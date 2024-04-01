@@ -154,6 +154,61 @@ constexpr char kCompleteMetadataV2Template[] = R"({
     "tableOfContent": []
   })";
 
+constexpr char kCompleteMetadataV2WithDelimiterTemplate[] = R"({
+    "captions": [
+      {
+        "endOffset": 3000,
+        "hypothesisParts": [
+          {
+            "offset": 0,
+            "text": [
+              "▁transcript"
+            ]
+          },
+          {
+            "offset": 2000,
+            "text": [
+              "▁text"
+            ]
+          }
+        ],
+        "startOffset": 1000,
+        "groupId": 1000,
+        "text": "transcript text"
+      },
+      {
+        "endOffset": 5000,
+        "hypothesisParts": [
+          {
+            "offset": 0,
+            "text": [
+              "▁transcript"
+            ]
+          },
+          {
+            "offset": 1000,
+            "text": [
+              "▁text"
+            ]
+          },
+          {
+            "offset": 1500,
+            "text": [
+              "▁2"
+            ]
+          }
+        ],
+        "startOffset": 3000,
+        "groupId": 3000,
+        "text": "transcript text 2"
+      }
+    ],
+    "captionLanguage": "en",
+    "recognitionStatus": 1,
+    "version": 2,
+    "tableOfContent": []
+  })";
+
 constexpr char kCompleteMetadataV2MultipleSentenceTemplate[] = R"({
     "captions": [
       {
@@ -2077,6 +2132,121 @@ constexpr char kCompleteMetadataV2ChineseTemplate[] = R"({
   "version": 2
 })";
 
+constexpr char kCompleteMetadataV2JapaneseWithLatinCharactersTemplate[] = R"({
+  "captions": [
+    {
+      "endOffset": 11000,
+      "hypothesisParts": [
+        {
+          "offset": 0,
+          "text": [
+            "こ"
+          ]
+        },
+        {
+          "offset": 1000,
+          "text": [
+            "れ"
+          ]
+        },
+        {
+          "offset": 2000,
+          "text": [
+            "は、"
+          ]
+        },
+        {
+          "offset": 3000,
+          "text": [
+            "3"
+          ]
+        },
+        {
+          "offset": 4000,
+          "text": [
+            "km"
+          ]
+        },
+        {
+          "offset": 5000,
+          "text": [
+            "などの"
+          ]
+        },
+        {
+          "offset": 6000,
+          "text": [
+            "数字を"
+          ]
+        },
+        {
+          "offset": 7000,
+          "text": [
+            "含むラ"
+          ]
+        },
+        {
+          "offset": 8000,
+          "text": [
+            "ンダム"
+          ]
+        },
+        {
+          "offset": 9000,
+          "text": [
+            "なテキ"
+          ]
+        },
+        {
+          "offset": 10000,
+          "text": [
+            "ストです。"
+          ]
+        }
+      ],
+      "startOffset": 0,
+      "groupId": 0,
+      "text": "これは、3 km などの数字を含むランダムなテキストです。"
+    },
+    {
+      "endOffset": 15000,
+      "hypothesisParts": [
+        {
+          "offset": 0,
+          "text": [
+            "これ"
+          ]
+        },
+        {
+          "offset": 1000,
+          "text": [
+            "も分"
+          ]
+        },
+        {
+          "offset": 2000,
+          "text": [
+            "割した"
+          ]
+        },
+        {
+          "offset": 3000,
+          "text": [
+            "い文です。"
+          ]
+        }
+      ],
+      "startOffset": 11000,
+      "groupId": 0,
+      "text": "これも分割したい文です。"
+    }
+  ],
+  "captionLanguage": "ja",
+  "recognitionStatus": 1,
+  "version": 2,
+  "tableOfContent": []
+})";
+
 void AssertSerializedString(const std::string& expected,
                             const std::string& actual) {
   std::optional<base::Value> expected_value = base::JSONReader::Read(expected);
@@ -2134,7 +2304,8 @@ std::string BuildTranscriptJson(
                             BuildHypothesisPartsList(hypothesis_part).c_str());
 }
 
-std::unique_ptr<ProjectorMetadata> populateMetadata() {
+std::unique_ptr<ProjectorMetadata> populateMetadata(
+    bool with_delimiters = false) {
   base::i18n::SetICUDefaultLocale("en_US");
   std::unique_ptr<ProjectorMetadata> metadata =
       std::make_unique<ProjectorMetadata>();
@@ -2142,10 +2313,13 @@ std::unique_ptr<ProjectorMetadata> populateMetadata() {
   metadata->SetMetadataVersionNumber(MetadataVersionNumber::kV2);
 
   std::vector<media::HypothesisParts> first_transcript;
-  first_transcript.emplace_back(std::vector<std::string>({"transcript"}),
-                                base::Milliseconds(0));
-  first_transcript.emplace_back(std::vector<std::string>({"text"}),
-                                base::Milliseconds(2000));
+  first_transcript.emplace_back(
+      std::vector<std::string>(
+          {with_delimiters ? "▁transcript" : "transcript"}),
+      base::Milliseconds(0));
+  first_transcript.emplace_back(
+      std::vector<std::string>({with_delimiters ? "▁text" : "text"}),
+      base::Milliseconds(2000));
 
   metadata->AddTranscript(std::make_unique<ProjectorTranscript>(
       /*start_time=*/base::Milliseconds(1000),
@@ -2155,12 +2329,16 @@ std::unique_ptr<ProjectorMetadata> populateMetadata() {
   metadata->MarkKeyIdea();
 
   std::vector<media::HypothesisParts> second_transcript;
-  second_transcript.emplace_back(std::vector<std::string>({"transcript"}),
-                                 base::Milliseconds(0));
-  second_transcript.emplace_back(std::vector<std::string>({"text"}),
-                                 base::Milliseconds(1000));
-  second_transcript.emplace_back(std::vector<std::string>({"2"}),
-                                 base::Milliseconds(1500));
+  second_transcript.emplace_back(
+      std::vector<std::string>(
+          {with_delimiters ? "▁transcript" : "transcript"}),
+      base::Milliseconds(0));
+  second_transcript.emplace_back(
+      std::vector<std::string>({with_delimiters ? "▁text" : "text"}),
+      base::Milliseconds(1000));
+  second_transcript.emplace_back(
+      std::vector<std::string>({with_delimiters ? "▁2" : "2"}),
+      base::Milliseconds(1500));
 
   metadata->AddTranscript(std::make_unique<ProjectorTranscript>(
       /*start_time=*/base::Milliseconds(3000),
@@ -2295,6 +2473,39 @@ std::unique_ptr<ProjectorMetadata> populateMetadataWithLanguageWithoutSpaces() {
   metadata->AddTranscript(std::make_unique<ProjectorTranscript>(
       paragraph_end_offset, paragraph_end_offset + paragraph_end_offset,
       paragraph_end_offset.InMilliseconds(), paragraph_text,
+      paragraph_hypothesis_parts));
+  return metadata;
+}
+
+std::unique_ptr<ProjectorMetadata> populateMetadataWithMixedCharacters() {
+  base::i18n::SetICUDefaultLocale("ja");
+  std::unique_ptr<ProjectorMetadata> metadata =
+      std::make_unique<ProjectorMetadata>();
+  metadata->SetCaptionLanguage("ja");
+  metadata->SetMetadataVersionNumber(MetadataVersionNumber::kV2);
+
+  std::string paragraph_text =
+      "これは、3 km "
+      "などの数字を含むランダムなテキストです。これも分割したい文です。";
+  const std::vector<std::string> paragraph_words = {
+      "こ",         "れ",     "は、",   "3",      "km",
+      "などの",     "数字を", "含むラ", "ンダム", "なテキ",
+      "ストです。", "これ",   "も分",   "割した", "い文です。",
+  };
+
+  std::vector<media::HypothesisParts> paragraph_hypothesis_parts;
+  for (uint i = 0; i < paragraph_words.size(); i++) {
+    paragraph_hypothesis_parts.emplace_back(
+        std::vector<std::string>({paragraph_words[i]}),
+        base::Milliseconds(i * 1000));
+  }
+  const base::TimeDelta paragraph_start_offset = base::Milliseconds(0);
+  const base::TimeDelta paragraph_end_offset =
+      base::Milliseconds(paragraph_words.size() * 1000);
+
+  metadata->AddTranscript(std::make_unique<ProjectorTranscript>(
+      paragraph_start_offset, paragraph_end_offset,
+      paragraph_start_offset.InMilliseconds(), paragraph_text,
       paragraph_hypothesis_parts));
   return metadata;
 }
@@ -2473,6 +2684,25 @@ TEST_F(ProjectorMetadataTestV2, AddMultiSentenceTranscriptWithChinese) {
   // = 6.
   EXPECT_EQ(metadata->GetTranscriptsCount(), 6ul);
   AssertSerializedString(kCompleteMetadataV2ChineseTemplate,
+                         metadata->Serialize());
+}
+
+TEST_F(ProjectorMetadataTestV2, RemoveDelimiter) {
+  std::unique_ptr<ProjectorMetadata> metadata = populateMetadata(true);
+  metadata->SetMetadataVersionNumber(MetadataVersionNumber::kV2);
+
+  metadata->SetSpeechRecognitionStatus(RecognitionStatus::kComplete);
+  AssertSerializedString(kCompleteMetadataV2WithDelimiterTemplate,
+                         metadata->Serialize());
+}
+
+TEST_F(ProjectorMetadataTestV2, PreserveSpacingForMixedCharacters) {
+  std::unique_ptr<ProjectorMetadata> metadata =
+      populateMetadataWithMixedCharacters();
+  metadata->SetMetadataVersionNumber(MetadataVersionNumber::kV2);
+
+  metadata->SetSpeechRecognitionStatus(RecognitionStatus::kComplete);
+  AssertSerializedString(kCompleteMetadataV2JapaneseWithLatinCharactersTemplate,
                          metadata->Serialize());
 }
 

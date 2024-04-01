@@ -48,6 +48,8 @@ class MetadataItem {
 
   base::TimeDelta& end_time() { return end_time_; }
 
+  std::string& text() { return text_; }
+
   // Return the serialized metadata item. This is used for storage.
   virtual base::Value::Dict ToJson() = 0;
 
