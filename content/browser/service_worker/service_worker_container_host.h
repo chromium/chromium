@@ -533,7 +533,7 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
 
   ukm::SourceId ukm_source_id() const { return ukm_source_id_; }
 
-  void SetContainerReady() { is_container_ready_ = true; }
+  void SetContainerReady();
 
  private:
   class ServiceWorkerRunningStatusObserver;
@@ -637,6 +637,10 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
                                     const GURL& script_url,
                                     const char* error_prefix,
                                     Args... args);
+
+  // Flushes features stored, when it gets ready to send.
+  // If it is still not ready to send, the features are buffered again.
+  void FlushFeatures();
 
   base::WeakPtr<ServiceWorkerContextCore> context_;
 
@@ -755,6 +759,11 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   // It is used for notifying the ServiceWorker running status change to
   // the ServiceWorkerContainerHost in the renderer.
   std::unique_ptr<ServiceWorkerRunningStatusObserver> running_status_observer_;
+
+  // Until |container_| gets associated, its method cannot be used.
+  // If CountFeature() is called before |container_| gets ready, features are
+  // kept here, and flushed in SetContainerReady().
+  std::set<blink::mojom::WebFeature> buffered_used_features_;
 
   // For worker clients only ---------------------------------------------------
 

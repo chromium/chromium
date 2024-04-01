@@ -647,10 +647,9 @@ void ServiceWorkerContainerHost::CountFeature(
   // been passed to the renderer process. Otherwise, the method call will crash
   // inside the mojo library (See crbug.com/40918057).
   if (!is_container_ready_) {
-    // TODO(crbug.com/331682623): Record WebFeature to be resent after the
-    // container become ready.
     base::UmaHistogramEnumeration(
         kDropOutMetrics, CountFeatureDropOutReason::kContainerNotReady);
+    buffered_used_features_.insert(feature);
     return;
   }
 
@@ -658,6 +657,7 @@ void ServiceWorkerContainerHost::CountFeature(
   if (!is_execution_ready()) {
     base::UmaHistogramEnumeration(
         kDropOutMetrics, CountFeatureDropOutReason::kExecutionNotReady);
+    buffered_used_features_.insert(feature);
     return;
   }
 
@@ -1480,6 +1480,8 @@ void ServiceWorkerContainerHost::SetExecutionReady() {
 
   if (context_)
     context_->NotifyClientIsExecutionReady(*this);
+
+  FlushFeatures();
 }
 
 void ServiceWorkerContainerHost::RunExecutionReadyCallbacks() {
@@ -2002,6 +2004,21 @@ ServiceWorkerContainerHost::MaybeCreateSubresourceLoaderParams(
   params.container_host = container_host->GetWeakPtr();
 
   return params;
+}
+
+void ServiceWorkerContainerHost::SetContainerReady() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  is_container_ready_ = true;
+
+  FlushFeatures();
+}
+
+void ServiceWorkerContainerHost::FlushFeatures() {
+  std::set<blink::mojom::WebFeature> features;
+  features.swap(buffered_used_features_);
+  for (const auto& feature : features) {
+    CountFeature(feature);
+  }
 }
 
 // If a blob URL is used for a SharedWorker script's URL, a controller will be
