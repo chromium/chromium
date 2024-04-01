@@ -636,7 +636,7 @@ suite('sea pen', () => {
         'wait for accept button to load');
     acceptTermsButton.click();
 
-    const seaPenTemplateQuery = await getSeaPenTemplateQuery(6);
+    const seaPenTemplateQuery = await getSeaPenTemplateQuery(5);
     assertTrue(!!seaPenTemplateQuery, 'Characters template should show up');
 
     const seaPenChips = await waitUntil(
