@@ -377,9 +377,9 @@ int MemEntryImpl::InternalWriteData(int index, int offset, IOBuffer* buf,
 
   const int delta = end_offset - old_data_size;
   if (truncate && delta < 0) {
-    CHECK(!backend_->HasExceededStorageSize());
+    // We permit reducing the size even if the storage size has been exceeded,
+    // since it can only improve the situation. See https://crbug.com/331839344.
     backend_->ModifyStorageSize(delta);
-    CHECK(!backend_->HasExceededStorageSize());
     data.resize(end_offset);
   } else if (delta > 0) {
     backend_->ModifyStorageSize(delta);
