@@ -212,7 +212,7 @@ void TabOrganizationService::OnTabGroupChanged(const TabGroupChange& change) {
   CHECK(session);
   // Ignore changes when the session has already been accepted, to avoid acting
   // on changes made by the session itself.
-  if (session->IsComplete()) {
+  if (session->request()->state() == TabOrganizationRequest::State::COMPLETED) {
     return;
   }
 
