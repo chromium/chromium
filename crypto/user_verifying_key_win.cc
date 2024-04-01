@@ -28,6 +28,7 @@
 #include "crypto/random.h"
 #include "crypto/user_verifying_key.h"
 
+using ABI::Windows::Foundation::IAsyncAction;
 using ABI::Windows::Foundation::IAsyncOperation;
 using ABI::Windows::Security::Credentials::IKeyCredential;
 using ABI::Windows::Security::Credentials::IKeyCredentialManagerStatics;
@@ -333,6 +334,37 @@ void GetUserVerifyingSigningKeyInternal(
   }
 }
 
+void DeleteUserVerifyingKeyInternal(UserVerifyingKeyLabel key_label,
+                                    base::OnceCallback<void(bool)> callback) {
+  SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
+
+  ComPtr<IKeyCredentialManagerStatics> factory;
+  HRESULT hr = base::win::GetActivationFactory<
+      IKeyCredentialManagerStatics,
+      RuntimeClass_Windows_Security_Credentials_KeyCredentialManager>(&factory);
+  if (FAILED(hr)) {
+    LOG(ERROR) << FormatError(
+        "DeleteUserVerifyingKeyInternal: Failed to obtain activation "
+        "factory for KeyCredentialManager",
+        hr);
+    std::move(callback).Run(false);
+    return;
+  }
+
+  ComPtr<IAsyncAction> delete_operation;
+  auto key_name = base::win::ScopedHString::Create(key_label);
+  hr = factory->DeleteAsync(key_name.get(), &delete_operation);
+  if (FAILED(hr)) {
+    LOG(ERROR) << FormatError(
+        "DeleteUserVerifyingKeyInternal: Call to DeleteAsync failed", hr);
+    std::move(callback).Run(false);
+    return;
+  }
+
+  // DeleteAsync does not report a value, so we have to assume success.
+  std::move(callback).Run(true);
+}
+
 std::optional<SignatureVerifier::SignatureAlgorithm> SelectAlgorithm(
     base::span<const SignatureVerifier::SignatureAlgorithm>
         acceptable_algorithms) {
@@ -395,8 +427,13 @@ class UserVerifyingKeyProviderWin : public UserVerifyingKeyProvider {
   void DeleteUserVerifyingKey(
       UserVerifyingKeyLabel key_label,
       base::OnceCallback<void(bool)> callback) override {
-    // TODO(crbug.com/40274370): implement.
-    std::move(callback).Run(false);
+    scoped_refptr<base::SequencedTaskRunner> task_runner =
+        base::ThreadPool::CreateSequencedTaskRunner(
+            {base::MayBlock(), base::TaskPriority::USER_BLOCKING});
+    task_runner->PostTask(
+        FROM_HERE, base::BindOnce(DeleteUserVerifyingKeyInternal, key_label,
+                                  base::BindPostTaskToCurrentDefault(
+                                      std::move(callback))));
   }
 };
 
