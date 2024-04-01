@@ -42,10 +42,7 @@ const base::FeatureParam<UnretainedDanglingPtrMode>
 
 BASE_FEATURE(kPartitionAllocDanglingPtr,
              "PartitionAllocDanglingPtr",
-#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_FEATURE_FLAG) ||                         \
-    (BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS) &&                              \
-     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)) && !defined(OFFICIAL_BUILD) && \
-     (!defined(NDEBUG) || DCHECK_IS_ON()))
+#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_FEATURE_FLAG)
              FEATURE_ENABLED_BY_DEFAULT
 #else
              FEATURE_DISABLED_BY_DEFAULT
