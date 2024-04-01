@@ -23,12 +23,16 @@ constexpr char kVersionKey[] = "version";
 constexpr char kCompatibleVersionKey[] = "last_compatible_version";
 constexpr char kMmapStatusKey[] = "mmap_status";
 
-void PrepareSetStatement(std::string_view key,
+bool PrepareSetStatement(std::string_view key,
                          Database& db,
                          Statement& insert_statement) {
   insert_statement.Assign(db.GetCachedStatement(
       SQL_FROM_HERE, "INSERT OR REPLACE INTO meta(key,value) VALUES(?,?)"));
+  if (!insert_statement.is_valid()) {
+    return false;
+  }
   insert_statement.BindString(0, key);
+  return true;
 }
 
 bool PrepareGetStatement(std::string_view key,
@@ -88,7 +92,10 @@ bool MetaTable::SetMmapStatus(Database* db, int64_t status) {
   DCHECK(status == kMmapFailure || status == kMmapSuccess || status >= 0);
 
   Statement insert;
-  PrepareSetStatement(kMmapStatusKey, *db, insert);
+  if (!PrepareSetStatement(kMmapStatusKey, *db, insert)) {
+    return false;
+  }
+
   insert.BindInt64(1, status);
   return insert.Run();
 }
