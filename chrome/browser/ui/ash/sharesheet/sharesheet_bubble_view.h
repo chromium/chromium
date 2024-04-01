@@ -110,7 +110,7 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView,
   // Owns this class.
   raw_ptr<::sharesheet::SharesheetServiceDelegator, DanglingUntriaged>
       delegator_;
-  std::u16string active_target_;
+  std::optional<::sharesheet::ShareActionType> active_share_action_type_;
   apps::IntentPtr intent_;
   ::sharesheet::DeliveredCallback delivered_callback_;
   ::sharesheet::CloseCallback close_callback_;

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/views/view.h"
@@ -24,6 +25,8 @@ class SharesheetController;
 class ShareAction {
  public:
   virtual ~ShareAction() = default;
+
+  virtual ShareActionType GetActionType() const = 0;
 
   virtual const std::u16string GetActionName() = 0;
 

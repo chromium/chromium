@@ -20,6 +20,7 @@ class DriveShareAction : public ::sharesheet::ShareAction {
   DriveShareAction& operator=(const DriveShareAction&) = delete;
 
   // ShareAction:
+  ::sharesheet::ShareActionType GetActionType() const override;
   const std::u16string GetActionName() override;
   const gfx::VectorIcon& GetActionIcon() override;
   void LaunchAction(::sharesheet::SharesheetController* controller,
