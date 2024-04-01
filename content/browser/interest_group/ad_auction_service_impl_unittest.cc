@@ -4778,6 +4778,8 @@ TEST_F(AdAuctionServiceImplTest, DisconnectedAndSuccessInFlightTogether) {
   network_responder_->FailUpdateRequestWithError(
       kUpdateUrlPath2, net::ERR_INTERNET_DISCONNECTED);
 
+  task_environment()->FastForwardBy(base::Seconds(1));
+
   constexpr char kInterestGroupName2[] = "group2";
   blink::InterestGroup interest_group_2 = CreateInterestGroup();
   interest_group_2.name = kInterestGroupName2;
@@ -4807,10 +4809,8 @@ TEST_F(AdAuctionServiceImplTest, DisconnectedAndSuccessInFlightTogether) {
   scoped_refptr<StorageInterestGroups> groups =
       GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(groups->size(), 2u);
-  auto group_2 =
-      groups->GetInterestGroups()[0]->interest_group.name == kInterestGroupName2
-          ? groups->GetInterestGroups()[0]->interest_group
-          : groups->GetInterestGroups()[0]->interest_group;
+  auto group_2 = groups->GetInterestGroups()[0]->interest_group;
+  ASSERT_EQ(group_2.name, kInterestGroupName2);
   ASSERT_TRUE(group_2.ads.has_value());
   ASSERT_EQ(group_2.ads->size(), 1u);
   EXPECT_EQ(group_2.ads.value()[0].render_url(), "https://example.com/render");
@@ -4828,14 +4828,15 @@ TEST_F(AdAuctionServiceImplTest, DisconnectedAndSuccessInFlightTogether) {
   // Check that both groups updated.
   groups = GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(groups->size(), 2u);
-  auto group_1 =
-      groups->GetInterestGroups()[0]->interest_group.name == kInterestGroupName
-          ? groups->GetInterestGroups()[0]->interest_group
-          : groups->GetInterestGroups()[1]->interest_group;
-  group_2 =
-      groups->GetInterestGroups()[0]->interest_group.name == kInterestGroupName2
-          ? groups->GetInterestGroups()[0]->interest_group
-          : groups->GetInterestGroups()[1]->interest_group;
+
+  std::vector<SingleStorageInterestGroup> single_groups =
+      groups->GetInterestGroups();
+
+  group_2 = single_groups[0]->interest_group;
+  auto group_1 = single_groups[1]->interest_group;
+
+  ASSERT_EQ(group_1.name, kInterestGroupName);
+  ASSERT_EQ(group_2.name, kInterestGroupName2);
 
   ASSERT_TRUE(group_1.ads.has_value());
   ASSERT_EQ(group_1.ads->size(), 1u);
