@@ -12,6 +12,7 @@ Design doc: https://docs.google.com/document/d/1MtdbUcWBDZyvmV0FOdsTWw_Jv16YtE6K
 """
 
 import logging
+from typing import Mapping
 
 from blinkpy.w3c.common import WPT_REVISION_FOOTER, WPT_GH_URL
 from blinkpy.w3c.gerrit import GerritError
@@ -31,23 +32,27 @@ class ExportNotifier(object):
         self.gerrit = gerrit
         self.dry_run = dry_run
 
-    def main(self):
-        """Surfaces relevant Taskcluster check failures to Gerrit through comments."""
-        gerrit_dict = {}
+    def main(self) -> Mapping[str, 'PRStatusInfo']:
+        """Surfaces relevant Taskcluster check failures to Gerrit through comments.
+
+        Returns:
+            A map from change IDs to statuses for failed PRs.
+
+        Raises:
+            ExportNotifierError: If the export notification somehow failed.
+        """
+        prs_by_change_id = {}
 
         try:
-            _log.info('Searching for recent failiing chromium exports.')
+            _log.info('Searching for recent failing chromium exports.')
             prs = self.wpt_github.recent_failing_chromium_exports()
         except GitHubError as e:
-            _log.info(
-                'Surfacing Taskcluster failures cannot be completed due to the following error:'
-            )
-            _log.error(str(e))
-            return True
+            raise ExportNotifierError('Surfacing Taskcluster failures '
+                                      f'could not be completed: {e}') from e
 
         if len(prs) > 100:
-            _log.error('Too many open failing PRs: %s; abort.', len(prs))
-            return True
+            raise ExportNotifierError(
+                f'Too many open failing PRs: {len(prs)}; abort.')
 
         _log.info('Found %d failing PRs.', len(prs))
         for pr in prs:
@@ -67,11 +72,11 @@ class ExportNotifier(object):
 
             gerrit_sha = self.wpt_github.extract_metadata(
                 WPT_REVISION_FOOTER, pr.body)
-            gerrit_dict[gerrit_id] = PRStatusInfo(checks_results, pr.number,
-                                                  gerrit_sha)
+            prs_by_change_id[gerrit_id] = PRStatusInfo(checks_results,
+                                                       pr.number, gerrit_sha)
 
-        self.process_failing_prs(gerrit_dict)
-        return False
+        self.process_failing_prs(prs_by_change_id)
+        return prs_by_change_id
 
     def get_check_runs(self, number):
         """Retrieves check runs through a PR number.
@@ -88,11 +93,11 @@ class ExportNotifier(object):
 
         return check_runs
 
-    def process_failing_prs(self, gerrit_dict):
+    def process_failing_prs(self, prs_by_change_id):
         """Processes and comments on CLs with failed Tackcluster checks."""
         _log.info('Processing %d CLs with failed Taskcluster checks.',
-                  len(gerrit_dict))
-        for change_id, pr_status_info in gerrit_dict.items():
+                  len(prs_by_change_id))
+        for change_id, pr_status_info in prs_by_change_id.items():
             _log.info('Change-Id: %s', change_id)
             try:
                 cl = self.gerrit.query_cl_comments_and_revisions(change_id)
@@ -159,13 +164,17 @@ class ExportNotifier(object):
         return checks_results
 
 
+class ExportNotifierError(Exception):
+    """Represents an unsuccessful notification attempt."""
+
+
 class PRStatusInfo(object):
     CL_SHA_TAG = 'Gerrit CL SHA: '
     PATCHSET_TAG = 'Patchset Number: '
 
     def __init__(self, checks_results, pr_number, gerrit_sha=None):
         self._checks_results = checks_results
-        self._pr_number = pr_number
+        self.pr_number = pr_number
         if gerrit_sha:
             self._gerrit_sha = gerrit_sha
         else:
@@ -201,7 +210,7 @@ class PRStatusInfo(object):
             'need earlier help please contact blink-dev@chromium.org.\n\n'
             'Any suggestions to improve this service are welcome; '
             'crbug.com/1027618.').format(
-                '%spull/%d' % (WPT_GH_URL, self._pr_number),
+                '%spull/%d' % (WPT_GH_URL, self.pr_number),
                 self._checks_results_as_comment())
 
         comment += ('\n\n{}{}').format(PRStatusInfo.CL_SHA_TAG,

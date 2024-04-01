@@ -12,7 +12,7 @@ from blinkpy.w3c.common import (
     read_credentials,
 )
 from blinkpy.w3c.chromium_exportable_commits import exportable_commits_over_last_n_commits
-from blinkpy.w3c.export_notifier import ExportNotifier
+from blinkpy.w3c.export_notifier import ExportNotifier, ExportNotifierError
 from blinkpy.w3c.gerrit import GerritAPI, GerritCL, GerritError
 from blinkpy.w3c.graphql import GraphQL
 from blinkpy.w3c.pr_cleanup_tool import PrCleanupTool
@@ -108,13 +108,18 @@ class TestExporter(object):
 
         _log.info('Automatic export process has finished successfully.')
 
-        export_notifier_failure = False
         if self.surface_failures_to_gerrit:
             _log.info('Starting surfacing cross-browser failures to Gerrit.')
-            export_notifier_failure = ExportNotifier(self.host, self.github,
-                                                     self.gerrit,
-                                                     self.dry_run).main()
-        return not export_notifier_failure
+            notifier = ExportNotifier(self.host, self.github, self.gerrit,
+                                      self.dry_run)
+            try:
+                # TODO(crbug.com/40267178): Write the list of blocked PRs to a
+                # summary file (as markdown).
+                notifier.main()
+            except ExportNotifierError as error:
+                _log.exception(f'Failed to surface upstream failures: {error}')
+                return False
+        return True
 
     def parse_args(self, argv):
         parser = argparse.ArgumentParser(description=__doc__)
