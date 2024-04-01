@@ -2,17 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/printing/print_view_manager.h"
+
 #include <memory>
 #include <utility>
 
-#include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/run_loop.h"
+#include "base/test/bind.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/browser_with_test_window_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/auto_reset.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
-#include "base/run_loop.h"
-#include "base/test/bind.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -21,17 +30,13 @@
 #include "chrome/browser/printing/print_job_manager.h"
 #include "chrome/browser/printing/print_job_worker.h"
 #include "chrome/browser/printing/print_test_utils.h"
-#include "chrome/browser/printing/print_view_manager.h"
 #include "chrome/browser/printing/print_view_manager_base.h"
 #include "chrome/browser/printing/printer_query.h"
-#include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/printing/common/print.mojom.h"
 #include "content/public/browser/global_routing_id.h"
-#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "printing/mojom/print.mojom.h"
 #include "printing/print_settings.h"
 #include "printing/print_settings_conversion.h"
 #include "printing/printed_document.h"
@@ -40,10 +45,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
-
-#if BUILDFLAG(IS_WIN)
-#include "printing/mojom/print.mojom.h"
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace printing {
 
@@ -51,13 +53,14 @@ using PrintViewManagerTest = BrowserWithTestWindowTest;
 
 namespace {
 
-class TestPrintQueriesQueue : public PrintQueriesQueue {
+#if BUILDFLAG(IS_WIN)
+class TestPrintQueriesQueueWin : public PrintQueriesQueue {
  public:
-  TestPrintQueriesQueue() = default;
-  TestPrintQueriesQueue(const TestPrintQueriesQueue&) = delete;
-  TestPrintQueriesQueue& operator=(const TestPrintQueriesQueue&) = delete;
+  TestPrintQueriesQueueWin() = default;
+  TestPrintQueriesQueueWin(const TestPrintQueriesQueueWin&) = delete;
+  TestPrintQueriesQueueWin& operator=(const TestPrintQueriesQueueWin&) = delete;
 
-  // Creates a `TestPrinterQuery`. Sets up the printer query with the printer
+  // Creates a `TestPrinterQueryWin`. Sets up the printer query with the printer
   // settings indicated by `printable_offset_x_`, `printable_offset_y_`, and
   // `print_driver_type_`.
   std::unique_ptr<PrinterQuery> CreatePrinterQuery(
@@ -68,30 +71,26 @@ class TestPrintQueriesQueue : public PrintQueriesQueue {
   // normally be filled in by the backend `PrintingContext`.
   void SetupPrinterOffsets(int offset_x, int offset_y);
 
-#if BUILDFLAG(IS_WIN)
   // Sets the printer type to `type`. Used to fill in printer settings that
   // would normally be filled in by the backend `PrintingContext`.
   void SetupPrinterLanguageType(mojom::PrinterLanguageType type);
-#endif
 
  private:
-  ~TestPrintQueriesQueue() override = default;
+  ~TestPrintQueriesQueueWin() override = default;
 
-#if BUILDFLAG(IS_WIN)
   mojom::PrinterLanguageType printer_language_type_;
-#endif
   int printable_offset_x_;
   int printable_offset_y_;
 };
 
-class TestPrinterQuery : public PrinterQuery {
+class TestPrinterQueryWin : public PrinterQuery {
  public:
   // Can only be called on the IO thread, since this inherits from
   // `PrinterQuery`.
-  explicit TestPrinterQuery(content::GlobalRenderFrameHostId rfh_id);
-  TestPrinterQuery(const TestPrinterQuery&) = delete;
-  TestPrinterQuery& operator=(const TestPrinterQuery&) = delete;
-  ~TestPrinterQuery() override;
+  explicit TestPrinterQueryWin(content::GlobalRenderFrameHostId rfh_id);
+  TestPrinterQueryWin(const TestPrinterQueryWin&) = delete;
+  TestPrinterQueryWin& operator=(const TestPrinterQueryWin&) = delete;
+  ~TestPrinterQueryWin() override;
 
   // Updates the current settings with `new_settings` dictionary values. Also
   // fills in the settings with values from `offsets_` and `printer_type_` that
@@ -99,11 +98,9 @@ class TestPrinterQuery : public PrinterQuery {
   void SetSettings(base::Value::Dict new_settings,
                    base::OnceClosure callback) override;
 
-#if BUILDFLAG(IS_WIN)
   // Sets `printer_language_type_` to `type`. Should be called before
   // `SetSettings()`.
   void SetPrinterLanguageType(mojom::PrinterLanguageType type);
-#endif
 
   // Sets printer offsets to `offset_x` and `offset_y`, which should be in DPI.
   // Should be called before `SetSettings()`.
@@ -111,45 +108,37 @@ class TestPrinterQuery : public PrinterQuery {
 
  private:
   std::optional<gfx::Point> offsets_;
-#if BUILDFLAG(IS_WIN)
   std::optional<mojom::PrinterLanguageType> printer_language_type_;
-#endif
 };
 
-std::unique_ptr<PrinterQuery> TestPrintQueriesQueue::CreatePrinterQuery(
+std::unique_ptr<PrinterQuery> TestPrintQueriesQueueWin::CreatePrinterQuery(
     content::GlobalRenderFrameHostId rfh_id) {
-  auto test_query = std::make_unique<TestPrinterQuery>(rfh_id);
-#if BUILDFLAG(IS_WIN)
+  auto test_query = std::make_unique<TestPrinterQueryWin>(rfh_id);
   test_query->SetPrinterLanguageType(printer_language_type_);
-#endif
   test_query->SetPrintableAreaOffsets(printable_offset_x_, printable_offset_y_);
-
   return test_query;
 }
 
-void TestPrintQueriesQueue::SetupPrinterOffsets(int offset_x, int offset_y) {
+void TestPrintQueriesQueueWin::SetupPrinterOffsets(int offset_x, int offset_y) {
   printable_offset_x_ = offset_x;
   printable_offset_y_ = offset_y;
 }
 
-#if BUILDFLAG(IS_WIN)
-void TestPrintQueriesQueue::SetupPrinterLanguageType(
+void TestPrintQueriesQueueWin::SetupPrinterLanguageType(
     mojom::PrinterLanguageType type) {
   printer_language_type_ = type;
 }
-#endif
 
-TestPrinterQuery::TestPrinterQuery(content::GlobalRenderFrameHostId rfh_id)
+TestPrinterQueryWin::TestPrinterQueryWin(
+    content::GlobalRenderFrameHostId rfh_id)
     : PrinterQuery(rfh_id) {}
 
-TestPrinterQuery::~TestPrinterQuery() = default;
+TestPrinterQueryWin::~TestPrinterQueryWin() = default;
 
-void TestPrinterQuery::SetSettings(base::Value::Dict new_settings,
-                                   base::OnceClosure callback) {
+void TestPrinterQueryWin::SetSettings(base::Value::Dict new_settings,
+                                      base::OnceClosure callback) {
   DCHECK(offsets_);
-#if BUILDFLAG(IS_WIN)
   DCHECK(printer_language_type_);
-#endif
   std::unique_ptr<PrintSettings> settings =
       PrintSettingsFromJobSettings(new_settings);
   mojom::ResultCode result = mojom::ResultCode::kSuccess;
@@ -168,56 +157,33 @@ void TestPrinterQuery::SetSettings(base::Value::Dict new_settings,
   gfx::Rect paper_rect(0, 0, paper_size.width(), paper_size.height());
   paper_rect.Inset(gfx::Insets::VH(offsets_->y(), offsets_->x()));
   settings->SetPrinterPrintableArea(paper_size, paper_rect, true);
-#if BUILDFLAG(IS_WIN)
   settings->set_printer_language_type(*printer_language_type_);
-#endif
 
   GetSettingsDone(std::move(callback), /*maybe_is_modifiable=*/std::nullopt,
                   std::move(settings), result);
 }
 
-#if BUILDFLAG(IS_WIN)
-void TestPrinterQuery::SetPrinterLanguageType(mojom::PrinterLanguageType type) {
+void TestPrinterQueryWin::SetPrinterLanguageType(
+    mojom::PrinterLanguageType type) {
   printer_language_type_ = type;
 }
-#endif
 
-void TestPrinterQuery::SetPrintableAreaOffsets(int offset_x, int offset_y) {
+void TestPrinterQueryWin::SetPrintableAreaOffsets(int offset_x, int offset_y) {
   offsets_ = gfx::Point(offset_x, offset_y);
 }
 
-class TestPrintViewManagerForSystemDialogPrint : public PrintViewManager {
- public:
-  explicit TestPrintViewManagerForSystemDialogPrint(
-      content::WebContents* web_contents)
-      : PrintViewManager(web_contents) {}
-  ~TestPrintViewManagerForSystemDialogPrint() override = default;
-
-  // PrintViewManager:
-  void PrintForSystemDialogImpl() override {
-    // There has to be a target frame so DidShowPrintDialog() does not crash.
-    // Manually set it, as there is no IPC in progress.
-    print_manager_host_receivers_for_testing().SetCurrentTargetFrameForTesting(
-        web_contents()->GetPrimaryMainFrame());
-    DidShowPrintDialog();
-    print_manager_host_receivers_for_testing().SetCurrentTargetFrameForTesting(
-        nullptr);
-  }
-};
-
-class TestPrintJob : public PrintJob {
+class TestPrintJobWin : public PrintJob {
  public:
   // Create an empty `PrintJob`. When initializing with this constructor,
   // post-constructor initialization must be done with `Initialize()`.
-  TestPrintJob() = default;
+  TestPrintJobWin() = default;
 
-  // Getters for values stored by `TestPrintJob` in Start...Converter functions.
+  // Getters for values stored by `TestPrintJobWin` in Start...Converter
+  // functions.
   const gfx::Size& page_size() const { return page_size_; }
   const gfx::Rect& content_area() const { return content_area_; }
   const gfx::Point& physical_offsets() const { return physical_offsets_; }
-#if BUILDFLAG(IS_WIN)
   mojom::PrinterLanguageType type() const { return type_; }
-#endif
 
   // All remaining functions are `PrintJob` implementation.
   void Initialize(std::unique_ptr<PrinterQuery> query,
@@ -252,7 +218,6 @@ class TestPrintJob : public PrintJob {
   // Intentional no-op, returns true.
   bool FlushJob(base::TimeDelta timeout) override { return true; }
 
-#if BUILDFLAG(IS_WIN)
   // These functions fill in the corresponding member variables based on the
   // arguments passed in.
   void StartPdfToEmfConversion(scoped_refptr<base::RefCountedMemory> bytes,
@@ -282,29 +247,47 @@ class TestPrintJob : public PrintJob {
     page_size_ = page_size;
     type_ = mojom::PrinterLanguageType::kTextOnly;
   }
-#endif  // BUILDFLAG(IS_WIN)
 
  private:
-  ~TestPrintJob() override { set_job_pending_for_testing(false); }
+  ~TestPrintJobWin() override { set_job_pending_for_testing(false); }
 
   gfx::Size page_size_;
   gfx::Rect content_area_;
   gfx::Point physical_offsets_;
-#if BUILDFLAG(IS_WIN)
   mojom::PrinterLanguageType type_;
-#endif
+};
+#endif  // BUILDFLAG(IS_WIN)
+
+class TestPrintViewManagerForSystemDialogPrint : public PrintViewManager {
+ public:
+  explicit TestPrintViewManagerForSystemDialogPrint(
+      content::WebContents* web_contents)
+      : PrintViewManager(web_contents) {}
+  ~TestPrintViewManagerForSystemDialogPrint() override = default;
+
+  // PrintViewManager:
+  void PrintForSystemDialogImpl() override {
+    // There has to be a target frame so DidShowPrintDialog() does not crash.
+    // Manually set it, as there is no IPC in progress.
+    print_manager_host_receivers_for_testing().SetCurrentTargetFrameForTesting(
+        web_contents()->GetPrimaryMainFrame());
+    DidShowPrintDialog();
+    print_manager_host_receivers_for_testing().SetCurrentTargetFrameForTesting(
+        nullptr);
+  }
 };
 
 }  // namespace
 
-class TestPrintViewManager : public PrintViewManagerBase {
+#if BUILDFLAG(IS_WIN)
+class TestPrintViewManagerWin : public PrintViewManagerBase {
  public:
-  explicit TestPrintViewManager(content::WebContents* web_contents)
+  explicit TestPrintViewManagerWin(content::WebContents* web_contents)
       : PrintViewManagerBase(web_contents) {}
-  TestPrintViewManager(const TestPrintViewManager&) = delete;
-  TestPrintViewManager& operator=(const TestPrintViewManager&) = delete;
+  TestPrintViewManagerWin(const TestPrintViewManagerWin&) = delete;
+  TestPrintViewManagerWin& operator=(const TestPrintViewManagerWin&) = delete;
 
-  ~TestPrintViewManager() override {
+  ~TestPrintViewManagerWin() override {
     // Set this null here. Otherwise, the `PrintViewManagerBase` destructor
     // will try to de-register for notifications that were not registered for
     // in `CreateNewPrintJob()`.
@@ -321,9 +304,6 @@ class TestPrintViewManager : public PrintViewManagerBase {
     mojo::AssociatedRemote<mojom::PrintRenderFrame> print_render_frame;
     rfh->GetRemoteAssociatedInterfaces()->GetInterface(&print_render_frame);
     print_render_frame->InitiatePrintPreview(
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-        mojo::NullAssociatedRemote(),
-#endif
         has_selection);
     return true;
   }
@@ -337,9 +317,7 @@ class TestPrintViewManager : public PrintViewManagerBase {
     return test_job()->physical_offsets();
   }
 
-#if BUILDFLAG(IS_WIN)
   mojom::PrinterLanguageType type() { return test_job()->type(); }
-#endif
 
   // Ends the run loop.
   void FakePrintCallback(const base::Value& error) {
@@ -356,14 +334,11 @@ class TestPrintViewManager : public PrintViewManagerBase {
   }
 
  protected:
-  // Override to create a `TestPrintJob` instead of a real one.
+  // Override to create a `TestPrintJobWin` instead of a real one.
   bool SetupNewPrintJob(std::unique_ptr<PrinterQuery> query) override {
-    print_job_ = base::MakeRefCounted<TestPrintJob>();
+    print_job_ = base::MakeRefCounted<TestPrintJobWin>();
     print_job_->Initialize(std::move(query), RenderSourceName(),
                            number_pages());
-#if BUILDFLAG(IS_CHROMEOS)
-    print_job_->SetSource(PrintJob::Source::kPrintPreview, /*source_id=*/"");
-#endif  // BUILDFLAG(IS_CHROMEOS)
     return true;
   }
   void SetupScriptedPrintPreview(
@@ -382,14 +357,15 @@ class TestPrintViewManager : public PrintViewManagerBase {
   }
 
  private:
-  TestPrintJob* test_job() {
-    return static_cast<TestPrintJob*>(print_job_.get());
+  TestPrintJobWin* test_job() {
+    return static_cast<TestPrintJobWin*>(print_job_.get());
   }
 
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
   // #addr-of
   RAW_PTR_EXCLUSION base::RunLoop* run_loop_ = nullptr;
 };
+#endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(PrintViewManagerTest, PrintSubFrameAndDestroy) {
   chrome::NewTab(browser());
@@ -442,8 +418,8 @@ TEST_F(PrintViewManagerTest, PrintForSystemDialog) {
 // Verifies that `StartPdfToPostScriptConversion` is called with the correct
 // printable area offsets. See crbug.com/821485.
 TEST_F(PrintViewManagerTest, PostScriptHasCorrectOffsets) {
-  scoped_refptr<TestPrintQueriesQueue> queue =
-      base::MakeRefCounted<TestPrintQueriesQueue>();
+  scoped_refptr<TestPrintQueriesQueueWin> queue =
+      base::MakeRefCounted<TestPrintQueriesQueueWin>();
 
   // Setup PostScript printer with printable area offsets of 0.1in.
   queue->SetupPrinterLanguageType(
@@ -457,8 +433,8 @@ TEST_F(PrintViewManagerTest, PostScriptHasCorrectOffsets) {
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
 
-  std::unique_ptr<TestPrintViewManager> print_view_manager =
-      std::make_unique<TestPrintViewManager>(web_contents);
+  auto print_view_manager =
+      std::make_unique<TestPrintViewManagerWin>(web_contents);
   PrintViewManager::SetReceiverImplForTesting(print_view_manager.get());
 
   print_view_manager->PrintPreviewNow(web_contents->GetPrimaryMainFrame(),
@@ -470,7 +446,7 @@ TEST_F(PrintViewManagerTest, PostScriptHasCorrectOffsets) {
   auto print_data = base::MakeRefCounted<base::RefCountedStaticMemory>(
       kTestData, sizeof(kTestData));
   PrinterHandler::PrintCallback callback =
-      base::BindOnce(&TestPrintViewManager::FakePrintCallback,
+      base::BindOnce(&TestPrintViewManagerWin::FakePrintCallback,
                      base::Unretained(print_view_manager.get()));
   print_view_manager->PrintForPrintPreview(std::move(print_ticket), print_data,
                                            web_contents->GetPrimaryMainFrame(),
@@ -484,6 +460,6 @@ TEST_F(PrintViewManagerTest, PostScriptHasCorrectOffsets) {
 
   PrintViewManager::SetReceiverImplForTesting(nullptr);
 }
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace printing
