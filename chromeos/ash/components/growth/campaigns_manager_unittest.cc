@@ -270,7 +270,7 @@ class CampaignsManagerTest : public testing::Test {
 
   void LoadComponentWithScheduling(const std::string& schedulings) {
     auto session_targeting = base::StringPrintf(R"(
-            "session": {
+            "runtime": {
               "schedulings": %s
             }
           )",
@@ -281,7 +281,7 @@ class CampaignsManagerTest : public testing::Test {
 
   void LoadComponentWithAppsOpenedTargeting(const std::string& apps_opened) {
     auto session_targeting = base::StringPrintf(R"(
-            "session": {
+            "runtime": {
               "appsOpened": %s
             }
           )",

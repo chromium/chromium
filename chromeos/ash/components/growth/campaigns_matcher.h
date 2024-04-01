@@ -45,6 +45,7 @@ class CampaignsMatcher {
   bool MatchOpenedApp(
       std::vector<std::unique_ptr<AppTargeting>> apps_opened_targeting) const;
   bool MatchSessionTargeting(const SessionTargeting& targeting) const;
+  bool MatchRuntimeTargeting(const RuntimeTargeting& targeting) const;
   bool Matched(const Targetings* targetings) const;
 
   // Owned by CampaignsManager.

@@ -54,6 +54,12 @@ inline constexpr char kRegisteredTime[] = "registeredTime";
 // Session Targeting paths.
 inline constexpr char kSessionTargeting[] = "session";
 
+// Experiment Tag Targeting paths.
+inline constexpr char kExperimentTargetings[] = "experimentTags";
+
+// Runtime Targeting paths.
+inline constexpr char kRuntimeTargeting[] = "runtime";
+
 // Scheduling Targeting paths.
 inline constexpr char kSchedulingTargetings[] = "schedulings";
 inline constexpr char kSchedulingStart[] = "start";
@@ -62,9 +68,6 @@ inline constexpr char kSchedulingEnd[] = "end";
 // Opened App Targeting paths.
 inline constexpr char kAppsOpenedTargetings[] = "appsOpened";
 inline constexpr char kAppId[] = "appId";
-
-// Experiment Tag Targeting paths.
-inline constexpr char kExperimentTargetings[] = "experimentTags";
 
 // Payloads
 inline constexpr char kPayloadPathTemplate[] = "payload.%s";
@@ -277,8 +280,18 @@ SessionTargeting::SessionTargeting(const Targeting* targeting_dict)
 
 SessionTargeting::~SessionTargeting() = default;
 
+const base::Value::List* SessionTargeting::GetExperimentTags() const {
+  return GetListCriteria(kExperimentTargetings);
+}
+
+// Runtime Targeting.
+RuntimeTargeting::RuntimeTargeting(const Targeting* targeting_dict)
+    : TargetingBase(targeting_dict, kRuntimeTargeting) {}
+
+RuntimeTargeting::~RuntimeTargeting() = default;
+
 const std::vector<std::unique_ptr<TimeWindowTargeting>>
-SessionTargeting::GetSchedulings() const {
+RuntimeTargeting::GetSchedulings() const {
   std::vector<std::unique_ptr<TimeWindowTargeting>> schedulings;
   auto* scheduling_dicts = GetListCriteria(kSchedulingTargetings);
   if (!scheduling_dicts) {
@@ -297,8 +310,25 @@ SessionTargeting::GetSchedulings() const {
   return schedulings;
 }
 
-const base::Value::List* SessionTargeting::GetExperimentTags() const {
-  return GetListCriteria(kExperimentTargetings);
+const std::vector<std::unique_ptr<AppTargeting>>
+RuntimeTargeting::GetAppsOpened() const {
+  std::vector<std::unique_ptr<AppTargeting>> app_targetings;
+
+  auto* app_targeting_dicts = GetListCriteria(kAppsOpenedTargetings);
+  if (!app_targeting_dicts) {
+    return app_targetings;
+  }
+
+  for (auto& app_targeting_dict : *app_targeting_dicts) {
+    if (!app_targeting_dict.is_dict()) {
+      // TODO(b/329124927): Record error.
+      continue;
+    }
+    app_targetings.push_back(
+        std::make_unique<AppTargeting>(&app_targeting_dict.GetDict()));
+  }
+
+  return app_targetings;
 }
 
 // Action.
@@ -319,27 +349,6 @@ std::optional<growth::ActionType> Action::GetActionType() const {
 
 const base::Value::Dict* Action::GetParams() const {
   return action_dict_->FindDict(kActionParamsPath);
-}
-
-const std::vector<std::unique_ptr<AppTargeting>>
-SessionTargeting::GetAppsOpened() const {
-  std::vector<std::unique_ptr<AppTargeting>> app_targetings;
-
-  auto* app_targeting_dicts = GetListCriteria(kAppsOpenedTargetings);
-  if (!app_targeting_dicts) {
-    return app_targetings;
-  }
-
-  for (auto& app_targeting_dict : *app_targeting_dicts) {
-    if (!app_targeting_dict.is_dict()) {
-      // TODO(b/329124927): Record error.
-      continue;
-    }
-    app_targetings.push_back(
-        std::make_unique<AppTargeting>(&app_targeting_dict.GetDict()));
-  }
-
-  return app_targetings;
 }
 
 // Anchor.

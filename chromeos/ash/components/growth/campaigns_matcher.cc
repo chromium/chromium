@@ -317,12 +317,21 @@ bool CampaignsMatcher::MatchOpenedApp(
 bool CampaignsMatcher::MatchSessionTargeting(
     const SessionTargeting& targeting) const {
   if (!targeting.IsValid()) {
-    // Campaigns matched if there is no demo mode targeting.
+    // Campaigns matched if there is no session targeting.
+    return true;
+  }
+
+  return MatchExperimentTags(targeting.GetExperimentTags());
+}
+
+bool CampaignsMatcher::MatchRuntimeTargeting(
+    const RuntimeTargeting& targeting) const {
+  if (!targeting.IsValid()) {
+    // Campaigns matched if there is no runtime targeting.
     return true;
   }
 
   return MatchSchedulings(targeting.GetSchedulings()) &&
-         MatchExperimentTags(targeting.GetExperimentTags()) &&
          MatchOpenedApp(targeting.GetAppsOpened());
 }
 
@@ -344,7 +353,8 @@ bool CampaignsMatcher::Matched(const Targetings* targetings) const {
 
   return MatchSessionTargeting(SessionTargeting(targeting)) &&
          MaybeMatchDemoModeTargeting(DemoModeTargeting(targeting)) &&
-         MatchDeviceTargeting(DeviceTargeting(targeting));
+         MatchDeviceTargeting(DeviceTargeting(targeting)) &&
+         MatchRuntimeTargeting(RuntimeTargeting(targeting));
 }
 
 }  // namespace growth

@@ -202,6 +202,24 @@ class DeviceTargeting : public TargetingBase {
   std::unique_ptr<TimeWindowTargeting> GetRegisteredTime() const;
 };
 
+// Wrapper around session targeting dictionary.
+//
+// The structure looks like:
+// {
+//   "session": {
+//      "experimentTag": [...]
+//   }
+// }
+class SessionTargeting : public TargetingBase {
+ public:
+  explicit SessionTargeting(const Targeting* targeting_dict);
+  SessionTargeting(const SessionTargeting&) = delete;
+  SessionTargeting& operator=(const SessionTargeting) = delete;
+  ~SessionTargeting();
+
+  const base::Value::List* GetExperimentTags() const;
+};
+
 // Wrapper around app targeting dictionary.
 //
 // The structure looks like:
@@ -221,22 +239,24 @@ class AppTargeting {
   raw_ptr<const base::Value::Dict> app_dict_;
 };
 
-// Wrapper around scheduling targeting dictionary.
+// Wrapper around runtime targeting dictionary.
 //
 // The structure looks like:
 // {
-//   "scheduling": []
+//   "runtime": {
+//      "schedulings": [...]
+//      "appsOpend": [...]
+//   }
 // }
-class SessionTargeting : public TargetingBase {
+class RuntimeTargeting : public TargetingBase {
  public:
-  explicit SessionTargeting(const Targeting* targeting_dict);
-  SessionTargeting(const SessionTargeting&) = delete;
-  SessionTargeting& operator=(const SessionTargeting) = delete;
-  ~SessionTargeting();
+  explicit RuntimeTargeting(const Targeting* targeting_dict);
+  RuntimeTargeting(const RuntimeTargeting&) = delete;
+  RuntimeTargeting& operator=(const RuntimeTargeting) = delete;
+  ~RuntimeTargeting();
 
   const std::vector<std::unique_ptr<TimeWindowTargeting>> GetSchedulings()
       const;
-  const base::Value::List* GetExperimentTags() const;
   // Returns a list of apps to be matched against the current opened app.
   const std::vector<std::unique_ptr<AppTargeting>> GetAppsOpened() const;
 };
