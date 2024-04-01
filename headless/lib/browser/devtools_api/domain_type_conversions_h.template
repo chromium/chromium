@@ -1,0 +1,71 @@
+// This file is generated
+
+// Copyright 2016 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef HEADLESS_PUBLIC_DEVTOOLS_INTERNAL_TYPE_CONVERSIONS_{{domain.domain | camelcase_to_hacker_style | upper}}_H_
+#define HEADLESS_PUBLIC_DEVTOOLS_INTERNAL_TYPE_CONVERSIONS_{{domain.domain | camelcase_to_hacker_style | upper}}_H_
+
+#include "base/notreached.h"
+#include "base/values.h"
+#include "headless/public/devtools/domains/types_{{domain.domain | camelcase_to_hacker_style}}.h"
+#include "headless/public/internal/value_conversions.h"
+
+namespace headless {
+namespace internal {
+
+{% for type in domain.types %}
+  {% set namespace = domain.domain | camelcase_to_hacker_style %}
+  {% if "enum" in type %}
+template <>
+struct FromValue<{{namespace}}::{{type.id}}> {
+  static {{namespace}}::{{type.id}} Parse(const base::Value& value, ErrorReporter* errors) {
+    {% set default = namespace + '::' + type.id + '::' + type.enum[0] | sanitize_literal | dash_to_camelcase | camelcase_to_hacker_style | upper %}
+    if (!value.is_string()) {
+      errors->AddError("string enum value expected");
+      {# Return an arbitrary enum member -- the caller will just ignore it. #}
+      return {{default}};
+    }
+    {% for literal in type.enum %}
+    if (value.GetString() == "{{literal}}")
+      return {{namespace}}::{{type.id}}::{{literal | sanitize_literal | dash_to_camelcase | camelcase_to_hacker_style | upper }};
+    {% endfor %}
+    errors->AddError("invalid enum value");
+    return {{default}};
+  }
+};
+
+template <>
+inline base::Value ToValue(const {{namespace}}::{{type.id}}& value) {
+  switch (value) {
+    {% for literal in type.enum %}
+    case {{namespace}}::{{type.id}}::{{literal | sanitize_literal | dash_to_camelcase | camelcase_to_hacker_style | upper }}:
+      return base::Value("{{literal}}");
+    {% endfor %}
+  };
+  NOTREACHED();
+  return base::Value();
+}
+    {% continue %}
+  {% endif %}
+
+  {% if not (type.type == "object") or not ("properties" in type) %}{% continue %}{% endif %}
+template <>
+struct FromValue<{{namespace}}::{{type.id}}> {
+  static std::unique_ptr<{{namespace}}::{{type.id}}> Parse(const base::Value& value, ErrorReporter* errors) {
+    return {{namespace}}::{{type.id}}::Parse(value, errors);
+  }
+};
+
+template <>
+inline base::Value ToValue(const {{namespace}}::{{type.id}}& value) {
+  return value.Serialize();
+}
+
+{% endfor %}
+
+}  // namespace internal
+}  // namespace headless
+
+#endif  // HEADLESS_PUBLIC_DEVTOOLS_INTERNAL_TYPE_CONVERSIONS_{{domain.domain | camelcase_to_hacker_style | upper}}_H_

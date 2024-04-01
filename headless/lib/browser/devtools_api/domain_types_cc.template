@@ -1,0 +1,86 @@
+// This file is generated
+
+// Copyright 2016 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+{% for domain_name in domain.dependencies %}
+#include "headless/public/devtools/domains/types_{{domain_name | camelcase_to_hacker_style}}.h"
+{% endfor %}
+
+#include "base/values.h"
+{% for dep in domain.dependencies %}
+#include "headless/public/devtools/internal/type_conversions_{{dep | camelcase_to_hacker_style}}.h"
+{% endfor %}
+
+namespace headless {
+
+namespace {{domain.domain | camelcase_to_hacker_style}} {
+{% for type in domain.types %}
+  {% if not (type.type == "object") or not ("properties" in type) %}{% continue %}{% endif %}
+
+std::unique_ptr<{{type.id}}> {{type.id}}::Parse(const base::Value& value, ErrorReporter* errors) {
+  errors->Push();
+  errors->SetName("{{type.id}}");
+  if (!value.is_dict()) {
+    errors->AddError("object expected");
+    errors->Pop();
+    return nullptr;
+  }
+
+  std::unique_ptr<{{type.id}}> result(new {{type.id}}());
+  errors->Push();
+  errors->SetName("{{type.id}}");
+  {% if type.properties %}
+  const base::Value::Dict& dict = value.GetDict();
+  {% endif %}
+  {% for property in type.properties %}
+    {% set value_name = property.name | camelcase_to_hacker_style + "_value" %}
+  const base::Value* {{value_name}} = dict.Find("{{property.name}}");
+  if ({{value_name}}) {
+    errors->SetName("{{property.name}}");
+    {% if property.optional %}
+    result->{{property.name | camelcase_to_hacker_style}}_ = internal::FromValue<{{resolve_type(property).raw_type}}>::Parse(*{{value_name}}, errors);
+    {% else %}
+    result->{{property.name | camelcase_to_hacker_style}}_ = internal::FromValue<{{resolve_type(property).raw_type}}>::Parse(*{{value_name}}, errors);
+    {% endif %}
+    {% if property.optional %}
+  }
+    {% else %}
+  } else {
+    errors->AddError("required property missing: {{property.name}}");
+  }
+    {% endif %}
+  {% endfor %}
+  errors->Pop();
+  errors->Pop();
+  if (errors->HasErrors())
+    return nullptr;
+  return result;
+}
+
+base::Value {{type.id}}::Serialize() const {
+  base::Value::Dict result;
+  {% for property in type.properties %}
+    {% set type = resolve_type(property) %}
+    {% if property.optional %}
+  if ({{property.name | camelcase_to_hacker_style}}_)
+    result.Set("{{property.name}}", internal::ToValue({{type.to_raw_type % ("%s_.value()" % property.name | camelcase_to_hacker_style)}}));
+    {% else %}
+  result.Set("{{property.name}}", internal::ToValue({{type.to_raw_type % ("%s_" % property.name | camelcase_to_hacker_style)}}));
+    {% endif %}
+  {% endfor %}
+  return base::Value(std::move(result));
+}
+
+std::unique_ptr<{{type.id}}> {{type.id}}::Clone() const {
+  ErrorReporter errors;
+  std::unique_ptr<{{type.id}}> result = Parse(Serialize(), &errors);
+  DCHECK(!errors.HasErrors());
+  return result;
+}
+
+{% endfor %}
+
+}  // namespace {{domain.domain | camelcase_to_hacker_style}}
+}  // namespace headless

@@ -1,0 +1,39 @@
+// This file is generated
+
+// Copyright 2016 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef HEADLESS_PUBLIC_DEVTOOLS_INTERNAL_TYPES_FORWARD_DECLARATIONS_{{domain.domain | camelcase_to_hacker_style | upper}}_H_
+#define HEADLESS_PUBLIC_DEVTOOLS_INTERNAL_TYPES_FORWARD_DECLARATIONS_{{domain.domain | camelcase_to_hacker_style | upper}}_H_
+
+#include "base/values.h"
+
+namespace headless {
+
+namespace {{domain.domain | camelcase_to_hacker_style}} {
+{% for type in domain.types %}
+  {% if type.type == "object" %}
+    {% if "properties" in type %}
+class {{type.id}};
+    {% else %}
+using {{type.id}} = base::Value;
+    {% endif %}
+  {% endif %}
+{% endfor %}
+
+{% for type in domain.types %}
+  {% if "enum" in type %}
+enum class {{type.id}} {
+    {% for literal in type.enum %}
+  {{ literal | sanitize_literal | dash_to_camelcase | camelcase_to_hacker_style | upper }}{{',' if not loop.last}}
+    {% endfor %}
+};
+
+  {% endif %}
+{% endfor %}
+}  // namespace {{domain.domain | camelcase_to_hacker_style}}
+
+}  // namespace headless
+
+#endif  // HEADLESS_PUBLIC_DEVTOOLS_INTERNAL_TYPES_FORWARD_DECLARATIONS_{{domain.domain | camelcase_to_hacker_style | upper}}_H_

@@ -1,0 +1,127 @@
+// This file is generated
+
+// Copyright 2016 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef HEADLESS_PUBLIC_DEVTOOLS_DOMAINS_TYPES_{{domain.domain | camelcase_to_hacker_style | upper}}_H_
+#define HEADLESS_PUBLIC_DEVTOOLS_DOMAINS_TYPES_{{domain.domain | camelcase_to_hacker_style | upper}}_H_
+
+#include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/inspector_protocol/crdtp/chromium/protocol_traits.h"
+
+{% for domain_name in domain.dependencies %}
+#include "headless/public/devtools/internal/types_forward_declarations_{{domain_name | camelcase_to_hacker_style}}.h"
+{% endfor %}
+#include "headless/public/headless_export.h"
+
+namespace headless {
+namespace protocol {
+using Binary = crdtp::Binary;
+}
+
+class ErrorReporter;
+
+namespace {{domain.domain | camelcase_to_hacker_style}} {
+{% for type in domain.types %}
+  {% if not (type.type == "object") or not ("properties" in type) %}{% continue %}{% endif %}
+
+  {% if type.description %}
+// {{type.description.replace('\n', '\n// ')}}
+  {% endif %}
+class HEADLESS_EXPORT {{type.id}} {
+ public:
+  static {{resolve_type(type).pass_type}} Parse(const base::Value& value, ErrorReporter* errors);
+
+  {{type.id}}(const {{type.id}}&) = delete;
+  {{type.id}}& operator=(const {{type.id}}&) = delete;
+
+  ~{{type.id}}() { }
+
+  {% for property in type.properties %}
+
+  {% if property.description %}
+  // {{property.description.replace('\n', '\n  // ')}}
+  {% endif %}
+    {% if property.optional %}
+  bool Has{{property.name | to_title_case}}() const { return !!{{property.name | camelcase_to_hacker_style}}_; }
+  {{resolve_type(property).raw_return_type}} Get{{property.name | to_title_case}}() const { DCHECK(Has{{property.name | to_title_case}}()); return {{resolve_type(property).to_raw_return_type % ("%s_.value()" % property.name | camelcase_to_hacker_style)}}; }
+  void Set{{property.name | to_title_case}}({{resolve_type(property).pass_type}} value) { {{property.name | camelcase_to_hacker_style}}_ = {{resolve_type(property).to_pass_type % 'value'}}; }
+    {% else %}
+  {{resolve_type(property).raw_return_type}} Get{{property.name | to_title_case}}() const { return {{resolve_type(property).to_raw_return_type % ("%s_" % property.name | camelcase_to_hacker_style)}}; }
+  void Set{{property.name | to_title_case}}({{resolve_type(property).pass_type}} value) { {{property.name | camelcase_to_hacker_style}}_ = {{resolve_type(property).to_pass_type % 'value'}}; }
+    {% endif %}
+  {% endfor %}
+
+  base::Value Serialize() const;
+  {{resolve_type(type).pass_type}} Clone() const;
+
+  template<int STATE>
+  class {{type.id}}Builder {
+  public:
+    enum {
+      kNoFieldsSet = 0,
+  {% for property in type.properties|rejectattr("optional") %}
+    k{{property.name | to_title_case}}Set = 1 << {{loop.index}},
+  {% endfor %}
+      kAllRequiredFieldsSet = (
+  {%- for property in type.properties %}
+    {% if not(property.optional) %}k{{property.name | to_title_case}}Set | {%endif %}
+  {% endfor %}0)
+    };
+
+  {% for property in type.properties %}
+    {% if property.optional %}
+    {{type.id}}Builder<STATE>& Set{{property.name | to_title_case}}({{resolve_type(property).pass_type}} value) {
+      result_->Set{{property.name | to_title_case}}({{resolve_type(property).to_pass_type % 'value'}});
+      return *this;
+    }
+    {% else %}
+    {{type.id}}Builder<STATE | k{{property.name | to_title_case}}Set>& Set{{property.name | to_title_case}}({{resolve_type(property).pass_type}} value) {
+      static_assert(!(STATE & k{{property.name | to_title_case}}Set), "property {{property.name}} should not have already been set");
+      result_->Set{{property.name | to_title_case}}({{resolve_type(property).to_pass_type % 'value'}});
+      return CastState<k{{property.name | to_title_case}}Set>();
+    }
+    {% endif %}
+
+  {% endfor %}
+    {{resolve_type(type).pass_type}} Build() {
+      static_assert(STATE == kAllRequiredFieldsSet, "all required fields should have been set");
+      return std::move(result_);
+    }
+
+   private:
+    friend class {{type.id}};
+    {{type.id}}Builder() : result_(new {{type.id}}()) { }
+
+    template<int STEP> {{type.id}}Builder<STATE | STEP>& CastState() {
+      return *reinterpret_cast<{{type.id}}Builder<STATE | STEP>*>(this);
+    }
+
+    {{resolve_type(type).type}} result_;
+  };
+
+  static {{type.id}}Builder<0> Builder() {
+    return {{type.id}}Builder<0>();
+  }
+
+ private:
+  {{type.id}}() { }
+
+  {% for property in type.properties %}
+    {% if property.optional %}
+  absl::optional<{{resolve_type(property).type}}> {{property.name | camelcase_to_hacker_style}}_;
+    {% else %}
+  {{resolve_type(property).type}} {{property.name | camelcase_to_hacker_style}}_;
+    {% endif %}
+  {% endfor %}
+};
+
+{% endfor %}
+
+}  // namespace {{domain.domain | camelcase_to_hacker_style}}
+
+}  // namespace headless
+
+#endif  // HEADLESS_PUBLIC_DEVTOOLS_DOMAINS_TYPES_{{domain.domain | camelcase_to_hacker_style | upper}}_H_
