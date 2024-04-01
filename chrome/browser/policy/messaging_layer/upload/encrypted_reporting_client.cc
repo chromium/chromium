@@ -68,8 +68,8 @@ bool IsIrrecoverableError(int response_code) {
 
 // Generates new backoff entry.
 std::unique_ptr<::net::BackoffEntry> GetBackoffEntry(Priority priority) {
-  // Retry policy for SECURITY queue.
-  static const ::net::BackoffEntry::Policy kSecurityUploadBackoffPolicy = {
+  // Retry policy for queues that require immediate backoff.
+  static const ::net::BackoffEntry::Policy kImmediateUploadBackoffPolicy = {
       // Number of initial errors to ignore before applying
       // exponential back-off rules.
       /*num_errors_to_ignore=*/0,
@@ -115,11 +115,12 @@ std::unique_ptr<::net::BackoffEntry> GetBackoffEntry(Priority priority) {
       /*always_use_initial_delay=*/true,
   };
   // Maximum backoff is set per priority. Current proposal is to set SECURITY
-  // events to be backed off only slightly: max delay is set to 1 minute.
-  // For all other priorities max delay is set to 24 hours.
+  // and IMMEDIATE events to be backed off only slightly: max delay is set
+  // to 1 minute. For all other priorities max delay is set to 24 hours.
   auto backoff_entry = std::make_unique<::net::BackoffEntry>(
-      priority == Priority::SECURITY ? &kSecurityUploadBackoffPolicy
-                                     : &kDefaultUploadBackoffPolicy);
+      (priority == Priority::SECURITY || priority == Priority::IMMEDIATE)
+          ? &kImmediateUploadBackoffPolicy
+          : &kDefaultUploadBackoffPolicy);
   return backoff_entry;
 }
 
