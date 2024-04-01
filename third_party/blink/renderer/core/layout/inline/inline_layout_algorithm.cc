@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_spacing.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -866,6 +867,16 @@ std::optional<LayoutUnit> InlineLayoutAlgorithm::ApplyJustify(
   const InlineItemResult& last_item_result = line_info->Results().back();
   if (last_item_result.hyphen) {
     line_text_builder.Append(last_item_result.hyphen.Text());
+  } else if (RuntimeEnabledFeatures::TextAlignLastJustifyNewLineEnabled()) {
+    // Remove the trailing \n.  See crbug.com/331729346.
+    wtf_size_t text_length = line_text_builder.length();
+    if (text_length > 0u &&
+        line_text_builder[text_length - 1] == kNewlineCharacter) {
+      if (text_length == 1u) {
+        return std::nullopt;
+      }
+      line_text_builder.Resize(text_length - 1);
+    }
   }
 
   // Compute the spacing to justify.

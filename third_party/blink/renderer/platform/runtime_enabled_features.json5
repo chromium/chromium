@@ -3772,6 +3772,11 @@
       status: "stable",
     },
     {
+      // crbug.com/331729346
+      name: "TextAlignLastJustifyNewLine",
+      status: "stable",
+    },
+    {
       // crbug.com/1008951
       name: "TextDecoratingBox",
       status: "stable",
