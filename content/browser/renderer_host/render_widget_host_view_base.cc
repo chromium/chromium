@@ -21,6 +21,7 @@
 #include "content/browser/device_posture/device_posture_provider_impl.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/renderer_host/delegated_frame_host.h"
+#include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/input/mouse_wheel_phase_handler.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_target_base.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
@@ -740,6 +741,17 @@ void RenderWidgetHostViewBase::ProcessMouseEvent(
   if (!host())
     return;
 
+  // Ensure the event is not routed to a prerendered page. This is now
+  // DUMP_WILL_BE_NOTREACHED_NORETURN() as this could actually happen for
+  // crbug.com/326509142. This static variable makes sure to record it only one
+  // time.
+  static bool is_prerendering_check_recorded = false;
+  if (!is_prerendering_check_recorded && host()->frame_tree() &&
+      host()->frame_tree()->is_prerendering()) {
+    is_prerendering_check_recorded = true;
+    DUMP_WILL_BE_NOTREACHED_NORETURN();
+  }
+
   PreProcessMouseEvent(event);
   host()->ForwardMouseEventWithLatencyInfo(event, latency);
 }
@@ -749,6 +761,18 @@ void RenderWidgetHostViewBase::ProcessMouseWheelEvent(
     const ui::LatencyInfo& latency) {
   if (!host())
     return;
+
+  // Ensure the event is not routed to a prerendered page. This is now
+  // DUMP_WILL_BE_NOTREACHED_NORETURN() as this could actually happen for
+  // crbug.com/326509142. This static variable makes sure to record it only one
+  // time.
+  static bool is_prerendering_check_recorded = false;
+  if (!is_prerendering_check_recorded && host()->frame_tree() &&
+      host()->frame_tree()->is_prerendering()) {
+    is_prerendering_check_recorded = true;
+    DUMP_WILL_BE_NOTREACHED_NORETURN();
+  }
+
   host()->ForwardWheelEventWithLatencyInfo(event, latency);
 }
 
@@ -757,6 +781,17 @@ void RenderWidgetHostViewBase::ProcessTouchEvent(
     const ui::LatencyInfo& latency) {
   if (!host())
     return;
+
+  // Ensure the event is not routed to a prerendered page. This is now
+  // DUMP_WILL_BE_NOTREACHED_NORETURN() as this could actually happen for
+  // crbug.com/326509142. This static variable makes sure to record it only one
+  // time.
+  static bool is_prerendering_check_recorded = false;
+  if (!is_prerendering_check_recorded && host()->frame_tree() &&
+      host()->frame_tree()->is_prerendering()) {
+    is_prerendering_check_recorded = true;
+    DUMP_WILL_BE_NOTREACHED_NORETURN();
+  }
 
   PreProcessTouchEvent(event);
   host()->ForwardTouchEventWithLatencyInfo(event, latency);
@@ -767,6 +802,18 @@ void RenderWidgetHostViewBase::ProcessGestureEvent(
     const ui::LatencyInfo& latency) {
   if (!host())
     return;
+
+  // Ensure the event is not routed to a prerendered page. This is now
+  // DUMP_WILL_BE_NOTREACHED_NORETURN() as this could actually happen for
+  // crbug.com/326509142. This static variable makes sure to record it only one
+  // time.
+  static bool is_prerendering_check_recorded = false;
+  if (!is_prerendering_check_recorded && host()->frame_tree() &&
+      host()->frame_tree()->is_prerendering()) {
+    is_prerendering_check_recorded = true;
+    DUMP_WILL_BE_NOTREACHED_NORETURN();
+  }
+
   host()->ForwardGestureEventWithLatencyInfo(event, latency);
 }
 
