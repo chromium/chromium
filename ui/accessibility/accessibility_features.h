@@ -60,10 +60,6 @@ AX_BASE_EXPORT bool IsAccessibilityPruneRedundantInlineTextEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kImageDescriptionsAlternateRouting);
 AX_BASE_EXPORT bool IsImageDescriptionsAlternateRoutingEnabled();
 
-// Augment existing images labels in addition to unlabeled images.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAugmentExistingImageLabels);
-AX_BASE_EXPORT bool IsAugmentExistingImageLabelsEnabled();
-
 // Disable the accessibility engine after a certain
 // number of user input events spanning a minimum amount of time with no
 // accessibility API usage in that time.

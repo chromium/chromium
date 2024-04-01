@@ -236,9 +236,7 @@ class ImageAnnotationBrowserTest : public InProcessBrowserTest {
  protected:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {features::kEnableAccessibilityExposeHTMLElement,
-         features::kAugmentExistingImageLabels},
-        {});
+        {features::kEnableAccessibilityExposeHTMLElement}, {});
     InProcessBrowserTest::SetUp();
   }
 
