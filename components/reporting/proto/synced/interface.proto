@@ -133,6 +133,12 @@ message UploadEncryptedRecordResponse {
   // Flag indicating health data logging state (`true` means "enable logging").
   // Can only be present when originating from Ash.
   optional bool health_data_logging_enabled = 3 [default = false];
+
+  // List of sequence ids that are cached by Ash.
+  // `missived` will not send to Ash the records with listed sequence ids.
+  // Backwards compatibility: absent from responses by earlier Ash builds and
+  // ignored by earlier `missived` builds.
+  repeated int64 cached_events_seq_ids = 4;
 }
 
 // ConfirmRecordUploadRequest is expected to only come from
