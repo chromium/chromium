@@ -83,8 +83,8 @@ void ShapeResultSpacing<TextContainerType>::ComputeExpansion(
     expansion_opportunity_count_ = Character::ExpansionOpportunityCount(
         text_.Span16(), direction, is_after_expansion);
   }
-  if (is_after_expansion && !allows_trailing_expansion) {
-    DCHECK_GT(expansion_opportunity_count_, 0u);
+  if (is_after_expansion && !allows_trailing_expansion &&
+      expansion_opportunity_count_ > 0) {
     --expansion_opportunity_count_;
   }
 
@@ -152,7 +152,10 @@ float ShapeResultSpacing<TextContainerType>::ComputeSpacing(
       U16_IS_TRAIL(text_[index + 1]))
     character = U16_GET_SUPPLEMENTARY(character, text_[index + 1]);
   if (!Character::IsCJKIdeographOrSymbol(character)) {
-    is_after_expansion_ = false;
+    if (!RuntimeEnabledFeatures::TextAlignJustifyBidiIsolateEnabled() ||
+        !Character::IsDefaultIgnorable(character)) {
+      is_after_expansion_ = false;
+    }
     return spacing;
   }
 
