@@ -115,12 +115,6 @@ bool IsValidBid(double bid) {
 // invocation is expected to use; e.g. it's 0 for top-level, and i + 1 for
 // i'th component auction.
 //
-// On return, `deprecated_url_lazy_fillers` will hold helpers to log console
-// warnings when fields with deprecated URLs are accessed. `v8_helper` and
-// `v8_logger` must remain valid until all elements of
-// `deprecated_url_lazy_fillers` are torn down, as must the values pointed at by
-// `decision_logic_url` and `trusted_scoring_signals_url`.
-//
 // The resulting object will look something like this (based on example from
 // explainer):
 //
@@ -158,45 +152,32 @@ bool AppendAuctionConfig(
     const std::vector<std::unique_ptr<AuctionConfigLazyFiller>>&
         auction_config_lazy_fillers,
     size_t auction_config_lazy_filler_pos,
-    std::vector<std::unique_ptr<DeprecatedUrlLazyFiller>>&
-        deprecated_url_lazy_fillers,
     v8::LocalVector<v8::Value>* args) {
   v8::Isolate* isolate = v8_helper->isolate();
   v8::Local<v8::Object> auction_config_value = v8::Object::New(isolate);
-
-  auction_config_lazy_fillers[auction_config_lazy_filler_pos]->FillInObject(
-      auction_ad_config_non_shared_params, auction_config_value);
 
   gin::Dictionary auction_config_dict(isolate, auction_config_value);
   if (!auction_config_dict.Set("seller", seller.Serialize())) {
     return false;
   }
+
+  auction_config_lazy_fillers[auction_config_lazy_filler_pos]->FillInObject(
+      auction_ad_config_non_shared_params, decision_logic_url,
+      trusted_scoring_signals_url, auction_config_value);
+
+  // Deprecated decisionLogicUrl is lazily filled by AuctionConfigLazyFiller.
   if (decision_logic_url.has_value()) {
-    deprecated_url_lazy_fillers.emplace_back(
-        std::make_unique<DeprecatedUrlLazyFiller>(
-            v8_helper, v8_logger, &decision_logic_url.value(),
-            "auctionConfig.decisionLogicUrl is deprecated."
-            " Please use auctionConfig.decisionLogicURL instead."));
     if (!auction_config_dict.Set("decisionLogicURL",
-                                 decision_logic_url->spec()) ||
-        !deprecated_url_lazy_fillers.back()->AddDeprecatedUrlGetter(
-            auction_config_value, "decisionLogicUrl")) {
+                                 decision_logic_url->spec())) {
       return false;
     }
   }
-
-  if (trusted_scoring_signals_url.has_value()) {
-    deprecated_url_lazy_fillers.emplace_back(
-        std::make_unique<DeprecatedUrlLazyFiller>(
-            v8_helper, v8_logger, &trusted_scoring_signals_url.value(),
-            "auctionConfig.trustedScoringSignalsUrl is deprecated."
-            " Please use auctionConfig.trustedScoringSignalsURL instead."));
-    if (!auction_config_dict.Set("trustedScoringSignalsURL",
-                                 trusted_scoring_signals_url->spec()) ||
-        !deprecated_url_lazy_fillers.back()->AddDeprecatedUrlGetter(
-            auction_config_value, "trustedScoringSignalsUrl")) {
-      return false;
-    }
+  // Deprecated trustedScoringSignalsUrl is lazily filled by
+  // AuctionConfigLazyFiller.
+  if (trusted_scoring_signals_url.has_value() &&
+      !auction_config_dict.Set("trustedScoringSignalsURL",
+                               trusted_scoring_signals_url->spec())) {
+    return false;
   }
 
   DCHECK(!auction_ad_config_non_shared_params.auction_signals.is_promise());
@@ -254,7 +235,7 @@ bool AppendAuctionConfig(
               component_auction.decision_logic_url,
               component_auction.trusted_scoring_signals_url,
               experiment_group_id, component_auction.non_shared_params,
-              auction_config_lazy_fillers, pos + 1, deprecated_url_lazy_fillers,
+              auction_config_lazy_fillers, pos + 1,
               &component_auction_vector)) {
         return false;
       }
@@ -781,17 +762,13 @@ void SellerWorklet::V8State::ScoreAd(
 
   context_recycler->EnsureAuctionConfigLazyFillers(
       1 + auction_ad_config_non_shared_params.component_auctions.size());
-
-  std::vector<std::unique_ptr<DeprecatedUrlLazyFiller>>
-      deprecated_url_lazy_fillers;
   if (!AppendAuctionConfig(v8_helper_.get(), &v8_logger, context,
                            url::Origin::Create(decision_logic_url_),
                            decision_logic_url_, trusted_scoring_signals_url_,
                            experiment_group_id_,
                            auction_ad_config_non_shared_params,
                            context_recycler->auction_config_lazy_fillers(),
-                           /*auction_config_lazy_filler_pos=*/0,
-                           deprecated_url_lazy_fillers, &args)) {
+                           /*auction_config_lazy_filler_pos=*/0, &args)) {
     PostScoreAdCallbackToUserThreadOnError(
         std::move(callback),
         /*scoring_latency=*/elapsed_timer.Elapsed(),
@@ -1272,8 +1249,6 @@ void SellerWorklet::V8State::ReportResult(
   AuctionV8Logger v8_logger(v8_helper_.get(), context);
 
   v8::LocalVector<v8::Value> args(isolate);
-  std::vector<std::unique_ptr<DeprecatedUrlLazyFiller>>
-      deprecated_url_lazy_fillers;
 
   context_recycler.EnsureAuctionConfigLazyFillers(
       1 + auction_ad_config_non_shared_params.component_auctions.size());
@@ -1283,8 +1258,7 @@ void SellerWorklet::V8State::ReportResult(
                            experiment_group_id_,
                            auction_ad_config_non_shared_params,
                            context_recycler.auction_config_lazy_fillers(),
-                           /*auction_config_lazy_filler_pos=*/0,
-                           deprecated_url_lazy_fillers, &args)) {
+                           /*auction_config_lazy_filler_pos=*/0, &args)) {
     PostReportResultCallbackToUserThread(std::move(callback),
                                          /*signals_for_winner=*/std::nullopt,
                                          /*report_url=*/std::nullopt,

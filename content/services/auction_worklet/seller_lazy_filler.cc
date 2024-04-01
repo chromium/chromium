@@ -173,16 +173,21 @@ bool CreateAdSizeObject(v8::Isolate* isolate,
 
 }  // namespace
 
-AuctionConfigLazyFiller::AuctionConfigLazyFiller(AuctionV8Helper* v8_helper)
-    : PersistedLazyFiller(v8_helper) {}
+AuctionConfigLazyFiller::AuctionConfigLazyFiller(AuctionV8Helper* v8_helper,
+                                                 AuctionV8Logger* v8_logger)
+    : PersistedLazyFiller(v8_helper), v8_logger_(v8_logger) {}
 
 void AuctionConfigLazyFiller::Reset() {
   auction_ad_config_non_shared_params_ = nullptr;
+  decision_logic_url_ = nullptr;
+  trusted_scoring_signals_url_ = nullptr;
 }
 
 bool AuctionConfigLazyFiller::FillInObject(
     const blink::AuctionConfig::NonSharedParams&
         auction_ad_config_non_shared_params,
+    base::optional_ref<const GURL> decision_logic_url,
+    base::optional_ref<const GURL> trusted_scoring_signals_url,
     v8::Local<v8::Object> object) {
   DCHECK(!auction_ad_config_non_shared_params_);
   auction_ad_config_non_shared_params_ = &auction_ad_config_non_shared_params;
@@ -245,6 +250,21 @@ bool AuctionConfigLazyFiller::FillInObject(
       !DefineLazyAttribute(object, "allSlotsRequestedSizes",
                            &HandleAllSlotsRequestedSizes)) {
     return false;
+  }
+
+  if (decision_logic_url.has_value()) {
+    decision_logic_url_ = &decision_logic_url.value();
+    if (!DefineLazyAttribute(object, "decisionLogicUrl",
+                             &HandleDeprecatedDecisionLogicUrl)) {
+      return false;
+    }
+  }
+  if (trusted_scoring_signals_url.has_value()) {
+    trusted_scoring_signals_url_ = &trusted_scoring_signals_url.value();
+    if (!DefineLazyAttribute(object, "trustedScoringSignalsUrl",
+                             &HandleDeprecatedTrustedScoringSignalsUrl)) {
+      return false;
+    }
   }
 
   return true;
@@ -500,9 +520,9 @@ void AuctionConfigLazyFiller::HandleAllSlotsRequestedSizes(
   v8::Isolate* isolate = v8_helper->isolate();
 
   // The first case is possible if a context is reused with fewer component
-  // auctions; which may happen when multiple auctions share a worklet process.
-  // The second is possible if an old object is kept around and has a field,
-  // while the new config doesn't.
+  // auctions; which may happen when multiple auctions share a worklet
+  // process. The second is possible if an old object is kept around and has
+  // a field, while the new config doesn't.
   if (!self->auction_ad_config_non_shared_params_ ||
       !self->auction_ad_config_non_shared_params_->all_slots_requested_sizes) {
     return;
@@ -520,6 +540,41 @@ void AuctionConfigLazyFiller::HandleAllSlotsRequestedSizes(
 
   SetResult(info,
             v8::Array::New(isolate, size_vector.data(), size_vector.size()));
+}
+
+void AuctionConfigLazyFiller::HandleDeprecatedDecisionLogicUrl(
+    v8::Local<v8::Name> name,
+    const v8::PropertyCallbackInfo<v8::Value>& info) {
+  AuctionConfigLazyFiller* self = GetSelf<AuctionConfigLazyFiller>(info);
+  self->v8_logger_->LogConsoleWarning(
+      "auctionConfig.decisionLogicUrl is deprecated."
+      " Please use auctionConfig.decisionLogicURL instead.");
+
+  AuctionV8Helper* v8_helper = self->v8_helper();
+  v8::Isolate* isolate = v8_helper->isolate();
+  v8::Local<v8::Value> value;
+  if (self->decision_logic_url_ &&
+      gin::TryConvertToV8(isolate, self->decision_logic_url_->spec(), &value)) {
+    SetResult(info, value);
+  }
+}
+
+void AuctionConfigLazyFiller::HandleDeprecatedTrustedScoringSignalsUrl(
+    v8::Local<v8::Name> name,
+    const v8::PropertyCallbackInfo<v8::Value>& info) {
+  AuctionConfigLazyFiller* self = GetSelf<AuctionConfigLazyFiller>(info);
+  self->v8_logger_->LogConsoleWarning(
+      "auctionConfig.trustedScoringSignalsUrl is deprecated."
+      " Please use auctionConfig.trustedScoringSignalsURL instead.");
+
+  AuctionV8Helper* v8_helper = self->v8_helper();
+  v8::Isolate* isolate = v8_helper->isolate();
+  v8::Local<v8::Value> value;
+  if (self->trusted_scoring_signals_url_ &&
+      gin::TryConvertToV8(isolate, self->trusted_scoring_signals_url_->spec(),
+                          &value)) {
+    SetResult(info, value);
+  }
 }
 
 }  // namespace auction_worklet

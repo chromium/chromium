@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <limits>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -87,8 +88,9 @@ class ContextRecyclerTest : public testing::Test {
       std::vector<std::string>& error_msgs,
       v8::Local<v8::Value> maybe_arg = v8::Local<v8::Value>()) {
     v8::LocalVector<v8::Value> args(helper_->isolate());
-    if (!maybe_arg.IsEmpty())
+    if (!maybe_arg.IsEmpty()) {
       args.push_back(maybe_arg);
+    }
     if (!helper_->RunScript(scope.GetContext(), script,
                             /*debug_id=*/nullptr, time_limit_.get(),
                             error_msgs)) {
@@ -1708,6 +1710,8 @@ TEST_F(ContextRecyclerTest, SharedStorageMethodsPermissionsPolicyDisabled) {
 }
 
 TEST_F(ContextRecyclerTest, AuctionConfigLazyFiller) {
+  std::optional<GURL> decision_logic_url;
+  std::optional<GURL> trusted_scoring_signals_url;
   blink::AuctionConfig::NonSharedParams params;
   params.interest_group_buyers.emplace();
   params.interest_group_buyers->push_back(
@@ -1746,10 +1750,10 @@ TEST_F(ContextRecyclerTest, AuctionConfigLazyFiller) {
 
     context_recycler.EnsureAuctionConfigLazyFillers(2);
     EXPECT_TRUE(context_recycler.auction_config_lazy_fillers()[0]->FillInObject(
-        params, o1));
+        params, decision_logic_url, trusted_scoring_signals_url, o1));
 
     EXPECT_TRUE(context_recycler.auction_config_lazy_fillers()[1]->FillInObject(
-        params2, o2));
+        params2, decision_logic_url, trusted_scoring_signals_url, o2));
 
     EXPECT_EQ(R"(["https://example.org"])",
               RunExpectString(scope, script, "test", o1));
@@ -1766,10 +1770,10 @@ TEST_F(ContextRecyclerTest, AuctionConfigLazyFiller) {
 
     context_recycler.EnsureAuctionConfigLazyFillers(2);
     EXPECT_TRUE(context_recycler.auction_config_lazy_fillers()[0]->FillInObject(
-        params, o1));
+        params, decision_logic_url, trusted_scoring_signals_url, o1));
 
     EXPECT_TRUE(context_recycler.auction_config_lazy_fillers()[1]->FillInObject(
-        params2, o2));
+        params2, decision_logic_url, trusted_scoring_signals_url, o2));
   }
 
   {
@@ -1780,7 +1784,7 @@ TEST_F(ContextRecyclerTest, AuctionConfigLazyFiller) {
     // Now using params2 to fill it in.
     v8::Local<v8::Object> o3 = v8::Object::New(isolate);
     EXPECT_TRUE(context_recycler.auction_config_lazy_fillers()[0]->FillInObject(
-        params2, o3));
+        params2, decision_logic_url, trusted_scoring_signals_url, o3));
 
     // What the current filler for that slot happens to point to.
     EXPECT_EQ(R"(["https://a.com","https://b.com"])",
@@ -1802,7 +1806,7 @@ TEST_F(ContextRecyclerTest, AuctionConfigLazyFiller) {
 
     context_recycler.EnsureAuctionConfigLazyFillers(1);
     EXPECT_TRUE(context_recycler.auction_config_lazy_fillers()[0]->FillInObject(
-        params, o1));
+        params, decision_logic_url, trusted_scoring_signals_url, o1));
   }
 
   {
@@ -1815,10 +1819,10 @@ TEST_F(ContextRecyclerTest, AuctionConfigLazyFiller) {
 
     context_recycler.EnsureAuctionConfigLazyFillers(2);
     EXPECT_TRUE(context_recycler.auction_config_lazy_fillers()[0]->FillInObject(
-        params, o3));
+        params, decision_logic_url, trusted_scoring_signals_url, o3));
 
     EXPECT_TRUE(context_recycler.auction_config_lazy_fillers()[1]->FillInObject(
-        params2, o2));
+        params2, decision_logic_url, trusted_scoring_signals_url, o2));
 
     EXPECT_EQ(R"(undefined)", RunExpectString(scope, script, "test", o1));
     EXPECT_EQ(R"(["https://a.com","https://b.com"])",
@@ -1855,11 +1859,15 @@ TEST_F(ContextRecyclerTest, AuctionConfigLazyFillerErrorHandling) {
        R"({"https://a.com":"EUR","https://b.com":"CAD","*":"USD"})"},
       {"perBuyerPrioritySignals", R"({"*":{"a":0.5}})"},
       {"requestedSize", R"({"width":"100px","height":"50px"})"},
-      {"allSlotsRequestedSizes", R"([{"width":"200px","height":"75px"}])"}};
+      {"allSlotsRequestedSizes", R"([{"width":"200px","height":"75px"}])"},
+      {"decisionLogicUrl", "\"https://a.com/decision/\""},
+      {"trustedScoringSignalsUrl", "\"https://a.com/scoring/\""}};
 
   for (const auto& test : kTests) {
     SCOPED_TRACE(test.field);
-
+    std::optional<GURL> decision_logic_url = GURL("https://a.com/decision/");
+    std::optional<GURL> trusted_scoring_signals_url =
+        GURL("https://a.com/scoring/");
     blink::AuctionConfig::NonSharedParams params;
     std::vector<blink::AuctionConfig::AdKeywordReplacement> replacements = {
         {"a", "1"}, {"b", "2"}};
@@ -1925,11 +1933,11 @@ TEST_F(ContextRecyclerTest, AuctionConfigLazyFillerErrorHandling) {
       context_recycler.EnsureAuctionConfigLazyFillers(2);
       EXPECT_TRUE(
           context_recycler.auction_config_lazy_fillers()[0]->FillInObject(
-              params, o1));
+              params, decision_logic_url, trusted_scoring_signals_url, o1));
 
       EXPECT_TRUE(
           context_recycler.auction_config_lazy_fillers()[1]->FillInObject(
-              params, o2));
+              params, decision_logic_url, trusted_scoring_signals_url, o2));
 
       EXPECT_EQ(test.expected_val, RunExpectString(scope, script, "test", o1));
       EXPECT_EQ(test.expected_val, RunExpectString(scope, script, "test", o2));
@@ -1947,11 +1955,11 @@ TEST_F(ContextRecyclerTest, AuctionConfigLazyFillerErrorHandling) {
       context_recycler.EnsureAuctionConfigLazyFillers(2);
       EXPECT_TRUE(
           context_recycler.auction_config_lazy_fillers()[0]->FillInObject(
-              params, o1));
+              params, decision_logic_url, trusted_scoring_signals_url, o1));
 
       EXPECT_TRUE(
           context_recycler.auction_config_lazy_fillers()[1]->FillInObject(
-              params, o2));
+              params, decision_logic_url, trusted_scoring_signals_url, o2));
     }
 
     {
@@ -1980,9 +1988,11 @@ TEST_F(ContextRecyclerTest, AuctionConfigLazyFillerErrorHandling) {
       params.all_buyers_priority_signals = std::nullopt;
       params.requested_size->width = -5;
       params.all_slots_requested_sizes = std::nullopt;
+      decision_logic_url = std::nullopt;
+      trusted_scoring_signals_url = std::nullopt;
       EXPECT_TRUE(
           context_recycler.auction_config_lazy_fillers()[0]->FillInObject(
-              params, o3));
+              params, decision_logic_url, trusted_scoring_signals_url, o3));
 
       // New config doesn't have a value.
       EXPECT_EQ("undefined", RunExpectString(scope, script, "test", o3));

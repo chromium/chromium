@@ -3977,6 +3977,64 @@ TEST_F(SellerWorkletTest,
   run_loop.Run();
 }
 
+TEST_F(SellerWorkletTest, ContextReuseDoesNotCrashLazyFiller) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kFledgeAlwaysReuseSellerContext);
+  AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
+                        R"(
+        scoreAd = function(adMetadata, bid, auctionConfig){
+            if (!globalThis.auctionConfig) {
+                globalThis.auctionConfig = auctionConfig;
+            } else {
+                // Access a lazily loaded attribute from a prior run
+                // of this function.
+                console.log(globalThis.auctionConfig.decisionLogicUrl);
+            }
+            return 1;
+        };
+        reportResult = scoreAd;
+      )");
+  auto seller_worklet = CreateWorklet();
+  ASSERT_TRUE(seller_worklet);
+  for (int i = 0; i < 3; ++i) {
+    double expected_score = 1;
+    base::RunLoop run_loop;
+    seller_worklet->ScoreAd(
+        ad_metadata_, bid_, bid_currency_, auction_ad_config_non_shared_params_,
+        direct_from_seller_seller_signals_,
+        direct_from_seller_seller_signals_header_ad_slot_,
+        direct_from_seller_auction_signals_,
+        direct_from_seller_auction_signals_header_ad_slot_,
+        browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
+        browser_signal_interest_group_owner_, browser_signal_render_url_,
+        browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
+        browser_signal_for_debugging_only_in_cooldown_or_lockout_,
+        seller_timeout_,
+        /*trace_id=*/1,
+        TestScoreAdClient::Create(base::BindLambdaForTesting(
+            [&run_loop, &expected_score](
+                double score, mojom::RejectReason reject_reason,
+                mojom::ComponentAuctionModifiedBidParamsPtr
+                    component_auction_modified_bid_params,
+                std::optional<double> bid_in_seller_currency,
+                std::optional<uint32_t> scoring_signals_data_version,
+                const std::optional<GURL>& debug_loss_report_url,
+                const std::optional<GURL>& debug_win_report_url,
+                PrivateAggregationRequests pa_requests,
+                base::TimeDelta scoring_latency,
+                mojom::ScoreAdDependencyLatenciesPtr
+                    score_ad_dependency_latencies,
+                const std::vector<std::string>& errors) {
+              EXPECT_EQ(expected_score, score);
+              EXPECT_FALSE(scoring_signals_data_version.has_value());
+              EXPECT_TRUE(errors.empty());
+              run_loop.Quit();
+            })));
+    run_loop.Run();
+  }
+}
+
 TEST_F(SellerWorkletTest, DeleteBeforeScoreAdCallback) {
   AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
                         CreateBasicSellAdScript());

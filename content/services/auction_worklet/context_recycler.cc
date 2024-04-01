@@ -118,7 +118,7 @@ void ContextRecycler::EnsureAuctionConfigLazyFillers(size_t required) {
   auction_config_lazy_fillers_.resize(required);
   for (size_t pos = cur_size; pos < required; ++pos) {
     auction_config_lazy_fillers_[pos] =
-        std::make_unique<AuctionConfigLazyFiller>(v8_helper_);
+        std::make_unique<AuctionConfigLazyFiller>(v8_helper_, v8_logger_.get());
   }
 }
 
