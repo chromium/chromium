@@ -180,7 +180,8 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   void UpdateToolbarButtonHighlight(bool side_panel_visible);
 
   void UpdatePanelIconAndTitle(const ui::ImageModel& icon,
-                               const std::u16string& text);
+                               const std::u16string& text,
+                               const bool is_extension);
 
   // views::ViewObserver:
   void OnViewVisibilityChanged(views::View* observed_view,

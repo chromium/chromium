@@ -163,9 +163,8 @@ std::unique_ptr<views::ImageView> CreateIcon() {
           ChromeDistanceMetric::
               DISTANCE_SIDE_PANEL_HEADER_INTERIOR_MARGIN_HORIZONTAL) *
       2;
-  icon->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::TLBR(0, horizontal_margin, 0, horizontal_margin));
+  icon->SetProperty(views::kMarginsKey,
+                    gfx::Insets().set_left(horizontal_margin));
   return icon;
 }
 
@@ -176,6 +175,13 @@ std::unique_ptr<views::Label> CreateTitle() {
 
   title->SetEnabledColorId(kColorSidePanelEntryTitle);
   title->SetSubpixelRenderingEnabled(false);
+  const int horizontal_margin =
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          ChromeDistanceMetric::
+              DISTANCE_SIDE_PANEL_HEADER_INTERIOR_MARGIN_HORIZONTAL) *
+      2;
+  title->SetProperty(views::kMarginsKey,
+                     gfx::Insets().set_left(horizontal_margin));
   title->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::LayoutOrientation::kHorizontal,
@@ -759,7 +765,9 @@ void SidePanelCoordinator::PopulateSidePanel(
     std::optional<std::unique_ptr<views::View>> content_view) {
   if (!header_combobox_) {
     actions::ActionItem* const action_item = GetActionItem(entry->key());
-    UpdatePanelIconAndTitle(action_item->GetImage(), action_item->GetText());
+    UpdatePanelIconAndTitle(
+        action_item->GetImage(), action_item->GetText(),
+        (entry->key().id() == SidePanelEntryId::kExtension));
   } else {
     // Ensure that the correct combobox entry is selected. This may not be the
     // case if `Show()` was called after registering a contextual entry.
@@ -897,21 +905,6 @@ std::unique_ptr<views::View> SidePanelCoordinator::CreateHeader() {
   auto header = std::make_unique<SidePanelHeader>();
   auto* const layout =
       header->SetLayoutManager(std::make_unique<views::FlexLayout>());
-
-  if (!features::IsChromeRefresh2023()) {
-    // ChromeLayoutProvider for providing margins.
-    ChromeLayoutProvider* const chrome_layout_provider =
-        ChromeLayoutProvider::Get();
-
-    // Set the interior margins of the header on the left and right sides.
-    const int horizontal_margin = chrome_layout_provider->GetDistanceMetric(
-        ChromeDistanceMetric::
-            DISTANCE_SIDE_PANEL_HEADER_INTERIOR_MARGIN_HORIZONTAL);
-    layout->SetInteriorMargin(
-        gfx::Insets::TLBR(0, horizontal_margin, 0, horizontal_margin * 2));
-    header->SetBackground(
-        views::CreateThemedSolidBackground(ui::kColorWindowBackground));
-  }
 
   // Set alignments for horizontal (main) and vertical (cross) axes.
   layout->SetMainAxisAlignment(views::LayoutAlignment::kStart);
@@ -1336,14 +1329,18 @@ void SidePanelCoordinator::UpdateToolbarButtonHighlight(
 }
 
 void SidePanelCoordinator::UpdatePanelIconAndTitle(const ui::ImageModel& icon,
-                                                   const std::u16string& text) {
-  ui::ImageModel updated_icon = icon;
-  if (icon.IsVectorIcon()) {
-    updated_icon = ui::ImageModel::FromVectorIcon(
-        *icon.GetVectorIcon().vector_icon(), kColorSidePanelEntryIcon,
-        icon.GetVectorIcon().icon_size());
+                                                   const std::u16string& text,
+                                                   const bool is_extension) {
+  if (is_extension) {
+    ui::ImageModel updated_icon = icon;
+    if (icon.IsVectorIcon()) {
+      updated_icon = ui::ImageModel::FromVectorIcon(
+          *icon.GetVectorIcon().vector_icon(), kColorSidePanelEntryIcon,
+          icon.GetVectorIcon().icon_size());
+    }
+    panel_icon_->SetImage(updated_icon);
   }
-  panel_icon_->SetImage(updated_icon);
+  panel_icon_->SetVisible(is_extension);
   panel_title_->SetText(text);
 }
 
