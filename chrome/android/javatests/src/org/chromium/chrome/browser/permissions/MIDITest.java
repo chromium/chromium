@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.permissions.PermissionTestRule.PermissionUpdateWaiter;
@@ -36,6 +37,7 @@ public class MIDITest {
     @Test
     @MediumTest
     @Feature({"MIDI"})
+    @DisabledTest(message = "https://crbug.com/330692957")
     public void testMIDIDialog() throws Exception {
         Tab tab = mPermissionRule.getActivity().getActivityTab();
         PermissionUpdateWaiter updateWaiter =
