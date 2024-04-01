@@ -1445,7 +1445,6 @@ targets.legacy_basic_suite(
         "check_static_initializers": targets.legacy_test_config(),
         "checkdeps": targets.legacy_test_config(),
         "checkperms": targets.legacy_test_config(),
-        "headless_python_unittests": targets.legacy_test_config(),
         "metrics_python_tests": targets.legacy_test_config(),
         "webkit_lint": targets.legacy_test_config(),
     },

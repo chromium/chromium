@@ -1948,11 +1948,6 @@
       },
       {
         "isolate_profile_data": true,
-        "name": "headless_python_unittests",
-        "script": "headless_python_unittests.py"
-      },
-      {
-        "isolate_profile_data": true,
         "name": "metrics_python_tests",
         "script": "metrics_python_tests.py"
       },
@@ -3788,11 +3783,6 @@
         "isolate_profile_data": true,
         "name": "checkperms",
         "script": "checkperms.py"
-      },
-      {
-        "isolate_profile_data": true,
-        "name": "headless_python_unittests",
-        "script": "headless_python_unittests.py"
       },
       {
         "isolate_profile_data": true,

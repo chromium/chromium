@@ -1197,11 +1197,6 @@ targets.tests.gtest_test(
     name = "headless_unittests",
 )
 
-targets.tests.script_test(
-    name = "headless_python_unittests",
-    script = "headless_python_unittests.py",
-)
-
 targets.tests.isolated_script_test(
     name = "high_dpi_blink_web_tests",
     mixins = [

@@ -1373,9 +1373,6 @@
       'checkperms': {
         'script': 'checkperms.py',
       },
-      'headless_python_unittests': {
-        'script': 'headless_python_unittests.py',
-      },
       'metrics_python_tests': {
         'script': 'metrics_python_tests.py',
       },
