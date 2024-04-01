@@ -2640,52 +2640,37 @@ const FeatureEntry::Choice kNotificationSchedulerChoices[] = {
 
 #if BUILDFLAG(IS_ANDROID)
 
-const FeatureEntry::FeatureParam
-    kOmniboxModernizeVisualUpdateExcludeTabletsSmallMargin[] = {
-        {"enable_modernize_visual_update_on_tablet", "false"},
-        {"modernize_visual_update_small_bottom_margin", "true"}};
+const FeatureEntry::FeatureParam kOmniboxModernizeVisualUpdateSmallMargin[] = {
+    {"modernize_visual_update_small_bottom_margin", "true"}};
 
 const FeatureEntry::FeatureParam
-    kOmniboxModernizeVisualUpdateExcludeTabletsSmallerMarginsMergeClipboard[] =
-        {{"enable_modernize_visual_update_on_tablet", "false"},
-         {"modernize_visual_update_smaller_margins", "true"},
-         {"modernize_visual_update_merge_clipboard_on_ntp", "true"}};
+    kOmniboxModernizeVisualUpdateSmallerMarginsMergeClipboard[] = {
+        {"modernize_visual_update_smaller_margins", "true"},
+        {"modernize_visual_update_merge_clipboard_on_ntp", "true"}};
 
 const FeatureEntry::FeatureParam
-    kOmniboxModernizeVisualUpdateExcludeTabletsSmallestMargins[] = {
-        {"enable_modernize_visual_update_on_tablet", "false"},
+    kOmniboxModernizeVisualUpdateSmallestMargins[] = {
         {"modernize_visual_update_merge_clipboard_on_ntp", "false"}};
 
 const FeatureEntry::FeatureParam
-    kOmniboxModernizeVisualUpdateExcludeTabletsSmallestMarginsMergeClipboard[] =
-        {{"enable_modernize_visual_update_on_tablet", "false"},
-         {"modernize_visual_update_merge_clipboard_on_ntp", "true"}};
+    kOmniboxModernizeVisualUpdateSmallestMarginsMergeClipboard[] = {
+        {"modernize_visual_update_merge_clipboard_on_ntp", "true"}};
 
-const FeatureEntry::FeatureParam kOmniboxModernizeVisualUpdateIncludeTablets[] =
-    {{"enable_modernize_visual_update_on_tablet", "true"},
-     {"modernize_visual_update_merge_clipboard_on_ntp", "true"}};
-
-const FeatureEntry::FeatureVariation kOmniboxModernizeVisualUpdateVariations[] = {
-    {"(Small vertical margin)",
-     kOmniboxModernizeVisualUpdateExcludeTabletsSmallMargin,
-     std::size(kOmniboxModernizeVisualUpdateExcludeTabletsSmallMargin),
-     nullptr},
-    {"(Smaller margins, merge clipboard)",
-     kOmniboxModernizeVisualUpdateExcludeTabletsSmallerMarginsMergeClipboard,
-     std::size(
-         kOmniboxModernizeVisualUpdateExcludeTabletsSmallerMarginsMergeClipboard),
-     nullptr},
-    {"(Smallest margins, merge clipboard)",
-     kOmniboxModernizeVisualUpdateExcludeTabletsSmallestMarginsMergeClipboard,
-     std::size(
-         kOmniboxModernizeVisualUpdateExcludeTabletsSmallestMarginsMergeClipboard),
-     nullptr},
-    {"(Smallest margins, don't merge clipboard)",
-     kOmniboxModernizeVisualUpdateExcludeTabletsSmallestMargins,
-     std::size(kOmniboxModernizeVisualUpdateExcludeTabletsSmallestMargins),
-     nullptr},
-    {"(Tablet)", kOmniboxModernizeVisualUpdateIncludeTablets,
-     std::size(kOmniboxModernizeVisualUpdateIncludeTablets), nullptr},
+const FeatureEntry::FeatureVariation kOmniboxModernizeVisualUpdateVariations[] =
+    {
+        {"(Small vertical margin)", kOmniboxModernizeVisualUpdateSmallMargin,
+         std::size(kOmniboxModernizeVisualUpdateSmallMargin), nullptr},
+        {"(Smaller margins, merge clipboard)",
+         kOmniboxModernizeVisualUpdateSmallerMarginsMergeClipboard,
+         std::size(kOmniboxModernizeVisualUpdateSmallerMarginsMergeClipboard),
+         nullptr},
+        {"(Smallest margins, don't merge clipboard)",
+         kOmniboxModernizeVisualUpdateSmallestMargins,
+         std::size(kOmniboxModernizeVisualUpdateSmallestMargins), nullptr},
+        {"(Smallest margins, merge clipboard)",
+         kOmniboxModernizeVisualUpdateSmallestMarginsMergeClipboard,
+         std::size(kOmniboxModernizeVisualUpdateSmallestMarginsMergeClipboard),
+         nullptr},
 };
 
 const FeatureEntry::FeatureParam kPhotoPickerAdoptionStudyActionGetContent[] = {

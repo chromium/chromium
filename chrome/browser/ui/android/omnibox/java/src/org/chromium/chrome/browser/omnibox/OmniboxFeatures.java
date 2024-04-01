@@ -13,7 +13,6 @@ import org.chromium.base.SysUtils;
 import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.util.ConversionUtils;
-import org.chromium.ui.base.DeviceFormFactor;
 
 /** This is the place where we define these: List of Omnibox features and parameters. */
 public class OmniboxFeatures {
@@ -27,12 +26,6 @@ public class OmniboxFeatures {
     /// Holds the information whether logic should focus on preserving memory on this device.
     private static Boolean sIsLowMemoryDevice;
 
-    public static final BooleanCachedFieldTrialParameter ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE,
-                    "enable_modernize_visual_update_on_tablet",
-                    true);
-
     public static final BooleanCachedFieldTrialParameter QUERY_TILES_SHOW_AS_CAROUSEL =
             ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                     ChromeFeatureList.QUERY_TILES_IN_ZPS_ON_NTP, "QueryTilesShowAsCarousel", false);
@@ -44,23 +37,7 @@ public class OmniboxFeatures {
      * @return Whether the new modernize visual UI update should be shown.
      */
     public static boolean shouldShowModernizeVisualUpdate(Context context) {
-        return ChromeFeatureList.sOmniboxModernizeVisualUpdate.isEnabled()
-                && (!isTablet(context) || enabledModernizeVisualUpdateOnTablet());
-    }
-
-    /**
-     * @param context The activity context.
-     * @return Whether current activity is in tablet mode.
-     */
-    private static boolean isTablet(Context context) {
-        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
-    }
-
-    /**
-     * @return Whether the new modernize visual UI update should be displayed on tablets.
-     */
-    private static boolean enabledModernizeVisualUpdateOnTablet() {
-        return ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.getValue();
+        return ChromeFeatureList.sOmniboxModernizeVisualUpdate.isEnabled();
     }
 
     /** Returns whether the toolbar and status bar color should be matched. */

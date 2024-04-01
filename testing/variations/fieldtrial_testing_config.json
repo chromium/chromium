@@ -543,7 +543,6 @@
                 {
                     "name": "Enabled_Tablets",
                     "params": {
-                        "enable_modernize_visual_update_on_tablet": "true",
                         "modernize_visual_update_merge_clipboard_on_ntp": "true"
                     },
                     "enable_features": [
