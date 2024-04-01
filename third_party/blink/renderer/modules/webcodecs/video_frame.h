@@ -139,7 +139,9 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   void ConvertAndCopyToRGB(scoped_refptr<media::VideoFrame> frame,
                            const gfx::Rect& src_rect,
                            const VideoFrameLayout& dest_layout,
-                           base::span<uint8_t> buffer);
+                           base::span<uint8_t> buffer,
+                           PredefinedColorSpace target_color_space);
+
   bool CopyToAsync(ScriptPromiseResolver<IDLSequence<PlaneLayout>>*,
                    scoped_refptr<media::VideoFrame> frame,
                    gfx::Rect src_rect,

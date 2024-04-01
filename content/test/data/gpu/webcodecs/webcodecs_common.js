@@ -198,8 +198,8 @@ class CanvasSource extends FrameSource {
     super();
     this.width = width;
     this.height = height;
-    this.canvas = new OffscreenCanvas(width, height, {colorSpace: 'srgb'});
-    this.ctx = this.canvas.getContext('2d');
+    this.canvas = new OffscreenCanvas(width, height);
+    this.ctx = this.canvas.getContext('2d', {colorSpace: 'srgb'});
     this.timestamp = 0;
     this.duration = 16666;  // 1/60 s
     this.frame_index = 0;
