@@ -56,7 +56,7 @@ inline constexpr uint8_t kNumOrders = kBitsPerSizeT + 1;
 template <typename SizeClass, SizeClass... Index>
 constexpr auto MakeOrderArray(SizeClass (*order_function)(uint8_t),
                               std::integer_sequence<SizeClass, Index...> seq) {
-  return std::array<SizeClass, seq.size()>{order_function(Index)...};
+  return std::array{order_function(Index)...};
 }
 
 inline constexpr auto kOrderIndexShift =
