@@ -1158,17 +1158,6 @@
     "expires": "Jul 1, 2024"
   },
   {
-    "prefix": "new-shadowroot-attach-behavior-disabled",
-    "owners": ["masonf@chromium.org"],
-    "platforms": ["Linux"],
-    "bases": [
-      "external/wpt/shadow-dom/declarative",
-      "shadow-dom"
-    ],
-    "args": ["--disable-blink-features=ShadowRootAttachmentNewBehavior"],
-    "expires": "Jul 1, 2024"
-  },
-  {
     "prefix": "gethtml-disabled",
     "owners": ["masonf@chromium.org"],
     "platforms": ["Linux"],

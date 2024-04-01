@@ -3450,13 +3450,6 @@
       status: "experimental",
     },
     {
-      // This is a killswitch for the change in declarative/imperative shadow
-      // root attachment. This should be removed in M126 assuming no issues are
-      // encountered.
-      name: "ShadowRootAttachmentNewBehavior",
-      status: "stable",
-    },
-    {
       // See crbug.com/1510466: this is the shadow root clonable implementation.
       // This shipped in M124, and should be safe to remove in M126 or so.
       name: "ShadowRootClonable",

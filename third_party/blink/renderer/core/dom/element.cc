@@ -5254,8 +5254,7 @@ const char* Element::ErrorMessageForAttachShadow(bool for_declarative) const {
   }
   // If shadow host has a non-null shadow root and "for declarative" is set,
   // then throw a "NotSupportedError" DOMException.
-  if (for_declarative &&
-      RuntimeEnabledFeatures::ShadowRootAttachmentNewBehaviorEnabled()) {
+  if (for_declarative) {
     return "A second declarative shadow root cannot be created on a host.";
   }
   // If shadow host has a non-null shadow root, "for declarative" is unset,
@@ -5306,16 +5305,14 @@ ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
 
   // If there's already a declarative shadow root, verify that the existing
   // mode is the same as the requested mode.
-  if (RuntimeEnabledFeatures::ShadowRootAttachmentNewBehaviorEnabled()) {
-    if (auto* existing_shadow = GetShadowRoot()) {
-      CHECK(existing_shadow->IsDeclarativeShadowRoot());
-      if (existing_shadow->GetMode() != type) {
-        exception_state.ThrowDOMException(
-            DOMExceptionCode::kNotSupportedError,
-            "The requested mode does not match the existing declarative shadow "
-            "root's mode");
-        return nullptr;
-      }
+  if (auto* existing_shadow = GetShadowRoot()) {
+    CHECK(existing_shadow->IsDeclarativeShadowRoot());
+    if (existing_shadow->GetMode() != type) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kNotSupportedError,
+          "The requested mode does not match the existing declarative shadow "
+          "root's mode");
+      return nullptr;
     }
   }
 
