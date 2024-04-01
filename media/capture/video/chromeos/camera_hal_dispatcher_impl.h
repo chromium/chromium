@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <set>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -116,18 +117,16 @@ class CAPTURE_EXPORT CameraEffectObserver : public base::CheckedObserver {
       const cros::mojom::EffectsConfigPtr& new_effects) {}
 };
 
-// The CameraHalDispatcherImpl hosts and waits on the unix domain socket
-// /var/run/camera3.sock.  CameraHalServer and CameraHalClients connect to the
-// unix domain socket to create the initial Mojo connections with the
-// CameraHalDisptcherImpl, and CameraHalDispatcherImpl then creates and
-// dispatches the Mojo channels between CameraHalServer and CameraHalClients to
-// establish direct Mojo connections between the CameraHalServer and the
-// CameraHalClients.
+// CameraHalDispatcherImpl hosts the CameraHalDispatcher service for Plug-in VM
+// host or camera tests to request the camera service.
 //
-// CameraHalDispatcherImpl owns two threads. blocking_io_thread_ is for
-// communicating with a socket file to listen for Mojo connection buildup
-// request. proxy_thread_ is the thread where the Mojo channel is bound and all
-// communication through Mojo will happen.
+// CameraHalClients connect to the CameraHalDisptcherImpl first, and
+// CameraHalDispatcherImpl then creates and dispatches the Mojo channels between
+// CameraHalServer and CameraHalClients to establish direct Mojo connections
+// between the CameraHalServer and the CameraHalClients.
+//
+// CameraHalDispatcherImpl owns |proxy_thread_| which is the thread where the
+// Mojo channel is bound and all communication through Mojo will happen.
 //
 // For general documentation about the CameraHalDispatcher Mojo interface see
 // the comments in mojo/cros_camera_service.mojom.
@@ -263,14 +262,6 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
 
   bool StartThreads();
 
-  // Creates the unix domain socket for the camera client processes and the
-  // camera HALv3 adapter process to connect.
-  void CreateSocket(base::WaitableEvent* started);
-
-  // Waits for incoming connections (from HAL process or from client processes).
-  // Runs on |blocking_io_thread_|.
-  void StartServiceLoop(base::ScopedFD socket_fd, base::WaitableEvent* started);
-
   void GetCameraSWPrivacySwitchStateOnProxyThread(
       cros::mojom::CrosCameraService::GetCameraSWPrivacySwitchStateCallback
           callback);
@@ -285,7 +276,8 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
 
   void EstablishMojoChannel(CameraClientObserver* client_observer);
 
-  // Handler for incoming Mojo connection on the unix domain socket.
+  // Handler for incoming Mojo connection requesting CameraHalDispatcher
+  // service.
   void OnPeerConnected(mojo::ScopedMessagePipeHandle message_pipe);
 
   // Mojo connection error handlers.
@@ -349,25 +341,13 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
       base::WaitableEvent* got_chrome_client,
       CameraClientObserver** client_observer);
 
-  // Functions to get/set the status of the service loop.
-  bool IsServiceLoopRunning();
-  void SetServiceLoopStatus(bool is_running);
-
   // chromeos::mojo_service_manager::mojom::ServiceProvider overrides.
   void Request(
       chromeos::mojo_service_manager::mojom::ProcessIdentityPtr identity,
       mojo::ScopedMessagePipeHandle receiver) override;
 
-  base::Lock service_loop_status_lock_;
-  bool is_service_loop_running_ GUARDED_BY(service_loop_status_lock_);
-
-  base::ScopedFD proxy_fd_;
-  base::ScopedFD cancel_pipe_;
-
   base::Thread proxy_thread_;
-  base::Thread blocking_io_thread_;
   scoped_refptr<base::SingleThreadTaskRunner> proxy_task_runner_;
-  scoped_refptr<base::SingleThreadTaskRunner> blocking_io_task_runner_;
 
   mojo::ReceiverSet<cros::mojom::CameraHalDispatcher> receiver_set_;
 
