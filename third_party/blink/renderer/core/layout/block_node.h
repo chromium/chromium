@@ -143,6 +143,8 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
       const PhysicalBoxFragment& child_fragment,
       PhysicalSize size) const;
 
+  bool MayHaveAnchorQuery() const { return box_->MayHaveAnchorQuery(); }
+
   bool HasLeftOverflow() const { return box_->HasLeftOverflow(); }
   bool HasTopOverflow() const { return box_->HasTopOverflow(); }
   bool HasNonVisibleOverflow() const { return box_->HasNonVisibleOverflow(); }

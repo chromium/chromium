@@ -209,8 +209,6 @@ class CORE_EXPORT FragmentBuilder {
       LogicalStaticPosition::InlineEdge = LogicalStaticPosition::kInlineStart,
       LogicalStaticPosition::BlockEdge = LogicalStaticPosition::kBlockStart);
 
-  void AddOutOfFlowChildCandidate(const LogicalOofPositionedNode& candidate);
-
   // This should only be used for inline-level OOF-positioned nodes.
   // |inline_container_direction| is the current text direction for determining
   // the correct static-position.
@@ -272,10 +270,6 @@ class CORE_EXPORT FragmentBuilder {
 
   bool HasMulticolsWithPendingOOFs() const {
     return !multicols_with_pending_oofs_.empty();
-  }
-
-  HeapVector<LogicalOofPositionedNode>* MutableOutOfFlowPositionedCandidates() {
-    return &oof_positioned_candidates_;
   }
 
   // This method should only be used within the inline layout algorithm. It is
@@ -630,6 +624,8 @@ class CORE_EXPORT FragmentBuilder {
   bool has_out_of_flow_in_fragmentainer_subtree_ = false;
   bool is_text_box_trim_applied_ = false;
 
+  bool oof_candidates_may_have_anchor_queries_ = false;
+  bool oof_fragmentainer_descendants_may_have_anchor_queries_ = false;
 #if DCHECK_IS_ON()
   bool is_may_have_descendant_above_block_start_explicitly_set_ = false;
 #endif

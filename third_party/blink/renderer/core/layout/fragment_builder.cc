@@ -392,14 +392,10 @@ void FragmentBuilder::AddOutOfFlowChildCandidate(
     LogicalStaticPosition::InlineEdge inline_edge,
     LogicalStaticPosition::BlockEdge block_edge) {
   DCHECK(child);
+  oof_candidates_may_have_anchor_queries_ |= child.MayHaveAnchorQuery();
   oof_positioned_candidates_.emplace_back(
       child, LogicalStaticPosition{child_offset, inline_edge, block_edge},
       RequiresContentBeforeBreaking(), OofInlineContainer<LogicalOffset>());
-}
-
-void FragmentBuilder::AddOutOfFlowChildCandidate(
-    const LogicalOofPositionedNode& candidate) {
-  oof_positioned_candidates_.emplace_back(candidate);
 }
 
 void FragmentBuilder::AddOutOfFlowInlineChildCandidate(
@@ -420,6 +416,8 @@ void FragmentBuilder::AddOutOfFlowInlineChildCandidate(
 
 void FragmentBuilder::AddOutOfFlowFragmentainerDescendant(
     const LogicalOofNodeForFragmentation& descendant) {
+  oof_fragmentainer_descendants_may_have_anchor_queries_ |=
+      descendant.box->MayHaveAnchorQuery();
   oof_positioned_fragmentainer_descendants_.push_back(descendant);
 }
 
@@ -438,10 +436,20 @@ void FragmentBuilder::AddOutOfFlowDescendant(
 void FragmentBuilder::SwapOutOfFlowPositionedCandidates(
     HeapVector<LogicalOofPositionedNode>* candidates) {
   DCHECK(candidates->empty());
+  if (oof_candidates_may_have_anchor_queries_) {
+    std::sort(oof_positioned_candidates_.begin(),
+              oof_positioned_candidates_.end(),
+              [](const LogicalOofPositionedNode& a,
+                 const LogicalOofPositionedNode& b) {
+                return a.box->IsBeforeInPreOrder(*b.box);
+              });
+    oof_candidates_may_have_anchor_queries_ = false;
+  }
   std::swap(oof_positioned_candidates_, *candidates);
 }
 
 void FragmentBuilder::ClearOutOfFlowPositionedCandidates() {
+  oof_candidates_may_have_anchor_queries_ = false;
   oof_positioned_candidates_.clear();
 }
 
@@ -464,6 +472,17 @@ void FragmentBuilder::SwapMulticolsWithPendingOOFs(
 void FragmentBuilder::SwapOutOfFlowFragmentainerDescendants(
     HeapVector<LogicalOofNodeForFragmentation>* descendants) {
   DCHECK(descendants->empty());
+  // If we have anchors *somewhere* in below the OOFs we need to ensure they
+  // are in pre-order so we perform layout in the correct order.
+  if (oof_fragmentainer_descendants_may_have_anchor_queries_) {
+    std::sort(oof_positioned_fragmentainer_descendants_.begin(),
+              oof_positioned_fragmentainer_descendants_.end(),
+              [](const LogicalOofNodeForFragmentation& a,
+                 const LogicalOofNodeForFragmentation& b) {
+                return a.box->IsBeforeInPreOrder(*b.box);
+              });
+    oof_fragmentainer_descendants_may_have_anchor_queries_ = false;
+  }
   std::swap(oof_positioned_fragmentainer_descendants_, *descendants);
 }
 
@@ -488,9 +507,12 @@ void FragmentBuilder::TransferOutOfFlowCandidates(
            multicol->fixedpos_inline_container});
       continue;
     }
-    destination_builder->AddOutOfFlowChildCandidate(candidate);
+    destination_builder->oof_positioned_candidates_.emplace_back(candidate);
   }
-  oof_positioned_candidates_.clear();
+  destination_builder->oof_candidates_may_have_anchor_queries_ |=
+      oof_candidates_may_have_anchor_queries_;
+
+  ClearOutOfFlowPositionedCandidates();
 }
 
 void FragmentBuilder::MoveOutOfFlowDescendantCandidatesToDescendants() {
@@ -611,6 +633,7 @@ void FragmentBuilder::PropagateOOFPositionedInfo(
     // |oof_positioned_candidates_| should not have duplicated entries.
     DCHECK(!base::Contains(oof_positioned_candidates_, node,
                            &LogicalOofPositionedNode::Node));
+    oof_candidates_may_have_anchor_queries_ |= node.MayHaveAnchorQuery();
     oof_positioned_candidates_.emplace_back(
         node, static_position, descendant.requires_content_before_breaking,
         new_inline_container);

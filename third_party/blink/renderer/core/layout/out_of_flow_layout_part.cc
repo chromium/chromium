@@ -44,31 +44,6 @@ namespace blink {
 
 namespace {
 
-bool IsInPreOrder(const HeapVector<LogicalOofNodeForFragmentation>& nodes) {
-  return std::is_sorted(nodes.begin(), nodes.end(),
-                        [](const LogicalOofNodeForFragmentation& a,
-                           const LogicalOofNodeForFragmentation& b) {
-                          return a.box->IsBeforeInPreOrder(*b.box);
-                        });
-}
-
-void SortInPreOrder(HeapVector<LogicalOofNodeForFragmentation>* nodes) {
-  std::sort(nodes->begin(), nodes->end(),
-            [](const LogicalOofNodeForFragmentation& a,
-               const LogicalOofNodeForFragmentation& b) {
-              return a.box->IsBeforeInPreOrder(*b.box);
-            });
-}
-
-bool MayHaveAnchorQuery(
-    const HeapVector<LogicalOofNodeForFragmentation>& nodes) {
-  for (const LogicalOofNodeForFragmentation& node : nodes) {
-    if (node.box->MayHaveAnchorQuery())
-      return true;
-  }
-  return false;
-}
-
 bool CalculateNonOverflowingRangeInOneAxis(
     const std::optional<LayoutUnit>& inset_start,
     const std::optional<LayoutUnit>& inset_end,
@@ -1254,14 +1229,11 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
       builder_for_anchor_query->Children(),
       builder_for_anchor_query->GetWritingDirection());
 
-  // |descendants| are sorted by fragmentainers, and then by the layout order,
-  // which is pre-order of the box tree. When fragments are pushed to later
-  // fragmentainers by overflow, |descendants| need to be re-sorted by the
-  // pre-order. Note that both |SortInPreOrder| and |IsInPreOrder| are not
-  // cheap, limit only when needed.
-  const bool may_have_anchors_on_oof = MayHaveAnchorQuery(*descendants);
-  if (may_have_anchors_on_oof && !IsInPreOrder(*descendants))
-    SortInPreOrder(descendants);
+  const bool may_have_anchors_on_oof =
+      std::any_of(descendants->begin(), descendants->end(),
+                  [](const LogicalOofPositionedNode& node) {
+                    return node.box->MayHaveAnchorQuery();
+                  });
 
   HeapVector<HeapVector<NodeToLayout>> descendants_to_layout;
   ClearCollectionScope<HeapVector<HeapVector<NodeToLayout>>>
