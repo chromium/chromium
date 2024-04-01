@@ -57,8 +57,7 @@ class TabStripSceneLayer : public SceneLayer {
                            jint scrim_color,
                            jfloat scrim_opacity,
                            jfloat left_padding,
-                           jfloat right_padding,
-                           jfloat top_padding);
+                           jfloat right_padding);
 
   void UpdateNewTabButton(
       JNIEnv* env,
@@ -68,7 +67,6 @@ class TabStripSceneLayer : public SceneLayer {
       jboolean should_apply_hover_highlight,
       jfloat x,
       jfloat y,
-      jfloat top_padding,
       jfloat touch_target_offset,
       jboolean visible,
       jint tint,

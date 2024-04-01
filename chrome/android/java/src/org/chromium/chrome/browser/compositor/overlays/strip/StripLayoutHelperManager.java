@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.compositor.layouts.components.TintedComposito
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.AreaMotionEventFilter;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.MotionEventHandler;
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayer;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -146,7 +147,6 @@ public class StripLayoutHelperManager
 
     // Caching Variables
     private final RectF mStripFilterArea = new RectF();
-    private final boolean mIsLayoutOptimizationsEnabled;
 
     // External influences
     private TabModelSelector mTabModelSelector;
@@ -162,13 +162,10 @@ public class StripLayoutHelperManager
 
     // UI State
     private float mWidth; // in dp units
-    private float mHeight; // Height of the entire tab strip compositor layer in DP.
-    private final float mScrollableStripHeight; // Height of the scrollable tab strip layer in DP.
-
+    private final float mHeight; // in dp units
     // Padding regions that tabs should remain untouchable.
     private float mLeftPadding; // in dp units
     private float mRightPadding; // in dp units
-    private float mTopPadding; // in dp units
     private final float mDensity;
     private int mOrientation;
     private TintedCompositorButton mModelSelectorButton;
@@ -367,10 +364,9 @@ public class StripLayoutHelperManager
             // TODO(crbug.com/1498252): Avoid passing the ToolbarManager instance. Potentially
             // implement an interface to manage strip transition states.
             @NonNull ToolbarManager toolbarManager) {
-        Resources res = context.getResources();
         mUpdateHost = updateHost;
         mLayerTitleCacheSupplier = layerTitleCacheSupplier;
-        mDensity = res.getDisplayMetrics().density;
+        mDensity = context.getResources().getDisplayMetrics().density;
         mTabStripTreeProvider = new TabStripSceneLayer(mDensity);
         mTabStripEventHandler = new TabStripEventHandler();
         mTabSwitcherLayoutObserver = new TabSwitcherLayoutObserver();
@@ -380,15 +376,6 @@ public class StripLayoutHelperManager
         mDefaultTitle = context.getString(R.string.tab_loading_default_title);
         mEventFilter =
                 new AreaMotionEventFilter(context, mTabStripEventHandler, null, false, false);
-
-        mIsLayoutOptimizationsEnabled = ToolbarFeatures.isTabStripWindowLayoutOptimizationEnabled();
-        mScrollableStripHeight = res.getDimension(R.dimen.tab_strip_height) / mDensity;
-        mHeight =
-                mIsLayoutOptimizationsEnabled
-                        ? toolbarManager.getTabStripHeightSupplier().get() / mDensity
-                        : mScrollableStripHeight;
-        mTopPadding = mHeight - mScrollableStripHeight;
-
         CompositorOnClickHandler selectorClickHandler = time -> handleModelSelectorButtonClick();
         createModelSelectorButton(context, selectorClickHandler);
         // Model selector button background color.
@@ -444,16 +431,19 @@ public class StripLayoutHelperManager
 
         // y-offset for folio = lowered tab container + (tab container size - bg size)/2 -
         // folio tab title y-offset = 2 + (38 - 32)/2 - 2 = 3dp
-        mModelSelectorButton.setDrawY(MODEL_SELECTOR_BUTTON_BACKGROUND_Y_OFFSET_DP + mTopPadding);
+        mModelSelectorButton.setDrawY(MODEL_SELECTOR_BUTTON_BACKGROUND_Y_OFFSET_DP);
 
         // Use toolbar menu button padding to align MSB with menu button.
-        mStripEndPadding = res.getDimension(R.dimen.button_end_padding) / mDensity;
+        mStripEndPadding =
+                context.getResources().getDimension(R.dimen.button_end_padding) / mDensity;
 
         mModelSelectorButton.setIncognito(false);
         mModelSelectorButton.setVisible(false);
         // Pressed resources are the same as the unpressed resources.
         mModelSelectorButton.setClickSlop(MODEL_SELECTOR_BUTTON_CLICK_SLOP_DP);
 
+        Resources res = context.getResources();
+        mHeight = res.getDimension(R.dimen.tab_strip_height) / mDensity;
         mModelSelectorButton.setAccessibilityDescription(
                 res.getString(R.string.accessibility_tabstrip_btn_incognito_toggle_standard),
                 res.getString(R.string.accessibility_tabstrip_btn_incognito_toggle_incognito));
@@ -673,8 +663,7 @@ public class StripLayoutHelperManager
                 getStripTransitionScrimColor(),
                 scrimOpacity,
                 mLeftPadding,
-                mRightPadding,
-                mTopPadding);
+                mRightPadding);
         return mTabStripTreeProvider;
     }
 
@@ -707,7 +696,6 @@ public class StripLayoutHelperManager
             mOrientation = orientation;
             orientationChanged = true;
         }
-        mModelSelectorButton.setDrawY(mTopPadding + MODEL_SELECTOR_BUTTON_BACKGROUND_Y_OFFSET_DP);
         if (!LocalizationUtils.isLayoutRtl()) {
             mModelSelectorButton.setDrawX(
                     mWidth - mRightPadding - getModelSelectorButtonWidthWithEndPadding());
@@ -720,14 +708,14 @@ public class StripLayoutHelperManager
 
         mNormalHelper.onSizeChanged(
                 mWidth,
-                mScrollableStripHeight,
+                getHeight(),
                 orientationChanged,
                 LayoutManagerImpl.time(),
                 mLeftPadding,
                 mRightPadding);
         mIncognitoHelper.onSizeChanged(
                 mWidth,
-                mScrollableStripHeight,
+                getHeight(),
                 orientationChanged,
                 LayoutManagerImpl.time(),
                 mLeftPadding,
@@ -735,7 +723,7 @@ public class StripLayoutHelperManager
 
         mStripFilterArea.set(
                 mLeftPadding,
-                mTopPadding,
+                0,
                 mWidth - mRightPadding,
                 Math.min(getHeight(), visibleViewportOffsetY));
         mEventFilter.setEventArea(mStripFilterArea);
@@ -744,9 +732,9 @@ public class StripLayoutHelperManager
     // Implements TabStripHeightObserver
 
     @Override
-    public void onHeightChanged(int newHeightPx) {
+    public void onHeightChanged(int newHeight) {
         mIsTransitioning = true;
-        mIsHidden = newHeightPx == 0;
+        mIsHidden = newHeight == 0;
         mStripTransitionScrimOpacity = mIsHidden ? 0f : 1f;
         // Update the strip visibility state in StatusBarController just after the margins are
         // updated during a hide->show transition so that the status bar assumes the base tab strip
@@ -757,15 +745,6 @@ public class StripLayoutHelperManager
         // Set the status bar color and scrim overlay at the start of the transition.
         mStatusBarColorController.setTabStripColorOverlay(
                 getStripTransitionScrimColor(), mStripTransitionScrimOpacity);
-
-        if (mIsLayoutOptimizationsEnabled) {
-            // Convert the input HeightPx to Dp.
-            mHeight = newHeightPx / mDensity;
-
-            // TODO(crbug/331490430): Revisit how we position the scrollable strip.
-            mTopPadding = Math.max(0, mHeight - mScrollableStripHeight);
-            onSizeChanged(mWidth, mHeight, mLastVisibleViewportOffsetY, mOrientation);
-        }
     }
 
     @Override
@@ -814,7 +793,9 @@ public class StripLayoutHelperManager
 
     @Override
     public void onTopResumedActivityChanged(boolean isTopResumedActivity) {
-        if (!mIsLayoutOptimizationsEnabled) return;
+        // TODO (crbug.com/326290073): Update this to use the helper method from
+        // TabUiFeatureUtilities.
+        if (!ChromeFeatureList.sTabStripLayoutOptimization.isEnabled()) return;
         mIsTopResumedActivity = isTopResumedActivity;
         mUpdateHost.requestUpdate();
     }

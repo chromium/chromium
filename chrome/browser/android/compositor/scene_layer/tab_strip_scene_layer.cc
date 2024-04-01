@@ -18,7 +18,6 @@
 #include "ui/android/resources/nine_patch_resource.h"
 #include "ui/android/resources/resource_manager_impl.h"
 #include "ui/base/l10n/l10n_util_android.h"
-#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/transform.h"
 
@@ -138,16 +137,12 @@ void TabStripSceneLayer::UpdateTabStripLayer(JNIEnv* env,
                                              jint scrim_color,
                                              jfloat scrim_opacity,
                                              jfloat left_padding,
-                                             jfloat right_padding,
-                                             jfloat top_padding) {
+                                             jfloat right_padding) {
   gfx::RectF content(0, y_offset, width, height);
   layer()->SetPosition(gfx::PointF(0, y_offset));
   tab_strip_layer_->SetBounds(gfx::Size(width, height));
+  scrollable_strip_layer_->SetBounds(gfx::Size(width, height));
   tab_strip_layer_->SetBackgroundColor(SkColor4f::FromColor(background_color));
-
-  float scrollable_strip_height = height - top_padding;
-  scrollable_strip_layer_->SetBounds(gfx::Size(width, scrollable_strip_height));
-  scrollable_strip_layer_->SetPosition(gfx::PointF(0, top_padding));
 
   // Content tree should not be affected by tab strip scene layer visibility.
   if (content_tree_)
@@ -196,7 +191,6 @@ void TabStripSceneLayer::UpdateNewTabButton(
     jboolean should_apply_hover_highlight,
     jfloat x,
     jfloat y,
-    jfloat top_padding,
     jfloat touch_target_offset,
     jboolean visible,
     jint tint,
@@ -230,9 +224,6 @@ void TabStripSceneLayer::UpdateNewTabButton(
 
   // Move new tab button visually towards tabs when tab strip is not full.
   x += left_offset;
-  // Move new tab button down with respect to top padding.
-  // TODO(crbug/331678185): Use a container layer to position the NTB.
-  y += top_padding;
 
   // Only show button bg if btn is being hovered on.
   if (!should_apply_hover_highlight) {
@@ -375,7 +366,7 @@ void TabStripSceneLayer::UpdateTabStripLeftFade(
 
   // Set bounds. Use the parent layer height so the 1px fade resource is
   // stretched vertically.
-  float height = tab_strip_layer_->bounds().height();
+  float height = scrollable_strip_layer_->bounds().height();
   left_fade_->SetBounds(gfx::Size(fade_resource->size().width(), height));
 
   // Set position. The rotation set above requires the layer to be offset
@@ -413,7 +404,7 @@ void TabStripSceneLayer::UpdateTabStripRightFade(
 
   // Set bounds. Use the parent layer height so the 1px fade resource is
   // stretched vertically.
-  float height = tab_strip_layer_->bounds().height();
+  float height = scrollable_strip_layer_->bounds().height();
   right_fade_->SetBounds(gfx::Size(fade_resource->size().width(), height));
 
   // Set position. The right fade is positioned at the end of the tab strip.
