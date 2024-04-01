@@ -293,15 +293,9 @@ void FirstPartySetsPolicyService::OnProfileConfigReady(
 std::optional<net::FirstPartySetEntry> FirstPartySetsPolicyService::FindEntry(
     const net::SchemefulSite& site) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!config_.has_value()) {
-    // Track this to measure how often the First-Party Sets in the browser
-    // process are queried before they are ready to answer queries.
-    num_queries_before_sets_ready_++;
+  if (!config_.has_value() || !is_enabled()) {
     return std::nullopt;
   }
-
-  if (!is_enabled())
-    return std::nullopt;
 
   return content::FirstPartySetsHandler::GetInstance()->FindEntry(
       site, config_.value());
@@ -322,13 +316,7 @@ bool FirstPartySetsPolicyService::ForEachEffectiveSetEntry(
     base::FunctionRef<bool(const net::SchemefulSite&,
                            const net::FirstPartySetEntry&)> f) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!is_enabled()) {
-    return false;
-  }
-  if (!is_ready()) {
-    // Track this to measure how often the First-Party Sets in the browser
-    // process are queried before they are ready to answer queries.
-    num_queries_before_sets_ready_++;
+  if (!is_enabled() || !is_ready()) {
     return false;
   }
   return content::FirstPartySetsHandler::GetInstance()
@@ -342,9 +330,6 @@ void FirstPartySetsPolicyService::OnReadyToNotifyDelegates(
   config_ = std::move(config);
   cache_filter_ = std::move(cache_filter);
   first_initialization_complete_for_testing_ = true;
-  base::UmaHistogramCounts100(
-      "Cookie.FirstPartySets.NumBrowserQueriesBeforeInitialization",
-      num_queries_before_sets_ready_);
   for (auto& delegate : access_delegates_) {
     delegate->NotifyReady(
         MakeReadyEvent(config_.value().Clone(), cache_filter_.value().Clone()));
@@ -373,7 +358,6 @@ void FirstPartySetsPolicyService::ResetForTesting() {
   on_first_init_complete_for_testing_.reset();
   // Note: `first_initialization_complete_for_testing_` is intentionally not
   // reset here.
-  num_queries_before_sets_ready_ = 0;
 }
 
 }  // namespace first_party_sets

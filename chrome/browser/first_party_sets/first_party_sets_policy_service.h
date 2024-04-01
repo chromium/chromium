@@ -239,11 +239,6 @@ class FirstPartySetsPolicyService : public KeyedService {
   // not be reset in `ResetForTesting`.
   bool first_initialization_complete_for_testing_ = false;
 
-  // Tracks the number of queries to the First-Party Sets in the browser process
-  // are received before the `global_sets_` are initialized.
-  mutable int num_queries_before_sets_ready_
-      GUARDED_BY_CONTEXT(sequence_checker_) = 0;
-
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<FirstPartySetsPolicyService> weak_factory_{this};

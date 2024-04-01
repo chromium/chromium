@@ -343,8 +343,6 @@ TEST_P(FirstPartySetsPolicyServicePrefTest, FindEntry_FpsDisabledByPref) {
 
   // Verify that FindEntry doesn't return associate1's entry when FPS is off.
   EXPECT_FALSE(service()->FindEntry(associate1_site));
-  histogram_tester.ExpectUniqueSample(
-      "Cookie.FirstPartySets.NumBrowserQueriesBeforeInitialization", 0, 1);
   env().RunUntilIdle();
 }
 
@@ -403,18 +401,8 @@ TEST_P(FirstPartySetsPolicyServicePrefTest,
   // Simulate the profile set overrides are empty.
   service()->InitForTesting();
 
-  // The queries that occur before global sets are ready should be
-  // counted in our metric.
-  histogram_tester.ExpectUniqueSample(
-      "Cookie.FirstPartySets.NumBrowserQueriesBeforeInitialization", 3, 1);
-
   // Verify that FindEntry finally returns associate1's entry.
   EXPECT_EQ(service()->FindEntry(associate_site).value(), associate_entry);
-
-  // The queries that occur after global sets are ready shouldn't be
-  // counted by our metric.
-  histogram_tester.ExpectUniqueSample(
-      "Cookie.FirstPartySets.NumBrowserQueriesBeforeInitialization", 3, 1);
 
   env().RunUntilIdle();
 }
@@ -443,11 +431,6 @@ TEST_P(FirstPartySetsPolicyServicePrefTest,
   EXPECT_EQ(service()->FindEntry(associate_site).value(), associate_entry);
   EXPECT_EQ(service()->FindEntry(associate_site).value(), associate_entry);
   EXPECT_EQ(service()->FindEntry(associate_site).value(), associate_entry);
-
-  // None of the 3 queries should be counted in our metric since the service
-  // already has received its context config.
-  histogram_tester.ExpectUniqueSample(
-      "Cookie.FirstPartySets.NumBrowserQueriesBeforeInitialization", 0, 1);
 }
 
 TEST_P(FirstPartySetsPolicyServicePrefTest,
