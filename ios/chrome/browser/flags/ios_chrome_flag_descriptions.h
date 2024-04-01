@@ -749,6 +749,24 @@ extern const char kOptimizationGuidePushNotificationClientDescription[];
 extern const char kOneTapForMapsName[];
 extern const char kOneTapForMapsDescription[];
 
+// Title and description for the flag to enable page content annotations.
+extern const char kPageContentAnnotationsName[];
+extern const char kPageContentAnnotationsDescription[];
+
+// Title and description for the flag to enable persisting salient images
+// metadata.
+extern const char kPageContentAnnotationsPersistSalientImageMetadataName[];
+extern const char
+    kPageContentAnnotationsPersistSalientImageMetadataDescription[];
+
+// Title and description for the flag to enable persisting remote page metadata.
+extern const char kPageContentAnnotationsRemotePageMetadataName[];
+extern const char kPageContentAnnotationsRemotePageMetadataDescription[];
+
+// Title and description for the flag to enable page visibility.
+extern const char kPageVisibilityPageContentAnnotationsName[];
+extern const char kPageVisibilityPageContentAnnotationsDescription[];
+
 // Title and description for the flag to enable PhishGuard password reuse
 // detection.
 extern const char kPasswordReuseDetectionName[];

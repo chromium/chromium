@@ -49,6 +49,7 @@
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "components/optimization_guide/core/optimization_guide_switches.h"
+#import "components/page_content_annotations/core/page_content_annotations_features.h"
 #import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/payments/core/features.h"
@@ -1595,6 +1596,30 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"autofill-sticky-infobar", flag_descriptions::kAutofillStickyInfobarName,
      flag_descriptions::kAutofillStickyInfobarDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kAutofillStickyInfobarIos)},
+    {"page-content-annotations", flag_descriptions::kPageContentAnnotationsName,
+     flag_descriptions::kPageContentAnnotationsDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         page_content_annotations::features::kPageContentAnnotations)},
+    {"page-content-annotations-persist-salient-image-metadata",
+     flag_descriptions::kPageContentAnnotationsPersistSalientImageMetadataName,
+     flag_descriptions::
+         kPageContentAnnotationsPersistSalientImageMetadataDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         page_content_annotations::features::
+             kPageContentAnnotationsPersistSalientImageMetadata)},
+    {"page-content-annotations-remote-page-metadata",
+     flag_descriptions::kPageContentAnnotationsRemotePageMetadataName,
+     flag_descriptions::kPageContentAnnotationsRemotePageMetadataDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         page_content_annotations::features::kRemotePageMetadata)},
+    {"page-visibility-page-content-annotations",
+     flag_descriptions::kPageVisibilityPageContentAnnotationsName,
+     flag_descriptions::kPageVisibilityPageContentAnnotationsDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(page_content_annotations::features::
+                            kPageVisibilityPageContentAnnotations)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

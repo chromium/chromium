@@ -1,6 +1,7 @@
 specific_include_rules = {
   # Flag list can depends on everything.
   "^about_flags.mm": [
+    "+components/page_content_annotations/core",
     "+ios/chrome/browser",
   ],
   "^ios_chrome_field_trials.mm": [
