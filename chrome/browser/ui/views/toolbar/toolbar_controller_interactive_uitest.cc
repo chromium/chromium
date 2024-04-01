@@ -256,7 +256,8 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
                  }),
                  WaitForShow(kSidePanelElementId), FlushEvents(),
                  PressButton(kSidePanelPinButtonElementId),
-                 PressButton(kSidePanelCloseButtonElementId));
+                 PressButton(kSidePanelCloseButtonElementId),
+                 WaitForHide(kSidePanelElementId), FlushEvents());
   }
 
   auto PinReadingModeToToolbar() {

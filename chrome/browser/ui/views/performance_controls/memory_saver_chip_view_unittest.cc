@@ -305,6 +305,8 @@ class MemorySaverChipViewWithPerformanceSidePanelTest
 };
 
 TEST_F(MemorySaverChipViewWithPerformanceSidePanelTest, OpensSidePanel) {
+  SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser())
+      ->SetNoDelaysForTesting(true);
   SetTabDiscardState(0, true);
   EXPECT_TRUE(GetPageActionIconView()->GetVisible());
 
