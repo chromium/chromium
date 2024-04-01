@@ -455,6 +455,7 @@ WebSocket::WebSocket(
       traffic_annotation_(traffic_annotation),
       origin_(std::move(origin)),
       site_for_cookies_(site_for_cookies),
+      isolation_info_(isolation_info),
       has_raw_headers_access_(has_raw_headers_access),
       writable_watcher_(FROM_HERE,
                         mojo::SimpleWatcher::ArmingPolicy::MANUAL,
@@ -569,6 +570,26 @@ bool WebSocket::AllowCookies(const GURL& url) const {
   }
   return net::StaticCookiePolicy(policy).CanAccessCookies(
              url, site_for_cookies_) == net::OK;
+}
+
+bool WebSocket::RevokeIfNonceMatches(const base::UnguessableToken& nonce) {
+  if (isolation_info_.nonce() != nonce) {
+    return false;
+  }
+
+  std::string message =
+      "This WebSocket is in a frame whose network access "
+      "is being revoked.";
+  DVLOG(3) << "WebSocketEventHandler::RevokeIfNonceMatches @"
+           << reinterpret_cast<void*>(this) << " " << message;
+  // OnAddChannelResponse may have already reset |impl_->handshake_client_| if
+  // the failure happened after a successful connection.
+  if (handshake_client_.is_bound()) {
+    handshake_client_->OnFailure(message, net::kWebSocketErrorGoingAway, -1);
+  }
+  client_.ResetWithReason(0, message);
+
+  return true;
 }
 
 int WebSocket::OnBeforeStartTransaction(

@@ -1,0 +1,85 @@
+
+<!DOCTYPE html>
+<title>Test disableUntrustedNetwork() with WebSockets.</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="resources/utils.js"></script>
+<body>
+<script>
+promise_test(async(t) => {
+  const fencedframe = await attachFencedFrameContext();
+
+  return fencedframe.execute(async () => {
+    await window.fence.disableUntrustedNetwork();
+    return new Promise((resolve, reject) => {
+      const ws = new WebSocket('wss://{{host}}:{{ports[wss][0]}}/echo');
+      ws.onopen = msg => {
+        reject("WebSocket was opened.");
+      };
+      ws.onerror = msg => {
+        resolve("WebSocket was not opened.");
+      };
+    });
+  })
+}, 'Network cutoff prevents opening new WebSocket connections.');
+
+promise_test(async(t) => {
+  const fencedframe = await attachFencedFrameContext();
+
+  return fencedframe.execute(() => {
+    return new Promise((resolve, reject) => {
+      const ws = new WebSocket('wss://{{host}}:{{ports[wss][0]}}/echo');
+      ws.onopen = msg => {
+        window.fence.disableUntrustedNetwork();
+      };
+      ws.onclose = msg => {
+        if (msg.wasClean) {
+          reject("WebSocket closure should not be clean.")
+        } else {
+          resolve("WebSocket was closed by network revocation.");
+        }
+      }
+    });
+  })
+}, 'Network cutoff closes existing WebSockets.');
+
+promise_test(async(t) => {
+  const fencedframe = await attachFencedFrameContext();
+  const key = token();
+  const ws_url = 'wss://{{host}}:{{ports[wss][0]}}/stash_responder';
+
+  await fencedframe.execute((key, ws_url) => {
+    return new Promise((resolve, reject) => {
+      const ws = new WebSocket(ws_url + `?action=put&key=${key}&value=true`);
+      ws.onopen = async msg => {
+        await window.fence.disableUntrustedNetwork();
+        ws.send("echo");
+      };
+      ws.onmessage = msg => {
+        reject("The send() call should've failed.");
+      };
+      ws.onerror = msg => {
+        resolve("WebSocket errored out when attempting to send a message.");
+      };
+    });
+  }, [key, ws_url]);
+
+  const ws = new WebSocket(ws_url + `?action=take&key=${key}`);
+  return new Promise((resolve, reject) => {
+    ws.onopen = () => {
+      // Tell the endpoint to send back any potential data sent by the fenced
+      // frame.
+      ws.send("echo");
+    };
+    ws.onmessage = t.step_func(msg => {
+      assert_equals(JSON.parse(msg.data).result, null,
+          "Nothing should've been sent from the fenced frame.");
+      resolve();
+    });
+  });
+
+}, 'Network cutoff prevents existing WebSockets from sending data.');
+</script>
+</body>

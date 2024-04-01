@@ -3049,6 +3049,11 @@ void NetworkContext::RevokeNetworkForNonces(
         loader->CancelRequestIfNonceMatchesAndUrlNotExempted(nonce, exemptions);
       }
     }
+#if BUILDFLAG(ENABLE_WEBSOCKETS)
+    if (websocket_factory_) {
+      websocket_factory_->RemoveIfNonceMatches(nonce);
+    }
+#endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
   }
   std::move(callback).Run();
 }

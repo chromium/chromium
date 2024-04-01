@@ -77,6 +77,11 @@ class WebSocketFactory final {
   // Removes and deletes |impl|.
   void Remove(WebSocket* impl);
 
+  // Close existing WebSocket connections when network access is revoked from a
+  // fenced frame. The frame's associated WebSockets are identified via their
+  // IsolationInfo's nonce.
+  void RemoveIfNonceMatches(const base::UnguessableToken& nonce);
+
  private:
   using WebSocketSet =
       std::set<std::unique_ptr<WebSocket>, base::UniquePtrComparator>;

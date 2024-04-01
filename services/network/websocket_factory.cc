@@ -66,6 +66,15 @@ void WebSocketFactory::CreateWebSocket(
     handshake_client_remote.reset();
     return;
   }
+  if (isolation_info.nonce().has_value() &&
+      !context_->IsNetworkForNonceAndUrlAllowed(*isolation_info.nonce(), url)) {
+    mojo::Remote<mojom::WebSocketHandshakeClient> handshake_client_remote(
+        std::move(handshake_client));
+    handshake_client_remote->OnFailure("Network access revoked",
+                                       net::ERR_NETWORK_ACCESS_REVOKED, -1);
+    handshake_client_remote.reset();
+    return;
+  }
   WebSocket::HasRawHeadersAccess has_raw_headers_access(
       context_->network_service()->HasRawHeadersAccess(
           process_id, net::ChangeWebSocketSchemeToHttpScheme(url)));
@@ -91,6 +100,13 @@ void WebSocketFactory::Remove(WebSocket* impl) {
     return;
   }
   connections_.erase(it);
+}
+
+void WebSocketFactory::RemoveIfNonceMatches(
+    const base::UnguessableToken& nonce) {
+  std::erase_if(connections_, [&nonce](const auto& connection) {
+    return connection->RevokeIfNonceMatches(nonce);
+  });
 }
 
 }  // namespace network
