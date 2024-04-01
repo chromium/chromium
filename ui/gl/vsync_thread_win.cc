@@ -207,12 +207,8 @@ void VSyncThreadWin::WaitForVSync() {
   // the reported interval may no longer match with the vblank wait.
   // To work around this discrepancy get the VSync interval directly from
   // monitor associated with window_ or the primary monitor.
-  //
-  // TODO(wicarr@microsoft.com): Replace build number comparison with
-  // base::win::GetVersion() variant when a post-WIN11_22H2 build has
-  // been added to base::win::Version.
   static bool use_sv3_workaround =
-      base::win::OSInfo::GetInstance()->version_number().build > 22621 &&
+      base::win::GetVersion() > base::win::Version::WIN11_22H2 &&
       base::FeatureList::IsEnabled(
           features::kUsePrimaryMonitorVSyncIntervalOnSV3);
 
