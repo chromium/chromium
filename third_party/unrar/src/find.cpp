@@ -143,7 +143,7 @@ bool FindFile::FastFind(const wchar *FindMask,FindData *fd,bool GetSymLink)
   fd->FileAttr=st.st_mode;
   fd->Size=st.st_size;
 
-  File::StatToRarTime(st, &fd->mtime, &fd->ctime, &fd->atime);
+  File::StatToRarTime(st,&fd->mtime,&fd->ctime,&fd->atime);
 
   wcsncpyz(fd->Name,FindMask,ASIZE(fd->Name));
 #endif

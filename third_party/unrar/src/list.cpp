@@ -1,12 +1,6 @@
 #include "rar.hpp"
 
-static void ListFileHeader(Archive& Arc,
-                           FileHeader& hd,
-                           bool& TitleShown,
-                           bool Verbose,
-                           bool Technical,
-                           bool Bare,
-                           bool DisableNames);
+static void ListFileHeader(Archive &Arc,FileHeader &hd,bool &TitleShown,bool Verbose,bool Technical,bool Bare,bool DisableNames);
 static void ListSymLink(Archive &Arc);
 static void ListFileAttr(uint A,HOST_SYSTEM_TYPE HostType,wchar *AttrStr,size_t AttrSize);
 static void ListOldSubHeader(Archive &Arc);
@@ -69,13 +63,13 @@ void ListArchive(CommandData *Cmd)
           if (Arc.Encrypted)
             mprintf(L"%s%s", SetCount++ > 0 ? L", ":L"", St(MListEncHead));
 
-          if (!Arc.MainHead.OrigName.empty()) {
-            mprintf(L"\n%s: %s", St(MOrigName), Arc.MainHead.OrigName.c_str());
-          }
-          if (Arc.MainHead.OrigTime.IsSet()) {
+          if (!Arc.MainHead.OrigName.empty())
+            mprintf(L"\n%s: %s",St(MOrigName),Arc.MainHead.OrigName.c_str());
+          if (Arc.MainHead.OrigTime.IsSet())
+          {
             wchar DateStr[50];
-            Arc.MainHead.OrigTime.GetText(DateStr, ASIZE(DateStr), Technical);
-            mprintf(L"\n%s: %s", St(MOriginalTime), DateStr);
+            Arc.MainHead.OrigTime.GetText(DateStr,ASIZE(DateStr),Technical);
+            mprintf(L"\n%s: %s",St(MOriginalTime),DateStr);
           }
 
           mprintf(L"\n");
@@ -109,8 +103,7 @@ void ListArchive(CommandData *Cmd)
               FileMatched=Cmd->IsProcessFile(Arc.FileHead,NULL,MATCH_WILDSUBPATH,0,NULL,0)!=0;
               if (FileMatched)
               {
-                ListFileHeader(Arc, Arc.FileHead, TitleShown, Verbose,
-                               Technical, Bare, Cmd->DisableNames);
+                ListFileHeader(Arc,Arc.FileHead,TitleShown,Verbose,Technical,Bare,Cmd->DisableNames);
                 if (!Arc.FileHead.SplitBefore)
                 {
                   TotalUnpSize+=Arc.FileHead.UnpSize;
@@ -123,8 +116,7 @@ void ListArchive(CommandData *Cmd)
               if (FileMatched && !Bare)
               {
                 if (Technical && ShowService)
-                  ListFileHeader(Arc, Arc.SubHead, TitleShown, Verbose, true,
-                                 false, Cmd->DisableNames);
+                  ListFileHeader(Arc,Arc.SubHead,TitleShown,Verbose,true,false,Cmd->DisableNames);
               }
               break;
           }
@@ -203,43 +195,36 @@ enum LISTCOL_TYPE {
   LCOL_NAME,LCOL_ATTR,LCOL_SIZE,LCOL_PACKED,LCOL_RATIO,LCOL_CSUM,LCOL_ENCR
 };
 
-void ListFileHeader(Archive& Arc,
-                    FileHeader& hd,
-                    bool& TitleShown,
-                    bool Verbose,
-                    bool Technical,
-                    bool Bare,
-                    bool DisableNames) {
-  if (!TitleShown && !Technical && !Bare) {
+
+void ListFileHeader(Archive &Arc,FileHeader &hd,bool &TitleShown,bool Verbose,bool Technical,bool Bare,bool DisableNames)
+{
+  if (!TitleShown && !Technical && !Bare)
+  {
     if (Verbose)
     {
       mprintf(L"\n%ls",St(MListTitleV));
-      if (!DisableNames) {
-        mprintf(
-            L"\n----------- ---------  -------- ----- ---------- -----  "
-            L"--------  ----");
-      }
+      if (!DisableNames)
+        mprintf(L"\n----------- ---------  -------- ----- ---------- -----  --------  ----");
     }
     else
     {
       mprintf(L"\n%ls",St(MListTitleL));
-      if (!DisableNames) {
+      if (!DisableNames)
         mprintf(L"\n----------- ---------  ---------- -----  ----");
-      }
     }
     // Must be set even in DisableNames mode to suppress "0 files" output
     // unless no files are matched.
     TitleShown=true;
   }
-  if (DisableNames) {
+  if (DisableNames)
     return;
-  }
 
-  wchar* Name = hd.FileName;
-  RARFORMAT Format = Arc.Format;
+  wchar *Name=hd.FileName;
+  RARFORMAT Format=Arc.Format;
 
-  if (Bare) {
-    mprintf(L"%s\n", Name);
+  if (Bare)
+  {
+    mprintf(L"%s\n",Name);
     return;
   }
 
@@ -333,24 +318,21 @@ void ListFileHeader(Archive& Arc,
       mprintf(L"\n%12ls: %ls",St(MListPacked),PackSizeText);
       mprintf(L"\n%12ls: %ls",St(MListRatio),RatioStr);
     }
-    bool WinTitles = false;
+    bool WinTitles=false;
 #ifdef _WIN_ALL
-    WinTitles = true;
+    WinTitles=true;
 #endif
     if (hd.mtime.IsSet())
-      mprintf(L"\n%12ls: %ls", St(WinTitles ? MListModified : MListMtime),
-              DateStr);
+      mprintf(L"\n%12ls: %ls",St(WinTitles ? MListModified:MListMtime),DateStr);
     if (hd.ctime.IsSet())
     {
       hd.ctime.GetText(DateStr,ASIZE(DateStr),true);
-      mprintf(L"\n%12ls: %ls", St(WinTitles ? MListCreated : MListCtime),
-              DateStr);
+      mprintf(L"\n%12ls: %ls",St(WinTitles ? MListCreated:MListCtime),DateStr);
     }
     if (hd.atime.IsSet())
     {
       hd.atime.GetText(DateStr,ASIZE(DateStr),true);
-      mprintf(L"\n%12ls: %ls", St(WinTitles ? MListAccessed : MListAtime),
-              DateStr);
+      mprintf(L"\n%12ls: %ls",St(WinTitles ? MListAccessed:MListAtime),DateStr);
     }
     mprintf(L"\n%12ls: %ls",St(MListAttr),AttrStr);
     if (hd.FileHash.Type==HASH_CRC32)
@@ -406,16 +388,16 @@ void ListFileHeader(Archive& Arc,
     {
       mprintf(L"\n%12ls: ",L"Unix owner");
       if (*hd.UnixOwnerName!=0)
-        mprintf(L"%ls", GetWide(hd.UnixOwnerName));
-      else if (hd.UnixOwnerNumeric) {
-        mprintf(L"#%d", hd.UnixOwnerID);
-      }
+        mprintf(L"%ls",GetWide(hd.UnixOwnerName));
+      else
+        if (hd.UnixOwnerNumeric)
+          mprintf(L"#%d",hd.UnixOwnerID);
       mprintf(L":");
       if (*hd.UnixGroupName!=0)
         mprintf(L"%ls",GetWide(hd.UnixGroupName));
-      else if (hd.UnixGroupNumeric) {
-        mprintf(L"#%d", hd.UnixGroupID);
-      }
+      else
+        if (hd.UnixGroupNumeric)
+          mprintf(L"#%d",hd.UnixGroupID);
     }
 
     mprintf(L"\n");

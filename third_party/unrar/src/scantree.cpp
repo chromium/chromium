@@ -218,16 +218,18 @@ bool ScanTree::GetNextMask()
   // We prefer to scan entire disk if mask like \\server\share\ or c:\
   // is specified regardless of recursion mode. Use \\server\share\*.*
   // or c:\*.* mask to scan only the root directory.
-  if (CurMask[0] == '\\' && CurMask[1] == '\\') {
-    const wchar* Slash = wcschr(CurMask + 2, '\\');
-    if (Slash != NULL) {
-      Slash = wcschr(Slash + 1, '\\');
-      ScanEntireDisk = Slash != NULL && *(Slash + 1) == 0;
+  if (CurMask[0]=='\\' && CurMask[1]=='\\')
+  {
+    const wchar *Slash=wcschr(CurMask+2,'\\');
+    if (Slash!=NULL)
+    {
+      Slash=wcschr(Slash+1,'\\');
+      ScanEntireDisk=Slash!=NULL && *(Slash+1)==0;
     }
-  } else {
-    ScanEntireDisk =
-        IsDriveLetter(CurMask) && IsPathDiv(CurMask[2]) && CurMask[3] == 0;
   }
+  else
+    ScanEntireDisk=IsDriveLetter(CurMask) && IsPathDiv(CurMask[2]) && CurMask[3]==0;
+
 
   wchar *Name=PointToName(CurMask);
   if (*Name==0)

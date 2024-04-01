@@ -7,7 +7,7 @@ File::File()
   NewFile=false;
   LastWrite=false;
   HandleType=FILE_HANDLENORMAL;
-  LineInput = false;
+  LineInput=false;
   SkipClose=false;
   ErrorType=FILE_SUCCESS;
   OpenShared=false;
@@ -19,7 +19,7 @@ File::File()
 #endif
   ReadErrorMode=FREM_ASK;
   TruncatedAfterReadError=false;
-  CurFilePos = 0;
+  CurFilePos=0;
 
 #ifdef CHROMIUM_UNRAR
   hOpenFile=FILE_BAD_HANDLE;
@@ -68,7 +68,7 @@ bool File::Open(const wchar *Name,uint Mode)
   uint ShareMode=(Mode & FMF_OPENEXCLUSIVE) ? 0 : FILE_SHARE_READ;
   if (OpenShared)
     ShareMode|=FILE_SHARE_WRITE;
-  uint Flags = FILE_FLAG_SEQUENTIAL_SCAN;
+  uint Flags=FILE_FLAG_SEQUENTIAL_SCAN;
   FindData FD;
   if (PreserveAtime)
     Access|=FILE_WRITE_ATTRIBUTES; // Needed to preserve atime.
@@ -407,10 +407,10 @@ int File::Read(void *Data,size_t Size)
 
   if (ReadErrorMode==FREM_IGNORE)
     FilePos=Tell();
-  int TotalRead = 0;
+  int TotalRead=0;
   while (true)
   {
-    int ReadSize = DirectRead(Data, Size);
+    int ReadSize=DirectRead(Data,Size);
 
     if (ReadSize==-1)
     {
@@ -425,9 +425,8 @@ int File::Read(void *Data,size_t Size)
             size_t SizeToRead=Min(Size-I,512);
             int ReadCode=DirectRead(Data,SizeToRead);
             ReadSize+=(ReadCode==-1) ? 512:ReadCode;
-            if (ReadSize != -1) {
-              TotalRead += ReadSize;
-            }
+            if (ReadSize!=-1)
+              TotalRead+=ReadSize;
           }
         }
         else
@@ -447,11 +446,10 @@ int File::Read(void *Data,size_t Size)
           ErrHandler.ReadError(FileName);
         }
     }
-    TotalRead +=
-        ReadSize;  // If ReadSize is -1, TotalRead is also set to -1 here.
+    TotalRead+=ReadSize; // If ReadSize is -1, TotalRead is also set to -1 here.
 
-    if (HandleType == FILE_HANDLESTD && !LineInput && ReadSize > 0 &&
-        (uint)ReadSize < Size) {
+    if (HandleType==FILE_HANDLESTD && !LineInput && ReadSize>0 && (uint)ReadSize<Size)
+    {
       // Unlike regular files, for pipe we can read only as much as was
       // written at the other end of pipe. We had seen data coming in small
       // ~80 byte chunks when piping from 'type arc.rar'. Extraction code
@@ -461,16 +459,15 @@ int File::Read(void *Data,size_t Size)
       // when processing user's input in console prompts. Otherwise apps
       // piping user responses to multiple Ask() prompts can hang if no more
       // data is available yet and pipe isn't closed.
-      Data = (byte*)Data + ReadSize;
-      Size -= ReadSize;
+      Data=(byte*)Data+ReadSize;
+      Size-=ReadSize;
       continue;
     }
     break;
   }
-  if (TotalRead > 0) {  // Can be -1 for error and AllowExceptions disabled.
-    CurFilePos += TotalRead;
-  }
-  return TotalRead;  // It can return -1 only if AllowExceptions is disabled.
+  if (TotalRead>0) // Can be -1 for error and AllowExceptions disabled.
+    CurFilePos+=TotalRead;
+  return TotalRead; // It can return -1 only if AllowExceptions is disabled.
 }
 
 
@@ -552,35 +549,35 @@ bool File::RawSeek(int64 Offset,int Method)
 {
   if (hFile==FILE_BAD_HANDLE)
     return true;
-  if (!IsSeekable())  // To extract archives from stdin with -si.
+  if (!IsSeekable()) // To extract archives from stdin with -si.
   {
     // We tried to dynamically allocate 32 KB buffer here, but it improved
     // speed in Windows 10 by mere ~1.5%.
     byte Buf[4096];
-    if (Method == SEEK_CUR || Method == SEEK_SET && Offset >= CurFilePos) {
-      uint64 SkipSize = Method == SEEK_CUR ? Offset : Offset - CurFilePos;
-      while (SkipSize > 0)  // Reading to emulate seek forward.
+    if (Method==SEEK_CUR || Method==SEEK_SET && Offset>=CurFilePos)
+    {
+      uint64 SkipSize=Method==SEEK_CUR ? Offset:Offset-CurFilePos;
+      while (SkipSize>0) // Reading to emulate seek forward.
       {
-        int ReadSize = Read(Buf, (size_t)Min(SkipSize, ASIZE(Buf)));
-        if (ReadSize <= 0) {
+        int ReadSize=Read(Buf,(size_t)Min(SkipSize,ASIZE(Buf)));
+        if (ReadSize<=0)
           return false;
-        }
-        SkipSize -= ReadSize;
-        CurFilePos += ReadSize;
+        SkipSize-=ReadSize;
+        CurFilePos+=ReadSize;
       }
       return true;
     }
     // May need it in FileLength() in Archive::UnexpEndArcMsg() when unpacking
     // RAR 4.x archives without the end of archive block created with -en.
-    if (Method == SEEK_END) {
+    if (Method==SEEK_END)
+    {
       int ReadSize;
-      while ((ReadSize = Read(Buf, ASIZE(Buf))) > 0) {
-        CurFilePos += ReadSize;
-      }
+      while ((ReadSize=Read(Buf,ASIZE(Buf)))>0)
+        CurFilePos+=ReadSize;
       return true;
     }
 
-    return false;  // Backward seek on unseekable file.
+    return false; // Backward seek on unseekable file.
   }
   if (Offset<0 && Method!=SEEK_SET)
   {
@@ -616,9 +613,8 @@ int64 File::Tell()
       ErrHandler.SeekError(FileName);
     else
       return -1;
-  if (!IsSeekable()) {
+  if (!IsSeekable())
     return CurFilePos;
-  }
 #ifdef _WIN_ALL
   LONG HighDist=0;
   uint LowDist=SetFilePointer(hFile,0,&HighDist,FILE_CURRENT);
@@ -768,69 +764,44 @@ void File::SetCloseFileTimeByName(const wchar *Name,RarTime *ftm,RarTime *fta)
 #endif
 }
 
+
 #ifdef _UNIX
-void File::StatToRarTime(struct stat& st,
-                         RarTime* ftm,
-                         RarTime* ftc,
-                         RarTime* fta) {
+void File::StatToRarTime(struct stat &st,RarTime *ftm,RarTime *ftc,RarTime *fta)
+{
 #ifdef UNIX_TIME_NS
 #if defined(_APPLE)
-  if (ftm != NULL) {
-    ftm->SetUnixNS(st.st_mtimespec.tv_sec * (uint64)1000000000 +
-                   st.st_mtimespec.tv_nsec);
-  }
-  if (ftc != NULL) {
-    ftc->SetUnixNS(st.st_ctimespec.tv_sec * (uint64)1000000000 +
-                   st.st_ctimespec.tv_nsec);
-  }
-  if (fta != NULL) {
-    fta->SetUnixNS(st.st_atimespec.tv_sec * (uint64)1000000000 +
-                   st.st_atimespec.tv_nsec);
-  }
+  if (ftm!=NULL) ftm->SetUnixNS(st.st_mtimespec.tv_sec*(uint64)1000000000+st.st_mtimespec.tv_nsec);
+  if (ftc!=NULL) ftc->SetUnixNS(st.st_ctimespec.tv_sec*(uint64)1000000000+st.st_ctimespec.tv_nsec);
+  if (fta!=NULL) fta->SetUnixNS(st.st_atimespec.tv_sec*(uint64)1000000000+st.st_atimespec.tv_nsec);
 #else
-  if (ftm != NULL) {
-    ftm->SetUnixNS(st.st_mtim.tv_sec * (uint64)1000000000 + st.st_mtim.tv_nsec);
-  }
-  if (ftc != NULL) {
-    ftc->SetUnixNS(st.st_ctim.tv_sec * (uint64)1000000000 + st.st_ctim.tv_nsec);
-  }
-  if (fta != NULL) {
-    fta->SetUnixNS(st.st_atim.tv_sec * (uint64)1000000000 + st.st_atim.tv_nsec);
-  }
+  if (ftm!=NULL) ftm->SetUnixNS(st.st_mtim.tv_sec*(uint64)1000000000+st.st_mtim.tv_nsec);
+  if (ftc!=NULL) ftc->SetUnixNS(st.st_ctim.tv_sec*(uint64)1000000000+st.st_ctim.tv_nsec);
+  if (fta!=NULL) fta->SetUnixNS(st.st_atim.tv_sec*(uint64)1000000000+st.st_atim.tv_nsec);
 #endif
 #else
-  if (ftm != NULL) {
-    ftm->SetUnix(st.st_mtime);
-  }
-  if (ftc != NULL) {
-    ftc->SetUnix(st.st_ctime);
-  }
-  if (fta != NULL) {
-    fta->SetUnix(st.st_atime);
-  }
+  if (ftm!=NULL) ftm->SetUnix(st.st_mtime);
+  if (ftc!=NULL) ftc->SetUnix(st.st_ctime);
+  if (fta!=NULL) fta->SetUnix(st.st_atime);
 #endif
 }
 #endif
 
-void File::GetOpenFileTime(RarTime* ftm, RarTime* ftc, RarTime* fta) {
+
+void File::GetOpenFileTime(RarTime *ftm,RarTime *ftc,RarTime *fta)
+{
 #ifdef _WIN_ALL
-  FILETIME ctime, atime, mtime;
-  GetFileTime(hFile, &ctime, &atime, &mtime);
-  if (ftm != NULL) {
-    ftm->SetWinFT(&mtime);
-  }
-  if (ftc != NULL) {
-    ftc->SetWinFT(&ctime);
-  }
-  if (fta != NULL) {
-    fta->SetWinFT(&atime);
-  }
+  FILETIME ctime,atime,mtime;
+  GetFileTime(hFile,&ctime,&atime,&mtime);
+  if (ftm!=NULL) ftm->SetWinFT(&mtime);
+  if (ftc!=NULL) ftc->SetWinFT(&ctime);
+  if (fta!=NULL) fta->SetWinFT(&atime);
 #elif defined(_UNIX)
   struct stat st;
   fstat(GetFD(),&st);
-  StatToRarTime(st, ftm, ftc, fta);
+  StatToRarTime(st,ftm,ftc,fta);
 #endif
 }
+
 
 int64 File::FileLength()
 {

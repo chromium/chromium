@@ -97,9 +97,8 @@ bool RSCoder16::Init(uint DataCount, uint RecCount, bool *ValidityFlags)
   }
 
   // 2021.09.01 - we allowed RR and REV >100%, so no more NR > ND check.
-  if (ND + NR > gfSize || /*NR > ND ||*/ ND == 0 || NR == 0) {
+  if (ND + NR > gfSize || /*NR > ND ||*/ ND == 0 || NR == 0)
     return false;
-  }
 
   delete[] MX;
   if (Decoding)

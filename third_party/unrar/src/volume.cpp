@@ -1,15 +1,15 @@
 #include "rar.hpp"
 
 #ifdef RARDLL
-static bool DllVolChange(CommandData* Cmd, wchar* NextName, size_t NameSize);
-static bool DllVolNotify(CommandData* Cmd, wchar* NextName);
+static bool DllVolChange(CommandData *Cmd,wchar *NextName,size_t NameSize);
+static bool DllVolNotify(CommandData *Cmd,wchar *NextName);
 #endif
 
 
 
 bool MergeArchive(Archive &Arc,ComprDataIO *DataIO,bool ShowFileName,wchar Command)
 {
-  CommandData* Cmd = Arc.GetCommandData();
+  CommandData *Cmd=Arc.GetCommandData();
 
   HEADER_TYPE HeaderType=Arc.GetHeaderType();
   FileHeader *hd=HeaderType==HEAD_SERVICE ? &Arc.SubHead:&Arc.FileHead;
@@ -25,12 +25,13 @@ bool MergeArchive(Archive &Arc,ComprDataIO *DataIO,bool ShowFileName,wchar Comma
       uiMsg(UIERROR_CHECKSUMPACKED, Arc.FileName, hd->FileName);
   }
 
-  bool PrevVolEncrypted = Arc.Encrypted;
+  bool PrevVolEncrypted=Arc.Encrypted;
 
   int64 PosBeforeClose=Arc.Tell();
 
   if (DataIO!=NULL)
-    DataIO->ProcessedArcSize += DataIO->LastArcSize;
+    DataIO->ProcessedArcSize+=DataIO->LastArcSize;
+
 
   Arc.Close();
 
@@ -41,9 +42,9 @@ bool MergeArchive(Archive &Arc,ComprDataIO *DataIO,bool ShowFileName,wchar Comma
 #if !defined(SFX_MODULE) && !defined(RARDLL)
   bool RecoveryDone=false;
 #endif
-  bool OldSchemeTested = false;
+  bool OldSchemeTested=false;
 
-  bool FailedOpen = false;  // No more next volume open attempts if true.
+  bool FailedOpen=false; // No more next volume open attempts if true.
 #if !defined(SILENT)
   // In -vp mode we force the pause before next volume even if it is present
   // and even if we are on the hard disk. It is important when user does not
@@ -136,12 +137,13 @@ bool MergeArchive(Archive &Arc,ComprDataIO *DataIO,bool ShowFileName,wchar Comma
     return false;
 #endif
 
-  if (Arc.Encrypted != PrevVolEncrypted) {
+  if (Arc.Encrypted!=PrevVolEncrypted)
+  {
     // There is no legitimate reason for encrypted header state to be
     // changed in the middle of volume sequence. So we abort here to prevent
     // replacing an encrypted header volume to unencrypted and adding
     // unexpected files by third party to encrypted extraction.
-    uiMsg(UIERROR_BADARCHIVE, Arc.FileName);
+    uiMsg(UIERROR_BADARCHIVE,Arc.FileName);
     ErrHandler.Exit(RARX_FATAL);
   }
 
@@ -154,7 +156,8 @@ bool MergeArchive(Archive &Arc,ComprDataIO *DataIO,bool ShowFileName,wchar Comma
     Arc.ConvertAttributes();
     Arc.Seek(Arc.NextBlockPos-Arc.FileHead.PackSize,SEEK_SET);
   }
-  if (ShowFileName && !Cmd->DisableNames) {
+  if (ShowFileName && !Cmd->DisableNames)
+  {
     mprintf(St(MExtrPoints),Arc.FileHead.FileName);
     if (!Cmd->DisablePercentage)
       mprintf(L"     ");
@@ -170,7 +173,7 @@ bool MergeArchive(Archive &Arc,ComprDataIO *DataIO,bool ShowFileName,wchar Comma
     }
 
     DataIO->AdjustTotalArcSize(&Arc);
-
+      
     // Reset the size of packed data read from current volume. It is used
     // to display the total progress and preceding volumes are already
     // compensated with ProcessedArcSize, so we need to reset this variable.
@@ -187,7 +190,8 @@ bool MergeArchive(Archive &Arc,ComprDataIO *DataIO,bool ShowFileName,wchar Comma
 
 
 #ifdef RARDLL
-bool DllVolChange(CommandData* Cmd, wchar* NextName, size_t NameSize) {
+bool DllVolChange(CommandData *Cmd,wchar *NextName,size_t NameSize)
+{
   bool DllVolChanged=false,DllVolAborted=false;
 
   if (Cmd->Callback!=NULL)
@@ -242,7 +246,8 @@ bool DllVolChange(CommandData* Cmd, wchar* NextName, size_t NameSize) {
 
 
 #ifdef RARDLL
-bool DllVolNotify(CommandData* Cmd, wchar* NextName) {
+bool DllVolNotify(CommandData *Cmd,wchar *NextName)
+{
   char NextNameA[NM];
   WideToChar(NextName,NextNameA,ASIZE(NextNameA));
   if (Cmd->Callback!=NULL)

@@ -228,10 +228,13 @@ void CharToWideMap(const char *Src,wchar *Dest,size_t DestSize,bool &Success)
 }
 #endif
 
+
 // SrcSize is source data size in wide characters, not in bytes.
 // DestSize is the maximum allowed destination size.
-byte* WideToRaw(const wchar* Src, size_t SrcSize, byte* Dest, size_t DestSize) {
-  for (size_t I = 0; I < SrcSize && I * 2 + 1 < DestSize; I++, Src++) {
+byte* WideToRaw(const wchar *Src,size_t SrcSize,byte *Dest,size_t DestSize)
+{
+  for (size_t I=0;I<SrcSize && I*2+1<DestSize;I++,Src++)
+  {
     Dest[I*2]=(byte)*Src;
     Dest[I*2+1]=(byte)(*Src>>8);
     if (*Src==0)
@@ -239,6 +242,7 @@ byte* WideToRaw(const wchar* Src, size_t SrcSize, byte* Dest, size_t DestSize) {
   }
   return Dest;
 }
+
 
 wchar* RawToWide(const byte *Src,wchar *Dest,size_t DestSize)
 {

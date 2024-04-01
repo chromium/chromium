@@ -9,7 +9,7 @@ BitInput::BitInput(bool AllocBuffer)
     // So let's allocate 4 additional bytes for situation, when we need to
     // read only 1 byte from the last position of buffer and avoid a crash
     // from access to next 4 bytes, which contents we do not need.
-    size_t BufSize = MAX_SIZE + 4;
+    size_t BufSize=MAX_SIZE+4;
     InBuf=new byte[BufSize];
 
     // Ensure that we get predictable results when accessing bytes in area

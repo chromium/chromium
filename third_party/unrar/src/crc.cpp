@@ -57,13 +57,14 @@ static void InitTables()
 #endif
 }
 
+
 uint CRC32(uint StartCRC,const void *Addr,size_t Size)
 {
   if (!is_initialized) {
     is_initialized = true;
     InitTables();
   }
-
+  
   byte *Data=(byte *)Addr;
 
 #ifdef USE_SLICING
@@ -111,6 +112,7 @@ ushort Checksum14(ushort StartCRC,const void *Addr,size_t Size)
   return StartCRC;
 }
 #endif
+
 
 #if 0
 static uint64 crc64_tables[8][256]; // Tables for Slicing-by-8 for CRC64.
@@ -180,6 +182,7 @@ uint64 CRC64(uint64 StartCRC,const void *Addr,size_t Size)
 
   return StartCRC;
 }
+
 
 #if 0
 static void TestCRC();

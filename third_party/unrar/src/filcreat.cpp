@@ -3,14 +3,9 @@
 // If NewFile==NULL, we delete created file after user confirmation.
 // It is useful if we need to overwrite an existing folder or file,
 // but need user confirmation for that.
-bool FileCreate(CommandData* Cmd,
-                File* NewFile,
-                wchar* Name,
-                size_t MaxNameSize,
-                bool* UserReject,
-                int64 FileSize,
-                RarTime* FileTime,
-                bool WriteOnly) {
+bool FileCreate(CommandData *Cmd,File *NewFile,wchar *Name,size_t MaxNameSize,
+                bool *UserReject,int64 FileSize,RarTime *FileTime,bool WriteOnly)
+{
   if (UserReject!=NULL)
     *UserReject=false;
 #ifdef _WIN_ALL
@@ -56,9 +51,10 @@ bool FileCreate(CommandData* Cmd,
   if (NewFile!=NULL && NewFile->Create(Name,FileMode))
     return true;
 
-  CreatePath(Name, true, Cmd->DisableNames);
+  CreatePath(Name,true,Cmd->DisableNames);
   return NewFile!=NULL ? NewFile->Create(Name,FileMode):DelFile(Name);
 }
+
 
 bool GetAutoRenamedName(wchar *Name,size_t MaxNameSize)
 {

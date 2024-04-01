@@ -273,12 +273,13 @@ void RarTime::SetAgeText(const wchar *TimeText)
   uint Seconds=0,Value=0;
   for (uint I=0;TimeText[I]!=0;I++)
   {
-    wchar Ch = TimeText[I];
+    wchar Ch=TimeText[I];
     if (IsDigit(Ch))
       Value=Value*10+Ch-'0';
     else
     {
-      switch (etoupperw(Ch)) {
+      switch(etoupperw(Ch))
+      {
         case 'D':
           Seconds+=Value*24*3600;
           break;

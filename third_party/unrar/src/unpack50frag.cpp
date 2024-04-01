@@ -47,13 +47,12 @@ void FragmentedWindow::Init(size_t WinSize)
         break;
       Size-=Size/32;
     }
-    if (NewMem == NULL) {
+    if (NewMem==NULL)
 #if defined(UNRAR_NO_EXCEPTIONS)
       base::TerminateBecauseOutOfMemory(Size);
 #else
-      throw std::bad_alloc();
+       throw std::bad_alloc();
 #endif  // defined(UNRAR_NO_EXCEPTIONS)
-    }
 
     // Clean the window to generate the same output when unpacking corrupt
     // RAR files, which may access to unused areas of sliding dictionary.
@@ -64,13 +63,12 @@ void FragmentedWindow::Init(size_t WinSize)
     MemSize[BlockNum]=TotalSize;
     BlockNum++;
   }
-  if (TotalSize < WinSize) {  // Not found enough free blocks.
+  if (TotalSize<WinSize) // Not found enough free blocks.
 #if defined(UNRAR_NO_EXCEPTIONS)
-    base::TerminateBecauseOutOfMemory(WinSize);
+      base::TerminateBecauseOutOfMemory(WinSize);
 #else
-    throw std::bad_alloc();
+       throw std::bad_alloc();
 #endif  // defined(UNRAR_NO_EXCEPTIONS)
-  }
 }
 
 

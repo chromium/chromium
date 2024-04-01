@@ -553,7 +553,7 @@ inline bool RARPPM_CONTEXT::decodeSymbol2(ModelPPM *Model)
     { 
       if (pps>=ps+ASIZE(ps)) // Extra safety check.
         return false;
-      Model->CharMask[(*pps)->Symbol] = Model->EscCount;
+      Model->CharMask[(*pps)->Symbol]=Model->EscCount; 
       pps++;
     } while ( --i );
     psee2c->Summ += Model->Coder.SubRange.scale;

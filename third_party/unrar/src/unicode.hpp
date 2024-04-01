@@ -34,7 +34,7 @@ class SupportDBCS
     SupportDBCS();
     void Init();
     char* charnext(const char *s);
-    static SupportDBCS& GetInstance();
+  static SupportDBCS& GetInstance();
 
     bool IsLeadByte[256];
     bool DBCSMode;

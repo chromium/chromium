@@ -80,9 +80,9 @@ static int CalcAllowedDepth(const wchar *Name)
       bool Dot2=Name[1]=='.' && Name[2]=='.' && (IsPathDiv(Name[3]) || Name[3]==0);
       if (!Dot && !Dot2)
         AllowedDepth++;
-      else if (Dot2) {
-        AllowedDepth--;
-      }
+      else
+        if (Dot2)
+          AllowedDepth--;
     }
     Name++;
   }
@@ -160,28 +160,24 @@ bool IsRelativeSymlinkSafe(CommandData *Cmd,const wchar *SrcName,const wchar *Pr
   return AllowedDepth>=UpLevels && PrepAllowedDepth>=UpLevels;
 }
 
-bool ExtractSymlink(CommandData* Cmd,
-                    ComprDataIO& DataIO,
-                    Archive& Arc,
-                    const wchar* LinkName,
-                    bool& UpLink) {
+
+bool ExtractSymlink(CommandData *Cmd,ComprDataIO &DataIO,Archive &Arc,const wchar *LinkName,bool &UpLink)
+{
   // Returning true in Uplink indicates that link target might include ".."
   // and enables additional checks. It is ok to falsely return true here,
   // as it implies only the minor performance penalty. But we shall always
   // return true for links with ".." in target for security reason.
 
-  UpLink = true;  // Assume the target might include potentially unsafe "..".
+  UpLink=true; // Assume the target might include potentially unsafe "..".
 #if defined(SAVE_LINKS) && defined(_UNIX) || defined(_WIN_ALL)
-  if (Arc.Format == RARFMT50) {  // For RAR5 archives we can check RedirName for
-                                 // both Unix and Windows.
-    UpLink = wcsstr(Arc.FileHead.RedirName, L"..") != NULL;
-  }
+  if (Arc.Format==RARFMT50) // For RAR5 archives we can check RedirName for both Unix and Windows.
+    UpLink=wcsstr(Arc.FileHead.RedirName,L"..")!=NULL;
 #endif
 
 #if defined(SAVE_LINKS) && defined(_UNIX)
   // For RAR 3.x archives we process links even in test mode to skip link data.
   if (Arc.Format==RARFMT15)
-    return ExtractUnixLink30(Cmd, DataIO, Arc, LinkName, UpLink);
+    return ExtractUnixLink30(Cmd,DataIO,Arc,LinkName,UpLink);
   if (Arc.Format==RARFMT50)
     return ExtractUnixLink50(Cmd,LinkName,&Arc.FileHead);
 #elif defined(_WIN_ALL)

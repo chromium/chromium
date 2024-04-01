@@ -57,20 +57,18 @@ void CommandData::OutHelp(RAR_EXIT ExitCode)
     // Console SFX switches definition.
     MCHelpCmd,MSHelpCmdE,MSHelpCmdT,MSHelpCmdV
 #else
-      // UnRAR switches definition.
-      MUNRARTitle1, MRARTitle2,  MCHelpCmd,    MCHelpCmdE,   MCHelpCmdL,
-      MCHelpCmdP,   MCHelpCmdT,  MCHelpCmdV,   MCHelpCmdX,   MCHelpSw,
-      MCHelpSwm,    MCHelpSwAT,  MCHelpSwAC,   MCHelpSwAD,   MCHelpSwAG,
-      MCHelpSwAI,   MCHelpSwAP,  MCHelpSwCm,   MCHelpSwCFGm, MCHelpSwCL,
-      MCHelpSwCU,   MCHelpSwDH,  MCHelpSwEP,   MCHelpSwEP3,  MCHelpSwEP4,
-      MCHelpSwF,    MCHelpSwIDP, MCHelpSwIERR, MCHelpSwINUL, MCHelpSwIOFF,
-      MCHelpSwKB,   MCHelpSwME,  MCHelpSwN,    MCHelpSwNa,   MCHelpSwNal,
-      MCHelpSwO,    MCHelpSwOC,  MCHelpSwOL,   MCHelpSwOP,   MCHelpSwOR,
-      MCHelpSwOW,   MCHelpSwP,   MCHelpSwR,    MCHelpSwRI,   MCHelpSwSC,
-      MCHelpSwSI,   MCHelpSwSL,  MCHelpSwSM,   MCHelpSwTA,   MCHelpSwTB,
-      MCHelpSwTN,   MCHelpSwTO,  MCHelpSwTS,   MCHelpSwU,    MCHelpSwVUnr,
-      MCHelpSwVER,  MCHelpSwVP,  MCHelpSwX,    MCHelpSwXa,   MCHelpSwXal,
-      MCHelpSwY
+    // UnRAR switches definition.
+    MUNRARTitle1,MRARTitle2,MCHelpCmd,MCHelpCmdE,MCHelpCmdL,
+    MCHelpCmdP,MCHelpCmdT,MCHelpCmdV,MCHelpCmdX,MCHelpSw,MCHelpSwm,
+    MCHelpSwAT,MCHelpSwAC,MCHelpSwAD,MCHelpSwAG,MCHelpSwAI,MCHelpSwAP,
+    MCHelpSwCm,MCHelpSwCFGm,MCHelpSwCL,MCHelpSwCU,MCHelpSwDH,MCHelpSwEP,
+    MCHelpSwEP3,MCHelpSwEP4,MCHelpSwF,MCHelpSwIDP,MCHelpSwIERR,
+    MCHelpSwINUL,MCHelpSwIOFF,MCHelpSwKB,MCHelpSwME,MCHelpSwN,MCHelpSwNa,
+    MCHelpSwNal,MCHelpSwO,MCHelpSwOC,MCHelpSwOL,MCHelpSwOP,MCHelpSwOR,
+    MCHelpSwOW,MCHelpSwP,MCHelpSwR,MCHelpSwRI,MCHelpSwSC,MCHelpSwSI,
+    MCHelpSwSL,MCHelpSwSM,MCHelpSwTA,MCHelpSwTB,MCHelpSwTN,MCHelpSwTO,
+    MCHelpSwTS,MCHelpSwU,MCHelpSwVUnr,MCHelpSwVER,MCHelpSwVP,MCHelpSwX,
+    MCHelpSwXa,MCHelpSwXal,MCHelpSwY
 #endif
   };
 
@@ -95,7 +93,8 @@ void CommandData::OutHelp(RAR_EXIT ExitCode)
       continue;
 #endif
 #ifdef _UNIX
-    if (CmpMSGID(Help[I], MRARTitle2)) {
+    if (CmpMSGID(Help[I],MRARTitle2))
+    {
       mprintf(St(MFwrSlTitle2));
       continue;
     }

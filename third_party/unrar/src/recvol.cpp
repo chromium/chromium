@@ -3,7 +3,10 @@
 #include "recvol3.cpp"
 #include "recvol5.cpp"
 
-bool RecVolumesRestore(CommandData* Cmd, const wchar* Name, bool Silent) {
+
+
+bool RecVolumesRestore(CommandData *Cmd,const wchar *Name,bool Silent)
+{
   Archive Arc(Cmd);
   if (!Arc.Open(Name))
   {
@@ -38,7 +41,9 @@ bool RecVolumesRestore(CommandData* Cmd, const wchar* Name, bool Silent) {
   }
 }
 
-void RecVolumesTest(CommandData* Cmd, Archive* Arc, const wchar* Name) {
+
+void RecVolumesTest(CommandData *Cmd,Archive *Arc,const wchar *Name)
+{
   wchar RevName[NM];
   *RevName=0;
   if (Arc!=NULL)

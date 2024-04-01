@@ -49,5 +49,5 @@ FileHeader& FileHeader::operator = (FileHeader &hd)
 
 void MainHeader::Reset()
 {
-  *this = {};
+  *this={};
 }

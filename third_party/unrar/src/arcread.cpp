@@ -145,7 +145,7 @@ size_t Archive::ReadHeader15()
 
   if (Decrypt)
   {
-#ifdef RAR_NOCRYPT  // For rarext.dll and unrar_nocrypt.dll.
+#ifdef RAR_NOCRYPT // For rarext.dll and unrar_nocrypt.dll.
     return 0;
 #else
     RequestArcPassword(NULL);
@@ -254,7 +254,7 @@ size_t Archive::ReadHeader15()
         hd->SplitAfter=(hd->Flags & LHD_SPLIT_AFTER)!=0;
         hd->Encrypted=(hd->Flags & LHD_PASSWORD)!=0;
         hd->SaltSet=(hd->Flags & LHD_SALT)!=0;
-
+        
         // RAR versions earlier than 2.0 do not set the solid flag
         // in file header. They use only a global solid archive flag.
         hd->Solid=FileBlock && (hd->Flags & LHD_SOLID)!=0;
@@ -510,10 +510,10 @@ size_t Archive::ReadHeader15()
   // Old Unix owners header didn't include string fields into header size,
   // but included them into CRC, so it couldn't be verified with generic
   // approach here.
-  if (ShortBlock.HeadCRC != HeaderCRC && ShortBlock.HeaderType != HEAD3_SIGN &&
-      ShortBlock.HeaderType != HEAD3_AV &&
-      (ShortBlock.HeaderType != HEAD3_OLDSERVICE ||
-       SubBlockHead.SubType != UO_HEAD)) {
+  if (ShortBlock.HeadCRC!=HeaderCRC && ShortBlock.HeaderType!=HEAD3_SIGN &&
+      ShortBlock.HeaderType!=HEAD3_AV && 
+      (ShortBlock.HeaderType!=HEAD3_OLDSERVICE || SubBlockHead.SubType!=UO_HEAD))
+  {
     bool Recovered=false;
     if (ShortBlock.HeaderType==HEAD_ENDARC && EndArcHead.RevSpace)
     {
@@ -556,10 +556,10 @@ size_t Archive::ReadHeader50()
     return 0;
 #else
 
-    if (Cmd->SkipEncrypted) {
-      uiMsg(UIMSG_SKIPENCARC, FileName);
-      FailedHeaderDecryption =
-          true;  // Suppress error messages and quit quietly.
+    if (Cmd->SkipEncrypted)
+    {
+      uiMsg(UIMSG_SKIPENCARC,FileName);
+      FailedHeaderDecryption=true; // Suppress error messages and quit quietly.
       return 0;
     }
 
@@ -576,21 +576,20 @@ size_t Archive::ReadHeader50()
     bool GlobalPassword=Cmd->Password.IsSet() || uiIsGlobalPasswordSet();
 
     RarCheckPassword CheckPwd;
-    if (CryptHead.UsePswCheck && !BrokenHeader) {
-      CheckPwd.Set(CryptHead.Salt, HeadersInitV, CryptHead.Lg2Count,
-                   CryptHead.PswCheck);
-    }
-
+    if (CryptHead.UsePswCheck && !BrokenHeader)
+      CheckPwd.Set(CryptHead.Salt,HeadersInitV,CryptHead.Lg2Count,CryptHead.PswCheck);
+    
     while (true) // Repeat the password prompt for wrong passwords.
     {
-      RequestArcPassword(CheckPwd.IsSet() ? &CheckPwd : NULL);
+      RequestArcPassword(CheckPwd.IsSet() ? &CheckPwd:NULL);
 
       byte PswCheck[SIZE_PSWCHECK];
       HeadersCrypt.SetCryptKeys(false,CRYPT_RAR50,&Cmd->Password,CryptHead.Salt,HeadersInitV,CryptHead.Lg2Count,NULL,PswCheck);
       // Verify password validity. If header is damaged, we cannot rely on
       // password check value, because it can be damaged too.
       if (CryptHead.UsePswCheck && !BrokenHeader &&
-          memcmp(PswCheck, CryptHead.PswCheck, SIZE_PSWCHECK) != 0) {
+          memcmp(PswCheck,CryptHead.PswCheck,SIZE_PSWCHECK)!=0)
+      {
         if (GlobalPassword) // For -p<pwd> or Ctrl+P.
         {
           // This message is used by Android GUI to reset cached passwords.
@@ -900,7 +899,8 @@ size_t Archive::ReadHeader50()
 
 
 #if !defined(RAR_NOCRYPT)
-void Archive::RequestArcPassword(RarCheckPassword* CheckPwd) {
+void Archive::RequestArcPassword(RarCheckPassword *CheckPwd)
+{
   if (!Cmd->Password.IsSet())
   {
 #ifdef RARDLL
@@ -929,8 +929,8 @@ void Archive::RequestArcPassword(RarCheckPassword* CheckPwd) {
       ErrHandler.Exit(RARX_USERBREAK);
     }
 #else
-    if (!uiGetPassword(UIPASSWORD_ARCHIVE, FileName, &Cmd->Password,
-                       CheckPwd)) {
+    if (!uiGetPassword(UIPASSWORD_ARCHIVE,FileName,&Cmd->Password,CheckPwd))
+    {
       Close();
       uiMsg(UIERROR_INCERRCOUNT); // Prevent archive deleting if delete after extraction is on.
       ErrHandler.Exit(RARX_USERBREAK);
@@ -941,9 +941,9 @@ void Archive::RequestArcPassword(RarCheckPassword* CheckPwd) {
 }
 #endif
 
-void Archive::ProcessExtra50(RawRead* Raw,
-                             size_t ExtraSize,
-                             const BaseBlock* bb) {
+
+void Archive::ProcessExtra50(RawRead *Raw,size_t ExtraSize,const BaseBlock *bb)
+{
   // Read extra data from the end of block skipping any fields before it.
   size_t ExtraStart=Raw->Size()-ExtraSize;
   if (ExtraStart<Raw->GetPos())
@@ -965,56 +965,57 @@ void Archive::ProcessExtra50(RawRead* Raw,
     if (bb->HeaderType==HEAD_MAIN)
     {
       MainHeader *hd=(MainHeader *)bb;
-      switch (FieldType) {
-        case MHEXTRA_LOCATOR: {
-          hd->Locator = true;
-          uint Flags = (uint)Raw->GetV();
-          if ((Flags & MHEXTRA_LOCATOR_QLIST) != 0) {
-            uint64 Offset = Raw->GetV();
-            if (Offset != 0) {  // 0 means that reserved space was not enough to
-                                // write the offset.
-              hd->QOpenOffset = Offset + CurBlockPos;
-            }
-          }
-          if ((Flags & MHEXTRA_LOCATOR_RR) != 0) {
-            uint64 Offset = Raw->GetV();
-            if (Offset != 0) {  // 0 means that reserved space was not enough to
-                                // write the offset.
-              hd->RROffset = Offset + CurBlockPos;
-            }
-          }
-        } break;
-        case MHEXTRA_METADATA: {
-          uint Flags = (uint)Raw->GetV();
-          if ((Flags & MHEXTRA_METADATA_NAME) != 0) {
-            uint64 NameSize = Raw->GetV();
-            if (NameSize > 0 &&
-                NameSize < 0x10000)  // Prevent excessive allocation.
+      switch(FieldType)
+      {
+        case MHEXTRA_LOCATOR:
+          {
+            hd->Locator=true;
+            uint Flags=(uint)Raw->GetV();
+            if ((Flags & MHEXTRA_LOCATOR_QLIST)!=0)
             {
-              std::vector<char> NameU((size_t)NameSize);  // UTF-8 name.
-              Raw->GetB(&NameU[0], (size_t)NameSize);
-              // If starts from 0, the name was longer than reserved space
-              // when saving this extra field.
-              if (NameU[0] != 0) {
-                NameU.push_back(0);
-                std::vector<wchar> NameW(NameU.size() * 4);
-                UtfToWide(&NameU[0], &NameW[0], NameW.size());
-                hd->OrigName.assign(&NameW[0]);
-              }
+              uint64 Offset=Raw->GetV();
+              if (Offset!=0) // 0 means that reserved space was not enough to write the offset.
+                hd->QOpenOffset=Offset+CurBlockPos;
+            }
+            if ((Flags & MHEXTRA_LOCATOR_RR)!=0)
+            {
+              uint64 Offset=Raw->GetV();
+              if (Offset!=0) // 0 means that reserved space was not enough to write the offset.
+                hd->RROffset=Offset+CurBlockPos;
             }
           }
-          if ((Flags & MHEXTRA_METADATA_CTIME) != 0) {
-            if ((Flags & MHEXTRA_METADATA_UNIXTIME) != 0) {
-              if ((Flags & MHEXTRA_METADATA_UNIX_NS) != 0) {
-                hd->OrigTime.SetUnixNS(Raw->Get8());
-              } else {
-                hd->OrigTime.SetUnix((time_t)Raw->Get4());
+          break;
+        case MHEXTRA_METADATA:
+          {
+            uint Flags=(uint)Raw->GetV();
+            if ((Flags & MHEXTRA_METADATA_NAME)!=0)
+            {
+              uint64 NameSize=Raw->GetV();
+              if (NameSize>0 && NameSize<0x10000) // Prevent excessive allocation.
+              {
+                std::vector<char> NameU((size_t)NameSize); // UTF-8 name.
+                Raw->GetB(&NameU[0],(size_t)NameSize);
+                // If starts from 0, the name was longer than reserved space
+                // when saving this extra field.
+                if (NameU[0]!=0)
+                {
+                  NameU.push_back(0);
+                  std::vector<wchar> NameW(NameU.size()*4);
+                  UtfToWide(&NameU[0],&NameW[0],NameW.size());
+                  hd->OrigName.assign(&NameW[0]);
+                }
               }
-            } else {
-              hd->OrigTime.SetWin(Raw->Get8());
             }
+            if ((Flags & MHEXTRA_METADATA_CTIME)!=0)
+              if ((Flags & MHEXTRA_METADATA_UNIXTIME)!=0)
+                if ((Flags & MHEXTRA_METADATA_UNIX_NS)!=0)
+                  hd->OrigTime.SetUnixNS(Raw->Get8());
+                else
+                  hd->OrigTime.SetUnix((time_t)Raw->Get4());
+              else
+                hd->OrigTime.SetWin(Raw->Get8());
           }
-        } break;
+          break;
       }
     }
 
@@ -1223,6 +1224,7 @@ void Archive::ProcessExtra50(RawRead* Raw,
     Raw->SetPos(NextPos);
   }
 }
+
 
 #ifndef SFX_MODULE
 size_t Archive::ReadHeader14()

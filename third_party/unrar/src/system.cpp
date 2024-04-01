@@ -190,7 +190,7 @@ SSE_VERSION GetSSEVersion()
   __cpuid(CPUInfo, 0);
 
   // Maximum supported cpuid function.
-  uint MaxSupported = CPUInfo[0];
+  uint MaxSupported=CPUInfo[0];
 
   if (MaxSupported>=7)
   {

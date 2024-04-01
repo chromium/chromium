@@ -5,7 +5,7 @@ wchar* PointToName(const wchar *Path)
   for (int I=(int)wcslen(Path)-1;I>=0;I--)
     if (IsPathDiv(Path[I]))
       return (wchar*)&Path[I+1];
-  return (wchar*)((*Path != 0 && IsDriveDiv(Path[1])) ? Path + 2 : Path);
+  return (wchar*)((*Path!=0 && IsDriveDiv(Path[1])) ? Path+2:Path);
 }
 
 
@@ -33,14 +33,15 @@ wchar* ConvertPath(const wchar *SrcPath,wchar *DestPath,size_t DestSize)
       s+=2;
 
     // Skip UNC Windows \\server\share\ or Unix //server/share/
-    if (IsPathDiv(s[0]) && IsPathDiv(s[1])) {
-      uint SlashCount = 0;
-      for (const wchar* t = s + 2; *t != 0; t++) {
-        if (IsPathDiv(*t) && ++SlashCount == 2) {
-          s = t + 1;  // Found two more path separators after leading two.
+    if (IsPathDiv(s[0]) && IsPathDiv(s[1]))
+    {
+      uint SlashCount=0;
+      for (const wchar *t=s+2;*t!=0;t++)
+        if (IsPathDiv(*t) && ++SlashCount==2)
+        {
+          s=t+1; // Found two more path separators after leading two.
           break;
         }
-      }
     }
     for (const wchar *t=s;*t!=0;t++)
       if (IsPathDiv(*t))
@@ -190,9 +191,8 @@ void MakeName(const wchar *Path,const wchar *Name,wchar *Pathname,size_t MaxSize
   wchar OutName[NM];
   wcsncpyz(OutName,Path,ASIZE(OutName));
   // Do not add slash to d:, we want to allow relative paths like d:filename.
-  if (!IsDriveLetter(Path) || Path[2] != 0) {
-    AddEndSlash(OutName, ASIZE(OutName));
-  }
+  if (!IsDriveLetter(Path) || Path[2]!=0)
+    AddEndSlash(OutName,ASIZE(OutName));
   wcsncatz(OutName,Name,ASIZE(OutName));
   wcsncpyz(Pathname,OutName,MaxSize);
 }
@@ -326,7 +326,7 @@ void GetConfigName(const wchar *Name,wchar *FullName,size_t MaxSize,bool CheckEx
 wchar* GetVolNumPart(const wchar *ArcName)
 {
   // We do not want to increment any characters in path component.
-  ArcName = PointToName(ArcName);
+  ArcName=PointToName(ArcName);
 
   if (*ArcName==0)
     return (wchar *)ArcName;
@@ -351,7 +351,7 @@ wchar* GetVolNumPart(const wchar *ArcName)
     {
       // Validate the first numeric part only if it has a dot somewhere 
       // before it.
-      const wchar* Dot = wcschr(ArcName, '.');
+      const wchar *Dot=wcschr(ArcName,'.');
       if (Dot!=NULL && Dot<NumPtr)
         ChPtr=NumPtr;
       break;
@@ -435,20 +435,18 @@ bool IsNameUsable(const wchar *Name)
 #ifdef _UNIX
   // Windows shares in Unix do not allow the drive letter,
   // so unlike Windows version, we check all characters here.
-  if (wcschr(Name, ':') != NULL) {
+  if (wcschr(Name,':')!=NULL)
     return false;
-  }
 #else
-  if (Name[0] != 0 && Name[1] != 0 && wcschr(Name + 2, ':') != NULL) {
+  if (Name[0]!=0 && Name[1]!=0 && wcschr(Name+2,':')!=NULL)
     return false;
-  }
 #endif
   for (const wchar *s=Name;*s!=0;s++)
   {
     if ((uint)*s<32)
       return false;
 
-      // It is for Windows shares in Unix. We can create such names in Windows.
+     // It is for Windows shares in Unix. We can create such names in Windows.
 #ifdef _UNIX
     // No spaces or dots before the path separator are allowed in Windows
     // shares. But they are allowed and automtically removed at the end of
@@ -476,21 +474,20 @@ void MakeNameUsable(wchar *Name,bool Extended)
     // files are unpacked to Windows share. This code is invoked only
     // if file failed to be created, so it doesn't affect extraction
     // of Unix compatible names to native Unix drives.
-    if (Extended) {
+    if (Extended)
+    {
       // Windows shares in Unix do not allow the drive letter,
       // so unlike Windows version, we check all characters here.
-      if (*s == ':') {
-        *s = '_';
-      }
+      if (*s==':')
+        *s='_';
 
       // No spaces or dots before the path separator are allowed on Windows
       // shares. But they are allowed and automatically removed at the end of
       // file or folder name, so it is useless to replace them here.
       // Since such files or folders are created successfully, a supposed
       // conversion here would never be invoked.
-      if ((*s == ' ' || *s == '.') && IsPathDiv(s[1])) {
-        *s = '_';
-      }
+      if ((*s==' ' || *s=='.') && IsPathDiv(s[1]))
+        *s='_';
     }
 #else
     if (s-Name>1 && *s==':')
@@ -715,8 +712,8 @@ static void GenArcName(wchar *ArcName,size_t MaxSize,const wchar *GenerateMask,u
   wchar Mask[MAX_GENERATE_MASK];
   wcsncpyz(Mask,*GenerateMask!=0 ? GenerateMask:L"yyyymmddhhmmss",ASIZE(Mask));
 
-  bool QuoteMode = false;
-  uint MAsMinutes = 0;  // By default we treat 'M' as months.
+  bool QuoteMode=false;
+  uint MAsMinutes=0; // By default we treat 'M' as months.
   for (uint I=0;Mask[I]!=0;I++)
   {
     if (Mask[I]=='{' || Mask[I]=='}')
@@ -728,12 +725,12 @@ static void GenArcName(wchar *ArcName,size_t MaxSize,const wchar *GenerateMask,u
       continue;
     int CurChar=toupperw(Mask[I]);
     if (CurChar=='H')
-      MAsMinutes = 2;  // Treat next two 'M' after 'H' as minutes.
-    if (CurChar == 'D' || CurChar == 'Y') {
-      MAsMinutes = 0;  // Treat 'M' in HHDDMMYY and HHYYMMDD as month.
-    }
+      MAsMinutes=2; // Treat next two 'M' after 'H' as minutes.
+    if (CurChar=='D' || CurChar=='Y')
+      MAsMinutes=0; // Treat 'M' in HHDDMMYY and HHYYMMDD as month.
 
-    if (MAsMinutes > 0 && CurChar == 'M') {
+    if (MAsMinutes>0 && CurChar=='M')
+    {
       // Replace minutes with 'I'. We use 'M' both for months and minutes,
       // so we treat as minutes only those 'M', which are found after hours.
       Mask[I]='I';
@@ -749,7 +746,8 @@ static void GenArcName(wchar *ArcName,size_t MaxSize,const wchar *GenerateMask,u
       // Here we ensure that we have enough 'N' characters to fit all digits
       // of archive number. We'll replace them by actual number later
       // in this function.
-      if (NCount < Digits && wcslen(Mask) + Digits - NCount < ASIZE(Mask)) {
+      if (NCount<Digits && wcslen(Mask)+Digits-NCount<ASIZE(Mask))
+      {
         wmemmove(Mask+I+Digits,Mask+I+NCount,wcslen(Mask+I+NCount)+1);
         wmemset(Mask+I,'N',Digits);
       }
@@ -797,7 +795,7 @@ static void GenArcName(wchar *ArcName,size_t MaxSize,const wchar *GenerateMask,u
   snprintf(Field[7], sizeof(Field[7]), "%u", (uint)WeekDay + 1);
   snprintf(Field[8], sizeof(Field[8]), "%03u", rlt.yDay + 1);
   snprintf(Field[9], sizeof(Field[9]), "%05u", ArcNumber);
-
+  
   const wchar *MaskChars=L"YMDHISWAEN";
 
   // How many times every modifier character was encountered in the mask.
@@ -848,8 +846,9 @@ static void GenArcName(wchar *ArcName,size_t MaxSize,const wchar *GenerateMask,u
       // CField[FieldPos] shall have exactly 3 "MMM" symbols, so we do not
       // repeat the month name in case "MMMMMMMM" mask. But since we
       // decremented CField[FieldPos] above, we compared it with 2.
-      if (FieldPos == 1 && CField[FieldPos] == 2 &&
-          toupperw(Mask[I + 1]) == 'M' && toupperw(Mask[I + 2]) == 'M') {
+      if (FieldPos==1 && CField[FieldPos]==2 &&
+          toupperw(Mask[I+1])=='M' && toupperw(Mask[I+2])=='M')
+      {
         wcsncpyz(DateText+J,GetMonthName(rlt.Month-1),ASIZE(DateText)-J);
         J=wcslen(DateText);
         I+=2;
@@ -1020,7 +1019,9 @@ void ConvertToPrecomposed(wchar *Name,size_t NameSize)
   }
 }
 
-void MakeNameCompatible(wchar* Name, size_t MaxSize) {
+
+void MakeNameCompatible(wchar *Name,size_t MaxSize)
+{
   // Remove trailing spaces and dots in file name and in dir names in path.
   int Src=0,Dest=0;
   while (true)
@@ -1042,42 +1043,44 @@ void MakeNameCompatible(wchar* Name, size_t MaxSize) {
 
   // Rename reserved device names, such as aux.txt to _aux.txt.
   // We check them in path components too, where they are also prohibited.
-  for (uint I = 0; Name[I] != 0; I++) {
-    if (I == 0 || I > 0 && IsPathDiv(Name[I - 1])) {
-      static const wchar* Devices[] = {L"CON", L"PRN",  L"AUX",
-                                       L"NUL", L"COM#", L"LPT#"};
-      wchar* s = Name + I;
-      bool MatchFound = false;
-      for (uint J = 0; J < ASIZE(Devices); J++) {
-        for (uint K = 0;; K++) {
-          if (Devices[J][K] == '#') {
-            if (!IsDigit(s[K])) {
+  for (uint I=0;Name[I]!=0;I++)
+    if (I==0 || I>0 && IsPathDiv(Name[I-1]))
+    {
+      static const wchar *Devices[]={L"CON",L"PRN",L"AUX",L"NUL",L"COM#",L"LPT#"};
+      wchar *s=Name+I;
+      bool MatchFound=false;
+      for (uint J=0;J<ASIZE(Devices);J++)
+        for (uint K=0;;K++)
+          if (Devices[J][K]=='#')
+          {
+            if (!IsDigit(s[K]))
+              break;
+          }
+          else
+            if (Devices[J][K]==0)
+            {
+              // Names like aux.txt are accessible without \\?\ prefix
+              // since Windows 11. Pure aux is still prohibited.
+              MatchFound=s[K]==0 || s[K]=='.' && !IsWindows11OrGreater() || IsPathDiv(s[K]);
               break;
             }
-          } else if (Devices[J][K] == 0) {
-            // Names like aux.txt are accessible without \\?\ prefix
-            // since Windows 11. Pure aux is still prohibited.
-            MatchFound = s[K] == 0 || s[K] == '.' && !IsWindows11OrGreater() ||
-                         IsPathDiv(s[K]);
-            break;
-          } else if (Devices[J][K] != toupperw(s[K])) {
-            break;
-          }
-        }
-      }
-      if (MatchFound) {
+            else
+              if (Devices[J][K]!=toupperw(s[K]))
+                break;
+      if (MatchFound)
+      {
         wchar OrigName[NM];
-        wcsncpyz(OrigName, Name, ASIZE(OrigName));
-        if (MaxSize > I + 1) {  // I+1, because we do not move the trailing 0.
-          memmove(s + 1, s, (MaxSize - I - 1) * sizeof(*s));
-        }
-        *s = '_';
+        wcsncpyz(OrigName,Name,ASIZE(OrigName));
+        if (MaxSize>I+1) // I+1, because we do not move the trailing 0.
+          memmove(s+1,s,(MaxSize-I-1)*sizeof(*s));
+        *s='_';
 #ifndef SFX_MODULE
-        uiMsg(UIMSG_CORRECTINGNAME, nullptr);
-        uiMsg(UIERROR_RENAMING, nullptr, OrigName, Name);
+        uiMsg(UIMSG_CORRECTINGNAME,nullptr);
+        uiMsg(UIERROR_RENAMING,nullptr,OrigName,Name);
 #endif
       }
     }
-  }
 }
 #endif
+
+

@@ -36,7 +36,8 @@ THREAD_PROC(RSDecodeThread)
 }
 #endif
 
-RecVolumes3::RecVolumes3(CommandData* Cmd, bool TestOnly) {
+RecVolumes3::RecVolumes3(CommandData *Cmd,bool TestOnly)
+{
   memset(SrcFile,0,sizeof(SrcFile));
   if (TestOnly)
   {
@@ -53,6 +54,7 @@ RecVolumes3::RecVolumes3(CommandData* Cmd, bool TestOnly) {
 #endif
   }
 }
+
 
 RecVolumes3::~RecVolumes3()
 {
@@ -96,7 +98,9 @@ static bool IsNewStyleRev(const wchar *Name)
   return DigitGroup<2;
 }
 
-bool RecVolumes3::Restore(CommandData* Cmd, const wchar* Name, bool Silent) {
+
+bool RecVolumes3::Restore(CommandData *Cmd,const wchar *Name,bool Silent)
+{
   wchar ArcName[NM];
   wcsncpyz(ArcName,Name,ASIZE(ArcName));
   wchar *Ext=GetExt(ArcName);
@@ -222,10 +226,8 @@ bool RecVolumes3::Restore(CommandData* Cmd, const wchar* Name, bool Silent) {
       if (WrongParam)
         continue;
     }
-    if (P[0] <= 0 || P[1] <= 0 || P[2] <= 0 || P[1] + P[2] > 255 ||
-        P[0] + P[2] - 1 > 255) {
+    if (P[0]<=0 || P[1]<=0 || P[2]<=0 || P[1]+P[2]>255 || P[0]+P[2]-1>255)
       continue;
-    }
     if (RecVolNumber!=0 && RecVolNumber!=P[1] || FileNumber!=0 && FileNumber!=P[2])
     {
       uiMsg(UIERROR_RECVOLDIFFSETS,CurName,PrevName);
@@ -239,11 +241,10 @@ bool RecVolumes3::Restore(CommandData* Cmd, const wchar* Name, bool Silent) {
 
     // This check is redundant taking into account P[I]>255 and P[0]+P[2]-1>255
     // checks above. Still we keep it here for better clarity and security.
-    int SrcPos = FileNumber + P[0] - 1;
-    if (SrcPos < 0 || SrcPos >= ASIZE(SrcFile)) {
+    int SrcPos=FileNumber+P[0]-1;
+    if (SrcPos<0 || SrcPos>=ASIZE(SrcFile))
       continue;
-    }
-    SrcFile[SrcPos] = NewFile;
+    SrcFile[SrcPos]=NewFile;
 
     FoundRecVolumes++;
 
@@ -488,6 +489,7 @@ bool RecVolumes3::Restore(CommandData* Cmd, const wchar* Name, bool Silent) {
   return true;
 }
 
+
 void RSEncode::DecodeBuf()
 {
   for (int BufPos=BufStart;BufPos<BufEnd;BufPos++)
@@ -501,7 +503,9 @@ void RSEncode::DecodeBuf()
   }
 }
 
-void RecVolumes3::Test(CommandData* Cmd, const wchar* Name) {
+
+void RecVolumes3::Test(CommandData *Cmd,const wchar *Name)
+{
   if (!IsNewStyleRev(Name)) // RAR 3.0 name#_#_#.rev do not include CRC32.
   {
     ErrHandler.UnknownMethodMsg(Name,Name);

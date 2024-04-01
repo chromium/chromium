@@ -47,21 +47,18 @@ bool CryptData::SetCryptKeys(bool Encrypt,CRYPT_METHOD Method,
      SecPassword *Password,const byte *Salt,
      const byte *InitV,uint Lg2Cnt,byte *HashKey,byte *PswCheck)
 {
-  if (Method == CRYPT_NONE || !Password->IsSet()) {
+  if (Method==CRYPT_NONE || !Password->IsSet())
     return false;
-  }
 
   CryptData::Method=Method;
 
   wchar PwdW[MAXPASSWORD];
   Password->Get(PwdW,ASIZE(PwdW));
-  PwdW[Min(MAXPASSWORD_RAR, MAXPASSWORD) - 1] =
-      0;  // For compatibility with existing archives.
+  PwdW[Min(MAXPASSWORD_RAR,MAXPASSWORD)-1]=0; // For compatibility with existing archives.
 
   char PwdA[MAXPASSWORD];
   WideToChar(PwdW,PwdA,ASIZE(PwdA));
-  PwdA[Min(MAXPASSWORD_RAR, MAXPASSWORD) - 1] =
-      0;  // For compatibility with existing archives.
+  PwdA[Min(MAXPASSWORD_RAR,MAXPASSWORD)-1]=0; // For compatibility with existing archives.
 
   switch(Method)
   {

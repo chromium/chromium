@@ -1,7 +1,5 @@
-bool ExtractHardlink(CommandData* Cmd,
-                     wchar* NameNew,
-                     wchar* NameExisting,
-                     size_t NameExistingSize) {
+bool ExtractHardlink(CommandData *Cmd,wchar *NameNew,wchar *NameExisting,size_t NameExistingSize)
+{
   if (!FileExist(NameExisting))
   {
     uiMsg(UIERROR_HLINKCREATE,NameNew);
@@ -9,7 +7,7 @@ bool ExtractHardlink(CommandData* Cmd,
     ErrHandler.SetErrorCode(RARX_CREATE);
     return false;
   }
-  CreatePath(NameNew, true, Cmd->DisableNames);
+  CreatePath(NameNew,true,Cmd->DisableNames);
 
 #ifdef _WIN_ALL
   bool Success=CreateHardLink(NameNew,NameExisting,NULL)!=0;
@@ -36,3 +34,4 @@ bool ExtractHardlink(CommandData* Cmd,
   return false;
 #endif
 }
+

@@ -1,12 +1,12 @@
 
 
-void ExtractUnixOwner30(Archive& Arc, const wchar* FileName) {
+void ExtractUnixOwner30(Archive &Arc,const wchar *FileName)
+{
   char NameA[NM];
   WideToChar(FileName,NameA,ASIZE(NameA));
 
-  if (memchr(&Arc.SubHead.SubData[0], 0, Arc.SubHead.SubData.Size()) == NULL) {
+  if (memchr(&Arc.SubHead.SubData[0],0,Arc.SubHead.SubData.Size())==NULL)
     return;
-  }
 
   char *OwnerName=(char *)&Arc.SubHead.SubData[0];
   int OwnerSize=strlen(OwnerName)+1;
@@ -44,6 +44,7 @@ void ExtractUnixOwner30(Archive& Arc, const wchar* FileName) {
   }
   SetFileAttr(FileName,Attr);
 }
+
 
 void SetUnixOwner(Archive &Arc,const wchar *FileName)
 {
