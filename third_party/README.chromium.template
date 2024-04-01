@@ -15,7 +15,15 @@ Description:
 A short description of what the package is and is used for.
 
 Local Modifications:
-Enumerate any changes that have been made locally to the package from the shipping version listed above.
+Enumerate any changes that have been made locally to the package from the
+shipping version listed above.
+
+If the files from the third party package (e.g. fetched during a git checkout)
+aren't modified, put "None" here (without enclosing quotes).
+
+Note: Files required for Chromium tooling integration don't count as local
+modifications. Examples include: BUILD.gn, OWNERS file, DIR_METADATA, LICENSE,
+README.chromium.
 
 # It is preferred each package has its own README.chromium. However, if
 # this is not possible and the information for multiple packages must be
