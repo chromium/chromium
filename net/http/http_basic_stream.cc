@@ -170,15 +170,6 @@ void HttpBasicStream::GetSSLInfo(SSLInfo* ssl_info) {
   }
 }
 
-void HttpBasicStream::GetSSLCertRequestInfo(
-    SSLCertRequestInfo* cert_request_info) {
-  if (!state_.connection()->socket()) {
-    cert_request_info->Reset();
-    return;
-  }
-  parser()->GetSSLCertRequestInfo(cert_request_info);
-}
-
 int HttpBasicStream::GetRemoteEndpoint(IPEndPoint* endpoint) {
   if (!state_.connection() || !state_.connection()->socket())
     return ERR_SOCKET_NOT_CONNECTED;

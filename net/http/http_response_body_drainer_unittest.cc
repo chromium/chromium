@@ -113,7 +113,6 @@ class MockHttpStream : public HttpStream {
     return false;
   }
   void GetSSLInfo(SSLInfo* ssl_info) override {}
-  void GetSSLCertRequestInfo(SSLCertRequestInfo* cert_request_info) override {}
   int GetRemoteEndpoint(IPEndPoint* endpoint) override {
     return ERR_UNEXPECTED;
   }

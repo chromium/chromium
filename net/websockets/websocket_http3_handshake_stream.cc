@@ -212,10 +212,6 @@ bool WebSocketHttp3HandshakeStream::GetLoadTimingInfo(
 void WebSocketHttp3HandshakeStream::GetSSLInfo(SSLInfo* ssl_info) {}
 
 // TODO(momoka): Implement this.
-void WebSocketHttp3HandshakeStream::GetSSLCertRequestInfo(
-    SSLCertRequestInfo* cert_request_info) {}
-
-// TODO(momoka): Implement this.
 int WebSocketHttp3HandshakeStream::GetRemoteEndpoint(IPEndPoint* endpoint) {
   return 0;
 }

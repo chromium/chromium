@@ -36,7 +36,6 @@ class HttpStream;
 class HttpStreamParser;
 class IOBuffer;
 class IPEndPoint;
-class SSLCertRequestInfo;
 class SSLInfo;
 class WebSocketEndpointLockManager;
 class WebSocketStreamRequestAPI;
@@ -89,7 +88,6 @@ class NET_EXPORT_PRIVATE WebSocketBasicHandshakeStream final
       AlternativeService* alternative_service) const override;
   bool GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const override;
   void GetSSLInfo(SSLInfo* ssl_info) override;
-  void GetSSLCertRequestInfo(SSLCertRequestInfo* cert_request_info) override;
   int GetRemoteEndpoint(IPEndPoint* endpoint) override;
   void Drain(HttpNetworkSession* session) override;
   void SetPriority(RequestPriority priority) override;

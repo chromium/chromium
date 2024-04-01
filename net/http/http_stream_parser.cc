@@ -875,6 +875,16 @@ int HttpStreamParser::HandleReadHeaderResult(int result) {
   }
 
   if (result < 0) {
+    // The `request_->url.SchemeIsCryptographic()` check should not be needed,
+    // as this should only happen when this layer is talking directly to an SSL
+    // destination.
+    //
+    // TODO(https://crbug.com/332234173): Look into removing that check.
+    if (result == ERR_SSL_CLIENT_AUTH_CERT_NEEDED &&
+        request_->url.SchemeIsCryptographic()) {
+      response_->cert_request_info = base::MakeRefCounted<SSLCertRequestInfo>();
+      stream_socket_->GetSSLCertRequestInfo(response_->cert_request_info.get());
+    }
     io_state_ = STATE_DONE;
     return result;
   }
@@ -1179,13 +1189,6 @@ void HttpStreamParser::OnConnectionClose() {
   // This is to ensure `stream_socket_` doesn't get dangling on connection
   // close.
   stream_socket_ = nullptr;
-}
-
-void HttpStreamParser::GetSSLCertRequestInfo(
-    SSLCertRequestInfo* cert_request_info) {
-  cert_request_info->Reset();
-  if (request_->url.SchemeIsCryptographic())
-    stream_socket_->GetSSLCertRequestInfo(cert_request_info);
 }
 
 int HttpStreamParser::EncodeChunk(std::string_view payload,

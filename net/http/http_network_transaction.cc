@@ -1195,8 +1195,11 @@ int HttpNetworkTransaction::DoReadHeadersComplete(int result) {
   if (result == ERR_SSL_CLIENT_AUTH_CERT_NEEDED) {
     DCHECK(stream_.get());
     DCHECK(IsSecureRequest());
-    response_.cert_request_info = base::MakeRefCounted<SSLCertRequestInfo>();
-    stream_->GetSSLCertRequestInfo(response_.cert_request_info.get());
+    // Unclear if this is needed. Copied behavior from an earlier version of
+    // Chrome.
+    if (!response_.cert_request_info) {
+      response_.cert_request_info = base::MakeRefCounted<SSLCertRequestInfo>();
+    }
     total_received_bytes_ += stream_->GetTotalReceivedBytes();
     total_sent_bytes_ += stream_->GetTotalSentBytes();
     stream_->Close(true);

@@ -38,7 +38,6 @@ class IOBuffer;
 class IPEndPoint;
 struct LoadTimingInfo;
 class NetLogWithSource;
-class SSLCertRequestInfo;
 class SSLInfo;
 
 class NET_EXPORT_PRIVATE HttpStream {
@@ -166,11 +165,6 @@ class NET_EXPORT_PRIVATE HttpStream {
   // was used to for this stream. Otherwise returns false.
   virtual bool GetAlternativeService(
       AlternativeService* alternative_service) const = 0;
-
-  // Get the SSLCertRequestInfo associated with this stream's connection.
-  // This should only be called for streams over SSL sockets, otherwise the
-  // behavior is undefined.
-  virtual void GetSSLCertRequestInfo(SSLCertRequestInfo* cert_request_info) = 0;
 
   // Gets the remote endpoint of the socket that the HTTP stream is using, if
   // any. Returns OK and fills in |endpoint| if it is available; returns an

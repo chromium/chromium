@@ -85,8 +85,6 @@ class NET_EXPORT_PRIVATE HttpBasicStream : public HttpStream {
 
   void GetSSLInfo(SSLInfo* ssl_info) override;
 
-  void GetSSLCertRequestInfo(SSLCertRequestInfo* cert_request_info) override;
-
   int GetRemoteEndpoint(IPEndPoint* endpoint) override;
 
   void Drain(HttpNetworkSession* session) override;

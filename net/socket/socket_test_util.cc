@@ -1470,7 +1470,6 @@ MockSSLClientSocket::GetPeerApplicationSettings() const {
 }
 
 bool MockSSLClientSocket::GetSSLInfo(SSLInfo* requested_ssl_info) {
-  requested_ssl_info->Reset();
   *requested_ssl_info = data_->ssl_info;
   return true;
 }

@@ -360,15 +360,6 @@ void WebSocketBasicHandshakeStream::GetSSLInfo(SSLInfo* ssl_info) {
   }
 }
 
-void WebSocketBasicHandshakeStream::GetSSLCertRequestInfo(
-    SSLCertRequestInfo* cert_request_info) {
-  if (!state_.connection()->socket()) {
-    cert_request_info->Reset();
-    return;
-  }
-  parser()->GetSSLCertRequestInfo(cert_request_info);
-}
-
 int WebSocketBasicHandshakeStream::GetRemoteEndpoint(IPEndPoint* endpoint) {
   if (!state_.connection() || !state_.connection()->socket())
     return ERR_SOCKET_NOT_CONNECTED;

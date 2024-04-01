@@ -211,13 +211,6 @@ void WebSocketHttp2HandshakeStream::GetSSLInfo(SSLInfo* ssl_info) {
     stream_->GetSSLInfo(ssl_info);
 }
 
-void WebSocketHttp2HandshakeStream::GetSSLCertRequestInfo(
-    SSLCertRequestInfo* cert_request_info) {
-  // A multiplexed stream cannot request client certificates. Client
-  // authentication may only occur during the initial SSL handshake.
-  NOTREACHED();
-}
-
 int WebSocketHttp2HandshakeStream::GetRemoteEndpoint(IPEndPoint* endpoint) {
   if (!session_)
     return ERR_SOCKET_NOT_CONNECTED;
