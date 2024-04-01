@@ -235,10 +235,10 @@ function validateBrowserSignals(browserSignals, isGenerateBid) {
     // FledgePassKAnonStatusToReportWin feature adds a new parameter
     // KAnonStatus to reportWin(), which is under a Finch trial for some enabled
     // tests.
-    // TODO(xtlsheep): Check length only equals to 15 after
+    // TODO(xtlsheep): Check length only equals to 16 after
     // FledgePassKAnonStatusToReportWin is completely turned on.
-    if (Object.keys(browserSignals).length !== 14 &&
-        Object.keys(browserSignals).length !== 15) {
+    if (Object.keys(browserSignals).length !== 15 &&
+        Object.keys(browserSignals).length !== 16) {
       throw 'Wrong number of browser signals fields ' +
           JSON.stringify(browserSignals);
     }
@@ -264,6 +264,8 @@ function validateBrowserSignals(browserSignals, isGenerateBid) {
     }
     if (browserSignals.adCost !== 3)
       throw 'Wrong adCost ' + browserSignals.adCost;
+    if (browserSignals.reportingTimeout !== 2000)
+      throw 'Wrong reportingTimeout ' + browserSignals.reportingTimeout;
   }
 }
 

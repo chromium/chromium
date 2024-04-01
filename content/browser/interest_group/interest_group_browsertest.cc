@@ -22140,17 +22140,18 @@ IN_PROC_BROWSER_TEST_F(AuctionConfigReportingTimeoutEnabledTest,
   GURL ad_url =
       embedded_https_test_server().GetURL(kHostA, "/echo?render_cars");
 
-  EXPECT_EQ(kSuccess,
-            JoinInterestGroupAndVerify(
-                /*owner=*/test_origin,
-                /*name=*/"cars",
-                /*priority=*/0.0,
-                /*execution_mode=*/
-                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
-                /*bidding_url=*/
-                embedded_https_test_server().GetURL(
-                    kHostA, "/interest_group/bidding_logic.js"),
-                /*ads=*/{{{ad_url, /*metadata=*/std::nullopt}}}));
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          /*owner=*/test_origin,
+          /*name=*/"cars",
+          /*priority=*/0.0,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          embedded_https_test_server().GetURL(
+              kHostA, "/interest_group/report_win_reporting_timeout_value.js"),
+          /*ads=*/{{{ad_url, /*metadata=*/std::nullopt}}}));
 
   const char kConfigTemplate[] = R"({
     seller: $1,
@@ -22160,7 +22161,6 @@ IN_PROC_BROWSER_TEST_F(AuctionConfigReportingTimeoutEnabledTest,
       seller: $3,
       decisionLogicURL: $4,
       interestGroupBuyers: [$1],
-      auctionSignals: "bidderAllowsComponentAuction",
       reportingTimeout: 2000,
     }]
   })";
@@ -22176,8 +22176,8 @@ IN_PROC_BROWSER_TEST_F(AuctionConfigReportingTimeoutEnabledTest,
 
   // All report functions succeeded as expected, and reportResult() worklets get
   // expected auctionConfig.reportingTimeout.
-  WaitForUrl(
-      embedded_https_test_server().GetURL(kHostA, "/echoall?report_bidder"));
+  WaitForUrl(embedded_https_test_server().GetURL(
+      kHostA, "/echoall?report_bidder,reportingTimeout=2000"));
   WaitForUrl(embedded_https_test_server().GetURL(
       kHostA, "/echoall?report_seller,reportingTimeout=3000"));
   WaitForUrl(embedded_https_test_server().GetURL(
@@ -22235,7 +22235,7 @@ IN_PROC_BROWSER_TEST_F(AuctionConfigReportingTimeoutEnabledTest,
   const char kHostA[] = "a.test";
   const char kHostB[] = "b.test";
   const char decisionLogicJs[] =
-      "/interest_group/report_result_loop_forever.js";
+      "/interest_group/report_result_reporting_timeout_value.js";
   GURL test_url =
       embedded_https_test_server().GetURL(kHostA, "/page_with_iframe.html");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
@@ -22247,17 +22247,18 @@ IN_PROC_BROWSER_TEST_F(AuctionConfigReportingTimeoutEnabledTest,
   WebContentsConsoleObserver console_observer(shell()->web_contents());
   console_observer.SetPattern("*Worklet error*");
 
-  EXPECT_EQ(kSuccess,
-            JoinInterestGroupAndVerify(
-                /*owner=*/test_origin,
-                /*name=*/"cars",
-                /*priority=*/0.0,
-                /*execution_mode=*/
-                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
-                /*bidding_url=*/
-                embedded_https_test_server().GetURL(
-                    kHostA, "/interest_group/report_win_loop_forever.js"),
-                /*ads=*/{{{ad_url, /*metadata=*/std::nullopt}}}));
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          /*owner=*/test_origin,
+          /*name=*/"cars",
+          /*priority=*/0.0,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          embedded_https_test_server().GetURL(
+              kHostA, "/interest_group/report_win_reporting_timeout_value.js"),
+          /*ads=*/{{{ad_url, /*metadata=*/std::nullopt}}}));
 
   const char kConfigTemplate[] = R"({
     seller: $1,
@@ -22267,6 +22268,7 @@ IN_PROC_BROWSER_TEST_F(AuctionConfigReportingTimeoutEnabledTest,
       seller: $3,
       decisionLogicURL: $4,
       interestGroupBuyers: [$1],
+      reportingTimeout: 2000,
     }]
   })";
 
@@ -22281,14 +22283,12 @@ IN_PROC_BROWSER_TEST_F(AuctionConfigReportingTimeoutEnabledTest,
   // Top level reportResult() aborted due to 0 timeout.
   EXPECT_EQ("Worklet error: reportResult() aborted due to zero timeout.",
             console_observer.GetMessageAt(0));
-  // Component auction's reportResult() and reportWin() both timed out, not
-  // aborted, because the component auction sets its own reportingTimeout
-  // (default timeout in this case) and not using the top level's 0.
-  std::string message1 = console_observer.GetMessageAt(1);
-  EXPECT_TRUE(message1.starts_with("Worklet error: https://b.test") &&
-              message1.ends_with("execution of `reportResult` timed out."));
-  EXPECT_TRUE(console_observer.GetMessageAt(2).ends_with(
-      "execution of `reportWin` timed out."));
+  // Component auction's reportResult() and reportWin() both succeeded, and get
+  // reporting timeouts from component auction.
+  WaitForUrl(embedded_https_test_server().GetURL(
+      kHostB, "/echoall?report_seller,reportingTimeout=2000"));
+  WaitForUrl(embedded_https_test_server().GetURL(
+      kHostA, "/echoall?report_bidder,reportingTimeout=2000"));
 }
 
 // Worklet handling of zero reporting timeout.
@@ -22469,17 +22469,18 @@ IN_PROC_BROWSER_TEST_F(AuctionConfigReportingTimeoutDisabledTest,
   GURL ad_url =
       embedded_https_test_server().GetURL(kHostA, "/echo?render_cars");
 
-  EXPECT_EQ(kSuccess,
-            JoinInterestGroupAndVerify(
-                /*owner=*/test_origin,
-                /*name=*/"cars",
-                /*priority=*/0.0,
-                /*execution_mode=*/
-                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
-                /*bidding_url=*/
-                embedded_https_test_server().GetURL(
-                    kHostA, "/interest_group/bidding_logic.js"),
-                /*ads=*/{{{ad_url, /*metadata=*/std::nullopt}}}));
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          /*owner=*/test_origin,
+          /*name=*/"cars",
+          /*priority=*/0.0,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          embedded_https_test_server().GetURL(
+              kHostA, "/interest_group/report_win_reporting_timeout_value.js"),
+          /*ads=*/{{{ad_url, /*metadata=*/std::nullopt}}}));
 
   const char kConfigTemplate[] = R"({
     seller: $1,
@@ -22489,7 +22490,6 @@ IN_PROC_BROWSER_TEST_F(AuctionConfigReportingTimeoutDisabledTest,
       seller: $3,
       decisionLogicURL: $4,
       interestGroupBuyers: [$1],
-      auctionSignals: "bidderAllowsComponentAuction",
       reportingTimeout: 0,
     }]
   })";
@@ -22505,8 +22505,8 @@ IN_PROC_BROWSER_TEST_F(AuctionConfigReportingTimeoutDisabledTest,
 
   // All report functions succeeded as expected, which means the auction
   // config's 0 reporting timeouts were ignored.
-  WaitForUrl(
-      embedded_https_test_server().GetURL(kHostA, "/echoall?report_bidder"));
+  WaitForUrl(embedded_https_test_server().GetURL(
+      kHostA, "/echoall?report_bidder,reportingTimeout=undefined"));
   WaitForUrl(embedded_https_test_server().GetURL(
       kHostA, "/echoall?report_seller,reportingTimeout=undefined"));
   WaitForUrl(embedded_https_test_server().GetURL(

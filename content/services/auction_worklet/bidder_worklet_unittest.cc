@@ -42,6 +42,7 @@
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_currencies.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size.h"
@@ -566,8 +567,9 @@ class BidderWorkletTest : public testing::Test {
         browser_signal_made_highest_scoring_other_bid_, browser_signal_ad_cost_,
         browser_signal_modeling_signals_, browser_signal_join_count_,
         browser_signal_recency_report_win_, browser_signal_seller_origin_,
-        browser_signal_top_level_seller_origin_, data_version_,
-        reporting_timeout_,
+        browser_signal_top_level_seller_origin_,
+        browser_signal_reporting_timeout_, data_version_,
+
         /*trace_id=*/1,
         base::BindOnce(
             [](const std::optional<GURL>& expected_report_url,
@@ -603,8 +605,9 @@ class BidderWorkletTest : public testing::Test {
             },
             expected_report_url, expected_ad_beacon_map,
             std::move(expected_ad_macro_map), std::move(expected_pa_requests),
-            expected_reporting_latency_timeout, reporting_timeout_,
-            expected_errors, std::move(done_closure)));
+            expected_reporting_latency_timeout,
+            browser_signal_reporting_timeout_, expected_errors,
+            std::move(done_closure)));
   }
 
   // Loads and runs a reportWin() with the provided return line, expecting the
@@ -960,11 +963,12 @@ class BidderWorkletTest : public testing::Test {
   uint8_t browser_signal_recency_report_win_;
 
   // Used for reportWin();
+  std::optional<base::TimeDelta> browser_signal_reporting_timeout_ =
+      std::nullopt;
   bool is_for_additional_bid_ = false;
   auction_worklet::mojom::ReportingIdField reporting_id_field_ =
       auction_worklet::mojom::ReportingIdField::kInterestGroupName;
   std::string reporting_id_;
-  std::optional<base::TimeDelta> reporting_timeout_ = std::nullopt;
 
   // Use a single constant start time. Only delta times are provided to scripts,
   // relative to the time of the auction, so no need to vary the auction time.
@@ -5579,8 +5583,8 @@ TEST_F(BidderWorkletTest, WasmReportWin) {
       browser_signal_made_highest_scoring_other_bid_, browser_signal_ad_cost_,
       browser_signal_modeling_signals_, browser_signal_join_count_,
       browser_signal_recency_report_win_, browser_signal_seller_origin_,
-      browser_signal_top_level_seller_origin_, data_version_,
-      reporting_timeout_,
+      browser_signal_top_level_seller_origin_,
+      browser_signal_reporting_timeout_, data_version_,
       /*trace_id=*/1,
       base::BindLambdaForTesting(
           [&run_loop](
@@ -7017,8 +7021,8 @@ TEST_F(BidderWorkletTest, DeleteBeforeReportWinCallback) {
       browser_signal_made_highest_scoring_other_bid_, browser_signal_ad_cost_,
       browser_signal_modeling_signals_, browser_signal_join_count_,
       browser_signal_recency_report_win_, browser_signal_seller_origin_,
-      browser_signal_top_level_seller_origin_, data_version_,
-      reporting_timeout_,
+      browser_signal_top_level_seller_origin_,
+      browser_signal_reporting_timeout_, data_version_,
       /*trace_id=*/1,
       base::BindOnce(
           [](const std::optional<GURL>& report_url,
@@ -7073,8 +7077,8 @@ TEST_F(BidderWorkletTest, ReportWinParallel) {
           browser_signal_ad_cost_, browser_signal_modeling_signals_,
           browser_signal_join_count_, browser_signal_recency_report_win_,
           browser_signal_seller_origin_,
-          browser_signal_top_level_seller_origin_, data_version_,
-          reporting_timeout_,
+          browser_signal_top_level_seller_origin_,
+          browser_signal_reporting_timeout_, data_version_,
           /*trace_id=*/1,
           base::BindLambdaForTesting(
               [&run_loop, &num_report_win_calls, i](
@@ -7128,8 +7132,8 @@ TEST_F(BidderWorkletTest, ReportWinParallelLoadFails) {
         browser_signal_made_highest_scoring_other_bid_, browser_signal_ad_cost_,
         browser_signal_modeling_signals_, browser_signal_join_count_,
         browser_signal_recency_report_win_, browser_signal_seller_origin_,
-        browser_signal_top_level_seller_origin_, data_version_,
-        reporting_timeout_,
+        browser_signal_top_level_seller_origin_,
+        browser_signal_reporting_timeout_, data_version_,
         /*trace_id=*/1,
         base::BindOnce(
             [](const std::optional<GURL>& report_url,
@@ -7685,8 +7689,8 @@ TEST_F(BidderWorkletTest, ScriptIsolation) {
         browser_signal_made_highest_scoring_other_bid_, browser_signal_ad_cost_,
         browser_signal_modeling_signals_, browser_signal_join_count_,
         browser_signal_recency_report_win_, browser_signal_seller_origin_,
-        browser_signal_top_level_seller_origin_, data_version_,
-        reporting_timeout_, /*trace_id=*/1,
+        browser_signal_top_level_seller_origin_,
+        browser_signal_reporting_timeout_, data_version_, /*trace_id=*/1,
         base::BindLambdaForTesting(
             [&run_loop](
                 const std::optional<GURL>& report_url,
@@ -8452,8 +8456,9 @@ TEST_F(BidderWorkletTest, CancelationDtor) {
       browser_signal_made_highest_scoring_other_bid_, browser_signal_ad_cost_,
       browser_signal_modeling_signals_, browser_signal_join_count_,
       browser_signal_recency_report_win_, browser_signal_seller_origin_,
-      browser_signal_top_level_seller_origin_, data_version_,
-      reporting_timeout_, /*trace_id=*/1,
+      browser_signal_top_level_seller_origin_,
+      browser_signal_reporting_timeout_, data_version_,
+      /*trace_id=*/1,
       base::BindOnce(
           [](const std::optional<GURL>& report_url,
              const base::flat_map<std::string, GURL>& ad_beacon_map,
@@ -10543,7 +10548,7 @@ TEST_F(BidderWorkletTest, ReportWinZeroTimeout) {
   AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
                         CreateReportWinScript("throw 'something'"));
 
-  reporting_timeout_ = base::TimeDelta();
+  browser_signal_reporting_timeout_ = base::TimeDelta();
   RunReportWinExpectingResult(
       /*expected_report_url=*/std::nullopt,
       /*expected_ad_beacon_map=*/{},
@@ -10570,7 +10575,7 @@ TEST_F(BidderWorkletTest, ReportWinTimeoutFromAuctionConfig) {
   // Make sure set_script_timeout_for_testing is called.
   task_environment_.RunUntilIdle();
 
-  reporting_timeout_ = base::Milliseconds(50);
+  browser_signal_reporting_timeout_ = base::Milliseconds(50);
   AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
                         CreateReportWinScript("while (true) {}"));
   RunReportWinExpectingResult(
