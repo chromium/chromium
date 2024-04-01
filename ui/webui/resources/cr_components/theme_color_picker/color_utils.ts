@@ -10,6 +10,11 @@ export interface Color {
   base?: SkColor;
 }
 
+export const EMPTY_COLOR: Color = {
+  background: {value: 0},
+  foreground: {value: 0},
+};
+
 export const LIGHT_DEFAULT_COLOR: Color = {
   background: {value: 0xffffffff},
   foreground: {value: 0xffdee1e6},

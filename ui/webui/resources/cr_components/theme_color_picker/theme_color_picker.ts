@@ -7,26 +7,27 @@ import './theme_color.js';
 import '//resources/cr_elements/cr_grid/cr_grid.js';
 import '//resources/cr_components/managed_dialog/managed_dialog.js';
 
-import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {hexColorToSkColor, skColorToRgba} from '//resources/js/color_utils.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {SkColor} from '//resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import {BrowserColorVariant} from '//resources/mojo/ui/base/mojom/themes.mojom-webui.js';
-import type {DomRepeat} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ThemeColorPickerBrowserProxy} from './browser_proxy.js';
+import {EMPTY_COLOR} from './color_utils.js';
 import type {Color, SelectedColor} from './color_utils.js';
 import {ColorType, DARK_BASELINE_BLUE_COLOR, DARK_BASELINE_GREY_COLOR, DARK_DEFAULT_COLOR, LIGHT_BASELINE_BLUE_COLOR, LIGHT_BASELINE_GREY_COLOR, LIGHT_DEFAULT_COLOR} from './color_utils.js';
 import type {ThemeColorElement} from './theme_color.js';
-import {getTemplate} from './theme_color_picker.html.js';
+import {getCss} from './theme_color_picker.css.js';
+import {getHtml} from './theme_color_picker.html.js';
 import type {ChromeColor, Theme, ThemeColorPickerHandlerRemote} from './theme_color_picker.mojom-webui.js';
 import type {ThemeHueSliderDialogElement} from './theme_hue_slider_dialog.js';
 
-const ThemeColorPickerElementBase = I18nMixin(PolymerElement);
+const ThemeColorPickerElementBase = I18nMixinLit(CrLitElement);
 
 export interface ThemeColorPickerElement {
   $: {
-    chromeColors: DomRepeat,
     customColorContainer: HTMLElement,
     customColor: ThemeColorElement,
     colorPicker: HTMLInputElement,
@@ -40,98 +41,70 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
     return 'cr-theme-color-picker';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      defaultColor_: {
-        type: Object,
-        computed: 'computeDefaultColor_(theme_)',
-      },
-      greyDefaultColor_: {
-        type: Object,
-        computed: 'computeGreyDefaultColor_(theme_)',
-      },
-      mainColor_: {
-        type: Object,
-        computed: 'computeMainColor_(theme_)',
-      },
-      colors_: Array,
-      theme_: Object,
-      selectedColor_: {
-        type: Object,
-        computed: 'computeSelectedColor_(theme_, colors_)',
-      },
-      isDefaultColorSelected_: {
-        type: Boolean,
-        computed: 'computeIsDefaultColorSelected_(selectedColor_)',
-      },
-      isGreyDefaultColorSelected_: {
-        type: Boolean,
-        computed: 'computeIsGreyDefaultColorSelected_(selectedColor_)',
-      },
-      isMainColorSelected_: {
-        type: Boolean,
-        computed: 'computeIsMainColorSelected_(selectedColor_)',
-      },
-      isCustomColorSelected_: {
-        type: Boolean,
-        computed: 'computeIsCustomColorSelected_(selectedColor_)',
-      },
-      customColor_: {
-        type: Object,
-        value: () =>
-            document.documentElement.hasAttribute('chrome-refresh-2023') ?
-            {} :
-            {
-              background: {value: 0xffffffff},
-              foreground: {value: 0xfff1f3f4},
-            },
-      },
-      showManagedDialog_: Boolean,
-      showBackgroundColor_: {
-        type: Boolean,
-        computed: 'computeShowBackgroundColor_(theme_)',
-      },
-      showCustomColorBackgroundColor_: {
-        type: Boolean,
-        computed: 'computeShowCustomColorBackgroundColor_(theme_)',
-      },
-      showMainColor_: {
-        type: Boolean,
-        computed: 'computeShowMainColor_(theme_)',
-      },
-      isChromeRefresh2023_: {
-        type: Boolean,
-        value: () =>
-            document.documentElement.hasAttribute('chrome-refresh-2023'),
-      },
-      columns: {
-        type: Number,
-        value: 4,
-      },
+      defaultColor_: {type: Object},
+      greyDefaultColor_: {type: Object},
+      mainColor_: {type: Object},
+      colors_: {type: Array},
+      theme_: {type: Object},
+      selectedColor_: {type: Object},
+      isDefaultColorSelected_: {type: Boolean},
+      isGreyDefaultColorSelected_: {type: Boolean},
+      isMainColorSelected_: {type: Boolean},
+      isCustomColorSelected_: {type: Boolean},
+      customColor_: {type: Object},
+      showManagedDialog_: {type: Boolean},
+      showBackgroundColor_: {type: Boolean},
+      showCustomColorBackgroundColor_: {type: Boolean},
+      showMainColor_: {type: Boolean},
+      isChromeRefresh2023_: {type: Boolean},
+      columns: {type: Number},
     };
   }
 
-  static get observers() {
-    return [
-      'updateCustomColor_(colors_, theme_, isCustomColorSelected_)',
-      'updateColors_(theme_)',
-    ];
-  }
-
-  private colors_: ChromeColor[];
+  protected defaultColor_: Color = EMPTY_COLOR;
+  protected mainColor_: SkColor|null = null;
+  protected greyDefaultColor_: Color = EMPTY_COLOR;
+  protected colors_: ChromeColor[] = [];
   private theme_: Theme;
-  private selectedColor_: SelectedColor;
-  private isCustomColorSelected_: boolean;
-  private customColor_: Color|undefined;
+  protected selectedColor_: SelectedColor;
+  protected isDefaultColorSelected_: boolean = false;
+  protected isGreyDefaultColorSelected_: boolean = false;
+  protected isMainColorSelected_: boolean = false;
+  protected isCustomColorSelected_: boolean = false;
+  protected customColor_: Color;
   private setThemeListenerId_: number|null = null;
-  private showManagedDialog_: boolean;
-  private isChromeRefresh2023_: boolean;
+
+  protected showManagedDialog_: boolean = false;
+  protected showBackgroundColor_: boolean = false;
+  protected showCustomColorBackgroundColor_: boolean = false;
+  protected showMainColor_: boolean = false;
+  protected isChromeRefresh2023_: boolean =
+      document.documentElement.hasAttribute('chrome-refresh-2023');
+  protected columns: number = 4;
 
   private handler_: ThemeColorPickerHandlerRemote;
+
+  constructor() {
+    super();
+
+    this.customColor_ =
+        document.documentElement.hasAttribute('chrome-refresh-2023') ?
+        EMPTY_COLOR :
+        {
+          background: {value: 0xffffffff},
+          foreground: {value: 0xfff1f3f4},
+        };
+  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -150,6 +123,49 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
         this.setThemeListenerId_!);
   }
 
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('theme_')) {
+      this.defaultColor_ = this.computeDefaultColor_();
+      this.greyDefaultColor_ = this.computeGreyDefaultColor_();
+      this.mainColor_ = this.computeMainColor_();
+      this.showBackgroundColor_ = this.computeShowBackgroundColor_();
+      this.showCustomColorBackgroundColor_ =
+          this.computeShowCustomColorBackgroundColor_();
+      this.showMainColor_ = this.computeShowMainColor_();
+      this.updateColors_();
+    }
+
+    if (changedPrivateProperties.has('theme_') ||
+        changedPrivateProperties.has('colors_')) {
+      this.selectedColor_ = this.computeSelectedColor_();
+    }
+
+    if (changedPrivateProperties.has('selectedColor_')) {
+      this.isDefaultColorSelected_ = this.computeIsDefaultColorSelected_();
+      this.isGreyDefaultColorSelected_ =
+          this.computeIsGreyDefaultColorSelected_();
+      this.isMainColorSelected_ = this.computeIsMainColorSelected_();
+      this.isCustomColorSelected_ = this.computeIsCustomColorSelected_();
+    }
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedPrivateProperties.has('colors_') ||
+        changedPrivateProperties.has('theme_') ||
+        changedPrivateProperties.has('isCustomColorSelected_')) {
+      this.updateCustomColor_();
+    }
+  }
+
   private computeDefaultColor_(): Color {
     if (this.isChromeRefresh2023_) {
       return this.theme_.isDarkMode ? DARK_BASELINE_BLUE_COLOR :
@@ -164,8 +180,7 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
   }
 
   private computeMainColor_(): SkColor|null {
-    return (!!this.theme_ && !!this.theme_.backgroundImageMainColor) ?
-        this.theme_.backgroundImageMainColor : null;
+    return this.theme_.backgroundImageMainColor || null;
   }
 
   private computeSelectedColor_(): SelectedColor {
@@ -215,23 +230,14 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
     return this.selectedColor_.type === ColorType.CUSTOM;
   }
 
-  private isChromeColorSelected_(color: SkColor, variant: BrowserColorVariant):
-      boolean {
+  protected isChromeColorSelected_(
+      color: SkColor, variant: BrowserColorVariant): boolean {
     return this.selectedColor_.type === ColorType.CHROME &&
         this.selectedColor_.chromeColor!.value === color.value &&
         this.selectedColor_.variant === variant;
   }
 
-  private boolToString_(value: boolean): string {
-    return value ? 'true' : 'false';
-  }
-
-  private getChromeColorCheckedStatus_(
-      color: SkColor, variant: BrowserColorVariant): string {
-    return this.boolToString_(this.isChromeColorSelected_(color, variant));
-  }
-
-  private chromeColorTabIndex_(color: SkColor, variant: BrowserColorVariant):
+  protected chromeColorTabIndex_(color: SkColor, variant: BrowserColorVariant):
       string {
     return this.selectedColor_.type === ColorType.CHROME &&
             this.selectedColor_.chromeColor!.value === color.value &&
@@ -240,7 +246,7 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
         '-1';
   }
 
-  private tabIndex_(selected: boolean): string {
+  protected tabIndex_(selected: boolean): string {
     return selected ? '0' : '-1';
   }
 
@@ -261,21 +267,21 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
     return !this.isChromeRefresh2023_ && !this.themeHasBackgroundImage_();
   }
 
-  private onDefaultColorClick_() {
+  protected onDefaultColorClick_() {
     if (this.handleClickForManagedColors_()) {
       return;
     }
     this.handler_.setDefaultColor();
   }
 
-  private onGreyDefaultColorClick_() {
+  protected onGreyDefaultColorClick_() {
     if (this.handleClickForManagedColors_()) {
       return;
     }
     this.handler_.setGreyDefaultColor();
   }
 
-  private onMainColorClick_() {
+  protected onMainColorClick_() {
     if (this.handleClickForManagedColors_()) {
       return;
     }
@@ -283,15 +289,18 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
         this.theme_!.backgroundImageMainColor!, BrowserColorVariant.kTonalSpot);
   }
 
-  private onChromeColorClick_(e: Event) {
+  protected onChromeColorClick_(e: Event) {
     if (this.handleClickForManagedColors_()) {
       return;
     }
-    const color = this.$.chromeColors.itemForElement(e.target as HTMLElement);
+
+    const index =
+        Number.parseInt((e.target as HTMLElement).dataset['index']!, 10);
+    const color = this.colors_[index];
     this.handler_.setSeedColor(color.seed, color.variant);
   }
 
-  private onCustomColorClick_() {
+  protected onCustomColorClick_() {
     if (this.handleClickForManagedColors_()) {
       return;
     }
@@ -304,13 +313,13 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
     }
   }
 
-  private onCustomColorChange_(e: Event) {
+  protected onCustomColorChange_(e: Event) {
     this.handler_.setSeedColor(
         hexColorToSkColor((e.target as HTMLInputElement).value),
         BrowserColorVariant.kTonalSpot);
   }
 
-  private onSelectedHueChanged_() {
+  protected onSelectedHueChanged_() {
     const selectedHue = this.$.hueSlider.selectedHue;
     if (this.theme_ && this.theme_.seedColorHue === selectedHue) {
       return;
@@ -343,7 +352,7 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
             .colors;
   }
 
-  private onManagedDialogClosed_() {
+  protected onManagedDialogClosed_() {
     this.showManagedDialog_ = false;
   }
 
