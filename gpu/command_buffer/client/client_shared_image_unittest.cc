@@ -183,4 +183,32 @@ TEST(ClientSharedImageTest, CreateViaSharedImageInterface) {
             static_cast<uint32_t>(GL_TEXTURE_2D));
 }
 
+TEST(ClientSharedImageTest, ExportAndImport) {
+  auto sii = base::MakeRefCounted<TestSharedImageInterface>();
+
+  const auto kFormat = viz::SinglePlaneFormat::kRGBA_8888;
+  const gfx::Size kSize(256, 256);
+  const uint32_t kUsage =
+      SHARED_IMAGE_USAGE_RASTER_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ;
+  SharedImageInfo si_info{kFormat,
+                          kSize,
+                          gfx::ColorSpace(),
+                          kTopLeft_GrSurfaceOrigin,
+                          kOpaque_SkAlphaType,
+                          kUsage,
+                          ""};
+
+  auto client_si = sii->CreateSharedImage(si_info, kNullSurfaceHandle);
+  auto exported_si = client_si->Export();
+  auto imported_client_si = ClientSharedImage::ImportUnowned(exported_si);
+
+  EXPECT_TRUE(imported_client_si->mailbox() ==
+              sii->GetMailboxForMostRecentlyCreatedSharedImage());
+  EXPECT_EQ(imported_client_si->format(), kFormat);
+  EXPECT_EQ(imported_client_si->size(), kSize);
+  EXPECT_EQ(imported_client_si->usage(), kUsage);
+  EXPECT_EQ(imported_client_si->GetTextureTarget(),
+            static_cast<uint32_t>(GL_TEXTURE_2D));
+}
+
 }  // namespace gpu
