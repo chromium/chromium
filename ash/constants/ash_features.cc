@@ -308,9 +308,17 @@ BASE_FEATURE(kCameraAppCrosEvents,
              "CameraAppCrosEvents",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables to enable digital zoom control inside Camera app.
+// Enables or disables digital zoom control inside Camera app.
 BASE_FEATURE(kCameraAppDigitalZoom,
              "CameraAppDigitalZoom",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Indicates whether the camera super resolution is supported. Note that this
+// feature is overridden by login_manager based on whether a per-board build
+// sets the USE camera_feature_super_res flag. Refer to:
+// chromiumos/src/platform2/login_manager/chrome_setup.cc
+BASE_FEATURE(kCameraSuperResSupported,
+             "CameraSuperResSupported",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable Big GL when using Borealis.
