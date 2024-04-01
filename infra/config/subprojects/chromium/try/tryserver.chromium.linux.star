@@ -93,6 +93,22 @@ try_.builder(
 )
 
 try_.builder(
+    name = "linux-arm64-cast-rel",
+    branch_selector = branches.selector.MAIN,
+    description_html = "Try builder for linux-arm64-cast-rel",
+    mirrors = [
+        "ci/linux-arm64-cast-rel",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/linux-arm64-cast-rel",
+        ],
+    ),
+    contact_team_email = "cast-eng@google.com",
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
     name = "linux-bfcache-rel",
     mirrors = [
         "ci/linux-bfcache-rel",
@@ -479,6 +495,22 @@ try_.builder(
         "ci/linux-wpt-content-shell-leak-detection",
     ],
     gn_args = "ci/linux-wpt-content-shell-leak-detection",
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
+    name = "linux-x64-cast-dbg",
+    branch_selector = branches.selector.MAIN,
+    description_html = "Try builder for linux-x64-cast-dbg",
+    mirrors = [
+        "ci/linux-x64-cast-dbg",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/linux-x64-cast-dbg",
+        ],
+    ),
+    contact_team_email = "cast-eng@google.com",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 

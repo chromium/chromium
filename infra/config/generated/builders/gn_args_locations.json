@@ -372,10 +372,12 @@
     "Linux Builder (Wayland)": "ci/Linux Builder (Wayland)/gn-args.json",
     "Linux Builder (dbg)": "ci/Linux Builder (dbg)/gn-args.json",
     "Network Service Linux": "ci/Network Service Linux/gn-args.json",
+    "linux-arm64-cast-rel": "ci/linux-arm64-cast-rel/gn-args.json",
     "linux-bfcache-rel": "ci/linux-bfcache-rel/gn-args.json",
     "linux-extended-tracing-rel": "ci/linux-extended-tracing-rel/gn-args.json",
     "linux-gcc-rel": "ci/linux-gcc-rel/gn-args.json",
-    "linux-v4l2-codec-rel": "ci/linux-v4l2-codec-rel/gn-args.json"
+    "linux-v4l2-codec-rel": "ci/linux-v4l2-codec-rel/gn-args.json",
+    "linux-x64-cast-dbg": "ci/linux-x64-cast-dbg/gn-args.json"
   },
   "chromium.mac": {
     "Mac Builder": "ci/Mac Builder/gn-args.json",
@@ -762,6 +764,7 @@
     "leak_detection_linux": "try/leak_detection_linux/gn-args.json",
     "linux-afl-asan-rel": "try/linux-afl-asan-rel/gn-args.json",
     "linux-annotator-rel": "try/linux-annotator-rel/gn-args.json",
+    "linux-arm64-cast-rel": "try/linux-arm64-cast-rel/gn-args.json",
     "linux-bfcache-rel": "try/linux-bfcache-rel/gn-args.json",
     "linux-blink-heap-verification-try": "try/linux-blink-heap-verification-try/gn-args.json",
     "linux-centipede-asan-rel": "try/linux-centipede-asan-rel/gn-args.json",
@@ -794,6 +797,7 @@
     "linux-webkit-msan-rel": "try/linux-webkit-msan-rel/gn-args.json",
     "linux-wpt-content-shell-fyi-rel": "try/linux-wpt-content-shell-fyi-rel/gn-args.json",
     "linux-wpt-content-shell-leak-detection": "try/linux-wpt-content-shell-leak-detection/gn-args.json",
+    "linux-x64-cast-dbg": "try/linux-x64-cast-dbg/gn-args.json",
     "linux_chromium_archive_rel_ng": "try/linux_chromium_archive_rel_ng/gn-args.json",
     "linux_chromium_asan_rel_ng": "try/linux_chromium_asan_rel_ng/gn-args.json",
     "linux_chromium_cfi_rel_ng": "try/linux_chromium_cfi_rel_ng/gn-args.json",

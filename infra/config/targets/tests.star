@@ -356,13 +356,6 @@ targets.tests.gtest_test(
     name = "capture_unittests",
 )
 
-# TODO(issues.chromium.org/1516671): Eliminate cast_* suites that are no longer
-# needed.
-
-#targets.tests.gtest_test(
-#    name = "cast_display_settings_unittests",
-#)
-
 targets.tests.gtest_test(
     name = "cast_runner_browsertests",
 )
@@ -375,47 +368,54 @@ targets.tests.gtest_test(
     name = "cast_runner_unittests",
 )
 
-#targets.tests.gtest_test(
-#    name = "cast_audio_backend_unittests",
-#)
-
 targets.tests.junit_test(
     name = "cast_base_junit_tests",
     label = "//chromecast/base:cast_base_junit_tests",
 )
 
-#targets.tests.gtest_test(
-#    name = "cast_base_unittests",
-#)
+# TODO(issues.chromium.org/1516671): Eliminate cast_* suites that are no longer
+# needed.
 
-#targets.tests.gtest_test(
-#    name = "cast_cast_core_unittests",
-#)
+targets.tests.gtest_test(
+    name = "cast_audio_backend_unittests",
+)
 
-#targets.tests.gtest_test(
-#    name = "cast_crash_unittests",
-#)
+targets.tests.gtest_test(
+    name = "cast_base_unittests",
+)
 
-#targets.tests.gtest_test(
-#    name = "cast_graphics_unittests",
-#)
+targets.tests.gtest_test(
+    name = "cast_cast_core_unittests",
+)
 
-#targets.tests.gtest_test(
-#    name = "cast_media_unittests",
-#)b
+targets.tests.gtest_test(
+    name = "cast_crash_unittests",
+)
 
-#targets.tests.gtest_test(
-#    name = "cast_shell_browsertests",
-#)
+targets.tests.gtest_test(
+    name = "cast_display_settings_unittests",
+)
+
+targets.tests.gtest_test(
+    name = "cast_graphics_unittests",
+)
+
+targets.tests.gtest_test(
+    name = "cast_media_unittests",
+)
+
+targets.tests.gtest_test(
+    name = "cast_shell_browsertests",
+)
+
+targets.tests.gtest_test(
+    name = "cast_shell_unittests",
+)
 
 targets.tests.junit_test(
     name = "cast_shell_junit_tests",
     label = "//chromecast/browser/android:cast_shell_junit_tests",
 )
-
-#targets.tests.gtest_test(
-#    name = "cast_shell_unittests",
-#)
 
 targets.tests.gtest_test(
     name = "cast_unittests",

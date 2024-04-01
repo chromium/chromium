@@ -95,6 +95,7 @@ ci/lacros-arm-generic-rel
 ci/lacros-arm-generic-rel-skylab
 ci/lacros64-archive-rel
 ci/linux-archive-rel
+ci/linux-arm64-cast-rel
 ci/linux-bfcache-rel
 ci/linux-cfm-rel
 ci/linux-chromeos-archive-rel
@@ -109,6 +110,7 @@ ci/linux-lacros-tester-rel
 ci/linux-presubmit
 ci/linux-ubsan-vptr
 ci/linux-v4l2-codec-rel
+ci/linux-x64-cast-dbg
 ci/mac-archive-rel
 ci/mac-arm64-archive-rel
 ci/mac-arm64-dbg
