@@ -146300,6 +146300,32 @@
          {}
         ]
        ],
+       "clip-path-shape-interpolation-003.html": [
+        "1324aad97f39a039f85fb8d880ece53ab8bc4aa9",
+        [
+         null,
+         [
+          [
+           "/css/css-masking/clip-path/animations/clip-path-path-interpolation-001-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "clip-path-shape-interpolation-004.html": [
+        "69bec3c097c57a2b346162be3e5eb6ccdb6d14ba",
+        [
+         null,
+         [
+          [
+           "/css/css-masking/clip-path/animations/clip-path-path-interpolation-002-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "clip-path-transition-custom-timing-function.html": [
         "f8bf6e08fe887af8de59af686b818aa00784a994",
         [
@@ -188083,6 +188109,19 @@
         {}
        ]
       ],
+      "text-align-justify-bidi-control.html": [
+       "934e947b7584ce21c5ae2175b5f840377d791367",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-align/text-align-justify-bidi-control-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "text-align-justify-last-center.html": [
        "8aba126e14802b81a0f3c196e588753adfb7f40d",
        [
@@ -188304,6 +188343,19 @@
         [
          [
           "/css/css-text/text-align/text-align-last-end-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-align-last-justify-br.html": [
+       "5685da088b830b11e80e5f011f79d2c72fee6681",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-align/text-align-last-justify-br-ref.html",
           "=="
          ]
         ],
@@ -331148,6 +331200,10 @@
        "68c16429305391cd4d69f0051d7a31f822560d2c",
        []
       ],
+      "text-align-justify-bidi-control-ref.html": [
+       "c30c5a0178bfb95934fbb30c9c2b29ba3cfaae71",
+       []
+      ],
       "text-align-last-010-ref.html": [
        "2f26b42723d0e736ef8d01ddc72ec3cc5e69d088",
        []
@@ -331170,6 +331226,10 @@
       ],
       "text-align-last-interpolation-expected.txt": [
        "738beedafe3bb884168529c1cd24068272c465d6",
+       []
+      ],
+      "text-align-last-justify-br-ref.html": [
+       "efe5481e824d235f5f175b042514ac9687d7329e",
        []
       ],
       "text-align-last-justify-ref.html": [
@@ -342647,7 +342707,7 @@
      ],
      "animation": {
       "offset-path-interpolation-008-expected.txt": [
-       "1e8c218017725ba769d47d0690cb2f67a0439855",
+       "e754fee53e8177bf8f4137568b20540ef9e5b3b6",
        []
       ],
       "reftests": {
@@ -394657,11 +394717,11 @@
      ]
     },
     "idlharness.https.any-expected.txt": [
-     "d880e9753ad0c0731b1233bad14bb5f45be49134",
+     "41ea80c138d6bb4092040759c708449c29c73ee5",
      []
     ],
     "idlharness.https.any.worker-expected.txt": [
-     "59c91a88a66dfdcd5d8b7bb4eb851b543da5d02e",
+     "69bbe0d262a2b6a04072c40d6dff5600bb7deca9",
      []
     ],
     "resources": {
@@ -453803,7 +453863,7 @@
        ]
       ],
       "clip-path-interpolation-shape.html": [
-       "cda6703ca7226ecda5829b18938bbf982634343f",
+       "638e133c26bf007c1b642a989f36430e26bf4dd3",
        [
         null,
         {}
@@ -474433,7 +474493,7 @@
        ]
       ],
       "offset-path-interpolation-008.html": [
-       "0632ee7a823d740deebe9119248e198833f6611e",
+       "30d789f4eb84daf9e4400c82558d1db3c479cf51",
        [
         null,
         {}
@@ -672638,7 +672698,7 @@
       ]
      ],
      "gruCell.https.any.js": [
-      "5056f8be68c3e9058c322cf267b6a220d8ae2037",
+      "3cd9d32b07397a37be3e1907e8e4fdf151b1048b",
       [
        "webnn/validation_tests/gruCell.https.any.html",
        {
