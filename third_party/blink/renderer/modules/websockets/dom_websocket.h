@@ -255,6 +255,9 @@ class MODULES_EXPORT DOMWebSocket
   String subprotocol_;
   String extensions_;
 
+  // ID for this socket used in record/replay annotations and dependency nodes.
+  int record_replay_id_ = 0;
+
   Member<EventQueue> event_queue_;
 
   bool buffered_amount_update_task_pending_;

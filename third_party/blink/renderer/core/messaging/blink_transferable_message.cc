@@ -42,6 +42,8 @@ BlinkTransferableMessage BlinkTransferableMessage::FromTransferableMessage(
   result.sender_agent_cluster_id = message.sender_agent_cluster_id;
   result.locked_to_sender_agent_cluster =
       message.locked_to_sender_agent_cluster;
+  result.record_replay_message_id = message.record_replay_message_id;
+  result.record_replay_process_id = message.record_replay_process_id;
   result.ports.AppendRange(message.ports.begin(), message.ports.end());
   for (auto& channel : message.stream_channels) {
     result.message->GetStreams().push_back(

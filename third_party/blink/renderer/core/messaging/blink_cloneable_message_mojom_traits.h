@@ -65,6 +65,14 @@ struct CORE_EXPORT StructTraits<blink::mojom::CloneableMessageDataView,
     return input.locked_to_sender_agent_cluster;
   }
 
+  static int record_replay_message_id(const blink::BlinkCloneableMessage& input) {
+    return input.record_replay_message_id;
+  }
+
+  static int record_replay_process_id(const blink::BlinkCloneableMessage& input) {
+    return input.record_replay_process_id;
+  }
+
   static Vector<
       mojo::PendingRemote<blink::mojom::blink::FileSystemAccessTransferToken>>
   file_system_access_tokens(blink::BlinkCloneableMessage& input) {

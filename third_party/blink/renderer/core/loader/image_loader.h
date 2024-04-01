@@ -183,7 +183,8 @@ class CORE_EXPORT ImageLoader : public GarbageCollected<ImageLoader>,
   bool HasPendingEvent() const;
 
   void DispatchPendingLoadEvent(std::unique_ptr<IncrementLoadEventDelayCount>);
-  void DispatchPendingErrorEvent(std::unique_ptr<IncrementLoadEventDelayCount>);
+  void DispatchPendingErrorEvent(std::unique_ptr<IncrementLoadEventDelayCount>,
+                                 int record_replay_scheduled_node_id);
 
   LayoutImageResource* GetLayoutImageResource();
   void UpdateLayoutObject();

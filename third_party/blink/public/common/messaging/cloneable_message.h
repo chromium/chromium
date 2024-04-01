@@ -71,6 +71,9 @@ struct BLINK_COMMON_EXPORT CloneableMessage {
   // If true, this message is locked to the sender agent cluster ID.
   bool locked_to_sender_agent_cluster = false;
 
+  int record_replay_message_id = 0;
+  int record_replay_process_id = 0;
+
   // Tokens required to clone FileSystemFileHandles and/or
   // FileSystemDirectoryHandles.
   std::vector<mojo::PendingRemote<mojom::FileSystemAccessTransferToken>>

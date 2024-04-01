@@ -415,13 +415,16 @@ inline void ImageLoader::DispatchErrorEvent() {
   // In such cases we cancel the previous event (by overwriting
   // |pending_error_event_|) and then re-schedule a new error event here.
   // crbug.com/722500
+  int record_replay_scheduled_node_id =
+    recordreplay::NewDependencyGraphNode("{\"kind\":\"dispatchImageErrorEvent\"}");
   pending_error_event_ = PostCancellableTask(
       *GetElement()->GetDocument().GetTaskRunner(TaskType::kDOMManipulation),
       FROM_HERE,
       WTF::BindOnce(&ImageLoader::DispatchPendingErrorEvent,
                     WrapPersistent(this),
                     std::make_unique<IncrementLoadEventDelayCount>(
-                        GetElement()->GetDocument())));
+                        GetElement()->GetDocument()),
+                    record_replay_scheduled_node_id));
 }
 
 inline void ImageLoader::CrossSiteOrCSPViolationOccurred(
@@ -486,7 +489,7 @@ void ImageLoader::DoUpdateFromElement(
     if (record_replay_scheduled_node_id) {
       recordreplay::AddDependencyGraphEdge(
         record_replay_scheduled_node_id, node_id,
-        "{\"kind\":\"imageUpdateScheduled\"}"
+        "{\"kind\":\"scheduler\"}"
       );
     }
     execute.emplace(node_id);
@@ -980,7 +983,8 @@ void ImageLoader::DispatchPendingLoadEvent(
 }
 
 void ImageLoader::DispatchPendingErrorEvent(
-    std::unique_ptr<IncrementLoadEventDelayCount> count) {
+    std::unique_ptr<IncrementLoadEventDelayCount> count,
+    int record_replay_scheduled_node_id) {
   absl::optional<recordreplay::AutoDependencyExecution> execute;
   if (recordreplay::DependencyGraphEnabled()) {
     base::Value::Dict info;
@@ -992,6 +996,10 @@ void ImageLoader::DispatchPendingErrorEvent(
     recordreplay::AddDependencyGraphEdge(
       record_replay_created_node_id_, node_id,
       "{\"kind\":\"imageLoader\"}"
+    );
+    recordreplay::AddDependencyGraphEdge(
+      record_replay_scheduled_node_id, node_id,
+      "{\"kind\":\"scheduler\"}"
     );
     execute.emplace(node_id);
   }

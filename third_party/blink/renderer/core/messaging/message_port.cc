@@ -57,6 +57,8 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
+#include "base/json/json_writer.h"
+
 namespace blink {
 
 MessagePort::MessagePort(ExecutionContext& execution_context)
@@ -143,6 +145,21 @@ void MessagePort::postMessage(ScriptState* script_state,
 
   msg.sender_agent_cluster_id = GetExecutionContext()->GetAgentClusterID();
   msg.locked_to_sender_agent_cluster = msg.message->IsLockedToAgentCluster();
+
+  if (recordreplay::IsRecordingOrReplaying() && IsMainThread()) {
+    msg.record_replay_message_id = recordreplay::NewIdMainThread("MessagePort::postMessage");
+    msg.record_replay_process_id = (int)base::GetCurrentProcId();
+
+    if (recordreplay::DependencyGraphEnabled()) {
+      base::Value::Dict info;
+      info.Set("kind", "postMessage");
+      info.Set("messageId", msg.record_replay_message_id);
+      info.Set("processId", msg.record_replay_process_id);
+      std::string json;
+      base::JSONWriter::Write(info, &json);
+      recordreplay::NewDependencyGraphNode(json.c_str());
+    }
+  }
 
   auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
   // Only pass the parent task ID if we're in the main world, as isolated world
@@ -316,14 +333,22 @@ bool MessagePort::Accept(mojo::Message* mojo_message) {
 
   recordreplay::Assert("[RUN-1126] MessagePort::Accept");
 
-  recordreplay::AutoMarkerDependencyExecution execute(
-    "ScriptExecution", "MessagePort::Accept"
-  );
-
   BlinkTransferableMessage message;
   if (!mojom::blink::TransferableMessage::DeserializeFromMessage(
           std::move(*mojo_message), &message)) {
     return false;
+  }
+
+  absl::optional<recordreplay::AutoDependencyExecution> execute;
+  if (recordreplay::DependencyGraphEnabled()) {
+    base::Value::Dict info;
+    info.Set("kind", "acceptMessage");
+    info.Set("messageId", message.record_replay_message_id);
+    info.Set("processId", message.record_replay_process_id);
+    info.Set("currentProcessId", (int)base::GetCurrentProcId());
+    std::string json;
+    base::JSONWriter::Write(info, &json);
+    execute.emplace(recordreplay::NewDependencyGraphNode(json.c_str()));
   }
 
   ExecutionContext* context = GetExecutionContext();

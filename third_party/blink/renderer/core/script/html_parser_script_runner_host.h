@@ -38,7 +38,7 @@ class CORE_EXPORT HTMLParserScriptRunnerHost : public GarbageCollectedMixin {
   virtual ~HTMLParserScriptRunnerHost() = default;
   void Trace(Visitor* visitor) const override {}
 
-  virtual void NotifyScriptLoaded() = 0;
+  virtual void NotifyScriptLoaded(int record_replay_scheduled_node_id) = 0;
   virtual HTMLInputStream& InputStream() = 0;
 
   virtual bool HasPreloadScanner() const = 0;

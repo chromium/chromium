@@ -106,7 +106,7 @@ class CORE_EXPORT ScriptRunner final : public GarbageCollected<ScriptRunner>,
   // PendingScriptClient
   void PendingScriptFinished(PendingScript*) override;
 
-  void ExecuteAsyncPendingScript(PendingScript*);
+  void ExecuteAsyncPendingScript(PendingScript*, int record_replay_scheduled_node_id);
   void ExecuteForceInOrderPendingScript(PendingScript*);
   void ExecuteParserBlockingScriptsBlockedByForceInOrder();
 

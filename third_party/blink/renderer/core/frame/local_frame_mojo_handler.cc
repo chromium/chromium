@@ -1479,6 +1479,10 @@ void LocalFrameMojoHandler::OnRecordReplayAuthTokenChanged(const WTF::String& to
   v8::Isolate* isolate = ToIsolate(frame_);
   v8::HandleScope handle_scope(isolate);
 
+  recordreplay::AutoMarkerDependencyExecution execute(
+    "ScriptExecution", "LocalFrameMojoHandler::OnRecordReplayAuthTokenChanged"
+  );
+
   ScriptState* script_state = ToScriptStateForMainWorld(frame_);
   v8::Local<v8::Context> context = script_state->GetContext();
   v8::Context::Scope context_scope(context);

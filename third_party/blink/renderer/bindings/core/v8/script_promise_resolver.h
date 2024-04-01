@@ -216,7 +216,7 @@ class CORE_EXPORT ScriptPromiseResolver
 
   void ResolveOrRejectImmediately();
   void ScheduleResolveOrReject();
-  void ResolveOrRejectDeferred();
+  void ResolveOrRejectDeferred(int record_replay_scheduled_node_id);
 
   ResolutionState state_;
   const Member<ScriptState> script_state_;

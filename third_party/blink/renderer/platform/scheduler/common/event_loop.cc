@@ -29,7 +29,9 @@ EventLoop::~EventLoop() {
 }
 
 void EventLoop::EnqueueMicrotask(base::OnceClosure task) {
-  pending_microtasks_.push_back(std::move(task));
+  int record_replay_scheduled_node_id =
+    recordreplay::NewDependencyGraphNode("{\"kind\":\"enqueueMicrotask\"}");
+  pending_microtasks_.emplace_back(std::move(task), record_replay_scheduled_node_id);
   if (microtask_queue_) {
     // Since the microtask queue won't outlive this object we do not need
     // to increment a ref count.
@@ -135,8 +137,18 @@ bool EventLoop::IsSchedulerAttachedForTest(FrameOrWorkerScheduler* scheduler) {
 void EventLoop::RunPendingMicrotask(void* data) {
   TRACE_EVENT0("renderer.scheduler", "RunPendingMicrotask");
   auto* self = static_cast<EventLoop*>(data);
-  base::OnceClosure task = std::move(self->pending_microtasks_.front());
+  base::OnceClosure task = std::move(self->pending_microtasks_.front().first);
+  int record_replay_scheduled_node_id = self->pending_microtasks_.front().second;
   self->pending_microtasks_.pop_front();
+
+  absl::optional<recordreplay::AutoDependencyExecution> execute;
+  if (recordreplay::DependencyGraphEnabled()) {
+    int node_id = recordreplay::NewDependencyGraphNode("{\"kind\":\"runMicrotask\"}");
+    recordreplay::AddDependencyGraphEdge(record_replay_scheduled_node_id, node_id,
+                                         "{\"kind\":\"scheduler\"}");
+    execute.emplace(node_id);
+  }
+
   std::move(task).Run();
 
   // If we had incremented the ref count decrement it. See `EnqueueMicrotask`.

@@ -41,6 +41,9 @@ struct CloneableMessage {
   mojo_base.mojom.UnguessableToken sender_agent_cluster_id;
   // If true, this message is locked to the sender agent cluster ID.
   bool locked_to_sender_agent_cluster;
+  // If the sender is recording/replaying, information about where the message was sent.
+  int32 record_replay_message_id;
+  int32 record_replay_process_id;
   // Tokens required to clone FileSystemFileHandles and/or
   // FileSystemDirectoryHandles.
   array<pending_remote<FileSystemAccessTransferToken>> file_system_access_tokens;

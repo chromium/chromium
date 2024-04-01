@@ -59,6 +59,16 @@ struct BLINK_COMMON_EXPORT
     return input.locked_to_sender_agent_cluster;
   }
 
+  static bool record_replay_message_id(
+      const blink::CloneableMessage& input) {
+    return input.record_replay_message_id;
+  }
+
+  static bool record_replay_process_id(
+      const blink::CloneableMessage& input) {
+    return input.record_replay_process_id;
+  }
+
   static bool Read(blink::mojom::CloneableMessage::DataView data,
                    blink::CloneableMessage* out);
 

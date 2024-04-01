@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding_registry.h"
 
+#include "base/json/json_writer.h"
 #include "base/record_replay.h"
 
 namespace recordreplay {
@@ -801,9 +802,14 @@ bool ResourceScriptStreamer::TryStartStreamingTask() {
   // This reset will also cancel the watcher.
   watcher_.reset();
 
-  record_replay_scheduled_node_id_ = recordreplay::NewDependencyGraphNode(
-    "{\"kind\":\"scheduleScriptStreamingTask\"}"
-  );
+  if (recordreplay::DependencyGraphEnabled()) {
+    base::Value::Dict info;
+    info.Set("kind", "scheduleScriptStreamingTask");
+    info.Set("url", ScriptURLString().Utf8());
+    std::string json;
+    base::JSONWriter::Write(info, &json);
+    record_replay_scheduled_node_id_ = recordreplay::NewDependencyGraphNode(json.c_str());
+  }
 
   // Script streaming tasks are high priority, as they can block the parser,
   // and they can (and probably will) block during their own execution as

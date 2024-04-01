@@ -78,6 +78,8 @@ class CORE_EXPORT HTMLStyleElement final : public HTMLElement,
   bool IsSameObject(const Node& node) const override { return this == &node; }
 
   Member<BlockingAttribute> blocking_attribute_;
+
+  int record_replay_load_task_scheduled_node_id_ = 0;
 };
 
 }  // namespace blink

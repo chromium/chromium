@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/scheduler/public/scheduling_policy.h"
 
+#include "base/json/json_writer.h"
 #include "third_party/blink/renderer/bindings/core/v8/record_replay_events.h"
 
 namespace blink {
@@ -85,7 +86,16 @@ DOMTimer::DOMTimer(ExecutionContext* context,
       action_(action) {
   DCHECK_GT(timeout_id, 0);
 
-  record_replay_dependency_graph_node_id_ = recordreplay::NewDependencyGraphNode("{\"kind\":\"timerScheduled\"}");
+  if (recordreplay::DependencyGraphEnabled()) {
+    base::Value::Dict info;
+    info.Set("kind", "timerScheduled");
+    info.Set("duration", timeout.InMillisecondsF());
+    info.Set("singleShot", single_shot);
+    std::string json;
+    base::JSONWriter::Write(info, &json);
+    record_replay_dependency_graph_node_id_ =
+      recordreplay::NewDependencyGraphNode(json.c_str());
+  }
 
   // Step 10:
   if (timeout.is_negative())

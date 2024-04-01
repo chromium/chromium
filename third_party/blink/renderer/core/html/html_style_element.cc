@@ -120,17 +120,29 @@ void HTMLStyleElement::DispatchPendingEvent(
   } else {
     DispatchEvent(*Event::Create(event_type_names::kError), "HTMLStyleElement::DispatchPendingEvent #2");
   }
+
+  absl::optional<recordreplay::AutoDependencyExecution> execute;
+  if (recordreplay::DependencyGraphEnabled()) {
+    int node_id = recordreplay::NewDependencyGraphNode(
+      "{\"kind\":\"styleSheetLoaded\"}"
+    );
+    recordreplay::AddDependencyGraphEdge(
+      record_replay_load_task_scheduled_node_id_, node_id, "{\"kind\":\"scheduler\"}"
+    );
+    execute.emplace(node_id);
+  }
+
   // Checks Document's load event synchronously here for performance.
   // This is safe because dispatchPendingEvent() is called asynchronously.
-  recordreplay::AutoMarkerDependencyExecution execute(
-    "LoadEventDelay", "HTMLStyleElement::DispatchPendingEvent"
-  );
   count->ClearAndCheckLoadEvent();
 }
 
 void HTMLStyleElement::NotifyLoadedSheetAndAllCriticalSubresources(
     LoadedSheetErrorStatus error_status) {
   bool is_load_event = error_status == kNoErrorLoadingSubresource;
+  record_replay_load_task_scheduled_node_id_ = recordreplay::NewDependencyGraphNode(
+    "{\"kind\":\"scheduleStyleSheetLoadedTask\"}"
+  );
   // Per the spec this should post on the network task source.
   // https://html.spec.whatwg.org/multipage/semantics.html#the-style-element
   // This guarantees that the <style> will be applied before the next <script>

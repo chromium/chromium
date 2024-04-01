@@ -40,10 +40,15 @@ class CORE_EXPORT IntersectionObserverEntry final : public ScriptWrappable {
   const IntersectionGeometry& GetGeometry() const { return geometry_; }
   void Trace(Visitor*) const override;
 
+  int RecordReplayCreatedNodeId() const {
+    return record_replay_created_node_id_;
+  }
+
  private:
   IntersectionGeometry geometry_;
   DOMHighResTimeStamp time_;
   Member<Element> target_;
+  int record_replay_created_node_id_;
 };
 
 }  // namespace blink

@@ -271,13 +271,17 @@ void HTMLParserScriptRunner::PendingScriptFinished(
     return;
   }
 
+  int record_replay_scheduled_node_id = recordreplay::NewDependencyGraphNode(
+    "{\"kind\":\"scheduleNotifyScriptLoaded\"}"
+  );
+
   // Posting the script execution part to a new task so that we can allow
   // yielding for cooperative scheduling. Cooperative scheduling requires that
   // the Blink C++ stack be thin when it executes JavaScript.
   document_->GetTaskRunner(TaskType::kInternalContinueScriptLoading)
       ->PostTask(FROM_HERE,
                  WTF::BindOnce(&HTMLParserScriptRunnerHost::NotifyScriptLoaded,
-                               WrapPersistent(host_.Get())));
+                               WrapPersistent(host_.Get()), record_replay_scheduled_node_id));
 }
 
 // <specdef href="https://html.spec.whatwg.org/C/#scriptEndTag">

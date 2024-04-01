@@ -151,17 +151,31 @@ void ScriptPromiseResolver::ResolveOrRejectImmediately() {
 }
 
 void ScriptPromiseResolver::ScheduleResolveOrReject() {
+  int record_replay_scheduled_node_id = recordreplay::NewDependencyGraphNode(
+    "{\"kind\":\"scheduleSettleScriptPromise\"}"
+  );
   deferred_resolve_task_ = PostCancellableTask(
       *GetExecutionContext()->GetTaskRunner(TaskType::kMicrotask), FROM_HERE,
       WTF::BindOnce(&ScriptPromiseResolver::ResolveOrRejectDeferred,
-                    WrapPersistent(this)));
+                    WrapPersistent(this), record_replay_scheduled_node_id));
 }
 
-void ScriptPromiseResolver::ResolveOrRejectDeferred() {
+void ScriptPromiseResolver::ResolveOrRejectDeferred(int record_replay_scheduled_node_id) {
   DCHECK(state_ == kResolving || state_ == kRejecting);
   if (!GetScriptState()->ContextIsValid()) {
     Detach();
     return;
+  }
+
+  absl::optional<recordreplay::AutoDependencyExecution> execute;
+  if (recordreplay::DependencyGraphEnabled()) {
+    int node_id = recordreplay::NewDependencyGraphNode(
+      "{\"kind\":\"settleScriptPromise\"}"
+    );
+    recordreplay::AddDependencyGraphEdge(
+      record_replay_scheduled_node_id, node_id, "{\"kind\":\"scheduler\"}"
+    );
+    execute.emplace(node_id);
   }
 
   ScriptState::Scope scope(script_state_);

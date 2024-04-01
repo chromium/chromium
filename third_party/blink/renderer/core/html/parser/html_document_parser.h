@@ -169,7 +169,7 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   void FlushPendingPreloads() override;
 
   // HTMLParserScriptRunnerHost
-  void NotifyScriptLoaded() final;
+  void NotifyScriptLoaded(int record_replay_scheduled_node_id) final;
   HTMLInputStream& InputStream() final { return input_; }
   bool HasPreloadScanner() const final {
     return preload_scanner_.get() || background_scanner_;
@@ -183,7 +183,8 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   bool PumpTokenizer();
   void PumpTokenizerIfPossible();
   void DeferredPumpTokenizerIfPossible(bool from_finish_append,
-                                       base::TimeTicks schedule_time);
+                                       base::TimeTicks schedule_time,
+                                       int record_replay_scheduled_node_id);
   void SchedulePumpTokenizer(bool from_finish_append);
   void ScheduleEndIfDelayed();
   void ConstructTreeFromToken(AtomicHTMLToken& atomic_token);

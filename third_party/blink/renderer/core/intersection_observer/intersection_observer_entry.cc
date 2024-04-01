@@ -13,7 +13,11 @@ IntersectionObserverEntry::IntersectionObserverEntry(
     const IntersectionGeometry& geometry,
     DOMHighResTimeStamp time,
     Element* target)
-    : geometry_(geometry), time_(time), target_(target) {}
+    : geometry_(geometry), time_(time), target_(target) {
+  record_replay_created_node_id_ = recordreplay::NewDependencyGraphNode(
+    "{\"kind\":\"intersectionObserverEntryCreated\"}"
+  );
+}
 
 DOMRectReadOnly* IntersectionObserverEntry::boundingClientRect() const {
   return DOMRectReadOnly::FromRectF(gfx::RectF(geometry_.TargetRect()));

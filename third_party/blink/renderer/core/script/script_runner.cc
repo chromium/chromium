@@ -185,11 +185,25 @@ void ScriptRunner::RemoveDelayReasonFromScript(PendingScript* pending_script,
     return;
   }
 
+  int record_replay_scheduled_node_id = 0;
+  if (recordreplay::DependencyGraphEnabled()) {
+    base::Value::Dict info;
+    info.Set("kind", "scheduleExecuteAsyncScript");
+    if (pending_script->IsEligibleForLowPriorityAsyncScriptExecution()) {
+      double timeout = features::kTimeoutForLowPriorityAsyncScriptExecution.Get().InMillisecondsF();
+      info.Set("lowPriorityTimeout", timeout);
+    }
+    std::string json;
+    base::JSONWriter::Write(info, &json);
+    record_replay_scheduled_node_id = recordreplay::NewDependencyGraphNode(json.c_str());
+  }
+
   // Script is really ready to evaluate.
   pending_async_scripts_.erase(it);
   base::OnceClosure task =
       WTF::BindOnce(&ScriptRunner::ExecuteAsyncPendingScript,
-                    WrapWeakPersistent(this), WrapPersistent(pending_script));
+                    WrapWeakPersistent(this), WrapPersistent(pending_script),
+                    record_replay_scheduled_node_id);
   if (pending_script->IsEligibleForLowPriorityAsyncScriptExecution()) {
     PostTaskWithLowPriorityUntilTimeout(
         FROM_HERE, std::move(task),
@@ -200,7 +214,16 @@ void ScriptRunner::RemoveDelayReasonFromScript(PendingScript* pending_script,
   }
 }
 
-void ScriptRunner::ExecuteAsyncPendingScript(PendingScript* pending_script) {
+void ScriptRunner::ExecuteAsyncPendingScript(PendingScript* pending_script, int record_replay_scheduled_node_id) {
+  absl::optional<recordreplay::AutoDependencyExecution> execute;
+  if (recordreplay::DependencyGraphEnabled()) {
+    int node_id = recordreplay::NewDependencyGraphNode("{\"kind\":\"executeAsyncScript\"}");
+    recordreplay::AddDependencyGraphEdge(
+      record_replay_scheduled_node_id, node_id, "{\"kind\":\"scheduler\"}"
+    );
+    execute.emplace(node_id);
+  }
+
   DCHECK_GT(number_of_async_scripts_not_evaluated_yet_, 0u);
   ExecutePendingScript(pending_script);
   number_of_async_scripts_not_evaluated_yet_--;
