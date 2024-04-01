@@ -660,6 +660,7 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
   void UpdateAutoclickStabilizePositionFromPref();
   void UpdateAutoclickMovementThresholdFromPref();
   void UpdateAutoclickMenuPositionFromPref();
+  void UpdateMouseKeysMaxSpeedFromPref();
   void UpdateFloatingMenuPositionFromPref();
   void UpdateLargeCursorFromPref();
   void UpdateLiveCaptionFromPref();

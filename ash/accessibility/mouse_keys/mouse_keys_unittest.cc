@@ -4,6 +4,7 @@
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/mouse_keys/mouse_keys_controller.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
@@ -244,6 +245,13 @@ class MouseKeysTest : public AshTestBase {
     PressColemakKey(key_code);
     ReleaseColemakKey(key_code);
     base::RunLoop().RunUntilIdle();
+  }
+
+  void SetMaxSpeed(double factor) {
+    PrefService* prefs =
+        Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+
+    prefs->SetDouble(prefs::kAccessibilityMouseKeysMaxSpeed, factor);
   }
 
  private:
@@ -493,7 +501,7 @@ TEST_F(MouseKeysTest, MaxSpeed) {
 
   // No acceleration.
   constexpr int kMaxSpeed = 3;
-  GetMouseKeysController()->SetMaxSpeed(kMaxSpeed);
+  SetMaxSpeed(kMaxSpeed);
   GetMouseKeysController()->set_acceleration(0);
 
   // Move right.
@@ -546,7 +554,7 @@ TEST_F(MouseKeysTest, Acceleration) {
       kAcceleration *
       MouseKeysController::kBaseAccelerationDIPPerSecondSquared *
       MouseKeysController::kUpdateFrequencyInSeconds;
-  GetMouseKeysController()->SetMaxSpeed(10);
+  SetMaxSpeed(10);
   GetMouseKeysController()->set_acceleration(kAcceleration);
 
   // Move down.
@@ -604,7 +612,7 @@ TEST_F(MouseKeysTest, AccelerationAndMaxSpeed) {
       kAcceleration *
       MouseKeysController::kBaseAccelerationDIPPerSecondSquared *
       MouseKeysController::kUpdateFrequencyInSeconds;
-  GetMouseKeysController()->SetMaxSpeed(kMaxSpeedFactor);
+  SetMaxSpeed(kMaxSpeedFactor);
   GetMouseKeysController()->set_acceleration(kAcceleration);
 
   // Move right.

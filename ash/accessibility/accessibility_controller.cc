@@ -2153,6 +2153,13 @@ void AccessibilityController::ObservePrefs(PrefService* prefs) {
       base::BindRepeating(
           &AccessibilityController::UpdateAutoclickMenuPositionFromPref,
           base::Unretained(this)));
+  if (::features::IsAccessibilityMouseKeysEnabled()) {
+    pref_change_registrar_->Add(
+        prefs::kAccessibilityMouseKeysMaxSpeed,
+        base::BindRepeating(
+            &AccessibilityController::UpdateMouseKeysMaxSpeedFromPref,
+            base::Unretained(this)));
+  }
   pref_change_registrar_->Add(
       prefs::kAccessibilityFloatingMenuPosition,
       base::BindRepeating(
@@ -2240,6 +2247,9 @@ void AccessibilityController::ObservePrefs(PrefService* prefs) {
   UpdateAutoclickStabilizePositionFromPref();
   UpdateAutoclickMovementThresholdFromPref();
   UpdateAutoclickMenuPositionFromPref();
+  if (::features::IsAccessibilityMouseKeysEnabled()) {
+    UpdateMouseKeysMaxSpeedFromPref();
+  }
   UpdateFloatingMenuPositionFromPref();
   UpdateLargeCursorFromPref();
   UpdateCursorColorFromPrefs(/*notify=*/true);
@@ -2316,6 +2326,13 @@ void AccessibilityController::UpdateAutoclickMovementThresholdFromPref() {
 void AccessibilityController::UpdateAutoclickMenuPositionFromPref() {
   Shell::Get()->autoclick_controller()->SetMenuPosition(
       GetAutoclickMenuPosition());
+}
+
+void AccessibilityController::UpdateMouseKeysMaxSpeedFromPref() {
+  DCHECK(active_user_prefs_);
+  double max_speed =
+      active_user_prefs_->GetDouble(prefs::kAccessibilityMouseKeysMaxSpeed);
+  Shell::Get()->mouse_keys_controller()->SetMaxSpeed(max_speed);
 }
 
 void AccessibilityController::SetAutoclickMenuPosition(
