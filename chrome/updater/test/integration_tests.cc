@@ -3230,7 +3230,7 @@ class IntegrationInstallerResultsTestNewInstalls : public IntegrationTestMsi {};
 
 TEST_F(IntegrationInstallerResultsTestNewInstalls, OnDemandCancel) {
   // Delay download a bit to allow cancellation.
-  test_server_->set_download_delay(base::Seconds(1));
+  test_server_->set_download_delay(base::Seconds(5));
 
   const base::FilePath crx_relative_path = GetInstallerPath(kMsiCrx);
 
