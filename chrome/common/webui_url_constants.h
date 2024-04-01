@@ -218,7 +218,6 @@ extern const char kChromeUISyncHost[];
 extern const char kChromeUISyncInternalsHost[];
 extern const char kChromeUISyncInternalsUrl[];
 extern const char kChromeUISystemInfoHost[];
-extern const char kChromeUIFeedbackSystemInfoUrl[];
 extern const char kChromeUITermsHost[];
 extern const char kChromeUITermsURL[];
 extern const char kChromeUIThemeHost[];

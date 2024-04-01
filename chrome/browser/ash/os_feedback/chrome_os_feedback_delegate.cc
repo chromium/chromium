@@ -433,7 +433,8 @@ void ChromeOsFeedbackDelegate::OpenMetricsDialog() {
 }
 
 void ChromeOsFeedbackDelegate::OpenSystemInfoDialog() {
-  GURL systemInfoUrl = GURL(chrome::kChromeUIFeedbackSystemInfoUrl);
+  GURL systemInfoUrl = GURL(
+      base::StrCat({chrome::kChromeUIFeedbackURL, "html/system_info.html"}));
   OpenWebDialog(systemInfoUrl, /*args=*/"");
 }
 
