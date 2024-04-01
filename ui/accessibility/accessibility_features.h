@@ -129,11 +129,6 @@ AX_BASE_EXPORT bool IsAccessibilityReducedAnimationsEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityFaceGaze);
 AX_BASE_EXPORT bool IsAccessibilityFaceGazeEnabled();
 
-// Use Select-to-Speak hover text improvements.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(
-    kAccessibilitySelectToSpeakHoverTextImprovements);
-AX_BASE_EXPORT bool IsAccessibilitySelectToSpeakHoverTextImprovementsEnabled();
-
 // Allow context checking with the accessibility Dictation
 // feature.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(

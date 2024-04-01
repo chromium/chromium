@@ -683,9 +683,6 @@ extern const char kAccessibilityMouseKeysDescription[];
 extern const char kAccessibilitySelectToSpeakPrefsMigrationName[];
 extern const char kAccessibilitySelectToSpeakPrefsMigrationDescription[];
 
-extern const char kAccessibilitySelectToSpeakHoverTextImprovementsName[];
-extern const char kAccessibilitySelectToSpeakHoverTextImprovementsDescription[];
-
 extern const char kMacCoreLocationBackendName[];
 extern const char kMacCoreLocationBackendDescription[];
 

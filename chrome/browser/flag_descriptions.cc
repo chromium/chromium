@@ -1147,12 +1147,6 @@ const char kAccessibilityMouseKeysName[] = "Mouse Keys";
 const char kAccessibilityMouseKeysDescription[] =
     "This option enables you to control the mouse with the keyboard.";
 
-const char kAccessibilitySelectToSpeakHoverTextImprovementsName[] =
-    "Select-to-Speak Hover Text Improvements";
-const char kAccessibilitySelectToSpeakHoverTextImprovementsDescription[] =
-    "This option enables improvements in the text shown when hovering over the "
-    "Select-to-Speak feature icon in the system tray.";
-
 const char kMacCoreLocationBackendName[] = "Core Location Backend";
 const char kMacCoreLocationBackendDescription[] =
     "Enables usage of the Core Location APIs as the backend for Geolocation "

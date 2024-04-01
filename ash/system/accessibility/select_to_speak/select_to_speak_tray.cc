@@ -62,11 +62,6 @@ ui::ImageModel GetImageOnCurrentSelectToSpeakStatus(
 
 std::u16string GetTooltipTextOnCurrentSelectToSpeakStatus(
     const SelectToSpeakState& select_to_speak_state) {
-  if (!::features::IsAccessibilitySelectToSpeakHoverTextImprovementsEnabled()) {
-    return l10n_util::GetStringUTF16(
-        IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SELECT_TO_SPEAK);
-  }
-
   switch (select_to_speak_state) {
     case SelectToSpeakState::kSelectToSpeakStateInactive:
       return l10n_util::GetStringUTF16(
