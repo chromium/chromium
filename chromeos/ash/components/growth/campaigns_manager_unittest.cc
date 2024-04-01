@@ -1083,11 +1083,6 @@ TEST_F(CampaignsManagerTest, GetSchedulingCampaignInvalidTargeting) {
   VerifyDemoModePayload(
       campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 
-  histogram_tester.ExpectBucketCount(
-      kCampaignsManagerErrorHistogramName,
-      CampaignsManagerError::kInvalidSchedulingTargeting,
-      /*count=*/1);
-
   histogram_tester.ExpectBucketCount(kCampaignsManagerErrorHistogramName,
                                      CampaignsManagerError::kInvalidCampaign,
                                      /*count=*/1);

@@ -78,19 +78,6 @@ using Campaign = base::Value::Dict;
 // List of campaigns.
 using Campaigns = base::Value::List;
 
-// Lists of campaigns keyed by the targeted slot. The key is the slot ID in
-// string. For example:
-// {
-//   "0": [...]
-//   "1": [...]
-// }
-using CampaignsPerSlot = base::Value::Dict;
-
-const Campaigns* GetCampaignsBySlot(const CampaignsPerSlot* campaigns_per_slot,
-                                    Slot slot);
-
-const Targetings* GetTargetings(const Campaign* campaign);
-
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH)
 const Payload* GetPayloadBySlot(const Campaign* campaign, Slot slot);
 

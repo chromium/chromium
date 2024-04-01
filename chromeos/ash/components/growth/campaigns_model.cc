@@ -282,11 +282,6 @@ SessionTargeting::GetSchedulings() const {
   std::vector<std::unique_ptr<TimeWindowTargeting>> schedulings;
   auto* scheduling_dicts = GetListCriteria(kSchedulingTargetings);
   if (!scheduling_dicts) {
-    // TODO(b/308440474): Empty scheduling targeting is a valid use case. Remove
-    // the error recording for that case.
-    LOG(ERROR) << "Invalid scheduling targetings";
-    RecordCampaignsManagerError(
-        CampaignsManagerError::kInvalidSchedulingTargeting);
     return schedulings;
   }
 
