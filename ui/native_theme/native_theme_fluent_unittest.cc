@@ -4,9 +4,14 @@
 
 #include "ui/native_theme/native_theme_fluent.h"
 
+#include "cc/paint/paint_flags.h"
+#include "cc/paint/paint_op.h"
+#include "cc/paint/paint_record.h"
+#include "cc/paint/record_paint_canvas.h"
 #include "skia/ext/font_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkTypeface.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/native_theme/native_theme_constants_fluent.h"
@@ -119,6 +124,28 @@ TEST_P(NativeThemeFluentTest, VerifyArrowRectWithTriangularArrows) {
 TEST_P(NativeThemeFluentTest, VerifyArrowRectWithArrowIcons) {
   SetArrowIconsAvailable(true);
   VerifyArrowRect();
+}
+
+// Verify that the thumb paint function draws a round rectangle.
+// Generally, NativeThemeFluent::Paint* functions are covered by
+// Blink's web tests; but in web tests we render the thumbs as squares
+// instead of pill-shaped. This test ensures we don't lose coverage on the
+// PaintOp called to draw the thumb.
+TEST_F(NativeThemeFluentTest, PaintThumbRoundedCorners) {
+  cc::RecordPaintCanvas canvas;
+  ColorProvider color_provider;
+  color_provider.GenerateColorMap();
+  constexpr gfx::Rect kRect(15, 100);
+  // `is_web_test` is `false` by default.
+  const NativeTheme::ScrollbarThumbExtraParams extra_params;
+  theme_.PaintScrollbarThumb(
+      &canvas, &color_provider,
+      /*part=*/NativeTheme::kScrollbarVerticalThumb,
+      /*state=*/NativeTheme::kNormal, kRect, extra_params,
+      /*color_scheme=*/NativeTheme::ColorScheme::kDefault);
+  EXPECT_EQ(canvas.TotalOpCount(), 1u);
+  EXPECT_EQ(canvas.ReleaseAsRecord().GetFirstOp().GetType(),
+            cc::PaintOpType::kDrawRRect);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
