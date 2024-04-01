@@ -4082,12 +4082,10 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
   if (!element)
     return false;
 
-  // Use a flag to control whether or not the <html> element is included
-  // in the accessibility tree. Either way it's always marked as "ignored",
-  // but eventually we want to always include it in the tree to simplify
-  // some logic.
+  // Include the <html> element in the accessibility tree, which will be
+  // "ignored".
   if (IsA<HTMLHtmlElement>(element))
-    return RuntimeEnabledFeatures::AccessibilityExposeHTMLElementEnabled();
+    return true;
 
   // Keep the internal accessibility tree consistent for videos which lack
   // a player and also inner text.

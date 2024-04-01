@@ -1,15 +1,5 @@
 (async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   function printNodeAndChildren(node, leadingSpace = "") {
-    // TODO(crbug.com/1063155): remove this workaround when
-    // RuntimeEnabledFeatures::AccessibilityExposeHTMLElementEnabled()
-    // is enabled everywhere.
-    if (node.role.value == "generic" &&
-        node.parent.role.value == "WebArea" &&
-        node.children.length == 1 &&
-        node.children[0].role.value == "generic") {
-      return printNodeAndChildren(node.children[0], leadingSpace);
-    }
-
     if (node.ignored) {
       return node.children.map((child) => printNodeAndChildren(child, leadingSpace)).join("\n");
     }

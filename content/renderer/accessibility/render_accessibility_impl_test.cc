@@ -177,7 +177,6 @@ void RenderAccessibilityImplTest::SetUp() {
   blink::WebTestingSupport::SaveRuntimeFeatures();
   blink::WebRuntimeFeatures::EnableExperimentalFeatures(false);
   blink::WebRuntimeFeatures::EnableTestOnlyFeatures(false);
-  blink::WebRuntimeFeatures::EnableAccessibilityExposeHTMLElement(true);
 
   RenderViewTest::SetUp();
 

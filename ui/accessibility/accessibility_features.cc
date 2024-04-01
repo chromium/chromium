@@ -66,14 +66,6 @@ bool IsAccessibilityAriaVirtualContentEnabled() {
       ::features::kEnableAccessibilityAriaVirtualContent);
 }
 
-BASE_FEATURE(kEnableAccessibilityExposeHTMLElement,
-             "AccessibilityExposeHTMLElement",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-bool IsAccessibilityExposeHTMLElementEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kEnableAccessibilityExposeHTMLElement);
-}
-
 BASE_FEATURE(kEnableAccessibilityLanguageDetection,
              "AccessibilityLanguageDetection",
              base::FEATURE_DISABLED_BY_DEFAULT);

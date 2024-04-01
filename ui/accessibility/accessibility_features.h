@@ -70,11 +70,6 @@ AX_BASE_EXPORT bool IsAutoDisableAccessibilityEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kEnableAccessibilityAriaVirtualContent);
 AX_BASE_EXPORT bool IsAccessibilityAriaVirtualContentEnabled();
 
-// Expose the <html> element to the browser process AXTree (as an
-// ignored node).
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kEnableAccessibilityExposeHTMLElement);
-AX_BASE_EXPORT bool IsAccessibilityExposeHTMLElementEnabled();
-
 // Use language detection to determine the language
 // of text content in page and exposed to the browser process AXTree.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kEnableAccessibilityLanguageDetection);

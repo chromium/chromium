@@ -223,11 +223,6 @@
       status: "test",
     },
     {
-      name: "AccessibilityExposeHTMLElement",
-      base_feature: "none",
-      public: true,
-    },
-    {
       name: "AccessibilityObjectModel",
       status: "experimental",
     },

@@ -339,8 +339,6 @@ class AXSelectionDeserializer final {
 
   // Pairs of focus nodes + focus offsets.
   Persistent<VectorOfPairs<Node, int>> foci_;
-
-  ScopedAccessibilityExposeHTMLElementForTest expose_html_element_{true};
 };
 
 }  // namespace

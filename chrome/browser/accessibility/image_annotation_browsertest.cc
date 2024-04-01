@@ -234,12 +234,6 @@ class ImageAnnotationBrowserTest : public InProcessBrowserTest {
       delete;
 
  protected:
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kEnableAccessibilityExposeHTMLElement}, {});
-    InProcessBrowserTest::SetUp();
-  }
-
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
 

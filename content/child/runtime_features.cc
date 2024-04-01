@@ -185,8 +185,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
       blinkFeatureToBaseFeatureMapping[] = {
           {wf::EnableAccessibilityAriaVirtualContent,
            raw_ref(features::kEnableAccessibilityAriaVirtualContent)},
-          {wf::EnableAccessibilityExposeHTMLElement,
-           raw_ref(features::kEnableAccessibilityExposeHTMLElement)},
 #if BUILDFLAG(IS_ANDROID)
           {wf::EnableAccessibilityPageZoom,
            raw_ref(features::kAccessibilityPageZoom)},

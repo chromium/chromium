@@ -235,8 +235,6 @@ void CrossPlatformAccessibilityBrowserTest::SetUp() {
 void CrossPlatformAccessibilityBrowserTest::ChooseFeatures(
     std::vector<base::test::FeatureRef>* enabled_features,
     std::vector<base::test::FeatureRef>* disabled_features) {
-  enabled_features->emplace_back(
-      features::kEnableAccessibilityExposeHTMLElement);
 }
 
 void CrossPlatformAccessibilityBrowserTest::SetUpOnMainThread() {

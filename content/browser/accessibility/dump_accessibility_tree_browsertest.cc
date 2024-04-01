@@ -122,8 +122,6 @@ void DumpAccessibilityTreeTest::ChooseFeatures(
   // http://crbug.com/1063155 - temporary until this is enabled
   // everywhere.
   enabled_features->emplace_back(
-      features::kEnableAccessibilityExposeHTMLElement);
-  enabled_features->emplace_back(
       features::kEnableAccessibilityAriaVirtualContent);
   DumpAccessibilityTestBase::ChooseFeatures(enabled_features,
                                             disabled_features);
