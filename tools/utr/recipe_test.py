@@ -64,10 +64,17 @@ class LegacyRunnerTests(unittest.TestCase):
     runner = recipe.LegacyRunner(self.tmp_dir, {}, 'some-bucket',
                                  'some-builder', 'swarming-server', [], False,
                                  False, False)
-    self.subp_mock.returncode = 1
     with mock.patch('asyncio.create_subprocess_exec',
                     return_value=self.subp_mock):
+      # Passing run.
+      self.subp_mock.returncode = 0
+      with open(self.tmp_dir.joinpath('out.json'), 'w') as f:
+        json.dump({}, f)
+      _, error_msg = runner.run_recipe()
+      self.assertIsNone(error_msg)
+
       # Missing json file
+      self.subp_mock.returncode = 1
       _, error_msg = runner.run_recipe()
       self.assertEqual(error_msg, 'Build/test failure')
 

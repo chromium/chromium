@@ -226,7 +226,7 @@ class LegacyRunner:
         try:
           with open(output_path) as f:
             output = json.load(f)
-          failure_md = output.get('failure', {}).get('humanReason')
+          failure_md = output.get('failure', {}).get('humanReason', '')
           # TODO(crbug.com/41492688): Also pull out info about gclient/GN arg
           # mismatches, surface those as a Y/N prompt to the user, and re-run
           # if Y.
