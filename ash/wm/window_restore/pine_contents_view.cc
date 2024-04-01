@@ -86,6 +86,16 @@ PineContentsView::PineContentsView() : creation_time_(base::TimeTicks::Now()) {
   SetInsideBorderInsets(kContentsInsets);
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
 
+  const PineContentsData* pine_contents_data =
+      Shell::Get()->pine_controller()->pine_contents_data();
+  CHECK(pine_contents_data);
+  const int title_message_id = pine_contents_data->last_session_crashed
+                                   ? IDS_ASH_PINE_DIALOG_CRASH_TITLE
+                                   : IDS_ASH_PINE_DIALOG_TITLE;
+  const int description_message_id = pine_contents_data->last_session_crashed
+                                         ? IDS_ASH_PINE_DIALOG_CRASH_DESCRIPTION
+                                         : IDS_ASH_PINE_DIALOG_DESCRIPTION;
+
   views::View* spacer;
   auto* actions_container_view = AddChildView(
       // This box layout view is the container for the left hand side (in LTR)
@@ -103,8 +113,8 @@ PineContentsView::PineContentsView() : creation_time_(base::TimeTicks::Now()) {
                                              kContentsTitleFontSize,
                                              gfx::Font::Weight::BOLD))
                   .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                  .SetText(
-                      l10n_util::GetStringUTF16(IDS_ASH_PINE_DIALOG_TITLE)),
+                  .SetMultiLine(true)
+                  .SetText(l10n_util::GetStringUTF16(title_message_id)),
               // Description.
               views::Builder<views::Label>()
                   .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
@@ -113,8 +123,7 @@ PineContentsView::PineContentsView() : creation_time_(base::TimeTicks::Now()) {
                                              gfx::Font::Weight::NORMAL))
                   .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                   .SetMultiLine(true)
-                  .SetText(l10n_util::GetStringUTF16(
-                      IDS_ASH_PINE_DIALOG_DESCRIPTION)),
+                  .SetText(l10n_util::GetStringUTF16(description_message_id)),
               // This box layout view is the container for the "No thanks" and
               // "Restore" pill buttons.
               views::Builder<views::BoxLayoutView>()
@@ -158,9 +167,6 @@ PineContentsView::PineContentsView() : creation_time_(base::TimeTicks::Now()) {
       ->SetFlexForView(spacer, 1);
 
   gfx::Size screenshot_size;
-  const PineContentsData* pine_contents_data =
-      Shell::Get()->pine_controller()->pine_contents_data();
-  CHECK(pine_contents_data);
   showing_list_view_ = pine_contents_data->image.isNull();
   if (showing_list_view_) {
     preview_container_view_ =
