@@ -7,6 +7,7 @@
 #include "ash/public/cpp/hotspot_config_service.h"
 #include "ash/public/cpp/network_config_service.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -105,7 +106,7 @@ void HotspotNotifier::OnHotspotTurnedOff(
   std::unique_ptr<message_center::Notification> notification =
       CreateNotification(l10n_util::GetStringUTF16(title_id),
                          l10n_util::GetStringUTF16(message_id), notification_id,
-                         delegate);
+                         /*use_hotspot_icon=*/false, delegate);
 
   if (notification_actions.size() > 0) {
     notification->set_buttons(notification_actions);
@@ -171,7 +172,7 @@ void HotspotNotifier::OnGetHotspotInfo(
         l10n_util::GetStringUTF16(IDS_ASH_TURN_OFF_HOTSPOT_LABEL)));
     std::unique_ptr<message_center::Notification> notification =
         CreateNotification(title, message, kHotspotTurnedOnNotificationId,
-                           delegate);
+                           /*use_hotspot_icon=*/true, delegate);
     notification->set_pinned(/*pinned=*/true);
     notification->set_buttons(notification_actions);
     message_center->AddNotification(std::move(notification));
@@ -261,7 +262,10 @@ HotspotNotifier::CreateNotification(
     const std::u16string& title_id,
     const std::u16string& message_id,
     const char* notification_id,
+    const bool use_hotspot_icon,
     scoped_refptr<message_center::NotificationDelegate> delegate) {
+  const gfx::VectorIcon& icon =
+      use_hotspot_icon ? kHotspotOnIcon : gfx::kNoneIcon;
   std::unique_ptr<message_center::Notification> notification =
       ash::CreateSystemNotificationPtr(
           message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title_id,
@@ -271,7 +275,7 @@ HotspotNotifier::CreateNotification(
               message_center::NotifierType::SYSTEM_COMPONENT, kNotifierHotspot,
               NotificationCatalogName::kHotspot),
           message_center::RichNotificationData(), delegate,
-          /*small_image=*/gfx::VectorIcon(),
+          /*small_image=*/icon,
           message_center::SystemNotificationWarningLevel::NORMAL);
 
   return notification;

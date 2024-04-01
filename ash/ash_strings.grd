@@ -3136,7 +3136,7 @@ Some features are limited to increase battery life.
         <ph name="DEVICE_NAME">$1<ex>Chromebook</ex></ph> hotspot is on, no devices connected
       </message>
       <message name="IDS_ASH_HOTSPOT_ON_TITLE" desc="Title used for the system notification shown when the hotspot is turned on.">
-        With hotspot on, Wi-Fi is off
+        Hotspot is on (Wi-Fi is off)
       </message>
       <message name="IDS_ASH_HOTSPOT_ON_MESSAGE_MULTIPLE_CONNECTED_DEVICES" desc="Message displayed in the notification when hotspot is turned on and multiple devices are connected.">
         <ph name="DEVICECOUNT">$1</ph> devices connected
@@ -3145,16 +3145,19 @@ Some features are limited to increase battery life.
         1 device connected
       </message>
       <message name="IDS_ASH_HOTSPOT_ON_MESSAGE_NO_CONNECTED_DEVICES_NOTIFICATION" desc="Message displayed in the notification when hotspot is turned on and no devices are connected.">
-        No devices connected. While using hotspot, Wi-Fi will stay off.
+        This may incur data cost.
+No devices connected.
       </message>
       <message name="IDS_ASH_HOTSPOT_ON_MESSAGE_MULTIPLE_CONNECTED_DEVICES_NOTIFICATION" desc="Message displayed in the notification when hotspot is turned on and multiple devices are connected.">
-        <ph name="DEVICECOUNT">$1</ph> devices connected. While using hotspot, Wi-Fi will stay off.
+        This may incur data cost.
+<ph name="DEVICECOUNT">$1</ph> devices connected.
       </message>
       <message name="IDS_ASH_HOTSPOT_ON_MESSAGE_ONE_CONNECTED_DEVICE_NOTIFICATION" desc="Message displayed in the notification when hotspot is turned on and one device is connected.">
-        1 device connected. While using hotspot, Wi-Fi will stay off.
+        This may incur data cost.
+1 device connected.
       </message>
       <message name="IDS_ASH_TURN_OFF_HOTSPOT_LABEL" desc="The label for button used to turn off hotspot.">
-        Turn off hotspot
+        Turn off
       </message>
       <message name="IDS_ASH_HOTSPOT_OFF_TITLE" desc="Title used for the system notification shown when the hotspot is turned off.">
         Hotspot is off

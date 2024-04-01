@@ -67,6 +67,7 @@ class ASH_EXPORT HotspotNotifier
       const std::u16string& title_id,
       const std::u16string& message_id,
       const char* notification_id,
+      const bool use_hotspot_icon,
       scoped_refptr<message_center::NotificationDelegate> delegate);
 
   void EnableHotspotHandler(const char* notification_id,
