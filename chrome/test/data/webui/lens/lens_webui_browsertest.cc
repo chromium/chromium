@@ -33,6 +33,8 @@ class LensWebUIBrowserTest : public WebUIMochaBrowserTest {
 class LensOverlayTest : public LensWebUIBrowserTest {
  protected:
   void RunOverlayTest(const std::string& file, const std::string& trigger) {
+    WaitForPaint();
+
     // State should start in off.
     auto* controller = browser()
                            ->tab_strip_model()
@@ -55,6 +57,18 @@ class LensOverlayTest : public LensWebUIBrowserTest {
     auto* web_contents = overlay_web_view->GetWebContents();
     content::WaitForLoadStop(web_contents);
     ASSERT_TRUE(RunTestOnWebContents(web_contents, file, trigger, true));
+  }
+
+  // Lens overlay takes a screenshot of the tab. In order to take a screenshot
+  // the tab must be painted. Wait for that paint.
+  void WaitForPaint() {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return browser()
+          ->tab_strip_model()
+          ->GetActiveTab()
+          ->contents()
+          ->CompletedFirstVisuallyNonEmptyPaint();
+    }));
   }
 };
 
