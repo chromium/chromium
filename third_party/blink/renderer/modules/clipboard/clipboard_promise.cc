@@ -606,11 +606,10 @@ void ClipboardPromise::ValidatePreconditions(
     return;
   }
 
-  if (RuntimeEnabledFeatures::AsyncClipboardImplicitPermissionEnabled() &&
-      ((permission == mojom::blink::PermissionName::CLIPBOARD_WRITE &&
-        ClipboardCommands::IsExecutingCutOrCopy(*context)) ||
-       (permission == mojom::blink::PermissionName::CLIPBOARD_READ &&
-        ClipboardCommands::IsExecutingPaste(*context)))) {
+  if ((permission == mojom::blink::PermissionName::CLIPBOARD_WRITE &&
+       ClipboardCommands::IsExecutingCutOrCopy(*context)) ||
+      (permission == mojom::blink::PermissionName::CLIPBOARD_READ &&
+       ClipboardCommands::IsExecutingPaste(*context))) {
     GetClipboardTaskRunner()->PostTask(
         FROM_HERE, WTF::BindOnce(std::move(callback),
                                  mojom::blink::PermissionStatus::GRANTED));
