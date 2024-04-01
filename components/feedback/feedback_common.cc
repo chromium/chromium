@@ -49,8 +49,10 @@ constexpr char kIsCrossDeviceIssueKey[] = "is_cross_device_issue";
 constexpr char kIsCrossDeviceIssueTrueValue[] = "true";
 constexpr char kTargetDeviceIdKey[] = "target_device_id";
 constexpr char kTargetDeviceIdTypeKey[] = "target_device_id_type";
+constexpr char kInitiatingDeviceName[] = "initiating_device_name";
 // Enum value for MAC_ADDRESS type.
 constexpr char kTargetDeviceIdTypeMacAddressValue[] = "1";
+constexpr char kInitiatingDeviceNameValue[] = "Chromebook";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 constexpr char kIsOffensiveOrUnsafeKey[] = "is_offensive_or_unsafe";
@@ -209,6 +211,8 @@ void FeedbackCommon::PrepareReport(
     AddFeedbackData(feedback_data, kTargetDeviceIdKey, mac_address_.value());
     AddFeedbackData(feedback_data, kTargetDeviceIdTypeKey,
                     kTargetDeviceIdTypeMacAddressValue);
+    AddFeedbackData(feedback_data, kInitiatingDeviceName,
+                    kInitiatingDeviceNameValue);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
