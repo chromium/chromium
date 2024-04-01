@@ -3745,8 +3745,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
 // These tests currently fail on linux due to http://crbug.com/1196493.
 // To keep the coverage from the rest of the test, we disable the failing check
 // on linux for window-maximization.
-// TODO(https://crbug.com/1255462): fails under lacros.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_RestoreAppMinimized DISABLED_RestoreAppMinimized
 #else
 #define MAYBE_RestoreAppMinimized RestoreAppMinimized
@@ -3766,6 +3765,8 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, MAYBE_RestoreAppMinimized) {
   Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
 
   app_browser->window()->Minimize();
+  ASSERT_TRUE(ui_test_utils::WaitForMinimized(app_browser));
+  EXPECT_TRUE(app_browser->window()->IsMinimized());
 
   // Pretend to 'close the browser'.
   // Just shutdown the services as we would if the browser is shutting down for
@@ -3794,6 +3795,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, MAYBE_RestoreAppMinimized) {
     if (browser->type() == Browser::Type::TYPE_APP) {
       EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(browser, app_id));
 #if !BUILDFLAG(IS_LINUX)
+      EXPECT_TRUE(ui_test_utils::WaitForMinimized(browser));
       EXPECT_TRUE(browser->window()->IsMinimized());
 #endif
       EXPECT_EQ(browser->tab_strip_model()->GetWebContentsAt(0)->GetURL(),
