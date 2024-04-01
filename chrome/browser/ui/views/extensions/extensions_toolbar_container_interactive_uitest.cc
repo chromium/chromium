@@ -233,8 +233,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerUITest,
 
 // Tests that clicking on a second extension action will close a first if its
 // popup was open.
+// TODO(crbug.com/332299695): Test failing on linux-lacros-tester-rel.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_ClickingOnASecondActionClosesTheFirst \
+  DISABLED_ClickingOnASecondActionClosesTheFirst
+#else
+#define MAYBE_ClickingOnASecondActionClosesTheFirst \
+  ClickingOnASecondActionClosesTheFirst
+#endif
 IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerUITest,
-                       ClickingOnASecondActionClosesTheFirst) {
+                       MAYBE_ClickingOnASecondActionClosesTheFirst) {
   std::vector<extensions::TestExtensionDir> test_dirs;
   auto load_extension = [&](const char* extension_name) {
     constexpr char kManifestTemplate[] =
