@@ -212,8 +212,8 @@ void DataProtectionNavigationObserver::CreateForNavigationIfNeeded(
   }
 
   // If this is a skipped URL, force the view to clear any data protections if
-  // present.  This is needed to handle for example navigating from a watermaked
-  // page to the NTP.
+  // present.  This is needed to handle for example navigating from a
+  // watermarked page to the NTP.
   if (SkipUrl(navigation_handle->GetURL())) {
     std::move(callback).Run(std::string());
     return;
@@ -245,9 +245,17 @@ void DataProtectionNavigationObserver::GetDataProtectionSettings(
     return;
   }
 
+  // If this is a skipped URL, force the view to clear any data protections if
+  // present.  This is needed to handle for example navigating from a
+  // watermarked page to the NTP.
+  if (SkipUrl(web_contents->GetLastCommittedURL())) {
+    std::move(callback).Run(std::string());
+    return;
+  }
+
   auto* lookup_service = safe_browsing::
       ChromeEnterpriseRealTimeUrlLookupServiceFactory::GetForProfile(profile);
-  if (lookup_service && web_contents->GetLastCommittedURL().is_valid()) {
+  if (lookup_service) {
     DoStringLookup(lookup_service, web_contents->GetLastCommittedURL(),
                    GetIdentifier(profile), std::move(callback), web_contents);
   } else {

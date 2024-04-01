@@ -36,6 +36,10 @@ class WatermarkView : public views::View {
   // views::View
   void OnPaint(gfx::Canvas* canvas) override;
 
+  bool has_text_for_testing() const {
+    return text_fill_.get() || text_outline_.get();
+  }
+
  private:
   // Helper function to draw a single block of text with the data in
   // `text_fill_` and `text_outline_` at the provided coordinates.

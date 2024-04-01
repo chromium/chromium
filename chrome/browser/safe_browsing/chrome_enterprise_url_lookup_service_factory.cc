@@ -28,10 +28,10 @@
 namespace safe_browsing {
 
 // static
-ChromeEnterpriseRealTimeUrlLookupService*
+RealTimeUrlLookupServiceBase*
 ChromeEnterpriseRealTimeUrlLookupServiceFactory::GetForProfile(
     Profile* profile) {
-  return static_cast<ChromeEnterpriseRealTimeUrlLookupService*>(
+  return static_cast<RealTimeUrlLookupServiceBase*>(
       GetInstance()->GetServiceForBrowserContext(profile, /* create= */ true));
 }
 

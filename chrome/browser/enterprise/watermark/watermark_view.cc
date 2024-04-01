@@ -106,24 +106,27 @@ WatermarkView::~WatermarkView() = default;
 void WatermarkView::SetString(const std::string& text) {
   DCHECK(base::IsStringUTF8(text));
 
-  text_fill_.reset();
-  text_outline_.reset();
+  if (text.empty()) {
+    text_fill_.reset();
+    text_outline_.reset();
+    block_height_ = 0;
+  } else {
+    std::u16string utf16_text = base::UTF8ToUTF16(text);
 
-  std::u16string utf16_text = base::UTF8ToUTF16(text);
+    // The coordinates here do not matter as the display rect will change for
+    // each drawn block.
+    gfx::Rect display_rect(0, 0, kWatermarkBlockWidth, 0);
+    text_fill_ = CreateFillRenderText(display_rect, utf16_text);
+    text_outline_ = CreateOutlineRenderText(display_rect, utf16_text);
 
-  // The coordinates here do not matter as the display rect will change for
-  // each drawn block.
-  gfx::Rect display_rect(0, 0, kWatermarkBlockWidth, 0);
-  text_fill_ = CreateFillRenderText(display_rect, utf16_text);
-  text_outline_ = CreateOutlineRenderText(display_rect, utf16_text);
-
-  // `block_height_` is going to be the max required height for a single line
-  // times the number of line.
-  int w = kWatermarkBlockWidth;
-  gfx::Canvas::SizeStringInt(utf16_text, WatermarkFontList(), &w,
-                             &block_height_, kTextSize,
-                             gfx::Canvas::NO_ELLIPSIS);
-  block_height_ *= text_fill_->GetNumLines();
+    // `block_height_` is going to be the max required height for a single line
+    // times the number of line.
+    int w = kWatermarkBlockWidth;
+    gfx::Canvas::SizeStringInt(utf16_text, WatermarkFontList(), &w,
+                               &block_height_, kTextSize,
+                               gfx::Canvas::NO_ELLIPSIS);
+    block_height_ *= text_fill_->GetNumLines();
+  }
 
   // Invalidate the state of the view.
   SchedulePaint();
