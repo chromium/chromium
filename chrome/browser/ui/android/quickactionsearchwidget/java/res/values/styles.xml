@@ -36,4 +36,12 @@ found in the LICENSE file.
     <style name="TextAppearance.QuickActionSearchWidgetXSmallHintText" parent="TextAppearance.SearchBoxText.Widget">
         <item name="android:textSize">@dimen/quick_action_search_widget_xsmall_search_bar_text_size</item>
     </style>
+
+    <style name="QuickActionSearchWidget.SmallLensButton" parent="QuickActionSearchWidgetSmallButton">
+      <item name="android:visibility">visible</item>
+    </style>
+
+    <style name="QuickActionSearchWidget.SmallDinoButton" parent="QuickActionSearchWidgetSmallButton">
+      <item name="android:visibility">visible</item>
+    </style>
 </resources>

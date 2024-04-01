@@ -6,7 +6,8 @@ found in the LICENSE file.
 -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <dimen name="quick_action_search_widget_width">264dp</dimen>
+    <!-- Preview and base dimensions. -->
+    <dimen name="quick_action_search_widget_width">300dp</dimen>
     <dimen name="quick_action_search_widget_background_radius">20dp</dimen>
     <dimen name="quick_action_search_widget_xsmall_background_radius">16dp</dimen>
 

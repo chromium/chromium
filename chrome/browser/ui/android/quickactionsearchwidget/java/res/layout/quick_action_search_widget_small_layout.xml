@@ -76,14 +76,14 @@ found in the LICENSE file.
 
         <ImageButton
             android:id="@+id/lens_quick_action_button"
-            style="@style/QuickActionSearchWidgetSmallButton"
+            style="@style/QuickActionSearchWidget.SmallLensButton"
             android:layout_marginHorizontal="@dimen/quick_action_search_widget_small_button_horizontal_margin"
             android:contentDescription="@string/accessibility_btn_lens_camera"
             android:src="@drawable/lens_camera_icon" />
 
         <ImageButton
             android:id="@+id/dino_quick_action_button"
-            style="@style/QuickActionSearchWidgetSmallButton"
+            style="@style/QuickActionSearchWidget.SmallDinoButton"
             android:layout_marginHorizontal="@dimen/quick_action_search_widget_small_button_horizontal_margin"
             android:contentDescription="@string/accessibility_quick_action_search_widget_start_dino_game"
             android:src="@drawable/ic_dino" />
