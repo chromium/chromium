@@ -185,6 +185,7 @@ void OutputController::UpdateActivatedDisplayIfNecessary() {
   auto output_pair = outputs_.find(current_active_display_id);
   if (output_pair != outputs_.end()) {
     output_pair->second->SendOutputActivated();
+    aura_output_manager_v2_->SendOutputActivated(*output_pair->second);
     dispatched_activated_display_id_ = current_active_display_id;
   }
 }
