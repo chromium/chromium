@@ -539,6 +539,8 @@ chromium-metrics-reviews@google.com.
   <int value="35" label="Bluetooth"/>
   <int value="36" label="USB"/>
   <int value="37" label="Unified password manager error"/>
+  <int value="38" label="Webapk Install Failed"/>
+  <int value="39" label="Data Sharing"/>
 </enum>
 
 </enums>

@@ -6044,6 +6044,12 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome da
       <message name="IDS_SHARED_IMAGE_TILES_COUNT" desc="The count string for number of tiles that overflows from shared image tiles. |COUNT_NUMBER| will be a number between 1 and 99 (it will be 1-2 digits at most). [CHAR_LIMIT=3]">
         +<ph name="COUNT_NUMBER">%1$s<ex>1</ex></ph>
       </message>
+      <message name="IDS_DATA_SHARING_INVITATION_NOTIFICATION_TITLE" desc="The title of the notification shown to user when a data sharing invitation is received. |NAME| will be the name of the inviter.">
+        <ph name="NAME">%1$s<ex>Jane Doe</ex></ph> invited you to access a shared item.
+      </message>
+      <message name="IDS_DATA_SHARING_ORIGIN_FALLBACK" desc="The fallback inviter name of the data sharing service notification.">
+        Someone
+      </message>
 
       <!-- Interstitial shown prior to making digital identity request to wallet -->
       <message name="IDS_DIGITAL_IDENTITY_INTERSTITIAL_DIALOG_TITLE" translateable="false">

@@ -81,7 +81,8 @@ public class NotificationUmaTracker {
         SystemNotificationType.BLUETOOTH,
         SystemNotificationType.USB,
         SystemNotificationType.UPM_ERROR,
-        SystemNotificationType.WEBAPK_INSTALL_FAILED
+        SystemNotificationType.WEBAPK_INSTALL_FAILED,
+        SystemNotificationType.DATA_SHARING
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface SystemNotificationType {
@@ -125,8 +126,9 @@ public class NotificationUmaTracker {
         int USB = 36;
         int UPM_ERROR = 37;
         int WEBAPK_INSTALL_FAILED = 38;
+        int DATA_SHARING = 39;
 
-        int NUM_ENTRIES = 39;
+        int NUM_ENTRIES = 40;
     }
 
     /*

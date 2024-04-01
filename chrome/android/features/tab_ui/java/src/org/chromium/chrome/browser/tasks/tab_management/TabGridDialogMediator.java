@@ -23,6 +23,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.chrome.browser.data_sharing.DataSharingNotificationManager;
 import org.chromium.chrome.browser.data_sharing.SharedImageTilesCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
@@ -713,6 +714,13 @@ public class TabGridDialogMediator
                 mSharedImageTilesCoordinator.updateTilesCount(0);
             }
             showShareBottomSheet();
+
+            // TODO(b/325082444): This is used for prototyping purposes for now, should be removed
+            // and called from Data Sharing service.
+            new DataSharingNotificationManager(mContext)
+                    .showNotification(
+                            mContext.getResources()
+                                    .getString(R.string.data_sharing_origin_fallback));
         };
     }
 
