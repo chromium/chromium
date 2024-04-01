@@ -47,11 +47,11 @@ class ContextualSearchPolicy {
     private static final String CONTEXTUAL_SEARCH_ENABLED = "true";
 
     private final SharedPreferencesManager mPreferencesManager;
+    private final Profile mProfile;
     private final ContextualSearchSelectionController mSelectionController;
     private final RelatedSearchesStamp mRelatedSearchesStamp;
     private ContextualSearchNetworkCommunicator mNetworkCommunicator;
     private ContextualSearchPanelInterface mSearchPanel;
-    private Profile mProfile;
 
     // Members used only for testing purposes.
     private boolean mDidOverrideFullyEnabledForTesting;
@@ -62,10 +62,12 @@ class ContextualSearchPolicy {
 
     /** ContextualSearchPolicy constructor. */
     public ContextualSearchPolicy(
+            Profile profile,
             ContextualSearchSelectionController selectionController,
             ContextualSearchNetworkCommunicator networkCommunicator) {
         mPreferencesManager = ChromeSharedPreferences.getInstance();
 
+        mProfile = profile;
         mSelectionController = selectionController;
         mNetworkCommunicator = networkCommunicator;
         mRelatedSearchesStamp = new RelatedSearchesStamp(this);
@@ -79,15 +81,9 @@ class ContextualSearchPolicy {
         mSearchPanel = panel;
     }
 
-    /** Set the {@link Profile} interacting with Contextual Search. */
-    public void setProfile(Profile profile) {
-        mProfile = profile;
-    }
-
     /**
      * @return The number of additional times to show the promo on tap, 0 if it should not be shown,
-     *         or a negative value if the counter has been disabled or the user has accepted
-     *         the promo.
+     *     or a negative value if the counter has been disabled or the user has accepted the promo.
      */
     int getPromoTapsRemaining() {
         if (!isUserUndecided()) return REMAINING_NOT_APPLICABLE;

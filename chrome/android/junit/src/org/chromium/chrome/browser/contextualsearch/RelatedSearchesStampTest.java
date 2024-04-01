@@ -17,11 +17,14 @@ import android.text.TextUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 
 /** Tests the {@link RelatedSearchesStamp} class. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -48,6 +51,8 @@ public class RelatedSearchesStampTest {
     private static final String SPANISH = "es";
     private static final String GERMAN = "de";
 
+    @Mock private Profile mProfile;
+
     private ContextualSearchPolicy mPolicy;
     private FeatureList.TestValues mFeatureListValues;
 
@@ -56,9 +61,10 @@ public class RelatedSearchesStampTest {
 
     @Before
     public void setup() {
+        MockitoAnnotations.initMocks(this);
         mFeatureListValues = new FeatureList.TestValues();
         FeatureList.setTestValues(mFeatureListValues);
-        mPolicy = new ContextualSearchPolicy(null, null);
+        mPolicy = new ContextualSearchPolicy(mProfile, null, null);
         mStamp = new RelatedSearchesStamp(mPolicy);
     }
 

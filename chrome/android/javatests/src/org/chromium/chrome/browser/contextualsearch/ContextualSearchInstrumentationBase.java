@@ -128,6 +128,7 @@ public class ContextualSearchInstrumentationBase {
         public ContextualSearchManagerWrapper(ChromeActivity activity) {
             super(
                     activity,
+                    ProfileManager.getLastUsedRegularProfile(),
                     null,
                     activity.getRootUiCoordinatorForTesting().getScrimCoordinator(),
                     activity.getActivityTabProvider(),
@@ -153,16 +154,8 @@ public class ContextualSearchInstrumentationBase {
                     WebContentsUtils.createSelectionPopupController(webContents);
             selectionPopupController.setSelectionClient(this.getContextualSearchSelectionClient());
 
-            // TODO: The ContextualSearchInternalStateController created by the super constructor
-            // holds onto the originally created policy. This results in the originally created
-            // policy and the new policy to be used for different purposes in the underlying
-            // ContextualSearchManager. Updating the InternalStateController to the new policy
-            // breaks the tests relying on this mismatch.
-            getContextualSearchPolicy().setProfile(profile);
-
             MockContextualSearchPolicy policy =
-                    new MockContextualSearchPolicy(getSelectionController());
-            policy.setProfile(profile);
+                    new MockContextualSearchPolicy(profile, getSelectionController());
             setContextualSearchPolicy(policy);
         }
 

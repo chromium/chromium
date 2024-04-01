@@ -1041,7 +1041,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         super.initializeCompositor();
 
         getTabContentManager().initWithNative();
-        PrefService prefs = UserPrefs.get(getProfileProviderSupplier().get().getOriginalProfile());
+        Profile originalProfile = getProfileProviderSupplier().get().getOriginalProfile();
+        PrefService prefs = UserPrefs.get(originalProfile);
         mCompositorViewHolderSupplier
                 .get()
                 .onNativeLibraryReady(getWindowAndroid(), getTabContentManager(), prefs);
@@ -1051,6 +1052,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             mContextualSearchManagerSupplier.set(
                     new ContextualSearchManager(
                             this,
+                            originalProfile,
                             this,
                             mRootUiCoordinator.getScrimCoordinator(),
                             getActivityTabProvider(),
@@ -2171,36 +2173,19 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         mActivityTabProvider.setLayoutStateProvider(layoutManager);
 
         if (mContextualSearchManagerSupplier.hasValue()) {
-            if (getProfileProviderSupplier().hasValue()) {
-                initializeContextualSearchManager(
-                        layoutManager,
-                        contentContainer,
-                        compositorViewHolder,
-                        getProfileProviderSupplier().get().getOriginalProfile());
-            } else {
-                getProfileProviderSupplier()
-                        .onAvailable(
-                                (profileProvider) -> {
-                                    initializeContextualSearchManager(
-                                            layoutManager,
-                                            contentContainer,
-                                            compositorViewHolder,
-                                            profileProvider.getOriginalProfile());
-                                });
-            }
+            initializeContextualSearchManager(
+                    layoutManager, contentContainer, compositorViewHolder);
         }
     }
 
     private void initializeContextualSearchManager(
             LayoutManagerImpl layoutManager,
             ViewGroup contentContainer,
-            CompositorViewHolder compositorViewHolder,
-            Profile profile) {
+            CompositorViewHolder compositorViewHolder) {
         mContextualSearchManagerSupplier
                 .get()
                 .initialize(
                         contentContainer,
-                        profile,
                         layoutManager,
                         mRootUiCoordinator.getBottomSheetController(),
                         compositorViewHolder,

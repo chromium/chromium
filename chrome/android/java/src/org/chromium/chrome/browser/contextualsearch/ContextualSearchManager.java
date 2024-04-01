@@ -137,6 +137,7 @@ public class ContextualSearchManager
             new ObserverList<ContextualSearchSelectionObserver>();
 
     private final Activity mActivity;
+    private final Profile mProfile;
     private final ContextualSearchTabPromotionDelegate mTabPromotionDelegate;
     private final ViewTreeObserver.OnGlobalFocusChangeListener mOnFocusChangeListener;
     private final FullscreenManager.Observer mFullscreenObserver;
@@ -175,7 +176,6 @@ public class ContextualSearchManager
     private long mNativeContextualSearchManagerPtr;
 
     private ViewGroup mParentView;
-    private Profile mProfile;
     private RedirectHandler mRedirectHandler;
     private TabModelSelectorTabModelObserver mTabModelObserver;
     private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
@@ -261,6 +261,7 @@ public class ContextualSearchManager
      * Constructs the manager for the given activity, and will attach views to the given parent.
      *
      * @param activity The {@link Activity} in use.
+     * @param profile The Profile associated with this ContextualSearchManager.
      * @param tabPromotionDelegate The {@link ContextualSearchTabPromotionDelegate} that is
      *     responsible for building tabs from contextual search {@link WebContents}.
      * @param scrimCoordinator A mechanism for showing and hiding the shared scrim.
@@ -275,6 +276,7 @@ public class ContextualSearchManager
      */
     public ContextualSearchManager(
             Activity activity,
+            Profile profile,
             ContextualSearchTabPromotionDelegate tabPromotionDelegate,
             ScrimCoordinator scrimCoordinator,
             Supplier<Tab> tabSupplier,
@@ -285,6 +287,7 @@ public class ContextualSearchManager
             Supplier<Long> lastUserInteractionTimeSupplier,
             ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
         mActivity = activity;
+        mProfile = profile;
         mTabPromotionDelegate = tabPromotionDelegate;
         mScrimCoordinator = scrimCoordinator;
         mTabSupplier = tabSupplier;
@@ -324,7 +327,7 @@ public class ContextualSearchManager
         mSelectionController =
                 new ContextualSearchSelectionController(activity, this, mTabSupplier);
         mNetworkCommunicator = this;
-        mPolicy = new ContextualSearchPolicy(mSelectionController, mNetworkCommunicator);
+        mPolicy = new ContextualSearchPolicy(mProfile, mSelectionController, mNetworkCommunicator);
         mTranslateController = new ContextualSearchTranslationImpl();
         mInternalStateController =
                 new ContextualSearchInternalStateController(
@@ -336,7 +339,6 @@ public class ContextualSearchManager
      * Initializes this manager.
      *
      * @param parentView The parent view to attach Contextual Search UX to.
-     * @param profile The Profile associated with this ContextualSearchManager.
      * @param layoutManager A means of attaching the OverlayPanel to the scene.
      * @param bottomSheetController The {@link BottomSheetController} that is used to show {@link
      *     BottomSheetContent}.
@@ -348,7 +350,6 @@ public class ContextualSearchManager
      */
     public void initialize(
             @NonNull ViewGroup parentView,
-            @NonNull Profile profile,
             @NonNull LayoutManagerImpl layoutManager,
             @NonNull BottomSheetController bottomSheetController,
             @NonNull CompositorViewHolder compositorViewHolder,
@@ -356,13 +357,10 @@ public class ContextualSearchManager
             @NonNull ToolbarManager toolbarManager,
             @ActivityType int activityType,
             @NonNull IntentRequestTracker intentRequestTracker) {
-        mNativeContextualSearchManagerPtr = ContextualSearchManagerJni.get().init(this, profile);
+        mNativeContextualSearchManagerPtr = ContextualSearchManagerJni.get().init(this, mProfile);
 
         mParentView = parentView;
         mParentView.getViewTreeObserver().addOnGlobalFocusChangeListener(mOnFocusChangeListener);
-
-        mProfile = profile;
-        mPolicy.setProfile(profile);
 
         mLayoutManager = layoutManager;
 
@@ -384,7 +382,7 @@ public class ContextualSearchManager
                             mLayoutManager.getOverlayPanelManager(),
                             mBrowserControlsStateProvider,
                             mWindowAndroid,
-                            profile,
+                            mProfile,
                             compositorViewHolder,
                             toolbarHeightDp,
                             toolbarManager,

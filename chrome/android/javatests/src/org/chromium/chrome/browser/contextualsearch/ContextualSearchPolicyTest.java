@@ -60,10 +60,8 @@ public class ContextualSearchPolicyTest {
         MockitoAnnotations.initMocks(this);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mPolicy = new ContextualSearchPolicy(null, mMockServer);
-
                     mProfile = ProfileManager.getLastUsedRegularProfile();
-                    mPolicy.setProfile(mProfile);
+                    mPolicy = new ContextualSearchPolicy(mProfile, null, mMockServer);
                 });
 
         TestThreadUtils.runOnUiThreadBlocking(
