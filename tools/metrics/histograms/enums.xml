@@ -30720,7 +30720,10 @@ Called by update_net_error_codes.py.-->
   <int value="20" label="WORKER"/>
   <int value="21" label="XSLT"/>
   <int value="22" label="FENCED_FRAME"/>
-  <int value="23" label="DICTIONARY"/>
+  <int value="23" label="WEB_IDENTITY"/>
+  <int value="24" label="DICTIONARY"/>
+  <int value="25" label="SPECULATION_RULES"/>
+  <int value="26" label="JSON"/>
 </enum>
 
 <enum name="ResourcePrefetchPredictorRedirectStatus">
