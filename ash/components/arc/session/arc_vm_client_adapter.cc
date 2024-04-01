@@ -89,6 +89,9 @@ constexpr base::TimeDelta kConnectSleepDurationInitial =
 
 constexpr const char kEmptyDiskPath[] = "/dev/null";
 
+// Value of vm_tools::GetEncodedName("arcvm").
+constexpr const char kArcvmEncodedName[] = "YXJjdm0=";
+
 std::optional<base::TimeDelta> g_connect_timeout_limit_for_testing;
 std::optional<base::TimeDelta> g_connect_sleep_duration_initial_for_testing;
 std::optional<int> g_boot_notification_server_fd;
@@ -349,6 +352,24 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
     disk_image->set_path(kEmptyDiskPath);
     // Ensure to set writable to false, otherwise crosvm will exit with
     // "failed to lock disk image" error.
+    disk_image->set_writable(false);
+  }
+
+  // For U+, add the metadata disk path as /dev/block/vdf for mounting Android
+  // /metadata. If the disk doesn't exist, concierge::StartArcVm will create
+  // an empty one at this path. (go/arcvm-metadata).
+  const bool add_metadata_disk = GetArcAndroidSdkVersionAsInt() > kArcVersionT;
+  const std::string metadata_disk_path =
+      base::StringPrintf("/run/daemon-store/crosvm/%s/%s.metadata.img",
+                         user_id_hash.c_str(), kArcvmEncodedName);
+  disk_image = request.add_disks();
+  disk_image->set_image_type(vm_tools::concierge::DISK_IMAGE_AUTO);
+  disk_image->set_do_mount(true);
+  if (add_metadata_disk) {
+    disk_image->set_path(metadata_disk_path);
+    disk_image->set_writable(true);
+  } else {
+    disk_image->set_path(kEmptyDiskPath);
     disk_image->set_writable(false);
   }
 

@@ -1712,6 +1712,36 @@ TEST_F(ArcVmClientAdapterTest, VirtioBlkForData_NoLvmForEphemeralCryptohome) {
   EXPECT_TRUE(req.enable_virtio_blk_data());
 }
 
+TEST_F(ArcVmClientAdapterTest, MetadataDisk_DisabledForArcT) {
+  // Metadata disk should not be requested for ARC T.
+  base::test::ScopedChromeOSVersionInfo version(
+      "CHROMEOS_ARC_ANDROID_SDK_VERSION=33", base::Time::Now());
+
+  StartParams start_params(GetPopulatedStartParams());
+  StartMiniArcWithParams(true, std::move(start_params));
+  const auto& req = GetTestConciergeClient()->start_arc_vm_request();
+
+  const std::string metadta_disk_path =
+      base::StringPrintf("/run/daemon-store/crosvm/%s/YXJjdm0=.metadata.img",
+                         std::string(kUserIdHash).c_str());
+  EXPECT_FALSE(HasDiskImage(req, metadta_disk_path));
+}
+
+TEST_F(ArcVmClientAdapterTest, MetadataDisk_EnabledForArcU) {
+  // Metadata disk should be requested for ARC U.
+  base::test::ScopedChromeOSVersionInfo version(
+      "CHROMEOS_ARC_ANDROID_SDK_VERSION=34", base::Time::Now());
+
+  StartParams start_params(GetPopulatedStartParams());
+  StartMiniArcWithParams(true, std::move(start_params));
+  const auto& req = GetTestConciergeClient()->start_arc_vm_request();
+
+  const std::string metadta_disk_path =
+      base::StringPrintf("/run/daemon-store/crosvm/%s/YXJjdm0=.metadata.img",
+                         std::string(kUserIdHash).c_str());
+  EXPECT_TRUE(HasDiskImage(req, metadta_disk_path));
+}
+
 TEST_F(ArcVmClientAdapterTest, ArcErofsImagesDisabled) {
   StartParams start_params(GetPopulatedStartParams());
   StartMiniArcWithParams(true, std::move(start_params));
