@@ -31,8 +31,8 @@
 #include "ui/ozone/platform/drm/gpu/drm_device_generator.h"
 #include "ui/ozone/platform/drm/gpu/drm_device_manager.h"
 #include "ui/ozone/platform/drm/gpu/drm_framebuffer.h"
+#include "ui/ozone/platform/drm/gpu/fake_drm_device.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_controller.h"
-#include "ui/ozone/platform/drm/gpu/mock_drm_device.h"
 #include "ui/ozone/platform/drm/gpu/page_flip_watchdog.h"
 #include "ui/ozone/platform/drm/gpu/screen_manager.h"
 #include "ui/ozone/public/surface_ozone_canvas.h"
@@ -48,7 +48,7 @@ const gfx::AcceleratedWidget kDefaultWidgetHandle = 1;
 const int kDefaultCursorSize = 64;
 
 std::vector<sk_sp<SkSurface>> GetCursorBuffers(
-    const scoped_refptr<MockDrmDevice> drm) {
+    const scoped_refptr<FakeDrmDevice> drm) {
   std::vector<sk_sp<SkSurface>> cursor_buffers;
   for (const auto& pair : drm->buffers()) {
     const auto& cursor_buffer = pair.second;
@@ -106,12 +106,12 @@ class MAYBE_DrmWindowTest : public testing::Test {
   }
 
  protected:
-  void InitializeDrmState(MockDrmDevice* drm, bool is_atomic = true);
+  void InitializeDrmState(FakeDrmDevice* drm, bool is_atomic = true);
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME,
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
-  scoped_refptr<MockDrmDevice> drm_;
+  scoped_refptr<FakeDrmDevice> drm_;
   std::unique_ptr<ScreenManager> screen_manager_;
   std::unique_ptr<DrmDeviceManager> drm_device_manager_;
 
@@ -128,7 +128,7 @@ void MAYBE_DrmWindowTest::SetUp() {
   last_swap_buffers_result_ = gfx::SwapResult::SWAP_FAILED;
 
   auto gbm_device = std::make_unique<MockGbmDevice>();
-  drm_ = new MockDrmDevice(std::move(gbm_device));
+  drm_ = new FakeDrmDevice(std::move(gbm_device));
   screen_manager_ = std::make_unique<ScreenManager>();
 
   InitializeDrmState(drm_.get());
@@ -160,11 +160,11 @@ void MAYBE_DrmWindowTest::TearDown() {
   window->Shutdown();
 }
 
-void MAYBE_DrmWindowTest::InitializeDrmState(MockDrmDevice* drm,
+void MAYBE_DrmWindowTest::InitializeDrmState(FakeDrmDevice* drm,
                                              bool is_atomic) {
-  drm->SetPropertyBlob(MockDrmDevice::AllocateInFormatsBlob(
+  drm->SetPropertyBlob(FakeDrmDevice::AllocateInFormatsBlob(
       kInFormatsBlobIdBase, {DRM_FORMAT_XRGB8888}, {}));
-  auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
+  auto drm_state = FakeDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
       /*crtc_count=*/1, /*planes_per_crtc=*/1);
   drm->InitializeState(drm_state, /*use_atomic=*/false);
 }
@@ -203,7 +203,7 @@ TEST_F(MAYBE_DrmWindowTest, CheckCursorSurfaceAfterChangingDevice) {
 
   // Add another device.
   auto gbm_device = std::make_unique<MockGbmDevice>();
-  scoped_refptr<MockDrmDevice> drm = new MockDrmDevice(std::move(gbm_device));
+  scoped_refptr<FakeDrmDevice> drm = new FakeDrmDevice(std::move(gbm_device));
   InitializeDrmState(drm.get());
 
   screen_manager_->AddDisplayController(drm, crtc_id_, connector_id_);

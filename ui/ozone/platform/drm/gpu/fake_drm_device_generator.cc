@@ -5,7 +5,7 @@
 #include "ui/ozone/platform/drm/gpu/fake_drm_device_generator.h"
 
 #include "ui/gfx/linux/test/mock_gbm_device.h"
-#include "ui/ozone/platform/drm/gpu/mock_drm_device.h"
+#include "ui/ozone/platform/drm/gpu/fake_drm_device.h"
 
 namespace ui {
 scoped_refptr<DrmDevice> FakeDrmDeviceGenerator::CreateDevice(
@@ -14,9 +14,9 @@ scoped_refptr<DrmDevice> FakeDrmDeviceGenerator::CreateDevice(
     bool is_primary_device) {
   auto gbm_device = std::make_unique<MockGbmDevice>();
   if (path.empty())
-    return base::MakeRefCounted<MockDrmDevice>(std::move(gbm_device));
+    return base::MakeRefCounted<FakeDrmDevice>(std::move(gbm_device));
 
-  return base::MakeRefCounted<MockDrmDevice>(
+  return base::MakeRefCounted<FakeDrmDevice>(
       std::move(path), std::move(gbm_device), is_primary_device);
 }
 

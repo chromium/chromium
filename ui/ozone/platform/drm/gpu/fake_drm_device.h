@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_OZONE_PLATFORM_DRM_GPU_MOCK_DRM_DEVICE_H_
-#define UI_OZONE_PLATFORM_DRM_GPU_MOCK_DRM_DEVICE_H_
+#ifndef UI_OZONE_PLATFORM_DRM_GPU_FAKE_DRM_DEVICE_H_
+#define UI_OZONE_PLATFORM_DRM_GPU_FAKE_DRM_DEVICE_H_
 
 #include <drm_fourcc.h>
 #include <drm_mode.h>
@@ -103,7 +103,7 @@ constexpr uint32_t kRotationPropId = 5003;
 constexpr uint32_t kBaseBlobId = 6000;
 
 // The real DrmDevice makes actual DRM calls which we can't use in unit tests.
-class MockDrmDevice : public DrmDevice {
+class FakeDrmDevice : public DrmDevice {
  public:
   struct CrtcProperties {
     CrtcProperties();
@@ -191,13 +191,13 @@ class MockDrmDevice : public DrmDevice {
     std::map<uint32_t, std::string> property_names;
   };
 
-  explicit MockDrmDevice(std::unique_ptr<GbmDevice> gbm_device);
-  explicit MockDrmDevice(const base::FilePath& path,
+  explicit FakeDrmDevice(std::unique_ptr<GbmDevice> gbm_device);
+  explicit FakeDrmDevice(const base::FilePath& path,
                          std::unique_ptr<GbmDevice> gbm_device,
                          bool is_primary_device);
 
-  MockDrmDevice(const MockDrmDevice&) = delete;
-  MockDrmDevice& operator=(const MockDrmDevice&) = delete;
+  FakeDrmDevice(const FakeDrmDevice&) = delete;
+  FakeDrmDevice& operator=(const FakeDrmDevice&) = delete;
 
   static ScopedDrmPropertyBlobPtr AllocateInFormatsBlob(
       uint32_t id,
@@ -368,7 +368,7 @@ class MockDrmDevice : public DrmDevice {
   uint32_t GetFramebufferForCrtc(uint32_t crtc_id) const;
 
  protected:
-  ~MockDrmDevice() override;
+  ~FakeDrmDevice() override;
 
  private:
   // Properties of the plane associated with a fb.
@@ -438,4 +438,4 @@ class MockDrmDevice : public DrmDevice {
 
 }  // namespace ui
 
-#endif  // UI_OZONE_PLATFORM_DRM_GPU_MOCK_DRM_DEVICE_H_
+#endif  // UI_OZONE_PLATFORM_DRM_GPU_FAKE_DRM_DEVICE_H_

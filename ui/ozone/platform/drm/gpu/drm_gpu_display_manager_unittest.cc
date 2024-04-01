@@ -19,8 +19,8 @@
 #include "ui/ozone/platform/drm/common/drm_util.h"
 #include "ui/ozone/platform/drm/gpu/drm_device_manager.h"
 #include "ui/ozone/platform/drm/gpu/drm_display.h"
+#include "ui/ozone/platform/drm/gpu/fake_drm_device.h"
 #include "ui/ozone/platform/drm/gpu/fake_drm_device_generator.h"
-#include "ui/ozone/platform/drm/gpu/mock_drm_device.h"
 #include "ui/ozone/platform/drm/gpu/screen_manager.h"
 
 namespace ui {
@@ -132,18 +132,18 @@ MATCHER_P(AtomicRequestHasCrtcConnectorPairs, pairings, "") {
   return true;
 }
 
-// MockDrmDevice is not set up to provide a finer grain mocking behavior for
+// FakeDrmDevice is not set up to provide a finer grain mocking behavior for
 // CommitProperties. GmockDrmDevice provides gmockable interface for DrmDevice,
-// but also defaults to MockDrmDevice unless a mock is specified.
-class GmockDrmDevice : public MockDrmDevice {
+// but also defaults to FakeDrmDevice unless a mock is specified.
+class GmockDrmDevice : public FakeDrmDevice {
  public:
   explicit GmockDrmDevice(std::unique_ptr<GbmDevice> gbm_device)
-      : MockDrmDevice(std::move(gbm_device)) {}
+      : FakeDrmDevice(std::move(gbm_device)) {}
 
   GmockDrmDevice(const base::FilePath& path,
                  std::unique_ptr<GbmDevice> gbm_device,
                  bool is_primary_device)
-      : MockDrmDevice(path, std::move(gbm_device), is_primary_device) {}
+      : FakeDrmDevice(path, std::move(gbm_device), is_primary_device) {}
 
   MOCK_METHOD(bool,
               CommitProperties,
@@ -193,24 +193,24 @@ class DrmGpuDisplayManagerTest : public testing::Test {
   }
 
   // Note: the first device added will be marked as the primary device.
-  scoped_refptr<MockDrmDevice> AddAndInitializeDrmDeviceWithState(
-      MockDrmDevice::MockDrmState& drm_state,
+  scoped_refptr<FakeDrmDevice> AddAndInitializeDrmDeviceWithState(
+      FakeDrmDevice::MockDrmState& drm_state,
       bool use_atomic = true) {
     std::string card_path = base::StringPrintf(kDefaultTestGraphicsCardPattern,
                                                next_drm_device_number_++);
     base::FilePath file_path(card_path);
 
     device_manager_->AddDrmDevice(file_path, base::ScopedFD());
-    MockDrmDevice* mock_drm = static_cast<MockDrmDevice*>(
+    FakeDrmDevice* fake_drm = static_cast<FakeDrmDevice*>(
         device_manager_->GetDrmDevices().back().get());
-    mock_drm->SetPropertyBlob(MockDrmDevice::AllocateInFormatsBlob(
+    fake_drm->SetPropertyBlob(FakeDrmDevice::AllocateInFormatsBlob(
         kInFormatsBlobIdBase, {DRM_FORMAT_XRGB8888}, {}));
-    mock_drm->InitializeState(drm_state, use_atomic);
-    return scoped_refptr<MockDrmDevice>(mock_drm);
+    fake_drm->InitializeState(drm_state, use_atomic);
+    return scoped_refptr<FakeDrmDevice>(fake_drm);
   }
 
   // Returns the CRTC ID.
-  uint32_t AddPlaneOnCrtcAndGetCrtcId(MockDrmDevice::MockDrmState& drm_state,
+  uint32_t AddPlaneOnCrtcAndGetCrtcId(FakeDrmDevice::MockDrmState& drm_state,
                                       size_t num_of_planes = 1u) {
     const auto& crtc = drm_state.AddCrtc();
     for (size_t i = 0; i < num_of_planes; ++i) {
@@ -255,7 +255,7 @@ TEST_F(DrmGpuDisplayManagerTest, CapOutOnMaxDrmDeviceCount) {
   // Add |kMaxDrmCount| + 1 DRM devices, each with one active display.
   for (size_t i = 0; i < kMaxDrmCount + 1; ++i) {
     auto drm_state =
-        MockDrmDevice::MockDrmState::CreateStateWithAllProperties();
+        FakeDrmDevice::MockDrmState::CreateStateWithAllProperties();
 
     // Add 1 CRTC
     AddPlaneOnCrtcAndGetCrtcId(drm_state);
@@ -280,7 +280,7 @@ TEST_F(DrmGpuDisplayManagerTest, CapOutOnMaxDrmDeviceCount) {
 
 TEST_F(DrmGpuDisplayManagerTest, CapOutOnMaxConnectorCount) {
   // One DRM device.
-  auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithAllProperties();
+  auto drm_state = FakeDrmDevice::MockDrmState::CreateStateWithAllProperties();
 
   // Add |kMaxDrmConnectors| + 1 connector, each with one active display.
   for (size_t i = 0; i < kMaxDrmConnectors + 1; ++i) {
@@ -315,7 +315,7 @@ TEST_F(DrmGpuDisplayManagerTest, CapOutOnMaxConnectorCount) {
 TEST_F(DrmGpuDisplayManagerTest,
        MAYBE_FindAndConfigureDisplaysOnSameDrmDevice) {
   // One DRM device.
-  auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithAllProperties();
+  auto drm_state = FakeDrmDevice::MockDrmState::CreateStateWithAllProperties();
 
   // Add 3 connectors, each with one active display.
   for (size_t i = 0; i < 3; ++i) {
@@ -332,7 +332,7 @@ TEST_F(DrmGpuDisplayManagerTest,
     connector.edid_blob =
         std::vector<uint8_t>(kHPz32x, kHPz32x + kHPz32xLength);
   }
-  scoped_refptr<MockDrmDevice> drm =
+  scoped_refptr<FakeDrmDevice> drm =
       AddAndInitializeDrmDeviceWithState(drm_state);
 
   MovableDisplaySnapshots display_snapshots =
@@ -374,7 +374,7 @@ TEST_F(DrmGpuDisplayManagerTest,
   // Add 3 DRM devices, each with one active display.
   for (size_t i = 0; i < 3; ++i) {
     auto drm_state =
-        MockDrmDevice::MockDrmState::CreateStateWithAllProperties();
+        FakeDrmDevice::MockDrmState::CreateStateWithAllProperties();
 
     AddPlaneOnCrtcAndGetCrtcId(drm_state);
 
@@ -428,7 +428,7 @@ TEST_F(DrmGpuDisplayManagerTest,
 TEST_F(DrmGpuDisplayManagerTest,
        MAYBE_OriginsPersistThroughSimilarExtendedModeConfigurations) {
   // One DRM device.
-  auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithAllProperties();
+  auto drm_state = FakeDrmDevice::MockDrmState::CreateStateWithAllProperties();
 
   // Add three connectors, each with one active display.
   for (size_t i = 0; i < 3; ++i) {
@@ -508,7 +508,7 @@ TEST_F(DrmGpuDisplayManagerTest,
 
 TEST_F(DrmGpuDisplayManagerTest, TestEdidIdConflictResolution) {
   // One DRM device.
-  auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithAllProperties();
+  auto drm_state = FakeDrmDevice::MockDrmState::CreateStateWithAllProperties();
 
   // First, add the internal display.
   {
@@ -604,7 +604,7 @@ class DrmGpuDisplayManagerMockedDeviceTest : public DrmGpuDisplayManagerTest {
 #endif
 TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
        MAYBE_ConfigureDisplaysAlternateCrtcFallbackSuccess) {
-  auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithAllProperties();
+  auto drm_state = FakeDrmDevice::MockDrmState::CreateStateWithAllProperties();
 
   // Create a pool of 3 CRTCs
   const uint32_t crtc_1 = AddPlaneOnCrtcAndGetCrtcId(drm_state);
@@ -640,7 +640,7 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
     secondary_connector_id = connector.id;
   }
 
-  scoped_refptr<MockDrmDevice> drm =
+  scoped_refptr<FakeDrmDevice> drm =
       AddAndInitializeDrmDeviceWithState(drm_state);
   GmockDrmDevice* gmock_drm = static_cast<GmockDrmDevice*>(drm.get());
 
@@ -707,7 +707,7 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
 
 TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
        ConfigureDisplaysFallbackTestSuccessButCommitFailiure) {
-  auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithAllProperties();
+  auto drm_state = FakeDrmDevice::MockDrmState::CreateStateWithAllProperties();
 
   // Create a pool of 3 CRTCs
   const uint32_t crtc_1 = AddPlaneOnCrtcAndGetCrtcId(drm_state);
@@ -743,7 +743,7 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
     secondary_connector_id = connector.id;
   }
 
-  scoped_refptr<MockDrmDevice> drm =
+  scoped_refptr<FakeDrmDevice> drm =
       AddAndInitializeDrmDeviceWithState(drm_state);
   GmockDrmDevice* gmock_drm = static_cast<GmockDrmDevice*>(drm.get());
 
@@ -800,7 +800,7 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
 
 TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
        ConfigureDisplaysAlternateCrtcFallbackAllFailed) {
-  auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithAllProperties();
+  auto drm_state = FakeDrmDevice::MockDrmState::CreateStateWithAllProperties();
 
   // Create a pool of 3 CRTCs
   AddPlaneOnCrtcAndGetCrtcId(drm_state);
@@ -830,7 +830,7 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
     connector.encoders = std::vector<uint32_t>{encoder.id};
   }
 
-  scoped_refptr<MockDrmDevice> drm =
+  scoped_refptr<FakeDrmDevice> drm =
       AddAndInitializeDrmDeviceWithState(drm_state);
   GmockDrmDevice* gmock_drm = static_cast<GmockDrmDevice*>(drm.get());
 
@@ -865,7 +865,7 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
   drm_gpu_display_manager_ = std::make_unique<DrmGpuDisplayManager>(
       screen_manager_.get(), device_manager_.get());
 
-  auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithAllProperties();
+  auto drm_state = FakeDrmDevice::MockDrmState::CreateStateWithAllProperties();
 
   // Create a pool of 2 CRTCs
   AddPlaneOnCrtcAndGetCrtcId(drm_state);
@@ -881,7 +881,7 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
     connector.encoders = std::vector<uint32_t>{encoder.id};
   }
 
-  scoped_refptr<MockDrmDevice> drm =
+  scoped_refptr<FakeDrmDevice> drm =
       AddAndInitializeDrmDeviceWithState(drm_state);
   GmockDrmDevice* gmock_drm = static_cast<GmockDrmDevice*>(drm.get());
 
@@ -916,7 +916,7 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
 #endif
 TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
        MAYBE_ConfigureDisplaysUseSuccesfulStateForCommit) {
-  auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithAllProperties();
+  auto drm_state = FakeDrmDevice::MockDrmState::CreateStateWithAllProperties();
 
   // Create a pool of 3 CRTCs
   const uint32_t crtc_1 = AddPlaneOnCrtcAndGetCrtcId(drm_state);
@@ -952,7 +952,7 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
     secondary_connector_id = connector.id;
   }
 
-  scoped_refptr<MockDrmDevice> drm =
+  scoped_refptr<FakeDrmDevice> drm =
       AddAndInitializeDrmDeviceWithState(drm_state);
   GmockDrmDevice* gmock_drm = static_cast<GmockDrmDevice*>(drm.get());
 

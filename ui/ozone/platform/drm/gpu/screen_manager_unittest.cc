@@ -25,8 +25,8 @@
 #include "ui/ozone/platform/drm/gpu/drm_device_manager.h"
 #include "ui/ozone/platform/drm/gpu/drm_framebuffer.h"
 #include "ui/ozone/platform/drm/gpu/drm_window.h"
+#include "ui/ozone/platform/drm/gpu/fake_drm_device.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_controller.h"
-#include "ui/ozone/platform/drm/gpu/mock_drm_device.h"
 #include "ui/ozone/platform/drm/gpu/screen_manager.h"
 
 namespace ui {
@@ -89,7 +89,7 @@ class MAYBE_ScreenManagerTest : public testing::Test {
                      kDefaultMode.vdisplay);
   }
 
-  void InitializeDrmState(MockDrmDevice* drm,
+  void InitializeDrmState(FakeDrmDevice* drm,
                           const std::vector<CrtcState>& crtc_states,
                           bool is_atomic,
                           bool use_modifiers_list = false,
@@ -97,7 +97,7 @@ class MAYBE_ScreenManagerTest : public testing::Test {
     size_t plane_count = crtc_states[0].planes.size();
     for (const auto& crtc_state : crtc_states) {
       ASSERT_EQ(plane_count, crtc_state.planes.size())
-          << "MockDrmDevice::CreateStateWithAllProperties currently expects "
+          << "FakeDrmDevice::CreateStateWithAllProperties currently expects "
              "the same number of planes per CRTC";
     }
 
@@ -110,10 +110,10 @@ class MAYBE_ScreenManagerTest : public testing::Test {
     }
 
     auto drm_state =
-        MockDrmDevice::MockDrmState::CreateStateWithAllProperties();
+        FakeDrmDevice::MockDrmState::CreateStateWithAllProperties();
 
     // Set up the default format property ID for the cursor planes:
-    drm->SetPropertyBlob(MockDrmDevice::AllocateInFormatsBlob(
+    drm->SetPropertyBlob(FakeDrmDevice::AllocateInFormatsBlob(
         kInFormatsBlobIdBase, {DRM_FORMAT_XRGB8888}, drm_format_modifiers));
 
     std::vector<uint32_t> crtc_ids;
@@ -124,7 +124,7 @@ class MAYBE_ScreenManagerTest : public testing::Test {
 
       for (size_t i = 0; i < crtc_state.planes.size(); ++i) {
         uint32_t new_blob_id = blob_id++;
-        drm->SetPropertyBlob(MockDrmDevice::AllocateInFormatsBlob(
+        drm->SetPropertyBlob(FakeDrmDevice::AllocateInFormatsBlob(
             new_blob_id, crtc_state.planes[i].formats, drm_format_modifiers));
 
         auto& plane = drm_state.AddPlane(
@@ -134,7 +134,7 @@ class MAYBE_ScreenManagerTest : public testing::Test {
     }
     for (const auto& movable_plane : movable_planes) {
       uint32_t new_blob_id = blob_id++;
-      drm->SetPropertyBlob(MockDrmDevice::AllocateInFormatsBlob(
+      drm->SetPropertyBlob(FakeDrmDevice::AllocateInFormatsBlob(
           new_blob_id, movable_plane.formats, drm_format_modifiers));
       auto& plane = drm_state.AddPlane(crtc_ids, DRM_PLANE_TYPE_OVERLAY);
       plane.SetProp(kInFormatsPropId, new_blob_id);
@@ -147,14 +147,14 @@ class MAYBE_ScreenManagerTest : public testing::Test {
   void AddPlaneToCrtc(uint32_t crtc_id,
                       uint32_t plane_type,
                       uint32_t blob_id,
-                      MockDrmDevice::MockDrmState& drm_state) {
-    drm_->SetPropertyBlob(MockDrmDevice::AllocateInFormatsBlob(
+                      FakeDrmDevice::MockDrmState& drm_state) {
+    drm_->SetPropertyBlob(FakeDrmDevice::AllocateInFormatsBlob(
         blob_id, {DRM_FORMAT_XRGB8888}, {}));
     auto& plane = drm_state.AddPlane(crtc_id, plane_type);
     plane.SetProp(kInFormatsPropId, blob_id);
   }
 
-  void InitializeDrmStateWithDefault(MockDrmDevice* drm,
+  void InitializeDrmStateWithDefault(FakeDrmDevice* drm,
                                      bool is_atomic,
                                      bool use_modifiers_list = false) {
     // A Sample of CRTC states.
@@ -167,7 +167,7 @@ class MAYBE_ScreenManagerTest : public testing::Test {
   void SetUp() override {
     auto gbm = std::make_unique<MockGbmDevice>();
     supported_modifiers_ = gbm->GetSupportedModifiers();
-    drm_ = new MockDrmDevice(std::move(gbm));
+    drm_ = new FakeDrmDevice(std::move(gbm));
     device_manager_ = std::make_unique<DrmDeviceManager>(nullptr);
     screen_manager_ = std::make_unique<ScreenManager>();
   }
@@ -195,7 +195,7 @@ class MAYBE_ScreenManagerTest : public testing::Test {
   }
 
  protected:
-  scoped_refptr<MockDrmDevice> drm_;
+  scoped_refptr<FakeDrmDevice> drm_;
   std::unique_ptr<DrmDeviceManager> device_manager_;
   std::unique_ptr<ScreenManager> screen_manager_;
   std::vector<uint64_t> supported_modifiers_;
@@ -1056,7 +1056,7 @@ TEST_F(MAYBE_ScreenManagerTest, CheckMirrorModeAfterBeginReEnabled) {
 
 TEST_F(MAYBE_ScreenManagerTest, ConfigureOnDifferentDrmDevices) {
   auto gbm_device = std::make_unique<MockGbmDevice>();
-  scoped_refptr<MockDrmDevice> drm2 = new MockDrmDevice(std::move(gbm_device));
+  scoped_refptr<FakeDrmDevice> drm2 = new FakeDrmDevice(std::move(gbm_device));
 
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/false);
   std::vector<CrtcState> crtc_states = {
@@ -1102,7 +1102,7 @@ TEST_F(MAYBE_ScreenManagerTest, ConfigureOnDifferentDrmDevices) {
 TEST_F(MAYBE_ScreenManagerTest,
        CheckProperConfigurationWithDifferentDeviceAndSameCrtc) {
   auto gbm_device = std::make_unique<MockGbmDevice>();
-  scoped_refptr<MockDrmDevice> drm2 = new MockDrmDevice(std::move(gbm_device));
+  scoped_refptr<FakeDrmDevice> drm2 = new FakeDrmDevice(std::move(gbm_device));
 
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
   uint32_t crtc_id = drm_->crtc_property(0).id;
@@ -1417,12 +1417,12 @@ TEST_F(MAYBE_ScreenManagerTest, ConfigureDisplayControllerShouldModesetOnce) {
 TEST_F(MAYBE_ScreenManagerTest, ShouldNotHardwareMirrorDifferentDrmDevices) {
   auto gbm_device1 = std::make_unique<MockGbmDevice>();
   auto drm_device1 =
-      base::MakeRefCounted<MockDrmDevice>(std::move(gbm_device1));
+      base::MakeRefCounted<FakeDrmDevice>(std::move(gbm_device1));
   InitializeDrmStateWithDefault(drm_device1.get(), /*is_atomic=*/true);
 
   auto gbm_device2 = std::make_unique<MockGbmDevice>();
   auto drm_device2 =
-      base::MakeRefCounted<MockDrmDevice>(std::move(gbm_device2));
+      base::MakeRefCounted<FakeDrmDevice>(std::move(gbm_device2));
   InitializeDrmStateWithDefault(drm_device2.get(), /*is_atomic=*/true);
 
   DrmDeviceManager drm_device_manager(nullptr);
@@ -1567,7 +1567,7 @@ TEST_F(MAYBE_ScreenManagerTest, ShouldNotHardwareMirrorDifferentDrmDevices) {
 // crbug.com/888553
 TEST_F(MAYBE_ScreenManagerTest, ShouldNotUnbindFramebufferOnJoiningMirror) {
   auto gbm_device = std::make_unique<MockGbmDevice>();
-  auto drm_device = base::MakeRefCounted<MockDrmDevice>(std::move(gbm_device));
+  auto drm_device = base::MakeRefCounted<FakeDrmDevice>(std::move(gbm_device));
   InitializeDrmStateWithDefault(drm_device.get(), /*is_atomic=*/false);
 
   DrmDeviceManager drm_device_manager(nullptr);
@@ -2160,10 +2160,10 @@ TEST_F(MAYBE_ScreenManagerTest, ReplaceDisplayControllersCrtcsComplex) {
   // Original state: {crtc_1 - connector_1}, {crtc_2 - connector_2}
   // After replacement: {crtc_2 - connector_1}, {crtc_3 - connector_2}
 
-  auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithAllProperties();
+  auto drm_state = FakeDrmDevice::MockDrmState::CreateStateWithAllProperties();
 
   // Set up the default format property ID for the cursor planes:
-  drm_->SetPropertyBlob(MockDrmDevice::AllocateInFormatsBlob(
+  drm_->SetPropertyBlob(FakeDrmDevice::AllocateInFormatsBlob(
       kInFormatsBlobIdBase, {DRM_FORMAT_XRGB8888}, {}));
   uint32_t blob_id = kInFormatsBlobIdBase + 1;
 
@@ -2181,19 +2181,19 @@ TEST_F(MAYBE_ScreenManagerTest, ReplaceDisplayControllersCrtcsComplex) {
   // Create 2 Connectors that can use all 3 CRTCs.
   uint32_t connector_1, connector_2;
   {
-    MockDrmDevice::EncoderProperties& encoder = drm_state.AddEncoder();
+    FakeDrmDevice::EncoderProperties& encoder = drm_state.AddEncoder();
     encoder.possible_crtcs = 0b111;
     const uint32_t encoder_id = encoder.id;
-    MockDrmDevice::ConnectorProperties& connector = drm_state.AddConnector();
+    FakeDrmDevice::ConnectorProperties& connector = drm_state.AddConnector();
     connector.connection = true;
     connector.encoders = std::vector<uint32_t>{encoder_id};
     connector_1 = connector.id;
   }
   {
-    MockDrmDevice::EncoderProperties& encoder = drm_state.AddEncoder();
+    FakeDrmDevice::EncoderProperties& encoder = drm_state.AddEncoder();
     encoder.possible_crtcs = 0b111;
     const uint32_t encoder_id = encoder.id;
-    MockDrmDevice::ConnectorProperties& connector = drm_state.AddConnector();
+    FakeDrmDevice::ConnectorProperties& connector = drm_state.AddConnector();
     connector.connection = true;
     connector.encoders = std::vector<uint32_t>{encoder_id};
     connector_2 = connector.id;

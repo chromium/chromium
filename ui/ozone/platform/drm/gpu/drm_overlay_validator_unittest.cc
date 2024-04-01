@@ -27,9 +27,9 @@
 #include "ui/ozone/platform/drm/gpu/drm_device_manager.h"
 #include "ui/ozone/platform/drm/gpu/drm_framebuffer.h"
 #include "ui/ozone/platform/drm/gpu/drm_window.h"
+#include "ui/ozone/platform/drm/gpu/fake_drm_device.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_controller.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane.h"
-#include "ui/ozone/platform/drm/gpu/mock_drm_device.h"
 #include "ui/ozone/platform/drm/gpu/screen_manager.h"
 #include "ui/ozone/public/overlay_surface_candidate.h"
 
@@ -131,7 +131,7 @@ class MAYBE_DrmOverlayValidatorTest : public testing::Test {
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
-  scoped_refptr<MockDrmDevice> drm_;
+  scoped_refptr<FakeDrmDevice> drm_;
   raw_ptr<MockGbmDevice> gbm_ = nullptr;
   std::unique_ptr<ScreenManager> screen_manager_;
   std::unique_ptr<DrmDeviceManager> drm_device_manager_;
@@ -155,7 +155,7 @@ void MAYBE_DrmOverlayValidatorTest::SetUp() {
 
   auto gbm = std::make_unique<MockGbmDevice>();
   gbm_ = gbm.get();
-  drm_ = new MockDrmDevice(std::move(gbm));
+  drm_ = new FakeDrmDevice(std::move(gbm));
 }
 
 void MAYBE_DrmOverlayValidatorTest::InitDrmStatesAndControllers(
@@ -164,14 +164,14 @@ void MAYBE_DrmOverlayValidatorTest::InitDrmStatesAndControllers(
   size_t plane_count = crtc_states[0].planes.size();
   for (const auto& crtc_state : crtc_states) {
     ASSERT_EQ(plane_count, crtc_state.planes.size())
-        << "MockDrmDevice::CreateStateWithDefaultObjects currently expects the "
+        << "FakeDrmDevice::CreateStateWithDefaultObjects currently expects the "
            "same number of planes per CRTC";
   }
 
-  auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithAllProperties();
+  auto drm_state = FakeDrmDevice::MockDrmState::CreateStateWithAllProperties();
 
   // Set up the default format property ID for the cursor planes:
-  drm_->SetPropertyBlob(MockDrmDevice::AllocateInFormatsBlob(
+  drm_->SetPropertyBlob(FakeDrmDevice::AllocateInFormatsBlob(
       kInFormatsBlobIdBase, {DRM_FORMAT_XRGB8888}, {}));
 
   uint32_t blob_id = kInFormatsBlobIdBase + 1;
@@ -182,7 +182,7 @@ void MAYBE_DrmOverlayValidatorTest::InitDrmStatesAndControllers(
 
     for (size_t i = 0; i < crtc_state.planes.size(); ++i) {
       uint32_t new_blob_id = blob_id++;
-      drm_->SetPropertyBlob(MockDrmDevice::AllocateInFormatsBlob(
+      drm_->SetPropertyBlob(FakeDrmDevice::AllocateInFormatsBlob(
           new_blob_id, crtc_state.planes[i].formats, {}));
 
       auto& plane = drm_state.AddPlane(
@@ -193,7 +193,7 @@ void MAYBE_DrmOverlayValidatorTest::InitDrmStatesAndControllers(
 
   for (const auto& movable_plane : movable_planes) {
     uint32_t new_blob_id = blob_id++;
-    drm_->SetPropertyBlob(MockDrmDevice::AllocateInFormatsBlob(
+    drm_->SetPropertyBlob(FakeDrmDevice::AllocateInFormatsBlob(
         new_blob_id, movable_plane.formats, {}));
     auto& plane = drm_state.AddPlane(crtc_ids, DRM_PLANE_TYPE_OVERLAY);
     plane.SetProp(kInFormatsPropId, new_blob_id);

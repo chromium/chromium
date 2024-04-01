@@ -28,9 +28,9 @@
 #include "ui/ozone/platform/drm/gpu/drm_framebuffer.h"
 #include "ui/ozone/platform/drm/gpu/drm_gpu_util.h"
 #include "ui/ozone/platform/drm/gpu/drm_overlay_plane.h"
+#include "ui/ozone/platform/drm/gpu/fake_drm_device.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_controller.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane.h"
-#include "ui/ozone/platform/drm/gpu/mock_drm_device.h"
 #include "ui/ozone/platform/drm/gpu/mock_drm_modifiers_filter.h"
 #include "ui/ozone/platform/drm/gpu/page_flip_watchdog.h"
 #include "ui/ozone/public/drm_modifiers_filter.h"
@@ -150,7 +150,7 @@ class MAYBE_HardwareDisplayControllerTest : public testing::Test {
   bool DisableController();
 
   std::unique_ptr<HardwareDisplayController> controller_;
-  scoped_refptr<MockDrmDevice> drm_;
+  scoped_refptr<FakeDrmDevice> drm_;
   std::unique_ptr<DrmModifiersFilter> modifiers_filter_;
 
   int successful_page_flips_count_ = 0;
@@ -166,7 +166,7 @@ void MAYBE_HardwareDisplayControllerTest::SetUp() {
   last_swap_result_ = gfx::SwapResult::SWAP_FAILED;
 
   auto gbm_device = std::make_unique<MockGbmDevice>();
-  drm_ = new MockDrmDevice(std::move(gbm_device));
+  drm_ = new FakeDrmDevice(std::move(gbm_device));
   InitializeDrmDevice(/* use_atomic= */ true);
 }
 
@@ -193,10 +193,10 @@ void MAYBE_HardwareDisplayControllerTest::InitializeDrmDevice(
     drm_format_modifiers.push_back(
         {.formats = 1, .offset = 0, .pad = 0, .modifier = modifier});
   }
-  drm_->SetPropertyBlob(MockDrmDevice::AllocateInFormatsBlob(
+  drm_->SetPropertyBlob(FakeDrmDevice::AllocateInFormatsBlob(
       kInFormatsBlobIdBase, {DRM_FORMAT_XRGB8888}, drm_format_modifiers));
 
-  auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
+  auto drm_state = FakeDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
       /*crtc_count=*/2, /*planes_per_crtc*/ 2, movable_planes);
 
   // Add one connected connector with no modes (sterile).
