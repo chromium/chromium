@@ -7933,8 +7933,15 @@ void AXObject::PreSerializationConsistencyCheck() {
   // TODO(https://crbug.com/1480627): convert to CHECKs.
   CHECK(AXObjectCache().IsFrozen());
   CHECK(!NeedsToUpdateCachedValues());
-  CHECK(AccessibilityIsIncludedInTree())
-      << "Do not serialize unincluded nodes: " << ToString(true, true);
+  if (!AccessibilityIsIncludedInTree()) {
+    AXObject* included_parent = ParentObjectIncludedInTree();
+    // TODO(accessibility): Return to CHECK once it has been resolved,
+    // so that the message does not bloat stable releases.
+    DUMP_WILL_BE_NOTREACHED_NORETURN()
+        << "Do not serialize unincluded nodes: " << ToString(true)
+        << "\nIncluded parent: "
+        << (included_parent ? included_parent->ToString(true) : "nullptr");
+  }
 #if defined(AX_FAIL_FAST_BUILD)
   // A bit more expensive, so only check in builds used for testing.
   CHECK_EQ(IsAriaHidden(), !!FindAncestorWithAriaHidden(this))
