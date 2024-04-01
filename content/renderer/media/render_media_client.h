@@ -38,6 +38,7 @@ class RenderMediaClient : public media::MediaClient {
   std::optional<::media::AudioRendererAlgorithmParameters>
   GetAudioRendererAlgorithmParameters(
       media::AudioParameters audio_parameters) final;
+  media::ExternalMemoryAllocator* GetMediaAllocator() final;
 
  private:
   RenderMediaClient();

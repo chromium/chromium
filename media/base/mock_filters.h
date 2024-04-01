@@ -880,6 +880,10 @@ class MockMediaClient : public media::MediaClient {
   MOCK_METHOD1(GetAudioRendererAlgorithmParameters,
                std::optional<::media::AudioRendererAlgorithmParameters>(
                    media::AudioParameters audio_parameters));
+  MOCK_METHOD(media::ExternalMemoryAllocator*,
+              GetMediaAllocator,
+              (),
+              (override));
 };
 
 class MockVideoEncoderMetricsProvider : public VideoEncoderMetricsProvider {

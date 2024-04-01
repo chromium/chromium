@@ -139,4 +139,8 @@ void RenderMediaClient::OnGetSupportedVideoDecoderConfigs(
 #endif
 }
 
+media::ExternalMemoryAllocator* RenderMediaClient::GetMediaAllocator() {
+  return GetContentClient()->renderer()->GetMediaAllocator();
+}
+
 }  // namespace content

@@ -74,6 +74,7 @@ class ResourceProvider;
 namespace media {
 class DecoderFactory;
 class Demuxer;
+class ExternalMemoryAllocator;
 class GpuVideoAcceleratorFactories;
 class MediaLog;
 class RendererFactory;
@@ -297,6 +298,10 @@ class CONTENT_EXPORT ContentRendererClient {
 
   // Return true if the bitstream format |codec| is supported by the audio sink.
   virtual bool IsSupportedBitstreamAudioCodec(media::AudioCodec codec);
+
+  // Returns custom allocator if exists, else nullptr
+  // Allocator will live as long as ContentRendererClient.
+  virtual media::ExternalMemoryAllocator* GetMediaAllocator();
 
   // Returns true if we should report a detailed message (including a stack
   // trace) for console [logs|errors|exceptions]. |source| is the WebKit-

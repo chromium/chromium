@@ -177,6 +177,7 @@ class TestMediaClient : public MediaClient {
   bool IsSupportedAudioType(const AudioType& type) final;
   bool IsSupportedVideoType(const VideoType& type) final;
   bool IsSupportedBitstreamAudioCodec(AudioCodec codec) final;
+  ExternalMemoryAllocator* GetMediaAllocator() final;
 
   // Helper function to disable "kExternal" key system support so that we can
   // test the key system update case.
@@ -214,6 +215,10 @@ bool TestMediaClient::IsSupportedVideoType(const VideoType& type) {
 
 bool TestMediaClient::IsSupportedBitstreamAudioCodec(AudioCodec codec) {
   return false;
+}
+
+ExternalMemoryAllocator* TestMediaClient::GetMediaAllocator() {
+  return nullptr;
 }
 
 void TestMediaClient::DisableExternalKeySystemSupport() {

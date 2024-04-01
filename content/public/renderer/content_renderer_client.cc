@@ -205,6 +205,10 @@ bool ContentRendererClient::IsSupportedVideoType(const media::VideoType& type) {
   return ::media::IsDefaultSupportedVideoType(type);
 }
 
+media::ExternalMemoryAllocator* ContentRendererClient::GetMediaAllocator() {
+  return nullptr;
+}
+
 bool ContentRendererClient::IsSupportedBitstreamAudioCodec(
     media::AudioCodec codec) {
   switch (codec) {
