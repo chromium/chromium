@@ -73,21 +73,22 @@ typedef int (*ChromeMainPtr)(int, char**);
 // As quite a hack of a workaround, the offset of the arm64 slice within the fat
 // main executable is influenced to land at the desired location by introducing
 // padding to the x86_64 slice that precedes it. The arm64 slice needs to remain
-// at offset 272kB (since 106.0.5249.61). The signed x86_64 slice has size
-// 260704 bytes (including 68kB of padding) in 106.0.5249.61, but has grown
-// since then, and before the introduction of any padding, would now be 194412
-// bytes long. It needs to be padded to be in the range (245760, 262144] so that
-// the arm64 slice that follows it begins at offset 272kB. To allow for the
-// possibility of small-scale (up to +/-8kB) size changes, the target size for
-// the padded x86_64 slice is 253952 bytes. To make up the 59540-byte
-// difference, 56kB (57344 bytes) of padding is added to the x86_64 slice. to
-// ensure that its size is stable, causing the arm64 slice to land where it
-// needs to be when universalized. This padding needs to be added to the thin
-// form of the x86_64 image before being fed to universalizer.py. Why 57344
-// bytes and not 59540? To keep it an even multiple of linker pages (not machine
-// pages: linker pages are 4kB for lld targeting x86_64 and 16kB for ld64
-// targeting x86_64, but Chrome uses lld). In any case, I'll make up some of the
-// 2196-byte difference with one more weird trick below.
+// at offset 288kB (since 123.0.6312.10). The signed x86_64 slice size has grown
+// from 249072 in 122.0.6261.143 to 269712 in 123.0.6312.10 (including 56kB of
+// current padding). Future versions need to be padded to be in the range
+// (262144, 278528] so that the arm64 slice that follows it begins at offset
+// 288kB. To allow for the possibility of small-scale (up to +/-8kB) size
+// changes, the target size for the padded x86_64 slice is 270336 bytes.
+
+// As of this writing 125.0.6378.0's x86_64 slice has shrunk back down to
+// 249312. To make up the 78368-byte difference, 76kB (77824 bytes) of padding
+// is added to the x86_64 slice to ensure that its size is stable, causing the
+// arm64 slice to land where it needs to be when universalized. This padding
+// needs to be added to the thin form of the x86_64 image before being fed to
+// universalizer.py. Why 77824 bytes and not 78368? To keep it an even multiple
+// of linker pages (not machine pages: linker pages are 4kB for lld targeting
+// x86_64 and 16kB for ld64 targeting x86_64, but Chrome uses lld). In any case,
+// I'll make up some of the 544-byte difference with one more weird trick below.
 //
 // There are several terrible ways to insert this padding into the x86_64 image.
 // Best would be something that considers the size of the x86_64 image without
@@ -103,36 +104,36 @@ typedef int (*ChromeMainPtr)(int, char**);
 // suppresses the warning, but does not prevent the compiler or linker from
 // removing it.
 //
-// The introduction of this fixed 56kB of padding causes the unsigned linker
-// output to grow by 56kB precisely, but the signed output will grow by slightly
+// The introduction of this fixed 76kB of padding causes the unsigned linker
+// output to grow by 76kB precisely, but the signed output will grow by slightly
 // more. This is because the code signature's code directory contains SHA-1 and
 // SHA-256 hashes of each 4kB code signing page (note, not machine pages or
 // linker pages) in the image, adding 20 and 32 bytes each (macOS 12.0.1
 // https://github.com/apple-oss-distributions/Security/blob/main/OSX/libsecurity_codesigning/lib/signer.cpp#L298
-// Security::CodeSigning::SecCodeSigner::Signer::prepare). For the 56kB
-// addition, the code signature grows by (56 / 4) * (20 + 32) = 728 bytes, thus
-// the total size of the linker output grows by 56kB + 728 = 58072 bytes. It is
+// Security::CodeSigning::SecCodeSigner::Signer::prepare). For the 76kB
+// addition, the code signature grows by (76 / 4) * (20 + 32) = 998 bytes, thus
+// the total size of the linker output grows by 76kB + 998 = 78822 bytes. It is
 // not possible to control this any more granularly: if the buffer were sized at
-// 56kB - 728 = 56616 bytes, it would either cause no change in the space
+// 76kB - 998 = 76826 bytes, it would either cause no change in the space
 // allocated to the __TEXT segment (due to padding for alignment) or would cause
 // the segment to shrink by a linker page (note, not a code signing or machine
 // page) which would which would cause the linker output to shrink by the same
-// amount and would be absolutely undesirable. Luckily, the net growth of 58072
-// bytes is almost at the target of 59540. In any event, having the signed
-// x86_64 slice sized at 252484 bytes instead of 253952 should not be a problem.
+// amount and would be absolutely undesirable. Luckily, the net growth of 78822
+// bytes is almost at the target of 78368. In any event, having the signed
+// x86_64 slice sized at 269792 bytes instead of 270336 should not be a problem.
 // So long as the size is in the proper 16kB range, the 16kB alignment for the
 // arm64 slice that follows it in the fat file will cause it to appear at the
-// desired 272kB.
+// desired 288kB.
 //
 // If the main executable has a significant change in size, this will need to be
 // revised. Hopefully a more elegant solution will become apparent before that's
 // required.
 #if !defined(DCHECK_ALWAYS_ON)
-__attribute__((used)) const char kGrossPaddingForCrbug1300598[56 * 1024] = {};
+__attribute__((used)) const char kGrossPaddingForCrbug1300598[76 * 1024] = {};
 #else
 // DCHECK builds are larger and therefore require less padding. See
 // https://crbug.com/1394196 for the calculations.
-__attribute__((used)) const char kGrossPaddingForCrbug1300598[36 * 1024] = {};
+__attribute__((used)) const char kGrossPaddingForCrbug1300598[56 * 1024] = {};
 #endif  // !defined(DCHECK_ALWAYS_ON)
 #endif
 
