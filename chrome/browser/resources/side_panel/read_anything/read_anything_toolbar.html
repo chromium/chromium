@@ -174,7 +174,8 @@
             aria-label="$i18n{fontNameTitle}"
             title="$i18n{fontNameTitle}">
       <template is="dom-repeat" items="[[fontOptions_]]">
-        <option value="[[item]]">[[item]]</option>
+        <option value="[[item]]">
+          [[getFontItemLabel_(item, areFontsLoaded_)]]</option>
       </template>
     </select>
     <hr class="separator" aria-hidden="true">
@@ -325,7 +326,7 @@
               class$="button-image check-mark
               check-mark-hidden-[[isFontItemSelected_(index)]]"
               icon="read-anything-20:check-mark"></iron-icon>
-            [[item]]
+            [[getFontItemLabel_(item, areFontsLoaded_)]]
           </button>
         </template>
       </cr-action-menu>

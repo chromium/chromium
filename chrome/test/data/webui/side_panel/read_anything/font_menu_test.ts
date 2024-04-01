@@ -101,8 +101,17 @@ suite('FontMenu', () => {
 
     test('each font option is styled with the font that it is', () => {
       updateFonts(['Serif', 'Andika', 'Poppins', 'STIX Two Text']);
+      toolbar.setFontsLoaded();
       fontMenuOptions.forEach(option => {
         assertFontsEqual(option.style.fontFamily, option.innerText);
+      });
+    });
+
+    test('each font option is loading', () => {
+      updateFonts(['Serif', 'Andika', 'Poppins', 'STIX Two Text']);
+      fontMenuOptions.forEach(option => {
+        assertFontsEqual(
+            option.style.fontFamily + '\u00A0(loading)', option.innerText);
       });
     });
 

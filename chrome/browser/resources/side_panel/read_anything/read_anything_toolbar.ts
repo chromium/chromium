@@ -16,6 +16,7 @@ import type {CrActionMenuElement, ShowAtPositionConfig} from '//resources/cr_ele
 import {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrLazyRenderElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
@@ -102,7 +103,8 @@ export const NEXT_GRANULARITY_EVENT = 'next-granularity-click';
 export const PREVIOUS_GRANULARITY_EVENT = 'previous-granularity-click';
 export const LINKS_EVENT = 'links-toggle';
 
-const ReadAnythingToolbarElementBase = WebUiListenerMixin(PolymerElement);
+const ReadAnythingToolbarElementBase =
+    WebUiListenerMixin(I18nMixin(PolymerElement));
 export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   contentPage = document.querySelector('read-anything-app');
 
@@ -129,6 +131,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       availableVoices: Array,
       localeToDisplayName: Object,
       previewVoicePlaying: Object,
+      areFontsLoaded_: Boolean,
     };
   }
 
@@ -314,6 +317,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   private isReadAloudEnabled_: boolean;
   private isHighlightOn_: boolean = true;
   private activeButton_: HTMLElement|null;
+  private areFontsLoaded_: boolean = false;
 
   private toolbarContainerObserver_: ResizeObserver|null;
   private dragResizeCallback_: () => void;
@@ -382,12 +386,17 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         'https://fonts.googleapis.com/css?family=Poppins|Comic+Neue|Lexend+Deca|' +
         'EB+Garamond|STIX+Two+Text|Andika';
 
-    link.onload = function() {
+    link.addEventListener('load', () => {
       link.media = 'all';
       link.rel = 'stylesheet';
-    };
+      this.setFontsLoaded();
+    });
 
     document.head.appendChild(link);
+  }
+
+  setFontsLoaded() {
+    this.areFontsLoaded_ = true;
   }
 
   private onDragResize_() {
@@ -459,6 +468,17 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
   private isFontItemSelected_(item: number): boolean {
     return item !== this.fontOptions_.indexOf(chrome.readingMode.fontName);
+  }
+
+  // Instead of using areFontsLoaded_ directly in this method, we pass
+  // the variable through HTML to force a re-render when the variable changes.
+  private getFontItemLabel_(item: string, areFontsLoaded: boolean): string {
+    // Before fonts are loaded, append the loading text to the font names
+    // so that the names will appear in the font menu like:
+    // Poppins (loading).
+    return areFontsLoaded ?
+        `${item}` :
+        `${item}\u00A0${this.i18n('readingModeFontLoadingText')}`;
   }
 
   private playPauseButtonAriaLabel_(paused: boolean) {
