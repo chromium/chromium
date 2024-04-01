@@ -30,7 +30,7 @@ struct GPU_EXPORT SharedImageCapabilities {
 
   std::vector<gfx::BufferUsageAndFormat> texture_target_exception_list;
 #if BUILDFLAG(IS_MAC)
-  uint32_t macos_specific_texture_target = 0;
+  uint32_t macos_specific_texture_target;
 #endif
 };
 
