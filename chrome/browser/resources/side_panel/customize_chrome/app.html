@@ -23,6 +23,13 @@
     max-width: calc(360px - 2 * var(--sp-body-padding));
   }
 
+  #toolbarButton {
+    display: flex;
+    justify-content: space-between;
+    padding-right: 16px;
+    border: none;
+  }
+
   customize-chrome-appearance,
   customize-chrome-shortcuts,
   customize-chrome-cards,
@@ -82,6 +89,16 @@
           id="appearanceElement">
       </customize-chrome-appearance>
     </div>
+    <template is="dom-if" if="[[toolbarCustomizationEnabled_]]">
+      <hr class="sp-cards-separator">
+      <cr-button id="toolbarButton" class="section sp-card"
+          on-click="onToolbarCustomizationButtonClicked_">
+        <sp-heading hide-back-button id="toolbar-customization-heading">
+          <h2 slot="heading">$i18n{toolbarHeader}</h2>
+        </sp-heading>
+        <iron-icon icon="cr:chevron-right" slot="suffix-icon"> </iron-icon>
+      </cr-button>
+    </template>
     <hr class="sp-cards-separator">
     <div id="shortcuts" class="section sp-card">
       <sp-heading hide-back-button>

@@ -92,6 +92,10 @@ export class AppElement extends AppElementBase {
         type: Boolean,
         value: () => loadTimeData.getBoolean('wallpaperSearchEnabled'),
       },
+      toolbarCustomizationEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('toolbarCustomizationEnabled'),
+      },
     };
   }
 
@@ -207,6 +211,8 @@ export class AppElement extends AppElementBase {
   private onChromeWebStoreLinkClick_() {
     this.pageHandler_.openChromeWebStoreHomePage();
   }
+
+  private onToolbarCustomizationButtonClicked_() {}
 }
 
 declare global {

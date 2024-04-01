@@ -19,6 +19,7 @@
 #include "chrome/browser/search/background/wallpaper_search/wallpaper_search_background_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/side_panel/customize_chrome/customize_chrome_utils.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/cr_components/customize_color_scheme_mode/customize_color_scheme_mode_handler.h"
 #include "chrome/browser/ui/webui/cr_components/theme_color_picker/theme_color_picker_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
@@ -90,6 +91,7 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"cardsHeader", IDS_NTP_CUSTOMIZE_MENU_MODULES_LABEL},
       {"categoriesHeader", IDS_NTP_CUSTOMIZE_THEMES_HEADER},
       {"shortcutsHeader", IDS_NTP_CUSTOMIZE_MENU_SHORTCUTS_LABEL},
+      {"toolbarHeader", IDS_NTP_CUSTOMIZE_MENU_TOOLBAR_LABEL},
       // Appearance strings.
       {"changeTheme", IDS_NTP_CUSTOMIZE_CHROME_CHANGE_THEME_LABEL},
       {"chromeColors", IDS_NTP_CUSTOMIZE_CHROME_COLORS_LABEL},
@@ -255,6 +257,8 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       wallpaper_search_enabled &&
           base::FeatureList::IsEnabled(
               ntp_features::kCustomizeChromeWallpaperSearchButton));
+  source->AddBoolean("toolbarCustomizationEnabled",
+                     base::FeatureList::IsEnabled(features::kToolbarPinning));
 
   webui::SetupChromeRefresh2023(source);
 
