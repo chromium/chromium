@@ -10,9 +10,16 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/mahi/mahi_ui_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
+#include "ui/views/view_tracker.h"
+
+namespace views {
+class View;
+}  // namespace views
 
 namespace ash {
 
@@ -33,6 +40,16 @@ class ASH_EXPORT MahiQuestionAnswerView : public views::FlexLayoutView,
   void OnContentsRefreshInitiated() override;
   void OnStateChanged(MahiUiController::State new_state,
                       const std::optional<PayloadType>& payload) override;
+
+  // Creates `error_bubble_` if `payload` suggests an error introduced by the
+  // most recent question; destroys `error_bubble_` if any when `payload`
+  // suggests a new question from the user.
+  void MaybeUpdateErrorBubble(const PayloadType& payload);
+
+  // Tracks the bubble that presents the error introduced by the most recent
+  // question. The bubble is created when the error occurs and is destroyed when
+  // the user asks a new question.
+  views::ViewTracker error_bubble_;
 };
 
 BEGIN_VIEW_BUILDER(ASH_EXPORT, MahiQuestionAnswerView, views::FlexLayoutView)

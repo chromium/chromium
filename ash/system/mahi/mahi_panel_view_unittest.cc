@@ -12,6 +12,7 @@
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/system_textfield.h"
 #include "ash/system/mahi/mahi_constants.h"
 #include "ash/system/mahi/mahi_ui_controller.h"
@@ -24,6 +25,7 @@
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -776,8 +778,11 @@ TEST_F(MahiPanelViewTest, QuestionTextfield_TrimWhitespace) {
 // iterating all possible errors.
 TEST_F(MahiPanelViewTest, FailToGetAnswer) {
   for (MahiResponseStatus error : GetMahiErrors()) {
-    if (error == MahiResponseStatus::kLowQuota) {
-      // `kLowQuota` triggers a warning verified in its own test.
+    if (error == MahiResponseStatus::kInappropriate ||
+        error == MahiResponseStatus::kLowQuota) {
+      // `kInappropriate` introduced by a question is presented in the Q&A view,
+      // verified in its own test. `kLowQuota` triggers a warning verified in
+      // its own test.
       continue;
     }
 
@@ -1023,6 +1028,101 @@ TEST_F(MahiPanelViewTest, RefreshSummaryContents_TransitionToSummaryView) {
   EXPECT_TRUE(summary_outlines_section->GetVisible());
   EXPECT_FALSE(question_answer_view->GetVisible());
   EXPECT_TRUE(question_answer_view->children().empty());
+}
+
+// Verifies that the error introduced by an inappropriate question is presented
+// as expected.
+TEST_F(MahiPanelViewTest, InappropriateQuestionError) {
+  // Config the mock mahi manager to return `MahiResponseStatus::kInappropriate`
+  // when handling a question.
+  base::test::TestFuture<void> answer_waiter;
+  EXPECT_CALL(mock_mahi_manager(), AnswerQuestion)
+      .WillOnce(
+          [&answer_waiter](
+              const std::u16string& question, bool current_panel_content,
+              chromeos::MahiManager::MahiAnswerQuestionCallback callback) {
+            ReturnDefaultAnswerAsyncly(answer_waiter,
+                                       MahiResponseStatus::kInappropriate,
+                                       std::move(callback));
+          });
+
+  auto* const question_textfield = views::AsViewClass<views::Textfield>(
+      panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionTextfield));
+  ASSERT_TRUE(question_textfield);
+  question_textfield->SetText(u"fake question");
+
+  const auto* const send_button =
+      panel_view()->GetViewByID(mahi_constants::ViewId::kAskQuestionSendButton);
+  ASSERT_TRUE(send_button);
+  LeftClickOn(send_button);
+  Mock::VerifyAndClearExpectations(&mock_mahi_manager());
+
+  // After a question is posted and before an answer is loaded:
+  // 1. The Q&A view should show.
+  // 2. The error image/label should not exist.
+  const auto* const question_answer_view =
+      panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionAnswerView);
+  CHECK(question_answer_view);
+  EXPECT_TRUE(question_answer_view->GetVisible());
+  EXPECT_FALSE(panel_view()->GetViewByID(
+      mahi_constants::ViewId::kQuestionAnswerErrorImage));
+  EXPECT_FALSE(panel_view()->GetViewByID(
+      mahi_constants::ViewId::kQuestionAnswerErrorLabel));
+
+  // Wait for the answer to be loaded. Verify:
+  // 1. `question_answer_view` shows.
+  // 2. `error_image_view` shows.
+  // 3. `error_label_view` shows with the expected label.
+
+  ASSERT_TRUE(answer_waiter.WaitAndClear());
+  EXPECT_TRUE(question_answer_view->GetVisible());
+
+  const auto* const error_image_view = panel_view()->GetViewByID(
+      mahi_constants::ViewId::kQuestionAnswerErrorImage);
+  ASSERT_TRUE(error_image_view);
+  EXPECT_TRUE(error_image_view->GetVisible());
+
+  const auto* const error_label_view =
+      views::AsViewClass<views::Label>(panel_view()->GetViewByID(
+          mahi_constants::ViewId::kQuestionAnswerErrorLabel));
+  ASSERT_TRUE(error_label_view);
+  EXPECT_TRUE(error_label_view->GetVisible());
+  EXPECT_EQ(error_label_view->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_ASH_MAHI_RESPONSE_STATUS_INAPPROPRIATE_LABEL_TEXT));
+
+  // Config the mock mahi manager to return an answer in success.
+  EXPECT_CALL(mock_mahi_manager(), AnswerQuestion)
+      .WillOnce(
+          [&answer_waiter](
+              const std::u16string& question, bool current_panel_content,
+              chromeos::MahiManager::MahiAnswerQuestionCallback callback) {
+            ReturnDefaultAnswerAsyncly(answer_waiter,
+                                       MahiResponseStatus::kSuccess,
+                                       std::move(callback));
+          });
+
+  // Ask another question.
+  question_textfield->SetText(u"A new question");
+  LeftClickOn(send_button);
+  Mock::VerifyAndClearExpectations(&mock_mahi_manager());
+
+  // Before the answer loaded, both the error image view and the error label
+  // view should not exist since asking a new question should remove the error
+  // introduced by the previous question.
+  EXPECT_FALSE(panel_view()->GetViewByID(
+      mahi_constants::ViewId::kQuestionAnswerErrorImage));
+  EXPECT_FALSE(panel_view()->GetViewByID(
+      mahi_constants::ViewId::kQuestionAnswerErrorLabel));
+
+  // Wait for the answer to load. Both the error image view and the error label
+  // view should not exist since the answer is loaded in success.
+  ASSERT_TRUE(answer_waiter.Wait());
+  EXPECT_TRUE(question_answer_view->GetVisible());
+  EXPECT_FALSE(panel_view()->GetViewByID(
+      mahi_constants::ViewId::kQuestionAnswerErrorImage));
+  EXPECT_FALSE(panel_view()->GetViewByID(
+      mahi_constants::ViewId::kQuestionAnswerErrorLabel));
 }
 
 }  // namespace ash

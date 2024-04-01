@@ -5,6 +5,7 @@
 #include "ash/system/mahi/mahi_ui_controller.h"
 
 #include "base/logging.h"
+#include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 
 namespace ash {
 
@@ -41,10 +42,8 @@ void MahiUiController::RemoveObserver(Observer* observer) {
 }
 
 void MahiUiController::NavigateToSummaryOutlinesSection() {
-  for (auto& observer : observers_) {
-    observer.OnStateChanged(State::kSummaryAndOutlines,
-                            /*payload=*/std::nullopt);
-  }
+  SetStateAndNotify(State::kSummaryAndOutlines,
+                    /*payload=*/std::nullopt);
 }
 
 void MahiUiController::NotifyRefreshAvailabilityChanged(bool available) {
@@ -63,10 +62,7 @@ void MahiUiController::RefreshContents() {
 
 void MahiUiController::SendQuestion(const std::u16string& question,
                                     bool current_panel_content) {
-  for (auto& observer : observers_) {
-    observer.OnStateChanged(State::kQuestionAndAnswer, question);
-  }
-
+  SetStateAndNotify(State::kQuestionAndAnswer, question);
   chromeos::MahiManager::Get()->AnswerQuestion(
       question, current_panel_content,
       base::BindOnce(&MahiUiController::OnAnswerLoaded,
@@ -88,8 +84,25 @@ void MahiUiController::HandleErrorStatus(chromeos::MahiResponseStatus status) {
     return;
   }
 
+  // The presentation of the inappropriate error during
+  // `State::kQuestionAndAnswer` should be embedded into the Q&A view instead
+  // of a separate view.
+  if (status == chromeos::MahiResponseStatus::kInappropriate &&
+      state_ == State::kQuestionAndAnswer) {
+    SetStateAndNotify(State::kQuestionAndAnswer, status);
+    return;
+  }
+
+  SetStateAndNotify(State::kError, status);
+}
+
+void MahiUiController::SetStateAndNotify(
+    State new_state,
+    const std::optional<Observer::PayloadType>& payload) {
+  state_ = new_state;
+
   for (auto& observer : observers_) {
-    observer.OnStateChanged(State::kError, status);
+    observer.OnStateChanged(state_, payload);
   }
 }
 

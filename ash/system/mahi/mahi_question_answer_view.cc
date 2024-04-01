@@ -9,6 +9,7 @@
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/system_textfield.h"
@@ -17,14 +18,18 @@
 #include "ash/system/mahi/mahi_ui_controller.h"
 #include "base/check.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/background.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/focus_ring.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/flex_layout.h"
@@ -37,11 +42,60 @@ namespace ash {
 
 namespace {
 
-constexpr gfx::Insets kInteriorMargin = gfx::Insets(8);
-constexpr gfx::Insets kTextBubbleInteriorMargin = gfx::Insets::VH(8, 12);
+// Constants -------------------------------------------------------------------
+
+// ErrorBubble
+constexpr auto kErrorBubbleInteriorMargin = gfx::Insets::TLBR(/*top=*/4,
+                                                              /*left=*/4,
+                                                              /*bottom=*/0,
+                                                              /*right=*/8);
+constexpr int kErrorIconSize = 16;
+constexpr int kErrorLabelPreferredWidth = 276;
+constexpr auto kErrorLabelInteriorMargin =
+    gfx::Insets::TLBR(/*top=*/0, /*left=*/8, /*bottom=*/0, /*right=*/0);
+
+// MahiQuestionAnswerView
+constexpr auto kInteriorMargin = gfx::Insets(/*all=*/8);
+constexpr auto kTextBubbleInteriorMargin =
+    gfx::Insets::VH(/*vertical=*/8, /*horizontal=*/12);
 constexpr int kBetweenChildSpacing = 8;
 constexpr int kTextBubbleCornerRadius = 12;
 constexpr int kTextBubbleDefaultMaixmumWidth = 300;
+
+// ErrorBubble -----------------------------------------------------------------
+
+// A bubble presenting the error introduced by the most recent question.
+class ErrorBubble : public views::FlexLayoutView {
+  METADATA_HEADER(ErrorBubble, views::FlexLayoutView)
+ public:
+  ErrorBubble() {
+    views::Builder<views::FlexLayoutView>(this)
+        .SetBorder(views::CreateEmptyBorder(kErrorBubbleInteriorMargin))
+        .SetOrientation(views::LayoutOrientation::kHorizontal)
+        .AddChildren(
+            views::Builder<views::ImageView>()
+                .SetID(mahi_constants::ViewId::kQuestionAnswerErrorImage)
+                .SetImage(ui::ImageModel::FromVectorIcon(
+                    vector_icons::kErrorIcon, cros_tokens::kCrosSysSecondary,
+                    kErrorIconSize)),
+            views::Builder<views::Label>()
+                .SetBorder(views::CreateEmptyBorder(kErrorLabelInteriorMargin))
+                .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
+                    TypographyToken::kCrosAnnotation1))
+                .SetID(mahi_constants::ViewId::kQuestionAnswerErrorLabel)
+                .SetMultiLine(true)
+                .SetMaximumWidth(kErrorLabelPreferredWidth)
+                .SetText(l10n_util::GetStringUTF16(
+                    IDS_ASH_MAHI_RESPONSE_STATUS_INAPPROPRIATE_LABEL_TEXT)))
+        .BuildChildren();
+  }
+};
+
+BEGIN_VIEW_BUILDER(ASH_EXPORT, ErrorBubble, views::FlexLayoutView)
+END_VIEW_BUILDER
+
+BEGIN_METADATA(ErrorBubble)
+END_METADATA
 
 // Creates a text bubble that will be populated with `text` and styled
 // to be a question or answer based on `is_question`.
@@ -131,6 +185,12 @@ std::unique_ptr<views::View> CreateQuestionAnswerRow(const std::u16string& text,
 
 }  // namespace
 
+}  // namespace ash
+
+DEFINE_VIEW_BUILDER(ASH_EXPORT, ash::ErrorBubble)
+
+namespace ash {
+
 MahiQuestionAnswerView::MahiQuestionAnswerView(MahiUiController* ui_controller)
     : MahiUiController::Observer(ui_controller) {
   SetOrientation(views::LayoutOrientation::kVertical);
@@ -162,12 +222,43 @@ void MahiQuestionAnswerView::OnStateChanged(
       return;
     case MahiUiController::State::kQuestionAndAnswer:
       SetVisible(true);
-      AddChildView(CreateQuestionAnswerRow(std::get<std::u16string>(*payload),
-                                           /*is_question=*/true));
+      if (std::holds_alternative<std::u16string>(*payload)) {
+        AddChildView(CreateQuestionAnswerRow(std::get<std::u16string>(*payload),
+                                             /*is_question=*/true));
+      }
+      MaybeUpdateErrorBubble(*payload);
       return;
     case MahiUiController::State::kSummaryAndOutlines:
       SetVisible(false);
       return;
+  }
+}
+
+void MahiQuestionAnswerView::MaybeUpdateErrorBubble(
+    const PayloadType& payload) {
+  if (std::holds_alternative<std::u16string>(payload) && error_bubble_) {
+    RemoveChildViewT(error_bubble_.view());
+    return;
+  }
+
+  if (std::holds_alternative<chromeos::MahiResponseStatus>(payload)) {
+    CHECK_EQ(std::get<chromeos::MahiResponseStatus>(payload),
+             chromeos::MahiResponseStatus::kInappropriate);
+
+    if (error_bubble_) {
+      LOG(ERROR)
+          << "Tried to add a new error bubble when there is an existing one.";
+      return;
+    }
+
+    // Building `ErrorBubble` is synchronous. Therefore, it is safe to pass the
+    // reference to `error_bubble` to the callback.
+    AddChildView(views::Builder<ErrorBubble>()
+                     .AfterBuild(base::BindOnce(
+                         [](views::ViewTracker& error_bubble,
+                            ErrorBubble* self) { error_bubble.SetView(self); },
+                         std::ref(error_bubble_)))
+                     .Build());
   }
 }
 

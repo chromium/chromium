@@ -54,9 +54,11 @@ class ASH_EXPORT MahiUiController {
     virtual void OnRefreshAvailabilityChanged(bool available) {}
 
     // Called when the current state of `MahiUiController` updates. `payload`
-    // indicates the additional data when state changes. If `new_state` is
-    // `State::kError`, `payload` is the error that leads to this change;
-    // if `new_state` is `kQuestionAndAnswer`, `payload` is a question string.
+    // provides more details on state transition:
+    // 1. If `new_state` is `State::kError`, `payload` is the error that leads
+    //    to this update.
+    // 2. if `new_state` is `kQuestionAndAnswer`, `payload` is either (1) a
+    //    question string or (2) an error introduced by the previous question.
     using PayloadType = std::variant</*posted_question=*/std::u16string,
                                      /*error=*/chromeos::MahiResponseStatus>;
     virtual void OnStateChanged(State new_state,
@@ -102,6 +104,11 @@ class ASH_EXPORT MahiUiController {
   // `chromeos::MahiResponseStatus::kSuccess`.
   void HandleErrorStatus(chromeos::MahiResponseStatus status);
 
+  // Updates `state_` and notifies observers. `payload` provides more details on
+  // state transition.
+  void SetStateAndNotify(State new_state,
+                         const std::optional<Observer::PayloadType>& payload);
+
   // Callbacks of `chromeos::MahiManager` APIs ---------------------------------
 
   void OnAnswerLoaded(std::optional<std::u16string> answer,
@@ -112,6 +119,9 @@ class ASH_EXPORT MahiUiController {
 
   void OnSummaryLoaded(std::u16string summary_text,
                        chromeos::MahiResponseStatus status);
+
+  // The current state. Be `State::kSummaryAndOutlines` by default.
+  State state_ = State::kSummaryAndOutlines;
 
   base::ObserverList<Observer> observers_;
 
