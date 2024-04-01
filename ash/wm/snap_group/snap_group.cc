@@ -64,7 +64,7 @@ void SnapGroup::ShowDivider() {
   const gfx::Rect window1_bounds = window1_->GetBoundsInScreen();
   const gfx::Rect window2_bounds = window2_->GetBoundsInScreen();
   int edge_gap = 0;
-  if (IsLayoutHorizontal(window1_)) {
+  if (IsSnapGroupLayoutHorizontal()) {
     edge_gap = window2_bounds.x() - window1_bounds.right();
   } else {
     edge_gap = window2_bounds.y() - window1_bounds.bottom();
@@ -85,6 +85,10 @@ void SnapGroup::ShowDivider() {
 
 void SnapGroup::HideDivider() {
   snap_group_divider_.CloseDividerWidget();
+}
+
+bool SnapGroup::IsSnapGroupLayoutHorizontal() {
+  return IsLayoutHorizontal(window1_);
 }
 
 void SnapGroup::OnLocatedEvent(ui::LocatedEvent* event) {

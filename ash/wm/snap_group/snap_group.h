@@ -38,6 +38,10 @@ class SnapGroup : public aura::WindowObserver,
   void ShowDivider();
   void HideDivider();
 
+  // Returns true if snap group is configured in a vertical split-screen layout.
+  // Returns false otherwise.
+  bool IsSnapGroupLayoutHorizontal();
+
   // Unified helper to handle mouse/touch events received from
   // `ToplevelWindowEventHandler` to hide `snap_group_divider_` when either of
   // the windows becomes unsnapped.

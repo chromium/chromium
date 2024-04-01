@@ -187,21 +187,40 @@ gfx::RoundedCornersF GetMiniWindowRoundedCorners(const aura::Window* window,
   if (SnapGroupController* snap_group_controller = SnapGroupController::Get()) {
     if (SnapGroup* snap_group =
             snap_group_controller->GetSnapGroupForGivenWindow(window)) {
-      return window == snap_group->window1()
+      const bool is_in_horizontal_snap_group =
+          snap_group->IsSnapGroupLayoutHorizontal();
+      if (window == snap_group->window1()) {
+        return is_in_horizontal_snap_group
+                   ? gfx::RoundedCornersF(
+                         /*upper_left=*/include_header_rounding
+                             ? scaled_corner_radius
+                             : 0,
+                         /*upper_right=*/0, /*lower_right=*/0,
+                         /*lower_left=*/scaled_corner_radius)
+                   : gfx::RoundedCornersF(
+                         /*upper_left=*/include_header_rounding
+                             ? scaled_corner_radius
+                             : 0,
+                         /*upper_right=*/
+                         include_header_rounding ? scaled_corner_radius : 0,
+                         /*lower_right=*/0,
+                         /*lower_left=*/0);
+      }
+
+      return is_in_horizontal_snap_group
                  ? gfx::RoundedCornersF(
-                       /*upper_left=*/include_header_rounding
-                           ? scaled_corner_radius
-                           : 0,
-                       /*upper_right=*/0, /*lower_right=*/0,
-                       /*lower_left=*/
-                       scaled_corner_radius)
-                 : gfx::RoundedCornersF(
                        /*upper_left=*/0,
                        /*upper_right=*/
                        include_header_rounding ? scaled_corner_radius : 0,
                        /*lower_right=*/
                        scaled_corner_radius,
-                       /*lower_left=*/0);
+                       /*lower_left=*/0)
+                 : gfx::RoundedCornersF(
+                       /*upper_left=*/0,
+                       /*upper_right=*/0,
+                       /*lower_right=*/
+                       scaled_corner_radius,
+                       /*lower_left=*/scaled_corner_radius);
     }
   }
 
