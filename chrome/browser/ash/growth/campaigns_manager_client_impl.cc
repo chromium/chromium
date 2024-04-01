@@ -7,12 +7,13 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/version.h"
 #include "chrome/browser/ash/growth/install_web_app_action_performer.h"
 #include "chrome/browser/ash/growth/metrics.h"
@@ -24,10 +25,13 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/component_updater/cros_component_manager.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/components/growth/campaigns_constants.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
+#include "components/feature_engagement/public/tracker.h"
 #include "components/variations/synthetic_trials.h"
 
 namespace {
@@ -41,6 +45,10 @@ inline constexpr char kGrowthStudyName[] = "CrOSGrowthStudy";
 // The synthetical trial group name for growth experiment. The campaign id
 // will be unique for different groups.
 inline constexpr char kGrowthGroupName[] = "CampaignId";
+
+Profile* GetProfile() {
+  return ProfileManager::GetActiveUserProfile();
+}
 
 }  // namespace
 
@@ -138,6 +146,8 @@ void CampaignsManagerClientImpl::RegisterSyntheticFieldTrial(
 
 void CampaignsManagerClientImpl::OnReadyToLogImpression(int campaign_id) {
   RecordImpression(campaign_id);
+  campaigns_manager_->NotifyEventForTargeting(
+      growth::CampaignEvent::kImpression, base::NumberToString(campaign_id));
 }
 
 void CampaignsManagerClientImpl::OnDismissed(int campaign_id) {
@@ -147,6 +157,28 @@ void CampaignsManagerClientImpl::OnDismissed(int campaign_id) {
 void CampaignsManagerClientImpl::OnButtonPressed(int campaign_id,
                                                  CampaignButtonId button_id) {
   RecordButtonPressed(campaign_id, button_id);
+
+  // Notify `kDismissed` event to the Feature Engagement framework. This event
+  // will be stored and could be used later.
+  switch (button_id) {
+    case CampaignButtonId::kPrimary:
+    case CampaignButtonId::kSecondary:
+      // Primary and Secondary button press will treated as user dismissal.
+      campaigns_manager_->NotifyEventForTargeting(
+          growth::CampaignEvent::kDismissed, base::NumberToString(campaign_id));
+      break;
+  }
+}
+
+void CampaignsManagerClientImpl::NotifyEvent(const std::string& event_name) {
+  auto* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserContext(GetProfile());
+  if (!tracker || !tracker->IsInitialized()) {
+    LOG(ERROR) << "Feature Engagement tracer is not available";
+    return;
+  }
+
+  tracker->NotifyEvent(event_name);
 }
 
 void CampaignsManagerClientImpl::OnComponentDownloaded(

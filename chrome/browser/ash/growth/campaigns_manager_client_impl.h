@@ -47,6 +47,7 @@ class CampaignsManagerClientImpl : public growth::CampaignsManagerClient,
   void OnReadyToLogImpression(int campaign_id) override;
   void OnDismissed(int campaign_id) override;
   void OnButtonPressed(int campaign_id, CampaignButtonId button_id) override;
+  void NotifyEvent(const std::string& event_name) override;
 
  private:
   void OnComponentDownloaded(

@@ -11,9 +11,11 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/syslog_logging.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/growth/campaigns_constants.h"
 #include "chromeos/ash/components/growth/campaigns_matcher.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
 #include "components/prefs/pref_service.h"
@@ -69,6 +71,24 @@ void LogCampaignInSystemLog(const Campaign* campaign, Slot slot) {
 
   SYSLOG(INFO) << "Growth Campaign " << *id
                << " is selected for slot: " << base::NumberToString(int(slot));
+}
+
+std::string GetEventName(growth::CampaignEvent event, const std::string& id) {
+  const char* event_name = nullptr;
+  switch (event) {
+    case growth::CampaignEvent::kImpression:
+      event_name = growth::kCampaignEventNameImpression;
+      break;
+    case growth::CampaignEvent::kDismissed:
+      event_name = growth::kCampaignEventNameDismissed;
+      break;
+    case growth::CampaignEvent::kAppOpened:
+      event_name = growth::kCampaignEventNameAppOpened;
+      break;
+  }
+
+  std::string event_name_with_id = base::StringPrintf(event_name, id.c_str());
+  return growth::kGrowthCampaignsEventNamePrefix + event_name_with_id;
 }
 
 }  // namespace
@@ -137,6 +157,10 @@ const std::string& CampaignsManager::GetOpenedAppId() const {
 
 void CampaignsManager::SetOpenedApp(const std::string& app_id) {
   matcher_.SetOpenedApp(app_id);
+
+  if (!app_id.empty()) {
+    NotifyEventForTargeting(CampaignEvent::kAppOpened, app_id);
+  }
 }
 
 void CampaignsManager::PerformAction(int campaign_id, const Action* action) {
@@ -177,6 +201,11 @@ void CampaignsManager::PerformAction(int campaign_id,
                               growth::ActionResultReason::kUnknown));
           },
           action_type));
+}
+
+void CampaignsManager::NotifyEventForTargeting(CampaignEvent event,
+                                               const std::string& id) {
+  NotifyEvent(GetEventName(event, id));
 }
 
 void CampaignsManager::OnCampaignsComponentLoaded(
@@ -240,6 +269,10 @@ void CampaignsManager::RegisterTrialForCampaign(
   client_->RegisterSyntheticFieldTrial(
       /*study_id=*/growth::GetStudyId(campaign),
       /*campaign_id=*/*id);
+}
+
+void CampaignsManager::NotifyEvent(const std::string& event) {
+  client_->NotifyEvent(event);
 }
 
 }  // namespace growth

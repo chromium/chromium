@@ -8,10 +8,12 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <variant>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "chromeos/ash/components/growth/action_performer.h"
+#include "chromeos/ash/components/growth/campaigns_constants.h"
 
 namespace base {
 class Version;
@@ -59,6 +61,9 @@ class CampaignsManagerClient {
   // Register sythetical trial for current session.
   virtual void RegisterSyntheticFieldTrial(std::optional<int> study_id,
                                            int campaign_id) const = 0;
+
+  // Notify events to Feature Engagement.
+  virtual void NotifyEvent(const std::string& event) = 0;
 };
 
 }  // namespace growth

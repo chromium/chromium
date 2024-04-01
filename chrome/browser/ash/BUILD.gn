@@ -4300,6 +4300,7 @@ source_set("ash") {
     "//components/exo/server",
     "//components/favicon/core",
     "//components/favicon_base",
+    "//components/feature_engagement/public",
     "//components/feedback/content",
     "//components/feedback/proto",
     "//components/google/core/common",

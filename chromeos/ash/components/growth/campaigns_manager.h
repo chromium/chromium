@@ -76,6 +76,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
                      const ActionType action_type,
                      const base::Value::Dict* params);
 
+  // Notify event to the Feature Engagement framework. Event will be stored and
+  // could be used for targeting.
+  void NotifyEventForTargeting(growth::CampaignEvent event,
+                               const std::string& id);
+
  private:
   // Triggred when campaigns component loaded.
   void OnCampaignsComponentLoaded(
@@ -95,6 +100,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   // Register synthetic trial for growth. It will not work if campaign is
   // incomplete, i.e. missing id.
   void RegisterTrialForCampaign(const Campaign* campaign) const;
+
+  void NotifyEvent(const std::string& event);
 
   raw_ptr<CampaignsManagerClient> client_ = nullptr;
 

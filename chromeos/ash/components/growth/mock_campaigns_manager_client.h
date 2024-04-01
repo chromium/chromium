@@ -37,6 +37,7 @@ class MockCampaignsManagerClient : public CampaignsManagerClient {
               RegisterSyntheticFieldTrial,
               (const std::optional<int> study_id, const int campaign_id),
               (const, override));
+  MOCK_METHOD(void, NotifyEvent, (const std::string& event), (override));
 };
 
 }  // namespace growth
