@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/streams/read_into_request.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_controller.h"
+#include "third_party/blink/renderer/core/streams/stream_promise_resolver.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -21,8 +22,7 @@ namespace blink {
 class ReadableStreamBYOBReader::BYOBReaderReadIntoRequest final
     : public ReadIntoRequest {
  public:
-  explicit BYOBReaderReadIntoRequest(
-      ScriptPromiseResolver<ReadableStreamReadResult>* resolver)
+  explicit BYOBReaderReadIntoRequest(StreamPromiseResolver* resolver)
       : resolver_(resolver) {}
 
   void ChunkSteps(ScriptState* script_state,
@@ -33,7 +33,8 @@ class ReadableStreamBYOBReader::BYOBReaderReadIntoRequest final
         ScriptValue(script_state->GetIsolate(),
                     ToV8Traits<DOMArrayBufferView>::ToV8(script_state, chunk)));
     read_result->setDone(false);
-    resolver_->Resolve(read_result);
+    resolver_->Resolve(script_state, ToV8Traits<ReadableStreamReadResult>::ToV8(
+                                         script_state, read_result));
   }
 
   void CloseSteps(ScriptState* script_state,
@@ -45,11 +46,13 @@ class ReadableStreamBYOBReader::BYOBReaderReadIntoRequest final
               : static_cast<v8::Local<v8::Value>>(
                     v8::Undefined(script_state->GetIsolate()))));
     read_result->setDone(true);
-    resolver_->Resolve(read_result);
+    resolver_->Resolve(script_state, ToV8Traits<ReadableStreamReadResult>::ToV8(
+                                         script_state, read_result));
   }
 
-  void ErrorSteps(ScriptState*, v8::Local<v8::Value> e) const override {
-    resolver_->Reject(e);
+  void ErrorSteps(ScriptState* script_state,
+                  v8::Local<v8::Value> e) const override {
+    resolver_->Reject(script_state, e);
   }
 
   void Trace(Visitor* visitor) const override {
@@ -58,7 +61,7 @@ class ReadableStreamBYOBReader::BYOBReaderReadIntoRequest final
   }
 
  private:
-  Member<ScriptPromiseResolver<ReadableStreamReadResult>> resolver_;
+  Member<StreamPromiseResolver> resolver_;
 };
 
 ReadableStreamBYOBReader* ReadableStreamBYOBReader::Create(
@@ -82,7 +85,7 @@ ReadableStreamBYOBReader::ReadableStreamBYOBReader(
 
 ReadableStreamBYOBReader::~ReadableStreamBYOBReader() = default;
 
-ScriptPromise<ReadableStreamReadResult> ReadableStreamBYOBReader::read(
+ScriptPromiseUntyped ReadableStreamBYOBReader::read(
     ScriptState* script_state,
     NotShared<DOMArrayBufferView> view,
     ExceptionState& exception_state) {
@@ -93,7 +96,7 @@ ScriptPromise<ReadableStreamReadResult> ReadableStreamBYOBReader::read(
     exception_state.ThrowTypeError(
         "This readable stream reader cannot be used to read as the view has "
         "byte length equal to 0");
-    return ScriptPromise<ReadableStreamReadResult>();
+    return ScriptPromiseUntyped();
   }
 
   // 2. If view.[[ViewedArrayBuffer]].[[ArrayBufferByteLength]] is 0, return a
@@ -102,7 +105,7 @@ ScriptPromise<ReadableStreamReadResult> ReadableStreamBYOBReader::read(
     exception_state.ThrowTypeError(
         "This readable stream reader cannot be used to read as the viewed "
         "array buffer has 0 byte length");
-    return ScriptPromise<ReadableStreamReadResult>();
+    return ScriptPromiseUntyped();
   }
 
   // 3. If ! IsDetachedBuffer(view.[[ViewedArrayBuffer]]) is true, return a
@@ -111,7 +114,7 @@ ScriptPromise<ReadableStreamReadResult> ReadableStreamBYOBReader::read(
     exception_state.ThrowTypeError(
         "This readable stream reader cannot be used to read as the viewed "
         "array buffer is detached");
-    return ScriptPromise<ReadableStreamReadResult>();
+    return ScriptPromiseUntyped();
   }
 
   // 4. If this.[[stream]] is undefined, return a promise rejected with a
@@ -120,13 +123,12 @@ ScriptPromise<ReadableStreamReadResult> ReadableStreamBYOBReader::read(
     exception_state.ThrowTypeError(
         "This readable stream reader has been released and cannot be used to "
         "read from its previous owner stream");
-    return ScriptPromise<ReadableStreamReadResult>();
+    return ScriptPromiseUntyped();
   }
 
   // 5. Let promise be a new promise.
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<ReadableStreamReadResult>>(
-          script_state, exception_state.GetContext());
+  auto* promise = MakeGarbageCollected<StreamPromiseResolver>(script_state,
+                                                              exception_state);
 
   // 6. Let readIntoRequest be a new read-into request with the following items:
   //    chunk steps, given chunk
@@ -136,12 +138,12 @@ ScriptPromise<ReadableStreamReadResult> ReadableStreamBYOBReader::read(
   //    error steps, given e
   //      1. Reject promise with e.
   auto* read_into_request =
-      MakeGarbageCollected<BYOBReaderReadIntoRequest>(resolver);
+      MakeGarbageCollected<BYOBReaderReadIntoRequest>(promise);
 
   // 7. Perform ! ReadableStreamBYOBReaderRead(this, view, readIntoRequest).
   Read(script_state, this, view, read_into_request, exception_state);
   // 8. Return promise.
-  return resolver->Promise();
+  return promise->GetScriptPromiseUntyped(script_state);
 }
 
 void ReadableStreamBYOBReader::Read(ScriptState* script_state,

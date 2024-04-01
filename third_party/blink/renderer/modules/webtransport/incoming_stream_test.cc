@@ -306,7 +306,9 @@ TEST_F(IncomingStreamTest, ClosedWithFinWithoutRead) {
   incoming_stream->OnIncomingStreamClosed(true);
   ClosePipe();
 
-  ScriptPromiseTester tester(script_state, reader->closed(script_state));
+  ScriptPromiseTester tester(
+      script_state,
+      reader->ClosedPromise()->GetScriptPromiseUntyped(script_state));
   tester.WaitUntilSettled();
   EXPECT_TRUE(tester.IsFulfilled());
 }

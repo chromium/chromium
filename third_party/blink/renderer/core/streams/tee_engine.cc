@@ -176,9 +176,8 @@ class TeeEngine::PullAlgorithm final : public StreamAlgorithm {
           //     iii. Resolve cancelPromise with !
           //     ReadableStreamCancel(stream, cloneResult.[[Value]]).
           engine_->cancel_promise_->Resolve(
-              script_state,
-              ReadableStream::Cancel(script_state, engine_->stream_, exception)
-                  .V8Promise());
+              script_state, ReadableStream::Cancel(
+                                script_state, engine_->stream_, exception));
           //     iv. Return.
           exception_state.ClearException();
           return;
@@ -267,8 +266,7 @@ class TeeEngine::CancelAlgorithm final : public StreamAlgorithm {
       // ii. Let cancelResult be ! ReadableStreamCancel(stream,
       //    compositeReason).
       auto cancel_result = ReadableStream::Cancel(
-                               script_state, engine_->stream_, composite_reason)
-                               .V8Promise();
+          script_state, engine_->stream_, composite_reason);
 
       // iii. Resolve cancelPromise with cancelResult.
       engine_->cancel_promise_->Resolve(script_state, cancel_result);
@@ -413,8 +411,8 @@ void TeeEngine::Start(ScriptState* script_state,
 
   // 19. Upon rejection of reader.[[closedPromise]] with reason r,
   StreamThenPromise(
-      script_state->GetContext(), reader_->closed(script_state).V8Promise(),
-      nullptr,
+      script_state->GetContext(),
+      reader_->ClosedPromise()->V8Promise(script_state->GetIsolate()), nullptr,
       MakeGarbageCollected<ScriptFunction>(
           script_state, MakeGarbageCollected<RejectFunction>(this)));
 

@@ -36,6 +36,7 @@ class ReadableStreamTransferringOptimizer;
 class ReadableWritablePair;
 class ReadIntoRequest;
 class ReadRequest;
+class ScriptPromiseUntyped;
 class ScriptState;
 class StrategySizeAlgorithm;
 class StreamAlgorithm;
@@ -138,12 +139,12 @@ class CORE_EXPORT ReadableStream
   // https://streams.spec.whatwg.org/#rs-constructor
   bool locked() const;
 
-  ScriptPromise<IDLUndefined> cancel(ScriptState*, ExceptionState&);
+  ScriptPromiseUntyped cancel(ScriptState*, ExceptionState&);
 
   // https://streams.spec.whatwg.org/#rs-cancel
-  ScriptPromise<IDLUndefined> cancel(ScriptState*,
-                                     ScriptValue reason,
-                                     ExceptionState&);
+  ScriptPromiseUntyped cancel(ScriptState*,
+                              ScriptValue reason,
+                              ExceptionState&);
 
   V8ReadableStreamReader* getReader(ScriptState* script_state,
                                     ExceptionState& exception_state);
@@ -170,15 +171,15 @@ class CORE_EXPORT ReadableStream
                               const StreamPipeOptions* options,
                               ExceptionState&);
 
-  ScriptPromise<IDLUndefined> pipeTo(ScriptState*,
-                                     WritableStream* destination,
-                                     ExceptionState&);
+  ScriptPromiseUntyped pipeTo(ScriptState*,
+                              WritableStream* destination,
+                              ExceptionState&);
 
   // https://streams.spec.whatwg.org/#rs-pipe-to
-  ScriptPromise<IDLUndefined> pipeTo(ScriptState*,
-                                     WritableStream* destination,
-                                     const StreamPipeOptions* options,
-                                     ExceptionState&);
+  ScriptPromiseUntyped pipeTo(ScriptState*,
+                              WritableStream* destination,
+                              const StreamPipeOptions* options,
+                              ExceptionState&);
 
   // https://streams.spec.whatwg.org/#rs-tee
   HeapVector<Member<ReadableStream>> tee(ScriptState*, ExceptionState&);
@@ -232,11 +233,11 @@ class CORE_EXPORT ReadableStream
   }
 
   // https://streams.spec.whatwg.org/#readable-stream-pipe-to
-  static ScriptPromise<IDLUndefined> PipeTo(ScriptState*,
-                                            ReadableStream*,
-                                            WritableStream*,
-                                            PipeOptions*,
-                                            ExceptionState&);
+  static ScriptPromiseUntyped PipeTo(ScriptState*,
+                                     ReadableStream*,
+                                     WritableStream*,
+                                     PipeOptions*,
+                                     ExceptionState&);
 
   // https://streams.spec.whatwg.org/#acquire-readable-stream-reader
   static ReadableStreamDefaultReader* AcquireDefaultReader(ScriptState*,
@@ -249,9 +250,9 @@ class CORE_EXPORT ReadableStream
                                                      ExceptionState&);
 
   // https://streams.spec.whatwg.org/#readable-stream-cancel
-  static ScriptPromise<IDLUndefined> Cancel(ScriptState*,
-                                            ReadableStream*,
-                                            v8::Local<v8::Value> reason);
+  static v8::Local<v8::Promise> Cancel(ScriptState*,
+                                       ReadableStream*,
+                                       v8::Local<v8::Value> reason);
 
   //
   // Functions exported for use by TransformStream. Not part of the standard.
