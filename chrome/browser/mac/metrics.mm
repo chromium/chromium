@@ -38,10 +38,8 @@ void RecordAppFileSystemTypeUsingVolumeTag(enum vtagtype tag) {
 }
 
 void RecordAppUpgradeCodeSignatureValidationStatus(OSStatus status) {
-  // There are currently 389 possible errSec values, however Chrome is only
-  // recording values returned by SecCodeCheckValidity which is a much smaller
-  // set (~10-20).
-  // https://github.com/apple-oss-distributions/Security/blob/Security-61040.80.10.0.1/base/SecBase.h#L318
+  // There are currently 83 possible code signing errSec values.
+  // https://github.com/apple-oss-distributions/Security/blob/Security-61040.80.10.0.1/OSX/libsecurity_codesigning/lib/CSCommon.h#L64
   base::UmaHistogramSparse("Mac.AppUpgradeCodeSignatureValidationStatus",
                            status);
 }
