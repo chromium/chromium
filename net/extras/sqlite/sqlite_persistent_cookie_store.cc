@@ -1225,9 +1225,9 @@ void SQLitePersistentCookieStore::Backend::BatchOperation(
     PendingOperation::OperationType op,
     const CanonicalCookie& cc) {
   // Commit every 30 seconds.
-  static const int kCommitIntervalMs = 30 * 1000;
+  constexpr base::TimeDelta kCommitInterval = base::Seconds(30);
   // Commit right away if we have more than 512 outstanding operations.
-  static const size_t kCommitAfterBatchSize = 512;
+  constexpr size_t kCommitAfterBatchSize = 512;
   DCHECK(!background_task_runner()->RunsTasksInCurrentSequence());
 
   // We do a full copy of the cookie here, and hopefully just here.
@@ -1273,7 +1273,7 @@ void SQLitePersistentCookieStore::Backend::BatchOperation(
     // We've gotten our first entry for this batch, fire off the timer.
     if (!background_task_runner()->PostDelayedTask(
             FROM_HERE, base::BindOnce(&Backend::Commit, this),
-            base::Milliseconds(kCommitIntervalMs))) {
+            kCommitInterval)) {
       NOTREACHED() << "background_task_runner() is not running.";
     }
   } else if (num_pending == kCommitAfterBatchSize) {
