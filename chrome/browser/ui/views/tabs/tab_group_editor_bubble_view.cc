@@ -553,21 +553,9 @@ void TabGroupEditorBubbleView::Ungroup(const Browser* browser,
 void TabGroupEditorBubbleView::CloseGroupPressed() {
   base::RecordAction(
       base::UserMetricsAction("TabGroups_TabGroupBubble_CloseGroup"));
-  if (base::FeatureList::IsEnabled(features::kTabGroupsSave) &&
-      browser_->profile()->IsRegularProfile() &&
-      save_group_toggle_->GetIsOn()) {
-    tab_groups::SavedTabGroupKeyedService* saved_tab_group_service =
-        tab_groups::SavedTabGroupServiceFactory::GetForProfile(
-            browser_->profile());
-    CHECK(saved_tab_group_service);
-    saved_tab_group_service->DisconnectLocalTabGroup(group_);
-  }
-
   TabStripModel* const model = browser_->tab_strip_model();
-
   const int num_tabs_in_group =
       model->group_model()->GetTabGroup(group_)->tab_count();
-
   if (model->count() == num_tabs_in_group) {
     // If the group about to be closed has all of the tabs in the browser, add a
     // new tab outside the group to prevent the browser from closing.

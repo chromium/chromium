@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
@@ -23,10 +24,13 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tab_helpers.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/chrome_switches.h"
@@ -196,6 +200,20 @@ void BrowserTabStripModelDelegate::CreateHistoricalGroup(
     service->CreateHistoricalGroup(
         BrowserLiveTabContext::FindContextWithGroup(group, browser_->profile()),
         group);
+
+    const bool saved_tab_groups_enabled =
+        base::FeatureList::IsEnabled(features::kTabGroupsSave) ||
+        base::FeatureList::IsEnabled(features::kTabGroupsSaveV2);
+    if (saved_tab_groups_enabled) {
+      tab_groups::SavedTabGroupKeyedService* saved_tab_group_service =
+          tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+              browser_->profile());
+      CHECK(saved_tab_group_service);
+
+      if (saved_tab_group_service->model()->Contains(group)) {
+        saved_tab_group_service->DisconnectLocalTabGroup(group);
+      }
+    }
   }
 }
 

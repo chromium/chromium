@@ -101,7 +101,6 @@ const std::optional<base::Uuid>
 AndroidLiveTabContext::GetSavedTabGroupIdForGroup(
     const tab_groups::TabGroupId& group) const {
   // Not applicable to android... yet.
-  NOTREACHED();
   return std::nullopt;
 }
 

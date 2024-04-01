@@ -11,6 +11,7 @@
 #include <iterator>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -252,6 +253,7 @@ void TabRestoreServiceHelper::CreateHistoricalGroup(
 
   auto group = std::make_unique<Group>();
   group->group_id = id;
+  group->saved_id = context->GetSavedTabGroupIdForGroup(id);
   group->visual_data = *context->GetVisualDataForGroup(id);
   group->browser_id = context->GetSessionID().id();
   group->timestamp = TimeNow();
@@ -853,13 +855,13 @@ void TabRestoreServiceHelper::PopulateTab(Tab* tab,
     tab->browser_id = context->GetSessionID().id();
     tab->pinned = context->IsTabPinned(tab->tabstrip_index);
     tab->group = context->GetTabGroupForTab(tab->tabstrip_index);
-    tab->group_visual_data =
-        tab->group.has_value()
-            ? std::optional<
-                  tab_groups::TabGroupVisualData>{*context
-                                                       ->GetVisualDataForGroup(
-                                                           tab->group.value())}
-            : std::nullopt;
+
+    if (tab->group.has_value()) {
+      tab->saved_id = context->GetSavedTabGroupIdForGroup(tab->group.value());
+      tab->group_visual_data =
+          *context->GetVisualDataForGroup(tab->group.value());
+    }
+
     tab->extra_data = context->GetExtraDataForTab(tab->tabstrip_index);
   }
 }

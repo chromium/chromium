@@ -14,6 +14,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "base/token.h"
+#include "base/uuid.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sessions/core/live_tab_context.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
@@ -131,6 +132,9 @@ class SESSIONS_EXPORT TabRestoreService : public KeyedService {
     // The group the tab belonged to, if any.
     std::optional<tab_groups::TabGroupId> group;
 
+    // The saved group id the tab belong to, if any.
+    std::optional<base::Uuid> saved_id = std::nullopt;
+
     // The group metadata for the tab, if any.
     std::optional<tab_groups::TabGroupVisualData> group_visual_data;
   };
@@ -185,6 +189,9 @@ class SESSIONS_EXPORT TabRestoreService : public KeyedService {
     // Group metadata.
     tab_groups::TabGroupId group_id = tab_groups::TabGroupId::CreateEmpty();
     tab_groups::TabGroupVisualData visual_data;
+
+    // The saved group id of this group, if any.
+    std::optional<base::Uuid> saved_id = std::nullopt;
 
     // The ID of the browser to which this group belonged, so it can be restored
     // there.
