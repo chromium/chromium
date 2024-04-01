@@ -45,6 +45,7 @@
 #include "ash/wm/window_state_util.h"
 #include "base/check.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/timer/timer.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/wm/window_util.h"
@@ -2526,6 +2527,82 @@ TEST_P(GameTypeGameDashboardContextTest,
 INSTANTIATE_TEST_SUITE_P(All,
                          GameTypeGameDashboardContextTest,
                          testing::Bool());
+
+// -----------------------------------------------------------------------------
+// GameDashboardEnabledFeatureTileVerificationTest:
+// Test fixture to test available Feature Tiles and their types depending on the
+// test params (param to create an ARC Game window, param to enable game
+// recording).
+class GameDashboardEnabledFeatureTileVerificationTest
+    : public GameDashboardContextTest,
+      public testing::WithParamInterface<
+          std::tuple</*is_arc_game=*/bool,
+                     /*enable_recording_feature=*/bool>> {
+ public:
+  GameDashboardEnabledFeatureTileVerificationTest()
+      : is_arc_game_(std::get<0>(GetParam())),
+        enable_recording_feature_(std::get<1>(GetParam())) {}
+  ~GameDashboardEnabledFeatureTileVerificationTest() override = default;
+
+  void SetUp() override {
+    GameDashboardContextTest::SetUp();
+    scoped_feature_list_.InitWithFeatureState(
+        features::kFeatureManagementGameDashboardRecordGame,
+        enable_recording_feature_);
+    CreateGameWindow(is_arc_game_);
+  }
+
+ protected:
+  const bool is_arc_game_;
+  const bool enable_recording_feature_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// GameDashboardEnabledFeatureTileVerificationTest Test
+// -----------------------------------------------------------------------
+// Verifies both the existence of Game Dashboard Main Menu Feature Tiles as well
+// as any given tile's type for every possible allowed combination of Feature
+// Tiles in the Main Menu.
+TEST_P(GameDashboardEnabledFeatureTileVerificationTest, MainMenuShortcutTiles) {
+  test_api_->OpenTheMainMenu();
+
+  auto* toolbar_tile = test_api_->GetMainMenuToolbarTile();
+  auto* screenshot_tile = test_api_->GetMainMenuScreenshotTile();
+  ASSERT_TRUE(toolbar_tile);
+  ASSERT_TRUE(screenshot_tile);
+
+  auto* game_controls_tile = test_api_->GetMainMenuGameControlsTile();
+  if (is_arc_game_) {
+    ASSERT_TRUE(game_controls_tile);
+    ASSERT_EQ(game_controls_tile->tile_type(), FeatureTile::TileType::kCompact);
+  } else {
+    ASSERT_FALSE(game_controls_tile);
+  }
+
+  auto* record_game_tile = test_api_->GetMainMenuRecordGameTile();
+  if (enable_recording_feature_) {
+    ASSERT_TRUE(record_game_tile);
+    ASSERT_EQ(record_game_tile->tile_type(), FeatureTile::TileType::kCompact);
+  } else {
+    ASSERT_FALSE(test_api_->GetMainMenuRecordGameTile());
+  }
+
+  FeatureTile::TileType expected_tile_type = FeatureTile::TileType::kCompact;
+  if (!is_arc_game_ && !enable_recording_feature_) {
+    expected_tile_type = FeatureTile::TileType::kPrimary;
+  }
+
+  ASSERT_EQ(toolbar_tile->tile_type(), expected_tile_type);
+  ASSERT_EQ(screenshot_tile->tile_type(), expected_tile_type);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    GameDashboardEnabledFeatureTileVerificationTest,
+    testing::Combine(/*is_arc_game=*/testing::Bool(),
+                     /*enable_recording_feature=*/testing::Bool()));
 
 // -----------------------------------------------------------------------------
 // GameDashboardStartAndStopCaptureSessionTest:

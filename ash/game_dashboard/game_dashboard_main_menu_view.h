@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "ash/system/unified/feature_tile.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -19,7 +20,6 @@ class BoxLayoutView;
 namespace ash {
 
 class AnchoredNudge;
-class FeatureTile;
 class GameDashboardContext;
 class IconButton;
 class PillButton;
@@ -100,12 +100,18 @@ class ASH_EXPORT GameDashboardMainMenuView
   // size to the `main_menu_container_`.
   void MaybeAddArcFeatureRows();
 
-  // Adds Game Controls feature tile in `container` if it is the ARC game window
-  // and Game Controls is available.
-  void MaybeAddGameControlsTile(views::View* container);
+  // Adds Game Controls feature tile of type `tile_type` to a specified
+  // `container`.
+  void AddGameControlsTile(views::View* container,
+                           FeatureTile::TileType tile_type);
 
   // Adds menu controls row for Game Controls.
   void AddGameControlsDetailsRow(views::View* container);
+
+  // Adds Record Game feature tile of type `tile_type` to a specified
+  // `container`.
+  void AddRecordGameTile(views::View* container,
+                         FeatureTile::TileType tile_type);
 
   // Adds a row to access a settings page controlling the screen size if the
   // given game window is an ARC app.

@@ -34,7 +34,6 @@
 #include "ash/style/typography.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/system/unified/feature_pod_button.h"
-#include "ash/system/unified/feature_tile.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -50,6 +49,7 @@
 #include "ui/compositor/layer_type.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/animation/ink_drop.h"
@@ -725,12 +725,25 @@ void GameDashboardMainMenuView::AddShortcutTilesRow() {
   container->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
   container->SetBetweenChildSpacing(kCenterPadding);
 
+  std::optional<ArcGameControlsFlag> game_controls_flags =
+      game_dashboard_utils::GetGameControlsFlag(context_->game_window());
+  const bool record_feature_enabled = base::FeatureList::IsEnabled(
+      features::kFeatureManagementGameDashboardRecordGame);
+
+  // Determines the tile type to assign to all Feature Tiles. There will be at
+  // least 2 tiles. In cases that there are more, the tile type is set to
+  // 'FeatureTile::TileType::kCompact', and if not,
+  // 'FeatureTile::TileType::kPrimary'.
+  const FeatureTile::TileType tile_type =
+      (game_controls_flags || record_feature_enabled)
+          ? FeatureTile::TileType::kCompact
+          : FeatureTile::TileType::kPrimary;
+
   const bool toolbar_visible = context_->IsToolbarVisible();
   toolbar_tile_ = container->AddChildView(CreateFeatureTile(
       base::BindRepeating(&GameDashboardMainMenuView::OnToolbarTilePressed,
                           base::Unretained(this)),
-      /*is_togglable=*/true, FeatureTile::TileType::kCompact,
-      VIEW_ID_GD_TOOLBAR_TILE, kGdToolbarIcon,
+      /*is_togglable=*/true, tile_type, VIEW_ID_GD_TOOLBAR_TILE, kGdToolbarIcon,
       l10n_util::GetStringUTF16(
           IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_BUTTON_TITLE),
       toolbar_visible
@@ -742,46 +755,37 @@ void GameDashboardMainMenuView::AddShortcutTilesRow() {
           ? IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_TOOLTIPS_HIDE_TOOLBAR
           : IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_TOOLTIPS_SHOW_TOOLBAR));
 
-  MaybeAddGameControlsTile(container);
+  if (game_controls_flags) {
+    AddGameControlsTile(container, tile_type);
+  }
 
-  if (base::FeatureList::IsEnabled(
-          features::kFeatureManagementGameDashboardRecordGame)) {
-    record_game_tile_ = container->AddChildView(CreateFeatureTile(
-        base::BindRepeating(&GameDashboardMainMenuView::OnRecordGameTilePressed,
-                            base::Unretained(this)),
-        /*is_togglable=*/true, FeatureTile::TileType::kCompact,
-        VIEW_ID_GD_RECORD_GAME_TILE, kGdRecordGameIcon,
-        l10n_util::GetStringUTF16(
-            IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_BUTTON_TITLE),
-        /*sub_label=*/std::nullopt));
-    // Set toggled background color.
-    record_game_tile_->SetBackgroundToggledColorId(
-        cros_tokens::kCrosSysSystemNegativeContainer);
-
-    // Set the label's foreground toggled colors.
-    record_game_tile_->SetForegroundToggledColorId(
-        cros_tokens::kCrosSysSystemOnNegativeContainer);
-    // Set the sub-label's foreground toggled colors.
-    record_game_tile_->SetForegroundOptionalToggledColorId(
-        cros_tokens::kCrosSysSystemOnNegativeContainer);
-
-    // Set toggled ink drop color.
-    record_game_tile_->SetInkDropToggledBaseColorId(
-        cros_tokens::kCrosSysRippleNeutralOnProminent);
-    UpdateRecordGameTile(
-        GameDashboardController::Get()->active_recording_context() == context_);
+  if (record_feature_enabled) {
+    AddRecordGameTile(container, tile_type);
   }
 
   auto* screenshot_tile = container->AddChildView(CreateFeatureTile(
       base::BindRepeating(&GameDashboardMainMenuView::OnScreenshotTilePressed,
                           base::Unretained(this)),
-      /*is_togglable=*/true, FeatureTile::TileType::kCompact,
-      VIEW_ID_GD_SCREENSHOT_TILE, kGdScreenshotIcon,
+      /*is_togglable=*/true, tile_type, VIEW_ID_GD_SCREENSHOT_TILE,
+      kGdScreenshotIcon,
       l10n_util::GetStringUTF16(
           IDS_ASH_GAME_DASHBOARD_SCREENSHOT_TILE_BUTTON_TITLE),
       /*sub_label=*/std::nullopt));
   // `screenshot_tile` is treated as a button instead of toggle button here.
   screenshot_tile->SetAccessibleRole(ax::mojom::Role::kButton);
+
+  // Remove the sub-label view from Screenshot Feature Tile.
+  if (tile_type == FeatureTile::TileType::kPrimary) {
+    screenshot_tile->sub_label()->SetVisible(false);
+  }
+
+  // Ensure that the Feature Tiles stretch out to equal width and height in the
+  // Feature Tile row.
+  for (auto tile : container->children()) {
+    tile->SetPreferredSize(gfx::Size(1, tile->GetPreferredSize().height()));
+  }
+
+  container->SetDefaultFlex(1);
 }
 
 void GameDashboardMainMenuView::MaybeAddArcFeatureRows() {
@@ -801,21 +805,18 @@ void GameDashboardMainMenuView::MaybeAddArcFeatureRows() {
   AddScreenSizeSettingsRow(feature_details_container);
 }
 
-void GameDashboardMainMenuView::MaybeAddGameControlsTile(
-    views::View* container) {
-  auto flags =
-      game_dashboard_utils::GetGameControlsFlag(context_->game_window());
-  if (!flags) {
-    return;
-  }
+void GameDashboardMainMenuView::AddGameControlsTile(
+    views::View* container,
+    FeatureTile::TileType tile_type) {
+  DCHECK(game_dashboard_utils::GetGameControlsFlag(context_->game_window()));
 
-  // Add the game controls tile which shows and hides the game controls mapping
-  // hint.
+  // Add the game controls tile which shows and hides the game controls
+  // mapping hint.
   game_controls_tile_ = container->AddChildView(CreateFeatureTile(
       base::BindRepeating(&GameDashboardMainMenuView::OnGameControlsTilePressed,
                           base::Unretained(this)),
-      /*is_togglable=*/true, FeatureTile::TileType::kCompact,
-      VIEW_ID_GD_CONTROLS_TILE, kGdGameControlsIcon,
+      /*is_togglable=*/true, tile_type, VIEW_ID_GD_CONTROLS_TILE,
+      kGdGameControlsIcon,
       l10n_util::GetStringUTF16(
           IDS_ASH_GAME_DASHBOARD_CONTROLS_TILE_BUTTON_TITLE),
       /*sub_label=*/std::nullopt));
@@ -823,6 +824,38 @@ void GameDashboardMainMenuView::MaybeAddGameControlsTile(
 
   // Call `SetSubLabelVisibility` after the sub-label is set.
   game_controls_tile_->SetSubLabelVisibility(true);
+}
+
+void GameDashboardMainMenuView::AddRecordGameTile(
+    views::View* container,
+    FeatureTile::TileType tile_type) {
+  DCHECK(base::FeatureList::IsEnabled(
+      features::kFeatureManagementGameDashboardRecordGame));
+
+  record_game_tile_ = container->AddChildView(CreateFeatureTile(
+      base::BindRepeating(&GameDashboardMainMenuView::OnRecordGameTilePressed,
+                          base::Unretained(this)),
+      /*is_togglable=*/true, tile_type, VIEW_ID_GD_RECORD_GAME_TILE,
+      kGdRecordGameIcon,
+      l10n_util::GetStringUTF16(
+          IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_BUTTON_TITLE),
+      /*sub_label=*/std::nullopt));
+  // Set toggled background color.
+  record_game_tile_->SetBackgroundToggledColorId(
+      cros_tokens::kCrosSysSystemNegativeContainer);
+
+  // Set the label's foreground toggled colors.
+  record_game_tile_->SetForegroundToggledColorId(
+      cros_tokens::kCrosSysSystemOnNegativeContainer);
+  // Set the sub-label's foreground toggled colors.
+  record_game_tile_->SetForegroundOptionalToggledColorId(
+      cros_tokens::kCrosSysSystemOnNegativeContainer);
+
+  // Set toggled ink drop color.
+  record_game_tile_->SetInkDropToggledBaseColorId(
+      cros_tokens::kCrosSysRippleNeutralOnProminent);
+  UpdateRecordGameTile(
+      GameDashboardController::Get()->active_recording_context() == context_);
 }
 
 void GameDashboardMainMenuView::AddGameControlsDetailsRow(
