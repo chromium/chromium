@@ -517,6 +517,7 @@ void PrerenderManager::ResetPrerenderHandlesOnPrimaryPageChanged(
   }
 
   bookmark_prerender_handle_.reset();
+  new_tab_page_prerender_handle_.reset();
 }
 
 bool PrerenderManager::ResetSearchPrerenderTaskIfNecessary(
