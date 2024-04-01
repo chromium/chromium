@@ -8,6 +8,7 @@ import textwrap
 import unittest
 from unittest import mock
 
+from blinkpy.common.checkout.git import CommitRange
 from blinkpy.common.checkout.git_mock import MockGit
 from blinkpy.common.host_mock import MockHost
 from blinkpy.common.net.git_cl import TryJobStatus
@@ -21,6 +22,7 @@ from blinkpy.common.system.log_testing import LoggingTestCase
 from blinkpy.w3c.buganizer import BuganizerIssue
 from blinkpy.w3c.chromium_commit_mock import MockChromiumCommit
 from blinkpy.w3c.directory_owners_extractor import WPTDirMetadata
+from blinkpy.w3c.import_notifier import ImportNotifier
 from blinkpy.w3c.local_wpt import LocalWPT
 from blinkpy.w3c.local_wpt_mock import MockLocalWPT
 from blinkpy.w3c.test_importer import TestImporter, ROTATIONS_URL, SHERIFF_EMAIL_FALLBACK, RUBBER_STAMPER_BOT
@@ -450,44 +452,68 @@ class TestImporterTest(LoggingTestCase):
     def test_commit_message(self):
         importer = self._get_test_importer(self.mock_host())
         self.assertEqual(
-            importer._commit_message('aaaa', '1111'), 'Import 1111\n\n'
-            'Using wpt-import in Chromium aaaa.\n\n'
-            'No-Export: true\n'
-            'Validate-Test-Flakiness: skip')
+            importer.commit_message('aaaa', CommitRange('0000', '1111')),
+            textwrap.dedent("""\
+                Import wpt@1111
+
+                https://github.com/web-platform-tests/wpt/compare/0000...1111
+
+                Using wpt-import in Chromium aaaa.
+                """))
+
+    def test_commit_message_with_pending_exportable_changes(self):
+        host = self.mock_host()
+        importer = self._get_test_importer(host)
+        locally_applied_commits = [
+            MockChromiumCommit(host, subject='Pending export 1'),
+            MockChromiumCommit(
+                host,
+                'refs/heads/main@{#222)',
+                subject=f'Pending export 2 with very long subject {"a" * 80}'),
+        ]
+        self.assertEqual(
+            importer.commit_message('aaaa', CommitRange('0000', '1111'),
+                                    locally_applied_commits),
+            textwrap.dedent("""\
+                Import wpt@1111
+
+                https://github.com/web-platform-tests/wpt/compare/0000...1111
+
+                Using wpt-import in Chromium aaaa.
+                With Chromium commits locally applied on WPT:
+                  14fd77e88e "Pending export 1"
+                  3e977a7ce6 "Pending export 2 with very long subject [...]
+                """)),
 
     def test_cl_description_with_empty_environ(self):
         host = self.mock_host()
-        host.executive = MockExecutive(output='Last commit message\n\n')
+        host.executive = MockExecutive(output='Last commit message\n')
         importer = self._get_test_importer(host)
-        description = importer._cl_description(directory_owners={})
+        description = importer.cl_description(directory_owners={})
         self.assertEqual(
-            description, 'Last commit message\n\n'
-            'Note to sheriffs: This CL imports external tests and adds\n'
-            'expectations for those tests; if this CL is large and causes\n'
-            'a few new failures, please fix the failures by adding new\n'
-            'lines to TestExpectations rather than reverting. See:\n'
-            'https://chromium.googlesource.com'
-            '/chromium/src/+/main/docs/testing/web_platform_tests.md\n\n'
-            'NOAUTOREVERT=true\n'
-            'No-Export: true\n'
-            'Validate-Test-Flakiness: skip\n'
-            'Cq-Include-Trybots: luci.chromium.try:linux-blink-rel\n')
-        self.assertEqual(host.executive.calls,
-                         [MANIFEST_INSTALL_CMD] +
-                         [['git', 'log', '-1', '--format=%B']])
+            description,
+            textwrap.dedent("""\
+                Last commit message
 
-    def test_cl_description_moves_noexport_tag(self):
-        host = self.mock_host()
-        host.executive = MockExecutive(output='Summary\n\nNo-Export: true\n\n')
-        importer = self._get_test_importer(host)
-        description = importer._cl_description(directory_owners={})
-        self.assertIn('No-Export: true', description)
+                Note to gardeners: This CL imports external tests and adds expectations
+                for those tests; if this CL is large and causes a few new failures,
+                please fix the failures by adding new lines to TestExpectations rather
+                than reverting. See:
+                https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_platform_tests.md
+
+                NOAUTOREVERT=true
+                No-Export: true
+                Validate-Test-Flakiness: skip
+                Cq-Include-Trybots: luci.chromium.try:linux-blink-rel
+                """))
+        self.assertEqual(host.executive.calls, [MANIFEST_INSTALL_CMD] +
+                         [['git', 'log', '-1', '--format=%B']])
 
     def test_cl_description_with_directory_owners(self):
         host = self.mock_host()
-        host.executive = MockExecutive(output='Last commit message\n\n')
+        host.executive = MockExecutive(output='Last commit message\n')
         importer = self._get_test_importer(host)
-        description = importer._cl_description(
+        description = importer.cl_description(
             directory_owners={
                 ('someone@chromium.org', ):
                 ['external/wpt/foo', 'external/wpt/bar'],
@@ -631,12 +657,13 @@ class TestImporterTest(LoggingTestCase):
                 **dataclasses.asdict(issue),
                 'issue_id': 111,
             })
+        notifier = ImportNotifier(host, git, local_wpt, gerrit_api,
+                                  buganizer_client)
         with mock.patch(
                 'blinkpy.w3c.import_notifier.'
                 'DirectoryOwnersExtractor.read_dir_metadata',
                 return_value=WPTDirMetadata(should_notify=True)):
-            importer.file_and_record_bugs(local_wpt, gerrit_api,
-                                          buganizer_client)
+            importer.file_and_record_bugs(notifier)
 
         gerrit_cl.post_comment.assert_called_once_with(
             'Filed bugs for failures introduced by this CL: '
@@ -697,12 +724,13 @@ class TestImporterTest(LoggingTestCase):
         local_wpt = MockLocalWPT()
         gerrit_api, buganizer_client = mock.Mock(), mock.Mock()
         gerrit_api.query_cls.return_value = [mock.Mock(messages=[])]
+        notifier = ImportNotifier(host, git, local_wpt, gerrit_api,
+                                  buganizer_client)
         with mock.patch(
                 'blinkpy.w3c.import_notifier.'
                 'DirectoryOwnersExtractor.read_dir_metadata',
                 return_value=WPTDirMetadata(should_notify=True)):
-            importer.file_and_record_bugs(local_wpt, gerrit_api,
-                                          buganizer_client)
+            importer.file_and_record_bugs(notifier)
 
         self.assertEqual(
             git.show_blob(RELATIVE_WEB_TESTS + 'TestExpectations',

@@ -26,6 +26,7 @@ from typing import (
 
 from blinkpy.common import path_finder
 from blinkpy.common.checkout.git import CommitRange
+from blinkpy.common.memoized import memoized
 from blinkpy.common.net.git_cl import CLRevisionID
 from blinkpy.common.system.executive import ScriptError
 from blinkpy.web_tests.models import typ_types
@@ -105,19 +106,14 @@ class ImportNotifier:
 
         Note: "test names" are paths of the tests relative to web_tests.
         """
-        # TODO(crbug.com/40631540): Add the GitHub comparison link to each
-        # import commit message. Then, the notifier can parse out the WPT
-        # revision range here without needing to look at the second most recent
-        # commit.
-        wpt_end_rev, import_rev = self._latest_wpt_revision_in_range()
+        wpt_end_rev, import_rev = self.latest_wpt_import()
         cl = self._cl_for_wpt_revision(wpt_end_rev)
         repo = self.host.project_config.gerrit_project
         _log.info(f'Identifying failures for {repo}@{import_rev} ({cl.url})')
         if self._bugs_already_filed(cl):
             _log.info(f'Bugs have already been filed.')
             return {}
-        wpt_start_rev, _ = self._latest_wpt_revision_in_range(
-            f'{import_rev}~1')
+        wpt_start_rev, _ = self.latest_wpt_import(f'{import_rev}~1')
 
         self.examine_baseline_changes(import_rev, cl.current_revision_id)
         self.examine_new_test_expectations(import_rev)
@@ -131,10 +127,15 @@ class ImportNotifier:
                 ', '.join(sorted(bug.link for bug in filed_bugs.values())))
         return filed_bugs
 
-    def _latest_wpt_revision_in_range(
+    @memoized
+    def latest_wpt_import(
             self,
             commits: Union[None, str, CommitRange] = None) -> Tuple[str, str]:
         """Get commit hashes for the last WPT import.
+
+        Arguments:
+            commits: The range to search. See `Git.most_recent_log_matching()`
+                docstring for usage.
 
         Returns:
             A pair of SHA-1 hex digests (40 hex digits each):

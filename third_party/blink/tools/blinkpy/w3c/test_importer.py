@@ -22,11 +22,19 @@ from blinkpy.common.net.git_cl import GitCL
 from blinkpy.common.net.network_transaction import NetworkTimeout
 from blinkpy.common.path_finder import PathFinder
 from blinkpy.common.system.log_utils import configure_logging
-from blinkpy.w3c.buganizer import BuganizerClient, BuganizerIssue
+from blinkpy.w3c.buganizer import BuganizerIssue
+from blinkpy.w3c.chromium_commit import ChromiumCommit
 from blinkpy.w3c.chromium_exportable_commits import exportable_commits_over_last_n_commits
-from blinkpy.w3c.common import read_credentials, is_testharness_baseline, is_file_exportable, WPT_GH_URL
+from blinkpy.w3c.common import (
+    read_credentials,
+    is_testharness_baseline,
+    is_file_exportable,
+    WPT_GH_URL,
+    WPT_GH_RANGE_URL_TEMPLATE,
+)
 from blinkpy.w3c.directory_owners_extractor import DirectoryOwnersExtractor
 from blinkpy.w3c.gerrit import GerritAPI
+from blinkpy.w3c.import_notifier import ImportNotifier
 from blinkpy.w3c.local_wpt import LocalWPT
 from blinkpy.w3c.test_copier import TestCopier
 from blinkpy.w3c.wpt_expectations_updater import WPTExpectationsUpdater
@@ -122,33 +130,32 @@ class TestImporter:
         # File bugs for the previous imported CL. This is done at the start so
         # that manually revived CLs still receive bugs.
         gerrit_api = GerritAPI.from_credentials(self.host, credentials)
-        self.file_and_record_bugs(local_wpt,
-                                  gerrit_api,
+        notifier = ImportNotifier(self.host, self.project_git, local_wpt,
+                                  gerrit_api)
+        self.file_and_record_bugs(notifier,
                                   auto_file_bugs=options.auto_file_bugs)
 
         if options.revision is not None:
             _log.info('Checking out %s', options.revision)
             self.wpt_git.run(['checkout', options.revision])
 
-        _log.debug('Noting the revision we are importing.')
-        import_commit = f'wpt@{self.wpt_git.latest_git_commit()}'
-
-        _log.info('Importing %s to Chromium %s', import_commit,
+        new_wpt_revision = self.wpt_git.latest_git_commit()
+        _log.info('Importing wpt@%s to Chromium %s', new_wpt_revision,
                   chromium_revision)
 
         if options.ignore_exportable_commits:
-            commit_message = self._commit_message(chromium_revision,
-                                                  import_commit)
+            commits = []
         else:
             commits = self.apply_exportable_commits_locally(local_wpt)
             if commits is None:
                 _log.error('Could not apply some exportable commits cleanly.')
                 _log.error('Aborting import to prevent clobbering commits.')
                 return 1
-            commit_message = self._commit_message(
-                chromium_revision,
-                import_commit,
-                locally_applied_commits=commits)
+        last_wpt_revision, _ = notifier.latest_wpt_import()
+        wpt_range = CommitRange(last_wpt_revision, new_wpt_revision)
+        commit_message = self.commit_message(chromium_revision,
+                                             wpt_range,
+                                             locally_applied_commits=commits)
 
         self._clear_out_dest_path()
 
@@ -188,7 +195,7 @@ class TestImporter:
             return 0
 
         directory_owners = self.get_directory_owners()
-        description = self._cl_description(directory_owners)
+        description = self.cl_description(directory_owners)
         self._upload_cl(description)
         _log.info('Issue: %s', self.git_cl.run(['issue']).strip())
 
@@ -490,18 +497,24 @@ class TestImporter:
                 return True
         return False
 
-    def _commit_message(self,
-                        chromium_commit_sha,
-                        import_commit_sha,
-                        locally_applied_commits=None):
-        message = 'Import {}\n\nUsing wpt-import in Chromium {}.\n'.format(
-            import_commit_sha, chromium_commit_sha)
+    def commit_message(
+        self,
+        chromium_commit_sha: str,
+        wpt_range: CommitRange,
+        locally_applied_commits: Optional[List[ChromiumCommit]] = None,
+    ) -> str:
+        wpt_short_range = CommitRange(wpt_range.start[:10], wpt_range.end[:10])
+        message = textwrap.dedent(f"""\
+            {ImportNotifier.IMPORT_SUBJECT_PREFIX}{wpt_range.end}
+
+            {WPT_GH_RANGE_URL_TEMPLATE.format(*wpt_short_range)}
+
+            Using wpt-import in Chromium {chromium_commit_sha}.
+            """)
         if locally_applied_commits:
             message += 'With Chromium commits locally applied on WPT:\n'
-            message += '\n'.join(
-                str(commit) for commit in locally_applied_commits)
-        message += '\nNo-Export: true'
-        message += '\nValidate-Test-Flakiness: skip'
+            message += '\n'.join(f'  {textwrap.shorten(str(commit), 70)}'
+                                 for commit in locally_applied_commits) + '\n'
         return message
 
     def _delete_orphaned_baselines(self):
@@ -571,7 +584,7 @@ class TestImporter:
         extractor = DirectoryOwnersExtractor(self.host)
         return extractor.list_owners(changed_files)
 
-    def _cl_description(self, directory_owners):
+    def cl_description(self, directory_owners):
         """Returns a CL description string.
 
         Args:
@@ -579,13 +592,18 @@ class TestImporter:
         """
         # TODO(robertma): Add a method in Git for getting the commit body.
         description = self.project_git.run(['log', '-1', '--format=%B'])
-        description += (
-            'Note to sheriffs: This CL imports external tests and adds\n'
-            'expectations for those tests; if this CL is large and causes\n'
-            'a few new failures, please fix the failures by adding new\n'
-            'lines to TestExpectations rather than reverting. See:\n'
-            'https://chromium.googlesource.com'
-            '/chromium/src/+/main/docs/testing/web_platform_tests.md\n\n')
+        gardener_instructions = textwrap.dedent("""\
+            Note to gardeners: This CL imports external tests and adds
+            expectations for those tests; if this CL is large and causes a few
+            new failures, please fix the failures by adding new lines to
+            TestExpectations rather than reverting. See:
+            """)
+        description += '\n'.join([
+            '',
+            *textwrap.wrap(gardener_instructions, width=72),
+            'https://chromium.googlesource.com/chromium/src/+/'
+            'main/docs/testing/web_platform_tests.md',
+        ]) + '\n\n'
 
         if directory_owners:
             description += self._format_directory_owners(
@@ -593,11 +611,6 @@ class TestImporter:
 
         # Prevent FindIt from auto-reverting import CLs.
         description += 'NOAUTOREVERT=true\n'
-
-        # Move any No-Export tag and flakiness footers to the end of the description.
-        description = description.replace('No-Export: true', '')
-        description = description.replace('Validate-Test-Flakiness: skip', '')
-        description = description.replace('\n\n\n\n\n', '\n\n')
         description += 'No-Export: true\n'
         description += 'Validate-Test-Flakiness: skip\n'
 
@@ -662,9 +675,7 @@ class TestImporter:
 
     def file_and_record_bugs(
         self,
-        local_wpt: LocalWPT,
-        gerrit_api: GerritAPI,
-        buganizer_client: Optional[BuganizerClient] = None,
+        notifier: ImportNotifier,
         auto_file_bugs: bool = True,
     ):
         """File bugs for the last imported CL and add them to TestExpectations.
@@ -680,10 +691,6 @@ class TestImporter:
               (origin/main) <tip-of-tree>
         """
         _log.info('Filing bugs for the last WPT import')
-        from blinkpy.w3c.import_notifier import ImportNotifier
-        # Construct the notifier here so that any errors won't affect the import.
-        notifier = ImportNotifier(self.host, self.project_git, local_wpt,
-                                  gerrit_api, buganizer_client)
         bugs_by_dir = notifier.main(dry_run=(not auto_file_bugs))
         referenced_bugs = self._update_bugs_in_expectations(
             notifier, bugs_by_dir)
@@ -714,7 +721,7 @@ class TestImporter:
 
     def _update_bugs_in_expectations(
         self,
-        notifier,
+        notifier: ImportNotifier,
         bugs_by_dir: Mapping[str, BuganizerIssue],
     ) -> Set[int]:
         expectations = TestExpectations(
