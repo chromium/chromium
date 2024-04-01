@@ -812,6 +812,7 @@ void MediaFoundationVideoEncodeAccelerator::Encode(
 void MediaFoundationVideoEncodeAccelerator::Encode(
     scoped_refptr<VideoFrame> frame,
     const EncodeOptions& options) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (codec_ == VideoCodec::kVP9 &&
       workarounds_.avoid_consecutive_keyframes_for_vp9 &&
       last_frame_was_keyframe_request_ && options.key_frame) {
@@ -831,7 +832,8 @@ void MediaFoundationVideoEncodeAccelerator::Encode(
     // state and produce a keyframe, to work around this issue, MFVEA will add
     // input and internally discard output until driver transition to T0 layer.
     uint32_t distance_to_base_layer = GetDistanceToNextTemporalBaseLayer(
-        input_since_keyframe_count_, num_temporal_layers_);
+        input_since_keyframe_count_ + pending_input_queue_.size(),
+        num_temporal_layers_);
     for (uint32_t i = 0; i < distance_to_base_layer; ++i) {
       EncodeOptions discard_options(/*force_keyframe=*/false);
       EncodeInternal(frame, discard_options, /*discard_output=*/true);
@@ -1496,6 +1498,7 @@ void MediaFoundationVideoEncodeAccelerator::FeedInputs() {
     return;
   }
   pending_input_queue_.pop_front();
+  input_since_keyframe_count_++;
 }
 
 HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
@@ -1578,7 +1581,6 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
                           .qp = metadata_qp,
                           .frame_id = input_since_keyframe_count_});
 
-    input_since_keyframe_count_++;
     has_prepared_input_sample_ = true;
   }
 
