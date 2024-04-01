@@ -18,6 +18,7 @@
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
 #include "ash/system/mahi/mahi_constants.h"
+#include "ash/system/mahi/mahi_error_status_view.h"
 #include "ash/system/mahi/mahi_question_answer_view.h"
 #include "ash/system/mahi/mahi_ui_controller.h"
 #include "ash/system/mahi/summary_outlines_section.h"
@@ -453,7 +454,10 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
                                   .SetID(mahi_constants::ViewId::
                                              kQuestionAnswerView)
                                   .CopyAddressTo(&question_answer_view_)
-                                  .SetVisible(false))))
+                                  .SetVisible(false))),
+              views::Builder<MahiErrorStatusView>(
+                  std::make_unique<MahiErrorStatusView>(ui_controller_))
+                  .SetVisible(false))
           .Build());
 
   auto* ask_question_container = AddChildView(

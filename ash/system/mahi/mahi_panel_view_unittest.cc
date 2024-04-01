@@ -19,8 +19,10 @@
 #include "ash/test/ash_test_base.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/size.h"
@@ -183,6 +185,8 @@ class MahiPanelViewTest : public AshTestBase {
  protected:
   // AshTestBase:
   void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(chromeos::features::kMahi);
+
     auto delegate = std::make_unique<MockNewWindowDelegate>();
     new_window_delegate_ = delegate.get();
     delegate_provider_ =
@@ -218,6 +222,7 @@ class MahiPanelViewTest : public AshTestBase {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   NiceMock<MockMahiManager> mock_mahi_manager_;
   std::unique_ptr<chromeos::ScopedMahiManagerSetter> scoped_setter_;
   MahiUiController ui_controller_;
@@ -771,6 +776,11 @@ TEST_F(MahiPanelViewTest, QuestionTextfield_TrimWhitespace) {
 // iterating all possible errors.
 TEST_F(MahiPanelViewTest, FailToGetAnswer) {
   for (MahiResponseStatus error : GetMahiErrors()) {
+    if (error == MahiResponseStatus::kLowQuota) {
+      // `kLowQuota` triggers a warning verified in its own test.
+      continue;
+    }
+
     // Config the mock mahi manager to return answer with an `error` asyncly.
     base::test::TestFuture<void> answer_waiter;
     EXPECT_CALL(mock_mahi_manager(), AnswerQuestion)
@@ -805,10 +815,24 @@ TEST_F(MahiPanelViewTest, FailToGetAnswer) {
     CHECK(summary_outlines_section);
     EXPECT_FALSE(summary_outlines_section->GetVisible());
 
+    const auto* const error_status_view =
+        panel_view()->GetViewByID(mahi_constants::ViewId::kErrorStatusView);
+    CHECK(error_status_view);
+    EXPECT_FALSE(error_status_view->GetVisible());
+
+    const auto* const error_status_label = views::AsViewClass<views::Label>(
+        panel_view()->GetViewByID(mahi_constants::ViewId::kErrorStatusLabel));
+    CHECK(error_status_label);
+    EXPECT_TRUE(error_status_label->GetText().empty());
+
     // Wait until an answer is loaded with an error. Verify views' visibility.
     ASSERT_TRUE(answer_waiter.Wait());
     EXPECT_FALSE(question_answer_view->GetVisible());
     EXPECT_FALSE(summary_outlines_section->GetVisible());
+    EXPECT_TRUE(error_status_view->GetVisible());
+
+    // TODO(http://b/319731862): Check the label contents.
+    EXPECT_FALSE(error_status_label->GetText().empty());
 
     RecreatePanelView();
   }
@@ -818,6 +842,11 @@ TEST_F(MahiPanelViewTest, FailToGetAnswer) {
 // iterating all possible errors.
 TEST_F(MahiPanelViewTest, FailToGetOutlines) {
   for (MahiResponseStatus error : GetMahiErrors()) {
+    if (error == MahiResponseStatus::kLowQuota) {
+      // `kLowQuota` triggers a warning verified in its own test.
+      continue;
+    }
+
     // Config the mock mahi manager to return outlines with an `error` asyncly.
     base::test::TestFuture<void> outlines_waiter;
     EXPECT_CALL(mock_mahi_manager(), GetOutlines)
@@ -842,10 +871,24 @@ TEST_F(MahiPanelViewTest, FailToGetOutlines) {
     CHECK(summary_outlines_section);
     EXPECT_TRUE(summary_outlines_section->GetVisible());
 
+    const auto* const error_status_view =
+        mahi_view.GetViewByID(mahi_constants::ViewId::kErrorStatusView);
+    CHECK(error_status_view);
+    EXPECT_FALSE(error_status_view->GetVisible());
+
+    const auto* const error_status_label = views::AsViewClass<views::Label>(
+        mahi_view.GetViewByID(mahi_constants::ViewId::kErrorStatusLabel));
+    CHECK(error_status_label);
+    EXPECT_TRUE(error_status_label->GetText().empty());
+
     // Wait until outlines are loaded with an error. Verify views' visibility.
     ASSERT_TRUE(outlines_waiter.Wait());
     EXPECT_FALSE(question_answer_view->GetVisible());
     EXPECT_FALSE(summary_outlines_section->GetVisible());
+    EXPECT_TRUE(error_status_view->GetVisible());
+
+    // TODO(http://b/319731862): Check the label contents.
+    EXPECT_FALSE(error_status_label->GetText().empty());
   }
 }
 
@@ -853,6 +896,11 @@ TEST_F(MahiPanelViewTest, FailToGetOutlines) {
 // all possible errors.
 TEST_F(MahiPanelViewTest, FailToGetSummary) {
   for (MahiResponseStatus error : GetMahiErrors()) {
+    if (error == MahiResponseStatus::kLowQuota) {
+      // `kLowQuota` triggers a warning verified in its own test.
+      continue;
+    }
+
     // Config the mock mahi manager to return a summary with an `error` asyncly.
     base::test::TestFuture<void> summary_waiter;
     EXPECT_CALL(mock_mahi_manager(), GetSummary)
@@ -877,10 +925,24 @@ TEST_F(MahiPanelViewTest, FailToGetSummary) {
     CHECK(summary_outlines_section);
     EXPECT_TRUE(summary_outlines_section->GetVisible());
 
+    const auto* const error_status_view =
+        mahi_view.GetViewByID(mahi_constants::ViewId::kErrorStatusView);
+    CHECK(error_status_view);
+    EXPECT_FALSE(error_status_view->GetVisible());
+
+    const auto* const error_status_label = views::AsViewClass<views::Label>(
+        mahi_view.GetViewByID(mahi_constants::ViewId::kErrorStatusLabel));
+    CHECK(error_status_label);
+    EXPECT_TRUE(error_status_label->GetText().empty());
+
     // Wait until the summary is loaded with an error. Verify views' visibility.
     ASSERT_TRUE(summary_waiter.Wait());
     EXPECT_FALSE(question_answer_view->GetVisible());
     EXPECT_FALSE(summary_outlines_section->GetVisible());
+    EXPECT_TRUE(error_status_view->GetVisible());
+
+    // TODO(http://b/319731862): Check the label contents.
+    EXPECT_FALSE(error_status_label->GetText().empty());
   }
 }
 

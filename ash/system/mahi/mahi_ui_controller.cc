@@ -83,6 +83,11 @@ void MahiUiController::UpdateSummaryAndOutlines() {
 void MahiUiController::HandleErrorStatus(chromeos::MahiResponseStatus status) {
   CHECK(HasError(status));
 
+  if (status == chromeos::MahiResponseStatus::kLowQuota) {
+    // TODO(http://b/319731862): Add the low quota warning toast.
+    return;
+  }
+
   for (auto& observer : observers_) {
     observer.OnStateChanged(State::kError, status);
   }

@@ -16,7 +16,9 @@
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/strings/strcat.h"
+#include "base/test/scoped_feature_list.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/views_test_utils.h"
@@ -36,6 +38,7 @@ class MahiPanelViewPixelTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(chromeos::features::kMahi);
     AshTestBase::SetUp();
 
     scoped_setter_ = std::make_unique<chromeos::ScopedMahiManagerSetter>(
@@ -62,6 +65,7 @@ class MahiPanelViewPixelTest : public AshTestBase {
   views::Widget* widget() { return widget_.get(); }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   testing::NiceMock<MockMahiManager> mock_mahi_manager_;
   std::unique_ptr<chromeos::ScopedMahiManagerSetter> scoped_setter_;
   MahiUiController ui_controller_;

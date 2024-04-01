@@ -37,6 +37,8 @@ enum ViewId {
   kOutlinesSectionContainer,
   kBannerTitleLabel,
   kRefreshButton,
+  kErrorStatusView,
+  kErrorStatusLabel,
 };
 
 // The size of the icon that appears in the panel's source row.
