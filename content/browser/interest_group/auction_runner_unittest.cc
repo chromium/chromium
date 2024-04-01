@@ -21270,12 +21270,11 @@ TEST_P(AuctionRunnerKAnonTest, ReportingId) {
       ASSERT_TRUE(result_.ad_descriptor.has_value());
       if (kanon_mode() == KAnonMode::kEnforce && !authorize_reporting_kanon) {
         // In case the k-anon check fails, seller worklet gets nothing, and
-        // bidder worklet gets empty group name (regardless of which field is
-        // actually set in the ad).
+        // bidder worklet gets nothing.
         EXPECT_THAT(result_.report_urls,
                     testing::UnorderedElementsAre(
                         "https://seller.example.org/?undefined/false",
-                        "https://example.org/?/true/"
+                        "https://example.org/?undefined/false/"
                         "undefined/false/undefined/false"));
       } else {
         switch (field_to_test) {
@@ -21305,6 +21304,9 @@ TEST_P(AuctionRunnerKAnonTest, ReportingId) {
                     "https://seller.example.org/?commonid1/true",
                     "https://example.org/?undefined/false/undefined/false/"
                     "commonid1/true"));
+            break;
+          default:
+            NOTREACHED();
         }
       }
     }

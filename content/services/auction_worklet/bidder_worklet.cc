@@ -868,6 +868,9 @@ void BidderWorklet::V8State::ReportWin(
     case mojom::ReportingIdField::kBuyerAndSellerReportingId:
       reporting_id_field_name = "buyerAndSellerReportingId";
       break;
+    case mojom::ReportingIdField::kNone:
+      // No reporting id field.
+      break;
   }
 
   std::string kanon_status;
@@ -904,7 +907,8 @@ void BidderWorklet::V8State::ReportWin(
       !browser_signals_dict.Set(
           "interestGroupOwner",
           url::Origin::Create(script_source_url_).Serialize()) ||
-      !browser_signals_dict.Set(reporting_id_field_name, reporting_id) ||
+      (reporting_id_field_name != nullptr &&
+       !browser_signals_dict.Set(reporting_id_field_name, reporting_id)) ||
       !browser_signals_dict.Set("renderURL",
                                 browser_signal_render_url.spec()) ||
       // TODO(crbug.com/1441988): Remove deprecated `renderUrl` alias.

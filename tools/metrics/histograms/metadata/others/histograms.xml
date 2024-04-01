@@ -1683,6 +1683,25 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Ads.InterestGroup.{AuctionType}.ReportingIdType"
+    enum="AuctionReportingIdField" expires_after="2024-08-25">
+  <owner>behamilton@google.com</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The reporting ID type passed to the bidder worklet (after k-anonymity
+    enforcement). Recorded once for each winning bid, just prior to the call to
+    the buyer's reportWin() or reportAdditionalBidWin() function.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+  <token key="AuctionType">
+    <variant name="Auction" summary="FLEDGE"/>
+    <variant name="ServerAuction" summary="Bidding and Auction Services"/>
+  </token>
+</histogram>
+
 <histogram name="Ads.InterestGroup.{AuctionType}.Result" enum="AuctionResult"
     expires_after="2024-08-25">
   <owner>mmenke@chromium.org</owner>

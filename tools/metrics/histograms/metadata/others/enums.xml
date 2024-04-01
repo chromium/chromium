@@ -26,6 +26,13 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="AuctionReportingIdField">
+  <int value="0" label="None"/>
+  <int value="1" label="InterestGroupName"/>
+  <int value="2" label="BuyerReportingId"/>
+  <int value="3" label="BuyerAndSellerReportingId"/>
+</enum>
+
 <enum name="DisplayServerSupport">
   <int value="0" label="None"/>
   <int value="1" label="X11"/>

@@ -163,10 +163,13 @@ struct PrioritySignalsDouble {
 };
 
 // Which field identifying the ad is passed to reportWin()
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum ReportingIdField {
-  kInterestGroupName,
-  kBuyerReportingId,
-  kBuyerAndSellerReportingId,
+  kNone = 0,
+  kInterestGroupName = 1,
+  kBuyerReportingId = 2,
+  kBuyerAndSellerReportingId = 3,
 };
 
 // Represents the time between BidderWorklet::BeginGenerateBid and each of the

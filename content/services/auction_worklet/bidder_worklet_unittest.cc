@@ -7247,6 +7247,10 @@ TEST_F(BidderWorkletTest, ReportWinReportingId) {
   RunReportWinWithFunctionBodyExpectingResult(
       kScriptBody,
       GURL("https://example.test/?undefined/undefined/reporting_id"));
+
+  reporting_id_field_ = mojom::ReportingIdField::kNone;
+  RunReportWinWithFunctionBodyExpectingResult(
+      kScriptBody, GURL("https://example.test/?undefined/undefined/undefined"));
 }
 
 TEST_F(BidderWorkletTest, ReportWinDataVersion) {
