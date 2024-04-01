@@ -2528,6 +2528,42 @@ TEST_F(ChromeComposeClientTest, TestComposeQualityNewSessionWithSelectedText) {
                 ->final_status());
 }
 
+TEST_F(ChromeComposeClientTest, TestComposeQualitFinishedWithoutInsert) {
+  ShowDialogAndBindMojo();
+
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
+  BindComposeFutureToOnResponseReceived(compose_future);
+
+  EXPECT_CALL(session(), ExecuteModel(_, _));
+
+  base::test::TestFuture<
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry>>
+      quality_test_future;
+
+  EXPECT_CALL(model_quality_logs_uploader(), UploadModelQualityLogs(_))
+      .WillOnce(testing::Invoke(
+          [&](std::unique_ptr<optimization_guide::ModelQualityLogEntry>
+                  response) {
+            quality_test_future.SetValue(std::move(response));
+          }));
+
+  page_handler()->Compose("a user typed this", false);
+  EXPECT_TRUE(compose_future.Take());  // Reset future for second compose call.
+
+  // Navigate to a new page.
+  GURL next_page("http://example.com/a.html");
+  NavigateAndCommit(web_contents(), next_page);
+
+  // Get quality result from the abandoned session.
+  std::unique_ptr<optimization_guide::ModelQualityLogEntry> result =
+      quality_test_future.Take();
+
+  EXPECT_EQ(
+      optimization_guide::proto::FinalStatus::STATUS_FINISHED_WITHOUT_INSERT,
+      result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+          ->final_status());
+}
+
 TEST_F(ChromeComposeClientTest, TestComposeQualityFeedbackPositive) {
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
   BindComposeFutureToOnResponseReceived(compose_future);
