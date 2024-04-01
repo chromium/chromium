@@ -145,7 +145,8 @@ void MaybeSetImageData(const base::Value::Dict* image_value,
   nudge_data.image_model = image_model.value();
 }
 
-views::View* GetWindowCaptionButtonContainer() {
+// Return the top level window widget.
+views::Widget* GetTriggeringWindowWidget() {
   auto* session = CampaignsManagerSession::Get();
   if (!session) {
     CHECK_IS_TEST();
@@ -167,7 +168,15 @@ views::View* GetWindowCaptionButtonContainer() {
     return nullptr;
   }
 
-  auto* root_view = widget->GetRootView();
+  return widget;
+}
+
+views::View* GetWindowCaptionButtonContainer() {
+  // Currently, nudge can only be triggered by app opened, so it is safe to
+  // assume that the triggering window is the window to anchor on. If we adding
+  // other triggering UI element, we need to revisit this decision.
+  auto* targeting_window_widget = GetTriggeringWindowWidget();
+  auto* root_view = targeting_window_widget->GetRootView();
   if (!root_view) {
     // TODO: b/331212624 - Log error metric.
     LOG(ERROR) << "Error: root view not found";
@@ -182,7 +191,9 @@ views::View* GetWindowCaptionButtonContainer() {
 
 ShowNudgeActionPerformer::ShowNudgeActionPerformer() = default;
 
-ShowNudgeActionPerformer::~ShowNudgeActionPerformer() = default;
+ShowNudgeActionPerformer::~ShowNudgeActionPerformer() {
+  triggering_widget_ = nullptr;
+}
 
 void ShowNudgeActionPerformer::Run(
   int campaign_id,
@@ -312,6 +323,11 @@ bool ShowNudgeActionPerformer::ShowNudge(int campaign_id,
   // Shell may not be initialized in test.
   if (ash::Shell::HasInstance()) {
     ash::Shell::Get()->anchored_nudge_manager()->Show(nudge_data);
+
+    triggering_widget_ = GetTriggeringWindowWidget();
+    if (triggering_widget_) {
+      scoped_observation_.Observe(triggering_widget_);
+    }
   }
 
   // TODO: b/331045558 - Add close button callback.
@@ -367,7 +383,7 @@ void ShowNudgeActionPerformer::OnNudgeButtonClicked(
   }
 
   if (action_type.value() == growth::ActionType::kDismiss) {
-    ash::Shell::Get()->anchored_nudge_manager()->Cancel(kGrowthNudgeId);
+    CancelNudge();
 
     // TODO(b/329671682): Log metrics.
     return;
@@ -381,4 +397,30 @@ void ShowNudgeActionPerformer::OnNudgeButtonClicked(
 
 void ShowNudgeActionPerformer::OnNudgeDismissed(int campaign_id) {
   NotifyDismissed(campaign_id);
+}
+
+void ShowNudgeActionPerformer::OnWidgetVisibilityChanged(views::Widget* widget,
+                                                         bool visible) {
+  if (!visible) {
+    CancelNudge();
+  }
+}
+
+void ShowNudgeActionPerformer::OnWidgetDestroying(views::Widget* widget) {
+  CancelNudge();
+}
+
+void ShowNudgeActionPerformer::OnWidgetActivationChanged(views::Widget* widget,
+                                                         bool active) {
+  if (!active) {
+    CancelNudge();
+  }
+}
+
+void ShowNudgeActionPerformer::CancelNudge() {
+  if (triggering_widget_) {
+    triggering_widget_->RemoveObserver(this);
+    triggering_widget_ = nullptr;
+  }
+  ash::Shell::Get()->anchored_nudge_manager()->Cancel(kGrowthNudgeId);
 }

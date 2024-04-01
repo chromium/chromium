@@ -11,6 +11,8 @@
 #include "base/values.h"
 #include "chrome/browser/ash/growth/metrics.h"
 #include "chrome/browser/ash/growth/ui_action_performer.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 
 // Dictionary of supported nudge payload. For example:
 // {
@@ -20,7 +22,8 @@
 using NudgePayload = base::Value::Dict;
 
 // Implements the action to show nudge.
-class ShowNudgeActionPerformer : public UiActionPerformer {
+class ShowNudgeActionPerformer : public UiActionPerformer,
+                                 views::WidgetObserver {
  public:
   ShowNudgeActionPerformer();
   ~ShowNudgeActionPerformer() override;
@@ -41,6 +44,16 @@ class ShowNudgeActionPerformer : public UiActionPerformer {
                             CampaignButtonId button_id,
                             const base::Value::Dict* action_dict);
   void OnNudgeDismissed(int campaign_id);
+  void CancelNudge();
+
+  // views::WidgetObserver:
+  void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
+  void OnWidgetDestroying(views::Widget* widget) override;
+  void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
+
+  raw_ptr<views::Widget> triggering_widget_ = nullptr;
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      scoped_observation_{this};
 
   base::WeakPtrFactory<ShowNudgeActionPerformer> weak_ptr_factory_{this};
 };
