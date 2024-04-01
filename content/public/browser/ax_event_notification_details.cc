@@ -11,9 +11,6 @@ namespace content {
 AXEventNotificationDetails::AXEventNotificationDetails()
     : ax_tree_id(ui::AXTreeIDUnknown()) {}
 
-AXEventNotificationDetails::AXEventNotificationDetails(
-    const AXEventNotificationDetails& other) = default;
-
 AXEventNotificationDetails::~AXEventNotificationDetails() {}
 
 AXLocationChangeNotificationDetails::AXLocationChangeNotificationDetails()

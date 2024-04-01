@@ -13,7 +13,13 @@ namespace ui {
 
 AXTreeUpdate::AXTreeUpdate() = default;
 
+AXTreeUpdate::AXTreeUpdate(AXTreeUpdate&& other) = default;
+
+AXTreeUpdate& AXTreeUpdate::operator=(AXTreeUpdate&& other) = default;
+
 AXTreeUpdate::AXTreeUpdate(const ui::AXTreeUpdate& other) = default;
+
+AXTreeUpdate& AXTreeUpdate::operator=(const AXTreeUpdate& other) = default;
 
 AXTreeUpdate::~AXTreeUpdate() = default;
 

@@ -21,7 +21,11 @@ namespace content {
 struct CONTENT_EXPORT AXEventNotificationDetails {
  public:
   AXEventNotificationDetails();
-  AXEventNotificationDetails(const AXEventNotificationDetails& other);
+
+  AXEventNotificationDetails(const AXEventNotificationDetails& other) = delete;
+  AXEventNotificationDetails& operator=(
+      const AXEventNotificationDetails& other) = delete;
+
   ~AXEventNotificationDetails();
 
   // The unique ID of the accessibility tree this event bundle applies to.

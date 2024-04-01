@@ -50,7 +50,14 @@ namespace ui {
 //        before or after an AXTreeUpdate.
 struct AX_BASE_EXPORT AXTreeUpdate {
   AXTreeUpdate();
+
+  AXTreeUpdate(AXTreeUpdate&& other);
+  AXTreeUpdate& operator=(AXTreeUpdate&& other);
+
+  // TODO(accessibility): try to = delete these or finish auditing all sites.
   AXTreeUpdate(const AXTreeUpdate& other);
+  AXTreeUpdate& operator=(const AXTreeUpdate& other);
+
   ~AXTreeUpdate();
 
   void AccumulateSize(AXNodeData::AXNodeDataSize& node_data_size) const;
