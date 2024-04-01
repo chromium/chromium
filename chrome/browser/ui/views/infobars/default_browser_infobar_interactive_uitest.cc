@@ -162,8 +162,15 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
                   WaitForHide(ConfirmInfoBar::kInfoBarElementId));
 }
 
+// TODO(crbug.com/332287979): Flaky on ASAN/TSAN. Investigate and re-enable this
+// test.
+#if defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER)
+#define MAYBE_LogsMetrics DISABLED_LogsMetrics
+#else
+#define MAYBE_LogsMetrics LogsMetrics
+#endif
 IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
-                       LogsMetrics) {
+                       MAYBE_LogsMetrics) {
   base::HistogramTester histogram_tester;
   ShowPromptForTesting();
   RunTestSequence(WaitForShow(ConfirmInfoBar::kInfoBarElementId),
