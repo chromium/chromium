@@ -344,6 +344,11 @@ TEST_F(AppsCollectionSectionViewTest, RecordMetricsForAppLaunchByCategory) {
   histograms.ExpectTotalCount(
       "Apps.AppList.AppsCollections.AppLaunchesByCategory", 0);
 
+  // TODO(anasalazar): Investigate why after adding margin to the
+  // AppsCollections apps container, this tests fails to click on apps unless we
+  // request focus here.
+  GetAppItemAtIndex(entertainment_collection, 0)->RequestFocus();
+
   LeftClickOn(GetAppItemAtIndex(entertainment_collection, 0));
   histograms.ExpectBucketCount(
       "Apps.AppList.AppsCollections.AppLaunchesByCategory",

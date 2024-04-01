@@ -27,6 +27,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/view_class_properties.h"
 
 namespace ash {
 namespace {
@@ -140,9 +141,9 @@ AppsCollectionSectionView::AppsCollectionSectionView(
   label->SetBorder(views::CreateEmptyBorder(kTitleLabelPadding));
 
   apps_container_ = AddChildView(std::make_unique<views::View>());
+  apps_container_->SetProperty(views::kMarginsKey, kAppsGridPadding);
   apps_container_->SetLayoutManager(
       std::make_unique<SimpleGridLayout>(kAppsPerColumn, 0, 0));
-  apps_container_->SetBorder(views::CreateEmptyBorder(kAppsGridPadding));
 
   SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysSystemOnBase, kCornerRadius));
@@ -222,7 +223,8 @@ int AppsCollectionSectionView::CalculateTilePadding() const {
   DCHECK(app_list_config_);
   int content_width = GetContentsBounds().width();
   int tile_width = app_list_config_->grid_tile_width();
-  int width_to_distribute = content_width - kAppsPerColumn * tile_width;
+  int width_to_distribute =
+      content_width - kAppsGridPadding.width() - kAppsPerColumn * tile_width;
 
   return width_to_distribute / ((kAppsPerColumn - 1) * 2);
 }
