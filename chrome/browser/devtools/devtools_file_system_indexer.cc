@@ -11,6 +11,7 @@
 #include <set>
 
 #include "base/check_op.h"
+#include "base/containers/heap_array.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -22,8 +23,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
-#include "content/public/browser/browser_thread.h"
-
 #include "content/public/browser/browser_thread.h"
 
 using base::FileEnumerator;
@@ -51,7 +50,7 @@ typedef int32_t Trigram;
 typedef char TrigramChar;
 typedef uint16_t FileId;
 
-const int kMinTimeoutBetweenWorkedNitification = 200;
+const int kMinTimeoutBetweenWorkedNotification = 200;
 // Trigram characters include all ASCII printable characters (32-126) except for
 // the capital letters, because the index is case insensitive.
 const size_t kTrigramCharacterCount = 126 - 'Z' - 1 + 'A' - ' ' + 1;
@@ -378,21 +377,21 @@ void DevToolsFileSystemIndexer::FileSystemIndexingJob::ReadFromFile() {
     CloseFile();
     return;
   }
-  std::unique_ptr<char[]> data_ptr(new char[kMaxReadLength]);
-  const char* const data = data_ptr.get();
-  int bytes_read =
-      current_file_.Read(current_file_offset_, data_ptr.get(), kMaxReadLength);
-  if (bytes_read < 0) {
+
+  auto data = base::HeapArray<uint8_t>::Uninit(kMaxReadLength);
+  std::optional<size_t> bytes_read =
+      current_file_.Read(current_file_offset_, data);
+  if (!bytes_read.has_value()) {
     FinishFileIndexing(false);
     return;
   }
 
-  if (bytes_read < 3) {
+  size_t size = bytes_read.value();
+  if (size < 3) {
     FinishFileIndexing(true);
     return;
   }
 
-  size_t size = static_cast<size_t>(bytes_read);
   vector<TrigramChar> trigram_chars;
   trigram_chars.reserve(size);
   for (size_t i = 0; i < size; ++i) {
@@ -412,7 +411,7 @@ void DevToolsFileSystemIndexer::FileSystemIndexingJob::ReadFromFile() {
       current_trigrams_.push_back(trigram);
     }
   }
-  current_file_offset_ += bytes_read - 2;
+  current_file_offset_ += size - 2;
   impl_task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&FileSystemIndexingJob::ReadFromFile, this));
 }
@@ -439,14 +438,15 @@ void DevToolsFileSystemIndexer::FileSystemIndexingJob::CloseFile() {
 
 void DevToolsFileSystemIndexer::FileSystemIndexingJob::ReportWorked() {
   TimeTicks current_time = TimeTicks::Now();
-  bool should_send_worked_nitification = true;
+  bool should_send_worked_notification = true;
   if (!last_worked_notification_time_.is_null()) {
     base::TimeDelta delta = current_time - last_worked_notification_time_;
-    if (delta.InMilliseconds() < kMinTimeoutBetweenWorkedNitification)
-      should_send_worked_nitification = false;
+    if (delta.InMilliseconds() < kMinTimeoutBetweenWorkedNotification) {
+      should_send_worked_notification = false;
+    }
   }
   ++files_indexed_;
-  if (should_send_worked_nitification) {
+  if (should_send_worked_notification) {
     last_worked_notification_time_ = current_time;
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, BindOnce(worked_callback_, files_indexed_));
@@ -481,9 +481,10 @@ DevToolsFileSystemIndexer::IndexPath(
   for (const string& path : excluded_folders) {
     paths.push_back(FilePath::FromUTF8Unsafe(path));
   }
-  scoped_refptr<FileSystemIndexingJob> indexing_job = new FileSystemIndexingJob(
-      FilePath::FromUTF8Unsafe(file_system_path), paths, std::move(total_work_callback),
-      worked_callback, std::move(done_callback));
+  scoped_refptr<FileSystemIndexingJob> indexing_job =
+      new FileSystemIndexingJob(FilePath::FromUTF8Unsafe(file_system_path),
+                                paths, std::move(total_work_callback),
+                                worked_callback, std::move(done_callback));
   indexing_job->Start();
   return indexing_job;
 }
