@@ -36,6 +36,7 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
+#include "third_party/omnibox_proto/navigational_intent.pb.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -213,6 +214,8 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
     }
   }
 
+  match.navigational_intent = suggestion.navigational_intent();
+
   return match;
 }
 
@@ -257,6 +260,7 @@ AutocompleteMatch BaseSearchProvider::CreateShortcutSearchSuggestion(
   SearchSuggestionParser::SuggestResult suggest_result(
       suggestion, type, /*suggest_type=*/omnibox::TYPE_NATIVE_CHROME,
       /*subtypes=*/{}, from_keyword,
+      /*navigational_intent=*/omnibox::NAV_INTENT_NONE,
       /*relevance=*/0, /*relevance_from_server=*/false,
       /*input_text=*/std::u16string());
   suggest_result.set_received_after_last_keystroke(false);
@@ -303,7 +307,8 @@ AutocompleteMatch BaseSearchProvider::CreateOnDeviceSearchSuggestion(
       /*annotation=*/std::u16string(),
       /*entity_info=*/omnibox::EntityInfo(),
       /*deletion_url=*/"",
-      /*from_keyword=*/false, relevance,
+      /*from_keyword=*/false,
+      /*navigational_intent=*/omnibox::NAV_INTENT_NONE, relevance,
       /*relevance_from_server=*/false,
       /*should_prefetch=*/false,
       /*should_prerender=*/false,

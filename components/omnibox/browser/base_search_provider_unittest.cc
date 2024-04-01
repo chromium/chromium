@@ -56,6 +56,7 @@ SearchSuggestionParser::SuggestResult BuildSuggestion(
       /*entity_info=*/entity_info,
       /*deletion_url=*/std::string(),
       /*from_keyword=*/false,
+      /*navigational_intent=*/omnibox::NAV_INTENT_LOW,
       /*relevance=*/relevance,
       /*relevance_from_server=*/true,
       /*should_prefetch=*/false,
@@ -154,6 +155,7 @@ TEST_F(BaseSearchProviderTest, PreserveAnswersWhenDeduplicating) {
   SearchSuggestionParser::SuggestResult more_relevant(
       query, AutocompleteMatchType::SEARCH_HISTORY, omnibox::TYPE_NATIVE_CHROME,
       /*subtypes=*/{}, /*from_keyword=*/false,
+      /*navigational_intent=*/omnibox::NAV_INTENT_NONE,
       /*relevance=*/1300, /*relevance_from_server=*/true,
       /*input_text=*/query);
   provider_->AddMatchToMap(
@@ -164,6 +166,7 @@ TEST_F(BaseSearchProviderTest, PreserveAnswersWhenDeduplicating) {
   SearchSuggestionParser::SuggestResult less_relevant(
       query, AutocompleteMatchType::SEARCH_SUGGEST, omnibox::TYPE_QUERY,
       /*subtypes=*/{}, /*from_keyword=*/false,
+      /*navigational_intent=*/omnibox::NAV_INTENT_LOW,
       /*relevance=*/850, /*relevance_from_server=*/true,
       /*input_text=*/query);
   less_relevant.SetAnswer(answer);
@@ -194,7 +197,9 @@ TEST_F(BaseSearchProviderTest, PreserveAnswersWhenDeduplicating) {
   more_relevant = SearchSuggestionParser::SuggestResult(
       query, AutocompleteMatchType::SEARCH_HISTORY, omnibox::TYPE_NATIVE_CHROME,
       /*subtypes=*/{}, /*from_keyword=*/false,
-      /*relevance=*/1300, /*relevance_from_server=*/true,
+      /*navigational_intent=*/omnibox::NAV_INTENT_NONE,
+      /*relevance=*/1300,
+      /*relevance_from_server=*/true,
       /*input_text=*/query);
   more_relevant.SetAnswer(answer2);
   provider_->AddMatchToMap(
@@ -238,6 +243,7 @@ TEST_F(BaseSearchProviderTest, PreserveImageWhenDeduplicating) {
   SearchSuggestionParser::SuggestResult more_relevant(
       query, AutocompleteMatchType::SEARCH_HISTORY, omnibox::TYPE_NATIVE_CHROME,
       /*subtypes=*/{}, /*from_keyword=*/false,
+      /*navigational_intent=*/omnibox::NAV_INTENT_NONE,
       /*relevance=*/1300, /*relevance_from_server=*/true,
       /*input_text=*/query);
   provider_->AddMatchToMap(
@@ -249,6 +255,7 @@ TEST_F(BaseSearchProviderTest, PreserveImageWhenDeduplicating) {
       query, AutocompleteMatchType::SEARCH_SUGGEST_ENTITY,
       omnibox::TYPE_CATEGORICAL_QUERY,
       /*subtypes=*/{}, /*from_keyword=*/false,
+      /*navigational_intent=*/omnibox::NAV_INTENT_LOW,
       /*relevance=*/850, /*relevance_from_server=*/true,
       /*input_text=*/query);
   less_relevant.SetEntityInfo(entity_info);
@@ -280,6 +287,7 @@ TEST_F(BaseSearchProviderTest, PreserveImageWhenDeduplicating) {
       query, AutocompleteMatchType::SEARCH_SUGGEST_ENTITY,
       omnibox::TYPE_CATEGORICAL_QUERY,
       /*subtypes=*/{}, /*from_keyword=*/false,
+      /*navigational_intent=*/omnibox::NAV_INTENT_LOW,
       /*relevance=*/1300, /*relevance_from_server=*/true,
       /*input_text=*/query);
   more_relevant.SetEntityInfo(entity_info2);
@@ -324,6 +332,7 @@ TEST_F(BaseSearchProviderTest, PreserveSubtypesWhenDeduplicating) {
   SearchSuggestionParser::SuggestResult more_relevant(
       query, AutocompleteMatchType::SEARCH_HISTORY, omnibox::TYPE_NATIVE_CHROME,
       /*subtypes=*/{omnibox::SUBTYPE_PERSONAL}, /*from_keyword=*/false,
+      /*navigational_intent=*/omnibox::NAV_INTENT_NONE,
       /*relevance=*/1300, /*relevance_from_server=*/true,
       /*input_text=*/query);
   provider_->AddMatchToMap(
@@ -335,6 +344,7 @@ TEST_F(BaseSearchProviderTest, PreserveSubtypesWhenDeduplicating) {
       query, AutocompleteMatchType::SEARCH_SUGGEST_ENTITY,
       omnibox::TYPE_CATEGORICAL_QUERY,
       /*subtypes=*/{omnibox::SUBTYPE_TRENDS}, /*from_keyword=*/false,
+      /*navigational_intent=*/omnibox::NAV_INTENT_LOW,
       /*relevance=*/850, /*relevance_from_server=*/true,
       /*input_text=*/query);
   provider_->AddMatchToMap(
@@ -537,6 +547,7 @@ TEST_F(BaseSearchProviderTest, DeleteDuplicateMatch) {
       query, AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED,
       omnibox::TYPE_NATIVE_CHROME,
       /*subtypes=*/{}, /*from_keyword=*/false,
+      /*navigational_intent=*/omnibox::NAV_INTENT_NONE,
       /*relevance=*/850, /*relevance_from_server=*/true,
       /*input_text=*/query);
   provider_->AddMatchToMap(
@@ -547,6 +558,7 @@ TEST_F(BaseSearchProviderTest, DeleteDuplicateMatch) {
   SearchSuggestionParser::SuggestResult less_relevant(
       query, AutocompleteMatchType::SEARCH_HISTORY, omnibox::TYPE_NATIVE_CHROME,
       /*subtypes=*/{}, /*from_keyword=*/false,
+      /*navigational_intent=*/omnibox::NAV_INTENT_NONE,
       /*relevance=*/735, /*relevance_from_server=*/true,
       /*input_text=*/query);
   provider_->AddMatchToMap(
@@ -578,6 +590,7 @@ TEST_F(BaseSearchProviderTest, PrerenderDefaultMatch) {
   SearchSuggestionParser::SuggestResult default_suggestion(
       query, AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED,
       omnibox::TYPE_NATIVE_CHROME, /*subtypes=*/{}, /*from_keyword=*/false,
+      /*navigational_intent=*/omnibox::NAV_INTENT_NONE,
       /*relevance=*/850, /*relevance_from_server=*/true,
       /*input_text=*/query);
   provider_->AddMatchToMap(

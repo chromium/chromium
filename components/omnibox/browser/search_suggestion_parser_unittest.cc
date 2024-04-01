@@ -5,6 +5,7 @@
 #include "components/omnibox/browser/search_suggestion_parser.h"
 
 #include <optional>
+#include <sstream>
 
 #include "base/base64.h"
 #include "base/feature_list.h"
@@ -18,6 +19,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/omnibox_proto/entity_info.pb.h"
+#include "third_party/omnibox_proto/navigational_intent.pb.h"
 
 namespace {
 
@@ -33,6 +35,20 @@ std::string SerializeAndEncodeGroupsInfo(
   std::string serialized_groups_info;
   groups_info.SerializeToString(&serialized_groups_info);
   return base::Base64Encode(serialized_groups_info);
+}
+
+std::string NavigationalIntentsToJSON(
+    std::vector<omnibox::NavigationalIntent> nav_intents) {
+  std::stringstream ss;
+  ss << "[";
+  for (size_t i = 0; i < nav_intents.size(); ++i) {
+    if (i > 0) {
+      ss << ", ";
+    }
+    ss << static_cast<int>(nav_intents[i]);
+  }
+  ss << "]";
+  return ss.str();
 }
 
 // (Rudimentary) mechanism comparing two protobuf MessageLite objects.
@@ -144,10 +160,11 @@ TEST(SearchSuggestionParserTest, ParseSuggestResults) {
   entity_info.set_name("Christopher Doe");
   entity_info.set_entity_id("/m/065xxm");
 
-  std::string json_data = R"([
+  std::string json_data =
+      R"([
       "chris",
-      ["christmas", "christopher doe"],
-      ["", ""],
+      ["christmas", "christopher doe", "chr.com"],
+      ["", "", ""],
       [],
       {
         "google:clientdata": {
@@ -155,14 +172,18 @@ TEST(SearchSuggestionParserTest, ParseSuggestResults) {
           "tlw": false
         },
         "google:fieldtrialtriggered": true,
-        "google:suggestdetail": [{
-          }, {
+        "google:suggestdetail": [{}, {
             "google:entityinfo": ")" +
-                          SerializeAndEncodeEntityInfo(entity_info) +
-                          R"("
-          }],
-        "google:suggestrelevance": [607, 606],
-        "google:suggesttype": ["QUERY", "ENTITY"],
+      SerializeAndEncodeEntityInfo(entity_info) +
+      R"("
+          }, {}],
+        "google:suggestnavintents": )" +
+      NavigationalIntentsToJSON({omnibox::NAV_INTENT_MEDIUM,
+                                 omnibox::NAV_INTENT_LOW,
+                                 omnibox::NAV_INTENT_HIGH}) +
+      R"(,
+        "google:suggestrelevance": [607, 606, 605],
+        "google:suggesttype": ["QUERY", "ENTITY", "NAVIGATION"],
         "google:verbatimrelevance": 851,
         "google:experimentstats": [
           {"2":"0:67","4":10001},
@@ -188,6 +209,7 @@ TEST(SearchSuggestionParserTest, ParseSuggestResults) {
   // The "google:verbatimrelevance".
   ASSERT_EQ(851, results.verbatim_relevance);
   ASSERT_EQ(2U, results.suggest_results.size());
+  ASSERT_EQ(1U, results.navigation_results.size());
   {
     const auto& suggestion_result = results.suggest_results[0];
     ASSERT_EQ(u"christmas", suggestion_result.suggestion());
@@ -195,6 +217,8 @@ TEST(SearchSuggestionParserTest, ParseSuggestResults) {
     // This entry has no entity data
     ASSERT_TRUE(ProtosAreEqual(suggestion_result.entity_info(),
                                omnibox::EntityInfo::default_instance()));
+    ASSERT_EQ(suggestion_result.navigational_intent(),
+              omnibox::NAV_INTENT_MEDIUM);
   }
   {
     const auto& suggestion_result = results.suggest_results[1];
@@ -204,6 +228,13 @@ TEST(SearchSuggestionParserTest, ParseSuggestResults) {
     ASSERT_EQ("#424242", suggestion_result.entity_info().dominant_color());
     ASSERT_EQ("http://example.com/a.png",
               suggestion_result.entity_info().image_url());
+    ASSERT_EQ(suggestion_result.navigational_intent(), omnibox::NAV_INTENT_LOW);
+  }
+  {
+    const auto& navigation_result = results.navigation_results[0];
+    ASSERT_EQ(GURL(u"http://chr.com"), navigation_result.url());
+    ASSERT_EQ(navigation_result.navigational_intent(),
+              omnibox::NAV_INTENT_HIGH);
   }
   ASSERT_EQ(3U, results.experiment_stats_v2s.size());
   {
@@ -299,7 +330,7 @@ TEST(SearchSuggestionParserTest, ParseBothPrefetchAndPrerenderSuggestion) {
 TEST(SearchSuggestionParserTest, SuggestClassification) {
   SearchSuggestionParser::SuggestResult result(
       u"foobar", AutocompleteMatchType::SEARCH_SUGGEST, omnibox::TYPE_QUERY, {},
-      false, 400, true, std::u16string());
+      false, omnibox::NAV_INTENT_NONE, 400, true, std::u16string());
   AutocompleteMatch::ValidateClassifications(result.match_contents(),
                                              result.match_contents_class());
 
@@ -343,7 +374,8 @@ TEST(SearchSuggestionParserTest, NavigationClassification) {
   SearchSuggestionParser::NavigationResult result(
       scheme_classifier, GURL("https://news.google.com/"),
       AutocompleteMatchType::Type::NAVSUGGEST, omnibox::TYPE_NAVIGATION, {},
-      std::u16string(), std::string(), false, 400, true, u"google");
+      std::u16string(), std::string(), false, omnibox::NAV_INTENT_HIGH, 400,
+      true, u"google");
   AutocompleteMatch::ValidateClassifications(result.match_contents(),
                                              result.match_contents_class());
   const ACMatchClassifications kBoldMiddle = {

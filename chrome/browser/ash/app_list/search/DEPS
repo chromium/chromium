@@ -5,4 +5,5 @@ include_rules = [
   "+ash/shortcut_viewer",
   "+ash/strings/grit",
   "+chromeos/ui/vector_icons",
+  "+third_party/omnibox_proto",
 ]

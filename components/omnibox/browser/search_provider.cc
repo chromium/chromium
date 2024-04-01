@@ -59,6 +59,7 @@
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
+#include "third_party/omnibox_proto/navigational_intent.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/url_constants.h"
 #include "url/url_util.h"
@@ -984,7 +985,8 @@ void SearchProvider::ConvertResultsToAutocompleteMatches() {
         /*suggestion=*/trimmed_verbatim,
         AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED,
         /*suggest_type=*/omnibox::TYPE_NATIVE_CHROME,
-        /*subtypes=*/{}, /*from_keyword=*/false, verbatim_relevance,
+        /*subtypes=*/{}, /*from_keyword=*/false,
+        /*navigational_intent=*/omnibox::NAV_INTENT_NONE, verbatim_relevance,
         relevance_from_server,
         /*input_text=*/trimmed_verbatim);
     if (has_answer)
@@ -1019,8 +1021,9 @@ void SearchProvider::ConvertResultsToAutocompleteMatches() {
             /*suggestion=*/trimmed_verbatim,
             AutocompleteMatchType::SEARCH_OTHER_ENGINE,
             /*suggest_type=*/omnibox::TYPE_NATIVE_CHROME,
-            /*subtypes=*/{}, /*from_keyword=*/true, keyword_verbatim_relevance,
-            keyword_relevance_from_server,
+            /*subtypes=*/{}, /*from_keyword=*/true,
+            /*navigational_intent=*/omnibox::NAV_INTENT_NONE,
+            keyword_verbatim_relevance, keyword_relevance_from_server,
             /*input_text=*/trimmed_verbatim);
         AddMatchToMap(verbatim, std::string(),
                       GetInput(verbatim.from_keyword()),
@@ -1203,7 +1206,7 @@ SearchProvider::ScoreHistoryResultsHelper(const HistoryResults& results,
         /*suggestion=*/trimmed_suggestion,
         AutocompleteMatchType::SEARCH_HISTORY,
         /*suggest_type=*/omnibox::TYPE_NATIVE_CHROME, /*subtypes=*/{},
-        is_keyword, relevance,
+        is_keyword, /*navigational_intent=*/omnibox::NAV_INTENT_NONE, relevance,
         /*relevance_from_server=*/false, /*input_text=*/trimmed_input);
     // History results are synchronous; they are received on the last keystroke.
     history_suggestion.set_received_after_last_keystroke(false);

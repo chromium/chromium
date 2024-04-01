@@ -64,6 +64,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
+#include "third_party/omnibox_proto/navigational_intent.pb.h"
 #include "ui/base/device_form_factor.h"
 
 using base::ASCIIToUTF16;
@@ -2877,7 +2878,8 @@ TEST_F(SearchProviderTest, NavigationInline) {
         ChromeAutocompleteSchemeClassifier(profile_.get()), GURL(cases[i].url),
         AutocompleteMatchType::NAVSUGGEST,
         /*suggest_type=*/omnibox::TYPE_NATIVE_CHROME, /*subtypes=*/{},
-        std::u16string(), std::string(), false, 0, false,
+        std::u16string(), std::string(), false,
+        /*navigational_intent=*/omnibox::NAV_INTENT_NONE, 0, false,
         ASCIIToUTF16(cases[i].input));
     result.set_received_after_last_keystroke(false);
     AutocompleteMatch match(provider_->NavigationToMatch(result));
@@ -2893,7 +2895,8 @@ TEST_F(SearchProviderTest, NavigationInline) {
         ChromeAutocompleteSchemeClassifier(profile_.get()), GURL(cases[i].url),
         AutocompleteMatchType::NAVSUGGEST,
         /*suggest_type=*/omnibox::TYPE_NATIVE_CHROME, /*subtypes=*/{},
-        std::u16string(), std::string(), false, 0, false,
+        std::u16string(), std::string(), false,
+        /*navigational_intent=*/omnibox::NAV_INTENT_NONE, 0, false,
         ASCIIToUTF16(cases[i].input));
     result_prevent_inline.set_received_after_last_keystroke(false);
     AutocompleteMatch match_prevent_inline(
@@ -2915,7 +2918,8 @@ TEST_F(SearchProviderTest, NavigationInlineSchemeSubstring) {
       ChromeAutocompleteSchemeClassifier(profile_.get()), GURL(url),
       AutocompleteMatchType::NAVSUGGEST,
       /*suggest_type=*/omnibox::TYPE_NATIVE_CHROME, /*subtypes=*/{},
-      std::u16string(), std::string(), false, 0, false, input);
+      std::u16string(), std::string(), false,
+      /*navigational_intent=*/omnibox::NAV_INTENT_NONE, 0, false, input);
   result.set_received_after_last_keystroke(false);
 
   // Check the offset and strings when inline autocompletion is allowed.
@@ -2942,7 +2946,8 @@ TEST_F(SearchProviderTest, NavigationInlineDomainClassify) {
       ChromeAutocompleteSchemeClassifier(profile_.get()),
       GURL("http://www.http.com/http"), AutocompleteMatchType::NAVSUGGEST,
       /*suggest_type=*/omnibox::TYPE_NATIVE_CHROME, /*subtypes=*/{},
-      std::u16string(), std::string(), false, 0, false, u"h");
+      std::u16string(), std::string(), false,
+      /*navigational_intent=*/omnibox::NAV_INTENT_NONE, 0, false, u"h");
   result.set_received_after_last_keystroke(false);
   AutocompleteMatch match(provider_->NavigationToMatch(result));
   EXPECT_EQ(u"ttp.com/http", match.inline_autocompletion);
@@ -2969,7 +2974,8 @@ TEST_F(SearchProviderTest, NavigationPrefixClassify) {
       ChromeAutocompleteSchemeClassifier(profile_.get()),
       GURL("http://moon.com/moon"), AutocompleteMatchType::NAVSUGGEST,
       /*suggest_type=*/omnibox::TYPE_NATIVE_CHROME, /*subtypes=*/{},
-      std::u16string(), std::string(), false, 0, false, u"moon");
+      std::u16string(), std::string(), false,
+      /*navigational_intent=*/omnibox::NAV_INTENT_NONE, 0, false, u"moon");
   result.set_received_after_last_keystroke(false);
   AutocompleteMatch match(provider_->NavigationToMatch(result));
   EXPECT_EQ(u"moon.com/moon", match.contents);
@@ -2990,7 +2996,8 @@ TEST_F(SearchProviderTest, NavigationMidWordClassify) {
       ChromeAutocompleteSchemeClassifier(profile_.get()),
       GURL("http://www.facebook.com"), AutocompleteMatchType::NAVSUGGEST,
       /*suggest_type=*/omnibox::TYPE_NATIVE_CHROME, /*subtypes=*/{},
-      std::u16string(), std::string(), false, 0, false, u"acebook");
+      std::u16string(), std::string(), false,
+      /*navigational_intent=*/omnibox::NAV_INTENT_NONE, 0, false, u"acebook");
   result.set_received_after_last_keystroke(false);
   AutocompleteMatch match(provider_->NavigationToMatch(result));
   EXPECT_EQ(u"facebook.com", match.contents);
@@ -3009,7 +3016,8 @@ TEST_F(SearchProviderTest, NavigationWordBreakClassify) {
       GURL("http://www.yellow-animals.com/duck"),
       AutocompleteMatchType::NAVSUGGEST,
       /*suggest_type=*/omnibox::TYPE_NATIVE_CHROME, /*subtypes=*/{},
-      std::u16string(), std::string(), false, 0, false, u"duck");
+      std::u16string(), std::string(), false,
+      /*navigational_intent=*/omnibox::NAV_INTENT_NONE, 0, false, u"duck");
   result.set_received_after_last_keystroke(false);
   AutocompleteMatch match(provider_->NavigationToMatch(result));
   EXPECT_EQ(u"yellow-animals.com/duck", match.contents);
@@ -3031,7 +3039,8 @@ TEST_F(SearchProviderTest, DoTrimHttpScheme) {
       ChromeAutocompleteSchemeClassifier(profile_.get()), GURL(url),
       AutocompleteMatchType::NAVSUGGEST,
       /*suggest_type=*/omnibox::TYPE_NATIVE_CHROME, /*subtypes=*/{},
-      std::u16string(), std::string(), false, 0, false, input);
+      std::u16string(), std::string(), false,
+      /*navigational_intent=*/omnibox::NAV_INTENT_NONE, 0, false, input);
 
   QueryForInput(input, false, false);
   AutocompleteMatch match_inline(provider_->NavigationToMatch(result));
@@ -3047,7 +3056,8 @@ TEST_F(SearchProviderTest, DontTrimHttpSchemeIfInputHasScheme) {
       ChromeAutocompleteSchemeClassifier(profile_.get()), GURL(url),
       AutocompleteMatchType::NAVSUGGEST,
       /*suggest_type=*/omnibox::TYPE_NATIVE_CHROME, /*subtypes=*/{},
-      std::u16string(), std::string(), false, 0, false, input);
+      std::u16string(), std::string(), false,
+      /*navigational_intent=*/omnibox::NAV_INTENT_NONE, 0, false, input);
 
   QueryForInput(input, false, false);
   AutocompleteMatch match_inline(provider_->NavigationToMatch(result));
@@ -3063,7 +3073,8 @@ TEST_F(SearchProviderTest, DontTrimHttpsSchemeIfInputHasScheme) {
       ChromeAutocompleteSchemeClassifier(profile_.get()), GURL(url),
       AutocompleteMatchType::NAVSUGGEST,
       /*suggest_type=*/omnibox::TYPE_NATIVE_CHROME, /*subtypes=*/{},
-      std::u16string(), std::string(), false, 0, false, input);
+      std::u16string(), std::string(), false,
+      /*navigational_intent=*/omnibox::NAV_INTENT_NONE, 0, false, input);
 
   QueryForInput(input, false, false);
   AutocompleteMatch match_inline(provider_->NavigationToMatch(result));
@@ -3078,7 +3089,8 @@ TEST_F(SearchProviderTest, DoTrimHttpsScheme) {
       ChromeAutocompleteSchemeClassifier(profile_.get()), GURL(url),
       AutocompleteMatchType::NAVSUGGEST,
       /*suggest_type=*/omnibox::TYPE_NATIVE_CHROME, /*subtypes=*/{},
-      std::u16string(), std::string(), false, 0, false, input);
+      std::u16string(), std::string(), false,
+      /*navigational_intent=*/omnibox::NAV_INTENT_NONE, 0, false, input);
 
   QueryForInput(input, false, false);
   AutocompleteMatch match_inline(provider_->NavigationToMatch(result));
@@ -3963,7 +3975,8 @@ TEST_F(SearchProviderTest, AnswersCache) {
   SearchSuggestionParser::SuggestResult suggest_result(
       query, AutocompleteMatchType::SEARCH_HISTORY,
       /*suggest_type=*/omnibox::TYPE_NATIVE_CHROME, /*subtypes=*/{},
-      /*from_keyword_provider=*/false,
+      /*from_keyword=*/false,
+      /*navigational_intent=*/omnibox::NAV_INTENT_NONE,
       /*relevance=*/1200, /*relevance_from_server=*/false,
       /*input_text=*/query);
   QueryForInput(u"weather l", false, false);

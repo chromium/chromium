@@ -40,6 +40,7 @@
 #include "components/search/search.h"
 #include "components/search_engines/template_url_service.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
+#include "third_party/omnibox_proto/navigational_intent.pb.h"
 #include "url/gurl.h"
 
 using metrics::OmniboxInputType;
@@ -216,7 +217,8 @@ void LocalHistoryZeroSuggestProvider::QueryURLDatabase(
         /*suggestion=*/result->normalized_term,
         AutocompleteMatchType::SEARCH_HISTORY,
         /*suggest_type=*/omnibox::TYPE_NATIVE_CHROME,
-        /*subtypes=*/{}, /*from_keyword=*/false, relevance--,
+        /*subtypes=*/{}, /*from_keyword=*/false,
+        /*navigational_intent=*/omnibox::NAV_INTENT_NONE, relevance--,
         /*relevance_from_server=*/false,
         /*input_text=*/base::ASCIIToUTF16(std::string()));
 

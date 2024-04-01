@@ -28,6 +28,7 @@
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/omnibox_proto/navigational_intent.pb.h"
 #include "url/gurl.h"
 
 namespace app_list {
@@ -80,6 +81,7 @@ void OmniboxLacrosProvider::StartWithoutSearchProvider(
         query, AutocompleteMatchType::URL_WHAT_YOU_TYPED,
         /*suggest_type=*/omnibox::TYPE_NATIVE_CHROME, /*subtypes=*/{},
         /*from_keyword=*/false,
+        /*navigational_intent=*/omnibox::NAV_INTENT_NONE,
         /*relevance=*/kMaxOmniboxScore, /*relevance_from_server=*/false,
         /*input_text=*/query);
     AutocompleteMatch match(/*provider=*/nullptr, suggest_result.relevance(),

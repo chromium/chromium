@@ -20,6 +20,7 @@
 #include "components/omnibox/browser/suggestion_group_util.h"
 #include "third_party/omnibox_proto/chrome_searchbox_stats.pb.h"
 #include "third_party/omnibox_proto/entity_info.pb.h"
+#include "third_party/omnibox_proto/navigational_intent.pb.h"
 #include "third_party/omnibox_proto/types.pb.h"
 #include "url/gurl.h"
 
@@ -55,7 +56,8 @@ class SearchSuggestionParser {
            AutocompleteMatchType::Type type,
            omnibox::SuggestType suggest_type,
            std::vector<int> subtypes,
-           const std::string& deletion_url);
+           const std::string& deletion_url,
+           omnibox::NavigationalIntent navigational_intent);
     Result(const Result& other);
     virtual ~Result();
 
@@ -85,6 +87,10 @@ class SearchSuggestionParser {
     }
 
     const std::string& deletion_url() const { return deletion_url_; }
+
+    omnibox::NavigationalIntent navigational_intent() const {
+      return navigational_intent_;
+    }
 
     // Returns the default relevance value for this result (which may
     // be left over from a previous omnibox input) given the current
@@ -130,6 +136,11 @@ class SearchSuggestionParser {
     // should result in some reasonable deletion behaviour on the server,
     // e.g. deleting this term out of a user's server-side search history.
     std::string deletion_url_;
+
+    // The "navigational intent" of this result. In other words, the likelihood
+    // that the user intends to navigate to a specific place by making use of
+    // this result.
+    omnibox::NavigationalIntent navigational_intent_ = omnibox::NAV_INTENT_NONE;
   };
 
   class SuggestResult : public Result {
@@ -139,6 +150,7 @@ class SearchSuggestionParser {
                   omnibox::SuggestType suggest_type,
                   std::vector<int> subtypes,
                   bool from_keyword,
+                  omnibox::NavigationalIntent navigational_intent,
                   int relevance,
                   bool relevance_from_server,
                   const std::u16string& input_text);
@@ -152,6 +164,7 @@ class SearchSuggestionParser {
                   omnibox::EntityInfo entity_info,
                   const std::string& deletion_url,
                   bool from_keyword,
+                  omnibox::NavigationalIntent navigational_intent,
                   int relevance,
                   bool relevance_from_server,
                   bool should_prefetch,
@@ -239,6 +252,7 @@ class SearchSuggestionParser {
                      const std::u16string& description,
                      const std::string& deletion_url,
                      bool from_keyword,
+                     omnibox::NavigationalIntent navigational_intent,
                      int relevance,
                      bool relevance_from_server,
                      const std::u16string& input_text);

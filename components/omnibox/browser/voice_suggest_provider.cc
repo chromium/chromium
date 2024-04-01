@@ -11,6 +11,7 @@
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
+#include "third_party/omnibox_proto/navigational_intent.pb.h"
 #include "third_party/omnibox_proto/types.pb.h"
 
 namespace {
@@ -50,6 +51,7 @@ void VoiceSuggestProvider::Start(const AutocompleteInput& input,
             AutocompleteMatchType::VOICE_SUGGEST,
             /*suggest_type=*/omnibox::TYPE_NATIVE_CHROME, /*subtypes=*/{},
             false,
+            /*navigational_intent=*/omnibox::NAV_INTENT_NONE,
             ConfidenceScoreToSuggestionScore(score_and_suggestion_pair.first),
             false, {}),
         {}, input,

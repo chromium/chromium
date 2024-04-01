@@ -30,6 +30,7 @@
 #include "components/url_formatter/url_formatter.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/omnibox_proto/groups.pb.h"
+#include "third_party/omnibox_proto/navigational_intent.pb.h"
 #include "third_party/omnibox_proto/types.pb.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/base/page_transition_types.h"
@@ -655,6 +656,11 @@ struct AutocompleteMatch {
   // responding providers, so different providers must be carefully tuned to
   // supply matches with appropriate relevance.
   int relevance = 0;
+
+  // The "navigational intent" of this match. In other words, the likelihood
+  // that the user intends to navigate to a specific place by making use of
+  // this match.
+  omnibox::NavigationalIntent navigational_intent;
 
   // How many times this result was typed in / selected from the omnibox.
   // Only set for some providers and result_types.  If it is not set,
