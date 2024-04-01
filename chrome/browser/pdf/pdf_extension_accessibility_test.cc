@@ -152,6 +152,12 @@ std::string DumpPdfAccessibilityTree(const ui::AXTreeUpdate& ax_tree,
     std::string name =
         node.GetStringAttribute(ax::mojom::StringAttribute::kName);
     base::ReplaceChars(name, "\r\n", "", &name);
+    if (node.role == ax::mojom::Role::kStaticText) {
+      // OCR may detect and put trailing whitespace in `kStaticText`, so trim
+      // it in that case.
+      base::TrimWhitespaceASCII(name, base::TrimPositions::TRIM_TRAILING,
+                                &name);
+    }
     if (!name.empty()) {
       ax_tree_dump += " '" + name + "'";
     }
