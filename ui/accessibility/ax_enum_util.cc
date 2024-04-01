@@ -2034,6 +2034,8 @@ const char* ToString(ax::mojom::InputEventType input_event_type) {
       return "insertReplacementText";
     case ax::mojom::InputEventType::kInsertCompositionText:
       return "insertCompositionText";
+    case ax::mojom::InputEventType::kInsertLink:
+      return "insertLink";
     case ax::mojom::InputEventType::kDeleteWordBackward:
       return "deleteWordBackward";
     case ax::mojom::InputEventType::kDeleteWordForward:

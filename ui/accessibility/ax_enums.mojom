@@ -1067,7 +1067,8 @@ enum Command {
 // Please keep in sync with the following specification and file:
 // https://w3c.github.io/input-events/#h-interface-inputevent-attributes
 // //third_party/blink/renderer/core/events/input_event.h
-// Next value: 39
+// Next Version: 2
+// Next value: 40
 [Extensible, Stable, Uuid="f53115ff-b29d-4a07-a497-9c49dc5b5ebd"]
 enum InputEventType {
   [Default]kNone = 0,
@@ -1084,6 +1085,7 @@ enum InputEventType {
   kInsertTranspose = 10,
   kInsertReplacementText = 11,
   kInsertCompositionText = 12,
+  [MinVersion=1] kInsertLink = 39,
   // Deletion.
   kDeleteWordBackward = 13,
   kDeleteWordForward = 14,

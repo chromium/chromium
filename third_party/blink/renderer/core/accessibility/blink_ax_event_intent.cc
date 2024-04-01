@@ -73,6 +73,10 @@ BlinkAXEventIntent BlinkAXEventIntent::FromEditCommand(
       input_event_type =
           ax::mojom::blink::InputEventType::kInsertCompositionText;
       break;
+    case InputEvent::InputType::kInsertLink:
+      command = ax::mojom::blink::Command::kInsert;
+      input_event_type = ax::mojom::blink::InputEventType::kInsertLink;
+      break;
 
     // Deletion.
     case InputEvent::InputType::kDeleteWordBackward:

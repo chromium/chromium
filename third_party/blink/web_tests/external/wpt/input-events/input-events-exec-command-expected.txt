@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 74 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 70 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Calling execCommand("insertHorizontalRule", false, null) (inputType value)
   assert_equals: expected "insertHorizontalRule" but got ""
 [FAIL] Calling execCommand("backColor", false, #FF0000) (inputType value)
@@ -140,13 +140,5 @@ Found 74 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_true: calling dataTransfer.clearData(text/plain) caused exception: TypeError: Cannot read properties of null (reading 'clearData') expected true got false
 [FAIL] Calling execCommand("paste", false, null) (dataTransfer.setData(text/plain))
   assert_true: calling dataTransfer.setData(text/plain) caused exception: TypeError: Cannot read properties of null (reading 'setData') expected true got false
-[FAIL] Calling execCommand("createLink", false, https://example.com/) (inputType value)
-  assert_equals: expected "insertLink" but got ""
-[FAIL] Calling execCommand("createLink", false, https://example.com/) (data value)
-  assert_equals: expected (string) "https://example.com/" but got (object) null
-[FAIL] Calling execCommand("createLink", false, foo.html) (inputType value)
-  assert_equals: expected "insertLink" but got ""
-[FAIL] Calling execCommand("createLink", false, foo.html) (data value)
-  assert_equals: expected (string) "foo.html" but got (object) null
 Harness: the test ran to completion.
 

@@ -144,6 +144,7 @@ bool CompositeEditCommand::Apply() {
       case InputEvent::InputType::kInsertTranspose:
       case InputEvent::InputType::kInsertReplacementText:
       case InputEvent::InputType::kInsertCompositionText:
+      case InputEvent::InputType::kInsertLink:
       case InputEvent::InputType::kDeleteWordBackward:
       case InputEvent::InputType::kDeleteWordForward:
       case InputEvent::InputType::kDeleteSoftLineBackward:

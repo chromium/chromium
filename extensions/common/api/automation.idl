@@ -583,6 +583,7 @@ enum IntentInputEventType {
   insertTranspose,
   insertReplacementText,
   insertCompositionText,
+  insertLink,
   // Deletion.
   deleteWordBackward,
   deleteWordForward,

@@ -2132,6 +2132,10 @@
       // iOS.
       status: {"Android": "test", "iOS": "test", "default": "stable"},
     },
+    {
+      name: "InputTypeSupportInsertLink",
+      status: "stable",
+    },
     // Insert a blockquote before a outer block after creating the blockquote
     // when indenting a node whose outer block is a blockquote. See
     // https://crbug.com/327665597

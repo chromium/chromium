@@ -39,6 +39,7 @@ class InputEvent final : public UIEvent {
     kInsertTranspose,
     kInsertReplacementText,
     kInsertCompositionText,
+    kInsertLink,
     // Deletion.
     kDeleteWordBackward,
     kDeleteWordForward,

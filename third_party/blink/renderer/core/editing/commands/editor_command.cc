@@ -146,6 +146,10 @@ InputEvent::InputType InputTypeFromCommandType(EditingCommandType command_type,
       return InputType::kInsertOrderedList;
     case CommandType::kInsertUnorderedList:
       return InputType::kInsertUnorderedList;
+    case CommandType::kCreateLink:
+      return RuntimeEnabledFeatures::InputTypeSupportInsertLinkEnabled()
+                 ? InputType::kInsertLink
+                 : InputType::kNone;
 
     // Deletion.
     case CommandType::kDelete:

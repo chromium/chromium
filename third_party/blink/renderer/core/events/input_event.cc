@@ -32,6 +32,7 @@ const struct {
     {InputEvent::InputType::kInsertTranspose, "insertTranspose"},
     {InputEvent::InputType::kInsertReplacementText, "insertReplacementText"},
     {InputEvent::InputType::kInsertCompositionText, "insertCompositionText"},
+    {InputEvent::InputType::kInsertLink, "insertLink"},
     {InputEvent::InputType::kDeleteWordBackward, "deleteWordBackward"},
     {InputEvent::InputType::kDeleteWordForward, "deleteWordForward"},
     {InputEvent::InputType::kDeleteSoftLineBackward, "deleteSoftLineBackward"},
