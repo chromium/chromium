@@ -122,9 +122,13 @@ std::unique_ptr<SkBitmap> JPEGCodec::Decode(const unsigned char* input,
     return nullptr;
   }
 
-  // Decode the image pixels directly onto an SkBitmap.
+  // Allocate pixel storage for the decoded JPEG.
   auto bitmap = std::make_unique<SkBitmap>();
-  bitmap->allocN32Pixels(info.width(), info.height());
+  if (!bitmap->tryAllocN32Pixels(info.width(), info.height())) {
+    return nullptr;
+  }
+
+  // Decode the image pixels directly onto an SkBitmap.
   SkCodec::Result result =
       codec->getPixels(info, bitmap->getAddr32(0, 0), bitmap->rowBytes());
   return (result == SkCodec::kSuccess) ? std::move(bitmap) : nullptr;
