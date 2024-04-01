@@ -49,6 +49,13 @@ config("find_bad_constructs") {
       "-Xclang",
       "disable-check-raw-ptr-to-stack-allocated-error",
 
+      # TODO(https://crbug.com/331856210): Remove when accidentally excluded
+      # dirs like devtools/ are rewritten.
+      "-Xclang",
+      "-plugin-arg-find-bad-constructs",
+      "-Xclang",
+      "raw-ptr-exclude-path=tools/",
+
       # TODO(https://crbug.com/1504043): Remove when raw_ptr check has been
       # enabled for the dawn repo.
       "-Xclang",
