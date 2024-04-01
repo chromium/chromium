@@ -50,7 +50,7 @@ void VerifyValidationResult(const base::FilePath& path1,
   const auto data = GenerateValidationData(
       ProtectionLevel::PROTECTION_PATH_VALIDATION, process1);
   ASSERT_TRUE(data.has_value()) << data.error();
-  EXPECT_EQ(expected_match, ValidateData(process2, *data))
+  EXPECT_EQ(expected_match, SUCCEEDED(ValidateData(process2, *data)))
       << path1 << " vs. " << path2;
   process1.Terminate(0, /*wait=*/true);
   process2.Terminate(0, /*wait=*/true);
@@ -70,7 +70,7 @@ TEST_F(CallerValidationTest, NoneValidationTest) {
   const auto data =
       GenerateValidationData(ProtectionLevel::PROTECTION_NONE, my_process);
   ASSERT_TRUE(data.has_value()) << data.error();
-  ASSERT_TRUE(ValidateData(my_process, *data));
+  ASSERT_HRESULT_SUCCEEDED(ValidateData(my_process, *data));
 }
 
 TEST_F(CallerValidationTest, PathValidationTest) {
@@ -78,7 +78,37 @@ TEST_F(CallerValidationTest, PathValidationTest) {
   const auto data = GenerateValidationData(
       ProtectionLevel::PROTECTION_PATH_VALIDATION, my_process);
   ASSERT_TRUE(data.has_value()) << data.error();
-  ASSERT_TRUE(ValidateData(my_process, *data));
+  ASSERT_HRESULT_SUCCEEDED(ValidateData(my_process, *data));
+}
+
+TEST_F(CallerValidationTest, PathValidationOldDataTest) {
+  // Test old format validation data.
+  const std::vector<uint8_t> data = {'P', 'A', 'T', 'H'};
+  const auto result = ValidateData(base::Process::Current(), data);
+  ASSERT_HRESULT_FAILED(result);
+  ASSERT_EQ(result, E_INVALIDARG);
+}
+
+TEST_F(CallerValidationTest, DeprecatedPathValidationTest) {
+  const auto data =
+      GenerateValidationData(ProtectionLevel::PROTECTION_PATH_VALIDATION_OLD,
+                             base::Process::Current());
+
+  ASSERT_FALSE(data.has_value());
+  EXPECT_EQ(data.error(), Elevator::kErrorUnsupportedProtectionLevel);
+}
+
+TEST_F(CallerValidationTest, BackwardsCompatiblePathDataTest) {
+  auto data = GenerateValidationData(
+      ProtectionLevel::PROTECTION_PATH_VALIDATION, base::Process::Current());
+  ASSERT_TRUE(data.has_value());
+  ASSERT_EQ((*data)[0], ProtectionLevel::PROTECTION_PATH_VALIDATION);
+  // Simulate a client that has previously generated path validation data but
+  // with the old validation type (0x01). This is compatible with the new data
+  // type (0x02).
+  (*data)[0] = ProtectionLevel::PROTECTION_PATH_VALIDATION_OLD;
+  const auto result = ValidateData(base::Process::Current(), *data);
+  ASSERT_HRESULT_SUCCEEDED(result);
 }
 
 TEST_F(CallerValidationTest, PathValidationTestFail) {
@@ -91,7 +121,9 @@ TEST_F(CallerValidationTest, PathValidationTestFail) {
       base::LaunchProcess(L"calc.exe", base::LaunchOptions());
   ASSERT_TRUE(notepad_process.IsRunning());
 
-  ASSERT_FALSE(ValidateData(notepad_process, *data));
+  const HRESULT res = ValidateData(notepad_process, *data);
+  ASSERT_HRESULT_FAILED(res);
+  ASSERT_EQ(res, Elevator::kValidationDidNotPass);
   ASSERT_TRUE(notepad_process.Terminate(0, true));
 }
 
@@ -117,7 +149,7 @@ TEST_F(CallerValidationTest, PathValidationTestOtherProcess) {
         base::LaunchProcess(L"calc.exe", base::LaunchOptions());
     ASSERT_TRUE(notepad_process.IsRunning());
 
-    ASSERT_TRUE(ValidateData(notepad_process, *data));
+    ASSERT_HRESULT_SUCCEEDED(ValidateData(notepad_process, *data));
     ASSERT_TRUE(notepad_process.Terminate(0, true));
   }
 }
@@ -133,7 +165,7 @@ TEST_F(CallerValidationTest, NoneValidationTestOtherProcess) {
   ASSERT_TRUE(notepad_process.IsRunning());
 
   // None validation should not care if the process is different.
-  ASSERT_TRUE(ValidateData(notepad_process, *data));
+  ASSERT_HRESULT_SUCCEEDED(ValidateData(notepad_process, *data));
   ASSERT_TRUE(notepad_process.Terminate(0, true));
 }
 

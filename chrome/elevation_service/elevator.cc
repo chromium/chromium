@@ -73,8 +73,8 @@ HRESULT Elevator::EncryptData(ProtectionLevel protection_level,
                               const BSTR plaintext,
                               BSTR* ciphertext,
                               DWORD* last_error) {
-  if (protection_level > ProtectionLevel::PROTECTION_PATH_VALIDATION) {
-    return E_INVALIDARG;
+  if (protection_level >= ProtectionLevel::PROTECTION_MAX) {
+    return kErrorUnsupportedProtectionLevel;
   }
 
   UINT length = ::SysStringByteLen(plaintext);
@@ -212,7 +212,9 @@ HRESULT Elevator::DecryptData(const BSTR ciphertext,
 
     // Note: Validation should always be done using caller impersonation token.
     std::string log_message;
-    if (!ValidateData(process, data, &log_message)) {
+    HRESULT validation_result = ValidateData(process, data, &log_message);
+
+    if (FAILED(validation_result)) {
       *last_error = ::GetLastError();
       // Only enable extended logging on Dev channel.
       if (install_static::GetChromeChannel() == version_info::Channel::DEV &&
@@ -220,7 +222,7 @@ HRESULT Elevator::DecryptData(const BSTR ciphertext,
         *plaintext =
             ::SysAllocStringByteLen(log_message.c_str(), log_message.length());
       }
-      return kValidationDidNotPass;
+      return validation_result;
     }
     plaintext_str = PopFromStringFront(mutable_plaintext);
   }

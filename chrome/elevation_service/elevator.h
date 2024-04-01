@@ -57,6 +57,8 @@ class Elevator
       MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA008);
   static constexpr HRESULT kErrorUnsupportedFilePath =
       MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA009);
+  static constexpr HRESULT kErrorUnsupportedProtectionLevel =
+      MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA00A);
 
   Elevator() = default;
 

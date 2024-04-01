@@ -123,17 +123,17 @@ base::expected<std::vector<uint8_t>, HRESULT> GeneratePathValidationData(
   return std::vector<uint8_t>(narrow_path.begin(), narrow_path.end());
 }
 
-bool ValidatePath(const base::Process& process,
-                  base::span<const uint8_t> data,
-                  std::string* log_message) {
+HRESULT ValidatePath(const base::Process& process,
+                     base::span<const uint8_t> data,
+                     std::string* log_message) {
   auto current_path = GeneratePathValidationData(process);
   if (!current_path.has_value()) {
-    return false;
+    return current_path.error();
   }
 
   if (data.size() == current_path->size() &&
       std::equal(data.begin(), data.end(), current_path->cbegin())) {
-    return true;
+    return S_OK;
   }
 
   if (log_message) {
@@ -142,7 +142,7 @@ bool ValidatePath(const base::Process& process,
         std::string(current_path->cbegin(), current_path->cend()) + "'";
   }
 
-  return false;
+  return elevation_service::Elevator::kValidationDidNotPass;
 }
 
 }  // namespace
@@ -153,7 +153,10 @@ base::expected<std::vector<uint8_t>, HRESULT> GenerateValidationData(
   switch (level) {
     case ProtectionLevel::PROTECTION_NONE:
       return std::vector<uint8_t>{ProtectionLevel::PROTECTION_NONE};
-    case ProtectionLevel::PROTECTION_PATH_VALIDATION:
+    case ProtectionLevel::PROTECTION_PATH_VALIDATION_OLD:
+      return base::unexpected(
+          elevation_service::Elevator::kErrorUnsupportedProtectionLevel);
+    case ProtectionLevel::PROTECTION_PATH_VALIDATION: {
       auto path_validation_data = GeneratePathValidationData(process);
       if (path_validation_data.has_value()) {
         path_validation_data->insert(
@@ -162,24 +165,35 @@ base::expected<std::vector<uint8_t>, HRESULT> GenerateValidationData(
         return *path_validation_data;
       }
       return base::unexpected(path_validation_data.error());
+    }
+    case ProtectionLevel::PROTECTION_MAX:
+      return base::unexpected(
+          elevation_service::Elevator::kErrorUnsupportedProtectionLevel);
   }
 }
 
-bool ValidateData(const base::Process& process,
-                  base::span<const uint8_t> validation_data,
-                  std::string* log_message) {
+HRESULT ValidateData(const base::Process& process,
+                     base::span<const uint8_t> validation_data,
+                     std::string* log_message) {
   if (validation_data.empty()) {
-    return false;
+    return E_INVALIDARG;
   }
 
   ProtectionLevel level = static_cast<ProtectionLevel>(validation_data[0]);
 
+  if (level >= ProtectionLevel::PROTECTION_MAX) {
+    return E_INVALIDARG;
+  }
+
   switch (level) {
     case ProtectionLevel::PROTECTION_NONE:
       // No validation always returns true.
-      return true;
+      return S_OK;
+    case ProtectionLevel::PROTECTION_PATH_VALIDATION_OLD:
     case ProtectionLevel::PROTECTION_PATH_VALIDATION:
       return ValidatePath(process, validation_data.subspan(1), log_message);
+    case ProtectionLevel::PROTECTION_MAX:
+      return E_INVALIDARG;
   }
 }
 

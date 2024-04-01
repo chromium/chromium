@@ -153,7 +153,9 @@ typedef
 enum ProtectionLevel
     {
         PROTECTION_NONE	= 0,
-        PROTECTION_PATH_VALIDATION	= 1
+        PROTECTION_PATH_VALIDATION_OLD	= 1,
+        PROTECTION_PATH_VALIDATION	= 2,
+        PROTECTION_MAX	= 3
     } 	ProtectionLevel;
 
 

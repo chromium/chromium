@@ -31,11 +31,12 @@ base::expected<std::vector<uint8_t>, HRESULT> GenerateValidationData(
 
 // Validates `validation_data` validates for `process`, according to the
 // validation policy for the level encoded in `validation_data` when it was
-// generated. Returns true if the validation passed. If validation failed and
-// `log_message` is specified, then an extended log might be returned.
-bool ValidateData(const base::Process& process,
-                  base::span<const uint8_t> validation_data,
-                  std::string* log_message = nullptr);
+// generated. The returned HRESULT determines whether or not the validation
+// passed. If validation failed and `log_message` is specified, then an extended
+// log might be returned.
+HRESULT ValidateData(const base::Process& process,
+                     base::span<const uint8_t> validation_data,
+                     std::string* log_message = nullptr);
 
 // This internal function is exposed to tests, for testing. See documentation on
 // `MaybeTrimProcessPath`.
