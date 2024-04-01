@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <unordered_set>
+
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
@@ -14,8 +16,22 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_live_tab_context.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/tab_group.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "components/saved_tab_groups/saved_tab_group.h"
+#include "components/saved_tab_groups/saved_tab_group_tab.h"
+#include "components/sessions/core/serialized_navigation_entry.h"
+#include "components/sessions/core/session_id.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
+#include "components/tab_groups/tab_group_id.h"
+#include "components/tab_groups/tab_group_visual_data.h"
+#include "url/gurl.h"
 
 namespace chrome {
 namespace {
@@ -97,6 +113,101 @@ void BrowserTabRestorer::OnBrowserRemoved(Browser* browser) {
   browser_->profile()->SetUserData(kBrowserTabRestorerKey, nullptr);
 }
 
+void AddMissingTabsToGroup(
+    Profile* profile,
+    tab_groups::SavedTabGroupKeyedService& saved_tab_group_service,
+    const base::Uuid& saved_id,
+    const tab_groups::TabGroupId& group_id,
+    const std::vector<std::unique_ptr<sessions::TabRestoreService::Tab>>&
+        restored_tabs) {
+  const tab_groups::SavedTabGroup* const saved_group =
+      saved_tab_group_service.model()->Get(saved_id);
+  CHECK(saved_group);
+
+  std::unordered_set<std::string> saved_urls;
+  for (const tab_groups::SavedTabGroupTab& saved_tab :
+       saved_group->saved_tabs()) {
+    if (!saved_urls.contains(saved_tab.url().spec())) {
+      saved_urls.emplace(saved_tab.url().spec());
+    }
+  }
+
+  // Find tabs that exist in |restored_tabs| but not in its saved group.
+  for (const std::unique_ptr<sessions::TabRestoreService::Tab>& tab :
+       restored_tabs) {
+    const sessions::SerializedNavigationEntry& entry =
+        tab->navigations.at(tab->normalized_navigation_index());
+    const GURL tab_url = entry.virtual_url();
+
+    if (!saved_urls.contains(tab_url.spec())) {
+      // Add the missing tab to the saved group.
+      tab_groups::SavedTabGroupTab saved_tab_group_tab(
+          entry.virtual_url(), entry.title(), saved_id, std::nullopt);
+      // TODO(dljames): Find a way to load favicons and set it here.
+      saved_tab_group_service.model()->AddTabToGroupLocally(
+          saved_id, std::move(saved_tab_group_tab));
+      saved_urls.emplace(tab_url.spec());
+    }
+  }
+}
+
+void UpdateGroupVisualData(const tab_groups::TabGroupId& group_id,
+                           const tab_groups::TabGroupVisualData& visual_data) {
+  TabGroup* const tab_group =
+      tab_groups::SavedTabGroupUtils::GetTabGroupWithId(group_id);
+  CHECK(tab_group);
+  tab_group->SetVisualData(visual_data);
+}
+
+void OpenSavedTabGroup(sessions::TabRestoreService& tab_restore_service,
+                       const sessions::TabRestoreService::Group& group,
+                       Browser* browser) {
+  tab_groups::SavedTabGroupKeyedService* saved_tab_group_service =
+      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+          browser->profile());
+  CHECK(saved_tab_group_service);
+
+  const std::optional<base::Uuid>& saved_id = group.saved_id;
+  const bool is_group_saved =
+      saved_id.has_value() &&
+      saved_tab_group_service->model()->Contains(saved_id.value());
+
+  if (!is_group_saved) {
+    // Copy these values so they are not overwritten when we remove the entry
+    // from TabRestoreService .
+    tab_groups::TabGroupId group_id = group.group_id;
+    tab_groups::TabGroupVisualData visual_data = group.visual_data;
+
+    // If the group is not saved, restore it normally, and save it.
+    tab_restore_service.RestoreMostRecentEntry(browser->live_tab_context());
+    saved_tab_group_service->SaveGroup(group_id);
+
+    // Update the color and title of the group appropriately.
+    UpdateGroupVisualData(group_id, visual_data);
+    return;
+  }
+
+  const SessionID& session_id = group.id;
+  const tab_groups::TabGroupId& group_id = group.group_id;
+  const tab_groups::TabGroupVisualData& visual_data = group.visual_data;
+
+  // It could be the case that the current state of the saved group has deviated
+  // from what is represented in TabRestoreService. Make sure any tabs that are
+  // not in the saved group are added to it.
+  AddMissingTabsToGroup(browser->profile(), *saved_tab_group_service,
+                        saved_id.value(), group_id, group.tabs);
+
+  // Open the group.
+  std::optional<tab_groups::TabGroupId> new_group_id =
+      saved_tab_group_service->OpenSavedTabGroupInBrowser(browser,
+                                                          saved_id.value());
+  CHECK(new_group_id.has_value());
+  UpdateGroupVisualData(new_group_id.value(), visual_data);
+
+  // Clean up TabRestoreService.
+  tab_restore_service.RemoveEntryById(session_id);
+}
+
 }  // namespace
 
 void RestoreTab(Browser* browser) {
@@ -104,12 +215,38 @@ void RestoreTab(Browser* browser) {
 
   sessions::TabRestoreService* service =
       TabRestoreServiceFactory::GetForProfile(browser->profile());
-  if (!service)
+  if (!service) {
     return;
+  }
 
   if (service->IsLoaded()) {
-    service->RestoreMostRecentEntry(browser->live_tab_context());
-    return;
+    if (!base::FeatureList::IsEnabled(features::kTabGroupsSaveV2) ||
+        service->entries().empty()) {
+      // Restore normally.
+      service->RestoreMostRecentEntry(browser->live_tab_context());
+      return;
+    }
+
+    const std::unique_ptr<sessions::TabRestoreService::Entry>&
+        most_recent_entry = service->entries().front();
+    switch (most_recent_entry->type) {
+      case sessions::TabRestoreService::TAB:
+      case sessions::TabRestoreService::WINDOW: {
+        // TODO(dljames): Handle Tab and Window Entries. Restore tabs and
+        // windows normally for now.
+        service->RestoreMostRecentEntry(browser->live_tab_context());
+        return;
+      }
+      case sessions::TabRestoreService::GROUP: {
+        OpenSavedTabGroup(*service,
+                          static_cast<sessions::TabRestoreService::Group&>(
+                              *most_recent_entry.get()),
+                          browser);
+        return;
+      }
+    }
+
+    NOTREACHED();
   }
 
   BrowserTabRestorer::CreateIfNecessary(browser);

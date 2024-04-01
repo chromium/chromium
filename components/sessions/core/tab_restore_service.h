@@ -104,6 +104,15 @@ class SESSIONS_EXPORT TabRestoreService : public KeyedService {
     // Entry:
     size_t EstimateMemoryUsage() const override;
 
+    // Since the current_navigation_index can be larger than the index for
+    // number of navigations in the current sessions (chrome://newtab is not
+    // stored), we must perform bounds checking. Returns a normalized
+    // bounds-checked navigation_index.
+    int normalized_navigation_index() const {
+      return std::max(0, std::min(current_navigation_index,
+                                  static_cast<int>(navigations.size() - 1)));
+    }
+
     // The navigations.
     std::vector<SerializedNavigationEntry> navigations;
 
