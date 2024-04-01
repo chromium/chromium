@@ -14,6 +14,7 @@
 #include "ash/system/brightness_control_delegate.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/display_settings/display_settings_provider.mojom.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "ui/display/manager/display_manager.h"
@@ -297,6 +298,11 @@ void DisplaySettingsProvider::SetInternalDisplayScreenBrightness(
   }
 
   brightness_control_delegate_->SetBrightnessPercent(percent, /*gradual=*/true);
+
+  // Record the brightness change event.
+  std::string histogram_name(base::StrCat(
+      {kDisplaySettingsHistogramName, ".Internal.BrightnessSliderAdjusted"}));
+  base::UmaHistogramPercentage(histogram_name, percent);
 }
 
 }  // namespace ash::settings

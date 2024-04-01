@@ -473,6 +473,11 @@ TEST_F(DisplaySettingsProviderTest,
   feature_list_.InitAndDisableFeature(
       ash::features::kEnableBrightnessControlInSettings);
 
+  // No histograms should have been recorded yet.
+  histogram_tester_.ExpectTotalCount(
+      "ChromeOS.Settings.Display.Internal.BrightnessSliderAdjusted",
+      /*expected_count=*/0);
+
   // Set the brightness with a sentinel value, so we can test that the
   // brightness doesn't change if the feature flag is disabled.
   double brightness_before_setting = 50.0;
@@ -488,6 +493,11 @@ TEST_F(DisplaySettingsProviderTest,
   // When feature flag is disabled, setting the brightness has no effect.
   EXPECT_EQ(brightness_before_setting,
             brightness_control_delegate_->brightness_percent());
+
+  // No histograms should have been recorded, because the feature is disabled.
+  histogram_tester_.ExpectTotalCount(
+      "ChromeOS.Settings.Display.Internal.BrightnessSliderAdjusted",
+      /*expected_count=*/0);
 }
 
 // Test the behavior when setting the internal display screen brightness (when
@@ -500,6 +510,11 @@ TEST_F(DisplaySettingsProviderTest,
   provider_->SetBrightnessControlDelegateForTesting(
       brightness_control_delegate_.get());
 
+  // No histograms should have been recorded yet.
+  histogram_tester_.ExpectTotalCount(
+      "ChromeOS.Settings.Display.Internal.BrightnessSliderAdjusted",
+      /*expected_count=*/0);
+
   double brightness_percent = 33.3;
   provider_->SetInternalDisplayScreenBrightness(brightness_percent);
 
@@ -507,6 +522,15 @@ TEST_F(DisplaySettingsProviderTest,
   // brightness percent.
   EXPECT_EQ(brightness_percent,
             brightness_control_delegate_->brightness_percent());
+
+  // Histogram should have been recorded for this change.
+  histogram_tester_.ExpectTotalCount(
+      "ChromeOS.Settings.Display.Internal.BrightnessSliderAdjusted",
+      /*expected_count=*/1);
+  histogram_tester_.ExpectUniqueSample(
+      "ChromeOS.Settings.Display.Internal.BrightnessSliderAdjusted",
+      /*sample=*/brightness_percent,
+      /*expected_bucket_count=*/1);
 }
 
 }  // namespace ash::settings

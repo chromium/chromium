@@ -185,6 +185,17 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Settings.Display.Internal.BrightnessSliderAdjusted"
+    units="%" expires_after="2025-03-01">
+  <owner>cambickel@google.com</owner>
+  <owner>zentaro@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records each time a user changes the screen brightness for an internal
+    display. The value saved is the brightness percentage after adjustment.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Settings.Display.MirrorModeStatus"
     enum="DisplaySettingsBoolean" expires_after="2024-06-28">
   <owner>zhangwenyu@google.com</owner>
