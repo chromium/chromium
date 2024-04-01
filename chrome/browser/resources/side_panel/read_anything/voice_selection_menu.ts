@@ -6,10 +6,12 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_icons.css.js';
 import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import './icons.html.js';
 
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrLazyRenderElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -19,7 +21,7 @@ import {getTemplate} from './voice_selection_menu.html.js';
 
 export interface VoiceSelectionMenuElement {
   $: {
-    voiceSelectionMenu: CrActionMenuElement,
+    voiceSelectionMenu: CrLazyRenderElement<CrActionMenuElement>,
   };
 }
 
@@ -116,7 +118,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
 
     this.voicePlayingWhenMenuOpened_ = !this.paused;
 
-    this.$.voiceSelectionMenu.showAt(target, {
+    this.$.voiceSelectionMenu.get().showAt(target, {
       minY: minY,
       left: 0,
       anchorAlignmentY: AnchorAlignment.AFTER_END,

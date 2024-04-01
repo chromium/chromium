@@ -26,7 +26,7 @@ suite('VoiceSelectionMenuElement', () => {
   };
 
   const getDropdownItemForVoice = (voice: SpeechSynthesisVoice) => {
-    return voiceSelectionMenu.$.voiceSelectionMenu
+    return voiceSelectionMenu.$.voiceSelectionMenu.get()
         .querySelector<HTMLButtonElement>(`[data-test-id="${
             stringToHtmlTestId(voice.name)}"].dropdown-voice-selection-button`)!
         ;
@@ -36,6 +36,7 @@ suite('VoiceSelectionMenuElement', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     voiceSelectionMenu = document.createElement('voice-selection-menu');
     document.body.appendChild(voiceSelectionMenu);
+    flush();
   });
 
   suite('with one voice', () => {
@@ -54,6 +55,7 @@ suite('VoiceSelectionMenuElement', () => {
           voiceSelectionMenu.shadowRoot!.querySelector<CrIconButtonElement>(
               '#voice-selection');
       button!.click();
+      flush();
 
       assertTrue(
           isPositionedOnPage(getDropdownItemForVoice(availableVoices[0]!)!));
@@ -76,9 +78,10 @@ suite('VoiceSelectionMenuElement', () => {
             voiceSelectionMenu.shadowRoot!.querySelector<CrIconButtonElement>(
                 '#voice-selection')!;
         button!.click();
+        flush();
 
         const dropdownItems: NodeListOf<HTMLElement> =
-            voiceSelectionMenu.$.voiceSelectionMenu
+            voiceSelectionMenu.$.voiceSelectionMenu.get()
                 .querySelectorAll<HTMLButtonElement>(
                     '.dropdown-voice-selection-button');
 
@@ -102,6 +105,9 @@ suite('VoiceSelectionMenuElement', () => {
     let previewVoice: SpeechSynthesisVoice;
 
     setup(() => {
+      // We need an additional call to voiceSelectionMenu.get() in these
+      // tests to ensure the menu has been rendered.
+      voiceSelectionMenu.$.voiceSelectionMenu.get();
       selectedVoice = {name: 'test voice 3', lang: 'en-US'} as
           SpeechSynthesisVoice;
       previewVoice = {name: 'test voice 1', lang: 'en-US'} as
@@ -135,11 +141,11 @@ suite('VoiceSelectionMenuElement', () => {
 
     test('it groups voices by language', () => {
       const englishGroup: HTMLElement =
-          voiceSelectionMenu.$.voiceSelectionMenu.querySelector<HTMLElement>(
-              'div[data-test-id="group-en-US"]')!;
+          voiceSelectionMenu.$.voiceSelectionMenu.get()
+              .querySelector<HTMLElement>('div[data-test-id="group-en-US"]')!;
       const italianGroup: HTMLElement =
-          voiceSelectionMenu.$.voiceSelectionMenu.querySelector<HTMLElement>(
-              'div[data-test-id="group-it-IT"]')!;
+          voiceSelectionMenu.$.voiceSelectionMenu.get()
+              .querySelector<HTMLElement>('div[data-test-id="group-it-IT"]')!;
 
       const englishDropdownItems: NodeListOf<HTMLElement> =
           englishGroup.querySelectorAll<HTMLButtonElement>(
@@ -166,8 +172,9 @@ suite('VoiceSelectionMenuElement', () => {
 
       test('it displays the display name', () => {
         const englishGroup: HTMLElement =
-            voiceSelectionMenu.$.voiceSelectionMenu.querySelector<HTMLElement>(
-                'div[data-test-id="group-English-United-States"]')!;
+            voiceSelectionMenu.$.voiceSelectionMenu.get()
+                .querySelector<HTMLElement>(
+                    'div[data-test-id="group-English-United-States"]')!;
         const groupNameSpan = englishGroup.querySelector<HTMLElement>('span');
 
         assertEquals(
@@ -176,8 +183,8 @@ suite('VoiceSelectionMenuElement', () => {
 
       test('it defaults to the locale when there is no display name', () => {
         const italianGroup: HTMLElement =
-            voiceSelectionMenu.$.voiceSelectionMenu.querySelector<HTMLElement>(
-                'div[data-test-id="group-it-IT"]')!;
+            voiceSelectionMenu.$.voiceSelectionMenu.get()
+                .querySelector<HTMLElement>('div[data-test-id="group-it-IT"]')!;
         const groupNameSpan = italianGroup.querySelector<HTMLElement>('span');
 
         assertEquals(groupNameSpan!.textContent!.trim(), 'it-IT');
@@ -196,11 +203,11 @@ suite('VoiceSelectionMenuElement', () => {
 
       test('it groups the duplicate languages correctly', () => {
         const usEnglishGroup: HTMLElement =
-            voiceSelectionMenu.$.voiceSelectionMenu.querySelector<HTMLElement>(
-                'div[data-test-id="group-en-US"]')!;
+            voiceSelectionMenu.$.voiceSelectionMenu.get()
+                .querySelector<HTMLElement>('div[data-test-id="group-en-US"]')!;
         const ukEnglishGroup: HTMLElement =
-            voiceSelectionMenu.$.voiceSelectionMenu.querySelector<HTMLElement>(
-                'div[data-test-id="group-en-UK"]')!;
+            voiceSelectionMenu.$.voiceSelectionMenu.get()
+                .querySelector<HTMLElement>('div[data-test-id="group-en-UK"]')!;
 
         const usEnglishDropdownItems: NodeListOf<HTMLElement> =
             usEnglishGroup.querySelectorAll<HTMLButtonElement>(
@@ -287,7 +294,7 @@ function isHiddenWithCss(element: HTMLElement): boolean {
 }
 
 function isPositionedOnPage(element: HTMLElement) {
-  return !!(
-      element.offsetWidth || element.offsetHeight ||
-      element.getClientRects().length);
+  return !!element &&
+      !!(element.offsetWidth || element.offsetHeight ||
+         element.getClientRects().length);
 }
