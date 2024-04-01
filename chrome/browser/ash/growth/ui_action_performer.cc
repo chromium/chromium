@@ -31,8 +31,9 @@ void UiActionPerformer::NotifyDismissed(int campaign_id) {
 }
 
 void UiActionPerformer::NotifyButtonPressed(int campaign_id,
-                                            CampaignButtonId button_id) {
+                                            CampaignButtonId button_id,
+                                            bool should_mark_dismissed) {
   for (auto& observer : observers_) {
-    observer.OnButtonPressed(campaign_id, button_id);
+    observer.OnButtonPressed(campaign_id, button_id, should_mark_dismissed);
   }
 }

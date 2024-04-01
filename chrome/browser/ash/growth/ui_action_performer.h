@@ -29,7 +29,8 @@ class UiActionPerformer : public growth::ActionPerformer {
 
     // Trigger when the button in the UI (if exists) is pressed.
     virtual void OnButtonPressed(int campaign_id,
-                                 CampaignButtonId button_id) = 0;
+                                 CampaignButtonId button_id,
+                                 bool should_mark_dismissed) = 0;
   };
 
   UiActionPerformer();
@@ -41,7 +42,9 @@ class UiActionPerformer : public growth::ActionPerformer {
  protected:
   void NotifyReadyToLogImpression(int campaign_id);
   void NotifyDismissed(int campaign_id);
-  void NotifyButtonPressed(int campaign_id, CampaignButtonId button_id);
+  void NotifyButtonPressed(int campaign_id,
+                           CampaignButtonId button_id,
+                           bool should_mark_dismissed);
 
  private:
   base::ObserverList<Observer> observers_;

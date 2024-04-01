@@ -33,7 +33,7 @@ class MockUiPerformerObserver : public UiActionPerformer::Observer {
 
   MOCK_METHOD(void, OnDismissed, (int), (override));
 
-  MOCK_METHOD(void, OnButtonPressed, (int, CampaignButtonId), (override));
+  MOCK_METHOD(void, OnButtonPressed, (int, CampaignButtonId, bool), (override));
 };
 
 }  // namespace

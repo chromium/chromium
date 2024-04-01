@@ -155,8 +155,12 @@ void CampaignsManagerClientImpl::OnDismissed(int campaign_id) {
 }
 
 void CampaignsManagerClientImpl::OnButtonPressed(int campaign_id,
-                                                 CampaignButtonId button_id) {
+                                                 CampaignButtonId button_id,
+                                                 bool should_mark_dismissed) {
   RecordButtonPressed(campaign_id, button_id);
+  if (!should_mark_dismissed) {
+    return;
+  }
 
   // Notify `kDismissed` event to the Feature Engagement framework. This event
   // will be stored and could be used later.

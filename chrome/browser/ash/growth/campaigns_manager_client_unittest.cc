@@ -199,7 +199,24 @@ TEST_F(CampaignsManagerClientTest, LoadCampaignsComponentFailed) {
 TEST_F(CampaignsManagerClientTest, RecordButtonPressedButton0Id0) {
   int campaign_id = 0;
   CampaignButtonId button_id = CampaignButtonId::kPrimary;
-  campaigns_manager_client_->OnButtonPressed(campaign_id, button_id);
+  campaigns_manager_client_->OnButtonPressed(campaign_id, button_id,
+                                             /*should_mark_dismissed=*/true);
+
+  histogram_tester_.ExpectUniqueSample(kButtonPressedButton0HistogramName500,
+                                       campaign_id,
+                                       /*expected_bucket_count=*/1);
+
+  const std::vector<metrics::structured::Event>& events =
+      metrics_recorder_.GetEvents();
+  ASSERT_EQ(events.size(), 1U);
+  ValidateButtonPressedEvent(events[0], campaign_id, button_id);
+}
+
+TEST_F(CampaignsManagerClientTest, RecordButtonPressedButton0Id0NoDismissal) {
+  int campaign_id = 0;
+  CampaignButtonId button_id = CampaignButtonId::kPrimary;
+  campaigns_manager_client_->OnButtonPressed(campaign_id, button_id,
+                                             /*should_mark_dismissed=*/false);
 
   histogram_tester_.ExpectUniqueSample(kButtonPressedButton0HistogramName500,
                                        campaign_id,
@@ -214,7 +231,8 @@ TEST_F(CampaignsManagerClientTest, RecordButtonPressedButton0Id0) {
 TEST_F(CampaignsManagerClientTest, RecordButtonPressedButton0Id499) {
   int campaign_id = 499;
   CampaignButtonId button_id = CampaignButtonId::kPrimary;
-  campaigns_manager_client_->OnButtonPressed(campaign_id, button_id);
+  campaigns_manager_client_->OnButtonPressed(campaign_id, button_id,
+                                             /*should_mark_dismissed=*/true);
 
   histogram_tester_.ExpectUniqueSample(kButtonPressedButton0HistogramName500,
                                        campaign_id,
@@ -229,7 +247,8 @@ TEST_F(CampaignsManagerClientTest, RecordButtonPressedButton0Id499) {
 TEST_F(CampaignsManagerClientTest, RecordButtonPressedButton0Id500) {
   int campaign_id = 500;
   CampaignButtonId button_id = CampaignButtonId::kPrimary;
-  campaigns_manager_client_->OnButtonPressed(campaign_id, button_id);
+  campaigns_manager_client_->OnButtonPressed(campaign_id, button_id,
+                                             /*should_mark_dismissed=*/true);
 
   histogram_tester_.ExpectUniqueSample(kButtonPressedButton0HistogramName1000,
                                        campaign_id,
@@ -245,8 +264,10 @@ TEST_F(CampaignsManagerClientTest, RecordButtonPressedButton0Id0And500) {
   int campaign_id_0 = 0;
   int campaign_id_500 = 500;
   CampaignButtonId button_id = CampaignButtonId::kPrimary;
-  campaigns_manager_client_->OnButtonPressed(campaign_id_0, button_id);
-  campaigns_manager_client_->OnButtonPressed(campaign_id_500, button_id);
+  campaigns_manager_client_->OnButtonPressed(campaign_id_0, button_id,
+                                             /*should_mark_dismissed=*/true);
+  campaigns_manager_client_->OnButtonPressed(campaign_id_500, button_id,
+                                             /*should_mark_dismissed=*/true);
 
   histogram_tester_.ExpectUniqueSample(kButtonPressedButton0HistogramName500,
                                        campaign_id_0,
@@ -265,7 +286,24 @@ TEST_F(CampaignsManagerClientTest, RecordButtonPressedButton0Id0And500) {
 TEST_F(CampaignsManagerClientTest, RecordButtonPressedButton1Id0) {
   int campaign_id = 0;
   CampaignButtonId button_id = CampaignButtonId::kSecondary;
-  campaigns_manager_client_->OnButtonPressed(campaign_id, button_id);
+  campaigns_manager_client_->OnButtonPressed(campaign_id, button_id,
+                                             /*should_mark_dismissed=*/true);
+
+  histogram_tester_.ExpectUniqueSample(kButtonPressedButton1HistogramName500,
+                                       campaign_id,
+                                       /*expected_bucket_count=*/1);
+
+  const std::vector<metrics::structured::Event>& events =
+      metrics_recorder_.GetEvents();
+  ASSERT_EQ(events.size(), 1U);
+  ValidateButtonPressedEvent(events[0], campaign_id, button_id);
+}
+
+TEST_F(CampaignsManagerClientTest, RecordButtonPressedButton1Id0NoDismissal) {
+  int campaign_id = 0;
+  CampaignButtonId button_id = CampaignButtonId::kSecondary;
+  campaigns_manager_client_->OnButtonPressed(campaign_id, button_id,
+                                             /*should_mark_dismissed=*/false);
 
   histogram_tester_.ExpectUniqueSample(kButtonPressedButton1HistogramName500,
                                        campaign_id,
@@ -280,7 +318,8 @@ TEST_F(CampaignsManagerClientTest, RecordButtonPressedButton1Id0) {
 TEST_F(CampaignsManagerClientTest, RecordButtonPressedButton1Id499) {
   int campaign_id = 499;
   CampaignButtonId button_id = CampaignButtonId::kSecondary;
-  campaigns_manager_client_->OnButtonPressed(campaign_id, button_id);
+  campaigns_manager_client_->OnButtonPressed(campaign_id, button_id,
+                                             /*should_mark_dismissed=*/true);
 
   histogram_tester_.ExpectUniqueSample(kButtonPressedButton1HistogramName500,
                                        campaign_id,
@@ -295,7 +334,8 @@ TEST_F(CampaignsManagerClientTest, RecordButtonPressedButton1Id499) {
 TEST_F(CampaignsManagerClientTest, RecordButtonPressedButton1Id500) {
   int campaign_id = 500;
   CampaignButtonId button_id = CampaignButtonId::kSecondary;
-  campaigns_manager_client_->OnButtonPressed(campaign_id, button_id);
+  campaigns_manager_client_->OnButtonPressed(campaign_id, button_id,
+                                             /*should_mark_dismissed=*/true);
 
   histogram_tester_.ExpectUniqueSample(kButtonPressedButton1HistogramName1000,
                                        campaign_id,
@@ -311,8 +351,10 @@ TEST_F(CampaignsManagerClientTest, RecordButtonPressedButton1Id0And500) {
   int campaign_id_0 = 0;
   int campaign_id_500 = 500;
   CampaignButtonId button_id = CampaignButtonId::kSecondary;
-  campaigns_manager_client_->OnButtonPressed(campaign_id_0, button_id);
-  campaigns_manager_client_->OnButtonPressed(campaign_id_500, button_id);
+  campaigns_manager_client_->OnButtonPressed(campaign_id_0, button_id,
+                                             /*should_mark_dismissed=*/true);
+  campaigns_manager_client_->OnButtonPressed(campaign_id_500, button_id,
+                                             /*should_mark_dismissed=*/true);
 
   histogram_tester_.ExpectUniqueSample(kButtonPressedButton1HistogramName500,
                                        campaign_id_0,

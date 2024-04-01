@@ -38,6 +38,7 @@ constexpr char kPrimaryButtonPath[] = "primaryButton";
 constexpr char kSecondaryButtonPath[] = "secondaryButton";
 constexpr char kLabelPath[] = "label";
 constexpr char kActionPath[] = "action";
+constexpr char kMarkDismissedPath[] = "shouldMarkDismissed";
 constexpr char kArrowPath[] = "arrow";
 constexpr char kAnchorPath[] = "anchor";
 constexpr char kActiveAppWindowAnchorTypePath[] =
@@ -351,12 +352,17 @@ void ShowNudgeActionPerformer::MaybeSetButtonData(
     return;
   }
 
+  // Default value of `should_mark_dismissed` is false if this is not
+  // configurated.
+  const auto mark_dismissed = button_dict->FindBool(kMarkDismissedPath);
+  bool should_mark_dismissed = mark_dismissed.value_or(false);
+
   auto button_text = base::UTF8ToUTF16(*button_text_value);
   auto callback = base::BindRepeating(
       &ShowNudgeActionPerformer::OnNudgeButtonClicked,
       weak_ptr_factory_.GetWeakPtr(), campaign_id,
       is_primary ? CampaignButtonId::kPrimary : CampaignButtonId::kSecondary,
-      action);
+      action, should_mark_dismissed);
   if (is_primary) {
     nudge_data.primary_button_text = button_text;
     nudge_data.primary_button_callback = callback;
@@ -369,8 +375,9 @@ void ShowNudgeActionPerformer::MaybeSetButtonData(
 void ShowNudgeActionPerformer::OnNudgeButtonClicked(
     int campaign_id,
     CampaignButtonId button_id,
-    const base::Value::Dict* action_dict) {
-  NotifyButtonPressed(campaign_id, button_id);
+    const base::Value::Dict* action_dict,
+    bool should_mark_dismissed) {
+  NotifyButtonPressed(campaign_id, button_id, should_mark_dismissed);
 
   if (!action_dict) {
     return;

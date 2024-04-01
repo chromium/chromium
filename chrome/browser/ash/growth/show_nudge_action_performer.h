@@ -42,7 +42,8 @@ class ShowNudgeActionPerformer : public UiActionPerformer,
                           bool is_primary);
   void OnNudgeButtonClicked(int campaign_id,
                             CampaignButtonId button_id,
-                            const base::Value::Dict* action_dict);
+                            const base::Value::Dict* action_dict,
+                            bool should_mark_dismissed);
   void OnNudgeDismissed(int campaign_id);
   void CancelNudge();
 
