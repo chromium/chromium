@@ -7,6 +7,10 @@
     width: 100%;
   }
 
+  #seaPenImagesHeading {
+    padding-top: 14px;
+  }
+
   .thumbnail-item-container,
   .thumbnail-placeholder-container {
     box-sizing: border-box;
@@ -194,7 +198,7 @@
     </div>
   </template>
   <template is="dom-if" if="[[shouldShowImageThumbnails_(thumbnailsLoading_, thumbnails_)]]" restamp>
-    <h2 class="wallpaper-collections-heading">
+    <h2 id="seaPenImagesHeading" class="wallpaper-collections-heading">
       [[getPoweredByGoogleMessage_()]]
     </h2>
     <iron-list id="grid"
