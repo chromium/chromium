@@ -74,6 +74,19 @@
 <h2>Recognition confidence</h2>
 <div class="settings-box first">
   <div class="start settings-box-text" aria-hidden="true">
+    Brow inner up
+  </div>
+  <settings-slider
+    id="[[browInnerUpSlider]]"
+    pref="{{browInnerUpPref_}}"
+    min="1" max="100"
+    label-aria="Brow inner up"
+    label-min="$i18n{sliderLabel1}"
+    label-max="$i18n{sliderLabel100}">
+  </settings-slider>
+</div>
+<div class="settings-box first">
+  <div class="start settings-box-text" aria-hidden="true">
     Brows down
   </div>
   <settings-slider
@@ -87,26 +100,39 @@
 </div>
 <div class="settings-box first">
   <div class="start settings-box-text" aria-hidden="true">
-    Brows inner up
+    Squint left eye
   </div>
   <settings-slider
-    id="[[browInnerUpSlider]]"
-    pref="{{browInnerUpPref_}}"
+    id="[[eyeSquintLeftSlider_]]"
+    pref="{{eyeSquintLeftPref_}}"
     min="1" max="100"
-    label-aria="Brows inner up"
+    label-aria="Squint left eye"
     label-min="$i18n{sliderLabel1}"
     label-max="$i18n{sliderLabel100}">
   </settings-slider>
 </div>
 <div class="settings-box first">
   <div class="start settings-box-text" aria-hidden="true">
-    Eyes look up
+    Squint right eye
   </div>
   <settings-slider
-    id="[[eyesLookUpSlider]]"
-    pref="{{eyesLookUpPref_}}"
+    id="[[eyeSquintRightSlider_]]"
+    pref="{{eyeSquintRightPref_}}"
     min="1" max="100"
-    label-aria="Eyes look up"
+    label-aria="Squint right eye"
+    label-min="$i18n{sliderLabel1}"
+    label-max="$i18n{sliderLabel100}">
+  </settings-slider>
+</div>
+<div class="settings-box first">
+  <div class="start settings-box-text" aria-hidden="true">
+    Eyes blink
+  </div>
+  <settings-slider
+    id="[[eyesBlinkSlider]]"
+    pref="{{eyesBlinkPref_}}"
+    min="1" max="100"
+    label-aria="Eyes blink"
     label-min="$i18n{sliderLabel1}"
     label-max="$i18n{sliderLabel100}">
   </settings-slider>
@@ -120,6 +146,45 @@
     pref="{{eyesLookDownPref_}}"
     min="1" max="100"
     label-aria="Eyes look down"
+    label-min="$i18n{sliderLabel1}"
+    label-max="$i18n{sliderLabel100}">
+  </settings-slider>
+</div>
+<div class="settings-box first">
+  <div class="start settings-box-text" aria-hidden="true">
+    Eyes look left
+  </div>
+  <settings-slider
+    id="[[eyesLookLeftSlider]]"
+    pref="{{eyesLookLeftPref_}}"
+    min="1" max="100"
+    label-aria="Eyes look left"
+    label-min="$i18n{sliderLabel1}"
+    label-max="$i18n{sliderLabel100}">
+  </settings-slider>
+</div>
+<div class="settings-box first">
+  <div class="start settings-box-text" aria-hidden="true">
+    Eyes look right
+  </div>
+  <settings-slider
+    id="[[eyesLookRightSlider]]"
+    pref="{{eyesLookRightPref_}}"
+    min="1" max="100"
+    label-aria="Eyes look right"
+    label-min="$i18n{sliderLabel1}"
+    label-max="$i18n{sliderLabel100}">
+  </settings-slider>
+</div>
+<div class="settings-box first">
+  <div class="start settings-box-text" aria-hidden="true">
+    Eyes look up
+  </div>
+  <settings-slider
+    id="[[eyesLookUpSlider]]"
+    pref="{{eyesLookUpPref_}}"
+    min="1" max="100"
+    label-aria="Eyes look up"
     label-min="$i18n{sliderLabel1}"
     label-max="$i18n{sliderLabel100}">
   </settings-slider>
@@ -152,6 +217,19 @@
 </div>
 <div class="settings-box first">
   <div class="start settings-box-text" aria-hidden="true">
+    Mouth pucker
+  </div>
+  <settings-slider
+    id="[[mouthPuckerSlider]]"
+    pref="{{mouthPuckerPref_}}"
+    min="1" max="100"
+    label-aria="Mouth pucker"
+    label-min="$i18n{sliderLabel1}"
+    label-max="$i18n{sliderLabel100}">
+  </settings-slider>
+</div>
+<div class="settings-box first">
+  <div class="start settings-box-text" aria-hidden="true">
     Mouth right
   </div>
   <settings-slider
@@ -165,13 +243,26 @@
 </div>
 <div class="settings-box first">
   <div class="start settings-box-text" aria-hidden="true">
-    Mouth pucker
+    Mouth smile
   </div>
   <settings-slider
-    id="[[mouthPuckerSlider]]"
-    pref="{{mouthPuckerPref_}}"
+    id="[[mouthSmileSlider]]"
+    pref="{{mouthSmilePref_}}"
     min="1" max="100"
-    label-aria="Mouth pucker"
+    label-aria="Mouth smile"
+    label-min="$i18n{sliderLabel1}"
+    label-max="$i18n{sliderLabel100}">
+  </settings-slider>
+</div>
+<div class="settings-box first">
+  <div class="start settings-box-text" aria-hidden="true">
+    Mouth upper up
+  </div>
+  <settings-slider
+    id="[[mouthUpperUpSlider]]"
+    pref="{{mouthUpperUpPref_}}"
+    min="1" max="100"
+    label-aria="Mouth upper up"
     label-min="$i18n{sliderLabel1}"
     label-max="$i18n{sliderLabel100}">
   </settings-slider>

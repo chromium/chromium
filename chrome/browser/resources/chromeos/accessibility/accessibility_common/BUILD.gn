@@ -71,6 +71,9 @@ ts_modules = [
   "magnifier/magnifier.ts",
 ]
 
+# The relative path in the staging directory of TS modules that need to be copied from another directory.
+copied_ts_modules = [ "facegaze/facial_gestures.ts" ]
+
 ts_definitions = [
   "$mediapipe_dir/vision.d.ts",
   "dictation/parse/pumpkin/pumpkin_tagger_externs.d.ts",
@@ -106,6 +109,7 @@ ts_library("ts_build") {
   # Targets that need to run before running the TS build.
   extra_deps = [
     #copied files
+    ":copy_ash_common_files",
     ":stage_ts_build",
   ]
 
@@ -123,7 +127,7 @@ ts_library("ts_build") {
 
   definitions = ts_definitions
 
-  in_files = js_modules + ts_modules
+  in_files = js_modules + ts_modules + copied_ts_modules
 
   tsconfig_base = "../tsconfig.base.json"
 }
@@ -170,6 +174,11 @@ copy("copy_mediapipe_files") {
 copy("stage_ts_build") {
   sources = js_modules + ts_modules
   outputs = [ "$ts_build_staging_dir/{{source_target_relative}}" ]
+}
+
+copy("copy_ash_common_files") {
+  sources = [ "//ash/webui/common/resources/accessibility/facial_gestures.ts" ]
+  outputs = [ "$ts_build_staging_dir/facegaze/facial_gestures.ts" ]
 }
 
 source_set("browser_tests") {

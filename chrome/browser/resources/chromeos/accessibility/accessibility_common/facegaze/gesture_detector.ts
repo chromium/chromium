@@ -5,37 +5,33 @@
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 import type {FaceLandmarkerResult} from '/third_party/mediapipe/vision.js';
 
-/**
- * The facial gestures that are supported by FaceGaze. New values should also
- * be added to FacialGesturesToMediapipeGestures.
- * Note that these correspond to values in
- * facegaze_facial_expression_subpage.ts, and if these values get changed, those
- * should too.
- */
-export enum FacialGesture {
-  BROWS_DOWN = 'browsDown',
-  BROW_INNER_UP = 'browInnerUp',
-  EYES_LOOK_DOWN = 'eyesLookDown',
-  EYES_LOOK_UP = 'eyesLookUp',
-  JAW_OPEN = 'jawOpen',
-  MOUTH_LEFT = 'mouthLeft',
-  MOUTH_PUCKER = 'mouthPucker',
-  MOUTH_RIGHT = 'mouthRight',
-}
+import {FacialGesture} from './facial_gestures.js';
 
 /** Facial gestures recognized by Mediapipe. */
 export enum MediapipeFacialGesture {
   BROW_DOWN_LEFT = 'browDownLeft',
   BROW_DOWN_RIGHT = 'browDownRight',
   BROW_INNER_UP = 'browInnerUp',
+  EYE_BLINK_LEFT = 'eyeBlinkLeft',
+  EYE_BLINK_RIGHT = 'eyeBlinkRight',
   EYE_LOOK_DOWN_LEFT = 'eyeLookDownLeft',
   EYE_LOOK_DOWN_RIGHT = 'eyeLookDownRight',
+  EYE_LOOK_IN_LEFT = 'eyeLookInLeft',
+  EYE_LOOK_IN_RIGHT = 'eyeLookInRight',
+  EYE_LOOK_OUT_LEFT = 'eyeLookOutLeft',
+  EYE_LOOK_OUT_RIGHT = 'eyeLookOutRight',
   EYE_LOOK_UP_LEFT = 'eyeLookUpLeft',
   EYE_LOOK_UP_RIGHT = 'eyeLookUpRight',
+  EYE_SQUINT_LEFT = 'eyeSquintLeft',
+  EYE_SQUINT_RIGHT = 'eyeSquintRight',
   JAW_OPEN = 'jawOpen',
   MOUTH_LEFT = 'mouthLeft',
   MOUTH_PUCKER = 'mouthPucker',
   MOUTH_RIGHT = 'mouthRight',
+  MOUTH_SMILE_LEFT = 'mouthSmileLeft',
+  MOUTH_SMILE_RIGHT = 'mouthSmileRight',
+  MOUTH_UPPER_UP_LEFT = 'mouthUpperUpLeft',
+  MOUTH_UPPER_UP_RIGHT = 'mouthUpperUpRight',
 }
 
 /**
@@ -43,6 +39,7 @@ export enum MediapipeFacialGesture {
  * compound gestures.
  */
 export const FacialGesturesToMediapipeGestures = new Map([
+  [FacialGesture.BROW_INNER_UP, [MediapipeFacialGesture.BROW_INNER_UP]],
   [
     FacialGesture.BROWS_DOWN,
     [
@@ -50,11 +47,15 @@ export const FacialGesturesToMediapipeGestures = new Map([
       MediapipeFacialGesture.BROW_DOWN_RIGHT,
     ],
   ],
-  [FacialGesture.BROW_INNER_UP, [MediapipeFacialGesture.BROW_INNER_UP]],
-  [FacialGesture.JAW_OPEN, [MediapipeFacialGesture.JAW_OPEN]],
-  [FacialGesture.MOUTH_LEFT, [MediapipeFacialGesture.MOUTH_LEFT]],
-  [FacialGesture.MOUTH_RIGHT, [MediapipeFacialGesture.MOUTH_RIGHT]],
-  [FacialGesture.MOUTH_PUCKER, [MediapipeFacialGesture.MOUTH_PUCKER]],
+  [FacialGesture.EYE_SQUINT_LEFT, [MediapipeFacialGesture.EYE_SQUINT_LEFT]],
+  [FacialGesture.EYE_SQUINT_RIGHT, [MediapipeFacialGesture.EYE_SQUINT_RIGHT]],
+  [
+    FacialGesture.EYES_BLINK,
+    [
+      MediapipeFacialGesture.EYE_BLINK_LEFT,
+      MediapipeFacialGesture.EYE_BLINK_RIGHT,
+    ],
+  ],
   [
     FacialGesture.EYES_LOOK_DOWN,
     [
@@ -63,10 +64,42 @@ export const FacialGesturesToMediapipeGestures = new Map([
     ],
   ],
   [
+    FacialGesture.EYES_LOOK_LEFT,
+    [
+      MediapipeFacialGesture.EYE_LOOK_OUT_LEFT,
+      MediapipeFacialGesture.EYE_LOOK_IN_RIGHT,
+    ],
+  ],
+  [
+    FacialGesture.EYES_LOOK_RIGHT,
+    [
+      MediapipeFacialGesture.EYE_LOOK_OUT_RIGHT,
+      MediapipeFacialGesture.EYE_LOOK_IN_LEFT,
+    ],
+  ],
+  [
     FacialGesture.EYES_LOOK_UP,
     [
       MediapipeFacialGesture.EYE_LOOK_UP_LEFT,
       MediapipeFacialGesture.EYE_LOOK_UP_RIGHT,
+    ],
+  ],
+  [FacialGesture.JAW_OPEN, [MediapipeFacialGesture.JAW_OPEN]],
+  [FacialGesture.MOUTH_LEFT, [MediapipeFacialGesture.MOUTH_LEFT]],
+  [FacialGesture.MOUTH_PUCKER, [MediapipeFacialGesture.MOUTH_PUCKER]],
+  [FacialGesture.MOUTH_RIGHT, [MediapipeFacialGesture.MOUTH_RIGHT]],
+  [
+    FacialGesture.MOUTH_SMILE,
+    [
+      MediapipeFacialGesture.MOUTH_SMILE_LEFT,
+      MediapipeFacialGesture.MOUTH_SMILE_RIGHT,
+    ],
+  ],
+  [
+    FacialGesture.MOUTH_UPPER_UP,
+    [
+      MediapipeFacialGesture.MOUTH_UPPER_UP_LEFT,
+      MediapipeFacialGesture.MOUTH_UPPER_UP_RIGHT,
     ],
   ],
 ]);

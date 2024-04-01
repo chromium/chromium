@@ -9,7 +9,8 @@ import {ToggleDictationMacro} from '/common/action_fulfillment/macros/toggle_dic
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 import type {FaceLandmarkerResult} from '/third_party/mediapipe/vision.js';
 
-import {FacialGesture, GestureDetector} from './gesture_detector.js';
+import {FacialGesture} from './facial_gestures.js';
+import {GestureDetector} from './gesture_detector.js';
 import {ResetCursorMacro} from './macros/reset_cursor_macro.js';
 import {MouseController} from './mouse_controller.js';
 
