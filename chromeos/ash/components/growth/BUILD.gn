@@ -69,6 +69,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   deps = [
+    ":config_provider",
     ":growth",
     ":test_support",
     "//ash/constants",
@@ -79,5 +80,8 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
-  sources = [ "campaigns_manager_unittest.cc" ]
+  sources = [
+    "campaigns_configuration_provider_unittest.cc",
+    "campaigns_manager_unittest.cc",
+  ]
 }

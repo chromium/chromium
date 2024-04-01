@@ -5,6 +5,9 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_GROWTH_CAMPAIGNS_CONFIGURATION_PROVIDER_H_
 #define CHROMEOS_ASH_COMPONENTS_GROWTH_CAMPAIGNS_CONFIGURATION_PROVIDER_H_
 
+#include <map>
+#include <string>
+
 #include "base/component_export.h"
 #include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/configuration_provider.h"
@@ -30,6 +33,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH_CONFIG_PROVIDER)
   const char* GetConfigurationSourceDescription() const override;
   std::set<std::string> MaybeProvideAllowedEventPrefixes(
       const base::Feature& feature) const override;
+
+  // Set config by a map of params.
+  void SetConfig(std::map<std::string, std::string> params);
 
  private:
   void SetConfig(const feature_engagement::FeatureConfig& config);

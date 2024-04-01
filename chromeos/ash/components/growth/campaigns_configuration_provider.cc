@@ -4,10 +4,13 @@
 
 #include "chromeos/ash/components/growth/campaigns_configuration_provider.h"
 
+#include <cstring>
+
 #include "base/feature_list.h"
 #include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/feature_list.h"
+#include "components/feature_engagement/public/field_trial_utils.h"
 #include "components/feature_engagement/public/group_list.h"
 
 namespace growth {
@@ -50,7 +53,9 @@ bool CampaignsConfigurationProvider::MaybeProvideFeatureConfiguration(
     feature_engagement::FeatureConfig& config,
     const feature_engagement::FeatureVector& known_features,
     const feature_engagement::GroupVector& known_groups) const {
-  if (feature_engagement::kIPHGrowthFramework.name != feature.name) {
+  // Skip if it is not growth framework feature.
+  if (std::strcmp((&feature_engagement::kIPHGrowthFramework)->name,
+                  feature.name)) {
     return false;
   }
 
@@ -67,11 +72,30 @@ const char* CampaignsConfigurationProvider::GetConfigurationSourceDescription()
 std::set<std::string>
 CampaignsConfigurationProvider::MaybeProvideAllowedEventPrefixes(
     const base::Feature& feature) const {
-  if (feature_engagement::kIPHGrowthFramework.name == feature.name) {
-    return {kGrowthCampaignsEventNamePrefix};
+  // TODO: b/332040194 - Add kIPHGrowthFramework to the kAllFeatures.
+  if (std::strcmp(
+          (&feature_engagement::kIPHScalableIphHelpAppBasedNudgeFeature)->name,
+          feature.name)) {
+    return {};
   }
 
-  return {};
+  return {kGrowthCampaignsEventNamePrefix};
+}
+
+void CampaignsConfigurationProvider::SetConfig(
+    std::map<std::string, std::string> params) {
+  config_ = feature_engagement::FeatureConfig();
+  uint32_t parse_errors = 0;
+  feature_engagement::ConfigParseOutput output(parse_errors);
+  output.trigger = &config_.trigger;
+  output.used = &config_.used;
+  output.event_configs = &config_.event_configs;
+
+  feature_engagement::ParseConfigFields(
+      &feature_engagement::kIPHGrowthFramework, params, output,
+      /*known_features=*/{},
+      /*known_groups=*/{});
+  config_.valid = parse_errors == 0;
 }
 
 void CampaignsConfigurationProvider::SetConfig(
