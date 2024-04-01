@@ -30,6 +30,7 @@ class NearbyExpirationScheduler : public NearbySchedulerBase {
                             const std::string& pref_name,
                             PrefService* pref_service,
                             OnRequestCallback on_request_callback,
+                            Feature logging_feature,
                             const base::Clock* clock);
 
   ~NearbyExpirationScheduler() override;

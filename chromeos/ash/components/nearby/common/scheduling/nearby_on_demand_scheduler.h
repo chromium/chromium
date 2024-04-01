@@ -22,6 +22,7 @@ class NearbyOnDemandScheduler : public NearbySchedulerBase {
                           const std::string& pref_name,
                           PrefService* pref_service,
                           OnRequestCallback callback,
+                          Feature logging_feature,
                           const base::Clock* clock);
 
   ~NearbyOnDemandScheduler() override;

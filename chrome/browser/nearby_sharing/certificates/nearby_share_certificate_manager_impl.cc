@@ -322,6 +322,7 @@ NearbyShareCertificateManagerImpl::NearbyShareCertificateManagerImpl(
               base::BindRepeating(&NearbyShareCertificateManagerImpl::
                                       AttemptPrivateCertificateRefresh,
                                   base::Unretained(this)),
+              Feature::NS,
               clock_)),
       public_certificate_expiration_scheduler_(
           ash::nearby::NearbySchedulerFactory::CreateExpirationScheduler(
@@ -335,6 +336,7 @@ NearbyShareCertificateManagerImpl::NearbyShareCertificateManagerImpl(
               base::BindRepeating(&NearbyShareCertificateManagerImpl::
                                       OnPublicCertificateExpiration,
                                   base::Unretained(this)),
+              Feature::NS,
               clock_)),
       upload_local_device_certificates_scheduler_(
           ash::nearby::NearbySchedulerFactory::CreateOnDemandScheduler(
@@ -346,6 +348,7 @@ NearbyShareCertificateManagerImpl::NearbyShareCertificateManagerImpl(
               base::BindRepeating(&NearbyShareCertificateManagerImpl::
                                       OnLocalDeviceCertificateUploadRequest,
                                   base::Unretained(this)),
+              Feature::NS,
               clock_)),
       download_public_certificates_scheduler_(
           ash::nearby::NearbySchedulerFactory::CreatePeriodicScheduler(
@@ -360,6 +363,7 @@ NearbyShareCertificateManagerImpl::NearbyShareCertificateManagerImpl(
                                   /*page_token=*/std::nullopt,
                                   /*page_number=*/1,
                                   /*certificate_count=*/0),
+              Feature::NS,
               clock_)) {
   local_device_data_manager_->AddObserver(this);
   contact_manager_->AddObserver(this);

@@ -52,7 +52,8 @@ class NearbyExpirationSchedulerTest : public ::testing::Test {
             &NearbyExpirationSchedulerTest::TestExpirationTimeFunctor,
             base::Unretained(this)),
         /*retry_failures=*/true, /*require_connectivity=*/true, kTestPrefName,
-        &pref_service_, base::DoNothing(), task_environment_.GetMockClock());
+        &pref_service_, base::DoNothing(), Feature::NS,
+        task_environment_.GetMockClock());
   }
 
   std::optional<base::Time> TestExpirationTimeFunctor() {

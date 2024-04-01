@@ -215,7 +215,8 @@ NearbyShareContactManagerImpl::NearbyShareContactManagerImpl(
               pref_service_,
               base::BindRepeating(&NearbyShareContactManagerImpl::
                                       OnPeriodicContactsUploadRequested,
-                                  base::Unretained(this)))),
+                                  base::Unretained(this)),
+              Feature::NS)),
       contact_download_and_upload_scheduler_(
           ash::nearby::NearbySchedulerFactory::CreatePeriodicScheduler(
               kContactDownloadPeriod,
@@ -225,7 +226,8 @@ NearbyShareContactManagerImpl::NearbyShareContactManagerImpl(
               pref_service_,
               base::BindRepeating(
                   &NearbyShareContactManagerImpl::OnContactsDownloadRequested,
-                  base::Unretained(this)))) {}
+                  base::Unretained(this)),
+              Feature::NS)) {}
 
 NearbyShareContactManagerImpl::~NearbyShareContactManagerImpl() = default;
 

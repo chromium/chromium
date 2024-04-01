@@ -38,7 +38,8 @@ class NearbyOnDemandSchedulerTest : public ::testing::Test {
 
     scheduler_ = std::make_unique<NearbyOnDemandScheduler>(
         /*retry_failures=*/true, /*require_connectivity=*/true, kTestPrefName,
-        &pref_service_, base::DoNothing(), task_environment_.GetMockClock());
+        &pref_service_, base::DoNothing(), Feature::NS,
+        task_environment_.GetMockClock());
   }
 
   NearbyScheduler* scheduler() { return scheduler_.get(); }

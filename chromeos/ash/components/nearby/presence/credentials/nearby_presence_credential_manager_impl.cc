@@ -199,7 +199,7 @@ NearbyPresenceCredentialManagerImpl::NearbyPresenceCredentialManagerImpl(
           base::BindRepeating(
               &NearbyPresenceCredentialManagerImpl::StartDailySync,
               weak_ptr_factory_.GetWeakPtr()),
-          base::DefaultClock::GetInstance());
+          Feature::NEARBY_INFRA, base::DefaultClock::GetInstance());
   daily_credential_sync_scheduler_->Start();
 }
 
@@ -224,7 +224,7 @@ void NearbyPresenceCredentialManagerImpl::RegisterPresence(
           base::BindRepeating(
               &NearbyPresenceCredentialManagerImpl::StartFirstTimeRegistration,
               weak_ptr_factory_.GetWeakPtr()),
-          base::DefaultClock::GetInstance());
+          Feature::NEARBY_INFRA, base::DefaultClock::GetInstance());
   first_time_registration_on_demand_scheduler_->Start();
   first_time_registration_on_demand_scheduler_->MakeImmediateRequest();
 }
@@ -718,7 +718,7 @@ void NearbyPresenceCredentialManagerImpl::ScheduleUploadCredentials(
               &NearbyPresenceCredentialManagerImpl::UploadCredentials,
               weak_ptr_factory_.GetWeakPtr(), proto_shared_credentials,
               std::move(on_upload)),
-          base::DefaultClock::GetInstance());
+          Feature::NEARBY_INFRA, base::DefaultClock::GetInstance());
   upload_on_demand_scheduler_->Start();
   upload_on_demand_scheduler_->MakeImmediateRequest();
 }
@@ -735,7 +735,7 @@ void NearbyPresenceCredentialManagerImpl::ScheduleDownloadCredentials(
           base::BindRepeating(
               &NearbyPresenceCredentialManagerImpl::DownloadCredentials,
               weak_ptr_factory_.GetWeakPtr(), std::move(on_download)),
-          base::DefaultClock::GetInstance());
+          Feature::NEARBY_INFRA, base::DefaultClock::GetInstance());
   download_on_demand_scheduler_->Start();
   download_on_demand_scheduler_->MakeImmediateRequest();
 }

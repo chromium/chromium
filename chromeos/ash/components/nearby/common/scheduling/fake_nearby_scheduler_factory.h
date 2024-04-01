@@ -38,6 +38,7 @@ class FakeNearbySchedulerFactory : public NearbySchedulerFactory {
     bool retry_failures;
     bool require_connectivity;
     raw_ptr<PrefService, DanglingUntriaged> pref_service = nullptr;
+    Feature logging_feature;
     raw_ptr<const base::Clock> clock = nullptr;
   };
 
@@ -46,6 +47,7 @@ class FakeNearbySchedulerFactory : public NearbySchedulerFactory {
     bool retry_failures;
     bool require_connectivity;
     raw_ptr<PrefService, DanglingUntriaged> pref_service = nullptr;
+    Feature logging_feature;
     raw_ptr<const base::Clock> clock = nullptr;
   };
 
@@ -55,6 +57,7 @@ class FakeNearbySchedulerFactory : public NearbySchedulerFactory {
     bool retry_failures;
     bool require_connectivity;
     raw_ptr<PrefService, DanglingUntriaged> pref_service = nullptr;
+    Feature logging_feature;
     raw_ptr<const base::Clock> clock = nullptr;
   };
 
@@ -85,6 +88,7 @@ class FakeNearbySchedulerFactory : public NearbySchedulerFactory {
       const std::string& pref_name,
       PrefService* pref_service,
       NearbyScheduler::OnRequestCallback on_request_callback,
+      Feature logging_feature,
       const base::Clock* clock) override;
   std::unique_ptr<NearbyScheduler> CreateOnDemandSchedulerInstance(
       bool retry_failures,
@@ -92,6 +96,7 @@ class FakeNearbySchedulerFactory : public NearbySchedulerFactory {
       const std::string& pref_name,
       PrefService* pref_service,
       NearbyScheduler::OnRequestCallback callback,
+      Feature logging_feature,
       const base::Clock* clock) override;
   std::unique_ptr<NearbyScheduler> CreatePeriodicSchedulerInstance(
       base::TimeDelta request_period,
@@ -100,6 +105,7 @@ class FakeNearbySchedulerFactory : public NearbySchedulerFactory {
       const std::string& pref_name,
       PrefService* pref_service,
       NearbyScheduler::OnRequestCallback callback,
+      Feature logging_feature,
       const base::Clock* clock) override;
 
   std::map<std::string, ExpirationInstance> pref_name_to_expiration_instance_;

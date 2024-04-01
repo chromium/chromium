@@ -105,7 +105,8 @@ NearbyShareLocalDeviceDataManagerImpl::NearbyShareLocalDeviceDataManagerImpl(
               pref_service_,
               base::BindRepeating(&NearbyShareLocalDeviceDataManagerImpl::
                                       OnDownloadDeviceDataRequested,
-                                  base::Unretained(this)))) {}
+                                  base::Unretained(this)),
+              Feature::NS)) {}
 
 NearbyShareLocalDeviceDataManagerImpl::
     ~NearbyShareLocalDeviceDataManagerImpl() = default;

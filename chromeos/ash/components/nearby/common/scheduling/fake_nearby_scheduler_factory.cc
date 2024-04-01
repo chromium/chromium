@@ -27,12 +27,14 @@ FakeNearbySchedulerFactory::CreateExpirationSchedulerInstance(
     const std::string& pref_name,
     PrefService* pref_service,
     NearbyScheduler::OnRequestCallback on_request_callback,
+    Feature logging_feature,
     const base::Clock* clock) {
   ExpirationInstance instance;
   instance.expiration_time_functor = std::move(expiration_time_functor);
   instance.retry_failures = retry_failures;
   instance.require_connectivity = require_connectivity;
   instance.pref_service = pref_service;
+  instance.logging_feature = logging_feature;
   instance.clock = clock;
 
   auto scheduler =
@@ -52,11 +54,13 @@ FakeNearbySchedulerFactory::CreateOnDemandSchedulerInstance(
     const std::string& pref_name,
     PrefService* pref_service,
     NearbyScheduler::OnRequestCallback callback,
+    Feature logging_feature,
     const base::Clock* clock) {
   OnDemandInstance instance;
   instance.retry_failures = retry_failures;
   instance.require_connectivity = require_connectivity;
   instance.pref_service = pref_service;
+  instance.logging_feature = logging_feature;
   instance.clock = clock;
 
   auto scheduler = std::make_unique<FakeNearbyScheduler>(std::move(callback));
@@ -76,12 +80,14 @@ FakeNearbySchedulerFactory::CreatePeriodicSchedulerInstance(
     const std::string& pref_name,
     PrefService* pref_service,
     NearbyScheduler::OnRequestCallback callback,
+    Feature logging_feature,
     const base::Clock* clock) {
   PeriodicInstance instance;
   instance.request_period = request_period;
   instance.retry_failures = retry_failures;
   instance.require_connectivity = require_connectivity;
   instance.pref_service = pref_service;
+  instance.logging_feature = logging_feature;
   instance.clock = clock;
 
   auto scheduler = std::make_unique<FakeNearbyScheduler>(std::move(callback));
