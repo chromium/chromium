@@ -87,6 +87,8 @@ static_library("arc") {
     "net/arc_net_host_impl.h",
     "net/arc_net_utils.cc",
     "net/arc_net_utils.h",
+    "net/arc_wifi_host_impl.cc",
+    "net/arc_wifi_host_impl.h",
     "net/browser_url_opener.cc",
     "net/browser_url_opener.h",
     "net/cert_manager.h",
