@@ -668,12 +668,11 @@ public class ToolbarManager
         mTopUiThemeColorProvider = topUiThemeColorProvider;
         mTopUiThemeColorProvider.addThemeColorObserver(this);
 
+        final boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
         mAppThemeColorProvider =
                 new AppThemeColorProvider(
                         /* context= */ mActivity,
-                        ToolbarFeatures.isTabStripWindowLayoutOptimizationEnabled()
-                                        && DeviceFormFactor.isNonMultiDisplayContextOnTablet(
-                                                mActivity)
+                        ToolbarFeatures.isTabStripWindowLayoutOptimizationEnabled(isTablet)
                                 ? mActivityLifecycleDispatcher
                                 : null);
         // Observe tint changes to update sub-components that rely on the tint (crbug.com/1077684).
@@ -710,9 +709,7 @@ public class ToolbarManager
         assert controlsVisibilityDelegate != null;
         mControlsVisibilityDelegate = controlsVisibilityDelegate;
         ThemeColorProvider browsingModeThemeColorProvider =
-                DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)
-                        ? mAppThemeColorProvider
-                        : mTopUiThemeColorProvider;
+                isTablet ? mAppThemeColorProvider : mTopUiThemeColorProvider;
         ThemeColorProvider overviewModeThemeColorProvider = mAppThemeColorProvider;
 
         Runnable requestFocusRunnable = compositorViewHolder::requestFocus;
@@ -884,8 +881,7 @@ public class ToolbarManager
             toolbarLayout.setLocationBarCoordinator(locationBarCoordinator);
             toolbarLayout.setBrowserControlsVisibilityDelegate(mControlsVisibilityDelegate);
             mLocationBar = locationBarCoordinator;
-            if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)
-                    && ChromeFeatureList.sDragDropIntoOmnibox.isEnabled()) {
+            if (isTablet && ChromeFeatureList.sDragDropIntoOmnibox.isEnabled()) {
                 ViewStub targetViewStub =
                         ((ViewStub) mActivity.findViewById(R.id.target_view_stub));
                 assert targetViewStub != null;

@@ -521,7 +521,7 @@ public class StripLayoutHelperManager
                 lifecycleDispatcher.getCurrentActivityState() <= ActivityState.RESUMED_WITH_NATIVE
                         || lifecycleDispatcher.getCurrentActivityState() == ActivityState.DESTROYED;
 
-        if (ToolbarFeatures.isTabStripWindowLayoutOptimizationEnabled()) {
+        if (ToolbarFeatures.isTabStripWindowLayoutOptimizationEnabled(/* isTablet= */ true)) {
             // Add some large margins to tab strip when flag enabled.
             // TODO(crbug/325351108): Introducing external callers and remove this call.
             updateHorizontalPaddings(

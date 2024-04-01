@@ -44,7 +44,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Features.JUnitProcessor;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
@@ -54,6 +53,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabObscuringHandler.Target;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
+import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.top.TabStripTransitionCoordinator.TabStripHeightObserver;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.resources.Resource;
@@ -242,8 +242,8 @@ public class TabStripTransitionCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
     public void hideTabStripDisabledByTabStripLayoutOptimizations() {
+        ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
         setDeviceWidthDp(NARROW_WINDOW_WIDTH);
         Assert.assertEquals(
                 "Hide transition is blocked by TabStripLayoutOptimizations.",

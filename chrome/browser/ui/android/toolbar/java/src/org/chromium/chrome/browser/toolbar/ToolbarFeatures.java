@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.toolbar;
 
+import androidx.annotation.OptIn;
+import androidx.core.os.BuildCompat;
+
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.base.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -33,6 +37,8 @@ public final class ToolbarFeatures {
                             ChromeFeatureList.DYNAMIC_TOP_CHROME,
                             USE_TOOLBAR_BG_COLOR_FOR_STRIP_TRANSITION_SCRIM_PARAM,
                             false);
+
+    private static Boolean sTabStripLayoutOptimizationEnabledForTesting;
 
     /** Private constructor to avoid instantiation. */
     private ToolbarFeatures() {}
@@ -69,7 +75,19 @@ public final class ToolbarFeatures {
     }
 
     /** Returns if we are using optimized window layout for tab strip. */
-    public static boolean isTabStripWindowLayoutOptimizationEnabled() {
-        return ChromeFeatureList.sTabStripLayoutOptimization.isEnabled();
+    @OptIn(markerClass = androidx.core.os.BuildCompat.PrereleaseSdkCheck.class)
+    public static boolean isTabStripWindowLayoutOptimizationEnabled(boolean isTablet) {
+        if (sTabStripLayoutOptimizationEnabledForTesting != null) {
+            return sTabStripLayoutOptimizationEnabledForTesting;
+        }
+        return ChromeFeatureList.sTabStripLayoutOptimization.isEnabled()
+                && isTablet
+                && BuildCompat.isAtLeastV();
+    }
+
+    /** Set the return value for {@link #isTabStripWindowLayoutOptimizationEnabled(boolean)}. */
+    public static void setIsTabStripLayoutOptimizationEnabledForTesting(boolean enabled) {
+        sTabStripLayoutOptimizationEnabledForTesting = enabled;
+        ResettersForTesting.register(() -> sTabStripLayoutOptimizationEnabledForTesting = null);
     }
 }

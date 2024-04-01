@@ -532,7 +532,7 @@ public class RootUiCoordinator
                         isTablet,
                         shouldAllowThemingInNightMode(),
                         shouldAllowBrightThemeColors(),
-                        ToolbarFeatures.isTabStripWindowLayoutOptimizationEnabled() && isTablet
+                        ToolbarFeatures.isTabStripWindowLayoutOptimizationEnabled(isTablet)
                                 ? mActivityLifecycleDispatcher
                                 : null);
 

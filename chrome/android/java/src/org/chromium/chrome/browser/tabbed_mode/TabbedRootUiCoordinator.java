@@ -13,9 +13,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.os.BuildCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
@@ -1201,17 +1199,18 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mToolbarManager.getTabStripHeightSupplier().addObserver(mOnTabStripHeightChangedCallback);
     }
 
-    @OptIn(markerClass = androidx.core.os.BuildCompat.PrereleaseSdkCheck.class)
     private void initAppHeaderCoordinator() {
-        // TODO(crbug/328511660): Move OS version within feature check.
-        if (!BuildCompat.isAtLeastV()
-                || !ToolbarFeatures.isTabStripWindowLayoutOptimizationEnabled()) {
-            return;
-        }
+        // AppHeaderCoordinator require API 30 to call the WindowInsets APIs.
+        if (VERSION.SDK_INT < VERSION_CODES.R) return;
 
         StripLayoutHelperManager stripLayoutHelperManager =
                 ((LayoutManagerChrome) mLayoutManager).getStripLayoutHelperManager();
         if (stripLayoutHelperManager == null) return;
+
+        // |stripLayoutHelperManager| will be non-null only on tablets.
+        if (!ToolbarFeatures.isTabStripWindowLayoutOptimizationEnabled(/* isTablet= */ true)) {
+            return;
+        }
 
         // TODO(crbug/328446763): instantiate earlier so the tab strip place holder draws properly.
         mAppHeaderCoordinator =
