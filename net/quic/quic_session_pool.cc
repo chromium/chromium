@@ -110,6 +110,20 @@ std::string QuicPlatformNotificationToString(
   return "InvalidNotification";
 }
 
+const char* AllActiveSessionsGoingAwayReasonToString(
+    AllActiveSessionsGoingAwayReason reason) {
+  switch (reason) {
+    case kClockSkewDetected:
+      return "ClockSkewDetected";
+    case kIPAddressChanged:
+      return "IPAddressChanged";
+    case kCertDBChanged:
+      return "CertDBChanged";
+    case kCertVerifierChanged:
+      return "CertVerifierChanged";
+  }
+}
+
 void HistogramCreateSessionFailure(enum CreateSessionFailure error) {
   UMA_HISTOGRAM_ENUMERATION("Net.QuicSession.CreationError", error,
                             CREATION_ERROR_MAX);
@@ -1471,6 +1485,10 @@ void QuicSessionPool::MarkAllActiveSessionsGoingAway(
     AllActiveSessionsGoingAwayReason reason) {
   net_log_.AddEvent(
       NetLogEventType::QUIC_SESSION_POOL_MARK_ALL_ACTIVE_SESSIONS_GOING_AWAY);
+  base::UmaHistogramCounts10000(
+      std::string("Net.QuicActiveSessionCount.") +
+          AllActiveSessionsGoingAwayReasonToString(reason),
+      active_sessions_.size());
   while (!active_sessions_.empty()) {
     QuicChromiumClientSession* session = active_sessions_.begin()->second;
     // If IP address change is detected, disable session's connectivity

@@ -2290,6 +2290,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.QuicActiveSessionCount.{GoingAwayReason}" units="sesions"
+    expires_after="2024-07-01">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Records the number of active sessions that are marked as going away because
+    {GoingAwayReason}.
+  </summary>
+  <token key="GoingAwayReason">
+    <variant name="CertDBChanged" summary="the certificate database changed"/>
+    <variant name="CertVerifierChanged"
+        summary="the certificate veriier changed"/>
+    <variant name="ClockSkewDetected" summary="a clock skew was detected"/>
+    <variant name="IPAddressChanged" summary="an IP address changed"/>
+  </token>
+</histogram>
+
 <histogram name="Net.QuicActiveSessions" units="units"
     expires_after="2024-03-22">
   <owner>dschinazi@chromium.org</owner>
