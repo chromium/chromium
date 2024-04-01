@@ -336,6 +336,7 @@
 <translation id="2405664212338326887">કનેક્ટ કરેલું નથી</translation>
 <translation id="2408955596600435184">તમારો PIN દાખલ કરો</translation>
 <translation id="2412593942846481727">અપડેટ ઉપલબ્ધ છે</translation>
+<translation id="2416438829169535743">શું વ્યૂમાંથી બહાર નીકળીએ?</translation>
 <translation id="2417486498593892439">નેટવર્ક પર સાઇન ઇન કરો</translation>
 <translation id="2426051945783024481">કૅમેરાની ફ્રેમને ઑટોમૅટિક રીતે મધ્યમાં ગોઠવવામાં આવે છે</translation>
 <translation id="2427507373259914951">લેફ્ટ ક્લિક કરો</translation>
@@ -1153,9 +1154,11 @@
 <translation id="5555639311269196631">હૉટસ્પૉટ બંધ કરો</translation>
 <translation id="5556459405103347317">ફરીથી લોડ કરો</translation>
 <translation id="5558091555391176027">નજીકના શેર સુવિધાની ઉચ્ચ દૃશ્યતા ટૉગલ કરો</translation>
+<translation id="5558314826121965174">સર્જનાત્મકતા</translation>
 <translation id="556042886152191864">બટન</translation>
 <translation id="5570122939431135380">નવા ટૅબને નવી છૂપી વિન્ડોમાં ખોલો</translation>
 <translation id="5571066253365925590">Bluetooth સક્ષમ છે</translation>
+<translation id="5572632238877308040">આવશ્યક</translation>
 <translation id="557563299383177668">આગલો ફકરો</translation>
 <translation id="5577082622442191756">બ્લૂટૂથ ટૉગલ કરો. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">ફોન હબનો ઉપયોગ કરવા માટે, ચેક કરો કે તમારા ફોન પર બ્લૂટૂથ ચાલુ કરવામાં આવ્યું છે</translation>
@@ -1180,6 +1183,7 @@
 <translation id="5662075790140998213">ડેસ્ક 10</translation>
 <translation id="5662709761327382534">માઇક્રોફોનથી રેકોર્ડ કરો <ph name="CURRENT_STATE" /> છે, માઇક્રોફોનથી રેકોર્ડિંગ <ph name="NEW_STATE" /> કરવા માટે enter દબાવો</translation>
 <translation id="5669267381087807207">ચાલુ થાય છે</translation>
+<translation id="5672890847723042801">યુટિલિટી</translation>
 <translation id="5673434351075758678">તમારી સેટિંગને સિંક કર્યા પછી "<ph name="FROM_LOCALE" />" થી "<ph name="TO_LOCALE" />"માં ફેરવો.</translation>
 <translation id="5675363643668471212">શેલ્ફ આઇટમ</translation>
 <translation id="5677928146339483299">બ્લૉક કરેલ</translation>
@@ -1361,6 +1365,7 @@
 <translation id="6351032674660237738">ઍપ સૂચનો</translation>
 <translation id="6352082849089527770">અજાણ્યા નેટવર્ક</translation>
 <translation id="6359587239691116345">નવીનતમ સુવિધાઓ અને સુરક્ષા સંબંધિત સુધારણાઓ મેળવો. જો તમે આ અપડેટ નકારશો, તો તમારું ડિવાઇસ હવે કદાચ યોગ્ય રીતે કામ કરશે નહીં અને તમે સુરક્ષા તથા પર્ફોર્મન્સ સંબંધિત સમસ્યાઓ અનુભવી શકો છો.</translation>
+<translation id="6362833380917912748">તમારી બિલ્ટ-ઇન ઍપ વિશે વધુ જાણો</translation>
 <translation id="6376931439017688372">બ્લૂટૂથ ચાલુ છે</translation>
 <translation id="6378515133128829137">વિન્ડોને જમણી બાજુ પિન કરો</translation>
 <translation id="6381109794406942707">ડિવાઇસને અનલૉક કરવા માટે. તમારો પિન દાખલ કરો.</translation>
@@ -1847,6 +1852,7 @@
 <translation id="8262312463845990408">પ્લેબૅક ટૉગલ કરો</translation>
 <translation id="8270450402312105425">{0,plural, =1{એક કલાકની અંદર ડિવાઇસનું વર્ઝન બદલીને અગાઉનું વર્ઝન કરો}one{# કલાકની અંદર ડિવાઇસનું વર્ઝન બદલીને અગાઉનું વર્ઝન કરો}other{# કલાકની અંદર ડિવાઇસનું વર્ઝન બદલીને અગાઉનું વર્ઝન કરો}}</translation>
 <translation id="8277261673056602147">તમારી સ્ક્રીન પરના ટેક્સ્ટને હાઇલાઇટ કરો</translation>
+<translation id="8287009018010202411">પ્રૉડક્ટિવિટી</translation>
 <translation id="828708037801473432">બંધ</translation>
 <translation id="8297006494302853456">નબળું</translation>
 <translation id="8308637677604853869">પાછલું મેનૂ</translation>
@@ -1918,6 +1924,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">તમારી ઍપને નામ અથવા રંગ અનુસાર સૉર્ટ કરો</translation>
 <translation id="8609384513243082612">નવું ટૅબ ખોલો</translation>
+<translation id="861045123704058818">કૅટેગરી મુજબ ઍપની ગોઠવણી હંગામી રીતે કરવામાં આવે છે</translation>
 <translation id="8612216344243590325">મહત્ત્વપૂર્ણ ફાઇલોને ડેસ્કટૉપ પર રાખવાને બદલે <ph name="HOLDING_SPACE_TITLE" />માં રાખો. બસ ફાઇલોને <ph name="HOLDING_SPACE_TITLE" /> પર ખેંચો.</translation>
 <translation id="8614517853887502247">જોવા સંબંધિત સુરક્ષા પ્રણાલી ચાલુ હોવાને કારણે <ph name="APP_1_TITLE" /> અને <ph name="APP_2_TITLE" /> નોટિફિકેશન છુપાવેલા છે</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1956,6 +1963,7 @@
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">તમારી ઓળખની ચકાસણી કરો: આ તમે જ છો, તે <ph name="ORIGIN_NAME" /> કન્ફર્મ કરવા માગે છે</translation>
 <translation id="875593634123171288">VPN સેટિંગ બતાવો</translation>
+<translation id="8756799553341497810">એકવાર તમે આ વ્યૂમાંથી બહાર નીકળો, પછી તમે તમારી ઍપનો લેઆઉટ કસ્ટમાઇઝ કરવાની શરૂઆત કરી શકો છો.</translation>
 <translation id="8759408218731716181">બહુવિધ સાઇન-ઇન સેટ કરી શકતાં નથી</translation>
 <translation id="8763883995157866248">ડિવાઇસને સ્લીપ મોડમાં મૂકો</translation>
 <translation id="877404052021108314">90°ફેરનહીટને સેલ્શિયસમાં ફેરવો</translation>

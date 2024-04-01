@@ -1114,6 +1114,7 @@
 <translation id="3154987252551138431">使用“附近分享”功能时出了点问题</translation>
 <translation id="315504272643575312">您的账号由 <ph name="MANAGER" /> 管理。</translation>
 <translation id="3155163173539279776">重新启动 Chromium</translation>
+<translation id="3156511682997763015">快进 10 秒</translation>
 <translation id="3157931365184549694">恢复</translation>
 <translation id="3158539265159265653">光碟</translation>
 <translation id="3162559335345991374">您要使用的 Wi-Fi 网络可能需要您访问其登录页面。</translation>
@@ -1212,6 +1213,7 @@
 <translation id="334438173029876234">滑板装备</translation>
 <translation id="3347146863028219517">滑雪与单板滑雪</translation>
 <translation id="3349952286488694786">SRA2</translation>
+<translation id="3350450887151703713">重放 10 秒</translation>
 <translation id="3352881017886802007">体育游戏</translation>
 <translation id="3355823806454867987">更改代理服务器设置...</translation>
 <translation id="335809815767823">已导出</translation>
@@ -3048,6 +3050,7 @@
 <translation id="6944557544071529399">策略游戏</translation>
 <translation id="6944692733090228304">您在一个不受 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 管理的网站上输入了您的密码。为了保护您的账号，请不要在其他应用和网站上重复使用您的密码。</translation>
 <translation id="6945221475159498467">选择</translation>
+<translation id="6946949206576443118">在 Chrome 中搜索网络信息</translation>
 <translation id="6948051842255602737">游戏结束，您的得分是 <ph name="SCORE" />。</translation>
 <translation id="6948701128805548767">要查看取货方式和要求，请选择相应地址</translation>
 <translation id="6948874830249067134">A1x3</translation>

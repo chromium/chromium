@@ -336,6 +336,7 @@
 <translation id="2405664212338326887">ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿಲ್ಲ</translation>
 <translation id="2408955596600435184">ನಿಮ್ಮ ಪಿನ್ ನಮೂದಿಸಿ</translation>
 <translation id="2412593942846481727">ಅಪ್‌ಡೇಟ್‌‌ ಲಭ್ಯವಿದೆ</translation>
+<translation id="2416438829169535743">ವೀಕ್ಷಣೆಯಿಂದ ನಿರ್ಗಮಿಸಬೇಕೇ?</translation>
 <translation id="2417486498593892439">ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="2426051945783024481">ಕ್ಯಾಮರಾ ಫ್ರೇಮ್ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಕೇಂದ್ರೀಕೃತವಾಗಿದೆ</translation>
 <translation id="2427507373259914951">ಎಡ-ಕ್ಲಿಕ್</translation>
@@ -1153,9 +1154,11 @@
 <translation id="5555639311269196631">ಹಾಟ್‌ಸ್ಪಾಟ್ ಆಫ್‌ ಮಾಡಿ</translation>
 <translation id="5556459405103347317">ಮರುಲೋಡ್‌</translation>
 <translation id="5558091555391176027">Nearby ಶೇರ್‌ನ ಹೆಚ್ಚಿನ ಗೋಚರತೆಯನ್ನು ಟಾಗಲ್ ಮಾಡಿ</translation>
+<translation id="5558314826121965174">ಸೃಜನಶೀಲತೆ</translation>
 <translation id="556042886152191864">ಬಟನ್</translation>
 <translation id="5570122939431135380">ಹೊಸ ಅಜ್ಞಾತ ವಿಂಡೋದಲ್ಲಿ ಹೊಸ ಟ್ಯಾಬ್ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="5571066253365925590">ಬ್ಲೂಟೂತ್‌ ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
+<translation id="5572632238877308040">ಅಗತ್ಯತೆಗಳು</translation>
 <translation id="557563299383177668">ಮುಂದಿನ ಪ್ಯಾರಾಗ್ರಾಫ್</translation>
 <translation id="5577082622442191756">ಬ್ಲೂಟೂತ್ ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">ಫೋನ್ ಹಬ್ ಬಳಸಲು ನಿಮ್ಮ ಫೋನ್‌ನಲ್ಲಿ ಬ್ಲೂಟೂತ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆಯೇ ಎನ್ನುವುದನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
@@ -1180,6 +1183,7 @@
 <translation id="5662075790140998213">ಡೆಸ್ಕ್ 10</translation>
 <translation id="5662709761327382534">ಮೈಕ್ರೋಫೋನ್ ಮೂಲಕ ರೆಕಾರ್ಡ್ ಮಾಡಿ ಆಯ್ಕೆಯು <ph name="CURRENT_STATE" /> ಆಗಿದೆ, ಮೈಕ್ರೋಫೋನ್ ಮೂಲಕ ರೆಕಾರ್ಡ್ ಮಾಡುವ ಆಯ್ಕೆಯನ್ನು <ph name="NEW_STATE" /> ಮಾಡಲು Enter ಒತ್ತಿರಿ</translation>
 <translation id="5669267381087807207">ಸಕ್ರಿಯವಾಗುತ್ತಿದೆ</translation>
+<translation id="5672890847723042801">ಸೌಲಭ್ಯಗಳು</translation>
 <translation id="5673434351075758678">ನಿಮ್ಮ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಸಿಂಕ್ ಮಾಡಿದ ಬಳಿಕ "<ph name="FROM_LOCALE" />" ನಿಂದ "<ph name="TO_LOCALE" />" ಗೆ.</translation>
 <translation id="5675363643668471212">ಶೆಲ್ಫ್ ಐಟಂ</translation>
 <translation id="5677928146339483299">ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
@@ -1361,6 +1365,7 @@
 <translation id="6351032674660237738">ಅಪ್ಲಿಕೇಶನ್ ಸಲಹೆಗಳು</translation>
 <translation id="6352082849089527770">ಅಪರಿಚಿತ ನೆಟ್‌ವರ್ಕ್‌ಗಳು</translation>
 <translation id="6359587239691116345">ಇತ್ತೀಚಿನ ಫೀಚರ್‌ಗಳು ಮತ್ತು ಭದ್ರತಾ ಸುಧಾರಣೆಗಳನ್ನು ಪಡೆಯಿರಿ. ನೀವು ಈ ಅಪ್‌ಡೇಟ್‌ ಅನ್ನು ನಿರಾಕರಿಸಿದರೆ, ನಿಮ್ಮ ಸಾಧನವು ಇನ್ನು ಮುಂದೆ ಸರಿಯಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸದೇ ಇರಬಹುದು ಮತ್ತು ನೀವು ಭದ್ರತೆ ಮತ್ತು ಕಾರ್ಯಕ್ಷಮತೆಯ ಸಮಸ್ಯೆಗಳನ್ನು ಅನುಭವಿಸಬಹುದು.</translation>
+<translation id="6362833380917912748">ನಿಮ್ಮ ಇನ್-ಬಿಲ್ಟ್ ಆ್ಯಪ್‌ಗಳ ಕುರಿತು ತಿಳಿದುಕೊಳ್ಳಿ</translation>
 <translation id="6376931439017688372">ಬ್ಲೂಟೂತ್ ಆನ್ ಆಗಿದೆ</translation>
 <translation id="6378515133128829137">ವಿಂಡೋವನ್ನು ಬಲಕ್ಕೆ ಪಿನ್ ಮಾಡಿ</translation>
 <translation id="6381109794406942707">ಸಾಧನವನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಲು, ನಿಮ್ಮ ಪಿನ್ ಅನ್ನು ನಮೂದಿಸಿ.</translation>
@@ -1847,6 +1852,7 @@
 <translation id="8262312463845990408">ಪ್ಲೇಬ್ಯಾಕ್ ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ</translation>
 <translation id="8270450402312105425">{0,plural, =1{ಒಂದು ಗಂಟೆಯಲ್ಲಿ ಸಾಧನವನ್ನು ಹಿಂದಿನ ಆವೃತ್ತಿಗೆ ಬದಲಾಯಿಸಿ}one{# ಗಂಟೆಗಳಲ್ಲಿ ಸಾಧನವನ್ನು ಹಿಂದಿನ ಆವೃತ್ತಿಗೆ ಬದಲಾಯಿಸಿ}other{# ಗಂಟೆಗಳಲ್ಲಿ ಸಾಧನವನ್ನು ಹಿಂದಿನ ಆವೃತ್ತಿಗೆ ಬದಲಾಯಿಸಿ}}</translation>
 <translation id="8277261673056602147">ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ನಲ್ಲಿ ಪಠ್ಯವನ್ನು ಹೈಲೈಟ್ ಮಾಡಿ</translation>
+<translation id="8287009018010202411">ಉತ್ಪಾದಕತೆ</translation>
 <translation id="828708037801473432">ಆಫ್</translation>
 <translation id="8297006494302853456">ದುರ್ಬಲ</translation>
 <translation id="8308637677604853869">ಹಿಂದಿನ ಮೆನು</translation>
@@ -1918,6 +1924,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">ನಿಮ್ಮ ಆ್ಯಪ್‌ಗಳನ್ನು ಹೆಸರು ಅಥವಾ ಬಣ್ಣದಿಂದ ವಿಂಗಡಿಸಿ</translation>
 <translation id="8609384513243082612">ಹೊಸ ಟ್ಯಾಬ್ ತೆರೆಯಿರಿ</translation>
+<translation id="861045123704058818">ಆ್ಯಪ್‌ಗಳನ್ನು ತಾತ್ಕಾಲಿಕವಾಗಿ ವರ್ಗದ ಪ್ರಕಾರವಾಗಿ ವ್ಯವಸ್ಥಿತಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="8612216344243590325">ಪ್ರಮುಖ ಫೈಲ್‌ಗಳನ್ನು ಡೆಸ್ಕ್‌ಟಾಪ್‌ನಲ್ಲಿ ಇರಿಸುವ ಬದಲು <ph name="HOLDING_SPACE_TITLE" /> ನಲ್ಲಿ ಇರಿಸಿ. <ph name="HOLDING_SPACE_TITLE" /> ಗೆ ಫೈಲ್‌ಗಳನ್ನು ಡ್ರ್ಯಾಗ್ ಮಾಡಿ.</translation>
 <translation id="8614517853887502247">ವೀಕ್ಷಣೆ ರಕ್ಷಣೆ ಆನ್ ಆಗಿರುವ ಕಾರಣದಿಂದಾಗಿ <ph name="APP_1_TITLE" /> ಮತ್ತು <ph name="APP_2_TITLE" /> ಅಧಿಸೂಚನೆಗಳನ್ನು ಮರೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1956,6 +1963,7 @@
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">ನಿಮ್ಮ ಗುರುತನ್ನು ಖಚಿತಪಡಿಸಿ: ಇದು ನೀವೇ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಲು <ph name="ORIGIN_NAME" /> ಬಯಸುತ್ತದೆ</translation>
 <translation id="875593634123171288">VPN ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
+<translation id="8756799553341497810">ನೀವು ಈ ವೀಕ್ಷಣೆಯಿಂದ ನಿರ್ಗಮಿಸಿದ ನಂತರ ನಿಮ್ಮ ಆ್ಯಪ್ ಲೇಔಟ್ ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಲು ಪ್ರಾರಂಭಿಸಬಹುದು.</translation>
 <translation id="8759408218731716181">ಬಹು ಸೈನ್‍-ಇನ್ ಹೊಂದಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="8763883995157866248">ನಿದ್ರೆಯ ಮೋಡ್‌ನಲ್ಲಿ ಸಾಧನವನ್ನು ಇರಿಸಿ</translation>
 <translation id="877404052021108314">ಸೆಲ್ಸಿಯಸ್‌ನಲ್ಲಿ 90°F</translation>

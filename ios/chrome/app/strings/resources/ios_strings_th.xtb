@@ -1183,6 +1183,7 @@
 <translation id="6989674195860388998">เปลี่ยนในการตั้งค่า…</translation>
 <translation id="6998989275928107238">ถึง</translation>
 <translation id="699954956411469731">การแจ้งเตือนในอุปกรณ์เคลื่อนที่</translation>
+<translation id="699985840472413751">ปิดการดาวน์โหลด</translation>
 <translation id="7004032350256606903">องค์กรกำหนดให้คุณท่องเว็บแบบส่วนตัว
 <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">แท็บล่าสุด</translation>
@@ -1472,6 +1473,7 @@
 <translation id="850600235656508448">เปิดในโหมดไม่ระบุตัวตน</translation>
 <translation id="8517375800490286174">ใบอนุญาตโอเพนซอร์ส</translation>
 <translation id="8522147671363140027">{count,plural, =1{รหัสผ่าน {count} รายการและรายการอื่นๆ จะบันทึกไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google {email}}other{รหัสผ่าน {count} รายการและรายการอื่นๆ จะบันทึกไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google {email}}}</translation>
+<translation id="8522813812888400223">ยกเลิกการดาวน์โหลด</translation>
 <translation id="8524799873541103884">แท็บ <ph name="INCOGNITO" /> <ph name="FIRST_VISIBLE_TAB" /> ถึง <ph name="LAST_VISIBLE_TAB" /> จาก <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="852576975834694248">คุณจะออกจากระบบ และแท็บจะปิดไป</translation>
 <translation id="8528009254289981965">เปิดลิงก์จากแอปอื่นๆ ในโหมดไม่ระบุตัวตน</translation>

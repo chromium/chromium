@@ -1183,6 +1183,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="6989674195860388998">Bytt i Innstillinger…</translation>
 <translation id="6998989275928107238">Til</translation>
 <translation id="699954956411469731">Mobilvarsler</translation>
+<translation id="699985840472413751">Lukk nedlastingen</translation>
 <translation id="7004032350256606903">Organisasjonen din krever at du surfer privat.
 <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Nylige faner</translation>
@@ -1472,6 +1473,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="850600235656508448">Åpne i inkognitomodus</translation>
 <translation id="8517375800490286174">Lisenser for åpen kildekode</translation>
 <translation id="8522147671363140027">{count,plural, =1{{count} passord og andre elementer er bare lagret på denne enheten. For å bruke dem på andre enheter, lagre dem i Google-kontoen din ({email}).}other{{count} passord og andre elementer er bare lagret på denne enheten. For å bruke dem på andre enheter, lagre dem i Google-kontoen din ({email}).}}</translation>
+<translation id="8522813812888400223">Avbryt nedlastingen</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" />fane <ph name="FIRST_VISIBLE_TAB" /> til og med <ph name="LAST_VISIBLE_TAB" /> av <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="852576975834694248">Du blir logget av, og faner blir lukket</translation>
 <translation id="8528009254289981965">Åpne linker fra andre apper i Inkognito</translation>

@@ -878,6 +878,7 @@
 <translation id="5548760955356983418">Handoffを使うと、このデバイスで見ているウェブサイトの続きをMacで見ることができます。現在開いているウェブサイトはMacのDockに表示されます。
 
 また[設定]の[一般]画面でHandoffを有効にしておく必要があります。お使いのデバイスでは、iCloudと同じアカウントを使用してください。</translation>
+<translation id="5551825465462320939">興味や関心に基づくニュースやスポーツなどの最新情報をお届けします。</translation>
 <translation id="5551897871312988470">翻訳するか尋ねる</translation>
 <translation id="5556459405103347317">再読み込み</translation>
 <translation id="555749644339804659">パスワードを確認しています…</translation>
@@ -1182,6 +1183,7 @@
 <translation id="6989674195860388998">設定で切り替える</translation>
 <translation id="6998989275928107238">To</translation>
 <translation id="699954956411469731">モバイル通知</translation>
+<translation id="699985840472413751">ダウンロードを閉じる</translation>
 <translation id="7004032350256606903">組織がシークレット モードで閲覧するよう求めています。
 <ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">最近使ったタブ</translation>
@@ -1471,6 +1473,7 @@
 <translation id="850600235656508448">シークレット モードで開く</translation>
 <translation id="8517375800490286174">オープンソースライセンス</translation>
 <translation id="8522147671363140027">{count,plural, =1{{count} 件のパスワードとその他のアイテムがこのデバイスのみに保存されます。他のデバイスで使用するには、Google アカウント（{email}）に保存してください。}other{{count} 件のパスワードとその他のアイテムがこのデバイスのみに保存されます。他のデバイスで使用するには、Google アカウント（{email}）に保存してください。}}</translation>
+<translation id="8522813812888400223">ダウンロードをキャンセル</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" />タブ: <ph name="FIRST_VISIBLE_TAB" />～<ph name="LAST_VISIBLE_TAB" />/<ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="852576975834694248">ログアウトしてタブを閉じます</translation>
 <translation id="8528009254289981965">他のアプリからのリンクをシークレット モードで開く</translation>

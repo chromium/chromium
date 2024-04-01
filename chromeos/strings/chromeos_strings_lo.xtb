@@ -910,6 +910,7 @@
 <translation id="6382182670717268353">ຕົວຢ່າງພາບພັກໜ້າຈໍ</translation>
 <translation id="6388847657025262518">ຕົວປ້ອນເອກະສານຂອງເຄື່ອງສະແກນຕິດຂັດ. ກະລຸນາກວດສອບຕົວປ້ອນເອກະສານແລ້ວລອງໃໝ່.</translation>
 <translation id="6394634179843537518">ເພີ່ມໄຟລ໌</translation>
+<translation id="6396719002784938593">ຫຍ້າຂົນນົກແຫ້ງ</translation>
 <translation id="639964859328803943">ຈິບຊາຫຼັງເລີກວຽກ</translation>
 <translation id="6400680457268373900"><ph name="DREAMSCAPES_OBJECT" /> ເກີນຈິງທີ່ເຮັດດ້ວຍ <ph name="DREAMSCAPES_MATERIAL" /> ໃນ <ph name="DREAMSCAPES_COLORS" /></translation>
 <translation id="6401427872449207797">ການຊອກຫາດ້ວຍໂປຣແກຣມທ່ອງເວັບ</translation>
@@ -951,6 +952,7 @@
 <translation id="6575134580692778371">ບໍ່ໄດ້ປັບຕັ້ງຄ່າ</translation>
 <translation id="6576005492601044801">ຊ້າຍ</translation>
 <translation id="6579509898032828423">ໃຊ້ຮູບພາບນີ້</translation>
+<translation id="6587870930887634392">ຊຸ່ມຊື່ນ</translation>
 <translation id="6596816719288285829">ທີ່​ຢູ່ IP</translation>
 <translation id="6599673642868607614">ຂໍຂອບໃຈສຳລັບຄຳຕິຊົມຂອງທ່ານ. ຄຳຕິຊົມຂອງທ່ານຈະຊ່ວຍໃຫ້ພວກເຮົາປັບປຸງປະສົບການນຳໃຊ້ Chromebook ແລະ ຈະໄດ້ຮັບການກວດສອບຈາກທີມຂອງພວກເຮົາ. ເນື່ອງຈາກມີລາຍງານຈຳນວນຫຼາຍ, ພວກເຮົາຈະບໍ່ສາມາດຕອບກັບໄດ້.</translation>
 <translation id="6618744767048954150">ກຳລັງເປີດ</translation>
@@ -1110,6 +1112,7 @@
 <translation id="7497215489070763236">ໃບຮັບຮອງ CA ຂອງເຊີບເວີ</translation>
 <translation id="7501957181231305652">ຫຼື</translation>
 <translation id="7502658306369382406">ທີ່ຢູ່ IPv6</translation>
+<translation id="7507061649493508884"><ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /> ສົດໃສ</translation>
 <translation id="7513770521371759388">ລຸ່ມສຸດ</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">ສ້າງຂຶ້ນ</translation>
@@ -1170,6 +1173,7 @@
 <translation id="7850847810298646851">ຮູບພື້ນຫຼັງຂັບເຄື່ອນໂດຍ Google AI</translation>
 <translation id="785170686607360576">ທິວລິບ</translation>
 <translation id="7856267634822906833">ໜ້າຈໍສຳຜັດ Bluetooth</translation>
+<translation id="7859006200041800233">ດອກກະບອງເພັດ</translation>
 <translation id="7869143217755017858">ປິດການນຳໃຊ້ໂໝດມືດ</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">ປະ​ເພດ​ຜູ້ໃຫ້​ບໍ​ລິ​ການ​</translation>
@@ -1305,6 +1309,7 @@
 <translation id="8726019395068607495">ຢຸດພິມ, ຝາເປີດຢູ່</translation>
 <translation id="8730621377337864115">ສໍາເລັດ</translation>
 <translation id="8747900814994928677">ຢືນຢັນການປ່ຽນແປງ</translation>
+<translation id="8749478549112817787">ພາບພື້ນຫຼັງກ້ອງຖ່າຍຮູບ</translation>
 <translation id="8755946156089753497">ຫໍຄອຍ</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">ອະລະບໍ້າ Google ຮູບພາບ</translation>

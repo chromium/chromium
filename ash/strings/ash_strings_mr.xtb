@@ -336,6 +336,7 @@
 <translation id="2405664212338326887">कनेक्ट केलेले नाही</translation>
 <translation id="2408955596600435184">तुमचा पिन प्रविष्‍ट करा</translation>
 <translation id="2412593942846481727">अपडेट उपलब्ध आहे</translation>
+<translation id="2416438829169535743">दृश्यामधून बाहेर पडायचे आहे का?</translation>
 <translation id="2417486498593892439">नेटवर्कमध्ये साइन इन करा</translation>
 <translation id="2426051945783024481">कॅमेराची फ्रेम आपोआप मध्यभागी आहे</translation>
 <translation id="2427507373259914951">लेफ्ट क्लिक करा</translation>
@@ -1153,9 +1154,11 @@
 <translation id="5555639311269196631">हॉटस्पॉट बंद करा</translation>
 <translation id="5556459405103347317">रीलोड करा</translation>
 <translation id="5558091555391176027">Nearby सह शेअरिंग चा उच्च दृश्यमानता मोड टॉगल करा</translation>
+<translation id="5558314826121965174">कल्पकता</translation>
 <translation id="556042886152191864">बटण</translation>
 <translation id="5570122939431135380">नवीन टॅबमध्ये नवीन गुप्त विंडो उघडा</translation>
 <translation id="5571066253365925590">ब्लूटूथ सक्षम</translation>
+<translation id="5572632238877308040">आवश्यक गोष्टी</translation>
 <translation id="557563299383177668">पुढील परिच्छेद</translation>
 <translation id="5577082622442191756">ब्लूटूथ टॉगल करा. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">फोन हब वापरण्यासाठी तुमच्या फोनवर ब्लूटूथ सुरू असल्याची खात्री करा</translation>
@@ -1180,6 +1183,7 @@
 <translation id="5662075790140998213">डेस्‍क १०</translation>
 <translation id="5662709761327382534">मायक्रोफोन वापरून रेकॉर्ड करा <ph name="CURRENT_STATE" />, मायक्रोफोन वापरून रेकॉर्डिंग सुरू करण्यासाठी एंटर प्रेस करा <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">सक्रिय करत आहे</translation>
+<translation id="5672890847723042801">उपयुक्तता</translation>
 <translation id="5673434351075758678">तुमच्या सेटिंग्ज सिंक केल्यानंतर "<ph name="FROM_LOCALE" />" पासून "<ph name="TO_LOCALE" />" पर्यंत.</translation>
 <translation id="5675363643668471212">शेल्‍फ आयटम</translation>
 <translation id="5677928146339483299">ब्लॉक केले</translation>
@@ -1361,6 +1365,7 @@
 <translation id="6351032674660237738">ॲप सूचना</translation>
 <translation id="6352082849089527770">अज्ञात नेटवर्क</translation>
 <translation id="6359587239691116345">नवीनतम वैशिष्ट्ये आणि सुरक्षेशी संबंधित सुधारणा मिळवा. तुम्ही या अपडेटला नकार दिल्यास, तुमचे डिव्हाइस यापुढे कदाचित योग्यरीत्या काम करणार नाही आणि तुम्हाला सुरक्षा व परफॉर्मन्सशी संबंधित समस्या येऊ शकतात.</translation>
+<translation id="6362833380917912748">तुमच्या बिल्ट-इन अ‍ॅप्सबद्दल जाणून घ्या</translation>
 <translation id="6376931439017688372">ब्लूटूथ सुरू आहे</translation>
 <translation id="6378515133128829137">विंडो उजवीकडे पिन करा</translation>
 <translation id="6381109794406942707">डिव्हाइस अनलॉक करण्यासाठी, तुमचा पिन एंटर करा.</translation>
@@ -1847,6 +1852,7 @@
 <translation id="8262312463845990408">प्लेबॅक टॉगल करा</translation>
 <translation id="8270450402312105425">{0,plural, =1{एक तासामध्ये डिव्हाइस मागील आवृत्तीवर बदला}other{# तासांमध्ये डिव्हाइस मागील आवृत्तीवर बदला}}</translation>
 <translation id="8277261673056602147">तुमच्या स्क्रीनवरील मजकूर हायलाइट करा</translation>
+<translation id="8287009018010202411">उत्पादनक्षमता</translation>
 <translation id="828708037801473432">बंद</translation>
 <translation id="8297006494302853456">कमकुवत</translation>
 <translation id="8308637677604853869">मागील मेनू</translation>
@@ -1918,6 +1924,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">नाव किंवा रंगानुसार तुमची ॲप्स क्रमाने लावा</translation>
 <translation id="8609384513243082612">नवीन टॅब उघडा</translation>
+<translation id="861045123704058818">अ‍ॅप्स वर्गवारीनुसार तात्पुरती संगतवार लावली आहेत</translation>
 <translation id="8612216344243590325">महत्त्वाच्या फाइल डेस्कटॉपवर ठेवण्याऐवजी <ph name="HOLDING_SPACE_TITLE" /> वर ठेवा. फाइल फक्त <ph name="HOLDING_SPACE_TITLE" /> वर ड्रॅग करा.</translation>
 <translation id="8614517853887502247">पाहण्यासंबंधित संरक्षण सुरू असल्याने, <ph name="APP_1_TITLE" /> आणि <ph name="APP_2_TITLE" /> सूचना लपवल्या आहेत</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1956,6 +1963,7 @@
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">तुमच्या ओळखीची पडताळणी करा: हे तुम्हीच असल्याची <ph name="ORIGIN_NAME" /> ला खात्री करायची आहे</translation>
 <translation id="875593634123171288">VPN सेटिंग्ज दाखवा</translation>
+<translation id="8756799553341497810">तुम्ही या दृश्यामधून बाहेर पडल्यानंतर तुमचा अ‍ॅप लेआउट कस्टमाइझ करणे सुरू करू शकता.</translation>
 <translation id="8759408218731716181">एकाधिक साइन इन सेट करता आले नाही</translation>
 <translation id="8763883995157866248">डिव्हाइस हे स्लीप मोडमध्ये ठेवा</translation>
 <translation id="877404052021108314">सेलि्सयसनुसार ९०°फॅ</translation>

@@ -271,6 +271,7 @@
 <translation id="2446553403094072641">Přesnost pohyblivé řádové čárky</translation>
 <translation id="2448312741937722512">Typ</translation>
 <translation id="2465272316171730950">Jsme na plné kapacitě. Vraťte se za chvíli.</translation>
+<translation id="2472215337771558851">Pomocí funkce Pomozte mi s psaním založené na Google AI můžete vytvořit koncept nebo vylepšit stávající text</translation>
 <translation id="2480572840229215612">krabi</translation>
 <translation id="248546197012830854">Zařízení je offline. Pokud chcete zobrazit obsah nápovědy, připojte se k síti Wi-Fi.</translation>
 <translation id="2486301288428798846">dřevo</translation>
@@ -328,10 +329,12 @@
 <translation id="2860473693272905224">Položte na skener další stránku</translation>
 <translation id="2872961005593481000">Vypnout</translation>
 <translation id="2873483161362553159">Navigace v prohlížeči</translation>
+<translation id="2873939192640533085">Zadejte pokyn jako například „uprav text tak, aby zněl jistěji“</translation>
 <translation id="2874939134665556319">Předchozí skladba</translation>
 <translation id="2875812231449496375">Pro optimální výsledky s touto tapetou toto nastavení zapněte. Můžete ho kdykoli vypnout.</translation>
 <translation id="2878387241690264070">Vybilo se <ph name="RATE" /> kapacity během <ph name="NUM_SECONDS" /> sekund.</translation>
 <translation id="2880569433548999039">Spořič obrazovky s plynoucími oblaky</translation>
+<translation id="2888298276507578975">Zadejte výzvu jako například „napiš poděkování“</translation>
 <translation id="2890557891229184386">tropický ostrov</translation>
 <translation id="2895772081848316509">tmavé</translation>
 <translation id="2926057806159140518">Zadejte uživatelské jméno nebo heslo nebo naskenujte svůj QR kód</translation>
@@ -376,6 +379,7 @@
 <translation id="3226405216343213872">Vyhledávání skenerů</translation>
 <translation id="3226657629376379887">Nabídka akcí s rozvržením</translation>
 <translation id="3227186760713762082">Vydělte hodnotu <ph name="CATEGORY_TEXT" /> číslem <ph name="CONVERSION_RATE" /></translation>
+<translation id="3237710083340813756">Přepsání</translation>
 <translation id="3246869037381808805">Tiskové úlohy starší než 1 den budou odstraněny</translation>
 <translation id="324961752321393509">Váš administrátor tuto aplikaci nedovoluje zavřít</translation>
 <translation id="3268178239013324452">Tisk selhal – jsou otevřená dvířka</translation>
@@ -414,6 +418,7 @@
 <translation id="346539236881580388">Pořídit další</translation>
 <translation id="3484914941826596830">Během aktualizace firmwaru neodpojujte externí zařízení ani nevypínejte počítač. Toto okno můžete minimalizovat. Aktualizace může trvat několik minut a externí zařízení po tuto dobu nemusí fungovat.</translation>
 <translation id="3486220673238053218">definice</translation>
+<translation id="3487866404496702283">Zpětná vazba k funkci mahi</translation>
 <translation id="3488065109653206955">Částečně aktivováno</translation>
 <translation id="3492882532495507361">Kancelář ve stylu <ph name="OFFICE_STYLE" /> s tóny v barvě <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">Data měří Chromebook. Údaje se od údajů poskytovatele mohou lišit.</translation>
@@ -442,6 +447,7 @@
 <translation id="3621072146987826699">sloni</translation>
 <translation id="3632579075709132555">Přepínač obrazovky s ochranou soukromí</translation>
 <translation id="3651050199673793219">Vyberte jednotku teploty</translation>
+<translation id="3661106764436337772">Pište rychleji a s větší jistotou</translation>
 <translation id="3662461537616691585">vínová a kaštanová</translation>
 <translation id="3668449597372804501">Tapeta s plynoucími oblaky</translation>
 <translation id="3675132884790542448">prasata</translation>
@@ -875,6 +881,7 @@
 <translation id="6235460611964961764">Využití dat resetovat ručně</translation>
 <translation id="6243280677745499710">Aktuálně nastaveno</translation>
 <translation id="6250316632541035980">slanina s vejci</translation>
+<translation id="6255213378196499011">Nastavení funkce Pomozte mi s psaním</translation>
 <translation id="6275224645089671689">Šipka vpravo</translation>
 <translation id="6278428485366576908">Motiv</translation>
 <translation id="6280912520669706465">ARC</translation>

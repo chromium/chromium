@@ -271,6 +271,7 @@
 <translation id="2446553403094072641">Točnost pomičnog zareza</translation>
 <translation id="2448312741937722512">Vrsta</translation>
 <translation id="2465272316171730950">Radimo punim kapacitetom. Vratite se uskoro.</translation>
+<translation id="2472215337771558851">Značajku Pomoć pri pisanju koju omogućuje Googleov AI koristite da biste izradili skicu ili usavršili postojeći rad</translation>
 <translation id="2480572840229215612">rakovi</translation>
 <translation id="248546197012830854">Uređaj je offline. Povežite se s Wi-Fi mrežom da biste vidjeli sadržaj pomoći.</translation>
 <translation id="2486301288428798846">drveta</translation>
@@ -328,10 +329,12 @@
 <translation id="2860473693272905224">Postavite još jednu stranicu na skener</translation>
 <translation id="2872961005593481000">Isključi</translation>
 <translation id="2873483161362553159">Kretanje preglednikom</translation>
+<translation id="2873939192640533085">Unesite upit kao što je "zvuči sigurnije"</translation>
 <translation id="2874939134665556319">Prethodna pjesma</translation>
 <translation id="2875812231449496375">Uključite tu postavku za najbolje rezultate s ovom pozadinom. Možete je isključiti kad god želite.</translation>
 <translation id="2878387241690264070">Ispražnjeno <ph name="RATE" /> za <ph name="NUM_SECONDS" /> s.</translation>
 <translation id="2880569433548999039">Čuvar zaslona s oblakom</translation>
+<translation id="2888298276507578975">Unesite upit kao što je "napiši zahvalu"</translation>
 <translation id="2890557891229184386">tropskog otoka</translation>
 <translation id="2895772081848316509">tamno</translation>
 <translation id="2926057806159140518">Unesite korisničko ime i zaporku ili skenirajte QR kôd</translation>
@@ -376,6 +379,7 @@
 <translation id="3226405216343213872">Traženje skenera</translation>
 <translation id="3226657629376379887">Izbornik aktivnosti izgleda</translation>
 <translation id="3227186760713762082">Podijelite vrijednost <ph name="CATEGORY_TEXT" /> s <ph name="CONVERSION_RATE" /></translation>
+<translation id="3237710083340813756">Preinaka</translation>
 <translation id="3246869037381808805">Uklonit će se zadaci ispisa stariji od jednog dana</translation>
 <translation id="324961752321393509">Vaš administrator ne dopušta zatvaranje te aplikacije</translation>
 <translation id="3268178239013324452">Nije uspjelo – vratašca su otvorena</translation>
@@ -414,6 +418,7 @@
 <translation id="346539236881580388">Snimi ponovo</translation>
 <translation id="3484914941826596830">Dok se oprema ažurira, nemojte iskopčavati ovaj vanjski uređaj niti isključivati računalo. Ovaj prozor možete minimizirati. Ažuriranje može potrajati nekoliko minuta i vaš vanjski uređaj tada možda neće funkcionirati.</translation>
 <translation id="3486220673238053218">definicija</translation>
+<translation id="3487866404496702283">Povratne informacije za značajku Mahi</translation>
 <translation id="3488065109653206955">Djelomično aktivirano</translation>
 <translation id="3492882532495507361">Ured (<ph name="OFFICE_STYLE" />) s nijansama boje <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">Podatke mjeri Chromebook. Mogu se razlikovati od podataka davatelja usluga.</translation>
@@ -442,6 +447,7 @@
 <translation id="3621072146987826699">slonovi</translation>
 <translation id="3632579075709132555">Prekidač zaslona privatnosti</translation>
 <translation id="3651050199673793219">Odaberite temperaturnu jedinicu</translation>
+<translation id="3661106764436337772">Pišite brže i s većom sigurnošću</translation>
 <translation id="3662461537616691585">bordo i smeđe boje</translation>
 <translation id="3668449597372804501">Pozadina s oblakom</translation>
 <translation id="3675132884790542448">svinje</translation>
@@ -875,6 +881,7 @@
 <translation id="6235460611964961764">Ručno poništi potrošnju podatkovnog prometa</translation>
 <translation id="6243280677745499710">Trenutačno postavljeno</translation>
 <translation id="6250316632541035980">slanina i jaja</translation>
+<translation id="6255213378196499011">Postavke značajke Pomoć pri pisanju</translation>
 <translation id="6275224645089671689">Strelica desno</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>

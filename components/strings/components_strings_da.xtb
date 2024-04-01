@@ -1114,6 +1114,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3154987252551138431">Der opstod en fejl ved anvendelsen af Deling tæt på</translation>
 <translation id="315504272643575312">Din konto administreres af <ph name="MANAGER" />.</translation>
 <translation id="3155163173539279776">Genstart Chromium</translation>
+<translation id="3156511682997763015">Spol 10 sekunder frem</translation>
 <translation id="3157931365184549694">Gendan</translation>
 <translation id="3158539265159265653">Disk</translation>
 <translation id="3162559335345991374">Det Wi-Fi-netværk, du bruger, kan kræve, at du går til netværkets loginside.</translation>
@@ -1214,6 +1215,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="334438173029876234">Skateboardudstyr</translation>
 <translation id="3347146863028219517">Ski og snowboarding</translation>
 <translation id="3349952286488694786">SRA2</translation>
+<translation id="3350450887151703713">Spol 10 sekunder tilbage</translation>
 <translation id="3352881017886802007">Sportsspil</translation>
 <translation id="3355823806454867987">Skift indstillinger for proxy...</translation>
 <translation id="335809815767823">Eksporteret</translation>
@@ -3053,6 +3055,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6944557544071529399">Strategispil</translation>
 <translation id="6944692733090228304">Du indtastede din adgangskode på et website, der ikke administreres af <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Du kan beskytte din konto ved at undgå at bruge din adgangskode i andre apps og på andre websites.</translation>
 <translation id="6945221475159498467">Vælg</translation>
+<translation id="6946949206576443118">Søg på nettet i Chrome</translation>
 <translation id="6948051842255602737">Spillet er slut – du fik <ph name="SCORE" /> point.</translation>
 <translation id="6948701128805548767">Vælg en adresse for at se afhentningsmetoder og -krav</translation>
 <translation id="6948874830249067134">A1x3</translation>

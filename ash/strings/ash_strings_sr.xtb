@@ -336,6 +336,7 @@
 <translation id="2405664212338326887">Није повезано</translation>
 <translation id="2408955596600435184">Унесите PIN</translation>
 <translation id="2412593942846481727">Доступно је ажурирање</translation>
+<translation id="2416438829169535743">Желите да изађете из приказа?</translation>
 <translation id="2417486498593892439">Пријавите се на мрежу</translation>
 <translation id="2426051945783024481">Оквир камере је аутоматски центриран</translation>
 <translation id="2427507373259914951">Леви клик</translation>
@@ -1154,9 +1155,11 @@
 <translation id="5555639311269196631">Искључи хотспот</translation>
 <translation id="5556459405103347317">Учитај поново</translation>
 <translation id="5558091555391176027">Укључите или искључите велику видљивост Дељења у близини</translation>
+<translation id="5558314826121965174">Креативност</translation>
 <translation id="556042886152191864">Дугме</translation>
 <translation id="5570122939431135380">Отвори нову картицу у новом прозору без архивирања</translation>
 <translation id="5571066253365925590">Bluetooth је омогућен</translation>
+<translation id="5572632238877308040">Основне апликације</translation>
 <translation id="557563299383177668">Следећи пасус</translation>
 <translation id="5577082622442191756">Укључите/искључите Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Уверите се да је Bluetooth омогућен на телефону да бисте користили Phone Hub</translation>
@@ -1181,6 +1184,7 @@
 <translation id="5662075790140998213">Радна површина 10</translation>
 <translation id="5662709761327382534">Подешавање Снимај помоћу микрофона је <ph name="CURRENT_STATE" />, притисните enter да би снимање помоћу микрофона било <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Активирање</translation>
+<translation id="5672890847723042801">Услужне апликације</translation>
 <translation id="5673434351075758678">Са језика „<ph name="FROM_LOCALE" />“ на „<ph name="TO_LOCALE" />“ после синхронизације уређаја.</translation>
 <translation id="5675363643668471212">Ставка на полици</translation>
 <translation id="5677928146339483299">Блокирано</translation>
@@ -1362,6 +1366,7 @@
 <translation id="6351032674660237738">ПРЕДЛОЗИ АПЛИКАЦИЈА</translation>
 <translation id="6352082849089527770">Непознате мреже</translation>
 <translation id="6359587239691116345">Добијајте најновије функције и безбедносна побољшања. Ако одбијете ово ажурирање, уређај можда више неће радити како треба, а ви можете да имате проблема са безбедношћу и перформансама.</translation>
+<translation id="6362833380917912748">Упознајте уграђене апликације</translation>
 <translation id="6376931439017688372">Bluetooth је укључен</translation>
 <translation id="6378515133128829137">Закачи прозор надесно</translation>
 <translation id="6381109794406942707">Да бисте откључали уређај, унесите PIN.</translation>
@@ -1849,6 +1854,7 @@
 <translation id="8262312463845990408">Укључите/искључите репродукцију</translation>
 <translation id="8270450402312105425">{0,plural, =1{Промените верзију уређаја у претходну верзију у року од једног сата}one{Промените верзију уређаја у претходну верзију у року од # сата}few{Промените верзију уређаја у претходну верзију у року од # сата}other{Промените верзију уређаја у претходну верзију у року од # сати}}</translation>
 <translation id="8277261673056602147">Истакните текст на екрану</translation>
+<translation id="8287009018010202411">Продуктивност</translation>
 <translation id="828708037801473432">Искључено</translation>
 <translation id="8297006494302853456">Слаб</translation>
 <translation id="8308637677604853869">Претходни мени</translation>
@@ -1920,6 +1926,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Сортирајте апликације према називу или боји</translation>
 <translation id="8609384513243082612">Отворите нову картицу</translation>
+<translation id="861045123704058818">Апликације су привремено организоване према категорији</translation>
 <translation id="8612216344243590325">Чувајте важне фајлове у фолдеру <ph name="HOLDING_SPACE_TITLE" /> уместо на позадини. Само превуците фајлове у <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Обавештења апликација <ph name="APP_1_TITLE" /> и <ph name="APP_2_TITLE" /> су скривена јер је заштита од прегледа укључена</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1958,6 +1965,7 @@
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">Верификујте идентитет: <ph name="ORIGIN_NAME" /> жели да потврди да сте то ви</translation>
 <translation id="875593634123171288">Прегледајте подешавања VPN-а</translation>
+<translation id="8756799553341497810">Можете да почнете са прилагођавањем распореда апликација када изађете из овог приказа.</translation>
 <translation id="8759408218731716181">Није могуће подесити вишеструко пријављивање</translation>
 <translation id="8763883995157866248">Пребаците уређај у режим спавања</translation>
 <translation id="877404052021108314">90 °F у C</translation>

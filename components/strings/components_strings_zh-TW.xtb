@@ -1112,6 +1112,7 @@
 <translation id="3154987252551138431">使用鄰近分享功能時發生錯誤</translation>
 <translation id="315504272643575312">你的帳戶是由 <ph name="MANAGER" /> 管理。</translation>
 <translation id="3155163173539279776">重新啟動 Chromium</translation>
+<translation id="3156511682997763015">快轉 10 秒</translation>
 <translation id="3157931365184549694">還原</translation>
 <translation id="3158539265159265653">光碟</translation>
 <translation id="3162559335345991374">目前使用的 Wi-Fi 網路可能會要求您造訪登入網頁。</translation>
@@ -1212,6 +1213,7 @@
 <translation id="334438173029876234">滑板裝備</translation>
 <translation id="3347146863028219517">滑雪與單板滑雪</translation>
 <translation id="3349952286488694786">SRA2</translation>
+<translation id="3350450887151703713">重播 10 秒</translation>
 <translation id="3352881017886802007">運動遊戲</translation>
 <translation id="3355823806454867987">變更 Proxy 設定...</translation>
 <translation id="335809815767823">匯出完成</translation>
@@ -3051,6 +3053,7 @@
 <translation id="6944557544071529399">策略遊戲</translation>
 <translation id="6944692733090228304">你在不是由 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 管理的網站上輸入了你的密碼。為確保帳戶安全，請勿在其他應用程式和網站上重複使用你的密碼。</translation>
 <translation id="6945221475159498467">選取</translation>
+<translation id="6946949206576443118">使用 Chrome 搜尋網路</translation>
 <translation id="6948051842255602737">遊戲結束，你的得分為 <ph name="SCORE" />。</translation>
 <translation id="6948701128805548767">如要查看取件方式和相關規定，請選取一個地址</translation>
 <translation id="6948874830249067134">A1 x 3</translation>

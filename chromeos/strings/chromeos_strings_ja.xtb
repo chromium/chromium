@@ -271,6 +271,7 @@
 <translation id="2446553403094072641">浮動小数点数精度</translation>
 <translation id="2448312741937722512">種類</translation>
 <translation id="2465272316171730950">処理能力の上限に達しています。しばらくしてからもう一度お試しください。</translation>
+<translation id="2472215337771558851">文書作成サポートを使用すると、Google AI の活用により文章の下書きを作成したり既存の文章を改良したりできます</translation>
 <translation id="2480572840229215612">カニ</translation>
 <translation id="248546197012830854">デバイスはオフラインです。ヘルプ コンテンツを表示するには、Wi-Fi ネットワークに接続してください。</translation>
 <translation id="2486301288428798846">木</translation>
@@ -328,10 +329,12 @@
 <translation id="2860473693272905224">スキャナに次のページを置いてください</translation>
 <translation id="2872961005593481000">終了</translation>
 <translation id="2873483161362553159">ブラウザ操作</translation>
+<translation id="2873939192640533085">「より確実な表現」などのプロンプトを入力</translation>
 <translation id="2874939134665556319">前のトラック</translation>
 <translation id="2875812231449496375">この設定をオンにすると、この壁紙を効果的に使用できます。この設定はいつでもオフにできます。</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> 秒で <ph name="RATE" /> 放電しました。</translation>
 <translation id="2880569433548999039">「雲の流れ」のスクリーン セーバー</translation>
+<translation id="2888298276507578975">「お礼のメッセージを作成」などのプロンプトを入力</translation>
 <translation id="2890557891229184386">熱帯の島</translation>
 <translation id="2895772081848316509">ダーク</translation>
 <translation id="2926057806159140518">ユーザー名とパスワードを入力するか、QR コードをスキャンしてください</translation>
@@ -376,6 +379,7 @@
 <translation id="3226405216343213872">スキャナを検索しています</translation>
 <translation id="3226657629376379887">レイアウトの操作メニュー</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> の値を <ph name="CONVERSION_RATE" /> で割る</translation>
+<translation id="3237710083340813756">書き換え</translation>
 <translation id="3246869037381808805">昨日より前の印刷ジョブは削除されます</translation>
 <translation id="324961752321393509">このアプリを閉じることは、管理者が許可していません</translation>
 <translation id="3268178239013324452">失敗 - 扉が開いています</translation>
@@ -414,6 +418,7 @@
 <translation id="346539236881580388">撮り直し</translation>
 <translation id="3484914941826596830">ファームウェアのアップデート中、この外部デバイスを電源から外したり、パソコンをシャットダウンしたりしないでください。このウィンドウは最小化できます。アップデートには数分かかることがあります。その間、外部デバイスは動作しない可能性があります。</translation>
 <translation id="3486220673238053218">定義</translation>
+<translation id="3487866404496702283">mahi 機能に関するフィードバック</translation>
 <translation id="3488065109653206955">一部有効</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" />色調の<ph name="OFFICE_STYLE" />オフィス</translation>
 <translation id="3493187369049186498">お使いの Chromebook で測定されたデータ使用量です。測定結果はプロバイダのデータとは異なる場合があります。</translation>
@@ -442,6 +447,7 @@
 <translation id="3621072146987826699">ゾウ</translation>
 <translation id="3632579075709132555">プライバシー画面の切り替え</translation>
 <translation id="3651050199673793219">温度の単位を選択してください</translation>
+<translation id="3661106764436337772">より確実な文章をすばやく作成</translation>
 <translation id="3662461537616691585">バーガンディとマルーン</translation>
 <translation id="3668449597372804501">「雲の流れ」の壁紙</translation>
 <translation id="3675132884790542448">ブタ</translation>
@@ -875,6 +881,7 @@
 <translation id="6235460611964961764">データ使用量を手動でリセットする</translation>
 <translation id="6243280677745499710">現在設定されている壁紙</translation>
 <translation id="6250316632541035980">ベーコンと卵</translation>
+<translation id="6255213378196499011">文書作成サポートの設定</translation>
 <translation id="6275224645089671689">右矢印</translation>
 <translation id="6278428485366576908">テーマ</translation>
 <translation id="6280912520669706465">ARC</translation>

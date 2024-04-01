@@ -336,7 +336,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2405664212338326887">Nije povezano</translation>
 <translation id="2408955596600435184">Unesite PIN</translation>
 <translation id="2412593942846481727">Ažuriranje je dostupno</translation>
-<translation id="2416438829169535743">Napustiti prikaz?</translation>
+<translation id="2416438829169535743">Izaći iz prikaza?</translation>
 <translation id="2417486498593892439">Prijava na mrežu</translation>
 <translation id="2426051945783024481">Kadriranje kamere je automatski centrirano</translation>
 <translation id="2427507373259914951">Lijevi klik</translation>
@@ -1158,7 +1158,7 @@ Neke funkcije su ograničene radi povećanja vijeka trajanja baterije.</translat
 <translation id="556042886152191864">Dugme</translation>
 <translation id="5570122939431135380">Otvaranje nove kartice u novom anonimnom prozoru</translation>
 <translation id="5571066253365925590">Bluetooth je omogućen</translation>
-<translation id="5572632238877308040">Osnovno</translation>
+<translation id="5572632238877308040">Osnovne aplikacije</translation>
 <translation id="557563299383177668">Sljedeći pasus</translation>
 <translation id="5577082622442191756">Uključite/isključite Bluetooth <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Bluetooth na telefonu mora biti uključen da biste koristili Phone Hub</translation>
@@ -1365,7 +1365,7 @@ Neke funkcije su ograničene radi povećanja vijeka trajanja baterije.</translat
 <translation id="6351032674660237738">PRIJEDLOZI APLIKACIJA</translation>
 <translation id="6352082849089527770">Nepoznate mreže</translation>
 <translation id="6359587239691116345">Preuzmite najnovije funkcije i poboljšanja sigurnosti. Ako odbijete ovo ažuriranje, vaš uređaj možda više neće funkcionirati ispravno i možete iskusiti probleme sa sigurnošću i performansama.</translation>
-<translation id="6362833380917912748">Upoznajte svoje ugrađene aplikacije</translation>
+<translation id="6362833380917912748">Saznajte više o ugrađenim aplikacijama</translation>
 <translation id="6376931439017688372">Bluetooth je uključen</translation>
 <translation id="6378515133128829137">Kačenje prozora na desnoj strani</translation>
 <translation id="6381109794406942707">Da otključate uređaj, unesite PIN.</translation>
@@ -1963,7 +1963,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">Potvrdite identitet: <ph name="ORIGIN_NAME" /> želi potvrditi vaš identitet</translation>
 <translation id="875593634123171288">Prikaži postavke VPN mreže</translation>
-<translation id="8756799553341497810">Nakon što zatvorite ovaj prikaz, možete početi prilagođavati izgled aplikacije.</translation>
+<translation id="8756799553341497810">Možete započeti prilagođavati izgled svoje aplikacije kada izađete iz ovog prikaza.</translation>
 <translation id="8759408218731716181">Nije moguće postaviti višestruku prijavu</translation>
 <translation id="8763883995157866248">Stavite uređaj u način rada mirovanja</translation>
 <translation id="877404052021108314">90 °F u °C</translation>

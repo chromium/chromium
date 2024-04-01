@@ -336,6 +336,7 @@
 <translation id="2405664212338326887">कनेक्ट नहीं है</translation>
 <translation id="2408955596600435184">अपना पिन डालें</translation>
 <translation id="2412593942846481727">अपडेट मौजूद है</translation>
+<translation id="2416438829169535743">क्या आपको व्यू से बाहर निकलना है?</translation>
 <translation id="2417486498593892439">नेटवर्क में साइन इन करें</translation>
 <translation id="2426051945783024481">ऑटो फ़्रेमिंग ने कैमरे के फ़ोकस को अपने-आप बीच में कर दिया है</translation>
 <translation id="2427507373259914951">बायां क्लिक</translation>
@@ -1154,9 +1155,11 @@
 <translation id="5555639311269196631">हॉटस्पॉट बंद करें</translation>
 <translation id="5556459405103347317">फिर लोड करें</translation>
 <translation id="5558091555391176027">आस-पास शेयर करने की सुविधा के ज़्यादा लोगों को दिखाने वाले मोड पर टॉगल करें</translation>
+<translation id="5558314826121965174">क्रिएटिविटी</translation>
 <translation id="556042886152191864">बटन</translation>
 <translation id="5570122939431135380">नए टैब को नई गुप्त विंडो में खोलें</translation>
 <translation id="5571066253365925590">ब्लूटूथ सक्षम किया गया</translation>
+<translation id="5572632238877308040">इन्हें ज़रूर आज़माएं</translation>
 <translation id="557563299383177668">अगले पैराग्राफ़ पर जाएं</translation>
 <translation id="5577082622442191756">ब्लूटूथ को टॉगल करें. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">फ़ोन हब का इस्तेमाल करने के लिए, पक्का करें कि आपके फ़ोन में ब्लूटूथ चालू हो</translation>
@@ -1181,6 +1184,7 @@
 <translation id="5662075790140998213">डेस्क 10</translation>
 <translation id="5662709761327382534">माइक्रोफ़ोन से ऑडियो रिकॉर्ड <ph name="CURRENT_STATE" />, माइक्रोफ़ोन से ऑडियो रिकॉर्ड करने के लिए enter दबाएं <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">चालू हो रहा है</translation>
+<translation id="5672890847723042801">काम की सेवाएं</translation>
 <translation id="5673434351075758678">अपनी सेटिंग सिंक करने के बाद "<ph name="FROM_LOCALE" />" से "<ph name="TO_LOCALE" />".</translation>
 <translation id="5675363643668471212">शेल्फ़ आइटम</translation>
 <translation id="5677928146339483299">ब्लॉक किया गया है</translation>
@@ -1362,6 +1366,7 @@
 <translation id="6351032674660237738">ऐप्लिकेशन सुझाव</translation>
 <translation id="6352082849089527770">नेटवर्क की कोई जानकारी नहीं है</translation>
 <translation id="6359587239691116345">नई सुविधाएं और बेहतर सुरक्षा पाएं. अगर आपने इस अपडेट को अस्वीकार किया है, तो हो सकता है कि आपका डिवाइस ठीक से काम न करे. इसके अलावा, सुरक्षा और परफ़ॉर्मेंस से जुड़ी समस्याएं आ सकती हैं.</translation>
+<translation id="6362833380917912748">अपने डिवाइस में पहले से मौजूद ऐप्लिकेशन के बारे में जानें</translation>
 <translation id="6376931439017688372">ब्लूटूथ चालू है</translation>
 <translation id="6378515133128829137">विंडो को दाईं ओर पिन करें</translation>
 <translation id="6381109794406942707">यह डिवाइस अनलॉक करने के लिए, अपना पिन डालें.</translation>
@@ -1848,6 +1853,7 @@
 <translation id="8262312463845990408">'चुनें और सुनें' सुविधा को रोकें या चालू करें</translation>
 <translation id="8270450402312105425">{0,plural, =1{डिवाइस को एक घंटे के अंदर पिछले वर्शन पर ले जाएं}one{डिवाइस को # घंटे के अंदर पिछले वर्शन पर ले जाएं}other{डिवाइस को # घंटों के अंदर पिछले वर्शन पर ले जाएं}}</translation>
 <translation id="8277261673056602147">अपनी स्क्रीन पर मौजूद टेक्स्ट को हाइलाइट करें</translation>
+<translation id="8287009018010202411">प्रोडक्टिविटी</translation>
 <translation id="828708037801473432">बंद है</translation>
 <translation id="8297006494302853456">कमज़ोर</translation>
 <translation id="8308637677604853869">पिछला मेन्यू</translation>
@@ -1919,6 +1925,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">अपने ऐप्लिकेशन को नाम या रंग के हिसाब से क्रम में लगाएं</translation>
 <translation id="8609384513243082612">नया टैब खोलें</translation>
+<translation id="861045123704058818">ऐप्लिकेशन कुछ समय के लिए, कैटगरी के हिसाब से व्यवस्थित किए जाते हैं</translation>
 <translation id="8612216344243590325">ज़रूरी फ़ाइलों को डेस्कटॉप के बजाय, <ph name="HOLDING_SPACE_TITLE" /> में रखें. बस, फ़ाइलों को खींचकर <ph name="HOLDING_SPACE_TITLE" /> में छोड़ें.</translation>
 <translation id="8614517853887502247">व्यूइंग प्रोटेक्शन चालू होने की वजह से, <ph name="APP_1_TITLE" /> और <ph name="APP_2_TITLE" /> से मिलने वाली सूचनाओं को छिपाया गया है</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1957,6 +1964,7 @@
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">अपनी पहचान की पुष्टि करें: <ph name="ORIGIN_NAME" /> आपकी पहचान की पुष्टि करना चाहता है</translation>
 <translation id="875593634123171288">VPN सेटिंग दिखाएं</translation>
+<translation id="8756799553341497810">इस व्यू से बाहर निकलने के बाद, ऐप्लिकेशन के लेआउट को पसंद के मुताबिक बनाया जा सकता है.</translation>
 <translation id="8759408218731716181">एक से ज़्यादा साइन-इन सेट अप नहीं किया जा सका</translation>
 <translation id="8763883995157866248">डिवाइस को स्लीप मोड में रखने के लिए</translation>
 <translation id="877404052021108314">90°F सेल्सियस में</translation>

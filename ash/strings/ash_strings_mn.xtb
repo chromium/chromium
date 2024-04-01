@@ -336,6 +336,7 @@
 <translation id="2405664212338326887">Холбогдоогүй</translation>
 <translation id="2408955596600435184">ПИН-ээ оруулна уу</translation>
 <translation id="2412593942846481727">Шинэчлэх боломжтой</translation>
+<translation id="2416438829169535743">Харагдах байдлаас гарах уу?</translation>
 <translation id="2417486498593892439">Сүлжээнд нэвтэрнэ үү</translation>
 <translation id="2426051945783024481">Камерын хүрээг автоматаар голлуулсан</translation>
 <translation id="2427507373259914951">Зүүн талыг товших</translation>
@@ -1154,9 +1155,11 @@
 <translation id="5555639311269196631">Сүлжээний цэгийг унтраах</translation>
 <translation id="5556459405103347317">Дахин ачаал</translation>
 <translation id="5558091555391176027">Ойролцоо хуваалцах онцлогийн өндөр харагдцыг асаана уу/унтраана уу</translation>
+<translation id="5558314826121965174">Бүтээлч байдал</translation>
 <translation id="556042886152191864">Товч</translation>
 <translation id="5570122939431135380">Шинэ табыг нууцлалтай шинэ цонхонд нээх</translation>
 <translation id="5571066253365925590">Bluetooth идэвхжсэн байна</translation>
+<translation id="5572632238877308040">Зайлшгүй хэрэгтэй</translation>
 <translation id="557563299383177668">Дараагийн догол мөр</translation>
 <translation id="5577082622442191756">Bluetooth-г асаана уу/унтраана уу. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Phone Hub-г ашиглахын тулд утсан дээрээ Bluetooth-г идэвхжүүлсэн эсэхийг шалгана уу</translation>
@@ -1181,6 +1184,7 @@
 <translation id="5662075790140998213">10-р дэлгэц</translation>
 <translation id="5662709761327382534">Микрофоныг бичих <ph name="CURRENT_STATE" /> байна. Микрофоны бичлэгийг <ph name="NEW_STATE" /> болгохын тулд enter дээр дарна уу</translation>
 <translation id="5669267381087807207">Идэвхжиж байна</translation>
+<translation id="5672890847723042801">Хэрэгслүүд</translation>
 <translation id="5673434351075758678">Тохиргоогоо синк хийсний дараа "<ph name="FROM_LOCALE" />"-с "<ph name="TO_LOCALE" />" руу шилжүүлнэ.</translation>
 <translation id="5675363643668471212">Shelf зүйл</translation>
 <translation id="5677928146339483299">Хаагдсан</translation>
@@ -1362,6 +1366,7 @@
 <translation id="6351032674660237738">АППЫН ЗӨВЛӨМЖ</translation>
 <translation id="6352082849089527770">Тодорхойгүй сүлжээ</translation>
 <translation id="6359587239691116345">Онцлог болон аюулгүй байдлын хамгийн сүүлийн үеийн сайжруулалтыг авна уу. Хэрэв та энэ шинэчлэлтээс татгалзвал төхөөрөмж тань цаашид зохих ёсоор ажиллахгүй байж магадгүй бөгөөд та аюулгүй байдал болон гүйцэтгэлийн асуудалтай тулгарч магадгүй.</translation>
+<translation id="6362833380917912748">Бүрэлдэхүүн аппуудтайгаа танилцаарай</translation>
 <translation id="6376931439017688372">Bluetooth асаалттай байна</translation>
 <translation id="6378515133128829137">Цонхыг баруун талд бэхлэх</translation>
 <translation id="6381109794406942707">Төхөөрөмжийн түгжээг тайлахын тулд ПИН-ээ оруулна уу.</translation>
@@ -1848,6 +1853,7 @@
 <translation id="8262312463845990408">Дахин тоглуулахыг асаах/унтраах</translation>
 <translation id="8270450402312105425">{0,plural, =1{Төхөөрөмжийг өмнөх хувилбар луу нь 1 цагийн дотор өөрчилнө үү}other{Төхөөрөмжийг өмнөх хувилбар луу нь # цагийн дотор өөрчилнө үү}}</translation>
 <translation id="8277261673056602147">Дэлгэц дээрээ текст тодруулах</translation>
+<translation id="8287009018010202411">Бүтээмж</translation>
 <translation id="828708037801473432">Унтраалттай</translation>
 <translation id="8297006494302853456">Сул</translation>
 <translation id="8308637677604853869">Өмнөх цэс</translation>
@@ -1920,6 +1926,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Аппуудаа нэр эсвэл өнгөөр эрэмбэлнэ үү</translation>
 <translation id="8609384513243082612">Шинэ таб нээх</translation>
+<translation id="861045123704058818">Аппуудыг ангиллаар нь түр зуур цэгцэлдэг</translation>
 <translation id="8612216344243590325">Чухал файлуудыг дэлгэцийн оронд <ph name="HOLDING_SPACE_TITLE" />-д байлгана уу. Ердөө файлуудыг <ph name="HOLDING_SPACE_TITLE" /> руу чирнэ үү.</translation>
 <translation id="8614517853887502247">Үзэх хамгаалалт асаалттай тул <ph name="APP_1_TITLE" /> болон <ph name="APP_2_TITLE" />-н мэдэгдлийг нуусан</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1958,6 +1965,7 @@
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">Өөрийгөө баталгаажуулах: <ph name="ORIGIN_NAME" /> таныг мөн болохыг баталгаажуулахыг хүсэж байна</translation>
 <translation id="875593634123171288">VPN тохиргоог харуулах</translation>
+<translation id="8756799553341497810">Та энэ харагдах байдлаас гарсны дараа аппын бүдүүвчээ өөрчилж эхлэх боломжтой.</translation>
 <translation id="8759408218731716181">Олон хэрэглэгчтэй нэвтрэх эрхийг суулгаж чадахгүй байна</translation>
 <translation id="8763883995157866248">Төхөөрөмжийг амраах горимд оруулах</translation>
 <translation id="877404052021108314">90°F цельсээр</translation>

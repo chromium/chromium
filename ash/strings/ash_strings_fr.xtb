@@ -336,6 +336,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2405664212338326887">Non connecté</translation>
 <translation id="2408955596600435184">Saisissez votre code.</translation>
 <translation id="2412593942846481727">Mise à jour disponible</translation>
+<translation id="2416438829169535743">Quitter la vue ?</translation>
 <translation id="2417486498593892439">Se connecter au réseau</translation>
 <translation id="2426051945783024481">Cadre de la caméra centré automatiquement</translation>
 <translation id="2427507373259914951">Clic gauche</translation>
@@ -1153,9 +1154,11 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="5555639311269196631">Désactiver le point d'accès</translation>
 <translation id="5556459405103347317">Actualiser</translation>
 <translation id="5558091555391176027">Activer/Désactiver le mode haute visibilité du Partage à proximité</translation>
+<translation id="5558314826121965174">Créativité</translation>
 <translation id="556042886152191864">Bouton</translation>
 <translation id="5570122939431135380">Ouvrir un nouvel onglet dans une nouvelle fenêtre de navigation privée</translation>
 <translation id="5571066253365925590">Bluetooth activé</translation>
+<translation id="5572632238877308040">Indispensables</translation>
 <translation id="557563299383177668">Paragraphe suivant</translation>
 <translation id="5577082622442191756">Activer/Désactiver le Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Vérifiez que le Bluetooth est activé sur votre téléphone pour utiliser Phone Hub</translation>
@@ -1180,6 +1183,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="5662075790140998213">Bureau 10</translation>
 <translation id="5662709761327382534">Enregistrement via le micro <ph name="CURRENT_STATE" />, appuyez sur Entrée pour qu'il soit <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Activation</translation>
+<translation id="5672890847723042801">Utilitaires</translation>
 <translation id="5673434351075758678">La langue utilisée est passée de "<ph name="FROM_LOCALE" />" à "<ph name="TO_LOCALE" />" après la synchronisation de vos paramètres.</translation>
 <translation id="5675363643668471212">Élément d'étagère</translation>
 <translation id="5677928146339483299">Bloqués</translation>
@@ -1361,6 +1365,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="6351032674660237738">SUGGESTIONS D'APPLICATIONS</translation>
 <translation id="6352082849089527770">Réseaux inconnus</translation>
 <translation id="6359587239691116345">Bénéficiez des dernières fonctionnalités et améliorations de sécurité. Si vous refusez cette mise à jour, votre appareil risque de ne plus fonctionner correctement, et vous risquez de rencontrer des problèmes de sécurité et de performances.</translation>
+<translation id="6362833380917912748">Familiarisez-vous avec vos applis intégrées</translation>
 <translation id="6376931439017688372">Bluetooth activé</translation>
 <translation id="6378515133128829137">Épingler la fenêtre à droite</translation>
 <translation id="6381109794406942707">Pour déverrouiller l'appareil, saisissez votre code.</translation>
@@ -1848,6 +1853,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8262312463845990408">Activer/Désactiver la lecture</translation>
 <translation id="8270450402312105425">{0,plural, =1{Rétablir une version antérieure de l'appareil d'ici une heure}one{Rétablir une version antérieure de l'appareil d'ici # heure}other{Rétablir une version antérieure de l'appareil d'ici # heures}}</translation>
 <translation id="8277261673056602147">Mettre en surbrillance du texte à l'écran</translation>
+<translation id="8287009018010202411">Productivité</translation>
 <translation id="828708037801473432">Désactivé</translation>
 <translation id="8297006494302853456">Faible</translation>
 <translation id="8308637677604853869">Menu précédent</translation>
@@ -1919,6 +1925,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Trier les applis par nom ou par couleur</translation>
 <translation id="8609384513243082612">Ouvrir un nouvel onglet</translation>
+<translation id="861045123704058818">Les applis sont temporairement organisées par catégorie</translation>
 <translation id="8612216344243590325">Conservez les fichiers importants dans <ph name="HOLDING_SPACE_TITLE" /> plutôt que sur le bureau. Il vous suffit de les faire glisser vers <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Les notifications <ph name="APP_1_TITLE" /> et <ph name="APP_2_TITLE" /> sont masquées, car la protection anti-regard est activée</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1956,6 +1963,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />, <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">Valider votre identité : <ph name="ORIGIN_NAME" /> souhaite vérifier qu'il s'agit bien de vous</translation>
 <translation id="875593634123171288">Afficher les paramètres de VPN</translation>
+<translation id="8756799553341497810">Vous pourrez commencer à personnaliser la mise en page des applis lorsque vous aurez quitté cette vue.</translation>
 <translation id="8759408218731716181">Impossible de configurer la connexion multicompte.</translation>
 <translation id="8763883995157866248">Mettre l'appareil en mode veille</translation>
 <translation id="877404052021108314">90 °F en °C</translation>

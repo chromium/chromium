@@ -336,6 +336,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2405664212338326887">Ei yhdistetty</translation>
 <translation id="2408955596600435184">Lisää PIN-koodi</translation>
 <translation id="2412593942846481727">Päivitys saatavilla</translation>
+<translation id="2416438829169535743">Poistutaanko näkymästä?</translation>
 <translation id="2417486498593892439">Kirjaudu verkkoon</translation>
 <translation id="2426051945783024481">Kameran kehys keskitetty automaattisesti</translation>
 <translation id="2427507373259914951">Ykköspainikkeen klikkaus</translation>
@@ -1153,9 +1154,11 @@ Joidenkin ominaisuuksien käyttöä on rajoitettu akunkeston pidentämiseksi.</t
 <translation id="5555639311269196631">Laita hotspot pois päältä</translation>
 <translation id="5556459405103347317">Lataa uudelleen</translation>
 <translation id="5558091555391176027">Laita lähijakamisen näkyvyys päälle/pois</translation>
+<translation id="5558314826121965174">Luovuus</translation>
 <translation id="556042886152191864">Painike</translation>
 <translation id="5570122939431135380">Avaa uusi välilehti uudessa incognito-ikkunassa</translation>
 <translation id="5571066253365925590">Bluetooth käytössä</translation>
+<translation id="5572632238877308040">Välttämättömät</translation>
 <translation id="557563299383177668">Seuraava kappale</translation>
 <translation id="5577082622442191756">Laita Bluetooth päälle tai pois päältä. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Tarkista että Bluetooth on käytössä puhelimessasi, jotta voit käyttää puhelinhubia</translation>
@@ -1180,6 +1183,7 @@ Joidenkin ominaisuuksien käyttöä on rajoitettu akunkeston pidentämiseksi.</t
 <translation id="5662075790140998213">Työpöytä 10</translation>
 <translation id="5662709761327382534">Mikrofonin tallentaminen on <ph name="CURRENT_STATE" />. Paina Enter laittaaksesi mikrofonin tallennuksen <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Aktivoidaan</translation>
+<translation id="5672890847723042801">Apusovellukset</translation>
 <translation id="5673434351075758678">Muutos asetusten synkronoinnin yhteydessä: <ph name="FROM_LOCALE" /> – <ph name="TO_LOCALE" /></translation>
 <translation id="5675363643668471212">Hyllyn kohde</translation>
 <translation id="5677928146339483299">Estetty</translation>
@@ -1361,6 +1365,7 @@ Joidenkin ominaisuuksien käyttöä on rajoitettu akunkeston pidentämiseksi.</t
 <translation id="6351032674660237738">SOVELLUSEHDOTUKSET</translation>
 <translation id="6352082849089527770">Tuntemattomat verkot</translation>
 <translation id="6359587239691116345">Lataa uusimmat ominaisuudet ja tietoturvaparannukset. Jos hylkäät päivityksen, laite ei välttämättä toimi kunnolla, ja saatat kokea turvallisuuteen ja suorituskykyyn liittyviä ongelmia.</translation>
+<translation id="6362833380917912748">Tutustu sisäänrakennettuihin sovelluksiin</translation>
 <translation id="6376931439017688372">Bluetooth on päällä</translation>
 <translation id="6378515133128829137">Kiinnitä ikkuna oikealle</translation>
 <translation id="6381109794406942707">Avaa laitteen lukitus lisäämällä PIN-koodisi.</translation>
@@ -1847,6 +1852,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8262312463845990408">Käynnistä tai keskeytä toisto</translation>
 <translation id="8270450402312105425">{0,plural, =1{Päivitä laite aiempaan versioon tunnin kuluessa}other{Päivitä laite aiempaan versioon # tunnin kuluessa}}</translation>
 <translation id="8277261673056602147">Korosta tekstiä näytöllä</translation>
+<translation id="8287009018010202411">Tuottavuus</translation>
 <translation id="828708037801473432">Poissa päältä</translation>
 <translation id="8297006494302853456">Heikko</translation>
 <translation id="8308637677604853869">Edellinen valikko</translation>
@@ -1918,6 +1924,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8594115950068821369">–<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Sovellusten lajitteleminen nimen tai värin perusteella</translation>
 <translation id="8609384513243082612">Avaa uusi välilehti</translation>
+<translation id="861045123704058818">Sovellukset järjestetään tilapäisesti kategorian mukaan</translation>
 <translation id="8612216344243590325">Säilytä tärkeitä tiedostoja työpöydän sijaan täällä: <ph name="HOLDING_SPACE_TITLE" />. Vedä tiedostot tänne: <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Ilmoitukset (<ph name="APP_1_TITLE" /> ja <ph name="APP_2_TITLE" />) on piilotettu, koska urkinnan esto on päällä</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1955,6 +1962,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />, <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">Vahvista henkilöllisyytesi: <ph name="ORIGIN_NAME" /> haluaa vahvistaa henkilöllisyytesi</translation>
 <translation id="875593634123171288">Näytä VPN-asetukset</translation>
+<translation id="8756799553341497810">Voit aloittaa sovelluksen asettelun muokkaamisen, kun poistut tästä näkymästä.</translation>
 <translation id="8759408218731716181">Useisiin tileihin kirjautumista ei sallita</translation>
 <translation id="8763883995157866248">Siirrä laite virransäästötilaan</translation>
 <translation id="877404052021108314">90 °F celsiusasteina</translation>

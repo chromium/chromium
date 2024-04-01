@@ -878,6 +878,7 @@
 <translation id="5548760955356983418">‏Handoff آپ کو اس آلہ پر کسی ویب سائٹ کی براؤزنگ شروع کرنے اور پھر آسانی سےآپ کے Mac پر جاری رکھنے دیتا ہے۔ موجودہ کھلی ویب سائٹ آپ کے Mac کے ڈاک میں ظاہر ہوگی۔
 
 Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ضروری ہے اور آپ کے آلات کو وہی iCloud اکاؤنٹ استعمال کرنا چاہیے۔</translation>
+<translation id="5551825465462320939">اپنی دلچسپیوں کی بنیاد پر خبروں، اسپورٹس اور بہت کچھ سے باخبر رہیں۔</translation>
 <translation id="5551897871312988470">ترجمہ کی پیشکش کریں</translation>
 <translation id="5556459405103347317">دوبارہ لوڈ کریں</translation>
 <translation id="555749644339804659">پاس ورڈز چیک ہو رہے ہیں…</translation>
@@ -1182,6 +1183,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6989674195860388998">ترتیبات میں سوئچ کریں…</translation>
 <translation id="6998989275928107238">بنام</translation>
 <translation id="699954956411469731">موبائل اطلاعات</translation>
+<translation id="699985840472413751">ڈاؤن لوڈ بند کریں</translation>
 <translation id="7004032350256606903">آپ کی تنظیم چاہتی ہے کہ آپ نجی طور پر براؤز کریں۔
 <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">حالیہ ٹیبز</translation>
@@ -1471,6 +1473,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="850600235656508448">پوشیدگی وضع میں کھولیں</translation>
 <translation id="8517375800490286174">اوپن سورس لائسنسز</translation>
 <translation id="8522147671363140027">{count,plural, =1{‏{count} پاس ورڈ اور دیگر آئٹمز صرف اس آلے پر محفوظ ہیں۔ انہیں اپنے دیگر آلات پر استعمال کرنے کیلئے، انہیں اپنے Google اکاؤنٹ، {email} میں محفوظ کریں۔}other{‏{count} پاس ورڈز اور دیگر آئٹمز صرف اس آلے پر محفوظ ہیں۔ انہیں اپنے دیگر آلات پر استعمال کرنے کیلئے، انہیں اپنے Google اکاؤنٹ، {email} میں محفوظ کریں۔}}</translation>
+<translation id="8522813812888400223">ڈاؤن لوڈ کو منسوخ کریں</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> ٹیبز <ph name="FIRST_VISIBLE_TAB" /> سے <ph name="LAST_VISIBLE_TAB" /> از <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="852576975834694248">آپ سائن آؤٹ ہو جائیں گے اور ٹیبز بند ہو جائیں گے۔</translation>
 <translation id="8528009254289981965">پوشیدگی میں دیگر ایپس کے لنکس کھولیں</translation>

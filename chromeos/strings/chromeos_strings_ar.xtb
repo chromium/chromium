@@ -271,6 +271,7 @@
 <translation id="2446553403094072641">دقة النقطة العائمة</translation>
 <translation id="2448312741937722512">النوع</translation>
 <translation id="2465272316171730950">لقد بلغنا الحدّ الأقصى. يُرجى العودة بعد قليل.</translation>
+<translation id="2472215337771558851">‏حسِّن نصًا سبقت كتابته أو أنشئ مسوّدة باستخدام ميزة "مساعدة في الكتابة" التي تستند إلى تكنولوجيات الذكاء الاصطناعي من Google</translation>
 <translation id="2480572840229215612">حيوانات سلطعون</translation>
 <translation id="248546197012830854">‏الجهاز غير متصل بالإنترنت. عليك الاتصال بشبكة Wi-Fi للاطّلاع على محتوى المساعدة.</translation>
 <translation id="2486301288428798846">الخشب</translation>
@@ -328,10 +329,12 @@
 <translation id="2860473693272905224">يُرجى وضع صفحة أخرى على الماسح الضوئي.</translation>
 <translation id="2872961005593481000">إيقاف التشغيل</translation>
 <translation id="2873483161362553159">التنقّل في المتصفِّح</translation>
+<translation id="2873939192640533085">أدخِل طلبًا، مثل "إعادة الكتابة بأسلوب أكثر ثقة"</translation>
 <translation id="2874939134665556319">المقطع الصوتي السابق</translation>
 <translation id="2875812231449496375">يمكنك تفعيل هذا الوضع للحصول على أفضل النتائج باستخدام هذه الخلفية. ويمكنك إيقاف هذا الإعداد في أي وقت.</translation>
 <translation id="2878387241690264070">تم نفاد <ph name="RATE" /> خلال <ph name="NUM_SECONDS" /> ثانية.</translation>
 <translation id="2880569433548999039">شاشة استراحة تعرض منظرًا انسيابيًا للسُحب</translation>
+<translation id="2888298276507578975">أدخِل طلبًا، مثل "كتابة رسالة شكر"</translation>
 <translation id="2890557891229184386">جزيرة استوائية</translation>
 <translation id="2895772081848316509">داكنة</translation>
 <translation id="2926057806159140518">أدخِل اسم المستخدم وكلمة المرور أو امسَح رمز الاستجابة السريعة ضوئيًا.</translation>
@@ -376,6 +379,7 @@
 <translation id="3226405216343213872">جارٍ البحث عن أجهزة مسح ضوئي</translation>
 <translation id="3226657629376379887">قائمة إجراءات التصميم</translation>
 <translation id="3227186760713762082">قسمة قيمة <ph name="CATEGORY_TEXT" /> على <ph name="CONVERSION_RATE" /></translation>
+<translation id="3237710083340813756">إعادة الكتابة</translation>
 <translation id="3246869037381808805">ستتم إزالة طلبات الطباعة التي مرَّ عليها أكثر من يوم.</translation>
 <translation id="324961752321393509">لا يسمح المشرف بإغلاق هذا التطبيق.</translation>
 <translation id="3268178239013324452">تعذَّرت الطباعة - باب الطابعة مفتوح</translation>
@@ -414,6 +418,7 @@
 <translation id="346539236881580388">إعادة التقاط</translation>
 <translation id="3484914941826596830">لا تفصل هذا الجهاز الخارجي أو توقف تشغيل الكمبيوتر أثناء تحديث البرامج الثابتة. يمكنك تصغير هذه النافذة. قد يستغرق هذا التحديث بضع دقائق وقد يتوقف الجهاز الخارجي عن العمل أثناء التحديث.</translation>
 <translation id="3486220673238053218">تعريف</translation>
+<translation id="3487866404496702283">‏ملاحظات حول ميزة Mahi</translation>
 <translation id="3488065109653206955">نشطة جزئيًا</translation>
 <translation id="3492882532495507361">مكتب <ph name="OFFICE_STYLE" /> بألوان <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">‏يقيس جهاز Chromebook البيانات التي يتم استخدامها. وقد يختلف هذا القياس عن قياسات مزوِّد البيانات.</translation>
@@ -442,6 +447,7 @@
 <translation id="3621072146987826699">أفيال</translation>
 <translation id="3632579075709132555">إيقاف/تفعيل شاشة الخصوصية</translation>
 <translation id="3651050199673793219">اختيار وحدة قياس درجة الحرارة</translation>
+<translation id="3661106764436337772">الكتابة بشكلٍ أسرع وبأسلوب أكثر ثقة</translation>
 <translation id="3662461537616691585">الخمريّ والكستنائي</translation>
 <translation id="3668449597372804501">خلفية تعرض منظرًا انسيابيًا للسُحب</translation>
 <translation id="3675132884790542448">خنازير</translation>
@@ -875,6 +881,7 @@
 <translation id="6235460611964961764">إعادة ضبط استخدام البيانات يدويًا</translation>
 <translation id="6243280677745499710">المحدّدة حاليًا</translation>
 <translation id="6250316632541035980">لحم مقدّد وبيض</translation>
+<translation id="6255213378196499011">إعدادات ميزة "مساعدة في الكتابة"</translation>
 <translation id="6275224645089671689">السهم المتّجه لليمين</translation>
 <translation id="6278428485366576908">المظهر</translation>
 <translation id="6280912520669706465">ARC</translation>

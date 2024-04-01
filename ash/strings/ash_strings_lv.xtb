@@ -336,6 +336,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2405664212338326887">Nav savienojuma</translation>
 <translation id="2408955596600435184">Ievadiet PIN kodu</translation>
 <translation id="2412593942846481727">Ir pieejams atjauninājums</translation>
+<translation id="2416438829169535743">Vai iziet no skata?</translation>
 <translation id="2417486498593892439">Pierakstīties tīklā</translation>
 <translation id="2426051945783024481">Kameras kadrs tiek automātiski centrēts</translation>
 <translation id="2427507373259914951">Noklikšķināt ar peles kreiso pogu</translation>
@@ -1153,9 +1154,11 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="5555639311269196631">Izslēgt tīklāju</translation>
 <translation id="5556459405103347317">Pārlādēt</translation>
 <translation id="5558091555391176027">Pārslēgt augstas redzamības režīmu funkcijai “Kopīgošana tuvumā”</translation>
+<translation id="5558314826121965174">Radošums</translation>
 <translation id="556042886152191864">Poga</translation>
 <translation id="5570122939431135380">Atvērt jaunu cilni jaunā inkognito režīma logā</translation>
 <translation id="5571066253365925590">Bluetooth iespējots</translation>
+<translation id="5572632238877308040">Ikdienā vajadzīgais</translation>
 <translation id="557563299383177668">Nākamā rindkopa</translation>
 <translation id="5577082622442191756">Pārslēgt Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Lai varētu izmantot tālruņa centrmezglu, iespējojiet tālrunī Bluetooth savienojumu</translation>
@@ -1180,6 +1183,7 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="5662075790140998213">10. darbvieta</translation>
 <translation id="5662709761327382534">Ierakstīt mikrofona skaņu <ph name="CURRENT_STATE" /> Lai mikrofona ierakstīšanai ieslēgtu statusu <ph name="NEW_STATE" />, nospiediet taustiņu Enter</translation>
 <translation id="5669267381087807207">Notiek aktivizācija</translation>
+<translation id="5672890847723042801">Utilītprogrammas</translation>
 <translation id="5673434351075758678">Pēc iestatījumu sinhronizēšanas valoda tika mainīta no “<ph name="FROM_LOCALE" />” uz “<ph name="TO_LOCALE" />”.</translation>
 <translation id="5675363643668471212">Plaukta vienums</translation>
 <translation id="5677928146339483299">Bloķēts</translation>
@@ -1361,6 +1365,7 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="6351032674660237738">LIETOTŅU IETEIKUMI</translation>
 <translation id="6352082849089527770">Nezināmi tīkli</translation>
 <translation id="6359587239691116345">Iegūstiet jaunākās funkcijas un drošības uzlabojumus. Ja noraidīsiet šo atjauninājumu, iespējams, jūsu ierīce vairs nedarbosies pareizi un jūs saskarsieties ar drošības un veiktspējas problēmām.</translation>
+<translation id="6362833380917912748">Izpētiet savas iebūvētās lietotnes</translation>
 <translation id="6376931439017688372">Bluetooth ir ieslēgts</translation>
 <translation id="6378515133128829137">Piespraust logu labajā malā</translation>
 <translation id="6381109794406942707">Lai atbloķētu ierīci, ievadiet PIN.</translation>
@@ -1847,6 +1852,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8262312463845990408">Pārslēgt atskaņošanu</translation>
 <translation id="8270450402312105425">{0,plural, =1{Atjaunojiet ierīcē iepriekšējo versiju pēc vienas stundas}zero{Atjaunojiet ierīcē iepriekšējo versiju pēc # stundām}one{Atjaunojiet ierīcē iepriekšējo versiju pēc # stundas}other{Atjaunojiet ierīcē iepriekšējo versiju pēc # stundām}}</translation>
 <translation id="8277261673056602147">Ekrānā atzīmējiet tekstu</translation>
+<translation id="8287009018010202411">Produktivitāte</translation>
 <translation id="828708037801473432">Izslēgts</translation>
 <translation id="8297006494302853456">Vājš</translation>
 <translation id="8308637677604853869">Iepriekšējā izvēlne</translation>
@@ -1918,6 +1924,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8594115950068821369">–<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Lietotņu kārtošana pēc nosaukuma vai krāsas</translation>
 <translation id="8609384513243082612">Atvērt jaunu cilni</translation>
+<translation id="861045123704058818">Lietotnes ir īslaicīgi sakārtotas pēc kategorijas.</translation>
 <translation id="8612216344243590325">Glabājiet svarīgus failus šeit: <ph name="HOLDING_SPACE_TITLE" /> (nevis darbvirsmā). Vienkārši velciet failus šeit: <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Lietotņu <ph name="APP_1_TITLE" /> un <ph name="APP_2_TITLE" /> paziņojumi ir paslēpti, jo ir ieslēgta skatīšanas aizsardzība.</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1956,6 +1963,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
         <ph name="SCREEN_SHARE_STATUS" />.</translation>
 <translation id="8755498163081687682">Identitātes apstiprināšana: <ph name="ORIGIN_NAME" /> vēlas apstiprināt jūsu identitāti</translation>
 <translation id="875593634123171288">Rādīt VPN iestatījumus</translation>
+<translation id="8756799553341497810">Kad iziesiet no šī skata, varēsiet sākt pielāgot lietotnes izkārtojumu.</translation>
 <translation id="8759408218731716181">Nevar iestatīt vairākkārtēju pierakstīšanos.</translation>
 <translation id="8763883995157866248">Ierīcē aktivizēt miega režīmu</translation>
 <translation id="877404052021108314">90°F Celsija skalā</translation>

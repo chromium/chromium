@@ -336,6 +336,7 @@
 <translation id="2405664212338326887">አልተገናኘም</translation>
 <translation id="2408955596600435184">የእርስዎን ፒን ያስገቡ</translation>
 <translation id="2412593942846481727">ዝማኔ ይገኛል</translation>
+<translation id="2416438829169535743">ከዕይታ ይውጣ?</translation>
 <translation id="2417486498593892439">ወደ አውታረ መረብ በመለያ ይግቡ</translation>
 <translation id="2426051945783024481">የካሜራ ክፈፍ በራስ-ሰር መሃል ላይ ሆኗል</translation>
 <translation id="2427507373259914951">የግራ ጠቅታ</translation>
@@ -1153,9 +1154,11 @@
 <translation id="5555639311269196631">መገናኛ ነጥብን አጥፋ</translation>
 <translation id="5556459405103347317">ዳግም ጫን</translation>
 <translation id="5558091555391176027">የአቅራቢያ አጋራ ከፍተኛ ታይነት ደረጃን ቀያይር</translation>
+<translation id="5558314826121965174">የፈጠራ ችሎታ</translation>
 <translation id="556042886152191864">አዘራር</translation>
 <translation id="5570122939431135380">አዲስ ትርን በማንነትን የማያሳውቅ መስኮት ውስጥ ይክፈቱት</translation>
 <translation id="5571066253365925590">ብሉቱዝ ነቅቷል</translation>
+<translation id="5572632238877308040">መሠረታዊ ነገሮች</translation>
 <translation id="557563299383177668">ቀጣይ አንቀጽ</translation>
 <translation id="5577082622442191756">ብሉቱዝን ቀያይር። <ph name="STATE_TEXT" />።</translation>
 <translation id="5577281275355252094">የስልክ ሃብን ለመጠቀም ብሉቱዝ በስልክዎ ላይ እንደነቃ ያረጋግጡ</translation>
@@ -1180,6 +1183,7 @@
 <translation id="5662075790140998213">ዴስክ 10</translation>
 <translation id="5662709761327382534">ማይክሮፎን ይቅረጹ <ph name="CURRENT_STATE" />፣ የማይክሮፎን ቀረፃን ለማዞር አስገባን ይጫኑ <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">በማግበር ላይ</translation>
+<translation id="5672890847723042801">መገልገያዎች</translation>
 <translation id="5673434351075758678">ከ«<ph name="FROM_LOCALE" />» ወደ «<ph name="TO_LOCALE" />» የእርስዎን ቅንብሮች ከማመሳሰል በኋላ።</translation>
 <translation id="5675363643668471212">የመደርደሪያ ንጥል</translation>
 <translation id="5677928146339483299">ታግዷል</translation>
@@ -1361,6 +1365,7 @@
 <translation id="6351032674660237738">የመተግበሪያ አስተያየት ጥቆማዎች</translation>
 <translation id="6352082849089527770">የማይታወቁ አውታረ መረቦች</translation>
 <translation id="6359587239691116345">የቅርብ ጊዜ ባህሪያትን እና የደህንነት ማሻሻያዎችን ያግኙ። ይህን ዝማኔ ካልተቀበሉ የእርስዎ መሣሪያ ከእንግዲህ በትክክል ላይሰራ እና የደህንነት እና የአፈጻጸም ችግሮች ሊያጋጥሙዎት ይችላል።</translation>
+<translation id="6362833380917912748">አብሮገነብ መተግበሪያዎችዎን ይወቁ</translation>
 <translation id="6376931439017688372">ብሉቱዝ በርቷል</translation>
 <translation id="6378515133128829137">መስኮትን በቀኝ ፒን ያድርጉ</translation>
 <translation id="6381109794406942707">መሣሪያውን ለመክፈት የእርስዎን ፒን ያስገቡ።</translation>
@@ -1848,6 +1853,7 @@
 <translation id="8262312463845990408">መልሶ ማጫወትን ይቀያይሩ</translation>
 <translation id="8270450402312105425">{0,plural, =1{በአንድ ሰዓት ውስጥ መሣሪያውን ወደ ቀዳሚው ስሪት ይቀይሩ}one{በ# ሰዓታት ውስጥ መሣሪያውን ወደ ቀዳሚው ስሪት ይቀይሩ}other{በ# ሰዓታት ውስጥ መሣሪያውን ወደ ቀዳሚው ስሪት ይቀይሩ}}</translation>
 <translation id="8277261673056602147">በማያ ገጽዎ ላይ ጽሁፍ ያድምቁ</translation>
+<translation id="8287009018010202411">አምራችነት</translation>
 <translation id="828708037801473432">ጠፍቷል</translation>
 <translation id="8297006494302853456">ደካማ</translation>
 <translation id="8308637677604853869">ቀዳሚ ምናሌ</translation>
@@ -1919,6 +1925,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">መተግበሪያዎችዎን በስም ወይም በቀለም ይደርድሩ</translation>
 <translation id="8609384513243082612">አዲስ ትር ይክፈቱ</translation>
+<translation id="861045123704058818">መተግበሪያዎች ለጊዜው በምድብ ተደራጅተዋል</translation>
 <translation id="8612216344243590325">አስፈላጊ የሆኑ ፋይሎችን በዴስክቶፕ ላይ ከማስቀመጥ ይልቅ በ<ph name="HOLDING_SPACE_TITLE" /> ውስጥ ያስቀምጡ። ፋይሎቹን ወደ <ph name="HOLDING_SPACE_TITLE" /> ይጎትቱት።</translation>
 <translation id="8614517853887502247">የእይታ ጥበቃ ስለበራ የ<ph name="APP_1_TITLE" /> እና <ph name="APP_2_TITLE" /> ማሳወቂያዎች ተደብቀዋል</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1957,6 +1964,7 @@
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">የእርስዎን ማንነት ያረጋግጡ፦ <ph name="ORIGIN_NAME" /> እርስዎ መሆንዎን ማረጋገጥ ይፈልጋል</translation>
 <translation id="875593634123171288">የቪፒኤን ቅንብሮችን አሳይ</translation>
+<translation id="8756799553341497810">አንዴ ከዚህ ዕይታ ከወጡ በኋላ የመተግበሪያዎን አቀማመጥ ማበጀት መጀመር ይችላሉ።</translation>
 <translation id="8759408218731716181">ባለብዙ መለያ መግቢያን ማዋቀር አልተቻለም</translation>
 <translation id="8763883995157866248">መሣሪያን በእንቅልፍ ሁነታ ውስጥ አስቀምጥ</translation>
 <translation id="877404052021108314">90 ፋራናይት በሴልሺየስ</translation>

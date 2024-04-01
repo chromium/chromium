@@ -336,6 +336,7 @@
 <translation id="2405664212338326887">متصل نیست</translation>
 <translation id="2408955596600435184">پین را وارد کنید</translation>
 <translation id="2412593942846481727">به‌روزرسانی دردسترس است</translation>
+<translation id="2416438829169535743">از نما خارج می‌شوید؟</translation>
 <translation id="2417486498593892439">ورود به سیستم شبکه</translation>
 <translation id="2426051945783024481">قاب دوربین به‌طور خودکار در مرکز قرار گرفت</translation>
 <translation id="2427507373259914951">کلیک چپ</translation>
@@ -1153,9 +1154,11 @@
 <translation id="5555639311269196631">خاموش کردن نقطه اتصال</translation>
 <translation id="5556459405103347317">بار کردن مجدد</translation>
 <translation id="5558091555391176027">روشن/خاموش کردن «هم‌رسانی با اطراف» با میزان بالای رؤیت‌پذیری</translation>
+<translation id="5558314826121965174">خلاقیت</translation>
 <translation id="556042886152191864">دکمه</translation>
 <translation id="5570122939431135380">باز کردن برگه جدید در پنجره ناشناس جدید</translation>
 <translation id="5571066253365925590">بلوتوث فعال شد</translation>
+<translation id="5572632238877308040">ضروریات</translation>
 <translation id="557563299383177668">پاراگراف بعدی</translation>
 <translation id="5577082622442191756">روشن/خاموش کردن بلوتوث. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">برای استفاده از «مرکز کنترل تلفن»، مطمئن شوید بلوتوث در تلفنتان فعال باشد</translation>
@@ -1180,6 +1183,7 @@
 <translation id="5662075790140998213">میزکار ۱۰</translation>
 <translation id="5662709761327382534">ضبط میکروفون <ph name="CURRENT_STATE" /> است، کلید ورود را فشار دهید تا ضبط میکروفون <ph name="NEW_STATE" /> شود</translation>
 <translation id="5669267381087807207">فعالسازی</translation>
+<translation id="5672890847723042801">برنامه‌های کمکی</translation>
 <translation id="5673434351075758678">از «<ph name="FROM_LOCALE" />» به «<ph name="TO_LOCALE" />» بعد از همگام‌سازی تنظیمات.</translation>
 <translation id="5675363643668471212">مورد قفسه</translation>
 <translation id="5677928146339483299">مسدود است</translation>
@@ -1361,6 +1365,7 @@
 <translation id="6351032674660237738">پیشنهادات برنامه</translation>
 <translation id="6352082849089527770">شبکه‌های ناشناس</translation>
 <translation id="6359587239691116345">جدیدترین ویژگی‌ها و قابلیت‌های امنیتی بهبودیافته را دریافت کنید. اگر این به‌روزرسانی را رد کنید، ممکن است دستگاهتان دیگر به‌درستی کار نکند و احتمال دارد با مشکلات امنیتی و عملکردی مواجه شوید.</translation>
+<translation id="6362833380917912748">با برنامه‌های داخلی آشنا شوید</translation>
 <translation id="6376931439017688372">بلوتوث روشن است</translation>
 <translation id="6378515133128829137">سنجاق کردن پنجره به راست</translation>
 <translation id="6381109794406942707">برای باز کردن قفل دستگاه، پین را وارد کنید.</translation>
@@ -1847,6 +1852,7 @@
 <translation id="8262312463845990408">فعال/ غیرفعال کردن بازپخش</translation>
 <translation id="8270450402312105425">{0,plural, =1{ظرف یک ساعت آینده، دستگاه را به نسخه قبلی تغییر دهید}one{ظرف # ساعت آینده، دستگاه را به نسخه قبلی تغییر دهید}other{ظرف # ساعت آینده، دستگاه را به نسخه قبلی تغییر دهید}}</translation>
 <translation id="8277261673056602147">برجسته کردن نوشتار روی صفحه</translation>
+<translation id="8287009018010202411">بهره‌وری</translation>
 <translation id="828708037801473432">خاموش</translation>
 <translation id="8297006494302853456">ضعیف</translation>
 <translation id="8308637677604853869">منوی قبلی</translation>
@@ -1918,6 +1924,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">مرتب‌سازی برنامه‌ها براساس نام یا رنگ</translation>
 <translation id="8609384513243082612">بازکردن برگه جدید</translation>
+<translation id="861045123704058818">برنامه‌ها موقتاً براساس دسته‌بندی سازمان‌دهی می‌شوند</translation>
 <translation id="8612216344243590325">فایل‌های مهم را به‌جای میز کار، در <ph name="HOLDING_SPACE_TITLE" /> نگه دارید. کافی است فایل‌ها را در <ph name="HOLDING_SPACE_TITLE" /> بکشید.</translation>
 <translation id="8614517853887502247">اعلان‌های <ph name="APP_1_TITLE" /> و <ph name="APP_2_TITLE" /> پنهان شده است زیرا «محافظت دربرابر مشاهده» روشن است</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1955,6 +1962,7 @@
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />، <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">هویتتان را به‌تأیید برسانید: <ph name="ORIGIN_NAME" /> می‌خواهید تأیید کند این فرد شما هستید</translation>
 <translation id="875593634123171288">‏نمایش تنظیمات VPN</translation>
+<translation id="8756799553341497810">پس‌از خروج از این نما می‌توانید سفارشی‌سازی چیدمان برنامه‌تان را شروع کنید.</translation>
 <translation id="8759408218731716181">تنظیم ورود چندگانه به سیستم ممکن نیست</translation>
 <translation id="8763883995157866248">قرار دادن دستگاه در حالت خواب</translation>
 <translation id="877404052021108314">‫۹۰ درجه فارنهایت به سلسیوس</translation>

@@ -271,6 +271,7 @@
 <translation id="2446553403094072641">Nøyaktighet av flytende desimalpunkt</translation>
 <translation id="2448312741937722512">Type</translation>
 <translation id="2465272316171730950">Det er ikke ledig kapasitet. Kom tilbake om en liten stund.</translation>
+<translation id="2472215337771558851">Bruk Hjelp meg å skrive til å lage utkast eller finjustere eksisterende tekst – basert på AI fra Google</translation>
 <translation id="2480572840229215612">krabber</translation>
 <translation id="248546197012830854">Enheten er uten nett. Koble til et wifi-nettverk for å se hjelpeinnhold.</translation>
 <translation id="2486301288428798846">tre</translation>
@@ -328,10 +329,12 @@
 <translation id="2860473693272905224">Legg en ny side på skanneren</translation>
 <translation id="2872961005593481000">Slå av</translation>
 <translation id="2873483161362553159">Nettlesernavigering</translation>
+<translation id="2873939192640533085">Skriv inn en forespørsel som «Hør mer selvsikker ut»</translation>
 <translation id="2874939134665556319">Forrige spor</translation>
 <translation id="2875812231449496375">Slå på dette for å få best resultat med denne bakgrunnen. Du kan slå av denne innstillingen når som helst.</translation>
 <translation id="2878387241690264070">Ladet ut <ph name="RATE" /> på <ph name="NUM_SECONDS" /> sekunder.</translation>
 <translation id="2880569433548999039">Skjermsparer: Skyflyt</translation>
+<translation id="2888298276507578975">Skriv inn en forespørsel som «Skriv en takkemelding»</translation>
 <translation id="2890557891229184386">tropisk øy</translation>
 <translation id="2895772081848316509">mørk</translation>
 <translation id="2926057806159140518">Oppgi brukernavn og passord, eller skann QR-koden din</translation>
@@ -376,6 +379,7 @@
 <translation id="3226405216343213872">Ser etter skannere</translation>
 <translation id="3226657629376379887">Handlingsmeny for layout</translation>
 <translation id="3227186760713762082">Divider <ph name="CATEGORY_TEXT" />-verdien med <ph name="CONVERSION_RATE" /></translation>
+<translation id="3237710083340813756">Skriv om</translation>
 <translation id="3246869037381808805">Utskriftsjobber som er eldre enn 1 dag, blir fjernet</translation>
 <translation id="324961752321393509">Administratoren din tillater ikke lukking av denne appen</translation>
 <translation id="3268178239013324452">Mislykket – luken er åpen</translation>
@@ -414,6 +418,7 @@
 <translation id="346539236881580388">Ta på nytt</translation>
 <translation id="3484914941826596830">Ikke koble fra denne eksterne enheten eller slå av datamaskinen mens fastvaren oppdateres. Du kan minimere dette vinduet. Denne oppdateringen kan ta noen minutter, og det kan hende den eksterne enheten ikke fungerer i dette tidsrommet.</translation>
 <translation id="3486220673238053218">definisjon</translation>
+<translation id="3487866404496702283">Tilbakemelding for mahi-funksjonen</translation>
 <translation id="3488065109653206955">Delvis aktivert</translation>
 <translation id="3492882532495507361">Et <ph name="OFFICE_STYLE" /> kontor med <ph name="OFFICE_COLOR" /> toner</translation>
 <translation id="3493187369049186498">Chromebook måler databruk. Disse målingene kan avvike fra operatørens.</translation>
@@ -442,6 +447,7 @@
 <translation id="3621072146987826699">elefanter</translation>
 <translation id="3632579075709132555">Personvernskjerm av/på</translation>
 <translation id="3651050199673793219">Velg en temperaturenhet</translation>
+<translation id="3661106764436337772">Skriv raskere og med mer selvsikkerhet</translation>
 <translation id="3662461537616691585">burgunderrød og rødbrun</translation>
 <translation id="3668449597372804501">Bakgrunn: Skyflyt</translation>
 <translation id="3675132884790542448">griser</translation>
@@ -875,6 +881,7 @@
 <translation id="6235460611964961764">Tilbakestill databruken manuelt</translation>
 <translation id="6243280677745499710">Nåværende bakgrunn</translation>
 <translation id="6250316632541035980">bacon og egg</translation>
+<translation id="6255213378196499011">Innstillinger for Hjelp meg å skrive</translation>
 <translation id="6275224645089671689">Høyrepil</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>

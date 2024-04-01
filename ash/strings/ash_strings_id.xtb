@@ -336,6 +336,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2405664212338326887">Tidak terhubung</translation>
 <translation id="2408955596600435184">Masukkan PIN</translation>
 <translation id="2412593942846481727">Update tersedia</translation>
+<translation id="2416438829169535743">Keluar dari tampilan?</translation>
 <translation id="2417486498593892439">Login ke jaringan</translation>
 <translation id="2426051945783024481">Bingkai kamera dipusatkan secara otomatis</translation>
 <translation id="2427507373259914951">Klik kiri</translation>
@@ -1153,9 +1154,11 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="5555639311269196631">Nonaktifkan hotspot</translation>
 <translation id="5556459405103347317">Muat ulang</translation>
 <translation id="5558091555391176027">Tombol visibilitas tinggi Berbagi Langsung</translation>
+<translation id="5558314826121965174">Kreativitas</translation>
 <translation id="556042886152191864">Tombol</translation>
 <translation id="5570122939431135380">Buka tab baru di jendela Samaran baru</translation>
 <translation id="5571066253365925590">Bluetooth diaktifkan</translation>
+<translation id="5572632238877308040">Penting</translation>
 <translation id="557563299383177668">Paragraf berikutnya</translation>
 <translation id="5577082622442191756">Tombol Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Periksa apakah Bluetooth diaktifkan di ponsel untuk menggunakan Phone Hub</translation>
@@ -1180,6 +1183,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="5662075790140998213">Desktop 10</translation>
 <translation id="5662709761327382534">Rekam mikrofon <ph name="CURRENT_STATE" />, Tekan enter agar perekaman mikrofon <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Mengaktifkan</translation>
+<translation id="5672890847723042801">Utilitas</translation>
 <translation id="5673434351075758678">Dari "<ph name="FROM_LOCALE" />" ke "<ph name="TO_LOCALE" />" setelah menyinkronkan setelan Anda.</translation>
 <translation id="5675363643668471212">Item rak</translation>
 <translation id="5677928146339483299">Diblokir</translation>
@@ -1361,6 +1365,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="6351032674660237738">SARAN APLIKASI</translation>
 <translation id="6352082849089527770">Jaringan tidak dikenal</translation>
 <translation id="6359587239691116345">Dapatkan fitur dan peningkatan keamanan terbaru. Jika Anda menolak update ini, perangkat mungkin tidak lagi berfungsi dengan baik dan Anda mungkin mengalami masalah keamanan dan performa.</translation>
+<translation id="6362833380917912748">Pelajari aplikasi bawaan Anda</translation>
 <translation id="6376931439017688372">Bluetooth aktif</translation>
 <translation id="6378515133128829137">Sematkan jendela ke kanan</translation>
 <translation id="6381109794406942707">Untuk membuka kunci perangkat, masukkan PIN Anda.</translation>
@@ -1847,6 +1852,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="8262312463845990408">Putar/Jeda pemutaran</translation>
 <translation id="8270450402312105425">{0,plural, =1{Ubah perangkat ke versi sebelumnya dalam 1 jam}other{Ubah perangkat ke versi sebelumnya dalam # jam}}</translation>
 <translation id="8277261673056602147">Tandai teks di layar</translation>
+<translation id="8287009018010202411">Produktivitas</translation>
 <translation id="828708037801473432">Nonaktif</translation>
 <translation id="8297006494302853456">Lemah</translation>
 <translation id="8308637677604853869">Menu sebelumnya</translation>
@@ -1918,6 +1924,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Urutkan aplikasi menurut nama atau warna</translation>
 <translation id="8609384513243082612">Membuka tab baru</translation>
+<translation id="861045123704058818">Aplikasi disusun menurut kategori untuk sementara</translation>
 <translation id="8612216344243590325">Simpan file penting di <ph name="HOLDING_SPACE_TITLE" />, bukan di desktop. Cukup tarik file ke <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Notifikasi <ph name="APP_1_TITLE" /> dan <ph name="APP_2_TITLE" /> disembunyikan karena perlindungan tampilan aktif</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1956,6 +1963,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">Verifikasi identitas Anda: <ph name="ORIGIN_NAME" /> ingin mengonfirmasi bahwa ini benar-benar Anda</translation>
 <translation id="875593634123171288">Tampilkan setelan VPN</translation>
+<translation id="8756799553341497810">Anda dapat mulai menyesuaikan tata letak aplikasi setelah keluar dari tampilan ini.</translation>
 <translation id="8759408218731716181">Tidak dapat menyiapkan fitur masuk banyak akun</translation>
 <translation id="8763883995157866248">Setel perangkat ke mode tidur</translation>
 <translation id="877404052021108314">90°F dalam C</translation>

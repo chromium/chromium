@@ -336,6 +336,7 @@
 <translation id="2405664212338326887">未連線</translation>
 <translation id="2408955596600435184">請輸入您的 PIN</translation>
 <translation id="2412593942846481727">有可用的更新</translation>
+<translation id="2416438829169535743">要離開檢視畫面嗎？</translation>
 <translation id="2417486498593892439">登入網絡</translation>
 <translation id="2426051945783024481">相機鏡頭已自動置中</translation>
 <translation id="2427507373259914951">按一下左鍵</translation>
@@ -1152,9 +1153,11 @@
 <translation id="5555639311269196631">關閉熱點</translation>
 <translation id="5556459405103347317">重新載入</translation>
 <translation id="5558091555391176027">將「咫尺共享」功能切換為向附近的所有裝置顯示</translation>
+<translation id="5558314826121965174">創意</translation>
 <translation id="556042886152191864">按鈕</translation>
 <translation id="5570122939431135380">在新無痕式視窗中開啟新分頁</translation>
 <translation id="5571066253365925590">藍牙已啟用</translation>
+<translation id="5572632238877308040">必備應用程式</translation>
 <translation id="557563299383177668">下一段</translation>
 <translation id="5577082622442191756">切換藍牙。<ph name="STATE_TEXT" />。</translation>
 <translation id="5577281275355252094">請確認手機已啟用藍牙功能，以便使用 Phone Hub</translation>
@@ -1179,6 +1182,7 @@
 <translation id="5662075790140998213">桌面 10</translation>
 <translation id="5662709761327382534">錄音枝咪<ph name="CURRENT_STATE" />，㩒 Enter 鍵就可以<ph name="NEW_STATE" />咪錄音功能</translation>
 <translation id="5669267381087807207">啟用</translation>
+<translation id="5672890847723042801">公用程式</translation>
 <translation id="5673434351075758678">同步處理您的設定後，系統會將語言從「<ph name="FROM_LOCALE" />」改為「<ph name="TO_LOCALE" />」。</translation>
 <translation id="5675363643668471212">捷徑列項目</translation>
 <translation id="5677928146339483299">已封鎖</translation>
@@ -1360,6 +1364,7 @@
 <translation id="6351032674660237738">應用程式建議</translation>
 <translation id="6352082849089527770">不明網絡</translation>
 <translation id="6359587239691116345">取得最新功能和改善安全性的資訊。如果拒絕此更新，裝置可能無法再正常運作，您亦可能會遇到安全性和效能問題。</translation>
+<translation id="6362833380917912748">瞭解內建應用程式</translation>
 <translation id="6376931439017688372">藍牙已開啟</translation>
 <translation id="6378515133128829137">將視窗固定至右邊</translation>
 <translation id="6381109794406942707">如要解鎖裝置，請輸入 PIN。</translation>
@@ -1845,6 +1850,7 @@
 <translation id="8262312463845990408">切換播放</translation>
 <translation id="8270450402312105425">{0,plural, =1{在 1 小時內將裝置回復為先前的版本}other{在 # 小時內將裝置回復為先前的版本}}</translation>
 <translation id="8277261673056602147">突顯畫面上的文字</translation>
+<translation id="8287009018010202411">效率提升</translation>
 <translation id="828708037801473432">已關閉</translation>
 <translation id="8297006494302853456">弱</translation>
 <translation id="8308637677604853869">前一個選單</translation>
@@ -1916,6 +1922,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">按名稱或顏色將應用程式排序</translation>
 <translation id="8609384513243082612">開啟新分頁</translation>
+<translation id="861045123704058818">系統會暫時依類別整理應用程式</translation>
 <translation id="8612216344243590325">請勿將重要檔案放在桌面上，而是要放在「<ph name="HOLDING_SPACE_TITLE" />」(只需將檔案拖曳至「<ph name="HOLDING_SPACE_TITLE" />」即可)。</translation>
 <translation id="8614517853887502247">檢視保護功能已開啟，因此系統已隱藏 <ph name="APP_1_TITLE" /> 和 <ph name="APP_2_TITLE" /> 的通知</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1954,6 +1961,7 @@
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">驗證你嘅身份：<ph name="ORIGIN_NAME" /> 要求確認你嘅身分</translation>
 <translation id="875593634123171288">顯示 VPN 設定</translation>
+<translation id="8756799553341497810">離開這個檢視畫面後，即可開始自訂應用程式版面配置。</translation>
 <translation id="8759408218731716181">無法設定多重登入</translation>
 <translation id="8763883995157866248">讓裝置進入休眠模式</translation>
 <translation id="877404052021108314">將華氏 90° 換算成攝氏</translation>

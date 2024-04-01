@@ -1114,6 +1114,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3154987252551138431">Hiba történt a Közeli megosztás funkció használata közben</translation>
 <translation id="315504272643575312">Az Ön fiókkezelője: <ph name="MANAGER" />.</translation>
 <translation id="3155163173539279776">A Chromium újraindítása</translation>
+<translation id="3156511682997763015">Előre 10 másodpercet</translation>
 <translation id="3157931365184549694">Helyreállítás</translation>
 <translation id="3158539265159265653">Lemez</translation>
 <translation id="3162559335345991374">Az Ön által használt Wi-Fi-hálózat megkövetelheti bejelentkezési oldalának felkeresését.</translation>
@@ -1212,6 +1213,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="334438173029876234">Gördeszka-felszerelés</translation>
 <translation id="3347146863028219517">Síelés és snowboard</translation>
 <translation id="3349952286488694786">SRA2</translation>
+<translation id="3350450887151703713">10 másodperc megismétlése</translation>
 <translation id="3352881017886802007">Sportjátékok</translation>
 <translation id="3355823806454867987">Proxybeállítások módosítása...</translation>
 <translation id="335809815767823">Exportálva</translation>
@@ -3051,6 +3053,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6944557544071529399">Stratégiai játékok</translation>
 <translation id="6944692733090228304">Olyan webhelyen adta meg a jelszavát, amelyet nem a(z) <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> kezel. Fiókja védelme érdekében ne használja fel újra a jelszót más alkalmazásokban és webhelyeken.</translation>
 <translation id="6945221475159498467">Kiválasztás</translation>
+<translation id="6946949206576443118">Webes keresés a Chrome-mal</translation>
 <translation id="6948051842255602737">Vége a játéknak. Pontszám: <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Az átvételi módok és követelmények megtekintéséhez válassza ki a címet</translation>
 <translation id="6948874830249067134">A1x3</translation>

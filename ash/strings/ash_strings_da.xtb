@@ -336,6 +336,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2405664212338326887">Ikke forbundet</translation>
 <translation id="2408955596600435184">Angiv din pinkode</translation>
 <translation id="2412593942846481727">Der er en tilgængelig opdatering</translation>
+<translation id="2416438829169535743">Vil du lukke visningen?</translation>
 <translation id="2417486498593892439">Log ind på netværk</translation>
 <translation id="2426051945783024481">Kameraets fokus centreres automatisk</translation>
 <translation id="2427507373259914951">Venstreklik</translation>
@@ -1153,9 +1154,11 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="5555639311269196631">Deaktiver hotspot</translation>
 <translation id="5556459405103347317">Genindlæs</translation>
 <translation id="5558091555391176027">Slå høj synlighed til/fra for Deling tæt på</translation>
+<translation id="5558314826121965174">Kreativitet</translation>
 <translation id="556042886152191864">Knap</translation>
 <translation id="5570122939431135380">Åbn ny fane i et nyt inkognitovindue</translation>
 <translation id="5571066253365925590">Bluetooth er aktiveret</translation>
+<translation id="5572632238877308040">Vigtige apps</translation>
 <translation id="557563299383177668">Næste afsnit</translation>
 <translation id="5577082622442191756">Slå Bluetooth til/fra. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Tjek, at Bluetooth er aktiveret på din telefon, så du kan bruge Telefonstyring</translation>
@@ -1180,6 +1183,7 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="5662075790140998213">Skrivebord 10</translation>
 <translation id="5662709761327382534">Optag mikrofon er slået <ph name="CURRENT_STATE" />, tryk på Enter for at slå optagelse af mikrofon <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Aktiverer</translation>
+<translation id="5672890847723042801">Værktøjer</translation>
 <translation id="5673434351075758678">Fra "<ph name="FROM_LOCALE" />" til "<ph name="TO_LOCALE" />", efter at du har synkroniseret dine indstillinger.</translation>
 <translation id="5675363643668471212">Hyldeelement</translation>
 <translation id="5677928146339483299">Blokeret</translation>
@@ -1361,6 +1365,7 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="6351032674660237738">APPFORSLAG</translation>
 <translation id="6352082849089527770">Ukendte netværk</translation>
 <translation id="6359587239691116345">Få de nyeste funktioner og sikkerhedsforbedringer. Hvis du afviser denne opdatering, fungerer din enhed muligvis ikke længere korrekt, og du kan opleve problemer med sikkerheden og ydeevnen.</translation>
+<translation id="6362833380917912748">Lær dine indbyggede apps at kende</translation>
 <translation id="6376931439017688372">Bluetooth er slået til</translation>
 <translation id="6378515133128829137">Fastgør vinduet til højre side</translation>
 <translation id="6381109794406942707">Angiv din pinkode for at låse enheden op.</translation>
@@ -1847,6 +1852,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8262312463845990408">Håndter afspilning</translation>
 <translation id="8270450402312105425">{0,plural, =1{Skift til en tidligere version af enheden inden for en time}one{Skift til en tidligere version af enheden inden for # time}other{Skift til en tidligere version af enheden inden for # timer}}</translation>
 <translation id="8277261673056602147">Fremhæv tekst på din skærm</translation>
+<translation id="8287009018010202411">Produktivitet</translation>
 <translation id="828708037801473432">Fra</translation>
 <translation id="8297006494302853456">Svag</translation>
 <translation id="8308637677604853869">Forrige menu</translation>
@@ -1918,6 +1924,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Sortér dine apps efter navn eller farve</translation>
 <translation id="8609384513243082612">Åbn en ny fane</translation>
+<translation id="861045123704058818">Apps organiseres midlertidigt efter kategori</translation>
 <translation id="8612216344243590325">Opbevar vigtige filer i <ph name="HOLDING_SPACE_TITLE" /> i stedet for på skrivebordet. Du skal bare trække filerne til <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Notifikationer fra <ph name="APP_1_TITLE" /> og <ph name="APP_2_TITLE" /> er skjult, fordi visningsbeskyttelse er aktiveret</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1956,6 +1963,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">Verificer din identitet: <ph name="ORIGIN_NAME" /> ønsker, at du bekræfter din identitet</translation>
 <translation id="875593634123171288">Vis VPN-indstillinger</translation>
+<translation id="8756799553341497810">Du kan begynde at tilpasse dit applayout, når du har lukket denne visning.</translation>
 <translation id="8759408218731716181">Samlet login fra flere konti kan ikke konfigureres</translation>
 <translation id="8763883995157866248">Aktivér dvaletilstand på enheden</translation>
 <translation id="877404052021108314">90 °F i C</translation>

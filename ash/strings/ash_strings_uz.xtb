@@ -336,6 +336,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2405664212338326887">Ulanmagan</translation>
 <translation id="2408955596600435184">PIN kodni kiriting</translation>
 <translation id="2412593942846481727">Yangilanish chiqdi</translation>
+<translation id="2416438829169535743">Darslik yopilsinmi?</translation>
 <translation id="2417486498593892439">Tarmoqqa kirish</translation>
 <translation id="2426051945783024481">Kamera freymi avtomatik markazga olinadi</translation>
 <translation id="2427507373259914951">Chap klik</translation>
@@ -1153,9 +1154,11 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="5555639311269196631">Hotspotni faolsizlantirish</translation>
 <translation id="5556459405103347317">Qayta yuklash</translation>
 <translation id="5558091555391176027">Nearby Share uchun keng ruxsat berish</translation>
+<translation id="5558314826121965174">Ijodkorlik</translation>
 <translation id="556042886152191864">Tugma</translation>
 <translation id="5570122939431135380">Yangi inkognito oynada yangi varaq ochish</translation>
 <translation id="5571066253365925590">Bluetooth yoniq</translation>
+<translation id="5572632238877308040">Asosiy ilovalar</translation>
 <translation id="557563299383177668">Keyingi xatboshi</translation>
 <translation id="5577082622442191756">Bluetooth qurilmasini yoqish/oʻchirish <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Phone Hub ishlatish uchun telefoningizda Bluetooth yoniq turishi kerak</translation>
@@ -1180,6 +1183,7 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="5662075790140998213">Desk 10</translation>
 <translation id="5662709761327382534">Mikrofon bilan yozib olish <ph name="CURRENT_STATE" />, mikrofon bilan yozib olishni <ph name="NEW_STATE" /> qilish uchun Enter tugmasini bosing</translation>
 <translation id="5669267381087807207">Faollashmoqda</translation>
+<translation id="5672890847723042801">Vositalar</translation>
 <translation id="5673434351075758678">Sinxronlash natijasida “<ph name="FROM_LOCALE" />” o‘rniga “<ph name="TO_LOCALE" />” asosiy til etib tayinlandi.</translation>
 <translation id="5675363643668471212">Javondagi element</translation>
 <translation id="5677928146339483299">Bloklangan</translation>
@@ -1361,6 +1365,7 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="6351032674660237738">ILOVA TAKLIFLARI</translation>
 <translation id="6352082849089527770">Notanish tarmoqlar</translation>
 <translation id="6359587239691116345">Eng oxirgi funksiyalar va xavfsizlikka oid yangilanishlarni olish Bu yangilanishni rad qilsangiz, qurilmangiz ishlashi, xavfsizlik va unumdorlikda muammolar yuz berishi mumkin.</translation>
+<translation id="6362833380917912748">Ichki oʻrnatilgan ilovalar bilan tanishing</translation>
 <translation id="6376931439017688372">Bluetooth yoniq</translation>
 <translation id="6378515133128829137">Oynani oʻngga qadash</translation>
 <translation id="6381109794406942707">Qurilmani qulfdan chiqarish uchun PIN kodingizni kiriting.</translation>
@@ -1847,6 +1852,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="8262312463845990408">Ijro tugmasi</translation>
 <translation id="8270450402312105425">{0,plural, =1{Qurilma tizimini bir soat ichida eski versiyaga qaytaring}other{Qurilma tizimini # soat ichida eski versiyaga qaytaring}}</translation>
 <translation id="8277261673056602147">Ekrandagi matnni tanlash</translation>
+<translation id="8287009018010202411">Unumdorlik</translation>
 <translation id="828708037801473432">Oʻchiq</translation>
 <translation id="8297006494302853456">Zaif</translation>
 <translation id="8308637677604853869">Avvalgi menyu</translation>
@@ -1918,6 +1924,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Ilovalarni nomi yoki rangi asosida saralash</translation>
 <translation id="8609384513243082612">Yangi varaq ochish</translation>
+<translation id="861045123704058818">Ilovalar vaqtincha turkum asosida tartiblangan</translation>
 <translation id="8612216344243590325">Muhim fayllarni ish stolida emas, <ph name="HOLDING_SPACE_TITLE" /> panelida saqlang. Ularni <ph name="HOLDING_SPACE_TITLE" /> paneliga tashlang.</translation>
 <translation id="8614517853887502247">Xavfsiz koʻrish rejimi yoniqligi uchun <ph name="APP_1_TITLE" /> va <ph name="APP_2_TITLE" /> bildirishnomalari yashirildi</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1956,6 +1963,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">Shaxsingizni tasdiqlang: <ph name="ORIGIN_NAME" /> bu siz ekanligingizni tasdiqlamoqchi</translation>
 <translation id="875593634123171288">VPN sozlamalarini ochish</translation>
+<translation id="8756799553341497810">Darslik yopilganda ilova dizaynini moslashni boshlash mumkin.</translation>
 <translation id="8759408218731716181">Bir nechta hisobdan kirish sozlanmadi</translation>
 <translation id="8763883995157866248">Qurilmani uyqu rejimiga qoʻyish</translation>
 <translation id="877404052021108314">90°F necha C</translation>

@@ -1114,6 +1114,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3154987252551138431">Jotain meni pieleen käytettäessä lähijakamista</translation>
 <translation id="315504272643575312"><ph name="MANAGER" /> ylläpitää tiliäsi.</translation>
 <translation id="3155163173539279776">Käynnistä Chromium uudelleen</translation>
+<translation id="3156511682997763015">Eteenpäin 10 sekuntia</translation>
 <translation id="3157931365184549694">Palauta</translation>
 <translation id="3158539265159265653">Levy</translation>
 <translation id="3162559335345991374">Käyttämäsi Wi-Fi saattaa edellyttää kirjautumista.</translation>
@@ -1215,6 +1216,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="334438173029876234">Rullalautailuvälineet</translation>
 <translation id="3347146863028219517">Laskettelu ja lumilautailu</translation>
 <translation id="3349952286488694786">SRA2</translation>
+<translation id="3350450887151703713">Toista uudelleen 10 sekuntia</translation>
 <translation id="3352881017886802007">Urheilupelit</translation>
 <translation id="3355823806454867987">Muuta välityspalvelimen asetuksia...</translation>
 <translation id="335809815767823">Viety</translation>
@@ -3054,6 +3056,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6944557544071529399">Strategiapelit</translation>
 <translation id="6944692733090228304">Kirjoitit salasanan sivustolle, jota <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ei ylläpidä. Älä käytä samaa salasanaa muissa sovelluksissa tai muilla sivustoilla tilisi turvallisuuden vuoksi.</translation>
 <translation id="6945221475159498467">Valitse</translation>
+<translation id="6946949206576443118">Hae verkosta Chromella</translation>
 <translation id="6948051842255602737">Peli loppui, pisteesi ovat <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Valitse osoite, niin näet noutotavat ja vaatimukset.</translation>
 <translation id="6948874830249067134">A1 x 3</translation>

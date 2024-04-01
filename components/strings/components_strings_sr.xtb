@@ -71,6 +71,7 @@
 <translation id="1125573121925420732">Упозорења могу често да се приказују док веб-сајтови ажурирају безбедност. То би ускоро требало да се побољша.</translation>
 <translation id="112840717907525620">Кеш смерница је у реду</translation>
 <translation id="1131264053432022307">Копирана слика</translation>
+<translation id="1138458427267715730">Добијајте обавештења када падне цена на било ком сајту широм веба</translation>
 <translation id="1142713751288681188">Тип папира</translation>
 <translation id="1142846828089312304">Блокирај колачиће трећих страна у режиму без архивирања</translation>
 <translation id="1144136880160289237">Још немате ниједну активну тему</translation>
@@ -1114,6 +1115,7 @@
 <translation id="3154987252551138431">Дошло је до грешке при коришћењу Дељења у близини</translation>
 <translation id="315504272643575312">Вашим налогом управља <ph name="MANAGER" />.</translation>
 <translation id="3155163173539279776">Поново покрени Chromium</translation>
+<translation id="3156511682997763015">Премотај 10 секунди унапред</translation>
 <translation id="3157931365184549694">Поново отвори</translation>
 <translation id="3158539265159265653">Диск</translation>
 <translation id="3162559335345991374">WiFi мрежа коју користите ће можда захтевати да посетите страницу за пријављивање.</translation>
@@ -1214,6 +1216,7 @@
 <translation id="334438173029876234">Опрема за скејтбординг</translation>
 <translation id="3347146863028219517">Скијање и сноубординг</translation>
 <translation id="3349952286488694786">SRA2</translation>
+<translation id="3350450887151703713">Поново пусти 10 секунди</translation>
 <translation id="3352881017886802007">Спортске игре</translation>
 <translation id="3355823806454867987">Промени подешавања проксија...</translation>
 <translation id="335809815767823">Извезено је</translation>
@@ -3052,6 +3055,7 @@
 <translation id="6944557544071529399">Стратешке игре</translation>
 <translation id="6944692733090228304">Унели сте лозинку на сајту којим не управља <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Да бисте заштитили налог, не користите лозинку поново у другим апликацијама ни на другим сајтовима.</translation>
 <translation id="6945221475159498467">Изабери</translation>
+<translation id="6946949206576443118">Претражујте веб у Chrome-у</translation>
 <translation id="6948051842255602737">Игра је завршена, ваш резултат је <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Да бисте видели начине и захтеве за преузимање, изаберите адресу</translation>
 <translation id="6948874830249067134">A1x3</translation>

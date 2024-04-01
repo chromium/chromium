@@ -336,6 +336,7 @@
 <translation id="2405664212338326887">연결되지 않음</translation>
 <translation id="2408955596600435184">PIN 입력</translation>
 <translation id="2412593942846481727">업데이트 가능</translation>
+<translation id="2416438829169535743">뷰를 종료하시겠습니까?</translation>
 <translation id="2417486498593892439">네트워크에 로그인</translation>
 <translation id="2426051945783024481">카메라 프레임이 자동으로 중앙에 위치함</translation>
 <translation id="2427507373259914951">왼쪽 클릭</translation>
@@ -1153,9 +1154,11 @@
 <translation id="5555639311269196631">핫스팟 사용 중지</translation>
 <translation id="5556459405103347317">새로고침</translation>
 <translation id="5558091555391176027">Nearby Share 모든 기기에 공개 설정 전환</translation>
+<translation id="5558314826121965174">창의성</translation>
 <translation id="556042886152191864">버튼</translation>
 <translation id="5570122939431135380">새 시크릿 창에서 새 탭 열기</translation>
 <translation id="5571066253365925590">블루투스를 사용함</translation>
+<translation id="5572632238877308040">기본</translation>
 <translation id="557563299383177668">다음 단락</translation>
 <translation id="5577082622442191756">블루투스를 전환합니다. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">휴대전화 허브를 사용하려면 휴대전화에 블루투스가 사용 설정되어 있는지 확인하세요.</translation>
@@ -1180,6 +1183,7 @@
 <translation id="5662075790140998213">데스크 10</translation>
 <translation id="5662709761327382534">마이크 녹음 <ph name="CURRENT_STATE" />, 마이크 녹음을 <ph name="NEW_STATE" /> 상태로 변경하려면 Enter 키를 누르세요.</translation>
 <translation id="5669267381087807207">활성화 중</translation>
+<translation id="5672890847723042801">유틸리티</translation>
 <translation id="5673434351075758678">설정 동기화 후 ‘<ph name="FROM_LOCALE" />’에서 ‘<ph name="TO_LOCALE" />’(으)로 변경합니다.</translation>
 <translation id="5675363643668471212">앱 표시줄 항목</translation>
 <translation id="5677928146339483299">차단됨</translation>
@@ -1361,6 +1365,7 @@
 <translation id="6351032674660237738">앱 추천</translation>
 <translation id="6352082849089527770">알 수 없는 네트워크</translation>
 <translation id="6359587239691116345">최신 기능과 보안 개선 사항을 받습니다. 이 업데이트를 거부하면 기기가 더 이상 제대로 작동하지 않을 수 있으며 보안 및 성능 문제가 발생할 수 있습니다.</translation>
+<translation id="6362833380917912748">기본 내장 앱 알아보기</translation>
 <translation id="6376931439017688372">블루투스 사용 중</translation>
 <translation id="6378515133128829137">오른쪽에 창 고정</translation>
 <translation id="6381109794406942707">기기의 잠금을 해제하려면 PIN을 입력하세요.</translation>
@@ -1847,6 +1852,7 @@
 <translation id="8262312463845990408">재생/일시중지 전환</translation>
 <translation id="8270450402312105425">{0,plural, =1{1시간 이내에 기기를 이전 버전으로 되돌리세요}other{#시간 이내에 기기를 이전 버전으로 되돌리세요}}</translation>
 <translation id="8277261673056602147">화면에서 텍스트 강조표시</translation>
+<translation id="8287009018010202411">생산성</translation>
 <translation id="828708037801473432">사용 안함</translation>
 <translation id="8297006494302853456">약함</translation>
 <translation id="8308637677604853869">이전 메뉴</translation>
@@ -1918,6 +1924,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">이름 또는 색상별로 앱 정렬</translation>
 <translation id="8609384513243082612">새 탭 열기</translation>
+<translation id="861045123704058818">일시적으로 앱이 카테고리별로 정리됩니다.</translation>
 <translation id="8612216344243590325">중요한 파일은 바탕화면이 아닌 <ph name="HOLDING_SPACE_TITLE" />에 보관하세요. 파일을 <ph name="HOLDING_SPACE_TITLE" />(으)로 드래그하기만 하면 됩니다.</translation>
 <translation id="8614517853887502247">사생활 보호가 켜져 있으므로 <ph name="APP_1_TITLE" /> 및 <ph name="APP_2_TITLE" /> 알림이 숨겨집니다.</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1956,6 +1963,7 @@
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">본인 확인: <ph name="ORIGIN_NAME" />에서 본인 확인을 요청합니다</translation>
 <translation id="875593634123171288">VPN 설정 표시</translation>
+<translation id="8756799553341497810">이 뷰를 종료한 후 앱 레이아웃 맞춤설정을 시작할 수 있습니다.</translation>
 <translation id="8759408218731716181">멀티 로그인을 설정할 수 없음</translation>
 <translation id="8763883995157866248">기기를 절전 모드로 설정</translation>
 <translation id="877404052021108314">화씨 90도를 섭씨로</translation>

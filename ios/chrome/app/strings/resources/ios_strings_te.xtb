@@ -1182,6 +1182,7 @@
 <translation id="6989674195860388998">సెట్టింగ్‌లలో స్విచ్ చేయి…</translation>
 <translation id="6998989275928107238">స్వీకర్త</translation>
 <translation id="699954956411469731">మొబైల్ నోటిఫికేషన్‌లు</translation>
+<translation id="699985840472413751">డౌన్‌లోడ్‌ను మూసివేయండి</translation>
 <translation id="7004032350256606903">మీరు ప్రైవేట్‌గా బ్రౌజ్ చేయాల్సిందిగా మీ సంస్థ కోరుతోంది.
 <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">ఇటీవలి ట్యాబ్‌లు</translation>
@@ -1471,6 +1472,7 @@
 <translation id="850600235656508448">అజ్ఞాత మోడ్‌లో తెరువు</translation>
 <translation id="8517375800490286174">ఓపెన్ సోర్స్ లైసెన్స్‌లు</translation>
 <translation id="8522147671363140027">{count,plural, =1{ఈ పరికరంలో {count} పాస్‌వర్డ్, ఇతర ఐటెమ్‌లు మాత్రమే సేవ్ చేయబడతాయి. వాటిని మీ ఇతర పరికరాలలో ఉపయోగించడానికి, వాటిని మీ Google ఖాతా, {email}‌లో సేవ్ చేయండి.}other{ఈ పరికరంలో {count} పాస్‌వర్డ్‌లు, ఇతర ఐటెమ్‌లు మాత్రమే సేవ్ చేయబడతాయి. వాటిని మీ ఇతర పరికరాలలో ఉపయోగించడానికి, వాటిని మీ Google ఖాతా, {email}‌లో సేవ్ చేయండి.}}</translation>
+<translation id="8522813812888400223">డౌన్‌లోడ్‌ను రద్దు చేయండి</translation>
 <translation id="8524799873541103884"><ph name="NUMBER_OF_OPEN_TABS" />లో <ph name="FIRST_VISIBLE_TAB" /> నుండి <ph name="LAST_VISIBLE_TAB" /> వరకు <ph name="INCOGNITO" /> ట్యాబ్‌లు</translation>
 <translation id="852576975834694248">మీరు సైన్ అవుట్ చేయబడతారు, ఆపై ట్యాబ్‌లు మూసివేయబడతాయి</translation>
 <translation id="8528009254289981965">అజ్ఞాతంలో ఇతర యాప్‌ల నుండి లింక్‌లను తెరవండి</translation>

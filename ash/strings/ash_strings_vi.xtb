@@ -336,6 +336,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2405664212338326887">Chưa kết nối</translation>
 <translation id="2408955596600435184">Nhập mã PIN của bạn</translation>
 <translation id="2412593942846481727">Đã có bản cập nhật</translation>
+<translation id="2416438829169535743">Thoát khỏi chế độ xem này?</translation>
 <translation id="2417486498593892439">Đăng nhập vào mạng</translation>
 <translation id="2426051945783024481">Khung hình của máy ảnh tự động căn giữa</translation>
 <translation id="2427507373259914951">Nhấp chuột trái</translation>
@@ -1153,9 +1154,11 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="5555639311269196631">Tắt điểm phát sóng</translation>
 <translation id="5556459405103347317">Tải lại</translation>
 <translation id="5558091555391176027">Bật/tắt chế độ hiển thị ở mức cao cho tính năng Chia sẻ lân cận</translation>
+<translation id="5558314826121965174">Sáng tạo</translation>
 <translation id="556042886152191864">Nút</translation>
 <translation id="5570122939431135380">Mở thẻ mới trong Cửa sổ ẩn danh mới</translation>
 <translation id="5571066253365925590">Đã bật bluetooth</translation>
+<translation id="5572632238877308040">Ứng dụng thiết yếu</translation>
 <translation id="557563299383177668">Đoạn tiếp theo</translation>
 <translation id="5577082622442191756">Bật/tắt Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Bạn phải bật Bluetooth trên điện thoại thì mới sử dụng được Trung tâm điều khiển điện thoại</translation>
@@ -1180,6 +1183,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="5662075790140998213">Không gian làm việc 10</translation>
 <translation id="5662709761327382534">Tính năng ghi âm <ph name="CURRENT_STATE" />. Hãy nhấn Enter để chuyển tính năng này sang trạng thái <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Đang kích hoạt</translation>
+<translation id="5672890847723042801">Phần mềm tiện ích</translation>
 <translation id="5673434351075758678">Từ "<ph name="FROM_LOCALE" />" sang "<ph name="TO_LOCALE" />" sau khi đồng bộ hóa cài đặt của bạn.</translation>
 <translation id="5675363643668471212">Mục trong giá</translation>
 <translation id="5677928146339483299">Bị chặn</translation>
@@ -1361,6 +1365,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="6351032674660237738">ĐỀ XUẤT ỨNG DỤNG</translation>
 <translation id="6352082849089527770">Mạng không xác định</translation>
 <translation id="6359587239691116345">Nhận các tính năng mới nhất và mức độ bảo mật cao hơn. Nếu bạn từ chối bản cập nhật này, thiết bị của bạn có thể sẽ không còn hoạt động bình thường. Đồng thời, bạn có thể gặp các vấn đề về hiệu suất và bảo mật.</translation>
+<translation id="6362833380917912748">Tìm hiểu về các ứng dụng tích hợp sẵn</translation>
 <translation id="6376931439017688372">Bluetooth đang bật</translation>
 <translation id="6378515133128829137">Ghim cửa sổ sang bên phải</translation>
 <translation id="6381109794406942707">Để mở khóa thiết bị, hãy nhập mã PIN của bạn.</translation>
@@ -1847,6 +1852,7 @@ Mới cài đặt</translation>
 <translation id="8262312463845990408">Phát hoặc dừng phát</translation>
 <translation id="8270450402312105425">{0,plural, =1{Hạ cấp hệ điều hành trên thiết bị về phiên bản trước trong vòng 1 giờ}other{Hạ cấp hệ điều hành trên thiết bị về phiên bản trước trong vòng # giờ}}</translation>
 <translation id="8277261673056602147">Đánh dấu văn bản trên màn hình</translation>
+<translation id="8287009018010202411">Năng suất</translation>
 <translation id="828708037801473432">Đang tắt</translation>
 <translation id="8297006494302853456">Yếu</translation>
 <translation id="8308637677604853869">Menu trước</translation>
@@ -1918,6 +1924,7 @@ Mới cài đặt</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Sắp xếp ứng dụng theo tên hoặc màu sắc</translation>
 <translation id="8609384513243082612">Mở thẻ mới</translation>
+<translation id="861045123704058818">Ứng dụng được sắp xếp tạm thời theo danh mục</translation>
 <translation id="8612216344243590325">Lưu giữ các tệp quan trọng trong <ph name="HOLDING_SPACE_TITLE" /> thay vì lưu trên màn hình. Bạn chỉ cần kéo các tệp vào <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Đã ẩn thông báo của <ph name="APP_1_TITLE" /> và <ph name="APP_2_TITLE" /> do đang bật chế độ chống nhìn lén</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1956,6 +1963,7 @@ Mới cài đặt</translation>
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">Xác minh danh tính của bạn: <ph name="ORIGIN_NAME" /> muốn xác nhận đó là bạn</translation>
 <translation id="875593634123171288">Hiển thị các tùy chọn cài đặt VPN</translation>
+<translation id="8756799553341497810">Bạn có thể bắt đầu tuỳ chỉnh bố cục ứng dụng sau khi thoát khỏi chế độ xem này.</translation>
 <translation id="8759408218731716181">Không thể thiết lập đăng nhập nhiều tài khoản</translation>
 <translation id="8763883995157866248">Đặt thiết bị ở chế độ ngủ</translation>
 <translation id="877404052021108314">90°F sang độ C</translation>

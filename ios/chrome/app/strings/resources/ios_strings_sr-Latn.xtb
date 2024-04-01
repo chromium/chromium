@@ -878,6 +878,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="5548760955356983418">Handoff vam omogućava da započnete pregledanje veb-sajta na ovom uređaju, pa da jednostavno nastavite na Mac-u. Veb-sajt koji je trenutno otvoren prikazaće se na doku na Mac-u.
 
 Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Podešavanja), a uređaji moraju da koriste isti iCloud nalog.</translation>
+<translation id="5551825465462320939">Pratite vesti, sport i druge teme na osnovu interesovanja.</translation>
 <translation id="5551897871312988470">Ponudi prevod</translation>
 <translation id="5556459405103347317">Učitaj ponovo</translation>
 <translation id="555749644339804659">Proveravaju se lozinke…</translation>
@@ -1182,6 +1183,7 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="6989674195860388998">Promenite u Podešavanjima…</translation>
 <translation id="6998989275928107238">Do</translation>
 <translation id="699954956411469731">Mobilna obaveštenja</translation>
+<translation id="699985840472413751">Zatvorite preuzimanje</translation>
 <translation id="7004032350256606903">Organizacija zahteva da pregledate privatno.
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Nedavne kartice</translation>
@@ -1471,6 +1473,7 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="850600235656508448">Otvori u režimu bez arhiviranja</translation>
 <translation id="8517375800490286174">Licence otvorenog koda</translation>
 <translation id="8522147671363140027">{count,plural, =1{{count} lozinka i druge stavke se čuvaju samo na ovom uređaju. Da biste ih koristili na drugim uređajima, sačuvajte ih na Google nalogu, {email}.}one{{count} lozinka i druge stavke se čuvaju samo na ovom uređaju. Da biste ih koristili na drugim uređajima, sačuvajte ih na Google nalogu, {email}.}few{{count} lozinke i druge stavke se čuvaju samo na ovom uređaju. Da biste ih koristili na drugim uređajima, sačuvajte ih na Google nalogu, {email}.}other{{count} lozinki i druge stavke se čuvaju samo na ovom uređaju. Da biste ih koristili na drugim uređajima, sačuvajte ih na Google nalogu, {email}.}}</translation>
+<translation id="8522813812888400223">Otkažite preuzimanje</translation>
 <translation id="8524799873541103884">Kartice <ph name="INCOGNITO" /> <ph name="FIRST_VISIBLE_TAB" /> do <ph name="LAST_VISIBLE_TAB" /> od <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="852576975834694248">Odjavićete se i kartice će biti zatvorene</translation>
 <translation id="8528009254289981965">Otvarajte linkove iz drugih aplikacija u režimu bez arhiviranja</translation>

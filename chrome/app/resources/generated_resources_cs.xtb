@@ -217,6 +217,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1164891049599601209">Zadáno na klamavém webu</translation>
 <translation id="1165039591588034296">Chyba</translation>
 <translation id="1166212789817575481">Zavřít karty napravo</translation>
+<translation id="1166457390969131095">Používat hesla a přístupové klíče z účtu Google a ukládat je do něj</translation>
 <translation id="1166583374608765787">Zkontrolujte změnu názvu</translation>
 <translation id="1166596238782048887">Karta <ph name="TAB_TITLE" /> patří k ploše <ph name="DESK_TITLE" /></translation>
 <translation id="1167262726334064738">Zkuste nové heslo</translation>
@@ -763,6 +764,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1575741822946219011">Jazyky a metody zadávání</translation>
 <translation id="1576594961618857597">Výchozí bílý avatar</translation>
 <translation id="1576729678809834061">Nahlásit tento výsledek vyhledávání</translation>
+<translation id="1578488449637163638">Tmavý</translation>
 <translation id="1578558981922970608">Ukončit aplikaci</translation>
 <translation id="157931050206866263">Další informace o kontrole na výskyt malwaru</translation>
 <translation id="1580772913177567930">Kontaktujte administrátora</translation>
@@ -1232,6 +1234,7 @@ Na aplikace a obsah v jiných zařízeních tato akce nemá vliv.</translation
 <translation id="1915734383465415025">Číslo prodejny</translation>
 <translation id="1916260783734263714">Aktuální karta</translation>
 <translation id="1916502483199172559">Výchozí červený avatar</translation>
+<translation id="1918127774159128277">Obnovit funkce Wi-Fi Direct</translation>
 <translation id="1918141783557917887">Menší</translation>
 <translation id="1919872106782726755">Pokud chcete nastavit otisk prstu, nechte dítě dotknout se snímače otisků prstů v pravém horním rohu klávesnice vedle vypínače. Otisk prstu dítěte je bezpečně uložen a nikdy neopouští <ph name="DEVICE_TYPE" />.</translation>
 <translation id="192015196730532810">Můžete vytvořit vlastní skupinu karet.</translation>
@@ -1286,6 +1289,7 @@ Na aplikace a obsah v jiných zařízeních tato akce nemá vliv.</translation
 <translation id="1951012854035635156">Asistent</translation>
 <translation id="1954597385941141174">Weby mohou žádat o připojení k zařízením USB</translation>
 <translation id="1954813140452229842">Při připojování sdílené složky došlo k chybě. Zkontrolujte identifikační údaje a zkuste to znovu.</translation>
+<translation id="1955749740583837857">Ignorovat doporučení</translation>
 <translation id="1956050014111002555">Soubor obsahoval více certifikátů, ale žádný z nich nebyl importován:</translation>
 <translation id="1956167375087861299">Zákaz používat identifikátory k přehrávání chráněného obsahu</translation>
 <translation id="1956390763342388273">Touto akcí nahrajete všechny soubory ze složky <ph name="FOLDER_PATH" />. Proveďte ji pouze v případě, že webu důvěřujete.</translation>
@@ -2386,6 +2390,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2764920001292228569">Zadejte název profilu</translation>
 <translation id="2765100602267695013">Obraťte se na svého mobilního operátora.</translation>
 <translation id="2765217105034171413">Malé</translation>
+<translation id="2765820627968019645">Světlý</translation>
 <translation id="2766006623206032690">Vl&amp;ožit a rovnou otevřít</translation>
 <translation id="2766161002040448006">Požádat rodiče</translation>
 <translation id="2767077837043621282">Chromebook se nepodařilo aktualizovat. Zkuste to později.</translation>
@@ -2645,6 +2650,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="2960942820860729477">Obnovovací frekvence</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" /> (poskytnuto rozšířením)</translation>
 <translation id="2961695502793809356">Kliknutím přejdete vpřed, přidržením se zobrazí historie</translation>
+<translation id="29618148602069201">Předmět</translation>
 <translation id="2963151496262057773">Následující plugin nereaguje: <ph name="PLUGIN_NAME" /> Chcete jej zastavit?</translation>
 <translation id="2964193600955408481">Vypnout Wi-Fi</translation>
 <translation id="2964245677645334031">Viditelnost pro sdílení na blízko</translation>
@@ -3616,6 +3622,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3729506734996624908">Povolené weby</translation>
 <translation id="3729957991398443677">Pokud chcete zobrazit své heslo nebo k němu přidat poznámku, vyberte ve vyhledávacím a adresním řádku možnost Správa hesel</translation>
 <translation id="3730076362938942381">Aplikace k psaní dotykovým perem</translation>
+<translation id="3730298295914858769">Funkce Wi-Fi Direct:</translation>
 <translation id="3732078975418297900">Chyba na řádku <ph name="ERROR_LINE" /></translation>
 <translation id="3732414796052961578">Pokračovat jako <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3732530910372558017">PIN smí mít maximálně 63 znaků</translation>
@@ -4337,6 +4344,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4279129444466079448">Do tohoto zařízení můžete nainstalovat nejvýše <ph name="PROFILE_LIMIT" /> profilů eSIM. Pokud chcete přidat další profil, nejdříve některý z existujících odstraňte.</translation>
 <translation id="4280325816108262082">Když zařízení vypnete nebo když nebude používáno, automaticky se odpojí</translation>
 <translation id="4281637354026226955">Povolit aplikacím a službám pro ChromeOS a Android s oprávněním pro přístup k poloze používat polohu vašeho zařízení. Google může pravidelně shromažďovat údaje o poloze a anonymně je používat ke zlepšování přesnosti polohy a služeb založených na poloze.</translation>
+<translation id="4281789858103154731">Vytvořit</translation>
 <translation id="4281844954008187215">Smluvní podmínky</translation>
 <translation id="4281849573951338030">Přizpůsobit tlačítka pera</translation>
 <translation id="4282196459431406533">Funkce Smart Lock je zapnutá</translation>
@@ -5438,6 +5446,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5146235736676876345">Vybrat vlastní</translation>
 <translation id="5146896637028965135">Systémový hlas</translation>
 <translation id="5147097165869384760">Hledáte systémovou stránku operačního systému? Přejděte na adresu <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />.</translation>
+<translation id="5147113439721488265">Doporučení</translation>
 <translation id="5147516217412920887">Ověřte kód podle pokynů na telefonu</translation>
 <translation id="5147992672778369947">Použijte doporučené heslo</translation>
 <translation id="5148285448107770349">Heslo musí obsahovat alespoň 8 znaků</translation>
@@ -7477,6 +7486,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6770042910635026163">Navštívené weby, které stanovují vaše zájmy</translation>
 <translation id="6770602306803890733">Zlepšuje bezpečnost pro vás i všechny ostatní uživatele internetu</translation>
 <translation id="6771503742377376720">Je certifikační autorita</translation>
+<translation id="6772974422346500939">Otevřít a upravit</translation>
 <translation id="6774710250118040929">Přidání nového hesla</translation>
 <translation id="6775163072363532304">Zde se budou zobrazovat dostupná zařízení.</translation>
 <translation id="677646486571529447">Přidat poznámku</translation>
@@ -7859,6 +7869,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7049293980323620022">Ponechat soubor?</translation>
 <translation id="7049524156282610342">Údaje o prohlížení <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Neplatná konfigurace hotspotu</translation>
+<translation id="7051222203795962489">{COUNT,plural, =1{Heslo bylo uloženo do vašeho účtu Google (<ph name="USER_EMAIL" />)}few{Hesla byla uložena do vašeho účtu Google (<ph name="USER_EMAIL" />)}many{Hesla byla uložena do vašeho účtu Google (<ph name="USER_EMAIL" />)}other{Hesla byla uložena do vašeho účtu Google (<ph name="USER_EMAIL" />)}}</translation>
 <translation id="7053983685419859001">Blokovat</translation>
 <translation id="7055152154916055070">Bylo zablokováno přesměrování:</translation>
 <translation id="7055451306017383754">Sdílení se nepodařilo zrušit, protože tuto složku používá nějaká aplikace. Sdílení složky bude zrušeno při příštím vypnutí systému Parallels Desktop.</translation>

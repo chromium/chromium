@@ -336,6 +336,7 @@
 <translation id="2405664212338326887">غیر منسلک</translation>
 <translation id="2408955596600435184">‏اپنا PIN درج کریں</translation>
 <translation id="2412593942846481727">اپ ڈیٹ دستیاب ہے</translation>
+<translation id="2416438829169535743">منظر سے باہر نکلیں؟</translation>
 <translation id="2417486498593892439">نیٹ ورک میں سائن ان کریں</translation>
 <translation id="2426051945783024481">کیمرے کا فریم خودکار طور پر بیچ میں کر دیا گیا ہے</translation>
 <translation id="2427507373259914951">بائیں طرف کلک کریں</translation>
@@ -1153,9 +1154,11 @@
 <translation id="5555639311269196631">ہاٹ اسپاٹ آف کریں</translation>
 <translation id="5556459405103347317">دوبارہ لوڈ کریں</translation>
 <translation id="5558091555391176027">قریبی آلات کے ساتھ اشتراک کی اعلی مرئیت کو ٹوگل کریں</translation>
+<translation id="5558314826121965174">تخلیقی صلاحیت</translation>
 <translation id="556042886152191864">بٹن</translation>
 <translation id="5570122939431135380">نئی پوشیدگی ونڈو میں نیا ٹیب کھولیں</translation>
 <translation id="5571066253365925590">بلوٹوتھ فعال ہے</translation>
+<translation id="5572632238877308040">لوازمات</translation>
 <translation id="557563299383177668">اگلا پیراگراف</translation>
 <translation id="5577082622442191756">بلوٹوتھ ٹوگل کریں۔ <ph name="STATE_TEXT" />۔</translation>
 <translation id="5577281275355252094">فون ہب استعمال کرنے کیلئے چیک کریں کہ آپ کے فون پر بلوٹوتھ فعال ہے</translation>
@@ -1180,6 +1183,7 @@
 <translation id="5662075790140998213">ڈیسک 10</translation>
 <translation id="5662709761327382534">‏مائیکروفون کے ذریعے ریکارڈ کریں <ph name="CURRENT_STATE" />، مائیکروفون کے ذریعے ریکارڈنگ کرنے کیلئے Enter دبائیں <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">فعال ہو رہا ہے</translation>
+<translation id="5672890847723042801">یوٹیلیٹیز</translation>
 <translation id="5673434351075758678">‏آپ کی ترتیبات کی مطابقت پذیری کے بعد '<ph name="FROM_LOCALE" />' سے '‎'‎<ph name="TO_LOCALE" />‎ میں۔</translation>
 <translation id="5675363643668471212">شیلف آئٹم</translation>
 <translation id="5677928146339483299">مسدود کردہ</translation>
@@ -1361,6 +1365,7 @@
 <translation id="6351032674660237738">ایپ کی تجاویز</translation>
 <translation id="6352082849089527770">نامعلوم نیٹ ورکس</translation>
 <translation id="6359587239691116345">تازہ ترین خصوصیات اور سیکیورٹی میں بہتریاں حاصل کریں۔ اگر آپ اس اپ ڈیٹ کو مسترد کرتے ہیں تو ہو سکتا ہے کہ آپ کا آلہ اب مزید ٹھیک سے کام نہ کرے اور آپ کو سیکیورٹی اور کارکردگی کے مسائل کا سامنا کرنا پڑے۔</translation>
+<translation id="6362833380917912748">اپنی پہلے سے شامل ایپس کو جانیں</translation>
 <translation id="6376931439017688372">بلوٹوتھ آن ہے</translation>
 <translation id="6378515133128829137">ونڈو کو دائیں جانب پن کریں</translation>
 <translation id="6381109794406942707">‏آلہ غیر مقفل کرنے کے لیے، اپنا PIN درج کریں۔</translation>
@@ -1846,6 +1851,7 @@
 <translation id="8262312463845990408">پلے بیک ٹوگل کریں</translation>
 <translation id="8270450402312105425">{0,plural, =1{ایک گھنٹے کے اندر آلہ کو گزشتہ ورژن میں تبدیل کریں}other{# گھنٹے کے اندر آلہ کو گزشتہ ورژن میں تبدیل کریں}}</translation>
 <translation id="8277261673056602147">اپنی اسکرین پر ٹیکسٹ کو نمایاں کریں</translation>
+<translation id="8287009018010202411">پروڈکٹیوٹی</translation>
 <translation id="828708037801473432">آف</translation>
 <translation id="8297006494302853456">کمزور</translation>
 <translation id="8308637677604853869">پچھلا مینیو</translation>
@@ -1917,6 +1923,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">اپنی ایپس کو نام یا رنگ کے لحاظ سے ترتیب دیں</translation>
 <translation id="8609384513243082612">نیا ٹیب کھولیں</translation>
+<translation id="861045123704058818">ایپس کو زمرہ کے لحاظ سے عارضی طور پر منظم کیا جاتا ہے</translation>
 <translation id="8612216344243590325">اہم فائلز کو ڈیسک ٹاپ کے بجائے <ph name="HOLDING_SPACE_TITLE" /> کے اندر رکھیں۔ بس فائلز کو <ph name="HOLDING_SPACE_TITLE" /> پر گھسیٹیں۔</translation>
 <translation id="8614517853887502247"><ph name="APP_1_TITLE" /> اور <ph name="APP_2_TITLE" /> اطلاعات پوشیدہ ہیں کیونکہ دیکھنے کا تحفظ آن ہے</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1955,6 +1962,7 @@
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">اپنی شناخت کی توثیق کریں: <ph name="ORIGIN_NAME" /> اس بات کی تصدیق کرنا چاہتی ہے کہ یہ آپ ہی ہیں</translation>
 <translation id="875593634123171288">‏VPN کی ترتیبات دکھائیں</translation>
+<translation id="8756799553341497810">اس منظر سے باہر نکلنے کے بعد آپ اپنے ایپ لے آؤٹ کو حسب ضرورت بنانا شروع کر سکتے ہیں۔</translation>
 <translation id="8759408218731716181">متعدد سائن ان ترتیب نہیں دے سکتے</translation>
 <translation id="8763883995157866248">آلہ کو سلیپ وضع میں بھیجیں</translation>
 <translation id="877404052021108314">‏C میں 90‎°F</translation>

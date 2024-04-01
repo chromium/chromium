@@ -336,6 +336,7 @@
 <translation id="2405664212338326887">Не підключено</translation>
 <translation id="2408955596600435184">Введіть PIN-код</translation>
 <translation id="2412593942846481727">Доступне оновлення</translation>
+<translation id="2416438829169535743">Вийти?</translation>
 <translation id="2417486498593892439">Вхід у мережу</translation>
 <translation id="2426051945783024481">Камера центрується автоматично</translation>
 <translation id="2427507373259914951">Натиснути лівою кнопкою</translation>
@@ -1153,9 +1154,11 @@
 <translation id="5555639311269196631">Вимкнути точку доступу</translation>
 <translation id="5556459405103347317">Перезавантажити</translation>
 <translation id="5558091555391176027">Перемикач режиму високої видимості для функції "Передавання поблизу"</translation>
+<translation id="5558314826121965174">Творчість</translation>
 <translation id="556042886152191864">Кнопка</translation>
 <translation id="5570122939431135380">Відкрити нову вкладку в новому вікні в режимі анонімного перегляду</translation>
 <translation id="5571066253365925590">Bluetooth увімкнено</translation>
+<translation id="5572632238877308040">Системні</translation>
 <translation id="557563299383177668">Наступний абзац</translation>
 <translation id="5577082622442191756">Увімкнути або вимкнути Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Щоб користуватися функцією "Керування телефоном", переконайтеся, що на пристрої ввімкнено Bluetooth</translation>
@@ -1180,6 +1183,7 @@
 <translation id="5662075790140998213">Робочий стіл 10</translation>
 <translation id="5662709761327382534">Мікрофон для запису <ph name="CURRENT_STATE" />. Щоб запис із мікрофона було <ph name="NEW_STATE" />, натисніть клавішу Enter</translation>
 <translation id="5669267381087807207">Активація</translation>
+<translation id="5672890847723042801">Утиліти</translation>
 <translation id="5673434351075758678">Після синхронізації налаштувань мову змінено. Попередня мова: <ph name="FROM_LOCALE" />, нова: <ph name="TO_LOCALE" />.</translation>
 <translation id="5675363643668471212">Елемент полиці</translation>
 <translation id="5677928146339483299">Заблоковано</translation>
@@ -1361,6 +1365,7 @@
 <translation id="6351032674660237738">ПРОПОЗИЦІЇ ДОДАТКІВ</translation>
 <translation id="6352082849089527770">Невідомі мережі</translation>
 <translation id="6359587239691116345">Отримуйте доступ до найновіших функцій і покращеної безпеки. Якщо відхилити це оновлення, ваш пристрій може працювати неналежним чином і у вас можуть виникати проблеми з безпекою та продуктивністю.</translation>
+<translation id="6362833380917912748">Дізнайтеся більше про доступні вбудовані додатки</translation>
 <translation id="6376931439017688372">Bluetooth увімкнено</translation>
 <translation id="6378515133128829137">Закріпити вікно праворуч</translation>
 <translation id="6381109794406942707">Щоб розблокувати пристрій, введіть PIN-код.</translation>
@@ -1847,6 +1852,7 @@
 <translation id="8262312463845990408">Увімкнути або вимкнути відтворення</translation>
 <translation id="8270450402312105425">{0,plural, =1{Поверніться до попередньої версії на пристрої протягом години}one{Поверніться до попередньої версії на пристрої протягом # години}few{Поверніться до попередньої версії на пристрої протягом # годин}many{Поверніться до попередньої версії на пристрої протягом # годин}other{Поверніться до попередньої версії на пристрої протягом # години}}</translation>
 <translation id="8277261673056602147">Виділити текст на екрані</translation>
+<translation id="8287009018010202411">Продуктивність</translation>
 <translation id="828708037801473432">Вимкнено</translation>
 <translation id="8297006494302853456">Слабкий</translation>
 <translation id="8308637677604853869">Попереднє меню</translation>
@@ -1918,6 +1924,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Сортуйте додатки за назвою чи кольором</translation>
 <translation id="8609384513243082612">Відкрити нову вкладку</translation>
+<translation id="861045123704058818">Додатки тимчасово впорядковано за категоріями</translation>
 <translation id="8612216344243590325">Зберігайте важливі файли в сервісі <ph name="HOLDING_SPACE_TITLE" />, а не на комп’ютері. Для цього перетягніть файли сюди: <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Сповіщення з додатків <ph name="APP_1_TITLE" /> і <ph name="APP_2_TITLE" /> приховано, оскільки ввімкнено безпечний перегляд</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1956,6 +1963,7 @@
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">Потрібне підтвердження: сайт <ph name="ORIGIN_NAME" /> хоче підтвердити вашу особу</translation>
 <translation id="875593634123171288">Показати налаштування VPN</translation>
+<translation id="8756799553341497810">Коли ви вийдете із цього режиму, то зможете налаштовувати макет додатка.</translation>
 <translation id="8759408218731716181">Не вдається налаштувати паралельний вхід</translation>
 <translation id="8763883995157866248">Перевести пристрій у режим сну</translation>
 <translation id="877404052021108314">90°F у °C</translation>

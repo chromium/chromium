@@ -336,6 +336,7 @@
 <translation id="2405664212338326887">সংযুক্ত হৈ থকা নাই</translation>
 <translation id="2408955596600435184">আপোনাৰ পিন দিয়ক</translation>
 <translation id="2412593942846481727">আপডে’ট উপলব্ধ</translation>
+<translation id="2416438829169535743">ভিউৰ পৰা বাহিৰ হ’বনে?</translation>
 <translation id="2417486498593892439">নেটৱৰ্কত ছাইন ইন কৰক</translation>
 <translation id="2426051945783024481">কেমেৰা ফ্ৰে’ম স্বয়ংক্ৰিয়ভাৱে সোঁমাজত ৰখা হ’ল</translation>
 <translation id="2427507373259914951">বাওঁফালে ক্লিক কৰা কার্য</translation>
@@ -676,6 +677,7 @@
 <translation id="3702809606464356667">বর্তমানৰ ডেস্কখনৰ পৰা ৱিণ্ড’সমূহ দেখুৱাই থকা হৈছে, আটাইবোৰ ডেস্কৰ পৰা ৱিণ্ড' দেখুৱাবলৈ আপ এৰ' কীটো টিপক</translation>
 <translation id="3702846122927433391">নাইজেৰিয়াৰ জনসংখ্যা</translation>
 <translation id="3705722231355495246">-</translation>
+<translation id="3706423975342040244">মনোৰঞ্জন</translation>
 <translation id="3708186454126126312">আগতে সংযোগ কৰা</translation>
 <translation id="3712143870407382523">এই ফালটোৰ বাবে এখন ৱিণ্ড’ বাছনি কৰক</translation>
 <translation id="371370241367527062">সন্মুখৰ মাইক্ৰ’ফ’ন</translation>
@@ -1152,9 +1154,11 @@
 <translation id="5555639311269196631">হটস্পট অফ কৰক</translation>
 <translation id="5556459405103347317">পুনৰ ল’ড কৰক</translation>
 <translation id="5558091555391176027">Nearby Shareৰ উচ্চ দৃশ্যমানতাৰ সুবিধাটো ট’গল কৰক</translation>
+<translation id="5558314826121965174">সৃষ্টিশীলতা</translation>
 <translation id="556042886152191864">বুটাম</translation>
 <translation id="5570122939431135380">নতুন ইনক’গনিট’ ৱিণ্ড’ত নতুন টেব খোলক</translation>
 <translation id="5571066253365925590">ব্লুটুথ সক্ষম কৰা হ'ল</translation>
+<translation id="5572632238877308040">অত্যাৱশ্যকীয়সমূহ</translation>
 <translation id="557563299383177668">পৰৱৰ্তী দফা</translation>
 <translation id="5577082622442191756">ব্লুটুথ ট’গল কৰক। <ph name="STATE_TEXT" />।</translation>
 <translation id="5577281275355252094">ফ’ন হাব ব্যৱহাৰ কৰিবলৈ আপোনাৰ ফ'নত ব্লুটুথ সক্ষম কৰা আছেনে নাই সেয়া পৰীক্ষা কৰক</translation>
@@ -1179,6 +1183,7 @@
 <translation id="5662075790140998213">ডেস্ক ১০</translation>
 <translation id="5662709761327382534">মাইক্ৰ’ফ’ন ৰেকৰ্ড কৰক <ph name="CURRENT_STATE" />, মাইক্ৰ’ফ’ন ৰেকৰ্ডিং অন কৰিবলৈ এণ্টাৰ টিপক <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">সক্ৰিয় কৰা হৈছে</translation>
+<translation id="5672890847723042801">য়ুটিলিটী</translation>
 <translation id="5673434351075758678">আপোনাৰ ছেটিংসমূহ ছিংক কৰাৰ পাছত "<ph name="FROM_LOCALE" />"ৰ পৰা "<ph name="TO_LOCALE" />"লৈ।</translation>
 <translation id="5675363643668471212">শ্বেল্ফৰ বস্তু</translation>
 <translation id="5677928146339483299">অৱৰোধিত</translation>
@@ -1360,6 +1365,7 @@
 <translation id="6351032674660237738">এপৰ পৰামৰ্শ</translation>
 <translation id="6352082849089527770">অজ্ঞাত নেটৱৰ্ক</translation>
 <translation id="6359587239691116345">শেহতীয়া সুবিধা আৰু সুৰক্ষা সম্পৰ্কীয় উন্নীতকৰণসমূহ লাভ কৰক। যদি আপুনি এই আপডে’টটো প্ৰত্যাখ্যান কৰে, তেন্তে আপোনাৰ ডিভাইচটোৱে আৰু সঠিককৈ কাম নকৰিব পাৰে আৰু আপুনি সুৰক্ষা আৰু কাৰ্যক্ষমতা সম্পৰ্কীয় সমস্যাৰ সন্মুখীন হ’ব পাৰে।</translation>
+<translation id="6362833380917912748">আপোনাৰ বিল্ট-ইন এপ্‌মূহৰ বিষয়ে জানক</translation>
 <translation id="6376931439017688372">ব্লুটুথ অন কৰা আছে</translation>
 <translation id="6378515133128829137">ৱিণ্ড’ সোঁফালে পিন কৰক</translation>
 <translation id="6381109794406942707">ডিভাইচটো আনলক কৰিবলৈ, আপোনাৰ পিনটো দিয়ক।</translation>
@@ -1846,6 +1852,7 @@
 <translation id="8262312463845990408">প্লে’বেক ট’গল কৰক</translation>
 <translation id="8270450402312105425">{0,plural, =1{এঘণ্টাৰ ভিতৰত ডিভাইচটো পূৰ্বৱৰ্তী সংস্কৰণলৈ সলনি কৰক}one{# ঘণ্টাৰ ভিতৰত ডিভাইচটো পূৰ্বৱৰ্তী সংস্কৰণলৈ সলনি কৰক}other{# ঘণ্টাৰ ভিতৰত ডিভাইচটো পূৰ্বৱৰ্তী সংস্কৰণলৈ সলনি কৰক}}</translation>
 <translation id="8277261673056602147">আপোনাৰ স্ক্ৰীনত থকা পাঠ হাইলাইট কৰক</translation>
+<translation id="8287009018010202411">উৎপাদনশীলতা</translation>
 <translation id="828708037801473432">অফ আছে</translation>
 <translation id="8297006494302853456">দুৰ্বল</translation>
 <translation id="8308637677604853869">পূৰ্বৱৰ্তী মেনু</translation>
@@ -1917,6 +1924,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">নাম অথবা ৰং অনুসৰি আপোনাৰ এপ্ সজাওক</translation>
 <translation id="8609384513243082612">নতুন টেব খোলক</translation>
+<translation id="861045123704058818">এপ্‌সমূহ অস্থায়ীভাৱে শ্ৰেণী অনুসৰি শৃংখলাবদ্ধ কৰা হয়</translation>
 <translation id="8612216344243590325">ডেস্কটপৰ সলনি <ph name="HOLDING_SPACE_TITLE" />ত গুৰুত্বপূৰ্ণ ফাইলসমূহ ৰাখক। কেৱল <ph name="HOLDING_SPACE_TITLE" />ত ফাইলসমূহ টানি আনি এৰক।</translation>
 <translation id="8614517853887502247">চোৱাৰ সুৰক্ষাটো অন হৈ থকাৰ বাবে <ph name="APP_1_TITLE" /> আৰু <ph name="APP_2_TITLE" />ৰ জাননীসমূহ লুকুওৱা হৈছে</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1955,6 +1963,7 @@
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">আপোনাৰ পৰিচয় সত্যাপন কৰক: <ph name="ORIGIN_NAME" />এ এয়া আপুনি বুলি নিশ্চিত কৰিবলৈ বিচাৰিছে</translation>
 <translation id="875593634123171288">VPN ছেটিংসমূহ দেখুৱাওক</translation>
+<translation id="8756799553341497810">আপুনি এই ভিউৰ পৰা ওলাই গ’লে আপোনাৰ এপৰ লে’আউট কাষ্টমাইজ কৰাটো আৰম্ভ কৰিব পাৰিব।</translation>
 <translation id="8759408218731716181">একাধিক প্ৰ’ফাইল ব্যৱহাৰ কৰিব পৰা সুবিধাটো ছেট আপ কৰিব নোৱাৰি</translation>
 <translation id="8763883995157866248">ডিভাইচটো সুপ্ত ম’ডলৈ নিয়ক</translation>
 <translation id="877404052021108314">৯০°ফাৰেনহাইট ছেণ্টিগ্ৰেডত</translation>

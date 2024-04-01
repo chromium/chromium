@@ -336,6 +336,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2405664212338326887">Nu s-a conectat</translation>
 <translation id="2408955596600435184">Introdu codul PIN</translation>
 <translation id="2412593942846481727">Actualizare disponibilă</translation>
+<translation id="2416438829169535743">Ieși din vizualizare?</translation>
 <translation id="2417486498593892439">Conectează-te la rețea</translation>
 <translation id="2426051945783024481">Cadrul camerei foto este centrat automat</translation>
 <translation id="2427507373259914951">Clic stânga</translation>
@@ -1153,9 +1154,11 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="5555639311269196631">Dezactivează hotspotul</translation>
 <translation id="5556459405103347317">Reîncarcă</translation>
 <translation id="5558091555391176027">Activează / dezactivează vizibilitatea crescută pentru Trimiterea în apropiere</translation>
+<translation id="5558314826121965174">Creativitate</translation>
 <translation id="556042886152191864">Buton</translation>
 <translation id="5570122939431135380">Deschide o filă nouă într-o fereastră incognito nouă</translation>
 <translation id="5571066253365925590">Bluetooth activat</translation>
+<translation id="5572632238877308040">Esențiale</translation>
 <translation id="557563299383177668">Paragraful următor</translation>
 <translation id="5577082622442191756">Comută Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Asigură-te că ai activat Bluetooth pe telefon pentru a folosi Phone Hub</translation>
@@ -1180,6 +1183,7 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="5662075790140998213">Biroul 10</translation>
 <translation id="5662709761327382534">Înregistrare audio <ph name="CURRENT_STATE" />, Apasă pe Enter pentru înregistrare audio <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Se activează</translation>
+<translation id="5672890847723042801">Utilitare</translation>
 <translation id="5673434351075758678">Din „<ph name="FROM_LOCALE" />” în „<ph name="TO_LOCALE" />” după sincronizarea setărilor.</translation>
 <translation id="5675363643668471212">Elementul din raft</translation>
 <translation id="5677928146339483299">Blocat</translation>
@@ -1361,6 +1365,7 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="6351032674660237738">SUGESTII DE APLICAȚII</translation>
 <translation id="6352082849089527770">Rețele necunoscute</translation>
 <translation id="6359587239691116345">Obține cele mai noi funcții și îmbunătățiri ale securității. Dacă refuzi această actualizare, este posibil ca dispozitivul să nu mai funcționeze corespunzător și să întâmpini probleme de securitate și de performanță.</translation>
+<translation id="6362833380917912748">Familiarizează-te cu aplicațiile încorporate</translation>
 <translation id="6376931439017688372">Bluetooth este activat</translation>
 <translation id="6378515133128829137">Fixează fereastra la dreapta</translation>
 <translation id="6381109794406942707">Pentru a debloca dispozitivul, introdu codul PIN.</translation>
@@ -1847,6 +1852,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8262312463845990408">Schimbă redarea</translation>
 <translation id="8270450402312105425">{0,plural, =1{Treci la versiunea anterioară a dispozitivului în cel mult o oră}few{Treci la versiunea anterioară a dispozitivului în # ore}other{Treci la versiunea anterioară a dispozitivului în # de ore}}</translation>
 <translation id="8277261673056602147">Evidențiază textul pe ecran</translation>
+<translation id="8287009018010202411">Productivitate</translation>
 <translation id="828708037801473432">Dezactivat</translation>
 <translation id="8297006494302853456">Slab</translation>
 <translation id="8308637677604853869">Meniul anterior</translation>
@@ -1918,6 +1924,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Sortează aplicațiile după nume sau culoare</translation>
 <translation id="8609384513243082612">Deschide o filă nouă</translation>
+<translation id="861045123704058818">Aplicațiile sunt organizate temporar după categorie</translation>
 <translation id="8612216344243590325">Păstrează fișierele importante în <ph name="HOLDING_SPACE_TITLE" /> în loc să le păstrezi pe desktop. Trage fișierele în <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Notificările pentru <ph name="APP_1_TITLE" /> și <ph name="APP_2_TITLE" /> sunt ascunse deoarece este activată protecția la afișare</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1956,6 +1963,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">Confirmă-ți identitatea: <ph name="ORIGIN_NAME" /> solicită să îți confirmi identitatea</translation>
 <translation id="875593634123171288">Afișează setările VPN</translation>
+<translation id="8756799553341497810">Poți începe să personalizezi aspectul aplicației după ce ieși din această vizualizare.</translation>
 <translation id="8759408218731716181">Nu se poate configura conectarea multiplă</translation>
 <translation id="8763883995157866248">Treci dispozitivul în modul inactiv</translation>
 <translation id="877404052021108314">90 °F în C</translation>

@@ -336,6 +336,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2405664212338326887">Nije povezano</translation>
 <translation id="2408955596600435184">Unesite PIN</translation>
 <translation id="2412593942846481727">Dostupno je ažuriranje</translation>
+<translation id="2416438829169535743">Želite da izađete iz prikaza?</translation>
 <translation id="2417486498593892439">Prijavite se na mrežu</translation>
 <translation id="2426051945783024481">Okvir kamere je automatski centriran</translation>
 <translation id="2427507373259914951">Levi klik</translation>
@@ -1154,9 +1155,11 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="5555639311269196631">Isključi hotspot</translation>
 <translation id="5556459405103347317">Učitaj ponovo</translation>
 <translation id="5558091555391176027">Uključite ili isključite veliku vidljivost Deljenja u blizini</translation>
+<translation id="5558314826121965174">Kreativnost</translation>
 <translation id="556042886152191864">Dugme</translation>
 <translation id="5570122939431135380">Otvori novu karticu u novom prozoru bez arhiviranja</translation>
 <translation id="5571066253365925590">Bluetooth je omogućen</translation>
+<translation id="5572632238877308040">Osnovne aplikacije</translation>
 <translation id="557563299383177668">Sledeći pasus</translation>
 <translation id="5577082622442191756">Uključite/isključite Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Uverite se da je Bluetooth omogućen na telefonu da biste koristili Phone Hub</translation>
@@ -1181,6 +1184,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="5662075790140998213">Radna površina 10</translation>
 <translation id="5662709761327382534">Podešavanje Snimaj pomoću mikrofona je <ph name="CURRENT_STATE" />, pritisnite enter da bi snimanje pomoću mikrofona bilo <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Aktiviranje</translation>
+<translation id="5672890847723042801">Uslužne aplikacije</translation>
 <translation id="5673434351075758678">Sa jezika „<ph name="FROM_LOCALE" />“ na „<ph name="TO_LOCALE" />“ posle sinhronizacije uređaja.</translation>
 <translation id="5675363643668471212">Stavka na polici</translation>
 <translation id="5677928146339483299">Blokirano</translation>
@@ -1362,6 +1366,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="6351032674660237738">PREDLOZI APLIKACIJA</translation>
 <translation id="6352082849089527770">Nepoznate mreže</translation>
 <translation id="6359587239691116345">Dobijajte najnovije funkcije i bezbednosna poboljšanja. Ako odbijete ovo ažuriranje, uređaj možda više neće raditi kako treba, a vi možete da imate problema sa bezbednošću i performansama.</translation>
+<translation id="6362833380917912748">Upoznajte ugrađene aplikacije</translation>
 <translation id="6376931439017688372">Bluetooth je uključen</translation>
 <translation id="6378515133128829137">Zakači prozor nadesno</translation>
 <translation id="6381109794406942707">Da biste otključali uređaj, unesite PIN.</translation>
@@ -1849,6 +1854,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8262312463845990408">Uključite/isključite reprodukciju</translation>
 <translation id="8270450402312105425">{0,plural, =1{Promenite verziju uređaja u prethodnu verziju u roku od jednog sata}one{Promenite verziju uređaja u prethodnu verziju u roku od # sata}few{Promenite verziju uređaja u prethodnu verziju u roku od # sata}other{Promenite verziju uređaja u prethodnu verziju u roku od # sati}}</translation>
 <translation id="8277261673056602147">Istaknite tekst na ekranu</translation>
+<translation id="8287009018010202411">Produktivnost</translation>
 <translation id="828708037801473432">Isključeno</translation>
 <translation id="8297006494302853456">Slab</translation>
 <translation id="8308637677604853869">Prethodni meni</translation>
@@ -1920,6 +1926,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Sortirajte aplikacije prema nazivu ili boji</translation>
 <translation id="8609384513243082612">Otvorite novu karticu</translation>
+<translation id="861045123704058818">Aplikacije su privremeno organizovane prema kategoriji</translation>
 <translation id="8612216344243590325">Čuvajte važne fajlove u folderu <ph name="HOLDING_SPACE_TITLE" /> umesto na pozadini. Samo prevucite fajlove u <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Obaveštenja aplikacija <ph name="APP_1_TITLE" /> i <ph name="APP_2_TITLE" /> su skrivena jer je zaštita od pregleda uključena</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1958,6 +1965,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">Verifikujte identitet: <ph name="ORIGIN_NAME" /> želi da potvrdi da ste to vi</translation>
 <translation id="875593634123171288">Pregledajte podešavanja VPN-a</translation>
+<translation id="8756799553341497810">Možete da počnete sa prilagođavanjem rasporeda aplikacija kada izađete iz ovog prikaza.</translation>
 <translation id="8759408218731716181">Nije moguće podesiti višestruko prijavljivanje</translation>
 <translation id="8763883995157866248">Prebacite uređaj u režim spavanja</translation>
 <translation id="877404052021108314">90 °F u C</translation>

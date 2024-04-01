@@ -1114,6 +1114,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3154987252551138431">Med uporabo deljenja v bližini je prišlo do napake.</translation>
 <translation id="315504272643575312">Vaš račun upravlja <ph name="MANAGER" />.</translation>
 <translation id="3155163173539279776">Znova zaženite Chromium</translation>
+<translation id="3156511682997763015">Preskok naprej za 10 sekund</translation>
 <translation id="3157931365184549694">Obnovi</translation>
 <translation id="3158539265159265653">Disk</translation>
 <translation id="3162559335345991374">Omrežje Wi-Fi, ki ga uporabljate, morda zahteva, da obiščete stran za prijavo.</translation>
@@ -1214,6 +1215,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="334438173029876234">Oprema za rolkanje</translation>
 <translation id="3347146863028219517">Smučanje in deskanje na snegu</translation>
 <translation id="3349952286488694786">SRA2</translation>
+<translation id="3350450887151703713">Vnovično predvajanje 10 sekund</translation>
 <translation id="3352881017886802007">Športne igre</translation>
 <translation id="3355823806454867987">Spremeni nastavitve proxyja ...</translation>
 <translation id="335809815767823">Izvoženo</translation>
@@ -3053,6 +3055,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6944557544071529399">Strateške igre</translation>
 <translation id="6944692733090228304">Vnesli ste geslo na spletnem mestu, ki ga ne upravlja: <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Zaradi zaščite računa gesla ne uporabljajte za druge aplikacije in spletna mesta.</translation>
 <translation id="6945221475159498467">Izberi</translation>
+<translation id="6946949206576443118">Iskanje po spletu v Chromu</translation>
 <translation id="6948051842255602737">Konec igre. Vaš rezultat je <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Če si želite ogledati načine prevzema in zahteve, izberite naslov</translation>
 <translation id="6948874830249067134">A1x3</translation>

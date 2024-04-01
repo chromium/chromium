@@ -337,6 +337,7 @@
 <translation id="2405664212338326887">غير متصلة</translation>
 <translation id="2408955596600435184">إدخال رقم التعريف الشخصي</translation>
 <translation id="2412593942846481727">هناك تحديث جديد</translation>
+<translation id="2416438829169535743">هل تريد الخروج من العرض؟</translation>
 <translation id="2417486498593892439">تسجيل الدخول إلى الشبكة</translation>
 <translation id="2426051945783024481">تم توسيط إطار الكاميرا تلقائيًا.</translation>
 <translation id="2427507373259914951">النقر بالزر الأيسر</translation>
@@ -1155,9 +1156,11 @@
 <translation id="5555639311269196631">إيقاف نقطة الاتصال</translation>
 <translation id="5556459405103347317">إعادة التحميل</translation>
 <translation id="5558091555391176027">إيقاف/تفعيل وضع الظهور لجميع الأجهزة القريبة لميزة "المشاركة عن قرب"</translation>
+<translation id="5558314826121965174">تطبيقات الإبداع</translation>
 <translation id="556042886152191864">زر</translation>
 <translation id="5570122939431135380">فتح علامة تبويب جديدة في نافذة تصفُّح متخفٍ جديدة</translation>
 <translation id="5571066253365925590">تم تفعيل البلوتوث</translation>
+<translation id="5572632238877308040">التطبيقات الأساسية</translation>
 <translation id="557563299383177668">الفقرة التالية</translation>
 <translation id="5577082622442191756">إيقاف/تفعيل البلوتوث: <ph name="STATE_TEXT" /></translation>
 <translation id="5577281275355252094">يُرجى التأكّد من تفعيل البلوتوث على هاتفك لاستخدام ميزة "مركز التحكّم بالهاتف".</translation>
@@ -1182,6 +1185,7 @@
 <translation id="5662075790140998213">سطح المكتب 10</translation>
 <translation id="5662709761327382534">‏التسجيل من الميكروفون <ph name="CURRENT_STATE" />. يمكنك الضغط على مفتاح Enter لضبط إعداد التسجيل من الميكروفون على <ph name="NEW_STATE" />.</translation>
 <translation id="5669267381087807207">تفعيل</translation>
+<translation id="5672890847723042801">تطبيقات الخدمات</translation>
 <translation id="5673434351075758678">من "<ph name="FROM_LOCALE" />" إلى "<ph name="TO_LOCALE" />" بعد مزامنة الإعدادات.</translation>
 <translation id="5675363643668471212">عنصر الرف</translation>
 <translation id="5677928146339483299">محظور</translation>
@@ -1363,6 +1367,7 @@
 <translation id="6351032674660237738">اقتراحات التطبيقات</translation>
 <translation id="6352082849089527770">الشبكات غير المعروفة</translation>
 <translation id="6359587239691116345">يُرجى الحصول على أحدث الميزات وتحسينات الأمان. في حال رفض هذا التحديث، من المحتمل أن يتوقف جهازك عن العمل بشكل صحيح وقد تواجه مشاكل تتعلّق بالأمان والأداء.</translation>
+<translation id="6362833380917912748">التعرُّف على التطبيقات المدمَجة</translation>
 <translation id="6376931439017688372">تم تفعيل البلوتوث</translation>
 <translation id="6378515133128829137">تثبيت النافذة على اليسار</translation>
 <translation id="6381109794406942707">لفتح قفل الجهاز، أدخِل رقم التعريف الشخصي.</translation>
@@ -1850,6 +1855,7 @@
 <translation id="8262312463845990408">استئناف التشغيل أو إيقافه مؤقتًا</translation>
 <translation id="8270450402312105425">{0,plural, =1{إعادة الجهاز إلى الإصدار السابق في غضون ساعة واحدة}zero{إعادة الجهاز إلى الإصدار السابق في غضون # ساعة}two{إعادة الجهاز إلى الإصدار السابق في غضون ساعتين}few{إعادة الجهاز إلى الإصدار السابق في غضون # ساعات}many{إعادة الجهاز إلى الإصدار السابق في غضون # ساعة}other{إعادة الجهاز إلى الإصدار السابق في غضون # ساعة}}</translation>
 <translation id="8277261673056602147">تمييز النص على الشاشة</translation>
+<translation id="8287009018010202411">تطبيقات الإنتاجية</translation>
 <translation id="828708037801473432">غير مُفعَّلة</translation>
 <translation id="8297006494302853456">ضعيفة</translation>
 <translation id="8308637677604853869">القائمة السابقة</translation>
@@ -1921,6 +1927,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">ترتيب التطبيقات حسب الاسم أو اللون</translation>
 <translation id="8609384513243082612">فتح علامة تبويب جديدة</translation>
+<translation id="861045123704058818">يتم تنظيم التطبيقات حسب الفئة مؤقتًا</translation>
 <translation id="8612216344243590325">احتفِظ بالملفات المهمة في "<ph name="HOLDING_SPACE_TITLE" />" بدلاً من وضعها على سطح المكتب. ما عليك سوى سحب الملفات إلى "<ph name="HOLDING_SPACE_TITLE" />".</translation>
 <translation id="8614517853887502247">‏تم حجب إشعارات التطبيقين <ph name="APP_1_TITLE" /> و<ph name="APP_2_TITLE" /> بسبب تفعيل ميزة Viewing Protection.</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1959,6 +1966,7 @@
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">إثبات هويتك: يريد النطاق <ph name="ORIGIN_NAME" /> تأكيد هويتك.</translation>
 <translation id="875593634123171288">‏عرض إعدادات الشبكة الظاهرية الخاصة (VPN)</translation>
+<translation id="8756799553341497810">يمكنك بدء تخصيص تنسيق التطبيق بعد الخروج من هذا العرض.</translation>
 <translation id="8759408218731716181">يتعذر إعداد الدخول المتعدد</translation>
 <translation id="8763883995157866248">ضبط الجهاز على وضع السكون</translation>
 <translation id="877404052021108314">تحويل 90 درجة فهرنهايت إلى ما يعادلها بالدرجة المئوية</translation>

@@ -336,6 +336,7 @@
 <translation id="2405664212338326887">Nincs kapcsolat</translation>
 <translation id="2408955596600435184">PIN-kód megadása</translation>
 <translation id="2412593942846481727">Rendelkezésre áll frissítés</translation>
+<translation id="2416438829169535743">Kilép a nézetből?</translation>
 <translation id="2417486498593892439">Bejelentkezés a hálózatba</translation>
 <translation id="2426051945783024481">Keret automatikusan középre igazítva</translation>
 <translation id="2427507373259914951">Kattintás bal egérgombbal</translation>
@@ -1154,9 +1155,11 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="5555639311269196631">Hotspot kikapcsolása</translation>
 <translation id="5556459405103347317">Újratöltés</translation>
 <translation id="5558091555391176027">A Közeli megosztás funkció nagyfokú láthatóságának be-/kikapcsolása</translation>
+<translation id="5558314826121965174">Kreativitás</translation>
 <translation id="556042886152191864">Gomb</translation>
 <translation id="5570122939431135380">Új lap megnyitása új inkognitó ablakban</translation>
 <translation id="5571066253365925590">Bluetooth engedélyezve</translation>
+<translation id="5572632238877308040">Kihagyhatatlanok</translation>
 <translation id="557563299383177668">Következő bekezdés</translation>
 <translation id="5577082622442191756">Bluetooth be-/kikapcsolása. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">A Telefonközpont használatához ellenőrizze, hogy a Bluetooth be van-e kapcsolva a telefonon</translation>
@@ -1181,6 +1184,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="5662075790140998213">10. asztal</translation>
 <translation id="5662709761327382534">A mikrofon általi hangrögzítés jelenleg <ph name="CURRENT_STATE" /> állásban van. Ha <ph name="NEW_STATE" /> állásba szeretné állítani, nyomja meg az Enter billentyűt</translation>
 <translation id="5669267381087807207">Aktiválás</translation>
+<translation id="5672890847723042801">Segédprogramok</translation>
 <translation id="5673434351075758678">Módosítás <ph name="FROM_LOCALE" /> nyelvről <ph name="TO_LOCALE" /> nyelvre a beállítások szinkronizálása után.</translation>
 <translation id="5675363643668471212">Polcelem</translation>
 <translation id="5677928146339483299">Letiltva</translation>
@@ -1362,6 +1366,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="6351032674660237738">ALKALMAZÁSJAVASLATOK</translation>
 <translation id="6352082849089527770">Ismeretlen hálózatok</translation>
 <translation id="6359587239691116345">Szeretném megkapni a legújabb funkciókat és biztonsági fejlesztéseket. Ha elutasítja ezt a frissítést, akkor előfordulhat, hogy az eszköz a továbbiakban nem fog megfelelően működni, és biztonsággal, illetve teljesítménnyel kapcsolatos problémákat tapasztalhat.</translation>
+<translation id="6362833380917912748">Ismerkedés a beépített alkalmazásokkal</translation>
 <translation id="6376931439017688372">A Bluetooth be van kapcsolva</translation>
 <translation id="6378515133128829137">Ablak kitűzése jobbra</translation>
 <translation id="6381109794406942707">Az eszköz feloldásához adja meg a PIN-kódot.</translation>
@@ -1848,6 +1853,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8262312463845990408">Lejátszás vagy szüneteltetés</translation>
 <translation id="8270450402312105425">{0,plural, =1{Eszköz módosítása az előző verzióra egy órán belül}other{Eszköz módosítása az előző verzióra # órán belül}}</translation>
 <translation id="8277261673056602147">A képernyőn lévő szöveg kiemelése</translation>
+<translation id="8287009018010202411">Hatékonyság</translation>
 <translation id="828708037801473432">Ki</translation>
 <translation id="8297006494302853456">Gyenge</translation>
 <translation id="8308637677604853869">Előző menü</translation>
@@ -1919,6 +1925,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Alkalmazások rendezése név vagy szín szerint</translation>
 <translation id="8609384513243082612">Új lap megnyitása</translation>
+<translation id="861045123704058818">Az alkalmazások átmenetileg kategória szerint vannak rendezve</translation>
 <translation id="8612216344243590325">Tárolja a fontos fájlokat az asztal helyett itt: <ph name="HOLDING_SPACE_TITLE" />. Csak húzza fájlokat a következő helyre: <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">A(z) <ph name="APP_1_TITLE" /> és a(z) <ph name="APP_2_TITLE" /> alkalmazás értesítései rejtve vannak, mert be van kapcsolva a megtekintési védelem</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1957,6 +1964,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">Igazolja személyazonosságát, a következő szeretne meggyőződni a személyazonosságáról: <ph name="ORIGIN_NAME" /></translation>
 <translation id="875593634123171288">VPN-beállítások megjelenítése</translation>
+<translation id="8756799553341497810">Az alkalmazás elrendezésének személyre szabását a nézetből való kilépés után kezdheti el.</translation>
 <translation id="8759408218731716181">Nem lehet beállítani a többfiókos bejelentkezést</translation>
 <translation id="8763883995157866248">Eszköz alvó üzemmódba helyezése</translation>
 <translation id="877404052021108314">90 °F Celsiusban</translation>

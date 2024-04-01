@@ -336,6 +336,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2405664212338326887">Tidak disambungkan</translation>
 <translation id="2408955596600435184">Masukkan PIN anda</translation>
 <translation id="2412593942846481727">Kemas kini tersedia</translation>
+<translation id="2416438829169535743">Keluar daripada paparan?</translation>
 <translation id="2417486498593892439">Log masuk ke rangkaian</translation>
 <translation id="2426051945783024481">Bingkai kamera dipusatkan secara automatik</translation>
 <translation id="2427507373259914951">Klik kiri</translation>
@@ -1153,9 +1154,11 @@ Sesetengah ciri dihadkan untuk meningkatkan hayat bateri.</translation>
 <translation id="5555639311269196631">Matikan tempat liputan</translation>
 <translation id="5556459405103347317">Muat Semula</translation>
 <translation id="5558091555391176027">Togol keterlihatan tinggi Kongsi Berdekatan</translation>
+<translation id="5558314826121965174">Kreativiti</translation>
 <translation id="556042886152191864">Butang</translation>
 <translation id="5570122939431135380">Buka tab baharu dalam tetingkap Inkognito baharu</translation>
 <translation id="5571066253365925590">Bluetooth didayakan</translation>
+<translation id="5572632238877308040">Apl Asas</translation>
 <translation id="557563299383177668">Perenggan seterusnya</translation>
 <translation id="5577082622442191756">Togol Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Pastikan Bluetooth didayakan pada telefon anda untuk menggunakan Hab Telefon</translation>
@@ -1180,6 +1183,7 @@ Sesetengah ciri dihadkan untuk meningkatkan hayat bateri.</translation>
 <translation id="5662075790140998213">Meja 10</translation>
 <translation id="5662709761327382534">Rakam mikrofon <ph name="CURRENT_STATE" />, Tekan Enter untuk menghidupkan rakaman mikrofon <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Mengaktifkan</translation>
+<translation id="5672890847723042801">Utiliti</translation>
 <translation id="5673434351075758678">Daripada "<ph name="FROM_LOCALE" />" kepada "<ph name="TO_LOCALE" />" selepas menyegerakkan tetapan anda.</translation>
 <translation id="5675363643668471212">Item rak</translation>
 <translation id="5677928146339483299">Disekat</translation>
@@ -1361,6 +1365,7 @@ Sesetengah ciri dihadkan untuk meningkatkan hayat bateri.</translation>
 <translation id="6351032674660237738">CADANGAN APL</translation>
 <translation id="6352082849089527770">Rangkaian tidak diketahui</translation>
 <translation id="6359587239691116345">Dapatkan ciri terkini dan peningkatan keselamatan. Jika anda menolak kemaskinian ini, peranti anda mungkin tidak lagi berfungsi dengan betul dan anda mungkin mengalami isu keselamatan dan prestasi.</translation>
+<translation id="6362833380917912748">Kenali apl terbina dalam anda</translation>
 <translation id="6376931439017688372">Bluetooth dihidupkan</translation>
 <translation id="6378515133128829137">Sematkan tetingkap pada bahagian kanan</translation>
 <translation id="6381109794406942707">Untuk membuka kunci peranti, masukkan PIN anda.</translation>
@@ -1847,6 +1852,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8262312463845990408">Togol main balik</translation>
 <translation id="8270450402312105425">{0,plural, =1{Tukar peranti kepada versi sebelumnya dalam masa sejam}other{Tukar peranti kepada versi sebelumnya dalam masa # jam}}</translation>
 <translation id="8277261673056602147">Serlahkan teks pada skrin anda</translation>
+<translation id="8287009018010202411">Produktiviti</translation>
 <translation id="828708037801473432">Dimatikan</translation>
 <translation id="8297006494302853456">Lemah</translation>
 <translation id="8308637677604853869">Menu sebelumnya</translation>
@@ -1918,6 +1924,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Isih apl anda mengikut nama atau warna</translation>
 <translation id="8609384513243082612">Buka tab baharu</translation>
+<translation id="861045123704058818">Apl disusun mengikut kategori buat sementara waktu</translation>
 <translation id="8612216344243590325">Simpan fail penting dalam <ph name="HOLDING_SPACE_TITLE" />, bukannya pada desktop. Seret fail kepada <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Pemberitahuan <ph name="APP_1_TITLE" /> dan <ph name="APP_2_TITLE" /> disembunyikan kerana perlindungan paparan dihidupkan</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1956,6 +1963,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">Sahkan identiti anda: <ph name="ORIGIN_NAME" /> ingin mengesahkan orang itu ialah anda</translation>
 <translation id="875593634123171288">Tunjukkan tetapan VPN</translation>
+<translation id="8756799553341497810">Anda boleh mula menyesuaikan reka letak apl anda setelah anda keluar daripada paparan ini.</translation>
 <translation id="8759408218731716181">Tidak dapat menyediakan berbilang log masuk</translation>
 <translation id="8763883995157866248">Tetapkan peranti kepada mod tidur</translation>
 <translation id="877404052021108314">90°F dalam C</translation>

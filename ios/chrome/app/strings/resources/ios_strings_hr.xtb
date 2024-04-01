@@ -1183,6 +1183,7 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="6989674195860388998">Promijenite u postavkama…</translation>
 <translation id="6998989275928107238">Do</translation>
 <translation id="699954956411469731">Obavijesti na mobilnom uređaju</translation>
+<translation id="699985840472413751">Zatvorite preuzimanje</translation>
 <translation id="7004032350256606903">Vaša organizacija zahtijeva da pregledavate privatno.
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Nedavne kartice</translation>
@@ -1472,6 +1473,7 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="850600235656508448">Otvori u anonimnom načinu</translation>
 <translation id="8517375800490286174">Licence otvorenog koda</translation>
 <translation id="8522147671363140027">{count,plural, =1{{count} zaporka i druge stavke spremaju se samo na ovaj uređaj. Da biste ih upotrebljavali na svojim drugim uređajima, spremite ih na svoj Google račun, {email}.}one{{count} zaporka i druge stavke spremaju se samo na ovaj uređaj. Da biste ih upotrebljavali na svojim drugim uređajima, spremite ih na svoj Google račun, {email}.}few{{count} zaporke i druge stavke spremaju se samo na ovaj uređaj. Da biste ih upotrebljavali na svojim drugim uređajima, spremite ih na svoj Google račun, {email}.}other{{count} zaporki i druge stavke spremaju se samo na ovaj uređaj. Da biste ih upotrebljavali na svojim drugim uređajima, spremite ih na svoj Google račun, {email}.}}</translation>
+<translation id="8522813812888400223">Otkažite preuzimanje</translation>
 <translation id="8524799873541103884">Kartice <ph name="INCOGNITO" /> od <ph name="FIRST_VISIBLE_TAB" /> do <ph name="LAST_VISIBLE_TAB" /> od ukupno <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="852576975834694248">Odjavit ćete se i kartice će se zatvoriti</translation>
 <translation id="8528009254289981965">Otvaranje veza iz drugih aplikacija u anonimnom načinu</translation>

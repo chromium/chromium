@@ -336,6 +336,7 @@
 <translation id="2405664212338326887">未连接</translation>
 <translation id="2408955596600435184">输入您的 PIN 码</translation>
 <translation id="2412593942846481727">有可用的更新</translation>
+<translation id="2416438829169535743">退出视图？</translation>
 <translation id="2417486498593892439">登录到网络</translation>
 <translation id="2426051945783024481">相机取景画面已自动居中</translation>
 <translation id="2427507373259914951">点击鼠标左键</translation>
@@ -1151,9 +1152,11 @@
 <translation id="5555639311269196631">关闭热点</translation>
 <translation id="5556459405103347317">重新加载</translation>
 <translation id="5558091555391176027">开启/关闭“附近分享”的高可见度模式</translation>
+<translation id="5558314826121965174">创意</translation>
 <translation id="556042886152191864">按钮</translation>
 <translation id="5570122939431135380">在新的无痕式窗口中打开新标签页</translation>
 <translation id="5571066253365925590">蓝牙已启用</translation>
+<translation id="5572632238877308040">基本应用</translation>
 <translation id="557563299383177668">下一个段落</translation>
 <translation id="5577082622442191756">开启/关闭蓝牙。<ph name="STATE_TEXT" />。</translation>
 <translation id="5577281275355252094">请确保在手机上启用蓝牙以便使用 Phone Hub</translation>
@@ -1178,6 +1181,7 @@
 <translation id="5662075790140998213">桌面 10</translation>
 <translation id="5662709761327382534">麦克风录音功能已<ph name="CURRENT_STATE" />，按 Enter 键即可<ph name="NEW_STATE" />此功能</translation>
 <translation id="5669267381087807207">正在激活</translation>
+<translation id="5672890847723042801">实用程序</translation>
 <translation id="5673434351075758678">当系统同步完您的设置后，“<ph name="FROM_LOCALE" />”即会改为“<ph name="TO_LOCALE" />”。</translation>
 <translation id="5675363643668471212">任务栏中的项目</translation>
 <translation id="5677928146339483299">已阻止</translation>
@@ -1359,6 +1363,7 @@
 <translation id="6351032674660237738">应用推荐</translation>
 <translation id="6352082849089527770">未知网络</translation>
 <translation id="6359587239691116345">获取最新的功能和安全性方面的改进。如果您拒绝此更新，您的设备可能会无法继续正常运行，您则可能会遇到安全问题和性能问题。</translation>
+<translation id="6362833380917912748">了解您的内置应用</translation>
 <translation id="6376931439017688372">蓝牙已开启</translation>
 <translation id="6378515133128829137">将窗口固定到右侧</translation>
 <translation id="6381109794406942707">要解锁此设备，请输入您的 PIN 码。</translation>
@@ -1845,6 +1850,7 @@
 <translation id="8262312463845990408">播放/暂停切换按钮</translation>
 <translation id="8270450402312105425">{0,plural, =1{请在 1 小时内将设备回滚到上一个版本}other{请在 # 小时内将设备回滚到上一个版本}}</translation>
 <translation id="8277261673056602147">突出显示屏幕上的文字</translation>
+<translation id="8287009018010202411">效率</translation>
 <translation id="828708037801473432">已关闭</translation>
 <translation id="8297006494302853456">弱</translation>
 <translation id="8308637677604853869">上一菜单</translation>
@@ -1916,6 +1922,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">按名称或颜色将您的应用排序</translation>
 <translation id="8609384513243082612">打开新标签页</translation>
+<translation id="861045123704058818">系统会暂时按类别整理应用</translation>
 <translation id="8612216344243590325">请将重要文件保存在<ph name="HOLDING_SPACE_TITLE" />中，而不是放在桌面。只需将文件拖到<ph name="HOLDING_SPACE_TITLE" />即可。</translation>
 <translation id="8614517853887502247">由于防窥探功能已开启，因此系统隐藏了<ph name="APP_1_TITLE" />和<ph name="APP_2_TITLE" />通知</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1954,6 +1961,7 @@
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">验证您的身份：<ph name="ORIGIN_NAME" /> 想确认您的身份</translation>
 <translation id="875593634123171288">显示 VPN 设置</translation>
+<translation id="8756799553341497810">退出此视图后，您就可以开始自定义应用布局。</translation>
 <translation id="8759408218731716181">无法设置多账号登录</translation>
 <translation id="8763883995157866248">将设备设为睡眠模式</translation>
 <translation id="877404052021108314">将 90°F 转换为摄氏度</translation>

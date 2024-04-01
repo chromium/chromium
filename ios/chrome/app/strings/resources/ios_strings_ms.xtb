@@ -878,6 +878,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="5548760955356983418">Ciri Serah membolehkan anda mula menyemak imbas laman web pada peranti ini, kemudian meneruskannya pada Mac anda dengan mudah. Tapak web yang dibuka pada masa ini akan muncul dalam Dock Mac anda.
 
 Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda mestilah menggunakan akaun iCloud yang sama.</translation>
+<translation id="5551825465462320939">Ikuti perkembangan berita, sukan dan pelbagai lagi berdasarkan minat anda.</translation>
 <translation id="5551897871312988470">Tawaran untuk Menterjemah</translation>
 <translation id="5556459405103347317">Muat Semula</translation>
 <translation id="555749644339804659">Menyemak kata laluan…</translation>
@@ -1182,6 +1183,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="6989674195860388998">Tukar dalam Tetapan…</translation>
 <translation id="6998989275928107238">Kepada</translation>
 <translation id="699954956411469731">Pemberitahuan Mudah Alih</translation>
+<translation id="699985840472413751">Tutup Muat Turun</translation>
 <translation id="7004032350256606903">Organisasi anda menghendaki anda menyemak imbas secara peribadi.
 <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Tab Terbaharu</translation>
@@ -1471,6 +1473,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="850600235656508448">Buka dalam Inkognito</translation>
 <translation id="8517375800490286174">Lesen Sumber Terbuka</translation>
 <translation id="8522147671363140027">{count,plural, =1{{count} kata laluan dan item lain disimpan pada peranti ini sahaja. Untuk menggunakan item ini pada peranti anda yang lain, simpan item dalam Google Account anda, {email}.}other{{count} kata laluan dan item lain disimpan pada peranti ini sahaja. Untuk menggunakan item ini pada peranti anda yang lain, simpan item dalam Google Account anda, {email}.}}</translation>
+<translation id="8522813812888400223">Batalkan Muat Turun</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> Tab <ph name="FIRST_VISIBLE_TAB" /> melalui <ph name="LAST_VISIBLE_TAB" /> daripada <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="852576975834694248">Anda akan dilog keluar dan tab akan ditutup</translation>
 <translation id="8528009254289981965">Buka pautan daripada apl lain dalam Inkognito</translation>

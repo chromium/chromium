@@ -219,6 +219,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1164891049599601209">Skrevet inn på et villedende nettsted</translation>
 <translation id="1165039591588034296">Feil</translation>
 <translation id="1166212789817575481">Lukk fanene til høyre</translation>
+<translation id="1166457390969131095">Bruk og lagre passord og passnøkler fra Google-kontoen din</translation>
 <translation id="1166583374608765787">Gjennomgå navneoppdatering</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> tilhører skrivebordet <ph name="DESK_TITLE" /></translation>
 <translation id="1167262726334064738">Prøv et nytt passord</translation>
@@ -761,6 +762,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1575741822946219011">Språk og inndatametoder</translation>
 <translation id="1576594961618857597">Hvitt standardbrukerbilde</translation>
 <translation id="1576729678809834061">Rapporter dette søkeresultatet</translation>
+<translation id="1578488449637163638">Mørk</translation>
 <translation id="1578558981922970608">Tving avslutning</translation>
 <translation id="157931050206866263">Finn ut mer om skanning etter skadelig programvare</translation>
 <translation id="1580772913177567930">Kontakt administratoren din</translation>
@@ -1236,6 +1238,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1915734383465415025">Butikknummer</translation>
 <translation id="1916260783734263714">Gjeldende fane</translation>
 <translation id="1916502483199172559">Rødt standardbrukerbilde</translation>
+<translation id="1918127774159128277">Oppdater Wifi Direct-egenskaper</translation>
 <translation id="1918141783557917887">&amp;Mindre</translation>
 <translation id="1919872106782726755">For å konfigurere fingeravtrykk, få barnet ditt til å berøre fingeravtrykkssensoren øverst til høyre på tastaturet, ved siden av av/på-knappen. Barnets fingeravtrykksdata lagres sikkert og sendes aldri fra <ph name="DEVICE_TYPE" />.</translation>
 <translation id="192015196730532810">Du kan opprette din egen fanegruppe.</translation>
@@ -1290,6 +1293,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1954597385941141174">Nettsteder kan be om å få koble til USB-enheter</translation>
 <translation id="1954813140452229842">Feil ved innsetting av deling. Sjekk legitimasjonen og prøv igjen.</translation>
+<translation id="1955749740583837857">Lukk anbefalingen</translation>
 <translation id="1956050014111002555">Filen inneholdt flere sertifikater, men ingen av dem ble importert:</translation>
 <translation id="1956167375087861299">Nettsteder som ikke har lov til å bruke identifikatorer til å spille av beskyttet innhold</translation>
 <translation id="1956390763342388273">Dette fører til at alle filer fra «<ph name="FOLDER_PATH" />» lastes opp. Du bør bare gjøre dette hvis du stoler på nettstedet.</translation>
@@ -2394,6 +2398,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2764920001292228569">Skriv inn et profilnavn</translation>
 <translation id="2765100602267695013">Kontakt mobiloperatøren din</translation>
 <translation id="2765217105034171413">Liten</translation>
+<translation id="2765820627968019645">Lys</translation>
 <translation id="2766006623206032690">&amp;Lim inn og gå til</translation>
 <translation id="2766161002040448006">Spør en forelder</translation>
 <translation id="2767077837043621282">Kunne ikke oppdatere Chromebooken din. Prøv på nytt senere.</translation>
@@ -2653,6 +2658,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2960942820860729477">Oppdateringsfrekvens</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" /> (fra utvidelse)</translation>
 <translation id="2961695502793809356">Klikk for å gå fremover – hold for å se logg</translation>
+<translation id="29618148602069201">Emne</translation>
 <translation id="2963151496262057773">Følgende programtillegg svarer ikke: <ph name="PLUGIN_NAME" />Vil du stoppe det?</translation>
 <translation id="2964193600955408481">Deaktiver Wifi</translation>
 <translation id="2964245677645334031">Tilgang for nærdeling</translation>
@@ -3624,6 +3630,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3729506734996624908">Tillatte nettsteder</translation>
 <translation id="3729957991398443677">For å se passordet ditt eller legge til en merknad om det, administrer passordene dine i søke- og adressefeltet</translation>
 <translation id="3730076362938942381">App for skriving med pekepenn</translation>
+<translation id="3730298295914858769">Wifi Direct-egenskaper:</translation>
 <translation id="3732078975418297900">Feil på linje <ph name="ERROR_LINE" /></translation>
 <translation id="3732414796052961578">Fortsett som <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3732530910372558017">PIN-koden kan ikke ha mer enn 63 tegn</translation>
@@ -4344,6 +4351,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4279129444466079448">Du kan installere opptil <ph name="PROFILE_LIMIT" /> eSIM-profiler på denne enheten. For å legge til en ny profil må du først fjerne en eksisterende profil.</translation>
 <translation id="4280325816108262082">Enheten kobles fra automatisk når den slås av eller ikke er i bruk</translation>
 <translation id="4281637354026226955">Tillat at ChromeOS- og Android-apper og -tjenester med posisjonstillatelse bruker posisjonen til enheten din. Google kan samle inn posisjonsdata med jevne mellomrom og bruke disse dataene anonymt for å gjøre posisjonsnøyaktigheten og posisjonsbaserte tjenester bedre.</translation>
+<translation id="4281789858103154731">Opprett</translation>
 <translation id="4281844954008187215">Vilkår for bruk</translation>
 <translation id="4281849573951338030">Tilpass pennknapper</translation>
 <translation id="4282196459431406533">Smart Lock er slått på</translation>
@@ -5445,6 +5453,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5146235736676876345">Velg ditt eget</translation>
 <translation id="5146896637028965135">Systemstemme</translation>
 <translation id="5147097165869384760">Ser du etter OS-systemsiden? Gå til<ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />.</translation>
+<translation id="5147113439721488265">Anbefaling</translation>
 <translation id="5147516217412920887">Følg veiledningen på telefonen for å bekrefte koden</translation>
 <translation id="5147992672778369947">Bruk anbefalt passord</translation>
 <translation id="5148285448107770349">Passordet må bestå av minst åtte tegn.</translation>
@@ -7482,6 +7491,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6770042910635026163">Nettsteder du besøker som definerer interessene dine</translation>
 <translation id="6770602306803890733">Øker sikkerheten for deg og alle andre på nettet</translation>
 <translation id="6771503742377376720">Er en sertifiseringsinstans</translation>
+<translation id="6772974422346500939">Åpne og rediger</translation>
 <translation id="6774710250118040929">Legg til nytt passord</translation>
 <translation id="6775163072363532304">Tilgjengelige enheter vises her.</translation>
 <translation id="677646486571529447">Legg til en merknad</translation>
@@ -7864,6 +7874,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7049293980323620022">Vil du beholde filen?</translation>
 <translation id="7049524156282610342">Nettlesingsdata <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Ugyldig konfigurasjon av wifi-sone</translation>
+<translation id="7051222203795962489">{COUNT,plural, =1{Passordet er lagret i Google-kontoen din, <ph name="USER_EMAIL" />}other{Passordene er lagret i Google-kontoen din, <ph name="USER_EMAIL" />}}</translation>
 <translation id="7053983685419859001">Blokkér</translation>
 <translation id="7055152154916055070">Viderekoblingen er blokkert:</translation>
 <translation id="7055451306017383754">Kunne ikke avvise delingen, fordi et program bruker denne mappen. Mappedelingen blir avvist neste gang Parallels Desktop avsluttes.</translation>

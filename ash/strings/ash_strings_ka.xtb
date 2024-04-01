@@ -336,6 +336,7 @@
 <translation id="2405664212338326887">არ არის დაკავშირებული</translation>
 <translation id="2408955596600435184">შეიყვანეთ თქვენი PIN-კოდი</translation>
 <translation id="2412593942846481727">ხელმისაწვდომია განახლება</translation>
+<translation id="2416438829169535743">გსურთ ხედიდან გასვლა?</translation>
 <translation id="2417486498593892439">ქსელში შესვლა</translation>
 <translation id="2426051945783024481">კამერის კადრი ავტომატურად ექცევა ცენტრში</translation>
 <translation id="2427507373259914951">მარცხენა დაწკაპუნება</translation>
@@ -1153,9 +1154,11 @@
 <translation id="5555639311269196631">უსადენო ქსელის გამორთვა</translation>
 <translation id="5556459405103347317">ხელახლა ჩატვირთვა</translation>
 <translation id="5558091555391176027">მახლობლად გაზიარების მაღალი ხილვადობის გადართვა</translation>
+<translation id="5558314826121965174">კრეატიულობა</translation>
 <translation id="556042886152191864">ღილაკი</translation>
 <translation id="5570122939431135380">ახალი ჩანართის გახსნა ახალ ინკოგნიტო ფანჯარაში</translation>
 <translation id="5571066253365925590">Bluetooth ჩართულია</translation>
+<translation id="5572632238877308040">ძირითადი</translation>
 <translation id="557563299383177668">შემდეგი აბზაცი</translation>
 <translation id="5577082622442191756">Bluetooth-ის გადართვა. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">ტელეფონის ცენტრის გამოსაყენებლად შეამოწმეთ, რომ თქვენს ტელეფონზე ჩართულია Bluetooth</translation>
@@ -1180,6 +1183,7 @@
 <translation id="5662075790140998213">სამუშაო მაგიდა 10</translation>
 <translation id="5662709761327382534">მიკროფონის ჩაწერაა <ph name="CURRENT_STATE" />, დააჭირეთ კლავიშს enter, თუ გსურთ, მიკროფონის ჩაწერა <ph name="NEW_STATE" /> იყოს</translation>
 <translation id="5669267381087807207">გააქტიურება</translation>
+<translation id="5672890847723042801">ხელსაწყოები</translation>
 <translation id="5673434351075758678">„<ph name="FROM_LOCALE" />“ გახდა „<ph name="TO_LOCALE" />“ თქვენი პარამეტრების სინქრონიზაციის შემდეგ.</translation>
 <translation id="5675363643668471212">თაროს ელემენტი</translation>
 <translation id="5677928146339483299">დაბლოკილი</translation>
@@ -1361,6 +1365,7 @@
 <translation id="6351032674660237738">აპების შემოთავაზებები</translation>
 <translation id="6352082849089527770">უცნობი ქსელები</translation>
 <translation id="6359587239691116345">ისარგებლეთ უახლესი ფუნქციებითა და უსაფრთხოების გაუმჯობესებებით. თუ ამ განახლებას უარყოფთ, თქვენმა მოწყობილობამ, შესაძლოა, სათანადოდ აღარ იმუშაოს, უსაფრთხოებასა და წარმადობასთან დაკავშირებით კი გარკვეული პრობლემები შეგექმნათ.</translation>
+<translation id="6362833380917912748">გაეცანით ჩაშენებულ აპებს</translation>
 <translation id="6376931439017688372">Bluetooth ჩართულია</translation>
 <translation id="6378515133128829137">ფანჯრის ჩამაგრება მარჯვნივ</translation>
 <translation id="6381109794406942707">მოწყობილობის განსაბლოკად შეიყვანეთ PIN-კოდი.</translation>
@@ -1847,6 +1852,7 @@
 <translation id="8262312463845990408">დაკვრის გადართვა</translation>
 <translation id="8270450402312105425">{0,plural, =1{დააბრუნეთ მოწყობილობა წინა ვერსიაზე ერთი საათის განმავლობაში}other{დააბრუნეთ მოწყობილობა წინა ვერსიაზე # საათის განმავლობაში}}</translation>
 <translation id="8277261673056602147">ტექსტის გამოყოფა თქვენს ეკრანზე</translation>
+<translation id="8287009018010202411">პროდუქტიულობა</translation>
 <translation id="828708037801473432">გამორთვა</translation>
 <translation id="8297006494302853456">სუსტი</translation>
 <translation id="8308637677604853869">წინა მენიუ</translation>
@@ -1918,6 +1924,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">დაალაგეთ თქვენი აპები სახელის ან ფერის მიხედვით</translation>
 <translation id="8609384513243082612">ახალი ჩანართის გახსნა</translation>
+<translation id="861045123704058818">აპები დროებით არის ორგანიზებული კატეგორიების მიხედვით</translation>
 <translation id="8612216344243590325">შეინახეთ მნიშვნელოვანი ფაილები დესკტოპის ნაცვლად <ph name="HOLDING_SPACE_TITLE" />-ში. უბრალოდ, ჩავლებით გადაიტანეთ ფაილები <ph name="HOLDING_SPACE_TITLE" />-ში.</translation>
 <translation id="8614517853887502247"><ph name="APP_1_TITLE" />-ისა და <ph name="APP_2_TITLE" />-ის შეტყობინებები დამალულია, რადგან ჩართულია ნახვის დაცვა</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1956,6 +1963,7 @@
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">დაადასტურეთ ვინაობა: <ph name="ORIGIN_NAME" /> ითხოვს თქვენი ვინაობის დადასტურებას</translation>
 <translation id="875593634123171288">VPN-ის პარამეტრების ჩვენება</translation>
+<translation id="8756799553341497810">ამ ხედიდან გასვლის შემდეგ შეგიძლიათ აპების განლაგების მორგების დაწყება.</translation>
 <translation id="8759408218731716181">მრავლობითი შესვლის დაყენება შეუძლებელია</translation>
 <translation id="8763883995157866248">მოწყობილობის გადაყვანა ძილის რეჟიმზე</translation>
 <translation id="877404052021108314">90°F ცელსიუსში</translation>

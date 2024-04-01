@@ -271,6 +271,7 @@
 <translation id="2446553403094072641">ความแม่นยำของจุดลอยตัว</translation>
 <translation id="2448312741937722512">ประเภท</translation>
 <translation id="2465272316171730950">ระบบไม่ว่างดำเนินการ โปรดกลับมาใหม่ในภายหลัง</translation>
+<translation id="2472215337771558851">ใช้ฟีเจอร์ช่วยฉันเขียนเพื่อสร้างข้อความร่างหรือปรับแต่งงานที่มีอยู่ซึ่งทำงานด้วยระบบ AI ของ Google</translation>
 <translation id="2480572840229215612">ปู</translation>
 <translation id="248546197012830854">อุปกรณ์ออฟไลน์อยู่ เชื่อมต่อกับเครือข่าย Wi-Fi เพื่อดูเนื้อหาช่วยเหลือ</translation>
 <translation id="2486301288428798846">ไม้</translation>
@@ -328,10 +329,12 @@
 <translation id="2860473693272905224">วางอีกหน้าบนเครื่องสแกน</translation>
 <translation id="2872961005593481000">ปิด</translation>
 <translation id="2873483161362553159">การนำทางสำหรับเบราว์เซอร์</translation>
+<translation id="2873939192640533085">ป้อนพรอมต์ เช่น "ให้ฟังดูมั่นใจมากขึ้น"</translation>
 <translation id="2874939134665556319">แทร็กก่อนหน้า</translation>
 <translation id="2875812231449496375">เปิดโหมดนี้เพื่อให้วอลเปเปอร์นี้มีผลลัพธ์ที่ดีที่สุด คุณปิดการตั้งค่านี้ได้ทุกเมื่อ</translation>
 <translation id="2878387241690264070">คายประจุ <ph name="RATE" /> ใน <ph name="NUM_SECONDS" /> วินาที</translation>
 <translation id="2880569433548999039">ภาพพักหน้าจอการเคลื่อนตัวของเมฆ</translation>
+<translation id="2888298276507578975">ป้อนพรอมต์ เช่น "เขียนโน้ตขอบคุณ"</translation>
 <translation id="2890557891229184386">เกาะเขตร้อน</translation>
 <translation id="2895772081848316509">มืด</translation>
 <translation id="2926057806159140518">ป้อนชื่อผู้ใช้และรหัสผ่าน หรือสแกนคิวอาร์โค้ด</translation>
@@ -376,6 +379,7 @@
 <translation id="3226405216343213872">กำลังค้นหาเครื่องสแกน</translation>
 <translation id="3226657629376379887">เมนูการทำงานสำหรับเลย์เอาต์</translation>
 <translation id="3227186760713762082">นำค่า <ph name="CATEGORY_TEXT" /> มาหารด้วย <ph name="CONVERSION_RATE" /></translation>
+<translation id="3237710083340813756">เขียนใหม่</translation>
 <translation id="3246869037381808805">ระบบจะนำงานพิมพ์ที่เก่ากว่า 1 วันออก</translation>
 <translation id="324961752321393509">ผู้ดูแลระบบไม่อนุญาตให้ปิดแอปนี้</translation>
 <translation id="3268178239013324452">ไม่สำเร็จ - ฝาเครื่องเปิดอยู่</translation>
@@ -414,6 +418,7 @@
 <translation id="346539236881580388">ถ่ายใหม่</translation>
 <translation id="3484914941826596830">ขณะอัปเดตเฟิร์มแวร์ โปรดอย่าถอดปลั๊กอุปกรณ์ภายนอกเครื่องนี้หรือปิดคอมพิวเตอร์ คุณย่อหน้าต่างนี้ให้เล็กสุดได้ การอัปเดตอาจใช้เวลาสักครู่และอุปกรณ์ภายนอกอาจใช้ไม่ได้ในช่วงเวลานี้</translation>
 <translation id="3486220673238053218">คำจำกัดความ</translation>
+<translation id="3487866404496702283">ความคิดเห็นเกี่ยวกับฟีเจอร์ mahi</translation>
 <translation id="3488065109653206955">เปิดการใช้งานบางส่วน</translation>
 <translation id="3492882532495507361">สำนักงาน <ph name="OFFICE_STYLE" /> ที่มีโทนสี <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">ข้อมูลนี้วัดโดย Chromebook ของคุณ ซึ่งอาจแตกต่างกับข้อมูลจากผู้ให้บริการ</translation>
@@ -442,6 +447,7 @@
 <translation id="3621072146987826699">ช้าง</translation>
 <translation id="3632579075709132555">เปิด/ปิดหน้าจอความเป็นส่วนตัว</translation>
 <translation id="3651050199673793219">เลือกหน่วยวัดอุณหภูมิ</translation>
+<translation id="3661106764436337772">เขียนได้เร็วขึ้นและมั่นใจมากขึ้น</translation>
 <translation id="3662461537616691585">เบอร์กันดีและน้ำตาลแดง</translation>
 <translation id="3668449597372804501">วอลเปเปอร์การเคลื่อนตัวของเมฆ</translation>
 <translation id="3675132884790542448">หมู</translation>
@@ -875,6 +881,7 @@
 <translation id="6235460611964961764">รีเซ็ตปริมาณการใช้อินเทอร์เน็ตด้วยตนเอง</translation>
 <translation id="6243280677745499710">วอลเปเปอร์ปัจจุบัน</translation>
 <translation id="6250316632541035980">เบคอนและไข่</translation>
+<translation id="6255213378196499011">การตั้งค่าฟีเจอร์ช่วยฉันเขียน</translation>
 <translation id="6275224645089671689">ลูกศรขวา</translation>
 <translation id="6278428485366576908">ธีม</translation>
 <translation id="6280912520669706465">ARC</translation>

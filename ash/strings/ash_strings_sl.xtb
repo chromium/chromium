@@ -336,6 +336,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2405664212338326887">Ni povezano</translation>
 <translation id="2408955596600435184">Vnos kode PIN</translation>
 <translation id="2412593942846481727">Na voljo je posodobitev</translation>
+<translation id="2416438829169535743">Želite zapreti pogled?</translation>
 <translation id="2417486498593892439">Prijava v omrežje</translation>
 <translation id="2426051945783024481">Okvir fotoaparata je samodejno na sredini.</translation>
 <translation id="2427507373259914951">Levi klik</translation>
@@ -1153,9 +1154,11 @@ Nekatere funkcije so omejene zaradi podaljšanja časa delovanja baterije.</tran
 <translation id="5555639311269196631">Izklopi dostopno točko</translation>
 <translation id="5556459405103347317">Znova naloži</translation>
 <translation id="5558091555391176027">Preklop visoke vidnosti deljenja v bližini</translation>
+<translation id="5558314826121965174">Ustvarjalnost</translation>
 <translation id="556042886152191864">Gumb</translation>
 <translation id="5570122939431135380">Odpiranje novega zavihka v novem anonimnem oknu</translation>
 <translation id="5571066253365925590">Bluetooth omogočen</translation>
+<translation id="5572632238877308040">Nepogrešljivo</translation>
 <translation id="557563299383177668">Naslednji odstavek</translation>
 <translation id="5577082622442191756">Preklop Bluetootha. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Če želite uporabljati telefonsko središče, preverite, ali je vklopljen Bluetooth.</translation>
@@ -1180,6 +1183,7 @@ Nekatere funkcije so omejene zaradi podaljšanja časa delovanja baterije.</tran
 <translation id="5662075790140998213">Namizje 10</translation>
 <translation id="5662709761327382534">Snemanje mikrofona <ph name="CURRENT_STATE" />. Pritisnite Enter, če želite vklopiti mikrofon: <ph name="NEW_STATE" />.</translation>
 <translation id="5669267381087807207">Aktiviranje</translation>
+<translation id="5672890847723042801">Orodja</translation>
 <translation id="5673434351075758678">Iz jezika »<ph name="FROM_LOCALE" />« v jezik »<ph name="TO_LOCALE" />« po sinhronizaciji nastavitev.</translation>
 <translation id="5675363643668471212">Element na polici</translation>
 <translation id="5677928146339483299">Blokirano</translation>
@@ -1361,6 +1365,7 @@ Nekatere funkcije so omejene zaradi podaljšanja časa delovanja baterije.</tran
 <translation id="6351032674660237738">PREDLOGI ZA APLIKACIJE</translation>
 <translation id="6352082849089527770">Neznana omrežja</translation>
 <translation id="6359587239691116345">Zagotovite si najnovejše funkcije in varnostne izboljšave. Če zavrnete to posodobitev, naprava morda ne bo več delovala pravilno in boste morda naleteli na varnostne težave in težave z zmogljivostjo.</translation>
+<translation id="6362833380917912748">Spoznajte vgrajene aplikacije</translation>
 <translation id="6376931439017688372">Bluetooth je vklopljen</translation>
 <translation id="6378515133128829137">Pripenjanje okna na desno</translation>
 <translation id="6381109794406942707">Če želite odkleniti napravo, vnesite kodo PIN.</translation>
@@ -1847,6 +1852,7 @@ Nova namestitev</translation>
 <translation id="8262312463845990408">Preklop predvajanja</translation>
 <translation id="8270450402312105425">{0,plural, =1{Spremenite napravo na prejšnjo različico v eni uri}one{Spremenite napravo na prejšnjo različico v # uri}two{Spremenite napravo na prejšnjo različico v # urah}few{Spremenite napravo na prejšnjo različico v # urah}other{Spremenite napravo na prejšnjo različico v # urah}}</translation>
 <translation id="8277261673056602147">Označevanje besedila na zaslonu</translation>
+<translation id="8287009018010202411">Storilnost</translation>
 <translation id="828708037801473432">Izklopljeno</translation>
 <translation id="8297006494302853456">Šibek</translation>
 <translation id="8308637677604853869">Prejšnji meni</translation>
@@ -1918,6 +1924,7 @@ Nova namestitev</translation>
 <translation id="8594115950068821369">–<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Razvrstitev aplikacij po imenu ali barvi</translation>
 <translation id="8609384513243082612">Odpiranje novega zavihka</translation>
+<translation id="861045123704058818">Aplikacije so začasno razvrščene glede na kategorijo</translation>
 <translation id="8612216344243590325">Pomembne datoteke shranjujte na mestu <ph name="HOLDING_SPACE_TITLE" /> namesto na namizju. Preprosto povlecite datoteke na mesto <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Obvestili aplikacij <ph name="APP_1_TITLE" /> in <ph name="APP_2_TITLE" /> sta skriti zaradi vklopljene zaščite pred ogledovanjem.</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1956,6 +1963,7 @@ Nova namestitev</translation>
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">Preverjanje identitete: Spletno mesto <ph name="ORIGIN_NAME" /> želi potrditi, ali ste to res vi.</translation>
 <translation id="875593634123171288">Prikaz nastavitev omrežja VPN</translation>
+<translation id="8756799553341497810">Postavitev aplikacije lahko začnete prilagajati, ko zaprete ta pogled.</translation>
 <translation id="8759408218731716181">Prijave z več računi ni mogoče nastaviti</translation>
 <translation id="8763883995157866248">Preklop naprave v stanje pripravljenosti</translation>
 <translation id="877404052021108314">90 °F v C</translation>

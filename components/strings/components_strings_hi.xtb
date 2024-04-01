@@ -1115,6 +1115,7 @@
 <translation id="3154987252551138431">आस-पास शेयर करने वाली सुविधा का इस्तेमाल करते समय कोई गड़बड़ी हुई</translation>
 <translation id="315504272643575312">आपके खाते को <ph name="MANAGER" /> मैनेज करता है.</translation>
 <translation id="3155163173539279776">क्रोमियम फिर से लॉन्च करें</translation>
+<translation id="3156511682997763015">10 सेकंड आगे बढ़ाएं</translation>
 <translation id="3157931365184549694">वापस लाएं</translation>
 <translation id="3158539265159265653">डिस्क</translation>
 <translation id="3162559335345991374">आप जिस वाई-फ़ाई का उपयोग कर रहे हैं, आपको उसके लॉगिन पेज पर जाने की ज़रूरत पड़ सकती है.</translation>
@@ -1214,6 +1215,7 @@
 <translation id="334438173029876234">स्केटबोर्डिंग इक्विपमेंट</translation>
 <translation id="3347146863028219517">स्कीइंग और स्नोबोर्डिंग</translation>
 <translation id="3349952286488694786">SRA2</translation>
+<translation id="3350450887151703713">10 सेकंड फिर से चलाएं</translation>
 <translation id="3352881017886802007">स्पोर्ट्स गेम</translation>
 <translation id="3355823806454867987">प्रॉक्सी सेटिंग बदलें...</translation>
 <translation id="335809815767823">एक्सपोर्ट की गईं</translation>
@@ -3053,6 +3055,7 @@
 <translation id="6944557544071529399">स्ट्रेटजी गेम</translation>
 <translation id="6944692733090228304">आपने एक ऐसी साइट पर अपना पासवर्ड डाला है जिसे <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> प्रबंधित नहीं करता है. अपने खाते को सुरक्षित रखने के लिए, दूसरे ऐप्लिकेशन और साइटों पर अपने पासवर्ड का दोबारा इस्तेमाल न करें.</translation>
 <translation id="6945221475159498467">चुनें</translation>
+<translation id="6946949206576443118">Chrome में वेब पर खोजें</translation>
 <translation id="6948051842255602737">गेम ओवर, आपका स्कोर <ph name="SCORE" /> है.</translation>
 <translation id="6948701128805548767">पिकअप के तरीके और ज़रूरतें देखने के लिए, कोई पता चुनें</translation>
 <translation id="6948874830249067134">A1x3</translation>

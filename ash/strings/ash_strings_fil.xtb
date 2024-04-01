@@ -336,6 +336,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2405664212338326887">Hindi nakakonekta</translation>
 <translation id="2408955596600435184">Ilagay ang iyong PIN</translation>
 <translation id="2412593942846481727">May available na update</translation>
+<translation id="2416438829169535743">Lumabas sa view?</translation>
 <translation id="2417486498593892439">Mag-sign in sa network</translation>
 <translation id="2426051945783024481">Awtomatikong napupunta sa gitna ang camera frame</translation>
 <translation id="2427507373259914951">Mag-left click</translation>
@@ -1153,9 +1154,11 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="5555639311269196631">I-off ang hotspot</translation>
 <translation id="5556459405103347317">I-reload</translation>
 <translation id="5558091555391176027">I-toggle ang mataas na visibility ng Nearby Share</translation>
+<translation id="5558314826121965174">Pagiging Malikhain</translation>
 <translation id="556042886152191864">Pindutan</translation>
 <translation id="5570122939431135380">Magbukas ng bagong tab sa bagong Incognito window</translation>
 <translation id="5571066253365925590">Pinapagana ang Bluetooth</translation>
+<translation id="5572632238877308040">Mga Essential</translation>
 <translation id="557563299383177668">Susunod na parirala</translation>
 <translation id="5577082622442191756">I-toggle ang Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Tingnan kung naka-enable ang Bluetooth sa iyong telepono para magamit ang Phone Hub</translation>
@@ -1180,6 +1183,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="5662075790140998213">Desk 10</translation>
 <translation id="5662709761327382534"><ph name="CURRENT_STATE" /> ang I-record ang mikropono, Pindutin ang enter para itakda sa <ph name="NEW_STATE" /> ang pag-record ng mikropono</translation>
 <translation id="5669267381087807207">Ina-activate</translation>
+<translation id="5672890847723042801">Mga Utility</translation>
 <translation id="5673434351075758678">Gagawing "<ph name="TO_LOCALE" />" mula "<ph name="FROM_LOCALE" />" pagkatapos i-sync ang iyong mga setting.</translation>
 <translation id="5675363643668471212">Item sa shelf</translation>
 <translation id="5677928146339483299">Naka-block</translation>
@@ -1361,6 +1365,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="6351032674660237738">MGA IMINUMUNGKAHING APP</translation>
 <translation id="6352082849089527770">Mga hindi kilalang network</translation>
 <translation id="6359587239691116345">Makuha ang mga pinakabagong feature at pagpapahusay sa seguridad. Kung tatanggihan mo ang update na ito, posibleng hindi na gumana nang maayos ang iyong device, at posible kang makaranas ng mga isyu sa seguridad at performance.</translation>
+<translation id="6362833380917912748">Alamin ang iyong mga built-in na app</translation>
 <translation id="6376931439017688372">Naka-on ang Bluetooth</translation>
 <translation id="6378515133128829137">I-pin ang window sa kanan</translation>
 <translation id="6381109794406942707">Para i-unlock ang device, ilagay ang iyong PIN.</translation>
@@ -1846,6 +1851,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8262312463845990408">I-toggle ang pag-playback</translation>
 <translation id="8270450402312105425">{0,plural, =1{Ibalik sa nakaraang bersyon ang device sa loob ng isang oras}one{Ibalik sa nakaraang bersyon ang device sa loob ng # oras}other{Ibalik sa nakaraang bersyon ang device sa loob ng # na oras}}</translation>
 <translation id="8277261673056602147">I-highlight ang text sa iyong screen</translation>
+<translation id="8287009018010202411">Pagiging Produktibo</translation>
 <translation id="828708037801473432">Naka-off</translation>
 <translation id="8297006494302853456">Mahina</translation>
 <translation id="8308637677604853869">Nakaraang menu</translation>
@@ -1917,6 +1923,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Pagbukud-bukurin ang iyong mga app ayon sa pangalan o kulay</translation>
 <translation id="8609384513243082612">Magbukas ng bagong tab</translation>
+<translation id="861045123704058818">Pansamantalang nakaayos ang mga app ayon sa kategorya</translation>
 <translation id="8612216344243590325">Ilagay ang mga mahalagang file sa <ph name="HOLDING_SPACE_TITLE" /> sa halip na sa desktop. I-drag lang ang mga file papunta sa <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Nakatago ang mga notification sa <ph name="APP_1_TITLE" /> at <ph name="APP_2_TITLE" /> dahil naka-on ang proteksyon sa pagtingin</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1954,6 +1961,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />, <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">I-verify ang pagkakakilanlan mo: Gustong kumpirmahin ng <ph name="ORIGIN_NAME" /> na ikaw ito</translation>
 <translation id="875593634123171288">Ipakita ang mga setting ng VPN</translation>
+<translation id="8756799553341497810">Puwede mo nang simulang i-customize ang layout ng iyong app kapag lumabas ka na sa view na ito.</translation>
 <translation id="8759408218731716181">Hindi maaaring mag-set up ng multiple na pag-sign in</translation>
 <translation id="8763883995157866248">Ilagay ang device sa sleep mode</translation>
 <translation id="877404052021108314">90°F sa C</translation>

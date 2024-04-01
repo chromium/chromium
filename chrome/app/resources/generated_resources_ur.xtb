@@ -217,6 +217,7 @@
 <translation id="1164891049599601209">فریب والی سائٹ پر درج کیا گیا</translation>
 <translation id="1165039591588034296">خرابی</translation>
 <translation id="1166212789817575481">دائیں جانب والے ٹیبز بند کریں</translation>
+<translation id="1166457390969131095">‏اپنے Google اکاؤنٹ سے پاس ورڈز اور پاس کیز کا استعمال کریں اور انہیں محفوظ کریں</translation>
 <translation id="1166583374608765787">نام میں ہوئی اپ ڈیٹ کا جائزہ لیں</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> <ph name="DESK_TITLE" /> ڈیسک سے تعلق رکھتی ہے</translation>
 <translation id="1167262726334064738">نیا پاس ورڈ آزمائیں</translation>
@@ -761,6 +762,7 @@
 <translation id="1575741822946219011">زبانیں اور ان پٹس</translation>
 <translation id="1576594961618857597">ڈیفالٹ سفید اوتار</translation>
 <translation id="1576729678809834061">اس تلاش کے نتیجے کی اطلاع دیں</translation>
+<translation id="1578488449637163638">گہرا</translation>
 <translation id="1578558981922970608">زبردستی بند کریں</translation>
 <translation id="157931050206866263">میلویئر اسکینز کے بارے میں مزید جانیں</translation>
 <translation id="1580772913177567930">اپنے منتظم سے رابطہ کریں</translation>
@@ -1230,6 +1232,7 @@
 <translation id="1915734383465415025">اسٹور نمبر</translation>
 <translation id="1916260783734263714">موجودہ ٹیب</translation>
 <translation id="1916502483199172559">ڈیفالٹ سرخ اوتار</translation>
+<translation id="1918127774159128277">‏WiFi ڈائریکٹ کی صلاحیتوں کو ریفریش کریں</translation>
 <translation id="1918141783557917887">&amp;چھوٹا</translation>
 <translation id="1919872106782726755">فنگر پرنٹ سیٹ اپ کرنے کے لیے اپنے بچے سے کی بورڈ کے اوپری دائیں کونے میں موجود پاور بٹن کے بغل میں فنگر پرنٹ سینسر کو چھونے کو کہیں۔ آپ کے بچے کے فنگر پرنٹ ڈیٹا کو محفوظ طریقے سے اسٹور کیا جاتا ہے اور یہ کبھی بھی آپ کے <ph name="DEVICE_TYPE" /> سے باہر نہیں جاتا۔</translation>
 <translation id="192015196730532810">آپ اپنا ٹیب گروپ تخلیق کر سکتے ہیں۔</translation>
@@ -1284,6 +1287,7 @@
 <translation id="1951012854035635156">اسسٹنٹ</translation>
 <translation id="1954597385941141174">‏سائٹس USB آلات سے منسلک ہونے کے لیے پوچھ سکتی ہیں</translation>
 <translation id="1954813140452229842">اشتراک کو ماؤنٹ کرنے میں خرابی آگئی ۔ براہ کرم اپنے اسنادات چیک کریں اور دوبارہ کوشش کریں۔</translation>
+<translation id="1955749740583837857">تجویز کالعدم کریں</translation>
 <translation id="1956050014111002555">فائل میں متعدد سرٹیفیکیٹس شامل ہیں، ان میں سے کسی کو درآمد نہیں کیا گیا:</translation>
 <translation id="1956167375087861299">تحفظ یافتہ مواد کو چلانے کیلئے شناخت کنندگان کو استعمال کرنے کی اجازت نہیں دی گئی</translation>
 <translation id="1956390763342388273">اس سے "<ph name="FOLDER_PATH" />" کی سبھی فائلز اپ لوڈ ہو جائیں گی۔ سائٹ پر اعتماد ہونے پر ہی ایسا کريں۔</translation>
@@ -2386,6 +2390,7 @@
 <translation id="2764920001292228569">پروفائل کا نام درج کریں</translation>
 <translation id="2765100602267695013">براہ کرم اپنے موبائل فراہم کنندہ سے رابطہ کریں</translation>
 <translation id="2765217105034171413">چھوٹا</translation>
+<translation id="2765820627968019645">روشنی</translation>
 <translation id="2766006623206032690">پی&amp;سٹ کریں اور جائیں</translation>
 <translation id="2766161002040448006">والدین سے پوچھیں</translation>
 <translation id="2767077837043621282">‏آپ کی Chromebook کو اپ ڈیٹ نہیں کیا جا سکا۔ براہ کرم بعد میں دوبارہ کوشش کریں۔</translation>
@@ -2645,6 +2650,7 @@
 <translation id="2960942820860729477">ریفریش ریٹ</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" /> (ایکسٹینشن فراہم کیا گیا)</translation>
 <translation id="2961695502793809356">آگے جانے کیلئے کلک کریں، سرگزشت دیکھنے کیلئے پکڑے رہیں</translation>
+<translation id="29618148602069201">موضوع</translation>
 <translation id="2963151496262057773">مندرجہ ذیل پلگ ان جواب نہیں دے رہا ہے: <ph name="PLUGIN_NAME" />کیا آپ اسے بند کرنا چاہیں گے؟</translation>
 <translation id="2964193600955408481">‏Wi-Fi کو غیر فعال کریں</translation>
 <translation id="2964245677645334031">قریبی آلات کے ساتھ اشتراک کی مرئیت</translation>
@@ -3616,6 +3622,7 @@
 <translation id="3729506734996624908">مجاز سائٹس</translation>
 <translation id="3729957991398443677">اپنا پاس ورڈ دیکھنے یا اس کے بارے میں کوئی نوٹ شامل کرنے کے لیے تلاش اور ایڈریس بار میں اپنے پاس ورڈز کا نظم کریں کو منتخب کریں</translation>
 <translation id="3730076362938942381">اسٹائلس تحریری ایپ</translation>
+<translation id="3730298295914858769">‏Wi-Fi ڈائریکٹ کی صلاحیتیں:</translation>
 <translation id="3732078975418297900">لائن <ph name="ERROR_LINE" /> پر خرابی ہے</translation>
 <translation id="3732414796052961578">بطور <ph name="ACCOUNT_NAME" /> جاری رکھیں</translation>
 <translation id="3732530910372558017">‏PIN زیادہ سے زیادہ 63 حروف پر مشتمل ہونا چاہیے</translation>
@@ -4338,6 +4345,7 @@
 <translation id="4279129444466079448">‏آپ اس آلے پر <ph name="PROFILE_LIMIT" /> eSIM پروفائلز انسٹال کر سکتے ہیں۔ دوسری پروفائل شامل کرنے کے لیے، پہلے موجودہ پروفائل ہٹائیں۔</translation>
 <translation id="4280325816108262082">جب آلہ آف ہو یا استعمال نہ ہو رہا ہو تو آلہ خودکار طور پر منقطع ہو جائے گا</translation>
 <translation id="4281637354026226955">‏مقام کی اجازت والی ChromeOS اور Android ایپس اور سروسز کو اپنے آلہ کا مقام استعمال کرنے کی اجازت دیں۔ Google وقفے وقفے سے مقام کا ڈیٹا جمع کر سکتا ہے اور مقام کی درستگی اور مقام پر مبنی سروسز کو بہتر بنانے کیلئے گمنام طریقے سے اس ڈیٹا کا استعمال کر سکتا ہے۔</translation>
+<translation id="4281789858103154731">تخلیق کریں</translation>
 <translation id="4281844954008187215">سروس کی شرائط</translation>
 <translation id="4281849573951338030">پین کے بٹنز کو حسب ضرورت بنائیں</translation>
 <translation id="4282196459431406533">‏Smart Lock آن ہے</translation>
@@ -5439,6 +5447,7 @@
 <translation id="5146235736676876345">اپنا مقام خود منتخب کریں</translation>
 <translation id="5146896637028965135">سسٹم کی آواز</translation>
 <translation id="5147097165869384760">‏OS سسٹم کا صفحہ تلاش کر رہے ہیں؟ <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" /> ملاحظہ کریں۔</translation>
+<translation id="5147113439721488265">تجویز</translation>
 <translation id="5147516217412920887">کوڈ کی توثیق کرنے کیلئے، اپنے فون پر ہدایات کی پیروی کریں</translation>
 <translation id="5147992672778369947">تجویز کردہ پاس ورڈ استعمال کریں</translation>
 <translation id="5148285448107770349">پاس ورڈ کم از کم 8 حروف کا ہونا چاہیے</translation>
@@ -7476,6 +7485,7 @@
 <translation id="6770042910635026163">آپ کی ملاحظہ کی جانے والی سائٹس آپ کی دلچسپیوں کا تعین کرتی ہیں</translation>
 <translation id="6770602306803890733">آپ کے لیے اور ویب پر سبھی کے لیے سیکیورٹی کو بہتر بناتی ہے</translation>
 <translation id="6771503742377376720">ایک سرٹیفیکیشن ادارہ ہے</translation>
+<translation id="6772974422346500939">کھولیں اور ترمیم کریں</translation>
 <translation id="6774710250118040929">نیا پاس ورڈ شامل کریں</translation>
 <translation id="6775163072363532304">دستیاب آلات یہاں دکھائی دیں گے۔</translation>
 <translation id="677646486571529447">ایک نوٹ شامل کریں</translation>
@@ -7857,6 +7867,7 @@
 <translation id="7049293980323620022">فائل رکھیں؟</translation>
 <translation id="7049524156282610342">براؤزنگ ڈیٹا <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">ہاٹ اسپاٹ کا غلط کنفیگریشن</translation>
+<translation id="7051222203795962489">{COUNT,plural, =1{‏آپ کے Google اکاؤنٹ <ph name="USER_EMAIL" /> میں پاس ورڈ محفوظ کیا گیا ہے}other{‏آپ کے Google اکاؤنٹ <ph name="USER_EMAIL" /> میں پاس ورڈز محفوظ کیے گئے ہیں}}</translation>
 <translation id="7053983685419859001">مسدود کریں</translation>
 <translation id="7055152154916055070">ری ڈائریکٹ مسدود کیا گیا:</translation>
 <translation id="7055451306017383754">‏اشتراک ختم نہیں ہوسکا کیونکہ ایک ایپلیکیشن اس فولڈر کو استعمال کر رہی ہے۔ اگلی بار Parallels Desktop بند ہونے پر فولڈر کا اشتراک ختم کر دیا جائے گا۔</translation>

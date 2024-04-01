@@ -271,6 +271,7 @@
 <translation id="2446553403094072641">ఫ్లోటింగ్ పాయింట్ ఖచ్చితత్వం</translation>
 <translation id="2448312741937722512">రకం</translation>
 <translation id="2465272316171730950">మేము ప్రస్తుతం మీకు సహాయం చేయలేము. దయచేసి కొంత సమయం తర్వాత ట్రై చేయండి.</translation>
+<translation id="2472215337771558851">Googleకు చెందిన AI టెక్నాలజీల ద్వారా అందించబడుతోన్న డ్రాఫ్ట్‌ను క్రియేట్ చేయడానికి లేదా ఇప్పటికే ఉన్న దాన్ని మెరుగుపరచడానికి 'నాకు రాయడానికి సహాయం చేయండి'ని ఉపయోగించండి</translation>
 <translation id="2480572840229215612">పీతలు</translation>
 <translation id="248546197012830854">పరికరం ఆఫ్‌లైన్‌లో ఉంది. Wi-Fi నెట్‌వర్క్‌కు కనెక్ట్ చేసి, సహాయక కంటెంట్‌ను చూడండి.</translation>
 <translation id="2486301288428798846">కలప</translation>
@@ -328,10 +329,12 @@
 <translation id="2860473693272905224">స్కానర్ మీద మరొక పేజీని పెట్టండి</translation>
 <translation id="2872961005593481000">షట్ డౌన్ చేయండి</translation>
 <translation id="2873483161362553159">బ్రౌజర్ నావిగేషన్</translation>
+<translation id="2873939192640533085">"మరింత నమ్మకంగా మాట్లాడండి" వంటి ప్రాంప్ట్‌ను ఎంటర్ చేయండి</translation>
 <translation id="2874939134665556319">మునుపటి ట్రాక్</translation>
 <translation id="2875812231449496375">ఈ వాల్‌పేపర్‌తో ఉత్తమ ఫలితాలను పొందడం కోసం దీన్ని ఆన్ చేయండి. మీరు ఈ సెట్టింగ్‌ను ఏ సమయంలోనైనా ఆఫ్ చేయవచ్చు.</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> సెకన్లలో <ph name="RATE" /> డిశ్చార్జ్ చేయబడింది.</translation>
 <translation id="2880569433548999039">క్లౌడ్ ఫ్లో స్క్రీన్ సేవర్</translation>
+<translation id="2888298276507578975">"థ్యాంక్ యూ నోట్ రాయండి" వంటి ప్రాంప్ట్‌ను ఎంటర్ చేయండి</translation>
 <translation id="2890557891229184386">ట్రాపికల్ దీవి</translation>
 <translation id="2895772081848316509">డార్క్</translation>
 <translation id="2926057806159140518">మీ యూజర్‌నేమ్, పాస్‌వర్డ్‌ను ఎంటర్ చేయండి లేదా మీ QR కోడ్‌ను స్కాన్ చేయండి</translation>
@@ -376,6 +379,7 @@
 <translation id="3226405216343213872">స్కానర్‌ల కోసం వెతుకుతోంది</translation>
 <translation id="3226657629376379887">లేఅవుట్ చర్యల మెనూ</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> విలువను <ph name="CONVERSION_RATE" />తో భాగించండి</translation>
+<translation id="3237710083340813756">మళ్లీ రాయండి</translation>
 <translation id="3246869037381808805">1 రోజుకు పైగా ఉన్న ప్రింట్ టాస్క్‌లు తీసివేయబడతాయి</translation>
 <translation id="324961752321393509">మీ అడ్మినిస్ట్రేటర్ ఈ యాప్‌ను మూసివేయడానికి అనుమతించడం లేదు</translation>
 <translation id="3268178239013324452">విఫలమైంది - తలుపు తెరుచుకుని ఉంది</translation>
@@ -414,6 +418,7 @@
 <translation id="346539236881580388">మళ్లీ తీయండి</translation>
 <translation id="3484914941826596830">ఫర్మ్‌వేర్ అప్‌డేట్ అవుతున్నప్పుడు, ఈ బాహ్య పరికరాన్ని అన్‌ప్లగ్ చేయవద్దు లేదా మీ కంప్యూటర్‌ను షట్ డౌన్ చేయవద్దు. మీరు ఈ విండోను చిన్నదిగా చేయవచ్చు. ఈ అప్‌డేట్‌కు కొన్ని నిమిషాల సమయం పట్టవచ్చు, ఇంకా ఈ సమయంలో మీ బాహ్య పరికరం పని చేయకపోవచ్చు.</translation>
 <translation id="3486220673238053218">నిర్వచనం</translation>
+<translation id="3487866404496702283">mahi ఫీచర్ కోసం ఫీడ్‌బ్యాక్.</translation>
 <translation id="3488065109653206955">పాక్షికంగా సక్రియం చేయబడింది</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> టోన్‌లతో <ph name="OFFICE_STYLE" /> ఆఫీస్</translation>
 <translation id="3493187369049186498">మీ డేటాను కొలవడం Chromebook ద్వారా జరుగుతుంది. ఇది ప్రొవైడర్ డేటాకు భిన్నంగా ఉండవచ్చు.</translation>
@@ -442,6 +447,7 @@
 <translation id="3621072146987826699">ఏనుగులు</translation>
 <translation id="3632579075709132555">గోప్యతా స్క్రీన్ టోగుల్</translation>
 <translation id="3651050199673793219">ఉష్ణోగ్రత యూనిట్‌ను ఎంచుకోండి</translation>
+<translation id="3661106764436337772">మరింత వేగంగా, మరింత నమ్మకంతో రాయండి</translation>
 <translation id="3662461537616691585">బర్గండీ, మెరూన్</translation>
 <translation id="3668449597372804501">క్లౌడ్ ఫ్లో వాల్‌పేపర్</translation>
 <translation id="3675132884790542448">పందులు</translation>
@@ -875,6 +881,7 @@
 <translation id="6235460611964961764">డేటా వినియోగాన్ని మాన్యువల్‌గా రీసెట్ చేయండి</translation>
 <translation id="6243280677745499710">ప్రస్తుతం సెట్ చేసినది</translation>
 <translation id="6250316632541035980">బేకన్, గుడ్లు</translation>
+<translation id="6255213378196499011">'నాకు రాయడానికి సహాయం చేయండి' సెట్టింగ్‌లు</translation>
 <translation id="6275224645089671689">కుడి వైపు బాణం</translation>
 <translation id="6278428485366576908">థీమ్</translation>
 <translation id="6280912520669706465">ARC</translation>

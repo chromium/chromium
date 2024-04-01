@@ -71,6 +71,7 @@
 <translation id="1125573121925420732">قد يكثر ظهور التحذيرات أثناء إجراء المواقع الإلكترونية لتحديثات الأمان، لكنّ هذه المسألة ستتحسَّن قريبًا.</translation>
 <translation id="112840717907525620">ذاكرة التخزين المؤقت للسياسة بحالة جيدة</translation>
 <translation id="1131264053432022307">الصورة التي نسختها</translation>
+<translation id="1138458427267715730">تلقَّ تنبيهات عند انخفاض السعر على أي موقع إلكتروني على الويب</translation>
 <translation id="1142713751288681188">نوع الورق</translation>
 <translation id="1142846828089312304">حظر ملفات تعريف الارتباط التابعة لجهات خارجية في وضع التصفُّح المتخفي</translation>
 <translation id="1144136880160289237">ليس لديك أي مواضيع نشِطة حتى الآن</translation>
@@ -1115,6 +1116,7 @@
 <translation id="3154987252551138431">حدث خطأ أثناء استخدام ميزة "المشاركة عن قرب".</translation>
 <translation id="315504272643575312">يدير <ph name="MANAGER" /> حسابك.</translation>
 <translation id="3155163173539279776">‏إعادة تشغيل Chromium</translation>
+<translation id="3156511682997763015">التقديم بمقدار 10 ثوانٍ</translation>
 <translation id="3157931365184549694">استعادة</translation>
 <translation id="3158539265159265653">القرص</translation>
 <translation id="3162559335345991374">‏قد يتطلب Wi-Fi الذي تستخدمه زيارة صفحة تسجيل الدخول.</translation>
@@ -1215,6 +1217,7 @@
 <translation id="334438173029876234">معدات ألواح التزحلق</translation>
 <translation id="3347146863028219517">تزلُّج وتزحلُق على الثلج</translation>
 <translation id="3349952286488694786">SRA2</translation>
+<translation id="3350450887151703713">إعادة تشغيل 10 ثوانٍ</translation>
 <translation id="3352881017886802007">ألعاب رياضية</translation>
 <translation id="3355823806454867987">تغيير إعدادات الخادم الوكيل...</translation>
 <translation id="335809815767823">اكتملت عملية التصدير.</translation>
@@ -3056,6 +3059,7 @@
 <translation id="6944557544071529399">ألعاب استراتيجية</translation>
 <translation id="6944692733090228304">لقد أدخلتَ كلمة المرور في موقع إلكتروني لا تديره <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. ويُرجى عدم إعادة استخدام كلمة المرور في التطبيقات ومواقع الويب الأخرى لحماية حسابك.</translation>
 <translation id="6945221475159498467">تحديد</translation>
+<translation id="6946949206576443118">‏البحث في الويب على Chrome</translation>
 <translation id="6948051842255602737">انتهت اللعبة، والنتيجة التي حققتها هي <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">لعرض طرق الاستلام ومتطلباته، اختَر عنوانًا</translation>
 <translation id="6948874830249067134">A1x3</translation>

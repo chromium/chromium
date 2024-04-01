@@ -41,6 +41,7 @@
 <translation id="102916930470544692">ກະແຈຜ່ານ</translation>
 <translation id="1029317248976101138">ຊູມ</translation>
 <translation id="1029526375103058355">ແຕະເພື່ອຄລິກ</translation>
+<translation id="1029724557649700742">ຄຸນສົມບັດໃໝ່ຈະຖືກຮວມເຂົ້າເມື່ອພວກມັນມີໃຫ້ ແລະ ຄຸນສົມບັດອາດຈະແຕກຕ່າງກັນໄປຕາມອຸປະກອນ.</translation>
 <translation id="1031362278801463162">ກໍາລັງໂຫຼດການເບິ່ງຕົວຢ່າງກ່ອນ</translation>
 <translation id="1032605640136438169">ກະລຸນາກວດເບິ່ງຂໍ້ກຳນົດໃໝ່</translation>
 <translation id="103279545524624934">ຂະຫຍາຍພື້ນທີ່ດິສກ໌ເພື່ອເປີດໃຊ້ແອັບ Android.</translation>
@@ -1571,6 +1572,7 @@
 <translation id="2155473371917268529">ການຕັ້ງຄ່າການສະແດງປັດຈຸບັນແມ່ນອຸປະກອນຂອງທ່ານ</translation>
 <translation id="2155772377859296191">ຄວາມລະອຽດ <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">ພະນັກງານບໍລິການ: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156707722163479690">ອະນຸຍາດໃຫ້ເລື່ອນ ແລະ ຊູມແຖບທີ່ແບ່ງປັນແລ້ວ</translation>
 <translation id="2156877321344104010">ເອີ້ນໃຊ້ການກວດສອບຄວາມປອດໄພອີກຄັ້ງ</translation>
 <translation id="2157474325782140681">ເພື່ອຮັບຄຸນສົມບັດເພີ່ມເຕີມ, ກະລຸນາໃຊ້ສະຖານີແທ່ນສາກ Dell ທີ່ຖືກອອກແບບມາໃຫ້ໃຊ້ໄດ້ກັບ Chromebook ນີ້.</translation>
 <translation id="215753907730220065">ອອກຈາກເຕັມໜ້າຈໍ</translation>
@@ -1993,6 +1995,7 @@
 <translation id="2459706890611560967">ສົ່ງສັນຍານແຖບໄປຫາ <ph name="DEVICE_NAME" /> ຕໍ່</translation>
 <translation id="2460356425461033301">ສຳຮອງຂໍ້ມູນໂປຣແກຣມທ່ອງເວັບຂອງທ່ານ ແລະ ໃຊ້ມັນຢູ່ອຸປະກອນໃດກໍໄດ້</translation>
 <translation id="2460482211073772897">ໃນໂຟນເດີອື່ນ</translation>
+<translation id="2461550163693930491">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊເລື່ອນ ແລະ ຊູມແຖບທີ່ແບ່ງປັນແລ້ວ</translation>
 <translation id="2461593638794842577">ທ່ານສາມາດປິດການຕັ້ງຄ່ານີ້ໄດ້ເພື່ອບັນທຶກລະຫັດຜ່ານຂອງທ່ານຢູ່ອຸປະກອນນີ້ເທົ່ານັ້ນ</translation>
 <translation id="2462332841984057083">ກຳລັງຕິດຕັ້ງ Steam ຢູ່ກ່ອນແລ້ວ. ກະລຸນາລໍຖ້າໃຫ້ການຕິດຕັ້ງສຳເລັດ.</translation>
 <translation id="2462724976360937186">ID ລະຫັດໜ່ວຍງານຢັ້ງຢືນ</translation>
@@ -2026,6 +2029,7 @@
 <translation id="2482895651873876648">ຍ້າຍແຖບໄປໃສ່ກຸ່ມ <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> ແລ້ວ</translation>
 <translation id="2483627560139625913">ຕັ້ງໂປຣແກຣມຊອກຫາໃນການຕັ້ງຄ່າໂປຣແກຣມທ່ອງເວັບ Chrome</translation>
 <translation id="2483698983806594329">ດາວໂຫຼດໄຟລ໌ທີ່ບໍ່ໄດ້ຮັບການຢັ້ງຢືນແລ້ວ</translation>
+<translation id="2484574361686148760">ໂຫຼດຂໍ້ມູນລູກຂ່າຍ Wi-Fi Direct ຄືນໃໝ່</translation>
 <translation id="2484743711056182585">ລຶບການໃຫ້ສິດອອກ</translation>
 <translation id="2484909293434545162">ຫາກເວັບໄຊໃດໜຶ່ງໃຊ້ຄຸກກີ້, ມັນຈະປາກົດຢູ່ບ່ອນນີ້</translation>
 <translation id="2484959914739448251">ເພື່ອລຶບລ້າງຂໍ້ມູນການທ່ອງເວັບອອກຈາກອຸປະກອນທີ່ຊິ້ງຂໍ້ມູນຂອງທ່ານທັງໝົດ ແລະ ບັນຊີ Google ຂອງທ່ານ, ກະລຸນາ <ph name="BEGIN_LINK" />ປ້ອນລະຫັດຜ່ານຂອງທ່ານ<ph name="END_LINK" />.</translation>
@@ -2219,6 +2223,7 @@
 <translation id="2629227353894235473">ພັດທະນາແອັບ Android</translation>
 <translation id="2629437048544561682">ລຶບລ້າງແຄນວາສ</translation>
 <translation id="2631498379019108537">ສະແດງຕົວເລືອກການປ້ອນຂໍ້ມູນໃນຖ້ານ</translation>
+<translation id="2632176111713971407">ເວັບໄຊສາມາດຂໍໃຫ້ເລື່ອນ ແລະ ຊູມແຖບທີ່ແບ່ງປັນແລ້ວໄດ້</translation>
 <translation id="2633212996805280240">ເອົາ " <ph name="EXTENSION_NAME" /> " ອອກໄປບໍ?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> ບໍ່​ສາ​ມາດຕິດຕັ້ງໄດ້​ສໍາ​ເລັດ​, ແຕ່​ຈະ​ສືບ​ຕໍ່ແລ່ນຈາກຮູບດິສກ໌ຂອງມັນ.</translation>
 <translation id="2633764681656412085">FIDO</translation>
@@ -3877,6 +3882,7 @@
 <translation id="3900966090527141178">ສົ່ງລະຫັດຜ່ານອອກ</translation>
 <translation id="3902789559055749153">ເລືອກວິທີທີ່ທ່ານຕ້ອງການສ້າງກະແຈຜ່ານສຳລັບ <ph name="APP_NAME" /></translation>
 <translation id="3903187154317825986">ແປ້ນພິມໃນຕົວ</translation>
+<translation id="3903696968689283281">ຂໍ້ມູນເຈົ້າຂອງ Wi-Fi Direct:</translation>
 <translation id="3904326018476041253">ການບໍລິການສະຖານທີ່</translation>
 <translation id="3905761538810670789">ສ້ອມ​ແປງແອັບ</translation>
 <translation id="3908288065506437185">ບລັອກຄຸກກີ້ພາກສ່ວນທີສາມໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
@@ -4532,6 +4538,7 @@
 <translation id="4409697491990005945">ຂອບເຈ້ຍ</translation>
 <translation id="4409779593816003679">ລະຫັດຜ່ານ ແລະ &amp;ການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ</translation>
 <translation id="4410545552906060960">ໃຊ້ຕົວເລກ (PIN) ແທນລະຫັດຜ່ານເພື່ອປົດລັອກອຸປະກອນຂອງທ່ານ. ເພື່ອຕັ້ງຄ່າ PIN ຂອງທ່ານໃນພາຍຫຼັງ, ກະລຸນາໄປທີ່ການຕັ້ງຄ່າ.</translation>
+<translation id="4411344321892622527">ບໍ່ອະນຸຍາດໃຫ້ເລື່ອນ ແລະ ຊູມແຖບທີ່ແບ່ງປັນແລ້ວ</translation>
 <translation id="4411578466613447185">ເຄື່ອງເຊັນລະ​ຫັດ</translation>
 <translation id="4411719918614785832">ກະແຈຜ່ານເຫຼົ່ານີ້ຖືກບັນທຶກໄວ້ຢູ່ Windows Hello ຢູ່ຄອມພິວເຕີນີ້ເທົ່ານັ້ນ. ພວກມັນບໍ່ໄດ້ຖືກບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ.</translation>
 <translation id="4412544493002546580">ລອງໃໝ່ ຫຼື ເລືອກຈາກໜຶ່ງໃນແຮງບັນດານໃຈຢູ່ທາງລຸ່ມ.</translation>
@@ -6875,6 +6882,7 @@
 <translation id="6257602895346497974">ເປີດການຊິ້ງຂໍ້ມູນ...</translation>
 <translation id="625827534921607067">ເຄືອຂ່າຍນີ້ຈະຖືກຕັ້ງໄວ້ໃຫ້ເລືອກກ່ອນຫາກມີເຄືອຂ່າຍທີ່ເຊື່ອມຕໍ່ ຫຼື ຕັ້ງຄ່າໄວ້ກ່ອນໜ້າສາມາດໃຊ້ໄດ້ຫຼາຍກວ່າໜຶ່ງເຄືອຂ່າຍ</translation>
 <translation id="62586649943626337">ຈັດລະບຽບແຖບຂອງທ່ານດ້ວຍກຸ່ມແຖບ</translation>
+<translation id="6259776178973198997">ໂຫຼດຂໍ້ມູນເຈົ້າຂອງ Wi-Fi Direct ຄືນໃໝ່</translation>
 <translation id="6262371516389954471">ຂໍ້ມູນທີ່ສຳຮອງໄວ້ຂອງທ່ານຖືກອັບໂຫຼດໄວ້ໃນ Google ແລະ ເຂົ້າລະຫັດໄວ້ໂດຍໃຊ້ລະຫັດຜ່ານບັນຊີ Google ຂອງທ່ານ.</translation>
 <translation id="6263082573641595914">ລຸ້ນ Microsoft CA</translation>
 <translation id="6263284346895336537">ບໍ່ສໍາຄັນ</translation>
@@ -7575,6 +7583,7 @@
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> ບໍ່​ສາມາດ​ຖືກ​ແລ່ນເປັນຮາກຖານໄດ້.</translation>
 <translation id="6812841287760418429">ສືບຕໍ່ປ່ຽນແປງ</translation>
 <translation id="6813907279658683733">ທັງໜ້າຈໍ</translation>
+<translation id="6814754908910736855">ຂໍ້ມູນລູກຂ່າຍ Wi-Fi Direct:</translation>
 <translation id="6815376457351236663">ຢືນຢັນການເປີດ</translation>
 <translation id="6815787852028615386">ໄຟລ໌ນີ້ຫຼອກລວງ ແລະ ອາດສ້າງການປ່ຽນແປງທີ່ບໍ່ຄາດຄິດຕໍ່ອຸປະກອນຂອງທ່ານໄດ້.</translation>
 <translation id="6816097980753839617">ສີຟ້າ-ເຫຼືອງ (Tritanomaly)</translation>
@@ -8443,6 +8452,7 @@
 <translation id="7501957181231305652">ຫຼື</translation>
 <translation id="7502220299952823578">ເພີ່ມໃສ່ລາຍຊື່ "ເປີດໃຊ້ເວັບໄຊເຫຼົ່ານີ້ໄວ້ຕະຫຼອດ"</translation>
 <translation id="7502528909759062987">ຢຸດສົ່ງສັນຍານແຖບໄປຫາ <ph name="DEVICE_NAME" /> ຊົ່ວຄາວ</translation>
+<translation id="7502804472671406749">ແຖບທີ່ແບ່ງປັນແລ້ວສາມາດເລື່ອນ ແລະ ຊູມໄດ້</translation>
 <translation id="7503191893372251637">ປະເພດໃບຢັ້ງຢືນ Netscape</translation>
 <translation id="7503985202154027481">ບັນທຶກການເຂົ້າເບິ່ງເວັບໄຊນີ້ຂອງທ່ານຈະຖືກຮັກສາໄວ້ໃນກະແຈຄວາມປອດໄພຂອງທ່ານ.</translation>
 <translation id="7504145862399276792">ປິດສຽງຂອງແຖບນີ້ຢູ່</translation>
@@ -9497,6 +9507,7 @@
 <translation id="8272194309885535896">ດາວໂຫຼດຮູບພາບ</translation>
 <translation id="8272443605911821513">ຈັດການສ່ວນຂະຫຍາຍຂອງທ່ານໂດຍການຄລິກສ່ວນຂະຫຍາຍຢູ່ໃນເມນູ "ເຄື່ອງມືເພີ່ມເຕີມ".</translation>
 <translation id="8272786333453048167">ອະນຸຍາດອີກຄັ້ງ</translation>
+<translation id="827388721451286702">ເວັບໄຊໃຊ້ການຕັ້ງຄ່ານີ້ເພື່ອເລື່ອນ ແລະ ຊູມແຖບທີ່ແບ່ງປັນແລ້ວ</translation>
 <translation id="8273905181216423293">ດາວໂຫຼດດຽວນີ້</translation>
 <translation id="8274495289680107339">ເວັບໄຊໃຊ້ການຕັ້ງຄ່ານີ້ເພື່ອເຂົ້າໄປການສະແດງຜົນຊ້ອນກັນໂດຍອັດຕະໂນມັດ. ເຊິ່ງຈະຊ່ວຍໃຫ້ທ່ານສືບຕໍ່ເບິ່ງວິດີໂອໄດ້, ໃນລະຫວ່າງທີ່ເຮັດໃຫ້ໜ້າຈໍຂອງທ່ານມີບ່ອນຫວ່າງຫຼາຍຂຶ້ນສຳລັບໜ້າວຽກອື່ນໆ.</translation>
 <translation id="827488840488530039">ໜ້າທີ່ທ່ານພະຍາຍາມເຂົ້າເບິ່ງບໍ່ສາມາດກວດຢືນຢັນປີ້ Kerberos ຂອງທ່ານໄດ້</translation>
@@ -10783,6 +10794,7 @@
 <translation id="949807244219288032">ແຖບນີ້ເຊື່ອມຕໍ່ກັບອຸປະກອນ HID</translation>
 <translation id="950079950995628542">ຈາກ "<ph name="PHONE_NAME" />"</translation>
 <translation id="950307215746360464">ຄຳແນະນຳການຕັ້ງຄ່າ</translation>
+<translation id="951273949038779544"><ph name="SITE_ACCESS" />. ຕິດຕັ້ງໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="951991426597076286">ປະຕິເສດ</translation>
 <translation id="952471655966876828">ອຸປະກອນຈະເຊື່ອມຕໍ່ອັດຕະໂນມັດເມື່ອເປີດມັນ ແລະ ກຳລັງຖືກໃຊ້ຢູ່</translation>
 <translation id="953434574221655299">ອະນຸຍາດໃຫ້ຮູ້ເມື່ອທ່ານກຳລັງໃຊ້ອຸປະກອນຂອງທ່ານຢູ່</translation>

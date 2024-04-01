@@ -217,6 +217,7 @@
 <translation id="1164891049599601209">تم إدخالها على موقع إلكتروني مريب.</translation>
 <translation id="1165039591588034296">الخطأ</translation>
 <translation id="1166212789817575481">إغلاق علامات التبويب على اليمين</translation>
+<translation id="1166457390969131095">‏استخدِم كلمات المرور ومفاتيح المرور واحفظها من حسابك على Google</translation>
 <translation id="1166583374608765787">مراجعة التعديل الذي تم إجراؤه على الاسم</translation>
 <translation id="1166596238782048887">تنتمي علامة التبويب <ph name="TAB_TITLE" /> إلى سطح المكتب <ph name="DESK_TITLE" /></translation>
 <translation id="1167262726334064738">تجربة كلمة مرور جديدة</translation>
@@ -764,6 +765,7 @@
 <translation id="1575741822946219011">اللغات وأساليب الإدخال</translation>
 <translation id="1576594961618857597">الصورة الرمزية التلقائية البيضاء</translation>
 <translation id="1576729678809834061">الإبلاغ عن نتيجة البحث هذه</translation>
+<translation id="1578488449637163638">داكن</translation>
 <translation id="1578558981922970608">فرض الإغلاق</translation>
 <translation id="157931050206866263">مزيد من المعلومات حول عمليات التحقّق من عدم وجود برامج ضارة</translation>
 <translation id="1580772913177567930">يُرجى التواصل مع المشرف.</translation>
@@ -1234,6 +1236,7 @@
 <translation id="1915734383465415025">رقم المتجر</translation>
 <translation id="1916260783734263714">علامة التبويب الحالية</translation>
 <translation id="1916502483199172559">الصورة الرمزية التلقائية الحمراء</translation>
+<translation id="1918127774159128277">‏إعادة تحميل إمكانات Wi-Fi Direct</translation>
 <translation id="1918141783557917887">أص&amp;غر</translation>
 <translation id="1919872106782726755">لضبط إعدادات بصمة الإصبع، اطلب من طفلك لمس أداة استشعار بصمة الإصبع في أعلى يمين لوحة المفاتيح، بجانب زر التشغيل. ويتم تخزين بيانات بصمة إصبع طفلك بشكل آمن ولا يتم نقلها من جهاز <ph name="DEVICE_TYPE" /> هذا.</translation>
 <translation id="192015196730532810">يمكنك إنشاء مجموعة علامات التبويب الخاصة بك.</translation>
@@ -1288,6 +1291,7 @@
 <translation id="1951012854035635156">المساعد</translation>
 <translation id="1954597385941141174">‏السماح للمواقع الإلكترونية بطلب الاتصال بأجهزة USB</translation>
 <translation id="1954813140452229842">حدث خطأ في تحميل المشاركة. يُرجى التحقُّق من بيانات الاعتماد وإعادة المحاولة.</translation>
+<translation id="1955749740583837857">إغلاق الاقتراح</translation>
 <translation id="1956050014111002555">احتوى الملف على شهادات متعددة، لم يتم استيراد أي منها:</translation>
 <translation id="1956167375087861299">المواقع الإلكترونية التي لا يُسمح لها باستخدام معرّفات لتشغيل المحتوى المحمي</translation>
 <translation id="1956390763342388273">سيؤدي ذلك إلى تحميل جميع الملفات من "<ph name="FOLDER_PATH" />"، يُرجى تجنُّب ذلك إذا لم تكن واثقًا من الموقع.</translation>
@@ -2390,6 +2394,7 @@
 <translation id="2764920001292228569">يُرجى إدخال اسم للملف الشخصي.</translation>
 <translation id="2765100602267695013">يُرجى التواصل مع مقدِّم خدمة الجوّال.</translation>
 <translation id="2765217105034171413">صغير</translation>
+<translation id="2765820627968019645">فاتح</translation>
 <translation id="2766006623206032690">‏&amp;لصق عنوان URL والدخول إليه</translation>
 <translation id="2766161002040448006">طلب الإذن من أحد الوالدَين</translation>
 <translation id="2767077837043621282">‏تعذَر تحديث جهاز Chromebook. يُرجى إعادة المحاولة لاحقًا.</translation>
@@ -2648,6 +2653,7 @@
 <translation id="2960942820860729477">معدّل التحديث</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" /> (الإضافة متوفرة)</translation>
 <translation id="2961695502793809356">انقر للانتقال إلى الأمام واضغط لمشاهدة السجل</translation>
+<translation id="29618148602069201">الموضوع</translation>
 <translation id="2963151496262057773">المكوّن الإضافي التالي غير مستجيب: <ph name="PLUGIN_NAME" />‏، هل تريد إيقافه؟</translation>
 <translation id="2964193600955408481">‏إيقاف Wi-Fi</translation>
 <translation id="2964245677645334031">إمكانية ظهور الجهاز الذي يستخدم ميزة "المشاركة عن قرب"</translation>
@@ -3619,6 +3625,7 @@
 <translation id="3729506734996624908">المواقع الإلكترونية المسموح بها</translation>
 <translation id="3729957991398443677">لعرض كلمة المرور أو إضافة ملاحظة بشأنها، اختَر "إدارة كلمات المرور" في شريط البحث أو شريط العناوين.</translation>
 <translation id="3730076362938942381">تطبيق الكتابة باستخدام قلم الشاشة</translation>
+<translation id="3730298295914858769">‏إمكانات Wi-Fi Direct:</translation>
 <translation id="3732078975418297900">خطأ في السطر رقم <ph name="ERROR_LINE" /></translation>
 <translation id="3732414796052961578">المتابعة باستخدام الحساب "<ph name="ACCOUNT_NAME" />"</translation>
 <translation id="3732530910372558017">يجب ألا يزيد رقم التعريف الشخصي عن 63 حرفًا</translation>
@@ -4339,6 +4346,7 @@
 <translation id="4279129444466079448">‏يمكنك تثبيت <ph name="PROFILE_LIMIT" /> ملف شخصي لبطاقة eSIM كحد أقصى على هذا الجهاز. لإضافة ملف شخصي آخر، عليك أولاً إزالة أحد الملفات الشخصية الحالية.</translation>
 <translation id="4280325816108262082">سيتم قطع اتصال الجهاز بالبلوتوث تلقائيًا عند إيقاف تشغيله أو عدم استخدامه.</translation>
 <translation id="4281637354026226955">‏يمكنك أن تمنح إذن استخدام موقع جهازك الجغرافي لكلّ من تطبيقات ChromeOS وAndroid وخدماتهما الحاصلة على إذن تحديد الموقع الجغرافي. ويجوز لشركة Google جمع بيانات الموقع الجغرافي بشكلٍ دوري واستخدامها بدون الكشف عن هويتك للمساعدة في تحسين دقة تحديد المواقع الجغرافية والخدمات المستندة إليها.</translation>
+<translation id="4281789858103154731">إنشاء</translation>
 <translation id="4281844954008187215">بنود الخدمة</translation>
 <translation id="4281849573951338030">تخصيص أزرار القلم</translation>
 <translation id="4282196459431406533">‏Smart Lock قيد التفعيل</translation>
@@ -5440,6 +5448,7 @@
 <translation id="5146235736676876345">الاختيار الذاتي</translation>
 <translation id="5146896637028965135">صوت النظام</translation>
 <translation id="5147097165869384760">هل تبحث عن صفحة نظام التشغيل؟ انتقِل إلى <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />.</translation>
+<translation id="5147113439721488265">اقتراح</translation>
 <translation id="5147516217412920887">يُرجى اتّباع التعليمات التي تظهر على هاتفك لتأكيد الرمز.</translation>
 <translation id="5147992672778369947">استخدام كلمة المرور المقترَحة</translation>
 <translation id="5148285448107770349">يجب ألا تقل كلمة المرور عن 8 أحرف.</translation>
@@ -7486,6 +7495,7 @@
 <translation id="6770042910635026163">المواقع الإلكترونية التي تزورها وتحدّد اهتماماتك</translation>
 <translation id="6770602306803890733">تحسين الأمان من أجلك ومن أجل جميع المستخدمين على الإنترنت</translation>
 <translation id="6771503742377376720">هو مرجع مصدق</translation>
+<translation id="6772974422346500939">فتح وتعديل</translation>
 <translation id="6774710250118040929">إضافة كلمة مرور جديدة</translation>
 <translation id="6775163072363532304">الأجهزة المتاحة ستظهر هنا.</translation>
 <translation id="677646486571529447">إضافة ملاحظة</translation>
@@ -7868,6 +7878,7 @@
 <translation id="7049293980323620022">هل تريد الاحتفاظ بالملف؟</translation>
 <translation id="7049524156282610342">بيانات التصفُّح: <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">إعدادات نقطة الاتصال غير صالحة.</translation>
+<translation id="7051222203795962489">{COUNT,plural, =1{‏تم حفظ كلمة المرور في حسابك على Google، <ph name="USER_EMAIL" />}zero{‏تم حفظ كلمات المرور في حسابك على Google، <ph name="USER_EMAIL" />}two{‏تم حفظ كلمتَي المرور في حسابك على Google، <ph name="USER_EMAIL" />}few{‏تم حفظ كلمات المرور في حسابك على Google، <ph name="USER_EMAIL" />}many{‏تم حفظ كلمات المرور في حسابك على Google، <ph name="USER_EMAIL" />}other{‏تم حفظ كلمات المرور في حسابك على Google، <ph name="USER_EMAIL" />}}</translation>
 <translation id="7053983685419859001">حظر</translation>
 <translation id="7055152154916055070">تم حظر إعادة توجيه:</translation>
 <translation id="7055451306017383754">‏تعذّر إلغاء المشاركة بسبب استخدام تطبيق لهذا المجلد. سيتم إلغاء مشاركة المجلد عند إيقاف تشغيل نظام Parallels Desktop.</translation>

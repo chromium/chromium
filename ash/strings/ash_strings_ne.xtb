@@ -336,6 +336,7 @@
 <translation id="2405664212338326887">कनेक्ट गरिएको छैन</translation>
 <translation id="2408955596600435184">आफ्नो PIN हाल्नुहोस्</translation>
 <translation id="2412593942846481727">अद्यावधिक उपलब्ध छ</translation>
+<translation id="2416438829169535743">भ्यूबाट बाहिरिने हो?</translation>
 <translation id="2417486498593892439">नेटवर्कमा साइन इन गर्नुहोस्</translation>
 <translation id="2426051945783024481">क्यामेराको फ्रेम स्वतः बिच भागमा पारियो</translation>
 <translation id="2427507373259914951">बायाँ क्लिक गर्नुहोस्</translation>
@@ -1153,9 +1154,11 @@
 <translation id="5555639311269196631">हटस्पट अफ गर्नुहोस्</translation>
 <translation id="5556459405103347317">पुन: लोड गर्नुहोस्</translation>
 <translation id="5558091555391176027">नजिकैका डिभाइससँग सेयर गर्ने सुविधाको उच्च भिजिबिलिटी मोड टगल गर्नुहोस्</translation>
+<translation id="5558314826121965174">सिर्जनशीलता</translation>
 <translation id="556042886152191864">बटन</translation>
 <translation id="5570122939431135380">नयाँ ट्याब नयाँ इन्कोग्निटो विन्डोमा खोल्नुहोस्</translation>
 <translation id="5571066253365925590">ब्लुटूथ सक्षम भयो</translation>
+<translation id="5572632238877308040">अत्यावश्यक कुराहरू</translation>
 <translation id="557563299383177668">अर्को अनुच्छेद</translation>
 <translation id="5577082622442191756">ब्लुटुथ टगल गर्नुहोस्। <ph name="STATE_TEXT" />।</translation>
 <translation id="5577281275355252094">फोन हब नामक सुविधा प्रयोग गर्न फोनको ब्लुटुथ अन छ भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>
@@ -1180,6 +1183,7 @@
 <translation id="5662075790140998213">डेस्क १०</translation>
 <translation id="5662709761327382534">माइक्रोफोन प्रयोग गरी रेकर्ड गर्ने सुविधा <ph name="CURRENT_STATE" /> छ, माइक्रोफोन प्रयोग गरी रेकर्ड गर्ने सुविधा <ph name="NEW_STATE" /> गर्न 'इन्टर' थिच्नुहोस्</translation>
 <translation id="5669267381087807207">सक्रिय गर्दै</translation>
+<translation id="5672890847723042801">युटिलिटीहरू</translation>
 <translation id="5673434351075758678">तपाईंका सेटिङहरू सिंक पश्चात् "<ph name="TO_LOCALE" />" बाट "<ph name="FROM_LOCALE" />" मा परिवर्तन भएका छन्।</translation>
 <translation id="5675363643668471212">सेल्फको वस्तु</translation>
 <translation id="5677928146339483299">ब्लक गरिएको छ</translation>
@@ -1361,6 +1365,7 @@
 <translation id="6351032674660237738">एपसम्बन्धी सुझावहरू</translation>
 <translation id="6352082849089527770">अज्ञात नेटवर्कहरू</translation>
 <translation id="6359587239691116345">नयाँ सुविधा तथा सुरक्षासम्बन्धी सुधारहरू प्राप्त गर्नुहोस्। तपाईंले यो अपडेट लागू गर्नुभएन भने तपाईंको डिभाइसले राम्रोसँग काम गर्न छाड्न सक्छ र सुरक्षा तथा पर्फर्मेन्ससम्बन्धी समस्या आउन सक्छ।</translation>
+<translation id="6362833380917912748">अन्तर्निर्मित एपहरूका बारेमा जान्नुहोस्</translation>
 <translation id="6376931439017688372">ब्लुटुथ सक्रिय छ</translation>
 <translation id="6378515133128829137">विन्डो दायाँतिर पिन गर्नुहोस्</translation>
 <translation id="6381109794406942707">यो डिभाइस अनलक गर्न आफ्नो PIN हाल्नुहोस्।</translation>
@@ -1847,6 +1852,7 @@
 <translation id="8262312463845990408">प्लेब्याक टगल गर्नुहोस्</translation>
 <translation id="8270450402312105425">{0,plural, =1{एक घन्टाभित्र यो डिभाइसमा अघिल्लो संस्करण रिस्टोर गर्नुहोस्}other{# घन्टाभित्र यो डिभाइसमा अघिल्लो संस्करण रिस्टोर गर्नुहोस्}}</translation>
 <translation id="8277261673056602147">स्क्रिनमा देखाइएको टेक्स्ट हाइलाइट गर्नुहोस्</translation>
+<translation id="8287009018010202411">उत्पादकत्व</translation>
 <translation id="828708037801473432">अफ</translation>
 <translation id="8297006494302853456">कमजोर</translation>
 <translation id="8308637677604853869">अघिल्लो मेनु</translation>
@@ -1918,6 +1924,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">आफ्ना एपहरू नाम वा रङअनुसार क्रमबद्ध गर्नुहोस्</translation>
 <translation id="8609384513243082612">नयाँ ट्याब खोल्नुहोस्</translation>
+<translation id="861045123704058818">एपहरू अस्थायी रूपमा कोटीअनुसार व्यवस्थापन गरिएका छन्</translation>
 <translation id="8612216344243590325">महत्त्वपूर्ण फाइलहरूलाई डेस्कटपको साटो <ph name="HOLDING_SPACE_TITLE" /> मा राख्नुहोस्। यसका लागि तपाईंले फाइलहरू ड्रयाग गरेर <ph name="HOLDING_SPACE_TITLE" /> मा लगे पुग्छ।</translation>
 <translation id="8614517853887502247">सुरक्षित रूपमा हेर्ने सुविधा अन गरिएको हुनाले <ph name="APP_1_TITLE" /> र <ph name="APP_2_TITLE" /> सम्बन्धी सूचनाहरू लुकाइएका छन्</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1956,6 +1963,7 @@
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">आफ्नो पहिचान पुष्टि गर्नुहोस्: <ph name="ORIGIN_NAME" /> तपाईंको पहिचान पुष्टि गर्न चाहन्छ</translation>
 <translation id="875593634123171288">VPN सेटिङहरू देखाउनुहोस्</translation>
+<translation id="8756799553341497810">तपाईं यो भ्यूबाट बाहिरिएपछि एपको लेआउट कस्टमाइज गर्न सुरु गर्न सक्नुहुन्छ।</translation>
 <translation id="8759408218731716181">बहुविध साइन-इन सेटअप गर्न सक्दैन</translation>
 <translation id="8763883995157866248">डिभाइस स्लिप मोडमा राख्नुहोस्</translation>
 <translation id="877404052021108314">९० डिग्री फरेनहाइटलाई सेल्सियसमा रूपान्तरण गरियोस्</translation>
