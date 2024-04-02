@@ -52,7 +52,6 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "media/capture/video/chromeos/camera_buffer_factory.h"
-#include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "media/capture/video/chromeos/public/cros_features.h"
 #include "media/capture/video/chromeos/video_capture_device_chromeos_halv3.h"
 #include "media/capture/video/chromeos/video_capture_device_factory_chromeos.h"
@@ -282,19 +281,12 @@ class VideoCaptureDeviceTest
         video_capture_client_(CreateDeviceClient()),
         image_capture_client_(new MockImageCaptureClient()) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    CHECK(test_thread_.Start()) << "Cannot start the test thread";
     local_gpu_memory_buffer_manager_ =
         std::make_unique<LocalGpuMemoryBufferManager>();
     VideoCaptureDeviceFactoryChromeOS::SetGpuBufferManager(
         local_gpu_memory_buffer_manager_.get());
-    if (media::ShouldUseCrosCameraService() &&
-        !CameraHalDispatcherImpl::GetInstance()->IsStarted()) {
-      if (!ash::mojo_service_manager::IsServiceManagerBound()) {
-        CHECK(ash::mojo_service_manager::BootstrapServiceManagerConnection())
-            << "Cannot bootstrap service manager connection.";
-      }
-      CameraHalDispatcherImpl::GetInstance()->Start();
-    }
+    // TODO(b/315966244): Initialize mojo service manager when re-enabling the
+    // test cases on a real device.
 #endif
     video_capture_device_factory_ = CreateVideoCaptureDeviceFactory(
         base::SingleThreadTaskRunner::GetCurrentDefault());
@@ -324,9 +316,10 @@ class VideoCaptureDeviceTest
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   void WaitForCameraServiceReady() {
     if (media::ShouldUseCrosCameraService()) {
-      ASSERT_TRUE(CameraHalDispatcherImpl::GetInstance()->IsStarted());
-      ASSERT_TRUE(CameraHalDispatcherImpl::GetInstance()
-                      ->WaitForServiceReadyForTesting());
+      VideoCaptureDeviceFactoryChromeOS* vcd_factory_chromeos =
+          static_cast<VideoCaptureDeviceFactoryChromeOS*>(
+              video_capture_device_factory_.get());
+      ASSERT_TRUE(vcd_factory_chromeos->WaitForCameraServiceReadyForTesting());
     }
   }
 #endif
@@ -455,17 +448,6 @@ class VideoCaptureDeviceTest
             },
             &run_loop, &test_case));
     run_loop.Run();
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-    base::RunLoop run_loop;
-    test_thread_.task_runner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](base::RunLoop* run_loop, base::OnceClosure* test_case) {
-              std::move(*test_case).Run();
-              run_loop->Quit();
-            },
-            &run_loop, &test_case));
-    run_loop.Run();
 #else
     std::move(test_case).Run();
 #endif
@@ -482,7 +464,6 @@ class VideoCaptureDeviceTest
   const scoped_refptr<MockImageCaptureClient> image_capture_client_;
   VideoCaptureFormat last_format_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  base::Thread test_thread_{"VCD test thread"};
   std::unique_ptr<LocalGpuMemoryBufferManager> local_gpu_memory_buffer_manager_;
 #endif
   std::unique_ptr<VideoCaptureDeviceFactory> video_capture_device_factory_;

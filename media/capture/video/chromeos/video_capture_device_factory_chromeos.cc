@@ -82,11 +82,6 @@ void VideoCaptureDeviceFactoryChromeOS::SetGpuBufferManager(
 }
 
 bool VideoCaptureDeviceFactoryChromeOS::Init() {
-  if (!CameraHalDispatcherImpl::GetInstance()->IsStarted()) {
-    LOG(ERROR) << "CameraHalDispatcherImpl is not started";
-    return false;
-  }
-
   camera_hal_delegate_ = std::make_unique<CameraHalDelegate>(ui_task_runner_);
 
   if (!camera_hal_delegate_->Init()) {
@@ -95,10 +90,7 @@ bool VideoCaptureDeviceFactoryChromeOS::Init() {
     return false;
   }
 
-  if (!camera_hal_delegate_->RegisterCameraClient()) {
-    LOG(ERROR) << "Failed to register camera client";
-    return false;
-  }
+  camera_hal_delegate_->BootStrapCameraServiceConnection();
 
   // Since we will unset camera info getter and virtual device controller before
   // invalidate |camera_hal_delegate_| in the destructor, it should be safe to
@@ -111,6 +103,13 @@ bool VideoCaptureDeviceFactoryChromeOS::Init() {
       base::BindRepeating(&CameraHalDelegate::EnableVirtualDevice,
                           base::Unretained(camera_hal_delegate_.get())));
   return true;
+}
+
+bool VideoCaptureDeviceFactoryChromeOS::WaitForCameraServiceReadyForTesting() {
+  if (!camera_hal_delegate_) {
+    return false;
+  }
+  return camera_hal_delegate_->WaitForCameraModuleReadyForTesting();  // IN-TEST
 }
 
 }  // namespace media

@@ -39,6 +39,12 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryChromeOS final
   static gpu::GpuMemoryBufferManager* GetBufferManager();
   static void SetGpuBufferManager(gpu::GpuMemoryBufferManager* buffer_manager);
 
+  // This is only for vcd unittests to make sure CameraHalDelegate get the
+  // camera module. It should not be invoked in the production code.
+  // It will return true immediately when CameraModule is ready for
+  // CameraHalDelegate or return false after 10 seconds.
+  bool WaitForCameraServiceReadyForTesting();
+
  private:
   // Initializes the factory. The factory is functional only after this call
   // succeeds.

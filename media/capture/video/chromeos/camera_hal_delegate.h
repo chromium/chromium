@@ -17,6 +17,7 @@
 #include "base/threading/sequence_bound.h"
 #include "base/threading/thread.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
+#include "media/capture/video/chromeos/mojo_service_manager_observer.h"
 #include "media/capture/video/chromeos/mojom/camera3.mojom.h"
 #include "media/capture/video/chromeos/mojom/camera_common.mojom.h"
 #include "media/capture/video/chromeos/vendor_tag_ops_delegate.h"
@@ -84,9 +85,10 @@ class CAPTURE_EXPORT CameraHalDelegate final
   CameraHalDelegate(const CameraHalDelegate&) = delete;
   CameraHalDelegate& operator=(const CameraHalDelegate&) = delete;
 
-  // Registers the camera client observer to the CameraHalDispatcher instance.
-  // Returns true if successful, false if failed (e.g., authentication failure).
-  bool RegisterCameraClient();
+  // Start observing the status of the CrosCameraService service on the Mojo
+  // Service Manager. Once the CrosCameraService service is registered,
+  // CameraHalDelegate will request camera module from it.
+  void BootStrapCameraServiceConnection();
 
   void SetCameraModule(
       mojo::PendingRemote<cros::mojom::CameraModule> camera_module);
@@ -136,6 +138,7 @@ class CAPTURE_EXPORT CameraHalDelegate final
   class SystemEventMonitorProxy;
   class VCDInfoMonitorImpl;
   class VideoCaptureDeviceDelegateMap;
+  class CameraModuleConnector;
 
   void NotifyVideoCaptureDevicesChanged();
 
@@ -201,9 +204,6 @@ class CAPTURE_EXPORT CameraHalDelegate final
       cros::mojom::CameraDeviceStatus new_status) final;
   void TorchModeStatusChange(int32_t camera_id,
                              cros::mojom::TorchModeStatus new_status) final;
-
-  base::WaitableEvent camera_hal_client_registered_;
-  bool authenticated_;
 
   base::WaitableEvent camera_module_has_been_set_;
 
@@ -277,6 +277,8 @@ class CAPTURE_EXPORT CameraHalDelegate final
   std::unique_ptr<SystemEventMonitorProxy> system_event_monitor_proxy_;
 
   base::SequenceBound<VCDInfoMonitorImpl> vcd_info_monitor_impl_;
+
+  base::SequenceBound<CameraModuleConnector> camera_module_connector_;
 
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
 };

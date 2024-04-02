@@ -84,34 +84,6 @@ const std::unordered_set<int32_t> module_id_set = {
 
 constexpr base::TimeDelta kEventWaitTimeoutSecs = base::Seconds(1);
 
-class LocalCameraClientObserver : public CameraClientObserver {
- public:
-  LocalCameraClientObserver() = delete;
-
-  explicit LocalCameraClientObserver(CameraHalDelegate* camera_hal_delegate,
-                                     cros::mojom::CameraClientType type,
-                                     base::UnguessableToken auth_token)
-      : CameraClientObserver(type, std::move(auth_token)),
-        camera_hal_delegate_(camera_hal_delegate) {}
-
-  LocalCameraClientObserver(const LocalCameraClientObserver&) = delete;
-  LocalCameraClientObserver& operator=(const LocalCameraClientObserver&) =
-      delete;
-
-  void OnChannelCreated(
-      mojo::PendingRemote<cros::mojom::CameraModule> camera_module) override {
-    camera_hal_delegate_->SetCameraModule(std::move(camera_module));
-  }
-
-  bool WaitForCameraModuleReadyForTesting() override {
-    return camera_hal_delegate_
-        ->WaitForCameraModuleReadyForTesting();  // IN-TEST
-  }
-
- private:
-  raw_ptr<CameraHalDelegate> camera_hal_delegate_;
-};
-
 // ash::system::StatisticsProvider::IsRunningOnVM() isn't available in unittest.
 bool IsRunningOnVM() {
   static bool is_vm = []() {
@@ -366,10 +338,59 @@ class CameraHalDelegate::VideoCaptureDeviceDelegateMap {
       weak_ptr_factory_{this};
 };
 
+class CameraHalDelegate::CameraModuleConnector {
+ public:
+  using OnGetCameraModuleCallback = base::RepeatingCallback<void(
+      mojo::PendingRemote<cros::mojom::CameraModule> camera_module)>;
+
+  explicit CameraModuleConnector(
+      OnGetCameraModuleCallback on_get_camera_module_callback)
+      : on_get_camera_module_callback_(on_get_camera_module_callback) {
+    mojo_service_manager_observer_ = MojoServiceManagerObserver::Create(
+        chromeos::mojo_services::kCrosCameraService,
+        base::BindRepeating(&CameraModuleConnector::ConnectToCameraService,
+                            weak_factory_.GetWeakPtr()),
+        base::DoNothing());
+  }
+
+  ~CameraModuleConnector() = default;
+
+  CameraModuleConnector(const CameraModuleConnector&) = delete;
+  CameraModuleConnector& operator=(const CameraModuleConnector&) = delete;
+
+ private:
+  void ConnectToCameraService() {
+    ash::mojo_service_manager::GetServiceManagerProxy()->Request(
+        chromeos::mojo_services::kCrosCameraService, std::nullopt,
+        camera_service_.BindNewPipeAndPassReceiver().PassPipe());
+    camera_service_.set_disconnect_handler(
+        base::BindOnce(&CameraModuleConnector::OnCameraServiceConnectionError,
+                       weak_factory_.GetWeakPtr()));
+    camera_service_->GetCameraModule(
+        cros::mojom::CameraClientType::CHROME,
+        base::BindOnce(&CameraModuleConnector::OnGetCameraModule,
+                       base::Unretained(this)));
+  }
+
+  void OnGetCameraModule(
+      mojo::PendingRemote<cros::mojom::CameraModule> camera_module) {
+    on_get_camera_module_callback_.Run(std::move(camera_module));
+  }
+
+  void OnCameraServiceConnectionError() { camera_service_.reset(); }
+
+  OnGetCameraModuleCallback on_get_camera_module_callback_;
+
+  std::unique_ptr<MojoServiceManagerObserver> mojo_service_manager_observer_;
+
+  mojo::Remote<cros::mojom::CrosCameraService> camera_service_;
+
+  base::WeakPtrFactory<CameraModuleConnector> weak_factory_{this};
+};
+
 CameraHalDelegate::CameraHalDelegate(
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner)
-    : authenticated_(false),
-      camera_module_has_been_set_(
+    : camera_module_has_been_set_(
           base::WaitableEvent::ResetPolicy::MANUAL,
           base::WaitableEvent::InitialState::NOT_SIGNALED),
       builtin_camera_info_updated_(
@@ -403,14 +424,6 @@ bool CameraHalDelegate::Init() {
 }
 
 CameraHalDelegate::~CameraHalDelegate() {
-  std::vector<CameraClientObserver*> observers;
-  for (auto& client_observer : local_client_observers_) {
-    observers.emplace_back(client_observer.get());
-  }
-  auto* dispatcher = CameraHalDispatcherImpl::GetInstance();
-  dispatcher->RemoveClientObservers(observers);
-  local_client_observers_.clear();
-
   if (ipc_task_runner_) {
     ipc_task_runner_->PostTask(
         FROM_HERE,
@@ -423,37 +436,34 @@ CameraHalDelegate::~CameraHalDelegate() {
                               std::move(system_event_monitor_proxy_));
 }
 
-bool CameraHalDelegate::RegisterCameraClient() {
-  auto* dispatcher = CameraHalDispatcherImpl::GetInstance();
-  auto type = cros::mojom::CameraClientType::CHROME;
-  auto client_observer = std::make_unique<LocalCameraClientObserver>(
-      this, type, dispatcher->GetTokenForTrustedClient(type));
-  dispatcher->AddClientObserver(
-      client_observer.get(),
-      base::BindOnce(&CameraHalDelegate::OnRegisteredCameraHalClient,
-                     base::Unretained(this)));
-  camera_hal_client_registered_.Wait();
-  local_client_observers_.emplace_back(std::move(client_observer));
-  return authenticated_;
-}
-
-void CameraHalDelegate::OnRegisteredCameraHalClient(int32_t result) {
-  if (result != 0) {
-    LOG(ERROR) << "Failed to register camera HAL client";
-    camera_hal_client_registered_.Signal();
-    return;
-  }
-  CAMERA_LOG(EVENT) << "Registered camera HAL client";
-  authenticated_ = true;
-  camera_hal_client_registered_.Signal();
-}
-
 void CameraHalDelegate::SetCameraModule(
     mojo::PendingRemote<cros::mojom::CameraModule> camera_module) {
   ipc_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&CameraHalDelegate::SetCameraModuleOnIpcThread,
                      base::Unretained(this), std::move(camera_module)));
+}
+
+void CameraHalDelegate::SetCameraModuleOnIpcThread(
+    mojo::PendingRemote<cros::mojom::CameraModule> camera_module) {
+  DCHECK(ipc_task_runner_->BelongsToCurrentThread());
+  if (camera_module_.is_bound()) {
+    LOG(ERROR) << "CameraModule is already bound";
+    return;
+  }
+  if (!camera_module.is_valid()) {
+    LOG(ERROR) << "Invalid pending camera module remote";
+    return;
+  }
+  camera_module_.Bind(std::move(camera_module));
+  camera_module_.set_disconnect_handler(
+      base::BindOnce(&CameraHalDelegate::ResetMojoInterfaceOnIpcThread,
+                     base::Unretained(this)));
+  camera_module_has_been_set_.Signal();
+
+  // Trigger ondevicechange event to notify clients that built-in camera device
+  // info can now be queried.
+  NotifyVideoCaptureDevicesChanged();
 }
 
 std::unique_ptr<VideoCaptureDevice> CameraHalDelegate::CreateDevice(
@@ -812,28 +822,6 @@ VideoCaptureDeviceChromeOSDelegate* CameraHalDelegate::GetVCDDelegate(
   return vcd_delegate_map_->Get(camera_id);
 }
 
-void CameraHalDelegate::SetCameraModuleOnIpcThread(
-    mojo::PendingRemote<cros::mojom::CameraModule> camera_module) {
-  DCHECK(ipc_task_runner_->BelongsToCurrentThread());
-  if (camera_module_.is_bound()) {
-    LOG(ERROR) << "CameraModule is already bound";
-    return;
-  }
-  if (!camera_module.is_valid()) {
-    LOG(ERROR) << "Invalid pending camera module remote";
-    return;
-  }
-  camera_module_.Bind(std::move(camera_module));
-  camera_module_.set_disconnect_handler(
-      base::BindOnce(&CameraHalDelegate::ResetMojoInterfaceOnIpcThread,
-                     base::Unretained(this)));
-  camera_module_has_been_set_.Signal();
-
-  // Trigger ondevicechange event to notify clients that built-in camera device
-  // info can now be queried.
-  NotifyVideoCaptureDevicesChanged();
-}
-
 void CameraHalDelegate::ResetMojoInterfaceOnIpcThread() {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
   camera_module_.reset();
@@ -1066,7 +1054,18 @@ void CameraHalDelegate::TorchModeStatusChange(
   // Do nothing here as we don't care about torch mode status.
 }
 
+void CameraHalDelegate::BootStrapCameraServiceConnection() {
+  camera_module_connector_ = base::SequenceBound<CameraModuleConnector>(
+      ui_task_runner_,
+      base::BindPostTask(
+          ipc_task_runner_,
+          base::BindRepeating(&CameraHalDelegate::SetCameraModuleOnIpcThread,
+                              base::Unretained(this))));
+}
+
 bool CameraHalDelegate::WaitForCameraModuleReadyForTesting() {
+  DCHECK(!ipc_task_runner_->BelongsToCurrentThread());
+
   if (camera_module_has_been_set_.IsSignaled()) {
     return true;
   }
