@@ -44,6 +44,7 @@ common_tsc_dir =
 # TS files to compile.
 ts_modules = [
   "background/background.ts",
+  "background/braille/braille_key_event_rewriter.ts",
   "background/chromevox_state.ts",
   "background/editing/editable_text_base.ts",
   "background/editing/editing.ts",
@@ -91,7 +92,6 @@ js_modules = [
   "background/braille/braille_display_manager.js",
   "background/braille/braille_input_handler.js",
   "background/braille/braille_interface.js",
-  "background/braille/braille_key_event_rewriter.js",
   "background/braille/braille_translator_manager.js",
   "background/braille/cursor_dots.js",
   "background/braille/expanding_braille_translator.js",

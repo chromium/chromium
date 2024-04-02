@@ -9,17 +9,24 @@ import {BrailleKeyCommand, BrailleKeyEvent} from '../../common/braille/braille_k
 import {QueueMode} from '../../common/tts_types.js';
 import {Output} from '../output/output.js';
 
+interface Modifiers {
+  altKey?: boolean;
+  ctrlKey?: boolean;
+  shiftKey?: boolean;
+
+  [key: string]: boolean | undefined;
+}
+
 /**
  * A class that transforms a sequence of braille key events into a standard key
  * event.
  */
 export class BrailleKeyEventRewriter {
-  constructor() {
-    /** @private {Object} */
-    this.incrementalKey_ = null;
-  }
+  static instance: BrailleKeyEventRewriter;
 
-  static init() {
+  private incrementalKey_: Modifiers | null = null;
+
+  static init(): void {
     if (BrailleKeyEventRewriter.instance) {
       throw new Error('Cannot create two BrailleKeyEventRewriter instances');
     }
@@ -28,10 +35,9 @@ export class BrailleKeyEventRewriter {
 
   /**
    * Accumulates and optionally modifies in-coming braille key events.
-   * @param {BrailleKeyEvent} evt
-   * @return {boolean} False to continue event propagation.
+   * @return False to continue event propagation.
    */
-  onBrailleKeyEvent(evt) {
+  onBrailleKeyEvent(evt: BrailleKeyEvent): boolean {
     let standardKeyCode;
     const dots = evt.brailleDots;
     if (!dots) {
@@ -82,6 +88,3 @@ export class BrailleKeyEventRewriter {
     return false;
   }
 }
-
-/** @type {BrailleKeyEventRewriter} */
-BrailleKeyEventRewriter.instance;
