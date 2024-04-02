@@ -5,17 +5,23 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller_impl.h"
 
 #include <memory>
+#include <optional>
+#include <variant>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/functional/overloaded.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_observer.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_params_util.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher_impl.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_switches.h"
+#include "chrome/browser/signin/bound_session_credentials/rotation_debug_info.pb.h"
 #include "chrome/browser/signin/bound_session_credentials/session_binding_helper.h"
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "content/public/browser/storage_partition.h"
@@ -33,6 +39,63 @@ void RecordNumberOfSuccessiveTimeoutIfAny(size_t successive_timeout) {
       "Signin.BoundSessionCredentials.ThrottledRequestsSuccessiveTimeout",
       successive_timeout);
 }
+
+struct TimeoutOccured {};
+
+void UpdateDebugInfo(bound_session_credentials::RotationDebugInfo& info,
+                     std::variant<Result, TimeoutOccured> last_result,
+                     bool last_challenge_received) {
+  using bound_session_credentials::RotationDebugInfo;
+  // Null value means no error.
+  std::optional<RotationDebugInfo::FailureType> failure_type = std::visit(
+      base::Overloaded{
+          [](Result result) -> std::optional<RotationDebugInfo::FailureType> {
+            switch (result) {
+              case Result::kConnectionError:
+                return RotationDebugInfo::CONNECTION_ERROR;
+              case Result::kServerTransientError:
+                return RotationDebugInfo::SERVER_ERROR;
+              case Result::kSuccess:
+                return std::nullopt;
+              default:
+                return RotationDebugInfo::OTHER;
+            }
+          },
+          [](TimeoutOccured) -> std::optional<RotationDebugInfo::FailureType> {
+            return RotationDebugInfo::TIMEOUT;
+          }},
+      last_result);
+
+  if (!failure_type.has_value()) {
+    // Clear `info` on success.
+    info.Clear();
+    return;
+  }
+
+  auto counter_it = base::ranges::find_if(
+      *info.mutable_errors_since_last_rotation(),
+      [&failure_type](const RotationDebugInfo::FailureCounter& counter) {
+        return counter.type() == failure_type.value();
+      });
+  if (counter_it == info.errors_since_last_rotation().end()) {
+    RotationDebugInfo::FailureCounter* counter =
+        info.add_errors_since_last_rotation();
+    counter->set_type(failure_type.value());
+    counter->set_count(1);
+  } else {
+    counter_it->set_count(counter_it->count() + 1);
+  }
+
+  if (!info.has_first_failure_info()) {
+    RotationDebugInfo::FailureInfo* failure_info =
+        info.mutable_first_failure_info();
+    *failure_info->mutable_failure_time() =
+        bound_session_credentials::TimeToTimestamp(base::Time::Now());
+    failure_info->set_type(failure_type.value());
+    failure_info->set_received_challenge(last_challenge_received);
+  }
+}
+
 }  // namespace
 
 BoundSessionCookieControllerImpl::BoundSessionCookieControllerImpl(
@@ -179,7 +242,7 @@ BoundSessionCookieControllerImpl::CreateRefreshCookieFetcher() const {
              ? std::make_unique<BoundSessionRefreshCookieFetcherImpl>(
                    storage_partition_->GetURLLoaderFactoryForBrowserProcess(),
                    *session_binding_helper_, url_, std::move(cookie_names),
-                   is_off_the_record_profile_)
+                   is_off_the_record_profile_, debug_info_)
              : refresh_cookie_fetcher_factory_for_testing_.Run(
                    storage_partition_->GetCookieManagerForBrowserProcess(),
                    url_, std::move(cookie_names));
@@ -220,6 +283,8 @@ void BoundSessionCookieControllerImpl::StartCookieRefresh() {
 
 void BoundSessionCookieControllerImpl::OnCookieRefreshFetched(
     BoundSessionRefreshCookieFetcher::Result result) {
+  UpdateDebugInfo(debug_info_, result,
+                  refresh_cookie_fetcher_->IsChallengeReceived());
   refresh_cookie_fetcher_.reset();
 
   chrome::mojom::ResumeBlockedRequestsTrigger trigger =
@@ -278,6 +343,8 @@ void BoundSessionCookieControllerImpl::ResumeBlockedRequests(
 }
 
 void BoundSessionCookieControllerImpl::OnResumeBlockedRequestsTimeout() {
+  UpdateDebugInfo(debug_info_, TimeoutOccured{},
+                  refresh_cookie_fetcher_->IsChallengeReceived());
   // Reset the fetcher, it has been taking at least
   // kResumeBlockedRequestTimeout. New requests will trigger a new fetch.
   refresh_cookie_fetcher_.reset();

@@ -8194,7 +8194,10 @@ proto_library("lcp_critical_path_predictor_proto") {
 
 if (enable_bound_session_credentials) {
   proto_library("bound_session_credentials_proto") {
-    sources = [ "signin/bound_session_credentials/bound_session_params.proto" ]
+    sources = [
+      "signin/bound_session_credentials/bound_session_params.proto",
+      "signin/bound_session_credentials/rotation_debug_info.proto",
+    ]
   }
 }
 

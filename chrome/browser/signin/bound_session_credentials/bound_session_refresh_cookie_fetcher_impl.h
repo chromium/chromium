@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.h"
+#include "chrome/browser/signin/bound_session_credentials/rotation_debug_info.pb.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/cookies/canonical_cookie.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -34,11 +35,13 @@ class BoundSessionRefreshCookieFetcherImpl
       SessionBindingHelper& session_binding_helper,
       const GURL& cookie_url,
       base::flat_set<std::string> cookie_names,
-      bool is_off_the_record_profile);
+      bool is_off_the_record_profile,
+      bound_session_credentials::RotationDebugInfo debug_info);
   ~BoundSessionRefreshCookieFetcherImpl() override;
 
   // BoundSessionRefreshCookieFetcher:
   void Start(RefreshCookieCompleteCallback callback) override;
+  bool IsChallengeReceived() const override;
 
  private:
   friend class BoundSessionRefreshCookieFetcherImplTest;
@@ -103,6 +106,7 @@ class BoundSessionRefreshCookieFetcherImpl
   Result result_;
   bool cookie_refresh_completed_ = false;
   size_t assertion_requests_count_ = 0;
+  bound_session_credentials::RotationDebugInfo debug_info_;
 
   // Non-null after a fetch has started.
   std::unique_ptr<network::SimpleURLLoader> url_loader_;

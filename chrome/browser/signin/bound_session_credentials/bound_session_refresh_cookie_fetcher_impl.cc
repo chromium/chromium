@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
@@ -15,6 +16,8 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/typed_macros.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_params_util.h"
+#include "chrome/browser/signin/bound_session_credentials/rotation_debug_info.pb.h"
 #include "chrome/browser/signin/bound_session_credentials/session_binding_helper.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -32,6 +35,8 @@ namespace {
 constexpr char kRotationChallengeHeader[] = "Sec-Session-Google-Challenge";
 constexpr char kRotationChallengeResponseHeader[] =
     "Sec-Session-Google-Response";
+constexpr char kRotationDebugHeader[] =
+    "Sec-Session-Google-Rotation-Debug-Info";
 constexpr char kChallengeItemKey[] = "challenge";
 const size_t kMaxAssertionRequestsAllowed = 5;
 
@@ -47,6 +52,14 @@ bool IsExpectedCookie(
   }
   return false;
 }
+
+std::string UpdateDebugInfoAndSerializeToHeader(
+    bound_session_credentials::RotationDebugInfo& debug_info) {
+  *debug_info.mutable_request_time() =
+      bound_session_credentials::TimeToTimestamp(base::Time::Now());
+  std::string serialized = debug_info.SerializeAsString();
+  return base::Base64Encode(serialized);
+}
 }  // namespace
 
 BoundSessionRefreshCookieFetcherImpl::BoundSessionRefreshCookieFetcherImpl(
@@ -54,12 +67,14 @@ BoundSessionRefreshCookieFetcherImpl::BoundSessionRefreshCookieFetcherImpl(
     SessionBindingHelper& session_binding_helper,
     const GURL& cookie_url,
     base::flat_set<std::string> cookie_names,
-    bool is_off_the_record_profile)
+    bool is_off_the_record_profile,
+    bound_session_credentials::RotationDebugInfo debug_info)
     : url_loader_factory_(std::move(url_loader_factory)),
       session_binding_helper_(session_binding_helper),
       expected_cookie_domain_(cookie_url),
       expected_cookie_names_(std::move(cookie_names)),
-      is_off_the_record_profile_(is_off_the_record_profile) {}
+      is_off_the_record_profile_(is_off_the_record_profile),
+      debug_info_(std::move(debug_info)) {}
 
 BoundSessionRefreshCookieFetcherImpl::~BoundSessionRefreshCookieFetcherImpl() =
     default;
@@ -73,6 +88,10 @@ void BoundSessionRefreshCookieFetcherImpl::Start(
   CHECK(callback);
   callback_ = std::move(callback);
   StartRefreshRequest(/*sec_session_challenge_response=*/std::nullopt);
+}
+
+bool BoundSessionRefreshCookieFetcherImpl::IsChallengeReceived() const {
+  return assertion_requests_count_ > 0;
 }
 
 void BoundSessionRefreshCookieFetcherImpl::StartRefreshRequest(
@@ -135,6 +154,8 @@ void BoundSessionRefreshCookieFetcherImpl::StartRefreshRequest(
     request->headers.SetHeader(kRotationChallengeResponseHeader,
                                *sec_session_challenge_response);
   }
+  request->headers.SetHeader(kRotationDebugHeader,
+                             UpdateDebugInfoAndSerializeToHeader(debug_info_));
 
   url::Origin origin = GaiaUrls::GetInstance()->gaia_origin();
   request->site_for_cookies = net::SiteForCookies::FromOrigin(origin);
@@ -275,14 +296,15 @@ void BoundSessionRefreshCookieFetcherImpl::HandleBindingKeyAssertionRequired(
     return;
   }
 
-  // Binding key assertion required.
-  assertion_requests_count_++;
   std::string challenge = ParseChallengeHeader(challenge_header_value);
   if (challenge.empty()) {
     CompleteRequestAndReportRefreshResult(
         Result::kChallengeRequiredUnexpectedFormat);
     return;
   }
+
+  // Binding key assertion required.
+  assertion_requests_count_++;
   RefreshWithChallenge(challenge);
 }
 

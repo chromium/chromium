@@ -45,6 +45,9 @@ class BoundSessionRefreshCookieFetcher {
   // called with the fetch results upon completion. Should be called no more
   // than once per instance.
   virtual void Start(RefreshCookieCompleteCallback callback) = 0;
+
+  // Returns whether the fetcher had received a challenge.
+  virtual bool IsChallengeReceived() const = 0;
 };
 
 std::ostream& operator<<(

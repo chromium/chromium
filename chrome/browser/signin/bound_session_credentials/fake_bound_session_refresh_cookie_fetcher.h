@@ -31,6 +31,7 @@ class FakeBoundSessionRefreshCookieFetcher
 
   // BoundSessionRefreshCookieFetcher:
   void Start(RefreshCookieCompleteCallback callback) override;
+  bool IsChallengeReceived() const override;
 
   // `cookie_expiration` is set only if `result` is
   // `BoundSessionRefreshCookieFetcher::Result::kSuccess`.

@@ -52,6 +52,10 @@ void FakeBoundSessionRefreshCookieFetcher::Start(
   }
 }
 
+bool FakeBoundSessionRefreshCookieFetcher::IsChallengeReceived() const {
+  return false;
+}
+
 void FakeBoundSessionRefreshCookieFetcher::SimulateCompleteRefreshRequest(
     BoundSessionRefreshCookieFetcher::Result result,
     std::optional<base::Time> cookie_expiration) {

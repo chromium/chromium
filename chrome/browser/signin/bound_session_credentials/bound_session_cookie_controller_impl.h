@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.h"
+#include "chrome/browser/signin/bound_session_credentials/rotation_debug_info.pb.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -124,6 +125,8 @@ class BoundSessionCookieControllerImpl
 
   RefreshCookieFetcherFactoryForTesting
       refresh_cookie_fetcher_factory_for_testing_;
+
+  bound_session_credentials::RotationDebugInfo debug_info_;
 
   // Added for testing purposes.
   std::unique_ptr<base::RetainingOneShotTimer> artifical_cookie_rotation_delay_;

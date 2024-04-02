@@ -1,0 +1,44 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+// Required in Chrome.
+option optimize_for = LITE_RUNTIME;
+
+package bound_session_credentials;
+
+import "bound_session_params.proto";
+
+// Debug information about previous failed rotation attempts. Attached to cookie
+// rotation requests.
+message RotationDebugInfo {
+  // Various transient error types that might have occurred during cookie
+  // rotation. Persistent errors are not included because they lead to session
+  // termination and thus no rotation requests will be sent to carry this debug
+  // info.
+  enum FailureType {
+    OTHER = 0;
+    CONNECTION_ERROR = 1;
+    SERVER_ERROR = 2;
+    TIMEOUT = 3;
+  }
+
+  // Contains how many times a specific type of error occurred.
+  message FailureCounter {
+    optional FailureType type = 1;
+    optional int32 count = 2;
+  }
+
+  // Contains information about one single failure.
+  message FailureInfo {
+    optional Timestamp failure_time = 1;
+    optional FailureType type = 2;
+    optional bool received_challenge = 3;
+  }
+
+  optional Timestamp request_time = 1;
+  repeated FailureCounter errors_since_last_rotation = 2;
+  optional FailureInfo first_failure_info = 3;
+}
