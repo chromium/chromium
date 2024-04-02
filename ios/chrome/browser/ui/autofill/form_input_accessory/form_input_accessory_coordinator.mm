@@ -762,7 +762,7 @@ const CGFloat kIPHVerticalOffset = -5;
 // Resets `formInputAccessoryViewController` and `formInputViewController` to
 // their initial state.
 - (void)resetInputViews {
-  [self.formInputAccessoryMediator enableSuggestions];
+  self.formInputAccessoryMediator.suggestionsEnabled = YES;
   [self.formInputAccessoryViewController reset];
 
   self.formInputViewController = nil;
@@ -772,7 +772,7 @@ const CGFloat kIPHVerticalOffset = -5;
 // fill view is displayed.
 - (void)updateKeyboardAccessoryForManualFilling {
   [self.formInputAccessoryViewController lockManualFallbackView];
-  [self.formInputAccessoryMediator disableSuggestions];
+  self.formInputAccessoryMediator.suggestionsEnabled = NO;
 }
 
 @end

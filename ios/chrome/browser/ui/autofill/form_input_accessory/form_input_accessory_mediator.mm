@@ -103,9 +103,6 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
 // The object that provides suggestions while filling forms.
 @property(nonatomic, weak) id<FormInputSuggestionsProvider> provider;
 
-// Whether suggestions are disabled.
-@property(nonatomic, assign) BOOL suggestionsDisabled;
-
 // YES if the latest form activity was made in a form that supports the
 // accessory.
 @property(nonatomic, assign) BOOL validActivityForAccessoryView;
@@ -273,6 +270,8 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
     _latestQueryId = 0;
 
     _engagementTracker = engagementTracker;
+
+    self.suggestionsEnabled = YES;
   }
   return self;
 }
@@ -529,13 +528,16 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
 
 #pragma mark - Public
 
-- (void)disableSuggestions {
-  self.suggestionsDisabled = YES;
-}
+- (void)setSuggestionsEnabled:(BOOL)enabled {
+  // Disable height change notifications when they are caused by the keyboard
+  // getting reset. They will get re-enabled in the next "keyboardWillShow:"
+  // call above.
+  _keyboardHeightChangeNotificationsEnabled = NO;
 
-- (void)enableSuggestions {
-  self.suggestionsDisabled = NO;
-  [self updateSuggestionsIfNeeded];
+  _suggestionsEnabled = enabled;
+  if (enabled) {
+    [self updateSuggestionsIfNeeded];
+  }
 }
 
 - (BOOL)isInputAccessoryViewActive {
@@ -651,7 +653,7 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
 
   [self.handler resetFormInputView];
 
-  self.suggestionsDisabled = NO;
+  self.suggestionsEnabled = YES;
   self.currentProvider = nil;
 }
 
@@ -693,8 +695,9 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
 // Post the passed `suggestions` to the consumer.
 - (void)updateWithProvider:(id<FormInputSuggestionsProvider>)provider
                suggestions:(NSArray<FormSuggestion*>*)suggestions {
-  if (self.suggestionsDisabled)
+  if (!self.suggestionsEnabled) {
     return;
+  }
 
   // If suggestions are enabled, update `currentProvider`.
   self.currentProvider = provider;
