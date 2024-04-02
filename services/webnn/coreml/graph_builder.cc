@@ -90,6 +90,7 @@ const char kOpMaximumTypeName[] = "maximum";
 const char kOpMinimumTypeName[] = "minimum";
 const char kOpPowerTypeName[] = "pow";
 const char kOpTransposeTypeName[] = "transpose";
+const char kOpConv2dTypeName[] = "conv";
 
 // Hard coded path used in the model file to point at the weight path.
 const char kWeightsRelativeFilePath[] = "@model_path/weights/weights.bin";
@@ -326,10 +327,13 @@ GraphBuilder::BuildCoreMLModel() {
             AddOperationForTranspose(*operation->get_transpose(), block));
         break;
       }
+      case mojom::Operation::Tag::kConv2d: {
+        RETURN_IF_ERROR(AddOperationForConv2d(*operation->get_conv2d(), block));
+        break;
+      }
       case mojom::Operation::Tag::kArgMinMax:
       case mojom::Operation::Tag::kBatchNormalization:
       case mojom::Operation::Tag::kClamp:
-      case mojom::Operation::Tag::kConv2d:
       case mojom::Operation::Tag::kConcat:
       case mojom::Operation::Tag::kElementWiseUnary:
       case mojom::Operation::Tag::kElu:
@@ -446,7 +450,7 @@ const GraphBuilder::OperandInfo* GraphBuilder::FindInputOperandInfo(
   if (id == input_name_to_id_map_.end()) {
     return nullptr;
   }
-  return GetOperandInfo(id->second);
+  return &GetOperandInfo(id->second);
 }
 
 const base::FilePath& GraphBuilder::GetModelFilePath() {
@@ -616,7 +620,8 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForTranspose(
       operation.permutation, std::back_inserter(permutation),
       [](uint32_t val) { return base::checked_cast<int32_t>(val); });
   AddConstantImmediateValue(
-      block, perm_op_output_name, mojom::Operand::DataType::kInt32,
+      block, perm_op_output_name,
+      CoreML::Specification::MILSpec::DataType::INT32,
       base::span<const uint32_t>(
           {base::checked_cast<uint32_t>(permutation.size())}),
       base::as_byte_span(permutation));
@@ -634,15 +639,124 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForTranspose(
   return base::ok();
 }
 
+base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForConv2d(
+    const mojom::Conv2d& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  const OperandInfo& input_operand = GetOperandInfo(operation.input_operand_id);
+  // Input keys and supported types are defined in coremltools.
+  // https://github.com/apple/coremltools/blob/b416f36054af9ca9d10b2d74ba215d0454677ca0/coremltools/converters/mil/mil/ops/defs/iOS15/conv.py#L24
+  static constexpr auto kSupportedConv2dOpsTypes =
+      base::MakeFixedFlatSet<CoreML::Specification::MILSpec::DataType>(
+          {CoreML::Specification::MILSpec::DataType::FLOAT16,
+           CoreML::Specification::MILSpec::DataType::FLOAT32});
+
+  if (operation.kind != mojom::Conv2d::Kind::kDirect) {
+    // TODO: support transposed conv2d.
+    return NewNotSupportedError("Unsupported conv2d kind.");
+  }
+
+  if (!kSupportedConv2dOpsTypes.contains(input_operand.mil_data_type)) {
+    return NewNotSupportedError("Unsupported input datatype.");
+  }
+
+  if (operation.input_layout != mojom::InputOperandLayout::kChannelsFirst) {
+    // TODO: support channels last by adding transposes.
+    return NewNotSupportedError("Unsupported input layout.");
+  }
+
+  if (!operation.activation.is_null()) {
+    // TODO: support by adding additional activation layer.
+    return NewNotSupportedError("activation is not supported.");
+  }
+
+  static const char kParamX[] = "x";
+  static const char kParamWeight[] = "weight";
+  static const char kParamStrides[] = "strides";
+  static const char kParamPadType[] = "pad_type";
+  static const char kParamPadTypeValue[] = "custom";
+  static const char kParamPad[] = "pad";
+  static const char kParamDilations[] = "dilations";
+  static const char kParamGroups[] = "groups";
+  static const char kParamBias[] = "bias";
+
+  const std::string strides_output_name =
+      GetCoreMLNameForParam(operation.output_operand_id, kParamStrides);
+  std::array<int32_t, 2> strides = {
+      base::checked_cast<int32_t>(operation.strides->height),
+      base::checked_cast<int32_t>(operation.strides->width)};
+  AddConstantImmediateValue(
+      block, strides_output_name,
+      CoreML::Specification::MILSpec::DataType::INT32,
+      base::span<const uint32_t>({static_cast<uint32_t>(strides.size())}),
+      base::as_byte_span(strides));
+
+  const std::string pad_type_output_name =
+      GetCoreMLNameForParam(operation.output_operand_id, kParamPadType);
+  AddConstantImmediateValue(block, pad_type_output_name,
+                            CoreML::Specification::MILSpec::DataType::STRING,
+                            base::span<const uint32_t>(),
+                            base::as_byte_span(kParamPadTypeValue));
+
+  const std::string pad_output_name =
+      GetCoreMLNameForParam(operation.output_operand_id, kParamPad);
+  std::array<int32_t, 4> pad = {
+      base::checked_cast<int32_t>(operation.padding->beginning->height),
+      base::checked_cast<int32_t>(operation.padding->ending->height),
+      base::checked_cast<int32_t>(operation.padding->beginning->width),
+      base::checked_cast<int32_t>(operation.padding->ending->width)};
+  AddConstantImmediateValue(
+      block, pad_output_name, CoreML::Specification::MILSpec::DataType::INT32,
+      base::span<const uint32_t>({static_cast<uint32_t>(pad.size())}),
+      base::as_byte_span(pad));
+
+  const std::string dilations_output_name =
+      GetCoreMLNameForParam(operation.output_operand_id, kParamDilations);
+  std::array<int32_t, 2> dilations = {
+      base::checked_cast<int32_t>(operation.dilations->height),
+      base::checked_cast<int32_t>(operation.dilations->width)};
+  AddConstantImmediateValue(
+      block, dilations_output_name,
+      CoreML::Specification::MILSpec::DataType::INT32,
+      base::span<const uint32_t>({static_cast<uint32_t>(dilations.size())}),
+      base::as_byte_span(dilations));
+
+  const std::string groups_output_name =
+      GetCoreMLNameForParam(operation.output_operand_id, kParamGroups);
+  AddConstantImmediateValue(block, groups_output_name,
+                            CoreML::Specification::MILSpec::DataType::INT32,
+                            base::span<const uint32_t>(),
+                            base::as_byte_span({operation.groups}));
+
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  op->set_type(kOpConv2dTypeName);
+  google::protobuf::Map<std::string,
+                        ::CoreML::Specification::MILSpec::Argument>& inputs =
+      (*op->mutable_inputs());
+  inputs[kParamX].add_arguments()->set_name(input_operand.coreml_name);
+  inputs[kParamWeight].add_arguments()->set_name(
+      GetOperandInfo(operation.filter_operand_id).coreml_name);
+
+  inputs[kParamStrides].add_arguments()->set_name(strides_output_name);
+  inputs[kParamPadType].add_arguments()->set_name(pad_type_output_name);
+  inputs[kParamPad].add_arguments()->set_name(pad_output_name);
+  inputs[kParamDilations].add_arguments()->set_name(dilations_output_name);
+  inputs[kParamGroups].add_arguments()->set_name(groups_output_name);
+  if (operation.bias_operand_id) {
+    inputs[kParamBias].add_arguments()->set_name(
+        GetOperandInfo(operation.bias_operand_id.value()).coreml_name);
+  }
+  CoreML::Specification::MILSpec::NamedValueType& output = *op->add_outputs();
+  PopulateNamedValueType(operation.output_operand_id, output);
+  return base::ok();
+}
+
 void GraphBuilder::AddConstantImmediateValue(
     CoreML::Specification::MILSpec::Block& block,
     std::string_view name,
-    mojom::Operand::DataType data_type,
+    CoreML::Specification::MILSpec::DataType mil_data_type,
     base::span<const uint32_t> dimensions,
     base::span<const uint8_t> value) {
   auto* op = block.add_operations();
-  const CoreML::Specification::MILSpec::DataType mil_data_type =
-      OperandTypeToMILDataType(data_type);
 
   op->set_type(kOpConstTypeName);
 
@@ -653,8 +767,8 @@ void GraphBuilder::AddConstantImmediateValue(
   PopulateValueType(mil_data_type, dimensions, *immediate_value.mutable_type());
   auto* data = immediate_value.mutable_immediatevalue()->mutable_tensor();
 
-  switch (data_type) {
-    case mojom::Operand::DataType::kFloat32: {
+  switch (mil_data_type) {
+    case CoreML::Specification::MILSpec::DataType::FLOAT32: {
       base::SpanReader<const uint8_t> reader(value);
       while (auto next = reader.Read<4u>()) {
         data->mutable_floats()->add_values(
@@ -665,14 +779,14 @@ void GraphBuilder::AddConstantImmediateValue(
     // As per
     // https://github.com/apple/coremltools/blob/bba83f43859e087d50c7d764cb132e7d4b427611/coremltools/converters/mil/backend/mil/helper.py#L23,
     // these types are stored in bytes.
-    case mojom::Operand::DataType::kFloat16:
-    case mojom::Operand::DataType::kInt8:
-    case mojom::Operand::DataType::kUint8:
-    case mojom::Operand::DataType::kUint32:
+    case CoreML::Specification::MILSpec::DataType::FLOAT16:
+    case CoreML::Specification::MILSpec::DataType::INT8:
+    case CoreML::Specification::MILSpec::DataType::UINT8:
+    case CoreML::Specification::MILSpec::DataType::UINT32:
       data->mutable_bytes()->mutable_values()->assign(
           base::as_string_view(value));
       break;
-    case mojom::Operand::DataType::kInt32: {
+    case CoreML::Specification::MILSpec::DataType::INT32: {
       base::SpanReader<const uint8_t> reader(value);
       while (auto next = reader.Read<4u>()) {
         data->mutable_ints()->add_values(
@@ -680,8 +794,8 @@ void GraphBuilder::AddConstantImmediateValue(
       }
       break;
     }
-    case mojom::Operand::DataType::kInt64:
-    case mojom::Operand::DataType::kUint64: {
+    case CoreML::Specification::MILSpec::DataType::INT64:
+    case CoreML::Specification::MILSpec::DataType::UINT64: {
       base::SpanReader<const uint8_t> reader(value);
       while (std::optional<base::span<const uint8_t, 8u>> next =
                  reader.Read<8u>()) {
@@ -689,6 +803,22 @@ void GraphBuilder::AddConstantImmediateValue(
             base::numerics::I64FromNativeEndian(*next));
       }
       break;
+    }
+    case CoreML::Specification::MILSpec::DataType::STRING: {
+      data->mutable_strings()->add_values(base::as_string_view(value).data());
+      break;
+    }
+    case CoreML::Specification::MILSpec::DataType::UNUSED_TYPE:
+    case CoreML::Specification::MILSpec::DataType::BOOL:
+    case CoreML::Specification::MILSpec::DataType::FLOAT64:
+    case CoreML::Specification::MILSpec::DataType::BFLOAT16:
+    case CoreML::Specification::MILSpec::DataType::INT16:
+    case CoreML::Specification::MILSpec::DataType::UINT16:
+    case CoreML::Specification::MILSpec::DataType::
+        DataType_INT_MIN_SENTINEL_DO_NOT_USE_:
+    case CoreML::Specification::MILSpec::DataType::
+        DataType_INT_MAX_SENTINEL_DO_NOT_USE_: {
+      NOTREACHED_NORETURN() << "Unsupported data type";
     }
   }
   attributes["val"] = std::move(immediate_value);
@@ -703,7 +833,8 @@ void GraphBuilder::AddConstantImmediateValue(
 
   std::string name = GetCoreMLNameFromOperand(constant_id);
   AddConstantImmediateValue(
-      block, name, operand.data_type, operand.dimensions,
+      block, name, OperandTypeToMILDataType(operand.data_type),
+      operand.dimensions,
       base::make_span(graph_info_->constant_id_to_buffer_map.at(constant_id)));
 }
 
@@ -731,11 +862,9 @@ void GraphBuilder::AddConstantFileValue(
   attributes["val"] = std::move(blob_value);
 }
 
-[[nodiscard]] const GraphBuilder::OperandInfo* GraphBuilder::GetOperandInfo(
+[[nodiscard]] const GraphBuilder::OperandInfo& GraphBuilder::GetOperandInfo(
     uint64_t operand_id) const {
-  const auto input_iterator = id_to_op_input_info_map_.find(operand_id);
-  CHECK(input_iterator != id_to_op_input_info_map_.end());
-  return &input_iterator->second;
+  return id_to_op_input_info_map_.at(operand_id);
 }
 
 base::expected<void, mojom::ErrorPtr> GraphBuilder::PopulateFeatureDescription(
@@ -821,25 +950,31 @@ void GraphBuilder::UpdateCoreMLInputInfoMap(uint64_t operand_id) {
 void GraphBuilder::PopulateValueType(
     const mojom::Operand& operand,
     CoreML::Specification::MILSpec::ValueType& value_type) {
+  // TODO: change this when any `Operand` needs to keep scalar type.
   PopulateValueType(OperandTypeToMILDataType(operand.data_type),
-                    operand.dimensions, value_type);
+                    operand.dimensions, value_type, /*keep_scalar_type=*/false);
 }
 
 void GraphBuilder::PopulateValueType(
     CoreML::Specification::MILSpec::DataType mil_data_type,
     base::span<const uint32_t> dimensions,
-    CoreML::Specification::MILSpec::ValueType& value_type) {
+    CoreML::Specification::MILSpec::ValueType& value_type,
+    bool keep_scalar_type) {
   auto* tensor_type = value_type.mutable_tensortype();
   tensor_type->set_datatype(mil_data_type);
-  tensor_type->set_rank(dimensions.empty() ? 1 : dimensions.size());
   if (dimensions.empty()) {
+    // Scalar value doesn't need to set rank and dimensions.
+    if (keep_scalar_type) {
+      return;
+    }
     tensor_type->set_rank(1);
     tensor_type->add_dimensions()->mutable_constant()->set_size(1);
-  } else {
-    tensor_type->set_rank(dimensions.size());
-    for (int dimension : dimensions) {
-      tensor_type->add_dimensions()->mutable_constant()->set_size(dimension);
-    }
+    return;
+  }
+
+  tensor_type->set_rank(dimensions.size());
+  for (auto dimension : dimensions) {
+    tensor_type->add_dimensions()->mutable_constant()->set_size(dimension);
   }
 }
 

@@ -96,10 +96,13 @@ class GraphBuilder {
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForTranspose(
       const mojom::Transpose& operation,
       CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForConv2d(
+      const mojom::Conv2d& operation,
+      CoreML::Specification::MILSpec::Block& block);
   // Add constants as immediate values in the model file.
   void AddConstantImmediateValue(CoreML::Specification::MILSpec::Block& block,
                                  std::string_view name,
-                                 mojom::Operand::DataType data_type,
+                                 CoreML::Specification::MILSpec::DataType,
                                  base::span<const uint32_t> dimensions,
                                  base::span<const uint8_t> value);
   void AddConstantImmediateValue(uint32_t constant_id,
@@ -110,7 +113,7 @@ class GraphBuilder {
                             CoreML::Specification::MILSpec::Block& block);
 
   // Helpers
-  [[nodiscard]] const OperandInfo* GetOperandInfo(uint64_t operand_id) const;
+  [[nodiscard]] const OperandInfo& GetOperandInfo(uint64_t operand_id) const;
   [[nodiscard]] base::expected<void, mojom::ErrorPtr>
   PopulateFeatureDescription(
       uint64_t operand_id,
@@ -130,7 +133,8 @@ class GraphBuilder {
                          CoreML::Specification::MILSpec::ValueType& value_type);
   void PopulateValueType(CoreML::Specification::MILSpec::DataType mil_data_type,
                          base::span<const uint32_t> dimensions,
-                         CoreML::Specification::MILSpec::ValueType& value_type);
+                         CoreML::Specification::MILSpec::ValueType& value_type,
+                         bool keep_scalar_type = true);
   // Update the `id_to_op_input_info_map_` to be used by ops later.
   void UpdateCoreMLInputInfoMap(uint64_t operand_id);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr>
