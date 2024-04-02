@@ -13,6 +13,8 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "media/base/subsample_entry.h"
+#include "media/base/video_codecs.h"
+#include "media/base/video_color_space.h"
 #include "media/formats/mp2t/es_parser_adts.h"
 #include "media/formats/mp4/bitstream_converter.h"
 #include "media/formats/mp4/box_definitions.h"
@@ -543,6 +545,7 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieVisualSampleEntry) {
   mp4::writable_boxes::VisualSampleEntry visual_sample_entry;
   visual_sample_entry.coded_size = gfx::Size(kWidth, kHeight);
   visual_sample_entry.compressor_name = "Chromium AVC Coding";
+  visual_sample_entry.codec = VideoCodec::kH264;
 
   mp4::writable_boxes::AVCDecoderConfiguration avc = {};
   avc.avc_config_record.version = 1;
@@ -726,6 +729,44 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4AacAudioSampleEntry) {
   EXPECT_FALSE(metadata_frame);
 }
 #endif
+
+TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieVPConfigurationRecord) {
+  // Tests `vpcC` and its children box writer.
+  std::vector<uint8_t> written_data;
+  CreateContext(written_data);
+
+  mp4::writable_boxes::VPCodecConfiguration vp_config = {};
+  vp_config.profile = VP9PROFILE_MIN;
+  vp_config.level = 0u;
+  vp_config.color_space = gfx::ColorSpace(
+      gfx::ColorSpace::PrimaryID::BT470M, gfx::ColorSpace::TransferID::GAMMA28,
+      gfx::ColorSpace::MatrixID::BT470BG, gfx::ColorSpace::RangeID::FULL);
+
+  Mp4MovieVPCodecConfigurationBoxWriter box_writer(*context(), vp_config);
+  FlushAndWait(&box_writer);
+
+  // MediaInformation will have multiple sample boxes even though they
+  // not added exclusively.
+  std::unique_ptr<mp4::BoxReader> box_reader(
+      mp4::BoxReader::ReadConcatentatedBoxes(written_data.data(),
+                                             written_data.size(), nullptr));
+
+  EXPECT_TRUE(box_reader->ScanChildren());
+
+  mp4::VPCodecConfigurationRecord vp_config_record;
+  EXPECT_TRUE(box_reader->ReadChild(&vp_config_record));
+
+  EXPECT_EQ(VP9PROFILE_MIN, vp_config_record.profile);
+  EXPECT_EQ(0u, vp_config_record.level);
+
+  EXPECT_EQ(gfx::ColorSpace::RangeID::FULL, vp_config_record.color_space.range);
+  EXPECT_EQ(VideoColorSpace::PrimaryID::BT470M,
+            vp_config_record.color_space.primaries);
+  EXPECT_EQ(VideoColorSpace::TransferID::GAMMA28,
+            vp_config_record.color_space.transfer);
+  EXPECT_EQ(VideoColorSpace::MatrixID::BT470BG,
+            vp_config_record.color_space.matrix);
+}
 
 TEST_F(Mp4MuxerBoxWriterTest, Mp4OpusAudioSampleEntry) {
   // Tests `opus` and its children box writer.

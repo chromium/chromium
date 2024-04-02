@@ -61,8 +61,6 @@ bool Mp4Muxer::PutFrame(EncodedFrame frame,
     auto* video_params = absl::get_if<VideoParameters>(&frame.params);
     CHECK(video_params);
     CHECK(has_video_);
-    CHECK_EQ(video_params->codec, VideoCodec::kH264);
-    DCHECK(!frame.is_keyframe || frame.codec_description.has_value());
 
     // The `trun` box, which holds information for each sample such as duration
     // and size, cannot be split because the `count` property needs to have the

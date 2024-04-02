@@ -70,6 +70,12 @@ AudioSampleEntry::AudioSampleEntry(const AudioSampleEntry&) = default;
 AudioSampleEntry& AudioSampleEntry::operator=(const AudioSampleEntry&) =
     default;
 
+VisualSampleEntry::VisualSampleEntry() = default;
+VisualSampleEntry::~VisualSampleEntry() = default;
+VisualSampleEntry::VisualSampleEntry(const VisualSampleEntry&) = default;
+VisualSampleEntry& VisualSampleEntry::operator=(const VisualSampleEntry&) =
+    default;
+
 OpusSpecificBox::OpusSpecificBox() = default;
 OpusSpecificBox::~OpusSpecificBox() = default;
 OpusSpecificBox::OpusSpecificBox(const OpusSpecificBox&) = default;

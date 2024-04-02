@@ -98,11 +98,21 @@ struct MEDIA_EXPORT AVCDecoderConfiguration : Box {
   // is hard to be correct.
   AVCDecoderConfigurationRecord avc_config_record;
 };
-
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
-// VisualSampleEtnry (`avc1`) box.
+struct MEDIA_EXPORT VPCodecConfiguration : FullBox {
+  VideoCodecProfile profile;
+  uint8_t level;
+  gfx::ColorSpace color_space;
+};
+
+// VisualSampleEtnry (`avc1`, 'vp09') box.
 struct MEDIA_EXPORT VisualSampleEntry : Box {
+  VisualSampleEntry();
+  ~VisualSampleEntry();
+  VisualSampleEntry(const VisualSampleEntry&);
+  VisualSampleEntry& operator=(const VisualSampleEntry&);
+
   gfx::Size coded_size;
   // It is formatted in a fixed 32-byte field, with the first
   // byte set to the number of bytes to be displayed, followed
@@ -112,9 +122,13 @@ struct MEDIA_EXPORT VisualSampleEntry : Box {
 
   // It will have browser brand name.
   std::string compressor_name;  // char compressor_name[32];
+
+  VideoCodec codec;
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  AVCDecoderConfiguration avc_decoder_configuration;
+  std::optional<AVCDecoderConfiguration> avc_decoder_configuration;
 #endif
+  std::optional<VPCodecConfiguration> vp_decoder_configuration;
+
   PixelAspectRatioBox pixel_aspect_ratio;
 };
 

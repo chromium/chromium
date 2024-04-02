@@ -25,6 +25,7 @@ namespace media {
 
 class AudioParameters;
 class Mp4MuxerDelegateFragment;
+enum VideoCodecProfile;
 
 class Mp4MuxerDelegateInterface {
  public:
@@ -54,8 +55,10 @@ class Mp4MuxerDelegateInterface {
 // MP4 format and internal data will be cleared at the end of `Flush`.
 class MEDIA_EXPORT Mp4MuxerDelegate : public Mp4MuxerDelegateInterface {
  public:
-  explicit Mp4MuxerDelegate(
+  Mp4MuxerDelegate(
       AudioCodec audio_codec,
+      std::optional<VideoCodecProfile> profile,
+      std::optional<VideoCodecLevel> level,
       Muxer::WriteDataCB write_callback,
       size_t audio_sample_count_per_fragment = kAudioFragmentCount);
   ~Mp4MuxerDelegate() override;
@@ -87,9 +90,10 @@ class MEDIA_EXPORT Mp4MuxerDelegate : public Mp4MuxerDelegateInterface {
           fragment_random_access_box_writer,
       size_t written_offset);
 
-  void BuildMovieVideoTrack(const Muxer::VideoParameters& params,
-                            std::string encoded_data,
-                            VideoEncoder::CodecDescription codec_description);
+  void BuildMovieVideoTrack(
+      const Muxer::VideoParameters& params,
+      std::string encoded_data,
+      std::optional<VideoEncoder::CodecDescription> codec_description);
   void AddDataToVideoFragment(std::string encoded_data, bool is_key_frame);
   void BuildMovieAudioTrack(
       const AudioParameters& params,
@@ -148,7 +152,11 @@ class MEDIA_EXPORT Mp4MuxerDelegate : public Mp4MuxerDelegateInterface {
 
   uint32_t sequence_number_ = 1;
 
-  AudioCodec audio_codec_;
+  AudioCodec audio_codec_ = AudioCodec::kUnknown;
+  VideoCodec video_codec_ = VideoCodec::kUnknown;
+
+  const std::optional<media::VideoCodecProfile> video_profile_;
+  const std::optional<media::VideoCodecLevel> video_level_;
 
   // 1000 is a count that audio samples in the same fragment
   // when no video frame is added. In Windows, when video frames are present,

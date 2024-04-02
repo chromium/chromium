@@ -406,14 +406,10 @@ VideoTrackRecorderImpl::CodecId
 VideoTrackRecorderImpl::CodecEnumerator::GetPreferredCodecId(
     MediaTrackContainerType type) const {
   if (preferred_codec_id_ == CodecId::kLast) {
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
-    // TODO(crbug.com/1481264): Not all platforms support `h264` codecs so make
-    // `vp9` as a default after supporting it in the mp4.
     if (type == MediaTrackContainerType::kVideoMp4 ||
         type == MediaTrackContainerType::kAudioMp4) {
-      return CodecId::kH264;
+      return CodecId::kVp9;
     }
-#endif
     return CodecId::kVp8;
   }
 

@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "components/version_info/version_info.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/video_codecs.h"
 #include "media/formats/mp4/avc.h"
 #include "media/formats/mp4/box_definitions.h"
 #include "media/muxers/box_byte_stream.h"
@@ -102,11 +103,16 @@ void CopyCreationTimeAndDuration(mp4::writable_boxes::Track& track,
 
 }  // namespace
 
-Mp4MuxerDelegate::Mp4MuxerDelegate(AudioCodec audio_codec,
-                                   Muxer::WriteDataCB write_callback,
-                                   size_t audio_sample_count_per_fragment)
+Mp4MuxerDelegate::Mp4MuxerDelegate(
+    AudioCodec audio_codec,
+    std::optional<VideoCodecProfile> video_profile,
+    std::optional<VideoCodecLevel> video_level,
+    Muxer::WriteDataCB write_callback,
+    size_t audio_sample_count_per_fragment)
     : write_callback_(std::move(write_callback)),
       audio_codec_(audio_codec),
+      video_profile_(std::move(video_profile)),
+      video_level_(std::move(video_level)),
       audio_sample_count_per_fragment_(audio_sample_count_per_fragment) {}
 
 Mp4MuxerDelegate::~Mp4MuxerDelegate() = default;
@@ -120,9 +126,12 @@ void Mp4MuxerDelegate::AddVideoFrame(
   if (!video_track_index_.has_value()) {
     DVLOG(1) << __func__ << ", " << params.AsHumanReadableString();
 
-    CHECK(codec_description.has_value());
+    CHECK(codec_description.has_value() || (params.codec == VideoCodec::kVP9));
     CHECK(is_key_frame);
     CHECK(start_video_time_.is_null());
+    CHECK_NE(params.codec, VideoCodec::kUnknown);
+
+    video_codec_ = params.codec;
 
     EnsureInitialized();
     last_video_time_ = start_video_time_ = timestamp;
@@ -136,7 +145,7 @@ void Mp4MuxerDelegate::AddVideoFrame(
     context_->SetVideoTrack({video_track_index_.value(), timescale});
     DVLOG(1) << __func__ << ", video track timescale:" << timescale;
 
-    BuildMovieVideoTrack(params, encoded_data, codec_description.value());
+    BuildMovieVideoTrack(params, encoded_data, std::move(codec_description));
   }
   last_video_time_ = timestamp;
 
@@ -146,30 +155,54 @@ void Mp4MuxerDelegate::AddVideoFrame(
 void Mp4MuxerDelegate::BuildMovieVideoTrack(
     const Muxer::VideoParameters& params,
     std::string encoded_data,
-    VideoEncoder::CodecDescription codec_description) {
+    std::optional<VideoEncoder::CodecDescription> codec_description) {
   DCHECK(video_track_index_.has_value());
 
   // `stsd`, `avc1`, `avcC`.
   mp4::writable_boxes::SampleDescription description = {};
-  mp4::writable_boxes::VisualSampleEntry visual_entry = {};
+  mp4::writable_boxes::VisualSampleEntry visual_sample_entry = {};
 
+  visual_sample_entry.coded_size = params.visible_rect_size;
+  visual_sample_entry.pixel_aspect_ratio =
+      mp4::writable_boxes::PixelAspectRatioBox();
+
+  if (video_codec_ == VideoCodec::kH264) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  visual_entry.coded_size = params.visible_rect_size;
-  visual_entry.compressor_name = version_info::GetProductName();
+    visual_sample_entry.compressor_name = "AVC1 Coding";
+    visual_sample_entry.codec = VideoCodec::kH264;
 
-  mp4::AVCDecoderConfigurationRecord avc_config;
-  bool result =
-      avc_config.Parse(codec_description.data(), codec_description.size());
-  DCHECK(result);
+    mp4::writable_boxes::AVCDecoderConfiguration avc_config = {};
+    mp4::AVCDecoderConfigurationRecord avc_config_record = {};
+    bool result = avc_config_record.Parse(codec_description.value().data(),
+                                          codec_description.value().size());
+    DCHECK(result);
 
-  visual_entry.avc_decoder_configuration.avc_config_record =
-      std::move(avc_config);
-  visual_entry.pixel_aspect_ratio = mp4::writable_boxes::PixelAspectRatioBox();
-  description.video_sample_entry = std::move(visual_entry);
+    avc_config.avc_config_record = std::move(avc_config_record);
+    visual_sample_entry.avc_decoder_configuration = std::move(avc_config);
 #else
   NOTREACHED();
 #endif
+  } else if (video_codec_ == VideoCodec::kVP9) {
+    visual_sample_entry.compressor_name = "VPC Coding";
+    visual_sample_entry.codec = VideoCodec::kVP9;
 
+    gfx::ColorSpace color_space = {};
+    if (params.color_space) {
+      color_space = *params.color_space;
+    }
+
+    mp4::writable_boxes::VPCodecConfiguration vp_config = {};
+    // DefaultCodecProfile() returns VP9PROFILE_PROFILE0(VP9PROFILE_MIN).
+    vp_config.profile = video_profile_.value_or(VP9PROFILE_PROFILE0);
+    vp_config.level = video_level_.value_or(0);
+    vp_config.color_space = color_space;
+
+    visual_sample_entry.vp_decoder_configuration = std::move(vp_config);
+  } else {
+    NOTREACHED();
+  }
+
+  description.video_sample_entry = std::move(visual_sample_entry);
   description.entry_count = 1;
 
   BuildTrack(*moov_, video_track_index_.value(), false,

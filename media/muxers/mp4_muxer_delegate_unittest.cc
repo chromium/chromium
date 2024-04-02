@@ -145,7 +145,7 @@ TEST_F(Mp4MuxerDelegateTest, AddVideoFrame) {
   std::vector<uint8_t> second_moof_written_data;
   int callback_count = 0;
   Mp4MuxerDelegate delegate(
-      media::AudioCodec::kAAC,
+      media::AudioCodec::kAAC, std::nullopt, std::nullopt,
       base::BindLambdaForTesting([&](base::StringPiece mp4_data_string) {
         std::copy(mp4_data_string.begin(), mp4_data_string.end(),
                   std::back_inserter(total_written_data));
@@ -459,7 +459,7 @@ TEST_F(Mp4MuxerDelegateTest, AddAudioFrame) {
   // Default Mp4MuxerDelegate with default max default audio duration of
   // 5 seconds.
   Mp4MuxerDelegate delegate(
-      media::AudioCodec::kAAC,
+      media::AudioCodec::kAAC, std::nullopt, std::nullopt,
       base::BindLambdaForTesting([&](base::StringPiece mp4_data_string) {
         std::copy(mp4_data_string.begin(), mp4_data_string.end(),
                   std::back_inserter(total_written_data));
@@ -684,7 +684,7 @@ TEST_F(Mp4MuxerDelegateTest, AudioOnlyNewFragmentCreation) {
 
   int callback_count = 0;
   Mp4MuxerDelegate delegate(
-      media::AudioCodec::kAAC,
+      media::AudioCodec::kAAC, std::nullopt, std::nullopt,
       base::BindLambdaForTesting([&](base::StringPiece mp4_data_string) {
         std::copy(mp4_data_string.begin(), mp4_data_string.end(),
                   std::back_inserter(total_written_data));
@@ -807,7 +807,7 @@ TEST_F(Mp4MuxerDelegateTest, AudioAndVideoAddition) {
 
   int callback_count = 0;
   Mp4MuxerDelegate delegate(
-      media::AudioCodec::kAAC,
+      media::AudioCodec::kAAC, std::nullopt, std::nullopt,
       base::BindLambdaForTesting([&](base::StringPiece mp4_data_string) {
         std::copy(mp4_data_string.begin(), mp4_data_string.end(),
                   std::back_inserter(total_written_data));
@@ -1010,7 +1010,7 @@ TEST_F(Mp4MuxerDelegateTest, MfraBoxOnAudioAndVideoAddition) {
 
   int callback_count = 0;
   Mp4MuxerDelegate delegate(
-      media::AudioCodec::kAAC,
+      media::AudioCodec::kAAC, std::nullopt, std::nullopt,
       base::BindLambdaForTesting([&](base::StringPiece mp4_data_string) {
         std::copy(mp4_data_string.begin(), mp4_data_string.end(),
                   std::back_inserter(total_written_data));
@@ -1215,7 +1215,7 @@ TEST_F(Mp4MuxerDelegateTest, VideoAndAudioAddition) {
 
   int callback_count = 0;
   Mp4MuxerDelegate delegate(
-      media::AudioCodec::kAAC,
+      media::AudioCodec::kAAC, std::nullopt, std::nullopt,
       base::BindLambdaForTesting([&](base::StringPiece mp4_data_string) {
         std::copy(mp4_data_string.begin(), mp4_data_string.end(),
                   std::back_inserter(total_written_data));
@@ -1359,7 +1359,7 @@ TEST_F(Mp4MuxerDelegateTest, AudioVideoAndAudioVideoFragment) {
 
   int callback_count = 0;
   Mp4MuxerDelegate delegate(
-      media::AudioCodec::kAAC,
+      media::AudioCodec::kAAC, std::nullopt, std::nullopt,
       base::BindLambdaForTesting([&](base::StringPiece mp4_data_string) {
         std::copy(mp4_data_string.begin(), mp4_data_string.end(),
                   std::back_inserter(total_written_data));

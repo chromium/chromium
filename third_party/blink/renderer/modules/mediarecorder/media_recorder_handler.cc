@@ -188,11 +188,11 @@ bool CanSupportVideoType(const String& type) {
   if (support) {
     return true;
   }
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+
   if (base::FeatureList::IsEnabled(kMediaRecorderEnableMp4Muxer)) {
     return EqualStringView(type, "video/mp4");
   }
-#endif
+
   return false;
 }
 
@@ -278,6 +278,7 @@ bool MediaRecorderHandler::CanSupportMimeType(const String& type,
         "avc1",
         "mp4a.40.2",
 #endif
+        "vp9",
         "opus",
     };
     static const char* const kAudioCodecsForMp4[] = {
@@ -490,7 +491,9 @@ bool MediaRecorderHandler::Start(int timeslice,
   if (use_mp4_muxer) {
     muxer = std::make_unique<media::Mp4Muxer>(
         audio_codec, use_video_tracks, use_audio_tracks,
-        std::make_unique<media::Mp4MuxerDelegate>(audio_codec, write_callback),
+        std::make_unique<media::Mp4MuxerDelegate>(
+            audio_codec, video_codec_profile_.profile,
+            video_codec_profile_.level, write_callback),
         optional_timeslice);
 
 #if BUILDFLAG(IS_WIN)

@@ -118,12 +118,15 @@ static const MediaRecorderTestParams kMediaRecorderTestParams[] = {
     {true, true, true, "video/mp4", "avc1,mp4a.40.2", false, true},
     {true, false, true, "audio/mp4", "mp4a.40.2", false, true},
     {true, true, true, "video/mp4", "avc1,opus", false, true},
+    {true, true, true, "video/mp4", "vp9,mp4a.40.2", false, true},
 #endif
     {true, false, true, "audio/webm", "opus", true},
     {true, false, true, "audio/webm", "", true},  // Should default to opus.
     {true, false, true, "audio/webm", "pcm", true},
     {true, true, true, "video/webm", "vp9,opus", true},
     {true, false, true, "audio/mp4", "opus", false, true},
+    {true, true, false, "video/mp4", "vp9", false, true},
+    {true, true, true, "video/mp4", "vp9,opus", false, true},
 };
 
 MediaStream* CreateMediaStream(V8TestingScope& scope) {
@@ -750,7 +753,7 @@ TEST_P(MediaRecorderHandlerTest, OpusEncodeAudioFrames) {
 TEST_P(MediaRecorderHandlerTest, WebmMuxerErrorWhileEncoding) {
   // Video-only test: Audio would be very similar.
   if (GetParam().has_audio || !IsCodecSupported() ||
-      !IsStreamWriteSupported()) {
+      !IsStreamWriteSupported() || GetParam().use_mp4_muxer) {
     return;
   }
 
@@ -1014,18 +1017,25 @@ TEST_P(MediaRecorderHandlerIsSupportedTypeTestForMp4,
   const String good_mp4_video_mime_types[] = {"video/mp4"};
   const String bad_mp4_video_mime_types[] = {"video/MP4"};
 
-  const String good_mp4_video_codecs[] = {"avc1", "avc1.420034"};
-  const String bad_mp4_video_codecs[] = {"h264",  "vp8",  "vp9",
-                                         "avc11", "aVc1", "avc1.123456"};
+  const String good_mp4_video_codecs[] = {"avc1", "avc1.420034", "vp9"};
+  const String bad_mp4_video_codecs[] = {"h264", "vp8", "avc11", "aVc1",
+                                         "avc1.123456"};
+
+  const String good_mp4_video_codecs_non_proprietory[] = {"vp9"};
+  const String bad_mp4_video_codecs_non_proprietory[] = {
+      "avc1", "h264", "vp8", "avc11", "aVc1", "avc1.123456"};
 
   // audio types.
   const String good_mp4_audio_mime_types[] = {"audio/mp4"};
   const String bad_mp4_audio_mime_types[] = {"AUDIO/mp4"};
 
   const String good_mp4_audio_codecs[] = {"mp4a.40.2, opus"};
-
   const String bad_mp4_audio_codecs[] = {"mp4a", "mp4a.40", "mP4a.40.2", "aac",
                                          "pcm"};
+
+  const String good_mp4_audio_codecs_non_proprietory[] = {"opus"};
+  const String bad_mp4_audio_codecs_non_proprietory[] = {
+      "mp4a.40.2", "mp4a", "mp4a.40", "mP4a.40.2", "aac", "pcm"};
 
   if (GetParam()) {
     // mp4, enabled feature of kMediaRecorderEnableMp4Muxer.
@@ -1076,12 +1086,34 @@ TEST_P(MediaRecorderHandlerIsSupportedTypeTestForMp4,
       }
     }
 #else
+    // success cases.
     for (const auto& type : good_mp4_video_mime_types) {
-      for (const auto& codec : good_mp4_video_codecs) {
-        EXPECT_FALSE(media_recorder_handler_->CanSupportMimeType(type, codec));
+      for (const auto& codec : good_mp4_video_codecs_non_proprietory) {
+        EXPECT_TRUE(media_recorder_handler_->CanSupportMimeType(type, codec));
       }
     }
 
+    for (const auto& type : good_mp4_video_mime_types) {
+      for (const auto& codec : good_mp4_audio_codecs_non_proprietory) {
+        EXPECT_TRUE(media_recorder_handler_->CanSupportMimeType(type, codec));
+      }
+    }
+
+    for (const auto& type : good_mp4_video_mime_types) {
+      for (const auto& video_codec : good_mp4_video_codecs_non_proprietory) {
+        for (const auto& audio_codec : good_mp4_audio_codecs_non_proprietory) {
+          String codecs = video_codec + "," + audio_codec;
+          EXPECT_TRUE(
+              media_recorder_handler_->CanSupportMimeType(type, codecs));
+
+          String codecs2 = audio_codec + "," + video_codec;
+          EXPECT_TRUE(
+              media_recorder_handler_->CanSupportMimeType(type, codecs2));
+        }
+      }
+    }
+
+    // failure cases.
     for (const auto& type : good_mp4_video_mime_types) {
       for (const auto& codec : bad_mp4_video_codecs) {
         EXPECT_FALSE(media_recorder_handler_->CanSupportMimeType(type, codec));
@@ -1134,12 +1166,14 @@ TEST_P(MediaRecorderHandlerIsSupportedTypeTestForMp4,
       }
     }
 #else
+    // success cases.
     for (const auto& type : good_mp4_audio_mime_types) {
-      for (const auto& codec : good_mp4_audio_codecs) {
-        EXPECT_FALSE(media_recorder_handler_->CanSupportMimeType(type, codec));
+      for (const auto& codec : good_mp4_audio_codecs_non_proprietory) {
+        EXPECT_TRUE(media_recorder_handler_->CanSupportMimeType(type, codec));
       }
     }
 
+    // failure cases.
     for (const auto& type : good_mp4_audio_mime_types) {
       for (const auto& codec : bad_mp4_audio_codecs) {
         EXPECT_FALSE(media_recorder_handler_->CanSupportMimeType(type, codec));
