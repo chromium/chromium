@@ -49,10 +49,8 @@ bool TermTable::Init() {
   }
   sql::Statement create_table(
       db_->GetCachedStatement(SQL_FROM_HERE, kCreateTableQuery));
-  if (!create_table.is_valid()) {
-    DLOG(ERROR) << "Failed to crate the term table " << kCreateTableQuery;
-    return false;
-  }
+  DCHECK(create_table.is_valid())
+      << "Failed to crate the term table " << kCreateTableQuery;
   if (!create_table.Run()) {
     LOG(ERROR) << "Failed to create the term table";
     return false;
@@ -69,10 +67,8 @@ int64_t TermTable::DeleteTerm(const std::string& term) {
 
   sql::Statement delete_term_by_id(
       db_->GetCachedStatement(SQL_FROM_HERE, kDeleteTermQuery));
-  if (!delete_term_by_id.is_valid()) {
-    DLOG(ERROR) << "Invalid delete statement: \"" << kDeleteTermQuery << "\"";
-    return -1;
-  }
+  DCHECK(delete_term_by_id.is_valid())
+      << "Invalid delete statement: \"" << kDeleteTermQuery << "\"";
   delete_term_by_id.BindInt64(0, term_id);
   if (!delete_term_by_id.Run()) {
     LOG(ERROR) << "Failed to delete terms matching " << term;
@@ -85,11 +81,8 @@ int64_t TermTable::GetTermId(const std::string& term, bool create) {
   sql::Statement get_term_id(
       db_->GetCachedStatement(SQL_FROM_HERE, kGetTermIdQuery));
   get_term_id.BindString(0, term);
-  if (!get_term_id.is_valid()) {
-    DLOG(ERROR) << "Invalid get term ID statement: \"" << kGetTermIdQuery
-                << "\"";
-    return -1;
-  }
+  DCHECK(get_term_id.is_valid())
+      << "Invalid get term ID statement: \"" << kGetTermIdQuery << "\"";
   if (get_term_id.Step()) {
     return get_term_id.ColumnInt64(0);
   }
@@ -98,11 +91,8 @@ int64_t TermTable::GetTermId(const std::string& term, bool create) {
   }
   sql::Statement insert_term(
       db_->GetCachedStatement(SQL_FROM_HERE, kInsertTermQuery));
-  if (!insert_term.is_valid()) {
-    DLOG(ERROR) << "Invalid insert term statement \"" << kInsertTermQuery
-                << "\"";
-    return -1;
-  }
+  DCHECK(insert_term.is_valid())
+      << "Invalid insert term statement \"" << kInsertTermQuery << "\"";
   insert_term.BindString(0, term);
   if (insert_term.Step()) {
     return insert_term.ColumnInt64(0);
