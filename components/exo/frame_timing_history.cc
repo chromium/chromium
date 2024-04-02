@@ -108,7 +108,16 @@ void FrameTimingHistory::MayRecordDidNotProduceToFrameArrvial(bool valid) {
       valid ? (base::TimeTicks::Now() - last_did_not_produce_time_)
             : base::TimeDelta();
 
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+  // Measures the time duration between Exo sending a DidNotProduceFrame
+  // response and the next frame arrival, if the next frame arrives before a new
+  // BeginFrame. Reported for clients with high-resolution clocks.
+
+  // This metric is used to measure whether the deadline Exo uses to wait for
+  // frames is reasonable. Please note that a value is reported for each
+  // DidNotProduceFrame. If (1) DidNotProduceFrame is issued when there are
+  // already queued BeginFrames; or (2) a new BeginFrame arrives before the next
+  // frame; or (3) BeginFrames are paused, then the value reported is 0.
+  LOCAL_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
       "Graphics.Exo.Smoothness.DidNotProduceToFrameArrival", duration,
       base::Microseconds(1), base::Milliseconds(50), 50);
 
@@ -134,7 +143,12 @@ void FrameTimingHistory::RecordFrameResponseToRemote(
   }
 
   if (frame_response_count_ >= kReportMetricsThreshold) {
-    UMA_HISTOGRAM_PERCENTAGE(
+    // Tracks the percent of BeginFrames that Exo receives and responds with
+    // DidNotProduceFrame.
+    // A new value is reported for every 100 BeginFrames that a shell surface
+    // receives. Note that this metric is reported only when there are
+    // sufficient number of BeginFrames (>=100).
+    LOCAL_HISTOGRAM_PERCENTAGE(
         "Graphics.Exo.Smoothness.PercentDidNotProduceFrame",
         frame_response_did_not_produce_ * 100 / frame_response_count_);
     frame_response_count_ = 0;
@@ -151,7 +165,12 @@ void FrameTimingHistory::RecordFrameHandled(bool discarded) {
   }
 
   if (frame_handling_count_ >= kReportMetricsThreshold) {
-    UMA_HISTOGRAM_PERCENTAGE(
+    // Tracks the percent of compositor frames that are submitted from Exo
+    // clients and directly discarded without being sent to the GPU process. A
+    // new value is reported for every 100 frames that a shell surface submits.
+    // Note that this metric is reported only when there are sufficient number
+    // of frames (>=100).
+    LOCAL_HISTOGRAM_PERCENTAGE(
         "Graphics.Exo.Smoothness.PercentFrameDiscarded",
         frame_handling_discarded_ * 100 / frame_handling_count_);
     frame_handling_count_ = 0;
