@@ -50,10 +50,6 @@ luci.bucket(
                 branches.value(branch_selector = branches.selector.MAIN, value = "v8"),
             ] if p != None],
         ),
-        acl.entry(
-            roles = acl.BUILDBUCKET_OWNER,
-            groups = "service-account-chromium-tryserver",
-        ),
     ],
 )
 

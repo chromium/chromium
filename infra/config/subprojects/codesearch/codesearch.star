@@ -18,10 +18,6 @@ luci.bucket(
             roles = acl.BUILDBUCKET_TRIGGERER,
             groups = "project-chromium-tryjob-access",
         ),
-        acl.entry(
-            roles = acl.BUILDBUCKET_OWNER,
-            groups = "service-account-chromium-tryserver",
-        ),
     ],
 )
 
