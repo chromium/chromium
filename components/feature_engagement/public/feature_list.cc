@@ -215,6 +215,7 @@ const base::Feature* const kAllFeatures[] = {
         // BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    &kIPHGrowthFramework,
     &kIPHGoogleOneOfferNotificationFeature,
     &kIPHLauncherSearchHelpUiFeature,
     &kIPHScalableIphTimerBasedOneFeature,

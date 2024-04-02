@@ -377,6 +377,7 @@ DEFINE_VARIATION_PARAM(kIPH3pcdUserBypassFeature, "IPH_3pcdUserBypass");
         // BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+DEFINE_VARIATION_PARAM(kIPHGrowthFramework, "IPH_GrowthFramework");
 DEFINE_VARIATION_PARAM(kIPHGoogleOneOfferNotificationFeature,
                        "IPH_GoogleOneOfferNotification");
 DEFINE_VARIATION_PARAM(kIPHLauncherSearchHelpUiFeature,
@@ -663,6 +664,7 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         // BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+        VARIATION_ENTRY(kIPHGrowthFramework),
         VARIATION_ENTRY(kIPHGoogleOneOfferNotificationFeature),
         VARIATION_ENTRY(kIPHLauncherSearchHelpUiFeature),
         VARIATION_ENTRY(kIPHScalableIphTimerBasedOneFeature),
