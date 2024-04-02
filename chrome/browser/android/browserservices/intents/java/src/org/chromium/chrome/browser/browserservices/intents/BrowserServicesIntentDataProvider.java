@@ -132,8 +132,16 @@ public abstract class BrowserServicesIntentDataProvider {
     }
 
     /**
-     * @return The resource id for enter animation, which is used in
-     *         {@link Activity#overridePendingTransition(int, int)}.
+     * @return The package name of the client app provided via identity sharing API introduced in
+     *     Android U.
+     */
+    public @Nullable String getClientPackageNameIdentitySharing() {
+        return null;
+    }
+
+    /**
+     * @return The resource id for enter animation, which is used in {@link
+     *     Activity#overridePendingTransition(int, int)}.
      */
     public int getAnimationEnterRes() {
         return 0;

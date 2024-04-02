@@ -355,9 +355,10 @@ public class LaunchIntentDispatcher {
         }
         maybePrefetchDnsInBackground();
 
-        // Strip EXTRA_CALLING_ACTIVITY_PACKAGE if present on the original intent so that it
-        // cannot be spoofed by CCT client apps.
+        // Strip EXTRA_CALLING_ACTIVITY_PACKAGE/EXTRA_LAUNCHED_FROM_PACKAGE if present on
+        // the original intent so that it cannot be spoofed by CCT client apps.
         IntentUtils.safeRemoveExtra(mIntent, IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE);
+        IntentUtils.safeRemoveExtra(mIntent, IntentHandler.EXTRA_LAUNCHED_FROM_PACKAGE);
 
         Intent intent = new Intent(mIntent);
         String packageName = mActivity.getCallingPackage();
@@ -365,10 +366,11 @@ public class LaunchIntentDispatcher {
         if (packageName != null) {
             intent.putExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, packageName);
         } else {
-            packageName = getCallingPackageIdentitySharing(mActivity);
+            packageName = getCallingPackageIdentitySharing();
             if (packageName != null) {
                 identityShared = true;
                 intent.putExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, packageName);
+                intent.putExtra(IntentHandler.EXTRA_LAUNCHED_FROM_PACKAGE, packageName);
             }
         }
         // Create and fire a launch intent.
@@ -392,12 +394,11 @@ public class LaunchIntentDispatcher {
     }
 
     /**
-     * @param activity The current {@link Activity} object.
-     * @return Client package name obtained from {@link Activity#getLaunchedFromPackage()}. {@code
-     *     null} if the underlying OS doesn't support the feature.
+     * Returns client package name obtained from {@link Activity#getLaunchedFromPackage()}. {@code
+     * null} if the underlying OS doesn't support the feature.
      */
-    public static String getCallingPackageIdentitySharing(Activity activity) {
-        return BuildCompat.isAtLeastU() ? activity.getLaunchedFromPackage() : null;
+    private String getCallingPackageIdentitySharing() {
+        return BuildCompat.isAtLeastU() ? mActivity.getLaunchedFromPackage() : null;
     }
 
     /** Handles launching a {@link ChromeTabbedActivity}. */
@@ -421,7 +422,7 @@ public class LaunchIntentDispatcher {
             }
             RecordHistogram.recordBooleanHistogram(
                     "Android.Intent.HasNonSpoofablePackageName", hasNonSpoofablePackageName());
-            boolean identityShared = getCallingPackageIdentitySharing(mActivity) != null;
+            boolean identityShared = getCallingPackageIdentitySharing() != null;
             RecordHistogram.recordBooleanHistogram("Android.Intent.IdentityShared", identityShared);
         }
 
@@ -502,7 +503,7 @@ public class LaunchIntentDispatcher {
 
     private boolean hasNonSpoofablePackageName() {
         return !TextUtils.isEmpty(mActivity.getCallingPackage())
-                || !TextUtils.isEmpty(getCallingPackageIdentitySharing(mActivity));
+                || !TextUtils.isEmpty(getCallingPackageIdentitySharing());
     }
 
     private static boolean clearTopIntentsForCustomTabsEnabled(Intent intent) {

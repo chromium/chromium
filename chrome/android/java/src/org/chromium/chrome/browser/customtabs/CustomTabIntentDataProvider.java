@@ -1137,6 +1137,11 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     @Override
+    public @Nullable String getClientPackageNameIdentitySharing() {
+        return IntentUtils.safeGetStringExtra(mIntent, IntentHandler.EXTRA_LAUNCHED_FROM_PACKAGE);
+    }
+
+    @Override
     public int getAnimationEnterRes() {
         return shouldAnimateOnFinish()
                 ? mAnimationBundle.getInt(BUNDLE_ENTER_ANIMATION_RESOURCE)
