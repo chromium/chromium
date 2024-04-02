@@ -65,6 +65,12 @@ static constexpr bool kBlinkMemberGCHasDebugChecks =
     !std::is_same<cppgc::internal::DefaultMemberCheckingPolicy,
                   cppgc::internal::DisabledCheckingPolicy>::value;
 
+// We should never bloat the Member<> wrapper.
+// NOTE: The Member<void*> works as we never use this Member in a trace method.
+static_assert(kBlinkMemberGCHasDebugChecks ||
+                  sizeof(Member<void*>) <= sizeof(void*),
+              "Member<> should stay small!");
+
 }  // namespace blink
 
 namespace WTF {
