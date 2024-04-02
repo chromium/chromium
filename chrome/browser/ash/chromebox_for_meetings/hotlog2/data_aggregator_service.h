@@ -60,9 +60,6 @@ class DataAggregatorService : public CfmObserver,
   ~DataAggregatorService() override;
 
   void AddLocalCommandSource(const std::string& command);
-  void BindLocalCommandSourceReceiver(
-      mojo::PendingReceiver<mojom::DataSource> pending_receiver,
-      const std::string& command);
   void OnLocalCommandDisconnect(const std::string& command);
   void StartFetchTimer();
   void FetchFromAllSourcesAndEnqueue();

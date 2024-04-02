@@ -119,22 +119,20 @@ void DataAggregatorService::AddLocalCommandSource(const std::string& command) {
   mojo::Remote<mojom::DataSource> remote;
   local_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&DataAggregatorService::BindLocalCommandSourceReceiver,
-                     base::Unretained(this),
-                     remote.BindNewPipeAndPassReceiver(), command));
+      base::BindOnce(
+          [](mojo::PendingReceiver<mojom::DataSource> pending_receiver,
+             const std::string& command) {
+            mojo::MakeSelfOwnedReceiver(
+                std::make_unique<CommandSource>(command),
+                std::move(pending_receiver));
+          },
+          remote.BindNewPipeAndPassReceiver(), command));
 
   remote.set_disconnect_handler(
       base::BindOnce(&DataAggregatorService::OnLocalCommandDisconnect,
                      base::Unretained(this), command));
 
   data_source_map_[command] = std::move(remote);
-}
-
-void DataAggregatorService::BindLocalCommandSourceReceiver(
-    mojo::PendingReceiver<mojom::DataSource> pending_receiver,
-    const std::string& command) {
-  mojo::MakeSelfOwnedReceiver(std::make_unique<CommandSource>(command),
-                              std::move(pending_receiver), local_task_runner_);
 }
 
 void DataAggregatorService::OnLocalCommandDisconnect(
