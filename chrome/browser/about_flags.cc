@@ -2640,9 +2640,6 @@ const FeatureEntry::Choice kNotificationSchedulerChoices[] = {
 
 #if BUILDFLAG(IS_ANDROID)
 
-const FeatureEntry::FeatureParam kOmniboxModernizeVisualUpdateSmallMargin[] = {
-    {"modernize_visual_update_small_bottom_margin", "true"}};
-
 const FeatureEntry::FeatureParam
     kOmniboxModernizeVisualUpdateSmallerMarginsMergeClipboard[] = {
         {"modernize_visual_update_smaller_margins", "true"},
@@ -2658,8 +2655,6 @@ const FeatureEntry::FeatureParam
 
 const FeatureEntry::FeatureVariation kOmniboxModernizeVisualUpdateVariations[] =
     {
-        {"(Small vertical margin)", kOmniboxModernizeVisualUpdateSmallMargin,
-         std::size(kOmniboxModernizeVisualUpdateSmallMargin), nullptr},
         {"(Smaller margins, merge clipboard)",
          kOmniboxModernizeVisualUpdateSmallerMarginsMergeClipboard,
          std::size(kOmniboxModernizeVisualUpdateSmallerMarginsMergeClipboard),
