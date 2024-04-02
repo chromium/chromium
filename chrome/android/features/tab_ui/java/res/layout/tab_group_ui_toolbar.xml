@@ -29,16 +29,19 @@ found in the LICENSE file.
             android:src="@drawable/ic_expand_more_black_24dp"
             app:tint="@color/default_icon_color_tint_list"
             android:contentDescription="@string/accessibility_bottom_tab_grid_close_tab_sheet" />
-        <ImageView
-            android:id="@+id/tab_group_color_icon"
-            android:layout_marginLeft="@dimen/tab_group_color_icon_horizontal_padding"
-            android:layout_marginRight="@dimen/tab_group_color_icon_horizontal_padding"
-            android:layout_marginTop="@dimen/tab_group_color_icon_vertical_padding"
-            android:layout_marginBottom="@dimen/tab_group_color_icon_vertical_padding"
-            android:layout_width="@dimen/tab_group_color_icon_item_size"
-            android:layout_height="@dimen/tab_group_color_icon_item_size"
-            android:contentDescription="@null"
-            android:background="@drawable/tab_group_dialog_color_icon" />
+        <FrameLayout
+            android:id="@+id/tab_group_color_icon_container"
+            android:layout_height="@dimen/min_touch_target_size"
+            android:layout_width="40dp" >
+            <ImageView
+                android:id="@+id/tab_group_color_icon"
+                android:layout_gravity="center"
+                android:layout_width="@dimen/tab_group_color_icon_item_size"
+                android:layout_height="@dimen/tab_group_color_icon_item_size"
+                android:importantForAccessibility="no"
+                android:contentDescription="@null"
+                android:background="@drawable/tab_group_dialog_color_icon" />
+        </FrameLayout>
         <!-- This generic option should not have autofillHints (crbug.com/1073966#c3). -->
         <EditText
             tools:ignore="Autofill,LabelFor"

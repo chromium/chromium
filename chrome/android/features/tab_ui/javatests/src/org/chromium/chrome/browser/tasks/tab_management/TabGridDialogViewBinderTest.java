@@ -85,6 +85,7 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
     private ChromeImageView mRightButton;
     private ChromeImageView mLeftButton;
     private EditText mTitleTextView;
+    private FrameLayout mColorIconContainer;
     private ImageView mColorIcon;
     private View mMainContent;
     private ScrimCoordinator mScrimCoordinator;
@@ -129,6 +130,8 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
                     mLeftButton = mToolbarView.findViewById(R.id.toolbar_left_button);
                     mRightButton = mToolbarView.findViewById(R.id.toolbar_right_button);
                     mTitleTextView = mToolbarView.findViewById(R.id.title);
+                    mColorIconContainer =
+                            mToolbarView.findViewById(R.id.tab_group_color_icon_container);
                     mColorIcon = mToolbarView.findViewById(R.id.tab_group_color_icon);
                     mMainContent = mToolbarView.findViewById(R.id.main_content);
                     mScrimCoordinator =
@@ -587,14 +590,14 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
     public void testSetColorIconClickListener() {
         AtomicBoolean colorIconClicked = new AtomicBoolean();
         colorIconClicked.set(false);
-        mColorIcon.performClick();
+        mColorIconContainer.performClick();
         Assert.assertFalse(colorIconClicked.get());
 
         mModel.set(
                 TabGridDialogProperties.COLOR_ICON_CLICK_LISTENER,
                 (View view) -> colorIconClicked.set(true));
 
-        mColorIcon.performClick();
+        mColorIconContainer.performClick();
         Assert.assertTrue(colorIconClicked.get());
     }
 

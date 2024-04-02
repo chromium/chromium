@@ -616,6 +616,9 @@
       </message>
 
       <!-- Tab Group Parity Strings -->
+      <message name="IDS_ACCESSIBILITY_TAB_GROUP_COLOR_ICON_DESCRIPTION" desc="Accessibility string describing what color the current tab group color icon has. Tap this item to change the color.">
+        <ph name="COLOR_NAME">%1$s<ex>Blue</ex></ph> tab group color icon
+      </message>
       <message name="IDS_ACCESSIBILITY_TAB_GROUP_COLOR_PICKER_COLOR_ITEM_GREY" desc="The accessibility string for the grey color item in the tab group color picker. Tap this item to toggle the color selection.">
         Grey
       </message>
