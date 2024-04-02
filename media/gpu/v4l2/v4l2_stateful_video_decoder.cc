@@ -1278,8 +1278,8 @@ H264FrameReassembler::FindH264FrameBoundary(const uint8_t* const data,
         "SubsetSPS",   "DPS",           "Reserved17",
         "Reserved18",  "CodedSliceAux", "CodedSliceExtension",
     };
-    const auto kMaxNALUTypeValue = std::size(kKnownNALUNames);
-    if (base::checked_cast<size_t>(nalu.nal_unit_type) > kMaxNALUTypeValue) {
+    constexpr auto kMaxNALUTypeValue = std::size(kKnownNALUNames);
+    if (base::checked_cast<size_t>(nalu.nal_unit_type) >= kMaxNALUTypeValue) {
       LOG(ERROR) << "NALU type unknown.";
       return std::nullopt;
     }
@@ -1352,7 +1352,7 @@ H264FrameReassembler::FindH264FrameBoundary(const uint8_t* const data,
                                  .is_start_of_new_frame = true,
                                  .nalu_size = nalu_size};
       default:
-        NOTREACHED_NORETURN() << "Unknown NALU, id: " << nalu.nal_unit_type;
+        VLOGF(4) << "Unsupported NALU " << kKnownNALUNames[nalu.nal_unit_type];
     }
   }
 }
