@@ -50,7 +50,8 @@ namespace internal {
 
 namespace  {
 
-// Enforce that allocated data aligns to at least 8 bytes, and that
+// TaggedStringPtr::Flags uses the lower 2 bits as tags.
+// Enforce that allocated data aligns to at least 4 bytes, and that
 // the alignment of the global const string value does as well.
 // The alignment guaranteed by `new std::string` depends on both:
 // - new align = __STDCPP_DEFAULT_NEW_ALIGNMENT__ / max_align_t
@@ -64,8 +65,8 @@ constexpr size_t kNewAlign = alignof(std::max_align_t);
 #endif
 constexpr size_t kStringAlign = alignof(std::string);
 
-static_assert((kStringAlign > kNewAlign ? kStringAlign : kNewAlign) >= 8, "");
-static_assert(alignof(ExplicitlyConstructedArenaString) >= 8, "");
+static_assert((kStringAlign > kNewAlign ? kStringAlign : kNewAlign) >= 4, "");
+static_assert(alignof(ExplicitlyConstructedArenaString) >= 4, "");
 
 }  // namespace
 
@@ -187,7 +188,7 @@ std::string* ArenaStringPtr::Release() {
   if (IsDefault()) return nullptr;
 
   std::string* released = tagged_ptr_.Get();
-  if (!tagged_ptr_.IsAllocated()) {
+  if (tagged_ptr_.IsArena()) {
     released = tagged_ptr_.IsMutable() ? new std::string(std::move(*released))
                                        : new std::string(*released);
   }
@@ -216,9 +217,7 @@ void ArenaStringPtr::SetAllocated(std::string* value, Arena* arena) {
 }
 
 void ArenaStringPtr::Destroy() {
-  if (tagged_ptr_.IsAllocated()) {
-    delete tagged_ptr_.Get();
-  }
+  delete tagged_ptr_.GetIfAllocated();
 }
 
 void ArenaStringPtr::ClearToEmpty() {

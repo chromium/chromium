@@ -32,7 +32,7 @@
 //  Based on original Protocol Buffers design by
 //  Sanjay Ghemawat, Jeff Dean, and others.
 
-#include <google/protobuf/compiler/java/java_message.h>
+#include <google/protobuf/compiler/java/message.h>
 
 #include <algorithm>
 #include <cstdint>
@@ -46,16 +46,19 @@
 #include <google/protobuf/wire_format.h>
 #include <google/protobuf/stubs/strutil.h>
 #include <google/protobuf/stubs/substitute.h>
-#include <google/protobuf/compiler/java/java_context.h>
-#include <google/protobuf/compiler/java/java_doc_comment.h>
-#include <google/protobuf/compiler/java/java_enum.h>
-#include <google/protobuf/compiler/java/java_extension.h>
-#include <google/protobuf/compiler/java/java_generator_factory.h>
-#include <google/protobuf/compiler/java/java_helpers.h>
-#include <google/protobuf/compiler/java/java_message_builder.h>
-#include <google/protobuf/compiler/java/java_message_builder_lite.h>
-#include <google/protobuf/compiler/java/java_name_resolver.h>
+#include <google/protobuf/compiler/java/context.h>
+#include <google/protobuf/compiler/java/doc_comment.h>
+#include <google/protobuf/compiler/java/enum.h>
+#include <google/protobuf/compiler/java/extension.h>
+#include <google/protobuf/compiler/java/generator_factory.h>
+#include <google/protobuf/compiler/java/helpers.h>
+#include <google/protobuf/compiler/java/message_builder.h>
+#include <google/protobuf/compiler/java/message_builder_lite.h>
+#include <google/protobuf/compiler/java/name_resolver.h>
 #include <google/protobuf/descriptor.pb.h>
+
+// Must be last.
+#include <google/protobuf/port_def.inc>
 
 namespace google {
 namespace protobuf {
@@ -1354,7 +1357,7 @@ void ImmutableMessageGenerator::GenerateKotlinOrNull(io::Printer* printer) const
     const FieldDescriptor* field = descriptor_->field(i);
     if (field->has_presence() && GetJavaType(field) == JAVATYPE_MESSAGE) {
       printer->Print(
-          "val $full_classname$OrBuilder.$camelcase_name$OrNull: $full_name$?\n"
+          "public val $full_classname$OrBuilder.$camelcase_name$OrNull: $full_name$?\n"
           "  get() = if (has$name$()) get$name$() else null\n\n",
           "full_classname", name_resolver_->GetClassName(descriptor_, true),
           "camelcase_name", context_->GetFieldGeneratorInfo(field)->name,
@@ -1450,7 +1453,7 @@ void ImmutableMessageGenerator::GenerateKotlinExtensions(
   printer->Print(
       "@kotlin.jvm.JvmSynthetic\n"
       "@Suppress(\"NOTHING_TO_INLINE\")\n"
-      "public inline operator fun <T : com.google.protobuf.MessageLite> set(\n"
+      "inline operator fun <T : com.google.protobuf.MessageLite> set(\n"
       "  extension: com.google.protobuf.ExtensionLite<$message$, T>,\n"
       "  value: T\n"
       ") {\n"
@@ -1596,3 +1599,5 @@ void ImmutableMessageGenerator::GenerateAnyMethods(io::Printer* printer) {
 }  // namespace compiler
 }  // namespace protobuf
 }  // namespace google
+
+#include <google/protobuf/port_undef.inc>

@@ -28,12 +28,12 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <google/protobuf/compiler/cpp/cpp_map_field.h>
+#include <google/protobuf/compiler/cpp/map_field.h>
 
 #include <google/protobuf/io/printer.h>
 #include <google/protobuf/wire_format.h>
 #include <google/protobuf/stubs/strutil.h>
-#include <google/protobuf/compiler/cpp/cpp_helpers.h>
+#include <google/protobuf/compiler/cpp/helpers.h>
 
 
 namespace google {
@@ -136,6 +136,7 @@ void MapFieldGenerator::GenerateInlineAccessorDefinitions(
       "}\n"
       "inline ::$proto_ns$::Map< $key_cpp$, $val_cpp$ >*\n"
       "$classname$::_internal_mutable_$name$() {\n"
+      "$maybe_prepare_split_message$"
       "  return $field$.MutableMap();\n"
       "}\n"
       "inline ::$proto_ns$::Map< $key_cpp$, $val_cpp$ >*\n"
@@ -153,7 +154,7 @@ void MapFieldGenerator::GenerateClearingCode(io::Printer* printer) const {
 
 void MapFieldGenerator::GenerateMergingCode(io::Printer* printer) const {
   Formatter format(printer, variables_);
-  format("$field$.MergeFrom(from.$field$);\n");
+  format("_this->$field$.MergeFrom(from.$field$);\n");
 }
 
 void MapFieldGenerator::GenerateSwappingCode(io::Printer* printer) const {
@@ -226,8 +227,7 @@ void MapFieldGenerator::GenerateSerializeWithCachedSizesToArray(
             format);
       }
     }
-    format(
-        "};\n");
+    format("};\n");
   }
 
   format(
@@ -271,21 +271,48 @@ void MapFieldGenerator::GenerateIsInitialized(io::Printer* printer) const {
       "false;\n");
 }
 
-void MapFieldGenerator::GenerateConstinitInitializer(
+void MapFieldGenerator::GenerateConstexprAggregateInitializer(
     io::Printer* printer) const {
   Formatter format(printer, variables_);
   if (HasDescriptorMethods(descriptor_->file(), options_)) {
-    format("$name$_(::$proto_ns$::internal::ConstantInitialized{})");
+    format("/*decltype($field$)*/{::_pbi::ConstantInitialized()}");
   } else {
-    format("$name$_()");
+    format("/*decltype($field$)*/{}");
   }
+}
+
+void MapFieldGenerator::GenerateCopyAggregateInitializer(
+    io::Printer* printer) const {
+  Formatter format(printer, variables_);
+  // MapField has no move constructor, which prevents explicit aggregate
+  // initialization pre-C++17.
+  format("/*decltype($field$)*/{}");
+}
+
+void MapFieldGenerator::GenerateAggregateInitializer(
+    io::Printer* printer) const {
+  Formatter format(printer, variables_);
+  if (ShouldSplit(descriptor_, options_)) {
+    format(
+        "/*decltype($classname$::Split::$name$_)*/"
+        "{::_pbi::ArenaInitialized(), arena}");
+    return;
+  }
+  // MapField has no move constructor.
+  format("/*decltype($field$)*/{::_pbi::ArenaInitialized(), arena}");
 }
 
 void MapFieldGenerator::GenerateDestructorCode(io::Printer* printer) const {
   GOOGLE_CHECK(!IsFieldStripped(descriptor_, options_));
 
   Formatter format(printer, variables_);
+  if (ShouldSplit(descriptor_, options_)) {
+    format("$cached_split_ptr$->$name$_.Destruct();\n");
+    format("$cached_split_ptr$->$name$_.~MapField$lite$();\n");
+    return;
+  }
   format("$field$.Destruct();\n");
+  format("$field$.~MapField$lite$();\n");
 }
 
 void MapFieldGenerator::GenerateArenaDestructorCode(

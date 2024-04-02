@@ -42,7 +42,7 @@
 // performance-minded Python code leverage the fast C++ implementation
 // directly.
 
-#include <google/protobuf/compiler/python/python_generator.h>
+#include <google/protobuf/compiler/python/generator.h>
 
 #include <algorithm>
 #include <limits>
@@ -54,15 +54,15 @@
 
 #include <google/protobuf/stubs/logging.h>
 #include <google/protobuf/stubs/common.h>
-#include <google/protobuf/compiler/python/python_helpers.h>
-#include <google/protobuf/compiler/python/python_pyi_generator.h>
-#include <google/protobuf/io/printer.h>
-#include <google/protobuf/io/zero_copy_stream.h>
-#include <google/protobuf/descriptor.h>
 #include <google/protobuf/stubs/strutil.h>
 #include <google/protobuf/stubs/stringprintf.h>
 #include <google/protobuf/stubs/substitute.h>
+#include <google/protobuf/compiler/python/helpers.h>
+#include <google/protobuf/compiler/python/pyi_generator.h>
+#include <google/protobuf/descriptor.h>
 #include <google/protobuf/descriptor.pb.h>
+#include <google/protobuf/io/printer.h>
+#include <google/protobuf/io/zero_copy_stream.h>
 
 namespace google {
 namespace protobuf {
@@ -90,11 +90,6 @@ std::string ModuleAlias(const std::string& filename) {
 // in proto2/public/reflection.py.
 const char kDescriptorKey[] = "DESCRIPTOR";
 
-
-// Does the file have top-level enums?
-inline bool HasTopLevelEnums(const FileDescriptor* file) {
-  return file->enum_type_count() > 0;
-}
 
 // file output by this generator.
 void PrintTopBoilerplate(io::Printer* printer, const FileDescriptor* file,

@@ -51,20 +51,20 @@
 
 #include <google/protobuf/stubs/logging.h>
 #include <google/protobuf/stubs/common.h>
-#include <google/protobuf/test_util2.h>
-#include <google/protobuf/io/coded_stream.h>
-#include <google/protobuf/io/zero_copy_stream.h>
-#include <google/protobuf/io/zero_copy_stream_impl.h>
 #include <google/protobuf/descriptor.pb.h>
-#include <google/protobuf/arena.h>
-#include <google/protobuf/descriptor.h>
-#include <google/protobuf/generated_message_reflection.h>
 #include <gmock/gmock.h>
 #include <google/protobuf/testing/googletest.h>
 #include <gtest/gtest.h>
 #include <google/protobuf/stubs/logging.h>
 #include <google/protobuf/stubs/substitute.h>
+#include <google/protobuf/arena.h>
+#include <google/protobuf/descriptor.h>
 #include <google/protobuf/io/io_win32.h>
+#include <google/protobuf/generated_message_reflection.h>
+#include <google/protobuf/io/coded_stream.h>
+#include <google/protobuf/io/zero_copy_stream.h>
+#include <google/protobuf/io/zero_copy_stream_impl.h>
+#include <google/protobuf/test_util2.h>
 
 
 namespace google {
@@ -278,13 +278,63 @@ TEST(MESSAGE_TEST_NAME, MergeFromUninitialized) {
   payload->mutable_optional_message()->set_dummy4(200);
   ASSERT_TRUE(p.ParsePartialFromString(o.SerializePartialAsString()));
 
-  GOOGLE_LOG(ERROR) << "seongkim: copy 1";
   q.mutable_child()->set_dummy(500);
   q = p;
-  GOOGLE_LOG(ERROR) << "seongkim: copy 1 done";
   q.ParsePartialFromString(q.SerializePartialAsString());
   EXPECT_TRUE(TestUtil::EqualsToSerialized(q, o.SerializePartialAsString()));
   EXPECT_TRUE(TestUtil::EqualsToSerialized(q, p.SerializePartialAsString()));
+}
+
+TEST(MESSAGE_TEST_NAME, ExplicitLazyExceedRecursionLimit) {
+  UNITTEST::NestedTestAllTypes original, parsed;
+  // Build proto with recursion depth of 3.
+  original.mutable_lazy_child()
+      ->mutable_child()
+      ->mutable_payload()
+      ->set_optional_int32(-1);
+  std::string serialized;
+  EXPECT_TRUE(original.SerializeToString(&serialized));
+
+  // User annotated LazyField ([lazy = true]) is eagerly verified and should
+  // catch the recursion limit violation.
+  io::ArrayInputStream array_stream(serialized.data(), serialized.size());
+  io::CodedInputStream input_stream(&array_stream);
+  input_stream.SetRecursionLimit(2);
+  EXPECT_FALSE(parsed.ParseFromCodedStream(&input_stream));
+
+  // Lazy read results in parsing error which can be verified by not having
+  // expected value.
+  EXPECT_NE(parsed.lazy_child().child().payload().optional_int32(), -1);
+}
+
+TEST(MESSAGE_TEST_NAME, NestedExplicitLazyExceedRecursionLimit) {
+  UNITTEST::NestedTestAllTypes original, parsed;
+  // Build proto with recursion depth of 5, with nested annotated LazyField.
+  original.mutable_lazy_child()
+      ->mutable_child()
+      ->mutable_lazy_child()
+      ->mutable_child()
+      ->mutable_payload()
+      ->set_optional_int32(-1);
+  std::string serialized;
+  EXPECT_TRUE(original.SerializeToString(&serialized));
+
+  // User annotated LazyField ([lazy = true]) is eagerly verified and should
+  // catch the recursion limit violation.
+  io::ArrayInputStream array_stream(serialized.data(), serialized.size());
+  io::CodedInputStream input_stream(&array_stream);
+  input_stream.SetRecursionLimit(4);
+  EXPECT_FALSE(parsed.ParseFromCodedStream(&input_stream));
+
+  // Lazy read results in parsing error which can be verified by not having
+  // expected value.
+  EXPECT_NE(parsed.lazy_child()
+                .child()
+                .lazy_child()
+                .child()
+                .payload()
+                .optional_int32(),
+            -1);
 }
 
 TEST(MESSAGE_TEST_NAME, ParseFailsIfSubmessageTruncated) {

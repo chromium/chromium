@@ -32,7 +32,7 @@
 //  Based on original Protocol Buffers design by
 //  Sanjay Ghemawat, Jeff Dean, and others.
 
-#include <google/protobuf/compiler/cpp/cpp_message.h>
+#include <google/protobuf/compiler/cpp/message.h>
 
 #include <algorithm>
 #include <cstdint>
@@ -51,13 +51,14 @@
 #include <google/protobuf/map_entry_lite.h>
 #include <google/protobuf/wire_format.h>
 #include <google/protobuf/stubs/strutil.h>
+#include <google/protobuf/stubs/stringprintf.h>
 #include <google/protobuf/stubs/substitute.h>
-#include <google/protobuf/compiler/cpp/cpp_enum.h>
-#include <google/protobuf/compiler/cpp/cpp_extension.h>
-#include <google/protobuf/compiler/cpp/cpp_field.h>
-#include <google/protobuf/compiler/cpp/cpp_helpers.h>
-#include <google/protobuf/compiler/cpp/cpp_padding_optimizer.h>
-#include <google/protobuf/compiler/cpp/cpp_parse_function_generator.h>
+#include <google/protobuf/compiler/cpp/enum.h>
+#include <google/protobuf/compiler/cpp/extension.h>
+#include <google/protobuf/compiler/cpp/field.h>
+#include <google/protobuf/compiler/cpp/helpers.h>
+#include <google/protobuf/compiler/cpp/padding_optimizer.h>
+#include <google/protobuf/compiler/cpp/parse_function_generator.h>
 #include <google/protobuf/descriptor.pb.h>
 #include <google/protobuf/stubs/hash.h>
 
@@ -83,7 +84,7 @@ static constexpr int kNoHasbit = -1;
 // masks must be non-zero.
 std::string ConditionalToCheckBitmasks(
     const std::vector<uint32_t>& masks, bool return_success = true,
-    StringPiece has_bits_var = "_has_bits_") {
+    StringPiece has_bits_var = "_impl_._has_bits_") {
   std::vector<std::string> parts;
   for (int i = 0; i < masks.size(); i++) {
     if (masks[i] == 0) continue;
@@ -345,10 +346,10 @@ bool IsRequired(const std::vector<const FieldDescriptor*>& v) {
   return v.front()->is_required();
 }
 
-bool HasSingularString(const Descriptor* desc, const Options& options) {
+bool HasNonSplitOptionalString(const Descriptor* desc, const Options& options) {
   for (const auto* field : FieldRange(desc)) {
     if (IsString(field, options) && !field->is_repeated() &&
-        !field->real_containing_oneof()) {
+        !field->real_containing_oneof() && !ShouldSplit(field, options)) {
       return true;
     }
   }
@@ -403,7 +404,7 @@ static int popcnt(uint32_t n) {
 class ColdChunkSkipper {
  public:
   ColdChunkSkipper(
-      const Options& options,
+      const Descriptor* descriptor, const Options& options,
       const std::vector<std::vector<const FieldDescriptor*>>& chunks,
       const std::vector<int>& has_bit_indices, const double cold_threshold)
       : chunks_(chunks),
@@ -411,7 +412,7 @@ class ColdChunkSkipper {
         access_info_map_(options.access_info_map),
         cold_threshold_(cold_threshold) {
     SetCommonVars(options, &variables_);
-    SetCommonMessageDataVariables(&variables_);
+    SetCommonMessageDataVariables(descriptor, &variables_);
   }
 
   // May open an external if check for a batch of cold fields. "from" is the
@@ -495,7 +496,7 @@ void ColdChunkSkipper::OnStartChunk(int chunk, int cached_has_word_index,
     if (this_word == cached_has_word_index) {
       format("(cached_has_bits & 0x$mask$u) != 0");
     } else {
-      format("($1$_has_bits_[$2$] & 0x$mask$u) != 0", from, this_word);
+      format("($1$_impl_._has_bits_[$2$] & 0x$mask$u) != 0", from, this_word);
     }
   }
   format(")) {\n");
@@ -547,9 +548,7 @@ void GenerateExtensionAnnotations(
   for (const auto& annotation : accessor_annotations_to_hooks) {
     (*variables)[annotation.first] = "";
   }
-  if (!options.field_listener_options.inject_field_listener_events ||
-      descriptor->file()->options().optimize_for() ==
-          google::protobuf::FileOptions::LITE_RUNTIME) {
+  if (!HasTracker(descriptor, options)) {
     return;
   }
   StringPiece tracker = (*variables)["tracker"];
@@ -617,7 +616,7 @@ MessageGenerator::MessageGenerator(
   if (!message_layout_helper_) {
     message_layout_helper_.reset(new PaddingOptimizer());
   }
-  SetCommonMessageDataVariables(&variables_);
+  SetCommonMessageDataVariables(descriptor, &variables_);
 
   // Variables that apply to this class
   variables_["classname"] = classname_;
@@ -630,9 +629,7 @@ MessageGenerator::MessageGenerator(
   variables_["annotate_bytesize"] = "";
   variables_["annotate_mergefrom"] = "";
 
-  if (options.field_listener_options.inject_field_listener_events &&
-      descriptor->file()->options().optimize_for() !=
-          google::protobuf::FileOptions::LITE_RUNTIME) {
+  if (HasTracker(descriptor_, options_)) {
     const std::string injector_template =
         StrCat("  ", variables_["tracker"], ".");
 
@@ -649,7 +646,7 @@ MessageGenerator::MessageGenerator(
     MaySetAnnotationVariable(options, "bytesize", injector_template,
                              "OnByteSize(this);\n", &variables_);
     MaySetAnnotationVariable(options, "mergefrom", injector_template,
-                             "OnMergeFrom(this, &from);\n", &variables_);
+                             "OnMergeFrom(_this, &from);\n", &variables_);
   }
 
   GenerateExtensionAnnotations(descriptor_, options_, &variables_);
@@ -1205,6 +1202,9 @@ void MessageGenerator::GenerateFieldClear(const FieldDescriptor* field,
     format.Outdent();
     format("}\n");
   } else {
+    if (ShouldSplit(field, options_)) {
+      format("if (IsSplitMessageDefault()) return;\n");
+    }
     field_generators_.get(field).GenerateClearingCode(format.printer());
     if (HasHasbit(field)) {
       int has_bit_index = HasBitIndex(field);
@@ -1245,13 +1245,12 @@ void MessageGenerator::GenerateFieldAccessorDefinitions(io::Printer* printer) {
       } else {
         format(
             "inline int $classname$::_internal_$name$_size() const {\n"
-            "  return $1$$2$.size();\n"
+            "  return $field$$1$.size();\n"
             "}\n"
             "inline int $classname$::$name$_size() const {\n"
             "$annotate_size$"
             "  return _internal_$name$_size();\n"
             "}\n",
-            FieldMemberName(field),
             IsImplicitWeakField(field, options_, scc_analyzer_) &&
                     field->message_type()
                 ? ".weak"
@@ -1398,6 +1397,11 @@ void MessageGenerator::GenerateClassDefinition(io::Printer* printer) {
     format(
         "inline $classname$() : $classname$("
         "::$proto_ns$::Arena::InternalCreateMessageOwnedArena(), true) {}\n");
+  } else if (EnableMessageOwnedArenaTrial(descriptor_, options_)) {
+    format(
+        "inline $classname$() : $classname$(InMoaTrial() ? "
+        "::$proto_ns$::Arena::InternalCreateMessageOwnedArena() : nullptr, "
+        "InMoaTrial()) {}\n");
   } else {
     format("inline $classname$() : $classname$(nullptr) {}\n");
   }
@@ -1510,11 +1514,13 @@ void MessageGenerator::GenerateClassDefinition(io::Printer* printer) {
     if (HasDescriptorMethods(descriptor_->file(), options_)) {
       format(
           "bool PackFrom(const ::$proto_ns$::Message& message) {\n"
+          "  $DCHK$_NE(&message, this);\n"
           "  return $any_metadata$.PackFrom(GetArena(), message);\n"
           "}\n"
           "bool PackFrom(const ::$proto_ns$::Message& message,\n"
           "              ::PROTOBUF_NAMESPACE_ID::ConstStringParam "
           "type_url_prefix) {\n"
+          "  $DCHK$_NE(&message, this);\n"
           "  return $any_metadata$.PackFrom(GetArena(), message, "
           "type_url_prefix);\n"
           "}\n"
@@ -1577,7 +1583,7 @@ void MessageGenerator::GenerateClassDefinition(io::Printer* printer) {
       "friend void swap($classname$& a, $classname$& b) {\n"
       "  a.Swap(&b);\n"
       "}\n"
-      "PROTOBUF_NOINLINE void Swap($classname$* other) {\n"
+      "inline void Swap($classname$* other) {\n"
       "  if (other == this) return;\n"
       "#ifdef PROTOBUF_FORCE_COPY_IN_SWAP\n"
       "  if (GetOwningArena() != nullptr &&\n"
@@ -1618,27 +1624,28 @@ void MessageGenerator::GenerateClassDefinition(io::Printer* printer) {
             // argument is a generic Message instance, and only define the
             // custom MergeFrom and CopyFrom instances when the source of the
             // merge/copy is known to be the same class as the destination.
-            // TODO(jorg): Define MergeFrom in terms of MergeImpl, rather than
-            // the other way around, to save even more code size.
             "using $superclass$::CopyFrom;\n"
             "void CopyFrom(const $classname$& from);\n"
             ""
             "using $superclass$::MergeFrom;\n"
-            "void MergeFrom(const $classname$& from);\n"
+            "void MergeFrom("
+            " const $classname$& from) {\n"
+            "  $classname$::MergeImpl(*this, from);\n"
+            "}\n"
             "private:\n"
-            "static void MergeImpl(::$proto_ns$::Message* to, const "
-            "::$proto_ns$::Message& from);\n"
+            "static void MergeImpl(::$proto_ns$::Message& to_msg, const "
+            "::$proto_ns$::Message& from_msg);\n"
             "public:\n");
       } else {
         format(
             "using $superclass$::CopyFrom;\n"
             "inline void CopyFrom(const $classname$& from) {\n"
-            "  $superclass$::CopyImpl(this, from);\n"
+            "  $superclass$::CopyImpl(*this, from);\n"
             "}\n"
             ""
             "using $superclass$::MergeFrom;\n"
             "void MergeFrom(const $classname$& from) {\n"
-            "  $superclass$::MergeImpl(this, from);\n"
+            "  $superclass$::MergeImpl(*this, from);\n"
             "}\n"
             "public:\n");
       }
@@ -1676,7 +1683,7 @@ void MessageGenerator::GenerateClassDefinition(io::Printer* printer) {
         "int GetCachedSize() const final { return "
         "$cached_size$.Get(); }"
         "\n\nprivate:\n"
-        "void SharedCtor();\n"
+        "void SharedCtor(::$proto_ns$::Arena* arena, bool is_message_owned);\n"
         "void SharedDtor();\n"
         "void SetCachedSize(int size) const$ full_final$;\n"
         "void InternalSwap($classname$* other);\n");
@@ -1745,6 +1752,17 @@ void MessageGenerator::GenerateClassDefinition(io::Printer* printer) {
     format(
         "std::string GetTypeName() const final;\n"
         "\n");
+  }
+
+  if (ShouldSplit(descriptor_, options_)) {
+    format(
+        "private:\n"
+        "inline bool IsSplitMessageDefault() const {\n"
+        "  return $split$ == reinterpret_cast<Impl_::Split*>(&$1$);\n"
+        "}\n"
+        "PROTOBUF_NOINLINE void PrepareSplitMessageForWrite();\n"
+        "public:\n",
+        DefaultInstanceName(descriptor_, options_, /*split=*/true));
   }
 
   format(
@@ -1837,11 +1855,20 @@ void MessageGenerator::GenerateClassDefinition(io::Printer* printer) {
                            : StrCat("::$proto_ns$::internal::HasBits<",
                                           sizeof_has_bits, "> _has_bits_;\n");
 
+  format(
+      "template <typename T> friend class "
+      "::$proto_ns$::Arena::InternalHelper;\n"
+      "typedef void InternalArenaConstructable_;\n"
+      "typedef void DestructorSkippable_;\n");
+
   // To minimize padding, data members are divided into three sections:
   // (1) members assumed to align to 8 bytes
   // (2) members corresponding to message fields, re-ordered to optimize
   //     alignment.
   // (3) members assumed to align to 4 bytes.
+
+  format("struct Impl_ {\n");
+  format.Indent();
 
   // Members assumed to align to 8 bytes:
 
@@ -1851,9 +1878,7 @@ void MessageGenerator::GenerateClassDefinition(io::Printer* printer) {
         "\n");
   }
 
-  if (options_.field_listener_options.inject_field_listener_events &&
-      descriptor_->file()->options().optimize_for() !=
-          google::protobuf::FileOptions::LITE_RUNTIME) {
+  if (HasTracker(descriptor_, options_)) {
     format("static ::$proto_ns$::AccessListener<$1$> _tracker_;\n",
            ClassName(descriptor_));
   }
@@ -1865,12 +1890,6 @@ void MessageGenerator::GenerateClassDefinition(io::Printer* printer) {
     format("::$proto_ns$::internal::HasBits<$1$> _inlined_string_donated_;\n",
            InlinedStringDonatedSize());
   }
-
-  format(
-      "template <typename T> friend class "
-      "::$proto_ns$::Arena::InternalHelper;\n"
-      "typedef void InternalArenaConstructable_;\n"
-      "typedef void DestructorSkippable_;\n");
 
   if (!has_bit_indices_.empty()) {
     // _has_bits_ is frequently accessed, so to reduce code size and improve
@@ -1890,7 +1909,24 @@ void MessageGenerator::GenerateClassDefinition(io::Printer* printer) {
   for (auto field : optimized_order_) {
     const FieldGenerator& generator = field_generators_.get(field);
     generator.GenerateStaticMembers(printer);
-    generator.GeneratePrivateMembers(printer);
+    if (!ShouldSplit(field, options_)) {
+      generator.GeneratePrivateMembers(printer);
+    }
+  }
+  if (ShouldSplit(descriptor_, options_)) {
+    format("struct Split {\n");
+    format.Indent();
+    for (auto field : optimized_order_) {
+      if (!ShouldSplit(field, options_)) continue;
+      const FieldGenerator& generator = field_generators_.get(field);
+      generator.GeneratePrivateMembers(printer);
+    }
+    format.Outdent();
+    format(
+        "  typedef void InternalArenaConstructable_;\n"
+        "  typedef void DestructorSkippable_;\n"
+        "};\n"
+        "Split* _split_;\n");
   }
 
   // For each oneof generate a union
@@ -1939,6 +1975,22 @@ void MessageGenerator::GenerateClassDefinition(io::Printer* printer) {
   // Generate _any_metadata_ for the Any type.
   if (IsAnyMessage(descriptor_, options_)) {
     format("::$proto_ns$::internal::AnyMetadata _any_metadata_;\n");
+  }
+
+  format.Outdent();
+  format("};\n");
+
+  // Only create the _impl_ field if it contains data.
+  if (HasImplData(descriptor_, options_)) {
+    format("union { Impl_ _impl_; };\n");
+  }
+
+  if (ShouldSplit(descriptor_, options_)) {
+    format(
+        "static Impl_::Split* CreateSplitMessage("
+        "::$proto_ns$::Arena* arena);\n");
+    format("friend struct $1$;\n",
+           DefaultInstanceType(descriptor_, options_, /*split=*/true));
   }
 
   // The TableStruct struct needs access to the private parts, in order to
@@ -2080,7 +2132,8 @@ void MessageGenerator::GenerateClassMethods(io::Printer* printer) {
   format("};\n\n");
   for (auto field : FieldRange(descriptor_)) {
     if (!IsFieldStripped(field, options_)) {
-      field_generators_.get(field).GenerateInternalAccessorDefinitions(printer);
+      field_generators_.get(field).GenerateInternalAccessorDefinitions(
+          printer);
     }
   }
 
@@ -2130,7 +2183,7 @@ void MessageGenerator::GenerateClassMethods(io::Printer* printer) {
     GenerateMergeFrom(printer);
     format("\n");
 
-    GenerateClassSpecificMergeFrom(printer);
+    GenerateClassSpecificMergeImpl(printer);
     format("\n");
 
     GenerateCopyFrom(printer);
@@ -2138,6 +2191,15 @@ void MessageGenerator::GenerateClassMethods(io::Printer* printer) {
 
     GenerateIsInitialized(printer);
     format("\n");
+  }
+
+  if (ShouldSplit(descriptor_, options_)) {
+    format(
+        "void $classname$::PrepareSplitMessageForWrite() {\n"
+        "  if (IsSplitMessageDefault()) {\n"
+        "    $split$ = CreateSplitMessage(GetArenaForAllocation());\n"
+        "  }\n"
+        "}\n");
   }
 
   GenerateVerify(printer);
@@ -2172,9 +2234,7 @@ void MessageGenerator::GenerateClassMethods(io::Printer* printer) {
         "\n");
   }
 
-  if (options_.field_listener_options.inject_field_listener_events &&
-      descriptor_->file()->options().optimize_for() !=
-          google::protobuf::FileOptions::LITE_RUNTIME) {
+  if (HasTracker(descriptor_, options_)) {
     format(
         "::$proto_ns$::AccessListener<$classtype$> "
         "$1$::$tracker$(&FullMessageName);\n",
@@ -2230,7 +2290,11 @@ std::pair<size_t, size_t> MessageGenerator::GenerateOffsets(
       // Don't use the top bit because that is for unused fields.
       format("::_pbi::kInvalidFieldOffsetTag");
     } else {
-      format("PROTOBUF_FIELD_OFFSET($classtype$, $1$)", FieldMemberName(field));
+      format("PROTOBUF_FIELD_OFFSET($classtype$$1$, $2$)",
+             ShouldSplit(field, options_) ? "::Impl_::Split" : "",
+             ShouldSplit(field, options_)
+                 ? FieldName(field) + "_"
+                 : FieldMemberName(field, /*cold=*/false));
     }
 
     // Some information about a field is in the pdproto profile. The profile is
@@ -2250,7 +2314,7 @@ std::pair<size_t, size_t> MessageGenerator::GenerateOffsets(
 
   int count = 0;
   for (auto oneof : OneOfRange(descriptor_)) {
-    format("PROTOBUF_FIELD_OFFSET($classtype$, $1$_),\n", oneof->name());
+    format("PROTOBUF_FIELD_OFFSET($classtype$, _impl_.$1$_),\n", oneof->name());
     count++;
   }
   GOOGLE_CHECK_EQ(count, descriptor_->real_oneof_decl_count());
@@ -2286,16 +2350,179 @@ void MessageGenerator::GenerateSharedConstructorCode(io::Printer* printer) {
   if (HasSimpleBaseClass(descriptor_, options_)) return;
   Formatter format(printer, variables_);
 
-  format("inline void $classname$::SharedCtor() {\n");
+  format(
+      "inline void $classname$::SharedCtor(\n"
+      "    ::_pb::Arena* arena, bool is_message_owned) {\n"
+      "  (void)arena;\n"
+      "  (void)is_message_owned;\n");
 
-  std::vector<bool> processed(optimized_order_.size(), false);
-  GenerateConstructorBody(printer, processed, false);
+  format.Indent();
+  // Impl_ _impl_.
+  format("new (&_impl_) Impl_{");
+  format.Indent();
+  const char* field_sep = " ";
+  const auto put_sep = [&] {
+    format("\n$1$ ", field_sep);
+    field_sep = ",";
+  };
+
+  // Note: any fields without move/copy constructors can't be explicitly
+  // aggregate initialized pre-C++17.
+  if (descriptor_->extension_range_count() > 0) {
+    put_sep();
+    format("/*decltype($extensions$)*/{::_pbi::ArenaInitialized(), arena}");
+  }
+  if (!inlined_string_indices_.empty()) {
+    put_sep();
+    format("decltype($inlined_string_donated_array$){}");
+  }
+  bool need_to_emit_cached_size = !HasSimpleBaseClass(descriptor_, options_);
+  if (!has_bit_indices_.empty()) {
+    put_sep();
+    format("decltype($has_bits$){}");
+    if (need_to_emit_cached_size) {
+      put_sep();
+      format("/*decltype($cached_size$)*/{}");
+      need_to_emit_cached_size = false;
+    }
+  }
+
+  // Initialize member variables with arena constructor.
+  for (auto field : optimized_order_) {
+    GOOGLE_DCHECK(!IsFieldStripped(field, options_));
+    if (ShouldSplit(field, options_)) {
+      continue;
+    }
+    put_sep();
+    field_generators_.get(field).GenerateAggregateInitializer(printer);
+  }
+  if (ShouldSplit(descriptor_, options_)) {
+    put_sep();
+    format("decltype($split$){reinterpret_cast<Impl_::Split*>(&$1$)}",
+           DefaultInstanceName(descriptor_, options_, /*split=*/true));
+  }
+  for (auto oneof : OneOfRange(descriptor_)) {
+    put_sep();
+    format("decltype(_impl_.$1$_){}", oneof->name());
+  }
+
+  if (need_to_emit_cached_size) {
+    put_sep();
+    format("/*decltype($cached_size$)*/{}");
+  }
+
+  if (descriptor_->real_oneof_decl_count() != 0) {
+    put_sep();
+    format("/*decltype($oneof_case$)*/{}");
+  }
+  if (num_weak_fields_ > 0) {
+    put_sep();
+    format("decltype($weak_field_map$){arena}");
+  }
+  if (IsAnyMessage(descriptor_, options_)) {
+    put_sep();
+    // AnyMetadata has no move constructor.
+    format("/*decltype($any_metadata$)*/{&_impl_.type_url_, &_impl_.value_}");
+  }
+
+  format.Outdent();
+  format("\n};\n");
+
+  if (!inlined_string_indices_.empty()) {
+    // Donate inline string fields.
+    format.Indent();
+    // The last bit is the tracking bit for registering ArenaDtor. The bit is 1
+    // means ArenaDtor is not registered on construction, and on demand register
+    // is needed.
+    format("if (arena != nullptr) {\n");
+    if (NeedsArenaDestructor() == ArenaDtorNeeds::kOnDemand) {
+      format(
+          "  if (!is_message_owned) {\n"
+          "    $inlined_string_donated_array$[0] = ~0u;\n"
+          "  } else {\n"
+          // We should not register ArenaDtor for MOA.
+          "    $inlined_string_donated_array$[0] = 0xFFFFFFFEu;\n"
+          "  }\n");
+    } else {
+      format("  $inlined_string_donated_array$[0] = 0xFFFFFFFEu;\n");
+    }
+    for (size_t i = 1; i < InlinedStringDonatedSize(); ++i) {
+      format("  $inlined_string_donated_array$[$1$] = ~0u;\n", i);
+    }
+    format("}\n");
+    format.Outdent();
+  }
+
+  for (const FieldDescriptor* field : optimized_order_) {
+    if (ShouldSplit(field, options_)) {
+      continue;
+    }
+    field_generators_.get(field).GenerateConstructorCode(printer);
+  }
 
   for (auto oneof : OneOfRange(descriptor_)) {
     format("clear_has_$1$();\n", oneof->name());
   }
 
+  format.Outdent();
   format("}\n\n");
+}
+
+void MessageGenerator::GenerateCreateSplitMessage(io::Printer* printer) {
+  Formatter format(printer, variables_);
+  format(
+      "$classname$::Impl_::Split* "
+      "$classname$::CreateSplitMessage(::$proto_ns$::Arena* arena) {\n");
+  format.Indent();
+  const char* field_sep = " ";
+  const auto put_sep = [&] {
+    format("\n$1$ ", field_sep);
+    field_sep = ",";
+  };
+  format(
+      "const size_t size = sizeof(Impl_::Split);\n"
+      "void* chunk = (arena == nullptr) ?\n"
+      "  ::operator new(size) :\n"
+      "  arena->AllocateAligned(size, alignof(Impl_::Split));\n"
+      "Impl_::Split* ptr = reinterpret_cast<Impl_::Split*>(chunk);\n"
+      "new (ptr) Impl_::Split{");
+  format.Indent();
+  for (const FieldDescriptor* field : optimized_order_) {
+    GOOGLE_DCHECK(!IsFieldStripped(field, options_));
+    if (ShouldSplit(field, options_)) {
+      put_sep();
+      field_generators_.get(field).GenerateAggregateInitializer(printer);
+    }
+  }
+  format.Outdent();
+  format("};\n");
+  for (const FieldDescriptor* field : optimized_order_) {
+    GOOGLE_DCHECK(!IsFieldStripped(field, options_));
+    if (ShouldSplit(field, options_)) {
+      field_generators_.get(field).GenerateCreateSplitMessageCode(printer);
+    }
+  }
+  format("return ptr;\n");
+  format.Outdent();
+  format("}\n");
+}
+
+void MessageGenerator::GenerateInitDefaultSplitInstance(io::Printer* printer) {
+  if (!ShouldSplit(descriptor_, options_)) return;
+
+  Formatter format(printer, variables_);
+  const char* field_sep = " ";
+  const auto put_sep = [&] {
+    format("\n$1$ ", field_sep);
+    field_sep = ",";
+  };
+  for (const auto* field : optimized_order_) {
+    if (ShouldSplit(field, options_)) {
+      put_sep();
+      field_generators_.get(field).GenerateConstexprAggregateInitializer(
+          printer);
+    }
+  }
 }
 
 void MessageGenerator::GenerateSharedDestructorCode(io::Printer* printer) {
@@ -2305,10 +2532,31 @@ void MessageGenerator::GenerateSharedDestructorCode(io::Printer* printer) {
   format("inline void $classname$::SharedDtor() {\n");
   format.Indent();
   format("$DCHK$(GetArenaForAllocation() == nullptr);\n");
+
+  if (descriptor_->extension_range_count() > 0) {
+    format("$extensions$.~ExtensionSet();\n");
+  }
+
   // Write the destructors for each field except oneof members.
   // optimized_order_ does not contain oneof fields.
   for (auto field : optimized_order_) {
+    if (ShouldSplit(field, options_)) {
+      continue;
+    }
     field_generators_.get(field).GenerateDestructorCode(printer);
+  }
+  if (ShouldSplit(descriptor_, options_)) {
+    format("if (!IsSplitMessageDefault()) {\n");
+    format.Indent();
+    format("auto* $cached_split_ptr$ = $split$;\n");
+    for (auto field : optimized_order_) {
+      if (ShouldSplit(field, options_)) {
+        field_generators_.get(field).GenerateDestructorCode(printer);
+      }
+    }
+    format("delete $cached_split_ptr$;\n");
+    format.Outdent();
+    format("}\n");
   }
 
   // Generate code to destruct oneofs. Clearing should do the work.
@@ -2323,6 +2571,11 @@ void MessageGenerator::GenerateSharedDestructorCode(io::Printer* printer) {
   if (num_weak_fields_) {
     format("$weak_field_map$.ClearAll();\n");
   }
+
+  if (IsAnyMessage(descriptor_, options_)) {
+    format("$any_metadata$.~AnyMetadata();\n");
+  }
+
   format.Outdent();
   format(
       "}\n"
@@ -2358,9 +2611,22 @@ void MessageGenerator::GenerateArenaDestructorCode(io::Printer* printer) {
 
   // Process non-oneof fields first.
   for (auto field : optimized_order_) {
-    if (IsFieldStripped(field, options_)) continue;
+    if (IsFieldStripped(field, options_) || ShouldSplit(field, options_))
+      continue;
     const FieldGenerator& fg = field_generators_.get(field);
     fg.GenerateArenaDestructorCode(printer);
+  }
+  if (ShouldSplit(descriptor_, options_)) {
+    format("if (!_this->IsSplitMessageDefault()) {\n");
+    format.Indent();
+    for (auto field : optimized_order_) {
+      if (IsFieldStripped(field, options_) || !ShouldSplit(field, options_))
+        continue;
+      const FieldGenerator& fg = field_generators_.get(field);
+      fg.GenerateArenaDestructorCode(printer);
+    }
+    format.Outdent();
+    format("}\n");
   }
 
   // Process oneof fields.
@@ -2378,72 +2644,118 @@ void MessageGenerator::GenerateArenaDestructorCode(io::Printer* printer) {
 void MessageGenerator::GenerateConstexprConstructor(io::Printer* printer) {
   Formatter format(printer, variables_);
 
+  if (IsMapEntryMessage(descriptor_) || !HasImplData(descriptor_, options_)) {
+    format(
+        "PROTOBUF_CONSTEXPR $classname$::$classname$(\n"
+        "    ::_pbi::ConstantInitialized) {}\n");
+    return;
+  }
+
   format(
       "PROTOBUF_CONSTEXPR $classname$::$classname$(\n"
       "    ::_pbi::ConstantInitialized)");
+
+  bool need_to_emit_cached_size = !HasSimpleBaseClass(descriptor_, options_);
+  format(": _impl_{");
   format.Indent();
-  const char* field_sep = ":";
+  const char* field_sep = " ";
   const auto put_sep = [&] {
     format("\n$1$ ", field_sep);
     field_sep = ",";
   };
-
-  if (!IsMapEntryMessage(descriptor_)) {
-    // Process non-oneof fields first.
-    for (auto field : optimized_order_) {
-      auto& gen = field_generators_.get(field);
+  if (descriptor_->extension_range_count() > 0) {
+    put_sep();
+    format("/*decltype($extensions$)*/{}");
+  }
+  if (!inlined_string_indices_.empty()) {
+    put_sep();
+    format("/*decltype($inlined_string_donated_array$)*/{}");
+  }
+  if (!has_bit_indices_.empty()) {
+    put_sep();
+    format("/*decltype($has_bits$)*/{}");
+    if (need_to_emit_cached_size) {
       put_sep();
-      gen.GenerateConstinitInitializer(printer);
+      format("/*decltype($cached_size$)*/{}");
+      need_to_emit_cached_size = false;
     }
+  }
+  for (auto field : optimized_order_) {
+    if (ShouldSplit(field, options_)) {
+      continue;
+    }
+    put_sep();
+    field_generators_.get(field).GenerateConstexprAggregateInitializer(
+        printer);
+  }
+  if (ShouldSplit(descriptor_, options_)) {
+    put_sep();
+    format("/*decltype($split$)*/&$1$._instance",
+           DefaultInstanceName(descriptor_, options_, /*split=*/true));
+  }
 
-    if (IsAnyMessage(descriptor_, options_)) {
-      put_sep();
-      format("_any_metadata_(&type_url_, &value_)");
-    }
+  for (auto oneof : OneOfRange(descriptor_)) {
+    put_sep();
+    format("/*decltype(_impl_.$1$_)*/{}", oneof->name());
+  }
 
-    if (descriptor_->real_oneof_decl_count() != 0) {
-      put_sep();
-      format("_oneof_case_{}");
-    }
+  if (need_to_emit_cached_size) {
+    put_sep();
+    format("/*decltype($cached_size$)*/{}");
+  }
+
+  if (descriptor_->real_oneof_decl_count() != 0) {
+    put_sep();
+    format("/*decltype($oneof_case$)*/{}");
+  }
+
+  if (num_weak_fields_) {
+    put_sep();
+    format("/*decltype($weak_field_map$)*/{}");
+  }
+
+  if (IsAnyMessage(descriptor_, options_)) {
+    put_sep();
+    format(
+        "/*decltype($any_metadata$)*/{&_impl_.type_url_, "
+        "&_impl_.value_}");
   }
 
   format.Outdent();
-  format("{}\n");
+  format("} {}\n");
 }
 
-void MessageGenerator::GenerateConstructorBody(io::Printer* printer,
-                                               std::vector<bool> processed,
-                                               bool copy_constructor) const {
+void MessageGenerator::GenerateCopyConstructorBody(io::Printer* printer) const {
   Formatter format(printer, variables_);
 
-  const RunMap runs = FindRuns(
-      optimized_order_, [copy_constructor, this](const FieldDescriptor* field) {
-        return (copy_constructor && IsPOD(field)) ||
-               (!copy_constructor &&
-                CanBeManipulatedAsRawBytes(field, options_, scc_analyzer_));
+  const RunMap runs =
+      FindRuns(optimized_order_, [this](const FieldDescriptor* field) {
+        return IsPOD(field) && !ShouldSplit(field, options_);
       });
 
-  std::string pod_template;
-  if (copy_constructor) {
-    pod_template =
-        "::memcpy(&$first$, &from.$first$,\n"
-        "  static_cast<size_t>(reinterpret_cast<char*>(&$last$) -\n"
-        "  reinterpret_cast<char*>(&$first$)) + sizeof($last$));\n";
-  } else {
-    pod_template =
-        "::memset(reinterpret_cast<char*>(this) + static_cast<size_t>(\n"
-        "    reinterpret_cast<char*>(&$first$) - "
-        "reinterpret_cast<char*>(this)),\n"
-        "    0, static_cast<size_t>(reinterpret_cast<char*>(&$last$) -\n"
-        "    reinterpret_cast<char*>(&$first$)) + sizeof($last$));\n";
+  std::string pod_template =
+      "::memcpy(&$first$, &from.$first$,\n"
+      "  static_cast<size_t>(reinterpret_cast<char*>(&$last$) -\n"
+      "  reinterpret_cast<char*>(&$first$)) + sizeof($last$));\n";
+
+  if (ShouldSplit(descriptor_, options_)) {
+    format("if (!from.IsSplitMessageDefault()) {\n");
+    format.Indent();
+    format("_this->PrepareSplitMessageForWrite();\n");
+    for (auto field : optimized_order_) {
+      if (ShouldSplit(field, options_)) {
+        field_generators_.get(field).GenerateCopyConstructorCode(printer);
+      }
+    }
+    format.Outdent();
+    format("}\n");
   }
 
-  for (int i = 0; i < optimized_order_.size(); ++i) {
-    if (processed[i]) {
+  for (size_t i = 0; i < optimized_order_.size(); ++i) {
+    const FieldDescriptor* field = optimized_order_[i];
+    if (ShouldSplit(field, options_)) {
       continue;
     }
-
-    const FieldDescriptor* field = optimized_order_[i];
     const auto it = runs.find(field);
 
     // We only apply the memset technique to runs of more than one field, as
@@ -2451,9 +2763,10 @@ void MessageGenerator::GenerateConstructorBody(io::Printer* printer,
     if (it != runs.end() && it->second > 1) {
       // Use a memset, then skip run_length fields.
       const size_t run_length = it->second;
-      const std::string first_field_name = FieldMemberName(field);
+      const std::string first_field_name =
+          FieldMemberName(field, /*cold=*/false);
       const std::string last_field_name =
-          FieldMemberName(optimized_order_[i + run_length - 1]);
+          FieldMemberName(optimized_order_[i + run_length - 1], /*cold=*/false);
 
       format.Set("first", first_field_name);
       format.Set("last", last_field_name);
@@ -2463,11 +2776,7 @@ void MessageGenerator::GenerateConstructorBody(io::Printer* printer,
       i += run_length - 1;
       // ++i at the top of the loop.
     } else {
-      if (copy_constructor) {
-        field_generators_.get(field).GenerateCopyConstructorCode(printer);
-      } else {
-        field_generators_.get(field).GenerateConstructorCode(printer);
-      }
+      field_generators_.get(field).GenerateCopyConstructorCode(printer);
     }
   }
 }
@@ -2475,78 +2784,14 @@ void MessageGenerator::GenerateConstructorBody(io::Printer* printer,
 void MessageGenerator::GenerateStructors(io::Printer* printer) {
   Formatter format(printer, variables_);
 
-  std::string superclass;
-  superclass = SuperClassName(descriptor_, options_);
-  std::string initializer_with_arena = superclass + "(arena, is_message_owned)";
-
-  if (descriptor_->extension_range_count() > 0) {
-    initializer_with_arena += ",\n  _extensions_(arena)";
-  }
-
-  // Initialize member variables with arena constructor.
-  for (auto field : optimized_order_) {
-    GOOGLE_DCHECK(!IsFieldStripped(field, options_));
-    bool has_arena_constructor = field->is_repeated();
-    if (!field->real_containing_oneof() &&
-        (IsLazy(field, options_, scc_analyzer_) ||
-         IsStringPiece(field, options_) ||
-         (IsString(field, options_) && IsStringInlined(field, options_)))) {
-      has_arena_constructor = true;
-    }
-    if (has_arena_constructor) {
-      initializer_with_arena +=
-          std::string(",\n  ") + FieldName(field) + std::string("_(arena)");
-    }
-  }
-
-  if (IsAnyMessage(descriptor_, options_)) {
-    initializer_with_arena += ",\n  _any_metadata_(&type_url_, &value_)";
-  }
-  if (num_weak_fields_ > 0) {
-    initializer_with_arena += ", _weak_field_map_(arena)";
-  }
-
-  std::string initializer_null = superclass + "()";
-  if (IsAnyMessage(descriptor_, options_)) {
-    initializer_null += ", _any_metadata_(&type_url_, &value_)";
-  }
-  if (num_weak_fields_ > 0) {
-    initializer_null += ", _weak_field_map_(nullptr)";
-  }
-
   format(
       "$classname$::$classname$(::$proto_ns$::Arena* arena,\n"
       "                         bool is_message_owned)\n"
-      "  : $1$ {\n",
-      initializer_with_arena);
-
-  if (!inlined_string_indices_.empty()) {
-    // Donate inline string fields.
-    format.Indent();
-    // The last bit is the tracking bit for registering ArenaDtor. The bit is 1
-    // means ArenaDtor is not registered on construction, and on demand register
-    // is needed.
-    format("if (arena != nullptr) {\n");
-    if (NeedsArenaDestructor() == ArenaDtorNeeds::kOnDemand) {
-      format(
-          "  if (!is_message_owned) {\n"
-          "    $inlined_string_donated_array$[0] = ~0u;\n"
-          "  } else {\n"
-          // We should not register ArenaDtor for MOA.
-          "    $inlined_string_donated_array$[0] = 0xFFFFFFFEu;\n"
-          "  }\n");
-    } else {
-      format("  $inlined_string_donated_array$[0] = 0xFFFFFFFEu;\n");
-    }
-    for (size_t i = 1; i < InlinedStringDonatedSize(); ++i) {
-      format("  $inlined_string_donated_array$[$1$] = ~0u;\n", i);
-    }
-    format("}\n");
-    format.Outdent();
-  }
+      "  : $1$(arena, is_message_owned) {\n",
+      SuperClassName(descriptor_, options_));
 
   if (!HasSimpleBaseClass(descriptor_, options_)) {
-    format("  SharedCtor();\n");
+    format("  SharedCtor(arena, is_message_owned);\n");
     if (NeedsArenaDestructor() == ArenaDtorNeeds::kRequired) {
       format(
           "  if (arena != nullptr && !is_message_owned) {\n"
@@ -2576,40 +2821,81 @@ void MessageGenerator::GenerateStructors(io::Printer* printer) {
   } else {
     format(
         "$classname$::$classname$(const $classname$& from)\n"
-        "  : $superclass$()");
+        "  : $superclass$() {\n");
     format.Indent();
-    format.Indent();
-    format.Indent();
+    format("$classname$* const _this = this; (void)_this;\n");
 
-    // Do not copy inlined_string_donated_, because this is not an arena
-    // constructor.
+    if (HasImplData(descriptor_, options_)) {
+      const char* field_sep = " ";
+      const auto put_sep = [&] {
+        format("\n$1$ ", field_sep);
+        field_sep = ",";
+      };
 
-    if (!has_bit_indices_.empty()) {
-      format(",\n_has_bits_(from._has_bits_)");
-    }
+      format("new (&_impl_) Impl_{");
+      format.Indent();
 
-    std::vector<bool> processed(optimized_order_.size(), false);
-    for (int i = 0; i < optimized_order_.size(); i++) {
-      auto field = optimized_order_[i];
-      if (!(field->is_repeated() && !(field->is_map())) &&
-          !IsCord(field, options_)) {
-        continue;
+      if (descriptor_->extension_range_count() > 0) {
+        put_sep();
+        format("/*decltype($extensions$)*/{}");
+      }
+      if (!inlined_string_indices_.empty()) {
+        // Do not copy inlined_string_donated_, because this is not an arena
+        // constructor.
+        put_sep();
+        format("decltype($inlined_string_donated_array$){}");
+      }
+      bool need_to_emit_cached_size =
+          !HasSimpleBaseClass(descriptor_, options_);
+      if (!has_bit_indices_.empty()) {
+        put_sep();
+        format("decltype($has_bits$){from.$has_bits$}");
+        if (need_to_emit_cached_size) {
+          put_sep();
+          format("/*decltype($cached_size$)*/{}");
+          need_to_emit_cached_size = false;
+        }
       }
 
-      processed[i] = true;
-      format(",\n$1$_(from.$1$_)", FieldName(field));
-    }
+      // Initialize member variables with arena constructor.
+      for (auto field : optimized_order_) {
+        if (ShouldSplit(field, options_)) {
+          continue;
+        }
+        put_sep();
+        field_generators_.get(field).GenerateCopyAggregateInitializer(printer);
+      }
+      if (ShouldSplit(descriptor_, options_)) {
+        put_sep();
+        format("decltype($split$){reinterpret_cast<Impl_::Split*>(&$1$)}",
+               DefaultInstanceName(descriptor_, options_, /*split=*/true));
+      }
+      for (auto oneof : OneOfRange(descriptor_)) {
+        put_sep();
+        format("decltype(_impl_.$1$_){}", oneof->name());
+      }
 
-    if (IsAnyMessage(descriptor_, options_)) {
-      format(",\n_any_metadata_(&type_url_, &value_)");
-    }
-    if (num_weak_fields_ > 0) {
-      format(",\n_weak_field_map_(from._weak_field_map_)");
-    }
+      if (need_to_emit_cached_size) {
+        put_sep();
+        format("/*decltype($cached_size$)*/{}");
+      }
 
-    format.Outdent();
-    format.Outdent();
-    format(" {\n");
+      if (descriptor_->real_oneof_decl_count() != 0) {
+        put_sep();
+        format("/*decltype($oneof_case$)*/{}");
+      }
+      if (num_weak_fields_ > 0) {
+        put_sep();
+        format("decltype($weak_field_map$){from.$weak_field_map$}");
+      }
+      if (IsAnyMessage(descriptor_, options_)) {
+        put_sep();
+        format(
+            "/*decltype($any_metadata$)*/{&_impl_.type_url_, &_impl_.value_}");
+      }
+      format.Outdent();
+      format("};\n\n");
+    }
 
     format(
         "_internal_metadata_.MergeFrom<$unknown_fields_type$>(from._internal_"
@@ -2621,7 +2907,7 @@ void MessageGenerator::GenerateStructors(io::Printer* printer) {
           "from.$extensions$);\n");
     }
 
-    GenerateConstructorBody(printer, processed, true);
+    GenerateCopyConstructorBody(printer);
 
     // Copy oneof fields. Oneof field requires oneof case check.
     for (auto oneof : OneOfRange(descriptor_)) {
@@ -2658,6 +2944,10 @@ void MessageGenerator::GenerateStructors(io::Printer* printer) {
 
   // Generate the shared constructor code.
   GenerateSharedConstructorCode(printer);
+
+  if (ShouldSplit(descriptor_, options_)) {
+    GenerateCreateSplitMessage(printer);
+  }
 
   // Generate the destructor.
   if (!HasSimpleBaseClass(descriptor_, options_)) {
@@ -2756,6 +3046,7 @@ void MessageGenerator::GenerateClear(io::Printer* printer) {
         // (memset) per chunk, and if present it will be at the beginning.
         bool same = HasByteIndex(a) == HasByteIndex(b) &&
                     a->is_repeated() == b->is_repeated() &&
+                    ShouldSplit(a, options_) == ShouldSplit(b, options_) &&
                     (CanInitializeByZeroing(a) == CanInitializeByZeroing(b) ||
                      (CanInitializeByZeroing(a) &&
                       (chunk_count == 1 || merge_zero_init)));
@@ -2763,7 +3054,8 @@ void MessageGenerator::GenerateClear(io::Printer* printer) {
         return same;
       });
 
-  ColdChunkSkipper cold_skipper(options_, chunks, has_bit_indices_, kColdRatio);
+  ColdChunkSkipper cold_skipper(descriptor_, options_, chunks, has_bit_indices_,
+                                kColdRatio);
   int cached_has_word_index = -1;
 
   for (int chunk_index = 0; chunk_index < chunks.size(); chunk_index++) {
@@ -2773,7 +3065,7 @@ void MessageGenerator::GenerateClear(io::Printer* printer) {
     const FieldDescriptor* memset_start = nullptr;
     const FieldDescriptor* memset_end = nullptr;
     bool saw_non_zero_init = false;
-
+    bool chunk_is_cold = !chunk.empty() && ShouldSplit(chunk.front(), options_);
     for (const auto& field : chunk) {
       if (CanInitializeByZeroing(field)) {
         GOOGLE_CHECK(!saw_non_zero_init);
@@ -2813,17 +3105,25 @@ void MessageGenerator::GenerateClear(io::Printer* printer) {
       format.Indent();
     }
 
+    if (chunk_is_cold) {
+      format("if (!IsSplitMessageDefault()) {\n");
+      format.Indent();
+    }
+
     if (memset_start) {
       if (memset_start == memset_end) {
         // For clarity, do not memset a single field.
         field_generators_.get(memset_start)
             .GenerateMessageClearingCode(printer);
       } else {
+        GOOGLE_CHECK_EQ(chunk_is_cold, ShouldSplit(memset_start, options_));
+        GOOGLE_CHECK_EQ(chunk_is_cold, ShouldSplit(memset_end, options_));
         format(
             "::memset(&$1$, 0, static_cast<size_t>(\n"
             "    reinterpret_cast<char*>(&$2$) -\n"
             "    reinterpret_cast<char*>(&$1$)) + sizeof($2$));\n",
-            FieldMemberName(memset_start), FieldMemberName(memset_end));
+            FieldMemberName(memset_start, chunk_is_cold),
+            FieldMemberName(memset_end, chunk_is_cold));
       }
     }
 
@@ -2850,6 +3150,11 @@ void MessageGenerator::GenerateClear(io::Printer* printer) {
         format.Outdent();
         format("}\n");
       }
+    }
+
+    if (chunk_is_cold) {
+      format.Outdent();
+      format("}\n");
     }
 
     if (have_outer_if) {
@@ -2950,7 +3255,7 @@ void MessageGenerator::GenerateSwap(io::Printer* printer) {
     std::map<std::string, std::string> vars;
     SetUnknownFieldsVariable(descriptor_, options_, &vars);
     format.AddMap(vars);
-    if (HasSingularString(descriptor_, options_)) {
+    if (HasNonSplitOptionalString(descriptor_, options_)) {
       format(
           "auto* lhs_arena = GetArenaForAllocation();\n"
           "auto* rhs_arena = other->GetArenaForAllocation();\n");
@@ -2966,11 +3271,15 @@ void MessageGenerator::GenerateSwap(io::Printer* printer) {
     // If possible, we swap several fields at once, including padding.
     const RunMap runs =
         FindRuns(optimized_order_, [this](const FieldDescriptor* field) {
-          return CanBeManipulatedAsRawBytes(field, options_, scc_analyzer_);
+          return !ShouldSplit(field, options_) &&
+                 CanBeManipulatedAsRawBytes(field, options_, scc_analyzer_);
         });
 
-    for (int i = 0; i < optimized_order_.size(); ++i) {
+    for (size_t i = 0; i < optimized_order_.size(); ++i) {
       const FieldDescriptor* field = optimized_order_[i];
+      if (ShouldSplit(field, options_)) {
+        continue;
+      }
       const auto it = runs.find(field);
 
       // We only apply the memswap technique to runs of more than one field, as
@@ -2979,9 +3288,10 @@ void MessageGenerator::GenerateSwap(io::Printer* printer) {
       if (it != runs.end() && it->second > 1) {
         // Use a memswap, then skip run_length fields.
         const size_t run_length = it->second;
-        const std::string first_field_name = FieldMemberName(field);
-        const std::string last_field_name =
-            FieldMemberName(optimized_order_[i + run_length - 1]);
+        const std::string first_field_name =
+            FieldMemberName(field, /*cold=*/false);
+        const std::string last_field_name = FieldMemberName(
+            optimized_order_[i + run_length - 1], /*cold=*/false);
 
         format.Set("first", first_field_name);
         format.Set("last", last_field_name);
@@ -3000,16 +3310,16 @@ void MessageGenerator::GenerateSwap(io::Printer* printer) {
         field_generators_.get(field).GenerateSwappingCode(printer);
       }
     }
+    if (ShouldSplit(descriptor_, options_)) {
+      format("swap($split$, other->$split$);\n");
+    }
 
     for (auto oneof : OneOfRange(descriptor_)) {
-      format("swap($1$_, other->$1$_);\n", oneof->name());
+      format("swap(_impl_.$1$_, other->_impl_.$1$_);\n", oneof->name());
     }
 
     for (int i = 0; i < descriptor_->real_oneof_decl_count(); i++) {
-      format(
-          "swap($oneof_case$[$1$], "
-          "other->$oneof_case$[$1$]);\n",
-          i);
+      format("swap($oneof_case$[$1$], other->$oneof_case$[$1$]);\n", i);
     }
 
     if (num_weak_fields_) {
@@ -3050,17 +3360,11 @@ void MessageGenerator::GenerateMergeFrom(io::Printer* printer) {
       format(
           "const ::$proto_ns$::Message::ClassData "
           "$classname$::_class_data_ = {\n"
-          "    ::$proto_ns$::Message::CopyWithSizeCheck,\n"
+          "    ::$proto_ns$::Message::CopyWithSourceCheck,\n"
           "    $classname$::MergeImpl\n"
           "};\n"
           "const ::$proto_ns$::Message::ClassData*"
           "$classname$::GetClassData() const { return &_class_data_; }\n"
-          "\n"
-          "void $classname$::MergeImpl(::$proto_ns$::Message* to,\n"
-          "                      const ::$proto_ns$::Message& from) {\n"
-          "  static_cast<$classname$ *>(to)->MergeFrom(\n"
-          "      static_cast<const $classname$ &>(from));\n"
-          "}\n"
           "\n");
     } else {
       // Generate CheckTypeAndMergeFrom().
@@ -3087,29 +3391,50 @@ void MessageGenerator::GenerateMergeFrom(io::Printer* printer) {
   }
 }
 
-void MessageGenerator::GenerateClassSpecificMergeFrom(io::Printer* printer) {
+void MessageGenerator::GenerateClassSpecificMergeImpl(io::Printer* printer) {
   if (HasSimpleBaseClass(descriptor_, options_)) return;
   // Generate the class-specific MergeFrom, which avoids the GOOGLE_CHECK and cast.
   Formatter format(printer, variables_);
+  if (!HasDescriptorMethods(descriptor_->file(), options_)) {
+    // For messages that don't inherit from Message, just implement MergeFrom
+    // directly.
+    format(
+        "void $classname$::MergeFrom(const $classname$& from) {\n"
+        "  $classname$* const _this = this;\n");
+  } else {
+    format(
+        "void $classname$::MergeImpl(::$proto_ns$::Message& to_msg, const "
+        "::$proto_ns$::Message& from_msg) {\n"
+        "  auto* const _this = static_cast<$classname$*>(&to_msg);\n"
+        "  auto& from = static_cast<const $classname$&>(from_msg);\n");
+  }
+  format.Indent();
   format(
-      "void $classname$::MergeFrom(const $classname$& from) {\n"
       "$annotate_mergefrom$"
       "// @@protoc_insertion_point(class_specific_merge_from_start:"
-      "$full_name$)\n"
-      "  $DCHK$_NE(&from, this);\n");
-  format.Indent();
+      "$full_name$)\n");
+  format("$DCHK$_NE(&from, _this);\n");
 
   format(
       "$uint32$ cached_has_bits = 0;\n"
       "(void) cached_has_bits;\n\n");
 
+  if (ShouldSplit(descriptor_, options_)) {
+    format(
+        "if (!from.IsSplitMessageDefault()) {\n"
+        "  _this->PrepareSplitMessageForWrite();\n"
+        "}\n");
+  }
+
   std::vector<std::vector<const FieldDescriptor*>> chunks = CollectFields(
       optimized_order_,
       [&](const FieldDescriptor* a, const FieldDescriptor* b) -> bool {
-        return HasByteIndex(a) == HasByteIndex(b);
+        return HasByteIndex(a) == HasByteIndex(b) &&
+               ShouldSplit(a, options_) == ShouldSplit(b, options_);
       });
 
-  ColdChunkSkipper cold_skipper(options_, chunks, has_bit_indices_, kColdRatio);
+  ColdChunkSkipper cold_skipper(descriptor_, options_, chunks, has_bit_indices_,
+                                kColdRatio);
 
   // cached_has_word_index maintains that:
   //   cached_has_bits = from._has_bits_[cached_has_word_index]
@@ -3198,7 +3523,8 @@ void MessageGenerator::GenerateClassSpecificMergeFrom(io::Printer* printer) {
       if (deferred_has_bit_changes) {
         // Flush the has bits for the primitives we deferred.
         GOOGLE_CHECK_LE(0, cached_has_word_index);
-        format("$has_bits$[$1$] |= cached_has_bits;\n", cached_has_word_index);
+        format("_this->$has_bits$[$1$] |= cached_has_bits;\n",
+               cached_has_word_index);
       }
 
       format.Outdent();
@@ -3235,7 +3561,7 @@ void MessageGenerator::GenerateClassSpecificMergeFrom(io::Printer* printer) {
   }
   if (num_weak_fields_) {
     format(
-        "$weak_field_map$.MergeFrom(from.$weak_field_map$);"
+        "_this->$weak_field_map$.MergeFrom(from.$weak_field_map$);"
         "\n");
   }
 
@@ -3243,12 +3569,13 @@ void MessageGenerator::GenerateClassSpecificMergeFrom(io::Printer* printer) {
   // the opportunity for tail calls.
   if (descriptor_->extension_range_count() > 0) {
     format(
-        "$extensions$.MergeFrom(internal_default_instance(), "
+        "_this->$extensions$.MergeFrom(internal_default_instance(), "
         "from.$extensions$);\n");
   }
 
   format(
-      "_internal_metadata_.MergeFrom<$unknown_fields_type$>(from._internal_"
+      "_this->_internal_metadata_.MergeFrom<$unknown_fields_type$>(from._"
+      "internal_"
       "metadata_);\n");
 
   format.Outdent();
@@ -3263,12 +3590,12 @@ void MessageGenerator::GenerateCopyFrom(io::Printer* printer) {
     // takes in the Message base class as a parameter); instead we just
     // let the base Message::CopyFrom take care of it.  The base MergeFrom
     // knows how to quickly confirm the types exactly match, and if so, will
-    // use GetClassData() to get the address of Message::CopyWithSizeCheck,
+    // use GetClassData() to get the address of Message::CopyWithSourceCheck,
     // which calls Clear() and then MergeFrom(), as well as making sure that
-    // clearing the destination message doesn't alter the size of the source,
-    // when in debug builds.
-    // Most callers avoid this by passing a "from" message that is the same
-    // type as the message being merged into, rather than a generic Message.
+    // clearing the destination message doesn't alter the source, when in debug
+    // builds. Most callers avoid this by passing a "from" message that is the
+    // same type as the message being merged into, rather than a generic
+    // Message.
   }
 
   // Generate the class-specific CopyFrom.
@@ -3280,20 +3607,33 @@ void MessageGenerator::GenerateCopyFrom(io::Printer* printer) {
 
   format("if (&from == this) return;\n");
 
-  if (!options_.opensource_runtime) {
+  if (!options_.opensource_runtime && HasMessageFieldOrExtension(descriptor_)) {
     // This check is disabled in the opensource release because we're
     // concerned that many users do not define NDEBUG in their release builds.
+    // It is also disabled if a message has neither message fields nor
+    // extensions, as it's impossible to copy from its descendant.
+    //
+    // Note that FailIfCopyFromDescendant is implemented by reflection and not
+    // available for lite runtime. In that case, check if the size of the source
+    // has changed after Clear.
+    format("#ifndef NDEBUG\n");
+    if (HasDescriptorMethods(descriptor_->file(), options_)) {
+      format("FailIfCopyFromDescendant(*this, from);\n");
+    } else {
+      format("size_t from_size = from.ByteSizeLong();\n");
+    }
     format(
-        "#ifndef NDEBUG\n"
-        "size_t from_size = from.ByteSizeLong();\n"
         "#endif\n"
-        "Clear();\n"
-        "#ifndef NDEBUG\n"
-        "$CHK$_EQ(from_size, from.ByteSizeLong())\n"
-        "  << \"Source of CopyFrom changed when clearing target.  Either \"\n"
-        "     \"source is a nested message in target (not allowed), or \"\n"
-        "     \"another thread is modifying the source.\";\n"
-        "#endif\n");
+        "Clear();\n");
+    if (!HasDescriptorMethods(descriptor_->file(), options_)) {
+      format(
+          "#ifndef NDEBUG\n"
+          "$CHK$_EQ(from_size, from.ByteSizeLong())\n"
+          "  << \"Source of CopyFrom changed when clearing target.  Either \"\n"
+          "     \"source is a nested message in target (not allowed), or \"\n"
+          "     \"another thread is modifying the source.\";\n"
+          "#endif\n");
+    }
   } else {
     format("Clear();\n");
   }
@@ -3485,7 +3825,7 @@ void MessageGenerator::GenerateSerializeWithCachedSizesBody(
             // Reload.
             int new_index = has_bit_index / 32;
 
-            format_("cached_has_bits = _has_bits_[$1$];\n", new_index);
+            format_("cached_has_bits = _impl_._has_bits_[$1$];\n", new_index);
 
             cached_has_bit_index_ = new_index;
           }
@@ -3878,14 +4218,16 @@ void MessageGenerator::GenerateByteSize(io::Printer* printer) {
   std::vector<std::vector<const FieldDescriptor*>> chunks = CollectFields(
       optimized_order_,
       [&](const FieldDescriptor* a, const FieldDescriptor* b) -> bool {
-        return a->label() == b->label() && HasByteIndex(a) == HasByteIndex(b);
+        return a->label() == b->label() && HasByteIndex(a) == HasByteIndex(b) &&
+               ShouldSplit(a, options_) == ShouldSplit(b, options_);
       });
 
   // Remove chunks with required fields.
   chunks.erase(std::remove_if(chunks.begin(), chunks.end(), IsRequired),
                chunks.end());
 
-  ColdChunkSkipper cold_skipper(options_, chunks, has_bit_indices_, kColdRatio);
+  ColdChunkSkipper cold_skipper(descriptor_, options_, chunks, has_bit_indices_,
+                                kColdRatio);
   int cached_has_word_index = -1;
 
   format(

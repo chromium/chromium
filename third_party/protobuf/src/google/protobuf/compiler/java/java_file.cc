@@ -32,7 +32,7 @@
 //  Based on original Protocol Buffers design by
 //  Sanjay Ghemawat, Jeff Dean, and others.
 
-#include <google/protobuf/compiler/java/java_file.h>
+#include <google/protobuf/compiler/java/file.h>
 
 #include <memory>
 #include <set>
@@ -42,17 +42,20 @@
 #include <google/protobuf/io/zero_copy_stream.h>
 #include <google/protobuf/dynamic_message.h>
 #include <google/protobuf/stubs/strutil.h>
-#include <google/protobuf/compiler/java/java_context.h>
-#include <google/protobuf/compiler/java/java_enum.h>
-#include <google/protobuf/compiler/java/java_enum_lite.h>
-#include <google/protobuf/compiler/java/java_extension.h>
-#include <google/protobuf/compiler/java/java_generator_factory.h>
-#include <google/protobuf/compiler/java/java_helpers.h>
-#include <google/protobuf/compiler/java/java_message.h>
-#include <google/protobuf/compiler/java/java_name_resolver.h>
-#include <google/protobuf/compiler/java/java_service.h>
-#include <google/protobuf/compiler/java/java_shared_code_generator.h>
+#include <google/protobuf/compiler/java/context.h>
+#include <google/protobuf/compiler/java/enum.h>
+#include <google/protobuf/compiler/java/enum_lite.h>
+#include <google/protobuf/compiler/java/extension.h>
+#include <google/protobuf/compiler/java/generator_factory.h>
+#include <google/protobuf/compiler/java/helpers.h>
+#include <google/protobuf/compiler/java/message.h>
+#include <google/protobuf/compiler/java/name_resolver.h>
+#include <google/protobuf/compiler/java/service.h>
+#include <google/protobuf/compiler/java/shared_code_generator.h>
 #include <google/protobuf/descriptor.pb.h>
+
+// Must be last.
+#include <google/protobuf/port_def.inc>
 
 namespace google {
 namespace protobuf {
@@ -247,7 +250,7 @@ bool FileGenerator::Validate(std::string* error) {
         << "generate full runtime code for Java. To use Java Lite runtime, "
         << "users should use the Java Lite plugin instead. See:\n"
         << "  "
-           "https://github.com/protocolbuffers/protobuf/blob/master/java/"
+           "https://github.com/protocolbuffers/protobuf/blob/main/java/"
            "lite.md";
   }
   return true;
@@ -732,3 +735,5 @@ bool FileGenerator::ShouldIncludeDependency(const FileDescriptor* descriptor,
 }  // namespace compiler
 }  // namespace protobuf
 }  // namespace google
+
+#include <google/protobuf/port_undef.inc>

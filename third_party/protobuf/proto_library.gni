@@ -137,13 +137,14 @@
 #    ]
 #  }
 
+import("//build/config/cronet/config.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/toolchain/kythe.gni")
 
 declare_args() {
   # Allows subprojects to omit javascript dependencies (e.g.) closure_compiler
   # and google-closure-library.
-  enable_js_protobuf = true
+  enable_js_protobuf = !is_cronet_build
 }
 
 if (enable_js_protobuf) {
@@ -159,6 +160,10 @@ if (host_os == "win") {
 _protoc_label = "//third_party/protobuf:protoc($host_toolchain)"
 _protoc_path = get_label_info(_protoc_label, "root_out_dir") + "/protoc" +
                _host_executable_suffix
+_protoc_gen_js_label =
+    "//third_party/protobuf-javascript:protoc-gen-js($host_toolchain)"
+_protoc_gen_js_path = get_label_info(_protoc_gen_js_label, "root_out_dir") +
+                      "/protoc-gen-js" + _host_executable_suffix
 
 template("proto_library") {
   assert(defined(invoker.sources), "Need sources for proto_library")
@@ -407,6 +412,8 @@ template("proto_library") {
       args += [
         "--js-out-dir",
         rel_js_out_dir,
+        "--protoc-gen-js",
+        "./" + rebase_path(_protoc_gen_js_path, root_build_dir),
       ]
     }
 
@@ -455,6 +462,11 @@ template("proto_library") {
     # System protoc is not used so it's necessary to build a chromium one.
     inputs += [ _protoc_path ]
     deps = [ _protoc_label ]
+
+    if (enable_js_protobuf) {
+      inputs += [ _protoc_gen_js_path ]
+      deps += [ _protoc_gen_js_label ]
+    }
 
     if (generate_with_plugin) {
       inputs += [ plugin_path ]

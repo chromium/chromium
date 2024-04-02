@@ -52,6 +52,7 @@ def __scandeps(ctx, args):
         "--proto-in-dir",
         "--import-dir",
         "--protoc",
+        "--protoc-gen-js",
         "--cc-out-dir",
         "--py-out-dir",
         "--js-out-dir",
@@ -81,6 +82,10 @@ def __scandeps(ctx, args):
             flag = ""
             continue
         elif flag == "--protoc":
+            inputs.append(ctx.fs.canonpath(arg))
+            flag = ""
+            continue
+        elif flag == "--protoc-gen-js":
             inputs.append(ctx.fs.canonpath(arg))
             flag = ""
             continue

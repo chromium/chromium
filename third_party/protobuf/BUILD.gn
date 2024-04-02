@@ -292,6 +292,9 @@ if (current_toolchain == host_toolchain) {
       # Default manifest on Windows (a no-op elsewhere).
       "//build/win:default_exe_manifest",
     ]
+    if (enable_js_protobuf) {
+      deps += [ "//third_party/protobuf-javascript:protoc-gen-js" ]
+    }
   }
 }
 
@@ -377,15 +380,16 @@ if (enable_js_protobuf) {
       "//third_party/google-closure-library/closure/goog/string/typedstring.js",
       "//third_party/google-closure-library/closure/goog/useragent/product.js",
       "//third_party/google-closure-library/closure/goog/useragent/useragent.js",
-      "js/binary/arith.js",
-      "js/binary/constants.js",
-      "js/binary/decoder.js",
-      "js/binary/encoder.js",
-      "js/binary/reader.js",
-      "js/binary/utils.js",
-      "js/binary/writer.js",
-      "js/map.js",
-      "js/message.js",
+      "//third_party/protobuf-javascript/src/asserts.js",
+      "//third_party/protobuf-javascript/src/binary/arith.js",
+      "//third_party/protobuf-javascript/src/binary/constants.js",
+      "//third_party/protobuf-javascript/src/binary/decoder.js",
+      "//third_party/protobuf-javascript/src/binary/encoder.js",
+      "//third_party/protobuf-javascript/src/binary/reader.js",
+      "//third_party/protobuf-javascript/src/binary/utils.js",
+      "//third_party/protobuf-javascript/src/binary/writer.js",
+      "//third_party/protobuf-javascript/src/map.js",
+      "//third_party/protobuf-javascript/src/message.js",
     ]
   }
 }

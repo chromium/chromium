@@ -32,7 +32,7 @@
 //  Based on original Protocol Buffers design by
 //  Sanjay Ghemawat, Jeff Dean, and others.
 
-#include <google/protobuf/compiler/java/java_helpers.h>
+#include <google/protobuf/compiler/java/helpers.h>
 
 #include <algorithm>
 #include <cstdint>
@@ -44,10 +44,13 @@
 #include <google/protobuf/stubs/strutil.h>
 #include <google/protobuf/stubs/stringprintf.h>
 #include <google/protobuf/stubs/substitute.h>
-#include <google/protobuf/compiler/java/java_name_resolver.h>
-#include <google/protobuf/compiler/java/java_names.h>
+#include <google/protobuf/compiler/java/name_resolver.h>
+#include <google/protobuf/compiler/java/names.h>
 #include <google/protobuf/descriptor.pb.h>
 #include <google/protobuf/stubs/hash.h>  // for hash<T *>
+
+// Must be last.
+#include <google/protobuf/port_def.inc>
 
 namespace google {
 namespace protobuf {
@@ -83,8 +86,7 @@ const char* kForbiddenWordList[] = {
     "AllFields",
     "DescriptorForType",
     "InitializationErrorString",
-    // TODO(b/219045204): re-enable
-    // "UnknownFields",
+    "UnknownFields",
     // obsolete. kept for backwards compatibility of generated code
     "CachedSize",
 };
@@ -261,18 +263,18 @@ std::string UnderscoresToCamelCaseCheckReserved(const FieldDescriptor* field) {
   return name;
 }
 
+// Names that should be avoided as field names in Kotlin.
+// All Kotlin hard keywords are in this list.
+const std::unordered_set<std::string>* kKotlinForbiddenNames =
+    new std::unordered_set<std::string>({
+        "as",    "as?",   "break", "class",  "continue",  "do",     "else",
+        "false", "for",   "fun",   "if",     "in",        "!in",    "interface",
+        "is",    "!is",   "null",  "object", "package",   "return", "super",
+        "this",  "throw", "true",  "try",    "typealias", "typeof", "val",
+        "var",   "when",  "while",
+    });
+
 bool IsForbiddenKotlin(const std::string& field_name) {
-  // Names that should be avoided as field names in Kotlin.
-  // All Kotlin hard keywords are in this list.
-  const std::unordered_set<std::string>* kKotlinForbiddenNames =
-      new std::unordered_set<std::string>({
-          "as",      "as?",       "break",  "class", "continue", "do",
-          "else",    "false",     "for",    "fun",   "if",       "in",
-          "!in",     "interface", "is",     "!is",   "null",     "object",
-          "package", "return",    "super",  "this",  "throw",    "true",
-          "try",     "typealias", "typeof", "val",   "var",      "when",
-          "while",
-      });
   return kKotlinForbiddenNames->find(field_name) !=
          kKotlinForbiddenNames->end();
 }
@@ -1109,3 +1111,5 @@ void EscapeUtf16ToString(uint16_t code, std::string* output) {
 }  // namespace compiler
 }  // namespace protobuf
 }  // namespace google
+
+#include <google/protobuf/port_undef.inc>

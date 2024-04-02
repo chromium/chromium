@@ -79,17 +79,20 @@ def _proto_gen_impl(ctx):
     deps = depset(direct=ctx.files.srcs)
     source_dir = _SourceDir(ctx)
     gen_dir = _GenDir(ctx).rstrip("/")
+    import_flags = []
+        
     if source_dir:
         has_sources = any([src.is_source for src in srcs])
-        has_generated = any([not src.is_source for src in srcs])
-        import_flags = []
         if has_sources:
             import_flags += ["-I" + source_dir]
-        if has_generated:
-            import_flags += ["-I" + gen_dir]
-        import_flags = depset(direct=import_flags)
     else:
-        import_flags = depset(direct=["-I."])
+        import_flags += ["-I."]
+
+    has_generated = any([not src.is_source for src in srcs])
+    if has_generated:
+        import_flags += ["-I" + gen_dir]
+
+    import_flags = depset(direct=import_flags)
 
     for dep in ctx.attr.deps:
         if type(dep.proto.import_flags) == "list":
@@ -163,7 +166,7 @@ def _proto_gen_impl(ctx):
             for out in outs:
                 orig_command = " ".join(
                     ["$(realpath %s)" % ctx.executable.protoc.path] + args +
-                    import_flags_real + ["-I.", src.basename],
+                    import_flags_real + [src.basename],
                 )
                 command = ";".join([
                     'CMD="%s"' % orig_command,
@@ -474,10 +477,12 @@ def internal_copied_filegroup(name, srcs, strip_prefix, dest, **kwargs):
         name = name + "_genrule",
         srcs = srcs,
         outs = outs,
-        cmd = " && ".join(
+        cmd_bash = " && ".join(
             ["cp $(location %s) $(location %s)" %
-             (s, _RelativeOutputPath(s, strip_prefix, dest)) for s in srcs],
-        ),
+             (s, _RelativeOutputPath(s, strip_prefix, dest)) for s in srcs]),
+        cmd_bat = " && ".join(
+            ["@copy /Y $(location %s) $(location %s) >NUL" %
+             (s, _RelativeOutputPath(s, strip_prefix, dest)) for s in srcs]),
     )
 
     native.filegroup(

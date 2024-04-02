@@ -28,13 +28,13 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <google/protobuf/compiler/python/python_helpers.h>
+#include <google/protobuf/compiler/python/helpers.h>
 
 #include <algorithm>
 
+#include <google/protobuf/stubs/strutil.h>
 #include <google/protobuf/compiler/code_generator.h>
 #include <google/protobuf/descriptor.h>
-#include <google/protobuf/stubs/strutil.h>
 #include <google/protobuf/descriptor.pb.h>
 
 namespace google {
@@ -62,7 +62,7 @@ const char* const kKeywords[] = {
     "del",    "elif",     "else",  "except", "finally",  "for",
     "from",   "global",   "if",    "import", "in",       "is",
     "lambda", "nonlocal", "not",   "or",     "pass",     "raise",
-    "return", "try",      "while", "with",   "yield",    "print",
+    "return", "try",      "while", "with",   "yield",
 };
 const char* const* kKeywordsEnd =
     kKeywords + (sizeof(kKeywords) / sizeof(kKeywords[0]));

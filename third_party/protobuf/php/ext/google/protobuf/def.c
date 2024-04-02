@@ -162,7 +162,7 @@ static void EnumDescriptor_FromEnumDef(zval *val, const upb_EnumDef *m) {
     ZVAL_NULL(val);
   } else {
     char *classname =
-        GetPhpClassname(upb_EnumDef_File(m), upb_EnumDef_FullName(m));
+        GetPhpClassname(upb_EnumDef_File(m), upb_EnumDef_FullName(m), false);
     zend_string *str = zend_string_init(classname, strlen(classname), 0);
     zend_class_entry *ce = zend_lookup_class(str);  // May autoload the class.
 
@@ -457,6 +457,44 @@ PHP_METHOD(FieldDescriptor, getEnumType) {
 }
 
 /*
+ * FieldDescriptor::getContainingOneof()
+ *
+ * Returns the OneofDescriptor for this field, or null if it is not inside
+ * a oneof.
+ */
+PHP_METHOD(FieldDescriptor, getContainingOneof) {
+  FieldDescriptor *intern = (FieldDescriptor*)Z_OBJ_P(getThis());
+  const upb_OneofDef *o = upb_FieldDef_ContainingOneof(intern->fielddef);
+  zval ret;
+
+  if (!o) {
+    RETURN_NULL();
+  }
+
+  OneofDescriptor_FromOneofDef(&ret, o);
+  RETURN_COPY_VALUE(&ret);
+}
+
+/*
+ * FieldDescriptor::getRealContainingOneof()
+ *
+ * Returns the non-synthetic OneofDescriptor for this field, or null if it is
+ * not inside a oneof.
+ */
+PHP_METHOD(FieldDescriptor, getRealContainingOneof) {
+  FieldDescriptor *intern = (FieldDescriptor*)Z_OBJ_P(getThis());
+  const upb_OneofDef *o = upb_FieldDef_RealContainingOneof(intern->fielddef);
+  zval ret;
+
+  if (!o) {
+    RETURN_NULL();
+  }
+
+  OneofDescriptor_FromOneofDef(&ret, o);
+  RETURN_COPY_VALUE(&ret);
+}
+
+/*
  * FieldDescriptor::getMessageType()
  *
  * Returns the Descriptor for this field, which must be a message.
@@ -482,6 +520,8 @@ static zend_function_entry FieldDescriptor_methods[] = {
   PHP_ME(FieldDescriptor, getType,   arginfo_void, ZEND_ACC_PUBLIC)
   PHP_ME(FieldDescriptor, isMap,     arginfo_void, ZEND_ACC_PUBLIC)
   PHP_ME(FieldDescriptor, getEnumType, arginfo_void, ZEND_ACC_PUBLIC)
+  PHP_ME(FieldDescriptor, getContainingOneof, arginfo_void, ZEND_ACC_PUBLIC)
+  PHP_ME(FieldDescriptor, getRealContainingOneof, arginfo_void, ZEND_ACC_PUBLIC)
   PHP_ME(FieldDescriptor, getMessageType, arginfo_void, ZEND_ACC_PUBLIC)
   ZEND_FE_END
 };
@@ -499,19 +539,24 @@ static void Descriptor_destructor(zend_object* obj) {
 }
 
 static zend_class_entry *Descriptor_GetGeneratedClass(const upb_MessageDef *m) {
-  char *classname =
-      GetPhpClassname(upb_MessageDef_File(m), upb_MessageDef_FullName(m));
-  zend_string *str = zend_string_init(classname, strlen(classname), 0);
-  zend_class_entry *ce = zend_lookup_class(str);  // May autoload the class.
+  for (int i = 0; i < 2; ++i) {
+    char *classname =
+        GetPhpClassname(upb_MessageDef_File(m), upb_MessageDef_FullName(m), (bool)i);
+    zend_string *str = zend_string_init(classname, strlen(classname), 0);
+    zend_class_entry *ce = zend_lookup_class(str);  // May autoload the class.
 
-  zend_string_release (str);
+    zend_string_release (str);
+    free(classname);
 
-  if (!ce) {
-    zend_error(E_ERROR, "Couldn't load generated class %s", classname);
+    if (ce) {
+      return ce;
+    }
   }
 
-  free(classname);
-  return ce;
+  char *classname =
+    GetPhpClassname(upb_MessageDef_File(m), upb_MessageDef_FullName(m), false);
+  zend_error(E_ERROR, "Couldn't load generated class %s", classname);
+  return NULL;
 }
 
 void Descriptor_FromMessageDef(zval *val, const upb_MessageDef *m) {
@@ -732,10 +777,8 @@ void DescriptorPool_CreateWithSymbolTable(zval *zv, upb_DefPool *symtab) {
 }
 
 upb_DefPool *DescriptorPool_GetSymbolTable() {
-  DescriptorPool *intern = GetPool(get_generated_pool());
-  return intern->symtab;
+  return get_global_symtab();
 }
-
 
 /*
  * DescriptorPool::getGeneratedPool()
@@ -743,9 +786,7 @@ upb_DefPool *DescriptorPool_GetSymbolTable() {
  * Returns the generated DescriptorPool.
  */
 PHP_METHOD(DescriptorPool, getGeneratedPool) {
-  zval ret;
-  ZVAL_COPY(&ret, get_generated_pool());
-  RETURN_COPY_VALUE(&ret);
+  DescriptorPool_CreateWithSymbolTable(return_value, get_global_symtab());
 }
 
 /*
@@ -880,14 +921,14 @@ static void add_name_mappings(const upb_FileDef *file) {
   }
 }
 
-static void add_descriptor(DescriptorPool *pool,
+static void add_descriptor(upb_DefPool *symtab,
                            const google_protobuf_FileDescriptorProto *file) {
   upb_StringView name = google_protobuf_FileDescriptorProto_name(file);
   upb_Status status;
   const upb_FileDef *file_def;
   upb_Status_Clear(&status);
 
-  if (upb_DefPool_FindFileByNameWithSize(pool->symtab, name.data, name.size)) {
+  if (upb_DefPool_FindFileByNameWithSize(symtab, name.data, name.size)) {
     // Already added.
     // TODO(teboring): Re-enable this warning when aggregate metadata is
     // deprecated.
@@ -902,10 +943,10 @@ static void add_descriptor(DescriptorPool *pool,
   // doesn't add it as a dependency even if the proto file actually does
   // depend on it.
   if (depends_on_descriptor(file)) {
-    google_protobuf_FileDescriptorProto_getmsgdef(pool->symtab);
+    google_protobuf_FileDescriptorProto_getmsgdef(symtab);
   }
 
-  file_def = upb_DefPool_AddFile(pool->symtab, file, &status);
+  file_def = upb_DefPool_AddFile(symtab, file, &status);
   CheckUpbStatus(&status, "Unable to load descriptor");
   add_name_mappings(file_def);
 }
@@ -915,7 +956,7 @@ static void add_descriptor(DescriptorPool *pool,
  *
  * Adds the given descriptor data to this DescriptorPool.
  */
-static void add_descriptor_set(DescriptorPool *pool, const char *data,
+static void add_descriptor_set(upb_DefPool *symtab, const char *data,
                                int data_len, upb_Arena *arena) {
   size_t i, n;
   google_protobuf_FileDescriptorSet *set;
@@ -932,13 +973,12 @@ static void add_descriptor_set(DescriptorPool *pool, const char *data,
 
   for (i = 0; i < n; i++) {
     const google_protobuf_FileDescriptorProto* file = files[i];
-    add_descriptor(pool, file);
+    add_descriptor(symtab, file);
   }
 }
 
 bool DescriptorPool_HasFile(const char *filename) {
-  DescriptorPool *intern = GetPool(get_generated_pool());
-  return upb_DefPool_FindFileByName(intern->symtab, filename) != NULL;
+  return upb_DefPool_FindFileByName(get_global_symtab(), filename) != NULL;
 }
 
 void DescriptorPool_AddDescriptor(const char *filename, const char *data,
@@ -952,7 +992,7 @@ void DescriptorPool_AddDescriptor(const char *filename, const char *data,
     return;
   }
 
-  add_descriptor(GetPool(get_generated_pool()), file);
+  add_descriptor(get_global_symtab(), file);
   upb_Arena_Free(arena);
 }
 
@@ -974,7 +1014,7 @@ PHP_METHOD(DescriptorPool, internalAddGeneratedFile) {
   }
 
   arena = upb_Arena_New();
-  add_descriptor_set(intern, data, data_len, arena);
+  add_descriptor_set(intern->symtab, data, data_len, arena);
   upb_Arena_Free(arena);
 }
 
@@ -1015,7 +1055,7 @@ zend_class_entry *InternalDescriptorPool_class_entry;
  * instance.
  */
 PHP_METHOD(InternalDescriptorPool, getGeneratedPool) {
-  RETURN_COPY(get_generated_pool());
+  DescriptorPool_CreateWithSymbolTable(return_value, get_global_symtab());
 }
 
 static zend_function_entry InternalDescriptorPool_methods[] = {

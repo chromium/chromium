@@ -298,6 +298,7 @@ public abstract class GeneratedMessageLite<
   protected abstract Object dynamicMethod(MethodToInvoke method, Object arg0, Object arg1);
 
   /** Same as {@link #dynamicMethod(MethodToInvoke, Object, Object)} with {@code null} padding. */
+  @CanIgnoreReturnValue
   protected Object dynamicMethod(MethodToInvoke method, Object arg0) {
     return dynamicMethod(method, arg0, null);
   }
@@ -406,8 +407,13 @@ public abstract class GeneratedMessageLite<
 
   protected static <T extends GeneratedMessageLite<?, ?>> void registerDefaultInstance(
       Class<T> clazz, T defaultInstance) {
+    // Default instances must be immutable.
+    // Marking immutable here to avoid extra bytecode in every generated message class.
+    // Only calling "markImmutable" rather than "makeImmutable" because for Default Instances:
+    // 1. All sub-messages are initialized to null / default instances and thus immutable
+    // 2. All lists are initialized to default instance empty lists which are also immutable.
+    defaultInstance.markImmutable();
     defaultInstanceMap.put(clazz, defaultInstance);
-    defaultInstance.makeImmutable();
   }
 
   protected static Object newMessageInfo(
@@ -669,7 +675,8 @@ public abstract class GeneratedMessageLite<
         return parseUnknownField(tag, input);
       }
 
-      ensureExtensionsAreMutable();
+      // TODO(b/230609037): remove the unused variable
+      FieldSet<ExtensionDescriptor> unused = ensureExtensionsAreMutable();
 
       if (packed) {
         int length = input.readRawVarint32();
@@ -862,7 +869,8 @@ public abstract class GeneratedMessageLite<
         throws IOException {
       int fieldNumber = typeId;
       int tag = WireFormat.makeTag(typeId, WireFormat.WIRETYPE_LENGTH_DELIMITED);
-      parseExtension(input, extensionRegistry, extension, tag, fieldNumber);
+      // TODO(b/230609037): remove the unused variable
+      boolean unused = parseExtension(input, extensionRegistry, extension, tag, fieldNumber);
     }
 
     private void mergeMessageSetExtensionFromBytes(
@@ -885,6 +893,7 @@ public abstract class GeneratedMessageLite<
           .setField(extension.descriptor, extension.singularToFieldSetType(value));
     }
 
+    @CanIgnoreReturnValue
     FieldSet<ExtensionDescriptor> ensureExtensionsAreMutable() {
       if (extensions.isImmutable()) {
         extensions = extensions.clone();
@@ -1524,8 +1533,10 @@ public abstract class GeneratedMessageLite<
     }
     boolean isInitialized = Protobuf.getInstance().schemaFor(message).isInitialized(message);
     if (shouldMemoize) {
-      message.dynamicMethod(
-          MethodToInvoke.SET_MEMOIZED_IS_INITIALIZED, isInitialized ? message : null);
+      // TODO(b/230609037): remove the unused variable
+      Object unused =
+          message.dynamicMethod(
+              MethodToInvoke.SET_MEMOIZED_IS_INITIALIZED, isInitialized ? message : null);
     }
     return isInitialized;
   }

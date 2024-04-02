@@ -32,7 +32,7 @@
 //  Based on original Protocol Buffers design by
 //  Sanjay Ghemawat, Jeff Dean, and others.
 
-#include <google/protobuf/compiler/java/java_field.h>
+#include <google/protobuf/compiler/java/field.h>
 
 #include <memory>
 
@@ -41,18 +41,18 @@
 #include <google/protobuf/io/printer.h>
 #include <google/protobuf/stubs/strutil.h>
 #include <google/protobuf/stubs/substitute.h>
-#include <google/protobuf/compiler/java/java_context.h>
-#include <google/protobuf/compiler/java/java_enum_field.h>
-#include <google/protobuf/compiler/java/java_enum_field_lite.h>
-#include <google/protobuf/compiler/java/java_helpers.h>
-#include <google/protobuf/compiler/java/java_map_field.h>
-#include <google/protobuf/compiler/java/java_map_field_lite.h>
-#include <google/protobuf/compiler/java/java_message_field.h>
-#include <google/protobuf/compiler/java/java_message_field_lite.h>
-#include <google/protobuf/compiler/java/java_primitive_field.h>
-#include <google/protobuf/compiler/java/java_primitive_field_lite.h>
-#include <google/protobuf/compiler/java/java_string_field.h>
-#include <google/protobuf/compiler/java/java_string_field_lite.h>
+#include <google/protobuf/compiler/java/context.h>
+#include <google/protobuf/compiler/java/enum_field.h>
+#include <google/protobuf/compiler/java/enum_field_lite.h>
+#include <google/protobuf/compiler/java/helpers.h>
+#include <google/protobuf/compiler/java/map_field.h>
+#include <google/protobuf/compiler/java/map_field_lite.h>
+#include <google/protobuf/compiler/java/message_field.h>
+#include <google/protobuf/compiler/java/message_field_lite.h>
+#include <google/protobuf/compiler/java/primitive_field.h>
+#include <google/protobuf/compiler/java/primitive_field_lite.h>
+#include <google/protobuf/compiler/java/string_field.h>
+#include <google/protobuf/compiler/java/string_field_lite.h>
 
 
 namespace google {

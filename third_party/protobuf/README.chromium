@@ -3,9 +3,9 @@ Short Name: protobuf
 URL: https://github.com/google/protobuf
 License: BSD
 License File: LICENSE
-Version: 3.20.3
-CPEPrefix: cpe:/a:google:protobuf:3.20.3
-Revision: fe271ab76f2ad2b2b28c10443865d2af21e27e0e
+Version: 21.12
+CPEPrefix: cpe:/a:google:protobuf:21.12
+Revision: f0dc78d7e6e331b8c6bb2d5283e06aa26883ca7c
 Security Critical: yes
 Shipped: yes
 
@@ -26,10 +26,45 @@ Steps used to create the current version:
    For future releases, it will be worth looking into which patches still need
    to be applied. In case of conflict, update those patches accordingly and save
    them back in place (i.e. in patches directory).
-7. Generate descriptor_pb2.py using the script "gen_extra_chromium_files.py" in
+7. Generate proto_sources.gni using the script "gen_chromium_file_lists.py".
+8. Generate descriptor_pb2.py using the script "gen_extra_chromium_files.py" in
    the same directory as this file.
-8. Generate proto_sources.gni using the script "gen_chromium_file_lists.py".
 9. Update this file (README.chromium).
+
+Notes (hints) for the next roll(er):
+
+* This is probably harder to roll than most things you've rolled in the past.
+  Good luck! Also please reach out for help proactively. The current roll as of
+  writing this required help from multiple very-senior people to even figure out
+  what was broken in the first place. `protobuf` rolling is not in a good place.
+* Rolling one version of protobuf likely introduces a large amount of changes.
+  We should possibly figure out if it's reasonable to stay close to tip of tree
+  and roll frequently rather than use released versions. Sharp corners here
+  likely include that the version is encoded in protobuf output and I (pbos@)
+  don't know if that version tag changes immediately on format incompatibilities
+  or get bumped every time something format incompatible is introduced.
+* After v3.20 protobuf-javascript/ split out from upstream protobuf/. You may
+  need to be aware of both repositories. Also upstream protobuf/ seems to move
+  faster / out of sync with protobuf-javascript/. Hopefully that doesn't cause
+  format incompatibilities in the future (protobuf/ supports something we need
+  that protobuf-javascript/ doesn't).
+* Any argument changes to `protoc_wrapper` in `third_party/protobuf/BUILD.gn`
+  may require updating `build/config/siso/protoc_wrapper.star` as well.
+* We've seen instances where instead of rolling protobuf a local copy of a new
+  built-in type has been checked in. When that happens you may see ODR
+  violations as your built-in type is defined in multiple files. If that happens
+  you may want to move the copy that should never have been checked in into its
+  own namespace, complete the roll and then cleanup the local copy.
+* third_party/mediapipe checks in a weird modified copy of
+  `third_party/protobuf/src/google/protobuf/any.pb.cc` called `any_lite.pb.cc`.
+  This precompiled protobuf will get invalidated on any protobuf version bumps
+  and you'll need to either painstakingly generated a new one (do a diff of the
+  checked-in `any_lite.pb.{cc,h}` and current `any.pb.{cc,h}` to aid you in the
+  process.
+  WARNING: This item is a lot larger than it looks. We should really
+  either fix mediapipe upstream to build with `MEDIAPIPE_PROTO_LITE` and
+  `MEDIAPIPE_PROTO_THIRD_PARTY` both set, but it looks like that configuration
+  has bit rotted.
 
 Note about libmirclient:
 
@@ -82,10 +117,6 @@ Description of the patches:
   Removes an instance of [[noreturn]]. The attribute is correct, but the way
   protobuf's GOOGLE_LOG(FATAL) is defined, the compiler can't see this and it
   trips -Winvalid-noreturn. See https://github.com/protocolbuffers/protobuf/issues/9817
-
-- 0028-export-internal-metadata.patch
-
-  Adds a missing PROTOBUF_EXPORT. See cl/443188236
 
 - 0029-make-initializers-optimizable.patch
 

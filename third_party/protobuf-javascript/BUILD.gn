@@ -1,0 +1,32 @@
+# Copyright 2014 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Only compile the compiler for the host architecture.
+if (current_toolchain == host_toolchain) {
+  executable("protoc-gen-js") {
+    sources = [
+      "src/generator/js_generator.cc",
+      "src/generator/js_generator.h",
+      "src/generator/protoc-gen-js.cc",
+      "src/generator/well_known_types_embed.cc",
+      "src/generator/well_known_types_embed.h",
+    ]
+    include_dirs = [ "src" ]
+    deps = [
+      "//third_party/protobuf:protoc_lib",
+
+      # Default manifest on Windows (a no-op elsewhere).
+      "//build/win:default_exe_manifest",
+    ]
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [
+      "//build/config/compiler:no_chromium_code",
+
+      # Must be after no_chromium_code for warning flags to be ordered
+      # correctly.
+      "//third_party/protobuf:protobuf_warnings",
+      "//third_party/protobuf:protoc_warnings",
+    ]
+  }
+}

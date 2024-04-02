@@ -27,7 +27,7 @@ def main():
         print('Running:', c)
         os.system(c)
 
-    r('ninja -C {} protoc'.format(out_build_dir))
+    r('autoninja -C {} protoc'.format(out_build_dir))
 
     protoc = os.path.join(out_build_dir, 'protoc')
     print('Creating //third_party/protobuf/python/google/protobuf/'

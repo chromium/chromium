@@ -45,8 +45,9 @@
 
 #include <google/protobuf/stubs/logging.h>
 #include <google/protobuf/stubs/common.h>
-#include <google/protobuf/message.h>
 #include <google/protobuf/stubs/substitute.h>
+#include <google/protobuf/message.h>
+#include <google/protobuf/io/io_win32.h>
 
 namespace google {
 namespace protobuf {
@@ -113,7 +114,7 @@ void Subprocess::Start(const std::string& program, SearchMode search_mode) {
   }
 
   // Setup STARTUPINFO to redirect handles.
-  STARTUPINFOA startup_info;
+  STARTUPINFOW startup_info;
   ZeroMemory(&startup_info, sizeof(startup_info));
   startup_info.cb = sizeof(startup_info);
   startup_info.dwFlags = STARTF_USESTDHANDLES;
@@ -125,17 +126,30 @@ void Subprocess::Start(const std::string& program, SearchMode search_mode) {
     GOOGLE_LOG(FATAL) << "GetStdHandle: " << Win32ErrorMessage(GetLastError());
   }
 
+  // get wide string version of program as the path may contain non-ascii characters
+  std::wstring wprogram;
+  if (!io::win32::strings::utf8_to_wcs(program.c_str(), &wprogram)) {
+    GOOGLE_LOG(FATAL) << "utf8_to_wcs: " << Win32ErrorMessage(GetLastError());
+  }
+
   // Invoking cmd.exe allows for '.bat' files from the path as well as '.exe'.
+  std::string command_line = "cmd.exe /c \"" + program + "\"";
+
+  // get wide string version of command line as the path may contain non-ascii characters
+  std::wstring wcommand_line;
+  if (!io::win32::strings::utf8_to_wcs(command_line.c_str(), &wcommand_line)) {
+    GOOGLE_LOG(FATAL) << "utf8_to_wcs: " << Win32ErrorMessage(GetLastError());
+  }
+
   // Using a malloc'ed string because CreateProcess() can mutate its second
   // parameter.
-  char* command_line =
-      portable_strdup(("cmd.exe /c \"" + program + "\"").c_str());
+  wchar_t *wcommand_line_copy = _wcsdup(wcommand_line.c_str());
 
   // Create the process.
   PROCESS_INFORMATION process_info;
 
-  if (CreateProcessA((search_mode == SEARCH_PATH) ? nullptr : program.c_str(),
-                     (search_mode == SEARCH_PATH) ? command_line : nullptr,
+  if (CreateProcessW((search_mode == SEARCH_PATH) ? nullptr : wprogram.c_str(),
+                     (search_mode == SEARCH_PATH) ? wcommand_line_copy : NULL,
                      nullptr,  // process security attributes
                      nullptr,  // thread security attributes
                      TRUE,     // inherit handles?
@@ -155,7 +169,7 @@ void Subprocess::Start(const std::string& program, SearchMode search_mode) {
 
   CloseHandleOrDie(stdin_pipe_read);
   CloseHandleOrDie(stdout_pipe_write);
-  free(command_line);
+  free(wcommand_line_copy);
 }
 
 bool Subprocess::Communicate(const Message& input, Message* output,
@@ -167,7 +181,11 @@ bool Subprocess::Communicate(const Message& input, Message* output,
 
   GOOGLE_CHECK(child_handle_ != nullptr) << "Must call Start() first.";
 
-  std::string input_data = input.SerializeAsString();
+  std::string input_data;
+  if (!input.SerializeToString(&input_data)) {
+    *error = "Failed to serialize request.";
+    return false;
+  }
   std::string output_data;
 
   int input_pos = 0;
@@ -369,7 +387,11 @@ bool Subprocess::Communicate(const Message& input, Message* output,
   // Make sure SIGPIPE is disabled so that if the child dies it doesn't kill us.
   SignalHandler* old_pipe_handler = signal(SIGPIPE, SIG_IGN);
 
-  std::string input_data = input.SerializeAsString();
+  std::string input_data;
+  if (!input.SerializeToString(&input_data)) {
+    *error = "Failed to serialize request.";
+    return false;
+  }
   std::string output_data;
 
   int input_pos = 0;
