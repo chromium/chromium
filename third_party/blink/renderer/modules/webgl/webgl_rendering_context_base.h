@@ -1616,6 +1616,23 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   // Helper function to validate a GL capability.
   virtual bool ValidateCapability(const char* function_name, GLenum);
 
+  bool ValidateUniformLocation(const char* function_name,
+                               const WebGLUniformLocation* location,
+                               const WebGLProgram* program) {
+    const WebGLProgram* loc_program = location->Program();
+    if (!loc_program) {
+      SynthesizeGLError(GL_INVALID_OPERATION, function_name,
+                        "location has been invalidated");
+      return false;
+    }
+    if (loc_program != program) {
+      SynthesizeGLError(GL_INVALID_OPERATION, function_name,
+                        "location is not from the associated program");
+      return false;
+    }
+    return true;
+  }
+
   // Helper function to validate input parameters for uniform functions.
   template <typename T>
   bool ValidateUniformParameters(const char* function_name,
@@ -1675,9 +1692,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
     DCHECK(size >= 0 && required_min_size > 0);
     if (!location)
       return false;
-    if (location->Program() != current_program_) {
-      SynthesizeGLError(GL_INVALID_OPERATION, function_name,
-                        "location is not from current program");
+    if (!ValidateUniformLocation(function_name, location, current_program_)) {
       return false;
     }
     if (!v) {

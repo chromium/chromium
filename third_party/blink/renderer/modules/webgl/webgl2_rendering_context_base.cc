@@ -2751,9 +2751,7 @@ void WebGL2RenderingContextBase::uniform1ui(
   if (isContextLost() || !location)
     return;
 
-  if (location->Program() != current_program_) {
-    SynthesizeGLError(GL_INVALID_OPERATION, "uniform1ui",
-                      "location not for current program");
+  if (!ValidateUniformLocation("uniform1ui", location, current_program_)) {
     return;
   }
 
@@ -2767,9 +2765,7 @@ void WebGL2RenderingContextBase::uniform2ui(
   if (isContextLost() || !location)
     return;
 
-  if (location->Program() != current_program_) {
-    SynthesizeGLError(GL_INVALID_OPERATION, "uniform2ui",
-                      "location not for current program");
+  if (!ValidateUniformLocation("uniform2ui", location, current_program_)) {
     return;
   }
 
@@ -2784,9 +2780,7 @@ void WebGL2RenderingContextBase::uniform3ui(
   if (isContextLost() || !location)
     return;
 
-  if (location->Program() != current_program_) {
-    SynthesizeGLError(GL_INVALID_OPERATION, "uniform3ui",
-                      "location not for current program");
+  if (!ValidateUniformLocation("uniform3ui", location, current_program_)) {
     return;
   }
 
@@ -2802,9 +2796,7 @@ void WebGL2RenderingContextBase::uniform4ui(
   if (isContextLost() || !location)
     return;
 
-  if (location->Program() != current_program_) {
-    SynthesizeGLError(GL_INVALID_OPERATION, "uniform4ui",
-                      "location not for current program");
+  if (!ValidateUniformLocation("uniform4ui", location, current_program_)) {
     return;
   }
 

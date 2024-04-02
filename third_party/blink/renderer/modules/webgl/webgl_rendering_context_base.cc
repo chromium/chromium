@@ -4261,9 +4261,7 @@ ScriptValue WebGLRenderingContextBase::getUniform(
   if (!ValidateWebGLProgramOrShader("getUniform", program))
     return ScriptValue::CreateNull(script_state->GetIsolate());
   DCHECK(uniform_location);
-  if (uniform_location->Program() != program) {
-    SynthesizeGLError(GL_INVALID_OPERATION, "getUniform",
-                      "no uniformlocation or not valid for this program");
+  if (!ValidateUniformLocation("getUniform", uniform_location, program)) {
     return ScriptValue::CreateNull(script_state->GetIsolate());
   }
   GLint location = uniform_location->Location();
@@ -6712,9 +6710,7 @@ void WebGLRenderingContextBase::uniform1f(const WebGLUniformLocation* location,
   if (isContextLost() || !location)
     return;
 
-  if (location->Program() != current_program_) {
-    SynthesizeGLError(GL_INVALID_OPERATION, "uniform1f",
-                      "location not for current program");
+  if (!ValidateUniformLocation("uniform1f", location, current_program_)) {
     return;
   }
 
@@ -6750,9 +6746,7 @@ void WebGLRenderingContextBase::uniform1i(const WebGLUniformLocation* location,
   if (isContextLost() || !location)
     return;
 
-  if (location->Program() != current_program_) {
-    SynthesizeGLError(GL_INVALID_OPERATION, "uniform1i",
-                      "location not for current program");
+  if (!ValidateUniformLocation("uniform1i", location, current_program_)) {
     return;
   }
 
@@ -6789,9 +6783,7 @@ void WebGLRenderingContextBase::uniform2f(const WebGLUniformLocation* location,
   if (isContextLost() || !location)
     return;
 
-  if (location->Program() != current_program_) {
-    SynthesizeGLError(GL_INVALID_OPERATION, "uniform2f",
-                      "location not for current program");
+  if (!ValidateUniformLocation("uniform2f", location, current_program_)) {
     return;
   }
 
@@ -6828,9 +6820,7 @@ void WebGLRenderingContextBase::uniform2i(const WebGLUniformLocation* location,
   if (isContextLost() || !location)
     return;
 
-  if (location->Program() != current_program_) {
-    SynthesizeGLError(GL_INVALID_OPERATION, "uniform2i",
-                      "location not for current program");
+  if (!ValidateUniformLocation("uniform2i", location, current_program_)) {
     return;
   }
 
@@ -6868,9 +6858,7 @@ void WebGLRenderingContextBase::uniform3f(const WebGLUniformLocation* location,
   if (isContextLost() || !location)
     return;
 
-  if (location->Program() != current_program_) {
-    SynthesizeGLError(GL_INVALID_OPERATION, "uniform3f",
-                      "location not for current program");
+  if (!ValidateUniformLocation("uniform3f", location, current_program_)) {
     return;
   }
 
@@ -6908,9 +6896,7 @@ void WebGLRenderingContextBase::uniform3i(const WebGLUniformLocation* location,
   if (isContextLost() || !location)
     return;
 
-  if (location->Program() != current_program_) {
-    SynthesizeGLError(GL_INVALID_OPERATION, "uniform3i",
-                      "location not for current program");
+  if (!ValidateUniformLocation("uniform3i", location, current_program_)) {
     return;
   }
 
@@ -6949,9 +6935,7 @@ void WebGLRenderingContextBase::uniform4f(const WebGLUniformLocation* location,
   if (isContextLost() || !location)
     return;
 
-  if (location->Program() != current_program_) {
-    SynthesizeGLError(GL_INVALID_OPERATION, "uniform4f",
-                      "location not for current program");
+  if (!ValidateUniformLocation("uniform4f", location, current_program_)) {
     return;
   }
 
@@ -6990,9 +6974,7 @@ void WebGLRenderingContextBase::uniform4i(const WebGLUniformLocation* location,
   if (isContextLost() || !location)
     return;
 
-  if (location->Program() != current_program_) {
-    SynthesizeGLError(GL_INVALID_OPERATION, "uniform4i",
-                      "location not for current program");
+  if (!ValidateUniformLocation("uniform4i", location, current_program_)) {
     return;
   }
 
