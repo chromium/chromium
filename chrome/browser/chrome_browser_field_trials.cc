@@ -46,6 +46,10 @@
 #include "chromeos/startup/startup.h"  // nogncheck
 #endif
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/startup/default_browser_prompt_manager.h"
+#endif
+
 ChromeBrowserFieldTrials::ChromeBrowserFieldTrials(PrefService* local_state)
     : local_state_(local_state) {
   DCHECK(local_state_);
@@ -148,4 +152,8 @@ void ChromeBrowserFieldTrials::RegisterSyntheticTrials() {
 #else
   SearchEngineChoiceClientSideTrial::RegisterSyntheticTrials();
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+  DefaultBrowserPromptManager::EnsureStickToDefaultBrowserPromptCohort();
+#endif
 }

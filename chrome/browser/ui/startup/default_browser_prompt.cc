@@ -8,10 +8,12 @@
 #include <string>
 
 #include "base/check_is_test.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/field_trial.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -34,6 +36,7 @@
 #include "components/version_info/version_info.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/ui_base_features.h"
 
 namespace {
 
@@ -92,6 +95,10 @@ bool ShouldShowDefaultBrowserPrompt(Profile* profile) {
       disable_version == version_info::GetVersion()) {
     return false;
   }
+
+  // If the user is in the control or an experiment arm, move them into the
+  // synthetic trial cohort.
+  DefaultBrowserPromptManager::MaybeJoinDefaultBrowserPromptCohort();
 
   if (base::FeatureList::IsEnabled(features::kDefaultBrowserPromptRefresh)) {
     if (!features::kShowDefaultBrowserInfoBar.Get()) {
@@ -152,6 +159,8 @@ void OnCheckIsDefaultBrowserFinished(
 void RegisterDefaultBrowserPromptPrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(
       prefs::kBrowserSuppressDefaultBrowserPrompt, std::string());
+  registry->RegisterStringPref(prefs::kDefaultBrowserPromptRefreshStudyGroup,
+                               std::string());
 }
 
 // Migrates the last declined time from the old int pref (profile) to the new
