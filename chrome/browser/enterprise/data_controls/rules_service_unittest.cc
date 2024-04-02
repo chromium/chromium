@@ -155,7 +155,8 @@ TEST_F(DataControlsRulesServiceFeatureDisabledTest, NoVerdicts) {
                     },
                     "restrictions": [
                       {"class": "PRINTING", "level": "BLOCK"},
-                      {"class": "CLIPBOARD", "level": "BLOCK"}
+                      {"class": "CLIPBOARD", "level": "BLOCK"},
+                      {"class": "SCREENSHOT", "level": "BLOCK"}
                     ]
                   })"});
   ExpectNoVerdict(RulesServiceFactory::GetInstance()
@@ -175,6 +176,9 @@ TEST_F(DataControlsRulesServiceFeatureDisabledTest, NoVerdicts) {
                       ->GetForBrowserContext(profile())
                       ->GetCopyRestrictedBySourceVerdict(
                           /*source*/ google_url()));
+  EXPECT_FALSE(RulesServiceFactory::GetInstance()
+                   ->GetForBrowserContext(profile())
+                   ->BlockScreenshots(google_url()));
 }
 
 TEST_F(DataControlsRulesServiceTest, NoRuleSet) {
@@ -195,6 +199,9 @@ TEST_F(DataControlsRulesServiceTest, NoRuleSet) {
                       ->GetForBrowserContext(profile())
                       ->GetCopyRestrictedBySourceVerdict(
                           /*source*/ google_url()));
+  EXPECT_FALSE(RulesServiceFactory::GetInstance()
+                   ->GetForBrowserContext(profile())
+                   ->BlockScreenshots(google_url()));
 }
 
 TEST_F(DataControlsRulesServiceTest, SourceURL) {
@@ -207,7 +214,8 @@ TEST_F(DataControlsRulesServiceTest, SourceURL) {
                       },
                       "restrictions": [
                         {"class": "CLIPBOARD", "level": "BLOCK"},
-                        {"class": "PRINTING", "level": "BLOCK"}
+                        {"class": "PRINTING", "level": "BLOCK"},
+                        {"class": "SCREENSHOT", "level": "BLOCK"}
                       ]
                     })"});
     ExpectBlockVerdict(RulesServiceFactory::GetInstance()
@@ -233,6 +241,9 @@ TEST_F(DataControlsRulesServiceTest, SourceURL) {
                            ->GetForBrowserContext(profile())
                            ->GetCopyRestrictedBySourceVerdict(
                                /*source*/ google_url()));
+    EXPECT_TRUE(RulesServiceFactory::GetInstance()
+                    ->GetForBrowserContext(profile())
+                    ->BlockScreenshots(google_url()));
   }
 
   {
@@ -244,7 +255,8 @@ TEST_F(DataControlsRulesServiceTest, SourceURL) {
                       },
                       "restrictions": [
                         {"class": "CLIPBOARD", "level": "WARN"},
-                        {"class": "PRINTING", "level": "WARN"}
+                        {"class": "PRINTING", "level": "WARN"},
+                        {"class": "SCREENSHOT", "level": "WARN"}
                       ]
                     })"});
     ExpectWarnVerdict(RulesServiceFactory::GetInstance()
@@ -270,6 +282,9 @@ TEST_F(DataControlsRulesServiceTest, SourceURL) {
                           ->GetForBrowserContext(profile())
                           ->GetCopyRestrictedBySourceVerdict(
                               /*source*/ google_url()));
+    EXPECT_FALSE(RulesServiceFactory::GetInstance()
+                     ->GetForBrowserContext(profile())
+                     ->BlockScreenshots(google_url()));
   }
 
   {
@@ -284,7 +299,8 @@ TEST_F(DataControlsRulesServiceTest, SourceURL) {
                       },
                       "restrictions": [
                         {"class": "CLIPBOARD", "level": "ALLOW"},
-                        {"class": "PRINTING", "level": "ALLOW"}
+                        {"class": "PRINTING", "level": "ALLOW"},
+                        {"class": "SCREENSHOT", "level": "ALLOW"}
                       ]
                     })",
                                                R"({
@@ -295,7 +311,8 @@ TEST_F(DataControlsRulesServiceTest, SourceURL) {
                       },
                       "restrictions": [
                         {"class": "CLIPBOARD", "level": "WARN"},
-                        {"class": "PRINTING", "level": "WARN"}
+                        {"class": "PRINTING", "level": "WARN"},
+                        {"class": "SCREENSHOT", "level": "BLOCK"}
                       ]
                     })"});
     ExpectAllowVerdict(RulesServiceFactory::GetInstance()
@@ -321,6 +338,9 @@ TEST_F(DataControlsRulesServiceTest, SourceURL) {
                            ->GetForBrowserContext(profile())
                            ->GetCopyRestrictedBySourceVerdict(
                                /*source*/ google_url()));
+    EXPECT_FALSE(RulesServiceFactory::GetInstance()
+                     ->GetForBrowserContext(profile())
+                     ->BlockScreenshots(google_url()));
   }
 }
 
@@ -449,7 +469,8 @@ TEST_F(DataControlsRulesServiceTest, SourceIncognito) {
                         "incognito": true
                       },
                       "restrictions": [
-                        {"class": "CLIPBOARD", "level": "BLOCK"}
+                        {"class": "CLIPBOARD", "level": "BLOCK"},
+                        {"class": "SCREENSHOT", "level": "BLOCK"}
                       ]
                     })"});
     ExpectBlockVerdict(RulesServiceFactory::GetInstance()
@@ -480,6 +501,12 @@ TEST_F(DataControlsRulesServiceTest, SourceIncognito) {
                         ->GetForBrowserContext(profile())
                         ->GetCopyRestrictedBySourceVerdict(
                             /*source*/ google_url()));
+    EXPECT_TRUE(RulesServiceFactory::GetInstance()
+                    ->GetForBrowserContext(incognito_profile())
+                    ->BlockScreenshots(google_url()));
+    EXPECT_FALSE(RulesServiceFactory::GetInstance()
+                     ->GetForBrowserContext(profile())
+                     ->BlockScreenshots(google_url()));
   }
 
   {
@@ -490,7 +517,8 @@ TEST_F(DataControlsRulesServiceTest, SourceIncognito) {
                         "incognito": true
                       },
                       "restrictions": [
-                        {"class": "CLIPBOARD", "level": "WARN"}
+                        {"class": "CLIPBOARD", "level": "WARN"},
+                        {"class": "SCREENSHOT", "level": "WARN"}
                       ]
                     })"});
     ExpectWarnVerdict(RulesServiceFactory::GetInstance()
@@ -521,6 +549,12 @@ TEST_F(DataControlsRulesServiceTest, SourceIncognito) {
                         ->GetForBrowserContext(profile())
                         ->GetCopyRestrictedBySourceVerdict(
                             /*source*/ google_url()));
+    EXPECT_FALSE(RulesServiceFactory::GetInstance()
+                     ->GetForBrowserContext(incognito_profile())
+                     ->BlockScreenshots(google_url()));
+    EXPECT_FALSE(RulesServiceFactory::GetInstance()
+                     ->GetForBrowserContext(profile())
+                     ->BlockScreenshots(google_url()));
   }
 
   {
@@ -534,7 +568,8 @@ TEST_F(DataControlsRulesServiceTest, SourceIncognito) {
                         "incognito": true
                       },
                       "restrictions": [
-                        {"class": "CLIPBOARD", "level": "ALLOW"}
+                        {"class": "CLIPBOARD", "level": "ALLOW"},
+                        {"class": "SCREENSHOT", "level": "ALLOW"}
                       ]
                     })",
                                                R"({
@@ -544,7 +579,8 @@ TEST_F(DataControlsRulesServiceTest, SourceIncognito) {
                         "incognito": true
                       },
                       "restrictions": [
-                        {"class": "CLIPBOARD", "level": "WARN"}
+                        {"class": "CLIPBOARD", "level": "WARN"},
+                        {"class": "SCREENSHOT", "level": "BLOCK"}
                       ]
                     })"});
     ExpectAllowVerdict(RulesServiceFactory::GetInstance()
@@ -575,6 +611,12 @@ TEST_F(DataControlsRulesServiceTest, SourceIncognito) {
                         ->GetForBrowserContext(profile())
                         ->GetCopyRestrictedBySourceVerdict(
                             /*source*/ google_url()));
+    EXPECT_FALSE(RulesServiceFactory::GetInstance()
+                     ->GetForBrowserContext(incognito_profile())
+                     ->BlockScreenshots(google_url()));
+    EXPECT_FALSE(RulesServiceFactory::GetInstance()
+                     ->GetForBrowserContext(profile())
+                     ->BlockScreenshots(google_url()));
   }
 }
 

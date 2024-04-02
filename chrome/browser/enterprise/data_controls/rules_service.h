@@ -43,6 +43,11 @@ class RulesService : public KeyedService {
   // verdicts should trigger a dialog.
   Verdict GetCopyToOSClipboardVerdict(const GURL& source) const;
 
+  // Returns true if rules indicate screenshots should be blocked. Only the
+  // "block" level is supported, a "warn" screenshot rule will not make this
+  // functions return true.
+  bool BlockScreenshots(const GURL& url) const;
+
  protected:
   friend class RulesServiceFactory;
 

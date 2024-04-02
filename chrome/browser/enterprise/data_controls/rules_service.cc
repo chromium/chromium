@@ -62,6 +62,13 @@ Verdict RulesService::GetCopyToOSClipboardVerdict(const GURL& source) const {
        .destination = {.os_clipboard = true}});
 }
 
+bool RulesService::BlockScreenshots(const GURL& url) const {
+  return GetVerdict(Rule::Restriction::kScreenshot,
+                    {.source = {.url = url,
+                                .incognito = profile_->IsIncognitoProfile()}})
+             .level() == Rule::Level::kBlock;
+}
+
 Verdict RulesService::GetVerdict(Rule::Restriction restriction,
                                  const ActionContext& context) const {
   if (!base::FeatureList::IsEnabled(kEnableDesktopDataControls)) {
