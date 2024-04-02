@@ -447,7 +447,14 @@ bool MatchesURLList(const GURL& target_url, const std::vector<GURL> url_list) {
   }
   GURL simple_target_url = GetSimplifiedURL(target_url);
   for (const GURL& url : url_list) {
-    if (GetSimplifiedURL(url) == simple_target_url) {
+    GURL simple_url = GetSimplifiedURL(url);
+    if (simple_url == simple_target_url) {
+      return true;
+    }
+    // Append trailing slash in case the policy specifies a URL with a path
+    // that does not append a slash. Simplified URLs will not match if the
+    // sole difference is a missing trailing slash.
+    if (simple_url.spec() + "/" == simple_target_url.spec()) {
       return true;
     }
   }

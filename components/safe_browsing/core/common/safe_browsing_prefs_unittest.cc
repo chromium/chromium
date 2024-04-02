@@ -135,6 +135,12 @@ TEST_F(SafeBrowsingPrefsTest, VerifyMatchesPasswordProtectionLoginURL) {
   prefs_.SetList(prefs::kPasswordProtectionLoginURLs, std::move(login_urls2));
   EXPECT_TRUE(prefs_.HasPrefPath(prefs::kPasswordProtectionLoginURLs));
   EXPECT_TRUE(MatchesPasswordProtectionLoginURL(chrome_url, prefs_));
+
+  base::Value::List login_urls3;
+  login_urls3.Append("https://mylogin.com/login");
+  GURL target_url("https://mylogin.com/login/");
+  prefs_.SetList(prefs::kPasswordProtectionLoginURLs, std::move(login_urls3));
+  EXPECT_TRUE(MatchesPasswordProtectionLoginURL(target_url, prefs_));
 }
 
 TEST_F(SafeBrowsingPrefsTest,
