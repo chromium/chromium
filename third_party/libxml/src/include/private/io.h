@@ -27,6 +27,9 @@ xmlNewInputBufferMemory(const void *mem, size_t size, int flags,
 #ifdef LIBXML_OUTPUT_ENABLED
 XML_HIDDEN xmlOutputBufferPtr
 xmlAllocOutputBufferInternal(xmlCharEncodingHandlerPtr encoder);
+XML_HIDDEN void
+xmlOutputBufferWriteQuotedString(xmlOutputBufferPtr buf,
+                                 const xmlChar *string);
 #endif
 
 #endif /* XML_IO_H_PRIVATE__ */

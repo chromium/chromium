@@ -499,10 +499,10 @@ xmlStrncatNew(const xmlChar *str1, const xmlChar *str2, int len) {
         if (len < 0)
             return(NULL);
     }
-    if ((str2 == NULL) || (len == 0))
-        return(xmlStrdup(str1));
     if (str1 == NULL)
         return(xmlStrndup(str2, len));
+    if ((str2 == NULL) || (len == 0))
+        return(xmlStrdup(str1));
 
     size = xmlStrlen(str1);
     if ((size < 0) || (size > INT_MAX - len))

@@ -68,6 +68,8 @@ XML_HIDDEN void
 xmlDetectEncoding(xmlParserCtxtPtr ctxt);
 XML_HIDDEN void
 xmlSetDeclaredEncoding(xmlParserCtxtPtr ctxt, xmlChar *encoding);
+XML_HIDDEN const xmlChar *
+xmlGetActualEncoding(xmlParserCtxtPtr ctxt);
 
 XML_HIDDEN xmlParserNsData *
 xmlParserNsCreate(void);

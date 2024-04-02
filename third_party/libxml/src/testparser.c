@@ -7,6 +7,7 @@
 #include <libxml/parser.h>
 #include <libxml/xmlreader.h>
 #include <libxml/xmlwriter.h>
+#include <libxml/HTMLparser.h>
 
 #include <string.h>
 
@@ -143,9 +144,72 @@ testHugeEncodedChunk(void) {
 
     return err;
 }
+
+#ifdef LIBXML_HTML_ENABLED
+static int
+testHtmlPushWithEncoding(void) {
+    htmlParserCtxtPtr ctxt;
+    htmlDocPtr doc;
+    htmlNodePtr node;
+    int err = 0;
+
+    ctxt = htmlCreatePushParserCtxt(NULL, NULL, NULL, 0, NULL,
+                                    XML_CHAR_ENCODING_UTF8);
+    htmlParseChunk(ctxt, "-\xC3\xA4-", 4, 1);
+
+    doc = ctxt->myDoc;
+    if (!xmlStrEqual(doc->encoding, BAD_CAST "UTF-8")) {
+        fprintf(stderr, "testHtmlPushWithEncoding failed\n");
+        err = 1;
+    }
+
+    node = xmlDocGetRootElement(doc)->children->children->children;
+    if (!xmlStrEqual(node->content, BAD_CAST "-\xC3\xA4-")) {
+        fprintf(stderr, "testHtmlPushWithEncoding failed\n");
+        err = 1;
+    }
+
+    xmlFreeDoc(doc);
+    htmlFreeParserCtxt(ctxt);
+    return err;
+}
+#endif
 #endif
 
-#if defined(LIBXML_READER_ENABLED) && defined(LIBXML_XINCLUDE_ENABLED)
+#ifdef LIBXML_READER_ENABLED
+static int
+testReaderEncoding(void) {
+    xmlBuffer *buf;
+    xmlTextReader *reader;
+    xmlChar *xml;
+    const xmlChar *encoding;
+    int err = 0;
+    int i;
+
+    buf = xmlBufferCreate();
+    xmlBufferCCat(buf, "<?xml version='1.0' encoding='ISO-8859-1'?>\n");
+    xmlBufferCCat(buf, "<doc>");
+    for (i = 0; i < 8192; i++)
+        xmlBufferCCat(buf, "x");
+    xmlBufferCCat(buf, "</doc>");
+    xml = xmlBufferDetach(buf);
+    xmlBufferFree(buf);
+
+    reader = xmlReaderForDoc(BAD_CAST xml, NULL, NULL, 0);
+    xmlTextReaderRead(reader);
+    encoding = xmlTextReaderConstEncoding(reader);
+
+    if (!xmlStrEqual(encoding, BAD_CAST "ISO-8859-1")) {
+        fprintf(stderr, "testReaderEncoding failed\n");
+        err = 1;
+    }
+
+    xmlFreeTextReader(reader);
+    xmlFree(xml);
+    return err;
+}
+
+#ifdef LIBXML_XINCLUDE_ENABLED
 typedef struct {
     char *message;
     int code;
@@ -223,6 +287,7 @@ testReaderXIncludeError(void) {
     return err;
 }
 #endif
+#endif
 
 #ifdef LIBXML_WRITER_ENABLED
 static int
@@ -279,9 +344,15 @@ main(void) {
 #ifdef LIBXML_PUSH_ENABLED
     err |= testHugePush();
     err |= testHugeEncodedChunk();
+#ifdef LIBXML_HTML_ENABLED
+    err |= testHtmlPushWithEncoding();
 #endif
-#if defined(LIBXML_READER_ENABLED) && defined(LIBXML_XINCLUDE_ENABLED)
+#endif
+#ifdef LIBXML_READER_ENABLED
+    err |= testReaderEncoding();
+#ifdef LIBXML_XINCLUDE_ENABLED
     err |= testReaderXIncludeError();
+#endif
 #endif
 #ifdef LIBXML_WRITER_ENABLED
     err |= testWriterClose();

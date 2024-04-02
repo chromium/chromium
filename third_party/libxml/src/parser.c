@@ -2980,13 +2980,6 @@ xmlSplitQName(xmlParserCtxtPtr ctxt, const xmlChar *name, xmlChar **prefixOut) {
 
     if (cur == NULL) return(NULL);
 
-#ifndef XML_XML_NAMESPACE
-    /* xml: prefix is not really a namespace */
-    if ((cur[0] == 'x') && (cur[1] == 'm') &&
-        (cur[2] == 'l') && (cur[3] == ':'))
-	return(xmlStrdup(name));
-#endif
-
     /* nasty but well=formed */
     if (cur[0] == ':')
 	return(xmlStrdup(name));
@@ -8910,7 +8903,7 @@ xmlAttrHashInsert(xmlParserCtxtPtr ctxt, unsigned size, const xmlChar *name,
             int nsIndex = (int) (ptrdiff_t) atts[2];
 
             if ((nsIndex == NS_INDEX_EMPTY) ? (uri == NULL) :
-                (nsIndex == NS_INDEX_XML) ? (uri == ctxt->str_xml) :
+                (nsIndex == NS_INDEX_XML) ? (uri == ctxt->str_xml_ns) :
                 (uri == ctxt->nsTab[nsIndex * 2 + 1]))
                 return(bucket->index);
         }

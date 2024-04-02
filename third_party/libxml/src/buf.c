@@ -195,8 +195,16 @@ xmlBufDetach(xmlBufPtr buf) {
     if (buf->error)
         return(NULL);
 
-    ret = buf->content;
+    if ((buf->alloc == XML_BUFFER_ALLOC_IO) &&
+        (buf->content != buf->contentIO)) {
+        ret = xmlStrndup(buf->content, buf->use);
+        xmlFree(buf->contentIO);
+    } else {
+        ret = buf->content;
+    }
+
     buf->content = NULL;
+    buf->contentIO = NULL;
     buf->size = 0;
     buf->use = 0;
     UPDATE_COMPAT(buf);
@@ -743,8 +751,7 @@ xmlBufResize(xmlBufPtr buf, size_t size)
  * Add a string range to an XML buffer. if len == -1, the length of
  * str is recomputed.
  *
- * Returns 0 successful, a positive error code number otherwise
- *         and -1 in case of internal or API error.
+ * Returns 0 if successful, -1 in case of error.
  */
 int
 xmlBufAdd(xmlBufPtr buf, const xmlChar *str, int len) {
@@ -781,10 +788,8 @@ xmlBufAdd(xmlBufPtr buf, const xmlChar *str, int len) {
 		return(-1);
 	    }
 	}
-        if (!xmlBufResize(buf, needSize)){
-	    xmlBufMemoryError(buf);
-            return XML_ERR_NO_MEMORY;
-        }
+        if (!xmlBufResize(buf, needSize))
+            return(-1);
     }
 
     memmove(&buf->content[buf->use], str, len);
@@ -811,72 +816,6 @@ xmlBufCat(xmlBufPtr buf, const xmlChar *str) {
     CHECK_COMPAT(buf)
     if (str == NULL) return -1;
     return xmlBufAdd(buf, str, -1);
-}
-
-/**
- * xmlBufCCat:
- * @buf:  the buffer to dump
- * @str:  the C char string
- *
- * Append a zero terminated C string to an XML buffer.
- *
- * Returns 0 successful, a positive error code number otherwise
- *         and -1 in case of internal or API error.
- */
-int
-xmlBufCCat(xmlBufPtr buf, const char *str) {
-    return xmlBufCat(buf, (const xmlChar *) str);
-}
-
-/**
- * xmlBufWriteQuotedString:
- * @buf:  the XML buffer output
- * @string:  the string to add
- *
- * routine which manage and grows an output buffer. This one writes
- * a quoted or double quoted #xmlChar string, checking first if it holds
- * quote or double-quotes internally
- *
- * Returns 0 if successful, a positive error code number otherwise
- *         and -1 in case of internal or API error.
- */
-int
-xmlBufWriteQuotedString(xmlBufPtr buf, const xmlChar *string) {
-    const xmlChar *cur, *base;
-    if ((buf == NULL) || (buf->error))
-        return(-1);
-    CHECK_COMPAT(buf)
-    if (xmlStrchr(string, '\"')) {
-        if (xmlStrchr(string, '\'')) {
-	    xmlBufCCat(buf, "\"");
-            base = cur = string;
-            while(*cur != 0){
-                if(*cur == '"'){
-                    if (base != cur)
-                        xmlBufAdd(buf, base, cur - base);
-                    xmlBufAdd(buf, BAD_CAST "&quot;", 6);
-                    cur++;
-                    base = cur;
-                }
-                else {
-                    cur++;
-                }
-            }
-            if (base != cur)
-                xmlBufAdd(buf, base, cur - base);
-	    xmlBufCCat(buf, "\"");
-	}
-        else{
-	    xmlBufCCat(buf, "\'");
-            xmlBufCat(buf, string);
-	    xmlBufCCat(buf, "\'");
-        }
-    } else {
-        xmlBufCCat(buf, "\"");
-        xmlBufCat(buf, string);
-        xmlBufCCat(buf, "\"");
-    }
-    return(0);
 }
 
 /**
@@ -932,12 +871,19 @@ xmlBufBackToBuffer(xmlBufPtr buf) {
     if (buf == NULL)
         return(NULL);
     CHECK_COMPAT(buf)
-    if ((buf->error) || (buf->buffer == NULL)) {
+    ret = buf->buffer;
+
+    if ((buf->error) || (ret == NULL)) {
         xmlBufFree(buf);
+        if (ret != NULL) {
+            ret->content = NULL;
+            ret->contentIO = NULL;
+            ret->use = 0;
+            ret->size = 0;
+        }
         return(NULL);
     }
 
-    ret = buf->buffer;
     /*
      * What to do in case of error in the buffer ???
      */

@@ -164,13 +164,13 @@ typedef enum {
     XML_TEXT_NODE=		3,
     XML_CDATA_SECTION_NODE=	4,
     XML_ENTITY_REF_NODE=	5,
-    XML_ENTITY_NODE=		6,
+    XML_ENTITY_NODE=		6,  /* unused */
     XML_PI_NODE=		7,
     XML_COMMENT_NODE=		8,
     XML_DOCUMENT_NODE=		9,
-    XML_DOCUMENT_TYPE_NODE=	10,
+    XML_DOCUMENT_TYPE_NODE=	10, /* unused */
     XML_DOCUMENT_FRAG_NODE=	11,
-    XML_NOTATION_NODE=		12,
+    XML_NOTATION_NODE=		12, /* unused */
     XML_HTML_DOCUMENT_NODE=	13,
     XML_DTD_NODE=		14,
     XML_ELEMENT_DECL=		15,
@@ -1003,10 +1003,10 @@ XMLPUBFUN void
 		xmlFreeNodeList		(xmlNodePtr cur);
 XMLPUBFUN void
 		xmlFreeNode		(xmlNodePtr cur);
-XMLPUBFUN void
+XMLPUBFUN int
 		xmlSetTreeDoc		(xmlNodePtr tree,
 					 xmlDocPtr doc);
-XMLPUBFUN void
+XMLPUBFUN int
 		xmlSetListDoc		(xmlNodePtr list,
 					 xmlDocPtr doc);
 /*
@@ -1125,10 +1125,10 @@ XMLPUBFUN xmlChar *
 XMLPUBFUN int
 		xmlNodeGetSpacePreserve	(const xmlNode *cur);
 #ifdef LIBXML_TREE_ENABLED
-XMLPUBFUN void
+XMLPUBFUN int
 		xmlNodeSetLang		(xmlNodePtr cur,
 					 const xmlChar *lang);
-XMLPUBFUN void
+XMLPUBFUN int
 		xmlNodeSetSpacePreserve (xmlNodePtr cur,
 					 int val);
 #endif /* LIBXML_TREE_ENABLED */

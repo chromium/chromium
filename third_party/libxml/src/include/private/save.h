@@ -13,8 +13,8 @@ XML_HIDDEN int
 xmlSaveNotationTable(xmlSaveCtxtPtr ctxt, xmlNotationTablePtr cur);
 
 XML_HIDDEN void
-xmlBufAttrSerializeTxtContent(xmlBufPtr buf, xmlDocPtr doc,
-                              xmlAttrPtr attr, const xmlChar * string);
+xmlBufAttrSerializeTxtContent(xmlOutputBufferPtr buf, xmlDocPtr doc,
+                              const xmlChar *string);
 XML_HIDDEN void
 xmlNsListDumpOutput(xmlOutputBufferPtr buf, xmlNsPtr cur);
 

@@ -4260,10 +4260,8 @@ xmlXPathNsLookup(xmlXPathContextPtr ctxt, const xmlChar *prefix) {
     if (prefix == NULL)
 	return(NULL);
 
-#ifdef XML_XML_NAMESPACE
     if (xmlStrEqual(prefix, (const xmlChar *) "xml"))
 	return(XML_XML_NAMESPACE);
-#endif
 
     if (ctxt->namespaces != NULL) {
 	int i;
@@ -8318,7 +8316,7 @@ xmlXPathTranslateFunction(xmlXPathParserContextPtr ctxt, int nargs) {
     if (ctxt->error != 0)
         goto error;
 
-    target = xmlBufCreate();
+    target = xmlBufCreateSize(64);
     if (target == NULL) {
         xmlXPathPErrMemory(ctxt);
         goto error;
@@ -13408,7 +13406,7 @@ xmlXPathEscapeUriFunction(xmlXPathParserContextPtr ctxt, int nargs) {
     CAST_TO_STRING;
     str = valuePop(ctxt);
 
-    target = xmlBufCreate();
+    target = xmlBufCreateSize(64);
 
     escape[0] = '%';
     escape[3] = 0;

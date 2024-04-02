@@ -2011,6 +2011,14 @@ htmlEntityLookup(const xmlChar *name) {
     return(NULL);
 }
 
+static int
+htmlCompareEntityDesc(const void *vkey, const void *vdesc) {
+    const unsigned *key = vkey;
+    const htmlEntityDesc *desc = vdesc;
+
+    return((int) *key - (int) desc->value);
+}
+
 /**
  * htmlEntityValueLookup:
  * @value: the entity's unicode value
@@ -2023,17 +2031,14 @@ htmlEntityLookup(const xmlChar *name) {
  */
 const htmlEntityDesc *
 htmlEntityValueLookup(unsigned int value) {
-    unsigned int i;
+    const htmlEntityDesc *desc;
+    size_t nmemb;
 
-    for (i = 0;i < (sizeof(html40EntitiesTable)/
-                    sizeof(html40EntitiesTable[0]));i++) {
-        if (html40EntitiesTable[i].value >= value) {
-	    if (html40EntitiesTable[i].value > value)
-		break;
-            return((htmlEntityDescPtr) &html40EntitiesTable[i]);
-	}
-    }
-    return(NULL);
+    nmemb = sizeof(html40EntitiesTable) / sizeof(html40EntitiesTable[0]);
+    desc = bsearch(&value, html40EntitiesTable, nmemb, sizeof(htmlEntityDesc),
+                   htmlCompareEntityDesc);
+
+    return(desc);
 }
 
 /**
