@@ -13,7 +13,9 @@
 
 namespace views {
 
-AnimationDelegateViews::AnimationDelegateViews(View* view) : view_(view) {
+AnimationDelegateViews::AnimationDelegateViews(View* view,
+                                               const base::Location& location)
+    : view_(view), location_(location) {
   if (view)
     scoped_observation_.Observe(view);
 }
@@ -35,11 +37,11 @@ void AnimationDelegateViews::AnimationContainerWasSet(
 
   container_ = container;
   container_->set_observer(this);
-  UpdateAnimationRunner(FROM_HERE);
+  UpdateAnimationRunner(location_);
 }
 
 void AnimationDelegateViews::OnViewAddedToWidget(View* observed_view) {
-  UpdateAnimationRunner(FROM_HERE);
+  UpdateAnimationRunner(location_);
 }
 
 void AnimationDelegateViews::OnViewRemovedFromWidget(View* observed_view) {
@@ -50,7 +52,7 @@ void AnimationDelegateViews::OnViewIsDeleting(View* observed_view) {
   DCHECK(scoped_observation_.IsObservingSource(view_.get()));
   scoped_observation_.Reset();
   view_ = nullptr;
-  UpdateAnimationRunner(FROM_HERE);
+  UpdateAnimationRunner(location_);
 }
 
 void AnimationDelegateViews::AnimationContainerShuttingDown(

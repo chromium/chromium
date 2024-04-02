@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_ANIMATION_ANIMATION_DELEGATE_VIEWS_H_
 #define UI_VIEWS_ANIMATION_ANIMATION_DELEGATE_VIEWS_H_
 
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/gfx/animation/animation_container_observer.h"
@@ -12,10 +13,6 @@
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/views_export.h"
-
-namespace base {
-class Location;
-}
 
 namespace views {
 class CompositorAnimationRunner;
@@ -27,7 +24,8 @@ class VIEWS_EXPORT AnimationDelegateViews
       public ViewObserver,
       public gfx::AnimationContainerObserver {
  public:
-  explicit AnimationDelegateViews(View* view);
+  explicit AnimationDelegateViews(View* view,
+                                  const base::Location& location = FROM_HERE);
   ~AnimationDelegateViews() override;
 
   // gfx::AnimationDelegate:
@@ -52,6 +50,8 @@ class VIEWS_EXPORT AnimationDelegateViews
 
   gfx::AnimationContainer* container() { return container_; }
 
+  const base::Location& location_for_test() const { return location_; }
+
  private:
   // Sets CompositorAnimationRunner to |container_| if possible. Otherwise,
   // clears AnimationRunner of |container_|.
@@ -60,6 +60,9 @@ class VIEWS_EXPORT AnimationDelegateViews
 
   raw_ptr<View> view_;
   raw_ptr<gfx::AnimationContainer> container_ = nullptr;
+
+  // Code location of where this is created.
+  const base::Location location_;
 
   // The animation runner that |container_| uses.
   raw_ptr<CompositorAnimationRunner> compositor_animation_runner_ = nullptr;
