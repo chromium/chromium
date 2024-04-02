@@ -1410,13 +1410,12 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
   base::test::ScopedFeatureList scoped_feature_list{
       password_manager::features::
           kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration};
+  InitializeSettingsService(/*password_sync_enabled=*/false,
+                            /*setting_sync_enabled=*/false);
   pref_service()->SetBoolean(password_manager::prefs::kCredentialsEnableService,
                              false);
   pref_service()->SetBoolean(
       password_manager::prefs::kCredentialsEnableAutosignin, false);
-
-  InitializeSettingsService(/*password_sync_enabled=*/false,
-                            /*setting_sync_enabled=*/false);
 
   ExpectSettingsRetrievalFromBackend(std::nullopt, /*times=*/1);
   EXPECT_CALL(
@@ -1447,11 +1446,6 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
   EXPECT_TRUE(pref_service()->GetBoolean(
       password_manager::prefs::kSettingsMigratedToUPMLocal));
 
-  EXPECT_FALSE(settings_service()->IsSettingEnabled(
-      PasswordManagerSetting::kOfferToSavePasswords));
-  EXPECT_FALSE(settings_service()->IsSettingEnabled(
-      PasswordManagerSetting::kAutoSignIn));
-
   histogram_tester()->ExpectUniqueSample(
       "PasswordManager.PasswordSettingsMigrationSucceeded", true, 1);
 }
@@ -1461,6 +1455,8 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
   base::test::ScopedFeatureList scoped_feature_list{
       password_manager::features::
           kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration};
+  InitializeSettingsService(/*password_sync_enabled=*/false,
+                            /*setting_sync_enabled=*/false);
   pref_service()->SetBoolean(password_manager::prefs::kCredentialsEnableService,
                              false);
   pref_service()->SetBoolean(
@@ -1469,9 +1465,6 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
       password_manager::prefs::kOfferToSavePasswordsEnabledGMS, false);
   pref_service()->SetBoolean(password_manager::prefs::kAutoSignInEnabledGMS,
                              false);
-
-  InitializeSettingsService(/*password_sync_enabled=*/false,
-                            /*setting_sync_enabled=*/false);
 
   ExpectSettingsRetrievalFromBackend(std::nullopt, /*times=*/1);
   EXPECT_CALL(
@@ -1496,11 +1489,6 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
 
   EXPECT_TRUE(pref_service()->GetBoolean(
       password_manager::prefs::kSettingsMigratedToUPMLocal));
-
-  EXPECT_FALSE(settings_service()->IsSettingEnabled(
-      PasswordManagerSetting::kOfferToSavePasswords));
-  EXPECT_FALSE(settings_service()->IsSettingEnabled(
-      PasswordManagerSetting::kAutoSignIn));
 
   histogram_tester()->ExpectUniqueSample(
       "PasswordManager.PasswordSettingsMigrationSucceeded", true, 1);
@@ -1535,7 +1523,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
 }
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
-       MigrateSettingsChromeAndGMSHadDefaultValue) {
+       MigrateSettingsChromeHadDefaultValue) {
   base::test::ScopedFeatureList scoped_feature_list{
       password_manager::features::
           kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration};
@@ -1567,11 +1555,6 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
       password_manager::prefs::kCredentialsEnableService));
   EXPECT_TRUE(pref_service()->GetBoolean(
       password_manager::prefs::kCredentialsEnableAutosignin));
-
-  EXPECT_TRUE(settings_service()->IsSettingEnabled(
-      PasswordManagerSetting::kOfferToSavePasswords));
-  EXPECT_TRUE(settings_service()->IsSettingEnabled(
-      PasswordManagerSetting::kAutoSignIn));
 
   EXPECT_TRUE(pref_service()->GetBoolean(
       password_manager::prefs::kSettingsMigratedToUPMLocal));
@@ -1642,12 +1625,12 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
   base::test::ScopedFeatureList scoped_feature_list{
       password_manager::features::
           kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration};
+  InitializeSettingsService(/*password_sync_enabled=*/false,
+                            /*setting_sync_enabled=*/false);
   // User has changed one setting.
   pref_service()->ClearPref(password_manager::prefs::kCredentialsEnableService);
   pref_service()->SetBoolean(
       password_manager::prefs::kCredentialsEnableAutosignin, false);
-  InitializeSettingsService(/*password_sync_enabled=*/false,
-                            /*setting_sync_enabled=*/false);
 
   ExpectSettingsRetrievalFromBackend(std::nullopt, /*times=*/1);
   EXPECT_CALL(
@@ -1680,11 +1663,6 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
   updater_bridge_consumer()->OnSuccessfulSettingChange(
       PasswordManagerSetting::kAutoSignIn);
 
-  EXPECT_FALSE(settings_service()->IsSettingEnabled(
-      PasswordManagerSetting::kOfferToSavePasswords));
-  EXPECT_FALSE(settings_service()->IsSettingEnabled(
-      PasswordManagerSetting::kAutoSignIn));
-
   EXPECT_TRUE(pref_service()->GetBoolean(
       password_manager::prefs::kSettingsMigratedToUPMLocal));
 
@@ -1697,13 +1675,12 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
   base::test::ScopedFeatureList scoped_feature_list{
       password_manager::features::
           kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration};
-  pref_service()->SetBoolean(password_manager::prefs::kCredentialsEnableService,
-                             true);
-  pref_service()->SetBoolean(
-      password_manager::prefs::kCredentialsEnableAutosignin, true);
-
   InitializeSettingsService(/*password_sync_enabled=*/false,
                             /*setting_sync_enabled=*/false);
+
+  pref_service()->ClearPref(password_manager::prefs::kCredentialsEnableService);
+  pref_service()->ClearPref(
+      password_manager::prefs::kCredentialsEnableAutosignin);
 
   EXPECT_CALL(*bridge_helper(),
               SetPasswordSettingValue(
@@ -1724,14 +1701,12 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
       PasswordManagerSetting::kOfferToSavePasswords, false);
 
   EXPECT_TRUE(pref_service()->GetBoolean(
-      password_manager::prefs::kCredentialsEnableAutosignin));
-  EXPECT_TRUE(pref_service()->GetBoolean(
       password_manager::prefs::kCredentialsEnableService));
+  EXPECT_TRUE(pref_service()->GetBoolean(
+      password_manager::prefs::kCredentialsEnableAutosignin));
 
-  EXPECT_TRUE(settings_service()->IsSettingEnabled(
-      PasswordManagerSetting::kOfferToSavePasswords));
-  EXPECT_TRUE(settings_service()->IsSettingEnabled(
-      PasswordManagerSetting::kAutoSignIn));
+  EXPECT_FALSE(pref_service()->GetBoolean(
+      password_manager::prefs::kSettingsMigratedToUPMLocal));
 
   histogram_tester()->ExpectUniqueSample(
       "PasswordManager.PasswordSettingsMigrationFailed.AutoSignIn.APIError",
@@ -1741,42 +1716,16 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
 }
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
-       MigrateSettingsMakredAsDoneIfChromeHadDefaultPrefs) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration};
-  pref_service()->ClearPref(password_manager::prefs::kCredentialsEnableService);
-  pref_service()->ClearPref(
-      password_manager::prefs::kCredentialsEnableAutosignin);
-
-  InitializeSettingsService(/*password_sync_enabled=*/false,
-                            /*setting_sync_enabled=*/false);
-
-  EXPECT_TRUE(pref_service()->GetBoolean(
-      password_manager::prefs::kSettingsMigratedToUPMLocal));
-
-  EXPECT_TRUE(pref_service()->GetBoolean(
-      password_manager::prefs::kCredentialsEnableService));
-  EXPECT_TRUE(pref_service()->GetBoolean(
-      password_manager::prefs::kCredentialsEnableAutosignin));
-
-  histogram_tester()->ExpectUniqueSample(
-      "PasswordManager.PasswordSettingsMigrationSucceeded", true, 1);
-}
-
-TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
        MigrateSettingsGotValueForTheSamePrefTwice) {
   base::test::ScopedFeatureList scoped_feature_list{
       password_manager::features::
           kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration};
-  // Set prefs to user selected value so that the migration is triggered
-  pref_service()->SetBoolean(password_manager::prefs::kCredentialsEnableService,
-                             true);
-  pref_service()->SetBoolean(
-      password_manager::prefs::kCredentialsEnableAutosignin, true);
-
   InitializeSettingsService(/*password_sync_enabled=*/false,
                             /*setting_sync_enabled=*/false);
+
+  pref_service()->ClearPref(password_manager::prefs::kCredentialsEnableService);
+  pref_service()->ClearPref(
+      password_manager::prefs::kCredentialsEnableAutosignin);
 
   EXPECT_CALL(*bridge_helper(),
               SetPasswordSettingValue(
@@ -1811,18 +1760,12 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
   base::test::ScopedFeatureList scoped_feature_list{
       password_manager::features::
           kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration};
-  pref_service()->SetBoolean(
-      password_manager::prefs::kSettingsMigratedToUPMLocal, false);
+  InitializeSettingsService(/*password_sync_enabled=*/false,
+                            /*setting_sync_enabled=*/false);
   pref_service()->SetBoolean(password_manager::prefs::kCredentialsEnableService,
                              false);
   pref_service()->SetBoolean(
       password_manager::prefs::kCredentialsEnableAutosignin, false);
-  pref_service()->SetBoolean(password_manager::prefs::kAutoSignInEnabledGMS,
-                             true);
-  pref_service()->SetBoolean(
-      password_manager::prefs::kOfferToSavePasswordsEnabledGMS, true);
-  InitializeSettingsService(/*password_sync_enabled=*/false,
-                            /*setting_sync_enabled=*/false);
 
   ExpectSettingsRetrievalFromBackend(std::nullopt, /*times=*/1);
   EXPECT_CALL(
@@ -1845,11 +1788,6 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
   updater_bridge_consumer()->OnFailedSettingChange(
       PasswordManagerSetting::kOfferToSavePasswords,
       AndroidBackendAPIErrorCode::kUnexpectedError);
-
-  EXPECT_FALSE(settings_service()->IsSettingEnabled(
-      PasswordManagerSetting::kOfferToSavePasswords));
-  EXPECT_FALSE(settings_service()->IsSettingEnabled(
-      PasswordManagerSetting::kAutoSignIn));
 
   EXPECT_FALSE(pref_service()->GetBoolean(
       password_manager::prefs::kSettingsMigratedToUPMLocal));
