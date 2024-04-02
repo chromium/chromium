@@ -149,26 +149,10 @@ const base::FeatureParam<BackupRefPtrEnabledProcesses>
         BackupRefPtrEnabledProcesses::kNonRenderer,
         &kBackupRefPtrEnabledProcessesOptions};
 
-// Map *-with-memory-reclaimer modes onto their counterpars without the suffix.
-// They are the same, as memory reclaimer is now controlled independently.
-//
-// Similarly, map disabled-but-*-way-split onto plain disabled, as we are done
-// experimenting with partition split.
-//
-// We need to keep those option strings, as there is a long tail of clients that
-// may have an old field trial config, which used these modes.
-//
-// DO NOT USE *-with-memory-reclaimer and disabled-but-*-way-split modes in new
-// configs!
 constexpr FeatureParam<BackupRefPtrMode>::Option kBackupRefPtrModeOptions[] = {
     {BackupRefPtrMode::kDisabled, "disabled"},
     {BackupRefPtrMode::kEnabled, "enabled"},
-    {BackupRefPtrMode::kEnabled, "enabled-with-memory-reclaimer"},
     {BackupRefPtrMode::kEnabled, "enabled-in-same-slot-mode"},
-    {BackupRefPtrMode::kDisabled, "disabled-but-2-way-split"},
-    {BackupRefPtrMode::kDisabled,
-     "disabled-but-2-way-split-with-memory-reclaimer"},
-    {BackupRefPtrMode::kDisabled, "disabled-but-3-way-split"},
 };
 
 const base::FeatureParam<BackupRefPtrMode> kBackupRefPtrModeParam{
