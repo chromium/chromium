@@ -288,6 +288,15 @@ int QuicChromiumClientStream::Handle::WriteConnectUdpPayload(
     return net_error_;
   }
 
+  base::UmaHistogramBoolean(kHttp3DatagramDroppedHistogram,
+                            !stream_->SupportsH3Datagram());
+  if (!stream_->SupportsH3Datagram()) {
+    DLOG(WARNING)
+        << "Dropping datagram because the session has either not received "
+           "settings frame with H3_DATAGRAM yet or received settings that "
+           "indicate datagrams are not supported (i.e., H3_DATAGRAM=0).";
+    return OK;
+  }
   // Set Context ID to zero as per RFC 9298
   // (https://datatracker.ietf.org/doc/html/rfc9298#name-http-datagram-payload-forma)
   // and copy packet data.
@@ -299,8 +308,8 @@ int QuicChromiumClientStream::Handle::WriteConnectUdpPayload(
   // Attempt to send the HTTP payload as a datagram over the stream.
   quic::MessageStatus message_status = stream_->SendHttp3Datagram(http_payload);
 
-  // If the attempt was successful or blocked (e.g., due to buffer constraints),
-  // proceed to handle the I/O completion with an OK status.
+  // If the attempt was successful or blocked (e.g., due to buffer
+  // constraints), proceed to handle the I/O completion with an OK status.
   if (message_status == quic::MessageStatus::MESSAGE_STATUS_SUCCESS ||
       message_status == quic::MessageStatus::MESSAGE_STATUS_BLOCKED) {
     return HandleIOComplete(OK);
@@ -695,6 +704,10 @@ void QuicChromiumClientStream::OnError(int error) {
     handle_ = nullptr;
     handle->OnError(error);
   }
+}
+
+bool QuicChromiumClientStream::SupportsH3Datagram() const {
+  return session_->SupportsH3Datagram();
 }
 
 int QuicChromiumClientStream::Read(IOBuffer* buf, int buf_len) {

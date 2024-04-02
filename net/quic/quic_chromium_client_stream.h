@@ -301,6 +301,9 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
     return can_migrate_to_cellular_network_;
   }
 
+  // True if the underlying QUIC session supports HTTP/3 Datagrams.
+  bool SupportsH3Datagram() const;
+
   // True if this stream is the first data stream created on this session.
   bool IsFirstStream();
 
@@ -310,6 +313,10 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
 
   bool DeliverTrailingHeaders(spdy::Http2HeaderBlock* header_block,
                               int* frame_len);
+
+  static constexpr char kHttp3DatagramDroppedHistogram[] =
+      "Net.QuicChromiumClientStream."
+      "Http3DatagramDroppedOnWriteConnectUdpPayload";
 
   using quic::QuicSpdyStream::HasBufferedData;
   using quic::QuicStream::sequencer;

@@ -2352,6 +2352,19 @@ chromium-metrics-reviews@google.com.
   <summary>Log the stream error code when QUIC stream handle closes.</summary>
 </histogram>
 
+<histogram
+    name="Net.QuicChromiumClientStream.Http3DatagramDroppedOnWriteConnectUdpPayload"
+    enum="BooleanSuccess" expires_after="2024-07-01">
+  <owner>ciaramcmullin@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Records whether an HTTP Datagram was dropped when trying to send a UDP
+    payload over the QUIC stream. Datagram is dropped if the QUIC session has
+    not yet received SETTINGS_H3_DATAGRAM frame and therefore does not support
+    sending or receiving datagrams.
+  </summary>
+</histogram>
+
 <histogram name="Net.QuicChromiumClientStream.TrailingHeadersProcessSuccess"
     enum="BooleanSuccess" expires_after="2024-04-03">
   <owner>renjietang@chromium.org</owner>
