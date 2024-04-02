@@ -575,6 +575,7 @@ TEST_F(VideoDecoderTest, ResolutionChangeAbortedByReset) {
 
   auto tvp = CreateDecoderListener(g_env->Video());
 
+  // kNewBuffersRequested is a specific kVDVDA event.
   tvp->PlayUntil(DecoderListener::Event::kNewBuffersRequested);
   EXPECT_TRUE(tvp->WaitForEvent(DecoderListener::Event::kNewBuffersRequested));
 

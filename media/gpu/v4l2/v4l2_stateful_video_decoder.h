@@ -146,9 +146,7 @@ class MEDIA_GPU_EXPORT V4L2StatefulVideoDecoder : public VideoDecoderMixin {
   base::ScopedFD wake_event_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Bitstream information and other stuff collected during Initialize().
-  VideoCodecProfile profile_ GUARDED_BY_CONTEXT(sequence_checker_) =
-      VIDEO_CODEC_PROFILE_UNKNOWN;
-  VideoAspectRatio aspect_ratio_ GUARDED_BY_CONTEXT(sequence_checker_);
+  VideoDecoderConfig config_ GUARDED_BY_CONTEXT(sequence_checker_);
   PipelineOutputCB output_cb_ GUARDED_BY_CONTEXT(sequence_checker_);
   DecodeCB flush_cb_ GUARDED_BY_CONTEXT(sequence_checker_);
   // Set to true when the driver identifies itself as a Mediatek 8173.

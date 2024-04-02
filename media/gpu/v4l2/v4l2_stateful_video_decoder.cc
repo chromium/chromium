@@ -409,9 +409,8 @@ void V4L2StatefulVideoDecoder::Initialize(const VideoDecoderConfig& config,
     return;
   }
 
-  aspect_ratio_ = config.aspect_ratio();
+  config_ = config;
   output_cb_ = std::move(output_cb);
-  profile_ = config.profile();
   if (is_h264) {
     h264_frame_reassembler_ = std::make_unique<H264FrameReassembler>();
   }
@@ -422,7 +421,11 @@ void V4L2StatefulVideoDecoder::Initialize(const VideoDecoderConfig& config,
 void V4L2StatefulVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
                                       DecodeCB decode_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(IsInitialized()) << "V4L2StatefulVideoDecoder must be Initialize()d";
+  if (!IsInitialized()) {
+    Initialize(config_, /*low_delay=*/false, /*cdm_context=*/nullptr,
+               /*init_cb=*/base::DoNothing(), output_cb_,
+               /*waiting_cb=*/base::DoNothing());
+  }
   VLOGF(3) << buffer->AsHumanReadableString(/*verbose=*/false);
 
   if (buffer->end_of_stream()) {
@@ -464,7 +467,7 @@ void V4L2StatefulVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
 
   PrintAndTraceQueueStates(FROM_HERE);
 
-  if (VideoCodecProfileToVideoCodec(profile_) == VideoCodec::kH264) {
+  if (VideoCodecProfileToVideoCodec(config_.profile()) == VideoCodec::kH264) {
     auto processed_buffer_and_decode_cbs = h264_frame_reassembler_->Process(
         std::move(buffer), std::move(decode_cb));
     // If Process() returns nothing, then it swallowed its arguments and
@@ -477,7 +480,8 @@ void V4L2StatefulVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
       decoder_buffer_and_callbacks_.push(std::move(a));
     }
 
-  } else if (VideoCodecProfileToVideoCodec(profile_) == VideoCodec::kHEVC) {
+  } else if (VideoCodecProfileToVideoCodec(config_.profile()) ==
+             VideoCodec::kHEVC) {
     NOTIMPLEMENTED();
     std::move(decode_cb).Run(DecoderStatus::Codes::kUnsupportedCodec);
     return;
@@ -519,6 +523,7 @@ void V4L2StatefulVideoDecoder::Reset(base::OnceClosure closure) {
   // Invalidate pointers from and cancel all hypothetical in-flight requests
   // to the WaitOnceForEvents() routine.
   weak_ptr_factory_for_events_.InvalidateWeakPtrs();
+  weak_ptr_factory_for_CAPTURE_availability_.InvalidateWeakPtrs();
   cancelable_task_tracker_.TryCancelAll();
 
   if (h264_frame_reassembler_) {
@@ -533,18 +538,25 @@ void V4L2StatefulVideoDecoder::Reset(base::OnceClosure closure) {
     std::move(media_decode_cb).Run(DecoderStatus::Codes::kAborted);
   }
 
-  if (OUTPUT_queue_ && !OUTPUT_queue_->Streamoff()) {
-    LOG(ERROR) << "Failed to stop (VIDIOC_STREAMOFF) |OUTPUT_queue_|.";
-  }
-  if (CAPTURE_queue_ && !CAPTURE_queue_->Streamoff()) {
-    LOG(ERROR) << "Failed to stop (VIDIOC_STREAMOFF) |CAPTURE_queue_|.";
-  }
+  // TODO(279980150): Remove the specific |is_mtk8173_| provision here and below
+  // once it's figured out why this device stalls after reset()ting the queues.
+  if (is_mtk8173_) {
+    if (OUTPUT_queue_ && !OUTPUT_queue_->Streamoff()) {
+      LOG(ERROR) << "Failed to stop (VIDIOC_STREAMOFF) |OUTPUT_queue_|.";
+    }
+    if (CAPTURE_queue_ && !CAPTURE_queue_->Streamoff()) {
+      LOG(ERROR) << "Failed to stop (VIDIOC_STREAMOFF) |CAPTURE_queue_|.";
+    }
 
-  if (OUTPUT_queue_ && !OUTPUT_queue_->Streamon()) {
-    LOG(ERROR) << "Failed to start (VIDIOC_STREAMON) |OUTPUT_queue_|.";
-  }
-  if (CAPTURE_queue_ && !CAPTURE_queue_->Streamon()) {
-    LOG(ERROR) << "Failed to start (VIDIOC_STREAMON) |CAPTURE_queue_|.";
+    if (OUTPUT_queue_ && !OUTPUT_queue_->Streamon()) {
+      LOG(ERROR) << "Failed to start (VIDIOC_STREAMON) |OUTPUT_queue_|.";
+    }
+    if (CAPTURE_queue_ && !CAPTURE_queue_->Streamon()) {
+      LOG(ERROR) << "Failed to start (VIDIOC_STREAMON) |CAPTURE_queue_|.";
+    }
+  } else {
+    CAPTURE_queue_.reset();
+    OUTPUT_queue_.reset();
   }
 
   encoding_timestamps_.clear();
@@ -553,11 +565,13 @@ void V4L2StatefulVideoDecoder::Reset(base::OnceClosure closure) {
     std::move(flush_cb_).Run(DecoderStatus::Codes::kAborted);
   }
 
-  // There might be available resources for |CAPTURE_queue_| from previous
-  // cycles, i.e. from before Reset(); try and make them available for the
-  // driver.
-  if (CAPTURE_queue_) {
-    TryAndEnqueueCAPTUREQueueBuffers();
+  if (is_mtk8173_) {
+    // There might be available resources for |CAPTURE_queue_| from previous
+    // cycles, i.e. from before Reset(); try and make them available for the
+    // driver.
+    if (CAPTURE_queue_) {
+      TryAndEnqueueCAPTUREQueueBuffers();
+    }
   }
 }
 
@@ -594,7 +608,11 @@ bool V4L2StatefulVideoDecoder::IsPlatformDecoder() const {
 void V4L2StatefulVideoDecoder::ApplyResolutionChange() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOGF(2);
-  InitializeCAPTUREQueue();
+  // It's possible that we have been Reset()ed in the interval between receiving
+  // the resolution change event in WaitOnceForEvents() (in a background thread)
+  // and arriving here from our |client_|. Check if that's the case.
+  if (IsInitialized())
+    InitializeCAPTUREQueue();
 }
 
 size_t V4L2StatefulVideoDecoder::GetMaxOutputFramePoolSize() const {
@@ -698,7 +716,7 @@ bool V4L2StatefulVideoDecoder::InitializeCAPTUREQueue() {
   CroStatus::Or<ImageProcessor::PixelLayoutCandidate> status_or_output_format =
       client_->PickDecoderOutputFormat(
           candidates, *visible_rect,
-          aspect_ratio_.GetNaturalSize(*visible_rect),
+          config_.aspect_ratio().GetNaturalSize(*visible_rect),
           /*output_size=*/std::nullopt, num_codec_reference_frames,
           /*use_protected=*/false, /*need_aux_frame_pool=*/false,
           /*allocator=*/std::nullopt);
