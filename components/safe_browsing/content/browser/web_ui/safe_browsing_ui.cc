@@ -1742,6 +1742,11 @@ std::string SerializeCSBRR(const ClientSafeBrowsingReportRequest& report) {
         "url_request_destination",
         UrlRequestDestinationToString(report.url_request_destination()));
   }
+  if (report.has_warning_shown_timestamp_msec()) {
+    report_request.Set(
+        "warning_shown_timestamp_msec",
+        static_cast<double>(report.warning_shown_timestamp_msec()));
+  }
   std::string serialized;
   if (report.SerializeToString(&serialized)) {
     std::string base64_encoded = base::Base64Encode(serialized);

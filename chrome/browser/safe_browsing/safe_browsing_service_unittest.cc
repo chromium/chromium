@@ -45,7 +45,10 @@ const char kTestDownloadUrl[] = "https://example.com";
 
 class SafeBrowsingServiceTest : public testing::Test {
  public:
-  SafeBrowsingServiceTest() = default;
+  SafeBrowsingServiceTest() {
+    feature_list_.InitAndEnableFeature(
+        safe_browsing::kDownloadReportWithoutUserDecision);
+  }
 
   void SetUp() override {
     browser_process_ = TestingBrowserProcess::GetGlobal();
@@ -189,6 +192,9 @@ class SafeBrowsingServiceTest : public testing::Test {
 
   ::testing::NiceMock<download::MockDownloadItem> download_item_;
   GURL download_url_ = GURL(kTestDownloadUrl);
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(SafeBrowsingServiceTest, SendDownloadReport_Success) {
@@ -213,6 +219,7 @@ TEST_F(SafeBrowsingServiceTest, SendDownloadReport_Success) {
             DownloadWarningAction::DOWNLOADS_PAGE,
             DownloadWarningAction::DISCARD,
             /*is_terminal_action=*/true, /*interval_msec=*/0);
+        EXPECT_TRUE(actual_request->has_warning_shown_timestamp_msec());
       }));
   ping_manager->SetURLLoaderFactoryForTesting(
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
@@ -239,6 +246,7 @@ TEST_F(
         std::unique_ptr<ClientSafeBrowsingReportRequest> actual_request =
             GetActualRequest(request);
         EXPECT_TRUE(actual_request->download_warning_actions().empty());
+        EXPECT_FALSE(actual_request->has_warning_shown_timestamp_msec());
       }));
   ping_manager->SetURLLoaderFactoryForTesting(
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(

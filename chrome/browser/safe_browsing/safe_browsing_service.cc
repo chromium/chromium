@@ -515,6 +515,13 @@ bool SafeBrowsingService::SendDownloadReport(
   }
   if (IsExtendedReportingEnabled(*profile->GetPrefs())) {
     PopulateDownloadWarningActions(download, report.get());
+    base::Time warning_first_shown_time =
+        DownloadItemWarningData::WarningFirstShownTime(download);
+    if (!warning_first_shown_time.is_null() &&
+        base::FeatureList::IsEnabled(kDownloadReportWithoutUserDecision)) {
+      report->set_warning_shown_timestamp_msec(
+          warning_first_shown_time.InMillisecondsSinceUnixEpoch());
+    }
   }
   return ChromePingManagerFactory::GetForBrowserContext(profile)
              ->ReportThreatDetails(std::move(report)) ==

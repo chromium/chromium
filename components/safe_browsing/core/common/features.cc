@@ -65,6 +65,10 @@ const base::FeatureParam<bool> kDelayedWarningsEnableMouseClicks{
     &kDelayedWarnings, "mouse",
     /*default_value=*/false};
 
+BASE_FEATURE(kDownloadReportWithoutUserDecision,
+             "DownloadReportWithoutUserDecision",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kDownloadTailoredWarnings,
              "DownloadTailoredWarnings",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -338,6 +342,7 @@ constexpr struct {
     {&kCreateNotificationsAcceptedClientSafeBrowsingReports, true},
     {&kCreateWarningShownClientSafeBrowsingReports, false},
     {&kDelayedWarnings, true},
+    {&kDownloadReportWithoutUserDecision, true},
     {&kDownloadTailoredWarnings, true},
     {&kExtensionTelemetryDisableOffstoreExtensions, true},
     {&kExtensionTelemetryInterceptRemoteHostsContactedInRenderer, true},
