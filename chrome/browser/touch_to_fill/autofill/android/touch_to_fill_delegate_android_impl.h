@@ -199,7 +199,7 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
   const raw_ptr<BrowserAutofillManager> manager_;
   FormData query_form_;
   FormFieldData query_field_;
-  bool dismissed_by_user_;
+  bool dismissed_by_user_ = false;
 
   base::WeakPtrFactory<TouchToFillDelegateAndroidImpl> weak_ptr_factory_{this};
 };
