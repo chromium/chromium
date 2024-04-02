@@ -39,6 +39,7 @@ constexpr int64_t kSectionHeaderChildSpacing = 4;
 constexpr int64_t kSectionHeaderIconSize = 20;
 constexpr gfx::Insets kSectionPadding = gfx::Insets::TLBR(8, 8, 16, 8);
 constexpr int64_t kSectionChildSpacing = 8;
+constexpr int kTextLabelDefaultMaximumWidth = 300;
 
 std::unique_ptr<views::View> CreateSectionHeader(const gfx::VectorIcon& icon,
                                                  int name_id) {
@@ -80,18 +81,25 @@ SummaryOutlinesSection::SummaryOutlinesSection(MahiUiController* ui_controller)
               IDR_MAHI_LOADING_SUMMARY_ANIMATION))
           .Build());
 
-  AddChildView(views::Builder<views::Label>()
-                   .CopyAddressTo(&summary_label_)
-                   .SetVisible(false)
-                   .SetID(mahi_constants::ViewId::kSummaryLabel)
-                   .SetMultiLine(true)
-                   .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
-                   .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
-                   .AfterBuild(base::BindOnce([](views::Label* self) {
-                     TypographyProvider::Get()->StyleLabel(
-                         TypographyToken::kCrosBody2, *self);
-                   }))
-                   .Build());
+  AddChildView(
+      views::Builder<views::Label>()
+          .CopyAddressTo(&summary_label_)
+          .SetVisible(false)
+          .SetID(mahi_constants::ViewId::kSummaryLabel)
+          .SetMultiLine(true)
+          // TODO(crbug.com/1349528): Multiline label right now doesn't
+          // work well with `FlexLayout`. The size constraint is not
+          // passed down from the views tree in the first round of layout,
+          // so we impose a maximum width constraint so that the first
+          // layout handle the width and height constraint correctly.
+          .SetMaximumWidth(kTextLabelDefaultMaximumWidth)
+          .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
+          .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+          .AfterBuild(base::BindOnce([](views::Label* self) {
+            TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2,
+                                                  *self);
+          }))
+          .Build());
 
   // TODO(b/330643995): Show the outlines section once it is ready.
   auto* outlines_section_container = AddChildView(
