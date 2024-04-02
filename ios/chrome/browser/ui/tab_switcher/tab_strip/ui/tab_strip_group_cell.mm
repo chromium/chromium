@@ -37,6 +37,13 @@ constexpr CGFloat kTitleContainerCenterYOffset = -2;
   return self;
 }
 
+#pragma mark - UICollectionViewCell
+
+- (void)prepareForReuse {
+  [super prepareForReuse];
+  self.titleContainerBackgroundColor = nil;
+}
+
 #pragma mark - Setters
 
 - (void)setTitle:(NSString*)title {

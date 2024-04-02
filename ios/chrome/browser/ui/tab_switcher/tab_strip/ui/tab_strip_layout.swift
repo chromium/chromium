@@ -580,19 +580,20 @@ class TabStripLayout: UICollectionViewFlowLayout {
   // Calculates the dynamic size of a tab according to the number of tabs and
   // groups.
   public func calculateTabCellSize() {
-    guard let collectionView = self.collectionView, let snapshot = dataSource?.snapshot() else {
+    guard let collectionView = self.collectionView, let snapshot = dataSource?.snapshot(for: .tabs)
+    else {
       return
     }
 
     var groupCellWidthSum: CGFloat = 0
     var tabCellCount: CGFloat = 0
-    let cellCount: CGFloat = CGFloat(snapshot.itemIdentifiers.count)
+    let cellCount: CGFloat = CGFloat(snapshot.visibleItems.count)
 
     if cellCount == 0 {
       return
     }
 
-    for itemIdentifier in snapshot.itemIdentifiers {
+    for itemIdentifier in snapshot.visibleItems {
       switch itemIdentifier.item {
       case .tab(_):
         tabCellCount += 1

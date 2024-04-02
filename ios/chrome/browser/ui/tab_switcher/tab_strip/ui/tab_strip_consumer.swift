@@ -7,9 +7,12 @@
 
   /// Tells the consumer to replace its current set of items with `items`, item data with `itemData`
   /// and updates the selected item to be `selectedItem`. The selected item must be in the `items`.
+  /// All tab items following a group item are set as children of that group up until the first tab for which
+  /// `isLastTabInGroup` is true.
   func populate(
     items: [TabStripItemIdentifier]?, selectedItem: TabSwitcherItem?,
-    itemData: [TabStripItemIdentifier: TabStripItemData])
+    itemData: [TabStripItemIdentifier: TabStripItemData],
+    itemParents: [TabStripItemIdentifier: TabGroupItem])
 
   /// Tells the consumer to select `item`.
   func selectItem(_ item: TabSwitcherItem?)
@@ -17,14 +20,36 @@
   /// Reconfigure the content of cells associated with `items`.
   func reconfigureItems(_ items: [TabStripItemIdentifier])
 
-  /// Moves `item`  after `destinationItem`. Pass nil to insert at the beginning.
+  /// Moves `item`  before `destinationItem`. Pass nil to insert at the end.
+  /// If `destinationItem` is a tab item which is inside of a group, then `item` will move to that group.
   func moveItem(
-    _ item: TabSwitcherItem, afterItem destinationItem: TabSwitcherItem?)
+    _ item: TabStripItemIdentifier, beforeItem destinationItem: TabStripItemIdentifier?)
+
+  /// Moves `item`  after `destinationItem`. Pass nil to insert at the beginning.
+  /// If `destinationItem` is a tab item which is inside of a group, then `item` will move to that group.
+  func moveItem(
+    _ item: TabStripItemIdentifier, afterItem destinationItem: TabStripItemIdentifier?)
+
+  /// Moves `item` to the last position in the children of `parentItem`.
+  func moveItem(
+    _ item: TabStripItemIdentifier, insideGroup parentItem: TabGroupItem)
 
   /// Inserts `items` before `destinationItem`. Pass nil to insert at the end.
   /// It's an error if any of the `items` is already passed to the consumer (and not yet removed).
+  /// If `destinationItem` is a tab item which is inside of a group, then `items` will be inserted in that group.
   func insertItems(
     _ items: [TabStripItemIdentifier], beforeItem destinationItem: TabStripItemIdentifier?)
+
+  /// Inserts `items` after `destinationItem`. Pass nil to insert at the beginning.
+  /// It's an error if any of the `items` is already passed to the consumer (and not yet removed).
+  /// If `destinationItem` is a tab item which is inside of a group, then `items` will be inserted in that group.
+  func insertItems(
+    _ items: [TabStripItemIdentifier], afterItem destinationItem: TabStripItemIdentifier?)
+
+  /// Inserts `items` at the last position in the children of `parentItem`.
+  /// It's an error if any of the `items` is already passed to the consumer (and not yet removed).
+  func insertItems(
+    _ items: [TabStripItemIdentifier], insideGroup parentItem: TabGroupItem)
 
   /// Removes `items`.
   func removeItems(_ items: [TabStripItemIdentifier]?)

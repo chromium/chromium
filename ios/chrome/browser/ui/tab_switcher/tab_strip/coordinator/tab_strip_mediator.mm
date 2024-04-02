@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/coordinator/tab_strip_mediator.h"
 
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
-#import <set>
 
 #import "base/metrics/histogram_functions.h"
 #import "components/favicon/ios/web_favicon_driver.h"
@@ -40,13 +39,26 @@
 
 namespace {
 
+// Finds any TabGroup in `web_state_list` whose range starts at `index`.
+// Returns `nullptr` if no such TabGroup exists.
+const TabGroup* FindTabGroupStartingAtIndex(int index,
+                                            WebStateList* web_state_list) {
+  CHECK(web_state_list);
+  for (const TabGroup* group : web_state_list->GetGroups()) {
+    if (web_state_list->GetGroupRange(group).range_begin() == index) {
+      return group;
+    }
+  }
+  return nullptr;
+}
+
 // Returns the `TabStripItemData` for a tab item at `index` in `web_state_list`.
-TabStripItemData* CreateTabItemData(int index,
-                                    const WebStateList& web_state_list) {
-  const TabGroup* group = web_state_list.GetGroupOfWebStateAt(index);
+TabStripItemData* CreateTabItemData(int index, WebStateList* web_state_list) {
+  CHECK(web_state_list);
+  const TabGroup* group = web_state_list->GetGroupOfWebStateAt(index);
   TabStripItemData* data = [[TabStripItemData alloc] init];
   if (group) {
-    const WebStateList::Range range = web_state_list.GetGroupRange(group);
+    const WebStateList::Range range = web_state_list->GetGroupRange(group);
     data.isFirstTabInGroup = range.range_begin() == index;
     data.isLastTabInGroup = range.range_end() == index + 1;
     data.groupStrokeColor = group->GetColor();
@@ -61,34 +73,35 @@ TabStripItemData* CreateGroupItemData(const TabGroup* group) {
   return data;
 }
 
-// Returns the `TabStripItemData` elements for WebStates in `range` in
-// `web_state_list`.
-// If `include_groups` is true, then each output element associated with a
-// WebState which is the first of its group will be preceded by an element
-// associated with that group.
-NSArray<TabStripItemData*>* CreateItemData(
-    const WebStateList& web_state_list,
+// Returns the `TabStripItemData` elements for WebStates and TabGroups in
+// `range` in `web_state_list`. If `including_groups` is set to false, then
+// TabGroups are not included in the result.
+NSMutableArray<TabStripItemData*>* CreateItemData(
+    WebStateList* web_state_list,
     WebStateList::Range range = WebStateList::Range::InvalidRange(),
-    bool include_groups = true) {
+    bool including_group_items = true) {
+  CHECK(web_state_list);
   if (!range.IsValid()) {
-    range = {0, web_state_list.count()};
+    range = {0, web_state_list->count()};
   }
   CHECK_GE(range.range_begin(), 0);
-  CHECK_LE(range.range_end(), web_state_list.count());
+  CHECK_LE(range.range_end(), web_state_list->count());
   NSMutableArray<TabStripItemData*>* data = [[NSMutableArray alloc] init];
-  for (int i = range.range_begin(); i < range.range_end(); i++) {
-    TabStripItemData* tab_item_data = CreateTabItemData(i, web_state_list);
-    const TabGroup* group = web_state_list.GetGroupOfWebStateAt(i);
-    if (include_groups && group &&
-        web_state_list.GetGroupRange(group).range_begin() == i &&
-        [TabStripFeaturesUtils isModernTabStripWithTabGroups]) {
-      [data addObject:CreateGroupItemData(group)];
+  for (int index = range.range_begin(); index < range.range_end(); index++) {
+    if ([TabStripFeaturesUtils isModernTabStripWithTabGroups]) {
+      if (including_group_items) {
+        if (const TabGroup* group =
+                FindTabGroupStartingAtIndex(index, web_state_list)) {
+          [data addObject:CreateGroupItemData(group)];
+        }
+      }
     }
-    [data addObject:tab_item_data];
+    [data addObject:CreateTabItemData(index, web_state_list)];
   }
   return data;
 }
 
+// Returns the `TabStripItemIdentifier` for `web_state`.
 TabStripItemIdentifier* CreateTabItemIdentifier(web::WebState* web_state) {
   TabSwitcherItem* tab_item =
       [[WebStateTabSwitcherItem alloc] initWithWebState:web_state];
@@ -97,6 +110,7 @@ TabStripItemIdentifier* CreateTabItemIdentifier(web::WebState* web_state) {
   return tab_item_identifier;
 }
 
+// Returns the `TabStripItemIdentifier` for `group`.
 TabStripItemIdentifier* CreateGroupItemIdentifier(
     const TabGroup* group,
     WebStateList* web_state_list) {
@@ -107,15 +121,14 @@ TabStripItemIdentifier* CreateGroupItemIdentifier(
   return group_item_identifier;
 }
 
-// Returns the `TabStripItemIdentifier` elements for WebStates in `range` in
-// `web_state_list`.
-// If `include_groups` is true, then each output element associated with a
-// WebState which is the first of its group will be preceded by an element
-// associated with that group.
-NSArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
+// Returns the `TabStripItemIdentifier` elements for WebStates and TabGroups in
+// `range` in `web_state_list`. If `including_groups` is set to false, then
+// TabGroups are not included in the result.
+NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
     WebStateList* web_state_list,
     WebStateList::Range range = WebStateList::Range::InvalidRange(),
-    bool include_groups = true) {
+    bool including_group_items = true) {
+  CHECK(web_state_list);
   if (!range.IsValid()) {
     range = {0, web_state_list->count()};
   }
@@ -123,15 +136,17 @@ NSArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   CHECK_LE(range.range_end(), web_state_list->count());
   NSMutableArray<TabStripItemIdentifier*>* item_identifiers =
       [[NSMutableArray alloc] init];
-  for (int i = range.range_begin(); i < range.range_end(); i++) {
-    web::WebState* web_state = web_state_list->GetWebStateAt(i);
-    const TabGroup* group = web_state_list->GetGroupOfWebStateAt(i);
-    if (include_groups && group &&
-        web_state_list->GetGroupRange(group).range_begin() == i &&
-        [TabStripFeaturesUtils isModernTabStripWithTabGroups]) {
-      [item_identifiers
-          addObject:CreateGroupItemIdentifier(group, web_state_list)];
+  for (int index = range.range_begin(); index < range.range_end(); index++) {
+    if ([TabStripFeaturesUtils isModernTabStripWithTabGroups]) {
+      if (including_group_items) {
+        if (const TabGroup* group =
+                FindTabGroupStartingAtIndex(index, web_state_list)) {
+          [item_identifiers
+              addObject:CreateGroupItemIdentifier(group, web_state_list)];
+        }
+      }
     }
+    web::WebState* web_state = web_state_list->GetWebStateAt(index);
     [item_identifiers addObject:CreateTabItemIdentifier(web_state)];
   }
   return item_identifiers;
@@ -224,27 +239,14 @@ NSArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   switch (change.type()) {
     case WebStateListChange::Type::kStatusOnly: {
       // The activation is handled after this switch statement.
-      const WebStateListChangeStatusOnly& statusOnlyChange =
-          change.As<WebStateListChangeStatusOnly>();
-      const int index = statusOnlyChange.index();
-      const TabGroup* oldGroup = statusOnlyChange.old_group();
-      const TabGroup* newGroup = statusOnlyChange.new_group();
-      // WebState changed group, it should be reloaded so the group stroke is
-      // updated.
-      if (oldGroup != newGroup) {
-        web::WebState* webState = webStateList->GetWebStateAt(index);
-        TabStripItemIdentifier* itemIdentifier =
-            CreateTabItemIdentifier(webState);
-        TabStripItemData* itemData = CreateTabItemData(index, *webStateList);
-        [self.consumer updateItemData:@{itemIdentifier : itemData}
-                     reconfigureItems:YES];
-        // Reconfigure the old and new group items if needed.
-        if (oldGroup) {
-          [self updateDataAndReconfigureItemsInGroup:oldGroup];
-        }
-        if (newGroup) {
-          [self updateDataAndReconfigureItemsInGroup:newGroup];
-        }
+      if (!status.active_web_state_change()) {
+        const WebStateListChangeStatusOnly& statusOnlyChange =
+            change.As<WebStateListChangeStatusOnly>();
+        [self moveItemForWebState:statusOnlyChange.web_state()
+            fromWebStateListIndex:statusOnlyChange.index()
+              toWebStateListIndex:statusOnlyChange.index()
+                         oldGroup:statusOnlyChange.old_group()
+                         newGroup:statusOnlyChange.new_group()];
       }
       break;
     }
@@ -268,63 +270,72 @@ NSArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
           change.As<WebStateListChangeInsert>();
       const int index = insertChange.index();
       web::WebState* insertedWebState = insertChange.inserted_web_state();
-      TabStripItemIdentifier* insertedItemIdentifier =
+      TabStripItemIdentifier* itemIdentifier =
           CreateTabItemIdentifier(insertedWebState);
-      TabStripItemData* insertedItemData =
-          CreateTabItemData(index, *webStateList);
-      [self.consumer updateItemData:@{insertedItemIdentifier : insertedItemData}
+      TabStripItemData* itemData = CreateTabItemData(index, webStateList);
+      [self.consumer updateItemData:@{itemIdentifier : itemData}
                    reconfigureItems:NO];
+      const TabGroup* group = insertChange.group();
 
-      TabStripItemIdentifier* destinationItemIdentifier = nil;
-      if (webStateList->ContainsIndex(index + 1)) {
-        const int destinationWebStateIndex = index + 1;
-        web::WebState* destinationWebState =
-            webStateList->GetWebStateAt(destinationWebStateIndex);
-        destinationItemIdentifier =
-            CreateTabItemIdentifier(destinationWebState);
+      if (TabStripItemIdentifier* previousItemIdentifier =
+              [self destinationItemAtIndex:(index - 1) parentGroup:group]) {
+        // If after the update, there is a neighbor WebState to the left of the
+        // newly inserted WebState, then there are three cases where
+        // `previousItemIdentifier` is not nil.
+        // 1. `group` is not nil and the neighbor is in `group` too
+        // (`previousItemIdentifier` is the neighbor WebState).
+        // 2. `group` is nil and the neighbor is not in a group either
+        // (`previousItemIdentifier` is the neighbor WebState).
+        // 3. `group` is nil and the neighbor is in a different group
+        // (`previousItemIdentifier` is the neighbor WebState's group).
+        [self.consumer insertItems:@[ itemIdentifier ]
+                         afterItem:previousItemIdentifier];
+      } else if (TabStripItemIdentifier* nextItemIdentifier =
+                     [self destinationItemAtIndex:(index + 1)
+                                      parentGroup:group]) {
+        // If after the update, there is a neighbor WebState to the right of the
+        // newly inserted WebState, then there are the same three cases where
+        // `nextItemIdentifier` is not nil.
+        [self.consumer insertItems:@[ itemIdentifier ]
+                        beforeItem:nextItemIdentifier];
+      } else if (group) {
+        // If there is no neighbor WebState in `group` to insert before/after,
+        // then the item will be the first child of that group.
+        TabGroupItem* groupItem =
+            [[TabGroupItem alloc] initWithTabGroup:group
+                                      webStateList:webStateList];
+        [self.consumer insertItems:@[ itemIdentifier ] insideGroup:groupItem];
+      } else if (const TabGroup* emptyGroupAtIndexZero =
+                     FindTabGroupStartingAtIndex(0, _webStateList)) {
+        // If `group` is null but there is no neighbor WebState to insert
+        // before/after, then the WebStateList has no WebStates and this new
+        // WebState is inserted at index 0. If there is an empty group at index
+        // 0, the item should be inserted after that group.
+        TabStripItemIdentifier* groupItemIdentifier =
+            CreateGroupItemIdentifier(emptyGroupAtIndexZero, _webStateList);
+        [self.consumer insertItems:@[ itemIdentifier ]
+                         afterItem:groupItemIdentifier];
+      } else {
+        // If `group` is null, there are no WebStates in the WebStateList and
+        // there is no empty group at index 0, then the new item should be
+        // inserted at the beginning of the collection view.
+        [self.consumer insertItems:@[ itemIdentifier ] afterItem:nil];
       }
-      [self.consumer insertItems:@[ insertedItemIdentifier ]
-                      beforeItem:destinationItemIdentifier];
+
       // Reconfigure the group items if needed.
-      if (insertChange.group()) {
-        [self updateDataAndReconfigureItemsInGroup:insertChange.group()];
+      if (group) {
+        [self updateDataAndReconfigureItemsInGroup:group];
       }
       break;
     }
     case WebStateListChange::Type::kMove: {
       const WebStateListChangeMove& moveChange =
           change.As<WebStateListChangeMove>();
-      const int to_index = moveChange.moved_to_index();
-      TabSwitcherItem* item = [[WebStateTabSwitcherItem alloc]
-          initWithWebState:moveChange.moved_web_state()];
-
-      const TabGroup* oldGroup = moveChange.old_group();
-      const TabGroup* newGroup = moveChange.new_group();
-      // WebState changed group, so the group stroke is updated.
-      if (oldGroup != newGroup) {
-        TabStripItemIdentifier* itemIdentifier =
-            [TabStripItemIdentifier tabIdentifier:item];
-        TabStripItemData* itemData = CreateGroupItemData(newGroup);
-        [self.consumer updateItemData:@{itemIdentifier : itemData}
-                     reconfigureItems:YES];
-      }
-
-      if (moveChange.moved_to_index() == 0) {
-        [_consumer moveItem:item afterItem:nil];
-      } else {
-        web::WebState* destinationWebState =
-            _webStateList->GetWebStateAt(to_index - 1);
-        TabSwitcherItem* destinationItem = [[WebStateTabSwitcherItem alloc]
-            initWithWebState:destinationWebState];
-        [_consumer moveItem:item afterItem:destinationItem];
-      }
-      // Reconfigure the old and new group items if needed.
-      if (moveChange.old_group()) {
-        [self updateDataAndReconfigureItemsInGroup:moveChange.old_group()];
-      }
-      if (moveChange.new_group()) {
-        [self updateDataAndReconfigureItemsInGroup:moveChange.new_group()];
-      }
+      [self moveItemForWebState:moveChange.moved_web_state()
+          fromWebStateListIndex:moveChange.moved_from_index()
+            toWebStateListIndex:moveChange.moved_to_index()
+                       oldGroup:moveChange.old_group()
+                       newGroup:moveChange.new_group()];
       break;
     }
     case WebStateListChange::Type::kReplace: {
@@ -338,7 +349,7 @@ NSArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
           [[WebStateTabSwitcherItem alloc] initWithWebState:newWebState];
       TabStripItemIdentifier* newItemIdentifier =
           [TabStripItemIdentifier tabIdentifier:newItem];
-      TabStripItemData* newItemData = CreateTabItemData(index, *webStateList);
+      TabStripItemData* newItemData = CreateTabItemData(index, webStateList);
       [self.consumer updateItemData:@{newItemIdentifier : newItemData}
                    reconfigureItems:NO];
       [self.consumer replaceItem:oldItem withItem:newItem];
@@ -371,7 +382,36 @@ NSArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
       break;
     }
     case WebStateListChange::Type::kGroupMove: {
-      // TODO(crbug.com/329810882): Handle the tab group move.
+      const WebStateListChangeGroupMove& groupMoveChange =
+          change.As<WebStateListChangeGroupMove>();
+      TabStripItemIdentifier* itemIdentifier = CreateGroupItemIdentifier(
+          groupMoveChange.moved_group(), _webStateList);
+      const WebStateList::Range toRange = groupMoveChange.moved_to_range();
+      // Move item to new position.
+      if (TabStripItemIdentifier* previousItemIdentifier =
+              [self destinationItemAtIndex:(toRange.range_begin() - 1)
+                               parentGroup:nil]) {
+        // If after the update, there is a neighbor WebState to the left of the
+        // group's range, then there are two cases where
+        // `previousItemIdentifier` is not nil.
+        // 1. The neighbor is not in a group (`previousItemIdentifier` is the
+        // neighbor WebState).
+        // 2. The neighbor is in a group (`previousItemIdentifier` is the
+        // neighbor WebState's group).
+        [self.consumer moveItem:itemIdentifier
+                      afterItem:previousItemIdentifier];
+      } else if (TabStripItemIdentifier* nextItemIdentifier =
+                     [self destinationItemAtIndex:toRange.range_end()
+                                      parentGroup:nil]) {
+        // If after the update, there is a neighbor WebState to the right of the
+        // group's range, then there are two cases where
+        // `nextItemIdentifier` is not nil.
+        // 1. The neighbor is not in a group (`nextItemIdentifier` is the
+        // neighbor WebState).
+        // 2. The neighbor is in a group (`nextItemIdentifier` is the neighbor
+        // WebState's group).
+        [self.consumer moveItem:itemIdentifier beforeItem:nextItemIdentifier];
+      }
       break;
     }
     case WebStateListChange::Type::kGroupDelete: {
@@ -506,23 +546,22 @@ NSArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   if (IsVisibleURLNewTabPage(webState)) {
     return;
   }
-
-  [self.consumer reconfigureItems:@[ CreateTabItemIdentifier(webState) ]];
+  [self reconfigureItemForWebState:webState];
 }
 
 - (void)webStateDidStopLoading:(web::WebState*)webState {
-  [self.consumer reconfigureItems:@[ CreateTabItemIdentifier(webState) ]];
+  [self reconfigureItemForWebState:webState];
 }
 
 - (void)webStateDidChangeTitle:(web::WebState*)webState {
-  [self.consumer reconfigureItems:@[ CreateTabItemIdentifier(webState) ]];
+  [self reconfigureItemForWebState:webState];
 }
 
 #pragma mark - WebStateFaviconDriverObserver
 
 - (void)faviconDriver:(favicon::FaviconDriver*)driver
     didUpdateFaviconForWebState:(web::WebState*)webState {
-  [self.consumer reconfigureItems:@[ CreateTabItemIdentifier(webState) ]];
+  [self reconfigureItemForWebState:webState];
 }
 
 #pragma mark - TabCollectionDragDropHandler
@@ -653,35 +692,88 @@ NSArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 
 // Updates the consumer with the list of all items and the selected one.
 - (void)populateConsumerItems {
-  if (!_webStateList) {
-    return;
-  }
-  TabSwitcherItem* item;
+  TabSwitcherItem* selectedItem = nil;
   if (_webStateList->GetActiveWebState()) {
-    item = [[WebStateTabSwitcherItem alloc]
+    selectedItem = [[WebStateTabSwitcherItem alloc]
         initWithWebState:_webStateList->GetActiveWebState()];
   }
-  NSArray<TabStripItemData*>* data = CreateItemData(*_webStateList);
   NSArray<TabStripItemIdentifier*>* itemIdentifiers =
       CreateItemIdentifiers(_webStateList);
+  // Prepare tab strip item data (group stroke color, etc).
   NSDictionary<TabStripItemIdentifier*, TabStripItemData*>* itemData =
-      [NSDictionary dictionaryWithObjects:data forKeys:itemIdentifiers];
+      [NSDictionary dictionaryWithObjects:CreateItemData(_webStateList)
+                                  forKeys:itemIdentifiers];
+  // Prepare item parents.
+  NSMutableDictionary<TabStripItemIdentifier*, TabGroupItem*>* itemParents =
+      [NSMutableDictionary dictionary];
+  for (int index = 0; index < _webStateList->count(); ++index) {
+    if (const TabGroup* parentGroup =
+            _webStateList->GetGroupOfWebStateAt(index)) {
+      TabGroupItem* parentTabGroupItem =
+          [[TabGroupItem alloc] initWithTabGroup:parentGroup
+                                    webStateList:_webStateList];
+      TabStripItemIdentifier* itemIdentifier =
+          CreateTabItemIdentifier(_webStateList->GetWebStateAt(index));
+      [itemParents setObject:parentTabGroupItem forKey:itemIdentifier];
+    }
+  }
   [self.consumer populateWithItems:itemIdentifiers
-                      selectedItem:item
-                          itemData:itemData];
+                      selectedItem:selectedItem
+                          itemData:itemData
+                       itemParents:itemParents];
 }
 
-// Moves item to the `destinationIndex`.
-- (void)moveItemWithID:(web::WebStateID)itemID
-               toIndex:(NSUInteger)destinationIndex {
-  int sourceIndex = GetWebStateIndex(_webStateList, WebStateSearchCriteria{
-                                                        .identifier = itemID,
-                                                    });
-  if (sourceIndex != WebStateList::kInvalidIndex) {
-    int destinationWebStateListIndex =
-        [self webStateListIndexFromItemIndex:destinationIndex];
-    _webStateList->MoveWebStateAt(sourceIndex, destinationWebStateListIndex);
+// Moves item to the desired final item index `itemIndexAfterUpdate`.
+- (void)moveItemWithID:(web::WebStateID)sourceWebStateID
+               toIndex:(NSUInteger)itemIndexAfterUpdate {
+  int webStateListIndexBeforeUpdate =
+      GetWebStateIndex(_webStateList, WebStateSearchCriteria{
+                                          .identifier = sourceWebStateID,
+                                      });
+  if (!_webStateList->ContainsIndex(webStateListIndexBeforeUpdate)) {
+    return;
   }
+
+  const TabGroup* sourceGroup =
+      _webStateList->GetGroupOfWebStateAt(webStateListIndexBeforeUpdate);
+  web::WebState* sourceWebState =
+      _webStateList->GetWebStateAt(webStateListIndexBeforeUpdate);
+  TabStripItemIdentifier* sourceItemIdentifier =
+      CreateTabItemIdentifier(sourceWebState);
+
+  // Simulating the move.
+  NSMutableArray<TabStripItemIdentifier*>* items =
+      CreateItemIdentifiers(_webStateList);
+  [items removeObject:sourceItemIdentifier];
+  [items insertObject:sourceItemIdentifier atIndex:itemIndexAfterUpdate];
+  const WebStateList::InsertionParams insertionParams =
+      [self insertionParamsForDestinationItemIndex:itemIndexAfterUpdate
+                                             items:items];
+  const TabGroup* destinationGroup = insertionParams.in_group;
+  const int webStateListIndexAfterUpdate = insertionParams.desired_index;
+
+  if (sourceGroup == destinationGroup) {
+    _webStateList->MoveWebStateAt(webStateListIndexBeforeUpdate,
+                                  webStateListIndexAfterUpdate);
+    return;
+  }
+
+  WebStateList::ScopedBatchOperation lock =
+      _webStateList->StartBatchOperation();
+  if (sourceGroup) {
+    _webStateList->RemoveFromGroups({webStateListIndexBeforeUpdate});
+    webStateListIndexBeforeUpdate =
+        _webStateList->GetIndexOfWebState(sourceWebState);
+  }
+  if (destinationGroup) {
+    _webStateList->MoveToGroup({webStateListIndexBeforeUpdate},
+                               destinationGroup);
+    webStateListIndexBeforeUpdate =
+        _webStateList->GetIndexOfWebState(sourceWebState);
+  }
+
+  _webStateList->MoveWebStateAt(webStateListIndexBeforeUpdate,
+                                webStateListIndexAfterUpdate);
 }
 
 // Inserts a new item with the given`newTabURL` at `index`.
@@ -704,34 +796,205 @@ NSArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   loadParams.transition_type = ui::PAGE_TRANSITION_TYPED;
   webState->GetNavigationManager()->LoadURLWithParams(loadParams);
 
-  int webStateListIndex = [self webStateListIndexFromItemIndex:index];
+  // Simulating the insertion.
+  NSMutableArray<TabStripItemIdentifier*>* items =
+      CreateItemIdentifiers(_webStateList);
+  [items insertObject:CreateTabItemIdentifier(webState.get()) atIndex:index];
 
-  _webStateList->InsertWebState(
-      std::move(webState),
-      WebStateList::InsertionParams::AtIndex(webStateListIndex).Activate());
+  const WebStateList::InsertionParams insertionParams =
+      [self insertionParamsForDestinationItemIndex:index items:items];
+  _webStateList->InsertWebState(std::move(webState), insertionParams);
 }
 
-// Converts the collection view's item index to WebStateList index.
-// Returns `kInvalidIndex` if `index` is out of range.
-- (int)webStateListIndexFromItemIndex:(NSUInteger)index {
-  // TODO(crbug.com/1515821): Need to be updated for pinned tabs.
-  CHECK(!IsPinnedTabsEnabled());
-  return index;
+// Returns `InsertionParams` which can be used to move/insert a WebState so as
+// to reflect the move/insertion of a new item at `destinationItemIndex` in
+// `items`.
+- (WebStateList::InsertionParams)
+    insertionParamsForDestinationItemIndex:(NSUInteger)destinationItemIndex
+                                     items:(NSArray<TabStripItemIdentifier*>*)
+                                               items {
+  TabStripItemIdentifier* previousItem =
+      destinationItemIndex > 0 ? items[destinationItemIndex - 1] : nil;
+  TabStripItemIdentifier* nextItem = destinationItemIndex + 1 < items.count
+                                         ? items[destinationItemIndex + 1]
+                                         : nil;
+  const TabGroup* destinationGroup =
+      [self groupForInsertionBetweenPreviousItem:previousItem
+                                        nextItem:nextItem];
+  int webStateListInsertionIndex = 0;
+  for (NSUInteger itemIndex = 0; itemIndex < destinationItemIndex;
+       itemIndex++) {
+    if (items[itemIndex].itemType == TabStripItemTypeTab) {
+      webStateListInsertionIndex++;
+    }
+  }
+  return WebStateList::InsertionParams::AtIndex(webStateListInsertionIndex)
+      .InGroup(destinationGroup);
+}
+
+// Returns the appropriate destination group for an item inserted between
+// `previousItem` and `nextItem`.
+- (const TabGroup*)
+    groupForInsertionBetweenPreviousItem:(TabStripItemIdentifier*)previousItem
+                                nextItem:(TabStripItemIdentifier*)nextItem {
+  if (!nextItem.tabSwitcherItem) {
+    // If the next item is not a tab, then the inserted item should have no
+    // group.
+    return nullptr;
+  }
+
+  const int indexOfNextWebState = GetWebStateIndex(
+      _webStateList, WebStateSearchCriteria{
+                         .identifier = nextItem.tabSwitcherItem.identifier,
+                     });
+  const TabGroup* groupOfNextWebState =
+      _webStateList->GetGroupOfWebStateAt(indexOfNextWebState);
+  if (!groupOfNextWebState) {
+    // If the next item is not in a group, then the inserted item should have no
+    // group either.
+    return nullptr;
+  }
+
+  if (previousItem.tabGroupItem) {
+    if (previousItem.tabGroupItem.tabGroup == groupOfNextWebState) {
+      // If the previous item is the parent group item of the next item, then
+      // the inserted item should be in that group.
+      return groupOfNextWebState;
+    }
+    return nullptr;
+  }
+
+  // If the previous item is not a group item then it is a tab.
+  int indexOfPreviousWebState = GetWebStateIndex(
+      _webStateList, WebStateSearchCriteria{
+                         .identifier = previousItem.tabSwitcherItem.identifier,
+                     });
+  const TabGroup* groupOfPreviousWebState =
+      _webStateList->GetGroupOfWebStateAt(indexOfPreviousWebState);
+  if (groupOfPreviousWebState == groupOfNextWebState) {
+    // If the item is inserted between two tabs belonging to the same group,
+    // then it should be inserted in that group.
+    return groupOfNextWebState;
+  }
+
+  return nullptr;
 }
 
 // For each WebState in `group`, the associated item is reconfigured with an
 // up-to-date `TabStripItemData`.
 - (void)updateDataAndReconfigureItemsInGroup:(const TabGroup*)group {
-  if (!_webStateList) {
-    return;
-  }
+  // Update group item.
+  TabStripItemIdentifier* groupItemIdentifier =
+      CreateGroupItemIdentifier(group, _webStateList);
+  TabStripItemData* groupItemData = CreateGroupItemData(group);
+  [self.consumer updateItemData:@{groupItemIdentifier : groupItemData}
+               reconfigureItems:YES];
+  // TODO(crbug.com/329091020): When a group is collapsed, its children tab
+  // items should not be reconfigured.
   const WebStateList::Range range = _webStateList->GetGroupRange(group);
-  NSArray<TabStripItemIdentifier*>* itemIdentifiers =
-      CreateItemIdentifiers(_webStateList, range);
-  NSArray<TabStripItemData*>* itemData = CreateItemData(*_webStateList, range);
-  NSDictionary<TabStripItemIdentifier*, TabStripItemData*>* updatedItemData =
-      [NSDictionary dictionaryWithObjects:itemData forKeys:itemIdentifiers];
-  [self.consumer updateItemData:updatedItemData reconfigureItems:YES];
+  NSArray<TabStripItemIdentifier*>* tabItemIdentifiers =
+      CreateItemIdentifiers(_webStateList, range,
+                            /*including_group_items=*/false);
+  NSArray<TabStripItemData*>* tabItemData =
+      CreateItemData(_webStateList, range,
+                     /*including_group_items=*/false);
+  NSDictionary<TabStripItemIdentifier*, TabStripItemData*>* tabItemDataDict =
+      [NSDictionary dictionaryWithObjects:tabItemData
+                                  forKeys:tabItemIdentifiers];
+  [self.consumer updateItemData:tabItemDataDict reconfigureItems:YES];
+}
+
+// Reconfigures the item associated with `webState`.
+- (void)reconfigureItemForWebState:(web::WebState*)webState {
+  // TODO(crbug.com/329091020): If `webState` is in a group which is collapsed,
+  // the associated item should not be reconfigured.
+  [self.consumer reconfigureItems:@[ CreateTabItemIdentifier(webState) ]];
+}
+
+// Returns a destination item for insertion before/after `index`, such that the
+// inserted item becomes a child of `parentGroup`. Returns nil if there is no
+// such destination item e.g. if the group of the WebState at `index` and
+// `parentGroup` are distinct groups.
+- (TabStripItemIdentifier*)destinationItemAtIndex:(int)index
+                                      parentGroup:(const TabGroup*)parentGroup {
+  if (!_webStateList->ContainsIndex(index)) {
+    return nil;
+  }
+  web::WebState* destinationWebState = _webStateList->GetWebStateAt(index);
+
+  // Option 1. There is a `parentGroup`.
+
+  if (parentGroup) {
+    const WebStateList::Range parentGroupRange =
+        _webStateList->GetGroupRange(parentGroup);
+    if (parentGroupRange.contains(index)) {
+      // If the item at `index` also belongs to `parentGroup`, then it can be
+      // used as a destination item.
+      return CreateTabItemIdentifier(destinationWebState);
+    }
+    // Otherwise `item` cannot be used as a destination item to insert in
+    // `parentGroup`.
+    return nil;
+  }
+
+  // Option 2. There is no `parentGroup`.
+
+  const TabGroup* groupOfDestinationWebState =
+      _webStateList->GetGroupOfWebStateAt(index);
+  if (groupOfDestinationWebState) {
+    // If `item` does belongs to a group, then that group can be used as
+    // destination item.
+    return CreateGroupItemIdentifier(groupOfDestinationWebState, _webStateList);
+  }
+
+  // Otherwise if `item` also does not belong to a group, then it can be used as
+  // a destination item.
+  return CreateTabItemIdentifier(destinationWebState);
+}
+
+// Updates the tab strip items to reflect the move of `webState` in the
+// WebStateList. This consists in moving the associated item to its appropriate
+// new group (if any) and location, as well as updating the data associated with
+// items in `oldGroup` and `newGroup`.
+- (void)moveItemForWebState:(web::WebState*)webState
+      fromWebStateListIndex:(int)fromIndex
+        toWebStateListIndex:(int)toIndex
+                   oldGroup:(const TabGroup*)oldGroup
+                   newGroup:(const TabGroup*)newGroup {
+  TabStripItemIdentifier* itemIdentifier = CreateTabItemIdentifier(webState);
+
+  // TODO(crbug.com/329091020): If `newGroup` is collapsed, `itemIdentifier`
+  // should not be reconfigured.
+  TabStripItemData* itemData = CreateTabItemData(toIndex, _webStateList);
+  [self.consumer updateItemData:@{itemIdentifier : itemData}
+               reconfigureItems:YES];
+
+  // Move item to new position.
+  if (fromIndex != toIndex || oldGroup != newGroup) {
+    if (TabStripItemIdentifier* previousItemIdentifier =
+            [self destinationItemAtIndex:(toIndex - 1) parentGroup:newGroup]) {
+      [self.consumer moveItem:itemIdentifier afterItem:previousItemIdentifier];
+    } else if (TabStripItemIdentifier* nextItemIdentifier =
+                   [self destinationItemAtIndex:(toIndex + 1)
+                                    parentGroup:newGroup]) {
+      [self.consumer moveItem:itemIdentifier beforeItem:nextItemIdentifier];
+    } else if (newGroup) {
+      TabGroupItem* newGroupItem =
+          [[TabGroupItem alloc] initWithTabGroup:newGroup
+                                    webStateList:_webStateList];
+      [self.consumer moveItem:itemIdentifier insideGroup:newGroupItem];
+    } else {
+      [self.consumer moveItem:itemIdentifier beforeItem:nil];
+    }
+  }
+
+  // Reconfigure the old and new group items if needed.
+  if (oldGroup) {
+    [self updateDataAndReconfigureItemsInGroup:oldGroup];
+  }
+  if (newGroup) {
+    [self updateDataAndReconfigureItemsInGroup:newGroup];
+  }
 }
 
 @end

@@ -382,6 +382,15 @@ UIImage* DefaultFavicon() {
   self.numberOfTabs = 0;
   self.tabIndex = 0;
   _accessibilityContainerView.accessibilityValue = nil;
+  self.loading = NO;
+  self.leadingSeparatorHidden = NO;
+  self.trailingSeparatorHidden = NO;
+  self.leadingSeparatorGradientViewHidden = NO;
+  self.trailingSeparatorGradientViewHidden = NO;
+  self.leftSelectedBorderBackgroundViewHidden = NO;
+  self.rightSelectedBorderBackgroundViewHidden = NO;
+  self.isFirstTabInGroup = NO;
+  self.isLastTabInGroup = NO;
 }
 
 - (void)setHighlighted:(BOOL)highlighted {

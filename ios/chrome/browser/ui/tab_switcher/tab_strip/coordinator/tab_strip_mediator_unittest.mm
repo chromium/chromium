@@ -41,6 +41,8 @@
     NSArray<TabStripItemIdentifier*>* reconfiguredItems;
 @property(nonatomic, strong)
     NSMutableDictionary<TabStripItemIdentifier*, TabStripItemData*>* itemData;
+@property(nonatomic, strong)
+    NSMutableDictionary<TabStripItemIdentifier*, TabGroupItem*>* itemParents;
 
 @end
 
@@ -50,10 +52,14 @@
              selectedItem:(TabSwitcherItem*)selectedItem
                  itemData:
                      (NSDictionary<TabStripItemIdentifier*, TabStripItemData*>*)
-                         itemData {
+                         itemData
+              itemParents:
+                  (NSDictionary<TabStripItemIdentifier*, TabGroupItem*>*)
+                      itemParents {
   self.items = [items mutableCopy];
   self.selectedItem = selectedItem;
   self.itemData = [NSMutableDictionary dictionaryWithDictionary:itemData];
+  self.itemParents = [NSMutableDictionary dictionaryWithDictionary:itemParents];
 }
 
 - (void)selectItem:(TabSwitcherItem*)item {
@@ -64,18 +70,22 @@
   self.reconfiguredItems = items;
 }
 
-- (void)moveItem:(TabSwitcherItem*)item
-       afterItem:(TabSwitcherItem*)destinationItem {
-  TabStripItemIdentifier* itemIdentifier =
-      [TabStripItemIdentifier tabIdentifier:item];
-  TabStripItemIdentifier* destinationItemIdentifier =
-      [TabStripItemIdentifier tabIdentifier:destinationItem];
+- (void)moveItem:(TabStripItemIdentifier*)itemIdentifier
+      beforeItem:(TabStripItemIdentifier*)destinationItemIdentifier {
   [self.items removeObject:itemIdentifier];
-  NSInteger destinationIndex = 0;
-  if (destinationItem) {
-    destinationIndex = [self.items indexOfObject:destinationItemIdentifier] + 1;
-  }
-  [self.items insertObject:itemIdentifier atIndex:destinationIndex];
+  [self insertItems:@[ itemIdentifier ] beforeItem:destinationItemIdentifier];
+}
+
+- (void)moveItem:(TabStripItemIdentifier*)itemIdentifier
+       afterItem:(TabStripItemIdentifier*)destinationItemIdentifier {
+  [self.items removeObject:itemIdentifier];
+  [self insertItems:@[ itemIdentifier ] afterItem:destinationItemIdentifier];
+}
+
+- (void)moveItem:(TabStripItemIdentifier*)itemIdentifier
+     insideGroup:(TabGroupItem*)destinationGroup {
+  [self.items removeObject:itemIdentifier];
+  [self insertItems:@[ itemIdentifier ] insideGroup:destinationGroup];
 }
 
 - (void)insertItems:(NSArray<TabStripItemIdentifier*>*)items
@@ -87,6 +97,58 @@
   NSInteger destinationIndex = [self.items indexOfObject:destinationItem];
   for (TabStripItemIdentifier* item in items) {
     [self.items insertObject:item atIndex:destinationIndex++];
+    self.itemParents[item] = self.itemParents[destinationItem];
+  }
+}
+
+- (void)insertItems:(NSArray<TabStripItemIdentifier*>*)items
+          afterItem:(TabStripItemIdentifier*)destinationItem {
+  if (!destinationItem) {
+    NSMutableArray* newItems = [items mutableCopy];
+    [newItems addObjectsFromArray:self.items];
+    self.items = newItems;
+    return;
+  }
+  NSInteger destinationIndex = [self.items indexOfObject:destinationItem] + 1;
+  for (TabStripItemIdentifier* item in items) {
+    [self.items insertObject:item atIndex:destinationIndex];
+    self.itemParents[item] = self.itemParents[destinationItem];
+  }
+}
+
+- (void)insertItems:(NSArray<TabStripItemIdentifier*>*)items
+        insideGroup:(TabGroupItem*)destinationGroup {
+  if (self.items.count == 0) {
+    return;
+  }
+  TabStripItemIdentifier* destinationGroupIdentifier =
+      [TabStripItemIdentifier groupIdentifier:destinationGroup];
+  // Finding the destination item: either a tab item in `destinationGroup` or
+  // the group item itself.
+  TabStripItemIdentifier* destinationItemIdentifier = nil;
+  NSUInteger candidateDestinationItemIndex = self.items.count;
+  while (candidateDestinationItemIndex > 0) {
+    candidateDestinationItemIndex--;
+    TabStripItemIdentifier* candidateDestinationItemIdentifier =
+        self.items[candidateDestinationItemIndex];
+    if ([destinationGroupIdentifier
+            isEqual:candidateDestinationItemIdentifier] ||
+        CompareTabGroupItems(
+            destinationGroup,
+            self.itemParents[candidateDestinationItemIdentifier])) {
+      destinationItemIdentifier = candidateDestinationItemIdentifier;
+      break;
+    }
+  }
+  if (!destinationItemIdentifier) {
+    return;
+  }
+  // If a destination is found, inserts the items after the destination and
+  // update parent.
+  candidateDestinationItemIndex += 1;
+  for (TabStripItemIdentifier* item in items) {
+    [self.items insertObject:item atIndex:candidateDestinationItemIndex++];
+    self.itemParents[item] = destinationGroup;
   }
 }
 
@@ -232,6 +294,7 @@ TEST_F(TabStripMediatorTest, ConsumerPopulated) {
   EXPECT_EQ(group_0, consumer_.items[0].tabGroupItem.tabGroup);
   EXPECT_EQ(web_state_list_->GetWebStateAt(0)->GetUniqueIdentifier(),
             consumer_.items[1].tabSwitcherItem.identifier);
+  EXPECT_EQ(group_0, consumer_.itemParents[consumer_.items[1]].tabGroup);
   EXPECT_NSEQ(group_0->GetColor(),
               consumer_.itemData[consumer_.items[1]].groupStrokeColor);
   EXPECT_EQ(web_state_list_->GetWebStateAt(1)->GetUniqueIdentifier(),
@@ -430,6 +493,119 @@ TEST_F(TabStripMediatorTest, TabStripItemDataUpdated) {
   EXPECT_NSEQ(consumer_.itemData[item_f].groupStrokeColor, group_2_color);
   EXPECT_NSEQ(consumer_.itemData[item_g].groupStrokeColor, group_2_color);
   EXPECT_NSEQ(consumer_.itemData[item_h].groupStrokeColor, group_2_color);
+}
+
+// Test that parent elements are updated accordingly.
+TEST_F(TabStripMediatorTest, ItemParentsUpdated) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      *web_state_list_, "a b | c* [ 0 d e ] f [ 1 g h ]"));
+  for (int i = 0; i < web_state_list_->count(); ++i) {
+    web::FakeWebState* web_state =
+        static_cast<web::FakeWebState*>(web_state_list_->GetWebStateAt(i));
+    web_state->SetBrowserState(browser_state_.get());
+    favicon::WebFaviconDriver::CreateForWebState(
+        web_state,
+        ios::FaviconServiceFactory::GetForBrowserState(
+            browser_state_.get(), ServiceAccessType::IMPLICIT_ACCESS));
+  }
+
+  InitializeMediator();
+
+  const TabGroup* group_0 = builder.GetTabGroupForIdentifier('0');
+  const TabGroup* group_1 = builder.GetTabGroupForIdentifier('1');
+
+  ASSERT_EQ(10ul, consumer_.items.count);
+  TabStripItemIdentifier* item_a = consumer_.items[0];
+  TabStripItemIdentifier* item_b = consumer_.items[1];
+  TabStripItemIdentifier* item_c = consumer_.items[2];
+  TabStripItemIdentifier* item_0 = consumer_.items[3];
+  TabStripItemIdentifier* item_d = consumer_.items[4];
+  TabStripItemIdentifier* item_e = consumer_.items[5];
+  TabStripItemIdentifier* item_f = consumer_.items[6];
+  TabStripItemIdentifier* item_1 = consumer_.items[7];
+  TabStripItemIdentifier* item_g = consumer_.items[8];
+  TabStripItemIdentifier* item_h = consumer_.items[9];
+
+  // 0. Testing parents up-to-date after initialization.
+
+  EXPECT_EQ(consumer_.itemParents[item_a].tabGroup, nullptr);
+  EXPECT_EQ(consumer_.itemParents[item_b].tabGroup, nullptr);
+  EXPECT_EQ(consumer_.itemParents[item_c].tabGroup, nullptr);
+  EXPECT_EQ(consumer_.itemParents[item_0].tabGroup, nullptr);
+  EXPECT_EQ(consumer_.itemParents[item_d].tabGroup, group_0);
+  EXPECT_EQ(consumer_.itemParents[item_e].tabGroup, group_0);
+  EXPECT_EQ(consumer_.itemParents[item_f].tabGroup, nullptr);
+  EXPECT_EQ(consumer_.itemParents[item_1].tabGroup, nullptr);
+  EXPECT_EQ(consumer_.itemParents[item_g].tabGroup, group_1);
+  EXPECT_EQ(consumer_.itemParents[item_h].tabGroup, group_1);
+
+  // 1. Testing parents up-to-date after WebStateListChange::Type::kStatusOnly.
+
+  const web::WebState* web_state_e = builder.GetWebStateForIdentifier('e');
+  web_state_list_->RemoveFromGroups(
+      {web_state_list_->GetIndexOfWebState(web_state_e)});
+  ASSERT_EQ(builder.GetWebStateListDescription(*web_state_list_),
+            "a b | c* [ 0 d ] e f [ 1 g h ]");
+  EXPECT_EQ(consumer_.itemParents[item_e].tabGroup, nullptr);
+
+  web_state_list_->MoveToGroup(
+      {web_state_list_->GetIndexOfWebState(web_state_e)}, group_0);
+  ASSERT_EQ(builder.GetWebStateListDescription(*web_state_list_),
+            "a b | c* [ 0 d e ] f [ 1 g h ]");
+  EXPECT_EQ(consumer_.itemParents[item_e].tabGroup, group_0);
+
+  web_state_list_->DeleteGroup(group_1);
+  ASSERT_EQ(builder.GetWebStateListDescription(*web_state_list_),
+            "a b | c* [ 0 d e ] f g h");
+  EXPECT_EQ(consumer_.itemParents[item_g].tabGroup, nullptr);
+  EXPECT_EQ(consumer_.itemParents[item_h].tabGroup, nullptr);
+
+  // 2. Testing parents up-to-date after WebStateListChange::Type::kInsert.
+
+  const web::WebState* web_state_d = builder.GetWebStateForIdentifier('d');
+  std::unique_ptr<web::WebState> web_state_d_detached =
+      web_state_list_->DetachWebStateAt(
+          web_state_list_->GetIndexOfWebState(web_state_d));
+  web_state_list_->InsertWebState(
+      std::move(web_state_d_detached),
+      WebStateList::InsertionParams::AtIndex(
+          web_state_list_->GetIndexOfWebState(web_state_e))
+          .InGroup(group_0));
+  ASSERT_EQ(builder.GetWebStateListDescription(*web_state_list_),
+            "a b | c* [ 0 d e ] f g h");
+  EXPECT_EQ(consumer_.itemParents[item_d].tabGroup, group_0);
+
+  // 3. Testing parents up-to-date after WebStateListChange::Type::kMove.
+
+  web_state_list_->MoveWebStateAt(3, 4);
+  ASSERT_EQ(builder.GetWebStateListDescription(*web_state_list_),
+            "a b | c* [ 0 e d ] f g h");
+  EXPECT_EQ(consumer_.itemParents[item_d].tabGroup, group_0);
+
+  // 4. Testing data up-to-date after WebStateListChange::Type::kGroupCreate.
+
+  const TabGroup* group_2 =
+      web_state_list_->CreateGroup({web_state_list_->GetIndexOfWebState(
+                                        builder.GetWebStateForIdentifier('c')),
+                                    web_state_list_->GetIndexOfWebState(
+                                        builder.GetWebStateForIdentifier('d')),
+                                    web_state_list_->GetIndexOfWebState(
+                                        builder.GetWebStateForIdentifier('f')),
+                                    web_state_list_->GetIndexOfWebState(
+                                        builder.GetWebStateForIdentifier('g')),
+                                    web_state_list_->GetIndexOfWebState(
+                                        builder.GetWebStateForIdentifier('h'))},
+                                   {});
+  builder.SetTabGroupIdentifier(group_2, '2');
+  ASSERT_EQ(builder.GetWebStateListDescription(*web_state_list_),
+            "a b | [ 2 c* d f g h ] [ 0 e ]");
+  EXPECT_EQ(consumer_.itemParents[item_c].tabGroup, group_2);
+  EXPECT_EQ(consumer_.itemParents[item_d].tabGroup, group_2);
+  EXPECT_EQ(consumer_.itemParents[item_f].tabGroup, group_2);
+  EXPECT_EQ(consumer_.itemParents[item_g].tabGroup, group_2);
+  EXPECT_EQ(consumer_.itemParents[item_h].tabGroup, group_2);
+  EXPECT_EQ(consumer_.itemParents[item_e].tabGroup, group_0);
 }
 
 // Tests that changing the selected tab is correctly reflected in the consumer.
