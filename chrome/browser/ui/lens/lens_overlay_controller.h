@@ -133,6 +133,9 @@ class LensOverlayController : public TabStripModelObserver,
   // Send text data to the WebUI.
   void SendText(lens::mojom::TextPtr text);
 
+  // Returns true if the overlay is open and covering the current active tab.
+  bool IsOverlayShowing();
+
  private:
   class UnderlyingWebContentsObserver;
 

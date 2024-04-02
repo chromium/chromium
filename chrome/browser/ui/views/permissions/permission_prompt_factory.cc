@@ -8,7 +8,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/permission_bubble/permission_prompt.h"
+#include "chrome/browser/ui/tabs/tab_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt.h"
@@ -53,9 +55,12 @@ LocationBarView* GetLocationBarView(Browser* browser) {
   return browser_view ? browser_view->GetLocationBarView() : nullptr;
 }
 
-// A permission request should be auto-ignored if a user interacts with the
-// LocationBar. The only exception is the NTP page where the user needs to press
-// on a microphone icon to get a permission request.
+// A permission request should be auto-ignored if:
+//    - a user interacts with the LocationBar. The only exception is the NTP
+//      page where the user needs to press on a microphone icon to get a
+//      permission request.
+//    - The Lens Overlay is open covering the context. We suppress permission
+//      prompts until the Lens Overlay is closed.
 bool ShouldIgnorePermissionRequest(
     content::WebContents* web_contents,
     Browser* browser,
@@ -70,12 +75,21 @@ bool ShouldIgnorePermissionRequest(
   }
 
   LocationBarView* location_bar = GetLocationBarView(browser);
-  bool can_display_prompt = location_bar && location_bar->IsEditingOrEmpty();
+  bool cant_display_prompt = location_bar && location_bar->IsEditingOrEmpty();
+
+  tabs::TabFeatures* current_tab_features =
+      browser->tab_strip_model()->GetActiveTab()->tab_features();
+  // Don't show prompt if Lens Overlay is showing
+  // TODO(b/331940245): Refactor to be decoupled from LensOverlayController
+  if (current_tab_features &&
+      current_tab_features->lens_overlay_controller()->IsOverlayShowing()) {
+    cant_display_prompt = true;
+  }
 
   permissions::PermissionUmaUtil::RecordPermissionPromptAttempt(
-      delegate->Requests(), can_display_prompt);
+      delegate->Requests(), cant_display_prompt);
 
-  return can_display_prompt;
+  return cant_display_prompt;
 }
 
 bool ShouldUseChip(permissions::PermissionPrompt::Delegate* delegate) {

@@ -20,6 +20,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/lens/lens_features.h"
+#include "components/permissions/test/permission_request_observer.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -33,6 +34,14 @@ namespace {
 constexpr char kDocumentWithNamedElement[] = "/select.html";
 
 using State = LensOverlayController::State;
+
+constexpr char kRequestNotificationsScript[] = R"(
+      new Promise(resolve => {
+        Notification.requestPermission().then(function (permission) {
+          resolve(permission);
+        });
+      })
+      )";
 
 // Stubs out network requests.
 class LensOverlayControllerFake : public LensOverlayController {
@@ -197,6 +206,48 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, ShowSidePanel) {
   EXPECT_TRUE(coordinator->IsSidePanelShowing());
   EXPECT_EQ(coordinator->GetCurrentEntryId(),
             SidePanelEntry::Id::kLensOverlayResults);
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       DelayPermissionsPrompt) {
+  // Navigate to a page so we can request permissions
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should eventually result in overlay state.
+  controller->ShowUI();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(contents);
+
+  permissions::PermissionRequestObserver observer(contents);
+
+  // Request permission in tab under overlay.
+  EXPECT_TRUE(content::ExecJs(
+      contents->GetPrimaryMainFrame(), kRequestNotificationsScript,
+      content::EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  // Verify no prompt was shown
+  observer.Wait();
+  EXPECT_FALSE(observer.request_shown());
+
+  // Close overlay
+  controller->CloseUI();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOff; }));
+
+  // Verify a prompt was shown
+  ASSERT_TRUE(base::test::RunUntil([&]() { return observer.request_shown(); }));
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,

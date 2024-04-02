@@ -18,6 +18,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/side_panel/lens/lens_overlay_side_panel_coordinator.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/lens/lens_features.h"
+#include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -130,6 +132,9 @@ void LensOverlayController::ShowUI() {
 }
 
 void LensOverlayController::CloseUI() {
+  // TODO(b/331940245): Refactor to be decoupled from permission_prompt_factory
+  state_ = State::kClosing;
+
   // Destroy the glue to avoid UaF. This must be done before destroying
   // `results_side_panel_coordinator_` or `overlay_widget_`.
   // This logic results on the assumption that the only way to destroy the
@@ -140,6 +145,19 @@ void LensOverlayController::CloseUI() {
     RemoveGlueForWebView(glued_webviews_.front());
   }
   glued_webviews_.clear();
+
+  // A permission prompt may be suspended if the overlay was showing when the
+  // permission was queued. Restore the suspended prompt if possible.
+  // TODO(b/331940245): Refactor to be decoupled from PermissionPromptFactory
+  content::WebContents* contents = tab_model_->contents();
+  if (contents) {
+    auto* permission_request_manager =
+        permissions::PermissionRequestManager::FromWebContents(contents);
+    if (permission_request_manager &&
+        permission_request_manager->CanRestorePrompt()) {
+      permission_request_manager->RestorePrompt();
+    }
+  }
 
   results_side_panel_coordinator_.reset();
 
@@ -226,6 +244,11 @@ void LensOverlayController::SendText(lens::mojom::TextPtr text) {
   page_->TextReceived(std::move(text));
 }
 
+bool LensOverlayController::IsOverlayShowing() {
+  return state_ == State::kStartingWebUI || state_ == State::kOverlay ||
+         state_ == State::kOverlayAndResults;
+}
+
 class LensOverlayController::UnderlyingWebContentsObserver
     : public content::WebContentsObserver {
  public:
@@ -244,9 +267,7 @@ class LensOverlayController::UnderlyingWebContentsObserver
   void FrameSizeChanged(content::RenderFrameHost* render_frame_host,
                         const gfx::Size& frame_size) override {
     // We only care to resize the overlay when it's visible to the user.
-    if (lens_overlay_controller_->state() == State::kStartingWebUI ||
-        lens_overlay_controller_->state() == State::kOverlay ||
-        lens_overlay_controller_->state() == State::kOverlayAndResults) {
+    if (lens_overlay_controller_->IsOverlayShowing()) {
       lens_overlay_controller_->ResetUIBounds();
     }
   }
