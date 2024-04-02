@@ -1796,7 +1796,8 @@
       // FledgeFeatureDetection should be on if any of the features it aims
       // to help detect is on.
       implied_by: ["FledgeCustomMaxAuctionAdComponents",
-                   "FledgeDeprecatedRenderURLReplacements"],
+                   "FledgeDeprecatedRenderURLReplacements",
+                   "FledgeReportingTimeout"],
       base_feature: "none",
     },
     {

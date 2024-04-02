@@ -22255,6 +22255,20 @@ class AuctionConfigReportingTimeoutEnabledTest
 };
 
 IN_PROC_BROWSER_TEST_F(AuctionConfigReportingTimeoutEnabledTest,
+                       FeatureDetection) {
+  const char kTestExpression[] = R"(
+    navigator.protectedAudience.queryFeatureSupport(
+        'reportingTimeout');
+  )";
+
+  GURL test_url =
+      embedded_https_test_server().GetURL("a.test", "/simple_page.html");
+
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  EXPECT_EQ(true, EvalJs(shell(), kTestExpression));
+}
+
+IN_PROC_BROWSER_TEST_F(AuctionConfigReportingTimeoutEnabledTest,
                        ReportingTimeoutPassedToWorklets) {
   const char kHostA[] = "a.test";
   const char kHostB[] = "b.test";
@@ -22534,6 +22548,20 @@ class AuctionConfigReportingTimeoutDisabledTest
  private:
   base::test::ScopedFeatureList feature_list_;
 };
+
+IN_PROC_BROWSER_TEST_F(AuctionConfigReportingTimeoutDisabledTest,
+                       FeatureDetection) {
+  const char kTestExpression[] = R"(
+    navigator.protectedAudience.queryFeatureSupport(
+        'reportingTimeout');
+  )";
+
+  GURL test_url =
+      embedded_https_test_server().GetURL("a.test", "/simple_page.html");
+
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  EXPECT_EQ(false, EvalJs(shell(), kTestExpression));
+}
 
 IN_PROC_BROWSER_TEST_F(AuctionConfigReportingTimeoutDisabledTest,
                        ReportResultTimedOutWithDefaultTimeout) {

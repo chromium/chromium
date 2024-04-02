@@ -28,6 +28,13 @@ ScriptValue ProtectedAudience::queryFeatureSupport(ScriptState* script_state,
                        ToV8Traits<IDLBoolean>::ToV8(script_state, enabled));
   }
 
+  if (feature_name == "reportingTimeout") {
+    bool enabled = RuntimeEnabledFeatures::FledgeReportingTimeoutEnabled(
+        ExecutionContext::From(script_state));
+    return ScriptValue(script_state->GetIsolate(),
+                       ToV8Traits<IDLBoolean>::ToV8(script_state, enabled));
+  }
+
   return ScriptValue();
 }
 
