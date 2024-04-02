@@ -14,6 +14,7 @@
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
 
 namespace safe_browsing {
+bool kAllowInTests = false;
 
 // static
 OhttpKeyService* OhttpKeyServiceFactory::GetForProfile(Profile* profile) {
@@ -68,6 +69,17 @@ OhttpKeyServiceFactory::BuildServiceInstanceForBrowserContext(
 bool OhttpKeyServiceFactory::ServiceIsCreatedWithBrowserContext() const {
   // The service is created early to start async key fetch.
   return true;
+}
+
+bool OhttpKeyServiceFactory::ServiceIsNULLWhileTesting() const {
+  return !kAllowInTests;
+}
+
+OhttpKeyServiceAllowerForTesting::OhttpKeyServiceAllowerForTesting() {
+  kAllowInTests = true;
+}
+OhttpKeyServiceAllowerForTesting::~OhttpKeyServiceAllowerForTesting() {
+  kAllowInTests = false;
 }
 
 }  // namespace safe_browsing

@@ -47,6 +47,7 @@ class OhttpKeyServiceFactoryTest : public testing::Test {
  private:
   scoped_refptr<safe_browsing::SafeBrowsingService> sb_service_;
   hash_realtime_utils::GoogleChromeBrandingPretenderForTesting apply_branding_;
+  OhttpKeyServiceAllowerForTesting allow_ohttp_key_service_;
 };
 
 #if BUILDFLAG(IS_ANDROID)

@@ -437,8 +437,12 @@ class TestSBClient : public base::RefCountedThreadSafe<TestSBClient>,
 class V4SafeBrowsingServiceTest : public InProcessBrowserTest {
  public:
   V4SafeBrowsingServiceTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        safe_browsing::kCreateWarningShownClientSafeBrowsingReports);
+    // TODO(crbug.com/40941453): Remove kSafeBrowsingAsyncRealTimeCheck from
+    // disabled features list.
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{safe_browsing::
+                                  kCreateWarningShownClientSafeBrowsingReports},
+        /*disabled_features=*/{safe_browsing::kSafeBrowsingAsyncRealTimeCheck});
   }
 
   V4SafeBrowsingServiceTest(const V4SafeBrowsingServiceTest&) = delete;
