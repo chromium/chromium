@@ -671,7 +671,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   private getVoices(): SpeechSynthesisVoice[] {
     if (!this.availableVoices) {
-      this.availableVoices = this.synth.getVoices();
+      let availableVoices = this.synth.getVoices();
+      if (availableVoices.some(({localService}) => localService)) {
+        availableVoices =
+            availableVoices.filter(({localService}) => localService);
+      }
+      this.availableVoices = availableVoices;
+
       this.populateDisplayNamesForLocaleCodes();
     }
     return this.availableVoices;
