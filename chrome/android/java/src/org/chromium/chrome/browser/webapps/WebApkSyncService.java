@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.webapps;
 import android.text.TextUtils;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -112,7 +113,7 @@ public class WebApkSyncService {
     interface Natives {
         void onWebApkUsed(byte[] webApkSpecifics, boolean isInstall);
 
-        void onWebApkUninstalled(String manifestId);
+        void onWebApkUninstalled(@JniType("std::string") String manifestId);
 
         void removeOldWebAPKsFromSync(long currentTimeMsSinceUnixEpoch);
 

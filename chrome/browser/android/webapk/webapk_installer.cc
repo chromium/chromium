@@ -209,22 +209,16 @@ void WebApkInstaller::InstallOrUpdateWebApk(const std::string& package_name,
   webapk_package_ = package_name;
 
   JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jstring> java_webapk_package =
-      base::android::ConvertUTF8ToJavaString(env, webapk_package_);
-  base::android::ScopedJavaLocalRef<jstring> java_title =
-      base::android::ConvertUTF16ToJavaString(env, short_name_);
-  base::android::ScopedJavaLocalRef<jstring> java_token =
-      base::android::ConvertUTF8ToJavaString(env, token);
 
   if (task_type_ == WebApkInstaller::INSTALL) {
     webapk::TrackRequestTokenDuration(install_duration_timer_->Elapsed(),
                                       package_name);
     Java_WebApkInstaller_installWebApkAsync(
-        env, java_ref_, java_webapk_package, webapk_version_, java_title,
-        java_token, webapps::ShortcutInfo::SOURCE_ADD_TO_HOMESCREEN_PWA);
+        env, java_ref_, webapk_package_, webapk_version_, short_name_, token,
+        webapps::ShortcutInfo::SOURCE_ADD_TO_HOMESCREEN_PWA);
   } else {
-    Java_WebApkInstaller_updateAsync(env, java_ref_, java_webapk_package,
-                                     webapk_version_, java_title, java_token);
+    Java_WebApkInstaller_updateAsync(env, java_ref_, webapk_package_,
+                                     webapk_version_, short_name_, token);
   }
 }
 
@@ -562,6 +556,5 @@ GURL WebApkInstaller::GetServerUrl() {
     return command_line_url;
 
   JNIEnv* env = base::android::AttachCurrentThread();
-  return GURL(base::android::ConvertJavaStringToUTF8(
-      env, Java_WebApkInstaller_getWebApkServerUrl(env, java_ref_)));
+  return GURL(Java_WebApkInstaller_getWebApkServerUrl(env, java_ref_));
 }

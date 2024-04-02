@@ -53,14 +53,13 @@ bool IsInScope(const GURL& url, const GURL& scope) {
 jlong JNI_WebApkUpdateDataFetcher_Initialize(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jstring>& java_start_url,
-    const JavaParamRef<jstring>& java_scope_url,
-    const JavaParamRef<jstring>& java_web_manifest_url,
+    std::string& java_start_url,
+    std::string& java_scope_url,
+    std::string& java_web_manifest_url,
     const JavaParamRef<jstring>& java_web_manifest_id) {
-  GURL start_url(base::android::ConvertJavaStringToUTF8(env, java_start_url));
-  GURL scope(base::android::ConvertJavaStringToUTF8(env, java_scope_url));
-  GURL web_manifest_url(
-      base::android::ConvertJavaStringToUTF8(env, java_web_manifest_url));
+  GURL start_url(java_start_url);
+  GURL scope(java_scope_url);
+  GURL web_manifest_url(java_web_manifest_url);
   GURL web_manifest_id;
   if (!java_web_manifest_id.is_null()) {
     web_manifest_id =

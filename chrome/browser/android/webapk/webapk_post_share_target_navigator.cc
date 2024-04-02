@@ -42,29 +42,20 @@ void NavigateShareTargetPost(
 static void JNI_WebApkPostShareTargetNavigator_NativeLoadViewForShareTargetPost(
     JNIEnv* env,
     const jboolean java_is_multipart_encoding,
-    const JavaParamRef<jobjectArray>& java_names,
-    const JavaParamRef<jobjectArray>& java_values,
+    std::vector<std::string>& names,
+    std::vector<std::string>& values,
     const JavaParamRef<jbooleanArray>& java_is_value_file_uris,
-    const JavaParamRef<jobjectArray>& java_filenames,
-    const JavaParamRef<jobjectArray>& java_types,
-    const JavaParamRef<jstring>& java_url,
+    std::vector<std::string>& filenames,
+    std::vector<std::string>& types,
+    std::string& url,
     const JavaParamRef<jobject>& java_web_contents) {
-  std::vector<std::string> names;
-  std::vector<std::string> values;
-  std::vector<std::string> filenames;
-  std::vector<std::string> types;
   std::vector<bool> is_value_file_uris;
 
   bool is_multipart_encoding = static_cast<bool>(java_is_multipart_encoding);
-  base::android::AppendJavaStringArrayToStringVector(env, java_names, &names);
-  base::android::AppendJavaStringArrayToStringVector(env, java_values, &values);
   base::android::JavaBooleanArrayToBoolVector(env, java_is_value_file_uris,
                                               &is_value_file_uris);
-  base::android::AppendJavaStringArrayToStringVector(env, java_filenames,
-                                                     &filenames);
-  base::android::AppendJavaStringArrayToStringVector(env, java_types, &types);
 
-  GURL share_target_gurl(base::android::ConvertJavaStringToUTF8(java_url));
+  GURL share_target_gurl(url);
 
   scoped_refptr<network::ResourceRequestBody> post_data;
   std::string header_list;

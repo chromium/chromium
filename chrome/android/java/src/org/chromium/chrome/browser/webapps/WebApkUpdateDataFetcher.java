@@ -9,7 +9,10 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 
+import androidx.annotation.Nullable;
+
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -230,10 +233,10 @@ public class WebApkUpdateDataFetcher extends EmptyTabObserver {
     interface Natives {
         long initialize(
                 WebApkUpdateDataFetcher caller,
-                String startUrl,
-                String scope,
-                String webManifestUrl,
-                String webManifestId);
+                @JniType("std::string") String startUrl,
+                @JniType("std::string") String scope,
+                @JniType("std::string") String webManifestUrl,
+                @Nullable String webManifestId);
 
         void replaceWebContents(
                 long nativeWebApkUpdateDataFetcher,

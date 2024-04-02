@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.webapps;
 import android.content.Intent;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -60,10 +61,10 @@ public class WebApkInstaller {
      */
     @CalledByNative
     private void installWebApkAsync(
-            final String packageName,
+            @JniType("std::string") final String packageName,
             int version,
-            final String title,
-            String token,
+            @JniType("std::u16string") final String title,
+            @JniType("std::string") String token,
             final int source) {
         // Check whether the WebAPK package is already installed. The WebAPK may have been installed
         // by another Chrome version (e.g. Chrome Dev). We have to do this check because the Play
@@ -120,13 +121,18 @@ public class WebApkInstaller {
 
     /**
      * Updates a WebAPK installation.
+     *
      * @param packageName The package name of the WebAPK to install.
      * @param version The version of WebAPK to install.
      * @param title The title of the WebAPK to display during installation.
      * @param token The token from WebAPK Server.
      */
     @CalledByNative
-    private void updateAsync(String packageName, int version, String title, String token) {
+    private void updateAsync(
+            @JniType("std::string") String packageName,
+            int version,
+            @JniType("std::u16string") String title,
+            @JniType("std::string") String token) {
         if (mInstallDelegate == null) {
             notify(WebApkInstallResult.NO_INSTALLER);
             return;
@@ -167,7 +173,7 @@ public class WebApkInstaller {
     }
 
     @CalledByNative
-    private String getWebApkServerUrl() {
+    private @JniType("std::string") String getWebApkServerUrl() {
         return mWebApkServerUrl;
     }
 

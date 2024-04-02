@@ -127,7 +127,7 @@ static void JNI_WebApkSyncService_OnWebApkUsed(
 
 static void JNI_WebApkSyncService_OnWebApkUninstalled(
     JNIEnv* env,
-    const JavaParamRef<jstring>& java_manifest_id) {
+    std::string& java_manifest_id) {
   if (!base::FeatureList::IsEnabled(syncer::kWebApkBackupAndRestoreBackend)) {
     return;
   }
@@ -138,7 +138,7 @@ static void JNI_WebApkSyncService_OnWebApkUninstalled(
   }
 
   WebApkSyncService::GetForProfile(profile)->OnWebApkUninstalled(
-      ConvertJavaStringToUTF8(env, java_manifest_id));
+      java_manifest_id);
 }
 
 static void JNI_WebApkSyncService_RemoveOldWebAPKsFromSync(
