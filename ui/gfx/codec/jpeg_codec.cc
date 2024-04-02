@@ -129,8 +129,7 @@ std::unique_ptr<SkBitmap> JPEGCodec::Decode(const unsigned char* input,
   }
 
   // Decode the image pixels directly onto an SkBitmap.
-  SkCodec::Result result =
-      codec->getPixels(info, bitmap->getAddr32(0, 0), bitmap->rowBytes());
+  SkCodec::Result result = codec->getPixels(bitmap->pixmap());
   return (result == SkCodec::kSuccess) ? std::move(bitmap) : nullptr;
 }
 
