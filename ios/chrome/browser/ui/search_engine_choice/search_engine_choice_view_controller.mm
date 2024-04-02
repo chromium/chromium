@@ -441,6 +441,13 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
   return NO;
 }
 
+- (void)textViewDidChangeSelection:(UITextView*)textView {
+  // Always force the `selectedTextRange` to `nil` to prevent users from
+  // selecting text. Setting the `selectable` property to `NO` doesn't help
+  // since it makes links inside the text view untappable.
+  textView.selectedTextRange = nil;
+}
+
 #pragma mark - UIContentContainer
 
 - (void)viewWillTransitionToSize:(CGSize)size
