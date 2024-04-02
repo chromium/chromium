@@ -53,6 +53,15 @@ void PageInfoSecurityContentView::SetIdentityInfo(
           PageInfoViewFactory::GetConnectionNotSecureIcon());
     }
     security_view_->SetSummary(security_description->summary, STYLE_RED);
+  } else if (security_description->summary_style ==
+                 SecuritySummaryColor::ENTERPRISE &&
+             (identity_info.safe_browsing_status ==
+                  PageInfo::SAFE_BROWSING_STATUS_MANAGED_POLICY_WARN ||
+              identity_info.safe_browsing_status ==
+                  PageInfo::SAFE_BROWSING_STATUS_MANAGED_POLICY_BLOCK)) {
+    security_view_->SetIcon(PageInfoViewFactory::GetBusinessIcon());
+    security_view_->SetSummary(security_description->summary,
+                               views::style::STYLE_BODY_3_MEDIUM);
   } else {
     security_view_->SetIcon(PageInfoViewFactory::GetConnectionSecureIcon());
     security_view_->SetSummary(security_description->summary,

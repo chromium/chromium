@@ -1608,7 +1608,7 @@ void PageInfo::GetSafeBrowsingStatusByMaliciousContentStatus(
     case security_state::MALICIOUS_CONTENT_STATUS_MANAGED_POLICY_BLOCK:
       *status = PageInfo::SAFE_BROWSING_STATUS_MANAGED_POLICY_BLOCK;
       *details =
-          l10n_util::GetStringUTF16(IDS_PAGE_INFO_ENTERPRISE_WARN_DETAILS);
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_ENTERPRISE_BLOCK_DETAILS);
       break;
     case security_state::MALICIOUS_CONTENT_STATUS_MANAGED_POLICY_WARN:
       *status = PageInfo::SAFE_BROWSING_STATUS_MANAGED_POLICY_WARN;

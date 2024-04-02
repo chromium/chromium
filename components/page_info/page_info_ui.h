@@ -40,10 +40,9 @@ class X509Certificate;
 // etc.).
 class PageInfoUI {
  public:
-  enum class SecuritySummaryColor {
-    RED,
-    GREEN,
-  };
+  // Specifies security icons and sections shown for the page info UI. For
+  // ENTERPRISE, a red business icon is shown in the omnibox.
+  enum class SecuritySummaryColor { RED, GREEN, ENTERPRISE };
 
   enum class SecurityDescriptionType {
     // The UI describes whether the connection is secure, e.g. secure

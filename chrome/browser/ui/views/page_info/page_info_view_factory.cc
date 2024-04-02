@@ -705,6 +705,11 @@ const ui::ImageModel PageInfoViewFactory::GetBlockingThirdPartyCookiesIcon() {
 }
 
 // static
+const ui::ImageModel PageInfoViewFactory::GetBusinessIcon() {
+  return GetImageModel(vector_icons::kBusinessIcon);
+}
+
+// static
 const ui::ImageModel PageInfoViewFactory::GetCookiesAndSiteDataIcon() {
   return GetImageModel(features::IsChromeRefresh2023()
                            ? vector_icons::kCookieChromeRefreshIcon

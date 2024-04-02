@@ -151,6 +151,9 @@ class PageInfoViewFactory {
   // Returns the icon for the 'Block third party cookies' button.
   static const ui::ImageModel GetBlockingThirdPartyCookiesIcon();
 
+  // Returns the icon for enterprise business.
+  static const ui::ImageModel GetBusinessIcon();
+
   // Returns the icon for the 'Cookies and site data' button.
   static const ui::ImageModel GetCookiesAndSiteDataIcon();
 

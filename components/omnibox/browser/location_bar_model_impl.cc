@@ -236,9 +236,13 @@ std::u16string LocationBarModelImpl::GetSecureDisplayText() const {
           visible_security_state = delegate_->GetVisibleSecurityState();
 
       // Don't show any text in the security indicator for sites on the billing
-      // interstitial list.
+      // interstitial list or blocked by the enterprise administrator.
       if (visible_security_state->malicious_content_status ==
-          security_state::MALICIOUS_CONTENT_STATUS_BILLING) {
+              security_state::MALICIOUS_CONTENT_STATUS_BILLING ||
+          visible_security_state->malicious_content_status ==
+              security_state::MALICIOUS_CONTENT_STATUS_MANAGED_POLICY_BLOCK ||
+          visible_security_state->malicious_content_status ==
+              security_state::MALICIOUS_CONTENT_STATUS_MANAGED_POLICY_WARN) {
         return std::u16string();
       }
 
