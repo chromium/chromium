@@ -32,7 +32,8 @@ Vector<uint8_t> TrailerWriter::MakeTrailerData() const {
                          features::kSSVTrailerWriteExposureAssertion)) {
     wtf_size_t start = trailer.size();
     trailer.Grow(start + 1 + sizeof(uint32_t) + num_exposed);
-    base::SpanWriter writer(base::span(trailer).subspan(start));
+    auto trailer_span = base::span(trailer);
+    base::SpanWriter writer(trailer_span.subspan(start));
     writer.WriteU8BigEndian(kTrailerRequiresInterfacesTag);
     writer.WriteU32BigEndian(num_exposed);
     writer.Write(base::as_byte_span(requires_exposed_interfaces_));
