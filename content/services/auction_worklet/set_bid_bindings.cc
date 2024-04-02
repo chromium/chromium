@@ -22,7 +22,6 @@
 #include "content/services/auction_worklet/webidl_compat.h"
 #include "gin/converter.h"
 #include "gin/dictionary.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_currencies.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size_utils.h"
@@ -203,8 +202,7 @@ struct SetBidBindings::GenerateBidOutput {
 
 SetBidBindings::SetBidBindings(AuctionV8Helper* v8_helper)
     : v8_helper_(v8_helper),
-      support_multi_bid_(
-          base::FeatureList::IsEnabled(blink::features::kFledgeMultiBid)) {}
+      support_multi_bid_(BidderWorklet::SupportMultiBid()) {}
 
 SetBidBindings::~SetBidBindings() = default;
 

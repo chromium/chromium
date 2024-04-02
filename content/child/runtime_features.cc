@@ -746,6 +746,11 @@ void ResolveInvalidConfigurations() {
     WebRuntimeFeatures::EnableAdInterestGroupAPI(false);
     WebRuntimeFeatures::EnableFledge(false);
   }
+
+  if (base::FeatureList::IsEnabled(
+          features::kCookieDeprecationFacilitatedTesting)) {
+    WebRuntimeFeatures::EnableFledgeMultiBid(false);
+  }
 }
 
 }  // namespace

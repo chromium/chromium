@@ -135,6 +135,8 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
           bidder_worklet_non_shared_params,
       const blink::AdDescriptor& ad_component_descriptor);
 
+  static bool SupportMultiBid();
+
   // mojom::BidderWorklet implementation:
   void BeginGenerateBid(
       mojom::BidderWorkletNonSharedParamsPtr bidder_worklet_non_shared_params,
