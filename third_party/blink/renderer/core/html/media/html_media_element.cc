@@ -2937,8 +2937,6 @@ void HTMLMediaElement::PauseInternal(PlayPromiseError code,
     ScheduleRejectPlayPromises(code);
   }
 
-  OnPause();
-
   UpdatePlayState(pause_speech);
 }
 
@@ -3914,6 +3912,8 @@ void HTMLMediaElement::UpdatePlayState(bool pause_speech /* = true */) {
   ReportCurrentTimeToMediaSource();
   PseudoStateChanged(CSSSelector::kPseudoPaused);
   PseudoStateChanged(CSSSelector::kPseudoPlaying);
+
+  UpdateVideoVisibilityTracker();
 }
 
 void HTMLMediaElement::StopPeriodicTimers() {
@@ -4010,6 +4010,8 @@ void HTMLMediaElement::ContextDestroyed() {
 
   StopPeriodicTimers();
   removed_from_document_timer_.Stop();
+
+  UpdateVideoVisibilityTracker();
 }
 
 bool HTMLMediaElement::HasPendingActivity() const {

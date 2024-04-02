@@ -126,7 +126,9 @@ void MediaVideoVisibilityTracker::Detach() {
 }
 
 void MediaVideoVisibilityTracker::UpdateVisibilityTrackerState() {
-  if (VideoElement().GetExecutionContext() && !VideoElement().paused()) {
+  const auto& video_element = VideoElement();
+  if (video_element.GetWebMediaPlayer() &&
+      video_element.GetExecutionContext() && !video_element.paused()) {
     Attach();
   } else {
     Detach();

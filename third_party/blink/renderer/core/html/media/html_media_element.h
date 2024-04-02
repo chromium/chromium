@@ -514,9 +514,12 @@ class CORE_EXPORT HTMLMediaElement
   void ContextDestroyed() override;
 
   virtual void OnPlay() {}
-  virtual void OnPause() {}
   virtual void OnLoadStarted() {}
   virtual void OnLoadFinished() {}
+
+  // Updates the `MediaVideoVisibilityTracker` state whenever the media play
+  // state is updated. This is typically handled during `UpdatePlayState`.
+  virtual void UpdateVideoVisibilityTracker() {}
 
   // Handles playing of media element when audio descriptions are finished
   // speaking.

@@ -387,6 +387,8 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
     return video->visibility_tracker_for_tests()->tracker_attached_to_document_;
   }
 
+  void ClearMediaPlayer() { Media()->ClearMediaPlayer(); }
+
  protected:
   // Helpers to call MediaPlayerObserver mojo methods and check their results.
   void NotifyMediaPlaying() {
@@ -1649,6 +1651,7 @@ TEST_P(HTMLMediaElementTest, VideoVisibilityTrackerDetachedOnPause) {
 
   auto* video = To<HTMLVideoElement>(Media());
   video->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
+  video->GetDocument().body()->AppendChild(video);
   test::RunPendingTasks();
   ASSERT_EQ(video->visibility_tracker_for_tests(), nullptr);
 
@@ -1656,6 +1659,7 @@ TEST_P(HTMLMediaElementTest, VideoVisibilityTrackerDetachedOnPause) {
   test::RunPendingTasks();
   video->Play();
   ASSERT_NE(video->visibility_tracker_for_tests(), nullptr);
+  EXPECT_NE(VideoVisibilityTrackerAttachedToDocument(video), nullptr);
 
   // Pause the video, and verify that the visibility tracker has been detached.
   video->pause();
@@ -1669,6 +1673,7 @@ TEST_P(HTMLMediaElementTest, VideoVisibilityTrackerDetachedOnEnded) {
 
   auto* video = To<HTMLVideoElement>(Media());
   video->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
+  video->GetDocument().body()->AppendChild(video);
   test::RunPendingTasks();
   ASSERT_EQ(video->visibility_tracker_for_tests(), nullptr);
 
@@ -1676,6 +1681,7 @@ TEST_P(HTMLMediaElementTest, VideoVisibilityTrackerDetachedOnEnded) {
   test::RunPendingTasks();
   video->Play();
   ASSERT_NE(video->visibility_tracker_for_tests(), nullptr);
+  EXPECT_NE(VideoVisibilityTrackerAttachedToDocument(video), nullptr);
 
   MockWebMediaPlayer* mock_wmpi =
       reinterpret_cast<MockWebMediaPlayer*>(video->GetWebMediaPlayer());
@@ -1699,6 +1705,7 @@ TEST_P(HTMLMediaElementTest, VideoVisibilityTrackerDetachedOnContextDestroyed) {
 
   auto* video = To<HTMLVideoElement>(Media());
   video->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
+  video->GetDocument().body()->AppendChild(video);
   test::RunPendingTasks();
   ASSERT_EQ(video->visibility_tracker_for_tests(), nullptr);
 
@@ -1706,6 +1713,7 @@ TEST_P(HTMLMediaElementTest, VideoVisibilityTrackerDetachedOnContextDestroyed) {
   test::RunPendingTasks();
   video->Play();
   ASSERT_NE(video->visibility_tracker_for_tests(), nullptr);
+  EXPECT_NE(VideoVisibilityTrackerAttachedToDocument(video), nullptr);
 
   // Destroy context, and verify that the visibility tracker has been detached.
   ContextDestroyed();
@@ -1727,12 +1735,40 @@ TEST_P(HTMLMediaElementTest, VideoVisibilityTrackerDetachedOnRemovedFrom) {
   test::RunPendingTasks();
   video->Play();
   ASSERT_NE(video->visibility_tracker_for_tests(), nullptr);
+  EXPECT_NE(VideoVisibilityTrackerAttachedToDocument(video), nullptr);
 
   // Remove video, and verify that the visibility tracker has been detached.
   NonThrowableExceptionState should_not_throw;
   video->remove(should_not_throw);
   test::RunPendingTasks();
 
+  EXPECT_EQ(VideoVisibilityTrackerAttachedToDocument(video), nullptr);
+}
+
+TEST_P(HTMLMediaElementTest,
+       VideoVisibilityTrackerDetachedOnWebMediaPlayerCleared) {
+  if (GetParam() != MediaTestParam::kVideo) {
+    return;
+  }
+
+  auto* video = To<HTMLVideoElement>(Media());
+  video->GetDocument().body()->AppendChild(video);
+  video->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
+  test::RunPendingTasks();
+  ASSERT_EQ(video->visibility_tracker_for_tests(), nullptr);
+
+  SetReadyState(HTMLMediaElement::kHaveEnoughData);
+  test::RunPendingTasks();
+  video->Play();
+  EXPECT_TRUE(video->GetWebMediaPlayer());
+  ASSERT_NE(video->visibility_tracker_for_tests(), nullptr);
+  EXPECT_NE(VideoVisibilityTrackerAttachedToDocument(video), nullptr);
+
+  // Clear media player, and verify that the visibility tracker has been
+  // detached.
+  ClearMediaPlayer();
+  EXPECT_FALSE(Media()->GetWebMediaPlayer());
+  EXPECT_TRUE(MediaIsPlaying());
   EXPECT_EQ(VideoVisibilityTrackerAttachedToDocument(video), nullptr);
 }
 

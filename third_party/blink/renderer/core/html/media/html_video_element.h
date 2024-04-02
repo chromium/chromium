@@ -202,9 +202,13 @@ class CORE_EXPORT HTMLVideoElement final
   const AtomicString ImageSourceURL() const override;
 
   void OnPlay() final;
-  void OnPause() final;
   void OnLoadStarted() final;
   void OnLoadFinished() final;
+
+  // Wrapper for the |MediaVideoVisibilityTracker|
+  // |UpdateVisibilityTrackerState| method. |UpdateVisibilityTrackerState| is
+  // called only if the |visibility_tracker_| exists.
+  void UpdateVideoVisibilityTracker() final;
 
   // Video-specific overrides for part of the media::mojom::MediaPlayer
   // interface, fully implemented in the parent class HTMLMediaElement.
@@ -223,10 +227,6 @@ class CORE_EXPORT HTMLVideoElement final
   // Creates a |MediaVideoVisibilityTracker| if one does not already exist.
   void CreateVisibilityTrackerIfNeeded();
 
-  // Wrapper for the |MediaVideoVisibilityTracker|
-  // |UpdateVisibilityTrackerState| method. |UpdateVisibilityTrackerState| is
-  // called only if the |visibility_tracker_| exists.
-  void UpdateVisibilityTrackerStateIfExists();
   void ReportVisibility(bool meets_visibility_threshold);
 
   Member<HTMLImageLoader> image_loader_;
