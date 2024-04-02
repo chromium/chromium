@@ -15,7 +15,8 @@ enum class BruschettaInstallResult {
   kUnknown = 0,
   kSuccess = 1,
   kInstallationProhibited = 2,
-  kToolsDlcInstallError = 3,
+  // Deprecated in favour of more specific errors.
+  // kToolsDlcInstallError = 3,
   kDownloadError = 4,
   // Deprecated: kInvalidFirmware = 5,
   kInvalidBootDisk = 6,
@@ -24,10 +25,23 @@ enum class BruschettaInstallResult {
   kCreateDiskError = 9,
   kStartVmFailed = 10,
   kInstallPflashError = 11,
-  kFirmwareDlcInstallError = 12,
+  // Deprecated in favour of more specific errors.
+  // kFirmwareDlcInstallError = 12,
   kVmAlreadyExists = 13,
   kClearVekFailed = 14,
-  kMaxValue = kClearVekFailed,
+  kToolsDlcOfflineError = 15,
+  kToolsDlcNeedUpdateError = 16,
+  kToolsDlcNeedRebootError = 17,
+  kToolsDlcDiskFullError = 18,
+  kToolsDlcBusyError = 19,
+  kToolsDlcUnknownError = 20,
+  kFirmwareDlcOfflineError = 21,
+  kFirmwareDlcNeedUpdateError = 22,
+  kFirmwareDlcNeedRebootError = 23,
+  kFirmwareDlcDiskFullError = 24,
+  kFirmwareDlcBusyError = 25,
+  kFirmwareDlcUnknownError = 26,
+  kMaxValue = kFirmwareDlcUnknownError
 };
 
 // Returns the string name of the BruschettaResult.

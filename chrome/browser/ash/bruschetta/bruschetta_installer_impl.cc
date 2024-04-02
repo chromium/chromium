@@ -136,7 +136,32 @@ void BruschettaInstallerImpl::OnToolsDlcInstalled(
 
   if (!install_result.has_value()) {
     install_running_ = false;
-    Error(BruschettaInstallResult::kToolsDlcInstallError);
+    BruschettaInstallResult result;
+    switch (install_result.error()) {
+      case guest_os::GuestOsDlcInstallation::Error::Offline:
+        result = BruschettaInstallResult::kToolsDlcOfflineError;
+        break;
+      case guest_os::GuestOsDlcInstallation::Error::NeedUpdate:
+        result = BruschettaInstallResult::kToolsDlcNeedUpdateError;
+        break;
+      case guest_os::GuestOsDlcInstallation::Error::NeedReboot:
+        result = BruschettaInstallResult::kToolsDlcNeedRebootError;
+        break;
+      case guest_os::GuestOsDlcInstallation::Error::DiskFull:
+        result = BruschettaInstallResult::kToolsDlcDiskFullError;
+        break;
+      case guest_os::GuestOsDlcInstallation::Error::Busy:
+        result = BruschettaInstallResult::kToolsDlcBusyError;
+        break;
+      case guest_os::GuestOsDlcInstallation::Error::Internal:
+      case guest_os::GuestOsDlcInstallation::Error::Invalid:
+      case guest_os::GuestOsDlcInstallation::Error::UnknownFailure:
+      case guest_os::GuestOsDlcInstallation::Error::Cancelled:
+      default:
+        result = BruschettaInstallResult::kToolsDlcUnknownError;
+        break;
+    }
+    Error(result);
     LOG(ERROR) << "Failed to install tools dlc: " << install_result.error();
     return;
   }
@@ -163,7 +188,32 @@ void BruschettaInstallerImpl::OnFirmwareDlcInstalled(
 
   if (!install_result.has_value()) {
     install_running_ = false;
-    Error(BruschettaInstallResult::kFirmwareDlcInstallError);
+    BruschettaInstallResult result;
+    switch (install_result.error()) {
+      case guest_os::GuestOsDlcInstallation::Error::Offline:
+        result = BruschettaInstallResult::kFirmwareDlcOfflineError;
+        break;
+      case guest_os::GuestOsDlcInstallation::Error::NeedUpdate:
+        result = BruschettaInstallResult::kFirmwareDlcNeedUpdateError;
+        break;
+      case guest_os::GuestOsDlcInstallation::Error::NeedReboot:
+        result = BruschettaInstallResult::kFirmwareDlcNeedRebootError;
+        break;
+      case guest_os::GuestOsDlcInstallation::Error::DiskFull:
+        result = BruschettaInstallResult::kFirmwareDlcDiskFullError;
+        break;
+      case guest_os::GuestOsDlcInstallation::Error::Busy:
+        result = BruschettaInstallResult::kFirmwareDlcBusyError;
+        break;
+      case guest_os::GuestOsDlcInstallation::Error::Internal:
+      case guest_os::GuestOsDlcInstallation::Error::Invalid:
+      case guest_os::GuestOsDlcInstallation::Error::UnknownFailure:
+      case guest_os::GuestOsDlcInstallation::Error::Cancelled:
+      default:
+        result = BruschettaInstallResult::kFirmwareDlcUnknownError;
+        break;
+    }
+    Error(result);
     LOG(ERROR) << "Failed to install firmware dlc: " << install_result.error();
     return;
   }

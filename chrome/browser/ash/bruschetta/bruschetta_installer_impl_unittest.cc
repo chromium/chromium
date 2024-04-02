@@ -320,7 +320,7 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
     // Tools DLC install step
     {
       if (out_result) {
-        *out_result = BruschettaInstallResult::kToolsDlcInstallError;
+        *out_result = BruschettaInstallResult::kToolsDlcUnknownError;
       }
       auto& expectation =
           EXPECT_CALL(
@@ -345,7 +345,7 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
     // UEFI DLC install step
     {
       if (out_result) {
-        *out_result = BruschettaInstallResult::kFirmwareDlcInstallError;
+        *out_result = BruschettaInstallResult::kFirmwareDlcUnknownError;
       }
       auto& expectation =
           EXPECT_CALL(

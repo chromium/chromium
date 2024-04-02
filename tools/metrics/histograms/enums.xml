@@ -2600,6 +2600,18 @@ Called by update_autofill_enums.py.-->
   <int value="12" label="kFirmwareDlcInstallError"/>
   <int value="13" label="kVmAlreadyExists"/>
   <int value="14" label="kClearVekFailed"/>
+  <int value="15" label="kToolsDlcOfflineError"/>
+  <int value="16" label="kToolsDlcNeedUpdateError"/>
+  <int value="17" label="kToolsDlcNeedRebootError"/>
+  <int value="18" label="kToolsDlcDiskFullError"/>
+  <int value="19" label="kToolsDlcBusyError"/>
+  <int value="20" label="kToolsDlcUnknownError"/>
+  <int value="21" label="kFirmwareDlcOfflineError"/>
+  <int value="22" label="kFirmwareDlcNeedUpdateError"/>
+  <int value="23" label="kFirmwareDlcNeedRebootError"/>
+  <int value="24" label="kFirmwareDlcDiskFullError"/>
+  <int value="25" label="kFirmwareDlcBusyError"/>
+  <int value="26" label="kFirmwareDlcUnknownError"/>
 </enum>
 
 <enum name="BruschettaResult">
