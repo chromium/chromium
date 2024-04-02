@@ -705,7 +705,7 @@ public class AutofillLocalCardEditorTest {
 
         FakeModalDialogManager fakeModalDialogManager =
                 new FakeModalDialogManager(ModalDialogManager.ModalDialogType.APP);
-        openDeleteCreditCardConfirmationDialog(
+        openDeletePaymentMethodConfirmationDialog(
                 autofillLocalCardEditorFragment, fakeModalDialogManager);
 
         // Verify the dialog is open
@@ -734,7 +734,7 @@ public class AutofillLocalCardEditorTest {
 
         FakeModalDialogManager fakeModalDialogManager =
                 new FakeModalDialogManager(ModalDialogManager.ModalDialogType.APP);
-        openDeleteCreditCardConfirmationDialog(
+        openDeletePaymentMethodConfirmationDialog(
                 autofillLocalCardEditorFragment, fakeModalDialogManager);
 
         // Verify the dialog is open
@@ -937,7 +937,7 @@ public class AutofillLocalCardEditorTest {
                 mActionTester.getActions().contains("AutofillCreditCardsEditedAndCvcWasUnchanged"));
     }
 
-    private void openDeleteCreditCardConfirmationDialog(
+    private void openDeletePaymentMethodConfirmationDialog(
             AutofillLocalCardEditor autofillLocalCardEditorFragment,
             ModalDialogManager modalDialogManager) {
         when(mModalDialogManagerSupplierMock.get()).thenReturn(modalDialogManager);

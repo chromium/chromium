@@ -116,7 +116,7 @@ public abstract class AutofillCreditCardEditor extends AutofillEditorBase
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.delete_menu_id) {
-            showDeleteCreditCardConfirmationDialog();
+            showDeletePaymentMethodConfirmationDialog();
             return true;
         }
         if (item.getItemId() == R.id.help_menu_id) {
@@ -145,21 +145,21 @@ public abstract class AutofillCreditCardEditor extends AutofillEditorBase
 
     /**
      * Sets Supplier for {@lnk ModalDialogManager} used to display {@link
-     * AutofillDeleteCreditCardConfirmationDialog}.
+     * AutofillDeletePaymentMethodConfirmationDialog}.
      */
     public void setModalDialogManagerSupplier(
             @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier) {
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
     }
 
-    private void showDeleteCreditCardConfirmationDialog() {
+    private void showDeletePaymentMethodConfirmationDialog() {
         assert mModalDialogManagerSupplier != null;
 
         ModalDialogManager modalDialogManager = mModalDialogManagerSupplier.get();
         assert modalDialogManager != null;
 
-        AutofillDeleteCreditCardConfirmationDialog dialog =
-                new AutofillDeleteCreditCardConfirmationDialog(
+        AutofillDeletePaymentMethodConfirmationDialog dialog =
+                new AutofillDeletePaymentMethodConfirmationDialog(
                         modalDialogManager,
                         getContext(),
                         dismissalCause -> {
@@ -167,7 +167,8 @@ public abstract class AutofillCreditCardEditor extends AutofillEditorBase
                                 deleteEntry();
                                 getActivity().finish();
                             }
-                        });
+                        },
+                        /* titleResId= */ R.string.autofill_credit_card_delete_confirmation_title);
         dialog.show();
     }
 }

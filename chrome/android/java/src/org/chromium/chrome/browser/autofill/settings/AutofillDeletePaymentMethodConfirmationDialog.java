@@ -13,33 +13,36 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.SimpleModalDialogController;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/** Dialog shown to user to confirm deleting a saved credit card. */
-public class AutofillDeleteCreditCardConfirmationDialog {
+
+/** Dialog shown to user to confirm deleting a saved payment method. */
+public class AutofillDeletePaymentMethodConfirmationDialog {
 
     private final ModalDialogManager mModalDialogManager;
     private final Context mContext;
     private final Callback<Integer> mResultHandler;
+    private final int mTitleResId;
 
-    public AutofillDeleteCreditCardConfirmationDialog(
+    public AutofillDeletePaymentMethodConfirmationDialog(
             ModalDialogManager modalDialogManager,
             Context context,
-            Callback<Integer> resultHandler) {
+            Callback<Integer> resultHandler,
+            int titleResId) {
         mModalDialogManager = modalDialogManager;
         mContext = context;
         mResultHandler = resultHandler;
+        mTitleResId = titleResId;
     }
 
-    /** Displays an AutofillDeleteCreditCardConfirmationDialog. */
+    /** Displays an AutofillDeletePaymentMethodConfirmationDialog. */
     public void show() {
         ModalDialogProperties.Controller dialogController =
                 new SimpleModalDialogController(mModalDialogManager, mResultHandler);
 
-        final int titleResId = R.string.autofill_credit_card_delete_confirmation_title;
-        final int descResId = R.string.autofill_credit_card_delete_confirmation_description;
+        final int descResId = R.string.autofill_payment_method_delete_confirmation_description;
         PropertyModel dialog =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, dialogController)
-                        .with(ModalDialogProperties.TITLE, mContext.getString(titleResId))
+                        .with(ModalDialogProperties.TITLE, mContext.getString(mTitleResId))
                         .with(
                                 ModalDialogProperties.MESSAGE_PARAGRAPH_1,
                                 mContext.getString(descResId))
