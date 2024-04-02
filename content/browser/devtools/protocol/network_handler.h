@@ -291,6 +291,10 @@ class NetworkHandler : public DevToolsDomainHandler,
       network::mojom::IPAddressSpace resource_address_space,
       int32_t http_status_code,
       const std::optional<net::CookiePartitionKey>& cookie_partition_key);
+  void OnResponseReceivedEarlyHints(
+      const std::string& devtools_request_id,
+      const std::vector<network::mojom::HttpRawHeaderPairPtr>&
+          response_headers);
   void OnTrustTokenOperationDone(
       const std::string& devtools_request_id,
       const network::mojom::TrustTokenOperationResult& result);

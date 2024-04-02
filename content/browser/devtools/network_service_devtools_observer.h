@@ -50,6 +50,9 @@ class NetworkServiceDevToolsObserver : public network::mojom::DevToolsObserver {
       int32_t http_status_code,
       const std::optional<net::CookiePartitionKey>& cookie_partition_key)
       override;
+  void OnEarlyHintsResponse(
+      const std::string& devtools_request_id,
+      std::vector<network::mojom::HttpRawHeaderPairPtr> headers) override;
   void OnTrustTokenOperationDone(
       const std::string& devtools_request_id,
       network::mojom::TrustTokenOperationResultPtr result) override;

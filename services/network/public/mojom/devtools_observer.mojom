@@ -98,6 +98,12 @@ interface DevToolsObserver {
     int32 http_status_code,
     CookiePartitionKey? cookie_partition_key);
 
+  // Called to send information about the 103 Early hints headers.
+  // Only called when `devtool_request_id` is available to the URLLoader.
+  OnEarlyHintsResponse(
+    string devtool_request_id,
+    array<HttpRawHeaderPair> headers);
+
   // Called to send information about a private network request that was blocked
   // (then |is_warning| is false), or will be blocked in the future (then
   // |is_warning| is true). It is possible to share sensitive information with

@@ -464,6 +464,18 @@ void MaybeRecordSharedDictionaryUsedResponseMetrics(
   }
 }
 
+std::vector<network::mojom::HttpRawHeaderPairPtr>
+ResponseHeaderToRawHeaderPairs(
+    const net::HttpResponseHeaders& response_headers) {
+  std::vector<network::mojom::HttpRawHeaderPairPtr> header_array;
+  size_t iterator = 0;
+  std::string name, value;
+  while (response_headers.EnumerateHeaderLines(&iterator, &name, &value)) {
+    header_array.emplace_back(std::in_place, std::move(name), std::move(value));
+  }
+  return header_array;
+}
+
 }  // namespace
 
 URLLoader::MaybeSyncURLLoaderClient::MaybeSyncURLLoaderClient(
@@ -2416,6 +2428,17 @@ void URLLoader::NotifyEarlyResponse(
 
   url_loader_client_.Get()->OnReceiveEarlyHints(mojom::EarlyHints::New(
       std::move(parsed_headers), referrer_policy, ip_address_space));
+
+  MaybeNotifyEarlyResponseToDevtools(*headers);
+}
+
+void URLLoader::MaybeNotifyEarlyResponseToDevtools(
+    const net::HttpResponseHeaders& headers) {
+  if (!devtools_observer_ || !devtools_request_id()) {
+    return;
+  }
+  devtools_observer_->OnEarlyHintsResponse(
+      devtools_request_id().value(), ResponseHeaderToRawHeaderPairs(headers));
 }
 
 void URLLoader::SetRawRequestHeadersAndNotify(
@@ -2516,7 +2539,6 @@ bool URLLoader::DispatchOnRawResponse() {
     return false;
   }
 
-  std::vector<network::mojom::HttpRawHeaderPairPtr> header_array;
 
   // This is gated by enable_reporting_raw_headers_ to be backwards compatible
   // with the old report_raw_headers behavior, where we wouldn't even send
@@ -2531,16 +2553,8 @@ bool URLLoader::DispatchOnRawResponse() {
       raw_response_headers_ && enable_reporting_raw_headers_
           ? raw_response_headers_.get()
           : url_request_->response_headers();
-
-  size_t iterator = 0;
-  std::string name, value;
-  while (response_headers->EnumerateHeaderLines(&iterator, &name, &value)) {
-    network::mojom::HttpRawHeaderPairPtr pair =
-        network::mojom::HttpRawHeaderPair::New();
-    pair->key = name;
-    pair->value = value;
-    header_array.push_back(std::move(pair));
-  }
+  std::vector<network::mojom::HttpRawHeaderPairPtr> header_array =
+      ResponseHeaderToRawHeaderPairs(*response_headers);
 
   // Only send the "raw" header text when the headers were actually send in
   // text form (i.e. not QUIC or SPDY)

@@ -204,6 +204,14 @@ class NavigationEarlyHintsTest : public DevToolsProtocolTest {
     }
   }
 
+  base::Value::Dict WaitForDevtoolsEarlyHints() {
+    base::Value::Dict result;
+    while (true) {
+      result = WaitForNotification("Network.responseReceivedEarlyHints", true);
+      return result;
+    }
+  }
+
   base::Value::Dict WaitForResponseReceived(const std::string& request_id) {
     base::Value::Dict result;
     while (true) {
@@ -825,12 +833,25 @@ IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, DevtoolsEventsForEarlyHint) {
   EXPECT_TRUE(NavigateToURL(shell(), target_url, target_url));
 
   std::string hinted_id = WaitForHintedScriptDevtoolsRequestId();
-  base::Value::Dict result = WaitForResponseReceived(hinted_id);
-  base::Value* from_early_hints_value =
-      result.FindByDottedPath("response.fromEarlyHints");
-  ASSERT_TRUE(from_early_hints_value);
-  ASSERT_TRUE(from_early_hints_value->is_bool());
-  ASSERT_TRUE(from_early_hints_value->GetBool());
+
+  {
+    base::Value::Dict early_hints_event = WaitForDevtoolsEarlyHints();
+    base::Value::Dict* early_hints_headers =
+        early_hints_event.FindDict("headers");
+    ASSERT_TRUE(early_hints_headers);
+    HeaderField link_header = CreatePreloadLinkForScript();
+    EXPECT_EQ(*early_hints_headers->FindString(link_header.name),
+              link_header.value);
+  }
+
+  {
+    base::Value::Dict result = WaitForResponseReceived(hinted_id);
+    base::Value* from_early_hints_value =
+        result.FindByDottedPath("response.fromEarlyHints");
+    ASSERT_TRUE(from_early_hints_value);
+    EXPECT_TRUE(from_early_hints_value->is_bool());
+    EXPECT_TRUE(from_early_hints_value->GetBool());
+  }
 }
 
 class NavigationEarlyHintsAddressSpaceTest : public NavigationEarlyHintsTest {

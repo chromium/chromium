@@ -349,6 +349,9 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
       override {
     on_raw_response_called_ = true;
   }
+  void OnEarlyHintsResponse(
+      const std::string& devtools_request_id,
+      std::vector<network::mojom::HttpRawHeaderPairPtr> headers) override {}
   void OnCorsPreflightRequest(
       const base::UnguessableToken& devtool_request_id,
       const net::HttpRequestHeaders& request_headers,

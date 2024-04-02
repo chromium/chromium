@@ -50,6 +50,10 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
       const std::optional<net::CookiePartitionKey>& cookie_partition_key)
       override;
 
+  void OnEarlyHintsResponse(
+      const std::string& devtools_request_id,
+      std::vector<network::mojom::HttpRawHeaderPairPtr> headers) override;
+
   void OnPrivateNetworkRequest(
       const std::optional<std::string>& devtools_request_id,
       const GURL& url,
@@ -123,6 +127,7 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
   void WaitUntilRawRequest(size_t goal);
   void WaitUntilPrivateNetworkRequest();
   void WaitUntilCorsError();
+  void WaitUntilEarlyHints();
 
   const net::CookieAndLineAccessResultList& raw_response_cookies() const {
     return raw_response_cookies_;
@@ -204,6 +209,11 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
     return preflight_status_;
   }
 
+  const std::vector<network::mojom::HttpRawHeaderPairPtr>& early_hint_headers()
+      const {
+    return early_hints_headers_;
+  }
+
  private:
   net::CookieAndLineAccessResultList raw_response_cookies_;
   base::OnceClosure wait_for_raw_response_;
@@ -232,6 +242,9 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
   mojo::ReceiverSet<mojom::DevToolsObserver> receivers_;
 
   std::optional<net::CookiePartitionKey> response_cookie_partition_key_;
+
+  base::RunLoop wait_for_early_hints_;
+  std::vector<network::mojom::HttpRawHeaderPairPtr> early_hints_headers_;
 };
 
 }  // namespace network

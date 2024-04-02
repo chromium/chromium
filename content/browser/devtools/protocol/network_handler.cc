@@ -3258,6 +3258,17 @@ void NetworkHandler::OnResponseReceivedExtraInfo(
       BuildProtocolExemptedSetCookies(response_cookie_list));
 }
 
+void NetworkHandler::OnResponseReceivedEarlyHints(
+    const std::string& devtools_request_id,
+    const std::vector<network::mojom::HttpRawHeaderPairPtr>& response_headers) {
+  if (!enabled_) {
+    return;
+  }
+
+  frontend_->ResponseReceivedEarlyHints(devtools_request_id,
+                                        GetRawHeaders(response_headers));
+}
+
 void NetworkHandler::OnLoadNetworkResourceFinished(
     DevToolsNetworkResourceLoader* loader,
     const net::HttpResponseHeaders* rh,
