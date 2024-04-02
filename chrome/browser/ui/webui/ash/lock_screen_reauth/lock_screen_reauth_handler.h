@@ -19,7 +19,7 @@
 
 namespace ash {
 
-class InSessionPasswordSyncManager;
+class LockScreenReauthManager;
 
 class LockScreenReauthHandler : public content::WebUIMessageHandler {
  public:
@@ -117,7 +117,7 @@ class LockScreenReauthHandler : public content::WebUIMessageHandler {
 
   ::login::StringList scraped_saml_passwords_;
 
-  raw_ptr<InSessionPasswordSyncManager> password_sync_manager_ = nullptr;
+  raw_ptr<LockScreenReauthManager> lock_screen_reauth_manager_ = nullptr;
 
   std::unique_ptr<UserContext> user_context_;
 

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/login/saml/password_sync_token_verifier_factory.h"
 
-#include "chrome/browser/ash/login/saml/in_session_password_sync_manager_factory.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_verifier.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -37,7 +36,6 @@ PasswordSyncTokenVerifierFactory::PasswordSyncTokenVerifierFactory()
               // Guest mode.
               .WithGuest(ProfileSelection::kOriginalOnly)
               .Build()) {
-  DependsOn(InSessionPasswordSyncManagerFactory::GetInstance());
 }
 
 PasswordSyncTokenVerifierFactory::~PasswordSyncTokenVerifierFactory() = default;

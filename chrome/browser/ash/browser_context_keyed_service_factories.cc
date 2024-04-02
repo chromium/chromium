@@ -65,9 +65,9 @@
 #include "chrome/browser/ash/lock_screen_apps/lock_screen_apps.h"
 #include "chrome/browser/ash/login/extensions/login_screen_extensions_content_script_manager_factory.h"
 #include "chrome/browser/ash/login/extensions/login_screen_extensions_lifetime_manager_factory.h"
+#include "chrome/browser/ash/login/lock/online_reauth/lock_screen_reauth_manager_factory.h"
 #include "chrome/browser/ash/login/osauth/profile_prefs_auth_policy_connector_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
-#include "chrome/browser/ash/login/saml/in_session_password_sync_manager_factory.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_verifier_factory.h"
 #include "chrome/browser/ash/login/security_token_session_controller_factory.h"
 #include "chrome/browser/ash/login/signin/auth_error_observer_factory.h"
@@ -198,11 +198,11 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   guest_os::GuestOsSharePathFactory::GetInstance();
   help_app::HelpAppManagerFactory::GetInstance();
   HoldingSpaceKeyedServiceFactory::GetInstance();
-  InSessionPasswordSyncManagerFactory::GetInstance();
   kcer::KcerFactoryAsh::EnsureFactoryBuilt();
   KerberosCredentialsManagerFactory::GetInstance();
   KioskAppUpdateServiceFactory::GetInstance();
   LockScreenAppsFactory::GetInstance();
+  LockScreenReauthManagerFactory::GetInstance();
   login::SecurityTokenSessionControllerFactory::GetInstance();
   login::SigninPartitionManager::Factory::GetInstance();
   LoginScreenExtensionsContentScriptManagerFactory::GetInstance();

@@ -20,6 +20,8 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "chrome/browser/ash/login/lock/online_reauth/lock_screen_reauth_manager.h"
+#include "chrome/browser/ash/login/lock/online_reauth/lock_screen_reauth_manager_factory.h"
 #include "chrome/browser/ash/login/login_constants.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/reauth_stats.h"
@@ -104,10 +106,11 @@ void OfflineSigninLimiter::Shutdown() {
 
 void OfflineSigninLimiter::OnSessionStateChanged() {
   TRACE_EVENT0("login", "OfflineSigninLimiter::OnSessionStateChanged");
-  if (!session_manager::SessionManager::Get()->IsScreenLocked())
+  if (!session_manager::SessionManager::Get()->IsScreenLocked()) {
     UpdateLimit();
-  else
+  } else {
     UpdateLockScreenLimit();
+  }
 }
 
 OfflineSigninLimiter::OfflineSigninLimiter(Profile* profile,
@@ -251,8 +254,9 @@ void OfflineSigninLimiter::UpdateLockScreenLimit() {
 std::optional<base::TimeDelta> OfflineSigninLimiter::GetGaiaNoSamlTimeLimit() {
   int no_saml_offline_limit =
       profile_->GetPrefs()->GetInteger(prefs::kGaiaOfflineSigninTimeLimitDays);
-  if (no_saml_offline_limit <= constants::kOfflineSigninTimeLimitNotSet)
+  if (no_saml_offline_limit <= constants::kOfflineSigninTimeLimitNotSet) {
     return std::nullopt;
+  }
 
   return std::make_optional<base::TimeDelta>(base::Days(no_saml_offline_limit));
 }
@@ -260,8 +264,9 @@ std::optional<base::TimeDelta> OfflineSigninLimiter::GetGaiaNoSamlTimeLimit() {
 std::optional<base::TimeDelta> OfflineSigninLimiter::GetGaiaSamlTimeLimit() {
   const int saml_offline_limit =
       profile_->GetPrefs()->GetInteger(prefs::kSAMLOfflineSigninTimeLimit);
-  if (saml_offline_limit <= constants::kOfflineSigninTimeLimitNotSet)
+  if (saml_offline_limit <= constants::kOfflineSigninTimeLimitNotSet) {
     return std::nullopt;
+  }
 
   return std::make_optional<base::TimeDelta>(base::Seconds(saml_offline_limit));
 }
@@ -321,26 +326,18 @@ void OfflineSigninLimiter::ForceOnlineLogin() {
 
 void OfflineSigninLimiter::ForceOnlineLockScreenReauth() {
   const user_manager::User& user = GetUser();
-
-  // Re-auth on lock - enabled only for the primary user.
-  proximity_auth::ScreenlockBridge* screenlock_bridge_ =
-      proximity_auth::ScreenlockBridge::Get();
-  DCHECK(screenlock_bridge_);
-
-  if (screenlock_bridge_->IsLocked()) {
-    // On the lock screen: need to update the UI.
-    screenlock_bridge_->lock_handler()->SetAuthType(
-        user.GetAccountId(), proximity_auth::mojom::AuthType::ONLINE_SIGN_IN,
-        std::u16string());
-  }
-
+  ReauthReason reauth_reason = ReauthReason::kNone;
   if (user.using_saml()) {
-    RecordReauthReason(user.GetAccountId(),
-                       ReauthReason::kSamlLockScreenReauthPolicy);
+    reauth_reason = ReauthReason::kSamlLockScreenReauthPolicy;
   } else {
-    RecordReauthReason(user.GetAccountId(),
-                       ReauthReason::kGaiaLockScreenReauthPolicy);
+    reauth_reason = ReauthReason::kGaiaLockScreenReauthPolicy;
   }
+
+  LockScreenReauthManager* lock_screen_reauth_manager =
+      LockScreenReauthManagerFactory::GetForProfile(profile_);
+  DCHECK(lock_screen_reauth_manager);
+  lock_screen_reauth_manager->MaybeForceReauthOnLockScreen(reauth_reason);
+  RecordReauthReason(user.GetAccountId(), reauth_reason);
   offline_lock_screen_signin_limit_timer_->Stop();
 }
 

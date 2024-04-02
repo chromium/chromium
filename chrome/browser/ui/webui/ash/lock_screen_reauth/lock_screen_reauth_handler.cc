@@ -12,9 +12,9 @@
 #include "base/notreached.h"
 #include "base/uuid.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/lock/online_reauth/lock_screen_reauth_manager.h"
+#include "chrome/browser/ash/login/lock/online_reauth/lock_screen_reauth_manager_factory.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
-#include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"
-#include "chrome/browser/ash/login/saml/in_session_password_sync_manager_factory.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/ash/login/ui/login_display_host_webui.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -388,17 +388,18 @@ void LockScreenReauthHandler::CheckCredentials(
   auto password_changed_callback =
       base::BindRepeating(&LockScreenReauthHandler::ShowPasswordChangedScreen,
                           weak_factory_.GetWeakPtr());
-  password_sync_manager_ =
-      InSessionPasswordSyncManagerFactory::GetForProfile(profile);
-  password_sync_manager_->CheckCredentials(*user_context,
-                                           password_changed_callback);
+  lock_screen_reauth_manager_ =
+      LockScreenReauthManagerFactory::GetForProfile(profile);
+  CHECK(lock_screen_reauth_manager_);
+  lock_screen_reauth_manager_->CheckCredentials(*user_context,
+                                                password_changed_callback);
 }
 
 void LockScreenReauthHandler::HandleUpdateUserPassword(
     const base::Value::List& value) {
   DCHECK(!value.empty());
   std::string old_password = value[0].GetString();
-  password_sync_manager_->UpdateUserPassword(old_password);
+  lock_screen_reauth_manager_->UpdateUserPassword(old_password);
 }
 
 void LockScreenReauthHandler::ShowPasswordChangedScreen() {
