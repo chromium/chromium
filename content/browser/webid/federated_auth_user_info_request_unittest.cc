@@ -175,7 +175,7 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
           kAccountName, kAccountGivenName, GURL(kAccountPicture),
           /*login_hints=*/std::vector<std::string>(),
           /*domain_hints=*/std::vector<std::string>(),
-          account_config.login_state);
+          /*labels=*/std::vector<std::string>(), account_config.login_state);
     }
 
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

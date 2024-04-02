@@ -271,6 +271,7 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
       accounts.emplace_back(account_info.first, "", "", "", GURL(),
                             /*login_hints=*/std::vector<std::string>(),
                             /*domain_hints=*/std::vector<std::string>(),
+                            /*labels=*/std::vector<std::string>(),
                             account_info.second);
     }
     return IdentityProviderDisplayData(
@@ -1201,7 +1202,8 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   std::vector<content::IdentityRequestAccount> new_accounts = {
       {kAccountId1, "", "", "", GURL(),
        /*login_hints=*/std::vector<std::string>(),
-       /*domain_hints=*/std::vector<std::string>(), LoginState::kSignUp}};
+       /*domain_hints=*/std::vector<std::string>(),
+       /*labels=*/std::vector<std::string>(), LoginState::kSignUp}};
   content::IdentityProviderData new_idp_data = {
       kIdpEtldPlusOne,
       new_accounts,
@@ -1259,7 +1261,8 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, UseAnotherAccount) {
   std::vector<content::IdentityRequestAccount> new_accounts = {
       {kAccountId2, "", "", "", GURL(),
        /*login_hints=*/std::vector<std::string>(),
-       /*domain_hints=*/std::vector<std::string>(), LoginState::kSignUp}};
+       /*domain_hints=*/std::vector<std::string>(),
+       /*labels=*/std::vector<std::string>(), LoginState::kSignUp}};
   content::IdentityProviderData new_idp_data = {
       kIdpEtldPlusOne,
       new_accounts,
@@ -1321,7 +1324,8 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, UseAnotherAccountModal) {
   std::vector<content::IdentityRequestAccount> new_accounts = {
       {kAccountId2, "", "", "", GURL(),
        /*login_hints=*/std::vector<std::string>(),
-       /*domain_hints=*/std::vector<std::string>(), LoginState::kSignUp}};
+       /*domain_hints=*/std::vector<std::string>(),
+       /*labels=*/std::vector<std::string>(), LoginState::kSignUp}};
   content::IdentityProviderData new_idp_data = {
       kIdpEtldPlusOne,
       new_accounts,

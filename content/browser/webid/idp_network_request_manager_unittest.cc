@@ -571,6 +571,32 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountMalformed) {
       AccountsResponseInvalidReason::kResponseIsNotJsonOrDict, 1);
 }
 
+TEST_F(IdpNetworkRequestManagerTest, ParseAccountLabels) {
+  const auto* test_accounts_json = R"({
+  "accounts" : [
+    {
+      "id": "1234",
+      "email": "ken@idp.test",
+      "name": "Ken R. Example",
+      "labels": ["l1", 42, "l2"]
+    }
+  ]
+  })";
+
+  FetchStatus accounts_response;
+  AccountList accounts;
+  std::tie(accounts_response, accounts) =
+      SendAccountsRequestAndWaitForResponse(test_accounts_json);
+
+  EXPECT_EQ(ParseStatus::kSuccess, accounts_response.parse_status);
+  EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
+  EXPECT_EQ("1234", accounts[0].id);
+  // The integer in the second position should be ignored.
+  ASSERT_EQ(2u, accounts[0].labels.size());
+  EXPECT_EQ("l1", accounts[0].labels[0]);
+  EXPECT_EQ("l2", accounts[0].labels[1]);
+}
+
 TEST_F(IdpNetworkRequestManagerTest, ComputeWellKnownUrl) {
   EXPECT_EQ("https://localhost:8000/.well-known/web-identity",
             IdpNetworkRequestManager::ComputeWellKnownUrl(
@@ -975,6 +1001,23 @@ TEST_F(IdpNetworkRequestManagerTest,
   EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
   EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
   EXPECT_EQ(false, idp_metadata.supports_add_account);
+}
+
+TEST_F(IdpNetworkRequestManagerTest, ParseConfigRequestedLabel) {
+  const char test_json[] = R"({
+    "accounts": {
+      "include": "l1"
+    }
+  })";
+
+  FetchStatus fetch_status;
+  IdentityProviderMetadata idp_metadata;
+  std::tie(fetch_status, idp_metadata) =
+      SendConfigRequestAndWaitForResponse(test_json);
+
+  EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
+  EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
+  EXPECT_EQ("l1", idp_metadata.requested_label);
 }
 
 // Tests that we send the correct origin for account requests.

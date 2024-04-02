@@ -112,8 +112,10 @@ Account ConvertFieldsToAccount(
   // The login hints and domain hints are only used before account selection.
   std::vector<std::string> login_hints;
   std::vector<std::string> domain_hints;
+  std::vector<std::string> labels;
   return Account(account_id, email, name, given_name, picture_url,
-                 std::move(login_hints), std::move(domain_hints), login_state);
+                 std::move(login_hints), std::move(domain_hints),
+                 std::move(labels), login_state);
 }
 
 ScopedJavaLocalRef<jstring> ConvertRpContextToJavaString(

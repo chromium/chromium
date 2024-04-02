@@ -14,6 +14,7 @@ IdentityRequestAccount::IdentityRequestAccount(
     const GURL& picture,
     std::vector<std::string> login_hints,
     std::vector<std::string> domain_hints,
+    std::vector<std::string> labels,
     std::optional<LoginState> login_state)
     : id{id},
       email{email},
@@ -22,6 +23,7 @@ IdentityRequestAccount::IdentityRequestAccount(
       picture{picture},
       login_hints(std::move(login_hints)),
       domain_hints(std::move(domain_hints)),
+      labels(std::move(labels)),
       login_state{login_state} {}
 
 IdentityRequestAccount::IdentityRequestAccount(const IdentityRequestAccount&) =

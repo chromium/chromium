@@ -33,7 +33,8 @@ class FedCmAccountSelectionViewBrowserTest : public DialogBrowserTest {
     std::vector<content::IdentityRequestAccount> accounts = {
         {"id", "email", "name", "given_name", GURL(),
          /*login_hints=*/std::vector<std::string>(),
-         /*domain_hints=*/std::vector<std::string>()}};
+         /*domain_hints=*/std::vector<std::string>(),
+         /*labels=*/std::vector<std::string>()}};
     account_selection_view()->Show(
         "top-frame-example.com",
         std::make_optional<std::string>("iframe-example.com"),

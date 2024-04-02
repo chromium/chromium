@@ -124,17 +124,19 @@ static const std::vector<IdentityRequestAccount> kSingleAccount{{
     "Ken",                       // given_name
     GURL(),                      // picture
     std::vector<std::string>(),  // login_hints
-    std::vector<std::string>()   // domain_hints
+    std::vector<std::string>(),  // domain_hints
+    std::vector<std::string>()   // labels
 }};
 
 static const std::vector<IdentityRequestAccount> kSingleAccountWithHint{{
-    kAccountId,                 // id
-    kEmail,                     // email
-    "Ken R. Example",           // name
-    "Ken",                      // given_name
-    GURL(),                     // picture
-    {kAccountId, kEmail},       // login_hints
-    std::vector<std::string>()  // domain_hints
+    kAccountId,                  // id
+    kEmail,                      // email
+    "Ken R. Example",            // name
+    "Ken",                       // given_name
+    GURL(),                      // picture
+    {kAccountId, kEmail},        // login_hints
+    std::vector<std::string>(),  // domain_hints
+    std::vector<std::string>()   // labels
 }};
 
 static const std::vector<IdentityRequestAccount> kSingleAccountWithDomainHint{{
@@ -144,7 +146,8 @@ static const std::vector<IdentityRequestAccount> kSingleAccountWithDomainHint{{
     "Ken",                       // given_name
     GURL(),                      // picture
     std::vector<std::string>(),  // login_hints
-    {kDomainHint}                // domain_hints
+    {kDomainHint},               // domain_hints
+    std::vector<std::string>()   // labels
 }};
 
 static const std::vector<IdentityRequestAccount> kMultipleAccounts{
@@ -156,6 +159,7 @@ static const std::vector<IdentityRequestAccount> kMultipleAccounts{
         GURL(),                      // picture
         std::vector<std::string>(),  // login_hints
         std::vector<std::string>(),  // domain_hints
+        std::vector<std::string>(),  // labels
         LoginState::kSignUp          // login_state
     },
     {
@@ -166,6 +170,7 @@ static const std::vector<IdentityRequestAccount> kMultipleAccounts{
         GURL(),                      // picture
         std::vector<std::string>(),  // login_hints
         std::vector<std::string>(),  // domain_hints
+        std::vector<std::string>(),  // labels
         LoginState::kSignIn          // login_state
     },
     {
@@ -176,6 +181,7 @@ static const std::vector<IdentityRequestAccount> kMultipleAccounts{
         GURL(),                      // picture
         std::vector<std::string>(),  // login_hints
         std::vector<std::string>(),  // domain_hints
+        std::vector<std::string>(),  // labels
         LoginState::kSignUp          // login_state
     }};
 
@@ -189,6 +195,7 @@ static const std::vector<IdentityRequestAccount>
             GURL(),                                     // picture
             {kAccountIdNicolas, kAccountEmailNicolas},  // login_hints
             {kDomainHint},                              // domain_hints
+            std::vector<std::string>(),                 // labels
             LoginState::kSignUp                         // login_state
         },
         {
@@ -199,6 +206,7 @@ static const std::vector<IdentityRequestAccount>
             GURL(),                                 // picture
             {kAccountIdPeter, kAccountEmailPeter},  // login_hints
             std::vector<std::string>(),             // domain_hints
+            std::vector<std::string>(),             // labels
             LoginState::kSignIn                     // login_state
         },
         {
@@ -209,6 +217,7 @@ static const std::vector<IdentityRequestAccount>
             GURL(),                               // picture
             {kAccountIdZach, kAccountEmailZach},  // login_hints
             {kDomainHint, kOtherDomainHint},      // domain_hints
+            std::vector<std::string>(),           // labels
             LoginState::kSignUp                   // login_state
         }};
 

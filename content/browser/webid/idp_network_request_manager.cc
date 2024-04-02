@@ -72,6 +72,9 @@ constexpr char kMetricsEndpoint[] = "metrics_endpoint";
 constexpr char kDisconnectEndpoint[] = "disconnect_endpoint";
 constexpr char kModesKey[] = "modes";
 
+// Keys in the 'accounts' dictionary
+constexpr char kIncludeKey[] = "include";
+
 // Keys in the 'modes' dictionary.
 constexpr char kButtonModeKey[] = "button";
 constexpr char kWidgetModeKey[] = "widget";
@@ -106,6 +109,7 @@ constexpr char kAccountPictureKey[] = "picture";
 constexpr char kAccountApprovedClientsKey[] = "approved_clients";
 constexpr char kHintsKey[] = "login_hints";
 constexpr char kDomainHintsKey[] = "domain_hints";
+constexpr char kLabelsKey[] = "labels";
 
 // Keys in 'branding' 'icons' dictionary in accounts endpoint.
 constexpr char kIdpBrandingIconUrl[] = "url";
@@ -231,6 +235,16 @@ std::optional<content::IdentityRequestAccount> ParseAccount(
     }
   }
 
+  std::vector<std::string> labels;
+  auto* labels_list = account.FindList(kLabelsKey);
+  if (labels_list) {
+    for (const base::Value& entry : *labels_list) {
+      if (entry.is_string()) {
+        labels.emplace_back(entry.GetString());
+      }
+    }
+  }
+
   // required fields
   if (!(id && email && name))
     return std::nullopt;
@@ -257,7 +271,7 @@ std::optional<content::IdentityRequestAccount> ParseAccount(
   return content::IdentityRequestAccount(
       *id, *email, *name, given_name ? *given_name : "",
       picture ? GURL(*picture) : GURL(), std::move(account_hints),
-      std::move(domain_hints), approved_value);
+      std::move(domain_hints), std::move(labels), approved_value);
 }
 
 // Parses accounts from given Value. Returns true if parse is successful and
@@ -534,6 +548,15 @@ void OnConfigParsed(const GURL& provider,
   }
   idp_metadata.idp_login_url =
       ExtractEndpoint(provider, response, kLoginUrlKey);
+
+  const base::Value::Dict* accounts_dict = response.FindDict(kAccountsKey);
+  if (accounts_dict) {
+    const std::string* requested_label = accounts_dict->FindString(kIncludeKey);
+    if (requested_label) {
+      idp_metadata.requested_label = *requested_label;
+    }
+  }
+
   if (IsFedCmUseOtherAccountEnabled(rp_mode == blink::mojom::RpMode::kButton)) {
     const base::Value::Dict* modes_dict = response.FindDict(kModesKey);
     const base::Value::Dict* selected_mode_dict = nullptr;

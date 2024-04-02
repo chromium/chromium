@@ -45,7 +45,8 @@ AccountSelectionViewTestBase::CreateTestIdentityRequestAccount(
       std::string(kNameBase) + account_suffix,
       std::string(kGivenNameBase) + account_suffix, GURL(),
       /*login_hints=*/std::vector<std::string>(),
-      /*domain_hints=*/std::vector<std::string>(), login_state);
+      /*domain_hints=*/std::vector<std::string>(),
+      /*labels=*/std::vector<std::string>(), login_state);
 }
 
 std::vector<content::IdentityRequestAccount>
