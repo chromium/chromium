@@ -413,7 +413,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     const currentFontIndex =
         this.fontOptions_.indexOf(chrome.readingMode.fontName);
     if (this.isReadAloudEnabled_) {
-      this.setCheckMarkForLazyMenu_(
+      this.setCheckMarkForMenu_(
           this.$.fontMenu.getIfExists(), currentFontIndex);
 
     } else {
@@ -433,22 +433,22 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     if (this.isReadAloudEnabled_) {
       const speechRate = this.getCurrentSpeechRate();
       this.setRateIcon_(speechRate);
-      this.setCheckMarkForLazyMenu_(
+      this.setCheckMarkForMenu_(
           this.$.rateMenu.getIfExists(), this.rateOptions_.indexOf(speechRate));
 
       this.setHighlightState_(
           chrome.readingMode.highlightGranularity ===
           chrome.readingMode.highlightOn);
     }
-    this.setCheckMarkForLazyMenu_(
+    this.setCheckMarkForMenu_(
         this.$.colorMenu.getIfExists(),
         this.getIndexOfSetting_(this.colorOptions_, colorSuffix));
-    this.setCheckMarkForLazyMenu_(
+    this.setCheckMarkForMenu_(
         this.$.lineSpacingMenu.getIfExists(),
         this.getIndexOfSetting_(
             this.lineSpacingOptions_, this.getCurrentLineSpacing()));
-    this.setCheckMarkForLazyMenu_(
-        this.$.letterSpacingMenu.get(),
+    this.setCheckMarkForMenu_(
+        this.$.letterSpacingMenu.getIfExists(),
         this.getIndexOfSetting_(
             this.letterSpacingOptions_, this.getCurrentLetterSpacing()));
   }
@@ -646,7 +646,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     if (this.contentPage) {
       contentPageCallback.call(this.contentPage, event.model.item.data);
     }
-    this.setCheckMarkForLazyMenu_(menuClicked, event.model.index);
+    this.setCheckMarkForMenu_(menuClicked, event.model.index);
     this.closeMenus_();
   }
 
@@ -656,8 +656,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         ReadAnythingSettingsChange.COUNT);
     const fontName = event.model.item;
     this.propagateFontChange_(fontName);
-    this.setCheckMarkForLazyMenu_(
-        this.$.fontMenu.getIfExists(), event.model.index);
+    this.setCheckMarkForMenu_(this.$.fontMenu.getIfExists(), event.model.index);
 
     this.closeMenus_();
   }
@@ -681,8 +680,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       rate: event.model.item,
     });
     this.setRateIcon_(event.model.item);
-    this.setCheckMarkForLazyMenu_(
-        this.$.rateMenu.getIfExists(), event.model.index);
+    this.setCheckMarkForMenu_(this.$.rateMenu.getIfExists(), event.model.index);
 
     this.closeMenus_();
   }
@@ -693,25 +691,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     button.setAttribute('iron-icon', 'voice-rate:' + rate);
   }
 
-  private setCheckMarkForMenu_(menu: CrActionMenuElement, index: number) {
-    const checkMarks = Array.from(menu.getElementsByClassName('check-mark'));
-    assert(
-        (index < checkMarks.length) && (index >= 0),
-        'trying to show a checkmark on an item that doesn\'t exist');
-    checkMarks.forEach((element) => {
-      assert(element instanceof HTMLElement, 'checkmark is not an HTMLElement');
-      // TODO(crbug.com/1465029): Ensure this works with screen readers
-      ReadAnythingToolbarElement.hideElement(element, true);
-    });
-    const checkMark = checkMarks[index] as IronIconElement;
-    ReadAnythingToolbarElement.showElement(checkMark);
-  }
-
-  // TODO(b/329676284): Once all menus have been updated to use CrLazyMenu,
-  // remove the current setCheckMarkForMenu_ and rename this method back to
-  // setCheckMarkForMenu_.
-  private setCheckMarkForLazyMenu_(
-      menu: CrActionMenuElement|null, index: number) {
+  private setCheckMarkForMenu_(menu: CrActionMenuElement|null, index: number) {
     // If the menu has not yet been rendered, don't attempt to set any check
     // marks yet.
     if (!menu) {
@@ -728,8 +708,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       }
     });
 
-    const checkMarks =
-        Array.from(menu.getElementsByClassName('check-mark-for-lazy-render'));
+    const checkMarks = Array.from(menu.getElementsByClassName('check-mark'));
     const checkMark = checkMarks[index] as IronIconElement;
     if (checkMark) {
       checkMark.classList.toggle('check-mark-hidden-true', false);

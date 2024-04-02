@@ -58,10 +58,6 @@
     font-size: 13px;
   }
   .check-mark {
-    visibility: hidden;
-    margin: 0;
-  }
-  .check-mark-for-lazy-render {
     margin: 0;
   }
   .check-mark-hidden-true {
@@ -258,7 +254,7 @@
       <cr-action-menu>
         <template is="dom-repeat" items="[[rateOptions_]]" index-as="index">
           <button class="dropdown-item" on-click="onRateClick_">
-            <iron-icon class$="button-image check-mark-for-lazy-render
+            <iron-icon class$="button-image check-mark
               check-mark-hidden-[[isRateItemSelected_(index)]]"
                 icon="read-anything-20:check-mark"></iron-icon>
             [[item]]x
@@ -300,7 +296,7 @@
       <cr-action-menu>
         <template is="dom-repeat" items="[[colorOptions_]]" index-as="index">
           <button class="dropdown-item" on-click="onColorClick_">
-            <iron-icon class$="button-image check-mark-for-lazy-render
+            <iron-icon class$="button-image check-mark
                               check-mark-hidden-[[isColorItemSelected_(index)]]"
                 icon="read-anything-20:check-mark"></iron-icon>
             <iron-icon class="button-image" icon="[[item.icon]]"></iron-icon>
@@ -316,7 +312,7 @@
         <template is="dom-repeat"
                   items="[[lineSpacingOptions_]]" index-as="index">
           <button class="dropdown-item" on-click="onLineSpacingClick_">
-            <iron-icon class$="button-image check-mark-for-lazy-render
+            <iron-icon class$="button-image check-mark
                         check-mark-hidden-[[isLineSpacingItemSelected_(index)]]"
                 icon="read-anything-20:check-mark"></iron-icon>
             <iron-icon class="button-image" icon="[[item.icon]]"></iron-icon>
@@ -332,7 +328,7 @@
         <template is="dom-repeat"
                   items="[[letterSpacingOptions_]]" index-as="index">
           <button class="dropdown-item" on-click="onLetterSpacingClick_">
-            <iron-icon class$="button-image check-mark-for-lazy-render
+            <iron-icon class$="button-image check-mark
                       check-mark-hidden-[[isLetterSpacingItemSelected_(index)]]"
                 icon="read-anything-20:check-mark"></iron-icon>
             <iron-icon class="button-image" icon="[[item.icon]]"></iron-icon>
@@ -349,7 +345,7 @@
           <button class="dropdown-item" on-click="onFontClick_"
               style$="font-family:[[item]]">
             <iron-icon
-              class$="button-image check-mark-for-lazy-render
+              class$="button-image check-mark
               check-mark-hidden-[[isFontItemSelected_(index)]]"
               icon="read-anything-20:check-mark"></iron-icon>
             [[getFontItemLabel_(item, areFontsLoaded_)]]
