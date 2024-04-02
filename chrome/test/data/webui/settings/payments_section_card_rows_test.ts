@@ -163,8 +163,13 @@ suite('PaymentsSectionCardRows', function() {
     const creditCardList = section.$.paymentsList;
     assertTrue(!!creditCardList);
     assertEquals(1, getLocalAndServerCreditCardListItems().length);
-    assertFalse(getCardRowShadowRoot(section.$.paymentsList)
-                    .querySelector<HTMLElement>('#cardImage')!.hidden);
+    const cardImage = getCardRowShadowRoot(section.$.paymentsList)
+                          .querySelector<HTMLImageElement>('#cardImage');
+    assertTrue(!!cardImage);
+    assertTrue(isVisible(cardImage));
+    assertEquals(
+        'chrome://theme/IDR_AUTOFILL_CC_GENERIC 1x, chrome://theme/IDR_AUTOFILL_CC_GENERIC@2x 2x',
+        cardImage.srcset);
   });
 
   test('verifyLocalCreditCardMenu', async function() {

@@ -238,6 +238,26 @@ export class SettingsCreditCardListEntryElement extends
   private getCardBenefitsProductUrl_(): string {
     return this.creditCard.productTermsUrl || '';
   }
+
+  /**
+   * When the provided `imageSrc` points toward a processor's default card art,
+   * this function returns a string that will scale the image based on the
+   * user's screen resolution, otherwise it will return the unmodified
+   * `imageSrc`.
+   */
+  private getCardImage_(imageSrc: string): string {
+    return imageSrc.startsWith('chrome://theme') ?
+        this.getScaledSrcSet_(imageSrc) :
+        imageSrc;
+  }
+
+  /**
+   * This function returns a string that can be used in a srcset to scale
+   * the provided `url` based on the user's screen resolution.
+   */
+  private getScaledSrcSet_(url: string): string {
+    return `${url} 1x, ${url}@2x 2x`;
+  }
 }
 
 customElements.define(

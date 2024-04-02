@@ -34,7 +34,7 @@
     </style>
     <div class="list-item" role="row">
       <div class="type-column" role="cell">
-        <img id="cardImage" src="[[creditCard.imageSrc]]" alt="">
+        <img id="cardImage" srcset="[[getCardImage_(creditCard.imageSrc)]]" alt="">
         <div class="summary-column screen-reader-only-host-node">
           <div class="screen-reader-only">
             [[getSummaryAriaLabel_(creditCard)]],
@@ -60,9 +60,9 @@
             <if expr="_google_chrome">
               <picture id="paymentsIcon">
                 <source
-                    srcset="chrome://theme/IDR_AUTOFILL_GOOGLE_PAY_DARK_SMALL"
+                    srcset="[[getScaledSrcSet_('chrome://theme/IDR_AUTOFILL_GOOGLE_PAY_DARK_SMALL')]]"
                     media="(prefers-color-scheme: dark)">
-                <img alt="" src="chrome://theme/IDR_AUTOFILL_GOOGLE_PAY_SMALL">
+                <img alt="" srcset="[[getScaledSrcSet_('chrome://theme/IDR_AUTOFILL_GOOGLE_PAY_SMALL')]]">
               </picture>
             </if>
             <if expr="not _google_chrome">
