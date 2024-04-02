@@ -312,12 +312,15 @@ void SerialConnection::OnSendError(device::mojom::SerialSendError error) {
   send_pipe_watcher_.Cancel();
   send_pipe_.reset();
 
+  // Invoking `send_complete_` may free `this`.
+  size_t bytes_written = bytes_written_;
+  bytes_written_ = 0;
+
   if (send_complete_) {
     // Respond the send request with bytes written currently.
     std::move(send_complete_)
-        .Run(bytes_written_, ConvertSendErrorFromMojo(error));
+        .Run(bytes_written, ConvertSendErrorFromMojo(error));
   }
-  bytes_written_ = 0;
 }
 
 void SerialConnection::OnOpen(
@@ -552,11 +555,15 @@ void SerialConnection::OnSendTimeout() {
   DCHECK(serial_port_);
   if (send_complete_) {
     send_pipe_watcher_.Cancel();
-    // Respond the send request with bytes_written
-    // without closing the data pipe.
-    std::move(send_complete_)
-        .Run(bytes_written_, api::serial::SendError::kTimeout);
+
+    // Invoking `send_complete_` may free `this`.
+    size_t bytes_written = bytes_written_;
     bytes_written_ = 0;
+
+    // Respond the send request with bytes_written without closing the data
+    // pipe.
+    std::move(send_complete_)
+        .Run(bytes_written, api::serial::SendError::kTimeout);
   }
 }
 
