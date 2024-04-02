@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "components/subresource_filter/content/browser/activation_state_computing_navigation_throttle.h"
@@ -649,6 +650,12 @@ ContentSubresourceFilterThrottleManager::
   return parent_filter
              ? std::make_unique<ChildFrameNavigationFilteringThrottle>(
                    navigation_handle, parent_filter,
+                   /*bypass_alias_check=*/false,
+                   base::BindRepeating([](const GURL& url) {
+                     return base::StringPrintf(
+                         kDisallowChildFrameConsoleMessageFormat,
+                         url.possibly_invalid_spec().c_str());
+                   }),
                    EnsureFrameAdEvidence(navigation_handle))
              : nullptr;
 }

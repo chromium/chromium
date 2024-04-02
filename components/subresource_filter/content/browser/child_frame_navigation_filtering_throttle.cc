@@ -4,12 +4,15 @@
 
 #include "components/subresource_filter/content/browser/child_frame_navigation_filtering_throttle.h"
 
+#include <optional>
 #include <sstream>
+#include <utility>
 
 #include "base/check_op.h"
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_web_contents_helper.h"
@@ -39,17 +42,25 @@ namespace subresource_filter {
 ChildFrameNavigationFilteringThrottle::ChildFrameNavigationFilteringThrottle(
     content::NavigationHandle* handle,
     AsyncDocumentSubresourceFilter* parent_frame_filter,
-    blink::FrameAdEvidence ad_evidence)
+    bool bypass_alias_check,
+    base::RepeatingCallback<std::string(const GURL& url)>
+        disallow_message_callback,
+    std::optional<blink::FrameAdEvidence> ad_evidence)
     : content::NavigationThrottle(handle),
       parent_frame_filter_(parent_frame_filter),
-      alias_check_enabled_(base::FeatureList::IsEnabled(
-          ::features::kSendCnameAliasesToSubresourceFilterFromBrowser)),
+      alias_check_enabled_(
+          !bypass_alias_check &&
+          base::FeatureList::IsEnabled(
+              features::kSendCnameAliasesToSubresourceFilterFromBrowser)),
+      disallow_message_callback_(std::move(disallow_message_callback)),
       ad_evidence_(std::move(ad_evidence)) {
   DCHECK(!IsInSubresourceFilterRoot(handle));
   DCHECK(parent_frame_filter_);
-  // Complete the ad evidence as it will be used to make best-effort tagging
-  // decisions by request time for ongoing subframe navs.
-  ad_evidence_.set_is_complete();
+  if (ad_evidence_.has_value()) {
+    // Complete the ad evidence as it will be used to make best-effort tagging
+    // decisions by request time for ongoing subframe navs.
+    ad_evidence_->set_is_complete();
+  }
 }
 
 ChildFrameNavigationFilteringThrottle::
@@ -58,6 +69,8 @@ ChildFrameNavigationFilteringThrottle::
     case LoadPolicy::EXPLICITLY_ALLOW:
       [[fallthrough]];
     case LoadPolicy::ALLOW:
+      // TODO(crbug.com/40280666): Split metrics for different filter
+      // implementations.
       UMA_HISTOGRAM_CUSTOM_MICRO_TIMES(
           "SubresourceFilter.DocumentLoad.SubframeFilteringDelay.Allowed",
           total_defer_time_, base::Microseconds(1), base::Seconds(10), 50);
@@ -139,9 +152,9 @@ const char* ChildFrameNavigationFilteringThrottle::GetNameForLogging() {
 
 void ChildFrameNavigationFilteringThrottle::HandleDisallowedLoad() {
   if (parent_frame_filter_->activation_state().enable_logging) {
-    std::string console_message = base::StringPrintf(
-        kDisallowChildFrameConsoleMessageFormat,
-        navigation_handle()->GetURL().possibly_invalid_spec().c_str());
+    std::string console_message =
+        disallow_message_callback_.Run(navigation_handle()->GetURL());
+
     // Use the parent's Page to log a message to the console so that if this
     // frame is the root of a nested frame tree (e.g. fenced frame), the log
     // message won't be associated with a to-be-destroyed Page.
@@ -221,12 +234,13 @@ void ChildFrameNavigationFilteringThrottle::OnCalculatedLoadPolicy(
     return;
   }
 
-  if (defer_stage_ == DeferStage::kWillStartOrRedirectRequest) {
+  if (defer_stage_ == DeferStage::kWillStartOrRedirectRequest &&
+      ad_evidence_.has_value()) {
     // Tag the navigation handle based on the current load policy + evidence
     // before the request starts.
-    ad_evidence_.UpdateFilterListResult(
+    ad_evidence_->UpdateFilterListResult(
         InterpretLoadPolicyAsEvidence(load_policy_));
-    if (ad_evidence_.IndicatesAdFrame()) {
+    if (ad_evidence_->IndicatesAdFrame()) {
       navigation_handle()->SetIsAdTagged();
     }
   }
@@ -258,6 +272,9 @@ void ChildFrameNavigationFilteringThrottle::DeferStart(DeferStage stage) {
 }
 
 void ChildFrameNavigationFilteringThrottle::NotifyLoadPolicy() const {
+  // TODO(crbug.com/40280666): Separate the notification mechanism from the
+  // current ContentSubresourceFilterThrottleManager to allow multiple filters
+  // with different throttle managers to use this class.
   auto* observer_manager = SubresourceFilterObserverManager::FromWebContents(
       navigation_handle()->GetWebContents());
   if (!observer_manager) {
