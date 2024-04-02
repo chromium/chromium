@@ -103,7 +103,7 @@ void RuntimeEnabledFeaturesBase::UpdateStatusFromBaseFeatures() {
   for (const auto& map : mappings) {
     const bool feature_enabled = base::FeatureList::IsEnabled(map.feature);
     const bool is_overridden =
-        base::FeatureList::GetInstance()->IsFeatureOverridden(map.feature.name);
+        base::FeatureList::GetStateIfOverridden(map.feature).has_value();
     if (map.if_overridden) {
       if (is_overridden)
         map.enabler(feature_enabled);

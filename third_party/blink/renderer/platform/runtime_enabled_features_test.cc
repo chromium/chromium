@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
@@ -268,6 +270,16 @@ TEST_F(RuntimeEnabledFeaturesTest, OriginTrialsByRuntimeEnabled) {
   // Depends on OriginTrialsSampleAPI.
   EXPECT_FALSE(RuntimeEnabledFeatures::
                    OriginTrialsSampleAPIDependentEnabledByRuntimeFlag());
+}
+
+TEST_F(RuntimeEnabledFeaturesTest, CopiedFromBaseFaetureIf) {
+  using base::FeatureList;
+  const base::Feature& kFeature = features::kTestBlinkFeatureDefault;
+  ASSERT_TRUE(FeatureList::IsEnabled(kFeature));
+  ASSERT_TRUE(FeatureList::GetInstance()->IsFeatureOverridden(kFeature.name));
+  ASSERT_FALSE(FeatureList::GetStateIfOverridden(kFeature));
+  WebRuntimeFeatures::UpdateStatusFromBaseFeatures();
+  EXPECT_FALSE(RuntimeEnabledFeatures::TestBlinkFeatureDefaultEnabled());
 }
 
 }  // namespace blink

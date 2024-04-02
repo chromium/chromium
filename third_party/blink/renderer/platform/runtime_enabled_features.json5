@@ -155,16 +155,20 @@
     // field is used only if base_feature is not empty.
     //
     // * "enabled_or_overridden"
-    // - If the base::Feature default is overridden by field trial or command
-    //   line, set Blink feature to the state of the base::Feature;
+    // - If the base::Feature status is overridden to the enabled or disabled
+    //   state by field trial or command line, set Blink feature to the state
+    //   of the base::Feature.  Note: "Override to Default" doesn't affect the
+    //   Blink feature.
     // - Otherwise if the base::Feature is enabled, enable the Blink feature.
     // - Otherwise no change.
     //
     // * "overridden"
-    //   Enables the Blink feature when the base::Feature is overridden by field
-    //   trial or command line. Otherwise no change. Its difference from
-    //   "enabled_or_overridden" is that the Blink feature isn't affected by the
-    //   default state of the base::Feature.
+    //   Enables the Blink feature when the base::Feature status is overridden
+    //   to the enabled or disabled state by field trial or command line.
+    //   Otherwise no change. Its difference from "enabled_or_overridden" is
+    //   that the Blink feature isn't affected by the default state of the
+    //   base::Feature.  Note: "Override to Default" deosn't affect the Blink
+    //   feature.
     //
     //   This is useful for Blink origin trial features especially those
     //   implemented in both Chromium and Blink. As origin trial only controls
@@ -3737,6 +3741,14 @@
       status: "stable",
     },
     // For unit tests.
+    {
+      // This is for testing copied_from_base_feature_if.
+      // This is set in base/test/test_suite.cc.
+      name: "TestBlinkFeatureDefault",
+      base_feature_status: "enabled",
+      copied_from_base_feature_if: "overridden",
+    },
+
     {
       name: "TestFeature",
       base_feature: "none",

@@ -169,11 +169,13 @@ class FeatureListScopedToEachTest : public testing::EmptyTestEventListener {
     // TestFeatureForBrowserTest1 and TestFeatureForBrowserTest2 used in
     // ContentBrowserTestScopedFeatureListTest to ensure ScopedFeatureList keeps
     // features from command line.
+    // TestBlinkFeatureDefault is used in RuntimeEnabledFeaturesTest to test a
+    // behavior with OverrideState::OVERIDE_USE_DEFAULT.
     std::string enabled =
         command_line->GetSwitchValueASCII(switches::kEnableFeatures);
     std::string disabled =
         command_line->GetSwitchValueASCII(switches::kDisableFeatures);
-    enabled += ",TestFeatureForBrowserTest1";
+    enabled += ",TestFeatureForBrowserTest1,*TestBlinkFeatureDefault";
     disabled += ",TestFeatureForBrowserTest2";
     scoped_feature_list_.InitFromCommandLine(enabled, disabled);
 
