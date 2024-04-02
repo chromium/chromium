@@ -350764,6 +350764,38 @@
      }
     },
     "content-encoding": {
+     "br": {
+      "resources": {
+       "bad-br-body.py": [
+        "0710e7ffdee96f56bda733607a616be6cd005390",
+        []
+       ],
+       "big.text.br": [
+        "b3a530d757de6b5453ddc38411d65522a9e372de",
+        []
+       ],
+       "big.text.br.headers": [
+        "aba00bd5d4a9d29e4838bbd3e92d9fc7e2e1a1d8",
+        []
+       ],
+       "foo.octetstream.br": [
+        "30cb2f7095e15aca510a4a8cbae00f5d35f0918b",
+        []
+       ],
+       "foo.octetstream.br.headers": [
+        "c0c19bc82affb5ef053b33f9077510e851eb13a1",
+        []
+       ],
+       "foo.text.br": [
+        "30cb2f7095e15aca510a4a8cbae00f5d35f0918b",
+        []
+       ],
+       "foo.text.br.headers": [
+        "8c03b823e09e9135244d15c9e82697c30f8da33a",
+        []
+       ]
+      }
+     },
      "gzip": {
       "resources": {
        "bad-gzip-body.py": [
@@ -510935,6 +510967,116 @@
      ]
     },
     "content-encoding": {
+     "br": {
+      "bad-br-body.https.any.js": [
+       "43ea90a336cd04df56b4f29f57182d2860481938",
+       [
+        "fetch/content-encoding/br/bad-br-body.https.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window"
+          ]
+         ]
+        }
+       ]
+      ],
+      "big-br-body.https.any.js": [
+       "1427dd730264f4f6cfc202226ea7be6843a495e0",
+       [
+        "fetch/content-encoding/br/big-br-body.https.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/content-encoding/br/big-br-body.https.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/content-encoding/br/big-br-body.https.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/content-encoding/br/big-br-body.https.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ]
+      ],
+      "br-body.https.any.js": [
+       "2c2dbb5d293220d59d4becc02bce670b6082d231",
+       [
+        "fetch/content-encoding/br/br-body.https.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/content-encoding/br/br-body.https.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/content-encoding/br/br-body.https.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/content-encoding/br/br-body.https.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ]
+      ]
+     },
      "gzip": {
       "bad-gzip-body.any.js": [
        "17bc1261a3f5c36a9797c5a171990c522cfe7598",
