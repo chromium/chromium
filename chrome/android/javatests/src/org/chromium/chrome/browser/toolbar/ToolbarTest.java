@@ -306,6 +306,7 @@ public class ToolbarTest {
     @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
     @EnableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
     public void testOnTopResumedActivityChanged() {
+        ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         var unfocusedTint =
                 ThemeUtils.getThemedToolbarIconTintForActivityState(
