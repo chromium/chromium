@@ -1635,12 +1635,12 @@ crbug.com/567837 virtual/scalefactor200/fast/hidpi/static/popup-menu-with-scroll
 crbug.com/567837 [ Linux ] virtual/scalefactor150/fast/hidpi/static/popup-menu-with-scrollbar-appearance.html [ Failure Timeout ]
 crbug.com/567837 [ Win ] virtual/scalefactor150/fast/hidpi/static/popup-menu-with-scrollbar-appearance.html [ Failure Timeout ]
 
-# Popover test timeout/flakiness/failures
-crbug.com/1416284 external/wpt/html/semantics/popovers/popover-attribute-basic.html [ Pass Timeout ]
-crbug.com/1497337 external/wpt/html/semantics/popovers/popover-focus-2.html [ Pass Timeout ]
-crbug.com/1446719 [ Mac ] external/wpt/html/semantics/popovers/light-dismiss-event-ordering.html [ Pass Timeout ]
-crbug.com/1491468 [ Linux ] external/wpt/html/semantics/popovers/popover-light-dismiss.html [ Failure Pass ]
-crbug.com/1491468 [ Linux ] virtual/popover-hint-disabled/external/wpt/html/semantics/popovers/popover-light-dismiss.html [ Failure Pass ]
+# Popover test failures:
+crbug.com/40935781 [ Linux ] external/wpt/html/semantics/popovers/popover-light-dismiss.html [ Failure Pass ]
+# Popover flaky timeouts:
+crbug.com/40287045 external/wpt/html/semantics/popovers/popover-focus-2.html [ Pass Timeout ]
+crbug.com/40268721 [ Mac ] external/wpt/html/semantics/popovers/light-dismiss-event-ordering.html [ Pass Timeout ]
+crbug.com/332331836 external/wpt/html/semantics/popovers/popover-attribute-basic.html [ Pass Timeout ]
 
 # Only virtual/threaded version of these tests pass (or running them with --enable-threaded-compositing).
 crbug.com/936891 fast/scrolling/document-level-touchmove-event-listener-passive-by-default.html [ Failure ]
@@ -6718,9 +6718,6 @@ crbug.com/1496375 [ Mac ] http/tests/loading/image-picture-download-after-shrink
 # Gardener 2023-12-21
 crbug.com/1508113 virtual/automatic-lazy-frame-loading/wpt_internal/lazyembed/automatic-lazy-frame-loading.sub.html [ Failure Pass Timeout ]
 crbug.com/1470053 external/wpt/html/browsers/browsing-the-web/overlapping-navigations-and-traversals/cross-document-traversal-cross-document-traversal.html [ Failure Pass ]
-
-# Gardener 2024-01-04
-crbug.com/1515743 [ Win ] virtual/popover-hint-disabled/external/wpt/html/semantics/popovers/popover-focus-2.html [ Crash Failure Pass ]
 
 # Gardener 2024-01-08
 crbug.com/1504244 [ Mac ] virtual/automatic-lazy-frame-loading-ads/http/tests/subresource_filter/frame-lazyload.html [ Failure Pass Timeout ]
