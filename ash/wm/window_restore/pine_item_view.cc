@@ -93,7 +93,7 @@ PineItemView::PineItemView(const PineContentsData::AppInfo& app_info,
             .SetBetweenChildSpacing(kTitleFaviconSpacing)
             .AddChildren(
                 views::Builder<views::Label>()
-                    .SetEnabledColorId(pine::kPineItemTextColor)
+                    .SetEnabledColorId(pine::kPineItemTextColorId)
                     .SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL,
                                                pine::kItemTitleFontSize,
                                                gfx::Font::Weight::BOLD))

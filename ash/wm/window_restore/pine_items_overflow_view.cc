@@ -32,8 +32,8 @@ constexpr gfx::Size kOverflowCountPreferredSize(18, 18);
 
 PineItemsOverflowView::PineItemsOverflowView(
     const PineContentsData::AppsInfos& apps_infos) {
-  const int elements = static_cast<int>(apps_infos.size());
-  CHECK_GT(elements, pine::kMaxItems);
+  const int num_elements = static_cast<int>(apps_infos.size());
+  CHECK_GT(num_elements, pine::kMaxItems);
 
   // TODO(hewer): Fix margins so the icons and text are aligned with
   // `PineItemView` elements.
@@ -41,49 +41,47 @@ PineItemsOverflowView::PineItemsOverflowView(
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
 
+  auto add_inner_box_layout_view =
+      [](views::BoxLayoutView* outer_box) -> views::BoxLayoutView* {
+    views::BoxLayoutView* inner_box =
+        outer_box->AddChildView(std::make_unique<views::BoxLayoutView>());
+    inner_box->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
+    inner_box->SetBetweenChildSpacing(kOverflowIconSpacing);
+    inner_box->SetMainAxisAlignment(
+        views::BoxLayout::MainAxisAlignment::kCenter);
+    inner_box->SetCrossAxisAlignment(
+        views::BoxLayout::CrossAxisAlignment::kStretch);
+    return inner_box;
+  };
+
   // Create a series of `BoxLayoutView`s to represent a 1x2 row, a triangle
   // with one element on top and two on the bottom, or a 2x2 box. The triangle
   // is specific to the 3-window overflow case, and is why we prefer a
   // `BoxLayout` over a `TableLayout` to keep things uniform.
+  views::BoxLayoutView* outer_box_view;
   AddChildView(
       views::Builder<views::BoxLayoutView>()
+          .CopyAddressTo(&outer_box_view)
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
           .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter)
-          .SetBetweenChildSpacing(kOverflowIconSpacing)
           .SetBackground(views::CreateThemedRoundedRectBackground(
-              pine::kIconBackgroundColor, kOverflowBackgroundRounding))
-          .AddChildren(
-              views::Builder<views::BoxLayoutView>()
-                  .CopyAddressTo(&top_row_view_)
-                  .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
-                  .SetMainAxisAlignment(
-                      views::BoxLayout::MainAxisAlignment::kCenter)
-                  .SetCrossAxisAlignment(
-                      views::BoxLayout::CrossAxisAlignment::kStretch)
-                  .SetBetweenChildSpacing(kOverflowIconSpacing),
-              views::Builder<views::BoxLayoutView>()
-                  .CopyAddressTo(&bottom_row_view_)
-                  .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
-                  .SetMainAxisAlignment(
-                      views::BoxLayout::MainAxisAlignment::kCenter)
-                  .SetCrossAxisAlignment(
-                      views::BoxLayout::CrossAxisAlignment::kStretch)
-                  .SetBetweenChildSpacing(kOverflowIconSpacing))
+              pine::kIconBackgroundColorId, kOverflowBackgroundRounding))
           .Build());
+  top_row_view_ = add_inner_box_layout_view(outer_box_view);
 
   // Populate the `BoxLayoutView`s with window icons or a count of any excess
   // windows.
-  for (int i = pine::kOverflowMinThreshold; i < elements; ++i) {
+  for (int i = pine::kOverflowMinThreshold; i < num_elements; ++i) {
     // If there are 5 or more overflow windows, save the last spot in the
     // bottom row to count the remaining windows.
-    if (elements > kOverflowMaxElements && i >= kOverflowMaxThreshold) {
+    if (num_elements > kOverflowMaxElements && i >= kOverflowMaxThreshold) {
       views::Label* count_label;
       bottom_row_view_->AddChildView(
           views::Builder<views::Label>()
               .CopyAddressTo(&count_label)
               // TODO(hewer): Cut off the maximum number of digits to
               // display.
-              .SetText(base::FormatNumber(elements - kOverflowMaxThreshold))
+              .SetText(base::FormatNumber(num_elements - kOverflowMaxThreshold))
               .SetPreferredSize(kOverflowCountPreferredSize)
               .SetEnabledColorId(cros_tokens::kCrosSysOnPrimaryContainer)
               .SetBackground(views::CreateThemedRoundedRectBackground(
@@ -95,37 +93,49 @@ PineItemsOverflowView::PineItemsOverflowView(
       break;
     }
 
-    // Add the image view to the correct row based on the total number of
-    // elements and the current index.
-    views::BoxLayoutView* row_view =
-        // If there are 6 elements (3 overflow elements), we will want to
-        // display the overflow elements in a triangle. Thus, we will only add
-        // the first element (i == 3) to the top row.
-        (elements == kOverflowTriangleElements &&
-         i == pine::kOverflowMinThreshold) ||
-                // Otherwise, we can add the first two elements (i == 3 || i
-                // == 4) to the top row, as the view will be in a 1x2 or 2x2
-                // configuration.
-                (elements != kOverflowTriangleElements && i <= pine::kMaxItems)
-            ? top_row_view_
-            : bottom_row_view_;
+    // The bottom row is needed once:
+    //   - `num_elements` == `kOverflowTriangleElements` and `top_row_view_` has
+    //     1 element. This is to achieve the triangle layout.
+    //   - `top_row_view_` has 2 elements otherwise.
+    if ((num_elements == kOverflowTriangleElements &&
+         top_row_view_->children().size() == 1u) ||
+        top_row_view_->children().size() == 2u) {
+      if (!bottom_row_view_) {
+        bottom_row_view_ = add_inner_box_layout_view(outer_box_view);
+      }
+    }
 
+    views::BoxLayoutView* row_view =
+        bottom_row_view_ ? bottom_row_view_ : top_row_view_;
     row_view->AddChildView(std::make_unique<PineAppImageView>(
         apps_infos[i].app_id, PineAppImageView::Type::kOverflow));
+  }
+
+  // If there are no children in the bottom row inner box layout view, we have
+  // two overflow icons. In this case, remove the between child spacing, and add
+  // padding so that the size of the outer box layout will be the same as if
+  // there were three or more overflow icons.
+  if (bottom_row_view_) {
+    outer_box_view->SetBetweenChildSpacing(kOverflowIconSpacing);
+  } else {
+    const int padding_height =
+        (pine::kOverflowIconPreferredSize.height() + kOverflowIconSpacing) / 2;
+    outer_box_view->SetBetweenChildSpacing(0);
+    outer_box_view->SetInsideBorderInsets(gfx::Insets::VH(padding_height, 0));
   }
 
   // Add a text label displaying the count of the remaining windows.
   views::Label* remaining_windows_label;
   AddChildView(views::Builder<views::Label>()
                    .CopyAddressTo(&remaining_windows_label)
-                   .SetEnabledColorId(pine::kPineItemTextColor)
+                   .SetEnabledColorId(pine::kPineItemTextColorId)
                    .SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL,
                                               pine::kItemTitleFontSize,
                                               gfx::Font::Weight::BOLD))
                    .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                    .SetText(l10n_util::GetPluralStringFUTF16(
                        IDS_ASH_FOREST_WINDOW_OVERFLOW_COUNT,
-                       elements - pine::kOverflowMinThreshold))
+                       num_elements - pine::kOverflowMinThreshold))
                    .Build());
   SetFlexForView(remaining_windows_label, 1);
 }

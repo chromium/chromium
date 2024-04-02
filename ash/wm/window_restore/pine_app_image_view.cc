@@ -15,7 +15,6 @@ namespace ash {
 namespace {
 
 constexpr gfx::Size kItemIconPreferredSize(32, 32);
-constexpr gfx::Size kOverflowIconPreferredSize(20, 20);
 constexpr int kItemIconBackgroundRounding = 10;
 
 gfx::Size GetImageSizeForType(const PineAppImageView::Type type) {
@@ -25,7 +24,7 @@ gfx::Size GetImageSizeForType(const PineAppImageView::Type type) {
     case PineAppImageView::Type::kItem:
       return kItemIconPreferredSize;
     case PineAppImageView::Type::kOverflow:
-      return kOverflowIconPreferredSize;
+      return pine::kOverflowIconPreferredSize;
   }
 }
 
@@ -36,7 +35,7 @@ gfx::Size GetPreferredSizeForType(const PineAppImageView::Type type) {
     case PineAppImageView::Type::kItem:
       return pine::kItemIconBackgroundPreferredSize;
     case PineAppImageView::Type::kOverflow:
-      return kOverflowIconPreferredSize;
+      return pine::kOverflowIconPreferredSize;
   }
 }
 
@@ -48,7 +47,7 @@ PineAppImageView::PineAppImageView(const std::string& app_id, const Type type) {
 
   if (type == Type::kItem) {
     SetBackground(views::CreateThemedRoundedRectBackground(
-        pine::kIconBackgroundColor, kItemIconBackgroundRounding));
+        pine::kIconBackgroundColorId, kItemIconBackgroundRounding));
   }
 
   // The callback may be called synchronously.

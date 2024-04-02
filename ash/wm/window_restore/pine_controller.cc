@@ -107,7 +107,6 @@ void PineController::MaybeShowPineOnboardingMessage(bool restore_on) {
     return;
   }
 
-  // Comment out this block while testing.
   if (!ShouldShowPineOnboarding()) {
     return;
   }

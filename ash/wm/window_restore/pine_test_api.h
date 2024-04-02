@@ -94,7 +94,9 @@ class PineItemsOverflowViewTestApi {
     return overflow_view_->top_row_view_->children().size();
   }
   size_t bottom_row_view_children_count() const {
-    return overflow_view_->bottom_row_view_->children().size();
+    return overflow_view_->bottom_row_view_
+               ? overflow_view_->bottom_row_view_->children().size()
+               : 0u;
   }
 
  private:

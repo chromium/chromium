@@ -45,11 +45,11 @@ inline constexpr gfx::Insets kItemsContainerInsets = gfx::Insets::VH(15, 15);
 inline constexpr int kAppImageSize = 64;
 
 // The text color for `PineItemView` and `PineItemOverflowView`.
-inline constexpr ui::ColorId kPineItemTextColor =
+inline constexpr ui::ColorId kPineItemTextColorId =
     cros_tokens::kCrosSysOnSurface;
 
 // The background color behind each app displayed in `PineItemsContainerView`.
-inline constexpr ui::ColorId kIconBackgroundColor =
+inline constexpr ui::ColorId kIconBackgroundColorId =
     cros_tokens::kCrosSysSystemOnBase;
 
 // Width of the preview container inside the pine dialog. Contents of the
@@ -58,6 +58,8 @@ inline constexpr int kPreviewContainerWidth = 344;
 
 // Corner radius of the screenshot preview inside the pine dialog.
 inline constexpr int kScreenshotPreviewRadius = 12;
+
+inline constexpr gfx::Size kOverflowIconPreferredSize(20, 20);
 
 // Constants for the icon row inside the screenshot preview.
 inline constexpr int kScreenshotIconRowChildSpacing = 4;
