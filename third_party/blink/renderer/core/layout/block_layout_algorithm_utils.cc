@@ -59,8 +59,10 @@ BlockContentAlignment ComputeContentAlignment(const ComputedStyle& style,
   }
 
   // https://drafts.csswg.org/css-align/#typedef-overflow-position
-  // The "smart" default value (OverflowAlignment::kDefault) is not implemented.
-  // We handle it as kUnsafe.
+  if (RuntimeEnabledFeatures::AlignContentForScrollableBlocksEnabled() &&
+      overflow == OverflowAlignment::kDefault && style.IsScrollContainer()) {
+    overflow = OverflowAlignment::kSafe;
+  }
   const bool is_safe = overflow == OverflowAlignment::kSafe;
   switch (position) {
     case ContentPosition::kCenter:

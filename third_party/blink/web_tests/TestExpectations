@@ -2765,7 +2765,6 @@ crbug.com/626703 external/wpt/css/css-text/white-space/text-wrap-balance-float-0
 crbug.com/626703 [ Mac13 Release ] virtual/third-party-storage-partitioning/external/wpt/IndexedDB/idb-explicit-commit.any.worker.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-align/blocks/align-content-block-break-content-020.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-align/blocks/align-content-block-break-overflow-020.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-align/blocks/align-content-block-overflow-000.html [ Failure ]
 crbug.com/626703 external/wpt/css/compositing/root-element-background-image-transparency-001.html [ Failure ]
 crbug.com/626703 [ Mac ] external/wpt/css/compositing/root-element-background-image-transparency-002.html [ Failure ]
 crbug.com/626703 external/wpt/css/compositing/root-element-background-image-transparency-003.html [ Failure ]
