@@ -13,6 +13,7 @@ import './categories.js';
 import './chrome_colors.js';
 import './shortcuts.js';
 import './themes.js';
+import './toolbar.js';
 import './wallpaper_search/wallpaper_search.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
@@ -44,6 +45,7 @@ export enum CustomizeChromePage {
   OVERVIEW = 'overview',
   CATEGORIES = 'categories',
   THEMES = 'themes',
+  TOOLBAR = 'toolbar',
   CHROME_COLORS = 'chrome-colors',
   WALLPAPER_SEARCH = 'wallpaper-search',
 }
@@ -152,6 +154,7 @@ export class AppElement extends AppElementBase {
   private onBackClick_() {
     switch (this.page_) {
       case CustomizeChromePage.CATEGORIES:
+      case CustomizeChromePage.TOOLBAR:
         this.page_ = CustomizeChromePage.OVERVIEW;
         this.$.appearanceElement.focusOnThemeButton();
         break;
@@ -212,7 +215,12 @@ export class AppElement extends AppElementBase {
     this.pageHandler_.openChromeWebStoreHomePage();
   }
 
-  private onToolbarCustomizationButtonClicked_() {}
+  private onToolbarCustomizationButtonClicked_() {
+    this.page_ = CustomizeChromePage.TOOLBAR;
+    const page = this.shadowRoot!.querySelector('customize-chrome-toolbar');
+    assert(page);
+    page.focusOnBackButton();
+  }
 }
 
 declare global {

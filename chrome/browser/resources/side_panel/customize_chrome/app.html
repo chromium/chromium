@@ -36,7 +36,8 @@
   customize-chrome-categories,
   customize-chrome-themes,
   customize-chrome-chrome-colors,
-  customize-chrome-wallpaper-search {
+  customize-chrome-wallpaper-search,
+  customize-chrome-toolbar {
     display: block;
     max-width: 360px;
     width: 100%;
@@ -161,5 +162,9 @@
     <customize-chrome-wallpaper-search on-back-click="onBackClick_"
         page-name="wallpaper-search" id="wallpaperSearchPage">
     </customize-chrome-wallpaper-search>
+  </template>
+  <template is="dom-if" if="[[toolbarCustomizationEnabled_]]">
+    <customize-chrome-toolbar on-back-click="onBackClick_" page-name="toolbar"
+      id="toolbarPage"></customize-chrome-toolbar>
   </template>
 </iron-pages>

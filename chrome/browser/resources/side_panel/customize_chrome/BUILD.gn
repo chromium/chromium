@@ -27,6 +27,7 @@ build_webui("build") {
     "shortcuts.ts",
     "themes.ts",
     "theme_snapshot.ts",
+    "toolbar.ts",
     "wallpaper_search/combobox/customize_chrome_combobox.ts",
     "wallpaper_search/wallpaper_search.ts",
     "wallpaper_search/wallpaper_search_tile.ts",
