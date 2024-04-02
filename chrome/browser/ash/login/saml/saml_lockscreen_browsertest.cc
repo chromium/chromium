@@ -29,9 +29,7 @@
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
@@ -46,8 +44,6 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
-#include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/storage_partition.h"
@@ -177,21 +173,6 @@ class LockscreenWebUiTest : public MixinBasedInProcessBrowserTest {
     // sign in on the login screen, which we skip in these tests.
     static_cast<ash::ChromeUserManagerImpl*>(user_manager::UserManager::Get())
         ->SetUsingSamlForTesting(GetAccountId(), true);
-
-    // Populate hosted domain for the user - lock screen reauth code might need
-    // it as a parameter for /samlredirect URL.
-    Profile* profile = ProfileManager::GetPrimaryUserProfile();
-    auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-    const CoreAccountId primary_account_id =
-        identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
-    AccountInfo account_info =
-        identity_manager->FindExtendedAccountInfoByGaiaId(
-            FakeGaiaMixin::kEnterpriseUser1GaiaId);
-    const std::string email_domain =
-        chrome::enterprise_util::GetDomainFromEmail(
-            FakeGaiaMixin::kEnterpriseUser1);
-    account_info.hosted_domain = email_domain;
-    signin::UpdateAccountInfoForAccount(identity_manager, account_info);
   }
 
   AccountId GetAccountId() { return logged_in_user_mixin_.GetAccountId(); }

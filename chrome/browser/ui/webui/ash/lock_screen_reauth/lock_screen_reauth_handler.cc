@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_reauth_dialogs.h"
 #include "chrome/browser/ui/webui/ash/login/check_passwords_against_cryptohome_helper.h"
@@ -34,7 +35,6 @@
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/version/version_loader.h"
 #include "components/account_id/account_id.h"
-#include "components/signin/public/identity_manager/account_info.h"
 #include "components/user_manager/known_user.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/storage_partition.h"
@@ -70,24 +70,6 @@ bool ShouldDoSamlRedirect(const std::string& email) {
   // changed the IdP to GAIA since last authentication and we wouldn't know
   // about it.
   return user && user->using_saml();
-}
-
-Profile* GetPrimaryUserProfile() {
-  const user_manager::User* user =
-      user_manager::UserManager::Get()->GetPrimaryUser();
-  Profile* profile = ProfileHelper::Get()->GetProfileByUser(user);
-  return profile;
-}
-
-std::string GetHostedDomain(const std::string& gaia_id) {
-  Profile* profile = GetPrimaryUserProfile();
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-  if (!identity_manager) {
-    return std::string();
-  }
-  const AccountInfo account_info =
-      identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id);
-  return account_info.hosted_domain;
 }
 
 std::string GetSSOProfile() {
@@ -218,7 +200,6 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
   params.Set("gaiaUrl", gaia_urls.gaia_url().spec());
   params.Set("clientId", gaia_urls.oauth2_chrome_client_id());
 
-  std::string hosted_domain = GetHostedDomain(context.gaia_id);
   bool do_saml_redirect = ShouldDoSamlRedirect(context.email);
   params.Set("doSamlRedirect", do_saml_redirect);
 
@@ -237,10 +218,13 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
     params.Set("gaiaPath", default_gaia_path);
   }
 
-  if (!hosted_domain.empty()) {
-    params.Set("enterpriseEnrollmentDomain", hosted_domain);
+  const std::string domain =
+      chrome::enterprise_util::GetDomainFromEmail(context.email);
+  if (!domain.empty()) {
+    params.Set("enterpriseEnrollmentDomain", domain);
   } else {
-    LOG(ERROR) << "Couldn't get hosted_domain from account info.";
+    // TODO(b/332481266): add proper error handling.
+    LOG(ERROR) << "Couldn't get domain for account.";
   }
   params.Set("enableGaiaActionButtons", !do_saml_redirect);
   const std::string sso_profile(GetSSOProfile());
