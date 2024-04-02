@@ -110,6 +110,7 @@ void VideoPictureInPictureWindowControllerImpl::Close(bool should_pause_video) {
     return;
 
   window_->Hide();
+  // The call to `Hide()` may cause `window_` to be cleared.
   CloseInternal(should_pause_video);
 }
 

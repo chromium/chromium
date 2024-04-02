@@ -153,6 +153,7 @@ void OverlayWindowAndroid::Destroy(JNIEnv* env) {
       /*should_pause_video=*/visible_actions_.find(
           static_cast<int>(media_session::mojom::MediaSessionAction::kPlay)) !=
       visible_actions_.end());
+  // `this` may be destroyed.
 }
 
 void OverlayWindowAndroid::TogglePlayPause(JNIEnv* env, bool toggleOn) {
@@ -225,6 +226,7 @@ void OverlayWindowAndroid::Close() {
 void OverlayWindowAndroid::Hide() {
   CloseInternal();
   controller_->OnWindowDestroyed(/*should_pause_video=*/false);
+  // `this` may be destroyed.
 }
 
 void OverlayWindowAndroid::CloseInternal() {
