@@ -14,6 +14,7 @@ namespace ash::cfm {
 static DataAggregatorService* g_data_aggregator_service = nullptr;
 
 constexpr base::TimeDelta kFetchFrequency = base::Seconds(30);
+constexpr base::TimeDelta kDefaultCommandPollFrequency = base::Seconds(5);
 
 // static
 void DataAggregatorService::Initialize() {
@@ -123,7 +124,8 @@ void DataAggregatorService::AddLocalCommandSource(const std::string& command) {
           [](mojo::PendingReceiver<mojom::DataSource> pending_receiver,
              const std::string& command) {
             mojo::MakeSelfOwnedReceiver(
-                std::make_unique<CommandSource>(command),
+                std::make_unique<CommandSource>(command,
+                                                kDefaultCommandPollFrequency),
                 std::move(pending_receiver));
           },
           remote.BindNewPipeAndPassReceiver(), command));
@@ -227,7 +229,7 @@ DataAggregatorService::DataAggregatorService()
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
 
   // Add local command sources
-  std::vector<std::string> cmd_sources = {"ifconfig"};
+  std::vector<std::string> cmd_sources = {"ip -brief address"};
   for (const auto& cmd : cmd_sources) {
     AddLocalCommandSource(cmd);
   }
