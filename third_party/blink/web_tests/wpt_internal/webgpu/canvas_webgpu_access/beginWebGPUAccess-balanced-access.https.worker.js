@@ -7,7 +7,7 @@ importScripts("./webgpu-helpers.js");
 
 // This test parallels beginWebGPUAccess-balanced-access.https.html.
 promise_test(() => {
-    return with_webgpu((adapter, device) => {
+    return with_webgpu((adapter, adapterInfo, device) => {
       test_beginWebGPUAccess_balanced_access(
           device,
           new OffscreenCanvas(50, 50));

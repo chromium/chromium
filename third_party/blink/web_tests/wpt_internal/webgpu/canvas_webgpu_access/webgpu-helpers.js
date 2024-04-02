@@ -1,16 +1,25 @@
-/** Invokes `callback` with a working GPUAdapter and GPUDevice, or asserts. */
+/**
+ * Invokes `callback` with a valid GPUAdapter, GPUAdapterInfo and GPUDevice, or
+ * causes an assertion.
+ */
 function with_webgpu(callback) {
   return navigator.gpu.requestAdapter().then((adapter) => {
     if (!(adapter instanceof GPUAdapter)) {
       assert_unreached('Failed to request WebGPU adapter.');
       return;
     }
-    return adapter.requestDevice().then((device) => {
-      if (!(device instanceof GPUDevice)) {
-        assert_unreached('Failed to request WebGPU device.');
+    return adapter.requestAdapterInfo().then((adapterInfo) => {
+      if (!(adapterInfo instanceof GPUAdapterInfo)) {
+        assert_unreached('Failed to request WebGPU adapter info.');
         return;
       }
-      return callback(adapter, device);
+      return adapter.requestDevice().then((device) => {
+        if (!(device instanceof GPUDevice)) {
+          assert_unreached('Failed to request WebGPU device.');
+          return;
+        }
+        return callback(adapter, adapterInfo, device);
+      });
     });
   });
 }

@@ -16,7 +16,7 @@ works.</p>
 <script>
 
 promise_test(() => {
-    return with_webgpu((adapter, device) => {
+    return with_webgpu((adapter, adapterInfo, device) => {
       return test_beginWebGPUAccess_texture_readback(
                  device,
                  document.getElementById('c'));
@@ -27,7 +27,7 @@ promise_test(() => {
 );
 
 promise_test(() => {
-    return with_webgpu((adapter, device) => {
+    return with_webgpu((adapter, adapterInfo, device) => {
       return test_beginWebGPUAccess_texture_readback(
                  device,
                  new OffscreenCanvas(50, 50));

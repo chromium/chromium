@@ -16,14 +16,14 @@
 <script>
 
 promise_test(() => {
-    return with_webgpu((adapter, device) => {
+    return with_webgpu((adapter, adapterInfo, device) => {
       test_getTextureFormat_rgba8(device, document.getElementById('c'));
     });
   }, 'getTextureFormat() returns RGBA8 or BGRA8 for a typical context'
 );
 
 promise_test(() => {
-    return with_webgpu((adapter, device) => {
+    return with_webgpu((adapter, adapterInfo, device) => {
       test_getTextureFormat_rgba8(device, new OffscreenCanvas(50, 50));
     });
   }, 'getTextureFormat() returns RGBA8 or BGRA8 for an offscreen context'

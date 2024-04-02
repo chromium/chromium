@@ -16,7 +16,7 @@
 <script>
 
 promise_test(() => {
-    return with_webgpu((adapter, device) => {
+    return with_webgpu((adapter, adapterInfo, device) => {
       test_beginWebGPUAccess_balanced_access(
           device,
           document.getElementById('c'));
@@ -26,7 +26,7 @@ promise_test(() => {
 );
 
 promise_test(() => {
-    return with_webgpu((adapter, device) => {
+    return with_webgpu((adapter, adapterInfo, device) => {
       test_beginWebGPUAccess_balanced_access(
           device,
           new OffscreenCanvas(50, 50));
