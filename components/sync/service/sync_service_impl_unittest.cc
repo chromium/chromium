@@ -2200,5 +2200,21 @@ TEST_F(
   service()->TriggerLocalDataMigration(requested_types);
 }
 
+TEST_F(SyncServiceImplTest, ShouldNotifyOnManagedPrefDisabled) {
+  PopulatePrefsForInitialSyncFeatureSetupComplete();
+  prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(true));
+  SignInWithSyncConsent();
+  InitializeService({{PASSWORDS, true}, {BOOKMARKS, true}});
+  base::RunLoop().RunUntilIdle();
+
+  testing::NiceMock<MockSyncServiceObserver> mock_sync_service_observer;
+  service()->AddObserver(&mock_sync_service_observer);
+
+  EXPECT_CALL(mock_sync_service_observer, OnStateChanged);
+  prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(false));
+
+  service()->RemoveObserver(&mock_sync_service_observer);
+}
+
 }  // namespace
 }  // namespace syncer
