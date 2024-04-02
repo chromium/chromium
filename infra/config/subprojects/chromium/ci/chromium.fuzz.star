@@ -278,6 +278,7 @@ ci.builder(
             "release",
             "reclient",
             "disable_seed_corpus",
+            "mojo_fuzzer",
         ],
     ),
     sheriff_rotations = args.ignore_default(None),
