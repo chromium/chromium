@@ -1475,19 +1475,6 @@
       'android-code-coverage-native', # Does not generate profraw data.
     ],
   },
-  'chrome_public_test_vr_apk-vega': {
-    'modifications': {
-      'Oreo Phone Tester': {
-        'swarming': {
-          'dimensions': {
-            'device_os': 'OVR1.180808.003',
-            'device_type': 'vega',
-            'os': 'Android',
-          },
-        },
-      }
-    }
-  },
   'chrome_public_unit_test_apk': {
     'remove_from': [
       'android-asan',  # https://crbug.com/964562
