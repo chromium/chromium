@@ -111,6 +111,10 @@
     BUILDFLAG(IS_WIN)
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
+#elif BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
+#include "components/saved_tab_groups/features.h"
+#include "components/saved_tab_groups/tab_group_sync_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN)
 
@@ -455,17 +459,26 @@ ChromeSyncClient::CreateModelTypeControllers(
                 kLegacyFullSyncModeOnly));
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+    // Tab group sync is enabled via separate feature flags on different
+    // platforms.
+    bool enable_tab_group_sync = false;
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
-    if (base::FeatureList::IsEnabled(features::kTabGroupsSave)) {
+    enable_tab_group_sync =
+        base::FeatureList::IsEnabled(features::kTabGroupsSave);
+#elif BUILDFLAG(IS_ANDROID)
+    enable_tab_group_sync =
+        base::FeatureList::IsEnabled(tab_groups::kTabGroupSyncAndroid);
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
+        // BUILDFLAG(IS_WIN)
+
+    if (enable_tab_group_sync) {
       controllers.push_back(std::make_unique<syncer::ModelTypeController>(
           syncer::SAVED_TAB_GROUP,
           std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
               GetControllerDelegateForModelType(syncer::SAVED_TAB_GROUP).get()),
           /*delegate_for_transport_mode=*/nullptr));
     }
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
-        // BUILDFLAG(IS_WIN)
 
 // Chrome prefers OS provided spell checkers where they exist. So only sync the
 // custom dictionary on platforms that typically don't provide one.
@@ -624,17 +637,27 @@ ChromeSyncClient::GetSyncableServiceForType(syncer::ModelType type) {
 base::WeakPtr<syncer::ModelTypeControllerDelegate>
 ChromeSyncClient::GetControllerDelegateForModelType(syncer::ModelType type) {
   switch (type) {
+    case syncer::SAVED_TAB_GROUP: {
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
-    case syncer::SAVED_TAB_GROUP: {
       DCHECK(base::FeatureList::IsEnabled(features::kTabGroupsSave));
       return tab_groups::SavedTabGroupServiceFactory::GetForProfile(profile_)
           ->bridge()
           ->change_processor()
           ->GetControllerDelegate();
-    }
+#elif BUILDFLAG(IS_ANDROID)
+      DCHECK(base::FeatureList::IsEnabled(tab_groups::kTabGroupSyncAndroid));
+      return tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile_)
+          ->bridge()
+          ->change_processor()
+          ->GetControllerDelegate();
+#else
+      NOTREACHED();
+      return base::WeakPtr<syncer::ModelTypeControllerDelegate>();
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN)
+    }
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case syncer::PRINTERS:
       return ash::SyncedPrintersManagerFactory::GetForBrowserContext(profile_)

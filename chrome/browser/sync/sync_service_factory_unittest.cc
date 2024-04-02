@@ -20,6 +20,7 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/data_sharing/public/features.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/saved_tab_groups/features.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
@@ -110,6 +111,10 @@ class SyncServiceFactoryTest : public testing::Test {
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
     if (base::FeatureList::IsEnabled(features::kTabGroupsSave)) {
+      datatypes.Put(syncer::SAVED_TAB_GROUP);
+    }
+#elif BUILDFLAG(IS_ANDROID)
+    if (base::FeatureList::IsEnabled(tab_groups::kTabGroupSyncAndroid)) {
       datatypes.Put(syncer::SAVED_TAB_GROUP);
     }
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
