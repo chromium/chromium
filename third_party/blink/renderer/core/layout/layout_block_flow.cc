@@ -293,6 +293,17 @@ void LayoutBlockFlow::MoveAllChildrenIncludingFloatsTo(
 
 void LayoutBlockFlow::ChildBecameFloatingOrOutOfFlow(LayoutBox* child) {
   NOT_DESTROYED();
+  if (IsAnonymousBlock()) {
+    if (auto* parent_inline = DynamicTo<LayoutInline>(Parent())) {
+      // The child used to be an in-flow block-in-inline, which requires an
+      // anonymous wrapper (|this|). It is no longer needed for this child, so
+      // unless there are other siblings there that still require it, it needs
+      // to be destroyed (i.e. |this| will be destroyed).
+      parent_inline->BlockInInlineBecameFloatingOrOutOfFlow(this);
+      return;
+    }
+  }
+
   MakeChildrenInlineIfPossible();
 
   // Reparent the child to an adjacent anonymous block if one is available.

@@ -616,11 +616,13 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
   if (HasReflection() && !HasLayer())
     SetHasReflection(false);
 
-  auto* parent_flow_block = DynamicTo<LayoutBlockFlow>(Parent());
-  if (IsFloatingOrOutOfFlowPositioned() && old_style &&
-      !old_style->IsFloating() && !old_style->HasOutOfFlowPosition() &&
-      parent_flow_block)
-    parent_flow_block->ChildBecameFloatingOrOutOfFlow(this);
+  if (auto* parent_flow_block = DynamicTo<LayoutBlockFlow>(Parent())) {
+    if (IsFloatingOrOutOfFlowPositioned() && old_style &&
+        !old_style->IsFloating() && !old_style->HasOutOfFlowPosition()) {
+      // Note that |parent_flow_block| may have been destroyed after this call.
+      parent_flow_block->ChildBecameFloatingOrOutOfFlow(this);
+    }
+  }
 
   SetOverflowClipAxes(ComputeOverflowClipAxes());
 

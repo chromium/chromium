@@ -137,6 +137,12 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   void AddChild(LayoutObject* new_child,
                 LayoutObject* before_child = nullptr) override;
 
+  // A block-in-inline became floated or out-of-flow positioned. The anonymous
+  // wrapper around it may therefore need to be removed, if it no longer
+  // contains any in-flow blocks at all.
+  void BlockInInlineBecameFloatingOrOutOfFlow(
+      LayoutBlockFlow* anonymous_block_child);
+
   Element* GetNode() const {
     NOT_DESTROYED();
     return To<Element>(LayoutBoxModelObject::GetNode());

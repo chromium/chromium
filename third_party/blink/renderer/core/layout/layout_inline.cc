@@ -302,6 +302,23 @@ void LayoutInline::AddChild(LayoutObject* new_child,
   return AddChildIgnoringContinuation(new_child, before_child);
 }
 
+void LayoutInline::BlockInInlineBecameFloatingOrOutOfFlow(
+    LayoutBlockFlow* anonymous_block_child) {
+  NOT_DESTROYED();
+  // Look for in-flow children. Any in-flow child will prevent the wrapper from
+  // being deleted.
+  for (const LayoutObject* grandchild = anonymous_block_child->FirstChild();
+       grandchild; grandchild = grandchild->NextSibling()) {
+    if (!grandchild->IsFloating() && !grandchild->IsOutOfFlowPositioned()) {
+      return;
+    }
+  }
+  // There are no longer any in-flow children inside the anonymous block wrapper
+  // child. Get rid of it.
+  anonymous_block_child->MoveAllChildrenTo(this, anonymous_block_child);
+  anonymous_block_child->Destroy();
+}
+
 void LayoutInline::AddChildIgnoringContinuation(LayoutObject* new_child,
                                                 LayoutObject* before_child) {
   NOT_DESTROYED();
