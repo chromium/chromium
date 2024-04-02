@@ -2810,6 +2810,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Apps.TimeDurationBetweenNewUserSessionActivationAndAppsCollectionShown"
+    units="ms" expires_after="2025-03-27">
+  <owner>anasalazar@google.com</owner>
+  <owner>anooshree@google.com</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    The time duration between session activation and opening the Launcher with
+    Apps Collections for the first time on a new user session. This metric is
+    recorded when a new user opens the launcher for the first time and only if
+    the Apps Collections view is shown instead of the regular app launcher.
+  </summary>
+</histogram>
+
+<histogram
     name="Apps.TimeDurationBetweenNewUserSessionActivationAndFirstLauncherOpening{TabletOrClamshell}"
     units="ms" expires_after="2024-08-25">
   <owner>andrewxu@chromium.org</owner>

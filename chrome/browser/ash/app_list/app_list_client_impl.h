@@ -189,7 +189,7 @@ class AppListClientImpl
   void SetUpSearchUI();
 
   // Records the metrics related to showing the app list.
-  void RecordViewShown();
+  void RecordViewShown(bool is_apps_collection_shown);
 
   // Records the browser window status + the opened search result type when
   // the result is opened from the search box.

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/app_list/app_list_view_delegate.h"
+#include "ash/app_list/apps_collections_controller.h"
 #include "ash/public/cpp/app_list/app_list_client.h"
 #include "ash/public/cpp/app_list/app_list_controller.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
@@ -394,7 +395,8 @@ void AppListClientImpl::OnAppListVisibilityWillChange(bool visible) {
 void AppListClientImpl::OnAppListVisibilityChanged(bool visible) {
   app_list_visible_ = visible;
   if (visible) {
-    RecordViewShown();
+    RecordViewShown(
+        ash::AppsCollectionsController::Get()->ShouldShowAppsCollection());
   } else if (current_model_updater_) {
     current_model_updater_->OnAppListHidden();
     // If the user started search, record no action if a result open event has
@@ -706,7 +708,7 @@ ash::AppListSortOrder AppListClientImpl::GetPermanentSortingOrder() const {
       ->GetPermanentSortingOrder();
 }
 
-void AppListClientImpl::RecordViewShown() {
+void AppListClientImpl::RecordViewShown(bool is_app_collections_shown) {
   base::RecordAction(base::UserMetricsAction("Launcher_Show"));
 
   // Record the time duration between session activation and the first launcher
@@ -772,6 +774,12 @@ void AppListClientImpl::RecordViewShown() {
           "ClamshellMode",
           /*sample=*/opening_duration, kTimeMetricsMin, kTimeMetricsMax,
           kTimeMetricsBucketCount);
+      if (is_app_collections_shown) {
+        base::UmaHistogramTimes(
+            "Apps."
+            "TimeDurationBetweenNewUserSessionActivationAndAppsCollectionShown",
+            opening_duration);
+      }
     }
   }
 }

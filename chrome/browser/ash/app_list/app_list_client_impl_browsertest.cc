@@ -1087,3 +1087,66 @@ IN_PROC_BROWSER_TEST_F(
       "ClamshellMode",
       0);
 }
+
+// Verifies that the duration between login and the first time apps collections
+// is shown by a new account is recorded correctly.
+class DurationBetweenSeesionActivationAndAppsCollectionsShowingBrowserTest
+    : public DurationBetweenSeesionActivationAndFirstLauncherShowingBrowserTest {
+ public:
+  DurationBetweenSeesionActivationAndAppsCollectionsShowingBrowserTest()
+      : DurationBetweenSeesionActivationAndFirstLauncherShowingBrowserTest() {
+    feature_list_.InitWithFeatures({app_list_features::kAppsCollections}, {});
+  }
+  ~DurationBetweenSeesionActivationAndAppsCollectionsShowingBrowserTest()
+      override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    DurationBetweenSeesionActivationAndAppsCollectionsShowingBrowserTest,
+    MetricRecordedOnNewAccount) {
+  base::HistogramTester tester;
+  ShowAppListAndVerify();
+  tester.ExpectTotalCount(
+      "Apps.TimeDurationBetweenNewUserSessionActivationAndAppsCollectionShown",
+      1);
+}
+
+// The duration between OOBE and the first launcher with apps collections
+// showing should not be recorded if the current user is pre-registered.
+IN_PROC_BROWSER_TEST_F(
+    DurationBetweenSeesionActivationAndAppsCollectionsShowingBrowserTest,
+    MetricNotRecordedOnRegisteredAccount) {
+  ash::UserAddingScreen::Get()->Start();
+
+  // Verify that the launcher usage state is recorded when switching accounts.
+  base::HistogramTester tester;
+  AddUser(registered_user_id_);
+
+  // Verify that the metric is not recorded.
+  ShowAppListAndVerify();
+  tester.ExpectTotalCount(
+      "Apps.TimeDurationBetweenNewUserSessionActivationAndAppsCollectionShown",
+      0);
+}
+
+// The duration between OOBE and the first launcher with apps collections
+// showing should not be recorded if a user signs in to a new account, switches
+// to another account then switches back to the new account.
+IN_PROC_BROWSER_TEST_F(
+    DurationBetweenSeesionActivationAndAppsCollectionsShowingBrowserTest,
+    MetricNotRecordedAfterUserSwitch) {
+  // Switch to a registered user account then switch back.
+  ash::UserAddingScreen::Get()->Start();
+  AddUser(registered_user_id_);
+  user_manager::UserManager::Get()->SwitchActiveUser(new_user_id_);
+
+  // Verify that the metric is not recorded.
+  base::HistogramTester tester;
+  ShowAppListAndVerify();
+  tester.ExpectTotalCount(
+      "Apps.TimeDurationBetweenNewUserSessionActivationAndAppsCollectionShown",
+      0);
+}
