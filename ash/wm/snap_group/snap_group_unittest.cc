@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/wm/snap_group/snap_group.h"
+
 #include <algorithm>
 #include <memory>
 #include <vector>
@@ -45,7 +47,6 @@
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/overview/overview_window_drag_controller.h"
 #include "ash/wm/overview/scoped_overview_transform_window.h"
-#include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_constants.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/faster_split_view.h"
@@ -82,6 +83,7 @@
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/hit_test.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/display/manager/display_manager.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -2417,13 +2419,13 @@ TEST_F(SnapGroupTest, AutomaticallyCreateGroupOnTwoWindowsSnappedInClamshell) {
   EXPECT_TRUE(snap_groups.empty());
   EXPECT_TRUE(window_to_snap_group_map.empty());
 
-  std::unique_ptr<aura::Window> w1(CreateTestWindow());
-  std::unique_ptr<aura::Window> w2(CreateTestWindow());
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
   SnapTwoTestWindows(w1.get(), w2.get());
   EXPECT_EQ(snap_groups.size(), 1u);
   EXPECT_EQ(window_to_snap_group_map.size(), 2u);
 
-  std::unique_ptr<aura::Window> w3(CreateTestWindow());
+  std::unique_ptr<aura::Window> w3(CreateAppWindow());
   wm::ActivateWindow(w2.get());
   EXPECT_TRUE(window_util::IsStackedBelow(w3.get(), w1.get()));
 
@@ -2433,12 +2435,35 @@ TEST_F(SnapGroupTest, AutomaticallyCreateGroupOnTwoWindowsSnappedInClamshell) {
   EXPECT_TRUE(window_to_snap_group_map.empty());
 }
 
+// Tests that snapped window and divider widget bounds scale dynamically with
+// display changes, preserving their relative snap ratio.
+TEST_F(SnapGroupTest, DisplayScaleChange) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+  const float w1_snap_ratio = *WindowState::Get(w1.get())->snap_ratio();
+  const float w2_snap_ratio = *WindowState::Get(w2.get())->snap_ratio();
+
+  SplitViewDivider* divider = snap_group_divider();
+  ASSERT_TRUE(divider->divider_widget());
+
+  display::DisplayManager* display_manager = Shell::Get()->display_manager();
+  const auto display_id = WindowTreeHostManager::GetPrimaryDisplayId();
+
+  for (const bool zoom_in : {true, true, true, true, false, false, false}) {
+    display_manager->ZoomDisplay(display_id, zoom_in);
+    EXPECT_NEAR(w1_snap_ratio, *WindowState::Get(w1.get())->snap_ratio(), 0.01);
+    EXPECT_NEAR(w2_snap_ratio, *WindowState::Get(w2.get())->snap_ratio(), 0.01);
+    UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), divider);
+  }
+}
+
 // Tests that the split view divider will be stacked on top of both windows in
 // the snap group and that on a third window activated the split view divider
 // will be stacked below the newly activated window.
 TEST_F(SnapGroupTest, DividerStackingOrderTest) {
-  std::unique_ptr<aura::Window> w1(CreateTestWindow());
-  std::unique_ptr<aura::Window> w2(CreateTestWindow());
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
   SnapTwoTestWindows(w1.get(), w2.get());
   wm::ActivateWindow(w1.get());
 
@@ -4003,40 +4028,36 @@ TEST_F(SnapGroupTest, ClamshellTabletTransitionWithOneSnapGroup) {
   std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(0));
   std::unique_ptr<aura::Window> window2(CreateTestWindowInShellWithId(1));
   SnapTwoTestWindows(window1.get(), window2.get(), /*horizontal=*/true);
-  const auto snap_group_observed_windows =
-      snap_group_divider()->observed_windows();
-  EXPECT_EQ(window1.get(), snap_group_observed_windows.front());
-  EXPECT_EQ(window2.get(), snap_group_observed_windows.back());
   EXPECT_TRUE(snap_group_divider()->divider_widget());
+  EXPECT_TRUE(UnionBoundsEqualToWorkAreaBounds(window1.get(), window2.get(),
+                                               snap_group_divider()));
 
   SwitchToTabletMode();
   EXPECT_FALSE(snap_group_divider());
   EXPECT_TRUE(split_view_divider()->divider_widget());
-  // The snap group and therefore divider is removed in tablet mode.
+  // The snap group is removed in tablet mode.
   auto* snap_group_controller = SnapGroupController::Get();
   EXPECT_FALSE(
       snap_group_controller->GetSnapGroupForGivenWindow(window1.get()));
-  const auto tablet_mode_observed_windows =
-      split_view_divider()->observed_windows();
-  // The order of `split_view_divider()->observed_windows()` does not matter,
-  // but `primary|secondary_window_` does matter.
-  EXPECT_TRUE(base::Contains(tablet_mode_observed_windows, window1.get()));
-  EXPECT_TRUE(base::Contains(tablet_mode_observed_windows, window2.get()));
+
   EXPECT_EQ(window1.get(), split_view_controller()->primary_window());
   EXPECT_EQ(window2.get(), split_view_controller()->secondary_window());
-
-  EXPECT_EQ(chromeos::kDefaultSnapRatio,
-            *WindowState::Get(window1.get())->snap_ratio());
-  EXPECT_EQ(chromeos::kDefaultSnapRatio,
-            *WindowState::Get(window2.get())->snap_ratio());
+  EXPECT_TRUE(UnionBoundsEqualToWorkAreaBounds(window1.get(), window2.get(),
+                                               split_view_divider()));
+  EXPECT_NEAR(chromeos::kDefaultSnapRatio,
+              *WindowState::Get(window1.get())->snap_ratio(), 0.05);
+  EXPECT_NEAR(chromeos::kDefaultSnapRatio,
+              *WindowState::Get(window2.get())->snap_ratio(), 0.05);
 
   ExitTabletMode();
   EXPECT_TRUE(SnapGroupController::Get()->AreWindowsInSnapGroup(window1.get(),
                                                                 window2.get()));
-  EXPECT_EQ(chromeos::kDefaultSnapRatio,
-            *WindowState::Get(window1.get())->snap_ratio());
-  EXPECT_EQ(chromeos::kDefaultSnapRatio,
-            *WindowState::Get(window2.get())->snap_ratio());
+  EXPECT_NEAR(chromeos::kDefaultSnapRatio,
+              *WindowState::Get(window1.get())->snap_ratio(), 0.05);
+  EXPECT_NEAR(chromeos::kDefaultSnapRatio,
+              *WindowState::Get(window2.get())->snap_ratio(), 0.05);
+  EXPECT_TRUE(UnionBoundsEqualToWorkAreaBounds(window1.get(), window2.get(),
+                                               snap_group_divider()));
   EXPECT_TRUE(snap_group_divider()->divider_widget());
 }
 

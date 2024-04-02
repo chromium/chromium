@@ -16,6 +16,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "ui/base/hit_test.h"
+#include "ui/display/display_observer.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/range/range_f.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -205,6 +206,33 @@ aura::Window::Windows SnapGroup::GetLayoutWindows() const {
   return {window1_.get(), window2_.get()};
 }
 
+void SnapGroup::OnDisplayMetricsChanged(const display::Display& display,
+                                        uint32_t metrics) {
+  if (window1_->GetRootWindow() !=
+      Shell::GetRootWindowForDisplayId(display.id())) {
+    return;
+  }
+
+  // Divider widiget can be invisible in Overview mode.
+  auto* divider_widget = snap_group_divider_.divider_widget();
+  if (!divider_widget || !divider_widget->IsVisible()) {
+    return;
+  }
+
+  if (!(metrics &
+        (DISPLAY_METRIC_BOUNDS | DISPLAY_METRIC_ROTATION |
+         DISPLAY_METRIC_DEVICE_SCALE_FACTOR | DISPLAY_METRIC_WORK_AREA))) {
+    return;
+  }
+
+  const auto window1_snap_ratio = WindowState::Get(window1_)->snap_ratio();
+  CHECK(window1_snap_ratio);
+
+  // Update the bounds of the snapped window and divider while preserving the
+  // snap ratio.
+  ApplyPrimarySnapRatio(*window1_snap_ratio);
+}
+
 void SnapGroup::StartObservingWindows() {
   CHECK(window1_);
   CHECK(window2_);
@@ -244,7 +272,7 @@ void SnapGroup::UpdateSnappedWindowBounds(aura::Window* window,
       GetPositionOfSnappedWindow(window), window,
       snap_ratio.value_or(window_util::GetSnapRatioForWindow(window)),
       account_for_divider_width);
-  const SetBoundsWMEvent event(requested_bounds, /*animate=*/true);
+  const SetBoundsWMEvent event(requested_bounds, /*animate=*/false);
   WindowState::Get(window)->OnWMEvent(&event);
 }
 

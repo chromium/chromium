@@ -10,6 +10,7 @@
 #include "ash/wm/window_state_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
+#include "ui/display/display_observer.h"
 
 namespace aura {
 class Window;
@@ -24,7 +25,8 @@ namespace ash {
 // `SnapGroupController` after the major window layout architecture is complete.
 class SnapGroup : public aura::WindowObserver,
                   public WindowStateObserver,
-                  public LayoutDividerController {
+                  public LayoutDividerController,
+                  public display::DisplayObserver {
  public:
   SnapGroup(aura::Window* window1, aura::Window* window2);
   SnapGroup(const SnapGroup&) = delete;
@@ -78,6 +80,10 @@ class SnapGroup : public aura::WindowObserver,
       const aura::Window* window) const override;
   aura::Window::Windows GetLayoutWindows() const override;
 
+  // display::DisplayObserver:
+  void OnDisplayMetricsChanged(const display::Display& display,
+                               uint32_t metrics) override;
+
  private:
   friend class SnapGroupController;
 
@@ -117,6 +123,8 @@ class SnapGroup : public aura::WindowObserver,
 
   // The secondary snapped window in the group.
   raw_ptr<aura::Window> window2_;
+
+  display::ScopedDisplayObserver display_observer_{this};
 };
 
 }  // namespace ash
