@@ -103,13 +103,9 @@ class OptionalOrRawPtrToGCedMatcher : public MatchFinder::MatchCallback {
  public:
   OptionalOrRawPtrToGCedMatcher(DiagnosticsReporter& diagnostics,
                                 RecordCache& record_cache,
-                                bool check_traceable,
-                                bool check_raw_ptr,
                                 bool check_raw_ref)
       : diagnostics_(diagnostics),
         record_cache_(record_cache),
-        check_traceable_(check_traceable),
-        check_raw_ptr_(check_raw_ptr),
         check_raw_ref_(check_raw_ref) {}
 
   void Register(MatchFinder& match_finder) {
@@ -119,10 +115,8 @@ class OptionalOrRawPtrToGCedMatcher : public MatchFinder::MatchCallback {
         classTemplateSpecializationDecl(
             hasAnyName("::absl::optional", "::std::optional", "::base::raw_ptr",
                        "::base::raw_ref"),
-            hasTemplateArgument(
-                0, refersToType(check_traceable_ ? anyOf(GarbageCollectedType(),
-                                                         TraceableType())
-                                                 : GarbageCollectedType())))
+            hasTemplateArgument(0, refersToType(anyOf(GarbageCollectedType(),
+                                                      TraceableType()))))
             .bind("type"));
     // Only check fields. Optional variables on stack will be found by
     // conservative stack scanning.
@@ -136,9 +130,6 @@ class OptionalOrRawPtrToGCedMatcher : public MatchFinder::MatchCallback {
   void run(const MatchFinder::MatchResult& result) override {
     auto* type = result.Nodes.getNodeAs<clang::CXXRecordDecl>("type");
     bool is_raw_ptr = (type->getName() == "raw_ptr");
-    if (is_raw_ptr && !check_raw_ptr_) {
-      return;
-    }
     bool is_raw_ref = (type->getName() == "raw_ref");
     if (is_raw_ref && !check_raw_ref_) {
       return;
@@ -173,8 +164,6 @@ class OptionalOrRawPtrToGCedMatcher : public MatchFinder::MatchCallback {
  private:
   DiagnosticsReporter& diagnostics_;
   RecordCache& record_cache_;
-  const bool check_traceable_;
-  const bool check_raw_ptr_;
   const bool check_raw_ref_;
 };
 
@@ -548,8 +537,7 @@ void FindBadPatterns(clang::ASTContext& ast_context,
   unique_ptr_gc.Register(match_finder);
 
   OptionalOrRawPtrToGCedMatcher optional_or_rawptr_gc(
-      diagnostics, record_cache, options.enable_optional_of_traceable_check,
-      options.enable_raw_ptr_of_gced_or_traceable_check,
+      diagnostics, record_cache,
       options.enable_raw_ref_of_gced_or_traceable_check);
   optional_or_rawptr_gc.Register(match_finder);
 

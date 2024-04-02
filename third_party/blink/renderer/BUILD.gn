@@ -20,11 +20,6 @@ declare_args() {
   # Set to true to have the clang Blink GC plugin emit class graph (in JSON)
   # with typed pointer edges; for debugging or other (internal) uses.
   blink_gc_plugin_option_do_dump_graph = false
-
-  # Set to true to have the clang Blink GC plugin additionally check if
-  # a class has an empty destructor which would be unnecessarily invoked
-  # when finalized.
-  blink_gc_plugin_option_warn_unneeded_finalizer = false
 }
 
 # features ---------------------------------------------------------------------
@@ -127,14 +122,7 @@ config("config") {
       "-Xclang",
       "-plugin-arg-blink-gc-plugin",
       "-Xclang",
-      "enable-optional-of-traceable-check",
-    ]
-
-    cflags += [
-      "-Xclang",
-      "-plugin-arg-blink-gc-plugin",
-      "-Xclang",
-      "enable-raw-ptr-of-gced-or-traceable-check",
+      "enable-raw-ref-of-gced-or-traceable-check",
     ]
 
     # Add arguments for enabled GC plugin options:
