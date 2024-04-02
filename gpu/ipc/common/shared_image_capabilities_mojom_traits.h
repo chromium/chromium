@@ -61,7 +61,7 @@ struct GPU_EXPORT StructTraits<gpu::mojom::SharedImageCapabilitiesDataView,
   }
 
 #if BUILDFLAG(IS_MAC)
-  static bool macos_specific_texture_target(
+  static uint32_t macos_specific_texture_target(
       const gpu::SharedImageCapabilities& input) {
     return input.macos_specific_texture_target;
   }
