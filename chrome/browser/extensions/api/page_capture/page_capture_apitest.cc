@@ -5,6 +5,7 @@
 #include <atomic>
 
 #include "base/command_line.h"
+#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/page_capture/page_capture_api.h"
@@ -32,7 +33,7 @@ class PageCaptureSaveAsMHTMLDelegate
       scoped_refptr<storage::ShareableFileReference> file) override {
     file->AddFinalReleaseCallback(
         base::BindOnce(&PageCaptureSaveAsMHTMLDelegate::OnReleaseCallback,
-                       base::Unretained(this)));
+                       weak_factory_.GetWeakPtr()));
     ++temp_file_count_;
   }
 
@@ -52,6 +53,7 @@ class PageCaptureSaveAsMHTMLDelegate
   base::RunLoop run_loop_;
   base::RepeatingClosure release_closure_ = run_loop_.QuitClosure();
   std::atomic<int> temp_file_count_{0};
+  base::WeakPtrFactory<PageCaptureSaveAsMHTMLDelegate> weak_factory_{this};
 };
 
 class ExtensionPageCaptureApiTest
