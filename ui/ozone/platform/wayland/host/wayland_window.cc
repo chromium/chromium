@@ -355,10 +355,7 @@ void WaylandWindow::UpdateDragImage(const gfx::ImageSkia& image,
 }
 
 void WaylandWindow::CancelDrag() {
-  if (drag_loop_quit_closure_.is_null()) {
-    return;
-  }
-  std::move(drag_loop_quit_closure_).Run();
+  connection_->data_drag_controller()->CancelSession();
 }
 
 void WaylandWindow::Show(bool inactive) {

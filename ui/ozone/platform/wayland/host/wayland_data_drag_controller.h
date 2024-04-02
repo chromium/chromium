@@ -101,6 +101,10 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
                     int operations,
                     mojom::DragEventSource source);
 
+  // Cancels the currently running drag and drop session. Must only be called if
+  // `IsDragSource()` returns true.
+  void CancelSession();
+
   // Updates the drag image. An empty |image| may be used to hide a previously
   // set non-empty drag image, and a non-empty |image| shows the drag image
   // again if it was previously hidden.
@@ -125,16 +129,22 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   // able to track only the current fetching task, on which it's interested in.
   using CancelFlag = base::RefCountedData<base::AtomicFlag>;
 
+  FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest, AsyncNoopStartDrag);
+  FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest, CancelDrag);
+  FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest,
+                           ForeignDragHandleAskAction);
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest, ReceiveDrag);
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest, StartDrag);
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest, StartDragWithText);
-  FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest, AsyncNoopStartDrag);
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest,
                            SuppressPointerButtonReleasesAfterEnter);
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest,
                            StartDragWithWrongMimeType);
-  FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest,
-                           ForeignDragHandleAskAction);
+
+  enum class DragResult {
+    kCancelled,
+    kCompleted,
+  };
 
   // WaylandDataDevice::DragDelegate:
   bool IsDragSource() const override;
@@ -173,6 +183,10 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
       base::TimeTicks start_time,
       std::unique_ptr<ui::OSExchangeData> received_data);
   void CancelDataFetchingIfNeeded();
+
+  // Completes/cancels the drag session and resets everything to idle state.
+  // Does nothing if the current state is already `kIdle`.
+  void Reset(DragResult result, base::TimeTicks timestamp);
 
   std::optional<wl::Serial> GetAndValidateSerialForDrag(
       mojom::DragEventSource source);

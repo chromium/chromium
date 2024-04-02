@@ -201,6 +201,21 @@ bool WaylandDataDragController::StartSession(const OSExchangeData& data,
   return true;
 }
 
+void WaylandDataDragController::CancelSession() {
+  CHECK(IsDragSource());
+
+  // Reset() will reset the wl_data_source we created for the drag, which as per
+  // the spec for wl_data_device.start_drag() will cancel the DnD session.
+  //
+  // Note: resetting immediately might lead to issues in tests in the future,
+  // because WaylandWindow::StartDrag() will return even though the compositor
+  // might still be in the process of ending the drag session. However,
+  // deferring the reset (e.g. until we receive wl_data_device.leave) in turn
+  // might lead to issues for real users if the compositor implements the spec
+  // incorrectly or just in a way we didn't foresee.
+  Reset(DragResult::kCancelled, ui::EventTimeForNow());
+}
+
 void WaylandDataDragController::UpdateDragImage(const gfx::ImageSkia& image,
                                                 const gfx::Vector2d& offset) {
   icon_image_ = image;
@@ -415,6 +430,12 @@ void WaylandDataDragController::OnDragMotion(const gfx::PointF& location,
     return;
   }
 
+  // The session might have been cancelled in response to OnDragEnter() or
+  // OnDragDataAvailable().
+  if (!data_offer_) {
+    return;
+  }
+
   // TODO(crbug.com/1519772): we should update the cursor position when some
   // data is dragged from another client. Currently `drag_source_` may be
   // nullopt in that case.
@@ -486,40 +507,8 @@ void WaylandDataDragController::OnDataSourceFinish(WaylandDataSource* source,
           << " origin=" << !!origin_window_
           << " nested_dispatcher=" << !!nested_dispatcher_;
 
-  if (origin_window_) {
-    origin_window_->OnDragSessionClose(
-        completed ? DndActionToDragOperation(data_source_->dnd_action())
-                  : DragOperation::kNone);
-    // DnD handlers expect DragLeave to be sent for drag sessions that end up
-    // with no data fetching (wl_data_source::cancelled event).
-    if (!completed) {
-      origin_window_->OnDragLeave();
-    }
-    origin_window_ = nullptr;
-  }
-
-  // We need to reset |nested_dispatcher_| before dispatching the pointer
-  // release, or else the event will be intercepted by ourself.
-  nested_dispatcher_.reset();
-
-  // Dispatch this after calling WaylandWindow::OnDragSessionClose(), else the
-  // extra leave event that is dispatched if |completed| is false may cause
-  // problems.
-  if (pointer_grabber_for_window_drag_) {
-    DispatchPointerRelease(timestamp);
-  }
-
-  data_source_.reset();
-  data_offer_.reset();
-  icon_buffer_.reset();
-  icon_surface_.reset();
-  icon_surface_buffer_scale_ = 1.0f;
-  icon_image_ = gfx::ImageSkia();
-  icon_frame_callback_.reset();
-  offered_exchange_data_provider_.reset();
-  data_device_->ResetDragDelegate();
-  has_received_enter_ = false;
-  state_ = State::kIdle;
+  auto result = completed ? DragResult::kCompleted : DragResult::kCancelled;
+  Reset(result, timestamp);
 }
 
 const WaylandWindow* WaylandDataDragController::GetDragTarget() const {
@@ -559,8 +548,12 @@ void WaylandDataDragController::PostDataFetchingTask(
   using FetchingInfo = std::vector<std::pair<std::string, int>>;
 
   DCHECK_EQ(state_, State::kFetching);
-  DCHECK(data_offer_);
   DCHECK(!cancel_flag->data.IsSet());
+
+  // This check may fail if OnDragEnter() runs a nested loop or other blocking
+  // call that results in calling back to WaylandDataDragController. For now,
+  // assume this isn't the case, so |data_offer_| should be non-null.
+  DCHECK(data_offer_);
 
   FetchingInfo offered_data;
   for (const auto& mime_type : data_offer_->mime_types()) {
@@ -661,6 +654,50 @@ void WaylandDataDragController::CancelDataFetchingIfNeeded() {
   }
 }
 
+void WaylandDataDragController::Reset(DragResult result,
+                                      base::TimeTicks timestamp) {
+  if (state_ == State::kIdle) {
+    return;
+  }
+
+  if (origin_window_) {
+    DragOperation operation =
+        (result == DragResult::kCompleted)
+            ? DndActionToDragOperation(data_source_->dnd_action())
+            : DragOperation::kNone;
+    origin_window_->OnDragSessionClose(operation);
+    // DnD handlers expect DragLeave to be sent for drag sessions that end up
+    // with no data fetching (wl_data_source::cancelled event).
+    if (result != DragResult::kCompleted) {
+      origin_window_->OnDragLeave();
+    }
+    origin_window_ = nullptr;
+  }
+
+  // We need to reset |nested_dispatcher_| before dispatching the pointer
+  // release, or else the event will be intercepted by ourself.
+  nested_dispatcher_.reset();
+
+  // Dispatch this after calling WaylandWindow::OnDragSessionClose(), else the
+  // extra leave event that is dispatched if |completed| is false may cause
+  // problems.
+  if (pointer_grabber_for_window_drag_) {
+    DispatchPointerRelease(timestamp);
+  }
+
+  data_source_.reset();
+  data_offer_.reset();
+  icon_buffer_.reset();
+  icon_surface_.reset();
+  icon_surface_buffer_scale_ = 1.0f;
+  icon_image_ = gfx::ImageSkia();
+  icon_frame_callback_.reset();
+  offered_exchange_data_provider_.reset();
+  data_device_->ResetDragDelegate();
+  has_received_enter_ = false;
+  state_ = State::kIdle;
+}
+
 std::optional<wl::Serial>
 WaylandDataDragController::GetAndValidateSerialForDrag(DragEventSource source) {
   wl::SerialType serial_type;
@@ -745,8 +782,7 @@ uint32_t WaylandDataDragController::DispatchEvent(const PlatformEvent& event) {
   // once.
   if (event->type() == ET_MOUSE_RELEASED) {
     if (!has_received_enter_) {
-      OnDataSourceFinish(data_source_.get(), event->time_stamp(),
-                         /*completed=*/false);
+      Reset(DragResult::kCancelled, event->time_stamp());
     } else {
       return POST_DISPATCH_STOP_PROPAGATION;
     }

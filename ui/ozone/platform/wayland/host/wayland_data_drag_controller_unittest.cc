@@ -107,7 +107,7 @@ class MockDropHandler : public WmDropHandler {
                void(const gfx::PointF& point, int operation, int modifiers));
   MOCK_METHOD0(MockOnDragDataAvailable, void());
   MOCK_METHOD3(MockDragMotion,
-               int(const gfx::PointF& point, int operation, int modifiers));
+               void(const gfx::PointF& point, int operation, int modifiers));
   MOCK_METHOD0(MockOnDragDrop, void());
   MOCK_METHOD0(OnDragLeave, void());
 
@@ -376,6 +376,44 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithFileContents) {
     EXPECT_EQ(1u, source->mime_types().size());
     EXPECT_EQ(kText, source->mime_types().front());
   });
+}
+
+// Cancels a DnD session that we initiated while the cursor is over our window.
+TEST_P(WaylandDataDragControllerTest, CancelDrag) {
+  FocusAndPressLeftPointerButton(window_.get(), &delegate_);
+
+  // Cancel the session once it's been fully initiated. Note that cancelling the
+  // session in OnDragEnter() would be too early, because when it's called we
+  // haven't finished our setup yet.
+  EXPECT_CALL(*drop_handler_, MockOnDragDataAvailable()).WillOnce([&]() {
+    drag_controller()->CancelSession();
+  });
+
+  RunMouseDragWithSampleData(
+      window_.get(), DragDropTypes::DRAG_COPY | DragDropTypes::DRAG_MOVE);
+}
+
+// Cancels a DnD session that we initiated while the cursor is outside of our
+// window.
+TEST_P(WaylandDataDragControllerTest, CancelDragOutsideWindow) {
+  FocusAndPressLeftPointerButton(window_.get(), &delegate_);
+
+  // Wait for the session to be fully initiated, then send wl_data_device.leave.
+  EXPECT_CALL(*drop_handler_, MockOnDragDataAvailable()).WillOnce([&]() {
+    SendDndLeave();
+  });
+
+  EXPECT_CALL(*drop_handler_, OnDragLeave())
+      // First call happens due to our SendDndLeave() call above, second call
+      // because OnDragLeave() is always called for unsuccessful DnD sessions
+      // (see the comment in WaylandDataDragController::Reset()).
+      .Times(2)
+      .WillOnce([&]() { drag_controller()->CancelSession(); })
+      // Silences an extremely verbose GTest warning.
+      .WillOnce(::testing::Return());
+
+  RunMouseDragWithSampleData(
+      window_.get(), DragDropTypes::DRAG_COPY | DragDropTypes::DRAG_MOVE);
 }
 
 MATCHER_P(PointFNear, n, "") {
