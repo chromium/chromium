@@ -17,16 +17,17 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
- * Bridge class providing an entry point for facilitated payments client to trigger the bottom sheet.
+ * Bridge class providing an entry point for facilitated payments client to trigger the
+ * bottom sheet.
  */
 @JNINamespace("payments::facilitated")
-public class FacilitatedPaymentsBottomSheetBridge {
+public class FacilitatedPaymentsPaymentMethodsViewBridge {
     private Context mContext;
     private BottomSheetController mBottomSheetController;
 
     @CalledByNative
     @VisibleForTesting
-    /* package */ FacilitatedPaymentsBottomSheetBridge() {}
+    /* package */ FacilitatedPaymentsPaymentMethodsViewBridge() {}
 
     /**
      * Requests to show the bottom sheet.
@@ -51,6 +52,6 @@ public class FacilitatedPaymentsBottomSheetBridge {
         return (mContext == null)
                 ? false
                 : mBottomSheetController.requestShowContent(
-                        new FacilitatedPaymentsBottomSheetContent(mContext), /* animate= */ true);
+                        new FacilitatedPaymentsPaymentMethodsView(mContext), /* animate= */ true);
     }
 }

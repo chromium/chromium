@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/android/rules.gni")
+
 static_library("android") {
   sources = [
     "facilitated_payments_bottom_sheet_bridge.cc",
@@ -9,10 +11,10 @@ static_library("android") {
   ]
 
   deps = [
+    ":jni_headers",
     "//base:base",
-    "//chrome/android:jni_headers",
     "//content/public/browser:browser",
-    "//ui/android:android"
+    "//ui/android:android",
   ]
 }
 
@@ -26,4 +28,13 @@ source_set("unit_tests") {
     "//content/public/browser:browser",
     "//testing/gtest",
   ]
+}
+
+group("jni_headers") {
+  public_deps =
+      [ "//chrome/browser/facilitated_payments/ui/android/internal:jni" ]
+}
+
+android_library("public_java") {
+  sources = [ "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsPaymentMethodsComponent.java" ]
 }

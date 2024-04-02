@@ -616,8 +616,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/dragdrop/toolbar/ToolbarDragDropCoordinator.java",
   "java/src/org/chromium/chrome/browser/externalnav/ExternalNavigationDelegateImpl.java",
   "java/src/org/chromium/chrome/browser/externalnav/IntentWithRequestMetadataHandler.java",
-  "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsBottomSheetBridge.java",
-  "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsBottomSheetContent.java",
   "java/src/org/chromium/chrome/browser/feedback/ChromeFeedbackCollector.java",
   "java/src/org/chromium/chrome/browser/feedback/ConnectivityChecker.java",
   "java/src/org/chromium/chrome/browser/feedback/ConnectivityFeedbackSource.java",

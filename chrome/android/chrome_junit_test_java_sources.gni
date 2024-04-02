@@ -208,8 +208,6 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/dragdrop/ChromeTabbedOnDragListenerUnitTest.java",
   "junit/src/org/chromium/chrome/browser/dragdrop/DragAndDropLauncherActivityUnitTest.java",
   "junit/src/org/chromium/chrome/browser/dragdrop/toolbar/ToolbarDragDropCoordinatorUnitTest.java",
-  "junit/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsBottomSheetBridgeTest.java",
-  "junit/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsBottomSheetContentTest.java",
   "junit/src/org/chromium/chrome/browser/feed/FeedActionDelegateImplTest.java",
   "junit/src/org/chromium/chrome/browser/feedback/ChromeFeedbackCollectorUnitTest.java",
   "junit/src/org/chromium/chrome/browser/feedback/FeedFeedbackCollectorTest.java",

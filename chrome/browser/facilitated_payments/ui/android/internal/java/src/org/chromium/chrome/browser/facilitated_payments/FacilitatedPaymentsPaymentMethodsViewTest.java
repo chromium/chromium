@@ -21,18 +21,18 @@ import org.robolectric.RuntimeEnvironment;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
-/** Unit test for {@link FacilitatedPaymentsBottomSheetContent}. */
+/** Unit test for {@link FacilitatedPaymentsPaymentMethodsView}. */
 @SmallTest
-public final class FacilitatedPaymentsBottomSheetContentTest {
+public final class FacilitatedPaymentsPaymentMethodsViewTest {
     private Context mContext;
-    private FacilitatedPaymentsBottomSheetContent mContent;
+    private FacilitatedPaymentsPaymentMethodsView mContent;
     private View mView;
 
     @Before
     public void setUp() {
         mContext = RuntimeEnvironment.getApplication().getApplicationContext();
         mView = new View(mContext);
-        mContent = new FacilitatedPaymentsBottomSheetContent(mContext);
+        mContent = new FacilitatedPaymentsPaymentMethodsView(mContext);
     }
 
     @Test

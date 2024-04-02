@@ -9,14 +9,13 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
 /** The contents of facilitated payments bottom sheet. */
-/*package*/ class FacilitatedPaymentsBottomSheetContent implements BottomSheetContent {
+/*package*/ class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
     private final View mView;
 
-    FacilitatedPaymentsBottomSheetContent(Context context) {
+    FacilitatedPaymentsPaymentMethodsView(Context context) {
         mView = new View(context);
     }
 

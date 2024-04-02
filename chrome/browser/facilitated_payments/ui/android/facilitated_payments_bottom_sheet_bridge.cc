@@ -5,13 +5,13 @@
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_bottom_sheet_bridge.h"
 
 #include "base/android/jni_android.h"
-#include "chrome/android/chrome_jni_headers/FacilitatedPaymentsBottomSheetBridge_jni.h"
+#include "chrome/browser/facilitated_payments/ui/android/internal/jni/FacilitatedPaymentsPaymentMethodsViewBridge_jni.h"
 #include "content/public/browser/web_contents.h"
 
 namespace payments::facilitated {
 
 FacilitatedPaymentsBottomSheetBridge::FacilitatedPaymentsBottomSheetBridge()
-    : java_bridge_(Java_FacilitatedPaymentsBottomSheetBridge_Constructor(
+    : java_bridge_(Java_FacilitatedPaymentsPaymentMethodsViewBridge_Constructor(
           base::android::AttachCurrentThread())) {}
 
 FacilitatedPaymentsBottomSheetBridge::~FacilitatedPaymentsBottomSheetBridge() =
@@ -31,7 +31,7 @@ bool FacilitatedPaymentsBottomSheetBridge::RequestShowContent(
 
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  return Java_FacilitatedPaymentsBottomSheetBridge_requestShowContent(
+  return Java_FacilitatedPaymentsPaymentMethodsViewBridge_requestShowContent(
       env, java_bridge_, java_web_contents);
 }
 

@@ -37,15 +37,15 @@ import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetControll
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
-/** Unit tests for {@link FacilitatedPaymentsBottomSheetBridge}. */
+/** Unit tests for {@link FacilitatedPaymentsPaymentMethodsViewBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class FacilitatedPaymentsBottomSheetBridgeTest {
+public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private WebContents mWebContents;
     @Mock private ManagedBottomSheetController mBottomSheetController;
 
-    private FacilitatedPaymentsBottomSheetBridge mFacilitatedPaymentsBottomSheetBridge;
+    private FacilitatedPaymentsPaymentMethodsViewBridge mViewBridge;
     private WindowAndroid mWindow;
 
     @Before
@@ -54,7 +54,7 @@ public class FacilitatedPaymentsBottomSheetBridgeTest {
         Context mApplicationContext = ApplicationProvider.getApplicationContext();
         mWindow = new WindowAndroid(mApplicationContext);
         BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
-        mFacilitatedPaymentsBottomSheetBridge = new FacilitatedPaymentsBottomSheetBridge();
+        mViewBridge = new FacilitatedPaymentsPaymentMethodsViewBridge();
     }
 
     @After
@@ -68,11 +68,11 @@ public class FacilitatedPaymentsBottomSheetBridgeTest {
     public void requestShowContent_callsControllerRequestShowContent() {
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
 
-        mFacilitatedPaymentsBottomSheetBridge.requestShowContent(mWebContents);
+        mViewBridge.requestShowContent(mWebContents);
 
         verify(mBottomSheetController)
                 .requestShowContent(
-                        any(FacilitatedPaymentsBottomSheetContent.class), /* animate= */ eq(true));
+                        any(FacilitatedPaymentsPaymentMethodsView.class), /* animate= */ eq(true));
     }
 
     @Test
@@ -80,13 +80,13 @@ public class FacilitatedPaymentsBottomSheetBridgeTest {
     public void requestShowContent_bottomSheetContentImplIsStubbed() {
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
 
-        mFacilitatedPaymentsBottomSheetBridge.requestShowContent(mWebContents);
+        mViewBridge.requestShowContent(mWebContents);
 
-        ArgumentCaptor<FacilitatedPaymentsBottomSheetContent> contentCaptor =
-                ArgumentCaptor.forClass(FacilitatedPaymentsBottomSheetContent.class);
+        ArgumentCaptor<FacilitatedPaymentsPaymentMethodsView> contentCaptor =
+                ArgumentCaptor.forClass(FacilitatedPaymentsPaymentMethodsView.class);
         verify(mBottomSheetController)
                 .requestShowContent(contentCaptor.capture(), /* animate= */ anyBoolean());
-        FacilitatedPaymentsBottomSheetContent content = contentCaptor.getValue();
+                FacilitatedPaymentsPaymentMethodsView content = contentCaptor.getValue();
         assertThat(content.getContentView(), notNullValue());
         assertThat(content.getSheetContentDescriptionStringId(), equalTo(R.string.ok));
         assertThat(content.getSheetHalfHeightAccessibilityStringId(), equalTo(R.string.ok));
