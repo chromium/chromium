@@ -1474,14 +1474,16 @@ void ChromeDownloadManagerDelegate::CheckClientDownloadDone(
         danger_type = download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED;
         break;
       case safe_browsing::DownloadCheckResult::IMMEDIATE_DEEP_SCAN:
-        is_pending_scanning = true;
-        danger_type = download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING;
         safe_browsing::DownloadProtectionService::UploadForConsumerDeepScanning(
             item,
             DownloadItemWarningData::DeepScanTrigger::
                 TRIGGER_IMMEDIATE_DEEP_SCAN,
             /*password=*/std::nullopt);
-        break;
+        // We return early because starting deep scanning immediately triggers
+        // this function with a `DownloadCheckResult` of `ASYNC_SCANNING`. Doing
+        // two updates would lead to two announced accessible alerts. See
+        // https://crbug.com/40926583.
+        return;
     }
     DCHECK_NE(danger_type,
               download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT);
