@@ -2,12 +2,11 @@
 estade@chromium.org
 
 # Secondary
-arichiv@chromium.org
 ayui@chromium.org
-cmp@chromium.org
-dmurph@chromium.org
 jsbell@chromium.org
 memmott@chromium.org
+
+file://storage/OWNERS  #{LAST_RESORT_SUGGESTION}
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
