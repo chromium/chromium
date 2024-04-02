@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller.h"
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller_source_from_web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/removing_indexes.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
@@ -30,15 +31,36 @@ void MoveWebStatesInRangeBetweenLists(WebStateList* source,
   DCHECK_GE(start, 0);
   DCHECK_LT(start, source->count());
   DCHECK_LE(start + count, source->count());
+  // Only one of the WebStateList can contain pinned tabs.
+  CHECK(target->pinned_tabs_count() == 0 || source->pinned_tabs_count() == 0);
 
   const int old_active_index = source->active_index();
   const int old_pinned_count = source->pinned_tabs_count();
   const int offset = target->count();
+  const int end = start + count;
 
   const OrderControllerSourceFromWebStateList order_controller_source(*source);
   const OrderController order_controller(order_controller_source);
   source->ActivateWebStateAt(order_controller.DetermineNewActiveIndex(
       old_active_index, RemovingIndexes({.start = start, .count = count})));
+
+  // Store the groups info.
+  std::vector<std::pair<WebStateList::Range, tab_groups::TabGroupVisualData>>
+      groups;
+  for (const TabGroup* group : source->GetGroups()) {
+    WebStateList::Range range = source->GetGroupRange(group);
+    // The group is not in the range of moving items, ignore it.
+    if (range.range_end() <= start || end <= range.range_begin()) {
+      continue;
+    }
+
+    // The current implementation does not support partially closing
+    // a group. So assert that the group is fully contained in the
+    // range of closed items.
+    CHECK(start <= range.range_begin() && range.range_end() <= end);
+    range.Move(offset - start);
+    groups.push_back({range, group->visual_data()});
+  }
 
   for (int n = 0; n < count; ++n) {
     const bool is_pinned = start + n < old_pinned_count;
@@ -52,6 +74,11 @@ void MoveWebStatesInRangeBetweenLists(WebStateList* source,
     const int insertion_index =
         target->InsertWebState(std::move(web_state), params);
     DCHECK_EQ(n + offset, insertion_index);
+  }
+
+  // Restore the groups info.
+  for (const auto& [range, visual_data] : groups) {
+    target->CreateGroup(range.AsSet(), visual_data);
   }
 }
 

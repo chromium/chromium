@@ -11,6 +11,7 @@
 #import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 
+class ChromeBrowserState;
 class TabGroup;
 class WebStateList;
 
@@ -53,7 +54,8 @@ class WebStateListBuilderFromDescription : public WebStateListObserver {
   // Returns `false` if `description` is not valid, in which case the state of
   // `web_state_list_` is unspecified.
   [[nodiscard]] bool BuildWebStateListFromDescription(
-      std::string_view description);
+      std::string_view description,
+      ChromeBrowserState* browser_state = nullptr);
 
   // Returns the description of `web_state_list_`.
   std::string GetWebStateListDescription() const;

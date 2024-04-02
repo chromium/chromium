@@ -11,10 +11,12 @@
 #import "base/strings/string_split.h"
 #import "base/strings/string_util.h"
 #import "components/tab_groups/tab_group_visual_data.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 
 namespace {
@@ -77,7 +79,8 @@ std::vector<Token> TokenizeWebStateListDescription(
 }
 
 // Creates a fake WebState with navigation items.
-std::unique_ptr<web::WebState> CreateWebState() {
+std::unique_ptr<web::WebState> CreateWebState(
+    ChromeBrowserState* browser_state) {
   const GURL url = GURL(kChromeUIVersionURL);
   auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
   navigation_manager->AddItem(url, ui::PAGE_TRANSITION_TYPED);
@@ -87,7 +90,13 @@ std::unique_ptr<web::WebState> CreateWebState() {
   web_state->SetNavigationManager(std::move(navigation_manager));
   web_state->SetNavigationItemCount(1);
   web_state->SetVisibleURL(url);
-
+  web_state->SetBrowserState(browser_state);
+  web_state->SetWebFramesManager(web::ContentWorld::kAllContentWorlds,
+                                 std::make_unique<web::FakeWebFramesManager>());
+  web_state->SetWebFramesManager(web::ContentWorld::kPageContentWorld,
+                                 std::make_unique<web::FakeWebFramesManager>());
+  web_state->SetWebFramesManager(web::ContentWorld::kIsolatedWorld,
+                                 std::make_unique<web::FakeWebFramesManager>());
   return web_state;
 }
 
@@ -106,7 +115,8 @@ WebStateListBuilderFromDescription::~WebStateListBuilderFromDescription() {
 }
 
 bool WebStateListBuilderFromDescription::BuildWebStateListFromDescription(
-    std::string_view description) {
+    std::string_view description,
+    ChromeBrowserState* browser_state) {
   if (!web_state_list_->empty()) {
     return false;
   }
@@ -132,8 +142,7 @@ bool WebStateListBuilderFromDescription::BuildWebStateListFromDescription(
         if (GetWebStateForIdentifier(token.character)) {
           return false;
         }
-        auto web_state = CreateWebState();
-
+        auto web_state = CreateWebState(browser_state);
         SetWebStateIdentifier(web_state.get(), token.character);
         web_state_list_->InsertWebState(
             std::move(web_state),
