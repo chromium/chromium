@@ -39,9 +39,11 @@
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interactive_test.h"
@@ -446,6 +448,7 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
   }
 #endif
   base::UserActionTester user_action_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   mock_shopping_service_->SetIsSubscribedCallbackValue(false);
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kShouldShowPriceTrackFUEBubble, false);
@@ -462,6 +465,13 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "Commerce.PriceTracking.OmniboxChip.Tracked"),
             1);
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::Shopping_ShoppingAction::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  ukm_recorder.ExpectEntryMetric(
+      entries[0], ukm::builders::Shopping_ShoppingAction::kPriceTrackedName, 1);
+  ukm_recorder.ExpectEntrySourceHasUrl(
+      entries[0], embedded_test_server()->GetURL(kShoppingURL));
 }
 
 IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
