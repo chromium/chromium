@@ -12,6 +12,10 @@ proto_library("chrome_os_enterprise_options") {
   sources = [ "chrome_os_enterprise_options.proto" ]
 }
 
+proto_library("cloud_proto") {
+  sources = [ "cloud_messages.proto" ]
+}
+
 proto_library("directory_proto") {
   sources = [ "directory_messages.proto" ]
   deps = [ ":host_info_proto" ]

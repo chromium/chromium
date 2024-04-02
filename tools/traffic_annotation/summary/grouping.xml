@@ -322,6 +322,7 @@ after discussions on the right group.
       <annotation id="camera_background_request"/>
       <annotation id="wallpaper_request"/>
       <annotation id="cws_fetch_item_snippet"/>
+      <annotation id="remoting_cloud_provision_gce_instance"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

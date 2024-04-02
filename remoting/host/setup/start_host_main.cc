@@ -24,6 +24,7 @@
 #include "remoting/base/breakpad.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/url_request_context_getter.h"
+#include "remoting/host/setup/cloud_host_starter.h"
 #include "remoting/host/setup/corp_host_starter.h"
 #include "remoting/host/setup/host_starter.h"
 #include "remoting/host/setup/oauth_host_starter.h"
@@ -60,7 +61,7 @@ base::SingleThreadTaskExecutor* g_main_thread_task_executor = nullptr;
 // The active RunLoop.
 base::RunLoop* g_active_run_loop = nullptr;
 
-void PrintHelpMessage(const char* process_name) {
+void PrintDefaultHelpMessage(const char* process_name) {
   // Optional args are shown first as the most common issue is needing to
   // generate the auth-code again and this ordering makes it easy to fix the
   // command line to rerun the tool.
@@ -75,12 +76,21 @@ void PrintHelpMessage(const char* process_name) {
           process_name);
 }
 
-void PrintCorpHelpMessage(const char* process_name) {
+void PrintCorpUserHelpMessage(const char* process_name) {
   fprintf(stdout,
           "Too many arguments provided.\nSetting up a machine for a corp user "
           "requires the email address of that user and an optional display "
           "name.\nExample usage: %s --corp-user=<user_email_address> "
           "[--display-name=corp-machine-name]\n",
+          process_name);
+}
+
+void PrintCloudUserHelpMessage(const char* process_name) {
+  fprintf(stdout,
+          "Too many arguments provided.\nSetting up a machine for a cloud user "
+          "requires the email address of that user and an optional display "
+          "name.\nExample usage: %s --cloud-user=<user_email_address> "
+          "[--display-name=cloud-instance-name]\n",
           process_name);
 }
 
@@ -162,8 +172,8 @@ void OnDone(HostStarter::Result result) {
   g_active_run_loop->Quit();
 }
 
-bool InitializeHostStarterParams(HostStarter::Params& params,
-                                 const base::CommandLine* command_line) {
+bool InitializeParamsForOAuthFlow(HostStarter::Params& params,
+                                  const base::CommandLine* command_line) {
   if (command_line->HasSwitch("host-id")) {
     params.id = command_line->GetSwitchValueASCII("host-id");
   }
@@ -250,6 +260,42 @@ bool InitializeCorpMachineParams(HostStarter::Params& params,
   return true;
 }
 
+bool InitializeCloudMachineParams(HostStarter::Params& params,
+                                  const base::CommandLine* command_line) {
+  // Count the number of args provided so we can show a helpful error message
+  // if the user provides an unexpected value.
+  size_t cloud_arg_count = 1;
+  params.owner_email =
+      base::ToLowerASCII(command_line->GetSwitchValueASCII("cloud-user"));
+
+  // Allow user to specify a display name.
+  if (command_line->HasSwitch("display-name")) {
+    cloud_arg_count++;
+    params.name = command_line->GetSwitchValueASCII("display-name");
+  }
+
+  bool has_disable_crash_reporting_switch =
+      command_line->HasSwitch("disable-crash-reporting");
+  params.enable_crash_reporting = !has_disable_crash_reporting_switch;
+  if (has_disable_crash_reporting_switch) {
+    cloud_arg_count++;
+  }
+
+  // Allow debugging switches.
+  if (command_line->HasSwitch("v")) {
+    cloud_arg_count++;
+  }
+  if (command_line->HasSwitch("vmodule")) {
+    cloud_arg_count++;
+  }
+
+  if (command_line->GetSwitches().size() > cloud_arg_count) {
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace
 
 int StartHostMain(int argc, char** argv) {
@@ -308,19 +354,25 @@ int StartHostMain(int argc, char** argv) {
 
   if (command_line->HasSwitch("help") || command_line->HasSwitch("h") ||
       command_line->HasSwitch("?") || !command_line->GetArgs().empty()) {
-    PrintHelpMessage(argv[0]);
+    PrintDefaultHelpMessage(argv[0]);
     return 1;
   }
 
   HostStarter::Params params;
   bool use_corp_machine_flow = command_line->HasSwitch("corp-user");
+  bool use_cloud_machine_flow = command_line->HasSwitch("cloud-user");
   if (use_corp_machine_flow) {
     if (!InitializeCorpMachineParams(params, command_line)) {
-      PrintCorpHelpMessage(argv[0]);
+      PrintCorpUserHelpMessage(argv[0]);
       return 1;
     }
-  } else if (!InitializeHostStarterParams(params, command_line)) {
-    PrintHelpMessage(argv[0]);
+  } else if (use_cloud_machine_flow) {
+    if (!InitializeCloudMachineParams(params, command_line)) {
+      PrintCloudUserHelpMessage(argv[0]);
+      return 1;
+    }
+  } else if (!InitializeParamsForOAuthFlow(params, command_line)) {
+    PrintDefaultHelpMessage(argv[0]);
     return 1;
   }
 
@@ -342,6 +394,12 @@ int StartHostMain(int argc, char** argv) {
   if (use_corp_machine_flow) {
     host_starter =
         ProvisionCorpMachine(url_loader_factory_owner.GetURLLoaderFactory());
+  } else if (use_cloud_machine_flow) {
+    fprintf(stdout,
+            "*** Warning: This workflow is experimental and not fully "
+            "supported at this time ***\n");
+    host_starter =
+        ProvisionCloudInstance(url_loader_factory_owner.GetURLLoaderFactory());
   } else {
     host_starter =
         CreateOAuthHostStarter(url_loader_factory_owner.GetURLLoaderFactory());

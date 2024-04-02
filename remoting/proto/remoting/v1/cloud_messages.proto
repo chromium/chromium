@@ -1,0 +1,57 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option java_multiple_files = true;
+option optimize_for = LITE_RUNTIME;
+
+option java_package = "remoting.apis.v1";
+package remoting.apis.v1;
+
+// Represents a service account created for a remote access host instance.
+message ServiceAccountInfo {
+  // The email address of the remote access host service account.
+  string email = 1;
+
+  // An OAuth authorization code generated for the remote access host service
+  // account. This code will be exchanged for an access and refresh token by the
+  // remote access host instance. The access token will be used for signaling
+  // and to communicate status back to the Chrome Remote Desktop backend.
+  // `authorization_code` has a limited lifetime (< 10 minutes) so it must be
+  // exchanged for a refresh token soon after it is received.
+  optional string authorization_code = 2;
+}
+
+// Creates a new remote access host instance in the Directory.
+message ProvisionGceInstanceRequest {
+  // The email address of the user to associate this instance with.
+  string owner_email = 1;
+
+  // This value is used to provide the initial 'display_name' value which is
+  // shown in the website client UI.
+  string display_name = 2;
+
+  // Public key for the host. Must be a 2048-bit RSA key encoded with Base64.
+  bytes public_key = 3;
+
+  // Version of the start_host utility being used for provisioning.
+  string version = 4;
+
+  // An optional value which, if provided, is used to remove a previous host
+  // instance from the machine. Prior to deleting `existing_directory_id`, the
+  // backend will validate the other fields in the request and ensure
+  // `owner_email` owns the previous instance as well.
+  optional string existing_directory_id = 5;
+}
+
+// The response to a ProvisionGceInstanceRequest request.
+message ProvisionGceInstanceResponse {
+  // The UUID of the new remote access host instance in the Directory.
+  string directory_id = 1;
+
+  // The email address and authorization_code for the service account created
+  // for the new remote access host instance.
+  ServiceAccountInfo service_account_info = 2;
+}

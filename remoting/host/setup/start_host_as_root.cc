@@ -72,20 +72,27 @@ int StartHostAsRoot(int argc, char** argv) {
   DCHECK(getuid() == 0);
 
   base::CommandLine command_line(argc, argv);
+  std::string user_email;
   std::string user_name;
   if (command_line.HasSwitch("corp-user")) {
-    std::string corp_user_email = command_line.GetSwitchValueASCII("corp-user");
-    size_t at_symbol_pos = corp_user_email.find("@");
+    user_email = command_line.GetSwitchValueASCII("corp-user");
+  } else if (command_line.HasSwitch("cloud-user")) {
+    user_email = command_line.GetSwitchValueASCII("cloud-user");
+  }
+
+  if (!user_email.empty()) {
+    size_t at_symbol_pos = user_email.find("@");
     if (at_symbol_pos != std::string::npos) {
-      user_name = corp_user_email.substr(0, at_symbol_pos);
+      user_name = user_email.substr(0, at_symbol_pos);
     }
   } else if (command_line.HasSwitch("user-name")) {
     user_name = command_line.GetSwitchValueASCII("user-name");
   }
+
   if (user_name.empty()) {
     fprintf(stderr,
-            "Must specify the --user-name or --corp-user option when running "
-            "as root.\n");
+            "Must specify of the following arguments when running as root:\n"
+            "  --user-name\n  --corp-user\n  --cloud-user\n");
     return 1;
   }
 

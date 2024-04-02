@@ -112,6 +112,8 @@ source_set("start_host_common") {
 
 source_set("start_host_main") {
   sources = [
+    "cloud_host_starter.cc",
+    "cloud_host_starter.h",
     "corp_host_starter.cc",
     "corp_host_starter.h",
     "oauth_host_starter.cc",
@@ -138,6 +140,7 @@ source_set("start_host_main") {
     "//remoting/host:common",
     "//remoting/host/setup",
     "//remoting/host/setup:start_host_main_headers",
+    "//remoting/proto/remoting/v1:cloud_proto",
     "//services/network:network_service",
     "//services/network/public/cpp:cpp",
     "//third_party/libjingle_xmpp:rtc_xmllite",
