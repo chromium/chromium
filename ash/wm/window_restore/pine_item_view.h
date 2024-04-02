@@ -40,8 +40,6 @@ class ASH_EXPORT PineItemView : public views::BoxLayoutView {
   }
 
  private:
-  friend class PineItemViewTestApi;
-
   void OnOneFaviconLoaded(
       base::OnceCallback<void(const gfx::ImageSkia&)> callback,
       const gfx::ImageSkia& favicon);

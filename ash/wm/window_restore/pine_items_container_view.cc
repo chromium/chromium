@@ -20,8 +20,10 @@
 namespace ash {
 
 namespace {
+
 constexpr gfx::Insets kItemsContainerInsets = gfx::Insets::VH(15, 15);
 constexpr int kItemsContainerRounding = 15;
+
 }  // namespace
 
 PineItemsContainerView::PineItemsContainerView(
@@ -41,8 +43,7 @@ PineItemsContainerView::PineItemsContainerView(
     // If there are more than four elements, we will need to save the last
     // space for the overflow view to condense the remaining info.
     if (elements > pine::kMaxItems && i >= pine::kOverflowMinThreshold) {
-      overflow_view_for_testing_ =
-          AddChildView(std::make_unique<PineItemsOverflowView>(apps_infos));
+      AddChildView(std::make_unique<PineItemsOverflowView>(apps_infos));
       break;
     }
 

@@ -22,9 +22,7 @@ class MenuRunner;
 
 namespace ash {
 
-class PillButton;
 class PineContextMenuModel;
-class PineScreenshotIconRowView;
 
 class ASH_EXPORT PineContentsView : public views::BoxLayoutView {
   METADATA_HEADER(PineContentsView, views::BoxLayoutView)
@@ -39,7 +37,6 @@ class ASH_EXPORT PineContentsView : public views::BoxLayoutView {
       const gfx::Rect& grid_bounds_in_screen);
 
  private:
-  friend class PineContentsViewTestApi;
   FRIEND_TEST_ALL_PREFIXES(PineContextMenuModelTest,
                            ShowContextMenuOnSettingsButtonClicked);
 
@@ -64,12 +61,6 @@ class ASH_EXPORT PineContentsView : public views::BoxLayoutView {
   bool showing_list_view_ = true;
 
   raw_ptr<views::ImageButton> settings_button_ = nullptr;
-
-  raw_ptr<BoxLayoutView> preview_container_view_ = nullptr;
-  raw_ptr<PineScreenshotIconRowView> screenshot_icon_row_view_ = nullptr;
-
-  raw_ptr<PillButton> restore_button_for_testing_ = nullptr;
-  raw_ptr<PillButton> cancel_button_for_testing_ = nullptr;
 
   base::WeakPtrFactory<PineContentsView> weak_ptr_factory_{this};
 };

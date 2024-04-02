@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_restore/full_restore_service.h"
-
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -16,6 +14,7 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_grid_test_api.h"
 #include "ash/wm/overview/overview_test_util.h"
+#include "ash/wm/window_restore/pine_constants.h"
 #include "ash/wm/window_restore/pine_contents_data.h"
 #include "ash/wm/window_restore/pine_contents_view.h"
 #include "ash/wm/window_restore/pine_controller.h"
@@ -25,6 +24,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_restore/app_restore_test_util.h"
 #include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
+#include "chrome/browser/ash/app_restore/full_restore_service.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/ash_test_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
@@ -61,14 +61,16 @@ const PineContentsView* GetPineContentsView() {
 const PillButton* GetPineDialogRestoreButton() {
   const PineContentsView* pine_contents_view = GetPineContentsView();
   return pine_contents_view
-             ? PineContentsViewTestApi(pine_contents_view).restore_button()
+             ? static_cast<const PillButton*>(
+                   pine_contents_view->GetViewByID(pine::kRestoreButtonID))
              : nullptr;
 }
 
 const PillButton* GetPineDialogCancelButton() {
   const PineContentsView* pine_contents_view = GetPineContentsView();
   return pine_contents_view
-             ? PineContentsViewTestApi(pine_contents_view).cancel_button()
+             ? static_cast<const PillButton*>(
+                   pine_contents_view->GetViewByID(pine::kCancelButtonID))
              : nullptr;
 }
 

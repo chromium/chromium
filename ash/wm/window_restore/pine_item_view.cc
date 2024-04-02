@@ -64,6 +64,7 @@ PineItemView::PineItemView(const PineContentsData::AppInfo& app_info,
     AddChildView(
         views::Builder<views::BoxLayoutView>()
             .CopyAddressTo(&favicon_container_view_)
+            .SetID(pine::kFaviconContainerViewID)
             .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
             .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart)
             .SetBetweenChildSpacing(pine::kScreenshotFaviconSpacing)
@@ -101,6 +102,7 @@ PineItemView::PineItemView(const PineContentsData::AppInfo& app_info,
                     .SetText(base::UTF8ToUTF16(title)),
                 views::Builder<views::BoxLayoutView>()
                     .CopyAddressTo(&favicon_container_view_)
+                    .SetID(pine::kFaviconContainerViewID)
                     .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
                     .SetCrossAxisAlignment(
                         views::BoxLayout::CrossAxisAlignment::kCenter)

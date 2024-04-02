@@ -7,101 +7,12 @@
 
 #include <memory>
 
-#include "ash/wm/window_restore/pine_contents_view.h"
-#include "ash/wm/window_restore/pine_item_view.h"
-#include "ash/wm/window_restore/pine_items_container_view.h"
-#include "ash/wm/window_restore/pine_items_overflow_view.h"
-#include "ash/wm/window_restore/pine_screenshot_icon_row_view.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/views/view_utils.h"
 
 namespace ash {
 
-class PillButton;
+struct PineContentsData;
 class SystemDialogDelegateView;
-
-class PineContentsViewTestApi {
- public:
-  explicit PineContentsViewTestApi(const PineContentsView* pine_contents_view);
-  PineContentsViewTestApi(const PineContentsViewTestApi&) = delete;
-  PineContentsViewTestApi& operator=(const PineContentsViewTestApi&) = delete;
-  ~PineContentsViewTestApi();
-
-  const PillButton* restore_button() const {
-    return pine_contents_view_->restore_button_for_testing_;
-  }
-  const PillButton* cancel_button() const {
-    return pine_contents_view_->cancel_button_for_testing_;
-  }
-  const views::BoxLayoutView* preview_container_view() const {
-    return pine_contents_view_->preview_container_view_;
-  }
-  const PineScreenshotIconRowView* screenshot_icon_row_view() const {
-    return pine_contents_view_->screenshot_icon_row_view_;
-  }
-  const PineItemsOverflowView* overflow_view() const {
-    return static_cast<PineItemsContainerView*>(
-               pine_contents_view_->preview_container_view_)
-        ->overflow_view_for_testing_;
-  }
-
- private:
-  const raw_ptr<const PineContentsView> pine_contents_view_;
-};
-
-class PineItemViewTestApi {
- public:
-  explicit PineItemViewTestApi(const PineItemView* pine_item_view);
-  PineItemViewTestApi(const PineItemViewTestApi&) = delete;
-  PineItemViewTestApi& operator=(const PineItemViewTestApi&) = delete;
-  ~PineItemViewTestApi();
-
-  const views::BoxLayoutView* favicon_container_view_for_testing() {
-    return pine_item_view_->favicon_container_view_;
-  }
-
- private:
-  const raw_ptr<const PineItemView> pine_item_view_;
-};
-
-class PineItemsOverflowViewTestApi {
- public:
-  explicit PineItemsOverflowViewTestApi(
-      const PineItemsOverflowView* overflow_view);
-  PineItemsOverflowViewTestApi(const PineItemsOverflowViewTestApi&) = delete;
-  PineItemsOverflowViewTestApi& operator=(const PineItemsOverflowViewTestApi&) =
-      delete;
-  ~PineItemsOverflowViewTestApi();
-
-  size_t image_views_count() const {
-    // Iterate through both rows to check how many `ImageView`s are shown
-    // (including `PineAppImageView`s).
-    size_t count = 0;
-    for (views::View* child : overflow_view_->top_row_view_->children()) {
-      if (views::IsViewClass<views::ImageView>(child)) {
-        ++count;
-      }
-    }
-    for (views::View* child : overflow_view_->bottom_row_view_->children()) {
-      if (views::IsViewClass<views::ImageView>(child)) {
-        ++count;
-      }
-    }
-    return count;
-  }
-
-  size_t top_row_view_children_count() const {
-    return overflow_view_->top_row_view_->children().size();
-  }
-  size_t bottom_row_view_children_count() const {
-    return overflow_view_->bottom_row_view_
-               ? overflow_view_->bottom_row_view_->children().size()
-               : 0u;
-  }
-
- private:
-  const raw_ptr<const PineItemsOverflowView> overflow_view_;
-};
 
 class PineTestApi {
  public:
@@ -114,30 +25,6 @@ class PineTestApi {
       std::unique_ptr<PineContentsData> pine_contents_data);
 
   SystemDialogDelegateView* GetOnboardingDialog();
-};
-
-class PineScreenshotIconRowViewTestApi {
- public:
-  explicit PineScreenshotIconRowViewTestApi(
-      const PineScreenshotIconRowView* icon_row_view);
-  PineScreenshotIconRowViewTestApi(const PineScreenshotIconRowViewTestApi&) =
-      delete;
-  PineScreenshotIconRowViewTestApi& operator=(
-      const PineScreenshotIconRowViewTestApi&) = delete;
-  ~PineScreenshotIconRowViewTestApi();
-
-  size_t image_views_count() const {
-    size_t count = 0;
-    for (views::View* child : icon_row_view_->children()) {
-      if (views::IsViewClass<views::ImageView>(child)) {
-        ++count;
-      }
-    }
-    return count;
-  }
-
- private:
-  const raw_ptr<const PineScreenshotIconRowView> icon_row_view_;
 };
 
 }  // namespace ash

@@ -31,8 +31,6 @@ class ASH_EXPORT PineScreenshotIconRowView : public views::BoxLayoutView {
   ~PineScreenshotIconRowView() override;
 
  private:
-  friend class PineScreenshotIconRowViewTestApi;
-
   // views::View:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 };

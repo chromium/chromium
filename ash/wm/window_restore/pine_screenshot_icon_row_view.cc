@@ -51,6 +51,7 @@ gfx::Size GetPreferredSizeOfTheRow(int child_number, bool one_browser_window) {
 
 PineScreenshotIconRowView::PineScreenshotIconRowView(
     const PineContentsData::AppsInfos& apps_infos) {
+  SetID(pine::kScreenshotIconRowViewID);
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart);
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
   SetBetweenChildSpacing(pine::kScreenshotIconRowChildSpacing);
@@ -78,8 +79,10 @@ PineScreenshotIconRowView::PineScreenshotIconRowView(
                              : elements_size;
 
     for (int i = 0; i < num_icon; i++) {
-      AddChildView(std::make_unique<PineAppImageView>(
-          apps_infos[i].app_id, PineAppImageView::Type::kScreenshot));
+      auto image_view = std::make_unique<PineAppImageView>(
+          apps_infos[i].app_id, PineAppImageView::Type::kScreenshot);
+      image_view->SetID(pine::kScreenshotImageViewID);
+      AddChildView(std::move(image_view));
     }
     if (exceed_max_elements) {
       auto* count_label = AddChildView(

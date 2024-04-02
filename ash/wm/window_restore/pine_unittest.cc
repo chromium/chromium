@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/window_restore/pine_contents_view.h"
-
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
@@ -75,8 +73,7 @@ class PineTest : public PineTestBase {
     const PineContentsView* contents_view =
         views::AsViewClass<PineContentsView>(pine_widget->GetContentsView());
     ASSERT_TRUE(contents_view);
-    auto contents_view_test_api = PineContentsViewTestApi(contents_view);
-    ASSERT_TRUE(contents_view_test_api.preview_container_view());
+    ASSERT_TRUE(contents_view->GetViewByID(pine::kPreviewContainerViewID));
   }
 
   const PineContentsView* GetContentsView() const {
@@ -86,13 +83,32 @@ class PineTest : public PineTestBase {
             ->GetContentsView());
   }
 
-  const PineItemsOverflowView* GetOverflowView() const {
-    return PineContentsViewTestApi(GetContentsView()).overflow_view();
+  // Returns the count of views with `view_id` starting at the view tree defined
+  // by `root`.
+  size_t GetViewCount(const views::View* root, int view_id) const {
+    size_t count = 0u;
+
+    if (root->GetID() == view_id) {
+      count++;
+    }
+
+    for (const views::View* child : root->children()) {
+      count += GetViewCount(child, view_id);
+    }
+
+    return count;
+  }
+
+  size_t GetOverflowImageCount() const {
+    const views::View* root =
+        GetContentsView()->GetViewByID(pine::kOverflowViewID);
+    CHECK(root);
+    return GetViewCount(root, pine::kOverflowImageViewID);
   }
 
   const PineScreenshotIconRowView* GetScreenshotIconRowView() const {
-    return PineContentsViewTestApi(GetContentsView())
-        .screenshot_icon_row_view();
+    return static_cast<const PineScreenshotIconRowView*>(
+        GetContentsView()->GetViewByID(pine::kScreenshotIconRowViewID));
   }
 
   // Used for testing overview. Returns a vector with `n` chrome browser app
@@ -146,49 +162,58 @@ TEST_F(PineTest, StartOverviewPineSession) {
 TEST_F(PineTest, NoOverflow) {
   // Start a Pine session with restore data for one window.
   StartPineOverviewSession(MakeTestAppIds(1));
-  EXPECT_FALSE(GetOverflowView());
+  EXPECT_FALSE(GetContentsView()->GetViewByID(pine::kOverflowViewID));
 }
 
 TEST_F(PineTest, TwoWindowOverflow) {
   // Start a Pine session with restore data for two overflow windows.
   StartPineOverviewSession(MakeTestAppIds(pine::kOverflowMinThreshold + 2));
 
-  const PineItemsOverflowView* overflow_view = GetOverflowView();
-  ASSERT_TRUE(overflow_view);
+  EXPECT_EQ(2u, GetOverflowImageCount());
 
   // The top row should have two elements, and the bottom row should have zero
   // elements, in order to form a 2x1 layout.
-  PineItemsOverflowViewTestApi test_api(overflow_view);
-  EXPECT_EQ(2u, test_api.top_row_view_children_count());
-  EXPECT_EQ(0u, test_api.bottom_row_view_children_count());
+  EXPECT_EQ(2u, GetContentsView()
+                    ->GetViewByID(pine::kOverflowTopRowViewID)
+                    ->children()
+                    .size());
+  EXPECT_FALSE(GetContentsView()->GetViewByID(pine::kOverflowBottomRowViewID));
 }
 
 TEST_F(PineTest, ThreeWindowOverflow) {
   // Start a Pine session with restore data for three overflow windows.
   StartPineOverviewSession(MakeTestAppIds(pine::kOverflowMinThreshold + 3));
 
-  const PineItemsOverflowView* overflow_view = GetOverflowView();
-  ASSERT_TRUE(overflow_view);
+  EXPECT_EQ(3u, GetOverflowImageCount());
 
   // The top row should have one element, and the bottom row should have two
   // elements, in order to form a triangular layout.
-  PineItemsOverflowViewTestApi test_api(overflow_view);
-  EXPECT_EQ(1u, test_api.top_row_view_children_count());
-  EXPECT_EQ(2u, test_api.bottom_row_view_children_count());
+  EXPECT_EQ(1u, GetContentsView()
+                    ->GetViewByID(pine::kOverflowTopRowViewID)
+                    ->children()
+                    .size());
+  EXPECT_EQ(2u, GetContentsView()
+                    ->GetViewByID(pine::kOverflowBottomRowViewID)
+                    ->children()
+                    .size());
 }
 
 TEST_F(PineTest, FourWindowOverflow) {
   // Start a Pine session with restore data for four overflow windows.
   StartPineOverviewSession(MakeTestAppIds(pine::kOverflowMinThreshold + 4));
 
-  const PineItemsOverflowView* overflow_view = GetOverflowView();
-  ASSERT_TRUE(overflow_view);
+  EXPECT_EQ(4u, GetOverflowImageCount());
 
   // The top and bottom rows should have two elements each, in order to form a
   // 2x2 layout.
-  PineItemsOverflowViewTestApi test_api(overflow_view);
-  EXPECT_EQ(2u, test_api.top_row_view_children_count());
-  EXPECT_EQ(2u, test_api.bottom_row_view_children_count());
+  EXPECT_EQ(2u, GetContentsView()
+                    ->GetViewByID(pine::kOverflowTopRowViewID)
+                    ->children()
+                    .size());
+  EXPECT_EQ(2u, GetContentsView()
+                    ->GetViewByID(pine::kOverflowBottomRowViewID)
+                    ->children()
+                    .size());
 }
 
 TEST_F(PineTest, FivePlusWindowOverflow) {
@@ -198,18 +223,20 @@ TEST_F(PineTest, FivePlusWindowOverflow) {
   // Start a Pine session with restore data for five overflow windows.
   StartPineOverviewSession(MakeTestAppIds(pine::kOverflowMinThreshold + 5));
 
-  const PineItemsOverflowView* overflow_view = GetOverflowView();
-  ASSERT_TRUE(overflow_view);
+  // The image view map should only have three elements as the fourth slot is
+  // saved for a count of the remaining windows.
+  EXPECT_EQ(3u, GetOverflowImageCount());
 
-  // The top and bottom rows should have two elements each, in order to form a
-  // 2x2 layout.
-  PineItemsOverflowViewTestApi test_api(overflow_view);
-  EXPECT_EQ(2u, test_api.top_row_view_children_count());
-  EXPECT_EQ(2u, test_api.bottom_row_view_children_count());
-
-  // Only three of the elements should be `views::ImageView`s, as the fourth
-  // slot is saved for a count (`views::Label`) of the remaining windows.
-  EXPECT_EQ(3u, test_api.image_views_count());
+  // The top row should have two elements, and the bottom row should have zero
+  // elements, in order to form a 2x2 layout.
+  EXPECT_EQ(2u, GetContentsView()
+                    ->GetViewByID(pine::kOverflowTopRowViewID)
+                    ->children()
+                    .size());
+  EXPECT_EQ(2u, GetContentsView()
+                    ->GetViewByID(pine::kOverflowBottomRowViewID)
+                    ->children()
+                    .size());
 }
 
 // Tests that the pine screenshot should not be shown if it has different
@@ -286,8 +313,8 @@ TEST_F(PineTest, ScreenshotIconRowMaxElements) {
   // The icon row should show all the elements and all of them should be shown
   // as icons.
   EXPECT_EQ(5u, screenshot_icon_row_view->children().size());
-  EXPECT_EQ(5u, PineScreenshotIconRowViewTestApi(screenshot_icon_row_view)
-                    .image_views_count());
+  EXPECT_EQ(
+      5u, GetViewCount(screenshot_icon_row_view, pine::kScreenshotImageViewID));
   histogram_tester.ExpectBucketCount(kDialogScreenshotVisibility, true, 1);
   histogram_tester.ExpectBucketCount(kDialogScreenshotVisibility, false, 0);
 
@@ -317,9 +344,9 @@ TEST_F(PineTest, ScreenshotIconRowExceedMaxElements) {
   EXPECT_TRUE(screenshot_icon_row_view);
   // The icon row should still have at most 5 number of items, but only 4 of
   // them should be icons. The last one should be a count label.
-  EXPECT_EQ(4u, PineScreenshotIconRowViewTestApi(screenshot_icon_row_view)
-                    .image_views_count());
   EXPECT_EQ(5u, screenshot_icon_row_view->children().size());
+  EXPECT_EQ(
+      4u, GetViewCount(screenshot_icon_row_view, pine::kScreenshotImageViewID));
 }
 
 // Tests that based on preferences (shown count, and last shown time), the nudge
@@ -453,8 +480,8 @@ TEST_F(PineTest, TimeToActionMetrics) {
 
   // Click the restore button after one second.
   SetFakeTimeTicksNow(base::TimeTicks::Now() + base::Seconds(1));
-  const PillButton* restore_button =
-      PineContentsViewTestApi(GetContentsView()).restore_button();
+  const views::View* restore_button =
+      GetContentsView()->GetViewByID(pine::kRestoreButtonID);
   LeftClickOn(restore_button);
 
   // The buckets are split into bucket by time deltas, so we check the size of
@@ -470,8 +497,8 @@ TEST_F(PineTest, TimeToActionMetrics) {
 
   // Click the cancel button after 2 seconds.
   SetFakeTimeTicksNow(base::TimeTicks::Now() + base::Seconds(2));
-  const PillButton* cancel_button =
-      PineContentsViewTestApi(GetContentsView()).cancel_button();
+  const views::View* cancel_button =
+      GetContentsView()->GetViewByID(pine::kCancelButtonID);
   LeftClickOn(cancel_button);
   EXPECT_EQ(
       2u,
@@ -514,10 +541,8 @@ TEST_F(PineTest, ClickRestoreToExit) {
   ASSERT_TRUE(pine_widget);
 
   // Exit overview by clicking the restore or cancel buttons.
-  const PillButton* restore_button =
-      PineContentsViewTestApi(
-          views::AsViewClass<PineContentsView>(pine_widget->GetContentsView()))
-          .restore_button();
+  const views::View* restore_button =
+      pine_widget->GetContentsView()->GetViewByID(pine::kRestoreButtonID);
   LeftClickOn(restore_button);
   ASSERT_FALSE(OverviewController::Get()->overview_session());
 
@@ -535,22 +560,18 @@ TEST_F(PineTest, PineItemView) {
   // Test when the tab count is within regular limits.
   auto item_view =
       std::make_unique<PineItemView>(app_info, /*inside_screenshot=*/false);
-  EXPECT_EQ(PineItemViewTestApi(item_view.get())
-                .favicon_container_view_for_testing()
-                ->children()
-                .size(),
-            4u);
+  EXPECT_EQ(
+      4u,
+      item_view->GetViewByID(pine::kFaviconContainerViewID)->children().size());
   item_view.reset();
 
   // Test the when the tab count has overflow.
   app_info.tab_count = 10u;
   item_view =
       std::make_unique<PineItemView>(app_info, /*inside_screenshot=*/false);
-  EXPECT_EQ(PineItemViewTestApi(item_view.get())
-                .favicon_container_view_for_testing()
-                ->children()
-                .size(),
-            5u);
+  EXPECT_EQ(
+      5u,
+      item_view->GetViewByID(pine::kFaviconContainerViewID)->children().size());
 }
 
 // Tests that the pine dialog remains in the center after zooming the display up

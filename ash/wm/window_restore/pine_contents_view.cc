@@ -97,6 +97,7 @@ PineContentsView::PineContentsView() : creation_time_(base::TimeTicks::Now()) {
                                          : IDS_ASH_PINE_DIALOG_DESCRIPTION;
 
   views::View* spacer;
+  views::BoxLayoutView* preview_container_view;
   auto* actions_container_view = AddChildView(
       // This box layout view is the container for the left hand side (in LTR)
       // of the contents view. It contains the title, buttons container and
@@ -132,19 +133,19 @@ PineContentsView::PineContentsView() : creation_time_(base::TimeTicks::Now()) {
                   .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
                   .AddChildren(
                       views::Builder<PillButton>()
-                          .CopyAddressTo(&cancel_button_for_testing_)
                           .SetCallback(base::BindRepeating(
                               &PineContentsView::OnCancelButtonPressed,
                               weak_ptr_factory_.GetWeakPtr()))
+                          .SetID(pine::kCancelButtonID)
                           .SetPillButtonType(
                               PillButton::Type::kDefaultLargeWithoutIcon)
                           .SetTextWithStringId(
                               IDS_ASH_PINE_DIALOG_NO_THANKS_BUTTON),
                       views::Builder<PillButton>()
-                          .CopyAddressTo(&restore_button_for_testing_)
                           .SetCallback(base::BindRepeating(
                               &PineContentsView::OnRestoreButtonPressed,
                               weak_ptr_factory_.GetWeakPtr()))
+                          .SetID(pine::kRestoreButtonID)
                           .SetPillButtonType(
                               PillButton::Type::kPrimaryLargeWithoutIcon)
                           .SetTextWithStringId(
@@ -159,6 +160,7 @@ PineContentsView::PineContentsView() : creation_time_(base::TimeTicks::Now()) {
                   .CopyAddressTo(&settings_button_)
                   .SetBackground(views::CreateThemedRoundedRectBackground(
                       cros_tokens::kCrosSysSystemOnBase, kSettingsIconSize))
+                  .SetID(pine::kSettingsButtonID)
                   .SetTooltipText(
                       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_SETTINGS)))
           .Build());
@@ -169,10 +171,11 @@ PineContentsView::PineContentsView() : creation_time_(base::TimeTicks::Now()) {
   gfx::Size screenshot_size;
   showing_list_view_ = pine_contents_data->image.isNull();
   if (showing_list_view_) {
-    preview_container_view_ =
+    preview_container_view =
         AddChildView(std::make_unique<PineItemsContainerView>(
             pine_contents_data->apps_infos));
-    preview_container_view_->SetPreferredSize(
+    preview_container_view->SetID(pine::kPreviewContainerViewID);
+    preview_container_view->SetPreferredSize(
         gfx::Size(pine::kPreviewContainerWidth, kItemsViewContainerHeight));
   } else {
     const gfx::ImageSkia& pine_image = pine_contents_data->image;
@@ -186,8 +189,10 @@ PineContentsView::PineContentsView() : creation_time_(base::TimeTicks::Now()) {
     // This box layout is used to set the vertical space when the screenshot's
     // height is smaller than `kScreenshotContainerMinHeight`. Thus the
     // screenshot and the icon row can be centered inside the container.
-    preview_container_view_ = AddChildView(
+    AddChildView(
         views::Builder<views::BoxLayoutView>()
+            .CopyAddressTo(&preview_container_view)
+            .SetID(pine::kPreviewContainerViewID)
             .AddChildren(
                 views::Builder<views::View>()
                     .SetLayoutManager(std::make_unique<views::FillLayout>())
@@ -212,7 +217,7 @@ PineContentsView::PineContentsView() : creation_time_(base::TimeTicks::Now()) {
         gfx::RoundedCornersF(pine::kScreenshotPreviewRadius));
     icon_row_container->layer()->SetFillsBoundsOpaquely(false);
 
-    screenshot_icon_row_view_ = icon_row_container->AddChildView(
+    icon_row_container->AddChildView(
         std::make_unique<PineScreenshotIconRowView>(
             pine_contents_data->apps_infos));
     icon_row_container->SetFlexForView(icon_row_spacer, 1);
@@ -239,7 +244,7 @@ PineContentsView::PineContentsView() : creation_time_(base::TimeTicks::Now()) {
     const int bottom_inset = vertical_gap / 2;
     const int top_inset =
         vertical_gap % 2 == 1 ? bottom_inset + 1 : bottom_inset;
-    preview_container_view_->SetInsideBorderInsets(
+    preview_container_view->SetInsideBorderInsets(
         gfx::Insets::TLBR(top_inset, 0, bottom_inset, 0));
   }
 

@@ -21,13 +21,6 @@ class ASH_EXPORT PineItemsOverflowView : public views::BoxLayoutView {
   PineItemsOverflowView(const PineItemsOverflowView&) = delete;
   PineItemsOverflowView& operator=(const PineItemsOverflowView&) = delete;
   ~PineItemsOverflowView() override;
-
- private:
-  friend class PineItemsOverflowViewTestApi;
-
-  // These views are stacked vertically to act as rows of window icons.
-  raw_ptr<views::BoxLayoutView> top_row_view_ = nullptr;
-  raw_ptr<views::BoxLayoutView> bottom_row_view_ = nullptr;
 };
 
 }  // namespace ash

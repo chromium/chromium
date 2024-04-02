@@ -67,6 +67,24 @@ inline constexpr int kScreenshotIconRowIconSize = 20;
 inline constexpr gfx::Size kScreenshotIconRowImageViewSize(20, 20);
 inline constexpr int kScreenshotFaviconSpacing = 2;
 
+// IDs used for the views that compose the pine dialog UI. Use these for easy
+// access to the views during the unit tests. Note that these IDs are only
+// guaranteed to be unique inside `PineContentsView`. We don't use an enum class
+// to avoid too many explicit casts at callsites.
+enum ViewID : int {
+  kRestoreButtonID = 1,
+  kCancelButtonID,
+  kSettingsButtonID,
+  kOverflowViewID,
+  kOverflowTopRowViewID,
+  kOverflowBottomRowViewID,
+  kOverflowImageViewID,
+  kScreenshotImageViewID,
+  kScreenshotIconRowViewID,
+  kFaviconContainerViewID,
+  kPreviewContainerViewID,
+};
+
 }  // namespace ash::pine
 
 #endif  // ASH_WM_WINDOW_RESTORE_PINE_CONSTANTS_H_

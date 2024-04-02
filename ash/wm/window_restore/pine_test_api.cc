@@ -6,27 +6,11 @@
 
 #include "ash/shell.h"
 #include "ash/style/system_dialog_delegate_view.h"
+#include "ash/wm/window_restore/pine_contents_data.h"
 #include "ash/wm/window_restore/pine_controller.h"
 #include "ui/views/view_utils.h"
 
 namespace ash {
-
-PineContentsViewTestApi::PineContentsViewTestApi(
-    const PineContentsView* pine_contents_view)
-    : pine_contents_view_(pine_contents_view) {}
-
-PineContentsViewTestApi::~PineContentsViewTestApi() = default;
-
-PineItemViewTestApi::PineItemViewTestApi(const PineItemView* pine_item_view)
-    : pine_item_view_(pine_item_view) {}
-
-PineItemViewTestApi::~PineItemViewTestApi() = default;
-
-PineItemsOverflowViewTestApi::PineItemsOverflowViewTestApi(
-    const PineItemsOverflowView* overflow_view)
-    : overflow_view_(overflow_view) {}
-
-PineItemsOverflowViewTestApi::~PineItemsOverflowViewTestApi() = default;
 
 PineTestApi::PineTestApi() = default;
 
@@ -45,11 +29,5 @@ SystemDialogDelegateView* PineTestApi::GetOnboardingDialog() {
                                  onboarding_widget->GetContentsView())
                            : nullptr;
 }
-
-PineScreenshotIconRowViewTestApi::PineScreenshotIconRowViewTestApi(
-    const PineScreenshotIconRowView* icon_row_view)
-    : icon_row_view_(icon_row_view) {}
-
-PineScreenshotIconRowViewTestApi::~PineScreenshotIconRowViewTestApi() = default;
 
 }  // namespace ash
