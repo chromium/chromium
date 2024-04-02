@@ -128,16 +128,25 @@ scoped_refptr<SecurityOrigin> CreateSecurityOrigin(
   DCHECK(!is_service_worker_global_scope ||
          !KURL(creation_params->script_url).ProtocolIsData());
 
-  // TODO(https://crbug.com/1058305) Inherit |agent_cluster_id_| for dedicated
-  // workers. DO NOT inherit for shared workers and service workers.
-  //
-  // Create a new SecurityOrigin via CreateFromUrlOrigin() so that worker's
-  // origin can avoid inheriting unnecessary capabilities from the starter
-  // origin, while the worker's origin inherits url:Origin's internal nonce.
   scoped_refptr<SecurityOrigin> security_origin;
   if (KURL(creation_params->script_url).ProtocolIsData()) {
-    security_origin = SecurityOrigin::CreateUniqueOpaque();
+    // Workers with data: URL should use a new, unique opaque origin per spec:
+    // https://html.spec.whatwg.org/multipage/workers.html#script-settings-for-workers:concept-settings-object-origin-2
+    // We derive the new opaque origin from the starter origin because of a bug
+    // where the browser thinks the worker's origin is the starter origin (see
+    // https://crbug.com/1058759). With `DeriveNewOpaqueOrigin()`, the precursor
+    // origin of the new opaque origin will be the starter origin. This way, if
+    // the browser needs to verify that the browser and renderer origin matches,
+    // it can just compare the browser-side origin with the precursor of the
+    // renderer-side origin.
+    security_origin = creation_params->starter_origin->DeriveNewOpaqueOrigin();
   } else {
+    // TODO(https://crbug.com/1058305) Inherit |agent_cluster_id_| for dedicated
+    // workers. DO NOT inherit for shared workers and service workers.
+    //
+    // Create a new SecurityOrigin via CreateFromUrlOrigin() so that worker's
+    // origin can avoid inheriting unnecessary capabilities from the starter
+    // origin, while the worker's origin inherits url:Origin's internal nonce.
     security_origin = SecurityOrigin::CreateFromUrlOrigin(
         creation_params->starter_origin->ToUrlOrigin());
   }
