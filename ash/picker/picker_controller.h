@@ -18,7 +18,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -40,7 +39,6 @@ class PickerSearchResult;
 // Controls a Picker widget.
 class ASH_EXPORT PickerController
     : public PickerViewDelegate,
-      public ash::input_method::ImeKeyboard::Observer,
       public views::WidgetObserver {
  public:
   PickerController();
@@ -88,10 +86,6 @@ class ASH_EXPORT PickerController
   void ShowEditor() override;
   PickerAssetFetcher* GetAssetFetcher() override;
 
-  // ash::input_method::ImeKeyboard::Observer:
-  void OnCapsLockChanged(bool enabled) override;
-  void OnLayoutChanging(const std::string& layout_name) override {}
-
   // views:WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
 
@@ -117,10 +111,6 @@ class ASH_EXPORT PickerController
 
   // Records metrics related to a session.
   std::unique_ptr<PickerSessionMetrics> session_metrics_;
-
-  base::ScopedObservation<ash::input_method::ImeKeyboard,
-                          ash::input_method::ImeKeyboard::Observer>
-      keyboard_observation_{this};
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};

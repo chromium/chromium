@@ -178,9 +178,6 @@ PickerController::PickerController() {
   // `base::Unretained` is safe here because this class owns `asset_fetcher_`.
   asset_fetcher_ = std::make_unique<PickerAssetFetcherImpl>(base::BindRepeating(
       &PickerController::GetSharedURLLoaderFactory, base::Unretained(this)));
-  if (auto* manager = ash::input_method::InputMethodManager::Get()) {
-    keyboard_observation_.Observe(manager->GetImeKeyboard());
-  }
   clipboard_provider_ = std::make_unique<PickerClipboardProvider>();
 }
 
@@ -360,11 +357,6 @@ void PickerController::ShowEditor() {
 
 PickerAssetFetcher* PickerController::GetAssetFetcher() {
   return asset_fetcher_.get();
-}
-
-void PickerController::OnCapsLockChanged(bool enabled) {
-  // TODO: b/319301963 - Remove this behaviour once the experiment is over.
-  ToggleWidget();
 }
 
 void PickerController::OnWidgetDestroying(views::Widget* widget) {
