@@ -79,8 +79,6 @@ class CORE_EXPORT DataObject : public GarbageCollected<DataObject>,
   // DataTransferItemList support.
   uint32_t length() const;
   DataObjectItem* Item(uint32_t index);
-  // TODO: Implement V8DataTransferItemList::indexedPropertyDeleter to get this
-  // called.
   void DeleteItem(uint32_t index);
   void ClearAll();
   // Removes all the items from |item_list_| whose |kind_| is kStringKind.

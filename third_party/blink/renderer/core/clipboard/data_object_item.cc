@@ -109,7 +109,6 @@ DataObjectItem* DataObjectItem::CreateFromFileSharedBuffer(
   item->shared_buffer_ = std::move(buffer);
   item->is_image_accessible_ = is_image_accessible;
   item->filename_extension_ = filename_extension;
-  // TODO(dcheng): Rename these fields to be more generically named.
   item->title_ = content_disposition;
   item->base_url_ = source_url;
   return item;
@@ -225,9 +224,6 @@ String DataObjectItem::GetAsString() const {
 }
 
 bool DataObjectItem::IsFilename() const {
-  // TODO(https://bugs.webkit.org/show_bug.cgi?id=81261): When we properly
-  // support File dragout, we'll need to make sure this works as expected for
-  // DragDataChromium.
   return kind_ == kFileKind && file_;
 }
 
