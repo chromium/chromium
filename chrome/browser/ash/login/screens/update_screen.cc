@@ -97,6 +97,10 @@ void RecordUpdateStages(const base::TimeDelta check_time,
   RecordFinalizeTime(finalize_time);
 }
 
+void RecordUpdateCheckTimeout(bool timeout) {
+  base::UmaHistogramBoolean("OOBE.UpdateScreen.CheckTimeout", timeout);
+}
+
 }  // namespace
 
 // static
@@ -454,6 +458,8 @@ void UpdateScreen::FinishExitUpdate(Result result) {
         ->quick_start_controller()
         ->ResumeSessionAfterCancelledUpdate();
   }
+
+  RecordUpdateCheckTimeout(result == Result::UPDATE_CHECK_TIMEOUT);
 
   if (!start_update_stage_.is_null() && check_time_.is_zero()) {
     check_time_ = tick_clock_->NowTicks() - start_update_stage_;

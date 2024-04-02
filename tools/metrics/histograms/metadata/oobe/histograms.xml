@@ -1073,6 +1073,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OOBE.UpdateScreen.CheckTimeout" enum="Boolean"
+    expires_after="2024-07-01">
+  <owner>bchikhaoui@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>Indicate if update screen exit with update check timeout.</summary>
+</histogram>
+
 <histogram name="OOBE.UpdateScreen.StageTime.{UpdateStage}" units="ms"
     expires_after="2024-09-01">
   <owner>dkuzmin@google.com</owner>
