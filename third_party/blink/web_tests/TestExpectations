@@ -2613,8 +2613,8 @@ crbug.com/626703 [ Mac ] external/wpt/mediacapture-insertable-streams/legacy/Med
 crbug.com/626703 external/wpt/uievents/mouse/mouse_boundary_events_after_removing_last_over_element.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/626703 [ Win11-arm64 ] external/wpt/websockets/Create-blocked-port.any.worker.html?default [ Timeout ]
-crbug.com/626703 [ Win10.20h2 ] external/wpt/websockets/Create-blocked-port.any.worker.html?wss [ Timeout ]
+crbug.com/332372555 [ Win11-arm64 ] external/wpt/websockets/Create-blocked-port.any.worker.html?default [ Timeout ]
+crbug.com/332372555 [ Win10.20h2 ] external/wpt/websockets/Create-blocked-port.any.worker.html?wss [ Timeout ]
 crbug.com/332370892 external/wpt/fetch/api/request/request-bad-port.any.html [ Timeout ]
 crbug.com/332370892 external/wpt/fetch/api/request/request-bad-port.any.sharedworker.html [ Timeout ]
 crbug.com/332370892 external/wpt/fetch/api/request/request-bad-port.any.worker.html [ Timeout ]
