@@ -3881,6 +3881,31 @@ TEST_F(SnapGroupTest, WindowCycleItemRoundedCorners) {
   CompleteWindowCycling();
 }
 
+TEST_F(SnapGroupTest, WindowCycleItemRoundedCornersInPortait) {
+  UpdateDisplay("600x900");
+
+  std::unique_ptr<aura::Window> window0 =
+      CreateAppWindow(gfx::Rect(100, 200), AppType::BROWSER);
+  std::unique_ptr<aura::Window> window1 =
+      CreateAppWindow(gfx::Rect(200, 300), AppType::BROWSER);
+  std::unique_ptr<aura::Window> window2 =
+      CreateAppWindow(gfx::Rect(300, 400), AppType::BROWSER);
+  SnapTwoTestWindows(window0.get(), window1.get(), /*horizontal=*/false);
+
+  WindowCycleController* window_cycle_controller =
+      Shell::Get()->window_cycle_controller();
+  CycleWindow(WindowCyclingDirection::kForward, /*steps=*/3);
+  EXPECT_TRUE(window_cycle_controller->IsCycling());
+  const auto* window_cycle_list = window_cycle_controller->window_cycle_list();
+  const auto* cycle_view = window_cycle_list->cycle_view();
+  auto& cycle_item_views = cycle_view->cycle_views_for_testing();
+  ASSERT_EQ(cycle_item_views.size(), 2u);
+  for (ash::WindowMiniViewBase* cycle_item_view : cycle_item_views) {
+    EXPECT_EQ(cycle_item_view->GetRoundedCorners(),
+              gfx::RoundedCornersF(kWindowMiniViewCornerRadius));
+  }
+}
+
 // Tests that two windows in a snap group is allowed to be shown as group item
 // view only if both of them belong to the same app as the mru window. If only
 // one window belongs to the app, the representation of the window will be shown

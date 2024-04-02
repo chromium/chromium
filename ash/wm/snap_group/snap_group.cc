@@ -90,7 +90,7 @@ void SnapGroup::HideDivider() {
 }
 
 bool SnapGroup::IsSnapGroupLayoutHorizontal() {
-  return IsLayoutHorizontal(window1_);
+  return IsLayoutHorizontal(GetRootWindow());
 }
 
 void SnapGroup::OnLocatedEvent(ui::LocatedEvent* event) {

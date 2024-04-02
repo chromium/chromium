@@ -9,6 +9,7 @@
 
 #include "ash/shell.h"
 #include "ash/wm/snap_group/snap_group.h"
+#include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_cycle/window_cycle_list.h"
 #include "ash/wm/window_cycle/window_cycle_view.h"
@@ -32,17 +33,40 @@ namespace ash {
 
 namespace {
 
-// The min and max width for preview size are in relation to the fixed height.
-constexpr int kMinPreviewWidthDp =
-    WindowCycleItemView::kFixedPreviewHeightDp / 2;
-constexpr int kMaxPreviewWidthDp =
-    WindowCycleItemView::kFixedPreviewHeightDp * 2;
+// Spacing between the `WindowCycleItemView`s hosted by the container view.
+constexpr int kBetweenCycleItemsSpacing = 4;
+
+// Fixed preview height to windows in portrait-oriented snap layouts.
+constexpr int kFixedPreviewHeightForVerticalSnapGroupDp =
+    (WindowCycleItemView::kFixedPreviewHeightDp - kWindowMiniViewHeaderHeight -
+     kBetweenCycleItemsSpacing) /
+    2;
 
 // The border padding value of the container view.
 constexpr auto kInsideContainerBorderInset = gfx::Insets(2);
 
-// Spacing between the `WindowCycleItemView`s hosted by the container view.
-constexpr int kBetweenCycleItemsSpacing = 4;
+// Returns true if the given `window` belongs to a snap group with a vertical
+// split layout.
+bool IsWindowInVerticalSnapGroup(const aura::Window* window) {
+  if (SnapGroupController* snap_group_controller = SnapGroupController::Get()) {
+    if (SnapGroup* snap_group =
+            snap_group_controller->GetSnapGroupForGivenWindow(window);
+        snap_group && !snap_group->IsSnapGroupLayoutHorizontal()) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+// Calculates fixed preview height for `window`. In vertical snap groups,
+// applies `kFixedPreviewHeightForVerticalSnapGroupDp` to maintain equal height
+// with other item preview views.
+int GetPreviewFixedHeight(const aura::Window* window) {
+  return IsWindowInVerticalSnapGroup(window)
+             ? kFixedPreviewHeightForVerticalSnapGroupDp
+             : WindowCycleItemView::kFixedPreviewHeightDp;
+}
 
 }  // namespace
 
@@ -87,10 +111,12 @@ gfx::Size WindowCycleItemView::GetPreviewViewSize() const {
   // Returns the size for the preview view, scaled to fit within the max
   // bounds. Scaling is always 1:1 and we only scale down, never up.
   gfx::Size preview_pref_size = preview_view()->GetPreferredSize();
-  if (preview_pref_size.width() > kMaxPreviewWidthDp ||
+  const int preview_view_height = GetPreviewFixedHeight(source_window());
+  const int max_preview_width = 2 * preview_view_height;
+  if (preview_pref_size.width() > max_preview_width ||
       preview_pref_size.height() > kFixedPreviewHeightDp) {
     const float scale = std::min(
-        kMaxPreviewWidthDp / static_cast<float>(preview_pref_size.width()),
+        max_preview_width / static_cast<float>(preview_pref_size.width()),
         kFixedPreviewHeightDp / static_cast<float>(preview_pref_size.height()));
     preview_pref_size =
         gfx::ScaleToRoundedSize(preview_pref_size, scale, scale);
@@ -143,14 +169,18 @@ gfx::Size WindowCycleItemView::CalculatePreferredSize() const {
   // sides to achieve this if the preview is too narrow.
   gfx::Size preview_size = GetPreviewViewSize();
 
+  const int preview_height = GetPreviewFixedHeight(source_window());
+
   // All previews are the same height (this may add padding on top and
   // bottom).
-  preview_size.set_height(kFixedPreviewHeightDp);
+  preview_size.set_height(preview_height);
 
   // Previews should never be narrower than half or wider than double their
   // fixed height.
+  const int min_preview_width = preview_height / 2;
+  const int max_preview_width = preview_height * 2;
   preview_size.set_width(
-      std::clamp(preview_size.width(), kMinPreviewWidthDp, kMaxPreviewWidthDp));
+      std::clamp(preview_size.width(), min_preview_width, max_preview_width));
 
   const int margin = GetInsets().width();
   preview_size.Enlarge(margin, margin + kWindowMiniViewHeaderHeight);
@@ -182,7 +212,8 @@ void WindowCycleItemView::RefreshItemVisuals() {
 BEGIN_METADATA(WindowCycleItemView)
 END_METADATA
 
-GroupContainerCycleView::GroupContainerCycleView(SnapGroup* snap_group) {
+GroupContainerCycleView::GroupContainerCycleView(SnapGroup* snap_group)
+    : is_layout_horizontal_(snap_group->IsSnapGroupLayoutHorizontal()) {
   mini_views_.push_back(AddChildView(
       std::make_unique<WindowCycleItemView>(snap_group->window1())));
   mini_views_.push_back(AddChildView(
@@ -194,10 +225,10 @@ GroupContainerCycleView::GroupContainerCycleView(SnapGroup* snap_group) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
-  // TODO(michelefan): Window layout should correspond to screen orientation.
   views::BoxLayout* layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal,
+          is_layout_horizontal_ ? views::BoxLayout::Orientation::kHorizontal
+                                : views::BoxLayout::Orientation::kVertical,
           kInsideContainerBorderInset, kBetweenCycleItemsSpacing));
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
@@ -214,7 +245,7 @@ bool GroupContainerCycleView::Contains(aura::Window* window) const {
 
 aura::Window* GroupContainerCycleView::GetWindowAtPoint(
     const gfx::Point& screen_point) const {
-  for (ash::WindowCycleItemView* mini_view : mini_views_) {
+  for (WindowCycleItemView* mini_view : mini_views_) {
     if (auto* window = mini_view->GetWindowAtPoint(screen_point)) {
       return window;
     }
@@ -223,7 +254,7 @@ aura::Window* GroupContainerCycleView::GetWindowAtPoint(
 }
 
 void GroupContainerCycleView::SetShowPreview(bool show) {
-  for (ash::WindowCycleItemView* mini_view : mini_views_) {
+  for (WindowCycleItemView* mini_view : mini_views_) {
     mini_view->SetShowPreview(show);
   }
 }
@@ -239,7 +270,7 @@ void GroupContainerCycleView::RefreshItemVisuals() {
             /*include_header_rounding=*/true));
   }
 
-  for (ash::WindowCycleItemView* mini_view : mini_views_) {
+  for (WindowCycleItemView* mini_view : mini_views_) {
     mini_view->RefreshItemVisuals();
   }
 }
@@ -281,14 +312,21 @@ gfx::RoundedCornersF GroupContainerCycleView::GetRoundedCorners() const {
   }
 
   CHECK_EQ(mini_views_.size(), 2u);
-  // The left corners (`upper_left` and `lower_left`) will depend on the primary
-  // snapped window, and likewise for the right corners.
-  // TODO(http://b/294294344): for vertical split view, the upper corners will
-  // depend on the primary snapped window and likewise for the lower corners.
+
+  // For horizontal window layout, the left corners (`upper_left` and
+  // `lower_left`) will depend on the primary snapped window, and likewise for
+  // the right corners.
+  // For vertical window layout, the top corners (`upper_left` and
+  // `upper_right`) will depend on the primary snapped window, and likewise for
+  // the bottom corners.
   const float upper_left = mini_views_[0]->GetRoundedCorners().upper_left();
-  const float upper_right = mini_views_[1]->GetRoundedCorners().upper_right();
+  const float upper_right =
+      is_layout_horizontal_ ? mini_views_[1]->GetRoundedCorners().upper_right()
+                            : mini_views_[0]->GetRoundedCorners().upper_right();
   const float lower_right = mini_views_[1]->GetRoundedCorners().lower_right();
-  const float lower_left = mini_views_[0]->GetRoundedCorners().lower_left();
+  const float lower_left =
+      is_layout_horizontal_ ? mini_views_[0]->GetRoundedCorners().lower_left()
+                            : mini_views_[1]->GetRoundedCorners().lower_left();
   return gfx::RoundedCornersF(upper_left, upper_right, lower_right, lower_left);
 }
 
@@ -311,7 +349,7 @@ void GroupContainerCycleView::SetSelectedWindowForFocus(aura::Window* window) {
   } else {
     // For normal use case, follow the window cycle order and `UpdateFocusState`
     // on the cycle item that contains the target window.
-    for (ash::WindowCycleItemView* mini_view : mini_views_) {
+    for (WindowCycleItemView* mini_view : mini_views_) {
       if (mini_view->Contains(window)) {
         mini_view->UpdateFocusState(/*focus=*/true);
         break;
@@ -321,7 +359,7 @@ void GroupContainerCycleView::SetSelectedWindowForFocus(aura::Window* window) {
 }
 
 void GroupContainerCycleView::ClearFocusSelection() {
-  for (ash::WindowCycleItemView* mini_view : mini_views_) {
+  for (WindowCycleItemView* mini_view : mini_views_) {
     mini_view->UpdateFocusState(/*focus=*/false);
   }
 }
