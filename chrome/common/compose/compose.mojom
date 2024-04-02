@@ -187,6 +187,10 @@ interface ComposeSessionUntrustedPageHandler {
 
   // Asks the native handler to store the user feedback supplied by the user.
   SetUserFeedback(UserFeedback feedback);
+
+  // Tells the native handler that the user has updated the compose results
+  // to the new result.
+  EditResult(string new_result);
 };
 
 // Interface for calls from the untrusted Compose dialog JS into the Browser

@@ -91,13 +91,19 @@ class ComposeState {
   ComposeState() {
     modeling_log_entry_ = nullptr;
     mojo_state_ = nullptr;
+    is_user_edited_ = false;
+    original_response_ = "";
   }
 
   ComposeState(std::unique_ptr<optimization_guide::ModelQualityLogEntry>
                    modeling_log_entry,
-               compose::mojom::ComposeStatePtr mojo_state) {
+               compose::mojom::ComposeStatePtr mojo_state,
+               bool is_user_edited,
+               std::string original_response) {
     modeling_log_entry_ = std::move(modeling_log_entry);
     mojo_state_ = std::move(mojo_state);
+    is_user_edited_ = is_user_edited;
+    original_response_ = original_response;
   }
 
   ~ComposeState() = default;
@@ -128,6 +134,14 @@ class ComposeState {
   compose::mojom::ComposeStatePtr TakeMojoState() {
     auto to_return = std::move(mojo_state_);
     return to_return;
+  }
+
+  bool is_user_edited() { return is_user_edited_; }
+  std::string original_response() { return original_response_; }
+
+  void SetUserEdited(std::string original_response) {
+    original_response_ = original_response;
+    is_user_edited_ = true;
   }
 
   void SetMojoState(compose::mojom::ComposeStatePtr mojo_state) {
@@ -175,6 +189,8 @@ class ComposeState {
  private:
   std::unique_ptr<optimization_guide::ModelQualityLogEntry> modeling_log_entry_;
   compose::mojom::ComposeStatePtr mojo_state_;
+  std::string original_response_;
+  bool is_user_edited_;
 };
 
 ComposeSession::ComposeSession(
@@ -830,6 +846,17 @@ void ComposeSession::SetUserFeedback(compose::mojom::UserFeedback feedback) {
   }
 }
 
+void ComposeSession::EditResult(const std::string& new_result) {
+  // Save the state if it hasn't been edited.
+  if (!most_recent_ok_state_->is_user_edited()) {
+    SaveMostRecentOkStateToUndoStack();
+    most_recent_ok_state_->SetUserEdited(
+        most_recent_ok_state_->mojo_state()->response->result);
+  }
+  // Update result to be the edited result.
+  most_recent_ok_state_->mojo_state()->response->result = new_result;
+}
+
 void ComposeSession::InitializeWithText(const std::optional<std::string>& text,
                                         const bool text_selected) {
   // In some cases (FRE not shown, MSBB not accepted), we wait to extract the
@@ -873,7 +900,9 @@ void ComposeSession::SaveMostRecentOkStateToUndoStack() {
   }
   undo_states_.push(std::make_unique<ComposeState>(
       most_recent_ok_state_->TakeModelingLogEntry(),
-      most_recent_ok_state_->TakeMojoState()));
+      most_recent_ok_state_->TakeMojoState(),
+      most_recent_ok_state_->is_user_edited(),
+      most_recent_ok_state_->original_response()));
 }
 
 void ComposeSession::AddPageContentToSession(

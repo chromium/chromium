@@ -147,6 +147,9 @@ class ComposeSession
   // Saves the user feedback supplied form the UI to include in quality logs.
   void SetUserFeedback(compose::mojom::UserFeedback feedback) override;
 
+  // Edits the result from the model.
+  void EditResult(const std::string& new_result) override;
+
   // Non-ComposeSessionUntrustedPageHandler Methods
 
   // Notifies the session that a new dialog is opening and starts refreshing

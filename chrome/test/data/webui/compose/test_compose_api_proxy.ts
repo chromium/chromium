@@ -58,6 +58,7 @@ export class TestComposeApiProxy extends TestBrowserProxy implements
       'showUi',
       'undo',
       'revertToMostRecentOkState',
+      'editResult',
     ]);
   }
 
@@ -156,5 +157,9 @@ export class TestComposeApiProxy extends TestBrowserProxy implements
 
   showUi() {
     this.methodCalled('showUi');
+  }
+
+  editResult(result: string) {
+    this.methodCalled('editResult', result);
   }
 }
