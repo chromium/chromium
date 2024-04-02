@@ -56,72 +56,51 @@ void PutScreenshotBack(NavigationControllerImpl* controller,
 //
 // Note: The timing function is linear.
 
-static constexpr base::TimeTicks kFittedStart;
-static constexpr base::TimeDelta kFittedTimelineDuration = base::Seconds(1);
+constexpr base::TimeTicks kFittedStart;
+constexpr base::TimeDelta kFittedTimelineDuration = base::Seconds(1);
 
 base::TimeTicks GetFittedTimeTicksForForegroundProgress(float progress) {
   return kFittedStart + kFittedTimelineDuration * progress;
 }
 
-// 0-indexed as the value will be stored in a bitset.
-enum class TargetProperty {
-  kScrim = 0,
-  kCrossFade,
-};
-
-struct ScrimAndCrossFadeAnimaitonConfig {
-  TargetProperty target_property;
-  float start;
-  float end;
-  base::TimeDelta duration;
-};
-
 //============================= Crossfade animation ============================
-static constexpr base::TimeDelta kCrossfadeDuration = base::Milliseconds(100);
-
-static constexpr ScrimAndCrossFadeAnimaitonConfig kCrossFadeAnimation{
-    .target_property = TargetProperty::kCrossFade,
-    .start = 1.0f,
-    .end = 0.0f,
-    .duration = kCrossfadeDuration};
+constexpr base::TimeDelta kCrossfadeDuration = base::Milliseconds(100);
 
 //=============================== Scrim animation ==============================
+
 // The scim animations have two timelines:
 // - The fist timeline for while the screenshot layer is moving across the
-//   screen.
+//   screen. The scrim goes from `kScrimStart` to
+//   `kScrimEndForLayerTransform`.
 // - The second timeline while the screenshot layer is cross-fading into the
-//   new content page.
+//   new content page. The scrim goes from `kScrimEndForLayerTransform` to
+//   `kScrimEnd`.
+static constexpr float kScrimStart = 0.8;
+static constexpr float kScrimEndForLayerTransform = 0.3;
+static constexpr float kScrimEnd = 0.f;
 
-static constexpr ScrimAndCrossFadeAnimaitonConfig
-    kScrimAnimationDuringGestureProgress{
-        .target_property = TargetProperty::kScrim,
-        .start = 0.8f,
-        .end = 0.3f,
-        .duration = kFittedTimelineDuration};
+// 0-indexed as the value will be stored in a bitset.
+enum class TargetProperty {
+  kScreenshotScrim = 0,
+};
 
-static constexpr ScrimAndCrossFadeAnimaitonConfig
-    kScrimAnimationDuringCrossFade{.target_property = TargetProperty::kScrim,
-                                   .start = 0.3f,
-                                   .end = 0.0f,
-                                   .duration = kCrossfadeDuration};
-
-void AddFloatModelToEffect(ScrimAndCrossFadeAnimaitonConfig config,
+// Add a scrim model to `effect_`.
+void AddScrimModelToEffect(float start,
+                           float end,
+                           base::TimeDelta duration,
                            gfx::FloatAnimationCurve::Target* target,
                            gfx::KeyframeEffect& effect) {
-  auto curve = gfx::KeyframedFloatAnimationCurve::Create();
-  curve->AddKeyframe(gfx::FloatKeyframe::Create(/*time=*/base::TimeDelta(),
-                                                /*value=*/config.start,
-                                                /*timing_function=*/nullptr));
-  curve->AddKeyframe(gfx::FloatKeyframe::Create(/*time=*/config.duration,
-                                                /*value=*/config.end,
-                                                /*timing_function=*/nullptr));
+  auto curve(gfx::KeyframedFloatAnimationCurve::Create());
+  curve->AddKeyframe(
+      gfx::FloatKeyframe::Create(base::TimeDelta(), start, nullptr));
+  curve->AddKeyframe(gfx::FloatKeyframe::Create(duration, end, nullptr));
   curve->set_target(target);
 
   auto model = gfx::KeyframeModel::Create(
       /*curve=*/std::move(curve),
       /*keyframe_model_id=*/effect.GetNextKeyframeModelId(),
       /*target_property_id=*/
-      static_cast<int>(config.target_property));
+      static_cast<int>(TargetProperty::kScreenshotScrim));
 
   effect.AddKeyframeModel(std::move(model));
 }
@@ -146,7 +125,6 @@ BackForwardTransitionAnimator::~BackForwardTransitionAnimator() {
 
   ResetTransformForLayer(animation_manager_->web_contents_view_android()
                              ->parent_for_web_page_widgets());
-
   // TODO(https://crbug.com/1488075): If there is the old visual state hovering
   // above the RWHV layer, we need to remove that as well.
 
@@ -338,6 +316,10 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
       // to whatever is underneath the screenshot.
       CHECK_EQ(navigation_state_, NavigationState::kCommitted);
       CHECK(primary_main_frame_navigation_request_id_of_gesture_nav_);
+      // TODO(https://crbug.com/1426457): This switch branch isn't reachable for
+      // now because we don't have the cross-fade animation. The transition from
+      // kDisplayingCrossFadeAnimation to kAnimationFinished is atomic. Make
+      // sure we test this branch when we implement the cross-fade animation.
       skip_all_animations_and_self_destroy = true;
       break;
     }
@@ -465,14 +447,8 @@ void BackForwardTransitionAnimator::OnAnimate(
       break;
     }
     case State::kDisplayingCrossFadeAnimation: {
-      // One cross-fade and one scrim models.
-      CHECK_EQ(effect_.keyframe_models().size(), 2U);
-      effect_.Tick(frame_begin_time);
-      // `Tick()` has the side effect of removing all the finished models. At
-      // the last frame of `OnFloatAnimated()`, the model is still running, but
-      // is immediately removed after the `Tick()` WITHOUT advancing to the
-      // finished or pending deletion state.
-      animation_finished = effect_.keyframe_models().empty();
+      // TODO(https://crbug.com/1426457): Tick for cross-fade.
+      animation_finished = true;
       break;
     }
     case State::kStarted:
@@ -591,18 +567,10 @@ void BackForwardTransitionAnimator::OnFloatAnimated(
     gfx::KeyframeModel* keyframe_model) {
   TargetProperty property = static_cast<TargetProperty>(target_property_id);
   switch (property) {
-    case TargetProperty::kScrim: {
-      CHECK(screenshot_scrim_);
+    case TargetProperty::kScreenshotScrim: {
       auto scrim = SkColors::kBlack;
       scrim.fA = value;
       screenshot_scrim_->SetBackgroundColor(scrim);
-      return;
-    }
-    case TargetProperty::kCrossFade: {
-      CHECK(ui_resource_layer_);
-      // Scrim (second timeline) and the crossfade model.
-      CHECK_EQ(effect_.keyframe_models().size(), 2u);
-      ui_resource_layer_->SetOpacity(value);
       return;
     }
   }
@@ -614,19 +582,13 @@ void BackForwardTransitionAnimator::OnCancelAnimationDisplayed() {
     AdvanceAndProcessState(State::kWaitingForBeforeUnloadResponse);
     return;
   }
-  CHECK_EQ(effect_.keyframe_models().size(), 1U);
-  CHECK_EQ(effect_.keyframe_models()[0]->TargetProperty(),
-           static_cast<int>(TargetProperty::kScrim));
+
   effect_.RemoveAllKeyframeModels();
   AdvanceAndProcessState(State::kAnimationFinished);
 }
 
 void BackForwardTransitionAnimator::OnInvokeAnimationDisplayed() {
-  // The first scrim timeline is a function of the top layer's position. At the
-  // end of the invoke animation, the top layer is completely out of the
-  // viewport, so the `KeyFrameModel` for the scrim should also be exhausted and
-  // removed.
-  CHECK(effect_.keyframe_models().empty());
+  effect_.RemoveAllKeyframeModels();
   if (viz_has_activated_first_frame_) {
     AdvanceAndProcessState(State::kDisplayingCrossFadeAnimation);
   } else {
@@ -635,7 +597,7 @@ void BackForwardTransitionAnimator::OnInvokeAnimationDisplayed() {
 }
 
 void BackForwardTransitionAnimator::OnCrossFadeAnimationDisplayed() {
-  CHECK(effect_.keyframe_models().empty());
+  effect_.RemoveAllKeyframeModels();
   AdvanceAndProcessState(State::kAnimationFinished);
 }
 
@@ -720,18 +682,20 @@ void BackForwardTransitionAnimator::
   CHECK(effect_.keyframe_models().empty());
 
   // First scrim timeline for the screenshot layer's transform.
-  AddFloatModelToEffect(kScrimAnimationDuringGestureProgress, this, effect_);
+  AddScrimModelToEffect(kScrimStart, kScrimEndForLayerTransform,
+                        kFittedTimelineDuration, this, effect_);
 }
 
 void BackForwardTransitionAnimator::InitializeEffectForCrossfadeAnimation() {
-  // At the the end if the invoke animation and before the cross-fade, the scrim
-  // model for the first timeline is finished (and removed).
+  // At the the end if the invoke animation and before the cross-fade, the model
+  // for the first timeline is finished (and removed).
   CHECK(effect_.keyframe_models().empty());
 
-  AddFloatModelToEffect(kCrossFadeAnimation, this, effect_);
-
   // Second scrim timeline for the cross-fade animation.
-  AddFloatModelToEffect(kScrimAnimationDuringCrossFade, this, effect_);
+  AddScrimModelToEffect(kScrimEndForLayerTransform, kScrimEnd,
+                        kCrossfadeDuration, this, effect_);
+
+  // TODO(https://crbug.com/1426457): Add two models for cross-fade.
 }
 
 void BackForwardTransitionAnimator::AdvanceAndProcessState(State state) {
@@ -828,8 +792,9 @@ void BackForwardTransitionAnimator::ProcessState() {
       // No-op. Waiting for `OnRenderFrameMetadataChangedAfterActivation()`.
       break;
     case State::kDisplayingCrossFadeAnimation: {
-      // TODO(https://crbug.com/1488075):
-      // - Dismiss the old page's visual copy.
+      // TODO(https://crbug.com/1426457):
+      // - Dismiss the active layer visual copy.
+      // - Move the screenshot to the very top before cross-fading.
 
       // Before we start displaying the crossfade animation,
       // `parent_for_web_page_widgets()` is completely out of the viewport. This
@@ -839,21 +804,12 @@ void BackForwardTransitionAnimator::ProcessState() {
                                  ->parent_for_web_page_widgets());
       ResetTransformForLayer(ui_resource_layer_.get());
 
-      // Move the screenshot to the very top, so we can cross-fade from the
-      // screenshot (top) into the active page (bottom).
-      CHECK(ui_resource_layer_->parent());
-      ui_resource_layer_->RemoveFromParent();
-      animation_manager_->web_contents_view_android()
-          ->AddScreenshotLayerForNavigationTransitions(
-              ui_resource_layer_.get(), /*screenshot_layer_on_top=*/true);
-
       InitializeEffectForCrossfadeAnimation();
 
-      CHECK(animation_manager_->web_contents_view_android()
-                ->GetTopLevelNativeWindow());
-      animation_manager_->web_contents_view_android()
-          ->GetTopLevelNativeWindow()
-          ->SetNeedsAnimate();
+      // TODO(https://crbug.com/1426457): Register `this` as a
+      // WindowAndroidObserver, and remove `OnCrossFadeAnimationDisplayed()`.
+      OnCrossFadeAnimationDisplayed();
+
       break;
     }
     case State::kAnimationFinished: {
