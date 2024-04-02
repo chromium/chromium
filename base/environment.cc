@@ -4,6 +4,7 @@
 
 #include "base/environment.h"
 
+#include <array>
 #include <string_view>
 
 #include "base/memory/ptr_util.h"
@@ -54,19 +55,23 @@ class EnvironmentImpl : public Environment {
  private:
   bool GetVarImpl(std::string_view variable_name, std::string* result) {
 #if BUILDFLAG(IS_WIN)
-    DWORD value_length =
-        ::GetEnvironmentVariable(UTF8ToWide(variable_name).c_str(), nullptr, 0);
-    if (value_length == 0)
-      return false;
-    if (result) {
-      std::unique_ptr<wchar_t[]> value(new wchar_t[value_length]);
-      ::GetEnvironmentVariable(UTF8ToWide(variable_name).c_str(), value.get(),
-                               value_length);
-      *result = WideToUTF8(value.get());
+    std::wstring wide_name = UTF8ToWide(variable_name);
+    if (!result) {
+      return ::GetEnvironmentVariable(wide_name.c_str(), nullptr, 0) != 0;
     }
+    // Documented to be the maximum environment variable size.
+    std::array<wchar_t, 32767> value;
+    DWORD value_length =
+        ::GetEnvironmentVariable(wide_name.c_str(), value.data(), value.size());
+    if (value_length == 0) {
+      return false;
+    }
+    CHECK_LE(value_length, value.size() - 1)
+        << "value should fit in the buffer (including the null terminator)";
+    WideToUTF8(value.data(), value_length, result);
     return true;
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-    const char* env_value = getenv(variable_name.data());
+    const char* env_value = getenv(std::string(variable_name).c_str());
     if (!env_value)
       return false;
     // Note that the variable may be defined but empty.
