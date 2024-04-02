@@ -534,10 +534,4 @@ bool CookieSettings::MitigationsEnabledFor3pcd() const {
          mitigations_enabled_for_3pcd_;
 }
 
-bool CookieSettings::IsStorageAccessApiEnabled() const {
-  // The network service relies on the browser process passing
-  // storage_access_grants_ correctly.
-  return true;
-}
-
 }  // namespace network

@@ -416,9 +416,6 @@ class CookieSettingsBase {
   virtual bool IsThirdPartyCookiesAllowedScheme(
       const std::string& scheme) const = 0;
 
-  // Returns whether the StorageAccessAPI feature is enabled.
-  virtual bool IsStorageAccessApiEnabled() const = 0;
-
   static bool storage_access_api_grants_unpartitioned_storage_;
   const bool is_storage_partitioned_;
 };

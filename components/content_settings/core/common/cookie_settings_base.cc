@@ -490,8 +490,7 @@ bool CookieSettingsBase::IsAllowedByTopLevelStorageAccessGrant(
     const GURL& url,
     const GURL& first_party_url,
     net::CookieSettingOverrides overrides) const {
-  return IsStorageAccessApiEnabled() &&
-         overrides.Has(
+  return overrides.Has(
              net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible) &&
          GetContentSetting(url, first_party_url,
                            ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
@@ -684,8 +683,7 @@ bool CookieSettingsBase::IsAllowedByStorageAccessGrant(
     const GURL& url,
     const GURL& first_party_url,
     net::CookieSettingOverrides overrides) const {
-  if (!IsStorageAccessApiEnabled() ||
-      !overrides.Has(net::CookieSettingOverride::kStorageAccessGrantEligible)) {
+  if (!overrides.Has(net::CookieSettingOverride::kStorageAccessGrantEligible)) {
     return false;
   }
   // The Storage Access API allows access in A(B(A)) case (or similar). Do the

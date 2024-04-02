@@ -174,7 +174,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
       const std::string& scheme) const override;
   bool ShouldBlockThirdPartyCookies() const override;
   bool MitigationsEnabledFor3pcd() const override;
-  bool IsStorageAccessApiEnabled() const override;
 
   bool IsThirdPartyPhaseoutEnabled() const;
 

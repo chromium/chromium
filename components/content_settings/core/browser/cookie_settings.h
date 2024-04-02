@@ -288,7 +288,6 @@ class CookieSettings
       content_settings::SettingInfo* info) const override;
   bool IsThirdPartyCookiesAllowedScheme(
       const std::string& scheme) const override;
-  bool IsStorageAccessApiEnabled() const override;
 
   // TrackingProtectionSettingsObserver:
   void OnTrackingProtection3pcdChanged() override;

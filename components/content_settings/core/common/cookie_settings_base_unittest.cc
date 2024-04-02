@@ -72,8 +72,6 @@ class CallbackCookieSettings : public CookieSettingsBase {
     return false;
   }
 
-  bool IsStorageAccessApiEnabled() const override { return true; }
-
   bool ShouldIgnoreSameSiteRestrictions(
       const GURL& url,
       const net::SiteForCookies& site_for_cookies) const override {

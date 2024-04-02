@@ -12,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/synchronization/lock.h"
-#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
@@ -379,17 +378,6 @@ bool CookieSettings::IsThirdPartyCookiesAllowedScheme(
   const std::vector<std::string> allowed_schemes =
       content_settings_info->third_party_cookie_allowed_secondary_schemes();
   return base::Contains(allowed_schemes, scheme);
-}
-
-bool CookieSettings::IsStorageAccessApiEnabled() const {
-  // TODO(https://crbug.com/1411765): instead of explicitly checking for
-  // USE_BLINK throughout the core code of this component, we should rely on
-  // CookieSettingsFactory to plumb in the necessary configuration instead.
-#if BUILDFLAG(USE_BLINK)
-  return true;
-#else
-  return false;
-#endif
 }
 
 CookieSettings::~CookieSettings() = default;
