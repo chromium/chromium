@@ -18,6 +18,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/syslog_logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
@@ -39,6 +40,7 @@
 #include "chrome/browser/ash/profiles/signin_profile_handler.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
+#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -65,6 +67,8 @@
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/common/content_switches.h"
+#include "extensions/common/features/feature_session_type.h"
+#include "extensions/common/mojom/feature_session_type.mojom.h"
 
 namespace ash {
 
@@ -162,7 +166,9 @@ void UpsertStubUserToAccountManager(Profile* user_profile,
 // 4. Chrome is started on dev machine i.e. not on Chrome OS device w/o
 //    login flow. In that case --login-user=[user_manager::kStubUserEmail] is
 //    added. See PreEarlyInitialization().
-void StartUserSession(Profile* user_profile, const std::string& login_user_id) {
+void StartUserSession(user_manager::UserManager* user_manager,
+                      Profile* user_profile,
+                      const std::string& login_user_id) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
   bool is_running_test = command_line->HasSwitch(::switches::kTestName) ||
@@ -175,7 +181,6 @@ void StartUserSession(Profile* user_profile, const std::string& login_user_id) {
 
     // This is done in SessionManager::OnProfileCreated during normal login.
     UserSessionManager* user_session_mgr = UserSessionManager::GetInstance();
-    user_manager::UserManager* user_manager = user_manager::UserManager::Get();
     const user_manager::User* user = user_manager->GetActiveUser();
     if (!user) {
       // This is possible if crash occured after profile removal
@@ -189,8 +194,8 @@ void StartUserSession(Profile* user_profile, const std::string& login_user_id) {
     // session resources have been loaded.
     if (demo_session && demo_session->started() && demo_session->components() &&
         !demo_session->components()->resources_component_loaded()) {
-      demo_session->EnsureResourcesLoaded(
-          base::BindOnce(&StartUserSession, user_profile, login_user_id));
+      demo_session->EnsureResourcesLoaded(base::BindOnce(
+          &StartUserSession, user_manager, user_profile, login_user_id));
       LOG(WARNING) << "Delay demo user session start until demo "
                    << "resources are loaded";
       return;
@@ -291,11 +296,12 @@ void OnRmaIsRequiredResponse() {
   }
 }
 
-bool MaybeStartArcVmDataMigration(Profile* profile) {
+bool MaybeStartArcVmDataMigration(user_manager::UserManager* user_manager,
+                                  Profile* profile) {
   // Migration should be performed only when the session is restarted with the
   // primary user.
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile);
-  if (user && user_manager::UserManager::Get()->GetPrimaryUser() == user) {
+  if (user && user_manager->GetPrimaryUser() == user) {
     arc::ArcVmDataMigrationStatus data_migration_status =
         arc::GetArcVmDataMigrationStatus(profile->GetPrefs());
     if (data_migration_status == arc::ArcVmDataMigrationStatus::kConfirmed ||
@@ -305,6 +311,37 @@ bool MaybeStartArcVmDataMigration(Profile* profile) {
     }
   }
   return false;
+}
+
+// NOTE: This has to be called before profile is initialized - so it is set up
+// when extension are loaded during profile initialization.
+void InitFeaturesSessionType(const user_manager::User* user) {
+  // Kiosk session should be set as part of kiosk user session initialization
+  // in normal circumstances (to be able to properly determine whether kiosk
+  // was auto-launched); in case of user session restore, feature session
+  // type has be set before kiosk app controller takes over, as at that point
+  // kiosk app profile would already be initialized - feature session type
+  // should be set before that.
+  if (user->IsKioskType()) {
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kLoginUser)) {
+      // For kiosk session crash recovery, feature session type has be set
+      // before kiosk app controller takes over, as at that point iosk app
+      // profile would already be initialized - feature session type
+      // should be set before that.
+      bool auto_launched = base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kAppAutoLaunched);
+      extensions::SetCurrentFeatureSessionType(
+          auto_launched
+              ? extensions::mojom::FeatureSessionType::kAutolaunchedKiosk
+              : extensions::mojom::FeatureSessionType::kKiosk);
+    }
+    return;
+  }
+
+  extensions::SetCurrentFeatureSessionType(
+      user->HasGaiaAccount() ? extensions::mojom::FeatureSessionType::kRegular
+                             : extensions::mojom::FeatureSessionType::kUnknown);
 }
 
 }  // namespace
@@ -317,6 +354,12 @@ ChromeSessionManager::ChromeSessionManager()
 
 ChromeSessionManager::~ChromeSessionManager() {
   RemoveObserver(user_session_initializer_.get());
+}
+
+void ChromeSessionManager::OnUserManagerCreated(
+    user_manager::UserManager* user_manager) {
+  user_manager_ = user_manager;
+  user_manager_observation_.Observe(user_manager_);
 }
 
 void ChromeSessionManager::Initialize(
@@ -349,7 +392,7 @@ void ChromeSessionManager::Initialize(
   }
 
   if (base::FeatureList::IsEnabled(arc::kEnableArcVmDataMigration) &&
-      MaybeStartArcVmDataMigration(profile)) {
+      MaybeStartArcVmDataMigration(user_manager_, profile)) {
     return;
   }
 
@@ -402,7 +445,7 @@ void ChromeSessionManager::Initialize(
     StartLoginOobeSession();
   } else {
     VLOG(1) << "Starting Chrome with a user session.";
-    StartUserSession(profile, login_account_id.GetUserEmail());
+    StartUserSession(user_manager_, profile, login_account_id.GetUserEmail());
   }
 }
 
@@ -411,10 +454,7 @@ void ChromeSessionManager::SessionStarted() {
   SetSessionState(session_manager::SessionState::ACTIVE);
 
   // Notifies UserManager so that it can update login state.
-  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  if (user_manager) {
-    user_manager->OnSessionStarted();
-  }
+  user_manager_->OnSessionStarted();
 }
 
 void ChromeSessionManager::NotifyUserLoggedIn(const AccountId& user_account_id,
@@ -425,7 +465,27 @@ void ChromeSessionManager::NotifyUserLoggedIn(const AccountId& user_account_id,
   btl->AddLoginTimeMarker("UserLoggedIn-Start", false);
   session_manager::SessionManager::NotifyUserLoggedIn(
       user_account_id, user_id_hash, browser_restart, is_child);
+
+  if (user_manager_->GetLoggedInUsers().size() == 1) {
+    InitFeaturesSessionType(user_manager_->GetPrimaryUser());
+  }
+
   btl->AddLoginTimeMarker("UserLoggedIn-End", false);
+}
+
+void ChromeSessionManager::OnUsersSignInConstraintsChanged() {
+  const user_manager::UserList& logged_in_users =
+      user_manager_->GetLoggedInUsers();
+  for (user_manager::User* user : logged_in_users) {
+    if (user->IsDeviceLocalAccount()) {
+      continue;
+    }
+    if (!user_manager_->IsUserAllowed(*user)) {
+      SYSLOG(ERROR)
+          << "The current user is not allowed, terminating the session.";
+      chrome::AttemptUserExit();
+    }
+  }
 }
 
 }  // namespace ash

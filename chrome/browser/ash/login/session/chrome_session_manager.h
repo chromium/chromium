@@ -7,10 +7,12 @@
 
 #include <string>
 
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/oobe_configuration.h"
 #include "chrome/browser/ash/login/session/user_session_initializer.h"
 #include "chromeos/ash/components/login/integrity/misconfigured_user_cleaner.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user_manager.h"
 
 namespace base {
 class CommandLine;
@@ -20,7 +22,8 @@ class Profile;
 
 namespace ash {
 
-class ChromeSessionManager : public session_manager::SessionManager {
+class ChromeSessionManager : public session_manager::SessionManager,
+                             public user_manager::UserManager::Observer {
  public:
   ChromeSessionManager();
 
@@ -28,6 +31,11 @@ class ChromeSessionManager : public session_manager::SessionManager {
   ChromeSessionManager& operator=(const ChromeSessionManager&) = delete;
 
   ~ChromeSessionManager() override;
+
+  // Currently, UserManager is created after SessionManager.
+  // TODO(b/332481586): Move this to the constructor by fixing initialization
+  // order.
+  void OnUserManagerCreated(user_manager::UserManager* user_manager);
 
   // Initialize session manager on browser starts up. Runs different code
   // path based on command line flags and policy. Possible scenarios include:
@@ -46,9 +54,18 @@ class ChromeSessionManager : public session_manager::SessionManager {
                           bool browser_restart,
                           bool is_child) override;
 
+  // user_manager::UserManager::Observer:
+  void OnUsersSignInConstraintsChanged() override;
+
  private:
+  raw_ptr<user_manager::UserManager> user_manager_ = nullptr;
+
   std::unique_ptr<OobeConfiguration> oobe_configuration_;
   std::unique_ptr<UserSessionInitializer> user_session_initializer_;
+
+  base::ScopedObservation<user_manager::UserManager,
+                          user_manager::UserManager::Observer>
+      user_manager_observation_{this};
 };
 
 }  // namespace ash

@@ -102,12 +102,16 @@ void BrowserProcessPlatformPart::ShutdownAutomaticRebootManager() {
 
 void BrowserProcessPlatformPart::InitializeUserManager() {
   DCHECK(!user_manager_);
+  CHECK(session_manager_);
   user_manager_ = ash::ChromeUserManagerImpl::CreateChromeUserManager();
   user_image_manager_registry_ =
       std::make_unique<ash::UserImageManagerRegistry>(user_manager_.get());
+  session_manager_->OnUserManagerCreated(user_manager_.get());
   // LoginState and DeviceCloudPolicyManager outlives UserManager, so on
   // their initialization, there's no way to start observing UserManager.
   // This is the earliest timing to do so.
+  // TODO(b/332481586): Consider move the initialization to the constructor
+  // of each class.
   if (auto* login_state = ash::LoginState::Get()) {
     login_state->OnUserManagerCreated(user_manager_.get());
   }
@@ -151,7 +155,7 @@ void BrowserProcessPlatformPart::ShutdownDeviceDisablingManager() {
 }
 
 void BrowserProcessPlatformPart::InitializeSessionManager() {
-  DCHECK(!session_manager_);
+  CHECK(!session_manager_);
   session_manager_ = std::make_unique<ash::ChromeSessionManager>();
 }
 

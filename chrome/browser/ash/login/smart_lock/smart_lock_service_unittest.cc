@@ -424,6 +424,7 @@ TEST_F(
   SetDisplaySize(gfx::Size(1920, 1200));
 
   ChromeSessionManager manager;
+  manager.OnUserManagerCreated(fake_user_manager_.Get());
 
   auto dialog = std::make_unique<FakeMultiDeviceSetupDialog>();
   multidevice_setup::MultiDeviceSetupDialog::SetInstanceForTesting(

@@ -182,8 +182,6 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_switches.h"
-#include "extensions/common/features/feature_session_type.h"
-#include "extensions/common/mojom/feature_session_type.mojom.h"
 #include "rlz/buildflags/buildflags.h"
 #include "third_party/cros_system_api/switches/chrome_switches.h"
 #include "ui/base/ime/ash/input_method_descriptor.h"
@@ -628,7 +626,6 @@ UserSessionManager::UserSessionManager()
       waiting_for_child_account_status_(false),
       attempt_restart_closure_(base::BindRepeating(&CallChromeAttemptRestart)) {
   user_manager::UserManager::Get()->AddSessionStateObserver(this);
-  user_manager::UserManager::Get()->AddObserver(this);
   content::GetNetworkConnectionTrackerFromUIThread(
       base::BindOnce(&UserSessionManager::SetNetworkConnectionTracker,
                      GetUserSessionManagerAsWeakPtr()));
@@ -641,7 +638,6 @@ UserSessionManager::~UserSessionManager() {
   // / UserSessionManager objects.
   if (user_manager::UserManager::IsInitialized()) {
     user_manager::UserManager::Get()->RemoveSessionStateObserver(this);
-    user_manager::UserManager::Get()->RemoveObserver(this);
   }
 }
 
@@ -859,36 +855,6 @@ bool UserSessionManager::UserSessionsRestored() const {
 bool UserSessionManager::UserSessionsRestoreInProgress() const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   return user_sessions_restore_in_progress_;
-}
-
-void UserSessionManager::InitNonKioskExtensionFeaturesSessionType(
-    const user_manager::User* user) {
-  // Kiosk session should be set as part of kiosk user session initialization
-  // in normal circumstances (to be able to properly determine whether kiosk
-  // was auto-launched); in case of user session restore, feature session
-  // type has be set before kiosk app controller takes over, as at that point
-  // kiosk app profile would already be initialized - feature session type
-  // should be set before that.
-  if (user->IsKioskType()) {
-    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kLoginUser)) {
-      // For kiosk session crash recovery, feature session type has be set
-      // before kiosk app controller takes over, as at that point iosk app
-      // profile would already be initialized - feature session type
-      // should be set before that.
-      bool auto_launched = base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kAppAutoLaunched);
-      extensions::SetCurrentFeatureSessionType(
-          auto_launched
-              ? extensions::mojom::FeatureSessionType::kAutolaunchedKiosk
-              : extensions::mojom::FeatureSessionType::kKiosk);
-    }
-    return;
-  }
-
-  extensions::SetCurrentFeatureSessionType(
-      user->HasGaiaAccount() ? extensions::mojom::FeatureSessionType::kRegular
-                             : extensions::mojom::FeatureSessionType::kUnknown);
 }
 
 void UserSessionManager::SetFirstLoginPrefs(
@@ -1208,32 +1174,6 @@ void UserSessionManager::OnProfilePrepared(Profile* profile,
 
 base::WeakPtr<UserSessionManagerDelegate> UserSessionManager::AsWeakPtr() {
   return GetUserSessionManagerAsWeakPtr();
-}
-
-void UserSessionManager::OnUserLoggedIn(const user_manager::User& user) {
-  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  if (user_manager->GetLoggedInUsers().size() == 1) {
-    InitNonKioskExtensionFeaturesSessionType(user_manager->GetPrimaryUser());
-  }
-}
-
-void UserSessionManager::OnUsersSignInConstraintsChanged() {
-  const user_manager::UserManager* user_manager =
-      user_manager::UserManager::Get();
-  const user_manager::UserList& logged_in_users =
-      user_manager->GetLoggedInUsers();
-  for (user_manager::User* user : logged_in_users) {
-    if (user->GetType() != user_manager::UserType::kRegular &&
-        user->GetType() != user_manager::UserType::kGuest &&
-        user->GetType() != user_manager::UserType::kChild) {
-      continue;
-    }
-    if (!user_manager->IsUserAllowed(*user)) {
-      SYSLOG(ERROR)
-          << "The current user is not allowed, terminating the session.";
-      chrome::AttemptUserExit();
-    }
-  }
 }
 
 void UserSessionManager::ChildAccountStatusReceivedCallback(Profile* profile) {
