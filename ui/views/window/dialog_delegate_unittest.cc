@@ -365,16 +365,16 @@ TEST_F(DialogTest, BoundsAccommodateTitle) {
   // Titled dialogs have taller initial frame bounds than untitled dialogs.
   View* frame1 = dialog()->GetWidget()->non_client_view()->frame_view();
   View* frame2 = dialog2->GetWidget()->non_client_view()->frame_view();
-  EXPECT_LT(frame1->GetPreferredSize().height(),
-            frame2->GetPreferredSize().height());
+  EXPECT_LT(frame1->GetPreferredSize({}).height(),
+            frame2->GetPreferredSize({}).height());
 
   // Giving the default test dialog a title will yield the same bounds.
   dialog()->set_title(u"Title");
   EXPECT_TRUE(dialog()->ShouldShowWindowTitle());
 
   dialog()->GetWidget()->UpdateWindowTitle();
-  EXPECT_EQ(frame1->GetPreferredSize().height(),
-            frame2->GetPreferredSize().height());
+  EXPECT_EQ(frame1->GetPreferredSize({}).height(),
+            frame2->GetPreferredSize({}).height());
 
   dialog2->TearDown();
 }
@@ -386,7 +386,7 @@ TEST_F(DialogTest, ActualBoundsMatchPreferredBounds) {
   dialog()->GetWidget()->UpdateWindowTitle();
 
   views::View* root_view = dialog()->GetWidget()->GetRootView();
-  gfx::Size preferred_size(root_view->GetPreferredSize());
+  gfx::Size preferred_size(root_view->GetPreferredSize({}));
   EXPECT_FALSE(preferred_size.IsEmpty());
   root_view->SizeToPreferredSize();
   views::test::RunScheduledLayout(root_view);

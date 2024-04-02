@@ -224,7 +224,7 @@ void CustomFrameView::Layout(PassKey) {
 gfx::Size CustomFrameView::CalculatePreferredSize() const {
   return frame_->non_client_view()
       ->GetWindowBoundsForClientBounds(
-          gfx::Rect(frame_->client_view()->GetPreferredSize()))
+          gfx::Rect(frame_->client_view()->GetPreferredSize({})))
       .size();
 }
 
@@ -476,7 +476,7 @@ void CustomFrameView::LayoutWindowControls() {
     if (!button)
       continue;
     gfx::Rect target_bounds(gfx::Point(next_button_x, caption_y),
-                            button->GetPreferredSize());
+                            button->GetPreferredSize({}));
     if (frame_button == leading_buttons.front())
       target_bounds.set_width(target_bounds.width() + extra_width);
     LayoutButton(button, target_bounds);
@@ -491,7 +491,7 @@ void CustomFrameView::LayoutWindowControls() {
     if (!button)
       continue;
     gfx::Rect target_bounds(gfx::Point(next_button_x, caption_y),
-                            button->GetPreferredSize());
+                            button->GetPreferredSize({}));
     if (frame_button == trailing_buttons.back())
       target_bounds.set_width(target_bounds.width() + extra_width);
     target_bounds.Offset(-target_bounds.width(), 0);

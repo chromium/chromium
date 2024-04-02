@@ -2180,11 +2180,11 @@ void Widget::SetInitialBounds(const gfx::Rect& bounds) {
       if (bounds.origin().IsOrigin()) {
         // No initial bounds supplied, so size the window to its content and
         // center over its parent.
-        CenterWindow(non_client_view_->GetPreferredSize());
+        CenterWindow(non_client_view_->GetPreferredSize({}));
       } else {
         // Use the preferred size and the supplied origin.
         gfx::Rect preferred_bounds(bounds);
-        preferred_bounds.set_size(non_client_view_->GetPreferredSize());
+        preferred_bounds.set_size(non_client_view_->GetPreferredSize({}));
         SetBoundsConstrained(preferred_bounds);
       }
     } else {
@@ -2200,7 +2200,7 @@ void Widget::SetInitialBoundsForFramelessWindow(const gfx::Rect& bounds) {
     DCHECK(contents_view);
     // No initial bounds supplied, so size the window to its content and
     // center over its parent if preferred size is provided.
-    gfx::Size size = contents_view->GetPreferredSize();
+    gfx::Size size = contents_view->GetPreferredSize({});
     if (!size.IsEmpty() && native_widget_)
       native_widget_->CenterWindow(size);
   } else {

@@ -141,7 +141,7 @@ gfx::Size DialogClientView::CalculatePreferredSize() const {
   }
   contents_size.Enlarge(content_margins.width(), content_margins.height());
   return GetBoundingSizeForVerticalStack(
-      contents_size, button_row_container_->GetPreferredSize());
+      contents_size, button_row_container_->GetPreferredSize({}));
 }
 
 gfx::Size DialogClientView::GetMinimumSize() const {
@@ -166,7 +166,7 @@ gfx::Size DialogClientView::GetMaximumSize() const {
   // If the height is constrained, add the button row height. Leave the width as
   // it is (be it constrained or unconstrained).
   if (max_size.height() != kUnconstrained) {
-    max_size.Enlarge(0, button_row_container_->GetPreferredSize().height());
+    max_size.Enlarge(0, button_row_container_->GetPreferredSize({}).height());
   }
 
   // Note not all constraints can be met. E.g. it's possible here for

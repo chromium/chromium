@@ -43,10 +43,11 @@ void ClientView::UpdateWindowRoundedCorners(int corner_radius) {}
 gfx::Size ClientView::CalculatePreferredSize() const {
   // |contents_view_| is allowed to be NULL up until the point where this view
   // is attached to a Container.
-  if (!contents_view_)
+  if (!contents_view_) {
     return gfx::Size();
+  }
 
-  return contents_view_->GetPreferredSize();
+  return contents_view_->GetPreferredSize({});
 }
 
 int ClientView::GetHeightForWidth(int width) const {

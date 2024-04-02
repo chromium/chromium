@@ -264,7 +264,7 @@ gfx::Size NonClientView::CalculatePreferredSize() const {
   // TODO(pkasting): This should probably be made to look similar to
   // GetMinimumSize() below.  This will require implementing GetPreferredSize()
   // better in the various frame views.
-  gfx::Rect client_bounds(gfx::Point(), client_view_->GetPreferredSize());
+  gfx::Rect client_bounds(gfx::Point(), client_view_->GetPreferredSize({}));
   return GetWindowBoundsForClientBounds(client_bounds).size();
 }
 
