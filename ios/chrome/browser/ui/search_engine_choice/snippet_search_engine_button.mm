@@ -47,6 +47,12 @@ constexpr CGFloat kChevronButtonHorizontalMargin = 2.;
 constexpr CGFloat kSeparatorThickness = 1.;
 // Duration of the snippet animation when changing state.
 constexpr NSTimeInterval kSnippetAnimationDurationInSecond = .3;
+// Duration of the touch animation.
+constexpr NSTimeInterval kTouchAnimationDurationInSecond = .3;
+// Alpha value for the checked background color.
+constexpr NSTimeInterval kCheckedBackgroundColorAlpha = .1;
+// Alpha value for the checked background color.
+constexpr NSTimeInterval kTouchBeginBackgroundColorAlpha = .5;
 
 // Returns a snippet label.
 UILabel* SnippetLabel() {
@@ -58,6 +64,23 @@ UILabel* SnippetLabel() {
   snippetLabel.adjustsFontForContentSizeCategory = YES;
   snippetLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
   return snippetLabel;
+}
+
+// Color for selected elements.
+UIColor* GetCheckedColor() {
+  return [UIColor colorNamed:kBlueColor];
+}
+
+// Background color when the button is checked.
+UIColor* GetCheckedBackgroundColor() {
+  return
+      [GetCheckedColor() colorWithAlphaComponent:kCheckedBackgroundColorAlpha];
+}
+
+// Background color at the begining of the touch animation.
+UIColor* GetTouchBeginBackgroundColor() {
+  return [GetCheckedColor()
+      colorWithAlphaComponent:kTouchBeginBackgroundColorAlpha];
 }
 
 }  // namespace
@@ -308,15 +331,15 @@ UILabel* SnippetLabel() {
 
 - (void)touchesBegan:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
   [super touchesBegan:touches withEvent:event];
-  self.backgroundColor = [UIColor colorNamed:kGrey300Color];
+  self.backgroundColor = GetTouchBeginBackgroundColor();
 }
 
 - (void)touchesEnded:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
   [super touchesEnded:touches withEvent:event];
   __weak __typeof(self) weakSelf = self;
-  [UIView animateWithDuration:.5
+  [UIView animateWithDuration:kTouchAnimationDurationInSecond
                    animations:^{
-                     weakSelf.backgroundColor = nil;
+                     weakSelf.backgroundColor = GetCheckedBackgroundColor();
                    }];
 }
 
@@ -332,6 +355,18 @@ UILabel* SnippetLabel() {
     return;
   }
   _checked = checked;
+  // `-[SnippetSearchEngineButton touchesEnded:withEvent:]` is called first,
+  // which sets the background color with the animation. Then the view
+  // controller receives the target action, which calls
+  // `-[SnippetSearchEngineButton setChecked:YES]`. During the `setChecked:`
+  // call, if the background color is updated, the animation is canceled.
+  // So if the background color is already set, there is no point to set it
+  // again.
+  if (_checked && !self.backgroundColor) {
+    self.backgroundColor = GetCheckedBackgroundColor();
+  } else if (!_checked) {
+    self.backgroundColor = nil;
+  }
   [self updateCircleImageView];
   [self updateAccessibilityTraits];
 }
@@ -453,12 +488,11 @@ UILabel* SnippetLabel() {
   if (_checked) {
     circleImage = DefaultSymbolWithPointSize(kCheckmarkCircleFillSymbol,
                                              kRadioButtonImageSize);
-    [_radioButtonImageView setTintColor:[UIColor colorNamed:kBlueColor]];
+    _radioButtonImageView.tintColor = GetCheckedColor();
   } else {
     circleImage =
         DefaultSymbolWithPointSize(kCircleSymbol, kRadioButtonImageSize);
-    [_radioButtonImageView
-        setTintColor:[UIColor colorNamed:kTextQuaternaryColor]];
+    _radioButtonImageView.tintColor = [UIColor colorNamed:kTextQuaternaryColor];
   }
   _radioButtonImageView.image = circleImage;
 }
