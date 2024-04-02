@@ -6684,7 +6684,7 @@
         'test_suites': {
            'gtest_tests': 'optimization_guide_nogpu_gtests',
         },
-        'os_type': 'cros',
+        'os_type': 'chromeos',
       },
       'optimization_guide-linux': {
         'additional_compile_targets': [
