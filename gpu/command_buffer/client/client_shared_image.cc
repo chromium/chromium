@@ -75,8 +75,11 @@ uint32_t ComputeTextureTargetForSharedImage(
 
   // The client should configure an SI to use external sampling only if they
   // have provided a native buffer to back that SI.
-  CHECK(client_side_native_buffer_used ||
-        allow_external_sampling_without_native_buffers_for_testing);
+  // TODO(crbug.com/332069927): Figure out why this is going off on LaCrOS and
+  // turn this into a CHECK.
+  DUMP_WILL_BE_CHECK(
+      client_side_native_buffer_used ||
+      allow_external_sampling_without_native_buffers_for_testing);
 
   // See the note at the top of this function wrt Fuchsia.
 #if BUILDFLAG(IS_FUCHSIA)
