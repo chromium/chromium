@@ -265,6 +265,8 @@ blink_core_sources_layout = [
   "inline/inline_node_data.h",
   "inline/inline_text_auto_space.cc",
   "inline/inline_text_auto_space.h",
+  "inline/justification_utils.cc",
+  "inline/justification_utils.h",
   "inline/leading_floats.h",
   "inline/line_box_fragment_builder.cc",
   "inline/line_box_fragment_builder.h",

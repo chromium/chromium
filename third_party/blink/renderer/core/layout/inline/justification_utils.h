@@ -1,0 +1,30 @@
+// Copyright 2016 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_JUSTIFICATION_UTILS_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_JUSTIFICATION_UTILS_H_
+
+#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+
+namespace blink {
+
+class LineInfo;
+
+enum class JustificationTarget {
+  kNormal,
+  kRubyBase,
+  kRubyText,
+  kSvgText,
+};
+
+// Justify the line. This changes the size of items by adding spacing.
+// Returns std::nullopt if justification failed and should fall back to
+// start-aligned.
+std::optional<LayoutUnit> ApplyJustification(LayoutUnit space,
+                                             JustificationTarget target,
+                                             LineInfo* line_info);
+
+}  // namespace blink
+
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_JUSTIFICATION_UTILS_H_

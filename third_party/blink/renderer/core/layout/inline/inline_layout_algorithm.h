@@ -91,15 +91,6 @@ class CORE_EXPORT InlineLayoutAlgorithm final
   void PlaceRelativePositionedItems(LogicalLineItems* line_box);
 
   LayoutUnit ApplyTextAlign(LineInfo*);
-  enum class JustificationTarget {
-    kNormal,
-    kRubyBase,
-    kRubyText,
-    kSvgText,
-  };
-  static std::optional<LayoutUnit> ApplyJustify(LayoutUnit space,
-                                                JustificationTarget target,
-                                                LineInfo*);
 
   // Add any trailing clearance requested by a BR 'clear' attribute on the line.
   // Return true if this was successful (this also includes cases where there is
