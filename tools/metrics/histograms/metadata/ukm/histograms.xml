@@ -337,6 +337,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="UKM.WebFeatureSets.Dropped" enum="UkmDataDroppedReason"
+    expires_after="2025-05-01">
+  <owner>yrsun@chromium.org</owner>
+  <owner>lucnguyen@google.com</owner>
+  <owner>chrome-metrics-team@google.com</owner>
+  <summary>
+    The reason why a web feature set was dropped. Emitted every time a call to
+    RecordWebFeatures() results in a drop. A web feature set is a set of
+    features that were used in a particular Source.
+  </summary>
+</histogram>
+
+<histogram name="UKM.WebFeatureSets.SerializedCount" units="web feature sets"
+    expires_after="2025-05-01">
+  <owner>yrsun@chromium.org</owner>
+  <owner>lucnguyen@google.com</owner>
+  <owner>chrome-metrics-team@google.com</owner>
+  <summary>
+    Number of serialized UKM web feature sets when storing a UKM log. A web
+    feature set is a set of features that were used in a particular Source.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

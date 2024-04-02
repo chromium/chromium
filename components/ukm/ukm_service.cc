@@ -32,6 +32,7 @@
 #include "services/metrics/public/cpp/ukm_recorder_client_interface_registry.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/metrics_proto/ukm/report.pb.h"
+#include "third_party/metrics_proto/ukm/web_features.pb.h"
 #include "third_party/metrics_proto/user_demographics.pb.h"
 
 namespace ukm {
@@ -179,6 +180,13 @@ void PurgeDataFromUnsentLogStore(metrics::UnsentLogStore* ukm_log_store,
           return relevant_source_ids.count(element.source_id());
         },
         report.entries(), report.mutable_entries());
+
+    // Remove all web features data originating from these sources.
+    FilterReportElements(
+        [&](const HighLevelWebFeatures& element) {
+          return relevant_source_ids.count(element.source_id());
+        },
+        report.web_features(), report.mutable_web_features());
 
     const bool app_version_changed =
         report.system_profile().app_version() != current_version;
@@ -558,7 +566,7 @@ void UkmService::BuildAndStoreLog(
   metrics_providers_.ProvideCurrentSessionUKMData();
 
   // Suppress generating a log if we have no new data to include.
-  bool empty = sources().empty() && entries().empty();
+  bool empty = sources().empty() && entries().empty() && web_features().empty();
   UMA_HISTOGRAM_BOOLEAN("UKM.BuildAndStoreLogIsEmpty", empty);
   if (empty) {
     DVLOG(DebuggingLogLevel::Rare) << "No local UKM data. No log created.";

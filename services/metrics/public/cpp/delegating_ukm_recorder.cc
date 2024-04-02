@@ -108,6 +108,15 @@ void DelegatingUkmRecorder::AddEntry(mojom::UkmEntryPtr entry) {
     iterator.second.AddEntry(entry->Clone());
 }
 
+void DelegatingUkmRecorder::RecordWebFeatures(
+    SourceId source_id,
+    const std::set<DummyWebFeatures>& features) {
+  base::AutoLock auto_lock(lock_);
+  for (auto& iterator : delegates_) {
+    iterator.second.RecordWebFeatures(source_id, features);
+  }
+}
+
 void DelegatingUkmRecorder::MarkSourceForDeletion(ukm::SourceId source_id) {
   base::AutoLock auto_lock(lock_);
   for (auto& iterator : delegates_)
@@ -174,6 +183,20 @@ void DelegatingUkmRecorder::Delegate::AddEntry(mojom::UkmEntryPtr entry) {
   }
   task_runner_->PostTask(FROM_HERE, base::BindOnce(&UkmRecorder::AddEntry, ptr_,
                                                    std::move(entry)));
+}
+
+void DelegatingUkmRecorder::Delegate::RecordWebFeatures(
+    SourceId source_id,
+    const std::set<DummyWebFeatures>& features) {
+  if (task_runner_->RunsTasksInCurrentSequence()) {
+    if (ptr_) {
+      ptr_->RecordWebFeatures(source_id, features);
+    }
+    return;
+  }
+  task_runner_->PostTask(FROM_HERE,
+                         base::BindOnce(&UkmRecorder::RecordWebFeatures, ptr_,
+                                        source_id, features));
 }
 
 void DelegatingUkmRecorder::Delegate::MarkSourceForDeletion(

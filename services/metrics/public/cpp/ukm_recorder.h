@@ -5,6 +5,8 @@
 #ifndef SERVICES_METRICS_PUBLIC_CPP_UKM_RECORDER_H_
 #define SERVICES_METRICS_PUBLIC_CPP_UKM_RECORDER_H_
 
+#include <set>
+
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/observer_list.h"
@@ -59,6 +61,9 @@ enum class AppType {
   kCrostini,
   kBorealis,
 };
+
+// TODO(b/316357582): Remove this when the actual enum lands.
+enum class DummyWebFeatures { kFeature1 = 0, kFeature2, kMaxCount };
 
 namespace internal {
 class SourceUrlRecorderWebContentsObserver;
@@ -166,6 +171,17 @@ class METRICS_EXPORT UkmRecorder {
 
   // Add an entry to the UkmEntry list.
   virtual void AddEntry(mojom::UkmEntryPtr entry) = 0;
+
+  // Associates web feature usage data with the UkmSource keyed by `source_id`.
+  // This function can be called more than once for a given `source_id`. The
+  // effects are additive. For example, after the following calls:
+  //   RecordWebFeature(100, {a, b});
+  //   RecordWebFeature(100, {b, c});
+  // The UKM recorder understands that the source identified by `source_id` 100
+  // is using features {a, b, c}.
+  virtual void RecordWebFeatures(
+      SourceId source_id,
+      const std::set<DummyWebFeatures>& features) = 0;
 
   // Controls sampling for testing purposes. Sampling is 1-in-N (N==rate).
   virtual void SetSamplingForTesting(int rate) {}

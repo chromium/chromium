@@ -37,6 +37,8 @@ enum class DroppedDataReason {
 void METRICS_EXPORT RecordDroppedEntry(uint64_t event_hash,
                                        DroppedDataReason reason);
 
+void METRICS_EXPORT RecordDroppedWebFeaturesSet(DroppedDataReason reason);
+
 }  // namespace ukm
 
 #endif  // SERVICES_METRICS_PUBLIC_CPP_UKM_RECORDER_IMPL_UTILS_H_

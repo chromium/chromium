@@ -47,6 +47,9 @@ class TestUkmRecorder : public ukm::UkmRecorder {
   void AddEntry(ukm::mojom::UkmEntryPtr entry) override {
     entries_.emplace_back(std::move(entry));
   }
+  void RecordWebFeatures(
+      ukm::SourceId source_id,
+      const std::set<ukm::DummyWebFeatures>& features) override {}
   void UpdateSourceURL(ukm::SourceId, const GURL&) override {}
   void UpdateAppURL(ukm::SourceId, const GURL&, const ukm::AppType) override {}
   void RecordNavigation(ukm::SourceId,

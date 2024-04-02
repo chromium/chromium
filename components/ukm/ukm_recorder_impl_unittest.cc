@@ -199,7 +199,7 @@ TEST(UkmRecorderImplTest, PurgeExtensionRecordings) {
   recorder.SetIsWebstoreExtensionCallback(
       base::BindRepeating([](base::StringPiece) { return true; }));
 
-  // Record some sources and events.
+  // Record some sources, events, and web features.
   SourceId id1 = ConvertToSourceId(1, SourceIdType::NAVIGATION_ID);
   recorder.UpdateSourceURL(id1, GURL("https://www.google.ca"));
   SourceId id2 = ConvertToSourceId(2, SourceIdType::NAVIGATION_ID);
@@ -212,15 +212,20 @@ TEST(UkmRecorderImplTest, PurgeExtensionRecordings) {
   TestEvent1(id1).Record(&recorder);
   TestEvent1(id2).Record(&recorder);
 
-  // All sources and events have been recorded.
+  recorder.RecordWebFeatures(id3, {DummyWebFeatures::kFeature1});
+  recorder.RecordWebFeatures(id4, {DummyWebFeatures::kFeature2});
+
+  // All sources, events, and web features have been recorded.
   EXPECT_TRUE(recorder.recording_enabled(EXTENSIONS));
   EXPECT_TRUE(recorder.recording_is_continuous_);
   EXPECT_EQ(4U, recorder.sources().size());
   EXPECT_EQ(2U, recorder.entries().size());
+  EXPECT_EQ(2U, recorder.web_features().size());
 
   recorder.PurgeRecordingsWithUrlScheme(kExtensionScheme);
 
-  // Recorded sources of extension scheme and related events have been cleared.
+  // Recorded sources of extension scheme and related events/web features have
+  // been cleared.
   EXPECT_EQ(2U, recorder.sources().size());
   EXPECT_EQ(1U, recorder.sources().count(id1));
   EXPECT_EQ(0U, recorder.sources().count(id2));
@@ -230,6 +235,9 @@ TEST(UkmRecorderImplTest, PurgeExtensionRecordings) {
   EXPECT_FALSE(recorder.recording_is_continuous_);
   EXPECT_EQ(1U, recorder.entries().size());
   EXPECT_EQ(id1, recorder.entries()[0]->source_id);
+
+  EXPECT_EQ(1U, recorder.web_features().size());
+  EXPECT_TRUE(base::Contains(recorder.web_features(), id3));
 
   // Recording is disabled for extensions, thus new extension URL will not be
   // recorded.
@@ -462,6 +470,98 @@ TEST(UkmRecorderImplTest, VerifyShouldDropEntry) {
   impl.DisableRecording();
   EXPECT_TRUE(impl.ShouldDropEntryForTesting(msbb_entry.get()));
   EXPECT_TRUE(impl.ShouldDropEntryForTesting(app_entry.get()));
+}
+
+TEST(UkmRecorderImplTest, WebFeaturesConsent) {
+  UkmRecorderImpl impl;
+
+  // Enable recording and set no sampling (1-in-1).
+  impl.EnableRecording();
+  impl.SetWebFeaturesSamplingForTesting(/*rate=*/1);
+
+  const SourceId kMsbbSourceId =
+      ConvertToSourceId(1, SourceIdType::NAVIGATION_ID);
+  const SourceId kAppsSourceId = ConvertToSourceId(1, SourceIdType::APP_ID);
+
+  // Although recording is enabled, neither MSBB nor app-sync are consented to,
+  // so no web features should be recorded.
+  impl.RecordWebFeatures(kMsbbSourceId, {DummyWebFeatures::kFeature1});
+  impl.RecordWebFeatures(kAppsSourceId, {DummyWebFeatures::kFeature1});
+  EXPECT_EQ(impl.web_features().size(), 0u);
+
+  // Consent to MSBB only. Only MSBB-related web features should be recorded.
+  impl.UpdateRecording({MSBB});
+  impl.RecordWebFeatures(kMsbbSourceId, {DummyWebFeatures::kFeature1});
+  impl.RecordWebFeatures(kAppsSourceId, {DummyWebFeatures::kFeature1});
+  EXPECT_EQ(impl.web_features().size(), 1u);
+  EXPECT_TRUE(base::Contains(impl.web_features(), kMsbbSourceId));
+  impl.web_features().clear();
+
+  // Consent to app-sync only. Only app-related related web features should be
+  // recorded.
+  impl.UpdateRecording({APPS});
+  impl.RecordWebFeatures(kMsbbSourceId, {DummyWebFeatures::kFeature1});
+  impl.RecordWebFeatures(kAppsSourceId, {DummyWebFeatures::kFeature1});
+  EXPECT_EQ(impl.web_features().size(), 1u);
+  EXPECT_TRUE(base::Contains(impl.web_features(), kAppsSourceId));
+  impl.web_features().clear();
+
+  // Consent to both MSBB and app-sync. Both MSBB and app related web features
+  // should be recorded.
+  impl.UpdateRecording({MSBB, APPS});
+  impl.RecordWebFeatures(kMsbbSourceId, {DummyWebFeatures::kFeature1});
+  impl.RecordWebFeatures(kAppsSourceId, {DummyWebFeatures::kFeature1});
+  EXPECT_EQ(impl.web_features().size(), 2u);
+  EXPECT_TRUE(base::Contains(impl.web_features(), kMsbbSourceId));
+  EXPECT_TRUE(base::Contains(impl.web_features(), kAppsSourceId));
+  impl.web_features().clear();
+
+  // Disable recording altogether. No web features should be recorded.
+  impl.DisableRecording();
+  impl.RecordWebFeatures(kMsbbSourceId, {DummyWebFeatures::kFeature1});
+  impl.RecordWebFeatures(kAppsSourceId, {DummyWebFeatures::kFeature1});
+  EXPECT_EQ(impl.web_features().size(), 0u);
+}
+
+TEST(UkmRecorderImplTest, WebFeaturesSampling) {
+  UkmRecorderImpl impl;
+
+  // Enable recording, consent to MSBB, and set 1-in-2 sampling.
+  impl.EnableRecording();
+  impl.UpdateRecording({MSBB});
+  impl.SetWebFeaturesSamplingForTesting(/*rate=*/2);
+  impl.SetSamplingSeedForTesting(0);
+
+  // Create a sampled-in source and sampled-out source. Note that generally,
+  // whether a source is sampled-in or sampled-out is "random". These are
+  // handpicked source IDs that are known to be sampled-in/out in advance.
+  const SourceId kSampledInSourceId =
+      ConvertToSourceId(2, SourceIdType::NAVIGATION_ID);
+  const SourceId kSampledOutSourceId =
+      ConvertToSourceId(1, SourceIdType::NAVIGATION_ID);
+
+  impl.RecordWebFeatures(kSampledInSourceId, {DummyWebFeatures::kFeature1});
+  impl.RecordWebFeatures(kSampledOutSourceId, {DummyWebFeatures::kFeature1});
+  EXPECT_EQ(impl.web_features().size(), 1u);
+  EXPECT_TRUE(base::Contains(impl.web_features(), kSampledInSourceId));
+  EXPECT_FALSE(base::Contains(impl.web_features(), kSampledOutSourceId));
+
+  // Verify that being sampled-in or sampled-out is consistent across calls.
+  // I.e., if a source is sampled-in, then all calls recording web features to
+  // it will go through. Similarly, if a source is sampled-out, then all calls
+  // recording web features to it will be no-ops. In other words, it's all or
+  // nothing.
+  impl.RecordWebFeatures(kSampledInSourceId, {DummyWebFeatures::kFeature2});
+  impl.RecordWebFeatures(kSampledOutSourceId, {DummyWebFeatures::kFeature2});
+  EXPECT_EQ(impl.web_features().size(), 1u);
+  ASSERT_TRUE(base::Contains(impl.web_features(), kSampledInSourceId));
+  EXPECT_TRUE(impl.web_features()
+                  .at(kSampledInSourceId)
+                  .Contains(static_cast<size_t>(DummyWebFeatures::kFeature1)));
+  EXPECT_TRUE(impl.web_features()
+                  .at(kSampledInSourceId)
+                  .Contains(static_cast<size_t>(DummyWebFeatures::kFeature2)));
+  EXPECT_FALSE(base::Contains(impl.web_features(), kSampledOutSourceId));
 }
 
 }  // namespace ukm

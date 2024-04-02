@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -58,6 +59,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/ukm/report.pb.h"
 #include "third_party/metrics_proto/ukm/source.pb.h"
+#include "third_party/metrics_proto/ukm/web_features.pb.h"
 #include "third_party/metrics_proto/user_demographics.pb.h"
 
 namespace ukm {
@@ -98,6 +100,11 @@ class TestRecordingHelper {
 
   void MarkSourceForDeletion(SourceId source_id) {
     recorder_->MarkSourceForDeletion(source_id);
+  }
+
+  void RecordWebFeatures(SourceId source_id,
+                         const std::set<DummyWebFeatures>& features) {
+    recorder_->RecordWebFeatures(source_id, features);
   }
 
  private:
@@ -191,6 +198,21 @@ void AddSourceToReport(Report& report,
   // Add entry for the source.
   Entry* entry = report.add_entries();
   entry->set_source_id(source_id);
+}
+
+bool WebFeaturesStrictlyContains(
+    const HighLevelWebFeatures& actual_features,
+    const std::set<DummyWebFeatures>& expected_features) {
+  constexpr size_t kBitSetSize =
+      static_cast<size_t>(DummyWebFeatures::kMaxCount);
+  BitSet bitset(kBitSetSize, actual_features.bit_vector());
+  for (size_t i = 0; i < kBitSetSize; ++i) {
+    if (bitset.Contains(i) !=
+        base::Contains(expected_features, static_cast<DummyWebFeatures>(i))) {
+      return false;
+    }
+  }
+  return true;
 }
 
 class ScopedUkmFeatureParams {
@@ -425,12 +447,19 @@ TEST_F(UkmServiceTest, PurgeExtensionDataFromUnsentLogStore) {
   proto_source_2->set_id(source_id_2);
   proto_source_2->add_urls()->set_url(extension_url);
 
+  // Add entries related to the sources.
   Entry* entry_1 = report.add_entries();
   entry_1->set_source_id(source_id_2);
   Entry* entry_2 = report.add_entries();
   entry_2->set_source_id(source_id_1);
   Entry* entry_3 = report.add_entries();
   entry_3->set_source_id(source_id_1);
+
+  // Add web features related to the sources.
+  HighLevelWebFeatures* features_1 = report.add_web_features();
+  features_1->set_source_id(source_id_1);
+  HighLevelWebFeatures* features_2 = report.add_web_features();
+  features_2->set_source_id(source_id_2);
 
   // Save the Report to the store.
   std::string serialized_log;
@@ -467,6 +496,11 @@ TEST_F(UkmServiceTest, PurgeExtensionDataFromUnsentLogStore) {
   EXPECT_EQ(2, filtered_report.entries_size());
   EXPECT_EQ(source_id_1, filtered_report.entries(0).source_id());
   EXPECT_EQ(source_id_1, filtered_report.entries(1).source_id());
+
+  // Only features_1 from the non-extension source is kept (features_2 was
+  // filtered out due to being associated with an extension source).
+  EXPECT_EQ(1, filtered_report.web_features_size());
+  EXPECT_EQ(source_id_1, filtered_report.web_features(0).source_id());
 }
 
 TEST_F(UkmServiceTest, PurgeExtensionDataFromUnsentLogStoreWithVersionChange) {
@@ -495,12 +529,19 @@ TEST_F(UkmServiceTest, PurgeExtensionDataFromUnsentLogStoreWithVersionChange) {
   proto_source_2->set_id(source_id_2);
   proto_source_2->add_urls()->set_url(extension_url);
 
+  // Add entries related to the sources.
   Entry* entry_1 = report.add_entries();
   entry_1->set_source_id(source_id_2);
   Entry* entry_2 = report.add_entries();
   entry_2->set_source_id(source_id_1);
   Entry* entry_3 = report.add_entries();
   entry_3->set_source_id(source_id_1);
+
+  // Add web features related to the sources.
+  HighLevelWebFeatures* features_1 = report.add_web_features();
+  features_1->set_source_id(source_id_1);
+  HighLevelWebFeatures* features_2 = report.add_web_features();
+  features_2->set_source_id(source_id_2);
 
   // Save the Report to the store.
   std::string serialized_log;
@@ -538,6 +579,11 @@ TEST_F(UkmServiceTest, PurgeExtensionDataFromUnsentLogStoreWithVersionChange) {
   EXPECT_EQ(2, filtered_report.entries_size());
   EXPECT_EQ(source_id_1, filtered_report.entries(0).source_id());
   EXPECT_EQ(source_id_1, filtered_report.entries(1).source_id());
+
+  // Only features_1 from the non-extension source is kept (features_2 was
+  // filtered out due to being associated with an extension source).
+  EXPECT_EQ(1, filtered_report.web_features_size());
+  EXPECT_EQ(source_id_1, filtered_report.web_features(0).source_id());
 }
 
 TEST_F(UkmServiceTest, PurgeAppDataFromUnsentLogStore) {
@@ -1103,7 +1149,7 @@ TEST_F(UkmServiceTest, LogsRotation) {
   }
 }
 
-TEST_F(UkmServiceTest, LogsUploadedOnlyWhenHavingSourcesOrEntries) {
+TEST_F(UkmServiceTest, LogsUploadedOnlyWhenHavingData) {
   UkmService service(&prefs_, &client_,
                      std::make_unique<MockDemographicMetricsProvider>());
   TestRecordingHelper recorder(&service);
@@ -1138,9 +1184,20 @@ TEST_F(UkmServiceTest, LogsUploadedOnlyWhenHavingSourcesOrEntries) {
   service.Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
   EXPECT_EQ(GetPersistedLogCount(), 3);
 
-  // The recorder contains no Sources or Entries thus will not create a new log.
+  // The recorder contains no data (Sources, Entries, nor web features), thus
+  // will not create a new log.
   service.Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
   EXPECT_EQ(GetPersistedLogCount(), 3);
+
+  recorder.RecordWebFeatures(id, {DummyWebFeatures::kFeature1});
+  // Includes web features data, so will persist.
+  service.Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
+  EXPECT_EQ(GetPersistedLogCount(), 4);
+
+  // The recorder contains no data (Sources, Entries, nor web features), thus
+  // will not create a new log.
+  service.Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
+  EXPECT_EQ(GetPersistedLogCount(), 4);
 }
 
 TEST_F(UkmServiceTest, GetNewSourceID) {
@@ -2057,6 +2114,65 @@ TEST_F(UkmServiceTest, PurgeLogsOnClonedInstallDetected) {
   EXPECT_FALSE(test_log_store->has_unsent_logs());
 }
 
+TEST_F(UkmServiceTest, WebFeatures) {
+  UkmService service(&prefs_, &client_,
+                     std::make_unique<MockDemographicMetricsProvider>());
+  TestRecordingHelper recorder(&service);
+  service.Initialize();
+  task_runner_->RunUntilIdle();
+  service.UpdateRecording({UkmConsentType::MSBB});
+  service.EnableReporting();
+
+  // Record some web features data, create a report, and verify that the data in
+  // it matches what was recorded.
+  auto id0 = GetAllowlistedSourceId(0);
+  recorder.UpdateSourceURL(id0, GURL("https://google.com/foobar0"));
+  recorder.RecordWebFeatures(id0, {DummyWebFeatures::kFeature1});
+  service.Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
+  ASSERT_EQ(GetPersistedLogCount(), 1);
+  Report proto_report = GetPersistedReport();
+  ASSERT_EQ(proto_report.web_features_size(), 1);
+  EXPECT_EQ(proto_report.web_features(0).source_id(), id0);
+  EXPECT_TRUE(WebFeaturesStrictlyContains(proto_report.web_features(0),
+                                          {DummyWebFeatures::kFeature1}));
+
+  // Record some more web features data, create a report, and verify that the
+  // data in it matches what was recorded. The web features data from the
+  // previous report should not appear.
+  auto id1 = GetAllowlistedSourceId(1);
+  recorder.UpdateSourceURL(id1, GURL("https://google.com/foobar1"));
+  recorder.RecordWebFeatures(
+      id1, {DummyWebFeatures::kFeature1, DummyWebFeatures::kFeature2});
+  service.Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
+  ASSERT_EQ(GetPersistedLogCount(), 2);
+  proto_report = GetPersistedReport();
+  ASSERT_EQ(proto_report.web_features_size(), 1);
+  EXPECT_EQ(proto_report.web_features(0).source_id(), id1);
+  EXPECT_TRUE(WebFeaturesStrictlyContains(
+      proto_report.web_features(0),
+      {DummyWebFeatures::kFeature1, DummyWebFeatures::kFeature2}));
+
+  // Create a report without recording any web features data. Verify that it
+  // contains no web features data, as the data from the previous reports should
+  // not appear.
+  auto id2 = GetAllowlistedSourceId(2);
+  recorder.UpdateSourceURL(id2, GURL("https://google.com/foobar2"));
+  service.Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
+  ASSERT_EQ(GetPersistedLogCount(), 3);
+  proto_report = GetPersistedReport();
+  EXPECT_EQ(proto_report.web_features_size(), 0);
+
+  // Record some more web features data, purge the data, and then try to create
+  // a report. Nothing should be created, and all the previous logs should also
+  // be gone.
+  auto id3 = GetAllowlistedSourceId(3);
+  recorder.UpdateSourceURL(id3, GURL("https://google.com/foobar3"));
+  recorder.RecordWebFeatures(id3, {DummyWebFeatures::kFeature2});
+  service.Purge();
+  service.Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
+  EXPECT_EQ(GetPersistedLogCount(), 0);
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(UkmServiceTest, NotifyObserverOnShutdown) {
   MockUkmRecorderObserver observer;
@@ -2262,6 +2378,10 @@ class MockUkmRecorder : public ukm::UkmRecorder {
   ~MockUkmRecorder() override = default;
 
   MOCK_METHOD(void, AddEntry, (mojom::UkmEntryPtr entry), (override));
+  MOCK_METHOD(void,
+              RecordWebFeatures,
+              (SourceId source_id, const std::set<DummyWebFeatures>& features),
+              (override));
   MOCK_METHOD(void,
               UpdateSourceURL,
               (SourceId source_id, const GURL& url),

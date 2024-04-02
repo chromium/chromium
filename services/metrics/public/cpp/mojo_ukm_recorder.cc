@@ -64,6 +64,12 @@ void MojoUkmRecorder::AddEntry(mojom::UkmEntryPtr entry) {
   interface_->AddEntry(std::move(entry));
 }
 
+void MojoUkmRecorder::RecordWebFeatures(
+    SourceId source_id,
+    const std::set<DummyWebFeatures>& features) {
+  NOTREACHED();
+}
+
 void MojoUkmRecorder::MarkSourceForDeletion(ukm::SourceId source_id) {
   NOTREACHED();
 }
