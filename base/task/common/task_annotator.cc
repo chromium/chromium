@@ -17,8 +17,8 @@
 #include "base/debug/alias.h"
 #include "base/hash/md5.h"
 #include "base/logging.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/ranges/algorithm.h"
-#include "base/sys_byteorder.h"
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/tracing_buildflags.h"
@@ -295,12 +295,7 @@ TaskAnnotator::ScopedSetIpcHash::ScopedSetIpcHash(
 // Static
 uint32_t TaskAnnotator::ScopedSetIpcHash::MD5HashMetricName(
     std::string_view name) {
-  base::MD5Digest digest;
-  base::MD5Sum(base::as_byte_span(name), &digest);
-  uint32_t value;
-  DCHECK_GE(sizeof(digest.a), sizeof(value));
-  memcpy(&value, digest.a, sizeof(value));
-  return base::NetToHost32(value);
+  return HashMetricNameAs32Bits(name);
 }
 
 TaskAnnotator::ScopedSetIpcHash::~ScopedSetIpcHash() {

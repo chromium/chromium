@@ -4,8 +4,10 @@
 
 #include "remoting/protocol/stun_tcp_packet_processor.h"
 
+#include "base/containers/span.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/sys_byteorder.h"
 #include "net/base/io_buffer.h"
 #include "third_party/webrtc/media/base/rtp_utils.h"
@@ -21,17 +23,19 @@ constexpr size_t kStunHeaderSize = 20;
 constexpr size_t kTurnChannelDataHeaderSize = 4;
 constexpr size_t kPacketLengthOffset = 2;
 
-int GetExpectedStunPacketSize(const uint8_t* data,
+int GetExpectedStunPacketSize(const uint8_t* data_ptr,
                               size_t len,
                               size_t* pad_bytes) {
-  DCHECK_LE(kTurnChannelDataHeaderSize, len);
-  // Both stun and turn had length at offset 2.
-  size_t packet_size = base::NetToHost16(
-      *reinterpret_cast<const uint16_t*>(data + kPacketLengthOffset));
+  // TODO(crbug.com/40284755): GetExpectedStunPacketSize() should receive a
+  // span.
+  auto data = UNSAFE_BUFFERS(base::span(data_ptr, len));
+  DCHECK_LE(kTurnChannelDataHeaderSize, data.size());
 
   // Get packet type (STUN or TURN).
-  uint16_t msg_type =
-      base::NetToHost16(*reinterpret_cast<const uint16_t*>(data));
+  uint16_t msg_type = base::numerics::U16FromBigEndian(data.subspan<0u, 2u>());
+  // Both stun and turn had length at offset 2.
+  size_t packet_size =
+      base::numerics::U16FromBigEndian(data.subspan<kPacketLengthOffset, 2u>());
 
   *pad_bytes = 0;
   // Add header length to packet length.

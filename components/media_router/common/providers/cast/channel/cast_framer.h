@@ -11,9 +11,9 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/span.h"
 #include "components/media_router/common/providers/cast/channel/cast_channel_enum.h"
 #include "net/base/io_buffer.h"
-
 #include "third_party/openscreen/src/cast/common/channel/proto/cast_channel.pb.h"
 
 namespace cast_channel {
@@ -67,9 +67,8 @@ class MessageFramer {
     // Prepends this header to |str|.
     void PrependToString(std::string* str);
     // Reads |header| from the bytes specified by |data|.
-    static void Deserialize(char* data, MessageHeader* header);
-    // Size (in bytes) of the message header.
-    static size_t header_size();
+    static void Deserialize(base::span<const uint8_t> data,
+                            MessageHeader* header);
     // Maximum size (in bytes) of a message payload on the wire (does not
     // include header).
     static size_t max_body_size();
@@ -77,8 +76,9 @@ class MessageFramer {
     static size_t max_message_size();
     std::string ToString();
     // The size of the following protocol message in bytes, in host byte order.
-    size_t message_size;
+    uint32_t message_size = 0u;
   };
+  static_assert(sizeof(MessageHeader) == sizeof(uint32_t));
 
  private:
   enum MessageElement { HEADER, BODY };

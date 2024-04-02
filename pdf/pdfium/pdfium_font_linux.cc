@@ -16,10 +16,13 @@
 #include <string>
 
 #include "base/check_op.h"
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/i18n/encoding_detection.h"
 #include "base/i18n/icu_string_conversions.h"
 #include "base/no_destructor.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/sequence_checker.h"
@@ -49,8 +52,8 @@ bool GetFontTable(int fd,
                   uint32_t table_tag,
                   uint8_t* output,
                   size_t* output_length) {
-  size_t data_length = 0;  // the length of the file data.
-  off_t data_offset = 0;   // the offset of the data in the file.
+  size_t data_length = 0u;  // the length of the file data.
+  off_t data_offset = 0;    // the offset of the data in the file.
   if (table_tag == 0) {
     // Get the entire font file.
     struct stat st;
@@ -60,34 +63,35 @@ bool GetFontTable(int fd,
     data_length = base::checked_cast<size_t>(st.st_size);
   } else {
     // Get a font table. Read the header to find its offset in the file.
-    uint16_t num_tables;
+    uint8_t bytes[2];
     ssize_t n = HANDLE_EINTR(
-        pread(fd, &num_tables, sizeof(num_tables), 4 /* skip the font type */));
-    if (n != sizeof(num_tables)) {
+        pread(fd, bytes, sizeof(bytes), 4 /* skip the font type */));
+    if (n != sizeof(bytes)) {
       return false;
     }
     // Font data is stored in net (big-endian) order.
-    num_tables = base::NetToHost16(num_tables);
+    uint16_t num_tables = base::numerics::U16FromBigEndian(bytes);
 
     // Read the table directory.
-    static const size_t kTableEntrySize = 16;
-    const size_t directory_size = num_tables * kTableEntrySize;
-    std::unique_ptr<uint8_t[]> table_entries(new uint8_t[directory_size]);
-    n = HANDLE_EINTR(pread(fd, table_entries.get(), directory_size,
+    static const size_t kTableEntrySize = 16u;
+    auto table_entries =
+        base::HeapArray<uint8_t>::WithSize(num_tables * kTableEntrySize);
+
+    n = HANDLE_EINTR(pread(fd, table_entries.data(), table_entries.size(),
                            12 /* skip the SFNT header */));
-    if (n != base::checked_cast<ssize_t>(directory_size)) {
+    if (n != base::checked_cast<ssize_t>(table_entries.size())) {
       return false;
     }
 
-    for (uint16_t i = 0; i < num_tables; ++i) {
-      uint8_t* entry = table_entries.get() + i * kTableEntrySize;
-      uint32_t tag = *reinterpret_cast<uint32_t*>(entry);
+    for (uint16_t i = 0u; i < num_tables; ++i) {
+      auto entry = table_entries.subspan(i * kTableEntrySize, kTableEntrySize);
+      // The `table_tag` is encoded in the same endian as the tag in the table.
+      auto tag = base::numerics::U32FromNativeEndian(entry.first<4u>());
       if (tag == table_tag) {
         // Font data is stored in net (big-endian) order.
-        data_offset =
-            base::NetToHost32(*reinterpret_cast<uint32_t*>(entry + 8));
+        data_offset = base::numerics::U32FromBigEndian(entry.subspan<8u, 4u>());
         data_length =
-            base::NetToHost32(*reinterpret_cast<uint32_t*>(entry + 12));
+            base::numerics::U32FromBigEndian(entry.subspan<12u, 4u>());
         break;
       }
     }
@@ -135,8 +139,9 @@ class BlinkFontMapper {
     // provide MatchFontWithFallback(). This only happens in unit tests, so just
     // refuse to map fonts there.
     sk_sp<SkFontConfigInterface> fci = SkFontConfigInterface::RefGlobal();
-    if (fci.get() == SkFontConfigInterface::GetSingletonDirectInterface())
+    if (fci.get() == SkFontConfigInterface::GetSingletonDirectInterface()) {
       return nullptr;
+    }
 
     auto font_file = std::make_unique<base::File>();
     // In RendererBlinkPlatform, SkFontConfigInterface::SetGlobal() only ever
@@ -147,8 +152,9 @@ class BlinkFontMapper {
         desc.family.Utf8(),
         desc.weight >= blink::WebFontDescription::kWeightBold, desc.italic,
         charset, desc.generic_family, font_file.get());
-    if (!font_file->IsValid())
+    if (!font_file->IsValid()) {
       return nullptr;
+    }
 
     // Release to PDFium. PDFium will free `font_file` in DeleteFont() below.
     return font_file.release();
@@ -232,8 +238,9 @@ void* MapFont(FPDF_SYSFONTINFO*,
 
   // Pretend the system does not have the Symbol font to force a fallback to
   // the built in Symbol font in CFX_FontMapper::FindSubstFont().
-  if (strcmp(face, "Symbol") == 0)
+  if (strcmp(face, "Symbol") == 0) {
     return nullptr;
+  }
 
   blink::WebFontDescription desc;
   if (pitch_family & FXFONT_FF_FIXEDPITCH) {
@@ -286,18 +293,21 @@ void* MapFont(FPDF_SYSFONTINFO*,
   };
 
   // Similar logic exists in PDFium's CFX_FolderFontInfo::FindFont().
-  if (charset == FXFONT_ANSI_CHARSET && (pitch_family & FXFONT_FF_FIXEDPITCH))
+  if (charset == FXFONT_ANSI_CHARSET && (pitch_family & FXFONT_FF_FIXEDPITCH)) {
     face = "Courier New";
+  }
 
   // Map from the standard PDF fonts to TrueType font names.
   size_t i;
   for (i = 0; i < std::size(kPdfFontSubstitutions); ++i) {
     if (strcmp(face, kPdfFontSubstitutions[i].pdf_name) == 0) {
       desc.family = blink::WebString::FromUTF8(kPdfFontSubstitutions[i].face);
-      if (kPdfFontSubstitutions[i].bold)
+      if (kPdfFontSubstitutions[i].bold) {
         desc.weight = blink::WebFontDescription::kWeightBold;
-      if (kPdfFontSubstitutions[i].italic)
+      }
+      if (kPdfFontSubstitutions[i].italic) {
         desc.italic = true;
+      }
       break;
     }
   }
@@ -315,8 +325,9 @@ void* MapFont(FPDF_SYSFONTINFO*,
       }
     }
 
-    if (face_utf8.empty())
+    if (face_utf8.empty()) {
       return nullptr;
+    }
 
     desc.family = blink::WebString::FromUTF8(face_utf8);
     desc.weight = WeightToBlinkWeight(weight);

@@ -8,12 +8,13 @@
 
 #include <limits>
 
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
 #include "base/notreached.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/sys_byteorder.h"
 #include "third_party/openscreen/src/cast/common/channel/proto/cast_channel.pb.h"
 
 namespace cast_channel {
@@ -22,41 +23,27 @@ MessageFramer::MessageFramer(scoped_refptr<net::GrowableIOBuffer> input_buffer)
   Reset();
 }
 
-MessageFramer::~MessageFramer() {}
+MessageFramer::~MessageFramer() = default;
 
-MessageFramer::MessageHeader::MessageHeader() : message_size(0) {}
+MessageFramer::MessageHeader::MessageHeader() = default;
 
 void MessageFramer::MessageHeader::SetMessageSize(size_t size) {
-  DCHECK_LT(size, static_cast<size_t>(std::numeric_limits<uint32_t>::max()));
-  DCHECK_GT(size, 0U);
-  message_size = size;
+  CHECK_GT(size, 0u);
+  message_size = base::checked_cast<uint32_t>(size);
 }
 
 // TODO(mfoltz): Investigate replacing header serialization with base::Pickle,
 // if bit-for-bit compatible.
 void MessageFramer::MessageHeader::PrependToString(std::string* str) {
-  MessageHeader output = *this;
-  output.message_size = base::HostToNet32(message_size);
-  size_t header_size = MessageHeader::header_size();
-  std::unique_ptr<char, base::FreeDeleter> char_array(
-      static_cast<char*>(malloc(header_size)));
-  memcpy(char_array.get(), &output, header_size);
-  str->insert(0, char_array.get(), header_size);
+  std::array<uint8_t, sizeof(message_size)> bytes =
+      base::numerics::U32ToBigEndian(message_size);
+  str->insert(str->begin(), bytes.begin(), bytes.end());
 }
 
-// TODO(mfoltz): Investigate replacing header deserialization with base::Pickle,
-// if bit-for-bit compatible.
-void MessageFramer::MessageHeader::Deserialize(char* data,
+void MessageFramer::MessageHeader::Deserialize(base::span<const uint8_t> data,
                                                MessageHeader* header) {
-  uint32_t message_size;
-  memcpy(&message_size, data, header_size());
-  header->message_size =
-      base::checked_cast<size_t>(base::NetToHost32(message_size));
-}
-
-// static
-size_t MessageFramer::MessageHeader::header_size() {
-  return sizeof(uint32_t);
+  header->message_size = base::numerics::U32FromBigEndian(
+      data.first<sizeof(header->message_size)>());
 }
 
 // static
@@ -66,7 +53,7 @@ size_t MessageFramer::MessageHeader::max_body_size() {
 
 // static
 size_t MessageFramer::MessageHeader::max_message_size() {
-  return header_size() + max_body_size();
+  return sizeof(MessageHeader) + max_body_size();
 }
 
 std::string MessageFramer::MessageHeader::ToString() {
@@ -97,13 +84,13 @@ size_t MessageFramer::BytesRequested() {
 
   switch (current_element_) {
     case HEADER:
-      bytes_left = MessageHeader::header_size() - message_bytes_received_;
-      DCHECK_LE(bytes_left, MessageHeader::header_size());
+      bytes_left = sizeof(MessageHeader) - message_bytes_received_;
+      DCHECK_LE(bytes_left, sizeof(MessageHeader));
       VLOG(2) << "Bytes needed for header: " << bytes_left;
       return bytes_left;
     case BODY:
       bytes_left =
-          (body_size_ + MessageHeader::header_size()) - message_bytes_received_;
+          (body_size_ + sizeof(MessageHeader)) - message_bytes_received_;
       DCHECK_LE(bytes_left, MessageHeader::max_body_size());
       VLOG(2) << "Bytes needed for body: " << bytes_left;
       return bytes_left;
@@ -133,7 +120,7 @@ std::unique_ptr<CastMessage> MessageFramer::Ingest(size_t num_bytes,
     case HEADER:
       if (BytesRequested() == 0) {
         MessageHeader header;
-        MessageHeader::Deserialize(input_buffer_->StartOfBuffer(), &header);
+        MessageHeader::Deserialize(input_buffer_->everything(), &header);
         if (header.message_size > MessageHeader::max_body_size()) {
           VLOG(1) << "Error parsing header (message size too large).";
           *error = ChannelError::INVALID_MESSAGE;
@@ -148,7 +135,7 @@ std::unique_ptr<CastMessage> MessageFramer::Ingest(size_t num_bytes,
       if (BytesRequested() == 0) {
         std::unique_ptr<CastMessage> parsed_message(new CastMessage);
         if (!parsed_message->ParseFromArray(
-                input_buffer_->StartOfBuffer() + MessageHeader::header_size(),
+                input_buffer_->StartOfBuffer() + sizeof(MessageHeader),
                 body_size_)) {
           VLOG(1) << "Error parsing packet body.";
           *error = ChannelError::INVALID_MESSAGE;

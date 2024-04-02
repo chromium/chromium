@@ -5,10 +5,13 @@
 #include "services/network/p2p/socket_tcp.h"
 
 #include <stddef.h>
+
 #include <utility>
 
+#include "base/containers/span.h"
+#include "base/containers/span_writer.h"
 #include "base/functional/bind.h"
-#include "base/sys_byteorder.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/time/time.h"
 #include "components/webrtc/fake_ssl_client_socket.h"
 #include "net/base/io_buffer.h"
@@ -438,8 +441,7 @@ bool P2PSocketTcp::ProcessInput(base::span<const uint8_t> input,
   if (input.size() < kPacketHeaderSize)
     return true;
 
-  uint32_t packet_size =
-      base::NetToHost16(*reinterpret_cast<const uint16_t*>(input.data()));
+  uint32_t packet_size = base::numerics::U16FromBigEndian(input.first<2u>());
   if (input.size() < packet_size + kPacketHeaderSize)
     return true;
 
@@ -451,16 +453,21 @@ bool P2PSocketTcp::ProcessInput(base::span<const uint8_t> input,
 void P2PSocketTcp::DoSend(const net::IPEndPoint& to,
                           base::span<const uint8_t> data,
                           const rtc::PacketOptions& options) {
-  int buffer_size = kPacketHeaderSize + data.size();
+  const size_t buffer_size = kPacketHeaderSize + data.size();
   SendBuffer send_buffer(
       options.packet_id,
       base::MakeRefCounted<net::DrainableIOBuffer>(
           base::MakeRefCounted<net::IOBufferWithSize>(buffer_size),
           buffer_size));
-  *reinterpret_cast<uint16_t*>(send_buffer.buffer->data()) =
-      base::HostToNet16(data.size());
-  memcpy(send_buffer.buffer->data() + kPacketHeaderSize, data.data(),
-         data.size());
+  {
+    base::SpanWriter writer(
+        base::as_writable_bytes(send_buffer.buffer->span()));
+    writer.WriteU16BigEndian(base::checked_cast<uint16_t>(data.size()));
+    // We've written the full header now.
+    static_assert(kPacketHeaderSize == sizeof(uint16_t));
+    writer.Write(data);
+    CHECK_EQ(writer.remaining(), 0u);
+  }
 
   cricket::ApplyPacketOptions(
       send_buffer.buffer->bytes() + kPacketHeaderSize,
@@ -560,13 +567,11 @@ void P2PSocketStunTcp::DoSend(const net::IPEndPoint& to,
 int P2PSocketStunTcp::GetExpectedPacketSize(base::span<const uint8_t> data,
                                             int* pad_bytes) {
   DCHECK_LE(static_cast<size_t>(kTurnChannelDataHeaderSize), data.size());
-  // Both stun and turn had length at offset 2.
-  int packet_size = base::NetToHost16(
-      *reinterpret_cast<const uint16_t*>(data.data() + kPacketLengthOffset));
-
   // Get packet type (STUN or TURN).
-  uint16_t msg_type =
-      base::NetToHost16(*reinterpret_cast<const uint16_t*>(data.data()));
+  uint16_t msg_type = base::numerics::U16FromBigEndian(data.subspan<0u, 2u>());
+  // Both stun and turn had length at offset 2.
+  int packet_size = int{base::numerics::U16FromBigEndian(
+      data.subspan<kPacketLengthOffset, 2u>())};
 
   *pad_bytes = 0;
   // Add heder length to packet length.
