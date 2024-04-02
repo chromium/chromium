@@ -22,7 +22,7 @@ items:
   value: false
 - caption: Enable the <ph name="PRIVACY_SANDBOX_NAME">Privacy Sandbox</ph> IP Protection feature.
   value: true
-- caption: Allow users to to turn on or turn off the <ph name="PRIVACY_SANDBOX_NAME">Privacy Sandbox</ph> IP Protection setting on their device.
+- caption: Allow users to turn on or turn off the <ph name="PRIVACY_SANDBOX_NAME">Privacy Sandbox</ph> IP Protection setting on their device.
   value: null
 owners:
 - awillia@chromium.org
