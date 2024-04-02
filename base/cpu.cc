@@ -12,6 +12,7 @@
 
 #include <algorithm>
 #include <sstream>
+#include <string_view>
 #include <utility>
 
 #include "base/no_destructor.h"
@@ -145,7 +146,7 @@ uint64_t xgetbv(uint32_t xcr) {
 #if defined(ARCH_CPU_ARM_FAMILY) && \
     (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
 StringPairs::const_iterator FindFirstProcCpuKey(const StringPairs& pairs,
-                                                StringPiece key) {
+                                                std::string_view key) {
   return ranges::find_if(pairs, [key](const StringPairs::value_type& pair) {
     return TrimWhitespaceASCII(pair.first, base::TRIM_ALL) == key;
   });
