@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -1398,6 +1399,103 @@ TEST_F(AutofillProfileComparatorTest, MergeProfilesBasedOnState) {
   expected.SetRawInfo(ADDRESS_HOME_STATE, u"Uttar Pradesh");
   MergeAddressesAndExpect(p3, p4, expected);
   MergeAddressesAndExpect(p4, p3, expected);
+}
+
+// Tests that when `NonMergeableSettingVisibleTypes()` is called with two
+// profiles of the same country, differing in `differing_types`, the function
+// returns `expected_setting_visible_difference`.
+struct NonMergeableSettingVisibleTypesTestCase {
+  const FieldTypeSet differing_types;
+  const FieldTypeSet expected_setting_visible_difference;
+};
+
+class NonMergeableSettingVisibleTypesTest
+    : public AutofillProfileComparatorTest,
+      public testing::WithParamInterface<
+          NonMergeableSettingVisibleTypesTestCase> {};
+
+TEST_P(NonMergeableSettingVisibleTypesTest, DifferingTypes) {
+  const NonMergeableSettingVisibleTypesTestCase& test = GetParam();
+  // Construct two profiles differing in exactly `test.differing_types`.
+  AutofillProfile a(kLegacyHierarchyCountryCode);
+  AutofillProfile b(kLegacyHierarchyCountryCode);
+  for (FieldType t : test.differing_types) {
+    a.SetRawInfo(t, u"a");
+    b.SetRawInfo(t, u"b");
+  }
+  // Initialize all other setting-visible types with the same value.
+  for (FieldType t : GetUserVisibleTypes()) {
+    // If a type of the same `FieldTypeGroup` was already set, ignore it, to
+    // avoid constructing conflicting substructures.
+    if (!base::Contains(test.differing_types, GroupTypeOfFieldType(t),
+                        &GroupTypeOfFieldType)) {
+      a.SetRawInfo(t, u"same");
+      b.SetRawInfo(t, u"same");
+    }
+  }
+  ASSERT_TRUE(a.FinalizeAfterImport());
+  ASSERT_TRUE(b.FinalizeAfterImport());
+  EXPECT_THAT(comparator_.NonMergeableSettingVisibleTypes(a, b),
+              testing::Optional(test.expected_setting_visible_difference));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AutofillProfileComparatorTest,
+    NonMergeableSettingVisibleTypesTest,
+    testing::Values(
+        // No differences:
+        NonMergeableSettingVisibleTypesTestCase{{}, {}},
+        // Differences in a single non-country type:
+        NonMergeableSettingVisibleTypesTestCase{{NAME_FULL}, {NAME_FULL}},
+        NonMergeableSettingVisibleTypesTestCase{{NAME_FIRST}, {NAME_FULL}},
+        NonMergeableSettingVisibleTypesTestCase{{NAME_LAST}, {NAME_FULL}},
+        NonMergeableSettingVisibleTypesTestCase{{COMPANY_NAME}, {COMPANY_NAME}},
+        NonMergeableSettingVisibleTypesTestCase{{ADDRESS_HOME_STREET_ADDRESS},
+                                                {ADDRESS_HOME_STREET_ADDRESS}},
+        NonMergeableSettingVisibleTypesTestCase{{ADDRESS_HOME_LINE1},
+                                                {ADDRESS_HOME_STREET_ADDRESS}},
+        NonMergeableSettingVisibleTypesTestCase{{ADDRESS_HOME_LINE2},
+                                                {ADDRESS_HOME_STREET_ADDRESS}},
+        NonMergeableSettingVisibleTypesTestCase{{ADDRESS_HOME_CITY},
+                                                {ADDRESS_HOME_CITY}},
+        NonMergeableSettingVisibleTypesTestCase{{ADDRESS_HOME_ZIP},
+                                                {ADDRESS_HOME_ZIP}},
+        NonMergeableSettingVisibleTypesTestCase{{ADDRESS_HOME_STATE},
+                                                {ADDRESS_HOME_STATE}},
+        NonMergeableSettingVisibleTypesTestCase{{PHONE_HOME_WHOLE_NUMBER},
+                                                {PHONE_HOME_WHOLE_NUMBER}},
+        NonMergeableSettingVisibleTypesTestCase{{EMAIL_ADDRESS},
+                                                {EMAIL_ADDRESS}},
+        // Differences in multiple types:
+        NonMergeableSettingVisibleTypesTestCase{
+            {NAME_FIRST, ADDRESS_HOME_LINE1, ADDRESS_HOME_STATE, EMAIL_ADDRESS},
+            {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_STATE,
+             EMAIL_ADDRESS}}));
+
+// Test that types with mergeable values are not returned by
+// `NonMergeableSettingVisibleTypes()`.
+TEST_F(AutofillProfileComparatorTest,
+       NonMergeableSettingVisibleTypes_Mergeability) {
+  AutofillProfile a = test::GetFullProfile();
+  AutofillProfile b = a;
+  // Tests that rewriting rules are applied.
+  a.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"123 Str.");
+  b.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"123 Street");
+  EXPECT_THAT(comparator_.NonMergeableSettingVisibleTypes(a, b),
+              testing::Optional(testing::IsEmpty()));
+  // Tests that empty values are always mergeable.
+  a.ClearFields({ADDRESS_HOME_STREET_ADDRESS});
+  EXPECT_THAT(comparator_.NonMergeableSettingVisibleTypes(a, b),
+              testing::Optional(testing::IsEmpty()));
+}
+
+// Tests that `NonMergeableSettingVisibleTypes()` is nullopt for profiles of
+// differing countries.
+TEST_F(AutofillProfileComparatorTest,
+       NonMergeableSettingVisibleTypes_DifferentCountry) {
+  EXPECT_EQ(comparator_.NonMergeableSettingVisibleTypes(
+                test::GetFullProfile(), test::GetFullCanadianProfile()),
+            std::nullopt);
 }
 
 }  // namespace

@@ -99,6 +99,13 @@ bool Address::IsStructuredAddressMergeable(const Address& newer) const {
   return GetRoot().IsMergeableWithComponent(newer.GetRoot());
 }
 
+bool Address::IsStructuredAddressMergeableForType(FieldType type,
+                                                  const Address& other) const {
+  return address_component_store_.GetNodeForType(type)
+      ->IsMergeableWithComponent(
+          *other.address_component_store_.GetNodeForType(type));
+}
+
 const AddressComponent& Address::GetRoot() const {
   return *address_component_store_.Root();
 }

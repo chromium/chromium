@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_PROFILE_COMPARATOR_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
@@ -14,6 +15,7 @@
 #include "components/autofill/core/browser/data_model/address.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/contact_info.h"
+#include "components/autofill/core/browser/field_types.h"
 
 namespace autofill {
 
@@ -27,6 +29,10 @@ struct ProfileValueDifference {
   bool operator==(const ProfileValueDifference& right) const = default;
 };
 
+// The values corresponding to those types are visible in the settings.
+// TODO(crbug.com/1441904): Landmark, between-street and admin-level2 are in
+// progress to be included in the settings.
+// TODO(b/40275657): This should depend on the country.
 FieldTypeSet GetUserVisibleTypes();
 
 // A utility class to assist in the comparison of AutofillProfile data.
@@ -196,6 +202,18 @@ class AutofillProfileComparator {
   bool MergeAddresses(const AutofillProfile& p1,
                       const AutofillProfile& p2,
                       Address& address) const;
+
+  // Returns the subset of setting-visible types whose values in `a` and `b` are
+  // non-mergeable. This means that `a` and `b` become mergeable, if the values
+  // for all types returned by this function and their substructures are
+  // cleared. As such, the size of the returned set can be interpreted as a
+  // dissimilarity measure of `a` and `b`. If `a` and `b` differ in country,
+  // nullopt is returned, since profiles of different countries are generally
+  // not considered mergeable due to the differences in the underlying address
+  // model.
+  std::optional<FieldTypeSet> NonMergeableSettingVisibleTypes(
+      const AutofillProfile& a,
+      const AutofillProfile& b) const;
 
   // App locale used when this comparator instance was created.
   const std::string app_locale() const { return app_locale_; }

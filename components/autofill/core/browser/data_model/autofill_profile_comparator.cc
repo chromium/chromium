@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 
 #include <algorithm>
+#include <optional>
 #include <string_view>
 #include <vector>
 
@@ -16,6 +17,7 @@
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/data_model/borrowed_transliterator.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -181,9 +183,6 @@ int32_t NormalizingIterator::GetNextChar() {
 
 }  // namespace
 
-// The values corresponding to those types are visible in the settings.
-// TODO(crbug.com/1441904): Landmark, between-street and admin-level2 are in
-// progress to be included in the settings.
 FieldTypeSet GetUserVisibleTypes() {
   static const FieldTypeSet user_visible_type = {
       NAME_FULL,
@@ -715,6 +714,47 @@ bool AutofillProfileComparator::MergeAddresses(const AutofillProfile& p1,
   address = p2.GetAddress();
   return address.MergeStructuredAddress(p1.GetAddress(),
                                         p2.use_date() < p1.use_date());
+}
+
+std::optional<FieldTypeSet>
+AutofillProfileComparator::NonMergeableSettingVisibleTypes(
+    const AutofillProfile& a,
+    const AutofillProfile& b) const {
+  if (a.GetAddressCountryCode() != b.GetAddressCountryCode()) {
+    return std::nullopt;
+  }
+  FieldTypeSet setting_visible_types = GetUserVisibleTypes();
+  FieldTypeSet non_mergeable_types;
+  auto maybe_add_type = [&](FieldType type, bool is_mergeable) {
+    // Ensure that `type` is actually a setting-visible type.
+    CHECK_EQ(setting_visible_types.erase(type), 1u);
+    if (!is_mergeable) {
+      non_mergeable_types.insert(type);
+    }
+  };
+  // For most setting-visible types, a HaveMergeable* function exists. If these
+  // types ever become non-settings visible, the check in `maybe_add_type` will
+  // fail in the unittest.
+  maybe_add_type(NAME_FULL, HaveMergeableNames(a, b));
+  maybe_add_type(COMPANY_NAME, HaveMergeableCompanyNames(a, b));
+  maybe_add_type(PHONE_HOME_WHOLE_NUMBER, HaveMergeablePhoneNumbers(a, b));
+  maybe_add_type(EMAIL_ADDRESS, HaveMergeableEmailAddresses(a, b));
+  // Now, only address-related types remain in `setting_visible_types`. Using
+  // `HaveMergeableAddresses()` is not fine-grained enough, since multiple
+  // address types are setting-visible (e.g. city, zip, etc). Verify differences
+  // in the corresponding subtrees manually.
+  for (FieldType address_type : setting_visible_types) {
+    CHECK_EQ(GroupTypeOfFieldType(address_type), FieldTypeGroup::kAddress);
+    if (!a.GetAddress().IsAddressFieldSettingAccessible(address_type)) {
+      // `address_type` is not applicable to `a`'s country (= `b`'s country).
+      continue;
+    }
+    if (!a.GetAddress().IsStructuredAddressMergeableForType(address_type,
+                                                            b.GetAddress())) {
+      non_mergeable_types.insert(address_type);
+    }
+  }
+  return non_mergeable_types;
 }
 
 bool AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(

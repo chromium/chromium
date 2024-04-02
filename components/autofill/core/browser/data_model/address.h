@@ -56,6 +56,10 @@ class Address : public FormGroup {
 
   // For structured addresses, returns true if |this| is mergeable with |newer|.
   bool IsStructuredAddressMergeable(const Address& newer) const;
+  // Like `IsStructuredAddressMergeable()`, but only for the subtree
+  // corresponding to `type`.
+  bool IsStructuredAddressMergeableForType(FieldType type,
+                                           const Address& other) const;
 
   // Returns a constant reference to the structured address' root node (i.e.
   // ADDRESS_HOME_ADDRESS) from the nodes store.
