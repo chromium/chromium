@@ -365,7 +365,7 @@ class EgtestsApp(GTestsApp):
             'Test repeat is only supported in Xcode 13 or higher!')
     return cmd
 
-  def fill_xctestrun_node(self):
+  def fill_xctestrun_node(self, include_disabled=False):
     """Fills only required nodes for egtests in xctestrun file.
 
     Returns:
@@ -377,6 +377,10 @@ class EgtestsApp(GTestsApp):
         self.test_app_path)
     module_data['TestingEnvironmentVariables'][
         'XCInjectBundleInto'] = '__TESTHOST__/%s' % self.module_name
+
+    if include_disabled:
+      module_data['TestingEnvironmentVariables'][
+          'RUN_DISABLED_EARL_GREY_TESTS'] = '1'
 
     if self.host_app_path:
       # Module data specific to EG2 tests

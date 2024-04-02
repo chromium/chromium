@@ -302,6 +302,7 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
     # that we don't need to maintain our own.
     self.record_video_option = kwargs.get('record_video_option')
 
+    self.all_eg_test_names = []
     self.all_eg_test_names = self.fetch_test_names()
     self.resolve_eg_test_cases()
 
@@ -324,40 +325,8 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
     Returns:
       A path to the generated xctestrun file.
     """
-    bundle_path = xcode_util.xctest_path(self.app_path)
-    module_data = {
-        'TestBundlePath':
-            f'__TESTHOST__{bundle_path}',
-        'TestHostPath':
-            self.app_path,
-        'IsAppHostedTestBundle':
-            True,
-        'TestHostBundleIdentifier':
-            test_apps.get_bundle_id(self.app_path),
-        'IsUITestBundle':
-            True,
-        'IsXCTRunnerHostedTestBundle':
-            True,
-        'UITargetAppPath':
-            self.host_app_path,
-        'UITargetAppBundleIdentifier':
-            test_apps.get_bundle_id(self.host_app_path)
-    }
-
-    dependent_products = [
-        module_data['UITargetAppPath'], module_data['TestBundlePath'],
-        module_data['TestHostPath']
-    ]
-
-    module_data['DependentProductPaths'] = dependent_products
-
-    if include_disabled:
-      module_data['TestingEnvironmentVariables'] = {
-          'RUN_DISABLED_EARL_GREY_TESTS': '1'
-      }
-
-    module = os.path.splitext(os.path.basename(self.app_path))[0] + '_module'
-    xctestrun_data = {module: module_data}
+    test_app = self.get_launch_test_app()
+    xctestrun_data = test_app.fill_xctestrun_node(include_disabled)
 
     xctestrun = os.path.join(self.out_dir, 'enumerate_tests.xctestrun')
     with open(xctestrun, 'wb') as f:
@@ -585,6 +554,7 @@ class DeviceXcodeTestRunner(SimulatorParallelTestRunner,
     self.test_results['path_delimiter'] = '/'
     self.record_video_option = kwargs.get('record_video_option')
     self.test_plugin_service = None
+    self.all_eg_test_names = []
     self.all_eg_test_names = self.fetch_test_names()
     self.resolve_eg_test_cases()
 
