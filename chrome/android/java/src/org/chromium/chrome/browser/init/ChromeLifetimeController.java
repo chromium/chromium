@@ -10,6 +10,8 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 
+import androidx.core.os.BuildCompat;
+
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
@@ -79,9 +81,16 @@ class ChromeLifetimeController
             activity.finish();
         }
 
-        // Kick off a timer to kill the process after a delay, which fires only if the Activities
-        // take too long to be finished.
-        mHandler.postDelayed(mRestartRunnable, WATCHDOG_DELAY_MS);
+        if (BuildCompat.isAtLeastV()) {
+            // Background activity launches are prohibited on newer versions of Android, so if the
+            // restart intent isn't fired right away then Chrome won't restart. See b/331370736.
+            mHandler.post(mRestartRunnable);
+        } else {
+            // Kick off a timer to kill the process after a delay, which fires only if the
+            // Activities
+            // take too long to be finished.
+            mHandler.postDelayed(mRestartRunnable, WATCHDOG_DELAY_MS);
+        }
     }
 
     @Override
