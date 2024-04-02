@@ -76,8 +76,6 @@ const char kIOSDockingPromoNewUserInactiveThresholdHours[] =
     "IOSDockingPromoNewUserInactiveThresholdHours";
 const char kIOSDockingPromoOldUserInactiveThresholdHours[] =
     "IOSDockingPromoOldUserInactiveThresholdHours";
-const char kIOSDockingPromoUsesStartUtilities[] =
-    "IOSDockingPromoUsesStartUtilities";
 
 BASE_FEATURE(kIOSDockingPromo,
              "IOSDockingPromo",
@@ -85,6 +83,10 @@ BASE_FEATURE(kIOSDockingPromo,
 
 BASE_FEATURE(kIOSDockingPromoFixedTriggerLogicKillswitch,
              "IOSDockingPromoFixedTriggerLogicKillswitch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kIOSDockingPromoPreventDeregistrationKillswitch,
+             "IOSDockingPromoPreventDeregistrationKillswitch",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNonModalDefaultBrowserPromoCooldownRefactor,
@@ -453,12 +455,6 @@ int HoursInactiveForOldUsersUntilShowingDockingPromo() {
   return base::GetFieldTrialParamByFeatureAsInt(
       kIOSDockingPromo, kIOSDockingPromoOldUserInactiveThresholdHours,
       /*default_value=*/72);
-}
-
-bool IsDockingPromoUsingStartUtilities() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kIOSDockingPromo, kIOSDockingPromoUsesStartUtilities,
-      /*default=*/false);
 }
 
 bool IsWebChannelsEnabled() {

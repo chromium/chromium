@@ -69,15 +69,16 @@ extern const char kIOSDockingPromoNewUserInactiveThresholdHours[];
 // A parameter representing how many hours of inactivity are required (for users
 // no older than 14 days) before the Docking Promo is shown.
 extern const char kIOSDockingPromoOldUserInactiveThresholdHours[];
-// A parameter representing whether or not the Docking Promo uses Start Surface
-// utilities for calculating app inactivity time.
-extern const char kIOSDockingPromoUsesStartUtilities[];
 
 // Feature flag to enable the Docking Promo.
 BASE_DECLARE_FEATURE(kIOSDockingPromo);
 
 // Killswitch to enable the fixed Docking Promo trigger logic.
 BASE_DECLARE_FEATURE(kIOSDockingPromoFixedTriggerLogicKillswitch);
+
+// Killswitch to prevent the Docking Promo from being deregistered in the Promos
+// Manager.
+BASE_DECLARE_FEATURE(kIOSDockingPromoPreventDeregistrationKillswitch);
 
 // Param values for the Docking Promo display trigger experimental arms.
 enum class DockingPromoDisplayTriggerArm {
@@ -99,10 +100,6 @@ int HoursInactiveForNewUsersUntilShowingDockingPromo();
 // For users no older than 14 days, how many hours of inactivity must pass
 // before showing the Docking Promo.
 int HoursInactiveForOldUsersUntilShowingDockingPromo();
-
-// Returns true if the Docking Promo calculations should use Start utilities for
-// app inactivity time.
-bool IsDockingPromoUsingStartUtilities();
 
 // Feature flag to enable the non-modal DB promo cooldown refactor separating
 // the cooldown periods for full screen and non-modal promos, as well as

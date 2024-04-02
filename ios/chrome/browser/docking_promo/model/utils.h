@@ -5,7 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_DOCKING_PROMO_MODEL_UTILS_H_
 #define IOS_CHROME_BROWSER_DOCKING_PROMO_MODEL_UTILS_H_
 
+#import <UIKit/UIKit.h>
+
+#import <optional>
+
 #import "base/time/time.h"
+
+@class SceneState;
 
 // For testing only.
 // Returns YES if the Docking Promo is forced for display via Chrome
@@ -23,5 +29,10 @@ BOOL IsDockingPromoForcedForDisplay();
 // but not their second day, (and/or) for users no older than 14 days, whether
 // they've been inactive for 3 consecutive (or more) days.
 BOOL CanShowDockingPromo(base::TimeDelta time_since_last_foreground);
+
+// Returns the minimum time since the last app foregrounding using
+// `foregroundScenes`.
+std::optional<base::TimeDelta> MinTimeSinceLastForeground(
+    NSArray<SceneState*>* foregroundScenes);
 
 #endif  // IOS_CHROME_BROWSER_DOCKING_PROMO_MODEL_UTILS_H_

@@ -6,11 +6,14 @@
 
 #import <UIKit/UIKit.h>
 
+#import <optional>
+
 #import "base/feature_list.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/docking_promo/coordinator/docking_promo_mediator.h"
+#import "ios/chrome/browser/docking_promo/model/utils.h"
 #import "ios/chrome/browser/docking_promo/ui/docking_promo_metrics.h"
 #import "ios/chrome/browser/docking_promo/ui/docking_promo_view_controller.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
@@ -79,39 +82,13 @@
 
   AppState* appState = self.browser->GetSceneState().appState;
 
-  base::TimeDelta timeSinceLastForeground = base::TimeDelta::Max();
-
-  if (IsDockingPromoUsingStartUtilities()) {
-    for (SceneState* scene in appState.foregroundScenes) {
-      const base::TimeDelta timeSinceLastForegroundForScene =
-          GetTimeSinceMostRecentTabWasOpenForSceneState(scene);
-
-      if (timeSinceLastForegroundForScene < timeSinceLastForeground) {
-        timeSinceLastForeground = timeSinceLastForegroundForScene;
-      }
-    }
-
-    // If the `timeSinceLastForeground` is never set, explicitly set it to the
-    // minimum available value, so the remainder of this method can evaluate
-    // safely.
-    if (timeSinceLastForeground == base::TimeDelta::Max()) {
-      timeSinceLastForeground = base::TimeDelta::Min();
-    }
-  } else {
-    base::TimeTicks lastTimeInForeground =
-        appState.lastTimeInForeground.is_null() ? base::TimeTicks::Now()
-                                                : appState.lastTimeInForeground;
-
-    timeSinceLastForeground =
-        base::FeatureList::IsEnabled(
-            kIOSDockingPromoFixedTriggerLogicKillswitch)
-            ? (base::TimeTicks::Now() - lastTimeInForeground)
-            : (lastTimeInForeground - base::TimeTicks::Now());
-  }
+  std::optional<base::TimeDelta> timeSinceLastForeground =
+      MinTimeSinceLastForeground(appState.foregroundScenes);
 
   self.mediator = [[DockingPromoMediator alloc]
         initWithPromosManager:promosManager
-      timeSinceLastForeground:timeSinceLastForeground];
+      timeSinceLastForeground:timeSinceLastForeground.value_or(
+                                  base::TimeDelta::Min())];
 
   if (_firstRun) {
     self.viewController = [[DockingPromoViewController alloc] init];
