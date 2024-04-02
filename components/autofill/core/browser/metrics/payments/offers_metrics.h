@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace autofill::autofill_metrics {
 
@@ -74,20 +75,36 @@ enum class OffersSuggestionsEvent {
   kMaxValue = kOfferSuggestionSeeOfferDetailsSelectedOnce,
 };
 
+// Logs when the offer notification bubble shows. Records histogram of
+// what type of offer is showing in the bubble and whether the bubble is opened
+// by reshow. This method also records UKM for when the bubble is reshowing for
+// free listing offer.
 void LogOfferNotificationBubbleOfferMetric(
     AutofillOfferData::OfferType offer_type,
     bool is_reshow,
-    const GURL& url);
+    const GURL& url,
+    ukm::SourceId ukm_source_id);
 
+// Logs when the promo code button is clicked in the offer notification bubble.
+// Records histogram of what type of offer is showing in the bubble that
+// is being clicked. This method also records UKM for when the bubble being
+// clicked is showing free listing offer.
 void LogOfferNotificationBubblePromoCodeButtonClicked(
     AutofillOfferData::OfferType offer_type,
-    const GURL& url);
+    const GURL& url,
+    ukm::SourceId ukm_source_id);
 
+// Logs when the offer notification bubble closes. Records histogram of
+// what type of offer is in the bubble that is being closed, and whether the
+// bubble is from reshowing.
 void LogOfferNotificationBubbleResultMetric(
     AutofillOfferData::OfferType offer_type,
     OfferNotificationBubbleResultMetric metric,
     bool is_reshow);
 
+// Logs when the offer notification bubble is suppressed. Records histogram
+// of what type of offer is showing in the bubble that is being
+// suppressed.
 void LogOfferNotificationBubbleSuppressed(
     AutofillOfferData::OfferType offer_type);
 
