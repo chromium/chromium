@@ -718,7 +718,10 @@ TEST_F(ResourceLoadSchedulerTest, LoosenThrottlingPolicy) {
 
 TEST_F(ResourceLoadSchedulerTest, ConsoleMessage) {
   auto test_task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+
+  // Use a mock clock to control the time.
   Scheduler()->SetClockForTesting(test_task_runner->GetMockClock());
+
   Scheduler()->SetOutstandingLimitForTesting(0, 0);
   Scheduler()->OnLifecycleStateChanged(
       scheduler::SchedulingLifecycleState::kThrottled);
@@ -759,6 +762,10 @@ TEST_F(ResourceLoadSchedulerTest, ConsoleMessage) {
       scheduler::SchedulingLifecycleState::kNotThrottled);
   EXPECT_TRUE(GetConsoleLogger()->HasMessage());
   EXPECT_TRUE(Release(id2));
+
+  // Reset the reference to ensure scheduler won't keep a reference to the
+  // destroyed clock.
+  Scheduler()->SetClockForTesting(nullptr);
 }
 
 TEST_F(ResourceLoadSchedulerTest, ConsiderNetworkStateInTigtMode) {
