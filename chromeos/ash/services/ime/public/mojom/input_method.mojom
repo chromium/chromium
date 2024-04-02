@@ -397,7 +397,7 @@ struct PinyinSettings {
 // Next ordinal: 1
 [Stable]
 struct JapaneseSettings {
-  JapaneseConfig japanese_config@0;
+  JpUnusedStruct unused@0;
   // TODO(b/232341104): Add the Japanese user dictionary here.
 };
 
