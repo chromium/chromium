@@ -6,11 +6,12 @@
 #define UI_EVENTS_OZONE_CHROMEOS_CURSOR_CONTROLLER_H_
 
 #include <map>
+#include <vector>
 
 #include "base/component_export.h"
 #include "base/memory/singleton.h"
-#include "base/observer_list.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "ui/display/display.h"
 #include "ui/events/platform_event.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -91,11 +92,13 @@ class COMPONENT_EXPORT(EVENTS_OZONE) CursorController {
   typedef std::map<gfx::AcceleratedWidget, PerWindowCursorConfiguration>
       WindowToCursorConfigurationMap;
 
-  WindowToCursorConfigurationMap window_to_cursor_configuration_map_;
   mutable base::Lock window_to_cursor_configuration_map_lock_;
+  WindowToCursorConfigurationMap window_to_cursor_configuration_map_
+      GUARDED_BY(window_to_cursor_configuration_map_lock_);
 
-  base::ObserverList<CursorObserver>::Unchecked cursor_observers_;
   mutable base::Lock cursor_observers_lock_;
+  std::vector<CursorObserver*> cursor_observers_
+      GUARDED_BY(cursor_observers_lock_);
 };
 
 }  // namespace ui

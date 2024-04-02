@@ -4,6 +4,9 @@
 
 #include "ui/events/ozone/chromeos/cursor_controller.h"
 
+#include "base/check.h"
+#include "base/containers/contains.h"
+
 namespace ui {
 
 namespace {
@@ -46,12 +49,14 @@ CursorController* CursorController::GetInstance() {
 
 void CursorController::AddCursorObserver(CursorObserver* observer) {
   base::AutoLock lock(cursor_observers_lock_);
-  cursor_observers_.AddObserver(observer);
+  CHECK(!base::Contains(cursor_observers_, observer),
+        base::NotFatalUntil::M126);
+  cursor_observers_.push_back(observer);
 }
 
 void CursorController::RemoveCursorObserver(CursorObserver* observer) {
   base::AutoLock lock(cursor_observers_lock_);
-  cursor_observers_.RemoveObserver(observer);
+  std::erase(cursor_observers_, observer);
 }
 
 void CursorController::SetCursorConfigForWindow(
@@ -79,8 +84,9 @@ void CursorController::ApplyCursorConfigForWindow(gfx::AcceleratedWidget widget,
 
 void CursorController::SetCursorLocation(const gfx::PointF& location) {
   base::AutoLock lock(cursor_observers_lock_);
-  for (auto& observer : cursor_observers_)
-    observer.OnCursorLocationChanged(location);
+  for (auto* observer : cursor_observers_) {
+    observer->OnCursorLocationChanged(location);
+  }
 }
 
 CursorController::CursorController() {
