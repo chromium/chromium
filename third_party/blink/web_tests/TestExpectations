@@ -7128,5 +7128,6 @@ crbug.com/332467110 external/wpt/websockets/Create-blocked-port.any.worker.html?
 crbug.com/332467110 external/wpt/websockets/Create-blocked-port.any.worker.html?wss [ Timeout ]
 crbug.com/332467110 external/wpt/websockets/Create-blocked-port.any.worker.html?wpt_flags=h2 [ Timeout Failure ]
 
-# Gardener (AEST) 2024-04-02
+# Branch Gardener 2024-04-02
 crbug.com/332068449 [ Mac ] external/wpt/focus/cross-origin-ancestor-activeelement-after-child-lose-focus.sub.html [ Failure Pass ]
+crbug.com/330761492 external/wpt/html/editing/the-hidden-attribute/beforematch-scroll-to-text-fragment.html [ Failure Pass ]
