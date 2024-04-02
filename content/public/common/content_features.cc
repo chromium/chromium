@@ -966,7 +966,7 @@ BASE_FEATURE(kServiceWorkerPaymentApps,
 // isolated renderers.
 BASE_FEATURE(kSharedArrayBuffer,
              "SharedArrayBuffer",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // If enabled, SharedArrayBuffer is present and can be transferred on desktop
 // platforms. This flag is used only as a "kill switch" as we migrate towards
 // requiring 'crossOriginIsolated'.
