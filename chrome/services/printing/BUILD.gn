@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//testing/test.gni")
 
-assert(enable_print_preview || is_win)
+assert(enable_printing)
 
 source_set("lib") {
   sources = [
