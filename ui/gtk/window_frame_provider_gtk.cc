@@ -181,30 +181,13 @@ bool HeaderIsTranslucent() {
 
 WindowFrameProviderGtk::Asset::Asset() = default;
 
-WindowFrameProviderGtk::Asset::Asset(const WindowFrameProviderGtk::Asset& src) {
-  CloneFrom(src);
-}
+WindowFrameProviderGtk::Asset::Asset(const WindowFrameProviderGtk::Asset& src) =
+    default;
 
 WindowFrameProviderGtk::Asset& WindowFrameProviderGtk::Asset::operator=(
-    const WindowFrameProviderGtk::Asset& src) {
-  CloneFrom(src);
-  return *this;
-}
+    const WindowFrameProviderGtk::Asset& src) = default;
 
 WindowFrameProviderGtk::Asset::~Asset() = default;
-
-void WindowFrameProviderGtk::Asset::CloneFrom(
-    const WindowFrameProviderGtk::Asset& src) {
-  valid = src.valid;
-  if (!valid) {
-    return;
-  }
-
-  frame_size_px = src.frame_size_px;
-  frame_thickness_px = src.frame_thickness_px;
-  focused_bitmap = src.focused_bitmap;
-  unfocused_bitmap = src.unfocused_bitmap;
-}
 
 WindowFrameProviderGtk::WindowFrameProviderGtk(bool solid_frame, bool tiled)
     : solid_frame_(solid_frame), tiled_(tiled) {
@@ -222,18 +205,52 @@ WindowFrameProviderGtk::WindowFrameProviderGtk(bool solid_frame, bool tiled)
 WindowFrameProviderGtk::~WindowFrameProviderGtk() = default;
 
 int WindowFrameProviderGtk::GetTopCornerRadiusDip() {
-  MaybeUpdateBitmaps(GetDeviceScaleFactor());
-  return top_corner_radius_dip_;
+  if (!top_corner_radius_dip_.has_value()) {
+    top_corner_radius_dip_ = ComputeTopCornerRadius();
+  }
+  return *top_corner_radius_dip_;
 }
 
 bool WindowFrameProviderGtk::IsTopFrameTranslucent() {
-  MaybeUpdateBitmaps(GetDeviceScaleFactor());
-  return top_frame_is_translucent_;
+  if (!top_frame_is_translucent_.has_value()) {
+    top_frame_is_translucent_ = !solid_frame_ && HeaderIsTranslucent();
+  }
+  return *top_frame_is_translucent_;
 }
 
 gfx::Insets WindowFrameProviderGtk::GetFrameThicknessDip() {
-  MaybeUpdateBitmaps(GetDeviceScaleFactor());
-  return frame_thickness_dip_;
+  if (!frame_thickness_dip_.has_value()) {
+    const auto& asset = GetOrCreateAsset(1.0f);
+
+    // In GTK4, there's no way to obtain the frame thickness from CSS values
+    // directly, so we must determine it experimentally based on the drawn
+    // bitmaps.
+    auto get_inset = [&](auto&& pixel_iterator) -> int {
+      for (int i = 0; i < asset.frame_size_px; ++i) {
+        if (SkColorGetA(pixel_iterator(i))) {
+          return asset.frame_size_px - i;
+        }
+      }
+      return 0;
+    };
+
+    frame_thickness_dip_ = gfx::Insets::TLBR(
+        get_inset([&](int i) {
+          return asset.focused_bitmap.getColor(2 * asset.frame_size_px, i);
+        }),
+        get_inset([&](int i) {
+          return asset.focused_bitmap.getColor(i, 2 * asset.frame_size_px);
+        }),
+        get_inset([&](int i) {
+          return asset.focused_bitmap.getColor(2 * asset.frame_size_px,
+                                               BitmapSizePx(asset) - i - 1);
+        }),
+        get_inset([&](int i) {
+          return asset.focused_bitmap.getColor(BitmapSizePx(asset) - i - 1,
+                                               2 * asset.frame_size_px);
+        }));
+  }
+  return *frame_thickness_dip_;
 }
 
 void WindowFrameProviderGtk::PaintWindowFrame(gfx::Canvas* canvas,
@@ -244,13 +261,11 @@ void WindowFrameProviderGtk::PaintWindowFrame(gfx::Canvas* canvas,
   gfx::ScopedCanvas scoped_canvas(canvas);
   float scale = canvas->UndoDeviceScaleFactor();
 
-  MaybeUpdateBitmaps(scale);
-
-  const auto& asset = assets_[scale];
-  DCHECK(asset.valid);
+  const auto& asset = GetOrCreateAsset(scale);
 
   const auto input_insets_px = gfx::ScaleToRoundedInsets(input_insets, scale);
-  auto effective_frame_thickness_px = asset.frame_thickness_px;
+  auto effective_frame_thickness_px =
+      gfx::ScaleToRoundedInsets(GetFrameThicknessDip(), scale);
   effective_frame_thickness_px.SetToMax(input_insets_px);
 
   auto client_bounds_px = gfx::ScaleToRoundedRect(rect_dip, scale);
@@ -332,7 +347,7 @@ void WindowFrameProviderGtk::PaintWindowFrame(gfx::Canvas* canvas,
     gfx::RectF bounds_px =
         gfx::RectF(client_bounds_px.x(), client_bounds_px.y(), header.width(),
                    header.height());
-    float radius_px = scale * top_corner_radius_dip_;
+    float radius_px = scale * GetTopCornerRadiusDip();
     SkVector radii[4]{{radius_px, radius_px}, {radius_px, radius_px}, {}, {}};
     SkRRect clip;
     clip.setRectRadii(gfx::RectFToSkRect(bounds_px), radii);
@@ -342,11 +357,13 @@ void WindowFrameProviderGtk::PaintWindowFrame(gfx::Canvas* canvas,
              client_bounds_px.y(), header.width(), header.height());
 }
 
-void WindowFrameProviderGtk::MaybeUpdateBitmaps(float scale) {
-  auto& asset = assets_[scale];
-  if (asset.valid) {
-    return;
+WindowFrameProviderGtk::Asset& WindowFrameProviderGtk::GetOrCreateAsset(
+    float scale) {
+  auto it = assets_.find(scale);
+  if (it != assets_.end()) {
+    return it->second;
   }
+  auto& asset = assets_[scale];
 
   asset.frame_size_px = std::ceil(kMaxFrameSizeDip * scale);
 
@@ -362,54 +379,7 @@ void WindowFrameProviderGtk::MaybeUpdateBitmaps(float scale) {
       PaintBitmap(bitmap_size, gfx::RectF(frame_bounds_dip),
                   DecorationContext(solid_frame_, tiled_, false), scale);
 
-  // In GTK4, there's no way to obtain the frame thickness from CSS values
-  // directly, so we must determine it experimentally based on the drawn
-  // bitmaps.
-  auto get_inset = [&](auto&& pixel_iterator) -> int {
-    for (int i = 0; i < asset.frame_size_px; ++i) {
-      if (SkColorGetA(pixel_iterator(i))) {
-        int inset_px = asset.frame_size_px - i;
-        return std::ceil(inset_px / scale);
-      }
-    }
-    return 0;
-  };
-
-  top_corner_radius_dip_ = ComputeTopCornerRadius();
-  top_frame_is_translucent_ = !solid_frame_ && HeaderIsTranslucent();
-
-  const auto previous_frame_thickness_dip_ = frame_thickness_dip_;
-  frame_thickness_dip_ = gfx::Insets::TLBR(
-      get_inset([&](int i) {
-        return asset.focused_bitmap.getColor(2 * asset.frame_size_px, i);
-      }),
-      get_inset([&](int i) {
-        return asset.focused_bitmap.getColor(i, 2 * asset.frame_size_px);
-      }),
-      get_inset([&](int i) {
-        return asset.focused_bitmap.getColor(2 * asset.frame_size_px,
-                                             BitmapSizePx(asset) - i - 1);
-      }),
-      get_inset([&](int i) {
-        return asset.focused_bitmap.getColor(BitmapSizePx(asset) - i - 1,
-                                             2 * asset.frame_size_px);
-      }));
-  if (!previous_frame_thickness_dip_.IsEmpty() &&
-      frame_thickness_dip_ != previous_frame_thickness_dip_) {
-    // The possibility of the mismatch is quite low because this logic affects
-    // only mixed DPI setups on Linux, which itself is a rare configuration
-    // already, and there the user needs to use some unusual scale that would
-    // cause the mismatch.  So in theory, this is possible, but in practice, it
-    // should never happen.
-    LOG(ERROR) << "Frame thickness mismatch!  Old: ["
-               << previous_frame_thickness_dip_.ToString() << "], new: ["
-               << frame_thickness_dip_.ToString() << "].  Current scale is "
-               << scale << ".  Please report to crbug.com/1240905.";
-  }
-  asset.frame_thickness_px =
-      gfx::ScaleToRoundedInsets(frame_thickness_dip_, scale);
-
-  asset.valid = true;
+  return asset;
 }
 
 int WindowFrameProviderGtk::BitmapSizePx(const Asset& asset) const {
@@ -422,6 +392,9 @@ int WindowFrameProviderGtk::BitmapSizePx(const Asset& asset) const {
 void WindowFrameProviderGtk::OnThemeChanged(GtkSettings* settings,
                                             GtkParamSpec* param) {
   assets_.clear();
+  frame_thickness_dip_ = std::nullopt;
+  top_corner_radius_dip_ = std::nullopt;
+  top_frame_is_translucent_ = std::nullopt;
 }
 
 }  // namespace gtk

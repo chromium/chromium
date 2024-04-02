@@ -5,6 +5,8 @@
 #ifndef UI_GTK_WINDOW_FRAME_PROVIDER_GTK_H_
 #define UI_GTK_WINDOW_FRAME_PROVIDER_GTK_H_
 
+#include <optional>
+
 #include "base/containers/flat_map.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/glib/scoped_gsignal.h"
@@ -43,25 +45,18 @@ class WindowFrameProviderGtk : public ui::WindowFrameProvider {
     Asset& operator=(const Asset&);
     ~Asset();
 
-    // Whether this record has valid data.
-    bool valid = false;
-
     int frame_size_px = 0;
-    gfx::Insets frame_thickness_px;
 
     // These are texture maps that we will sample from to draw the frame.  The
     // corners are drawn directly and the edges are tiled.
     SkBitmap focused_bitmap;
     SkBitmap unfocused_bitmap;
-
-   private:
-    void CloneFrom(const Asset&);
   };
 
   // Paint the window frame and update any metrics (like the frame thickness)
   // based on it.  Bitmaps and metrics are cached in |assets_|, so this is a
   // no-op if there is a cache entry created earlier.
-  void MaybeUpdateBitmaps(float scale);
+  Asset& GetOrCreateAsset(float scale);
 
   int BitmapSizePx(const Asset& asset) const;
 
@@ -72,9 +67,9 @@ class WindowFrameProviderGtk : public ui::WindowFrameProvider {
   const bool tiled_;
 
   // Scale-independent metric calculated based on the bitmaps.
-  gfx::Insets frame_thickness_dip_;
-  int top_corner_radius_dip_ = 0;
-  bool top_frame_is_translucent_ = false;
+  std::optional<gfx::Insets> frame_thickness_dip_;
+  std::optional<int> top_corner_radius_dip_;
+  std::optional<bool> top_frame_is_translucent_;
 
   // Cached bitmaps and metrics.
   base::flat_map<float, Asset> assets_;
