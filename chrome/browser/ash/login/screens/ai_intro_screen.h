@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 
@@ -53,10 +54,19 @@ class AiIntroScreen : public BaseScreen {
   bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
+
+  // Notification of a change in the accessibility settings.
+  // Pause autoscroll in oobe_carousel if cvox is active.
+  void OnAccessibilityStatusChanged(
+      const AccessibilityStatusEventDetails& details);
   void OnUserAction(const base::Value::List& args) override;
 
+  base::CallbackListSubscription accessibility_subscription_;
   base::WeakPtr<AiIntroScreenView> view_;
   ScreenExitCallback exit_callback_;
+
+  // WeakPtrFactory used to schedule other tasks in this object.
+  base::WeakPtrFactory<AiIntroScreen> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

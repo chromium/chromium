@@ -1413,7 +1413,7 @@
   <message name="IDS_LOGIN_RECOMMEND_APPS_SCREEN_LOADING" desc="Message shown while the recommended app list is being downloaded.">
     Please wait...
   </message>
-
+  <!-- Strings for app downloading screen -->
   <message name="IDS_LOGIN_APP_DOWNLOADING_SCREEN_TITLE" desc="The title of the dialog that tells the user the selected Android Apps are downloading.">
     Apps downloading
   </message>
@@ -1423,6 +1423,49 @@
   <message name="IDS_LOGIN_APP_DOWNLOADING_SCREEN_NEXT" desc="The label on the button that continues the setup flow.">
     Next
   </message>
+  <!-- Strings for ai intro screen -->
+  <message name="IDS_AI_INTRO_TITLE" desc="The title of the ai intro dialog">
+    Use Google AI to be more creative and productive
+  </message>
+  <message name="IDS_AI_INTRO_SUBTITLE" desc="The subtitle of the ai intro dialog">
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Exclusive for <ph name="DEVICE_TYPE">$1<ex>Chromebook Plus</ex></ph>.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>Generative AI is experimental, in early development, and currently has limited availability.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
+  </message>
+  <message name="IDS_AI_INTRO_SLIDE_WRITE_TITLE" desc="The title of the write info slide">
+    Write faster and with more confidence
+  </message>
+  <message name="IDS_AI_INTRO_SLIDE_WRITE_TEXT" desc="The text of the write info slide">
+    Right-click in a text box to use Help me write
+  </message>
+  <message name="IDS_AI_INTRO_SLIDE_WALLPAPER_TITLE" desc="The title of the wallpaper info slide">
+    Create wallpapers with AI
+  </message>
+  <message name="IDS_AI_INTRO_SLIDE_WALLPAPER_TEXT" desc="The text of the wallpaper info slide">
+    Style unique wallpapers
+  </message>
+  <message name="IDS_AI_INTRO_SLIDE_BACKGROUND_TITLE" desc="The title of the background info slide">
+    Create backgrounds with AI
+  </message>
+  <message name="IDS_AI_INTRO_SLIDE_BACKGROUND_TEXT" desc="The text of the background info slide">
+    Personalize your camera backgrounds for video calls and more
+  </message>
+  <message name="IDS_AI_INTRO_SLIDE_LABEL" desc="Text of slide label for accessibility.">
+    Extra content <ph name="CURRENT_ELEMENT">$1<ex>1</ex></ph> out of <ph name="TOTAL_ELEMENTS">$2<ex>2</ex></ph>
+  </message>
+  <message name="IDS_AI_INTRO_SELECTED_BUTTON_LABEL" desc="Text of carousel selected button label for accessibility.">
+    Selected, extra content <ph name="CURRENT_ELEMENT">$1<ex>1</ex></ph> out of <ph name="TOTAL_ELEMENTS">$2<ex>2</ex></ph>
+  </message>
+  <message name="IDS_AI_INTRO_UNSELECTED_BUTTON_LABEL" desc="Text of carousel unselected button label for accessibility.">
+    Navigate to extra content <ph name="CURRENT_ELEMENT">$1<ex>1</ex></ph> out of <ph name="TOTAL_ELEMENTS">$2<ex>2</ex></ph>
+  </message>
+  <!-- Strings for tuna screen -->
+  <message name="IDS_TUNA_TITLE" desc="The title of the tuna dialog" translateable="false">
+    Your <ph name="DEVICE_TYPE">$1<ex>Chromebook Plus</ex></ph> comes with Google AI
+  </message>
+  <message name="IDS_TUNA_SUBTITLE" desc="The subtitle of the tuna dialog" translateable="false">
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Get help on writing, planning, learning and more.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+  </message>
+  <!-- Strings for marketing optin screen -->
   <message name="IDS_LOGIN_MARKETING_OPT_IN_SCREEN_TITLE" desc="The title of the last dialog in the set of screens that are always displayed to the user on the first login to the ChromeOS device.">
     You are all set!
   </message>

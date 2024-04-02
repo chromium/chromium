@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import '//resources/ash/common/cr_elements/cros_color_overrides.css.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../../components/oobe_illo_icons.html.js';
 import '../../components/buttons/oobe_back_button.js';
 import '../../components/buttons/oobe_next_button.js';
 import '../../components/common_styles/oobe_common_styles.css.js';

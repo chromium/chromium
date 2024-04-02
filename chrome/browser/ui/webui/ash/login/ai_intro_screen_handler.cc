@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
+#include "ui/chromeos/devicetype_utils.h"
 
 namespace ash {
 
@@ -17,10 +18,27 @@ AiIntroScreenHandler::~AiIntroScreenHandler() = default;
 // Add localized values that you want to propagate to the JS side here.
 void AiIntroScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
+  builder->Add("aiIntroScreenTitle", IDS_AI_INTRO_TITLE);
+  builder->AddF("aiIntroScreenSubtitle", IDS_AI_INTRO_SUBTITLE,
+                ui::GetChromeOSDeviceName());
+  builder->Add("slideWriteTitle", IDS_AI_INTRO_SLIDE_WRITE_TITLE);
+  builder->Add("slideWriteText", IDS_AI_INTRO_SLIDE_WRITE_TEXT);
+  builder->Add("slideWallpaperTitle", IDS_AI_INTRO_SLIDE_WALLPAPER_TITLE);
+  builder->Add("slideWallpaperText", IDS_AI_INTRO_SLIDE_WALLPAPER_TEXT);
+  builder->Add("slideBackgroundTitle", IDS_AI_INTRO_SLIDE_BACKGROUND_TITLE);
+  builder->Add("slideBackgroundText", IDS_AI_INTRO_SLIDE_BACKGROUND_TEXT);
+  builder->Add("slideLabel", IDS_AI_INTRO_SLIDE_LABEL);
+  builder->Add("slideSelectedButtonLabel", IDS_AI_INTRO_SELECTED_BUTTON_LABEL);
+  builder->Add("slideUnselectedButtonLabel",
+               IDS_AI_INTRO_UNSELECTED_BUTTON_LABEL);
 }
 
 void AiIntroScreenHandler::Show() {
   ShowInWebUI();
+}
+
+void AiIntroScreenHandler::SetAutoTransition(bool value) {
+  CallExternalAPI("setAutoTransition", value);
 }
 
 base::WeakPtr<AiIntroScreenView> AiIntroScreenHandler::AsWeakPtr() {

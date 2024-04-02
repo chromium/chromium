@@ -25,6 +25,7 @@ class AiIntroScreenView {
 
   // Shows the contents of the screen.
   virtual void Show() = 0;
+  virtual void SetAutoTransition(bool value) = 0;
 
   // Gets a WeakPtr to the instance.
   virtual base::WeakPtr<AiIntroScreenView> AsWeakPtr() = 0;
@@ -51,6 +52,7 @@ class AiIntroScreenHandler final : public BaseScreenHandler,
   base::WeakPtr<AiIntroScreenView> AsWeakPtr() override;
 
  private:
+  void SetAutoTransition(bool value) override;
   base::WeakPtrFactory<AiIntroScreenView> weak_ptr_factory_{this};
 };
 

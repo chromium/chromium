@@ -72,10 +72,37 @@ void AiIntroScreen::ShowImpl() {
     return;
   }
 
+  // AccessibilityManager::Get() can be nullptr in unittests.
+  if (AccessibilityManager::Get()) {
+    AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
+    accessibility_subscription_ = accessibility_manager->RegisterCallback(
+        base::BindRepeating(&AiIntroScreen::OnAccessibilityStatusChanged,
+                            weak_ptr_factory_.GetWeakPtr()));
+    view_->SetAutoTransition(
+        !AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
+  }
+
   view_->Show();
 }
 
-void AiIntroScreen::HideImpl() {}
+void AiIntroScreen::HideImpl() {
+  accessibility_subscription_ = {};
+  view_->SetAutoTransition(false);
+}
+
+void AiIntroScreen::OnAccessibilityStatusChanged(
+    const AccessibilityStatusEventDetails& details) {
+  if (details.notification_type ==
+      AccessibilityNotificationType::kManagerShutdown) {
+    accessibility_subscription_ = {};
+    return;
+  }
+  // AccessibilityManager::Get() can be nullptr in unittests.
+  if (view_ && AccessibilityManager::Get()) {
+    view_->SetAutoTransition(
+        !AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
+  }
+}
 
 void AiIntroScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();

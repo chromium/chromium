@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
+#include "ui/chromeos/devicetype_utils.h"
 
 namespace ash {
 
@@ -17,6 +18,8 @@ TunaScreenHandler::~TunaScreenHandler() = default;
 // Add localized values that you want to propagate to the JS side here.
 void TunaScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
+  builder->AddF("tunaScreenTitle", IDS_TUNA_TITLE, ui::GetChromeOSDeviceName());
+  builder->Add("tunaScreenSubtitle", IDS_TUNA_SUBTITLE);
 }
 
 void TunaScreenHandler::Show(base::Value::Dict data) {
