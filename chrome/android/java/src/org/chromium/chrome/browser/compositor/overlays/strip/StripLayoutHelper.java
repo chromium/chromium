@@ -1380,18 +1380,18 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             setTabContainerVisible(currTab, currTabSelected, currTabHovered);
 
             /**
-             * Start divider should be visible when: 1. currTab is dragged off of the strip OR 2.
+             * Start divider should be visible when: 1. prevTab is dragged off of the strip OR 2.
              * currTab container is hidden and (a) prevTab has trailing margin (ie: currTab is start
              * of group or an individual tab) OR (b) prevTab container is also hidden.
              */
-            boolean currDraggedOffStrip = currTab.isDraggedOffStrip();
             boolean currContainerHidden = currTab.getContainerOpacity() == TAB_OPACITY_HIDDEN;
             boolean startDividerVisible;
             if (mStripViews[i - 1] instanceof StripLayoutTab prevTab) {
+                boolean prevTabNotLeftMostAndDraggedOffStrip = prevTab.isDraggedOffStrip() && i > 1;
                 boolean prevContainerHidden = prevTab.getContainerOpacity() == TAB_OPACITY_HIDDEN;
                 boolean prevTabHasMargin = prevTab.getTrailingMargin() > 0;
                 startDividerVisible =
-                        currDraggedOffStrip
+                        prevTabNotLeftMostAndDraggedOffStrip
                                 || (currContainerHidden
                                         && (prevContainerHidden || prevTabHasMargin));
             } else {

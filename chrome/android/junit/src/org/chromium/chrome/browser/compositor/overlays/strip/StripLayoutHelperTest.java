@@ -530,7 +530,7 @@ public class StripLayoutHelperTest {
                 "First start divider should always be hidden.", tabs[0].isStartDividerVisible());
         assertFalse("Start divider should be hidden.", tabs[1].isStartDividerVisible());
         assertFalse("Start divider should be hidden.", tabs[2].isStartDividerVisible());
-        assertTrue("Start divider should be hidden.", tabs[3].isStartDividerVisible());
+        assertTrue("Start divider should be visible.", tabs[3].isStartDividerVisible());
         assertTrue("Start divider should be visible.", tabs[4].isStartDividerVisible());
 
         // Verify end divider visible only for 5th tab.
@@ -561,7 +561,7 @@ public class StripLayoutHelperTest {
                 "First start divider should always be hidden.", tabs[0].isStartDividerVisible());
         assertFalse("Start divider should be hidden.", tabs[1].isStartDividerVisible());
         assertFalse("Start divider should be hidden.", tabs[2].isStartDividerVisible());
-        assertTrue("Start divider should be hidden.", tabs[3].isStartDividerVisible());
+        assertTrue("Start divider should be visible.", tabs[3].isStartDividerVisible());
         assertTrue("Start divider should be visible.", tabs[4].isStartDividerVisible());
 
         // Verify end divider visible for 1st and 5th tab.
@@ -593,7 +593,7 @@ public class StripLayoutHelperTest {
                 "First start divider should always be hidden.", tabs[0].isStartDividerVisible());
         assertFalse("Start divider should be hidden.", tabs[1].isStartDividerVisible());
         assertFalse("Start divider should be hidden.", tabs[2].isStartDividerVisible());
-        assertTrue("Start divider should be hidden.", tabs[3].isStartDividerVisible());
+        assertTrue("Start divider should be visible.", tabs[3].isStartDividerVisible());
         assertTrue("Start divider should be visible.", tabs[4].isStartDividerVisible());
 
         // Verify end divider visible for 1st and 5th tab.
@@ -3305,6 +3305,34 @@ public class StripLayoutHelperTest {
                 SCREEN_HEIGHT,
                 draggedTab.getOffsetY(),
                 EPSILON);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    @Config(sdk = Build.VERSION_CODES.R)
+    public void testDrag2_DragActiveClickedTabOutOfStrip() {
+        // Setup and mark the active clicked tab.
+        initializeTest(false, false, false, 1, 5);
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
+
+        // Drag tab out of strip.
+        float expectedOffsetX = 123.45f;
+        mStripLayoutHelper.prepareForTabDrop(TIMESTAMP, 0f, 0f, true, false);
+        StripLayoutTab draggedTab = mStripLayoutHelper.getInteractingTabForTesting();
+        draggedTab.setOffsetX(expectedOffsetX);
+        mStripLayoutHelper.clearForTabDrop(TIMESTAMP, true, false);
+        mStripLayoutHelper.startReorderModeAtIndexForTesting(1);
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+
+        // Verify 3rd, 4th and 5th tab's start divider is visible.
+        assertFalse("Start divider should be hidden.", tabs[0].isStartDividerVisible());
+        assertFalse("DraggedTab divider should be hidden.", tabs[1].isStartDividerVisible());
+        assertTrue(
+                "Tab after draggedTab start divider should be visible.",
+                tabs[2].isStartDividerVisible());
+        assertTrue("Start divider should be visible.", tabs[3].isStartDividerVisible());
+        assertTrue("Start divider should be visible.", tabs[4].isStartDividerVisible());
     }
 
     @Test
