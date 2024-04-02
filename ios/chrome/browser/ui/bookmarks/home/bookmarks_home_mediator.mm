@@ -771,6 +771,12 @@ bool IsABookmarkNodeSectionForIdentifier(
           syncer::SyncService::TransportState::PAUSED) {
     return NO;
   }
+  // Do not show for syncing users.
+  // TODO(crbug.com/40066949): Remove this after UNO phase 3. See
+  // ConsentLevel::kSync documentation for more details.
+  if (self.syncService->HasSyncConsent()) {
+    return NO;
+  }
   // Do not show if last syncing account is different from the current one.
   // Note that the "last syncing" account pref is cleared during the migration
   // of syncing users to the signed-in state, but these users should also be
