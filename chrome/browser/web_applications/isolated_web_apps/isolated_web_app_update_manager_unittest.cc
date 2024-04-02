@@ -1130,15 +1130,23 @@ INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     IsolatedWebAppUpdateManagerFeatureFlagTest,
     ::testing::Values(
-        FeatureFlagParam{.feature_states = {}, .expected_result = false},
+// TODO: crbug.com/40274058 - Enable automatic updates on other platforms.
+#if !BUILDFLAG(IS_CHROMEOS)
+        FeatureFlagParam{
+            .feature_states = {{features::kIsolatedWebApps, false}},
+            .expected_result = false},
         FeatureFlagParam{.feature_states = {{features::kIsolatedWebApps, true}},
                          .expected_result = false}
-// TODO(crbug.com/1458725): Enable automatic updates on other platforms.
-#if BUILDFLAG(IS_CHROMEOS)
-        ,
+#else   // BUILDFLAG(IS_CHROMEOS)
         FeatureFlagParam{
-            .feature_states = {{features::kIsolatedWebAppAutomaticUpdates,
+            .feature_states = {{features::kIsolatedWebApps, false},
+                               {features::kIsolatedWebAppAutomaticUpdates,
                                 true}},
+            .expected_result = false},
+        FeatureFlagParam{
+            .feature_states = {{features::kIsolatedWebApps, true},
+                               {features::kIsolatedWebAppAutomaticUpdates,
+                                false}},
             .expected_result = false},
         FeatureFlagParam{
             .feature_states = {{features::kIsolatedWebApps, true},

@@ -1156,6 +1156,9 @@ TEST_F(ChromeContentBrowserClientStoragePartitionTest,
 
 TEST_F(ChromeContentBrowserClientStoragePartitionTest,
        DefaultPartitionIsUsedWhenIsolationDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kIsolatedWebApps);
+
   TestChromeContentBrowserClient test_content_browser_client;
   content::StoragePartitionConfig config =
       test_content_browser_client.GetStoragePartitionConfigForSite(

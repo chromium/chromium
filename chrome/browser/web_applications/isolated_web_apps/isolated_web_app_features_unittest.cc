@@ -37,20 +37,22 @@ class IsolatedWebAppFeaturesTest : public WebAppTest {
 };
 
 TEST_F(IsolatedWebAppFeaturesTest, IsIwaDevModeEnabled) {
+  base::test::ScopedFeatureList base_scoped_feature_list{
+      features::kIsolatedWebApps};
+
   SetDeveloperToolsAvailabilityPolicy(
       policy::DeveloperToolsPolicyHandler::Availability::
           kDisallowedForForceInstalledExtensions);
   EXPECT_THAT(IsIwaDevModeEnabled(profile()), IsFalse());
 
   {
-    base::test::ScopedFeatureList scoped_feature_list{
-        features::kIsolatedWebAppDevMode};
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatures({features::kIsolatedWebAppDevMode},
+                                         {features::kIsolatedWebApps});
     // `features::kIsolatedWebApps` is not enabled.
     EXPECT_THAT(IsIwaDevModeEnabled(profile()), IsFalse());
   }
   {
-    base::test::ScopedFeatureList scoped_feature_list{
-        features::kIsolatedWebApps};
     // `features::kIsolatedWebAppDevMode` is not enabled.
     EXPECT_THAT(IsIwaDevModeEnabled(profile()), IsFalse());
   }
