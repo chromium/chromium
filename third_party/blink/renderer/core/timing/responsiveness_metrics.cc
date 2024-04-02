@@ -312,20 +312,32 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
     if (contextmenu_flush_timer_.IsActive()) {
       contextmenu_flush_timer_.Stop();
     }
-    // Generate a new interaction id.
-    UpdateInteractionId();
-    entry->SetInteractionIdAndOffset(GetCurrentInteractionId(),
-                                     GetInteractionCount());
 
     // Any existing pointerup in the map cannot fire a click.
     FlushPointerup();
+
     // Platforms like Android would create ever-increasing pointer_id for
     // interactions, whereas platforms like linux could reuse the same id for
     // different interactions. So resetting pointer_info here if it's flushed.
     if (!pointer_id_entry_map_.Contains(pointer_id)) {
       // Reset if pointer_info got flushed.
       pointer_info = nullptr;
+
+      UseCounter::Count(window_performance_->GetExecutionContext(),
+                        WebFeature::kEventTimingOrphanPointerup);
+
+      if (base::FeatureList::IsEnabled(
+              features::kEventTimingHandleOrphanPointerup)) {
+        // Early exit if it's an orphan pointerup, not treating it as an
+        // interaction. crbug.com/40935137
+        return true;
+      }
     }
+
+    // Generate a new interaction id.
+    UpdateInteractionId();
+    entry->SetInteractionIdAndOffset(GetCurrentInteractionId(),
+                                     GetInteractionCount());
 
     if (pointer_info &&
         pointer_info->GetEntry()->name() == event_type_names::kPointerdown) {

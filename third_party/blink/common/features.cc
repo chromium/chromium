@@ -880,6 +880,12 @@ BASE_FEATURE(kEventTimingFallbackToModalDialogStart,
              "EventTimingFallbackToModalDialogStart",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable not reporting orphan pointerup (pointerup not accompanied by
+// pointerdown) as an interaction in performance event timing.
+BASE_FEATURE(kEventTimingHandleOrphanPointerup,
+             "EventTimingHandleOrphanPointerup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether LCP calculations should exclude low-entropy images. If
 // enabled, then the associated parameter sets the cutoff, expressed as the
 // minimum number of bits of encoded image data used to encode each rendered
