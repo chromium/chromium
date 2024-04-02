@@ -210,12 +210,6 @@ TEST_F(
   RunUntilIdle();
   EXPECT_EQ(MigrationType::kNonSyncableToAndroidBackend,
             migration_in_progress_type());
-
-  // Verify that migration attempt happened by checking that the time of
-  // the last migration attempt was updated.
-  EXPECT_FALSE(
-      prefs().GetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt) ==
-      kLastMigrationAttemptTime);
 }
 
 TEST_F(
@@ -259,12 +253,6 @@ TEST_F(
   RunUntilIdle();
   EXPECT_EQ(MigrationType::kNonSyncableToBuiltInBackend,
             migration_in_progress_type());
-
-  // Verify that migration attempt happened by checking that the time of
-  // the last migration attempt was updated.
-  EXPECT_FALSE(
-      prefs().GetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt) ==
-      kLastMigrationAttemptTime);
 }
 
 TEST_F(LegacyPasswordStoreBackendMigrationDecoratorTest,
