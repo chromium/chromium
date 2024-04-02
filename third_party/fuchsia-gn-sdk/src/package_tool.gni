@@ -12,6 +12,7 @@ import("gn_sdk_configs.gni")
 #   package_name - defaults to target_name
 #   archive_manifest - required
 #   command - the packaging step to perform valid steps are build, archive
+#   subpackages_manifest (with "build" command only) - optional
 #
 # Forwarded parameters
 #       testonly
@@ -85,6 +86,14 @@ template("fuchsia_package_tool") {
         "--depfile",
       ]
 
+      if (defined(invoker.subpackages_manifest)) {
+        inputs += [ invoker.subpackages_manifest ]
+        args += [
+          "--subpackages-build-manifest-path",
+          rebase_path(invoker.subpackages_manifest, root_build_dir),
+        ]
+      }
+
       assert(fuchsia_target_api_level >= 1)
       args += [
         "--api-level",
@@ -107,6 +116,49 @@ template("fuchsia_package_tool") {
         "--depfile",
         rebase_path(_final_far_depfile, root_build_dir),
       ]
+
+      metadata = {
+        # Export information for using this package as a subpackage.
+        subpackages_manifest_data = [
+          {
+            package_manifest_file =
+                rebase_path(_pkg_output_manifest, root_build_dir)
+          },
+        ]
+
+        # Stop subpackage discovery from recursing into our own subpackages.
+        # Used by `fuchsia_package_tool_subpackages_manifest` below.
+        subpackages_manifest_barrier = []
+      }
     }
+  }
+}
+
+# Generates a subpackages manifest that references a list of packages.
+#
+# Parameters
+#   subpackages - list of packages to be referenced by the generated manifest.
+#   outputs - list with a single element, the output manifest file.
+#
+# Forwarded parameters
+#       testonly
+#       visibility
+template("fuchsia_package_tool_subpackages_manifest") {
+  generated_file(target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "testonly",
+                             "visibility",
+                           ])
+
+    assert(defined(invoker.subpackages), "subpackages is required.")
+    deps = invoker.subpackages
+
+    assert(defined(invoker.outputs), "outputs is required.")
+    outputs = invoker.outputs
+
+    data_keys = [ "subpackages_manifest_data" ]
+    walk_keys = [ "subpackages_manifest_barrier" ]
+    output_conversion = "json"
   }
 }

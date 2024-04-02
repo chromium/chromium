@@ -47,6 +47,10 @@ import("package_tool.gni")
 #
 #     Type: file path
 #
+#   subpackages: [Optional]
+#     A list of `fuchsia_package` or `fuchsia_sdk_package` targets.
+#     Type: list of targets
+#
 #   deps
 #     Required: List of fuchsia_component() targets that this
 #              package contains.
@@ -111,6 +115,11 @@ template("fuchsia_package") {
     _package_deps += invoker.data_deps
   }
 
+  _subpackages = []
+  if (defined(invoker.subpackages)) {
+    _subpackages += invoker.subpackages
+  }
+
   # Generates a JSON file containing the contents of each of the
   # components being included in this package.
   generated_file(_packaged_components_metadata_target) {
@@ -131,6 +140,20 @@ template("fuchsia_package") {
 
     outputs = [ _fidl_json_refs_file ]
     data_keys = [ "fidl_json" ]
+  }
+
+  # Generates a file listing all subpackages.
+  if (_subpackages != []) {
+    _subpackages_manifest_target = "${target_name}__subpackages_manifest"
+    _subpackages_manifest_file =
+        "${target_gen_dir}/${package_name}_subpackages_manifest.json"
+
+    fuchsia_package_tool_subpackages_manifest(_subpackages_manifest_target) {
+      forward_variables_from(invoker, [ "testonly" ])
+      visibility = [ ":$_metadata_target" ]
+      subpackages = _subpackages
+      outputs = [ _subpackages_manifest_file ]
+    }
   }
 
   action(_manifest_target) {
@@ -205,6 +228,12 @@ template("fuchsia_package") {
     package_name = package_name
     command = "build"
     archive_manifest = _archive_manifest
+
+    if (_subpackages != []) {
+      subpackages_manifest = _subpackages_manifest_file
+      deps = [ ":$_subpackages_manifest_target" ] + _subpackages
+    }
+
     public_deps = [ ":$_manifest_target" ]
   }
 
