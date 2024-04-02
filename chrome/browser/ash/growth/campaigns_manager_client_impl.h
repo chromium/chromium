@@ -64,6 +64,11 @@ class CampaignsManagerClientImpl : public growth::CampaignsManagerClient,
   base::ScopedObservation<UiActionPerformer, UiActionPerformer::Observer>
       show_nudge_performer_observation_{this};
 
+  // Reset before `campaigns_manager_`, because `this` observes one of the
+  // performers owned by the manager.
+  base::ScopedObservation<UiActionPerformer, UiActionPerformer::Observer>
+      show_notification_performer_observation_{this};
+
   base::WeakPtrFactory<CampaignsManagerClientImpl> weak_ptr_factory_{this};
 };
 
