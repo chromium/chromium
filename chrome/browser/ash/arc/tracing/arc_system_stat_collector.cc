@@ -60,7 +60,8 @@ const base::FilePath::CharType kCpuFrequencyPath[] =
 
 const base::FilePath::CharType kPowercapPath[] =
     FILE_PATH_LITERAL("/sys/class/powercap");
-const base::FilePath::CharType kIntelRaplQuery[] = FILE_PATH_LITERAL("intel-rapl:*");
+const base::FilePath::CharType kIntelRaplQuery[] =
+    FILE_PATH_LITERAL("intel-rapl:*");
 const base::FilePath::CharType kEnergyPath[] = FILE_PATH_LITERAL("energy_uj");
 const base::FilePath::CharType kLongTermConstraintPath[] =
     FILE_PATH_LITERAL("constraint_0_power_limit_uw");
@@ -106,8 +107,9 @@ class CpuTemperaturePathDetector {
            !temperature_label_path.empty();
            temperature_label_path = enumerator.Next()) {
         std::string label;
-        if (!base::ReadFileToString(temperature_label_path, &label))
+        if (!base::ReadFileToString(temperature_label_path, &label)) {
           continue;
+        }
         base::TrimWhitespaceASCII(label, base::TRIM_TRAILING, &label);
         bool package_temp = label == "Package id 0";
         if (label != "Core 0" && label != "Physical id 0" && !package_temp) {
@@ -119,8 +121,9 @@ class CpuTemperaturePathDetector {
                                            "label", "input");
         const base::FilePath temperature_input_path =
             base::FilePath(temperature_input_path_string);
-        if (!base::PathExists(temperature_input_path))
+        if (!base::PathExists(temperature_input_path)) {
           continue;
+        }
         path_ = temperature_input_path;
         VLOG(1) << "Detected path to read CPU temperature (" << label
                 << "): " << temperature_input_path;
@@ -327,7 +330,8 @@ struct ArcSystemStatCollector::SystemReadersContext {
     context->system_readers[SystemReader::kCpuTemperature].reset(
         open(cpu_temp_path.value().c_str(), O_RDONLY));
     if (!context->system_readers[SystemReader::kCpuTemperature].is_valid()) {
-      LOG(ERROR) << "Failed to open cpu temperature file: " << cpu_temp_path.value();
+      LOG(ERROR) << "Failed to open cpu temperature file: "
+                 << cpu_temp_path.value();
     }
 
     context->system_readers[SystemReader::kCpuFrequency].reset(
@@ -433,10 +437,12 @@ void ArcSystemStatCollector::Flush(const base::TimeTicks& min_timestamp,
   while (sample_index < write_index_) {
     const Sample& sample = samples_[sample_index % samples_.size()];
     ++sample_index;
-    if (sample.timestamp > max_timestamp)
+    if (sample.timestamp > max_timestamp) {
       break;
-    if (sample.timestamp < min_timestamp)
+    }
+    if (sample.timestamp < min_timestamp) {
       continue;
+    }
     const int64_t timestamp =
         (sample.timestamp - base::TimeTicks()).InMicroseconds();
     mem_total.MaybeAdd(timestamp, sample.mem_total_kb);
@@ -446,20 +452,25 @@ void ArcSystemStatCollector::Flush(const base::TimeTicks& min_timestamp,
     swap_read.MaybeAdd(timestamp, sample.swap_sectors_read);
     swap_write.MaybeAdd(timestamp, sample.swap_sectors_write);
     swap_wait.MaybeAdd(timestamp, sample.swap_waiting_time_ms);
-    if (sample.cpu_temperature > std::numeric_limits<int>::min())
+    if (sample.cpu_temperature > std::numeric_limits<int>::min()) {
       cpu_temperature.MaybeAdd(timestamp, sample.cpu_temperature);
-    if (sample.cpu_frequency > 0)
+    }
+    if (sample.cpu_frequency > 0) {
       cpu_frequency.MaybeAdd(timestamp, sample.cpu_frequency);
+    }
     if (sample.package_power_constraint > 0) {
       package_power_constraint.MaybeAdd(timestamp,
                                         sample.package_power_constraint);
     }
-    if (sample.cpu_power > 0)
+    if (sample.cpu_power > 0) {
       cpu_power.MaybeAdd(timestamp, sample.cpu_power);
-    if (sample.gpu_power > 0)
+    }
+    if (sample.gpu_power > 0) {
       gpu_power.MaybeAdd(timestamp, sample.gpu_power);
-    if (sample.memory_power > 0)
+    }
+    if (sample.memory_power > 0) {
       memory_power.MaybeAdd(timestamp, sample.memory_power);
+    }
   }
 
   // These are optional. Keep it if non-zero value is detected.
@@ -529,8 +540,9 @@ std::string ArcSystemStatCollector::SerializeToJson() const {
 
 bool ArcSystemStatCollector::LoadFromJson(const std::string& json_data) {
   const std::optional<base::Value> root = base::JSONReader::Read(json_data);
-  if (!root)
+  if (!root) {
     return false;
+  }
   return LoadFromValue(*root);
 }
 
@@ -547,8 +559,9 @@ bool ArcSystemStatCollector::LoadFromValue(const base::Value& root) {
   max_interval_ = base::Microseconds(max_interval_mcs);
 
   const base::Value::List* sample_list = root_dict.FindList(kKeySamples);
-  if (!sample_list)
+  if (!sample_list) {
     return false;
+  }
 
   for (const auto& sample_entry : *sample_list) {
     const base::Value::Dict* sample_entry_dict = sample_entry.GetIfDict();
@@ -601,8 +614,9 @@ bool ArcSystemStatCollector::LoadFromValue(const base::Value& root) {
 
 void ArcSystemStatCollector::ScheduleSystemStatUpdate() {
   if (!context_) {
-    if (missed_update_warning_left_-- > 0)
+    if (missed_update_warning_left_-- > 0) {
       LOG(WARNING) << "Dropping update, already pending";
+    }
     return;
   }
   background_task_runner_->PostTaskAndReplyWithResult(
@@ -614,8 +628,9 @@ void ArcSystemStatCollector::ScheduleSystemStatUpdate() {
 }
 
 void ArcSystemStatCollector::FreeSystemReadersContext() {
-  if (!context_)
+  if (!context_) {
     return;
+  }
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&SystemReadersContext::FreeOnBackgroundThread,
@@ -695,8 +710,9 @@ ArcSystemStatCollector::ReadSystemStatOnBackgroundThread(
             context->system_readers[one_value_readers[i].reader].get(),
             kOneValueColumns, one_value_readers[i].value)) {
       *one_value_readers[i].value = one_value_readers[i].default_value;
-      if (one_value_readers_error_reported[i])
+      if (one_value_readers_error_reported[i]) {
         continue;
+      }
       LOG(ERROR) << "Failed to read one value system stat: "
                  << one_value_readers[i].reader;
       one_value_readers_error_reported[i] = true;
@@ -767,22 +783,26 @@ ArcSystemStatCollector::RuntimeFrame::RuntimeFrame() = default;
 
 bool ParseStatFile(int fd, const int* columns, int64_t* output) {
   char buffer[128];
-  if (lseek(fd, 0, SEEK_SET))
+  if (lseek(fd, 0, SEEK_SET)) {
     return false;
+  }
   const int read_bytes = read(fd, buffer, sizeof(buffer) - 1);
-  if (read_bytes < 0)
+  if (read_bytes < 0) {
     return false;
+  }
   buffer[read_bytes] = 0;
   int column_index = 0;
   const char* scan = buffer;
   while (true) {
     // Skip whitespace.
-    while (IsWhitespace(*scan))
+    while (IsWhitespace(*scan)) {
       ++scan;
+    }
     if (*columns != column_index) {
       // Just skip this entry. It may be digits or text.
-      while (!IsWhitespace(*scan))
+      while (!IsWhitespace(*scan)) {
         ++scan;
+      }
     } else {
       int64_t value = 0;
       while (IsDigit(*scan)) {
@@ -791,11 +811,13 @@ bool ParseStatFile(int fd, const int* columns, int64_t* output) {
       }
       *output++ = value;
       ++columns;
-      if (*columns < 0)
+      if (*columns < 0) {
         return IsEnd(*scan);  // All columns are read.
+      }
     }
-    if (!IsWhitespace(*scan))
+    if (!IsWhitespace(*scan)) {
       return false;
+    }
     ++column_index;
   }
 }

@@ -56,11 +56,11 @@ base::Value::List SerializeCpuEvents(const CpuEvents& cpu_events);
 // Serializes all CPU events into |base::Value::List|.
 base::Value::List SerializeAllCpuEvents(const AllCpuEvents& all_cpu_events);
 
-// Loads CPU events from |base::Value::List|. Returns true in case CPU events were
-// loaded successfully.
-bool LoadCpuEvents(const base::Value* value, CpuEvents* cpu_events);
-// Loads all CPU events from |base::Value::List|. Returns true in case CPU events
+// Loads CPU events from |base::Value::List|. Returns true in case CPU events
 // were loaded successfully.
+bool LoadCpuEvents(const base::Value* value, CpuEvents* cpu_events);
+// Loads all CPU events from |base::Value::List|. Returns true in case CPU
+// events were loaded successfully.
 bool LoadAllCpuEvents(const base::Value* value, AllCpuEvents* all_cpu_events);
 
 std::ostream& operator<<(std::ostream& os, ArcCpuEvent::Type event_type);

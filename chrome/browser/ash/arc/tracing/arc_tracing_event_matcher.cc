@@ -63,14 +63,18 @@ ArcTracingEventMatcher& ArcTracingEventMatcher::AddArgument(
 }
 
 bool ArcTracingEventMatcher::Match(const ArcTracingEvent& event) const {
-  if (phase_ && phase_ != event.GetPhase())
+  if (phase_ && phase_ != event.GetPhase()) {
     return false;
-  if (!category_.empty() && event.GetCategory() != category_)
+  }
+  if (!category_.empty() && event.GetCategory() != category_) {
     return false;
-  if (!name_.empty() && !name_prefix_match_ && event.GetName() != name_)
+  }
+  if (!name_.empty() && !name_prefix_match_ && event.GetName() != name_) {
     return false;
-  if (name_prefix_match_ && (event.GetName().find(name_) != 0))
+  }
+  if (name_prefix_match_ && (event.GetName().find(name_) != 0)) {
     return false;
+  }
   for (const auto& arg : args_) {
     if (event.GetArgAsString(arg.first, std::string() /* default_value */) !=
         arg.second) {
@@ -82,12 +86,14 @@ bool ArcTracingEventMatcher::Match(const ArcTracingEvent& event) const {
 
 std::optional<int64_t> ArcTracingEventMatcher::ReadAndroidEventInt64(
     const ArcTracingEvent& event) const {
-  if (!name_prefix_match_ || (event.GetName().find(name_) != 0))
+  if (!name_prefix_match_ || (event.GetName().find(name_) != 0)) {
     return std::nullopt;
+  }
 
   int64_t value = 0;
-  if (!base::StringToInt64(event.GetName().data() + name_.size(), &value))
+  if (!base::StringToInt64(event.GetName().data() + name_.size(), &value)) {
     return std::nullopt;
+  }
 
   return std::make_optional(value);
 }

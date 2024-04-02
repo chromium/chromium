@@ -105,8 +105,9 @@ class AppToCategoryMapper {
   // Returns empty string if category is not set for app |app_id|.
   const std::string& GetCategory(const std::string& app_id) const {
     const auto& it = app_id_to_category_.find(app_id);
-    if (it == app_id_to_category_.end())
+    if (it == app_id_to_category_.end()) {
       return base::EmptyString();
+    }
     return it->second;
   }
 
@@ -139,8 +140,9 @@ ArcAppPerformanceTracing::ArcAppPerformanceTracing(
     : context_(context), weak_ptr_factory_(this) {
   // Not related tests may indirectly create this instance and helper might
   // not be set.
-  if (exo::WMHelper::HasInstance())
+  if (exo::WMHelper::HasInstance()) {
     exo::WMHelper::GetInstance()->AddActivationObserver(this);
+  }
   ArcAppListPrefs::Get(context_)->AddObserver(this);
 }
 
@@ -184,8 +186,9 @@ void ArcAppPerformanceTracing::Shutdown() {
   DetachActiveWindow();
 
   ArcAppListPrefs::Get(context_)->RemoveObserver(this);
-  if (exo::WMHelper::HasInstance())
+  if (exo::WMHelper::HasInstance()) {
     exo::WMHelper::GetInstance()->RemoveActivationObserver(this);
+  }
 }
 
 void ArcAppPerformanceTracing::OnCustomTraceDone(
@@ -220,8 +223,9 @@ bool ArcAppPerformanceTracing::StartCustomTracing() {
       base::TimeDelta() /* tracing_period */,
       base::BindOnce(&ArcAppPerformanceTracing::OnCustomTraceDone,
                      weak_ptr_factory_.GetWeakPtr()));
-  if (custom_session_ready_callback_)
+  if (custom_session_ready_callback_) {
     custom_session_ready_callback_.Run();
+  }
 
   return true;
 }
@@ -371,8 +375,9 @@ void ArcAppPerformanceTracing::CancelJankinessTracing() {
 
 void ArcAppPerformanceTracing::FinalizeJankinessTracing(bool stopped_early) {
   // Never started. Nothing to do.
-  if (!jankiness_timer_.IsRunning() && stopped_early)
+  if (!jankiness_timer_.IsRunning() && stopped_early) {
     return;
+  }
 
   jankiness_timer_.Stop();
 
@@ -383,19 +388,22 @@ void ArcAppPerformanceTracing::FinalizeJankinessTracing(bool stopped_early) {
   }
 
   const auto it = task_id_to_app_id_.find(active_task_->id);
-  if (it == task_id_to_app_id_.end())
+  if (it == task_id_to_app_id_.end()) {
     // It is normal that information might not be available at this time.
     return;
+  }
 
   // Test instances might not have Service Manager running.
   auto* arc_service_manager = ArcServiceManager::Get();
-  if (!arc_service_manager)
+  if (!arc_service_manager) {
     return;
+  }
 
   auto* instance = ARC_GET_INSTANCE_FOR_METHOD(
       arc_service_manager->arc_bridge_service()->metrics(), GetGfxMetrics);
-  if (!instance)
+  if (!instance) {
     return;
+  }
 
   const std::string package_name = it->second.second;
   auto callback = base::BindOnce(&ArcAppPerformanceTracing::OnGfxMetrics,
@@ -403,8 +411,9 @@ void ArcAppPerformanceTracing::FinalizeJankinessTracing(bool stopped_early) {
   instance->GetGfxMetrics(package_name, std::move(callback));
 
   // Finalized normally, safe to restart.
-  if (!stopped_early)
+  if (!stopped_early) {
     StartJankinessTracing();
+  }
 }
 
 void ArcAppPerformanceTracing::OnGfxMetrics(const std::string& package_name,

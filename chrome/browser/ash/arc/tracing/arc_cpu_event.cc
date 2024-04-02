@@ -116,8 +116,9 @@ bool AddAllCpuEvent(AllCpuEvents* all_cpu_events,
                     uint64_t timestamp,
                     ArcCpuEvent::Type type,
                     uint32_t tid) {
-  if (all_cpu_events->size() <= cpu_id)
+  if (all_cpu_events->size() <= cpu_id) {
     all_cpu_events->resize(cpu_id + 1);
+  }
   return AddCpuEvent(&(*all_cpu_events)[cpu_id], timestamp, type, tid);
 }
 
@@ -135,21 +136,25 @@ base::Value::List SerializeCpuEvents(const CpuEvents& cpu_events) {
 
 base::Value::List SerializeAllCpuEvents(const AllCpuEvents& all_cpu_events) {
   base::Value::List list;
-  for (const auto& cpu_events : all_cpu_events)
+  for (const auto& cpu_events : all_cpu_events) {
     list.Append(SerializeCpuEvents(cpu_events));
+  }
   return list;
 }
 
 bool LoadCpuEvents(const base::Value* value, CpuEvents* cpu_events) {
-  if (!value || !value->is_list())
+  if (!value || !value->is_list()) {
     return false;
+  }
 
   uint64_t previous_timestamp = 0;
   for (const auto& entry : value->GetList()) {
-    if (!entry.is_list() || entry.GetList().size() != 3)
+    if (!entry.is_list() || entry.GetList().size() != 3) {
       return false;
-    if (!entry.GetList()[0].is_int())
+    }
+    if (!entry.GetList()[0].is_int()) {
       return false;
+    }
     const ArcCpuEvent::Type type =
         static_cast<ArcCpuEvent::Type>(entry.GetList()[0].GetInt());
     switch (type) {
@@ -161,13 +166,16 @@ bool LoadCpuEvents(const base::Value* value, CpuEvents* cpu_events) {
       default:
         return false;
     }
-    if (!entry.GetList()[1].is_double() && !entry.GetList()[1].is_int())
+    if (!entry.GetList()[1].is_double() && !entry.GetList()[1].is_int()) {
       return false;
+    }
     const uint64_t timestamp = entry.GetList()[1].GetDouble();
-    if (timestamp < previous_timestamp)
+    if (timestamp < previous_timestamp) {
       return false;
-    if (!entry.GetList()[2].is_int())
+    }
+    if (!entry.GetList()[2].is_int()) {
       return false;
+    }
     const int tid = entry.GetList()[2].GetInt();
     cpu_events->emplace_back(timestamp, type, tid);
     previous_timestamp = timestamp;
@@ -177,13 +185,15 @@ bool LoadCpuEvents(const base::Value* value, CpuEvents* cpu_events) {
 }
 
 bool LoadAllCpuEvents(const base::Value* value, AllCpuEvents* all_cpu_events) {
-  if (!value || !value->is_list())
+  if (!value || !value->is_list()) {
     return false;
+  }
 
   for (const auto& entry : value->GetList()) {
     CpuEvents cpu_events;
-    if (!LoadCpuEvents(&entry, &cpu_events))
+    if (!LoadCpuEvents(&entry, &cpu_events)) {
       return false;
+    }
     all_cpu_events->emplace_back(std::move(cpu_events));
   }
 

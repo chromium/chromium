@@ -29,11 +29,10 @@
 #include "components/exo/surface.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/views/widget/widget.h"
-
 #include "ui/display/display.h"
 #include "ui/display/test/test_screen.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/views/widget/widget.h"
 
 namespace arc {
 

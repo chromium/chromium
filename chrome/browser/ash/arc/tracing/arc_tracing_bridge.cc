@@ -197,8 +197,9 @@ class ArcTracingDataSource
       // StopTracingOnUI should only be called once all bridges have completed
       // or abandoned startup.
       DCHECK_NE(ArcTracingBridge::State::kStarting, bridge->state());
-      if (bridge->state() != ArcTracingBridge::State::kEnabled)
+      if (bridge->state() != ArcTracingBridge::State::kEnabled) {
         continue;
+      }
       // |this| never gets destructed, so it's OK to bind an unretained pointer.
       bridge->StopTracing(base::BindOnce(
           &ArcTracingDataSource::OnTracingStoppedOnUI, base::Unretained(this)));
@@ -213,8 +214,9 @@ class ArcTracingDataSource
   // bridge is unregisted.
   void OnTracingStartedOnUI(bool success) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    if (!IsAnyBridgeStarting() && pending_stop_tracing_)
+    if (!IsAnyBridgeStarting() && pending_stop_tracing_) {
       std::move(pending_stop_tracing_).Run();
+    }
   }
 
   // Called by each bridge when it has stopped tracing. Also called when a
@@ -224,8 +226,9 @@ class ArcTracingDataSource
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
     // When a bridge unregisters, we may not actually be stopping.
-    if (!stop_complete_callback_)
+    if (!stop_complete_callback_) {
       return;
+    }
 
     DCHECK(producer_on_ui_thread_);
 
@@ -248,16 +251,18 @@ class ArcTracingDataSource
 
   bool IsAnyBridgeStarting() const {
     for (ArcTracingBridge* bridge : bridges_) {
-      if (bridge->state() == ArcTracingBridge::State::kStarting)
+      if (bridge->state() == ArcTracingBridge::State::kStarting) {
         return true;
+      }
     }
     return false;
   }
 
   bool AreAllBridgesStopped() const {
     for (ArcTracingBridge* bridge : bridges_) {
-      if (bridge->state() != ArcTracingBridge::State::kDisabled)
+      if (bridge->state() != ArcTracingBridge::State::kDisabled) {
         return false;
+      }
     }
     return true;
   }
@@ -325,8 +330,9 @@ void ArcTracingBridge::OnConnectionReady() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   mojom::TracingInstance* tracing_instance = ARC_GET_INSTANCE_FOR_METHOD(
       arc_bridge_service_->tracing(), QueryAvailableCategories);
-  if (!tracing_instance)
+  if (!tracing_instance) {
     return;
+  }
   tracing_instance->QueryAvailableCategories(base::BindOnce(
       &ArcTracingBridge::OnCategoriesReady, weak_ptr_factory_.GetWeakPtr()));
 }
@@ -340,8 +346,9 @@ void ArcTracingBridge::OnCategoriesReady(
   // alternative, the old category that is no longer in |categories_| will be
   // ignored when calling |StartTracing|.
   categories_.clear();
-  for (const auto& category : categories)
+  for (const auto& category : categories) {
     categories_.emplace_back(Category{category, kCategoryPrefix + category});
+  }
 }
 
 void ArcTracingBridge::StartTracing(const std::string& config,
@@ -373,8 +380,9 @@ void ArcTracingBridge::StartTracing(const std::string& config,
   {
     base::AutoLock lock(categories_lock_);
     for (const auto& category : categories_) {
-      if (trace_config.IsCategoryGroupEnabled(category.full_name))
+      if (trace_config.IsCategoryGroupEnabled(category.full_name)) {
         selected_categories.push_back(category.name);
+      }
     }
   }
 
@@ -418,8 +426,9 @@ void ArcTracingBridge::OnArcTracingStopped(StopCallback callback,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_EQ(State::kStopping, state_);
   state_ = State::kDisabled;
-  if (!success)
+  if (!success) {
     LOG(ERROR) << "Failed to stop tracing";
+  }
   std::move(callback).Run();
 }
 

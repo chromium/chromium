@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <inttypes.h>
-
-#include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "chrome/browser/ash/arc/tracing/arc_tracing_model.h"
+
+#include <inttypes.h>
 
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "chrome/browser/ash/arc/tracing/arc_tracing_event.h"
