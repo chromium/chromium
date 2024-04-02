@@ -249,10 +249,10 @@ TEST_F(CrosDisplayConfigTest, OnDisplayConfigChanged) {
   EXPECT_EQ(1, observer.display_changes());
   observer.reset_display_changes();
 
-  // Adding two displays should trigger two notification.
+  // Adding one display should trigger just one notification.
   UpdateDisplay("500x400,500x400");
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(2, observer.display_changes());
+  EXPECT_EQ(1, observer.display_changes());
 }
 
 TEST_F(CrosDisplayConfigTest, GetDisplayLayoutInfo) {

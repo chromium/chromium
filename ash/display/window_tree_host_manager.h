@@ -24,7 +24,6 @@
 #include "ui/aura/window_tree_host_observer.h"
 #include "ui/base/ime/ime_key_event_dispatcher.h"
 #include "ui/base/ime/input_method.h"
-#include "ui/display/display_observer.h"
 #include "ui/display/manager/content_protection_manager.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/gfx/geometry/point.h"
@@ -49,10 +48,9 @@ class RoundedDisplayProvider;
 // WindowTreeHostManager owns and maintains RootWindows for each attached
 // display, keeping them in sync with display configuration changes.
 class ASH_EXPORT WindowTreeHostManager
-    : public display::DisplayObserver,
+    : public display::DisplayManager::Delegate,
       public aura::WindowTreeHostObserver,
       public display::ContentProtectionManager::Observer,
-      public display::DisplayManager::Delegate,
       public ui::ImeKeyEventDispatcher,
       public AshWindowTreeHostDelegate {
  public:
@@ -146,12 +144,6 @@ class ASH_EXPORT WindowTreeHostManager
 
   ui::InputMethod* input_method() { return input_method_.get(); }
 
-  // display::DisplayObserver overrides:
-  void OnDisplayAdded(const display::Display& display) override;
-  void OnDisplayRemoved(const display::Display& display) override;
-  void OnDisplayMetricsChanged(const display::Display& display,
-                               uint32_t metrics) override;
-
   // Enables the rounded corners mask texture for a display. It creates
   // `RoundedDisplayProvider` for a display as needed and updates the surface if
   // required.
@@ -168,6 +160,10 @@ class ASH_EXPORT WindowTreeHostManager
   void OnDisplaySecurityChanged(int64_t display_id, bool secure) override;
 
   // display::DisplayManager::Delegate overrides:
+  void CreateDisplay(const display::Display& display) override;
+  void RemoveDisplay(const display::Display& display) override;
+  void UpdateDisplayMetrics(const display::Display& display,
+                            uint32_t metrics) override;
   void CreateOrUpdateMirroringDisplay(
       const display::DisplayInfoList& info_list) override;
   void CloseMirroringDisplayIfNotNecessary() override;
@@ -251,9 +247,6 @@ class ASH_EXPORT WindowTreeHostManager
   // Stores the cursor's display. The id is used to determine whether the mouse
   // should be moved after a display configuration change.
   int64_t cursor_display_id_for_restore_;
-
-  // Receive DisplayObserver callbacks between Start and Shutdown.
-  std::optional<display::ScopedDisplayObserver> display_observer_;
 
   // A repeating timer to trigger sending UMA metrics for primary display's
   // effective resolution at fixed intervals.

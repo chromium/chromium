@@ -11,20 +11,6 @@ namespace display {
 
 DisplayObserver::~DisplayObserver() {}
 
-void DisplayObserver::OnDisplayAdded(const Display& new_display) {}
-
-void DisplayObserver::OnDisplayRemoved(const Display& old_display) {}
-
-void DisplayObserver::OnDidRemoveDisplays() {}
-
-void DisplayObserver::OnDisplayMetricsChanged(const Display& display,
-                                              uint32_t changed_metrics) {}
-
-void DisplayObserver::OnCurrentWorkspaceChanged(
-    const std::string& new_workspace) {}
-
-void DisplayObserver::OnDisplayTabletStateChanged(TabletState state) {}
-
 ScopedOptionalDisplayObserver::ScopedOptionalDisplayObserver(
     DisplayObserver* observer) {
   if (auto* screen = display::Screen::GetScreen()) {

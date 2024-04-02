@@ -65,6 +65,9 @@
 #include "ui/wm/public/activation_client.h"
 
 namespace ash {
+
+using DM = display::DisplayObserver::DisplayMetric;
+
 namespace {
 
 // Primary display stored in global object as it can be
@@ -304,7 +307,6 @@ WindowTreeHostManager::~WindowTreeHostManager() {
 }
 
 void WindowTreeHostManager::Start() {
-  display_observer_.emplace(this);
   Shell::Get()
       ->display_configurator()
       ->content_protection_manager()
@@ -333,12 +335,6 @@ void WindowTreeHostManager::Shutdown() {
 
   effective_resolution_UMA_timer_->Reset();
 
-  auto* display_manager = Shell::Get()->display_manager();
-
-  // Unset the display manager's delegate here because
-  // DisplayManager outlives WindowTreeHostManager.
-  display_manager->set_delegate(nullptr);
-
   cursor_window_controller_.reset();
   mirror_window_controller_.reset();
 
@@ -346,7 +342,10 @@ void WindowTreeHostManager::Shutdown() {
       ->display_configurator()
       ->content_protection_manager()
       ->RemoveObserver(this);
-  display_observer_.reset();
+
+  // Unset the display manager's delegate here because
+  // DisplayManager outlives WindowTreeHostManager.
+  Shell::Get()->display_manager()->set_delegate(nullptr);
 
   int64_t primary_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
 
@@ -583,7 +582,7 @@ bool WindowTreeHostManager::UpdateWorkAreaOfDisplayNearestWindow(
   return GetDisplayManager()->UpdateWorkAreaOfDisplay(id, insets);
 }
 
-void WindowTreeHostManager::OnDisplayAdded(const display::Display& display) {
+void WindowTreeHostManager::CreateDisplay(const display::Display& display) {
   // If we're switching from/to offscreen WTH, we need to
   // create new WTH for primary display instead of reusing.
   if (primary_tree_host_for_replace_ &&
@@ -688,7 +687,7 @@ void WindowTreeHostManager::DeleteHost(AshWindowTreeHost* host_to_delete) {
                                                                 controller);
 }
 
-void WindowTreeHostManager::OnDisplayRemoved(const display::Display& display) {
+void WindowTreeHostManager::RemoveDisplay(const display::Display& display) {
   AshWindowTreeHost* host_to_delete = window_tree_hosts_[display.id()];
   CHECK(host_to_delete) << display.ToString();
 
@@ -739,7 +738,7 @@ void WindowTreeHostManager::OnDisplayRemoved(const display::Display& display) {
     // update the WTH the RoundedDisplayProviders are attached to.
     UpdateHostOfDisplayProviders();
 
-    OnDisplayMetricsChanged(new_primary_display, DISPLAY_METRIC_BOUNDS);
+    UpdateDisplayMetrics(new_primary_display, DM::DISPLAY_METRIC_BOUNDS);
   }
 
   DeleteHost(host_to_delete);
@@ -750,11 +749,12 @@ void WindowTreeHostManager::OnDisplayRemoved(const display::Display& display) {
   window_tree_hosts_.erase(display.id());
 }
 
-void WindowTreeHostManager::OnDisplayMetricsChanged(
+void WindowTreeHostManager::UpdateDisplayMetrics(
     const display::Display& display,
     uint32_t metrics) {
-  if (!(metrics & (DISPLAY_METRIC_BOUNDS | DISPLAY_METRIC_ROTATION |
-                   DISPLAY_METRIC_DEVICE_SCALE_FACTOR | DISPLAY_METRIC_VRR))) {
+  if (!(metrics &
+        (DM::DISPLAY_METRIC_BOUNDS | DM::DISPLAY_METRIC_ROTATION |
+         DM::DISPLAY_METRIC_DEVICE_SCALE_FACTOR | DM::DISPLAY_METRIC_VRR))) {
     return;
   }
 

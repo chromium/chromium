@@ -287,7 +287,7 @@ void TabUsageScenarioTracker::OnDisplayAdded(const display::Display&) {
   OnNumDisplaysChanged();
 }
 
-void TabUsageScenarioTracker::OnDidRemoveDisplays() {
+void TabUsageScenarioTracker::OnDisplaysRemoved(const display::Displays&) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   OnNumDisplaysChanged();
 }

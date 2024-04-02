@@ -355,7 +355,8 @@ void MediaFoundationServiceMonitor::OnDisplayAdded(
     const display::Display& /*new_display*/) {
   OnPowerOrDisplayChange();
 }
-void MediaFoundationServiceMonitor::OnDidRemoveDisplays() {
+void MediaFoundationServiceMonitor::OnDisplaysRemoved(
+    const display::Displays& /*removed_displays*/) {
   OnPowerOrDisplayChange();
 }
 void MediaFoundationServiceMonitor::OnDisplayMetricsChanged(

@@ -29,21 +29,21 @@ void DisplayChangeNotifier::RemoveObserver(DisplayObserver* obs) {
 void DisplayChangeNotifier::NotifyDisplaysChanged(
     const std::vector<Display>& old_displays,
     const std::vector<Display>& new_displays) {
-  bool did_remove_displays = false;
+  std::vector<Display> removed_displays;
   // Display present in old_displays but not in new_displays has been removed.
   for (auto old_it = old_displays.begin(); old_it != old_displays.end();
        ++old_it) {
     if (!base::Contains(new_displays, old_it->id(), &Display::id)) {
-      did_remove_displays = true;
+      removed_displays.push_back(*old_it);
       for (DisplayObserver& observer : observer_list_) {
         observer.OnDisplayRemoved(*old_it);
       }
     }
   }
 
-  if (did_remove_displays) {
+  if (!removed_displays.empty()) {
     for (DisplayObserver& observer : observer_list_) {
-      observer.OnDidRemoveDisplays();
+      observer.OnDisplaysRemoved(removed_displays);
     }
   }
 

@@ -34,7 +34,8 @@ void ScreenChangeMonitor::OnDisplayAdded(const display::Display& new_display) {
   OnScreensChange();
 }
 
-void ScreenChangeMonitor::OnDidRemoveDisplays() {
+void ScreenChangeMonitor::OnDisplaysRemoved(
+    const display::Displays& /*removed_displays*/) {
   OnScreensChange();
 }
 

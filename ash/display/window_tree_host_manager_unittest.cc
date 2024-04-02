@@ -548,9 +548,10 @@ TEST_F(WindowTreeHostManagerTest, SecondaryDisplayLayout) {
 
   TestObserver observer;
   UpdateDisplay("600x500,500x400");
-  EXPECT_EQ(1, observer.CountAndReset());  // resize and add
+  // only 1st display gets resized.
+  EXPECT_EQ(1, observer.CountAndReset());
   EXPECT_EQ(1, observer.GetBoundsChangedCountAndReset());
-  EXPECT_EQ(2, observer.GetWorkareaChangedCountAndReset());
+  EXPECT_EQ(1, observer.GetWorkareaChangedCountAndReset());
   EXPECT_EQ(0, observer.GetFocusChangedCountAndReset());
   EXPECT_EQ(0, observer.GetActivationChangedCountAndReset());
   gfx::Insets insets(5);
