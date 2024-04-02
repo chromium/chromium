@@ -23,7 +23,6 @@ if (is_android) {
     ]
     deps = [
       ":java_resources",
-      ":jni_headers",
       "//base:base_java",
       "//build/android:build_java",
       "//chrome/browser/android/lifecycle:java",

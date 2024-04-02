@@ -49,7 +49,6 @@ android_library("java") {
 
   deps = [
     ":java_resources",
-    ":jni_headers",
     "//base:base_java",
     "//build/android:build_java",
     "//chrome/android:chrome_app_java_resources",

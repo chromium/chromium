@@ -31,7 +31,6 @@ android_library("java") {
   ]
 
   deps = [
-    ":jni_headers",
     "//base:base_java",
     "//base/version_info/android:version_constants_java",
     "//build/android:build_java",
