@@ -24,6 +24,7 @@ import {getSeaPenTemplates, SeaPenTemplate} from 'chrome://resources/ash/common/
 import {isSeaPenEnabled} from 'chrome://resources/ash/common/sea_pen/load_time_booleans.js';
 import {setThumbnailResponseStatusCodeAction} from 'chrome://resources/ash/common/sea_pen/sea_pen_actions.js';
 import {SeaPenTemplateId} from 'chrome://resources/ash/common/sea_pen/sea_pen_generated.mojom-webui.js';
+import {logSeaPenTemplateSelect} from 'chrome://resources/ash/common/sea_pen/sea_pen_metrics_logger.js';
 import {getSeaPenStore} from 'chrome://resources/ash/common/sea_pen/sea_pen_store.js';
 import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {getTransitionEnabled, setTransitionsEnabled} from 'chrome://resources/ash/common/sea_pen/transition.js';
@@ -352,6 +353,10 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
     // Then resets it back to the original value after routing is done to not
     // interfere with other page transitions.
     setTransitionsEnabled(false);
+    // log metrics for the selected template.
+    if (templateId && templateId in SeaPenTemplateId) {
+      logSeaPenTemplateSelect(parseInt(templateId) as SeaPenTemplateId);
+    }
     PersonalizationRouterElement.instance()
         .goToRoute(Paths.SEA_PEN_RESULTS, {seaPenTemplateId: templateId})
         ?.finally(() => {

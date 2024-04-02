@@ -23,6 +23,8 @@ import {AnchorAlignment, CrActionMenuElement} from 'chrome://resources/ash/commo
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {getSeaPenTemplates, SeaPenTemplate} from 'chrome://resources/ash/common/sea_pen/constants.js';
 import {setThumbnailResponseStatusCodeAction} from 'chrome://resources/ash/common/sea_pen/sea_pen_actions.js';
+import {SeaPenTemplateId} from 'chrome://resources/ash/common/sea_pen/sea_pen_generated.mojom-webui.js';
+import {logSeaPenTemplateSelect} from 'chrome://resources/ash/common/sea_pen/sea_pen_metrics_logger.js';
 import {SeaPenPaths, SeaPenRouterElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_router_element.js';
 import {getSeaPenStore} from 'chrome://resources/ash/common/sea_pen/sea_pen_store.js';
 import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
@@ -241,6 +243,10 @@ export class VcBackgroundBreadcrumbElement extends
     // Then resets it back to the original value after routing is done to not
     // interfere with other page transitions.
     setTransitionsEnabled(false);
+    // log metrics for the selected template.
+    if (templateId && templateId in SeaPenTemplateId) {
+      logSeaPenTemplateSelect(parseInt(templateId) as SeaPenTemplateId);
+    }
     SeaPenRouterElement.instance()
         .goToRoute(SeaPenPaths.RESULTS, {seaPenTemplateId: templateId})
         ?.finally(() => {

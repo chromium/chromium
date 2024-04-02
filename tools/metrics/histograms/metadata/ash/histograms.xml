@@ -6753,6 +6753,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.SeaPen.Template" enum="SeaPenTemplateId"
+    expires_after="2025-03-30">
+  <owner>thuongphan@google.com</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Records the user's selected template when they navigates to the template
+    subpage.
+  </summary>
+</histogram>
+
 <histogram name="Ash.SeaPen.{TemplateName}.UserFeedback" enum="Boolean"
     expires_after="2024-12-31">
   <owner>pzliu@google.com</owner>

@@ -57,6 +57,7 @@ build_webui("build_ts") {
     "sea_pen_actions.ts",
     "sea_pen_controller.ts",
     "sea_pen_interface_provider.ts",
+    "sea_pen_metrics_logger.ts",
     "sea_pen_reducer.ts",
     "sea_pen_state.ts",
     "sea_pen_store.ts",

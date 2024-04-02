@@ -14,6 +14,8 @@ import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {getSeaPenTemplates, SeaPenTemplate} from './constants.js';
+import {SeaPenTemplateId} from './sea_pen_generated.mojom-webui.js';
+import {logSeaPenTemplateSelect} from './sea_pen_metrics_logger.js';
 import {SeaPenRouterElement} from './sea_pen_router_element.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
 import {getTemplate} from './sea_pen_templates_element.html.js';
@@ -56,6 +58,10 @@ export class SeaPenTemplatesElement extends WithSeaPenStore {
     const template = this.seaPenTemplates_.find(
         template => template.id === this.selected_.id);
     if (template) {
+      // log metrics for the selected template.
+      if (template.id in SeaPenTemplateId) {
+        logSeaPenTemplateSelect(template.id as SeaPenTemplateId);
+      }
       SeaPenRouterElement.instance().selectSeaPenTemplate(template.id);
     }
   }
