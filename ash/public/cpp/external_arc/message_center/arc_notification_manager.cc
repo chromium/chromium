@@ -224,7 +224,7 @@ void ArcNotificationManager::OnNotificationPosted(ArcNotificationDataPtr data) {
     return;
   }
 
-  const std::string& key = data->key;
+  const std::string key = data->key;
   auto it = items_.find(key);
   if (it == items_.end()) {
     // Show a notification on the primary logged-in user's desktop and badge the
@@ -248,14 +248,21 @@ void ArcNotificationManager::OnNotificationPosted(ArcNotificationDataPtr data) {
         data->is_custom_notification);
   }
 
-  std::string app_id =
+  const std::string app_id =
       data->package_name
           ? ArcAppIdProvider::Get()->GetAppIdByPackageName(*data->package_name)
           : std::string();
   it->second->OnUpdatedFromAndroid(std::move(data), app_id);
 
-  for (auto& observer : observers_)
-    observer.OnNotificationUpdated(it->second->GetNotificationId(), app_id);
+  // OnUpdatedFromAndroid may remove the new notification if the number of
+  // notifications are limited.
+  it = items_.find(key);
+  if (it != items_.end()) {
+    const std::string notification_id = it->second->GetNotificationId();
+    for (auto& observer : observers_) {
+      observer.OnNotificationUpdated(notification_id, app_id);
+    }
+  }
 }
 
 void ArcNotificationManager::OnNotificationUpdated(
