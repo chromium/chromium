@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ash/wallpaper_handlers/sea_pen_fetcher.h"
 
-#include <cstddef>
-#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -15,17 +13,18 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ash/wallpaper_handlers/sea_pen_utils.h"
-#include "chrome/browser/manta/manta_service_factory.h"
-#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers_metric_utils.h"
 #include "components/manta/features.h"
 #include "components/manta/manta_service.h"
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/manta.pb.h"
 #include "components/manta/snapper_provider.h"
-#include "mojo/public/cpp/bindings/clone_traits.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -213,14 +212,13 @@ class FakeSeaPenFetcher : public SeaPenFetcher {
 
 class SeaPenFetcherImpl : public SeaPenFetcher {
  public:
-  explicit SeaPenFetcherImpl(Profile* profile) {
+  // `snapper_provider` may be null.
+  explicit SeaPenFetcherImpl(
+      std::unique_ptr<manta::SnapperProvider> snapper_provider)
+      : snapper_provider_(std::move(snapper_provider)) {
     CHECK(ash::features::IsSeaPenEnabled() ||
           ash::features::IsVcBackgroundReplaceEnabled());
     CHECK(manta::features::IsMantaServiceEnabled());
-    auto* manta_service = manta::MantaServiceFactory::GetForProfile(profile);
-    if (manta_service) {
-      snapper_provider_ = manta_service->CreateSnapperProvider();
-    }
   }
 
   SeaPenFetcherImpl(const SeaPenFetcherImpl&) = delete;
@@ -238,6 +236,7 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
                               manta::MantaStatusCode::kGenericError);
       return;
     }
+
     if (query->is_text_query() &&
         query->get_text_query().size() >
             ash::personalization_app::mojom::kMaximumSearchWallpaperTextBytes) {
@@ -247,44 +246,29 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
                               manta::MantaStatusCode::kInvalidInput);
       return;
     }
-    weak_ptr_factory_.InvalidateWeakPtrs();
+
+    fetch_thumbnails_timer_.Stop();
+    fetch_thumbnails_weak_ptr_factory_.InvalidateWeakPtrs();
+
     if (pending_fetch_thumbnails_callback_) {
       std::move(pending_fetch_thumbnails_callback_)
           .Run(std::nullopt, manta::MantaStatusCode::kOk);
     }
+
     pending_fetch_thumbnails_callback_ = std::move(callback);
-    auto request = CreateMantaRequest(query, std::nullopt,
-                                      /*num_outputs=*/8, kDesiredThumbnailSize,
-                                      feature_name);
+
+    fetch_thumbnails_timer_.Start(
+        FROM_HERE, kRequestTimeout,
+        base::BindOnce(&SeaPenFetcherImpl::OnFetchThumbnailsTimeout,
+                       fetch_thumbnails_weak_ptr_factory_.GetWeakPtr()));
+
     snapper_provider_->Call(
-        request, TrafficAnnotationForFeature(feature_name),
+        CreateMantaRequest(query, std::nullopt, kNumThumbnailsRequested,
+                           kDesiredThumbnailSize, feature_name),
+        TrafficAnnotationForFeature(feature_name),
         base::BindOnce(&SeaPenFetcherImpl::OnFetchThumbnailsDone,
-                       weak_ptr_factory_.GetWeakPtr(), query.Clone()));
-  }
-
-  void OnFetchThumbnailsDone(
-      const ash::personalization_app::mojom::SeaPenQueryPtr& query,
-      std::unique_ptr<manta::proto::Response> response,
-      manta::MantaStatus status) {
-    DCHECK(pending_fetch_thumbnails_callback_);
-    if (status.status_code != manta::MantaStatusCode::kOk || !response) {
-      LOG(WARNING) << "Failed to fetch manta response: " << status.message;
-      std::move(pending_fetch_thumbnails_callback_)
-          .Run(std::nullopt, status.status_code);
-      return;
-    }
-
-    std::vector<ash::SeaPenImage> images;
-    for (auto& data : *response->mutable_output_data()) {
-      if (!IsValidOutput(data, __func__)) {
-        continue;
-      }
-      images.emplace_back(
-          std::move(*data.mutable_image()->mutable_serialized_bytes()),
-          data.generation_seed());
-    }
-    std::move(pending_fetch_thumbnails_callback_)
-        .Run(std::move(images), status.status_code);
+                       fetch_thumbnails_weak_ptr_factory_.GetWeakPtr(),
+                       base::TimeTicks::Now(), query.Clone()));
   }
 
   void FetchWallpaper(
@@ -297,33 +281,60 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
       std::move(callback).Run(std::nullopt);
       return;
     }
+
     if (query->is_text_query()) {
       CHECK_LE(
           query->get_text_query().size(),
           ash::personalization_app::mojom::kMaximumSearchWallpaperTextBytes);
     }
-    weak_ptr_factory_.InvalidateWeakPtrs();
+
+    fetch_wallpaper_timer_.Stop();
+    fetch_wallpaper_weak_ptr_factory_.InvalidateWeakPtrs();
+
     if (pending_fetch_wallpaper_callback_) {
       std::move(pending_fetch_wallpaper_callback_).Run(std::nullopt);
     }
+
     pending_fetch_wallpaper_callback_ = std::move(callback);
+
+    fetch_wallpaper_timer_.Start(
+        FROM_HERE, kRequestTimeout,
+        base::BindOnce(&SeaPenFetcherImpl::OnFetchWallpaperTimeout,
+                       fetch_thumbnails_weak_ptr_factory_.GetWeakPtr()));
 
     snapper_provider_->Call(
         CreateMantaRequest(query, thumbnail.id, /*num_outputs=*/1,
                            GetLargestDisplaySizeLandscape(), feature_name),
         TrafficAnnotationForFeature(feature_name),
         base::BindOnce(&SeaPenFetcherImpl::OnFetchWallpaperDone,
-                       weak_ptr_factory_.GetWeakPtr()));
+                       fetch_wallpaper_weak_ptr_factory_.GetWeakPtr(),
+                       base::TimeTicks::Now()));
   }
 
-  void OnFetchWallpaperDone(std::unique_ptr<manta::proto::Response> response,
-                            manta::MantaStatus status) {
-    DCHECK(pending_fetch_wallpaper_callback_);
+ private:
+  void OnFetchThumbnailsDone(
+      const base::TimeTicks start_time,
+      const ash::personalization_app::mojom::SeaPenQueryPtr& query,
+      std::unique_ptr<manta::proto::Response> response,
+      manta::MantaStatus status) {
+    DCHECK(pending_fetch_thumbnails_callback_);
+    DCHECK(fetch_thumbnails_timer_.IsRunning());
+
+    fetch_thumbnails_timer_.Stop();
+
+    RecordSeaPenMantaStatusCode(status.status_code, SeaPenApiType::kThumbnails);
+
     if (status.status_code != manta::MantaStatusCode::kOk || !response) {
       LOG(WARNING) << "Failed to fetch manta response: " << status.message;
-      std::move(pending_fetch_wallpaper_callback_).Run(std::nullopt);
+      std::move(pending_fetch_thumbnails_callback_)
+          .Run(std::nullopt, status.status_code);
       return;
     }
+
+    RecordSeaPenLatency(base::TimeTicks::Now() - start_time,
+                        SeaPenApiType::kThumbnails);
+    RecordSeaPenTimeout(/*hit_timeout=*/false, SeaPenApiType::kThumbnails);
+
     std::vector<ash::SeaPenImage> images;
     for (auto& data : *response->mutable_output_data()) {
       if (!IsValidOutput(data, __func__)) {
@@ -333,22 +344,89 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
           std::move(*data.mutable_image()->mutable_serialized_bytes()),
           data.generation_seed());
     }
+
+    RecordSeaPenThumbnailsCount(images.size());
+
     if (images.empty()) {
-      LOG(WARNING) << "Got empty images";
+      LOG(WARNING) << "Got empty images from thumbnails request";
+      std::move(pending_fetch_thumbnails_callback_)
+          .Run(std::nullopt, manta::MantaStatusCode::kGenericError);
+      return;
+    }
+
+    std::move(pending_fetch_thumbnails_callback_)
+        .Run(std::move(images), status.status_code);
+  }
+
+  void OnFetchThumbnailsTimeout() {
+    DCHECK(pending_fetch_thumbnails_callback_);
+    fetch_thumbnails_weak_ptr_factory_.InvalidateWeakPtrs();
+    std::move(pending_fetch_thumbnails_callback_)
+        .Run(std::nullopt, manta::MantaStatusCode::kGenericError);
+    RecordSeaPenTimeout(/*hit_timeout=*/true, SeaPenApiType::kThumbnails);
+  }
+
+  void OnFetchWallpaperDone(const base::TimeTicks start_time,
+                            std::unique_ptr<manta::proto::Response> response,
+                            manta::MantaStatus status) {
+    DCHECK(pending_fetch_wallpaper_callback_);
+    DCHECK(fetch_wallpaper_timer_.IsRunning());
+
+    fetch_wallpaper_timer_.Stop();
+
+    RecordSeaPenMantaStatusCode(status.status_code, SeaPenApiType::kWallpaper);
+
+    if (status.status_code != manta::MantaStatusCode::kOk || !response) {
+      LOG(WARNING) << "Failed to fetch manta response: " << status.message;
       std::move(pending_fetch_wallpaper_callback_).Run(std::nullopt);
       return;
     }
+
+    RecordSeaPenLatency(base::TimeTicks::Now() - start_time,
+                        SeaPenApiType::kWallpaper);
+    RecordSeaPenTimeout(/*hit_timeout=*/false, SeaPenApiType::kWallpaper);
+
+    std::vector<ash::SeaPenImage> images;
+    for (auto& data : *response->mutable_output_data()) {
+      if (!IsValidOutput(data, __func__)) {
+        continue;
+      }
+      images.emplace_back(
+          std::move(*data.mutable_image()->mutable_serialized_bytes()),
+          data.generation_seed());
+    }
+
+    RecordSeaPenWallpaperHasImage(!images.empty());
+
+    if (images.empty()) {
+      LOG(WARNING) << "Got empty images from upscale request";
+      std::move(pending_fetch_wallpaper_callback_).Run(std::nullopt);
+      return;
+    }
+
     if (images.size() > 1) {
       LOG(WARNING) << "Got more than 1 output image";
     }
+
     std::move(pending_fetch_wallpaper_callback_).Run(std::move(images.at(0)));
   }
 
- private:
+  void OnFetchWallpaperTimeout() {
+    DCHECK(pending_fetch_wallpaper_callback_);
+    fetch_wallpaper_weak_ptr_factory_.InvalidateWeakPtrs();
+    RecordSeaPenTimeout(/*hit_timeout=*/true, SeaPenApiType::kWallpaper);
+    std::move(pending_fetch_wallpaper_callback_).Run(std::nullopt);
+  }
+
   OnFetchThumbnailsComplete pending_fetch_thumbnails_callback_;
   OnFetchWallpaperComplete pending_fetch_wallpaper_callback_;
   std::unique_ptr<manta::SnapperProvider> snapper_provider_;
-  base::WeakPtrFactory<SeaPenFetcherImpl> weak_ptr_factory_{this};
+  base::OneShotTimer fetch_thumbnails_timer_;
+  base::OneShotTimer fetch_wallpaper_timer_;
+  base::WeakPtrFactory<SeaPenFetcherImpl> fetch_thumbnails_weak_ptr_factory_{
+      this};
+  base::WeakPtrFactory<SeaPenFetcherImpl> fetch_wallpaper_weak_ptr_factory_{
+      this};
 };
 
 #endif  // defined(FAKE_SEA_PEN_FETCHER_FOR_DEBUG)
@@ -360,11 +438,11 @@ SeaPenFetcher::SeaPenFetcher() = default;
 SeaPenFetcher::~SeaPenFetcher() = default;
 
 std::unique_ptr<SeaPenFetcher> SeaPenFetcher::MakeSeaPenFetcher(
-    Profile* profile) {
+    std::unique_ptr<manta::SnapperProvider> snapper_provider) {
 #ifdef FAKE_SEA_PEN_FETCHER_FOR_DEBUG
   return std::make_unique<FakeSeaPenFetcher>();
 #else   // FAKE_SEA_PEN_FETCHER_FOR_DEBUG
-  return std::make_unique<SeaPenFetcherImpl>(profile);
+  return std::make_unique<SeaPenFetcherImpl>(std::move(snapper_provider));
 #endif  // FAKE_SEA_PEN_FETCHER_FOR_DEBUG
 }
 

@@ -9,8 +9,9 @@
 
 namespace manta {
 
-// Please do not renumber these.
-// Should match ash/webui/common/mojom/sea_pen.mojom.
+// Please do not renumber these, as they are used for metrics.
+// Must match //ash/webui/common/mojom/sea_pen.mojom.
+// Must match MantaStatusCode enum values in enums.xml.
 enum class MantaStatusCode {
   kOk = 0,
   kGenericError = 1,
@@ -28,7 +29,7 @@ enum class MantaStatusCode {
   // caused by a request being attempted while ChromeOS is shutting down.
   kNoIdentityManager = 10,
   kPerUserQuotaExceeded = 11,
-  kMax = kPerUserQuotaExceeded,
+  kMaxValue = kPerUserQuotaExceeded,
 };
 
 struct MantaStatus {

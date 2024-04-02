@@ -4,8 +4,11 @@
 
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers_metric_utils.h"
 
+#include <string>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/ash/wallpaper_handlers/sea_pen_fetcher.h"
 
 namespace wallpaper_handlers {
 namespace {
@@ -25,6 +28,18 @@ std::string ToHistogramBase(GooglePhotosApi api) {
       return "Ash.Wallpaper.GooglePhotos.Api.GetPhotos";
     case GooglePhotosApi::kGetSharedAlbums:
       return "Ash.Wallpaper.GooglePhotos.Api.GetSharedAlbums";
+  }
+}
+
+// NOTE: These strings are persisted to metric logs and should match
+// SeaPenApiType variants in
+// //tools/metrics/histograms/metadata/ash/histograms.xml.
+std::string ToHistogramString(SeaPenApiType sea_pen_api_type) {
+  switch (sea_pen_api_type) {
+    case SeaPenApiType::kThumbnails:
+      return "Thumbnails";
+    case SeaPenApiType::kWallpaper:
+      return "Wallpaper";
   }
 }
 
@@ -61,6 +76,43 @@ void RecordGooglePhotosApiRefreshCount(GooglePhotosApi api, int refresh_count) {
   base::UmaHistogramExactLinear(
       base::StringPrintf("%s.RefreshCount", histogram_base.c_str()),
       refresh_count, 11);
+}
+
+void RecordSeaPenLatency(const base::TimeDelta elapsed_time,
+                         const SeaPenApiType sea_pen_api_type) {
+  base::UmaHistogramCustomTimes(
+      base::StringPrintf("Ash.SeaPen.Api.%s.Latency",
+                         ToHistogramString(sea_pen_api_type).c_str()),
+      elapsed_time,
+      /*min=*/base::Seconds(1),
+      /*max=*/SeaPenFetcher::kRequestTimeout,
+      /*buckets=*/50);
+}
+
+void RecordSeaPenMantaStatusCode(const manta::MantaStatusCode status_code,
+                                 const SeaPenApiType sea_pen_api_type) {
+  base::UmaHistogramEnumeration(
+      base::StringPrintf("Ash.SeaPen.Api.%s.MantaStatusCode",
+                         ToHistogramString(sea_pen_api_type).c_str()),
+      status_code);
+}
+
+void RecordSeaPenTimeout(bool hit_timeout, SeaPenApiType sea_pen_api_type) {
+  base::UmaHistogramBoolean(
+      base::StringPrintf("Ash.SeaPen.Api.%s.Timeout",
+                         ToHistogramString(sea_pen_api_type).c_str()),
+      hit_timeout);
+}
+
+void RecordSeaPenThumbnailsCount(const int thumbnails_count) {
+  base::UmaHistogramExactLinear(
+      "Ash.SeaPen.Api.Thumbnails.Count",
+      std::min(thumbnails_count, SeaPenFetcher::kNumThumbnailsRequested),
+      SeaPenFetcher::kNumThumbnailsRequested + 1);
+}
+
+void RecordSeaPenWallpaperHasImage(bool has_image) {
+  base::UmaHistogramBoolean("Ash.SeaPen.Api.Wallpaper.HasImage", has_image);
 }
 
 }  // namespace wallpaper_handlers

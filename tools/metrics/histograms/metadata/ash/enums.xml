@@ -1225,6 +1225,21 @@ ash/ambient/util/time_of_day_utils.h -->
   <int value="6" label="IME tray"/>
 </enum>
 
+<enum name="MantaStatusCode">
+  <int value="0" label="kOk"/>
+  <int value="1" label="kGenericError"/>
+  <int value="2" label="kInvalidInput"/>
+  <int value="3" label="kResourceExhausted"/>
+  <int value="4" label="kBackendFailure"/>
+  <int value="5" label="kMalformedResponse"/>
+  <int value="6" label="kNoInternetConnection"/>
+  <int value="7" label="kUnsupportedLanguage"/>
+  <int value="8" label="kBlockedOutputs"/>
+  <int value="9" label="kRestrictedCountry"/>
+  <int value="10" label="kNoIdentityManager"/>
+  <int value="11" label="kPerUserQuotaExceeded"/>
+</enum>
+
 <enum name="ModifyGlanceablesTaskResult">
   <int value="0" label="Change committed"/>
   <int value="1" label="No change"/>

@@ -48,7 +48,8 @@ bool IsValidOutput(manta::proto::OutputData output,
     LOG(WARNING) << "Manta output data missing id for " << source;
     return false;
   }
-  if (!output.has_image() || !output.image().has_serialized_bytes()) {
+  if (!output.has_image() || !output.image().has_serialized_bytes() ||
+      output.image().serialized_bytes().empty()) {
     LOG(WARNING) << "Manta output data missing image for" << source;
     return false;
   }
