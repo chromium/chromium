@@ -22,6 +22,7 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/vector_icon_types.h"
 
 namespace growth {
 namespace {
@@ -81,6 +82,7 @@ inline constexpr char kAppId[] = "appId";
 inline constexpr char kPayloadPathTemplate[] = "payload.%s";
 inline constexpr char kDemoModePayloadPath[] = "demoModeApp";
 inline constexpr char kNudgePayloadPath[] = "nudge";
+inline constexpr char kNotificationPayloadPath[] = "notification";
 
 // Actions
 inline constexpr char kActionTypePath[] = "type";
@@ -92,11 +94,22 @@ inline constexpr char kActiveAppWindowAnchorType[] =
 inline constexpr char kShelfAppButtonId[] = "shelfAppButtonId";
 
 // Image Model.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 inline constexpr char kBuiltInIcon[] = "builtInIcon";
 inline constexpr int kIconSize = 60;
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 inline constexpr gfx::Size kBubbleIconSizeDip = gfx::Size(kIconSize, kIconSize);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+std::optional<BuiltInIcon> GetBuiltInIconType(
+    const base::Value::Dict* image_dict) {
+  auto built_in_icon_value = image_dict->FindInt(kBuiltInIcon);
+  if (!built_in_icon_value) {
+    return std::nullopt;
+  }
+
+  return static_cast<BuiltInIcon>(built_in_icon_value.value());
+}
 
 }  // namespace
 
@@ -124,6 +137,8 @@ const Payload* GetPayloadBySlot(const Campaign* campaign, Slot slot) {
       return campaign->FindDictByDottedPath(
           base::StringPrintf(kPayloadPathTemplate, kNudgePayloadPath));
     case Slot::kNotification:
+      return campaign->FindDictByDottedPath(
+          base::StringPrintf(kPayloadPathTemplate, kNotificationPayloadPath));
     case Slot::kDemoModeFreePlayApps:
       NOTREACHED();
       break;
@@ -422,8 +437,19 @@ const std::string* Anchor::GetShelfAppButtonId() const {
 Image::Image(const base::Value::Dict* image_dict) : image_dict_(image_dict) {}
 Image::~Image() = default;
 
+const gfx::VectorIcon* Image::GetVectorIcon() const {
+  const auto icon = GetBuiltInIconType(image_dict_);
+  if (!icon || icon.value() != BuiltInIcon::kRedeem) {
+    // TODO: b/329666969 - Record unrecognized built in icon.
+    LOG(ERROR) << "Unrecognized built in icon: "
+               << static_cast<int>(icon.value());
+    return nullptr;
+  }
+
+  return &chromeos::kRedeemIcon;
+}
+
 const std::optional<ui::ImageModel> Image::GetImage() const {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (!image_dict_) {
     return std::nullopt;
   }
@@ -433,17 +459,15 @@ const std::optional<ui::ImageModel> Image::GetImage() const {
 }
 
 const std::optional<ui::ImageModel> Image::GetBuiltInIcon() const {
-  auto built_in_icon_value = image_dict_->FindInt(kBuiltInIcon);
-  if (!built_in_icon_value) {
-    return std::nullopt;
-  }
-
-  auto icon = static_cast<BuiltInIcon>(built_in_icon_value.value());
-  if (icon == BuiltInIcon::kRedeem) {
+  const auto* vector_icon = GetVectorIcon();
+  if (vector_icon) {
+    // Returns vector icon.
     return ui::ImageModel::FromVectorIcon(
-        chromeos::kRedeemIcon, cros_tokens::kCrosSysOnSurface, kIconSize);
+        *vector_icon, cros_tokens::kCrosSysOnSurface, kIconSize);
   }
 
+  const auto icon = GetBuiltInIconType(image_dict_);
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (icon == BuiltInIcon::kContainerApp) {
     gfx::ImageSkia* image =
         ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
@@ -453,10 +477,11 @@ const std::optional<ui::ImageModel> Image::GetBuiltInIcon() const {
     resized_image.EnsureRepsForSupportedScales();
     return ui::ImageModel::FromImageSkia(resized_image);
   }
-
-  // TODO(b/329666969)): Record unrecognized built in icon.
-  LOG(ERROR) << "Unrecognized built in icon: " << static_cast<int>(icon);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+  // TODO: b/329666969 - Record unrecognized built in icon.
+  LOG(ERROR) << "Unrecognized built in icon: "
+             << static_cast<int>(icon.value());
   return std::nullopt;
 }
 

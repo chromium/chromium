@@ -17,6 +17,10 @@ namespace base {
 class Time;
 }  // namespace base
 
+namespace gfx {
+struct VectorIcon;
+}  // namespace gfx
+
 namespace ui {
 class ImageModel;
 }  // namespace ui
@@ -359,6 +363,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) Image {
   Image& operator=(const Image) = delete;
   ~Image();
 
+  const gfx::VectorIcon* GetVectorIcon() const;
   const std::optional<ui::ImageModel> GetImage() const;
 
  private:

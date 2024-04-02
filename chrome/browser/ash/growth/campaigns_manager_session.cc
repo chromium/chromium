@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/growth/campaigns_manager_session.h"
 
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/logging.h"
@@ -11,6 +13,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/components/growth/action_performer.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
 #include "components/app_constants/constants.h"
@@ -20,32 +23,49 @@ namespace {
 
 CampaignsManagerSession* g_instance = nullptr;
 
-void MaybeTriggerNudgeCampaigns() {
-  auto* campaigns_manager = growth::CampaignsManager::Get();
-  CHECK(campaigns_manager);
+std::optional<growth::ActionType> GetActionTypeBySlot(growth::Slot slot) {
+  if (slot == growth::Slot::kNotification) {
+    return growth::ActionType::kShowNotification;
+  }
 
-  auto* nudge_campaign =
-      campaigns_manager->GetCampaignBySlot(growth::Slot::kNudge);
-  // No nudge campaign in campaign file.
-  if (!nudge_campaign) {
+  if (slot == growth::Slot::kNudge) {
+    return growth::ActionType::kShowNudge;
+  }
+
+  return std::nullopt;
+}
+
+void MaybeTriggerSlot(growth::Slot slot) {
+  const auto action_type = GetActionTypeBySlot(slot);
+  if (!action_type) {
+    LOG(ERROR) << "Invalid: no supported action type for slot "
+               << static_cast<int>(action_type.value());
     return;
   }
 
-  auto campaign_id = growth::GetCampaignId(nudge_campaign);
+  auto* campaigns_manager = growth::CampaignsManager::Get();
+  CHECK(campaigns_manager);
+
+  auto* campaign = campaigns_manager->GetCampaignBySlot(slot);
+  if (!campaign) {
+    // No campaign matched.
+    return;
+  }
+
+  auto campaign_id = growth::GetCampaignId(campaign);
   if (!campaign_id) {
     LOG(ERROR) << "Invalid: Missing campaign id.";
     return;
   }
 
-  const auto* nudge_payload =
-      growth::GetPayloadBySlot(nudge_campaign, growth::Slot::kNudge);
-  if (!nudge_payload) {
+  const auto* payload = growth::GetPayloadBySlot(campaign, slot);
+  if (!payload) {
     LOG(ERROR) << "Invalid: Missing payload.";
     return;
   }
 
-  campaigns_manager->PerformAction(
-      campaign_id.value(), growth::ActionType::kShowNudge, nudge_payload);
+  campaigns_manager->PerformAction(campaign_id.value(), action_type.value(),
+                                   payload);
 }
 
 void MaybeTriggerCampaignsWhenAppOpened() {
@@ -53,7 +73,8 @@ void MaybeTriggerCampaignsWhenAppOpened() {
     return;
   }
 
-  MaybeTriggerNudgeCampaigns();
+  MaybeTriggerSlot(growth::Slot::kNudge);
+  MaybeTriggerSlot(growth::Slot::kNotification);
 }
 
 }  // namespace
@@ -180,5 +201,5 @@ void CampaignsManagerSession::MaybeTriggerProactiveCampaigns() {
   auto* campaigns_manager = growth::CampaignsManager::Get();
   CHECK(campaigns_manager);
 
-  // TODO(b/318885858): Trigger nudge if nudge campaigns is matched.
+  // TODO(b/318885858): Trigger campaigns if matched.
 }
