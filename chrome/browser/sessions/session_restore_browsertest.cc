@@ -771,13 +771,7 @@ void VerifyNavigationEntries(content::NavigationController& controller,
 
 }  // namespace
 
-// Flaky on Lacros and Wayland. https://crbug.com/1283339
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
-#define MAYBE_RestoreForeignTab DISABLED_RestoreForeignTab
-#else
-#define MAYBE_RestoreForeignTab RestoreForeignTab
-#endif
-IN_PROC_BROWSER_TEST_F(SessionRestoreTest, MAYBE_RestoreForeignTab) {
+IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreForeignTab) {
   GURL url1("http://google.com");
   GURL url2("http://google2.com");
 
@@ -837,11 +831,14 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, MAYBE_RestoreForeignTab) {
   tab_content = nullptr;
   {
     content::CreateAndLoadWebContentsObserver observer;
+    ui_test_utils::BrowserChangeObserver new_browser_observer(
+        nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
     tab_content = SessionRestore::RestoreForeignSessionTab(
         browser()->tab_strip_model()->GetActiveWebContents(), tab,
         WindowOpenDisposition::NEW_WINDOW);
     observer.Wait();
-    new_browser = BrowserList::GetInstance()->GetLastActive();
+    new_browser = new_browser_observer.Wait();
+    ui_test_utils::WaitForBrowserSetLastActive(new_browser);
     EXPECT_NE(new_browser, browser());
   }
 
