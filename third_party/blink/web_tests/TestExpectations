@@ -2620,13 +2620,9 @@ crbug.com/626703 [ Mac ] external/wpt/mediacapture-insertable-streams/legacy/Med
 crbug.com/626703 external/wpt/uievents/mouse/mouse_boundary_events_after_removing_last_over_element.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/332372555 [ Win11-arm64 ] external/wpt/websockets/Create-blocked-port.any.worker.html?default [ Timeout ]
-crbug.com/626703 [ Win10.20h2 ] external/wpt/websockets/Create-blocked-port.any.worker.html?default [ Timeout ]
-crbug.com/332372555 [ Win10.20h2 ] external/wpt/websockets/Create-blocked-port.any.worker.html?wss [ Timeout ]
 crbug.com/332370892 external/wpt/fetch/api/request/request-bad-port.any.html [ Timeout ]
 crbug.com/332370892 external/wpt/fetch/api/request/request-bad-port.any.sharedworker.html [ Timeout ]
 crbug.com/332370892 external/wpt/fetch/api/request/request-bad-port.any.worker.html [ Timeout ]
-crbug.com/332467110 [ Win10.20h2 ] external/wpt/websockets/Create-blocked-port.any.html?wss [ Timeout ]
 crbug.com/332370892 virtual/keepalive-in-browser-migration/external/wpt/fetch/api/request/request-bad-port.any.html [ Timeout ]
 crbug.com/332370892 virtual/keepalive-in-browser-migration/external/wpt/fetch/api/request/request-bad-port.any.sharedworker.html [ Timeout ]
 crbug.com/332370892 virtual/keepalive-in-browser-migration/external/wpt/fetch/api/request/request-bad-port.any.worker.html [ Timeout ]
@@ -3161,7 +3157,6 @@ crbug.com/626703 [ Debug ] external/wpt/webrtc-extensions/transfer-datachannel-s
 crbug.com/626703 [ Release ] external/wpt/webrtc-extensions/transfer-datachannel-service-worker.https.html [ Timeout ]
 crbug.com/626703 [ Debug ] external/wpt/webrtc-extensions/transfer-datachannel.html [ Timeout ]
 crbug.com/626703 [ Release ] external/wpt/webrtc-extensions/transfer-datachannel.html [ Timeout ]
-crbug.com/626703 [ Win ] external/wpt/websockets/Create-blocked-port.any.worker.html?wpt_flags=h2 [ Failure Timeout ]
 crbug.com/1209223 external/wpt/html/syntax/xmldecl/xmldecl-2.html [ Failure ]
 crbug.com/626703 [ Mac ] editing/pasteboard/drag-selected-image-to-contenteditable.html [ Failure ]
 crbug.com/626703 [ Mac Release ] external/wpt/webxr/xrSession_requestReferenceSpace_features.https.html [ Failure Pass Timeout ]
@@ -4788,9 +4783,6 @@ crbug.com/1456442 virtual/compositor-threaded-percent-based-scrolling/fast/event
 
 # Green Mac11 Test
 crbug.com/1201406 http/tests/credentialmanagement/publickeycredential-same-origin-with-ancestors.html [ Crash Pass Timeout ]
-
-# Sheriff 2021-06-14
-crbug.com/1219499 [ Release Win ] external/wpt/websockets/Create-blocked-port.any.html?wpt_flags=h2 [ Failure Pass Timeout ]
 
 # Waiting for resolution on disabled fieldsets in https://github.com/whatwg/html/issues/5886
 # We want to make fieldsets not disableable due to crbug.com/1422096 and crbug.com/1422547
@@ -7127,6 +7119,14 @@ crbug.com/331237019 external/wpt/permissions-policy/payment-extension-allowed-by
 
 # Branch Gardener 2024-03-27
 crbug.com/331358162 [ Win11-arm64 ] http/tests/navigation/back-to-redirect-with-frame.php [ Failure ]
+
+# New blocked ports need to be added.
+crbug.com/332467110 external/wpt/websockets/Create-blocked-port.any.html?default [ Timeout ]
+crbug.com/332467110 external/wpt/websockets/Create-blocked-port.any.html?wss [ Timeout ]
+crbug.com/332467110 external/wpt/websockets/Create-blocked-port.any.html?wpt_flags=h2 [ Timeout Failure ]
+crbug.com/332467110 external/wpt/websockets/Create-blocked-port.any.worker.html?default [ Timeout ]
+crbug.com/332467110 external/wpt/websockets/Create-blocked-port.any.worker.html?wss [ Timeout ]
+crbug.com/332467110 external/wpt/websockets/Create-blocked-port.any.worker.html?wpt_flags=h2 [ Timeout Failure ]
 
 # Gardener (AEST) 2024-04-02
 crbug.com/332068449 [ Mac ] external/wpt/focus/cross-origin-ancestor-activeelement-after-child-lose-focus.sub.html [ Failure Pass ]
