@@ -1635,8 +1635,6 @@ crbug.com/567837 virtual/scalefactor200/fast/hidpi/static/popup-menu-with-scroll
 crbug.com/567837 [ Linux ] virtual/scalefactor150/fast/hidpi/static/popup-menu-with-scrollbar-appearance.html [ Failure Timeout ]
 crbug.com/567837 [ Win ] virtual/scalefactor150/fast/hidpi/static/popup-menu-with-scrollbar-appearance.html [ Failure Timeout ]
 
-# Popover test failures:
-crbug.com/40935781 [ Linux ] external/wpt/html/semantics/popovers/popover-light-dismiss.html [ Failure Pass ]
 # Popover flaky timeouts:
 crbug.com/40287045 external/wpt/html/semantics/popovers/popover-focus-2.html [ Pass Timeout ]
 crbug.com/40268721 [ Mac ] external/wpt/html/semantics/popovers/light-dismiss-event-ordering.html [ Pass Timeout ]
