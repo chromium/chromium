@@ -63,24 +63,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "win-celab-try-rel",
-    executable = "recipe:celab",
-    gn_args = gn_args.config(
-        configs = [
-            "release_builder",
-            "reclient",
-            "minimal_symbols",
-        ],
-    ),
-    properties = {
-        "exclude": "chrome_only",
-        "pool_name": "celab-chromium-try",
-        "pool_size": 20,
-        "tests": "*",
-    },
-)
-
-try_.builder(
     name = "win-clobber-rel",
     mirrors = [
         "ci/win-archive-rel",

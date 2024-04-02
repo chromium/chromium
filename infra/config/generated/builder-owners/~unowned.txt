@@ -151,7 +151,6 @@ ci/metadata-exporter
 ci/rts-model-packager
 ci/rts-suite-analysis
 ci/win-annotator-rel
-ci/win-celab-builder-rel
 ci/win-fieldtrial-rel
 ci/win-network-sandbox-tester
 ci/win-perfetto-rel
@@ -483,7 +482,6 @@ try/win-annotator-rel
 try/win-asan
 try/win-asan-media-rel
 try/win-asan-rel
-try/win-celab-try-rel
 try/win-fieldtrial-rel
 try/win-libfuzzer-asan-rel
 try/win-official
