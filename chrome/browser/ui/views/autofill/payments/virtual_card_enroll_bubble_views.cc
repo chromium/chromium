@@ -21,6 +21,7 @@
 #include "components/grit/components_scaled_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/bubble/tooltip_icon.h"
 #include "ui/views/controls/label.h"
@@ -273,9 +274,14 @@ void VirtualCardEnrollBubbleViews::SwitchToLoadingState() {
   if (loading_progress_row_ == nullptr) {
     return;
   }
+  SetButtons(ui::DIALOG_BUTTON_NONE);
+
   loading_throbber_->Start();
   loading_progress_row_->SetVisible(true);
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  loading_throbber_->GetViewAccessibility().AnnounceText(
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_LOADING_THROBBER_ACCESSIBLE_NAME));
+
   DialogModelChanged();
 }
 

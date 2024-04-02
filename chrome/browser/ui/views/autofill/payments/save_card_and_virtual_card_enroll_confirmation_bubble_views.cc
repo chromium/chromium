@@ -30,7 +30,7 @@ SaveCardAndVirtualCardEnrollConfirmationBubbleViews::
     SetShowCloseButton(true);
   } else {
     SetButtons(ui::DIALOG_BUTTON_OK);
-    SetButtonLabel(ui::DIALOG_BUTTON_OK, ui_params_.failure_button_text);
+    SetButtonLabel(ui::DIALOG_BUTTON_OK, ui_params_.failure_ok_button_text);
   }
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
@@ -74,6 +74,13 @@ void SaveCardAndVirtualCardEnrollConfirmationBubbleViews::WindowClosing() {
   }
 }
 
+void SaveCardAndVirtualCardEnrollConfirmationBubbleViews::
+    OnWidgetInitialized() {
+  if (auto* ok_button = GetOkButton()) {
+    ok_button->SetAccessibleName(ui_params_.failure_ok_button_accessible_name);
+  }
+}
+
 void SaveCardAndVirtualCardEnrollConfirmationBubbleViews::Init() {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
@@ -85,6 +92,7 @@ void SaveCardAndVirtualCardEnrollConfirmationBubbleViews::Init() {
   description->SetID(DialogViewId::DESCRIPTION_LABEL);
   description->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   description->SetMultiLine(true);
+  description->SetAccessibleName(ui_params_.description_text);
   AddChildView(std::move(description));
 }
 
