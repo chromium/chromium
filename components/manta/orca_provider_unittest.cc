@@ -38,7 +38,9 @@ class FakeOrcaProvider : public OrcaProvider, public FakeBaseProvider {
       scoped_refptr<network::SharedURLLoaderFactory> test_url_loader_factory,
       signin::IdentityManager* identity_manager)
       : BaseProvider(test_url_loader_factory, identity_manager),
-        OrcaProvider(test_url_loader_factory, identity_manager),
+        OrcaProvider(test_url_loader_factory,
+                     identity_manager,
+                     /*is_demo_mode=*/false),
         FakeBaseProvider(test_url_loader_factory, identity_manager) {}
 };
 

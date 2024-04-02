@@ -113,14 +113,16 @@ void OnServerResponseOrErrorReceived(
 
 OrcaProvider::OrcaProvider(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    signin::IdentityManager* identity_manager)
-    : BaseProvider(url_loader_factory, identity_manager) {}
+    signin::IdentityManager* identity_manager,
+    bool is_demo_mode)
+    : BaseProvider(url_loader_factory, identity_manager),
+      is_demo_mode_(is_demo_mode) {}
 
 OrcaProvider::~OrcaProvider() = default;
 
 void OrcaProvider::Call(const std::map<std::string, std::string>& input,
                         MantaGenericCallback done_callback) {
-  if (!identity_manager_observation_.IsObserving()) {
+  if (!is_demo_mode_ && !identity_manager_observation_.IsObserving()) {
     std::move(done_callback)
         .Run(base::Value::Dict(), {MantaStatusCode::kNoIdentityManager});
     return;
@@ -175,16 +177,29 @@ void OrcaProvider::Call(const std::map<std::string, std::string>& input,
             }
           }
         })");
-  std::unique_ptr<EndpointFetcher> fetcher = CreateEndpointFetcher(
-      GURL{GetProviderEndpoint(features::IsOrcaUseProdServerEnabled())},
-      kOauthConsumerName, traffic_annotation, serialized_request);
 
-  EndpointFetcher* const fetcher_ptr = fetcher.get();
   MantaProtoResponseCallback internal_callback = base::BindOnce(
       &OnServerResponseOrErrorReceived, std::move(done_callback));
-  fetcher_ptr->Fetch(base::BindOnce(&OnEndpointFetcherComplete,
-                                    std::move(internal_callback),
-                                    std::move(fetcher)));
+
+  if (is_demo_mode_) {
+    std::unique_ptr<EndpointFetcher> fetcher = CreateEndpointFetcherForDemoMode(
+        GURL{GetProviderEndpoint(features::IsOrcaUseProdServerEnabled())},
+        traffic_annotation, serialized_request);
+    EndpointFetcher* const fetcher_ptr = fetcher.get();
+    fetcher_ptr->PerformRequest(
+        base::BindOnce(&OnEndpointFetcherComplete, std::move(internal_callback),
+                       std::move(fetcher)),
+        nullptr);
+  } else {
+    std::unique_ptr<EndpointFetcher> fetcher = CreateEndpointFetcher(
+        GURL{GetProviderEndpoint(features::IsOrcaUseProdServerEnabled())},
+        kOauthConsumerName, traffic_annotation, serialized_request);
+
+    EndpointFetcher* const fetcher_ptr = fetcher.get();
+    fetcher_ptr->Fetch(base::BindOnce(&OnEndpointFetcherComplete,
+                                      std::move(internal_callback),
+                                      std::move(fetcher)));
+  }
 }
 
 }  // namespace manta

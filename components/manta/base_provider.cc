@@ -24,6 +24,8 @@ BaseProvider::BaseProvider(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager)
     : url_loader_factory_(url_loader_factory) {
+  // Guest mode and demo mode also have valid identity_manager instance, so it's
+  // OK to CHECK here.
   CHECK(identity_manager);
   identity_manager_observation_.Observe(identity_manager);
 }
@@ -56,6 +58,23 @@ std::unique_ptr<EndpointFetcher> BaseProvider::CreateEndpointFetcher(
       /*annotation_tag=*/annotation_tag,
       /*identity_manager=*/identity_manager_observation_.GetSource(),
       /*consent_level=*/signin::ConsentLevel::kSignin);
+}
+
+std::unique_ptr<EndpointFetcher> BaseProvider::CreateEndpointFetcherForDemoMode(
+    const GURL& url,
+    const net::NetworkTrafficAnnotationTag& annotation_tag,
+    const std::string& post_data) {
+  return std::make_unique<EndpointFetcher>(
+      /*url_loader_factory=*/url_loader_factory_,
+      /*url=*/url,
+      /*http_method=*/kHttpMethod,
+      /*content_type=*/kHttpContentType,
+      /*timeout=*/kTimeout,
+      /*post_data=*/post_data,
+      /*headers=*/std::vector<std::string>(),
+      /*annotation_tag=*/annotation_tag,
+      // ChromeOS always uses the stable channel API key
+      /*is_stable_channel=*/true);
 }
 
 }  // namespace manta

@@ -39,13 +39,19 @@ FeatureSupportStatus ConvertToMantaFeatureSupportStatus(signin::Tribool value) {
 
 MantaService::MantaService(
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
-    signin::IdentityManager* identity_manager)
+    signin::IdentityManager* identity_manager,
+    bool is_demo_mode)
     : shared_url_loader_factory_(shared_url_loader_factory),
-      identity_manager_(identity_manager) {}
+      identity_manager_(identity_manager),
+      is_demo_mode_(is_demo_mode) {}
 
 MantaService::~MantaService() = default;
 
 FeatureSupportStatus MantaService::SupportsOrca() {
+  if (is_demo_mode_) {
+    return FeatureSupportStatus::kSupported;
+  }
+
   if (identity_manager_ == nullptr) {
     return FeatureSupportStatus::kUnknown;
   }
@@ -74,7 +80,7 @@ std::unique_ptr<OrcaProvider> MantaService::CreateOrcaProvider() {
     return nullptr;
   }
   return std::make_unique<OrcaProvider>(shared_url_loader_factory_,
-                                        identity_manager_);
+                                        identity_manager_, is_demo_mode_);
 }
 
 std::unique_ptr<SnapperProvider> MantaService::CreateSnapperProvider() {

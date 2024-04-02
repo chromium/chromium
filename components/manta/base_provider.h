@@ -38,9 +38,20 @@ class COMPONENT_EXPORT(MANTA) BaseProvider
   // Creates and returns unique pointer to an `EndpointFetcher` initialized with
   // the provided parameters and defaults relevant to Manta providers. Virtual
   // to allow overriding in tests.
+  // It's a particular provider's choice to support Demo mode or not, and choose
+  // from these two functions accordingly.
+
+  // Creates an EndpointFetcher with oauth-based auth.
   virtual std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
       const GURL& url,
       const std::string& oauth_consumer_name,
+      const net::NetworkTrafficAnnotationTag& annotation_tag,
+      const std::string& post_data);
+  // Creates an EndpointFetcher with default API key auth.
+  // If an EndpointFetcher is obtained with this function, call its
+  // `PerformRequest` directly instead of `Fetch`.
+  virtual std::unique_ptr<EndpointFetcher> CreateEndpointFetcherForDemoMode(
+      const GURL& url,
       const net::NetworkTrafficAnnotationTag& annotation_tag,
       const std::string& post_data);
 

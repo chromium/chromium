@@ -42,7 +42,8 @@ class COMPONENT_EXPORT(MANTA) MantaService : public KeyedService {
  public:
   MantaService(
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
-      signin::IdentityManager* identity_manager);
+      signin::IdentityManager* identity_manager,
+      bool is_demo_mode);
 
   MantaService(const MantaService&) = delete;
   MantaService& operator=(const MantaService&) = delete;
@@ -67,6 +68,7 @@ class COMPONENT_EXPORT(MANTA) MantaService : public KeyedService {
  private:
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   raw_ptr<signin::IdentityManager> identity_manager_;
+  const bool is_demo_mode_;
 };
 
 }  // namespace manta
