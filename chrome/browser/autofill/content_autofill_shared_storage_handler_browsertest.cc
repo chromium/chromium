@@ -54,8 +54,8 @@ IN_PROC_BROWSER_TEST_F(ContentAutofillSharedStorageHandlerBrowserTest,
       ->profile()
       ->GetDefaultStoragePartition()
       ->GetSharedStorageManager()
-      ->Get(url::Origin::Create(payments::GetBaseSecureUrl()),
-            u"browser_autofill_card_data", future.GetCallback());
+      ->Get(payments::GetGooglePayScriptOrigin(), u"browser_autofill_card_data",
+            future.GetCallback());
   storage::SharedStorageDatabase::GetResult result = future.Take();
   ASSERT_EQ(result.result,
             storage::SharedStorageDatabase::OperationResult::kSuccess);
@@ -108,8 +108,8 @@ IN_PROC_BROWSER_TEST_F(AutofillSharedStorageServerCardDataDisabledTest,
       ->profile()
       ->GetDefaultStoragePartition()
       ->GetSharedStorageManager()
-      ->Get(url::Origin::Create(payments::GetBaseSecureUrl()),
-            u"browser_autofill_card_data", future.GetCallback());
+      ->Get(payments::GetGooglePayScriptOrigin(), u"browser_autofill_card_data",
+            future.GetCallback());
   ASSERT_EQ(future.Take().result,
             storage::SharedStorageDatabase::OperationResult::kNotFound);
 
