@@ -61,13 +61,14 @@ MediaDevicesManager::BoolDeviceTypes DoCheckPermissionsOnUIThread(
       blink::mojom::PermissionsPolicyFeature::kSpeakerSelection);
 
   MediaDevicesManager::BoolDeviceTypes result;
-  // Speakers.
 
+  // Speakers. Also allow speakers if the microphone permission is given, even
+  // if speaker permission is not explicitly given.
   result[static_cast<size_t>(MediaDeviceType::kMediaAudioOuput)] =
       requested_device_types[static_cast<size_t>(
           MediaDeviceType::kMediaAudioOuput)] &&
-      (microphone_permission || speaker_selection_permission) &&
-      speaker_selection_permissions_policy;
+      ((microphone_permission && mic_permissions_policy) ||
+       (speaker_selection_permission && speaker_selection_permissions_policy));
 
   // Mic.
   result[static_cast<size_t>(MediaDeviceType::kMediaAudioInput)] =
