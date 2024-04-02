@@ -60,6 +60,17 @@ std::optional<std::string> MapContextToString(
   return ui_location + "." + preview_type;
 }
 
+void UmaHistogramLinearCounts(const std::string& name,
+                              int sample,
+                              int minimum,
+                              int maximum,
+                              size_t bucket_count) {
+  base::HistogramBase* histogram = base::LinearHistogram::FactoryGet(
+      name, minimum, maximum, bucket_count,
+      base::HistogramBase::kUmaTargetedHistogramFlag);
+  histogram->Add(sample);
+}
+
 }  // anonymous namespace
 
 namespace media_preview_metrics {
@@ -70,13 +81,13 @@ Context::Context(UiLocation ui_location, PreviewType preview_type)
 Context::~Context() = default;
 
 void RecordPageInfoCameraNumInUseDevices(int devices) {
-  base::UmaHistogramCustomCounts(
-      "MediaPreviews.UI.PageInfo.Camera.NumInUseDevices", devices, 0, 5, 5);
+  base::UmaHistogramExactLinear(
+      "MediaPreviews.UI.PageInfo.Camera.NumInUseDevices", devices, 5);
 }
 
 void RecordPageInfoMicNumInUseDevices(int devices) {
-  base::UmaHistogramCustomCounts(
-      "MediaPreviews.UI.PageInfo.Mic.NumInUseDevices", devices, 0, 5, 5);
+  base::UmaHistogramExactLinear("MediaPreviews.UI.PageInfo.Mic.NumInUseDevices",
+                                devices, 5);
 }
 
 void RecordDeviceSelectionTotalDevices(Context context, int devices) {
@@ -86,7 +97,7 @@ void RecordDeviceSelectionTotalDevices(Context context, int devices) {
   }
   std::string metric_name =
       "MediaPreviews.UI.DeviceSelection." + *context_metric_id + ".NumDevices";
-  base::UmaHistogramCustomCounts(metric_name, devices, 0, 5, 5);
+  base::UmaHistogramExactLinear(metric_name, devices, 5);
 }
 
 void RecordPreviewCameraPixelHeight(Context context, int pixel_height) {
@@ -106,7 +117,9 @@ void RecordPreviewCameraPixelHeight(Context context, int pixel_height) {
       return;
 #endif
   }
-  base::UmaHistogramCustomCounts(context_metric_id, pixel_height, 0, 1080, 8);
+  // This really has 8 buckets for 1-1080, but we have to add 2 for underflow
+  // and overflow.
+  UmaHistogramLinearCounts(context_metric_id, pixel_height, 1, 1080, 10);
 }
 
 void RecordPreviewVideoExpectedFPS(Context context, int expected_fps) {
@@ -127,7 +140,8 @@ void RecordPreviewVideoExpectedFPS(Context context, int expected_fps) {
       return;
 #endif
   }
-  base::UmaHistogramCustomCounts(context_metric_id, expected_fps, 0, 60, 12);
+  base::UmaHistogramExactLinear(context_metric_id, expected_fps,
+                                /*exclusive_max=*/61);
 }
 
 void RecordDeviceSelectionAction(
@@ -160,7 +174,8 @@ void RecordPreviewVideoActualFPS(Context context, int actual_fps) {
       return;
 #endif
   }
-  base::UmaHistogramCustomCounts(context_metric_id, actual_fps, 0, 60, 12);
+  base::UmaHistogramExactLinear(context_metric_id, actual_fps,
+                                /*exclusive_max=*/61);
 }
 
 void RecordMediaPreviewDuration(Context context, const base::TimeDelta& delta) {
