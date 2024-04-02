@@ -1781,7 +1781,16 @@ TEST_F(TraceEventDataSourceTest, MAYBE_ExplicitThreadTimeForDifferentThread) {
       perfetto::ThreadTrack::ForThread(1), /*explicit_thread_time=*/20);
 }
 
-TEST_F(TraceEventDataSourceTest, TrackSupportOnBeginAndEndWithLambda) {
+// The test fails on fuchsia during thread pool initialization because
+// base::SysInfo::NumberOfEfficientProcessorsImpl() is not implemented.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_TrackSupportOnBeginAndEndWithLambda \
+  DISABLED_TrackSupportOnBeginAndEndWithLambda
+#else
+#define MAYBE_TrackSupportOnBeginAndEndWithLambda \
+  TrackSupportOnBeginAndEndWithLambda
+#endif
+TEST_F(TraceEventDataSourceTest, MAYBE_TrackSupportOnBeginAndEndWithLambda) {
   StartTraceEventDataSource();
 
   auto track = perfetto::Track(1);
@@ -2069,7 +2078,14 @@ TEST_F(TraceEventDataSourceTest, FilteringSimpleTraceEvent) {
   ExpectInternedDebugAnnotationNames(e_packet, {});
 }
 
-TEST_F(TraceEventDataSourceTest, FilteringEventWithArgs) {
+// The test fails on fuchsia during thread pool initialization because
+// base::SysInfo::NumberOfEfficientProcessorsImpl() is not implemented.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_FilteringEventWithArgs DISABLED_FilteringEventWithArgs
+#else
+#define MAYBE_FilteringEventWithArgs FilteringEventWithArgs
+#endif
+TEST_F(TraceEventDataSourceTest, MAYBE_FilteringEventWithArgs) {
   StartTraceEventDataSource(/* privacy_filtering_enabled =*/true);
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   // New SDK does not accept TRACE_EVENT_FLAG values.
