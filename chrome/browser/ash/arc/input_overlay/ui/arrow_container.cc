@@ -6,13 +6,20 @@
 
 #include <cmath>
 
+#include "ash/style/system_shadow.h"
 #include "cc/paint/paint_flags.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_delegate.h"
+#include "ui/compositor/layer_type.h"
+#include "ui/compositor/paint_recorder.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/skia_paint_util.h"
 #include "ui/views/border.h"
+#include "ui/views/view_observer.h"
 
 namespace arc::input_overlay {
 namespace {
@@ -30,12 +37,16 @@ constexpr int kMenuWidth = kButtonOptionsMenuWidth + kTriangleHeight;
 // Draws the dialog shape path with round corner. It starts after the corner
 // radius on line #0 and draws clockwise.
 //
-// draw_triangle_on_left draws the triangle wedge on the left side of the box
+// `draw_triangle_on_left` draws the triangle wedge on the left side of the box
 // instead of the right if set to true.
 //
-// action_offset draws the triangle wedge higher or lower if the position of
+// `action_offset` draws the triangle wedge higher or lower if the position of
 // the action is too close to the top or bottom of the window. An offset of
 // zero draws the triangle wedge at the vertical center of the box.
+//
+// `origin_offset` of 0 means drawing the top and left edge on the x-axis and
+// y-axis. Otherwise, draw the top and left edge on the y = origin_offset and x
+// = origin_offset.
 //  _0>__________
 // |             |
 // |             |
@@ -47,7 +58,8 @@ constexpr int kMenuWidth = kButtonOptionsMenuWidth + kTriangleHeight;
 //
 SkPath BackgroundPath(SkScalar height,
                       SkScalar action_offset,
-                      bool draw_triangle_on_left) {
+                      bool draw_triangle_on_left,
+                      SkScalar origin_offset = 0) {
   SkPath path;
   const SkScalar short_length =
       SkIntToScalar(kMenuWidth) - kTriangleHeight - 2 * kCornerRadius;
@@ -72,9 +84,9 @@ SkPath BackgroundPath(SkScalar height,
     action_offset = -limit;
   }
   if (draw_triangle_on_left) {
-    path.moveTo(kCornerRadius + kTriangleHeight, 0);
+    path.moveTo(kCornerRadius + kTriangleHeight + origin_offset, origin_offset);
   } else {
-    path.moveTo(kCornerRadius, 0);
+    path.moveTo(kCornerRadius + origin_offset, origin_offset);
   }
   // Top left after corner radius to top right corner radius.
   path.rLineTo(short_length, 0);
@@ -123,10 +135,93 @@ SkPath BackgroundPath(SkScalar height,
   return path;
 }
 
+gfx::ShadowValues GetShadowValues() {
+  return gfx::ShadowValue::MakeChromeOSSystemUIShadowValues(
+      ash::SystemShadow::GetElevationFromType(
+          ash::SystemShadow::Type::kElevation12));
+}
+
+// Returns negative insets to expand the shadow layer bigger than the container.
+gfx::Insets GetShadowInsets() {
+  return gfx::ShadowValue::GetMargin(GetShadowValues());
+}
+
 }  // namespace
+
+// ArrowContainer is not a regular shadow container, so it needs to draw the
+// special shape of the shadow in the ShadowLayer.
+class ArrowContainer::ShadowLayer : public ui::Layer,
+                                    public ui::LayerDelegate,
+                                    public views::ViewObserver {
+ public:
+  explicit ShadowLayer(ArrowContainer* owner)
+      : ui::Layer(ui::LAYER_TEXTURED), owner_(owner) {
+    // TODO(b/331837116): Check the shadow distance and blur again after the
+    // system shadow is adjusted to keep them consistent.
+    SetFillsBoundsOpaquely(false);
+    set_delegate(this);
+  }
+
+  ShadowLayer(const ShadowLayer&) = delete;
+  ShadowLayer& operator=(const ShadowLayer&) = delete;
+
+  ~ShadowLayer() override = default;
+
+  // ui::LayerDelegate:
+  void OnPaintLayer(const ui::PaintContext& context) override {
+    if (bounds().IsEmpty()) {
+      return;
+    }
+    ui::PaintRecorder recorder(context, size());
+    auto* canvas = recorder.canvas();
+
+    const auto shadow_values = GetShadowValues();
+    gfx::Insets shadow_insets = -gfx::ShadowValue::GetMargin(shadow_values);
+
+    cc::PaintFlags flags;
+    flags.setLooper(gfx::CreateShadowDrawLooper(shadow_values));
+    flags.setColor(SK_ColorTRANSPARENT);
+    flags.setAntiAlias(true);
+
+    canvas->DrawPath(
+        BackgroundPath(SkIntToScalar(owner_->size().height()),
+                       SkIntToScalar(owner_->arrow_vertical_offset_),
+                       owner_->arrow_on_left_, shadow_insets.top()),
+        flags);
+  }
+
+  // ui::LayerDelegate:
+  void OnDeviceScaleFactorChanged(float old_device_scale_factor,
+                                  float new_device_scale_factor) override {}
+
+  // views::ViewObserver:
+  void OnViewBoundsChanged(views::View* observed_view) override {
+    auto shadow_layer_bounds = observed_view->layer()->bounds();
+    shadow_layer_bounds.Inset(GetShadowInsets());
+    SetBounds(shadow_layer_bounds);
+  }
+
+  void OnViewLayoutInvalidated(views::View* observed_view) override {
+    // When the `observed_view` is relayout without bounds change, it also needs
+    // to redraw the shadow because the triangle arrow position may change.
+    SchedulePaint(gfx::Rect(size()));
+  }
+
+  void OnViewRemovedFromWidget(views::View* observed_view) override {
+    observed_view->RemoveObserver(this);
+  }
+
+ private:
+  raw_ptr<ArrowContainer> owner_;
+};
 
 ArrowContainer::ArrowContainer() {
   UpdateBorder();
+
+  // Add shadow.
+  shadow_layer_ = std::make_unique<ShadowLayer>(this);
+  AddLayerToRegion(shadow_layer_.get(), views::LayerRegion::kBelow);
+  AddObserver(shadow_layer_.get());
 }
 
 ArrowContainer::~ArrowContainer() = default;

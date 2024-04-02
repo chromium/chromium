@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_ARROW_CONTAINER_H_
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_ARROW_CONTAINER_H_
 
+#include <memory>
+
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -34,11 +36,15 @@ class ArrowContainer : public views::View {
   void SetArrowOnLeft(bool arrow_on_left);
 
  private:
+  class ShadowLayer;
+
   void UpdateBorder();
 
   // views::View:
   void OnPaintBackground(gfx::Canvas* canvas) override;
   gfx::Size CalculatePreferredSize() const override;
+
+  std::unique_ptr<ShadowLayer> shadow_layer_;
 
   int arrow_vertical_offset_ = 0;
   bool arrow_on_left_ = false;
