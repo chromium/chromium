@@ -267,8 +267,8 @@ void EnrollmentLauncherImpl::DoEnroll(policy::DMAuth auth_data) {
   DCHECK(enrollment_config_.is_mode_attestation() ||
          oauth_status_ == OAUTH_STARTED_WITH_AUTH_CODE ||
          oauth_status_ == OAUTH_STARTED_WITH_TOKEN);
-  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
-  // in the logs.
+
+  // Logging as "WARNING" to make sure it's preserved in the logs.
   LOG(WARNING) << "Enroll with token type: "
                << static_cast<int>(auth_data.token_type());
   auth_data_ = std::move(auth_data);
@@ -415,8 +415,7 @@ void EnrollmentLauncherImpl::OnEnrollmentFinished(
   enrollment_handler_.reset();
   attestation_flow_.reset();
 
-  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
-  // in the logs.
+  // Logging as "WARNING" to make sure it's preserved in the logs.
   LOG(WARNING) << "Enrollment finished, code: " << status.enrollment_code();
   ReportEnrollmentStatus(status);
   if (oauth_status_ != OAUTH_NOT_STARTED) {
