@@ -184,6 +184,7 @@ void EditLabels::InitForActionMoveKeyboard() {
     if (i == 0 || i == 2) {
       AddChildView(std::make_unique<views::View>());
     } else {
+      DCHECK_LT(labels_.size(), size_t(Direction::kMaxValue) + 1);
       labels_.emplace_back(AddChildView(std::make_unique<EditLabel>(
           controller_, action_, for_editing_list_, labels_.size())));
     }

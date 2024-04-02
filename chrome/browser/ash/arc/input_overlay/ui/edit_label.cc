@@ -8,6 +8,7 @@
 #include "ash/bubble/bubble_utils.h"
 #include "ash/shell.h"
 #include "ash/style/typography.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -48,6 +49,26 @@ constexpr int kPulseTimes = 3;
 constexpr int kPulseExtraHalfSize = 32;
 constexpr base::TimeDelta kPulseDuration = base::Seconds(2);
 
+// Returns "<up/down/left/right>" for `direction`.
+std::u16string GetAccessibleNameSuffixForDirection(Direction direction) {
+  switch (direction) {
+    case Direction::kUp:
+      return l10n_util ::GetStringUTF16(
+          IDS_INPUT_OVERLAY_JOYSTICK_DIRECTION_UP_A11Y_LABEL);
+    case Direction::kLeft:
+      return l10n_util ::GetStringUTF16(
+          IDS_INPUT_OVERLAY_JOYSTICK_DIRECTION_LEFT_A11Y_LABEL);
+    case Direction::kDown:
+      return l10n_util ::GetStringUTF16(
+          IDS_INPUT_OVERLAY_JOYSTICK_DIRECTION_DOWN_A11Y_LABEL);
+    case Direction::kRight:
+      return l10n_util ::GetStringUTF16(
+          IDS_INPUT_OVERLAY_JOYSTICK_DIRECTION_RIGHT_A11Y_LABEL);
+    default:
+      NOTREACHED();
+  }
+}
+
 }  // namespace
 
 EditLabel::EditLabel(DisplayOverlayController* controller,
@@ -58,7 +79,7 @@ EditLabel::EditLabel(DisplayOverlayController* controller,
       controller_(controller),
       action_(action),
       for_editing_list_(for_editing_list),
-      index_(index) {
+      direction_index_(static_cast<Direction>(index)) {
   Init();
 }
 
@@ -143,8 +164,8 @@ void EditLabel::Init() {
 void EditLabel::SetLabelContent() {
   DCHECK(!action_->IsDeleted());
   const auto& keys = action_->GetCurrentDisplayedInput().keys();
-  DCHECK(index_ < keys.size());
-  std::u16string output_string = GetDisplayText(keys[index_]);
+  DCHECK(size_t(direction_index_) < keys.size());
+  std::u16string output_string = GetDisplayText(keys[size_t(direction_index_)]);
   if (action_->is_new() && output_string == kUnknownBind) {
     output_string = u"";
   }
@@ -185,17 +206,41 @@ void EditLabel::SetNameTagState(bool is_error,
 void EditLabel::UpdateAccessibleName() {
   const std::u16string a11y_name =
       GetDisplayTextAccessibleName(label()->GetText());
-  const std::u16string reassign = l10n_util::GetStringUTF16(
-      IDS_INPUT_OVERLAY_EDIT_LABEL_REASSIGN_A11Y_LABEL);
+  const bool unassigned =
+      a11y_name.empty() || a11y_name.compare(kUnknownBind) == 0;
+  const std::u16string suffix_instruction = l10n_util::GetStringUTF16(
+      unassigned
+          ? IDS_INPUT_OVERLAY_EDIT_LABEL_KEYBOARD_ASSIGN_INSTRUCTION_A11Y_LABEL
+          : IDS_INPUT_OVERLAY_EDIT_LABEL_KEYBOARD_REASSIGN_INSTRUCTION_A11Y_LABEL);
 
-  if (a11y_name.empty() || a11y_name.compare(kUnknownBind) == 0) {
-    SetAccessibleName(l10n_util::GetStringUTF16(
-        IDS_INPUT_OVERLAY_EDIT_LABEL_UNASSIGNED_A11Y_LABEL));
-  } else if (for_editing_list_) {
-    SetAccessibleName(l10n_util::GetStringFUTF16(
-        IDS_INPUT_OVERLAY_EDIT_LABEL_A11Y_LABEL_TEMPLATE, a11y_name, reassign));
-  } else {
-    SetAccessibleName(reassign);
+  switch (action_->GetType()) {
+    case ActionType::TAP:
+      if (unassigned) {
+        SetAccessibleName(l10n_util::GetStringFUTF16(
+            IDS_INPUT_OVERLAY_EDIT_LABEL_BUTTON_KEYBOARD_UNASSIGNED_A11Y_TPL,
+            suffix_instruction));
+      } else {
+        SetAccessibleName(l10n_util::GetStringFUTF16(
+            IDS_INPUT_OVERLAY_EDIT_LABEL_BUTTON_KEYBOARD_A11Y_TPL, a11y_name,
+            suffix_instruction));
+      }
+      break;
+    case ActionType::MOVE: {
+      const std::u16string direction =
+          GetAccessibleNameSuffixForDirection(direction_index_);
+      if (unassigned) {
+        SetAccessibleName(l10n_util::GetStringFUTF16(
+            IDS_INPUT_OVERLAY_EDIT_LABEL_JOYSTICK_KEYBOARD_UNASSIGNED_A11Y_TPL,
+            direction, suffix_instruction));
+      } else {
+        SetAccessibleName(l10n_util::GetStringFUTF16(
+            IDS_INPUT_OVERLAY_EDIT_LABEL_JOYSTICK_KEYBOARD_A11Y_TPL, a11y_name,
+            direction, suffix_instruction));
+      }
+      break;
+    }
+    default:
+      NOTREACHED();
   }
 }
 
@@ -286,11 +331,12 @@ bool EditLabel::OnKeyPressed(const ui::KeyEvent& event) {
       auto new_keys = input_binding.keys();
       // If there is duplicated key in its own action, unset the key.
       const int unassigned_index = input_binding.GetIndexOfKey(code);
-      if (unassigned_index != -1 && size_t(unassigned_index) != index_) {
+      if (unassigned_index != -1 &&
+          size_t(unassigned_index) != size_t(direction_index_)) {
         new_keys[unassigned_index] = ui::DomCode::NONE;
       }
       // Set the new key.
-      new_keys[index_] = code;
+      new_keys[size_t(direction_index_)] = code;
       input = InputElement::CreateActionMoveKeyElement(new_keys);
       break;
     }

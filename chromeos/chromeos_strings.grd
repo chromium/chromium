@@ -4129,7 +4129,7 @@
           A painting of a <ph name="ART_FEATURE">$1<ex>field of flowers </ex></ph> in the <ph name="ART_MOVEMENT">$2<ex>avant-garde</ex></ph> style
         </message>
         <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_FEATURE_FIELD" desc="Option to fill in the VC_BACKGROUND_ART_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
-          field of flowers 
+          field of flowers
         </message>
         <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_FEATURE_SWAMP" desc="Option to fill in the VC_BACKGROUND_ART_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
           swamp
@@ -6371,14 +6371,35 @@
          <message name="IDS_INPUT_OVERLAY_CONTROL_NAME_LABEL_UNASSIGNED_TEMPLATE" desc="The Control name is formed by Control type and assigned keys. For example, Unassigned button or Unassigned Joystick.">
           Unassigned <ph name="CONTROL_TYPE">$1<ex>Button</ex></ph>
         </message>
-        <message name="IDS_INPUT_OVERLAY_EDIT_LABEL_REASSIGN_A11Y_LABEL" desc="Edit label button a11y label for button options menu. Spoken by screen readers when the list item button gets focus but not visually rendered." translateable="false">
+        <message name="IDS_INPUT_OVERLAY_EDIT_LABEL_BUTTON_KEYBOARD_A11Y_TPL" desc="Edit label a11y label. Spoken by screen readers when the list item button gets focus but not visually rendered." translateable="false">
+          Selected key is <ph name="KEYS">$1<ex>w</ex></ph>. <ph name="ASSIGN_INSTRUCTION">$2<ex>assign_instruction</ex></ph>
+        </message>
+        <message name="IDS_INPUT_OVERLAY_EDIT_LABEL_BUTTON_KEYBOARD_UNASSIGNED_A11Y_TPL" desc="A11y name for symbol '?' or empty string and spoken by screen readers when symbol ? or nothing renders in key label and gets focus but the name not visually rendered." translateable="false">
+          Key is missing. <ph name="REASSIGN_INSTRUCTION">$1<ex>reassign_instruction</ex></ph>
+        </message>
+        <message name="IDS_INPUT_OVERLAY_EDIT_LABEL_JOYSTICK_KEYBOARD_A11Y_TPL" desc="Edit label a11y label for joystick keyboard binding. Spoken by screen readers when the list item button gets focus but not visually rendered." translateable="false">
+          Selected key is <ph name="KEYS">$1<ex>w</ex></ph> for <ph name="DIRECTION">$2<ex>up</ex></ph>. <ph name="REASSIGN_INSTRUCTION">$3<ex>reassign_instruction</ex></ph>
+        </message>
+        <message name="IDS_INPUT_OVERLAY_EDIT_LABEL_JOYSTICK_KEYBOARD_UNASSIGNED_A11Y_TPL" desc="A11y name for joystick keyboard binding symbol '?' or empty string and spoken by screen readers when symbol ? or nothing renders in key label and gets focus but the name not visually rendered." translateable="false">
+          Key is missing for <ph name="DIRECTION">$1<ex>up</ex></ph>. <ph name="ASSIGN_INSTRUCTION">$2<ex>assign_instruction</ex></ph>
+        </message>
+        <message name="IDS_INPUT_OVERLAY_EDIT_LABEL_KEYBOARD_ASSIGN_INSTRUCTION_A11Y_LABEL" desc="Edit label button a11y label as assignment instruction. Spoken by screen readers when the list item button gets focus but not visually rendered." translateable="false">
+          Tap on a keyboard key to assign
+        </message>
+        <message name="IDS_INPUT_OVERLAY_EDIT_LABEL_KEYBOARD_REASSIGN_INSTRUCTION_A11Y_LABEL" desc="Edit label button a11y label as replacement instruction. Spoken by screen readers when the list item button gets focus but not visually rendered." translateable="false">
           Tap on another keyboard key to replace
         </message>
-        <message name="IDS_INPUT_OVERLAY_EDIT_LABEL_A11Y_LABEL_TEMPLATE" desc="Edit label a11y label. Spoken by screen readers when the list item button gets focus but not visually rendered." translateable="false">
-          Selected key is <ph name="KEYS">$1<ex>w</ex></ph>. <ph name="REASSIGN_INSTRUCTION">$2<ex>reassign_instruction</ex></ph>
+        <message name="IDS_INPUT_OVERLAY_JOYSTICK_DIRECTION_UP_A11Y_LABEL" desc="A11y name for joystick direction when the up label is focused. It's not visually rendered." translateable="false">
+          up
         </message>
-        <message name="IDS_INPUT_OVERLAY_EDIT_LABEL_UNASSIGNED_A11Y_LABEL" desc="A11y name for symbol '?' or empty string and spoken by screen readers when symbol ? or nothing renders in key label and gets focus but the name not visually rendered." translateable="false">
-          Key is missing. Tap on a keyboard key to assign
+        <message name="IDS_INPUT_OVERLAY_JOYSTICK_DIRECTION_LEFT_A11Y_LABEL" desc="A11y name for joystick direction when the left label is focused. It's not visually rendered." translateable="false">
+          left
+        </message>
+        <message name="IDS_INPUT_OVERLAY_JOYSTICK_DIRECTION_DOWN_A11Y_LABEL" desc="A11y name for joystick direction when the down label is focused. It's not visually rendered." translateable="false">
+          down
+        </message>
+        <message name="IDS_INPUT_OVERLAY_JOYSTICK_DIRECTION_RIGHT_A11Y_LABEL" desc="A11y name for joystick direction when the right label is focused. It's not visually rendered." translateable="false">
+          right
         </message>
         <message name="IDS_INPUT_OVERLAY_EDITING_DONE_BUTTON_LABEL" desc="The title of buttons in the Game Controls menu indicating to save and close either the main or editor menu.">
           Done
@@ -6410,11 +6431,11 @@
         <message name="IDS_INPUT_OVERLAY_EDITING_LIST_DONE_BUTTON_A11Y_LABEL" desc="Done button a11y label. Spoken by screen readers when the list item button gets focus but not visually rendered." translateable="false">
           Done editing
         </message>
-        <message name="IDS_INPUT_OVERLAY_EDITING_LIST_ITEM_BUTTON_A11Y_TEMPLATE" desc="List item button a11y label for editing list when including one single edit label. Spoken by screen readers when the list item button gets focus but not visually rendered." translateable="false">
+        <message name="IDS_INPUT_OVERLAY_EDITING_LIST_ITEM_BUTTON_CONTAINER_A11Y_TPL" desc="List item button a11y label for editing list when including one single edit label. Spoken by screen readers when the list item button gets focus but not visually rendered." translateable="false">
           Selected key is <ph name="KEYS">$1<ex>w</ex></ph>. Tap on the button to edit the control
         </message>
-        <message name="IDS_INPUT_OVERLAY_EDITING_LIST_ITEM_BUTTON_A11Y_PLURAL_TEMPLATE" desc="List item button a11y label for editing list when including more than one edit label. Spoken by screen readers when list item button gets focus but not visually rendered." translateable="false">
-          Selected key are <ph name="KEYS">$1<ex>w, a, s, d</ex></ph>. Tap on the button to edit the control
+        <message name="IDS_INPUT_OVERLAY_EDITING_LIST_ITEM_JOYSTICK_CONTAINER_A11Y_TPL" desc="List item button a11y label for editing list when including more than one edit label. Spoken by screen readers when list item button gets focus but not visually rendered." translateable="false">
+          Selected joystick keys are <ph name="KEYS">$1<ex>w, a, s, d</ex></ph>. Tap on the button to edit the control
         </message>
         <message name="IDS_INPUT_OVERLAY_SHORTCUT_EDIT_A11Y_LABEL_TEMPLATE" desc="Edit button a11y label for delete-edit shortcut menu. Spoken by screen readers when the list item button gets focus but not visually rendered." translateable="false">
           Edit <ph name="ACTION_NAME">$1<ex>Button w</ex></ph>

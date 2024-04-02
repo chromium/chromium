@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_CONSTANTS_H_
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_CONSTANTS_H_
 
-#include <stddef.h>
+#include <cstddef>
 
 namespace arc::input_overlay {
 
@@ -169,6 +169,15 @@ enum class InputOverlayWindowStateType {
   kFullscreen = 3,
   kSnapped = 4,
   kMaxValue = kSnapped
+};
+
+// This is about the four directions of the ActionMove.
+enum class Direction : size_t {
+  kUp = 0,
+  kLeft = 1,
+  kDown = 2,
+  kRight = 3,
+  kMaxValue = kRight
 };
 
 }  // namespace arc::input_overlay

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/label_button.h"
 
@@ -62,7 +63,7 @@ class EditLabel : public views::LabelButton {
   raw_ptr<Action, DanglingUntriaged> action_ = nullptr;
   // A11y label is different for `EditingList` and `ButtonOptionsMenu`.
   const bool for_editing_list_;
-  const size_t index_;
+  const Direction direction_index_;
 
   // Layer for edit label pulse animation.
   std::unique_ptr<ui::Layer> pulse_layer_;
