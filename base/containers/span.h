@@ -1049,7 +1049,7 @@ span(const T (&)[N]) -> span<const T, N>;
 
 // [span.objectrep], views of object representation
 template <typename T, size_t X>
-auto as_bytes(span<T, X> s) noexcept {
+constexpr auto as_bytes(span<T, X> s) noexcept {
   constexpr size_t N = X == dynamic_extent ? dynamic_extent : sizeof(T) * X;
   // SAFETY: span provides that data() points to at least size_bytes() many
   // bytes. So since `uint8_t` has a size of 1 byte, the size_bytes() value is
@@ -1063,7 +1063,7 @@ auto as_bytes(span<T, X> s) noexcept {
 
 template <typename T, size_t X>
   requires(!std::is_const_v<T>)
-auto as_writable_bytes(span<T, X> s) noexcept {
+constexpr auto as_writable_bytes(span<T, X> s) noexcept {
   constexpr size_t N = X == dynamic_extent ? dynamic_extent : sizeof(T) * X;
   // SAFETY: span provides that data() points to at least size_bytes() many
   // bytes. So since `uint8_t` has a size of 1 byte, the size_bytes() value is a
@@ -1080,7 +1080,7 @@ auto as_writable_bytes(span<T, X> s) noexcept {
 // added since chrome still represents many things as char arrays which
 // rightfully should be uint8_t.
 template <typename T, size_t X>
-auto as_chars(span<T, X> s) noexcept {
+constexpr auto as_chars(span<T, X> s) noexcept {
   constexpr size_t N = X == dynamic_extent ? dynamic_extent : sizeof(T) * X;
   // SAFETY: span provides that data() points to at least size_bytes() many
   // bytes. So since `char` has a size of 1 byte, the size_bytes() value is a
