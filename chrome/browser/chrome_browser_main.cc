@@ -1236,7 +1236,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRun() {
 
 // PreMainMessageLoopRun calls these extra stages in the following order:
 //  PreMainMessageLoopRunImpl()
-//   ... initial setup, including browser_process_ setup.
+//   ... initial setup.
 //   PreProfileInit()
 //   ... additional setup, including CreateProfile()
 //   PostProfileInit()
