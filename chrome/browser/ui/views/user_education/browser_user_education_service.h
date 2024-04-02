@@ -11,6 +11,7 @@ namespace user_education {
 class FeaturePromoRegistry;
 class HelpBubbleDelegate;
 class HelpBubbleFactoryRegistry;
+class NewBadgeRegistry;
 }  // namespace user_education
 
 class BrowserFeaturePromoController;
@@ -23,6 +24,8 @@ extern void RegisterChromeHelpBubbleFactories(
     user_education::HelpBubbleFactoryRegistry& registry);
 extern void MaybeRegisterChromeFeaturePromos(
     user_education::FeaturePromoRegistry& registry);
+extern void MaybeRegisterChromeNewBadges(
+    user_education::NewBadgeRegistry& registry);
 
 // Creates (or doesn't create) a FeaturePromoController for the specified
 // `browser_view`. Not all browser windows can do promos; specifically,

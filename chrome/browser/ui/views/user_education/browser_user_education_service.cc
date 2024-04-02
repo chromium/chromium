@@ -1128,7 +1128,7 @@ void MaybeRegisterChromeTutorials(
               .SetBubbleArrow(HelpBubbleArrow::kNone)));
 }
 
-void MaybeRegisterNewBadges(user_education::NewBadgeRegistry& registry) {
+void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
   if (registry.IsFeatureRegistered(
           user_education::features::kNewBadgeTestFeature)) {
     return;
@@ -1167,7 +1167,7 @@ std::unique_ptr<BrowserFeaturePromoController> CreateUserEducationResources(
   MaybeRegisterChromeTutorials(user_education_service->tutorial_registry());
   CHECK(user_education_service->new_badge_registry());
 
-  MaybeRegisterNewBadges(*user_education_service->new_badge_registry());
+  MaybeRegisterChromeNewBadges(*user_education_service->new_badge_registry());
   user_education_service->new_badge_controller()->InitData();
 
   return std::make_unique<BrowserFeaturePromoController>(

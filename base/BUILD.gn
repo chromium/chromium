@@ -3015,6 +3015,7 @@ if (is_apple) {
     testonly = true
     sources = [
       "//tools/metrics/histograms/enums.xml",
+      "//tools/metrics/histograms/test_data/histograms.xml",
       "test/data/file_util/binary_file.bin",
       "test/data/file_util/binary_file_diff.bin",
       "test/data/file_util/binary_file_same.bin",
@@ -3499,6 +3500,7 @@ test("base_unittests") {
     "test/memory/dangling_ptr_instrumentation.h",
     "test/metrics/histogram_enum_reader_unittest.cc",
     "test/metrics/histogram_tester_unittest.cc",
+    "test/metrics/histogram_variants_reader_unittest.cc",
     "test/metrics/user_action_tester_unittest.cc",
     "test/mock_callback_unittest.cc",
     "test/rectify_callback_unittest.cc",
@@ -3645,6 +3647,7 @@ test("base_unittests") {
   data = [
     "test/data/",
     "//tools/metrics/histograms/enums.xml",
+    "//tools/metrics/histograms/test_data/histograms.xml",
   ]
 
   if (use_blink) {

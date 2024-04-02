@@ -6079,6 +6079,15 @@ test("unit_tests") {
     "../browser/flag-metadata.json",
     "../browser/flag-never-expire-list.json",
   ]
+
+  if (!is_android) {
+    inputs += [
+      # These files are analyzed by BrowserUserEducationServiceTest, so this
+      # dependency is needed to re-run unit_tests on changes to that file.
+      "//tools/metrics/histograms/metadata/feature_engagement/histograms.xml",
+    ]
+  }
+
   sources = [
     # All unittests in browser, common, renderer and service.
     "../browser/about_flags_unittest.cc",
@@ -6658,7 +6667,10 @@ test("unit_tests") {
       "data/title1.html",
     ]
   } else {
-    data += [ "data/" ]
+    data += [
+      "data/",
+      "//tools/metrics/histograms/metadata/feature_engagement/histograms.xml",
+    ]
   }
 
   if (is_android) {
@@ -10114,6 +10126,7 @@ test("unit_tests") {
       "../browser/ui/views/translate/translate_bubble_controller_unittest.cc",
       "../browser/ui/views/translate/translate_bubble_view_unittest.cc",
       "../browser/ui/views/user_education/browser_feature_promo_controller_unittest.cc",
+      "../browser/ui/views/user_education/browser_user_education_service_unittest.cc",
       "../browser/ui/views/user_education/help_bubble_view_timeout_unittest.cc",
       "../browser/ui/views/user_education/recent_session_observer_impl_unittest.cc",
       "../browser/ui/views/user_education/views_tutorial_unittest.cc",

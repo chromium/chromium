@@ -1,0 +1,38 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
+
+#include "base/strings/string_util.h"
+#include "base/test/metrics/histogram_variants_reader.h"
+#include "base/threading/thread_restrictions.h"
+#include "components/user_education/common/feature_promo_registry.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+TEST(BrowserUserEducationServiceTest, CheckFeaturePromoHistograms) {
+  std::optional<base::HistogramVariantsEntryMap> iph_features;
+  std::vector<std::string> missing_features;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    iph_features =
+        base::ReadVariantsFromHistogramsXml("IPHFeature", "feature_engagement");
+    ASSERT_TRUE(iph_features.has_value());
+  }
+
+  user_education::FeaturePromoRegistry registry;
+  MaybeRegisterChromeFeaturePromos(registry);
+  const auto& iph_specifications = registry.feature_data();
+  for (const auto& [feature, spec] : iph_specifications) {
+    if (!base::Contains(*iph_features, feature->name)) {
+      missing_features.emplace_back(feature->name);
+    }
+  }
+  ASSERT_TRUE(missing_features.empty())
+      << "IPH Features:\n"
+      << base::JoinString(missing_features, ", ")
+      << "\nconfigured in browser_user_education_service.cc but no "
+         "corresponding variants were added to IPHFeature variants in "
+         "//tools/metrics/histograms/metadata/feature_engagement/"
+         "histograms.xml";
+}

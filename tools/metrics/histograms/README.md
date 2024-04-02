@@ -540,6 +540,19 @@ logic, and only use
 [`HistogramTester`](https://cs.chromium.org/chromium/src/base/test/metrics/histogram_tester.h)
 to verify that the histogram values are being generated as you would expect.
 
+### Verify Enum and Variant Values
+
+If you have <enum> or <variant> entries that need to be updated to match code,
+you can use
+[HistogramEnumReader](https://cs.chromium.org/chromium/src/base/test/metrics/histogram_enum_reader.h)
+or
+[HistogramVariantsReader](https://cs.chromium.org/chromium/src/base/test/metrics/histogram_enum_reader.h)
+to read and verify the expected values in a unit test. This prevents a mismatch
+between code and histogram data from slipping through CQ.
+
+For an example, see
+[BrowserUserEducationServiceTest.CheckFeaturePromoHistograms](https://cs.chromium.org/chromium/src/chrome/browser/ui/views/user_education/browser_user_education_service_unittest.cc).
+
 ## Interpreting the Resulting Data
 
 The top of [go/uma-guide](http://go/uma-guide) has good advice on how to go

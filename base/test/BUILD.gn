@@ -80,6 +80,8 @@ static_library("test_support") {
     "metrics/histogram_enum_reader.h",
     "metrics/histogram_tester.cc",
     "metrics/histogram_tester.h",
+    "metrics/histogram_variants_reader.cc",
+    "metrics/histogram_variants_reader.h",
     "metrics/user_action_tester.cc",
     "metrics/user_action_tester.h",
     "mock_callback.h",

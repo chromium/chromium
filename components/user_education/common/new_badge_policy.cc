@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/user_education/common/new_badge_policy.h"
+
 #include <algorithm>
 
 #include "base/feature_list.h"
