@@ -78,7 +78,6 @@ source_set("startup") {
     "//components/password_manager/core/browser",
     "//components/search_engines:search_engines",
     "//ios/chrome/app",
-    "//ios/chrome/browser/default_browser/model:default_browser_interest_signals",
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/net/model:model",

@@ -12,13 +12,13 @@
 
 namespace default_browser {
 
-void NotifyStartWithWidget() {
+void NotifyStartWithWidget(feature_engagement::Tracker* tracker) {
   // TODO(b/322358517): Migrate to FET.
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeMadeForIOS);
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
 }
 
-void NotifyStartWithURL() {
+void NotifyStartWithURL(feature_engagement::Tracker* tracker) {
   // TODO(b/322358517): Migrate to FET.
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
 }

@@ -52,6 +52,7 @@
 #import "ios/chrome/browser/crash_report/model/crash_keys_helper.h"
 #import "ios/chrome/browser/crash_report/model/crash_loop_detection_util.h"
 #import "ios/chrome/browser/crash_report/model/crash_report_helper.h"
+#import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/enterprise/model/idle/idle_service.h"
@@ -531,6 +532,28 @@ void OnListFamilyMembersResponse(
     [[NonModalDefaultBrowserPromoSchedulerSceneAgent
         agentFromScene:self.sceneState] logUserEnteredAppViaFirstPartyScheme];
     [self notifyFETAppOpenedViaFirstParty];
+  }
+
+  ChromeBrowserState* browserState =
+      self.sceneState.browserProviderInterface.mainBrowserProvider.browser
+          ->GetBrowserState();
+  if (!browserState) {
+    return;
+  }
+
+  if (parameters.openedViaWidgetScheme) {
+    // Notify Default Browser promo that user opened Chrome with widget.
+    default_browser::NotifyStartWithWidget(
+        feature_engagement::TrackerFactory::GetForBrowserState(browserState));
+  }
+  if (parameters.openedWithURL) {
+    // An HTTP(S) URL open that opened Chrome (e.g. default browser open or
+    // explictly opened from first party apps) should be logged as significant
+    // activity for a potential user that would want Chrome as their default
+    // browser in case the user changes away from Chrome. This will leave a
+    // trace of this activity for re-prompting.
+    default_browser::NotifyStartWithURL(
+        feature_engagement::TrackerFactory::GetForBrowserState(browserState));
   }
 }
 

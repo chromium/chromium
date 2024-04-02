@@ -14,10 +14,10 @@ class Tracker;
 namespace default_browser {
 
 // Records all necessary information for Chrome start with widget.
-void NotifyStartWithWidget();
+void NotifyStartWithWidget(feature_engagement::Tracker* tracker);
 
 // Records all necessary information for Chrome start with URL event.
-void NotifyStartWithURL();
+void NotifyStartWithURL(feature_engagement::Tracker* tracker);
 
 // Records all necessary information for Credential Extension use.
 void NotifyCredentialExtensionUsed(feature_engagement::Tracker* tracker);

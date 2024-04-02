@@ -14,7 +14,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
-#import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -188,9 +187,6 @@ enum class IOSExternalAction {
 // Histogram helper to log the UMA IOS.WidgetKit.Action histogram.
 void LogWidgetKitAction(WidgetKitExtensionAction action) {
   UmaHistogramEnumeration("IOS.WidgetKit.Action", action);
-
-  // Notify Default Browser promo that user opened Chrome with widget.
-  default_browser::NotifyStartWithWidget();
 }
 
 bool CallerAppIsFirstParty(MobileSessionCallerApp callerApp) {
@@ -309,17 +305,21 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
                   secureSourceApp:sourceWidget
                       completeURL:completeURL
                   applicationMode:ApplicationModeForTabOpening::NORMAL];
+      appStartupParameters.openedViaWidgetScheme = YES;
       return appStartupParameters;
     }
 
     NSString* commandString = base::SysUTF8ToNSString(command);
-    return [self startupParametersForCommand:commandString
-                            withExternalText:externalText
-                                externalData:nil
-                                       index:0
-                                         URL:nil
-                           sourceApplication:appID
-                     secureSourceApplication:sourceWidget];
+    ChromeAppStartupParameters* appStartupParameters =
+        [self startupParametersForCommand:commandString
+                         withExternalText:externalText
+                             externalData:nil
+                                    index:0
+                                      URL:nil
+                        sourceApplication:appID
+                  secureSourceApplication:sourceWidget];
+    appStartupParameters.openedViaWidgetScheme = YES;
+    return appStartupParameters;
 
   } else if (IsXCallbackURL(parsedURL)) {
     base::UmaHistogramEnumeration(kAppLaunchSource,
@@ -439,12 +439,6 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
     }
     UMA_HISTOGRAM_ENUMERATION(kUMAMobileSessionStartActionHistogram, action,
                               MOBILE_SESSION_START_ACTION_COUNT);
-    // An HTTP(S) URL open that opened Chrome (e.g. default browser open or
-    // explictly opened from first party apps) should be logged as significant
-    // activity for a potential user that would want Chrome as their default
-    // browser in case the user changes away from Chrome. This will leave a
-    // trace of this activity for re-prompting.
-    default_browser::NotifyStartWithURL();
 
     if (action == START_ACTION_OPEN_HTTP_FROM_OS ||
         action == START_ACTION_OPEN_HTTPS_FROM_OS) {
@@ -461,6 +455,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
             secureSourceApp:nil
                 completeURL:completeURL
             applicationMode:ApplicationModeForTabOpening::UNDETERMINED];
+    params.openedWithURL = YES;
     params.openedViaFirstPartyScheme =
         openedViaSpecificScheme && CallerAppIsFirstParty(params.callerApp);
     return params;
