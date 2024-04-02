@@ -280,13 +280,6 @@ std::vector<base::Time> LoadActiveTimestampsForKey(NSString* key,
   return times;
 }
 
-// Loads from NSUserDefaults the time of the non-expired events for the
-// given promo type.
-std::vector<base::Time> LoadTimestampsForPromoType(DefaultPromoType type) {
-  return LoadActiveTimestampsForKey(StorageKeyForDefaultPromoType(type),
-                                    kUserActivityTimestampExpiration);
-}
-
 // Stores the time of the last recorded events for `key`.
 void StoreTimestampsForKey(NSString* key, std::vector<base::Time> times) {
   NSMutableArray<NSDate*>* dates =
@@ -487,6 +480,13 @@ const char kDefaultBrowserVideoPromoVariant[] =
 
 // Migration to FET keys.
 NSString* const kFRETimestampMigrationDone = @"fre_timestamp_migration_done";
+NSString* const kPromoInterestEventMigrationDone =
+    @"promo_interest_event_migration_done";
+
+std::vector<base::Time> LoadTimestampsForPromoType(DefaultPromoType type) {
+  return LoadActiveTimestampsForKey(StorageKeyForDefaultPromoType(type),
+                                    kUserActivityTimestampExpiration);
+}
 
 void SetObjectIntoStorageForKey(NSString* key, NSObject* data) {
   UpdateStorageWithDictionary(@{key : data});
@@ -1151,5 +1151,17 @@ void LogFRETimestampMigrationDone() {
 BOOL FRETimestampMigrationDone() {
   NSNumber* number =
       GetObjectFromStorageForKey<NSNumber>(kFRETimestampMigrationDone);
+  return number.boolValue;
+}
+
+void LogPromoInterestEventMigrationDone() {
+  NSDictionary<NSString*, NSObject*>* update =
+      @{kPromoInterestEventMigrationDone : @YES};
+  UpdateStorageWithDictionary(update);
+}
+
+BOOL IsPromoInterestEventMigrationDone() {
+  NSNumber* number =
+      GetObjectFromStorageForKey<NSNumber>(kPromoInterestEventMigrationDone);
   return number.boolValue;
 }

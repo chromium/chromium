@@ -244,6 +244,22 @@ extern const char kIOSOverflowMenuOffscreenItemUsed[];
 // The Default Browser FRE promo was shown to the user.
 extern const char kIOSDefaultBrowserFREShown[];
 
+// The user has met all the conditions to be eligible for generic default
+// browser promo.
+extern const char kGenericDefaultBrowserPromoConditionsMet[];
+
+// The user has met all the conditions to be eligible for All Tabs default
+// browser promo.
+extern const char kAllTabsPromoConditionsMet[];
+
+// The user has met all the conditions to be eligible for Made for iOS default
+// browser promo.
+extern const char kMadeForIOSPromoConditionsMet[];
+
+// The user has met all the conditions to be eligible for Stay Safe default
+// browser promo.
+extern const char kStaySafePromoConditionsMet[];
+
 #endif  // BUILDFLAG(IS_IOS)
 
 // Android.

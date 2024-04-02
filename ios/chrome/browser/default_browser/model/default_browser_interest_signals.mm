@@ -13,71 +13,134 @@
 namespace default_browser {
 
 void NotifyStartWithWidget(feature_engagement::Tracker* tracker) {
-  // TODO(b/322358517): Migrate to FET.
+  if (IsPromoInterestEventMigrationDone() && tracker) {
+    tracker->NotifyEvent(
+        feature_engagement::events::kMadeForIOSPromoConditionsMet);
+    tracker->NotifyEvent(
+        feature_engagement::events::kGenericDefaultBrowserPromoConditionsMet);
+  }
+
+  // TODO(crbug.com/322358517): Continue logging to UserDefault until migration
+  // is verified on stable. Can be removed M127+.
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeMadeForIOS);
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
 }
 
 void NotifyStartWithURL(feature_engagement::Tracker* tracker) {
-  // TODO(b/322358517): Migrate to FET.
+  if (IsPromoInterestEventMigrationDone() && tracker) {
+    tracker->NotifyEvent(
+        feature_engagement::events::kGenericDefaultBrowserPromoConditionsMet);
+  }
+
+  // TODO(crbug.com/322358517): Continue logging to UserDefault until migration
+  // is verified on stable. Can be removed M127+.
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
 }
 
 void NotifyCredentialExtensionUsed(feature_engagement::Tracker* tracker) {
-  // TODO(b/322358517): Migrate to FET.
+  if (IsPromoInterestEventMigrationDone() && tracker) {
+    tracker->NotifyEvent(
+        feature_engagement::events::kMadeForIOSPromoConditionsMet);
+  }
+
+  // TODO(crbug.com/322358517): Continue logging to UserDefault until migration
+  // is verified on stable. Can be removed M127+.
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeMadeForIOS);
 }
 
 void NotifyAutofillSuggestionsShown(feature_engagement::Tracker* tracker) {
-  // TODO(b/322358517): Migrate to FET.
+  if (IsPromoInterestEventMigrationDone() && tracker) {
+    tracker->NotifyEvent(
+        feature_engagement::events::kMadeForIOSPromoConditionsMet);
+  }
+
+  // TODO(crbug.com/322358517): Continue logging to UserDefault until migration
+  // is verified on stable. Can be removed M127+.
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeMadeForIOS);
 }
 
 void NotifyPasswordAutofillSuggestionUsed(
     feature_engagement::Tracker* tracker) {
-  // TODO(b/322358517): Migrate to FET.
+  if (IsPromoInterestEventMigrationDone() && tracker) {
+    tracker->NotifyEvent(
+        feature_engagement::events::kStaySafePromoConditionsMet);
+  }
+
+  // TODO(crbug.com/322358517): Continue logging to UserDefault until migration
+  // is verified on stable. Can be removed M127+.
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeStaySafe);
 
   LogAutofillUseForCriteriaExperiment();
 }
 
 void NotifyPasswordSavedOrUpdated(feature_engagement::Tracker* tracker) {
-  // TODO(b/322358517): Migrate to FET.
+  if (IsPromoInterestEventMigrationDone() && tracker) {
+    tracker->NotifyEvent(
+        feature_engagement::events::kAllTabsPromoConditionsMet);
+  }
+
+  // TODO(crbug.com/322358517): Continue logging to UserDefault until migration
+  // is verified on stable. Can be removed M127+.
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeStaySafe);
 
   LogAutofillUseForCriteriaExperiment();
 }
 
 void NotifyRemoteTabsGridViewed(feature_engagement::Tracker* tracker) {
-  // TODO(b/322358517): Migrate to FET.
+  if (IsPromoInterestEventMigrationDone() && tracker) {
+    tracker->NotifyEvent(
+        feature_engagement::events::kAllTabsPromoConditionsMet);
+  }
+  // TODO(crbug.com/322358517): Continue logging to UserDefault until migration
+  // is verified on stable. Can be removed M127+.
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
 
   LogRemoteTabsUseForCriteriaExperiment();
 }
 
 void NotifyBookmarkAddOrEdit(feature_engagement::Tracker* tracker) {
-  // TODO(b/322358517): Migrate to FET.
+  if (IsPromoInterestEventMigrationDone() && tracker) {
+    tracker->NotifyEvent(
+        feature_engagement::events::kAllTabsPromoConditionsMet);
+  }
+  // TODO(crbug.com/322358517): Continue logging to UserDefault until migration
+  // is verified on stable. Can be removed M127+.
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
 
   LogBookmarkUseForCriteriaExperiment();
 }
 
 void NotifyBookmarkManagerOpened(feature_engagement::Tracker* tracker) {
-  // TODO(b/322358517): Migrate to FET.
+  if (IsPromoInterestEventMigrationDone() && tracker) {
+    tracker->NotifyEvent(
+        feature_engagement::events::kAllTabsPromoConditionsMet);
+  }
+  // TODO(crbug.com/322358517): Continue logging to UserDefault until migration
+  // is verified on stable. Can be removed M127+.
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
 
   LogBookmarkUseForCriteriaExperiment();
 }
 
 void NotifyBookmarkManagerClosed(feature_engagement::Tracker* tracker) {
-  // TODO(b/322358517): Migrate to FET.
+  if (IsPromoInterestEventMigrationDone() && tracker) {
+    tracker->NotifyEvent(
+        feature_engagement::events::kAllTabsPromoConditionsMet);
+  }
+  // TODO(crbug.com/322358517): Continue logging to UserDefault until migration
+  // is verified on stable. Can be removed M127+.
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
 
   LogBookmarkUseForCriteriaExperiment();
 }
 
 void NotifyURLFromBookmarkOpened(feature_engagement::Tracker* tracker) {
-  // TODO(b/322358517): Migrate to FET.
+  if (IsPromoInterestEventMigrationDone() && tracker) {
+    tracker->NotifyEvent(
+        feature_engagement::events::kAllTabsPromoConditionsMet);
+  }
+  // TODO(crbug.com/322358517): Continue logging to UserDefault until migration
+  // is verified on stable. Can be removed M127+.
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
 
   LogBookmarkUseForCriteriaExperiment();
@@ -97,6 +160,12 @@ void NotifyOmniboxURLCopyPaste(feature_engagement::Tracker* tracker) {
 void NotifyOmniboxURLCopyPasteAndNavigate(bool is_off_record,
                                           feature_engagement::Tracker* tracker,
                                           SceneState* scene_state) {
+  if (IsPromoInterestEventMigrationDone() && tracker) {
+    tracker->NotifyEvent(
+        feature_engagement::events::kGenericDefaultBrowserPromoConditionsMet);
+  }
+  // TODO(crbug.com/322358517): Continue logging to UserDefault until migration
+  // is verified on stable. Can be removed M127+.
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
   LogCopyPasteInOmniboxForCriteriaExperiment();
 
@@ -124,13 +193,21 @@ void NotifyOmniboxURLCopyPasteAndNavigate(bool is_off_record,
 
 void NotifyOmniboxTextCopyPasteAndNavigate(
     feature_engagement::Tracker* tracker) {
+  if (IsPromoInterestEventMigrationDone() && tracker) {
+    tracker->NotifyEvent(
+        feature_engagement::events::kGenericDefaultBrowserPromoConditionsMet);
+  }
+  // TODO(crbug.com/322358517): Continue logging to UserDefault until migration
+  // is verified on stable. Can be removed M127+.
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
+
   LogCopyPasteInOmniboxForCriteriaExperiment();
 }
 
 void NotifyDefaultBrowserFREPromoShown(feature_engagement::Tracker* tracker) {
   // Continue logging to UserDefaults for non-modal promo.
-  // TODO(b/315329355): Remove once non-modal promos are migrated to FET.
+  // TODO(crbug.com/315329355): Remove once non-modal promos are migrated to
+  // FET.
   LogUserInteractionWithFirstRunPromo();
 
   // No need to do migration for this client because it will be already

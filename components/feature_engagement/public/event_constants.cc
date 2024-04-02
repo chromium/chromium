@@ -128,6 +128,12 @@ const char kIOSOverflowMenuCustomizationUsed[] =
 const char kIOSOverflowMenuOffscreenItemUsed[] =
     "overflow_menu_offscreen_item_used";
 const char kIOSDefaultBrowserFREShown[] = "default_browser_fre_shown";
+const char kGenericDefaultBrowserPromoConditionsMet[] =
+    "generic_default_browser_promo_conditions_met";
+const char kAllTabsPromoConditionsMet[] = "all_tabs_promo_conditions_met";
+const char kMadeForIOSPromoConditionsMet[] =
+    "made_for_ios_promo_conditions_met";
+const char kStaySafePromoConditionsMet[] = "stay_safe_promo_conditions_met";
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)

@@ -75,3 +75,38 @@ TEST_F(DefaultBrowserEventExporterTest, TestFRETimestampMigration) {
   RequestExportEventsAndVerifyCallback();
   EXPECT_EQ(GetExportEventsCount(), 0);
 }
+
+TEST_F(DefaultBrowserEventExporterTest, TestPromoInterestEventsMigration) {
+  // No events to export.
+  RequestExportEventsAndVerifyCallback();
+  EXPECT_EQ(GetExportEventsCount(), 0);
+
+  // Check when there is only 1 event.
+  ClearDefaultBrowserPromoData();
+  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
+
+  RequestExportEventsAndVerifyCallback();
+  EXPECT_EQ(GetExportEventsCount(), 1);
+
+  // Check that exporting second time will not have any events.
+  RequestExportEventsAndVerifyCallback();
+  EXPECT_EQ(GetExportEventsCount(), 0);
+
+  // Check when there are 2 events for the same promo type
+  ClearDefaultBrowserPromoData();
+  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
+  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
+
+  RequestExportEventsAndVerifyCallback();
+  EXPECT_EQ(GetExportEventsCount(), 2);
+
+  // Check when there are events for all 4 promo types.
+  ClearDefaultBrowserPromoData();
+  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
+  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
+  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeMadeForIOS);
+  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeStaySafe);
+
+  RequestExportEventsAndVerifyCallback();
+  EXPECT_EQ(GetExportEventsCount(), 4);
+}

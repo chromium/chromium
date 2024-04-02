@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_DEFAULT_BROWSER_MODEL_DEFAULT_BROWSER_PROMO_EVENT_EXPORTER_H_
 
 #import "components/feature_engagement/public/tracker.h"
+#import "ios/chrome/browser/default_browser/model/utils.h"
 
 // A class to export saved default browser promo impressions and eligibility
 // events to the Feature Engagement Tracker.
@@ -17,6 +18,12 @@ class DefaultBrowserEventExporter
 
   // feature_engagement::TrackerEventExporter implementation
   void ExportEvents(ExportEventsCallback callback) override;
+
+ private:
+  void AddFREPromoEvent(std::vector<EventData>& events);
+  void AddPromoInterestEvents(std::vector<EventData>& events,
+                              DefaultPromoType promo,
+                              const std::string& event_name);
 };
 
 #endif  // IOS_CHROME_BROWSER_DEFAULT_BROWSER_MODEL_DEFAULT_BROWSER_PROMO_EVENT_EXPORTER_H_

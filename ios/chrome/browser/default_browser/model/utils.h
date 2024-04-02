@@ -116,6 +116,10 @@ extern const char kVideoFullscreenPromo[];
 extern const char kVideoHalfscreenPromo[];
 extern const char kDefaultBrowserVideoPromoVariant[];
 
+// Loads from NSUserDefaults the time of the non-expired events for the
+// given promo type.
+std::vector<base::Time> LoadTimestampsForPromoType(DefaultPromoType type);
+
 // Helper function to set `data` for `key` into the storage object.
 void SetObjectIntoStorageForKey(NSString* key, NSObject* data);
 
@@ -352,5 +356,11 @@ void LogFRETimestampMigrationDone();
 
 // Returns whether FRE timestamp migratin is done.
 BOOL FRETimestampMigrationDone();
+
+// Log to UserDefaults promo interest event migration is done.
+void LogPromoInterestEventMigrationDone();
+
+// Returns whether promo interest event migratin is done.
+BOOL IsPromoInterestEventMigrationDone();
 
 #endif  // IOS_CHROME_BROWSER_DEFAULT_BROWSER_MODEL_UTILS_H_
