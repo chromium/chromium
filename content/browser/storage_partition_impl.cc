@@ -2814,16 +2814,8 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
         base::IgnoreArgs<bool>(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
             CreateTaskCompletionClosure(TracingDataType::kCdmStorage))));
 
-    if (!storage_key_origin_empty) {
-      cdm_storage_manager->DeleteDataForStorageKey(
-          storage_key, begin, end, std::move(cdm_deletion_callback));
-    } else if (!generic_filter.is_null()) {
-      cdm_storage_manager->DeleteDataForFilter(
-          generic_filter, begin, end, std::move(cdm_deletion_callback));
-    } else {
-      cdm_storage_manager->DeleteDataForTimeFrame(
-          begin, end, std::move(cdm_deletion_callback));
-    }
+    cdm_storage_manager->DeleteData(generic_filter, storage_key, begin, end,
+                                    std::move(cdm_deletion_callback));
   }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 

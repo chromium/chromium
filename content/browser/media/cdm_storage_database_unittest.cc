@@ -332,8 +332,8 @@ TEST_F(CdmStorageDatabaseInMemoryTest, DeleteForStorageKey) {
                                             kFileNameTwo),
             kPopulatedFileValueTwo);
 
-  EXPECT_TRUE(cdm_storage_database_->DeleteDataForStorageKey(
-      kTestStorageKey, time_now, base::Time::Max()));
+  EXPECT_TRUE(cdm_storage_database_->DeleteData(
+      base::NullCallback(), kTestStorageKey, time_now, base::Time::Max()));
 
   // Expect that for the storage key, all of the file content returned is empty.
   EXPECT_TRUE(
@@ -357,8 +357,8 @@ TEST_F(CdmStorageDatabaseInMemoryTest, DeleteForStorageKeyWithNoData) {
 
   // Even if there is no data for the storage key, the SQL statement should
   // still run properly.
-  EXPECT_TRUE(cdm_storage_database_->DeleteDataForStorageKey(
-      kTestStorageKey, time_now, base::Time::Max()));
+  EXPECT_TRUE(cdm_storage_database_->DeleteData(
+      base::NullCallback(), kTestStorageKey, time_now, base::Time::Max()));
 
   EXPECT_TRUE(
       cdm_storage_database_->ReadFile(kTestStorageKey, kCdmType, kFileName)
@@ -382,8 +382,8 @@ TEST_F(CdmStorageDatabaseInMemoryTest,
       kPopulatedFileValue.size() + kPopulatedFileValueTwo.size() +
           kPopulatedFileValueThree.size());
 
-  EXPECT_TRUE(cdm_storage_database_->DeleteDataForTimeFrame(time_now,
-                                                            base::Time::Max()));
+  EXPECT_TRUE(cdm_storage_database_->DeleteData(
+      base::NullCallback(), blink::StorageKey(), time_now, base::Time::Max()));
 
   EXPECT_TRUE(
       cdm_storage_database_->ReadFile(kTestStorageKey, kCdmType, kFileName)
@@ -413,8 +413,9 @@ TEST_F(CdmStorageDatabaseInMemoryTest, DeleteForTimeFrameWithNoData) {
 
   // Even if there is no data for the storage key, the SQL statement should
   // still run properly.
-  EXPECT_TRUE(cdm_storage_database_->DeleteDataForTimeFrame(base::Time::Min(),
-                                                            base::Time::Max()));
+  EXPECT_TRUE(cdm_storage_database_->DeleteData(
+      base::NullCallback(), blink::StorageKey(), base::Time::Min(),
+      base::Time::Max()));
 }
 
 TEST_F(CdmStorageDatabaseInMemoryTest, WriteFileForBigData) {
@@ -617,9 +618,9 @@ TEST_F(CdmStorageDatabaseInMemoryTest, DeleteDataForFilter) {
           BrowsingDataFilterBuilder::Mode::kDelete);
   filter_builder_not_included->AddOrigin(kTestStorageKeyTwo.origin());
 
-  cdm_storage_database_->DeleteDataForFilter(
-      filter_builder_not_included->BuildStorageKeyFilter(), now,
-      base::Time::Max());
+  cdm_storage_database_->DeleteData(
+      filter_builder_not_included->BuildStorageKeyFilter(), blink::StorageKey(),
+      now, base::Time::Max());
 
   EXPECT_EQ(
       cdm_storage_database_->ReadFile(kTestStorageKey, kCdmType, kFileName),
@@ -633,16 +634,18 @@ TEST_F(CdmStorageDatabaseInMemoryTest, DeleteDataForFilter) {
   filter_builder_delete->AddOrigin(kTestStorageKey.origin());
 
   // Should not apply as time ranges do not match.
-  cdm_storage_database_->DeleteDataForFilter(
-      filter_builder_delete->BuildStorageKeyFilter(), base::Time::Min(), now);
+  cdm_storage_database_->DeleteData(
+      filter_builder_delete->BuildStorageKeyFilter(), blink::StorageKey(),
+      base::Time::Min(), now);
 
   EXPECT_EQ(
       cdm_storage_database_->ReadFile(kTestStorageKey, kCdmType, kFileName),
       kPopulatedFileValue);
 
   // Should delete in the time range.
-  cdm_storage_database_->DeleteDataForFilter(
-      filter_builder_delete->BuildStorageKeyFilter(), now, base::Time::Max());
+  cdm_storage_database_->DeleteData(
+      filter_builder_delete->BuildStorageKeyFilter(), blink::StorageKey(), now,
+      base::Time::Max());
 
   EXPECT_EQ(cdm_storage_database_->GetSizeForStorageKey(kTestStorageKey, now,
                                                         base::Time::Max()),
@@ -666,9 +669,9 @@ TEST_F(CdmStorageDatabaseInMemoryTest, PreserveDataForFilter) {
   filter_builder_preserve_all->AddOrigin(kTestStorageKey.origin());
   filter_builder_preserve_all->AddOrigin(kTestStorageKeyTwo.origin());
 
-  cdm_storage_database_->DeleteDataForFilter(
-      filter_builder_preserve_all->BuildStorageKeyFilter(), now,
-      base::Time::Max());
+  cdm_storage_database_->DeleteData(
+      filter_builder_preserve_all->BuildStorageKeyFilter(), blink::StorageKey(),
+      now, base::Time::Max());
 
   EXPECT_EQ(
       cdm_storage_database_->ReadFile(kTestStorageKey, kCdmType, kFileName),
@@ -686,9 +689,9 @@ TEST_F(CdmStorageDatabaseInMemoryTest, PreserveDataForFilter) {
   // Even with the filter builder only preserving `kTestStorageKey`, the time
   // frame specified should make the cdm storage database not delete anything at
   // all.
-  cdm_storage_database_->DeleteDataForFilter(
-      filter_builder_preserve_one->BuildStorageKeyFilter(), base::Time::Min(),
-      now);
+  cdm_storage_database_->DeleteData(
+      filter_builder_preserve_one->BuildStorageKeyFilter(), blink::StorageKey(),
+      base::Time::Min(), now);
 
   EXPECT_EQ(
       cdm_storage_database_->ReadFile(kTestStorageKey, kCdmType, kFileName),
@@ -697,9 +700,9 @@ TEST_F(CdmStorageDatabaseInMemoryTest, PreserveDataForFilter) {
                                             kFileNameTwo),
             kPopulatedFileValueTwo);
 
-  cdm_storage_database_->DeleteDataForFilter(
-      filter_builder_preserve_one->BuildStorageKeyFilter(), now,
-      base::Time::Max());
+  cdm_storage_database_->DeleteData(
+      filter_builder_preserve_one->BuildStorageKeyFilter(), blink::StorageKey(),
+      now, base::Time::Max());
 
   EXPECT_EQ(
       cdm_storage_database_->ReadFile(kTestStorageKey, kCdmType, kFileName),
@@ -773,8 +776,8 @@ TEST_F(CdmStorageDatabaseValidPathTest, DeleteForStorageKey) {
                                             kFileNameTwo),
             kPopulatedFileValue);
 
-  EXPECT_TRUE(cdm_storage_database_->DeleteDataForStorageKey(
-      kTestStorageKey, time_now, base::Time::Max()));
+  EXPECT_TRUE(cdm_storage_database_->DeleteData(
+      base::NullCallback(), kTestStorageKey, time_now, base::Time::Max()));
 
   // Expect that for the storage key, all of the file content returned is empty.
   EXPECT_TRUE(
@@ -798,8 +801,8 @@ TEST_F(CdmStorageDatabaseValidPathTest, DeleteForStorageKeyWithNoData) {
 
   // Even if there is no data for the storage key, the SQL statement should
   // still run properly.
-  EXPECT_TRUE(cdm_storage_database_->DeleteDataForStorageKey(
-      kTestStorageKey, time_now, base::Time::Max()));
+  EXPECT_TRUE(cdm_storage_database_->DeleteData(
+      base::NullCallback(), kTestStorageKey, time_now, base::Time::Max()));
 
   EXPECT_TRUE(
       cdm_storage_database_->ReadFile(kTestStorageKey, kCdmType, kFileName)
@@ -823,8 +826,8 @@ TEST_F(CdmStorageDatabaseValidPathTest,
       kPopulatedFileValue.size() + kPopulatedFileValueTwo.size() +
           kPopulatedFileValueThree.size());
 
-  EXPECT_TRUE(cdm_storage_database_->DeleteDataForTimeFrame(time_now,
-                                                            base::Time::Max()));
+  EXPECT_TRUE(cdm_storage_database_->DeleteData(
+      base::NullCallback(), blink::StorageKey(), time_now, base::Time::Max()));
 
   EXPECT_TRUE(
       cdm_storage_database_->ReadFile(kTestStorageKey, kCdmType, kFileName)
@@ -854,8 +857,9 @@ TEST_F(CdmStorageDatabaseValidPathTest, DeleteForTimeFrameWithNoData) {
 
   // Even if there is no data for the storage key, the SQL statement should
   // still run properly.
-  EXPECT_TRUE(cdm_storage_database_->DeleteDataForTimeFrame(base::Time::Min(),
-                                                            base::Time::Max()));
+  EXPECT_TRUE(cdm_storage_database_->DeleteData(
+      base::NullCallback(), blink::StorageKey(), base::Time::Min(),
+      base::Time::Max()));
 }
 
 TEST_F(CdmStorageDatabaseValidPathTest, WriteFileForBigData) {
@@ -1059,9 +1063,9 @@ TEST_F(CdmStorageDatabaseValidPathTest, DeleteDataForFilter) {
           BrowsingDataFilterBuilder::Mode::kDelete);
   filter_builder_not_included->AddOrigin(kTestStorageKeyTwo.origin());
 
-  cdm_storage_database_->DeleteDataForFilter(
-      filter_builder_not_included->BuildStorageKeyFilter(), now,
-      base::Time::Max());
+  cdm_storage_database_->DeleteData(
+      filter_builder_not_included->BuildStorageKeyFilter(), blink::StorageKey(),
+      now, base::Time::Max());
 
   EXPECT_EQ(
       cdm_storage_database_->ReadFile(kTestStorageKey, kCdmType, kFileName),
@@ -1075,16 +1079,18 @@ TEST_F(CdmStorageDatabaseValidPathTest, DeleteDataForFilter) {
   filter_builder_delete->AddOrigin(kTestStorageKey.origin());
 
   // Should not apply as time ranges do not match.
-  cdm_storage_database_->DeleteDataForFilter(
-      filter_builder_delete->BuildStorageKeyFilter(), base::Time::Min(), now);
+  cdm_storage_database_->DeleteData(
+      filter_builder_delete->BuildStorageKeyFilter(), blink::StorageKey(),
+      base::Time::Min(), now);
 
   EXPECT_EQ(
       cdm_storage_database_->ReadFile(kTestStorageKey, kCdmType, kFileName),
       kPopulatedFileValue);
 
   // Should delete in the time range.
-  cdm_storage_database_->DeleteDataForFilter(
-      filter_builder_delete->BuildStorageKeyFilter(), now, base::Time::Max());
+  cdm_storage_database_->DeleteData(
+      filter_builder_delete->BuildStorageKeyFilter(), blink::StorageKey(), now,
+      base::Time::Max());
 
   EXPECT_EQ(cdm_storage_database_->GetSizeForStorageKey(kTestStorageKey, now,
                                                         base::Time::Max()),
@@ -1108,9 +1114,9 @@ TEST_F(CdmStorageDatabaseValidPathTest, PreserveDataForFilter) {
   filter_builder_preserve_all->AddOrigin(kTestStorageKey.origin());
   filter_builder_preserve_all->AddOrigin(kTestStorageKeyTwo.origin());
 
-  cdm_storage_database_->DeleteDataForFilter(
-      filter_builder_preserve_all->BuildStorageKeyFilter(), now,
-      base::Time::Max());
+  cdm_storage_database_->DeleteData(
+      filter_builder_preserve_all->BuildStorageKeyFilter(), blink::StorageKey(),
+      now, base::Time::Max());
 
   EXPECT_EQ(
       cdm_storage_database_->ReadFile(kTestStorageKey, kCdmType, kFileName),
@@ -1128,9 +1134,9 @@ TEST_F(CdmStorageDatabaseValidPathTest, PreserveDataForFilter) {
   // Even with the filter builder only preserving `kTestStorageKey`, the time
   // frame specified should make the cdm storage database not delete anything at
   // all.
-  cdm_storage_database_->DeleteDataForFilter(
-      filter_builder_preserve_one->BuildStorageKeyFilter(), base::Time::Min(),
-      now);
+  cdm_storage_database_->DeleteData(
+      filter_builder_preserve_one->BuildStorageKeyFilter(), blink::StorageKey(),
+      base::Time::Min(), now);
 
   EXPECT_EQ(
       cdm_storage_database_->ReadFile(kTestStorageKey, kCdmType, kFileName),
@@ -1139,9 +1145,9 @@ TEST_F(CdmStorageDatabaseValidPathTest, PreserveDataForFilter) {
                                             kFileNameTwo),
             kPopulatedFileValueTwo);
 
-  cdm_storage_database_->DeleteDataForFilter(
-      filter_builder_preserve_one->BuildStorageKeyFilter(), now,
-      base::Time::Max());
+  cdm_storage_database_->DeleteData(
+      filter_builder_preserve_one->BuildStorageKeyFilter(), blink::StorageKey(),
+      now, base::Time::Max());
 
   EXPECT_EQ(
       cdm_storage_database_->ReadFile(kTestStorageKey, kCdmType, kFileName),

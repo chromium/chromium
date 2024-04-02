@@ -30,6 +30,11 @@ static const int kVersionNumber = 2;
 
 const char kUmaPrefix[] = "Media.EME.CdmStorageDatabaseSQLiteError.";
 
+const char kDeleteForTimeFrameError[] = "DeleteForTimeFrameError.";
+const char kDeleteForStorageKeyError[] = "DeleteForStorageKeyError.";
+const char kDeleteForFilterError[] = "DeleteForFilterError.";
+const char kDeleteFileError[] = "DeleteFileError.";
+
 static bool DatabaseIsEmpty(sql::Database* db) {
   static constexpr char kSelectCountSql[] = "SELECT COUNT(*) FROM cdm_storage";
   DCHECK(db->IsSQLValid(kSelectCountSql));
@@ -312,15 +317,36 @@ bool CdmStorageDatabase::DeleteFile(const blink::StorageKey& storage_key,
 
   last_operation_ = "DeleteFile";
 
-  sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kDeleteSql));
-  statement.BindString(0, storage_key.Serialize());
-  statement.BindBlob(1, cdm_type.AsBytes());
-  statement.BindString(2, file_name);
-  bool success = statement.Run();
-
+  bool success;
+  {
+    sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kDeleteSql));
+    statement.BindString(0, storage_key.Serialize());
+    statement.BindBlob(1, cdm_type.AsBytes());
+    statement.BindString(2, file_name);
+    success = statement.Run();
+  }
   DVLOG_IF(1, !success) << "Error deleting Cdm storage data.";
 
-  return success;
+  base::UmaHistogramBoolean(
+      GetCdmStorageManagerHistogramName(kDeleteFileError, in_memory()),
+      !success);
+
+  return DeleteIfEmptyDatabase(success);
+}
+
+bool CdmStorageDatabase::DeleteData(
+    const StoragePartition::StorageKeyMatcherFunction& storage_key_matcher,
+    const blink::StorageKey& storage_key,
+    const base::Time begin,
+    const base::Time end) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!storage_key_matcher.is_null()) {
+    return DeleteDataForFilter(storage_key_matcher, begin, end);
+  } else if (!storage_key.origin().opaque()) {
+    return DeleteDataForStorageKey(storage_key, begin, end);
+  }
+  return DeleteDataForTimeFrame(begin, end);
 }
 
 bool CdmStorageDatabase::DeleteDataForFilter(
@@ -337,7 +363,12 @@ bool CdmStorageDatabase::DeleteDataForFilter(
       DeleteDataForStorageKey(storage_key, begin, end);
     }
   }
-  return true;
+
+  base::UmaHistogramBoolean(
+      GetCdmStorageManagerHistogramName(kDeleteForFilterError, in_memory()),
+      false);
+
+  return DeleteIfEmptyDatabase(true);
 }
 
 bool CdmStorageDatabase::DeleteDataForStorageKey(
@@ -361,15 +392,22 @@ bool CdmStorageDatabase::DeleteDataForStorageKey(
   // clang-format on
   DCHECK(db_.IsSQLValid(kDeleteSql));
 
-  sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kDeleteSql));
-  statement.BindString(0, storage_key.Serialize());
-  statement.BindTime(1, begin);
-  statement.BindTime(2, end);
-  bool success = statement.Run();
+  bool success;
+  {
+    sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kDeleteSql));
+    statement.BindString(0, storage_key.Serialize());
+    statement.BindTime(1, begin);
+    statement.BindTime(2, end);
+    success = statement.Run();
+  }
 
   DVLOG_IF(1, !success) << "Error deleting Cdm storage data.";
 
-  return success;
+  base::UmaHistogramBoolean(
+      GetCdmStorageManagerHistogramName(kDeleteForStorageKeyError, in_memory()),
+      !success);
+
+  return DeleteIfEmptyDatabase(success);
 }
 
 bool CdmStorageDatabase::DeleteDataForTimeFrame(const base::Time begin,
@@ -390,15 +428,22 @@ bool CdmStorageDatabase::DeleteDataForTimeFrame(const base::Time begin,
   // clang-format on
   DCHECK(db_.IsSQLValid(kDeleteSql));
 
-  sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kDeleteSql));
-  statement.BindTime(0, begin);
-  statement.BindTime(1, end);
-  bool success = statement.Run();
+  bool success;
+  {
+    sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kDeleteSql));
+    statement.BindTime(0, begin);
+    statement.BindTime(1, end);
+    success = statement.Run();
+  }
 
   DVLOG_IF(1, !success)
       << "Error deleting Cdm storage data for specified time frame.";
 
-  return success;
+  base::UmaHistogramBoolean(GetCdmStorageManagerHistogramName(
+                                kDeleteForTimeFrameError, path_.empty()),
+                            !success);
+
+  return DeleteIfEmptyDatabase(success);
 }
 
 bool CdmStorageDatabase::ClearDatabase() {
@@ -408,7 +453,7 @@ bool CdmStorageDatabase::ClearDatabase() {
 
   db_.Close();
 
-  if (path_.empty()) {
+  if (in_memory()) {
     // Memory associated with an in-memory database will be released when the
     // database is closed above.
     return true;
@@ -449,7 +494,7 @@ CdmStorageOpenError CdmStorageDatabase::OpenDatabase(bool is_retry) {
 
   last_operation_ = "OpenDatabase";
 
-  if (path_.empty()) {
+  if (in_memory()) {
     success = db_.OpenInMemory();
   } else {
     success = db_.Open(path_);

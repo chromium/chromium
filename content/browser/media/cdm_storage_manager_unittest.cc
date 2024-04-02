@@ -116,8 +116,9 @@ class CdmStorageManagerSingularTest : public CdmStorageManagerTest,
   }
 
   void TearDown() override {
-    cdm_storage_manager_->DeleteDataForTimeFrame(
-        base::Time::Min(), base::Time::Max(), base::DoNothing());
+    cdm_storage_manager_->DeleteData(base::NullCallback(), blink::StorageKey(),
+                                     base::Time::Min(), base::Time::Max(),
+                                     base::DoNothing());
 
     // To prevent a memory leak, reset the manager. This may post
     // destruction of other objects, so RunUntilIdle().
@@ -147,10 +148,12 @@ class CdmStorageManagerMultipleTest
   }
 
   void TearDown() override {
-    cdm_storage_manager_->DeleteDataForTimeFrame(
-        base::Time::Min(), base::Time::Max(), base::DoNothing());
-    cdm_storage_manager_two_->DeleteDataForTimeFrame(
-        base::Time::Min(), base::Time::Max(), base::DoNothing());
+    cdm_storage_manager_->DeleteData(base::NullCallback(), blink::StorageKey(),
+                                     base::Time::Min(), base::Time::Max(),
+                                     base::DoNothing());
+    cdm_storage_manager_two_->DeleteData(base::NullCallback(),
+                                         blink::StorageKey(), base::Time::Min(),
+                                         base::Time::Max(), base::DoNothing());
 
     // To prevent a memory leak, reset the manager. This may post
     // destruction of other objects, so RunUntilIdle().
@@ -220,8 +223,9 @@ TEST_P(CdmStorageManagerSingularTest, DeleteDataForStorageKey) {
   Write(cdm_file_for_remote_two, kPopulatedFileValue);
   ASSERT_TRUE(cdm_file_for_remote_two.is_bound());
 
-  cdm_storage_manager_->DeleteDataForStorageKey(kTestStorageKey,
-                                                base::DoNothing());
+  cdm_storage_manager_->DeleteData(base::NullCallback(), kTestStorageKey,
+                                   base::Time::Min(), base::Time::Max(),
+                                   base::DoNothing());
 
   ExpectFileContents(cdm_file_for_remote_one, kEmptyFileValue);
   ExpectFileContents(cdm_file_two_for_remote_one, kEmptyFileValue);
@@ -271,6 +275,8 @@ TEST_P(CdmStorageManagerMultipleTest, DeleteFile) {
 // that deletion from one profile does not affect the files written to the same
 // storage key from another profile.
 TEST_P(CdmStorageManagerMultipleTest, DeleteDataForStorageKey) {
+  auto time_test_started = base::Time::Now();
+
   cdm_storage_manager_->OpenCdmStorage(
       CdmStorageBindingContext(kTestStorageKey, kCdmType),
       cdm_storage_.BindNewPipeAndPassReceiver());
@@ -291,8 +297,18 @@ TEST_P(CdmStorageManagerMultipleTest, DeleteDataForStorageKey) {
   Write(cdm_file_for_remote_two, kPopulatedFileValue);
   ASSERT_TRUE(cdm_file_for_remote_two.is_bound());
 
-  cdm_storage_manager_->DeleteDataForStorageKey(kTestStorageKey,
-                                                base::DoNothing());
+  cdm_storage_manager_->DeleteData(base::NullCallback(), kTestStorageKey,
+                                   base::Time::Min(), time_test_started,
+                                   base::DoNothing());
+
+  ExpectFileContents(cdm_file_for_remote_one, kPopulatedFileValue);
+  ExpectFileContents(cdm_file_two_for_remote_one, kPopulatedFileValue);
+
+  ExpectFileContents(cdm_file_for_remote_two, kPopulatedFileValue);
+
+  cdm_storage_manager_->DeleteData(base::NullCallback(), kTestStorageKey,
+                                   base::Time::Min(), base::Time::Max(),
+                                   base::DoNothing());
 
   ExpectFileContents(cdm_file_for_remote_one, kEmptyFileValue);
   ExpectFileContents(cdm_file_two_for_remote_one, kEmptyFileValue);
@@ -301,7 +317,6 @@ TEST_P(CdmStorageManagerMultipleTest, DeleteDataForStorageKey) {
 }
 
 TEST_P(CdmStorageManagerMultipleTest, DeleteDataForStorageKeyTimeSpecified) {
-  auto time_test_started = base::Time::Now();
   cdm_storage_manager_->OpenCdmStorage(
       CdmStorageBindingContext(kTestStorageKey, kCdmType),
       cdm_storage_.BindNewPipeAndPassReceiver());
@@ -322,17 +337,9 @@ TEST_P(CdmStorageManagerMultipleTest, DeleteDataForStorageKeyTimeSpecified) {
   Write(cdm_file_for_remote_two, kPopulatedFileValue);
   ASSERT_TRUE(cdm_file_for_remote_two.is_bound());
 
-  cdm_storage_manager_->DeleteDataForStorageKey(
-      kTestStorageKey, base::Time::Min(), time_test_started, base::DoNothing());
-
-  ExpectFileContents(cdm_file_for_remote_one, kPopulatedFileValue);
-  ExpectFileContents(cdm_file_two_for_remote_one, kPopulatedFileValue);
-
-  ExpectFileContents(cdm_file_for_remote_two, kPopulatedFileValue);
-
-  cdm_storage_manager_->DeleteDataForStorageKey(
-      kTestStorageKey, base::Time::Min(), base::Time::Now(), base::DoNothing());
-
+  cdm_storage_manager_->DeleteData(base::NullCallback(), kTestStorageKey,
+                                   base::Time::Min(), base::Time::Max(),
+                                   base::DoNothing());
   ExpectFileContents(cdm_file_for_remote_one, kEmptyFileValue);
   ExpectFileContents(cdm_file_two_for_remote_one, kEmptyFileValue);
 

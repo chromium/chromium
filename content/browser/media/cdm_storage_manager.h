@@ -78,20 +78,12 @@ class CONTENT_EXPORT CdmStorageManager : public media::mojom::CdmStorage,
                   const std::string& file_name,
                   base::OnceCallback<void(bool)> callback);
 
-  void DeleteDataForFilter(
-      StoragePartition::StorageKeyMatcherFunction storage_key_matcher,
+  void DeleteData(
+      const StoragePartition::StorageKeyMatcherFunction& storage_key_matcher,
+      const blink::StorageKey& storage_key,
       const base::Time begin,
       const base::Time end,
       base::OnceCallback<void(bool)> callback);
-
-  void DeleteDataForStorageKey(const blink::StorageKey& storage_key,
-                               const base::Time begin,
-                               const base::Time end,
-                               base::OnceCallback<void(bool)> callback);
-
-  void DeleteDataForTimeFrame(const base::Time begin,
-                              const base::Time end,
-                              base::OnceCallback<void(bool)> callback);
 
   void OnFileReceiverDisconnect(const std::string& name,
                                 const media::CdmType& cdm_type,
@@ -132,13 +124,7 @@ class CONTENT_EXPORT CdmStorageManager : public media::mojom::CdmStorage,
                   const std::string& operation,
                   std::optional<uint64_t> size);
 
-  void DidDelete(base::OnceCallback<void(bool)> callback,
-                 const std::string& operation,
-                 bool success);
-
   void ReportDatabaseOpenError(CdmStorageOpenError error);
-
-  std::string GetHistogramName(const std::string& operation);
 
   const base::FilePath path_;
 

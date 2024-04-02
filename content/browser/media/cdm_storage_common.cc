@@ -4,7 +4,18 @@
 
 #include "content/browser/media/cdm_storage_common.h"
 
+#include "content/public/common/content_features.h"
+
 namespace content {
+
+namespace {
+constexpr char kUmaPrefix[] = "Media.EME.CdmStorageManager.";
+
+constexpr char kIncognito[] = "Incognito";
+constexpr char kNonIncognito[] = "NonIncognito";
+
+constexpr char kMigration[] = ".Migration";
+}  // namespace
 
 CdmFileId::CdmFileId(const std::string& name, const media::CdmType& cdm_type)
     : name(name), cdm_type(cdm_type) {}
@@ -24,5 +35,20 @@ CdmFileIdAndContents::CdmFileIdAndContents(const CdmFileId& file,
 CdmFileIdAndContents::CdmFileIdAndContents(const CdmFileIdAndContents&) =
     default;
 CdmFileIdAndContents::~CdmFileIdAndContents() = default;
+
+std::string GetCdmStorageManagerHistogramName(const std::string& operation,
+                                              bool in_memory) {
+  auto histogram_name = base::StrCat(
+      {kUmaPrefix, operation, in_memory ? kIncognito : kNonIncognito});
+
+  // If the 'kCdmStorageDatabaseMigration' flag is enabled, we should mark the
+  // UMA with the fact that this error came during the migration.
+  if (base::FeatureList::IsEnabled(features::kCdmStorageDatabase) &&
+      base::FeatureList::IsEnabled(features::kCdmStorageDatabaseMigration)) {
+    histogram_name = base::StrCat({histogram_name, kMigration});
+  }
+
+  return histogram_name;
+}
 
 }  // namespace content

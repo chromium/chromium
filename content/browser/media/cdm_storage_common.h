@@ -97,6 +97,11 @@ struct CONTENT_EXPORT CdmFileIdAndContents {
   const std::vector<uint8_t> data;
 };
 
+// Called in CdmStorageDatabase and CdmStorageManager to get
+// CdmStorageManager* metric names.
+std::string GetCdmStorageManagerHistogramName(const std::string& operation,
+                                              bool in_memory);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_MEDIA_CDM_STORAGE_COMMON_H_
