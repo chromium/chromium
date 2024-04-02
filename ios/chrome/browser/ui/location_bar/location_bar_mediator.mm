@@ -44,7 +44,12 @@
 }
 
 - (void)disconnect {
-  self.webStateList = nil;
+  if (_webStateList) {
+    _webStateList->RemoveObserver(_webStateListObserver.get());
+    _webStateList = nullptr;
+  }
+  _webStateListObserver = nullptr;
+  _searchEngineObserver = nullptr;
 }
 
 - (void)dealloc {

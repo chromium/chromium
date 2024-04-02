@@ -23,12 +23,7 @@
 
 @interface LocationBarSteadyViewMediator () <CRWWebStateObserver,
                                              WebStateListObserving,
-                                             OverlayPresenterObserving> {
-  std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
-  std::unique_ptr<web::WebStateObserverBridge> _observer;
-  std::unique_ptr<ActiveWebStateObservationForwarder> _forwarder;
-  std::unique_ptr<OverlayPresenterObserverBridge> _overlayObserver;
-}
+                                             OverlayPresenterObserving>
 
 // Whether an overlay is currently presented over the web content area.
 @property(nonatomic, assign, getter=isWebContentAreaShowingOverlay)
@@ -47,7 +42,12 @@
 
 @end
 
-@implementation LocationBarSteadyViewMediator
+@implementation LocationBarSteadyViewMediator {
+  std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
+  std::unique_ptr<web::WebStateObserverBridge> _webStateObserver;
+  std::unique_ptr<ActiveWebStateObservationForwarder> _forwarder;
+  std::unique_ptr<OverlayPresenterObserverBridge> _overlayObserver;
+}
 
 - (instancetype)initWithLocationBarModel:(LocationBarModel*)locationBarModel {
   DCHECK(locationBarModel);
@@ -55,7 +55,7 @@
   if (self) {
     _locationBarModel = locationBarModel;
     _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
-    _observer = std::make_unique<web::WebStateObserverBridge>(self);
+    _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
     _overlayObserver = std::make_unique<OverlayPresenterObserverBridge>(self);
   }
   return self;
@@ -66,8 +66,20 @@
 }
 
 - (void)disconnect {
-  self.webStateList = nullptr;
-  self.webContentAreaOverlayPresenter = nullptr;
+  _forwarder = nullptr;
+  _webStateObserver = nullptr;
+
+  if (_webStateList) {
+    _webStateList->RemoveObserver(_webStateListObserver.get());
+    _webStateList = nullptr;
+  }
+  _webStateListObserver = nullptr;
+
+  if (_webContentAreaOverlayPresenter) {
+    _webContentAreaOverlayPresenter->RemoveObserver(_overlayObserver.get());
+    _webContentAreaOverlayPresenter = nullptr;
+  }
+  _overlayObserver = nullptr;
 }
 
 #pragma mark - Setters
@@ -91,7 +103,7 @@
   if (_webStateList) {
     _webStateList->AddObserver(_webStateListObserver.get());
     _forwarder = std::make_unique<ActiveWebStateObservationForwarder>(
-        _webStateList, _observer.get());
+        _webStateList, _webStateObserver.get());
   }
 }
 
