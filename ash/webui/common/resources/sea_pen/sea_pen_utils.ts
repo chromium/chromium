@@ -104,3 +104,10 @@ export function getTemplateTokens(
     }
   });
 }
+
+/**
+ * Checks whether the origin of the URL from Personalization App.
+ */
+export function isPersonalizationApp(): boolean {
+  return window.location.origin === 'chrome://personalization';
+}

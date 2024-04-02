@@ -29,17 +29,11 @@ import {getTemplate} from './sea_pen_images_element.html.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {logSeaPenTemplateFeedback} from './sea_pen_metrics_logger.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
-import {isNonEmptyArray, isSeaPenImageId} from './sea_pen_utils.js';
+import {isNonEmptyArray, isPersonalizationApp, isSeaPenImageId} from './sea_pen_utils.js';
 
 const kLoadingPlaceholderCount = 8;
 
 type Tile = 'loading'|SeaPenThumbnail;
-
-// TODO(b/329891508) track down all uses of window origin checks and consolidate
-// into a utils function.
-function isPersonalizationApp(): boolean {
-  return window.location.origin === 'chrome://personalization';
-}
 
 export class SeaPenImagesElement extends WithSeaPenStore {
   static get is() {

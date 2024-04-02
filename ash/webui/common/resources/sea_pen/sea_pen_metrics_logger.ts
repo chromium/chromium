@@ -3,10 +3,19 @@
 // found in the LICENSE file.
 
 import {SeaPenTemplateId} from './sea_pen_generated.mojom-webui.js';
+import {isPersonalizationApp} from './sea_pen_utils.js';
 
 const enum HistogramName {
   SEA_PEN_TEMPLATE_SUBPAGE = 'Ash.SeaPen.Template',
   SEA_PEN_CREATE_BUTTON = 'Ash.SeaPen.CreateButton',
+}
+
+// Numerical values are used for metrics; do not change or reuse values.
+export enum RecentImageActionMenuItem {
+  CREATE_MORE = 0,
+  DELETE,
+  ABOUT,
+  MAX_VALUE = ABOUT,
 }
 
 export function logSeaPenTemplateFeedback(
@@ -25,4 +34,12 @@ export function logSeaPenTemplateSelect(templateId: SeaPenTemplateId) {
   chrome.metricsPrivate.recordEnumerationValue(
       HistogramName.SEA_PEN_TEMPLATE_SUBPAGE, templateId as SeaPenTemplateId,
       SeaPenTemplateId.MAX_VALUE + 1);
+}
+
+export function logRecentImageActionMenuItemClick(
+    menuItem: RecentImageActionMenuItem) {
+  const appName = isPersonalizationApp() ? 'Wallpaper' : 'VcBackground';
+  chrome.metricsPrivate.recordEnumerationValue(
+      `Ash.SeaPen.${appName}.RecentImage.ActionMenu`, menuItem,
+      RecentImageActionMenuItem.MAX_VALUE + 1);
 }

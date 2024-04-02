@@ -1807,6 +1807,12 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="9" label="Failed on DLP checking"/>
 </enum>
 
+<enum name="SeaPenActionMenuItem">
+  <int value="0" label="Create More Like This"/>
+  <int value="1" label="Delete"/>
+  <int value="2" label="About"/>
+</enum>
+
 <enum name="SeaPenTemplateId">
 <!-- Defined in ash/webui/common/mojom/sea_pen.mojom -->
 

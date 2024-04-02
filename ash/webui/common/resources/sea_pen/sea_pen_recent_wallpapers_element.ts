@@ -25,9 +25,10 @@ import {SeaPenImageId} from './constants.js';
 import {RecentSeaPenThumbnailData, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
 import {deleteRecentSeaPenImage, fetchRecentSeaPenData, selectRecentSeaPenImage} from './sea_pen_controller.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
+import {logRecentImageActionMenuItemClick, RecentImageActionMenuItem} from './sea_pen_metrics_logger.js';
 import {getTemplate} from './sea_pen_recent_wallpapers_element.html.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
-import {isImageDataUrl, isNonEmptyArray, isSeaPenImageId} from './sea_pen_utils.js';
+import {isImageDataUrl, isNonEmptyArray, isPersonalizationApp, isSeaPenImageId} from './sea_pen_utils.js';
 
 export class SeaPenRecentImageDeleteEvent extends CustomEvent<null> {
   static readonly EVENT_NAME = 'sea-pen-recent-image-delete';
@@ -216,7 +217,7 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
   }
 
   private getRecentPoweredByGoogleMessage_(): string {
-    return window.location.origin === 'chrome://personalization' ?
+    return isPersonalizationApp() ?
         this.i18n('seaPenRecentWallpapersHeading') :
         this.i18n('vcBackgroundRecentWallpapersHeading');
   }
@@ -296,6 +297,7 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
   }
 
   private onClickMoreLikeThis_() {
+    logRecentImageActionMenuItemClick(RecentImageActionMenuItem.CREATE_MORE);
     // TODO(b/304581483): make "More like this" button functional.
   }
 
@@ -313,6 +315,7 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
 
     await deleteRecentSeaPenImage(
         event.model.image, getSeaPenProvider(), this.getStore());
+    logRecentImageActionMenuItemClick(RecentImageActionMenuItem.DELETE);
     this.closeAllActionMenus_();
 
     // If the deleted image is the last image or the only image in recent
@@ -345,6 +348,7 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
     if (id !== undefined) {
       this.currentShowWallpaperInfoDialog_ = parseInt(id, 10);
     }
+    logRecentImageActionMenuItemClick(RecentImageActionMenuItem.ABOUT);
     this.closeAllActionMenus_();
   }
 

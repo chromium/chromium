@@ -283,6 +283,11 @@ chromium-metrics-reviews@google.com.
   <variant name="Wallpaper"/>
 </variants>
 
+<variants name="SeaPenAppName">
+  <variant name="VcBackground" summary="Vc Background App"/>
+  <variant name="Wallpaper" summary="Wallpaper App"/>
+</variants>
+
 <variants name="SeaPenTemplateName">
   <variant name="Art" summary="Template Classic art"/>
   <variant name="Characters" summary="Template Characters"/>
@@ -6817,6 +6822,17 @@ chromium-metrics-reviews@google.com.
     Records the user's selected template when they navigates to the template
     subpage.
   </summary>
+</histogram>
+
+<histogram name="Ash.SeaPen.{AppName}.RecentImage.ActionMenu"
+    enum="SeaPenActionMenuItem" expires_after="2025-03-30">
+  <owner>thuongphan@google.com</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Record the action menu item click for SeaPen recent image of each {AppName}
+    from the user.
+  </summary>
+  <token key="AppName" variants="SeaPenAppName"/>
 </histogram>
 
 <histogram name="Ash.SeaPen.{TemplateName}.UserFeedback" enum="Boolean"
