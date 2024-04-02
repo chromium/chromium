@@ -24,14 +24,16 @@ namespace {
 constexpr CGFloat kFaviconContainerViewRadius = 7.;
 // Size for the favicon container.
 constexpr CGFloat kFaviconContainerViewSize = 32.;
+// Margin between the name and snippet labels.
+constexpr CGFloat kNameSnippetLabelMargin = 2.;
 // The size of the radio button size.
 constexpr CGFloat kRadioButtonSize = 24.;
 // The size of the radio button image.
 constexpr CGFloat kRadioButtonImageSize = 20.;
 // Upper vertical margin for name label in the button.
 constexpr CGFloat kUpperVerticalMargin = 10.;
-// Lower vertical margine for the snippet label in the button.
-constexpr CGFloat kLowerVerticalMargin = 10.;
+// Lower vertical margin for the snippet label in the button.
+constexpr CGFloat kLowerVerticalMargin = 12.;
 // Horizontal margin between elements in the button.
 constexpr CGFloat kInnerHorizontalMargin = 12.;
 // Horizontal margin between favicon/radio button image and the border.
@@ -74,9 +76,15 @@ UILabel* SnippetLabel() {
   UILabel* _snippetLabelOneLine;
   // UILabel to display the snippet with all lines.
   UILabel* _snippetLabelExpanded;
-  // Constraint to display `_snippetLabelOneLine`
+  // Constraint to activate when the button is collapsed. This contraint
+  // locks the bottom of `_snippetLabelOneLine` with the bottom of
+  // SnippetSearchEngineButton (with the right margin).
+  // `_snippetLabelExpandedConstraint` needs to be disabled.
   NSLayoutConstraint* _snippetLabelOneLineConstraint;
-  // Constraint to display `_snippetLabelExpanded`.
+  // Constraint to activate when the button is expanded. This contraint
+  // locks the bottom of `_snippetLabelExpanded` with the bottom of
+  // SnippetSearchEngineButton (with the right margin).
+  // `_snippetLabelOneLineConstraint` needs to be disabled.
   NSLayoutConstraint* _snippetLabelExpandedConstraint;
 }
 
@@ -102,7 +110,7 @@ UILabel* SnippetLabel() {
         setContentCompressionResistancePriority:UILayoutPriorityRequired
                                         forAxis:
                                             UILayoutConstraintAxisHorizontal];
-    // Add name label and snippet label.
+    // Add name label.
     _nameLabel = [[UILabel alloc] init];
     _nameLabel.translatesAutoresizingMaskIntoConstraints = NO;
     _nameLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
@@ -112,26 +120,22 @@ UILabel* SnippetLabel() {
     // by increasing the hugging priority.
     [_nameLabel setContentHuggingPriority:UILayoutPriorityDefaultHigh + 1
                                   forAxis:UILayoutConstraintAxisVertical];
-    // Add snippet container that contains `_snippetLabelOneLine`, and
-    // `_snippetLabelExpanded`.
-    UIView* snippetLabelContainer = [[UIView alloc] init];
-    snippetLabelContainer.userInteractionEnabled = NO;
-    snippetLabelContainer.translatesAutoresizingMaskIntoConstraints = NO;
-    [self addSubview:snippetLabelContainer];
+    // Add one line snippet.
     _snippetLabelOneLine = SnippetLabel();
     _snippetLabelOneLine.numberOfLines = 1;
     // Make sure the snippet is not streched.
     [_snippetLabelOneLine
         setContentHuggingPriority:UILayoutPriorityDefaultHigh + 1
                           forAxis:UILayoutConstraintAxisVertical];
-    [snippetLabelContainer addSubview:_snippetLabelOneLine];
+    [self addSubview:_snippetLabelOneLine];
+    // Add expanded snippet.
     _snippetLabelExpanded = SnippetLabel();
     _snippetLabelExpanded.numberOfLines = 0;
     // Make sure the snippet is not streched.
     [_snippetLabelExpanded
         setContentHuggingPriority:UILayoutPriorityDefaultHigh + 1
                           forAxis:UILayoutConstraintAxisVertical];
-    [snippetLabelContainer addSubview:_snippetLabelExpanded];
+    [self addSubview:_snippetLabelExpanded];
     // Add Chevron.
     _chevronButton = [[UIButton alloc] init];
     _chevronButton.translatesAutoresizingMaskIntoConstraints = NO;
@@ -162,22 +166,29 @@ UILabel* SnippetLabel() {
     _radioButtonImageView.userInteractionEnabled = NO;
     _radioButtonImageView.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:_radioButtonImageView];
-    // Add constraints.
+    // This layout guide is to generate the middle between _nameLabel and
+    // _snippetLabelOneLine. This vertical middle is used to vertically aligned
+    // the favicon, the chevron the vertical separator and the radio button.
+    UILayoutGuide* nameAndOneLineSnippetLayoutGuide =
+        [[UILayoutGuide alloc] init];
+    [self addLayoutGuide:nameAndOneLineSnippetLayoutGuide];
     // Constraint when the snippet is expanded.
-    _snippetLabelExpandedConstraint = [snippetLabelContainer.bottomAnchor
-        constraintEqualToAnchor:_snippetLabelOneLine.bottomAnchor];
-    _snippetLabelExpandedConstraint.priority = UILayoutPriorityDefaultHigh;
+    _snippetLabelExpandedConstraint = [_snippetLabelExpanded.bottomAnchor
+        constraintEqualToAnchor:self.bottomAnchor
+                       constant:-kLowerVerticalMargin];
     // Constraint when the snippet is only one line.
-    _snippetLabelOneLineConstraint = [snippetLabelContainer.bottomAnchor
-        constraintEqualToAnchor:_snippetLabelExpanded.bottomAnchor];
-    _snippetLabelOneLineConstraint.priority = UILayoutPriorityDefaultLow;
+    _snippetLabelOneLineConstraint =
+        [nameAndOneLineSnippetLayoutGuide.bottomAnchor
+            constraintEqualToAnchor:self.bottomAnchor
+                           constant:-kLowerVerticalMargin];
     NSArray* constraints = @[
-      // Favicon and favicon container.
+      // Constraints for avicon and favicon container.
       [_faviconContainerView.leadingAnchor
           constraintEqualToAnchor:self.leadingAnchor
                          constant:kBorderHorizontalMargin],
       [_faviconContainerView.centerYAnchor
-          constraintEqualToAnchor:self.centerYAnchor],
+          constraintEqualToAnchor:nameAndOneLineSnippetLayoutGuide
+                                      .centerYAnchor],
       [_faviconContainerView.widthAnchor
           constraintEqualToConstant:kFaviconContainerViewSize],
       [_faviconContainerView.heightAnchor
@@ -190,61 +201,73 @@ UILabel* SnippetLabel() {
           constraintEqualToConstant:kFaviconImageViewSize],
       [_faviconImageView.heightAnchor
           constraintEqualToConstant:kFaviconImageViewSize],
-      // Name label.
-      [_nameLabel.topAnchor constraintEqualToAnchor:self.topAnchor
-                                           constant:kUpperVerticalMargin],
-      [_nameLabel.leadingAnchor
+      // Constraints for layout guide for _nameLabel and _snippetLabelOneLine.
+      [nameAndOneLineSnippetLayoutGuide.topAnchor
+          constraintEqualToAnchor:self.topAnchor
+                         constant:kUpperVerticalMargin],
+      _snippetLabelOneLineConstraint,
+      [nameAndOneLineSnippetLayoutGuide.leadingAnchor
           constraintEqualToAnchor:_faviconContainerView.trailingAnchor
                          constant:kInnerHorizontalMargin],
+      [nameAndOneLineSnippetLayoutGuide.trailingAnchor
+          constraintEqualToAnchor:_chevronButton.leadingAnchor
+                         constant:-kChevronButtonHorizontalMargin],
+      // Constraints for name label.
+      [_nameLabel.topAnchor
+          constraintEqualToAnchor:nameAndOneLineSnippetLayoutGuide.topAnchor],
+      [_nameLabel.leadingAnchor
+          constraintEqualToAnchor:nameAndOneLineSnippetLayoutGuide
+                                      .leadingAnchor],
       [_nameLabel.trailingAnchor
-          constraintLessThanOrEqualToAnchor:_chevronButton.leadingAnchor
-                                   constant:-kChevronButtonHorizontalMargin],
+          constraintLessThanOrEqualToAnchor:nameAndOneLineSnippetLayoutGuide
+                                                .trailingAnchor],
       [_nameLabel.bottomAnchor
-          constraintEqualToAnchor:snippetLabelContainer.topAnchor],
-      // Snippet labels and container.
-      [snippetLabelContainer.leadingAnchor
-          constraintEqualToAnchor:_nameLabel.leadingAnchor],
-      [snippetLabelContainer.trailingAnchor
-          constraintLessThanOrEqualToAnchor:_chevronButton.leadingAnchor
-                                   constant:-kChevronButtonHorizontalMargin],
-      [snippetLabelContainer.bottomAnchor
-          constraintEqualToAnchor:self.bottomAnchor
-                         constant:-kLowerVerticalMargin],
-      [snippetLabelContainer.topAnchor
-          constraintEqualToAnchor:_snippetLabelExpanded.topAnchor],
-      [snippetLabelContainer.leadingAnchor
-          constraintEqualToAnchor:_snippetLabelExpanded.leadingAnchor],
-      [snippetLabelContainer.trailingAnchor
-          constraintEqualToAnchor:_snippetLabelExpanded.trailingAnchor],
-      [snippetLabelContainer.topAnchor
+          constraintEqualToAnchor:_snippetLabelOneLine.topAnchor
+                         constant:-kNameSnippetLabelMargin],
+      // Constraints for _snippetLabelOneLine.
+      [_snippetLabelOneLine.bottomAnchor
+          constraintEqualToAnchor:nameAndOneLineSnippetLayoutGuide
+                                      .bottomAnchor],
+      [_snippetLabelOneLine.leadingAnchor
+          constraintEqualToAnchor:nameAndOneLineSnippetLayoutGuide
+                                      .leadingAnchor],
+      [_snippetLabelOneLine.trailingAnchor
+          constraintLessThanOrEqualToAnchor:nameAndOneLineSnippetLayoutGuide
+                                                .trailingAnchor],
+      // Constraints for _snippetLabelExpanded.
+      [_snippetLabelExpanded.topAnchor
           constraintEqualToAnchor:_snippetLabelOneLine.topAnchor],
-      [snippetLabelContainer.leadingAnchor
-          constraintEqualToAnchor:_snippetLabelOneLine.leadingAnchor],
-      [snippetLabelContainer.trailingAnchor
-          constraintEqualToAnchor:_snippetLabelOneLine.trailingAnchor],
-      _snippetLabelExpandedConstraint,
-      _snippetLabelOneLineConstraint,
-      // Chevron.
+      [_snippetLabelExpanded.leadingAnchor
+          constraintEqualToAnchor:nameAndOneLineSnippetLayoutGuide
+                                      .leadingAnchor],
+      [_snippetLabelExpanded.trailingAnchor
+          constraintLessThanOrEqualToAnchor:nameAndOneLineSnippetLayoutGuide
+                                                .trailingAnchor],
+      // Constraints for chevron.
       [_chevronButton.heightAnchor
           constraintEqualToConstant:kChevronButtonSize],
       [_chevronButton.widthAnchor constraintEqualToConstant:kChevronButtonSize],
-      [_chevronButton.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
+      [_chevronButton.centerYAnchor
+          constraintEqualToAnchor:nameAndOneLineSnippetLayoutGuide
+                                      .centerYAnchor],
       [_chevronButton.trailingAnchor
           constraintEqualToAnchor:verticalSeparator.leadingAnchor
                          constant:-kChevronButtonHorizontalMargin],
-      // Vertical separator.
+      // Constraints for vertical separator.
       [verticalSeparator.heightAnchor
           constraintEqualToAnchor:_nameLabel.heightAnchor],
       [verticalSeparator.centerYAnchor
-          constraintEqualToAnchor:self.centerYAnchor],
+          constraintEqualToAnchor:nameAndOneLineSnippetLayoutGuide
+                                      .centerYAnchor],
       [verticalSeparator.widthAnchor
           constraintEqualToConstant:kSeparatorThickness],
       [verticalSeparator.trailingAnchor
           constraintEqualToAnchor:_radioButtonImageView.leadingAnchor
                          constant:-kInnerHorizontalMargin],
-      // Radio button.
+      // Constraints for radio button.
       [_radioButtonImageView.centerYAnchor
-          constraintEqualToAnchor:self.centerYAnchor],
+          constraintEqualToAnchor:nameAndOneLineSnippetLayoutGuide
+                                      .centerYAnchor],
       [_radioButtonImageView.widthAnchor
           constraintEqualToConstant:kRadioButtonSize],
       [_radioButtonImageView.heightAnchor
@@ -252,9 +275,10 @@ UILabel* SnippetLabel() {
       [_radioButtonImageView.trailingAnchor
           constraintEqualToAnchor:self.trailingAnchor
                          constant:-kBorderHorizontalMargin],
-      // HorizontalSeparator.
+      // Constraints for horizontal separator.
       [_horizontalSeparator.leadingAnchor
-          constraintEqualToAnchor:_nameLabel.leadingAnchor],
+          constraintEqualToAnchor:nameAndOneLineSnippetLayoutGuide
+                                      .leadingAnchor],
       [_horizontalSeparator.trailingAnchor
           constraintEqualToAnchor:self.trailingAnchor],
       [_horizontalSeparator.bottomAnchor
@@ -398,16 +422,16 @@ UILabel* SnippetLabel() {
             CGAffineTransformRotate(CGAffineTransformIdentity, downRotation);
         snippetLabelOneLine.alpha = 1;
         snippetLabelExpanded.alpha = 0;
-        snippetLabelOneLineConstraint.priority = UILayoutPriorityDefaultLow;
-        snippetLabelExpandedConstraint.priority = UILayoutPriorityDefaultHigh;
+        snippetLabelOneLineConstraint.active = YES;
+        snippetLabelExpandedConstraint.active = NO;
         break;
       case SnippetButtonState::kExpanded:
         chevronButton.transform =
             CGAffineTransformRotate(CGAffineTransformIdentity, upRotation);
         snippetLabelOneLine.alpha = 0;
         snippetLabelExpanded.alpha = 1;
-        snippetLabelOneLineConstraint.priority = UILayoutPriorityDefaultHigh;
-        snippetLabelExpandedConstraint.priority = UILayoutPriorityDefaultLow;
+        snippetLabelOneLineConstraint.active = NO;
+        snippetLabelExpandedConstraint.active = YES;
         break;
     }
     if (animate) {
