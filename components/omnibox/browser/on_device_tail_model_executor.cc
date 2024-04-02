@@ -8,6 +8,8 @@
 #include <cstdint>
 #include <sstream>
 
+#include "base/base64.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
@@ -16,6 +18,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/tflite_op_resolver.h"
 #include "third_party/tflite/src/tensorflow/lite/c/c_api_types.h"
 #include "third_party/tflite/src/tensorflow/lite/kernels/register.h"
@@ -47,8 +50,13 @@ static constexpr char kRnnStepOutputProbsNodeName[] = "probs";
 static constexpr size_t kPreQueryEncodingCacheSize = 10;
 static constexpr size_t kRnnStepOutputCacheSize = 20;
 
-// Maximum badword hash file size that will be loaded in bytes.
-static constexpr size_t kBadwordHashFileSizeLimit = 64 * 1024;
+// Maximum file size that will be loaded in bytes.
+static constexpr size_t kFileSizeLimit = 128 * 1024;
+
+// Keywords to identify additional files needed by the executor.
+static constexpr char kVocabFileNameKeyword[] = "vocab";
+static constexpr char kBadwordHashesFileNameKeyword[] = "hashes";
+static constexpr char kBadSubstringDenyListFileNameKeyword[] = "denylist";
 
 std::ostream& operator<<(std::ostream& os,
                          const OnDeviceTailTokenizer::TokenIds& ids) {
@@ -64,6 +72,18 @@ std::ostream& operator<<(std::ostream& os,
     os << ", " << base::NumberToString(*iter);
   }
   return os;
+}
+
+std::string LoadFileContent(const base::FilePath file_path) {
+  std::string content;
+  if (file_path.empty()) {
+    return content;
+  }
+  if (!base::ReadFileToStringWithMaxSize(file_path, &content, kFileSizeLimit)) {
+    DVLOG(1) << "Failed to read file: " << file_path.LossyDisplayName();
+    content.clear();
+  }
+  return content;
 }
 
 }  // namespace
@@ -165,6 +185,7 @@ bool OnDeviceTailModelExecutor::Init() {
   num_layer_ = metadata_.lstm_model_params().num_layer();
   embedding_dimension_ = metadata_.lstm_model_params().embedding_dimension();
   vocab_size_ = tokenizer_->vocab_size();
+  LoadBadSubstringSet();
   LoadBadwordHashSet();
 
   return true;
@@ -172,9 +193,25 @@ bool OnDeviceTailModelExecutor::Init() {
 
 bool OnDeviceTailModelExecutor::Init(
     const base::FilePath& model_filepath,
-    const base::FilePath& vocab_filepath,
-    const base::FilePath& badword_hashes_filepath,
+    const base::flat_set<base::FilePath>& additional_files,
     const ModelMetadata& metadata) {
+  base::FilePath vocab_filepath, badword_hashes_filepath,
+      bad_substrings_filepath;
+  for (const base::FilePath& file_path : additional_files) {
+    if (!file_path.empty()) {
+      std::string file_path_str =
+          optimization_guide::FilePathToString(file_path);
+      if (base::Contains(file_path_str, kVocabFileNameKeyword)) {
+        vocab_filepath = file_path;
+      } else if (base::Contains(file_path_str, kBadwordHashesFileNameKeyword)) {
+        badword_hashes_filepath = file_path;
+      } else if (base::Contains(file_path_str,
+                                kBadSubstringDenyListFileNameKeyword)) {
+        bad_substrings_filepath = file_path;
+      }
+    }
+  }
+
   if (model_filepath.empty() || vocab_filepath.empty()) {
     return false;
   }
@@ -182,6 +219,7 @@ bool OnDeviceTailModelExecutor::Init(
   model_filepath_ = model_filepath;
   vocab_filepath_ = vocab_filepath;
   badword_hashes_filepath_ = badword_hashes_filepath;
+  bad_substrings_filepath_ = bad_substrings_filepath;
   metadata_ = metadata;
 
   if (Init()) {
@@ -191,6 +229,7 @@ bool OnDeviceTailModelExecutor::Init(
   model_filepath_.clear();
   vocab_filepath_.clear();
   badword_hashes_filepath_.clear();
+  bad_substrings_filepath_.clear();
   return false;
 }
 
@@ -312,21 +351,37 @@ void OnDeviceTailModelExecutor::ResetCaches() {
   rnn_step_cache_.Clear();
 }
 
+void OnDeviceTailModelExecutor::LoadBadSubstringSet() {
+  bad_substrings_.clear();
+
+  std::string content = LoadFileContent(bad_substrings_filepath_);
+  if (content.empty()) {
+    return;
+  }
+
+  std::string bad_substring, line;
+  std::stringstream file_content(content);
+  while (std::getline(file_content, line)) {
+    if (line.empty()) {
+      break;
+    }
+    if (base::Base64Decode(line, &bad_substring)) {
+      bad_substrings_.insert(bad_substring);
+    } else {
+      DVLOG(1) << "Could not decode line: " << line;
+    }
+  }
+}
+
 void OnDeviceTailModelExecutor::LoadBadwordHashSet() {
-  if (badword_hashes_filepath_.empty()) {
-    return;
-  }
-  std::string content;
-  if (!base::ReadFileToStringWithMaxSize(badword_hashes_filepath_, &content,
-                                         kBadwordHashFileSizeLimit)) {
-    DVLOG(1) << "Failed to read the badword hash file "
-             << badword_hashes_filepath_.LossyDisplayName();
-    return;
-  }
-
   badword_hashes_.clear();
-  std::string hash_string;
 
+  std::string content = LoadFileContent(badword_hashes_filepath_);
+  if (content.empty()) {
+    return;
+  }
+
+  std::string hash_string;
   std::stringstream badword_hash_strings(content);
   while (std::getline(badword_hash_strings, hash_string)) {
     if (hash_string.empty()) {
@@ -340,19 +395,29 @@ void OnDeviceTailModelExecutor::LoadBadwordHashSet() {
 }
 
 bool OnDeviceTailModelExecutor::IsSuggestionBad(const std::string suggestion) {
-  if (badword_hashes_.empty() || suggestion.empty()) {
+  if (suggestion.empty()) {
     return false;
   }
-  std::vector<std::string> words =
-      base::SplitString(suggestion, base::kWhitespaceASCII,
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
-  for (const std::string& word : words) {
-    auto hash_value = base::PersistentHash(word);
-    if (badword_hashes_.find(hash_value) != badword_hashes_.end()) {
+  for (const std::string& substring : bad_substrings_) {
+    if (base::Contains(suggestion, substring)) {
       return true;
     }
   }
+
+  if (!badword_hashes_.empty()) {
+    std::vector<std::string> words =
+        base::SplitString(suggestion, base::kWhitespaceASCII,
+                          base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+    for (const std::string& word : words) {
+      auto hash_value = base::PersistentHash(word);
+      if (base::Contains(badword_hashes_, hash_value)) {
+        return true;
+      }
+    }
+  }
+
   return false;
 }
 

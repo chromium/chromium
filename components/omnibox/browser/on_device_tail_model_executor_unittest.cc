@@ -62,7 +62,9 @@ class OnDeviceTailModelExecutorPublic : public OnDeviceTailModelExecutor {
 // OnDeviceTailModelExecutor::InsertBeamNodeToCandidateQueue.
 class OnDeviceTailModelExecutorTest : public ::testing::Test {
  public:
-  OnDeviceTailModelExecutorTest() { InitExecutor(""); }
+  OnDeviceTailModelExecutorTest() {
+    InitExecutor(base::flat_set<std::string>());
+  }
 
  protected:
   void TearDown() override { executor_.reset(); }
@@ -97,16 +99,23 @@ class OnDeviceTailModelExecutorTest : public ::testing::Test {
     EXPECT_NEAR(b1.log_prob, b2.log_prob, 0.01f);
   }
 
-  void InitExecutor(const std::string badword_filename) {
+  void InitExecutor(const base::flat_set<std::string>& denylist_filenames) {
     executor_ = std::make_unique<OnDeviceTailModelExecutorPublic>();
     OnDeviceTailModelExecutor::ModelMetadata metadata;
     metadata.mutable_lstm_model_params()->set_num_layer(kNumLayer);
     metadata.mutable_lstm_model_params()->set_state_size(kStateSize);
     metadata.mutable_lstm_model_params()->set_embedding_dimension(
         kEmbeddingDim);
+
+    base::flat_set<base::FilePath> additional_files;
+    additional_files.insert(GetTestFilePath("vocab_test.txt"));
+
+    for (const auto& filename : denylist_filenames) {
+      additional_files.insert(GetTestFilePath(filename));
+    }
+
     EXPECT_TRUE(executor_->Init(GetTestFilePath("test_tail_model.tflite"),
-                                GetTestFilePath("vocab_test.txt"),
-                                GetTestFilePath(badword_filename), metadata));
+                                additional_files, metadata));
   }
 
   std::unique_ptr<OnDeviceTailModelExecutorPublic> executor_;
@@ -383,10 +392,11 @@ TEST_F(OnDeviceTailModelExecutorTest,
   std::vector<OnDeviceTailModelExecutor::Prediction> predictions;
 
   {
-    InitExecutor("");
+    // Make sure the test model can predict "login" for prefix "logi".
+    InitExecutor(base::flat_set<std::string>());
     OnDeviceTailModelExecutor::ModelInput input("logi", "", 5, 20, 0.05);
     predictions = executor_->GenerateSuggestionsForPrefix(input);
-    EXPECT_FALSE(predictions.empty());
+    EXPECT_EQ(predictions.size(), 1U);
     EXPECT_TRUE(base::StartsWith(predictions[0].suggestion, "login",
                                  base::CompareCase::SENSITIVE));
   }
@@ -394,14 +404,26 @@ TEST_F(OnDeviceTailModelExecutorTest,
   {
     // The test badwords file contains hash for word "login", so |predictions|
     // should not contain results with word "login".
-    InitExecutor("badword_hashes_test.txt");
+    InitExecutor(base::flat_set<std::string>({"badword_hashes_test.txt"}));
     OnDeviceTailModelExecutor::ModelInput input("logi", "", 5, 20, 0.05);
     predictions = executor_->GenerateSuggestionsForPrefix(input);
-    for (size_t i = 0; i < predictions.size(); ++i) {
+    for (auto& prediction : predictions) {
       auto words =
-          base::SplitString(predictions[i].suggestion, base::kWhitespaceASCII,
+          base::SplitString(prediction.suggestion, base::kWhitespaceASCII,
                             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
       EXPECT_FALSE(base::Contains(words, "login"));
+    }
+  }
+
+  {
+    // The denylist contains substrings "ogi" & "abc", so |prediction| should
+    // not contain these strings neither.
+    InitExecutor(base::flat_set<std::string>({"denylist_test.txt"}));
+    OnDeviceTailModelExecutor::ModelInput input("logi", "", 5, 20, 0.05);
+    predictions = executor_->GenerateSuggestionsForPrefix(input);
+    for (auto& prediction : predictions) {
+      EXPECT_FALSE(base::Contains(prediction.suggestion, "abc"));
+      EXPECT_FALSE(base::Contains(prediction.suggestion, "ogi"));
     }
   }
 }

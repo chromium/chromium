@@ -18,7 +18,6 @@
 #include "base/time/time.h"
 #include "components/omnibox/browser/on_device_tail_model_executor.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/models.pb.h"
@@ -41,25 +40,7 @@ void InitializeTailModelExecutor(
   if (model_file.empty() || additional_files.empty()) {
     return;
   }
-
-  base::FilePath vocab_filepath, badword_hash_filepath;
-  for (const base::FilePath& file_path : additional_files) {
-    if (!file_path.empty()) {
-      std::string file_path_str =
-          optimization_guide::FilePathToString(file_path);
-      if (file_path_str.find("vocab") != std::string::npos) {
-        vocab_filepath = file_path;
-      } else if (file_path_str.find("badword") != std::string::npos) {
-        badword_hash_filepath = file_path;
-      }
-    }
-  }
-
-  if (vocab_filepath.empty()) {
-    return;
-  }
-
-  executor->Init(model_file, vocab_filepath, badword_hash_filepath, metadata);
+  executor->Init(model_file, additional_files, metadata);
 }
 
 std::vector<OnDeviceTailModelExecutor::Prediction> RunTailModelExecutor(

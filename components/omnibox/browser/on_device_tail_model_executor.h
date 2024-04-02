@@ -63,8 +63,7 @@ class OnDeviceTailModelExecutor {
   // Initializes the model executor.
   bool Init();
   bool Init(const base::FilePath& model_filepath,
-            const base::FilePath& vocab_filepath,
-            const base::FilePath& badword_hashes_filepath,
+            const base::flat_set<base::FilePath>& additional_files,
             const ModelMetadata& metadata);
 
   // Returns whether the executor is initialized.
@@ -211,7 +210,8 @@ class OnDeviceTailModelExecutor {
   // Helper to calculate log probability.
   static float GetLogProbability(float probability);
 
-  // Loads badword hash set from filepath.
+  // Loads bad suggestion filter lists from filepaths.
+  void LoadBadSubstringSet();
   void LoadBadwordHashSet();
 
   // Determines if the given suggestion is bad and should be discarded, by
@@ -253,11 +253,13 @@ class OnDeviceTailModelExecutor {
   base::FilePath model_filepath_;
   base::FilePath vocab_filepath_;
   base::FilePath badword_hashes_filepath_;
+  base::FilePath bad_substrings_filepath_;
   optimization_guide::proto::OnDeviceTailSuggestModelMetadata metadata_;
 
-  // Hashes (calculated by base::PersistentHash) of badword used to filter bad
-  // suggestions.
+  // The hashes (calculated by base::PersistentHash) of badword and the bad
+  // substrings which are encoded by BASE64 used to filter bad suggestions.
   std::set<uint32_t> badword_hashes_;
+  std::set<std::string> bad_substrings_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_ON_DEVICE_TAIL_MODEL_EXECUTOR_H_
