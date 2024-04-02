@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/nix/xdg_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 
 namespace ui {
@@ -59,6 +60,11 @@ class XdgActivation : public wl::GlobalObjectRegistrar<XdgActivation> {
   mutable base::queue<std::unique_ptr<TokenRequest>> token_request_queue_;
 
   const raw_ptr<WaylandConnection> connection_;
+
+  scoped_refptr<base::SequencedTaskRunner> task_runner_ =
+      base::SequencedTaskRunner::GetCurrentDefault();
+
+  base::WeakPtrFactory<XdgActivation> weak_ptr_factory_{this};
 };
 
 }  // namespace ui
