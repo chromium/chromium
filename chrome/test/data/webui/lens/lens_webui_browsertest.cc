@@ -97,6 +97,14 @@ IN_PROC_BROWSER_TEST_F(LensOverlayTest, ManualRegionSelection) {
   RunOverlayTest("lens/overlay/region_selection_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(LensOverlayTest, TextSelection) {
+  RunOverlayTest("lens/overlay/text_selection_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayTest, SelectionOverlay) {
+  RunOverlayTest("lens/overlay/selection_overlay_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(LensOverlayTest, ManualRegionSelectionCanvas) {
   RunOverlayTest("lens/overlay/region_selection_canvas_test.js", "mocha.run()");
 }

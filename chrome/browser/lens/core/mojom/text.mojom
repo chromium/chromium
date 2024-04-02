@@ -30,9 +30,6 @@ struct TextLayout {
 };
 
 struct Word {
-  // Required. Unique id within TextLayout.
-  TextEntityIdentifier id;
-
   // Required. The text in a plain text, which can be an empty string.
   string plain_text;
 
@@ -43,6 +40,10 @@ struct Word {
 
   // Optional. The geometry of the word.
   Geometry? geometry;
+
+  // Optional. The text writing direction (aka reading order). All words in a
+  // paragraph must have the same writing direction.
+  WritingDirection? writing_direction;
 
   // Optional. Metadata for formulas. This is populated for entities of
   // `type=FORMULA`.
@@ -58,9 +59,6 @@ struct Line {
 };
 
 struct Paragraph {
-  // Required. Unique id within TextLayout.
-  TextEntityIdentifier id;
-
   // Optional. List of lines in natural reading order (see also
   // `writing_direction`).
   array<Line> lines;
@@ -80,10 +78,4 @@ struct FormulaMetadata {
   // Optional. LaTeX representation of a formula. Can be the same as
   // `plain_text`. Example: "\frac{2}{x}=y".
   string? latex;
-};
-
-struct TextEntityIdentifier {
-  // Required. Unique entity id used to reference (and match) text entities and
-  // ranges.
-  int64 id;
 };

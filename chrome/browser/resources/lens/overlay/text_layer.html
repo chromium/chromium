@@ -4,12 +4,24 @@
     width: 100%;
   }
 
+  :host([is-selecting-text]) {
+    cursor: text;
+  }
+
   .word {
     cursor: text;
     opacity: 0;
     position: absolute;
+    user-select: none;
+  }
+
+  .word.highlighted {
+    background-color: rgb(181, 215, 253);
+    opacity: 50%;
   }
 </style>
-<template is="dom-repeat" items="[[renderedWords]]">
-  <div class="word" style$="[[getWordStyle_(item)]]"></div>
+<template id="wordsContainer" is="dom-repeat" items="[[renderedWords]]">
+  <div style$="[[getWordStyle_(item)]]" class$="word
+    [[getHighlightedCssClass_(index, selectionStartIndex, selectionEndIndex)]]">
+  </div>
 </template>

@@ -9,9 +9,10 @@ import type {RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
-import {type RegionSelectionElement} from './region_selection.js';
+import type {RegionSelectionElement} from './region_selection.js';
 import {getTemplate} from './selection_overlay.html.js';
 import {DRAG_THRESHOLD, DragFeature, emptyGestureEvent, type GestureEvent, GestureState} from './selection_utils.js';
+import type {TextLayerElement} from './text_layer.js';
 
 /**
  * Returns a mojo RectF corresponding to the gesture provided.
@@ -25,7 +26,11 @@ function getRectFromGesture(gesture: GestureEvent): RectF {
 }
 
 export interface SelectionOverlayElement {
-  $: {regionSelectionLayer: RegionSelectionElement};
+  $: {
+    regionSelectionLayer: RegionSelectionElement,
+    selectionOverlay: HTMLElement,
+    textSelectionLayer: TextLayerElement,
+  };
 }
 
 /*
@@ -70,6 +75,11 @@ export class SelectionOverlayElement extends PolymerElement {
       clientX: event.clientX,
       clientY: event.clientY,
     };
+
+    if (this.$.textSelectionLayer.handleDownGesture(this.currentGesture)) {
+      // Text is responding to this sequence of gestures.
+      this.draggingRespondent = DragFeature.TEXT;
+    }
   }
 
   private onPointerUp(event: PointerEvent) {
@@ -86,6 +96,8 @@ export class SelectionOverlayElement extends PolymerElement {
         if (this.draggingRespondent === DragFeature.MANUAL_REGION) {
           BrowserProxyImpl.getInstance().handler.issueLensRequest(
               getRectFromGesture(this.currentGesture));
+        } else if (this.draggingRespondent === DragFeature.TEXT) {
+          this.$.textSelectionLayer.handleUpGesture();
         }
         break;
       case GestureState.STARTING:
@@ -97,6 +109,7 @@ export class SelectionOverlayElement extends PolymerElement {
 
     // After features have responded to the event, reset the current drag state.
     this.currentGesture = emptyGestureEvent();
+    this.draggingRespondent = DragFeature.NONE;
   }
 
   private onPointerMove(event: PointerEvent) {
@@ -110,9 +123,14 @@ export class SelectionOverlayElement extends PolymerElement {
     if (this.isDragging()) {
       this.currentGesture.state = GestureState.DRAGGING;
 
-      // Let the features respond to the current drag.
-      this.draggingRespondent = DragFeature.MANUAL_REGION;
-      this.$.regionSelectionLayer.handleDragGesture(this.currentGesture);
+      if (this.draggingRespondent === DragFeature.TEXT) {
+        this.$.textSelectionLayer.handleDragGesture(this.currentGesture);
+      } else {
+        // Let the features respond to the current drag if no other feature
+        // responded first.
+        this.draggingRespondent = DragFeature.MANUAL_REGION;
+        this.$.regionSelectionLayer.handleDragGesture(this.currentGesture);
+      }
     }
   }
 
