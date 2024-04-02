@@ -107,6 +107,9 @@ tast_disabled_tests_from_chrome_all = [
   "videoconferencing.TrayTriggersExtension@brya",
   "videoconferencing.TrayTriggersExtension.lacros@brya",
 
+  # https://b/331491411
+  "audio.PlaybackAudioControls.fieldtrial_config_disable",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
