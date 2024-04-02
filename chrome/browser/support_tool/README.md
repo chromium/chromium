@@ -128,7 +128,7 @@ Source code on [CrashIdsSource](https://source.chromium.org/chromium/chromium/sr
         -   The sync data that can be available in chrome://sync-internals in
         JSON format
     -   Extension info logs
-        -   List in format: "extension_id" : "extension_name" : "extension_version"
+        -   List in format: `extension_id` : `extension_name` : `extension_version`
     -   Power API logs
         -   The extension levels from chrome.power API
     -   Chrome version (incl. Lacros version if enabled)
@@ -174,7 +174,7 @@ Source code on [LacrosLogFilesLogSource](https://source.chromium.org/chromium/ch
 ### Lacros System Information
 
 -   Gets information for Lacros browser through CrosAPI calls. It contains entries such as:
-    -   Contents of "Chrome System Information" for Lacros
+    -   Contents of `Chrome System Information` for Lacros
     -   Crash IDs for Lacros browser
     -   Device events
     -   Memory Details
@@ -223,8 +223,8 @@ Source code on [DBusLogSource](https://source.chromium.org/chromium/chromium/src
 
 ### Device Event
 
--   "network_event_log": Network events that occurred on the device.
--   "device_event_log": All other device events.
+-   `network_event_log`: Network events that occurred on the device.
+-   `device_event_log`: All other device events.
 
 See UI on chrome://device-log.
 
@@ -248,21 +248,25 @@ Source code on [PolicyDataCollector](https://source.chromium.org/chromium/chromi
 
 ### ChromeOS Shill (Connection Manager) Logs
 
-TODO: b/308088383 - Add details.
+Gathers network service and device configs and properties.
 
 Source code on [ShillDataCollector](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/support_tool/ash/shill_data_collector.h).
 
 
 ### ChromeOS System Logs
 
-TODO: b/308088383 - Add details.
+Several log files from /var/log/ path through [`debugd`](https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform2/debugd/). See [this section](https://docs.google.com/spreadsheets/d/1EX9tmmooY_0xG_4B6eMvqRpFCdQe2lIxi7Tebn4aw6g/edit#rangeid=1443702921) on the spreadsheet for the exact list of files. Note that only the files from /var/log/ will be included from the linked list.
+
+See [`log_tool.cc`](https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform2/debugd/src/log_tool.cc) for details.
 
 Source code on [SystemLogsDataCollector](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/support_tool/ash/system_logs_data_collector.h).
 
 
 ### ChromeOS System State and Logs
 
-TODO: b/308088383 - Add details.
+Calls [`debugd`](https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform2/debugd/) to run some commands to gather system state and reports. See [this section](https://docs.google.com/spreadsheets/d/1EX9tmmooY_0xG_4B6eMvqRpFCdQe2lIxi7Tebn4aw6g/edit#rangeid=1443702921) on the spreadsheet for the exact list of data. Note that `/var/log/` files from this link are collected under [ChromeOS System Logs](#chromeos-system-logs) and will not be included here.
+
+See [`log_tool.cc`](https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform2/debugd/src/log_tool.cc) for details.
 
 Source code on [SystemStateDataCollector](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/support_tool/ash/system_state_data_collector.h).
 
@@ -278,35 +282,53 @@ Source code on [ChromeUserLogsDataCollector](https://source.chromium.org/chromiu
 
 ### ChromeOS Bluetooth
 
-TODO: b/308088383 - Add details.
+If [Bluetooth Floss](https://sites.google.com/corp/google.com/flossproject/home) is enabled or not.
 
 Source code on [BluetoothDataCollector](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ash/system_logs/bluetooth_log_source.h).
 
 
 ### ChromeOS Connected Input Devices
 
-TODO: b/308088383 - Add details.
+Connected input device (e.g. touch screen or touchpad) information such as vendor names and versions.
 
 Source code on [ConnectedInputDevicesLogSource](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ash/system_logs/connected_input_devices_log_source.h).
 
 
 ### ChromeOS Virtual Keyboard
 
-TODO: b/308088383 - Add details.
+Virtual keyboard related information such as the touch screen type and keyboard name.
 
 Source code on [VirtualKeyboardLogSource](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ash/system_logs/virtual_keyboard_log_source.h).
 
 
 ### ChromeOS Traffic Counters
 
-TODO: b/308088383 - Add details.
+Network traffic counters of recent active networks on the device. This information can be used to monitor the amount of traffic on networks.
 
 Source code on [TrafficCountersLogSource](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ash/system_logs/traffic_counters_log_source.h).
 
 
 ### ChromeOS Network Health
 
-TODO: b/308088383 - Add details.
+Network health snapshot and network diagnostics routine outputs.
+
+Network health snapshot contains network information such as network name and signal strengths.
+
+Network diagnostics routines are such as following:
+-   LAN connectivity problems
+-   signal strength problems
+-   gateway can be pinged problems
+-   secure WIFI connection problems
+-   DNS resolver present problems
+-   DNS latency problems
+-   DNS resolution problems
+-   captive portal problems
+-   HTTP/HTTPS firewall problems
+-   HTTPS latency problems
+-   video conferencing problems
+-   ARC HTTP problems
+-   ARC DNS resolution problems
+-   ARC ping problems
 
 Source code on [NetworkHeathDataCollector](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/support_tool/ash/network_health_data_collector.h).
 
@@ -326,13 +348,15 @@ Source code on [PerformanceLogSource](https://source.chromium.org/chromium/chrom
 
 ### Sign In Status
 
-TODO: b/308088383 - Add details.
+The sign-in details on the device such as the signin status and the accounts. The fetched data contains the access token details such as scope and the service name.
+
+UI in chrome://signin-internals.
 
 Source code on [SigninDataCollector](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/support_tool/signin_data_collector.h).
 
 
 ### ChromeOS App Service
 
-TODO: b/308088383 - Add details.
+Gets the list of installed and running apps on the device from Apps Service and writes it on the `app_service` file.
 
 Source code on [AppServiceLogSource](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ash/system_logs/app_service_log_source.h).
