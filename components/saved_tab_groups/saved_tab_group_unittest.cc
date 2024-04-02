@@ -220,4 +220,16 @@ TEST(SavedTabGroupTest, RemoveTabFromSyncMaintainsPositions) {
   }
 }
 
+TEST(SavedTabGroupTest, PinAndUnpin) {
+  SavedTabGroup group = CreateDefaultEmptySavedTabGroup();
+  // Saved Tab Group should have position after pin.
+  group.SetPinned(true);
+  EXPECT_TRUE(group.is_pinned());
+  EXPECT_TRUE(group.position().has_value());
+  // Save Tab Group should not have position after unpin.
+  group.SetPinned(false);
+  EXPECT_FALSE(group.is_pinned());
+  EXPECT_FALSE(group.position().has_value());
+}
+
 }  // namespace tab_groups

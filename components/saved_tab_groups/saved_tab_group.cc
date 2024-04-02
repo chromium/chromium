@@ -142,8 +142,13 @@ SavedTabGroup& SavedTabGroup::SetPosition(size_t position) {
 }
 
 SavedTabGroup& SavedTabGroup::SetPinned(bool pinned) {
-  pinned_ = pinned;
-  SetUpdateTimeWindowsEpochMicros(base::Time::Now());
+  if (pinned && position_ != 0) {
+    position_ = 0;
+    SetUpdateTimeWindowsEpochMicros(base::Time::Now());
+  } else if (!pinned && position_ != std::nullopt) {
+    position_ = std::nullopt;
+    SetUpdateTimeWindowsEpochMicros(base::Time::Now());
+  }
   return *this;
 }
 
