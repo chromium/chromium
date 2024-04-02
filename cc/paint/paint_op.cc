@@ -26,6 +26,7 @@
 #include "cc/paint/paint_op_writer.h"
 #include "cc/paint/paint_record.h"
 #include "cc/paint/skottie_serialization_history.h"
+#include "skia/ext/draw_gainmap_image.h"
 #include "third_party/skia/include/core/SkAnnotation.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
@@ -37,7 +38,6 @@
 #include "third_party/skia/include/core/SkTiledImageUtils.h"
 #include "third_party/skia/include/core/SkVertices.h"
 #include "third_party/skia/include/docs/SkPDFDocument.h"
-#include "third_party/skia/include/private/SkGainmapShader.h"
 #include "third_party/skia/include/private/chromium/Slug.h"
 #include "ui/gfx/color_conversion_sk_filter_cache.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -1146,38 +1146,6 @@ class DrawImageToneMapUtil {
     }
     return false;
   }
-  static void AddGainmapShaderToPaint(SkPaint& paint,
-                                      const PaintImage& image,
-                                      const SkRect& src_rect,
-                                      const SkSamplingOptions& sampling,
-                                      const SkRect& dst_rect,
-                                      sk_sp<SkColorSpace> dst_color_space) {
-    if (!dst_color_space) {
-      dst_color_space = SkColorSpace::MakeSRGB();
-    }
-
-    // Let `gainmap_rect` be the rect in `gainmap_sk_image` that corresponds to
-    // `src_rect` in `cached_sk_image_`.
-    SkRect gainmap_rect = src_rect;
-    {
-      float scale_x = image.gainmap_sk_image_->width() /
-                      static_cast<float>(image.cached_sk_image_->width());
-      float scale_y = image.gainmap_sk_image_->height() /
-                      static_cast<float>(image.cached_sk_image_->height());
-      gainmap_rect.fLeft *= scale_x;
-      gainmap_rect.fRight *= scale_x;
-      gainmap_rect.fTop *= scale_y;
-      gainmap_rect.fBottom *= scale_y;
-    }
-
-    sk_sp<SkShader> shader = SkGainmapShader::Make(
-        image.cached_sk_image_, src_rect, sampling, image.gainmap_sk_image_,
-        gainmap_rect, sampling, image.gainmap_info_.value(), dst_rect,
-        image.target_hdr_headroom_, std::move(dst_color_space));
-    DCHECK(shader);
-    paint.setShader(std::move(shader));
-  }
-
   static bool UseGlobalToneMapFilter(const PaintImage& image) {
     return image.use_global_tone_map_ && image.cached_sk_image_ &&
            image.cached_sk_image_->colorSpace();
@@ -1231,15 +1199,11 @@ void DrawImageOp::RasterWithFlags(const DrawImageOp* op,
     }
 
     // If this uses a gainmap shader, then replace DrawImage with a shader.
-    // TODO(b/41483652): This needs to tile images that don't fit into textures.
     if (DrawImageToneMapUtil::UseGainmapShader(op->image)) {
-      SkRect src = SkRect::MakeIWH(sk_image->width(), sk_image->height());
-      SkRect dst = SkRect::MakeXYWH(op->left, op->top, sk_image->width(),
-                                    sk_image->height());
-      DrawImageToneMapUtil::AddGainmapShaderToPaint(
-          paint, op->image, src, op->sampling, dst,
-          canvas->imageInfo().refColorSpace());
-      canvas->drawRect(dst, paint);
+      skia::DrawGainmapImage(
+          canvas, op->image.cached_sk_image_, op->image.gainmap_sk_image_,
+          op->image.gainmap_info_.value(), op->image.target_hdr_headroom_,
+          op->left, op->top, op->sampling, paint);
       return;
     }
 
@@ -1338,14 +1302,11 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
 
       // If the PaintImage uses a gainmap shader, then replace DrawImage with a
       // shader.
-      // TODO(b/41483652): This needs to tile images that don't fit into
-      // textures.
       if (DrawImageToneMapUtil::UseGainmapShader(op->image)) {
-        SkPaint gainmap_paint = p;
-        DrawImageToneMapUtil::AddGainmapShaderToPaint(
-            gainmap_paint, op->image, adjusted_src, op->sampling, op->dst,
-            c->imageInfo().refColorSpace());
-        c->drawRect(op->dst, gainmap_paint);
+        skia::DrawGainmapImageRect(
+            c, op->image.cached_sk_image_, op->image.gainmap_sk_image_,
+            op->image.gainmap_info_.value(), op->image.target_hdr_headroom_,
+            adjusted_src, op->dst, op->sampling, p);
         return;
       }
 
