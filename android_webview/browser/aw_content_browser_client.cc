@@ -130,8 +130,8 @@
 using content::BrowserThread;
 using content::WebContents;
 using safe_browsing::hash_realtime_utils::HashRealTimeSelection;
-using AttributionReportType =
-    content::ContentBrowserClient::AttributionReportingOsReportType;
+using AttributionReportingOsRegistrar =
+    content::ContentBrowserClient::AttributionReportingOsRegistrar;
 
 namespace android_webview {
 namespace {
@@ -1236,8 +1236,8 @@ bool AwContentBrowserClient::IsAttributionReportingOperationAllowed(
   NOTREACHED_NORETURN();
 }
 
-content::ContentBrowserClient::AttributionReportingOsReportTypes
-AwContentBrowserClient::GetAttributionReportingOsReportTypes(
+content::ContentBrowserClient::AttributionReportingOsRegistrars
+AwContentBrowserClient::GetAttributionReportingOsRegistrars(
     content::WebContents* web_contents) {
   // Attribution reporting can register a source to either the top level origin
   // or the app. For WebView the default is to register sources against the app
@@ -1259,7 +1259,8 @@ AwContentBrowserClient::GetAttributionReportingOsReportTypes(
   AwSettings* aw_settings = AwSettings::FromWebContents(web_contents);
 
   if (!aw_settings) {
-    return {AttributionReportType::kDisabled, AttributionReportType::kDisabled};
+    return {AttributionReportingOsRegistrar::kDisabled,
+            AttributionReportingOsRegistrar::kDisabled};
   }
 
   AwSettings::AttributionBehavior attribution_behavior =
@@ -1267,14 +1268,17 @@ AwContentBrowserClient::GetAttributionReportingOsReportTypes(
 
   switch (attribution_behavior) {
     case AwSettings::AttributionBehavior::WEB_SOURCE_AND_WEB_TRIGGER:
-      return {AttributionReportType::kWeb, AttributionReportType::kWeb};
+      return {AttributionReportingOsRegistrar::kWeb,
+              AttributionReportingOsRegistrar::kWeb};
     case AwSettings::AttributionBehavior::APP_SOURCE_AND_WEB_TRIGGER:
-      return {AttributionReportType::kOs, AttributionReportType::kWeb};
+      return {AttributionReportingOsRegistrar::kOs,
+              AttributionReportingOsRegistrar::kWeb};
     case AwSettings::AttributionBehavior::APP_SOURCE_AND_APP_TRIGGER:
-      return {AttributionReportType::kOs, AttributionReportType::kOs};
+      return {AttributionReportingOsRegistrar::kOs,
+              AttributionReportingOsRegistrar::kOs};
     case AwSettings::AttributionBehavior::DISABLED:
-      return {AttributionReportType::kDisabled,
-              AttributionReportType::kDisabled};
+      return {AttributionReportingOsRegistrar::kDisabled,
+              AttributionReportingOsRegistrar::kDisabled};
   }
 
   NOTREACHED_NORETURN();

@@ -29,7 +29,7 @@ struct CONTENT_EXPORT OsRegistration {
   std::optional<AttributionInputEvent> input_event;
   bool is_within_fenced_frame;
   GlobalRenderFrameHostId render_frame_id;
-  ContentBrowserClient::AttributionReportingOsReportType report_type;
+  ContentBrowserClient::AttributionReportingOsRegistrar registrar;
 
   OsRegistration(
       std::vector<attribution_reporting::OsRegistrationItem>,
@@ -37,7 +37,7 @@ struct CONTENT_EXPORT OsRegistration {
       std::optional<AttributionInputEvent> input_event,
       bool is_within_fenced_frame,
       GlobalRenderFrameHostId render_frame_id,
-      ContentBrowserClient::AttributionReportingOsReportTypes os_report_types);
+      ContentBrowserClient::AttributionReportingOsRegistrars os_registrars);
 
   ~OsRegistration();
 

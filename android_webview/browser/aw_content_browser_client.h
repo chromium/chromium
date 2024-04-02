@@ -283,7 +283,7 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
       const url::Origin* destination_origin,
       const url::Origin* reporting_origin,
       bool* can_bypass) override;
-  AttributionReportingOsReportTypes GetAttributionReportingOsReportTypes(
+  AttributionReportingOsRegistrars GetAttributionReportingOsRegistrars(
       content::WebContents* web_contents) override;
   blink::mojom::OriginTrialsSettingsPtr GetOriginTrialsSettings() override;
   network::mojom::IpProtectionProxyBypassPolicy

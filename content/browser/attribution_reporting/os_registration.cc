@@ -23,7 +23,7 @@ OsRegistration::OsRegistration(
     std::optional<AttributionInputEvent> input_event,
     bool is_within_fenced_frame,
     GlobalRenderFrameHostId render_frame_id,
-    ContentBrowserClient::AttributionReportingOsReportTypes os_report_types)
+    ContentBrowserClient::AttributionReportingOsRegistrars os_registrars)
     : registration_items(std::move(items)),
       top_level_origin(std::move(top_level_origin)),
       input_event(std::move(input_event)),
@@ -32,10 +32,10 @@ OsRegistration::OsRegistration(
   CHECK(!this->registration_items.empty());
   switch (GetType()) {
     case attribution_reporting::mojom::RegistrationType::kSource:
-      report_type = os_report_types.source_report_type;
+      registrar = os_registrars.source_registrar;
       break;
     case attribution_reporting::mojom::RegistrationType::kTrigger:
-      report_type = os_report_types.trigger_report_type;
+      registrar = os_registrars.trigger_registrar;
       break;
   }
 }

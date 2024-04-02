@@ -511,8 +511,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           url::Origin::Create(GURL("https://b.test")), AttributionInputEvent(),
           /*is_within_fenced_frame=*/false,
           /*render_frame_id=*/GlobalRenderFrameHostId(),
-          {ContentBrowserClient::AttributionReportingOsReportType::kWeb,
-           ContentBrowserClient::AttributionReportingOsReportType::kWeb}),
+          {ContentBrowserClient::AttributionReportingOsRegistrar::kWeb,
+           ContentBrowserClient::AttributionReportingOsRegistrar::kWeb}),
       /*is_debug_key_allowed=*/false,
       attribution_reporting::mojom::OsRegistrationResult::kPassedToOs);
   EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());

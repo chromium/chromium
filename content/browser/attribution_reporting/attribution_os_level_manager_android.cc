@@ -48,7 +48,7 @@ namespace content {
 namespace {
 
 using ApiState = ContentBrowserClient::AttributionReportingOsApiState;
-using OsReportType = ContentBrowserClient::AttributionReportingOsReportType;
+using OsRegistrar = ContentBrowserClient::AttributionReportingOsRegistrar;
 
 int GetDeletionMode(bool delete_rate_limit_data) {
   // See
@@ -145,8 +145,8 @@ void AttributionOsLevelManagerAndroid::Register(
 
   // TODO(apaseltiner): Ideally `OsRegistration` wouldn't even be able to
   // represent `kDisabled` at this point in the processing pipeline.
-  const OsReportType report_type = registration.report_type;
-  CHECK_NE(report_type, OsReportType::kDisabled);
+  const OsRegistrar registrar = registration.registrar;
+  CHECK_NE(registrar, OsRegistrar::kDisabled);
 
   JNIEnv* env = base::android::AttachCurrentThread();
 
@@ -168,8 +168,8 @@ void AttributionOsLevelManagerAndroid::Register(
   switch (type) {
     case attribution_reporting::mojom::RegistrationType::kSource: {
       DCHECK(input_event.has_value());
-      switch (report_type) {
-        case OsReportType::kWeb: {
+      switch (registrar) {
+        case OsRegistrar::kWeb: {
           auto sources =
               Java_AttributionOsLevelManager_createWebSourceParamsList(
                   env, is_debug_key_allowed.size());
@@ -182,21 +182,21 @@ void AttributionOsLevelManagerAndroid::Register(
               input_event->input_event);
           break;
         }
-        case OsReportType::kOs: {
+        case OsRegistrar::kOs: {
           Java_AttributionOsLevelManager_registerAttributionSource(
               env, jobj_, request_id,
               url::GURLAndroid::ToJavaArrayOfGURLs(env, registration_urls),
               input_event->input_event);
           break;
         }
-        case OsReportType::kDisabled:
+        case OsRegistrar::kDisabled:
           NOTREACHED_NORETURN();
       }
       break;
     }
     case attribution_reporting::mojom::RegistrationType::kTrigger: {
-      switch (report_type) {
-        case OsReportType::kWeb: {
+      switch (registrar) {
+        case OsRegistrar::kWeb: {
           auto triggers =
               Java_AttributionOsLevelManager_createWebTriggerParamsList(
                   env, is_debug_key_allowed.size());
@@ -208,14 +208,14 @@ void AttributionOsLevelManagerAndroid::Register(
               env, jobj_, request_id, triggers, top_level_origin);
           break;
         }
-        case OsReportType::kOs: {
+        case OsRegistrar::kOs: {
           for (const auto& registration_url : registration_urls) {
             Java_AttributionOsLevelManager_registerAttributionTrigger(
                 env, jobj_, request_id, registration_url);
           }
           break;
         }
-        case OsReportType::kDisabled:
+        case OsRegistrar::kDisabled:
           NOTREACHED_NORETURN();
       }
       break;

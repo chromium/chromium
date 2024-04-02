@@ -97,10 +97,10 @@ using ::attribution_reporting::mojom::SourceRegistrationError;
 using ::attribution_reporting::mojom::SourceType;
 using ::attribution_reporting::mojom::TriggerRegistrationError;
 using ::blink::mojom::AttributionReportingIssueType;
-using AttributionReportingOsReportType =
-    ::content::ContentBrowserClient::AttributionReportingOsReportType;
-using AttributionReportingOsReportTypes =
-    ::content::ContentBrowserClient::AttributionReportingOsReportTypes;
+using AttributionReportingOsRegistrar =
+    ::content::ContentBrowserClient::AttributionReportingOsRegistrar;
+using AttributionReportingOsRegistrars =
+    ::content::ContentBrowserClient::AttributionReportingOsRegistrars;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -454,8 +454,8 @@ class AttributionDataHostManagerImpl::RegistrationContext {
     return suitable_context_.last_input_event();
   }
 
-  AttributionReportingOsReportTypes os_report_types() const {
-    return suitable_context_.os_report_types();
+  AttributionReportingOsRegistrars os_registrars() const {
+    return suitable_context_.os_registrars();
   }
 
   std::optional<int64_t> navigation_id() const { return navigation_id_; }
@@ -577,8 +577,8 @@ class AttributionDataHostManagerImpl::Registrations {
     return context_.render_frame_id();
   }
 
-  AttributionReportingOsReportTypes os_report_types() const {
-    return context_.os_report_types();
+  AttributionReportingOsRegistrars os_registrars() const {
+    return context_.os_registrars();
   }
 
   const std::optional<std::string>& devtools_request_id() const {
@@ -1058,10 +1058,10 @@ void AttributionDataHostManagerImpl::ParseHeader(
 
   const bool is_source = pending_decode.GetType() == RegistrationType::kSource;
   const bool client_os_disabled =
-      is_source ? it->os_report_types().source_report_type ==
-                      AttributionReportingOsReportType::kDisabled
-                : it->os_report_types().trigger_report_type ==
-                      AttributionReportingOsReportType::kDisabled;
+      is_source ? it->os_registrars().source_registrar ==
+                      AttributionReportingOsRegistrar::kDisabled
+                : it->os_registrars().trigger_registrar ==
+                      AttributionReportingOsRegistrar::kDisabled;
 
   network::mojom::AttributionSupport attribution_support =
       AttributionManager::GetAttributionSupport(client_os_disabled);
@@ -1221,10 +1221,10 @@ void AttributionDataHostManagerImpl::HandleRegistrationInfo(
   const bool is_source =
       pending_registration_data.headers.type == RegistrationType::kSource;
   const bool client_os_disabled =
-      is_source ? it->os_report_types().source_report_type ==
-                      AttributionReportingOsReportType::kDisabled
-                : it->os_report_types().trigger_report_type ==
-                      AttributionReportingOsReportType::kDisabled;
+      is_source ? it->os_registrars().source_registrar ==
+                      AttributionReportingOsRegistrar::kDisabled
+                : it->os_registrars().trigger_registrar ==
+                      AttributionReportingOsRegistrar::kDisabled;
 
   auto registrar_info = attribution_reporting::RegistrarInfo::Get(
       pending_registration_data.headers.web_header.has_value(),
@@ -2254,7 +2254,7 @@ void AttributionDataHostManagerImpl::SubmitOsRegistrations(
       /*top_level_origin=*/registration_context.context_origin(),
       std::move(input_event), registration_context.is_within_fenced_frame(),
       registration_context.render_frame_id(),
-      registration_context.os_report_types()));
+      registration_context.os_registrars()));
 }
 
 void AttributionDataHostManagerImpl::MaybeLogAuditIssueAndReportHeaderError(

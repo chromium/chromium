@@ -273,8 +273,8 @@ BASE_FEATURE(kCrashOnDanglingBrowserContext,
 
 using LifecycleState = RenderFrameHost::LifecycleState;
 using LifecycleStateImpl = RenderFrameHostImpl::LifecycleStateImpl;
-using AttributionReportingOsReportType =
-    ContentBrowserClient::AttributionReportingOsReportType;
+using AttributionReportingOsRegistrar =
+    ContentBrowserClient::AttributionReportingOsRegistrar;
 
 base::LazyInstance<base::RepeatingCallbackList<void(WebContents*)>>::
     DestructorAtExit g_created_callbacks = LAZY_INSTANCE_INITIALIZER;
@@ -10800,14 +10800,14 @@ void WebContentsImpl::SetOverscrollNavigationEnabled(bool enabled) {
 }
 
 network::mojom::AttributionSupport WebContentsImpl::GetAttributionSupport() {
-  ContentBrowserClient::AttributionReportingOsReportTypes reportTypes =
-      AttributionOsLevelManager::GetAttributionReportingOsReportTypes(this);
+  ContentBrowserClient::AttributionReportingOsRegistrars reportTypes =
+      AttributionOsLevelManager::GetAttributionReportingOsRegistrars(this);
 
   return AttributionManager::GetAttributionSupport(
-      reportTypes.source_report_type ==
-          AttributionReportingOsReportType::kDisabled &&
-      reportTypes.trigger_report_type ==
-          AttributionReportingOsReportType::kDisabled);
+      reportTypes.source_registrar ==
+          AttributionReportingOsRegistrar::kDisabled &&
+      reportTypes.trigger_registrar ==
+          AttributionReportingOsRegistrar::kDisabled);
 }
 
 void WebContentsImpl::UpdateAttributionSupportRenderer() {

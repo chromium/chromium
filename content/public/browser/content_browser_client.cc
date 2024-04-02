@@ -91,7 +91,7 @@
 #endif
 
 using AttributionReportType =
-    content::ContentBrowserClient::AttributionReportingOsReportType;
+    content::ContentBrowserClient::AttributionReportingOsRegistrar;
 
 namespace content {
 
@@ -561,8 +561,8 @@ bool ContentBrowserClient::IsAttributionReportingOperationAllowed(
   return true;
 }
 
-ContentBrowserClient::AttributionReportingOsReportTypes
-ContentBrowserClient::GetAttributionReportingOsReportTypes(
+ContentBrowserClient::AttributionReportingOsRegistrars
+ContentBrowserClient::GetAttributionReportingOsRegistrars(
     WebContents* web_contents) {
   return {AttributionReportType::kWeb, AttributionReportType::kWeb};
 }

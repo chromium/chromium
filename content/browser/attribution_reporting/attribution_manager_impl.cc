@@ -1386,8 +1386,8 @@ void AttributionManagerImpl::MaybeSendVerboseDebugReport(
 
 void AttributionManagerImpl::HandleOsRegistration(OsRegistration registration) {
   if (!network::HasAttributionOsSupport(GetAttributionSupport(
-          registration.report_type ==
-          ContentBrowserClient::AttributionReportingOsReportType::kDisabled))) {
+          registration.registrar ==
+          ContentBrowserClient::AttributionReportingOsRegistrar::kDisabled))) {
     NotifyTotalOsRegistrationFailure(registration,
                                      OsRegistrationResult::kUnsupported);
     return;

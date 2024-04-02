@@ -142,9 +142,9 @@ using attribution_reporting::kAttributionReportingRegisterSourceHeader;
 using attribution_reporting::kAttributionReportingRegisterTriggerHeader;
 
 const GlobalRenderFrameHostId kFrameId = {0, 1};
-const ContentBrowserClient::AttributionReportingOsReportTypes kOsReportTypes = {
-    ContentBrowserClient::AttributionReportingOsReportType::kWeb,
-    ContentBrowserClient::AttributionReportingOsReportType::kWeb};
+const ContentBrowserClient::AttributionReportingOsRegistrars kOsRegistrars = {
+    ContentBrowserClient::AttributionReportingOsRegistrar::kWeb,
+    ContentBrowserClient::AttributionReportingOsRegistrar::kWeb};
 
 constexpr BeaconId kBeaconId(123);
 constexpr int64_t kNavigationId(456);
@@ -1315,8 +1315,8 @@ TEST_F(AttributionDataHostManagerImplTest,
           source_site,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId,
           AttributionInputEvent(),
-          {ContentBrowserClient::AttributionReportingOsReportType::kDisabled,
-           ContentBrowserClient::AttributionReportingOsReportType::kDisabled},
+          {ContentBrowserClient::AttributionReportingOsRegistrar::kDisabled,
+           ContentBrowserClient::AttributionReportingOsRegistrar::kDisabled},
           /*attribution_data_host_manager=*/nullptr),
       attribution_src_token, kNavigationId, kDevtoolsRequestId);
   EXPECT_TRUE(data_host_manager_.NotifyNavigationRegistrationData(
@@ -1349,7 +1349,7 @@ TEST_F(AttributionDataHostManagerImplTest, NavigationRedirectOsSource) {
                    OsRegistrationItem(GURL("https://r.test/y"),
                                       /*debug_reporting=*/false)},
                   *source_site, AttributionInputEvent(),
-                  /*is_within_fenced_frame=*/false, kFrameId, kOsReportTypes)))
+                  /*is_within_fenced_frame=*/false, kFrameId, kOsRegistrars)))
       .Times(1);
 
   const blink::AttributionSrcToken attribution_src_token;
@@ -2379,7 +2379,7 @@ TEST_F(AttributionDataHostManagerImplTest,
                                       /*debug_reporting=*/false)},
                   *source_origin, AttributionInputEvent(),
                   /*is_within_fenced_frame=*/false,
-                  /*render_frame_id=*/kFrameId, kOsReportTypes)));
+                  /*render_frame_id=*/kFrameId, kOsRegistrars)));
 
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
   headers->SetHeader(kAttributionReportingRegisterOsSourceHeader,
@@ -2883,13 +2883,12 @@ TEST_F(AttributionDataHostManagerImplTest, OsSourceAvailable) {
   const auto kTopLevelOrigin = *SuitableOrigin::Deserialize("https://a.test");
   const GURL kRegistrationUrl("https://b.test/x");
 
-  EXPECT_CALL(mock_manager_,
-              HandleOsRegistration(OsRegistration(
-                  {OsRegistrationItem(kRegistrationUrl,
-                                      /*debug_reporting=*/true)},
-                  *kTopLevelOrigin, AttributionInputEvent(),
-                  /*is_within_fenced_frame=*/true,
-                  /*render_frame_id=*/kFrameId, kOsReportTypes)));
+  EXPECT_CALL(mock_manager_, HandleOsRegistration(OsRegistration(
+                                 {OsRegistrationItem(kRegistrationUrl,
+                                                     /*debug_reporting=*/true)},
+                                 *kTopLevelOrigin, AttributionInputEvent(),
+                                 /*is_within_fenced_frame=*/true,
+                                 /*render_frame_id=*/kFrameId, kOsRegistrars)));
 
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
   data_host_manager_.RegisterDataHost(
@@ -2918,7 +2917,7 @@ TEST_F(AttributionDataHostManagerImplTest, OsTriggerAvailable) {
           {OsRegistrationItem(kRegistrationUrl, /*debug_reporting=*/true)},
           *kTopLevelOrigin,
           /*input_event=*/std::nullopt,
-          /*is_within_fenced_frame=*/true, kFrameId, kOsReportTypes)));
+          /*is_within_fenced_frame=*/true, kFrameId, kOsRegistrars)));
 
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
   data_host_manager_.RegisterDataHost(
@@ -3987,7 +3986,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
                   {OsRegistrationItem(GURL("https://r.test/x"),
                                       /*debug_reporting=*/false)},
                   context_origin, /*input_event=*/AttributionInputEvent(),
-                  /*is_within_fenced_frame=*/false, kFrameId, kOsReportTypes)));
+                  /*is_within_fenced_frame=*/false, kFrameId, kOsRegistrars)));
 
   data_host_manager_.NotifyBackgroundRegistrationStarted(
       kBackgroundId, suitable_context,
@@ -4024,8 +4023,8 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
           context_origin,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId,
           AttributionInputEvent(),
-          {ContentBrowserClient::AttributionReportingOsReportType::kDisabled,
-           ContentBrowserClient::AttributionReportingOsReportType::kDisabled},
+          {ContentBrowserClient::AttributionReportingOsRegistrar::kDisabled,
+           ContentBrowserClient::AttributionReportingOsRegistrar::kDisabled},
           /*attribution_data_host_manager=*/nullptr),
       RegistrationEligibility::kSourceOrTrigger,
       /*attribution_src_token=*/std::nullopt, kDevtoolsRequestId);
@@ -4193,7 +4192,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
                   {OsRegistrationItem(GURL("https://r.test/x"),
                                       /*debug_reporting=*/false)},
                   context_origin, /*input_event=*/std::nullopt,
-                  /*is_within_fenced_frame=*/false, kFrameId, kOsReportTypes)));
+                  /*is_within_fenced_frame=*/false, kFrameId, kOsRegistrars)));
 
   data_host_manager_.NotifyBackgroundRegistrationStarted(
       kBackgroundId,
@@ -4232,8 +4231,8 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
           context_origin,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId,
           AttributionInputEvent(),
-          {ContentBrowserClient::AttributionReportingOsReportType::kDisabled,
-           ContentBrowserClient::AttributionReportingOsReportType::kDisabled},
+          {ContentBrowserClient::AttributionReportingOsRegistrar::kDisabled,
+           ContentBrowserClient::AttributionReportingOsRegistrar::kDisabled},
           nullptr),
       RegistrationEligibility::kTrigger,
       /*attribution_src_token=*/std::nullopt, kDevtoolsRequestId);

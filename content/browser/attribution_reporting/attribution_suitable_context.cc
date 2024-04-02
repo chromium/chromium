@@ -98,7 +98,7 @@ std::optional<AttributionSuitableContext> AttributionSuitableContext::Create(
       initiator_frame->IsNestedWithinFencedFrame(),
       initiator_root_frame->GetGlobalId(), initiator_frame->navigation_id(),
       attribution_host->GetMostRecentNavigationInputEvent(),
-      AttributionOsLevelManager::GetAttributionReportingOsReportTypes(
+      AttributionOsLevelManager::GetAttributionReportingOsRegistrars(
           web_contents),
       data_host_manager->AsWeakPtr());
 }
@@ -110,12 +110,11 @@ AttributionSuitableContext AttributionSuitableContext::CreateForTesting(
     GlobalRenderFrameHostId root_render_frame_id,
     int64_t last_navigation_id,
     AttributionInputEvent last_input_event,
-    ContentBrowserClient::AttributionReportingOsReportTypes os_report_types,
+    ContentBrowserClient::AttributionReportingOsRegistrars os_registrars,
     AttributionDataHostManager* attribution_data_host_manager) {
   return AttributionSuitableContext(
       std::move(context_origin), is_nested_within_fenced_frame,
-      root_render_frame_id, last_navigation_id, last_input_event,
-      os_report_types,
+      root_render_frame_id, last_navigation_id, last_input_event, os_registrars,
       attribution_data_host_manager ? attribution_data_host_manager->AsWeakPtr()
                                     : nullptr);
 }
@@ -138,14 +137,14 @@ AttributionSuitableContext::AttributionSuitableContext(
     GlobalRenderFrameHostId root_render_frame_id,
     int64_t last_navigation_id,
     AttributionInputEvent last_input_event,
-    ContentBrowserClient::AttributionReportingOsReportTypes os_report_types,
+    ContentBrowserClient::AttributionReportingOsRegistrars os_registrars,
     base::WeakPtr<AttributionDataHostManager> attribution_data_host_manager)
     : context_origin_(std::move(context_origin)),
       is_nested_within_fenced_frame_(is_nested_within_fenced_frame),
       root_render_frame_id_(root_render_frame_id),
       last_navigation_id_(last_navigation_id),
       last_input_event_(std::move(last_input_event)),
-      os_report_types_(os_report_types),
+      os_registrars_(os_registrars),
       attribution_data_host_manager_(attribution_data_host_manager) {}
 
 AttributionSuitableContext::AttributionSuitableContext(

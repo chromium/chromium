@@ -33,8 +33,8 @@
 namespace content {
 namespace {
 
-using AttributionReportingOsReportType =
-    ContentBrowserClient::AttributionReportingOsReportType;
+using AttributionReportingOsRegistrar =
+    ContentBrowserClient::AttributionReportingOsRegistrar;
 
 class AttributionOsLevelManagerAndroidTest : public ::testing::Test {
  public:
@@ -58,48 +58,48 @@ TEST_F(AttributionOsLevelManagerAndroidTest, Register) {
   const struct {
     const char* desc;
     std::optional<AttributionInputEvent> input_event;
-    ContentBrowserClient::AttributionReportingOsReportTypes os_report_types;
+    ContentBrowserClient::AttributionReportingOsRegistrars os_registrars;
     size_t items_count;
   } kTestCases[] = {
       {"os-trigger-single",
        std::nullopt,
-       {AttributionReportingOsReportType::kOs,
-        AttributionReportingOsReportType::kOs},
+       {AttributionReportingOsRegistrar::kOs,
+        AttributionReportingOsRegistrar::kOs},
        1},
       {"os-trigger-multi",
        std::nullopt,
-       {AttributionReportingOsReportType::kOs,
-        AttributionReportingOsReportType::kOs},
+       {AttributionReportingOsRegistrar::kOs,
+        AttributionReportingOsRegistrar::kOs},
        3},
       {"web-trigger-single",
        std::nullopt,
-       {AttributionReportingOsReportType::kOs,
-        AttributionReportingOsReportType::kWeb},
+       {AttributionReportingOsRegistrar::kOs,
+        AttributionReportingOsRegistrar::kWeb},
        1},
       {"web-trigger-multi",
        std::nullopt,
-       {AttributionReportingOsReportType::kOs,
-        AttributionReportingOsReportType::kWeb},
+       {AttributionReportingOsRegistrar::kOs,
+        AttributionReportingOsRegistrar::kWeb},
        3},
       {"web-source-single",
        AttributionInputEvent(),
-       {AttributionReportingOsReportType::kWeb,
-        AttributionReportingOsReportType::kWeb},
+       {AttributionReportingOsRegistrar::kWeb,
+        AttributionReportingOsRegistrar::kWeb},
        1},
       {"web-source-multi",
        AttributionInputEvent(),
-       {AttributionReportingOsReportType::kWeb,
-        AttributionReportingOsReportType::kWeb},
+       {AttributionReportingOsRegistrar::kWeb,
+        AttributionReportingOsRegistrar::kWeb},
        3},
       {"os-source-single",
        AttributionInputEvent(),
-       {AttributionReportingOsReportType::kOs,
-        AttributionReportingOsReportType::kWeb},
+       {AttributionReportingOsRegistrar::kOs,
+        AttributionReportingOsRegistrar::kWeb},
        1},
       {"os-source-multi",
        AttributionInputEvent(),
-       {AttributionReportingOsReportType::kOs,
-        AttributionReportingOsReportType::kWeb},
+       {AttributionReportingOsRegistrar::kOs,
+        AttributionReportingOsRegistrar::kWeb},
        3},
   };
 
@@ -124,18 +124,18 @@ TEST_F(AttributionOsLevelManagerAndroidTest, Register) {
                        url::Origin::Create(GURL("https://o.test")),
                        test_case.input_event, /*is_within_fenced_frame=*/false,
                        /*render_frame_id=*/GlobalRenderFrameHostId(),
-                       test_case.os_report_types),
+                       test_case.os_registrars),
         is_debug_key_allowed,
         base::BindLambdaForTesting(
             [&](const OsRegistration& registration, bool success) {
               switch (registration.GetType()) {
                 case attribution_reporting::mojom::RegistrationType::kSource:
-                  EXPECT_EQ(registration.report_type,
-                            test_case.os_report_types.source_report_type);
+                  EXPECT_EQ(registration.registrar,
+                            test_case.os_registrars.source_registrar);
                   break;
                 case attribution_reporting::mojom::RegistrationType::kTrigger:
-                  EXPECT_EQ(registration.report_type,
-                            test_case.os_report_types.trigger_report_type);
+                  EXPECT_EQ(registration.registrar,
+                            test_case.os_registrars.trigger_registrar);
                   break;
               }
               // We don't check `success` here because the measurement API may

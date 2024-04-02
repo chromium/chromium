@@ -78,10 +78,10 @@ void AttributionOsLevelManager::SetApiState(std::optional<ApiState> state) {
 }
 
 // static
-ContentBrowserClient::AttributionReportingOsReportTypes
-AttributionOsLevelManager::GetAttributionReportingOsReportTypes(
+ContentBrowserClient::AttributionReportingOsRegistrars
+AttributionOsLevelManager::GetAttributionReportingOsRegistrars(
     WebContents* web_contents) {
-  return GetContentClient()->browser()->GetAttributionReportingOsReportTypes(
+  return GetContentClient()->browser()->GetAttributionReportingOsRegistrars(
       web_contents);
 }
 
