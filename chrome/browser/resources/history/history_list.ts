@@ -105,6 +105,11 @@ export class HistoryListElement extends HistoryListElementBase {
       queryState: Object,
 
       actionMenuModel_: Object,
+
+      scrollTarget: {
+        type: Object,
+        observer: 'onScrollTargetChanged_',
+      },
     };
   }
 
@@ -118,18 +123,11 @@ export class HistoryListElement extends HistoryListElementBase {
   pendingDelete: boolean = false;
   lastSelectedIndex: number;
   queryState: QueryState;
+  scrollTarget: HTMLElement = document.documentElement;
 
   override connectedCallback() {
     super.connectedCallback();
-
-    // It is possible (eg, when middle clicking the reload button) for all other
-    // resize events to fire before the list is attached and can be measured.
-    // Adding another resize here ensures it will get sized correctly.
-    this.$['infinite-list'].notifyResize();
-    this.$['infinite-list'].scrollTarget = this;
-    this.$['scroll-threshold'].scrollTarget = this;
     this.setAttribute('aria-roledescription', this.i18n('ariaRoleDescription'));
-
     this.addWebUiListener('history-deleted', () => this.onHistoryDeleted_());
   }
 
@@ -614,6 +612,13 @@ export class HistoryListElement extends HistoryListElementBase {
   private showHistoryEmbeddings_(): boolean {
     return loadTimeData.getBoolean('enableHistoryEmbeddings') &&
         !!this.searchedTerm && this.historyData_?.length > 0;
+  }
+
+  private onScrollTargetChanged_() {
+    // It is possible (eg, when middle clicking the reload button) for all other
+    // resize events to fire before the list is attached and can be measured.
+    // Adding another resize here ensures it will get sized correctly.
+    this.$['infinite-list'].notifyResize();
   }
 }
 

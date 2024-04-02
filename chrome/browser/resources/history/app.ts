@@ -42,6 +42,7 @@ import type {ForeignSession, QueryResult, QueryState} from './externs.js';
 import type {HistoryListElement} from './history_list.js';
 import type {HistoryToolbarElement} from './history_toolbar.js';
 import {Page, TABBED_PAGES} from './router.js';
+import type {HistoryRouterElement} from './router.js';
 import type {FooterInfo, HistorySideBarElement} from './side_bar.js';
 
 let lazyLoadPromise: Promise<void>|null = null;
@@ -125,6 +126,8 @@ export interface HistoryAppElement {
     'tabs-container': Element,
     'tabs-content': IronPagesElement,
     'toolbar': HistoryToolbarElement,
+    tabsScrollContainer: HTMLElement,
+    router: HistoryRouterElement,
   };
 }
 
@@ -239,6 +242,8 @@ export class HistoryAppElement extends HistoryAppElementBase {
           ];
         },
       },
+
+      scrollTarget_: Object,
     };
   }
 
@@ -261,6 +266,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
   private tabsNames_: string[];
   private toolbarShadow_: boolean;
   private historyClustersViewStartTime_: Date|null = null;
+  private scrollTarget_: HTMLElement;
 
   constructor() {
     super();
@@ -276,7 +282,6 @@ export class HistoryAppElement extends HistoryAppElementBase {
 
   override connectedCallback() {
     super.connectedCallback();
-
     this.eventTracker_.add(
         document, 'keydown', (e: Event) => this.onKeyDown_(e as KeyboardEvent));
     this.eventTracker_.add(
@@ -525,15 +530,12 @@ export class HistoryAppElement extends HistoryAppElementBase {
 
   private updateScrollTarget_() {
     const topLevelIronPages = this.$['content'];
-    const lowerLevelIronPages = this.$['tabs-content'];
-
     const topLevelHistoryPage = this.$['tabs-container'];
     if (topLevelIronPages.selectedItem &&
         topLevelIronPages.selectedItem === topLevelHistoryPage) {
       // The top-level History page has another inner IronPages element that
-      // can toggle between different pages. If this is the case, set the
-      // scroll target to the currently selected inner tab.
-      this.scrollTarget = lowerLevelIronPages.selectedItem as HTMLElement;
+      // can toggle between different pages.
+      this.scrollTarget = this.$.tabsScrollContainer;
     } else if (topLevelIronPages.selectedItem) {
       this.scrollTarget = topLevelIronPages.selectedItem as HTMLElement;
     } else {

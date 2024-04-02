@@ -18,6 +18,7 @@ import {getTemplate} from './app.html.js';
 export interface HistoryClustersAppElement {
   $: {
     searchbox: CrToolbarSearchFieldElement,
+    historyClusters: HTMLElement,
   };
 }
 
@@ -39,6 +40,8 @@ export class HistoryClustersAppElement extends PolymerElement {
         type: String,
         value: '',
       },
+
+      scrollContainer: HTMLElement,
     };
   }
 
@@ -52,6 +55,7 @@ export class HistoryClustersAppElement extends PolymerElement {
   //============================================================================
 
   query: string;
+  private scrollTarget_: HTMLElement;
 
   //============================================================================
   // Event Handlers
@@ -68,6 +72,7 @@ export class HistoryClustersAppElement extends PolymerElement {
 
   override connectedCallback() {
     super.connectedCallback();
+    this.scrollTarget_ = this.$.historyClusters;
 
     // Populate the initial query from the URL parameter. Other methods are
     // mostly racy.

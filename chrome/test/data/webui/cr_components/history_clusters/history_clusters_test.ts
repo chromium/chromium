@@ -260,4 +260,12 @@ suite('history-clusters', () => {
     assertEquals('https://something-different.com', newPageUrl.url);
     assertTrue(!icon.getImageUrlForTesting());
   });
+
+  test('sets scroll target', async () => {
+    const clustersElement = await setupClustersElement();
+    clustersElement.scrollTarget = document.body;
+
+    assertEquals(document.body, clustersElement.$.clusters.scrollTarget);
+    assertEquals(document.body, clustersElement.$.scrollThreshold.scrollTarget);
+  });
 });

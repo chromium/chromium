@@ -19,11 +19,11 @@
     width: auto;
   }
 
- #history-clusters {
+ #historyClusters {
     flex: 1;
   }
 
-  :host-context([chrome-refresh-2023]) #history-clusters {
+  :host-context([chrome-refresh-2023]) #historyClusters {
     margin-inline-start: var(--sp-body-padding);
     margin-bottom: var(--sp-body-padding);
   }
@@ -34,8 +34,9 @@
                          clear-label="$i18n{clearSearch}"
                          on-contextmenu="onContextMenu_">
 </cr-toolbar-search-field>
-<history-clusters id="history-clusters"
+<history-clusters id="historyClusters"
     query="[[query]]"
     path="journeys"
-    on-query-changed-by-user="onQueryChangedByUser_" class="sp-scroller">
+    on-query-changed-by-user="onQueryChangedByUser_" class="sp-scroller"
+    scroll-target="[[scrollTarget_]]">
 </history-clusters>

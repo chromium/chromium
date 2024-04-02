@@ -24,6 +24,7 @@
       }
 
       #historyEmbeddingsDisclaimer {
+        width: 100%;
         margin: 0 auto;
         max-width: var(--cluster-max-width);
         padding: 6px 8px 8px;
@@ -33,6 +34,7 @@
       }
 
       cr-history-embeddings-filter-chips {
+        width: 100%;
         margin: 0 auto;
         max-width: var(--cluster-max-width);
         padding: 16px 8px;
@@ -44,6 +46,8 @@
       }
 
       #tabs-container {
+        display: flex;
+        flex-direction: column;
         --cr-tabs-height: 48px;
         --tabs-margin-top: 16px;
       }
@@ -57,15 +61,21 @@
         justify-content: start;
         margin: 0 auto;
         max-width: var(--cluster-max-width);
+        width: 100%;
+      }
+
+      #tabsScrollContainer {
+        overflow: auto;
+        height: 100%;
+      }
+
+      :host([show-history-clusters_]) #tabsScrollContainer {
+        flex: 1;
       }
 
       #tabs-content,
       #tabs-content > * {
         height: 100%;
-      }
-
-      :host([show-history-clusters_]) #tabs-content {
-        height: calc(100% - var(--cr-tabs-height));
       }
 
       :host([toolbar-shadow_]) #drop-shadow {
@@ -128,25 +138,29 @@
               </cr-tabs>
             </div>
           </template>
-          <iron-pages id="tabs-content" attr-for-selected="path"
-              fallback-selection="history"
-              selected="[[getSelectedPage_(selectedPage_, items)]]"
-              on-selected-item-changed="updateScrollTarget_"
-              items="{{items}}">
-            <history-list id="history" query-state="[[queryState_]]"
-                searched-term="[[queryResult_.info.term]]"
-                pending-delete="{{pendingDelete_}}"
-                query-result="[[queryResult_]]"
-                path="history">
-            </history-list>
-            <template is="dom-if"
-                if="[[historyClustersSelected_(selectedPage_, showHistoryClusters_)]]">
-              <history-clusters id="history-clusters"
-                  query="[[queryState_.searchTerm]]"
-                  path="grouped">
-              </history-clusters>
-            </template>
-          </iron-pages>
+          <div id="tabsScrollContainer">
+            <iron-pages id="tabs-content" attr-for-selected="path"
+                fallback-selection="history"
+                selected="[[getSelectedPage_(selectedPage_, items)]]"
+                on-selected-item-changed="updateScrollTarget_"
+                items="{{items}}">
+              <history-list id="history" query-state="[[queryState_]]"
+                  searched-term="[[queryResult_.info.term]]"
+                  pending-delete="{{pendingDelete_}}"
+                  query-result="[[queryResult_]]"
+                  path="history"
+                  scroll-target="[[scrollTarget]]">
+              </history-list>
+              <template is="dom-if"
+                  if="[[historyClustersSelected_(selectedPage_, showHistoryClusters_)]]">
+                <history-clusters id="history-clusters"
+                    query="[[queryState_.searchTerm]]"
+                    path="grouped"
+                    scroll-target="[[scrollTarget]]">
+                </history-clusters>
+              </template>
+            </iron-pages>
+          </div>
         </div>
         <template is="dom-if" if="[[syncedTabsSelected_(selectedPage_)]]">
           <history-synced-device-manager id="synced-devices"

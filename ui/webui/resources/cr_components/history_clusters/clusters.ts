@@ -111,6 +111,11 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
         type: Object,
         value: () => [],
       },
+
+      scrollTarget: {
+        type: Object,
+        observer: 'onScrollTargetChanged_',
+      },
     };
   }
 
@@ -119,6 +124,7 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
   //============================================================================
 
   query: string;
+  scrollTarget: HTMLElement = document.documentElement;
   private callbackRouter_: PageCallbackRouter;
   private headerText_: string;
   private inSidePanel_: boolean;
@@ -149,10 +155,6 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
     // Register a per-document singleton focus outline manager. Some of our
     // child elements depend on the CSS classes set by this singleton.
     FocusOutlineManager.forDocument(document);
-
-    this.$.clusters.notifyResize();
-    this.$.clusters.scrollTarget = this;
-    this.$.scrollThreshold.scrollTarget = this;
 
     this.onClustersQueryResultListenerId_ =
         this.callbackRouter_.onClustersQueryResult.addListener(
@@ -422,6 +424,10 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
       composed: true,
       detail: query,
     }));
+  }
+
+  private onScrollTargetChanged_() {
+    this.$.clusters.notifyResize();
   }
 }
 

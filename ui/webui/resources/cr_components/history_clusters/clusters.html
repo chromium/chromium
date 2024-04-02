@@ -3,7 +3,6 @@
     color: var(--cr-primary-text-color);
     display: block;
     font-size: 0.875rem;  /* 14px */
-    overflow-y: auto;
   }
 
   cr-dialog::part(dialog) {
@@ -90,8 +89,10 @@
   [[placeholderText_]]
 </div>
 <iron-list id="clusters" items="[[result_.clusters]]"
-           on-hide-visit="onHideVisit_" on-hide-visits="onHideVisits_" on-remove-visits="onRemoveVisits_"
-           hidden="[[!result_.clusters.length]]">
+           on-hide-visit="onHideVisit_" on-hide-visits="onHideVisits_"
+           on-remove-visits="onRemoveVisits_"
+           hidden="[[!result_.clusters.length]]"
+           scroll-target="[[scrollTarget]]">
   <!-- We must have a tabindex on these history-cluster elements, because
        iron-list gets very confused handling arrow keys without them. Moreover,
        we can't allow Tab to traverse all list elements because:
@@ -114,7 +115,8 @@
              hidden$="[[!showSpinner_]]"></iron-icon>
 </div>
 <iron-scroll-threshold id="scrollThreshold"
-    lower-threshold="500" on-lower-threshold="onScrolledToBottom_">
+    lower-threshold="500" on-lower-threshold="onScrolledToBottom_"
+    scroll-target="[[scrollTarget]]">
 </iron-scroll-threshold>
 <cr-lazy-render id="confirmationDialog">
   <template>

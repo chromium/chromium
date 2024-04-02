@@ -17,6 +17,10 @@ class HistoryUIBrowserTest : public WebUIMochaBrowserTest {
 
 using HistoryTest = HistoryUIBrowserTest;
 
+IN_PROC_BROWSER_TEST_F(HistoryTest, App) {
+  RunTest("history/history_app_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(HistoryTest, Drawer) {
   RunTest("history/history_drawer_test.js", "mocha.run()");
 }
@@ -142,4 +146,8 @@ IN_PROC_BROWSER_TEST_F(HistoryListTest, ClickingFileUrlSendsMessageToChrome) {
 IN_PROC_BROWSER_TEST_F(HistoryListTest,
                        DeleteHistoryResultsInQueryHistoryEvent) {
   RunTestCase("DeleteHistoryResultsInQueryHistoryEvent");
+}
+
+IN_PROC_BROWSER_TEST_F(HistoryListTest, SetsScrollTarget) {
+  RunTestCase("SetsScrollTarget");
 }

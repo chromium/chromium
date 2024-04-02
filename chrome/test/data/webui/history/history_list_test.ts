@@ -657,6 +657,13 @@ suite('HistoryListTest', function() {
     assertEquals(0, testService.getCallCount('queryHistory'));
   });
 
+  test('SetsScrollTarget', async () => {
+    await finishSetup(TEST_HISTORY_RESULTS);
+    await flushTasks();
+    assertEquals(app.scrollTarget, element.$['infinite-list'].scrollTarget);
+    assertEquals(app.scrollTarget, element.$['scroll-threshold'].scrollTarget);
+  });
+
   teardown(function() {
     app.dispatchEvent(new CustomEvent(
         'change-query', {bubbles: true, composed: true, detail: {search: ''}}));
