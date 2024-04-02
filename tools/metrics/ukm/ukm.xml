@@ -1442,6 +1442,13 @@ be describing additional metrics about the same event.
       once.
     </summary>
   </metric>
+  <metric name="NumInterestGroupsWithOtherMultiBid">
+    <summary>
+      Number of instances in which an InterestGroup generated a complicated
+      sequence of multiple bids that doesn't match any of the other
+      'NumInterestGroupsWith...' cases.
+    </summary>
+  </metric>
   <metric name="NumInterestGroupsWithSameBidForKAnonAndNonKAnon">
     <summary>
       Number of instances in which an InterestGroup's top generated bid did
