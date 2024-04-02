@@ -125,6 +125,12 @@
   <message name="IDS_HISTORY_EMBEDDINGS_DISCLAIMER" desc="On the history page, the text displayed explaining the history embeddings feature." translateable="false">
     Some text explaining what data is collected.
   </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_PROMO_HEADING" desc="On the history page, the heading of the promo for history embeddings." translateable="false">
+    Search through history
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_PROMO_BODY" desc="On the history page, the body text of the promo for history embeddings." translateable="false">
+    Enter a search query to search through history. Here is some more placeholder text about how to search History and what data is available. Here is some more text to make this placeholder longer. View more in <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Settings<ph name="END_LINK">&lt;/a&gt;</ph>.
+  </message>
   <message name="IDS_HISTORY_EMBEDDINGS_SUGGESTION_1" desc="On the history page, the text inside of a suggestion chip that a user can click to update their search to show results from yesterday" translateable="false">
     Yesterday
   </message>

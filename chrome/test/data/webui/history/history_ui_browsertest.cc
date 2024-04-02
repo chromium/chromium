@@ -61,6 +61,10 @@ IN_PROC_BROWSER_TEST_F(HistoryTest, SearchedLabel) {
   RunTest("history/searched_label_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(HistoryTest, HistoryEmbeddingsPromo) {
+  RunTest("history/history_embeddings_promo_test.js", "mocha.run()");
+}
+
 class HistoryListTest : public HistoryUIBrowserTest {
  protected:
   void RunTestCase(const std::string& testCase) {

@@ -1,0 +1,63 @@
+<style include="cr-hidden-style">
+  :host {
+    display: block;
+    box-sizing: border-box;
+  }
+
+  #promo {
+    display: flex;
+    border-radius: 8px;
+    box-shadow: var(--cr-elevation-3);
+    box-sizing: border-box;
+    padding: 24px 92px 24px 27px;
+    gap: 18px;
+    position: relative;
+    width: 100%;
+  }
+
+  #close {
+    --cr-icon-button-margin-end: 0;
+    position: absolute;
+    inset-block-start: 12px;
+    inset-inline-end: 12px;
+  }
+
+  #illustration {
+    flex-shrink: 0;
+    width: 250px;
+    height: 121px;
+    background: url(images/history_embeddings_promo.svg)
+        no-repeat center center;
+  }
+
+  #title {
+    color: var(--cr-primary-text-color);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+  }
+
+  #description {
+    color: var(--cr-secondary-text-color);
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+  }
+
+  a {
+    color: var(--cr-link-color);
+  }
+</style>
+
+<div id="promo" hidden$="[[!shown_]]">
+  <cr-icon-button id="close" iron-icon="cr:close"
+      on-click="onCloseClick_">
+  </cr-icon-button>
+
+  <div id="illustration" aria-hidden="true"></div>
+  <div>
+    <h2 id="title">$i18n{historyEmbeddingsPromoHeading}</h2>
+    <div id="description">$i18nRaw{historyEmbeddingsPromoBody}</div>
+  </div>
+</div>

@@ -10,6 +10,7 @@ build_webui("build") {
 
   static_files = [
     "history.html",
+    "images/history_embeddings_promo.svg",
     "images/list.svg",
     "images/sign_in_promo_dark.svg",
     "images/sign_in_promo.svg",
@@ -18,6 +19,7 @@ build_webui("build") {
   # Files holding a Polymer element definition and have an equivalent .html file.
   web_component_files = [
     "app.ts",
+    "history_embeddings_promo.ts",
     "history_item.ts",
     "history_list.ts",
     "history_toolbar.ts",

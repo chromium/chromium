@@ -33,6 +33,11 @@
         font-weight: 400;
       }
 
+      history-embeddings-promo {
+        margin: 0 auto;
+        max-width: var(--cluster-max-width);
+      }
+
       cr-history-embeddings-filter-chips {
         width: 100%;
         margin: 0 auto;
@@ -124,6 +129,7 @@
               $i18n{historyEmbeddingsDisclaimer}
               <a href="#" target="_blank">$i18n{learnMore}</a>
             </div>
+            <history-embeddings-promo></history-embeddings-promo>
             <cr-history-embeddings-filter-chips
                 show-results-by-group="[[
                     getShowResultsByGroup_(selectedPage_)]]"
