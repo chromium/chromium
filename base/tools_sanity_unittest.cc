@@ -15,10 +15,10 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sanitizer_buildflags.h"
-#include "base/third_party/dynamic_annotations/dynamic_annotations.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/base/dynamic_annotations.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -358,7 +358,8 @@ TEST(ToolsSanityTest, DataRace) {
 
 TEST(ToolsSanityTest, AnnotateBenignRace) {
   bool shared = false;
-  ANNOTATE_BENIGN_RACE(&shared, "Intentional race - make sure doesn't show up");
+  ABSL_ANNOTATE_BENIGN_RACE(
+      &shared, "Intentional race - make sure doesn't show up");
   TOOLS_SANITY_TEST_CONCURRENT_THREAD thread1(&shared), thread2(&shared);
   RunInParallel(&thread1, &thread2);
   EXPECT_TRUE(shared);

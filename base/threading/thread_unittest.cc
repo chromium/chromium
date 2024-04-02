@@ -23,13 +23,13 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
-#include "base/third_party/dynamic_annotations/dynamic_annotations.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+#include "third_party/abseil-cpp/absl/base/dynamic_annotations.h"
 
 #if DCHECK_IS_ON()
 #include "base/threading/thread_restrictions.h"
@@ -43,7 +43,7 @@ namespace base {
 namespace {
 
 void ToggleValue(bool* value) {
-  ANNOTATE_BENIGN_RACE(
+  ABSL_ANNOTATE_BENIGN_RACE(
       value, "Test-only data race on boolean in base/thread_unittest");
   *value = !*value;
 }
@@ -52,7 +52,7 @@ class SleepInsideInitThread : public Thread {
  public:
   SleepInsideInitThread() : Thread("none") {
     init_called_ = false;
-    ANNOTATE_BENIGN_RACE(
+    ABSL_ANNOTATE_BENIGN_RACE(
         this, "Benign test-only data race on vptr - http://crbug.com/98219");
   }
 

@@ -21,7 +21,6 @@
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/third_party/dynamic_annotations/dynamic_annotations.h"
 #include "base/threading/thread.h"
 #include "base/trace_event/heap_profiler.h"
 #include "base/trace_event/heap_profiler_allocation_context_tracker.h"
@@ -34,6 +33,7 @@
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
 #include "partition_alloc/partition_alloc_buildflags.h"
+#include "third_party/abseil-cpp/absl/base/dynamic_annotations.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/trace_event/java_heap_dump_provider_android.h"
@@ -463,7 +463,7 @@ void MemoryDumpManager::InvokeOnMemoryDump(MemoryDumpProviderInfo* mdpinfo,
   provider_name_for_debugging[sizeof(provider_name_for_debugging) - 1] = '\0';
   base::debug::Alias(provider_name_for_debugging);
 
-  ANNOTATE_BENIGN_RACE(&mdpinfo->disabled, "best-effort race detection");
+  ABSL_ANNOTATE_BENIGN_RACE(&mdpinfo->disabled, "best-effort race detection");
   CHECK(!is_thread_bound ||
         !*(static_cast<volatile bool*>(&mdpinfo->disabled)));
   bool dump_successful =

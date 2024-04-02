@@ -116,7 +116,6 @@ test("device_unittests") {
   deps = [
     "//base",
     "//base/test:test_support",
-    "//base/third_party/dynamic_annotations:dynamic_annotations",
     "//build:chromeos_buildflags",
     "//components/apdu",
     "//components/cbor",
@@ -140,6 +139,7 @@ test("device_unittests") {
     "//net",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
     "//third_party/blink/public:blink_headers",
     "//ui/base",
     "//url",

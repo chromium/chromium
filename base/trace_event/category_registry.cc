@@ -12,7 +12,7 @@
 #include "base/check.h"
 #include "base/debug/leak_annotations.h"
 #include "base/notreached.h"
-#include "base/third_party/dynamic_annotations/dynamic_annotations.h"
+#include "third_party/abseil-cpp/absl/base/dynamic_annotations.h"
 
 namespace base {
 namespace trace_event {
@@ -47,8 +47,8 @@ void CategoryRegistry::Initialize() {
   // traced or not, so we allow races on the enabled flag to keep the trace
   // macros fast.
   for (size_t i = 0; i < kMaxCategories; ++i) {
-    ANNOTATE_BENIGN_RACE(categories_[i].state_ptr(),
-                         "trace_event category enabled");
+    ABSL_ANNOTATE_BENIGN_RACE(categories_[i].state_ptr(),
+                              "trace_event category enabled");
     // If this DCHECK is hit in a test it means that ResetForTesting() is not
     // called and the categories state leaks between test fixtures.
     DCHECK(!categories_[i].is_enabled());

@@ -1073,11 +1073,11 @@ component("base") {
     "//base/allocator:buildflags",
     "//base/allocator/partition_allocator:raw_ptr",
     "//base/third_party/double_conversion",
-    "//base/third_party/dynamic_annotations",
     "//build:blink_buildflags",
     "//build:branding_buildflags",
     "//build:ios_buildflags",
     "//build/config/compiler:compiler_buildflags",
+    "//third_party/abseil-cpp:absl",
     "//third_party/modp_b64",
   ]
 
@@ -2784,7 +2784,6 @@ component("i18n") {
     "//third_party/icu",
   ]
   deps = [
-    "//base/third_party/dynamic_annotations",
     "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",
   ]
@@ -3616,6 +3615,7 @@ test("base_unittests") {
     "//build:chromeos_buildflags",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
     "//third_party/icu",
     "//third_party/modp_b64",
   ]

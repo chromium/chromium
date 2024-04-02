@@ -18,7 +18,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/third_party/dynamic_annotations/dynamic_annotations.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -27,6 +26,7 @@
 #include "device/gamepad/gamepad_user_gesture.h"
 #include "device/gamepad/public/cpp/gamepad_features.h"
 #include "mojo/public/cpp/system/platform_handle.h"
+#include "third_party/abseil-cpp/absl/base/dynamic_annotations.h"
 
 namespace device {
 
@@ -356,8 +356,9 @@ void GamepadProvider::DoPoll() {
 
   bool changed;
 
-  ANNOTATE_BENIGN_RACE_SIZED(gamepad_shared_buffer_->buffer(), sizeof(Gamepads),
-                             "Racey reads are discarded");
+  ABSL_ANNOTATE_BENIGN_RACE_SIZED(
+      gamepad_shared_buffer_->buffer(), sizeof(Gamepads),
+      "Racey reads are discarded");
 
   {
     base::AutoLock lock(devices_changed_lock_);

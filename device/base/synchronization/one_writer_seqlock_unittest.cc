@@ -8,10 +8,10 @@
 #include <atomic>
 
 #include "base/memory/raw_ptr.h"
-#include "base/third_party/dynamic_annotations/dynamic_annotations.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/base/dynamic_annotations.h"
 
 namespace device {
 
@@ -105,7 +105,7 @@ TEST(OneWriterSeqLockTest, MAYBE_ManyThreads) {
   TestData data;
   std::atomic<int> ready(0);
 
-  ANNOTATE_BENIGN_RACE_SIZED(&data, sizeof(data), "Racey reads are discarded");
+  ABSL_ANNOTATE_BENIGN_RACE_SIZED(&data, sizeof(data), "Racey reads are discarded");
 
   static const unsigned kNumReaderThreads = 10;
   BasicSeqLockTestThread threads[kNumReaderThreads];
