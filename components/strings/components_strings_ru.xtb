@@ -71,6 +71,7 @@
 <translation id="1125573121925420732">Пока на сайтах обновляются сертификаты безопасности, предупреждения временно могут появляться чаще обычного.</translation>
 <translation id="112840717907525620">В кеше политики ошибок не найдено</translation>
 <translation id="1131264053432022307">Скопированное изображение</translation>
+<translation id="1138458427267715730">Получайте оповещения о скидках, когда они появляются на каком-либо сайте.</translation>
 <translation id="1142713751288681188">Тип бумаги</translation>
 <translation id="1142846828089312304">Блокировать сторонние файлы cookie в режиме инкогнито</translation>
 <translation id="1144136880160289237">Этот список пока пуст.</translation>
@@ -1114,6 +1115,7 @@
 <translation id="3154987252551138431">Ошибка при использовании функции "Обмен с окружением".</translation>
 <translation id="315504272643575312">Вашим аккаунтом управляет <ph name="MANAGER" />.</translation>
 <translation id="3155163173539279776">Перезапустить Chromium</translation>
+<translation id="3156511682997763015">Перемотать на 10 секунд вперед</translation>
 <translation id="3157931365184549694">Восстановить</translation>
 <translation id="3158539265159265653">Диск</translation>
 <translation id="3162559335345991374">Возможно, вам нужно перейти на страницу входа сети Wi-Fi.</translation>
@@ -1213,6 +1215,7 @@
 <translation id="334438173029876234">Инвентарь для скейтбординга</translation>
 <translation id="3347146863028219517">Лыжи и сноуборд</translation>
 <translation id="3349952286488694786">SRA2</translation>
+<translation id="3350450887151703713">Перемотать на 10 секунд назад</translation>
 <translation id="3352881017886802007">Спортивные игры</translation>
 <translation id="3355823806454867987">Изменить настройки прокси-сервера...</translation>
 <translation id="335809815767823">Экспорт завершен</translation>
@@ -3052,6 +3055,7 @@
 <translation id="6944557544071529399">Стратегические игры</translation>
 <translation id="6944692733090228304">Вы ввели пароль на сайте, который не находится под управлением организации <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Чтобы защитить свой аккаунт, не используйте этот пароль для других приложений и сайтов.</translation>
 <translation id="6945221475159498467">Выбрать</translation>
+<translation id="6946949206576443118">Веб-поиск в Chrome</translation>
 <translation id="6948051842255602737">Игра закончена. Ваш результат: <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Выберите адрес, чтобы посмотреть способы и условия получения.</translation>
 <translation id="6948874830249067134">A1x3</translation>

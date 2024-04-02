@@ -878,6 +878,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="5548760955356983418">Handoffi abil saate alustada veebisaidi sirvimist selles seadmes ja jätkata seda hõlpsalt Macis. Praegu avatud veebisait kuvatakse Maci Dockis.
 
 Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama sama iCloudi kontot.</translation>
+<translation id="5551825465462320939">Püsige kursis uudiste, spordi ja muu teid huvitavaga.</translation>
 <translation id="5551897871312988470">Paku tõlkimist</translation>
 <translation id="5556459405103347317">Laadi uuesti</translation>
 <translation id="555749644339804659">Paroolide kontrollimine …</translation>
@@ -1182,6 +1183,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="6989674195860388998">Muutke Seadetes …</translation>
 <translation id="6998989275928107238">Kellele</translation>
 <translation id="699954956411469731">Mobiilimärguanded</translation>
+<translation id="699985840472413751">Sule allalaadimisriba</translation>
 <translation id="7004032350256606903">Teie organisatsioon nõuab, et sirviksite privaatselt.
 <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Hiljutised vahelehed</translation>
@@ -1471,6 +1473,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="850600235656508448">Ava inkognito režiimis</translation>
 <translation id="8517375800490286174">Avatud lähtekoodi litsentsid</translation>
 <translation id="8522147671363140027">{count,plural, =1{{count} parool ja muud üksused on salvestatud ainult sellesse seadmesse. Nende kasutamiseks muudes seadmetes salvestage need oma Google'i kontole {email}.}other{{count} parooli ja muud üksused on salvestatud ainult sellesse seadmesse. Nende kasutamiseks muudes seadmetes salvestage need oma Google'i kontole {email}.}}</translation>
+<translation id="8522813812888400223">Tühista allalaadimine</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> vahelehed <ph name="FIRST_VISIBLE_TAB" />–<ph name="LAST_VISIBLE_TAB" />/<ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="852576975834694248">Teid logitakse välja ja vahelehed suletakse</translation>
 <translation id="8528009254289981965">Muude rakenduste linkide avamine inkognito režiimis</translation>

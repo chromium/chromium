@@ -271,6 +271,7 @@
 <translation id="2446553403094072641">ಫ್ಲೋಟಿಂಗ್ ಪಾಯಿಂಟ್ ನಿಖರತೆ</translation>
 <translation id="2448312741937722512">ಪ್ರಕಾರ</translation>
 <translation id="2465272316171730950">ಪ್ರಸ್ತುತ ಓವರ್‌ಲೋಡ್ ಆಗಿದೆ. ಸ್ವಲ್ಪ ಸಮಯದ ನಂತರ ಪ್ರಯತ್ನಿಸಿ.</translation>
+<translation id="2472215337771558851">Google AI ನಿಂದ ಚಾಲಿತ, ಡ್ರಾಫ್ಟ್ ರಚಿಸಲು ಅಥವಾ ಅಸ್ತಿತ್ವದಲ್ಲಿರುವ ಕೆಲಸವನ್ನು ರೀಫೈನ್ ಮಾಡುವುದಕ್ಕೆ ನನಗೆ ಬರೆಯಲು ಸಹಾಯ ಮಾಡಿ ಎಂಬುದನ್ನು ಬಳಸಿ</translation>
 <translation id="2480572840229215612">ಏಡಿಗಳು</translation>
 <translation id="248546197012830854">ಸಾಧನ ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿದೆ. ಸಹಾಯ ವಿಷಯವನ್ನು ನೋಡಲು ವೈ-ಫೈ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಿ.</translation>
 <translation id="2486301288428798846">ಮರ</translation>
@@ -328,10 +329,12 @@
 <translation id="2860473693272905224">ಸ್ಕ್ಯಾನರ್‌ನ ಮೇಲೆ ಮತ್ತೊಂದು ಪುಟವನ್ನು ಇರಿಸಿ</translation>
 <translation id="2872961005593481000">ಮುಚ್ಚಿಬಿಡಿ </translation>
 <translation id="2873483161362553159">ಬ್ರೌಸರ್ ನ್ಯಾವಿಗೇಷನ್</translation>
+<translation id="2873939192640533085">"ಹೆಚ್ಚು ಆತ್ಮವಿಶ್ವಾಸದಿಂದ ಧ್ವನಿಸಿ" ಎಂಬಂತಹ ಪ್ರಾಂಪ್ಟ್ ಅನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="2874939134665556319">ಹಿಂದಿನ ಟ್ರ್ಯಾಕ್</translation>
 <translation id="2875812231449496375">ಈ ವಾಲ್‌ಪೇಪರ್ ಕುರಿತು ಉತ್ತಮ ಫಲಿತಾಂಶಗಳನ್ನು ಪಡೆಯಲು ಅದನ್ನು ಆನ್ ಮಾಡಿ. ನೀವು ಯಾವಾಗ ಬೇಕಾದರೂ ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಆಫ್ ಮಾಡಬಹುದು.</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> ಸೆಕೆಂಡ್‌ಗಳಲ್ಲಿ <ph name="RATE" /> ಡಿಸ್‌ಚಾರ್ಜ್ ಆಗಿದೆ.</translation>
 <translation id="2880569433548999039">ಮೋಡ ತೆಲುತ್ತಿರುವ ಸ್ಕ್ರೀನ್ ಸೇವರ್</translation>
+<translation id="2888298276507578975">"ಧನ್ಯವಾದ ತಿಳಿಸುವ ಟಿಪ್ಪಣಿ ಬರೆಯಿರಿ" ಎಂಬಂತಹ ಪ್ರಾಂಪ್ಟ್ ಅನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="2890557891229184386">ಉಷ್ಣವಲಯದ ದ್ವೀಪ</translation>
 <translation id="2895772081848316509">ಡಾರ್ಕ್</translation>
 <translation id="2926057806159140518">ನಿಮ್ಮ ಬಳಕೆದಾರರ ಹೆಸರು ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಮೂದಿಸಿ ಅಥವಾ ನಿಮ್ಮ QR ಕೋಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
@@ -376,6 +379,7 @@
 <translation id="3226405216343213872">ಸ್ಕ್ಯಾನರ್‌ಗಳಿಗಾಗಿ ಹುಡುಕಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3226657629376379887">ಲೇಔಟ್ ಕ್ರಿಯೆಗಳ ಮೆನು</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> ನ ಮೌಲ್ಯವನ್ನು <ph name="CONVERSION_RATE" /> ಸಂಖ್ಯೆಯಿಂದ ಭಾಗಿಸಿ</translation>
+<translation id="3237710083340813756">ಪುನಃ ಬರೆಯಿರಿ</translation>
 <translation id="3246869037381808805">1 ದಿನಕ್ಕಿಂತ ಹಳೆಯದಾದ ಮುದ್ರಣ ಕಾರ್ಯಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ</translation>
 <translation id="324961752321393509">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಈ ಆ್ಯಪ್ ಅನ್ನು ಮುಚ್ಚಲು ಅನುಮತಿಸುವುದಿಲ್ಲ</translation>
 <translation id="3268178239013324452">ವಿಫಲವಾಗಿದೆ - ಡೋರ್ ತೆರೆದಿದೆ</translation>
@@ -414,6 +418,7 @@
 <translation id="346539236881580388">ರೀಟೇಕ್</translation>
 <translation id="3484914941826596830">ಫರ್ಮ್‌ವೇರ್ ಅಪ್‌ಡೇಟ್ ಆಗುತ್ತಿರುವ ಸಮಯದಲ್ಲಿ, ಈ ಬಾಹ್ಯ ಸಾಧನವನ್ನು ಅನ್‌ಪ್ಲಗ್ ಮಾಡಬೇಡಿ ಅಥವಾ ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್ ಅನ್ನು ಸ್ಥಶಟ್ ಡೌನ್ ಮಾಡಬೇಡಿ. ನೀವು ಈ ವಿಂಡೋವನ್ನು ಕುಗ್ಗಿಸಬಹುದು. ಈ ಅಪ್‌ಡೇಟ್, ಕೆಲವು ನಿಮಿಷಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳಬಹುದು ಮತ್ತು ಈ ಸಮಯದಲ್ಲಿ ನಿಮ್ಮ ಬಾಹ್ಯ ಸಾಧನವು ಕಾರ್ಯನಿರ್ವಹಿಸದೇ ಇರಬಹುದು.</translation>
 <translation id="3486220673238053218">ವಿವರಣೆ</translation>
+<translation id="3487866404496702283">ಮಾಹಿ ಫೀಚರ್‌ಗಾಗಿ ಫೀಡ್‌ಬ್ಯಾಕ್</translation>
 <translation id="3488065109653206955">ಭಾಗಶಃ ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> ಟೋನ್ ಹೊಂದಿರುವ <ph name="OFFICE_STYLE" /> ಆಫೀಸ್</translation>
 <translation id="3493187369049186498">ಡೇಟಾವನ್ನು ನಿಮ್ಮ Chromebook ಮೂಲಕ ಅಳೆಯಲಾಗುತ್ತದೆ. ಇದು ಪೂರೈಕೆದಾರರ ಡೇಟಾದಿಂದ ಭಿನ್ನವಾಗಿರಬಹುದು.</translation>
@@ -442,6 +447,7 @@
 <translation id="3621072146987826699">ಆನೆಗಳು</translation>
 <translation id="3632579075709132555">ಗೌಪ್ಯತೆ ಸ್ಕ್ರೀನ್ ಟಾಗಲ್</translation>
 <translation id="3651050199673793219">ತಾಪಮಾನ ಘಟಕವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
+<translation id="3661106764436337772">ವೇಗವಾಗಿ ಮತ್ತು ಹೆಚ್ಚು ವಿಶ್ವಾಸದಿಂದ ಬರೆಯಿರಿ</translation>
 <translation id="3662461537616691585">ಬರ್ಗಂಡಿ ಮತ್ತು ಮರೂನ್ ಬಣ್ಣ</translation>
 <translation id="3668449597372804501">ಮೋಡ ತೆಲುತ್ತಿರುವ ವಾಲ್‌ಪೇಪರ್</translation>
 <translation id="3675132884790542448">ಹಂದಿಗಳು</translation>
@@ -585,6 +591,7 @@
 <translation id="4503441351962730761">ಆಧುನಿಕ ಕಲೆ</translation>
 <translation id="4507392511610824664">ಪ್ರಖರತೆ ಹೆಚ್ಚು ಮಾಡಿ</translation>
 <translation id="4511264077854731334">ಪೋರ್ಟಲ್</translation>
+<translation id="4513946894732546136">ಪ್ರತಿಕ್ರಿಯೆ</translation>
 <translation id="4521826082652183069">ವಿಷಯದ ಪರ್ಯಾಯ ಹೆಸರಿನ ಹೊಂದಾಣಿಕೆ</translation>
 <translation id="4522570452068850558">ವಿವರಗಳು</translation>
 <translation id="4536864596629708641">IP ಕಾನ್ಫಿಗರೇಶನ್</translation>
@@ -757,6 +764,7 @@
 <translation id="5543701552415191873">ಲಾಕ್ ಆಗಿದೆ</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">ಸೂರ್ಯಾಸ್ತದ ಸಮಯದಲ್ಲಿ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಡಾರ್ಕ್ ಥೀಮ್‌ಗೆ ಬದಲಿಸಿ</translation>
+<translation id="556042886152191864">ಬಟನ್</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_COLOR" /> ಶೇಡ್‌ಗಳಲ್ಲಿ <ph name="TERRAIN_FEATURE" /></translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">ಪುನಃ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
@@ -875,6 +883,7 @@
 <translation id="6235460611964961764">ಡೇಟಾ ಬಳಕೆಯನ್ನು ಹಸ್ತಚಾಲಿತವಾಗಿ ರೀಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="6243280677745499710">ಪ್ರಸ್ತುತವಾಗಿ ಹೊಂದಿಸಿರುವುದು</translation>
 <translation id="6250316632541035980">ಬೇಕನ್ ಮತ್ತು ಮೊಟ್ಟೆಗಳು</translation>
+<translation id="6255213378196499011">ಬರೆಯಲು ನನಗೆ ಸಹಾಯ ಮಾಡಿ ಎಂಬುದರ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="6275224645089671689">ರೈಟ್ ಗುರುತು</translation>
 <translation id="6278428485366576908">ಥೀಮ್</translation>
 <translation id="6280912520669706465">ARC</translation>

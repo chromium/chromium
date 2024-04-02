@@ -1114,6 +1114,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3154987252551138431">Kon nie Nabydeling gebruik nie</translation>
 <translation id="315504272643575312">Jou rekening word bestuur deur <ph name="MANAGER" />.</translation>
 <translation id="3155163173539279776">Herbegin Chromium</translation>
+<translation id="3156511682997763015">Spoel 10 sekondes vorentoe</translation>
 <translation id="3157931365184549694">Stel terug</translation>
 <translation id="3158539265159265653">Skyf</translation>
 <translation id="3162559335345991374">Die Wi-Fi wat jy gebruik, kan vereis dat jy sy aanmeldbladsy besoek.</translation>
@@ -1214,6 +1215,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="334438173029876234">Skaatsplanktoerusting</translation>
 <translation id="3347146863028219517">Ski en sneeuplankry</translation>
 <translation id="3349952286488694786">SRA2</translation>
+<translation id="3350450887151703713">Herspeel 10 sekondes</translation>
 <translation id="3352881017886802007">Sportspeletjies</translation>
 <translation id="3355823806454867987">Verander instaanbedienerinstellings …</translation>
 <translation id="335809815767823">Uitgevoer</translation>
@@ -3053,6 +3055,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6944557544071529399">Strategiespeletjies</translation>
 <translation id="6944692733090228304">Jy het jou wagwoord ingevoer op 'n werf wat nie deur <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> bestuur word nie. Om jou rekening te beskerm, moet jy nie jou wagwoord op ander programme en werwe hergebruik nie.</translation>
 <translation id="6945221475159498467">Kies</translation>
+<translation id="6946949206576443118">Deursoek die web in Chrome</translation>
 <translation id="6948051842255602737">Speletjie is verby. Jou telling is <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Kies 'n adres om oplaaimetodes en -vereistes te sien</translation>
 <translation id="6948874830249067134">A1x3</translation>

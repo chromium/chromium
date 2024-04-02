@@ -350,7 +350,6 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="125220115284141797">Standard</translation>
 <translation id="1252219782845132919">Skjul gruppe</translation>
 <translation id="1252987234827889034">Der opstod en fejl i forbindelse med profilen</translation>
-<translation id="1253664522045778676">Klik på et resultat, hvorefter siden åbnes på din aktuelle fane</translation>
 <translation id="1254593899333212300">Direkte internetforbindelse</translation>
 <translation id="1256588359404100567">Indstillingen er synkroniseret fra din tidligere enhed.</translation>
 <translation id="1257336506558170607">Eksportér det valgte certifikat</translation>
@@ -1212,7 +1211,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1887210448491286312">Stop med at caste fanen til <ph name="DEVICE_NAME" /></translation>
 <translation id="1887442540531652736">Loginfejl</translation>
 <translation id="1887597546629269384">Sig "Hey Google" igen</translation>
-<translation id="1889091146873278175">Klik på knappen "G" for at se flere søgeresultater i et sidepanel</translation>
 <translation id="1890026367080681123">Gå til indstillingerne for indlejret indhold</translation>
 <translation id="189035593835762169">Vilkår og betingelser</translation>
 <translation id="1891362123137972260">Der er næsten ikke mere diskplads. Frigør plads.</translation>
@@ -6279,7 +6277,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5804241973901381774">Tilladelser</translation>
 <translation id="5804259315582798390">Gendannelse af lokale data kunne ikke aktiveres</translation>
 <translation id="5805268472388605531">Hold tastaturtasterne nede for at se accenttegn og specialtegn</translation>
-<translation id="5805354171420804923">Sammenlign hurtigere søgeresultater fra det nye sidepanel</translation>
 <translation id="5805697420284793859">Vinduesadministrator</translation>
 <translation id="5806447147478173900">Samlet lagerplads, der bruges af de viste websites: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (standard)</translation>
@@ -7423,7 +7420,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="6709357832553498500">Opret forbindelse ved hjælp af <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">Forrige</translation>
 <translation id="6710394144992407503">Tjek, om der er stavefejl, når du skriver tekst på websider</translation>
-<translation id="671226373742585927">Klik på knappen "X" for at lukke sidepanelet</translation>
 <translation id="6712943853047024245">Du har allerede gemt en adgangskode for dette brugernavn til <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">Tilføj arbejdsprofil</translation>
 <translation id="6713441551032149301">Hold applistetasten nede for at skifte mellem funktionstaster og systemtasterne på den øverste række</translation>
@@ -8789,7 +8785,6 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7758884017823246335">Tilføj websitesøgning</translation>
 <translation id="7759809451544302770">Valgfrit</translation>
 <translation id="7762024824096060040">Denne konto kan ikke bruges</translation>
-<translation id="7762243782113123335">Noget gik galt. Send os feedback med #bruschetta i beskrivelsen. Fejlkoden er <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Tilføj adresse</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> fra <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764527477537408401">Åbn gruppen i et nyt vindue</translation>
@@ -9274,7 +9269,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="810185532889603849">Tilpasset farve</translation>
 <translation id="8101987792947961127">Powerwash er påkrævet ved næste genstart</translation>
 <translation id="8102139037507939978">Fjern personhenførbare oplysninger fra system_logs.txt.</translation>
-<translation id="8102344699913991108">Websites bruger denne indstilling til at tilbyde medrivende oplevelser i fuld skærm uafhængigt af brugernes bevægelser</translation>
 <translation id="810362914482827094">Søg efter adgangskoder</translation>
 <translation id="8104088837833760645">Download eSIM-profilen</translation>
 <translation id="8105273883928376822">Log ind for at fortsætte.</translation>
@@ -9495,7 +9489,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8272443605911821513">Administrer dine udvidelser ved at klikke på Udvidelser i menuen "Flere værktøjer".</translation>
 <translation id="8272786333453048167">Tillad igen</translation>
 <translation id="8273905181216423293">Download nu</translation>
-<translation id="8274495289680107339">Websites anvender denne indstilling til automatisk at åbne integreret billede. På den måde kan du fortsætte med at se en video og samtidig have plads til at udføre andre opgaver på skærmen.</translation>
 <translation id="827488840488530039">Den side, du forsøger at besøge, kunne ikke verificere dine Kerberos-billetter</translation>
 <translation id="8274921654076766238">Forstørrelse følger indtastningen på tastaturet</translation>
 <translation id="8274924778568117936">Undgå at slukke eller lukke din <ph name="DEVICE_TYPE" />, før opdateringen er færdig. Din <ph name="DEVICE_TYPE" /> genstarter, når installationen er fuldført.</translation>

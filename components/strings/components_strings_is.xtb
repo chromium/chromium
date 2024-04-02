@@ -71,6 +71,7 @@
 <translation id="1125573121925420732">Viðvaranir geta verið tíðar á meðan vefsvæði uppfæra öryggisvarnir sínar. Þetta ætti að lagast fljótlega.</translation>
 <translation id="112840717907525620">Skyndiminni reglu í lagi</translation>
 <translation id="1131264053432022307">Myndir sem þú afritaðir</translation>
+<translation id="1138458427267715730">Fáðu tilkynningar ef verð lækkar á hvaða vefsvæði sem er</translation>
 <translation id="1142713751288681188">Pappírsgerð</translation>
 <translation id="1142846828089312304">Loka á fótspor þriðju aðila í huliðsstillingu</translation>
 <translation id="1144136880160289237">Það eru enn engin virk umfjöllunarefni</translation>
@@ -1114,6 +1115,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3154987252551138431">Eitthvað fór úrskeiðis við notkun nærdeilingar</translation>
 <translation id="315504272643575312"><ph name="MANAGER" /> hefur umsjón með reikningnum þínum.</translation>
 <translation id="3155163173539279776">Endurræsa Chromium</translation>
+<translation id="3156511682997763015">Áfram um 10 sekúndur</translation>
 <translation id="3157931365184549694">Endurheimta</translation>
 <translation id="3158539265159265653">Diskur</translation>
 <translation id="3162559335345991374">Wi-Fi netið sem þú notar kann að fara fram á að þú farir á innskráningarsíðu þess.</translation>
@@ -1214,6 +1216,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="334438173029876234">Hjólabrettabúnaður</translation>
 <translation id="3347146863028219517">Skíði og snjóbretti</translation>
 <translation id="3349952286488694786">SRA2</translation>
+<translation id="3350450887151703713">Endurspila 10 sekúndur</translation>
 <translation id="3352881017886802007">Íþróttaleikir</translation>
 <translation id="3355823806454867987">Breyta proxy-stillingum...</translation>
 <translation id="335809815767823">Flutt út</translation>
@@ -3053,6 +3056,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6944557544071529399">Herkænskuleikir</translation>
 <translation id="6944692733090228304">Þú slóst aðgangsorðið þitt inn á vefsvæði sem <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> hefur ekki umsjón með. Til að vernda reikninginn þinn skaltu ekki nota sama aðgangsorð í öðrum forritum eða vefsvæðum.</translation>
 <translation id="6945221475159498467">Velja</translation>
+<translation id="6946949206576443118">Leitaðu á vefnum í Chrome</translation>
 <translation id="6948051842255602737">Leik lokið, þú fékkst <ph name="SCORE" /> stig.</translation>
 <translation id="6948701128805548767">Veldu heimilisfang til að sjá afhendingarmáta og kröfur</translation>
 <translation id="6948874830249067134">A1x3</translation>

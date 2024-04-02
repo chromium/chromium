@@ -30,7 +30,6 @@
 <translation id="109942774857561566">我好无聊</translation>
 <translation id="1104084341931202936">显示无障碍设置</translation>
 <translation id="1104621072296271835">协同运作可使您的各部设备更好地发挥作用</translation>
-<translation id="1106446201446919638">已连接 1 部设备。使用热点时，Wi-Fi 将保持关闭状态。</translation>
 <translation id="1111021433905331574">您可在“设置”&gt;“<ph name="APP_TITLE" />”部分中更改键盘背光的颜色</translation>
 <translation id="1117719261843403176">开启/关闭移动流量。<ph name="STATE" />。</translation>
 <translation id="112308213915226829">自动隐藏任务栏</translation>
@@ -428,6 +427,7 @@
 <translation id="2785499565474703580">已连接 1 部设备</translation>
 <translation id="2791421900609674576">系统会显示建议项目，以便您继续使用上次打开的内容。您可以通过轻触并按住建议项目将其移除。</translation>
 <translation id="2792498699870441125">Alt + 搜索键</translation>
+<translation id="2801954693771979815">屏幕上的内容大小</translation>
 <translation id="2802938996245446490">已选择“<ph name="BUTTON_LABEL" />”</translation>
 <translation id="2805756323405976993">应用</translation>
 <translation id="2814448776515246190">截取/录制局部屏幕</translation>
@@ -518,7 +518,6 @@
 <translation id="316086887565479535">此模板含有不支持的应用</translation>
 <translation id="3160929076476941240">2 小时</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> 正在回滚您的 <ph name="DEVICE_TYPE" />。您的设备将会重置，并且所有数据都会被删除。</translation>
-<translation id="3170769098533255179">未连接任何设备。使用热点时，Wi-Fi 将保持关闭状态。</translation>
 <translation id="3171170659304083361">输入法设置</translation>
 <translation id="3176221688814061633">您的 Chromebook 或蓝牙设备使用的是旧版蓝牙。开启超高解析度蓝牙或使用内置麦克风可提升音质。</translation>
 <translation id="3181441307743005334">重启可能需要一点时间</translation>
@@ -553,7 +552,6 @@
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> 部设备已连接到 <ph name="DEVICE_NAME" /> 热点</translation>
 <translation id="3307642347673023554">已切换到笔记本电脑模式</translation>
 <translation id="3308453408813785101">日后“<ph name="USER_EMAIL_ADDRESS" />”仍能登录。</translation>
-<translation id="3317779231018057649">已连接 <ph name="DEVICECOUNT" /> 部设备。使用热点时，Wi-Fi 将保持关闭状态。</translation>
 <translation id="3321628682574733415">家长访问代码不正确</translation>
 <translation id="332827762492701193">已隐藏通知</translation>
 <translation id="3333674550998107387">展开“<ph name="NOTIFICATION_TITLE" />”通知</translation>
@@ -852,6 +850,7 @@
 <translation id="440113666232554208">无法保存抓屏</translation>
 <translation id="4405151984121254935">所连外围设备的类型不受支持</translation>
 <translation id="4406883609789734330">实时字幕</translation>
+<translation id="4412698727486357573">帮助中心</translation>
 <translation id="4412944820643904175">“<ph name="FEATURE_NAME" />”功能已关闭。</translation>
 <translation id="4424159417645388645">桌面 5</translation>
 <translation id="4430019312045809116">音量</translation>
@@ -892,7 +891,6 @@
 <translation id="4566144812051858745">对任何建议都不感兴趣</translation>
 <translation id="4569753163207712681">查看手机中的近期照片、媒体内容和应用</translation>
 <translation id="4573176682887762361">“输入 [字词/短语]”</translation>
-<translation id="4577188182049003486">热点开启时，Wi-Fi 会关闭</translation>
 <translation id="4577274620589681794">时间到 · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">显示预览</translation>
 <translation id="4578906031062871102">已打开“设置”菜单</translation>
@@ -1014,6 +1012,7 @@
 <translation id="5003993274120026347">下一句</translation>
 <translation id="5004607513195820459">网络处于受管理状态</translation>
 <translation id="5009463889040999939">正在重命名配置文件。这可能需要几分钟的时间。</translation>
+<translation id="5013847959275396160">隐藏工具栏</translation>
 <translation id="5016558321564993266">开启/关闭标记工具。<ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">搜索类别</translation>
 <translation id="5030659775136592441">显示书签管理器</translation>
@@ -1149,7 +1148,6 @@
 <translation id="5550417424894892620">将文件拖放到桌面上即可将其添加到<ph name="HOLDING_SPACE_TITLE" />。您无法将文件添加到桌面。</translation>
 <translation id="5551456515017410630">打开/关闭日历</translation>
 <translation id="5551974246223970793">搜索网页时，转到下一个相符的搜索结果</translation>
-<translation id="5555639311269196631">关闭热点</translation>
 <translation id="5556459405103347317">重新加载</translation>
 <translation id="5558091555391176027">开启/关闭“附近分享”的高可见度模式</translation>
 <translation id="5558314826121965174">创意</translation>
@@ -1784,6 +1782,7 @@
 <translation id="799296642788192631">您可以固定重要文件。如需固定某个文件，请将鼠标指针悬停在该文件上，或者打开“文件”应用并从中右键点击相应文件。</translation>
 <translation id="7994370417837006925">多账号登录</translation>
 <translation id="7995804128062002838">未能截取屏幕</translation>
+<translation id="8000020256436988724">工具栏</translation>
 <translation id="8000066093800657092">未连接任何网络</translation>
 <translation id="8001755249288974029">选中从光标处到行首的文字</translation>
 <translation id="8004512796067398576">增加</translation>
@@ -1897,6 +1896,7 @@
 <translation id="847056008324733326">显示比例设置</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />已<ph name="FEATURE_STATE" /><ph name="FEATURE_NAME" />。</translation>
 <translation id="8477270416194247200">按 Alt+搜索键或按 Shift 键可取消。</translation>
+<translation id="8480418399907765580">显示工具栏</translation>
 <translation id="8487699605742506766">热点</translation>
 <translation id="8491237443345908933">在新标签页中打开链接</translation>
 <translation id="8492573885090281069">“<ph name="DISPLAY_NAME" />”不支持 <ph name="SPECIFIED_RESOLUTION" />。分辨率已改为 <ph name="FALLBACK_RESOLUTION" />。点击“确认”即可保留更改。将在 <ph name="TIMEOUT_SECONDS" />后恢复以前的设置。</translation>
@@ -1982,6 +1982,7 @@
 <translation id="8834539327799336565">目前已连接</translation>
 <translation id="8841375032071747811">“返回”按钮</translation>
 <translation id="8843682306134542540">切换旋转锁定设置。<ph name="STATE_TEXT" /></translation>
+<translation id="8845001906332463065">获取帮助</translation>
 <translation id="8849001918648564819">已隐藏</translation>
 <translation id="8853703225951107899">仍然无法验证您的 PIN 码或密码。注意：如果您最近更改了密码，请使用旧密码。待您退出登录后，系统才会应用新密码。</translation>
 <translation id="8855885154700222542">全屏键</translation>

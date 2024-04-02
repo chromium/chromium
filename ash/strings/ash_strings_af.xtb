@@ -30,7 +30,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="109942774857561566">Ek is verveeld</translation>
 <translation id="1104084341931202936">Wys toeganklikheidsinstellings</translation>
 <translation id="1104621072296271835">Jou toestelle werk selfs nog beter saam</translation>
-<translation id="1106446201446919638">1 toestel is gekoppel. Terwyl die warmkol gebruik word, sal wi-fi af bly.</translation>
 <translation id="1111021433905331574">Jy kan die kleur van jou sleutelbord se agterlig verander in Instellings &gt; <ph name="APP_TITLE" /></translation>
 <translation id="1117719261843403176">Wissel mobiele data. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">Outoversteek rak</translation>
@@ -336,6 +335,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2405664212338326887">Nie gekoppel nie</translation>
 <translation id="2408955596600435184">Voer jou PIN in</translation>
 <translation id="2412593942846481727">Opdatering is beskikbaar</translation>
+<translation id="2416438829169535743">Gaan uit aansig?</translation>
 <translation id="2417486498593892439">Meld aan by netwerk</translation>
 <translation id="2426051945783024481">Kamera se raam is outomaties gesentreer</translation>
 <translation id="2427507373259914951">Linksklik</translation>
@@ -427,6 +427,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2785499565474703580">1 toestel is gekoppel</translation>
 <translation id="2791421900609674576">Jy sal aanbevelings sien sodat jy kan aanhou waar jy opgehou het. Jy kan raak en hou om aanbevelings te verwyder.</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
+<translation id="2801954693771979815">Skermgrootte</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, gekies</translation>
 <translation id="2805756323405976993">Programme</translation>
 <translation id="2814448776515246190">Gedeeltelike opname</translation>
@@ -517,7 +518,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="316086887565479535">Ongesteunde programme in templaat</translation>
 <translation id="3160929076476941240">2 u.</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> rol tans jou <ph name="DEVICE_TYPE" /> terug. Jou toestel sal teruggestel word en alle data sal uitgevee word.</translation>
-<translation id="3170769098533255179">Geen toestelle is gekoppel nie. Terwyl die warmkol gebruik word, sal wi-fi af bly.</translation>
 <translation id="3171170659304083361">Invoermetodesinstellings</translation>
 <translation id="3176221688814061633">Jou Chromebook of Bluetooth-toestel gebruik tans ’n ouer weergawe van Bluetooth. Skakel die Bluetooth-superresolusie aan of gebruik interne mikrofoon vir beter klankgehalte.</translation>
 <translation id="3181441307743005334">Dit kan 'n rukkie neem om te herbegin</translation>
@@ -552,7 +552,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> toestelle is aan <ph name="DEVICE_NAME" />-warmkol gekoppel</translation>
 <translation id="3307642347673023554">Het na skootrekenaarmodus oorgeskakel</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> kan steeds later aanmeld.</translation>
-<translation id="3317779231018057649"><ph name="DEVICECOUNT" /> toestelle is gekoppel. Terwyl die warmkol gebruik word, sal wi-fi af bly.</translation>
 <translation id="3321628682574733415">Verkeerde ouerkode</translation>
 <translation id="332827762492701193">Kennisgewings word versteek</translation>
 <translation id="3333674550998107387">Vou <ph name="NOTIFICATION_TITLE" />-kennisgewing uit</translation>
@@ -853,6 +852,7 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="440113666232554208">Kan nie skermopname stoor nie</translation>
 <translation id="4405151984121254935">Die gekoppelde randtoesteltipe word nie gesteun nie</translation>
 <translation id="4406883609789734330">Intydse Onderskrifte</translation>
+<translation id="4412698727486357573">Hulpsentrum</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> is af.</translation>
 <translation id="4424159417645388645">Lessenaar 5</translation>
 <translation id="4430019312045809116">Volume</translation>
@@ -893,7 +893,6 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="4566144812051858745">Stel nie in enige voorstelle belang nie</translation>
 <translation id="4569753163207712681">Bekyk jou foon se onlangse foto’s, media en apps.</translation>
 <translation id="4573176682887762361">"Tik [woord / frase]"</translation>
-<translation id="4577188182049003486">Met warmkol aan is wi-fi af</translation>
 <translation id="4577274620589681794">Tyd is verby · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Wys voorskoue</translation>
 <translation id="4578906031062871102">Instellingskieslys is oopgemaak</translation>
@@ -1151,12 +1150,13 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="5550417424894892620">Laat val lêers op die werkskerm om dit by <ph name="HOLDING_SPACE_TITLE" /> te voeg. Jy kan nie lêers by die werkskerm voeg nie.</translation>
 <translation id="5551456515017410630">Maak kalender oop/toe</translation>
 <translation id="5551974246223970793">Gaan na volgende passing vir soektog wanneer ’n bladsy deurgesoek word</translation>
-<translation id="5555639311269196631">Skakel warmkol af</translation>
 <translation id="5556459405103347317">Herlaai</translation>
 <translation id="5558091555391176027">Wissel hoë sigbaarheid van Nabydeling</translation>
+<translation id="5558314826121965174">Kreatiwiteit</translation>
 <translation id="556042886152191864">Knoppie</translation>
 <translation id="5570122939431135380">Maak nuwe oortjie in nuwe Incognito-venster oop</translation>
 <translation id="5571066253365925590">Bluetooth geaktiveer</translation>
+<translation id="5572632238877308040">Noodsaaklikhede</translation>
 <translation id="557563299383177668">Volgende paragraaf</translation>
 <translation id="5577082622442191756">Wissel Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Maak seker dat Bluetooth op jou foon geaktiveer is as jy Foonsentrum wil gebruik</translation>
@@ -1181,6 +1181,7 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="5662075790140998213">Lessenaar 10</translation>
 <translation id="5662709761327382534">Neem mikrofoon <ph name="CURRENT_STATE" /> op; druk enter om mikrofoonopname <ph name="NEW_STATE" /> te begin</translation>
 <translation id="5669267381087807207">Aktiveer tans</translation>
+<translation id="5672890847723042801">Nutsdienste</translation>
 <translation id="5673434351075758678">Van "<ph name="FROM_LOCALE" />" af na "<ph name="TO_LOCALE" />" toe nadat jou instellings gesinkroniseer is.</translation>
 <translation id="5675363643668471212">Rakitem</translation>
 <translation id="5677928146339483299">Geblokkeer</translation>
@@ -1362,6 +1363,7 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="6351032674660237738">PROGRAMVOORSTELLE</translation>
 <translation id="6352082849089527770">Onbekende netwerke</translation>
 <translation id="6359587239691116345">Kry die jongste kenmerke en veiligheidverbeterings. As jy hierdie opdatering weier, sal jou toestel dalk nie meer reg werk nie en kan jy veiligheid- en werkverrigtingkwessies ervaar.</translation>
+<translation id="6362833380917912748">Leer jou ingeboude apps ken</translation>
 <translation id="6376931439017688372">Bluetooth is aan</translation>
 <translation id="6378515133128829137">Speld venster aan regterkant vas</translation>
 <translation id="6381109794406942707">Voer jou PIN in om die toestel te ontsluit.</translation>
@@ -1782,6 +1784,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="799296642788192631">Jy kan belangrike lêers vasspeld. Hou oor ’n item of maak Lêers oop en regsklik ’n item om dit vas te speld.</translation>
 <translation id="7994370417837006925">Veelvuldige aanmelding</translation>
 <translation id="7995804128062002838">Kon nie skermkiekie neem nie</translation>
+<translation id="8000020256436988724">Nutsbalk</translation>
 <translation id="8000066093800657092">Geen netwerk nie</translation>
 <translation id="8001755249288974029">Kies teks van skermpyltjie af tot by begin van reël</translation>
 <translation id="8004512796067398576">Inkrement</translation>
@@ -1848,6 +1851,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8262312463845990408">Wissel terugspeel</translation>
 <translation id="8270450402312105425">{0,plural, =1{Verander toestel binne 'n uur na vorige weergawe}other{Verander toestel binne # uur na vorige weergawe}}</translation>
 <translation id="8277261673056602147">Kleurmerk teks op jou skerm</translation>
+<translation id="8287009018010202411">Produktiwiteit</translation>
 <translation id="828708037801473432">Af</translation>
 <translation id="8297006494302853456">Swak</translation>
 <translation id="8308637677604853869">Vorige kieslys</translation>
@@ -1919,6 +1923,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Rangskik jou programme volgens naam of kleur</translation>
 <translation id="8609384513243082612">Maak nuwe oortjie oop</translation>
+<translation id="861045123704058818">Apps word tydelik volgens kategorie georganiseer</translation>
 <translation id="8612216344243590325">Hou belangrike lêers in <ph name="HOLDING_SPACE_TITLE" /> in plaas van op die werkskerm. Sleep net lêers na <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247"><ph name="APP_1_TITLE" />- en <ph name="APP_2_TITLE" />-kennisgewings word versteek omdat kykbeskerming aan is</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1957,6 +1962,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">Verifieer jou identiteit: <ph name="ORIGIN_NAME" /> wil bevestig dat dit jy is</translation>
 <translation id="875593634123171288">Wys VPN-instellings</translation>
+<translation id="8756799553341497810">Jy kan begin om jou appuitleg te pasmaak sodra jy uit hierdie aansig gaan.</translation>
 <translation id="8759408218731716181">Kan nie veelvuldige aanmelding opstel nie</translation>
 <translation id="8763883995157866248">Plaas toestel in slaapmodus</translation>
 <translation id="877404052021108314">90°F in C</translation>
@@ -1977,6 +1983,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8834539327799336565">Tans gekoppel</translation>
 <translation id="8841375032071747811">Terugknoppie</translation>
 <translation id="8843682306134542540">Wissel rotasieslot. <ph name="STATE_TEXT" /></translation>
+<translation id="8845001906332463065">Kry hulp</translation>
 <translation id="8849001918648564819">Versteek</translation>
 <translation id="8853703225951107899">Jou PIN of wagwoord kon steeds nie geverifieer word nie. Let wel: As jy jou wagwoord onlangs verander het, moet jy jou ou wagwoord gebruik. Jou nuwe wagwoord sal van toepassing wees sodra jy afmeld.</translation>
 <translation id="8855885154700222542">Volskermsleutel</translation>

@@ -349,7 +349,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="125220115284141797">Noklusējums</translation>
 <translation id="1252219782845132919">Paslēpt grupu</translation>
 <translation id="1252987234827889034">Radās profila kļūda</translation>
-<translation id="1253664522045778676">Noklikšķiniet uz rezultāta, un lapa tiks atvērta pašreizējā cilnē.</translation>
 <translation id="1254593899333212300">Tiešais interneta savienojums</translation>
 <translation id="1256588359404100567">Iestatījums ir sinhronizēts no jūsu iepriekšējās ierīces.</translation>
 <translation id="1257336506558170607">Eksportēt atlasīto sertifikātu</translation>
@@ -1201,7 +1200,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1887210448491286312">Pārtraukt cilnes apraidi ierīcē <ph name="DEVICE_NAME" /></translation>
 <translation id="1887442540531652736">Pierakstīšanās kļūda</translation>
 <translation id="1887597546629269384">Vēlreiz izrunājiet “Hey Google”</translation>
-<translation id="1889091146873278175">Noklikšķiniet uz pogas “G”, lai sānu panelī skatītu citus meklēšanas rezultātus.</translation>
 <translation id="1890026367080681123">Pāriet uz iegultā satura iestatījumiem</translation>
 <translation id="189035593835762169">Pakalpojumu sniegšanas noteikumi</translation>
 <translation id="1891362123137972260">Diskā gandrīz nav vietas. Lūdzu, atbrīvojiet vietu diskā.</translation>
@@ -6262,7 +6260,6 @@ Ja šī funkcija tiks izslēgta, Android ierīce atrašanās vietas noteikšanai
 <translation id="5804241973901381774">Atļaujas</translation>
 <translation id="5804259315582798390">Neizdevās iespējot lokālo datu atkopšanu</translation>
 <translation id="5805268472388605531">Lai skatītu uzsvara zīmes un speciālās rakstzīmes, nospiediet un turiet tastatūras taustiņus</translation>
-<translation id="5805354171420804923">Ātrāka meklēšanas rezultātu salīdzināšana jaunajā sānu panelī</translation>
 <translation id="5805697420284793859">Logu pārvaldnieks</translation>
 <translation id="5806447147478173900">Kopējais krātuves apjoms, ko izmanto parādītās vietnes: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (noklusējums)</translation>
@@ -7407,7 +7404,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6709357832553498500">Izveidot savienojumu, izmantojot paplašinājumu <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">Iepriekšējais</translation>
 <translation id="6710394144992407503">Pārbaudīt pareizrakstību, kad tīmekļa lapās rakstāt tekstu</translation>
-<translation id="671226373742585927">Noklikšķiniet uz pogas “X”, lai aizvērtu sānu paneli.</translation>
 <translation id="6712943853047024245">Jūs jau esat saglabājis paroli šim lietotājvārdam vietnē <ph name="WEBSITE" />.</translation>
 <translation id="6713233729292711163">Pievienot darba profilu</translation>
 <translation id="6713441551032149301">Turiet palaidēja taustiņu, lai pārslēgtu funkciju taustiņus un sistēmas augšējās rindas taustiņus.</translation>
@@ -8773,7 +8769,6 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="7758884017823246335">Pievienojiet meklēšanu vietnē</translation>
 <translation id="7759809451544302770">Neobligātas</translation>
 <translation id="7762024824096060040">Nevar izmantot šo kontu</translation>
-<translation id="7762243782113123335">Diemžēl radās problēma. Lūdzu, iesniedziet atsauksmi, aprakstā norādot atsauci #bruschetta. Kļūdas kods ir <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Pievienot adresi</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> no <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764527477537408401">Atvērt grupu jaunā logā</translation>
@@ -9258,7 +9253,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="810185532889603849">Pielāgota krāsa</translation>
 <translation id="8101987792947961127">Nākamajā atkārtotas palaišanas reizē jāizpilda funkcija Powerwash</translation>
 <translation id="8102139037507939978">Izņemt personu identificējošu informāciju no faila system_logs.txt.</translation>
-<translation id="8102344699913991108">Vietnēs šis iestatījums tiek izmantots, lai piedāvātu visaptverošu pilnekrāna pieredzi neatkarīgi no lietotāja žestiem.</translation>
 <translation id="810362914482827094">Meklējiet piekļuves atslēgas</translation>
 <translation id="8104088837833760645">Lejupielādēt eSIM profilu</translation>
 <translation id="8105273883928376822">Lūdzu, pierakstieties, lai turpinātu</translation>
@@ -9479,7 +9473,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8272443605911821513">Pārvaldiet savus paplašinājumus, izvēlnē “Citi rīki” noklikšķinot uz Paplašinājumi.</translation>
 <translation id="8272786333453048167">Atkal piešķirt atļaujas</translation>
 <translation id="8273905181216423293">Lejupielādēt tūlīt</translation>
-<translation id="8274495289680107339">Vietnēs šis iestatījums tiek izmantots, lai automātiski aktivizētu režīmu “Attēls attēlā”. Tādējādi varat turpināt skatīties videoklipu, vienlaikus atbrīvojot ekrānu citiem uzdevumiem.</translation>
 <translation id="827488840488530039">Lapa, kuru mēģināt apmeklēt, nevarēja verificēt jūsu Kerberos biļetes.</translation>
 <translation id="8274921654076766238">Lupa seko tastatūras fokusam</translation>
 <translation id="8274924778568117936">Neizslēdziet un neaizveriet savu <ph name="DEVICE_TYPE" /> ierīci, kamēr notiek atjaunināšana. Pēc instalēšanas pabeigšanas jūsu <ph name="DEVICE_TYPE" /> ierīce tiks restartēta.</translation>

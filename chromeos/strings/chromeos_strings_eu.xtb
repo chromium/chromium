@@ -271,6 +271,7 @@
 <translation id="2446553403094072641">Puntu gainerakorraren zehaztasuna</translation>
 <translation id="2448312741937722512">Mota</translation>
 <translation id="2465272316171730950">Zerbitzua lanpetuta dago. Itzuli geroago.</translation>
+<translation id="2472215337771558851">Erabili Idazteko laguntza zirriborro bat sortzeko edo jadanik daukazun testu bat hobetzeko, Google-ren AA bidez</translation>
 <translation id="2480572840229215612">karramarroak</translation>
 <translation id="248546197012830854">Gailua deskonektatuta dago. Konektatu wifi-sarera laguntza-edukia ikusteko.</translation>
 <translation id="2486301288428798846">egurra</translation>
@@ -328,10 +329,12 @@
 <translation id="2860473693272905224">Jarri beste orri bat eskanerrean</translation>
 <translation id="2872961005593481000">Itzali</translation>
 <translation id="2873483161362553159">Arakatzaileko nabigazioa</translation>
+<translation id="2873939192640533085">Idatzi eskaera-mezu bat; adibidez, "eman tonu ziurrago bat"</translation>
 <translation id="2874939134665556319">Aurreko pista</translation>
 <translation id="2875812231449496375">Horma-paper honekin emaitzarik onenak lortzeko, aktibatu hau. Edonoiz desaktiba dezakezu ezarpena.</translation>
 <translation id="2878387241690264070"><ph name="RATE" /> deskargatu da <ph name="NUM_SECONDS" /> segundoan.</translation>
 <translation id="2880569433548999039">Hodeien fluxua erakusten duen pantaila-babeslea</translation>
+<translation id="2888298276507578975">Idatzi eskaera-mezu bat; adibidez, "idatzi eskertzeko ohar bat"</translation>
 <translation id="2890557891229184386">Uharte tropikal</translation>
 <translation id="2895772081848316509">ilun</translation>
 <translation id="2926057806159140518">Idatzi erabiltzaile-izena eta pasahitza, edo eskaneatu QR kodea</translation>
@@ -376,6 +379,7 @@
 <translation id="3226405216343213872">Eskanerren bila</translation>
 <translation id="3226657629376379887">Diseinuaren ekintza-menua</translation>
 <translation id="3227186760713762082">Zatitu <ph name="CATEGORY_TEXT" /> balioa <ph name="CONVERSION_RATE" /> faktorearekin</translation>
+<translation id="3237710083340813756">Idatzi berriro</translation>
 <translation id="3246869037381808805">Egun bat baino gehiagoko inprimatze-lanak kendu egingo dira</translation>
 <translation id="324961752321393509">Administratzaileak ez du onartzen aplikazio hau ixtea</translation>
 <translation id="3268178239013324452">Hutsegitea - Atea irekita dago</translation>
@@ -414,6 +418,7 @@
 <translation id="346539236881580388">Atera berriro</translation>
 <translation id="3484914941826596830">Firmwarea eguneratu bitartean, ez deskonektatu kanpoko gailua edo ez itzali ordenagailua. Leihoa minimiza dezakezu. Agian minutu batzuk beharko dira eguneratzea instalatzeko, eta baliteke kanpoko gailuak denbora tarte horretan ez funtzionatzea.</translation>
 <translation id="3486220673238053218">definizioa</translation>
+<translation id="3487866404496702283">Mahi eginbideari buruzko oharrak</translation>
 <translation id="3488065109653206955">Partzialki aktibatuta</translation>
 <translation id="3492882532495507361">Bulego <ph name="OFFICE_STYLE" /> bat, tonu <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">Chromebook-ak neurtzen ditu datuak. Baliteke informazio hori bat ez etortzea hornitzaileak egindako datuen neurketarekin.</translation>
@@ -442,6 +447,7 @@
 <translation id="3621072146987826699">elefanteak</translation>
 <translation id="3632579075709132555">Pribatutasun-pantaila aldatzeko etengailua</translation>
 <translation id="3651050199673793219">Hautatu tenperatura-unitatea</translation>
+<translation id="3661106764436337772">Idatzi bizkorrago eta ziurrago</translation>
 <translation id="3662461537616691585">gorrimina eta granatea</translation>
 <translation id="3668449597372804501">Hodeien fluxua erakusten duen horma-papera</translation>
 <translation id="3675132884790542448">txerriak</translation>
@@ -585,6 +591,7 @@
 <translation id="4503441351962730761">arte modernoa</translation>
 <translation id="4507392511610824664">handitu distira</translation>
 <translation id="4511264077854731334">Ataria</translation>
+<translation id="4513946894732546136">Iritzia</translation>
 <translation id="4521826082652183069">Gaiaren ordezko izenaren bat-etortzea</translation>
 <translation id="4522570452068850558">Xehetasunak</translation>
 <translation id="4536864596629708641">IParen konfigurazioa</translation>
@@ -757,6 +764,7 @@
 <translation id="5543701552415191873">blokeatua</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Aldatu automatikoki gai ilunera ilunabarrean</translation>
+<translation id="556042886152191864">Botoia</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_COLOR" /> koloreko <ph name="TERRAIN_FEATURE" /></translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Eskaneatu berriro</translation>
@@ -875,6 +883,7 @@
 <translation id="6235460611964961764">Berrezarri datu-erabilera eskuz</translation>
 <translation id="6243280677745499710">Ezarrita dagoena</translation>
 <translation id="6250316632541035980">hirugiharra eta arrautzak</translation>
+<translation id="6255213378196499011">Idazteko laguntzaren ezarpenak</translation>
 <translation id="6275224645089671689">Eskuinera gezi-tekla</translation>
 <translation id="6278428485366576908">Gaia</translation>
 <translation id="6280912520669706465">ARC</translation>

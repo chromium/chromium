@@ -30,7 +30,6 @@
 <translation id="109942774857561566">મને કંટાળો આવે છે</translation>
 <translation id="1104084341931202936">ઍક્સેસિબિલિટી સેટિંગ બતાવો</translation>
 <translation id="1104621072296271835">તમારા ઉપકરણો એક સાથે હોય ત્યારે વધુ કાર્યક્ષમ હોય છે</translation>
-<translation id="1106446201446919638">1 ડિવાઇસ કનેક્ટ કર્યું. હૉટસ્પૉટનો ઉપયોગ કરતી વખતે વાઇ-ફાઇ બંધ રહેશે.</translation>
 <translation id="1111021433905331574">તમે સેટિંગ &gt; <ph name="APP_TITLE" />માં જઈને તમારા કીબોર્ડની બૅકલાઇટનો રંગ બદલી શકો છો</translation>
 <translation id="1117719261843403176">મોબાઇલ ડેટા ટૉગલ કરો. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">સ્વતઃછુપાવો શેલ્ફ</translation>
@@ -428,6 +427,7 @@
 <translation id="2785499565474703580">1 ડિવાઇસ કનેક્ટ કર્યું</translation>
 <translation id="2791421900609674576">તમને સુઝાવો દેખાશે જેથી તમે જ્યાંથી છોડી દીધું હતું ત્યાંથી ચાલુ રાખી શકો.  સુઝાવો કાઢી નાખવા માટે, તમે ટચ કરીને થોડીવાર દબાવી રાખી શકો છો.</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
+<translation id="2801954693771979815">સ્ક્રીનનું કદ</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, પસંદ કર્યું</translation>
 <translation id="2805756323405976993">ઍપ</translation>
 <translation id="2814448776515246190">આંશિક સ્ક્રીન કૅપ્ચર</translation>
@@ -518,7 +518,6 @@
 <translation id="316086887565479535">સપોર્ટ ન કરવામાં આવતી ઍપ નમૂનામાં છે</translation>
 <translation id="3160929076476941240">2 કલાક</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> તમારા <ph name="DEVICE_TYPE" />ને અગાઉના વર્ઝન પર લઈ જાય છે. તમારું ડિવાઇસ રીસેટ થશે અને બધો ડેટા ડિલીટ કરાશે.</translation>
-<translation id="3170769098533255179">કોઈ ડિવાઇસ કનેક્ટ કરેલું નથી. હૉટસ્પૉટનો ઉપયોગ કરતી વખતે વાઇ-ફાઇ બંધ રહેશે.</translation>
 <translation id="3171170659304083361">ઇનપુટ પદ્ધતિઓના સેટિંગ</translation>
 <translation id="3176221688814061633">તમારી Chromebook દ્વારા કે બ્લૂટૂથ ડિવાઇસ દ્વારા બ્લૂટૂથના કોઈ જૂના વર્ઝનનો ઉપયોગ કરવામાં આવી રહ્યો છે. બહેતર ઑડિયો ક્વૉલિટી માટે બ્લૂટૂથ સુપર રિઝોલ્યુશનની સુવિધા ચાલુ કરો અથવા આંતરિક માઇક્રોફોનનો ઉપયોગ કરો.</translation>
 <translation id="3181441307743005334">ફરી શરૂ થવામાં થોડો સમય લાગી શકે છે</translation>
@@ -553,7 +552,6 @@
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> ડિવાઇસ <ph name="DEVICE_NAME" /> હૉટસ્પૉટ સાથે કનેક્ટેડ છે</translation>
 <translation id="3307642347673023554">લૅપટૉપ મોડ પર સ્વિચ થયા</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> હજીએ થોડા સમય પછી સાઇન ઇન કરી શકશે.</translation>
-<translation id="3317779231018057649"><ph name="DEVICECOUNT" /> ડિવાઇસ કનેક્ટ કર્યા. હૉટસ્પૉટનો ઉપયોગ કરતી વખતે વાઇ-ફાઇ બંધ રહેશે.</translation>
 <translation id="3321628682574733415">માતાપિતાનો કોડ ખોટો</translation>
 <translation id="332827762492701193">નોટિફિકેશન છુપાવેલા છે</translation>
 <translation id="3333674550998107387"><ph name="NOTIFICATION_TITLE" /> નોટિફિકેશન મોટું કરો</translation>
@@ -853,6 +851,7 @@
 <translation id="440113666232554208">સ્ક્રીનકાસ્ટ સાચવી શકાયું નથી</translation>
 <translation id="4405151984121254935">કનેક્ટ કરવામાં આવેલા પેરિફેરલ પ્રકારને સપોર્ટ આપવામાં આવતો નથી</translation>
 <translation id="4406883609789734330">લાઇવ કૅપ્શન</translation>
+<translation id="4412698727486357573">સહાયતા કેન્દ્ર</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> બંધ છે.</translation>
 <translation id="4424159417645388645">ડેસ્ક 5</translation>
 <translation id="4430019312045809116">વૉલ્યૂમ</translation>
@@ -893,7 +892,6 @@
 <translation id="4566144812051858745">કોઈપણ સૂચનમાં રુચિ ધરાવતા નથી</translation>
 <translation id="4569753163207712681">તમારા ફોનના તાજેતરના ફોટા, મીડિયા અને ઍપ જુઓ</translation>
 <translation id="4573176682887762361">"[શબ્દ / શબ્દસમૂહ] ટાઇપ કરો"</translation>
-<translation id="4577188182049003486">હૉટસ્પૉટ ચાલુ હોવા પર વાઇ-ફાઇ બંધ હોય છે</translation>
 <translation id="4577274620589681794">સમય સમાપ્ત · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">પ્રીવ્યૂ બતાવો</translation>
 <translation id="4578906031062871102">સેટિંગ મેનૂ ખોલ્યું</translation>
@@ -1015,6 +1013,7 @@
 <translation id="5003993274120026347">આગલું વાક્ય</translation>
 <translation id="5004607513195820459">નેટવર્ક મેનેજ કરવામાં આવે છે</translation>
 <translation id="5009463889040999939">પ્રોફાઇલનું નામ બદલી રહ્યાં છીએ. આમાં થોડો સમય લાગી શકે છે.</translation>
+<translation id="5013847959275396160">ઉપકરણપટ્ટી છુપાવો</translation>
 <translation id="5016558321564993266">માર્કરને ટૉગલ કરો. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">શોધની કૅટેગરી</translation>
 <translation id="5030659775136592441">બુકમાર્ક મેનેજર બતાવો</translation>
@@ -1151,7 +1150,6 @@
 <translation id="5550417424894892620">ફાઇલોને <ph name="HOLDING_SPACE_TITLE" />માં ઉમેરવા માટે તેને ડેસ્કટૉપ પર ડ્રૉપ કરો. તમે ડેસ્કટૉપ પર ફાઇલો ઉમેરી શકતા નથી.</translation>
 <translation id="5551456515017410630">કૅલેન્ડર ખોલો/બંધ કરો</translation>
 <translation id="5551974246223970793">પેજમાં શોધતી વખતે, શોધ માટે આગલા મેળ પર જાઓ</translation>
-<translation id="5555639311269196631">હૉટસ્પૉટ બંધ કરો</translation>
 <translation id="5556459405103347317">ફરીથી લોડ કરો</translation>
 <translation id="5558091555391176027">નજીકના શેર સુવિધાની ઉચ્ચ દૃશ્યતા ટૉગલ કરો</translation>
 <translation id="5558314826121965174">સર્જનાત્મકતા</translation>
@@ -1786,6 +1784,7 @@
 <translation id="799296642788192631">તમે મહત્ત્વની ફાઇલો પિન કરી શકો છો. પિન કરવા માટે, કોઈ આઇટમ પર કર્સર લઈ જાઓ અથવા Files ખોલો અને કોઈ આઇટમ પર રાઇટ ક્લિક કરો.</translation>
 <translation id="7994370417837006925">બહુવિધ સાઇન-ઇન</translation>
 <translation id="7995804128062002838">સ્ક્રીન કૅપ્ચર કરવામાં નિષ્ફળ રહ્યાં</translation>
+<translation id="8000020256436988724">ટૂલબાર</translation>
 <translation id="8000066093800657092">નેટવર્ક નથી</translation>
 <translation id="8001755249288974029">કર્સરથી લાઇનની શરૂઆત સુધીની ટેક્સ્ટ પસંદ કરો</translation>
 <translation id="8004512796067398576">વૃદ્ધિ</translation>
@@ -1899,6 +1898,7 @@
 <translation id="847056008324733326">પ્રદર્શન ધોરણનું સેટિંગ</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />માં <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />છે.</translation>
 <translation id="8477270416194247200">રદ કરવા માટે Alt+Search અથવા Shift દબાવો.</translation>
+<translation id="8480418399907765580">ટૂલબાર બતાવો</translation>
 <translation id="8487699605742506766">હૉટસ્પૉટ</translation>
 <translation id="8491237443345908933">નવા ટૅબમાં લિંક ખોલો</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" />ને સપોર્ટ આપતું નથી. રિઝોલ્યુશનને <ph name="FALLBACK_RESOLUTION" /> પર બદલવામાં આવ્યું હતું. ફેરફારો રાખવા માટે કન્ફર્મ પર ક્લિક કરો. અગાઉના સેટિંગ <ph name="TIMEOUT_SECONDS" />માં રિસ્ટોર કરવામાં આવશે.</translation>
@@ -1984,6 +1984,7 @@
 <translation id="8834539327799336565">હાલમાં કનેક્ટેડ</translation>
 <translation id="8841375032071747811">પાછળ બટન</translation>
 <translation id="8843682306134542540">રોટેશન લૉક ટૉગલ કરો. <ph name="STATE_TEXT" /></translation>
+<translation id="8845001906332463065">સહાય મેળવો</translation>
 <translation id="8849001918648564819">છુપાવેલી</translation>
 <translation id="8853703225951107899">તમારો પિન કે પાસવર્ડ હજી પણ ચકાસી શકાયો નથી. નોંધ: જો તમે તમારો પાસવર્ડ તાજેતરમાં બદલ્યો હોય, તો તમારા જૂના પાસવર્ડનો ઉપયોગ કરો. એકવાર તમે સાઇન આઉટ કરો, તે પછી તમારો નવો પાસવર્ડ લાગુ કરવામાં આવશે.</translation>
 <translation id="8855885154700222542">પૂર્ણસ્ક્રીન કી</translation>

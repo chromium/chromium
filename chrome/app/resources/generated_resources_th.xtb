@@ -348,7 +348,6 @@
 <translation id="125220115284141797">ค่าเริ่มต้น</translation>
 <translation id="1252219782845132919">ซ่อนกลุ่ม</translation>
 <translation id="1252987234827889034">เกิดข้อผิดพลาดของโปรไฟล์</translation>
-<translation id="1253664522045778676">คลิกที่ผลลัพธ์แล้วหน้าเว็บจะเปิดขึ้นในแท็บปัจจุบัน</translation>
 <translation id="1254593899333212300">เชื่อมต่ออินเทอร์เน็ตโดยตรง</translation>
 <translation id="1256588359404100567">การตั้งค่าที่ซิงค์จากอุปกรณ์ก่อนหน้า</translation>
 <translation id="1257336506558170607">ส่งออกใบรับรองที่เลือก</translation>
@@ -1201,7 +1200,6 @@
 <translation id="1887210448491286312">หยุดแคสต์แท็บไปยัง <ph name="DEVICE_NAME" /></translation>
 <translation id="1887442540531652736">ข้อผิดพลาดในการลงชื่อเข้าใช้</translation>
 <translation id="1887597546629269384">พูดว่า "Hey Google" อีกครั้ง</translation>
-<translation id="1889091146873278175">คลิกปุ่ม "G" เพื่อดูผลการค้นหาเพิ่มเติมในแผงด้านข้าง</translation>
 <translation id="1890026367080681123">ไปที่การตั้งค่าเนื้อหาที่ฝัง</translation>
 <translation id="189035593835762169">ข้อกำหนดและเงื่อนไข</translation>
 <translation id="1891362123137972260">พื้นที่ดิสก์เกือบเต็มแล้ว โปรดเพิ่มพื้นที่ว่างในดิสก์</translation>
@@ -2155,7 +2153,7 @@
 <translation id="2589658397149952302">ไม่ต้องแสดงไฟล์ในไดรฟ์</translation>
 <translation id="25899519884572181">ออกจากโหมดผู้อ่าน</translation>
 <translation id="2593499352046705383">ตรวจสอบว่าคุณได้สำรองข้อมูลไว้แล้วก่อนที่จะเริ่ม การติดตั้ง <ph name="DEVICE_OS" /> จะเขียนทับข้อมูลในฮาร์ดไดรฟ์ ดูข้อมูลเพิ่มเติมที่ g.co/flex/InstallGuide</translation>
-<translation id="2594832159966169099">จัดการการรักษาความปลอดภัยของ V8</translation>
+<translation id="2594832159966169099">จัดการความปลอดภัย V8</translation>
 <translation id="2594999711683503743">ค้นหาด้วย Google หรือพิมพ์ URL</translation>
 <translation id="2597073208962000830">การแชร์ใกล้เคียงใช้การสแกนหาบลูทูธเพื่อค้นหาอุปกรณ์ที่อยู่ใกล้เคียง</translation>
 <translation id="2598710988533271874">Chrome เวอร์ชันใหม่พร้อมใช้งานแล้ว</translation>
@@ -6269,7 +6267,6 @@
 <translation id="5804241973901381774">สิทธิ์</translation>
 <translation id="5804259315582798390">เปิดใช้การกู้คืนข้อมูลในเครื่องไม่สำเร็จ</translation>
 <translation id="5805268472388605531">กดแป้นบนแป้นพิมพ์ค้างไว้เพื่อดูเครื่องหมายการเน้นเสียงและสัญลักษณ์พิเศษ</translation>
-<translation id="5805354171420804923">เปรียบเทียบผลการค้นหาได้เร็วขึ้นจากแผงด้านข้างใหม่</translation>
 <translation id="5805697420284793859">ตัวจัดการหน้าต่าง</translation>
 <translation id="5806447147478173900">พื้นที่เก็บข้อมูลทั้งหมดที่เว็บไซต์ต่างๆ ที่แสดงอยู่ใช้: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (ค่าเริ่มต้น)</translation>
@@ -7410,7 +7407,6 @@
 <translation id="6709357832553498500">เชื่อมต่อโดยใช้ <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">ก่อนหน้า</translation>
 <translation id="6710394144992407503">ตรวจสอบข้อผิดพลาดของการสะกดคำเมื่อพิมพ์ข้อความในหน้าเว็บ</translation>
-<translation id="671226373742585927">คลิกปุ่ม "X" เพื่อปิดแผงด้านข้าง</translation>
 <translation id="6712943853047024245">คุณได้บันทึกรหัสผ่านไว้กับชื่อผู้ใช้นี้แล้วสำหรับ <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">เพิ่มโปรไฟล์งาน</translation>
 <translation id="6713441551032149301">กดแป้น Launcher ค้างไว้เพื่อสลับระหว่างแป้นฟังก์ชันกับแป้นแถวบนสุดของระบบ</translation>
@@ -8777,7 +8773,6 @@
 <translation id="7758884017823246335">เพิ่มการค้นหาเว็บไซต์</translation>
 <translation id="7759809451544302770">ไม่บังคับ</translation>
 <translation id="7762024824096060040">ใช้บัญชีนี้ไม่ได้</translation>
-<translation id="7762243782113123335">ขออภัย มีข้อผิดพลาดเกิดขึ้น โปรดส่งความคิดเห็นพร้อมใส่ #bruschetta ในคำอธิบาย รหัสข้อผิดพลาดคือ <ph name="ERROR" /></translation>
 <translation id="7764225426217299476">เพิ่มที่อยู่</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> จาก <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764527477537408401">เปิดกลุ่มในหน้าต่างใหม่</translation>
@@ -9263,7 +9258,6 @@
 <translation id="810185532889603849">สีที่กำหนดเอง</translation>
 <translation id="8101987792947961127">ต้องใช้ Powerwash ในการรีบูตครั้งถัดไป</translation>
 <translation id="8102139037507939978">นำข้อมูลส่วนบุคคลที่ระบุตัวบุคคลนั้นได้ออกจาก system_logs.txt</translation>
-<translation id="8102344699913991108">เว็บไซต์ใช้การตั้งค่านี้เพื่อมอบประสบการณ์แบบเต็มหน้าจอที่สมจริงโดยไม่คำนึงถึงการกระทำของผู้ใช้</translation>
 <translation id="810362914482827094">ค้นหาพาสคีย์</translation>
 <translation id="8104088837833760645">ดาวน์โหลดโปรไฟล์ eSIM</translation>
 <translation id="8105273883928376822">โปรดลงชื่อเข้าใช้เพื่อดำเนินการต่อ</translation>
@@ -9484,7 +9478,6 @@
 <translation id="8272443605911821513">จัดการส่วนขยายของคุณโดยคลิกที่ "ส่วนขยาย" ในเมนู "เครื่องมือเพิ่มเติม"</translation>
 <translation id="8272786333453048167">อนุญาตอีกครั้ง</translation>
 <translation id="8273905181216423293">ดาวน์โหลดเลย</translation>
-<translation id="8274495289680107339">เว็บไซต์ใช้การตั้งค่านี้เพื่อเข้าสู่การแสดงภาพซ้อนภาพโดยอัตโนมัติ ซึ่งจะช่วยให้คุณดูวิดีโอต่อได้และยังทำให้หน้าจอมีที่ว่างมากขึ้นสำหรับงานอื่นๆ</translation>
 <translation id="827488840488530039">หน้าเว็บที่คุณพยายามเข้าชมไม่สามารถยืนยันตั๋ว Kerberos ของคุณได้</translation>
 <translation id="8274921654076766238">แว่นขยายตามโฟกัสของแป้นพิมพ์</translation>
 <translation id="8274924778568117936">อย่าปิดเครื่องหรือปิดฝา <ph name="DEVICE_TYPE" /> จนกว่าการอัปเดตจะเสร็จสิ้น <ph name="DEVICE_TYPE" /> จะรีสตาร์ทหลังติดตั้งเสร็จแล้ว</translation>

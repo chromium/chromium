@@ -579,6 +579,7 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
 <translation id="1468702975912409463">Toestaan dat gebruikers met externe toegang URL's aan de hostzijde openen in hun lokale clientbrowser</translation>
 <translation id="1474273443907024088">TLS False Start uitzetten</translation>
 <translation id="1477934438414550161">TLS 1.2</translation>
+<translation id="1478529725439951221">De provider van UI-automatisering wordt aan- of uitgezet via het framework voor varianten.</translation>
 <translation id="1479427764273213107">Als je het beleid instelt, wordt de lijst met USB-apparaten gedefinieerd die door gebruikers mogen worden ontkoppeld van hun kernel-driver, zodat ze via de chrome.usb API rechtstreeks kunnen worden gebruikt in een web-app. Items zijn paren van de ID van de USB-leverancier en de ID van het product, zodat specifieke hardware kan worden geïdentificeerd.
 
       Als je het beleid niet instelt, is de lijst met USB-apparaten die kunnen worden ontkoppeld leeg.</translation>
@@ -2097,10 +2098,10 @@ OPMERKING: Dit beleid had de onjuist gedocumenteerde standaardwaarde 'waar' in M
 <translation id="2608535066974278204">Periode (minuten) die de duur van het tijdvenster voor herstarten aangeeft.</translation>
 <translation id="2608887839902987727">Voorkomen dat captive portal-verificatie proxyinstellingen negeert</translation>
 <translation id="2608985885792348429">Standaard klembordinstelling</translation>
-<translation id="2613493229743687635">Met de <ph name="GET_ALL_SCREENS_MEDIA_NAME" /> API kunnen geïsoleerde web-apps (geïdentificeerd op basis van hun oorsprong) meerdere platforms tegelijk vastleggen zonder aanvullende gebruikerstoestemming.
+<translation id="2613493229743687635">Met de API <ph name="GET_ALL_SCREENS_MEDIA_NAME" /> kunnen geïsoleerde web-apps (geïdentificeerd op basis van hun oorsprong) meerdere platforms tegelijk vastleggen zonder aanvullende gebruikerstoestemming.
       Als het beleid niet is ingesteld, is <ph name="GET_ALL_SCREENS_MEDIA_NAME" /> niet beschikbaar voor web-apps.
 Voor de privacy ondersteunt dit beleid geen updates van de beleidswaarde tijdens een sessie. Wijzigingen worden pas toegepast nadat de gebruiker is uitgelogd en weer is ingelogd.
-De gebruiker kan er zeker van zijn dat er geen andere apps zijn die de schermen kunnen vastleggen na het inloggen (als dit nog niet was toegestaan bij de start van de sessie).</translation>
+De gebruiker kan erop vertrouwen dat er geen andere apps zijn die de schermen kunnen vastleggen na het inloggen als dit nog niet was toegestaan bij de start van de sessie.</translation>
 <translation id="2615240493030733717">Informatie over tijdzone rapporteren</translation>
 <translation id="2619258867868873629">De bestemming Opslaan als pdf en de bestemming Opslaan in Google Drive op <ph name="PRODUCT_OS_NAME" />-apparaten</translation>
 <translation id="2621290137818374425">Als je het beleid instelt, wordt de handhaving van vereisten voor openbaarmaking via Certificaattransparantie uitgezet voor de hostnamen in de opgegeven URL's. Hoewel het moeilijker wordt om misbruik van certificaten vast te stellen, kunnen hosts certificaten blijven gebruiken die anders niet zouden worden vertrouwd (omdat deze niet op de juiste manier openbaar zijn gemaakt).
@@ -5787,6 +5788,7 @@ Als je het beleid niet toepast, wordt <ph name="PRODUCT_NAME" /> uitgezet.</tran
       Opmerking: Gebruik bij meerdere waarden een komma als scheidingsteken.</translation>
 <translation id="5693469654327063861">Gegevensmigratie toestaan</translation>
 <translation id="56936613186060503">Downloadbeheer heeft geen optie om bestanden op te slaan in <ph name="GOOGLE_DRIVE_NAME" />.</translation>
+<translation id="5693942129376744977">De provider van UI-automatisering uitzetten.</translation>
 <translation id="5695209488612697377">Hiermee wordt een standaard zoekprovider in het contextmenu gebruikt.
 
           Als je dit beleid niet toepast, is de zoekoptie in het contextmenu die je standaard zoekprovider gebruikt niet beschikbaar.
@@ -5860,6 +5862,17 @@ Als je dit beleid niet toepast of niet instelt, staat Glanceables niet aan in <p
       Als het beleid is ingesteld op False of niet is ingesteld, worden de gegevens niet gerapporteerd.
       Als het beleid is ingesteld op True, worden de VPD-gegevens van het apparaat gerapporteerd.
       VPD (Vital Product Data) is een verzameling configuratiegegevens en informatie, zoals onderdeel- en serienummers, die bij het apparaat horen.</translation>
+<translation id="5760227556806302854">Hiermee wordt de provider van het toegankelijkheidsframework voor UI-automatisering in <ph name="PRODUCT_NAME" /> aangezet voor gebruik door toegankelijkheidstools.
+
+Dit beleid wordt in <ph name="PRODUCT_NAME" /> ondersteund voor een overgangsperiode van één jaar, zodat bedrijfsbeheerders de implementatie van de provider van het toegankelijkheidsframework voor UI-automatisering van de browser kunnen beheren. Voor toegankelijkheid en andere tools die het toegankelijkheidsframework voor UI-automatisering gebruiken voor samenwerking met de browser, zijn misschien updates nodig voor een goede werking met de provider van UI-automatisering. Beheerders kunnen dit beleid gebruiken om de provider van UI-automatisering van de browser tijdelijk uit te zetten (waardoor het beleid wordt teruggezet naar het oude gedrag) terwijl ze samenwerken met leveranciers om updates voor getroffen tools te leveren.
+
+Als je dit beleid instelt op Onwaar, zet <ph name="PRODUCT_NAME" /> alleen de Microsoft Active Accessibility-provider aan. Toegankelijkheid en andere tools die het nieuwere toegankelijkheidsframework voor UI-automatisering gebruiken voor samenwerking met de browser, communiceren via een tussenliggende compatibiliteitsfunctie in <ph name="MS_WIN_NAME" />.
+
+Als je dit instelt op Waar, zet <ph name="PRODUCT_NAME" /> de provider van UI-automatisering aan in aanvulling op de Microsoft Active Accessibility-provider. Toegankelijkheid en andere tools die het nieuwere toegankelijkheidsframework voor UI-automatisering gebruiken voor samenwerking met de browser, communiceren rechtstreeks met de browser.
+
+Als je dit beleid niet instelt, wordt het framework voor varianten in <ph name="PRODUCT_NAME" /> gebruikt om de provider aan of uit te zetten.
+
+Ondersteuning voor deze beleidsinstelling wordt beëindigd in <ph name="PRODUCT_NAME" /> 136.</translation>
 <translation id="5762969307102447459">Automatisch invullen voor adressen uitzetten</translation>
 <translation id="5765780083710877561">Beschrijving:</translation>
 <translation id="5766438888216077649"><ph name="WINDOW_OPENER_PROPERTY" /> niet instellen voor links die <ph name="BLANK_PAGE_NAME" /> targeten</translation>
@@ -7555,6 +7568,7 @@ Als je dit beleid instelt op <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_
       Als het beleid niet wordt ingesteld, wordt de plank standaard onderaan het scherm geplaatst en kan de gebruiker de positie van de plank zelf wijzigen.</translation>
 <translation id="7039815268521168329">Voice Match-proces van de Google Assistent laten zien tijdens de eerste installatie</translation>
 <translation id="7040229947030068419">Voorbeeldwaarde:</translation>
+<translation id="7043157348967593138">De provider van het toegankelijkheidsframework voor UI-automatisering van de browser aanzetten in Windows</translation>
 <translation id="7044883996351280650">De Android-service 'Back-up maken en terugzetten' beheren</translation>
 <translation id="7045221780834308118">Als je het beleid toepast, kunnen web-apps van derden de Desk API gebruiken om <ph name="PRODUCT_OS_NAME" />-bureaus te beheren. Als je het beleid niet instelt of niet toepast, is <ph name="DESK_API_NAME" /> niet beschikbaar. Het beleid geldt alleen voor ingeschreven apparaten.</translation>
 <translation id="7046113122884041950">Smart Lock niet toestaan</translation>
@@ -8497,6 +8511,7 @@ Ga naar https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-e
 
        Als je het beleid niet toepast of niet instelt, blijft de ontwikkelaarsmodus beschikbaar voor het apparaat.</translation>
 <translation id="7824000841504721945">Atomische beleidsgroepen uitzetten</translation>
+<translation id="7824833865123899471">De provider van UI-automatisering aanzetten.</translation>
 <translation id="782661371433719637">Geen sites toestemming geven om leestoegang tot bestanden of directory's te vragen via de File System API</translation>
 <translation id="7827127381981620448">Platform-app</translation>
 <translation id="7829436838673974723">Toestaan dat pagina's synchrone XHR-verzoeken sturen tijdens het sluiten van pagina's</translation>

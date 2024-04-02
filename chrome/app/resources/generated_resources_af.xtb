@@ -349,7 +349,6 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="125220115284141797">Verstek</translation>
 <translation id="1252219782845132919">Versteek groep</translation>
 <translation id="1252987234827889034">Profielfout het voorgekom</translation>
-<translation id="1253664522045778676">Klik ’n resultaat en die bladsy sal in jou huidige oortjie oopmaak</translation>
 <translation id="1254593899333212300">Direkte internetverbinding</translation>
 <translation id="1256588359404100567">Instelling is van jou vorige toestel af gesinkroniseer.</translation>
 <translation id="1257336506558170607">Voer gekose sertifikaat uit</translation>
@@ -1211,7 +1210,6 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1887210448491286312">Hou op om oortjie na <ph name="DEVICE_NAME" /> toe uit te saai</translation>
 <translation id="1887442540531652736">Aanmeldfout</translation>
 <translation id="1887597546629269384">Sê weer "Hey Google"</translation>
-<translation id="1889091146873278175">Klik die “G”-knoppie om meer soekresultate in ’n kantpaneel te sien</translation>
 <translation id="1890026367080681123">Gaan na ingebedde inhoudinstellings</translation>
 <translation id="189035593835762169">Bepalings en voorwaardes</translation>
 <translation id="1891362123137972260">Skyfspasie is gevaarlik min. Maak asseblief spasie op skyf beskikbaar.</translation>
@@ -6279,7 +6277,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5804241973901381774">Toestemmings</translation>
 <translation id="5804259315582798390">Kon nie terugstelling van plaaslike data aktiveer nie</translation>
 <translation id="5805268472388605531">Druk en hou sleutelbordsleutels om aksentmerke en spesiale karakters te sien</translation>
-<translation id="5805354171420804923">Vergelyk soekresultate vinniger van die nuwe kantpaneel af</translation>
 <translation id="5805697420284793859">Vensterbestuurder</translation>
 <translation id="5806447147478173900">Totale berginggebruik deur vertoonde werwe: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (Verstek)</translation>
@@ -7421,7 +7418,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6709357832553498500">Koppel met <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">Vorige</translation>
 <translation id="6710394144992407503">Gaan na of daar spelfoute is wanneer jy teks op webbladsye tik</translation>
-<translation id="671226373742585927">Klik die “X”-knoppie om die kantpaneel toe te maak</translation>
 <translation id="6712943853047024245">Jy het reeds 'n wagwoord met hierdie gebruikernaam vir <ph name="WEBSITE" /> gestoor</translation>
 <translation id="6713233729292711163">Voeg werkprofiel by</translation>
 <translation id="6713441551032149301">Hou die lanseerdersleutel in om tussen funksiesleutels en die stelsel se boonste ry sleutels te wissel</translation>
@@ -8786,7 +8782,6 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7758884017823246335">Voeg werfsoektog by</translation>
 <translation id="7759809451544302770">Opsioneel</translation>
 <translation id="7762024824096060040">Kan nie hierdie rekening gebruik nie</translation>
-<translation id="7762243782113123335">Jammer, iets is fout. Dien asseblief terugvoer in met #bruschetta in die beskrywing. Foutkode is <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Voeg adres by</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> vanaf <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764527477537408401">Maak groep in nuwe venster oop</translation>
@@ -9271,7 +9266,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="810185532889603849">Gepasmaakte kleur</translation>
 <translation id="8101987792947961127">Kragwas vereis vir volgende herselflaai</translation>
 <translation id="8102139037507939978">Verwyder persoonlik identifiseerbare inligting uit system_logs.txt.</translation>
-<translation id="8102344699913991108">Werwe gebruik hierdie instelling om meesleurende volskermervarings te bied, ongeag gebruikergebare</translation>
 <translation id="810362914482827094">Soek toegangsleutels</translation>
 <translation id="8104088837833760645">Laai e-SIM-profiel af</translation>
 <translation id="8105273883928376822">Meld asseblief aan om voort te gaan.</translation>
@@ -9492,7 +9486,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8272443605911821513">Bestuur jou uitbreidings deur Uitbreidings in die "Meer nutsgoed"-kieslys te klik.</translation>
 <translation id="8272786333453048167">Laat weer toe</translation>
 <translation id="8273905181216423293">Laai nou af</translation>
-<translation id="8274495289680107339">Werwe gebruik hierdie instelling om prent-in-prent outomaties in te gaan. Dit laat jou ’n video aanhou kyk, terwyl jy jou skerm vir ander take vrymaak.</translation>
 <translation id="827488840488530039">Die bladsy wat jy probeer besoek, kon nie jou Kerberos-kaartjies verifieer nie</translation>
 <translation id="8274921654076766238">Vergrootglas volg sleutelbordfokus</translation>
 <translation id="8274924778568117936">Moenie jou <ph name="DEVICE_TYPE" /> afskakel of toemaak voordat die opdatering afgehandel is nie. Jou <ph name="DEVICE_TYPE" /> sal herbegin wanneer die installering voltooi is.</translation>

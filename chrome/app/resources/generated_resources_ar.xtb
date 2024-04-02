@@ -352,7 +352,6 @@
 <translation id="125220115284141797">تلقائي</translation>
 <translation id="1252219782845132919">إخفاء المجموعة</translation>
 <translation id="1252987234827889034">حدث خطأ في الملف الشخصي</translation>
-<translation id="1253664522045778676">انقر على إحدى نتائج البحث وسيتم فتح الصفحة في علامة التبويب الحالية.</translation>
 <translation id="1254593899333212300">اتصال مباشر بالإنترنت</translation>
 <translation id="1256588359404100567">تمّت مزامنة الإعداد من جهازك السابق.</translation>
 <translation id="1257336506558170607">تصدير الشهادة التي تم اختيارها</translation>
@@ -1205,7 +1204,6 @@
 <translation id="1887210448491286312">إيقاف بث علامة التبويب على "<ph name="DEVICE_NAME" />"</translation>
 <translation id="1887442540531652736">خطأ في تسجيل الدخول</translation>
 <translation id="1887597546629269384">‏يُرجى قول "Ok Google" مرة أخرى.</translation>
-<translation id="1889091146873278175">‏انقر على زر "G" للاطّلاع على المزيد من نتائج البحث في لوحة جانبية.</translation>
 <translation id="1890026367080681123">الانتقال إلى إعدادات المحتوى المضمَّن</translation>
 <translation id="189035593835762169">الأحكام والشروط</translation>
 <translation id="1891362123137972260">مساحة القرص منخفضة للغاية. يُرجى إخلاء بعض المساحة.</translation>
@@ -6274,7 +6272,6 @@
 <translation id="5804241973901381774">الأذونات</translation>
 <translation id="5804259315582798390">تعذَّر تفعيل ميزة استرداد البيانات المحلّية</translation>
 <translation id="5805268472388605531">اضغط مع الاستمرار على مفاتيح لوحة المفاتيح لإظهار علامات التشكيل والرموز الخاصة.</translation>
-<translation id="5805354171420804923">المقارنة بين نتائج البحث بشكل أسرع من خلال اللوحة الجانبية الجديدة</translation>
 <translation id="5805697420284793859">مدير النوافذ</translation>
 <translation id="5806447147478173900">إجمالي مساحة التخزين التي تستخدمها المواقع الإلكترونية المعروضة: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0 درجة (تلقائي)</translation>
@@ -7424,7 +7421,6 @@
 <translation id="6709357832553498500">الاتصال باستخدام <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">السابق</translation>
 <translation id="6710394144992407503">التحقق من الأخطاء الإملائية عند كتابة نص على صفحات الويب</translation>
-<translation id="671226373742585927">‏انقر على زر "X" لإغلاق اللوحة الجانبية.</translation>
 <translation id="6712943853047024245">سبق أن حفظت كلمة مرور مع اسم المستخدم هذا للموقع الإلكتروني <ph name="WEBSITE" />.</translation>
 <translation id="6713233729292711163">إضافة ملف شخصي للعمل</translation>
 <translation id="6713441551032149301">اضغط مع الاستمرار على مفتاح مشغّل التطبيقات للتبديل بين مفاتيح الوظائف ومفاتيح الصف العلوي للنظام</translation>
@@ -8792,7 +8788,6 @@
 <translation id="7758884017823246335">إضافة محرّك بحث في المواقع الإلكترونية</translation>
 <translation id="7759809451544302770">اختياري</translation>
 <translation id="7762024824096060040">لا يمكن استخدام هذا الحساب</translation>
-<translation id="7762243782113123335">‏حدث خطأ. يُرجى إرسال ملاحظاتك وإضافة عبارة ‎#bruschetta في الوصف. رمز الخطأ هو <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">إضافة عنوان</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> من <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764527477537408401">فتح المجموعة في نافذة جديدة</translation>
@@ -9278,7 +9273,6 @@
 <translation id="810185532889603849">لون مخصص</translation>
 <translation id="8101987792947961127">‏يتطلب إجراء Powerwash بعد عملية إعادة التشغيل التالية</translation>
 <translation id="8102139037507939978">‏إزالة معلومات تحديد الهوية الشخصية من system_logs.txt</translation>
-<translation id="8102344699913991108">تستخدم المواقع الإلكترونية هذا الإعداد لتقديم تجربة غامرة بملء الشاشة، وذلك بغض النظر عن إيماءات المستخدم</translation>
 <translation id="810362914482827094">البحث في مفاتيح المرور</translation>
 <translation id="8104088837833760645">‏تنزيل الملف الشخصي لشريحة eSIM</translation>
 <translation id="8105273883928376822">يُرجى تسجيل الدخول للمتابعة</translation>
@@ -9500,7 +9494,6 @@
 <translation id="8272443605911821513">يمكنك إدارة الإضافات من خلال النقر على "الإضافات" في قائمة "المزيد من الأدوات".</translation>
 <translation id="8272786333453048167">السماح مرة أخرى</translation>
 <translation id="8273905181216423293">تنزيل الآن</translation>
-<translation id="8274495289680107339">تستخدم المواقع الإلكترونية هذا الإعداد لفتح النوافذ في وضع "نافذة ضمن النافذة" تلقائيًا. يتيح لك هذا الإعداد مواصلة مشاهدة الفيديو مع إخلاء جزء من الشاشة لتنفيذ مهام أخرى.</translation>
 <translation id="827488840488530039">‏يتعذّر على الصفحة التي تحاول الانتقال إليها التحقّق من تذاكر Kerberos.</translation>
 <translation id="8274921654076766238">المكبِّر يتبع تركيز لوحة المفاتيح.</translation>
 <translation id="8274924778568117936">لا توقف تشغيل جهاز <ph name="DEVICE_TYPE" /> أو تُغلقه لحين الانتهاء من التحديث. ستتم إعادة تشغيل جهاز <ph name="DEVICE_TYPE" /> بعد اكتمال التثبيت.</translation>

@@ -148,6 +148,7 @@
 <translation id="3100998948628680988">Andke oma Chrome'i profiilile nimi</translation>
 <translation id="3112458742631356345">Chrome blokeeris selle allalaadimise, kuna seda faili ei laadita sageli alla ja see võib olla ohtlik</translation>
 <translation id="3114643501466072395">Kui soovite kontrollida, kas teie muud paroolid on andmetega seotud rikkumiste ja muude turvaprobleemide eest kaitstud, <ph name="BEGIN_LINK" />logige Chrome'i sisse<ph name="END_LINK" />.</translation>
+<translation id="3119573284443908657">Chrome blokeeris selle allalaadimise, kuna arhiivifail sisaldab muid faile, mis võivad peita pahavara</translation>
 <translation id="3140883423282498090">Teie muudatused jõustuvad järgmine kord, kui avate Google Chrome'i.</translation>
 <translation id="3149510190863420837">Chrome'i rakendused</translation>
 <translation id="3169523567916669830">Prooviperioodidel saate vaadata ja eemaldada huvipakkuvaid teemasid, mida saidid teile reklaamide näitamiseks kasutavad. Chrome prognoosib teie huvisid teie hiljutise sirvimisajaloo põhjal.</translation>
@@ -218,6 +219,7 @@
 <translation id="4334294535648607276">Allalaadimine on lõpule viidud.</translation>
 <translation id="4335235004908507846">Chrome aitab teid kaitsta andmetega seotud rikkumiste, ohtlike laienduste ja muu eest</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> on Chrome'i lisatud</translation>
+<translation id="436060642166082913">Chrome blokeeris selle allalaadimise, kuna fail võib kahjustada teie isiklikke ja sotsiaalvõrgustiku kontosid</translation>
 <translation id="4384570495110188418">Chrome ei saa teie paroole kontrollida, kuna te pole sisse logitud</translation>
 <translation id="4389991535395284064">Kui sirvite inkognito režiimis, hoiatab Chrome teid enne saidi laadimist ebaturvalise ühenduse kaudu</translation>
 <translation id="4427306783828095590">Täiustatud kaitse aitab andmepüüki ja pahavara paremini blokeerida</translation>
@@ -471,6 +473,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="873133009373065397">Google Chrome ei saa määrata ega seadistada vaikebrauserit</translation>
 <translation id="8765470054473112089">Kui sisestate teksti aadressiribale või otsingukasti, saadab Chrome teie sisestatud teksti teie vaikeotsingumootorisse, et saada paremaid soovitusi. See on inkognito režiimis välja lülitatud.</translation>
 <translation id="878572486461146056">Installimisviga: teie võrguadministraator on kehtestanud rühmareegli, mis takistab installimist: <ph name="INSTALL_ERROR" /></translation>
+<translation id="8796073561259064743">Chrome blokeeris selle allalaadimise, kuna fail võib kahjustada teie isiklikke ja sotsiaalvõrgustiku kontosid, sealhulgas kontot <ph name="USER_EMAIL" /></translation>
 <translation id="8801657293260363985">V8 on Chrome'i JavaScripti ja WebAssembly mootor, mida kasutatakse saidi jõudluse parandamiseks</translation>
 <translation id="8821043148920470810">Google Chrome'i tulevaste värskenduste saamiseks on teil vaja operatsioonisüsteemi Windows 10 või uuemat versiooni. See arvuti kasutab operatsioonisüsteemi Windows 7.</translation>
 <translation id="8823341990149967727">Chrome on aegunud</translation>

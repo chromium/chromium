@@ -271,6 +271,7 @@
 <translation id="2446553403094072641">အလွတ်ရွှေ့နိုင်သောအမှတ်၏ မှန်ကန်မှု</translation>
 <translation id="2448312741937722512">ပုံစံ</translation>
 <translation id="2465272316171730950">လုပ်နိုင်စွမ်း ပြည့်နေပါပြီ။ ခဏအကြာတွင် ပြန်လာပါ။</translation>
+<translation id="2472215337771558851">Google AI က ပံ့ပိုးထားသော ‘ကူရေးပေးပါ’ သုံး၍ မူကြမ်းပြုလုပ်နိုင်သည် (သို့) ရှိပြီးသားအလုပ်ကို ပိုမိုတိကျအောင် ပြုလုပ်နိုင်သည်</translation>
 <translation id="2480572840229215612">ကဏန်း</translation>
 <translation id="248546197012830854">စက်အော့ဖ်လိုင်းဖြစ်နေသည်။ အကူအညီ အကြောင်းအရာကြည့်ရန် Wi-Fi ကွန်ရက်သို့ ချိတ်ဆက်ပါ။</translation>
 <translation id="2486301288428798846">သစ်သား</translation>
@@ -328,10 +329,12 @@
 <translation id="2860473693272905224">စကင်နာပေါ် နောက်စာမျက်နှာတစ်ရွက်တင်ပါ</translation>
 <translation id="2872961005593481000">ပိတ်ရန်</translation>
 <translation id="2873483161362553159">ဘရောင်ဇာ လမ်းညွှန်မှု</translation>
+<translation id="2873939192640533085">"ပိုမိုယုံကြည်မှုရှိပုံပေါ်သည်" ကဲ့သို့သော တိုက်တွန်းချက်ထည့်ပါ</translation>
 <translation id="2874939134665556319">ယခင်တစ်ပုဒ်</translation>
 <translation id="2875812231449496375">ဤနောက်ခံဖြင့် အကောင်းဆုံးရလဒ်များ ရယူရန် ၎င်းကိုဖွင့်ပါ။ ၎င်းဆက်တင်ကို အချိန်မရွေးပိတ်နိုင်သည်။</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> စက္ကန့်အတွင်း <ph name="RATE" /> အားလျော့သွားသည်။</translation>
 <translation id="2880569433548999039">တိမ်များလွှင့်နေသည့် စခရင်နားချိန်ပုံ</translation>
+<translation id="2888298276507578975">"ကျေးဇူးတင်မှတ်စု ရေးပေးပါ" ကဲ့သို့သော တိုက်တွန်းချက်ထည့်ပါ</translation>
 <translation id="2890557891229184386">အပူပိုင်းဒေသကျွန်း</translation>
 <translation id="2895772081848316509">အမှောင်</translation>
 <translation id="2926057806159140518">သင့်အသုံးပြုသူအမည်နှင့် စကားဝှက်ကို ထည့်ပါ (သို့) QR ကုဒ်ကို စကင်ဖတ်ပါ</translation>
@@ -376,6 +379,7 @@
 <translation id="3226405216343213872">စကင်ဖတ်စက်များ ရှာနေသည်</translation>
 <translation id="3226657629376379887">အပြင်အဆင် လုပ်ဆောင်ချက် မီနူး</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> ကို <ph name="CONVERSION_RATE" /> နှင့်စားပါ</translation>
+<translation id="3237710083340813756">ပြန်ရေးရန်</translation>
 <translation id="3246869037381808805">1 ရက်အထက် ပရင့်ထုတ်ရန်ဖိုင်များကို ဖယ်ရှားပါမည်</translation>
 <translation id="324961752321393509">သင့်စီမံခန့်ခွဲသူသည် ဤအက်ပ်ကို ခွင့်မပြုပါ</translation>
 <translation id="3268178239013324452">မအောင်မြင်ပါ - တံခါးပွင့်နေသည်</translation>
@@ -414,6 +418,7 @@
 <translation id="346539236881580388">ပြန်ရိုက်ရန်</translation>
 <translation id="3484914941826596830">ဖားမ်ဝဲအပ်ဒိတ်လုပ်နေစဉ် ဤပြင်ပကိရိယာကို ပလတ်မဖြုတ်ပါနှင့် (သို့) သင်၏ကွန်ပျူတာကို အပြီးမပိတ်ပါနှင့်။ ဤဝင်းဒိုးကို ချုံ့နိုင်သည်။ ယခုအပ်ဒိတ်သည် မိနစ်အနည်းငယ်ကြာနိုင်ပြီး ဤအချိန်အတွင်း သင်၏ပြင်ပကိရိယာ အလုပ်လုပ်နိုင်မည်မဟုတ်ပါ။</translation>
 <translation id="3486220673238053218">အဓိပ္ပါယ် ဖွင့်ဆိုချက်</translation>
+<translation id="3487866404496702283">Mahi တူးလ်အတွက် အကြံပြုချက်</translation>
 <translation id="3488065109653206955">တစ်စိတ်တစ်ဒေသ ဖွင့်သုံးနေ</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> အရောင်များဖြင့် <ph name="OFFICE_STYLE" /> ရုံးခန်း</translation>
 <translation id="3493187369049186498">ဒေတာကို သင့် Chromebook ဖြင့် တိုင်းတာသည်။ ၎င်းသည် ဝန်ဆောင်မှုပေးသူ၏ ဒေတာနှင့် ကွဲပြားမှုရှိနိုင်သည်။</translation>
@@ -442,6 +447,7 @@
 <translation id="3621072146987826699">ဆင်</translation>
 <translation id="3632579075709132555">အချက်အလက်ကာကွယ်ရေး ဖန်သားပြင်ပြောင်းရန်</translation>
 <translation id="3651050199673793219">အပူချိန်ယူနစ်ရွေးရန်</translation>
+<translation id="3661106764436337772">ပိုမိုယုံကြည်မှုရှိစွာ မြန်မြန်ရေးလိုက်ပါ</translation>
 <translation id="3662461537616691585">အနီမှိုင်းရောင်နှင့် ကြက်သွေးရင့်ရောင်</translation>
 <translation id="3668449597372804501">တိမ်များလွှင့်နေသည့် နောက်ခံ</translation>
 <translation id="3675132884790542448">ဝက်</translation>
@@ -585,6 +591,7 @@
 <translation id="4503441351962730761">ခေတ်ပေါ်အနုပညာ</translation>
 <translation id="4507392511610824664">တောက်ပမှု တိုးရန်</translation>
 <translation id="4511264077854731334">ပေါ်တယ်</translation>
+<translation id="4513946894732546136">အကြံပြုချက်</translation>
 <translation id="4521826082652183069">အကြောင်းအရာ၏ အခြားအမည် ကိုက်ညီမှု</translation>
 <translation id="4522570452068850558">အသေးစိတ်များ</translation>
 <translation id="4536864596629708641">IP စီစဉ်သတ်မှတ်ချက်</translation>
@@ -757,6 +764,7 @@
 <translation id="5543701552415191873">လော့ခ်ချထားသည်</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">နေဝင်ချိန်တွင် အမှောင်နောက်ခံသို့ အလိုအလျောက်ပြောင်းရန်</translation>
+<translation id="556042886152191864">ခလုတ်</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_COLOR" /> အရောင်များဖြင့် <ph name="TERRAIN_FEATURE" /></translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">စကင်ပြန်ဖတ်ရန်</translation>
@@ -875,6 +883,7 @@
 <translation id="6235460611964961764">ဒေတာသုံးစွဲမှု ကိုယ်တိုင်ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="6243280677745499710">လောလောဆယ် သတ်မှတ်ထားသည်</translation>
 <translation id="6250316632541035980">ဝက်ပေါင်ခြောက်နှင့် ကြက်ဥ</translation>
+<translation id="6255213378196499011">‘ကူရေးပေးပါ’ ဆက်တင်များ</translation>
 <translation id="6275224645089671689">ညာညွှန်မြား</translation>
 <translation id="6278428485366576908">အပြင်အဆင်</translation>
 <translation id="6280912520669706465">ARC</translation>

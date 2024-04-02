@@ -30,7 +30,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="109942774857561566">Ik verveel me</translation>
 <translation id="1104084341931202936">Toegankelijkheidsinstellingen bekijken</translation>
 <translation id="1104621072296271835">Je apparaten werken samen nog beter</translation>
-<translation id="1106446201446919638">1 apparaat verbonden. Tijdens het gebruik van de hotspot blijft wifi uit.</translation>
 <translation id="1111021433905331574">Je kunt de kleur van de achtergrondverlichting van je toetsenbord wijzigen in Instellingen &gt; <ph name="APP_TITLE" /></translation>
 <translation id="1117719261843403176">Mobiele data aan-/uitzetten. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">Plank automatisch verbergen</translation>
@@ -428,6 +427,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2785499565474703580">1 verbonden apparaat</translation>
 <translation id="2791421900609674576">Je ziet aanbevelingen zodat je verder kunt gaan waar je gebleven was. Tik en houd vast om aanbevelingen te verwijderen.</translation>
 <translation id="2792498699870441125">Alt+Zoeken</translation>
+<translation id="2801954693771979815">Schermgrootte</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, geselecteerd</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2814448776515246190">Gedeeltelijke opname</translation>
@@ -518,7 +518,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="316086887565479535">Niet-ondersteunde apps in template</translation>
 <translation id="3160929076476941240">2 u</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> zet je <ph name="DEVICE_TYPE" /> terug naar een oudere versie. Je apparaat wordt gereset en alle gegevens worden verwijderd.</translation>
-<translation id="3170769098533255179">Geen apparaten verbonden. Tijdens het gebruik van de hotspot blijft wifi uit.</translation>
 <translation id="3171170659304083361">Instellingen voor invoermethoden</translation>
 <translation id="3176221688814061633">Je Chromebook of bluetooth-apparaat gebruikt een oudere versie van bluetooth. Zet Bluetooth Super Resolution aan of gebruik de interne microfoon voor een betere audiokwaliteit.</translation>
 <translation id="3181441307743005334">Opnieuw opstarten kan even duren</translation>
@@ -553,7 +552,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> apparaten verbonden met <ph name="DEVICE_NAME" />-hotspot</translation>
 <translation id="3307642347673023554">Overgeschakeld naar laptopmodus</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> kan later nog inloggen.</translation>
-<translation id="3317779231018057649"><ph name="DEVICECOUNT" /> apparaten verbonden. Tijdens het gebruik van de hotspot blijft wifi uit.</translation>
 <translation id="3321628682574733415">Onjuiste oudercode</translation>
 <translation id="332827762492701193">Meldingen zijn verborgen</translation>
 <translation id="3333674550998107387">Vouw de melding <ph name="NOTIFICATION_TITLE" /> uit</translation>
@@ -853,6 +851,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="440113666232554208">Kan screencast niet opslaan</translation>
 <translation id="4405151984121254935">Het aangesloten randapparaattype wordt niet ondersteund</translation>
 <translation id="4406883609789734330">Live ondertiteling</translation>
+<translation id="4412698727486357573">Helpcentrum</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> staat uit.</translation>
 <translation id="4424159417645388645">Bureau 5</translation>
 <translation id="4430019312045809116">Volume</translation>
@@ -893,7 +892,6 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4566144812051858745">Niet geïnteresseerd in suggesties</translation>
 <translation id="4569753163207712681">Recente foto's, media en meldingen van je telefoon bekijken</translation>
 <translation id="4573176682887762361">'Typ [woord/woordgroep]'</translation>
-<translation id="4577188182049003486">Als de hotspot aanstaat, staat wifi uit</translation>
 <translation id="4577274620589681794">De tijd is om · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Voorbeelden bekijken</translation>
 <translation id="4578906031062871102">Menu Instellingen geopend</translation>
@@ -1015,6 +1013,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="5003993274120026347">Volgende zin</translation>
 <translation id="5004607513195820459">Netwerk wordt beheerd</translation>
 <translation id="5009463889040999939">Naam van profiel wijzigen. Dit kan een paar minuten duren.</translation>
+<translation id="5013847959275396160">Werkbalk verbergen</translation>
 <translation id="5016558321564993266">Stift aan-/uitzetten. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Zoekcategorieën</translation>
 <translation id="5030659775136592441">Bookmarkmanager bekijken</translation>
@@ -1151,7 +1150,6 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="5550417424894892620">Zet bestanden op het bureaublad neer om ze toe te voegen aan <ph name="HOLDING_SPACE_TITLE" />. Je kunt geen bestanden toevoegen aan het bureaublad.</translation>
 <translation id="5551456515017410630">Agenda openen/sluiten</translation>
 <translation id="5551974246223970793">Naar de volgende overeenkomst voor de zoekopdracht gaan als je zoekt op een pagina</translation>
-<translation id="5555639311269196631">Hotspot uitzetten</translation>
 <translation id="5556459405103347317">Opnieuw laden</translation>
 <translation id="5558091555391176027">Hoge zichtbaarheid voor Dichtbij delen aan- of uitzetten</translation>
 <translation id="5558314826121965174">Creativiteit</translation>
@@ -1786,6 +1784,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="799296642788192631">Je kunt belangrijke bestanden vastzetten. Als je een item wilt vastzetten, plaats je de cursor op het item of open je Bestanden en klik je met de rechtermuisknop op het item.</translation>
 <translation id="7994370417837006925">Toegang tot meerdere accounts</translation>
 <translation id="7995804128062002838">Schermopname mislukt</translation>
+<translation id="8000020256436988724">Toolbar</translation>
 <translation id="8000066093800657092">Geen netwerk</translation>
 <translation id="8001755249288974029">Tekst vanaf cursor tot het begin van de regel selecteren</translation>
 <translation id="8004512796067398576">Hoger</translation>
@@ -1899,6 +1898,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="847056008324733326">Instellingen voor weergaveschaal</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> heeft <ph name="FEATURE_NAME" /> <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">Druk op Alt+Zoeken of Shift om te annuleren.</translation>
+<translation id="8480418399907765580">Werkbalk tonen</translation>
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8491237443345908933">Link openen in een nieuw tabblad</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> ondersteunt <ph name="SPECIFIED_RESOLUTION" /> niet. De resolutie is gewijzigd in <ph name="FALLBACK_RESOLUTION" />. Klik op 'Bevestigen' om de wijzigingen te behouden. De vorige instellingen worden over <ph name="TIMEOUT_SECONDS" /> hersteld.</translation>
@@ -1984,6 +1984,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8834539327799336565">Momenteel verbonden</translation>
 <translation id="8841375032071747811">Knop Terug</translation>
 <translation id="8843682306134542540">Draaivergrendeling aan- of uitzetten. <ph name="STATE_TEXT" /></translation>
+<translation id="8845001906332463065">Hulp nodig?</translation>
 <translation id="8849001918648564819">Verborgen</translation>
 <translation id="8853703225951107899">Je pincode of wachtwoord kan nog steeds niet worden geverifieerd. Opmerking: Als je onlangs je wachtwoord hebt gewijzigd, gebruik je je oude wachtwoord. Je nieuwe wachtwoord wordt toegepast zodra je uitlogt.</translation>
 <translation id="8855885154700222542">Toets voor volledig scherm</translation>

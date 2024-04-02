@@ -238,6 +238,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5427571867875391349">Tetapkan Chromium sebagai penyemak imbas lalai anda</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta</translation>
 <translation id="5473971139929175403">Chromium mungkin tidak akan berfungsi dengan betul kerana tidak disokong pada edaran Linux ini lagi</translation>
+<translation id="5475924890392386523">Chromium menyekat muat turun ini kerana fail tersebut boleh membahayakan akaun peribadi dan rangkaian sosial anda</translation>
 <translation id="5480860683791598150">Chromium memerlukan akses kepada lokasi anda untuk berkongsi lokasi dengan tapak ini</translation>
 <translation id="5487574057737591516">Untuk melindungi privasi anda, kami memadamkan minat anda yang disimpan melebihi 4 minggu secara automatik. Semasa anda terus menyemak imbas, minat itu mungkin muncul semula dalam senarai. Jika Chromium tersilap atau anda tidak mahu melihat iklan tertentu, anda boleh mengalih keluar minat itu.</translation>
 <translation id="549669000822060376">Sila tunggu sementara Chromium memasang kemas kini sistem terkini.</translation>
@@ -366,6 +367,7 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="7339898014177206373">Tetingkap baharu</translation>
 <translation id="734373864078049451">Web, penanda halaman dan barangan Chromium anda yang lain tinggal di sini.</translation>
 <translation id="7349591376906416160">Pentadbir sistem anda telah mengkonfigurasikan Chromium agar membuka <ph name="ALTERNATIVE_BROWSER_NAME" /> untuk mengakses <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="7355355292030546812">Chromium menyekat muat turun ini kerana fail tersebut boleh membahayakan akaun peribadi dan rangkaian sosial anda termasuk <ph name="USER_EMAIL" /></translation>
 <translation id="7398989605938454041">Dengan profil Chromium anda dapat mengasingkan semua bahan Chromium anda. Ini akan lebih memudahkan pengasingan antara bahan kerja dengan bahan untuk keseronokan.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7451052299415159299">Chromium memerlukan kebenaran untuk mengakses kamera anda bagi tapak ini</translation>
@@ -452,6 +454,7 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="8988036198400390003">Urus profil Chromium</translation>
 <translation id="9019929317751753759">Untuk menjadikan Chromium lebih selamat, kami melumpuhkan sambungan berikut yang tidak disenaraikan dalam  <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dan mungkin telah ditambahkan tanpa pengetahuan anda.</translation>
 <translation id="9022552996538154597">Log masuk ke Chromium</translation>
+<translation id="904366664621834601">Chromium menyekat muat turun ini kerana fail arkib termasuk fail lain yang mungkin menyembunyikan perisian hasad</translation>
 <translation id="907832235989677238">Log Masuk ke Chromium. Jika anda mahu log masuk akaun satu kali sahaja, anda boleh <ph name="GUEST_LINK_BEGIN" />menggunakan peranti sebagai tetamu<ph name="GUEST_LINK_END" />.</translation>
 <translation id="9078733879136747090">Chromium telah ditutup secara automatik</translation>
 <translation id="9089354809943900324">Chromium sudah usang</translation>

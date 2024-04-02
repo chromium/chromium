@@ -878,6 +878,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="5548760955356983418">Handoff permíteche comezar a navegar nun sitio web neste dispositivo e despois continuar facilmente no teu Mac. O sitio web aberto actualmente aparecerá no Dock do teu Mac.
 
 Handoff tamén debe estar activado na sección Xeral da configuración e os teus dispositivos deben utilizar a mesma conta iCloud.</translation>
+<translation id="5551825465462320939">Mantente ao día das noticias, os deportes e moito máis en función dos teus intereses.</translation>
 <translation id="5551897871312988470">Ofrecer a tradución</translation>
 <translation id="5556459405103347317">Volver cargar</translation>
 <translation id="555749644339804659">Comprobando contrasinais…</translation>
@@ -1182,6 +1183,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="6989674195860388998">Cambiar en Configuración…</translation>
 <translation id="6998989275928107238">Para</translation>
 <translation id="699954956411469731">Notificacións para móbiles</translation>
+<translation id="699985840472413751">Pechar a barra de descargas</translation>
 <translation id="7004032350256606903">A túa organización esixe que navegues de forma privada.
 <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Pestanas recentes</translation>
@@ -1471,6 +1473,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="850600235656508448">Abrir marcador no modo de incógnito</translation>
 <translation id="8517375800490286174">Licenzas de código aberto</translation>
 <translation id="8522147671363140027">{count,plural, =1{Hai {count} contrasinal e outros elementos gardados só neste dispositivo. Para usalos noutros aparellos, gárdaos na túa Conta de Google ({email}).}other{Hai {count} contrasinais e outros elementos gardados só neste dispositivo. Para usalos noutros aparellos, gárdaos na túa Conta de Google ({email}).}}</translation>
+<translation id="8522813812888400223">Cancelar a descarga</translation>
 <translation id="8524799873541103884">Etiquetas de <ph name="INCOGNITO" /> <ph name="FIRST_VISIBLE_TAB" /> a <ph name="LAST_VISIBLE_TAB" /> de <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="852576975834694248">Pecharanse a túa sesión e as pestanas</translation>
 <translation id="8528009254289981965">Abre ligazóns desde outras aplicacións no modo de incógnito</translation>

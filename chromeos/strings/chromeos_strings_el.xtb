@@ -271,6 +271,7 @@
 <translation id="2446553403094072641">Ακρίβεια κινητής υποδιαστολής</translation>
 <translation id="2448312741937722512">Τύπος</translation>
 <translation id="2465272316171730950">Αυτή τη στιγμή δεν μπορούμε να σας εξυπηρετήσουμε. Επιστρέψτε σε λίγο.</translation>
+<translation id="2472215337771558851">Χρησιμοποιήστε τη λειτουργία Βοήθησέ με να γράψω, για να δημιουργήσετε ένα πρόχειρο ή να τελειοποιήσετε μια υπάρχουσα εργασία, με την υποστήριξη του Google AI</translation>
 <translation id="2480572840229215612">καβούρια</translation>
 <translation id="248546197012830854">Η συσκευή είναι εκτός σύνδεσης. Συνδεθείτε στο δίκτυο Wi-Fi για να δείτε περιεχόμενο βοήθειας.</translation>
 <translation id="2486301288428798846">ξύλο</translation>
@@ -328,10 +329,12 @@
 <translation id="2860473693272905224">Τοποθετήστε μια άλλη σελίδα στον σαρωτή</translation>
 <translation id="2872961005593481000">Τερματισμός λειτουργίας</translation>
 <translation id="2873483161362553159">Πλοήγηση προγράμματος περιήγησης</translation>
+<translation id="2873939192640533085">Εισαγάγετε μια οδηγία όπως "με περισσότερη αυτοπεποίθηση"</translation>
 <translation id="2874939134665556319">Προηγούμενο κομμάτι</translation>
 <translation id="2875812231449496375">Ενεργοποιήστε αυτή την επιλογή για καλύτερα αποτελέσματα με αυτή την ταπετσαρία. Μπορείτε να απενεργοποιήσετε αυτή τη ρύθμιση ανά πάσα στιγμή.</translation>
 <translation id="2878387241690264070">Εκφόρτιση <ph name="RATE" /> σε <ph name="NUM_SECONDS" /> δευτερόλεπτα.</translation>
 <translation id="2880569433548999039">Προστασία οθόνης Κίνηση των σύννεφων</translation>
+<translation id="2888298276507578975">Εισαγάγετε μια οδηγία όπως "γράψε ένα ευχαριστήριο σημείωμα"</translation>
 <translation id="2890557891229184386">τροπικό νησί</translation>
 <translation id="2895772081848316509">σκούρο</translation>
 <translation id="2926057806159140518">Εισαγάγετε το όνομα χρήστη και τον κωδικό πρόσβασής σας ή σαρώστε τον κωδικό QR σας</translation>
@@ -376,6 +379,7 @@
 <translation id="3226405216343213872">Αναζήτηση για σαρωτές</translation>
 <translation id="3226657629376379887">Μενού ενεργειών διάταξης</translation>
 <translation id="3227186760713762082">Διαιρέστε την τιμή <ph name="CATEGORY_TEXT" /> με το <ph name="CONVERSION_RATE" /></translation>
+<translation id="3237710083340813756">Αναδιατύπωση</translation>
 <translation id="3246869037381808805">Οι εργασίες εκτύπωσης που είναι παλαιότερες της 1 ημέρας θα καταργηθούν.</translation>
 <translation id="324961752321393509">Ο διαχειριστής σας δεν επιτρέπει το κλείσιμο αυτής της εφαρμογής</translation>
 <translation id="3268178239013324452">Σφάλμα - Η θύρα είναι ανοικτή</translation>
@@ -414,6 +418,7 @@
 <translation id="346539236881580388">Νέα λήψη</translation>
 <translation id="3484914941826596830">Κατά την ενημέρωση του υλικολογισμικού, μην αποσυνδέσετε αυτή την εξωτερική συσκευή και μην τερματίσετε τη λειτουργία του υπολογιστή. Μπορείτε να ελαχιστοποιήσετε αυτό το παράθυρο. Μπορεί να χρειαστούν λίγα λεπτά για αυτή την ενημέρωση και η εξωτερική συσκευή σας μπορεί να μην λειτουργεί αυτό το διάστημα.</translation>
 <translation id="3486220673238053218">ορισμός</translation>
+<translation id="3487866404496702283">Σχόλια για τη λειτουργία mahi</translation>
 <translation id="3488065109653206955">Μερικώς ενεργοποιημένο</translation>
 <translation id="3492882532495507361">Ένα <ph name="OFFICE_STYLE" /> γραφείο σε <ph name="OFFICE_COLOR" /> τόνους</translation>
 <translation id="3493187369049186498">Τα δεδομένα μετρώνται από το Chromebook. Αυτά τα δεδομένα ενδέχεται να διαφέρουν από τα δεδομένα παρόχου.</translation>
@@ -442,6 +447,7 @@
 <translation id="3621072146987826699">ελέφαντες</translation>
 <translation id="3632579075709132555">Εναλλαγή οθόνης απορρήτου</translation>
 <translation id="3651050199673793219">Επιλέξτε μια μονάδα θερμοκρασίας</translation>
+<translation id="3661106764436337772">Γράψτε πιο γρήγορα και με περισσότερη αυτοπεποίθηση</translation>
 <translation id="3662461537616691585">μπορντό και καστανοκόκκινο</translation>
 <translation id="3668449597372804501">Ταπετσαρία Κίνηση των σύννεφων</translation>
 <translation id="3675132884790542448">χοίροι</translation>
@@ -585,6 +591,7 @@
 <translation id="4503441351962730761">σύγχρονης τέχνης</translation>
 <translation id="4507392511610824664">αύξηση φωτεινότητας</translation>
 <translation id="4511264077854731334">Πύλη</translation>
+<translation id="4513946894732546136">Σχόλια</translation>
 <translation id="4521826082652183069">Αντιστοιχία εναλλακτικού ονόματος υποκειμένου</translation>
 <translation id="4522570452068850558">Λεπτομέρειες</translation>
 <translation id="4536864596629708641">Διαμόρφωση IP</translation>
@@ -757,6 +764,7 @@
 <translation id="5543701552415191873">κλειδωμένη</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Αυτόματη εναλλαγή σε σκούρο θέμα κατά τη δύση του ηλίου</translation>
+<translation id="556042886152191864">Κουμπί</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> σε αποχρώσεις του <ph name="TERRAIN_COLOR" /></translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Επανάληψη σάρωσης</translation>
@@ -875,6 +883,7 @@
 <translation id="6235460611964961764">Μη αυτόματη επαναφορά χρήσης δεδομένων</translation>
 <translation id="6243280677745499710">Έχει οριστεί</translation>
 <translation id="6250316632541035980">μπέικον και αυγά</translation>
+<translation id="6255213378196499011">Ρυθμίσεις λειτουργίας Βοήθησέ με να γράψω</translation>
 <translation id="6275224645089671689">Δεξί βέλος</translation>
 <translation id="6278428485366576908">Θέμα</translation>
 <translation id="6280912520669706465">ARC</translation>

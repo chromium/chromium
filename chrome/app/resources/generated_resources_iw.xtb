@@ -351,7 +351,6 @@
 <translation id="125220115284141797">ברירת מחדל</translation>
 <translation id="1252219782845132919">הסתרת הקבוצה</translation>
 <translation id="1252987234827889034">אירעה שגיאה בפרופיל</translation>
-<translation id="1253664522045778676">לוחצים על תוצאה והדף נפתח בכרטיסייה הנוכחית</translation>
 <translation id="1254593899333212300">חיבור אינטרנט ישיר</translation>
 <translation id="1256588359404100567">ההגדרה סונכרנה מהמכשיר הקודם שלך.</translation>
 <translation id="1257336506558170607">ייצוא האישור שנבחר</translation>
@@ -1210,7 +1209,6 @@
 <translation id="1887210448491286312">הפסקת ההעברה של הכרטיסייה אל <ph name="DEVICE_NAME" /></translation>
 <translation id="1887442540531652736">שגיאת כניסה</translation>
 <translation id="1887597546629269384">‏יש לומר שוב "Hey Google"</translation>
-<translation id="1889091146873278175">‏כדי להציג תוצאות חיפוש נוספות בחלונית צדדית, לוחצים על הלחצן 'G'</translation>
 <translation id="1890026367080681123">מעבר להגדרות התוכן המוטמע</translation>
 <translation id="189035593835762169">תנאים והגבלות</translation>
 <translation id="1891362123137972260">נפח האחסון בדיסק כמעט נגמר. יש לפנות מקום בשטח האחסון בדיסק.</translation>
@@ -6279,7 +6277,6 @@
 <translation id="5804241973901381774">הרשאות</translation>
 <translation id="5804259315582798390">נכשלה ההפעלה של שחזור הנתונים המקומיים</translation>
 <translation id="5805268472388605531">כדי לראות סימנים דיאקריטיים ותווים מיוחדים, יש להקיש הקשה ארוכה על מקשי המקלדת</translation>
-<translation id="5805354171420804923">בחלונית הצדדית החדשה אפשר להשוות בין תוצאות חיפוש מהר יותר</translation>
 <translation id="5805697420284793859">מנהל החלונות</translation>
 <translation id="5806447147478173900">נפח האחסון הכולל שבשימוש של האתרים המוצגים: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (ברירת מחדל)</translation>
@@ -6845,7 +6842,7 @@
 <translation id="6241530762627360640">‏פרטי גישה של מכשירי Bluetooth המותאמים למערכת שלך ומגלים מכשירי Bluetooth קרובים.</translation>
 <translation id="6241844896329831164">אין צורך בגישה</translation>
 <translation id="6242574558232861452">המערכת בודקת אם הקובץ עומד בדרישות של מדיניות האבטחה של הארגון.</translation>
-<translation id="6242589501614145408">איפוס מפתח האבטחה שלך</translation>
+<translation id="6242589501614145408">איפוס מפתח האבטחה</translation>
 <translation id="6242605626259978229">הדפדפן והפרופיל שלך מנוהלים</translation>
 <translation id="6242852299490624841">הדגשת הכרטיסייה הזו</translation>
 <translation id="6243774244933267674">השרת אינו זמין</translation>
@@ -7425,7 +7422,6 @@
 <translation id="6709357832553498500">התחברות באמצעות <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">הקודם</translation>
 <translation id="6710394144992407503">בדיקה של שגיאות איות תוך כדי הקלדה של טקסט בדפי אינטרנט</translation>
-<translation id="671226373742585927">‏כדי לסגור את החלונית הצדדית, לוחצים על הלחצן 'X'</translation>
 <translation id="6712943853047024245">כבר שמרת סיסמה עם שם המשתמש הזה לאתר <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">הוספת פרופיל עבודה</translation>
 <translation id="6713441551032149301">צריך ללחוץ לחיצה ארוכה על מקש מרכז האפליקציות כדי לעבור בין מקשי הפונקציות למקשי המערכת שבשורה העליונה</translation>
@@ -8791,7 +8787,6 @@
 <translation id="7758884017823246335">הוספת חיפוש באתר</translation>
 <translation id="7759809451544302770">אופציונלי</translation>
 <translation id="7762024824096060040">לא ניתן להשתמש בחשבון הזה</translation>
-<translation id="7762243782113123335">‏מצטערים, משהו השתבש. יש לשלוח משוב ולציין ‎#bruschetta בתיאור. קוד השגיאה הוא <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">הוספת כתובת</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> מ-<ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764527477537408401">פתיחת הקבוצה בחלון חדש</translation>
@@ -9278,7 +9273,6 @@
 <translation id="810185532889603849">צבע מותאם אישית</translation>
 <translation id="8101987792947961127">‏יש לבצע Powerwash באתחול הבא</translation>
 <translation id="8102139037507939978">‏הסרה של פרטים אישיים מזהים מהקובץ system_logs.txt.</translation>
-<translation id="8102344699913991108">ההגדרה הזו מאפשרת לאתרים להציע חוויות עשירות במסך מלא ללא קשר לתנועות של המשתמשים.</translation>
 <translation id="810362914482827094">חיפוש מפתחות גישה</translation>
 <translation id="8104088837833760645">‏הורדת פרופיל eSIM</translation>
 <translation id="8105273883928376822">צריך להיכנס לחשבון כדי להמשיך.</translation>
@@ -9499,7 +9493,6 @@
 <translation id="8272443605911821513">אפשר לנהל את התוספים על ידי לחיצה על 'תוספים' בתפריט 'כלים נוספים'.</translation>
 <translation id="8272786333453048167">מתן הרשאה מחדש</translation>
 <translation id="8273905181216423293">להורדה</translation>
-<translation id="8274495289680107339">ההגדרה הזו מעבירה אתרים באופן אוטומטי לתצוגה של תמונה בתוך תמונה. כך אפשר להמשיך לצפות בסרטון ולפנות מקום במסך למשימות אחרות.</translation>
 <translation id="827488840488530039">‏לא ניתן היה לאמת את כרטיסי Kerberos בדף שבו ניסית לבקר</translation>
 <translation id="8274921654076766238">מגדיר עוקב אחרי מיקוד המקלדת</translation>
 <translation id="8274924778568117936">אין לכבות או לסגור את ה-<ph name="DEVICE_TYPE" /> לפני סיום העדכון. ה-<ph name="DEVICE_TYPE" /> יופעל מחדש באופן אוטומטי בסיום ההתקנה.</translation>

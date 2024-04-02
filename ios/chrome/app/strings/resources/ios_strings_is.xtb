@@ -878,6 +878,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="5548760955356983418">Handoff gerir þér kleift að byrja að skoða vefsvæði í þessu tæki og halda því síðan áfram á einfaldan hátt í Mac-tölvunni. Vefsvæðið sem er opið birtist í kvínni í Mac-tölvunni.
 
 Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tækin þurfa að vera tengd sama iCloud-reikningi.</translation>
+<translation id="5551825465462320939">Fylgstu með fréttum, íþróttum og fleiru byggt á áhugasviðunum þínum.</translation>
 <translation id="5551897871312988470">Bjóðast til að þýða</translation>
 <translation id="5556459405103347317">Endurhlaða</translation>
 <translation id="555749644339804659">Athugar aðgangsorð…</translation>
@@ -1182,6 +1183,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="6989674195860388998">Skipta í stillingum…</translation>
 <translation id="6998989275928107238">Til</translation>
 <translation id="699954956411469731">Tilkynningar í snjalltæki</translation>
+<translation id="699985840472413751">Loka niðurhali</translation>
 <translation id="7004032350256606903">Fyrirtækið þitt krefst þess að þú vafrir í huliðsstillingu.
 <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Nýlegir flipar</translation>
@@ -1471,6 +1473,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="850600235656508448">Opna í huliðsstillingu</translation>
 <translation id="8517375800490286174">Leyfi opins kóða</translation>
 <translation id="8522147671363140027">{count,plural, =1{{count} aðgangsorð og fleiri atriði eru aðeins vistuð í þessu tæki. Til að nota atriðin í öðrum tækjum skaltu vista þau á Google-reikningnum þínum, {email}.}one{{count} aðgangsorð og fleiri atriði eru aðeins vistuð í þessu tæki. Til að nota atriðin í öðrum tækjum skaltu vista þau á Google-reikningnum þínum, {email}.}other{{count} aðgangsorð og fleiri atriði eru aðeins vistuð í þessu tæki. Til að nota atriðin í öðrum tækjum skaltu vista þau á Google-reikningnum þínum, {email}.}}</translation>
+<translation id="8522813812888400223">Hætta við niðurhal</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> Flipar <ph name="FIRST_VISIBLE_TAB" /> til og með <ph name="LAST_VISIBLE_TAB" /> af <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="852576975834694248">Þú skráist út og flipar lokast</translation>
 <translation id="8528009254289981965">Opna tengla úr öðrum forritum í huliðsstillingu</translation>

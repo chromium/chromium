@@ -1183,6 +1183,7 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="6989674195860388998">Perjungti nustatymuose…</translation>
 <translation id="6998989275928107238">Kam</translation>
 <translation id="699954956411469731">Pranešimai mobiliuosiuose</translation>
+<translation id="699985840472413751">Uždaryti atsisiuntimą</translation>
 <translation id="7004032350256606903">Jūsų organizacija reikalauja, kad naršytumėte privačiai.
 <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Naujausi skirtukai</translation>
@@ -1472,6 +1473,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="850600235656508448">Atidaryti inkognito režimu</translation>
 <translation id="8517375800490286174">Atvirojo šaltinio licencijos</translation>
 <translation id="8522147671363140027">{count,plural, =1{{count} slaptažodis ir kiti elementai išsaugoti tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje {email}.}one{{count} slaptažodis ir kiti elementai išsaugoti tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje {email}.}few{{count} slaptažodžiai ir kiti elementai išsaugoti tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje {email}.}many{{count} slaptažodžio ir kiti elementai išsaugoti tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje {email}.}other{{count} slaptažodžių ir kiti elementai išsaugoti tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje {email}.}}</translation>
+<translation id="8522813812888400223">Atšaukti atsisiuntimą</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> skirtukai: <ph name="FIRST_VISIBLE_TAB" />–<ph name="LAST_VISIBLE_TAB" /> iš <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="852576975834694248">Būsite atjungti, o skirtukai bus uždaryti</translation>
 <translation id="8528009254289981965">Atidaryti nuorodas iš kitų programų inkognito režimu</translation>

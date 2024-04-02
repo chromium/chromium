@@ -271,6 +271,7 @@
 <translation id="2446553403094072641">Точность чисел с плавающей запятой</translation>
 <translation id="2448312741937722512">Тип</translation>
 <translation id="2465272316171730950">Нет свободных ресурсов. Повторите попытку позже.</translation>
+<translation id="2472215337771558851">Генератор текстов создаст черновик или поможет улучшить существующий текст, используя технологии ИИ от Google.</translation>
 <translation id="2480572840229215612">крабы</translation>
 <translation id="248546197012830854">Устройство не подключено к интернету. Подключитесь к сети Wi-Fi, чтобы посмотреть справочный контент.</translation>
 <translation id="2486301288428798846">древесина</translation>
@@ -328,10 +329,12 @@
 <translation id="2860473693272905224">Положите другую страницу в сканер.</translation>
 <translation id="2872961005593481000">Завершить работу</translation>
 <translation id="2873483161362553159">Навигация в браузере</translation>
+<translation id="2873939192640533085">Введите запрос, например "напиши более уверенным тоном"</translation>
 <translation id="2874939134665556319">Предыдущий трек</translation>
 <translation id="2875812231449496375">Для оптимальной работы обоев включите этот параметр. Вы сможете отключить его в любое время.</translation>
 <translation id="2878387241690264070">Батарея разрядилась на <ph name="RATE" /> за <ph name="NUM_SECONDS" /> сек.</translation>
 <translation id="2880569433548999039">Динамическая заставка с облаками</translation>
+<translation id="2888298276507578975">Введите запрос, например "напиши благодарственное письмо"</translation>
 <translation id="2890557891229184386">тропический остров</translation>
 <translation id="2895772081848316509">темные тона</translation>
 <translation id="2926057806159140518">Введите имя пользователя и пароль или отсканируйте QR-код.</translation>
@@ -360,7 +363,7 @@
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Удалить страницу?}=1{Удалить страницу {PAGE_NUMBER}?}one{Удалить страницу {PAGE_NUMBER}?}few{Удалить страницу {PAGE_NUMBER}?}many{Удалить страницу {PAGE_NUMBER}?}other{Удалить страницу {PAGE_NUMBER}?}}</translation>
 <translation id="3140130301071865159">снег</translation>
 <translation id="3146655726035122603">Эксклюзивно для <ph name="PRODUCT_NAME" /></translation>
-<translation id="315116470104423982">Мобильное подключение</translation>
+<translation id="315116470104423982">Мобильный интернет</translation>
 <translation id="3156846309055100599">Сканирование страницы <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Обнаружена страница входа</translation>
 <translation id="3160172848211257835">Отправить <ph name="BEGIN_LINK1" />сведения о системе и приложениях<ph name="END_LINK1" />, а также <ph name="BEGIN_LINK2" />статистику<ph name="END_LINK2" /></translation>
@@ -376,6 +379,7 @@
 <translation id="3226405216343213872">Поиск сканеров…</translation>
 <translation id="3226657629376379887">Меню действий, связанных с раскладкой</translation>
 <translation id="3227186760713762082">Разделите значение "<ph name="CATEGORY_TEXT" />" на <ph name="CONVERSION_RATE" /></translation>
+<translation id="3237710083340813756">Переписать</translation>
 <translation id="3246869037381808805">Задания печати, хранящиеся дольше 1 дня, будут удалены</translation>
 <translation id="324961752321393509">Администратор запретил закрывать это приложение</translation>
 <translation id="3268178239013324452">Сбой: крышка открыта</translation>
@@ -414,6 +418,7 @@
 <translation id="346539236881580388">Переснять</translation>
 <translation id="3484914941826596830">Пока выполняется обновление встроенного ПО, не отключайте внешнее устройство и не выключайте компьютер. Это окно можно свернуть. Обновление займет несколько минут, в течение которых внешнее устройство может не работать.</translation>
 <translation id="3486220673238053218">узнать определение</translation>
+<translation id="3487866404496702283">Отзыв о функции mahi</translation>
 <translation id="3488065109653206955">Частично активировано</translation>
 <translation id="3492882532495507361">Офис: стиль – <ph name="OFFICE_STYLE" />, цвет – <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">Объем использованного трафика измеряется на устройстве. Значения могут отличаться от данных оператора связи.</translation>
@@ -442,6 +447,7 @@
 <translation id="3621072146987826699">слоны</translation>
 <translation id="3632579075709132555">Включение экрана конфиденциальности</translation>
 <translation id="3651050199673793219">Выбрать единицу измерения температуры</translation>
+<translation id="3661106764436337772">Пишите быстрее и точнее</translation>
 <translation id="3662461537616691585">бордовый и коричнево-малиновый</translation>
 <translation id="3668449597372804501">Динамические обои с облаками</translation>
 <translation id="3675132884790542448">свиньи</translation>
@@ -585,6 +591,7 @@
 <translation id="4503441351962730761">современное искусство</translation>
 <translation id="4507392511610824664">увеличить яркость</translation>
 <translation id="4511264077854731334">Портал</translation>
+<translation id="4513946894732546136">Отзыв</translation>
 <translation id="4521826082652183069">Совпадение с альтернативным именем субъекта</translation>
 <translation id="4522570452068850558">Сведения</translation>
 <translation id="4536864596629708641">Конфигурация IP</translation>
@@ -757,6 +764,7 @@
 <translation id="5543701552415191873">заблокировано</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Автоматически включать тёмную тему на закате</translation>
+<translation id="556042886152191864">Кнопка</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> в <ph name="TERRAIN_COLOR" /> оттенках</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Сканировать повторно</translation>
@@ -875,6 +883,7 @@
 <translation id="6235460611964961764">Выполнять сброс показателя вручную</translation>
 <translation id="6243280677745499710">Установлено как обои</translation>
 <translation id="6250316632541035980">яичница с беконом</translation>
+<translation id="6255213378196499011">Настройки генератора текстов</translation>
 <translation id="6275224645089671689">Стрелка вправо</translation>
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6280912520669706465">ARC</translation>

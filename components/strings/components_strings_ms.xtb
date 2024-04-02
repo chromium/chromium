@@ -413,6 +413,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1734878702283171397">Cuba hubungi pentadbir sistem.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, tamat tempoh <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Komputer</translation>
+<translation id="1739422091279046802">menatal &amp; mengezum</translation>
 <translation id="1741613555002899862">Mesti dinyatakan dan merupakan rentetan yang sah apabila DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Cadar &amp; Peralatan Tempat Tidur</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Cara kami menggunakan data ini:<ph name="END_BOLD" /> Chrome mengingati topik yang anda minati semasa anda membuat penyemakan imbas. Label topik dipratakrifkan dan merangkumi perkara seperti Seni &amp; Hiburan, Beli-belah dan Sukan. Kemudian, laman yang anda lawati boleh meminta Chrome beberapa topik anda (tetapi bukan sejarah penyemakan imbas anda) untuk memeribadikan iklan yang anda lihat.</translation>
@@ -451,6 +452,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1812527064848182527">landskap</translation>
 <translation id="1812975699435941848">Pendidikan Kesihatan &amp; Latihan Perubatan</translation>
 <translation id="1813414402673211292">Kosongkan Data Semakan Imbas</translation>
+<translation id="1816436748874040213">Boleh meminta untuk menatal dan mengezum tab kongsi</translation>
 <translation id="1818522458013171885">Nyahsekat</translation>
 <translation id="1818585559878922121">Filem Dokumentari</translation>
 <translation id="182139138257690338">muat turun automatik</translation>
@@ -964,6 +966,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> mahu menggunakan maklumat yang disimpan tentang anda</translation>
 <translation id="2839032553903800133">Pemberitahuan disekat</translation>
 <translation id="2839501879576190149">Tapak palsu di hadapan</translation>
+<translation id="2843623755398178332">Tatal dan zum tab kongsi anda?</translation>
 <translation id="2851291081585704741">Anda di luar talian</translation>
 <translation id="2856444702002559011">Penyerang mungkin akan cuba mencuri maklumat anda daripada <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (contohnya, kata laluan, mesej atau kad kredit). <ph name="BEGIN_LEARN_MORE_LINK" />Ketahui lebih lanjut<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2858134430383535011">200 x 300 mm</translation>
@@ -1056,6 +1059,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3023165109041533893">Iklan yang dicadangkan laman membantu untuk melindungi sejarah penyemakan imbas dan identiti anda sambil mendayakan laman untuk memaparkan iklan yang berkaitan kepada anda. Berdasarkan aktiviti anda, laman yang anda lawati boleh mencadangkan iklan yang berkaitan semasa anda terus menyemak imbas. Anda boleh melihat senarai laman ini dan menyekat laman yang tidak diingini dalam tetapan.</translation>
 <translation id="3024663005179499861">Jenis dasar salah</translation>
 <translation id="3030331669969285614">Bendera ini menghalang atau membalikkan perubahan memutus dan hanya tersedia untuk masa terhad.</translation>
+<translation id="3034526003882782781">Tatal &amp; zum dibenarkan</translation>
 <translation id="3036894576201005614">Bekalan Pembersihan Rumah</translation>
 <translation id="3037177537145227281">Menjejaki harga</translation>
 <translation id="3037605927509011580">Oh, Tidak!</translation>
@@ -1338,6 +1342,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3567778190852720481">Tidak dapat membuat pendaftaran dengan akaun perusahaan (akaun perusahaan tidak layak).</translation>
 <translation id="3567901620846335314">100 x 150 mm</translation>
 <translation id="3568886473829759308">Akses laman web untuk melihat maklumat, sumber atau perkhidmatan yang disediakan oleh perniagaan.</translation>
+<translation id="3570079787344939099">Menatal &amp; mengezum</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Benarkan untuk tapak ini</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -2459,6 +2464,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5765072501007116331">Pilih alamat untuk melihat kaedah dan syarat penghantaran</translation>
 <translation id="57689295674415555">Nombor kad maya tidak diisikan?</translation>
 <translation id="5772086939108830423">Gunakan Kunci Laluan pada Peranti Lain</translation>
+<translation id="5775734789739406956">Klik kanan untuk menambahkan maklumat anda yang disimpan pada sebarang bentuk</translation>
 <translation id="5776313857861697733">Keutamaan</translation>
 <translation id="5776574724412881956">Kad maya tidak diisi? Klik butiran kad maya untuk disalin ke papan keratan. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">Percubaan didayakan</translation>
@@ -2475,6 +2481,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="580241730938216256">Mulakan pengemaskinian</translation>
 <translation id="5803412860119678065">Adakah anda ingin mengisi <ph name="CARD_DETAIL" /> anda?</translation>
 <translation id="5804241973901381774">Kebenaran</translation>
+<translation id="5806871454498484178">Tatal &amp; zum disekat</translation>
 <translation id="5808435672482059465">Lihat Sejarah Chrome Anda</translation>
 <translation id="5810442152076338065">Sambungan anda ke <ph name="DOMAIN" /> disulitkan menggunakan suit sifer yang sudah usang.</translation>
 <translation id="5813119285467412249">&amp;Buat Semula Tambahkan</translation>
@@ -3471,6 +3478,7 @@ Butiran tambahan:
 <translation id="7673278391011283842">Peti mel 6</translation>
 <translation id="7675325315208090829">Urus Kaedah Pembayaran...</translation>
 <translation id="767550629621587224">Tab Diprapotong</translation>
+<translation id="7675756033024037212">Tatal &amp; zum tidak dibenarkan</translation>
 <translation id="7676643023259824263">Cari teks papan keratan, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Lihat dan urus sejarah penyemakan imbas anda dalam tetapan Chrome</translation>
 <translation id="7679947978757153706">Besbol</translation>

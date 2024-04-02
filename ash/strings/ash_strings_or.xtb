@@ -30,7 +30,6 @@
 <translation id="109942774857561566">ମୁଁ ବିରକ୍ତ ହୋଇଗଲିଣି</translation>
 <translation id="1104084341931202936">ଆକ୍ସେସିବିଲିଟୀ ସେଟିଂସ୍ ଦେଖାନ୍ତୁ</translation>
 <translation id="1104621072296271835">ଏକାଠି ହୋ‍ଇ ଆପଣଙ୍କର ଡିଭାଇସ୍‌ଗୁଡ଼ିକ ଆହୁରି ଭଲ କାର୍ଯ୍ୟ କରନ୍ତି</translation>
-<translation id="1106446201446919638">1 ଡିଭାଇସକୁ କନେକ୍ଟ କରାଯାଇଛି। ହଟସ୍ପଟ ଚାଲୁ ଥିବା ସମୟରେ, ୱାଇ-ଫାଇ ବନ୍ଦ ରହିବ।</translation>
 <translation id="1111021433905331574">ଆପଣ ସେଟିଂସ &gt; <ph name="APP_TITLE" />ରେ ଆପଣଙ୍କ କୀବୋର୍ଡ ବ୍ୟାକଲାଇଟର ରଙ୍ଗ ପରିବର୍ତ୍ତନ କରିପାରିବେ</translation>
 <translation id="1117719261843403176">ମୋବାଇଲ ଡାଟାକୁ ଟୋଗଲ କରନ୍ତୁ। <ph name="STATE" />।</translation>
 <translation id="112308213915226829">ସେଲ୍ଫକୁ ସ୍ୱଚାଳିତ ଭାବେ ଲୁଚାନ୍ତୁ</translation>
@@ -336,6 +335,7 @@
 <translation id="2405664212338326887">ସଂଯୁକ୍ତ ହୋଇନାହିଁ</translation>
 <translation id="2408955596600435184">ଆପଣଙ୍କର PIN ଲେଖନ୍ତୁ</translation>
 <translation id="2412593942846481727">ଅପ୍‍‍ଡେଟ୍ ଉପଲବ୍ଧ ଅଛି</translation>
+<translation id="2416438829169535743">ଭ୍ୟୁରୁ ବାହାରି ଯିବେ?</translation>
 <translation id="2417486498593892439">ନେଟୱାର୍କରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="2426051945783024481">କେମେରା ଫ୍ରେମ ସ୍ୱଚାଳିତ ଭାବେ ମଝିରେ ଅଛି</translation>
 <translation id="2427507373259914951">ବାମ କ୍ଲିକ୍</translation>
@@ -427,6 +427,7 @@
 <translation id="2785499565474703580">1ଟି ଡିଭାଇସ କନେକ୍ଟ କରାଯାଇଛି</translation>
 <translation id="2791421900609674576">ଆପଣ ଯେଉଁଠାରେ ଛାଡ଼ିଥିଲେ ସେଠାରୁ ଜାରି ରଖିବା ପାଇଁ ସୁପାରିଶଗୁଡ଼ିକ ଦେଖିବେ। ଆପଣ ସୁପାରିଶଗୁଡ଼ିକୁ କାଢ଼ି ଦେବା ପାଇଁ ସ୍ପର୍ଶ କରି ଧରି ରଖିପାରିବେ।</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
+<translation id="2801954693771979815">ସ୍କ୍ରିନର ଆକାର</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, ଚୟନ କରାଯାଇଛି</translation>
 <translation id="2805756323405976993">ଆପ୍ସ</translation>
 <translation id="2814448776515246190">ଆଂଶିକ କ୍ୟାପଚର୍</translation>
@@ -517,7 +518,6 @@
 <translation id="316086887565479535">ଟେମ୍ପଲେଟରେ ଅସମର୍ଥିତ ଆପଗୁଡ଼ିକ ଅଛି</translation>
 <translation id="3160929076476941240">2 ଘଣ୍ଟା</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />କୁ ପ୍ରତ୍ୟାହାର କରୁଛି। ଆପଣଙ୍କ ଡିଭାଇସ ରିସେଟ ହେବ ଏବଂ ସମସ୍ତ ଡାଟା ଡିଲିଟ ହୋଇଯିବ।</translation>
-<translation id="3170769098533255179">କୌଣସି ଡିଭାଇସକୁ କନେକ୍ଟ କରାଯାଇନାହିଁ। ହଟସ୍ପଟ ଚାଲୁ ଥିବା ସମୟରେ, ୱାଇ-ଫାଇ ବନ୍ଦ ରହିବ।</translation>
 <translation id="3171170659304083361">ଇନପୁଟ୍ ପଦ୍ଧତି ସେଟିଂସ୍</translation>
 <translation id="3176221688814061633">ଆପଣଙ୍କ Chromebook କିମ୍ବା ବ୍ଲୁଟୁଥ ଡିଭାଇସ ବ୍ଲୁଟୁଥର ଏକ ପୁରୁଣା ଭର୍ସନ ବ୍ୟବହାର କରୁଛି। ଆହୁରି ଭଲ ଅଡିଓ ଗୁଣବତ୍ତା ପାଇଁ ବ୍ଲୁଟୁଥ ସୁପର ରିଜୋଲ୍ୟୁସନକୁ ଚାଲୁ କରନ୍ତୁ କିମ୍ବା ଇଣ୍ଟର୍ନଲ ମାଇକ୍ରୋଫୋନ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="3181441307743005334">ରିଷ୍ଟାର୍ଟ ହେବା ପାଇଁ କିଛି ସମୟ ଲାଗିପାରେ</translation>
@@ -552,7 +552,6 @@
 <translation id="3306386552969601301"><ph name="DEVICE_NAME" /> ହଟସ୍ପଟ ସହ <ph name="DEVICECOUNT" />ଟି ଡିଭାଇସ କନେକ୍ଟ କରାଯାଇଛି</translation>
 <translation id="3307642347673023554">ଲାପଟପ୍ ମୋଡକୁ ସ୍ୱିଚ୍ କରାଯାଇଛି</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> ଏବେ ମଧ୍ୟ ପରେ ସାଇନ୍‍ ଇନ୍‌ କରିପାରିବେ।</translation>
-<translation id="3317779231018057649"><ph name="DEVICECOUNT" /> ଡିଭାଇସକୁ କନେକ୍ଟ କରାଯାଇଛି। ହଟସ୍ପଟ ଚାଲୁ ଥିବା ସମୟରେ, ୱାଇ-ଫାଇ ବନ୍ଦ ରହିବ।</translation>
 <translation id="3321628682574733415">ଅବୈଧ ପ୍ୟାରେଣ୍ଟ କୋଡ୍</translation>
 <translation id="332827762492701193">ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ଲୁକ୍କାୟିତ ଅଛି</translation>
 <translation id="3333674550998107387"><ph name="NOTIFICATION_TITLE" /> ବିଜ୍ଞପ୍ତିକୁ ବିସ୍ତାର କରନ୍ତୁ</translation>
@@ -676,6 +675,7 @@
 <translation id="3702809606464356667">ବର୍ତ୍ତମାନର ଡେସ୍କରୁ ୱିଣ୍ଡୋଗୁଡ଼ିକ ଦେଖାଯାଉଛି, ସମସ୍ତ ଡେସ୍କରୁ ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ଦେଖାଇବା ପାଇଁ ଅପ୍ ତୀର କୀ ଦବାନ୍ତୁ</translation>
 <translation id="3702846122927433391">ନାଇଜେରିଆର ଜନସଂଖ୍ୟା</translation>
 <translation id="3705722231355495246">-</translation>
+<translation id="3706423975342040244">ମନୋରଞ୍ଜନ</translation>
 <translation id="3708186454126126312">ପୂର୍ବରୁ ସଂଯୋଗ କରାଯାଇଛି</translation>
 <translation id="3712143870407382523">ଏହି ସାଇଡ ପାଇଁ ଏକ ୱିଣ୍ଡୋ ବାଛନ୍ତୁ</translation>
 <translation id="371370241367527062">ସାମ୍‌ନାପଟର ମାଇକ୍ରୋଫୋନ୍</translation>
@@ -851,6 +851,7 @@
 <translation id="440113666232554208">ସ୍କ୍ରିନକାଷ୍ଟକୁ ସେଭ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="4405151984121254935">ସଂଯୋଗ କରାଯାଇଥିବା ପେରିଫେରାଲର ପ୍ରକାର ସମର୍ଥିତ ନୁହେଁ</translation>
 <translation id="4406883609789734330">ଲାଇଭ୍ କ୍ୟାପସନ୍</translation>
+<translation id="4412698727486357573">ସହାୟତା କେନ୍ଦ୍ର</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ବନ୍ଦ ଅଛି।</translation>
 <translation id="4424159417645388645">ଡେସ୍କ 5</translation>
 <translation id="4430019312045809116">ଭଲ୍ୟୁମ୍</translation>
@@ -891,7 +892,6 @@
 <translation id="4566144812051858745">କୌଣସି ପରାମର୍ଶରେ ରୁଚି ନାହିଁ</translation>
 <translation id="4569753163207712681">ଆପଣଙ୍କ ଫୋନର ବର୍ତ୍ତମାନର ଫଟୋ, ମିଡିଆ ଏବଂ ଆପ୍ସ ଭ୍ୟୁ କରନ୍ତୁ</translation>
 <translation id="4573176682887762361">"[ଶବ୍ଦ / ବାକ୍ୟାଂଶ] ଟାଇପ କରନ୍ତୁ"</translation>
-<translation id="4577188182049003486">ହଟସ୍ପଟ ଚାଲୁ ହେଲେ, ୱାଇ-ଫାଇ ବନ୍ଦ ହୋଇଯାଏ</translation>
 <translation id="4577274620589681794">ସମୟ ସମାପ୍ତ ହୋଇଛି · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">ପ୍ରିଭ୍ୟୁଗୁଡ଼ିକୁ ଦେଖାନ୍ତୁ</translation>
 <translation id="4578906031062871102">ସେଟିଂସ୍ ମେନୁ ଖୋଲାଯାଇଛି</translation>
@@ -1149,12 +1149,13 @@
 <translation id="5550417424894892620"><ph name="HOLDING_SPACE_TITLE" />ରେ ଫାଇଲଗୁଡ଼ିକୁ ଯୋଗ କରିବା ପାଇଁ ସେଗୁଡ଼ିକୁ ଡେସ୍କଟପରେ ଡ୍ରପ କରନ୍ତୁ। ଆପଣ ଡେସ୍କଟପରେ ଫାଇଲ ଯୋଗ କରିପାରିବେ ନାହିଁ।</translation>
 <translation id="5551456515017410630">କେଲେଣ୍ଡର ଖୋଲନ୍ତୁ/ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="5551974246223970793">ଏକ ପୃଷ୍ଠାକୁ ସର୍ଚ୍ଚ କରିବା ସମୟରେ ସର୍ଚ୍ଚ ପାଇଁ ପରବର୍ତ୍ତୀ ମେଳକୁ ଯାଆନ୍ତୁ</translation>
-<translation id="5555639311269196631">ହଟସ୍ପଟକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="5556459405103347317">ପୁନଃ ଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="5558091555391176027">Nearby Shareର ଉଚ୍ଚ ଭିଜିବିଲିଟୀକୁ ଟୋଗଲ କରନ୍ତୁ</translation>
+<translation id="5558314826121965174">ସୃଜନଶୀଳତା</translation>
 <translation id="556042886152191864">ବଟନ୍</translation>
 <translation id="5570122939431135380">ନୂଆ ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋରେ ନୂଆ ଟାବ ଖୋଲନ୍ତୁ</translation>
 <translation id="5571066253365925590">ବ୍ଲୁଟୁଥ୍‌ ସକ୍ଷମ ଅଛି</translation>
+<translation id="5572632238877308040">ଅତ୍ୟାବଶ୍ୟକୀୟ</translation>
 <translation id="557563299383177668">ପରବର୍ତ୍ତୀ ଅନୁଚ୍ଛେଦ</translation>
 <translation id="5577082622442191756">ବ୍ଲୁଟୁଥ ଟୋଗଲ କରନ୍ତୁ। <ph name="STATE_TEXT" />।</translation>
 <translation id="5577281275355252094">ଫୋନ୍ ହବ୍ ବ୍ୟବହାର କରିବା ପାଇଁ ଆପଣଙ୍କ ଫୋନରେ ବ୍ଲୁଟୁଥ୍ ଚାଲୁ ଥିବା ଯାଞ୍ଚ କରନ୍ତୁ</translation>
@@ -1179,6 +1180,7 @@
 <translation id="5662075790140998213">ଡେସ୍କ 10</translation>
 <translation id="5662709761327382534">ମାଇକ୍ରୋଫୋନରେ ରେକର୍ଡ କରନ୍ତୁ <ph name="CURRENT_STATE" />, ମାଇକ୍ରୋଫୋନରେ ରେକର୍ଡିଂ ଚାଲୁ କରିବାକୁ Enter କୀ'କୁ ଦବାନ୍ତୁ <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">ସକ୍ରିୟ ହେଉଛି</translation>
+<translation id="5672890847723042801">ୟୁଟିଲିଟିଗୁଡ଼ିକ</translation>
 <translation id="5673434351075758678">ଆପଣଙ୍କର ସେଟିଂସ୍ ସିଙ୍କ୍ ହେବା ପରେ "<ph name="FROM_LOCALE" />"ରୁ "<ph name="TO_LOCALE" />" ପର୍ଯ୍ୟନ୍ତ।</translation>
 <translation id="5675363643668471212">ସେଲ୍ଫ ଆଇଟମ୍</translation>
 <translation id="5677928146339483299">ବ୍ଲକ୍ କରାଯାଇଛି</translation>
@@ -1360,6 +1362,7 @@
 <translation id="6351032674660237738">ଆପ୍ ପରାମର୍ଶ</translation>
 <translation id="6352082849089527770">ଅଜଣା ନେଟୱାର୍କଗୁଡ଼ିକ</translation>
 <translation id="6359587239691116345">ନବୀନତମ ଫିଚର ଏବଂ ସୁରକ୍ଷା ଉନ୍ନତିଗୁଡ଼ିକୁ ପାଆନ୍ତୁ। ଯଦି ଆପଣ ଏହି ଅପଡେଟକୁ ଅଗ୍ରାହ୍ୟ କରନ୍ତି, ତେବେ ଆପଣଙ୍କ ଡିଭାଇସ ଆଉ ସଠିକ୍ ଭାବେ କାମ କରିନପାରେ ଏବଂ ଆପଣ ସୁରକ୍ଷା ଓ ପରଫରମାନ୍ସ ସମସ୍ୟାଗୁଡ଼ିକର ସମ୍ମୁଖୀନ ହୋଇପାରନ୍ତି।</translation>
+<translation id="6362833380917912748">ଆପଣଙ୍କ ବିଲ୍ଟ-ଇନ ଆପ୍ସକୁ ଜାଣନ୍ତୁ</translation>
 <translation id="6376931439017688372">ବ୍ଲୁଟୁଥ୍ ଚାଲୁ ଅଛି</translation>
 <translation id="6378515133128829137">ୱିଣ୍ଡୋକୁ ଡାହାଣକୁ ପିନ କରନ୍ତୁ</translation>
 <translation id="6381109794406942707">ଡିଭାଇସକୁ ଅନଲକ୍ କରିବା ପାଇଁ ଆପଣଙ୍କର PIN ଲେଖନ୍ତୁ।</translation>
@@ -1779,6 +1782,7 @@
 <translation id="799296642788192631">ଆପଣ ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ଫାଇଲଗୁଡ଼ିକୁ ପିନ କରିପାରିବେ। ପିନ କରିବା ପାଇଁ, ଏକ ଆଇଟମ ଉପରେ ହୋଭର କରନ୍ତୁ କିମ୍ବା ଫାଇଲଗୁଡ଼ିକୁ ଖୋଲି ଏକ ଆଇଟମରେ ଡାହାଣ-କ୍ଲିକ କରନ୍ତୁ।</translation>
 <translation id="7994370417837006925">ଏକାଧିକ ସାଇନ୍-ଇନ୍</translation>
 <translation id="7995804128062002838">ସ୍କ୍ରିନ୍ କ୍ୟାପଚର୍ କରିବା ବିଫଳ ହୋଇଛି</translation>
+<translation id="8000020256436988724">ଟୁଲବାର୍</translation>
 <translation id="8000066093800657092">କୌଣସି ନେଟ୍‌ୱର୍କ ନାହିଁ</translation>
 <translation id="8001755249288974029">କର୍ସରରୁ ଲାଇନର ଆରମ୍ଭ ପର୍ଯ୍ୟନ୍ତ ଟେକ୍ସଟ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="8004512796067398576">ବୃଦ୍ଧି</translation>
@@ -1845,6 +1849,7 @@
 <translation id="8262312463845990408">ପ୍ଲେବେକ ଟୋଗଲ କରନ୍ତୁ</translation>
 <translation id="8270450402312105425">{0,plural, =1{ଡିଭାଇସକୁ ଏକ ଘଣ୍ଟା ମଧ୍ୟରେ ପୂର୍ବବର୍ତ୍ତୀ ସଂସ୍କରଣକୁ ପରିବର୍ତ୍ତନ କରନ୍ତୁ}other{ଡିଭାଇସକୁ # ଘଣ୍ଟା ମଧ୍ୟରେ ପୂର୍ବବର୍ତ୍ତୀ ସଂସ୍କରଣକୁ ପରିବର୍ତ୍ତନ କରନ୍ତୁ}}</translation>
 <translation id="8277261673056602147">ଆପଣଙ୍କ ସ୍କ୍ରିନରେ ଟେକ୍ସଟକୁ ହାଇଲାଇଟ କରନ୍ତୁ</translation>
+<translation id="8287009018010202411">ଉତ୍ପାଦନକ୍ଷମତା</translation>
 <translation id="828708037801473432">ବନ୍ଦ</translation>
 <translation id="8297006494302853456">ଦୁର୍ବଳ</translation>
 <translation id="8308637677604853869">ପୂର୍ବବର୍ତ୍ତୀ ମେନୁ</translation>
@@ -1916,6 +1921,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">ଆପଣଙ୍କ ଆପଗୁଡ଼ିକୁ ନାମ କିମ୍ବା ରଙ୍ଗ ଅନୁସାରେ ସର୍ଟ କରନ୍ତୁ</translation>
 <translation id="8609384513243082612">ନୂଆ ଟାବ୍ ଖୋଲନ୍ତୁ</translation>
+<translation id="861045123704058818">ଆପ୍ସକୁ ଅସ୍ଥାୟୀ ଭାବେ ବର୍ଗ ଅନୁଯାୟୀ ବ୍ୟବସ୍ଥିତ କରାଯାଇଛି</translation>
 <translation id="8612216344243590325">ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ଫାଇଲଗୁଡ଼ିକୁ ଡେସ୍କଟପ ପରିବର୍ତ୍ତେ <ph name="HOLDING_SPACE_TITLE" />ରେ ରଖନ୍ତୁ। ଏବେ ଫାଇଲଗୁଡ଼ିକୁ <ph name="HOLDING_SPACE_TITLE" />କୁ ଡ୍ରାଗ କରନ୍ତୁ।</translation>
 <translation id="8614517853887502247">"ଦେଖିବା ସମ୍ବନ୍ଧିତ ସୁରକ୍ଷା" ସୁବିଧା ଚାଲୁ ଥିବା ଯୋଗୁଁ <ph name="APP_1_TITLE" /> ଏବଂ <ph name="APP_2_TITLE" /> ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ଲୁକ୍କାୟିତ ଅଛି</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1954,6 +1960,7 @@
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">ଆପଣଙ୍କ ପରିଚୟ ଯାଞ୍ଚ କରନ୍ତୁ: ଏହା ଆପଣ ଅଟନ୍ତି ବୋଲି <ph name="ORIGIN_NAME" /> ସୁନିଶ୍ଚିତ କରିବାକୁ ଚାହୁଁଛି</translation>
 <translation id="875593634123171288">VPN ସେଟିଂସ୍‌ ଦେଖାନ୍ତୁ</translation>
+<translation id="8756799553341497810">ଆପଣ ଏହି ଭ୍ୟୁରୁ ବାହାରି ଯିବା ପରେ ଆପଣଙ୍କ ଆପ ଲେଆଉଟକୁ କଷ୍ଟମାଇଜ କରିବା ଆରମ୍ଭ କରିପାରିବେ।</translation>
 <translation id="8759408218731716181">ଏକାଧିକ ସାଇନ୍-ଇନ୍ ସେଟ୍ ଅପ୍ କରିପାରିବେ ନାହିଁ</translation>
 <translation id="8763883995157866248">ଡିଭାଇସକୁ ସ୍ଲିପ ମୋଡରେ ରଖନ୍ତୁ</translation>
 <translation id="877404052021108314">ସେଲସିଆସ ଅନୁସାରେ 90°F</translation>
@@ -1974,6 +1981,7 @@
 <translation id="8834539327799336565">ବର୍ତ୍ତମାନ ସଂଯୁକ୍ତ ଅଛି</translation>
 <translation id="8841375032071747811">ପଛକୁ ଫେରନ୍ତୁ ବଟନ୍</translation>
 <translation id="8843682306134542540">ଘୂର୍ଣ୍ଣନ ଲକ୍ ଟୋଗଲ୍ କରନ୍ତୁ। <ph name="STATE_TEXT" /></translation>
+<translation id="8845001906332463065">ସାହାଯ୍ୟ ପାଆନ୍ତୁ</translation>
 <translation id="8849001918648564819">ଲୁକ୍କାୟିତ</translation>
 <translation id="8853703225951107899">ଆପଣଙ୍କ PIN କିମ୍ବା ପାସୱାର୍ଡକୁ ଏବେ ବି ଯାଞ୍ଚ କରାଯାଇପାରିଲା ନାହିଁ। ଧ୍ୟାନ ଦିଅନ୍ତୁ: ଯଦି ଆପଣ ଆପଣଙ୍କ ପାସୱାର୍ଡକୁ ବର୍ତ୍ତମାନ ପରିବର୍ତ୍ତନ କରିଛନ୍ତି, ତେବେ ପୁରୁଣା ପାସୱାର୍ଡ ବ୍ୟବହାର କରନ୍ତୁ। ଆପଣ ସାଇନ୍ ଆଉଟ୍ କରିବା ପରେ ଆପଣଙ୍କ ନୂଆ ପାସୱାର୍ଡ ଲାଗୁ ହେବ।</translation>
 <translation id="8855885154700222542">ପୂର୍ଣ୍ଣସ୍କ୍ରିନ୍‌ କୀ</translation>

@@ -345,7 +345,6 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="125220115284141797">Defolt</translation>
 <translation id="1252219782845132919">Qrupu gizlədin</translation>
 <translation id="1252987234827889034">Profil xətası baş verdi</translation>
-<translation id="1253664522045778676">Nəticəyə klikləyin, səhifə cari tabda açılacaq</translation>
 <translation id="1254593899333212300">Birbaşa İnternet bağlantısı</translation>
 <translation id="1256588359404100567">Ayar əvvəlki cihazdan sinxronlaşdırıldı.</translation>
 <translation id="1257336506558170607">Seçilmiş sertifikatı eksport edin</translation>
@@ -1195,7 +1194,6 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1887210448491286312"><ph name="DEVICE_NAME" /> cihazında tab yayımını dayandırın</translation>
 <translation id="1887442540531652736">Giriş xətası</translation>
 <translation id="1887597546629269384">Yenidən "Hey Google" deyin</translation>
-<translation id="1889091146873278175">Yan paneldə digər axtarış nəticələrini görmək üçün "G" düyməsinə klikləyin</translation>
 <translation id="1890026367080681123">Daxil edilmiş kontent ayarlarına keçin</translation>
 <translation id="189035593835762169">Şərtlər və qaydalar</translation>
 <translation id="1891362123137972260">Diskdə boş yer çox azdır. Diskdə yer boşaldın.</translation>
@@ -6259,7 +6257,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5804241973901381774">İcazələr</translation>
 <translation id="5804259315582798390">Lokal datanın bərpasını aktivləşdirmək alınmadı</translation>
 <translation id="5805268472388605531">Vurğu işarələrini və xüsusi simvolları görmək üçün klaviatura düymələrini basıb saxlayın</translation>
-<translation id="5805354171420804923">Yeni yan paneldə axtarış nəticələrini daha sürətlə müqayisə edin</translation>
 <translation id="5805697420284793859">Pəncərə meneceri</translation>
 <translation id="5806447147478173900">Göstərilən saytlar tərəfindən istifadə olunan cəmi yaddaş: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (Defolt)</translation>
@@ -7399,7 +7396,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" /> istifadə edərək qoşulun</translation>
 <translation id="6710213216561001401">Əvvəlki</translation>
 <translation id="6710394144992407503">Veb səhifələrdə mətn yazarkən orfoqrafik səhvləri yoxlayın</translation>
-<translation id="671226373742585927">Yan paneli bağlamaq üçün "X" düyməsinə klikləyin</translation>
 <translation id="6712943853047024245"><ph name="WEBSITE" /> üçün bu istifadəçi adı ilə parolu artıq yadda saxlamısınız</translation>
 <translation id="6713233729292711163">İş Profili əlavə edin</translation>
 <translation id="6713441551032149301">Funksiya düymələri və sistemin yuxarı sıra düymələri arasında dəyişmək üçün başladıcı düyməsini basıb saxlayın</translation>
@@ -8764,7 +8760,6 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7758884017823246335">Sayt axtarışı əlavə edin</translation>
 <translation id="7759809451544302770">İstəyə görə</translation>
 <translation id="7762024824096060040">Bu hesabı istifadə etmək mümkün deyil</translation>
-<translation id="7762243782113123335">Xəta baş verdi. Təsvirdə #bruschetta ilə rəy bildirin. Xəta kodu: <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Ünvan əlavə edin</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_DOMAIN" /> domenindən <ph name="DOWNLOAD_RECEIVED" /></translation>
 <translation id="7764527477537408401">Qrupu yeni pəncərədə açın</translation>
@@ -9249,7 +9244,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="810185532889603849">Fərdi rəng</translation>
 <translation id="8101987792947961127">Növbəti yenidən yüklənmə zamanı zavod sıfırlaması tələb olunur</translation>
 <translation id="8102139037507939978">Şəxsi Eyniləşdirici Məlumatları system_logs.txt faylından çıxarın.</translation>
-<translation id="8102344699913991108">Saytlar istifadəçi jestlərindən asılı olmayaraq immersiv tam ekran təcrübələri təklif etmək üçün bu ayardan istifadə edir</translation>
 <translation id="810362914482827094">Parolları axtarın</translation>
 <translation id="8104088837833760645">eSIM profilini endirin</translation>
 <translation id="8105273883928376822">Davam etmək üçün daxil olun.</translation>
@@ -9470,7 +9464,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8272443605911821513">"Digər alətlər" menyusunda Artırmalara klikləməklə artırmalarınızı idarə edin.</translation>
 <translation id="8272786333453048167">Yenidən icazə verin</translation>
 <translation id="8273905181216423293">İndi endirin</translation>
-<translation id="8274495289680107339">Saytlar şəkildə şəkil rejiminə avtomatik daxil olmaq üçün bu ayardan istifadə edir. Digər tapşırıqlar üçün ekranı boşaltdıqda video izləməyə davam edə bilərsiniz.</translation>
 <translation id="827488840488530039">Daxil olmaq istədiyiniz səhifə Kerberos biletlərini doğrulaya bilmədi</translation>
 <translation id="8274921654076766238">Böyüdücü klaviatura fokusunu izləyir</translation>
 <translation id="8274924778568117936">Yeniləmə tamamlanana qədər <ph name="DEVICE_TYPE" /> cihazını deaktiv etməyin və ya bağlamayın. <ph name="DEVICE_TYPE" /> quraşdırmadan sonra yenidən başlayacaq.</translation>

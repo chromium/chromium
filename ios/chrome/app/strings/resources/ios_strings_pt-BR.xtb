@@ -878,6 +878,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="5548760955356983418">A "Transição" permite que você comece a navegar por um website neste dispositivo e, em seguida, continue facilmente no seu Mac. O website aberto aparecerá no Dock do Mac.
 
 A "Transição" também deve ser ativada na seção "Geral" das configurações. Seus dispositivos devem usar a mesma conta do iCloud.</translation>
+<translation id="5551825465462320939">Acompanhe notícias, esportes e muito mais com base nos seus interesses.</translation>
 <translation id="5551897871312988470">Oferecer para traduzir</translation>
 <translation id="5556459405103347317">Recarregar</translation>
 <translation id="555749644339804659">Verificando senhas…</translation>
@@ -1182,6 +1183,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="6989674195860388998">Mudar nas configurações</translation>
 <translation id="6998989275928107238">Para</translation>
 <translation id="699954956411469731">Notificações no dispositivo móvel</translation>
+<translation id="699985840472413751">Fechar o download</translation>
 <translation id="7004032350256606903">Sua organização requer o uso do modo de navegação privada.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Guias recentes</translation>
@@ -1471,6 +1473,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="850600235656508448">Abrir em modo de navegação anônima</translation>
 <translation id="8517375800490286174">Licenças de código aberto</translation>
 <translation id="8522147671363140027">{count,plural, =1{{count} senha e outros itens foram salvos apenas neste dispositivo. Para usá-los em outros dispositivos, salve na sua Conta do Google, {email}.}one{{count} senha e outros itens foram salvos apenas neste dispositivo. Para usá-los em outros dispositivos, salve na sua Conta do Google, {email}.}other{{count} senhas e outros itens foram salvos apenas neste dispositivo. Para usá-los em outros dispositivos, salve na sua Conta do Google, {email}.}}</translation>
+<translation id="8522813812888400223">Cancelar o download</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> Guias <ph name="FIRST_VISIBLE_TAB" /> a <ph name="LAST_VISIBLE_TAB" /> de <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="852576975834694248">Sua conta será desconectada e as guias serão fechadas</translation>
 <translation id="8528009254289981965">Abrir links de outros apps na navegação anônima</translation>

@@ -30,7 +30,6 @@
 <translation id="109942774857561566">আমি বোর হয়ে গেছি</translation>
 <translation id="1104084341931202936">অ্যাক্সেসেবিলিটি সেটিংস দেখান</translation>
 <translation id="1104621072296271835">আপনার ডিভাইসগুলি একসাথে আরও ভাল কাজ করে</translation>
-<translation id="1106446201446919638">১টি ডিভাইস কানেক্ট করা হয়েছে। হটস্পট ব্যবহার করার সময়, ওয়াই-ফাই বন্ধ করা থাকবে।</translation>
 <translation id="1111021433905331574">'সেটিংস' &gt; <ph name="APP_TITLE" /> থেকে কীবোর্ড ব্যাকলাইটের রঙ পরিবর্তন করতে পারবেন</translation>
 <translation id="1117719261843403176">মোবাইল ডেটা টগল করুন। <ph name="STATE" />।</translation>
 <translation id="112308213915226829">তাককে স্বয়ংক্রিয়ভাবে লুকান</translation>
@@ -336,6 +335,7 @@
 <translation id="2405664212338326887">কানেক্ট করা নেই</translation>
 <translation id="2408955596600435184">আপনার পিন লিখুন</translation>
 <translation id="2412593942846481727">আপডেট উপলভ্য</translation>
+<translation id="2416438829169535743">ভিউ ছেড়ে বেরিয়ে আসবেন?</translation>
 <translation id="2417486498593892439">নেটওয়ার্কে সাইন-ইন করুন</translation>
 <translation id="2426051945783024481">ক্যামেরা ফ্রেম অটোমেটিক কেন্দ্রে আছে</translation>
 <translation id="2427507373259914951">বাঁদিকের বোতামে ক্লিক করুন</translation>
@@ -427,6 +427,7 @@
 <translation id="2785499565474703580">১টি ডিভাইস কানেক্ট করা আছে</translation>
 <translation id="2791421900609674576">আপনি সাজেশন দেখতে পাবেন যাতে যেখানে শেষ কাজ করেছিলেন সেখান থেকেই আবার শুরু করতে পারেন। সাজেশন সরিয়ে দেওয়ার জন্য আপনি টাচ করে ধরে থাকতে পারেন।</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
+<translation id="2801954693771979815">স্ক্রিন সাইজ</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, বেছে নেওয়া হয়েছে</translation>
 <translation id="2805756323405976993">অ্যাপ্স</translation>
 <translation id="2814448776515246190">আংশিক ক্যাপচার</translation>
@@ -517,7 +518,6 @@
 <translation id="316086887565479535">টেমপ্লেটে এমন কিছু অ্যাপ আছে যা কাজ করে না</translation>
 <translation id="3160929076476941240">২ঘঃ</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> আপনার <ph name="DEVICE_TYPE" /> আগের ভার্সনে ফিরিয়ে নিয়ে যাচ্ছে। আপনার ডিভাইস রিসেট করা হবে এবং সব ডেটা মুছে যাবে।</translation>
-<translation id="3170769098533255179">কোনও ডিভাইস কানেক্ট করা হয়নি। হটস্পট ব্যবহার করার সময়, ওয়াই-ফাই বন্ধ করা থাকবে।</translation>
 <translation id="3171170659304083361">'ইনপুট পদ্ধতি' সম্পর্কিত সেটিংস</translation>
 <translation id="3176221688814061633">আপনার Chromebook অথবা ব্লুটুথ ডিভাইস, ব্লুটুথের পুরনো কোনও ভার্সন ব্যবহার করছে। ব্লুটুথ সুপার রেজোলিউশন চালু করুন অথবা আরও ভাল অডিও কোয়ালিটির জন্য ইন্টার্নাল মাইক্রোফোন ব্যবহার করুন।</translation>
 <translation id="3181441307743005334">রিস্টার্ট করতে কিছুক্ষণ সময় লাগতে পারে</translation>
@@ -552,7 +552,6 @@
 <translation id="3306386552969601301"><ph name="DEVICE_NAME" />-এর হটস্পটের সাথে <ph name="DEVICECOUNT" />টি ডিভাইস কানেক্ট করা আছে</translation>
 <translation id="3307642347673023554">'ল্যাপটপ' মোডে পাল্টানো হয়েছে</translation>
 <translation id="3308453408813785101">তা সত্ত্বেও, <ph name="USER_EMAIL_ADDRESS" /> পরে সাইন-ইন করতে পারবেন।</translation>
-<translation id="3317779231018057649"><ph name="DEVICECOUNT" />টি ডিভাইস কানেক্ট করা হয়েছে। হটস্পট ব্যবহার করার সময়, ওয়াই-ফাই বন্ধ করা থাকবে।</translation>
 <translation id="3321628682574733415">ভুল অভিভাবকীয় কোড</translation>
 <translation id="332827762492701193">বিজ্ঞপ্তি লুকানো আছে</translation>
 <translation id="3333674550998107387"><ph name="NOTIFICATION_TITLE" /> বিজ্ঞপ্তি বড় করুন</translation>
@@ -852,6 +851,7 @@
 <translation id="440113666232554208">স্ক্রিনকাস্ট সেভ করা যাচ্ছে না</translation>
 <translation id="4405151984121254935">কানেক্ট করা পেরিফেরাল যে ধরনের, তাতে কাজ করে না</translation>
 <translation id="4406883609789734330">লাইভ ক্যাপশন</translation>
+<translation id="4412698727486357573">সহায়তা কেন্দ্র</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> বন্ধ আছে।</translation>
 <translation id="4424159417645388645">ডেস্ক ৫</translation>
 <translation id="4430019312045809116">ভলিউম</translation>
@@ -892,7 +892,6 @@
 <translation id="4566144812051858745">যেকোনও সাজেশনে আগ্রহী নই</translation>
 <translation id="4569753163207712681">আপনার ফোনের সাম্প্রতিক ফটো, মিডিয়া এবং অ্যাপ দেখুন</translation>
 <translation id="4573176682887762361">"টাইপ [শব্দ / বাক্যাংশ]"</translation>
-<translation id="4577188182049003486">হটস্পট চালু থাকাকালীন, ওয়াই-ফাই বন্ধ আছে</translation>
 <translation id="4577274620589681794">সময় শেষ হয়ে গেছে · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">প্রিভিউ দেখুন</translation>
 <translation id="4578906031062871102">'সেটিংস' মেনু খোলা হয়েছে</translation>
@@ -1014,6 +1013,7 @@
 <translation id="5003993274120026347">পরের বাক্য</translation>
 <translation id="5004607513195820459">নেটওয়ার্ক ম্যানেজ করা হয়</translation>
 <translation id="5009463889040999939">প্রোফাইলের নাম পরিবর্তন করা হচ্ছে। এর জন্য কয়েক মিনিট সময় লাগতে পারে।</translation>
+<translation id="5013847959275396160">সরঞ্জামদণ্ড গোপন করুন</translation>
 <translation id="5016558321564993266">মার্কার টগল করুন। <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">বিভাগ অনুযায়ী সার্চ করুন</translation>
 <translation id="5030659775136592441">বুকমার্ক পরিচালক দেখান</translation>
@@ -1150,12 +1150,13 @@
 <translation id="5550417424894892620"><ph name="HOLDING_SPACE_TITLE" />-এ যোগ করার জন্য ডেস্কটপে ফাইলগুলি ড্রপ করুন। আপনি ডেস্কটপে ফাইল যোগ করতে পারবেন না।</translation>
 <translation id="5551456515017410630">ক্যালেন্ডার খুলুন/বন্ধ করুন</translation>
 <translation id="5551974246223970793">একটি পৃষ্ঠা সার্চ করার সময়, সার্চের জন্য পরবর্তী ম্যাচে যান</translation>
-<translation id="5555639311269196631">হটস্পট বন্ধ করুন</translation>
 <translation id="5556459405103347317">রিলোড করুন</translation>
 <translation id="5558091555391176027">'নিয়ারবাই শেয়ার হাই ভিজিবিলিটি' মোড টগল করুন</translation>
+<translation id="5558314826121965174">ক্রিয়েটিভিটি</translation>
 <translation id="556042886152191864">বোতাম</translation>
 <translation id="5570122939431135380">নতুন ছদ্মবেশী উইন্ডোতে নতুন ট্যাব খুলুন</translation>
 <translation id="5571066253365925590">ব্লুটুথ সক্ষমিত</translation>
+<translation id="5572632238877308040">প্রয়োজনীয়</translation>
 <translation id="557563299383177668">পরবর্তী অনুচ্ছেদ</translation>
 <translation id="5577082622442191756">ব্লুটুথ টগল করুন। <ph name="STATE_TEXT" />।</translation>
 <translation id="5577281275355252094">'ফোন হাব' ব্যবহার করতে আপনার ফোনে ব্লুটুথ চালু করা আছে কিনা তা দেখে নিন</translation>
@@ -1180,6 +1181,7 @@
 <translation id="5662075790140998213">ডেস্ক ১০</translation>
 <translation id="5662709761327382534">মাইক্রোফোনে রেকর্ড করুন <ph name="CURRENT_STATE" />, মাইক্রোফোনে রেকর্ডিং চালু করতে Enter কী প্রেস করুন <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">সক্রিয় করা হচ্ছে</translation>
+<translation id="5672890847723042801">উপযোগিতা</translation>
 <translation id="5673434351075758678">সেটিংস সিঙ্ক করার পরে "<ph name="FROM_LOCALE" />" থেকে "<ph name="TO_LOCALE" />" সেট করা হয়েছে।</translation>
 <translation id="5675363643668471212">শেল্ফ আইটেম</translation>
 <translation id="5677928146339483299">অবরুদ্ধ</translation>
@@ -1361,6 +1363,7 @@
 <translation id="6351032674660237738">অ্যাপের প্রস্তাবনা</translation>
 <translation id="6352082849089527770">অজানা নেটওয়ার্ক</translation>
 <translation id="6359587239691116345">লেটেস্ট ফিচার এবং নিরাপত্তা সংক্রান্ত উন্নতি পান। আপনি এই আপডেটটি বাতিল করলে, আপনার ডিভাইস আর সঠিকভাবে কাজ নাও করতে পারে এবং আপনি নিরাপত্তা এবং পারফর্ম্যান্স সংক্রান্ত সমস্যার সম্মুখীন হতে পারেন।</translation>
+<translation id="6362833380917912748">আপনার বিল্ট-ইন অ্যাপ সম্পর্কে জানুন</translation>
 <translation id="6376931439017688372">ব্লুটুথ চালু আছে</translation>
 <translation id="6378515133128829137">ডানদিকে উইন্ডোটি পিন করুন</translation>
 <translation id="6381109794406942707">ডিভাইস আনলক করতে, আপনার পিন এন্টার করুন।</translation>
@@ -1782,6 +1785,7 @@
 <translation id="799296642788192631">আপনি গুরুত্বপূর্ণ ফাইল পিন করতে পারেন। পিন করার জন্য, আইটেমের উপর নিয়ে যান বা ফাইল খুলে আইটেমের উপর ডানদিকের বোতামে ক্লিক করুন।</translation>
 <translation id="7994370417837006925">একাধিক সাইন-ইন</translation>
 <translation id="7995804128062002838">স্ক্রিন ক্যাপচার করা যায়নি</translation>
+<translation id="8000020256436988724">সরজ্ঞামদণ্ড</translation>
 <translation id="8000066093800657092">কোনও নেটওয়ার্ক নেই</translation>
 <translation id="8001755249288974029">কার্সার থেকে লাইনের শুরুতে টেক্সট বেছে নিন</translation>
 <translation id="8004512796067398576">বৃদ্ধি</translation>
@@ -1848,6 +1852,7 @@
 <translation id="8262312463845990408">প্লেব্যাক টগল করুন</translation>
 <translation id="8270450402312105425">{0,plural, =1{১ ঘণ্টার মধ্যে ডিভাইসটি আগের ভার্সনে ফিরিয়ে নিয়ে যান}one{# ঘণ্টার মধ্যে ডিভাইসটি আগের ভার্সনে ফিরিয়ে নিয়ে যান}other{# ঘণ্টার মধ্যে ডিভাইসটি আগের ভার্সনে ফিরিয়ে নিয়ে যান}}</translation>
 <translation id="8277261673056602147">আপনার স্ক্রিনে টেক্সট হাইলাইট করুন</translation>
+<translation id="8287009018010202411">প্রোডাক্টিভিটি</translation>
 <translation id="828708037801473432">বন্ধ করা আছে</translation>
 <translation id="8297006494302853456">দুর্বল</translation>
 <translation id="8308637677604853869">পূর্ববর্তী মেনু</translation>
@@ -1894,6 +1899,7 @@
 <translation id="847056008324733326">স্কেলের সেটিংস দেখান</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />-এর <ph name="FEATURE_NAME" /> <ph name="FEATURE_STATE" />।</translation>
 <translation id="8477270416194247200">Alt+Search টিপুন বা বাতিল করতে Shift টিপুন</translation>
+<translation id="8480418399907765580">সরঞ্জামদণ্ড দেখান</translation>
 <translation id="8487699605742506766">হটস্পট</translation>
 <translation id="8491237443345908933">নতুন ট্যাবে লিঙ্ক খুলুন</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> রেজোলিউশনে চলতে পারে না। এই রেজোলিউশন পরিবর্তন করে <ph name="FALLBACK_RESOLUTION" /> করা হয়েছে। পরিবর্তিত সেটিংস বজায় রাখতে, 'কনফার্ম করুন' বোতামে ক্লিক করুন। <ph name="TIMEOUT_SECONDS" />-এর মধ্যে পুরনো সেটিংসে ফিরিয়ে নিয়ে যাওয়া হবে।</translation>
@@ -1919,6 +1925,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">নাম বা রঙ অনুযায়ী অ্যাপ সাজান</translation>
 <translation id="8609384513243082612">নতুন ট্যাব খুলুন</translation>
+<translation id="861045123704058818">অস্থায়ীভাবে অ্যাপ বিভাগ অনুযায়ী সাজানো হয়েছে</translation>
 <translation id="8612216344243590325">গুরুত্বপূর্ণ ফাইলগুলি ডেস্কটপের পরিবর্তে <ph name="HOLDING_SPACE_TITLE" />-এ রাখুন। ফাইলগুলি শুধুমাত্র <ph name="HOLDING_SPACE_TITLE" />-এ টেনে আনুন।</translation>
 <translation id="8614517853887502247">ভিউ সংক্রান্ত নিরাপত্তা চালু থাকার জন্য <ph name="APP_1_TITLE" /> এবং <ph name="APP_2_TITLE" />-এর বিজ্ঞপ্তি লুকানো আছে</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1957,6 +1964,7 @@
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">আপনার পরিচয় যাচাই করুন: <ph name="ORIGIN_NAME" /> আপনার পরিচয় যাচাই করতে চায়</translation>
 <translation id="875593634123171288">VPN সেটিংস দেখান</translation>
+<translation id="8756799553341497810">আপনি একবার এই ভিউ ছেড়ে বেরিয়ে এলে, নিজের অ্যাপের লেআউট কাস্টমাইজ করতে পারবেন।</translation>
 <translation id="8759408218731716181">একাধিক সাইন-ইন সেট-আপ করা যাবে না</translation>
 <translation id="8763883995157866248">স্লিপ মোডে ডিভাইস রাখুন</translation>
 <translation id="877404052021108314">৯০° ফারেনহাইটে কত সেন্টিগ্রেড</translation>
@@ -1977,6 +1985,7 @@
 <translation id="8834539327799336565">এখন কানেক্ট করা রয়েছে</translation>
 <translation id="8841375032071747811">ফিরে যাওয়ার বোতাম</translation>
 <translation id="8843682306134542540">রোটেশন লক টগল করুন। <ph name="STATE_TEXT" /></translation>
+<translation id="8845001906332463065">সাহায্য পান</translation>
 <translation id="8849001918648564819">লুকানো আছে</translation>
 <translation id="8853703225951107899">আপনার পিন বা পাসওয়ার্ড এখনও যাচাই করা যায়নি। মনে রাখবেন: আপনি সম্প্রতি পাসওয়ার্ড পরিবর্তন করে থাকলে, পুরনো পাসওয়ার্ড ব্যবহার করুন। আপনি সাইন-আউট করলে নতুন পাসওয়ার্ড প্রয়োগ করা হবে।</translation>
 <translation id="8855885154700222542">ফুলস্ক্রিন করার বোতাম</translation>

@@ -30,7 +30,6 @@
 <translation id="109942774857561566">ฉันเบื่อจัง</translation>
 <translation id="1104084341931202936">แสดงการตั้งค่าการเข้าถึงพิเศษ</translation>
 <translation id="1104621072296271835">อุปกรณ์จะทำงานได้ดียิ่งขึ้นเมื่อใช้ร่วมกัน</translation>
-<translation id="1106446201446919638">มีอุปกรณ์ที่เชื่อมต่ออยู่ 1 เครื่อง Wi-Fi จะยังคงปิดอยู่ขณะใช้ฮอตสปอต</translation>
 <translation id="1111021433905331574">คุณเปลี่ยนสีไฟแบ็กไลต์ของแป้นพิมพ์ได้ในการตั้งค่า &gt; <ph name="APP_TITLE" /></translation>
 <translation id="1117719261843403176">เปิด/ปิดอินเทอร์เน็ตมือถือ <ph name="STATE" /></translation>
 <translation id="112308213915226829">ซ่อนชั้นวางโดยอัตโนมัติ</translation>
@@ -428,6 +427,7 @@
 <translation id="2785499565474703580">มีอุปกรณ์ที่เชื่อมต่ออยู่ 1 เครื่อง</translation>
 <translation id="2791421900609674576">คุณจะเห็นคำแนะนำเพื่อให้ดำเนินการต่อจากจุดที่คุณค้างไว้ได้ โดยสามารถแตะค้างไว้หากต้องการนำคำแนะนำออก</translation>
 <translation id="2792498699870441125">Alt+ค้นหา</translation>
+<translation id="2801954693771979815">ขนาดหน้าจอ</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" /> เลือกอยู่</translation>
 <translation id="2805756323405976993">แอป</translation>
 <translation id="2814448776515246190">จับภาพบางส่วน</translation>
@@ -518,7 +518,6 @@
 <translation id="316086887565479535">แอปที่ไม่รองรับในเทมเพลต</translation>
 <translation id="3160929076476941240">2 ชม.</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> จะย้อนกลับเวอร์ชันของ <ph name="DEVICE_TYPE" /> อุปกรณ์จะรีเซ็ตและระบบจะลบข้อมูลทั้งหมด</translation>
-<translation id="3170769098533255179">ไม่มีอุปกรณ์ที่เชื่อมต่อ Wi-Fi จะยังคงปิดอยู่ขณะใช้ฮอตสปอต</translation>
 <translation id="3171170659304083361">การตั้งค่าวิธีการป้อนข้อมูล</translation>
 <translation id="3176221688814061633">Chromebook หรืออุปกรณ์บลูทูธของคุณกำลังใช้บลูทูธเวอร์ชันเก่า เปิด Bluetooth Super Resolution หรือใช้ไมโครโฟนภายในเพื่อคุณภาพเสียงที่ดีกว่า</translation>
 <translation id="3181441307743005334">การรีสตาร์ทอาจใช้เวลาสักพัก</translation>
@@ -553,7 +552,6 @@
 <translation id="3306386552969601301">อุปกรณ์ <ph name="DEVICECOUNT" /> เครื่องเชื่อมต่ออยู่กับฮอตสปอต <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">เปลี่ยนเป็นโหมดแล็ปท็อปแล้ว</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> ยังมีสิทธิ์ลงชื่อเข้าใช้ภายหลังได้</translation>
-<translation id="3317779231018057649">มีอุปกรณ์ที่เชื่อมต่ออยู่ <ph name="DEVICECOUNT" /> เครื่อง Wi-Fi จะยังคงปิดอยู่ขณะใช้ฮอตสปอต</translation>
 <translation id="3321628682574733415">รหัสผู้ปกครองไม่ถูกต้อง</translation>
 <translation id="332827762492701193">การแจ้งเตือนซ่อนอยู่</translation>
 <translation id="3333674550998107387">ขยายการแจ้งเตือนเกี่ยวกับ<ph name="NOTIFICATION_TITLE" /></translation>
@@ -848,6 +846,7 @@
 <translation id="440113666232554208">บันทึก Screencast ไม่ได้</translation>
 <translation id="4405151984121254935">ไม่รองรับอุปกรณ์ต่อพ่วงที่เชื่อมต่ออยู่</translation>
 <translation id="4406883609789734330">คำบรรยายสด</translation>
+<translation id="4412698727486357573">ศูนย์ช่วยเหลือ</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ปิดอยู่</translation>
 <translation id="4424159417645388645">เดสก์ 5</translation>
 <translation id="4430019312045809116">ระดับเสียง</translation>
@@ -888,7 +887,6 @@
 <translation id="4566144812051858745">ไม่สนใจคำแนะนำใดๆ</translation>
 <translation id="4569753163207712681">ดูรูปภาพ สื่อ และแอปล่าสุดของโทรศัพท์</translation>
 <translation id="4573176682887762361">"พิมพ์[คำหรือวลี]"</translation>
-<translation id="4577188182049003486">เมื่อเปิดฮอตสปอตไว้ Wi-Fi จะปิด</translation>
 <translation id="4577274620589681794">หมดเวลา · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">แสดงตัวอย่าง</translation>
 <translation id="4578906031062871102">เมนูการตั้งค่าเปิดอยู่</translation>
@@ -1010,6 +1008,7 @@
 <translation id="5003993274120026347">ประโยคถัดไป</translation>
 <translation id="5004607513195820459">เครือข่ายได้รับการจัดการ</translation>
 <translation id="5009463889040999939">กำลังเปลี่ยนชื่อโปรไฟล์ การดำเนินการนี้อาจใช้เวลาสักครู่</translation>
+<translation id="5013847959275396160">ซ่อนแถบเครื่องมือ</translation>
 <translation id="5016558321564993266">เปิด/ปิดตัวทำเครื่องหมาย <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">หมวดหมู่การค้นหา</translation>
 <translation id="5030659775136592441">แสดงการจัดการบุ๊กมาร์ก</translation>
@@ -1146,7 +1145,6 @@
 <translation id="5550417424894892620">วางไฟล์บนเดสก์ท็อปเพื่อเพิ่มลงใน <ph name="HOLDING_SPACE_TITLE" /> คุณจะเพิ่มไฟล์ไปยังเดสก์ท็อปไม่ได้</translation>
 <translation id="5551456515017410630">เปิด/ปิดปฏิทิน</translation>
 <translation id="5551974246223970793">เมื่อค้นหาในหน้า ให้ไปยังรายการถัดไปที่ตรงกับการค้นหา</translation>
-<translation id="5555639311269196631">ปิดฮอตสปอต</translation>
 <translation id="5556459405103347317">โหลดใหม่</translation>
 <translation id="5558091555391176027">เปิด/ปิดระดับการเข้าถึงสูงของการแชร์ใกล้เคียง</translation>
 <translation id="5558314826121965174">ความคิดสร้างสรรค์</translation>
@@ -1781,6 +1779,7 @@
 <translation id="799296642788192631">คุณปักหมุดไฟล์ที่สำคัญได้ หากต้องการปักหมุด ให้วางเมาส์เหนือรายการหรือเปิด Files และคลิกขวาที่รายการ</translation>
 <translation id="7994370417837006925">การลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชี</translation>
 <translation id="7995804128062002838">จับภาพหน้าจอไม่สำเร็จ</translation>
+<translation id="8000020256436988724">แถบเครื่องมือ</translation>
 <translation id="8000066093800657092">ไม่มีเครือข่าย</translation>
 <translation id="8001755249288974029">เลือกข้อความจากเคอร์เซอร์ไปจนถึงต้นบรรทัด</translation>
 <translation id="8004512796067398576">การเพิ่ม</translation>
@@ -1894,6 +1893,7 @@
 <translation id="847056008324733326">การตั้งค่าระดับการแสดงผล</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> ได้<ph name="FEATURE_STATE" /><ph name="FEATURE_NAME" />ไว้</translation>
 <translation id="8477270416194247200">กด Alt + Search หรือ Shift เพื่อยกเลิก</translation>
+<translation id="8480418399907765580">แสดงแถบเครื่องมือ</translation>
 <translation id="8487699605742506766">ฮอตสปอต</translation>
 <translation id="8491237443345908933">เปิดลิงก์ในแท็บใหม่</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> ไม่รองรับ <ph name="SPECIFIED_RESOLUTION" /> ระบบเปลี่ยนความละเอียดเป็น <ph name="FALLBACK_RESOLUTION" /> คลิก "ยืนยัน" เพื่อเก็บการเปลี่ยนแปลงไว้ ระบบจะคืนการตั้งค่าก่อนหน้าใน <ph name="TIMEOUT_SECONDS" /></translation>
@@ -1979,6 +1979,7 @@
 <translation id="8834539327799336565">เชื่อมต่ออยู่</translation>
 <translation id="8841375032071747811">ปุ่มกลับ</translation>
 <translation id="8843682306134542540">เปิด/ปิดการล็อกการหมุน <ph name="STATE_TEXT" /></translation>
+<translation id="8845001906332463065">ขอความช่วยเหลือ</translation>
 <translation id="8849001918648564819">ซ่อน</translation>
 <translation id="8853703225951107899">ยังคงยืนยัน PIN หรือรหัสผ่านของคุณไม่ได้ หากคุณเพิ่งเปลี่ยนรหัสผ่านไปไม่นาน ให้ใช้รหัสผ่านเก่า รหัสผ่านใหม่จะมีผลเมื่อคุณออกจากระบบ</translation>
 <translation id="8855885154700222542">แป้นแสดงเต็มหน้าจอ</translation>

@@ -30,7 +30,6 @@
 <translation id="109942774857561566">„I’m bored“ („Скучно ми е“)</translation>
 <translation id="1104084341931202936">Показване на настройките за достъпност</translation>
 <translation id="1104621072296271835">Устройствата ви работят още по-добре заедно</translation>
-<translation id="1106446201446919638">1 устройство е свързано. Докато използвате точката за достъп, функцията за Wi-Fi ще остане изключена.</translation>
 <translation id="1111021433905331574">Можете да промените цвета на фоновото осветление на клавиатурата от „Настройки“ &gt; „<ph name="APP_TITLE" />“</translation>
 <translation id="1117719261843403176">Превключване на мобилните данни. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">Автоматично скриване на лавицата</translation>
@@ -116,6 +115,7 @@
 <translation id="1383597849754832576">Файловете за говор не могат да бъдат изтеглени. Опитайте отново по-късно.</translation>
 <translation id="1383876407941801731">Търсене</translation>
 <translation id="1391102559483454063">Включено</translation>
+<translation id="1394698770495054737">Пълно замъгляване</translation>
 <translation id="1407069428457324124">Тъмна тема</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Използвайте клавишите със стрелка, за да се придвижвате между датите.</translation>
 <translation id="141170878022560212">Среден бутон</translation>
@@ -428,6 +428,7 @@
 <translation id="2785499565474703580">1 свързано устройство</translation>
 <translation id="2791421900609674576">Ще виждате препоръки, така че да можете да продължавате оттам, откъдето сте прекъснали. Имате възможност да докоснете и задържите дадена препоръка, за да я премахнете.</translation>
 <translation id="2792498699870441125">Alt + търсене</translation>
+<translation id="2801954693771979815">Размер на елементите на екрана</translation>
 <translation id="2802938996245446490">Бутонът „<ph name="BUTTON_LABEL" />“ е избран</translation>
 <translation id="2805756323405976993">Приложения</translation>
 <translation id="2814448776515246190">Частично заснемане</translation>
@@ -518,7 +519,6 @@
 <translation id="316086887565479535">Шаблонът съдържа неподдържани приложения</translation>
 <translation id="3160929076476941240">2 ч</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> връща устройството ви <ph name="DEVICE_TYPE" /> към по-стара версия. То ще бъде нулирано и всички данни ще бъдат изтрити.</translation>
-<translation id="3170769098533255179">Няма свързани устройства. Докато използвате точката за достъп, функцията за Wi-Fi ще остане изключена.</translation>
 <translation id="3171170659304083361">Настройки на методите на въвеждане</translation>
 <translation id="3176221688814061633">Вашият Chromebook или устройството ви с Bluetooth е с по-стара версия на Bluetooth. За по-добро качество на звука включете Bluetooth Super Resolution или използвайте вътрешен микрофон.</translation>
 <translation id="3181441307743005334">Рестартирането може да отнеме известно време</translation>
@@ -553,7 +553,6 @@
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> устройства са свързани с точката за достъп от <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">Превключихте към режима на лаптоп</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> пак може да влезе в профила си по-късно.</translation>
-<translation id="3317779231018057649"><ph name="DEVICECOUNT" /> устройства са свързани. Докато използвате точката за достъп, функцията за Wi-Fi ще остане изключена.</translation>
 <translation id="3321628682574733415">Неправилен код на родител</translation>
 <translation id="332827762492701193">Известията са скрити</translation>
 <translation id="3333674550998107387">Разгъване на известието „<ph name="NOTIFICATION_TITLE" />“</translation>
@@ -853,6 +852,7 @@
 <translation id="440113666232554208">Скрийнкастът не може да се запази</translation>
 <translation id="4405151984121254935">Типът на свързаното периферно устройство не се поддържа</translation>
 <translation id="4406883609789734330">Надписи на живо</translation>
+<translation id="4412698727486357573">Помощен център</translation>
 <translation id="4412944820643904175">„<ph name="FEATURE_NAME" />“ е изключено.</translation>
 <translation id="4424159417645388645">Работен кът 5</translation>
 <translation id="4430019312045809116">Звук</translation>
@@ -893,7 +893,6 @@
 <translation id="4566144812051858745">Не ме интересуват никакви предложения</translation>
 <translation id="4569753163207712681">Преглед на скорошните снимки, мултимедийни файлове и приложения на телефона ви</translation>
 <translation id="4573176682887762361">„Type [word/phrase]“</translation>
-<translation id="4577188182049003486">Когато точката за достъп е включена, функцията за Wi-Fi е изключена</translation>
 <translation id="4577274620589681794">Времето изтече   <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Показване на визуализации</translation>
 <translation id="4578906031062871102">Менюто за настройки е отворено</translation>
@@ -956,6 +955,7 @@
 <translation id="4798888871844665150">Копираният елемент вече е в буферната памет. За преглед използвайте <ph name="SHORTCUT_KEY_NAME" /> + V.</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">Изключване</translation>
+<translation id="4806631651704497161">Слабо замъгляване</translation>
 <translation id="4813311884204119883">Преместете с плъзгане дадена връзка до празен участък на лентата с раздели</translation>
 <translation id="4814539958450445987">Екран за вход</translation>
 <translation id="481455355267255546">Предстоящи събития</translation>
@@ -1015,6 +1015,7 @@
 <translation id="5003993274120026347">Следващо изречение</translation>
 <translation id="5004607513195820459">Мрежата се управлява</translation>
 <translation id="5009463889040999939">Профилът за мобилна мрежа се преименува. Това може да отнеме няколко минути.</translation>
+<translation id="5013847959275396160">Скриване на лентата с инструменти</translation>
 <translation id="5016558321564993266">Превключване на маркера. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Категории на резултатите от търсенето</translation>
 <translation id="5030659775136592441">Показване на диспечера на отметките</translation>
@@ -1151,7 +1152,6 @@
 <translation id="5550417424894892620">Преместете файлове върху работния плот, за да ги добавите към <ph name="HOLDING_SPACE_TITLE" />. Не можете да добавяте файлове към работния плот.</translation>
 <translation id="5551456515017410630">Отваряне или затваряне на календара</translation>
 <translation id="5551974246223970793">Преминаване към следващото съответствие за заявката при търсене на страница</translation>
-<translation id="5555639311269196631">Изключване на точката за достъп</translation>
 <translation id="5556459405103347317">Повторно зареждане</translation>
 <translation id="5558091555391176027">Превключване на увеличената видимост за „Споделяне наблизо“</translation>
 <translation id="5558314826121965174">Творчество</translation>
@@ -1786,6 +1786,7 @@
 <translation id="799296642788192631">Можете да фиксирате важни файлове. За да фиксирате елемент, задръжте курсора на мишката върху него или отворете „Файлове“ и кликнете с десния бутон на мишката върху елемента.</translation>
 <translation id="7994370417837006925">Централизиран вход</translation>
 <translation id="7995804128062002838">Екранът не бе заснет</translation>
+<translation id="8000020256436988724">Лента с инструменти</translation>
 <translation id="8000066093800657092">Няма мрежа</translation>
 <translation id="8001755249288974029">Избиране на текста от курсора до началото на реда</translation>
 <translation id="8004512796067398576">Увеличаване</translation>
@@ -1899,6 +1900,7 @@
 <translation id="847056008324733326">Настройки за мащаба на показване</translation>
 <translation id="8473301994082929012">Функцията „<ph name="FEATURE_NAME" />“ е <ph name="FEATURE_STATE" /> от <ph name="ORGANIZATION_NAME" />.</translation>
 <translation id="8477270416194247200">Натиснете Alt + клавиша „търсене“ или само Shift, за да анулирате.</translation>
+<translation id="8480418399907765580">Показване на лентата с инструменти</translation>
 <translation id="8487699605742506766">Точка за достъп</translation>
 <translation id="8491237443345908933">Отваряне на връзката в нов раздел</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> не поддържа <ph name="SPECIFIED_RESOLUTION" />. Разделителната способност бе променена на <ph name="FALLBACK_RESOLUTION" />. Кликнете върху бутона за потвърждаване, за да запазите промените. Предишните настройки ще бъдат възстановени след <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -1984,6 +1986,7 @@
 <translation id="8834539327799336565">Свързани сега</translation>
 <translation id="8841375032071747811">Бутон за връщане назад</translation>
 <translation id="8843682306134542540">Превключване на функцията за заключване на завъртането. <ph name="STATE_TEXT" /></translation>
+<translation id="8845001906332463065">Получете помощ</translation>
 <translation id="8849001918648564819">Скрито</translation>
 <translation id="8853703225951107899">ПИН кодът или паролата ви пак не бяха потвърдени. Забележка: Ако наскоро сте променили паролата си, използвайте старата. Новата ще бъде приложена, щом излезете от профила си.</translation>
 <translation id="8855885154700222542">Клавиш за цял екран</translation>

@@ -1183,6 +1183,7 @@
 <translation id="6989674195860388998">在“设置”中切换…</translation>
 <translation id="6998989275928107238">至</translation>
 <translation id="699954956411469731">移动设备通知</translation>
+<translation id="699985840472413751">关闭下载栏</translation>
 <translation id="7004032350256606903">贵单位要求您进行无痕浏览。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">最近打开的标签页</translation>
@@ -1472,6 +1473,7 @@
 <translation id="850600235656508448">在无痕模式下打开</translation>
 <translation id="8517375800490286174">开放源代码许可</translation>
 <translation id="8522147671363140027">{count,plural, =1{有 {count} 个密码和其他内容会仅保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号 {email}。}other{有 {count} 个密码和其他内容会仅保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号 {email}。}}</translation>
+<translation id="8522813812888400223">取消下载</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" />标签页<ph name="FIRST_VISIBLE_TAB" />-<ph name="LAST_VISIBLE_TAB" />（共<ph name="NUMBER_OF_OPEN_TABS" />个）</translation>
 <translation id="852576975834694248">您将自动退出账号，而且标签页将被关闭</translation>
 <translation id="8528009254289981965">在无痕模式下打开来自其他应用的链接</translation>

@@ -351,7 +351,6 @@
 <translation id="125220115284141797">ডিফ’ল্ট</translation>
 <translation id="1252219782845132919">গোট লুকুৱাওক</translation>
 <translation id="1252987234827889034">প্ৰ’ফাইলত আসোঁৱাহ হৈছে</translation>
-<translation id="1253664522045778676">এটা ফলাফলত ক্লিক কৰক আৰু পৃষ্ঠাখন আপোনাৰ বৰ্তমানৰ টেবটোত খোল খাব</translation>
 <translation id="1254593899333212300">পোনপটীয়া ইণ্টাৰনেট সংযোগ</translation>
 <translation id="1256588359404100567">আপোনাৰ আগৰ ডিভাইচটোৰ পৰা ছিংক কৰা ছেটিং।</translation>
 <translation id="1257336506558170607">বাছনি কৰা প্ৰমাণপত্ৰ ৰপ্তানি কৰক</translation>
@@ -1211,7 +1210,6 @@
 <translation id="1887210448491286312"><ph name="DEVICE_NAME" />ত টেব কাষ্ট কৰাটো বন্ধ কৰক</translation>
 <translation id="1887442540531652736">ছাইন-ইন সম্পর্কীয় আসোঁৱাহ</translation>
 <translation id="1887597546629269384">পুনৰ "Hey Google" বুলি কওক</translation>
-<translation id="1889091146873278175">এটা ছাইডৰ পেনেলত অধিক সন্ধানৰ ফলাফল চাবলৈ "G" বুটামটোত ক্লিক কৰক</translation>
 <translation id="1890026367080681123">এম্বেডে কৰা সমলৰ ছেটিঙলৈ যাওক</translation>
 <translation id="189035593835762169">নিয়ম আৰু চৰ্তাৱলী</translation>
 <translation id="1891362123137972260">ডিস্কৰ ঠাই একেবাৰে কমি গৈছে। অনুগ্ৰহ কৰি ডিস্কৰ ঠাই খালী কৰক।</translation>
@@ -6284,7 +6282,6 @@
 <translation id="5804241973901381774">অনুমতি</translation>
 <translation id="5804259315582798390">স্থানীয় ডেটা পুনৰুদ্ধাৰ কৰাৰ সুবিধাটো সক্ষম কৰিব পৰা নগ’ল</translation>
 <translation id="5805268472388605531">উচ্চাৰণ চিহ্ন আৰু বিশেষ বৰ্ণ চাবলৈ কীব’ৰ্ডৰ কীবোৰ টিপি ধৰি ৰাখক</translation>
-<translation id="5805354171420804923">নতুন ছাইডৰ পেনেলৰ জৰিয়তে সন্ধানৰ ফলাফলসমূহ দ্ৰুততাৰে তুলনা কৰক</translation>
 <translation id="5805697420284793859">ৱিণ্ড‘ পৰিচালক</translation>
 <translation id="5806447147478173900">প্ৰদৰ্শিত ছাইটসমূহে ব্যৱহাৰ কৰা মুঠ ষ্ট’ৰেজ: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">০° (ডিফ’ল্ট)</translation>
@@ -7428,7 +7425,6 @@
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" /> ব্যৱহাৰ কৰি সংযোগ কৰক</translation>
 <translation id="6710213216561001401">পূৰ্বৱৰ্তী</translation>
 <translation id="6710394144992407503">আপুনি ৱেব পৃষ্ঠাত পাঠ টাইপ কৰোঁতে বানান ভুল হৈছে নেকি চাওক</translation>
-<translation id="671226373742585927">ছাইডৰ পেনেল বন্ধ কৰিবলৈ "X" বুটামটোত ক্লিক কৰক</translation>
 <translation id="6712943853047024245">আপুনি ইতিমধ্যে <ph name="WEBSITE" />ৰ বাবে এই ব্যৱহাৰকাৰীৰ নামটোৰ সৈতে এটা পাছৱৰ্ড ছেভ কৰিছে</translation>
 <translation id="6713233729292711163">কৰ্মস্থানৰ প্ৰ’ফাইল যোগ দিয়ক</translation>
 <translation id="6713441551032149301">ফাংশ্বন কীসমূহ আৰু ছিষ্টেমৰ শীৰ্ষ শাৰীৰ কীসমূহৰ মাজত সলনি কৰিবলৈ লঞ্চাৰ কী টিপি ধৰি ৰাখক</translation>
@@ -8795,7 +8791,6 @@
 <translation id="7758884017823246335">ছাইট সন্ধান কৰাৰ সুবিধা যোগ দিয়ক</translation>
 <translation id="7759809451544302770">ঐচ্ছিক</translation>
 <translation id="7762024824096060040">এই একাউণ্টটো ব্যৱহাৰ কৰিব নোৱাৰি</translation>
-<translation id="7762243782113123335">দুঃখিত, কিবা ভুল হ’ল। অনুগ্ৰহ কৰি বিৱৰণত #bruschettaৰ জৰিয়তে মতামত দাখিল কৰক। আসোঁৱাহ ক’ড হৈছে <ph name="ERROR" />।</translation>
 <translation id="7764225426217299476">ঠিকনা যোগ কৰক</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_DOMAIN" />ৰপৰা <ph name="DOWNLOAD_RECEIVED" /></translation>
 <translation id="7764527477537408401">নতুন ৱিণ্ড’ত গোট খোলক</translation>
@@ -9280,7 +9275,6 @@
 <translation id="810185532889603849">কাষ্টম ৰং</translation>
 <translation id="8101987792947961127">পৰৱর্তী ৰিবুটৰ বাবে পাৱাৰৱাশ্বৰ আৱশ্যক</translation>
 <translation id="8102139037507939978">system_logs.txtৰ পৰা ব্যক্তিগতভাৱে চিনাক্ত কৰিব পৰা তথ্য আঁতৰাওক।</translation>
-<translation id="8102344699913991108">ছাইটসমূহে ব্যৱহাৰকাৰীৰ নিৰ্দেশসমূহ যি হ’লেও ইমাৰ্ছিভ সম্পূৰ্ণ স্ক্ৰীনৰ অভিজ্ঞতা প্ৰদান কৰিবলৈ এই ছেটিংটো ব্যৱহাৰ কৰে</translation>
 <translation id="810362914482827094">পাছকীৰ সন্ধান কৰক</translation>
 <translation id="8104088837833760645">ই-ছিমৰ প্ৰ’ফাইল ডাউনল’ড কৰক</translation>
 <translation id="8105273883928376822">অব্যাহত ৰাখিবলৈ অনুগ্ৰহ কৰি ছাইন ইন কৰক।</translation>
@@ -9501,7 +9495,6 @@
 <translation id="8272443605911821513">"অধিক সঁজুলি" মেনুৰ অন্তৰ্গত এক্সটেনশ্বন-ত ক্লিক কৰি আপোনাৰ এক্সটেনশ্বনবোৰ পৰিচালনা কৰক।</translation>
 <translation id="8272786333453048167">পুনৰ অনুমতি দিয়ক</translation>
 <translation id="8273905181216423293">এতিয়াই ডাউনল’ড কৰক</translation>
-<translation id="8274495289680107339">ছাইটসমূহে picture-in-picture ম’ডলৈ স্বয়ংক্ৰিয়ভাৱে যাবলৈ এই ছেটিংটো ব্যৱহাৰ কৰে। ই আপোনাক অন্য কামৰ বাবে স্ক্ৰীন খালী কৰি থাকোঁতে ভিডিঅ’ চাই থাকিবলৈ দিয়ে।</translation>
 <translation id="827488840488530039">আপুনি চাবলৈ চেষ্টা কৰি থকা পৃষ্ঠাখনে আপোনাৰ Kerberosৰ টিকেটসমূহ সত্যাপন কৰিব নোৱাৰিলে</translation>
 <translation id="8274921654076766238">বিৱৰ্ধকে কীব’ৰ্ডৰ ফ’কাছ অনুসৰণ কৰে</translation>
 <translation id="8274924778568117936">আপডে’ট সম্পূৰ্ণ নোহোৱালৈকে আপোনাৰ <ph name="DEVICE_TYPE" /> অফ বা বন্ধ নকৰিব। ইনষ্টল সম্পূৰ্ণ হোৱাৰ পাছত আপোনাৰ <ph name="DEVICE_TYPE" /> ৰিষ্টাৰ্ট হ’ব।</translation>

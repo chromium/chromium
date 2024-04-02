@@ -348,7 +348,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="125220115284141797">Predefiniti</translation>
 <translation id="1252219782845132919">Nascondi gruppo</translation>
 <translation id="1252987234827889034">Errore con il profilo</translation>
-<translation id="1253664522045778676">Fai clic su un risultato e la pagina si aprirà nella scheda corrente</translation>
 <translation id="1254593899333212300">Connessione diretta a Internet</translation>
 <translation id="1256588359404100567">Impostazione sincronizzata dal tuo dispositivo precedente.</translation>
 <translation id="1257336506558170607">Esporta certificato selezionato</translation>
@@ -1201,7 +1200,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1887210448491286312">Interrompi la trasmissione della scheda su <ph name="DEVICE_NAME" /></translation>
 <translation id="1887442540531652736">Errore di accesso</translation>
 <translation id="1887597546629269384">Dì di nuovo "Ok Google"</translation>
-<translation id="1889091146873278175">Fai clic sul pulsante "G" per visualizzare altri risultati di ricerca in un riquadro laterale</translation>
 <translation id="1890026367080681123">Vai alle impostazioni dei contenuti incorporati</translation>
 <translation id="189035593835762169">Termini e condizioni</translation>
 <translation id="1891362123137972260">Lo spazio sul disco sta per esaurirsi. Libera spazio.</translation>
@@ -6269,7 +6267,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5804241973901381774">Autorizzazioni</translation>
 <translation id="5804259315582798390">Impossibile attivare il recupero dei dati locali</translation>
 <translation id="5805268472388605531">Tieni premuti i tasti della tastiera per vedere accenti e caratteri speciali</translation>
-<translation id="5805354171420804923">Confronta più velocemente i risultati di ricerca dal nuovo riquadro laterale</translation>
 <translation id="5805697420284793859">Gestione finestre</translation>
 <translation id="5806447147478173900">Spazio di archiviazione totale usato dai siti visualizzati: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (valore predefinito)</translation>
@@ -7410,7 +7407,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6709357832553498500">Connettiti utilizzando <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">Precedente</translation>
 <translation id="6710394144992407503">Verifica la presenza di errori ortografici durante la digitazione di testo nelle pagine web</translation>
-<translation id="671226373742585927">Fai clic sul pulsante "X" per chiudere il riquadro laterale</translation>
 <translation id="6712943853047024245">Hai già salvato una password con questo nome utente per <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">Aggiungi profilo di lavoro</translation>
 <translation id="6713441551032149301">Tieni premuto il tasto Avvio app per spostarti tra i tasti funzione e i tasti della fila superiore del sistema</translation>
@@ -8778,7 +8774,6 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7758884017823246335">Aggiungi ricerca su sito</translation>
 <translation id="7759809451544302770">Facoltative</translation>
 <translation id="7762024824096060040">Impossibile usare questo account</translation>
-<translation id="7762243782113123335">Si è verificato un problema. Invia un feedback con #bruschetta nella descrizione. Il codice di errore è <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Aggiungi indirizzo</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> da <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764527477537408401">Apri il gruppo in una nuova finestra</translation>
@@ -9264,7 +9259,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="810185532889603849">Colore personalizzato</translation>
 <translation id="8101987792947961127">Powerwash necessario a prossimo riavvio</translation>
 <translation id="8102139037507939978">Rimuovi le informazioni che consentono l'identificazione personale dal file system_logs.txt.</translation>
-<translation id="8102344699913991108">I siti usano questa impostazione per offrire esperienze immersive a schermo intero indipendentemente dai gesti dell'utente</translation>
 <translation id="810362914482827094">Cerca nelle passkey</translation>
 <translation id="8104088837833760645">Scarica profilo eSIM</translation>
 <translation id="8105273883928376822">Accedi per continuare.</translation>
@@ -9485,7 +9479,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8272443605911821513">Gestisci le tue estensioni facendo clic su Estensioni nel menu "Altri strumenti".</translation>
 <translation id="8272786333453048167">Consenti di nuovo</translation>
 <translation id="8273905181216423293">Scarica ora</translation>
-<translation id="8274495289680107339">I siti usano questa impostazione per attivare automaticamente la modalità Picture in picture. In questo modo puoi continuare a guardare un video, liberando lo schermo per altre attività.</translation>
 <translation id="827488840488530039">La pagina che stai tentando di visitare non è riuscita a verificare le richieste di Kerberos</translation>
 <translation id="8274921654076766238">La funzionalità di ingrandimento segue lo stato attivo della tastiera</translation>
 <translation id="8274924778568117936">Non spegnere o chiudere il tuo dispositivo <ph name="DEVICE_TYPE" /> fino al termine dell'aggiornamento. Il dispositivo <ph name="DEVICE_TYPE" /> si riavvierà al termine dell'installazione.</translation>

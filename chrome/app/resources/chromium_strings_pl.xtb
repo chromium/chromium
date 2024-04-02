@@ -236,6 +236,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5427571867875391349">Ustaw Chromium jako domyślną przeglądarkę</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium Beta</translation>
 <translation id="5473971139929175403">Przeglądarka Chromium może działać nieprawidłowo, bo nie jest już obsługiwana w tej dystrybucji Linuksa</translation>
+<translation id="5475924890392386523">Pobieranie zostało zablokowane przez Chromium, ponieważ plik może wyrządzić szkody na Twoich kontach osobistych i tych w sieciach społecznościowych</translation>
 <translation id="5480860683791598150">Chromium musi mieć dostęp do Twojej lokalizacji, by udostępnić ją tej stronie</translation>
 <translation id="5487574057737591516">Aby chronić Twoją prywatność, automatycznie usuwamy Twoje zainteresowania, które są starsze niż 4 tygodnie. Podczas dalszego przeglądania zainteresowanie może się pojawić ponownie na liście. Jeśli uznasz to za błąd lub jeśli nie będą Cię interesować określone reklamy, możesz usunąć zainteresowanie.</translation>
 <translation id="549669000822060376">Poczekaj, aż Chromium zainstaluje najnowsze aktualizacje systemu.</translation>
@@ -363,6 +364,7 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="7339898014177206373">Nowe okno</translation>
 <translation id="734373864078049451">Tu są Twoje strony, zakładki i inne dane z Chromium.</translation>
 <translation id="7349591376906416160">Administrator systemu skonfigurował Chromium tak, by strona <ph name="TARGET_URL_HOSTNAME" /> otwierała się w przeglądarce <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
+<translation id="7355355292030546812">Pobieranie zostało zablokowane przez Chromium, ponieważ plik może wyrządzić szkody na Twoich kontach osobistych i tych w sieciach społecznościowych, w tym na koncie <ph name="USER_EMAIL" /></translation>
 <translation id="7398989605938454041">Dzięki profilom Chromium wszystkie swoje rzeczy z tej przeglądarki możesz przechowywać osobno. To pozwala łatwo oddzielić pracę od rozrywki.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7451052299415159299">Chromium potrzebuje uprawnień dostępu do aparatu na tej stronie</translation>
@@ -449,6 +451,7 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="8988036198400390003">Zarządzaj profilami Chromium</translation>
 <translation id="9019929317751753759">Aby poprawić bezpieczeństwo Chromium, wyłączyliśmy to rozszerzenie. Nie jest ono dostępne w <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i mogło zostać dodane bez Twojej wiedzy.</translation>
 <translation id="9022552996538154597">Zaloguj się w Chromium</translation>
+<translation id="904366664621834601">Pobieranie zostało zablokowane przez Chromium, ponieważ plik archiwum zawiera inne pliki, które mogą ukrywać złośliwe oprogramowanie</translation>
 <translation id="907832235989677238">Zaloguj się w Chromium. Jeśli chcesz zalogować się na konto tylko raz, możesz <ph name="GUEST_LINK_BEGIN" />skorzystać z trybu gościa na urządzeniu<ph name="GUEST_LINK_END" />.</translation>
 <translation id="9078733879136747090">Aplikacja Chromium została automatycznie zamknięta</translation>
 <translation id="9089354809943900324">Chromium jest nieaktualny</translation>

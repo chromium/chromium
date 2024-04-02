@@ -30,7 +30,6 @@
 <translation id="109942774857561566">Зеригип жатам</translation>
 <translation id="1104084341931202936">Атайын мүмкүнчүлүктөрдүн параметрлерин көрсөтүү</translation>
 <translation id="1104621072296271835">Түзмөктөрүңүз бирге мындан да жакшы иштейт</translation>
-<translation id="1106446201446919638">1 түзмөк туташты. Хотспот колдонулуп жатканда Wi-Fi өчүрүлөт.</translation>
 <translation id="1111021433905331574">Баскычтоптун жарыгынын түсүн жөндөөлөрдөн өзгөртө аласыз &gt; <ph name="APP_TITLE" /></translation>
 <translation id="1117719261843403176">Мобилдик трафикти өчүрүү/күйгүзүү. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">Текчени авто-жашыруу</translation>
@@ -336,6 +335,7 @@
 <translation id="2405664212338326887">Туташкан жок</translation>
 <translation id="2408955596600435184">PIN кодуңузду киргизиңиз</translation>
 <translation id="2412593942846481727">Жаңы версия бар</translation>
+<translation id="2416438829169535743">Көрүнүштөн чыгасызбы?</translation>
 <translation id="2417486498593892439">Тармакка кирүү</translation>
 <translation id="2426051945783024481">Камеранын алкагы автоматтык түрдө ортого коюлду</translation>
 <translation id="2427507373259914951">Сол баскычын чыкылдатуу</translation>
@@ -427,6 +427,7 @@
 <translation id="2785499565474703580">1 түзмөк туташып турат</translation>
 <translation id="2791421900609674576">Токтогон жериңизден улантуу үчүн сунуштарды көрөсүз. Сунуштарды өчүрүү үчүн коё бербей басып туруңуз.</translation>
 <translation id="2792498699870441125">Alt+Издөө</translation>
+<translation id="2801954693771979815">Экрандын өлчөмү</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" /> тандалды</translation>
 <translation id="2805756323405976993">Колдонмолор</translation>
 <translation id="2814448776515246190">Сүрөткө жарым-жартылай тартып алуу</translation>
@@ -517,7 +518,6 @@
 <translation id="316086887565479535">Үлгүдө колдоого алынбаган колдонмолор</translation>
 <translation id="3160929076476941240">2 с.</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> <ph name="DEVICE_TYPE" /> түзмөгүңүздү мурунку версияга кайтарууда. Түзмөгүңүз баштапкы абалга келтирилип, бардык дайын-даректер өчүрүлөт.</translation>
-<translation id="3170769098533255179">Туташып турган түзмөктөр жок. Хотспот колдонулуп жатканда Wi-Fi өчүрүлөт.</translation>
 <translation id="3171170659304083361">Киргизүү ыкмаларынын параметрлери</translation>
 <translation id="3176221688814061633">Chromebook же Bluetooth түзмөгүңүз Bluetooth'дун эски версиясын колдонуп жатат. Аудионун сапатын жакшыртуу үчүн Bluetooth Super Resolution'ду күйгүзүңүз же ички микрофонду колдонуңуз.</translation>
 <translation id="3181441307743005334">Өчүрүп күйгүзүү бир нече убакытка созулушу мүмкүн</translation>
@@ -552,7 +552,6 @@
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> түзмөк <ph name="DEVICE_NAME" /> байланыш түйүнүнө туташып турат</translation>
 <translation id="3307642347673023554">Ноутбук режимине которулду</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> аккаунтка кийинчерээк дагы кире алат.</translation>
-<translation id="3317779231018057649"><ph name="DEVICECOUNT" /> түзмөк туташты. Хотспот колдонулуп жатканда Wi-Fi өчүрүлөт.</translation>
 <translation id="3321628682574733415">Ата-эненин кирүү коду туура эмес</translation>
 <translation id="332827762492701193">Билдирмелер жашырылды</translation>
 <translation id="3333674550998107387"><ph name="NOTIFICATION_TITLE" /> билдирмесин жайып көрсөтүү</translation>
@@ -852,6 +851,7 @@
 <translation id="440113666232554208">Скринкаст сакталган жок</translation>
 <translation id="4405151984121254935">Туташып турган сырткы түзмөктүн түрү колдоого алынбайт</translation>
 <translation id="4406883609789734330">Ыкчам коштомо жазуулар</translation>
+<translation id="4412698727486357573">Жардам борбору</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> өчүк.</translation>
 <translation id="4424159417645388645">5-иш такта</translation>
 <translation id="4430019312045809116">Үндүн катуулугу</translation>
@@ -892,7 +892,6 @@
 <translation id="4566144812051858745">Сунуштар кызыктырбайт</translation>
 <translation id="4569753163207712681">Телефонуңуздагы соңку сүрөттөрдү, медиа файлдарды жана колдонмолорду көрүү</translation>
 <translation id="4573176682887762361">"[Сөз / сөз айкашын] терүү"</translation>
-<translation id="4577188182049003486">Хотспот күйүп турганда Wi-Fi өчүрүлөт</translation>
 <translation id="4577274620589681794">Убакыт бүттү · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Алдын ала көрүүнү жашыруу</translation>
 <translation id="4578906031062871102">Параметрлер менюсу ачылды</translation>
@@ -1150,12 +1149,13 @@
 <translation id="5550417424894892620"><ph name="HOLDING_SPACE_TITLE" /> иш чөйрөсүнө кошуу үчүн файлдарды иш тактага cүйрөп барыңыз. Файлдарды иш тактага кошо албайсыз.</translation>
 <translation id="5551456515017410630">Жылнааманы ачуу/жабуу</translation>
 <translation id="5551974246223970793">Баракты издеп жатканда кийинки дал келген нерсеге өтүү</translation>
-<translation id="5555639311269196631">Байланыш түйүнүн өчүрүү</translation>
 <translation id="5556459405103347317">Кайра жүктөө</translation>
 <translation id="5558091555391176027">Жакын жердеги түзмөктөргө так көрүнүү үчүн Nearby Share режимин өчүрүп күйгүзүңүз</translation>
+<translation id="5558314826121965174">Чыгармачылык</translation>
 <translation id="556042886152191864">Баскыч</translation>
 <translation id="5570122939431135380">Жаңы өтмөктү жаңы жашыруун терезеде ачуу</translation>
 <translation id="5571066253365925590">Bluetooth иштетилди</translation>
+<translation id="5572632238877308040">Негизги колдонмолор</translation>
 <translation id="557563299383177668">Кийинки абзац</translation>
 <translation id="5577082622442191756">Bluetooth'ду өчүрүү/күйгүзүү. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Phone Hub'ды колдонуу үчүн телефонуңуздагы Bluetooth иштетилгенин текшериңиз</translation>
@@ -1180,6 +1180,7 @@
 <translation id="5662075790140998213">10-иш такта</translation>
 <translation id="5662709761327382534">Аудиону жаздыруу <ph name="CURRENT_STATE" />. Микрофонду <ph name="NEW_STATE" /> абалына өткөрүү үчүн "Enter" баскычын басыңыз</translation>
 <translation id="5669267381087807207">Жандырылууда</translation>
+<translation id="5672890847723042801">Кызматтык программалар</translation>
 <translation id="5673434351075758678">Параметрлер шайкештештирилгенден кийин тил "<ph name="FROM_LOCALE" />" тилинен "<ph name="TO_LOCALE" />" тилине өзгөртүлдү.</translation>
 <translation id="5675363643668471212">Текчедеги нерсе</translation>
 <translation id="5677928146339483299">Бөгөттөлгөн</translation>
@@ -1361,6 +1362,7 @@
 <translation id="6351032674660237738">СУНУШТАЛГАН КОЛДОНМОЛОР</translation>
 <translation id="6352082849089527770">Белгисиз тармактар</translation>
 <translation id="6359587239691116345">Жаңы функцияларды жана коопсуздук жакшыртууларын алыңыз. Эгер бул жаңыртууну четке какчаңыз, түзмөгүңүз туура иштебей, коопсуздук жана майнаптуулук көйгөйлөрү чыгышы мүмкүн.</translation>
+<translation id="6362833380917912748">Алдын ала орнотулган колдонмолор менен таанышып чыгыңыз</translation>
 <translation id="6376931439017688372">Bluetooth күйүк</translation>
 <translation id="6378515133128829137">Терезени оңго кадоо</translation>
 <translation id="6381109794406942707">Түзмөктүн кулпусун ачуу үчүн PIN кодуңузду киргизиңиз.</translation>
@@ -1781,6 +1783,7 @@
 <translation id="799296642788192631">Маанилүү файлдарды кадап койсоңуз болот. Кадоо үчүн чычканды элементтин үстүнө алып келип же Files колдонмосун ачып, элементтин үстүнөн чычкандын оң баскычын басыңыз.</translation>
 <translation id="7994370417837006925">Бир нече аккаунт менен кирүү</translation>
 <translation id="7995804128062002838">Экран сүрөткө тартылбай калды</translation>
+<translation id="8000020256436988724">Куралдар тилкеси</translation>
 <translation id="8000066093800657092">Тармак жок</translation>
 <translation id="8001755249288974029">Текстти курсордон баштап саптын башына чейин тандоо</translation>
 <translation id="8004512796067398576">Инкремент</translation>
@@ -1847,6 +1850,7 @@
 <translation id="8262312463845990408">Ойнотууну өчүрүү/күйгүзүү</translation>
 <translation id="8270450402312105425">{0,plural, =1{Түзмөктү бир сааттын ичинде мурунку версияга өзгөртүңүз}other{Түзмөктү # сааттын ичинде мурунку версияга өзгөртүңүз}}</translation>
 <translation id="8277261673056602147">Экрандагы текстти бөлүп көрсөтүү</translation>
+<translation id="8287009018010202411">Майнаптуулук</translation>
 <translation id="828708037801473432">Өчүк</translation>
 <translation id="8297006494302853456">Начар</translation>
 <translation id="8308637677604853869">Мурунку меню</translation>
@@ -1918,6 +1922,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Колдонмолоруңузду аталышы же түсү боюнча иргей аласыз</translation>
 <translation id="8609384513243082612">Жаңы өтмөк ачуу</translation>
+<translation id="861045123704058818">Колдонмолор убактылуу түрдө категория боюнча иреттелет</translation>
 <translation id="8612216344243590325">Маанилүү файлдарды иш тактада эмес, <ph name="HOLDING_SPACE_TITLE" /> иш чөйрөсүндө сактаңыз. Файлдарды жөн гана <ph name="HOLDING_SPACE_TITLE" /> иш чөйрөсүнө сүйрөңүз.</translation>
 <translation id="8614517853887502247">Көрүүдөн коргоо функциясы күйүп тургандыктан, <ph name="APP_1_TITLE" /> менен <ph name="APP_2_TITLE" /> билдирмелери жашырылды</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1956,6 +1961,7 @@
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">Өздүгүңүздү ырастаңыз: <ph name="ORIGIN_NAME" /> өздүгүңүздү ырастоону суранып жатат</translation>
 <translation id="875593634123171288">VPN параметрлерин көрсөтүү</translation>
+<translation id="8756799553341497810">Бул көрүнүштөн чыккандан кийин колдонмонун калыбын тууралап баштасаңыз болот.</translation>
 <translation id="8759408218731716181">Бир нече профиль менен кирүүнү орнотууга болбойт</translation>
 <translation id="8763883995157866248">Түзмөктү көшүү режимине коюу</translation>
 <translation id="877404052021108314">90°F канча цельсий</translation>
@@ -1976,6 +1982,7 @@
 <translation id="8834539327799336565">Учурда туташып турган түзмөктөр</translation>
 <translation id="8841375032071747811">Артка баскычы</translation>
 <translation id="8843682306134542540">Буруу кулпусун өчүрүү/күйгүзүү. <ph name="STATE_TEXT" /></translation>
+<translation id="8845001906332463065">Жардам алуу</translation>
 <translation id="8849001918648564819">Жашырылды</translation>
 <translation id="8853703225951107899">PIN кодуңуз же сырсөзүңүз дагы эле ырасталган жок. Эскертүү: Эгер жакында сырсөзүңүздү өзгөрткөн болсоңуз, эски сырсөзүңүздү колдонуңуз. Жаңы сырсөзүңүз аккаунтуңуздан чыккандан кийин колдонулат.</translation>
 <translation id="8855885154700222542">Толук экран режиминин ачкычы</translation>

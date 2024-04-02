@@ -30,7 +30,6 @@
 <translation id="109942774857561566">मला कंटाळा आला आहे</translation>
 <translation id="1104084341931202936">ॲक्सेसिबिलिटी सेटिंग्ज दाखवा</translation>
 <translation id="1104621072296271835">तुमची डिव्हाइस एकत्र आणखी चांगले काम करतात</translation>
-<translation id="1106446201446919638">१ डिव्हाइस कनेक्ट केले आहे. हॉटस्पॉट वापरत असताना, वाय-फाय बंद राहील.</translation>
 <translation id="1111021433905331574">तुम्ही तुमच्या कीबोर्ड बॅकलाइटचा रंग सेटिंग्ज &gt; <ph name="APP_TITLE" /> मध्ये बदलू शकता</translation>
 <translation id="1117719261843403176">मोबाइल डेटा टॉगल करा. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">शेल्फ स्वयं लपवा</translation>
@@ -428,6 +427,7 @@
 <translation id="2785499565474703580">एक डिव्हाइस कनेक्ट केलेले आहे</translation>
 <translation id="2791421900609674576">तुम्हाला शिफारशी दिसतील, जेणेकरून तुम्ही जिथे सोडले होते तेथून सुरू ठेवू शकता. तुम्ही शिफारशी काढून टाकण्यासाठी स्पर्श करून धरून ठेवू शकता.</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
+<translation id="2801954693771979815">स्क्रीनचा आकार</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" /> निवडले</translation>
 <translation id="2805756323405976993">ॲप्लिकेशन</translation>
 <translation id="2814448776515246190">आंशिक कॅप्चर</translation>
@@ -518,7 +518,6 @@
 <translation id="316086887565479535">टेंप्लेटमधील सपोर्ट करत नसलेली ॲप्स</translation>
 <translation id="3160929076476941240">२ तास</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> तुमचे <ph name="DEVICE_TYPE" /> मागे घेत आहे. तुमचे डिव्हाइस रीसेट केले जाईल आणि सर्व डेटा हटवला जाईल.</translation>
-<translation id="3170769098533255179">कोणतीही डिव्हाइस कनेक्ट केलेली नाहीत. हॉटस्पॉट वापरत असताना, वाय-फाय बंद राहील.</translation>
 <translation id="3171170659304083361">इनपुट पद्धतींची सेटिंग्ज</translation>
 <translation id="3176221688814061633">तुमचे Chromebook किंवा ब्लूटूथ डिव्‍हाइस हे ब्लूटूथ ची जुनी आवृत्ती वापरत आहे. आणखी चांगल्या ऑडिओ गुणवत्तेसाठी ब्लूटूथ सुपर रेझोल्यूशन सुरू करा किंवा अंतर्गत मायक्रोफोन वापरा.</translation>
 <translation id="3181441307743005334">रीस्टार्टला थोडा वेळ लागू शकतो</translation>
@@ -553,7 +552,6 @@
 <translation id="3306386552969601301"><ph name="DEVICE_NAME" /> च्या हॉटस्पॉटशी <ph name="DEVICECOUNT" /> डिव्हाइस कनेक्ट केली आहेत</translation>
 <translation id="3307642347673023554">लॅपटॉप मोडवर स्विच केले</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> नंतरही साइन इन करू शकतो.</translation>
-<translation id="3317779231018057649"><ph name="DEVICECOUNT" /> डिव्हाइस कनेक्ट केली आहेत. हॉटस्पॉट वापरत असताना, वाय-फाय बंद राहील.</translation>
 <translation id="3321628682574733415">चुकीचा पालक कोड</translation>
 <translation id="332827762492701193">सूचना लपवलेल्या आहेत</translation>
 <translation id="3333674550998107387"><ph name="NOTIFICATION_TITLE" /> या सूचनेचा विस्तार करा</translation>
@@ -853,6 +851,7 @@
 <translation id="440113666232554208">स्क्रीनकास्ट सेव्ह करता आले नाही</translation>
 <translation id="4405151984121254935">कनेक्ट केलेल्या पेरिफेरल प्रकाराला सपोर्ट नाही</translation>
 <translation id="4406883609789734330">लाइव्ह कॅप्शन</translation>
+<translation id="4412698727486357573">मदत केंद्र</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> बंद आहे.</translation>
 <translation id="4424159417645388645">डेस्‍क ५</translation>
 <translation id="4430019312045809116">व्हॉल्यूम</translation>
@@ -893,7 +892,6 @@
 <translation id="4566144812051858745">कोणत्याही सूचनांमध्ये स्वारस्य नाही</translation>
 <translation id="4569753163207712681">तुमच्या फोनमधील अलीकडील फोटो, मीडिया आणि अ‍ॅप्स पहा</translation>
 <translation id="4573176682887762361">"[शब्द / वाक्य] टाइप करा"</translation>
-<translation id="4577188182049003486">हॉटस्पॉट सुरू असताना, वाय-फाय बंद असते</translation>
 <translation id="4577274620589681794">वेळ संपली · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">पूर्वावलोकने दाखवा</translation>
 <translation id="4578906031062871102">सेटिंग्ज मेनू उघडला आहे</translation>
@@ -1015,6 +1013,7 @@
 <translation id="5003993274120026347">पुढील वाक्य</translation>
 <translation id="5004607513195820459">नेटवर्क व्यवस्थापित केले आहे</translation>
 <translation id="5009463889040999939">प्रोफाइलचे नाव बदलत आहे. याला काही मिनिटे लागू शकतात.</translation>
+<translation id="5013847959275396160">टूलबार लपवा</translation>
 <translation id="5016558321564993266">मार्कर टॉगल करा. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">शोधण्याशी संबंधित वर्गवाऱ्या</translation>
 <translation id="5030659775136592441">बुकमार्क व्यवस्थापक दाखवा</translation>
@@ -1151,7 +1150,6 @@
 <translation id="5550417424894892620">फाइल <ph name="HOLDING_SPACE_TITLE" /> मध्ये जोडण्यासाठी त्या डेस्कटॉपवर ड्रॉप करा. तुम्ही डेस्कटॉपवर फाइल जोडू शकत नाही.</translation>
 <translation id="5551456515017410630">कॅलेंडर सुरू/बंद करा</translation>
 <translation id="5551974246223970793">पेज शोधत असताना, शोधासाठी नवीन जुळणीवर जा</translation>
-<translation id="5555639311269196631">हॉटस्पॉट बंद करा</translation>
 <translation id="5556459405103347317">रीलोड करा</translation>
 <translation id="5558091555391176027">Nearby सह शेअरिंग चा उच्च दृश्यमानता मोड टॉगल करा</translation>
 <translation id="5558314826121965174">कल्पकता</translation>
@@ -1786,6 +1784,7 @@
 <translation id="799296642788192631">तुम्ही महत्त्वाच्या फाइल पिन करू शकता. पिन करण्यासाठी, आयटमवर कर्सर फिरवा किंवा Files उघडा आणि आयटमवर राइट-क्लिक करा.</translation>
 <translation id="7994370417837006925">मल्टिपल साइन इन</translation>
 <translation id="7995804128062002838">स्क्रीन कॅप्चर करता आली नाही</translation>
+<translation id="8000020256436988724">टूलबार</translation>
 <translation id="8000066093800657092">कोणतेही नेटवर्क नाही</translation>
 <translation id="8001755249288974029">कर्सरपासून ओळीच्या सुरुवातीपर्यंत मजकूर निवडा</translation>
 <translation id="8004512796067398576">बढती</translation>
@@ -1899,6 +1898,7 @@
 <translation id="847056008324733326">स्केल सेटिंग्‍ज दाखवा</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> कडे <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> आहेत.</translation>
 <translation id="8477270416194247200">रद्द करण्यासाठी Alt+Search किंवा Shift प्रेस करा.</translation>
+<translation id="8480418399907765580">टूलबार दर्शवा</translation>
 <translation id="8487699605742506766">हॉटस्पॉट</translation>
 <translation id="8491237443345908933">नवीन टॅबमध्ये लिंक उघडा</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> ला सपोर्ट करत नाही. रेझोल्यूशन <ph name="FALLBACK_RESOLUTION" /> वर बदलले. बदल ठेवण्यासाठी खात्री करा वर क्लिक करा. मागील सेटिंग्ज <ph name="TIMEOUT_SECONDS" /> मध्ये रिस्टोअर केली जातील.</translation>
@@ -1984,6 +1984,7 @@
 <translation id="8834539327799336565">सध्या कनेक्ट केलेली</translation>
 <translation id="8841375032071747811">मागे जा बटण</translation>
 <translation id="8843682306134542540">रोटेशन लॉक टॉगल करा. <ph name="STATE_TEXT" /></translation>
+<translation id="8845001906332463065">मदत मिळवा</translation>
 <translation id="8849001918648564819">लपवलेली</translation>
 <translation id="8853703225951107899">तुमच्या पिन किंवा पासवर्डची अद्याप पडताळणी करता आली नाही. टीप: तुम्ही अलीकडेच तुमचा पासवर्ड बदलला असल्यास, जुना पासवर्ड वापरा. तुम्ही साइन आउट केल्यानंतर तुमचा नवीन पासवर्ड लागू केला जाईल.</translation>
 <translation id="8855885154700222542">क्षेत्रे की</translation>

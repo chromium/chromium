@@ -71,6 +71,7 @@
 <translation id="1125573121925420732">Baliteke webguneek segurtasuna eguneratu bitartean hainbat abisu jasotzea. Laster hobetuko da egoera.</translation>
 <translation id="112840717907525620">Gidalerroaren cachea egoera onean dago</translation>
 <translation id="1131264053432022307">Kopiatu duzun irudia</translation>
+<translation id="1138458427267715730">Jaso alertak sareko edozein webgunetan prezioa jaisten denean</translation>
 <translation id="1142713751288681188">Paper mota</translation>
 <translation id="1142846828089312304">Blokeatu hirugarrenen cookieak ezkutuko moduan</translation>
 <translation id="1144136880160289237">Oraindik ez daukazu gai aktiborik</translation>
@@ -1114,6 +1115,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3154987252551138431">Arazo bat izan da Nearby Share erabiltzean</translation>
 <translation id="315504272643575312"><ph name="MANAGER" /> domeinuak kudeatzen du kontua.</translation>
 <translation id="3155163173539279776">Berrabiarazi Chromium</translation>
+<translation id="3156511682997763015">Aurreratu 10 segundo</translation>
 <translation id="3157931365184549694">Leheneratu</translation>
 <translation id="3158539265159265653">Diskoa</translation>
 <translation id="3162559335345991374">Baliteke darabilzun Wi-Fi konexioaren saio-hasierako orrira joan behar izatea.</translation>
@@ -1211,6 +1213,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="334438173029876234">Skate-ekipamendua</translation>
 <translation id="3347146863028219517">Eskia eta snowboarda</translation>
 <translation id="3349952286488694786">SRA2</translation>
+<translation id="3350450887151703713">Erreproduzitu 10 segundo berriro</translation>
 <translation id="3352881017886802007">Kirol-jokoak</translation>
 <translation id="3355823806454867987">Aldatu proxy-ezarpenak…</translation>
 <translation id="335809815767823">Esportatu dira</translation>
@@ -3048,6 +3051,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6944557544071529399">Estrategia-jokoak</translation>
 <translation id="6944692733090228304"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> erakundeak kudeatzen ez duen webgune batean idatzi duzu pasahitza. Kontua babesteko, ez erabili berriro pasahitz hori beste aplikazio eta webguneetan.</translation>
 <translation id="6945221475159498467">Hautatu</translation>
+<translation id="6946949206576443118">Bilatu sarean Chrome bidez</translation>
 <translation id="6948051842255602737">Amaitu da partida. Hau da zure puntuazioa: <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Jasotze-metodoak eta -eskakizunak ikusteko, hautatu helbide bat</translation>
 <translation id="6948874830249067134">A1x3</translation>

@@ -30,7 +30,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="109942774857561566">Me aburro</translation>
 <translation id="1104084341931202936">Muestra configuración de accesibilidad</translation>
 <translation id="1104621072296271835">Tus dispositivos funcionan aún mejor juntos</translation>
-<translation id="1106446201446919638">1 dispositivo conectado. Mientras se esté usando la función Compartir Internet, la conexión Wi-Fi permanecerá desactivada.</translation>
 <translation id="1111021433905331574">Puedes cambiar el color de la retroiluminación de tu teclado en Configuración &gt; <ph name="APP_TITLE" /></translation>
 <translation id="1117719261843403176">Activar o desactivar datos móviles. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">Autoocultar estantería</translation>
@@ -336,6 +335,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2405664212338326887">No conectado</translation>
 <translation id="2408955596600435184">Introduce tu PIN</translation>
 <translation id="2412593942846481727">Actualización disponible</translation>
+<translation id="2416438829169535743">¿Salir de la vista?</translation>
 <translation id="2417486498593892439">Iniciar sesión en la red</translation>
 <translation id="2426051945783024481">Encuadre de cámara centrado automáticamente</translation>
 <translation id="2427507373259914951">Clic con el botón izquierdo</translation>
@@ -427,6 +427,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2785499565474703580">1 dispositivo conectado</translation>
 <translation id="2791421900609674576">Aparecerán recomendaciones para que puedas seguir donde lo dejaste. Puedes mantener pulsadas las recomendaciones para quitarlas.</translation>
 <translation id="2792498699870441125">Alt+tecla de búsqueda</translation>
+<translation id="2801954693771979815">Tamaño de la pantalla</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, seleccionado</translation>
 <translation id="2805756323405976993">Aplicaciones</translation>
 <translation id="2814448776515246190">Captura parcial</translation>
@@ -517,7 +518,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="316086887565479535">Hay aplicaciones no admitidas en la plantilla</translation>
 <translation id="3160929076476941240">2 h</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> va a restaurar tu <ph name="DEVICE_TYPE" />. Tu dispositivo se reiniciará y se eliminarán todos los datos.</translation>
-<translation id="3170769098533255179">No hay dispositivos conectados. Mientras se esté usando la función Compartir Internet, la conexión Wi-Fi permanecerá desactivada.</translation>
 <translation id="3171170659304083361">Configuración de métodos de introducción de texto</translation>
 <translation id="3176221688814061633">Tu Chromebook o dispositivo Bluetooth usan una versión antigua de Bluetooth. Activa el Bluetooth de alta resolución o usa un micrófono interno para disfrutar de una mejor calidad de audio.</translation>
 <translation id="3181441307743005334">El reinicio puede tardar un poco</translation>
@@ -552,7 +552,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> dispositivos conectados al punto de acceso de <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">Se ha cambiado al modo portátil</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> podrá iniciar sesión después de la eliminación.</translation>
-<translation id="3317779231018057649"><ph name="DEVICECOUNT" /> dispositivos conectados. Mientras se esté usando la función Compartir Internet, la conexión Wi-Fi permanecerá desactivada.</translation>
 <translation id="3321628682574733415">Código parental incorrecto</translation>
 <translation id="332827762492701193">Las notificaciones están ocultas</translation>
 <translation id="3333674550998107387">Desplegar notificación de <ph name="NOTIFICATION_TITLE" /></translation>
@@ -853,6 +852,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="440113666232554208">No se puede guardar la grabación de pantalla</translation>
 <translation id="4405151984121254935">El tipo de periférico conectado no es compatible.</translation>
 <translation id="4406883609789734330">Subtítulos automáticos</translation>
+<translation id="4412698727486357573">Centro de Ayuda</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> está desactivado.</translation>
 <translation id="4424159417645388645">Escritorio 5</translation>
 <translation id="4430019312045809116">Volumen</translation>
@@ -893,7 +893,6 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4566144812051858745">No me interesa ninguna sugerencia</translation>
 <translation id="4569753163207712681">Consulta las fotos, el contenido multimedia y las aplicaciones recientes de tu teléfono</translation>
 <translation id="4573176682887762361">"Escribir [palabra/frase]"</translation>
-<translation id="4577188182049003486">Al activar la función Compartir Internet, se desactivará la conexión Wi-Fi</translation>
 <translation id="4577274620589681794">Tiempo agotado · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Mostrar vistas previas</translation>
 <translation id="4578906031062871102">Menú Ajustes abierto</translation>
@@ -1015,6 +1014,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="5003993274120026347">Siguiente frase</translation>
 <translation id="5004607513195820459">Red gestionada</translation>
 <translation id="5009463889040999939">Cambiando el nombre del perfil. Este proceso puede durar unos minutos.</translation>
+<translation id="5013847959275396160">Ocultar barra de herramientas</translation>
 <translation id="5016558321564993266">Activar/Desactivar marcador. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Categorías de búsqueda</translation>
 <translation id="5030659775136592441">Mostrar administrador de marcadores</translation>
@@ -1151,12 +1151,13 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="5550417424894892620">Suelta archivos en el escritorio para añadirlos a <ph name="HOLDING_SPACE_TITLE" />. No puedes añadir archivos al escritorio.</translation>
 <translation id="5551456515017410630">Abrir/Cerrar calendario</translation>
 <translation id="5551974246223970793">Al buscar en una página, ir a la siguiente coincidencia</translation>
-<translation id="5555639311269196631">Desactivar punto de acceso</translation>
 <translation id="5556459405103347317">Volver a cargar</translation>
 <translation id="5558091555391176027">Activar o desactivar alta visibilidad en Compartir con Nearby</translation>
+<translation id="5558314826121965174">Creatividad</translation>
 <translation id="556042886152191864">Botón</translation>
 <translation id="5570122939431135380">Abrir una pestaña nueva en una ventana de Incógnito nueva</translation>
 <translation id="5571066253365925590">Bluetooth habilitado</translation>
+<translation id="5572632238877308040">Básicas</translation>
 <translation id="557563299383177668">Siguiente párrafo</translation>
 <translation id="5577082622442191756">Activar o desactivar Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Comprueba que el Bluetooth está activado en tu teléfono para usar la función Mi teléfono</translation>
@@ -1181,6 +1182,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="5662075790140998213">Escritorio 10</translation>
 <translation id="5662709761327382534">Grabar micrófono <ph name="CURRENT_STATE" />. Pulsa Intro para cambiar el estado de grabación del micrófono a <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Activando</translation>
+<translation id="5672890847723042801">Utilidades</translation>
 <translation id="5673434351075758678">De "<ph name="FROM_LOCALE" />" a "<ph name="TO_LOCALE" />" después de sincronizar tu configuración.</translation>
 <translation id="5675363643668471212">Elemento de la estantería</translation>
 <translation id="5677928146339483299">Bloqueado</translation>
@@ -1362,6 +1364,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="6351032674660237738">SUGERENCIAS DE APLICACIONES</translation>
 <translation id="6352082849089527770">Redes desconocidas</translation>
 <translation id="6359587239691116345">Recibe las últimas funciones y mejoras de seguridad. Si rechazas esta actualización, es posible que tu dispositivo deje de funcionar correctamente y que tengas problemas de seguridad y rendimiento.</translation>
+<translation id="6362833380917912748">Familiarízate con las aplicaciones integradas</translation>
 <translation id="6376931439017688372">El Bluetooth está activado</translation>
 <translation id="6378515133128829137">Fijar ventana a la derecha</translation>
 <translation id="6381109794406942707">Para desbloquear el dispositivo, introduce tu PIN.</translation>
@@ -1782,6 +1785,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="799296642788192631">Puedes fijar archivos importantes. Para fijar un elemento, coloca el cursor sobre él o abre la aplicación Archivos y haz clic con el botón derecho en el elemento.</translation>
 <translation id="7994370417837006925">Inicio de sesión múltiple</translation>
 <translation id="7995804128062002838">No se ha podido hacer una captura de pantalla</translation>
+<translation id="8000020256436988724">Barra de herramientas</translation>
 <translation id="8000066093800657092">Ninguna red</translation>
 <translation id="8001755249288974029">Seleccionar el texto desde el cursor hasta el principio de la línea</translation>
 <translation id="8004512796067398576">Aumentar</translation>
@@ -1848,6 +1852,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="8262312463845990408">Reproducir/Pausar</translation>
 <translation id="8270450402312105425">{0,plural, =1{Cambia el dispositivo a la versión anterior en un plazo de 1 hora}other{Cambia el dispositivo a la versión anterior en un plazo de # horas}}</translation>
 <translation id="8277261673056602147">Destacar texto en la pantalla</translation>
+<translation id="8287009018010202411">Productividad</translation>
 <translation id="828708037801473432">Desactivada</translation>
 <translation id="8297006494302853456">Débil</translation>
 <translation id="8308637677604853869">Menú anterior</translation>
@@ -1894,6 +1899,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="847056008324733326">Configuración de escala de pantalla</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> ha <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Pulsa Alt + tecla de búsqueda o Mayús para cancelarlo.</translation>
+<translation id="8480418399907765580">Mostrar barra de herramientas</translation>
 <translation id="8487699605742506766">Compartir Internet</translation>
 <translation id="8491237443345908933">Abrir enlace en una pestaña nueva</translation>
 <translation id="8492573885090281069">La pantalla <ph name="DISPLAY_NAME" /> no admite <ph name="SPECIFIED_RESOLUTION" />. Se ha cambiado la resolución a <ph name="FALLBACK_RESOLUTION" />. Haz clic en Confirmar para mantener los cambios. La configuración anterior se restaurará en <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -1919,6 +1925,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Ordena tus aplicaciones por nombre o color</translation>
 <translation id="8609384513243082612">Abrir nueva pestaña</translation>
+<translation id="861045123704058818">Las aplicaciones se organizan temporalmente por categorías</translation>
 <translation id="8612216344243590325">Guarda los archivos importantes en <ph name="HOLDING_SPACE_TITLE" /> en vez de en el escritorio. Solo tienes que arrastrar los archivos a <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Se han ocultado notificaciones de <ph name="APP_1_TITLE" /> y <ph name="APP_2_TITLE" /> porque la protección contra fisgones está activada</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1957,6 +1964,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">Verifica tu identidad: <ph name="ORIGIN_NAME" /> quiere confirmar que eres tú</translation>
 <translation id="875593634123171288">Muestra la configuración de VPN</translation>
+<translation id="8756799553341497810">Puedes empezar a personalizar la distribución de tus aplicaciones una vez que salgas de esta vista.</translation>
 <translation id="8759408218731716181">No se puede configurar el inicio de sesión múltiple</translation>
 <translation id="8763883995157866248">Poner dispositivo en modo de suspensión</translation>
 <translation id="877404052021108314">90 °F en C</translation>
@@ -1977,6 +1985,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="8834539327799336565">Conectado ahora</translation>
 <translation id="8841375032071747811">Botón Atrás</translation>
 <translation id="8843682306134542540">Activa o desactiva el bloqueo. <ph name="STATE_TEXT" />.</translation>
+<translation id="8845001906332463065">Obtener ayuda</translation>
 <translation id="8849001918648564819">Oculto</translation>
 <translation id="8853703225951107899">Todavía no se ha podido verificar tu PIN o contraseña. Nota: Si has cambiado la contraseña recientemente, utiliza la contraseña anterior. La nueva contraseña se aplicará cuando hayas cerrado la sesión.</translation>
 <translation id="8855885154700222542">Tecla de pantalla completa</translation>

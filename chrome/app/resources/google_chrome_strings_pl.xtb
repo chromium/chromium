@@ -146,6 +146,7 @@
 <translation id="3100998948628680988">Nadaj nazwę swojemu profilowi Chrome</translation>
 <translation id="3112458742631356345">Pobieranie zostało zablokowane przez Chrome, ponieważ ten plik nie jest często pobierany i może być niebezpieczny</translation>
 <translation id="3114643501466072395">Aby sprawdzić, czy Twoje pozostałe hasła są chronione przed naruszeniami bezpieczeństwa danych i innymi zagrożeniami tego typu, <ph name="BEGIN_LINK" />zaloguj się w Chrome<ph name="END_LINK" />.</translation>
+<translation id="3119573284443908657">Pobieranie zostało zablokowane przez Chrome, ponieważ plik archiwum zawiera inne pliki, które mogą ukrywać złośliwe oprogramowanie</translation>
 <translation id="3140883423282498090">Zmiany zaczną obowiązywać po ponownym uruchomieniu Google Chrome.</translation>
 <translation id="3149510190863420837">Aplikacje Chrome</translation>
 <translation id="3169523567916669830">W czasie testów możesz przeglądać i usuwać interesujące Cię tematy, których witryny używają do dobierania wyświetlanych reklam. Chrome ocenia, jakie są Twoje zainteresowania, na podstawie ostatniej historii przeglądania.</translation>
@@ -216,6 +217,7 @@
 <translation id="4334294535648607276">Pobieranie ukończone.</translation>
 <translation id="4335235004908507846">Chrome pomaga chronić Cię przed naruszeniami bezpieczeństwa danych, niebezpiecznymi rozszerzeniami i innymi zagrożeniami.</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> – dodano do Chrome</translation>
+<translation id="436060642166082913">Pobieranie zostało zablokowane przez Chrome, ponieważ plik może zaszkodzić Twoim kontom osobistym i tym w sieciach społecznościowych</translation>
 <translation id="4384570495110188418">Chrome nie może sprawdzić haseł, jeśli się nie zalogujesz</translation>
 <translation id="4389991535395284064">Podczas przeglądania w trybie incognito Chrome będzie Cię ostrzegać przed wczytaniem strony korzystającej z niezabezpieczonego połączenia</translation>
 <translation id="4427306783828095590">Silniejsza ochrona lepiej chroni przed phishingiem i złośliwym oprogramowaniem</translation>
@@ -467,6 +469,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="873133009373065397">Google Chrome nie może określić ani ustawić domyślnej przeglądarki</translation>
 <translation id="8765470054473112089">Gdy piszesz na pasku adresu lub w polu wyszukiwania, Chrome wysyła to, co piszesz, do domyślnej wyszukiwarki, aby podawać Ci lepsze sugestie. Ta funkcja jest wyłączona w trybie incognito.</translation>
 <translation id="878572486461146056">Błąd instalacji: administrator sieci zastosował zasady grupy, które uniemożliwiają instalację: <ph name="INSTALL_ERROR" /></translation>
+<translation id="8796073561259064743">Pobieranie zostało zablokowane przez Chrome, ponieważ plik może wyrządzić szkody na Twoich kontach osobistych i tych w sieciach społecznościowych, w tym na koncie <ph name="USER_EMAIL" /></translation>
 <translation id="8801657293260363985">V8 to mechanizm JavaScript i WebAssembly w Chrome używany do zwiększania wydajności witryny</translation>
 <translation id="8821043148920470810">Aby w przyszłości otrzymywać aktualizacje Google Chrome, musisz mieć system Windows 10 lub nowszy. Na tym komputerze jest zainstalowany system Windows 7.</translation>
 <translation id="8823341990149967727">Chrome jest nieaktualny</translation>

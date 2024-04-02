@@ -349,7 +349,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="125220115284141797">Alapértelmezett</translation>
 <translation id="1252219782845132919">Csoport elrejtése</translation>
 <translation id="1252987234827889034">Profilhiba történt</translation>
-<translation id="1253664522045778676">Kattintson valamelyik találatra, és az adott oldal megnyílik az aktuális lapon</translation>
 <translation id="1254593899333212300">Közvetlen internetkapcsolat</translation>
 <translation id="1256588359404100567">Az előző eszközről származó beállítás szinkronizálva.</translation>
 <translation id="1257336506558170607">Kiválasztott tanúsítvány exportálása</translation>
@@ -1210,7 +1209,6 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1887210448491286312">Lap következőre való átküldésének leállítása: <ph name="DEVICE_NAME" /></translation>
 <translation id="1887442540531652736">Bejelentkezési hiba</translation>
 <translation id="1887597546629269384">Mondja még egyszer azt, hogy „Ok Google”</translation>
-<translation id="1889091146873278175">Kattintson a „G” gombra, hogy további keresési találatok jelenjenek meg az oldalsó panelen</translation>
 <translation id="1890026367080681123">Ugrás a beágyazott tartalmak beállításaihoz</translation>
 <translation id="189035593835762169">Általános Szerződési Feltételek</translation>
 <translation id="1891362123137972260">A lemez nagyon kevés szabad tárhellyel rendelkezik. Szabadítson fel rajta tárhelyet.</translation>
@@ -6277,7 +6275,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5804241973901381774">Engedélyek</translation>
 <translation id="5804259315582798390">Nem sikerült a helyi adatok helyreállítása</translation>
 <translation id="5805268472388605531">Az ékezetek és a speciális karakterek megjelenítéséhez tartsa lenyomva a billentyűket</translation>
-<translation id="5805354171420804923">Az új oldalsó panelen gyorsabban összehasonlíthatja a keresési találatokat</translation>
 <translation id="5805697420284793859">Ablakkezelő</translation>
 <translation id="5806447147478173900">A megjelenített webhelyek által felhasznált teljes tárhely: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (alapértelmezett)</translation>
@@ -7419,7 +7416,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6709357832553498500">Csatlakozás a következővel: <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">Előző</translation>
 <translation id="6710394144992407503">Helyesírási hibák keresése szöveg weboldalakon való beírásakor</translation>
-<translation id="671226373742585927">Az „X” gombra kattintva bezárhatja az oldalsó panelt</translation>
 <translation id="6712943853047024245">Már mentett jelszót ezzel a felhasználónévvel a következőhöz: <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">Munkaprofil hozzáadása</translation>
 <translation id="6713441551032149301">Az Indító billentyű nyomva tartásával válthat a funkcióbillentyűk és rendszer felső sorban lévő billentyűi között</translation>
@@ -8784,7 +8780,6 @@ Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelé
 <translation id="7758884017823246335">Webhelyről indított keresés hozzáadása</translation>
 <translation id="7759809451544302770">Nem kötelező</translation>
 <translation id="7762024824096060040">Ez a fiók nem használható</translation>
-<translation id="7762243782113123335">Sajnos hiba történt. Küldjön be visszajelzést, és a leírásban használja a #bruschetta jelölést. A hibakód: <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Cím hozzáadása</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> a(z) <ph name="DOWNLOAD_DOMAIN" /> webhelyről</translation>
 <translation id="7764527477537408401">Csoport megnyitása új ablakban</translation>
@@ -9270,7 +9265,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="810185532889603849">Egyéni szín</translation>
 <translation id="8101987792947961127">Powerwash szükséges a következő újraindításkor</translation>
 <translation id="8102139037507939978">Személyazonosításra alkalmas adatok eltávolítása a system_logs.txt fájlból.</translation>
-<translation id="8102344699913991108">A webhelyek ezzel a beállítással lenyűgöző teljes képernyős élményt nyújtanak a felhasználói kézmozdulatoktól függetlenül</translation>
 <translation id="810362914482827094">Azonosítókulcsok keresése</translation>
 <translation id="8104088837833760645">eSIM-profil letöltése</translation>
 <translation id="8105273883928376822">Kérjük, jelentkezzen be a folytatáshoz</translation>
@@ -9491,7 +9485,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8272443605911821513">Bővítményeit a „További eszközök” menü Bővítmények elemére kattintva kezelheti.</translation>
 <translation id="8272786333453048167">Újbóli engedélyezés</translation>
 <translation id="8273905181216423293">Letöltés</translation>
-<translation id="8274495289680107339">A webhelyek ezzel a beállítással automatikusan elindítják a kép a képben módot. Így folytathatja a videónézést, miközben más feladatokra felszabadíthatja a képernyőt.</translation>
 <translation id="827488840488530039">A felkeresni kívánt oldal nem tudta ellenőrizni az Ön Kerberos-jegyeit.</translation>
 <translation id="8274921654076766238">A nagyító a billentyűzetfókuszt követi</translation>
 <translation id="8274924778568117936">A frissítés befejezéséig ne kapcsolja ki vagy csukja le <ph name="DEVICE_TYPE" /> eszközét. <ph name="DEVICE_TYPE" /> eszköze a telepítést követően újraindul.</translation>

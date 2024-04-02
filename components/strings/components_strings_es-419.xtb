@@ -1114,6 +1114,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3154987252551138431">Se produjo un error al utilizar Compartir con Nearby</translation>
 <translation id="315504272643575312"><ph name="MANAGER" /> administra tu cuenta.</translation>
 <translation id="3155163173539279776">Reiniciar Chromium</translation>
+<translation id="3156511682997763015">Avanzar 10 segundos</translation>
 <translation id="3157931365184549694">Restaurar</translation>
 <translation id="3158539265159265653">Disco</translation>
 <translation id="3162559335345991374">Es posible que la red Wi-Fi que estás usando requiera que visites la página de acceso.</translation>
@@ -1215,6 +1216,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="334438173029876234">Equipo para skateboarding</translation>
 <translation id="3347146863028219517">Esquí y snowboard</translation>
 <translation id="3349952286488694786">SRA2</translation>
+<translation id="3350450887151703713">Volver a reproducir 10 segundos</translation>
 <translation id="3352881017886802007">Juegos deportivos</translation>
 <translation id="3355823806454867987">Cambiar la configuración del proxy...</translation>
 <translation id="335809815767823">Se exportó correctamente</translation>
@@ -3054,6 +3056,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6944557544071529399">Juegos de estrategia</translation>
 <translation id="6944692733090228304">Ingresaste tu contraseña en un sitio que no está administrado por <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Para proteger tu cuenta, no vuelvas a usar la contraseña en otras apps y sitios.</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
+<translation id="6946949206576443118">Busca en la Web con Chrome</translation>
 <translation id="6948051842255602737">Terminó el juego, tu puntuación es <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Para ver los requisitos y métodos de retiro, selecciona una dirección</translation>
 <translation id="6948874830249067134">A1x3</translation>

@@ -350,7 +350,6 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="125220115284141797">Podrazumevane</translation>
 <translation id="1252219782845132919">Sakrij grupu</translation>
 <translation id="1252987234827889034">Došlo je do greške na profilu</translation>
-<translation id="1253664522045778676">Kliknite na rezultat i stranica će se otvoriti na trenutnoj kartici</translation>
 <translation id="1254593899333212300">Direktna veza sa internetom</translation>
 <translation id="1256588359404100567">Podešavanje je sinhronizovano sa prethodnog uređaja.</translation>
 <translation id="1257336506558170607">Izvezite izabrani sertifikat</translation>
@@ -1200,7 +1199,6 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1887210448491286312">Zaustavite prebacivanje kartice na <ph name="DEVICE_NAME" /></translation>
 <translation id="1887442540531652736">Greška pri prijavljivanju</translation>
 <translation id="1887597546629269384">Recite „Hej Google“ ponovo</translation>
-<translation id="1889091146873278175">Kliknite na dugme G da biste videli još rezultata pretrage na bočnoj tabli</translation>
 <translation id="1890026367080681123">Otvorite podešavanja ugrađenog sadržaja</translation>
 <translation id="189035593835762169">Uslovi i odredbe</translation>
 <translation id="1891362123137972260">Prostor na disku je izuzetno mali. Oslobodite prostor na disku.</translation>
@@ -6269,7 +6267,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5804241973901381774">Dozvole</translation>
 <translation id="5804259315582798390">Omogućavanje oporavka lokalnih podataka nije uspelo</translation>
 <translation id="5805268472388605531">Pritisnite i zadržite tastere na tastaturi da biste videli oznake akcenta i specijalne znakove</translation>
-<translation id="5805354171420804923">Poredite rezultate pretrage brže na novoj bočnoj tabli</translation>
 <translation id="5805697420284793859">Menadžer prozora</translation>
 <translation id="5806447147478173900">Ukupan memorijski prostor koji koriste prikazani sajtovi: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (podrazumevano)</translation>
@@ -7415,7 +7412,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6709357832553498500">Poveži se pomoću <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">Prethodno</translation>
 <translation id="6710394144992407503">Proverite da li ima pravopisnih grešaka kada unosite tekst na veb-stranicama</translation>
-<translation id="671226373742585927">Kliknite na dugme X da biste zatvorili bočnu tablu</translation>
 <translation id="6712943853047024245">Već ste sačuvali lozinku sa ovim korisničkim imenom za <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">Dodaj poslovni profil</translation>
 <translation id="6713441551032149301">Držite taster pokretača da biste se prebacivali između funkcijskih tastera i sistemskih tastera u gornjem redu</translation>
@@ -8783,7 +8779,6 @@ Pritisnite dodeljeni prekidač ili taster da biste uklonili dodelu.</translation
 <translation id="7758884017823246335">Dodajte pretragu veb lokacija</translation>
 <translation id="7759809451544302770">Opcionalno</translation>
 <translation id="7762024824096060040">Ne možete da koristite ovaj nalog</translation>
-<translation id="7762243782113123335">Žao nam je, došlo je do greške. Pošaljite povratne informacije i navedite #bruschetta u opisu. Kôd greške je <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Dodajte adresu</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> sa <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764527477537408401">Otvori grupu u novom prozoru</translation>
@@ -9269,7 +9264,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="810185532889603849">Prilagođena boja</translation>
 <translation id="8101987792947961127">Powerwash je obavezan pri sledećem ponovnom pokretanju</translation>
 <translation id="8102139037507939978">Ukloni podatke koji mogu da otkriju identitet iz datoteke system_logs.txt.</translation>
-<translation id="8102344699913991108">Sajtovi koriste ovo podešavanje da bi pružali upečatljive doživljaje preko celog ekrana bez obzira na pokrete korisnika</translation>
 <translation id="810362914482827094">Pretražite pristupne kodove</translation>
 <translation id="8104088837833760645">Preuzmite eSIM profil</translation>
 <translation id="8105273883928376822">Prijavite se da biste nastavili.</translation>
@@ -9490,7 +9484,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8272443605911821513">Upravljajte dodacima klikom na Dodaci u meniju „Još alatki“.</translation>
 <translation id="8272786333453048167">Dozvoli ponovo</translation>
 <translation id="8273905181216423293">Preuzmi</translation>
-<translation id="8274495289680107339">Sajtovi koriste ovo podešavanje da bi automatski ulazili u režim slike u slici. To vam omogućava da nastavite da gledate video i da istovremeno oslobodite ekran za druge zadatke.</translation>
 <translation id="827488840488530039">Stranica koju pokušavate da posetite nije uspela da verifikuje Kerberos tikete</translation>
 <translation id="8274921654076766238">Lupa prati fokus tastature</translation>
 <translation id="8274924778568117936">Ne isključujte i ne zatvarajte <ph name="DEVICE_TYPE" /> dok se ažuriranje ne završi. <ph name="DEVICE_TYPE" /> će se ponovo pokrenuti kada se instalacija završi.</translation>

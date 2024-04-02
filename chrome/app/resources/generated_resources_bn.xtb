@@ -350,7 +350,6 @@
 <translation id="125220115284141797">ডিফল্ট</translation>
 <translation id="1252219782845132919">গ্রুপ লুকান</translation>
 <translation id="1252987234827889034">প্রোফাইল ত্রুটি ঘটেছে</translation>
-<translation id="1253664522045778676">একটি ফলাফলে ক্লিক করুন এবং পৃষ্ঠাটি আপনার বর্তমান ট্যাবে খুলবে</translation>
 <translation id="1254593899333212300">সরাসরি ইন্টারনেট সংযোগ</translation>
 <translation id="1256588359404100567">আপনার আগের ডিভাইস থেকে সেটিং সিঙ্ক করা হয়েছে।</translation>
 <translation id="1257336506558170607">বেছে নেওয়া সার্টিফিকেট এক্সপোর্ট করুন</translation>
@@ -1212,7 +1211,6 @@
 <translation id="1887210448491286312"><ph name="DEVICE_NAME" />-এ ট্যাব কাস্ট করা বন্ধ করুন</translation>
 <translation id="1887442540531652736">সাইন-ইন করতে সমস্যা হয়েছে</translation>
 <translation id="1887597546629269384">আবার "হ্যালো Google" বলুন</translation>
-<translation id="1889091146873278175">সাইড প্যানেলে আরও সার্চ ফলাফল দেখতে "G" বোতামে ক্লিক করুন</translation>
 <translation id="1890026367080681123">এম্বেড করা কন্টেন্ট সেটিংসে যান</translation>
 <translation id="189035593835762169">নিয়ম ও শর্তাবলী</translation>
 <translation id="1891362123137972260">ডিস্কে জায়গা খুবই কম। ডিস্কে জায়গা বের করুন।</translation>
@@ -6281,7 +6279,6 @@
 <translation id="5804241973901381774">অনুমতিগুলি</translation>
 <translation id="5804259315582798390">স্থানীয় ডেটা রিকভারি চালু করা যায়নি</translation>
 <translation id="5805268472388605531">অ্যাকসেন্ট চিহ্ন এবং বিশেষ অক্ষর দেখতে কীবোর্ড কী প্রেস করে ধরে থাকুন</translation>
-<translation id="5805354171420804923">নতুন সাইড প্যানেল থেকে সার্চ ফলাফল ঝটপট তুলনা করুন</translation>
 <translation id="5805697420284793859">উইন্ডো ম্যানেজার</translation>
 <translation id="5806447147478173900">দেখানো সাইটগুলি মোট যতটা স্টোরেজ ব্যবহার করেছে: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">০° (ডিফল্ট)</translation>
@@ -7426,7 +7423,6 @@
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" /> ব্যবহার করে সংযোগ করুন</translation>
 <translation id="6710213216561001401">আগের</translation>
 <translation id="6710394144992407503">ওয়েব পৃষ্ঠাতে টেক্সট টাইপ করার সময় বানান সংক্রান্ত সমস্যা চেক করুন</translation>
-<translation id="671226373742585927">সাইড প্যানেল বন্ধ করার জন্য "X" বোতাম ক্লিক করুন</translation>
 <translation id="6712943853047024245"><ph name="WEBSITE" />-এ এই ইউজারনেম সহ আপনি আগেই একটি পাসওয়ার্ড সেভ করেছেন</translation>
 <translation id="6713233729292711163">অফিস প্রোফাইল যোগ করুন</translation>
 <translation id="6713441551032149301">ফাংশন 'কী' এবং উপরের সারির সিস্টেম 'কী'-এর মধ্যে পরিবর্তন করার জন্য লঞ্চার 'কী' প্রেস করে ধরে থাকুন</translation>
@@ -8792,7 +8788,6 @@
 <translation id="7758884017823246335">সাইট সার্চ যোগ করুন</translation>
 <translation id="7759809451544302770">ঐচ্ছিক</translation>
 <translation id="7762024824096060040">এই অ্যাকাউন্ট ব্যবহার করা যাচ্ছে না</translation>
-<translation id="7762243782113123335">কোনও সমস্যা হয়েছে। বিবরণে #bruschetta সহ মতামত ফাইল করুন। সমস্যার কোড হল <ph name="ERROR" />।</translation>
 <translation id="7764225426217299476">ঠিকানা যোগ করুন</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_DOMAIN" /> থেকে <ph name="DOWNLOAD_RECEIVED" /></translation>
 <translation id="7764527477537408401">নতুন উইন্ডোয় গ্রুপ খুলুন</translation>
@@ -9277,7 +9272,6 @@
 <translation id="810185532889603849">কাস্টম রঙ</translation>
 <translation id="8101987792947961127">পরবর্তী রিবুটে পাওয়ারওয়াশ প্রয়োজন</translation>
 <translation id="8102139037507939978">System_logs.txt থেকে ব্যক্তিগতভাবে শনাক্তকরণযোগ্য তথ্য সরিয়ে দিন</translation>
-<translation id="8102344699913991108">ব্যবহারকারীর জেসচার যাই হোক না কেন, সাইট ইমারসিভ ফুল-স্ক্রিনের অভিজ্ঞতা দিতে এই সেটিং ব্যবহার করে</translation>
 <translation id="810362914482827094">'পাসকী' সার্চ করুন</translation>
 <translation id="8104088837833760645">ই-সিম প্রোফাইল ডাউনলোড করুন</translation>
 <translation id="8105273883928376822">চালিয়ে যেতে, সাইন-ইন করুন।</translation>
@@ -9498,7 +9492,6 @@
 <translation id="8272443605911821513">"আরও টুলগুলির মেনুতে" এক্সটেনশনগুলি ক্লিক করে আপনার এক্সটেনশনগুলি পরিচালনা করুন৷</translation>
 <translation id="8272786333453048167">আবার অনুমতি দিন</translation>
 <translation id="8273905181216423293">এখন ডাউনলোড করুন</translation>
-<translation id="8274495289680107339">অটোমেটিক 'ছবির-মধ্যে-ছবি' সেটিংয়ে প্রবেশ করতে, সাইট এই সেটিংটি ব্যবহার করে। অন্যান্য টাস্কের জন্য স্ক্রিন খালি করার পাশাপাশি এটি আপনাকে ভিডিও দেখা চালিয়ে যেতে দেয়।</translation>
 <translation id="827488840488530039">আপনি যে পৃষ্ঠাটি দেখার চেষ্টা করছেন সেটি আপনার Kerberos টিকিট যাচাই করতে পারেনি</translation>
 <translation id="8274921654076766238">'ফুল স্ক্রিন' মোডে টেক্সটকে বড় করে দেখার সুবিধা কীবোর্ড ফোকাস অনুযায়ী পাল্টানো হয়</translation>
 <translation id="8274924778568117936">আপডেটটি সম্পূর্ণ না হওয়া পর্যন্ত <ph name="DEVICE_TYPE" />টি বন্ধ করবেন না। ইনস্টলেশন হয়ে গেলে <ph name="DEVICE_TYPE" />টি নিজে থেকেই রিস্টার্ট হবে।</translation>

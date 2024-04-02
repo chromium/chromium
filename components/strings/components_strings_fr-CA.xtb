@@ -71,6 +71,7 @@
 <translation id="1125573121925420732">Les avertissements peuvent être fréquents lorsque les sites Web mettent à jour leurs mesures de sécurité. Cette situation devrait bientôt s'améliorer.</translation>
 <translation id="112840717907525620">Cache de la règle valide</translation>
 <translation id="1131264053432022307">L'image que vous avez copiée</translation>
+<translation id="1138458427267715730">Recevez des alertes lorsque le prix baisse sur n'importe quel site du Web</translation>
 <translation id="1142713751288681188">Type de papier</translation>
 <translation id="1142846828089312304">Bloquer les témoins tiers en navigation privée</translation>
 <translation id="1144136880160289237">Vous n'avez pas encore de sujets actifs</translation>
@@ -1114,6 +1115,7 @@
 <translation id="3154987252551138431">Un problème est survenu lors de l'utilisation du partage à proximité</translation>
 <translation id="315504272643575312">Votre compte est géré par <ph name="MANAGER" />.</translation>
 <translation id="3155163173539279776">Relancer Chromium</translation>
+<translation id="3156511682997763015">Avancer de 10 secondes</translation>
 <translation id="3157931365184549694">Restaurer</translation>
 <translation id="3158539265159265653">Disque</translation>
 <translation id="3162559335345991374">Le réseau Wi-Fi que vous utilisez peut vous demander de visiter sa page de connexion.</translation>
@@ -1214,6 +1216,7 @@
 <translation id="334438173029876234">Équipement de planche à roulettes</translation>
 <translation id="3347146863028219517">Ski et planche à neige</translation>
 <translation id="3349952286488694786">SRA2</translation>
+<translation id="3350450887151703713">Reculer de 10 secondes</translation>
 <translation id="3352881017886802007">Jeux de sports</translation>
 <translation id="3355823806454867987">Modifier les paramètres du mandataire...</translation>
 <translation id="335809815767823">Exportées</translation>
@@ -3053,6 +3056,7 @@
 <translation id="6944557544071529399">Jeux de stratégie</translation>
 <translation id="6944692733090228304">Vous avez entré votre mot de passe sur un site non géré par <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Pour protéger votre compte, ne réutilisez pas votre mot de passe dans d'autres applications ni sur d'autres sites.</translation>
 <translation id="6945221475159498467">Sélectionner</translation>
+<translation id="6946949206576443118">Faites des recherches sur le Web dans Chrome</translation>
 <translation id="6948051842255602737">Partie terminée, votre pointage est de <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Pour voir les exigences et les modes de ramassage, sélectionnez une adresse</translation>
 <translation id="6948874830249067134">A1 x 3</translation>

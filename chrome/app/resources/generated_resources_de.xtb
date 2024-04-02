@@ -217,6 +217,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1164891049599601209">Auf betrügerischer Website eingegeben</translation>
 <translation id="1165039591588034296">Fehler</translation>
 <translation id="1166212789817575481">Tabs rechts schließen</translation>
+<translation id="1166457390969131095">Passwörter und Passkeys aus deinem Google-Konto verwenden und speichern</translation>
 <translation id="1166583374608765787">Namensaktualisierung prüfen</translation>
 <translation id="1166596238782048887">„<ph name="TAB_TITLE" />“ gehört zum Desktop „<ph name="DESK_TITLE" />“</translation>
 <translation id="1167262726334064738">Es mit einem neuen Passwort versuchen</translation>
@@ -347,7 +348,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="125220115284141797">Standard</translation>
 <translation id="1252219782845132919">Gruppe ausblenden</translation>
 <translation id="1252987234827889034">Profilfehler aufgetreten</translation>
-<translation id="1253664522045778676">Klicke auf ein Suchergebnis, um die Seite im aktuellen Tab zu öffnen</translation>
 <translation id="1254593899333212300">Direkte Internetverbindung</translation>
 <translation id="1256588359404100567">Die Einstellung wurde von deinem vorherigen Gerät synchronisiert.</translation>
 <translation id="1257336506558170607">Ausgewähltes Zertifikat exportieren</translation>
@@ -758,6 +758,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1575741822946219011">Sprachen und Eingaben</translation>
 <translation id="1576594961618857597">Weißer Standardavatar</translation>
 <translation id="1576729678809834061">Dieses Suchergebnis melden</translation>
+<translation id="1578488449637163638">Dunkel</translation>
 <translation id="1578558981922970608">Schließen erzwingen</translation>
 <translation id="157931050206866263">Weitere Informationen zu Malware-Scans</translation>
 <translation id="1580772913177567930">Wende dich an deinen Administrator</translation>
@@ -1196,7 +1197,6 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1887210448491286312">Streamen des Tabs an „<ph name="DEVICE_NAME" />“ beenden</translation>
 <translation id="1887442540531652736">Fehler bei der Anmeldung</translation>
 <translation id="1887597546629269384">Sag noch einmal „Hey Google“</translation>
-<translation id="1889091146873278175">Klicke auf die Schaltfläche „G“, um mehr Suchergebnisse in der Seitenleiste zu sehen.</translation>
 <translation id="1890026367080681123">Zu den Einstellungen für eingebettete Inhalte gehen</translation>
 <translation id="189035593835762169">Nutzungsbedingungen</translation>
 <translation id="1891362123137972260">Es ist nur noch sehr wenig Speicherplatz vorhanden. Gib bitte Speicherplatz frei.</translation>
@@ -1227,6 +1227,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1915734383465415025">Geschäftsnummer</translation>
 <translation id="1916260783734263714">Aktueller Tab</translation>
 <translation id="1916502483199172559">Roter Standardavatar</translation>
+<translation id="1918127774159128277">WiFi Direct-Funktionen aktualisieren</translation>
 <translation id="1918141783557917887">&amp;Kleiner</translation>
 <translation id="1919872106782726755">Bitte dein Kind, einen Finger auf den Fingerabdrucksensor oben rechts auf der Tastatur zu legen, neben der Ein-/Aus-Taste. Sein Fingerabdruck wird sicher auf dem <ph name="DEVICE_TYPE" /> gespeichert und verlässt dieses Gerät nie.</translation>
 <translation id="192015196730532810">Du kannst deine eigenen Tabgruppen erstellen.</translation>
@@ -1281,6 +1282,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954597385941141174">Websites dürfen nachfragen, wenn sie eine Verbindung mit USB-Geräten herstellen möchten</translation>
 <translation id="1954813140452229842">Fehler beim Bereitstellen der Freigabe. Überprüfe deine Anmeldedaten und versuche es noch einmal.</translation>
+<translation id="1955749740583837857">Empfehlung ablehnen</translation>
 <translation id="1956050014111002555">Die Datei enthielt mehrere Zertifikate, von denen keines importiert wurde:</translation>
 <translation id="1956167375087861299">Darf keine Kennungen verwenden, um geschützte Inhalte wiederzugeben</translation>
 <translation id="1956390763342388273">Hierdurch werden alle Dateien aus „<ph name="FOLDER_PATH" />“ hochgeladen. Tue dies nur, wenn du die Website als vertrauenswürdig einstufst.</translation>
@@ -2381,6 +2383,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2764920001292228569">Profilname eingeben</translation>
 <translation id="2765100602267695013">Bitte wende dich an deinen Mobilfunkanbieter</translation>
 <translation id="2765217105034171413">Klein</translation>
+<translation id="2765820627968019645">Hell</translation>
 <translation id="2766006623206032690">Einfügen und &amp;aufrufen</translation>
 <translation id="2766161002040448006">Elternteil fragen</translation>
 <translation id="2767077837043621282">Dein Chromebook konnte nicht aktualisiert werden. Bitte versuche es später noch einmal.</translation>
@@ -2640,6 +2643,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="2960942820860729477">Aktualisierungsrate</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" /> (Verlängerung gewährt)</translation>
 <translation id="2961695502793809356">Klicken, um weiterzugehen. Gedrückt halten, um den Verlauf aufzurufen</translation>
+<translation id="29618148602069201">Thema</translation>
 <translation id="2963151496262057773">Das folgende Plug-in reagiert nicht: <ph name="PLUGIN_NAME" />. Möchtest du es anhalten?</translation>
 <translation id="2964193600955408481">WLAN deaktivieren</translation>
 <translation id="2964245677645334031">Nearby Share-Sichtbarkeit</translation>
@@ -3611,6 +3615,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3729506734996624908">Erlaubte Websites</translation>
 <translation id="3729957991398443677">Wenn du dein Passwort ansehen oder eine Notiz dafür hinzufügen möchtest, wähle „Passwörter verwalten“ auf der Such- und Adressleiste aus</translation>
 <translation id="3730076362938942381">Schreib-App für Eingabestift</translation>
+<translation id="3730298295914858769">WiFi Direct-Funktionen:</translation>
 <translation id="3732078975418297900">Fehler in Zeile <ph name="ERROR_LINE" /></translation>
 <translation id="3732414796052961578">Als „<ph name="ACCOUNT_NAME" />“ fortfahren</translation>
 <translation id="3732530910372558017">PIN darf maximal 63 Zeichen lang sein</translation>
@@ -4333,6 +4338,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4279129444466079448">Du kannst bis zu <ph name="PROFILE_LIMIT" /> eSIM-Profile auf diesem Gerät installieren. Damit du ein weiteres Profil hinzufügen kannst, musst du zuerst ein vorhandenes Profil entfernen.</translation>
 <translation id="4280325816108262082">Gerät wird automatisch getrennt, wenn es ausgeschaltet oder nicht verwendet wird</translation>
 <translation id="4281637354026226955">ChromeOS- und Android-Apps und ‑Dienste mit Berechtigung zur Standortermittlung dürfen den Standort deines Geräts nutzen. Google kann in regelmäßigen Abständen anonymisierte Standortdaten erheben und sie zur Verbesserung der Standortgenauigkeit und von standortbezogenen Diensten verwenden.</translation>
+<translation id="4281789858103154731">Erstellen</translation>
 <translation id="4281844954008187215">Nutzungsbedingungen</translation>
 <translation id="4281849573951338030">Stifttasten anpassen</translation>
 <translation id="4282196459431406533">Smart Lock ist aktiviert</translation>
@@ -5434,6 +5440,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5146235736676876345">Eigenes wählen</translation>
 <translation id="5146896637028965135">Systemstimme</translation>
 <translation id="5147097165869384760">Suchst du die Seite für das Betriebssystem? Gehe zu <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />.</translation>
+<translation id="5147113439721488265">Empfehlung</translation>
 <translation id="5147516217412920887">Folge der Anleitung auf deinem Smartphone, um den Code zu bestätigen</translation>
 <translation id="5147992672778369947">Empfohlenes Passwort verwenden</translation>
 <translation id="5148285448107770349">Passwort muss aus mindestens 8 Zeichen bestehen</translation>
@@ -6257,7 +6264,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5804241973901381774">Berechtigungen</translation>
 <translation id="5804259315582798390">Fehler beim Aktivieren der lokalen Datenwiederherstellung</translation>
 <translation id="5805268472388605531">Drücke und halte die Tasten gedrückt, um Akzentzeichen und Sonderzeichen zu sehen</translation>
-<translation id="5805354171420804923">Suchergebnisse mit der neuen Seitenleiste schneller vergleichen</translation>
 <translation id="5805697420284793859">Fenstermanager</translation>
 <translation id="5806447147478173900">Von angezeigten Websites belegter Speicherplatz insgesamt: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (Standard)</translation>
@@ -7398,7 +7404,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6709357832553498500">Über <ph name="EXTENSIONNAME" /> verbinden</translation>
 <translation id="6710213216561001401">Zurück</translation>
 <translation id="6710394144992407503">Bei der Eingabe von Text auf Webseiten nach Tippfehlern suchen</translation>
-<translation id="671226373742585927">Klicke auf die Schaltfläche „X“, um die Seitenleiste zu schließen</translation>
 <translation id="6712943853047024245">Du hast bereits ein Passwort zu diesem Nutzernamen für <ph name="WEBSITE" /> gespeichert</translation>
 <translation id="6713233729292711163">Arbeitsprofil hinzufügen</translation>
 <translation id="6713441551032149301">Launcher-Taste gedrückt halten, um zwischen Funktionstasten und Tasten der obersten Reihe zu wechseln</translation>
@@ -7469,6 +7474,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6770042910635026163">Von dir besuchte Websites, über die deine Interessen definiert werden</translation>
 <translation id="6770602306803890733">Verbessert die Sicherheit für dich und alle im Internet</translation>
 <translation id="6771503742377376720">Ist eine Zertifizierungsstelle</translation>
+<translation id="6772974422346500939">Öffnen und bearbeiten</translation>
 <translation id="6774710250118040929">Neues Passwort hinzufügen</translation>
 <translation id="6775163072363532304">Verfügbare Geräte werden hier angezeigt.</translation>
 <translation id="677646486571529447">Notiz hinzufügen</translation>
@@ -7851,6 +7857,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7049293980323620022">Datei beibehalten?</translation>
 <translation id="7049524156282610342">Browserdaten von <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Ungültige Hotspot-Konfiguration</translation>
+<translation id="7051222203795962489">{COUNT,plural, =1{Passwort in deinem Google-Konto (<ph name="USER_EMAIL" />) gespeichert}other{Passwörter in deinem Google-Konto (<ph name="USER_EMAIL" />) gespeichert}}</translation>
 <translation id="7053983685419859001">Blockieren</translation>
 <translation id="7055152154916055070">Weiterleitung blockiert:</translation>
 <translation id="7055451306017383754">Die Aufhebung der Freigabe ist nicht möglich, weil eine Anwendung diesen Ordner verwendet. Die Freigabe des Ordners wird beim nächsten Herunterfahren von Parallels Desktop aufgehoben.</translation>
@@ -8764,7 +8771,6 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7758884017823246335">Website-Suchmaschine hinzufügen</translation>
 <translation id="7759809451544302770">Optional</translation>
 <translation id="7762024824096060040">Dieses Konto kann nicht verwendet werden</translation>
-<translation id="7762243782113123335">Ein Fehler ist aufgetreten. Gib bitte Feedback und verwende #bruschetta in der Beschreibung. Fehlercode: <ph name="ERROR" /></translation>
 <translation id="7764225426217299476">Adresse hinzufügen</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> von <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764527477537408401">Gruppe in neuem Fenster öffnen</translation>
@@ -9250,7 +9256,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="810185532889603849">Personalisierte Farbe</translation>
 <translation id="8101987792947961127">Powerwash beim nächsten Neustart erforderlich</translation>
 <translation id="8102139037507939978">Personenidentifizierbare Informationen aus system_logs.txt entfernen.</translation>
-<translation id="8102344699913991108">Websites verwenden diese Einstellung, um eine immersive Vollbildnutzung unabhängig von Nutzergesten anzubieten</translation>
 <translation id="810362914482827094">Passkeys durchsuchen</translation>
 <translation id="8104088837833760645">eSIM-Profil herunterladen</translation>
 <translation id="8105273883928376822">Melde dich an, um fortzufahren.</translation>
@@ -9471,7 +9476,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8272443605911821513">Klicke zum Verwalten deiner Erweiterungen im Menü „Mehr Tools“ auf „Erweiterungen“.</translation>
 <translation id="8272786333453048167">Wieder zulassen</translation>
 <translation id="8273905181216423293">Jetzt herunterladen</translation>
-<translation id="8274495289680107339">Websites verwenden diese Einstellung, um automatisch den Bild-im-Bild-Modus zu aktivieren. So kannst du ein Video weiter ansehen und hast auf dem Bildschirm gleichzeitig Platz für andere Aufgaben.</translation>
 <translation id="827488840488530039">Die Seite, die du besuchen möchtest, konnte deine Kerberos-Tickets nicht bestätigen</translation>
 <translation id="8274921654076766238">Lupe folgt Tastaturfokus</translation>
 <translation id="8274924778568117936">Schalte dein <ph name="DEVICE_TYPE" /> nicht aus bzw. schließe es nicht, bis das Update abgeschlossen ist. Nach Abschluss der Installation wird dein <ph name="DEVICE_TYPE" /> neu gestartet.</translation>

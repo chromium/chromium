@@ -30,7 +30,6 @@
 <translation id="109942774857561566">ನನಗೆ ಬೇಜಾರಾಗಿದೆ</translation>
 <translation id="1104084341931202936">ಆ್ಯಕ್ಸೆಸಿಬಿಲಿಟಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="1104621072296271835">ನಿಮ್ಮ ಸಾಧನಗಳು ಜೊತೆಯಲ್ಲಿ ಇನ್ನೂ ಚೆನ್ನಾಗಿ ಕೆಲಸ ಮಾಡುತ್ತವೆ</translation>
-<translation id="1106446201446919638">1 ಸಾಧನ ಕನೆಕ್ಟ್ ಆಗಿದೆ. ಹಾಟ್‌ಸ್ಪಾಟ್ ಬಳಸುವಾಗ, ವೈ-ಫೈ ಆಫ್ ಆಗಿರುತ್ತದೆ.</translation>
 <translation id="1111021433905331574">ನಿಮ್ಮ ಕೀಬೋರ್ಡ್ ಬ್ಯಾಕ್‌ಲೈಟ್‌ನ ಬಣ್ಣವನ್ನು ನೀವು ಸೆಟ್ಟಿಂಗ್‌ಗಳು &gt; <ph name="APP_TITLE" /> ನಲ್ಲಿ ಬದಲಾಯಿಸಬಹುದು</translation>
 <translation id="1117719261843403176">ಮೊಬೈಲ್ ಡೇಟಾವನ್ನು ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">ಶೆಲ್ಫ್ ಅನ್ನು ಸ್ವಯಂಮರೆಮಾಡು</translation>
@@ -428,6 +427,7 @@
 <translation id="2785499565474703580">1 ಸಾಧನವನ್ನು ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="2791421900609674576">ನೀವು ಶಿಫಾರಸುಗಳನ್ನು ನೋಡುತ್ತೀರಿ ಆದ್ದರಿಂದ ನೀವು ಎಲ್ಲಿಗೆ ನಿಲ್ಲಿಸಿರುವಿರೋ ಅಲ್ಲಿಂದಲೇ ಮುಂದುವರಿಸಬಹುದು. ಶಿಫಾರಸುಗಳನ್ನು ತೆಗೆದುಹಾಕಲು ನೀವು ಸ್ಪರ್ಶಿಸಿ ಮತ್ತು ಹೋಲ್ಡ್‌ ಮಾಡಬಹುದು.</translation>
 <translation id="2792498699870441125">Alt+ಹುಡುಕಾಟ</translation>
+<translation id="2801954693771979815">ಸ್ಕ್ರೀನ್ ಗಾತ್ರ</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="2805756323405976993">ಆಪ್ಸ್‌‌</translation>
 <translation id="2814448776515246190">ಭಾಗಶಃ ಕ್ಯಾಪ್ಚರ್</translation>
@@ -518,7 +518,6 @@
 <translation id="316086887565479535">ಟೆಂಪ್ಲೇಟ್‌ನಲ್ಲಿ ಬೆಂಬಲಿಸದ ಆ್ಯಪ್‌ಗಳು</translation>
 <translation id="3160929076476941240">2ಗಂ</translation>
 <translation id="316356270129335934">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಅನ್ನು <ph name="MANAGER" /> ಹಿಂತಿರುಗಿಸುತ್ತಿದೆ. ನಿಮ್ಮ ಸಾಧನವನ್ನು ರೀಸೆಟ್ ಮಾಡಲಾಗುತ್ತದೆ ಮತ್ತು ಎಲ್ಲಾ ಡೇಟಾವನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ.</translation>
-<translation id="3170769098533255179">ಯಾವುದೇ ಸಾಧನಗಳು ಕನೆಕ್ಟ್ ಆಗಿಲ್ಲ. ಹಾಟ್‌ಸ್ಪಾಟ್ ಬಳಸುವಾಗ, ವೈ-ಫೈ ಆಫ್ ಆಗಿರುತ್ತದೆ.</translation>
 <translation id="3171170659304083361">ಇನ್‌ಪುಟ್ ವಿಧಾನಗಳ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="3176221688814061633">ನಿಮ್ಮ Chromebook ಅಥವಾ ಬ್ಲೂಟೂತ್ ಸಾಧನವು ಬ್ಲೂಟೂತ್‌ನ ಹಳೆಯ ಆವೃತ್ತಿಯನ್ನು ಬಳಸುತ್ತಿದೆ. ಉತ್ತಮ ಆಡಿಯೊ ಗುಣಮಟ್ಟಕ್ಕಾಗಿ ಬ್ಲೂಟೂತ್ ಸೂಪರ್ ರೆಸಲ್ಯೂಷನ್‌‌ ಅನ್ನು ಆನ್ ಮಾಡಿ ಅಥವಾ ಆಂತರಿಕ ಮೈಕ್ರೊಫೋನ್ ಬಳಸಿ.</translation>
 <translation id="3181441307743005334">ಮರುಪ್ರಾರಂಭಗೊಳ್ಳಲು ಸ್ವಲ್ಪ ಸಮಯ ಬೇಕಾಗಬಹುದು</translation>
@@ -553,7 +552,6 @@
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> ಸಾಧನಗಳು <ph name="DEVICE_NAME" /> ಹಾಟ್‌ಸ್ಪಾಟ್‌ಗೆ ಕನೆಕ್ಟ್ ಆಗಿವೆ</translation>
 <translation id="3307642347673023554">ಲ್ಯಾಪ್‌ಟಾಪ್ ಮೋಡ್‌ಗೆ ಬದಲಿಸಲಾಗಿದೆ</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" />, ಆನಂತರ ಕೂಡಾ ಸೈನ್ ಇನ್ ಮಾಡಬಹುದು.</translation>
-<translation id="3317779231018057649"><ph name="DEVICECOUNT" /> ಸಾಧನಗಳು ಕನೆಕ್ಟ್ ಆಗಿವೆ. ಹಾಟ್‌ಸ್ಪಾಟ್ ಬಳಸುವಾಗ, ವೈ-ಫೈ ಆಫ್ ಆಗಿರುತ್ತದೆ.</translation>
 <translation id="3321628682574733415">ತಪ್ಪಾದ ಪೋಷಕ ಕೋಡ್</translation>
 <translation id="332827762492701193">ಅಧಿಸೂಚನೆಗಳು ಮರೆಯಾಗಿವೆ</translation>
 <translation id="3333674550998107387"><ph name="NOTIFICATION_TITLE" /> ನೋಟಿಫಿಕೇಶನ್ ಅನ್ನು ವಿಸ್ತರಿಸಿ</translation>
@@ -853,6 +851,7 @@
 <translation id="440113666232554208">ಸ್ಕ್ರೀನ್‌ಕ್ಯಾಸ್ಟ್ ಅನ್ನು ಉಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="4405151984121254935">ಕನೆಕ್ಟ್ ಆಗಿರುವ ಪೆರಿಫರಲ್ ಪ್ರಕಾರವು ಬೆಂಬಲಿತವಾಗಿಲ್ಲ</translation>
 <translation id="4406883609789734330">ಲೈವ್ ಕ್ಯಾಪ್ಶನ್</translation>
+<translation id="4412698727486357573">ಸಹಾಯ ಕೇಂದ್ರ</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ಆಫ್ ಆಗಿದೆ.</translation>
 <translation id="4424159417645388645">ಡೆಸ್ಕ್ 5</translation>
 <translation id="4430019312045809116">ವಾಲ್ಯೂಮ್</translation>
@@ -893,7 +892,6 @@
 <translation id="4566144812051858745">ಯಾವುದೇ ರೀತಿಯ ಸಲಹೆಗಳಲ್ಲಿ ಆಸಕ್ತಿಯಿಲ್ಲ</translation>
 <translation id="4569753163207712681">ನಿಮ್ಮ ಫೋನ್‌ನ ಇತ್ತೀಚಿನ ಫೋಟೋಗಳು, ಮಾಧ್ಯಮ ಮತ್ತು ಆ್ಯಪ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="4573176682887762361">"ಟೈಪ್ ಮಾಡಿ [ಪದ / ನುಡಿಗಟ್ಟು]"</translation>
-<translation id="4577188182049003486">ಹಾಟ್‌ಸ್ಪಾಟ್ ಆನ್ ಆಗಿರುವುದರಿಂದ, ವೈ-ಫೈ ಆಫ್ ಆಗಿದೆ</translation>
 <translation id="4577274620589681794">ಸಮಯ ಮುಗಿದಿದೆ · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">ಪೂರ್ವವೀಕ್ಷಣೆಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="4578906031062871102">ಸೆಟ್ಟಿಂಗ್‌ಗಳ ಮೆನುವನ್ನು ತೆರೆಯಲಾಗಿದೆ</translation>
@@ -1015,6 +1013,7 @@
 <translation id="5003993274120026347">ಮುಂದಿನ ವಾಕ್ಯ</translation>
 <translation id="5004607513195820459">ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ನಿರ್ವಹಿಸಲಾಗಿದೆ</translation>
 <translation id="5009463889040999939">ಪ್ರೊಫೈಲ್ ಅನ್ನು ಮರುಹೆಸರಿಸಲಾಗುತ್ತಿದೆ. ಇದಕ್ಕೆ ಕೆಲವು ನಿಮಿಷಗಳ ಕಾಲಾವಕಾಶ ಬೇಕಾಗಬಹುದು.</translation>
+<translation id="5013847959275396160">ಪರಿಕರ ಪಟ್ಟಿ ಮರೆಮಾಡಿ</translation>
 <translation id="5016558321564993266">ಮಾರ್ಕರ್ ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">ಹುಡುಕಾಟ ವಿಭಾಗಗಳು</translation>
 <translation id="5030659775136592441">ಬುಕ್‌ಮಾರ್ಕ್ ನಿರ್ವಾಹಕವನ್ನು ತೋರಿಸಿ</translation>
@@ -1151,7 +1150,6 @@
 <translation id="5550417424894892620"><ph name="HOLDING_SPACE_TITLE" /> ಗೆ ಫೈಲ್‌ಗಳನ್ನು ಸೇರಿಸಲು ಅವುಗಳನ್ನು ಡೆಸ್ಕ್‌ಟಾಪ್‌ನಲ್ಲಿ ಡ್ರಾಪ್ ಮಾಡಿ. ನೀವು ಡೆಸ್ಕ್‌ಟಾಪ್‌ಗೆ ಫೈಲ್‌ಗಳನ್ನು ಸೇರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
 <translation id="5551456515017410630">ಕ್ಯಾಲೆಂಡರ್ ತೆರೆಯಿರಿ/ಮುಚ್ಚಿ</translation>
 <translation id="5551974246223970793">ಪುಟವೊಂದನ್ನು ಹುಡುಕುವಾಗ, ಹುಡುಕಾಟಕ್ಕಾಗಿ ಮುಂದಿನ ಹೊಂದಾಣಿಕೆಗೆ ಹೋಗಿ</translation>
-<translation id="5555639311269196631">ಹಾಟ್‌ಸ್ಪಾಟ್ ಆಫ್‌ ಮಾಡಿ</translation>
 <translation id="5556459405103347317">ಮರುಲೋಡ್‌</translation>
 <translation id="5558091555391176027">Nearby ಶೇರ್‌ನ ಹೆಚ್ಚಿನ ಗೋಚರತೆಯನ್ನು ಟಾಗಲ್ ಮಾಡಿ</translation>
 <translation id="5558314826121965174">ಸೃಜನಶೀಲತೆ</translation>
@@ -1786,6 +1784,7 @@
 <translation id="799296642788192631">ಪ್ರಮುಖ ಫೈಲ್‌ಗಳನ್ನು ನೀವು ಪಿನ್ ಮಾಡಬಹುದು. ಪಿನ್ ಮಾಡಲು, ಐಟಂ ಮೇಲೆ ಹೋವರ್ ಮಾಡಿ ಅಥವಾ ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ ಮತ್ತು ಐಟಂ ಮೇಲೆ ಬಲ ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
 <translation id="7994370417837006925">ಬಹು ಸೈನ್-ಇನ್</translation>
 <translation id="7995804128062002838">ಸ್ಕ್ರೀನ್ ಕ್ಯಾಪ್ಚರ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ</translation>
+<translation id="8000020256436988724">ಟೂಲ್‌ಬಾರ್</translation>
 <translation id="8000066093800657092">ನೆಟ್‌ವರ್ಕ್ ಇಲ್ಲ</translation>
 <translation id="8001755249288974029">ಕರ್ಸರ್‌ನಿಂದ ಸಾಲಿನ ಆರಂಭಕ್ಕೆ ಪಠ್ಯವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="8004512796067398576">ಹೆಚ್ಚಿಕೆ</translation>
@@ -1899,6 +1898,7 @@
 <translation id="847056008324733326">ಮಾಪಕ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />, <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> ಹೊಂದಿದೆ.</translation>
 <translation id="8477270416194247200">ರದ್ದುಗೊಳಿಸಲು Alt+ಹುಡುಕಾಟ ಅಥವಾ Shift ಅನ್ನು ಒತ್ತಿರಿ.</translation>
+<translation id="8480418399907765580">ಪರಿಕರಪಟ್ಟಿ ತೋರಿಸು</translation>
 <translation id="8487699605742506766">ಹಾಟ್‌ಸ್ಪಾಟ್</translation>
 <translation id="8491237443345908933">ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಲಿಂಕ್ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="8492573885090281069"><ph name="SPECIFIED_RESOLUTION" /> ಅನ್ನು <ph name="DISPLAY_NAME" /> ಬೆಂಬಲಿಸುವುದಿಲ್ಲ. ರೆಸಲ್ಯೂಷನ್ ಅನ್ನು <ph name="FALLBACK_RESOLUTION" /> ಗೆ ಬದಲಾಯಿಸಲಾಗಿದೆ. ಬದಲಾವಣೆಗಳನ್ನು ಉಳಿಸಲು 'ಖಚಿತಪಡಿಸಿ' ಕ್ಲಿಕ್ ಮಾಡಿ. ಹಿಂದಿನ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಇನ್ನು <ph name="TIMEOUT_SECONDS" /> ನಲ್ಲಿ ಮರುಸ್ಥಾಪಿಸಲಾಗುತ್ತದೆ.</translation>
@@ -1984,6 +1984,7 @@
 <translation id="8834539327799336565">ಪ್ರಸ್ತುತ ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8841375032071747811">ಹಿಂದೆ ಬಟನ್</translation>
 <translation id="8843682306134542540">ಪರದೆ ತಿರುಗಿಸುವಿಕೆಯ ಲಾಕ್ ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE_TEXT" /></translation>
+<translation id="8845001906332463065">ಸಹಾಯ ಪಡೆಯಿರಿ</translation>
 <translation id="8849001918648564819">ಮರೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8853703225951107899">ನಿಮ್ಮ ಪಿನ್ ಅಥವಾ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಇನ್ನೂ ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಗಮನಿಸಿ: ನೀವು ಇತ್ತೀಚೆಗೆ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬದಲಾಯಿಸಿದ್ದರೆ, ನಿಮ್ಮ ಹಳೆಯ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬಳಸಿ. ನೀವು ಸೈನ್ ಔಟ್ ಮಾಡಿದ ನಂತರ ನಿಮ್ಮ ಹೊಸ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಅನ್ವಯಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="8855885154700222542">ಪೂರ್ಣಪರದೆ ಕೀ</translation>

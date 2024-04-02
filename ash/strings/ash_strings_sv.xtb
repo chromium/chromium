@@ -30,7 +30,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="109942774857561566">Jag har tråkigt</translation>
 <translation id="1104084341931202936">Visa tillgänglighetsinställningar</translation>
 <translation id="1104621072296271835">Dina enheter fungerar ännu bättre tillsammans</translation>
-<translation id="1106446201446919638">1 enhet är ansluten. Wifi förblir inaktiverat när surfzonen används.</translation>
 <translation id="1111021433905331574">Du kan byta färg på tangentbordets bakgrundsbelysning i inställningarna &gt; <ph name="APP_TITLE" /></translation>
 <translation id="1117719261843403176">Aktivera och inaktivera mobildata. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">Dölj hyllan automatiskt</translation>
@@ -428,6 +427,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2785499565474703580">1 enhet är ansluten</translation>
 <translation id="2791421900609674576">Rekommendationer visas så att du kan fortsätta där du slutade. Du kan ta bort rekommendationer genom att trycka länge.</translation>
 <translation id="2792498699870441125">Alt + Sök</translation>
+<translation id="2801954693771979815">Skärmstorlek</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, har valts</translation>
 <translation id="2805756323405976993">Appar</translation>
 <translation id="2814448776515246190">Skärmbild/skärminspelning av en del av skärmen</translation>
@@ -518,7 +518,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="316086887565479535">Appar som inte stöds i mallen</translation>
 <translation id="3160929076476941240">2 tim</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> återställer din <ph name="DEVICE_TYPE" /> till en tidigare version. Enheten återställs och all data raderas.</translation>
-<translation id="3170769098533255179">Inga enheter är anslutna. Wifi förblir inaktiverat när surfzonen används.</translation>
 <translation id="3171170659304083361">Inmatningsinställningar</translation>
 <translation id="3176221688814061633">En äldre version av Bluetooth används av Chromebook eller Bluetooth-enheten. Aktivera Bluetooth Super Resolution eller använd den interna mikrofonen för bättre ljudkvalitet.</translation>
 <translation id="3181441307743005334">Det kan ta en stund att starta om</translation>
@@ -553,7 +552,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> enheter är anslutna till <ph name="DEVICE_NAME" />-surfzonen</translation>
 <translation id="3307642347673023554">Bytte till laptopläge</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> kan ändå logga in igen senare.</translation>
-<translation id="3317779231018057649"><ph name="DEVICECOUNT" /> enheter är anslutna. Wifi förblir inaktiverat när surfzonen används.</translation>
 <translation id="3321628682574733415">Felaktig föräldrakod</translation>
 <translation id="332827762492701193">Aviseringar har dolts</translation>
 <translation id="3333674550998107387">Utöka <ph name="NOTIFICATION_TITLE" />-avisering</translation>
@@ -853,6 +851,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="440113666232554208">Det gick inte att spara screencast</translation>
 <translation id="4405151984121254935">Typen av kringutrustning som är ansluten stöds inte</translation>
 <translation id="4406883609789734330">Live Caption</translation>
+<translation id="4412698727486357573">Hjälpcenter</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> är av.</translation>
 <translation id="4424159417645388645">Skrivbord 5</translation>
 <translation id="4430019312045809116">Volym</translation>
@@ -893,7 +892,6 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4566144812051858745">Jag är inte intresserad av några förslag</translation>
 <translation id="4569753163207712681">Visa de senaste bilderna, mediefilerna och aviseringarna på telefonen</translation>
 <translation id="4573176682887762361">”Skriv [ord/fras]”</translation>
-<translation id="4577188182049003486">Wifi är inaktiverat när surfzonen är aktiverad</translation>
 <translation id="4577274620589681794">Tiden är ute · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Visa förhandsgranskningar</translation>
 <translation id="4578906031062871102">Inställningsmenyn har öppnats</translation>
@@ -1015,6 +1013,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="5003993274120026347">Nästa mening</translation>
 <translation id="5004607513195820459">Nätverket hanteras</translation>
 <translation id="5009463889040999939">Byter namn på profilen. Det kan ta några minuter.</translation>
+<translation id="5013847959275396160">Dölj verktygsfält</translation>
 <translation id="5016558321564993266">Aktivera och inaktivera märkpennan. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Sökkategorier</translation>
 <translation id="5030659775136592441">Visa bokmärkeshanteraren</translation>
@@ -1151,7 +1150,6 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="5550417424894892620">Släpp filer på skrivbordet för att lägga till dem i ditt <ph name="HOLDING_SPACE_TITLE" />. Du kan inte lägga till filer på skrivbordet.</translation>
 <translation id="5551456515017410630">Öppna/stäng kalendern</translation>
 <translation id="5551974246223970793">Gå till nästa matchning för sökningen när du söker på en sida</translation>
-<translation id="5555639311269196631">Inaktivera surfzon</translation>
 <translation id="5556459405103347317">Hämta igen</translation>
 <translation id="5558091555391176027">Aktivera och inaktivera Närdelning med hög synlighet</translation>
 <translation id="5558314826121965174">Kreativitet</translation>
@@ -1786,6 +1784,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="799296642788192631">Du kan fästa viktiga filer. Håll muspekaren över ett objekt eller öppna Filer och högerklicka på ett objekt för att fästa det.</translation>
 <translation id="7994370417837006925">Multiinloggning</translation>
 <translation id="7995804128062002838">Skärmbild/skärminspelning misslyckades</translation>
+<translation id="8000020256436988724">Verktygsfält</translation>
 <translation id="8000066093800657092">Inget nätverk</translation>
 <translation id="8001755249288974029">Markera text från markören till början av raden</translation>
 <translation id="8004512796067398576">Öka</translation>
@@ -1899,6 +1898,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="847056008324733326">Inställningar för skala på skärmen</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> har <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Avbryt genom att trycka på Alt + söktangenten eller Skift.</translation>
+<translation id="8480418399907765580">Visa verktygsfält</translation>
 <translation id="8487699605742506766">Surfzon</translation>
 <translation id="8491237443345908933">Öppna länken i ny flik</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> har inte stöd för <ph name="SPECIFIED_RESOLUTION" />. Upplösningen ändrades till <ph name="FALLBACK_RESOLUTION" />. Klicka på bekräfta om du vill behålla ändringarna. De gamla inställningarna återställs om <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -1984,6 +1984,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8834539327799336565">Anslutna just nu</translation>
 <translation id="8841375032071747811">Bakåtknapp</translation>
 <translation id="8843682306134542540">Aktivera och inaktivera rotationslås. <ph name="STATE_TEXT" /></translation>
+<translation id="8845001906332463065">Få hjälp</translation>
 <translation id="8849001918648564819">Dold</translation>
 <translation id="8853703225951107899">Det gick fortfarande inte att verifiera pinkoden eller lösenordet. Obs! Om du nyligen har bytt lösenord ska du använda det gamla lösenordet. Det nya lösenordet börjar gälla när du loggar ut.</translation>
 <translation id="8855885154700222542">Tangent för helskärm</translation>

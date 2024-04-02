@@ -347,7 +347,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="125220115284141797">Predeterminado</translation>
 <translation id="1252219782845132919">Ocultar grupo</translation>
 <translation id="1252987234827889034">Se produjo un error en el perfil</translation>
-<translation id="1253664522045778676">Haz clic en un resultado y la página se abrirá en la pestaña actual</translation>
 <translation id="1254593899333212300">Conexión directa a Internet</translation>
 <translation id="1256588359404100567">Se sincronizó la configuración de tu dispositivo anterior.</translation>
 <translation id="1257336506558170607">Exportar el certificado seleccionado</translation>
@@ -1196,7 +1195,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1887210448491286312">Detener la transmisión de la pestaña a <ph name="DEVICE_NAME" /></translation>
 <translation id="1887442540531652736">Error de acceso</translation>
 <translation id="1887597546629269384">Di "Ok Google" nuevamente</translation>
-<translation id="1889091146873278175">Haz clic en el botón "G" para ver más resultados de la búsqueda en un panel lateral</translation>
 <translation id="1890026367080681123">Ir a la configuración de contenido incorporado</translation>
 <translation id="189035593835762169">Términos y Condiciones</translation>
 <translation id="1891362123137972260">Hay muy poco espacio disponible en el disco, por lo que debes liberar espacio.</translation>
@@ -6259,7 +6257,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="5804259315582798390">No se pudo habilitar la recuperación de datos locales</translation>
 <translation id="5805268472388605531">Mantén presionadas las teclas para ver acentos y caracteres especiales</translation>
-<translation id="5805354171420804923">Compara resultados de la búsqueda más rápido con el nuevo panel lateral</translation>
 <translation id="5805697420284793859">Administrador de ventanas</translation>
 <translation id="5806447147478173900">Almacenamiento total que usan los sitios que se muestran: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (predeterminado)</translation>
@@ -7401,7 +7398,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6709357832553498500">Conectar a través de <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6710394144992407503">Verificar que no haya errores ortográficos cuando escribas en páginas web</translation>
-<translation id="671226373742585927">Haz clic en el botón "X" para cerrar el panel lateral</translation>
 <translation id="6712943853047024245">Ya guardaste una contraseña con este nombre de usuario para <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">Agregar un perfil de trabajo</translation>
 <translation id="6713441551032149301">Mantén presionada la tecla del Selector para alternar entre las teclas de función y las teclas de la fila superior del sistema</translation>
@@ -8767,7 +8763,6 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7758884017823246335">Agrega búsquedas en el sitio</translation>
 <translation id="7759809451544302770">Opcional</translation>
 <translation id="7762024824096060040">No se puede usar esta cuenta</translation>
-<translation id="7762243782113123335">Se produjo un error. Envía tus comentarios con el hashtag #bruschetta en la descripción. El código de error es <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Agregar dirección</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> de <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764527477537408401">Abrir grupo en una ventana nueva</translation>
@@ -9253,7 +9248,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="810185532889603849">Color personalizado</translation>
 <translation id="8101987792947961127">Se requiere Powerwash en el siguiente reinicio</translation>
 <translation id="8102139037507939978">Quita la información de identificación personal del archivo system_logs.txt.</translation>
-<translation id="8102344699913991108">Los sitios usan este parámetro de configuración para ofrecer experiencias de pantalla completa envolvente, sin importar los gestos del usuario</translation>
 <translation id="810362914482827094">Buscar claves de acceso</translation>
 <translation id="8104088837833760645">Descargar el perfil de eSIM</translation>
 <translation id="8105273883928376822">Accede a tu cuenta para continuar</translation>
@@ -9474,7 +9468,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8272443605911821513">Para administrar tus extensiones, haz clic en Extensiones en el menú "Más herramientas".</translation>
 <translation id="8272786333453048167">Volver a permitir</translation>
 <translation id="8273905181216423293">Descargar ahora</translation>
-<translation id="8274495289680107339">Los sitios usan este parámetro de configuración para activar el modo de pantalla en pantalla automáticamente. De esta manera, puedes seguir mirando un video y liberar la pantalla para otras tareas.</translation>
 <translation id="827488840488530039">La página que intentas visitar no pudo verificar tus tickets de Kerberos.</translation>
 <translation id="8274921654076766238">La lupa sigue el enfoque del teclado</translation>
 <translation id="8274924778568117936">No apagues ni cierres el dispositivo <ph name="DEVICE_TYPE" /> hasta que finalice la actualización. Cuando el proceso termine, el dispositivo <ph name="DEVICE_TYPE" /> se reiniciará.</translation>

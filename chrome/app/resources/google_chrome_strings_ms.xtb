@@ -147,6 +147,7 @@
 <translation id="3100998948628680988">Namakan profil Chrome anda</translation>
 <translation id="3112458742631356345">Chrome menyekat muat turun ini kerana fail jarang dimuat turun dan mungkin berbahaya</translation>
 <translation id="3114643501466072395">Untuk menyemak sama ada kata laluan anda yang lain selamat daripada pelanggaran data dan isu keselamatan lain, <ph name="BEGIN_LINK" />log masuk ke Chrome<ph name="END_LINK" />.</translation>
+<translation id="3119573284443908657">Chrome menyekat muat turun ini kerana fail arkib termasuk fail lain yang mungkin menyembunyikan perisian hasad</translation>
 <translation id="3140883423282498090">Perubahan anda akan berkuat kuasa apabila anda melancarkan semula Google Chrome pada masa hadapan.</translation>
 <translation id="3149510190863420837">Chrome Apps</translation>
 <translation id="3169523567916669830">Semasa percubaan, anda boleh melihat dan mengalih keluar topik minat yang digunakan oleh laman untuk memaparkan iklan kepada anda. Chrome menganggarkan minat anda berdasarkan sejarah penyemakan imbas anda baru-baru ini.</translation>
@@ -217,6 +218,7 @@
 <translation id="4334294535648607276">Muat turun selesai.</translation>
 <translation id="4335235004908507846">Chrome dapat membantu untuk memastikan anda selamat daripada pelanggaran data, sambungan tidak elok dan pelbagai lagi</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> telah ditambahkan pada Chrome</translation>
+<translation id="436060642166082913">Chrome menyekat muat turun ini kerana fail tersebut boleh membahayakan akaun peribadi dan rangkaian sosial anda</translation>
 <translation id="4384570495110188418">Chrome tidak dapat menyemak kata laluan anda kerana anda tidak log masuk</translation>
 <translation id="4389991535395284064">Apabila menyemak imbas dalam Mod Inkognito, Chrome akan memberi anda amaran sebelum memuatkan laman menggunakan sambungan yang tidak selamat</translation>
 <translation id="4427306783828095590">Perlindungan yang dipertingkatkan melakukan pelbagai lagi perkara untuk menyekat pancingan data dan perisian hasad</translation>
@@ -468,6 +470,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="873133009373065397">Google Chrome tidak dapat menentukan atau menetapkan penyemak imbas lalai</translation>
 <translation id="8765470054473112089">Apabila anda menaip dalam bar alamat atau kotak carian, Chrome menghantar perkara yang anda taip ke enjin carian lalai anda untuk mendapatkan cadangan yang lebih baik. Tetapan ini dimatikan dalam Inkognito.</translation>
 <translation id="878572486461146056">Ralat pemasangan: Pentadbir rangkaian anda telah menggunakan Dasar Kumpulan yang menghalang pemasangan: <ph name="INSTALL_ERROR" /></translation>
+<translation id="8796073561259064743">Chrome menyekat muat turun ini kerana fail tersebut boleh membahayakan akaun peribadi dan rangkaian sosial anda termasuk <ph name="USER_EMAIL" /></translation>
 <translation id="8801657293260363985">V8 ialah JavaScript Chrome dan enjin WebAssembly yang digunakan untuk meningkatkan prestasi laman</translation>
 <translation id="8821043148920470810">Untuk mendapatkan kemaskinian Google Chrome yang akan datang, anda memerlukan Windows 10 atau yang lebih baharu. Komputer ini menggunakan Windows 7.</translation>
 <translation id="8823341990149967727">Chrome sudah Usang</translation>

@@ -1184,6 +1184,7 @@
 <translation id="6989674195860388998">सेटिंग्ज मध्ये स्विच करा…</translation>
 <translation id="6998989275928107238">प्रति</translation>
 <translation id="699954956411469731">मोबाइल सूचना</translation>
+<translation id="699985840472413751">डाउनलोड बार बंद करा</translation>
 <translation id="7004032350256606903">तुमच्या संस्थेनुसार तुम्ही खाजगीरीत्या ब्राउझ करणे आवश्यक आहे.
 <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">अलीकडील टॅब</translation>
@@ -1473,6 +1474,7 @@
 <translation id="850600235656508448">गुप्त प्रकारात उघडा</translation>
 <translation id="8517375800490286174">मुक्त स्रोत परवाने</translation>
 <translation id="8522147671363140027">{count,plural, =1{{count} पासवर्ड आणि इतर आयटम फक्त या डिव्हाइसवर सेव्ह केले आहेत. ते इतर डिव्हाइसवर वापरण्यासाठी, तुमच्या {email} या Google खाते मध्ये सेव्ह करा.}other{{count} पासवर्ड आणि इतर आयटम फक्त या डिव्हाइसवर सेव्ह केले आहेत. ते इतर डिव्हाइसवर वापरण्यासाठी, तुमच्या {email} या Google खाते मध्ये सेव्ह करा.}}</translation>
+<translation id="8522813812888400223">डाउनलोड रद्द करा</translation>
 <translation id="8524799873541103884"><ph name="NUMBER_OF_OPEN_TABS" /> पैकी <ph name="LAST_VISIBLE_TAB" /> ते <ph name="FIRST_VISIBLE_TAB" /> <ph name="INCOGNITO" /> टॅब</translation>
 <translation id="852576975834694248">तुम्हाला साइन आउट केले जाईल आणि टॅब बंद केले जातील</translation>
 <translation id="8528009254289981965">गुप्त मोड मध्ये इतर ॲप्समधील लिंक उघडा</translation>

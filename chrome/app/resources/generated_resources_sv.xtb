@@ -349,7 +349,6 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="125220115284141797">Standard</translation>
 <translation id="1252219782845132919">Dölj grupp</translation>
 <translation id="1252987234827889034">Ett profilfel har uppstått</translation>
-<translation id="1253664522045778676">Klicka på ett resultat så öppnas sidan på den aktuella fliken.</translation>
 <translation id="1254593899333212300">Direkt Internetanslutning</translation>
 <translation id="1256588359404100567">Inställningen har synkroniserats från din förra enhet.</translation>
 <translation id="1257336506558170607">Exportera valt certifikat</translation>
@@ -1211,7 +1210,6 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1887210448491286312">Sluta casta fliken till <ph name="DEVICE_NAME" /></translation>
 <translation id="1887442540531652736">Inloggningsfel</translation>
 <translation id="1887597546629269384">Säg ”Hey Google” igen</translation>
-<translation id="1889091146873278175">Klicka på G-knappen om du vill se fler sökresultat i sidopanelen</translation>
 <translation id="1890026367080681123">Öppna inställningarna för inbäddat innehåll</translation>
 <translation id="189035593835762169">Användarvillkor</translation>
 <translation id="1891362123137972260">Mycket ont om diskutrymme. Frigör diskutrymme.</translation>
@@ -6278,7 +6276,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5804241973901381774">Behörigheter</translation>
 <translation id="5804259315582798390">Det gick inte att aktivera lokal dataåterställning</translation>
 <translation id="5805268472388605531">Tryck länge på tangenterna för att se accenttecken och specialtecken</translation>
-<translation id="5805354171420804923">Jämför sökresultat snabbare från den nya sidopanelen</translation>
 <translation id="5805697420284793859">Fönsterhanterare</translation>
 <translation id="5806447147478173900">Totalt lagringsutrymme som används av visade webbplatser: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (standard)</translation>
@@ -7420,7 +7417,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6709357832553498500">Anslut med <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">Föregående</translation>
 <translation id="6710394144992407503">Kontrollera stavfel när du skriver in text på webbsidor</translation>
-<translation id="671226373742585927">Stäng sidopanelen genom att klicka på X-knappen</translation>
 <translation id="6712943853047024245">Du har redan sparat ett lösenord för det här användarnamnet för <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">Lägg till jobbprofil</translation>
 <translation id="6713441551032149301">Håll ned starttangenten om du vill växla mellan funktionstangenter och systemets översta tangenter</translation>
@@ -8786,7 +8782,6 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7758884017823246335">Lägg till webbplatssökning</translation>
 <translation id="7759809451544302770">Valfritt</translation>
 <translation id="7762024824096060040">Det här kontot kan inte användas</translation>
-<translation id="7762243782113123335">Något gick fel. Skicka feedback och ange #bruschetta i beskrivningen. Felkoden är <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Lägg till adress</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> från <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764527477537408401">Öppna gruppen i ett nytt fönster</translation>
@@ -9272,7 +9267,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="810185532889603849">Anpassad färg</translation>
 <translation id="8101987792947961127">Powerwash krävs vid nästa omstart</translation>
 <translation id="8102139037507939978">Ta bort uppgifter som kan kopplas till en specifik individ från system_logs.txt.</translation>
-<translation id="8102344699913991108">Webbplatser använder den här inställningen för att erbjuda en uppslukande helskärmsupplevelse oavsett användarrörelser</translation>
 <translation id="810362914482827094">Sök efter nycklar</translation>
 <translation id="8104088837833760645">Ladda ned eSIM-profil</translation>
 <translation id="8105273883928376822">Logga in om du vill fortsätta.</translation>
@@ -9493,7 +9487,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8272443605911821513">Hantera dina tillägg genom att klicka på Tillägg i menyn Fler verktyg.</translation>
 <translation id="8272786333453048167">Tillåt igen</translation>
 <translation id="8273905181216423293">Ladda ned nu</translation>
-<translation id="8274495289680107339">Webbplatser använder den här inställningen för att öppna bild-i-bild automatiskt. På så sätt kan du fortsätta titta på en video samtidigt som du frigör skärmen för andra uppgifter.</translation>
 <translation id="827488840488530039">Sidan som du försöker besöka kunde inte verifiera dina Kerberos-biljetter</translation>
 <translation id="8274921654076766238">Förstoringsglaset följer tangentbordsfokus</translation>
 <translation id="8274924778568117936">Stäng inte av eller stäng <ph name="DEVICE_TYPE" /> förrän uppdateringen har slutförts. <ph name="DEVICE_TYPE" /> startas om när installationen är slutförd.</translation>

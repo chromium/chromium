@@ -30,7 +30,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="109942774857561566">Abúrrome</translation>
 <translation id="1104084341931202936">Mostrar a configuración de accesibilidade</translation>
 <translation id="1104621072296271835">Os dispositivos funcionan mellor xuntos</translation>
-<translation id="1106446201446919638">1 dispositivo conectado. Cando se use a zona wifi, a wifi permanecerá desactivada.</translation>
 <translation id="1111021433905331574">Podes cambiar a cor da retroiluminación do teclado en Configuración &gt; <ph name="APP_TITLE" /></translation>
 <translation id="1117719261843403176">Activar/Desactivar datos móbiles. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">Ocultar estante automaticamente</translation>
@@ -336,6 +335,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2405664212338326887">Función non conectada</translation>
 <translation id="2408955596600435184">Introduce o PIN</translation>
 <translation id="2412593942846481727">Hai unha actualización dispoñible</translation>
+<translation id="2416438829169535743">Queres saír da vista?</translation>
 <translation id="2417486498593892439">Inicia sesión na rede</translation>
 <translation id="2426051945783024481">O encadramento da cámara centrouse automaticamente</translation>
 <translation id="2427507373259914951">Clic co botón esquerdo do rato</translation>
@@ -427,6 +427,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2785499565474703580">1 dispositivo conectado</translation>
 <translation id="2791421900609674576">Recibirás recomendacións para poder continuar coas túas actividades desde onde as deixaches. Podes manter premidas as recomendacións para quitalas.</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
+<translation id="2801954693771979815">Tamaño da pantalla</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, botón seleccionado</translation>
 <translation id="2805756323405976993">Aplicacións</translation>
 <translation id="2814448776515246190">Captura parcial</translation>
@@ -517,7 +518,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="316086887565479535">Aplicacións non compatibles no modelo</translation>
 <translation id="3160929076476941240">2 h</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> está cambiando o teu dispositivo (<ph name="DEVICE_TYPE" />) a unha versión anterior. O dispositivo restablecerase e eliminaranse todos os datos.</translation>
-<translation id="3170769098533255179">Ningún dispositivo conectado. Cando se use a zona wifi, a wifi permanecerá desactivada.</translation>
 <translation id="3171170659304083361">Configuración dos métodos de introdución de texto</translation>
 <translation id="3176221688814061633">O teu dispositivo Chromebook ou Bluetooth usa unha versión antiga de Bluetooth. Activa o Bluetooth de alta resolución ou usa o micrófono interno para desfrutar dunha mellor calidade de audio.</translation>
 <translation id="3181441307743005334">O reinicio pode tardar uns intres</translation>
@@ -552,7 +552,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> dispositivos conectados á zona wifi de <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">Cambiouse ao modo de ordenador portátil</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> segue podendo iniciar sesión máis tarde.</translation>
-<translation id="3317779231018057649"><ph name="DEVICECOUNT" /> dispositivos conectados. Cando se use a zona wifi, a wifi permanecerá desactivada.</translation>
 <translation id="3321628682574733415">O código de pai ou nai é incorrecto</translation>
 <translation id="332827762492701193">As notificacións están ocultas</translation>
 <translation id="3333674550998107387">Despregar a notificación <ph name="NOTIFICATION_TITLE" /></translation>
@@ -853,6 +852,7 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="440113666232554208">Non se puido gardar a gravación da pantalla</translation>
 <translation id="4405151984121254935">O tipo de periférico conectado non é compatible</translation>
 <translation id="4406883609789734330">Subtítulos instantáneos</translation>
+<translation id="4412698727486357573">Centro de Axuda</translation>
 <translation id="4412944820643904175">A función <ph name="FEATURE_NAME" /> está desactivada.</translation>
 <translation id="4424159417645388645">Escritorio 5</translation>
 <translation id="4430019312045809116">Volume</translation>
@@ -893,7 +893,6 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="4566144812051858745">Non me interesa recibir suxestións</translation>
 <translation id="4569753163207712681">Consulta o contido multimedia, as aplicacións e as fotos recentes do teu teléfono</translation>
 <translation id="4573176682887762361">"Escribe [palabra/frase]"</translation>
-<translation id="4577188182049003486">Cando a zona wifi está activada, a wifi está desactivada</translation>
 <translation id="4577274620589681794">Acabouse o tempo · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Mostrar vistas previas</translation>
 <translation id="4578906031062871102">Abriuse o menú de configuración</translation>
@@ -1151,12 +1150,13 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="5550417424894892620">Solta ficheiros no escritorio para engadilos a <ph name="HOLDING_SPACE_TITLE" />. Non podes engadir ficheiros ao escritorio.</translation>
 <translation id="5551456515017410630">Abre ou pecha o calendario</translation>
 <translation id="5551974246223970793">Ir á seguinte coincidencia ao buscar nunha páxina</translation>
-<translation id="5555639311269196631">Desactivar zona wifi</translation>
 <translation id="5556459405103347317">Volver cargar</translation>
 <translation id="5558091555391176027">Activar/desactivar o modo de alta visibilidade da función Compartir por Nearby</translation>
+<translation id="5558314826121965174">Creatividade</translation>
 <translation id="556042886152191864">Botón</translation>
 <translation id="5570122939431135380">Abrir nova pestana nunha ventá nova do modo de incógnito</translation>
 <translation id="5571066253365925590">Bluetooth activado</translation>
+<translation id="5572632238877308040">Esenciais</translation>
 <translation id="557563299383177668">Seguinte parágrafo</translation>
 <translation id="5577082622442191756">Activar/desactivar o Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Para utilizar O meu teléfono, asegúrate de ter activado o Bluetooth no dispositivo</translation>
@@ -1181,6 +1181,7 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="5662075790140998213">Escritorio 10</translation>
 <translation id="5662709761327382534">Estado da gravación dos sons do micrófono: <ph name="CURRENT_STATE" />. Premer Introducir para que a gravación dos sons do micrófono pase ao estado <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Activando</translation>
+<translation id="5672890847723042801">Utilidades</translation>
 <translation id="5673434351075758678">De "<ph name="FROM_LOCALE" />" a "<ph name="TO_LOCALE" />" tras sincronizar a configuración.</translation>
 <translation id="5675363643668471212">Elemento do estante</translation>
 <translation id="5677928146339483299">Bloqueada</translation>
@@ -1362,6 +1363,7 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="6351032674660237738">SUXESTIÓNS DE APLICACIÓNS</translation>
 <translation id="6352082849089527770">Redes descoñecidas</translation>
 <translation id="6359587239691116345">Goza das últimas funcións e melloras de seguranza. Se rexeitas esta actualización, é posible que o dispositivo deixe de funcionar adecuadamente e que teñas problemas de seguranza e de rendemento.</translation>
+<translation id="6362833380917912748">Familiarízate coas túas aplicacións integradas</translation>
 <translation id="6376931439017688372">O Bluetooth está activado</translation>
 <translation id="6378515133128829137">Fixar ventá na dereita</translation>
 <translation id="6381109794406942707">Para desbloquear o dispositivo escribe o PIN.</translation>
@@ -1782,6 +1784,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="799296642788192631">Podes fixar os ficheiros importantes. Para facelo, pasa por enriba dun elemento ou abre Ficheiros e fai clic co botón dereito sobre un elemento.</translation>
 <translation id="7994370417837006925">Inicio de sesión múltiple</translation>
 <translation id="7995804128062002838">Produciuse un erro ao facer a captura de pantalla</translation>
+<translation id="8000020256436988724">Barra de ferramentas</translation>
 <translation id="8000066093800657092">Sen rede</translation>
 <translation id="8001755249288974029">Selecciona texto desde cursor ata o comezo da liña</translation>
 <translation id="8004512796067398576">Aumentar</translation>
@@ -1848,6 +1851,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8262312463845990408">Activar/desactivar reprodución</translation>
 <translation id="8270450402312105425">{0,plural, =1{Cambia o dispositivo a unha versión anterior no prazo de 1 hora}other{Cambia o dispositivo a unha versión anterior no prazo de # horas}}</translation>
 <translation id="8277261673056602147">Destacar o texto na pantalla</translation>
+<translation id="8287009018010202411">Produtividade</translation>
 <translation id="828708037801473432">Desactivada</translation>
 <translation id="8297006494302853456">Feble</translation>
 <translation id="8308637677604853869">Menú anterior</translation>
@@ -1919,6 +1923,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Ordena as túas aplicacións por nome ou cor</translation>
 <translation id="8609384513243082612">Abre unha nova pestana</translation>
+<translation id="861045123704058818">As aplicacións están organizadas por categoría de forma temporal</translation>
 <translation id="8612216344243590325">Garda ficheiros importantes en <ph name="HOLDING_SPACE_TITLE" /> en lugar de no escritorio. Só tes que arrastralos a <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Ocultáronse notificacións das aplicacións <ph name="APP_1_TITLE" /> e <ph name="APP_2_TITLE" /> porque está activada a protección fronte a miróns</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1957,6 +1962,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">Verificar identidade: <ph name="ORIGIN_NAME" /> quere confirmar a túa identidade</translation>
 <translation id="875593634123171288">Mostrar a configuración da VPN</translation>
+<translation id="8756799553341497810">En canto saias desta vista, poderás comezar a personalizar o deseño da túa aplicación.</translation>
 <translation id="8759408218731716181">Erro ao configurar o inicio de sesión múltiple</translation>
 <translation id="8763883995157866248">Pon o dispositivo no modo de suspensión</translation>
 <translation id="877404052021108314">90 °F en C</translation>
@@ -1977,6 +1983,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8834539327799336565">Dispositivos conectados actualmente</translation>
 <translation id="8841375032071747811">Botón Atrás</translation>
 <translation id="8843682306134542540">Activar/desactivar o bloqueo de rotación. <ph name="STATE_TEXT" /></translation>
+<translation id="8845001906332463065">Obter axuda</translation>
 <translation id="8849001918648564819">Oculto</translation>
 <translation id="8853703225951107899">Aínda non se puido verificar o teu PIN ou contrasinal. Nota: Se cambiaches o contrasinal recentemente, utiliza o antigo. O contrasinal novo aplicarase en canto peches sesión.</translation>
 <translation id="8855885154700222542">Tecla de pantalla completa</translation>

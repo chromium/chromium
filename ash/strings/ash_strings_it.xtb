@@ -30,7 +30,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="109942774857561566">Mi annoio</translation>
 <translation id="1104084341931202936">Mostra impostazioni di accessibilità</translation>
 <translation id="1104621072296271835">I tuoi dispositivi funzionano ancora meglio insieme</translation>
-<translation id="1106446201446919638">1 dispositivo connesso. Durante l'utilizzo dell'hotspot, il Wi-Fi rimane disattivato.</translation>
 <translation id="1111021433905331574">Puoi cambiare il colore della retroilluminazione della tastiera in Impostazioni &gt; <ph name="APP_TITLE" /></translation>
 <translation id="1117719261843403176">Attiva/disattiva i dati mobili. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">Nascondi automaticamente barra delle app</translation>
@@ -428,6 +427,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2785499565474703580">1 dispositivo connesso</translation>
 <translation id="2791421900609674576">Vedrai consigli per poter continuare dal punto in cui avevi interrotto. Puoi toccare i consigli e tenere premuto per rimuoverli.</translation>
 <translation id="2792498699870441125">Alt+tasto per la ricerca</translation>
+<translation id="2801954693771979815">Dimensioni schermo</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, selezionato</translation>
 <translation id="2805756323405976993">App</translation>
 <translation id="2814448776515246190">Acquisizione parziale</translation>
@@ -518,7 +518,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="316086887565479535">App non supportate nel modello</translation>
 <translation id="3160929076476941240">2 h</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> sta eseguendo il rollback di <ph name="DEVICE_TYPE" />. Il dispositivo verrà reimpostato e tutti i dati verranno eliminati.</translation>
-<translation id="3170769098533255179">Nessun dispositivo connesso. Durante l'utilizzo dell'hotspot, il Wi-Fi rimane disattivato.</translation>
 <translation id="3171170659304083361">Impostazioni metodi di immissione</translation>
 <translation id="3176221688814061633">Il tuo Chromebook o dispositivo Bluetooth sta utilizzando una versione precedente di Bluetooth. Attiva la super risoluzione Bluetooth o usa il microfono interno per una migliore qualità audio.</translation>
 <translation id="3181441307743005334">Il riavvio potrebbe richiedere un po' di tempo</translation>
@@ -553,7 +552,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> dispositivi connessi all'hotspot di <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">Passaggio alla modalità laptop effettuato</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> può ancora accedere in seguito.</translation>
-<translation id="3317779231018057649"><ph name="DEVICECOUNT" /> dispositivi connessi. Durante l'utilizzo dell'hotspot, il Wi-Fi rimane disattivato.</translation>
 <translation id="3321628682574733415">Codice genitore errato</translation>
 <translation id="332827762492701193">Le notifiche sono nascoste</translation>
 <translation id="3333674550998107387">Espandi la notifica <ph name="NOTIFICATION_TITLE" /></translation>
@@ -850,6 +848,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="440113666232554208">Impossibile salvare lo screencast</translation>
 <translation id="4405151984121254935">Il tipo periferico connesso non è supportato</translation>
 <translation id="4406883609789734330">Sottotitoli in tempo reale</translation>
+<translation id="4412698727486357573">Centro assistenza</translation>
 <translation id="4412944820643904175">La funzionalità <ph name="FEATURE_NAME" /> è disattivata.</translation>
 <translation id="4424159417645388645">Scrivania 5</translation>
 <translation id="4430019312045809116">Volume</translation>
@@ -890,7 +889,6 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4566144812051858745">Non mi interessa alcun suggerimento</translation>
 <translation id="4569753163207712681">Visualizza app, contenuti multimediali e foto recenti dello smartphone</translation>
 <translation id="4573176682887762361">"Digita [parola/frase]"</translation>
-<translation id="4577188182049003486">Con l'hotspot attivo, il Wi-Fi non è attivo</translation>
 <translation id="4577274620589681794">Tempo scaduto · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Mostra anteprime</translation>
 <translation id="4578906031062871102">Menu Impostazioni aperto</translation>
@@ -1012,6 +1010,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="5003993274120026347">Frase successiva</translation>
 <translation id="5004607513195820459">La rete è gestita</translation>
 <translation id="5009463889040999939">Ridenominazione del profilo in corso. Questa operazione può richiedere alcuni minuti.</translation>
+<translation id="5013847959275396160">Nascondi barra degli strumenti</translation>
 <translation id="5016558321564993266">Attiva/disattiva evidenziatore. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Cerca nelle categorie</translation>
 <translation id="5030659775136592441">Consente di mostrare Gestione preferiti</translation>
@@ -1148,7 +1147,6 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="5550417424894892620">Rilascia i file sul desktop per aggiungerli a <ph name="HOLDING_SPACE_TITLE" />. Non puoi aggiungere file al desktop.</translation>
 <translation id="5551456515017410630">Apri/chiudi il calendario</translation>
 <translation id="5551974246223970793">Quando cerchi una pagina, vai alla corrispondenza successiva</translation>
-<translation id="5555639311269196631">Disattiva l'hotspot</translation>
 <translation id="5556459405103347317">Ricarica</translation>
 <translation id="5558091555391176027">Attiva/disattiva alta visibilità di Condivisione nelle vicinanze</translation>
 <translation id="5558314826121965174">Creatività</translation>
@@ -1783,6 +1781,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="799296642788192631">Puoi bloccare i file importanti. Per bloccare l'elemento, passa il mouse sopra un elemento o apri File e fai clic con il tasto destro del mouse su un elemento.</translation>
 <translation id="7994370417837006925">Accesso simultaneo</translation>
 <translation id="7995804128062002838">Impossibile acquisire schermo</translation>
+<translation id="8000020256436988724">Barra degli strumenti</translation>
 <translation id="8000066093800657092">Nessuna rete</translation>
 <translation id="8001755249288974029">Seleziona il testo dal cursore all'inizio della riga</translation>
 <translation id="8004512796067398576">Aumenta</translation>
@@ -1896,6 +1895,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="847056008324733326">Impostazioni scala di visualizzazione</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> ha <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Premi ALT + tasto per la ricerca o MAIUSC per annullare.</translation>
+<translation id="8480418399907765580">Mostra barra degli strumenti</translation>
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8491237443345908933">Apri link in un'altra scheda</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> non supporta la risoluzione <ph name="SPECIFIED_RESOLUTION" />. È stata impostata la risoluzione <ph name="FALLBACK_RESOLUTION" />. Fai clic su Conferma per mantenere le modifiche. Le impostazioni precedenti verranno ripristinate tra <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -1980,6 +1980,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8834539327799336565">Attualmente connesso</translation>
 <translation id="8841375032071747811">Pulsante Indietro</translation>
 <translation id="8843682306134542540">Attiva/disattiva blocco rotazione. <ph name="STATE_TEXT" /></translation>
+<translation id="8845001906332463065">Richiedi assistenza</translation>
 <translation id="8849001918648564819">Nascosto</translation>
 <translation id="8853703225951107899">Non è stato di nuovo possibile verificare il PIN o la password. Nota: se hai modificato la password di recente, usa la password precedente. La nuova password verrà applicata quando uscirai dall'account.</translation>
 <translation id="8855885154700222542">Tasto schermo intero</translation>

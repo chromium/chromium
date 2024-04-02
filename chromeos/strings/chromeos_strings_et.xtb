@@ -271,6 +271,7 @@
 <translation id="2446553403094072641">Ujukoma täpsus</translation>
 <translation id="2448312741937722512">Tüüp</translation>
 <translation id="2465272316171730950">Maht on täis. Tulge hiljem tagasi.</translation>
+<translation id="2472215337771558851">Kasutage funktsiooni Aita mul kirjutada, et luua mustand või viimistleda olemasolevat tööd (toimib Google'i AI platvormil)</translation>
 <translation id="2480572840229215612">krabid</translation>
 <translation id="248546197012830854">Seade on võrguühenduseta. Abimaterjalide nägemiseks looge ühendus WiFi-võrguga.</translation>
 <translation id="2486301288428798846">puidust</translation>
@@ -328,10 +329,12 @@
 <translation id="2860473693272905224">Asetage skannerile veel üks leht</translation>
 <translation id="2872961005593481000">Lülita välja</translation>
 <translation id="2873483161362553159">Brauseris navigeerimine</translation>
+<translation id="2873939192640533085">Sisestage päring, nt „kirjuta enesekindlamalt“</translation>
 <translation id="2874939134665556319">Eelmine lugu</translation>
 <translation id="2875812231449496375">Selle taustapildiga parima tulemuse jaoks lülitage see sisse. Saate selle seade igal ajal välja lülitada.</translation>
 <translation id="2878387241690264070">Tühjenes <ph name="RATE" /> <ph name="NUM_SECONDS" /> sekundiga.</translation>
 <translation id="2880569433548999039">Pilvevoolu ekraanisäästja</translation>
+<translation id="2888298276507578975">Sisestage päring, nt „kirjuta tänukaart“</translation>
 <translation id="2890557891229184386">troopikasaar</translation>
 <translation id="2895772081848316509">tume</translation>
 <translation id="2926057806159140518">Sisestage kasutajanimi ja parool või skannige QR-kood</translation>
@@ -376,6 +379,7 @@
 <translation id="3226405216343213872">Skannerite otsimine</translation>
 <translation id="3226657629376379887">Paigutuse toimingute menüü</translation>
 <translation id="3227186760713762082">Jagage <ph name="CATEGORY_TEXT" /> arvuga <ph name="CONVERSION_RATE" /></translation>
+<translation id="3237710083340813756">Ümberkirjutamine</translation>
 <translation id="3246869037381808805">Prinditööd, mis on vanemad kui 1 päev, eemaldatakse</translation>
 <translation id="324961752321393509">Teie administraator ei luba seda rakendust sulgeda</translation>
 <translation id="3268178239013324452">Ebaõnnestus – luuk on avatud</translation>
@@ -414,6 +418,7 @@
 <translation id="346539236881580388">Tee uuesti</translation>
 <translation id="3484914941826596830">Püsivara värskendamise ajal ärge seda välist seadet eemaldage ega arvutit välja lülitage. Võite selle akna minimeerida. Selle värskenduse lõpuleviimiseks võib kuluda mõni minut ja teie väline seade ei pruugi sel ajal töötada.</translation>
 <translation id="3486220673238053218">definitsioon</translation>
+<translation id="3487866404496702283">Mahi funktsiooni tagasiside</translation>
 <translation id="3488065109653206955">Osaliselt aktiveeritud</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_STYLE" /> kontor, mis on <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">Andmekasutust mõõdab teie Chromebook. See võib erineda teenusepakkuja andmetest.</translation>
@@ -442,6 +447,7 @@
 <translation id="3621072146987826699">elevandid</translation>
 <translation id="3632579075709132555">Privaatsuskuva lüliti</translation>
 <translation id="3651050199673793219">Valige temperatuuriühik</translation>
+<translation id="3661106764436337772">Kirjutage kiiremini ja enesekindlamalt</translation>
 <translation id="3662461537616691585">tumepunane ja kastanpruun</translation>
 <translation id="3668449597372804501">Pilvevoolu taustapilt</translation>
 <translation id="3675132884790542448">sead</translation>
@@ -585,6 +591,7 @@
 <translation id="4503441351962730761">moodne kunst</translation>
 <translation id="4507392511610824664">suurendab heledust</translation>
 <translation id="4511264077854731334">Portaal</translation>
+<translation id="4513946894732546136">Tagasiside</translation>
 <translation id="4521826082652183069">Teema alternatiivse nime vaste</translation>
 <translation id="4522570452068850558">Üksikasjad</translation>
 <translation id="4536864596629708641">IP seadistamine</translation>
@@ -757,6 +764,7 @@
 <translation id="5543701552415191873">lukus</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Päikeseloojangul automaatselt tumedale teemale lülitumine</translation>
+<translation id="556042886152191864">Nupp</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_COLOR" /> toonides <ph name="TERRAIN_FEATURE" /></translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Skanni uuesti</translation>
@@ -875,6 +883,7 @@
 <translation id="6235460611964961764">Lähtestage andmekasutus käsitsi</translation>
 <translation id="6243280677745499710">Praegu määratud</translation>
 <translation id="6250316632541035980">peekon ja munad</translation>
+<translation id="6255213378196499011">Funktsiooni Aita mul kirjutada seaded</translation>
 <translation id="6275224645089671689">Paremnool</translation>
 <translation id="6278428485366576908">Teema</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -903,6 +912,7 @@
 <translation id="6382182670717268353">Ekraanisäästja eelvaade</translation>
 <translation id="6388847657025262518">Skanneri dokumendisöötur on ummistunud. Kontrollige sööturit ja proovige uuesti.</translation>
 <translation id="6394634179843537518">Lisa fail</translation>
+<translation id="6396719002784938593">kuivanud sulghein</translation>
 <translation id="639964859328803943">õhtusöök</translation>
 <translation id="6400680457268373900">Sürrealistlik <ph name="DREAMSCAPES_COLORS" /> <ph name="DREAMSCAPES_OBJECT" />, mis on tehtud <ph name="DREAMSCAPES_MATERIAL" /></translation>
 <translation id="6401427872449207797">brauseri otsing</translation>
@@ -944,6 +954,7 @@
 <translation id="6575134580692778371">Ei ole konfigureeritud</translation>
 <translation id="6576005492601044801">vasak</translation>
 <translation id="6579509898032828423">Kasuta seda fotot</translation>
+<translation id="6587870930887634392">sukulent</translation>
 <translation id="6596816719288285829">IP-aadress</translation>
 <translation id="6599673642868607614">Suur tänu tagasiside eest. Teie tagasiside aitab meil parandada Chromebooki kasutuskogemust ja meie tiim vaatab selle üle. Kuna saame rohkelt teavitusi, ei saa me teile vastata.</translation>
 <translation id="6618744767048954150">Pooleli</translation>
@@ -1102,6 +1113,7 @@
 <translation id="7497215489070763236">Serveri CA-sertifikaat</translation>
 <translation id="7501957181231305652">või</translation>
 <translation id="7502658306369382406">IPv6 aadress</translation>
+<translation id="7507061649493508884">Ere <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /></translation>
 <translation id="7513770521371759388">alumine</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">Loo</translation>
@@ -1162,6 +1174,7 @@
 <translation id="7850847810298646851">Google'i AI platvormil toimiv taustapilt</translation>
 <translation id="785170686607360576">tulp</translation>
 <translation id="7856267634822906833">Bluetooth-puuteekraan</translation>
+<translation id="7859006200041800233">kaktuselill</translation>
 <translation id="7869143217755017858">Tumeda režiimi keelamine</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Teenusepakkuja tüüp</translation>
@@ -1297,6 +1310,7 @@
 <translation id="8726019395068607495">Peatatud – luuk on avatud</translation>
 <translation id="8730621377337864115">Valmis</translation>
 <translation id="8747900814994928677">Kinnita muudatus</translation>
+<translation id="8749478549112817787">Kaamera taust</translation>
 <translation id="8755946156089753497">torn</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Teenuse Google Photos album</translation>

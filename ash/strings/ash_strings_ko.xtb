@@ -30,7 +30,6 @@
 <translation id="109942774857561566">나 심심해</translation>
 <translation id="1104084341931202936">접근성 설정 표시</translation>
 <translation id="1104621072296271835">기기가 연결되면 더욱 원활하게 작동합니다</translation>
-<translation id="1106446201446919638">기기 1대가 연결되었습니다. 핫스팟을 사용하는 중에는 Wi-Fi가 사용 중지된 상태로 유지됩니다.</translation>
 <translation id="1111021433905331574">설정 &gt; <ph name="APP_TITLE" />에서 키보드 백라이트 색상을 변경할 수 있습니다.</translation>
 <translation id="1117719261843403176">모바일 데이터를 전환합니다. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">앱 표시줄 자동 숨김</translation>
@@ -428,6 +427,7 @@
 <translation id="2785499565474703580">기기 1대 연결됨</translation>
 <translation id="2791421900609674576">이전에 중단한 부분부터 계속할 수 있도록 추천 항목이 표시됩니다. 추천 항목을 삭제하려면 길게 터치하세요.</translation>
 <translation id="2792498699870441125">Alt+검색 키</translation>
+<translation id="2801954693771979815">화면 크기</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, 선택됨</translation>
 <translation id="2805756323405976993">앱</translation>
 <translation id="2814448776515246190">부분 캡처</translation>
@@ -518,7 +518,6 @@
 <translation id="316086887565479535">템플릿에 지원되지 않는 앱이 있습니다</translation>
 <translation id="3160929076476941240">2시간</translation>
 <translation id="316356270129335934"><ph name="MANAGER" />에서 <ph name="DEVICE_TYPE" /> 기기를 롤백 중입니다. 기기가 재설정되고 모든 데이터가 삭제됩니다.</translation>
-<translation id="3170769098533255179">연결된 기기가 없습니다. 핫스팟을 사용하는 중에는 Wi-Fi가 사용 중지된 상태로 유지됩니다.</translation>
 <translation id="3171170659304083361">입력 방법 설정</translation>
 <translation id="3176221688814061633">Chromebook 또는 블루투스 기기에서 이전 버전의 블루투스를 사용하고 있습니다. 오디오 품질을 개선하려면 블루투스 초해상도를 사용 설정하거나 내장 마이크를 사용하세요.</translation>
 <translation id="3181441307743005334">다시 시작하는 데 시간이 다소 걸릴 수 있습니다</translation>
@@ -553,7 +552,6 @@
 <translation id="3306386552969601301">기기 <ph name="DEVICECOUNT" />개가 <ph name="DEVICE_NAME" /> 핫스팟에 연결되어 있습니다.</translation>
 <translation id="3307642347673023554">노트북 모드로 전환됨</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" />님은 나중에도 로그인할 수 있습니다.</translation>
-<translation id="3317779231018057649">기기 <ph name="DEVICECOUNT" />대가 연결되었습니다. 핫스팟을 사용하는 중에는 Wi-Fi가 사용 중지된 상태로 유지됩니다.</translation>
 <translation id="3321628682574733415">잘못된 부모 코드</translation>
 <translation id="332827762492701193">알림이 숨겨져 있음</translation>
 <translation id="3333674550998107387"><ph name="NOTIFICATION_TITLE" /> 알림 펼치기</translation>
@@ -853,6 +851,7 @@
 <translation id="440113666232554208">스크린캐스트를 저장할 수 없음</translation>
 <translation id="4405151984121254935">지원되지 않는 유형의 주변기기가 연결되었습니다.</translation>
 <translation id="4406883609789734330">실시간 자막</translation>
+<translation id="4412698727486357573">고객센터</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> 기능이 꺼져 있습니다.</translation>
 <translation id="4424159417645388645">데스크 5</translation>
 <translation id="4430019312045809116">볼륨</translation>
@@ -893,7 +892,6 @@
 <translation id="4566144812051858745">어떤 제안에도 관심 없음</translation>
 <translation id="4569753163207712681">휴대전화의 최근 사진, 미디어, 앱 보기</translation>
 <translation id="4573176682887762361">"[단어/구문] 입력"</translation>
-<translation id="4577188182049003486">핫스팟이 사용 설정되면 Wi-Fi가 사용 중지됨</translation>
 <translation id="4577274620589681794">타이머 종료 · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">미리보기 표시</translation>
 <translation id="4578906031062871102">설정 메뉴가 열림</translation>
@@ -1015,6 +1013,7 @@
 <translation id="5003993274120026347">다음 문장</translation>
 <translation id="5004607513195820459">네트워크가 관리됨</translation>
 <translation id="5009463889040999939">프로필 이름을 변경하는 중입니다. 몇 분 정도 소요될 수 있습니다.</translation>
+<translation id="5013847959275396160">툴바 숨기기</translation>
 <translation id="5016558321564993266">마커를 전환합니다. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">카테고리 검색</translation>
 <translation id="5030659775136592441">북마크 관리자 표시</translation>
@@ -1151,7 +1150,6 @@
 <translation id="5550417424894892620">파일을 바탕화면에 드롭하여 <ph name="HOLDING_SPACE_TITLE" />에 추가세요. 바탕화면에는 파일을 추가할 수 없습니다.</translation>
 <translation id="5551456515017410630">캘린더 열기/닫기</translation>
 <translation id="5551974246223970793">페이지를 검색할 때 다음 일치 항목으로 이동</translation>
-<translation id="5555639311269196631">핫스팟 사용 중지</translation>
 <translation id="5556459405103347317">새로고침</translation>
 <translation id="5558091555391176027">Nearby Share 모든 기기에 공개 설정 전환</translation>
 <translation id="5558314826121965174">창의성</translation>
@@ -1786,6 +1784,7 @@
 <translation id="799296642788192631">중요한 파일을 고정할 수 있습니다. 항목을 고정하려면 항목 위로 마우스를 가져가거나 Files를 열고 고정할 항목을 마우스 오른쪽 버튼으로 클릭합니다.</translation>
 <translation id="7994370417837006925">멀티 로그인</translation>
 <translation id="7995804128062002838">화면을 캡처할 수 없습니다.</translation>
+<translation id="8000020256436988724">툴바</translation>
 <translation id="8000066093800657092">네트워크 없음</translation>
 <translation id="8001755249288974029">커서부터 첫 줄까지 텍스트 선택</translation>
 <translation id="8004512796067398576">올리기</translation>
@@ -1899,6 +1898,7 @@
 <translation id="847056008324733326">배율 설정 표시</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />에서 <ph name="FEATURE_NAME" /> 기능을 <ph name="FEATURE_STATE" /> 상태로 설정했습니다.</translation>
 <translation id="8477270416194247200">취소하려면 Alt+검색 또는 Shift 키를 누르세요.</translation>
+<translation id="8480418399907765580">툴바 표시</translation>
 <translation id="8487699605742506766">핫스팟</translation>
 <translation id="8491237443345908933">새 탭에서 링크 열기</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" />에서 <ph name="SPECIFIED_RESOLUTION" />을(를) 지원하지 않습니다. 해상도가 <ph name="FALLBACK_RESOLUTION" />(으)로 변경되었습니다. 변경사항을 유지하려면 확인을 클릭하세요. <ph name="TIMEOUT_SECONDS" /> 후 이전 설정으로 복원됩니다.</translation>
@@ -1984,6 +1984,7 @@
 <translation id="8834539327799336565">현재 연결된 기기</translation>
 <translation id="8841375032071747811">뒤로 버튼</translation>
 <translation id="8843682306134542540">회전 잠금을 전환합니다. <ph name="STATE_TEXT" /></translation>
+<translation id="8845001906332463065">도움말 보기</translation>
 <translation id="8849001918648564819">숨김</translation>
 <translation id="8853703225951107899">여전히 PIN 또는 비밀번호를 확인할 수 없습니다. 참고: 최근에 비밀번호를 변경한 경우 이전 비밀번호를 사용해 보세요. 로그아웃하고 나면 새로운 비밀번호가 적용됩니다.</translation>
 <translation id="8855885154700222542">전체화면 키</translation>

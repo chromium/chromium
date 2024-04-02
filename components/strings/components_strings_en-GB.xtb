@@ -1114,6 +1114,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3154987252551138431">Something went wrong while using Nearby Share</translation>
 <translation id="315504272643575312">Your account is managed by <ph name="MANAGER" />.</translation>
 <translation id="3155163173539279776">Relaunch Chromium</translation>
+<translation id="3156511682997763015">Forward 10 seconds</translation>
 <translation id="3157931365184549694">Restore</translation>
 <translation id="3158539265159265653">Disc</translation>
 <translation id="3162559335345991374">The Wi-Fi that you are using may require you to visit its login page.</translation>
@@ -1214,6 +1215,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="334438173029876234">Skateboarding Equipment</translation>
 <translation id="3347146863028219517">Skiing and snowboarding</translation>
 <translation id="3349952286488694786">SRA2</translation>
+<translation id="3350450887151703713">Replay 10 seconds</translation>
 <translation id="3352881017886802007">Sports games</translation>
 <translation id="3355823806454867987">Change proxy settings...</translation>
 <translation id="335809815767823">Exported</translation>
@@ -3053,6 +3055,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6944557544071529399">Strategy games</translation>
 <translation id="6944692733090228304">You entered your password on a site that’s not managed by <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. To protect your account, don’t reuse your password on other apps and sites.</translation>
 <translation id="6945221475159498467">Select</translation>
+<translation id="6946949206576443118">Search the web in Chrome</translation>
 <translation id="6948051842255602737">Game over; your score is <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">To see pickup methods and requirements, select an address</translation>
 <translation id="6948874830249067134">A1 x 3</translation>

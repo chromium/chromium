@@ -30,7 +30,6 @@
 <translation id="109942774857561566">ਮੈਂ ਬੋਰ ਹੋ ਚੁੱਕਾ/ਚੁੱਕੀ ਹਾਂ</translation>
 <translation id="1104084341931202936">ਪਹੁੰਚਯੋਗਤਾ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ</translation>
 <translation id="1104621072296271835">ਰਲ ਕੇ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਹੋਰ ਵੀ ਬਿਹਤਰ ਕੰਮ ਕਰਦੇ ਹਨ</translation>
-<translation id="1106446201446919638">1 ਡੀਵਾਈਸ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ। ਹੌਟਸਪੌਟ ਵਰਤਣ ਦੌਰਾਨ, ਵਾਈ-ਫਾਈ ਬੰਦ ਰਹੇਗਾ।</translation>
 <translation id="1111021433905331574">ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ &gt; <ph name="APP_TITLE" /> 'ਤੇ ਜਾ ਕੇ ਆਪਣੇ ਕੀ-ਬੋਰਡ ਬੈਕਲਾਈਟ ਦਾ ਰੰਗ ਬਦਲ ਸਕਦੇ ਹੋ</translation>
 <translation id="1117719261843403176">ਮੋਬਾਈਲ ਡਾਟੇ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE" />.</translation>
 <translation id="112308213915226829">ਸ਼ੈਲਫ ਆਟੋਲੁਕਾਓ</translation>
@@ -336,6 +335,7 @@
 <translation id="2405664212338326887">ਕਨੈਕਟ ਨਹੀਂ ਹੈ</translation>
 <translation id="2408955596600435184">ਆਪਣਾ PIN ਦਾਖਲ ਕਰੋ</translation>
 <translation id="2412593942846481727">ਅੱਪਡੇਟ ਉਪਲਬਧ ਹੈ</translation>
+<translation id="2416438829169535743">ਕੀ ਦ੍ਰਿਸ਼ ਤੋਂ ਬਾਹਰ ਜਾਣਾ ਹੈ?</translation>
 <translation id="2417486498593892439">ਨੈੱਟਵਰਕ 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="2426051945783024481">ਕੈਮਰਾ ਫ੍ਰੇਮ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਕੇਂਦਰਿਤ ਹੁੰਦਾ ਹੈ</translation>
 <translation id="2427507373259914951">ਖੱਬਾ ਕਲਿੱਕ ਕਰੋ</translation>
@@ -410,7 +410,7 @@
 <translation id="2705001408393684014">ਮਾਈਕ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">ਉੱਪਰ</translation>
 <translation id="2710984741481549981">ਵਿੰਡੋ ਨੂੰ ਲਾਕ ਕਰੋ</translation>
-<translation id="2718395828230677721">ਰਾਤ ਦੀ ਰੋਸ਼ਨੀ</translation>
+<translation id="2718395828230677721">ਨਾਈਟ ਲਾਈਟ</translation>
 <translation id="2726420622004325180">ਹੌਟਸਪੌਟ ਮੁਹੱਈਆ ਕਰਵਾਉਣ ਲਈ ਤੁਹਾਡੇ ਫ਼ੋਨ ਵਿੱਚ ਮੋਬਾਈਲ ਡਾਟਾ ਹੋਣਾ ਲਾਜ਼ਮੀ ਹੈ</translation>
 <translation id="2727175239389218057">ਜਵਾਬ ਦਿਓ</translation>
 <translation id="2727977024730340865">ਇੱਕ ਘੱਟ-ਪਾਵਰ ਦੇ ਚਾਰਜਰ ਨਾਲ ਪਲੱਗ-ਇਨ ਕੀਤਾ ਗਿਆ। ਬੈਟਰੀ ਚਾਰਜਿੰਗ ਭਰੋਸੇਯੋਗ ਨਹੀਂ ਵੀ ਹੋ ਸਕਦੀ।</translation>
@@ -427,6 +427,7 @@
 <translation id="2785499565474703580">1 ਡੀਵਾਈਸ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="2791421900609674576">ਤੁਹਾਨੂੰ ਸਿਫ਼ਾਰਸ਼ਾਂ ਦਿਖਾਈ ਦੇਣਗੀਆਂ ਤਾਂ ਜੋ ਤੁਸੀਂ ਉੱਥੋਂ ਜਾਰੀ ਰੱਖ ਸਕੋ ਜਿੱਥੇ ਤੁਸੀਂ ਛੱਡਿਆ ਸੀ।  ਤੁਸੀਂ ਸਿਫ਼ਾਰਸ਼ਾਂ ਹਟਾਉਣ ਲਈ ਸਪਰਸ਼ ਕਰ ਕੇ ਰੱਖ ਸਕਦੇ ਹੋ।</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
+<translation id="2801954693771979815">ਸਕ੍ਰੀਨ ਦਾ ਆਕਾਰ</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" /> ਨੂੰ ਚੁਣਿਆ ਗਿਆ</translation>
 <translation id="2805756323405976993">ਐਪਸ</translation>
 <translation id="2814448776515246190">ਅੰਸ਼ਕ ਕੈਪਚਰ</translation>
@@ -517,7 +518,6 @@
 <translation id="316086887565479535">ਟੈਮਪਲੇਟ ਵਿੱਚ ਅਸਮਰਥਿਤ ਐਪਾਂ</translation>
 <translation id="3160929076476941240">2 ਘੰ.</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> ਤੁਹਾਡੇ <ph name="DEVICE_TYPE" /> ਨੂੰ ਪਿਛਲੇ ਵਰਜਨ 'ਤੇ ਵਾਪਸ ਲਿਆ ਰਿਹਾ ਹੈ। ਤੁਹਾਡਾ ਡੀਵਾਈਸ ਰੀਸੈੱਟ ਹੋ ਜਾਵੇਗਾ ਅਤੇ ਸਾਰਾ ਡਾਟਾ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
-<translation id="3170769098533255179">ਕੋਈ ਡੀਵਾਈਸ ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਗਿਆ। ਹੌਟਸਪੌਟ ਵਰਤਣ ਦੌਰਾਨ, ਵਾਈ-ਫਾਈ ਬੰਦ ਰਹੇਗਾ।</translation>
 <translation id="3171170659304083361">ਇਨਪੁੱਟ ਵਿਧੀਆਂ ਦੀਆਂ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="3176221688814061633">ਤੁਹਾਡੀ Chromebook ਜਾਂ ਬਲੂਟੁੱਥ ਡੀਵਾਈਸ ਵਿੱਚ ਬਲੂਟੁੱਥ ਦੇ ਪੁਰਾਣੇ ਵਰਜਨ ਦੀ ਵਰਤੋਂ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ। ਬਿਹਤਰ ਆਡੀਓ ਕੁਆਲਿਟੀ ਲਈ ਬਲੂਟੁੱਥ ਸੁਪਰ ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਨੂੰ ਚਾਲੂ ਕਰੋ ਜਾਂ ਅੰਦਰੂਨੀ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
 <translation id="3181441307743005334">ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨ ਵਿੱਚ ਕੁਝ ਸਮਾਂ ਲੱਗ ਸਕਦਾ ਹੈ</translation>
@@ -552,7 +552,6 @@
 <translation id="3306386552969601301"><ph name="DEVICE_NAME" /> ਦੇ ਹੌਟਸਪੌਟ ਨਾਲ <ph name="DEVICECOUNT" /> ਡੀਵਾਈਸ ਕਨੈਕਟ ਹਨ</translation>
 <translation id="3307642347673023554">ਲੈਪਟਾਪ ਮੋਡ 'ਤੇ ਸਵਿੱਚ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> ਹਾਲੇ ਵੀ ਬਾਅਦ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰ ਸਕਦੇ ਹਨ।</translation>
-<translation id="3317779231018057649"><ph name="DEVICECOUNT" /> ਡੀਵਾਈਸ ਕਨੈਕਟ ਕੀਤੇ ਗਏ। ਹੌਟਸਪੌਟ ਵਰਤਣ ਦੌਰਾਨ, ਵਾਈ-ਫਾਈ ਬੰਦ ਰਹੇਗਾ।</translation>
 <translation id="3321628682574733415">ਮਾਂ-ਪਿਓ ਵਾਲਾ ਕੋਡ ਗਲਤ ਹੈ</translation>
 <translation id="332827762492701193">ਸੂਚਨਾਵਾਂ ਲੁਕੀਆਂ ਹੋਈਆਂ ਹਨ</translation>
 <translation id="3333674550998107387"><ph name="NOTIFICATION_TITLE" /> ਸੂਚਨਾ ਦਾ ਵਿਸਤਾਰ ਕਰੋ</translation>
@@ -852,6 +851,7 @@
 <translation id="440113666232554208">ਸਕ੍ਰੀਨਕਾਸਟ ਨੂੰ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="4405151984121254935">ਇਸ ਕਨੈਕਟ ਕੀਤੀ ਪੈਰੀਫੈਰਲ ਕਿਸਮ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕੀਤਾ ਜਾਂਦਾ</translation>
 <translation id="4406883609789734330">ਲਾਈਵ ਸੁਰਖੀਆਂ</translation>
+<translation id="4412698727486357573">ਮਦਦ ਕੇਂਦਰ</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ਬੰਦ ਹੈ।</translation>
 <translation id="4424159417645388645">ਡੈਸਕ 5</translation>
 <translation id="4430019312045809116">ਵੌਲਿਊਮ</translation>
@@ -892,7 +892,6 @@
 <translation id="4566144812051858745">ਕਿਸੇ ਵੀ ਸੁਝਾਅ ਵਿੱਚ ਕੋਈ ਦਿਲਚਸਪੀ ਨਹੀਂ ਹੈ</translation>
 <translation id="4569753163207712681">ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਹਾਲੀਆ ਫ਼ੋਟੋਆਂ, ਮੀਡੀਆ ਅਤੇ ਐਪਾਂ ਨੂੰ ਦੇਖੋ</translation>
 <translation id="4573176682887762361">"ਕਿਸਮ [ਸ਼ਬਦ / ਵਾਕਾਂਸ਼]"</translation>
-<translation id="4577188182049003486">ਹੌਟਸਪੌਟ ਚਾਲੂ ਹੋਣ 'ਤੇ, ਵਾਈ-ਫਾਈ ਬੰਦ ਹੋ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="4577274620589681794">ਸਮਾਂ ਸਮਾਪਤ ਹੋਇਆ · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">ਪੂਰਵ-ਝਲਕਾਂ ਦਿਖਾਓ</translation>
 <translation id="4578906031062871102">ਸੈਟਿੰਗ ਮੀਨੂ ਨੂੰ ਖੋਲ੍ਹਿਆ ਗਿਆ</translation>
@@ -1151,12 +1150,13 @@
 <translation id="5550417424894892620">ਫ਼ਾਈਲਾਂ ਨੂੰ <ph name="HOLDING_SPACE_TITLE" /> ਵਿੱਚ ਸ਼ਾਮਲ ਕਰਨ ਲਈ ਉਨ੍ਹਾਂ ਨੂੰ ਡੈਸਕਟਾਪ 'ਤੇ ਛੱਡੋ। ਤੁਸੀਂ ਡੈਸਕਟਾਪ 'ਤੇ ਫ਼ਾਈਲਾਂ ਸ਼ਾਮਲ ਨਹੀਂ ਕਰ ਸਕਦੇ।</translation>
 <translation id="5551456515017410630">ਕੈਲੰਡਰ ਨੂੰ ਖੋਲ੍ਹੋ/ਬੰਦ ਕਰੋ</translation>
 <translation id="5551974246223970793">ਕਿਸੇ ਪੰਨੇ ਨੂੰ ਖੋਜਣ ਵੇਲੇ, ਖੋਜ ਲਈ ਅਗਲੇ ਮਿਲਾਨ 'ਤੇ ਜਾਓ</translation>
-<translation id="5555639311269196631">ਹੌਟਸਪੌਟ ਬੰਦ ਕਰੋ</translation>
 <translation id="5556459405103347317">ਰੀਲੋਡ ਕਰੋ</translation>
 <translation id="5558091555391176027">'ਨਜ਼ਦੀਕੀ ਸਾਂਝ' ਉੱਚ ਦਿਖਣਯੋਗਤਾ ਨੂੰ ਟੌਗਲ ਕਰੋ</translation>
+<translation id="5558314826121965174">ਰਚਨਾਤਮਕਤਾ</translation>
 <translation id="556042886152191864">ਬਟਨ</translation>
 <translation id="5570122939431135380">ਨਵੀਂ ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋ ਵਿੱਚ ਨਵੀਂ ਟੈਬ ਖੋਲ੍ਹੋ</translation>
 <translation id="5571066253365925590">ਬਲੂਟੁੱਥ ਸਮਰਥਿਤ</translation>
+<translation id="5572632238877308040">ਲੋੜੀਂਦੀਆਂ</translation>
 <translation id="557563299383177668">ਅਗਲਾ ਪੈਰਾ</translation>
 <translation id="5577082622442191756">ਬਲੂਟੁੱਥ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">ਜਾਂਚ ਕਰੋ ਕਿ ਫ਼ੋਨ ਹੱਬ ਵਰਤਣ ਲਈ ਤੁਹਾਡੇ ਫ਼ੋਨ 'ਤੇ ਬਲੂਟੁੱਥ ਚਾਲੂ ਹੈ</translation>
@@ -1181,6 +1181,7 @@
 <translation id="5662075790140998213">ਡੈਸਕ 10</translation>
 <translation id="5662709761327382534">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਨਾਲ ਰਿਕਾਰਡ ਕਰੋ <ph name="CURRENT_STATE" />, ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਰਿਕਾਰਡਿੰਗ ਚਾਲੂ ਕਰਨ ਲਈ Enter ਦਬਾਓ <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">ਸਕਿਰਿਆ ਕਰ ਰਿਹਾ ਹੈ</translation>
+<translation id="5672890847723042801">ਉਪਯੋਗਤਾਵਾਂ</translation>
 <translation id="5673434351075758678">ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ ਸਿੰਕ ਕਰਨ ਤੋਂ ਬਾਅਦ ਭਾਸ਼ਾ "<ph name="FROM_LOCALE" />" ਤੋਂ "<ph name="TO_LOCALE" />" ਹੋਈ।</translation>
 <translation id="5675363643668471212">ਸ਼ੈਲਫ ਆਈਟਮ</translation>
 <translation id="5677928146339483299">ਬਲੌਕ ਕੀਤਾ</translation>
@@ -1362,6 +1363,7 @@
 <translation id="6351032674660237738">ਐਪ ਸੁਝਾਅ</translation>
 <translation id="6352082849089527770">ਅਗਿਆਤ ਨੈੱਟਵਰਕ</translation>
 <translation id="6359587239691116345">ਨਵੀਨਤਮ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਅਤੇ ਸੁਰੱਖਿਆ ਸੰਬੰਧੀ ਸੁਧਾਰ ਪ੍ਰਾਪਤ ਕਰੋ। ਜੇ ਤੁਸੀਂ ਇਸ ਅੱਪਡੇਟ ਨੂੰ ਅਸਵੀਕਾਰ ਕਰਦੇ ਹੋ, ਤਾਂ ਤੁਹਾਡਾ ਡੀਵਾਈਸ ਸ਼ਾਇਦ ਹੁਣ ਸਹੀ ਢੰਗ ਨਾਲ ਕੰਮ ਨਾ ਕਰੇ ਅਤੇ ਤੁਹਾਨੂੰ ਸੁਰੱਖਿਆ ਅਤੇ ਕਾਰਗੁਜ਼ਾਰੀ ਸੰਬੰਧੀ ਸਮੱਸਿਆਵਾਂ ਹੋ ਸਕਦੀਆਂ ਹਨ।</translation>
+<translation id="6362833380917912748">ਆਪਣੀਆਂ ਬਿਲਟ-ਇਨ ਐਪਾਂ ਬਾਰੇ ਜਾਣੋ</translation>
 <translation id="6376931439017688372">ਬਲੂਟੁੱਥ ਚਾਲੂ ਹੈ</translation>
 <translation id="6378515133128829137">ਵਿੰਡੋ ਨੂੰ ਸੱਜੇ ਪਾਸੇ ਪਿੰਨ ਕਰੋ</translation>
 <translation id="6381109794406942707">ਡੀਵਾਈਸ ਨੂੰ ਅਣਲਾਕ ਕਰਨ ਲਈ, ਆਪਣਾ ਪਿੰਨ ਦਾਖਲ ਕਰੋ।</translation>
@@ -1782,6 +1784,7 @@
 <translation id="799296642788192631">ਤੁਸੀਂ ਮਹੱਤਵਪੂਰਨ ਫ਼ਾਈਲਾਂ ਨੂੰ ਪਿੰਨ ਕਰ ਸਕਦੇ ਹੋ। ਪਿੰਨ ਕਰਨ ਲਈ, ਕਰਸਰ ਨੂੰ ਕਿਸੇ ਆਈਟਮ ਦੇ ਉੱਤੇ ਘੁੰਮਾਓ ਜਾਂ ਫ਼ਾਈਲਾਂ ਖੋਲ੍ਹੋ ਅਤੇ ਉਸ ਆਈਟਮ 'ਤੇ ਸੱਜਾ-ਕਲਿਕ ਕਰੋ।</translation>
 <translation id="7994370417837006925">ਬਹੁ-ਗਿਣਤੀ ਸਾਈਨ-ਇਨ</translation>
 <translation id="7995804128062002838">ਸਕ੍ਰੀਨ ਨੂੰ ਕੈਪਚਰ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ</translation>
+<translation id="8000020256436988724">ਟੂਲਬਾਰ</translation>
 <translation id="8000066093800657092">ਕੋਈ ਨੈੱਟਵਰਕ ਨਹੀਂ</translation>
 <translation id="8001755249288974029">ਕਰਸਰ ਤੋਂ ਲਾਈਨ ਦੀ ਸ਼ੁਰੂਆਤ ਤੱਕ ਲਿਖਤ ਚੁਣੋ</translation>
 <translation id="8004512796067398576">ਵਧਾਓ</translation>
@@ -1848,6 +1851,7 @@
 <translation id="8262312463845990408">ਪਲੇਬੈਕ ਨੂੰ ਟੌਗਲ ਕਰੋ</translation>
 <translation id="8270450402312105425">{0,plural, =1{ਡੀਵਾਈਸ ਨੂੰ ਇੱਕ ਘੰਟੇ ਵਿੱਚ ਹੀ ਪਿਛਲੇ ਵਰਜਨ 'ਤੇ ਬਦਲੋ}one{ਡੀਵਾਈਸ ਨੂੰ # ਘੰਟੇ ਵਿੱਚ ਹੀ ਪਿਛਲੇ ਵਰਜਨ 'ਤੇ ਬਦਲੋ}other{ਡੀਵਾਈਸ ਨੂੰ # ਘੰਟਿਆਂ ਵਿੱਚ ਹੀ ਪਿਛਲੇ ਵਰਜਨ 'ਤੇ ਬਦਲੋ}}</translation>
 <translation id="8277261673056602147">ਆਪਣੀ ਸਕ੍ਰੀਨ 'ਤੇ ਲਿਖਤ ਨੂੰ ਉਜਾਗਰ ਕਰੋ</translation>
+<translation id="8287009018010202411">ਉਤਪਾਦਕਤਾ</translation>
 <translation id="828708037801473432">ਬੰਦ</translation>
 <translation id="8297006494302853456">ਕਮਜ਼ੋਰ</translation>
 <translation id="8308637677604853869">ਪਿਛਲਾ ਮੀਨੂ</translation>
@@ -1919,6 +1923,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">ਆਪਣੀਆਂ ਐਪਾਂ ਨੂੰ ਨਾਮ ਜਾਂ ਰੰਗ ਮੁਤਾਬਕ ਕ੍ਰਮ-ਬੱਧ ਕਰੋ</translation>
 <translation id="8609384513243082612">ਨਵੀਂ ਟੈਬ ਖੋਲ੍ਹੋ</translation>
+<translation id="861045123704058818">ਐਪਾਂ ਨੂੰ ਕੁਝ ਸਮੇਂ ਲਈ ਸ਼੍ਰੇਣੀ ਮੁਤਾਬਕ ਵਿਵਸਥਿਤ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="8612216344243590325">ਮਹੱਤਵਪੂਰਨ ਫ਼ਾਈਲਾਂ ਨੂੰ ਡੈਸਕਟਾਪ 'ਤੇ ਰੱਖਣ ਦੀ ਬਜਾਏ ਉਨ੍ਹਾਂ ਨੂੰ <ph name="HOLDING_SPACE_TITLE" /> ਵਿੱਚ ਰੱਖੋ। ਬਸ ਫ਼ਾਈਲਾਂ ਨੂੰ <ph name="HOLDING_SPACE_TITLE" /> 'ਤੇ ਘਸੀਟੋ।</translation>
 <translation id="8614517853887502247"><ph name="APP_1_TITLE" /> ਅਤੇ <ph name="APP_2_TITLE" /> ਸੂਚਨਾਵਾਂ ਲੁਕੀਆਂ ਹੋਈਆਂ ਹਨ ਕਿਉਂਕਿ ਦੇਖਣ ਸੰਬੰਧੀ ਸੁਰੱਖਿਆ ਚਾਲੂ ਹੈ</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1957,6 +1962,7 @@
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ: <ph name="ORIGIN_NAME" /> ਤੁਹਾਡੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨਾ ਚਾਹੁੰਦੀ ਹੈ</translation>
 <translation id="875593634123171288">VPN ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ</translation>
+<translation id="8756799553341497810">ਇਸ ਦ੍ਰਿਸ਼ ਤੋਂ ਬਾਹਰ ਜਾਣ ਤੋਂ ਬਾਅਦ, ਤੁਸੀਂ ਆਪਣੀ ਐਪ ਦੇ ਖਾਕੇ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰਨਾ ਸ਼ੁਰੂ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="8759408218731716181">ਬਹੁ-ਗਿਣਤੀ ਸਾਈਨ-ਇਨ ਸੈੱਟ ਅੱਪ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="8763883995157866248">ਡੀਵਾਈਸ ਨੂੰ ਸਲੀਪ ਮੋਡ ਵਿੱਚ ਰੱਖੋ</translation>
 <translation id="877404052021108314">C ਵਿੱਚ 90°F</translation>
@@ -1977,6 +1983,7 @@
 <translation id="8834539327799336565">ਇਸ ਵੇਲੇ ਕਨੈਕਟ ਹੈ</translation>
 <translation id="8841375032071747811">'ਪਿੱਛੇ' ਬਟਨ</translation>
 <translation id="8843682306134542540">ਘੁਮਾਅ ਸੰਬੰਧੀ ਲਾਕ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" /></translation>
+<translation id="8845001906332463065">ਮਦਦ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="8849001918648564819">ਲੁਕੀ ਹੋਈ</translation>
 <translation id="8853703225951107899">ਤੁਹਾਡੇ ਪਿੰਨ ਜਾਂ ਪਾਸਵਰਡ ਦੀ ਹਾਲੇ ਵੀ ਪੁਸ਼ਟੀ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ। ਨੋਟ ਕਰੋ: ਜੇ ਤੁਸੀਂ ਹਾਲ ਹੀ ਵਿੱਚ ਆਪਣਾ ਪਾਸਵਰਡ ਬਦਲਿਆ ਹੈ, ਤਾਂ ਆਪਣਾ ਪੁਰਾਣਾ ਪਾਸਵਰਡ ਵਰਤੋ। ਇੱਕ ਵਾਰ ਸਾਈਨ-ਆਊਟ ਕਰਨ 'ਤੇ ਤੁਹਾਡਾ ਨਵਾਂ ਪਾਸਵਰਡ ਲਾਗੂ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="8855885154700222542">ਪੂਰੀ-ਸਕ੍ਰੀਨ ਕੁੰਜੀ</translation>

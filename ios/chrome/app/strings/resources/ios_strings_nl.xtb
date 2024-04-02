@@ -1183,6 +1183,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="6989674195860388998">Aanpassen in Instellingen…</translation>
 <translation id="6998989275928107238">Aan</translation>
 <translation id="699954956411469731">Mobiele meldingen</translation>
+<translation id="699985840472413751">Download sluiten</translation>
 <translation id="7004032350256606903">Je organisatie vereist dat je privé browst.
 <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Recent gebruikte tabbladen</translation>
@@ -1472,6 +1473,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="850600235656508448">Openen in incognitomodus</translation>
 <translation id="8517375800490286174">Opensource-licenties</translation>
 <translation id="8522147671363140027">{count,plural, =1{{count} wachtwoord en andere items worden alleen op dit apparaat opgeslagen. Als je ze op je andere apparaten wilt gebruiken, sla je ze op in je Google-account, {email}.}other{{count} wachtwoorden en andere items worden alleen op dit apparaat opgeslagen. Als je ze op je andere apparaten wilt gebruiken, sla je ze op in je Google-account, {email}.}}</translation>
+<translation id="8522813812888400223">Download annuleren</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" />-tabbladen <ph name="FIRST_VISIBLE_TAB" /> tot <ph name="LAST_VISIBLE_TAB" /> van <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="852576975834694248">Je wordt uitgelogd en tabbladen worden gesloten</translation>
 <translation id="8528009254289981965">Links vanuit andere apps openen in de incognitomodus</translation>

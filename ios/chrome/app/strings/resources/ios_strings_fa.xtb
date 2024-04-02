@@ -1183,6 +1183,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6989674195860388998">تغییر در «تنظیمات»…</translation>
 <translation id="6998989275928107238">به</translation>
 <translation id="699954956411469731">اعلان‌های تلفن همراه</translation>
+<translation id="699985840472413751">بستن بارگیری</translation>
 <translation id="7004032350256606903">سازمانتان از شما می‌خواهد به‌طور خصوصی مرور کنید.
 <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">برگه‌های جدید</translation>
@@ -1472,6 +1473,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="850600235656508448">باز کردن در حالت ناشناس</translation>
 <translation id="8517375800490286174">مجوزهای منبع باز</translation>
 <translation id="8522147671363140027">{count,plural, =1{‏‫{count} گذرواژه و موارد دیگر فقط در این دستگاه ذخیره شده‌اند. برای استفاده از آن‌ها در دستگاه‌های دیگرتان، آن‌ها را در «حساب Google» خود ({email}) ذخیره کنید.}one{‏‫{count} گذرواژه و موارد دیگر فقط در این دستگاه ذخیره شده‌اند. برای استفاده از آن در دستگاه‌های دیگرتان، آن را در «حساب Google» خود ({email}) ذخیره کنید.}other{‏‫{count} گذرواژه و موارد دیگر فقط در این دستگاه ذخیره شده‌اند. برای استفاده از آن‌ها در دستگاه‌های دیگرتان، آن‌ها را در «حساب Google» خود ({email}) ذخیره کنید.}}</translation>
+<translation id="8522813812888400223">لغو بارگیری</translation>
 <translation id="8524799873541103884">برگه‌های <ph name="INCOGNITO" />،‏ <ph name="FIRST_VISIBLE_TAB" /> تا <ph name="LAST_VISIBLE_TAB" /> از <ph name="NUMBER_OF_OPEN_TABS" /> برگه</translation>
 <translation id="852576975834694248">از سیستم خارج خواهید شد و برگه‌ها بسته خواهد شد</translation>
 <translation id="8528009254289981965">باز کردن پیوندهای دیگر برنامه‌ها در حالت ناشناس</translation>

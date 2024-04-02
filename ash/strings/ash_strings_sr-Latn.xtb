@@ -30,7 +30,6 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="109942774857561566">Dosadno mi je</translation>
 <translation id="1104084341931202936">Pregledajte podešavanja pristupačnosti</translation>
 <translation id="1104621072296271835">Uređaji zajedno funkcionišu još bolje</translation>
-<translation id="1106446201446919638">1 uređaj je povezan. Kada koristite hotspot, WiFi ostaje isključen.</translation>
 <translation id="1111021433905331574">Boju pozadinskog osvetljenja tastature možete da promenite u podešavanjima &gt; <ph name="APP_TITLE" /></translation>
 <translation id="1117719261843403176">Uključi ili isključi mobilne podatke. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">Automatski sakrij policu</translation>
@@ -428,6 +427,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2785499565474703580">1 uređaj je povezan</translation>
 <translation id="2791421900609674576">Videćete preporuke da biste mogli da nastavite tamo gde ste stali.  Možete da dodirnete i zadržite da biste uklonili preporuke.</translation>
 <translation id="2792498699870441125">Alt + taster za pretragu</translation>
+<translation id="2801954693771979815">Veličina ekrana</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, izabrano je</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="2814448776515246190">Delimično snimanje</translation>
@@ -518,7 +518,6 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="316086887565479535">Nepodržane aplikacije u šablonu</translation>
 <translation id="3160929076476941240">2 s</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> vraća <ph name="DEVICE_TYPE" /> na prethodnu verziju. Uređaj će se resetovati i svi podaci će biti izbrisani.</translation>
-<translation id="3170769098533255179">Nijedan uređaj nije povezan. Kada koristite hotspot, WiFi ostaje isključen.</translation>
 <translation id="3171170659304083361">Podešavanja metoda unosa</translation>
 <translation id="3176221688814061633">Chromebook ili Bluetooth uređaj koristi stariju verziju Bluetooth-a. Uključite Bluetooth super rezoluciju ili koristite interni mikrofon za bolji kvalitet zvuka.</translation>
 <translation id="3181441307743005334">Restartovanje može da potraje</translation>
@@ -553,7 +552,6 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="3306386552969601301">Uspostavljena je veza između <ph name="DEVICECOUNT" /> uređaja i <ph name="DEVICE_NAME" /> hotspota</translation>
 <translation id="3307642347673023554">Prešli ste u režim laptopa</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> će i dalje moći da se prijavi kasnije.</translation>
-<translation id="3317779231018057649">Povezanih uređaja: <ph name="DEVICECOUNT" />. Kada koristite hotspot, WiFi ostaje isključen.</translation>
 <translation id="3321628682574733415">Netačan kôd roditelja</translation>
 <translation id="332827762492701193">Obaveštenja su sakrivena</translation>
 <translation id="3333674550998107387">Proširi obaveštenje <ph name="NOTIFICATION_TITLE" /></translation>
@@ -854,6 +852,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="440113666232554208">Čuvanje video snimka ekrana nije uspelo</translation>
 <translation id="4405151984121254935">Tip povezanog perifernog uređaja nije podržan</translation>
 <translation id="4406883609789734330">Titl uživo</translation>
+<translation id="4412698727486357573">Centar za pomoć</translation>
 <translation id="4412944820643904175">Funkcija <ph name="FEATURE_NAME" /> je isključena.</translation>
 <translation id="4424159417645388645">Radna površina 5</translation>
 <translation id="4430019312045809116">Jačina zvuka</translation>
@@ -894,7 +893,6 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="4566144812051858745">Ne zanimaju me nikakvi predlozi</translation>
 <translation id="4569753163207712681">Pregledajte nedavne slike, medije i aplikacije na telefonu</translation>
 <translation id="4573176682887762361">„Unesi [reč ili fraza]“</translation>
-<translation id="4577188182049003486">Kada je hotspot uključen, WiFi je isključen</translation>
 <translation id="4577274620589681794">Vreme je isteklo · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Prikaži preglede</translation>
 <translation id="4578906031062871102">Meni Podešavanja je otvoren</translation>
@@ -1016,6 +1014,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="5003993274120026347">Sledeća rečenica</translation>
 <translation id="5004607513195820459">Mrežom se upravlja</translation>
 <translation id="5009463889040999939">Menja se ime profila. To može da potraje nekoliko minuta.</translation>
+<translation id="5013847959275396160">Sakrij traku s alatkama</translation>
 <translation id="5016558321564993266">Uključite/isključite marker. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Kategorije pretrage</translation>
 <translation id="5030659775136592441">Prikažite menadžer obeleživača</translation>
@@ -1152,7 +1151,6 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="5550417424894892620">Otpustite fajlove na pozadini da biste ih dodali u <ph name="HOLDING_SPACE_TITLE" />. Ne možete da dodajete fajlove na pozadini.</translation>
 <translation id="5551456515017410630">Otvori ili zatvori kalendar</translation>
 <translation id="5551974246223970793">Pri pretraživanju stranice idi na sledeće podudaranje za pretragu</translation>
-<translation id="5555639311269196631">Isključi hotspot</translation>
 <translation id="5556459405103347317">Učitaj ponovo</translation>
 <translation id="5558091555391176027">Uključite ili isključite veliku vidljivost Deljenja u blizini</translation>
 <translation id="5558314826121965174">Kreativnost</translation>
@@ -1788,6 +1786,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="799296642788192631">Možete da zakačite važne fajlove. Da biste zakačili fajl, pređite kursorom preko stavke ili otvorite Fajlovi i kliknite desnim tasterom na stavku.</translation>
 <translation id="7994370417837006925">Višestruko prijavljivanje</translation>
 <translation id="7995804128062002838">Snimanje ekrana nije uspelo</translation>
+<translation id="8000020256436988724">Traka s alatkama</translation>
 <translation id="8000066093800657092">Nema mreže</translation>
 <translation id="8001755249288974029">Izaberi tekst od kursora do početka reda</translation>
 <translation id="8004512796067398576">Povećanje</translation>
@@ -1901,6 +1900,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="847056008324733326">Podešavanja razmere prikaza</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> – <ph name="FEATURE_STATE" />: <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Pritisnite Alt + taster za pretragu ili Shift da biste otkazali.</translation>
+<translation id="8480418399907765580">Prikaži traku s alatkama</translation>
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8491237443345908933">Otvori link na novoj kartici</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> ne podržava rezoluciju <ph name="SPECIFIED_RESOLUTION" />. Rezolucija je promenjena u <ph name="FALLBACK_RESOLUTION" />. Kliknite na Potvrdi da biste zadržali promene. Prethodna podešavanja će biti vraćena za <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -1986,6 +1986,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8834539327799336565">Trenutno povezani</translation>
 <translation id="8841375032071747811">Dugme Nazad</translation>
 <translation id="8843682306134542540">Uključite/isključite zaključavanje rotacije. <ph name="STATE_TEXT" /></translation>
+<translation id="8845001906332463065">Zatražite pomoć</translation>
 <translation id="8849001918648564819">Skriveno</translation>
 <translation id="8853703225951107899">Verifikacija PIN-a ili lozinke još uvek nije uspela. Napomena: Ako ste nedavno promenili lozinku, koristite staru. Nova lozinka će biti primenjena kada se odjavite.</translation>
 <translation id="8855885154700222542">Taster za ceo ekran</translation>

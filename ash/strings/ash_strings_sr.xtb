@@ -30,7 +30,6 @@
 <translation id="109942774857561566">Досадно ми је</translation>
 <translation id="1104084341931202936">Прегледајте подешавања приступачности</translation>
 <translation id="1104621072296271835">Уређаји заједно функционишу још боље</translation>
-<translation id="1106446201446919638">1 уређај је повезан. Када користите хотспот, WiFi остаје искључен.</translation>
 <translation id="1111021433905331574">Боју позадинског осветљења тастатуре можете да промените у подешавањима &gt; <ph name="APP_TITLE" /></translation>
 <translation id="1117719261843403176">Укључи или искључи мобилне податке. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">Аутоматски сакриј полицу</translation>
@@ -428,6 +427,7 @@
 <translation id="2785499565474703580">1 уређај је повезан</translation>
 <translation id="2791421900609674576">Видећете препоруке да бисте могли да наставите тамо где сте стали.  Можете да додирнете и задржите да бисте уклонили препоруке.</translation>
 <translation id="2792498699870441125">Alt + тастер за претрагу</translation>
+<translation id="2801954693771979815">Величина екрана</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, изабрано је</translation>
 <translation id="2805756323405976993">Апликације</translation>
 <translation id="2814448776515246190">Делимично снимање</translation>
@@ -518,7 +518,6 @@
 <translation id="316086887565479535">Неподржане апликације у шаблону</translation>
 <translation id="3160929076476941240">2 с</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> враћа <ph name="DEVICE_TYPE" /> на претходну верзију. Уређај ће се ресетовати и сви подаци ће бити избрисани.</translation>
-<translation id="3170769098533255179">Ниједан уређај није повезан. Када користите хотспот, WiFi остаје искључен.</translation>
 <translation id="3171170659304083361">Подешавања метода уноса</translation>
 <translation id="3176221688814061633">Chromebook или Bluetooth уређај користи старију верзију Bluetooth-а. Укључите Bluetooth супер резолуцију или користите интерни микрофон за бољи квалитет звука.</translation>
 <translation id="3181441307743005334">Рестартовање може да потраје</translation>
@@ -553,7 +552,6 @@
 <translation id="3306386552969601301">Успостављена је веза између <ph name="DEVICECOUNT" /> уређаја и <ph name="DEVICE_NAME" /> хотспота</translation>
 <translation id="3307642347673023554">Прешли сте у режим лаптопа</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> ће и даље моћи да се пријави касније.</translation>
-<translation id="3317779231018057649">Повезаних уређаја: <ph name="DEVICECOUNT" />. Када користите хотспот, WiFi остаје искључен.</translation>
 <translation id="3321628682574733415">Нетачан кôд родитеља</translation>
 <translation id="332827762492701193">Обавештења су сакривена</translation>
 <translation id="3333674550998107387">Прошири обавештење <ph name="NOTIFICATION_TITLE" /></translation>
@@ -854,6 +852,7 @@
 <translation id="440113666232554208">Чување видео снимка екрана није успело</translation>
 <translation id="4405151984121254935">Тип повезаног периферног уређаја није подржан</translation>
 <translation id="4406883609789734330">Титл уживо</translation>
+<translation id="4412698727486357573">Центар за помоћ</translation>
 <translation id="4412944820643904175">Функција <ph name="FEATURE_NAME" /> је искључена.</translation>
 <translation id="4424159417645388645">Радна површина 5</translation>
 <translation id="4430019312045809116">Јачина звука</translation>
@@ -894,7 +893,6 @@
 <translation id="4566144812051858745">Не занимају ме никакви предлози</translation>
 <translation id="4569753163207712681">Прегледајте недавне слике, медије и апликације на телефону</translation>
 <translation id="4573176682887762361">„Унеси [реч или фраза]“</translation>
-<translation id="4577188182049003486">Када је хотспот укључен, WiFi је искључен</translation>
 <translation id="4577274620589681794">Време је истекло · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Прикажи прегледе</translation>
 <translation id="4578906031062871102">Мени Подешавања је отворен</translation>
@@ -1016,6 +1014,7 @@
 <translation id="5003993274120026347">Следећа реченица</translation>
 <translation id="5004607513195820459">Мрежом се управља</translation>
 <translation id="5009463889040999939">Мења се име профила. То може да потраје неколико минута.</translation>
+<translation id="5013847959275396160">Сакриј траку с алаткама</translation>
 <translation id="5016558321564993266">Укључите/искључите маркер. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Категорије претраге</translation>
 <translation id="5030659775136592441">Прикажите менаџер обележивача</translation>
@@ -1152,7 +1151,6 @@
 <translation id="5550417424894892620">Отпустите фајлове на позадини да бисте их додали у <ph name="HOLDING_SPACE_TITLE" />. Не можете да додајете фајлове на позадини.</translation>
 <translation id="5551456515017410630">Отвори или затвори календар</translation>
 <translation id="5551974246223970793">При претраживању странице иди на следеће подударање за претрагу</translation>
-<translation id="5555639311269196631">Искључи хотспот</translation>
 <translation id="5556459405103347317">Учитај поново</translation>
 <translation id="5558091555391176027">Укључите или искључите велику видљивост Дељења у близини</translation>
 <translation id="5558314826121965174">Креативност</translation>
@@ -1788,6 +1786,7 @@
 <translation id="799296642788192631">Можете да закачите важне фајлове. Да бисте закачили фајл, пређите курсором преко ставке или отворите Фајлови и кликните десним тастером на ставку.</translation>
 <translation id="7994370417837006925">Вишеструко пријављивање</translation>
 <translation id="7995804128062002838">Снимање екрана није успело</translation>
+<translation id="8000020256436988724">Трака с алаткама</translation>
 <translation id="8000066093800657092">Нема мреже</translation>
 <translation id="8001755249288974029">Изабери текст од курсора до почетка реда</translation>
 <translation id="8004512796067398576">Повећање</translation>
@@ -1901,6 +1900,7 @@
 <translation id="847056008324733326">Подешавања размере приказа</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> – <ph name="FEATURE_STATE" />: <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Притисните Alt + тастер за претрагу или Shift да бисте отказали.</translation>
+<translation id="8480418399907765580">Прикажи траку с алаткама</translation>
 <translation id="8487699605742506766">Хотспот</translation>
 <translation id="8491237443345908933">Отвори линк на новој картици</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> не подржава резолуцију <ph name="SPECIFIED_RESOLUTION" />. Резолуција је промењена у <ph name="FALLBACK_RESOLUTION" />. Кликните на Потврди да бисте задржали промене. Претходна подешавања ће бити враћена за <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -1986,6 +1986,7 @@
 <translation id="8834539327799336565">Тренутно повезани</translation>
 <translation id="8841375032071747811">Дугме Назад</translation>
 <translation id="8843682306134542540">Укључите/искључите закључавање ротације. <ph name="STATE_TEXT" /></translation>
+<translation id="8845001906332463065">Затражите помоћ</translation>
 <translation id="8849001918648564819">Скривено</translation>
 <translation id="8853703225951107899">Верификација PIN-а или лозинке још увек није успела. Напомена: Ако сте недавно променили лозинку, користите стару. Нова лозинка ће бити примењена када се одјавите.</translation>
 <translation id="8855885154700222542">Тастер за цео екран</translation>

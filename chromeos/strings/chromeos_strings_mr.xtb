@@ -271,6 +271,7 @@
 <translation id="2446553403094072641">फ्लोटिंग पॉइंटची अचूकता</translation>
 <translation id="2448312741937722512">प्रकार</translation>
 <translation id="2465272316171730950">आमची क्षमता संपली आहे. कृपया काही वेळाने परत या.</translation>
+<translation id="2472215337771558851">मसुदा तयार करण्यासाठी किंवा सध्याच्या कामामध्ये सुधारणा करण्यासाठी Google AI द्वारे सक्षम केलेले मला लिहिण्यात मदत करा वापरा</translation>
 <translation id="2480572840229215612">खेकडे</translation>
 <translation id="248546197012830854">डिव्हाइस ऑफलाइन आहे. मदत आशय पाहण्यासाठी वाय-फायशी कनेक्ट करा.</translation>
 <translation id="2486301288428798846">लाकूड</translation>
@@ -328,10 +329,12 @@
 <translation id="2860473693272905224">स्कॅनरवर दुसरे पेज ठेवा</translation>
 <translation id="2872961005593481000">बंद करा</translation>
 <translation id="2873483161362553159">ब्राउझर नेव्हिगेशन</translation>
+<translation id="2873939192640533085">"लिखाणामध्ये आणखी आत्मविश्वास दिसू द्या" यासारखा प्रॉम्प्ट एंटर करा</translation>
 <translation id="2874939134665556319">मागील ट्रॅक</translation>
 <translation id="2875812231449496375">सर्वोत्तम परिणामांसाठी या वॉलपेपरसह हा मोड सुरू करा. तुम्ही हे सेटिंग कधीही बंद करू शकता.</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> सेकंदामध्ये <ph name="RATE" /> डिस्चार्ज झाले.</translation>
 <translation id="2880569433548999039">क्लाउड फ्लो स्क्रीन सेव्हर</translation>
+<translation id="2888298276507578975">"आभारपत्र लिहा" यासारखा प्रॉम्प्ट एंटर करा</translation>
 <translation id="2890557891229184386">उष्णकटिबंधीय बेट</translation>
 <translation id="2895772081848316509">गडद</translation>
 <translation id="2926057806159140518">तुमचे वापरकर्ता नाव आणि पासवर्ड एंटर करा किंवा तुमचा QR कोड स्कॅन करा</translation>
@@ -376,6 +379,7 @@
 <translation id="3226405216343213872">स्कॅनर शोधत आहे</translation>
 <translation id="3226657629376379887">लेआउट अ‍ॅक्‍शन मेनू</translation>
 <translation id="3227186760713762082"><ph name="CONVERSION_RATE" /> ने <ph name="CATEGORY_TEXT" /> मूल्याचा भागाकार करा</translation>
+<translation id="3237710083340813756">पुन्हा लिहा</translation>
 <translation id="3246869037381808805">एक दिवसापेक्षा जुने प्रिंट जॉब काढून टाकले जातील</translation>
 <translation id="324961752321393509">तुमचा अ‍ॅडमिनिस्ट्रेटर हे अ‍ॅप बंद करण्याची अनुमती देत नाही</translation>
 <translation id="3268178239013324452">अयशस्वी झाले - दार उघडे आहे</translation>
@@ -414,6 +418,7 @@
 <translation id="346539236881580388">पुन्हा काढा</translation>
 <translation id="3484914941826596830">फर्मवेअर अपडेट होत असताना, हे बाह्य डिव्हाइस अनप्लग करू नका किंवा तुमचा कॉंप्युटर बंद करू नका. तुम्ही ही विंडो लहान करू शकता. या अपडेटला काही मिनिटे लागू शकतात आणि या कालावधीदरम्यान तुमचे बाह्य डिव्हाइस कदाचित काम करणार नाही.</translation>
 <translation id="3486220673238053218">परिभाषा</translation>
+<translation id="3487866404496702283">माहि वैशिष्ट्य यासंबंधित फीडबॅक द्या</translation>
 <translation id="3488065109653206955">आंशिक रूपात सक्रिय </translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> टोन असलेले <ph name="OFFICE_STYLE" /> कार्यालय</translation>
 <translation id="3493187369049186498">तुमच्या Chromebook द्वारे डेटाचे मापन केले जाते. हा पुरवठादाराच्या डेटापेक्षा वेगळा असू शकतो.</translation>
@@ -442,6 +447,7 @@
 <translation id="3621072146987826699">हत्ती</translation>
 <translation id="3632579075709132555">गोपनीयता स्क्रीन टॉगल करा</translation>
 <translation id="3651050199673793219">तापमान युनिट निवडा</translation>
+<translation id="3661106764436337772">जलद आणि अधिक आत्मविश्वासाने लिहा</translation>
 <translation id="3662461537616691585">बर्गंडी आणि मरून</translation>
 <translation id="3668449597372804501">क्लाउड फ्लो वॉलपेपर</translation>
 <translation id="3675132884790542448">डुकरे</translation>
@@ -585,6 +591,7 @@
 <translation id="4503441351962730761">आधुनिक कला</translation>
 <translation id="4507392511610824664">ब्राइटनेस वाढवा</translation>
 <translation id="4511264077854731334">पोर्टल</translation>
+<translation id="4513946894732546136">फीडबॅक</translation>
 <translation id="4521826082652183069">विषयाच्या पर्यायी नावाची जुळणी</translation>
 <translation id="4522570452068850558">तपशील</translation>
 <translation id="4536864596629708641">आयपी कॉन्फिगरेशन</translation>
@@ -757,6 +764,7 @@
 <translation id="5543701552415191873">लॉक केले आहे</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">सूर्यास्ताच्या वेळी आपोआप गडद थीमवर स्विच करा</translation>
+<translation id="556042886152191864">बटण</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_COLOR" /> च्या रंगछटांमध्ये <ph name="TERRAIN_FEATURE" /></translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">पुन्हा स्कॅन करा</translation>
@@ -875,6 +883,7 @@
 <translation id="6235460611964961764">डेटा वापर मॅन्युअली रीसेट करा</translation>
 <translation id="6243280677745499710">सध्या सेट केला आहे</translation>
 <translation id="6250316632541035980">बेकन आणि अंडी</translation>
+<translation id="6255213378196499011">मला लिहिण्यात मदत करा यासंबंधित सेटिंग्ज</translation>
 <translation id="6275224645089671689">राइट अ‍ॅरो</translation>
 <translation id="6278428485366576908">थीम</translation>
 <translation id="6280912520669706465">ARC</translation>

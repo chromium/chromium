@@ -30,7 +30,6 @@
 <translation id="109942774857561566">నాకు ఏమీ తోచడం లేదు</translation>
 <translation id="1104084341931202936">యాక్సెసిబిలిటీ సెట్టింగ్‌లను చూపుతుంది</translation>
 <translation id="1104621072296271835">మీ పరికరాలు కలిసికట్టుగా మరింత బాగా పనిచేస్తాయి</translation>
-<translation id="1106446201446919638">1 పరికరం కనెక్ట్ అయింది. హాట్‌స్పాట్ ఉపయోగిస్తున్నప్పుడు, Wi-Fi ఆఫ్‌లో ఉంటుంది.</translation>
 <translation id="1111021433905331574">మీరు మీ కీబోర్డ్ బ్యాక్‌లైట్ రంగును సెట్టింగ్‌లు &gt; <ph name="APP_TITLE" />‌లో మార్చవచ్చు</translation>
 <translation id="1117719261843403176">మొబైల్ డేటాను టోగుల్ చేయండి. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">అరను ఆటోమేటిక్‌గా దాచు</translation>
@@ -336,6 +335,7 @@
 <translation id="2405664212338326887">కనెక్ట్ చేయబడలేదు</translation>
 <translation id="2408955596600435184">మీ PINని నమోదు చేయండి</translation>
 <translation id="2412593942846481727">అప్‌డేట్ అందుబాటులో ఉంది</translation>
+<translation id="2416438829169535743">వీక్షణ నుండి ఎగ్జిట్ అవ్వాలా?</translation>
 <translation id="2417486498593892439">నెట్‌వర్క్‌కు సైన్ ఇన్ చేయండి</translation>
 <translation id="2426051945783024481">కెమెరా ఫ్రేమ్ ఆటోమేటిక్‌గా మధ్యలో ఉంటుంది</translation>
 <translation id="2427507373259914951">ఎడమ క్లిక్</translation>
@@ -427,6 +427,7 @@
 <translation id="2785499565474703580">1 పరికరం కనెక్ట్ అయింది</translation>
 <translation id="2791421900609674576">మీకు సిఫార్సులు కనిపిస్తాయి, కాబట్టి మీరు ఆపివేసిన చోటు నుండే కొనసాగించవచ్చు.  మీరు తాకి, నొక్కి ఉంచి, సిఫార్సులను తీసివేయవచ్చు.</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
+<translation id="2801954693771979815">స్క్రీన్ సైజ్‌</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />ను ఎంచుకున్నారు</translation>
 <translation id="2805756323405976993">యాప్స్</translation>
 <translation id="2814448776515246190">పాక్షికంగా క్యాప్చర్ చేయండి</translation>
@@ -517,7 +518,6 @@
 <translation id="316086887565479535">టెంప్లేట్‌లో సపోర్ట్ చేయని యాప్‌లు</translation>
 <translation id="3160929076476941240">2గం</translation>
 <translation id="316356270129335934"><ph name="MANAGER" />, మీ <ph name="DEVICE_TYPE" />ను దాని పాత వెర్షన్‌కు మారుస్తున్నారు. మీ పరికరం రీసెట్ చేయబడుతుంది, ఇంకా మొత్తం డేటా తొలగించబడుతుంది.</translation>
-<translation id="3170769098533255179">పరికరాలు ఏవీ కనెక్ట్ కాలేదు. హాట్‌స్పాట్ ఉపయోగిస్తున్నప్పుడు, Wi-Fi ఆఫ్‌లో ఉంటుంది.</translation>
 <translation id="3171170659304083361">ఇన్‌పుట్ విధానాల సెట్టింగ్‌లు</translation>
 <translation id="3176221688814061633">మీ Chromebook లేదా బ్లూటూత్ పరికరం, బ్లూటూత్ పాత వెర్షన్‌ను ఉపయోగిస్తున్నాయి. మెరుగైన ఆడియో క్వాలిటీ కోసం బ్లూటూత్ సూపర్ రిజల్యూషన్‌ను ఆన్ చేయండి లేదా అంతర్గత మైక్రోఫోన్‌ను ఉపయోగించండి.</translation>
 <translation id="3181441307743005334">రీస్టార్ట్ చేయడానికి కొంత సమయం పట్టవచ్చు</translation>
@@ -552,7 +552,6 @@
 <translation id="3306386552969601301"><ph name="DEVICE_NAME" /> హాట్‌స్పాట్‌కు <ph name="DEVICECOUNT" /> పరికరాలు కనెక్ట్ చేయబడ్డాయి</translation>
 <translation id="3307642347673023554">ల్యాప్‌టాప్ మోడ్‌కు స్విచ్ చేయబడింది</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> ఇప్పటికీ తర్వాత సైన్ ఇన్ చేయవచ్చు.</translation>
-<translation id="3317779231018057649"><ph name="DEVICECOUNT" /> పరికరాలు కనెక్ట్ అయ్యాయి. హాట్‌స్పాట్ ఉపయోగిస్తున్నప్పుడు, Wi-Fi ఆఫ్‌లో ఉంటుంది.</translation>
 <translation id="3321628682574733415">తల్లి/తండ్రి కోడ్ తప్పు</translation>
 <translation id="332827762492701193">నోటిఫికేషన్‌లు దాచబడ్డాయి</translation>
 <translation id="3333674550998107387"><ph name="NOTIFICATION_TITLE" /> నోటిఫికేషన్‌ను విస్తరించండి</translation>
@@ -853,6 +852,7 @@
 <translation id="440113666232554208">స్క్రీన్‌కాస్ట్‌ను సేవ్ చేయడం సాధ్యం కాదు</translation>
 <translation id="4405151984121254935">కనెక్ట్ చేయబడిన పెరిఫెరల్ రకానికి సపోర్ట్ లేదు</translation>
 <translation id="4406883609789734330">లైవ్ క్యాప్షన్</translation>
+<translation id="4412698727486357573">సహాయ కేంద్రం</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ఆఫ్‌లో ఉంది.</translation>
 <translation id="4424159417645388645">డెస్క్ 5</translation>
 <translation id="4430019312045809116">వాల్యూమ్</translation>
@@ -893,7 +893,6 @@
 <translation id="4566144812051858745">ఎటువంటి సూచనలపై ఆసక్తి లేదు</translation>
 <translation id="4569753163207712681">మీ ఫోన్‌లోని తాజా ఫోటోలను, మీడియాను, ఇంకా యాప్‌లను చూడండి</translation>
 <translation id="4573176682887762361">"[word / phrase]ను టైప్ చేయండి"</translation>
-<translation id="4577188182049003486">హాట్‌స్పాట్ ఆన్‌లో ఉన్నందున, Wi-Fi ఆఫ్ చేయబడింది</translation>
 <translation id="4577274620589681794">సమయం ముగిసింది · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">ప్రివ్యూలను చూపు</translation>
 <translation id="4578906031062871102">సెట్టింగ్‌ల మెనూ తెరవబడింది</translation>
@@ -1015,6 +1014,7 @@
 <translation id="5003993274120026347">తర్వాతి వాక్యం</translation>
 <translation id="5004607513195820459">నెట్‌వర్క్ మేనేజ్ చేయబడుతోంది</translation>
 <translation id="5009463889040999939">ప్రొఫైల్ పేరు మార్చుతోంది. దీనికి కొన్ని నిమిషాలు పట్టవచ్చు.</translation>
+<translation id="5013847959275396160">ఉపకరణపట్టీని దాచిపెట్టు</translation>
 <translation id="5016558321564993266">మార్కర్‌ను టోగుల్ చేయండి. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">కేటగిరీలను సెర్చ్ చేయండి</translation>
 <translation id="5030659775136592441">బుక్‌మార్క్ మేనేజర్‌ను చూపండి</translation>
@@ -1151,12 +1151,13 @@
 <translation id="5550417424894892620"><ph name="HOLDING_SPACE_TITLE" />‌కు ఫైల్స్‌ను జోడించడానికి వాటిని డెస్క్‌టాప్ మీద వదలండి. మీరు డెస్క్‌టాప్‌కు ఫైల్స్‌ను జోడించడం సాధ్యం కాదు.</translation>
 <translation id="5551456515017410630">క్యాలెండర్‌ను తెరవండి/మూసివేయండి</translation>
 <translation id="5551974246223970793">ఒక పేజీని సెర్చ్ చేస్తున్నప్పుడు, తర్వాతి మ్యాచ్‌కు వెళ్లండి</translation>
-<translation id="5555639311269196631">హాట్‌స్పాట్‌ను ఆఫ్ చేయండి</translation>
 <translation id="5556459405103347317">మళ్లీ లోడ్ చేయి</translation>
 <translation id="5558091555391176027">సమీప షేరింగ్ అధిక విజిబిలిటీ మోడ్‌ను టోగుల్ చేయండి</translation>
+<translation id="5558314826121965174">క్రియేటివిటీ</translation>
 <translation id="556042886152191864">బటన్</translation>
 <translation id="5570122939431135380">కొత్త ట్యాబ్‌ను కొత్త అజ్ఞాత విండోలో తెరవండి</translation>
 <translation id="5571066253365925590">బ్లూటూత్‌ ప్రారంభించబడింది</translation>
+<translation id="5572632238877308040">అవసరమైనవి</translation>
 <translation id="557563299383177668">తర్వాతి పేరా</translation>
 <translation id="5577082622442191756">బ్లూటూత్‌ను టోగుల్ చేయండి. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">ఫోన్ హబ్‌ను ఉపయోగించడానికి మీ ఫోన్‌లో బ్లూటూత్ ఎనేబుల్ చేసి ఉందో, లేదో చెక్ చేయండి</translation>
@@ -1181,6 +1182,7 @@
 <translation id="5662075790140998213">డెస్క్ 10</translation>
 <translation id="5662709761327382534">మైక్రోఫోన్‌తో రికార్డ్ చేయడం <ph name="CURRENT_STATE" />లో ఉంది, మైక్రోఫోన్‌తో రికార్డ్ చేయడాన్ని <ph name="NEW_STATE" /> చేయడానికి enterను నొక్కండి</translation>
 <translation id="5669267381087807207">సక్రియమవుతోంది</translation>
+<translation id="5672890847723042801">యుటిలిటీలు</translation>
 <translation id="5673434351075758678">మీ సెట్టింగులను సింక్ చేసిన తర్వాత "<ph name="FROM_LOCALE" />" నుండి "<ph name="TO_LOCALE" />"కి.</translation>
 <translation id="5675363643668471212">అరలోని అంశం</translation>
 <translation id="5677928146339483299">బ్లాక్ చేయబడింది</translation>
@@ -1362,6 +1364,7 @@
 <translation id="6351032674660237738">యాప్ సూచనలు</translation>
 <translation id="6352082849089527770">తెలియని నెట్‌వర్క్‌లు</translation>
 <translation id="6359587239691116345">తాజా ఫీచర్‌లు, సెక్యూరిటీ మెరుగుదలలను పొందండి. మీరు ఈ అప్‌డేట్‌ను తిరస్కరిస్తే, మీ పరికరం ఇకపై సరిగ్గా పని చేయకపోవచ్చు, మీరు సెక్యూరిటీ, అలాగే పనితీరుకు సంబంధించిన సమస్యలను ఎదుర్కోవచ్చు.</translation>
+<translation id="6362833380917912748">మీ బిల్ట్-ఇన్ యాప్‌ల గురించి తెలుసుకోండి</translation>
 <translation id="6376931439017688372">బ్లూటూత్ ఆన్ చేయబడింది</translation>
 <translation id="6378515133128829137">విండోను కుడి వైపునకు పిన్ చేయండి</translation>
 <translation id="6381109794406942707">పరికరాన్ని అన్‌లాక్ చేయడానికి, మీ పిన్‌ను ఎంటర్ చేయండి.</translation>
@@ -1782,6 +1785,7 @@
 <translation id="799296642788192631">మీరు ముఖ్యమైన ఫైల్స్‌ను పిన్ చేయవచ్చు. ఏదైనా ఐటెమ్‌ను పిన్ చేయడానికి, దానిపై మౌస్ కర్సర్ ఉంచండి లేదా Filesను తెరిచి, ఐటెమ్‌పై కుడి క్లిక్ చేయండి.</translation>
 <translation id="7994370417837006925">బహుళ సైన్-ఇన్</translation>
 <translation id="7995804128062002838">స్క్రీన్‌ను క్యాప్చర్ చేయడం విఫలమైంది</translation>
+<translation id="8000020256436988724">ఉపకరణపట్టీ</translation>
 <translation id="8000066093800657092">ఏ నెట్‌వర్క్ లేదు</translation>
 <translation id="8001755249288974029">కర్సర్ నుండి లైన్ ప్రారంభం వరకు ఉన్న టెక్స్ట్‌ను ఎంచుకోండి</translation>
 <translation id="8004512796067398576">పెరుగుదల</translation>
@@ -1848,6 +1852,7 @@
 <translation id="8262312463845990408">ప్లేబ్యాక్‌ను టోగుల్ చేయండి</translation>
 <translation id="8270450402312105425">{0,plural, =1{ఒక గంటలోపు పరికరాన్ని మునుపటి వెర్షన్‌కు మార్చండి}other{# గంటల్లోపు పరికరాన్ని మునుపటి వెర్షన్‌కు మార్చండి}}</translation>
 <translation id="8277261673056602147">మీ స్క్రీన్‌పై ఉన్న టెక్స్ట్‌ను హైలైట్ చేయండి</translation>
+<translation id="8287009018010202411">ప్రొడక్టివిటీ</translation>
 <translation id="828708037801473432">ఆఫ్</translation>
 <translation id="8297006494302853456">బలహీనం</translation>
 <translation id="8308637677604853869">మునుపటి మెనూ</translation>
@@ -1894,6 +1899,7 @@
 <translation id="847056008324733326">స్కేల్ సెట్టింగ్‌లను ప్రదర్శించండి</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_NAME" />ను <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">రద్దు చేయడానికి Alt+Search లేదా Shiftను నొక్కండి.</translation>
+<translation id="8480418399907765580">టూల్‌బార్‌ను చూపించు</translation>
 <translation id="8487699605742506766">హాట్‌స్పాట్</translation>
 <translation id="8491237443345908933">కొత్త ట్యాబ్‌లో లింక్‌ను తెరవండి</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" />ను సపోర్ట్ చేయదు. <ph name="FALLBACK_RESOLUTION" />కు రిజల్యూషన్ మార్చబడింది. మార్పులను అలాగే ఉంచడానికి 'ధృవీకరించు'ను క్లిక్ చేయండి. మునుపటి సెట్టింగ్‌లు <ph name="TIMEOUT_SECONDS" />లో రీస్టోర్ చేయబడతాయి.</translation>
@@ -1919,6 +1925,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">పేరు లేదా రంగు ఆధారంగా మీ యాప్‌లను క్రమపద్ధతిలో అమర్చండి</translation>
 <translation id="8609384513243082612">కొత్త ట్యాబ్‌ను తెరవండి</translation>
+<translation id="861045123704058818">యాప్‌లు తాత్కాలికంగా కేటగిరీ వారీగా ఆర్గనైజ్ చేయబడతాయి</translation>
 <translation id="8612216344243590325">ముఖ్యమైన ఫైల్స్‌ను డెస్క్‌టాప్‌లో కాకుండా <ph name="HOLDING_SPACE_TITLE" />‌లో ఉంచండి. ఫైల్స్‌ను <ph name="HOLDING_SPACE_TITLE" />‌కు లాగండి.</translation>
 <translation id="8614517853887502247">వీక్షణ ప్రొటెక్షన్ ఆన్‌లో ఉంది కాబట్టి <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> నోటిఫికేషన్‌లు దాచబడ్డాయి</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1957,6 +1964,7 @@
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">మీ గుర్తింపును వెరిఫై చేయండి: <ph name="ORIGIN_NAME" /> అది మీరేనని నిర్ధారించాలనుకుంటుంది</translation>
 <translation id="875593634123171288">VPN సెట్టింగ్‌లను చూపుతుంది</translation>
+<translation id="8756799553341497810">మీరు ఈ వీక్షణ నుండి ఎగ్జిట్ అయిన తర్వాత మీ యాప్ లేఅవుట్‌ను అనుకూలీకరించడం ప్రారంభించవచ్చు.</translation>
 <translation id="8759408218731716181">బహుళ సైన్-ఇన్‌ను సెటప్ చేయలేరు</translation>
 <translation id="8763883995157866248">పరికరాన్ని స్లీప్ మోడ్‌లో ఉంచండి</translation>
 <translation id="877404052021108314">సెంటీగ్రేడ్లలో 90°F</translation>
@@ -1977,6 +1985,7 @@
 <translation id="8834539327799336565">ప్రస్తుతం కనెక్ట్ చేయబడింది</translation>
 <translation id="8841375032071747811">వెనుకకు బటన్</translation>
 <translation id="8843682306134542540">భ్రమణం లాక్‌ను టోగుల్ చేయండి. <ph name="STATE_TEXT" /></translation>
+<translation id="8845001906332463065">సహాయం పొందండి</translation>
 <translation id="8849001918648564819">దాచబడింది</translation>
 <translation id="8853703225951107899">మీ పిన్ లేదా పాస్‌వర్డ్‌ను వెరిఫై చేయడం ఇంకా సాధ్యం కాలేదు. గమనిక: మీరు ఇటీవలే మీ పాస్‌వర్డ్‌ను మార్చి ఉంటే, మీ పాత పాస్‌వర్డ్‌ను ఉపయోగించండి. మీరు ఖాతా నుంచి సైన్ అవుట్ చేసిన తర్వాత మీ కొత్త పాస్‌వర్డ్ వర్తిస్తుంది.</translation>
 <translation id="8855885154700222542">పూర్తిస్క్రీన్ కీ</translation>

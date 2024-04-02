@@ -347,7 +347,6 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="125220115284141797">Parazgjedhja</translation>
 <translation id="1252219782845132919">Fshih grupin</translation>
 <translation id="1252987234827889034">Ndodhi një gabim i profilit</translation>
-<translation id="1253664522045778676">Kliko te një rezultat dhe faqja do të hapet në skedën tënde aktuale</translation>
 <translation id="1254593899333212300">Lidhje direkte e internetit</translation>
 <translation id="1256588359404100567">Cilësimi u sinkronizua nga pajisja jote e mëparshme.</translation>
 <translation id="1257336506558170607">Eksporto certifikatën e zgjedhur</translation>
@@ -1196,7 +1195,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1887210448491286312">Ndalo transmetimin e skedës te <ph name="DEVICE_NAME" /></translation>
 <translation id="1887442540531652736">Gabim në identifikim</translation>
 <translation id="1887597546629269384">Thuaj përsëri "Hej Google"</translation>
-<translation id="1889091146873278175">Kliko te butoni "G" për të parë më shumë rezultate kërkimi në një panel anësor</translation>
 <translation id="1890026367080681123">Shko te cilësimet e përmbajtjeve të integruara</translation>
 <translation id="189035593835762169">Kushtet e përgjithshme</translation>
 <translation id="1891362123137972260">Hapësira e diskut është jashtëzakonisht e ulët. Liro hapësirën e diskut.</translation>
@@ -6260,7 +6258,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5804241973901381774">Lejet</translation>
 <translation id="5804259315582798390">Aktivizimi i rikuperimit të të dhënave lokale dështoi</translation>
 <translation id="5805268472388605531">Shtyp dhe mbaj shtypur tastet e tastierës për të parë shenjat e theksimit dhe karakteret e veçanta</translation>
-<translation id="5805354171420804923">Krahaso më shpejt rezultatet e kërkimit nga paneli i ri anësor</translation>
 <translation id="5805697420284793859">Menaxheri i dritareve</translation>
 <translation id="5806447147478173900">Hapësira ruajtëse në total e përdorur nga sajtet e shfaqura: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (parazgjedhja)</translation>
@@ -7402,7 +7399,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6709357832553498500">Lidhu duke përdorur <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">Prapa</translation>
 <translation id="6710394144992407503">Kontrollo për gabime drejtshkrimore kur shkruan tekste në faqe uebi</translation>
-<translation id="671226373742585927">Kliko te butoni "X" për të mbyllur panelin anësor</translation>
 <translation id="6712943853047024245">Ke ruajtur tashmë një fjalëkalim me këtë emër përdoruesi për <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">Shto profilin e punës</translation>
 <translation id="6713441551032149301">Mbaj shtypur tastin e nisësit për të ndryshuar mes tasteve të funksioneve dhe tasteve të rreshtit të sipërm të sistemit</translation>
@@ -8767,7 +8763,6 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7758884017823246335">Shto kërkimin për sajtin</translation>
 <translation id="7759809451544302770">Opsionale</translation>
 <translation id="7762024824096060040">Kjo llogari nuk mund të përdoret</translation>
-<translation id="7762243782113123335">Më vjen keq, ndodhi një gabim. Jep komente me #bruschetta në përshkrim. Kodi i gabimit është <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Shto adresë</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> nga <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764527477537408401">Hape grupin në një dritare të re</translation>
@@ -9251,7 +9246,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="810185532889603849">Ngjyra e personalizuar</translation>
 <translation id="8101987792947961127">Kërkohet Powerwash me rindezjen e ardhshme</translation>
 <translation id="8102139037507939978">Hiq informacionin e idetifikueshëm personalisht nga system_logs.txt.</translation>
-<translation id="8102344699913991108">Sajtet e përdorin këtë cilësim për të ofruar përvoja gjithëpërfshirëse në ekran të plotë pavarësisht nga gjestet e përdoruesit</translation>
 <translation id="810362914482827094">Kërko te çelësat e kalimit</translation>
 <translation id="8104088837833760645">Shkarko profilin e kartës eSIM</translation>
 <translation id="8105273883928376822">Identifikohu për të vazhduar.</translation>
@@ -9472,7 +9466,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8272443605911821513">Menaxho shtesat duke klikuar "Shtesat" në menynë "Më shumë vegla".</translation>
 <translation id="8272786333453048167">Lejo përsëri</translation>
 <translation id="8273905181216423293">Shkarko tani</translation>
-<translation id="8274495289680107339">Sajtet e përdorin këtë cilësim për të kaluar automatikisht në modalitetin "figurë brenda figurës". Kjo të lejon të vazhdosh të shikosh një video, ndërkohë që e liron ekranin për detyra të tjera.</translation>
 <translation id="827488840488530039">Faqja që po përpiqesh të vizitosh nuk mund t'i verifikonte biletat e tua të Kerberos</translation>
 <translation id="8274921654076766238">Zmadhuesi ndjek fokusin e tastierës</translation>
 <translation id="8274924778568117936">Mos e fik dhe mos e mbyll pajisjen tënde <ph name="DEVICE_TYPE" /> deri sa të përfundojë përditësimi. Pajisja <ph name="DEVICE_TYPE" /> do të riniset pas përfundimit të instalimit.</translation>

@@ -591,6 +591,7 @@
 <translation id="4503441351962730761">ubuciko besimanje</translation>
 <translation id="4507392511610824664">ukukhanya kuphezulu</translation>
 <translation id="4511264077854731334">I-Portal</translation>
+<translation id="4513946894732546136">Impendulo</translation>
 <translation id="4521826082652183069">Ukufana kwelinye igama lesihloko</translation>
 <translation id="4522570452068850558">Imininingwane</translation>
 <translation id="4536864596629708641">Ukulungiselelwa kwe-IP</translation>
@@ -763,6 +764,7 @@
 <translation id="5543701552415191873">kukhiyiwe</translation>
 <translation id="554517032089923082">I-GTC</translation>
 <translation id="5559898619118303662">Shintsha ngokuzenzakalelayo kutimu emnyama ekushoneni kwelanga</translation>
+<translation id="556042886152191864">Inkinobho</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> ngombala othi <ph name="TERRAIN_COLOR" /></translation>
 <translation id="5578477003638479617">I-UMTS</translation>
 <translation id="5578519639599103840">Phinda uskene</translation>
@@ -910,6 +912,7 @@
 <translation id="6382182670717268353">Ukuhlola kuqala isilondolozi sesikrini</translation>
 <translation id="6388847657025262518">Okuphakelayo kweskena sedokhumenti kujemile. Hlola okuphakelayo bese uyazama futhi.</translation>
 <translation id="6394634179843537518">Engeza ifayela</translation>
+<translation id="6396719002784938593">utshani bezinsiba obomisiwe</translation>
 <translation id="639964859328803943">itiye eliphezulu</translation>
 <translation id="6400680457268373900">I-surreal <ph name="DREAMSCAPES_OBJECT" /> eyenziwe nge-<ph name="DREAMSCAPES_MATERIAL" /> e-<ph name="DREAMSCAPES_COLORS" /></translation>
 <translation id="6401427872449207797">ukusesha kwebhrawuza</translation>
@@ -951,6 +954,7 @@
 <translation id="6575134580692778371">Akulungiselelwe</translation>
 <translation id="6576005492601044801">kwesokunxele</translation>
 <translation id="6579509898032828423">Sebenzisa lesi sithombe</translation>
+<translation id="6587870930887634392">i-succulent</translation>
 <translation id="6596816719288285829">Ikheli le-IP</translation>
 <translation id="6599673642868607614">Siyabonga ngempendulo yakho. Impendulo yakho isisiza ukuthi sithuthukise ukuzizwisa kwe-Chromebook futhi izobuyekezwa yithimba lethu. Ngenxa yenani elikhulu lemibiko, ngeke sikwazi ukuthumela impendulo.</translation>
 <translation id="6618744767048954150">Uyagijima</translation>
@@ -1109,6 +1113,7 @@
 <translation id="7497215489070763236">Isitifiketi se-CA yeseva</translation>
 <translation id="7501957181231305652">noma</translation>
 <translation id="7502658306369382406">Ikheli le-IPv^</translation>
+<translation id="7507061649493508884">I-<ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /> ecwebezelayo</translation>
 <translation id="7513770521371759388">phansi</translation>
 <translation id="7515998400212163428">I-Android</translation>
 <translation id="7525067979554623046">Dala</translation>
@@ -1169,6 +1174,7 @@
 <translation id="7850847810298646851">Isithombe sangemuva sisekelwe yi-Google AI</translation>
 <translation id="785170686607360576">i-tulip</translation>
 <translation id="7856267634822906833">Isikrini esithintwayo se-Bluetooth</translation>
+<translation id="7859006200041800233">imbali yomdolofiya</translation>
 <translation id="7869143217755017858">Khubaza imodi emnyama</translation>
 <translation id="7881066108824108340">I-DNS</translation>
 <translation id="7882358943899516840">Uhlobo lomhlinzeki</translation>
@@ -1304,6 +1310,7 @@
 <translation id="8726019395068607495">Imile - Umnyango uvuliwe</translation>
 <translation id="8730621377337864115">Kwenziwe</translation>
 <translation id="8747900814994928677">Qinisekisa ushintsho</translation>
+<translation id="8749478549112817787">Ingemuva Lekhamera</translation>
 <translation id="8755946156089753497">isilindo</translation>
 <translation id="8764414543112028321">I-WireGuard</translation>
 <translation id="87646919272181953">I-albhamu Yezithombe ze-Google</translation>

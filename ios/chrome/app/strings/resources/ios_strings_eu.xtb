@@ -878,6 +878,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="5548760955356983418">Handoff eginbidea erabiltzen baduzu, gailu honetan has zaitezke webguneak ikusten eta Mac-ean jarrai dezakezu haiek arakatzen.
 
 "Settings" (Ezarpenak) aplikazioaren "General" (Orokorra) atalean ere gaitu behar da Handoff, eta gailuek iCloud kontu bera erabili behar dute.</translation>
+<translation id="5551825465462320939">Egin albisteen, kirolen eta beste gauza askoren jarraipena, zure interesetan oinarrituta.</translation>
 <translation id="5551897871312988470">Eskaini itzultzea</translation>
 <translation id="5556459405103347317">Kargatu berriro</translation>
 <translation id="555749644339804659">Pasahitzak egiaztatzen…</translation>
@@ -1182,6 +1183,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="6989674195860388998">Aldatu ezarpenetan…</translation>
 <translation id="6998989275928107238">Hartzailea</translation>
 <translation id="699954956411469731">Mugikorreko jakinarazpenak</translation>
+<translation id="699985840472413751">Itxi deskarga</translation>
 <translation id="7004032350256606903">Modu pribatuan arakatzeko eskatzen dizu zure erakundeak.
 <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Azken fitxak</translation>
@@ -1471,6 +1473,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="850600235656508448">Ireki ezkutuko moduan</translation>
 <translation id="8517375800490286174">Kode irekiko lizentziak</translation>
 <translation id="8522147671363140027">{count,plural, =1{{count} pasahitz eta beste elementu batzuk gailu honetan soilik gordeta daude. Beste gailuetan erabiltzeko, gorde itzazu Google-ko kontuan ({email}).}other{{count} pasahitz eta beste elementu batzuk gailu honetan soilik gordeta daude. Beste gailuetan erabiltzeko, gorde itzazu Google-ko kontuan ({email}).}}</translation>
+<translation id="8522813812888400223">Utzi deskargatzeari</translation>
 <translation id="8524799873541103884"><ph name="FIRST_VISIBLE_TAB" />-<ph name="LAST_VISIBLE_TAB" />/<ph name="NUMBER_OF_OPEN_TABS" /> <ph name="INCOGNITO" /> fitxak</translation>
 <translation id="852576975834694248">Zure saioa amaituko da, eta fitxak itxiko dira</translation>
 <translation id="8528009254289981965">Ireki beste aplikazioetako estekak ezkutuko moduan</translation>

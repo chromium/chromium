@@ -352,7 +352,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="125220115284141797">Zadano</translation>
 <translation id="1252219782845132919">Sakrij grupu</translation>
 <translation id="1252987234827889034">Došlo je do greške na profilu</translation>
-<translation id="1253664522045778676">Kliknite na rezultat i stranica će se otvoriti u trenutnoj kartici</translation>
 <translation id="1254593899333212300">Direktna internetska veza</translation>
 <translation id="1256588359404100567">Postavka je sinhronizirana s prethodnog uređaja.</translation>
 <translation id="1257336506558170607">Izvoz odabranih certifikata</translation>
@@ -1212,7 +1211,6 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1887210448491286312">Zaustavljanje emitiranja kartice na uređaju <ph name="DEVICE_NAME" /></translation>
 <translation id="1887442540531652736">Greška pri prijavljivanju</translation>
 <translation id="1887597546629269384">Ponovo kažite "Hej Google"</translation>
-<translation id="1889091146873278175">Kliknite na dugme "G" da vidite više rezultata pretraživanja na bočnoj ploči</translation>
 <translation id="1890026367080681123">Idite u postavke ugrađenog sadržaja</translation>
 <translation id="189035593835762169">Uslovi i odredbe</translation>
 <translation id="1891362123137972260">Količina prostora na disku je kritično mala. Oslobodite prostor na disku.</translation>
@@ -6286,7 +6284,6 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="5804241973901381774">Odobrenja</translation>
 <translation id="5804259315582798390">Omogućavanje vraćanja lokalnih podataka nije uspjelo</translation>
 <translation id="5805268472388605531">Pritisnite i držite tipke tastature da vidite oznake akcenata i specijalne znakove</translation>
-<translation id="5805354171420804923">Brže uporedite rezultate pretraživanja s nove bočne ploče</translation>
 <translation id="5805697420284793859">Upravitelj prozora</translation>
 <translation id="5806447147478173900">Ukupna pohrana koju koriste prikazane web lokacije: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (zadano)</translation>
@@ -7432,7 +7429,6 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="6709357832553498500">Poveži se na mrežu pomoću dodatka <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">Nazad</translation>
 <translation id="6710394144992407503">Provjeravaj pravopisne greške prilikom pisanja teksta na web stranicama</translation>
-<translation id="671226373742585927">Kliknite na dugme "X" da zatvorite bočnu ploču</translation>
 <translation id="6712943853047024245">Već ste sačuvali lozinku s ovim korisničkim imenom za <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">Dodaj radni profil</translation>
 <translation id="6713441551032149301">Zadržite tipku pokretača da promijenite funkcijske tipke i tipke u gornjem redu sistema</translation>
@@ -8800,7 +8796,6 @@ Pritisnite dodijeljeni prekidač ili tipku da uklonite dodjeljivanje.</translati
 <translation id="7758884017823246335">Dodajte pretraživanje web lokacije</translation>
 <translation id="7759809451544302770">Izborno</translation>
 <translation id="7762024824096060040">Nije moguće koristiti ovaj račun</translation>
-<translation id="7762243782113123335">Nažalost, nešto nije uredu. Pošaljite povratne informacije uz hešteg #bruschetta u opisu. Kȏd greške je <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Dodaj adresu</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> sa <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764527477537408401">Otvori grupu u novom prozoru</translation>
@@ -9286,7 +9281,6 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="810185532889603849">Prilagođena boja</translation>
 <translation id="8101987792947961127">Powerwash je obavezan prilikom sljedećeg ponovnog pokretanja</translation>
 <translation id="8102139037507939978">Uklonite informacije koje mogu poslužiti za ličnu identifikaciju iz fajla system_logs.txt.</translation>
-<translation id="8102344699913991108">Web lokacije koriste ovu postavku da ponude interaktivna iskustva preko cijelog ekrana bez obzira na pokrete korisnika</translation>
 <translation id="810362914482827094">Pretražite pristupne ključeve</translation>
 <translation id="8104088837833760645">Preuzmi eSIM profil</translation>
 <translation id="8105273883928376822">Prijavite se da nastavite.</translation>
@@ -9507,7 +9501,6 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8272443605911821513">Upravljajte svojim ekstenzijama klikom na Ekstenzije u meniju "Više alata".</translation>
 <translation id="8272786333453048167">Ponovo dozvoli</translation>
 <translation id="8273905181216423293">Preuzmi sada</translation>
-<translation id="8274495289680107339">Web lokacije koriste ovu postavku da automatski uđu u način rada slike u slici. Ovo vam omogućava da nastavite gledati videozapis, a istovremeno vam oslobađa ekran za druge zadatke.</translation>
 <translation id="827488840488530039">Stranica koju pokušavate posjetiti nije uspjela potvrditi vaše Kerberos karte</translation>
 <translation id="8274921654076766238">Povećalo prati fokus tastature</translation>
 <translation id="8274924778568117936">Nemojte gasiti ili zatvarati uređaj <ph name="DEVICE_TYPE" /> prije završetka ažuriranja. Uređaj <ph name="DEVICE_TYPE" /> će se ponovno pokrenuti nakon završetka instalacije.</translation>

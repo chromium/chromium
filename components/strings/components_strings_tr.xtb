@@ -71,6 +71,7 @@
 <translation id="1125573121925420732">Web siteleri güvenliklerini güncellerken uyarılar yaygın olarak görülebilir. Yakında bu işlev iyileştirilecektir.</translation>
 <translation id="112840717907525620">Politika önbelleği uygun</translation>
 <translation id="1131264053432022307">Kopyalanan Resim</translation>
+<translation id="1138458427267715730">Web'deki herhangi bir sitede fiyat düşüşü olduğunda uyarı alın</translation>
 <translation id="1142713751288681188">Kağıt türü</translation>
 <translation id="1142846828089312304">Gizli modda üçüncü taraf çerezlerini engelle</translation>
 <translation id="1144136880160289237">Henüz etkin konunuz yok</translation>
@@ -1114,6 +1115,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3154987252551138431">Yakındakilerle Paylaş özelliği kullanılırken bir sorun oluştu</translation>
 <translation id="315504272643575312">Hesabınız <ph name="MANAGER" /> tarafından yönetiliyor.</translation>
 <translation id="3155163173539279776">Chromium'u Yeniden Başlat</translation>
+<translation id="3156511682997763015">10 saniye ileri git</translation>
 <translation id="3157931365184549694">Geri yükle</translation>
 <translation id="3158539265159265653">Disk</translation>
 <translation id="3162559335345991374">Kullandığınız Kablosuz ağ, giriş sayfasını ziyaret etmenizi gerektiriyor olabilir.</translation>
@@ -1214,6 +1216,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="334438173029876234">Kaykay Gereçleri</translation>
 <translation id="3347146863028219517">Kayak ve Snowboard</translation>
 <translation id="3349952286488694786">SRA2</translation>
+<translation id="3350450887151703713">10 saniyesini tekrar oynat</translation>
 <translation id="3352881017886802007">Spor Oyunları</translation>
 <translation id="3355823806454867987">Proxy ayarlarını değiştir...</translation>
 <translation id="335809815767823">Dışa aktarıldı</translation>
@@ -3053,6 +3056,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6944557544071529399">Strateji Oyunları</translation>
 <translation id="6944692733090228304">Şifrenizi <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> tarafından yönetilmeyen bir sitede girdiniz. Hesabınızı korumak için şifrenizi başka uygulama ve sitelerde tekrar kullanmayın.</translation>
 <translation id="6945221475159498467">Seç</translation>
+<translation id="6946949206576443118">Chrome ile web'de arama yapın</translation>
 <translation id="6948051842255602737">Oyun bitti, <ph name="SCORE" /> puan aldınız.</translation>
 <translation id="6948701128805548767">Alım yöntemlerini ve gereksinimlerini görmek için bir adres seçin</translation>
 <translation id="6948874830249067134">A1x3</translation>

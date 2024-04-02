@@ -1183,6 +1183,7 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="6989674195860388998">Preklop v nastavitvah …</translation>
 <translation id="6998989275928107238">Za</translation>
 <translation id="699954956411469731">Obvestila v mobilnih napravah</translation>
+<translation id="699985840472413751">Zapri prenos</translation>
 <translation id="7004032350256606903">Vaša organizacija zahteva, da brskate zasebno.
 <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Nedavni zavihki</translation>
@@ -1472,6 +1473,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="850600235656508448">Odpri v anonimnem načinu</translation>
 <translation id="8517375800490286174">Odprtokodne licence</translation>
 <translation id="8522147671363140027">{count,plural, =1{{count} geslo in drugi elementi so shranjeni samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, {email}.}one{{count} geslo in drugi elementi so shranjeni samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, {email}.}two{{count} gesli in drugi elementi so shranjeni samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, {email}.}few{{count} gesla in drugi elementi so shranjeni samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, {email}.}other{{count} gesel in drugi elementi so shranjeni samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, {email}.}}</translation>
+<translation id="8522813812888400223">Prekliči prenos</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> Tabs <ph name="FIRST_VISIBLE_TAB" /> through <ph name="LAST_VISIBLE_TAB" /> of <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="852576975834694248">Odjavljeni boste in zavihki bodo zaprti</translation>
 <translation id="8528009254289981965">Odpiranje povezav iz drugih aplikacij v anonimnem načinu</translation>

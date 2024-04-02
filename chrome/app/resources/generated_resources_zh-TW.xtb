@@ -347,7 +347,6 @@
 <translation id="125220115284141797">預設值</translation>
 <translation id="1252219782845132919">隱藏群組</translation>
 <translation id="1252987234827889034">設定檔發生錯誤</translation>
-<translation id="1253664522045778676">點選任一項搜尋結果，該頁面就會在目前的分頁中開啟</translation>
 <translation id="1254593899333212300">直接連線到網際網路</translation>
 <translation id="1256588359404100567">已從舊裝置同步處理設定。</translation>
 <translation id="1257336506558170607">匯出選取的憑證</translation>
@@ -1199,7 +1198,6 @@
 <translation id="1887210448491286312">停止將分頁投放到「<ph name="DEVICE_NAME" />」</translation>
 <translation id="1887442540531652736">登入錯誤</translation>
 <translation id="1887597546629269384">再說一次「Hey Google」</translation>
-<translation id="1889091146873278175">點選「G」按鈕即可在側邊面板查看更多搜尋結果</translation>
 <translation id="1890026367080681123">前往嵌入的內容設定</translation>
 <translation id="189035593835762169">條款及細則</translation>
 <translation id="1891362123137972260">磁碟空間嚴重不足，請釋出磁碟空間。</translation>
@@ -6259,7 +6257,6 @@
 <translation id="5804241973901381774">權限</translation>
 <translation id="5804259315582798390">無法啟用本機資料復原功能</translation>
 <translation id="5805268472388605531">按住鍵盤按鍵即可查看重音符號和特殊字元</translation>
-<translation id="5805354171420804923">推出全新的側邊面板，更快比較搜尋結果</translation>
 <translation id="5805697420284793859">視窗管理員</translation>
 <translation id="5806447147478173900">以下網站使用的總儲存空間：<ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (預設)</translation>
@@ -7399,7 +7396,6 @@
 <translation id="6709357832553498500">使用「<ph name="EXTENSIONNAME" />」連線</translation>
 <translation id="6710213216561001401">返回</translation>
 <translation id="6710394144992407503">在網頁上輸入文字時，檢查是否有拼字錯誤</translation>
-<translation id="671226373742585927">點選「X」按鈕即可關閉側邊面板</translation>
 <translation id="6712943853047024245">你已儲存過這個使用者名稱在「<ph name="WEBSITE" />」的密碼</translation>
 <translation id="6713233729292711163">新增工作資料夾</translation>
 <translation id="6713441551032149301">按住啟動器按鍵可以切換功能鍵和系統最上排按鍵</translation>
@@ -8765,7 +8761,6 @@
 <translation id="7758884017823246335">新增網站搜尋引擎</translation>
 <translation id="7759809451544302770">選用</translation>
 <translation id="7762024824096060040">無法使用這個帳戶</translation>
-<translation id="7762243782113123335">抱歉，系統發生錯誤。請提供意見回饋，並在說明中加上 #bruschetta。錯誤代碼：<ph name="ERROR" />。</translation>
 <translation id="7764225426217299476">新增地址</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> (來源網域：<ph name="DOWNLOAD_DOMAIN" />)</translation>
 <translation id="7764527477537408401">在新視窗中開啟分頁群組</translation>
@@ -9251,7 +9246,6 @@
 <translation id="810185532889603849">自訂顏色</translation>
 <translation id="8101987792947961127">必須在下次重新啟動時執行 Powerwash</translation>
 <translation id="8102139037507939978">移除 system_logs.txt 中的個人識別資訊。</translation>
-<translation id="8102344699913991108">網站會使用這項設定提供沉浸式的全螢幕體驗，無論使用者的手勢為何</translation>
 <translation id="810362914482827094">搜尋密碼金鑰</translation>
 <translation id="8104088837833760645">下載 eSIM 卡設定檔</translation>
 <translation id="8105273883928376822">如要繼續進行，請登入帳戶。</translation>
@@ -9472,7 +9466,6 @@
 <translation id="8272443605911821513">如要管理擴充功能，只需按一下 [其他工具] 選單裡的 [擴充功能] 即可。</translation>
 <translation id="8272786333453048167">重新授權</translation>
 <translation id="8273905181216423293">立即下載</translation>
-<translation id="8274495289680107339">網站會使用這項設定自動進入子母畫面。你可以繼續觀看影片，同時在螢幕上處理其他工作。</translation>
 <translation id="827488840488530039">你嘗試造訪的網頁無法驗證你的 Kerberos 票證</translation>
 <translation id="8274921654076766238">放大鏡追蹤鍵盤焦點</translation>
 <translation id="8274924778568117936">完成更新前，請勿將 <ph name="DEVICE_TYPE" /> 關機。<ph name="DEVICE_TYPE" /> 會在安裝完成後重新啟動。</translation>

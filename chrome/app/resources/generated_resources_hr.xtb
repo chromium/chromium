@@ -201,7 +201,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1150565364351027703">Sunčane naočale</translation>
 <translation id="1151917987301063366">Hostu <ph name="HOST" /> uvijek dopusti pristup senzorima</translation>
 <translation id="1152346050262092795">Ponovo unesite zaporku da biste potvrdili račun.</translation>
-<translation id="1153636665119721804">Googleov program Napredne zaštite</translation>
+<translation id="1153636665119721804">Googleov Program napredne zaštite</translation>
 <translation id="1155545602507378023">Ne, samo na ovom uređaju</translation>
 <translation id="1155816283571436363">Povezivanje s vašim telefonom</translation>
 <translation id="1157952955648710254">Zatvorite bočnu ploču Google pretraživanja</translation>
@@ -350,7 +350,6 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="125220115284141797">Zadano</translation>
 <translation id="1252219782845132919">Sakrij grupu</translation>
 <translation id="1252987234827889034">Došlo je do pogreške na profilu</translation>
-<translation id="1253664522045778676">Kliknite rezultat i stranica će se otvoriti na trenutnoj kartici</translation>
 <translation id="1254593899333212300">Izravna internetska veza</translation>
 <translation id="1256588359404100567">Postavka je sinkronizirana s vašeg prethodnog uređaja.</translation>
 <translation id="1257336506558170607">Izvezi odabrani certifikat</translation>
@@ -1203,7 +1202,6 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1887210448491286312">Zaustavi emitiranje kartice na uređaj <ph name="DEVICE_NAME" /></translation>
 <translation id="1887442540531652736">Pogreška prijave</translation>
 <translation id="1887597546629269384">Ponovo izgovorite "Hej Google"</translation>
-<translation id="1889091146873278175">Kliknite gumb "G" da biste na bočnoj ploči vidjeli više rezultata pretraživanja</translation>
 <translation id="1890026367080681123">Otvorite postavke ugrađenog sadržaja</translation>
 <translation id="189035593835762169">Uvjeti i odredbe</translation>
 <translation id="1891362123137972260">Količina prostora na disku kritično je mala. Oslobodite prostor na disku.</translation>
@@ -4141,7 +4139,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="4104944259562794668">Možete ga omogućiti kasnije u odjeljku Postavke &gt; Sigurnost i privatnost &gt; Zaključavanje zaslona i prijava</translation>
 <translation id="4106054677122819586">Idemo organizirati vaše kartice</translation>
 <translation id="4107048419833779140">Prepoznaj i izbaci uređaje za pohranu</translation>
-<translation id="4107522742068568249">Otvorite sigurnosnu provjeru</translation>
+<translation id="4107522742068568249">Provjeri sad</translation>
 <translation id="4108314971463891922">Prati</translation>
 <translation id="4109135793348361820">Premjesti prozor korisniku <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Vrati upozorenje</translation>
@@ -6069,7 +6067,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="563821631542362636">Dopusti web-lokaciji da sprema podatke</translation>
 <translation id="5638309510554459422">Pronađite proširenja i teme u <ph name="BEGIN_LINK" />Chrome Web Storeu<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Ponovo učitajte ovu stranicu, zadržite da biste vidjeli više opcija</translation>
-<translation id="5640133431808313291">Upravljajte sigurnosnim ključevima</translation>
+<translation id="5640133431808313291">Upravljanje sigurnosnim ključevima</translation>
 <translation id="5640159004008030285">Zaporka se sprema samo na ovaj uređaj. Da biste je upotrebljavali na svojim drugim uređajima, <ph name="BEGIN_LINK" />spremite je na svoj Google račun<ph name="END_LINK" />.</translation>
 <translation id="5641608986289282154">Počnite upotrebljavati <ph name="DEVICE_OS" /></translation>
 <translation id="5641648607875312660">Uređivač snimki zaslona</translation>
@@ -6272,7 +6270,6 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="5804241973901381774">Dozvoljeno</translation>
 <translation id="5804259315582798390">Omogućivanje oporavka lokalnih podataka nije uspjelo</translation>
 <translation id="5805268472388605531">Pritisnite i zadržite tipke tipkovnice da biste vidjeli dijakritičke i posebne znakove</translation>
-<translation id="5805354171420804923">Brže uspoređivanje rezultata pretraživanja s nove bočne ploče</translation>
 <translation id="5805697420284793859">Upravitelj prozora</translation>
 <translation id="5806447147478173900">Ukupna pohrana koju upotrebljavaju prikazane web-lokacije: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (zadano)</translation>
@@ -7417,7 +7414,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="6709357832553498500">Poveži pomoću proširenja <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">Prethodno</translation>
 <translation id="6710394144992407503">Provjerite ima li pravopisnih pogrešaka dok pišete tekst na web-stranicama</translation>
-<translation id="671226373742585927">Kliknite gumb "X" da biste zatvorili bočnu ploču</translation>
 <translation id="6712943853047024245">Već ste spremili zaporku uz to korisničko ime za <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">Dodaj poslovni profil</translation>
 <translation id="6713441551032149301">Držite tipku pokretača da biste izmjenjivali funkcijske tipke i tipke najvišeg retka</translation>
@@ -8785,7 +8781,6 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="7758884017823246335">Dodaj pretraživanje web-lokacija</translation>
 <translation id="7759809451544302770">Izborno</translation>
 <translation id="7762024824096060040">Upotreba računa nije moguća</translation>
-<translation id="7762243782113123335">Nešto nije u redu. Pošaljite povratne informacije s oznakom #bruschetta u opisu. Kôd pogreške je <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Dodajte adresu</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> s <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764527477537408401">Otvaranje grupe u novom prozoru</translation>
@@ -9271,7 +9266,6 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="810185532889603849">Prilagođena boja</translation>
 <translation id="8101987792947961127">Pri sljedećem ponovnom pokretanju potrebno je izvršiti Powerwash</translation>
 <translation id="8102139037507939978">Ukloni podatke koji otkrivaju identitet iz datoteke system_logs.txt.</translation>
-<translation id="8102344699913991108">Web-lokacije upotrebljavaju tu postavku kako bi pružile interaktivne doživljaje na cijelom zaslonu bez obzira na pokrete korisnika</translation>
 <translation id="810362914482827094">Pretraživanje pristupnih ključeva</translation>
 <translation id="8104088837833760645">Preuzmite eSIM profil</translation>
 <translation id="8105273883928376822">Prijavite se da biste nastavili.</translation>
@@ -9492,7 +9486,6 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8272443605911821513">Upravljajte proširenjima klikom na Proširenja u izborniku "Više alata".</translation>
 <translation id="8272786333453048167">Dopustite ponovo</translation>
 <translation id="8273905181216423293">Preuzmi odmah</translation>
-<translation id="8274495289680107339">Web-lokacije upotrebljavaju tu postavku za automatski unos slike u slici. To će vam omogućiti da nastavite gledati videozapis, a istovremeno oslobodite zaslon za druge zadatke.</translation>
 <translation id="827488840488530039">Stranica koju pokušavate posjetiti nije mogla potvrditi vaše Kerberosove ulaznice</translation>
 <translation id="8274921654076766238">Povećalo prati fokus na tipkovnici</translation>
 <translation id="8274924778568117936">Ne isključujte i ne zatvarajte uređaj <ph name="DEVICE_TYPE" /> dok ažuriranje ne završi. Uređaj <ph name="DEVICE_TYPE" /> ponovo će se pokrenuti kada instaliranje završi.</translation>

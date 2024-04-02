@@ -577,6 +577,7 @@ First-Party Set 中的所有网站都必须是采用 HTTPS 协议的可注册网
 <translation id="1468702975912409463">允许远程访问用户在本地客户端浏览器中打开主机端网址</translation>
 <translation id="1474273443907024088">停用 TLS False Start</translation>
 <translation id="1477934438414550161">TLS 1.2</translation>
+<translation id="1478529725439951221">通过变体版本框架启用或停用界面自动化提供程序。</translation>
 <translation id="1479427764273213107">通过设置此政策，您可以指定一个 USB 设备列表，在其中列出用户可从内核驱动程序分离以便直接在 Web 应用内通过 chrome.usb API 使用的 USB 设备。列表中的条目是成对的用于标识特定硬件的 USB 供应商标识符和产品标识符。
 
       如果您不设置此政策，可分离式 USB 设备的列表便会是空的。</translation>
@@ -5777,6 +5778,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
       注意：各个值之间用英文逗号隔开。</translation>
 <translation id="5693469654327063861">允许数据迁移</translation>
 <translation id="56936613186060503">用户无法通过内容下载管理器将文件保存到 <ph name="GOOGLE_DRIVE_NAME" />。</translation>
+<translation id="5693942129376744977">停用界面自动化提供程序。</translation>
 <translation id="5695209488612697377">允许在上下文菜单中使用默认搜索服务提供商。
 
           如果您停用了此政策，依赖您的默认搜索服务提供商的搜索上下文菜单项将不可用。
@@ -5851,6 +5853,17 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
       如果此政策设为 false 或未设置，系统将不会报告这些信息。
       如果此政策设为 true，系统将会报告设备的 VPD 信息。
       重要产品数据 (VPD) 是指一系列与设备相关的配置数据和信息类数据，例如部件号和序列号。</translation>
+<translation id="5760227556806302854">在 <ph name="PRODUCT_NAME" /> 中启用界面自动化无障碍框架提供程序，以供无障碍工具使用。
+
+<ph name="PRODUCT_NAME" /> 在一年的过渡期内支持此政策，以便企业管理员控制浏览器的界面自动化无障碍框架提供程序的部署情况。使用界面自动化无障碍框架与浏览器互操作的无障碍工具和其他工具可能需要更新，才能与浏览器的界面自动化提供程序正常搭配运行。管理员可以使用此政策暂时停用浏览器的界面自动化提供程序（从而恢复为旧版行为），同时与供应商合作，为受影响的工具提供更新。
+
+如果此政策设为 false，<ph name="PRODUCT_NAME" /> 仅会启用其 Microsoft Active Accessibility 提供程序。使用较新版本的界面自动化无障碍框架与浏览器互操作的无障碍工具和其他工具将通过 <ph name="MS_WIN_NAME" /> 中的兼容性 shim 与其通信。
+
+如果此政策设为 true，<ph name="PRODUCT_NAME" /> 不仅会启用其 Microsoft Active Accessibility 提供程序，还会启用其界面自动化提供程序。使用较新版本的界面自动化无障碍功能框与浏览器互操作的无障碍工具和其他工具将直接与其通信。
+
+如果未设置此政策，系统会使用 <ph name="PRODUCT_NAME" /> 中的变体版本框架来启用或停用此提供程序。
+
+我们将在 <ph name="PRODUCT_NAME" /> 136 中停止对此政策设置的支持。</translation>
 <translation id="5762969307102447459">禁止使用“自动填充”功能填写地址</translation>
 <translation id="5765780083710877561">说明：</translation>
 <translation id="5766438888216077649">不为那些定位到“<ph name="BLANK_PAGE_NAME" />”页面的链接设置 <ph name="WINDOW_OPENER_PROPERTY" /></translation>
@@ -7551,6 +7564,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果未设置此政策，工具栏将默认放置在屏幕底部，但用户可以更改工具栏的位置。</translation>
 <translation id="7039815268521168329">在初始设置期间显示 Google 助理 Voice Match 流程</translation>
 <translation id="7040229947030068419">值示例：</translation>
+<translation id="7043157348967593138">在 Windows 上启用浏览器的界面自动化无障碍框架提供程序</translation>
 <translation id="7044883996351280650">控制 Android 备份和恢复服务</translation>
 <translation id="7045221780834308118">如果已启用此政策，第三方 Web 应用将能使用 Desk API 来控制 <ph name="PRODUCT_OS_NAME" /> 桌面。如果未设置或已停用此政策，<ph name="DESK_API_NAME" /> 将不可用。此政策仅适用于已注册的设备。</translation>
 <translation id="7046113122884041950">不允许使用 Smart Lock</translation>
@@ -8486,6 +8500,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
        如果此政策已停用或未设置，相应设备将可以使用开发者模式。</translation>
 <translation id="7824000841504721945">停用政策原子组</translation>
+<translation id="7824833865123899471">启用界面自动化提供程序。</translation>
 <translation id="782661371433719637">不允许任何网站通过 File System API 请求对文件和目录的读取权限</translation>
 <translation id="7827127381981620448">平台应用</translation>
 <translation id="7829436838673974723">允许页面在关闭期间发送同步 XHR 请求</translation>

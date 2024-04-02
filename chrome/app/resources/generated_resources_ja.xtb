@@ -348,7 +348,6 @@
 <translation id="125220115284141797">デフォルト</translation>
 <translation id="1252219782845132919">グループを非表示</translation>
 <translation id="1252987234827889034">プロフィール エラーが発生しました</translation>
-<translation id="1253664522045778676">検索結果をクリックすると、そのページが現在のタブで開きます</translation>
 <translation id="1254593899333212300">インターネットへの直接接続</translation>
 <translation id="1256588359404100567">以前のデバイスから設定を同期しました。</translation>
 <translation id="1257336506558170607">選択した証明書をエクスポート</translation>
@@ -1198,7 +1197,6 @@
 <translation id="1887210448491286312"><ph name="DEVICE_NAME" /> へのタブのキャストを停止する</translation>
 <translation id="1887442540531652736">ログインエラー</translation>
 <translation id="1887597546629269384">もう一度「OK Google」と話しかけてください</translation>
-<translation id="1889091146873278175">[G] ボタンをクリックすると、サイドパネルにその他の検索結果が表示されます</translation>
 <translation id="1890026367080681123">埋め込みコンテンツの設定に移動します</translation>
 <translation id="189035593835762169">利用規約</translation>
 <translation id="1891362123137972260">ディスクの空き領域が非常に少なくなっています。空き容量を増やしてください。</translation>
@@ -6260,7 +6258,6 @@
 <translation id="5804241973901381774">権限</translation>
 <translation id="5804259315582798390">ローカルデータの復元を有効にできませんでした</translation>
 <translation id="5805268472388605531">キーボードのキーを長押しすると、アクセント記号と特殊文字が表示されます</translation>
-<translation id="5805354171420804923">新しいサイドパネルで検索結果を簡単に比較</translation>
 <translation id="5805697420284793859">ウィンドウ マネージャ</translation>
 <translation id="5806447147478173900">表示されたサイトの合計ストレージ使用状況: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0°（デフォルト）</translation>
@@ -7401,7 +7398,6 @@
 <translation id="6709357832553498500">「<ph name="EXTENSIONNAME" />」を使用して接続</translation>
 <translation id="6710213216561001401">前へ</translation>
 <translation id="6710394144992407503">ウェブページにテキストを入力するときにスペルミスがないか確認する</translation>
-<translation id="671226373742585927">[X] ボタンをクリックすると、サイドパネルを閉じます</translation>
 <translation id="6712943853047024245">このユーザー名で <ph name="WEBSITE" /> のパスワードはすでに保存されています</translation>
 <translation id="6713233729292711163">仕事用プロファイルを追加</translation>
 <translation id="6713441551032149301">ファンクション キーとシステムの最上段のキーを切り替えるには、ランチャーキーを長押しします</translation>
@@ -8765,7 +8761,6 @@
 <translation id="7758884017823246335">サイト内検索を追加</translation>
 <translation id="7759809451544302770">省略可</translation>
 <translation id="7762024824096060040">このアカウントを使用することはできません</translation>
-<translation id="7762243782113123335">エラーが発生しました。説明に #bruschetta と入力してフィードバックを送信してください。エラーコード: <ph name="ERROR" />。</translation>
 <translation id="7764225426217299476">住所を追加</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" />（<ph name="DOWNLOAD_DOMAIN" /> から）</translation>
 <translation id="7764527477537408401">新しいウィンドウでグループを開く</translation>
@@ -9251,7 +9246,6 @@
 <translation id="810185532889603849">カスタム色</translation>
 <translation id="8101987792947961127">次回の再起動時に Powerwash が必要</translation>
 <translation id="8102139037507939978">system_logs.txt から個人を特定できる情報を削除する。</translation>
-<translation id="8102344699913991108">この設定により、サイトはユーザーの操作に関係なく常に没入型の全画面表示モードになります</translation>
 <translation id="810362914482827094">パスキーを検索</translation>
 <translation id="8104088837833760645">eSIM プロファイルのダウンロード</translation>
 <translation id="8105273883928376822">続行するにはログインしてください。</translation>
@@ -9472,7 +9466,6 @@
 <translation id="8272443605911821513">拡張機能を管理するには、[その他のツール] メニューの [拡張機能] をクリックします。</translation>
 <translation id="8272786333453048167">もう一度許可</translation>
 <translation id="8273905181216423293">今すぐダウンロード</translation>
-<translation id="8274495289680107339">サイトはこの設定を使用して、ピクチャー イン ピクチャーを自動的に開始します。これにより、動画の視聴を続行しながら、画面で他のタスクを行うことができます。</translation>
 <translation id="827488840488530039">アクセスしようとしているページで Kerberos チケットを確認できませんでした</translation>
 <translation id="8274921654076766238">キーボード フォーカスに合わせた拡大鏡</translation>
 <translation id="8274924778568117936">アップデートが完了するまでは、<ph name="DEVICE_TYPE" /> の電源を切ったり蓋を閉じたりしないでください。インストールが完了すると、<ph name="DEVICE_TYPE" /> は再起動します。</translation>

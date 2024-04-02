@@ -349,7 +349,6 @@
 <translation id="125220115284141797">ነባሪ</translation>
 <translation id="1252219782845132919">ቡድንን ደብቅ</translation>
 <translation id="1252987234827889034">የመገለጫ ስህተት ተከስቷል</translation>
-<translation id="1253664522045778676">አንድ ውጤት ላይ ጠቅ ያድርጉ እና ገጹ በአሁኑ ትርዎ ውስጥ ይከፈታል</translation>
 <translation id="1254593899333212300">ቀጥተኛ የበይነመረብ ግንኙነት</translation>
 <translation id="1256588359404100567">ቅንብር ከእርስዎ የቀድሞ መሣሪያ ሰምሯል።</translation>
 <translation id="1257336506558170607">የተመረጠውን የእውቅና ማረጋገጫ ወደ ውጭ ላክ</translation>
@@ -1209,7 +1208,6 @@
 <translation id="1887210448491286312">ትርን ወደ <ph name="DEVICE_NAME" /> cast ማድረግን አቁም</translation>
 <translation id="1887442540531652736">የመግባት ስህተት</translation>
 <translation id="1887597546629269384">እንደገና «Hey Google» ይበሉ</translation>
-<translation id="1889091146873278175">በአንድ የጎን ፓነል ውስጥ ያሉ ተጨማሪ የፍለጋ ውጤቶችን ለማየት የ«G» አዝራር ላይ ጠቅ ያድርጉ</translation>
 <translation id="1890026367080681123">ወደ የተከተቱ የይዘት ቅንብሮች ይሂዱ</translation>
 <translation id="189035593835762169">የአገልግሎት ውል</translation>
 <translation id="1891362123137972260">የዲስክ ቦታ በጣም ዝቅተኛ ነው። እባክዎ የዲስክ ቦታ ያስለቅቁ።</translation>
@@ -6278,7 +6276,6 @@
 <translation id="5804241973901381774">ፍቃዶች</translation>
 <translation id="5804259315582798390">የአካባቢያዊ ውሂብ መልሶ ማግኘትን ማንቃት አልተሳካም</translation>
 <translation id="5805268472388605531">የአጽንዖት ምልክቶች እና ልዩ ቁምፊዎችን ለማየት የቁልፍ ሰሌዳ ቁልፎችን ተጭነው ይያዙ</translation>
-<translation id="5805354171420804923">በአዲሱ የጎን ፓነል በፍጥነት የፍለጋ ውጤቶችን ያወዳድሩ</translation>
 <translation id="5805697420284793859">የWindow አስተዳዳሪ</translation>
 <translation id="5806447147478173900">በሚታዩት ጣቢያዎች ሥራ ላይ የዋለው ጠቅላላ ማከማቻ፦ <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (ነባሪ)</translation>
@@ -7422,7 +7419,6 @@
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" />ን በመጠቀም አገናኝ</translation>
 <translation id="6710213216561001401">ቀዳሚ</translation>
 <translation id="6710394144992407503">በድረ-ገጾች ላይ ጽሁፍ በሚተይቡበት ጊዜ የፊደል ስህተቶችን ይፈትሹ</translation>
-<translation id="671226373742585927">የጎን ፓነልን ለመዝጋት የ«X» አዝራር ላይ ጠቅ ያድርጉ</translation>
 <translation id="6712943853047024245">ለ<ph name="WEBSITE" /> ከዚህ የተጠቃሚ ስም ጋር የይለፍ ቃል አስቀድመው አስቀምጠዋል</translation>
 <translation id="6713233729292711163">የስራ መገለጫን አክል</translation>
 <translation id="6713441551032149301">በተግባር ቁልፎች እና የሥርዓት ከፍተኛ ረድፍ ቁልፎች መካከል ለመለዋወጥ የማስጀመሪያውን ቁልፍ ይጫኑ</translation>
@@ -8790,7 +8786,6 @@
 <translation id="7758884017823246335">የጣቢያ ፍለጋን ያክሉ</translation>
 <translation id="7759809451544302770">አስገዳጅ ያልሆነ</translation>
 <translation id="7762024824096060040">ይህንን መለያ መጠቀም አይችሉም</translation>
-<translation id="7762243782113123335">ይቅርታ፣ የሆነ ችግር ተፈጥሯል። እባክዎ በመግለጫው ውስጥ #bruschettaን በማካተት ግብረመልስ ያስገቡ። የስህተት ኮድ <ph name="ERROR" /> ነው።</translation>
 <translation id="7764225426217299476">አድራሻ አክል</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> ከ<ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764527477537408401">ቡድንን በአዲስ መስኮት ክፈት</translation>
@@ -9281,7 +9276,6 @@ nil</translation>
 <translation id="810185532889603849">ብጁ ቀለም</translation>
 <translation id="8101987792947961127">በቀጣዩ ዳግም ማስነሳት ላይ Powerwash  ያስፈልጋል</translation>
 <translation id="8102139037507939978">በግል ሊለይ የሚችል መረጃን ከ system_logs.txt ያውጡ።</translation>
-<translation id="8102344699913991108">ጣቢያዎች የተጠቃሚ ምልክቶችን ከግምት ሳያስገባ መሳጭ የሙሉ ማያ ገጽ ተሞክሮዎችን ለማቅረብ ይህንን ቅንብር ይጠቀማሉ</translation>
 <translation id="810362914482827094">የይለፍ ቁልፎችን ይፈልጉ</translation>
 <translation id="8104088837833760645">የኢሲም መገለጫ አውርድ</translation>
 <translation id="8105273883928376822">ለመቀጠል እባክዎ በመለያ ይግቡ።</translation>
@@ -9502,7 +9496,6 @@ nil</translation>
 <translation id="8272443605911821513">በ«ተጨማሪ መሣሪያዎች» ምናሌው ውስጥ ቅጥያዎች የሚለውን ጠቅ በማድረግ ቅጥያዎችዎን ያቀናብሩ።</translation>
 <translation id="8272786333453048167">እንደገና ፍቀድ</translation>
 <translation id="8273905181216423293">አሁን አውርድ</translation>
-<translation id="8274495289680107339">ጣቢያዎች የስዕል-ላይ-ስዕልን በራስ-ሰር ለማስገባት ይህን ቅንብር ይጠቀማሉ። ይህ ማያ ገፅዎን ለሌሎች ተግባሮች ነፃ በሚያደርጉበት ወቅት ቪድዮ ማየት እንዲቀጥሉ ያስችልዎታል።</translation>
 <translation id="827488840488530039">ሊጎበኙት እየሞከሩ ያሉት ገፅ የእርስዎን የKerberos ቲኬቶች ለማረጋገጥ አልቻለም</translation>
 <translation id="8274921654076766238">ማጉያ የቁልፍ ሰሌዳ ትኩረትን ይከተላል</translation>
 <translation id="8274924778568117936">ዝማኔው እስኪጨርስ ድረስ የእርስዎን <ph name="DEVICE_TYPE" /> አያጥፉት ወይም አይዝጉት። መጫኑ ከተጠናቀቀ በኋላ የእርስዎ <ph name="DEVICE_TYPE" /> ዳግም ይነሳል።</translation>

@@ -271,6 +271,7 @@
 <translation id="2446553403094072641">ஃப்லோட்டிங் பாயிண்ட் துல்லியத்தன்மை</translation>
 <translation id="2448312741937722512">வகை</translation>
 <translation id="2465272316171730950">தற்போது அதிகமானோர் பயன்படுத்துகின்றனர். சிறிது நேரம் கழித்து முயலவும்.</translation>
+<translation id="2472215337771558851">Google AI வழங்கும் ‘எழுத எனக்கு உதவு’ கருவி மூலம் வரைவை உருவாக்கலாம், ஏற்கெனவே உள்ளவற்றை மேம்படுத்தலாம்</translation>
 <translation id="2480572840229215612">நண்டுகள்</translation>
 <translation id="248546197012830854">சாதனம் ஆஃப்லைனில் உள்ளது. உதவி உள்ளடக்கத்தைப் பார்க்க வைஃபை நெட்வொர்க்குடன் இணைக்கவும்.</translation>
 <translation id="2486301288428798846">மரம்</translation>
@@ -328,10 +329,12 @@
 <translation id="2860473693272905224">ஸ்கேனரில் மற்றொரு பக்கத்தை வைக்கவும்</translation>
 <translation id="2872961005593481000">நிறுத்து</translation>
 <translation id="2873483161362553159">உலாவி வழிசெலுத்தல்</translation>
+<translation id="2873939192640533085">"இன்னும் உறுதியாகச் சொல்" போன்ற ப்ராம்ப்ட்டை டைப் செய்யவும்</translation>
 <translation id="2874939134665556319">முந்தைய டிராக்</translation>
 <translation id="2875812231449496375">இந்த வால்பேப்பர் சிறப்பாகக் காட்டப்பட இதை இயக்கவும். இந்த அமைப்பை எப்போது வேண்டுமானாலும் முடக்கலாம்.</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> வினாடிகளில் <ph name="RATE" /> சார்ஜ் இறங்கியது.</translation>
 <translation id="2880569433548999039">கிளவுடு ஃப்ளோ ஸ்கிரீன் சேவர்</translation>
+<translation id="2888298276507578975">"நன்றியுரையை எழுது" போன்ற ப்ராம்ப்ட்டை டைப் செய்யவும்</translation>
 <translation id="2890557891229184386">வெப்பமண்டலத் தீவு</translation>
 <translation id="2895772081848316509">அடர்த்தியான</translation>
 <translation id="2926057806159140518">உங்கள் பயனர்பெயரையும் கடவுச்சொல்லையும் டைப் செய்யவும் அல்லது QR குறியீட்டை ஸ்கேன் செய்யவும்</translation>
@@ -376,6 +379,7 @@
 <translation id="3226405216343213872">ஸ்கேனர்களைத் தேடுகிறது</translation>
 <translation id="3226657629376379887">தளவமைப்புகளுக்கான செயல்பாட்டு மெனு</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> மதிப்பை <ph name="CONVERSION_RATE" /> ஆல் வகுக்கவும்</translation>
+<translation id="3237710083340813756">மீண்டும் எழுதுதல்</translation>
 <translation id="3246869037381808805">1 நாளுக்கும் முன்னதாக உள்ள பிரிண்ட்டிங் பணிகள் அகற்றப்படும்</translation>
 <translation id="324961752321393509">இந்த ஆப்ஸை மூடுவதை உங்கள் நிர்வாகி அனுமதிக்கவில்லை</translation>
 <translation id="3268178239013324452">பிரிண்டரின் மூடி திறந்துள்ளதால் அச்சிட முடியவில்லை</translation>
@@ -414,6 +418,7 @@
 <translation id="346539236881580388">மீண்டும் எடு</translation>
 <translation id="3484914941826596830">நிலைபொருளைப் புதுப்பிக்கும்போது இந்த வெளிப்புறச் சாதனத்தின் இணைப்பைத் துண்டிக்கவோ உங்கள் கம்ப்யூட்டரை ஷட் டவுன் செய்யவோ கூடாது. இந்தச் சாளரத்தைச் சிறிதாக்கிக்கொள்ளலாம். இந்தப் புதுப்பிப்பு நிறைவடைய சில நிமிடங்கள் ஆகலாம். அதுவரை உங்கள் வெளிப்புறச் சாதனத்தில் வேறு எதுவும் செய்ய முடியாமல் போகலாம்.</translation>
 <translation id="3486220673238053218">விளக்கம்</translation>
+<translation id="3487866404496702283">Mahi அம்சத்திற்கான கருத்து</translation>
 <translation id="3488065109653206955">பகுதியளவு செயலாக்கப்பட்டது</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> வண்ணங்களுடைய <ph name="OFFICE_STYLE" /> அலுவலகம்</translation>
 <translation id="3493187369049186498">டேட்டாவை உங்கள் Chromebook அளவிடுகிறது. இது வழங்குநர் டேட்டாவிலிருந்து வேறுபடலாம்.</translation>
@@ -442,6 +447,7 @@
 <translation id="3621072146987826699">யானைகள்</translation>
 <translation id="3632579075709132555">தனிப்பட்ட திரையை இயக்கும்/முடக்கும்</translation>
 <translation id="3651050199673793219">வெப்பநிலை அலகைத் தேர்ந்தெடுக்கும்</translation>
+<translation id="3661106764436337772">விரைவாகவும் கூடுதல் நம்பிக்கையுடனும் எழுதுங்கள்</translation>
 <translation id="3662461537616691585">பர்கண்டி மற்றும் கருஞ்சிவப்பு</translation>
 <translation id="3668449597372804501">கிளவுடு ஃப்ளோ வால்பேப்பர்</translation>
 <translation id="3675132884790542448">பன்றிகள்</translation>
@@ -585,6 +591,7 @@
 <translation id="4503441351962730761">நவீன ஓவியம்</translation>
 <translation id="4507392511610824664">ஒளிர்வை அதிகரிப்பதற்கான ஐகான்</translation>
 <translation id="4511264077854731334">போர்ட்டல்</translation>
+<translation id="4513946894732546136">கருத்து</translation>
 <translation id="4521826082652183069">சான்றிதழின் மாற்றுப் பெயர் பொருத்தம்</translation>
 <translation id="4522570452068850558">விவரங்கள்</translation>
 <translation id="4536864596629708641">IP உள்ளமைவு</translation>
@@ -757,6 +764,7 @@
 <translation id="5543701552415191873">பூட்டப்பட்டுள்ளது</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">சூரிய அஸ்தமனத்தின்போது தானாகவே டார்க் தீமிற்கு மாறும்</translation>
+<translation id="556042886152191864">பட்டன்</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_COLOR" /> ஷேட்களில் <ph name="TERRAIN_FEATURE" /></translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">மீண்டும் ஸ்கேன் செய்</translation>
@@ -875,6 +883,7 @@
 <translation id="6235460611964961764">டேட்டா உபயோகத்தை நீங்களே ரீசெட் செய்யுங்கள்</translation>
 <translation id="6243280677745499710">தற்போது அமைக்கப்பட்டுள்ளது</translation>
 <translation id="6250316632541035980">பன்றிக்கறி உப்புக்கண்டமும் முட்டைகளும்</translation>
+<translation id="6255213378196499011">’எழுத எனக்கு உதவு’ அமைப்புகள்</translation>
 <translation id="6275224645089671689">வலது அம்புக்குறி</translation>
 <translation id="6278428485366576908">தீம்</translation>
 <translation id="6280912520669706465">ARC</translation>

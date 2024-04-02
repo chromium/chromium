@@ -271,6 +271,7 @@
 <translation id="2446553403094072641">دقت نقطه شناور</translation>
 <translation id="2448312741937722512">نوع</translation>
 <translation id="2465272316171730950">تکمیل شده است. لطفاً کمی بعد دوباره سر بزنید.</translation>
+<translation id="2472215337771558851">‏بااستفاده از «کمک به نوشتن»، پیش‌نویس تهیه کنید یا کار موجود را پالایش کنید؛ از هوش مصنوعی Google بهره می‌گیرد</translation>
 <translation id="2480572840229215612">خرچنگ</translation>
 <translation id="248546197012830854">‏دستگاه آفلاین است. برای دیدن محتوای راهنما، به شبکه Wi-Fi متصل شوید.</translation>
 <translation id="2486301288428798846">چوب</translation>
@@ -328,10 +329,12 @@
 <translation id="2860473693272905224">صفحه دیگری روی اسکنر قرار دهید</translation>
 <translation id="2872961005593481000">خاموش کردن</translation>
 <translation id="2873483161362553159">پیمایش در مرورگر</translation>
+<translation id="2873939192640533085">پیام‌واره‌ای مثل «با قاطعیت بیشتری بنویس» را وارد کنید</translation>
 <translation id="2874939134665556319">آهنگ قبلی</translation>
 <translation id="2875812231449496375">برای دریافت بهترین نتیجه از این کاغذدیواری، این گزینه را روشن کنید. هر زمان خواستید می‌توانید این تنظیم را خاموش کنید.</translation>
 <translation id="2878387241690264070"><ph name="RATE" /> در <ph name="NUM_SECONDS" /> ثانیه تخلیه شد.</translation>
 <translation id="2880569433548999039">محافظ صفحه جریان ابر</translation>
+<translation id="2888298276507578975">پیام‌واره‌ای مثل «پیام تشکر بنویس» را وارد کنید</translation>
 <translation id="2890557891229184386">جزیره استوایی</translation>
 <translation id="2895772081848316509">تیره</translation>
 <translation id="2926057806159140518">نام کاربری و گذرواژه‌تان را وارد کنید یا رمزینه پاسخ‌سریع را اسکن کنید</translation>
@@ -376,6 +379,7 @@
 <translation id="3226405216343213872">درحال جستجوی اسکنرها</translation>
 <translation id="3226657629376379887">منوی کنش‌های طرح‌بندی</translation>
 <translation id="3227186760713762082">تقسیم مقدار <ph name="CATEGORY_TEXT" /> بر <ph name="CONVERSION_RATE" /></translation>
+<translation id="3237710083340813756">بازنویسی</translation>
 <translation id="3246869037381808805">کارهای چاپ قدیمی‌تر از ۱ روز برداشته می‌شوند</translation>
 <translation id="324961752321393509">سرپرستتان اجازه نمی‌دهد این برنامه را ببندید</translation>
 <translation id="3268178239013324452">انجام نشد - در باز است</translation>
@@ -414,6 +418,7 @@
 <translation id="346539236881580388">عکس گرفتن مجدد</translation>
 <translation id="3484914941826596830">وقتی سفت‌افزار درحال به‌روزرسانی است، این دستگاه خارجی را جدا نکنید و رایانه را خاموش نکنید. می‌توانید این پنجره را کمینه کنید. این به‌روزرسانی ممکن است چند دقیقه طول بکشد و در این مدت ممکن است دستگاه خارجی‌تان کار نکند.</translation>
 <translation id="3486220673238053218">معنی</translation>
+<translation id="3487866404496702283">‏بازخورد درباره ویژگی mahi</translation>
 <translation id="3488065109653206955">به‌طور نسبی فعال شده است</translation>
 <translation id="3492882532495507361">دفتر کار <ph name="OFFICE_STYLE" /> با رنگ‌های <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">‏دستگاه Chromebook شما میزان مصرف داده را اندازه‌گیری می‌کند. مقدار آن ممکن است با اندازه‌گیری رساننده خدمات متفاوت باشد.</translation>
@@ -442,6 +447,7 @@
 <translation id="3621072146987826699">فیل</translation>
 <translation id="3632579075709132555">پنهان/ نمایان کردن صفحه حریم خصوصی</translation>
 <translation id="3651050199673793219">انتخاب واحد دما</translation>
+<translation id="3661106764436337772">سریع‌تر و با قاطعیت بیشتر بنویسید</translation>
 <translation id="3662461537616691585">شرابی و زرشکی</translation>
 <translation id="3668449597372804501">کاغذدیواری جریان ابر</translation>
 <translation id="3675132884790542448">خوک</translation>
@@ -585,6 +591,7 @@
 <translation id="4503441351962730761">هنر مدرن</translation>
 <translation id="4507392511610824664">افزایش روشنایی</translation>
 <translation id="4511264077854731334">پورتال</translation>
+<translation id="4513946894732546136">بازخورد</translation>
 <translation id="4521826082652183069">مطابقت نام جایگزین موضوع</translation>
 <translation id="4522570452068850558">جزئیات</translation>
 <translation id="4536864596629708641">‏پیکربندی IP</translation>
@@ -757,6 +764,7 @@
 <translation id="5543701552415191873">قفل‌شده</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">رفتن خودکار به زمینه تیره هنگام غروب</translation>
+<translation id="556042886152191864">دکمه</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> با طیف <ph name="TERRAIN_COLOR" /></translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">اسکن مجدد</translation>
@@ -875,6 +883,7 @@
 <translation id="6235460611964961764">بازنشانی دستی مصرف داده</translation>
 <translation id="6243280677745499710">درحال حاضر تنظیم‌ شده است</translation>
 <translation id="6250316632541035980">گوشت و تخم‌مرغ</translation>
+<translation id="6255213378196499011">تنظیمات «کمک به نوشتن»</translation>
 <translation id="6275224645089671689">جهت‌نمای راست</translation>
 <translation id="6278428485366576908">زمینه</translation>
 <translation id="6280912520669706465">ARC</translation>

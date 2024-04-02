@@ -271,6 +271,7 @@
 <translation id="2446553403094072641">Katumpakan ng floating point</translation>
 <translation id="2448312741937722512">Uri</translation>
 <translation id="2465272316171730950">Puno kami ngayon. Bumalik sa loob ng ilang sandali.</translation>
+<translation id="2472215337771558851">Gamitin ang Tulungan akong magsulat para gumawa ng draft o magpino ng dati nang gawa, na pinapagana ng Google AI</translation>
 <translation id="2480572840229215612">mga alimango</translation>
 <translation id="248546197012830854">Offline ang device. Kumonekta sa Wi-Fi network para makita ang content ng tulong.</translation>
 <translation id="2486301288428798846">kahoy</translation>
@@ -328,10 +329,12 @@
 <translation id="2860473693272905224">Maglagay ng isa pang pahina sa scanner</translation>
 <translation id="2872961005593481000">Shut down</translation>
 <translation id="2873483161362553159">Pag-navigate sa browser</translation>
+<translation id="2873939192640533085">Maglagay ng prompt na tulad ng "gawing mas may kumpiyansa ang dating"</translation>
 <translation id="2874939134665556319">Nakaraang track</translation>
 <translation id="2875812231449496375">I-on ito para sa pinakamahuhusay na resulta sa wallpaper na ito. Puwede mong i-off ang setting na ito anumang oras.</translation>
 <translation id="2878387241690264070">Nag-discharge nang <ph name="RATE" /> sa loob ng <ph name="NUM_SECONDS" /> (na) segundo.</translation>
 <translation id="2880569433548999039">Screen saver na paggalaw ng ulap</translation>
+<translation id="2888298276507578975">Maglagay ng prompt na tulad ng "magsulat ng mensahe ng pasasalamat"</translation>
 <translation id="2890557891229184386">tropikal na isla</translation>
 <translation id="2895772081848316509">madilim</translation>
 <translation id="2926057806159140518">Ilagay ang iyong username at password o i-scan ang iyong QR code</translation>
@@ -376,6 +379,7 @@
 <translation id="3226405216343213872">Naghahanap ng mga scanner</translation>
 <translation id="3226657629376379887">Menu ng mga pagkilos sa layout</translation>
 <translation id="3227186760713762082">I-divide ang value ng <ph name="CATEGORY_TEXT" /> sa <ph name="CONVERSION_RATE" /></translation>
+<translation id="3237710083340813756">I-rewrite</translation>
 <translation id="3246869037381808805">Aalisin ang mga pag-print na lampas 1 araw na</translation>
 <translation id="324961752321393509">Hindi pinapayagan ng iyong administrator na isara ang app na ito</translation>
 <translation id="3268178239013324452">Hindi na-print - Nakabukas ang takip</translation>
@@ -414,6 +418,7 @@
 <translation id="346539236881580388">Kunan ulit</translation>
 <translation id="3484914941826596830">Habang nag-a-update ang firmware, huwag alisin sa pagkakasaksak ang external device na ito o i-shut down ang iyong computer. Puwede mong i-minimize ang window na ito. Posibleng tumagal nang ilang minuto ang update na ito at posibleng hindi gumana ang iyong external device sa panahong ito.</translation>
 <translation id="3486220673238053218">kahulugan</translation>
+<translation id="3487866404496702283">Feedback para sa mahi na feature</translation>
 <translation id="3488065109653206955">Bahagyang na-activate</translation>
 <translation id="3492882532495507361">Isang <ph name="OFFICE_STYLE" /> na opisina na may mga <ph name="OFFICE_COLOR" /> na tone</translation>
 <translation id="3493187369049186498">Sinusukat ng iyong Chromebook ang data. Posibleng naiiba ito sa data ng provider.</translation>
@@ -442,6 +447,7 @@
 <translation id="3621072146987826699">mga elepante</translation>
 <translation id="3632579075709132555">Toggle ng Privacy screen</translation>
 <translation id="3651050199673793219">Pumili ng unit ng temperatura</translation>
+<translation id="3661106764436337772">Magsulat nang mas mabilis at mas may kumpiyansa</translation>
 <translation id="3662461537616691585">burgundy at maroon</translation>
 <translation id="3668449597372804501">Wallpaper na paggalaw ng ulap</translation>
 <translation id="3675132884790542448">mga baboy</translation>
@@ -585,6 +591,7 @@
 <translation id="4503441351962730761">modernong sining</translation>
 <translation id="4507392511610824664">taasan ang liwanag</translation>
 <translation id="4511264077854731334">Portal</translation>
+<translation id="4513946894732546136">Feedback</translation>
 <translation id="4521826082652183069">Pagtugma sa alternatibong pangalan ng subject</translation>
 <translation id="4522570452068850558">Mga Detalye</translation>
 <translation id="4536864596629708641">Configuration ng IP</translation>
@@ -757,6 +764,7 @@
 <translation id="5543701552415191873">naka-lock</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Awtomatikong lumipat sa madilim na tema sa paglubog ng araw</translation>
+<translation id="556042886152191864">Pindutan</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> na nasa shade ng <ph name="TERRAIN_COLOR" /></translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Mag-scan ulit</translation>
@@ -875,6 +883,7 @@
 <translation id="6235460611964961764">Manual na i-reset ang paggamit ng data</translation>
 <translation id="6243280677745499710">Kasalukuyang nakatakda</translation>
 <translation id="6250316632541035980">mga bacon at itlog</translation>
+<translation id="6255213378196499011">Mga setting ng Tulungan akong magsulat</translation>
 <translation id="6275224645089671689">Pakanang arrow</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>

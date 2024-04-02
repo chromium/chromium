@@ -30,7 +30,6 @@
 <translation id="109942774857561566">Би уйдаж байна</translation>
 <translation id="1104084341931202936">Нэвтрэлтийн тохиргоог харуулах</translation>
 <translation id="1104621072296271835">Таны төхөөрөмжүүд хамтдаа илүү сайн ажилладаг</translation>
-<translation id="1106446201446919638">1 төхөөрөмж холбогдсон. Сүлжээний цэг ашиглах үед Wi-Fi унтраалттай байх болно.</translation>
 <translation id="1111021433905331574">Та гарынхаа арын гэрлийн өнгийг Тохиргоо &gt; <ph name="APP_TITLE" /> хэсэгт өөрчлөх боломжтой</translation>
 <translation id="1117719261843403176">Мобайл датаг асаана уу/унтраана уу. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">Autohide shelf</translation>
@@ -428,6 +427,7 @@
 <translation id="2785499565474703580">1 төхөөрөмж холбогдсон</translation>
 <translation id="2791421900609674576">Та зөвлөмжүүд харах бөгөөд ингэснээр орхисон газраасаа үргэлжлүүлэх боломжтой.  Та зөвлөмжүүдийг хасахын тулд удаан дарж болно.</translation>
 <translation id="2792498699870441125">Alt+ Хайлт</translation>
+<translation id="2801954693771979815">Дэлгэцийн хэмжээ</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, сонгосон</translation>
 <translation id="2805756323405976993">Програм</translation>
 <translation id="2814448776515246190">Хэсэгчилсэн зураг авах</translation>
@@ -518,7 +518,6 @@
 <translation id="316086887565479535">Загвар дахь дэмжигдээгүй аппууд</translation>
 <translation id="3160929076476941240">2ц</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> таны <ph name="DEVICE_TYPE" />-г өмнөх хувилбар луу нь буцааж байна. Таны төхөөрөмжийг шинэчилж, бүх өгөгдлийг устгана.</translation>
-<translation id="3170769098533255179">Ямар ч төхөөрөмж холбогдоогүй. Сүлжээний цэг ашиглах үед Wi-Fi унтраалттай байх болно.</translation>
 <translation id="3171170659304083361">Оруулах аргын тохиргоо</translation>
 <translation id="3176221688814061633">Таны Chromebook эсвэл Bluetooth төхөөрөмж Bluetooth-н хуучин хувилбарыг ашиглаж байна. Аудионы чанарыг илүү сайжруулахын тулд Bluetooth-н супер нягтралыг асаах эсвэл дотоод микрофоныг ашиглана уу.</translation>
 <translation id="3181441307743005334">Дахин эхлүүлэхэд хэдэн хором шаардлагатай байж болзошгүй</translation>
@@ -553,7 +552,6 @@
 <translation id="3306386552969601301"><ph name="DEVICE_NAME" />-н сүлжээний цэгтэй <ph name="DEVICECOUNT" /> төхөөрөмж холбогдсон</translation>
 <translation id="3307642347673023554">Зөөврийн компьютерын горим руу сэлгэсэн</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> дараа нэвтрэх боломжтой хэвээр байна.</translation>
-<translation id="3317779231018057649"><ph name="DEVICECOUNT" /> төхөөрөмж холбогдсон. Сүлжээний цэг ашиглах үед Wi-Fi унтраалттай байх болно.</translation>
 <translation id="3321628682574733415">Эцэг эхийн код буруу байна</translation>
 <translation id="332827762492701193">Мэдэгдлийг нуусан</translation>
 <translation id="3333674550998107387"><ph name="NOTIFICATION_TITLE" /> мэдэгдлийг дэлгэх</translation>
@@ -854,6 +852,7 @@
 <translation id="440113666232554208">Дэлгэцийн видео бичлэгийг хадгалах боломжгүй</translation>
 <translation id="4405151984121254935">Холбогдсон нэмэлтийн төрлийг дэмждэггүй</translation>
 <translation id="4406883609789734330">Шууд тайлбар</translation>
+<translation id="4412698727486357573">Тусламжийн төв</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> унтраалттай байна.</translation>
 <translation id="4424159417645388645">Дэлгэц 5</translation>
 <translation id="4430019312045809116">Хэмжээ</translation>
@@ -894,7 +893,6 @@
 <translation id="4566144812051858745">Ямар ч зөвлөмж сонирхохгүй байна</translation>
 <translation id="4569753163207712681">Утасныхаа саяхны зураг, медиа болон аппуудыг харах</translation>
 <translation id="4573176682887762361">"[Үг / хэллэг] бичих"</translation>
-<translation id="4577188182049003486">Сүлжээний цэг асаалттай байхад Wi-Fi унтраалттай байна</translation>
 <translation id="4577274620589681794">Цаг дууслаа · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Урьдчилан үзэлтийг харуулах</translation>
 <translation id="4578906031062871102">Тохиргооны цэсийг нээсэн</translation>
@@ -1152,7 +1150,6 @@
 <translation id="5550417424894892620">Файлуудыг <ph name="HOLDING_SPACE_TITLE" />-д нэмэхийн тулд тэдгээрийг дэлгэцэд буулгана уу. Та дэлгэцэд файлууд нэмэх боломжгүй.</translation>
 <translation id="5551456515017410630">Календарийг нээх/хаах</translation>
 <translation id="5551974246223970793">Хуудаснаас хайж байхдаа хайлтын дараагийн тохирол руу очих</translation>
-<translation id="5555639311269196631">Сүлжээний цэгийг унтраах</translation>
 <translation id="5556459405103347317">Дахин ачаал</translation>
 <translation id="5558091555391176027">Ойролцоо хуваалцах онцлогийн өндөр харагдцыг асаана уу/унтраана уу</translation>
 <translation id="5558314826121965174">Бүтээлч байдал</translation>
@@ -1787,6 +1784,7 @@
 <translation id="799296642788192631">Та чухал файлуудыг бэхлэх боломжтой. Бэхлэхийн тулд зүйл дээгүүр курсорыг зөөх эсвэл Файлсыг нээж, зүйл дээр баруун талыг товшино уу.</translation>
 <translation id="7994370417837006925">Олон тооны нэвтрэлт</translation>
 <translation id="7995804128062002838">Дэлгэцийн зургийг авч чадсангүй</translation>
+<translation id="8000020256436988724">Самбар</translation>
 <translation id="8000066093800657092">Ямар ч сүлжээ алга байна</translation>
 <translation id="8001755249288974029">Курсороос мөрийн эхлэл хүртэлх текстийг сонгох</translation>
 <translation id="8004512796067398576">Тоон өсөлт</translation>
@@ -1986,6 +1984,7 @@
 <translation id="8834539327799336565">Одоогоор холбогдсон</translation>
 <translation id="8841375032071747811">Буцах товчлуур</translation>
 <translation id="8843682306134542540">Эргүүлэлтийн түгжээг унтрааж/асаана уу. <ph name="STATE_TEXT" /></translation>
+<translation id="8845001906332463065">Тусламж авах</translation>
 <translation id="8849001918648564819">Нуусан</translation>
 <translation id="8853703225951107899">Таны ПИН эсвэл нууц үгийг баталгаажуулж чадаагүй хэвээрээ байна. Тайлбар: Хэрэв та нууц үгээ саяхан сольсон бол хуучин нууц үгээ ашиглана уу. Таныг гарсны дараа, шинэ нууц үгийг ашиглах боломжтой болно.</translation>
 <translation id="8855885154700222542">Бүтэн дэлгэцийн түлхүүр</translation>

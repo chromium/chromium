@@ -271,6 +271,7 @@
 <translation id="2446553403094072641">浮点准确性</translation>
 <translation id="2448312741937722512">类型</translation>
 <translation id="2465272316171730950">我们已达到容量上限。请稍后再回来查看。</translation>
+<translation id="2472215337771558851">使用 Google AI 赋能的“帮我写”功能撰写草稿或润色现有内容</translation>
 <translation id="2480572840229215612">螃蟹</translation>
 <translation id="248546197012830854">设备处于离线状态。您需要连接到 Wi-Fi 网络才能查看相关的帮助内容。</translation>
 <translation id="2486301288428798846">木材</translation>
@@ -328,10 +329,12 @@
 <translation id="2860473693272905224">将另一个页面放置在扫描仪上</translation>
 <translation id="2872961005593481000">关机</translation>
 <translation id="2873483161362553159">浏览器导航</translation>
+<translation id="2873939192640533085">输入提示，例如“让语气显得更自信”</translation>
 <translation id="2874939134665556319">上一首</translation>
 <translation id="2875812231449496375">启用此设置可让该壁纸呈现最佳效果。您可以随时关闭此设置。</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> 秒内释放了 <ph name="RATE" /> 的电量。</translation>
 <translation id="2880569433548999039">“云朵的动态变化”屏保</translation>
+<translation id="2888298276507578975">输入提示，例如“写一封感谢信”</translation>
 <translation id="2890557891229184386">热带岛屿</translation>
 <translation id="2895772081848316509">深色</translation>
 <translation id="2926057806159140518">输入您的用户名和密码，或扫描您的二维码</translation>
@@ -376,6 +379,7 @@
 <translation id="3226405216343213872">正在搜寻扫描器</translation>
 <translation id="3226657629376379887">布局操作菜单</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" />值除以 <ph name="CONVERSION_RATE" /></translation>
+<translation id="3237710083340813756">重写</translation>
 <translation id="3246869037381808805">系统会自动移除存在时长已超过 1 天的打印任务</translation>
 <translation id="324961752321393509">您的管理员不允许关闭此应用</translation>
 <translation id="3268178239013324452">失败 - 机盖未关</translation>
@@ -414,6 +418,7 @@
 <translation id="346539236881580388">重拍</translation>
 <translation id="3484914941826596830">固件更新期间，请不要拔掉此外部设备的电源插头或关闭您的计算机。您可以最小化此窗口。此更新可能需要几分钟时间，在此期间，您的外部设备可能无法正常使用。</translation>
 <translation id="3486220673238053218">定义</translation>
+<translation id="3487866404496702283">针对 Mahi 功能的反馈</translation>
 <translation id="3488065109653206955">部分激活</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" />色调的<ph name="OFFICE_STYLE" />办公室</translation>
 <translation id="3493187369049186498">流量消耗是由 Chromebook 测得的，可能与提供商的数据不同。</translation>
@@ -442,6 +447,7 @@
 <translation id="3621072146987826699">大象</translation>
 <translation id="3632579075709132555">隐私保护屏幕开关</translation>
 <translation id="3651050199673793219">选择温度单位</translation>
+<translation id="3661106764436337772">写作更快更自信</translation>
 <translation id="3662461537616691585">酒红色和栗色</translation>
 <translation id="3668449597372804501">“云朵的动态变化”壁纸</translation>
 <translation id="3675132884790542448">猪</translation>
@@ -585,6 +591,7 @@
 <translation id="4503441351962730761">现代艺术</translation>
 <translation id="4507392511610824664">调高亮度</translation>
 <translation id="4511264077854731334">门户网站</translation>
+<translation id="4513946894732546136">反馈</translation>
 <translation id="4521826082652183069">主题备用名称匹配</translation>
 <translation id="4522570452068850558">详情</translation>
 <translation id="4536864596629708641">IP 配置</translation>
@@ -757,6 +764,7 @@
 <translation id="5543701552415191873">已锁定</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">日落时自动切换到深色主题</translation>
+<translation id="556042886152191864">按钮</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_COLOR" />色调的<ph name="TERRAIN_FEATURE" /></translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">重新扫描</translation>
@@ -875,6 +883,7 @@
 <translation id="6235460611964961764">手动重置流量使用情况</translation>
 <translation id="6243280677745499710">当前设置的壁纸</translation>
 <translation id="6250316632541035980">培根和鸡蛋</translation>
+<translation id="6255213378196499011">“帮我写”设置</translation>
 <translation id="6275224645089671689">向右</translation>
 <translation id="6278428485366576908">主题背景</translation>
 <translation id="6280912520669706465">ARC</translation>

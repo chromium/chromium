@@ -349,7 +349,6 @@
 <translation id="125220115284141797">Oletus</translation>
 <translation id="1252219782845132919">Piilota ryhmä</translation>
 <translation id="1252987234827889034">Profiilivirhe</translation>
-<translation id="1253664522045778676">Klikkaa tulosta, niin sivu avautuu nykyiselle välilehdelle</translation>
 <translation id="1254593899333212300">Suora internet-yhteys</translation>
 <translation id="1256588359404100567">Asetus synkronoitu edellisestä laitteestasi.</translation>
 <translation id="1257336506558170607">Vie valittu varmenne</translation>
@@ -1210,7 +1209,6 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1887210448491286312">Lopeta välilehden striimaus: <ph name="DEVICE_NAME" /></translation>
 <translation id="1887442540531652736">Sisäänkirjautumisvirhe</translation>
 <translation id="1887597546629269384">Sano taas OK Google</translation>
-<translation id="1889091146873278175">Näet lisää hakutuloksia sivupaneelissa klikkaamalla G-painiketta</translation>
 <translation id="1890026367080681123">Siirry upotetun sisällön asetuksiin</translation>
 <translation id="189035593835762169">Käyttöehdot</translation>
 <translation id="1891362123137972260">Levytila on erittäin vähissä. Vapauta levytilaa.</translation>
@@ -6274,7 +6272,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="5804241973901381774">Luvat</translation>
 <translation id="5804259315582798390">Paikallisen datan palauttamisen käyttöönotto epäonnistui</translation>
 <translation id="5805268472388605531">Näet aksenttimerkit ja erikoismerkit painamalla näppäimiä pitkään</translation>
-<translation id="5805354171420804923">Vertaile hakutuloksia aiempaa nopeammin uudella sivupaneelilla</translation>
 <translation id="5805697420284793859">Ikkunat</translation>
 <translation id="5806447147478173900">Näkyvien sivustojen käyttämä tallennustila yhteensä: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (oletus)</translation>
@@ -7416,7 +7413,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6709357832553498500">Yhdistä laajennuksella <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">Edellinen</translation>
 <translation id="6710394144992407503">Tarkista kirjoitusvirheet, kun kirjoitat tekstiä verkkosivuilla</translation>
-<translation id="671226373742585927">Sulje sivupaneeli klikkaamalla X-painiketta</translation>
 <translation id="6712943853047024245">Olet jo tallentanut tämän käyttäjänimen salasanan täällä: <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">Lisää työprofiili</translation>
 <translation id="6713441551032149301">Vaihda toimintonäppäinten ja järjestelmän ylärivin näppäinten välillä painamalla käynnistysohjelmanäppäintä pitkään</translation>
@@ -8782,7 +8778,6 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7758884017823246335">Lisää sivustohaku</translation>
 <translation id="7759809451544302770">Valinnainen</translation>
 <translation id="7762024824096060040">Tiliä ei voi käyttää</translation>
-<translation id="7762243782113123335">Jotain meni pieleen. Lähetä palautetta ja lisää kuvaukseen #bruschetta. Virhekoodi on <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Lisää osoite</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> verkkotunnuksesta <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764527477537408401">Avaa ryhmä uudessa ikkunassa</translation>
@@ -9267,7 +9262,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="810185532889603849">Oma väri</translation>
 <translation id="8101987792947961127">Powerwash vaaditaan seuraavan uudelleenkäynnistyksen yhteydessä</translation>
 <translation id="8102139037507939978">Poista henkilökohtaiset tunnistetiedot system_logs.txt-tiedostosta.</translation>
-<translation id="8102344699913991108">Sivustot käyttävät tätä asetusta immersiivisiin koko näytön kokemuksiin käyttäjäeleistä riippumatta</translation>
 <translation id="810362914482827094">Hae avainkoodeja</translation>
 <translation id="8104088837833760645">Lataa eSIM-profiili</translation>
 <translation id="8105273883928376822">Jatka kirjautumalla sisään.</translation>
@@ -9488,7 +9482,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8272443605911821513">Hallinnoi laajennuksiasi valitsemalla Lisätyökalut-valikossa Laajennukset.</translation>
 <translation id="8272786333453048167">Salli uudelleen</translation>
 <translation id="8273905181216423293">Lataa nyt</translation>
-<translation id="8274495289680107339">Tämän asetuksen avulla sivustot siirtyvät automaattisesti pikkuruututilaan. Näin voit jatkaa videon katselua ja tehdä samalla muita asioita näytöllä.</translation>
 <translation id="827488840488530039">Sivu, jolle yrität siirtyä, ei voinut vahvistaa Kerberos-tukipyyntöjäsi</translation>
 <translation id="8274921654076766238">Suurennus seuraa näppäimistön kohdistusta</translation>
 <translation id="8274924778568117936">Pidä <ph name="DEVICE_TYPE" /> päällä, kunnes päivitys on valmis. <ph name="DEVICE_TYPE" /> käynnistyy uudelleen, kun asennus on valmis.</translation>

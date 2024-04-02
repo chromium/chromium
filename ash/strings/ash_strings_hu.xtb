@@ -30,7 +30,6 @@
 <translation id="109942774857561566">Unatkozom</translation>
 <translation id="1104084341931202936">A kisegítő lehetőségekhez tartozó beállítások megjelenítése</translation>
 <translation id="1104621072296271835">Eszközei együtt még jobban működnek</translation>
-<translation id="1106446201446919638">Egy eszköz van csatlakoztatva. A hotspot használata közben a Wi-Fi kikapcsolva marad.</translation>
 <translation id="1111021433905331574">Lehetősége van a billentyűzet háttérvilágítása színének módosítására, amelyet a következő pontban tehet meg: Beállítások &gt; <ph name="APP_TITLE" /></translation>
 <translation id="1117719261843403176">Mobiladatok be-/kikapcsolása. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">Polc automatikus elrejtése</translation>
@@ -428,6 +427,7 @@
 <translation id="2785499565474703580">1 csatlakoztatott eszköz</translation>
 <translation id="2791421900609674576">Ajánlásokat tekinthet meg, hogy ott folytathassa, ahol abbahagyta. Érintéssel és nyomva tartással eltávolíthatja az ajánlásokat.</translation>
 <translation id="2792498699870441125">Alt + Keresés</translation>
+<translation id="2801954693771979815">Képernyő mérete</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, kiválasztva</translation>
 <translation id="2805756323405976993">Alkalmazások</translation>
 <translation id="2814448776515246190">Részleges rögzítés</translation>
@@ -518,7 +518,6 @@
 <translation id="316086887565479535">Nem támogatott alkalmazások találhatók a sablonban</translation>
 <translation id="3160929076476941240">2 óra</translation>
 <translation id="316356270129335934">A(z) <ph name="MANAGER" /> visszaállítja <ph name="DEVICE_TYPE" /> eszköze korábbi verzióját. Eszköze újra fog indulni, és minden adat törlődik róla.</translation>
-<translation id="3170769098533255179">Nincsenek csatlakoztatott eszközök. A hotspot használata közben a Wi-Fi kikapcsolva marad.</translation>
 <translation id="3171170659304083361">Beviteli módszerek beállításai</translation>
 <translation id="3176221688814061633">Chromebookja vagy Bluetooth-eszköze régebbi Bluetooth-verziót használ. Kapcsolja be a szuperfelbontású Bluetootht, vagy használjon belső mikrofont a jobb hangminőség érdekében.</translation>
 <translation id="3181441307743005334">Az újraindítás eltarthat egy ideig</translation>
@@ -553,7 +552,6 @@
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> eszköz csatlakozik a következő hotspothoz: <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">Visszaváltott laptop módra</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> később be tud jelentkezni.</translation>
-<translation id="3317779231018057649"><ph name="DEVICECOUNT" /> eszköz van csatlakoztatva. A hotspot használata közben a Wi-Fi kikapcsolva marad.</translation>
 <translation id="3321628682574733415">Érvénytelen szülői kód</translation>
 <translation id="332827762492701193">Az értesítések el vannak rejtve</translation>
 <translation id="3333674550998107387">A következővel kapcsolatos értesítés kibontása: <ph name="NOTIFICATION_TITLE" /></translation>
@@ -854,6 +852,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="440113666232554208">Nem sikerült a képernyőfelvétel mentése</translation>
 <translation id="4405151984121254935">A csatlakoztatott perifériatípus nem támogatott</translation>
 <translation id="4406883609789734330">Élő feliratozás</translation>
+<translation id="4412698727486357573">Súgó</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> kikapcsolva.</translation>
 <translation id="4424159417645388645">5. asztal</translation>
 <translation id="4430019312045809116">Hangerő</translation>
@@ -894,7 +893,6 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="4566144812051858745">Semmilyen javaslat nem érdekel</translation>
 <translation id="4569753163207712681">A telefon legutóbbi fotóinak, médiatartalmainak és alkalmazásainak megtekintése</translation>
 <translation id="4573176682887762361">„Type [word / phrase]” ([szó/kifejezés] begépelése)</translation>
-<translation id="4577188182049003486">Ha a hotspot be van kapcsolva, akkor a Wi-Fi ki van kapcsolva</translation>
 <translation id="4577274620589681794">Az idő lejárt · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Előnézetek megjelenítése</translation>
 <translation id="4578906031062871102">Beállítások menü megnyitva</translation>
@@ -1016,6 +1014,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="5003993274120026347">Következő mondat</translation>
 <translation id="5004607513195820459">Felügyelt hálózat</translation>
 <translation id="5009463889040999939">Profil átnevezése. Ez eltarthat néhány percig.</translation>
+<translation id="5013847959275396160">Eszköztár elrejtése</translation>
 <translation id="5016558321564993266">Jelölő be- vagy kikapcsolása. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Kategóriák keresése</translation>
 <translation id="5030659775136592441">A könyvjelzőkezelő megjelenítése</translation>
@@ -1152,7 +1151,6 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="5550417424894892620">Húzza a fájlokat az asztalra a következő helyre való hozzáadáshoz: <ph name="HOLDING_SPACE_TITLE" />. Nem adhat hozzá fájlokat az asztalhoz.</translation>
 <translation id="5551456515017410630">Naptár megnyitása vagy bezárása</translation>
 <translation id="5551974246223970793">Oldalkereséskor ugrás a következő keresési találatra</translation>
-<translation id="5555639311269196631">Hotspot kikapcsolása</translation>
 <translation id="5556459405103347317">Újratöltés</translation>
 <translation id="5558091555391176027">A Közeli megosztás funkció nagyfokú láthatóságának be-/kikapcsolása</translation>
 <translation id="5558314826121965174">Kreativitás</translation>
@@ -1787,6 +1785,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="799296642788192631">Kitűzheti a fontos fájlokat. A kitűzéshez mutasson az egérrel egy elemre, vagy nyissa meg a Fájlok alkalmazást, és kattintson jobb egérgombbal a kívánt elemre.</translation>
 <translation id="7994370417837006925">Többfiókos bejelentkezés</translation>
 <translation id="7995804128062002838">Nem sikerült képernyőfelvételt készíteni</translation>
+<translation id="8000020256436988724">Eszköztár</translation>
 <translation id="8000066093800657092">Nincs hálózat</translation>
 <translation id="8001755249288974029">Szöveg kijelölése a kurzortól a sor elejéig</translation>
 <translation id="8004512796067398576">Növelés</translation>
@@ -1900,6 +1899,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="847056008324733326">A megjelenítési méret beállításai</translation>
 <translation id="8473301994082929012">A(z) <ph name="ORGANIZATION_NAME" /> szervezetnél <ph name="FEATURE_STATE" /> van a(z) <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">A kikapcsoláshoz nyomja meg az Alt+Keresés billentyűkombinációt vagy a Shift billentyűt.</translation>
+<translation id="8480418399907765580">Az eszköztár megjelenítése</translation>
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8491237443345908933">Link megnyitása új lapon</translation>
 <translation id="8492573885090281069">A(z) <ph name="DISPLAY_NAME" /> nem támogatja a következő felbontást: <ph name="SPECIFIED_RESOLUTION" />. A felbontás erre módosult: <ph name="FALLBACK_RESOLUTION" />. A módosítás megtartásához kattintson a Megerősítés gombra. A beállítás <ph name="TIMEOUT_SECONDS" /> múlva visszaáll a korábbi értékre.</translation>
@@ -1985,6 +1985,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8834539327799336565">Csatlakoztatva</translation>
 <translation id="8841375032071747811">Vissza gomb</translation>
 <translation id="8843682306134542540">Váltás a forgatás zárolásának állapotai közt. <ph name="STATE_TEXT" /></translation>
+<translation id="8845001906332463065">Súgó</translation>
 <translation id="8849001918648564819">Rejtett</translation>
 <translation id="8853703225951107899">PIN-kódjának vagy jelszavának ellenőrzése még mindig nem sikerült. Megjegyzés: Ha nemrég módosította jelszavát, akkor használja a régit. Az új jelszó beállítása a kijelentkezés után lép érvénybe.</translation>
 <translation id="8855885154700222542">Teljes képernyő billentyű</translation>

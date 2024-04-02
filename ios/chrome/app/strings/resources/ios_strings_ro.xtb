@@ -1183,6 +1183,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="6989674195860388998">Schimbă din Setări…</translation>
 <translation id="6998989275928107238">La</translation>
 <translation id="699954956411469731">Notificări pe dispozitivul mobil</translation>
+<translation id="699985840472413751">Închide descărcarea</translation>
 <translation id="7004032350256606903">Organizația îți solicită să navighezi în privat.
 <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">File recente</translation>
@@ -1472,6 +1473,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="850600235656508448">Deschide în modul incognito</translation>
 <translation id="8517375800490286174">Licențe open source</translation>
 <translation id="8522147671363140027">{count,plural, =1{Parola pentru {count} și alte elemente se salvează numai pe acest dispozitiv. Pentru a le folosi pe alte dispozitive, salvează-le în Contul Google {email}.}few{{count} parole și alte elemente se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google {email}.}other{{count} parole și alte elemente se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google {email}.}}</translation>
+<translation id="8522813812888400223">Anulează descărcarea</translation>
 <translation id="8524799873541103884">Filele <ph name="INCOGNITO" /> de la <ph name="FIRST_VISIBLE_TAB" /> la <ph name="LAST_VISIBLE_TAB" /> din <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="852576975834694248">Vei fi deconectat(ă) și filele vor fi închise</translation>
 <translation id="8528009254289981965">Deschide linkuri din alte aplicații în modul incognito</translation>

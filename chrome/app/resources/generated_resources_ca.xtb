@@ -347,7 +347,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="125220115284141797">Predeterminats</translation>
 <translation id="1252219782845132919">Amaga el grup</translation>
 <translation id="1252987234827889034">S'ha produït un error amb el perfil</translation>
-<translation id="1253664522045778676">Fes clic en un resultat i la pàgina s'obrirà a la pestanya actual</translation>
 <translation id="1254593899333212300">Connexió directa a Internet</translation>
 <translation id="1256588359404100567">L'opció de configuració s'ha sincronitzat des del dispositiu anterior.</translation>
 <translation id="1257336506558170607">Exporta el certificat seleccionat</translation>
@@ -1199,7 +1198,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1887210448491286312">Deixa d'emetre la pestanya a <ph name="DEVICE_NAME" /></translation>
 <translation id="1887442540531652736">Error d'inici de sessió</translation>
 <translation id="1887597546629269384">Torna a dir "Ok Google"</translation>
-<translation id="1889091146873278175">Fes clic al botó "G" per veure més resultats de la cerca en un tauler lateral</translation>
 <translation id="1890026367080681123">Ves a la configuració del contingut inserit</translation>
 <translation id="189035593835762169">Termes i condicions</translation>
 <translation id="1891362123137972260">Queda molt poc espai de disc. Allibera'n.</translation>
@@ -6261,7 +6259,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="5804259315582798390">No s'ha pogut activar la recuperació de dades locals</translation>
 <translation id="5805268472388605531">Mantén premuda qualsevol tecla del teclat per veure'n marques d'èmfasi i caràcters especials</translation>
-<translation id="5805354171420804923">Compara els resultats de cerca més ràpidament des del nou tauler lateral</translation>
 <translation id="5805697420284793859">Gestor de finestres</translation>
 <translation id="5806447147478173900">Emmagatzematge total utilitzat pels llocs web mostrats: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (valor predeterminat)</translation>
@@ -7402,7 +7399,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6709357832553498500">Connecta mitjançant <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6710394144992407503">Comprova si hi ha errors ortogràfics quan escriguis text en pàgines web</translation>
-<translation id="671226373742585927">Fes clic al botó "X" per tancar el tauler lateral</translation>
 <translation id="6712943853047024245">Ja has desat una contrasenya amb aquest nom d'usuari per a <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">Afegeix un perfil de treball</translation>
 <translation id="6713441551032149301">Mantén premuda la tecla del menú d'aplicacions per canviar entre les tecles de funció i les tecles de la fila superior del sistema</translation>
@@ -8768,7 +8764,6 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7758884017823246335">Afegeix una cerca al lloc web</translation>
 <translation id="7759809451544302770">Opcional</translation>
 <translation id="7762024824096060040">No es pot utilitzar aquest compte</translation>
-<translation id="7762243782113123335">S'ha produït un error. Envia suggeriments amb #bruschetta a la descripció. El codi d'error és <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Afegeix una adreça</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> del domini <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764527477537408401">Obre el grup en una finestra nova</translation>
@@ -9254,7 +9249,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="810185532889603849">Color personalitzat</translation>
 <translation id="8101987792947961127">Es requereix Powerwash la propera vegada que es reiniciï</translation>
 <translation id="8102139037507939978">Elimina la informació d'identificació personal del fitxer system_logs.txt.</translation>
-<translation id="8102344699913991108">Els llocs web utilitzen aquesta opció de configuració per oferir experiències immersives en pantalla completa independentment dels gestos de l'usuari</translation>
 <translation id="810362914482827094">Cerca claus d'accés</translation>
 <translation id="8104088837833760645">Baixa el perfil de l'eSIM</translation>
 <translation id="8105273883928376822">Inicia la sessió per continuar.</translation>
@@ -9475,7 +9469,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8272443605911821513">Per gestionar les extensions, feu clic a Extensions al menú Més eines.</translation>
 <translation id="8272786333453048167">Torna a permetre</translation>
 <translation id="8273905181216423293">Baixa ara</translation>
-<translation id="8274495289680107339">Els llocs web utilitzen aquesta opció de configuració per entrar automàticament al mode d'imatge sobre imatge. Això et permet continuar mirant un vídeo i alliberar la pantalla per a altres tasques.</translation>
 <translation id="827488840488530039">La pàgina que proves de visitar no ha pogut verificar les entrades de Kerberos</translation>
 <translation id="8274921654076766238">La lupa segueix el focus del teclat</translation>
 <translation id="8274924778568117936">No apaguis ni tanquis el dispositiu <ph name="DEVICE_TYPE" /> fins que l'actualització no hagi finalitzat. <ph name="DEVICE_TYPE" /> es reiniciarà un cop finalitzi la instal·lació.</translation>

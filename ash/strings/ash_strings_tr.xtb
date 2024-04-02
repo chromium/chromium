@@ -30,7 +30,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="109942774857561566">Canım sıkıldı</translation>
 <translation id="1104084341931202936">Erişilebilirlik ayarlarını göster</translation>
 <translation id="1104621072296271835">Cihazlarınız birlikte daha da iyi çalışır</translation>
-<translation id="1106446201446919638">1 cihaz bağlı. Hotspot kullanılırken kablosuz bağlantı kapalı kalır.</translation>
 <translation id="1111021433905331574">Ayarlar &gt; <ph name="APP_TITLE" /> bölümüne giderek klavye arka ışığınızın rengini değiştirebilirsiniz</translation>
 <translation id="1117719261843403176">Mobil veriyi aç/kapat. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">Rafı otomatik gizle</translation>
@@ -336,6 +335,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2405664212338326887">Bağlı değil</translation>
 <translation id="2408955596600435184">PIN'inizi girin</translation>
 <translation id="2412593942846481727">Güncelleme var</translation>
+<translation id="2416438829169535743">Görünümden çıkılsın mı?</translation>
 <translation id="2417486498593892439">Ağda oturum açın</translation>
 <translation id="2426051945783024481">Kamera çerçevesi otomatik olarak ortalandı</translation>
 <translation id="2427507373259914951">Sol tıklama</translation>
@@ -427,6 +427,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2785499565474703580">1 cihaz bağlandı</translation>
 <translation id="2791421900609674576">Kaldığınız yerden devam edebilmeniz için öneriler gösterilir. Dokunup basılı tutarak önerileri kaldırabilirsiniz.</translation>
 <translation id="2792498699870441125">Alt+Arama</translation>
+<translation id="2801954693771979815">Ekran boyutu</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, seçildi</translation>
 <translation id="2805756323405976993">Uygulamalar</translation>
 <translation id="2814448776515246190">Kısmi ekran görüntüsü alma</translation>
@@ -517,7 +518,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="316086887565479535">Şablonda desteklenmeyen uygulamalar var</translation>
 <translation id="3160929076476941240">2 sa.</translation>
 <translation id="316356270129335934"><ph name="MANAGER" />, <ph name="DEVICE_TYPE" /> cihazınızı geri çekiyor. Cihazınız sıfırlanacak ve tüm veriler silinecek.</translation>
-<translation id="3170769098533255179">Bağlı cihaz yok. Hotspot kullanılırken kablosuz bağlantı kapalı kalır.</translation>
 <translation id="3171170659304083361">Giriş yöntemi ayarları</translation>
 <translation id="3176221688814061633">Chromebook veya Bluetooth cihazınızda Bluetooth'un eski bir sürümü kullanılıyor. Daha iyi ses kalitesi için Bluetooth Süper Çözünürlük'ü açın veya cihazın mikrofonunu kullanın.</translation>
 <translation id="3181441307743005334">Yeniden başlatmak biraz zaman alabilir</translation>
@@ -552,7 +552,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3306386552969601301"><ph name="DEVICE_NAME" /> hotspot'una <ph name="DEVICECOUNT" /> cihaz bağlı</translation>
 <translation id="3307642347673023554">Dizüstü bilgisayar moduna geçildi</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> daha sonra yine oturum açabilir.</translation>
-<translation id="3317779231018057649"><ph name="DEVICECOUNT" /> cihaz bağlı. Hotspot kullanılırken kablosuz bağlantı kapalı kalır.</translation>
 <translation id="3321628682574733415">Ebeveyn kodu yanlış</translation>
 <translation id="332827762492701193">Bildirimler gizlendi.</translation>
 <translation id="3333674550998107387"><ph name="NOTIFICATION_TITLE" /> bildirimini genişlet</translation>
@@ -852,6 +851,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="440113666232554208">Ekran video kaydı kaydedilemiyor</translation>
 <translation id="4405151984121254935">Bağlı çevre birimi türü desteklenmiyor</translation>
 <translation id="4406883609789734330">Canlı Altyazı</translation>
+<translation id="4412698727486357573">Yardım merkezi</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> özelliği kapalı.</translation>
 <translation id="4424159417645388645">Masa 5</translation>
 <translation id="4430019312045809116">Ses</translation>
@@ -892,7 +892,6 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="4566144812051858745">Hiçbir öneriyle ilgilenmiyorum</translation>
 <translation id="4569753163207712681">Telefonunuzdaki son fotoğrafları, medya içeriklerini ve uygulamaları görün</translation>
 <translation id="4573176682887762361">"[Kelime/kelime öbeği] yaz"</translation>
-<translation id="4577188182049003486">Hotspot açıkken kablosuz bağlantı kapatılır</translation>
 <translation id="4577274620589681794">Süre doldu · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Önizlemeleri göster</translation>
 <translation id="4578906031062871102">Ayarlar menüsü açıldı</translation>
@@ -1014,6 +1013,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="5003993274120026347">Sonraki cümle</translation>
 <translation id="5004607513195820459">Ağ yönetiliyor</translation>
 <translation id="5009463889040999939">Profil yeniden adlandırılıyor. Bu işlem birkaç dakika sürebilir.</translation>
+<translation id="5013847959275396160">Araç çubuğunu gizle</translation>
 <translation id="5016558321564993266">İşaretçiyi açın/kapatın. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Kategorilerde arayın</translation>
 <translation id="5030659775136592441">Yer işareti yöneticisini görüntüler</translation>
@@ -1150,12 +1150,13 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="5550417424894892620">Dosyaları <ph name="HOLDING_SPACE_TITLE" /> hedefine eklemek için masaüstüne bırakın. Masaüstüne dosya ekleyemezsiniz.</translation>
 <translation id="5551456515017410630">Takvimi açın/kapatın</translation>
 <translation id="5551974246223970793">Sayfa ararken aramayla ilgili bir sonraki eşleşmeye git</translation>
-<translation id="5555639311269196631">Hotspot'u kapat</translation>
 <translation id="5556459405103347317">Yeniden Yükle</translation>
 <translation id="5558091555391176027">Yakındakilerle Paylaş özelliğinin yüksek görünürlüğünü aç/kapat</translation>
+<translation id="5558314826121965174">Yaratıcılık</translation>
 <translation id="556042886152191864">Düğme</translation>
 <translation id="5570122939431135380">Yeni sekmeyi yeni gizli pencerede aç</translation>
 <translation id="5571066253365925590">Bluetooth etkin</translation>
+<translation id="5572632238877308040">Temel Uygulamalar</translation>
 <translation id="557563299383177668">Sonraki paragraf</translation>
 <translation id="5577082622442191756">Bluetooth'u aç/kapat. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Telefon Merkezi'ni kullanmak için telefonunuzda Bluetooth'un açık olup olmadığını kontrol edin</translation>
@@ -1180,6 +1181,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="5662075790140998213">Masa 10</translation>
 <translation id="5662709761327382534">Mikrofon kaydı <ph name="CURRENT_STATE" />, mikrofon kaydını <ph name="NEW_STATE" /> konuma getirmek için Enter'a basın</translation>
 <translation id="5669267381087807207">Etkinleştiriliyor</translation>
+<translation id="5672890847723042801">Yardımcı programlar</translation>
 <translation id="5673434351075758678">Ayarlarınız senkronize edildikten sonra "<ph name="FROM_LOCALE" />" olan dil "<ph name="TO_LOCALE" />" olarak değiştirildi.</translation>
 <translation id="5675363643668471212">Raf öğesi</translation>
 <translation id="5677928146339483299">Engelleniyor</translation>
@@ -1361,6 +1363,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="6351032674660237738">UYGULAMA ÖNERİLERİ</translation>
 <translation id="6352082849089527770">Bilinmeyen ağlar</translation>
 <translation id="6359587239691116345">En son özellikleri ve güvenlik iyileştirmelerini edinin. Bu güncellemeyi reddederseniz cihazınız artık düzgün çalışmayabilir, ayrıca güvenlik ve performans sorunları yaşayabilirsiniz.</translation>
+<translation id="6362833380917912748">Yerleşik uygulamalarınızı tanıyın</translation>
 <translation id="6376931439017688372">Bluetooth açık</translation>
 <translation id="6378515133128829137">Pencereyi sağa sabitle</translation>
 <translation id="6381109794406942707">Cihazın kilidini açmak için PIN'inizi girin.</translation>
@@ -1781,6 +1784,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="799296642788192631">Önemli dosyaları sabitleyebilirsiniz. Sabitlemek için fareyle bir öğenin üzerine gelin veya Dosyalar'ı açıp öğeyi sağ tıklayın.</translation>
 <translation id="7994370417837006925">Çoklu oturum açma</translation>
 <translation id="7995804128062002838">Ekran görüntüsü alınamadı</translation>
+<translation id="8000020256436988724">Araç Çubuğu</translation>
 <translation id="8000066093800657092">Ağ yok</translation>
 <translation id="8001755249288974029">İmleç konumundan satırın başına kadar olan metni seç</translation>
 <translation id="8004512796067398576">Artır</translation>
@@ -1847,6 +1851,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8262312463845990408">Çal/duraklat</translation>
 <translation id="8270450402312105425">{0,plural, =1{Cihazı bir saat içinde önceki sürüme geçirin}other{Cihazı # saat içinde önceki sürüme geçirin}}</translation>
 <translation id="8277261673056602147">Ekrandaki metni vurgula</translation>
+<translation id="8287009018010202411">Verimlilik</translation>
 <translation id="828708037801473432">Kapalı</translation>
 <translation id="8297006494302853456">Zayıf</translation>
 <translation id="8308637677604853869">Önceki menü</translation>
@@ -1893,6 +1898,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="847056008324733326">Ekran ölçeği ayarları</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />, <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> özelliğine sahip.</translation>
 <translation id="8477270416194247200">İptal etmek için Alt+Ara veya Üst Karakter tuşuna basın.</translation>
+<translation id="8480418399907765580">Araç çubuğunu göster</translation>
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8491237443345908933">Bağlantıyı yeni sekmede aç</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" /> çözünürlüğü desteklemiyor. Çözünürlük <ph name="FALLBACK_RESOLUTION" /> olarak değiştirildi. Değişiklikleri korumak için Onayla'yı tıklayın. Önceki ayarlar <ph name="TIMEOUT_SECONDS" /> saniye içinde geri yüklenecek.</translation>
@@ -1918,6 +1924,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Uygulamalarınızı ada veya renge göre sıralama</translation>
 <translation id="8609384513243082612">Yeni sekme açar</translation>
+<translation id="861045123704058818">Uygulamalar geçici olarak kategoriye göre düzenlenir</translation>
 <translation id="8612216344243590325">Önemli dosyaları masaüstü yerine <ph name="HOLDING_SPACE_TITLE" /> içinde saklayın. Dosyaları <ph name="HOLDING_SPACE_TITLE" /> hedefine sürüklemeniz yeterlidir.</translation>
 <translation id="8614517853887502247">Görüntüleme koruması açık olduğundan <ph name="APP_1_TITLE" /> ve <ph name="APP_2_TITLE" /> bildirimleri gösterilmiyor</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1956,6 +1963,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">Kimliğinizi doğrulayın: <ph name="ORIGIN_NAME" />, kimliğinizi doğrulamak istiyor</translation>
 <translation id="875593634123171288">VPN ayarlarını göster</translation>
+<translation id="8756799553341497810">Bu görünümden çıktıktan sonra uygulama düzeninizi özelleştirmeye başlayabilirsiniz.</translation>
 <translation id="8759408218731716181">Çoklu oturum açma kurulamıyor</translation>
 <translation id="8763883995157866248">Cihazı uyku moduna geçirin</translation>
 <translation id="877404052021108314">90°F kaç santigrattır?</translation>
@@ -1976,6 +1984,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8834539327799336565">Şu anda bağlı</translation>
 <translation id="8841375032071747811">Geri düğmesi</translation>
 <translation id="8843682306134542540">Döndürme kilidini aç/kapat. <ph name="STATE_TEXT" /></translation>
+<translation id="8845001906332463065">Yardım alın</translation>
 <translation id="8849001918648564819">Gizli</translation>
 <translation id="8853703225951107899">PIN'iniz veya şifreniz hâlâ doğrulanamadı. Not: Şifrenizi yakın zamanda değiştirdiyseniz eski şifrenizi kullanın. Yeni şifreniz, oturumunuzu kapattıktan sonra geçerli olacaktır.</translation>
 <translation id="8855885154700222542">Tam ekran tuşu</translation>

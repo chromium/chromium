@@ -71,6 +71,7 @@
 <translation id="1125573121925420732">ਵੈੱਬਸਾਈਟਾਂ ਵੱਲੋਂ ਉਹਨਾਂ ਦੀ ਸੁਰੱਖਿਆ ਅੱਪਡੇਟ ਕਰਨ ਵੇਲੇ ਚਿਤਾਵਨੀਆਂ ਦਾ ਦਿੱਸਣਾ ਆਮ ਹੈ। ਇਹ ਜਲਦ ਹੀ ਦਿੱਸਣੀਆਂ ਬੰਦ ਹੋ ਜਾਣਗੀਆਂ।</translation>
 <translation id="112840717907525620">ਨੀਤੀ ਕੈਸ਼ੇ OK</translation>
 <translation id="1131264053432022307">ਤੁਹਾਡੇ ਵੱਲੋਂ ਕਾਪੀ ਕੀਤਾ ਚਿੱਤਰ</translation>
+<translation id="1138458427267715730">ਵੈੱਬ 'ਤੇ ਕਿਸੇ ਵੀ ਸਾਈਟ 'ਤੇ ਕੀਮਤ ਘਟਣ 'ਤੇ ਅਲਰਟ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="1142713751288681188">ਪੇਪਰ ਦੀ ਕਿਸਮ</translation>
 <translation id="1142846828089312304">ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਵਿੱਚ ਤੀਜੀ ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਨੂੰ ਬਲਾਕ ਕਰੋ</translation>
 <translation id="1144136880160289237">ਤੁਹਾਡੇ ਕੋਲ ਹਾਲੇ ਕੋਈ ਕਿਰਿਆਸ਼ੀਲ ਵਿਸ਼ਾ ਨਹੀਂ ਹੈ</translation>
@@ -1114,6 +1115,7 @@
 <translation id="3154987252551138431">ਨਜ਼ਦੀਕੀ ਸਾਂਝ ਦੀ ਵਰਤੋਂ ਕਰਦਿਆਂ ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ</translation>
 <translation id="315504272643575312">ਤੁਹਾਡਾ ਖਾਤਾ <ph name="MANAGER" /> ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="3155163173539279776">Chromium ਮੁੜ-ਲਾਂਚ ਕਰੋ</translation>
+<translation id="3156511682997763015">10 ਸਕਿੰਟ ਅੱਗੇ ਕਰੋ</translation>
 <translation id="3157931365184549694">ਰੀਸਟੋਰ ਕਰੋ</translation>
 <translation id="3158539265159265653">ਡਿਸਕ</translation>
 <translation id="3162559335345991374">ਤੁਹਾਡੇ ਵੱਲੋਂ ਵਰਤਿਆ ਜਾ ਰਿਹਾ ਵਾਈ-ਫਾਈ ਇਹ ਚਾਹ ਸਕਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਇਸਦੇ ਲੌਗ-ਇਨ ਪੰਨੇ 'ਤੇ ਜਾਓ।</translation>
@@ -1212,6 +1214,7 @@
 <translation id="334438173029876234">ਸਕੇਟਬੋਰਡਿੰਗ ਸੰਬੰਧੀ ਉਪਕਰਨ</translation>
 <translation id="3347146863028219517">ਸਕੀਇੰਗ ਅਤੇ ਸਨੋਬੋਰਡਿੰਗ</translation>
 <translation id="3349952286488694786">SRA2</translation>
+<translation id="3350450887151703713">10 ਸਕਿੰਟ ਮੁੜ-ਚਲਾਓ</translation>
 <translation id="3352881017886802007">ਖੇਡਾਂ ਵਾਲੀਆਂ ਗੇਮਾਂ</translation>
 <translation id="3355823806454867987">ਪ੍ਰੌਕਸੀ ਸੈਟਿੰਗਾਂ ਬਦਲੋ...</translation>
 <translation id="335809815767823">ਨਿਰਯਾਤ ਕੀਤਾ ਗਿਆ</translation>
@@ -3049,6 +3052,7 @@
 <translation id="6944557544071529399">ਰਣਨੀਤਕ ਗੇਮਾਂ</translation>
 <translation id="6944692733090228304">ਤੁਸੀਂ ਉਸ ਸਾਈਟ 'ਤੇ ਆਪਣਾ ਪਾਸਵਰਡ ਦਾਖਲ ਕੀਤਾ ਹੈ ਜੋ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਨਹੀਂ ਕੀਤੀ ਜਾਂਦੀ ਹੈ। ਆਪਣੇ ਖਾਤੇ ਨੂੰ ਸੁਰੱਖਿਅਤ ਰੱਖਣ ਲਈ, ਹੋਰਾਂ ਐਪਾਂ ਅਤੇ ਸਾਈਟਾਂ 'ਤੇ ਆਪਣਾ ਪਾਸਵਰਡ ਮੁੜ ਨਾ ਵਰਤੋ।</translation>
 <translation id="6945221475159498467">ਚੁਣੋ</translation>
+<translation id="6946949206576443118">Chrome ਵਿੱਚ ਵੈੱਬ ਖੋਜੋ</translation>
 <translation id="6948051842255602737">ਗੇਮ ਸਮਾਪਤ, ਤੁਹਾਡਾ ਸਕੋਰ <ph name="SCORE" /> ਹੈ।</translation>
 <translation id="6948701128805548767">ਪਿੱਕਅੱਪ ਵਿਧੀਆਂ ਅਤੇ ਲੋੜਾਂ ਨੂੰ ਦੇਖਣ ਲਈ, ਇੱਕ ਪਤਾ ਚੁਣੋ</translation>
 <translation id="6948874830249067134">A1x3</translation>

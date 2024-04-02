@@ -271,6 +271,7 @@
 <translation id="2446553403094072641">ફ્લોટિંગ પૉઇન્ટની સચોટતા</translation>
 <translation id="2448312741937722512">પ્રકાર</translation>
 <translation id="2465272316171730950">હમણાં અમે તમારી સહાય કરી શકીશું નહીં. કૃપા કરીને થોડા સમય પછી ફરી પાછા આવો.</translation>
+<translation id="2472215337771558851">ડ્રાફ્ટ બનાવ અથવા હાલના લખાણને સુધારવા માટે, Google AI દ્વારા સંચાલિત 'લખવામાં મારી સહાય કરો'નો ઉપયોગ કરો</translation>
 <translation id="2480572840229215612">કરચલાં</translation>
 <translation id="248546197012830854">ડિવાઇસ ઑફલાઇન છે. સહાયક કન્ટેન્ટ જોવા માટે વાઇ-ફાઇ નેટવર્ક સાથે કનેક્ટ કરો.</translation>
 <translation id="2486301288428798846">લાકડું</translation>
@@ -328,10 +329,12 @@
 <translation id="2860473693272905224">બીજા પેજને સ્કૅનર પર મૂકો</translation>
 <translation id="2872961005593481000">શટ ડાઉન કરો</translation>
 <translation id="2873483161362553159">બ્રાઉઝર નૅવિગેશન</translation>
+<translation id="2873939192640533085">"વધુ આત્મવિશ્વાસ હોય તેવું દર્શાવો" જેવો પ્રૉમ્પ્ટ દાખલ કરો</translation>
 <translation id="2874939134665556319">પાછલું ટ્રૅક</translation>
 <translation id="2875812231449496375">શ્રેષ્ઠ પરિણામો માટે આ વૉલપેપર સાથે આ મોડ ચાલુ કરો. તમે આ સેટિંગ કોઈપણ સમયે બંધ કરી શકો છો.</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> સેકન્ડમાં <ph name="RATE" /> ડિસ્ચાર્જ.</translation>
 <translation id="2880569433548999039">ક્લાઉડ ફ્લો સ્ક્રીન સેવર</translation>
+<translation id="2888298276507578975">"આભાર ચિઠ્ઠી લખો" જેવો પ્રૉમ્પ્ટ દાખલ કરો</translation>
 <translation id="2890557891229184386">ઉષ્ણકટિબંધીય ટાપુ</translation>
 <translation id="2895772081848316509">ડાર્ક</translation>
 <translation id="2926057806159140518">તમારું વપરાશકર્તા નામ અને પાસવર્ડ દાખલ કરો અથવા તમારો QR કોડ સ્કૅન કરો</translation>
@@ -376,6 +379,7 @@
 <translation id="3226405216343213872">સ્કૅનર શોધી રહ્યાં છીએ</translation>
 <translation id="3226657629376379887">લેઆઉટ ક્રિયા મેનૂ</translation>
 <translation id="3227186760713762082"><ph name="CONVERSION_RATE" />થી <ph name="CATEGORY_TEXT" /> મૂલ્યનો ભાગાકાર કરો</translation>
+<translation id="3237710083340813756">ફરીથી લખો</translation>
 <translation id="3246869037381808805">1 દિવસ કરતાં જૂના પ્રિન્ટ કાર્યો કાઢી નાખવામાં આવશે</translation>
 <translation id="324961752321393509">તમારા ઍડમિનિસ્ટ્રેટર દ્વારા આ ઍપને બંધ કરવાની મંજૂરી આપવામાં આવતી નથી</translation>
 <translation id="3268178239013324452">નિષ્ફળ રહ્યું - પ્રિન્ટરનું ઢાંકણ ખૂલ્લું છે</translation>
@@ -414,6 +418,7 @@
 <translation id="346539236881580388">ફરીથી લો</translation>
 <translation id="3484914941826596830">ફર્મવેયર અપડેટ થતું હોય ત્યારે આ બાહ્ય ડિવાઇસ પ્લગમાંથી દૂર કરશો નહીં અથવા તમારા કમ્પ્યુટરને શટ ડાઉન કરશો નહીં. તમે આ વિન્ડો નાની કરી શકો છો. આ અપડેટમાં થોડી મિનિટનો સમય લાગી શકે અને તમારું બાહ્ય ડિવાઇસ આ સમય દરમિયાન કામ ન કરે તેમ બની શકે છે.</translation>
 <translation id="3486220673238053218">વિવરણ</translation>
+<translation id="3487866404496702283">mahi સુવિધા માટેનો પ્રતિસાદ</translation>
 <translation id="3488065109653206955">આંશિક રીતે સક્રિય કરેલું</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> ટોનવાળી કોઈ <ph name="OFFICE_STYLE" /> ઑફિસ</translation>
 <translation id="3493187369049186498">Chromebook દ્વારા ડેટાની માપણી કરવામાં આવે છે. આ કદાચ પ્રદાતાના ડેટાથી અલગ હોઈ શકે છે.</translation>
@@ -442,6 +447,7 @@
 <translation id="3621072146987826699">હાથીઓ</translation>
 <translation id="3632579075709132555">પ્રાઇવસી સ્ક્રીન ટૉગલ કરો</translation>
 <translation id="3651050199673793219">તાપમાનનો એકમ પસંદ કરો</translation>
+<translation id="3661106764436337772">વધુ ઝડપે અને વધુ આત્મવિશ્વાસ સાથે લખો</translation>
 <translation id="3662461537616691585">બર્ગન્ડી અને મરૂન</translation>
 <translation id="3668449597372804501">ક્લાઉડ ફ્લો વૉલપેપર</translation>
 <translation id="3675132884790542448">ડુક્કરો</translation>
@@ -585,6 +591,7 @@
 <translation id="4503441351962730761">આધુનિક કલા</translation>
 <translation id="4507392511610824664">બ્રાઇટનેસ વધારો</translation>
 <translation id="4511264077854731334">પોર્ટલ</translation>
+<translation id="4513946894732546136">પ્રતિસાદ</translation>
 <translation id="4521826082652183069">વિષયના નામનો વૈકલ્પિક મેળ</translation>
 <translation id="4522570452068850558">વિગતો</translation>
 <translation id="4536864596629708641">IP કન્ફિગ્યુરેશન</translation>
@@ -757,6 +764,7 @@
 <translation id="5543701552415191873">લૉક છે</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">સૂર્યાસ્ત સમયે ઑટોમૅટિક રીતે ઘેરી થીમ પર સ્વિચ કરો</translation>
+<translation id="556042886152191864">બટન</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_COLOR" />ના શેડમાં <ph name="TERRAIN_FEATURE" /></translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">ફરી સ્કૅન કરો</translation>
@@ -875,6 +883,7 @@
 <translation id="6235460611964961764">ડેટા વપરાશ મૅન્યુઅલી રીસેટ કરો</translation>
 <translation id="6243280677745499710">હાલમાં સેટ કરેલ</translation>
 <translation id="6250316632541035980">બેકન અને ઈંડાં</translation>
+<translation id="6255213378196499011">'લખવામાં મારી સહાય કરો' માટેના સેટિંગ</translation>
 <translation id="6275224645089671689">જમણી ઍરો કી</translation>
 <translation id="6278428485366576908">થીમ</translation>
 <translation id="6280912520669706465">ARC</translation>

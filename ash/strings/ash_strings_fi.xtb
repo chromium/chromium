@@ -30,7 +30,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="109942774857561566">Minulla on tylsää</translation>
 <translation id="1104084341931202936">Näytä esteettömyysasetukset</translation>
 <translation id="1104621072296271835">Laitteesi toimivat entistä paremmin yhdessä</translation>
-<translation id="1106446201446919638">Yksi laite yhdistetty. Wi-Fi pysyy pois päältä hotspotin käytön aikana.</translation>
 <translation id="1111021433905331574">Voit muuttaa näppäimistön taustaväriä Asetuksista &gt; <ph name="APP_TITLE" /></translation>
 <translation id="1117719261843403176">Laita mobiilidata päälle tai pois päältä. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">Piilota hylly automaattisesti</translation>
@@ -428,6 +427,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2785499565474703580">1 laite yhdistetty</translation>
 <translation id="2791421900609674576">Näet suosituksia, joten voit jatkaa siitä, mihin jäit. Suosituksia voi poistaa koskettamalla pitkään.</translation>
 <translation id="2792498699870441125">Alt + haku</translation>
+<translation id="2801954693771979815">Näytön koko</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, valittu</translation>
 <translation id="2805756323405976993">Sovellukset</translation>
 <translation id="2814448776515246190">Osittainen kuvakaappaus</translation>
@@ -518,7 +518,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="316086887565479535">Mallissa sovelluksia, joita ei tueta</translation>
 <translation id="3160929076476941240">2 t</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> palauttaa laitteen (<ph name="DEVICE_TYPE" />) aiempaan versioon. Laitteen tehdasasetukset palautetaan ja kaikki data poistetaan.</translation>
-<translation id="3170769098533255179">Ei liitettyjä laitteita. Wi-Fi pysyy pois päältä hotspotin käytön aikana.</translation>
 <translation id="3171170659304083361">Syöttötapojen asetukset</translation>
 <translation id="3176221688814061633">Chromebookissa tai Bluetooth-laitteessa on vanhempi Bluetooth-versio. Laita Bluetooth Super Resolution päälle tai käytä sisäistä mikrofonia äänenlaadun parantamiseksi.</translation>
 <translation id="3181441307743005334">Uudelleenkäynnistys voi kestää hetken</translation>
@@ -553,7 +552,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> laitetta yhdistetty hotspotiin: <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">Siirrytty tietokonetilaan</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> voi silti kirjautua sisään myöhemmin.</translation>
-<translation id="3317779231018057649"><ph name="DEVICECOUNT" /> laitetta yhdistetty. Wi-Fi pysyy pois päältä hotspotin käytön aikana.</translation>
 <translation id="3321628682574733415">Virheellinen vanhemman koodi</translation>
 <translation id="332827762492701193">Ilmoitukset on piilotettu</translation>
 <translation id="3333674550998107387">Laajenna ilmoitus: <ph name="NOTIFICATION_TITLE" /></translation>
@@ -853,6 +851,7 @@ Joitakin ominaisuuksia on rajoitettu akunkeston parantamiseksi.</translation>
 <translation id="440113666232554208">Ruutukaappausvideota ei voi tallentaa</translation>
 <translation id="4405151984121254935">Yhdistettyä lisälaitetyyppiä ei tueta</translation>
 <translation id="4406883609789734330">Livetekstitys</translation>
+<translation id="4412698727486357573">Ohjekeskus</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ei ole päällä.</translation>
 <translation id="4424159417645388645">Työpöytä 5</translation>
 <translation id="4430019312045809116">Äänenvoimakkuus</translation>
@@ -893,7 +892,6 @@ Joitakin ominaisuuksia on rajoitettu akunkeston parantamiseksi.</translation>
 <translation id="4566144812051858745">En ole kiinnostunut ehdotuksista</translation>
 <translation id="4569753163207712681">Katsele puhelimesi viimeaikaisia kuvia, mediaa ja ilmoituksia</translation>
 <translation id="4573176682887762361">Kirjoita [sana tai lause]</translation>
-<translation id="4577188182049003486">Kun hotspot on päällä, Wi-Fi ei ole päällä</translation>
 <translation id="4577274620589681794">Aika loppui · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Näytä esikatselut</translation>
 <translation id="4578906031062871102">Asetusvalikko avattu</translation>
@@ -1015,6 +1013,7 @@ Joitakin ominaisuuksia on rajoitettu akunkeston parantamiseksi.</translation>
 <translation id="5003993274120026347">Seuraava lause</translation>
 <translation id="5004607513195820459">Verkkoa hallinnoidaan</translation>
 <translation id="5009463889040999939">Nimetään profiilia uudelleen. Tämä voi kestää muutaman minuutin.</translation>
+<translation id="5013847959275396160">Piilota työkalupalkki</translation>
 <translation id="5016558321564993266">Piirtotyökalu päälle tai pois päältä. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Hakukategoriat</translation>
 <translation id="5030659775136592441">Näytä kirjainmerkkien hallinta</translation>
@@ -1151,7 +1150,6 @@ Joidenkin ominaisuuksien käyttöä on rajoitettu akunkeston pidentämiseksi.</t
 <translation id="5550417424894892620">Pudota tiedostoja työpöydälle, niin ne lisätään tänne: <ph name="HOLDING_SPACE_TITLE" />. Et voi lisätä tiedostoja työpöydälle.</translation>
 <translation id="5551456515017410630">Avaa/sulje kalenteri</translation>
 <translation id="5551974246223970793">Kun haet sivua, siirry haun seuraavaan osumaan</translation>
-<translation id="5555639311269196631">Laita hotspot pois päältä</translation>
 <translation id="5556459405103347317">Lataa uudelleen</translation>
 <translation id="5558091555391176027">Laita lähijakamisen näkyvyys päälle/pois</translation>
 <translation id="5558314826121965174">Luovuus</translation>
@@ -1786,6 +1784,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="799296642788192631">Voit kiinnittää tärkeitä tiedostoja. Voit kiinnittää kohteen viemällä hiiren kohteen päälle tai avaamalla Tiedostot ja klikkaamalla kohdetta hiiren kakkospainikkeella.</translation>
 <translation id="7994370417837006925">Kirjautuminen useaan tiliin</translation>
 <translation id="7995804128062002838">Kuvakaappaus epäonnistui</translation>
+<translation id="8000020256436988724">Työkalupalkki</translation>
 <translation id="8000066093800657092">Ei verkkoa</translation>
 <translation id="8001755249288974029">Valitse tekstiä kohdistimesta rivin alkuun</translation>
 <translation id="8004512796067398576">Lisää</translation>
@@ -1899,6 +1898,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="847056008324733326">Näytön skaalauksen asetukset</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> omistaa tämän: <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Peru painamalla Alt+haku tai vaihto.</translation>
+<translation id="8480418399907765580">Näytä työkalupalkki</translation>
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8491237443345908933">Avaa linkki uudella välilehdellä</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> ei tue resoluutiota <ph name="SPECIFIED_RESOLUTION" />. Resoluutioksi vaihdettiin <ph name="FALLBACK_RESOLUTION" />. Pidä muutokset valitsemalla Vahvista. Aiempi asetus palautetaan <ph name="TIMEOUT_SECONDS" /> päästä.</translation>
@@ -1983,6 +1983,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8834539327799336565">Yhdistetty tällä hetkellä</translation>
 <translation id="8841375032071747811">Takaisin-painike</translation>
 <translation id="8843682306134542540">Laita kierron lukitus päälle tai pois päältä. <ph name="STATE_TEXT" /></translation>
+<translation id="8845001906332463065">Hae ohjeita</translation>
 <translation id="8849001918648564819">Piilotettu</translation>
 <translation id="8853703225951107899">PIN-koodiasi tai salasanaasi ei voitu vieläkään vahvistaa. Huom. Jos vaihdoit salasanasi äskettäin, käytä vanhaa salasanaa. Uusi salasana otetaan käyttöön kirjauduttuasi ulos.</translation>
 <translation id="8855885154700222542">Koko näyttö ‑näppäin</translation>

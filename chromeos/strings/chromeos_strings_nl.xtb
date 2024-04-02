@@ -271,6 +271,7 @@
 <translation id="2446553403094072641">Nauwkeurigheid van zwevendekommagetallen</translation>
 <translation id="2448312741937722512">Type</translation>
 <translation id="2465272316171730950">We zijn nu erg druk. Probeer het later opnieuw.</translation>
+<translation id="2472215337771558851">Gebruik Help me met schrijven om een concept te maken of bestaand werk te verfijnen, mogelijk gemaakt door AI van Google</translation>
 <translation id="2480572840229215612">krabben</translation>
 <translation id="248546197012830854">Het apparaat is offline. Maak verbinding met een wifi-netwerk om Help-content te bekijken.</translation>
 <translation id="2486301288428798846">hout</translation>
@@ -328,10 +329,12 @@
 <translation id="2860473693272905224">Leg een andere pagina op de scanner</translation>
 <translation id="2872961005593481000">Afsluiten</translation>
 <translation id="2873483161362553159">Browsernavigatie</translation>
+<translation id="2873939192640533085">Voer een prompt in, zoals 'straal meer zelfvertrouwen uit'</translation>
 <translation id="2874939134665556319">Vorig nummer</translation>
 <translation id="2875812231449496375">Zet dit aan voor de beste resultaten met deze achtergrond. Je kunt deze instelling altijd uitzetten.</translation>
 <translation id="2878387241690264070"><ph name="RATE" /> ontladen in <ph name="NUM_SECONDS" /> seconden.</translation>
 <translation id="2880569433548999039">Screensaver Wolkenstroom</translation>
+<translation id="2888298276507578975">Voer een prompt in, zoals 'schrijf een bedankje'</translation>
 <translation id="2890557891229184386">tropisch eiland</translation>
 <translation id="2895772081848316509">donker</translation>
 <translation id="2926057806159140518">Geef je gebruikersnaam en wachtwoord op of scan je QR-code</translation>
@@ -376,6 +379,7 @@
 <translation id="3226405216343213872">Zoeken naar scanners</translation>
 <translation id="3226657629376379887">Actiemenu voor indeling</translation>
 <translation id="3227186760713762082">Deel de waarde voor <ph name="CATEGORY_TEXT" /> door <ph name="CONVERSION_RATE" /></translation>
+<translation id="3237710083340813756">Herschrijven</translation>
 <translation id="3246869037381808805">Afdruktaken ouder dan 1 dag worden verwijderd</translation>
 <translation id="324961752321393509">Je beheerder staat deze app sluiten niet toe</translation>
 <translation id="3268178239013324452">Mislukt - Klep geopend</translation>
@@ -401,7 +405,7 @@
 <translation id="3383623117265110236">Exclusief</translation>
 <translation id="3404249063913988450">Screensaver aanzetten</translation>
 <translation id="3413935475507503304">Klik op Volgende om door te gaan met de update.</translation>
-<translation id="3428551088151258685">outdoor</translation>
+<translation id="3428551088151258685">buiten</translation>
 <translation id="3428971106895559033">pastel</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Beveiliging</translation>
@@ -414,6 +418,7 @@
 <translation id="346539236881580388">Opnieuw maken</translation>
 <translation id="3484914941826596830">Koppel dit externe apparaat niet los en zet je computer niet uit terwijl de firmware wordt geüpdatet. Je kunt dit venster minimaliseren. Deze update kan een paar minuten duren en je externe apparaat werkt misschien niet tijdens het updaten.</translation>
 <translation id="3486220673238053218">definitie</translation>
+<translation id="3487866404496702283">Feedback voor de mahi-functie</translation>
 <translation id="3488065109653206955">Gedeeltelijk geactiveerd</translation>
 <translation id="3492882532495507361">Een <ph name="OFFICE_STYLE" /> kantoor met <ph name="OFFICE_COLOR" /> tinten</translation>
 <translation id="3493187369049186498">Het datagebruik wordt gemeten door je Chromebook. Dit kan afwijken van de gegevens van je provider.</translation>
@@ -442,6 +447,7 @@
 <translation id="3621072146987826699">olifanten</translation>
 <translation id="3632579075709132555">Privacyscherm schakelen</translation>
 <translation id="3651050199673793219">Een temperatuureenheid selecteren</translation>
+<translation id="3661106764436337772">Schrijf sneller en met meer vertrouwen</translation>
 <translation id="3662461537616691585">bordeauxrood en kastanjebruin</translation>
 <translation id="3668449597372804501">Achtergrond Wolkenstroom</translation>
 <translation id="3675132884790542448">varkens</translation>
@@ -585,6 +591,7 @@
 <translation id="4503441351962730761">moderne kunst</translation>
 <translation id="4507392511610824664">helderheid omhoog</translation>
 <translation id="4511264077854731334">Portal</translation>
+<translation id="4513946894732546136">Feedback</translation>
 <translation id="4521826082652183069">Overeenkomst voor alternatieve naam van onderwerp</translation>
 <translation id="4522570452068850558">Details</translation>
 <translation id="4536864596629708641">IP-configuratie</translation>
@@ -757,6 +764,7 @@
 <translation id="5543701552415191873">vergrendeld</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Automatisch overschakelen naar donker thema bij zonsondergang</translation>
+<translation id="556042886152191864">Knop</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> in de tinten <ph name="TERRAIN_COLOR" /></translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Opnieuw scannen</translation>
@@ -856,7 +864,7 @@
 <translation id="6122277663991249694">Invoermethodeservice voor Chrome OS</translation>
 <translation id="6127426868813166163">wit</translation>
 <translation id="6136285399872347291">Backspace</translation>
-<translation id="6137614725462089991">cyberpunkachtig</translation>
+<translation id="6137614725462089991">cyberpunk</translation>
 <translation id="6137767437444130246">Gebruikerscertificaat</translation>
 <translation id="6146993107019042706">Geef je nieuwe wachtwoord opnieuw op om te voltooien</translation>
 <translation id="6147514244879357420">Png</translation>
@@ -875,6 +883,7 @@
 <translation id="6235460611964961764">Datagebruik handmatig resetten</translation>
 <translation id="6243280677745499710">Momenteel ingesteld</translation>
 <translation id="6250316632541035980">eieren met spek</translation>
+<translation id="6255213378196499011">Instellingen voor Help me met schrijven</translation>
 <translation id="6275224645089671689">Pijl-rechts</translation>
 <translation id="6278428485366576908">Thema</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -951,7 +960,7 @@
 <translation id="6624819909909965616">Je kunt geen bestanden uploaden die groter zijn dan 10 MB</translation>
 <translation id="6643016212128521049">Wissen</translation>
 <translation id="6647510110698214773">Versleutelingsalgoritme</translation>
-<translation id="6648412990074186169">minimaal</translation>
+<translation id="6648412990074186169">minimalistisch</translation>
 <translation id="6650062777702288430">Schakelaar voor kana/alfanumeriek</translation>
 <translation id="6657240842932274095">Systeemservices toestaan je locatie te gebruiken?</translation>
 <translation id="6657585470893396449">Wachtwoord</translation>

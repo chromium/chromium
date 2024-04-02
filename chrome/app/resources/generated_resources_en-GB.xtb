@@ -349,7 +349,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="125220115284141797">Default</translation>
 <translation id="1252219782845132919">Hide group</translation>
 <translation id="1252987234827889034">Profile error occurred</translation>
-<translation id="1253664522045778676">Click on a result and the page will open in your current tab</translation>
 <translation id="1254593899333212300">Direct Internet connection</translation>
 <translation id="1256588359404100567">Setting synced from your previous device.</translation>
 <translation id="1257336506558170607">Export selected certificate</translation>
@@ -1211,7 +1210,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1887210448491286312">Stop casting tab to <ph name="DEVICE_NAME" /></translation>
 <translation id="1887442540531652736">Sign-in error</translation>
 <translation id="1887597546629269384">Say "Hey Google" again</translation>
-<translation id="1889091146873278175">Click the 'G' button to see more search results in a side panel</translation>
 <translation id="1890026367080681123">Go to embedded content settings</translation>
 <translation id="189035593835762169">Terms and Conditions</translation>
 <translation id="1891362123137972260">Disk space is critically low. Please free up disk space.</translation>
@@ -6278,7 +6276,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5804241973901381774">Permissions</translation>
 <translation id="5804259315582798390">Failed to enable local data recovery</translation>
 <translation id="5805268472388605531">Press and hold keyboard keys to see accent marks and special characters</translation>
-<translation id="5805354171420804923">Compare search results faster from the new side panel</translation>
 <translation id="5805697420284793859">Window manager</translation>
 <translation id="5806447147478173900">Total storage used by displayed sites: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (Default)</translation>
@@ -7420,7 +7417,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6709357832553498500">Connect using <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">Previous</translation>
 <translation id="6710394144992407503">Check for spelling errors when you type text on web pages</translation>
-<translation id="671226373742585927">Click the 'X' button to close the side panel</translation>
 <translation id="6712943853047024245">You already saved a password with this username for <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">Add work profile</translation>
 <translation id="6713441551032149301">Hold the launcher key to change between function keys and system top-row keys</translation>
@@ -8786,7 +8782,6 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7758884017823246335">Add Site Search</translation>
 <translation id="7759809451544302770">Optional</translation>
 <translation id="7762024824096060040">Can't use this account</translation>
-<translation id="7762243782113123335">Sorry, something went wrong. Please file feedback with #bruschetta in the description. Error code is <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Add address</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> from <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764527477537408401">Open group in new window</translation>
@@ -9272,7 +9267,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="810185532889603849">Custom colour</translation>
 <translation id="8101987792947961127">Powerwash required on next reboot</translation>
 <translation id="8102139037507939978">Strip personally identifiable information from system_logs.txt.</translation>
-<translation id="8102344699913991108">Sites use this setting to offer immersive fullscreen experiences regardless of user gestures</translation>
 <translation id="810362914482827094">Search passkeys</translation>
 <translation id="8104088837833760645">Download eSIM profile</translation>
 <translation id="8105273883928376822">Please sign in to continue.</translation>
@@ -9493,7 +9487,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8272443605911821513">Manage your extensions by clicking Extensions in the "More tools" menu.</translation>
 <translation id="8272786333453048167">Allow again</translation>
 <translation id="8273905181216423293">Download now</translation>
-<translation id="8274495289680107339">Sites use this setting to enter picture-in-picture automatically. This lets you continue watching a video while freeing up your screen for other tasks.</translation>
 <translation id="827488840488530039">The page that you are trying to visit couldn't verify your Kerberos tickets</translation>
 <translation id="8274921654076766238">Magnifier follows keyboard focus</translation>
 <translation id="8274924778568117936">Don’t turn off or close your <ph name="DEVICE_TYPE" /> until the update finishes. Your <ph name="DEVICE_TYPE" /> will restart after installation completes.</translation>

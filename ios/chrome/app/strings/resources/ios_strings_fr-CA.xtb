@@ -878,6 +878,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="5548760955356983418">La fonction de transfert vous permet de commencer à naviguer sur un site Web sur cet appareil et de continuer facilement sur votre Mac. Le site Web actuellement ouvert apparaîtra dans le Dock de votre Mac.
 
 La fonction de transfert doit également être activée dans la section Général des paramètres, et vos appareils doivent utiliser le même compte iCloud.</translation>
+<translation id="5551825465462320939">Tenez-vous au courant des actualités, des sports et bien plus encore en fonction de vos centres d'intérêt.</translation>
 <translation id="5551897871312988470">Proposer de traduire</translation>
 <translation id="5556459405103347317">Actualiser</translation>
 <translation id="555749644339804659">Vérif. mots de passe…</translation>
@@ -1182,6 +1183,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="6989674195860388998">Changer dans les paramètres…</translation>
 <translation id="6998989275928107238">À</translation>
 <translation id="699954956411469731">Notifications pour appareil mobile</translation>
+<translation id="699985840472413751">Fermer le téléchargement</translation>
 <translation id="7004032350256606903">Votre organisation vous demande de naviguer en mode privé.
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Onglets récents</translation>
@@ -1471,6 +1473,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="850600235656508448">Ouvrir en mode de navigation privée</translation>
 <translation id="8517375800490286174">Licences de logiciels libres</translation>
 <translation id="8522147671363140027">{count,plural, =1{{count} mot de passe et d'autres éléments sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google, {email}}one{{count} mot de passe et d'autres éléments sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google, {email}.}other{{count} mots de passe et d'autres éléments sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google, {email}.}}</translation>
+<translation id="8522813812888400223">Annuler le téléchargement</translation>
 <translation id="8524799873541103884">Onglets <ph name="INCOGNITO" /> <ph name="FIRST_VISIBLE_TAB" /> à <ph name="LAST_VISIBLE_TAB" /> sur <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="852576975834694248">Vous serez déconnecté, et les onglets seront fermés</translation>
 <translation id="8528009254289981965">Ouvrir des liens d'autres applications en navigation privée</translation>

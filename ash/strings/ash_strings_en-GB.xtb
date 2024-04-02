@@ -30,7 +30,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="109942774857561566">I'm bored</translation>
 <translation id="1104084341931202936">Show accessibility settings</translation>
 <translation id="1104621072296271835">Your devices work even better together</translation>
-<translation id="1106446201446919638">One device connected. While using hotspot, Wi-Fi will stay off.</translation>
 <translation id="1111021433905331574">You can change the colour of your keyboard backlight in Settings &gt; <ph name="APP_TITLE" /></translation>
 <translation id="1117719261843403176">Toggle mobile data. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">Autohide shelf</translation>
@@ -336,6 +335,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2405664212338326887">Not connected</translation>
 <translation id="2408955596600435184">Enter your PIN</translation>
 <translation id="2412593942846481727">Update available</translation>
+<translation id="2416438829169535743">Exit view?</translation>
 <translation id="2417486498593892439">Sign in to network</translation>
 <translation id="2426051945783024481">Camera frame automatically centred</translation>
 <translation id="2427507373259914951">Left click</translation>
@@ -427,6 +427,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2785499565474703580">One device connected</translation>
 <translation id="2791421900609674576">You’ll see recommendations so that you can continue where you left off. You can touch &amp; hold to remove recommendations.</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
+<translation id="2801954693771979815">Screen size</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, selected</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2814448776515246190">Partial capture</translation>
@@ -517,7 +518,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="316086887565479535">Unsupported apps in template</translation>
 <translation id="3160929076476941240">2 h</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> is rolling back your <ph name="DEVICE_TYPE" />. Your device will reset and all data will be deleted.</translation>
-<translation id="3170769098533255179">No devices connected. While using hotspot, Wi-Fi will stay off.</translation>
 <translation id="3171170659304083361">Input methods settings</translation>
 <translation id="3176221688814061633">Your Chromebook or Bluetooth device is using an older version of Bluetooth. Turn on the Bluetooth Super Resolution or use internal microphone for better audio quality.</translation>
 <translation id="3181441307743005334">Restart may take a while</translation>
@@ -552,7 +552,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> devices connected to <ph name="DEVICE_NAME" /> hotspot</translation>
 <translation id="3307642347673023554">Switched to laptop mode</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> can still sign in later.</translation>
-<translation id="3317779231018057649"><ph name="DEVICECOUNT" /> devices connected While using hotspot, Wi-Fi will stay off.</translation>
 <translation id="3321628682574733415">Incorrect parent code</translation>
 <translation id="332827762492701193">Notifications are hidden</translation>
 <translation id="3333674550998107387">Expand <ph name="NOTIFICATION_TITLE" /> notification</translation>
@@ -852,6 +851,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="440113666232554208">Can't save screencast</translation>
 <translation id="4405151984121254935">The connected peripheral type is not supported</translation>
 <translation id="4406883609789734330">Live Caption</translation>
+<translation id="4412698727486357573">Help Centre</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> is off.</translation>
 <translation id="4424159417645388645">Desk 5</translation>
 <translation id="4430019312045809116">Volume</translation>
@@ -892,7 +892,6 @@ Some features are limited to increase battery life.</translation>
 <translation id="4566144812051858745">Not interested in any suggestions</translation>
 <translation id="4569753163207712681">View your phone's recent photos, media and apps</translation>
 <translation id="4573176682887762361">'Type [word / phrase]'</translation>
-<translation id="4577188182049003486">With hotspot on, Wi-Fi is off</translation>
 <translation id="4577274620589681794">Time's up · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Show previews</translation>
 <translation id="4578906031062871102">Settings menu opened</translation>
@@ -1014,6 +1013,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="5003993274120026347">Next sentence</translation>
 <translation id="5004607513195820459">Network is managed</translation>
 <translation id="5009463889040999939">Renaming profile. This may take a few minutes.</translation>
+<translation id="5013847959275396160">Hide toolbar</translation>
 <translation id="5016558321564993266">Toggle marker. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Search categories</translation>
 <translation id="5030659775136592441">Show bookmark manager</translation>
@@ -1150,12 +1150,13 @@ Some features are limited to increase battery life.</translation>
 <translation id="5550417424894892620">Drop files on the desktop to add them to <ph name="HOLDING_SPACE_TITLE" />. You can't add files to desktop.</translation>
 <translation id="5551456515017410630">Open/close calendar</translation>
 <translation id="5551974246223970793">When searching a page, go to next match for search</translation>
-<translation id="5555639311269196631">Turn off hotspot</translation>
 <translation id="5556459405103347317">Reload</translation>
 <translation id="5558091555391176027">Toggle Nearby Share high visibility</translation>
+<translation id="5558314826121965174">Creativity</translation>
 <translation id="556042886152191864">Button</translation>
 <translation id="5570122939431135380">Open new tab in new incognito window</translation>
 <translation id="5571066253365925590">Bluetooth enabled</translation>
+<translation id="5572632238877308040">Essentials</translation>
 <translation id="557563299383177668">Next paragraph</translation>
 <translation id="5577082622442191756">Toggle Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Check that Bluetooth is enabled on your phone to use Phone Hub</translation>
@@ -1180,6 +1181,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="5662075790140998213">Desk 10</translation>
 <translation id="5662709761327382534">Record microphone <ph name="CURRENT_STATE" />, press enter to turn microphone recording <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Activating</translation>
+<translation id="5672890847723042801">Utilities</translation>
 <translation id="5673434351075758678">From '<ph name="FROM_LOCALE" />' to '<ph name="TO_LOCALE" />' after syncing your settings.</translation>
 <translation id="5675363643668471212">Shelf item</translation>
 <translation id="5677928146339483299">Blocked</translation>
@@ -1361,6 +1363,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="6351032674660237738">APP SUGGESTIONS</translation>
 <translation id="6352082849089527770">Unknown networks</translation>
 <translation id="6359587239691116345">Get the latest features and security improvements. If you decline this update, your device may no longer work properly and you may experience security and performance issues.</translation>
+<translation id="6362833380917912748">Get to know your built-in apps</translation>
 <translation id="6376931439017688372">Bluetooth is on</translation>
 <translation id="6378515133128829137">Pin window to right</translation>
 <translation id="6381109794406942707">To unlock the device, enter your PIN.</translation>
@@ -1781,6 +1784,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="799296642788192631">You can pin important files. To pin, hover over an item or open Files and right-click an item.</translation>
 <translation id="7994370417837006925">Multiple sign-in</translation>
 <translation id="7995804128062002838">Failed to capture screen</translation>
+<translation id="8000020256436988724">Toolbar</translation>
 <translation id="8000066093800657092">No network</translation>
 <translation id="8001755249288974029">Select text from cursor to beginning of line</translation>
 <translation id="8004512796067398576">Increment</translation>
@@ -1847,6 +1851,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8262312463845990408">Toggle -playback</translation>
 <translation id="8270450402312105425">{0,plural, =1{Change device to previous version within an hour}other{Change device to previous version within # hours}}</translation>
 <translation id="8277261673056602147">Highlight text on your screen</translation>
+<translation id="8287009018010202411">Productivity</translation>
 <translation id="828708037801473432">Off</translation>
 <translation id="8297006494302853456">Weak</translation>
 <translation id="8308637677604853869">Previous menu</translation>
@@ -1893,6 +1898,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="847056008324733326">Display scale settings</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> has <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Press Alt+Search or Shift to cancel.</translation>
+<translation id="8480418399907765580">Show toolbar</translation>
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8491237443345908933">Open link in new tab</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> doesn't support <ph name="SPECIFIED_RESOLUTION" />. The resolution was changed to <ph name="FALLBACK_RESOLUTION" />. Click confirm to keep changes. The previous settings will be restored in <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -1918,6 +1924,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Sort your apps by name or colour</translation>
 <translation id="8609384513243082612">Open new tab</translation>
+<translation id="861045123704058818">Apps are organised by category temporarily</translation>
 <translation id="8612216344243590325">Keep important files in <ph name="HOLDING_SPACE_TITLE" /> instead of on the desktop. Just drag files to <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247"><ph name="APP_1_TITLE" /> and <ph name="APP_2_TITLE" /> notifications are hidden because viewing protection is on</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1956,6 +1963,7 @@ To shut down the device, press and hold the power button on the device again.</t
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">Verify your identity: <ph name="ORIGIN_NAME" /> would like to confirm that it's you</translation>
 <translation id="875593634123171288">Show VPN settings</translation>
+<translation id="8756799553341497810">You can start customising your app layout once you exit this view.</translation>
 <translation id="8759408218731716181">Can't set up multiple sign-in</translation>
 <translation id="8763883995157866248">Put device in sleep mode</translation>
 <translation id="877404052021108314">32°C in F</translation>
@@ -1976,6 +1984,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8834539327799336565">Currently connected</translation>
 <translation id="8841375032071747811">Back button</translation>
 <translation id="8843682306134542540">Toggle rotation lock. <ph name="STATE_TEXT" /></translation>
+<translation id="8845001906332463065">Get help</translation>
 <translation id="8849001918648564819">Hidden</translation>
 <translation id="8853703225951107899">Your PIN or password still couldn't be verified. Note: If you recently changed your password, use your old password. Your new password will be applied once you've signed out.</translation>
 <translation id="8855885154700222542">Full-screen key</translation>

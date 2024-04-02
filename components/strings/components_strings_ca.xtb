@@ -1114,6 +1114,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3154987252551138431">S'ha produït un error en utilitzar Compartició Nearby</translation>
 <translation id="315504272643575312">El teu compte està gestionat per <ph name="MANAGER" />.</translation>
 <translation id="3155163173539279776">Torna a iniciar Chromium</translation>
+<translation id="3156511682997763015">Avança 10 segons</translation>
 <translation id="3157931365184549694">Restaura</translation>
 <translation id="3158539265159265653">Disc</translation>
 <translation id="3162559335345991374">És possible que la xarxa Wi-Fi que esteu fent servir requereixi que visiteu la seva pàgina d'inici de sessió.</translation>
@@ -1214,6 +1215,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="334438173029876234">Equipament per a patinatge de monopatí</translation>
 <translation id="3347146863028219517">Esquí i surf de neu</translation>
 <translation id="3349952286488694786">SRA2</translation>
+<translation id="3350450887151703713">Torna a reproduir 10 segons</translation>
 <translation id="3352881017886802007">Jocs d'esports</translation>
 <translation id="3355823806454867987">Canvia la configuració del servidor intermediari...</translation>
 <translation id="335809815767823">S'han exportat</translation>
@@ -3053,6 +3055,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6944557544071529399">Jocs d'estratègia</translation>
 <translation id="6944692733090228304">Has introduït la contrasenya en un lloc web que no està gestionat per <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Per protegir el teu compte, no facis servir la mateixa contrasenya en altres aplicacions ni llocs web.</translation>
 <translation id="6945221475159498467">Selecciona</translation>
+<translation id="6946949206576443118">Cerca al web amb Chrome</translation>
 <translation id="6948051842255602737">S'ha acabat la partida. La teva puntuació és <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Per veure els mètodes i els requisits de recollida, selecciona una adreça</translation>
 <translation id="6948874830249067134">A1x3</translation>

@@ -71,6 +71,7 @@
 <translation id="1125573121925420732">Podes ver avisos con frecuencia mentres os sitios web actualizan os seus sistemas de seguranza, pero a situación mellorará en breve.</translation>
 <translation id="112840717907525620">Caché de política correcta</translation>
 <translation id="1131264053432022307">Imaxe que copiaches</translation>
+<translation id="1138458427267715730">Recibe alertas cando baixe o prezo en calquera sitio da Web</translation>
 <translation id="1142713751288681188">Tipo de papel</translation>
 <translation id="1142846828089312304">Bloquear cookies de terceiros no modo de incógnito</translation>
 <translation id="1144136880160289237">Aínda non tes ningún tema activo</translation>
@@ -1114,6 +1115,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3154987252551138431">Produciuse un erro ao usar Compartir por Nearby</translation>
 <translation id="315504272643575312"><ph name="MANAGER" /> xestiona a túa conta.</translation>
 <translation id="3155163173539279776">Reiniciar Chromium</translation>
+<translation id="3156511682997763015">Avanzar 10 segundos</translation>
 <translation id="3157931365184549694">Restaurar</translation>
 <translation id="3158539265159265653">Disco</translation>
 <translation id="3162559335345991374">É posible que a rede wifi que utilizas requira o acceso á súa páxina de inicio de sesión.</translation>
@@ -1214,6 +1216,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="334438173029876234">Equipamento de monopatín</translation>
 <translation id="3347146863028219517">Esquí e snowboard</translation>
 <translation id="3349952286488694786">SRA2</translation>
+<translation id="3350450887151703713">Volver reproducir 10 segundos</translation>
 <translation id="3352881017886802007">Xogos de deportes</translation>
 <translation id="3355823806454867987">Cambiar configuración do proxy...</translation>
 <translation id="335809815767823">Políticas exportadas</translation>
@@ -3053,6 +3056,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6944557544071529399">Xogos de estratexia</translation>
 <translation id="6944692733090228304">Introduciches o teu contrasinal nun sitio que non está xestionado por <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Para protexer a túa conta, non reutilices o contrasinal noutros sitios nin aplicacións.</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
+<translation id="6946949206576443118">Fai buscas na Web desde Chrome</translation>
 <translation id="6948051842255602737">Fin da partida. A túa puntuación é <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Para consultar os requisitos e métodos de recollida, selecciona un enderezo</translation>
 <translation id="6948874830249067134">A1x3</translation>

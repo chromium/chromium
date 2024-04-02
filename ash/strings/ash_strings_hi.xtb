@@ -30,7 +30,6 @@
 <translation id="109942774857561566">मुझे बोरियत हो रही है</translation>
 <translation id="1104084341931202936">सुलभता सेटिंग दिखाएं</translation>
 <translation id="1104621072296271835">साथ मिलकर आपके डिवाइस और बेहतर काम करते हैं</translation>
-<translation id="1106446201446919638">1 डिवाइस को कनेक्ट किया गया. हॉटस्पॉट का इस्तेमाल करने के दौरान, वाई-फ़ाई बंद रहेगा.</translation>
 <translation id="1111021433905331574">सेटिंग &gt; <ph name="APP_TITLE" /> में जाकर, अपने कीबोर्ड की बैकलाइट का रंग बदलने का विकल्प उपलब्ध है</translation>
 <translation id="1117719261843403176">मोबाइल डेटा टॉगल. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">अलमारी कोअपने-आपछिपाएं</translation>
@@ -428,6 +427,7 @@
 <translation id="2785499565474703580">1 डिवाइस कनेक्ट है</translation>
 <translation id="2791421900609674576">जहां पिछली बार छोड़ा था वहीं से इस्तेमाल शुरू करने के लिए, आपको सुझाव दिखेंगे.  दबाकर रखने से, इन सुझावों को बंद किया जा सकता है.</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
+<translation id="2801954693771979815">स्क्रीन का साइ़ज़</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" /> को चुना गया</translation>
 <translation id="2805756323405976993">ऐप्लिकेशन</translation>
 <translation id="2814448776515246190">पार्शियल कैप्चर</translation>
@@ -518,7 +518,6 @@
 <translation id="316086887565479535">टेंप्लेट में मौजूद, काम नहीं करने वाले ऐप्लिकेशन</translation>
 <translation id="3160929076476941240">2 घंटे</translation>
 <translation id="316356270129335934"><ph name="MANAGER" />, आपके <ph name="DEVICE_TYPE" /> को रोल बैक कर रहा है. आपका डिवाइस रीसेट हो जाएगा. साथ ही, आपका सारा डेटा मिट जाएगा.</translation>
-<translation id="3170769098533255179">कोई डिवाइस कनेक्ट नहीं है. हॉटस्पॉट का इस्तेमाल करने के दौरान, वाई-फ़ाई बंद रहेगा.</translation>
 <translation id="3171170659304083361">इनपुट के तरीकों से जुड़ी सेटिंग</translation>
 <translation id="3176221688814061633">आपके ब्लूटूथ डिवाइस या Chromebook में, ब्लूटूथ के पुराने वर्शन का इस्तेमाल किया जा रहा है. बेहतर ऑडियो क्वालिटी के लिए, ब्लूटूथ सुपर रिज़ॉल्यूशन को चालू करें या इंटरनल माइक्रोफ़ोन का इस्तेमाल करें.</translation>
 <translation id="3181441307743005334">रीस्टार्ट होने में कुछ समय लगेगा</translation>
@@ -553,7 +552,6 @@
 <translation id="3306386552969601301"><ph name="DEVICE_NAME" /> के हॉटस्पॉट से <ph name="DEVICECOUNT" /> डिवाइस कनेक्ट हैं</translation>
 <translation id="3307642347673023554">लैपटॉप मोड पर स्विच किया गया</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> अब भी बाद में साइन इन कर सकते हैं.</translation>
-<translation id="3317779231018057649"><ph name="DEVICECOUNT" /> डिवाइस कनेक्ट किए गए. हॉटस्पॉट का इस्तेमाल करने के दौरान, वाई-फ़ाई बंद रहेगा.</translation>
 <translation id="3321628682574733415">माता-पिता वाला कोड गलत है</translation>
 <translation id="332827762492701193">सूचनाएं छिपी हुई हैं</translation>
 <translation id="3333674550998107387"><ph name="NOTIFICATION_TITLE" /> की सूचना को बड़ा करें</translation>
@@ -854,6 +852,7 @@
 <translation id="440113666232554208">स्क्रीनकास्ट सेव नहीं किया जा सका</translation>
 <translation id="4405151984121254935">कनेक्ट किए गए सहायक डिवाइस (जैसे, कीबोर्ड, माउस, मॉनिटर, वेबकैम वगैरह) काम नहीं करते</translation>
 <translation id="4406883609789734330">लाइव कैप्शन</translation>
+<translation id="4412698727486357573">सहायता केंद्र</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> बंद है.</translation>
 <translation id="4424159417645388645">डेस्क 5</translation>
 <translation id="4430019312045809116">आवाज़</translation>
@@ -894,7 +893,6 @@
 <translation id="4566144812051858745">किसी भी सुझाव में दिलचस्पी नहीं है</translation>
 <translation id="4569753163207712681">अपने फ़ोन में मौजूद हाल ही की फ़ोटो, कॉन्टेंट, और ऐप्लिकेशन देखें</translation>
 <translation id="4573176682887762361">"[शब्द / वाक्यांश] टाइप करें"</translation>
-<translation id="4577188182049003486">हॉटस्पॉट चालू होने पर, वाई-फ़ाई बंद हो जाता है</translation>
 <translation id="4577274620589681794">समय खत्म हुआ · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">झलक दिखाएं</translation>
 <translation id="4578906031062871102">सेटिंग मेन्यू खोला गया</translation>
@@ -1016,6 +1014,7 @@
 <translation id="5003993274120026347">अगले वाक्य पर जाएं</translation>
 <translation id="5004607513195820459">नेटवर्क को एडमिन मैनेज करता है</translation>
 <translation id="5009463889040999939">प्रोफ़ाइल का नाम बदला जा रहा है. इसमें कुछ मिनट लग सकते हैं.</translation>
+<translation id="5013847959275396160">टूलबार छिपाएं</translation>
 <translation id="5016558321564993266">मार्कर को टॉगल करें. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">कैटगरी खोजें</translation>
 <translation id="5030659775136592441">बुकमार्क मैनेजर दिखाएं</translation>
@@ -1152,7 +1151,6 @@
 <translation id="5550417424894892620">फ़ाइलों को <ph name="HOLDING_SPACE_TITLE" /> में जोड़ने के लिए उन्हें खींचकर डेस्कटॉप पर छोड़ें. डेस्कटॉप पर फ़ाइलें नहीं जोड़ी जा सकतीं.</translation>
 <translation id="5551456515017410630">कैलेंडर खोलने या बंद करने के लिए</translation>
 <translation id="5551974246223970793">किसी पेज को खोजते समय, खोज के लिए अगले मिलान पर जाएं</translation>
-<translation id="5555639311269196631">हॉटस्पॉट बंद करें</translation>
 <translation id="5556459405103347317">फिर लोड करें</translation>
 <translation id="5558091555391176027">आस-पास शेयर करने की सुविधा के ज़्यादा लोगों को दिखाने वाले मोड पर टॉगल करें</translation>
 <translation id="5558314826121965174">क्रिएटिविटी</translation>
@@ -1787,6 +1785,7 @@
 <translation id="799296642788192631">ज़रूरी फ़ाइलों को पिन किया जा सकता है. किसी आइटम को पिन करने के लिए, उस पर कर्सर ले जाएं या Files खोलें और उस आइटम पर दायां क्लिक करें.</translation>
 <translation id="7994370417837006925">एक से ज़्यादा साइन-इन</translation>
 <translation id="7995804128062002838">स्क्रीन कैप्चर नहीं हो पाई</translation>
+<translation id="8000020256436988724">टूलबार</translation>
 <translation id="8000066093800657092">नेटवर्क नहीं है</translation>
 <translation id="8001755249288974029">कर्सर जहां मौजूद है, वहां से लेकर लाइन की शुरुआत तक का टेक्स्ट चुनें</translation>
 <translation id="8004512796067398576">वृद्धि</translation>
@@ -1900,6 +1899,7 @@
 <translation id="847056008324733326">डिसप्ले पैमाने की सेटिंग</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> में <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> हैं.</translation>
 <translation id="8477270416194247200">रद्द करने के लिए Alt+Search या Shift दबाएं.</translation>
+<translation id="8480418399907765580">टूलबार दिखाएं</translation>
 <translation id="8487699605742506766">हॉटस्पॉट</translation>
 <translation id="8491237443345908933">लिंक को नए टैब में खोलें</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" /> के साथ काम नहीं करता. रिज़ॉल्यूशन को बदलकर <ph name="FALLBACK_RESOLUTION" /> कर दिया गया था. बदलाव बनाए रखने के लिए, 'जारी रखें' पर क्लिक करें. सेटिंग को <ph name="TIMEOUT_SECONDS" /> में पहले जैसा दिया जाएगा.</translation>
@@ -1985,6 +1985,7 @@
 <translation id="8834539327799336565">फ़िलहाल, कनेक्ट किए गए डिवाइस</translation>
 <translation id="8841375032071747811">वापस जाएं बटन</translation>
 <translation id="8843682306134542540">रोटेशन लॉक को टॉगल करें. <ph name="STATE_TEXT" /></translation>
+<translation id="8845001906332463065">सहायता पाएं</translation>
 <translation id="8849001918648564819">छिपा हुआ</translation>
 <translation id="8853703225951107899">अब भी आपके पिन या पासवर्ड की पुष्टि नहीं की जा सकी. ध्यान दें: अगर आपने हाल ही में अपना पासवर्ड बदला है, तो पुराना पासवर्ड इस्तेमाल करें. नया पासवर्ड आपके साइन आउट करने के बाद लागू होगा.</translation>
 <translation id="8855885154700222542">फ़ुलस्क्रीन कुंजी</translation>

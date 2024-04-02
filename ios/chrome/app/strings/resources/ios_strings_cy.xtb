@@ -878,6 +878,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="5548760955356983418">Mae Handoff yn gadael i chi ddechrau pori gwefan ar y ddyfais hon ac yna parhau yn hawdd ar eich Mac. Bydd y wefan sydd ar agor yn bresennol yn ymddangos yn Noc eich Mac.
 
 Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyfeisiau ddefnyddio'r un cyfrif iCloud.</translation>
+<translation id="5551825465462320939">Cael y diweddaraf am newyddion, chwaraeon, a rhagor yn seiliedig ar eich diddordebau.</translation>
 <translation id="5551897871312988470">Cynnig Cyfieithu</translation>
 <translation id="5556459405103347317">Ail-lwytho</translation>
 <translation id="555749644339804659">Wrthi'n gwirio cyfrineiriau…</translation>
@@ -1182,6 +1183,7 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="6989674195860388998">Newid yn y Gosodiadau…</translation>
 <translation id="6998989275928107238">I</translation>
 <translation id="699954956411469731">Hysbysiadau Ffôn Symudol</translation>
+<translation id="699985840472413751">Cau'r Lawrlwytho</translation>
 <translation id="7004032350256606903">Mae eich sefydliad yn gofyn i chi bori'n breifat.
 <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Tabiau Diweddar</translation>
@@ -1471,6 +1473,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="850600235656508448">Agor yn y Modd Anhysbys</translation>
 <translation id="8517375800490286174">Trwyddedau Ffynhonnell Agored</translation>
 <translation id="8522147671363140027">{count,plural, =1{Mae {count} cyfrinair ac eitemau eraill wedi'u cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google, {email}.}zero{Mae {count} cyfrinair ac eitemau eraill wedi'u cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google, {email}.}two{Mae {count} gyfrinair ac eitemau eraill wedi'u cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google, {email}.}few{Mae {count} chyfrinair ac eitemau eraill wedi'u cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google, {email}.}many{Mae {count} chyfrinair ac eitemau eraill wedi'u cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google, {email}.}other{Mae {count} cyfrinair ac eitemau eraill wedi'u cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google, {email}.}}</translation>
+<translation id="8522813812888400223">Canslo Lawrlwytho</translation>
 <translation id="8524799873541103884">Tabiau <ph name="INCOGNITO" /> <ph name="FIRST_VISIBLE_TAB" /> drwy <ph name="LAST_VISIBLE_TAB" /> o <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="852576975834694248">Byddwch yn cael eich allgofnodi a bydd y tabiau'n cael eu cau</translation>
 <translation id="8528009254289981965">Agor dolenni o apiau eraill yn Anhysbys</translation>

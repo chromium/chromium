@@ -271,6 +271,7 @@
 <translation id="2446553403094072641">Akurasi floating point</translation>
 <translation id="2448312741937722512">Jenis</translation>
 <translation id="2465272316171730950">Saat ini, kami tidak dapat membuat teks. Harap kembali lagi nanti.</translation>
+<translation id="2472215337771558851">Menggunakan fitur Bantu tulis untuk membuat draf atau meningkatkan kualitas pekerjaan yang ada, didukung teknologi AI Google</translation>
 <translation id="2480572840229215612">kepiting</translation>
 <translation id="248546197012830854">Perangkat sedang offline. Hubungkan ke jaringan Wi-Fi untuk melihat konten bantuan.</translation>
 <translation id="2486301288428798846">kayu</translation>
@@ -328,10 +329,12 @@
 <translation id="2860473693272905224">Letakkan halaman lain pada pemindai</translation>
 <translation id="2872961005593481000">Matikan</translation>
 <translation id="2873483161362553159">Navigasi browser</translation>
+<translation id="2873939192640533085">Masukkan perintah seperti "buat terdengar lebih percaya diri"</translation>
 <translation id="2874939134665556319">Lagu sebelumnya</translation>
 <translation id="2875812231449496375">Aktifkan setelan ini untuk mendapatkan hasil terbaik dengan wallpaper ini. Anda dapat menonaktifkan setelan ini kapan saja.</translation>
 <translation id="2878387241690264070">Daya terpakai <ph name="RATE" /> dalam <ph name="NUM_SECONDS" /> detik.</translation>
 <translation id="2880569433548999039">Screensaver Aliran awan</translation>
+<translation id="2888298276507578975">Masukkan perintah seperti "tulis ucapan terima kasih"</translation>
 <translation id="2890557891229184386">pulau tropis</translation>
 <translation id="2895772081848316509">gelap</translation>
 <translation id="2926057806159140518">Masukkan nama pengguna dan sandi atau pindai kode QR</translation>
@@ -376,6 +379,7 @@
 <translation id="3226405216343213872">Mencari pemindai</translation>
 <translation id="3226657629376379887">Menu tindakan tata letak</translation>
 <translation id="3227186760713762082">Bagi nilai <ph name="CATEGORY_TEXT" /> dengan <ph name="CONVERSION_RATE" /></translation>
+<translation id="3237710083340813756">Tulis ulang</translation>
 <translation id="3246869037381808805">Tugas pencetakan yang sudah lebih dari 1 hari akan dihapus</translation>
 <translation id="324961752321393509">Administrator tidak mengizinkan penutupan aplikasi ini</translation>
 <translation id="3268178239013324452">Gagal - Tutup terbuka</translation>
@@ -414,6 +418,7 @@
 <translation id="346539236881580388">Ambil ulang</translation>
 <translation id="3484914941826596830">Saat firmware sedang diupdate, jangan mencabut perangkat eksternal ini atau mematikan komputer. Anda dapat meminimalkan jendela ini. Update ini mungkin perlu waktu beberapa menit dan perangkat eksternal mungkin tidak berfungsi selama update.</translation>
 <translation id="3486220673238053218">definisi</translation>
+<translation id="3487866404496702283">Masukan untuk fitur mahi</translation>
 <translation id="3488065109653206955">Diaktifkan sebagian</translation>
 <translation id="3492882532495507361">Kantor <ph name="OFFICE_STYLE" /> dengan warna <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">Data diukur oleh Chromebook Anda. Data ini mungkin berbeda dari data operator.</translation>
@@ -442,6 +447,7 @@
 <translation id="3621072146987826699">gajah</translation>
 <translation id="3632579075709132555">Beralih layar privasi</translation>
 <translation id="3651050199673793219">Pilih satuan suhu</translation>
+<translation id="3661106764436337772">Tulis lebih cepat dan lebih percaya diri</translation>
 <translation id="3662461537616691585">burgundi dan marun</translation>
 <translation id="3668449597372804501">Wallpaper Aliran awan</translation>
 <translation id="3675132884790542448">babi</translation>
@@ -585,6 +591,7 @@
 <translation id="4503441351962730761">seni modern</translation>
 <translation id="4507392511610824664">tingkatkan kecerahan</translation>
 <translation id="4511264077854731334">Portal</translation>
+<translation id="4513946894732546136">Masukan</translation>
 <translation id="4521826082652183069">Kecocokan nama alternatif subjek</translation>
 <translation id="4522570452068850558">Detail</translation>
 <translation id="4536864596629708641">Konfigurasi IP</translation>
@@ -757,6 +764,7 @@
 <translation id="5543701552415191873">terkunci</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Otomatis beralih ke tema gelap saat matahari terbenam</translation>
+<translation id="556042886152191864">Tombol</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> dalam warna <ph name="TERRAIN_COLOR" /></translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Pindai ulang</translation>
@@ -875,6 +883,7 @@
 <translation id="6235460611964961764">Reset penggunaan data secara manual</translation>
 <translation id="6243280677745499710">Yang disetel saat ini</translation>
 <translation id="6250316632541035980">daging asap dan telur</translation>
+<translation id="6255213378196499011">Setelan Bantu tulis</translation>
 <translation id="6275224645089671689">Panah kanan</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>

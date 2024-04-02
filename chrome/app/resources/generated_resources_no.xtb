@@ -350,7 +350,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="125220115284141797">Standard</translation>
 <translation id="1252219782845132919">Skjul gruppe</translation>
 <translation id="1252987234827889034">Det oppsto en profilfeil</translation>
-<translation id="1253664522045778676">Klikk på et resultat, så åpnes siden i den gjeldende fanen</translation>
 <translation id="1254593899333212300">Direkte internettilkobling</translation>
 <translation id="1256588359404100567">Innstillingen er synkronisert fra den forrige enheten din.</translation>
 <translation id="1257336506558170607">Eksporter det valgte sertifikatet</translation>
@@ -1207,7 +1206,6 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1887210448491286312">Slutt å caste fanen til <ph name="DEVICE_NAME" /></translation>
 <translation id="1887442540531652736">Påloggingsfeil</translation>
 <translation id="1887597546629269384">Si «Hey Google» igjen</translation>
-<translation id="1889091146873278175">Klikk på «G»-knappen for å se flere søkeresultater i et sidepanel</translation>
 <translation id="1890026367080681123">Gå til innstillingene for innebygd innhold</translation>
 <translation id="189035593835762169">Vilkår</translation>
 <translation id="1891362123137972260">Det er kritisk lite diskplass. Frigjør diskplass.</translation>
@@ -6278,7 +6276,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5804241973901381774">Tillatelser</translation>
 <translation id="5804259315582798390">Kunne ikke slå på lokal datagjenoppretting</translation>
 <translation id="5805268472388605531">Trykk og hold på tastaturtastene for å se aksenttegn og spesialtegn</translation>
-<translation id="5805354171420804923">Sammenlign søkeresultater raskere fra det nye sidepanelet</translation>
 <translation id="5805697420284793859">Window Manager</translation>
 <translation id="5806447147478173900">Total mengde lagringsplass som brukes av nettstedene som vises: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (standard)</translation>
@@ -7420,7 +7417,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6709357832553498500">Koble til med <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">Forrige</translation>
 <translation id="6710394144992407503">Se etter stavefeil når du skriver inn tekst på nettsider</translation>
-<translation id="671226373742585927">Klikk på «X»-knappen for å lukke sidepanelet.</translation>
 <translation id="6712943853047024245">Du har allerede lagret et passord med dette brukernavnet for <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">Legg til en jobbprofil</translation>
 <translation id="6713441551032149301">Hold inne Appoversikt-tasten for å bytte mellom funksjonstaster og tastene på øverste rad på systemet</translation>
@@ -8788,7 +8784,6 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7758884017823246335">Legg til nettstedsøk</translation>
 <translation id="7759809451544302770">Valgfritt</translation>
 <translation id="7762024824096060040">Kan ikke bruke denne kontoen</translation>
-<translation id="7762243782113123335">Beklager, noe gikk galt. Send en tilbakemelding med #bruschetta i beskrivelsen. Feilkoden er <ph name="ERROR" /></translation>
 <translation id="7764225426217299476">Legg til adresse</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> fra <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764527477537408401">Åpne gruppen i et nytt vindu</translation>
@@ -9274,7 +9269,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="810185532889603849">Egendefinert farge</translation>
 <translation id="8101987792947961127">Powerwash kreves ved neste omstart</translation>
 <translation id="8102139037507939978">Fjern personlig identifiserende informasjon fra system_logs.txt.</translation>
-<translation id="8102344699913991108">Nettsteder bruker denne innstillingen for å tilby engasjerende fullskjermopplevelser uavhengig av brukerbevegelser</translation>
 <translation id="810362914482827094">Søk blant passnøkler</translation>
 <translation id="8104088837833760645">Last ned eSIM-profilen</translation>
 <translation id="8105273883928376822">Logg på for å fortsette.</translation>
@@ -9495,7 +9489,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8272443605911821513">Administrer utvidelsene dine ved å klikke på Utvidelser i Flere verktøy-menyen.</translation>
 <translation id="8272786333453048167">Tillat igjen</translation>
 <translation id="8273905181216423293">Last ned nå</translation>
-<translation id="8274495289680107339">Nettsteder bruker denne innstillingen til å starte bilde-i-bilde automatisk. Da kan du fortsette å se på videoer, samtidig som du frigjør skjermen til andre oppgaver.</translation>
 <translation id="827488840488530039">Siden du prøver å besøke, kunne ikke bekrefte Kerberos-sakene dine</translation>
 <translation id="8274921654076766238">Lupen følger tastaturets fokus</translation>
 <translation id="8274924778568117936">Du må ikke slå av eller lukke <ph name="DEVICE_TYPE" />-enheten din før oppdateringen er ferdig. <ph name="DEVICE_TYPE" />-enheten starter på nytt når installasjonen er ferdig.</translation>

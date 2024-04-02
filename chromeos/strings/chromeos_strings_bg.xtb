@@ -271,6 +271,7 @@
 <translation id="2446553403094072641">Точност на плаващата точка</translation>
 <translation id="2448312741937722512">Тип</translation>
 <translation id="2465272316171730950">Капацитетът ни е достигнат. Заповядайте отново след малко.</translation>
+<translation id="2472215337771558851">Използвайте функцията „Помощ при писане“, базирана на AI на Google, за да създадете чернова или да прецизирате съществуващ текст</translation>
 <translation id="2480572840229215612">раци</translation>
 <translation id="248546197012830854">Устройството е офлайн. Свържете се с Wi-Fi мрежа, за да видите помощното съдържание.</translation>
 <translation id="2486301288428798846">дърво</translation>
@@ -328,10 +329,12 @@
 <translation id="2860473693272905224">Поставете друга страница върху скенера</translation>
 <translation id="2872961005593481000">Изключване</translation>
 <translation id="2873483161362553159">Придвижване в браузъра</translation>
+<translation id="2873939192640533085">Въведете подкана, като например „да звучи по-уверено“</translation>
 <translation id="2874939134665556319">Предишен запис</translation>
 <translation id="2875812231449496375">Включете тази настройка за най-добри резултати с този тапет. Можете да я изключите по всяко време.</translation>
 <translation id="2878387241690264070">За <ph name="NUM_SECONDS" /> секунди батерията се разреди с(ъс) <ph name="RATE" />.</translation>
 <translation id="2880569433548999039">Скрийнсейвър с облаци</translation>
+<translation id="2888298276507578975">Въведете подкана, като например „напиши благодарствена бележка“</translation>
 <translation id="2890557891229184386">тропически остров</translation>
 <translation id="2895772081848316509">тъмни/тъмно</translation>
 <translation id="2926057806159140518">Въведете потребителското име и паролата си или сканирайте QR кода си</translation>
@@ -376,6 +379,7 @@
 <translation id="3226405216343213872">Търсят се скенери</translation>
 <translation id="3226657629376379887">Меню с действия за оформлението</translation>
 <translation id="3227186760713762082">Разделете стойността за <ph name="CATEGORY_TEXT" /> на <ph name="CONVERSION_RATE" /></translation>
+<translation id="3237710083340813756">Пренаписване</translation>
 <translation id="3246869037381808805">Заданията за отпечатване, по-стари от 1 ден, ще бъдат премахнати</translation>
 <translation id="324961752321393509">Администраторът ви не разрешава затварянето на това приложение</translation>
 <translation id="3268178239013324452">Неуспешно – вратичката е отворена</translation>
@@ -414,6 +418,7 @@
 <translation id="346539236881580388">Повторно заснемане</translation>
 <translation id="3484914941826596830">Докато фърмуерът се актуализира, не изключвайте това външно устройство, нито компютъра си. Можете да намалите прозореца. Възможно е актуализацията да отнеме няколко минути и през това време външното ви устройство може да не работи.</translation>
 <translation id="3486220673238053218">дефиниция</translation>
+<translation id="3487866404496702283">Отзиви за функцията mahi</translation>
 <translation id="3488065109653206955">Частично активиран</translation>
 <translation id="3492882532495507361">Офис в(ъв) <ph name="OFFICE_STYLE" /> стил с(ъс) <ph name="OFFICE_COLOR" /> тонове</translation>
 <translation id="3493187369049186498">Данните се измерват от вашия Chromebook. Стойностите, отчетени от доставчика, може да са различни.</translation>
@@ -442,6 +447,7 @@
 <translation id="3621072146987826699">слонове</translation>
 <translation id="3632579075709132555">Превключване на екрана за поверителност</translation>
 <translation id="3651050199673793219">Изберете единица за температура</translation>
+<translation id="3661106764436337772">Пишете по-бързо и уверено</translation>
 <translation id="3662461537616691585">бургундско червено и тъмночервено</translation>
 <translation id="3668449597372804501">Тапет с облаци</translation>
 <translation id="3675132884790542448">прасета</translation>
@@ -585,6 +591,7 @@
 <translation id="4503441351962730761">модерно изкуство</translation>
 <translation id="4507392511610824664">увеличаване на яркостта</translation>
 <translation id="4511264077854731334">Портал</translation>
+<translation id="4513946894732546136">Отзиви</translation>
 <translation id="4521826082652183069">Съответствие на алтернативното име на субекта</translation>
 <translation id="4522570452068850558">Подробности</translation>
 <translation id="4536864596629708641">Конфигурация на IP адреса</translation>
@@ -757,6 +764,7 @@
 <translation id="5543701552415191873">заключено</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Автоматично превключване към тъмната тема при залез</translation>
+<translation id="556042886152191864">Бутон</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> в нюанси на <ph name="TERRAIN_COLOR" /></translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Повторно сканиране</translation>
@@ -875,6 +883,7 @@
 <translation id="6235460611964961764">Ръчно нулиране на преноса на данни</translation>
 <translation id="6243280677745499710">Зададено понастоящем</translation>
 <translation id="6250316632541035980">бекон и яйца</translation>
+<translation id="6255213378196499011">Настройки на функцията „Помощ при писане“</translation>
 <translation id="6275224645089671689">Стрелка за надясно</translation>
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -903,6 +912,7 @@
 <translation id="6382182670717268353">Визуализация на скрийнсейвъра</translation>
 <translation id="6388847657025262518">Подавачът на документи на скенера е блокирал. Проверете го и опитайте отново.</translation>
 <translation id="6394634179843537518">Добавяне на файл</translation>
+<translation id="6396719002784938593">суха переста трева</translation>
 <translation id="639964859328803943">място за следобеден чай</translation>
 <translation id="6400680457268373900">Сюрреалистично изображение на <ph name="DREAMSCAPES_OBJECT" /> от <ph name="DREAMSCAPES_MATERIAL" /> в <ph name="DREAMSCAPES_COLORS" /></translation>
 <translation id="6401427872449207797">търсене в браузъра</translation>
@@ -944,6 +954,7 @@
 <translation id="6575134580692778371">Не е конфигурирано</translation>
 <translation id="6576005492601044801">лява страна</translation>
 <translation id="6579509898032828423">Използване на тази снимка</translation>
+<translation id="6587870930887634392">сукулент</translation>
 <translation id="6596816719288285829">IP адрес</translation>
 <translation id="6599673642868607614">Благодарим ви за отзивите. Отзивите ви ни помагат да подобрим практическата работа с Chromebook и ще бъдат прегледани от екипа ни. Поради големия брой сигнали не можем да изпратим отговор.</translation>
 <translation id="6618744767048954150">В ход</translation>
@@ -1102,6 +1113,7 @@
 <translation id="7497215489070763236">Сертификат от сертифициращ орган за сървъра</translation>
 <translation id="7501957181231305652">или</translation>
 <translation id="7502658306369382406">IPv6 адрес</translation>
+<translation id="7507061649493508884">Наситено <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /></translation>
 <translation id="7513770521371759388">долна част</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">Създаване</translation>
@@ -1162,6 +1174,7 @@
 <translation id="7850847810298646851">Тапет, базиран на AI на Google</translation>
 <translation id="785170686607360576">Лале</translation>
 <translation id="7856267634822906833">Сензорен екран с Bluetooth</translation>
+<translation id="7859006200041800233">кактусов цвят</translation>
 <translation id="7869143217755017858">Деактивиране на тъмния режим</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Тип на доставчика</translation>
@@ -1297,6 +1310,7 @@
 <translation id="8726019395068607495">Спряло – вратичката е отворена</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8747900814994928677">Потвърждаване на промяната</translation>
+<translation id="8749478549112817787">Фон на камерата</translation>
 <translation id="8755946156089753497">кула</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Албум в Google Снимки</translation>

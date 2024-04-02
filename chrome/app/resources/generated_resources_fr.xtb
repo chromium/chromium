@@ -348,7 +348,6 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="125220115284141797">Par défaut</translation>
 <translation id="1252219782845132919">Masquer le groupe</translation>
 <translation id="1252987234827889034">Erreur au niveau du profil</translation>
-<translation id="1253664522045778676">Cliquez sur un résultat (la page s'ouvrira dans l'onglet actif)</translation>
 <translation id="1254593899333212300">Connexion directe à Internet</translation>
 <translation id="1256588359404100567">Paramètre synchronisé à partir de votre ancien appareil.</translation>
 <translation id="1257336506558170607">Exporter le certificat sélectionné</translation>
@@ -1200,7 +1199,6 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1887210448491286312">Arrêter de caster l'onglet sur <ph name="DEVICE_NAME" /></translation>
 <translation id="1887442540531652736">Erreur de connexion</translation>
 <translation id="1887597546629269384">Dites à nouveau "Ok Google"</translation>
-<translation id="1889091146873278175">Cliquez sur le bouton "G" pour voir plus de résultats de recherche dans un panneau latéral</translation>
 <translation id="1890026367080681123">Accéder aux paramètres de contenu intégré</translation>
 <translation id="189035593835762169">Conditions d'utilisation</translation>
 <translation id="1891362123137972260">Veuillez libérer de l'espace sur le disque, car il est presque saturé.</translation>
@@ -6264,7 +6262,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5804241973901381774">Autorisations</translation>
 <translation id="5804259315582798390">Échec de l'activation de la récupération des données locales</translation>
 <translation id="5805268472388605531">Appuyez de manière prolongée sur les touches du clavier pour afficher les accents et les caractères spéciaux</translation>
-<translation id="5805354171420804923">Comparez plus vite les résultats de recherche grâce au nouveau panneau latéral</translation>
 <translation id="5805697420284793859">Gestionnaire de fenêtres</translation>
 <translation id="5806447147478173900">Espace de stockage total utilisé par les sites affichés : <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (par défaut)</translation>
@@ -7408,7 +7405,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6709357832553498500">Se connecter avec "<ph name="EXTENSIONNAME" />"</translation>
 <translation id="6710213216561001401">Précédent</translation>
 <translation id="6710394144992407503">Vérifier l'orthographe du texte saisi sur les pages Web</translation>
-<translation id="671226373742585927">Cliquez sur le bouton "X" pour fermer le panneau latéral</translation>
 <translation id="6712943853047024245">Vous avez déjà enregistré un mot de passe avec ce nom d'utilisateur pour <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">Ajouter un profil professionnel</translation>
 <translation id="6713441551032149301">Appuyez de manière prolongée sur la touche du Lanceur d'applications pour passer des touches de fonction aux touches supérieures du système et vice-versa</translation>
@@ -8774,7 +8770,6 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7758884017823246335">Ajouter une recherche sur un site</translation>
 <translation id="7759809451544302770">Facultatif</translation>
 <translation id="7762024824096060040">Impossible d'utiliser ce compte</translation>
-<translation id="7762243782113123335">Désolé, un problème est survenu. Veuillez envoyer vos commentaires en incluant #bruschetta dans la description. Code d'erreur : <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Ajouter une adresse</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> du domaine <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764527477537408401">Ouvrir le groupe dans une nouvelle fenêtre</translation>
@@ -9260,7 +9255,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="810185532889603849">Couleur personnalisée</translation>
 <translation id="8101987792947961127">Powerwash requis au prochain redémarrage</translation>
 <translation id="8102139037507939978">Retirez les informations permettant d'identifier personnellement les utilisateurs du fichier system_logs.txt.</translation>
-<translation id="8102344699913991108">Les sites utilisent ce paramètre pour proposer une expérience immersive en plein écran, indépendamment des gestes des utilisateurs</translation>
 <translation id="810362914482827094">Rechercher des clés d'accès</translation>
 <translation id="8104088837833760645">Télécharger le profil eSIM</translation>
 <translation id="8105273883928376822">Veuillez vous connecter pour continuer.</translation>
@@ -9481,7 +9475,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8272443605911821513">Pour gérer les extensions, cliquez sur "Extensions" dans le menu "Autres outils".</translation>
 <translation id="8272786333453048167">Autoriser à nouveau</translation>
 <translation id="8273905181216423293">Télécharger</translation>
-<translation id="8274495289680107339">Les sites utilisent ce paramètre pour passer en Picture-in-picture automatiquement. Cela vous permet de continuer à regarder une vidéo tout en libérant votre écran pour d'autres tâches.</translation>
 <translation id="827488840488530039">La page que vous essayez de consulter n'a pas pu valider vos tickets Kerberos</translation>
 <translation id="8274921654076766238">Loupe selon la sélection au clavier</translation>
 <translation id="8274924778568117936">N'éteignez pas et ne fermez pas votre <ph name="DEVICE_TYPE" /> avant la fin de la mise à jour. Votre <ph name="DEVICE_TYPE" /> redémarrera une fois l'installation terminée.</translation>

@@ -1183,6 +1183,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="6989674195860388998">Przełącz w ustawieniach…</translation>
 <translation id="6998989275928107238">Do</translation>
 <translation id="699954956411469731">Powiadomienia na urządzeniach mobilnych</translation>
+<translation id="699985840472413751">Zamknij pobieranie</translation>
 <translation id="7004032350256606903">Twoja organizacja wymaga przeglądania prywatnego.
 <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Ostatnie karty</translation>
@@ -1472,6 +1473,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="850600235656508448">Otwórz w trybie incognito</translation>
 <translation id="8517375800490286174">Licencje typu open source</translation>
 <translation id="8522147671363140027">{count,plural, =1{{count} hasło i inne elementy zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google {email}.}few{{count} hasła i inne elementy zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google {email}.}many{{count} haseł i inne elementy zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google {email}.}other{{count} hasła i inne elementy zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google {email}.}}</translation>
+<translation id="8522813812888400223">Anuluj pobieranie</translation>
 <translation id="8524799873541103884">Karty <ph name="INCOGNITO" /> od <ph name="FIRST_VISIBLE_TAB" /> do <ph name="LAST_VISIBLE_TAB" /> z <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="852576975834694248">Nastąpi wylogowanie, a karty zostaną zamknięte</translation>
 <translation id="8528009254289981965">Otwieraj linki z innych aplikacji w trybie incognito</translation>

@@ -581,6 +581,7 @@ Wenn du diese Richtlinie deaktivierst, wird das Scrollen zu bestimmten Textfragm
 <translation id="1468702975912409463">Nutzern mit Remotezugriff ermöglichen, URLs auf Hostseite in ihrem lokalen Clientbrowser zu öffnen</translation>
 <translation id="1474273443907024088">TLS-Funktion "False Start" deaktivieren</translation>
 <translation id="1477934438414550161">TLS 1.2</translation>
+<translation id="1478529725439951221">Der Anbieter der Benutzeroberflächenautomatisierung wird über das Varianten-Framework aktiviert oder deaktiviert.</translation>
 <translation id="1479427764273213107">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste der USB-Geräte definieren, die vom jeweiligen Kerneltreiber getrennt werden können, um über die chrome.usb API direkt in einer Webanwendung eingesetzt zu werden. Die Einträge bestehen aus der ID des USB-Herstellers und der Produkt-ID, über die die Hardware identifiziert werden kann.
 
       Ist diese Richtlinie nicht konfiguriert, ist die Liste der trennbaren USB-Geräte leer.</translation>
@@ -5794,6 +5795,7 @@ Ist die Richtlinie deaktiviert, wird <ph name="PRODUCT_NAME" /> deaktiviert.</tr
       Hinweis: Trenne mehrere Werte durch Kommas.</translation>
 <translation id="5693469654327063861">Datenmigration zulassen</translation>
 <translation id="56936613186060503">Der Download-Manager hat keine Option zum Speichern von Dateien in <ph name="GOOGLE_DRIVE_NAME" />.</translation>
+<translation id="5693942129376744977">Anbieter der Benutzeroberflächenautomatisierung deaktivieren.</translation>
 <translation id="5695209488612697377">Aktiviert die Verwendung eines Standardsuchanbieters im Kontextmenü.
 
           Wenn diese Richtlinie deaktiviert ist, ist die Suche mit deinem Standardsuchanbieter im Kontextmenü nicht verfügbar.
@@ -5868,6 +5870,17 @@ Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, sind Glanceables 
       Wenn die Richtlinie auf "false" gesetzt oder nicht konfiguriert ist, werden keine Informationen ausgegeben.
       Ist sie auf "true" gesetzt, werden VPD-Informationen zum Gerät ausgegeben.
       Vital Product Data (VPD) sind Informationen zum Gerät selbst (z. B. Teile- und Seriennummern) und zur Konfiguration des Geräts.</translation>
+<translation id="5760227556806302854">Aktiviert den Anbieter des Bedienungshilfen-Frameworks zur Benutzeroberflächenautomatisierung in <ph name="PRODUCT_NAME" /> für die Verwendung durch Bedienungshilfen.
+
+Diese Richtlinie wird in <ph name="PRODUCT_NAME" /> für einen einjährigen Übergangszeitraum unterstützt, damit Unternehmensadministratoren die Bereitstellung des Browser-eigenen Anbieters des Bedienungshilfen-Frameworks zur Benutzeroberflächenautomatisierung steuern können. Bedienungshilfen und andere Tools, die das Bedienungshilfen-Framework zur Benutzeroberflächenautomatisierung für die Interoperabilität mit dem Browser verwenden, müssen möglicherweise aktualisiert werden, damit sie ordnungsgemäß mit dem Browser-eigenen Anbieter der Benutzeroberflächenautomatisierung funktionieren. Administratoren können den Browser-eigenen Anbieter der Benutzeroberflächenautomatisierung mit dieser Richtlinie vorübergehend deaktivieren und damit zum alten Verhalten zurückkehren, während sie zusammen mit Anbietern daran arbeiten, Updates für betroffene Tools bereitzustellen.
+
+Wenn die Richtlinie auf „false“ gesetzt ist, aktiviert <ph name="PRODUCT_NAME" /> nur seinen Microsoft Active Accessibility-Anbieter. Bedienungshilfen und andere Tools, die das neuere Bedienungshilfen-Framework zur Benutzeroberflächenautomatisierung für die Interoperabilität mit dem Browser verwenden, kommunizieren mit diesem über einen Kompatibilitäts-Shim in <ph name="MS_WIN_NAME" />.
+
+Wenn die Richtlinie auf „true“ gesetzt ist, aktiviert <ph name="PRODUCT_NAME" /> seinen Anbieter der Benutzeroberflächenautomatisierung zusätzlich zu seinem Microsoft Active Accessibility-Anbieter. Bedienungshilfen und andere Tools, die das neuere Bedienungshilfen-Framework zur Benutzeroberflächenautomatisierung für die Interoperabilität mit dem Browser verwenden, kommunizieren direkt mit ihm.
+
+Wenn die Richtlinie nicht konfiguriert ist, wird das Varianten-Framework in <ph name="PRODUCT_NAME" /> verwendet, um den Anbieter zu aktivieren oder zu deaktivieren.
+
+Die Unterstützung dieser Richtlinieneinstellung wird in <ph name="PRODUCT_NAME" /> 136 eingestellt.</translation>
 <translation id="5762969307102447459">Autofill für Adressdaten deaktivieren</translation>
 <translation id="5765780083710877561">Beschreibung:</translation>
 <translation id="5766438888216077649">Für Links, die <ph name="BLANK_PAGE_NAME" /> zum Ziel haben, sollte <ph name="WINDOW_OPENER_PROPERTY" /> nicht aktiviert werden</translation>
@@ -7567,6 +7580,7 @@ Wenn diese Richtlinie auf „<ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_
       Ist die Richtlinie nicht konfiguriert, erscheint die Ablage standardmäßig unten auf dem Bildschirm und der Nutzer hat die Möglichkeit, diese Position zu ändern.</translation>
 <translation id="7039815268521168329">Ablauf „Voice Match mit Google Assistant“ bei der Ersteinrichtung anzeigen</translation>
 <translation id="7040229947030068419">Beispielwert</translation>
+<translation id="7043157348967593138">Anbieter des Browser-eigenen Bedienungshilfen-Frameworks zur Benutzeroberflächenautomatisierung unter Windows aktivieren</translation>
 <translation id="7044883996351280650">Android-Dienst "Sicherung und Wiederherstellung" konfigurieren</translation>
 <translation id="7045221780834308118">Wenn die Richtlinie aktiviert ist, können Webanwendungen von Drittanbietern die Desk API verwenden, um <ph name="PRODUCT_OS_NAME" />-Desktops zu steuern. Wenn die Richtlinie nicht konfiguriert oder deaktiviert ist, ist die <ph name="DESK_API_NAME" /> nicht verfügbar. Die Richtlinie wird nur auf registrierten Geräten angewendet.</translation>
 <translation id="7046113122884041950">Smart Lock nicht zulassen</translation>
@@ -8507,6 +8521,7 @@ Weitere Informationen zur Richtlinie <ph name="IEEM_SITELIST_POLICY" /> von Inte
 
        Ist die Richtlinie deaktiviert oder nicht konfiguriert, bleibt der Entwicklermodus auf dem Gerät verfügbar.</translation>
 <translation id="7824000841504721945">Gruppen aus Einzelrichtlinien deaktivieren</translation>
+<translation id="7824833865123899471">Anbieter der Benutzeroberflächenautomatisierung aktivieren.</translation>
 <translation id="782661371433719637">Websites dürfen den Nutzer nicht um Lesezugriff auf Dateien und Verzeichnisse über die File System API bitten</translation>
 <translation id="7827127381981620448">Plattform-App</translation>
 <translation id="7829436838673974723">Zulassen, dass Seiten beim Schließen synchrone XHR-Anfragen senden</translation>

@@ -350,7 +350,6 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="125220115284141797">Výchozí</translation>
 <translation id="1252219782845132919">Skrýt skupinu</translation>
 <translation id="1252987234827889034">Došlo k chybě profilu</translation>
-<translation id="1253664522045778676">Kliknutím na výsledek příslušnou stránku otevřete na aktuální kartě</translation>
 <translation id="1254593899333212300">Přímé připojení k internetu</translation>
 <translation id="1256588359404100567">Nastavení bylo synchronizováno z předchozího zařízení.</translation>
 <translation id="1257336506558170607">Exportovat vybraný certifikát</translation>
@@ -1203,7 +1202,6 @@ Na aplikace a obsah v jiných zařízeních tato akce nemá vliv.</translation
 <translation id="1887210448491286312">Zastavit odesílání karty do zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="1887442540531652736">Chyba přihlášení</translation>
 <translation id="1887597546629269384">Znovu řekněte „Ok Google“</translation>
-<translation id="1889091146873278175">Kliknutím na tlačítko „G“ zobrazíte na postranním panelu další výsledky vyhledávání.</translation>
 <translation id="1890026367080681123">Přejít na nastavení vloženého obsahu</translation>
 <translation id="189035593835762169">Smluvní podmínky</translation>
 <translation id="1891362123137972260">Na disku je kriticky málo místa. Uvolněte místo na disku.</translation>
@@ -6270,7 +6268,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5804241973901381774">Oprávnění</translation>
 <translation id="5804259315582798390">Aktivace obnovení místních dat se nezdařila</translation>
 <translation id="5805268472388605531">Podržením kláves zobrazíte diakritiku a speciální znaky</translation>
-<translation id="5805354171420804923">Porovnávejte výsledky vyhledávání rychleji na novém bočním panelu</translation>
 <translation id="5805697420284793859">Správce oken</translation>
 <translation id="5806447147478173900">Celkový úložný prostor využitý zobrazenými weby: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (výchozí)</translation>
@@ -7415,7 +7412,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6709357832553498500">Připojit pomocí rozšíření <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">Předchozí</translation>
 <translation id="6710394144992407503">Při zadávání textu na webových stránkách kontrolovat pravopis</translation>
-<translation id="671226373742585927">Kliknutím na tlačítko X zavřete boční panel</translation>
 <translation id="6712943853047024245">Heslo pro toto uživatelské jméno na webu <ph name="WEBSITE" /> už máte uložené</translation>
 <translation id="6713233729292711163">Přidat pracovní profil</translation>
 <translation id="6713441551032149301">Podržením spouštěcí klávesy můžete přepínat mezi funkčními klávesami a horní řadou systémových kláves</translation>
@@ -8782,7 +8778,6 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7758884017823246335">Přidat vyhledávání na webu</translation>
 <translation id="7759809451544302770">Volitelné</translation>
 <translation id="7762024824096060040">Tento účet nelze použít</translation>
-<translation id="7762243782113123335">Litujeme, něco se pokazilo. Zašlete nám prosím zpětnou vazbu s hashtagem #bruschetta v popisu. Kód chyby je <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Přidat adresu</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> z <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764527477537408401">Otevřít skupinu v novém okně</translation>
@@ -9268,7 +9263,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="810185532889603849">Vlastní barva</translation>
 <translation id="8101987792947961127">Je vyžadováno použití funkce Powerwash při dalším restartu</translation>
 <translation id="8102139037507939978">Odstranit ze souboru system_logs.txt informace umožňující zjištění totožnosti.</translation>
-<translation id="8102344699913991108">Weby toto nastavení používají k nabízení pohlcujících zážitků na celou obrazovku bez ohledu na uživatelská gesta</translation>
 <translation id="810362914482827094">Vyhledat přístupové klíče</translation>
 <translation id="8104088837833760645">Stáhnout profil eSIM</translation>
 <translation id="8105273883928376822">Pokud chcete pokračovat, přihlaste se.</translation>
@@ -9489,7 +9483,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8272443605911821513">Chcete-li spravovat rozšíření, klikněte v nabídce Nástroje na příkaz Rozšíření.</translation>
 <translation id="8272786333453048167">Znovu povolit</translation>
 <translation id="8273905181216423293">Stáhnout</translation>
-<translation id="8274495289680107339">Weby používají toto nastavení k automatické aktivaci režimu obrazu v obraze. To vám umožní pokračovat ve sledování videa a zároveň uvolnit obrazovku pro jiné úkoly.</translation>
 <translation id="827488840488530039">Stránce, kterou se pokoušíte navštívit, se nepodařilo ověřit vaše lístky Kerberos</translation>
 <translation id="8274921654076766238">Lupa sleduje zaměření klávesnice</translation>
 <translation id="8274924778568117936">V průběhu aktualizace <ph name="DEVICE_TYPE" /> nevypínejte ani nezavírejte. Po dokončení instalace se <ph name="DEVICE_TYPE" /> restartuje.</translation>

@@ -347,7 +347,6 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="125220115284141797">Asosiy</translation>
 <translation id="1252219782845132919">Guruhni yashirish</translation>
 <translation id="1252987234827889034">Profil xatoligi yuz berdi</translation>
-<translation id="1253664522045778676">Kerakli natijani bosing va sahifa joriy varaqda ochiladi</translation>
 <translation id="1254593899333212300">Internetga to‘g‘ridan-to‘g‘ri ulanish</translation>
 <translation id="1256588359404100567">Parametr oldingi qurilmadan sinxronlangan.</translation>
 <translation id="1257336506558170607">Tanlangan sertifikatni eksport qilish</translation>
@@ -1198,7 +1197,6 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1887210448491286312">Varaqning <ph name="DEVICE_NAME" /> qurilmasiga translatsiyasini toʻxtatish</translation>
 <translation id="1887442540531652736">Kirishda xatolik yuz berdi</translation>
 <translation id="1887597546629269384">Yana “Hey Google” deng</translation>
-<translation id="1889091146873278175">Yon panelda qoʻshimcha qidiruv natijalarini koʻrish uchun “G” belgisini bosing</translation>
 <translation id="1890026367080681123">Joylashtirilgan kontent sozlamalarini ochish</translation>
 <translation id="189035593835762169">Foydalanish shartlari</translation>
 <translation id="1891362123137972260">Diskda boʻsh joy deyarli qolmadi. Xotirada joy boʻshating.</translation>
@@ -6265,7 +6263,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="5804241973901381774">Ruxsatlar</translation>
 <translation id="5804259315582798390">Qurilmadagi maʼlumotlarni tiklash funksiyasi yoqilmadi</translation>
 <translation id="5805268472388605531">Urgʻu va maxsus belgilarni koʻrish uchun klaviatura tugmalarini bosib turing</translation>
-<translation id="5805354171420804923">Yangi yon panelda qidiruv natijalarini solishtiring</translation>
 <translation id="5805697420284793859">Oynalar menejeri</translation>
 <translation id="5806447147478173900">Ochilgan saytlar ishlatgan jami xotira: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (asosiy)</translation>
@@ -7407,7 +7404,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" /> orqali ulanish</translation>
 <translation id="6710213216561001401">Avvalgi</translation>
 <translation id="6710394144992407503">Veb-sahifalarda matn kiritayotganda imloviy xatolar tekshirilsin</translation>
-<translation id="671226373742585927">Yon panelni yopish uchun X belgisini bosing</translation>
 <translation id="6712943853047024245"><ph name="WEBSITE" /> uchun parol bu foydalanuvchi nomi bilan allaqachon saqlangan</translation>
 <translation id="6713233729292711163">Ish profilini kiritish</translation>
 <translation id="6713441551032149301">Funksiya tugmalari va yuqori qatordagi tizim tugmalarini almashtirish uchun launcher tugmasini bosib turing</translation>
@@ -8772,7 +8768,6 @@ Tayinlovni bekor qilish uchun belgilangan kalit yoki tugmani bosing.</translatio
 <translation id="7758884017823246335">Sayt qidiruv tizimini kiritish</translation>
 <translation id="7759809451544302770">Ixtiyoriy</translation>
 <translation id="7762024824096060040">Bu hisobdan foydalanish imkonsiz</translation>
-<translation id="7762243782113123335">Xatolik yuz berdi. Fikr-mulohaza yuborish orqali bizga xabar bering. Uning tavsifiga #bruschetta tegini qoʻshing. Xatolik kodi: <ph name="ERROR" /></translation>
 <translation id="7764225426217299476">Manzil kiritish</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_DOMAIN" /> saytidan <ph name="DOWNLOAD_RECEIVED" /></translation>
 <translation id="7764527477537408401">Guruhni yangi oynada ochish</translation>
@@ -9256,7 +9251,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="810185532889603849">Maxsus rang</translation>
 <translation id="8101987792947961127">Qurilmani keyingi marta qayta ishga tushirishda Powerwash amali bajarilishi kerak</translation>
 <translation id="8102139037507939978">Shaxsni aniqlash maʼlumotlarini system_logs.txt faylidan chiqarib tashlash.</translation>
-<translation id="8102344699913991108">Foydalanuvchi imo-ishoralaridan qatʼi nazar saytlar bu sozlamadan butun ekranda ochishni taklif qilish uchun foydalanadi</translation>
 <translation id="810362914482827094">Kodlarni qidirish</translation>
 <translation id="8104088837833760645">eSIM profilini yuklab olish</translation>
 <translation id="8105273883928376822">Davom etish uchun hisobga kiring.</translation>
@@ -9477,7 +9471,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8272443605911821513">Kengaytmalarni “Qo‘shimcha asboblar” menyusidagi “Kengaytmalar” bo‘limidan boshqarish mumkin.</translation>
 <translation id="8272786333453048167">Yana ruxsat berish</translation>
 <translation id="8273905181216423293">Yuklab olish</translation>
-<translation id="8274495289680107339">Saytlar bu sozlamadan tasvir ustida tasvir rejimiga avtomatik kirish uchun foydalanadi. Bu boshqa vazifalar uchun ekranni boʻshatib, videoni tomosha qilishni davom ettirish imkonini beradi.</translation>
 <translation id="827488840488530039">Siz ochishga uringan sahifa Kerberos chiptangizni tasdiqlay olmadi</translation>
 <translation id="8274921654076766238">Lupa yoqilganda klaviatura fokuslanadi</translation>
 <translation id="8274924778568117936">Yangilanish tugamasdan oldin <ph name="DEVICE_TYPE" /> qurilmasini o‘chirmang va yopmang. Yangilanish o‘rnatilishi bilan <ph name="DEVICE_TYPE" /> qayta ishga tushiriladi.</translation>

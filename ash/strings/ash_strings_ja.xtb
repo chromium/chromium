@@ -30,7 +30,6 @@
 <translation id="109942774857561566">退屈だな</translation>
 <translation id="1104084341931202936">ユーザー補助機能の設定を表示</translation>
 <translation id="1104621072296271835">デバイスを連携させると活用の幅が広がります</translation>
-<translation id="1106446201446919638">1 台のデバイスが接続されています。アクセス ポイントの使用中、Wi-Fi はオフになります。</translation>
 <translation id="1111021433905331574">[設定] &gt; [<ph name="APP_TITLE" />] でキーボードのバックライトの色を変更できます</translation>
 <translation id="1117719261843403176">モバイルデータのオンとオフを切り替える。<ph name="STATE" />。</translation>
 <translation id="112308213915226829">シェルフを自動的に非表示にする</translation>
@@ -428,6 +427,7 @@
 <translation id="2785499565474703580">1 台のデバイスが接続されています</translation>
 <translation id="2791421900609674576">前回中断したところから再開できるように、おすすめが表示されます。おすすめは長押しで削除できます。</translation>
 <translation id="2792498699870441125">Alt+ 検索</translation>
+<translation id="2801954693771979815">画面サイズ</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />、選択済み</translation>
 <translation id="2805756323405976993">アプリ</translation>
 <translation id="2814448776515246190">画面の一部のキャプチャ</translation>
@@ -518,7 +518,6 @@
 <translation id="316086887565479535">テンプレートでサポートされていないアプリ</translation>
 <translation id="3160929076476941240">2 時間</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> が <ph name="DEVICE_TYPE" /> をロールバックしています。デバイスはリセットされ、データはすべて削除されます。</translation>
-<translation id="3170769098533255179">デバイスは接続されていません。アクセス ポイントの使用中、Wi-Fi はオフになります。</translation>
 <translation id="3171170659304083361">入力方法の設定</translation>
 <translation id="3176221688814061633">Chromebook または Bluetooth デバイスで古いバージョンの Bluetooth が使用されています。Bluetooth 超解像をオンにするか、内蔵マイクを使用すると音質が向上します。</translation>
 <translation id="3181441307743005334">再起動には時間がかかる場合があります</translation>
@@ -553,7 +552,6 @@
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> 台のデバイスが <ph name="DEVICE_NAME" /> のアクセス ポイントに接続されています</translation>
 <translation id="3307642347673023554">ノートパソコン モードに切り替えました</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> が後でログインすることは引き続き可能です。</translation>
-<translation id="3317779231018057649"><ph name="DEVICECOUNT" /> 台のデバイスが接続されています。アクセス ポイントの使用中、Wi-Fi はオフになります。</translation>
 <translation id="3321628682574733415">保護者のコードが間違っています</translation>
 <translation id="332827762492701193">通知は非表示になっています</translation>
 <translation id="3333674550998107387"><ph name="NOTIFICATION_TITLE" /> の通知を開く</translation>
@@ -853,6 +851,7 @@
 <translation id="440113666232554208">スクリーンキャストを保存できません</translation>
 <translation id="4405151984121254935">接続されている周辺機器のタイプはサポートされていません</translation>
 <translation id="4406883609789734330">自動字幕起こし</translation>
+<translation id="4412698727486357573">ヘルプセンター</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> はオフになっています。</translation>
 <translation id="4424159417645388645">デスク 5</translation>
 <translation id="4430019312045809116">音量</translation>
@@ -893,7 +892,6 @@
 <translation id="4566144812051858745">提案自体に興味がない</translation>
 <translation id="4569753163207712681">スマートフォンの最近の写真、メディア、アプリを表示する</translation>
 <translation id="4573176682887762361">"[単語 / フレーズ] をタイプ"</translation>
-<translation id="4577188182049003486">アクセス ポイントがオンのとき、Wi-Fi はオフになります</translation>
 <translation id="4577274620589681794">時間です · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">プレビューを表示</translation>
 <translation id="4578906031062871102">設定メニューが開いています</translation>
@@ -1015,6 +1013,7 @@
 <translation id="5003993274120026347">次の文</translation>
 <translation id="5004607513195820459">ネットワークは管理されています</translation>
 <translation id="5009463889040999939">プロファイルの名前を変更しています。この処理には数分かかることがあります。</translation>
+<translation id="5013847959275396160">ツールバーを隠す</translation>
 <translation id="5016558321564993266">マーカーを切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">検索カテゴリ</translation>
 <translation id="5030659775136592441">ブックマーク マネージャーを表示する</translation>
@@ -1151,7 +1150,6 @@
 <translation id="5550417424894892620">デスクトップにドロップしたファイルは、<ph name="HOLDING_SPACE_TITLE" /> に追加されます。デスクトップにファイルを追加することはできません。</translation>
 <translation id="5551456515017410630">カレンダーを開くまたは閉じます</translation>
 <translation id="5551974246223970793">ページ検索時に次の一致箇所に移動する</translation>
-<translation id="5555639311269196631">アクセス ポイントをオフにする</translation>
 <translation id="5556459405103347317">再読み込み</translation>
 <translation id="5558091555391176027">ニアバイシェアで付近のデバイスに表示されるモードのオンとオフを切り替えます</translation>
 <translation id="5558314826121965174">創造性</translation>
@@ -1542,7 +1540,7 @@
 <translation id="703425375924687388"><ph name="QUERY_NAME" />、Google アシスタント</translation>
 <translation id="7042322267639375032">ステータス領域を表示しない</translation>
 <translation id="7045033600005038336">テンプレートを置き換えますか？</translation>
-<translation id="7051244143160304048"><ph name="DEVICE_NAME" /> さんが接続を解除しました</translation>
+<translation id="7051244143160304048"><ph name="DEVICE_NAME" /> の接続が解除されました</translation>
 <translation id="7055910611768509537">タッチペンが 1 週間以上使用されていません</translation>
 <translation id="7061457967428964661">カメラをプレビューしています。別の方向をプレビューするには、Ctrl　と矢印キーを押します</translation>
 <translation id="7066646422045619941">このネットワークは管理者によって無効にされています。</translation>
@@ -1787,6 +1785,7 @@
 <translation id="799296642788192631">重要なファイルを固定できます。固定するには、該当のファイルにカーソルを合わせるか、ファイルアプリで該当のファイルを右クリックします。</translation>
 <translation id="7994370417837006925">マルチログイン</translation>
 <translation id="7995804128062002838">画面をキャプチャできませんでした</translation>
+<translation id="8000020256436988724">ツールバー</translation>
 <translation id="8000066093800657092">ネットワーク接続なし</translation>
 <translation id="8001755249288974029">カーソル位置から行頭までのテキストを選択する</translation>
 <translation id="8004512796067398576">増やす</translation>
@@ -1900,6 +1899,7 @@
 <translation id="847056008324733326">表示スケールの設定</translation>
 <translation id="8473301994082929012"><ph name="FEATURE_NAME" />は <ph name="ORGANIZATION_NAME" /> により<ph name="FEATURE_STATE" />に設定されています。</translation>
 <translation id="8477270416194247200">キャンセルするには Alt+ 検索キーまたは Shift キーを押します。</translation>
+<translation id="8480418399907765580">ツールバーを表示</translation>
 <translation id="8487699605742506766">アクセス ポイント</translation>
 <translation id="8491237443345908933">新しいタブでリンクを開く</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> は <ph name="SPECIFIED_RESOLUTION" /> に対応していません。解像度を <ph name="FALLBACK_RESOLUTION" /> に変更しました。変更を保存するには確定してください。<ph name="TIMEOUT_SECONDS" /> 秒後に以前の設定に戻ります。</translation>
@@ -1984,6 +1984,7 @@
 <translation id="8834539327799336565">現在接続中のデバイス</translation>
 <translation id="8841375032071747811">戻るボタン</translation>
 <translation id="8843682306134542540">画面の向きの固定を切り替えます。<ph name="STATE_TEXT" /></translation>
+<translation id="8845001906332463065">ヘルプ</translation>
 <translation id="8849001918648564819">非表示</translation>
 <translation id="8853703225951107899">PIN またはパスワードはまだ確認されていません。注: パスワードを最近変更した場合は、古いパスワードを使用してください。新しいパスワードはログアウトした後に適用されます。</translation>
 <translation id="8855885154700222542">全画面表示キー</translation>

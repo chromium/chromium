@@ -71,6 +71,7 @@
 <translation id="1125573121925420732">Avisos podem ser comuns enquanto os sites atualizam a segurança. Isso deve melhorar em breve.</translation>
 <translation id="112840717907525620">Cache da política OK</translation>
 <translation id="1131264053432022307">Imagem que você copiou</translation>
+<translation id="1138458427267715730">Receba alertas quando houver uma redução no preço em qualquer site</translation>
 <translation id="1142713751288681188">Tipo de papel</translation>
 <translation id="1142846828089312304">Bloquear cookies de terceiros na navegação anônima</translation>
 <translation id="1144136880160289237">Você ainda não tem temas ativos</translation>
@@ -1114,6 +1115,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3154987252551138431">Ocorreu um erro com o Compartilhar por proximidade</translation>
 <translation id="315504272643575312">Sua conta é gerenciada por <ph name="MANAGER" />.</translation>
 <translation id="3155163173539279776">Reiniciar Chromium</translation>
+<translation id="3156511682997763015">Avançar 10 segundos</translation>
 <translation id="3157931365184549694">Restaurar</translation>
 <translation id="3158539265159265653">Disco</translation>
 <translation id="3162559335345991374">O Wi-Fi que você está usando pode exigir a visita a uma página de login.</translation>
@@ -1214,6 +1216,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="334438173029876234">Equipamentos de skate</translation>
 <translation id="3347146863028219517">Esqui e snowboard</translation>
 <translation id="3349952286488694786">SRA2</translation>
+<translation id="3350450887151703713">Repetir 10 segundos</translation>
 <translation id="3352881017886802007">Jogos de esporte</translation>
 <translation id="3355823806454867987">Alterar configurações de proxy...</translation>
 <translation id="335809815767823">Exportadas</translation>
@@ -3054,6 +3057,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6944557544071529399">Jogos de estratégia</translation>
 <translation id="6944692733090228304">Você inseriu sua senha em um site que não é gerenciado por <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Para proteger sua conta, não reutilize sua senha em outros apps e sites.</translation>
 <translation id="6945221475159498467">Selecionar</translation>
+<translation id="6946949206576443118">Pesquise na Web usando o Chrome</translation>
 <translation id="6948051842255602737">Fim de jogo. Sua pontuação é de <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Para acessar métodos e requisitos de retirada, selecione um endereço</translation>
 <translation id="6948874830249067134">A1x3</translation>
