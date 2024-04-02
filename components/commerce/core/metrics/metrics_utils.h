@@ -73,6 +73,7 @@ enum class ShoppingAction {
   kDiscountCopied = 0,
   kDiscountOpened = 1,
   kPriceInsightsOpened = 2,
+  kPriceTracked = 3,
 };
 
 // Record the state of a PDP for a navigation.

@@ -134,4 +134,18 @@ void ShoppingUiHandlerDelegate::ShowBookmarkEditorForCurrentUrl() {
                        BookmarkEditor::EditDetails::EditNode(existing_node),
                        BookmarkEditor::SHOW_TREE);
 }
+
+ukm::SourceId ShoppingUiHandlerDelegate::GetCurrentTabUkmSourceId() {
+  auto* browser = chrome::FindTabbedBrowser(profile_, false);
+  if (!browser) {
+    return ukm::kInvalidSourceId;
+  }
+  content::WebContents* web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
+  if (!web_contents) {
+    return ukm::kInvalidSourceId;
+  }
+  return web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
+}
+
 }  // namespace commerce
