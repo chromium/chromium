@@ -8,4 +8,5 @@ found in the LICENSE file.
 <resources>
     <!-- Tab Strip Dimensions -->
     <dimen name="tab_strip_height">40dp</dimen>
+    <dimen name="tab_strip_reserved_top_padding">2dp</dimen>
 </resources>

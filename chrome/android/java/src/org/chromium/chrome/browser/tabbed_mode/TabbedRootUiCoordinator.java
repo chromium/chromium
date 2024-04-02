@@ -1062,11 +1062,16 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private void updateTopControlsHeight() {
         if (mToolbarManager == null) return;
 
-        final boolean animate = !sDisableTopControlsAnimationForTesting;
+        // TODO(crbug/331844971): Do a smooth transition head into DW mode.
+        final boolean animate =
+                !sDisableTopControlsAnimationForTesting && !isInDesktopWindowingMode();
         final BrowserControlsSizer browserControlsSizer = mBrowserControlsManager;
 
+        boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
         int topControlsNewHeight;
-        if (ToolbarFeatures.isDynamicTopChromeEnabled()) {
+        // TODO(crbug/325351108): Check isDesktopWindowingEnabled instead. This currently checks
+        // the flag value, in order to receive every height updates from TabStripHeightSupplier.
+        if (ToolbarFeatures.canTabStripHeightChange(isTablet)) {
             // This method can be called when the toolbar didn't go through a layout pass (e.g. when
             // theme switches in settings, activity recreates), so getToolbar().getHeight() returns
             // 0.
@@ -1077,8 +1082,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             .getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
             final int tabStripHeight = mToolbarManager.getTabStripHeightSupplier().get();
             topControlsNewHeight = toolbarHeight + tabStripHeight + mStatusIndicatorHeight;
-
-            boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
             if (tabStripHeight > 0 && !isTablet) {
                 String msg =
                         "Non-zero tab strip height found on non-tablet form factor. tabStripHeight="
@@ -1212,6 +1215,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             return;
         }
 
+        var tabStripTransitionCoordinator = mToolbarManager.getTabStripTransitionCoordinator();
+        assert tabStripTransitionCoordinator != null;
+
         // TODO(crbug/328446763): instantiate earlier so the tab strip place holder draws properly.
         mAppHeaderCoordinator =
                 new AppHeaderCoordinator(
@@ -1219,7 +1225,15 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mCoordinator,
                         stripLayoutHelperManager,
                         mBrowserControlsManager.getBrowserVisibilityDelegate(),
-                        mInsetObserverViewSupplier.get());
+                        mInsetObserverViewSupplier.get(),
+                        tabStripTransitionCoordinator);
+    }
+
+    // TODO(crbug/325351108): Make it an observable boolean supplier.
+    private boolean isInDesktopWindowingMode() {
+        return VERSION.SDK_INT >= VERSION_CODES.R
+                && mAppHeaderCoordinator != null
+                && mAppHeaderCoordinator.isDesktopWindowingEnabled();
     }
 
     @Override

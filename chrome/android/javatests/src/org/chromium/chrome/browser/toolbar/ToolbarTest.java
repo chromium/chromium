@@ -266,7 +266,7 @@ public class ToolbarTest {
                                 .getDimensionPixelSize(R.dimen.toolbar_hairline_height);
         checkTabStripHeightOnUiThread(tabStripHeightResource);
         ComponentCallbacks tabStripCallback =
-                activity.getToolbarManager().getTabStripTransitionCoordinatorForTesting();
+                activity.getToolbarManager().getTabStripTransitionCoordinator();
         Assert.assertNotNull("Tab strip transition callback is null.", tabStripCallback);
 
         // Set the screen width bucket and trigger an configuration change to force toggle tab strip

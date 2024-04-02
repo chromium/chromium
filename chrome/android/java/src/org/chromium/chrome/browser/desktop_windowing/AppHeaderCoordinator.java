@@ -23,6 +23,7 @@ import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
+import org.chromium.chrome.browser.toolbar.top.TabStripTransitionCoordinator;
 import org.chromium.components.browser_ui.widget.InsetObserver;
 import org.chromium.components.browser_ui.widget.InsetsRectProvider;
 import org.chromium.ui.util.ColorUtils;
@@ -48,9 +49,9 @@ public class AppHeaderCoordinator {
     private final InsetsRectProvider mInsetsRectProvider;
     private final StripLayoutHelperManager mStripLayoutHelperManager;
     private final BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
+    private final TabStripTransitionCoordinator mTabStripTransitionCoordinator;
 
     private final WindowInsetsController mInsetsController;
-    private final InsetsRectProvider.Observer mInsetsRectUpdateRunnable;
 
     private boolean mDesktopWindowingEnabled;
     private int mBrowserControlsToken = TokenHolder.INVALID_TOKEN;
@@ -67,6 +68,7 @@ public class AppHeaderCoordinator {
      *     controls visibility.
      * @param insetObserver {@link InsetObserver} that manages insets changes on the
      *     CoordinatorView.
+     * @param tabStripTransitionCoordinator Coordinator managing tab strip height transitions.
      */
     @SuppressWarnings("WrongConstant")
     public AppHeaderCoordinator(
@@ -74,13 +76,14 @@ public class AppHeaderCoordinator {
             View coordinatorView,
             StripLayoutHelperManager stripLayoutHelperManager,
             BrowserStateBrowserControlsVisibilityDelegate browserControlsVisibilityDelegate,
-            InsetObserver insetObserver) {
+            InsetObserver insetObserver,
+            @NonNull TabStripTransitionCoordinator tabStripTransitionCoordinator) {
         // TODO(crbug/328446763): Properly release the reference to the activity when destroyed.
         mActivity = activity;
         mCoordinatorView = coordinatorView;
         mStripLayoutHelperManager = stripLayoutHelperManager;
         mBrowserControlsVisibilityDelegate = browserControlsVisibilityDelegate;
-        mInsetsRectUpdateRunnable = this::onInsetsRectsUpdated;
+        mTabStripTransitionCoordinator = tabStripTransitionCoordinator;
 
         mInsetsController = mActivity.getWindow().getDecorView().getWindowInsetsController();
 
@@ -92,18 +95,23 @@ public class AppHeaderCoordinator {
                                 insetObserver,
                                 WindowInsets.Type.captionBar(),
                                 WindowInsetsCompat.toWindowInsetsCompat(insets, mCoordinatorView));
-        mInsetsRectProvider.addObserver(mInsetsRectUpdateRunnable);
+        InsetsRectProvider.Observer insetsRectUpdateRunnable = this::onInsetsRectsUpdated;
+        mInsetsRectProvider.addObserver(insetsRectUpdateRunnable);
+
+        // TODO(wenyufu): Inject this mInsetsRectProvider into TSTC's ctor.
+        mTabStripTransitionCoordinator.setInsetRectProvider(mInsetsRectProvider);
 
         // Populate the initial value if the rect provider is ready.
         if (!mInsetsRectProvider.getWidestUnoccludedRect().isEmpty()) {
-            mInsetsRectUpdateRunnable.onBoundingRectsUpdated(
+            insetsRectUpdateRunnable.onBoundingRectsUpdated(
                     mInsetsRectProvider.getWidestUnoccludedRect());
         }
     }
 
     /** Destroy the instances and remove all the dependencies. */
     public void destroy() {
-        mInsetsRectProvider.removeObserver(mInsetsRectUpdateRunnable);
+        mTabStripTransitionCoordinator.setInsetRectProvider(null);
+        mInsetsRectProvider.destroy();
     }
 
     /**

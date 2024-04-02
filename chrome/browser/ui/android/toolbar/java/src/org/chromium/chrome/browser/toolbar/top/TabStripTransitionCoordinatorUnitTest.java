@@ -5,17 +5,15 @@
 package org.chromium.chrome.browser.toolbar.top;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -55,6 +53,7 @@ import org.chromium.chrome.browser.tab.TabObscuringHandler.Target;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.top.TabStripTransitionCoordinator.TabStripHeightObserver;
+import org.chromium.components.browser_ui.widget.InsetsRectProvider;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.resources.Resource;
 import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
@@ -63,7 +62,7 @@ import java.util.concurrent.TimeUnit;
 
 /** Unit test for {@link TabStripTransitionCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(qualifiers = "w600dp", shadows = ShadowLooper.class)
+@Config(qualifiers = "w600dp-h800dp", shadows = ShadowLooper.class)
 @DisableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
 public class TabStripTransitionCoordinatorUnitTest {
     private static final int TEST_TAB_STRIP_HEIGHT = 40;
@@ -82,23 +81,31 @@ public class TabStripTransitionCoordinatorUnitTest {
     @Mock private BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
     @Mock private ControlContainer mControlContainer;
     @Mock private ViewResourceAdapter mViewResourceAdapter;
+    @Mock private InsetsRectProvider mInsetsRectProvider;
     @Captor private ArgumentCaptor<BrowserControlsStateProvider.Observer> mBrowserControlsObserver;
     @Captor private ArgumentCaptor<Callback<Resource>> mOnCaptureReadyCallback;
+    @Captor private ArgumentCaptor<InsetsRectProvider.Observer> mInsetsRectObserver;
 
     private TestControlContainerView mSpyControlContainer;
     private TabStripTransitionCoordinator mCoordinator;
     private TestActivity mActivity;
     private TabObscuringHandler mTabObscuringHandler = new TabObscuringHandler();
-
-    private int mTopControlsContentOffset;
-
     private TestObserver mObserver;
+    private int mReservedTopPadding;
+
+    // Test variables
+    private int mTopControlsContentOffset;
+    private Rect mWidesUnoccludedRect = new Rect();
 
     @Before
     public void setup() {
         mActivityScenario.getScenario().onActivity(activity -> mActivity = activity);
         mSpyControlContainer = TestControlContainerView.createSpy(mActivity);
         mActivity.setContentView(mSpyControlContainer);
+        mReservedTopPadding =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.tab_strip_reserved_top_padding);
 
         // Set the mocks for control container and its view resource adapter.
         doReturn(mSpyControlContainer).when(mControlContainer).getView();
@@ -107,6 +114,10 @@ public class TabStripTransitionCoordinatorUnitTest {
                 .when(mViewResourceAdapter)
                 .addOnResourceReadyCallback(mOnCaptureReadyCallback.capture());
         doAnswer(inv -> triggerCapture()).when(mViewResourceAdapter).triggerBitmapCapture();
+
+        // Set up mocks for mInsetsRectProvider
+        doReturn(mWidesUnoccludedRect).when(mInsetsRectProvider).getWidestUnoccludedRect();
+        doNothing().when(mInsetsRectProvider).addObserver(mInsetsRectObserver.capture());
 
         mCoordinator =
                 new TabStripTransitionCoordinator(
@@ -246,11 +257,9 @@ public class TabStripTransitionCoordinatorUnitTest {
         ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
         setDeviceWidthDp(NARROW_WINDOW_WIDTH);
         Assert.assertEquals(
-                "Hide transition is blocked by TabStripLayoutOptimizations.",
-                NOTHING_OBSERVED,
+                "Hide transition is disabled when TabStripLayoutOptimizations enabled.",
+                TEST_TAB_STRIP_HEIGHT,
                 mObserver.heightRequested);
-
-        verify(mSpyControlContainer, times(0)).setMinimumHeight(anyInt());
     }
 
     @Test
@@ -493,6 +502,72 @@ public class TabStripTransitionCoordinatorUnitTest {
                         "Android.DynamicTopChrome.TabStripTransition.Finished", false)) {
             setDeviceWidthDp(600);
         }
+    }
+
+    @Test
+    public void useInsetsRectProvider_IncreaseHeight() {
+        ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
+        mCoordinator.setInsetRectProvider(mInsetsRectProvider);
+
+        // Simulate a rect update.
+        int newHeight = 10 + TEST_TAB_STRIP_HEIGHT;
+        mWidesUnoccludedRect.set(new Rect(0, 0, 600, newHeight));
+        mInsetsRectObserver.getValue().onBoundingRectsUpdated(mWidesUnoccludedRect);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        Assert.assertEquals(
+                "Height request should include the top padding.",
+                newHeight,
+                mObserver.heightRequested);
+
+        // Push a browser control height update to kick off the height transition.
+        doReturn(TEST_TOOLBAR_HEIGHT).when(mBrowserControlsVisibilityManager).getContentOffset();
+        getBrowserControlsObserver().onControlsOffsetChanged(0, 0, 0, 0, false);
+
+        assertTabStripHeightForMargins(newHeight);
+        assertObservedHeight(newHeight);
+    }
+
+    @Test
+    public void useInsetsRectProvider_DecreasedHeight() {
+        ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
+        mCoordinator.setInsetRectProvider(mInsetsRectProvider);
+
+        // Simulate a rect update that has a smaller height.
+        int newHeight = TEST_TAB_STRIP_HEIGHT - 10;
+        int expectedHeight = mReservedTopPadding + TEST_TAB_STRIP_HEIGHT;
+        mWidesUnoccludedRect.set(new Rect(0, 0, 600, newHeight));
+        mInsetsRectObserver.getValue().onBoundingRectsUpdated(mWidesUnoccludedRect);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        Assert.assertEquals(
+                "When new height is less than height with reserved padding, use that instead.",
+                expectedHeight,
+                mObserver.heightRequested);
+
+        // Push a browser control height update to kick off the height transition.
+        doReturn(TEST_TOOLBAR_HEIGHT).when(mBrowserControlsVisibilityManager).getContentOffset();
+        getBrowserControlsObserver().onControlsOffsetChanged(0, 0, 0, 0, false);
+
+        assertTabStripHeightForMargins(expectedHeight);
+        assertObservedHeight(expectedHeight);
+    }
+
+    @Test
+    public void useInsetsRectProvider_DecreasedWidth() {
+        ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
+        mCoordinator.setInsetRectProvider(mInsetsRectProvider);
+
+        // Simulate a rect update that has a smaller width.
+        int newHeight = TEST_TAB_STRIP_HEIGHT + 10;
+        mWidesUnoccludedRect.set(new Rect(0, 0, NARROW_WINDOW_WIDTH, newHeight));
+        mInsetsRectObserver.getValue().onBoundingRectsUpdated(mWidesUnoccludedRect);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        Assert.assertEquals(
+                "Narrower width does not trigger tab strip hiding, instead use the height only.",
+                newHeight,
+                mObserver.heightRequested);
     }
 
     /** Run #onControlsOffsetChanged, changing content offset from |beginOffset| to |endOffset|. */

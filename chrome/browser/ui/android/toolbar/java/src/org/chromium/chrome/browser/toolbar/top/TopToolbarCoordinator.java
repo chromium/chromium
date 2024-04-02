@@ -376,7 +376,8 @@ public class TopToolbarCoordinator implements Toolbar {
         }
 
         int tabStripHeightResource = mToolbarLayout.getTabStripHeightFromResource();
-        if (ToolbarFeatures.isDynamicTopChromeEnabled() && tabStripHeightResource > 0) {
+        boolean isTablet = tabStripHeightResource > 0;
+        if (ToolbarFeatures.canTabStripHeightChange(isTablet)) {
             mTabStripTransitionCoordinator =
                     new TabStripTransitionCoordinator(
                             browserControlsVisibilityManager,
@@ -903,7 +904,7 @@ public class TopToolbarCoordinator implements Toolbar {
     }
 
     /** Returns the {@link TabStripTransitionCoordinator}. */
-    public TabStripTransitionCoordinator getTabStripTransitionCoordinatorForTesting() {
+    public TabStripTransitionCoordinator getTabStripTransitionCoordinator() {
         return mTabStripTransitionCoordinator;
     }
 

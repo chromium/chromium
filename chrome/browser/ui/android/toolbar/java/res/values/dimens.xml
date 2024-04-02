@@ -11,6 +11,7 @@ found in the LICENSE file.
 
     <!-- Tab Strip Dimensions -->
     <dimen name="tab_strip_height">0dp</dimen>
+    <dimen name="tab_strip_reserved_top_padding">0dp</dimen>
 
     <!-- Negative vertical inset added to the search box bounds when modern is enabled. 4dp is added
          to both the top and bottom bounds to bring the 48dp modern_toolbar_background_size to 56dp

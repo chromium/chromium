@@ -13,8 +13,11 @@ import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
  * modified.
  */
 public class TabStripHeightSupplier extends ObservableSupplierImpl<Integer> {
+    private final boolean mIsTablet;
+
     public TabStripHeightSupplier(int initValue) {
         super(initValue);
+        mIsTablet = initValue > 0;
     }
 
     /**
@@ -35,7 +38,7 @@ public class TabStripHeightSupplier extends ObservableSupplierImpl<Integer> {
     }
 
     private void assertIsEnabled() {
-        assert ToolbarFeatures.isDynamicTopChromeEnabled()
+        assert ToolbarFeatures.canTabStripHeightChange(mIsTablet)
                 : "TabStripHeightSupplier set or observed without DTC enabled.";
     }
 }

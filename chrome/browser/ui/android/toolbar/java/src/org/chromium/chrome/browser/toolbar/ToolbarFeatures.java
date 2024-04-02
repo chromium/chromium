@@ -90,4 +90,9 @@ public final class ToolbarFeatures {
         sTabStripLayoutOptimizationEnabledForTesting = enabled;
         ResettersForTesting.register(() -> sTabStripLayoutOptimizationEnabledForTesting = null);
     }
+
+    /** Returns whether the tab strip height can change during run time. */
+    public static boolean canTabStripHeightChange(boolean isTablet) {
+        return isTabStripWindowLayoutOptimizationEnabled(isTablet) || isDynamicTopChromeEnabled();
+    }
 }

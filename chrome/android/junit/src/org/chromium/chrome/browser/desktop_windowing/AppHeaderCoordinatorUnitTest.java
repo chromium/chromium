@@ -10,6 +10,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
@@ -37,6 +38,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
+import org.chromium.chrome.browser.toolbar.top.TabStripTransitionCoordinator;
 import org.chromium.components.browser_ui.widget.InsetObserver;
 import org.chromium.components.browser_ui.widget.InsetsRectProvider;
 import org.chromium.ui.base.TestActivity;
@@ -64,6 +66,7 @@ public class AppHeaderCoordinatorUnitTest {
     @Mock private BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisDelegate;
     @Mock private InsetObserver mInsetObserver;
     @Mock private InsetsRectProvider mInsetsRectProvider;
+    @Mock private TabStripTransitionCoordinator mTabStripTransitionCoordinator;
     @Captor private ArgumentCaptor<InsetsRectProvider.Observer> mInsetRectObserverCaptor;
 
     private AppHeaderCoordinator mAppHeaderCoordinator;
@@ -216,7 +219,8 @@ public class AppHeaderCoordinatorUnitTest {
     public void testDestroy() {
         mAppHeaderCoordinator.destroy();
 
-        verify(mInsetsRectProvider).removeObserver(any());
+        verify(mInsetsRectProvider).destroy();
+        verify(mTabStripTransitionCoordinator).setInsetRectProvider(isNull());
         verify(mRootView, times(0)).setSystemGestureExclusionRects(any());
         verify(mStripLayoutManager, times(0)).updateHorizontalPaddings(anyFloat(), anyFloat());
     }
@@ -228,7 +232,8 @@ public class AppHeaderCoordinatorUnitTest {
                         mRootView,
                         mStripLayoutManager,
                         mBrowserControlsVisDelegate,
-                        mInsetObserver);
+                        mInsetObserver,
+                        mTabStripTransitionCoordinator);
     }
 
     private void setupWithNoInsets() {
