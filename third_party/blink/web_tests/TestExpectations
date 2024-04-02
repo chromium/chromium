@@ -2615,6 +2615,23 @@ crbug.com/626703 [ Mac ] external/wpt/mediacapture-insertable-streams/legacy/Med
 crbug.com/626703 external/wpt/uievents/mouse/mouse_boundary_events_after_removing_last_over_element.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/fetch/api/request/request-bad-port.any.html [ Timeout ]
+crbug.com/626703 external/wpt/fetch/api/request/request-bad-port.any.sharedworker.html [ Timeout ]
+crbug.com/626703 external/wpt/fetch/api/request/request-bad-port.any.worker.html [ Timeout ]
+crbug.com/626703 [ Win10.20h2 ] external/wpt/websockets/Create-blocked-port.any.html?wss [ Timeout ]
+crbug.com/626703 virtual/keepalive-in-browser-migration/external/wpt/fetch/api/request/request-bad-port.any.html [ Timeout ]
+crbug.com/626703 virtual/keepalive-in-browser-migration/external/wpt/fetch/api/request/request-bad-port.any.sharedworker.html [ Timeout ]
+crbug.com/626703 virtual/keepalive-in-browser-migration/external/wpt/fetch/api/request/request-bad-port.any.worker.html [ Timeout ]
+crbug.com/626703 virtual/orb-v02/external/wpt/fetch/api/request/request-bad-port.any.html [ Timeout ]
+crbug.com/626703 virtual/orb-v02/external/wpt/fetch/api/request/request-bad-port.any.sharedworker.html [ Timeout ]
+crbug.com/626703 virtual/orb-v02/external/wpt/fetch/api/request/request-bad-port.any.worker.html [ Timeout ]
+crbug.com/626703 virtual/plz-dedicated-worker-disabled/external/wpt/fetch/api/request/request-bad-port.any.html [ Timeout ]
+crbug.com/626703 virtual/plz-dedicated-worker-disabled/external/wpt/fetch/api/request/request-bad-port.any.sharedworker.html [ Timeout ]
+crbug.com/626703 virtual/plz-dedicated-worker-disabled/external/wpt/fetch/api/request/request-bad-port.any.worker.html [ Timeout ]
+crbug.com/626703 virtual/produce-compile-hints/external/wpt/fetch/api/request/request-bad-port.any.html [ Timeout ]
+crbug.com/626703 virtual/produce-compile-hints/external/wpt/fetch/api/request/request-bad-port.any.sharedworker.html [ Timeout ]
+crbug.com/626703 virtual/produce-compile-hints/external/wpt/fetch/api/request/request-bad-port.any.worker.html [ Timeout ]
+crbug.com/626703 [ Linux ] virtual/shared-storage-fenced-frame-mparch/external/wpt/shared-storage/shared-storage-writable-service-worker-fetch.tentative.https.sub.html [ Timeout ]
 crbug.com/332345856 [ Win11-arm64 ] external/wpt/html/browsers/browsing-the-web/back-forward-cache/eligibility/broadcast-channel.html [ Timeout ]
 crbug.com/332085381 virtual/composite-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-shape-interpolation-003.html [ Failure ]
 crbug.com/332085381 virtual/composite-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-shape-interpolation-004.html [ Failure ]
@@ -6754,7 +6771,6 @@ crbug.com/1519124 [ Linux ] external/wpt/webrtc-encoded-transform/tentative/RTCP
 
 # Gardener: 2024-01-22
 crbug.com/1518453 inspector-protocol/input/dispatchTouchEvent.js [ Failure Pass Timeout ]
-crbug.com/1520409 [ Linux ] virtual/shared-storage-fenced-frame-mparch/external/wpt/shared-storage/shared-storage-writable-service-worker-fetch.tentative.https.sub.html [ Failure Pass ]
 
 # May fail due to test framework issue. Disabling while this is being resolved.
 crbug.com/1367312 [ Win ] fast/dom/timer-throttling-hidden-page.html [ Failure Pass ]
