@@ -363,6 +363,12 @@ template("chrome_extra_paks") {
         ]
       }
 
+      if (is_chrome_branded) {
+        sources +=
+            [ "$root_gen_dir/ash/webui/conch/resources/conch_resources.pak" ]
+        deps += [ "//ash/webui/conch/resources" ]
+      }
+
       if (include_ash_ambient_animation_resources) {
         sources += [ "$root_gen_dir/ash/ambient/resources/ash_ambient_lottie_resources.pak" ]
         deps += [ "//ash/ambient/resources:lottie_resources" ]

@@ -187,7 +187,12 @@
 #include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chrome/browser/ui/webui/ash/cellular_setup/mobile_setup_ui.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
-#endif
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "ash/webui/conch/url_constants.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/webui/dlp_internals/dlp_internals_ui.h"
@@ -1124,6 +1129,10 @@ ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
     GURL(chrome::kChromeUIUserImageURL),
     GURL(chrome::kChromeUIVmUrl),
     GURL(scalable_iph::kScalableIphDebugURL),
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    GURL(ash::kChromeUIConchURL),
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
     // Pages that only exist in Lacros, where they are reachable via chrome://.
