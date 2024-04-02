@@ -61,6 +61,7 @@ public class ScreenshotCaptureTest {
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setRevision(1)
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_NAVIGATION_GESTURENAV)
                     .build();
 

@@ -215,7 +215,7 @@ public class SectionHeaderView extends LinearLayout {
             // Add 20dp padding at each sides for the SectionHeaderView.
             int lateralPadding =
                     getResources().getDimensionPixelSize(R.dimen.feed_header_menu_end_margin);
-            mContent.setPadding(lateralPadding, 0, lateralPadding, 0);
+            mContent.setPadding(lateralPadding, 0, 0, 0);
             MarginLayoutParams contentMarginLayoutParams =
                     (MarginLayoutParams) mContent.getLayoutParams();
             contentMarginLayoutParams.topMargin =
