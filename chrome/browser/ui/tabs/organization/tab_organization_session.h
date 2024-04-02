@@ -48,6 +48,7 @@ class TabOrganizationSession : public TabOrganization::Observer {
   }
   ID session_id() const { return session_id_; }
   std::u16string feedback_id() const { return feedback_id_; }
+  optimization_guide::proto::UserFeedback feedback() const { return feedback_; }
 
   static std::unique_ptr<TabOrganizationSession> CreateSessionForBrowser(
       const Browser* browser,
@@ -67,6 +68,10 @@ class TabOrganizationSession : public TabOrganization::Observer {
   // Returns true if the request is not completed or there are still actions
   // that need to be taken on organizations.
   bool IsComplete() const;
+
+  void SetFeedback(optimization_guide::proto::UserFeedback feedback) {
+    feedback_ = feedback;
+  }
 
   void AddObserver(Observer* new_observer);
   void RemoveObserver(Observer* new_observer);
@@ -94,6 +99,10 @@ class TabOrganizationSession : public TabOrganization::Observer {
   TabOrganizations tab_organizations_;
   ID session_id_;
   std::u16string feedback_id_;
+
+  // Represents whether the user has provided feedback via the thumbs UI.
+  optimization_guide::proto::UserFeedback feedback_ =
+      optimization_guide::proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
 
   // Entry point used to create the session. Used for logging.
   TabOrganizationEntryPoint entrypoint_;

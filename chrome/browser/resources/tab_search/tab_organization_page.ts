@@ -275,28 +275,29 @@ export class TabOrganizationPageElement extends PolymerElement {
     if (!this.session_) {
       return;
     }
-    const organizations: TabOrganization[] = this.multiTabOrganization_ ?
-        this.session_.organizations :
-        this.session_.organizations.slice(0, 1);
-    organizations.forEach((organization) => {
-      switch (event.detail.value) {
-        case CrFeedbackOption.UNSPECIFIED:
-          this.apiProxy_.setUserFeedback(
-              this.session_!.sessionId, organization.organizationId,
-              UserFeedback.kUserFeedBackUnspecified);
-          break;
-        case CrFeedbackOption.THUMBS_UP:
-          this.apiProxy_.setUserFeedback(
-              this.session_!.sessionId, organization.organizationId,
-              UserFeedback.kUserFeedBackPositive);
-          break;
-        case CrFeedbackOption.THUMBS_DOWN:
-          this.apiProxy_.setUserFeedback(
-              this.session_!.sessionId, organization.organizationId,
-              UserFeedback.kUserFeedBackNegative);
-          break;
-      }
-    });
+    // Multi organization feedback is per-session, single organization feedback
+    // is per-organization.
+    let organizationId = -1;
+    if (!this.multiTabOrganization_) {
+      organizationId = this.session_.organizations[0]!.organizationId;
+    }
+    switch (event.detail.value) {
+      case CrFeedbackOption.UNSPECIFIED:
+        this.apiProxy_.setUserFeedback(
+            this.session_!.sessionId, organizationId,
+            UserFeedback.kUserFeedBackUnspecified);
+        break;
+      case CrFeedbackOption.THUMBS_UP:
+        this.apiProxy_.setUserFeedback(
+            this.session_!.sessionId, organizationId,
+            UserFeedback.kUserFeedBackPositive);
+        break;
+      case CrFeedbackOption.THUMBS_DOWN:
+        this.apiProxy_.setUserFeedback(
+            this.session_!.sessionId, organizationId,
+            UserFeedback.kUserFeedBackNegative);
+        break;
+    }
     if (event.detail.value === CrFeedbackOption.THUMBS_DOWN) {
       // Show feedback dialog
       this.apiProxy_.triggerFeedback(this.session_.sessionId);

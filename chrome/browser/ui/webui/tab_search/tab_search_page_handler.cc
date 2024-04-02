@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
@@ -39,6 +40,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
@@ -655,14 +657,27 @@ void TabSearchPageHandler::SetUserFeedback(
           optimization_guide::proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
       break;
   }
-
-  TabOrganization* organization =
-      GetTabOrganization(organization_service_, session_id, organization_id);
-  if (!organization) {
-    return;
+  if (base::FeatureList::IsEnabled(features::kMultiTabOrganization)) {
+    CHECK(organization_id == -1);
+    Browser* browser = chrome::FindLastActive();
+    if (!browser) {
+      return;
+    }
+    TabOrganizationSession* session =
+        organization_service_->GetSessionForBrowser(browser);
+    if (!session) {
+      return;
+    }
+    session->SetFeedback(user_feedback);
+  } else {
+    CHECK(organization_id >= 0);
+    TabOrganization* organization =
+        GetTabOrganization(organization_service_, session_id, organization_id);
+    if (!organization) {
+      return;
+    }
+    organization->SetFeedback(user_feedback);
   }
-
-  organization->SetFeedback(user_feedback);
 }
 
 void TabSearchPageHandler::ShowUI() {

@@ -87,15 +87,25 @@ void RecordUserFeedbackHistogram(proto::LogAiDataRequest* log_ai_data_request) {
               ->organizations()
               .empty()) {
         RecordUserFeedbackHistogram(feature, user_feedback);
-      }
-      for (auto organization :
-           GetModelQualityData<TabOrganizationFeatureTypeMap>(
-               log_ai_data_request)
-               ->organizations()) {
-        // We assume there is only one tab organizations when we upload the
-        // model quality data for this version.
-        user_feedback = organization.user_feedback();
+      } else if (GetModelQualityData<TabOrganizationFeatureTypeMap>(
+                     log_ai_data_request)
+                     ->user_feedback()) {
+        user_feedback = GetModelQualityData<TabOrganizationFeatureTypeMap>(
+                            log_ai_data_request)
+                            ->user_feedback();
         RecordUserFeedbackHistogram(feature, user_feedback);
+      } else {
+        for (auto organization :
+             GetModelQualityData<TabOrganizationFeatureTypeMap>(
+                 log_ai_data_request)
+                 ->organizations()) {
+          // TODO(b/331852814): Remove this else case along with the multi tab
+          // organization flag
+          // We assume there is only one tab organization when we upload the
+          // model quality data for this version.
+          user_feedback = organization.user_feedback();
+          RecordUserFeedbackHistogram(feature, user_feedback);
+        }
       }
       break;
     case proto::LogAiDataRequest::FeatureCase::kWallpaperSearch:
