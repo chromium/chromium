@@ -173,7 +173,7 @@ class AttributionInteropParser {
     return output;
   }
 
-  [[nodiscard]] std::string ParseConfig(
+  base::expected<void, std::string> ParseConfig(
       const base::Value::Dict& dict,
       AttributionInteropConfig& interop_config,
       bool required) && {
@@ -260,7 +260,10 @@ class AttributionInteropParser {
 
     // TODO(linnan): Parse null reports rate if it's supported in interop tests.
 
-    return error_stream_.str();
+    if (has_error_) {
+      return base::unexpected(error_stream_.str());
+    }
+    return base::ok();
   }
 
  private:
@@ -753,16 +756,14 @@ ParseAttributionInteropInput(base::Value::Dict input,
 base::expected<AttributionInteropConfig, std::string>
 ParseAttributionInteropConfig(const base::Value::Dict& dict) {
   AttributionInteropConfig config;
-  std::string error =
-      AttributionInteropParser().ParseConfig(dict, config, /*required=*/true);
-  if (!error.empty()) {
-    return base::unexpected(std::move(error));
-  }
+  RETURN_IF_ERROR(
+      AttributionInteropParser().ParseConfig(dict, config, /*required=*/true));
   return config;
 }
 
-std::string MergeAttributionInteropConfig(const base::Value::Dict& dict,
-                                          AttributionInteropConfig& config) {
+base::expected<void, std::string> MergeAttributionInteropConfig(
+    const base::Value::Dict& dict,
+    AttributionInteropConfig& config) {
   return AttributionInteropParser().ParseConfig(dict, config,
                                                 /*required=*/false);
 }

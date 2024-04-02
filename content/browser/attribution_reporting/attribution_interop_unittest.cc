@@ -104,7 +104,8 @@ TEST_P(AttributionInteropTest, HasExpectedOutput) {
 
   if (const base::Value* api_config = dict.Find("api_config")) {
     ASSERT_TRUE(api_config->is_dict());
-    ASSERT_EQ("", MergeAttributionInteropConfig(api_config->GetDict(), config));
+    ASSERT_THAT(MergeAttributionInteropConfig(api_config->GetDict(), config),
+                base::test::HasValue());
   }
 
   std::optional<base::Value> input = dict.Extract("input");

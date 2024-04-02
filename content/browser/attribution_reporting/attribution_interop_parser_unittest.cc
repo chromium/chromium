@@ -209,8 +209,7 @@ TEST_P(AttributionInteropParserInputErrorTest, InvalidInputFails) {
 
   base::Value::Dict value = base::test::ParseJsonDict(test_case.json);
   auto result = ParseAttributionInteropInput(std::move(value), kOffsetTime);
-  EXPECT_THAT(result, base::test::ErrorIs(
-                          HasSubstr(test_case.expected_failure_substr)));
+  EXPECT_THAT(result, ErrorIs(HasSubstr(test_case.expected_failure_substr)));
 }
 
 const ParseErrorTestCase kParseErrorTestCases[] = {
@@ -568,6 +567,8 @@ TEST(AttributionInteropParserTest, ValidConfig) {
        }}};
 
   for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.json);
+
     AttributionInteropConfig expected;
     absl::visit(base::Overloaded{
                     [&](MakeAttributionConfigFunc f) {
@@ -579,13 +580,12 @@ TEST(AttributionInteropParserTest, ValidConfig) {
 
     base::Value::Dict json = base::test::ParseJsonDict(test_case.json);
     if (test_case.required) {
-      EXPECT_THAT(ParseAttributionInteropConfig(json),
-                  base::test::ValueIs(expected))
-          << json;
+      EXPECT_THAT(ParseAttributionInteropConfig(json), ValueIs(expected));
     } else {
       AttributionInteropConfig config;
-      EXPECT_EQ("", MergeAttributionInteropConfig(json, config)) << json;
-      EXPECT_EQ(config, expected) << json;
+      EXPECT_THAT(MergeAttributionInteropConfig(json, config),
+                  base::test::HasValue());
+      EXPECT_EQ(config, expected);
     }
   }
 }
@@ -610,11 +610,11 @@ TEST(AttributionInteropParserTest, InvalidConfigPositiveIntegers) {
   {
     auto result = ParseAttributionInteropConfig(base::Value::Dict());
     for (const char* field : kFields) {
-      EXPECT_THAT(result, base::test::ErrorIs(HasSubstr(
-                              base::StrCat({"[\"", field,
-                                            "\"]: must be a positive integer "
-                                            "formatted as base-10 string"}))))
-          << field;
+      EXPECT_THAT(
+          result,
+          ErrorIs(HasSubstr(base::StrCat({"[\"", field,
+                                          "\"]: must be a positive integer "
+                                          "formatted as base-10 string"}))));
     }
   }
 
@@ -625,15 +625,14 @@ TEST(AttributionInteropParserTest, InvalidConfigPositiveIntegers) {
       dict.Set(field, "0");
     }
 
-    std::string error = MergeAttributionInteropConfig(dict, config);
+    auto result = MergeAttributionInteropConfig(dict, config);
 
     for (const char* field : kFields) {
       EXPECT_THAT(
-          error,
-          HasSubstr(base::StrCat(
-              {"[\"", field,
-               "\"]: must be a positive integer formatted as base-10 string"})))
-          << field;
+          result,
+          ErrorIs(HasSubstr(base::StrCat({"[\"", field,
+                                          "\"]: must be a positive integer "
+                                          "formatted as base-10 string"}))));
     }
   }
 }
@@ -647,11 +646,11 @@ TEST(AttributionInteropParserTest, InvalidConfigNonNegativeIntegers) {
   {
     auto result = ParseAttributionInteropConfig(base::Value::Dict());
     for (const char* field : kFields) {
-      EXPECT_THAT(result, base::test::ErrorIs(HasSubstr(base::StrCat(
-                              {"[\"", field,
-                               "\"]: must be a non-negative integer "
-                               "formatted as base-10 string"}))))
-          << field;
+      EXPECT_THAT(
+          result,
+          ErrorIs(HasSubstr(base::StrCat({"[\"", field,
+                                          "\"]: must be a non-negative integer "
+                                          "formatted as base-10 string"}))));
     }
   }
 
@@ -662,14 +661,14 @@ TEST(AttributionInteropParserTest, InvalidConfigNonNegativeIntegers) {
       dict.Set(field, "-10");
     }
 
-    std::string error = MergeAttributionInteropConfig(dict, config);
+    auto result = MergeAttributionInteropConfig(dict, config);
 
     for (const char* field : kFields) {
-      EXPECT_THAT(error,
-                  HasSubstr(base::StrCat({"[\"", field,
+      EXPECT_THAT(
+          result,
+          ErrorIs(HasSubstr(base::StrCat({"[\"", field,
                                           "\"]: must be a non-negative integer "
-                                          "formatted as base-10 string"})))
-          << field;
+                                          "formatted as base-10 string"}))));
     }
   }
 }
@@ -679,7 +678,7 @@ TEST(AttributionInteropParserTest, InvalidConfigMaxSettableEpsilon) {
     auto result = ParseAttributionInteropConfig(base::Value::Dict());
     EXPECT_THAT(
         result,
-        base::test::ErrorIs(HasSubstr(
+        ErrorIs(HasSubstr(
             "[\"max_settable_event_level_epsilon\"]: must be \"inf\" or a "
             "non-negative double formated as a base-10 string")));
   }
@@ -687,12 +686,11 @@ TEST(AttributionInteropParserTest, InvalidConfigMaxSettableEpsilon) {
     AttributionInteropConfig config;
     base::Value::Dict dict;
     dict.Set("max_settable_event_level_epsilon", "-1.5");
-    std::string error = MergeAttributionInteropConfig(dict, config);
     EXPECT_THAT(
-        error,
-        HasSubstr(
+        MergeAttributionInteropConfig(dict, config),
+        ErrorIs(HasSubstr(
             "[\"max_settable_event_level_epsilon\"]: must be \"inf\" or a "
-            "non-negative double formated as a base-10 string"));
+            "non-negative double formated as a base-10 string")));
   }
 }
 
@@ -701,19 +699,19 @@ TEST(AttributionInteropParserTest, InvalidConfigMaxInfGain) {
     AttributionInteropConfig config;
     base::Value::Dict dict;
     dict.Set("max_navigation_info_gain", "-1.5");
-    std::string error = MergeAttributionInteropConfig(dict, config);
-    EXPECT_THAT(
-        error, HasSubstr("[\"max_navigation_info_gain\"]: must be \"inf\" or a "
-                         "non-negative double formated as a base-10 string"));
+    EXPECT_THAT(MergeAttributionInteropConfig(dict, config),
+                ErrorIs(HasSubstr(
+                    "[\"max_navigation_info_gain\"]: must be \"inf\" or a "
+                    "non-negative double formated as a base-10 string")));
   }
   {
     AttributionInteropConfig config;
     base::Value::Dict dict;
     dict.Set("max_event_info_gain", "-1.5");
-    std::string error = MergeAttributionInteropConfig(dict, config);
-    EXPECT_THAT(error,
-                HasSubstr("[\"max_event_info_gain\"]: must be \"inf\" or a "
-                          "non-negative double formated as a base-10 string"));
+    EXPECT_THAT(
+        MergeAttributionInteropConfig(dict, config),
+        ErrorIs(HasSubstr("[\"max_event_info_gain\"]: must be \"inf\" or a "
+                          "non-negative double formated as a base-10 string")));
   }
 }
 

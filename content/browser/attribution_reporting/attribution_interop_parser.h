@@ -100,8 +100,7 @@ struct AttributionInteropConfig {
 base::expected<AttributionInteropConfig, std::string>
 ParseAttributionInteropConfig(const base::Value::Dict&);
 
-// Returns a non-empty string on failure.
-[[nodiscard]] std::string MergeAttributionInteropConfig(
+base::expected<void, std::string> MergeAttributionInteropConfig(
     const base::Value::Dict&,
     AttributionInteropConfig&);
 
