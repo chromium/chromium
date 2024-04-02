@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ash/arc/input_overlay/ui/editing_list.h"
 
-#include <memory>
-
 #include "ash/bubble/bubble_utils.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/new_window_delegate.h"
@@ -16,6 +14,7 @@
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/style_util.h"
+#include "ash/style/system_shadow.h"
 #include "ash/style/typography.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "base/check_op.h"
@@ -47,6 +46,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
@@ -56,6 +56,7 @@ namespace arc::input_overlay {
 namespace {
 
 constexpr int kMainContainerWidth = 296;
+constexpr int kMainContainerCornerRadius = 24;
 
 constexpr int kHeaderBottomMargin = 16;
 constexpr float kAddContainerCornerRadius = 16.0f;
@@ -226,11 +227,14 @@ void EditingList::UpdateWidget() {
 
 void EditingList::Init() {
   SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysSystemBaseElevatedOpaque, /*radius=*/24));
-  SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::VH(kEditingListInsideBorderInsets, 0)));
+      cros_tokens::kCrosSysSystemBaseElevatedOpaque,
+      kMainContainerCornerRadius));
+  SetBorder(std::make_unique<views::HighlightBorder>(
+      kMainContainerCornerRadius,
+      views::HighlightBorder::Type::kHighlightBorderOnShadow));
   SetLayoutManager(std::make_unique<views::BoxLayout>(
-                       views::BoxLayout::Orientation::kVertical))
+                       views::BoxLayout::Orientation::kVertical,
+                       gfx::Insets::VH(kEditingListInsideBorderInsets, 0)))
       ->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
 
   AddHeader();
@@ -258,6 +262,10 @@ void EditingList::Init() {
   }
 
   SizeToPreferredSize();
+
+  shadow_ = ash::SystemShadow::CreateShadowOnNinePatchLayerForView(
+      this, ash::SystemShadow::Type::kElevation12);
+  shadow_->SetRoundedCornerRadius(kMainContainerCornerRadius);
 }
 
 bool EditingList::HasControls() const {

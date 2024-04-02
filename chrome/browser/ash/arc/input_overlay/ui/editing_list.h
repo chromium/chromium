@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_EDITING_LIST_H_
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_EDITING_LIST_H_
 
+#include <memory>
+
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector_observer.h"
@@ -13,6 +15,7 @@
 
 namespace ash {
 class AnchoredNudge;
+class SystemShadow;
 }  // namespace ash
 
 namespace ui {
@@ -132,6 +135,9 @@ class EditingList : public views::View, public TouchInjectorObserver {
   raw_ptr<views::Label> editing_header_label_;
 
   raw_ptr<AddContainerButton> add_container_;
+
+  // Owned by this view.
+  std::unique_ptr<ash::SystemShadow> shadow_;
 
   // Used to tell if the zero state view shows up.
   bool is_zero_state_ = false;
