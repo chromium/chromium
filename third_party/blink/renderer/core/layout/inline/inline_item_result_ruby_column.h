@@ -23,9 +23,9 @@ struct InlineItemResultRubyColumn
   // A list of annotation level LineInfo.  [0] is the outermost one.
   HeapVector<LineInfo, 1> annotation_line_list;
 
-  // A list of flags for ruby-position:under.  The size of this list must be
-  // same as annotation_line_list.
-  Vector<bool, 1> is_under_annotation_list;
+  // A list of ruby-position values.  The size of this list must be same as
+  // annotation_line_list.
+  Vector<RubyPosition, 1> position_list;
 };
 
 }  // namespace blink

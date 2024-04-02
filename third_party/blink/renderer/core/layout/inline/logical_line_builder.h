@@ -16,6 +16,7 @@ class InlineLayoutStateStack;
 class LineInfo;
 class LogicalLineItems;
 struct InlineBoxState;
+struct LogicalRubyColumn;
 
 // This class is responsible to build a LogicalLineItems from a LineInfo.
 // It's a helper for InlineLayoutAlgorithm.
@@ -84,6 +85,10 @@ class LogicalLineBuilder {
                                   InlineItemResult& item_result,
                                   LogicalLineItems& line_box,
                                   InlineBoxState* box);
+  void PlaceRubyAnnotation(InlineItemResult& item_result,
+                           wtf_size_t index,
+                           LineInfo& annotation_line,
+                           LogicalRubyColumn& logical_column);
   void PlaceListMarker(const InlineItem&, InlineItemResult*);
 
   void BidiReorder(TextDirection base_direction, LogicalLineItems* line_box);

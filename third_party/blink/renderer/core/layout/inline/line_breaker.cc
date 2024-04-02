@@ -3027,12 +3027,11 @@ InlineItemResult* LineBreaker::AddRubyColumnResult(
         *Items()[annotation_data_list[i].start_item_index].GetLayoutObject();
     data->annotation_line_list[i].OverrideLineStyle(*annotation_object.Style());
     const LayoutObject* parent = annotation_object.Parent();
-    data->is_under_annotation_list.push_back(
-        parent->IsInlineRuby() &&
-        parent->Style()->GetRubyPosition() == RubyPosition::kAfter);
+    data->position_list.push_back(parent->IsInlineRuby()
+                                      ? parent->Style()->GetRubyPosition()
+                                      : RubyPosition::kBefore);
   }
-  DCHECK_EQ(data->annotation_line_list.size(),
-            data->is_under_annotation_list.size());
+  DCHECK_EQ(data->annotation_line_list.size(), data->position_list.size());
 
   column_result->text_offset.end = annotation_line_list[0].EndTextOffset();
   column_result->should_create_line_box = true;

@@ -390,14 +390,42 @@ InlineBoxState* LogicalLineBuilder::PlaceRubyColumn(
     InlineItemResult& item_result,
     LogicalLineItems& line_box,
     InlineBoxState* box) {
-  box = HandleItemResults(line_info,
-                          *item_result.ruby_column->base_line.MutableResults(),
+  InlineItemResultRubyColumn& ruby_column = *item_result.ruby_column;
+
+  // Set up LogicalRubyColumns. This should be done before consuming the base
+  // InlineItemResults because it might contain ruby columns, and annotation
+  // level detection depends on the LogicalRubyColumn creation order.
+  wtf_size_t start_index = line_box.size();
+  wtf_size_t ruby_column_start_index = box_states_->RubyColumnList().size();
+  for (const RubyPosition position : ruby_column.position_list) {
+    LogicalRubyColumn& logical_column = box_states_->CreateRubyColumn();
+    logical_column.start_index = start_index;
+    logical_column.ruby_position = position;
+  }
+
+  box = HandleItemResults(line_info, *ruby_column.base_line.MutableResults(),
                           &line_box,
                           /* main_line_helper */ nullptr, box);
+  wtf_size_t column_base_size = line_box.size() - start_index;
 
-  // TODO(crbug.com/324111880): Handle annotation lines.
+  for (wtf_size_t i = 0; i < ruby_column.annotation_line_list.size(); ++i) {
+    LogicalRubyColumn& logical_column =
+        box_states_->RubyColumnAt(ruby_column_start_index + i);
+    logical_column.size = column_base_size;
+    PlaceRubyAnnotation(item_result, i, ruby_column.annotation_line_list[i],
+                        logical_column);
+  }
 
   return box;
+}
+
+void LogicalLineBuilder::PlaceRubyAnnotation(
+    InlineItemResult& item_result,
+    wtf_size_t index,
+    LineInfo& annotation_line,
+    LogicalRubyColumn& logical_column) {
+  // TODO(crbug.com/324111880): Handle annotation lines.
+  // logical_column.annotation_items and ruby_column_list should be updated.
 }
 
 // Place a list marker.

@@ -40,6 +40,11 @@ FontHeight ComputeEmphasisMarkOutsets(const ComputedStyle& style,
 
 }  // namespace
 
+void LogicalRubyColumn::Trace(Visitor* visitor) const {
+  visitor->Trace(annotation_items);
+  visitor->Trace(ruby_column_list);
+}
+
 InlineBoxState::InlineBoxState(const InlineBoxState&& state)
     : fragment_start(state.fragment_start),
       item(state.item),
@@ -1176,6 +1181,11 @@ FontHeight InlineLayoutStateStack::MetricsForTopAndBottomAlign(
     }
   }
   return max;
+}
+
+LogicalRubyColumn& InlineLayoutStateStack::CreateRubyColumn() {
+  ruby_column_list_.push_back(MakeGarbageCollected<LogicalRubyColumn>());
+  return *ruby_column_list_.back();
 }
 
 #if DCHECK_IS_ON()
