@@ -44,6 +44,11 @@ class CacheManager {
     virtual void OnContentCacheInitializeComplete(
         base::FilePath base64_encoded_provider_folder_name,
         base::File::Error result) {}
+
+    // Called when a provider has been uninitialized.
+    virtual void OnProviderUninitialized(
+        base::FilePath base64_encoded_provider_folder_name,
+        base::File::Error result) {}
   };
 
   explicit CacheManager(const base::FilePath& profile_path,
@@ -58,15 +63,23 @@ class CacheManager {
   void InitializeForProvider(const base::FilePath& provider_folder_name,
                              FileErrorOrContentCacheCallback callback);
 
+  // Destruction of the cache directory for the specific FSP.
+  void UninitializeForProvider(const base::FilePath& provider_folder_name);
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
  private:
+  // Called once the creation of the cache directory has been attempted.
   // Responds to the FSP with the a `ContentCache` instance if directory
   // creation was successful (or `in_memory_only` is true).
   void OnInitializeForProvider(FileErrorOrContentCacheCallback callback,
                                base::FilePath cache_directory_path,
                                base::File::Error result);
+  // Called once the deletion of the cache directory has been attempted.
+  void OnUninitializeForProvider(
+      const base::FilePath& base64_encoded_provider_folder_name,
+      base::File::Error result);
 
   const base::FilePath root_content_cache_directory_;
   bool in_memory_only_ = false;
