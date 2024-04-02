@@ -327,6 +327,9 @@ void DocumentScanAsh::StartPreparedScan(const std::string& scanner_handle,
   lorgnette::StartPreparedScanRequest request;
   request.mutable_scanner()->set_token(scanner_handle);
   request.set_image_format(options->format);
+  if (options->max_read_size) {
+    request.set_max_read_size(*options->max_read_size);
+  }
 
   ash::LorgnetteScannerManagerFactory::GetForBrowserContext(GetProfile())
       ->StartPreparedScan(

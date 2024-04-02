@@ -54,6 +54,7 @@ class FakeDocumentScanAsh : public crosapi::mojom::DocumentScan {
       const std::optional<std::vector<std::string>>& scan_data);
   void SetOpenScannerResponse(const std::string& connection_string,
                               crosapi::mojom::OpenScannerResponsePtr response);
+  void SetSmallestMaxReadSize(size_t max_size);
 
  private:
   struct OpenScannerState {
@@ -71,6 +72,7 @@ class FakeDocumentScanAsh : public crosapi::mojom::DocumentScan {
   std::vector<std::string> scanner_names_;
   std::optional<std::vector<std::string>> scan_data_;
   std::vector<crosapi::mojom::ScannerInfoPtr> scanners_;
+  size_t smallest_max_read_ = 0;
 
   // Map from connection strings to the OpenScannerResponsePtr that should be
   // returned.

@@ -151,6 +151,13 @@ void FakeDocumentScanAsh::StartPreparedScan(
 
   auto response = crosapi::mojom::StartPreparedScanResponse::New();
   response->scanner_handle = scanner_handle;
+  if (options->max_read_size.has_value() &&
+      options->max_read_size.value() < smallest_max_read_) {
+    response->result = crosapi::mojom::ScannerOperationResult::kInvalid;
+    std::move(callback).Run(std::move(response));
+    return;
+  }
+
   response->result = crosapi::mojom::ScannerOperationResult::kSuccess;
   response->job_handle = base::StringPrintf(
       "%s-job-%03zu", scanner_handle.c_str(), ++handle_count_);
@@ -348,6 +355,10 @@ void FakeDocumentScanAsh::SetOpenScannerResponse(
     const std::string& connection_string,
     crosapi::mojom::OpenScannerResponsePtr response) {
   open_responses_[connection_string] = std::move(response);
+}
+
+void FakeDocumentScanAsh::SetSmallestMaxReadSize(size_t max_size) {
+  smallest_max_read_ = max_size;
 }
 
 }  // namespace extensions

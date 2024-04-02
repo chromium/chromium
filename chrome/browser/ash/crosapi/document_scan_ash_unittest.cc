@@ -386,8 +386,11 @@ TEST_F(DocumentScanAshTest, StartPreparedScan_GoodResponse) {
   GetLorgnetteScannerManager()->SetStartPreparedScanResponse(
       std::move(fake_response));
   base::RunLoop run_loop;
+  auto options = mojom::StartScanOptions::New();
+  options->format = "image/png";
+  options->max_read_size = 32768;
   document_scan_ash().StartPreparedScan(
-      "scanner-handle", mojom::StartScanOptions::New(),
+      "scanner-handle", std::move(options),
       base::BindLambdaForTesting(
           [&](mojom::StartPreparedScanResponsePtr response) {
             run_loop.Quit();

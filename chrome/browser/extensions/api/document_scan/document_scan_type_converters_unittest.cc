@@ -711,6 +711,17 @@ TEST(DocumentScanTypeConvertersTest, StartScanOptions_Success) {
   input.format = "format";
   auto output = mojom::StartScanOptions::From(input);
   EXPECT_EQ(output->format, "format");
+  EXPECT_FALSE(output->max_read_size.has_value());
+}
+
+TEST(DocumentScanTypeConvertersTest, StartScanOptions_WithMaxReadSize) {
+  document_scan::StartScanOptions input;
+  input.format = "format";
+  input.max_read_size = 100000;
+  auto output = mojom::StartScanOptions::From(input);
+  EXPECT_EQ(output->format, "format");
+  ASSERT_TRUE(output->max_read_size.has_value());
+  EXPECT_EQ(output->max_read_size.value(), 100000U);
 }
 
 TEST(DocumentScanTypeConvertersTest, StartScanResponse_Empty) {

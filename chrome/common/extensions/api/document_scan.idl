@@ -424,6 +424,13 @@ namespace documentScan {
   dictionary StartScanOptions {
     // Specifies the MIME type to return scanned data in.
     DOMString format;
+
+    // If a non-zero value is specified, limits the maximum scanned bytes
+    // returned in a single $(ref:readScanData) response to that value.  The
+    // smallest allowed value is 32768 (32 KB).  If this property is not
+    // specified, the size of a returned chunk may be as large as the entire
+    // scanned image.
+    long? maxReadSize;
   };
 
   // The response from <code>startScan()</code>.

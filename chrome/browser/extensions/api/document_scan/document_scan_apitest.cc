@@ -33,6 +33,8 @@ namespace extensions {
 
 namespace {
 
+constexpr size_t kRealBackendMinimumReadSize = 32768;
+
 // Enum used to initialize the parameterized test with different types of
 // extensions.
 enum class ExtensionType {
@@ -116,6 +118,7 @@ class DocumentScanApiTest : public ExtensionApiTest,
     DocumentScanAPIHandler::Get(browser()->profile())
         ->SetDocumentScanForTesting(&document_scan_ash_);
 #endif
+    document_scan()->SetSmallestMaxReadSize(kRealBackendMinimumReadSize);
   }
 
  protected:

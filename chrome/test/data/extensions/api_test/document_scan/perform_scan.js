@@ -142,6 +142,44 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
+  async function startScanZeroMaxSizeFails() {
+    const scannerHandle = await getScannerHandle();
+    chrome.test.assertNe(null, scannerHandle);
+
+    const startResponse = await startScan(scannerHandle, 0);
+    chrome.test.assertEq(scannerHandle, startResponse.scannerHandle);
+    chrome.test.assertEq(OperationResult.INVALID, startResponse.result);
+    chrome.test.assertEq(null, startResponse.job);
+    chrome.test.succeed();
+  },
+
+  async function startScanInvalidMaxSizeFails() {
+    const scannerHandle = await getScannerHandle();
+    chrome.test.assertNe(null, scannerHandle);
+
+    const startResponse = await startScan(scannerHandle, 32767);
+    chrome.test.assertEq(scannerHandle, startResponse.scannerHandle);
+    chrome.test.assertEq(OperationResult.INVALID, startResponse.result);
+    chrome.test.assertEq(null, startResponse.job);
+    chrome.test.succeed();
+  },
+
+  async function starScanValidMaxSizeSucceeds() {
+    const scannerHandle = await getScannerHandle();
+    chrome.test.assertNe(null, scannerHandle);
+
+    const startResponse = await startScan(scannerHandle, 32768);
+    const jobHandle = startResponse.job;
+    chrome.test.assertEq(scannerHandle, startResponse.scannerHandle);
+    chrome.test.assertEq(OperationResult.SUCCESS, startResponse.result);
+    chrome.test.assertNe(null, jobHandle);
+
+    const cancelResponse = await cancelScan(jobHandle);
+    chrome.test.assertEq(jobHandle, cancelResponse.job);
+    chrome.test.assertEq(OperationResult.SUCCESS, cancelResponse.result);
+    chrome.test.succeed();
+  },
+
   async function startScanInvalidHandleFails() {
     const startResponse = await startScan('invalid-handle');
     chrome.test.assertEq('invalid-handle', startResponse.scannerHandle);
