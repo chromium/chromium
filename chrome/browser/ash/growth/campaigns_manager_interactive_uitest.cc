@@ -14,6 +14,7 @@
 #include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
 #include "chromeos/ash/components/growth/campaigns_constants.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -123,4 +124,11 @@ IN_PROC_BROWSER_TEST_F(CampaignsManagerInteractiveUiTest,
 
   growth::CampaignsManager::Get()->NotifyEventForTargeting(
       growth::CampaignEvent::kAppOpened, "abcd");
+}
+
+IN_PROC_BROWSER_TEST_F(CampaignsManagerInteractiveUiTest, ClearConfig) {
+  EXPECT_CALL(*GetMockTracker(), ClearEventData).Times(1);
+
+  growth::CampaignsManager::Get()->ClearEvent(growth::CampaignEvent::kAppOpened,
+                                              "abcd");
 }

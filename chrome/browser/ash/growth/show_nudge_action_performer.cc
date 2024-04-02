@@ -19,6 +19,7 @@
 #include "base/notreached.h"
 #include "chrome/browser/ash/growth/campaigns_manager_session.h"
 #include "chrome/browser/ash/growth/metrics.h"
+#include "chromeos/ash/components/growth/campaigns_constants.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
@@ -34,6 +35,7 @@ constexpr char kNudgeTitlePath[] = "title";
 constexpr char kNudgeBodyPath[] = "body";
 constexpr char kImagePath[] = "image";
 constexpr char kDurationPath[] = "duration";
+constexpr char kClearAppOpenedEventPath[] = "clearAppOpenedEvent";
 constexpr char kPrimaryButtonPath[] = "primaryButton";
 constexpr char kSecondaryButtonPath[] = "secondaryButton";
 constexpr char kLabelPath[] = "label";
@@ -333,6 +335,15 @@ bool ShowNudgeActionPerformer::ShowNudge(int campaign_id,
 
   // TODO: b/331045558 - Add close button callback.
   NotifyReadyToLogImpression(campaign_id);
+
+  const std::string* clear_app_opened_event =
+      nudge_payload->FindString(kClearAppOpenedEventPath);
+  if (clear_app_opened_event) {
+    auto* campaigns_manager = growth::CampaignsManager::Get();
+    CHECK(campaigns_manager);
+    campaigns_manager->ClearEvent(growth::CampaignEvent::kAppOpened,
+                                  *clear_app_opened_event);
+  }
 
   return true;
 }

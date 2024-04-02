@@ -76,6 +76,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
                      const ActionType action_type,
                      const base::Value::Dict* params);
 
+  // Clear event stored in the Feature Engagement framework.
+  void ClearEvent(CampaignEvent event, const std::string& id);
+
   // Notify event to the Feature Engagement framework. Event will be stored and
   // could be used for targeting.
   void NotifyEventForTargeting(growth::CampaignEvent event,

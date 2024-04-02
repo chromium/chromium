@@ -157,6 +157,19 @@ void CampaignsManagerClientImpl::NotifyEvent(const std::string& event_name) {
   tracker->NotifyEvent(event_name);
 }
 
+void CampaignsManagerClientImpl::ClearConfig(
+    const std::map<std::string, std::string>& params) {
+  auto* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserContext(GetProfile());
+  if (!tracker || !tracker->IsInitialized()) {
+    LOG(ERROR) << "Feature Engagement tracer is not available";
+    return;
+  }
+
+  UpdateConfig(params);
+  tracker->ClearEventData(feature_engagement::kIPHGrowthFramework);
+}
+
 bool CampaignsManagerClientImpl::WouldTriggerHelpUI(
     const std::map<std::string, std::string>& params) {
   auto* tracker =

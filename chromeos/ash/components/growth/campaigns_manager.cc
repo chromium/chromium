@@ -28,6 +28,10 @@ CampaignsManager* g_instance = nullptr;
 
 inline constexpr char kCampaignFileName[] = "campaigns.json";
 
+inline constexpr char kEventKey[] = "event_to_be_cleared";
+inline constexpr char kAppOpenedEventTemplate[] =
+    "name:%s;comparator:any;window:365;storage:365";
+
 std::optional<base::Value::Dict> ReadCampaignsFile(
     const base::FilePath& campaigns_component_path) {
   const auto campaigns_load_start_time = base::TimeTicks::Now();
@@ -201,6 +205,15 @@ void CampaignsManager::PerformAction(int campaign_id,
                               growth::ActionResultReason::kUnknown));
           },
           action_type));
+}
+
+void CampaignsManager::ClearEvent(CampaignEvent event, const std::string& id) {
+  std::map<std::string, std::string> conditions_params;
+  // Event can be put in any key starting with `event_`.
+  // Please see `components/feature_engagement/README.md#featureconfig`.
+  conditions_params[kEventKey] = base::StringPrintf(
+      kAppOpenedEventTemplate, GetEventName(event, id).c_str());
+  client_->ClearConfig(conditions_params);
 }
 
 void CampaignsManager::NotifyEventForTargeting(CampaignEvent event,

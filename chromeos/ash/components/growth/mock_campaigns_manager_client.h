@@ -37,6 +37,10 @@ class MockCampaignsManagerClient : public CampaignsManagerClient {
               RegisterSyntheticFieldTrial,
               (const std::optional<int> study_id, const int campaign_id),
               (const, override));
+  MOCK_METHOD(void,
+              ClearConfig,
+              ((const std::map<std::string, std::string>& params)),
+              (override));
   MOCK_METHOD(void, NotifyEvent, (const std::string& event), (override));
   MOCK_METHOD(bool,
               WouldTriggerHelpUI,

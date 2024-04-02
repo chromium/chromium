@@ -63,6 +63,8 @@ class CampaignsManagerClient {
                                            int campaign_id) const = 0;
 
   // Proxy to Feature Engagement methods.
+  virtual void ClearConfig(
+      const std::map<std::string, std::string>& params) = 0;
   virtual void NotifyEvent(const std::string& event) = 0;
   virtual bool WouldTriggerHelpUI(
       const std::map<std::string, std::string>& params) = 0;
