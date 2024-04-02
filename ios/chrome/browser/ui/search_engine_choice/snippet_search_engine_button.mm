@@ -466,7 +466,7 @@ UILabel* SnippetLabel() {
 #pragma mark - Accessibility
 
 - (NSString*)accessibilityLabel {
-  CHECK_NE(self.snippetText.length, 0ul, base::NotFatalUntil::M124)
+  CHECK_NE(self.snippetText.length, 0ul, base::NotFatalUntil::M127)
       << base::SysNSStringToUTF8(self.searchEngineName) << " "
       << base::SysNSStringToUTF8(self.snippetText);
   return [NSString
@@ -474,7 +474,7 @@ UILabel* SnippetLabel() {
 }
 
 - (NSArray<NSString*>*)accessibilityUserInputLabels {
-  CHECK_NE(self.searchEngineName.length, 0ul, base::NotFatalUntil::M124)
+  CHECK_NE(self.searchEngineName.length, 0ul, base::NotFatalUntil::M127)
       << base::SysNSStringToUTF8(self.searchEngineName) << " "
       << base::SysNSStringToUTF8(self.snippetText);
   return @[ self.searchEngineName ];

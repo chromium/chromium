@@ -997,11 +997,12 @@ void TemplateURLService::SetUserSelectedDefaultSearchProvider(
     } else {
       // When we are setting the search engine choice from choice screens,
       // the DSP source is expected to allow the search engine to be changed by
-      // the user. So we are guaranteed to not drop one of the choices coming
-      // from these screens here.
-      // TODO(crbug.com/323905627): Remove milestone if no hits by then.
+      // the user. But theoretically there is a possibility that a policy
+      // kicked in after a choice screen was shown, that could be a way to
+      // enter this state
+      // TODO(crbug.com/328041262): Investigate mitigation options.
       CHECK_NE(choice_made_location, search_engines::ChoiceMadeLocation::kOther,
-               base::NotFatalUntil::M124);
+               base::NotFatalUntil::M127);
     }
   } else {
     // We rely on the DefaultSearchManager to call ApplyDefaultSearchChange if,

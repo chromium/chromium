@@ -76,7 +76,7 @@
 
 - (void)learnMoreDone:
     (SearchEngineChoiceLearnMoreViewController*)viewController {
-  CHECK_EQ(_viewController, viewController, base::NotFatalUntil::M124);
+  CHECK_EQ(_viewController, viewController, base::NotFatalUntil::M127);
   __weak __typeof(self) weakSelf = self;
   [_viewController dismissViewControllerAnimated:YES
                                       completion:^() {
