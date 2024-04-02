@@ -67,6 +67,7 @@ import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
+import org.chromium.chrome.browser.page_insights.PageInsightsConfigRequest;
 import org.chromium.chrome.browser.page_insights.proto.Config.PageInsightsConfig;
 import org.chromium.chrome.browser.page_insights.proto.IntentParams.PageInsightsIntentParams;
 import org.chromium.chrome.browser.page_load_metrics.PageLoadMetrics;
@@ -2019,6 +2020,29 @@ public class CustomTabsConnection {
             BrowserServicesIntentDataProvider intentData,
             @Nullable NavigationHandle navigationHandle,
             @Nullable NavigationEntry navigationEntry,
+            Supplier<Profile> profileSupplier) {
+        // For all params, by default populate the most conservative values.
+        return PageInsightsConfig.newBuilder()
+                .setShouldAutoTrigger(false)
+                .setShouldXsurfaceLog(false)
+                .setIsInitialPage(false)
+                .setServerShouldNotLogOrPersonalize(true)
+                .build();
+    }
+
+    /**
+     * Returns how the Page Insights feature should be configured for the given params. Only applies
+     * if {@link #shouldEnablePageInsightsForIntent(BrowserServicesIntentDataProvider)} returns
+     * true.
+     *
+     * @param request {@link PageInsightsConfigRequest} containing info important for config
+     * @param intentData {@link BrowserServicesIntentDataProvider} built from the Intent that
+     *     launched this CCT.
+     * @param profileSupplier supplier of the current {@link Profile}.
+     */
+    public PageInsightsConfig getPageInsightsConfig(
+            PageInsightsConfigRequest request,
+            BrowserServicesIntentDataProvider intentData,
             Supplier<Profile> profileSupplier) {
         // For all params, by default populate the most conservative values.
         return PageInsightsConfig.newBuilder()

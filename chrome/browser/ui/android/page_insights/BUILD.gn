@@ -9,6 +9,7 @@ import("//third_party/jni_zero/jni_zero.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/page_insights/PageInsightsActionHandlerImpl.java",
+    "java/src/org/chromium/chrome/browser/page_insights/PageInsightsConfigRequest.java",
     "java/src/org/chromium/chrome/browser/page_insights/PageInsightsCoordinator.java",
     "java/src/org/chromium/chrome/browser/page_insights/PageInsightsDataLoader.java",
     "java/src/org/chromium/chrome/browser/page_insights/PageInsightsLoggingParametersImpl.java",
