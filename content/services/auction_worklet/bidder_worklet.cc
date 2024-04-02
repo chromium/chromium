@@ -1036,6 +1036,8 @@ void BidderWorklet::V8State::ReportWin(
               args, total_timeout.get(), errors_out)
           .IsEmpty();
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "report_win", trace_id);
+  base::TimeDelta elapsed = elapsed_timer.Elapsed();
+  base::UmaHistogramTimes("Ads.InterestGroup.Auction.ReportWinTime", elapsed);
 
   if (script_failed) {
     // Keep Private Aggregation API requests since `reportWin()` might use it to
@@ -1045,7 +1047,7 @@ void BidderWorklet::V8State::ReportWin(
         /*ad_beacon_map=*/{}, /*ad_macro_map=*/{},
         context_recycler.private_aggregation_bindings()
             ->TakePrivateAggregationRequests(),
-        elapsed_timer.Elapsed(), std::move(errors_out));
+        elapsed, std::move(errors_out));
     return;
   }
 
@@ -1057,7 +1059,7 @@ void BidderWorklet::V8State::ReportWin(
       context_recycler.register_ad_macro_bindings()->TakeAdMacroMap(),
       context_recycler.private_aggregation_bindings()
           ->TakePrivateAggregationRequests(),
-      elapsed_timer.Elapsed(), std::move(errors_out));
+      elapsed, std::move(errors_out));
 }
 
 void BidderWorklet::V8State::GenerateBid(

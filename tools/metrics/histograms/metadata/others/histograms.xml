@@ -611,8 +611,9 @@ chromium-metrics-reviews@google.com.
   <owner>pauljensen@chromium.org</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
-    The length of time it took to initialize the context and arguments, and
-    evaluate generateBid() once.
+    The length of time it took to initialize arguments, and evaluate
+    generateBid() once. If the interest group's execution mode is compatibility
+    mode, it also includes initialize the context and run top-level script.
 
     See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
     version of the FLEDGE explainer.
@@ -907,6 +908,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ads.InterestGroup.Auction.ReportResultTime" units="ms"
+    expires_after="2024-08-25">
+  <owner>qingxinwu@google.com</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The length of time it took to initialize the context and arguments, run
+    top-level script, and evaluate reportResult() once.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
+<histogram name="Ads.InterestGroup.Auction.ReportWinTime" units="ms"
+    expires_after="2024-08-25">
+  <owner>qingxinwu@google.com</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The length of time it took to initialize the context and arguments, run
+    top-level script, and evaluate reportWin() once.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
 <histogram name="Ads.InterestGroup.Auction.ScoreAdInputWaitTime" units="ms"
     expires_after="2024-08-25">
   <owner>abigailkatcoff@chromium.org</owner>
@@ -948,8 +975,8 @@ chromium-metrics-reviews@google.com.
   <owner>pauljensen@chromium.org</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
-    The length of time it took to initialize the context and arguments, and
-    evaluate scoreAd() once.
+    The length of time it took to initialize the context and arguments, run
+    top-level script, and evaluate scoreAd() once.
 
     See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
     version of the FLEDGE explainer.

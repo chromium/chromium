@@ -1401,6 +1401,9 @@ void SellerWorklet::V8State::ReportResult(
           .ToLocal(&signals_for_winner_value);
 
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "report_result", trace_id);
+  base::TimeDelta elapsed = elapsed_timer.Elapsed();
+  base::UmaHistogramTimes("Ads.InterestGroup.Auction.ReportResultTime",
+                          elapsed);
 
   if (!success) {
     // Keep Private Aggregation API requests since `reportReport()` might use
@@ -1410,7 +1413,7 @@ void SellerWorklet::V8State::ReportResult(
         /*report_url=*/std::nullopt, /*ad_beacon_map=*/{},
         context_recycler.private_aggregation_bindings()
             ->TakePrivateAggregationRequests(),
-        elapsed_timer.Elapsed(), std::move(errors_out));
+        elapsed, std::move(errors_out));
     return;
   }
 
@@ -1430,7 +1433,7 @@ void SellerWorklet::V8State::ReportResult(
       context_recycler.register_ad_beacon_bindings()->TakeAdBeaconMap(),
       context_recycler.private_aggregation_bindings()
           ->TakePrivateAggregationRequests(),
-      elapsed_timer.Elapsed(), std::move(errors_out));
+      elapsed, std::move(errors_out));
 }
 
 void SellerWorklet::V8State::ConnectDevToolsAgent(
