@@ -16,6 +16,7 @@
 #include "ipcz/node_link_memory.h"
 #include "ipcz/router.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/abseil-cpp/absl/synchronization/mutex.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
@@ -633,21 +634,32 @@ void Node::IntroduceRemoteNodes(NodeLink& first, NodeLink& second) {
     }
   }
 
+  const absl::Cleanup remove_intro_key = [this, &key] {
+    absl::MutexLock lock(&mutex_);
+    in_progress_introductions_.erase(key);
+  };
+
   DriverMemoryWithMapping buffer = NodeLinkMemory::AllocateMemory(driver_);
+  if (!buffer.memory.is_valid()) {
+    return;
+  }
+
+  DriverMemory cloned_buffer = buffer.memory.Clone();
+  if (!cloned_buffer.is_valid()) {
+    return;
+  }
+
   auto [transport_for_first_node, transport_for_second_node] =
       DriverTransport::CreatePair(driver_, first.transport().get(),
                                   second.transport().get());
   first.AcceptIntroduction(second_name, LinkSide::kA, second.remote_node_type(),
                            second.remote_protocol_version(),
                            std::move(transport_for_first_node),
-                           buffer.memory.Clone());
+                           std::move(cloned_buffer));
   second.AcceptIntroduction(first_name, LinkSide::kB, first.remote_node_type(),
                             first.remote_protocol_version(),
                             std::move(transport_for_second_node),
                             std::move(buffer.memory));
-
-  absl::MutexLock lock(&mutex_);
-  in_progress_introductions_.erase(key);
 }
 
 }  // namespace ipcz
