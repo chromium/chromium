@@ -242,12 +242,12 @@ void LocationBarView::Init() {
 
     permission_dashboard_controller_ =
         std::make_unique<PermissionDashboardController>(
-            browser_, this, permission_dashboard_view_);
+            this, permission_dashboard_view_);
   } else {
     chip_controller_ = std::make_unique<ChipController>(
-        browser_, AddChildViewAt(std::make_unique<PermissionChipView>(
-                                     PermissionChipView::PressedCallback()),
-                                 0));
+        this, AddChildViewAt(std::make_unique<PermissionChipView>(
+                                 PermissionChipView::PressedCallback()),
+                             0));
   }
 
   const auto& typography_provider = views::TypographyProvider::Get();

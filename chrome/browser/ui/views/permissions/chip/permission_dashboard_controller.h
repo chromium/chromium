@@ -16,7 +16,6 @@
 #include "content/public/browser/global_routing_id.h"
 #include "ui/views/view_tracker.h"
 
-class Browser;
 class LocationBarView;
 class ChipController;
 class ContentSettingImageModel;
@@ -24,7 +23,6 @@ class ContentSettingImageModel;
 class PermissionDashboardController : public PermissionChipView::Observer {
  public:
   PermissionDashboardController(
-      Browser* browser,
       LocationBarView* location_bar_view,
       PermissionDashboardView* permission_dashboard_view);
 
@@ -74,7 +72,7 @@ class PermissionDashboardController : public PermissionChipView::Observer {
   void OnIndicatorsChipButtonPressed();
   std::u16string GetIndicatorTitle(ContentSettingImageModel* model);
 
-  raw_ptr<Browser> browser_ = nullptr;
+  // `LocationBarView` owns this.
   raw_ptr<LocationBarView> location_bar_view_ = nullptr;
   raw_ptr<PermissionDashboardView> permission_dashboard_view_ = nullptr;
   // Currently only Camera and Mic are supported.

@@ -15,9 +15,9 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/views/content_setting_bubble_contents.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
@@ -82,11 +82,11 @@ class BubbleButtonController : public views::ButtonController {
 };
 
 ChipController::ChipController(
-    Browser* browser,
+    LocationBarView* location_bar_view,
     PermissionChipView* chip_view,
     PermissionDashboardView* permission_dashboard_view,
     PermissionDashboardController* permission_dashboard_controller)
-    : browser_(browser),
+    : location_bar_view_(location_bar_view),
       chip_(chip_view),
       permission_dashboard_view_(permission_dashboard_view),
       permission_dashboard_controller_(permission_dashboard_controller) {
@@ -542,7 +542,16 @@ void ChipController::HideChip() {
 
 void ChipController::OpenPermissionPromptBubble() {
   DCHECK(!IsBubbleShowing());
-  if (!permission_prompt_model_ || !permission_prompt_model_->GetDelegate()) {
+  if (!permission_prompt_model_ || !permission_prompt_model_->GetDelegate() ||
+      !location_bar_view_->GetWebContents()) {
+    return;
+  }
+
+  Browser* browser =
+      chrome::FindBrowserWithTab(location_bar_view_->GetWebContents());
+  if (!browser) {
+    DLOG(WARNING) << "Permission prompt suppressed because the WebContents is "
+                     "not attached to any Browser window.";
     return;
   }
 
@@ -558,7 +567,7 @@ void ChipController::OpenPermissionPromptBubble() {
     // Loud prompt bubble.
     raw_ptr<PermissionPromptBubbleBaseView> prompt_bubble =
         CreatePermissionPromptBubbleView(
-            browser_, permission_prompt_model_->GetDelegate(),
+            browser, permission_prompt_model_->GetDelegate(),
             request_chip_shown_time_, PermissionPromptStyle::kChip);
     bubble_tracker_.SetView(prompt_bubble);
     prompt_bubble->Show();
@@ -713,11 +722,6 @@ void ChipController::ResetTimers() {
   collapse_timer_.AbandonAndStop();
   dismiss_timer_.AbandonAndStop();
   delay_prompt_timer_.AbandonAndStop();
-}
-
-LocationBarView* ChipController::GetLocationBarView() {
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
-  return browser_view ? browser_view->GetLocationBarView() : nullptr;
 }
 
 views::Widget* ChipController::GetBubbleWidget() {

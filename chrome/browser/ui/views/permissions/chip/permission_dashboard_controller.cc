@@ -8,7 +8,6 @@
 
 #include "base/check.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
@@ -146,14 +145,12 @@ bool SuppressVerboseState(ChipController* request_chip_controller) {
 }  // namespace
 
 PermissionDashboardController::PermissionDashboardController(
-    Browser* browser,
     LocationBarView* location_bar_view,
     PermissionDashboardView* permission_dashboard_view)
-    : browser_(browser),
-      location_bar_view_(location_bar_view),
+    : location_bar_view_(location_bar_view),
       permission_dashboard_view_(permission_dashboard_view) {
   request_chip_controller_ = std::make_unique<ChipController>(
-      browser, permission_dashboard_view_->GetRequestChip(),
+      location_bar_view, permission_dashboard_view_->GetRequestChip(),
       permission_dashboard_view_, this);
   observation_.Observe(permission_dashboard_view_->GetIndicatorChip());
 
