@@ -450,6 +450,7 @@ public abstract class ChromeFeatureList {
     public static final String TAB_DRAG_DROP_ANDROID = "TabDragDropAndroid";
     public static final String TAB_GROUP_PANE_ANDROID = "TabGroupPaneAndroid";
     public static final String TAB_GROUP_PARITY_ANDROID = "TabGroupParityAndroid";
+    public static final String TAB_GROUP_SYNC_ANDROID = "TabGroupSyncAndroid";
     public static final String TAB_LINK_DRAG_DROP_ANDROID = "TabAndLinkDragDropAndroid";
     public static final String TAB_ENGAGEMENT_REPORTING_ANDROID = "TabEngagementReportingAndroid";
     public static final String TAB_RESUMPTION_MODULE_ANDROID = "TabResumptionModuleAndroid";
@@ -624,6 +625,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(TAB_GROUP_PANE_ANDROID, false);
     public static final CachedFlag sTabGroupParityAndroid =
             newCachedFlag(TAB_GROUP_PARITY_ANDROID, false);
+    public static final CachedFlag sTabGroupSyncAndroid =
+            newCachedFlag(TAB_GROUP_SYNC_ANDROID, false);
     public static final CachedFlag sTabLinkDragDropAndroid =
             newCachedFlag(TAB_LINK_DRAG_DROP_ANDROID, false);
     public static final CachedFlag sTabResumptionModuleAndroid =
@@ -728,6 +731,7 @@ public abstract class ChromeFeatureList {
                     sTabDragDropAsWindowAndroid,
                     sTabGroupPaneAndroid,
                     sTabGroupParityAndroid,
+                    sTabGroupSyncAndroid,
                     sTabLinkDragDropAndroid,
                     sTabResumptionModuleAndroid,
                     sTabStateFlatBuffer,

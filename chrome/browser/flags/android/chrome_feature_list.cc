@@ -52,6 +52,7 @@
 #include "components/query_tiles/switches.h"
 #include "components/reading_list/features/reading_list_switches.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/saved_tab_groups/features.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/segmentation_platform/public/features.h"
 #include "components/send_tab_to_self/features.h"
@@ -358,6 +359,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &syncer::kSyncEnableContactInfoDataTypeInTransportMode,
     &syncer::kSyncShowIdentityErrorsForSignedInUsers,
     &syncer::kWebApkBackupAndRestoreBackend,
+    &tab_groups::kTabGroupSyncAndroid,
     &webapps::features::kAmbientBadgeSuppressFirstVisit,
     &webapps::features::kPwaUniversalInstallUi,
     &webapps::features::kWebApkInstallFailureNotification,
