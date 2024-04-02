@@ -1350,8 +1350,14 @@ void WaylandWindow::RequestState(PlatformWindowDelegate::State state,
   // Adjust state values if necessary.
   state.bounds_dip = AdjustBoundsToConstraintsDIP(state.bounds_dip);
 
-  state.size_px = gfx::ScaleToEnclosingRectIgnoringError(state.bounds_dip,
-                                                         state.window_scale)
+  // Upper layers (eg //cc) convert the window size from DIP to pixels
+  // independently from the window origin. For example, for a window whose
+  // bounds are arbitrary `x,y w x h` in DIP, //cc translates its origin (x,y)
+  // and size (w x h) to pixels independently from each other. Translating the
+  // whole rect from DIPs to pixels might generate a 1px difference that cause
+  // render artifacts - see https://issues.chromium.org/40876438 for details.
+  state.size_px = gfx::ScaleToEnclosingRectIgnoringError(
+                      gfx::Rect(state.bounds_dip.size()), state.window_scale)
                       .size();
   // This will ensure that if insets at the time of the request changed, a new
   // frame is produced when the state is applied.

@@ -5057,7 +5057,8 @@ TEST_P(WaylandWindowTest, NoRoundingErrorInDIP) {
                                       gfx::Rect(20, 0, 100, 100), &delegate);
     for (int i = 100; i < 3000; i++) {
       const gfx::Rect kBoundsDip{20, 0, i, 3000 - i};
-      const gfx::Rect bounds_in_px = delegate_.ConvertRectToPixels(kBoundsDip);
+      const gfx::Rect bounds_in_px =
+          delegate_.ConvertRectToPixels(gfx::Rect(kBoundsDip.size()));
       wayland_window->SetBoundsInDIP(kBoundsDip);
       AdvanceFrameToCurrent(wayland_window.get(), delegate);
       EXPECT_EQ(bounds_in_px.size(), wayland_window->applied_state().size_px);
