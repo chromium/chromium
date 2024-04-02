@@ -204,6 +204,11 @@ bool IsStorageKeySessionOnly(
   return false;
 }
 
+const base::TimeDelta ReportRetryDelay(bool is_first_retry) {
+  return is_first_retry ? kAttributionReportDeliveryFirstRetryDelay.Get()
+                        : kAttributionReportDeliverySecondRetryDelay.Get();
+}
+
 void RecordStoreSourceStatus(const StoreSourceResult& result) {
   static_assert(StorableSource::Result::kMaxValue ==
                     StorableSource::Result::kExceedsMaxTriggerStateCardinality,
@@ -442,15 +447,11 @@ struct AttributionManagerImpl::SourceOrTriggerRFH {
 std::optional<base::TimeDelta> GetFailedReportDelay(int failed_send_attempts) {
   DCHECK_GT(failed_send_attempts, 0);
 
-  const int kMaxFailedSendAttempts = 2;
-  const base::TimeDelta kInitialReportDelay = base::Minutes(5);
-  const int kDelayFactor = 3;
-
-  if (failed_send_attempts > kMaxFailedSendAttempts) {
+  const int kMaxFailedSendAttempts = 3;
+  if (failed_send_attempts >= kMaxFailedSendAttempts) {
     return std::nullopt;
   }
-
-  return kInitialReportDelay * std::pow(kDelayFactor, failed_send_attempts - 1);
+  return ReportRetryDelay(/*is_first_retry=*/failed_send_attempts == 1);
 }
 
 ScopedUseInMemoryStorageForTesting::ScopedUseInMemoryStorageForTesting()
