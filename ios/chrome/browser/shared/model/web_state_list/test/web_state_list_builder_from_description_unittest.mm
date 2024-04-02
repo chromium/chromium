@@ -20,16 +20,14 @@ class WebStateListBuilderFromDescriptionTest : public PlatformTest,
   void WillActivateWebState(web::WebState* web_state) final {}
 
  protected:
-  // Shorthand for
-  // `builder_.BuildWebStateListFromDescription(web_state_list_, ...)`.
+  // Shorthand for `builder_.BuildWebStateListFromDescription(...)`.
   bool BuildWebStateList(std::string_view description) {
-    return builder_.BuildWebStateListFromDescription(web_state_list_,
-                                                     description);
+    return builder_.BuildWebStateListFromDescription(description);
   }
 
-  // Shorthand for `builder_.GetWebStateListDescription(web_state_list_)`.
+  // Shorthand for `builder_.GetWebStateListDescription()`.
   std::string GetDescription() const {
-    return builder_.GetWebStateListDescription(web_state_list_);
+    return builder_.GetWebStateListDescription();
   }
 
   using InsertionParams = WebStateList::InsertionParams;
@@ -40,14 +38,13 @@ class WebStateListBuilderFromDescriptionTest : public PlatformTest,
                                    params);
   }
 
-  // Resets `web_state_list_` and `builder_`.
+  // Resets `web_state_list_`.
   void Reset() {
     CloseAllWebStates(web_state_list_, WebStateList::CLOSE_NO_FLAGS);
-    builder_ = {};
   }
 
   WebStateList web_state_list_{this};
-  WebStateListBuilderFromDescription builder_;
+  WebStateListBuilderFromDescription builder_{&web_state_list_};
 };
 
 // Test that `WebStateListBuilderFromDescription` builds the expected
@@ -107,11 +104,11 @@ TEST_F(WebStateListBuilderFromDescriptionTest, CanGetWebStateListDescription) {
   web_state_list_.CreateGroup({2, 3}, {});
   web_state_list_.CreateGroup({6, 7}, {});
   EXPECT_EQ("_ _ | [ _ _ _* ] _ _ [ _ _ _ ]", GetDescription());
-  builder_.GenerateIdentifiersForWebStateList(web_state_list_);
+  builder_.GenerateIdentifiersForWebStateList();
   EXPECT_EQ("a b | [ 0 c d* ] e f [ 1 g h ]", GetDescription());
 }
 
-// Test that `BuildWebStateListFromDescription(web_state_list_, description)`
+// Test that `BuildWebStateListFromDescription(description)`
 // returns true when given a valid `description` and that the description
 // returned by `GetWebStateListDescription()` is consistent with the description
 // from which the WebStateList was built.
@@ -141,7 +138,7 @@ TEST_F(WebStateListBuilderFromDescriptionTest, ManyValidDescriptions) {
   }
 }
 
-// Test that `BuildWebStateListFromDescription(web_state_list_, description)`
+// Test that `BuildWebStateListFromDescription(description)`
 // returns false when given an invalid `description`.
 TEST_F(WebStateListBuilderFromDescriptionTest, ManyInvalidDescriptions) {
   constexpr std::string_view invalid_descriptions[] = {
@@ -219,7 +216,7 @@ TEST_F(WebStateListBuilderFromDescriptionTest, CanSetIdentifiers) {
   builder_.SetWebStateIdentifier(web_state_list_.GetWebStateAt(6), 'v');
   EXPECT_EQ("| [ 9 z y ] x _ w _ v", GetDescription());
 
-  builder_.GenerateIdentifiersForWebStateList(web_state_list_);
+  builder_.GenerateIdentifiersForWebStateList();
   EXPECT_EQ("| [ 9 z y ] x a w b v", GetDescription());
 
   Reset();
@@ -237,7 +234,7 @@ TEST_F(WebStateListBuilderFromDescriptionTest,
   InsertWebState(InsertionParams::AtIndex(2));
 
   EXPECT_EQ("| _ _ _", GetDescription());
-  builder_.GenerateIdentifiersForWebStateList(web_state_list_);
+  builder_.GenerateIdentifiersForWebStateList();
   EXPECT_EQ("| a b c", GetDescription());
 
   web_state_list_.SetWebStatePinnedAt(2, true);
@@ -255,17 +252,20 @@ TEST_F(WebStateListBuilderFromDescriptionTest,
   EXPECT_EQ("| a b c", GetDescription());
 
   {
+    // Check that there is no sharing with another builder.
     WebStateList other_web_state_list{this};
-    EXPECT_EQ("| a b c", builder_.GetWebStateListDescription(web_state_list_));
-    EXPECT_EQ("|", builder_.GetWebStateListDescription(other_web_state_list));
+    WebStateListBuilderFromDescription other_builder(&other_web_state_list);
+    EXPECT_EQ("| a b c", builder_.GetWebStateListDescription());
+    EXPECT_EQ("|", other_builder.GetWebStateListDescription());
     other_web_state_list.InsertWebState(web_state_list_.DetachWebStateAt(2));
     other_web_state_list.InsertWebState(web_state_list_.DetachWebStateAt(1));
     other_web_state_list.InsertWebState(web_state_list_.DetachWebStateAt(0));
-    EXPECT_EQ("|", builder_.GetWebStateListDescription(web_state_list_));
-    EXPECT_EQ("| c b a",
-              builder_.GetWebStateListDescription(other_web_state_list));
+    EXPECT_EQ("|", builder_.GetWebStateListDescription());
+    // WebStates have no identifiers that could have leaked from the initial
+    // builder.
+    EXPECT_EQ("| _ _ _", other_builder.GetWebStateListDescription());
     CloseAllWebStates(other_web_state_list, WebStateList::CLOSE_NO_FLAGS);
-    EXPECT_EQ("|", builder_.GetWebStateListDescription(other_web_state_list));
+    EXPECT_EQ("|", other_builder.GetWebStateListDescription());
   }
 
   Reset();
@@ -276,7 +276,7 @@ TEST_F(WebStateListBuilderFromDescriptionTest,
   InsertWebState(InsertionParams::Automatic().Activate(true));
   InsertWebState(InsertionParams::Automatic());
   EXPECT_EQ("_ _ | _ _* _", GetDescription());
-  builder_.GenerateIdentifiersForWebStateList(web_state_list_);
+  builder_.GenerateIdentifiersForWebStateList();
   EXPECT_EQ("a b | c d* e", GetDescription());
 
   web_state_list_.ActivateWebStateAt(WebStateList::kInvalidIndex);
@@ -298,7 +298,7 @@ TEST_F(WebStateListBuilderFromDescriptionTest,
   EXPECT_EQ("a b | [ _ c ] [ _ d ] e*", GetDescription());
   web_state_list_.CreateGroup({4}, {});
   EXPECT_EQ("a b | [ _ c ] [ _ d ] [ _ e* ]", GetDescription());
-  builder_.GenerateIdentifiersForWebStateList(web_state_list_);
+  builder_.GenerateIdentifiersForWebStateList();
   EXPECT_EQ("a b | [ 0 c ] [ 1 d ] [ 2 e* ]", GetDescription());
 
   web_state_list_.CloseWebStatesAtIndices(WebStateList::CLOSE_NO_FLAGS,
@@ -307,5 +307,61 @@ TEST_F(WebStateListBuilderFromDescriptionTest,
   CloseAllNonPinnedWebStates(web_state_list_, WebStateList::CLOSE_NO_FLAGS);
   EXPECT_EQ("b* |", GetDescription());
   CloseAllWebStates(web_state_list_, WebStateList::CLOSE_NO_FLAGS);
+  EXPECT_EQ("|", GetDescription());
+}
+
+// Tests that the identifier of a closed tab doesn’t get reused for a new tab.
+TEST_F(WebStateListBuilderFromDescriptionTest, ResetsTabIdentifier) {
+  ASSERT_TRUE(BuildWebStateList("| a"));
+  std::unique_ptr<web::WebState> detached_web_state =
+      web_state_list_.DetachWebStateAt(0);
+  EXPECT_EQ("|", GetDescription());
+
+  web_state_list_.InsertWebState(std::move(detached_web_state),
+                                 InsertionParams::Automatic());
+
+  EXPECT_EQ("| _", GetDescription());
+}
+
+// Tests that the identifier of a closed group doesn’t get reused for a new
+// group.
+TEST_F(WebStateListBuilderFromDescriptionTest, ResetsGroupIdentifier) {
+  ASSERT_TRUE(BuildWebStateList("| [ 0 a ]"));
+  const TabGroup* group = builder_.GetTabGroupForIdentifier('0');
+  web_state_list_.DeleteGroup(group);
+  EXPECT_EQ("| a", GetDescription());
+
+  const auto visual_data = tab_groups::TabGroupVisualData(
+      u"New Group", tab_groups::TabGroupColorId::kGrey);
+  web_state_list_.CreateGroup({0}, visual_data);
+
+  EXPECT_EQ("| [ _ a ]", GetDescription());
+}
+
+// Tests that replacing a WebState doesn’t change the identifier.
+TEST_F(WebStateListBuilderFromDescriptionTest, ReplaceKeepsIdentifier) {
+  ASSERT_TRUE(BuildWebStateList("| a"));
+  const web::WebState* initial_web_state = web_state_list_.GetWebStateAt(0);
+  ASSERT_EQ(initial_web_state, web_state_list_.GetWebStateAt(0));
+
+  web_state_list_.ReplaceWebStateAt(0, std::make_unique<web::FakeWebState>());
+
+  // Check that the WebState actually changed.
+  EXPECT_NE(initial_web_state, web_state_list_.GetWebStateAt(0));
+  // Check that the replacing WebState inherited the identifier.
+  EXPECT_EQ("| a", GetDescription());
+}
+
+// Tests that detaching a WebState removes its identifier.
+TEST_F(WebStateListBuilderFromDescriptionTest, DetachRemovesIdentifier) {
+  ASSERT_TRUE(BuildWebStateList("| a"));
+  const web::WebState* web_state = web_state_list_.GetWebStateAt(0);
+  EXPECT_EQ('a', builder_.GetWebStateIdentifier(web_state));
+
+  std::unique_ptr<web::WebState> detached_web_state =
+      web_state_list_.DetachWebStateAt(0);
+
+  EXPECT_EQ(detached_web_state.get(), web_state);
+  EXPECT_EQ('_', builder_.GetWebStateIdentifier(web_state));
   EXPECT_EQ("|", GetDescription());
 }

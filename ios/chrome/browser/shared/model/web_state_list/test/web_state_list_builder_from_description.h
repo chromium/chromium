@@ -9,62 +9,61 @@
 #import <unordered_map>
 
 #import "base/memory/raw_ptr.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 
 class TabGroup;
+class WebStateList;
 
 namespace web {
 class WebState;
 }
 
-class WebStateList;
-
 // Helper to build a WebStateList from a simple description e.g. the following
 // code
 //
 //   WebStateList web_state_list(...);
-//   WebStateListBuilderFromDescription builder;
+//   WebStateListBuilderFromDescription builder(&web_state_list);
 //   ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-//       web_state_list, "a b | [ 0 c d* ] e f [ 1 g h ]"));
+//       "a b | [ 0 c d* ] e f [ 1 g h ]"));
 //
 // will initialize `web_state_list` with two pinned tabs "a" and "b", six
 // regular tabs "c", "d", "e", "f", "g", "h" where "d" is active, and two tab
 // groups: the first tab group has identifier "0" and contains tabs "c" and "d",
 // the second tab group has identifier "1" and contains tabs "g" and "h".
-// The `builder` object memorizes the identifiers associated with each tab and
-// tab group, such that the result of operations performed on `web_state_list`
-// can be checked e.g. the following code
+// The `builder` object observes the WebStateList and memorizes the identifiers
+// associated with each tab and tab group, such that the result of operations
+// performed on `web_state_list` can be checked with e.g. the following code:
 //
 //   web_state_list.SetWebStatePinnedAt(4, true);
 //   web_state_list.CloseWebStateAt(0, WebStateList::CLOSE_NO_FLAGS);
 //   EXPECT_EQ("b e | [ 0 c d* ] f [ 1 g h ]",
-//             builder.GetWebStateListDescription(web_state_list));
+//             builder.GetWebStateListDescription());
 //
 // checks that "e" was pinned and "a" removed.
-class WebStateListBuilderFromDescription {
+class WebStateListBuilderFromDescription : public WebStateListObserver {
   using WebState = web::WebState;
 
  public:
-  WebStateListBuilderFromDescription();
-  ~WebStateListBuilderFromDescription();
+  // `web_state_list` must be empty. The WebStateListBuilderFromDescription will
+  // observe its `web_state_list`, so it must not outlive it.
+  WebStateListBuilderFromDescription(WebStateList* web_state_list);
+  ~WebStateListBuilderFromDescription() override;
 
-  // Initializes `web_state_list` using `description` as a blueprint.
+  // Initializes `web_state_list_` using `description` as a blueprint.
   // Returns `false` if `description` is not valid, in which case the state of
-  // `web_state_list` is unspecified.
+  // `web_state_list_` is unspecified.
   [[nodiscard]] bool BuildWebStateListFromDescription(
-      WebStateList& web_state_list,
       std::string_view description);
 
-  // Returns the description for a given `web_state_list`.
-  std::string GetWebStateListDescription(
-      const WebStateList& web_state_list) const;
+  // Returns the description of `web_state_list_`.
+  std::string GetWebStateListDescription() const;
 
-  // Formats `description` to match `GetWebStateListDescription(web_state_list)`
+  // Formats `description` to match `GetWebStateListDescription()`
   // e.g. if `description` is valid, then the following code should pass.
   //
-  //   ASSERT_TRUE(builder.BuildWebStateListFromDescription(web_state_list,
-  //                                                        description));
+  //   ASSERT_TRUE(builder.BuildWebStateListFromDescription(description));
   //   EXPECT_EQ(builder.FormatWebStateListDescription(description),
-  //             builder.GetWebStateListDescription(web_state_list));
+  //             builder.GetWebStateListDescription());
   //
   std::string FormatWebStateListDescription(std::string_view description) const;
 
@@ -86,11 +85,20 @@ class WebStateListBuilderFromDescription {
   void SetWebStateIdentifier(const WebState* web_state, char identifier);
   void SetTabGroupIdentifier(const TabGroup* tab_group, char identifier);
 
-  // Generates identifiers for WebStates and TabGroups in `web_state_list` which
-  // have not be named yet.
-  void GenerateIdentifiersForWebStateList(const WebStateList& web_state_list);
+  // Generates identifiers for WebStates and TabGroups in `web_state_list_`
+  // which have not been named yet.
+  void GenerateIdentifiersForWebStateList();
+
+  // WebStateListObserver methods.
+  void WebStateListDidChange(WebStateList* web_state_list,
+                             const WebStateListChange& change,
+                             const WebStateListStatus& status) override;
+
+  void WebStateListDestroyed(WebStateList* web_state_list) override;
 
  private:
+  // The observed WebStateList.
+  raw_ptr<WebStateList> web_state_list_;
   // Memorizes identifiers for WebStates and TabGroups created by this builder.
   std::unordered_map<char, raw_ptr<const WebState>> web_state_for_identifier_;
   std::unordered_map<char, raw_ptr<const TabGroup>> tab_group_for_identifier_;

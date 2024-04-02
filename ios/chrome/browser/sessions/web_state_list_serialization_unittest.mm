@@ -888,9 +888,8 @@ TEST_F(WebStateListSerializationTest, Deserialize_Proto_TabGroupsEnabled) {
   ios::proto::WebStateListStorage storage;
   {
     WebStateList web_state_list(&delegate);
-    WebStateListBuilderFromDescription builder;
-    ASSERT_TRUE(builder.BuildWebStateListFromDescription(web_state_list,
-                                                         "| [0 a] b* c d"));
+    WebStateListBuilderFromDescription builder(&web_state_list);
+    ASSERT_TRUE(builder.BuildWebStateListFromDescription("| [0 a] b* c d"));
 
     SerializeWebStateList(web_state_list, storage);
 
@@ -929,9 +928,8 @@ TEST_F(WebStateListSerializationTest, Deserialize_ObjC_TabGroupsEnabled) {
   SessionWindowIOS* session_window = nil;
   {
     WebStateList web_state_list(&delegate);
-    WebStateListBuilderFromDescription builder;
-    ASSERT_TRUE(builder.BuildWebStateListFromDescription(web_state_list,
-                                                         "| [0 a] b* c d"));
+    WebStateListBuilderFromDescription builder(&web_state_list);
+    ASSERT_TRUE(builder.BuildWebStateListFromDescription("| [0 a] b* c d"));
 
     session_window = SerializeWebStateList(&web_state_list);
 
@@ -973,9 +971,8 @@ TEST_F(WebStateListSerializationTest,
   ios::proto::WebStateListStorage storage;
   {
     WebStateList web_state_list(&delegate);
-    WebStateListBuilderFromDescription builder;
-    ASSERT_TRUE(builder.BuildWebStateListFromDescription(web_state_list,
-                                                         "| [0 a] b* [1 c d]"));
+    WebStateListBuilderFromDescription builder(&web_state_list);
+    ASSERT_TRUE(builder.BuildWebStateListFromDescription("| [0 a] b* [1 c d]"));
 
     SerializeWebStateList(web_state_list, storage);
 
@@ -1016,9 +1013,8 @@ TEST_F(WebStateListSerializationTest, Deserialize_ObjC_MultipleGroups) {
   SessionWindowIOS* session_window = nil;
   {
     WebStateList web_state_list(&delegate);
-    WebStateListBuilderFromDescription builder;
-    ASSERT_TRUE(builder.BuildWebStateListFromDescription(web_state_list,
-                                                         "| [0 a] b* [1 c d]"));
+    WebStateListBuilderFromDescription builder(&web_state_list);
+    ASSERT_TRUE(builder.BuildWebStateListFromDescription("| [0 a] b* [1 c d]"));
 
     session_window = SerializeWebStateList(&web_state_list);
 
@@ -1058,9 +1054,8 @@ TEST_F(WebStateListSerializationTest, Deserialize_Proto_TabGroupsDisabled) {
   ios::proto::WebStateListStorage storage;
   {
     WebStateList web_state_list(&delegate);
-    WebStateListBuilderFromDescription builder;
-    ASSERT_TRUE(builder.BuildWebStateListFromDescription(web_state_list,
-                                                         "| [0 a] b* [1 c d]"));
+    WebStateListBuilderFromDescription builder(&web_state_list);
+    ASSERT_TRUE(builder.BuildWebStateListFromDescription("| [0 a] b* [1 c d]"));
 
     SerializeWebStateList(web_state_list, storage);
 
@@ -1097,9 +1092,8 @@ TEST_F(WebStateListSerializationTest, Deserialize_ObjC_TabGroupsDisabled) {
   SessionWindowIOS* session_window = nil;
   {
     WebStateList web_state_list(&delegate);
-    WebStateListBuilderFromDescription builder;
-    ASSERT_TRUE(builder.BuildWebStateListFromDescription(web_state_list,
-                                                         "| [0 a] b* [1 c d]"));
+    WebStateListBuilderFromDescription builder(&web_state_list);
+    ASSERT_TRUE(builder.BuildWebStateListFromDescription("| [0 a] b* [1 c d]"));
 
     session_window = SerializeWebStateList(&web_state_list);
 
@@ -1138,9 +1132,8 @@ TEST_F(WebStateListSerializationTest, Deserialize_Proto_TabGroupsInvalid) {
   ios::proto::WebStateListStorage storage;
   {
     WebStateList web_state_list(&delegate);
-    WebStateListBuilderFromDescription builder;
-    ASSERT_TRUE(builder.BuildWebStateListFromDescription(web_state_list,
-                                                         "| [0 a] b* c d"));
+    WebStateListBuilderFromDescription builder(&web_state_list);
+    ASSERT_TRUE(builder.BuildWebStateListFromDescription("| [0 a] b* c d"));
 
     SerializeWebStateList(web_state_list, storage);
   }
@@ -1187,9 +1180,8 @@ TEST_F(WebStateListSerializationTest, Deserialize_ObjC_TabGroupsInvalid) {
   SessionWindowIOS* session_window = nil;
   {
     WebStateList web_state_list(&delegate);
-    WebStateListBuilderFromDescription builder;
-    ASSERT_TRUE(builder.BuildWebStateListFromDescription(web_state_list,
-                                                         "| [0 a] b* c d"));
+    WebStateListBuilderFromDescription builder(&web_state_list);
+    ASSERT_TRUE(builder.BuildWebStateListFromDescription("| [0 a] b* c d"));
 
     session_window = SerializeWebStateList(&web_state_list);
   }

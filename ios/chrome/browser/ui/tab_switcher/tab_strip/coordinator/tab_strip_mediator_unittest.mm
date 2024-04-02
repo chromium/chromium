@@ -314,9 +314,9 @@ TEST_F(TabStripMediatorTest, ConsumerPopulated) {
 
 // Test that `TabStripItemData` elements are updated accordingly.
 TEST_F(TabStripMediatorTest, TabStripItemDataUpdated) {
-  WebStateListBuilderFromDescription builder;
+  WebStateListBuilderFromDescription builder(web_state_list_);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      *web_state_list_, "a b | c* [ 0 d e ] f [ 1 g h ]"));
+      "a b | c* [ 0 d e ] f [ 1 g h ]"));
   for (int i = 0; i < web_state_list_->count(); ++i) {
     web::FakeWebState* web_state =
         static_cast<web::FakeWebState*>(web_state_list_->GetWebStateAt(i));
@@ -389,7 +389,7 @@ TEST_F(TabStripMediatorTest, TabStripItemDataUpdated) {
   const web::WebState* web_state_e = builder.GetWebStateForIdentifier('e');
   web_state_list_->RemoveFromGroups(
       {web_state_list_->GetIndexOfWebState(web_state_e)});
-  ASSERT_EQ(builder.GetWebStateListDescription(*web_state_list_),
+  ASSERT_EQ(builder.GetWebStateListDescription(),
             "a b | c* [ 0 d ] e f [ 1 g h ]");
   // Group stroke color of 'e' should now be nil, and 'd' is now the last tab of
   // its group.
@@ -399,7 +399,7 @@ TEST_F(TabStripMediatorTest, TabStripItemDataUpdated) {
 
   web_state_list_->MoveToGroup(
       {web_state_list_->GetIndexOfWebState(web_state_e)}, group_0);
-  ASSERT_EQ(builder.GetWebStateListDescription(*web_state_list_),
+  ASSERT_EQ(builder.GetWebStateListDescription(),
             "a b | c* [ 0 d e ] f [ 1 g h ]");
   // Group stroke color of 'e' should be back to its previous value, and be the
   // last tab of its group.
@@ -408,8 +408,7 @@ TEST_F(TabStripMediatorTest, TabStripItemDataUpdated) {
   EXPECT_EQ(consumer_.itemData[item_e].isLastTabInGroup, YES);
 
   web_state_list_->DeleteGroup(group_1);
-  ASSERT_EQ(builder.GetWebStateListDescription(*web_state_list_),
-            "a b | c* [ 0 d e ] f g h");
+  ASSERT_EQ(builder.GetWebStateListDescription(), "a b | c* [ 0 d e ] f g h");
   EXPECT_NSEQ(consumer_.itemData[item_g].groupStrokeColor, nil);
   EXPECT_NSEQ(consumer_.itemData[item_h].groupStrokeColor, nil);
   EXPECT_EQ(consumer_.itemData[item_g].isFirstTabInGroup, NO);
@@ -423,19 +422,20 @@ TEST_F(TabStripMediatorTest, TabStripItemDataUpdated) {
   std::unique_ptr<web::WebState> web_state_d_detached =
       web_state_list_->DetachWebStateAt(
           web_state_list_->GetIndexOfWebState(web_state_d));
-  ASSERT_EQ(builder.GetWebStateListDescription(*web_state_list_),
-            "a b | c* [ 0 e ] f g h");
+  ASSERT_EQ(builder.GetWebStateListDescription(), "a b | c* [ 0 e ] f g h");
   EXPECT_EQ(consumer_.itemData[item_e].isFirstTabInGroup, YES);
 
   // 3. Testing data up-to-date after WebStateListChange::Type::kInsert.
 
+  // Reset the identifier for the detached web state, as it was removed when
+  // detached.
+  builder.SetWebStateIdentifier(web_state_d_detached.get(), 'd');
   web_state_list_->InsertWebState(
       std::move(web_state_d_detached),
       WebStateList::InsertionParams::AtIndex(
           web_state_list_->GetIndexOfWebState(web_state_e))
           .InGroup(group_0));
-  ASSERT_EQ(builder.GetWebStateListDescription(*web_state_list_),
-            "a b | c* [ 0 d e ] f g h");
+  ASSERT_EQ(builder.GetWebStateListDescription(), "a b | c* [ 0 d e ] f g h");
   EXPECT_NSEQ(consumer_.itemData[item_d].groupStrokeColor, group_0_color);
   EXPECT_EQ(consumer_.itemData[item_d].isFirstTabInGroup, YES);
   EXPECT_EQ(consumer_.itemData[item_e].isFirstTabInGroup, NO);
@@ -444,8 +444,7 @@ TEST_F(TabStripMediatorTest, TabStripItemDataUpdated) {
   // 4. Testing data up-to-date after WebStateListChange::Type::kMove.
 
   web_state_list_->MoveWebStateAt(3, 4);
-  ASSERT_EQ(builder.GetWebStateListDescription(*web_state_list_),
-            "a b | c* [ 0 e d ] f g h");
+  ASSERT_EQ(builder.GetWebStateListDescription(), "a b | c* [ 0 e d ] f g h");
   EXPECT_EQ(consumer_.itemData[item_d].isFirstTabInGroup, NO);
   EXPECT_EQ(consumer_.itemData[item_e].isFirstTabInGroup, YES);
   EXPECT_EQ(consumer_.itemData[item_d].isLastTabInGroup, YES);
@@ -467,7 +466,7 @@ TEST_F(TabStripMediatorTest, TabStripItemDataUpdated) {
                                    {});
   builder.SetTabGroupIdentifier(group_2, '2');
   UIColor* group_2_color = group_2->GetColor();
-  ASSERT_EQ(builder.GetWebStateListDescription(*web_state_list_),
+  ASSERT_EQ(builder.GetWebStateListDescription(),
             "a b | [ 2 c* d f g h ] [ 0 e ]");
   EXPECT_NSEQ(consumer_.itemData[item_c].groupStrokeColor, group_2_color);
   EXPECT_NSEQ(consumer_.itemData[item_d].groupStrokeColor, group_2_color);
@@ -497,9 +496,9 @@ TEST_F(TabStripMediatorTest, TabStripItemDataUpdated) {
 
 // Test that parent elements are updated accordingly.
 TEST_F(TabStripMediatorTest, ItemParentsUpdated) {
-  WebStateListBuilderFromDescription builder;
+  WebStateListBuilderFromDescription builder(web_state_list_);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      *web_state_list_, "a b | c* [ 0 d e ] f [ 1 g h ]"));
+      "a b | c* [ 0 d e ] f [ 1 g h ]"));
   for (int i = 0; i < web_state_list_->count(); ++i) {
     web::FakeWebState* web_state =
         static_cast<web::FakeWebState*>(web_state_list_->GetWebStateAt(i));
@@ -545,19 +544,18 @@ TEST_F(TabStripMediatorTest, ItemParentsUpdated) {
   const web::WebState* web_state_e = builder.GetWebStateForIdentifier('e');
   web_state_list_->RemoveFromGroups(
       {web_state_list_->GetIndexOfWebState(web_state_e)});
-  ASSERT_EQ(builder.GetWebStateListDescription(*web_state_list_),
+  ASSERT_EQ(builder.GetWebStateListDescription(),
             "a b | c* [ 0 d ] e f [ 1 g h ]");
   EXPECT_EQ(consumer_.itemParents[item_e].tabGroup, nullptr);
 
   web_state_list_->MoveToGroup(
       {web_state_list_->GetIndexOfWebState(web_state_e)}, group_0);
-  ASSERT_EQ(builder.GetWebStateListDescription(*web_state_list_),
+  ASSERT_EQ(builder.GetWebStateListDescription(),
             "a b | c* [ 0 d e ] f [ 1 g h ]");
   EXPECT_EQ(consumer_.itemParents[item_e].tabGroup, group_0);
 
   web_state_list_->DeleteGroup(group_1);
-  ASSERT_EQ(builder.GetWebStateListDescription(*web_state_list_),
-            "a b | c* [ 0 d e ] f g h");
+  ASSERT_EQ(builder.GetWebStateListDescription(), "a b | c* [ 0 d e ] f g h");
   EXPECT_EQ(consumer_.itemParents[item_g].tabGroup, nullptr);
   EXPECT_EQ(consumer_.itemParents[item_h].tabGroup, nullptr);
 
@@ -567,20 +565,20 @@ TEST_F(TabStripMediatorTest, ItemParentsUpdated) {
   std::unique_ptr<web::WebState> web_state_d_detached =
       web_state_list_->DetachWebStateAt(
           web_state_list_->GetIndexOfWebState(web_state_d));
+  // Reset the identifier for the detached WebState.
+  builder.SetWebStateIdentifier(web_state_d_detached.get(), 'd');
   web_state_list_->InsertWebState(
       std::move(web_state_d_detached),
       WebStateList::InsertionParams::AtIndex(
           web_state_list_->GetIndexOfWebState(web_state_e))
           .InGroup(group_0));
-  ASSERT_EQ(builder.GetWebStateListDescription(*web_state_list_),
-            "a b | c* [ 0 d e ] f g h");
+  ASSERT_EQ(builder.GetWebStateListDescription(), "a b | c* [ 0 d e ] f g h");
   EXPECT_EQ(consumer_.itemParents[item_d].tabGroup, group_0);
 
   // 3. Testing parents up-to-date after WebStateListChange::Type::kMove.
 
   web_state_list_->MoveWebStateAt(3, 4);
-  ASSERT_EQ(builder.GetWebStateListDescription(*web_state_list_),
-            "a b | c* [ 0 e d ] f g h");
+  ASSERT_EQ(builder.GetWebStateListDescription(), "a b | c* [ 0 e d ] f g h");
   EXPECT_EQ(consumer_.itemParents[item_d].tabGroup, group_0);
 
   // 4. Testing data up-to-date after WebStateListChange::Type::kGroupCreate.
@@ -598,7 +596,7 @@ TEST_F(TabStripMediatorTest, ItemParentsUpdated) {
                                         builder.GetWebStateForIdentifier('h'))},
                                    {});
   builder.SetTabGroupIdentifier(group_2, '2');
-  ASSERT_EQ(builder.GetWebStateListDescription(*web_state_list_),
+  ASSERT_EQ(builder.GetWebStateListDescription(),
             "a b | [ 2 c* d f g h ] [ 0 e ]");
   EXPECT_EQ(consumer_.itemParents[item_c].tabGroup, group_2);
   EXPECT_EQ(consumer_.itemParents[item_d].tabGroup, group_2);
