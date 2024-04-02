@@ -56,10 +56,10 @@ BASE_FEATURE(kAdInterestGroupAPIRestrictedPolicyByDefault,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Make MediaDevicesDispatcherHost and ended MediaStreamTrack not block BFCache.
-// See https://chrbug.com/1502395 for more details.
+// See https://crbug.com/1502395 for more details.
 BASE_FEATURE(kAllowBFCacheWhenClosedMediaStreamTrack,
              "AllowBFCacheWhenClosedMediaStreamTrack",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Block all MIDI access with the MIDI_SYSEX permission
 BASE_FEATURE(kBlockMidiByDefault,
