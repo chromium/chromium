@@ -123,6 +123,15 @@ gfx::Rect GetDefaultSizeForTesting() {
 
 - (void)setMarkedText:(nullable NSString*)markedText
         selectedRange:(NSRange)selectedRange {
+  std::u16string text = base::SysNSStringToUTF16(markedText);
+  std::vector<ui::ImeTextSpan> spans{ui::ImeTextSpan(
+      ui::ImeTextSpan::Type::kComposition, 0, text.length(),
+      ui::ImeTextSpan::Thickness::kThin,
+      ui::ImeTextSpan::UnderlineStyle::kSolid, SK_ColorTRANSPARENT,
+      SK_ColorTRANSPARENT, std::vector<std::string>())};
+  int start = selectedRange.location;
+  int end = start + selectedRange.length;
+  _view->ImeSetComposition(text, spans, gfx::Range::InvalidRange(), start, end);
 }
 
 - (void)unmarkText {
