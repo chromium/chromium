@@ -40,13 +40,19 @@ TEST(UpdateChannelId, DefaultChannelId) {
 using UpdateChannelIdCreateInvalidTest = testing::TestWithParam<std::string>;
 
 TEST_P(UpdateChannelIdCreateInvalidTest, Check) {
-  EXPECT_THAT(UpdateChannelId::Create(""), ErrorIs(Eq(absl::monostate())));
+  EXPECT_THAT(UpdateChannelId::Create(GetParam()),
+              ErrorIs(Eq(absl::monostate())));
 }
 
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     UpdateChannelIdCreateInvalidTest,
-    testing::Values(""));
+    testing::Values("",
+                    // These are a few invalid UTF-8 sequences taken from
+                    // `base/strings/string_util_unittest.cc`.
+                    "\xED\xA0\x8F",
+                    "\xF4\x8F\xBF\xBE",
+                    "\xC0\x80"));
 
 using UpdateChannelIdCreateValidTest = testing::TestWithParam<std::string>;
 

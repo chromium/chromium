@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_util.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/types/optional_ref.h"
@@ -34,7 +35,7 @@ const UpdateChannelId& UpdateChannelId::default_id() {
 // static
 base::expected<UpdateChannelId, absl::monostate> UpdateChannelId::Create(
     std::string input) {
-  if (input.empty()) {
+  if (input.empty() || !base::IsStringUTF8(input)) {
     return base::unexpected(absl::monostate());
   }
   return UpdateChannelId(std::move(input));
