@@ -142,7 +142,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebCore.Fullscreen.WebsiteStateAtFullscreenRequest"
+<histogram name="WebCore.Fullscreen.WebsiteStateAtApiRequest"
     enum="WebsiteStateAtFullscreenRequest" expires_after="2024-09-19">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
