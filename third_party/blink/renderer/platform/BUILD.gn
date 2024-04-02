@@ -1424,6 +1424,7 @@ component("platform") {
     "text/character_emoji.cc",
     "text/character_property.h",
     "text/character_property_data.h",
+    "text/character_variation_sequences.cc",
     "text/date_components.cc",
     "text/date_components.h",
     "text/date_time_format.cc",

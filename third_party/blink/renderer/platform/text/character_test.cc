@@ -525,4 +525,28 @@ TEST(CharacterTest, MaybeEmojiPresentationNoIllegalShortcut) {
   }
 }
 
+TEST(CharacterTest, TestIsStandardizedVariationSequence) {
+  EXPECT_TRUE(Character::IsStandardizedVariationSequence(0x2293, 0xfe00));
+  EXPECT_TRUE(Character::IsStandardizedVariationSequence(0x8279, 0xfe00));
+  EXPECT_TRUE(Character::IsStandardizedVariationSequence(0x8279, 0xfe01));
+  EXPECT_FALSE(Character::IsStandardizedVariationSequence(0x8279, 0xe0100));
+  EXPECT_FALSE(Character::IsStandardizedVariationSequence(0x8279, 0xfe03));
+}
+
+TEST(CharacterTest, TestIsEmojiVariationSequence) {
+  EXPECT_TRUE(Character::IsEmojiVariationSequence(0x1fae8, 0xfe0f));
+  EXPECT_TRUE(Character::IsEmojiVariationSequence(0x0030, 0xfe0e));
+  EXPECT_FALSE(Character::IsEmojiVariationSequence(0x1faf0, 0xfe00));
+  EXPECT_FALSE(Character::IsEmojiVariationSequence(0x0041, 0xfe0f));
+}
+
+TEST(CharacterTest, TestIsIdeographicVariationSequence) {
+  EXPECT_TRUE(Character::IsIdeographicVariationSequence(0x8279, 0xe0100));
+  EXPECT_TRUE(Character::IsIdeographicVariationSequence(0x8279, 0xe01ef));
+  EXPECT_TRUE(Character::IsIdeographicVariationSequence(0x9038, 0xe0101));
+  EXPECT_TRUE(Character::IsIdeographicVariationSequence(0x9038, 0xe01ef));
+  EXPECT_FALSE(Character::IsIdeographicVariationSequence(0x9038, 0xfe00));
+  EXPECT_FALSE(Character::IsIdeographicVariationSequence(0x0041, 0xe0100));
+}
+
 }  // namespace blink

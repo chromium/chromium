@@ -37,6 +37,7 @@
 
 #include <algorithm>
 
+#include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/character_property_data.h"
 #include "third_party/blink/renderer/platform/text/icu_error.h"
@@ -64,7 +65,25 @@ unsigned GetProperty(UChar32 c, CharacterProperty property) {
          static_cast<CharacterPropertyType>(property);
 }
 
+base::Lock& GetFreezePatternLock() {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(base::Lock, lock, ());
+  return lock;
+}
+
 }  // namespace
+
+void Character::ApplyPatternAndFreezeIfEmpty(icu::UnicodeSet* unicodeSet,
+                                             const char* pattern) {
+  base::AutoLock locker(GetFreezePatternLock());
+  if (!unicodeSet->isEmpty()) {
+    return;
+  }
+  blink::ICUError err;
+  // Use ICU's invariant-character initialization method.
+  unicodeSet->applyPattern(icu::UnicodeString(pattern, -1, US_INV), err);
+  unicodeSet->freeze();
+  DCHECK_EQ(err, U_ZERO_ERROR);
+}
 
 bool Character::IsUprightInMixedVertical(UChar32 character) {
   return u_getIntPropertyValue(character,

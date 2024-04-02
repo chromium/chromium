@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_CHARACTER_H_
 
 #include <unicode/uchar.h>
+#include <unicode/uniset.h>
 
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
@@ -81,6 +82,12 @@ class PLATFORM_EXPORT Character {
            IsInRange(character, 0xFE00, 0xFE0F)  // VARIATION SELECTOR-1 to 16
            || IsInRange(character, 0xE0100,
                         0xE01EF);  // VARIATION SELECTOR-17 to 256
+  }
+
+  static inline bool IsUnicodeEmojiVariationSelector(UChar32 character) {
+    // https://www.unicode.org/Public/emoji/5.0/emoji-variation-sequences.txt
+    return character == 0xFE0E ||
+           character == 0xFE0F;  // VARIATION SELECTOR-15 to 16
   }
 
   static bool IsCJKIdeographOrSymbol(UChar32 c) {
@@ -203,6 +210,11 @@ class PLATFORM_EXPORT Character {
   static bool IsExtendedPictographic(UChar32);
   static bool MaybeEmojiPresentation(UChar32);
 
+  static bool IsStandardizedVariationSequence(UChar32, UChar32);
+  static bool IsEmojiVariationSequence(UChar32, UChar32);
+  static bool IsIdeographicVariationSequence(UChar32 ch, UChar32 vs);
+  static bool IsVariationSequence(UChar32, UChar32);
+
   static inline bool IsNormalizedCanvasSpaceCharacter(UChar32 c) {
     // According to specification all space characters should be replaced with
     // 0x0020 space character.
@@ -246,6 +258,8 @@ class PLATFORM_EXPORT Character {
   static bool IsHangulSlow(UChar32);
   static bool MaybeHanKerningOpenSlow(UChar32);
   static bool MaybeHanKerningCloseSlow(UChar32);
+  static void ApplyPatternAndFreezeIfEmpty(icu::UnicodeSet* unicodeSet,
+                                           const char* pattern);
 };
 
 inline bool Character::IsEastAsianWidthFullwidth(UChar32 ch) {
