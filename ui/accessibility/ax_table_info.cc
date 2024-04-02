@@ -7,12 +7,12 @@
 #include <iostream>
 #include <string>
 
+#include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-
 #include "ui/accessibility/ax_constants.mojom.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
@@ -151,11 +151,13 @@ void FindCellsForRowlessTable(
       } else if (IsCellOrTableHeader(child->GetRole())) {
         const int rowIndex =
             child->GetIntAttribute(ax::mojom::IntAttribute::kTableCellRowIndex);
+        CHECK_GE(rowIndex,0);
         if (current_row < rowIndex) {
           cell_nodes_per_row->emplace_back();
           current_row = rowIndex;
           current_index++;
         }
+        CHECK_GE(current_index,0);
         auto& cell_nodes = cell_nodes_per_row->at(current_index);
         cell_nodes.push_back(child);
       }
