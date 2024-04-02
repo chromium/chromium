@@ -80,8 +80,26 @@
           navigator.preferences.reducedData.onchange = null;
         });
         navigator.preferences.reducedData.onchange = t.step_func_done();
+        navigator.preferences.reducedData.requestOverride('reduce');
+      }, "navigator.preferences.reducedData fires change event when requesting override");
+      async_test((t) => {
+        t.add_cleanup(() => {
+          navigator.preferences.reducedData.clearOverride();
+          navigator.preferences.reducedData.onchange = null;
+        });
+        navigator.preferences.reducedData.onchange = t.step_func_done();
         navigator.preferences.reducedData.requestOverride('no-preference');
       }, "navigator.preferences.reducedData fires change event when requesting override (without value change)");
+      promise_test(async (t) => {
+        t.add_cleanup(() => {
+          navigator.preferences.reducedData.clearOverride();
+          navigator.preferences.reducedData.onchange = null;
+        });
+        await navigator.preferences.reducedData.requestOverride('reduce');
+        const eventPromise = changeEventPromise("reducedData");
+        await navigator.preferences.reducedData.clearOverride();
+        await eventPromise;
+      }, "navigator.preferences.reducedData fires change event when clearing override");
       promise_test(async (t) => {
         t.add_cleanup(() => {
           navigator.preferences.reducedData.clearOverride();

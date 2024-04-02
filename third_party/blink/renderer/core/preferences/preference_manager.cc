@@ -53,4 +53,16 @@ PreferenceObject* PreferenceManager::reducedData() {
   return reduced_data_.Get();
 }
 
+void PreferenceManager::PreferenceMaybeChanged() {
+  if (!RuntimeEnabledFeatures::WebPreferencesEnabled()) {
+    return;
+  }
+
+  colorScheme()->PreferenceMaybeChanged();
+  contrast()->PreferenceMaybeChanged();
+  reducedMotion()->PreferenceMaybeChanged();
+  reducedTransparency()->PreferenceMaybeChanged();
+  reducedData()->PreferenceMaybeChanged();
+}
+
 }  // namespace blink

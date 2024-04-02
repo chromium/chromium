@@ -80,8 +80,26 @@
           navigator.preferences.colorScheme.onchange = null;
         });
         navigator.preferences.colorScheme.onchange = t.step_func_done();
+        navigator.preferences.colorScheme.requestOverride('dark');
+      }, "navigator.preferences.colorScheme fires change event when requesting override");
+      async_test((t) => {
+        t.add_cleanup(() => {
+          navigator.preferences.colorScheme.clearOverride();
+          navigator.preferences.colorScheme.onchange = null;
+        });
+        navigator.preferences.colorScheme.onchange = t.step_func_done();
         navigator.preferences.colorScheme.requestOverride('light');
       }, "navigator.preferences.colorScheme fires change event when requesting override (without value change)");
+      promise_test(async (t) => {
+        t.add_cleanup(() => {
+          navigator.preferences.colorScheme.clearOverride();
+          navigator.preferences.colorScheme.onchange = null;
+        });
+        await navigator.preferences.colorScheme.requestOverride('dark');
+        const eventPromise = changeEventPromise("colorScheme");
+        await navigator.preferences.colorScheme.clearOverride();
+        await eventPromise;
+      }, "navigator.preferences.colorScheme fires change event when clearing override");
       promise_test(async (t) => {
         t.add_cleanup(() => {
           navigator.preferences.colorScheme.clearOverride();

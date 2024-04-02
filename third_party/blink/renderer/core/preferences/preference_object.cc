@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/frozen_array.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/css/media_values.h"
+#include "third_party/blink/renderer/core/css/media_values_cached.h"
 #include "third_party/blink/renderer/core/css/media_values_dynamic.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -61,6 +62,11 @@ PreferenceObject::PreferenceObject(ExecutionContext* executionContext,
     frame = DynamicTo<LocalDOMWindow>(executionContext)->GetFrame();
   }
   media_values_ = MediaValues::CreateDynamicIfFrameExists(frame);
+  preferred_color_scheme_ = media_values_->GetPreferredColorScheme();
+  preferred_contrast_ = media_values_->GetPreferredContrast();
+  prefers_reduced_data_ = media_values_->PrefersReducedData();
+  prefers_reduced_motion_ = media_values_->PrefersReducedMotion();
+  prefers_reduced_transparency_ = media_values_->PrefersReducedTransparency();
 }
 
 PreferenceObject::~PreferenceObject() = default;
@@ -151,25 +157,18 @@ AtomicString PreferenceObject::value(ScriptState* script_state) {
   }
 
   if (name_ == preference_names::kColorScheme) {
-    mojom::blink::PreferredColorScheme color_scheme =
-        media_values_->GetPreferredColorScheme();
-    return ColorSchemeToString(color_scheme);
+    return ColorSchemeToString(preferred_color_scheme_);
   } else if (name_ == preference_names::kContrast) {
-    mojom::blink::PreferredContrast contrast =
-        media_values_->GetPreferredContrast();
-    return ContrastToString(contrast);
+    return ContrastToString(preferred_contrast_);
   } else if (name_ == preference_names::kReducedMotion) {
-    return media_values_->PrefersReducedMotion()
-               ? preference_values::kReduce
-               : preference_values::kNoPreference;
+    return prefers_reduced_motion_ ? preference_values::kReduce
+                                   : preference_values::kNoPreference;
   } else if (name_ == preference_names::kReducedTransparency) {
-    return media_values_->PrefersReducedTransparency()
-               ? preference_values::kReduce
-               : preference_values::kNoPreference;
+    return prefers_reduced_transparency_ ? preference_values::kReduce
+                                         : preference_values::kNoPreference;
   } else if (name_ == preference_names::kReducedData) {
-    return media_values_->PrefersReducedData()
-               ? preference_values::kReduce
-               : preference_values::kNoPreference;
+    return prefers_reduced_data_ ? preference_values::kReduce
+                                 : preference_values::kNoPreference;
   } else {
     NOTREACHED();
     return g_empty_atom;
@@ -207,9 +206,8 @@ void PreferenceObject::clearOverride(ScriptState* script_state) {
 
     window->GetFrame()->GetPage()->SetPreferenceOverride(
         media_feature_names::kPrefersColorSchemeMediaFeature, String());
-    mojom::blink::PreferredColorScheme new_color_scheme =
-        media_values_->GetPreferredColorScheme();
-    value_unchanged = (color_scheme.value() == new_color_scheme);
+    value_unchanged =
+        (color_scheme.value() == media_values_->GetPreferredColorScheme());
   } else if (name_ == preference_names::kContrast) {
     std::optional<mojom::blink::PreferredContrast> contrast =
         overrides->GetPreferredContrast();
@@ -219,9 +217,8 @@ void PreferenceObject::clearOverride(ScriptState* script_state) {
 
     window->GetFrame()->GetPage()->SetPreferenceOverride(
         media_feature_names::kPrefersContrastMediaFeature, String());
-    mojom::blink::PreferredContrast new_contrast =
-        media_values_->GetPreferredContrast();
-    value_unchanged = (contrast.value() == new_contrast);
+    value_unchanged =
+        (contrast.value() == media_values_->GetPreferredContrast());
   } else if (name_ == preference_names::kReducedMotion) {
     std::optional<bool> reduced_motion = overrides->GetPrefersReducedMotion();
     if (!reduced_motion.has_value()) {
@@ -230,8 +227,8 @@ void PreferenceObject::clearOverride(ScriptState* script_state) {
 
     window->GetFrame()->GetPage()->SetPreferenceOverride(
         media_feature_names::kPrefersReducedMotionMediaFeature, String());
-    bool new_reduced_motion = media_values_->PrefersReducedMotion();
-    value_unchanged = (reduced_motion.value() == new_reduced_motion);
+    value_unchanged =
+        (reduced_motion.value() == media_values_->PrefersReducedMotion());
   } else if (name_ == preference_names::kReducedTransparency) {
     std::optional<bool> reduced_transparency =
         overrides->GetPrefersReducedTransparency();
@@ -241,9 +238,8 @@ void PreferenceObject::clearOverride(ScriptState* script_state) {
 
     window->GetFrame()->GetPage()->SetPreferenceOverride(
         media_feature_names::kPrefersReducedTransparencyMediaFeature, String());
-    bool new_reduced_transparency = media_values_->PrefersReducedTransparency();
-    value_unchanged =
-        (reduced_transparency.value() == new_reduced_transparency);
+    value_unchanged = (reduced_transparency.value() ==
+                       media_values_->PrefersReducedTransparency());
   } else if (name_ == preference_names::kReducedData) {
     std::optional<bool> reduced_data = overrides->GetPrefersReducedData();
     if (!reduced_data.has_value()) {
@@ -252,8 +248,8 @@ void PreferenceObject::clearOverride(ScriptState* script_state) {
 
     window->GetFrame()->GetPage()->SetPreferenceOverride(
         media_feature_names::kPrefersReducedDataMediaFeature, String());
-    bool new_reduced_data = media_values_->PrefersReducedData();
-    value_unchanged = (reduced_data.value() == new_reduced_data);
+    value_unchanged =
+        (reduced_data.value() == media_values_->PrefersReducedData());
   } else {
     NOTREACHED();
     return;
@@ -309,8 +305,7 @@ ScriptPromise<IDLUndefined> PreferenceObject::requestOverride(
         }
       }
     }
-    existing_value =
-        ColorSchemeToString(media_values_->GetPreferredColorScheme());
+    existing_value = ColorSchemeToString(preferred_color_scheme_);
   } else if (name_ == preference_names::kContrast) {
     feature_name = media_feature_names::kPrefersContrastMediaFeature;
 
@@ -323,7 +318,7 @@ ScriptPromise<IDLUndefined> PreferenceObject::requestOverride(
         }
       }
     }
-    existing_value = ContrastToString(media_values_->GetPreferredContrast());
+    existing_value = ContrastToString(preferred_contrast_);
   } else if (name_ == preference_names::kReducedMotion) {
     feature_name = media_feature_names::kPrefersReducedMotionMediaFeature;
 
@@ -338,9 +333,8 @@ ScriptPromise<IDLUndefined> PreferenceObject::requestOverride(
         }
       }
     }
-    existing_value = media_values_->PrefersReducedMotion()
-                         ? preference_values::kReduce
-                         : preference_values::kNoPreference;
+    existing_value = prefers_reduced_motion_ ? preference_values::kReduce
+                                             : preference_values::kNoPreference;
   } else if (name_ == preference_names::kReducedTransparency) {
     feature_name = media_feature_names::kPrefersReducedTransparencyMediaFeature;
 
@@ -355,7 +349,7 @@ ScriptPromise<IDLUndefined> PreferenceObject::requestOverride(
         }
       }
     }
-    existing_value = media_values_->PrefersReducedTransparency()
+    existing_value = prefers_reduced_transparency_
                          ? preference_values::kReduce
                          : preference_values::kNoPreference;
   } else if (name_ == preference_names::kReducedData) {
@@ -372,9 +366,8 @@ ScriptPromise<IDLUndefined> PreferenceObject::requestOverride(
         }
       }
     }
-    existing_value = media_values_->PrefersReducedData()
-                         ? preference_values::kReduce
-                         : preference_values::kNoPreference;
+    existing_value = prefers_reduced_data_ ? preference_values::kReduce
+                                           : preference_values::kNoPreference;
   } else {
     NOTREACHED();
   }
@@ -427,6 +420,49 @@ const FrozenArray<IDLString>& PreferenceObject::validValues() {
   valid_values_ =
       MakeGarbageCollected<FrozenArray<IDLString>>(std::move(valid_values));
   return *valid_values_.Get();
+}
+
+void PreferenceObject::PreferenceMaybeChanged() {
+  CHECK(RuntimeEnabledFeatures::WebPreferencesEnabled());
+  if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed()) {
+    return;
+  }
+  auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext());
+  if (!window) {
+    return;
+  }
+
+  if (name_ == preference_names::kColorScheme) {
+    if (preferred_color_scheme_ == media_values_->GetPreferredColorScheme()) {
+      return;
+    }
+  } else if (name_ == preference_names::kContrast) {
+    if (preferred_contrast_ == media_values_->GetPreferredContrast()) {
+      return;
+    }
+  } else if (name_ == preference_names::kReducedMotion) {
+    if (prefers_reduced_motion_ == media_values_->PrefersReducedMotion()) {
+      return;
+    }
+  } else if (name_ == preference_names::kReducedTransparency) {
+    if (prefers_reduced_transparency_ ==
+        media_values_->PrefersReducedTransparency()) {
+      return;
+    }
+  } else if (name_ == preference_names::kReducedData) {
+    if (prefers_reduced_data_ == media_values_->PrefersReducedData()) {
+      return;
+    }
+  } else {
+    NOTREACHED();
+    return;
+  }
+  preferred_color_scheme_ = media_values_->GetPreferredColorScheme();
+  preferred_contrast_ = media_values_->GetPreferredContrast();
+  prefers_reduced_data_ = media_values_->PrefersReducedData();
+  prefers_reduced_motion_ = media_values_->PrefersReducedMotion();
+  prefers_reduced_transparency_ = media_values_->PrefersReducedTransparency();
+  DispatchEvent(*Event::Create(event_type_names::kChange));
 }
 
 void PreferenceObject::Trace(Visitor* visitor) const {

@@ -27,6 +27,8 @@ class PreferenceManager final : public ScriptWrappable {
   PreferenceObject* reducedTransparency();
   PreferenceObject* reducedData();
 
+  void PreferenceMaybeChanged();
+
   void Trace(Visitor*) const override;
 
  private:

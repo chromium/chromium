@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/frame/page_scale_constraints.h"
 #include "third_party/blink/renderer/core/frame/page_scale_constraints_set.h"
 #include "third_party/blink/renderer/core/frame/remote_frame.h"
@@ -79,6 +80,8 @@
 #include "third_party/blink/renderer/core/page/spatial_navigation_controller.h"
 #include "third_party/blink/renderer/core/page/validation_message_client_impl.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/core/preferences/navigator_preferences.h"
+#include "third_party/blink/renderer/core/preferences/preference_manager.h"
 #include "third_party/blink/renderer/core/preferences/preference_overrides.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
@@ -904,6 +907,13 @@ void Page::SettingsChanged(ChangeType change_type) {
         if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
           local_frame->GetDocument()->MediaQueryAffectingValueChanged(
               MediaValueChange::kOther);
+          if (RuntimeEnabledFeatures::WebPreferencesEnabled()) {
+            auto* navigator = local_frame->DomWindow()->navigator();
+            if (auto* preferences =
+                    NavigatorPreferences::preferences(*navigator)) {
+              preferences->PreferenceMaybeChanged();
+            }
+          }
         }
       }
       break;
@@ -1026,6 +1036,12 @@ void Page::InvalidateColorScheme() {
        frame = frame->Tree().TraverseNext()) {
     if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
       local_frame->GetDocument()->ColorSchemeChanged();
+      if (RuntimeEnabledFeatures::WebPreferencesEnabled()) {
+        auto* navigator = local_frame->DomWindow()->navigator();
+        if (auto* preferences = NavigatorPreferences::preferences(*navigator)) {
+          preferences->PreferenceMaybeChanged();
+        }
+      }
     }
   }
 }

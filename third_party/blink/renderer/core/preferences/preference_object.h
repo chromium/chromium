@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PREFERENCES_PREFERENCE_OBJECT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PREFERENCES_PREFERENCE_OBJECT_H_
 
+#include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/css/preferred_contrast.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
@@ -41,6 +43,8 @@ class CORE_EXPORT PreferenceObject final
 
   const FrozenArray<IDLString>& validValues();
 
+  void PreferenceMaybeChanged();
+
   DEFINE_ATTRIBUTE_EVENT_LISTENER(change, kChange)
 
   void Trace(Visitor* visitor) const override;
@@ -55,6 +59,11 @@ class CORE_EXPORT PreferenceObject final
   AtomicString name_;
   Member<FrozenArray<IDLString>> valid_values_;
   Member<const MediaValues> media_values_;
+  mojom::blink::PreferredColorScheme preferred_color_scheme_;
+  mojom::blink::PreferredContrast preferred_contrast_;
+  bool prefers_reduced_data_;
+  bool prefers_reduced_motion_;
+  bool prefers_reduced_transparency_;
 };
 
 }  // namespace blink
