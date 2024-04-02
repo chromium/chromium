@@ -16,7 +16,6 @@
 #include "components/metrics/structured/structured_metrics_service.h"
 #include "components/metrics/structured/test/test_event_storage.h"
 #include "components/metrics/structured/test/test_key_data_provider.h"
-#include "components/metrics/structured/test/test_structured_metrics_provider.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 
 namespace {
@@ -80,15 +79,9 @@ void StructuredMetricsMixin::SetUpOnMainThread() {
   auto recorder = std::make_unique<StructuredMetricsRecorder>(
       std::move(key_data_provider), std::make_unique<TestEventStorage>());
 
-  // TODO(b/282057109): Cleanup provider code once feature is removed.
-  if (base::FeatureList::IsEnabled(kEnabledStructuredMetricsService)) {
-    g_browser_process->GetMetricsServicesManager()
-        ->GetStructuredMetricsService()
-        ->SetRecorderForTest(std::move(recorder));
-  } else {
-    structured_metrics_provider_ =
-        std::make_unique<TestStructuredMetricsProvider>(std::move(recorder));
-  }
+  g_browser_process->GetMetricsServicesManager()
+      ->GetStructuredMetricsService()
+      ->SetRecorderForTest(std::move(recorder));
 }
 
 StructuredMetricsRecorder* StructuredMetricsMixin::GetRecorder() {

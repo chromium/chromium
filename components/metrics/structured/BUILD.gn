@@ -23,8 +23,6 @@ static_library("structured") {
     "reporting/structured_metrics_reporting_service.h",
     "structured_metrics_prefs.cc",
     "structured_metrics_prefs.h",
-    "structured_metrics_provider.cc",
-    "structured_metrics_provider.h",
     "structured_metrics_recorder.cc",
     "structured_metrics_recorder.h",
     "structured_metrics_scheduler.cc",
@@ -256,7 +254,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "key_data_prefs_delegate_unittest.cc",
-    "structured_metrics_provider_unittest.cc",
     "structured_metrics_recorder_unittest.cc",
     "structured_metrics_service_unittest.cc",
   ]

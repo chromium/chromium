@@ -175,7 +175,6 @@
 #include "chrome/browser/metrics/per_user_state_manager_chromeos.h"
 #include "chrome/browser/metrics/update_engine_metrics_provider.h"
 #include "chrome/browser/ui/webui/ash/settings/services/metrics/os_settings_metrics_provider.h"
-#include "components/metrics/structured/structured_metrics_provider.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -919,17 +918,6 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
 
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<ash::PrinterMetricsProvider>());
-
-  // TODO(b/282057109) The StructuredMetricsService owns the recorder. While we
-  // are transitioning from the provider to the service, the provider will be
-  // given a pointer to the recorder. Will be removed when the provider is
-  // deprecated.
-  if (!base::FeatureList::IsEnabled(
-          metrics::structured::kEnabledStructuredMetricsService)) {
-    metrics_service_->RegisterMetricsProvider(
-        std::make_unique<metrics::structured::StructuredMetricsProvider>(
-            structured_metrics_service_->recorder()));
-  }
 
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<AssistantServiceMetricsProvider>());

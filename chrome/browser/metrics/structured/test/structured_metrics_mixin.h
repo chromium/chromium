@@ -14,7 +14,6 @@
 #include "components/metrics/metrics_provider.h"
 #include "components/metrics/structured/structured_metrics_recorder.h"
 #include "components/metrics/structured/test/test_event_storage.h"
-#include "components/metrics/structured/test/test_structured_metrics_provider.h"
 #include "third_party/metrics_proto/structured_data.pb.h"
 
 // Mixin browser tests can use StructuredMetricsMixin to set up test
@@ -80,8 +79,6 @@ class StructuredMetricsMixin : public InProcessBrowserTestMixin {
 
  private:
   std::unique_ptr<MetricsProvider> system_profile_provider_;
-
-  std::unique_ptr<TestStructuredMetricsProvider> structured_metrics_provider_;
 
   base::ScopedTempDir temp_dir_;
 

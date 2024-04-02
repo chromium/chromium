@@ -43,7 +43,6 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "components/metrics/structured/structured_metrics_features.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -252,11 +251,6 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
   // and VmmMetricsProvider.
   expected_providers += 15;
 
-  // StructuredMetricsProvider.
-  if (!base::FeatureList::IsEnabled(
-          metrics::structured::kEnabledStructuredMetricsService)) {
-    expected_providers++;
-  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

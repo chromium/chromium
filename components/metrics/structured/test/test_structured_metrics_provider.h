@@ -9,7 +9,6 @@
 #include "components/metrics/metrics_provider.h"
 #include "components/metrics/structured/event.h"
 #include "components/metrics/structured/recorder.h"
-#include "components/metrics/structured/structured_metrics_provider.h"
 #include "components/metrics/structured/structured_metrics_recorder.h"
 
 namespace metrics::structured {
@@ -58,8 +57,6 @@ class TestStructuredMetricsProvider : public Recorder::RecorderImpl {
   void OnEventRecord(const Event& event) override;
 
   std::unique_ptr<StructuredMetricsRecorder> structured_metrics_recorder_;
-
-  std::unique_ptr<StructuredMetricsProvider> structured_metrics_provider_;
 
   base::ScopedTempDir temp_dir_;
 

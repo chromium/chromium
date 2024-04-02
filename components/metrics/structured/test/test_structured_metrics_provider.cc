@@ -21,10 +21,6 @@ TestStructuredMetricsProvider::TestStructuredMetricsProvider() {
                 .Append(FILE_PATH_LITERAL("structured_metrics"))
                 .Append(FILE_PATH_LITERAL("device_keys"))),
         std::make_unique<TestEventStorage>());
-    structured_metrics_provider_ =
-        base::WrapUnique(new StructuredMetricsProvider(
-            /*write_delay=*/base::Seconds(0),
-            structured_metrics_recorder_.get()));
     Recorder::GetInstance()->AddObserver(this);
   }
 }
@@ -32,10 +28,6 @@ TestStructuredMetricsProvider::TestStructuredMetricsProvider() {
 TestStructuredMetricsProvider::TestStructuredMetricsProvider(
     std::unique_ptr<StructuredMetricsRecorder> recorder)
     : structured_metrics_recorder_(std::move(recorder)) {
-  structured_metrics_provider_ =
-      std::unique_ptr<StructuredMetricsProvider>(new StructuredMetricsProvider(
-          /*write_delay=*/base::Seconds(0),
-          structured_metrics_recorder_.get()));
   Recorder::GetInstance()->AddObserver(this);
 }
 
@@ -45,14 +37,14 @@ TestStructuredMetricsProvider::~TestStructuredMetricsProvider() {
 
 const EventsProto& TestStructuredMetricsProvider::ReadEvents() const {
   return *static_cast<const TestEventStorage*>(
-              structured_metrics_provider_->recorder().event_storage())
+              structured_metrics_recorder_->event_storage())
               ->events();
 }
 
 std::optional<const StructuredEventProto*>
 TestStructuredMetricsProvider::FindEvent(uint64_t project_name_hash,
                                          uint64_t event_name_hash) {
-  if (!structured_metrics_provider_->recorder().CanProvideMetrics()) {
+  if (!structured_metrics_recorder_->CanProvideMetrics()) {
     return std::nullopt;
   }
 
@@ -71,7 +63,7 @@ std::vector<const StructuredEventProto*>
 TestStructuredMetricsProvider::FindEvents(uint64_t project_name_hash,
                                           uint64_t event_name_hash) {
   std::vector<const StructuredEventProto*> events_vector;
-  if (!structured_metrics_provider_->recorder().CanProvideMetrics()) {
+  if (!structured_metrics_recorder_->CanProvideMetrics()) {
     return events_vector;
   }
 
@@ -86,16 +78,16 @@ TestStructuredMetricsProvider::FindEvents(uint64_t project_name_hash,
 }
 
 void TestStructuredMetricsProvider::EnableRecording() {
-  structured_metrics_provider_->OnRecordingEnabled();
+  structured_metrics_recorder_->EnableRecording();
 }
 
 void TestStructuredMetricsProvider::DisableRecording() {
-  structured_metrics_provider_->OnRecordingDisabled();
+  structured_metrics_recorder_->DisableRecording();
 }
 
 void TestStructuredMetricsProvider::WaitUntilReady() {
   base::RunLoop run_loop;
-  structured_metrics_provider_->recorder().SetOnReadyToRecord(
+  structured_metrics_recorder_->SetOnReadyToRecord(
       base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
   run_loop.Run();
 }
@@ -106,7 +98,7 @@ void TestStructuredMetricsProvider::SetOnEventsRecordClosure(
 }
 
 void TestStructuredMetricsProvider::OnEventRecord(const Event& event) {
-  structured_metrics_provider_->recorder().OnEventRecord(event);
+  structured_metrics_recorder_->OnEventRecord(event);
   if (!event_record_callback_) {
     return;
   }
