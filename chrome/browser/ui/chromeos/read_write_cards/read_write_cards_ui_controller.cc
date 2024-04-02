@@ -35,10 +35,7 @@ constexpr int kQuickAnswersAndMahiSpacing = 10;
 views::Widget::InitParams CreateWidgetInitParams() {
   views::Widget::InitParams params;
   params.activatable = views::Widget::InitParams::Activatable::kNo;
-  // TODO(b/327786910): remove shadow in the widget and use shadow in individual
-  // views.
-  params.shadow_elevation = 2;
-  params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
+  params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
   params.type = views::Widget::InitParams::TYPE_POPUP;
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
   params.child = true;

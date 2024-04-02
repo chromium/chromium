@@ -9,12 +9,14 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view.h"
+#include "ui/views/view_shadow.h"
 
 namespace chromeos {
 
 ReadWriteCardsView::ReadWriteCardsView(
     chromeos::ReadWriteCardsUiController& read_write_cards_ui_controller)
-    : read_write_cards_ui_controller_(read_write_cards_ui_controller) {}
+    : view_shadow_(std::make_unique<views::ViewShadow>(this, /*elevation=*/2)),
+      read_write_cards_ui_controller_(read_write_cards_ui_controller) {}
 
 ReadWriteCardsView::~ReadWriteCardsView() = default;
 
