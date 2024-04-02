@@ -18,6 +18,7 @@
 #include "ash/shell.h"
 #include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -26,7 +27,9 @@ namespace ash {
 
 namespace {
 
-constexpr int kDataFetchTimeoutInMs = 1000;
+constexpr base::TimeDelta kDataFetchPostLoginTimeoutInMs =
+    base::Milliseconds(3000);
+constexpr base::TimeDelta kDataFetchTimeoutInMs = base::Milliseconds(1000);
 
 // Returns the pref service to use for Birch prefs.
 PrefService* GetPrefService() {
@@ -155,7 +158,8 @@ void BirchModel::SetClientAndInit(BirchClient* client) {
   }
 }
 
-void BirchModel::RequestBirchDataFetch(base::OnceClosure callback) {
+void BirchModel::RequestBirchDataFetch(bool is_post_login,
+                                       base::OnceClosure callback) {
   if (!Shell::Get()->session_controller()->IsUserPrimary()) {
     // Fetches are only supported for the primary user. Return with empty data.
     ClearAllItems();
@@ -176,9 +180,11 @@ void BirchModel::RequestBirchDataFetch(base::OnceClosure callback) {
   PendingRequest& request = pending_requests_[request_id];
   request.callback = std::move(callback);
   request.timer = std::make_unique<base::OneShotTimer>();
-  request.timer->Start(FROM_HERE, base::Milliseconds(kDataFetchTimeoutInMs),
-                       base::BindOnce(&BirchModel::HandleRequestTimeout,
-                                      base::Unretained(this), request_id));
+  request.timer->Start(
+      FROM_HERE,
+      is_post_login ? kDataFetchPostLoginTimeoutInMs : kDataFetchTimeoutInMs,
+      base::BindOnce(&BirchModel::HandleRequestTimeout, base::Unretained(this),
+                     request_id));
 
   if (fetch_in_progress) {
     return;

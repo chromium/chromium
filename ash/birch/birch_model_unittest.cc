@@ -237,7 +237,8 @@ TEST_F(BirchModelTest, AddItemNotifiesCallback) {
   EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());
 
   // Make a data fetch request and set fresh tab data.
-  model->RequestBirchDataFetch(base::BindOnce(&TestModelConsumer::OnItemsReady,
+  model->RequestBirchDataFetch(/*is_post_login=*/false,
+                               base::BindOnce(&TestModelConsumer::OnItemsReady,
                                               base::Unretained(&consumer),
                                               /*id=*/"0"));
   model->SetRecentTabItems(std::vector<BirchTabItem>());
@@ -261,7 +262,8 @@ TEST_F(BirchModelTest, AddItemNotifiesCallback) {
 
   // Request another data fetch and expect the consumer to be notified once
   // items are set again.
-  model->RequestBirchDataFetch(base::BindOnce(&TestModelConsumer::OnItemsReady,
+  model->RequestBirchDataFetch(/*is_post_login=*/false,
+                               base::BindOnce(&TestModelConsumer::OnItemsReady,
                                               base::Unretained(&consumer),
                                               /*id=*/"1"));
   model->SetRecentTabItems(std::vector<BirchTabItem>());
@@ -286,7 +288,8 @@ TEST_F(BirchModelTest, DataFetchForNonPrimaryUserClearsModel) {
   model->SetFileSuggestItems(MakeFileItemList(/*item_count=*/1));
 
   // Request a data fetch.
-  model->RequestBirchDataFetch(base::BindOnce(&TestModelConsumer::OnItemsReady,
+  model->RequestBirchDataFetch(/*is_post_login=*/false,
+                               base::BindOnce(&TestModelConsumer::OnItemsReady,
                                               base::Unretained(&consumer),
                                               /*id=*/"0"));
   // The fetch callback was called.
@@ -325,7 +328,8 @@ TEST_F(BirchModelTest, DisablingAllPrefsCausesNoFetch) {
   model->OverrideWeatherProviderForTest(std::move(weather_provider));
 
   // Request a data fetch.
-  model->RequestBirchDataFetch(base::BindOnce(&TestModelConsumer::OnItemsReady,
+  model->RequestBirchDataFetch(/*is_post_login=*/false,
+                               base::BindOnce(&TestModelConsumer::OnItemsReady,
                                               base::Unretained(&consumer),
                                               /*id=*/"0"));
 
@@ -361,7 +365,7 @@ TEST_F(BirchModelTest, EnablingOnePrefsCausesFetch) {
   model->OverrideWeatherProviderForTest(std::move(weather_provider));
 
   // Request a fetch.
-  model->RequestBirchDataFetch(base::DoNothing());
+  model->RequestBirchDataFetch(/*is_post_login=*/false, base::DoNothing());
 
   // Only calendar was fetched.
   auto& client = stub_birch_client_;
@@ -443,7 +447,8 @@ TEST_F(BirchModelTest, FetchWithOnePrefDisabledMarksDataFresh) {
   prefs->SetBoolean(prefs::kBirchUseWeather, false);
 
   // Request a fetch.
-  model->RequestBirchDataFetch(base::BindOnce(&TestModelConsumer::OnItemsReady,
+  model->RequestBirchDataFetch(/*is_post_login=*/false,
+                               base::BindOnce(&TestModelConsumer::OnItemsReady,
                                               base::Unretained(&consumer),
                                               /*id=*/"0"));
   // Reply with everything but weather.
@@ -509,7 +514,8 @@ TEST_F(BirchModelTest, MAYBE_DataFetchTimeout) {
   EXPECT_TRUE(model->IsDataFresh());
   EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());
 
-  model->RequestBirchDataFetch(base::BindOnce(&TestModelConsumer::OnItemsReady,
+  model->RequestBirchDataFetch(/*is_post_login=*/false,
+                               base::BindOnce(&TestModelConsumer::OnItemsReady,
                                               base::Unretained(&consumer),
                                               /*id=*/"0"));
   EXPECT_FALSE(model->IsDataFresh());
@@ -556,7 +562,8 @@ TEST_F(BirchModelWithoutWeatherTest, MAYBE_DataFetchTimeout) {
   EXPECT_TRUE(model->IsDataFresh());
   EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());
 
-  model->RequestBirchDataFetch(base::BindOnce(&TestModelConsumer::OnItemsReady,
+  model->RequestBirchDataFetch(/*is_post_login=*/false,
+                               base::BindOnce(&TestModelConsumer::OnItemsReady,
                                               base::Unretained(&consumer),
                                               /*id=*/"0"));
   EXPECT_FALSE(model->IsDataFresh());
@@ -565,6 +572,57 @@ TEST_F(BirchModelWithoutWeatherTest, MAYBE_DataFetchTimeout) {
   // Test that passing a short amount of time and setting some data does not
   // notify that items are ready.
   task_environment()->FastForwardBy(base::Milliseconds(500));
+  std::vector<BirchTabItem> tab_item_list;
+  tab_item_list.emplace_back(u"tab title", GURL("example.com"),
+                             base::Time::Now(), GURL("example.com/favicon_url"),
+                             "session_name",
+                             BirchTabItem::DeviceFormFactor::kDesktop);
+  model->SetRecentTabItems(tab_item_list);
+  EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());
+
+  // Test that passing enough time notifies that items are ready.
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+  EXPECT_THAT(consumer.items_ready_responses(), testing::ElementsAre("0"));
+
+  std::vector<std::unique_ptr<BirchItem>> all_items = model->GetAllItems();
+  EXPECT_EQ(all_items.size(), 2u);
+  EXPECT_EQ(all_items[0]->GetType(), BirchItemType::kTab);
+  EXPECT_EQ(all_items[1]->GetType(), BirchItemType::kFile);
+  EXPECT_FALSE(model->IsDataFresh());
+}
+
+// Test that the data fetch timeout is longer when requesting directly after
+// login.
+TEST_F(BirchModelTest, PostLoginDataFetchTimeout) {
+  BirchModel* model = Shell::Get()->birch_model();
+  TestModelConsumer consumer;
+  EXPECT_TRUE(model);
+
+  // Passing time and setting data before requesting a birch data fetch will
+  // not notify consumer.
+  task_environment()->FastForwardBy(base::Milliseconds(1000));
+
+  model->SetFileSuggestItems(MakeFileItemList(/*item_count=*/1));
+  model->SetRecentTabItems(std::vector<BirchTabItem>());
+  model->SetWeatherItems({});
+  model->SetCalendarItems({});
+  model->SetAttachmentItems({});
+  model->SetReleaseNotesItems({});
+
+  EXPECT_TRUE(model->IsDataFresh());
+  EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());
+
+  model->RequestBirchDataFetch(/*is_post_login=*/true,
+                               base::BindOnce(&TestModelConsumer::OnItemsReady,
+                                              base::Unretained(&consumer),
+                                              /*id=*/"0"));
+  EXPECT_FALSE(model->IsDataFresh());
+  EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());
+
+  // Test that passing a short amount of time and setting some data does not
+  // notify that items are ready.
+  task_environment()->FastForwardBy(base::Milliseconds(2500));
+
   std::vector<BirchTabItem> tab_item_list;
   tab_item_list.emplace_back(u"tab title", GURL("example.com"),
                              base::Time::Now(), GURL("example.com/favicon_url"),
@@ -595,7 +653,8 @@ TEST_F(BirchModelWithoutWeatherTest, AddItemNotifiesCallback) {
   EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());
 
   // Make a data fetch request and set fresh tab data.
-  model->RequestBirchDataFetch(base::BindOnce(&TestModelConsumer::OnItemsReady,
+  model->RequestBirchDataFetch(/*is_post_login=*/false,
+                               base::BindOnce(&TestModelConsumer::OnItemsReady,
                                               base::Unretained(&consumer),
                                               /*id=*/"0"));
   model->SetRecentTabItems(std::vector<BirchTabItem>());
@@ -619,7 +678,8 @@ TEST_F(BirchModelWithoutWeatherTest, AddItemNotifiesCallback) {
 
   // Request another data fetch and expect the consumer to be notified once
   // items are set again.
-  model->RequestBirchDataFetch(base::BindOnce(&TestModelConsumer::OnItemsReady,
+  model->RequestBirchDataFetch(/*is_post_login=*/false,
+                               base::BindOnce(&TestModelConsumer::OnItemsReady,
                                               base::Unretained(&consumer),
                                               /*id=*/"1"));
   model->SetRecentTabItems(std::vector<BirchTabItem>());
@@ -635,14 +695,16 @@ TEST_F(BirchModelTest, MultipleRequestsHaveIndependentTimeouts) {
   TestModelConsumer consumer;
   EXPECT_TRUE(model);
 
-  model->RequestBirchDataFetch(base::BindOnce(&TestModelConsumer::OnItemsReady,
+  model->RequestBirchDataFetch(/*is_post_login=*/false,
+                               base::BindOnce(&TestModelConsumer::OnItemsReady,
                                               base::Unretained(&consumer),
                                               /*id=*/"0"));
 
   task_environment()->FastForwardBy(base::Milliseconds(500));
   EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());
 
-  model->RequestBirchDataFetch(base::BindOnce(&TestModelConsumer::OnItemsReady,
+  model->RequestBirchDataFetch(/*is_post_login=*/false,
+                               base::BindOnce(&TestModelConsumer::OnItemsReady,
                                               base::Unretained(&consumer),
                                               /*id=*/"1"));
   task_environment()->FastForwardBy(base::Milliseconds(500));
@@ -652,7 +714,8 @@ TEST_F(BirchModelTest, MultipleRequestsHaveIndependentTimeouts) {
   EXPECT_THAT(consumer.items_ready_responses(), testing::ElementsAre("0", "1"));
   EXPECT_FALSE(model->IsDataFresh());
 
-  model->RequestBirchDataFetch(base::BindOnce(&TestModelConsumer::OnItemsReady,
+  model->RequestBirchDataFetch(/*is_post_login=*/false,
+                               base::BindOnce(&TestModelConsumer::OnItemsReady,
                                               base::Unretained(&consumer),
                                               /*id=*/"2"));
 
@@ -669,14 +732,16 @@ TEST_F(BirchModelTest, ResponseAfterFirstTimeout) {
   TestModelConsumer consumer;
   EXPECT_TRUE(model);
 
-  model->RequestBirchDataFetch(base::BindOnce(&TestModelConsumer::OnItemsReady,
+  model->RequestBirchDataFetch(/*is_post_login=*/false,
+                               base::BindOnce(&TestModelConsumer::OnItemsReady,
                                               base::Unretained(&consumer),
                                               /*id=*/"0"));
 
   task_environment()->FastForwardBy(base::Milliseconds(500));
   EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());
 
-  model->RequestBirchDataFetch(base::BindOnce(&TestModelConsumer::OnItemsReady,
+  model->RequestBirchDataFetch(/*is_post_login=*/false,
+                               base::BindOnce(&TestModelConsumer::OnItemsReady,
                                               base::Unretained(&consumer),
                                               /*id=*/"1"));
   task_environment()->FastForwardBy(base::Milliseconds(500));
@@ -707,7 +772,8 @@ TEST_F(BirchModelTest, ResponseAfterFirstTimeout) {
   EXPECT_THAT(consumer.items_ready_responses(), testing::ElementsAre("0", "1"));
   EXPECT_EQ(model->GetAllItems().size(), 6u);
 
-  model->RequestBirchDataFetch(base::BindOnce(&TestModelConsumer::OnItemsReady,
+  model->RequestBirchDataFetch(/*is_post_login=*/false,
+                               base::BindOnce(&TestModelConsumer::OnItemsReady,
                                               base::Unretained(&consumer),
                                               /*id=*/"2"));
   EXPECT_FALSE(model->IsDataFresh());

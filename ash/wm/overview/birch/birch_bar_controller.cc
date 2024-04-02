@@ -157,6 +157,7 @@ void BirchBarController::MaybeFetchDataFromModel() {
     // Fetching data from model.
     data_fetch_in_progress_ = true;
     birch_model->RequestBirchDataFetch(
+        /*is_post_login=*/from_pine_service_,
         base::BindOnce(&BirchBarController::OnItemsFetchedFromModel,
                        weak_ptr_factory_.GetWeakPtr()));
   } else if (!birch_model_observer_.IsObserving()) {

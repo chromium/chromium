@@ -103,7 +103,8 @@ TEST_F(BirchWeatherProviderTest, GetWeather) {
   ambient_backend_controller_->SetWeatherInfo(info);
 
   base::RunLoop run_loop;
-  birch_model->RequestBirchDataFetch(run_loop.QuitClosure());
+  birch_model->RequestBirchDataFetch(/*is_post_login=*/false,
+                                     run_loop.QuitClosure());
   EXPECT_TRUE(birch_model->GetWeatherForTest().empty());
   run_loop.Run();
 
@@ -127,7 +128,8 @@ TEST_F(BirchWeatherProviderTest, GetWeatherWaitsForRefreshTokens) {
   ambient_backend_controller_->SetWeatherInfo(info);
 
   base::RunLoop run_loop;
-  birch_model->RequestBirchDataFetch(run_loop.QuitClosure());
+  birch_model->RequestBirchDataFetch(/*is_post_login=*/false,
+                                     run_loop.QuitClosure());
   run_loop.Run();
 
   // The provider used the client to wait for refresh tokens.
@@ -160,7 +162,8 @@ TEST_F(BirchWeatherProviderTest, WeatherNotFetchedWhenGeolocationDisabled) {
 
   // Fetch birch data.
   base::RunLoop run_loop;
-  birch_model->RequestBirchDataFetch(run_loop.QuitClosure());
+  birch_model->RequestBirchDataFetch(/*is_post_login=*/false,
+                                     run_loop.QuitClosure());
   EXPECT_TRUE(birch_model->GetWeatherForTest().empty());
   run_loop.Run();
 
@@ -179,7 +182,8 @@ TEST_F(BirchWeatherProviderTest, GetWeatherInCelsius) {
   ambient_backend_controller_->SetWeatherInfo(std::move(info));
 
   base::RunLoop run_loop;
-  birch_model->RequestBirchDataFetch(run_loop.QuitClosure());
+  birch_model->RequestBirchDataFetch(/*is_post_login=*/false,
+                                     run_loop.QuitClosure());
   EXPECT_TRUE(birch_model->GetWeatherForTest().empty());
   run_loop.Run();
 
@@ -195,7 +199,8 @@ TEST_F(BirchWeatherProviderTest, NoWeatherInfo) {
   auto* birch_model = Shell::Get()->birch_model();
 
   base::RunLoop run_loop;
-  birch_model->RequestBirchDataFetch(run_loop.QuitClosure());
+  birch_model->RequestBirchDataFetch(/*is_post_login=*/false,
+                                     run_loop.QuitClosure());
   run_loop.Run();
 
   EXPECT_TRUE(birch_model->GetWeatherForTest().empty());
@@ -211,7 +216,8 @@ TEST_F(BirchWeatherProviderTest, WeatherWithNoIcon) {
   ambient_backend_controller_->SetWeatherInfo(std::move(info));
 
   base::RunLoop run_loop;
-  birch_model->RequestBirchDataFetch(run_loop.QuitClosure());
+  birch_model->RequestBirchDataFetch(/*is_post_login=*/false,
+                                     run_loop.QuitClosure());
   run_loop.Run();
 
   EXPECT_TRUE(birch_model->GetWeatherForTest().empty());
@@ -228,7 +234,8 @@ TEST_F(BirchWeatherProviderTest, WeatherWithInvalidIcon) {
   ambient_backend_controller_->SetWeatherInfo(std::move(info));
 
   base::RunLoop run_loop;
-  birch_model->RequestBirchDataFetch(run_loop.QuitClosure());
+  birch_model->RequestBirchDataFetch(/*is_post_login=*/false,
+                                     run_loop.QuitClosure());
   run_loop.Run();
 
   EXPECT_TRUE(birch_model->GetWeatherForTest().empty());
@@ -247,7 +254,8 @@ TEST_F(BirchWeatherProviderTest, WeatherIconDownloadFailure) {
   image_downloader_->set_should_fail(true);
 
   base::RunLoop run_loop;
-  birch_model->RequestBirchDataFetch(run_loop.QuitClosure());
+  birch_model->RequestBirchDataFetch(/*is_post_login=*/false,
+                                     run_loop.QuitClosure());
   run_loop.Run();
 
   EXPECT_TRUE(birch_model->GetWeatherForTest().empty());
@@ -263,7 +271,8 @@ TEST_F(BirchWeatherProviderTest, WeatherWithNoTemperature) {
   ambient_backend_controller_->SetWeatherInfo(std::move(info));
 
   base::RunLoop run_loop;
-  birch_model->RequestBirchDataFetch(run_loop.QuitClosure());
+  birch_model->RequestBirchDataFetch(/*is_post_login=*/false,
+                                     run_loop.QuitClosure());
   run_loop.Run();
 
   EXPECT_TRUE(birch_model->GetWeatherForTest().empty());
@@ -279,7 +288,8 @@ TEST_F(BirchWeatherProviderTest, WeatherWithNoDecription) {
   ambient_backend_controller_->SetWeatherInfo(std::move(info));
 
   base::RunLoop run_loop;
-  birch_model->RequestBirchDataFetch(run_loop.QuitClosure());
+  birch_model->RequestBirchDataFetch(/*is_post_login=*/false,
+                                     run_loop.QuitClosure());
   run_loop.Run();
 
   EXPECT_TRUE(birch_model->GetWeatherForTest().empty());
@@ -296,7 +306,8 @@ TEST_F(BirchWeatherProviderTest, RefetchWeather) {
   ambient_backend_controller_->SetWeatherInfo(info1);
 
   base::RunLoop run_loop;
-  birch_model->RequestBirchDataFetch(run_loop.QuitClosure());
+  birch_model->RequestBirchDataFetch(/*is_post_login=*/false,
+                                     run_loop.QuitClosure());
   run_loop.Run();
 
   auto& weather_items = birch_model->GetWeatherForTest();
@@ -314,7 +325,8 @@ TEST_F(BirchWeatherProviderTest, RefetchWeather) {
   ambient_backend_controller_->SetWeatherInfo(info2);
 
   base::RunLoop run_loop2;
-  birch_model->RequestBirchDataFetch(run_loop2.QuitClosure());
+  birch_model->RequestBirchDataFetch(/*is_post_login=*/false,
+                                     run_loop2.QuitClosure());
   run_loop2.Run();
 
   auto& updated_weather_items = birch_model->GetWeatherForTest();
@@ -336,7 +348,8 @@ TEST_F(BirchWeatherProviderTest, RefetchInvalidWeather) {
   ambient_backend_controller_->SetWeatherInfo(info1);
 
   base::RunLoop run_loop;
-  birch_model->RequestBirchDataFetch(run_loop.QuitClosure());
+  birch_model->RequestBirchDataFetch(/*is_post_login=*/false,
+                                     run_loop.QuitClosure());
   run_loop.Run();
 
   auto& weather_items = birch_model->GetWeatherForTest();
@@ -351,7 +364,8 @@ TEST_F(BirchWeatherProviderTest, RefetchInvalidWeather) {
   ambient_backend_controller_->SetWeatherInfo(info2);
 
   base::RunLoop run_loop2;
-  birch_model->RequestBirchDataFetch(run_loop2.QuitClosure());
+  birch_model->RequestBirchDataFetch(/*is_post_login=*/false,
+                                     run_loop2.QuitClosure());
   run_loop2.Run();
 
   EXPECT_TRUE(birch_model->GetWeatherForTest().empty());

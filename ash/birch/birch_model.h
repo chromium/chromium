@@ -51,9 +51,11 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Sends a request to the birch keyed service to fetch data into the model.
+  // `is_post_login` determines fetch timeout depending on whether this request
+  // is made post login.
   // `callback` will run once either all data is fresh or the request timeout
   // has expired.
-  void RequestBirchDataFetch(base::OnceClosure callback);
+  void RequestBirchDataFetch(bool is_post_login, base::OnceClosure callback);
 
   void SetCalendarItems(const std::vector<BirchCalendarItem>& calendar_items);
   void SetAttachmentItems(
