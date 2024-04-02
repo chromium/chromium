@@ -8,6 +8,7 @@ import '//resources/cr_elements/cr_grid/cr_grid.js';
 import '//resources/cr_components/managed_dialog/managed_dialog.js';
 
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
+import {assert} from '//resources/js/assert.js';
 import {hexColorToSkColor, skColorToRgba} from '//resources/js/color_utils.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
@@ -75,8 +76,8 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
   protected mainColor_: SkColor|null = null;
   protected greyDefaultColor_: Color = EMPTY_COLOR;
   protected colors_: ChromeColor[] = [];
-  private theme_: Theme;
-  protected selectedColor_: SelectedColor;
+  private theme_?: Theme;
+  protected selectedColor_: SelectedColor = {type: ColorType.NONE};
   protected isDefaultColorSelected_: boolean = false;
   protected isGreyDefaultColorSelected_: boolean = false;
   protected isMainColorSelected_: boolean = false;
@@ -92,7 +93,8 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
       document.documentElement.hasAttribute('chrome-refresh-2023');
   protected columns: number = 4;
 
-  private handler_: ThemeColorPickerHandlerRemote;
+  private handler_: ThemeColorPickerHandlerRemote =
+      ThemeColorPickerBrowserProxy.getInstance().handler;
 
   constructor() {
     super();
@@ -108,7 +110,6 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.handler_ = ThemeColorPickerBrowserProxy.getInstance().handler;
     this.setThemeListenerId_ =
         ThemeColorPickerBrowserProxy.getInstance()
             .callbackRouter.setTheme.addListener((theme: Theme) => {
@@ -167,6 +168,7 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
   }
 
   private computeDefaultColor_(): Color {
+    assert(this.theme_);
     if (this.isChromeRefresh2023_) {
       return this.theme_.isDarkMode ? DARK_BASELINE_BLUE_COLOR :
                                       LIGHT_BASELINE_BLUE_COLOR;
@@ -175,11 +177,13 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
   }
 
   private computeGreyDefaultColor_(): Color {
+    assert(this.theme_);
     return this.theme_.isDarkMode ? DARK_BASELINE_GREY_COLOR :
                                     LIGHT_BASELINE_GREY_COLOR;
   }
 
   private computeMainColor_(): SkColor|null {
+    assert(this.theme_);
     return this.theme_.backgroundImageMainColor || null;
   }
 
@@ -203,8 +207,8 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
     }
     if (this.colors_.find(
             (color: ChromeColor) =>
-                color.seed.value === this.theme_.seedColor.value &&
-                color.variant === this.theme_.browserColorVariant)) {
+                color.seed.value === this.theme_!.seedColor.value &&
+                color.variant === this.theme_!.browserColorVariant)) {
       return {
         type: ColorType.CHROME,
         chromeColor: this.theme_.seedColor,
@@ -296,7 +300,7 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
 
     const index =
         Number.parseInt((e.target as HTMLElement).dataset['index']!, 10);
-    const color = this.colors_[index];
+    const color = this.colors_[index]!;
     this.handler_.setSeedColor(color.seed, color.variant);
   }
 
@@ -335,6 +339,7 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
     if (!this.isCustomColorSelected_) {
       return;
     }
+    assert(this.theme_);
     this.customColor_ = {
       background: this.theme_.backgroundColor,
       foreground: this.theme_.foregroundColor!,
@@ -347,6 +352,7 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
   }
 
   private async updateColors_() {
+    assert(this.theme_);
     this.colors_ =
         (await this.handler_.getChromeColors(this.theme_.isDarkMode, false))
             .colors;

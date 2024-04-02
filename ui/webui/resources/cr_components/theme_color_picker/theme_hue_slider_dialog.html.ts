@@ -1,3 +1,12 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import type {ThemeHueSliderDialogElement} from './theme_hue_slider_dialog.js';
+
+export function getHtml(this: ThemeHueSliderDialogElement) {
+  return html`
 <dialog id="dialog">
   <div id="header">
     <h2 id="title">${this.i18n('hueSliderTitle')}</h2>
@@ -16,4 +25,5 @@
       .style="--hue-gradient_: ${this.hueGradient_}; --knob-hue_: ${this.knobHue_}"
       aria-labelledby="title">
   </cr-slider>
-</dialog>
+</dialog>`;
+}
