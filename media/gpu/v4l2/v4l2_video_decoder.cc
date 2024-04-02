@@ -774,6 +774,7 @@ CroStatus V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
 CroStatus V4L2VideoDecoder::SetExtCtrls10Bit(const gfx::Size& size) {
   struct v4l2_ext_control ctrl;
   std::vector<struct v4l2_ext_control> ctrls;
+  struct v4l2_ctrl_hevc_sps v4l2_sps;
 
   if (input_format_fourcc_ == V4L2_PIX_FMT_HEVC_SLICE) {
     VLOGF(1) << "Setting EXT_CTRLS for 10-bit HEVC";
@@ -781,7 +782,6 @@ CroStatus V4L2VideoDecoder::SetExtCtrls10Bit(const gfx::Size& size) {
     // until the SPS data is sent in to indicate 10-bit content. We also set the
     // size and chroma format since that should be all the information needed in
     // order to know the format.
-    struct v4l2_ctrl_hevc_sps v4l2_sps;
     memset(&v4l2_sps, 0, sizeof(v4l2_sps));
     v4l2_sps.pic_width_in_luma_samples = size.width();
     v4l2_sps.pic_height_in_luma_samples = size.height();
