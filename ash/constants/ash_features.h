@@ -670,8 +670,6 @@ BASE_DECLARE_FEATURE(kOsSettingsAppNotificationsPage);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kOsSettingsDeprecateDnsDialog);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kOsSettingsDeprecateSyncMetricsToggle);
-COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kOsSettingsRevampWayfinding);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kOsSyncConsentRevamp);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kOverviewDeskNavigation);
@@ -1191,8 +1189,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeRemoveShutdownButtonEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeTouchpadScrollEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeDisplaySizeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOsSettingsDeprecateDnsDialogEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsOsSettingsDeprecateSyncMetricsToggleEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOsSettingsRevampWayfindingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOsSyncConsentRevampEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOverviewDeskNavigationEnabled();

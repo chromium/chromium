@@ -78,10 +78,6 @@ void AddSyncControlsStrings(content::WebUIDataSource* html_source) {
       "appsToggleSharingEnabled",
       base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing) &&
           crosapi::browser_util::IsLacrosEnabled());
-
-  html_source->AddBoolean(
-      "osDeprecateSyncMetricsToggle",
-      ash::features::IsOsSettingsDeprecateSyncMetricsToggleEnabled());
 }
 
 const std::vector<SearchConcept>& GetCategorizedSyncSearchConcepts() {

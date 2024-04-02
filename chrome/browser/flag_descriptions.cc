@@ -6919,12 +6919,6 @@ const char kOsFeedbackDialogName[] =
 const char kOsFeedbackDialogDescription[] =
     "Enable the OS Feedback dialog on OOBE and login screen.";
 
-const char kOsSettingsDeprecateSyncMetricsToggleName[] =
-    "ChromeOS Settings Deprecate Sync Metrics Toggle";
-const char kOsSettingsDeprecateSyncMetricsToggleDescription[] =
-    "If enabled, deprecate the metrics in sync settings page in "
-    "ChromeOS Settings.";
-
 const char kOsSettingsRevampWayfindingName[] =
     "ChromeOS Settings Revamp: Wayfinding Improvements";
 const char kOsSettingsRevampWayfindingDescription[] =

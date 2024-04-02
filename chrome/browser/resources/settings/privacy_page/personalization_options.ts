@@ -291,13 +291,8 @@ export class SettingsPersonalizationOptionsElement extends
 
   // <if expr="chromeos_ash">
   private onMetricsReportingLinkClick_() {
-    if (loadTimeData.getBoolean('osDeprecateSyncMetricsToggle')) {
-      // TODO(wesokuhara) Deep link directly to metrics toggle via settingId.
-      this.navigateTo_(
-          loadTimeData.getString('osSettingsPrivacyHubSubpageUrl'));
-    } else {
-      this.navigateTo_(loadTimeData.getString('osSyncSetupSettingsUrl'));
-    }
+    // TODO(wesokuhara) Deep link directly to metrics toggle via settingId.
+    this.navigateTo_(loadTimeData.getString('osSettingsPrivacyHubSubpageUrl'));
   }
   // </if>
 

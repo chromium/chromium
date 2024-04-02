@@ -493,36 +493,11 @@ suite('OfficialBuild', function() {
 
   // <if expr="chromeos_ash">
   test(
-      'Metrics row links to OS sync page with deprecate sync metrics off',
-      function() {
+      'Metrics row links to OS Settings Privacy Hub subpage', function() {
         let targetUrl: string = '';
         testElement['navigateTo_'] = (url: string) => {
           targetUrl = url;
         };
-
-        loadTimeData.overrideValues({
-          osDeprecateSyncMetricsToggle: false,
-        });
-
-        const syncSetupUrl = loadTimeData.getString('osSyncSetupSettingsUrl');
-
-        testElement.$.metricsReportingLink.click();
-
-        assertEquals(syncSetupUrl, targetUrl);
-      });
-
-  test(
-      'Metrics row links to OS Settings Privacy Hub subpage with deprecate ' +
-          'sync metrics on',
-      function() {
-        let targetUrl: string = '';
-        testElement['navigateTo_'] = (url: string) => {
-          targetUrl = url;
-        };
-
-        loadTimeData.overrideValues({
-          osDeprecateSyncMetricsToggle: true,
-        });
 
         testElement.$.metricsReportingLink.click();
         const expectedUrl =

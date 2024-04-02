@@ -1533,9 +1533,6 @@ extern const char kOsFeedbackDialogDescription[];
 extern const char kOsSettingsAppNotificationsPageName[];
 extern const char kOsSettingsAppNotificationsPageDescription[];
 
-extern const char kOsSettingsDeprecateSyncMetricsToggleName[];
-extern const char kOsSettingsDeprecateSyncMetricsToggleDescription[];
-
 extern const char kOverviewDeskNavigationName[];
 extern const char kOverviewDeskNavigationDescription[];
 
