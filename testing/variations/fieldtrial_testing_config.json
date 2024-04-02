@@ -4067,6 +4067,21 @@
             ]
         }
     ],
+    "CollectAndroidFrameTimelineMetricsWebviewStudy": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20240320",
+                    "enable_features": [
+                        "CollectAndroidFrameTimelineMetrics"
+                    ]
+                }
+            ]
+        }
+    ],
     "Collections": [
         {
             "platforms": [
