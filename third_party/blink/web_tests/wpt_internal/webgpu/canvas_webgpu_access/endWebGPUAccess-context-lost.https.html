@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="./webgpu-helpers.js"></script>
+</head>
+
+<h1>Canvas WebGPU Access: endWebGPUAccess-context-lost</h1>
+
+<p>endWebGPUAccess() should be a no-op if the canvas context is lost.</p>
+
+<canvas id="c" width="50" height="50"></canvas>
+
+<script>
+
+promise_test(() => {
+    return with_webgpu((adapter, adapterInfo, device) => {
+      return test_endWebGPUAccess_context_lost(
+                 device,
+                 document.getElementById('c'),
+                 {});
+    });
+  },
+  'endWebGPUAccess() should be a no-op if the 2D context is lost.'
+);
+
+promise_test(() => {
+    return with_webgpu((adapter, adapterInfo, device) => {
+      return test_endWebGPUAccess_context_lost(
+                 device,
+                 new OffscreenCanvas(50, 50),
+                 {});
+    });
+  },
+  'endWebGPUAccess() should be a no-op if the offscreen context is lost.'
+);
+
+</script>

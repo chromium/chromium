@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="./webgpu-helpers.js"></script>
+</head>
+
+<h1>Canvas WebGPU Access: endWebGPUAccess-canvas-readback</h1>
+
+<p>endWebGPUAccess() should preserve texture changes on the 2D canvas.</p>
+
+<canvas id="c" width="50" height="50"></canvas>
+
+<script>
+
+promise_test(() => {
+    return with_webgpu((adapter, adapterInfo, device) => {
+      return test_endWebGPUAccess_canvas_readback(
+                 adapterInfo,
+                 device,
+                 document.getElementById('c'),
+                 {});
+    });
+  },
+  'endWebGPUAccess() should preserve texture changes on the 2D canvas.'
+);
+
+promise_test(() => {
+    return with_webgpu((adapter, adapterInfo, device) => {
+      return test_endWebGPUAccess_canvas_readback(
+                 adapterInfo,
+                 device,
+                 new OffscreenCanvas(50, 50),
+                 {});
+    });
+  },
+  'endWebGPUAccess() should preserve texture changes on a 2D offscreen canvas.'
+);
+
+</script>

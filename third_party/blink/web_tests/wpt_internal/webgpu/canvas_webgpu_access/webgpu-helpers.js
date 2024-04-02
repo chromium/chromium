@@ -24,6 +24,13 @@ function with_webgpu(callback) {
   });
 }
 
+/** Returns true if we are running on a Mac with a SwiftShader GPU adapter. */
+function isMacSwiftShader(adapterInfo) {
+  assert_true(adapterInfo instanceof GPUAdapterInfo);
+  return adapterInfo.architecture == 'swiftshader' &&
+         navigator.platform.startsWith('Mac');
+}
+
 /** getTextureFormat() should return RGBA8 or BGRA8 for a typical context. */
 function test_getTextureFormat_rgba8(device, canvas) {
   const ctx = canvas.getContext('2d');
@@ -135,5 +142,64 @@ function test_beginWebGPUAccess_balanced_access(device, canvas) {
   for (let count = 0; count < 10; ++count) {
     const tex = ctx.beginWebGPUAccess({device: device});
     ctx.endWebGPUAccess();
+  }
+}
+
+/** endWebGPUAccess() should preserve texture changes on the 2D canvas. */
+function test_endWebGPUAccess_canvas_readback(adapterInfo, device,
+                                              canvas, canvasFormat) {
+  // Skip this test on Mac Swiftshader due to "Invalid Texture" errors.
+  if (isMacSwiftShader(adapterInfo)) {
+    return;
+  }
+
+  // Convert the canvas to a texture.
+  const ctx = canvas.getContext('2d', canvasFormat);
+  const tex = ctx.beginWebGPUAccess({device: device});
+
+  // Fill the texture with a color containing distinct values in each channel.
+  const encoder = device.createCommandEncoder();
+  const pass = encoder.beginRenderPass({
+    colorAttachments: [{
+       view: tex.createView(),
+       loadOp: 'clear',
+       storeOp: 'store',
+       clearValue: { r: 64 / 255, g: 128 / 255, b: 192 / 255, a: 1.0 },
+    }]
+  });
+  pass.end();
+  device.queue.submit([encoder.finish()]);
+
+  // Finish our WebGPU pass and restore the canvas.
+  ctx.endWebGPUAccess();
+
+  // Verify that the canvas contains our chosen color across every pixel.
+  // The ImageData `data` array holds RGBA elements in uint8 format.
+  const imageData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
+  for (let idx = 0; idx < ctx.canvas.width * ctx.canvas.height * 4; idx += 4) {
+    assert_array_equals([imageData.data[idx + 0],
+                         imageData.data[idx + 1],
+                         imageData.data[idx + 2],
+                         imageData.data[idx + 3]],
+                        [0x40, 0x80, 0xC0, 0xFF],
+                        'RGBA @ ' + idx);
+  }
+}
+
+/** endWebGPUAccess() should be a no-op if the canvas context is lost. */
+function test_endWebGPUAccess_context_lost(device, canvas) {
+  // Begin a WebGPU access session.
+  const ctx = canvas.getContext('2d');
+  const tex = ctx.beginWebGPUAccess({device: device});
+
+  // Forcibly lose the canvas context.
+  assert_true(!!window.internals, 'Internal APIs unavailable.');
+  internals.forceLoseCanvasContext(canvas, '2d');
+
+  // End the WebGPU access session. Nothing should be thrown.
+  try {
+    ctx.endWebGPUAccess();
+  } catch {
+    assert_unreached('endWebGPUAccess should be safe when context is lost.');
   }
 }

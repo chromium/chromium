@@ -779,6 +779,10 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
 
   cc::PaintFlags GetClearFlags() const;
 
+  bool CopyGPUTextureToResourceProvider(
+      GPUTexture& src_texture,
+      CanvasResourceProvider& resource_provider);
+
   bool origin_tainted_by_content_;
   UsePaintCache path2d_use_paint_cache_;
   int num_readbacks_performed_ = 0;

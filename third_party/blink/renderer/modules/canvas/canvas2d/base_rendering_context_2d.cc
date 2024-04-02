@@ -65,6 +65,7 @@
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_layer_bridge.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
@@ -3448,7 +3449,64 @@ GPUTexture* BaseRenderingContext2D::beginWebGPUAccess(
   return webgpu_access_texture_;
 }
 
+bool BaseRenderingContext2D::CopyGPUTextureToResourceProvider(
+    GPUTexture& texture,
+    CanvasResourceProvider& resource_provider) {
+  // Get the GPU mailbox associated with the WebGPU access texture. This texture
+  // always originates from `beginWebGPUAccess`, so we should always find a
+  // shared-image mailbox here.
+  scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
+      texture.GetMailboxTexture();
+  CHECK(mailbox_texture);
+
+  const gpu::Mailbox& mailbox = mailbox_texture->GetMailbox();
+  CHECK(mailbox.IsSharedImage());
+
+  // Dissociating the mailbox texture from WebGPU forces the GPU queue to drain,
+  // and yields a sync token for OverwriteImage.
+  gpu::SyncToken ready_sync_token = mailbox_texture->Dissociate();
+  if (!ready_sync_token.HasData()) {
+    return false;
+  }
+
+  // Overwrite the resource provider's shared image with the WebGPU texture.
+  const bool unpack_flip_y = !resource_provider.IsOriginTopLeft();
+  gfx::Rect copy_rect(texture.width(), texture.height());
+
+  gpu::SyncToken completion_sync_token;
+  if (!resource_provider.OverwriteImage(mailbox, copy_rect, unpack_flip_y,
+                                        /*unpack_premultiply_alpha=*/false,
+                                        ready_sync_token,
+                                        completion_sync_token)) {
+    return false;
+  }
+
+  // Ensure that the mailbox texture lives until OverwriteImage fully completes.
+  // Note that `mailbox_texture->Dissociate` above has already set a completion
+  // sync token on the mailbox texture (our `ready_sync_token`), but we are
+  // deliberately replacing it here with a newer sync token that also includes
+  // completion of the image overwrite operation.
+  mailbox_texture->SetCompletionSyncToken(completion_sync_token);
+  return true;
+}
+
 void BaseRenderingContext2D::endWebGPUAccess(ExceptionState& exception_state) {
+  // If the context is lost or doesn't exist, this call should be a no-op.
+  // We don't want to throw an exception or attempt any changes if
+  // `endWebGPUAccess` is called during teardown.
+  CanvasRenderingContextHost* host = GetCanvasRenderingContextHost();
+  if (UNLIKELY(!host) || UNLIKELY(isContextLost())) {
+    return;
+  }
+
+  // Get the CanvasResourceProvider of this canvas. As above, if the canvas
+  // resource provider doesn't exist, this call becomes a no-op.
+  CanvasResourceProvider* resource_provider =
+      host->GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  if (UNLIKELY(!resource_provider)) {
+    return;
+  }
+
   // Prevent unbalanced calls to endWebGPUAccess without an earlier call to
   // beginWebGPUAccess.
   if (!webgpu_access_texture_) {
@@ -3458,17 +3516,14 @@ void BaseRenderingContext2D::endWebGPUAccess(ExceptionState& exception_state) {
     return;
   }
 
-  // Get the GPU mailbox associated with the WebGPU access texture. This texture
-  // always originates from `beginWebGPUAccess`, so we should always find a
-  // shared-image mailbox here.
-  scoped_refptr<WebGPUMailboxTexture> texture =
-      webgpu_access_texture_->GetMailboxTexture();
-  CHECK(texture);
+  // Copy the contents of the GPUTexture into this ResourceProvider.
+  if (!CopyGPUTextureToResourceProvider(*webgpu_access_texture_,
+                                        *resource_provider)) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Unable to replace canvas image.");
+  }
 
-  const gpu::Mailbox& mailbox = texture->GetMailbox();
-  CHECK(mailbox.IsSharedImage());
-
-  // TODO(crbug.com/41490345): copy this texture back onto the canvas.
+  // We are finished with the WebGPU texture and its associated device.
   webgpu_access_texture_ = nullptr;
 }
 
