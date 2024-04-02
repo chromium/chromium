@@ -26,10 +26,6 @@ BASE_FEATURE(kTestFeatureInvalid,
              "GrowthGramework",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTestFeaturePlaceholder,
-             "IPH_ScalableIphHelpAppBasedNudge",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 constexpr char kEventUsedKey[] = "event_used";
 constexpr char kEventTriggerKey[] = "event_trigger";
 constexpr char kEvent1Key[] = "event_1";
@@ -63,9 +59,9 @@ class CampaignsConfigurationProviderTest : public testing::Test {
   CampaignsConfigurationProvider provider_;
 };
 
-TEST_F(CampaignsConfigurationProviderTest, HasPrefixPlaceholderFeature) {
+TEST_F(CampaignsConfigurationProviderTest, HasPrefixValidFeature) {
   const auto prefixes =
-      provider_.MaybeProvideAllowedEventPrefixes(kTestFeaturePlaceholder);
+      provider_.MaybeProvideAllowedEventPrefixes(kTestFeatureValid);
 
   EXPECT_EQ(1u, prefixes.size());
   EXPECT_TRUE(prefixes.contains("ChromeOSAshGrowthCampaigns"));

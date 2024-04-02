@@ -72,10 +72,8 @@ const char* CampaignsConfigurationProvider::GetConfigurationSourceDescription()
 std::set<std::string>
 CampaignsConfigurationProvider::MaybeProvideAllowedEventPrefixes(
     const base::Feature& feature) const {
-  // TODO: b/332040194 - Add kIPHGrowthFramework to the kAllFeatures.
-  if (std::strcmp(
-          (&feature_engagement::kIPHScalableIphHelpAppBasedNudgeFeature)->name,
-          feature.name)) {
+  if (std::strcmp((&feature_engagement::kIPHGrowthFramework)->name,
+                  feature.name)) {
     return {};
   }
 
