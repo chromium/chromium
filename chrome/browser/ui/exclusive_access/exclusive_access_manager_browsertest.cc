@@ -2,14 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
-#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
 #include "content/public/test/browser_test.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "url/gurl.h"
 
 using ExclusiveAccessManagerTest = ExclusiveAccessTest;
 
@@ -115,4 +119,44 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessManagerPressAndHoldEscTest,
   // Timer won't start on key up event.
   SendEscapeToExclusiveAccessManager(/*is_key_down=*/false);
   EXPECT_FALSE(IsEscKeyHoldTimerRunning());
+}
+
+// Disable the test on ChromeOS because the Exclusive Access Bubble isn't shown
+// for browser fullscreen.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ShowExclusiveAccessBubble DISABLED_ShowExclusiveAccessBubble
+#else
+#define MAYBE_ShowExclusiveAccessBubble ShowExclusiveAccessBubble
+#endif  // IS_CHROMEOS
+IN_PROC_BROWSER_TEST_F(ExclusiveAccessManagerPressAndHoldEscTest,
+                       MAYBE_ShowExclusiveAccessBubble) {
+  // The bubble is shown after the browser enters fullscreen.
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
+  EXPECT_TRUE(IsFullscreenForBrowser());
+  EXPECT_TRUE(IsExclusiveAccessBubbleDisplayed());
+
+  // Setting the bubble type to none will hide the bubble.
+  GetExclusiveAccessManager()
+      ->context()
+      ->UpdateExclusiveAccessExitBubbleContent(
+          GURL(), ExclusiveAccessBubbleType::EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE,
+          base::DoNothing(),
+          /*notify_download=*/false, /*force_update=*/true);
+  EXPECT_FALSE(IsExclusiveAccessBubbleDisplayed());
+
+  // The bubble is not shown after a short press on Esc key.
+  SendEscapeToExclusiveAccessManager(/*is_key_down=*/true);
+  SendEscapeToExclusiveAccessManager(/*is_key_down=*/false);
+  EXPECT_FALSE(IsExclusiveAccessBubbleDisplayed());
+
+  {
+    auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+    base::TestMockTimeTaskRunner::ScopedContext scoped_context(
+        task_runner.get());
+
+    // The bubble is shown after pressing on the Esc key for 0.5 second.
+    SendEscapeToExclusiveAccessManager(/*is_key_down=*/true);
+    task_runner->FastForwardBy(base::Seconds(0.5));
+    EXPECT_TRUE(IsExclusiveAccessBubbleDisplayed());
+  }
 }

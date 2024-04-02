@@ -30,6 +30,10 @@ namespace {
 // Amount of time the user must press on Esc to make it a press-and-hold event.
 constexpr base::TimeDelta kHoldEscapeTime = base::Milliseconds(1500);
 
+// Amount of time the user must press on Esc to see the Exclusive Access Bubble
+// showing up.
+constexpr base::TimeDelta kShowExitBubbleTime = base::Milliseconds(500);
+
 constexpr char kHistogramFullscreenLockStateAtEntryViaApi[] =
     "WebCore.Fullscreen.LockStateAtEntryViaApi";
 constexpr char kHistogramFullscreenLockStateAtEntryViaBrowserUi[] =
@@ -161,6 +165,7 @@ bool ExclusiveAccessManager::HandleUserKeyEvent(
     if (event.GetType() == content::NativeWebKeyboardEvent::Type::kKeyUp &&
         esc_key_hold_timer_.IsRunning()) {
       esc_key_hold_timer_.Stop();
+      show_exit_bubble_timer_.Stop();
       for (auto controller : exclusive_access_controllers_) {
         controller->HandleUserReleasedEscapeEarly();
       }
@@ -171,6 +176,12 @@ bool ExclusiveAccessManager::HandleUserKeyEvent(
           FROM_HERE, kHoldEscapeTime,
           base::BindOnce(&ExclusiveAccessManager::HandleUserHeldEscape,
                          base::Unretained(this)));
+      show_exit_bubble_timer_.Start(
+          FROM_HERE, kShowExitBubbleTime,
+          base::BindOnce(
+              &ExclusiveAccessManager::UpdateExclusiveAccessExitBubbleContent,
+              base::Unretained(this), base::DoNothing(),
+              /*force_update=*/true));
     }
     // If the keyboard lock is enabled and requires press-and-hold Esc to exit,
     // do not pass the event to other controllers. Returns false as we don't

@@ -99,6 +99,10 @@ class ExclusiveAccessManager {
   // invokes `HandleUserHeldEscape()` when the timer is fired.
   base::OneShotTimer esc_key_hold_timer_;
 
+  // The timer starts and stops at the same time as `esc_key_hold_timer_` but is
+  // fired after a shorter delay.
+  base::OneShotTimer show_exit_bubble_timer_;
+
   const raw_ptr<ExclusiveAccessContext> exclusive_access_context_;
   FullscreenController fullscreen_controller_;
   KeyboardLockController keyboard_lock_controller_;
