@@ -162,21 +162,15 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
                   WaitForHide(ConfirmInfoBar::kInfoBarElementId));
 }
 
-// TODO(crbug.com/332287979): Flaky on ASAN/TSAN. Investigate and re-enable this
-// test.
-#if defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER)
-#define MAYBE_LogsMetrics DISABLED_LogsMetrics
-#else
-#define MAYBE_LogsMetrics LogsMetrics
-#endif
 IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
-                       MAYBE_LogsMetrics) {
+                       LogsMetrics) {
   base::HistogramTester histogram_tester;
   ShowPromptForTesting();
   RunTestSequence(WaitForShow(ConfirmInfoBar::kInfoBarElementId),
+                  // This flush is needed to prevent TSan builders from flaking.
+                  FlushEvents(),
                   PressButton(ConfirmInfoBar::kOkButtonElementId),
-                  WaitForHide(ConfirmInfoBar::kInfoBarElementId),
-                  FlushEvents());
+                  WaitForHide(ConfirmInfoBar::kInfoBarElementId));
 
   histogram_tester.ExpectTotalCount(
       "DefaultBrowser.InfoBar.TimesShownBeforeAccept", 1);
