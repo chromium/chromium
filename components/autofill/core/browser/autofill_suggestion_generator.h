@@ -173,11 +173,15 @@ class AutofillSuggestionGenerator {
   // Creates a suggestion for the given `credit_card`. `virtual_card_option`
   // suggests whether the suggestion is a virtual card option.
   // `card_linked_offer_available` indicates whether a card-linked offer is
-  // attached to the `credit_card`.
-  Suggestion CreateCreditCardSuggestion(const CreditCard& credit_card,
-                                        FieldType trigger_field_type,
-                                        bool virtual_card_option,
-                                        bool card_linked_offer_available) const;
+  // attached to the `credit_card`. `metadata_logging_context` contains card
+  // metadata related information used for metrics logging.
+  Suggestion CreateCreditCardSuggestion(
+      const CreditCard& credit_card,
+      FieldType trigger_field_type,
+      bool virtual_card_option,
+      bool card_linked_offer_available,
+      autofill_metrics::CardMetadataLoggingContext& metadata_logging_context)
+      const;
 
   // Dedupes the given profiles based on if one is a subset of the other for
   // suggestions represented by `field_types`. The function returns at most
@@ -243,10 +247,16 @@ class AutofillSuggestionGenerator {
                                            FieldType trigger_field_type) const;
 
   // Return the labels to be shown in the suggestion. Note this does not account
-  // for virtual cards or card-linked offers.
-  std::vector<std::vector<Suggestion::Text>> GetSuggestionLabelsForCard(
+  // for virtual cards or card-linked offers. Also writes to
+  // `metadata_logging_context` the instrument ids of credit cards for which
+  // benefits data is available. When displaying card benefits is disabled,
+  // `metadata_logging_context` will be populated but a benefit label will not
+  // be shown.
+  std::vector<std::vector<Suggestion::Text>> CreateSuggestionLabelsForCard(
       const CreditCard& credit_card,
-      FieldType trigger_field_type) const;
+      FieldType trigger_field_type,
+      autofill_metrics::CardMetadataLoggingContext& metadata_logging_context)
+      const;
 
   // Returns the benefit text to display in credit card suggestions if it is
   // available.
