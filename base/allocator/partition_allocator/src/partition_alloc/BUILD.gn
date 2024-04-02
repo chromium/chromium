@@ -138,16 +138,15 @@ component("raw_ptr") {
   configs += [ ":dependants_extra_warnings" ]
 }
 
-# Enables buildflag to use pool offset freelist features
-# in lieu of solely using encoded next entry pointers.
+# Changes the freelist implementation to use pointer offsets in lieu
+# of full-on pointers. Defaults to false, which implies the use of
+# "encoded next" freelist entry.
 #
-# Note: Enabling the buildflag is not enough to utilize
-# the feature. use_pool_offset_freelists in PartitionOptions
-# struct requires further manipulation in order to
-# to be enabled when configuring the allocator.
+# This is disabled because it ends up accessing fields from a null pointer. See
+# https://crrev.com/c/5379567/comment/9407f1ad_cf4c0ca4/
 #
 # Only usable when pointers are 64-bit.
-use_freelist_pool_offsets = has_64_bit_pointers
+use_freelist_pool_offsets = has_64_bit_pointers && false
 
 buildflag_header("partition_alloc_buildflags") {
   header = "partition_alloc_buildflags.h"
