@@ -10246,6 +10246,13 @@
                     "enable_features": [
                         "KeepAliveInBrowserMigration"
                     ]
+                },
+                {
+                    "name": "AttributionReportingInBrowserMigration",
+                    "enable_features": [
+                        "AttributionReportingInBrowserMigration",
+                        "KeepAliveInBrowserMigration"
+                    ]
                 }
             ]
         }
