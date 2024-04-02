@@ -22,42 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="OfflineIndicator.ConnectivityChanged.DeviceState.Offline"
-    enum="OfflineIndicatorSurfaceState" expires_after="2022-01-16">
-  <owner>curranmax@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
-  <owner>sinansahin@google.com</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    For OfflineIndicatorV2, records whether the native browser controls can be
-    animated and whether the omnibox is focused. Recorded when the device goes
-    offline.
-  </summary>
-</histogram>
-
-<histogram name="OfflineIndicator.ConnectivityChanged.DeviceState.Online"
-    enum="OfflineIndicatorSurfaceState" expires_after="2021-05-09">
-  <owner>curranmax@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
-  <owner>sinansahin@google.com</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    For OfflineIndicatorV2, records whether the native browser controls can be
-    animated and whether the omnibox is focused. Recorded when the device goes
-    online.
-  </summary>
-</histogram>
-
-<histogram name="OfflineIndicator.CTR" enum="OfflineIndicatorCTREvent"
-    expires_after="2021-01-25">
-  <owner>dimich@chromium.org</owner>
-  <owner>jianli@chromium.org</owner>
-  <summary>
-    Records events related to click through rate (CTR) calculation for Offline
-    Indicator UI. The CTR can be calculated by computing Clicked/Displayed.
-  </summary>
-</histogram>
-
 <histogram name="OfflineIndicator.ShownDurationV2" units="ms"
     expires_after="2022-04-17">
   <owner>curranmax@chromium.org</owner>
@@ -82,17 +46,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Counts the number of times an offline page is accessed. Events are reported
     per offline pages namespace.
-  </summary>
-</histogram>
-
-<histogram name="OfflinePages.Background.ImmediateStart.AvailableRequestCount"
-    units="units" expires_after="2021-06-25">
-  <owner>dougarnett@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Number of queued background load requests available for processing when
-    processing starts immediately (vs. scheduled). This is for non-svelte
-    devices (where svelte is determined by base::SysInfo::IsLowEnd()).
   </summary>
 </histogram>
 
@@ -135,21 +88,6 @@ chromium-metrics-reviews@google.com.
     are persisted to prefs and reported to the histogram only when the next UMA
     data upload is likely to succeed. For more details see:
     https://goo.gl/GJXwFe.
-  </summary>
-</histogram>
-
-<histogram name="OfflinePages.OfflineUsage.NotOfflineResilient"
-    enum="OfflinePagesOfflineUsage" expires_after="2022-04-17">
-  <owner>sclittle@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Counts user-days when Chrome was used in specific ways regarding navigation
-    to online and offline content. Buckets are mutually exclusive so that only
-    one bucket is incremented per reported day.
-
-    This metric is a mirror of OfflinePages.OfflineUsage but it doesn't use any
-    of the offline resilient mechanisms that one has. Ideally both should report
-    exactly the same values but it is expected this one will lose more samples.
   </summary>
 </histogram>
 
