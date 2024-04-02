@@ -1013,6 +1013,7 @@ BuildProtocolExemptedSetCookies(
       protocol_list->push_back(
           Network::ExemptedSetCookieWithReason::Create()
               .SetExemptionReason(std::move(exemption_reason))
+              .SetCookieLine(cookie.cookie_string)
               .SetCookie(BuildCookie(cookie.cookie.value()))
               .Build());
     }

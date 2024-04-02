@@ -4,7 +4,7 @@ Number of exempted cookies: 0
 Number of exempted cookies: 1
 {
     cookie : {
-        domain : example.test
+        domain : .example.test
         expires : -1
         httpOnly : false
         name : foo
@@ -19,6 +19,7 @@ Number of exempted cookies: 1
         sourceScheme : Secure
         value : bar
     }
+    cookieLine : foo=bar; Path=/; Domain=example.test; Secure; SameSite=None;
     exemptionReason : StorageAccess
 }
 

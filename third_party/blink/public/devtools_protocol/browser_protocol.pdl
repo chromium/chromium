@@ -6123,6 +6123,8 @@ domain Network
     properties
       # The reason the cookie was exempted.
       CookieExemptionReason exemptionReason
+      # The string representing this individual cookie as it would appear in the header.
+      string cookieLine
       # The cookie object representing the cookie.
       Cookie cookie
 
