@@ -11,7 +11,7 @@ import android.widget.LinearLayout;
 
 public class SampleActivity extends Activity {
     static {
-        System.loadLibrary("sample_lib");
+        System.loadLibrary("jni_zero_sample");
     }
 
     public void onCreate(Bundle b) {
