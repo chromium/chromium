@@ -252,6 +252,18 @@ DOMWebSocket* DOMWebSocket::Create(
     recordreplay::NewDependencyGraphNode(json.c_str());
   }
 
+  if (recordreplay::IsRecordingOrReplaying() && v8::IsMainThread()) {
+    std::string annotationContents;
+    if (recordreplay::IsReplaying()) {
+      base::Value::Dict info;
+      info.Set("kind", "create");
+      info.Set("socketId", websocket->record_replay_id_);
+      info.Set("url", url.Utf8());
+      base::JSONWriter::Write(info, &annotationContents);
+    }
+    recordreplay::OnAnnotation("DOMWebSocket", annotationContents.c_str());
+  }
+
   return websocket;
 }
 
@@ -764,6 +776,18 @@ void DOMWebSocket::DidError() {
   DVLOG(1) << "WebSocket " << this << " DidError()";
   ReflectBufferedAmountConsumption();
   common_.SetState(kClosed);
+
+  if (recordreplay::IsRecordingOrReplaying() && v8::IsMainThread()) {
+    std::string annotationContents;
+    if (recordreplay::IsReplaying()) {
+      base::Value::Dict info;
+      info.Set("kind", "onError");
+      info.Set("socketId", record_replay_id_);
+      base::JSONWriter::Write(info, &annotationContents);
+    }
+    recordreplay::OnAnnotation("DOMWebSocket", annotationContents.c_str());
+  }
+
   event_queue_->Dispatch(Event::Create(event_type_names::kError));
 }
 
@@ -800,6 +824,17 @@ void DOMWebSocket::DidClose(
   common_.SetState(kClosed);
 
   ReleaseChannel();
+
+  if (recordreplay::IsRecordingOrReplaying() && v8::IsMainThread()) {
+    std::string annotationContents;
+    if (recordreplay::IsReplaying()) {
+      base::Value::Dict info;
+      info.Set("kind", "onClose");
+      info.Set("socketId", record_replay_id_);
+      base::JSONWriter::Write(info, &annotationContents);
+    }
+    recordreplay::OnAnnotation("DOMWebSocket", annotationContents.c_str());
+  }
 
   event_queue_->Dispatch(
       MakeGarbageCollected<CloseEvent>(was_clean, code, reason));
