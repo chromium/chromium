@@ -28,6 +28,8 @@ bool ArcGraphicsJankDetector::IsEnoughSamplesToDetect(size_t num_samples) {
 
 void ArcGraphicsJankDetector::Reset() {
   stage_ = Stage::kWarmUp;
+  // TODO(matvore): do not use Now directly, as this forces unit tests to use it
+  // also.
   last_sample_time_ = base::Time::Now();
   warm_up_sample_cnt_ = kWarmUpSamples;
   period_fixed_ = false;
@@ -39,11 +41,7 @@ void ArcGraphicsJankDetector::SetPeriodFixed(const base::TimeDelta& period) {
   stage_ = Stage::kActive;
 }
 
-void ArcGraphicsJankDetector::OnSample() {
-  OnSample(base::Time::Now());
-}
-
-void ArcGraphicsJankDetector::OnSample(const base::Time& timestamp) {
+void ArcGraphicsJankDetector::OnSample(base::Time timestamp) {
   const base::TimeDelta delta = timestamp - last_sample_time_;
   last_sample_time_ = timestamp;
 

@@ -52,7 +52,7 @@ double CalcJanksPerMinute(const std::deque<int64_t>& presents,
                           const base::TimeDelta& duration) {
   int jank_count = 0;
   ArcGraphicsJankDetector jank_detector(base::BindRepeating(
-      [](int* out_count, const base::Time& timestamp) { (*out_count)++; },
+      [](int* out_count, base::Time timestamp) { (*out_count)++; },
       &jank_count));
 
   // Feed minimum samples into detector to obtain sampling rate.

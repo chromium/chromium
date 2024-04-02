@@ -204,11 +204,12 @@ void AddJanks(std::vector<BufferEvent>* events,
               EventType pulse_event_type,
               EventType jank_event_type) {
   // Detect rate first.
-  BufferEvents pulse_events;
+  std::vector<base::Time> pulse_events;
 
   for (const auto& ev : *events) {
     if (ev.type == pulse_event_type) {
-      pulse_events.emplace_back(ev);
+      pulse_events.emplace_back(base::Time::FromDeltaSinceWindowsEpoch(
+          base::Microseconds(ev.timestamp)));
     }
   }
   if (!ArcGraphicsJankDetector::IsEnoughSamplesToDetect(pulse_events.size())) {
@@ -216,11 +217,11 @@ void AddJanks(std::vector<BufferEvent>* events,
                  << pulse_events.size();
     return;
   }
-  SortBufferEventsByTimestamp(&pulse_events);
+  std::sort(pulse_events.begin(), pulse_events.end());
 
   ArcGraphicsJankDetector jank_detector(base::BindRepeating(
       [](EventType jank_event_type, BufferEvents* out_janks,
-         const base::Time& timestamp) {
+         base::Time timestamp) {
         out_janks->emplace_back(
             jank_event_type,
             timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds());
@@ -228,8 +229,7 @@ void AddJanks(std::vector<BufferEvent>* events,
       jank_event_type, events));
 
   for (const auto& it : pulse_events) {
-    jank_detector.OnSample(base::Time::FromDeltaSinceWindowsEpoch(
-        base::Microseconds(it.timestamp)));
+    jank_detector.OnSample(it);
     if (jank_detector.stage() == ArcGraphicsJankDetector::Stage::kActive)
       break;
   }
@@ -242,8 +242,7 @@ void AddJanks(std::vector<BufferEvent>* events,
   // Period is defined. Pass all samples to detect janks.
   jank_detector.SetPeriodFixed(jank_detector.period());
   for (const auto& it : pulse_events) {
-    jank_detector.OnSample(base::Time::FromDeltaSinceWindowsEpoch(
-        base::Microseconds(it.timestamp)));
+    jank_detector.OnSample(it);
   }
 
   SortBufferEventsByTimestamp(events);
