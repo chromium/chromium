@@ -65,6 +65,8 @@ const char kIOSDockingPromoNewUserInactiveThresholdHours[] =
     "IOSDockingPromoNewUserInactiveThresholdHours";
 const char kIOSDockingPromoOldUserInactiveThresholdHours[] =
     "IOSDockingPromoOldUserInactiveThresholdHours";
+const char kIOSDockingPromoUsesStartUtilities[] =
+    "IOSDockingPromoUsesStartUtilities";
 
 BASE_FEATURE(kIOSDockingPromo,
              "IOSDockingPromo",
@@ -448,6 +450,12 @@ int HoursInactiveForOldUsersUntilShowingDockingPromo() {
   return base::GetFieldTrialParamByFeatureAsInt(
       kIOSDockingPromo, kIOSDockingPromoOldUserInactiveThresholdHours,
       /*default_value=*/72);
+}
+
+bool IsDockingPromoUsingStartUtilities() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kIOSDockingPromo, kIOSDockingPromoUsesStartUtilities,
+      /*default=*/false);
 }
 
 bool IsWebChannelsEnabled() {

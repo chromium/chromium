@@ -68,6 +68,22 @@
     return;
   }
 
+  if (IsDockingPromoUsingStartUtilities()) {
+    for (SceneState* scene in _appState.foregroundScenes) {
+      const base::TimeDelta timeSinceLastForeground =
+          GetTimeSinceMostRecentTabWasOpenForSceneState(scene);
+
+      if (!CanShowDockingPromo(timeSinceLastForeground)) {
+        [self deregisterPromo];
+        return;
+      }
+    }
+
+    [self registerPromo];
+
+    return;
+  }
+
   // If the app was never foregrounded, do not register the Docking Promo.
   if (_appState.lastTimeInForeground.is_null()) {
     return;

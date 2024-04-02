@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_ui_handler.h"
+#import "ios/chrome/browser/ui/start_surface/start_surface_util.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
 @interface DockingPromoCoordinator () <ConfirmationAlertActionHandler,
@@ -78,14 +79,35 @@
 
   AppState* appState = self.browser->GetSceneState().appState;
 
-  base::TimeTicks lastTimeInForeground = appState.lastTimeInForeground.is_null()
-                                             ? base::TimeTicks::Now()
-                                             : appState.lastTimeInForeground;
+  base::TimeDelta timeSinceLastForeground = base::TimeDelta::Max();
 
-  base::TimeDelta timeSinceLastForeground =
-      base::FeatureList::IsEnabled(kIOSDockingPromoFixedTriggerLogicKillswitch)
-          ? (base::TimeTicks::Now() - lastTimeInForeground)
-          : (lastTimeInForeground - base::TimeTicks::Now());
+  if (IsDockingPromoUsingStartUtilities()) {
+    for (SceneState* scene in appState.foregroundScenes) {
+      const base::TimeDelta timeSinceLastForegroundForScene =
+          GetTimeSinceMostRecentTabWasOpenForSceneState(scene);
+
+      if (timeSinceLastForegroundForScene < timeSinceLastForeground) {
+        timeSinceLastForeground = timeSinceLastForegroundForScene;
+      }
+    }
+
+    // If the `timeSinceLastForeground` is never set, explicitly set it to the
+    // minimum available value, so the remainder of this method can evaluate
+    // safely.
+    if (timeSinceLastForeground == base::TimeDelta::Max()) {
+      timeSinceLastForeground = base::TimeDelta::Min();
+    }
+  } else {
+    base::TimeTicks lastTimeInForeground =
+        appState.lastTimeInForeground.is_null() ? base::TimeTicks::Now()
+                                                : appState.lastTimeInForeground;
+
+    timeSinceLastForeground =
+        base::FeatureList::IsEnabled(
+            kIOSDockingPromoFixedTriggerLogicKillswitch)
+            ? (base::TimeTicks::Now() - lastTimeInForeground)
+            : (lastTimeInForeground - base::TimeTicks::Now());
+  }
 
   self.mediator = [[DockingPromoMediator alloc]
         initWithPromosManager:promosManager
