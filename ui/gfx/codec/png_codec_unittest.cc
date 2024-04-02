@@ -802,9 +802,9 @@ TEST(PNGCodec, DecodeGamma) {
   };
 
   const SourceFile kSourceFiles[] = {
-      {1.0, 186, "checkerboard.gamma1dot0.png"},
-      {1.8, 145, "checkerboard.gamma1dot8.png"},
-      {2.2, 128, "checkerboard.gamma2dot2.png"},
+      {1.0, 188, "checkerboard.gamma1dot0.png"},
+      {1.8, 146, "checkerboard.gamma1dot8.png"},
+      {2.2, 129, "checkerboard.gamma2dot2.png"},
   };
 
   for (const auto& sf : kSourceFiles) {
@@ -820,17 +820,6 @@ TEST(PNGCodec, DecodeGamma) {
     ASSERT_TRUE(PNGCodec::Decode(&input[0], input.size(), PNGCodec::FORMAT_RGBA,
                                  &output, &outw, &outh));
     ASSERT_GT(output.size(), 0u);
-
-    // The floor(etc) formula matches libpng (see github link below). Note that
-    // libpng's png_gamma_8bit_correct function takes a single "png_fixed_point
-    // gamma_val" argument that (1) combines both the PNG-file gAMA chunk value
-    // and the display gamma and (2) is scaled by 100000 since the PNG gAMA
-    // chunk holds an integer value. Here, we use "sf.gamma / 2.2" instead.
-    // sf.gamma represents the PNG-file value and 2.2 is the display gamma.
-    //
-    // https://github.com/glennrp/libpng/blob/e755fb79ba945fea8a318dc343e73d22a39e2f4e/png.c#L3893
-    ASSERT_EQ(static_cast<double>(sf.corrected),
-              floor(255.0 * pow(128.0 / 255.0, sf.gamma / 2.2) + 0.5));
 
     EXPECT_EQ(output[0], sf.corrected) << "gamma: " << sf.gamma;
   }

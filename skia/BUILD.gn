@@ -339,6 +339,8 @@ component("skia") {
   sources += skia_encode_png_srcs
   sources += skia_encode_webp_srcs
   sources += [
+    "//third_party/skia/src/codec/SkEncodedInfo.cpp",
+    "//third_party/skia/src/codec/SkPngCodec.cpp",
     "//third_party/skia/src/fonts/SkFontMgr_indirect.cpp",
     "//third_party/skia/src/fonts/SkRemotableFontMgr.cpp",
     "//third_party/skia/src/ports/SkGlobalInitialization_default.cpp",
@@ -353,7 +355,6 @@ component("skia") {
     sources += skia_encode_jpeg_srcs
     public += skia_encode_jpeg_public
     sources += [
-      "//third_party/skia/src/codec/SkEncodedInfo.cpp",
       "//third_party/skia/src/codec/SkIcoCodec.cpp",
       "//third_party/skia/src/codec/SkJpegCodec.cpp",
       "//third_party/skia/src/codec/SkJpegDecoderMgr.cpp",
@@ -362,7 +363,6 @@ component("skia") {
       "//third_party/skia/src/codec/SkJpegSourceMgr.cpp",
       "//third_party/skia/src/codec/SkJpegUtility.cpp",
       "//third_party/skia/src/codec/SkParseEncodedOrigin.cpp",
-      "//third_party/skia/src/codec/SkPngCodec.cpp",
       "//third_party/skia/src/codec/SkWebpCodec.cpp",
       "//third_party/skia/src/codec/SkWuffsCodec.cpp",
       "//third_party/skia/src/ports/SkImageGenerator_skia.cpp",
