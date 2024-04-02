@@ -615,7 +615,6 @@ constexpr EngineAndTier engines_LI[] = {
     {SearchEngineTier::kTopEngines, &qwant},
     {SearchEngineTier::kRemainingEngines, &yahoo_emea},
     {SearchEngineTier::kRemainingEngines, &karma},
-    {SearchEngineTier::kRemainingEngines, &panda},
     {SearchEngineTier::kRemainingEngines, &you},
 };
 
