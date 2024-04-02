@@ -37,7 +37,10 @@ static bool allow_external_sampling_without_native_buffers_for_testing = false;
 //     on the texture target being 0.
 uint32_t ComputeTextureTargetForSharedImage(
     SharedImageMetadata metadata,
-    gfx::GpuMemoryBufferType client_gmb_type) {
+    gfx::GpuMemoryBufferType client_gmb_type,
+    scoped_refptr<SharedImageInterface> sii) {
+  CHECK(sii);
+
 #if BUILDFLAG(IS_IOS)
   // The target to use on IOS is always GL_TEXTURE_2D, regardless of whether
   // native buffers are being used or not.
@@ -58,8 +61,9 @@ uint32_t ComputeTextureTargetForSharedImage(
   bool uses_native_buffer = client_side_native_buffer_used ||
                             (metadata.usage & usages_requiring_native_buffer);
 
-  return uses_native_buffer ? GetPlatformSpecificTextureTarget()
-                            : GL_TEXTURE_2D;
+  return uses_native_buffer
+             ? sii->GetCapabilities().macos_specific_texture_target
+             : GL_TEXTURE_2D;
 #else
   // Check for external sampling.
   bool uses_external_sampler = metadata.format.PrefersExternalSampler() ||
@@ -175,7 +179,8 @@ ClientSharedImage::ClientSharedImage(
       sii_holder_(std::move(sii_holder)) {
   CHECK(!mailbox.IsZero());
   CHECK(sii_holder_);
-  texture_target_ = ComputeTextureTargetForSharedImage(metadata_, gmb_type);
+  texture_target_ = ComputeTextureTargetForSharedImage(metadata_, gmb_type,
+                                                       sii_holder_->Get());
 }
 
 ClientSharedImage::ClientSharedImage(
@@ -231,7 +236,7 @@ ClientSharedImage::ClientSharedImage(
   CHECK(!mailbox.IsZero());
   CHECK(sii_holder_);
   texture_target_ = ComputeTextureTargetForSharedImage(
-      metadata_, gpu_memory_buffer_->GetType());
+      metadata_, gpu_memory_buffer_->GetType(), sii_holder_->Get());
 }
 
 ClientSharedImage::~ClientSharedImage() = default;
