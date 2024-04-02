@@ -62,6 +62,8 @@ namespace {
 struct GetAllScreensMediaTestParameters {
   std::string base_page;
   bool expected_csp_acceptable;
+  std::string expected_error_name;
+  bool expected_script_should_load;
 };
 
 std::string ExtractError(const std::string& message) {
@@ -79,6 +81,15 @@ bool RunGetAllScreensMediaAndGetIds(content::WebContents* tab,
                                     std::string* error_name_out = nullptr) {
   EXPECT_TRUE(stream_ids.empty());
   EXPECT_TRUE(track_ids.empty());
+
+  auto run_get_all_screens_media_exists =
+      content::EvalJs(tab->GetPrimaryMainFrame(),
+                      "typeof runGetAllScreensMediaAndGetIds === 'function';")
+          .ExtractBool();
+  if (!run_get_all_screens_media_exists) {
+    *error_name_out = "ScriptNotLoadedError";
+    return false;
+  }
 
   std::string result = content::EvalJs(tab->GetPrimaryMainFrame(),
                                        "runGetAllScreensMediaAndGetIds();")
@@ -228,19 +239,34 @@ INSTANTIATE_TEST_SUITE_P(
     GetAllScreensMediaBrowserTest,
     ::testing::ValuesIn(std::vector<GetAllScreensMediaTestParameters>{
         {/*base_page=*/"/webrtc/webrtc_getallscreensmedia_valid_csp_test.html",
-         /*expected_csp_acceptable=*/true},
+         /*expected_csp_acceptable=*/true,
+         /*expected_error_name=*/"",
+         /*expected_script_should_load=*/true},
         {/*base_page=*/"/webrtc/"
                        "webrtc_getallscreensmedia_no_object_source_test.html",
-         /*expected_csp_acceptable=*/false},
+         /*expected_csp_acceptable=*/false,
+         /*expected_error_name=*/"NotAllowedError",
+         /*expected_script_should_load=*/true},
         {/*base_page=*/"/webrtc/"
                        "webrtc_getallscreensmedia_no_base_uri_test.html",
-         /*expected_csp_acceptable=*/false},
+         /*expected_csp_acceptable=*/false,
+         /*expected_error_name=*/"NotAllowedError",
+         /*expected_script_should_load=*/true},
         {/*base_page=*/"/webrtc/"
                        "webrtc_getallscreensmedia_no_script_source_test.html",
-         /*expected_csp_acceptable=*/false},
+         /*expected_csp_acceptable=*/false,
+         /*expected_error_name=*/"NotAllowedError",
+         /*expected_script_should_load=*/true},
         {/*base_page=*/"/webrtc/"
                        "webrtc_getallscreensmedia_no_trusted_types_test.html",
-         /*expected_csp_acceptable=*/false},
+         /*expected_csp_acceptable=*/false,
+         /*expected_error_name=*/"NotAllowedError",
+         /*expected_script_should_load=*/true},
+        {/*base_page=*/"/webrtc/"
+                       "webrtc_getallscreensmedia_invalid_csp_test.html",
+         /*expected_csp_acceptable=*/false,
+         /*expected_error_name=*/"ScriptNotLoadedError",
+         /*expected_script_should_load=*/false},
     }));
 
 IN_PROC_BROWSER_TEST_P(GetAllScreensMediaBrowserTest,
@@ -251,12 +277,13 @@ IN_PROC_BROWSER_TEST_P(GetAllScreensMediaBrowserTest,
   std::string error_name;
   const bool result = RunGetAllScreensMediaAndGetIds(contents_, stream_ids,
                                                      track_ids, &error_name);
-  if (GetParam().expected_csp_acceptable) {
+  const auto& param = GetParam();
+  if (param.expected_csp_acceptable) {
     EXPECT_TRUE(result);
     EXPECT_EQ(1u, track_ids.size());
   } else {
     EXPECT_FALSE(result);
-    EXPECT_EQ("NotAllowedError", error_name);
+    EXPECT_EQ(param.expected_error_name, error_name);
   }
 }
 
@@ -267,7 +294,8 @@ IN_PROC_BROWSER_TEST_P(GetAllScreensMediaBrowserTest,
   std::string error_name;
   const bool result = RunGetAllScreensMediaAndGetIds(contents_, stream_ids,
                                                      track_ids, &error_name);
-  if (GetParam().expected_csp_acceptable) {
+  const auto& param = GetParam();
+  if (param.expected_csp_acceptable) {
     EXPECT_TRUE(result);
     // If no screen is attached to a device, the |DisplayManager| will add a
     // default device. This same behavior is used in other places in Chrome that
@@ -277,7 +305,7 @@ IN_PROC_BROWSER_TEST_P(GetAllScreensMediaBrowserTest,
     EXPECT_EQ(1u, track_ids.size());
   } else {
     EXPECT_FALSE(result);
-    EXPECT_EQ("NotAllowedError", error_name);
+    EXPECT_EQ(param.expected_error_name, error_name);
   }
 }
 
@@ -291,7 +319,8 @@ IN_PROC_BROWSER_TEST_P(GetAllScreensMediaBrowserTest,
   std::string error_name;
   const bool result = RunGetAllScreensMediaAndGetIds(contents_, stream_ids,
                                                      track_ids, &error_name);
-  if (GetParam().expected_csp_acceptable) {
+  const auto& param = GetParam();
+  if (param.expected_csp_acceptable) {
     EXPECT_TRUE(result);
     // TODO(crbug.com/1404274): Adapt this test if a decision is made on whether
     // stream ids shall be shared or unique.
@@ -299,7 +328,7 @@ IN_PROC_BROWSER_TEST_P(GetAllScreensMediaBrowserTest,
     EXPECT_EQ(5u, track_ids.size());
   } else {
     EXPECT_FALSE(result);
-    EXPECT_EQ("NotAllowedError", error_name);
+    EXPECT_EQ(param.expected_error_name, error_name);
   }
 }
 
@@ -311,7 +340,8 @@ IN_PROC_BROWSER_TEST_P(GetAllScreensMediaBrowserTest,
   std::string error_name;
   const bool result = RunGetAllScreensMediaAndGetIds(contents_, stream_ids,
                                                      track_ids, &error_name);
-  if (GetParam().expected_csp_acceptable) {
+  const auto& param = GetParam();
+  if (param.expected_csp_acceptable) {
     EXPECT_TRUE(result);
     EXPECT_TRUE(result);
     ASSERT_EQ(1u, stream_ids.size());
@@ -320,7 +350,7 @@ IN_PROC_BROWSER_TEST_P(GetAllScreensMediaBrowserTest,
     EXPECT_TRUE(CheckScreenDetailedExists(contents_, *track_ids.begin()));
   } else {
     EXPECT_FALSE(result);
-    EXPECT_EQ("NotAllowedError", error_name);
+    EXPECT_EQ(param.expected_error_name, error_name);
   }
 }
 
@@ -334,7 +364,9 @@ IN_PROC_BROWSER_TEST_P(GetAllScreensMediaBrowserTest,
   std::string error_name;
   EXPECT_FALSE(RunGetAllScreensMediaAndGetIds(contents_, stream_ids, track_ids,
                                               &error_name));
-  EXPECT_EQ("NotAllowedError", error_name);
+  EXPECT_EQ(GetParam().expected_script_should_load ? "NotAllowedError"
+                                                   : "ScriptNotLoadedError",
+            error_name);
 }
 
 // Test that getDisplayMedia and getAllScreensMedia are independent,
