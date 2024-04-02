@@ -131,7 +131,8 @@ class UrlFilterUiTest : public InteractiveFamilyLiveTest,
   }
 };
 
-IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ParentBlocksPage) {
+// TODO(https://crbug.com/328036610): fails on win-live-tests-tester-rel
+IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, DISABLED_ParentBlocksPage) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildElementId);
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ChromeTestStateObserver,
                                       kSetSafeSitesStateObserver);
