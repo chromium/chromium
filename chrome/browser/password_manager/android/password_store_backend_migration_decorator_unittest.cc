@@ -11,6 +11,8 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "base/time/time.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/password_store.h"
@@ -97,6 +99,12 @@ class PasswordStoreBackendMigrationDecoratorTest : public testing::Test {
 
   void FastForwardUntilNoTasksRemain() {
     task_env_.FastForwardUntilNoTasksRemain();
+  }
+
+  void FastForwardBy(base::TimeDelta delta) { task_env_.FastForwardBy(delta); }
+
+  int GetPendingMainThreadTaskCount() {
+    return task_env_.GetPendingMainThreadTaskCount();
   }
 
  private:
@@ -513,6 +521,27 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
 
   EXPECT_CALL(completion_callback, Run(true));
   std::move(captured_android_backend_reply).Run(true);
+}
+
+TEST_F(PasswordStoreBackendMigrationDecoratorTest,
+       MigrationIsStartedWithDelayAfterInit) {
+  prefs().SetInteger(
+      prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          prefs::UseUpmLocalAndSeparateStoresState::kOffAndMigrationPending));
+
+  backend_migration_decorator()->InitBackend(
+      nullptr, /* remote_form_changes_received= */ base::DoNothing(),
+      /* sync_enabled_or_disabled_cb= */ base::DoNothing(),
+      /* completion= */ base::DoNothing());
+  // Migration should be scheduled.
+  EXPECT_EQ(1, GetPendingMainThreadTaskCount());
+
+  FastForwardBy(
+      base::Seconds(password_manager::features::
+                        GetLocalPasswordsMigrationToAndroidBackendDelay()));
+  // Migration should be started by now.
+  EXPECT_EQ(0, GetPendingMainThreadTaskCount());
 }
 
 }  // namespace password_manager
