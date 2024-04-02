@@ -8921,7 +8921,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"web-identity-digital-credentials",
      flag_descriptions::kWebIdentityDigitalCredentialsName,
-     flag_descriptions::kWebIdentityDigitalCredentialsDescription, kOsAndroid,
+     flag_descriptions::kWebIdentityDigitalCredentialsDescription, kOsAll,
      FEATURE_WITH_PARAMS_VALUE_TYPE(
          features::kWebIdentityDigitalCredentials,
          kWebIdentityDigitalIdentityCredentialVariations,
