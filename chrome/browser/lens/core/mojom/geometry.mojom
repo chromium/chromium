@@ -7,7 +7,7 @@ module lens.mojom;
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
 struct CenterRotatedBox {
-  // The box
+  // The box with x and y positions at the center.
   gfx.mojom.RectF box;
 
   // The angle of rotation around the center of the rect in radians. The
