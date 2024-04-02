@@ -29,6 +29,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
@@ -511,8 +512,9 @@ struct AttributionDataHostManagerImpl::HeaderPendingDecode {
         reporting_url(std::move(reporting_url)),
         verifications(std::move(verifications)),
         report_header_errors(report_header_errors) {
-    DCHECK_EQ(url::Origin::Create(this->reporting_origin->GetURL()),
-              url::Origin::Create(this->reporting_url));
+    CHECK_EQ(url::Origin::Create(this->reporting_origin->GetURL()),
+             url::Origin::Create(this->reporting_url),
+             base::NotFatalUntil::M128);
   }
 
   RegistrationType GetType() const {
@@ -617,7 +619,7 @@ class AttributionDataHostManagerImpl::Registrations {
   bool operator<(const Registrations& other) const { return Id() < other.Id(); }
 
   void CompleteRegistrations() {
-    DCHECK(!registrations_complete_);
+    CHECK(!registrations_complete_, base::NotFatalUntil::M128);
     registrations_complete_ = true;
   }
 
@@ -870,10 +872,11 @@ struct AttributionDataHostManagerImpl::PendingRegistrationData {
         reporting_origin(std::move(reporting_origin)),
         reporting_url(std::move(reporting_url)),
         verifications(std::move(verifications)) {
-    DCHECK_EQ(url::Origin::Create(this->reporting_origin->GetURL()),
-              url::Origin::Create(this->reporting_url));
-    DCHECK_EQ(this->headers.type == RegistrationType::kTrigger,
-              this->verifications.has_value());
+    CHECK_EQ(url::Origin::Create(this->reporting_origin->GetURL()),
+             url::Origin::Create(this->reporting_url),
+             base::NotFatalUntil::M128);
+    CHECK_EQ(this->headers.type == RegistrationType::kTrigger,
+             this->verifications.has_value(), base::NotFatalUntil::M128);
   }
 };
 
@@ -1043,7 +1046,7 @@ void AttributionDataHostManagerImpl::ParseHeader(
     base::flat_set<Registrations>::iterator it,
     HeaderPendingDecode pending_decode,
     Registrar registrar) {
-  DCHECK(it != registrations_.end());
+  CHECK(it != registrations_.end());
 
   switch (it->eligibility()) {
     case RegistrationEligibility::kSourceOrTrigger:
@@ -1129,7 +1132,7 @@ void AttributionDataHostManagerImpl::ParseHeader(
 void AttributionDataHostManagerImpl::HandleRegistrationData(
     base::flat_set<Registrations>::iterator it,
     PendingRegistrationData pending_registration_data) {
-  DCHECK(it != registrations_.end());
+  CHECK(it != registrations_.end());
 
   it->pending_registration_data().emplace_back(
       std::move(pending_registration_data));
@@ -1142,8 +1145,8 @@ void AttributionDataHostManagerImpl::HandleRegistrationData(
 
 void AttributionDataHostManagerImpl::HandleNextRegistrationData(
     base::flat_set<Registrations>::iterator it) {
-  DCHECK(it != registrations_.end());
-  DCHECK(!it->pending_registration_data().empty());
+  CHECK(it != registrations_.end());
+  CHECK(!it->pending_registration_data().empty());
 
   {
     auto& pending_registration_data = it->pending_registration_data().front();
@@ -1175,8 +1178,8 @@ void AttributionDataHostManagerImpl::OnInfoHeaderParsed(
     RegistrationsId id,
     InfoParseResult result) {
   auto it = registrations_.find(id);
-  DCHECK(it != registrations_.end());
-  DCHECK(!it->pending_registration_data().empty());
+  CHECK(it != registrations_.end());
+  CHECK(!it->pending_registration_data().empty());
 
   {
     auto& pending_registration_data = it->pending_registration_data().front();
@@ -1216,7 +1219,7 @@ void AttributionDataHostManagerImpl::HandleRegistrationInfo(
     base::flat_set<Registrations>::iterator it,
     PendingRegistrationData pending_registration_data,
     const attribution_reporting::RegistrationInfo& registration_info) {
-  DCHECK(it != registrations_.end());
+  CHECK(it != registrations_.end());
 
   const bool is_source =
       pending_registration_data.headers.type == RegistrationType::kSource;
@@ -1267,7 +1270,7 @@ void AttributionDataHostManagerImpl::HandleNextWebDecode(
     return;
   }
 
-  DCHECK(!registrations.pending_web_decodes().empty());
+  CHECK(!registrations.pending_web_decodes().empty());
 
   const auto& pending_decode = registrations.pending_web_decodes().front();
 
@@ -1285,7 +1288,7 @@ void AttributionDataHostManagerImpl::HandleNextOsDecode(
     return;
   }
 
-  DCHECK(!registrations.pending_os_decodes().empty());
+  CHECK(!registrations.pending_os_decodes().empty());
 
   const auto& pending_decode = registrations.pending_os_decodes().front();
 
@@ -1350,7 +1353,7 @@ void AttributionDataHostManagerImpl::NotifyNavigationRegistrationStarted(
     // when the navigation data host disconnects.
     auto [__, inserted] =
         ongoing_background_datahost_registrations_.emplace(navigation_id);
-    DCHECK(inserted);
+    CHECK(inserted, base::NotFatalUntil::M128);
 
     receivers_.Add(
         this, std::move(it->second),
@@ -1704,7 +1707,7 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
     SuitableOrigin reporting_origin,
     attribution_reporting::SourceRegistration data) {
   // This is validated by the Mojo typemapping.
-  DCHECK(reporting_origin.IsValid());
+  CHECK(reporting_origin.IsValid(), base::NotFatalUntil::M128);
 
   const RegistrationContext* context =
       GetReceiverRegistrationContextForSource();
@@ -1736,7 +1739,7 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
     attribution_reporting::TriggerRegistration data,
     std::vector<network::TriggerVerification> verifications) {
   // This is validated by the Mojo typemapping.
-  DCHECK(reporting_origin.IsValid());
+  CHECK(reporting_origin.IsValid(), base::NotFatalUntil::M128);
 
   const RegistrationContext* context =
       GetReceiverRegistrationContextForTrigger();
@@ -1834,7 +1837,7 @@ void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconData(
     return;
   }
 
-  DCHECK(!it->registrations_complete());
+  CHECK(!it->registrations_complete(), base::NotFatalUntil::M128);
   if (is_final_response) {
     it->CompleteRegistrations();
   }
@@ -1975,9 +1978,9 @@ void AttributionDataHostManagerImpl::OnWebHeaderParsed(
         trigger_verifications,
     data_decoder::DataDecoder::ValueOrError result) {
   auto registrations = registrations_.find(id);
-  DCHECK(registrations != registrations_.end());
+  CHECK(registrations != registrations_.end());
 
-  DCHECK(!registrations->pending_web_decodes().empty());
+  CHECK(!registrations->pending_web_decodes().empty());
   {
     const auto& pending_decode = registrations->pending_web_decodes().front();
     switch (type) {
@@ -2041,9 +2044,9 @@ void AttributionDataHostManagerImpl::OnOsHeaderParsed(
     RegistrationType registration_type,
     OsParseResult result) {
   auto registrations = registrations_.find(id);
-  DCHECK(registrations != registrations_.end());
+  CHECK(registrations != registrations_.end());
 
-  DCHECK(!registrations->pending_os_decodes().empty());
+  CHECK(!registrations->pending_os_decodes().empty());
   {
     auto registration_items =
         [&]() -> base::expected<
@@ -2098,7 +2101,7 @@ void AttributionDataHostManagerImpl::OnOsHeaderParsed(
 
 void AttributionDataHostManagerImpl::MaybeOnRegistrationsFinished(
     base::flat_set<Registrations>::const_iterator it) {
-  DCHECK(it != registrations_.end());
+  CHECK(it != registrations_.end());
   if (it->has_pending_decodes() || !it->registrations_complete()) {
     return;
   }
