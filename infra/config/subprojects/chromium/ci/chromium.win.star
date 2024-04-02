@@ -11,6 +11,7 @@ load("//lib/builders.star", "os", "reclient", "sheriff_rotations")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
+load("//lib/targets.star", "targets")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -483,4 +484,52 @@ ci.builder(
     reclient_bootstrap_env = {
         "RBE_ip_timeout": "10m",
     },
+)
+
+ci.builder(
+    name = "linux-win-cross-rel",
+    description_html = "Linux to Windows cross compile.",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "win",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+        build_gs_bucket = "chromium-win-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "ci/Win x64 Builder",
+            "win_cross",
+        ],
+    ),
+    targets = targets.bundle(
+        # TODO(crbug.com/332248571): Add same targets as Win Tests builders.
+        targets = ["base_unittests"],
+        additional_compile_targets = ["all"],
+        mixins = [
+            "chromium-tester-service-account",
+            "win10",
+            "x86-64",
+        ],
+    ),
+    os = os.LINUX_DEFAULT,
+
+    # TODO(crbug.com/332248571): Promote to main gardening rotation once green.
+    sheriff_rotations = args.ignore_default(None),
+    tree_closing = False,
+    console_view_entry = consoles.console_view_entry(
+        category = "misc",
+        short_name = "lxw",
+    ),
+    # TODO(crbug.com/332248571): Transfer ownership once green.
+    contact_team_email = "estaab@google.com",
 )

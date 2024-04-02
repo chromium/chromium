@@ -39,6 +39,22 @@ consoles.list_view(
 )
 
 try_.builder(
+    name = "linux-win-cross-rel",
+    description_html = "Linux to Windows cross compile.",
+    mirrors = ["ci/linux-win-cross-rel"],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/linux-win-cross-rel",
+            "dcheck_always_on",
+            "no_symbols",
+        ],
+    ),
+
+    # TODO(crbug.com/332248571): Transfer ownership once green.
+    contact_team_email = "estaab@google.com",
+)
+
+try_.builder(
     name = "win-annotator-rel",
     mirrors = ["ci/win-annotator-rel"],
     gn_args = gn_args.config(

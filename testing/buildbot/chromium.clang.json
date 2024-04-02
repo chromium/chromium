@@ -2250,7 +2250,7 @@
       }
     ]
   },
-  "linux-win_cross-rel": {
+  "linux-win-cross-clang-tot-rel": {
     "additional_compile_targets": [
       "all"
     ],

@@ -871,7 +871,6 @@
   'browser_tests': {
     'remove_from': [
       'CrWinAsan(dll)', # https://crbug.com/935598
-      'linux-win_cross-rel',
       'ToTLinuxTSan',  # https://crbug.com/368525
       # TODO(crbug.com/1171053): Enable the suite in 'Mac10.15 Tests' once it's
       # off CQ.
@@ -2256,7 +2255,6 @@
   },
   'crashpad_tests': {
     'remove_from': [
-      'linux-win_cross-rel', # https://crbug.com/762167
       # https://crbug.com/crashpad/304
       'Linux TSan Tests',
       'ToTLinuxTSan',
@@ -3463,7 +3461,6 @@
     # If you change this, make similar changes in ppapi_unittests
     'remove_from': [
       'ToTMacASan',  # The mac asan tot bot sets enable_nacl=false
-      'linux-win_cross-rel',  # Sets enable_nacl=false, https://crbug.com/774186
       'Linux TSan Tests',  # The TSan bot sets enable_nacl=false
       'Mac ASan 64 Tests (1)',  # The mac asan bot sets enable_nacl=false
       'linux-arm64-rel-cft',  # Not available on arm64.
@@ -3938,7 +3935,6 @@
     # If you change this, make similar changes in nacl_loader_unittests
     'remove_from': [
       'ToTMacASan',  # The mac asan tot bot sets enable_nacl=false
-      'linux-win_cross-rel',  # Sets enable_nacl=false, https://crbug.com/774186
       'Linux TSan Tests',  # The TSan bot sets enable_nacl=false
       'Mac ASan 64 Tests (1)',  # The mac asan bot sets enable_nacl=false
     ],

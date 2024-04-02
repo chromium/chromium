@@ -42,4 +42,4 @@ ci/ToTWinArm64PGO
 ci/ToTWindowsCoverage
 ci/ToTiOS
 ci/ToTiOSDevice
-ci/linux-win_cross-rel
+ci/linux-win-cross-clang-tot-rel

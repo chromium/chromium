@@ -444,7 +444,6 @@ exempted_from_description_builders = {
         "linux-updater-tester-rel",
         "linux-upload-perfetto",
         "linux-v4l2-codec-rel",
-        "linux-win_cross-rel",
         "linux-wpt-chromium-rel",
         "linux-wpt-content-shell-asan-fyi-rel",
         "linux-wpt-content-shell-fyi-rel",

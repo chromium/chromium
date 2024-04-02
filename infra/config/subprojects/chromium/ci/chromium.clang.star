@@ -6,6 +6,7 @@
 load("//lib/args.star", "args")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builder_health_indicators.star", "health_spec")
+load("//lib/builder_url.star", "linkify_builder")
 load("//lib/builders.star", "builders", "os", "reclient", "sheriff_rotations")
 load("//lib/branches.star", "branches")
 load("//lib/ci.star", "ci")
@@ -1280,7 +1281,11 @@ ci.builder(
 )
 
 ci.builder(
-    name = "linux-win_cross-rel",
+    name = "linux-win-cross-clang-tot-rel",
+    description_html = "Linux to Windows cross compile with Clang ToT. " +
+                       "Previously at {}.".format(
+                           linkify_builder("ci", "linux-win_cross-rel"),
+                       ),
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",

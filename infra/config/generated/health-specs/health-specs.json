@@ -10617,7 +10617,7 @@
           }
         ]
       },
-      "linux-win_cross-rel": {
+      "linux-win-cross-clang-tot-rel": {
         "contact_team_email": "lexan@google.com",
         "problem_specs": [
           {
@@ -10637,6 +10637,27 @@
             "score": 1,
             "thresholds": {
               "fail_rate": {}
+            }
+          }
+        ]
+      },
+      "linux-win-cross-rel": {
+        "contact_team_email": "estaab@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
             }
           }
         ]

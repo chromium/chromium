@@ -2230,7 +2230,7 @@
           'isolated_scripts': 'ios_clang_tot_device_tests'
         },
       },
-      'linux-win_cross-rel': {
+      'linux-win-cross-clang-tot-rel': {
         'mixins': [
           'win10',
         ],

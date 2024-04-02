@@ -181,7 +181,7 @@
     "ToTWindowsCoverage": "ci/ToTWindowsCoverage/gn-args.json",
     "ToTiOS": "ci/ToTiOS/gn-args.json",
     "ToTiOSDevice": "ci/ToTiOSDevice/gn-args.json",
-    "linux-win_cross-rel": "ci/linux-win_cross-rel/gn-args.json"
+    "linux-win-cross-clang-tot-rel": "ci/linux-win-cross-clang-tot-rel/gn-args.json"
   },
   "chromium.coverage": {
     "android-code-coverage": "ci/android-code-coverage/gn-args.json",
@@ -511,6 +511,7 @@
     "Win x64 Builder": "ci/Win x64 Builder/gn-args.json",
     "Win x64 Builder (dbg)": "ci/Win x64 Builder (dbg)/gn-args.json",
     "Windows deterministic": "ci/Windows deterministic/gn-args.json",
+    "linux-win-cross-rel": "ci/linux-win-cross-rel/gn-args.json",
     "win-arm64-dbg": "ci/win-arm64-dbg/gn-args.json",
     "win-arm64-rel": "ci/win-arm64-rel/gn-args.json"
   },
@@ -928,6 +929,7 @@
     "gpu-fyi-try-win10-nvidia-rel-64": "try/gpu-fyi-try-win10-nvidia-rel-64/gn-args.json",
     "gpu-fyi-try-win11-qualcomm-rel-64": "try/gpu-fyi-try-win11-qualcomm-rel-64/gn-args.json",
     "gpu-try-win-nvidia-dbg": "try/gpu-try-win-nvidia-dbg/gn-args.json",
+    "linux-win-cross-rel": "try/linux-win-cross-rel/gn-args.json",
     "win-annotator-rel": "try/win-annotator-rel/gn-args.json",
     "win-arm64-compile-dbg": "try/win-arm64-compile-dbg/gn-args.json",
     "win-arm64-dbg": "try/win-arm64-dbg/gn-args.json",
