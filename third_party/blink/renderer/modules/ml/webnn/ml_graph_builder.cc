@@ -749,18 +749,14 @@ MLOperand* BuildPool2d(MLGraphBuilder* builder,
                        ExceptionState& exception_state) {
   auto pool2d_attributes = ConvertToPool2dAttributes(options);
   if (!pool2d_attributes.has_value()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        WTF::String::FromUTF8(pool2d_attributes.error()));
+    exception_state.ThrowTypeError(String::FromUTF8(pool2d_attributes.error()));
     return nullptr;
   }
 
   auto validated_output = webnn::ValidatePool2dAndInferOutput(
       ConvertToComponentOperand(input), std::move(pool2d_attributes.value()));
   if (!validated_output.has_value()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        WTF::String::FromUTF8(validated_output.error()));
+    exception_state.ThrowTypeError(String::FromUTF8(validated_output.error()));
     return nullptr;
   }
   // Create pool2d operator and its output operand. Connect the pool2d operator
@@ -772,8 +768,7 @@ MLOperand* BuildPool2d(MLGraphBuilder* builder,
       builder, input->DataType(),
       Vector<uint32_t>(validated_output->dimensions), pool2d);
   if (!output.has_value()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      output.error());
+    exception_state.ThrowTypeError(output.error());
     return nullptr;
   }
   pool2d->Connect({input}, {output.value()});

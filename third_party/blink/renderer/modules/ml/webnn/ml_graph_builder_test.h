@@ -23,7 +23,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_lstm_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_data_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pad_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_reduce_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_softplus_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_split_options.h"
@@ -96,13 +95,6 @@ MLOperand* BuildPad(V8TestingScope& scope,
                     const Vector<uint32_t>& beginningPadding,
                     const Vector<uint32_t>& endingPadding,
                     const MLPadOptions* options = MLPadOptions::Create());
-
-MLOperand* BuildPool2d(
-    V8TestingScope& scope,
-    MLGraphBuilder* builder,
-    webnn::mojom::blink::Pool2d::Kind kind,
-    const MLOperand* input,
-    const MLPool2dOptions* options = MLPool2dOptions::Create());
 
 MLOperand* BuildGemm(V8TestingScope& scope,
                      MLGraphBuilder* builder,

@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_transpose_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_leaky_relu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pad_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_reduce_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_split_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_triangular_options.h"
@@ -1468,111 +1467,6 @@ TEST_P(MLGraphTest, HardSwishTest) {
                               .values = {-1.2, -0.6, 0.6, 1.2}},
                     .expected = {-0.36, -0.24, 0.36, 0.84}}
         .Test(*this, scope);
-  }
-}
-
-template <typename T>
-struct Pool2dTester {
-  webnn::mojom::blink::Pool2d::Kind kind;
-  OperandInfo<T> input;
-  Vector<T> expected;
-
-  void Test(MLGraphTest& helper,
-            V8TestingScope& scope,
-            MLPool2dOptions* options = MLPool2dOptions::Create()) {
-    auto* builder =
-        CreateMLGraphBuilder(scope.GetExecutionContext(),
-                             scope.GetScriptState(), scope.GetExceptionState());
-    auto* input_operand =
-        BuildInput(builder, "input", input.dimensions, input.data_type,
-                   scope.GetExceptionState());
-    auto* output_operand =
-        BuildPool2d(scope, builder, kind, input_operand, options);
-    auto [graph, error_name, error_message] =
-        helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    ASSERT_THAT(graph, testing::NotNull());
-
-    MLNamedArrayBufferViews inputs(
-        {{"input",
-          CreateArrayBufferViewForOperand(input_operand, input.values)}});
-    MLNamedArrayBufferViews outputs(
-        {{"output", CreateArrayBufferViewForOperand(output_operand)}});
-    std::tie(error_name, error_message) =
-        helper.ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_TRUE(error_name.IsNull());
-    auto results = GetArrayBufferViewValues<T>(outputs[0].second);
-    EXPECT_EQ(results, expected);
-  }
-};
-
-TEST_P(MLGraphTest, Pool2dTest) {
-  V8TestingScope scope;
-
-  // TODO: crbug.com/325598628 - Add tests for `kL2Pool2d`.
-
-  {
-    // Test averagePool2d operator for nhwc input layout.
-    auto* options = MLPool2dOptions::Create();
-    options->setLayout(V8MLInputOperandLayout::Enum::kNhwc);
-    options->setWindowDimensions({3, 3});
-    Pool2dTester<float>{
-        .kind = webnn::mojom::blink::Pool2d::Kind::kAveragePool2d,
-        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                  .dimensions = {1, 4, 4, 1},
-                  .values = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0,
-                             11.0, 12.0, 13.0, 14.0, 15.0, 16.0}},
-        .expected = {6.0, 7.0, 10.0, 11.0}}
-        .Test(*this, scope, options);
-  }
-  {
-    // Test global averagePool2d operator for nhwc input layout.
-    auto* options = MLPool2dOptions::Create();
-    options->setLayout(V8MLInputOperandLayout::Enum::kNhwc);
-    Pool2dTester<float>{
-        .kind = webnn::mojom::blink::Pool2d::Kind::kAveragePool2d,
-        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                  .dimensions = {1, 4, 4, 1},
-                  .values = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0,
-                             11.0, 12.0, 13.0, 14.0, 15.0, 16.0}},
-        .expected = {8.5}}
-        .Test(*this, scope, options);
-  }
-  {
-    // Test maxPool2d operator for nhwc input layout.
-    auto* options = MLPool2dOptions::Create();
-    options->setLayout(V8MLInputOperandLayout::Enum::kNhwc);
-    options->setWindowDimensions({3, 3});
-    Pool2dTester<float>{
-        .kind = webnn::mojom::blink::Pool2d::Kind::kMaxPool2d,
-        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                  .dimensions = {1, 4, 4, 1},
-                  .values = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0,
-                             11.0, 12.0, 13.0, 14.0, 15.0, 16.0}},
-        .expected = {11.0, 12.0, 15.0, 16.0}}
-        .Test(*this, scope, options);
-  }
-  {
-    // Test maxPool2d operator for explicit padding are not same as the
-    // calculated padding with kSameUpper, input size, window dimensions, stride
-    // and dilation that are used by CalculateConv2dPadding function.
-    auto* options = MLPool2dOptions::Create();
-    options->setLayout(V8MLInputOperandLayout::Enum::kNhwc);
-    // The paddings are {1, 1, 1, 1} with calculating by CalculateConv2dPadding
-    // function.
-    options->setPadding({2, 2, 1, 1});
-    options->setWindowDimensions({3, 3});
-    options->setStrides({2, 2});
-    Pool2dTester<float>{
-        .kind = webnn::mojom::blink::Pool2d::Kind::kMaxPool2d,
-        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                  .dimensions = {1, 7, 5, 1},
-                  .values = {2.0, 3.0, 2.0, 6.0, 9.0, 2.0, 3.0, 2.0, 6.0,
-                             9.0, 2.0, 3.0, 2.0, 6.0, 9.0, 2.0, 3.0, 2.0,
-                             6.0, 9.0, 2.0, 3.0, 2.0, 6.0, 9.0, 2.0, 3.0,
-                             2.0, 6.0, 9.0, 2.0, 3.0, 2.0, 6.0, 9.0}},
-        .expected = {3.0, 6.0, 9.0, 3.0, 6.0, 9.0, 3.0, 6.0, 9.0, 3.0, 6.0, 9.0,
-                     3.0, 6.0, 9.0}}
-        .Test(*this, scope, options);
   }
 }
 
