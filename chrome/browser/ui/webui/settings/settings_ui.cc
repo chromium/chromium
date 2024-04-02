@@ -523,6 +523,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "isIpProtectionV1Enabled",
       base::FeatureList::IsEnabled(privacy_sandbox::kIpProtectionUx) && false);
+  html_source->AddBoolean("isFingerprintingProtectionEnabled",
+                          base::FeatureList::IsEnabled(
+                              privacy_sandbox::kFingerprintingProtectionUx));
   auto* onboarding_service =
       TrackingProtectionOnboardingFactory::GetForProfile(profile);
   html_source->AddBoolean(

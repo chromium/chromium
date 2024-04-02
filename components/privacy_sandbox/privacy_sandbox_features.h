@@ -180,13 +180,17 @@ BASE_DECLARE_FEATURE(kPrivateAggregationDebugReportingCookieDeprecationTesting);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPrivacySandboxInternalsDevUI);
 
-// Enables IP Protection setting behavior.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kIpProtectionV1);
-
 // Enables fingerprinting protection setting behavior.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kFingerprintingProtectionSetting);
+
+// Enables fingerprinting protection setting UX.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kFingerprintingProtectionUx);
+
+// Enables IP Protection setting behavior.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kIpProtectionV1);
 
 // Enables showing IP Protection toggle on the settings page.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
