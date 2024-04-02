@@ -554,14 +554,14 @@ class AddNewAddressBubbleTest : public UnclassifiedFieldsTest {
     autofill_client()->GetPersonalDataManager()->SetAutofillProfileEnabled(
         true);
 
-    FormData form = CreateAndAttachUnclassifiedForm();
+    form_ = CreateAndAttachUnclassifiedForm();
     autofill_context_menu_manager()->set_params_for_testing(
-        CreateContextMenuParams(form.renderer_id, form.fields[0].renderer_id));
+        CreateContextMenuParams(form_.renderer_id,
+                                form_.fields[0].renderer_id));
     autofill_context_menu_manager()->AppendItems();
 
     ASSERT_EQ(AddressBubblesController::FromWebContents(web_contents()),
               nullptr);
-    EXPECT_CALL(*driver(), RendererShouldTriggerSuggestions).Times(0);
 
     autofill_context_menu_manager()->ExecuteCommand(
         IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS);
@@ -573,6 +573,10 @@ class AddNewAddressBubbleTest : public UnclassifiedFieldsTest {
   AddressBubblesController* bubble_controller() {
     return AddressBubblesController::FromWebContents(web_contents());
   }
+  const FormData& form() { return form_; }
+
+ private:
+  FormData form_;
 };
 
 // Tests that when the address manual fallback entry is selected and there are
@@ -588,14 +592,24 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Tests that the "Autofill.ManualFallback.AddNewAddressPromptShown" metric is
-// sent when the user accepts the prompt and saves an address via the editor.
+// sent when the user accepts the prompt and saves an address via the editor and
+// the manual fallback suggestions are triggered.
 IN_PROC_BROWSER_TEST_F(AddNewAddressBubbleTest,
-                       UnclassifiedFormShown_AddAddressMetricsAreSentOnSave) {
+                       UnclassifiedFormShown_AddAddressSave) {
+  EXPECT_CALL(
+      *driver(),
+      RendererShouldTriggerSuggestions(
+          FieldGlobalId{LocalFrameToken(main_rfh()->GetFrameToken().value()),
+                        form().fields[0].renderer_id},
+          AutofillSuggestionTriggerSource::kManualFallbackAddress));
+
+  PersonalDataChangedWaiter waiter(*personal_data_);
   base::HistogramTester histogram_tester;
 
   // Imitate the user's decision.
   bubble_controller()->OnUserDecision(
-      AutofillClient::AddressPromptUserDecision::kEditAccepted, std::nullopt);
+      AutofillClient::AddressPromptUserDecision::kEditAccepted,
+      test::GetFullProfile());
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.ManualFallback.AddNewAddressPromptShown",
@@ -605,6 +619,9 @@ IN_PROC_BROWSER_TEST_F(AddNewAddressBubbleTest,
       "Autofill.AddedNewAddress",
       autofill_metrics::AutofillManuallyAddedAddressSurface::kContextMenuPrompt,
       /*expected_bucket_count=*/1);
+
+  // Make sure the PDM's async work is done and the callbacks are called.
+  std::move(waiter).Wait();
 }
 
 // Tests that the "Autofill.ManualFallback.AddNewAddressPromptShown" metric is

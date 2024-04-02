@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/values.h"
@@ -299,6 +300,7 @@ void AutofillContextMenuManager::ExecuteFallbackForAddressesCommand(
         web_contents,
         base::BindOnce(
             [](PersonalDataManager* pdm,
+               base::WeakPtr<AutofillContextMenuManager> self,
                AutofillClient::AddressPromptUserDecision decision,
                base::optional_ref<const AutofillProfile> profile) {
               bool new_address_saved =
@@ -306,6 +308,31 @@ void AutofillContextMenuManager::ExecuteFallbackForAddressesCommand(
                   AutofillClient::AddressPromptUserDecision::kEditAccepted;
               if (new_address_saved && profile.has_value()) {
                 pdm->AddProfile(*profile);
+                pdm->AddChangeCallback(base::BindOnce(
+                    [](base::WeakPtr<AutofillContextMenuManager> self) {
+                      if (!self) {
+                        return;
+                      }
+
+                      content::RenderFrameHost* rfh =
+                          self->delegate_->GetRenderFrameHost();
+                      if (!rfh) {
+                        return;
+                      }
+                      ContentAutofillDriver* driver =
+                          ContentAutofillDriver::GetForRenderFrameHost(rfh);
+                      if (!driver) {
+                        return;
+                      }
+
+                      driver->browser_events().RendererShouldTriggerSuggestions(
+                          /*field_id=*/{driver->GetFrameToken(),
+                                        FieldRendererId(
+                                            self->params_.field_renderer_id)},
+                          AutofillSuggestionTriggerSource::
+                              kManualFallbackAddress);
+                    },
+                    self));
               }
 
               LogAddNewAddressPromptOutcome(
@@ -323,7 +350,7 @@ void AutofillContextMenuManager::ExecuteFallbackForAddressesCommand(
             },
             // `PersonalDataManager`, as a keyed service, will always outlive
             // the bubble, which is bound to a tab.
-            personal_data_manager_));
+            personal_data_manager_, weak_ptr_factory_.GetWeakPtr()));
   } else {
     driver.browser_events().RendererShouldTriggerSuggestions(
         /*field_id=*/{driver.GetFrameToken(),

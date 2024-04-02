@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_CONTEXT_MENU_MANAGER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/types/strong_alias.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -119,6 +120,8 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   const raw_ptr<ui::SimpleMenuModel> menu_model_;
   const raw_ptr<RenderViewContextMenuBase> delegate_;
   content::ContextMenuParams params_;
+
+  base::WeakPtrFactory<AutofillContextMenuManager> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill
