@@ -309,6 +309,10 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
   DCHECK([self.identityDiscButton imageForState:UIControlStateNormal]);
 }
 
+- (void)setAllowFontScaleAnimation:(BOOL)allowFontScaleAnimation {
+  _allowFontScaleAnimation = allowFontScaleAnimation;
+  self.headerView.allowFontScaleAnimation = allowFontScaleAnimation;
+}
 #pragma mark - Private
 
 // Initialize and add a search field tap target and a voice search button.

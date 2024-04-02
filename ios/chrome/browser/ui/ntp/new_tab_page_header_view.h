@@ -47,6 +47,10 @@
 // `YES` if Google is the default search engine.
 @property(nonatomic, assign) BOOL isGoogleDefaultSearchEngine;
 
+// Should be set to YES if an animation will run that requires animating the
+// font scale, for example, during a fakebox defocus animation.
+@property(nonatomic, assign) BOOL allowFontScaleAnimation;
+
 // Adds the separator to the searchField. Must be called after the searchField
 // is added as a subview.
 - (void)addSeparatorToSearchField:(UIView*)searchField;

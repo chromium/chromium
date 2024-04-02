@@ -67,6 +67,10 @@
 // ContentSuggestions.
 @property(nonatomic, strong, readonly) UIButton* identityDiscButton;
 
+// Should be set to YES if an animation will run that requires animating the
+// font scale, for example, during a fakebox defocus animation.
+@property(nonatomic, assign) BOOL allowFontScaleAnimation;
+
 // Animation to expand this header in response to focusing the omnibox to match
 // the fake omnibox with the omnibox's.
 - (void)expandHeaderForFocus;

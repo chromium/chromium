@@ -661,7 +661,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
 // Returns the font for the hint label at the given animation percent.
 - (UIFont*)hintLabelFontForPercent:(CGFloat)percent {
-  if (percent == 1) {
+  if (percent == 1 && !self.allowFontScaleAnimation) {
     return _hintLabelFontSmall;
   }
   return _hintLabelFontBig;
@@ -689,7 +689,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     searchHintLabel.font = font;
   }
 
-  if (percent == 1) {
+  if (percent == 1 && !self.allowFontScaleAnimation) {
     // When pinned, the small font is used without scaling down.
     _currentHintLabelScale = 1;
     searchHintLabel.transform = CGAffineTransformIdentity;

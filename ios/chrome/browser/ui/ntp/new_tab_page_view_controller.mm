@@ -157,6 +157,10 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
 // When set to YES, the scroll position wont be updated.
 @property(nonatomic, assign) BOOL inhibitScrollPositionUpdates;
 
+// YES if there is a currently running "shift down" / omnibox defocus animation
+// running.
+@property(nonatomic, assign) BOOL shiftDownInProgress;
+
 @end
 
 @implementation NewTabPageViewController {
@@ -1113,6 +1117,10 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
 
 // Shifts tiles down when defocusing the omnibox.
 - (void)shiftTilesDownForOmniboxDefocus {
+  if (self.shiftDownInProgress) {
+    return;
+  }
+  self.shiftDownInProgress = YES;
   if (IsSplitToolbarMode(self)) {
     [self.NTPContentDelegate onFakeboxBlur];
   }
@@ -1130,22 +1138,25 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
   if (self.collectionShiftingOffset == 0 || self.collectionView.dragging) {
     self.collectionShiftingOffset = 0;
     [self updateFakeOmniboxForScrollPosition];
+    self.shiftDownInProgress = NO;
     return;
   }
 
   // Use a simple animation to scroll back into position.
   CGFloat yOffset = MAX([self pinnedOffsetY] - self.collectionShiftingOffset,
                         -[self heightAboveFeed]);
-  self.headerViewController.view.alpha = 0;
+  self.headerViewController.view.alpha = 1;
   __weak __typeof(self) weakSelf = self;
   self.inhibitScrollPositionUpdates = YES;
+  self.headerViewController.allowFontScaleAnimation = YES;
+  [self updateFakeOmniboxForScrollPosition];
+  [self.headerViewController layoutHeader];
   self.animator = [[UIViewPropertyAnimator alloc]
       initWithDuration:kMaterialDuration6
                  curve:UIViewAnimationCurveEaseInOut
             animations:^{
-              weakSelf.headerViewController.view.alpha = 1;
               weakSelf.collectionView.contentOffset = CGPoint(0, yOffset);
-              [weakSelf updateFakeOmniboxForScrollPosition];
+              [weakSelf.headerViewController layoutHeader];
             }];
   [self.animator addCompletion:^(UIViewAnimatingPosition finalPosition) {
     weakSelf.inhibitScrollPositionUpdates = NO;
@@ -1153,6 +1164,8 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
     weakSelf.headerViewController.view.alpha = 1;
     weakSelf.collectionView.contentOffset = CGPoint(0, yOffset);
     weakSelf.scrolledToMinimumHeight = NO;
+    weakSelf.headerViewController.allowFontScaleAnimation = NO;
+    weakSelf.shiftDownInProgress = NO;
   }];
   self.animator.interruptible = YES;
   [self.animator startAnimation];
