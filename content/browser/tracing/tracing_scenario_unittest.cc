@@ -223,8 +223,8 @@ class TracingScenarioForTesting : public TracingScenario {
  public:
   TracingScenarioForTesting(const perfetto::protos::gen::ScenarioConfig& config,
                             TestTracingScenarioDelegate* delegate)
-      : TracingScenario(config, delegate) {
-    EXPECT_TRUE(Initialize(config, false, false));
+      : TracingScenario(config, delegate, /*enable_privacy_filter=*/false) {
+    EXPECT_TRUE(Initialize(config, false));
   }
 
  protected:

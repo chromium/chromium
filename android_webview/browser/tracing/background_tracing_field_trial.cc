@@ -71,8 +71,8 @@ bool MaybeSetupWebViewOnlyTracingFromFieldTrial() {
   auto& manager = BackgroundTracingManager::GetInstance();
   auto field_tracing_config = tracing::GetFieldTracingConfig();
   if (field_tracing_config) {
-    return manager.InitializeScenarios(std::move(*field_tracing_config),
-                                       data_filtering);
+    return manager.InitializeFieldScenarios(std::move(*field_tracing_config),
+                                            data_filtering);
   }
   std::unique_ptr<BackgroundTracingConfig> config =
       manager.GetBackgroundTracingConfig(kBackgroundTracingFieldTrial);

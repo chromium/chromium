@@ -251,7 +251,7 @@ BackgroundTracingManagerImpl::~BackgroundTracingManagerImpl() {
   if (active_scenario_) {
     active_scenario_->Abort();
   } else {
-    for (auto& scenario : scenarios_) {
+    for (auto& scenario : enabled_scenarios_) {
       scenario->Disable();
     }
   }
@@ -414,8 +414,11 @@ bool BackgroundTracingManagerImpl::RequestActivateScenario() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   RecordMetric(Metrics::SCENARIO_ACTIVATION_REQUESTED);
   // Multi-scenarios sessions can't be initialized twice.
-  DCHECK(scenarios_.empty());
+  DCHECK(field_scenarios_.empty());
 
+  if (!enabled_scenarios_.empty()) {
+    return false;
+  }
   if (legacy_active_scenario_ &&
       (legacy_active_scenario_->state() !=
        BackgroundTracingActiveScenario::State::kIdle)) {
@@ -436,7 +439,7 @@ void BackgroundTracingManagerImpl::SetReceiveCallback(
   receive_callback_ = std::move(receive_callback);
 }
 
-bool BackgroundTracingManagerImpl::InitializeScenarios(
+bool BackgroundTracingManagerImpl::InitializeFieldScenarios(
     const perfetto::protos::gen::ChromeFieldTracingConfig& config,
     DataFiltering data_filtering) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -444,24 +447,92 @@ bool BackgroundTracingManagerImpl::InitializeScenarios(
     return false;
   }
 
-  requires_anonymized_data_ = (data_filtering != NO_DATA_FILTERING);
+  bool requires_anonymized_data = (data_filtering != NO_DATA_FILTERING);
   bool enable_package_name_filter =
       (data_filtering == ANONYMIZE_DATA_AND_FILTER_PACKAGE_NAME);
   InitializeTraceReportDatabase();
 
+  // Guaranteed by RequestActivateScenario() above.
+  DCHECK(enabled_scenarios_.empty());
   for (const auto& scenario_config : config.scenarios()) {
     auto scenario =
-        TracingScenario::Create(scenario_config, requires_anonymized_data_,
+        TracingScenario::Create(scenario_config, requires_anonymized_data,
                                 enable_package_name_filter, this);
     if (!scenario) {
       return false;
     }
-    scenarios_.push_back(std::move(scenario));
-    scenarios_.back()->Enable();
+    field_scenarios_.push_back(std::move(scenario));
+    enabled_scenarios_.push_back(field_scenarios_.back().get());
+    enabled_scenarios_.back()->Enable();
   }
   RecordMetric(Metrics::SCENARIO_ACTIVATED_SUCCESSFULLY);
   DoEmitNamedTrigger(kStartupTracingTriggerName, std::nullopt);
   return true;
+}
+
+std::vector<std::string> BackgroundTracingManagerImpl::AddPresetScenarios(
+    const perfetto::protos::gen::ChromeFieldTracingConfig& config,
+    DataFiltering data_filtering) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  bool enable_privacy_filter = (data_filtering != NO_DATA_FILTERING);
+  bool enable_package_name_filter =
+      (data_filtering == ANONYMIZE_DATA_AND_FILTER_PACKAGE_NAME);
+
+  std::vector<std::string> added_scenarios;
+  for (const auto& scenario_config : config.scenarios()) {
+    auto scenario =
+        TracingScenario::Create(scenario_config, enable_privacy_filter,
+                                enable_package_name_filter, this);
+    if (!scenario) {
+      continue;
+    }
+    added_scenarios.push_back(scenario->config_hash());
+    preset_scenarios_.emplace(scenario->config_hash(), std::move(scenario));
+  }
+  return added_scenarios;
+}
+
+std::vector<std::pair<std::string, std::string>>
+BackgroundTracingManagerImpl::GetAllPresetScenarios() const {
+  std::vector<std::pair<std::string, std::string>> result;
+  for (const auto& scenario : preset_scenarios_) {
+    result.emplace_back(scenario.first, scenario.second->scenario_name());
+  }
+  return result;
+}
+
+bool BackgroundTracingManagerImpl::SetEnabledScenarios(
+    std::vector<std::string> enabled_scenarios) {
+  if (active_scenario_) {
+    enabled_scenarios_.clear();
+    active_scenario_->Abort();
+  } else {
+    for (auto& scenario : enabled_scenarios_) {
+      scenario->Disable();
+    }
+    enabled_scenarios_.clear();
+  }
+  InitializeTraceReportDatabase();
+  for (const std::string& hash : enabled_scenarios) {
+    auto it = preset_scenarios_.find(hash);
+    if (it == preset_scenarios_.end()) {
+      return false;
+    }
+    enabled_scenarios_.push_back(it->second.get());
+    if (!active_scenario_) {
+      it->second->Enable();
+    }
+  }
+  return true;
+}
+
+std::vector<std::string> BackgroundTracingManagerImpl::GetEnabledScenarios()
+    const {
+  std::vector<std::string> scenario_hashes;
+  for (auto scenario : enabled_scenarios_) {
+    scenario_hashes.push_back(scenario->config_hash());
+  }
+  return scenario_hashes;
 }
 
 bool BackgroundTracingManagerImpl::SetActiveScenario(
@@ -506,8 +577,8 @@ bool BackgroundTracingManagerImpl::SetActiveScenario(
     upload_limit_network_kb_ = *config_impl->upload_limit_network_kb();
   }
 
-  requires_anonymized_data_ = (data_filtering != NO_DATA_FILTERING);
-  config_impl->set_requires_anonymized_data(requires_anonymized_data_);
+  bool requires_anonymized_data = (data_filtering != NO_DATA_FILTERING);
+  config_impl->set_requires_anonymized_data(requires_anonymized_data);
 
   bool enable_package_name_filter =
       (data_filtering == ANONYMIZE_DATA_AND_FILTER_PACKAGE_NAME);
@@ -515,7 +586,7 @@ bool BackgroundTracingManagerImpl::SetActiveScenario(
 
   // TODO(oysteine): Retry when time_until_allowed has elapsed.
   if (delegate_ &&
-      !delegate_->OnBackgroundTracingActive(requires_anonymized_data_)) {
+      !delegate_->OnBackgroundTracingActive(requires_anonymized_data)) {
     return false;
   }
 
@@ -571,8 +642,8 @@ bool BackgroundTracingManagerImpl::OnScenarioActive(
       kMaxTracesPerScenario) {
     return false;
   }
-  if (delegate_ &&
-      !delegate_->OnBackgroundTracingActive(requires_anonymized_data_)) {
+  if (delegate_ && !delegate_->OnBackgroundTracingActive(
+                       active_scenario->privacy_filter_enabled())) {
     return false;
   }
   active_scenario_ = active_scenario;
@@ -581,7 +652,7 @@ bool BackgroundTracingManagerImpl::OnScenarioActive(
   for (EnabledStateTestObserver* observer : background_tracing_observers_) {
     observer->OnScenarioActive(active_scenario_->scenario_name());
   }
-  for (auto& scenario : scenarios_) {
+  for (auto& scenario : enabled_scenarios_) {
     if (scenario.get() == active_scenario) {
       continue;
     }
@@ -600,9 +671,9 @@ bool BackgroundTracingManagerImpl::OnScenarioIdle(
     observer->OnScenarioIdle(idle_scenario->scenario_name());
   }
   bool is_allowed_finalization =
-      !delegate_ ||
-      delegate_->OnBackgroundTracingIdle(requires_anonymized_data_);
-  for (auto& scenario : scenarios_) {
+      !delegate_ || delegate_->OnBackgroundTracingIdle(
+                        idle_scenario->privacy_filter_enabled());
+  for (auto& scenario : enabled_scenarios_) {
     scenario->Enable();
   }
   return is_allowed_finalization;
@@ -627,7 +698,8 @@ void BackgroundTracingManagerImpl::SaveTrace(
         base::StringPrintf(" value: %d", *triggered_rule->triggered_value()));
   }
   OnProtoDataComplete(std::move(trace_data), scenario->scenario_name(),
-                      rule_name, /*is_crash_scenario=*/false, trace_uuid);
+                      rule_name, scenario->privacy_filter_enabled(),
+                      /*is_crash_scenario=*/false, trace_uuid);
 }
 
 bool BackgroundTracingManagerImpl::HasActiveScenario() {
@@ -782,6 +854,7 @@ void BackgroundTracingManagerImpl::SaveTraceForTesting(
     const base::Token& uuid) {
   InitializeTraceReportDatabase(true);
   OnProtoDataComplete(std::move(serialized_trace), scenario_name, rule_name,
+                      /*privacy_filter_enabled*/ true,
                       /*is_crash_scenario=*/false, uuid);
 }
 
@@ -798,6 +871,7 @@ void BackgroundTracingManagerImpl::OnProtoDataComplete(
     std::string&& serialized_trace,
     const std::string& scenario_name,
     const std::string& rule_name,
+    bool privacy_filter_enabled,
     bool is_crash_scenario,
     const base::Token& uuid) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -812,7 +886,7 @@ void BackgroundTracingManagerImpl::OnProtoDataComplete(
                          variations::HashName(scenario_name));
 
     SkipUploadReason skip_reason = SkipUploadReason::kNoSkip;
-    if (!requires_anonymized_data_) {
+    if (!privacy_filter_enabled) {
       skip_reason = SkipUploadReason::kNotAnonymized;
     } else if (serialized_trace.size() > upload_limit_kb_ * 1024) {
       skip_reason = SkipUploadReason::kSizeLimitExceeded;

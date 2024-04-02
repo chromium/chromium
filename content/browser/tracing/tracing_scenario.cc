@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "content/browser/tracing/tracing_scenario.h"
+
 #include <memory>
 
+#include "base/hash/md5.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/stringprintf.h"
@@ -199,13 +201,12 @@ void NestedTracingScenario::SetState(State new_state) {
 // static
 std::unique_ptr<TracingScenario> TracingScenario::Create(
     const perfetto::protos::gen::ScenarioConfig& config,
-    bool requires_anonymized_data,
+    bool enable_privacy_filter,
     bool enable_package_name_filter,
     Delegate* scenario_delegate) {
-  auto scenario =
-      base::WrapUnique(new TracingScenario(config, scenario_delegate));
-  if (!scenario->Initialize(config, requires_anonymized_data,
-                            enable_package_name_filter)) {
+  auto scenario = base::WrapUnique(
+      new TracingScenario(config, scenario_delegate, enable_privacy_filter));
+  if (!scenario->Initialize(config, enable_package_name_filter)) {
     return nullptr;
   }
   return scenario;
@@ -213,8 +214,11 @@ std::unique_ptr<TracingScenario> TracingScenario::Create(
 
 TracingScenario::TracingScenario(
     const perfetto::protos::gen::ScenarioConfig& config,
-    Delegate* scenario_delegate)
+    Delegate* scenario_delegate,
+    bool enable_privacy_filter)
     : TracingScenarioBase(config.scenario_name()),
+      config_hash_(base::MD5String(config.SerializeAsString())),
+      privacy_filtering_enabled_(enable_privacy_filter),
       trace_config_(config.trace_config()),
       scenario_delegate_(scenario_delegate) {}
 
@@ -222,10 +226,10 @@ TracingScenario::~TracingScenario() = default;
 
 bool TracingScenario::Initialize(
     const perfetto::protos::gen::ScenarioConfig& config,
-    bool requires_anonymized_data,
     bool enable_package_name_filter) {
   if (!tracing::AdaptPerfettoConfigForChrome(
-          &trace_config_, requires_anonymized_data, enable_package_name_filter,
+          &trace_config_, privacy_filtering_enabled_,
+          enable_package_name_filter,
           perfetto::protos::gen::ChromeConfig::BACKGROUND)) {
     return false;
   }

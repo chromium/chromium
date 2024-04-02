@@ -21,6 +21,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "components/tracing/common/background_tracing_state_manager.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "content/public/browser/background_tracing_manager.h"
 #include "content/public/browser/browser_thread.h"
@@ -28,11 +29,16 @@
 namespace tracing {
 
 BASE_FEATURE(kFieldTracing, "FieldTracing", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPresetTracing,
+             "PresetTracing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 
 const base::FeatureParam<std::string> kFieldTracingConfig{&kFieldTracing,
                                                           "config", ""};
+const base::FeatureParam<std::string> kPresetTracingConfig{&kPresetTracing,
+                                                           "config", ""};
 
 bool BlockingWriteTraceToFile(const base::FilePath& output_file,
                               std::string file_contents) {
@@ -93,6 +99,24 @@ GetBackgroundTracingConfigFromFile(const base::FilePath& config_file) {
   return config;
 }
 
+std::optional<perfetto::protos::gen::ChromeFieldTracingConfig>
+GetTracingConfigFromFeature(
+    const base::Feature& feature,
+    const base::FeatureParam<std::string> feature_param) {
+  if (!base::FeatureList::IsEnabled(feature)) {
+    return std::nullopt;
+  }
+  std::string serialized_config;
+  if (!base::Base64Decode(feature_param.Get(), &serialized_config)) {
+    return std::nullopt;
+  }
+  perfetto::protos::gen::ChromeFieldTracingConfig config;
+  if (config.ParseFromString(serialized_config)) {
+    return config;
+  }
+  return std::nullopt;
+}
+
 }  // namespace
 
 void RecordDisallowedMetric(TracingFinalizationDisallowedReason reason) {
@@ -133,8 +157,13 @@ bool SetupBackgroundTracingFromProtoConfigFile(
   // NO_DATA_FILTERING is set because the trace is saved to a local output file
   // instead of being uploaded to a metrics server, so there are no PII
   // concerns.
-  return content::BackgroundTracingManager::GetInstance().InitializeScenarios(
-      std::move(config), content::BackgroundTracingManager::NO_DATA_FILTERING);
+  auto scenarios =
+      content::BackgroundTracingManager::GetInstance().AddPresetScenarios(
+          std::move(config),
+          content::BackgroundTracingManager::NO_DATA_FILTERING);
+
+  return content::BackgroundTracingManager::GetInstance().SetEnabledScenarios(
+      scenarios);
 }
 
 bool SetupBackgroundTracingFromCommandLine() {
@@ -158,6 +187,23 @@ bool SetupBackgroundTracingFromCommandLine() {
     case BackgroundTracingSetupMode::kFromFieldTrial:
       return false;
   }
+}
+
+bool SetupPresetTracingFromFieldTrial() {
+  if (GetBackgroundTracingSetupMode() !=
+      BackgroundTracingSetupMode::kFromFieldTrial) {
+    return false;
+  }
+
+  auto& manager = content::BackgroundTracingManager::GetInstance();
+  auto field_tracing_config = tracing::GetPresetTracingConfig();
+  if (field_tracing_config) {
+    manager.AddPresetScenarios(
+        std::move(*field_tracing_config),
+        content::BackgroundTracingManager::NO_DATA_FILTERING);
+    return true;
+  }
+  return false;
 }
 
 bool HasBackgroundTracingOutputFile() {
@@ -218,18 +264,12 @@ BackgroundTracingSetupMode GetBackgroundTracingSetupMode() {
 
 std::optional<perfetto::protos::gen::ChromeFieldTracingConfig>
 GetFieldTracingConfig() {
-  if (!base::FeatureList::IsEnabled(kFieldTracing)) {
-    return std::nullopt;
-  }
-  std::string serialized_config;
-  if (!base::Base64Decode(kFieldTracingConfig.Get(), &serialized_config)) {
-    return std::nullopt;
-  }
-  perfetto::protos::gen::ChromeFieldTracingConfig config;
-  if (config.ParseFromString(serialized_config)) {
-    return config;
-  }
-  return std::nullopt;
+  return GetTracingConfigFromFeature(kFieldTracing, kFieldTracingConfig);
+}
+
+std::optional<perfetto::protos::gen::ChromeFieldTracingConfig>
+GetPresetTracingConfig() {
+  return GetTracingConfigFromFeature(kPresetTracing, kPresetTracingConfig);
 }
 
 bool IsFieldTracingEnabled() {

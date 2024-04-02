@@ -61,6 +61,9 @@ COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
 bool SetupBackgroundTracingFromCommandLine();
 
 COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
+bool SetupPresetTracingFromFieldTrial();
+
+COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
 bool SetBackgroundTracingOutputFile();
 
 COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
@@ -72,6 +75,10 @@ BackgroundTracingSetupMode GetBackgroundTracingSetupMode();
 COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
 std::optional<perfetto::protos::gen::ChromeFieldTracingConfig>
 GetFieldTracingConfig();
+
+COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
+std::optional<perfetto::protos::gen::ChromeFieldTracingConfig>
+GetPresetTracingConfig();
 
 COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
 bool IsFieldTracingEnabled();

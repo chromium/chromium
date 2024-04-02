@@ -4,6 +4,7 @@
 
 #include "chrome/browser/tracing/background_tracing_field_trial.h"
 
+#include "components/tracing/common/background_tracing_state_manager.h"
 #include "components/tracing/common/background_tracing_utils.h"
 #include "content/public/browser/background_tracing_config.h"
 #include "content/public/browser/background_tracing_manager.h"
@@ -65,8 +66,8 @@ bool MaybeSetupBackgroundTracingFromFieldTrial() {
   auto& manager = BackgroundTracingManager::GetInstance();
   auto field_tracing_config = tracing::GetFieldTracingConfig();
   if (field_tracing_config) {
-    return manager.InitializeScenarios(std::move(*field_tracing_config),
-                                       data_filtering);
+    return manager.InitializeFieldScenarios(std::move(*field_tracing_config),
+                                            data_filtering);
   }
 
   std::unique_ptr<BackgroundTracingConfig> config =

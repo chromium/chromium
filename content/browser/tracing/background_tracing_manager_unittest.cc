@@ -192,7 +192,7 @@ TEST_F(BackgroundTracingManagerTest, SavedCountPreventsStart) {
             BackgroundTracingManagerImpl::GetInstance().GetScenarioSavedCount(
                 "test_scenario"));
 
-  background_tracing_manager_->InitializeScenarios(
+  background_tracing_manager_->InitializeFieldScenarios(
       ParseFieldTracingConfigFromText(kScenarioConfig),
       BackgroundTracingManager::NO_DATA_FILTERING);
 

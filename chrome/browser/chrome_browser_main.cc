@@ -1218,6 +1218,7 @@ void ChromeBrowserMainParts::PostCreateThreads() {
 
   tracing::MaybeSetupSystemTracingFromFieldTrial();
   tracing::SetupBackgroundTracingFromCommandLine();
+  tracing::SetupPresetTracingFromFieldTrial();
 
   for (auto& chrome_extra_part : chrome_extra_parts_)
     chrome_extra_part->PostCreateThreads();

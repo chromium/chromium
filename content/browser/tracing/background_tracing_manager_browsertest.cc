@@ -440,6 +440,90 @@ std::unique_ptr<BackgroundTracingConfig> CreateSystemConfig() {
 }
 
 IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
+                       AddPresetScenarios) {
+  TestBackgroundTracingHelper background_tracing_helper;
+  constexpr const char kScenarioConfig[] = R"pb(
+    scenarios: {
+      scenario_name: "test_scenario"
+      start_rules: {
+        name: "start_trigger"
+        manual_trigger_name: "start_trigger"
+      }
+      upload_rules: {
+        name: "upload_trigger"
+        manual_trigger_name: "upload_trigger"
+      }
+      trace_config: {
+        data_sources: { config: { name: "org.chromium.trace_metadata" } }
+      }
+    }
+  )pb";
+  auto scenarios = BackgroundTracingManager::GetInstance().AddPresetScenarios(
+      ParseFieldTracingConfigFromText(kScenarioConfig),
+      BackgroundTracingManager::NO_DATA_FILTERING);
+  EXPECT_EQ(std::vector<std::string>({"e345f523fcd98b60063256afa89905ca"}),
+            scenarios);
+  {
+    auto all_scenarios =
+        BackgroundTracingManager::GetInstance().GetAllPresetScenarios();
+    std::vector<std::pair<std::string, std::string>> expected = {
+        std::make_pair("e345f523fcd98b60063256afa89905ca", "test_scenario")};
+    EXPECT_EQ(expected, all_scenarios);
+  }
+
+  BackgroundTracingManager::GetInstance().SetEnabledScenarios(scenarios);
+  EXPECT_EQ(std::vector<std::string>({"e345f523fcd98b60063256afa89905ca"}),
+            BackgroundTracingManager::GetInstance().GetEnabledScenarios());
+
+  background_tracing_helper.ExpectOnScenarioActive("test_scenario");
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
+  background_tracing_helper.WaitForTraceStarted();
+
+  background_tracing_helper.ExpectOnScenarioIdle("test_scenario");
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("upload_trigger"));
+  background_tracing_helper.WaitForScenarioIdle();
+
+  background_tracing_helper.WaitForTraceReceived();
+  EXPECT_TRUE(background_tracing_helper.trace_received());
+}
+
+IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
+                       EnablePresetScenariosWhileTracing) {
+  TestBackgroundTracingHelper background_tracing_helper;
+  constexpr const char kScenarioConfig[] = R"pb(
+    scenarios: {
+      scenario_name: "test_scenario"
+      start_rules: {
+        name: "start_trigger"
+        manual_trigger_name: "start_trigger"
+      }
+      trace_config: {
+        data_sources: { config: { name: "org.chromium.trace_metadata" } }
+      }
+    }
+  )pb";
+  auto scenarios = BackgroundTracingManager::GetInstance().AddPresetScenarios(
+      ParseFieldTracingConfigFromText(kScenarioConfig),
+      BackgroundTracingManager::NO_DATA_FILTERING);
+
+  EXPECT_EQ(std::vector<std::string>({"5875325968aa9b724ccf25e4018a2907"}),
+            scenarios);
+  BackgroundTracingManager::GetInstance().SetEnabledScenarios(scenarios);
+  EXPECT_EQ(std::vector<std::string>({"5875325968aa9b724ccf25e4018a2907"}),
+            BackgroundTracingManager::GetInstance().GetEnabledScenarios());
+
+  background_tracing_helper.ExpectOnScenarioActive("test_scenario");
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
+  background_tracing_helper.WaitForTraceStarted();
+
+  background_tracing_helper.ExpectOnScenarioIdle("test_scenario");
+  BackgroundTracingManager::GetInstance().SetEnabledScenarios({});
+  EXPECT_EQ(std::vector<std::string>(),
+            BackgroundTracingManager::GetInstance().GetEnabledScenarios());
+  background_tracing_helper.WaitForScenarioIdle();
+}
+
+IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
                        StartUploadScenario) {
   TestBackgroundTracingHelper background_tracing_helper;
   constexpr const char kScenarioConfig[] = R"pb(
@@ -458,7 +542,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
       }
     }
   )pb";
-  BackgroundTracingManager::GetInstance().InitializeScenarios(
+  BackgroundTracingManager::GetInstance().InitializeFieldScenarios(
       ParseFieldTracingConfigFromText(kScenarioConfig),
       BackgroundTracingManager::NO_DATA_FILTERING);
 
@@ -489,7 +573,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
       }
     }
   )pb";
-  BackgroundTracingManager::GetInstance().InitializeScenarios(
+  BackgroundTracingManager::GetInstance().InitializeFieldScenarios(
       ParseFieldTracingConfigFromText(kScenarioConfig),
       BackgroundTracingManager::NO_DATA_FILTERING);
 
@@ -529,7 +613,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
       }
     }
   )pb";
-  BackgroundTracingManager::GetInstance().InitializeScenarios(
+  BackgroundTracingManager::GetInstance().InitializeFieldScenarios(
       ParseFieldTracingConfigFromText(kScenarioConfig),
       BackgroundTracingManager::ANONYMIZE_DATA);
   background_tracing_helper.ExpectOnScenarioActive("test_scenario");
@@ -579,7 +663,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
       }
     }
   )pb";
-  BackgroundTracingManager::GetInstance().InitializeScenarios(
+  BackgroundTracingManager::GetInstance().InitializeFieldScenarios(
       ParseFieldTracingConfigFromText(kScenarioConfig),
       BackgroundTracingManager::NO_DATA_FILTERING);
 
@@ -622,7 +706,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
       }
     }
   )pb";
-  BackgroundTracingManager::GetInstance().InitializeScenarios(
+  BackgroundTracingManager::GetInstance().InitializeFieldScenarios(
       ParseFieldTracingConfigFromText(kScenarioConfig),
       BackgroundTracingManager::NO_DATA_FILTERING);
 

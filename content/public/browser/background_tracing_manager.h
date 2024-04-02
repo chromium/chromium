@@ -103,15 +103,46 @@ class BackgroundTracingManager {
       std::unique_ptr<BackgroundTracingConfig> config,
       DataFiltering data_filtering) = 0;
 
-  // Initializes background tracing with a set of scenarios, each
-  // associated with specific tracing configs. Scenarios are enrolled by
-  // clients based on a set of start and stop rules that delimitate a
-  // meaningful tracing interval, usually covering a user journey or a
-  // guardian metric (e.g. FirstContentfulPaint). This can only be
-  // called once.
-  virtual bool InitializeScenarios(
+  // Tracing Scenarios are enrolled by clients based on a set of start and
+  // stop rules that delimitate a meaningful tracing interval, usually covering
+  // a user journey or a guardian metric (e.g. FirstContentfulPaint). This can
+  // only be called once.
+  // Field scenarios are enabled automatically for a subset of the population.
+  // Preset scenarios are predefined and enabled locally by manual action from
+  // a user. When enabled, they take precedence over field scenarios if any.
+
+  // Saves and enables a set of field scenarios, each associated with specific
+  // tracing configs. Returns true if all scenarios were successfully
+  // initialized. This will fail and return false if any scenario was previously
+  // enabled, either with InitializeFieldScenarios() or SetEnabledScenarios().
+  virtual bool InitializeFieldScenarios(
       const perfetto::protos::gen::ChromeFieldTracingConfig& config,
       DataFiltering data_filtering) = 0;
+
+  // Saves a set of preset scenarios, each associated with specific tracing
+  // configs, without enabling them. These scenarios can be enabled with
+  // SetEnabledScenarios(). Returns the list of scenario hashes that were
+  // successfully added. This can be called multiple times.
+  virtual std::vector<std::string> AddPresetScenarios(
+      const perfetto::protos::gen::ChromeFieldTracingConfig& config,
+      DataFiltering data_filtering) = 0;
+
+  // Returns the list of preset scenario hashes and names that were saved,
+  // whether or not enabled.
+  virtual std::vector<std::pair<std::string, std::string>>
+  GetAllPresetScenarios() const = 0;
+
+  // Enables a list of preset scenarios identified by their hashes. This
+  // disables all previously enabled scenarios and aborts the current background
+  // tracing session if any. Since InitializeFieldScenarios() above fails if
+  // scenarios are enabled, field scenarios can't be re-enabled after calling
+  // this.
+  virtual bool SetEnabledScenarios(
+      std::vector<std::string> enabled_preset_scenario_hashes) = 0;
+
+  // Returns the list of scenario hashes that are currently enabled. These are
+  // either all preset scenarios or all field scenarios.
+  virtual std::vector<std::string> GetEnabledScenarios() const = 0;
 
   virtual bool HasActiveScenario() = 0;
 

@@ -10,6 +10,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -104,9 +105,17 @@ class BackgroundTracingManagerImpl
                                  mojom::ChildProcess* child_process);
 
   void SetReceiveCallback(ReceiveCallback receive_callback) override;
-  bool InitializeScenarios(
+  bool InitializeFieldScenarios(
       const perfetto::protos::gen::ChromeFieldTracingConfig& config,
       DataFiltering data_filtering) override;
+  std::vector<std::string> AddPresetScenarios(
+      const perfetto::protos::gen::ChromeFieldTracingConfig& config,
+      DataFiltering data_filtering) override;
+  std::vector<std::pair<std::string, std::string>> GetAllPresetScenarios()
+      const override;
+  bool SetEnabledScenarios(
+      std::vector<std::string> enabled_scenarios_hashes) override;
+  std::vector<std::string> GetEnabledScenarios() const override;
 
   bool SetActiveScenario(std::unique_ptr<BackgroundTracingConfig>,
                          DataFiltering data_filtering) override;
@@ -170,6 +179,7 @@ class BackgroundTracingManagerImpl
   void OnProtoDataComplete(std::string&& serialized_trace,
                            const std::string& scenario_name,
                            const std::string& rule_name,
+                           bool privacy_filter_enabled,
                            bool is_crash_scenario,
                            const base::Token& uuid);
 
@@ -222,12 +232,13 @@ class BackgroundTracingManagerImpl
 
   std::unique_ptr<TracingDelegate> delegate_;
   std::unique_ptr<BackgroundTracingActiveScenario> legacy_active_scenario_;
-  std::vector<std::unique_ptr<TracingScenario>> scenarios_;
+  std::vector<std::unique_ptr<TracingScenario>> field_scenarios_;
+  base::flat_map<std::string, std::unique_ptr<TracingScenario>>
+      preset_scenarios_;
+  std::vector<raw_ptr<TracingScenario>> enabled_scenarios_;
   raw_ptr<TracingScenario> active_scenario_{nullptr};
   ReceiveCallback receive_callback_;
   base::RepeatingCallback<std::string()> system_profile_recorder_;
-
-  bool requires_anonymized_data_ = true;
 
   std::map<std::string, base::ObserverList<BackgroundTracingRule>>
       named_trigger_observers_;

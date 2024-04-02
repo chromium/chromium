@@ -334,6 +334,7 @@ void AwBrowserMainParts::PostCreateThreads() {
 
   MaybeSetupSystemTracingFromFieldTrial();
   tracing::SetupBackgroundTracingFromCommandLine();
+  tracing::SetupPresetTracingFromFieldTrial();
 }
 
 }  // namespace android_webview

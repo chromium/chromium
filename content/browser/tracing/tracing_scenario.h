@@ -166,7 +166,7 @@ class CONTENT_EXPORT TracingScenario : public TracingScenarioBase,
 
   static std::unique_ptr<TracingScenario> Create(
       const perfetto::protos::gen::ScenarioConfig& config,
-      bool requires_anonymized_data,
+      bool enable_privacy_filter,
       bool enable_package_name_filter,
       Delegate* scenario_delegate);
 
@@ -185,15 +185,17 @@ class CONTENT_EXPORT TracingScenario : public TracingScenarioBase,
       perfetto::protos::pbzero::ChromeMetadataPacket* metadata);
 
   State current_state() const { return current_state_; }
+  bool privacy_filter_enabled() const { return privacy_filtering_enabled_; }
+  std::string config_hash() const { return config_hash_; }
 
   base::Token GetSessionID() const { return session_id_; }
 
  protected:
   TracingScenario(const perfetto::protos::gen::ScenarioConfig& config,
-                  Delegate* scenario_delegate);
+                  Delegate* scenario_delegate,
+                  bool enable_privacy_filter);
 
   bool Initialize(const perfetto::protos::gen::ScenarioConfig& config,
-                  bool requires_anonymized_data,
                   bool enable_package_name_filter);
 
   virtual std::unique_ptr<perfetto::TracingSession> CreateTracingSession();
@@ -243,6 +245,8 @@ class CONTENT_EXPORT TracingScenario : public TracingScenarioBase,
   base::WeakPtr<TracingScenario> GetWeakPtr();
   void SetState(State new_state);
 
+  const std::string config_hash_;
+  const bool privacy_filtering_enabled_;
   State current_state_ = State::kDisabled;
   std::vector<std::unique_ptr<BackgroundTracingRule>> setup_rules_;
 
