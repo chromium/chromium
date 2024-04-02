@@ -5,25 +5,15 @@
 import './text_layer.js';
 import './region_selection.js';
 
-import type {RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
+import {CenterRotatedBox_CoordinateType} from './geometry.mojom-webui.js';
+import type {CenterRotatedBox} from './geometry.mojom-webui.js';
 import type {RegionSelectionElement} from './region_selection.js';
 import {getTemplate} from './selection_overlay.html.js';
 import {DRAG_THRESHOLD, DragFeature, emptyGestureEvent, type GestureEvent, GestureState} from './selection_utils.js';
 import type {TextLayerElement} from './text_layer.js';
-
-/**
- * Returns a mojo RectF corresponding to the gesture provided.
- */
-function getRectFromGesture(gesture: GestureEvent): RectF {
-  const width = Math.abs(gesture.clientX - gesture.startX);
-  const height = Math.abs(gesture.clientY - gesture.startY);
-  const topLeftX = Math.min(gesture.clientX, gesture.startX);
-  const topLeftY = Math.min(gesture.clientY, gesture.startY);
-  return {x: topLeftX, y: topLeftY, width: width, height: height};
-}
 
 export interface SelectionOverlayElement {
   $: {
@@ -95,7 +85,8 @@ export class SelectionOverlayElement extends PolymerElement {
         // Drag has finished. Let the features respond to the end of a drag.
         if (this.draggingRespondent === DragFeature.MANUAL_REGION) {
           BrowserProxyImpl.getInstance().handler.issueLensRequest(
-              getRectFromGesture(this.currentGesture));
+              this.getNormalizedCenterRotatedBoxFromGesture(
+                  this.currentGesture));
         } else if (this.draggingRespondent === DragFeature.TEXT) {
           this.$.textSelectionLayer.handleUpGesture();
         }
@@ -160,6 +151,34 @@ export class SelectionOverlayElement extends PolymerElement {
     const yMovement =
         Math.abs(this.currentGesture.clientY - this.currentGesture.startY);
     return xMovement > DRAG_THRESHOLD || yMovement > DRAG_THRESHOLD;
+  }
+
+  /**
+   * @returns a mojo CenterRotatedBox corresponding to the gesture provided,
+   *          normalized to the selection overlay dimensions.
+   */
+  private getNormalizedCenterRotatedBoxFromGesture(gesture: GestureEvent):
+      CenterRotatedBox {
+    const parentRect = this.getBoundingClientRect();
+
+    const normalizedWidth =
+        Math.abs(gesture.clientX - gesture.startX) / parentRect.width;
+    const normalizedHeight =
+        Math.abs(gesture.clientY - gesture.startY) / parentRect.height;
+    const normalizedCenterX =
+        (gesture.clientX + gesture.startX) / 2 / parentRect.width;
+    const normalizedCenterY =
+        (gesture.clientY + gesture.startY) / 2 / parentRect.height;
+    return {
+      box: {
+        x: normalizedCenterX,
+        y: normalizedCenterY,
+        width: normalizedWidth,
+        height: normalizedHeight,
+      },
+      rotation: 0,
+      coordinateType: CenterRotatedBox_CoordinateType.kNormalized,
+    };
   }
 }
 

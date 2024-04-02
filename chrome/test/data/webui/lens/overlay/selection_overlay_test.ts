@@ -6,6 +6,8 @@ import 'chrome-untrusted://lens/selection_overlay.js';
 
 import type {RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 import {BrowserProxyImpl} from 'chrome-untrusted://lens/browser_proxy.js';
+import {CenterRotatedBox_CoordinateType} from 'chrome-untrusted://lens/geometry.mojom-webui.js';
+import type {CenterRotatedBox} from 'chrome-untrusted://lens/geometry.mojom-webui.js';
 import type {LensPageRemote} from 'chrome-untrusted://lens/lens.mojom-webui.js';
 import type {SelectionOverlayElement} from 'chrome-untrusted://lens/selection_overlay.js';
 import {assertDeepEquals, assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
@@ -126,9 +128,18 @@ suite('SelectionOverlay', function() {
         };
         await simulateDrag({x: 0, y: 0}, dragEnd);
 
-        const data =
+        const expectedRect: CenterRotatedBox = {
+          box: normalizedBox({
+            x: dragEnd.x / 2,
+            y: dragEnd.y / 2,
+            width: dragEnd.x,
+            height: dragEnd.y,
+          }),
+          rotation: 0,
+          coordinateType: CenterRotatedBox_CoordinateType.kNormalized,
+        };
+        const rect =
             await testBrowserProxy.handler.whenCalled('issueLensRequest');
-        assertDeepEquals(
-            {x: 0, y: 0, width: dragEnd.x, height: dragEnd.y}, data);
+        assertDeepEquals(expectedRect, rect);
       });
 });
