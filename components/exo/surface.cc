@@ -113,45 +113,6 @@ bool FormatHasAlpha(gfx::BufferFormat format) {
   return gfx::AlphaBitsForBufferFormat(format) != 0;
 }
 
-std::string FormatToString(const gfx::BufferFormat format) {
-  switch (format) {
-    case gfx::BufferFormat::BGR_565:
-      return "BGR_565";
-    case gfx::BufferFormat::RGBX_8888:
-      return "RGBX_8888";
-    case gfx::BufferFormat::BGRX_8888:
-      return "RGRX_8888";
-    case gfx::BufferFormat::YVU_420:
-      return "YUV_420";
-    case gfx::BufferFormat::YUV_420_BIPLANAR:
-      return "YUV_420_BIPLANAR";
-    case gfx::BufferFormat::R_8:
-      return "R_8";
-    case gfx::BufferFormat::R_16:
-      return "R_16";
-    case gfx::BufferFormat::RG_88:
-      return "RG_88";
-    case gfx::BufferFormat::RG_1616:
-      return "RG_1616";
-    case gfx::BufferFormat::RGBA_4444:
-      return "RGBA_4444";
-    case gfx::BufferFormat::RGBA_8888:
-      return "RGBA_8888";
-    case gfx::BufferFormat::BGRA_1010102:
-      return "BGRA_1010102";
-    case gfx::BufferFormat::RGBA_1010102:
-      return "RGBA_1010102";
-    case gfx::BufferFormat::BGRA_8888:
-      return "BGRA_8888";
-    case gfx::BufferFormat::RGBA_F16:
-      return "RGBA_F16";
-    case gfx::BufferFormat::YUVA_420_TRIPLANAR:
-      return "YUVA_420_TRIPLANAR";
-    case gfx::BufferFormat::P010:
-      return "P010";
-  }
-}
-
 Transform InvertY(Transform transform) {
   switch (transform) {
     case Transform::NORMAL:
@@ -2133,8 +2094,9 @@ std::string Surface::DumpDebugInfo() const {
          +" opaque-region=" + state_.basic_state.opaque_region.ToString() +
          " " +
          (has_buffer
-              ? ("format=" +
-                 FormatToString(state_.buffer->buffer()->GetFormat()) +
+              ? (std::string("format=") +
+                 gfx::BufferFormatToString(
+                     state_.buffer->buffer()->GetFormat()) +
                  (FormatHasAlpha(state_.buffer->buffer()->GetFormat()) ? "(a)"
                                                                        : ""))
               : "");
