@@ -61,6 +61,8 @@ class TabSharingUIViews : public TabSharingUI,
       base::OnceClosure stop_callback,
       content::MediaStreamUI::SourceCallback source_callback,
       const std::vector<content::DesktopMediaID>& media_ids) override;
+  void OnRegionCaptureRectChanged(
+      const std::optional<gfx::Rect>& region_capture_rect) override;
 
   // TabSharingUI:
   // Runs |source_callback_| to start sharing the tab containing |infobar|.
@@ -95,9 +97,6 @@ class TabSharingUIViews : public TabSharingUI,
   // FaviconPeriodicUpdate() before updating the favicon. A captured tab can
   // toggle its favicon back and forth at an arbitrary rate, but we implicitly
   // rate-limit our response.
-
-  void OnRegionCaptureRectChanged(
-      const std::optional<gfx::Rect>& region_capture_rect) override;
 
  protected:
 #if BUILDFLAG(IS_CHROMEOS)

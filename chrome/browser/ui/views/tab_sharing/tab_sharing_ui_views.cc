@@ -205,6 +205,23 @@ gfx::NativeViewId TabSharingUIViews::OnStarted(
   return 0;
 }
 
+void TabSharingUIViews::OnRegionCaptureRectChanged(
+    const std::optional<gfx::Rect>& region_capture_rect) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (!shared_tab_) {
+    return;
+  }
+
+  auto* const helper =
+      TabCaptureContentsBorderHelper::FromWebContents(shared_tab_);
+  if (!helper) {
+    return;
+  }
+
+  helper->OnRegionCaptureRectChanged(capture_session_id_, region_capture_rect);
+}
+
 void TabSharingUIViews::StartSharing(infobars::InfoBar* infobar) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (source_callback_.is_null())
@@ -323,23 +340,6 @@ void TabSharingUIViews::WebContentsDestroyed() {
   // TODO(crbug.com/1276816): Prevent StopSharing() from interacting with
   // |shared_tab_| while it is being destroyed.
   StopSharing();
-}
-
-void TabSharingUIViews::OnRegionCaptureRectChanged(
-    const std::optional<gfx::Rect>& region_capture_rect) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (!shared_tab_) {
-    return;
-  }
-
-  auto* const helper =
-      TabCaptureContentsBorderHelper::FromWebContents(shared_tab_);
-  if (!helper) {
-    return;
-  }
-
-  helper->OnRegionCaptureRectChanged(capture_session_id_, region_capture_rect);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
