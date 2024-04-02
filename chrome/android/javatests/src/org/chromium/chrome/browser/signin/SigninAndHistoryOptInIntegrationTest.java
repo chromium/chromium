@@ -20,6 +20,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+
 import android.content.Intent;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -199,8 +201,12 @@ public class SigninAndHistoryOptInIntegrationTest {
                 HistoryOptInMode.REQUIRED);
 
         // Verify that the history opt-in dialog is shown and accept.
-        onView(withId(R.id.history_sync_illustration)).check(matches(isDisplayed()));
-        onView(allOf(withId(R.id.button_primary), isCompletelyDisplayed())).perform(click());
+        onViewWaiting(withId(R.id.history_sync_illustration), /* checkRootDialog= */ true)
+                .check(matches(isDisplayed()));
+        onViewWaiting(
+                        allOf(withId(R.id.button_primary), isCompletelyDisplayed()),
+                        /* checkRootDialog= */ true)
+                .perform(click());
 
         // Verify signin and history sync state.
         assertNotNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
