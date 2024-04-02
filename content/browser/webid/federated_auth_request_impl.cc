@@ -955,7 +955,9 @@ void FederatedAuthRequestImpl::RequestToken(
     return;
   }
 
-  // Show loading dialog while fetching endpoints if it is a button flow.
+  // Show loading dialog while fetching endpoints if it is a button flow. This
+  // is needed even if the LoginStatus is "logged-out" because we need to fetch
+  // the config file to get the login_url which may take some time.
   if (rp_mode_ == RpMode::kButton) {
     CHECK(idp_order_.size() > 0);
     // TODO(crbug.com/1307709): Handle button mode with multiple IdP.
@@ -1203,6 +1205,9 @@ void FederatedAuthRequestImpl::OnAllConfigAndWellKnownFetched(
 
     // Make sure that we don't fetch accounts if the IDP sign-in bit is reset to
     // false during the API call. e.g. by the login/logout HEADER.
+    // In the button flow we get here even if the IDP sign-in bit was false
+    // originally, because we need the well-known and config files to find the
+    // login URL.
     idp_info->has_failing_idp_signin_status =
         webid::ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
             render_frame_host(), identity_provider_config_url,
