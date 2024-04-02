@@ -542,9 +542,6 @@ class LayoutImpl<
   //   std::tie(ints, doubles) = x.Pointers(p);
   //
   // Requires: `p` is aligned to `Alignment()`.
-  //
-  // Note: We're not using ElementType alias here because it does not compile
-  // under MSVC.
   template <class Char>
   auto Pointers(Char* p) const {
     return std::tuple<CopyConst<Char, ElementType<OffsetSeq>>*...>(
@@ -598,9 +595,6 @@ class LayoutImpl<
   //   std::tie(ints, doubles) = x.Slices(p);
   //
   // Requires: `p` is aligned to `Alignment()`.
-  //
-  // Note: We're not using ElementType alias here because it does not compile
-  // under MSVC.
   //
   // Note: We mark the parameter as unused because GCC detects it is not used
   // when `SizeSeq` is empty [-Werror=unused-but-set-parameter].

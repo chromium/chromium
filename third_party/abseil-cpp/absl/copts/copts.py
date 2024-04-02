@@ -48,6 +48,7 @@ ABSL_LLVM_FLAGS = [
     "-Wcast-qual",
     "-Wconversion",
     "-Wdead-code-aggressive",
+    "-Wdeprecated-pragma",
     "-Wfloat-overflow-conversion",
     "-Wfloat-zero-conversion",
     "-Wfor-loop-analysis",

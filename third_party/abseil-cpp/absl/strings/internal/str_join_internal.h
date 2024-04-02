@@ -37,13 +37,16 @@
 #include <limits>
 #include <memory>
 #include <string>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 
+#include "absl/base/config.h"
 #include "absl/base/internal/raw_logging.h"
 #include "absl/strings/internal/ostringstream.h"
 #include "absl/strings/internal/resize_uninitialized.h"
 #include "absl/strings/str_cat.h"
+#include "absl/strings/string_view.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN

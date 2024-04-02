@@ -75,6 +75,7 @@
 #include "absl/base/internal/per_thread_tls.h"
 #include "absl/base/macros.h"
 #include "absl/base/nullability.h"
+#include "absl/base/optimization.h"
 #include "absl/base/port.h"
 #include "absl/container/inlined_vector.h"
 #include "absl/crc/internal/crc_cord_state.h"
@@ -1388,6 +1389,7 @@ inline void Cord::Prepend(absl::string_view src) {
 
 inline void Cord::Append(CordBuffer buffer) {
   if (ABSL_PREDICT_FALSE(buffer.length() == 0)) return;
+  contents_.MaybeRemoveEmptyCrcNode();
   absl::string_view short_value;
   if (CordRep* rep = buffer.ConsumeValue(short_value)) {
     contents_.AppendTree(rep, CordzUpdateTracker::kAppendCordBuffer);
@@ -1398,6 +1400,7 @@ inline void Cord::Append(CordBuffer buffer) {
 
 inline void Cord::Prepend(CordBuffer buffer) {
   if (ABSL_PREDICT_FALSE(buffer.length() == 0)) return;
+  contents_.MaybeRemoveEmptyCrcNode();
   absl::string_view short_value;
   if (CordRep* rep = buffer.ConsumeValue(short_value)) {
     contents_.PrependTree(rep, CordzUpdateTracker::kPrependCordBuffer);

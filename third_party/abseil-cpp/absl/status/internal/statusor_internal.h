@@ -123,6 +123,58 @@ using IsForwardingAssignmentValid = absl::disjunction<
         std::is_same<absl::in_place_t, absl::remove_cvref_t<U>>,
         IsForwardingAssignmentAmbiguous<T, U>>>>;
 
+template <bool Explicit, typename T>
+using NegationIf = std::conditional_t<Explicit, absl::negation<T>, T>;
+
+template <typename T, typename U, bool Explicit>
+using IsConstructionValid = absl::conjunction<
+    IsDirectInitializationValid<T, U&&>, std::is_constructible<T, U&&>,
+    NegationIf<Explicit, std::is_convertible<U&&, T>>,
+    absl::disjunction<
+        std::is_same<T, absl::remove_cvref_t<U>>,
+        absl::conjunction<
+            std::conditional_t<
+                Explicit,
+                absl::negation<std::is_constructible<absl::Status, U&&>>,
+                absl::negation<std::is_convertible<U&&, absl::Status>>>,
+            absl::negation<
+                internal_statusor::HasConversionOperatorToStatusOr<T, U&&>>>>>;
+
+template <typename T, typename U>
+using IsAssignmentValid = absl::conjunction<
+    std::is_constructible<T, U&&>, std::is_assignable<T&, U&&>,
+    absl::disjunction<
+        std::is_same<T, absl::remove_cvref_t<U>>,
+        absl::conjunction<
+            absl::negation<std::is_convertible<U&&, absl::Status>>,
+            absl::negation<HasConversionOperatorToStatusOr<T, U&&>>>>,
+    IsForwardingAssignmentValid<T, U&&>>;
+
+template <typename T, typename U, bool Explicit>
+using IsConstructionFromStatusValid = absl::conjunction<
+    absl::negation<std::is_same<absl::StatusOr<T>, absl::remove_cvref_t<U>>>,
+    absl::negation<std::is_same<T, absl::remove_cvref_t<U>>>,
+    absl::negation<std::is_same<absl::in_place_t, absl::remove_cvref_t<U>>>,
+    NegationIf<Explicit, std::is_convertible<U, absl::Status>>,
+    std::is_constructible<absl::Status, U>,
+    absl::negation<HasConversionOperatorToStatusOr<T, U>>>;
+
+template <typename T, typename U>
+using IsStatusAssignmentValid = IsConstructionFromStatusValid<T, U, false>;
+
+template <typename T, typename U, typename UQ, bool Explicit>
+using IsConstructionFromStatusOrValid = absl::conjunction<
+    absl::negation<std::is_same<T, U>>, std::is_constructible<T, UQ>,
+    NegationIf<Explicit, std::is_convertible<UQ, T>>,
+    absl::negation<IsConstructibleOrConvertibleFromStatusOr<T, U>>>;
+
+template <typename T, typename U>
+using IsStatusOrAssignmentValid = absl::conjunction<
+    absl::negation<std::is_same<T, absl::remove_cvref_t<U>>>,
+    std::is_constructible<T, U>, std::is_assignable<T, U>,
+    absl::negation<IsConstructibleOrConvertibleOrAssignableFromStatusOr<
+        T, absl::remove_cvref_t<U>>>>;
+
 class Helper {
  public:
   // Move type-agnostic error handling to the .cc.

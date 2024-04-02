@@ -77,8 +77,7 @@ size_t PartialOffset(size_t k);
 template <>
 size_t PartialOffset<int8_t, int16_t, int32_t, Int128>(size_t k) {
   constexpr size_t o = MyAlign(MyAlign(3 * 1, 2) + 5 * 2, 4);
-  // return Align(o + k * 4, 8);
-  return (o + k * 4 + 7) & ~7U;
+  return MyAlign(o + k * 4, 8);
 }
 
 template <>
