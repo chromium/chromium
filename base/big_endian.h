@@ -50,15 +50,27 @@ class BASE_EXPORT BigEndianReader {
   // Reads an 8-bit integer and advances past it. Returns false if there is not
   // enough bytes to read from.
   bool ReadU8(uint8_t* value);
+  // Reads an 8-bit signed integer and advances past it. Returns false if there
+  // is not enough bytes to read from.
+  bool ReadI8(int8_t* value);
   // Reads a 16-bit integer and advances past it. Returns false if there is not
   // enough bytes to read from.
   bool ReadU16(uint16_t* value);
+  // Reads a 16-bit signed integer and advances past it. Returns false if there
+  // is not enough bytes to read from.
+  bool ReadI16(int16_t* value);
   // Reads a 32-bit integer and advances past it. Returns false if there is not
   // enough bytes to read from.
   bool ReadU32(uint32_t* value);
+  // Reads a 32-bit signed integer and advances past it. Returns false if there
+  // is not enough bytes to read from.
+  bool ReadI32(int32_t* value);
   // Reads a 64-bit integer and advances past it. Returns false if there is not
   // enough bytes to read from.
   bool ReadU64(uint64_t* value);
+  // Reads a 64-bit signed integer and advances past it. Returns false if there
+  // is not enough bytes to read from.
+  bool ReadI64(int64_t* value);
 
   // An alias for `ReadU8` that works with a `char` pointer instead of
   // `uint8_t`.

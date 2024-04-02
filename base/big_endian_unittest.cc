@@ -26,7 +26,7 @@ TEST(BigEndianReaderTest, ReadsValues) {
 
   {
     BigEndianReader reader(data);
-    EXPECT_TRUE(reader.Skip(4));
+    EXPECT_TRUE(reader.Skip(4u));
     EXPECT_EQ(reader.remaining_bytes().data(), &data[4u]);
     EXPECT_EQ(reader.remaining(), sizeof(data) - 4);
     EXPECT_TRUE(reader.ReadU8(&u8));
@@ -41,6 +41,36 @@ TEST(BigEndianReaderTest, ReadsValues) {
     EXPECT_TRUE(reader.ReadPiece(&piece, 2));
     EXPECT_EQ(2u, piece.size());
     EXPECT_EQ(expected.data(), piece.data());
+  }
+
+  // Signed integer reads.
+  {
+    std::array<uint8_t, 21u> sdata = {
+        0,    1,    2,    3,                            //
+        0x84,                                           //
+        0x85, 0x06,                                     //
+        0x87, 0x08, 0x09, 0x0A,                         //
+        0x8B, 0x0C, 0x0D, 0x0E, 0x0F, 0x1A, 0x2B, 0x3C  //
+    };
+    int8_t i8;
+    int16_t i16;
+    int32_t i32;
+    int64_t i64;
+
+    BigEndianReader reader(sdata);
+    EXPECT_TRUE(reader.Skip(4u));
+    EXPECT_TRUE(reader.ReadI8(&i8));
+    EXPECT_EQ(-124, i8);
+    EXPECT_EQ(static_cast<int8_t>(0x84u), i8);
+    EXPECT_TRUE(reader.ReadI16(&i16));
+    EXPECT_EQ(-31482, i16);
+    EXPECT_EQ(static_cast<int16_t>(0x8506u), i16);
+    EXPECT_TRUE(reader.ReadI32(&i32));
+    EXPECT_EQ(-2029516534, i32);
+    EXPECT_EQ(static_cast<int32_t>(0x8708090Au), i32);
+    EXPECT_TRUE(reader.ReadI64(&i64));
+    EXPECT_EQ(-8427346448682964164, i64);
+    EXPECT_EQ(static_cast<int64_t>(0x8B0C0D0E0F1A2B3Cllu), i64);
   }
 
   {

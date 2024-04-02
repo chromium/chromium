@@ -6,14 +6,16 @@
 
 #include <string.h>
 
+#include <string_view>
+
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/string_piece.h"
 
 namespace base {
 
-BigEndianReader BigEndianReader::FromStringPiece(StringPiece string_piece) {
-  return BigEndianReader(as_byte_span(string_piece));
+BigEndianReader BigEndianReader::FromStringPiece(std::string_view view) {
+  return BigEndianReader(as_byte_span(view));
 }
 
 BigEndianReader::BigEndianReader(const uint8_t* buf, size_t len)
@@ -43,12 +45,30 @@ bool BigEndianReader::ReadU8(uint8_t* value) {
   return true;
 }
 
+bool BigEndianReader::ReadI8(int8_t* value) {
+  std::array<uint8_t, 1u> bytes;
+  if (!ReadBytes<1u>(bytes)) {
+    return false;
+  }
+  *value = static_cast<int8_t>(numerics::U8FromBigEndian(bytes));
+  return true;
+}
+
 bool BigEndianReader::ReadU16(uint16_t* value) {
   std::array<uint8_t, 2u> bytes;
   if (!ReadBytes<2u>(bytes)) {
     return false;
   }
   *value = U16FromBigEndian(bytes);
+  return true;
+}
+
+bool BigEndianReader::ReadI16(int16_t* value) {
+  std::array<uint8_t, 2u> bytes;
+  if (!ReadBytes<2u>(bytes)) {
+    return false;
+  }
+  *value = static_cast<int16_t>(numerics::U16FromBigEndian(bytes));
   return true;
 }
 
@@ -61,6 +81,15 @@ bool BigEndianReader::ReadU32(uint32_t* value) {
   return true;
 }
 
+bool BigEndianReader::ReadI32(int32_t* value) {
+  std::array<uint8_t, 4u> bytes;
+  if (!ReadBytes<4u>(bytes)) {
+    return false;
+  }
+  *value = static_cast<int32_t>(numerics::U32FromBigEndian(bytes));
+  return true;
+}
+
 bool BigEndianReader::ReadU64(uint64_t* value) {
   std::array<uint8_t, 8u> bytes;
   if (!ReadBytes<8u>(bytes)) {
@@ -70,12 +99,22 @@ bool BigEndianReader::ReadU64(uint64_t* value) {
   return true;
 }
 
-bool BigEndianReader::ReadPiece(StringPiece* out, size_t len) {
+bool BigEndianReader::ReadI64(int64_t* value) {
+  std::array<uint8_t, 8u> bytes;
+  if (!ReadBytes<8u>(bytes)) {
+    return false;
+  }
+  *value = static_cast<int64_t>(numerics::U64FromBigEndian(bytes));
+  return true;
+}
+
+bool BigEndianReader::ReadPiece(std::string_view* out, size_t len) {
   if (len > remaining()) {
     return false;
   }
   auto [view, remain] = buffer_.split_at(len);
-  *out = StringPiece(reinterpret_cast<const char*>(view.data()), view.size());
+  *out =
+      std::string_view(reinterpret_cast<const char*>(view.data()), view.size());
   buffer_ = remain;
   return true;
 }

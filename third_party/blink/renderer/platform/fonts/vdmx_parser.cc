@@ -30,68 +30,15 @@
 
 #include "third_party/blink/renderer/platform/fonts/vdmx_parser.h"
 
-#include "base/sys_byteorder.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-
 #include <stdlib.h>
 #include <string.h>
 
+#include "base/big_endian.h"
+#include "base/containers/span.h"
+#include "base/numerics/byte_conversions.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+
 namespace blink {
-namespace {
-
-// Buffer helper class
-//
-// This class perform some trival buffer operations while checking for
-// out-of-bounds errors. As a family they return false if anything is amiss,
-// updating the current offset otherwise.
-class Buffer {
-  STACK_ALLOCATED();
-
- public:
-  Buffer(const uint8_t* buffer, size_t length)
-      : buffer_(buffer), length_(length), offset_(0) {}
-  Buffer(const Buffer&) = delete;
-  Buffer& operator=(const Buffer&) = delete;
-
-  bool skip(size_t numBytes) {
-    if (offset_ + numBytes > length_)
-      return false;
-    offset_ += numBytes;
-    return true;
-  }
-
-  bool ReadU8(uint8_t* value) {
-    if (offset_ + sizeof(uint8_t) > length_)
-      return false;
-    *value = buffer_[offset_];
-    offset_ += sizeof(uint8_t);
-    return true;
-  }
-
-  bool ReadU16(uint16_t* value) {
-    if (offset_ + sizeof(uint16_t) > length_)
-      return false;
-    memcpy(value, buffer_ + offset_, sizeof(uint16_t));
-    *value = base::NetToHost16(*value);
-    offset_ += sizeof(uint16_t);
-    return true;
-  }
-
-  bool ReadS16(int16_t* value) {
-    return ReadU16(reinterpret_cast<uint16_t*>(value));
-  }
-
-  size_t Offset() const { return offset_; }
-
-  void SetOffset(size_t newoffset) { offset_ = newoffset; }
-
- private:
-  const uint8_t* const buffer_;
-  const size_t length_;
-  size_t offset_;
-};
-
-}  // namespace
 
 // VDMX parsing code.
 //
@@ -114,16 +61,25 @@ class Buffer {
 // See http://www.microsoft.com/opentype/otspec/vdmx.htm
 bool ParseVDMX(int* y_max,
                int* y_min,
-               const uint8_t* vdmx,
+               const uint8_t* vdmx_ptr,
                size_t vdmx_length,
                unsigned target_pixel_size) {
-  Buffer buf(vdmx, vdmx_length);
+  auto vdmx =
+      // TODO(crbug.com/40284755): ParseVDMX should receive a span, not a
+      // pointer and length.
+      UNSAFE_BUFFERS(base::span(vdmx_ptr, vdmx_length));
 
   // We ignore the version. Future tables should be backwards compatible with
   // this layout.
   uint16_t num_ratios;
-  if (!buf.skip(4) || !buf.ReadU16(&num_ratios))
-    return false;
+  {
+    base::BigEndianReader reader(vdmx);
+    if (!reader.Skip(4u) || !reader.ReadU16(&num_ratios)) {
+      return false;
+    }
+  }
+
+  const size_t ratios_offset = 6u;  // Bytes read so far.
 
   // Now we have two tables. Firstly we have @numRatios Ratio records, then a
   // matching array of @numRatios offsets. We save the offset of the beginning
@@ -131,63 +87,79 @@ bool ParseVDMX(int* y_max,
   //
   // Range 6 <= x <= 262146
   size_t offset_table_offset =
-      buf.Offset() + 4 /* sizeof struct ratio */ * num_ratios;
+      ratios_offset + 4u /* sizeof struct ratio */ * num_ratios;
 
   unsigned desired_ratio = 0xffffffff;
   // We read 4 bytes per record, so the offset range is
   //   6 <= x <= 524286
-  for (unsigned i = 0; i < num_ratios; ++i) {
-    uint8_t x_ratio, y_ratio1, y_ratio2;
+  {
+    base::BigEndianReader reader(vdmx.subspan(ratios_offset));
+    for (unsigned i = 0; i < num_ratios; ++i) {
+      uint8_t x_ratio, y_ratio1, y_ratio2;
 
-    if (!buf.skip(1) || !buf.ReadU8(&x_ratio) || !buf.ReadU8(&y_ratio1) ||
-        !buf.ReadU8(&y_ratio2))
-      return false;
+      if (!reader.Skip(1u) || !reader.ReadU8(&x_ratio) ||
+          !reader.ReadU8(&y_ratio1) || !reader.ReadU8(&y_ratio2)) {
+        return false;
+      }
 
-    // This either covers 1:1, or this is the default entry (0, 0, 0)
-    if ((x_ratio == 1 && y_ratio1 <= 1 && y_ratio2 >= 1) ||
-        (x_ratio == 0 && y_ratio1 == 0 && y_ratio2 == 0)) {
-      desired_ratio = i;
-      break;
+      // This either covers 1:1, or this is the default entry (0, 0, 0)
+      if ((x_ratio == 1 && y_ratio1 <= 1 && y_ratio2 >= 1) ||
+          (x_ratio == 0 && y_ratio1 == 0 && y_ratio2 == 0)) {
+        desired_ratio = i;
+        break;
+      }
     }
   }
-
   if (desired_ratio == 0xffffffff)  // no ratio found
     return false;
 
-  // Range 10 <= x <= 393216
-  buf.SetOffset(offset_table_offset + sizeof(uint16_t) * desired_ratio);
-
-  // Now we read from the offset table to get the offset of another array
   uint16_t group_offset;
-  if (!buf.ReadU16(&group_offset))
-    return false;
-  // Range 0 <= x <= 65535
-  buf.SetOffset(group_offset);
-
-  uint16_t num_records;
-  if (!buf.ReadU16(&num_records) || !buf.skip(sizeof(uint16_t)))
-    return false;
-
-  // We read 6 bytes per record, so the offset range is
-  //   4 <= x <= 458749
-  for (unsigned i = 0; i < num_records; ++i) {
-    uint16_t pixel_size;
-    if (!buf.ReadU16(&pixel_size))
+  {
+    // Range 10 <= x <= 393216
+    const size_t offset_of_group_offset =
+        offset_table_offset + sizeof(uint16_t) * desired_ratio;
+    if (offset_of_group_offset + sizeof(uint16_t) > vdmx.size()) {
       return false;
-    // the entries are sorted, so we can abort early if need be
-    if (pixel_size > target_pixel_size)
-      return false;
-
-    if (pixel_size == target_pixel_size) {
-      int16_t temp_y_max, temp_y_min;
-      if (!buf.ReadS16(&temp_y_max) || !buf.ReadS16(&temp_y_min))
-        return false;
-      *y_min = temp_y_min;
-      *y_max = temp_y_max;
-      return true;
     }
-    if (!buf.skip(2 * sizeof(int16_t)))
+    // Now we read from the offset table to get the offset of another array.
+    group_offset = base::numerics::U16FromBigEndian(
+        vdmx.subspan(offset_of_group_offset).first<2u>());
+  }
+
+  {
+    base::BigEndianReader reader(vdmx.subspan(
+        // Range 0 <= x <= 65535
+        group_offset));
+
+    uint16_t num_records;
+    if (!reader.ReadU16(&num_records) || !reader.Skip(sizeof(uint16_t))) {
       return false;
+    }
+
+    // We read 6 bytes per record, so the offset range is
+    //   4 <= x <= 458749
+    for (unsigned i = 0; i < num_records; ++i) {
+      uint16_t pixel_size;
+      if (!reader.ReadU16(&pixel_size)) {
+        return false;
+      }
+      // the entries are sorted, so we can abort early if need be
+      if (pixel_size > target_pixel_size) {
+        return false;
+      }
+
+      if (pixel_size == target_pixel_size) {
+        int16_t temp_y_max, temp_y_min;
+        if (!reader.ReadI16(&temp_y_max) || !reader.ReadI16(&temp_y_min)) {
+          return false;
+        }
+        *y_min = temp_y_min;
+        *y_max = temp_y_max;
+        return true;
+      } else if (!reader.Skip(2 * sizeof(int16_t))) {
+        return false;
+      }
+    }
   }
 
   return false;
