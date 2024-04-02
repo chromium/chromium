@@ -298,9 +298,18 @@ bool KeyboardSettingsAreValid(
     const mojom::Keyboard& keyboard,
     const mojom::KeyboardSettings& settings,
     const mojom::KeyboardPolicies& keyboard_policies) {
+  const bool containsFnKey =
+      base::Contains(keyboard.modifier_keys, ui::mojom::ModifierKey::kFunction);
+
   for (const auto& remapping : settings.modifier_remappings) {
     auto it = base::ranges::find(keyboard.modifier_keys, remapping.first);
     if (it == keyboard.modifier_keys.end()) {
+      return false;
+    }
+    // No modifier key can be remapped to function key if function key is not a
+    // modifier key.
+    if (!containsFnKey &&
+        remapping.second == ui::mojom::ModifierKey::kFunction) {
       return false;
     }
   }

@@ -353,6 +353,13 @@ RetrieveModifierRemappings(const mojom::Keyboard& keyboard,
       continue;
     }
 
+    // Do not add modifier remappings for function key if function key is not a
+    // modifier key.
+    if (to_key == ui::mojom::ModifierKey::kFunction &&
+        !base::Contains(keyboard.modifier_keys, to_key)) {
+      continue;
+    }
+
     modifier_remappings[from_key] = to_key;
   }
 

@@ -829,6 +829,17 @@ TEST_F(InputDeviceSettingsControllerTest, KeyboardSettingsAreValid) {
 
   EXPECT_EQ(observer_->num_keyboards_settings_updated(), 0u);
   EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_updated(), 0u);
+
+  const mojom::KeyboardSettingsPtr new_settings = CreateNewKeyboardSettings();
+  // Function key is not a modifier key so alt key can't be remapped to function
+  // key.
+  new_settings->modifier_remappings[ui::mojom::ModifierKey::kAlt] =
+      ui::mojom::ModifierKey::kFunction;
+  controller_->SetKeyboardSettings((DeviceId)kSampleKeyboardInternal.id,
+                                   new_settings.Clone());
+
+  EXPECT_EQ(observer_->num_keyboards_settings_updated(), 0u);
+  EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_updated(), 0u);
 }
 
 TEST_F(InputDeviceSettingsControllerTest, FkeySettingsAreValid) {

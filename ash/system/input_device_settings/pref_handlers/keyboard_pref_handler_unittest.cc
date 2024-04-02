@@ -687,6 +687,10 @@ TEST_F(KeyboardPrefHandlerTest, InvalidModifierRemappings) {
   invalid_modifier_remappings.Set(
       base::NumberToString(static_cast<int>(ui::mojom::ModifierKey::kAlt)),
       static_cast<int>(ui::mojom::ModifierKey::kMinValue) - 1);
+  invalid_modifier_remappings.Set(
+      base::NumberToString(
+          static_cast<int>(ui::mojom::ModifierKey::kBackspace)),
+      static_cast<int>(ui::mojom::ModifierKey::kFunction));
 
   // Set 1 valid modifier remapping to check that it skips invalid remappings,
   // and keeps the valid.
