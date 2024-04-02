@@ -657,9 +657,8 @@ bool GpuDataManagerImplPrivate::GpuAccessAllowedForHardwareGpu(
 void GpuDataManagerImplPrivate::RequestDx12VulkanVideoGpuInfoIfNeeded(
     GpuDataManagerImpl::GpuInfoRequest request,
     bool delayed) {
-  if (request & GpuDataManagerImpl::kGpuInfoRequestDirectX) {
-    RequestGpuSupportedDirectXVersion(delayed);
-  }
+  if (request & GpuDataManagerImpl::kGpuInfoRequestDx12)
+    RequestGpuSupportedDx12Version(delayed);
 
   if (request & GpuDataManagerImpl::kGpuInfoRequestVulkan)
     RequestGpuSupportedVulkanVersion(delayed);
@@ -673,8 +672,7 @@ void GpuDataManagerImplPrivate::RequestDx12VulkanVideoGpuInfoIfNeeded(
   }
 }
 
-void GpuDataManagerImplPrivate::RequestGpuSupportedDirectXVersion(
-    bool delayed) {
+void GpuDataManagerImplPrivate::RequestGpuSupportedDx12Version(bool delayed) {
 #if BUILDFLAG(IS_WIN)
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   base::TimeDelta delta;
@@ -686,15 +684,14 @@ void GpuDataManagerImplPrivate::RequestGpuSupportedDirectXVersion(
   base::OnceClosure task = base::BindOnce(
       [](base::TimeDelta delta) {
         GpuDataManagerImpl* manager = GpuDataManagerImpl::GetInstance();
-        if (manager->DirectXRequested()) {
+        if (manager->Dx12Requested())
           return;
-        }
 
         base::CommandLine* command_line =
             base::CommandLine::ForCurrentProcess();
         if (command_line->HasSwitch(
                 switches::kDisableGpuProcessForDX12InfoCollection)) {
-          manager->UpdateDirectXRequestStatus(false);
+          manager->UpdateDx12RequestStatus(false);
           return;
         }
 
@@ -704,32 +701,30 @@ void GpuDataManagerImplPrivate::RequestGpuSupportedDirectXVersion(
         // should be available by the time this task starts to run. In the case
         // of no delay, which is for testing only, don't check the GPU ID
         // because the ID is not available yet.
-        const gpu::GPUInfo::GPUDevice& gpu = manager->GetGPUInfo().gpu;
+        const gpu::GPUInfo::GPUDevice gpu = manager->GetGPUInfo().gpu;
         if ((gpu.vendor_id == 0xffff && gpu.device_id == 0xffff) ||
             (!delta.is_zero() && gpu.vendor_id == 0 && gpu.device_id == 0)) {
-          manager->UpdateDirectXRequestStatus(false);
+          manager->UpdateDx12RequestStatus(false);
           return;
         }
 
         GpuProcessHost* host = GpuProcessHost::Get(
             GPU_PROCESS_KIND_INFO_COLLECTION, true /* force_create */);
         if (!host) {
-          manager->UpdateDirectXRequestStatus(false);
+          manager->UpdateDx12RequestStatus(false);
           return;
         }
 
-        manager->UpdateDirectXRequestStatus(true);
+        manager->UpdateDx12RequestStatus(true);
         host->info_collection_gpu_service()
-            ->GetGpuSupportedDirectXVersionAndDevicePerfInfo(
+            ->GetGpuSupportedDx12VersionAndDevicePerfInfo(
                 base::BindOnce([](uint32_t d3d12_feature_level,
                                   uint32_t highest_shader_model_version,
-                                  uint32_t directml_feature_level,
                                   const gpu::DevicePerfInfo& device_perf_info) {
                   GpuDataManagerImpl* manager =
                       GpuDataManagerImpl::GetInstance();
-                  manager->UpdateDirectXInfo(d3d12_feature_level,
-                                             directml_feature_level);
-                  // UpdateDirectXInfo() needs to be called before
+                  manager->UpdateDx12Info(d3d12_feature_level);
+                  // UpdateDx1Info() needs to be called before
                   // UpdateDevicePerfInfo() because only the latter calls
                   // NotifyGpuInfoUpdate().
                   manager->UpdateDevicePerfInfo(device_perf_info);
@@ -922,9 +917,9 @@ bool GpuDataManagerImplPrivate::IsDx12VulkanVersionAvailable() const {
   // This function returns the status of availability to the tests based on
   // whether gpu info has been requested or not.
 
-  return (gpu_info_dx_valid_ && gpu_info_vulkan_valid_) ||
-         (!gpu_info_dx_requested_ || !gpu_info_vulkan_requested_) ||
-         (gpu_info_dx_request_failed_ || gpu_info_vulkan_request_failed_);
+  return (gpu_info_dx12_valid_ && gpu_info_vulkan_valid_) ||
+         (!gpu_info_dx12_requested_ || !gpu_info_vulkan_requested_) ||
+         (gpu_info_dx12_request_failed_ || gpu_info_vulkan_request_failed_);
 #else
   return true;
 #endif
@@ -996,7 +991,6 @@ void GpuDataManagerImplPrivate::UpdateGpuInfo(
   // If GPU process crashes and launches again, GPUInfo will be sent back from
   // the new GPU process again, and may overwrite the DX12, Vulkan, info we
   // already collected. This is to make sure it doesn't happen.
-  uint32_t directml_feature_level = gpu_info_.directml_feature_level;
   uint32_t d3d12_feature_level = gpu_info_.d3d12_feature_level;
   uint32_t vulkan_version = gpu_info_.vulkan_version;
 #endif
@@ -1008,9 +1002,6 @@ void GpuDataManagerImplPrivate::UpdateGpuInfo(
   }
   if (vulkan_version != 0) {
     gpu_info_.vulkan_version = vulkan_version;
-  }
-  if (directml_feature_level != 0) {
-    gpu_info_.directml_feature_level = directml_feature_level;
   }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -1060,14 +1051,10 @@ void GpuDataManagerImplPrivate::UpdateGpuInfo(
 }
 
 #if BUILDFLAG(IS_WIN)
-
-void GpuDataManagerImplPrivate::UpdateDirectXInfo(
-    uint32_t d3d12_feature_level,
-    uint32_t directml_feature_level) {
+void GpuDataManagerImplPrivate::UpdateDx12Info(uint32_t d3d12_feature_level) {
   gpu_info_.d3d12_feature_level = d3d12_feature_level;
-  gpu_info_.directml_feature_level = directml_feature_level;
-  gpu_info_dx_valid_ = true;
-  // No need to call NotifyGpuInfoUpdate() because UpdateDirectXInfo() is
+  gpu_info_dx12_valid_ = true;
+  // No need to call NotifyGpuInfoUpdate() because UpdateDx12Info() is
   // always called together with UpdateDevicePerfInfo, which calls
   // NotifyGpuInfoUpdate().
 }
@@ -1105,12 +1092,12 @@ void GpuDataManagerImplPrivate::UpdateDXGIInfo(
       FROM_HERE, base::BindOnce(&HDRProxy::GotResult, std::move(dxgi_info)));
 }
 
-void GpuDataManagerImplPrivate::UpdateDirectXRequestStatus(
+void GpuDataManagerImplPrivate::UpdateDx12RequestStatus(
     bool request_continues) {
-  gpu_info_dx_requested_ = true;
-  gpu_info_dx_request_failed_ = !request_continues;
+  gpu_info_dx12_requested_ = true;
+  gpu_info_dx12_request_failed_ = !request_continues;
 
-  if (gpu_info_dx_request_failed_) {
+  if (gpu_info_dx12_request_failed_) {
     gpu::DevicePerfInfo device_perf_info;
     gpu::CollectDevicePerfInfo(&device_perf_info, /*in_browser_process=*/true);
     UpdateDevicePerfInfo(device_perf_info);
@@ -1123,8 +1110,8 @@ void GpuDataManagerImplPrivate::UpdateVulkanRequestStatus(
   gpu_info_vulkan_request_failed_ = !request_continues;
 }
 
-bool GpuDataManagerImplPrivate::DirectXRequested() const {
-  return gpu_info_dx_requested_;
+bool GpuDataManagerImplPrivate::Dx12Requested() const {
+  return gpu_info_dx12_requested_;
 }
 
 bool GpuDataManagerImplPrivate::VulkanRequested() const {
@@ -1134,10 +1121,9 @@ bool GpuDataManagerImplPrivate::VulkanRequested() const {
 void GpuDataManagerImplPrivate::TerminateInfoCollectionGpuProcess() {
   // Wait until DX12/Vulkan and DevicePerfInfo requests are all complete.
   // gpu_info_dx12_valid_ is always updated before device_perf_info
-  if (gpu_info_dx_requested_ && !gpu_info_dx_request_failed_ &&
-      !gpu::GetDevicePerfInfo().has_value()) {
+  if (gpu_info_dx12_requested_ && !gpu_info_dx12_request_failed_ &&
+      !gpu::GetDevicePerfInfo().has_value())
     return;
-  }
 
   if (gpu_info_vulkan_requested_ && !gpu_info_vulkan_request_failed_ &&
       !gpu_info_vulkan_valid_)
@@ -1167,15 +1153,15 @@ void GpuDataManagerImplPrivate::PostCreateThreads() {
   if (command_line->HasSwitch(switches::kNoDelayForDX12VulkanInfoCollection)) {
     // This is for the info collection test of the gpu integration tests.
     RequestDx12VulkanVideoGpuInfoIfNeeded(
-        GpuDataManagerImpl::kGpuInfoRequestDirectXVulkan,
+        GpuDataManagerImpl::kGpuInfoRequestDx12Vulkan,
         /*delayed=*/false);
   } else {
-    // Launch the info collection GPU process to collect DX12 and DirectML
-    // support information for UMA at the start of the browser. Not to affect
-    // Chrome startup, this is done in a delayed mode,  i.e., 120 seconds after
-    // Chrome startup.
+    // Launch the info collection GPU process to collect DX12 support
+    // information for UMA at the start of the browser.
+    // Not to affect Chrome startup, this is done in a delayed mode,  i.e., 120
+    // seconds after Chrome startup.
     RequestDx12VulkanVideoGpuInfoIfNeeded(
-        GpuDataManagerImpl::kGpuInfoRequestDirectX, /*delayed=*/true);
+        GpuDataManagerImpl::kGpuInfoRequestDx12, /*delayed=*/true);
   }
 
   // Observer for display change.

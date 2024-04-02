@@ -375,10 +375,6 @@ struct GPU_EXPORT StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo> {
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
-  static uint32_t directml_feature_level(const gpu::GPUInfo& input) {
-    return input.directml_feature_level;
-  }
-
   static uint32_t d3d12_feature_level(const gpu::GPUInfo& input) {
     return input.d3d12_feature_level;
   }

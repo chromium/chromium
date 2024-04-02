@@ -43,33 +43,30 @@ void InfoCollectionGpuServiceImpl::BindOnIO(
   receiver_.Bind(std::move(pending_receiver));
 }
 
-void InfoCollectionGpuServiceImpl::
-    GetGpuSupportedDirectXVersionAndDevicePerfInfo(
-        GetGpuSupportedDirectXVersionAndDevicePerfInfoCallback callback) {
+void InfoCollectionGpuServiceImpl::GetGpuSupportedDx12VersionAndDevicePerfInfo(
+    GetGpuSupportedDx12VersionAndDevicePerfInfoCallback callback) {
   DCHECK(io_runner_->BelongsToCurrentThread());
 
   main_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&InfoCollectionGpuServiceImpl::
-                         GetGpuSupportedDirectXVersionAndDevicePerfInfoOnMain,
+                         GetGpuSupportedDx12VersionAndDevicePerfInfoOnMain,
                      base::Unretained(this), std::move(callback)));
 }
 
 void InfoCollectionGpuServiceImpl::
-    GetGpuSupportedDirectXVersionAndDevicePerfInfoOnMain(
-        GetGpuSupportedDirectXVersionAndDevicePerfInfoCallback callback) {
+    GetGpuSupportedDx12VersionAndDevicePerfInfoOnMain(
+        GetGpuSupportedDx12VersionAndDevicePerfInfoCallback callback) {
   DCHECK(main_runner_->BelongsToCurrentThread());
 
   uint32_t d3d12_feature_level = 0;
   uint32_t highest_shader_model_version = 0;
-  uint32_t directml_feature_level = 0;
-  gpu::GetGpuSupportedDirectXVersion(d3d12_feature_level,
-                                     highest_shader_model_version,
-                                     directml_feature_level);
+  gpu::GetGpuSupportedD3D12Version(d3d12_feature_level,
+                                   highest_shader_model_version);
   io_runner_->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), d3d12_feature_level,
-                                highest_shader_model_version,
-                                directml_feature_level, device_perf_info_));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), d3d12_feature_level,
+                     highest_shader_model_version, device_perf_info_));
 }
 
 void InfoCollectionGpuServiceImpl::GetGpuSupportedVulkanVersionInfo(
