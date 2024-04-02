@@ -2629,6 +2629,7 @@ crbug.com/331837315 [ Mac14 ] external/wpt/html/semantics/forms/the-select-eleme
 crbug.com/331837315 [ Mac13 ] external/wpt/html/semantics/forms/the-select-element/stylable-select/select-keyboard-behavior.tentative.html [ Timeout ]
 crbug.com/331837315 [ Mac12 ] external/wpt/html/semantics/forms/the-select-element/stylable-select/select-keyboard-behavior.tentative.html [ Timeout ]
 crbug.com/331837315 [ Mac11 ] external/wpt/html/semantics/forms/the-select-element/stylable-select/select-keyboard-behavior.tentative.html [ Timeout ]
+crbug.com/626703 [ Mac14-arm64 ] external/wpt/html/semantics/forms/the-select-element/stylable-select/select-keyboard-behavior.tentative.html [ Timeout ]
 crbug.com/331835714 [ Win11-arm64 ] external/wpt/webaudio/the-audio-api/the-audionode-interface/audionode.html [ Failure Timeout ]
 crbug.com/331915503 [ Mac11 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/notify-event-iframe.https.html [ Skip Timeout ]
 crbug.com/331851044 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/elementwise_binary.https.any.html [ Skip Timeout ]

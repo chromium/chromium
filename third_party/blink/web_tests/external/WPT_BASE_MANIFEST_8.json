@@ -17927,7 +17927,7 @@
    },
    "payment-method-basic-card": {
     "billing-address-is-null-manual.https.html": [
-     "3250e0a2c550e89b4744a34341e68cd2ae063cea",
+     "5eac71963eb478e9d4f1df2fc7bd5c0c1579bc0f",
      [
       null,
       {}
@@ -17942,6 +17942,52 @@
     ]
    },
    "payment-request": {
+    "PaymentAddress": {
+     "attributes-and-toJSON-method-manual.https.html": [
+      "fc1ce3523e57a0a023041f21e18d4de37b390823",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
+    "PaymentRequestUpdateEvent": {
+     "updateWith-call-immediate-manual.https.html": [
+      "1365ecefebeb279db2ede9de99d2f0c984708c5a",
+      [
+       null,
+       {}
+      ]
+     ],
+     "updateWith-duplicate-shipping-options-manual.https.html": [
+      "a4a7afd7f6337c3134d254f1257463d69efd30fc",
+      [
+       null,
+       {}
+      ]
+     ],
+     "updateWith-incremental-update-manual.https.html": [
+      "c1ed1b5f6850c7f26566ffb6e98b06ea51739e15",
+      [
+       null,
+       {}
+      ]
+     ],
+     "updateWith-method-abort-update-manual.https.html": [
+      "e24452c2a99d301b8eac033083e3795e54bbe16a",
+      [
+       null,
+       {}
+      ]
+     ],
+     "updateWith-state-checks-manual.https.html": [
+      "fb16de5699aa74e9fb71788e2378df6e21847f12",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
     "PaymentValidationErrors": {
      "retry-shows-error-member-manual.https.html": [
       "9135520cd762f3e6286b5f3ba572f88cae920fa1",
@@ -17956,8 +18002,50 @@
        null,
        {}
       ]
+     ],
+     "retry-shows-shippingAddress-member-manual.https.html": [
+      "94e6fa5105b20a7127292de57adcfb20f3b806e8",
+      [
+       null,
+       {}
+      ]
      ]
     },
+    "algorithms-manual.https.html": [
+     "b90c312aba3bf4978986defe00f5195c74b88b61",
+     [
+      null,
+      {}
+     ]
+    ],
+    "billing-address-changed-manual.https.html": [
+     "d03f7615187eb52cd6d980665aae9758d97b19f1",
+     [
+      null,
+      {}
+     ]
+    ],
+    "change-shipping-option-manual.https.html": [
+     "438001804acdaca21410ce0d367a8208cac60aff",
+     [
+      null,
+      {}
+     ]
+    ],
+    "change-shipping-option-select-last-manual.https.html": [
+     "4ad31d65317338f0474c24e6e35688eb8f2b4cbe",
+     [
+      null,
+      {}
+     ]
+    ],
+    "dynamically-change-shipping-options-manual.https.html": [
+     "0e6670a1b824524872b8317b4258196379214e46",
+     [
+      null,
+      {}
+     ]
+    ],
     "payment-request-hasenrolledinstrument-method-manual.tentative.https.html": [
      "e6b164f7cc7b8f1c57b8fa9fd14cbc7f5ef81eea",
      [
@@ -18035,8 +18123,50 @@
        null,
        {}
       ]
+     ],
+     "retry-method-manual.https.html": [
+      "a5aab49e387d326c68bcca32d2ad5fe59385f517",
+      [
+       null,
+       {}
+      ]
+     ],
+     "retry-method-warnings-manual.https.html": [
+      "b68bf18309702c481c76adef0cddee24cbd1b543",
+      [
+       null,
+       {}
+      ]
+     ],
+     "shippingAddress-attribute-manual.https.html": [
+      "f9f0a6e4faf2f05912e4ee721c23dbb840fcf6c8",
+      [
+       null,
+       {}
+      ]
+     ],
+     "shippingOption-attribute-manual.https.html": [
+      "687d3a52de9f6bfdb10456147586008b18683eb2",
+      [
+       null,
+       {}
+      ]
      ]
     },
+    "shipping-address-changed-manual.https.html": [
+     "aad57cd724c69ba665a8a6e47f390daa90f059f2",
+     [
+      null,
+      {}
+     ]
+    ],
+    "show-method-optional-promise-resolves-manual.https.html": [
+     "5360a9704af459f30180f938d12828f6dbf1b570",
+     [
+      null,
+      {}
+     ]
+    ],
     "show-method-postmessage-manual.https.html": [
      "0751920e375a2fa4a9a25b432a510808e03d7fef",
      [
@@ -18044,8 +18174,22 @@
       {}
      ]
     ],
+    "updateWith-method-pmi-handling-manual.https.html": [
+     "1a52978ca3e312392c754c08267405723e5f8800",
+     [
+      null,
+      {}
+     ]
+    ],
     "user-abort-algorithm-manual.https.html": [
      "078bf3d61ae6e75b3ccf0fed8a987e6b7cd36ffe",
+     [
+      null,
+      {}
+     ]
+    ],
+    "user-accepts-payment-request-algo-manual.https.html": [
+     "300f04811fdf2d9bbdf8f8730a1ca620385f2408",
      [
       null,
       {}
@@ -70305,6 +70449,19 @@
        [
         [
          "/css/css-anchor-position/reference/anchor-position-circular-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "anchor-position-dynamic-005.html": [
+      "b22a060cbda81b2edcc0ad94c51df395bd92e531",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
          "=="
         ]
        ],
@@ -372949,7 +373106,7 @@
      []
     ],
     "input-events-exec-command-expected.txt": [
-     "8df7c1dba99fa01f6023e7f2577f09d15cae2049",
+     "c812c9cf09751e4756cc7df0f496c322de8e89cf",
      []
     ],
     "input-events-get-target-ranges-deleting-range-across-editing-host-boundaries.tentative-expected.txt": [
@@ -378462,7 +378619,7 @@
     ],
     "payment-response": {
      "helpers.js": [
-      "1242ecb743c9a710e4597e2524a11bc24c2a3c6a",
+      "3e4f5cfd36f898c116717c1151806f966511a945",
       []
      ]
     },
@@ -378489,7 +378646,7 @@
      []
     ],
     "show-method-optional-promise-rejects.https-expected.txt": [
-     "0c44ef6d35868f7cd7bbc6f6da583d7b800eb225",
+     "a80d8a32c89ccd71511c095dff5e53f7660246ce",
      []
     ],
     "show-method-postmessage-iframe.html": [
@@ -481646,6 +481803,17 @@
        "06bf2e26b544184ba0df858fbfb0ff3adf9daa85",
        [
         "dom/observable/tentative/observable-map.window.html",
+        {}
+       ]
+      ],
+      "observable-switchMap.any.js": [
+       "836a39a68e00f15c7e42a80354feb9ad7842c22d",
+       [
+        "dom/observable/tentative/observable-switchMap.any.html",
+        {}
+       ],
+       [
+        "dom/observable/tentative/observable-switchMap.any.worker.html",
         {}
        ]
       ],
@@ -592951,7 +593119,7 @@
       ]
      ],
      "loaf-stream-source-location.html": [
-      "5776ff5255243609132aa046e1ede5a3f8de1720",
+      "0fd30859d738dec410b9b8d20c0c9ba8c2f61294",
       [
        null,
        {
@@ -592960,7 +593128,7 @@
       ]
      ],
      "loaf-stream.html": [
-      "424f2cd0d1e629ab89df5c29a206b49b2d2fff51",
+      "e35bc2f9aa7d7de7a6ac224b9befde30d128e85c",
       [
        null,
        {
@@ -603436,7 +603604,7 @@
       ]
      ],
      "updatewith-method.https.html": [
-      "9a60fe7a4c0a6090f829f934331ef692429fd4e3",
+      "fffd3b3ec544c907a4354ffec2dd46505b8d4cf5",
       [
        null,
        {}
@@ -603460,7 +603628,7 @@
      ]
     ],
     "historical.https.html": [
-     "aa183a58cdb9fcaf206b826677524336a86ffbab",
+     "3e881d0122b4131944504215da33045cd92aab67",
      [
       null,
       {}
@@ -603519,15 +603687,24 @@
       }
      ]
     ],
+    "payment-request-constructor-thcrash.https.html": [
+     "b6003070851459a5c72218951fe47251cfec9dc6",
+     [
+      null,
+      {
+       "timeout": "long"
+      }
+     ]
+    ],
     "payment-request-constructor.https.sub.html": [
-     "c1ecc225838b3b663c40cef417ba081d9a2805ef",
+     "9b0ad06454f9330ba4115bff2990647b47adbd2d",
      [
       null,
       {}
      ]
     ],
     "payment-request-ctor-currency-code-checks.https.sub.html": [
-     "c608608c7ebdeaeeb2b223eb7d216b4708a2c00f",
+     "b4ca2a0c40b39b3c922343a9a74341b69a338459",
      [
       null,
       {}
@@ -603588,6 +603765,41 @@
       {}
      ]
     ],
+    "payment-request-onshippingaddresschange-attribute.https.html": [
+     "5b2538992f76c774259f52b734bc844468fc14f7",
+     [
+      null,
+      {}
+     ]
+    ],
+    "payment-request-onshippingoptionchange-attribute.https.html": [
+     "43ea5dcce87afe9dff0387891d57c3265be303f5",
+     [
+      null,
+      {}
+     ]
+    ],
+    "payment-request-shippingAddress-attribute.https.html": [
+     "08918356b6fea393fd993f7ce7b2c7871892a98b",
+     [
+      null,
+      {}
+     ]
+    ],
+    "payment-request-shippingOption-attribute.https.html": [
+     "b5f9ea65c6c8e0deff02f12e529f09ba96720571",
+     [
+      null,
+      {}
+     ]
+    ],
+    "payment-request-shippingType-attribute.https.html": [
+     "11f75b1c862224b5655cb724d8c8f5b25ab1af00",
+     [
+      null,
+      {}
+     ]
+    ],
     "payment-request-show-method.https.html": [
      "d3385b5468b8fc6cfd954df4e77c5959f8ceb32f",
      [
@@ -603625,7 +603837,7 @@
      ]
     ],
     "show-method-optional-promise-rejects.https.html": [
-     "4a41f28fc9be1612ec06a71b9fce641b1dfd688d",
+     "3b42965503922d88213409dc814300c05b3a672f",
      [
       null,
       {
