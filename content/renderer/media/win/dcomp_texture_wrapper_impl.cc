@@ -39,6 +39,10 @@ class DCOMPTextureMailboxResources
     last_sync_token_ = sync_token;
   }
 
+  scoped_refptr<gpu::ClientSharedImage> GetSharedImage() {
+    return shared_image_;
+  }
+
   DCOMPTextureFactory* Factory() { return factory_.get(); }
 
  private:
@@ -166,9 +170,8 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
   // No need to wait on any sync token as the SharedImage |mailbox_| should be
   // ready for use.
   scoped_refptr<gpu::ClientSharedImage> shared_image;
-  if (!mailbox_added_) {
+  if (!dcomp_texture_resources_) {
     DVLOG_FUNC(1) << "AddMailbox";
-    mailbox_added_ = true;
     gpu::SharedImageInterface* sii = factory_->SharedImageInterface();
 
     // The SI backing this VideoFrame will be read by the display compositor and
@@ -185,20 +188,19 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
                                 gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                                     gpu::SHARED_IMAGE_USAGE_GLES2_READ |
                                     gpu::SHARED_IMAGE_USAGE_RASTER_READ);
-  }
-
-  gpu::MailboxHolder holders[media::VideoFrame::kMaxPlanes] = {
-      gpu::MailboxHolder(mailbox_, gpu::SyncToken(), GL_TEXTURE_EXTERNAL_OES)};
-
-  if (!dcomp_texture_resources_) {
     CHECK(shared_image);
     dcomp_texture_resources_ =
         base::MakeRefCounted<DCOMPTextureMailboxResources>(
             std::move(shared_image), factory_);
   }
 
-  auto frame = media::VideoFrame::WrapNativeTextures(
-      media::PIXEL_FORMAT_BGRA, holders,
+  scoped_refptr<gpu::ClientSharedImage>
+      shared_images[media::VideoFrame::kMaxPlanes] = {
+          dcomp_texture_resources_->GetSharedImage()};
+
+  auto frame = media::VideoFrame::WrapSharedImages(
+      media::PIXEL_FORMAT_BGRA, shared_images, gpu::SyncToken(),
+      GL_TEXTURE_EXTERNAL_OES,
       base::BindPostTask(
           media_task_runner_,
           base::BindOnce(&OnReleaseVideoFrame, dcomp_texture_resources_)),

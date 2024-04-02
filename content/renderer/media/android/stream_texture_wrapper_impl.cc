@@ -66,12 +66,6 @@ void StreamTextureWrapperImpl::CreateVideoFrame(
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
     const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info) {
-  // This message comes from GPU process when the SharedImage is already
-  // created, so we don't need to wait on any synctoken, mailbox is ready to
-  // use.
-  gpu::MailboxHolder holders[media::VideoFrame::kMaxPlanes] = {
-      gpu::MailboxHolder(mailbox, gpu::SyncToken(), GL_TEXTURE_EXTERNAL_OES)};
-
   gpu::SharedImageInterface* sii = factory_->SharedImageInterface();
   // The SI backing this VideoFrame will be read by the display compositor and
   // raster. The latter will be over GL if not using OOP-R. NOTE: GL usage can
@@ -83,6 +77,9 @@ void StreamTextureWrapperImpl::CreateVideoFrame(
                               gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                                   gpu::SHARED_IMAGE_USAGE_GLES2_READ |
                                   gpu::SHARED_IMAGE_USAGE_RASTER_READ);
+  scoped_refptr<gpu::ClientSharedImage>
+      shared_images[media::VideoFrame::kMaxPlanes];
+  shared_images[0] = shared_image;
 
   // The pixel format doesn't matter here as long as it's valid for texture
   // frames. But SkiaRenderer wants to ensure that the format of the resource
@@ -91,9 +88,14 @@ void StreamTextureWrapperImpl::CreateVideoFrame(
   // image. crbug.com/1028746. Since we create all the textures/abstract
   // textures as well as shared images for video to be of format RGBA, we need
   // to use the pixel format as ABGR here(which corresponds to 32bpp RGBA).
+  //
+  // This message comes from GPU process when the SharedImage is already
+  // created, so we don't need to wait on any synctoken, mailbox is ready to
+  // use.
   scoped_refptr<media::VideoFrame> new_frame =
-      media::VideoFrame::WrapNativeTextures(
-          media::PIXEL_FORMAT_ABGR, holders,
+      media::VideoFrame::WrapSharedImages(
+          media::PIXEL_FORMAT_ABGR, shared_images, gpu::SyncToken(),
+          GL_TEXTURE_EXTERNAL_OES,
           base::BindPostTask(main_task_runner_,
                              base::BindOnce(&OnReleaseVideoFrame, factory_,
                                             std::move(shared_image))),
