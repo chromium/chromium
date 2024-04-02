@@ -232,6 +232,7 @@ unit tests.
 - client_6.key
 - client_6.pk8
 - client_6_ca.pem
+- client_1_u16_password.p12
 - client_root_ca.pem
      This is a set of files used to unit test SSL client certificate
      authentication.
@@ -254,6 +255,9 @@ unit tests.
      - client_6.pem is similar to client_2.pem but is a P-521 ECDSA key rather
        than RSA.
      - client_root_ca.pem is the CA certificate which signed client_*_ca.pem.
+     - client_1_u16_password.p12 contains the client_1.key and client_1.pem key
+       and certificate, but is encoded as a PKCS#12 file and has a password with
+       UTF-16 symbols ("Hello, 世界").
 
 ===== From net/data/ssl/scripts/generate-bad-eku-certs.sh
 - eku-test-root.pem
@@ -312,6 +316,6 @@ unit tests.
      Self-signed P-256 certificates with various combinations of keyUsage
      flags. Their private key is key_usage_p256.key.
 
-===== From net/data/ssl/scripts/generate-key-usage-certs.sh
+===== From net/data/ssl/scripts/generate_2_client_certs_1_key.sh
 - 2_client_certs_1_key.p12
      Key pair and two client certificates for it in a single .p12 file.

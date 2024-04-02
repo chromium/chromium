@@ -260,6 +260,13 @@ try openssl pkcs12 \
   -export \
   -passout pass:chrome
 
+try openssl pkcs12 \
+  -inkey out/A.key \
+  -in out/A.pem \
+  -out out/client_1_u16_password.p12 \
+  -export \
+  -passout pass:"Hello, 世界"
+
 echo Package the client certs for unit tests
 try cp out/A.pem ../certificates/client_1.pem
 try cp out/A.key ../certificates/client_1.key
@@ -295,5 +302,7 @@ try cp out/J.pem ../certificates/client_7.pem
 try cp out/J.key ../certificates/client_7.key
 try cp out/J.pk8 ../certificates/client_7.pk8
 try cp out/E.pem ../certificates/client_7_ca.pem
+
+try cp out/client_1_u16_password.p12 ../certificates/client_1_u16_password.p12
 
 try cp out/C.pem ../certificates/client_root_ca.pem

@@ -39,6 +39,7 @@ data/ssl/certificates/client_1.key
 data/ssl/certificates/client_1.pem
 data/ssl/certificates/client_1.pk8
 data/ssl/certificates/client_1_ca.pem
+data/ssl/certificates/client_1_u16_password.p12
 data/ssl/certificates/client_2.key
 data/ssl/certificates/client_2.pem
 data/ssl/certificates/client_2.pk8

@@ -2657,5 +2657,58 @@ TEST_F(KcerNssImportPkcs12Test, EmptyPassword) {
   }
 }
 
+// PKCS#12 import: test that Kcer correctly handles files with passwords that
+// contain wide characters.
+TEST_F(KcerNssImportPkcs12Test, NonAsciiPassword) {
+  InitializeKcer({Token::kUser});
+  SlotId slot_id(user_token_->GetSlotId());
+
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<2>(
+          std::vector<ObjectHandle>{ObjectHandle(1)}, chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_client_, CreateObject)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<2>(ObjectHandle(1),
+                                                   chromeos::PKCS11_CKR_OK));
+
+  std::vector<uint8_t> pkcs12_data = ReadTestFile("client_1_u16_password.p12");
+
+  // Incorrect password should be rejected.
+  {
+    const std::string kNonAsciiPassword = "Wrong Password, Hello, 世界";
+    base::test::TestFuture<base::expected<void, Error>> import_waiter;
+    kcer_->ImportPkcs12Cert(
+        Token::kUser, Pkcs12Blob(pkcs12_data), kNonAsciiPassword,
+        /*hardware_backed=*/false,
+        /*mark_as_migrated=*/true, import_waiter.GetCallback());
+    EXPECT_FALSE(import_waiter.Get().has_value());
+  }
+
+  // Correct password should be accepted.
+  {
+    const std::string kNonAsciiPassword = "Hello, 世界";
+    base::test::TestFuture<base::expected<void, Error>> import_waiter;
+    kcer_->ImportPkcs12Cert(
+        Token::kUser, Pkcs12Blob(pkcs12_data), kNonAsciiPassword,
+        /*hardware_backed=*/false,
+        /*mark_as_migrated=*/true, import_waiter.GetCallback());
+    EXPECT_TRUE(import_waiter.Get().has_value());
+  }
+
+  // Chrome currently converts a std::u16string into std::string at some point
+  // using the helper from base::, double check that the helper works as
+  // expected.
+  {
+    const std::u16string kUtf16NonAsciiPassword = u"Hello, 世界";
+    const std::string kConvertedPassword =
+        base::UTF16ToUTF8(kUtf16NonAsciiPassword);
+    base::test::TestFuture<base::expected<void, Error>> import_waiter;
+    kcer_->ImportPkcs12Cert(
+        Token::kUser, Pkcs12Blob(pkcs12_data), kConvertedPassword,
+        /*hardware_backed=*/false,
+        /*mark_as_migrated=*/true, import_waiter.GetCallback());
+    EXPECT_TRUE(import_waiter.Get().has_value());
+  }
+}
+
 }  // namespace
 }  // namespace kcer
