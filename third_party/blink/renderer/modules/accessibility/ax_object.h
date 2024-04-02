@@ -897,6 +897,9 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Returns 0-based index.
   int IndexInParent() const;
 
+  // Returns true if the object is not orphaned and has no siblings.
+  bool IsOnlyChild() const;
+
   // Value should be 1-based. 0 means not supported.
   virtual int PosInSet() const { return 0; }
   virtual int SetSize() const { return 0; }

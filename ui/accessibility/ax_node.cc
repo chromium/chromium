@@ -1158,7 +1158,7 @@ gfx::RectF AXNode::GetTextContentRangeBoundsUTF16(int start_offset,
       GetIntListAttribute(ax::mojom::IntListAttribute::kCharacterOffsets);
   int character_offsets_length =
       base::checked_cast<int>(character_offsets.size());
-  // Charactger offsets are always based on the UTF-16 representation of the
+  // Character offsets are always based on the UTF-16 representation of the
   // text.
   if (character_offsets_length < GetTextContentLengthUTF16()) {
     // Blink might not return pixel offsets for all characters. Clamp the

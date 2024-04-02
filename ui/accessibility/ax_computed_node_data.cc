@@ -10,6 +10,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_position.h"
@@ -446,6 +447,19 @@ void AXComputedNodeData::ComputeWordOffsetsIfNeeded() const {
 }
 
 std::string AXComputedNodeData::ComputeTextContentUTF8() const {
+  // Name is omitted from an inline text if an only child since its value is
+  // the same as the parent. We can differentiate this case from a specified
+  // but empty name based on the name from attribute, which is kFromContent if
+  // set and kNone if the text content is to be inferred from the parent.
+  if (::features::IsAccessibilityPruneRedundantInlineTextEnabled()) {
+    if (owner_->data().role == ax::mojom::Role::kInlineTextBox &&
+        owner_->data().GetNameFrom() == ax::mojom::NameFrom::kNone &&
+        !owner_->data().HasStringAttribute(ax::mojom::StringAttribute::kName)) {
+      return owner_->GetParent()->data().GetStringAttribute(
+          ax::mojom::StringAttribute::kName);
+    }
+  }
+
   // If a text field has no descendants, then we compute its text content from
   // its value or its placeholder. Otherwise we prefer to look at its descendant
   // text nodes because Blink doesn't always add all trailing white space to the
