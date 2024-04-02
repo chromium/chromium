@@ -2876,7 +2876,7 @@
 <translation id="3149510190863420837">Приложения Chrome</translation>
 <translation id="3150693969729403281">Запустить проверку безопасности</translation>
 <translation id="3150927491400159470">Жесткая перезагрузка</translation>
-<translation id="315116470104423982">Мобильное подключение</translation>
+<translation id="315116470104423982">Мобильный интернет</translation>
 <translation id="3151539355209957474">Время начала</translation>
 <translation id="3151562827395986343">Удалить файлы cookie и данные сайтов, очистить историю и кеш</translation>
 <translation id="3151786313568798007">Ориентация</translation>
@@ -8509,7 +8509,7 @@
 <translation id="7581007437437492586">Правила настроены верно.</translation>
 <translation id="7581462281756524039">Инструмент очистки</translation>
 <translation id="7582582252461552277">Предпочитать эту сеть</translation>
-<translation id="7582844466922312471">Мобильный модем</translation>
+<translation id="7582844466922312471">Мобильный интернет</translation>
 <translation id="7583948862126372804">Количество</translation>
 <translation id="7585106857920830898">Проверка на соответствие правилам безопасности вашей организации…</translation>
 <translation id="7586498138629385861">Браузер будет продолжать работать, пока вы не закроете приложения Chrome.</translation>
@@ -9666,7 +9666,7 @@
 <translation id="8434480141477525001">Порт отладки NaCl</translation>
 <translation id="8436054240208929121">Войдите в аккаунт и включите синхронизацию, чтобы получать рекомендации Chrome по группировке вкладок.</translation>
 <translation id="8437209419043462667">США</translation>
-<translation id="8438566539970814960">Помогать улучшить просмотр страниц и поиск</translation>
+<translation id="8438566539970814960">Помогать улучшать просмотр страниц и поиск</translation>
 <translation id="8439506636278576865">Предлагать перевести страницы на этом языке</translation>
 <translation id="8440004142066757254">Начать трансляцию видеофайлов с вашего устройства на другой экран</translation>
 <translation id="8440630305826533614">Приложения для Linux</translation>
