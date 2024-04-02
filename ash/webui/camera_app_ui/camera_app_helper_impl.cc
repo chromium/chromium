@@ -202,9 +202,11 @@ CameraAppHelperImpl::CameraAppHelperImpl(
   DCHECK(window);
   window->SetProperty(kCanConsumeSystemKeysKey, true);
   ScreenBacklight::Get()->AddObserver(this);
+  ash::SessionManagerClient::Get()->AddObserver(this);
 }
 
 CameraAppHelperImpl::~CameraAppHelperImpl() {
+  ash::SessionManagerClient::Get()->RemoveObserver(this);
   ScreenBacklight::Get()->RemoveObserver(this);
 
   if (pending_intent_id_.has_value()) {
@@ -578,6 +580,22 @@ void CameraAppHelperImpl::OpenWifiDialog(
     camera_app::mojom::WifiConfigPtr wifi_config) {
   camera_app_ui_->delegate()->OpenWifiDialog(
       FromMojoWifiConfig(std::move(wifi_config)));
+}
+
+void CameraAppHelperImpl::SetScreenLockedMonitor(
+    mojo::PendingRemote<ScreenLockedMonitor> monitor,
+    SetScreenLockedMonitorCallback callback) {
+  screen_locked_monitor_ =
+      mojo::Remote<ScreenLockedMonitor>(std::move(monitor));
+  std::move(callback).Run(ash::SessionManagerClient::Get()->IsScreenLocked());
+}
+
+void CameraAppHelperImpl::ScreenLockedStateUpdated() {
+  if (!screen_locked_monitor_.is_bound()) {
+    return;
+  }
+  screen_locked_monitor_->Update(
+      ash::SessionManagerClient::Get()->IsScreenLocked());
 }
 
 }  // namespace ash

@@ -15,6 +15,7 @@
 #include "ash/webui/camera_app_ui/document_scanner_service_client.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/services/machine_learning/public/mojom/document_scanner.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -29,6 +30,7 @@ enum class TabletState;
 namespace ash {
 
 class CameraAppHelperImpl : public ScreenBacklightObserver,
+                            public SessionManagerClient::Observer,
                             public display::DisplayObserver,
                             public camera_app::mojom::CameraAppHelper {
  public:
@@ -45,6 +47,7 @@ class CameraAppHelperImpl : public ScreenBacklightObserver,
   using CameraUsageOwnershipMonitor =
       camera_app::mojom::CameraUsageOwnershipMonitor;
   using StorageMonitor = camera_app::mojom::StorageMonitor;
+  using ScreenLockedMonitor = camera_app::mojom::ScreenLockedMonitor;
 
   CameraAppHelperImpl(CameraAppUI* camera_app_ui,
                       CameraResultCallback camera_result_callback,
@@ -104,6 +107,8 @@ class CameraAppHelperImpl : public ScreenBacklightObserver,
   void StopStorageMonitor() override;
   void OpenStorageManagement() override;
   void OpenWifiDialog(camera_app::mojom::WifiConfigPtr wifi_config) override;
+  void SetScreenLockedMonitor(mojo::PendingRemote<ScreenLockedMonitor> monitor,
+                              SetScreenLockedMonitorCallback callback) override;
 
  private:
   void CheckExternalScreenState();
@@ -123,6 +128,9 @@ class CameraAppHelperImpl : public ScreenBacklightObserver,
   // ScreenBacklightObserver overrides;
   void OnScreenBacklightStateChanged(
       ScreenBacklightState screen_backlight_state) override;
+
+  // ash::SessionManagerClient::Observer overrides;
+  void ScreenLockedStateUpdated() override;
 
   // display::DisplayObserver overrides;
   void OnDisplayAdded(const display::Display& new_display) override;
@@ -151,8 +159,6 @@ class CameraAppHelperImpl : public ScreenBacklightObserver,
   mojo::Remote<StorageMonitor> storage_monitor_;
   StartStorageMonitorCallback storage_callback_;
 
-  mojo::Receiver<camera_app::mojom::CameraAppHelper> receiver_{this};
-
   std::unique_ptr<CameraAppWindowStateController> window_state_controller_;
 
   display::ScopedDisplayObserver display_observer_{this};
@@ -161,6 +167,10 @@ class CameraAppHelperImpl : public ScreenBacklightObserver,
   std::unique_ptr<DocumentScannerServiceClient> document_scanner_service_;
 
   raw_ptr<HoldingSpaceClient> const holding_space_client_;
+
+  mojo::Remote<ScreenLockedMonitor> screen_locked_monitor_;
+
+  mojo::Receiver<camera_app::mojom::CameraAppHelper> receiver_{this};
 
   base::WeakPtrFactory<CameraAppHelperImpl> weak_factory_{this};
 };

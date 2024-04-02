@@ -18,6 +18,7 @@ export {
   DocumentOutputFormat,
   ExternalScreenMonitorCallbackRouter,
   FileMonitorResult,
+  ScreenLockedMonitorCallbackRouter,
   ScreenState,
   ScreenStateMonitorCallbackRouter,
   StorageMonitorCallbackRouter,

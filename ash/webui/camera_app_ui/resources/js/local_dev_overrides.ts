@@ -160,6 +160,12 @@ export class ChromeHelperFake extends ChromeHelper {
   override openWifiDialog(_config: WifiConfig): void {
     /* Do nothing. */
   }
+
+  override async initScreenLockedMonitor(
+      _onChange: (isScreenLocked: boolean) => void): Promise<boolean> {
+    return false;
+  }
+
   /* eslint-enable @typescript-eslint/require-await */
 }
 

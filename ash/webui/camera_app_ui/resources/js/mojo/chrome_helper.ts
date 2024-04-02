@@ -21,6 +21,7 @@ import {
   ExternalScreenMonitorCallbackRouter,
   FileMonitorResult,
   Rotation,
+  ScreenLockedMonitorCallbackRouter,
   ScreenState,
   ScreenStateMonitorCallbackRouter,
   StorageMonitorCallbackRouter,
@@ -227,6 +228,9 @@ export abstract class ChromeHelper {
   abstract openStorageManagement(): void;
 
   abstract openWifiDialog(config: WifiConfig): void;
+
+  abstract initScreenLockedMonitor(onChange: (isScreenLocked: boolean) => void):
+      Promise<boolean>;
 
   /**
    * Creates a new instance of ChromeHelper if it is not set. Returns the
@@ -467,5 +471,16 @@ class ChromeHelperImpl extends ChromeHelper {
 
   override openWifiDialog(config: WifiConfig): void {
     this.remote.openWifiDialog(config);
+  }
+
+  override async initScreenLockedMonitor(
+      onChange: (isScreenLocked: boolean) => void): Promise<boolean> {
+    const monitorCallbackRouter =
+        wrapEndpoint(new ScreenLockedMonitorCallbackRouter());
+    monitorCallbackRouter.update.addListener(onChange);
+
+    const {isScreenLocked} = await this.remote.setScreenLockedMonitor(
+        monitorCallbackRouter.$.bindNewPipeAndPassRemote());
+    return isScreenLocked;
   }
 }

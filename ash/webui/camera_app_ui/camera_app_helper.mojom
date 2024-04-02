@@ -74,6 +74,14 @@ interface ScreenStateMonitor {
   Update(ScreenState state);
 };
 
+// Interface for monitoring lock state of screen. The state is detected from
+// Chrome browser process and is notified to Chrome Camera App in renderer
+// process.
+interface ScreenLockedMonitor {
+  // Updates when the lock state of screen got changed.
+  Update(bool is_screen_locked);
+};
+
 // Interface for monitoring the existence of external screen. The state is
 // detected from Chrome browser process and is notified to Chrome Camera App in
 // renderer process.
@@ -307,4 +315,10 @@ interface CameraAppHelper {
   // connection directly, no error message will be returned when the config is
   // incorrect.
   OpenWifiDialog(WifiConfig config);
+
+  // Registers a ScreenLockedMonitor instance and returns the initial lock
+  // state of screen.
+  // Calling the Update() whenever the screen is locked/unlocked.
+  SetScreenLockedMonitor(pending_remote<ScreenLockedMonitor> monitor)
+      => (bool is_screen_locked);
 };
