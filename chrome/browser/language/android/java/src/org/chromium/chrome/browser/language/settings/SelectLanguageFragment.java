@@ -25,6 +25,8 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.R;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
 import java.util.ArrayList;
@@ -35,7 +37,7 @@ import java.util.Locale;
  * Fragment with a {@link RecyclerView} containing a list of languages that users may add to their
  * accept languages. There is a {@link SearchView} on its Actionbar to make a quick lookup.
  */
-public class SelectLanguageFragment extends Fragment {
+public class SelectLanguageFragment extends Fragment implements ProfileDependentSetting {
     // Intent key to pass selected language code from SelectLanguageFragment.
     static final String INTENT_SELECTED_LANGUAGE = "SelectLanguageFragment.SelectedLanguage";
     // Intent key to receive type of languages to populate fragment with.
@@ -48,8 +50,8 @@ public class SelectLanguageFragment extends Fragment {
     }
 
     private class LanguageSearchListAdapter extends LanguageListBaseAdapter {
-        LanguageSearchListAdapter(Context context) {
-            super(context);
+        LanguageSearchListAdapter(Context context, Profile profile) {
+            super(context, profile);
         }
 
         @Override
@@ -93,6 +95,7 @@ public class SelectLanguageFragment extends Fragment {
     private LanguageSearchListAdapter mAdapter;
     private List<LanguageItem> mFilteredLanguages;
     private LanguageListBaseAdapter.ItemClickListener mItemClickListener;
+    private Profile mProfile;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -126,7 +129,8 @@ public class SelectLanguageFragment extends Fragment {
                         .getIntExtra(
                                 INTENT_POTENTIAL_LANGUAGES,
                                 LanguagesManager.LanguageListType.ACCEPT_LANGUAGES);
-        mFilteredLanguages = LanguagesManager.getInstance().getPotentialLanguages(languageOption);
+        mFilteredLanguages =
+                LanguagesManager.getForProfile(mProfile).getPotentialLanguages(languageOption);
         mItemClickListener =
                 item -> {
                     Intent intent = new Intent();
@@ -134,7 +138,7 @@ public class SelectLanguageFragment extends Fragment {
                     activity.setResult(Activity.RESULT_OK, intent);
                     activity.finish();
                 };
-        mAdapter = new LanguageSearchListAdapter(activity);
+        mAdapter = new LanguageSearchListAdapter(activity, mProfile);
 
         mRecyclerView.setAdapter(mAdapter);
         mAdapter.setDisplayedLanguages(mFilteredLanguages);
@@ -179,5 +183,10 @@ public class SelectLanguageFragment extends Fragment {
                         return true;
                     }
                 });
+    }
+
+    @Override
+    public void setProfile(Profile profile) {
+        mProfile = profile;
     }
 }

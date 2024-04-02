@@ -37,13 +37,11 @@ public class ContentLanguagesPreference extends Preference {
     private static class LanguageListAdapter extends LanguageListBaseAdapter
             implements LanguagesManager.AcceptLanguageObserver {
         private final Context mContext;
-        private final Profile mProfile;
         private final PrefService mPrefService;
 
         LanguageListAdapter(Context context, Profile profile, PrefService prefService) {
-            super(context);
+            super(context, profile);
             mContext = context;
-            mProfile = profile;
             mPrefService = prefService;
         }
 
@@ -62,7 +60,7 @@ public class ContentLanguagesPreference extends Preference {
                     && !ChromeFeatureList.isEnabled(ChromeFeatureList.DETAILED_LANGUAGE_SETTINGS)) {
                 // Set this row checked if the language is unblocked.
                 int endIconResId =
-                        TranslateBridge.isBlockedLanguage(mProfile, info.getCode())
+                        TranslateBridge.isBlockedLanguage(getProfile(), info.getCode())
                                 ? 0
                                 : R.drawable.ic_check_googblue_24dp;
                 ListItem item =
@@ -102,7 +100,7 @@ public class ContentLanguagesPreference extends Preference {
                             // Toggle current blocked state of this language.
                             boolean state = model.get(ListMenuItemProperties.END_ICON_ID) == 0;
                             TranslateBridge.setLanguageBlockedState(
-                                    mProfile, info.getCode(), !state);
+                                    getProfile(), info.getCode(), !state);
                             LanguagesManager.recordAction(
                                     state
                                             ? LanguagesManager.LanguageSettingsActionType
@@ -110,18 +108,18 @@ public class ContentLanguagesPreference extends Preference {
                                             : LanguagesManager.LanguageSettingsActionType
                                                     .DISABLE_TRANSLATE_FOR_SINGLE_LANGUAGE);
                         } else if (textId == R.string.remove) {
-                            LanguagesManager.getInstance()
+                            LanguagesManager.getForProfile(getProfile())
                                     .removeFromAcceptLanguages(info.getCode());
                             LanguagesManager.recordAction(
                                     LanguagesManager.LanguageSettingsActionType.LANGUAGE_REMOVED);
                         } else if (textId == R.string.menu_item_move_up) {
-                            LanguagesManager.getInstance()
+                            LanguagesManager.getForProfile(getProfile())
                                     .moveLanguagePosition(info.getCode(), -1, true);
                         } else if (textId == R.string.menu_item_move_down) {
-                            LanguagesManager.getInstance()
+                            LanguagesManager.getForProfile(getProfile())
                                     .moveLanguagePosition(info.getCode(), 1, true);
                         } else if (textId == R.string.menu_item_move_to_top) {
-                            LanguagesManager.getInstance()
+                            LanguagesManager.getForProfile(getProfile())
                                     .moveLanguagePosition(info.getCode(), -position, true);
                         }
                         // Re-generate list items.
@@ -147,7 +145,8 @@ public class ContentLanguagesPreference extends Preference {
             } else {
                 disableDrag();
             }
-            setDisplayedLanguages(LanguagesManager.getInstance().getUserAcceptLanguageItems());
+            setDisplayedLanguages(
+                    LanguagesManager.getForProfile(getProfile()).getUserAcceptLanguageItems());
         }
     }
 
@@ -155,6 +154,7 @@ public class ContentLanguagesPreference extends Preference {
     private RecyclerView mRecyclerView;
     private LanguageListAdapter mAdapter;
     private SelectLanguageFragment.Launcher mLauncher;
+    private LanguagesManager mLanguagesManager;
 
     public ContentLanguagesPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -172,6 +172,7 @@ public class ContentLanguagesPreference extends Preference {
     void initialize(
             SelectLanguageFragment.Launcher launcher, Profile profile, PrefService prefService) {
         mLauncher = launcher;
+        mLanguagesManager = LanguagesManager.getForProfile(profile);
         mAdapter = new LanguageListAdapter(getContext(), profile, prefService);
     }
 
@@ -208,7 +209,7 @@ public class ContentLanguagesPreference extends Preference {
         // the view is bound.
         if (mRecyclerView.getAdapter() != mAdapter) {
             mRecyclerView.setAdapter(mAdapter);
-            LanguagesManager.getInstance().setAcceptLanguageObserver(mAdapter);
+            mLanguagesManager.setAcceptLanguageObserver(mAdapter);
             // Initialize accept language list.
             mAdapter.onDataUpdated();
         }

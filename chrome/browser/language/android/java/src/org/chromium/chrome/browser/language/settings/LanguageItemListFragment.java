@@ -60,8 +60,8 @@ public abstract class LanguageItemListFragment extends Fragment
     }
 
     private class ListAdapter extends LanguageListBaseAdapter {
-        ListAdapter(Context context) {
-            super(context);
+        ListAdapter(Context context, Profile profile) {
+            super(context, profile);
         }
 
         @Override
@@ -122,7 +122,7 @@ public abstract class LanguageItemListFragment extends Fragment
         mRecyclerView.addItemDecoration(
                 new DividerItemDecoration(activity, layoutManager.getOrientation()));
 
-        mAdapter = new ListAdapter(activity);
+        mAdapter = new ListAdapter(activity, mProfile);
         mRecyclerView.setAdapter(mAdapter);
         mAdapter.onDataUpdated();
         ScrollView scrollView = inflatedView.findViewById(R.id.scroll_view);

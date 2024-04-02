@@ -376,12 +376,12 @@ public class AppLanguagePromoDialog {
      * current location's and users preferred languages at the top.
      */
     protected void showAppLanguageModal() {
+        LanguagesManager languagesManager = LanguagesManager.getForProfile(mProfile);
         // Setup initial language lists.
         LanguageItem currentOverrideLanguage =
-                LanguagesManager.getInstance().getLanguageItem(AppLocaleUtils.getAppLanguagePref());
+                languagesManager.getLanguageItem(AppLocaleUtils.getAppLanguagePref());
         LinkedHashSet<LanguageItem> uiLanguages =
-                new LinkedHashSet<LanguageItem>(
-                        LanguagesManager.getInstance().getAllPossibleUiLanguages());
+                new LinkedHashSet<LanguageItem>(languagesManager.getAllPossibleUiLanguages());
         LinkedHashSet<LanguageItem> topLanguages =
                 getTopLanguages(mProfile, uiLanguages, currentOverrideLanguage);
         uiLanguages.removeAll(topLanguages);

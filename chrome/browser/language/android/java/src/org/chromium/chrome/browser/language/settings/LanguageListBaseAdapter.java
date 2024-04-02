@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.chrome.browser.language.R;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableListAdapter;
 import org.chromium.components.browser_ui.widget.dragreorder.DragStateDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListUtils;
@@ -146,9 +147,17 @@ public class LanguageListBaseAdapter extends DragReorderableListAdapter<Language
         }
     }
 
-    LanguageListBaseAdapter(Context context) {
+    private final Profile mProfile;
+
+    LanguageListBaseAdapter(Context context, Profile profile) {
         super(context);
+        mProfile = profile;
         setDragStateDelegate(new LanguageDragStateDelegate());
+    }
+
+    /** Return the Profile associated with the displayed data. */
+    Profile getProfile() {
+        return mProfile;
     }
 
     /**
@@ -190,7 +199,7 @@ public class LanguageListBaseAdapter extends DragReorderableListAdapter<Language
         for (int i = 0; i < order.size(); i++) {
             codes[i] = order.get(i).getCode();
         }
-        LanguagesManager.getInstance().setOrder(codes, false);
+        LanguagesManager.getForProfile(mProfile).setOrder(codes, false);
         notifyDataSetChanged();
     }
 

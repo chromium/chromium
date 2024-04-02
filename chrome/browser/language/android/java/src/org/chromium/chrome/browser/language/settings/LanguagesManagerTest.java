@@ -74,7 +74,7 @@ public class LanguagesManagerTest {
     @SmallTest
     public void testGetPotentialAcceptLanguages() {
         List<LanguageItem> items =
-                LanguagesManager.getInstance()
+                LanguagesManager.getForProfile(mProfile)
                         .getPotentialLanguages(LanguagesManager.LanguageListType.ACCEPT_LANGUAGES);
 
         // The default accept languages list is "sw,en,en-US". Those languages should not be
@@ -90,12 +90,12 @@ public class LanguagesManagerTest {
         Assert.assertEquals(items.get(0).getCode(), "af");
 
         // Add "af" to front of Accept-Languages.
-        items = LanguagesManager.getInstance().getUserAcceptLanguageItems();
-        items.add(0, LanguagesManager.getInstance().getLanguageItem("af"));
+        items = LanguagesManager.getForProfile(mProfile).getUserAcceptLanguageItems();
+        items.add(0, LanguagesManager.getForProfile(mProfile).getLanguageItem("af"));
         setOrder(items);
 
         items =
-                LanguagesManager.getInstance()
+                LanguagesManager.getForProfile(mProfile)
                         .getPotentialLanguages(LanguagesManager.LanguageListType.ACCEPT_LANGUAGES);
         Assert.assertFalse(containsLanguage(items, "en"));
         Assert.assertFalse(containsLanguage(items, "en-US"));
@@ -112,7 +112,7 @@ public class LanguagesManagerTest {
         AppLocaleUtils.setAppLanguagePref("sw");
 
         List<LanguageItem> items =
-                LanguagesManager.getInstance()
+                LanguagesManager.getForProfile(mProfile)
                         .getPotentialLanguages(LanguagesManager.LanguageListType.UI_LANGUAGES);
         Assert.assertFalse(containsLanguage(items, "en"));
         Assert.assertTrue(containsLanguage(items, "en-US"));
@@ -134,7 +134,7 @@ public class LanguagesManagerTest {
         AppLocaleUtils.setAppLanguagePref(AppLocaleUtils.APP_LOCALE_USE_SYSTEM_LANGUAGE);
 
         items =
-                LanguagesManager.getInstance()
+                LanguagesManager.getForProfile(mProfile)
                         .getPotentialLanguages(LanguagesManager.LanguageListType.UI_LANGUAGES);
 
         // Check that system default is not on the list and that German is.
@@ -148,7 +148,8 @@ public class LanguagesManagerTest {
     @Test
     @SmallTest
     public void testGetAllPossibleUiLanguages() {
-        List<LanguageItem> items = LanguagesManager.getInstance().getAllPossibleUiLanguages();
+        List<LanguageItem> items =
+                LanguagesManager.getForProfile(mProfile).getAllPossibleUiLanguages();
         List<String> itemCodes = items.stream().map(i -> i.getCode()).collect(Collectors.toList());
         Assert.assertEquals(itemCodes, Arrays.asList("af", "en-GB", "en-US", "fil", "hi", "sw"));
     }
@@ -158,7 +159,7 @@ public class LanguagesManagerTest {
     @SmallTest
     public void testGetPotentialTargetLanguages() {
         List<LanguageItem> items =
-                LanguagesManager.getInstance()
+                LanguagesManager.getForProfile(mProfile)
                         .getPotentialLanguages(LanguagesManager.LanguageListType.TARGET_LANGUAGES);
         Assert.assertFalse(containsLanguage(items, "en-US"));
         Assert.assertFalse(containsLanguage(items, "en-GB"));
@@ -173,7 +174,7 @@ public class LanguagesManagerTest {
         // Set the target language to "fil" (Filipino) which is "tl" as a Translate language.
         TranslateBridge.setDefaultTargetLanguage(mProfile, "fil");
         items =
-                LanguagesManager.getInstance()
+                LanguagesManager.getForProfile(mProfile)
                         .getPotentialLanguages(LanguagesManager.LanguageListType.TARGET_LANGUAGES);
         Assert.assertFalse(containsLanguage(items, "fil"));
         Assert.assertTrue(containsLanguage(items, "en"));
@@ -181,7 +182,7 @@ public class LanguagesManagerTest {
         // Set the target language to "sw" (Swahili).
         TranslateBridge.setDefaultTargetLanguage(mProfile, "sw");
         items =
-                LanguagesManager.getInstance()
+                LanguagesManager.getForProfile(mProfile)
                         .getPotentialLanguages(LanguagesManager.LanguageListType.TARGET_LANGUAGES);
         Assert.assertFalse(containsLanguage(items, "sw"));
         Assert.assertTrue(containsLanguage(items, "fil"));
@@ -192,7 +193,7 @@ public class LanguagesManagerTest {
     @SmallTest
     public void testGetPotentialAlwaysLanguages() {
         List<LanguageItem> items =
-                LanguagesManager.getInstance()
+                LanguagesManager.getForProfile(mProfile)
                         .getPotentialLanguages(LanguagesManager.LanguageListType.ALWAYS_LANGUAGES);
         int itemsCount = items.size();
 
@@ -209,7 +210,7 @@ public class LanguagesManagerTest {
         TranslateBridge.setLanguageAlwaysTranslateState(mProfile, "fil", true);
 
         items =
-                LanguagesManager.getInstance()
+                LanguagesManager.getForProfile(mProfile)
                         .getPotentialLanguages(LanguagesManager.LanguageListType.ALWAYS_LANGUAGES);
         Assert.assertFalse(containsLanguage(items, "fil"));
         Assert.assertFalse(containsLanguage(items, "en"));
@@ -221,7 +222,7 @@ public class LanguagesManagerTest {
     @SmallTest
     public void testGetPotentialNeverLanguages() {
         List<LanguageItem> items =
-                LanguagesManager.getInstance()
+                LanguagesManager.getForProfile(mProfile)
                         .getPotentialLanguages(LanguagesManager.LanguageListType.NEVER_LANGUAGES);
         int itemsCount = items.size();
 
@@ -239,7 +240,7 @@ public class LanguagesManagerTest {
         TranslateBridge.setLanguageBlockedState(mProfile, "sw", true);
 
         items =
-                LanguagesManager.getInstance()
+                LanguagesManager.getForProfile(mProfile)
                         .getPotentialLanguages(LanguagesManager.LanguageListType.NEVER_LANGUAGES);
         Assert.assertFalse(containsLanguage(items, "fil"));
         Assert.assertFalse(containsLanguage(items, "sw"));
