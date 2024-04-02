@@ -15,6 +15,8 @@
 #include "base/values.h"
 #include "components/policy/policy_export.h"
 
+class PrefService;
+
 namespace base {
 class Time;
 }
@@ -78,6 +80,13 @@ class POLICY_EXPORT PolicyStatusProvider {
   static std::u16string GetPolicyStatusFromStore(const CloudPolicyStore*,
                                                  const CloudPolicyClient*);
   static std::u16string GetTimeSinceLastActionString(base::Time);
+
+  // Add last report uploaded timestamp into policy `status` dictionary from
+  // `prefs`.
+  static void UpdateLastReportTimestamp(
+      base::Value::Dict& status,
+      PrefService* prefs,
+      const std::string& report_timestamp_pref_path);
 
  private:
   base::ObserverList<Observer, /*check_empty=*/true> observers_;

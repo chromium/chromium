@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/policy/core/browser/webui/policy_status_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
@@ -62,6 +63,9 @@ base::Value::Dict UserCloudPolicyStatusProvider::GetStatus() {
     dict.Remove(policy::kUsernameKey);
     dict.Remove(policy::kGaiaIdKey);
   }
+  UpdateLastReportTimestamp(
+      dict, profile_->GetPrefs(),
+      enterprise_reporting::kLastUploadSucceededTimestamp);
   dict.Set(policy::kPolicyDescriptionKey, kUserPolicyStatusDescription);
   SetProfileId(&dict, profile_);
   return dict;

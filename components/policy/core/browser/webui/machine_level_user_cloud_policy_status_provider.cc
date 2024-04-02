@@ -90,17 +90,10 @@ base::Value::Dict MachineLevelUserCloudPolicyStatusProvider::GetStatus() {
     }
   }
   dict.Set(kMachineKey, GetMachineName());
-
-  if (prefs_->HasPrefPath(context_->lastReportTimestampPrefName)) {
-    base::Time last_report_timestamp =
-        prefs_->GetTime(context_->lastReportTimestampPrefName);
-    dict.Set(
-        "lastCloudReportSentTimestamp",
-        base::TimeFormatShortDateAndTimeWithTimeZone(last_report_timestamp));
-    dict.Set("timeSinceLastCloudReportSent",
-             GetTimeSinceLastActionString(last_report_timestamp));
-  }
   dict.Set(policy::kPolicyDescriptionKey, GetMachineStatusDescriptionKey());
+
+  UpdateLastReportTimestamp(dict, prefs_,
+                            context_->lastReportTimestampPrefName);
   return dict;
 }
 
