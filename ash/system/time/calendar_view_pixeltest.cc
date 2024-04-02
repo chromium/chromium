@@ -128,7 +128,7 @@ TEST_P(CalendarViewPixelTest, Basics) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "calendar_view",
-      /*revision_number=*/9, GetCalendarView()));
+      /*revision_number=*/10, GetCalendarView()));
 }
 
 // Tests that the scroll view scrolls up when there are not at least 2 weeks
@@ -149,7 +149,7 @@ TEST_P(CalendarViewPixelTest, Basics_ShowMoreFutureDates) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "calendar_view_more_future_dates",
-      /*revision_number=*/0, GetCalendarView()));
+      /*revision_number=*/1, GetCalendarView()));
 }
 
 TEST_P(CalendarViewPixelTest, EventList) {

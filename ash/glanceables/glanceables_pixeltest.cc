@@ -93,7 +93,7 @@ TEST_F(GlanceablesPixelTest, Smoke) {
   ASSERT_TRUE(GetDateTray()->is_active());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "glanceables_smoke", /*revision_number=*/0,
+      "glanceables_smoke", /*revision_number=*/1,
       GetGlanceableTrayBubble()->GetBubbleView()));
 }
 

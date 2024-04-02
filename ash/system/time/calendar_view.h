@@ -223,10 +223,6 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   // Returns the calculated height of a single visible row.
   int GetSingleVisibleRowHeight() const;
 
-  // Returns the height under todays row. This is needed for scrolling to show
-  // more future dates.
-  int GetHeightUnderTodaysRow() const;
-
   // Adds a month label.
   views::View* AddLabelWithId(LabelType type, bool add_at_front = false);
 
@@ -376,14 +372,6 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
 
   // Removes the `up_next_view_`.
   void RemoveUpNextView();
-
-  // Animates scrolling the Calendar `scroll_view_` by the given offset. Uses
-  // layer transforms to mimic scrolling and then sets a final scroll position
-  // on the scroll view to give the illusion of animating scrolling.
-  void AnimateScrollByOffset(int offset);
-
-  // Post animation callback for `AnimateScrollByOffset()`.
-  void OnAnimateScrollByOffsetComplete(int offset);
 
   // Used by the `CalendarUpNextView` to open the event list for today's date.
   void OpenEventListForTodaysDate();
