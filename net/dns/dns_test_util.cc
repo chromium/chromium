@@ -210,8 +210,7 @@ std::pair<uint16_t, std::string> BuildTestHttpsServiceMandatoryParam(
 
   std::string value;
   for (uint16_t param_key : param_key_list) {
-    std::array<uint8_t, 2> num_buffer =
-        base::numerics::U16ToBigEndian(param_key);
+    std::array<uint8_t, 2> num_buffer = base::U16ToBigEndian(param_key);
     value.append(num_buffer.begin(), num_buffer.end());
   }
 
@@ -220,7 +219,7 @@ std::pair<uint16_t, std::string> BuildTestHttpsServiceMandatoryParam(
 }
 
 std::pair<uint16_t, std::string> BuildTestHttpsServicePortParam(uint16_t port) {
-  std::array<uint8_t, 2> buffer = base::numerics::U16ToBigEndian(port);
+  std::array<uint8_t, 2> buffer = base::U16ToBigEndian(port);
   return std::pair(dns_protocol::kHttpsServiceParamKeyPort,
                    std::string(buffer.begin(), buffer.end()));
 }
@@ -237,7 +236,7 @@ DnsResourceRecord BuildTestHttpsServiceRecord(
   std::string rdata;
 
   {
-    std::array<uint8_t, 2> buf = base::numerics::U16ToBigEndian(priority);
+    std::array<uint8_t, 2> buf = base::U16ToBigEndian(priority);
     rdata.append(buf.begin(), buf.end());
   }
 
@@ -257,11 +256,11 @@ DnsResourceRecord BuildTestHttpsServiceRecord(
 
   for (auto& param : params) {
     {
-      std::array<uint8_t, 2> buf = base::numerics::U16ToBigEndian(param.first);
+      std::array<uint8_t, 2> buf = base::U16ToBigEndian(param.first);
       rdata.append(buf.begin(), buf.end());
     }
     {
-      std::array<uint8_t, 2> buf = base::numerics::U16ToBigEndian(
+      std::array<uint8_t, 2> buf = base::U16ToBigEndian(
           base::checked_cast<uint16_t>(param.second.size()));
       rdata.append(buf.begin(), buf.end());
     }
@@ -382,17 +381,15 @@ DnsResponse BuildTestDnsServiceResponse(
     std::string rdata;
     {
       std::array<uint8_t, 2> buf =
-          base::numerics::U16ToBigEndian(service_record.priority);
+          base::U16ToBigEndian(service_record.priority);
       rdata.append(buf.begin(), buf.end());
     }
     {
-      std::array<uint8_t, 2> buf =
-          base::numerics::U16ToBigEndian(service_record.weight);
+      std::array<uint8_t, 2> buf = base::U16ToBigEndian(service_record.weight);
       rdata.append(buf.begin(), buf.end());
     }
     {
-      std::array<uint8_t, 2> buf =
-          base::numerics::U16ToBigEndian(service_record.port);
+      std::array<uint8_t, 2> buf = base::U16ToBigEndian(service_record.port);
       rdata.append(buf.begin(), buf.end());
     }
 

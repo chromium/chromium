@@ -218,10 +218,9 @@ base::span<const uint8_t> DnsQuery::qname() const {
 }
 
 uint16_t DnsQuery::qtype() const {
-  return base::numerics::U16FromBigEndian(
-      base::as_bytes(io_buffer_->span())
-          .subspan(kHeaderSize + qname_size_)
-          .first<2u>());
+  return base::U16FromBigEndian(base::as_bytes(io_buffer_->span())
+                                    .subspan(kHeaderSize + qname_size_)
+                                    .first<2u>());
 }
 
 std::string_view DnsQuery::question() const {

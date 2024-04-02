@@ -195,8 +195,8 @@ unsigned DnsRecordParser::ReadName(const void* const vpos,
           VLOG(1) << kAbortMsg << " Detected loop in label pointers.";
           return 0;
         }
-        uint16_t new_offset = base::numerics::U16FromBigEndian(
-            packet_.subspan(offset).first<2u>());
+        uint16_t new_offset =
+            base::U16FromBigEndian(packet_.subspan(offset).first<2u>());
         offset = new_offset & dns_protocol::kOffsetMask;
         if (offset >= packet_.size()) {
           VLOG(1) << kAbortMsg << " Label pointer points outside packet.";
@@ -280,7 +280,7 @@ bool DnsRecordParser::ReadQuestion(std::string& out_dotted_qname,
     return false;
   }
 
-  out_qtype = base::numerics::U16FromBigEndian(
+  out_qtype = base::U16FromBigEndian(
       packet_.subspan(cur_ + consumed).first<sizeof(uint16_t)>());
 
   cur_ += consumed + 2 * sizeof(uint16_t);  // QTYPE + QCLASS

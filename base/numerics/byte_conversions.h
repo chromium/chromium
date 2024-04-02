@@ -18,14 +18,14 @@
 // Chromium only builds and runs on Little Endian machines.
 static_assert(ARCH_CPU_LITTLE_ENDIAN);
 
-namespace base::numerics {
+namespace base {
 
 // Returns a value with all bytes in |x| swapped, i.e. reverses the endianness.
 // TODO(pkasting): Once C++23 is available, replace with std::byteswap.
 template <class T>
   requires(std::is_integral_v<T>)
 inline constexpr T ByteSwap(T value) {
-  return numerics::internal::SwapBytes(value);
+  return internal::SwapBytes(value);
 }
 
 // Returns a uint8_t with the value in `bytes` interpreted as the native endian
@@ -708,6 +708,73 @@ inline constexpr std::array<uint8_t, 8u> DoubleToBigEndian(double val) {
   return internal::ToLittleEndian(ByteSwap(std::bit_cast<uint64_t>(val)));
 }
 
-}  // namespace base::numerics
+// Deprecated: Prefer the shorter, less-namespaced names.
+// TODO(crbug.com/40284755): Remove these when callers have been migrated to
+// the shorter name.
+namespace numerics {
+using ::base::ByteSwap;
+using ::base::DoubleFromBigEndian;
+using ::base::DoubleFromLittleEndian;
+using ::base::DoubleFromNativeEndian;
+using ::base::DoubleToBigEndian;
+using ::base::DoubleToLittleEndian;
+using ::base::DoubleToNativeEndian;
+using ::base::FloatFromBigEndian;
+using ::base::FloatFromLittleEndian;
+using ::base::FloatFromNativeEndian;
+using ::base::FloatToBigEndian;
+using ::base::FloatToLittleEndian;
+using ::base::FloatToNativeEndian;
+using ::base::I16FromBigEndian;
+using ::base::I16FromLittleEndian;
+using ::base::I16FromNativeEndian;
+using ::base::I16ToBigEndian;
+using ::base::I16ToLittleEndian;
+using ::base::I16ToNativeEndian;
+using ::base::I32FromBigEndian;
+using ::base::I32FromLittleEndian;
+using ::base::I32FromNativeEndian;
+using ::base::I32ToBigEndian;
+using ::base::I32ToLittleEndian;
+using ::base::I32ToNativeEndian;
+using ::base::I64FromBigEndian;
+using ::base::I64FromLittleEndian;
+using ::base::I64FromNativeEndian;
+using ::base::I64ToBigEndian;
+using ::base::I64ToLittleEndian;
+using ::base::I64ToNativeEndian;
+using ::base::I8FromBigEndian;
+using ::base::I8FromLittleEndian;
+using ::base::I8FromNativeEndian;
+using ::base::I8ToBigEndian;
+using ::base::I8ToLittleEndian;
+using ::base::I8ToNativeEndian;
+using ::base::U16FromBigEndian;
+using ::base::U16FromLittleEndian;
+using ::base::U16FromNativeEndian;
+using ::base::U16ToBigEndian;
+using ::base::U16ToLittleEndian;
+using ::base::U16ToNativeEndian;
+using ::base::U32FromBigEndian;
+using ::base::U32FromLittleEndian;
+using ::base::U32FromNativeEndian;
+using ::base::U32ToBigEndian;
+using ::base::U32ToLittleEndian;
+using ::base::U32ToNativeEndian;
+using ::base::U64FromBigEndian;
+using ::base::U64FromLittleEndian;
+using ::base::U64FromNativeEndian;
+using ::base::U64ToBigEndian;
+using ::base::U64ToLittleEndian;
+using ::base::U64ToNativeEndian;
+using ::base::U8FromBigEndian;
+using ::base::U8FromLittleEndian;
+using ::base::U8FromNativeEndian;
+using ::base::U8ToBigEndian;
+using ::base::U8ToLittleEndian;
+using ::base::U8ToNativeEndian;
+}  // namespace numerics
+
+}  // namespace base
 
 #endif  //  BASE_NUMERICS_BYTE_CONVERSIONS_H_

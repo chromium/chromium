@@ -836,8 +836,7 @@ TEST_F(WebSocketBasicStreamSocketChunkedReadTest, OneMegFrame) {
   {
     auto [header, extended_payload_length] = extended_header.split_at<2u>();
     header.copy_from(base::as_byte_span({'\x81', '\x7F'}));
-    extended_payload_length.copy_from(
-        base::numerics::U64ToBigEndian(kPayloadSize));
+    extended_payload_length.copy_from(base::U64ToBigEndian(kPayloadSize));
   }
 
   std::ranges::fill(payload, 'A');

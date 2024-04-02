@@ -363,8 +363,8 @@ std::unique_ptr<ServiceFormHttpsRecordRdata> ServiceFormHttpsRecordRdata::Parse(
     DCHECK(IsSupportedKey(param_key));
     if (param_value.size() != 2)
       return nullptr;
-    uint16_t port_val = base::numerics::U16FromBigEndian(
-        base::as_byte_span(param_value).first<2>());
+    uint16_t port_val =
+        base::U16FromBigEndian(base::as_byte_span(param_value).first<2>());
     port = port_val;
     if (reader.remaining() > 0 &&
         !ReadNextServiceParam(param_key, reader, &param_key, &param_value)) {

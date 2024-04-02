@@ -26,21 +26,21 @@ namespace base {
 // returns the result.
 inline constexpr uint16_t NetToHost16(uint16_t x) {
 #if defined(ARCH_CPU_LITTLE_ENDIAN)
-  return numerics::ByteSwap(x);
+  return ByteSwap(x);
 #else
   return x;
 #endif
 }
 inline constexpr uint32_t NetToHost32(uint32_t x) {
 #if defined(ARCH_CPU_LITTLE_ENDIAN)
-  return numerics::ByteSwap(x);
+  return ByteSwap(x);
 #else
   return x;
 #endif
 }
 inline constexpr uint64_t NetToHost64(uint64_t x) {
 #if defined(ARCH_CPU_LITTLE_ENDIAN)
-  return numerics::ByteSwap(x);
+  return ByteSwap(x);
 #else
   return x;
 #endif
@@ -50,21 +50,21 @@ inline constexpr uint64_t NetToHost64(uint64_t x) {
 // returns the result.
 inline constexpr uint16_t HostToNet16(uint16_t x) {
 #if defined(ARCH_CPU_LITTLE_ENDIAN)
-  return numerics::ByteSwap(x);
+  return ByteSwap(x);
 #else
   return x;
 #endif
 }
 inline constexpr uint32_t HostToNet32(uint32_t x) {
 #if defined(ARCH_CPU_LITTLE_ENDIAN)
-  return numerics::ByteSwap(x);
+  return ByteSwap(x);
 #else
   return x;
 #endif
 }
 inline constexpr uint64_t HostToNet64(uint64_t x) {
 #if defined(ARCH_CPU_LITTLE_ENDIAN)
-  return numerics::ByteSwap(x);
+  return ByteSwap(x);
 #else
   return x;
 #endif

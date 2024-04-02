@@ -131,7 +131,7 @@ size_t WebSocketFrameParser::DecodeFrameHeader(base::span<const uint8_t> data) {
     if (data.size() < current + 2)
       return 0;
     uint16_t payload_length_16 =
-        base::numerics::U16FromBigEndian(data.subspan(current).first<2>());
+        base::U16FromBigEndian(data.subspan(current).first<2>());
     current += 2;
     payload_length = payload_length_16;
     if (payload_length <= kMaxPayloadLengthWithoutExtendedLengthField) {
@@ -141,8 +141,7 @@ size_t WebSocketFrameParser::DecodeFrameHeader(base::span<const uint8_t> data) {
   } else if (payload_length == kPayloadLengthWithEightByteExtendedLengthField) {
     if (data.size() < current + 8)
       return 0;
-    payload_length =
-        base::numerics::U64FromBigEndian(data.subspan(current).first<8>());
+    payload_length = base::U64FromBigEndian(data.subspan(current).first<8>());
     current += 8;
     if (payload_length <= UINT16_MAX ||
         payload_length > static_cast<uint64_t>(INT64_MAX)) {

@@ -41,7 +41,7 @@ class SpanWriter {
 
   // Returns true and skips over the next `n` objects, if there are enough
   // objects left. Otherwise, it returns false and does nothing.
-  bool Skip(base::StrictNumeric<size_t> n) {
+  bool Skip(StrictNumeric<size_t> n) {
     if (n > remaining()) {
       return false;
     }
@@ -57,22 +57,22 @@ class SpanWriter {
   bool WriteU8BigEndian(uint8_t value)
     requires(std::same_as<T, uint8_t>)
   {
-    return Write(numerics::U8ToBigEndian(value));
+    return Write(U8ToBigEndian(value));
   }
   bool WriteU16BigEndian(uint16_t value)
     requires(std::same_as<T, uint8_t>)
   {
-    return Write(numerics::U16ToBigEndian(value));
+    return Write(U16ToBigEndian(value));
   }
   bool WriteU32BigEndian(uint32_t value)
     requires(std::same_as<T, uint8_t>)
   {
-    return Write(numerics::U32ToBigEndian(value));
+    return Write(U32ToBigEndian(value));
   }
   bool WriteU64BigEndian(uint64_t value)
     requires(std::same_as<T, uint8_t>)
   {
-    return Write(numerics::U64ToBigEndian(value));
+    return Write(U64ToBigEndian(value));
   }
 
   // For a SpanWriter over bytes, we can write integer values directly to those
@@ -83,22 +83,22 @@ class SpanWriter {
   bool WriteU8LittleEndian(uint8_t value)
     requires(std::same_as<T, uint8_t>)
   {
-    return Write(numerics::U8ToLittleEndian(value));
+    return Write(U8ToLittleEndian(value));
   }
   bool WriteU16LittleEndian(uint16_t value)
     requires(std::same_as<T, uint8_t>)
   {
-    return Write(numerics::U16ToLittleEndian(value));
+    return Write(U16ToLittleEndian(value));
   }
   bool WriteU32LittleEndian(uint32_t value)
     requires(std::same_as<T, uint8_t>)
   {
-    return Write(numerics::U32ToLittleEndian(value));
+    return Write(U32ToLittleEndian(value));
   }
   bool WriteU64LittleEndian(uint64_t value)
     requires(std::same_as<T, uint8_t>)
   {
-    return Write(numerics::U64ToLittleEndian(value));
+    return Write(U64ToLittleEndian(value));
   }
 
   // For a SpanWriter over bytes, we can write integer values directly to those
@@ -112,22 +112,22 @@ class SpanWriter {
   bool WriteU8NativeEndian(uint8_t value)
     requires(std::same_as<T, uint8_t>)
   {
-    return Write(numerics::U8ToNativeEndian(value));
+    return Write(U8ToNativeEndian(value));
   }
   bool WriteU16NativeEndian(uint16_t value)
     requires(std::same_as<T, uint8_t>)
   {
-    return Write(numerics::U16ToNativeEndian(value));
+    return Write(U16ToNativeEndian(value));
   }
   bool WriteU32NativeEndian(uint32_t value)
     requires(std::same_as<T, uint8_t>)
   {
-    return Write(numerics::U32ToNativeEndian(value));
+    return Write(U32ToNativeEndian(value));
   }
   bool WriteU64NativeEndian(uint64_t value)
     requires(std::same_as<T, uint8_t>)
   {
-    return Write(numerics::U64ToNativeEndian(value));
+    return Write(U64ToNativeEndian(value));
   }
 
   // Returns the number of objects remaining to be written to the original span.
@@ -137,7 +137,7 @@ class SpanWriter {
   span<T> remaining_span() const { return buf_; }
 
  private:
-  base::raw_span<T> buf_;
+  raw_span<T> buf_;
 };
 
 template <class T, size_t N>

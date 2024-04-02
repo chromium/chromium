@@ -116,8 +116,7 @@ bool HpackFuzzUtil::NextHeaderBlock(Input* input, std::string_view* out) {
   if (input->RemainingBytes().size() < sizeof(uint32_t)) {
     return false;
   }
-  uint32_t length =
-      base::numerics::U32FromBigEndian(input->ReadSpan<sizeof(uint32_t)>());
+  uint32_t length = base::U32FromBigEndian(input->ReadSpan<sizeof(uint32_t)>());
 
   if (input->RemainingBytes().size() < length) {
     return false;
@@ -131,7 +130,7 @@ bool HpackFuzzUtil::NextHeaderBlock(Input* input, std::string_view* out) {
 // static
 std::string HpackFuzzUtil::HeaderBlockPrefix(size_t block_size) {
   std::array<uint8_t, 4u> buf =
-      base::numerics::U32ToBigEndian(base::checked_cast<uint32_t>(block_size));
+      base::U32ToBigEndian(base::checked_cast<uint32_t>(block_size));
   return std::string(buf.begin(), buf.end());
 }
 

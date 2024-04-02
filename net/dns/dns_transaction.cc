@@ -814,7 +814,7 @@ class DnsTCPAttempt : public DnsAttempt {
     if (static_cast<int>(query_size) != query_->io_buffer()->size())
       return ERR_FAILED;
     base::as_writable_bytes(length_buffer_->span())
-        .copy_from(base::numerics::U16ToBigEndian(query_size));
+        .copy_from(base::U16ToBigEndian(query_size));
     buffer_ = base::MakeRefCounted<DrainableIOBuffer>(length_buffer_,
                                                       length_buffer_->size());
     next_state_ = STATE_SEND_LENGTH;
@@ -879,7 +879,7 @@ class DnsTCPAttempt : public DnsAttempt {
       return OK;
     }
 
-    response_length_ = base::numerics::U16FromBigEndian(
+    response_length_ = base::U16FromBigEndian(
         base::as_bytes(length_buffer_->span().first<2u>()));
     // Check if advertised response is too short. (Optimization only.)
     if (response_length_ < query_->io_buffer()->size())
