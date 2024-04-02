@@ -6504,7 +6504,7 @@
   {
     "name": "panel-self-refresh-2",
     "owners": [ "mrfemi@google.com", "chromeos-gfx-compositor@google.com" ],
-    "expiry_milestone": 124
+    "expiry_milestone": 135
   },
   {
     "name": "parcel-tracking-test-data",
