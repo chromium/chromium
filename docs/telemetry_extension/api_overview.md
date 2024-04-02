@@ -28,7 +28,6 @@ extension-event based interface in M119. The interface is described in
 | disk_read |
 | dns_resolution |
 | memory |
-| nvme_wear_level |
 | smartctl_check |
 | lan_connectivity |
 | signal_strength |
@@ -134,11 +133,6 @@ extension-event based interface in M119. The interface is described in
 ------------ | ------- | ----------- |
 | timeout_seconds | number | A timeout for the routine |
 
-### RunNvmeWearLevelRequest
-| Property Name | Type | Description |
------------- | ------- | ----------- |
-| wear_level_threshold | number | Threshold number in percentage which routine examines wear level status against |
-
 ### RunNvmeSelfTestRequest
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
@@ -206,7 +200,6 @@ extension-event based interface in M119. The interface is described in
 | runLanConnectivityRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M102 |
 | runMemoryRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M96 |
 | runNvmeSelfTestRoutine | (params: RunNvmeSelfTestRequest) => Promise<RunRoutineResponse\> | `os.diagnostics` | M110 |
-| runNvmeWearLevelRoutine | (params: RunNvmeWearLevelRequest) => Promise<RunRoutineResponse\> | `os.diagnostics` | M102 |
 | runPowerButtonRoutine | (params: RunPowerButtonRequest) => Promise<RunRoutineResponse\> | `os.diagnostics` | M117 |
 | runSensitiveSensorRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M110 |
 | runSignalStrengthRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M108 |

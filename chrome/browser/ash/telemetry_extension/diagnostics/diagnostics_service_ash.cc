@@ -409,19 +409,11 @@ void DiagnosticsServiceAsh::RunNvmeSelfTestRoutine(
           std::move(callback)));
 }
 
-void DiagnosticsServiceAsh::RunNvmeWearLevelRoutine(
+void DiagnosticsServiceAsh::DEPRECATED_RunNvmeWearLevelRoutine(
     uint32_t wear_level_threshold,
-    RunNvmeWearLevelRoutineCallback callback) {
-  GetService()->RunNvmeWearLevelRoutine(
-      cros_healthd::mojom::NullableUint32::New(wear_level_threshold),
-      base::BindOnce(
-          [](crosapi::mojom::DiagnosticsService::RunNvmeWearLevelRoutineCallback
-                 callback,
-             cros_healthd::mojom::RunRoutineResponsePtr ptr) {
-            std::move(callback).Run(
-                converters::diagnostics::ConvertDiagnosticsPtr(std::move(ptr)));
-          },
-          std::move(callback)));
+    DEPRECATED_RunNvmeWearLevelRoutineCallback callback) {
+  // This routine is deprecated.
+  std::move(callback).Run(nullptr);
 }
 
 void DiagnosticsServiceAsh::RunPrimeSearchRoutine(

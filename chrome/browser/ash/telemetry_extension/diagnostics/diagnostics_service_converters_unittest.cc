@@ -61,10 +61,6 @@ TEST(DiagnosticsServiceConvertersTest, ConvertDiagnosticRoutineEnum) {
             crosapi::DiagnosticsRoutineEnum::kMemory);
   EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kNvmeSelfTest),
             crosapi::DiagnosticsRoutineEnum::kNvmeSelfTest);
-  EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kNvmeWearLevel),
-            crosapi::DiagnosticsRoutineEnum::kNvmeWearLevel);
-  EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kNvmeWearLevel),
-            crosapi::DiagnosticsRoutineEnum::kNvmeWearLevel);
   EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kPrimeSearch),
             crosapi::DiagnosticsRoutineEnum::kPrimeSearch);
   EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kSignalStrength),
@@ -95,6 +91,9 @@ TEST(DiagnosticsServiceConvertersTest, ConvertDiagnosticRoutineEnum) {
   EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kFan),
             crosapi::DiagnosticsRoutineEnum::kFan);
 
+  EXPECT_EQ(
+      Convert(cros_healthd::DiagnosticRoutineEnum::DEPRECATED_kNvmeWearLevel),
+      crosapi::DiagnosticsRoutineEnum::DEPRECATED_kNvmeWearLevel);
   EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kArcHttp),
             std::nullopt);
 }

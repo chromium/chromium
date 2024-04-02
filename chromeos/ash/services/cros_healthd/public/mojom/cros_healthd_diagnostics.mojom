@@ -27,7 +27,7 @@ enum DiagnosticRoutineEnum {
   kCpuCache = 5,
   kCpuStress = 6,
   kFloatingPointAccuracy = 7,
-  kNvmeWearLevel = 8,
+  DEPRECATED_kNvmeWearLevel = 8,
   kNvmeSelfTest = 9,
   kDiskRead = 10,
   kPrimeSearch = 11,

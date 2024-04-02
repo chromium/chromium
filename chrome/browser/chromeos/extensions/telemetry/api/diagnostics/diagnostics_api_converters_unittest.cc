@@ -109,12 +109,6 @@ TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
   {
     cx_diag::RoutineType out = cx_diag::RoutineType::kNone;
     EXPECT_TRUE(ConvertMojoRoutine(
-        crosapi::DiagnosticsRoutineEnum::kNvmeWearLevel, &out));
-    EXPECT_EQ(out, cx_diag::RoutineType::kNvmeWearLevel);
-  }
-  {
-    cx_diag::RoutineType out = cx_diag::RoutineType::kNone;
-    EXPECT_TRUE(ConvertMojoRoutine(
         crosapi::DiagnosticsRoutineEnum::kSignalStrength, &out));
     EXPECT_EQ(out, cx_diag::RoutineType::kSignalStrength);
   }
@@ -166,6 +160,11 @@ TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
     EXPECT_TRUE(
         ConvertMojoRoutine(crosapi::DiagnosticsRoutineEnum::kFan, &out));
     EXPECT_EQ(out, cx_diag::RoutineType::kFan);
+  }
+  {
+    cx_diag::RoutineType out = cx_diag::RoutineType::kNone;
+    EXPECT_FALSE(ConvertMojoRoutine(
+        crosapi::DiagnosticsRoutineEnum::DEPRECATED_kNvmeWearLevel, &out));
   }
 }
 

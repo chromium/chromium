@@ -106,7 +106,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
         crosapi::DiagnosticsRoutineEnum::kDnsResolverPresent,
         crosapi::DiagnosticsRoutineEnum::kLanConnectivity,
         crosapi::DiagnosticsRoutineEnum::kMemory,
-        crosapi::DiagnosticsRoutineEnum::kNvmeWearLevel,
         crosapi::DiagnosticsRoutineEnum::kSignalStrength,
         crosapi::DiagnosticsRoutineEnum::kGatewayCanBePinged,
         crosapi::DiagnosticsRoutineEnum::kSmartctlCheck,
@@ -150,7 +149,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
               "dns_resolver_present",
               "lan_connectivity",
               "memory",
-              "nvme_wear_level",
               "signal_strength",
               "gateway_can_be_pinged",
               "smartctl_check",
@@ -1039,43 +1037,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
           await chrome.os.diagnostics.runNvmeSelfTestRoutine(
             {
               test_type: 'short_test'
-            }
-          );
-        chrome.test.assertEq({id: 0, status: "ready"}, response);
-        chrome.test.succeed();
-      }
-    ]);
-  )");
-}
-
-IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
-                       RunNvmeWearLevelRoutineSuccess) {
-  // Configure FakeDiagnosticsService.
-  {
-    auto expected_response = crosapi::DiagnosticsRunRoutineResponse::New();
-    expected_response->id = 0;
-    expected_response->status = crosapi::DiagnosticsRoutineStatusEnum::kReady;
-
-    // Set the return value for a call to RunNvmeWearLevelRoutine.
-    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
-    fake_service_impl->SetRunRoutineResponse(std::move(expected_response));
-
-    // Set the expected runtime actions.
-    fake_service_impl->SetExpectedLastPassedParameters(
-        base::Value::Dict().Set("wear_level_threshold", 80));
-    fake_service_impl->SetExpectedLastCalledRoutine(
-        crosapi::DiagnosticsRoutineEnum::kNvmeWearLevel);
-
-    SetServiceForTesting(std::move(fake_service_impl));
-  }
-
-  CreateExtensionAndRunServiceWorker(R"(
-    chrome.test.runTests([
-      async function runNvmeWearLevelRoutine() {
-        const response =
-          await chrome.os.diagnostics.runNvmeWearLevelRoutine(
-            {
-              wear_level_threshold: 80
             }
           );
         chrome.test.assertEq({id: 0, status: "ready"}, response);

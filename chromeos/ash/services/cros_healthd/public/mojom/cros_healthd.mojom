@@ -196,8 +196,8 @@ interface CrosHealthdDiagnosticsService {
   RunFloatingPointAccuracyRoutine@9(NullableUint32? length_seconds)
       => (RunRoutineResponse response);
 
-  // Requests that the NvmeWearLevel routine is created and started on the
-  // platform. This routine examines wear level of NVMe against input
+  // [Deprecated] Requests that the NvmeWearLevel routine is created and started
+  // on the platform. This routine examines wear level of NVMe against input
   // threshold.
   // The availability of this routine can be determined by checking that
   // kNvmeWearLevel is returned by GetAvailableRoutines.
@@ -211,12 +211,13 @@ interface CrosHealthdDiagnosticsService {
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  DEPRECATED_RunNvmeWearLevelRoutine@10(uint32 wear_level_threshold)
-      => (RunRoutineResponse response);
+  DEPRECATED_RunNvmeWearLevelRoutineWithThreshold@10(
+    uint32 wear_level_threshold)
+        => (RunRoutineResponse response);
 
-  [MinVersion=1] RunNvmeWearLevelRoutine@32(
-      NullableUint32? wear_level_threshold)
-      => (RunRoutineResponse response);
+  [MinVersion=1] DEPRECATED_RunNvmeWearLevelRoutine@32(
+    NullableUint32? wear_level_threshold)
+        => (RunRoutineResponse response);
 
   // Requests that the NvmeSelfTest routine is created and started on the
   // platform. This routine launches the NVMe self-test, a tool to perform

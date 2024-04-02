@@ -79,7 +79,6 @@ TEST_F(DiagnosticsServiceAshTest, GetAvailableRoutinesSuccess) {
       cros_healthd::mojom::DiagnosticRoutineEnum::kDnsResolverPresent,
       cros_healthd::mojom::DiagnosticRoutineEnum::kLanConnectivity,
       cros_healthd::mojom::DiagnosticRoutineEnum::kMemory,
-      cros_healthd::mojom::DiagnosticRoutineEnum::kNvmeWearLevel,
       cros_healthd::mojom::DiagnosticRoutineEnum::kSignalStrength,
       cros_healthd::mojom::DiagnosticRoutineEnum::kGatewayCanBePinged,
       cros_healthd::mojom::DiagnosticRoutineEnum::kSmartctlCheck,
@@ -114,7 +113,6 @@ TEST_F(DiagnosticsServiceAshTest, GetAvailableRoutinesSuccess) {
           crosapi::mojom::DiagnosticsRoutineEnum::kDnsResolverPresent,
           crosapi::mojom::DiagnosticsRoutineEnum::kLanConnectivity,
           crosapi::mojom::DiagnosticsRoutineEnum::kMemory,
-          crosapi::mojom::DiagnosticsRoutineEnum::kNvmeWearLevel,
           crosapi::mojom::DiagnosticsRoutineEnum::kSignalStrength,
           crosapi::mojom::DiagnosticsRoutineEnum::kGatewayCanBePinged,
           crosapi::mojom::DiagnosticsRoutineEnum::kSmartctlCheck,
@@ -581,27 +579,6 @@ TEST_F(DiagnosticsServiceAshTest, RunNvmeSelfTestRoutineSuccess) {
   const auto& result = future.Get();
   ValidateResponse(result,
                    cros_healthd::mojom::DiagnosticRoutineEnum::kNvmeSelfTest);
-  EXPECT_TRUE(cros_healthd::FakeCrosHealthd::Get()
-                  ->DidExpectedDiagnosticsParametersMatch());
-}
-
-TEST_F(DiagnosticsServiceAshTest, RunNvmeWearLevelRoutineSuccess) {
-  // Configure FakeCrosHealthd.
-  SetSuccessfulRoutineResponse();
-  base::Value::Dict expected_passed_parameters;
-  expected_passed_parameters.Set("wear_level_threshold", 80);
-  cros_healthd::FakeCrosHealthd::Get()
-      ->SetExpectedLastPassedDiagnosticsParametersForTesting(
-          std::move(expected_passed_parameters));
-
-  base::test::TestFuture<crosapi::mojom::DiagnosticsRunRoutineResponsePtr>
-      future;
-  diagnostics_service()->RunNvmeWearLevelRoutine(80, future.GetCallback());
-
-  ASSERT_TRUE(future.Wait());
-  const auto& result = future.Get();
-  ValidateResponse(result,
-                   cros_healthd::mojom::DiagnosticRoutineEnum::kNvmeWearLevel);
   EXPECT_TRUE(cros_healthd::FakeCrosHealthd::Get()
                   ->DidExpectedDiagnosticsParametersMatch());
 }

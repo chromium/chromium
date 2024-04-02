@@ -81,8 +81,6 @@ std::optional<crosapi::mojom::DiagnosticsRoutineEnum> Convert(
       return crosapi::mojom::DiagnosticsRoutineEnum::kCpuStress;
     case cros_healthd::mojom::DiagnosticRoutineEnum::kFloatingPointAccuracy:
       return crosapi::mojom::DiagnosticsRoutineEnum::kFloatingPointAccuracy;
-    case cros_healthd::mojom::DiagnosticRoutineEnum::kNvmeWearLevel:
-      return crosapi::mojom::DiagnosticsRoutineEnum::kNvmeWearLevel;
     case cros_healthd::mojom::DiagnosticRoutineEnum::kNvmeSelfTest:
       return crosapi::mojom::DiagnosticsRoutineEnum::kNvmeSelfTest;
     case cros_healthd::mojom::DiagnosticRoutineEnum::kDiskRead:
@@ -131,6 +129,9 @@ std::optional<crosapi::mojom::DiagnosticsRoutineEnum> Convert(
       return crosapi::mojom::DiagnosticsRoutineEnum::kBluetoothPairing;
     case cros_healthd::mojom::DiagnosticRoutineEnum::kFan:
       return crosapi::mojom::DiagnosticsRoutineEnum::kFan;
+    // Below are deprecated routines.
+    case cros_healthd::mojom::DiagnosticRoutineEnum::DEPRECATED_kNvmeWearLevel:
+      return crosapi::mojom::DiagnosticsRoutineEnum::DEPRECATED_kNvmeWearLevel;
     default:
       return std::nullopt;
   }

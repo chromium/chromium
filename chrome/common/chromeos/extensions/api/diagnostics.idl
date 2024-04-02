@@ -27,7 +27,6 @@ namespace os.diagnostics {
     disk_read,
     dns_resolution,
     memory,
-    nvme_wear_level,
     smartctl_check,
     lan_connectivity,
     signal_strength,
@@ -150,10 +149,6 @@ namespace os.diagnostics {
 
   dictionary RunNvmeSelfTestRequest {
     NvmeSelfTestType test_type;
-  };
-
-  dictionary RunNvmeWearLevelRequest {
-    long wear_level_threshold;
   };
 
   dictionary RunSmartctlCheckRequest {
@@ -467,10 +462,6 @@ namespace os.diagnostics {
 
     static void runNvmeSelfTestRoutine(
         RunNvmeSelfTestRequest request,
-        RunRoutineCallback callback);
-
-    static void runNvmeWearLevelRoutine(
-        RunNvmeWearLevelRequest request,
         RunRoutineCallback callback);
 
     static void runSensitiveSensorRoutine(RunRoutineCallback callback);

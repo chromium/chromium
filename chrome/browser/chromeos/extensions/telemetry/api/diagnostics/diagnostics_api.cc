@@ -432,18 +432,6 @@ void OsDiagnosticsRunNvmeSelfTestRoutineFunction::RunIfAllowed() {
       GetOnResult());
 }
 
-// OsDiagnosticsRunNvmeWearLevelRoutineFunction --------------------------------
-
-void OsDiagnosticsRunNvmeWearLevelRoutineFunction::RunIfAllowed() {
-  const auto params = GetParams<cx_diag::RunNvmeWearLevelRoutine::Params>();
-  if (!params) {
-    return;
-  }
-
-  GetRemoteService()->RunNvmeWearLevelRoutine(
-      params->request.wear_level_threshold, GetOnResult());
-}
-
 // OsDiagnosticsRunSensitiveSensorRoutineFunction -----------------------------
 
 void OsDiagnosticsRunSensitiveSensorRoutineFunction::RunIfAllowed() {

@@ -321,18 +321,10 @@ void FakeDiagnosticsService::RunNvmeSelfTestRoutine(
       base::BindOnce(std::move(callback), run_routine_response_->Clone()));
 }
 
-void FakeDiagnosticsService::RunNvmeWearLevelRoutine(
+void FakeDiagnosticsService::DEPRECATED_RunNvmeWearLevelRoutine(
     uint32_t wear_level_threshold,
-    RunNvmeWearLevelRoutineCallback callback) {
-  actual_passed_parameters_.clear();
-  actual_passed_parameters_.Set("wear_level_threshold",
-                                static_cast<int32_t>(wear_level_threshold));
-
-  actual_called_routine_ = crosapi::DiagnosticsRoutineEnum::kNvmeWearLevel;
-
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), run_routine_response_->Clone()));
+    DEPRECATED_RunNvmeWearLevelRoutineCallback callback) {
+  std::move(callback).Run(nullptr);
 }
 
 void FakeDiagnosticsService::RunPrimeSearchRoutine(

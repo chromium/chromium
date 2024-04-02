@@ -346,17 +346,6 @@ class OsDiagnosticsRunNvmeSelfTestRoutineFunction
   void RunIfAllowed() override;
 };
 
-class OsDiagnosticsRunNvmeWearLevelRoutineFunction
-    : public DiagnosticsApiRunRoutineFunctionBase {
-  DECLARE_EXTENSION_FUNCTION("os.diagnostics.runNvmeWearLevelRoutine",
-                             OS_DIAGNOSTICS_RUNNVMEWEARLEVELROUTINE)
- private:
-  ~OsDiagnosticsRunNvmeWearLevelRoutineFunction() override = default;
-
-  // BaseTelemetryExtensionApiGuardFunction:
-  void RunIfAllowed() override;
-};
-
 class OsDiagnosticsRunSensitiveSensorRoutineFunction
     : public DiagnosticsApiRunRoutineFunctionBase {
   DECLARE_EXTENSION_FUNCTION("os.diagnostics.runSensitiveSensorRoutine",

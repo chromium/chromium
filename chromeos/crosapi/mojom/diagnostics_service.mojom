@@ -171,9 +171,9 @@ interface DiagnosticsService {
   RunFloatingPointAccuracyRoutine@8(uint32 length_seconds)
       => (DiagnosticsRunRoutineResponse response);
 
-  // Requests that the NvmeWearLevel routine is created and started on the
-  // platform. This routine examines wear level of NVMe against input
-  // threshold.
+  // [Deprecated in M125] Requests that the NvmeWearLevel routine is created and
+  // started on the platform. This routine examines wear level of NVMe against
+  // input threshold.
   // The availability of this routine can be determined by checking that
   // kNvmeWearLevel is returned by GetAvailableRoutines.
   //
@@ -184,7 +184,7 @@ interface DiagnosticsService {
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  RunNvmeWearLevelRoutine@9(uint32 wear_level_threshold)
+  DEPRECATED_RunNvmeWearLevelRoutine@9(uint32 wear_level_threshold)
       => (DiagnosticsRunRoutineResponse response);
 
   // Requests that the NvmeSelfTest routine is created and started on the
@@ -511,7 +511,7 @@ enum DiagnosticsRoutineEnum {
   kCpuCache = 4,
   kCpuStress = 5,
   kFloatingPointAccuracy = 6,
-  kNvmeWearLevel = 7,
+  DEPRECATED_kNvmeWearLevel = 7,
   kNvmeSelfTest = 8,
   kDiskRead = 9,
   kPrimeSearch = 10,

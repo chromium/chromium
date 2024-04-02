@@ -90,9 +90,9 @@ class FakeDiagnosticsService : public crosapi::mojom::DiagnosticsService {
   void RunNvmeSelfTestRoutine(
       crosapi::mojom::DiagnosticsNvmeSelfTestTypeEnum nvme_self_test_type,
       RunNvmeSelfTestRoutineCallback callback) override;
-  void RunNvmeWearLevelRoutine(
+  void DEPRECATED_RunNvmeWearLevelRoutine(
       uint32_t wear_level_threshold,
-      RunNvmeWearLevelRoutineCallback callback) override;
+      DEPRECATED_RunNvmeWearLevelRoutineCallback callback) override;
   void RunPrimeSearchRoutine(uint32_t length_seconds,
                              RunPrimeSearchRoutineCallback callback) override;
   void RunSensitiveSensorRoutine(

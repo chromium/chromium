@@ -64,9 +64,6 @@ bool ConvertMojoRoutine(crosapi::DiagnosticsRoutineEnum in,
     case crosapi::DiagnosticsRoutineEnum::kMemory:
       *out = cx_diag::RoutineType::kMemory;
       return true;
-    case crosapi::DiagnosticsRoutineEnum::kNvmeWearLevel:
-      *out = cx_diag::RoutineType::kNvmeWearLevel;
-      return true;
     case crosapi::DiagnosticsRoutineEnum::kSignalStrength:
       *out = cx_diag::RoutineType::kSignalStrength;
       return true;
@@ -115,6 +112,8 @@ bool ConvertMojoRoutine(crosapi::DiagnosticsRoutineEnum in,
     case crosapi::DiagnosticsRoutineEnum::kFan:
       *out = cx_diag::RoutineType::kFan;
       return true;
+    // Below are deprecated routines.
+    case crosapi::DiagnosticsRoutineEnum::DEPRECATED_kNvmeWearLevel:
     case crosapi::DiagnosticsRoutineEnum::kUnknown:
       return false;
   }
