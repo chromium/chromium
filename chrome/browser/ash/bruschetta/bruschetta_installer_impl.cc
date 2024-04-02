@@ -385,6 +385,7 @@ void BruschettaInstallerImpl::CreateVmDisk() {
   request.set_cryptohome_id(std::move(user_hash));
   request.set_vm_name(vm_name_);
   request.set_image_type(vm_tools::concierge::DiskImageType::DISK_IMAGE_AUTO);
+  request.set_storage_ballooning(true);
 
   client->CreateDiskImage(
       request, base::BindOnce(&BruschettaInstallerImpl::OnCreateVmDisk,
