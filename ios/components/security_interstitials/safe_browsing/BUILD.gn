@@ -133,3 +133,11 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 }
+
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  public_deps = [ "//base" ]
+}

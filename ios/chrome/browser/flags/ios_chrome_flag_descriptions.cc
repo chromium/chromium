@@ -460,6 +460,12 @@ const char kEnableWebChannelsDescription[] =
     "Enable folowing content from web and display Following feed on NTP based "
     "on sites that users followed.";
 
+const char kEnhancedSafeBrowsingPromoName[] =
+    "Enable Enhanced Safe Browsing Promos";
+const char kEnhancedSafeBrowsingPromoDescription[] =
+    "When enabled, the Enhanced Safe Browsing inline and infobar promos are "
+    "displayed given certain preconditions are met.";
+
 const char kFeedBackgroundRefreshName[] = "Enable feed background refresh";
 const char kFeedBackgroundRefreshDescription[] =
     "Schedules a feed background refresh after some minimum period of time has "

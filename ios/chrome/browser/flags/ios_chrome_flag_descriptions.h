@@ -393,6 +393,11 @@ extern const char kEnableVariationsGoogleGroupFilteringDescription[];
 extern const char kEnableWebChannelsName[];
 extern const char kEnableWebChannelsDescription[];
 
+// Title and description for the flag to display promos promoting the Enhanced
+// Safe Browsing feature.
+extern const char kEnhancedSafeBrowsingPromoName[];
+extern const char kEnhancedSafeBrowsingPromoDescription[];
+
 // Title and description for the flag to enable feed background refresh.
 extern const char kFeedBackgroundRefreshName[];
 extern const char kFeedBackgroundRefreshDescription[];
