@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
@@ -34,7 +35,7 @@ class AllPasswordsBottomSheetBridge implements AllPasswordsBottomSheetCoordinato
 
     @CalledByNative
     private static AllPasswordsBottomSheetBridge create(
-            long nativeView, WindowAndroid windowAndroid, String origin) {
+            long nativeView, WindowAndroid windowAndroid, @JniType("std::string") String origin) {
         return new AllPasswordsBottomSheetBridge(nativeView, windowAndroid, origin);
     }
 
@@ -51,12 +52,12 @@ class AllPasswordsBottomSheetBridge implements AllPasswordsBottomSheetCoordinato
     @CalledByNative
     private void insertCredential(
             int index,
-            String username,
-            String password,
-            String formattedUsername,
-            String originUrl,
+            @JniType("std::u16string") String username,
+            @JniType("std::u16string") String password,
+            @JniType("std::u16string") String formattedUsername,
+            @JniType("std::string") String originUrl,
             boolean isAndroidCredential,
-            String appDisplayName) {
+            @JniType("std::string") String appDisplayName) {
         mCredentials[index] =
                 new Credential(
                         username,
@@ -94,8 +95,8 @@ class AllPasswordsBottomSheetBridge implements AllPasswordsBottomSheetCoordinato
     interface Natives {
         void onCredentialSelected(
                 long nativeAllPasswordsBottomSheetViewImpl,
-                String username,
-                String password,
+                @JniType("std::u16string") String username,
+                @JniType("std::u16string") String password,
                 boolean requestsToFillPassword);
 
         void onDismiss(long nativeAllPasswordsBottomSheetViewImpl);

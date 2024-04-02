@@ -62,13 +62,10 @@ void AllPasswordsBottomSheetViewImpl::Show(
     }
 
     Java_AllPasswordsBottomSheetBridge_insertCredential(
-        env, java_object, index++,
-        ConvertUTF16ToJavaString(env, credential->username_value),
-        ConvertUTF16ToJavaString(env, credential->password_value),
-        ConvertUTF16ToJavaString(env, GetDisplayUsername(*credential)),
-        ConvertUTF8ToJavaString(env, credential->url.spec()),
-        facet.IsValidAndroidFacetURI(),
-        ConvertUTF8ToJavaString(env, app_display_name));
+        env, java_object, index++, credential->username_value,
+        credential->password_value, GetDisplayUsername(*credential),
+        credential->url.spec(), facet.IsValidAndroidFacetURI(),
+        app_display_name);
   }
 
   const bool is_password_field =
@@ -79,12 +76,11 @@ void AllPasswordsBottomSheetViewImpl::Show(
 
 void AllPasswordsBottomSheetViewImpl::OnCredentialSelected(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& username,
-    const base::android::JavaParamRef<jstring>& password,
+    std::u16string& username,
+    std::u16string& password,
     jboolean requests_to_fill_password) {
   controller_->OnCredentialSelected(
-      ConvertJavaStringToUTF16(env, username),
-      ConvertJavaStringToUTF16(env, password),
+      username, password,
       AllPasswordsBottomSheetController::RequestsToFillPassword(
           requests_to_fill_password));
 }
@@ -105,6 +101,5 @@ AllPasswordsBottomSheetViewImpl::GetOrCreateJavaObject() {
   return java_object_internal_ = Java_AllPasswordsBottomSheetBridge_create(
              AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
              controller_->GetNativeView()->GetWindowAndroid()->GetJavaObject(),
-             ConvertUTF8ToJavaString(AttachCurrentThread(),
-                                     controller_->GetFrameUrl().spec()));
+             controller_->GetFrameUrl().spec());
 }

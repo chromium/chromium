@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -134,7 +135,8 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
     }
 
     @CalledByNative
-    private void confirmDeletion(String title, String body) {
+    private void confirmDeletion(
+            @JniType("std::u16string") String title, @JniType("std::u16string") String body) {
         assert mManualFillingComponent != null;
         mManualFillingComponent.confirmOperation(
                 title,
@@ -152,34 +154,34 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
      * @param array AutofillSuggestion array that should get a new suggestion added.
      * @param index Index in the array where to place a new suggestion.
      * @param label Suggested text. The text that's going to be filled in the focused field, with a
-     *              few exceptions:
-     *              <ul>
-     *                  <li>Credit card numbers are elided, e.g. "Visa ****-1234."</li>
-     *                  <li>The text "CLEAR FORM" will clear the filled in text.</li>
-     *                  <li>Empty text can be used to display only icons, e.g. for credit card scan
-     *                      or editing autofill settings.</li>
-     *              </ul>
+     *     few exceptions:
+     *     <ul>
+     *       <li>Credit card numbers are elided, e.g. "Visa ****-1234."
+     *       <li>The text "CLEAR FORM" will clear the filled in text.
+     *       <li>Empty text can be used to display only icons, e.g. for credit card scan or editing
+     *           autofill settings.
+     *     </ul>
+     *
      * @param sublabel Hint for the suggested text. The text that's going to be filled in the
-     *                 unfocused fields of the form. If {@see label} is empty, then this must be
-     *                 empty too.
+     *     unfocused fields of the form. If {@see label} is empty, then this must be empty too.
      * @param iconId The resource ID for the icon associated with the suggestion, or 0 for no icon.
      * @param popupItemId Determines the type of the suggestion.
      * @param isDeletable Whether the item can be deleted by the user.
      * @param featureForIPH The In-Product-Help feature used for displaying the bubble for the
-     *         suggestion.
+     *     suggestion.
      * @param customIconUrl The url used to fetch the custom icon to be displayed in the autofill
-     *         suggestion chip.
+     *     suggestion chip.
      */
     @CalledByNative
     private static void addToAutofillSuggestionArray(
             AutofillSuggestion[] array,
             int index,
-            String label,
-            String sublabel,
+            @JniType("std::u16string") String label,
+            @JniType("std::u16string") String sublabel,
             int iconId,
             @PopupItemId int popupItemId,
             boolean isDeletable,
-            String featureForIPH,
+            @JniType("std::string") String featureForIPH,
             GURL customIconUrl) {
         int drawableId = iconId == 0 ? DropdownItem.NO_ICON : iconId;
         array[index] =

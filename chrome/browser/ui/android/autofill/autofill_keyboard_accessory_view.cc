@@ -104,11 +104,10 @@ void AutofillKeyboardAccessoryView::Show() {
     }
 
     Java_AutofillKeyboardAccessoryViewBridge_addToAutofillSuggestionArray(
-        env, data_array, position++, ConvertUTF16ToJavaString(env, label),
-        ConvertUTF16ToJavaString(env, sublabel), android_icon_id,
+        env, data_array, position++, label, sublabel, android_icon_id,
         base::to_underlying(suggestion.popup_item_id),
         controller_->GetRemovalConfirmationText(i, nullptr, nullptr),
-        ConvertUTF8ToJavaString(env, suggestion.feature_for_iph),
+        suggestion.feature_for_iph,
         url::GURLAndroid::FromNativeGURL(env, suggestion.custom_icon_url));
   }
   Java_AutofillKeyboardAccessoryViewBridge_show(env, java_object_, data_array);
@@ -125,8 +124,7 @@ void AutofillKeyboardAccessoryView::ConfirmDeletion(
   JNIEnv* env = base::android::AttachCurrentThread();
   deletion_callback_ = std::move(deletion_callback);
   Java_AutofillKeyboardAccessoryViewBridge_confirmDeletion(
-      env, java_object_, ConvertUTF16ToJavaString(env, confirmation_title),
-      ConvertUTF16ToJavaString(env, confirmation_body));
+      env, java_object_, confirmation_title, confirmation_body);
 }
 
 void AutofillKeyboardAccessoryView::SuggestionSelected(

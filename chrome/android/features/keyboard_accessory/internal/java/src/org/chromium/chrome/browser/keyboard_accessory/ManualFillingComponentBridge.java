@@ -11,6 +11,7 @@ import android.util.SparseArray;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -123,7 +124,9 @@ class ManualFillingComponentBridge {
 
     @CalledByNative
     private static Object createAccessorySheetData(
-            @AccessoryTabType int type, String title, String warning) {
+            @AccessoryTabType int type,
+            @JniType("std::u16string") String title,
+            @JniType("std::u16string") String warning) {
         return new AccessorySheetData(type, title, warning);
     }
 
@@ -137,7 +140,7 @@ class ManualFillingComponentBridge {
     @CalledByNative
     private void addOptionToggleToAccessorySheetData(
             Object objAccessorySheetData,
-            String displayText,
+            @JniType("std::u16string") String displayText,
             boolean enabled,
             @AccessoryAction int accessoryAction) {
         ((AccessorySheetData) objAccessorySheetData)
@@ -160,7 +163,10 @@ class ManualFillingComponentBridge {
 
     @CalledByNative
     private Object addUserInfoToAccessorySheetData(
-            Object objAccessorySheetData, String origin, boolean isExactMatch, GURL iconUrl) {
+            Object objAccessorySheetData,
+            @JniType("std::string") String origin,
+            boolean isExactMatch,
+            GURL iconUrl) {
         UserInfo userInfo = new UserInfo(origin, isExactMatch, iconUrl);
         ((AccessorySheetData) objAccessorySheetData).getUserInfoList().add(userInfo);
         return userInfo;
@@ -170,10 +176,10 @@ class ManualFillingComponentBridge {
     private void addFieldToUserInfo(
             Object objUserInfo,
             @AccessoryTabType int sheetType,
-            String displayText,
-            String textToFill,
-            String a11yDescription,
-            String guid,
+            @JniType("std::u16string") String displayText,
+            @JniType("std::u16string") String textToFill,
+            @JniType("std::u16string") String a11yDescription,
+            @JniType("std::string") String guid,
             boolean isObfuscated,
             boolean selectable) {
         Callback<UserInfoField> callback = null;
@@ -208,8 +214,8 @@ class ManualFillingComponentBridge {
     private void addPasskeySectionToAccessorySheetData(
             Object objAccessorySheetData,
             @AccessoryTabType int sheetType,
-            String displayName,
-            byte[] passkeyId) {
+            @JniType("std::string") String displayName,
+            @JniType("std::vector<uint8_t>") byte[] passkeyId) {
         ((AccessorySheetData) objAccessorySheetData)
                 .getPasskeySectionList()
                 .add(
@@ -231,12 +237,12 @@ class ManualFillingComponentBridge {
     private void addPromoCodeInfoToAccessorySheetData(
             Object objAccessorySheetData,
             @AccessoryTabType int sheetType,
-            String displayText,
-            String textToFill,
-            String a11yDescription,
-            String guid,
+            @JniType("std::u16string") String displayText,
+            @JniType("std::u16string") String textToFill,
+            @JniType("std::u16string") String a11yDescription,
+            @JniType("std::string") String guid,
             boolean isObfuscated,
-            String detailsText) {
+            @JniType("std::u16string") String detailsText) {
         PromoCodeInfo promoCodeInfo = new PromoCodeInfo();
         ((AccessorySheetData) objAccessorySheetData).getPromoCodeInfoList().add(promoCodeInfo);
 
@@ -268,7 +274,9 @@ class ManualFillingComponentBridge {
 
     @CalledByNative
     private void addFooterCommandToAccessorySheetData(
-            Object objAccessorySheetData, String displayText, int accessoryAction) {
+            Object objAccessorySheetData,
+            @JniType("std::u16string") String displayText,
+            int accessoryAction) {
         ((AccessorySheetData) objAccessorySheetData)
                 .getFooterCommands()
                 .add(
@@ -380,7 +388,7 @@ class ManualFillingComponentBridge {
                 long nativeManualFillingViewAndroid,
                 ManualFillingComponentBridge caller,
                 int tabType,
-                byte[] passkeyId);
+                @JniType("std::vector<uint8_t>") byte[] passkeyId);
 
         void onOptionSelected(
                 long nativeManualFillingViewAndroid,
@@ -403,8 +411,8 @@ class ManualFillingComponentBridge {
 
         void cachePasswordSheetDataForTesting(
                 WebContents webContents,
-                String[] userNames,
-                String[] passwords,
+                @JniType("std::vector<std::string>") String[] userNames,
+                @JniType("std::vector<std::string>") String[] passwords,
                 boolean originDenylisted);
 
         void notifyFocusedFieldTypeForTesting(

@@ -51,22 +51,15 @@ class ManualFillingViewAndroid : public ManualFillingViewInterface {
       const autofill::AccessoryTabType& tab_type) override;
 
   // Called from Java via JNI:
-  void OnFaviconRequested(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jstring>& j_origin,
-      jint desired_size_in_px,
-      const base::android::JavaParamRef<jobject>& j_callback);
   void OnFillingTriggered(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       jint tab_type,
       const base::android::JavaParamRef<jobject>& j_user_info_field);
-  void OnPasskeySelected(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      jint tab_type,
-      const base::android::JavaParamRef<jbyteArray>& j_passkey_id);
+  void OnPasskeySelected(JNIEnv* env,
+                         const base::android::JavaParamRef<jobject>& obj,
+                         jint tab_type,
+                         std::vector<uint8_t>& passkey);
   void OnOptionSelected(JNIEnv* env,
                         const base::android::JavaParamRef<jobject>& obj,
                         jint selected_action);
@@ -81,10 +74,6 @@ class ManualFillingViewAndroid : public ManualFillingViewInterface {
                        const base::android::JavaParamRef<jobject>& obj);
 
  private:
-  void OnImageFetched(base::android::ScopedJavaGlobalRef<jstring> j_origin,
-                      base::android::ScopedJavaGlobalRef<jobject> j_callback,
-                      const gfx::Image& image);
-
   base::android::ScopedJavaGlobalRef<jobject> GetOrCreateJavaObject();
 
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_ =
