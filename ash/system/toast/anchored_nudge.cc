@@ -90,6 +90,7 @@ AnchoredNudge::AnchoredNudge(AnchoredNudgeData& nudge_data)
   set_color(SK_ColorTRANSPARENT);
   set_margins(gfx::Insets());
   set_close_on_deactivate(false);
+  set_highlight_button_when_shown(nudge_data.highlight_anchor_button);
   SetLayoutManager(std::make_unique<views::FlexLayout>());
   system_nudge_view_ =
       AddChildView(std::make_unique<SystemNudgeView>(nudge_data));

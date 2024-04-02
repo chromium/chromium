@@ -117,6 +117,9 @@ struct ASH_PUBLIC_EXPORT AnchoredNudgeData {
   // is required for lottie images, which need their size to be set directly.
   bool fill_image_size = false;
 
+  // Highlight anchor button by default.
+  bool highlight_anchor_button = true;
+
   // Nudge action callbacks.
   HoverStateChangeCallback hover_state_change_callback;
   NudgeClickCallback click_callback;
