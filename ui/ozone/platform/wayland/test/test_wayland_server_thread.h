@@ -149,12 +149,6 @@ class TestWaylandServerThread : public TestOutput::Delegate,
                          const TestOutputMetrics& metrics) override;
   void OnTestOutputGlobalDestroy(TestOutput* test_output) override;
 
-  // Called when the Flush() is called for a `test_output`. When called sends
-  // the corresponding events for the `metrics` to clients of the
-  // aura output manager.
-  void OnTestOutputMetricsFlush(TestOutput* test_output,
-                                const TestOutputMetrics& metrics);
-
   TestDataDeviceManager* data_device_manager() { return &data_device_manager_; }
   TestSeat* seat() { return &seat_; }
   MockXdgShell* xdg_shell() { return &xdg_shell_; }
