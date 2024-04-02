@@ -79,6 +79,7 @@ class FakeProvidedFileSystem : public ProvidedFileSystemInterface {
                 int64_t size,
                 base::Time modification_time,
                 std::string mime_type,
+                std::unique_ptr<CloudFileInfo> cloud_file_info,
                 std::string contents);
 
   // Fetches a pointer to a fake entry registered in the fake file system. If

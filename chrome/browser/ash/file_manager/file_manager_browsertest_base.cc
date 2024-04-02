@@ -1943,11 +1943,11 @@ class FileSystemProviderTestVolume : public TestVolume {
         << "Unable to get fake file system for provider_id_ "
         << provider_id_.ToString();
     bool folder = entry.entry_type == AddEntriesMessage::EntryType::DIRECTORY;
-    std::string fileContents = folder ? "" : "abcdef";
+    std::string file_contents = folder ? "" : "abcdef";
     fake_file_system->AddEntry(base::FilePath(entry.target_path), folder,
-                               entry.name_text, fileContents.length(),
+                               entry.name_text, file_contents.length(),
                                entry.last_modified_time, entry.mime_type,
-                               fileContents);
+                               /*cloud_file_info=*/nullptr, file_contents);
   }
 
  private:

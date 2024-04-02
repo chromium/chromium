@@ -41,6 +41,8 @@ constexpr char kBadFakeEntryName2[] = "bad2";
 const base::FilePath::CharType kFakeFilePath[] =
     FILE_PATH_LITERAL("/hello.txt");
 
+constexpr char kFakeFileVersionTag[] = "versionA";
+
 FakeEntry::FakeEntry() = default;
 
 FakeEntry::FakeEntry(std::unique_ptr<EntryMetadata> metadata,
@@ -52,32 +54,38 @@ FakeEntry::~FakeEntry() = default;
 FakeProvidedFileSystem::FakeProvidedFileSystem(
     const ProvidedFileSystemInfo& file_system_info)
     : file_system_info_(file_system_info), last_file_handle_(0) {
-  AddEntry(base::FilePath(FILE_PATH_LITERAL("/")), true, "", 0, base::Time(),
-           "", "");
+  AddEntry(base::FilePath(FILE_PATH_LITERAL("/")), /*is_directory=*/true,
+           /*name=*/"", /*size=*/0, /*modification_time=*/base::Time(),
+           /*mime_type=*/"", /*cloud_file_info=*/nullptr, /*contents=*/"");
 
   base::Time modification_time;
   EXPECT_TRUE(
       base::Time::FromUTCString(kFakeFileModificationTime, &modification_time));
   AddEntry(base::FilePath(kFakeFilePath), false, kFakeFileName, kFakeFileSize,
-           modification_time, kFakeFileMimeType, kFakeFileText);
+           modification_time, kFakeFileMimeType,
+           std::make_unique<CloudFileInfo>(kFakeFileVersionTag), kFakeFileText);
 
   // Add a set of bad entries, in the root directory, which should be filtered
   // out.
   AddEntry(base::FilePath(kBadFakeEntryPath1), false, kBadFakeEntryName1,
-           kFakeFileSize, modification_time, kFakeFileMimeType, kFakeFileText);
+           kFakeFileSize, modification_time, kFakeFileMimeType,
+           /*cloud_file_info=*/nullptr, kFakeFileText);
   AddEntry(base::FilePath(kBadFakeEntryPath2), false, kBadFakeEntryName2,
-           kFakeFileSize, modification_time, kFakeFileMimeType, kFakeFileText);
+           kFakeFileSize, modification_time, kFakeFileMimeType,
+           /*cloud_file_info=*/nullptr, kFakeFileText);
 }
 
 FakeProvidedFileSystem::~FakeProvidedFileSystem() = default;
 
-void FakeProvidedFileSystem::AddEntry(const base::FilePath& entry_path,
-                                      bool is_directory,
-                                      const std::string& name,
-                                      int64_t size,
-                                      base::Time modification_time,
-                                      std::string mime_type,
-                                      std::string contents) {
+void FakeProvidedFileSystem::AddEntry(
+    const base::FilePath& entry_path,
+    bool is_directory,
+    const std::string& name,
+    int64_t size,
+    base::Time modification_time,
+    std::string mime_type,
+    std::unique_ptr<CloudFileInfo> cloud_file_info,
+    std::string contents) {
   DCHECK(entries_.find(entry_path) == entries_.end())
       << "Already present " << entry_path;
   std::unique_ptr<EntryMetadata> metadata(new EntryMetadata);
@@ -87,6 +95,7 @@ void FakeProvidedFileSystem::AddEntry(const base::FilePath& entry_path,
   metadata->size = std::make_unique<int64_t>(size);
   metadata->modification_time = std::make_unique<base::Time>(modification_time);
   metadata->mime_type = std::make_unique<std::string>(mime_type);
+  metadata->cloud_file_info = std::move(cloud_file_info);
 
   entries_[entry_path] =
       std::make_unique<FakeEntry>(std::move(metadata), contents);
@@ -126,10 +135,18 @@ base::File::Error FakeProvidedFileSystem::CopyOrMoveEntry(
   DCHECK_NE(source_entry->metadata->size, nullptr);
   DCHECK_NE(source_entry->metadata->modification_time, nullptr);
   DCHECK_NE(source_entry->metadata->mime_type, nullptr);
+
+  auto cloud_file_info =
+      (source_entry->metadata->cloud_file_info)
+          ? std::make_unique<CloudFileInfo>(
+                source_entry->metadata->cloud_file_info->version_tag)
+          : nullptr;
+
   AddEntry(target_path, *(source_entry->metadata->is_directory),
            *(source_entry->metadata->name), *(source_entry->metadata->size),
            *(source_entry->metadata->modification_time),
-           *(source_entry->metadata->mime_type), source_entry->contents);
+           *(source_entry->metadata->mime_type), std::move(cloud_file_info),
+           source_entry->contents);
   if (is_move) {
     entries_.erase(source_path);
   }
@@ -340,7 +357,9 @@ AbortCallback FakeProvidedFileSystem::CreateDirectory(
       return PostAbortableTask(base::BindOnce(
           std::move(callback), base::File::FILE_ERROR_INVALID_OPERATION));
     }
-    AddEntry(path, true, path.BaseName().value(), 0, base::Time(), "", "");
+    AddEntry(path, /*is_directory=*/true, path.BaseName().value(), /*size=*/0,
+             base::Time(), /*mime_type=*/"", /*cloud_file_info=*/nullptr,
+             /*contents=*/"");
   }
   return PostAbortableTask(
       base::BindOnce(std::move(callback), base::File::FILE_OK));
@@ -391,8 +410,9 @@ AbortCallback FakeProvidedFileSystem::CreateFile(
     return PostAbortableTask(
         base::BindOnce(std::move(callback), base::File::FILE_ERROR_EXISTS));
   }
-  AddEntry(file_path, false, file_path.BaseName().value(), 0, base::Time(),
-           kFakeFileMimeType, std::string());
+  AddEntry(file_path, /*is_directory=*/false, file_path.BaseName().value(),
+           /*size=*/0, base::Time(), kFakeFileMimeType,
+           /*cloud_file_info=*/nullptr, std::string());
   return PostAbortableTask(
       base::BindOnce(std::move(callback), base::File::FILE_OK));
 }

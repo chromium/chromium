@@ -1737,13 +1737,15 @@ class OneDriveTest : public TestAccountBrowserTest,
         base::Time::Now(),
         "application/"
         "vnd.openxmlformats-officedocument.wordprocessingml.document",
-        "");
+        /*cloud_file_info=*/nullptr,
+        /*contents=*/"");
     provided_file_system_->AddEntry(
         test_path_within_odfs_2_, false, test_pptx_file_name_2_, 0,
         base::Time::Now(),
         "application/"
         "vnd.openxmlformats-officedocument.presentationml.presentation",
-        "");
+        /*cloud_file_info=*/nullptr,
+        /*contents=*/"");
 
     // Get URLs of test files.
     odfs_docx_test_file_url_1_ = ash::cloud_upload::FilePathToFileSystemURL(
