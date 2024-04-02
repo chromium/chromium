@@ -1479,9 +1479,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.Startup.TimeDeferred2" units="ms"
-    expires_after="2024-05-10">
+    expires_after="2025-05-10">
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
+  <owner>victorvianna@google.com</owner>
   <component>Services&gt;Sync</component>
   <summary>
     Recorded on browser startup if the SyncEngine initialization is deferred by
