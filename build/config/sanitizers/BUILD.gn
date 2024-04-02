@@ -473,10 +473,11 @@ config("msan_flags") {
 
       # TODO(https://crbug.com/1317909): evaluate and possibly enable
       "-fno-sanitize-memory-use-after-dtor",
-
-      # TODO(https://crbug.com/1369167): evaluate and possibly enable
-      "-fno-sanitize-memory-param-retval",
     ]
+
+    if (!msan_eager_checks) {
+      cflags += [ "-fno-sanitize-memory-param-retval" ]
+    }
   }
 }
 

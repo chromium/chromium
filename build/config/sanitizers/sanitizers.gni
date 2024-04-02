@@ -39,6 +39,12 @@ declare_args() {
   # chain of stores leading from allocation site to use site.
   msan_track_origins = 2
 
+  # Enables "param-retval" mode, which finds more uses of uninitialized data and
+  # reduces code size. Behind a flag as there are a number of previously
+  # undetected violations that still need to be fixed.
+  # TODO(crbug.com/1369167): Default this to true and remove.
+  msan_eager_checks = false
+
   # Use dynamic libraries instrumented by one of the sanitizers instead of the
   # standard system libraries. Set this flag to build the libraries from source.
   use_locally_built_instrumented_libraries = false
