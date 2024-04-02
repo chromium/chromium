@@ -471,7 +471,7 @@ BASE_FEATURE(kBlockIntentsWhileLocked,
 
 BASE_FEATURE(kBrowserControlsEarlyResize,
              "BrowserControlsEarlyResize",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCacheActivityTaskID,
              "CacheActivityTaskID",
