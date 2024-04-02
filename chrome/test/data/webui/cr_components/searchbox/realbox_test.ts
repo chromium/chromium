@@ -226,7 +226,7 @@ suite('NewTabPageRealboxTest', () => {
     // Assert.
     assertStyle(
         realbox.$.voiceSearchButton, 'background-image',
-        'url("chrome://new-tab-page/icons/googlemic_clr_24px.svg")');
+        'url("chrome://resources/cr_components/searchbox/icons/mic.svg")');
 
     // Restore.
     loadTimeData.overrideValues({realboxCr23Theming: false});
@@ -243,7 +243,7 @@ suite('NewTabPageRealboxTest', () => {
     // Assert.
     assertStyle(
         realbox.$.voiceSearchButton, '-webkit-mask-image',
-        'url("chrome://new-tab-page/icons/googlemic_clr_24px.svg")');
+        'url("chrome://resources/cr_components/searchbox/icons/mic.svg")');
 
     // Restore.
     loadTimeData.overrideValues({realboxCr23Theming: false});

@@ -63,6 +63,12 @@ generate_grd("build_grdp") {
     "win_share_cr23.svg",
     "win_share.svg",
   ]
+  if (!is_chrome_branded) {
+    input_files += [
+      "mic.svg",
+      "camera.svg",
+    ]
+  }
   input_files_base_dir = rebase_path(".", "//")
 }
 
@@ -72,8 +78,10 @@ if (is_chrome_branded) {
     resource_path_prefix = "cr_components/searchbox/icons"
     out_grd = "$target_gen_dir/chrome_branded_resources.grdp"
     input_files = [
+      "camera.svg",
       "google_g.svg",
       "google_g_cr23.svg",
+      "mic.svg",
     ]
     input_files_base_dir =
         rebase_path("//chrome/app/theme/google_chrome/realbox", "//")
