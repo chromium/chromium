@@ -473,3 +473,17 @@ source_set("utils") {
     "//net:net",
   ]
 }
+
+source_set("utils_unit_tests") {
+  testonly = true
+
+  sources = [ "commerce_utils_unittest.cc" ]
+
+  deps = [
+    ":utils",
+    "//base",
+    "//base/test:test_support",
+    "//components/commerce/core:shopping_service_test_support",
+    "//url",
+  ]
+}

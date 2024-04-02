@@ -5,11 +5,15 @@
 #include "components/commerce/core/commerce_utils.h"
 
 #include <string>
+#include <vector>
 
 #include "base/feature_list.h"
+#include "base/json/json_writer.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
+#include "base/strings/escape.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "net/base/url_util.h"
@@ -63,4 +67,19 @@ ParcelTrackingStatus GetParcelTrackingStatusTestData() {
   return status;
 }
 
+GURL GetProductSpecsTabUrl(const std::vector<GURL>& urls) {
+  auto urls_list = base::Value::List();
+
+  for (auto& url : urls) {
+    urls_list.Append(url.spec());
+  }
+
+  std::string json;
+  if (!base::JSONWriter::Write(urls_list, &json)) {
+    return GURL(commerce::kChromeUICompareUrl);
+  }
+
+  return net::AppendQueryParameter(GURL(commerce::kChromeUICompareUrl), "urls",
+                                   json);
+}
 }  // namespace commerce

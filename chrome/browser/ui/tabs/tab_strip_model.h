@@ -569,6 +569,7 @@ class TabStripModel : public TabGroupController {
     CommandCopyURL,
     CommandGoBack,
     CommandCloseAllTabs,
+    CommandCommerceProductSpecifications,
     CommandLast
   };
 
@@ -744,7 +745,7 @@ class TabStripModel : public TabGroupController {
   // Returns the WebContentses at the specified indices. This does no checking
   // of the indices, it is assumed they are valid.
   std::vector<content::WebContents*> GetWebContentsesByIndices(
-      const std::vector<int>& indices);
+      const std::vector<int>& indices) const;
 
   // Sets the selection to |new_model| and notifies any observers.
   // Note: This function might end up sending 0 to 3 notifications in the

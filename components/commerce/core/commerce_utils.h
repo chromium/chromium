@@ -18,6 +18,8 @@ bool UrlContainsDiscountUtmTag(const GURL& url);
 // flag is enabled.
 ParcelTrackingStatus GetParcelTrackingStatusTestData();
 
+// Gets the url for the ProductSpec page based on `urls`.
+GURL GetProductSpecsTabUrl(const std::vector<GURL>& urls);
 }  // namespace commerce
 
 #endif  // COMPONENTS_COMMERCE_CORE_COMMERCE_UTILS_H_

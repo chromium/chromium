@@ -25,6 +25,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/commerce/browser_utils.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
@@ -64,6 +65,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/commerce/core/commerce_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/reading_list/core/reading_list_model.h"
@@ -1452,6 +1454,15 @@ bool TabStripModel::IsContextMenuCommandEnabled(
     case CommandOrganizeTabs:
       return true;
 
+    case CommandCommerceProductSpecifications: {
+      auto selected_web_contents =
+          GetWebContentsesByIndices(GetIndicesForCommand(context_index));
+      return commerce::IsProductSpecsMultiSelectMenuEnabled(
+                 profile_, GetWebContentsAt(context_index)) &&
+             commerce::IsWebContentsListEligibleForProductSpecs(
+                 selected_web_contents);
+    }
+
     case CommandFollowSite:
     case CommandUnfollowSite: {
       std::vector<int> indices = GetIndicesForCommand(context_index);
@@ -1681,6 +1692,21 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       service->RestartSessionAndShowUI(
           browser, TabOrganizationEntryPoint::kTabContextMenu,
           GetWebContentsAt(context_index));
+      break;
+    }
+
+    case CommandCommerceProductSpecifications: {
+      // ProductSpecs can only be triggered on non-incognito profiles.
+      DCHECK(!profile_->IsIncognitoProfile());
+      auto indices = GetIndicesForCommand(context_index);
+      auto selected_web_contents =
+          GetWebContentsesByIndices(GetIndicesForCommand(context_index));
+      auto eligible_urls =
+          commerce::GetListOfProductSpecsEligibleUrls(selected_web_contents);
+      Browser* browser =
+          chrome::FindBrowserWithTab(GetWebContentsAt(context_index));
+      chrome::OpenCommerceProductSpecificationsTab(browser, eligible_urls,
+                                                   indices.back());
       break;
     }
 
@@ -1935,7 +1961,7 @@ bool TabStripModel::IsNewTabAtEndOfTabStrip(WebContents* contents) const {
 }
 
 std::vector<content::WebContents*> TabStripModel::GetWebContentsesByIndices(
-    const std::vector<int>& indices) {
+    const std::vector<int>& indices) const {
   std::vector<content::WebContents*> items;
   items.reserve(indices.size());
   for (int index : indices)

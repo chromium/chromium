@@ -277,6 +277,11 @@ void RunScreenAILayoutExtraction(Browser* browser);
 
 void ExecLensRegionSearch(Browser* browser);
 
+// Commerce
+void OpenCommerceProductSpecificationsTab(Browser* browser,
+                                          const std::vector<GURL>& urls,
+                                          const int position);
+
 }  // namespace chrome
 
 #endif  // CHROME_BROWSER_UI_BROWSER_COMMANDS_H_

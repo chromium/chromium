@@ -10,6 +10,7 @@
 #include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/commerce/browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/ui/tabs/existing_tab_group_sub_menu_model.h"
@@ -26,6 +27,9 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/commerce/core/commerce_constants.h"
+#include "components/commerce/core/commerce_feature_list.h"
+#include "components/feed/feed_feature_list.h"
 #include "components/reading_list/features/reading_list_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -155,6 +159,13 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
                           IDS_TAB_CXMENU_ORGANIZE_TABS);
       SetIsNewFeatureAt(GetItemCount() - 1, true);
     }
+  }
+
+  if (commerce::IsProductSpecsMultiSelectMenuEnabled(
+          tab_strip->profile(), tab_strip->GetWebContentsAt(index)) &&
+      num_tabs >= commerce::kProductSpecificationsMinTabsCount) {
+    AddItemWithStringId(TabStripModel::CommandCommerceProductSpecifications,
+                        IDS_TAB_CXMENU_COMMERCE_PRODUCT_SPEC);
   }
 
   AddSeparator(ui::NORMAL_SEPARATOR);

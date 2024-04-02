@@ -287,6 +287,8 @@ static_library("browser") {
     "command_updater_delegate.h",
     "command_updater_impl.cc",
     "command_updater_impl.h",
+    "commerce/browser_utils.cc",
+    "commerce/browser_utils.h",
     "commerce/product_specifications/product_specifications_service_factory.cc",
     "commerce/product_specifications/product_specifications_service_factory.h",
     "commerce/shopping_service_factory.cc",
