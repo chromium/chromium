@@ -192,7 +192,9 @@ export class NetworkRequest {
   }
 
   handleRedirect(event: Protocol.Network.RequestWillBeSentEvent) {
-    this.#response.hasExtraInfo = event.redirectHasExtraInfo;
+    // TODO: use event.redirectResponse;
+    // Temporary workaround to emit ResponseCompleted event for redirects
+    this.#response.hasExtraInfo = false;
     this.#response.info = event.redirectResponse!;
     this.#emitEventsIfReady({
       wasRedirected: true,

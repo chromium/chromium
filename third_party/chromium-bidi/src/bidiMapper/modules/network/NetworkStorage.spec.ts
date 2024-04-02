@@ -377,5 +377,16 @@ describe('NetworkStorage', () => {
       const event = await getEvent('network.responseCompleted');
       expect(event).to.exist;
     });
+
+    it('should work with redirect', async () => {
+      const request = new MockCdpNetworkEvents(cdpClient, {
+        url: 'data:text/html,<div>yo</div>',
+      });
+
+      request.requestWillBeSent();
+      request.requestWillBeSentRedirect();
+      const event = await getEvent('network.responseCompleted');
+      expect(event).to.exist;
+    });
   });
 });

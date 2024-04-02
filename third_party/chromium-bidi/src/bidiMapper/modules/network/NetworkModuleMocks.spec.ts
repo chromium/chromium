@@ -110,6 +110,83 @@ export class MockCdpNetworkEvents {
     });
   }
 
+  requestWillBeSentRedirect() {
+    this.cdpClient.emit('Network.requestWillBeSent', {
+      requestId: this.requestId,
+      loaderId: this.loaderId,
+      documentURL: this.url,
+      request: {
+        url: this.url,
+        method: 'GET',
+        headers: {
+          'Upgrade-Insecure-Requests': '1',
+          'User-Agent':
+            'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/125.0.0.0 Safari/537.36',
+          'sec-ch-ua': '"Chromium";v="125", "Not.A/Brand";v="24"',
+          'sec-ch-ua-mobile': '?0',
+          'sec-ch-ua-platform': '"Linux"',
+        },
+        mixedContentType: 'none',
+        initialPriority: 'VeryHigh',
+        referrerPolicy: 'strict-origin-when-cross-origin',
+        isSameSite: true,
+      },
+      timestamp: 584528.247548,
+      wallTime: 1712063242.363687,
+      initiator: {type: 'other'},
+      redirectHasExtraInfo: true,
+      redirectResponse: {
+        url: this.url,
+        status: 302,
+        statusText: 'Found',
+        headers: {
+          Connection: 'keep-alive',
+          Date: 'Tue, 02 Apr 2024 13:07:22 GMT',
+          'Transfer-Encoding': 'chunked',
+          location: '/redirect',
+        },
+        mimeType: '',
+        charset: '',
+        connectionReused: true,
+        connectionId: 41,
+        remoteIPAddress: '[::1]',
+        remotePort: 36387,
+        fromDiskCache: false,
+        fromServiceWorker: false,
+        fromPrefetchCache: false,
+        encodedDataLength: 134,
+        timing: {
+          requestTime: 584528.242766,
+          proxyStart: -1,
+          proxyEnd: -1,
+          dnsStart: -1,
+          dnsEnd: -1,
+          connectStart: -1,
+          connectEnd: -1,
+          sslStart: -1,
+          sslEnd: -1,
+          workerStart: -1,
+          workerReady: -1,
+          workerFetchStart: -1,
+          workerRespondWithSettled: -1,
+          sendStart: 0.199,
+          sendEnd: 0.258,
+          pushStart: 0,
+          pushEnd: 0,
+          receiveHeadersStart: 4.199,
+          receiveHeadersEnd: 4.304,
+        },
+        responseTime: 1.712063242363088e12,
+        protocol: 'http/1.1',
+        alternateProtocolUsage: 'unspecifiedReason',
+        securityState: 'secure',
+      },
+      type: this.type,
+      frameId: this.frameId,
+      hasUserGesture: false,
+    });
+  }
+
   requestWillBeSentExtraInfo() {
     this.cdpClient.emit('Network.requestWillBeSentExtraInfo', {
       requestId: this.requestId,
