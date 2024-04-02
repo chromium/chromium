@@ -18,7 +18,7 @@ namespace blink {
 class WritingDirectionMode;
 
 // Possible region end points for a computed <inset-area-span>
-enum class InsetAreaRegion {
+enum class InsetAreaRegion : uint8_t {
   kNone,
   kAll,
   kCenter,

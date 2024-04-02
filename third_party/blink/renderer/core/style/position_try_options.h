@@ -7,6 +7,7 @@
 
 #include <array>
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/core/style/inset_area.h"
 #include "third_party/blink/renderer/core/style/scoped_css_name.h"
 
 namespace blink {
@@ -26,9 +27,12 @@ class CORE_EXPORT PositionTryOption {
  public:
   PositionTryOption(const ScopedCSSName* name, TryTacticList tactic_list)
       : position_try_name_(name), tactic_list_(tactic_list) {}
+  explicit PositionTryOption(InsetArea inset_area)
+      : tactic_list_(kNoTryTactics), inset_area_(inset_area) {}
 
   const TryTacticList& GetTryTactic() const { return tactic_list_; }
   const ScopedCSSName* GetPositionTryName() const { return position_try_name_; }
+  const InsetArea& GetInsetArea() const { return inset_area_; }
 
   bool operator==(const PositionTryOption& other) const;
 
@@ -37,6 +41,7 @@ class CORE_EXPORT PositionTryOption {
  private:
   Member<const ScopedCSSName> position_try_name_;
   TryTacticList tactic_list_;
+  InsetArea inset_area_;
 };
 
 class CORE_EXPORT PositionTryOptions

@@ -7157,6 +7157,8 @@ CSSValue* ConsumeFontSizeAdjust(CSSParserTokenRange& range,
                                             CSSValuePair::kKeepIdenticalValues);
 }
 
+namespace {
+
 // Consume 'flip-block || flip-inline || flip-start' into `flips`,
 // in the order that they appear.
 //
@@ -7195,8 +7197,9 @@ bool ConsumeFlipsInto(CSSParserTokenRange& range, CSSValue* (&flips)[3]) {
   return i != 0;
 }
 
-CSSValue* ConsumeSinglePositionTryOption(CSSParserTokenRange& range,
-                                         const CSSParserContext& context) {
+// [ <dashed-ident> || <try-tactic> ]
+CSSValue* ConsumeDashedIdentOrTactic(CSSParserTokenRange& range,
+                                     const CSSParserContext& context) {
   CSSValue* dashed_ident = nullptr;
   CSSValue* flips[3] = {nullptr};
   while (!range.AtEnd()) {
@@ -7210,6 +7213,7 @@ CSSValue* ConsumeSinglePositionTryOption(CSSParserTokenRange& range,
         continue;
       }
     }
+    // flip-block || flip-inline || flip-start
     if (!flips[0] && ConsumeFlipsInto(range, flips)) {
       CHECK(flips[0]);
       continue;
@@ -7231,10 +7235,37 @@ CSSValue* ConsumeSinglePositionTryOption(CSSParserTokenRange& range,
   return list;
 }
 
+// inset-area( <inset-area> )
+CSSValue* ConsumeInsetAreaFunction(CSSParserTokenRange& range) {
+  if (range.Peek().FunctionId() != CSSValueID::kInsetArea) {
+    return nullptr;
+  }
+  CSSParserTokenRange arg = ConsumeFunction(range);
+  const CSSValue* inset_area = ConsumeInsetArea(arg);
+  if (!inset_area) {
+    return nullptr;
+  }
+  auto* function =
+      MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kInsetArea);
+  function->Append(*inset_area);
+  return function;
+}
+
+}  // namespace
+
+CSSValue* ConsumeSinglePositionTryOption(CSSParserTokenRange& range,
+                                         const CSSParserContext& context) {
+  // // <dashed-ident> || <try-tactic>
+  if (CSSValue* value = ConsumeDashedIdentOrTactic(range, context)) {
+    return value;
+  }
+  // inset-area( <inset-area> )
+  return ConsumeInsetAreaFunction(range);
+}
+
 CSSValue* ConsumePositionTryOptions(CSSParserTokenRange& range,
                                     const CSSParserContext& context) {
-  // position-try-options: none | [ <dashed-ident> || <try-tactic> ]#
-  // <try-tactic> = flip-block || flip-inline || flip-start
+  // none | [ [<dashed-ident> || <try-tactic>] | inset-area( <inset-area> ) ]#
   if (range.Peek().Id() == CSSValueID::kNone) {
     return ConsumeIdent(range);
   }

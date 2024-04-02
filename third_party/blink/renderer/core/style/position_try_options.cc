@@ -8,7 +8,8 @@ namespace blink {
 
 bool PositionTryOption::operator==(const PositionTryOption& other) const {
   return tactic_list_ == other.tactic_list_ &&
-         base::ValuesEquivalent(position_try_name_, other.position_try_name_);
+         base::ValuesEquivalent(position_try_name_, other.position_try_name_) &&
+         inset_area_ == other.inset_area_;
 }
 
 void PositionTryOption::Trace(Visitor* visitor) const {

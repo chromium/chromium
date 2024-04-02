@@ -6902,7 +6902,17 @@ const CSSValue* PositionTryOptions::CSSValueFromComputedStyleInternal(
   if (const blink::PositionTryOptions* options =
           style.GetPositionTryOptions()) {
     CSSValueList* option_list = CSSValueList::CreateCommaSeparated();
-    for (const auto& option : options->GetOptions()) {
+    for (const PositionTryOption& option : options->GetOptions()) {
+      // inset-area( <inset-area> )
+      if (!option.GetInsetArea().IsNone()) {
+        auto* function =
+            MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kInsetArea);
+        function->Append(
+            *ComputedStyleUtils::ValueForInsetArea(option.GetInsetArea()));
+        option_list->Append(*function);
+        continue;
+      }
+      // [<dashed-ident> || <try-tactic>]
       CSSValueList* option_value = CSSValueList::CreateSpaceSeparated();
       if (const ScopedCSSName* name = option.GetPositionTryName()) {
         option_value->Append(*MakeGarbageCollected<CSSCustomIdentValue>(*name));
@@ -6930,6 +6940,15 @@ void PositionTryOptions::ApplyValue(StyleResolverState& state,
   }
   HeapVector<PositionTryOption> options;
   for (const auto& option : To<CSSValueList>(value)) {
+    // inset-area( <inset-area> )
+    if (const auto* function = DynamicTo<CSSFunctionValue>(option.Get())) {
+      CHECK_EQ(1u, function->length());
+      blink::InsetArea inset_area =
+          StyleBuilderConverter::ConvertInsetArea(state, function->First());
+      options.push_back(PositionTryOption(inset_area));
+      continue;
+    }
+    // [<dashed-ident> || <try-tactic>]
     const ScopedCSSName* scoped_name = nullptr;
     TryTacticList tactic_list = {TryTactic::kNone};
     wtf_size_t tactic_index = 0;

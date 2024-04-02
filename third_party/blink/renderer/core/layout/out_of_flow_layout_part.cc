@@ -165,6 +165,10 @@ class OOFCandidateStyleIterator {
       const PositionTryOption& option =
           position_try_options_->GetOptions()[*try_option_index_];
       const CSSPropertyValueSet* properties = nullptr;
+      if (!option.GetInsetArea().IsNone()) {
+        // TODO(crbug.com/329687279): Support inset-area() function.
+        continue;
+      }
       if (const ScopedCSSName* name = option.GetPositionTryName()) {
         const StyleRulePositionTry* rule = GetPositionTryRule(*name);
         if (!rule) {

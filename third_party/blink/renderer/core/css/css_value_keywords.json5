@@ -1831,6 +1831,8 @@
     // self-end,
     "span-self-start",
     "span-self-end",
+    // inset-area()
+    "inset-area",
 
     // resize
     // none
