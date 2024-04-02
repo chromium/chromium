@@ -383,12 +383,17 @@ function createPerfLogger(): PerfLogger {
     if (state.get(Mode.VIDEO)) {
       return;
     }
-    const event = PerfEvent.PHOTO_TAKING;
+    if (!val) {
+      perfLogger.stop(PerfEvent.PHOTO_TAKING, extras);
+    }
+  });
 
+  state.addObserver(PerfEvent.PHOTO_CAPTURE_SHUTTER, (val) => {
+    // If we log photo-taking metrics by 'taking' state, we cannot exclude the
+    // timer duration. photo-capture-shutter is the timing that a shutter is
+    // clicked.
     if (val) {
-      perfLogger.start(event);
-    } else {
-      perfLogger.stop(event, extras);
+      perfLogger.start(PerfEvent.PHOTO_TAKING);
     }
   });
 
