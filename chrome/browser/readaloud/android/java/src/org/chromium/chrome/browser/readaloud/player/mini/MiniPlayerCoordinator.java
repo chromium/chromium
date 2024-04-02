@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.readaloud.ReadAloudMiniPlayerSceneLayer;
+import org.chromium.chrome.browser.readaloud.player.PlayerCoordinator;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -34,25 +35,31 @@ public class MiniPlayerCoordinator {
     // Compositor layer to be shown during show and hide while browser controls are
     // resizing.
     private final ReadAloudMiniPlayerSceneLayer mSceneLayer;
+    private final PlayerCoordinator mPlayerCoordinator;
 
     /**
      * @param activity App activity containing a placeholder FrameLayout with ID
      *     R.id.readaloud_mini_player.
      * @param context View-inflation-capable Context for read_aloud_playback isolated split.
      * @param sharedModel Player UI property model for properties shared with expanded player.
+     * @param browserControlsSizer Allows observing and changing browser controls heights.
+     * @param layoutManager Involved in showing the compositor view.
+     * @param playerCoordinator PlayerCoordinator to be notified of mini player updates.
      */
     public MiniPlayerCoordinator(
             Activity activity,
             Context context,
             PropertyModel sharedModel,
             BrowserControlsSizer browserControlsSizer,
-            @Nullable LayoutManager layoutManager) {
+            @Nullable LayoutManager layoutManager,
+            PlayerCoordinator playerCoordinator) {
         this(
                 sharedModel,
                 new MiniPlayerMediator(browserControlsSizer),
                 inflateLayout(activity, context),
                 new ReadAloudMiniPlayerSceneLayer(browserControlsSizer),
-                layoutManager);
+                layoutManager,
+                playerCoordinator);
     }
 
     private static MiniPlayerLayout inflateLayout(Activity activity, Context context) {
@@ -72,8 +79,10 @@ public class MiniPlayerCoordinator {
             MiniPlayerMediator mediator,
             MiniPlayerLayout layout,
             ReadAloudMiniPlayerSceneLayer sceneLayer,
-            @Nullable LayoutManager layoutManager) {
+            @Nullable LayoutManager layoutManager,
+            PlayerCoordinator playerCoordinator) {
         mMediator = mediator;
+        mMediator.setCoordinator(this);
         mLayout = layout;
         assert layout != null;
         mSceneLayer = sceneLayer;
@@ -81,6 +90,7 @@ public class MiniPlayerCoordinator {
         if (layoutManager != null) {
             layoutManager.addSceneOverlay(sceneLayer);
         }
+        mPlayerCoordinator = playerCoordinator;
 
         mPlayerModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
@@ -120,6 +130,10 @@ public class MiniPlayerCoordinator {
      */
     public void dismiss(boolean animate) {
         mMediator.dismiss(animate);
+    }
+
+    void onShown() {
+        mPlayerCoordinator.onMiniPlayerShown();
     }
 
     public static void setViewStubForTesting(ViewStub stub) {

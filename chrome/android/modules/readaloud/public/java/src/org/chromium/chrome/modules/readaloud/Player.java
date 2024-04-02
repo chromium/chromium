@@ -91,6 +91,9 @@ public interface Player {
 
         /** Called when the user closes the voice menu. */
         void onVoiceMenuClosed();
+
+        /** Called when the mini player finishes its transition from gone to showing. */
+        void onMiniPlayerShown();
     }
 
     /**

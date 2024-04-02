@@ -128,6 +128,7 @@ public class ReadAloudController
     @Nullable private Profile mProfile;
 
     private boolean mOnUserLeaveHint;
+    private boolean mRestoringPlayer;
 
     /**
      * ReadAloud entrypoint defined in readaloud/enums.xml.
@@ -514,6 +515,7 @@ public class ReadAloudController
                                                 : null;
                                 if (restored != null
                                         && restored.getTab().getUrl().equals(tab.getUrl())) {
+                                    mRestoringPlayer = true;
                                     Log.d(
                                             TAG,
                                             "Restore state: swapping tab from the old activity with"
@@ -722,6 +724,14 @@ public class ReadAloudController
     }
 
     /**
+     * Returns true if playback is being restored for a previously playing tab. True from
+     * onTabSelected() until the mini player is fully shown.
+     */
+    public boolean isRestoringPlayer() {
+        return mRestoringPlayer;
+    }
+
+    /**
      * Play the tab, creating and showing the player if it isn't already showing. No effect if tab's
      * URL is the same as the URL that is already playing.
      *
@@ -909,6 +919,7 @@ public class ReadAloudController
             insetObserver.removeObserver(this);
         }
         mActivityLifecycleDispatcher.unregister(this);
+        mRestoringPlayer = false;
     }
 
     private void maybeSetUpHighlighter(Playback.Metadata metadata) {
@@ -1268,6 +1279,11 @@ public class ReadAloudController
             mStateToRestoreOnVoiceMenuClose.restore();
             mStateToRestoreOnVoiceMenuClose = null;
         }
+    }
+
+    @Override
+    public void onMiniPlayerShown() {
+        mRestoringPlayer = false;
     }
 
     // InsetObserver.WindowInsetObserver

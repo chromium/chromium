@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.readaloud.ReadAloudMiniPlayerSceneLayer;
 import org.chromium.chrome.browser.readaloud.ReadAloudMiniPlayerSceneLayerJni;
+import org.chromium.chrome.browser.readaloud.player.PlayerCoordinator;
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
@@ -56,6 +57,7 @@ public class MiniPlayerCoordinatorUnitTest {
     @Mock private MiniPlayerLayout mLayout;
     @Mock private MiniPlayerMediator mMediator;
     @Mock private ReadAloudMiniPlayerSceneLayer mSceneLayer;
+    @Mock private PlayerCoordinator mPlayerCoordinator;
     private PropertyModel mSharedModel;
     private PropertyModel mModel;
 
@@ -76,7 +78,12 @@ public class MiniPlayerCoordinatorUnitTest {
         doReturn(mModel).when(mMediator).getModel();
         mCoordinator =
                 new MiniPlayerCoordinator(
-                        mSharedModel, mMediator, mLayout, mSceneLayer, mLayoutManager);
+                        mSharedModel,
+                        mMediator,
+                        mLayout,
+                        mSceneLayer,
+                        mLayoutManager,
+                        mPlayerCoordinator);
     }
 
     @Test
@@ -90,7 +97,8 @@ public class MiniPlayerCoordinatorUnitTest {
                         mContextForInflation,
                         mSharedModel,
                         mBrowserControlsSizer,
-                        mLayoutManager);
+                        mLayoutManager,
+                        mPlayerCoordinator);
         verify(mViewStub).inflate();
         verify(mLayoutManager).addSceneOverlay(eq(mSceneLayer));
     }

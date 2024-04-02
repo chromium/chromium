@@ -447,6 +447,37 @@ public class ReadAloudControllerUnitTest {
     }
 
     @Test
+    public void testIsRestoringPlayer() {
+        assertFalse(mController.isRestoringPlayer());
+
+        // Start playing a tab, detach, restore
+        mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
+        resolvePromises();
+        verify(mPlaybackHooks, times(1))
+                .createPlayback(Mockito.any(), mPlaybackCallbackCaptor.capture());
+        onPlaybackSuccess(mPlayback);
+        mController
+                .getTabModelTabObserverforTests()
+                .onActivityAttachmentChanged(mTab, /* window= */ null);
+        verify(mPlayerCoordinator).dismissPlayers();
+        verify(mPlayback).release();
+
+        TabModelUtils.selectTabById(
+                mTabModelSelector,
+                mTab.getId(),
+                TabSelectionType.FROM_NEW,
+                /* skipLoadingTab= */ true);
+        verify(mPlaybackHooks, times(2)).createPlayback(any(), mPlaybackCallbackCaptor.capture());
+
+        // Player is now being restored
+        assertTrue(mController.isRestoringPlayer());
+
+        // Mini player finishes showing, done restoring player
+        mController.onMiniPlayerShown();
+        assertFalse(mController.isRestoringPlayer());
+    }
+
+    @Test
     public void testReloadPage_errorUiDismissed() {
         // start a playback with an error
         mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);

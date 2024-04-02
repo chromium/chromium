@@ -27,6 +27,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -62,6 +63,7 @@ public class BottomControlsMediatorTest {
     @Mock EdgeToEdgeController mEdgeToEdgeController;
     @Mock FullscreenManager mFullscreenManager;
     @Mock KeyboardVisibilityDelegate mKeyboardDelegate;
+    @Mock Supplier<Boolean> mReadAloudRestoringSupplier;
 
     private ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
     private ObservableSupplierImpl<Tab> mTabObservableSupplier = new ObservableSupplierImpl();
@@ -88,7 +90,8 @@ public class BottomControlsMediatorTest {
                         mTabObscuringHandler,
                         DEFAULT_HEIGHT,
                         mOverlayPanelVisibilitySupplier,
-                        mEdgeToEdgeControllerSupplier);
+                        mEdgeToEdgeControllerSupplier,
+                        mReadAloudRestoringSupplier);
     }
 
     @Test
@@ -102,7 +105,8 @@ public class BottomControlsMediatorTest {
                         mTabObscuringHandler,
                         DEFAULT_HEIGHT,
                         mOverlayPanelVisibilitySupplier,
-                        new ObservableSupplierImpl<>(null));
+                        new ObservableSupplierImpl<>(null),
+                        mReadAloudRestoringSupplier);
         assertNull(plainMediator.getEdgeToEdgeChangeObserverForTesting());
     }
 
@@ -146,7 +150,8 @@ public class BottomControlsMediatorTest {
                         mTabObscuringHandler,
                         DEFAULT_HEIGHT,
                         mOverlayPanelVisibilitySupplier,
-                        new ObservableSupplierImpl<>(liveEdgeToEdgeController));
+                        new ObservableSupplierImpl<>(liveEdgeToEdgeController),
+                        mReadAloudRestoringSupplier);
         assertNotNull(liveEdgeToEdgeController.getAnyChangeObserverForTesting());
         plainMediator.destroy();
         assertNull(liveEdgeToEdgeController.getAnyChangeObserverForTesting());
@@ -172,7 +177,8 @@ public class BottomControlsMediatorTest {
                 mTabObscuringHandler,
                 DEFAULT_HEIGHT,
                 mOverlayPanelVisibilitySupplier,
-                new ObservableSupplierImpl<>(liveEdgeToEdgeController));
+                new ObservableSupplierImpl<>(liveEdgeToEdgeController),
+                mReadAloudRestoringSupplier);
         assertNotNull(liveEdgeToEdgeController.getAnyChangeObserverForTesting());
         liveEdgeToEdgeController.setToEdgeForTesting(false);
         int toNormalHeight = mModel.get(ANDROID_VIEW_HEIGHT);
