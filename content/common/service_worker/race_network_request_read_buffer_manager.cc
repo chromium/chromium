@@ -48,7 +48,6 @@ RaceNetworkRequestReadBufferManager::ReadData() {
   MojoResult result;
   bool is_query_data_size_mode = base::GetFieldTrialParamByFeatureAsBool(
       features::kServiceWorkerAutoPreload, "query_data_size", false);
-  bool is_queried_num_bytes_zero = false;
   if (is_query_data_size_mode) {
     result = consumer_handle_->ReadData(nullptr, &num_bytes,
                                         MOJO_READ_DATA_FLAG_QUERY);
@@ -59,7 +58,6 @@ RaceNetworkRequestReadBufferManager::ReadData() {
     if (num_bytes == 0) {
       num_bytes = network::features::GetDataPipeDefaultAllocationSize();
       CHECK_GT(num_bytes, 0u);
-      is_queried_num_bytes_zero = true;
     }
   } else {
     num_bytes = base::GetFieldTrialParamByFeatureAsInt(
@@ -67,24 +65,10 @@ RaceNetworkRequestReadBufferManager::ReadData() {
         network::features::GetDataPipeDefaultAllocationSize(
             network::features::DataPipeAllocationSize::kLargerSizeIfPossible));
   }
-  SCOPED_CRASH_KEY_NUMBER("SWRace", "num_bytes_before_read", num_bytes);
-  SCOPED_CRASH_KEY_BOOL("SWRace", "is_queried_num_bytes_zero",
-                        is_queried_num_bytes_zero);
-  SCOPED_CRASH_KEY_BOOL("SWRace", "consumer_handle_valid",
-                        consumer_handle_->is_valid());
   scoped_refptr<net::IOBuffer> buffer =
       base::MakeRefCounted<net::IOBufferWithSize>(num_bytes);
   result = consumer_handle_->ReadData(buffer->data(), &num_bytes,
                                       MOJO_READ_DATA_FLAG_NONE);
-
-  static bool has_dumped_without_crashing = false;
-  if (is_queried_num_bytes_zero && !has_dumped_without_crashing) {
-    has_dumped_without_crashing = true;
-    SCOPED_CRASH_KEY_NUMBER("SWRace", "read_result", result);
-    SCOPED_CRASH_KEY_NUMBER("SWRace", "num_bytes_read_buffer", num_bytes);
-    SCOPED_CRASH_KEY_NUMBER("SWRace", "buffer_size", buffer->size());
-    base::debug::DumpWithoutCrashing();
-  }
 
   if (result == MOJO_RESULT_OK) {
     buffer_ = base::MakeRefCounted<net::DrainableIOBuffer>(std::move(buffer),
