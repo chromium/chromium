@@ -53,7 +53,8 @@ using media_feature_names::kMaxDevicePixelRatioMediaFeature;
 using media_feature_names::kMinDeviceAspectRatioMediaFeature;
 
 static inline bool FeatureWithValidIdent(const String& media_feature,
-                                         CSSValueID ident) {
+                                         CSSValueID ident,
+                                         const CSSParserContext& context) {
   if (media_feature == media_feature_names::kDisplayModeMediaFeature) {
     return ident == CSSValueID::kFullscreen ||
            ident == CSSValueID::kBorderless ||
@@ -150,7 +151,8 @@ static inline bool FeatureWithValidIdent(const String& media_feature,
     }
   }
 
-  if (RuntimeEnabledFeatures::DevicePostureEnabled()) {
+  if (RuntimeEnabledFeatures::DevicePostureEnabled(
+          context.GetExecutionContext())) {
     if (media_feature == media_feature_names::kDevicePostureMediaFeature) {
       return ident == CSSValueID::kContinuous || ident == CSSValueID::kFolded;
     }
@@ -257,7 +259,8 @@ static inline bool FeatureWithValidDensity(const String& media_feature,
          media_feature == media_feature_names::kMaxResolutionMediaFeature;
 }
 
-static inline bool FeatureExpectingInteger(const String& media_feature) {
+static inline bool FeatureExpectingInteger(const String& media_feature,
+                                           const CSSParserContext& context) {
   if (media_feature == media_feature_names::kColorMediaFeature ||
       media_feature == media_feature_names::kMaxColorMediaFeature ||
       media_feature == media_feature_names::kMinColorMediaFeature ||
@@ -270,7 +273,8 @@ static inline bool FeatureExpectingInteger(const String& media_feature) {
     return true;
   }
 
-  if (RuntimeEnabledFeatures::ViewportSegmentsEnabled()) {
+  if (RuntimeEnabledFeatures::ViewportSegmentsEnabled(
+          context.GetExecutionContext())) {
     if (media_feature ==
             media_feature_names::kHorizontalViewportSegmentsMediaFeature ||
         media_feature ==
@@ -283,11 +287,12 @@ static inline bool FeatureExpectingInteger(const String& media_feature) {
 }
 
 static inline bool FeatureWithInteger(const String& media_feature,
-                                      const CSSPrimitiveValue* value) {
+                                      const CSSPrimitiveValue* value,
+                                      const CSSParserContext& context) {
   if (!value->IsInteger()) {
     return false;
   }
-  return FeatureExpectingInteger(media_feature);
+  return FeatureExpectingInteger(media_feature, context);
 }
 
 static inline bool FeatureWithNumber(const String& media_feature,
@@ -479,7 +484,7 @@ std::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
 
   CSSPrimitiveValue* value = css_parsing_utils::ConsumeInteger(
       range, context, -std::numeric_limits<double>::max() /* minimum_value */);
-  if (!value && !FeatureExpectingInteger(media_feature)) {
+  if (!value && !FeatureExpectingInteger(media_feature, context)) {
     value = css_parsing_utils::ConsumeNumber(
         range, context, CSSPrimitiveValue::ValueRange::kAll);
   }
@@ -494,7 +499,7 @@ std::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
   if (!value) {
     if (CSSIdentifierValue* ident = css_parsing_utils::ConsumeIdent(range)) {
       CSSValueID ident_id = ident->GetValueID();
-      if (!FeatureWithValidIdent(media_feature, ident_id)) {
+      if (!FeatureWithValidIdent(media_feature, ident_id, context)) {
         return std::nullopt;
       }
       return MediaQueryExpValue(ident_id);
@@ -535,7 +540,7 @@ std::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
                               numeric_literal->GetType());
   }
 
-  if (FeatureWithInteger(media_feature, value) ||
+  if (FeatureWithInteger(media_feature, value, context) ||
       FeatureWithNumber(media_feature, value) ||
       FeatureWithZeroOrOne(media_feature, value)) {
     return MediaQueryExpValue(value->GetDoubleValue(),

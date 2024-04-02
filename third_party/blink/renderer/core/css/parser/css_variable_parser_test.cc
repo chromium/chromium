@@ -74,7 +74,10 @@ TEST_P(ValidVariableReferenceTest, ContainsValidVariableReferences) {
   SCOPED_TRACE(GetParam());
   Vector<CSSParserToken, 32> tokens = Parse(GetParam());
   CSSParserTokenRange range(tokens);
-  EXPECT_TRUE(CSSVariableParser::ContainsValidVariableReferences(range));
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  EXPECT_TRUE(CSSVariableParser::ContainsValidVariableReferences(
+      range, context->GetExecutionContext()));
 }
 
 TEST_P(ValidVariableReferenceTest, ParseUniversalSyntaxValue) {
@@ -104,7 +107,10 @@ TEST_P(InvalidVariableReferenceTest, ContainsValidVariableReferences) {
   SCOPED_TRACE(GetParam());
   Vector<CSSParserToken, 32> tokens = Parse(GetParam());
   CSSParserTokenRange range(tokens);
-  EXPECT_FALSE(CSSVariableParser::ContainsValidVariableReferences(range));
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  EXPECT_FALSE(CSSVariableParser::ContainsValidVariableReferences(
+      range, context->GetExecutionContext()));
 }
 
 TEST_P(InvalidVariableReferenceTest, ParseUniversalSyntaxValue) {

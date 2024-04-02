@@ -36,6 +36,7 @@
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/buildflags.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
@@ -208,7 +209,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            raw_ref(features::kConsolidatedMovementXY)},
           {wf::EnableCooperativeScheduling,
            raw_ref(features::kCooperativeScheduling)},
-          {wf::EnableDevicePosture, raw_ref(features::kDevicePosture)},
           {wf::EnableDigitalGoods, raw_ref(features::kDigitalGoodsApi),
            kSetOnlyIfOverridden},
           {wf::EnableDocumentPolicyNegotiation,
@@ -298,7 +298,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            raw_ref(features::kUserActivationSameOriginVisibility)},
           {wf::EnableVideoPlaybackQuality,
            raw_ref(features::kVideoPlaybackQuality)},
-          {wf::EnableViewportSegments, raw_ref(features::kViewportSegments)},
           {wf::EnableWebBluetooth, raw_ref(features::kWebBluetooth),
            kSetOnlyIfOverridden},
           {wf::EnableWebBluetoothGetDevices,

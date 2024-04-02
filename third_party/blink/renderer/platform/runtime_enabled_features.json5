@@ -1240,7 +1240,9 @@
       name: "DevicePosture",
       public: true,
       status: "experimental",
-      base_feature: "none",
+      base_feature_status: "enabled",
+      copied_from_base_feature_if: "overridden",
+      origin_trial_feature_name: "FoldableAPIs",
     },
     {
       // This feature makes the <dialog> element close properly when its "open"
@@ -4031,7 +4033,9 @@
       name: "ViewportSegments",
       status: "experimental",
       public: true,
-      base_feature: "none",
+      base_feature_status: "enabled",
+      copied_from_base_feature_if: "overridden",
+      origin_trial_feature_name: "FoldableAPIs",
     },
     {
       // If enabled, ViewTransition API is supported for navigations including

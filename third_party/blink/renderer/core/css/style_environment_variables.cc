@@ -110,22 +110,22 @@ const AtomicString StyleEnvironmentVariables::GetVariableName(
     const FeatureContext* feature_context) {
   switch (variable) {
     case UADefinedTwoDimensionalVariable::kViewportSegmentTop:
-      DCHECK(RuntimeEnabledFeatures::ViewportSegmentsEnabled());
+      DCHECK(RuntimeEnabledFeatures::ViewportSegmentsEnabled(feature_context));
       return AtomicString("viewport-segment-top");
     case UADefinedTwoDimensionalVariable::kViewportSegmentRight:
-      DCHECK(RuntimeEnabledFeatures::ViewportSegmentsEnabled());
+      DCHECK(RuntimeEnabledFeatures::ViewportSegmentsEnabled(feature_context));
       return AtomicString("viewport-segment-right");
     case UADefinedTwoDimensionalVariable::kViewportSegmentBottom:
-      DCHECK(RuntimeEnabledFeatures::ViewportSegmentsEnabled());
+      DCHECK(RuntimeEnabledFeatures::ViewportSegmentsEnabled(feature_context));
       return AtomicString("viewport-segment-bottom");
     case UADefinedTwoDimensionalVariable::kViewportSegmentLeft:
-      DCHECK(RuntimeEnabledFeatures::ViewportSegmentsEnabled());
+      DCHECK(RuntimeEnabledFeatures::ViewportSegmentsEnabled(feature_context));
       return AtomicString("viewport-segment-left");
     case UADefinedTwoDimensionalVariable::kViewportSegmentWidth:
-      DCHECK(RuntimeEnabledFeatures::ViewportSegmentsEnabled());
+      DCHECK(RuntimeEnabledFeatures::ViewportSegmentsEnabled(feature_context));
       return AtomicString("viewport-segment-width");
     case UADefinedTwoDimensionalVariable::kViewportSegmentHeight:
-      DCHECK(RuntimeEnabledFeatures::ViewportSegmentsEnabled());
+      DCHECK(RuntimeEnabledFeatures::ViewportSegmentsEnabled(feature_context));
       return AtomicString("viewport-segment-height");
     default:
       break;

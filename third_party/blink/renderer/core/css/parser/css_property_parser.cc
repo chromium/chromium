@@ -191,7 +191,8 @@ bool CSSPropertyParser::ParseValueStart(CSSPropertyID unresolved_property,
   }
 #endif
 
-  if (CSSVariableParser::ContainsValidVariableReferences(original_range)) {
+  if (CSSVariableParser::ContainsValidVariableReferences(
+          original_range, context_->GetExecutionContext())) {
     StringView text =
         CSSVariableParser::StripTrailingWhitespaceAndComments(value_.text);
     if (text.length() > CSSVariableData::kMaxVariableBytes) {

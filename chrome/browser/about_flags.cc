@@ -8036,11 +8036,11 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"device-posture", flag_descriptions::kDevicePostureName,
      flag_descriptions::kDevicePostureDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kDevicePosture)},
+     FEATURE_VALUE_TYPE(blink::features::kDevicePosture)},
 
     {"viewport-segments", flag_descriptions::kViewportSegmentsName,
      flag_descriptions::kViewportSegmentsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kViewportSegments)},
+     FEATURE_VALUE_TYPE(blink::features::kViewportSegments)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"device-force-scheduled-reboot",

@@ -15,11 +15,11 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.content.browser.WindowEventObserver;
 import org.chromium.content.browser.WindowEventObserverManager;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content_public.browser.ContentFeatureMap;
-import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -55,8 +55,8 @@ public class DevicePosturePlatformProviderAndroid implements WindowEventObserver
 
     @CalledByNative
     private void startListening() {
-        if (ContentFeatureMap.isEnabled(ContentFeatures.DEVICE_POSTURE)
-                || ContentFeatureMap.isEnabled(ContentFeatures.VIEWPORT_SEGMENTS)) {
+        if (ContentFeatureMap.isEnabled(BlinkFeatures.DEVICE_POSTURE)
+                || ContentFeatureMap.isEnabled(BlinkFeatures.VIEWPORT_SEGMENTS)) {
             mListening = true;
             observeWindowLayoutListener(mWebContents.getTopLevelNativeWindow());
         }

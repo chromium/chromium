@@ -234,12 +234,6 @@ BASE_FEATURE(kCrashReporting,
              "CrashReporting",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable the device posture API.
-// Tracking bug for enabling device posture API: https://crbug.com/1066842.
-BASE_FEATURE(kDevicePosture,
-             "DevicePosture",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether the Digital Goods API is enabled.
 // https://github.com/WICG/digital-goods/
 BASE_FEATURE(kDigitalGoodsApi,
@@ -1139,12 +1133,6 @@ BASE_FEATURE(kUserActivationSameOriginVisibility,
 BASE_FEATURE(kVerifyDidCommitParams,
              "VerifyDidCommitParams",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enable the viewport segments API.
-// Tracking bug for enabling viewport segments API: https://crbug.com/1039050.
-BASE_FEATURE(kViewportSegments,
-             "ViewportSegments",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables future V8 VM features
 BASE_FEATURE(kV8VmFuture, "V8VmFuture", base::FEATURE_DISABLED_BY_DEFAULT);

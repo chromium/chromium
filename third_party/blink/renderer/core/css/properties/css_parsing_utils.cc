@@ -687,9 +687,11 @@ bool ConsumeTranslate3d(CSSParserTokenRange& args,
 // Add CSSVariableData to variableData vector.
 bool AddCSSPaintArgument(
     const Vector<CSSParserToken>& tokens,
-    Vector<scoped_refptr<CSSVariableData>>* const variable_data) {
+    Vector<scoped_refptr<CSSVariableData>>* const variable_data,
+    const CSSParserContext& context) {
   CSSParserTokenRange token_range(tokens);
-  if (CSSVariableParser::ContainsValidVariableReferences(token_range)) {
+  if (CSSVariableParser::ContainsValidVariableReferences(
+          token_range, context.GetExecutionContext())) {
     return false;
   }
   if (!token_range.AtEnd()) {
@@ -3023,7 +3025,7 @@ static CSSValue* ConsumePaint(CSSParserTokenRange& args,
     if (args.Peek().GetType() != kCommaToken) {
       argument_tokens.AppendVector(ConsumeFunctionArgsOrNot(args));
     } else {
-      if (!AddCSSPaintArgument(argument_tokens, &variable_data)) {
+      if (!AddCSSPaintArgument(argument_tokens, &variable_data, context)) {
         return nullptr;
       }
       argument_tokens.clear();
@@ -3032,7 +3034,7 @@ static CSSValue* ConsumePaint(CSSParserTokenRange& args,
       }
     }
   }
-  if (!AddCSSPaintArgument(argument_tokens, &variable_data)) {
+  if (!AddCSSPaintArgument(argument_tokens, &variable_data, context)) {
     return nullptr;
   }
 

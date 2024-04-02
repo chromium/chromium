@@ -90,12 +90,14 @@ class MediaQueryFeatureSet : public MediaQueryParser::FeatureSet {
                 execution_context)) ||
            (feature ==
                 media_feature_names::kHorizontalViewportSegmentsMediaFeature &&
-            RuntimeEnabledFeatures::ViewportSegmentsEnabled()) ||
+            RuntimeEnabledFeatures::ViewportSegmentsEnabled(
+                execution_context)) ||
            (feature ==
                 media_feature_names::kVerticalViewportSegmentsMediaFeature &&
-            RuntimeEnabledFeatures::ViewportSegmentsEnabled()) ||
+            RuntimeEnabledFeatures::ViewportSegmentsEnabled(
+                execution_context)) ||
            (feature == media_feature_names::kDevicePostureMediaFeature &&
-            RuntimeEnabledFeatures::DevicePostureEnabled()) ||
+            RuntimeEnabledFeatures::DevicePostureEnabled(execution_context)) ||
            (feature == media_feature_names::kOverflowInlineMediaFeature &&
             RuntimeEnabledFeatures::CSSOverflowMediaFeaturesEnabled()) ||
            (feature == media_feature_names::kOverflowBlockMediaFeature &&

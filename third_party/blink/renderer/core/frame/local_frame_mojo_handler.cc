@@ -781,8 +781,10 @@ void LocalFrameMojoHandler::DidUpdateFramePolicy(
 
 void LocalFrameMojoHandler::OnPostureChanged(
     mojom::blink::DevicePostureType posture) {
-  if (!RuntimeEnabledFeatures::DevicePostureEnabled())
+  if (!RuntimeEnabledFeatures::DevicePostureEnabled(
+          GetDocument()->GetExecutionContext())) {
     return;
+  }
   current_device_posture_ = posture;
   // A change of the device posture requires re-evaluation of media queries
   // for the local frame subtree (the device posture affect the

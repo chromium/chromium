@@ -1551,7 +1551,8 @@ void LocalFrame::MediaQueryAffectingValueChangedForLocalSubtree(
 
 void LocalFrame::ViewportSegmentsChanged(
     const WebVector<gfx::Rect>& viewport_segments) {
-  if (!RuntimeEnabledFeatures::ViewportSegmentsEnabled()) {
+  if (!RuntimeEnabledFeatures::ViewportSegmentsEnabled(
+          GetDocument()->GetExecutionContext())) {
     return;
   }
 
@@ -1577,7 +1578,8 @@ void LocalFrame::ViewportSegmentsChanged(
 
 void LocalFrame::UpdateViewportSegmentCSSEnvironmentVariables(
     const WebVector<gfx::Rect>& viewport_segments) {
-  DCHECK(RuntimeEnabledFeatures::ViewportSegmentsEnabled());
+  DCHECK(RuntimeEnabledFeatures::ViewportSegmentsEnabled(
+      GetDocument()->GetExecutionContext()));
 
   // Update the variable values on the root instance so that documents that
   // are created after the values change automatically have the right values.

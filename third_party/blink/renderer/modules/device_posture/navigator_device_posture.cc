@@ -16,7 +16,8 @@ const char NavigatorDevicePosture::kSupplementName[] = "NavigatorDevicePosture";
 
 // static
 DevicePosture* NavigatorDevicePosture::devicePosture(Navigator& navigator) {
-  DCHECK(RuntimeEnabledFeatures::DevicePostureEnabled());
+  DCHECK(RuntimeEnabledFeatures::DevicePostureEnabled(
+      navigator.GetExecutionContext()));
 
   NavigatorDevicePosture* supplement =
       Supplement<Navigator>::From<NavigatorDevicePosture>(navigator);

@@ -15,8 +15,8 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.UnownedUserData;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UnownedUserDataKey;
+import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.content_public.browser.ContentFeatureMap;
-import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.window.WindowUtil;
 
@@ -82,7 +82,7 @@ public class WindowLayoutInfoListener implements UnownedUserData {
             WindowAndroid window) {
         // WindowUtil is only available on Android 13+.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
-                || !ContentFeatureMap.isEnabled(ContentFeatures.DEVICE_POSTURE)
+                || !ContentFeatureMap.isEnabled(BlinkFeatures.DEVICE_POSTURE)
                 || !WindowUtil.isAvailable()
                 || window == null) {
             return null;

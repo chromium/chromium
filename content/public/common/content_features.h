@@ -63,7 +63,6 @@ CONTENT_EXPORT extern const char kCookieDeprecationLabelName[];
 CONTENT_EXPORT extern const char kCookieDeprecationTestingDisableAdsAPIsName[];
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kCooperativeScheduling);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kCrashReporting);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kDevicePosture);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDigitalGoodsApi);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDIPS);
 CONTENT_EXPORT extern const base::FeatureParam<bool>
@@ -281,7 +280,6 @@ CONTENT_EXPORT extern const base::FeatureParam<int>
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kUnrestrictedSharedArrayBuffer);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kUserActivationSameOriginVisibility);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kVerifyDidCommitParams);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kViewportSegments);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kV8VmFuture);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebAppSystemMediaControlsWin);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyBaseline);
