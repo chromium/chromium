@@ -44,7 +44,7 @@
       promise_test(async (t) => {
         await waitForScrollReset(scroller);
         resetScrollerStyle();
-        waitForCompositorCommit();
+        await waitForCompositorReady();
 
         scroller.addEventListener('scroll', listener);
         let scroller_rect = scroller.getBoundingClientRect();
@@ -75,7 +75,7 @@
         scroller.removeEventListener('scroll', listener);
         resetScrollerStyle();
         await waitForScrollReset(scroller);
-        await waitForCompositorCommit();
+        await waitForCompositorReady();
         assert_equals(scroller.scrollTop, 0);
 
         scrollend_promise = waitForScrollendEvent(scroller);
