@@ -19,8 +19,11 @@ namespace gfx {
 // The alternative would be to have the template files pull in the whole gfx
 // namespace via using-directives, which is banned by the style guide.
 #define DECLARE_VECTOR_COMMANDS                                                \
-  /* A new <path> element. For the first path, this is assumed. */             \
+  /* A new <path> element. For the first path, this is assumed. By default */  \
+  /* the path has the 'kEvenOdd' fill type. */                                 \
   DECLARE_VECTOR_COMMAND(NEW_PATH)                                             \
+  /* Set the fill type to Non-zero aka 'kWinding'. */                          \
+  DECLARE_VECTOR_COMMAND(FILL_RULE_NONZERO)                                    \
   /* Sets the alpha for the current path. */                                   \
   DECLARE_VECTOR_COMMAND(PATH_COLOR_ALPHA)                                     \
   /* Sets the color for the current path. */                                   \

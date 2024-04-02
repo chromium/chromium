@@ -148,6 +148,7 @@ class PathParser {
       case R_ARC_TO:
         return 7;
 
+      case FILL_RULE_NONZERO:
       case NEW_PATH:
       case PATH_MODE_CLEAR:
       case CAP_SQUARE:
@@ -173,6 +174,7 @@ CommandType CommandFromString(const std::string& source) {
     return command;
 
   RETURN_IF_IS(NEW_PATH);
+  RETURN_IF_IS(FILL_RULE_NONZERO);
   RETURN_IF_IS(PATH_COLOR_ALPHA);
   RETURN_IF_IS(PATH_COLOR_ARGB);
   RETURN_IF_IS(PATH_MODE_CLEAR);
@@ -270,6 +272,10 @@ void PaintPath(Canvas* canvas,
     switch (command_type) {
       // Handled above.
       case NEW_PATH:
+        break;
+
+      case FILL_RULE_NONZERO:
+        path.setFillType(SkPathFillType::kWinding);
         break;
 
       case PATH_COLOR_ALPHA:
