@@ -148,7 +148,8 @@ bool MeasureAppBoundEncryptionStatus(PrefService* local_state,
   base::UmaHistogramEnumeration("OSCrypt.AppBoundEncryption.SupportLevel",
                                 support);
 
-  if (support != SupportLevel::kSupported) {
+  if (support == SupportLevel::kNotSystemLevel) {
+    // No service. No App-Bound APIs are available.
     return true;
   }
 
@@ -177,6 +178,12 @@ bool MeasureAppBoundEncryptionStatus(PrefService* local_state,
     return com_runner->PostTask(
         FROM_HERE,
         base::BindOnce(&DecryptAndRecordMetricsOnCOMThread, encrypted_data));
+  }
+
+  if (support != SupportLevel::kSupported) {
+    // Do not support encrypt of any new data if running on an unsupported
+    // platform.
+    return true;
   }
 
   return com_runner->PostTaskAndReplyWithResult(

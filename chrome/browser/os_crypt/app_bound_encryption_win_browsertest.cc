@@ -78,6 +78,11 @@ class AppBoundEncryptionWinTest : public InProcessBrowserTest {
   std::optional<base::ScopedClosureRunner> maybe_uninstall_service_;
 };
 
+// Test App-Bound is supported for tests.
+IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, Supported) {
+  EXPECT_EQ(SupportLevel::kSupported, GetAppBoundEncryptionSupportLevel());
+}
+
 // Test the basic interface to Encrypt and Decrypt data.
 IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, EncryptDecrypt) {
   ASSERT_TRUE(install_static::IsSystemInstall());

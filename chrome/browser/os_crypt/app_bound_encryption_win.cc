@@ -5,23 +5,57 @@
 #include "chrome/browser/os_crypt/app_bound_encryption_win.h"
 
 #include <objbase.h>
-#include <string.h>
+
 #include <windows.h>
+
 #include <wrl/client.h>
 
+#include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/win/com_init_util.h"
 #include "base/win/scoped_bstr.h"
+#include "chrome/common/chrome_paths.h"
+#include "chrome/common/chrome_paths_internal.h"
 #include "chrome/elevation_service/elevation_service_idl.h"
 #include "chrome/install_static/install_util.h"
 
 namespace os_crypt {
 
+namespace {
+bool g_non_standard_user_data_dir_supported_for_testing = false;
+}
+
 SupportLevel GetAppBoundEncryptionSupportLevel() {
   // Must be a system install.
   if (!install_static::IsSystemInstall()) {
     return SupportLevel::kNotSystemLevel;
+  }
+
+  base::FilePath user_data_dir;
+  if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir)) {
+    return SupportLevel::kApiFailed;
+  }
+
+  // If the user data dir is on a network drive, then maybe it is shared between
+  // multiple machines, which is unsupported since App-Bound more strongly binds
+  // data to the local machine.
+  if (user_data_dir.IsNetwork()) {
+    return SupportLevel::kUserDataDirNotLocalDisk;
+  }
+
+  base::FilePath default_user_data_dir;
+  if (!chrome::GetDefaultUserDataDirectory(&default_user_data_dir)) {
+    return SupportLevel::kApiFailed;
+  }
+
+  // Overridden by policy or by a command line option. This might mean that the
+  // user data dir could move in future, so disable App-Bound as a matter of
+  // caution.
+  if (user_data_dir != default_user_data_dir &&
+      !g_non_standard_user_data_dir_supported_for_testing) {
+    return SupportLevel::kNotUsingDefaultUserDataDir;
   }
 
   std::string image_path(MAX_PATH, L'\0');
@@ -135,6 +169,10 @@ HRESULT DecryptAppBoundString(const std::string& ciphertext,
 
   last_error = ERROR_SUCCESS;
   return S_OK;
+}
+
+void SetNonStandardUserDataDirSupportedForTesting(bool supported) {
+  g_non_standard_user_data_dir_supported_for_testing = supported;
 }
 
 }  // namespace os_crypt

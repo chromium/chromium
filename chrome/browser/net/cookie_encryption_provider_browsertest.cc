@@ -14,6 +14,7 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/net/cookie_encryption_provider_impl.h"
 #include "chrome/browser/os_crypt/app_bound_encryption_provider_win.h"
+#include "chrome/browser/os_crypt/app_bound_encryption_win.h"
 #include "chrome/browser/os_crypt/test_support.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -53,6 +54,12 @@ enum TestConfiguration {
   // without the service being correctly installed/running. This allows testing
   // of failure conditions.
   kOSCryptAsyncWithAppBoundProviderWithEncryptionNoService,
+  // This is the same as `kOSCryptAsyncWithAppBoundProviderWithEncryption` but
+  // with custom user data dir meaning that Encrypt should fail but Decrypt
+  // should work. This is to test that on a machine where data was previously
+  // encrypted, then it moved to an unsupported state, decryption will still be
+  // attempted.
+  kOSCryptAsyncWithAppBoundProviderWithEncryptionUnsupportedUserData,
 };
 
 enum MetricsExpectation {
@@ -143,6 +150,22 @@ class CookieEncryptionProviderBrowserTest
             features::kRegisterAppBoundEncryptionProvider);
         os_crypt_async::AppBoundEncryptionProviderWin::
             SetEnableEncryptionForTesting(true);
+        break;
+      case kOSCryptAsyncWithAppBoundProviderWithEncryptionUnsupportedUserData:
+        if (base::GetCurrentProcessIntegrityLevel() != base::HIGH_INTEGRITY) {
+          GTEST_SKIP() << "Elevation is required for this test.";
+        }
+        maybe_uninstall_service_ = os_crypt::InstallService();
+        EXPECT_TRUE(maybe_uninstall_service_.has_value());
+        enabled_features.push_back(
+            features::kUseOsCryptAsyncForCookieEncryption);
+        enabled_features.push_back(features::kEnableDPAPIEncryptionProvider);
+        enabled_features.push_back(
+            features::kRegisterAppBoundEncryptionProvider);
+        os_crypt_async::AppBoundEncryptionProviderWin::
+            SetEnableEncryptionForTesting(true);
+        os_crypt::SetNonStandardUserDataDirSupportedForTesting(
+            /*supported=*/false);
         break;
     }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
@@ -302,5 +325,24 @@ INSTANTIATE_TEST_SUITE_P(
          .expect_pass = false,
          .before = kOSCryptAsyncWithAppBoundProviderWithEncryption,
          .after = kOSCryptAsyncWithAppBoundProviderWithEncryptionNoService},
+        // This test will result in App-Bound being able to provide a key and
+        // it's used for encryption, and in the second part of the test, the
+        // system will be 'unsupported' due to a custom user data dir provided
+        // by the test framework, but still be able to decrypt data, since the
+        // App-Bound verification passes and the user data is, in fact, the
+        // same.
+        {.name = "app_bound_encryption_not_supported_on_decrypt",
+         .before = kOSCryptAsyncWithAppBoundProviderWithEncryption,
+         .after =
+             kOSCryptAsyncWithAppBoundProviderWithEncryptionUnsupportedUserData},
+        // This test will result in App-Bound not being able to provide a key,
+        // as the system is unsupported, so it will not be registered, and the
+        // cookies will instead be encrypted with the second provider which is
+        // DPAPI, and then these can successfully be decrypted when App-Bound is
+        // not enabled.
+        {.name = "app_bound_encryption_not_supported_on_encrypt",
+         .before =
+             kOSCryptAsyncWithAppBoundProviderWithEncryptionUnsupportedUserData,
+         .after = kOSCryptAsyncWithDPAPIProvider},
     }),
     [](const auto& info) { return info.param.name; });

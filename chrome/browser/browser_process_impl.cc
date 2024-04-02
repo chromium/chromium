@@ -149,7 +149,6 @@
 #include "base/win/windows_version.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/os_crypt/app_bound_encryption_provider_win.h"
-#include "chrome/browser/os_crypt/app_bound_encryption_win.h"
 #include "components/os_crypt/async/browser/dpapi_key_provider.h"
 #elif BUILDFLAG(IS_MAC)
 #include "chrome/browser/chrome_browser_main_mac.h"
@@ -1332,17 +1331,14 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
           features::kRegisterAppBoundEncryptionProvider)) {
     // Support level is logged separately to metrics from
     // app_bound_encryption_metrics_win.cc.
-    if (os_crypt::GetAppBoundEncryptionSupportLevel() ==
-        os_crypt::SupportLevel::kSupported) {
-      providers.emplace_back(std::make_pair(
-          // Note: 15 is chosen to be higher than the 10 precedence above for
-          // DPAPI. This ensures that when the the provider is enabled for
-          // encryption, the App-Bound encryption key is used and not the DPAPI
-          // one.
-          /*precedence=*/15u,
-          std::make_unique<os_crypt_async::AppBoundEncryptionProviderWin>(
-              local_state())));
-    }
+    providers.emplace_back(std::make_pair(
+        // Note: 15 is chosen to be higher than the 10 precedence above for
+        // DPAPI. This ensures that when the the provider is enabled for
+        // encryption, the App-Bound encryption key is used and not the DPAPI
+        // one.
+        /*precedence=*/15u,
+        std::make_unique<os_crypt_async::AppBoundEncryptionProviderWin>(
+            local_state())));
   }
 #endif  // BUILDFLAG(IS_WIN)
 

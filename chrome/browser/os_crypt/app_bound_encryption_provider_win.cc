@@ -130,6 +130,12 @@ void AppBoundEncryptionProviderWin::GetKey(KeyCallback callback) {
   base::UmaHistogramEnumeration(
       "OSCrypt.AppBoundProvider.KeyRetrieval.Status",
       encrypted_key_data.error_or(KeyRetrievalStatus::kSuccess));
+  const auto support_level = os_crypt::GetAppBoundEncryptionSupportLevel();
+  if (support_level == os_crypt::SupportLevel::kNotSystemLevel) {
+    // No service. No App-Bound APIs are available, so fail now.
+    std::move(callback).Run(kAppBoundDataPrefix, std::nullopt);
+    return;
+  }
 
   if (encrypted_key_data.has_value()) {
     // There is a key, perform the decryption on the background worker.
@@ -140,7 +146,15 @@ void AppBoundEncryptionProviderWin::GetKey(KeyCallback callback) {
     return;
   }
 
-  // There is no key, so generate a new one.
+  // There is no key, so generate a new one, but only on a fully supported
+  // system. In unsupported systems the provider will support decrypt of
+  // existing data (if App-Bound validation still passes) but not encrypt of any
+  // new data.
+  if (support_level != os_crypt::SupportLevel::kSupported) {
+    std::move(callback).Run(kAppBoundDataPrefix, std::nullopt);
+    return;
+  }
+
   std::vector<uint8_t> random_key(
       os_crypt_async::Encryptor::Key::kAES256GCMKeySize);
   crypto::RandBytes(random_key);

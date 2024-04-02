@@ -19,7 +19,9 @@ enum class SupportLevel {
   kNotSystemLevel = 1,
   kNotLocalDisk = 2,
   kApiFailed = 3,
-  kMaxValue = kApiFailed,
+  kNotUsingDefaultUserDataDir = 4,
+  kUserDataDirNotLocalDisk = 5,
+  kMaxValue = kUserDataDirNotLocalDisk,
 };
 
 // Returns whether or not app-bound encryption is supported on the current
@@ -55,6 +57,9 @@ HRESULT DecryptAppBoundString(const std::string& ciphertext,
                               std::string& plaintext,
                               DWORD& last_error,
                               std::string* log_message = nullptr);
+
+// Allow non-standard user data dir for testing.
+void SetNonStandardUserDataDirSupportedForTesting(bool supported);
 
 }  // namespace os_crypt
 

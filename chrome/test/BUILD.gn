@@ -10567,6 +10567,7 @@ if (!is_android) {
         "base/window_contents_as_string_win.cc",
         "base/window_contents_as_string_win.h",
       ]
+      deps += [ "//chrome/browser/os_crypt" ]
     }
 
     if (enable_ppapi) {

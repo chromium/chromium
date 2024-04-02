@@ -35,6 +35,7 @@ source_set("app_bound_api") {
 
   deps = [
     "//base",
+    "//chrome/common:constants",
     "//chrome/elevation_service:public_headers",
     "//chrome/install_static:install_static_util",
   ]
