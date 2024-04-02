@@ -574,6 +574,18 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
       return make_result(StoreSourceResult::InternalError());
   }
 
+  switch (rate_limit_table_.SourceAllowedForReportingOriginPerSiteLimit(
+      &db_, source, source_time)) {
+    case RateLimitResult::kAllowed:
+      break;
+    case RateLimitResult::kNotAllowed:
+      return make_result(StoreSourceResult::ReportingOriginsPerSiteLimitReached(
+          delegate_->GetRateLimits()
+              .max_reporting_origins_per_source_reporting_site));
+    case RateLimitResult::kError:
+      return make_result(StoreSourceResult::InternalError());
+  }
+
   if (auto result = CheckDestinationRateLimit(source, source_time);
       !absl::holds_alternative<StoreSourceResult::Success>(result)) {
     return make_result(std::move(result));
@@ -585,17 +597,6 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
       break;
     case RateLimitResult::kNotAllowed:
       return make_result(StoreSourceResult::ExcessiveReportingOrigins());
-    case RateLimitResult::kError:
-      return make_result(StoreSourceResult::InternalError());
-  }
-
-  switch (rate_limit_table_.SourceAllowedForReportingOriginPerSiteLimit(
-      &db_, source, source_time)) {
-    case RateLimitResult::kAllowed:
-      break;
-    case RateLimitResult::kNotAllowed:
-      return make_result(
-          StoreSourceResult::ReportingOriginsPerSiteLimitReached());
     case RateLimitResult::kError:
       return make_result(StoreSourceResult::InternalError());
   }

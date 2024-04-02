@@ -265,6 +265,18 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
          },
          "type": "source-destination-rate-limit"
        }])json"},
+      {StoreSourceResult::ReportingOriginsPerSiteLimitReached(2),
+       /*debug_key=*/std::nullopt,
+       /*expected_report_body=*/
+       R"json([{
+         "body": {
+           "attribution_destination": "https://conversion.test",
+           "limit": "2",
+           "source_event_id": "123",
+           "source_site": "https://impression.test"
+         },
+         "type": "source-reporting-origin-per-site-limit"
+       }])json"},
   };
 
   for (bool is_debug_cookie_set : {false, true}) {

@@ -80,7 +80,8 @@ enum class DebugDataType {
   kTriggerEventReportWindowNotStarted = 26,
   kTriggerEventNoMatchingTriggerData = 27,
   kHeaderParsingError = 28,
-  kMaxValue = kHeaderParsingError,
+  kSourceReportingOriginPerSiteLimit = 29,
+  kMaxValue = kSourceReportingOriginPerSiteLimit,
 };
 
 struct DebugDataTypeAndBody {
@@ -101,16 +102,15 @@ std::optional<DebugDataTypeAndBody> GetReportDataBody(
               StoreSourceResult::ExceedsMaxTriggerStateCardinality>) {
             return std::optional<DebugDataTypeAndBody>();
           },
-          [](absl::variant<
-              StoreSourceResult::Success,
-              // `kSourceSuccess` is sent for a few errors as well to mitigate
-              // the security concerns on reporting these errors. Because these
-              // errors are thrown based on information across reporting
-              // origins, reporting on them would violate the same-origin
-              // policy.
-              StoreSourceResult::ExcessiveReportingOrigins,
-              StoreSourceResult::DestinationGlobalLimitReached,
-              StoreSourceResult::ReportingOriginsPerSiteLimitReached>) {
+          [](absl::variant<StoreSourceResult::Success,
+                           // `kSourceSuccess` is sent for a few errors as well
+                           // to mitigate the security concerns on reporting
+                           // these errors. Because these errors are thrown
+                           // based on information across reporting origins,
+                           // reporting on them would violate the same-origin
+                           // policy.
+                           StoreSourceResult::ExcessiveReportingOrigins,
+                           StoreSourceResult::DestinationGlobalLimitReached>) {
             return std::make_optional<DebugDataTypeAndBody>(
                 DebugDataType::kSourceSuccess);
           },
@@ -135,6 +135,10 @@ std::optional<DebugDataTypeAndBody> GetReportDataBody(
           [](StoreSourceResult::InternalError) {
             return std::make_optional<DebugDataTypeAndBody>(
                 DebugDataType::kSourceUnknownError);
+          },
+          [](StoreSourceResult::ReportingOriginsPerSiteLimitReached v) {
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kSourceReportingOriginPerSiteLimit, v.limit);
           },
       },
       result.result());
@@ -270,6 +274,8 @@ std::string_view SerializeReportDataType(DebugDataType data_type) {
       return "os-trigger-delegated";
     case DebugDataType::kHeaderParsingError:
       return "header-parsing-error";
+    case DebugDataType::kSourceReportingOriginPerSiteLimit:
+      return "source-reporting-origin-per-site-limit";
   }
 }
 
@@ -359,6 +365,7 @@ base::Value::Dict GetReportDataBody(DebugDataType data_type,
     case DebugDataType::kOsSourceDelegated:
     case DebugDataType::kOsTriggerDelegated:
     case DebugDataType::kHeaderParsingError:
+    case DebugDataType::kSourceReportingOriginPerSiteLimit:
       NOTREACHED_NORETURN();
   }
 
@@ -373,7 +380,8 @@ base::Value::Dict GetReportData(DebugDataType type, base::Value::Dict body) {
 }
 
 void RecordVerboseDebugReportType(DebugDataType type) {
-  static_assert(DebugDataType::kMaxValue == DebugDataType::kHeaderParsingError,
+  static_assert(DebugDataType::kMaxValue ==
+                    DebugDataType::kSourceReportingOriginPerSiteLimit,
                 "Update ConversionVerboseDebugReportType enum.");
   base::UmaHistogramEnumeration("Conversions.SentVerboseDebugReportType4",
                                 type);

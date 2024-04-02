@@ -53,7 +53,10 @@ class CONTENT_EXPORT StoreSourceResult {
     explicit DestinationBothLimitsReached(int limit) : limit(limit) {}
   };
 
-  struct ReportingOriginsPerSiteLimitReached {};
+  struct ReportingOriginsPerSiteLimitReached {
+    int limit;
+    explicit ReportingOriginsPerSiteLimitReached(int limit) : limit(limit) {}
+  };
 
   struct ExceedsMaxChannelCapacity {};
 

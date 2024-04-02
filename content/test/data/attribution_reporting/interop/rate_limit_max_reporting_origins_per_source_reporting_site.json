@@ -222,9 +222,10 @@
             "body": {
               "attribution_destination": "https://destination.test",
               "source_event_id": "444",
+              "limit": "1",
               "source_site": "https://source.test"
             },
-            "type": "source-success"
+            "type": "source-reporting-origin-per-site-limit"
           }
         ],
         "report_time": "86399999",
