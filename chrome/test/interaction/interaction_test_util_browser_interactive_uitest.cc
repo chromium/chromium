@@ -23,15 +23,15 @@
 using InteractionTestUtilBrowserUiTest = InteractiveBrowserTest;
 
 // This test checks that we can attach to a WebUI that is embedded in a tab.
-// TODO(crbug.com/1376747): This test fails on the Win bot.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_CompareScreenshot_TabWebUI DISABLED_CompareScreenshot_TabWebUI
-#else
-#define MAYBE_CompareScreenshot_TabWebUI CompareScreenshot_TabWebUI
-#endif
+// Note: This test used to fail on the Win bot (crbug.com/1376747).
 IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserUiTest,
-                       MAYBE_CompareScreenshot_TabWebUI) {
+                       CompareScreenshot_TabWebUI) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDownloadsPageElementId);
+
+  // Set the browser view to a consistent size.
+  BrowserView* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser());
+  browser_view->GetWidget()->SetSize({600, 400});
 
   RunTestSequence(
       InstrumentTab(kDownloadsPageElementId),
@@ -45,7 +45,7 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserUiTest,
           OnIncompatibleAction::kIgnoreAndContinue,
           "Screenshot can only run in pixel_tests on Windows."),
       Screenshot(kDownloadsPageElementId, /*screenshot_name=*/std::string(),
-                 /*baseline_cl=*/"3924454"));
+                 /*baseline_cl=*/"5406828"));
 }
 
 // This test checks that we can attach to a WebUI that is not embedded in a tab.
