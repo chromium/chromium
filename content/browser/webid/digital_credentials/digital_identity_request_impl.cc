@@ -184,6 +184,11 @@ void DigitalIdentityRequestImpl::ShowInterstitialIfNeeded(
     return;
   }
 
+  if (!render_frame_host().IsActive()) {
+    CompleteRequest("", RequestStatusForMetrics::kErrorOther);
+    return;
+  }
+
   GetContentClient()->browser()->ShowDigitalIdentityInterstitialIfNeeded(
       *WebContents::FromRenderFrameHost(&render_frame_host()), origin(),
       base::BindOnce(&DigitalIdentityRequestImpl::CompleteRequest,

@@ -7,8 +7,8 @@ package org.chromium.chrome.browser.ui.android.webid;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+
+import android.app.Activity;
 
 import androidx.test.filters.LargeTest;
 
@@ -17,7 +17,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
@@ -30,6 +29,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -91,14 +91,40 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
         }
     }
 
+    /** {@link MockIdentityCredentialsDelegate} implementation which returns "token". */
+    private static class ReturnTokenIdentityCredentialsDelegate
+            extends MockIdentityCredentialsDelegate {
+        @Override
+        public Promise<byte[]> get(Activity activity, String origin, String request) {
+            return Promise.fulfilled("token".getBytes());
+        }
+    }
+
+    /**
+     * {@link MockIdentityCredentialsDelegate} implementation which provides the ability to control
+     * when the {@link #get()} promise is resolved.
+     */
+    private static class DelayedReturnIdentityCredentialsDelegate
+            extends MockIdentityCredentialsDelegate {
+        private Promise<byte[]> mPromise;
+
+        @Override
+        public Promise<byte[]> get(Activity activity, String origin, String request) {
+            mPromise = new Promise<byte[]>();
+            return mPromise;
+        }
+
+        public void fulfillPromise() {
+            mPromise.fulfill("token".getBytes());
+        }
+    }
+
     private static final String TEST_PAGE = "/chrome/test/data/android/fedcm_mdocs.html";
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
-
-    @Mock public MockIdentityCredentialsDelegate mDelegate;
 
     private EmbeddedTestServer mTestServer;
 
@@ -112,7 +138,8 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
     public void setUp() {
         mActivityTestRule.getEmbeddedTestServerRule().setServerUsesHttps(true);
         mTestServer = mActivityTestRule.getTestServer();
-        DigitalCredentialProviderUtils.setDelegateForTesting(mDelegate);
+        DigitalCredentialProviderUtils.setDelegateForTesting(
+                new ReturnTokenIdentityCredentialsDelegate());
 
         mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(TEST_PAGE));
 
@@ -149,19 +176,16 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
                 });
     }
 
-    public void checkDigitalIdentityRequestWithDialogFieldTrialParam(
-            String dialogParamValue, int expectedInterstitialParagraph1ResourceId)
-            throws TimeoutException {
+    public void setFieldTrialParam(String dialogParamValue) {
         FeatureList.TestValues testValues = new TestValues();
         testValues.addFieldTrialParamOverride(
                 ContentFeatureList.WEB_IDENTITY_DIGITAL_CREDENTIALS,
                 DigitalIdentitySafetyInterstitialBridge.DIGITAL_IDENTITY_DIALOG_PARAM,
                 dialogParamValue);
         FeatureList.setTestValues(testValues);
+    }
 
-        when(mDelegate.get(any(), any(), any()))
-                .thenAnswer(input -> Promise.fulfilled("token".getBytes()));
-
+    public void addModalDialogObserver(int expectedInterstitialParagraph1ResourceId) {
         String pageUrl = mTestServer.getURL(TEST_PAGE);
         Origin pageOrigin = Origin.create(new GURL(pageUrl));
         String expectedDialogText = null;
@@ -183,6 +207,13 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
                 () -> {
                     mModalDialogManager.addObserver(mModalDialogObserver);
                 });
+    }
+
+    public void checkDigitalIdentityRequestWithDialogFieldTrialParam(
+            String dialogParamValue, int expectedInterstitialParagraph1ResourceId)
+            throws TimeoutException {
+        setFieldTrialParam(dialogParamValue);
+        addModalDialogObserver(expectedInterstitialParagraph1ResourceId);
 
         JavaScriptUtils.executeJavaScriptAndWaitForResult(
                 mActivityTestRule.getWebContents(), "request()");
@@ -234,5 +265,38 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
     public void testNoDialogByDefault() throws TimeoutException {
         checkDigitalIdentityRequestWithDialogFieldTrialParam(
                 /* dialogParamValue= */ "", /* expectedInterstitialParagraph1ResourceId= */ -1);
+    }
+
+    /**
+     * Test that no interstitial is shown if the BF cache is enabled and the page navigates while
+     * the Android OS system prompt is being shown.
+     */
+    @Test
+    @LargeTest
+    @DisableFeatures({"BackForwardCacheMemoryControls"})
+    @EnableFeatures(ContentFeatureList.WEB_IDENTITY_DIGITAL_CREDENTIALS)
+    public void testNoDialogIfNavigationDuringAndroidOsCall() throws TimeoutException {
+        DelayedReturnIdentityCredentialsDelegate delegate =
+                new DelayedReturnIdentityCredentialsDelegate();
+        DigitalCredentialProviderUtils.setDelegateForTesting(delegate);
+        setFieldTrialParam(
+                DigitalIdentitySafetyInterstitialBridge
+                        .DIGITAL_IDENTITY_HIGH_RISK_DIALOG_PARAM_VALUE);
+        addModalDialogObserver(/* expectedInterstitialParagraph1ResourceId= */ -1);
+
+        JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                mActivityTestRule.getWebContents(), "request()");
+
+        // Do page navigation during the Android OS call.
+        mActivityTestRule.loadUrl(mTestServer.getURL("/chrome/test/data/android/simple.html"));
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    delegate.fulfillPromise();
+                });
+
+        // An interstitial should not have been shown.
+        assertFalse(mModalDialogObserver.wasAnyDialogShown());
+        assertFalse(mModalDialogObserver.wasDialogShown());
     }
 }
