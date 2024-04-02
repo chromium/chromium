@@ -230,6 +230,9 @@ static_library("test_support") {
 
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
+    if (is_linux) {
+      deps += [ "//ui/linux:display_server_utils" ]
+    }
   }
 
   if (enable_plugins && enable_nacl) {

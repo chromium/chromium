@@ -6910,6 +6910,7 @@ static_library("browser") {
       "themes/theme_service_aura_linux.cc",
       "themes/theme_service_aura_linux.h",
     ]
+    deps += [ "//ui/linux:display_server_utils" ]
   }
 
   if (is_win || is_linux || is_chromeos) {

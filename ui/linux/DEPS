@@ -20,4 +20,7 @@ specific_include_rules = {
     "+ui/events/keycodes",
     "+ui/views/controls",
   ],
+  "display_server_utils.cc": [
+    "+ui/ozone",
+  ],
 }

@@ -196,6 +196,7 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "base/nix/scoped_xdg_activation_token_injector.h"
+#include "ui/linux/display_server_utils.h"
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
@@ -964,7 +965,7 @@ std::optional<int> ChromeMainDelegate::PostEarlyInitialization(
   // properties. Must be added before feature list is created otherwise the
   // added flag won't be picked up.
 #if BUILDFLAG(IS_LINUX)
-  ChromeBrowserMainExtraPartsLinux::InitOzonePlatformHint();
+  ui::SetOzonePlatformForLinuxIfNeeded(*base::CommandLine::ForCurrentProcess());
 #endif
   ui::OzonePlatform::PreEarlyInitialization();
   AddFeatureFlagsToCommandLine();

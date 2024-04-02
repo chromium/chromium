@@ -345,6 +345,9 @@ if (!is_android && !is_mac) {
 
         if (use_ozone) {
           deps += [ "//ui/ozone" ]
+          if (is_linux) {
+            deps += [ "//ui/linux:display_server_utils" ]
+          }
         }
       }
 
