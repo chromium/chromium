@@ -154,10 +154,6 @@
   }
 
   LogFullscreenDefaultBrowserPromoDisplayed();
-
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  LogToFETDefaultBrowserPromoShown(
-      feature_engagement::TrackerFactory::GetForBrowserState(browserState));
 }
 
 @end

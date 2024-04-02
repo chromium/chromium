@@ -83,9 +83,6 @@ TEST_F(VideoDefaultBrowserPromoCoordinatorTest, TestRemindMeLater) {
   EXPECT_NSEQ(nil, view_controller_.presentedViewController);
 
   coordinator_.showRemindMeLater = YES;
-  EXPECT_CALL(
-      *mock_tracker_,
-      NotifyEvent(feature_engagement::events::kDefaultBrowserPromoShown));
   [coordinator_ start];
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "IOS.DefaultBrowserVideoPromo.Appear"));

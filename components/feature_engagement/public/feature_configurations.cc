@@ -1612,6 +1612,8 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                                              Comparator(EQUAL, 0), 14, 360));
     config->event_configs.insert(EventConfig("default_browser_fre_shown",
                                              Comparator(EQUAL, 0), 14, 360));
+    config->event_configs.insert(EventConfig(
+        "default_browser_promos_group_trigger", Comparator(EQUAL, 0), 14, 360));
     config->blocked_by.type = BlockedBy::Type::NONE;
     config->blocking.type = Blocking::Type::NONE;
     return config;
@@ -1644,6 +1646,8 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                                              Comparator(EQUAL, 0), 14, 360));
     config->event_configs.insert(EventConfig("default_browser_fre_shown",
                                              Comparator(EQUAL, 0), 14, 360));
+    config->event_configs.insert(EventConfig(
+        "default_browser_promos_group_trigger", Comparator(EQUAL, 0), 14, 360));
     config->blocked_by.type = BlockedBy::Type::NONE;
     config->blocking.type = Blocking::Type::NONE;
     return config;
@@ -1677,6 +1681,8 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                                              Comparator(EQUAL, 0), 14, 360));
     config->event_configs.insert(EventConfig("default_browser_fre_shown",
                                              Comparator(EQUAL, 0), 14, 360));
+    config->event_configs.insert(EventConfig(
+        "default_browser_promos_group_trigger", Comparator(EQUAL, 0), 14, 360));
     config->blocked_by.type = BlockedBy::Type::NONE;
     config->blocking.type = Blocking::Type::NONE;
     return config;

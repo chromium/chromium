@@ -185,10 +185,6 @@ using base::UserMetricsAction;
 
   LogFullscreenDefaultBrowserPromoDisplayed();
   RecordAction(UserMetricsAction("IOS.DefaultBrowserVideoPromo.Appear"));
-
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  LogToFETDefaultBrowserPromoShown(
-      feature_engagement::TrackerFactory::GetForBrowserState(browserState));
 }
 
 @end

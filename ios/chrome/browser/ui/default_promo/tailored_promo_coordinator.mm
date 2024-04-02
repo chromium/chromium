@@ -160,10 +160,6 @@ using l10n_util::GetNSString;
   base::UmaHistogramEnumeration("IOS.DefaultBrowserPromo.Shown",
                                 DefaultPromoTypeForUMA(_promoType));
   LogFullscreenDefaultBrowserPromoDisplayed();
-
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  LogToFETDefaultBrowserPromoShown(
-      feature_engagement::TrackerFactory::GetForBrowserState(browserState));
 }
 
 @end

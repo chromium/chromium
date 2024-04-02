@@ -544,3 +544,33 @@ TEST_F(DefaultBrowserFeatureEngagementTest, BlueDotSettingsFeatureFRECooldown) {
   EXPECT_TRUE(tracker->WouldTriggerHelpUI(
       feature_engagement::kIPHiOSDefaultBrowserSettingsBadgeFeature));
 }
+
+TEST_F(DefaultBrowserFeatureEngagementTest,
+       BlueDotSettingsFeatureFullscreenPromoCooldown) {
+  std::unique_ptr<feature_engagement::Tracker> tracker = CreateAndInitTracker();
+
+  // Promo shouldn't trigger because the preconditions are not satistfied.
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSDefaultBrowserSettingsBadgeFeature));
+
+  // Make sure the preconditions are satisfied for the blue dot promo.
+  tracker->NotifyEvent("blue_dot_promo_eligibility_met");
+  EXPECT_TRUE(tracker->WouldTriggerHelpUI(
+      feature_engagement::kIPHiOSDefaultBrowserSettingsBadgeFeature));
+
+  // If user seen any of the fullscreen promos then the blue dot promo shouldn't
+  // trigger.
+  tracker->NotifyEvent("default_browser_promos_group_trigger");
+  EXPECT_FALSE(tracker->WouldTriggerHelpUI(
+      feature_engagement::kIPHiOSDefaultBrowserSettingsBadgeFeature));
+
+  // After 5 days it should still not trigger.
+  test_clock_.Advance(base::Days(5));
+  EXPECT_FALSE(tracker->WouldTriggerHelpUI(
+      feature_engagement::kIPHiOSDefaultBrowserSettingsBadgeFeature));
+
+  // After another 10 days it should trigger.
+  test_clock_.Advance(base::Days(10));
+  EXPECT_TRUE(tracker->WouldTriggerHelpUI(
+      feature_engagement::kIPHiOSDefaultBrowserSettingsBadgeFeature));
+}
