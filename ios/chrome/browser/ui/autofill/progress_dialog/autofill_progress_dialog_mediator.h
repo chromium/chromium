@@ -12,6 +12,7 @@
 #import "base/memory/weak_ptr.h"
 
 @protocol AlertConsumer;
+@protocol AutofillProgressDialogMediatorDelegate;
 
 namespace autofill {
 class AutofillProgressDialogControllerImpl;
@@ -22,9 +23,10 @@ class AutofillProgressDialogControllerImpl;
 class AutofillProgressDialogMediator
     : public autofill::AutofillProgressDialogView {
  public:
-  explicit AutofillProgressDialogMediator(
+  AutofillProgressDialogMediator(
       base::WeakPtr<autofill::AutofillProgressDialogControllerImpl>
-          model_controller);
+          model_controller,
+      id<AutofillProgressDialogMediatorDelegate> delegate);
   AutofillProgressDialogMediator(const AutofillProgressDialogMediator&) =
       delete;
   AutofillProgressDialogMediator& operator=(
@@ -45,6 +47,8 @@ class AutofillProgressDialogMediator
       model_controller_;
 
   __weak id<AlertConsumer> consumer_;
+
+  __weak id<AutofillProgressDialogMediatorDelegate> delegate_;
 
   // Whether the dialog dismissal is invoked by user action.
   bool is_canceled_by_user_ = false;

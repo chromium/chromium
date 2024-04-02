@@ -8,6 +8,7 @@ source_set("progress_dialog") {
     "autofill_progress_dialog_coordinator.mm",
     "autofill_progress_dialog_mediator.h",
     "autofill_progress_dialog_mediator.mm",
+    "autofill_progress_dialog_mediator_delegate.h",
   ]
   deps = [
     "//base:base",
@@ -15,8 +16,9 @@ source_set("progress_dialog") {
     "//ios/chrome/browser/autofill/model:model_internal",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/web_state_list:web_state_list",
-    "//ios/chrome/browser/ui/alert_view:alert_view",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/ui/alert_view",
     "//ios/chrome/browser/ui/autofill",
   ]
   frameworks = [ "UIKit.framework" ]
@@ -28,8 +30,8 @@ source_set("unit_tests") {
   deps = [
     ":progress_dialog",
     "//components/autofill/core/browser",
-    "//ios/chrome/browser/ui/alert_view:alert_view",
-    "//testing/gtest:gtest",
+    "//ios/chrome/browser/ui/alert_view",
+    "//testing/gtest",
     "//third_party/ocmock",
   ]
 }

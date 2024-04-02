@@ -11,10 +11,13 @@
 #import "ios/chrome/browser/autofill/model/autofill_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/alert_view/alert_view_controller.h"
 #import "ios/chrome/browser/ui/autofill/chrome_autofill_client_ios.h"
 #import "ios/chrome/browser/ui/autofill/ios_chrome_payments_autofill_client.h"
 #import "ios/chrome/browser/ui/autofill/progress_dialog/autofill_progress_dialog_mediator.h"
+#import "ios/chrome/browser/ui/autofill/progress_dialog/autofill_progress_dialog_mediator_delegate.h"
 
 @implementation AutofillProgressDialogCoordinator {
   // The model layer controller. This model controller provide access to model
@@ -43,7 +46,7 @@
     CHECK(paymentsClient);
     _modelController = paymentsClient->GetProgressDialogModel();
     _mediator = std::make_unique<AutofillProgressDialogMediator>(
-        _modelController->GetImplWeakPtr());
+        _modelController->GetImplWeakPtr(), self);
   }
   return self;
 }
@@ -66,6 +69,14 @@
 
 - (void)stop {
   [_alertViewController dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark - AutofillProgressDialogMediatorDelegate
+
+- (void)dismissDialog {
+  id<AutofillCommands> autofillCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), AutofillCommands);
+  [autofillCommandsHandler dismissAutofillProgressDialog];
 }
 
 @end

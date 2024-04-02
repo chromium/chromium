@@ -11,11 +11,13 @@
 #import "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
 #import "ios/chrome/browser/ui/alert_view/alert_action.h"
 #import "ios/chrome/browser/ui/alert_view/alert_consumer.h"
+#import "ios/chrome/browser/ui/autofill/progress_dialog/autofill_progress_dialog_mediator_delegate.h"
 
 AutofillProgressDialogMediator::AutofillProgressDialogMediator(
     base::WeakPtr<autofill::AutofillProgressDialogControllerImpl>
-        model_controller)
-    : model_controller_(model_controller) {}
+        model_controller,
+    id<AutofillProgressDialogMediatorDelegate> delegate)
+    : model_controller_(model_controller), delegate_(delegate) {}
 
 AutofillProgressDialogMediator::~AutofillProgressDialogMediator() {
   // If the closure is not initiated from the backend side (via Dismiss()), it
@@ -31,8 +33,7 @@ void AutofillProgressDialogMediator::Dismiss(
     bool is_canceled_by_user) {
   // TODO(crbug.com/324603292): Check whether we need the confirmation on iOS.
   is_canceled_by_user_ = is_canceled_by_user;
-  // TODO(crbug.com/324606723): Invoke the MediatorDelegate to close the view
-  // and terminate everything.
+  [delegate_ dismissDialog];
 }
 
 void AutofillProgressDialogMediator::InvalidateControllerForCallbacks() {

@@ -8,10 +8,12 @@
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
+#import "ios/chrome/browser/ui/autofill/progress_dialog/autofill_progress_dialog_mediator_delegate.h"
 
 // The coordinator responsible for managing the autofill progress dialog.
 // This dialog is shown to indicate some progress is ongoing in the background.
-@interface AutofillProgressDialogCoordinator : ChromeCoordinator
+@interface AutofillProgressDialogCoordinator
+    : ChromeCoordinator <AutofillProgressDialogMediatorDelegate>
 
 @end
 
