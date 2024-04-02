@@ -18,7 +18,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::test::RunClosure;
 using testing::_;
 using testing::Field;
 using testing::IsEmpty;
@@ -30,12 +29,19 @@ const char kExtensionId[] = "mbflcebpggnecokmikipoihdbecnjfoj";
 const char kFileSystemId[] = "cloud-fs-id";
 const char kDisplayName[] = "Cloud FS";
 
-class MockCacheManagerObserver : public CacheManager::Observer {
+class MockCacheManager : public CacheManager {
  public:
   MOCK_METHOD(void,
-              OnContentCacheInitializeComplete,
-              (const base::FilePath mount_path, base::File::Error result),
+              InitializeForProvider,
+              (const base::FilePath& provider_folder_name,
+               FileErrorOrContentCacheCallback callback),
               (override));
+  MOCK_METHOD(void,
+              UninitializeForProvider,
+              (const base::FilePath& provider_folder_name),
+              (override));
+  MOCK_METHOD(void, AddObserver, (Observer * observer), (override));
+  MOCK_METHOD(void, RemoveObserver, (Observer * observer), (override));
 };
 
 class FileSystemProviderCloudFileSystemTest : public testing::Test,
@@ -46,14 +52,15 @@ class FileSystemProviderCloudFileSystemTest : public testing::Test,
 
   void SetUp() override { profile_ = std::make_unique<TestingProfile>(); }
 
-  // Creates a CloudFileSystem which wraps a FakeProvidedFileSystem. If
-  // `with_cache_manager` is true, wait until the CloudFileSystem's content
-  // cache has been initialized.
+  const base::FilePath GetProviderMountPath() {
+    return util::GetMountPath(profile_.get(),
+                              ProviderId::CreateFromExtensionId(kExtensionId),
+                              kFileSystemId);
+  }
+
+  // Creates a CloudFileSystem which wraps a FakeProvidedFileSystem.
   std::unique_ptr<CloudFileSystem> CreateCloudFileSystem(
-      bool with_cache_manager) {
-    base::FilePath mount_path = util::GetMountPath(
-        profile_.get(), ProviderId::CreateFromExtensionId(kExtensionId),
-        kFileSystemId);
+      bool with_mock_cache_manager) {
     MountOptions mount_options;
     mount_options.file_system_id = kFileSystemId;
     mount_options.display_name = kDisplayName;
@@ -61,35 +68,21 @@ class FileSystemProviderCloudFileSystemTest : public testing::Test,
     mount_options.writable = true;
     std::unique_ptr<ProvidedFileSystemInfo> file_system_info =
         std::make_unique<ProvidedFileSystemInfo>(
-            kExtensionId, mount_options, mount_path, /*configurable=*/false,
+            kExtensionId, mount_options, GetProviderMountPath(),
+            /*configurable=*/false,
             /*watchable=*/true, extensions::SOURCE_NETWORK, IconSet(),
-            with_cache_manager ? CacheType::LRU : CacheType::NONE);
+            with_mock_cache_manager ? CacheType::LRU : CacheType::NONE);
     std::unique_ptr<FakeProvidedFileSystem> provided_file_system =
         std::make_unique<FakeProvidedFileSystem>(*file_system_info.get());
-    std::unique_ptr<CacheManager> cache_manager =
-        std::make_unique<CacheManager>(profile_->GetPath());
-    // Observe the CacheManager.
-    MockCacheManagerObserver observer;
-    cache_manager->AddObserver(&observer);
     // Start the CloudFileSystem initialisation.
     std::unique_ptr<CloudFileSystem> cloud_file_system =
         std::make_unique<CloudFileSystem>(
             std::move(provided_file_system),
-            with_cache_manager ? cache_manager.get() : nullptr);
-    // Wait until the CloudFileSystem content cache has been initialised.
-    if (with_cache_manager) {
-      base::RunLoop run_loop;
-      EXPECT_CALL(
-          observer,
-          OnContentCacheInitializeComplete(
-              base::FilePath(base::Base64Encode(mount_path.BaseName().value())),
-              base::File::FILE_OK))
-          .WillOnce(RunClosure(run_loop.QuitClosure()));
-      run_loop.Run();
-    }
+            with_mock_cache_manager ? &mock_cache_manager_ : nullptr);
     return cloud_file_system;
   }
 
+  MockCacheManager mock_cache_manager_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
 };
@@ -98,8 +91,11 @@ class FileSystemProviderCloudFileSystemTest : public testing::Test,
 // there is a CacheManager.
 TEST_F(FileSystemProviderCloudFileSystemTest,
        WatcherOnRootIsAddedWhenCacheManagerExists) {
+  EXPECT_CALL(mock_cache_manager_,
+              InitializeForProvider(GetProviderMountPath().BaseName(), _))
+      .Times(1);
   std::unique_ptr<CloudFileSystem> cloud_file_system =
-      CreateCloudFileSystem(/*with_cache_manager=*/true);
+      CreateCloudFileSystem(/*with_mock_cache_manager=*/true);
 
   // Expect recursive root watcher added.
   EXPECT_THAT(cloud_file_system->GetWatchers(),
@@ -112,8 +108,9 @@ TEST_F(FileSystemProviderCloudFileSystemTest,
 // CacheManager.
 TEST_F(FileSystemProviderCloudFileSystemTest,
        WatcherOnRootIsNotAddedWhenCacheManagerDoesNotExist) {
+  EXPECT_CALL(mock_cache_manager_, InitializeForProvider(_, _)).Times(0);
   std::unique_ptr<CloudFileSystem> cloud_file_system =
-      CreateCloudFileSystem(/*with_cache_manager=*/false);
+      CreateCloudFileSystem(/*with_mock_cache_manager=*/false);
 
   // Expect no watchers are added.
   EXPECT_THAT(cloud_file_system->GetWatchers(), Pointee(IsEmpty()));

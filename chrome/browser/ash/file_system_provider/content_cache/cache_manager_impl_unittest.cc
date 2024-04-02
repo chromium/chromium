@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/file_system_provider/content_cache/cache_manager.h"
+#include "chrome/browser/ash/file_system_provider/content_cache/cache_manager_impl.h"
 
 #include "base/base64.h"
 #include "base/files/file_error_or.h"
@@ -11,7 +11,6 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ash/file_system_provider/content_cache/content_cache.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -36,10 +35,10 @@ class MockCacheManagerObserver : public CacheManager::Observer {
               (override));
 };
 
-class FileSystemProviderCacheManagerTest : public testing::Test {
+class FileSystemProviderCacheManagerImplTest : public testing::Test {
  protected:
-  FileSystemProviderCacheManagerTest() = default;
-  ~FileSystemProviderCacheManagerTest() override = default;
+  FileSystemProviderCacheManagerImplTest() = default;
+  ~FileSystemProviderCacheManagerImplTest() override = default;
 
   void SetUp() override {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -56,9 +55,9 @@ class FileSystemProviderCacheManagerTest : public testing::Test {
   base::FilePath profile_dir_;
 };
 
-TEST_F(FileSystemProviderCacheManagerTest,
+TEST_F(FileSystemProviderCacheManagerImplTest,
        InMemoryOnlyDoesntCreateFolderOnDisk) {
-  CacheManager cache_manager(profile_dir_, /*in_memory_only=*/true);
+  CacheManagerImpl cache_manager(profile_dir_, /*in_memory_only=*/true);
   TestFuture<FileErrorOrContentCache> future;
   cache_manager.InitializeForProvider(FilePath("fsp_id"), future.GetCallback());
   EXPECT_THAT(future.Get(),
@@ -66,8 +65,9 @@ TEST_F(FileSystemProviderCacheManagerTest,
   EXPECT_FALSE(base::PathExists(GetProviderMountPath("fsp_id")));
 }
 
-TEST_F(FileSystemProviderCacheManagerTest, EmptyProviderIdFailsInitialization) {
-  CacheManager cache_manager(profile_dir_);
+TEST_F(FileSystemProviderCacheManagerImplTest,
+       EmptyProviderIdFailsInitialization) {
+  CacheManagerImpl cache_manager(profile_dir_);
   TestFuture<FileErrorOrContentCache> future;
   cache_manager.InitializeForProvider(FilePath(""), future.GetCallback());
   EXPECT_THAT(future.Get(), Property(&FileErrorOrContentCache::error,
@@ -75,9 +75,9 @@ TEST_F(FileSystemProviderCacheManagerTest, EmptyProviderIdFailsInitialization) {
   EXPECT_FALSE(base::PathExists(profile_dir_.Append(kFspContentCacheDirName)));
 }
 
-TEST_F(FileSystemProviderCacheManagerTest,
+TEST_F(FileSystemProviderCacheManagerImplTest,
        FspProviderIdCreatedOnInitializationAndDeletedOnUninitialization) {
-  CacheManager cache_manager(profile_dir_);
+  CacheManagerImpl cache_manager(profile_dir_);
   MockCacheManagerObserver observer;
   cache_manager.AddObserver(&observer);
   TestFuture<FileErrorOrContentCache> future;
@@ -98,9 +98,9 @@ TEST_F(FileSystemProviderCacheManagerTest,
   EXPECT_FALSE(base::PathExists(GetProviderMountPath("fsp_id")));
 }
 
-TEST_F(FileSystemProviderCacheManagerTest,
+TEST_F(FileSystemProviderCacheManagerImplTest,
        NonExistantFspProviderHasUnsucessfulUninitialization) {
-  CacheManager cache_manager(profile_dir_);
+  CacheManagerImpl cache_manager(profile_dir_);
   MockCacheManagerObserver observer;
   cache_manager.AddObserver(&observer);
 

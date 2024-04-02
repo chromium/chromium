@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/file_system_provider/content_cache/cache_manager.h"
+#include "chrome/browser/ash/file_system_provider/content_cache/cache_manager_impl.h"
 
 #include "base/base64.h"
 #include "base/files/file_path.h"
@@ -24,15 +24,21 @@ base::File::Error CreateProviderDirectory(const base::FilePath& path) {
 
 }  // namespace
 
-CacheManager::CacheManager(const base::FilePath& profile_path,
-                           bool in_memory_only)
+CacheManagerImpl::CacheManagerImpl(const base::FilePath& profile_path,
+                                   bool in_memory_only)
     : root_content_cache_directory_(
           profile_path.Append(kFspContentCacheDirName)),
       in_memory_only_(in_memory_only) {}
 
-CacheManager::~CacheManager() = default;
+CacheManagerImpl::~CacheManagerImpl() = default;
 
-void CacheManager::InitializeForProvider(
+std::unique_ptr<CacheManager> CacheManagerImpl::Create(
+    const base::FilePath& profile_path,
+    bool in_memory_only) {
+  return std::make_unique<CacheManagerImpl>(profile_path, in_memory_only);
+}
+
+void CacheManagerImpl::InitializeForProvider(
     const base::FilePath& provider_folder_name,
     FileErrorOrContentCacheCallback callback) {
   if (provider_folder_name.empty()) {
@@ -59,12 +65,12 @@ void CacheManager::InitializeForProvider(
 
   blocking_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&CreateProviderDirectory, cache_directory_path),
-      base::BindOnce(&CacheManager::OnInitializeForProvider,
+      base::BindOnce(&CacheManagerImpl::OnInitializeForProvider,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      cache_directory_path));
 }
 
-void CacheManager::UninitializeForProvider(
+void CacheManagerImpl::UninitializeForProvider(
     const base::FilePath& provider_folder_name) {
   if (provider_folder_name.empty()) {
     return;
@@ -102,22 +108,22 @@ void CacheManager::UninitializeForProvider(
                        : base::File::FILE_ERROR_FAILED;
           },
           std::move(cache_directory_path)),
-      base::BindOnce(&CacheManager::OnUninitializeForProvider,
+      base::BindOnce(&CacheManagerImpl::OnUninitializeForProvider,
                      weak_ptr_factory_.GetWeakPtr(),
                      base64_encoded_provider_folder_name));
 }
 
-void CacheManager::AddObserver(Observer* observer) {
+void CacheManagerImpl::AddObserver(Observer* observer) {
   DCHECK(observer);
   observers_.AddObserver(observer);
 }
 
-void CacheManager::RemoveObserver(Observer* observer) {
+void CacheManagerImpl::RemoveObserver(Observer* observer) {
   DCHECK(observer);
   observers_.RemoveObserver(observer);
 }
 
-void CacheManager::OnInitializeForProvider(
+void CacheManagerImpl::OnInitializeForProvider(
     FileErrorOrContentCacheCallback callback,
     base::FilePath cache_directory_path,
     base::File::Error result) {
@@ -138,7 +144,7 @@ void CacheManager::OnInitializeForProvider(
   }
 }
 
-void CacheManager::OnUninitializeForProvider(
+void CacheManagerImpl::OnUninitializeForProvider(
     const base::FilePath& base64_encoded_provider_folder_name,
     base::File::Error result) {
   LOG_IF(ERROR, result != base::File::FILE_OK)
