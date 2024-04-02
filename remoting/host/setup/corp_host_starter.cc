@@ -113,8 +113,8 @@ void CorpHostStarter::ReportError(const std::string& message,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const std::string& host_id = params().id;
-  LOG(ERROR) << "Reporting provisioning error for host id `" << host_id
-             << "`: " << message;
+  LOG(ERROR) << "\n  Reporting provisioning error for host id `" << host_id
+             << "`:\n    " << message;
   corp_service_client_->ReportProvisioningError(
       host_id, message,
       base::BindOnce(

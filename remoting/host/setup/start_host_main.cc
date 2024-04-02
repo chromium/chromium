@@ -70,9 +70,10 @@ void PrintDefaultHelpMessage(const char* process_name) {
           "instructions on running this tool and help generating the command "
           "line arguments.\n"
           "\n"
-          "Usage: %s [--name=<host display name>] [--pin=<6+ digit PIN>] "
+          "Example usage:\n%s --code=<authCode> --redirect-url=<redirectURL> "
+          "[--name=<host display name>] [--pin=<6+ digit PIN>] "
           "[--host-owner=<host owner email>]"
-          "--redirect-url=<redirectURL> --code=<authCode>\n",
+          " \n",
           process_name);
 }
 
@@ -80,7 +81,7 @@ void PrintCorpUserHelpMessage(const char* process_name) {
   fprintf(stdout,
           "Too many arguments provided.\nSetting up a machine for a corp user "
           "requires the email address of that user and an optional display "
-          "name.\nExample usage: %s --corp-user=<user_email_address> "
+          "name.\nExample usage:\n%s --corp-user=<user_email_address> "
           "[--display-name=corp-machine-name]\n",
           process_name);
 }
@@ -89,7 +90,7 @@ void PrintCloudUserHelpMessage(const char* process_name) {
   fprintf(stdout,
           "Too many arguments provided.\nSetting up a machine for a cloud user "
           "requires the email address of that user and an optional display "
-          "name.\nExample usage: %s --cloud-user=<user_email_address> "
+          "name.\nExample usage:\n%s --cloud-user=<user_email_address> "
           "[--display-name=cloud-instance-name]\n",
           process_name);
 }

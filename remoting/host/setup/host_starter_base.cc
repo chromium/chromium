@@ -10,12 +10,14 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/i18n/icu_string_conversions.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/threading/platform_thread.h"
 #include "base/values.h"
 #include "google_apis/gaia/gaia_oauth_client.h"
@@ -264,17 +266,26 @@ void HostStarterBase::HandleHttpStatusError(const ProtobufHttpStatus& status) {
              << ", message: " << error_message;
 
   if (!status.response_body().empty()) {
+    std::string extended_error_info;
     size_t pos = status.response_body().rfind("Caused by: ");
     if (pos != std::string::npos) {
-      error_message = status.response_body().substr(pos);
-      LOG(ERROR) << "\n  Extended error information: \n" << error_message;
-      VLOG(1) << "\n  Full error information: \n" << status.response_body();
+      extended_error_info = status.response_body().substr(pos);
     } else {
-      error_message = status.response_body();
-      LOG(ERROR) << "\n  Failed to find extended error information, showing "
-                 << "full output:\n"
-                 << error_message;
+      extended_error_info = status.response_body();
     }
+    VLOG(1) << "Full error information: \n" << status.response_body();
+    // Convert the string contents if it is not valid UTF-8. Otherwise it can
+    // cause additional errors when reporting the original error to our backend.
+    if (!base::IsStringUTF8(extended_error_info)) {
+      std::string converted_string;
+      if (base::ConvertToUtf8AndNormalize(
+              extended_error_info, base::kCodepageLatin1, &converted_string)) {
+        extended_error_info = std::move(converted_string);
+      }
+    }
+    error_message =
+        base::StringPrintf("%s\nExtended error information: %s\n",
+                           error_message.c_str(), extended_error_info.c_str());
   }
 
   auto result = NETWORK_ERROR;
