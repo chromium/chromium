@@ -20,7 +20,7 @@ import {FileSystemType, getVolumeTypeFromRootType, isNative, RootType, Source, V
 import {getMyFiles} from '../../state/ducks/all_entries.js';
 import {changeDirectory} from '../../state/ducks/current_directory.js';
 import {clearSearch, getDefaultSearchOptions, updateSearch} from '../../state/ducks/search.js';
-import type {SearchData} from '../../state/state.js';
+import type {FileData, FileKey, SearchData} from '../../state/state.js';
 import {PropStatus, SearchLocation, type SearchOptions, type State, type Volume, type VolumeId} from '../../state/state.js';
 import {getFileData, getStore, getVolume, type Store} from '../../state/store.js';
 
@@ -100,9 +100,10 @@ function getFileCategory(
 }
 
 export type DirectoryChangeEvent = CustomEvent<{
-  previousDirEntry: DirectoryEntry | FilesAppDirEntry,
-  newDirEntry: DirectoryEntry | FilesAppDirEntry,
-  volumeChanged: boolean,
+  previousDirEntry?: DirectoryEntry | FilesAppDirEntry,
+  previousFileKey?: FileKey,
+  newDirEntry?: DirectoryEntry | FilesAppDirEntry,
+  newFileKey?: FileKey, volumeChanged: boolean,
 }>;
 
 export type CurDirScanFailedEvent = CustomEvent<{error: DOMError}>;
@@ -176,7 +177,7 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
     this.currentFileListContext_ = new FileListContext(
         this.fileFilter_, this.metadataModel_, this.volumeManager_);
     this.currentDirContents_ = new DirectoryContents(
-        this.currentFileListContext_, false, undefined, () => {
+        this.currentFileListContext_, false, undefined, undefined, () => {
           return new DirectoryContentScanner(undefined);
         });
 
@@ -598,6 +599,11 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
   }
 
   getCurrentDirName(): string {
+    const fileData = this.getCurrentFileData();
+    if (fileData) {
+      return fileData.label;
+    }
+
     const dirEntry = this.getCurrentDirEntry();
     if (!dirEntry) {
       return '';
@@ -605,6 +611,19 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
 
     const locationInfo = this.volumeManager_.getLocationInfo(dirEntry);
     return getEntryLabel(locationInfo, dirEntry);
+  }
+
+  getCurrentFileKey(): FileKey|undefined {
+    return this.currentDirContents_.getFileKey();
+  }
+
+  getCurrentFileData(): FileData|undefined {
+    const fileKey = this.getCurrentFileKey();
+    if (!fileKey) {
+      return;
+    }
+
+    return getFileData(this.store_.getState(), fileKey) ?? undefined;
   }
 
   /**
@@ -891,7 +910,8 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
       const currentDirEntry = this.getCurrentDirEntry()!;
       assert(currentDirEntry);
       const newDirContents = this.createDirectoryContents_(
-          this.currentFileListContext_, currentDirEntry, this.lastSearchQuery_);
+          this.currentFileListContext_, currentDirEntry,
+          currentDirEntry.toURL(), this.lastSearchQuery_);
       this.clearAndScan_(newDirContents, callback);
     });
   }
@@ -1003,9 +1023,8 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
       onFinished();
 
       // Record metric for Downloads directory.
-      if (!dirContents.isSearch()) {
-        const dirEntry = dirContents.getDirectoryEntry();
-        assert(dirEntry);
+      const dirEntry = dirContents.getDirectoryEntry();
+      if (dirEntry && !dirContents.isSearch()) {
         const locationInfo = this.volumeManager_.getLocationInfo(dirEntry);
         const volumeInfo = locationInfo && locationInfo.volumeInfo;
         if (volumeInfo && volumeInfo.volumeType === VolumeType.DOWNLOADS &&
@@ -1250,13 +1269,14 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
       }
 
       const newDirectoryContents = this.createDirectoryContents_(
-          this.currentFileListContext_, dirEntry, '');
+          this.currentFileListContext_, dirEntry, dirEntry.toURL(), '');
       if (!newDirectoryContents) {
         queueTaskCallback();
         return;
       }
 
       const previousDirEntry = this.currentDirContents_.getDirectoryEntry();
+      const previousFileKey = this.currentDirContents_.getFileKey();
       this.clearAndScan_(newDirectoryContents, result => {
         // Calls the callback of the method and inform it about success or lack
         // of thereof.
@@ -1279,7 +1299,9 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
       const event = new CustomEvent('directory-changed', {
         detail: {
           previousDirEntry,
+          previousKey: previousFileKey,
           newDirEntry: dirEntry,
+          newFileKey: dirEntry.toURL(),
           volumeChanged: (previousVolumeInfo !== currentVolumeInfo),
         },
       });
@@ -1522,8 +1544,11 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
    * @param query Search query string.
    * @return True if directory search should be used for the entry and query.
    */
-  isSearchDirectory(entry: DirectoryEntry|FilesAppEntry, query?: string):
+  isSearchDirectory(entry?: DirectoryEntry|FilesAppEntry, query?: string):
       boolean {
+    if (!entry) {
+      return !!query;
+    }
     const rootType = getRootType(entry);
     if (isRecentRootType(rootType) || rootType === RootType.CROSTINI ||
         rootType === RootType.DRIVE_FAKE_ROOT) {
@@ -1555,8 +1580,15 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
    * @return The factory to create ContentScanner instance.
    */
   createScannerFactory(
-      entry: DirectoryEntry|FilesAppEntry, query?: string,
+      fileKey: FileKey, entry?: DirectoryEntry|FilesAppEntry, query?: string,
       options?: SearchOptions): () => ContentScanner {
+    if (!entry) {
+      return () => {
+        console.debug(`TODO: Implement scanner for ${fileKey}`);
+        return new EmptyContentScanner();
+      };
+    }
+
     const sanitizedQuery = (query || '').trimStart();
     const locationInfo = this.volumeManager_.getLocationInfo(entry);
 
@@ -1647,11 +1679,18 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
    * @return Directory contents.
    */
   private createDirectoryContents_(
-      context: FileListContext, entry: DirectoryEntry|FilesAppDirEntry,
-      query?: string, options?: SearchOptions): DirectoryContents {
+      context: FileListContext, entry?: DirectoryEntry|FilesAppDirEntry,
+      fileKey?: FileKey, query?: string,
+      options?: SearchOptions): DirectoryContents {
+    if (!entry && !fileKey) {
+      console.error('`fileKey` or `entry` must be provided');
+    }
+
     const isSearch = this.isSearchDirectory(entry, query);
-    const scannerFactory = this.createScannerFactory(entry, query, options);
-    return new DirectoryContents(context, isSearch, entry, scannerFactory);
+    const key = fileKey ?? entry!.toURL();
+    const scannerFactory =
+        this.createScannerFactory(key, entry, query, options);
+    return new DirectoryContents(context, isSearch, entry, key, scannerFactory);
   }
 
   /**
@@ -1698,7 +1737,8 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
       if (!(query || '').trimStart()) {
         if (this.isSearching()) {
           const newDirContents = this.createDirectoryContents_(
-              this.currentFileListContext_, currentDirEntry);
+              this.currentFileListContext_, currentDirEntry,
+              currentDirEntry.toURL());
           this.clearAndScan_(newDirContents, callback);
         } else {
           callback();
@@ -1707,7 +1747,8 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
       }
 
       const newDirContents = this.createDirectoryContents_(
-          this.currentFileListContext_, currentDirEntry, query, options);
+          this.currentFileListContext_, currentDirEntry,
+          currentDirEntry.toURL(), query, options);
       if (!newDirContents) {
         callback();
         return;

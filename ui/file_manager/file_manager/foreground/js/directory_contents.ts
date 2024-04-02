@@ -19,7 +19,7 @@ import {createTrashReaders, TRASH_CONFIG} from '../../common/js/trash.js';
 import {FileErrorToDomError} from '../../common/js/util.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import {getDefaultSearchOptions} from '../../state/ducks/search.js';
-import {SearchLocation, type SearchOptions} from '../../state/state.js';
+import {type FileKey, SearchLocation, type SearchOptions} from '../../state/state.js';
 import {getStore} from '../../state/store.js';
 
 import {ACTIONS_MODEL_METADATA_PREFETCH_PROPERTY_NAMES, CROSTINI_CONNECT_ERR, DLP_METADATA_PREFETCH_PROPERTY_NAMES, FILE_SELECTION_METADATA_PREFETCH_PROPERTY_NAMES, LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES} from './constants.js';
@@ -1056,17 +1056,15 @@ export class DirectoryContents extends
 
   /**
    * @param context The file list context.
-   * @param isSearch True for search directory contents, otherwise
-   *     false.
-   * @param directoryEntry The entry
-   *     of the current directory.
-   * @param scannerFactory The factory to create
-   *     ContentScanner instance.
+   * @param isSearch True for search directory contents, otherwise false.
+   * @param directoryEntry The entry of the current directory.
+   * @param scannerFactory The factory to create ContentScanner instance.
    */
   constructor(
       private readonly context_: FileListContext,
       private readonly isSearch_: boolean,
       private readonly directoryEntry_: UniversalDirectory|undefined,
+      private readonly fileKey_: FileKey|undefined,
       private readonly scannerFactory_: () => ContentScanner) {
     super();
 
@@ -1080,7 +1078,7 @@ export class DirectoryContents extends
    */
   clone(): DirectoryContents {
     return new DirectoryContents(
-        this.context_, this.isSearch_, this.directoryEntry_,
+        this.context_, this.isSearch_, this.directoryEntry_, this.fileKey_,
         this.scannerFactory_);
   }
 
@@ -1188,6 +1186,10 @@ export class DirectoryContents extends
    */
   getDirectoryEntry(): UniversalDirectory|undefined {
     return this.directoryEntry_;
+  }
+
+  getFileKey(): FileKey|undefined {
+    return this.fileKey_;
   }
 
   /**

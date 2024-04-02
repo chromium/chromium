@@ -94,8 +94,8 @@ DirectoryItemTreeBaseMethods.getItemByEntry = function(entry) {
  * Finds a parent directory of the {@code entry} in {@code this}, and
  * invokes the DirectoryItem.selectByEntry() of the found directory.
  *
- * @param {!DirectoryEntry|!FilesAppDirEntry} entry The entry to be searched
- *     for. Can be a fake.
+ * @param {!DirectoryEntry|!FilesAppDirEntry|undefined} entry The entry to be
+ *     searched for. Can be a fake.
  * @return {!Promise<boolean>} True if the parent item is found.
  * @this {(DirectoryItem|VolumeItem|DirectoryTree)}
  */
@@ -113,17 +113,17 @@ DirectoryItemTreeBaseMethods.searchAndSelectByEntry = async function(entry) {
     // Team drives are descendants of the Drive root volume item "Google Drive".
     // When we looking for an item in team drives, recursively search inside the
     // "Google Drive" root item.
-    if (isSharedDriveEntry(entry) && item instanceof DriveVolumeItem) {
+    if (entry && isSharedDriveEntry(entry) && item instanceof DriveVolumeItem) {
       await item.selectByEntry(entry);
       return true;
     }
 
-    if (isComputersEntry(entry) && item instanceof DriveVolumeItem) {
+    if (entry && isComputersEntry(entry) && item instanceof DriveVolumeItem) {
       await item.selectByEntry(entry);
       return true;
     }
 
-    if (isDescendantEntry(item.entry, entry) ||
+    if (entry && isDescendantEntry(item.entry, entry) ||
         isSameEntry(item.entry, entry)) {
       await item.selectByEntry(entry);
       return true;
@@ -553,8 +553,8 @@ export class DirectoryItem extends FilesTreeItem {
   /**
    * Calls DirectoryItemTreeBaseMethods.updateSubElementsFromList().
    *
-   * @param {!DirectoryEntry|!FilesAppDirEntry} entry The entry to be searched
-   *     for. Can be a fake.
+   * @param {!DirectoryEntry|!FilesAppDirEntry|undefined} entry The entry to be
+   *     searched for. Can be a fake.
    * @return {!Promise<boolean>} True if the parent item is found.
    */
   async searchAndSelectByEntry(entry) {
@@ -2634,8 +2634,8 @@ export class DirectoryTree extends Tree {
    * Finds a parent directory of the {@code entry} in {@code this}, and
    * invokes the DirectoryItem.selectByEntry() of the found directory.
    *
-   * @param {!DirectoryEntry|!FilesAppDirEntry} entry The entry to be searched
-   *     for. Can be a fake.
+   * @param {!DirectoryEntry|!FilesAppDirEntry|undefined} entry The entry to be
+   *     searched for. Can be a fake.
    * @return {!Promise<boolean>} True if the parent item is found.
    */
   async searchAndSelectByEntry(entry) {
@@ -2666,8 +2666,8 @@ export class DirectoryTree extends Tree {
 
   /**
    * Select the item corresponding to the given entry.
-   * @param {!DirectoryEntry|!FilesAppDirEntry} entry The directory entry to be
-   *     selected. Can be a fake.
+   * @param {!DirectoryEntry|!FilesAppDirEntry|undefined} entry The directory
+   *     entry to be selected. Can be a fake.
    * @return {!Promise<void>}
    */
   async selectByEntry(entry) {
@@ -2680,6 +2680,11 @@ export class DirectoryTree extends Tree {
     }
 
     this.updateSubDirectories(false /* recursive */);
+
+    if (!entry) {
+      return;
+    }
+
     const currentSequence = ++this.sequence_;
     const volumeInfo = this.volumeManager_.getVolumeInfo(entry);
     if (!volumeInfo) {

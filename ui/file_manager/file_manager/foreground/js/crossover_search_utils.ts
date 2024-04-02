@@ -33,7 +33,8 @@ export async function findQueryMatchedDirectoryEntry(
       console.warn(error.stack || error);
     }
 
-    const scanner = dirModel.createScannerFactory(dirEntry, searchQuery)();
+    const scanner = dirModel.createScannerFactory(
+        dirEntry.toURL(), dirEntry, searchQuery)();
     await new Promise<void>(
         resolve => scanner.scan(entriesCallback, resolve, errorCallback));
     if (isEntryFound) {
