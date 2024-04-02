@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/tabs/tab_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "components/lens/lens_features.h"
 #include "content/public/common/url_constants.h"
@@ -16,6 +17,10 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view_utils.h"
 
+namespace {
+
+constexpr char kDocumentWithNamedElement[] = "/select.html";
+
 using State = LensOverlayController::State;
 
 class LensWebUIBrowserTest : public WebUIMochaBrowserTest {
@@ -23,6 +28,16 @@ class LensWebUIBrowserTest : public WebUIMochaBrowserTest {
   LensWebUIBrowserTest() {
     set_test_loader_scheme(content::kChromeUIUntrustedScheme);
     set_test_loader_host(chrome::kChromeUILensHost);
+  }
+
+  void SetUp() override {
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    WebUIMochaBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    WebUIMochaBrowserTest::SetUpOnMainThread();
+    embedded_test_server()->StartAcceptingConnections();
   }
 
  private:
@@ -60,8 +75,10 @@ class LensOverlayTest : public LensWebUIBrowserTest {
   }
 
   // Lens overlay takes a screenshot of the tab. In order to take a screenshot
-  // the tab must be painted. Wait for that paint.
+  // the tab must not be about:blank and must be painted.
   void WaitForPaint() {
+    const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     ASSERT_TRUE(base::test::RunUntil([&]() {
       return browser()
           ->tab_strip_model()
@@ -88,3 +105,5 @@ using LensSidePanelTest = LensWebUIBrowserTest;
 IN_PROC_BROWSER_TEST_F(LensSidePanelTest, SidePanelResultsFrame) {
   RunTest("lens/side_panel/results_frame_test.js", "mocha.run()");
 }
+
+}  // namespace

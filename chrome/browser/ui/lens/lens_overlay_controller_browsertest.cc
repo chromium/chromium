@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/lens/lens_features.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -28,6 +29,8 @@
 #include "ui/views/view_utils.h"
 
 namespace {
+
+constexpr char kDocumentWithNamedElement[] = "/select.html";
 
 using State = LensOverlayController::State;
 
@@ -55,6 +58,16 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
     tabs::TabFeatures::ReplaceTabFeaturesForTesting(base::BindRepeating(
         &LensOverlayControllerBrowserTest::CreateTabFeatures,
         base::Unretained(this)));
+  }
+
+  void SetUp() override {
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    embedded_test_server()->StartAcceptingConnections();
   }
 
   ~LensOverlayControllerBrowserTest() override {
@@ -98,8 +111,10 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
   }
 
   // Lens overlay takes a screenshot of the tab. In order to take a screenshot
-  // the tab must be painted. Wait for that paint.
+  // the tab must not be about:blank and must be painted.
   void WaitForPaint() {
+    const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     ASSERT_TRUE(base::test::RunUntil([&]() {
       return browser()
           ->tab_strip_model()
