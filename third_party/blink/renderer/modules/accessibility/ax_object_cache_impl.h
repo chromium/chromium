@@ -479,6 +479,7 @@ class MODULES_EXPORT AXObjectCacheImpl
                        ui::AXTreeData*,
                        ui::AXNodeData>*
   GetPluginTreeSerializer();
+  void ResetPluginTreeSerializer();
   void MarkPluginDescendantDirty(ui::AXNodeID node_id);
 
   std::pair<ax::mojom::blink::EventFrom, ax::mojom::blink::Action>
@@ -641,6 +642,10 @@ class MODULES_EXPORT AXObjectCacheImpl
   // AXObjectCache and AXTreeSerializer.
   void UpdateIncludedNodeCount(const AXObject* obj);
   size_t GetIncludedNodeCount() const { return included_node_count_; }
+  void UpdatePluginIncludedNodeCount();
+  size_t GetPluginIncludedNodeCount() const {
+    return plugin_included_node_count_;
+  }
   HeapHashMap<AXID, Member<AXObject>>& GetObjects() { return objects_; }
 #endif
 
@@ -894,6 +899,7 @@ class MODULES_EXPORT AXObjectCacheImpl
       inline_text_box_object_mapping_;
 #if DCHECK_IS_ON()
   size_t included_node_count_ = 0;
+  size_t plugin_included_node_count_ = 0;
 #endif
 
   // Used for a mock AXObject representing the message displayed in the

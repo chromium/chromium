@@ -266,7 +266,6 @@ class AX_EXPORT AXTree {
   static bool is_focused_node_always_unignored_;
 
 #if DCHECK_IS_ON()
-  bool has_plugin_ = false;
   void CheckTreeConsistency(const AXTreeUpdate& update);
 #endif
 
