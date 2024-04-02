@@ -403,7 +403,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': 'bc0a01d924e5c1654bb36bd33167098eb53908c3',
+  'devtools_frontend_revision': 'a73560d622f61ee1abe1af44cbf8a8c85c011671',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -1198,7 +1198,7 @@ deps = {
     Var('chromium_git') + '/devtools/devtools-frontend' + '@' + Var('devtools_frontend_revision'),
 
   'src/third_party/devtools-frontend-internal': {
-      'url': Var('chrome_git') + '/devtools/devtools-internal.git' + '@' + '80f9fd3e974ddf0a2b28d5580c33f2c8832e8f87',
+      'url': Var('chrome_git') + '/devtools/devtools-internal.git' + '@' + 'e9bd897fca0135924c8a60a78bf0bd4c35cde926',
     'condition': 'checkout_src_internal',
   },
 
