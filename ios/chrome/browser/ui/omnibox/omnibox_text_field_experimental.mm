@@ -325,15 +325,14 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
 #pragma mark pre-edit
 
-// Creates a UILabel based on the current dimension of the text field and
-// displays the URL in the UILabel so it appears properly aligned to the URL.
+/// Enters pre-edit state.
 - (void)enterPreEditState {
   // Empty omnibox should show the insertion point immediately. There is
   // nothing to erase.
   if (!self.text.length || UIAccessibilityIsVoiceOverRunning())
     return;
 
-  self.preEditing = true;
+  self.preEditing = YES;
 
   NSMutableDictionary<NSAttributedStringKey, id>* attributes =
       self.defaultTextAttributes.mutableCopy;
@@ -342,13 +341,16 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
                 forKey:NSBackgroundColorAttributeName];
   self.defaultTextAttributes = attributes;
 
-  self.clearsOnInsertion = true;
+  self.clearsOnInsertion = YES;
 }
 
-// Finishes pre-edit state by removing the UILabel with the URL.
+/// Exits pre-edit state.
 - (void)exitPreEditState {
-  self.preEditing = false;
-  self.clearsOnInsertion = false;
+  if (!self.preEditing) {
+    return;
+  }
+  self.preEditing = NO;
+  self.clearsOnInsertion = NO;
 
   NSMutableDictionary<NSAttributedStringKey, id>* attributes =
       self.defaultTextAttributes.mutableCopy;
