@@ -4749,8 +4749,12 @@ struct GemmTester {
   }
 };
 
+#if BUILDFLAG(IS_WIN)
 // Test building and computing a graph with single operator gemm on npu.
 TEST_F(WebNNGraphImplBackendTest, BuildSingleOperatorGemmOnNpu) {
+  // Skip if failed to get NPU instance since not all platforms support NPU.
+  SKIP_TEST_IF(
+      !dml::Adapter::GetNpuInstance(DML_FEATURE_LEVEL_4_0).has_value());
   // Test gemm without a third input.
   GemmTester<float>{.input_a = {.type = mojom::Operand::DataType::kFloat32,
                                 .dimensions = {2, 2},
@@ -4763,6 +4767,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildSingleOperatorGemmOnNpu) {
                                .values = {7, 10, 15, 22}}}
       .Test(mojom::CreateContextOptions::Device::kNpu);
 }
+#endif  // #if BUILDFLAG(IS_WIN)
 
 // Test building and computing a graph with single operator gemm on gpu.
 TEST_F(WebNNGraphImplBackendTest, BuildSingleOperatorGemmOnGpu) {
