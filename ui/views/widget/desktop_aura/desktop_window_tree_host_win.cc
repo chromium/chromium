@@ -131,6 +131,11 @@ DesktopWindowTreeHostWin::DesktopWindowTreeHostWin(
 
 DesktopWindowTreeHostWin::~DesktopWindowTreeHostWin() {
   desktop_native_widget_aura_->OnDesktopWindowTreeHostDestroyed(this);
+  // Normally HandleDestroying() destroys the compositor (which is called
+  // from WM_DESTROY) but it appears in some situations we can get
+  // WM_NCDESTROY (which calls this function) without a WM_DESTROY. As a result
+  // DestroyCompositor() is called from both places.
+  DestroyCompositor();
   DestroyDispatcher();
 }
 
