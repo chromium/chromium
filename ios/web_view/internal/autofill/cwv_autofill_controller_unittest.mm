@@ -22,7 +22,6 @@
 #include "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/autofill/ios/form_util/form_activity_tab_helper.h"
 #import "components/autofill/ios/form_util/test_form_activity_tab_helper.h"
-#include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -78,8 +77,6 @@ class CWVAutofillControllerTest : public web::WebTest {
         autofill::prefs::kAutofillProfileEnabled, true);
 
     web_state_.SetBrowserState(&browser_state_);
-
-    UniqueIDDataTabHelper::CreateForWebState(&web_state_);
 
     frame_id_ = base::SysUTF8ToNSString(web::kMainFakeFrameId);
 

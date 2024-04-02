@@ -5,14 +5,15 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_IOS_IOS_PASSWORD_MANAGER_DRIVER_H_
 #define COMPONENTS_PASSWORD_MANAGER_IOS_IOS_PASSWORD_MANAGER_DRIVER_H_
 
-#include <vector>
+#import <vector>
 
-#include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
-#include "components/password_manager/core/browser/password_generation_frame_helper.h"
-#include "components/password_manager/core/browser/password_manager_driver.h"
-#include "components/password_manager/ios/password_manager_driver_bridge.h"
-#include "url/gurl.h"
+#import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
+#import "components/autofill/core/common/field_data_manager.h"
+#import "components/password_manager/core/browser/password_generation_frame_helper.h"
+#import "components/password_manager/core/browser/password_manager_driver.h"
+#import "components/password_manager/ios/password_manager_driver_bridge.h"
+#import "url/gurl.h"
 
 namespace autofill {
 struct PasswordFormFillData;
@@ -67,6 +68,12 @@ class IOSPasswordManagerDriver final
   base::WeakPtr<PasswordManagerDriver> AsWeakPtr() override;
   const std::string& web_frame_id() const { return frame_id_; }
   const GURL& security_origin() const { return security_origin_; }
+  autofill::FieldDataManager& field_data_manager() {
+    return *field_data_manager_;
+  }
+  const autofill::FieldDataManager& field_data_manager() const {
+    return *field_data_manager_;
+  }
 
  private:
   // The constructor below is private so that no one uses it while trying to
@@ -103,6 +110,10 @@ class IOSPasswordManagerDriver final
   // driver is handling the saving, editing or syncing of the password after a
   // form submission.
   std::string frame_id_;
+
+  // Because `this` can outlast `web_frame_`, we keep a refptr to the associated
+  // FieldDataManager, to ensure it also outlives the frame.
+  const scoped_refptr<autofill::FieldDataManager> field_data_manager_;
 
   bool is_in_main_frame_;
   // The security origin associated with |web_frame_|.

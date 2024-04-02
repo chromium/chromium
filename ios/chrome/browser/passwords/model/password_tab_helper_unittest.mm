@@ -10,7 +10,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/bind.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
 #import "components/password_manager/core/browser/password_manager_constants.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -45,7 +44,6 @@ class PasswordTabHelperTest : public PlatformTest {
     web::WebState::CreateParams params(browser_state_.get());
     web_state_ = web::WebState::Create(params);
 
-    UniqueIDDataTabHelper::CreateForWebState(web_state_.get());
     PasswordTabHelper::CreateForWebState(web_state_.get());
   }
 

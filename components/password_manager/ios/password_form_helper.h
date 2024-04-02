@@ -19,7 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class PasswordFormHelper;
 
 namespace autofill {
-class FieldDataManager;
 struct FormData;
 struct PasswordFormFillData;
 }  // namespace autofill
@@ -68,15 +67,6 @@ enum class HandleSubmittedFormStatus {
 // Returns empty URL if current web state is not available.
 @property(nonatomic, readonly) const GURL& lastCommittedURL;
 
-// Maps UniqueFieldId of an input element to the pair of:
-// 1) The most recent text that user typed or PasswordManager autofilled in
-// input elements. Used for storing username/password before JavaScript
-// changes them.
-// 2) Field properties mask, i.e. whether the field was autofilled, modified
-// by user, etc. (see FieldPropertiesMask).
-@property(nonatomic, readonly) scoped_refptr<autofill::FieldDataManager>
-    fieldDataManager;
-
 // The associated delegate.
 @property(nonatomic, nullable, weak) id<PasswordFormHelperDelegate> delegate;
 
@@ -85,8 +75,8 @@ enum class HandleSubmittedFormStatus {
 // |completionHandler| with an empty vector if no password forms are found.
 - (void)findPasswordFormsInFrame:(web::WebFrame*)frame
                completionHandler:
-                   (nullable void (^)(const std::vector<autofill::FormData>&,
-                                      uint32_t))completionHandler;
+                   (nullable void (^)(const std::vector<autofill::FormData>&))
+                       completionHandler;
 
 // Fills new password field for (optional as @"") |newPasswordIdentifier| and
 // for (optional as @"") confirm password field |confirmPasswordIdentifier| in
@@ -118,14 +108,10 @@ enum class HandleSubmittedFormStatus {
                   (void (^)(BOOL found,
                             const autofill::FormData& form))completionHandler;
 
-// Sets up the next available numeric value for setting unique renderer ids
-// in |frame|.
-- (void)setUpForUniqueIDsWithInitialState:(uint32_t)nextAvailableID
-                                  inFrame:(web::WebFrame*)frame;
-
 // Updates the stored field data. In case if there is a presaved credential it
 // updates the presaved credential.
 - (void)updateFieldDataOnUserInput:(autofill::FieldRendererId)field_id
+                           inFrame:(web::WebFrame*)frame
                         inputValue:(NSString*)field_value;
 
 // Processes `message` sent by JavaScript to the `PasswordFormSubmitButtonClick`

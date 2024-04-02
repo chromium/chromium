@@ -9,7 +9,6 @@
 #import <memory>
 
 #import "components/password_manager/core/browser/password_form.h"
-#import "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #import "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
 #import "components/password_manager/core/browser/password_form_manager.h"
 #import "components/password_manager/core/browser/password_form_manager_for_ui.h"
@@ -70,7 +69,6 @@ class IOSChromePasswordManagerClientTest : public PlatformTest {
     // predictions on.
     PasswordFormManager::set_wait_for_server_predictions_for_filling(false);
 
-    UniqueIDDataTabHelper::CreateForWebState(web_state());
     passwordController_ =
         [[PasswordController alloc] initWithWebState:web_state()];
   }

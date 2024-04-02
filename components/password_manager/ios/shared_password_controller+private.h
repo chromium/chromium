@@ -23,7 +23,6 @@ using autofill::FormRendererId;
                        completionHandler:(void (^)())completionHandler;
 
 - (void)didFinishPasswordFormExtraction:(const std::vector<FormData>&)forms
-                        withMaxUniqueID:(uint32_t)maxID
                   triggeredByFormChange:(BOOL)triggeredByFormChange
                                 inFrame:(web::WebFrame*)frame;
 

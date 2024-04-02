@@ -38,7 +38,6 @@
 #import "components/autofill/ios/browser/form_suggestion_provider_query.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #include "components/autofill/ios/form_util/form_activity_params.h"
-#include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #import "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_generation_frame_helper.h"
@@ -244,13 +243,14 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
   // Clear per-page state.
   [self.suggestionHelper resetForNewPage];
 
-  auto fieldDataManager =
-      UniqueIDDataTabHelper::FromWebState(_webState)->GetFieldDataManager();
   // This FieldDataManager info is for forms that were present on a page
   // before navigation, therefore not the current driver is needed, but the
   // last submitted one.
-  _passwordManager->PropagateFieldDataManagerInfo(
-      *fieldDataManager, _lastSubmittedPasswordManagerDriver.get());
+  if (_lastSubmittedPasswordManagerDriver) {
+    _passwordManager->PropagateFieldDataManagerInfo(
+        _lastSubmittedPasswordManagerDriver->field_data_manager(),
+        _lastSubmittedPasswordManagerDriver.get());
+  }
   // On non-iOS platforms navigations initiated by link click are excluded from
   // navigations which might be form submssions. On iOS there is no easy way to
   // check that the navigation is link initiated, so it is skipped. It should
@@ -258,7 +258,9 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
   // after filling password form w/o submitting it.
   _passwordManager->DidNavigateMainFrame(
       /*form_may_be_submitted=*/navigation->IsRendererInitiated());
-  fieldDataManager->ClearData();
+  if (_lastSubmittedPasswordManagerDriver) {
+    _lastSubmittedPasswordManagerDriver->field_data_manager().ClearData();
+  }
 }
 
 - (void)webState:(web::WebState*)webState didLoadPageWithSuccess:(BOOL)success {
@@ -277,15 +279,11 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
 
   if (!webState->ContentIsHTML()) {
     // If the current page is not HTML, it does not contain any HTML forms.
-    UniqueIDDataTabHelper* uniqueIDDataTabHelper =
-        UniqueIDDataTabHelper::FromWebState(_webState);
-    uint32_t maxUniqueID = uniqueIDDataTabHelper->GetNextAvailableRendererID();
     password_manager::PasswordManagerJavaScriptFeature* feature =
         password_manager::PasswordManagerJavaScriptFeature::GetInstance();
     web::WebFrame* mainFrame =
         feature->GetWebFramesManager(_webState)->GetMainWebFrame();
     [self didFinishPasswordFormExtraction:std::vector<FormData>()
-                          withMaxUniqueID:maxUniqueID
                     triggeredByFormChange:false
                                   inFrame:mainFrame];
   }
@@ -294,13 +292,6 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
 - (void)webFramesManager:(web::WebFramesManager*)webFramesManager
     frameBecameAvailable:(web::WebFrame*)webFrame {
   DCHECK(webFrame);
-  UniqueIDDataTabHelper* uniqueIDDataTabHelper =
-      UniqueIDDataTabHelper::FromWebState(_webState);
-  uint32_t nextAvailableRendererID =
-      uniqueIDDataTabHelper->GetNextAvailableRendererID();
-  [self.formHelper setUpForUniqueIDsWithInitialState:nextAvailableRendererID
-                                             inFrame:webFrame];
-
   auto* driver =
       autofill::AutofillDriverIOS::FromWebStateAndWebFrame(_webState, webFrame);
   if (driver) {
@@ -339,9 +330,9 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
   // Casting is safe, as this code is run on iOS Chrome & WebView only.
   auto* driver = static_cast<IOSPasswordManagerDriver*>(
       [_driverHelper PasswordManagerDriver:webFrame]);
-  auto fieldDataManager =
-      UniqueIDDataTabHelper::FromWebState(_webState)->GetFieldDataManager();
-  _passwordManager->OnIframeDetach(frameId, driver, *fieldDataManager);
+
+  _passwordManager->OnIframeDetach(frameId, driver,
+                                   driver->field_data_manager());
 }
 
 - (void)webStateDestroyed:(web::WebState*)webState {
@@ -480,6 +471,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
     if ([formQuery.type isEqual:@"input"] ||
         [formQuery.type isEqual:@"keyup"]) {
       [self.formHelper updateFieldDataOnUserInput:formQuery.uniqueFieldID
+                                          inFrame:frame
                                        inputValue:formQuery.typedValue];
       _passwordManager->UpdateStateOnUserInput(
           [_driverHelper PasswordManagerDriver:frame], formQuery.uniqueFormID,
@@ -716,7 +708,6 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
 #pragma mark - Private methods
 
 - (void)didFinishPasswordFormExtraction:(const std::vector<FormData>&)forms
-                        withMaxUniqueID:(uint32_t)maxID
                   triggeredByFormChange:(BOOL)triggeredByFormChange
                                 inFrame:(web::WebFrame*)frame {
   // Do nothing if |self| has been detached.
@@ -726,12 +717,6 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
   IOSPasswordManagerDriver* driver =
       [_driverHelper PasswordManagerDriver:frame];
   if (!forms.empty()) {
-    UniqueIDDataTabHelper* uniqueIDDataTabHelper =
-        UniqueIDDataTabHelper::FromWebState(_webState);
-    // Update NextAvailableRendererId if a bigger value was extracted.
-    if (uniqueIDDataTabHelper->GetNextAvailableRendererID() < maxID)
-      uniqueIDDataTabHelper->SetNextAvailableRendererID(++maxID);
-
     // Invoke the password manager callback to autofill password forms
     // on the loaded page.
     _passwordManager->OnPasswordFormsParsed(driver, forms);
@@ -758,13 +743,11 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
   // Read all password forms from the page and send them to the password
   // manager.
   __weak SharedPasswordController* weakSelf = self;
-  auto completionHandler =
-      ^(const std::vector<FormData>& forms, uint32_t maxID) {
-        [weakSelf didFinishPasswordFormExtraction:forms
-                                  withMaxUniqueID:maxID
-                            triggeredByFormChange:triggeredByFormChange
-                                          inFrame:frame];
-      };
+  auto completionHandler = ^(const std::vector<FormData>& forms) {
+    [weakSelf didFinishPasswordFormExtraction:forms
+                        triggeredByFormChange:triggeredByFormChange
+                                      inFrame:frame];
+  };
 
   [self.formHelper findPasswordFormsInFrame:frame
                           completionHandler:completionHandler];
@@ -942,7 +925,6 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
       return;
 
     [weakSelf presaveGeneratedPassword:generatedPassword
-                      passwordUniqueId:newPasswordUniqueId
                               formData:form
                                inFrame:frame];
   };
@@ -955,7 +937,6 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
 }
 
 - (void)presaveGeneratedPassword:(NSString*)generatedPassword
-                passwordUniqueId:(FieldRendererId)newPasswordUniqueId
                         formData:(const autofill::FormData&)formData
                          inFrame:(web::WebFrame*)frame {
   if (!_passwordManager)
@@ -968,14 +949,12 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
 
 // Checks that all fields with |fieldIds| have user input recorded by
 // the FieldDataManager.
-- (BOOL)allFieldsContainUserInput:
-    (const std::vector<FieldRendererId>&)fieldIds {
-  for (auto fieldId : fieldIds) {
-    if (!self.formHelper.fieldDataManager->HasFieldData(fieldId)) {
-      return NO;
-    }
-  }
-  return YES;
+- (BOOL)allFieldsContainUserInput:(const std::vector<FieldRendererId>&)fieldIds
+                 fieldDataManager:
+                     (const autofill::FieldDataManager&)fieldDataManager {
+  return base::ranges::all_of(fieldIds, [&fieldDataManager](auto fieldId) {
+    return fieldDataManager.HasFieldData(fieldId);
+  });
 }
 
 #pragma mark - FormActivityObserver
@@ -1022,25 +1001,27 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
       << "Invalid params. Form removal events with missing input should have "
          "been filtered out by FormActivityTabHelper.";
 
+  auto* driver = static_cast<IOSPasswordManagerDriver*>(
+      [_driverHelper PasswordManagerDriver:frame]);
+
   // TODO(crbug.com/330909663): Move unowned fields input check to
   // PasswordFormManager and only do it if formless form is the last interacted
   // form.
   if (!params.removed_unowned_fields.empty()) {
     // If formless password fields were removed, check that all of them had
     // user input.
-    if (![self allFieldsContainUserInput:params.removed_unowned_fields]) {
+    if (![self allFieldsContainUserInput:params.removed_unowned_fields
+                        fieldDataManager:driver->field_data_manager()]) {
       return;
     }
   }
 
-  auto fieldDataManager =
-      UniqueIDDataTabHelper::FromWebState(_webState)->GetFieldDataManager();
   // TODO(crbug.com/330909663): Handle multiple form removals in Password
   // Manager.
-  _passwordManager->OnPasswordFormRemoved(
-      [_driverHelper PasswordManagerDriver:frame], *fieldDataManager,
-      params.removed_forms.empty() ? FormRendererId()
-                                   : params.removed_forms[0]);
+  _passwordManager->OnPasswordFormRemoved(driver, driver->field_data_manager(),
+                                          params.removed_forms.empty()
+                                              ? FormRendererId()
+                                              : params.removed_forms[0]);
 }
 
 @end

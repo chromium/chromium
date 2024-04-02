@@ -4,39 +4,37 @@
 
 #import "components/password_manager/ios/password_form_helper.h"
 
-#include <stddef.h>
+#import <stddef.h>
 
-#include "base/apple/bundle_locations.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/test/ios/wait_util.h"
-#include "base/test/metrics/histogram_tester.h"
+#import "base/apple/bundle_locations.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
+#import "base/test/ios/wait_util.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/values.h"
-#include "components/autofill/core/browser/logging/log_manager.h"
-#include "components/autofill/core/common/form_data.h"
-#include "components/autofill/core/common/password_form_fill_data.h"
+#import "components/autofill/core/browser/logging/log_manager.h"
+#import "components/autofill/core/common/form_data.h"
+#import "components/autofill/core/common/password_form_fill_data.h"
 #import "components/autofill/ios/form_util/autofill_test_with_web_state.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
-#include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
-#import "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
-#include "components/password_manager/ios/account_select_fill_data.h"
-#include "components/password_manager/ios/password_manager_java_script_feature.h"
-#include "components/password_manager/ios/test_helpers.h"
-#include "components/ukm/ios/ukm_url_recorder.h"
-#include "components/ukm/test_ukm_recorder.h"
+#import "components/password_manager/ios/account_select_fill_data.h"
+#import "components/password_manager/ios/password_manager_java_script_feature.h"
+#import "components/password_manager/ios/test_helpers.h"
+#import "components/ukm/ios/ukm_url_recorder.h"
+#import "components/ukm/test_ukm_recorder.h"
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
-#include "ios/web/public/test/fakes/fake_web_client.h"
+#import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/gtest_mac.h"
+#import "services/metrics/public/cpp/ukm_builders.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
@@ -85,7 +83,7 @@ class PasswordFormHelperTest : public AutofillTestWithWebState {
 
   void SetUp() override {
     WebTestWithWebState::SetUp();
-    UniqueIDDataTabHelper::CreateForWebState(web_state());
+
     helper_ = [[PasswordFormHelper alloc] initWithWebState:web_state()];
     ukm::InitializeSourceUrlRecorderForWebState(web_state());
   }
@@ -114,11 +112,6 @@ class PasswordFormHelperTest : public AutofillTestWithWebState {
       return false;
     }
     DCHECK(main_frame);
-    SetUpForUniqueIds(main_frame);
-
-    if (!success) {
-      return false;
-    }
 
     // Run password forms search to set up unique IDs.
     __block bool complete = false;
@@ -228,8 +221,7 @@ TEST_F(PasswordFormHelperTest, FindPasswordFormsInView) {
     __block std::vector<FormData> forms;
     __block BOOL block_was_called = NO;
     [helper_ findPasswordFormsInFrame:GetMainFrame()
-                    completionHandler:^(const std::vector<FormData>& result,
-                                        uint32_t maxID) {
+                    completionHandler:^(const std::vector<FormData>& result) {
                       block_was_called = YES;
                       forms = result;
                     }];
@@ -424,6 +416,7 @@ TEST_F(PasswordFormHelperTest, FillPasswordIntoFormWithUserTypedUsername) {
   ExecuteJavaScript(
       @"document.getElementById('u1').value = 'typed@typed.com';");
   [helper_ updateFieldDataOnUserInput:username_field_id
+                              inFrame:GetMainFrame()
                            inputValue:@"typed@typed.com"];
 
   // Try to autofill the form.
@@ -504,7 +497,6 @@ TEST_F(PasswordFormHelperTest, HandleFormSubmittedMessage_InvalidFormat) {
 // loaded in the webstate.
 TEST_F(PasswordFormHelperTest, HandleFormSubmittedMessage_NoTrustedUrl) {
   FakeWebStateWithoutTrustedCommittedUrl web_state;
-  UniqueIDDataTabHelper::CreateForWebState(&web_state);
   PasswordFormHelper* helper =
       [[PasswordFormHelper alloc] initWithWebState:&web_state];
 

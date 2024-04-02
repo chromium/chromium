@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
 
 #import "base/feature_list.h"
-#import "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #import "components/breadcrumbs/core/breadcrumbs_status.h"
 #import "components/commerce/ios/browser/commerce_tab_helper.h"
 #import "components/favicon/core/favicon_service.h"
@@ -220,8 +219,6 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
   history::WebStateTopSitesObserver::CreateForWebState(
       web_state,
       ios::TopSitesFactory::GetForBrowserState(original_browser_state).get());
-
-  UniqueIDDataTabHelper::CreateForWebState(web_state);
 
   // Depends on favicon::WebFaviconDriver, must be created after it.
   SearchEngineTabHelper::CreateForWebState(web_state);

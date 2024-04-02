@@ -1758,16 +1758,6 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
   web::WebFrame* main_frame = WaitForMainFrame();
   ASSERT_TRUE(main_frame);
 
-  uint32_t next_available_id = 1;
-  autofill::FormUtilJavaScriptFeature::GetInstance()
-      ->SetUpForUniqueIDsWithInitialState(main_frame, next_available_id);
-
-  // Wait for `SetUpForUniqueIDsWithInitialState` to complete.
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-    return [ExecuteJavaScript(@"document[__gCrWeb.fill.ID_SYMBOL]") intValue] ==
-           static_cast<int>(next_available_id);
-  }));
-
   NSDictionary* expected = @{
     @"name" : @"TestForm",
     @"fields" : @[
@@ -1970,16 +1960,6 @@ TEST_F(AutofillControllerJsTest, FillActiveFormField) {
   web::WebFrame* main_frame = WaitForMainFrame();
   ASSERT_TRUE(main_frame);
 
-  uint32_t next_available_id = 1;
-  autofill::FormUtilJavaScriptFeature::GetInstance()
-      ->SetUpForUniqueIDsWithInitialState(main_frame, next_available_id);
-
-  // Wait for `SetUpForUniqueIDsWithInitialState` to complete.
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-    return [ExecuteJavaScript(@"document[__gCrWeb.fill.ID_SYMBOL]") intValue] ==
-           static_cast<int>(next_available_id);
-  }));
-
   // Simulate form parsing to set renderer IDs.
   ExecuteJavaScript(@"__gCrWeb.autofill.extractForms(0, true)");
 
@@ -2016,16 +1996,6 @@ TEST_F(AutofillControllerJsTest, FillSpecificFormField) {
 
   web::WebFrame* main_frame = WaitForMainFrame();
   ASSERT_TRUE(main_frame);
-
-  uint32_t next_available_id = 1;
-  autofill::FormUtilJavaScriptFeature::GetInstance()
-      ->SetUpForUniqueIDsWithInitialState(main_frame, next_available_id);
-
-  // Wait for `SetUpForUniqueIDsWithInitialState` to complete.
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-    return [ExecuteJavaScript(@"document[__gCrWeb.fill.ID_SYMBOL]") intValue] ==
-           static_cast<int>(next_available_id);
-  }));
 
   // Simulate form parsing to set renderer IDs.
   ExecuteJavaScript(@"__gCrWeb.autofill.extractForms(0, true)");

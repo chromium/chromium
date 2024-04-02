@@ -180,7 +180,6 @@ TEST_F(FormJsTest, AddForm) {
 
   web::WebFrame* main_frame = WaitForMainFrame();
   ASSERT_TRUE(main_frame);
-  SetUpForUniqueIds(main_frame);
   TrackFormMutations(main_frame);
 
   ExecuteJavaScript(
@@ -275,7 +274,6 @@ TEST_F(FormJsTest, RemoveForm) {
 
   web::WebFrame* main_frame = WaitForMainFrame();
   ASSERT_TRUE(main_frame);
-  SetUpForUniqueIds(main_frame);
   TrackFormMutations(main_frame);
 
   ExecuteJavaScript(@"var form1 = document.getElementById('form1');"
@@ -301,7 +299,6 @@ TEST_F(FormJsTest, RemoveFormlessPasswordFields) {
 
   web::WebFrame* main_frame = WaitForMainFrame();
   ASSERT_TRUE(main_frame);
-  SetUpForUniqueIds(main_frame);
   TrackFormMutations(main_frame);
 
   ExecuteJavaScript(@"var password = document.getElementById('pw');"

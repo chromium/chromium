@@ -94,19 +94,6 @@ class PasswordControllerJsTest : public PlatformTest {
     }
     DCHECK(main_frame);
 
-    constexpr uint32_t next_available_id = 1;
-    autofill::FormUtilJavaScriptFeature::GetInstance()
-        ->SetUpForUniqueIDsWithInitialState(main_frame, next_available_id);
-
-    // Wait for `SetUpForUniqueIDsWithInitialState` to complete.
-    success = WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-      return [ExecuteJavaScript(@"document[__gCrWeb.fill.ID_SYMBOL]")
-                 intValue] == int{next_available_id};
-    });
-    if (!success) {
-      return false;
-    }
-
     // Run password forms search to set up unique IDs.
     return FindPasswordForms() != nil;
   }

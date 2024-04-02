@@ -80,7 +80,6 @@ TEST_P(FormActivityTabHelperTest, TestObserverDocumentSubmitted) {
 
   WebFrame* main_frame = WaitForMainFrame();
   ASSERT_TRUE(main_frame);
-  SetUpForUniqueIds(main_frame);
 
   ASSERT_FALSE(observer_->submit_document_info());
   const std::string kTestFormName("form-name");
@@ -117,7 +116,6 @@ TEST_P(FormActivityTabHelperTest, TestFormSubmittedHook) {
 
   WebFrame* main_frame = WaitForMainFrame();
   ASSERT_TRUE(main_frame);
-  SetUpForUniqueIds(main_frame);
 
   ASSERT_FALSE(observer_->submit_document_info());
   const std::string kTestFormName("form-name");
@@ -156,7 +154,6 @@ TEST_P(FormActivityTabHelperTest,
 
   WebFrame* main_frame = WaitForMainFrame();
   ASSERT_TRUE(main_frame);
-  SetUpForUniqueIds(main_frame);
 
   ASSERT_FALSE(observer_->form_activity_info());
   // First call will set document.activeElement (which is usually set by user
@@ -191,7 +188,6 @@ TEST_P(FormActivityTabHelperTest, FormRemovalRegistered) {
 
   web::WebFrame* main_frame = WaitForMainFrame();
   ASSERT_TRUE(main_frame);
-  SetUpForUniqueIds(main_frame);
 
   ASSERT_FALSE(observer_->form_removal_info());
 
@@ -247,7 +243,6 @@ TEST_P(FormActivityTabHelperTest,
 
   web::WebFrame* main_frame = WaitForMainFrame();
   ASSERT_TRUE(main_frame);
-  SetUpForUniqueIds(main_frame);
 
   ASSERT_FALSE(observer_->form_removal_info());
   ASSERT_FALSE(observer_->form_activity_info());

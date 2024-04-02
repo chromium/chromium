@@ -50,11 +50,11 @@
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/common/features.h"
+#import "components/autofill/ios/common/field_data_manager_factory_ios.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
-#import "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #import "components/grit/components_resources.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
@@ -74,6 +74,7 @@
 
 using autofill::AutofillJavaScriptFeature;
 using autofill::FieldDataManager;
+using autofill::FieldDataManagerFactoryIOS;
 using autofill::FieldRendererId;
 using autofill::FormGlobalId;
 using autofill::FormHandlersJavaScriptFeature;
@@ -186,8 +187,6 @@ constexpr CGFloat kSuggestionIconWidth = 32;
   std::unique_ptr<autofill::FormActivityObserverBridge>
       _formActivityObserverBridge;
 
-  scoped_refptr<FieldDataManager> _fieldDataManager;
-
   // ID of the last Autofill query made. Used to discard outdated suggestions.
   autofill::FieldGlobalId _lastQueriedFieldID;
 }
@@ -221,10 +220,6 @@ constexpr CGFloat kSuggestionIconWidth = 32;
         autofill::prefs::kAutofillCreditCardEnabled, &_prefChangeRegistrar);
     _prefObserverBridge->ObserveChangesForPreference(
         autofill::prefs::kAutofillProfileEnabled, &_prefChangeRegistrar);
-
-    UniqueIDDataTabHelper* uniqueIDDataTabHelper =
-        UniqueIDDataTabHelper::FromWebState(_webState);
-    _fieldDataManager = uniqueIDDataTabHelper->GetFieldDataManager();
   }
   return self;
 }
@@ -287,8 +282,9 @@ constexpr CGFloat kSuggestionIconWidth = 32;
   GURL pageURL = _webState->GetLastCommittedURL();
   GURL frameOrigin =
       frame ? frame->GetSecurityOrigin() : pageURL.DeprecatedGetOriginAsURL();
-  scoped_refptr<autofill::FieldDataManager> fieldDataManager =
-      _fieldDataManager;
+
+  const scoped_refptr<FieldDataManager> fieldDataManager =
+      FieldDataManagerFactoryIOS::GetRetainable(frame);
   AutofillJavaScriptFeature::GetInstance()->FetchForms(
       frame, base::BindOnce(^(NSString* formJSON) {
         std::vector<autofill::FormData> formData;
@@ -403,14 +399,15 @@ constexpr CGFloat kSuggestionIconWidth = 32;
   completion(_mostRecentSuggestions, self);
 }
 
-- (void)updateFieldManagerForClearedIDs:(NSString*)jsonString {
+- (void)updateFieldManagerForClearedIDs:(NSString*)jsonString
+                                inFrame:(web::WebFrame*)frame {
   std::optional<std::vector<FieldRendererId>> clearingResults =
       autofill::ExtractIDs<FieldRendererId>(jsonString);
 
   if (clearingResults) {
     for (auto uniqueID : *clearingResults) {
-      _fieldDataManager->UpdateFieldDataMap(uniqueID, std::u16string(),
-                                            kAutofilledOnUserTrigger);
+      FieldDataManagerFactoryIOS::FromWebFrame(frame)->UpdateFieldDataMap(
+          uniqueID, std::u16string(), kAutofilledOnUserTrigger);
     }
   }
 }
@@ -517,7 +514,7 @@ constexpr CGFloat kSuggestionIconWidth = 32;
           if (!strongSelf) {
             return;
           }
-          [strongSelf updateFieldManagerForClearedIDs:jsonString];
+          [strongSelf updateFieldManagerForClearedIDs:jsonString inFrame:frame];
           suggestionHandledCompletionCopy();
         }));
 
@@ -601,7 +598,9 @@ constexpr CGFloat kSuggestionIconWidth = 32;
           return;
         }
         if (success) {
-          [strongSelf updateFieldManagerForSpecificField:field withValue:value];
+          [strongSelf updateFieldManagerForSpecificField:field
+                                                 inFrame:frame
+                                               withValue:value];
         }
         // Especially in test code, it is possible that the fill was not
         // initiated by selecting a suggestion. In this case the callback is
@@ -989,16 +988,23 @@ constexpr CGFloat kSuggestionIconWidth = 32;
     return;
   }
 
+  auto* driver =
+      autofill::AutofillDriverIOS::FromWebStateAndWebFrame(webState, frame);
+  if (!driver) {
+    return;
+  }
+
+  FieldDataManager* fieldDataManager =
+      FieldDataManagerFactoryIOS::FromWebFrame(frame);
+
   FormDataVector forms;
 
   bool success = autofill::ExtractFormsData(
       base::SysUTF8ToNSString(formData), true, base::UTF8ToUTF16(formName),
       webState->GetLastCommittedURL(), frame->GetSecurityOrigin(),
-      *_fieldDataManager, &forms);
+      *fieldDataManager, &forms);
 
-  auto* driver =
-      autofill::AutofillDriverIOS::FromWebStateAndWebFrame(webState, frame);
-  if (!driver || !success || forms.empty()) {
+  if (!success || forms.empty()) {
     return;
   }
 
@@ -1064,21 +1070,24 @@ constexpr CGFloat kSuggestionIconWidth = 32;
           return;
         if (success) {
           [strongSelf updateFieldManagerForSpecificField:uniqueFieldID
+                                                 inFrame:frame
                                                withValue:value];
         }
         suggestionHandledCompletionCopy();
       }));
 }
 
-- (void)updateFieldManagerWithFillingResults:(NSString*)jsonString {
+- (void)updateFieldManagerWithFillingResults:(NSString*)jsonString
+                                     inFrame:(web::WebFrame*)frame {
   std::map<uint32_t, std::u16string> fillingResults;
   if (autofill::ExtractFillingResults(jsonString, &fillingResults)) {
     for (auto& fillData : fillingResults) {
-      _fieldDataManager->UpdateFieldDataMap(FieldRendererId(fillData.first),
-                                            fillData.second,
-                                            kAutofilledOnUserTrigger);
+      FieldDataManagerFactoryIOS::FromWebFrame(frame)->UpdateFieldDataMap(
+          FieldRendererId(fillData.first), fillData.second,
+          kAutofilledOnUserTrigger);
     }
   }
+
   // TODO(crbug/1131038): Remove once the experiment is over.
   UMA_HISTOGRAM_BOOLEAN("Autofill.FormFillSuccessIOS", !fillingResults.empty());
 
@@ -1089,9 +1098,10 @@ constexpr CGFloat kSuggestionIconWidth = 32;
 }
 
 - (void)updateFieldManagerForSpecificField:(FieldRendererId)uniqueFieldID
+                                   inFrame:(web::WebFrame*)frame
                                  withValue:(const std::u16string&)value {
-  _fieldDataManager->UpdateFieldDataMap(uniqueFieldID, value,
-                                        kAutofilledOnUserTrigger);
+  FieldDataManagerFactoryIOS::FromWebFrame(frame)->UpdateFieldDataMap(
+      uniqueFieldID, value, kAutofilledOnUserTrigger);
 }
 
 // Sends the the |data| to |frame| to actually fill the data.
@@ -1107,7 +1117,8 @@ constexpr CGFloat kSuggestionIconWidth = 32;
         AutofillAgent* strongSelf = weakSelf;
         if (!strongSelf)
           return;
-        [strongSelf updateFieldManagerWithFillingResults:jsonString];
+        [strongSelf updateFieldManagerWithFillingResults:jsonString
+                                                 inFrame:frame];
         // It is possible that the fill was not initiated by selecting
         // a suggestion in this case the callback is nil.
         if (suggestionHandledCompletionCopy)

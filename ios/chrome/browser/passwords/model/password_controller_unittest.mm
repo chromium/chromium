@@ -26,7 +26,6 @@
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
-#import "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #import "components/password_manager/core/browser/leak_detection/mock_leak_detection_check_factory.h"
 #import "components/password_manager/core/browser/password_form_manager.h"
 #import "components/password_manager/core/browser/password_form_metrics_recorder.h"
@@ -252,7 +251,6 @@ class PasswordControllerTest : public PlatformTest {
     // predictions on.
     PasswordFormManager::set_wait_for_server_predictions_for_filling(false);
 
-    UniqueIDDataTabHelper::CreateForWebState(web_state());
     autofill::AutofillDriverIOSFactory::CreateForWebState(
         web_state(), &autofill_client_, /*bridge=*/nil, /*locale=*/"en");
 
@@ -293,29 +291,12 @@ class PasswordControllerTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
-  bool SetUpUniqueIDs() {
+  bool WaitForMainFrame() {
     autofill::FormUtilJavaScriptFeature* feature =
         autofill::FormUtilJavaScriptFeature::GetInstance();
-    __block web::WebFrame* main_frame = nullptr;
-    bool success =
-        WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-          main_frame =
-              feature->GetWebFramesManager(web_state())->GetMainWebFrame();
-          return main_frame != nullptr;
-        });
-    if (!success) {
-      return false;
-    }
-    DCHECK(main_frame);
-
-    constexpr uint32_t next_available_id = 1;
-    feature->SetUpForUniqueIDsWithInitialState(main_frame, next_available_id);
-
-    // Wait for `SetUpForUniqueIDsWithInitialState` to complete.
     return WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-      return
-          [ExecuteJavaScriptInFeatureWorld(@"document[__gCrWeb.fill.ID_SYMBOL]")
-              intValue] == int{next_available_id};
+      return feature->GetWebFramesManager(web_state())->GetMainWebFrame() !=
+             nullptr;
     });
   }
 
@@ -454,17 +435,17 @@ class PasswordControllerTest : public PlatformTest {
 
   void LoadHtml(NSString* html) {
     web::test::LoadHtml(html, web_state());
-    ASSERT_TRUE(SetUpUniqueIDs());
+    ASSERT_TRUE(WaitForMainFrame());
   }
 
   void LoadHtml(NSString* html, const GURL& url) {
     web::test::LoadHtml(html, url, web_state());
-    ASSERT_TRUE(SetUpUniqueIDs());
+    ASSERT_TRUE(WaitForMainFrame());
   }
 
   [[nodiscard]] bool LoadHtml(const std::string& html) {
     web::test::LoadHtml(base::SysUTF8ToNSString(html), web_state());
-    return SetUpUniqueIDs();
+    return WaitForMainFrame();
   }
 
   std::string BaseUrl() const {
@@ -731,14 +712,11 @@ TEST_F(PasswordControllerTest, DISABLED_FindPasswordFormsInView) {
     LoadHtml(data.html_string);
     __block std::vector<FormData> forms;
     __block BOOL block_was_called = NO;
-    __block uint32_t maxExtractedID;
     [passwordController_.sharedPasswordController.formHelper
         findPasswordFormsInFrame:GetWebFrame(/*is_main_frame=*/true)
-               completionHandler:^(const std::vector<FormData>& result,
-                                   uint32_t maxID) {
+               completionHandler:^(const std::vector<FormData>& result) {
                  block_was_called = YES;
                  forms = result;
-                 maxExtractedID = maxID;
                }];
     EXPECT_TRUE(
         WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool() {
@@ -751,7 +729,6 @@ TEST_F(PasswordControllerTest, DISABLED_FindPasswordFormsInView) {
     } else {
       ASSERT_TRUE(forms.empty());
     }
-    EXPECT_EQ(data.maxID, maxExtractedID);
   }
 }
 
@@ -1278,7 +1255,6 @@ class PasswordControllerTestSimple : public PlatformTest {
         {autofill::FormUtilJavaScriptFeature::GetInstance(),
          password_manager::PasswordManagerJavaScriptFeature::GetInstance()});
 
-    UniqueIDDataTabHelper::CreateForWebState(&web_state_);
     autofill::AutofillDriverIOSFactory::CreateForWebState(
         &web_state_, &autofill_client_, /*bridge=*/nil, /*locale=*/"en");
 
@@ -1517,10 +1493,8 @@ TEST_F(PasswordControllerTest, CheckAsyncSuggestions) {
     __block BOOL completion_handler_success = NO;
     __block BOOL completion_handler_called = NO;
 
-    FormRendererId form_id =
-        store_has_credentials ? FormRendererId(4) : FormRendererId(1);
-    FieldRendererId field_id =
-        store_has_credentials ? FieldRendererId(5) : FieldRendererId(2);
+    FormRendererId form_id = FormRendererId(1);
+    FieldRendererId field_id = FieldRendererId(2);
 
     FormSuggestionProviderQuery* form_query =
         [[FormSuggestionProviderQuery alloc]
@@ -1874,9 +1848,7 @@ TEST_F(PasswordControllerTest, SavingOnNavigateMainFrame) {
         } else {
           EXPECT_CALL(*weak_client_, PromptUserToSaveOrUpdatePassword).Times(0);
         }
-        form_id.value() += 3;
-        username_id.value() += 3;
-        password_id.value() += 3;
+
         web::FakeNavigationContext context;
         context.SetHasCommitted(has_commited);
         context.SetIsSameDocument(is_same_document);
@@ -1972,8 +1944,8 @@ TEST_F(PasswordControllerTest, DetectSubmissionOnRemovedForm) {
 
     std::string form_name = has_form_tag ? "login_form" : "";
     FormRendererId form_id(has_form_tag ? 1 : 0);
-    FieldRendererId username_id(has_form_tag ? 2 : 4);
-    FieldRendererId password_id(has_form_tag ? 3 : 5);
+    FieldRendererId username_id(has_form_tag ? 2 : 1);
+    FieldRendererId password_id(has_form_tag ? 3 : 2);
 
     SimulateUserTyping(form_name, form_id, "un", username_id, "user1",
                        mainFrameID);
@@ -1986,8 +1958,8 @@ TEST_F(PasswordControllerTest, DetectSubmissionOnRemovedForm) {
 
     std::vector<FieldRendererId> removed_ids;
     if (!has_form_tag) {
-      removed_ids.push_back(FieldRendererId(4));
-      removed_ids.push_back(FieldRendererId(5));
+      removed_ids.push_back(FieldRendererId(1));
+      removed_ids.push_back(FieldRendererId(2));
     }
 
     SimulateFormRemovalObserverSignal({form_id}, removed_ids);

@@ -4,12 +4,13 @@
 
 #import "components/password_manager/ios/ios_password_manager_driver.h"
 
-#include <string>
+#import <string>
 
-#include "base/hash/hash.h"
-#include "components/autofill/core/common/password_form_fill_data.h"
-#include "components/password_manager/core/browser/password_generation_frame_helper.h"
-#include "components/password_manager/core/browser/password_manager.h"
+#import "base/hash/hash.h"
+#import "components/autofill/core/common/password_form_fill_data.h"
+#import "components/autofill/ios/common/field_data_manager_factory_ios.h"
+#import "components/password_manager/core/browser/password_generation_frame_helper.h"
+#import "components/password_manager/core/browser/password_manager.h"
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
 
@@ -27,7 +28,9 @@ IOSPasswordManagerDriver::IOSPasswordManagerDriver(
       password_manager_(password_manager),
       id_(driver_id),
       cached_frame_id_(base::FastHash(web_frame->GetFrameId())),
-      frame_id_(web_frame->GetFrameId()) {
+      frame_id_(web_frame->GetFrameId()),
+      field_data_manager_(
+          autofill::FieldDataManagerFactoryIOS::GetRetainable(web_frame)) {
   password_generation_helper_ =
       std::make_unique<password_manager::PasswordGenerationFrameHelper>(
           password_manager_->GetClient(), this);

@@ -18,7 +18,6 @@
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
-#import "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -84,8 +83,6 @@ class PaymentRequestFullCardRequesterTest : public PlatformTest {
         autofill::AutofillJavaScriptFeature::GetInstance();
     web::ContentWorld content_world = feature->GetSupportedContentWorld();
     web_state()->SetWebFramesManager(content_world, std::move(frames_manager));
-
-    UniqueIDDataTabHelper::CreateForWebState(web_state());
 
     autofill_agent_ =
         [[AutofillAgent alloc] initWithPrefService:browser_state()->GetPrefs()

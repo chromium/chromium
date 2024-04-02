@@ -20,7 +20,6 @@
 #import "components/autofill/ios/form_util/child_frame_registrar.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
-#import "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #import "components/prefs/testing_pref_service.h"
 #import "ios/testing/embedded_test_server_handlers.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -91,9 +90,6 @@ class AutofillAcrossIframesTest : public AutofillTestWithWebState {
     autofill_manager_injector_ =
         std::make_unique<TestAutofillManagerInjector<TestAutofillManager>>(
             web_state());
-
-    // AutofillAgent init crashes without this.
-    UniqueIDDataTabHelper::CreateForWebState(web_state());
 
     // We need an AutofillAgent to exist or else the form will never get parsed.
     prefs_ = autofill::test::PrefServiceForTesting();

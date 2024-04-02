@@ -5,26 +5,25 @@
 #import "components/password_manager/ios/shared_password_controller.h"
 
 #import "base/memory/raw_ptr.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/test/metrics/histogram_tester.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
-#include "components/autofill/core/browser/test_browser_autofill_manager.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
-#include "components/autofill/core/common/form_data.h"
-#include "components/autofill/core/common/password_form_generation_data.h"
-#include "components/autofill/ios/browser/autofill_driver_ios_factory.h"
+#import "base/test/task_environment.h"
+#import "components/autofill/core/browser/autofill_test_utils.h"
+#import "components/autofill/core/browser/test_autofill_client.h"
+#import "components/autofill/core/browser/test_browser_autofill_manager.h"
+#import "components/autofill/core/browser/ui/popup_item_ids.h"
+#import "components/autofill/core/common/form_data.h"
+#import "components/autofill/core/common/password_form_generation_data.h"
+#import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/form_suggestion_provider_query.h"
-#include "components/autofill/ios/browser/test_autofill_manager_injector.h"
-#include "components/autofill/ios/form_util/form_activity_params.h"
-#include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
-#include "components/password_manager/core/browser/password_generation_frame_helper.h"
-#include "components/password_manager/core/browser/password_manager_interface.h"
-#include "components/password_manager/core/browser/stub_password_manager_client.h"
-#include "components/password_manager/core/browser/stub_password_manager_driver.h"
+#import "components/autofill/ios/browser/test_autofill_manager_injector.h"
+#import "components/autofill/ios/form_util/form_activity_params.h"
+#import "components/password_manager/core/browser/password_generation_frame_helper.h"
+#import "components/password_manager/core/browser/password_manager_interface.h"
+#import "components/password_manager/core/browser/stub_password_manager_client.h"
+#import "components/password_manager/core/browser/stub_password_manager_driver.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/ios/ios_password_manager_driver.h"
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
@@ -34,15 +33,15 @@
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
 #import "components/password_manager/ios/password_suggestion_helper.h"
 #import "components/password_manager/ios/shared_password_controller+private.h"
-#include "components/password_manager/ios/test_helpers.h"
+#import "components/password_manager/ios/test_helpers.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
-#include "ios/web/public/test/fakes/fake_web_frame.h"
+#import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "testing/gmock/include/gmock/gmock.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
 #define andCompareStringAtIndex(expected_string, index) \
@@ -198,7 +197,6 @@ class SharedPasswordControllerTest : public PlatformTest {
     controller_.delegate = delegate_;
     [suggestion_helper_ verify];
     [form_helper_ verify];
-    UniqueIDDataTabHelper::CreateForWebState(&web_state_);
 
     web_state_.SetCurrentURL(GURL(kTestURL));
   }
@@ -208,22 +206,28 @@ class SharedPasswordControllerTest : public PlatformTest {
 
     PasswordGenerationFrameHelper* password_generation_helper_ptr =
         &password_generation_helper_;
-    [[[driver_helper_ stub]
-        andReturnValue:OCMOCK_VALUE(password_generation_helper_ptr)]
-        PasswordGenerationHelper:static_cast<web::WebFrame*>(
-                                     [OCMArg anyPointer])];
+    OCMStub(
+        [driver_helper_ PasswordGenerationHelper:static_cast<web::WebFrame*>(
+                                                     [OCMArg anyPointer])])
+        .andReturn(password_generation_helper_ptr);
 
     EXPECT_CALL(password_manager_, GetClient)
         .WillRepeatedly(Return(&password_manager_client_));
+
+    // It's not possible to mock the driver, and it has to be non-null, so we
+    // have the mock DriverHelper return a real driver.
+    auto dummy_web_frame =
+        web::FakeWebFrame::CreateMainWebFrame(GURL(kTestURL));
+    dummy_driver_ = IOSPasswordManagerDriverFactory::GetRetainableDriver(
+        &web_state_, dummy_web_frame.get());
+    OCMStub([driver_helper_ PasswordManagerDriver:static_cast<web::WebFrame*>(
+                                                      [OCMArg anyPointer])])
+        .andReturn(dummy_driver_.get());
   }
 
  protected:
   void AddWebFrame(std::unique_ptr<web::WebFrame> frame,
                    id completion_handler) {
-    [[[form_helper_ expect] ignoringNonObjectArgs]
-        setUpForUniqueIDsWithInitialState:1
-                                  inFrame:frame.get()];
-
     OCMExpect([form_helper_ findPasswordFormsInFrame:frame.get()
                                    completionHandler:completion_handler]);
 
@@ -247,6 +251,7 @@ class SharedPasswordControllerTest : public PlatformTest {
   id form_helper_;
   id suggestion_helper_;
   id driver_helper_;
+  scoped_refptr<IOSPasswordManagerDriver> dummy_driver_;
   password_manager::StubPasswordManagerClient password_manager_client_;
   id delegate_;
   SharedPasswordController* controller_;
@@ -310,7 +315,6 @@ TEST_F(SharedPasswordControllerTest,
                                 /*is_main_frame=*/true, GURL(kTestURL));
   AddWebFrame(std::move(web_frame));
 
-  EXPECT_CALL(password_manager_, PropagateFieldDataManagerInfo);
   EXPECT_CALL(password_manager_, DidNavigateMainFrame(true));
   OCMExpect([suggestion_helper_ resetForNewPage]);
   web_state_.OnNavigationFinished(&navigation_context);
@@ -354,10 +358,6 @@ TEST_F(SharedPasswordControllerTest, NoFormsArePropagatedOnNonHTMLPageLoad) {
       web_frame_id, /*is_main_frame=*/true, GURL(kTestURL));
   web::WebFrame* frame = web_frame.get();
 
-  [[[form_helper_ expect] ignoringNonObjectArgs]
-      setUpForUniqueIDsWithInitialState:1
-                                inFrame:web_frame.get()];
-
   web_frames_manager_->AddWebFrame(std::move(web_frame));
 
   [[form_helper_ reject] findPasswordFormsInFrame:frame
@@ -371,18 +371,6 @@ TEST_F(SharedPasswordControllerTest, NoFormsArePropagatedOnNonHTMLPageLoad) {
 
   [suggestion_helper_ verify];
   [form_helper_ verify];
-}
-
-// Tests that new frames will trigger PasswordFormHelper to set up unique IDs.
-TEST_F(SharedPasswordControllerTest, FormHelperSetsUpUniqueIDsForNewFrame) {
-  auto web_frame =
-      web::FakeWebFrame::Create("dummy-frame-id",
-                                /*is_main_frame=*/true, GURL(kTestURL));
-  [[[form_helper_ expect] ignoringNonObjectArgs]
-      setUpForUniqueIDsWithInitialState:1
-                                inFrame:web_frame.get()];
-  OCMExpect([form_helper_ findPasswordFormsInFrame:web_frame.get()
-                                 completionHandler:[OCMArg any]]);
 }
 
 // Tests that suggestions are reported as unavailable for nonpassword forms.
@@ -922,7 +910,6 @@ class SharedPasswordControllerTestWithRealSuggestionHelper
 
     controller_.delegate = delegate_;
 
-    UniqueIDDataTabHelper::CreateForWebState(&web_state_);
     autofill::AutofillDriverIOSFactory::CreateForWebState(
         &web_state_, &autofill_client_, /*bridge=*/nil, /*locale=*/"en");
 
@@ -937,10 +924,6 @@ class SharedPasswordControllerTestWithRealSuggestionHelper
   }
 
   void AddWebFrame(std::unique_ptr<web::WebFrame> frame) {
-    [[[form_helper_ expect] ignoringNonObjectArgs]
-        setUpForUniqueIDsWithInitialState:1
-                                  inFrame:frame.get()];
-
     web_frames_manager_->AddWebFrame(std::move(frame));
   }
 
@@ -979,7 +962,6 @@ TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
   EXPECT_CALL(password_manager_, OnPasswordFormsRendered);
 
   [controller_ didFinishPasswordFormExtraction:{form}
-                               withMaxUniqueID:5
                          triggeredByFormChange:false
                                        inFrame:frame];
 
@@ -1049,7 +1031,6 @@ TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
   EXPECT_CALL(password_manager_, OnPasswordFormsRendered);
 
   [controller_ didFinishPasswordFormExtraction:{form}
-                               withMaxUniqueID:5
                          triggeredByFormChange:false
                                        inFrame:frame];
 
@@ -1205,7 +1186,6 @@ TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
   EXPECT_CALL(password_manager_, OnPasswordFormsRendered);
 
   [controller_ didFinishPasswordFormExtraction:{form}
-                               withMaxUniqueID:5
                          triggeredByFormChange:false
                                        inFrame:frame];
 
@@ -1243,10 +1223,6 @@ TEST_F(SharedPasswordControllerTest,
                                 /*is_main_frame=*/false, GURL(kTestURL));
   web::WebFrame* frame = web_frame.get();
 
-  [[[form_helper_ expect] ignoringNonObjectArgs]
-      setUpForUniqueIDsWithInitialState:1
-                                inFrame:frame];
-
   [[form_helper_ expect] findPasswordFormsInFrame:frame
                                 completionHandler:[OCMArg any]];
 
@@ -1272,7 +1248,7 @@ TEST_F(SharedPasswordControllerTest,
   ASSERT_TRUE(IsCrossOriginIframe(&web_state_, frame->IsMainFrame(),
                                   frame->GetSecurityOrigin()));
 
-  OCMExpect([driver_helper_ PasswordManagerDriver:frame]);
+  //  OCMExpect([driver_helper_ PasswordManagerDriver:frame]);
   EXPECT_CALL(password_manager_, OnIframeDetach).Times(1);
   web_frames_manager_->RemoveWebFrame(frame->GetFrameId());
 }
@@ -1404,10 +1380,6 @@ TEST_F(SharedPasswordControllerTest,
 
   OCMExpect([form_helper_ findPasswordFormsInFrame:frame
                                  completionHandler:[OCMArg any]]);
-
-  [[[form_helper_ expect] ignoringNonObjectArgs]
-      setUpForUniqueIDsWithInitialState:1
-                                inFrame:frame];
 
   web_frames_manager_->AddWebFrame(std::move(web_frame));
 

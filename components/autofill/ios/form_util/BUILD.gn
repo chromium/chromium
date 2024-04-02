@@ -17,8 +17,6 @@ source_set("form_util") {
     "form_activity_params.mm",
     "form_activity_tab_helper.h",
     "form_activity_tab_helper.mm",
-    "unique_id_data_tab_helper.h",
-    "unique_id_data_tab_helper.mm",
   ]
   deps = [
     ":form_util_feature",
@@ -202,7 +200,6 @@ source_set("unit_tests") {
     "form_activity_tab_helper_unittest.mm",
     "form_handlers_unittest.mm",
     "form_unittest.mm",
-    "unique_id_data_tab_helper_unittest.mm",
   ]
   deps = [
     ":child_frame_registrar",

@@ -29,7 +29,6 @@
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/test_autofill_manager_injector.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
-#import "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #import "components/sync_user_events/fake_user_event_service.h"
@@ -239,7 +238,6 @@ void FormStructureBrowserTest::SetUp() {
 
   // Create a PasswordController instance that will handle set up for renderer
   // ids.
-  UniqueIDDataTabHelper::CreateForWebState(web_state());
   password_controller_ =
       [[PasswordController alloc] initWithWebState:web_state()];
 
@@ -276,35 +274,17 @@ void FormStructureBrowserTest::TearDown() {
 
 bool FormStructureBrowserTest::LoadHtmlWithoutSubresourcesAndInitRendererIds(
     const std::string& html) {
-  bool success = web::test::LoadHtmlWithoutSubresources(
-      base::SysUTF8ToNSString(html), web_state());
-  if (!success) {
+  if (!web::test::LoadHtmlWithoutSubresources(base::SysUTF8ToNSString(html),
+                                              web_state())) {
     return false;
   }
 
   autofill::FormUtilJavaScriptFeature* feature =
       autofill::FormUtilJavaScriptFeature::GetInstance();
-
-  __block web::WebFrame* main_frame = nullptr;
-  success = WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+  return WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
     web::WebFramesManager* frames_manager =
         feature->GetWebFramesManager(web_state());
-    main_frame = frames_manager->GetMainWebFrame();
-    return main_frame != nullptr;
-  });
-  if (!success) {
-    return false;
-  }
-  DCHECK(main_frame);
-
-  uint32_t next_available_id = 1;
-  feature->SetUpForUniqueIDsWithInitialState(main_frame, next_available_id);
-
-  // Wait for `SetUpForUniqueIDsWithInitialState` to complete.
-  return WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-    return [web::test::ExecuteJavaScriptForFeature(
-               web_state(), @"document[__gCrWeb.fill.ID_SYMBOL]", feature)
-               intValue] == static_cast<int>(next_available_id);
+    return frames_manager->GetMainWebFrame() != nullptr;
   });
 }
 
