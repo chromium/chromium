@@ -31,7 +31,8 @@ mojom::CaptivePortalProblem GetProblemFromPortalState(
       return mojom::CaptivePortalProblem::kPortalSuspected;
     case network_config::mojom::PortalState::kPortal:
       return mojom::CaptivePortalProblem::kPortal;
-    case network_config::mojom::PortalState::kProxyAuthRequired:
+    case network_config::mojom::PortalState::kDeprecatedProxyAuthRequired:
+      NOTREACHED();
       return mojom::CaptivePortalProblem::kProxyAuthRequired;
     case network_config::mojom::PortalState::kNoInternet:
       return mojom::CaptivePortalProblem::kNoInternet;

@@ -862,18 +862,6 @@ suite('NetworkListItemTest', function() {
       assertFalse(!!listItem.$$('#sublabel').hasAttribute('active'));
     });
 
-    test('kPortalProxyAuth portalState show sign in description', async () => {
-      init();
-      initWithPortalState(PortalState.kProxyAuthRequired);
-      const getSublabel = () => {
-        const element = listItem.$$('#sublabel');
-        return element ? element.textContent.trim() : '';
-      };
-      assertEquals(getSublabel(), listItem.i18n('networkListItemSignIn'));
-      assertTrue(listItem.$$('#sublabel').classList.contains('warning'));
-      assertFalse(!!listItem.$$('#sublabel').hasAttribute('active'));
-    });
-
     test('kPortalSuspected portalState show sign in description', async () => {
       init();
       initWithPortalState(PortalState.kPortalSuspected);

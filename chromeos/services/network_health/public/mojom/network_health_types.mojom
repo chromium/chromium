@@ -94,7 +94,7 @@ struct Network {
   // minute period. See SignalStrengthStats for more details.
   [MinVersion=1] SignalStrengthStats? signal_strength_stats;
   // The URL used to identify a captive portal state, set when portal_state is
-  // kPortal, kPortalSuspected, or kProxyAuthRequired.
+  // kPortal or kPortalSuspected.
   [MinVersion=3] url.mojom.Url? portal_probe_url;
 };
 

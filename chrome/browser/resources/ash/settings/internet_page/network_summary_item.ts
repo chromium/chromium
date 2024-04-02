@@ -596,8 +596,7 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
 
   private isPortalState_(portalState: PortalState): boolean {
     return portalState === PortalState.kPortal ||
-        portalState === PortalState.kPortalSuspected ||
-        portalState === PortalState.kProxyAuthRequired;
+        portalState === PortalState.kPortalSuspected;
   }
 }
 

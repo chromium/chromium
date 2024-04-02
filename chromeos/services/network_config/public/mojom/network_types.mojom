@@ -121,7 +121,8 @@ enum PortalState {
   // The network is in a portal state with a redirect URL.
   kPortal,
   // A proxy requiring authentication is detected.
-  kProxyAuthRequired,
+  // Deprecated in M125. Proxy auth is decoupled for portal detection.
+  kDeprecatedProxyAuthRequired,
   // The network is connected but no internet is available and no proxy was
   // detected.
   kNoInternet,

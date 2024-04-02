@@ -434,9 +434,7 @@ void NetworkPortalDetectorImpl::DetectionCompleted(
         portal_state = NetworkState::PortalState::kPortal;
         break;
       case CAPTIVE_PORTAL_STATUS_PROXY_AUTH_REQUIRED:
-        // This case unused and largely orthogonal to captive portal detection.
-        // PortalState::kProxyAuthRequired should probably be deprecated.
-        // See b/207069182 and b/321958601 for details.
+        // This case is unused and is orthogonal to captive portal detection.
         portal_state = NetworkState::PortalState::kUnknown;
         break;
     }

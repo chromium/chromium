@@ -1192,8 +1192,7 @@ Polymer({
    */
   isPortalState_(portalState) {
     return portalState === PortalState.kPortal ||
-        portalState === PortalState.kPortalSuspected ||
-        portalState === PortalState.kProxyAuthRequired;
+        portalState === PortalState.kPortalSuspected;
   },
 
   /**

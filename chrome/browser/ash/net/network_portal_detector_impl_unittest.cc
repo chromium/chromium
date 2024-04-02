@@ -704,8 +704,8 @@ TEST_F(NetworkPortalDetectorImplTest, ProxyAuthRequired) {
   SetConnectedWithProxy(kStubWireless1);
   EXPECT_EQ(State::STATE_CHECKING_FOR_PORTAL, state());
 
-  // A 407 response does not set the kProxyAuthRequired state or trigger
-  // additional portal detection.
+  // A 407 response does not set a portal state or trigger additional portal
+  // detection.
   CompleteURLFetch(net::OK, /*status_code=*/407, /*content_length=*/0, nullptr);
   EXPECT_EQ(State::STATE_IDLE, state());
 

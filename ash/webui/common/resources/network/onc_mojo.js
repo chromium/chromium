@@ -100,8 +100,6 @@ export class OncMojo {
         return 'PortalSuspected';
       case PortalState.kPortal:
         return 'Portal';
-      case PortalState.kProxyAuthRequired:
-        return 'ProxyAuthRequired';
       case PortalState.kNoInternet:
         return 'NoInternet';
     }
@@ -1233,7 +1231,6 @@ export class OncMojo {
         return false;
       case PortalState.kPortalSuspected:
       case PortalState.kPortal:
-      case PortalState.kProxyAuthRequired:
       case PortalState.kNoInternet:
         return true;
     }

@@ -83,11 +83,12 @@ std::optional<std::u16string> GetPortalStateSubtext(
     case PortalState::kPortalSuspected:
       [[fallthrough]];
     case PortalState::kPortal:
-      [[fallthrough]];
-    case PortalState::kProxyAuthRequired:
       // Use 'signin to network' for portal and proxy auth required states.
       return l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_NETWORK_STATUS_SIGNIN);
+    case PortalState::kDeprecatedProxyAuthRequired:
+      NOTREACHED();
+      return std::nullopt;
   }
 }
 

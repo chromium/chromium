@@ -7972,8 +7972,7 @@ ChromeContentBrowserClient::GetAlternativeErrorPageOverrideInfo(
     auto alternative_error_page_override_info =
         content::mojom::AlternativeErrorPageOverrideInfo::New();
     bool is_portal_state = portal_state == PortalState::kPortal ||
-                           portal_state == PortalState::kPortalSuspected ||
-                           portal_state == PortalState::kProxyAuthRequired;
+                           portal_state == PortalState::kPortalSuspected;
     // Use the alternative error page dictionary to provide additional
     // suggestions in the default error page.
     alternative_error_page_override_info->alternative_error_page_params.Set(

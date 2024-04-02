@@ -363,32 +363,6 @@ suite('<settings-internet-detail-subpage>', () => {
       assertTrue(signinButton.disabled);
     });
 
-    test('WiFi in a proxy-auth portalState', async () => {
-      init();
-      mojoApi.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
-      const wifiNetwork = getManagedProperties(NetworkType.kWiFi, 'wifi_user');
-      wifiNetwork.source = OncSource.kUser;
-      wifiNetwork.connectable = true;
-      wifiNetwork.connectionState = ConnectionStateType.kPortal;
-      wifiNetwork.portalState = PortalState.kProxyAuthRequired;
-
-      mojoApi.setManagedPropertiesForTest(wifiNetwork);
-
-      internetDetailPage.init('wifi_user_guid', 'WiFi', 'wifi_user');
-      await flushTasks();
-      const networkStateText =
-          internetDetailPage.shadowRoot!.querySelector('#networkState');
-      assertTrue(!!networkStateText);
-      assertTrue(networkStateText.hasAttribute('warning'));
-      assertEquals(
-          internetDetailPage.i18n('networkListItemSignIn'),
-          networkStateText.textContent!.trim());
-      const signinButton = getButton('signinButton');
-      assertTrue(!!signinButton);
-      assertFalse(signinButton.hidden);
-      assertFalse(signinButton.disabled);
-    });
-
     test('Hidden toggle enabled', async () => {
       init();
       mojoApi.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
