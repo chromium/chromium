@@ -280,6 +280,10 @@ class MetaBuildWrapper:
     subp.set_defaults(func=self.CmdIsolateEverything)
     subp.add_argument('path',
                       help='path build was generated into')
+    subp.add_argument('--write-ide-json',
+                      action='store_true',
+                      help='Write project target information to a file at '
+                      'project.json in the build dir.')
     subp = subps.add_parser('isolate',
                             description='Generate the .isolate files for a '
                                         'given binary.')
@@ -490,7 +494,7 @@ class MetaBuildWrapper:
     return 0
 
   def CmdIsolateEverything(self):
-    vals = self.Lookup()
+    vals = self.GetConfig()
     return self.RunGNGenAllIsolates(vals)
 
   def CmdHelp(self):
