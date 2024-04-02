@@ -11,10 +11,12 @@ import {AppManagementUserAction} from 'chrome://resources/cr_components/app_mana
 import {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
 import {createBoolPermission, createTriStatePermission, getBoolPermissionValue, getTriStatePermissionValue, isBoolValue, isTriStateValue} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {getPermission, getPermissionValueBool, recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './permission_item.html.js';
 import {AppManagementToggleRowElement} from './toggle_row.js';
+import {getPermissionDescriptionString} from './util.js';
 
 export class AppManagementPermissionItemElement extends PolymerElement {
   static get is() {
@@ -69,6 +71,14 @@ export class AppManagementPermissionItemElement extends PolymerElement {
         computed: 'isDisabled_(app, permissionType)',
         reflectToAttribute: true,
       },
+
+      /**
+       * When true, the permission state is described in the sublabel.
+       */
+      showPermissionDescriptionString_: {
+        type: Boolean,
+        computed: 'computeShowPermissionDescriptionString_(permissionType)',
+      },
     };
   }
 
@@ -79,7 +89,7 @@ export class AppManagementPermissionItemElement extends PolymerElement {
   private syncPermissionManually: boolean;
   private available_: boolean;
   private disabled_: boolean;
-
+  private showPermissionDescriptionString_: boolean;
 
   override ready(): void {
     super.ready();
@@ -120,6 +130,28 @@ export class AppManagementPermissionItemElement extends PolymerElement {
     }
 
     return this.isManaged_(app, permissionType);
+  }
+
+  private computeShowPermissionDescriptionString_(
+      permissionType: PermissionTypeIndex): boolean {
+    if (permissionType === undefined) {
+      return false;
+    }
+
+    switch (PermissionType[permissionType]) {
+      case PermissionType.kCamera:
+      case PermissionType.kLocation:
+      case PermissionType.kMicrophone:
+      case PermissionType.kContacts:
+      case PermissionType.kStorage:
+        return loadTimeData.getBoolean('privacyHubAppPermissionsV2Enabled');
+      case PermissionType.kNotifications:
+      case PermissionType.kPrinting:
+      case PermissionType.kFileHandling:
+        return false;
+      default:
+        assertNotReached();
+    }
   }
 
   private getValue_(
@@ -270,6 +302,12 @@ export class AppManagementPermissionItemElement extends PolymerElement {
       default:
         assertNotReached();
     }
+  }
+
+  private getPermissionDescriptionString_(
+      app: App|undefined,
+      permissionType: PermissionTypeIndex|undefined): string {
+    return getPermissionDescriptionString(app, permissionType);
   }
 }
 

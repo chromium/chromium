@@ -25,5 +25,10 @@
       value="[[getValue_(app, permissionType)]]"
       aria-description="Click to toggle [[permissionLabel]] permissions."
       i18n-aria-descrirption="Label for toggle button to change [[permissionLabel]] permissions.">
+    <template is="dom-if" if="[[showPermissionDescriptionString_]]">
+      <div id="permissionDescription" slot="description">
+        [[getPermissionDescriptionString_(app, permissionType)]]
+      </div>
+    </template>
   </app-management-toggle-row>
 </template>

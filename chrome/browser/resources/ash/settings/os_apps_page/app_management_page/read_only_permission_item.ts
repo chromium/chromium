@@ -4,14 +4,15 @@
 
 import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_indicator.js';
 
-import {App, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
-import {getPermission, getPermissionValueAsTriState} from 'chrome://resources/cr_components/app_management/util.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
+import {getPermission} from 'chrome://resources/cr_components/app_management/util.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './read_only_permission_item.html.js';
+import {getPermissionDescriptionString} from './util.js';
 
 const AppManagementReadOnlyPermissionItemElementBase =
     I18nMixin(PolymerElement);
@@ -76,28 +77,7 @@ export class AppManagementReadOnlyPermissionItemElement extends
   private getPermissionDescriptionString_(
       app: App|undefined,
       permissionType: PermissionTypeIndex|undefined): string {
-    if (app === undefined || permissionType === undefined) {
-      return '';
-    }
-
-    const permission = getPermission(app, permissionType);
-    assert(permission);
-
-    const value = getPermissionValueAsTriState(app, permissionType);
-
-    if (value === TriState.kAllow && permission.details) {
-      return this.i18n(
-          'appManagementPermissionAllowedWithDetails', permission.details);
-    }
-
-    switch (value) {
-      case TriState.kAllow:
-        return this.i18n('appManagementPermissionAllowed');
-      case TriState.kBlock:
-        return this.i18n('appManagementPermissionDenied');
-      case TriState.kAsk:
-        return this.i18n('appManagementPermissionAsk');
-    }
+    return getPermissionDescriptionString(app, permissionType);
   }
 
   private isManaged_(

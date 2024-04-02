@@ -22,11 +22,10 @@
     </template>
     <div class="vertical-align">
       <div id="label">[[label]]</div>
-      <template is="dom-if" if="[[description]]">
-          <div id="description" class="secondary-text">
-            [[description]]
-          </div>
-      </template>
+      <div id="description" class="secondary-text">
+        [[description]]
+        <slot name="description"></slot>
+      </div>
     </div>
   </div>
 </div>
