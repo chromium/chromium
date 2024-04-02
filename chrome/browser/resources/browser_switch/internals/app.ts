@@ -4,6 +4,8 @@
 
 import '../strings.m.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {addWebUiListener} from 'chrome://resources/js/cr.js';

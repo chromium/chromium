@@ -1,4 +1,19 @@
 <style>
+  :host {
+    color: var(--cr-primary-text-color);
+    line-height: 154%;
+    overflow: hidden;
+    user-select: text;
+  }
+
+  html {
+    height: 100%;
+  }
+
+  body {
+    margin: 0;
+  }
+
   ul {
     list-style-type: none;
     margin: 0;
@@ -16,15 +31,27 @@
   }
 
   th {
-    background: black;
-    color: white;
+    background: var(--cr-card-background-color);
+    color: var(--cr-primary-text-color);
   }
 
   th,
   td {
-    border: 1px solid black;
+    border: 1px solid var(--cr-primary-text-color);
     padding: 6px 10px;
     text-align: center;
+  }
+
+  label {
+    margin: 10px 0;
+  }
+
+  h2 {
+    width: max-content;
+  }
+
+  a[href] {
+    color: var(--cr-link-color);
   }
 
   .url {
@@ -43,7 +70,7 @@
   }
 
   .policy-prop {
-    background-color: rgba(175, 184, 193, 0.2);
+    background-color: var(--mwb-background-color);
     color: rgb(36, 41, 47);
   }
 
@@ -76,7 +103,47 @@
   }
 
   .container {
-    padding: 10px;
+    margin: 24px;
+  }
+
+  .row-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .url-card-container, .cr-left-card-container, .card {
+    box-shadow: var(--cr-card-shadow);
+    background-color: var(--cr-card-background-color);
+    border-radius: var(--cr-card-border-radius);
+    display: flex;
+    flex-direction: column;
+    padding: var(--cr-section-padding);
+    margin-bottom: 24px;
+    margin-right: 5px;
+  }
+
+  .url-card-container {
+    flex-basis: calc(276px / var(--cr-centered-card-width-percentage));
+    max-width: 276px;
+  }
+
+  .cr-left-card-container {
+    flex-basis: calc(500px / var(--cr-centered-card-width-percentage));
+    min-width: 300px;
+    max-width: 476px;
+  }
+
+  .card {
+    flex-basis: calc(var(--cr-centered-card-max-width)
+    / var(--cr-centered-card-width-percentage));
+    justify-content: center;
+    align-items: center;
+  }
+
+  .card-text {
+    margin-inline-end: 24px;
+    margin-inline-start: 24px;
   }
 </style>
 
@@ -89,153 +156,151 @@
 </cr-toolbar>
 
 <div class="container">
-  <p>
-    $i18n{switchInternalDescription}
-  </p>
+  <div class="card">
+    <p class="card-text">
+      $i18n{switchInternalDescription}
+    </p>
+  </div>
 </div>
-<hr></hr>
 
-<section class="container" hidden$="[[isBrowserSwitcherEnabled_]]">
-  <h2>$i18n{nothingShown}</h2>
-
-  <p>
-    $i18nRaw{switcherDisabled}
-  </p>
-</section>
-
-<section class="container" hidden$="[[!isBrowserSwitcherEnabled_]]">
-  <section>
-    <h2>$i18n{urlCheckerTitle}</h2>
-
-    <label>
-      $i18n{urlCheckerDesc}
-      <input
-        type="text"
-        value="{{urlCheckerInput_::input}}"
-        placeholder="http://example.com/"
-      ></input>
-    </label>
-
-    <ul>
-      <template is="dom-repeat" items="[[urlCheckerOutput_]]">
-        <li>[[item]]</li>
-      </template>
-    </ul>
-  </section>
-  <hr></hr>
-
-  <section>
-    <h2 class="tooltip">
-      $i18n{xmlTitle}
-      <span class="right">
-        $i18n{xmlDesc}
-      </span>
-    </h2>
-
-    <table>
-      <tr>
-        <th>$i18n{xmlSource}</th>
-        <th>URL</th>
-      </tr>
-      <template is="dom-repeat" items="[[xmlSiteLists_]]">
-        <tr>
-          <td>[[item.policyName]]</td>
-          <td class="url">[[item.url]]</td>
-        </tr>
-      </template>
-    </table>
-
-    <template is="dom-if" if="[[xmlSiteLists_.length]]">
-      <p>
-        <template is="dom-if" if="[[!lastFetch_]]">
-          $i18n{sitelistNotFetched}
-        </template>
-        <template is="dom-if" if="[[lastFetch_]]">
-          [[getXmlSitelistsLastDownloadLabel()]]
-        </template>
-      </p>
-      <template is="dom-if" if="[[nextFetch_]]">
-        <p>[[getXmlSitelistsNextDownloadLabel()]]</p>
-      </template>
-      <p>
-        <button on-click="refreshXml">$i18n{sitelistDownloadButton}</button>
-      </p>
-    </template>
-  </section>
-
-  <hr></hr>
-
-  <section>
-    <h2 class="tooltip">
-      $i18n{forceOpenTitle}
-      <span class="right">
-        $i18n{forceOpenDescription}
-      </span>
-    </h2>
-    <h4>
-      $i18nRaw{forceOpenParagraph1}
-    </h4>
+<div class="container" hidden$="[[isBrowserSwitcherEnabled_]]">
+  <section class="card">
+    <h2>$i18n{nothingShown}</h2>
 
     <p>
-      $i18n{forceOpenParagraph2}
+      $i18nRaw{switcherDisabled}
     </p>
-    <table>
-      <tr>
-        <th>$i18n{forceOpenTableColumnRule}</th>
-        <th>$i18n{forceOpenTableColumnOpensIn}</th>
-        <th>$i18n{forceOpenTableColumnSource}</th>
-      </tr>
-      <template is="dom-repeat" items="[[siteListRules_]]">
+  </section>
+</div>
+
+<div class="container" hidden$="[[!isBrowserSwitcherEnabled_]]">
+  <div class="row-container">
+    <section class="url-card-container">
+      <h2>$i18n{urlCheckerTitle}</h2>
+
+      <label>
+        $i18n{urlCheckerDesc}
+      </label>
+      <label>
+        <cr-input
+          type="text"
+          value="{{urlCheckerInput_::input}}"
+          placeholder="http://example.com/">
+        </cr-input>
+      </label>
+
+      <ul>
+        <template is="dom-repeat" items="[[urlCheckerOutput_]]">
+          <li>[[item]]</li>
+        </template>
+      </ul>
+    </section>
+    <section class="cr-left-card-container">
+      <h2 class="tooltip">
+        $i18n{xmlTitle}
+          <span class="right">
+            $i18n{xmlDesc}
+          </span>
+      </h2>
+
+      <table>
         <tr>
-          <td class="url">[[item.rule]]</td>
-          <td>[[getRuleBrowserName(item.rule)]]</td>
-          <td>
-            <span class="tooltip">
-              [[item.rulesetName]]
+          <th>$i18n{xmlSource}</th>
+          <th>URL</th>
+        </tr>
+        <template is="dom-repeat" items="[[xmlSiteLists_]]">
+            <tr>
+              <td>[[item.policyName]]</td>
+              <td class="url">[[item.url]]</td>
+            </tr>
+        </template>
+      </table>
+
+      <template is="dom-if" if="[[xmlSiteLists_.length]]">
+        <p>
+          <template is="dom-if" if="[[!lastFetch_]]">
+            $i18n{sitelistNotFetched}
+          </template>
+          <template is="dom-if" if="[[lastFetch_]]">
+            [[getXmlSitelistsLastDownloadLabel()]]
+          </template>
+        </p>
+        <template is="dom-if" if="[[nextFetch_]]">
+          <p>[[getXmlSitelistsNextDownloadLabel()]]</p>
+        </template>
+        <p>
+          <cr-button on-click="refreshXml">
+            $i18n{sitelistDownloadButton}
+          </cr-button>
+        </p>
+      </template>
+    </section>
+    <section class="cr-left-card-container">
+      <h2 class="tooltip">
+        $i18n{forceOpenTitle}
+        <span class="right">
+          $i18n{forceOpenDescription}
+        </span>
+      </h2>
+      <h4>
+        $i18nRaw{forceOpenParagraph1}
+      </h4>
+
+      <p>
+        $i18n{forceOpenParagraph2}
+      </p>
+      <table>
+        <tr>
+          <th>$i18n{forceOpenTableColumnRule}</th>
+          <th>$i18n{forceOpenTableColumnOpensIn}</th>
+          <th>$i18n{forceOpenTableColumnSource}</th>
+        </tr>
+        <template is="dom-repeat" items="[[siteListRules_]]">
+          <tr>
+            <td class="url">[[item.rule]]</td>
+            <td>[[getRuleBrowserName(item.rule)]]</td>
+            <td>
+              <span class="tooltip">
+                [[item.rulesetName]]
               <span class="right">
                 [[getPolicyFromRuleset(item.rulesetName)]]
               </span>
-            </span>
-          </td>
-        </tr>
-      </template>
-    </table>
-  </section>
-
-  <hr></hr>
-
-  <section>
-    <h2 class="tooltip">
-      $i18n{ignoreTitle}
-      <span class="right">
-        $i18n{ignoreDescription}
-      </span>
-    </h2>
-    <h4>
-      $i18nRaw{ignoreParagraph1}
-    </h4>
-
-    <p>
+              </span>
+            </td>
+          </tr>
+        </template>
+      </table>
+    </section>
+    <section class="cr-left-card-container">
+      <h2 class="tooltip">
+        $i18n{ignoreTitle}
+        <span class="right">
+          $i18n{ignoreDescription}
+        </span>
+      </h2>
+      <h4>
+        $i18nRaw{ignoreParagraph1}
+      </h4>
       <p>[[getIgnoreUrlMatchingLabel()]]</p>
-    </p>
-    <table>
-      <tr>
-        <th>$i18n{ignoreTableColumnRule}</th>
-        <th>$i18n{ignoreTableColumnSource}</th>
-      </tr>
-      <template is="dom-repeat" items="[[greyListRules_]]">
+      <table>
         <tr>
-          <td class="url">[[item.rule]]</td>
-          <td>
-            <span class="tooltip">
-              [[item.rulesetName]]
-              <span class="right"
-                >[[getPolicyFromRuleset(item.rulesetName)]]</span
-              >
-            </span>
-          </td>
+          <th>$i18n{ignoreTableColumnRule}</th>
+          <th>$i18n{ignoreTableColumnSource}</th>
         </tr>
-      </template>
-    </table>
-  </section>
-</section>
+        <template is="dom-repeat" items="[[greyListRules_]]">
+          <tr>
+            <td class="url">[[item.rule]]</td>
+            <td>
+              <span class="tooltip">
+                [[item.rulesetName]]
+                <span class="right">
+                  [[getPolicyFromRuleset(item.rulesetName)]]
+                </span>
+              </span>
+            </td>
+          </tr>
+        </template>
+      </table>
+    </section>
+  </div>
+</div>
