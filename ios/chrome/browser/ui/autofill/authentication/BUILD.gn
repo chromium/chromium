@@ -54,6 +54,7 @@ source_set("card_unmask_authentication_selection_coordinator") {
   ]
   deps = [
     ":card_unmask_authentication_selection_mediator",
+    ":card_unmask_authentication_selection_view_controller",
     "//components/autofill/core/browser",
     "//ios/chrome/browser/autofill/model/bottom_sheet",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
@@ -101,4 +102,30 @@ source_set("otp_input_dialog_mediator_unittest") {
     "//testing/gtest:gtest",
     "//third_party/ocmock",
   ]
+}
+
+source_set("card_unmask_authentication_selection_view_controller") {
+  sources = [
+    "card_unmask_authentication_selection_view_controller.h",
+    "card_unmask_authentication_selection_view_controller.mm",
+  ]
+  deps = [
+    "//components/strings:components_strings_grit",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/ui/autofill/cells",
+    "//ios/chrome/common/ui/colors",
+    "//ui/base",
+  ]
+  public_deps = [
+    ":card_unmask_authentication_selection_consumer",
+    ":card_unmask_authentication_selection_mutator",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("card_unmask_authentication_selection_mutator") {
+  sources = [ "card_unmask_authentication_selection_mutator.h" ]
 }
