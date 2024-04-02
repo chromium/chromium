@@ -32,6 +32,7 @@
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_utils.h"
+#include "components/commerce/core/metrics/metrics_utils.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/strings/grit/components_strings.h"
@@ -385,6 +386,9 @@ void CommerceUiTabHelper::OnPriceInsightsIconClicked() {
       base::UmaHistogramBoolean(
           "Commerce.PriceInsights.SidePanelOpenWithMultipleCatalogs",
           price_insights_info_->has_multiple_catalogs);
+      commerce::metrics::RecordShoppingActionUKM(
+          web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId(),
+          commerce::metrics::ShoppingAction::kPriceInsightsOpened);
     }
   }
   RecordPriceInsightsIconMetrics(true);

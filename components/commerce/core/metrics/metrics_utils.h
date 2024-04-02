@@ -69,7 +69,11 @@ enum class ShoppingFeatureIneligibilityReason {
 
 // The possible actions that user can take on a shopping page. These must be
 // kept in sync with Shopping.ShoppingActions in ukm.xml.
-enum class ShoppingAction { kDiscountCopied = 0, kDiscountOpened = 1 };
+enum class ShoppingAction {
+  kDiscountCopied = 0,
+  kDiscountOpened = 1,
+  kPriceInsightsOpened = 2,
+};
 
 // Record the state of a PDP for a navigation.
 void RecordPDPMetrics(optimization_guide::OptimizationGuideDecision decision,

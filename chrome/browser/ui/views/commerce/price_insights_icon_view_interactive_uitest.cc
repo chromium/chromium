@@ -20,9 +20,11 @@
 #include "components/commerce/core/test_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/search/ntp_features.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/base/interaction/interactive_test.h"
 
 namespace {
@@ -153,6 +155,7 @@ IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewInteractiveTest,
                        SidePanelShownOnPress) {
   EXPECT_CALL(*mock_shopping_service_, GetProductInfoForUrl);
   EXPECT_CALL(*mock_shopping_service_, GetPriceInsightsInfoForUrl);
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   RunTestSequence(
       InstrumentTab(kShoppingTab),
@@ -167,6 +170,15 @@ IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewInteractiveTest,
       // Click on the action chip again to close the side panel
       PressButton(kPriceInsightsChipElementId),
       WaitForHide(kSidePanelElementId), FlushEvents());
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::Shopping_ShoppingAction::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::Shopping_ShoppingAction::kPriceInsightsOpenedName, 1);
+  ukm_recorder.ExpectEntrySourceHasUrl(
+      entries[0], embedded_test_server()->GetURL(kShoppingURL));
 }
 
 IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewInteractiveTest,
