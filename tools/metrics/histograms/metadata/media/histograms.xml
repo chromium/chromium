@@ -2398,146 +2398,30 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Media.EME.CdmStorageDatabaseSQLiteError.AlterDatabaseForFileSize"
+    name="Media.EME.CdmStorageDatabaseSQLiteError.{CdmDatabaseOperation}"
     enum="SqliteLoggedResultCode" expires_after="2025-02-27">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
-    This UMA records SQLite specific errors that occur when altering the Cdm
-    Storage Database to add the column file_size. This UMA is recorded on every
-    error for this operation.
-  </summary>
-</histogram>
-
-<histogram
-    name="Media.EME.CdmStorageDatabaseSQLiteError.AlterDatabaseForLastModified"
-    enum="SqliteLoggedResultCode" expires_after="2025-02-27">
-  <owner>vpasupathy@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    This UMA records SQLite specific errors that occur when altering the Cdm
-    Storage Database to add the column last_modified. This UMA is recorded on
-    every error for this operation.
-  </summary>
-</histogram>
-
-<histogram name="Media.EME.CdmStorageDatabaseSQLiteError.ClearDatabase"
-    enum="SqliteLoggedResultCode" expires_after="2025-02-27">
-  <owner>vpasupathy@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    This UMA records SQLite specific errors that occur when clearing the Cdm
-    Storage Database. This UMA is recorded on every error for this operation.
-  </summary>
-</histogram>
-
-<histogram name="Media.EME.CdmStorageDatabaseSQLiteError.DeleteFile"
-    enum="SqliteLoggedResultCode" expires_after="2025-02-27">
-  <owner>vpasupathy@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    This UMA records SQLite specific errors that occur when deleting a singular
-    file in the Cdm Storage Database. This UMA is recorded on every error for
+    This UMA records SQLite specific errors that occur when executing the
+    operation {CdmDatabaseOperation}. This UMA is recorded on every error for
     this operation.
   </summary>
-</histogram>
-
-<histogram name="Media.EME.CdmStorageDatabaseSQLiteError.DeleteForStorageKey"
-    enum="SqliteLoggedResultCode" expires_after="2025-02-27">
-  <owner>vpasupathy@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    This UMA records SQLite specific errors that occur when deleting multiple
-    files for a single storage key in the Cdm Storage Database. This UMA is
-    recorded on every error for this operation.
-  </summary>
-</histogram>
-
-<histogram name="Media.EME.CdmStorageDatabaseSQLiteError.DeleteForTimeFrame"
-    enum="SqliteLoggedResultCode" expires_after="2025-02-27">
-  <owner>vpasupathy@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    This UMA records SQLite specific errors that occur when deleting multiple
-    files for a specified time frame in the Cdm Storage Database. This UMA is
-    recorded on every error for this operation.
-  </summary>
-</histogram>
-
-<histogram name="Media.EME.CdmStorageDatabaseSQLiteError.DeleteIfEmptyDatabase"
-    enum="SqliteLoggedResultCode" expires_after="2025-02-27">
-  <owner>vpasupathy@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    This UMA records SQLite specific errors that occur when getting the count of
-    entries in the Cdm Storage Database. This UMA is recorded on every error for
-    this operation.
-  </summary>
-</histogram>
-
-<histogram name="Media.EME.CdmStorageDatabaseSQLiteError.GetSizeForFile"
-    enum="SqliteLoggedResultCode" expires_after="2025-02-27">
-  <owner>vpasupathy@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    This UMA records SQLite specific errors that occur when getting the sum()
-    size of a file in the Cdm Storage Database. This UMA is recorded on every
-    error for this operation.
-  </summary>
-</histogram>
-
-<histogram name="Media.EME.CdmStorageDatabaseSQLiteError.GetSizeForStorageKey"
-    enum="SqliteLoggedResultCode" expires_after="2025-02-27">
-  <owner>vpasupathy@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    This UMA records SQLite specific errors that occur when getting the sum()
-    size of files for a single storage key and time frame in the Cdm Storage
-    Database. This UMA is recorded on every error for this operation.
-  </summary>
-</histogram>
-
-<histogram name="Media.EME.CdmStorageDatabaseSQLiteError.GetSizeForTimeFrame"
-    enum="SqliteLoggedResultCode" expires_after="2025-02-27">
-  <owner>vpasupathy@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    This UMA records SQLite specific errors that occur when getting the sum()
-    size of files for a time frame in the Cdm Storage Database. This UMA is
-    recorded on every error for this operation.
-  </summary>
-</histogram>
-
-<histogram name="Media.EME.CdmStorageDatabaseSQLiteError.OpenDatabase"
-    enum="SqliteLoggedResultCode" expires_after="2024-09-15">
-  <owner>vpasupathy@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    This UMA records SQLite specific errors that occur when opening the Cdm
-    Storage Database. This UMA is recorded on every error for this operation.
-  </summary>
-</histogram>
-
-<histogram name="Media.EME.CdmStorageDatabaseSQLiteError.ReadFile"
-    enum="SqliteLoggedResultCode" expires_after="2025-02-27">
-  <owner>vpasupathy@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    This UMA records SQLite specific errors that occur when reading a file from
-    the Cdm Storage Database. This UMA is recorded on every error for this
-    operation.
-  </summary>
-</histogram>
-
-<histogram name="Media.EME.CdmStorageDatabaseSQLiteError.WriteFile"
-    enum="SqliteLoggedResultCode" expires_after="2025-02-27">
-  <owner>vpasupathy@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    This UMA records SQLite specific errors that occur when writing a file to
-    the Cdm Storage Database. This UMA is recorded on every error for this
-    operation.
-  </summary>
+  <token key="CdmDatabaseOperation">
+    <variant name="AlterDatabaseForFileSize"/>
+    <variant name="AlterDatabaseForLastModified"/>
+    <variant name="ClearDatabase"/>
+    <variant name="DeleteFile"/>
+    <variant name="DeleteForStorageKey"/>
+    <variant name="DeleteForTimeFrame"/>
+    <variant name="DeleteIfEmptyDatabase"/>
+    <variant name="GetSizeForFile"/>
+    <variant name="GetSizeForStorageKey"/>
+    <variant name="GetSizeForTimeFrame"/>
+    <variant name="OpenDatabase"/>
+    <variant name="ReadFile"/>
+    <variant name="WriteFile"/>
+  </token>
 </histogram>
 
 <histogram name="Media.EME.CdmStorageManager.DatabaseOpenError"
