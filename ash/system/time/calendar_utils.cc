@@ -7,8 +7,9 @@
 #include <optional>
 #include <string>
 
+#include "ash/calendar/calendar_client.h"
+#include "ash/calendar/calendar_controller.h"
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
@@ -17,7 +18,6 @@
 #include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
-#include "components/prefs/pref_service.h"
 #include "components/user_manager/user_type.h"
 #include "ui/views/layout/table_layout.h"
 
@@ -269,9 +269,8 @@ ASH_EXPORT bool IsActiveUser() {
 }
 
 ASH_EXPORT bool IsDisabledByAdmin() {
-  auto* pref_service =
-      Shell::Get()->session_controller()->GetActivePrefService();
-  return !pref_service->GetBoolean(prefs::kCalendarIntegrationEnabled);
+  const auto* const client = Shell::Get()->calendar_controller()->GetClient();
+  return !client || client->IsDisabledByAdmin();
 }
 
 base::TimeDelta GetTimeDifference(base::Time date) {

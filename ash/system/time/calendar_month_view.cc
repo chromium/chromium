@@ -97,6 +97,7 @@ CalendarDateCellView::CalendarDateCellView(
     base::Time date,
     base::TimeDelta time_difference,
     bool is_grayed_out_date,
+    bool should_fetch_calendar_data,
     int row_index,
     bool is_fetched)
     : views::LabelButton(
@@ -107,6 +108,7 @@ CalendarDateCellView::CalendarDateCellView(
           CONTEXT_CALENDAR_DATE),
       date_(date),
       grayed_out_(is_grayed_out_date),
+      should_fetch_calendar_data_(should_fetch_calendar_data),
       row_index_(row_index),
       is_fetched_(is_fetched),
       is_today_(calendar_utils::IsToday(date)),
@@ -129,7 +131,7 @@ CalendarDateCellView::CalendarDateCellView(
 
   DisableFocus();
   if (!grayed_out_) {
-    if (calendar_utils::ShouldFetchCalendarData() && is_fetched_) {
+    if (should_fetch_calendar_data_ && is_fetched_) {
       UpdateFetchStatus(true);
     }
 
@@ -276,7 +278,7 @@ void CalendarDateCellView::DisableFocus() {
 
 void CalendarDateCellView::SetTooltipAndAccessibleName() {
   std::u16string formatted_date = calendar_utils::GetMonthDayYearWeek(date_);
-  if (!calendar_utils::ShouldFetchCalendarData()) {
+  if (!should_fetch_calendar_data_) {
     tool_tip_ = formatted_date;
   } else {
     if (is_fetched_) {
@@ -302,7 +304,7 @@ void CalendarDateCellView::UpdateFetchStatus(bool is_fetched) {
     return;
   }
 
-  if (!calendar_utils::ShouldFetchCalendarData()) {
+  if (!should_fetch_calendar_data_) {
     SetTooltipAndAccessibleName();
     return;
   }
@@ -351,7 +353,7 @@ void CalendarDateCellView::PaintButtonContents(gfx::Canvas* canvas) {
 }
 
 void CalendarDateCellView::OnDateCellActivated(const ui::Event& event) {
-  if (grayed_out_ || !calendar_utils::ShouldFetchCalendarData() ||
+  if (grayed_out_ || !should_fetch_calendar_data_ ||
       !calendar_view_controller_->is_date_cell_clickable()) {
     return;
   }
@@ -378,7 +380,7 @@ gfx::Point CalendarDateCellView::GetEventsPresentIndicatorCenterPosition() {
 void CalendarDateCellView::MaybeDrawEventsIndicator(gfx::Canvas* canvas) {
   // Not drawing the event dot if it's a grayed out cell or the user is not in
   // an active session (without a vilid user account id).
-  if (grayed_out_ || !calendar_utils::ShouldFetchCalendarData()) {
+  if (grayed_out_ || !should_fetch_calendar_data_) {
     return;
   }
 
@@ -442,6 +444,8 @@ CalendarMonthView::CalendarMonthView(
   FetchEvents(fetch_month_);
   bool has_fetched_data =
       calendar_view_controller_->IsSuccessfullyFetched(fetch_month_);
+  const bool should_fetch_calendar_data =
+      calendar_utils::ShouldFetchCalendarData();
 
   // TODO(https://crbug.com/1236276): Extract the following 3 parts (while
   // loops) into a method.
@@ -452,7 +456,8 @@ CalendarMonthView::CalendarMonthView(
          (first_day_of_month_exploded.month - 1) % 12) {
     AddDateCellToLayout(current_date, column,
                         /*is_in_current_month=*/false, /*row_index=*/0,
-                        /*is_fetched=*/has_fetched_data);
+                        /*is_fetched=*/has_fetched_data,
+                        should_fetch_calendar_data);
     MoveToNextDay(column, current_date, current_date_local,
                   current_date_exploded);
     ++safe_index;
@@ -474,7 +479,8 @@ CalendarMonthView::CalendarMonthView(
     auto* cell = AddDateCellToLayout(current_date, column,
                                      /*is_in_current_month=*/true,
                                      /*row_index=*/row_number - 1,
-                                     /*is_fetched=*/has_fetched_data);
+                                     /*is_fetched=*/has_fetched_data,
+                                     should_fetch_calendar_data);
     // Add the first non-grayed-out cell of the row to the `focused_cells_`.
     if (column == 0 || current_date_exploded.day_of_month == 1) {
       focused_cells_.push_back(cell);
@@ -538,7 +544,8 @@ CalendarMonthView::CalendarMonthView(
     AddDateCellToLayout(current_date, column,
                         /*is_in_current_month=*/false,
                         /*row_index=*/row_number,
-                        /*is_fetched=*/has_fetched_data);
+                        /*is_fetched=*/has_fetched_data,
+                        should_fetch_calendar_data);
     MoveToNextDay(column, current_date, current_date_local,
                   current_date_exploded);
 
@@ -671,7 +678,8 @@ CalendarDateCellView* CalendarMonthView::AddDateCellToLayout(
     int column,
     bool is_in_current_month,
     int row_index,
-    bool is_fetched) {
+    bool is_fetched,
+    bool should_fetch_calendar_data) {
   auto* layout_manager = static_cast<views::TableLayout*>(GetLayoutManager());
   if (column == 0) {
     layout_manager->AddRows(1, views::TableLayout::kFixedSize);
@@ -679,7 +687,8 @@ CalendarDateCellView* CalendarMonthView::AddDateCellToLayout(
   return AddChildView(std::make_unique<CalendarDateCellView>(
       calendar_view_controller_, current_date,
       calendar_utils::GetTimeDifference(current_date),
-      /*is_grayed_out_date=*/!is_in_current_month, /*row_index=*/row_index,
+      /*is_grayed_out_date=*/!is_in_current_month, should_fetch_calendar_data,
+      /*row_index=*/row_index,
       /*is_fetched=*/is_fetched));
 }
 

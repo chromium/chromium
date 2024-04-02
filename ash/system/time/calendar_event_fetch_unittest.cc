@@ -40,6 +40,8 @@ class TestCalendarClient : public CalendarClient {
   TestCalendarClient& operator=(const TestCalendarClient& other) = delete;
   ~TestCalendarClient() override = default;
 
+  bool IsDisabledByAdmin() const override { return false; }
+
   base::OnceClosure GetCalendarList(
       google_apis::calendar::CalendarListCallback callback) override {
     // TODO(b/308692003): Implement TestCalendarClient changes to introduce

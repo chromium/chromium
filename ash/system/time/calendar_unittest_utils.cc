@@ -156,6 +156,10 @@ CalendarClientTestImpl::CalendarClientTestImpl() = default;
 
 CalendarClientTestImpl::~CalendarClientTestImpl() = default;
 
+bool CalendarClientTestImpl::IsDisabledByAdmin() const {
+  return is_disabled_by_admin_;
+}
+
 base::OnceClosure CalendarClientTestImpl::GetCalendarList(
     google_apis::calendar::CalendarListCallback callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(

@@ -309,7 +309,12 @@ class CalendarClientTestImpl : public CalendarClient {
       delete;
   ~CalendarClientTestImpl() override;
 
+  void set_is_disabled_by_admin(bool is_disabled_by_admin) {
+    is_disabled_by_admin_ = is_disabled_by_admin;
+  }
+
   // CalendarClient:
+  bool IsDisabledByAdmin() const override;
   base::OnceClosure GetCalendarList(
       google_apis::calendar::CalendarListCallback callback) override;
   base::OnceClosure GetEventList(
@@ -341,6 +346,7 @@ class CalendarClientTestImpl : public CalendarClient {
   }
 
  private:
+  bool is_disabled_by_admin_ = false;
   google_apis::ApiErrorCode error_ = google_apis::HTTP_SUCCESS;
   std::unique_ptr<google_apis::calendar::CalendarList> calendars_;
   std::unique_ptr<google_apis::calendar::EventList> events_;

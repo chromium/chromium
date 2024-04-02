@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 #include "ash/system/time/calendar_view.h"
+
 #include <climits>
 #include <memory>
 
 #include "ash/calendar/calendar_client.h"
 #include "ash/calendar/calendar_controller.h"
-#include "ash/constants/ash_pref_names.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/session/session_controller_impl.h"
@@ -37,6 +37,7 @@
 #include "base/time/time_override.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chromeos/ash/components/settings/scoped_timezone_settings.h"
+#include "components/account_id/account_id.h"
 #include "google_apis/common/api_error_codes.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
@@ -91,6 +92,11 @@ class CalendarViewTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
+    Shell::Get()->calendar_controller()->SetActiveUserAccountIdForTesting(
+        account_id_);
+    Shell::Get()->calendar_controller()->RegisterClientForUser(account_id_,
+                                                               &client_);
+
     widget_ = CreateFramelessTestWidget();
     widget_->SetFullscreen(true);
   }
@@ -98,8 +104,13 @@ class CalendarViewTest : public AshTestBase {
   void TearDown() override {
     widget_.reset();
 
+    Shell::Get()->calendar_controller()->RegisterClientForUser(account_id_,
+                                                               nullptr);
+
     AshTestBase::TearDown();
   }
+
+  calendar_test_utils::CalendarClientTestImpl* client() { return &client_; }
 
   // Gets date cell of a given CalendarMonthView and numerical `day`.
   const views::LabelButton* GetDateCell(CalendarMonthView* month,
@@ -315,6 +326,8 @@ class CalendarViewTest : public AshTestBase {
   static void SetFakeNow(base::Time fake_now) { fake_time_ = fake_now; }
 
  private:
+  const AccountId account_id_ = AccountId::FromUserEmail("user1@email.com");
+  calendar_test_utils::CalendarClientTestImpl client_;
   std::unique_ptr<views::Widget> widget_;
   // Owned by `widget_`.
   raw_ptr<CalendarView, DanglingUntriaged> calendar_view_ = nullptr;
@@ -1333,8 +1346,7 @@ TEST_F(CalendarViewTest, AdminDisabledTest) {
   base::subtle::ScopedTimeClockOverrides time_override(
       &CalendarViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
       /*thread_ticks_override=*/nullptr);
-  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      ash::prefs::kCalendarIntegrationEnabled, false);
+  client()->set_is_disabled_by_admin(true);
 
   CreateCalendarView();
 
@@ -1371,8 +1383,8 @@ TEST_F(CalendarViewTest, ManagedButtonTest) {
   base::subtle::ScopedTimeClockOverrides time_override(
       &CalendarViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
       /*thread_ticks_override=*/nullptr);
-  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      ash::prefs::kCalendarIntegrationEnabled, false);
+  client()->set_is_disabled_by_admin(true);
+
   CreateCalendarView();
 
   // Click on managed button to open chrome://management.
@@ -1407,8 +1419,6 @@ class CalendarViewAnimationTest : public AshTestBase {
         std::make_unique<calendar_test_utils::CalendarClientTestImpl>();
     Shell::Get()->calendar_controller()->RegisterClientForUser(
         account_id, calendar_client_.get());
-    Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-        ash::prefs::kCalendarIntegrationEnabled, true);
   }
 
   void TearDown() override {
@@ -2368,8 +2378,8 @@ TEST_F(CalendarViewWithJellyEnabledTest,
   base::subtle::ScopedTimeClockOverrides time_override(
       &CalendarViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
       /*thread_ticks_override=*/nullptr);
-  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      ash::prefs::kCalendarIntegrationEnabled, false);
+  client()->set_is_disabled_by_admin(true);
+
   CreateCalendarView();
 
   // When we've just created the calendar view and not fetched any events, then

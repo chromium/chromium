@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/calendar/calendar_controller.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/time/calendar_event_list_view.h"
 #include "ash/system/time/calendar_unittest_utils.h"
@@ -15,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "components/account_id/account_id.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 
 namespace ash {
@@ -42,6 +45,22 @@ class CalendarViewPixelTest
     scoped_feature_list_.InitWithFeatureStates(
         {{features::kGlanceablesV2, AreGlanceablesV2Enabled()},
          {features::kGlanceablesV2CalendarView, AreGlanceablesV2Enabled()}});
+  }
+
+  void SetUp() override {
+    AshTestBase::SetUp();
+
+    Shell::Get()->calendar_controller()->SetActiveUserAccountIdForTesting(
+        account_id_);
+    Shell::Get()->calendar_controller()->RegisterClientForUser(account_id_,
+                                                               &client_);
+  }
+
+  void TearDown() override {
+    Shell::Get()->calendar_controller()->RegisterClientForUser(account_id_,
+                                                               nullptr);
+
+    AshTestBase::TearDown();
   }
 
   bool AreGlanceablesV2Enabled() { return GetParam(); }
@@ -86,6 +105,8 @@ class CalendarViewPixelTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  const AccountId account_id_ = AccountId::FromUserEmail("user1@email.com");
+  calendar_test_utils::CalendarClientTestImpl client_;
   raw_ptr<CalendarView, DanglingUntriaged> calendar_view_ = nullptr;
   static base::Time fake_time_;
 };

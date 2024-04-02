@@ -33,6 +33,7 @@ class CalendarDateCellView : public CalendarViewController::Observer,
                        base::Time date,
                        base::TimeDelta time_difference,
                        bool is_grayed_out_date,
+                       bool should_fetch_calendar_data,
                        int row_index,
                        bool is_fetched);
   CalendarDateCellView(const CalendarDateCellView& other) = delete;
@@ -95,6 +96,9 @@ class CalendarDateCellView : public CalendarViewController::Observer,
   const base::Time date_;
 
   const bool grayed_out_;
+
+  // Indicates whether calendar data is expected to be fetched for this cell.
+  const bool should_fetch_calendar_data_;
 
   // The row index in the current month for this date cell. Starts from 0.
   const int row_index_;
@@ -185,7 +189,8 @@ class ASH_EXPORT CalendarMonthView : public views::View,
                                             int column,
                                             bool is_in_current_month,
                                             int row_index,
-                                            bool is_fetched);
+                                            bool is_fetched,
+                                            bool should_fetch_calendar_data);
 
   // Fetches events.
   void FetchEvents(const base::Time& month);

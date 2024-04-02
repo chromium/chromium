@@ -25,6 +25,7 @@ class CalendarClientImpl : public CalendarClient {
   ~CalendarClientImpl() override;
 
   // CalendarClient:
+  bool IsDisabledByAdmin() const override;
   base::OnceClosure GetCalendarList(
       google_apis::calendar::CalendarListCallback callback) override;
   base::OnceClosure GetEventList(
