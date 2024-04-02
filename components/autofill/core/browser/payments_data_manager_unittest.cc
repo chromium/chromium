@@ -1749,4 +1749,86 @@ TEST_F(PaymentsDataManagerTest, ProcessCardArtUrlChanges) {
 }
 #endif
 
+// Params:
+// 1. Whether the benefits toggle is turned on or off.
+// 2. Whether the American Express benefits flag is enabled.
+// 3. Whether the Capital One benefits flag is enabled.
+class PaymentsDataManagerStartupBenefitsTest
+    : public PaymentsDataManagerHelper,
+      public testing::Test,
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+ public:
+  PaymentsDataManagerStartupBenefitsTest() {
+    feature_list_.InitWithFeatureStates(
+        /*feature_states=*/
+        {{features::kAutofillEnableCardBenefitsForAmericanExpress,
+          AreAmericanExpressBenefitsEnabled()},
+         {features::kAutofillEnableCardBenefitsForCapitalOne,
+          AreCapitalOneBenefitsEnabled()}});
+    SetUpTest();
+  }
+
+  ~PaymentsDataManagerStartupBenefitsTest() override = default;
+
+  bool IsBenefitsPrefTurnedOn() const { return std::get<0>(GetParam()); }
+  bool AreAmericanExpressBenefitsEnabled() const {
+    return std::get<1>(GetParam());
+  }
+  bool AreCapitalOneBenefitsEnabled() const { return std::get<2>(GetParam()); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         PaymentsDataManagerStartupBenefitsTest,
+                         testing::Combine(testing::Bool(),
+                                          testing::Bool(),
+                                          testing::Bool()));
+
+// Tests that on startup we log the value of the card benefits pref.
+TEST_P(PaymentsDataManagerStartupBenefitsTest,
+       LogIsCreditCardBenefitsEnabledAtStartup) {
+  prefs::SetAutofillPaymentMethodsEnabled(prefs_.get(), true);
+  prefs::SetPaymentCardBenefits(prefs_.get(), IsBenefitsPrefTurnedOn());
+  base::HistogramTester histogram_tester;
+  ResetPersonalDataManager();
+  if (!AreAmericanExpressBenefitsEnabled() && !AreCapitalOneBenefitsEnabled()) {
+    histogram_tester.ExpectTotalCount(
+        "Autofill.PaymentMethods.CardBenefitsIsEnabled.Startup", 0);
+  } else {
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.PaymentMethods.CardBenefitsIsEnabled.Startup",
+        IsBenefitsPrefTurnedOn(), 1);
+  }
+}
+
+// Tests that on startup if payment methods are disabled we don't log if
+// benefits are enabled/disabled.
+TEST_F(PaymentsDataManagerTest,
+       LogIsCreditCardBenefitsEnabledAtStartup_PaymentMethodsDisabled) {
+  prefs::SetAutofillPaymentMethodsEnabled(prefs_.get(), false);
+  base::HistogramTester histogram_tester;
+  ResetPersonalDataManager();
+  histogram_tester.ExpectTotalCount(
+      "Autofill.PaymentMethods.CardBenefitsIsEnabled.Startup", 0);
+}
+
+// Tests that on startup if there is no pref service for the PaymentsDataManager
+// we don't log if benefits are enabled/disabled.
+TEST_F(PaymentsDataManagerTest,
+       LogIsCreditCardBenefitsEnabledAtStartup_NullPrefService) {
+  base::HistogramTester histogram_tester;
+  PaymentsDataManager payments_data_manager =
+      PaymentsDataManager(/*profile_database=*/nullptr,
+                          /*account_database=*/nullptr,
+                          /*image_fetcher=*/nullptr,
+                          /*shared_storage_handler=*/nullptr,
+                          /*pref_service=*/nullptr,
+                          /*app-locale=*/"en-US", personal_data_.get());
+
+  histogram_tester.ExpectTotalCount(
+      "Autofill.PaymentMethods.CardBenefitsIsEnabled.Startup", 0);
+}
+
 }  // namespace autofill

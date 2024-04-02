@@ -596,10 +596,6 @@ class PersonalDataManager : public KeyedService,
   // Returns true if the user pref to store CVC is enabled.
   virtual bool IsPaymentCvcStorageEnabled();
 
-  // Returns true if both the cards benefit feature and the card benefits user
-  // pref are enabled.
-  bool IsPaymentCardBenefitsEnabled();
-
   // Get pointer to the image fetcher.
   AutofillImageFetcherBase* GetImageFetcher() const;
 

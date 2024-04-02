@@ -120,6 +120,9 @@ void LogAcceptanceLatency(base::TimeDelta latency,
                           const CardMetadataLoggingContext& suggestion_context,
                           const CreditCard& selected_card);
 
+// Logs if credit card benefits are enabled when a new profile is launched.
+void LogIsCreditCardBenefitsEnabledAtStartup(bool enabled);
+
 }  // namespace autofill::autofill_metrics
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_CARD_METADATA_METRICS_H_

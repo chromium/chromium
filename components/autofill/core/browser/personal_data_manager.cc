@@ -858,14 +858,6 @@ bool PersonalDataManager::IsPaymentCvcStorageEnabled() {
          prefs::IsPaymentCvcStorageEnabled(pref_service_);
 }
 
-bool PersonalDataManager::IsPaymentCardBenefitsEnabled() {
-  return (base::FeatureList::IsEnabled(
-              features::kAutofillEnableCardBenefitsForAmericanExpress) ||
-          base::FeatureList::IsEnabled(
-              features::kAutofillEnableCardBenefitsForCapitalOne)) &&
-         prefs::IsPaymentCardBenefitsEnabled(pref_service_);
-}
-
 AutofillImageFetcherBase* PersonalDataManager::GetImageFetcher() const {
   return payments_data_manager_->image_fetcher_;
 }
