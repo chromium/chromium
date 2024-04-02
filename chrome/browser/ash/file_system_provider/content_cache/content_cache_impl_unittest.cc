@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/file_system_provider/content_cache/content_cache.h"
+#include "chrome/browser/ash/file_system_provider/content_cache/content_cache_impl.h"
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
@@ -23,15 +23,15 @@ using base::test::TestFuture;
 // The default chunk size that is requested via the `FileStreamReader`.
 constexpr int kDefaultChunkSize = 512;
 
-class FileSystemProviderContentCacheTest : public testing::Test {
+class FileSystemProviderContentCacheImplTest : public testing::Test {
  protected:
-  FileSystemProviderContentCacheTest() = default;
-  ~FileSystemProviderContentCacheTest() override = default;
+  FileSystemProviderContentCacheImplTest() = default;
+  ~FileSystemProviderContentCacheImplTest() override = default;
 
   void SetUp() override {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
 
-    content_cache_ = std::make_unique<ContentCache>(temp_dir_.GetPath());
+    content_cache_ = std::make_unique<ContentCacheImpl>(temp_dir_.GetPath());
   }
 
   scoped_refptr<net::IOBufferWithSize> InitializeBufferWithRandBytes(int size) {
@@ -64,12 +64,12 @@ class FileSystemProviderContentCacheTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
 };
 
-TEST_F(FileSystemProviderContentCacheTest, StartWriteBytes) {
+TEST_F(FileSystemProviderContentCacheImplTest, StartWriteBytes) {
   // Perform initial write to cache of length 512 bytes.
   WriteFileToCache(base::FilePath("random-path"), /*version_tag=*/"versionA");
 }
 
-TEST_F(FileSystemProviderContentCacheTest,
+TEST_F(FileSystemProviderContentCacheImplTest,
        StartWriteBytesShouldFailWithEmptyVersionTag) {
   OpenedCloudFile file(base::FilePath("not-in-cache"),
                        OpenFileMode::OPEN_FILE_MODE_READ, /*version_tag=*/"");
@@ -78,7 +78,7 @@ TEST_F(FileSystemProviderContentCacheTest,
                                                base::DoNothing()));
 }
 
-TEST_F(FileSystemProviderContentCacheTest,
+TEST_F(FileSystemProviderContentCacheImplTest,
        StartWriteBytesShouldFailIfNonContiguousChunk) {
   const base::FilePath fsp_path("random-path");
   const std::string version_tag("versionA");
@@ -95,7 +95,7 @@ TEST_F(FileSystemProviderContentCacheTest,
       /*offset=*/1024, kDefaultChunkSize, base::DoNothing()));
 }
 
-TEST_F(FileSystemProviderContentCacheTest,
+TEST_F(FileSystemProviderContentCacheImplTest,
        StartWriteBytesShouldFailIfBytesAlreadyExist) {
   const base::FilePath fsp_path("random-path");
   const std::string version_tag("versionA");
@@ -112,7 +112,7 @@ TEST_F(FileSystemProviderContentCacheTest,
                                                base::DoNothing()));
 }
 
-TEST_F(FileSystemProviderContentCacheTest,
+TEST_F(FileSystemProviderContentCacheImplTest,
        StartWriteBytesShouldFailIfMultipleWritersAttemptToWriteAtOnce) {
   OpenedCloudFile file(base::FilePath("random-path"),
                        OpenFileMode::OPEN_FILE_MODE_READ,
@@ -135,7 +135,7 @@ TEST_F(FileSystemProviderContentCacheTest,
   EXPECT_EQ(future.Get(), base::File::FILE_OK);
 }
 
-TEST_F(FileSystemProviderContentCacheTest,
+TEST_F(FileSystemProviderContentCacheImplTest,
        StartReadBytesShouldFailOnFirstRead) {
   OpenedCloudFile file(base::FilePath("not-in-cache"),
                        OpenFileMode::OPEN_FILE_MODE_READ, /*version_tag=*/"");
@@ -144,7 +144,7 @@ TEST_F(FileSystemProviderContentCacheTest,
                                               base::DoNothing()));
 }
 
-TEST_F(FileSystemProviderContentCacheTest,
+TEST_F(FileSystemProviderContentCacheImplTest,
        StartReadBytesShouldFailIfVersionTagMismatch) {
   // Write to cache a file with `versionA`.
   const base::FilePath fsp_path("random-path");
@@ -158,7 +158,7 @@ TEST_F(FileSystemProviderContentCacheTest,
                                               base::DoNothing()));
 }
 
-TEST_F(FileSystemProviderContentCacheTest,
+TEST_F(FileSystemProviderContentCacheImplTest,
        StartReadBytesShouldFailIfBytesRequestedArentAvailable) {
   const base::FilePath fsp_path("random-path");
   const std::string version_tag("versionA");
@@ -171,7 +171,7 @@ TEST_F(FileSystemProviderContentCacheTest,
                                               base::DoNothing()));
 }
 
-TEST_F(FileSystemProviderContentCacheTest,
+TEST_F(FileSystemProviderContentCacheImplTest,
        StartReadBytesShouldSucceedIfBytesAreAvailable) {
   const base::FilePath fsp_path("random-path");
   const std::string version_tag("versionA");

@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/types/expected.h"
+#include "chrome/browser/ash/file_system_provider/content_cache/content_cache_impl.h"
 
 namespace ash::file_system_provider {
 
@@ -133,8 +134,7 @@ void CacheManagerImpl::OnInitializeForProvider(
     std::move(callback).Run(base::unexpected(result));
   } else {
     initialized_providers_.emplace(base64_encoded_provider_folder_name);
-    std::move(callback).Run(
-        std::make_unique<ContentCache>(cache_directory_path));
+    std::move(callback).Run(ContentCacheImpl::Create(cache_directory_path));
   }
 
   // Notify all observers once the ContentCache is initialisation is complete.

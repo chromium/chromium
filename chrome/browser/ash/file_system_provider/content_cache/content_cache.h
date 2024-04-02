@@ -23,23 +23,18 @@ using FileErrorOrBytesRead = base::FileErrorOr<int>;
 // of orchestration between the LRU cache and the disk persistence layer.
 class ContentCache {
  public:
-  explicit ContentCache(const base::FilePath& root_dir);
-
-  ContentCache(const ContentCache&) = delete;
-  ContentCache& operator=(const ContentCache&) = delete;
-
-  ~ContentCache();
+  virtual ~ContentCache() = default;
 
   // Start reading bytes defined by `file` from the content cache. Returns true
   // when the bytes exist in the content cache and can be read (the actual bytes
   // will be stored in the `buffer` and `callback` invoked on finish) and false
   // if the bytes don't exist.
-  bool StartReadBytes(
+  virtual bool StartReadBytes(
       const OpenedCloudFile& file,
       net::IOBuffer* buffer,
       int64_t offset,
       int length,
-      ProvidedFileSystemInterface::ReadChunkReceivedCallback callback);
+      ProvidedFileSystemInterface::ReadChunkReceivedCallback callback) = 0;
 
   // Start writing bytes into the cache. Returns true if the bytes are able to
   // be written, currently this means:
@@ -48,35 +43,11 @@ class ContentCache {
   //     contiguous chunk to be written.
   //   - No other writer must be writing to the file at the moment
   // If any conditions are not satisfied, return false.
-  bool StartWriteBytes(const OpenedCloudFile& file,
-                       net::IOBuffer* buffer,
-                       int64_t offset,
-                       int length,
-                       FileErrorCallback callback);
-
- private:
-  void OnBytesRead(
-      const base::FilePath& file_path,
-      ProvidedFileSystemInterface::ReadChunkReceivedCallback callback,
-      FileErrorOrBytesRead error_or_bytes_read);
-
-  void OnBytesWritten(const base::FilePath& file_path,
-                      int64_t offset,
-                      int length,
-                      FileErrorCallback callback,
-                      base::File::Error result);
-
-  // Helper method to retrieve the path of a file on disk from the supplied
-  // `ctx`.
-  const base::FilePath GetPathOnDiskFromContext(const CacheFileContext& ctx);
-
-  SEQUENCE_CHECKER(sequence_checker_);
-
-  const base::FilePath root_dir_;
-  ContentLRUCache lru_cache_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
-  base::WeakPtrFactory<ContentCache> weak_ptr_factory_{this};
+  virtual bool StartWriteBytes(const OpenedCloudFile& file,
+                               net::IOBuffer* buffer,
+                               int64_t offset,
+                               int length,
+                               FileErrorCallback callback) = 0;
 };
 
 }  // namespace ash::file_system_provider

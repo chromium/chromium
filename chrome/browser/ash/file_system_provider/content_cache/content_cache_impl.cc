@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/file_system_provider/content_cache/content_cache.h"
+#include "chrome/browser/ash/file_system_provider/content_cache/content_cache_impl.h"
 
 #include "base/files/file.h"
 #include "base/memory/scoped_refptr.h"
@@ -53,15 +53,20 @@ FileErrorOrBytesRead ReadBytesBlocking(const base::FilePath& path,
 
 }  // namespace
 
-ContentCache::ContentCache(const base::FilePath& root_dir)
+ContentCacheImpl::ContentCacheImpl(const base::FilePath& root_dir)
     : root_dir_(root_dir),
       io_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {}
 
-ContentCache::~ContentCache() = default;
+ContentCacheImpl::~ContentCacheImpl() = default;
 
-bool ContentCache::StartReadBytes(
+std::unique_ptr<ContentCache> ContentCacheImpl::Create(
+    const base::FilePath& root_dir) {
+  return std::make_unique<ContentCacheImpl>(root_dir);
+}
+
+bool ContentCacheImpl::StartReadBytes(
     const OpenedCloudFile& file,
     net::IOBuffer* buffer,
     int64_t offset,
@@ -99,13 +104,14 @@ bool ContentCache::StartReadBytes(
       FROM_HERE,
       base::BindOnce(&ReadBytesBlocking, GetPathOnDiskFromContext(ctx),
                      base::WrapRefCounted(buffer), offset, length),
-      base::BindOnce(&ContentCache::OnBytesRead, weak_ptr_factory_.GetWeakPtr(),
-                     file.file_path, std::move(callback)));
+      base::BindOnce(&ContentCacheImpl::OnBytesRead,
+                     weak_ptr_factory_.GetWeakPtr(), file.file_path,
+                     std::move(callback)));
 
   return true;
 }
 
-void ContentCache::OnBytesRead(
+void ContentCacheImpl::OnBytesRead(
     const base::FilePath& file_path,
     ProvidedFileSystemInterface::ReadChunkReceivedCallback callback,
     FileErrorOrBytesRead error_or_bytes_read) {
@@ -124,11 +130,11 @@ void ContentCache::OnBytesRead(
   callback.Run(bytes_read, /*has_more=*/false, base::File::FILE_OK);
 }
 
-bool ContentCache::StartWriteBytes(const OpenedCloudFile& file,
-                                   net::IOBuffer* buffer,
-                                   int64_t offset,
-                                   int length,
-                                   FileErrorCallback callback) {
+bool ContentCacheImpl::StartWriteBytes(const OpenedCloudFile& file,
+                                       net::IOBuffer* buffer,
+                                       int64_t offset,
+                                       int length,
+                                       FileErrorCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (file.version_tag.empty()) {
@@ -162,7 +168,7 @@ bool ContentCache::StartWriteBytes(const OpenedCloudFile& file,
       FROM_HERE,
       base::BindOnce(&WriteBytesBlocking, GetPathOnDiskFromContext(ctx),
                      base::WrapRefCounted(buffer), offset, length),
-      base::BindOnce(&ContentCache::OnBytesWritten,
+      base::BindOnce(&ContentCacheImpl::OnBytesWritten,
                      weak_ptr_factory_.GetWeakPtr(), file.file_path, offset,
                      length, std::move(callback)));
 
@@ -170,11 +176,11 @@ bool ContentCache::StartWriteBytes(const OpenedCloudFile& file,
   return true;
 }
 
-void ContentCache::OnBytesWritten(const base::FilePath& file_path,
-                                  int64_t offset,
-                                  int length,
-                                  FileErrorCallback callback,
-                                  base::File::Error result) {
+void ContentCacheImpl::OnBytesWritten(const base::FilePath& file_path,
+                                      int64_t offset,
+                                      int length,
+                                      FileErrorCallback callback,
+                                      base::File::Error result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ContentLRUCache::iterator it = lru_cache_.Get(file_path);
@@ -192,7 +198,7 @@ void ContentCache::OnBytesWritten(const base::FilePath& file_path,
   std::move(callback).Run(result);
 }
 
-const base::FilePath ContentCache::GetPathOnDiskFromContext(
+const base::FilePath ContentCacheImpl::GetPathOnDiskFromContext(
     const CacheFileContext& ctx) {
   return root_dir_.Append(ctx.id.ToString());
 }
