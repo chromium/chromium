@@ -77,6 +77,13 @@ void MaybeTriggerCampaignsWhenAppOpened() {
   MaybeTriggerSlot(growth::Slot::kNotification);
 }
 
+void MaybeTriggerCampaignsWhenCampaignsLoaded() {
+  auto* campaigns_manager = growth::CampaignsManager::Get();
+  CHECK(campaigns_manager);
+
+  // TODO(b/318885858): Trigger nudge if nudge campaigns is matched.
+}
+
 }  // namespace
 
 // static
@@ -102,6 +109,14 @@ CampaignsManagerSession::~CampaignsManagerSession() {
 }
 
 void CampaignsManagerSession::OnSessionStateChanged() {
+  if (session_manager::SessionManager::Get()->session_state() ==
+      session_manager::SessionState::LOCKED) {
+    if (scoped_observation_.IsObserving()) {
+      scoped_observation_.Reset();
+    }
+    return;
+  }
+
   if (session_manager::SessionManager::Get()->session_state() !=
       session_manager::SessionState::ACTIVE) {
     // Loads campaigns at session active only.
@@ -111,12 +126,12 @@ void CampaignsManagerSession::OnSessionStateChanged() {
   if (!IsEligible()) {
     return;
   }
-  SetupWindowObserver();
 
   auto* campaigns_manager = growth::CampaignsManager::Get();
   CHECK(campaigns_manager);
+
   campaigns_manager->LoadCampaigns(
-      base::BindOnce(&CampaignsManagerSession::MaybeTriggerProactiveCampaigns,
+      base::BindOnce(&CampaignsManagerSession::OnLoadCampaignsCompleted,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -187,6 +202,8 @@ bool CampaignsManagerSession::IsEligible() {
 }
 
 void CampaignsManagerSession::SetupWindowObserver() {
+  CHECK(!scoped_observation_.IsObserving());
+
   auto* profile = GetProfile();
   // Some test profiles will not have AppServiceProxy.
   if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
@@ -197,9 +214,10 @@ void CampaignsManagerSession::SetupWindowObserver() {
   scoped_observation_.Observe(&proxy->InstanceRegistry());
 }
 
-void CampaignsManagerSession::MaybeTriggerProactiveCampaigns() {
-  auto* campaigns_manager = growth::CampaignsManager::Get();
-  CHECK(campaigns_manager);
+void CampaignsManagerSession::OnLoadCampaignsCompleted() {
+  if (ash::features::IsGrowthCampaignsTriggerByAppOpenEnabled()) {
+    SetupWindowObserver();
+  }
 
-  // TODO(b/318885858): Trigger campaigns if matched.
+  MaybeTriggerCampaignsWhenCampaignsLoaded();
 }

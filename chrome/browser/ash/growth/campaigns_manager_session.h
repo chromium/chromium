@@ -43,7 +43,7 @@ class CampaignsManagerSession : public session_manager::SessionManagerObserver,
   Profile* GetProfile();
   bool IsEligible();
   void SetupWindowObserver();
-  void MaybeTriggerProactiveCampaigns();
+  void OnLoadCampaignsCompleted();
 
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>
