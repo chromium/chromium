@@ -1045,7 +1045,7 @@ void ContainerNode::NotifyNodeAtEndOfBuildingFragmentTree(
 
   // No node-lists should have been created at this (otherwise
   // InvalidateNodeListCaches() would need to be called).
-  DCHECK(!HasRareData() || !RareData()->NodeLists());
+  DCHECK(!RareData() || !RareData()->NodeLists());
 
   if (node.IsContainerNode()) {
     DynamicTo<ContainerNode>(node)->ChildrenChanged(change);
@@ -1350,14 +1350,6 @@ static void DispatchChildRemovalEvents(Node& child) {
   }
 }
 
-bool ContainerNode::HasRestyleFlagInternal(DynamicRestyleFlags mask) const {
-  return RareData()->HasRestyleFlag(mask);
-}
-
-bool ContainerNode::HasRestyleFlagsInternal() const {
-  return RareData()->HasRestyleFlags();
-}
-
 void ContainerNode::SetRestyleFlag(DynamicRestyleFlags mask) {
   DCHECK(IsElementNode() || IsShadowRoot());
   EnsureRareData().SetRestyleFlag(mask);
@@ -1500,13 +1492,15 @@ void ContainerNode::InvalidateNodeListCachesInAncestors(
   if (change && change->type == ChildrenChangeType::kTextChanged)
     return;
 
-  if (HasRareData() && (!attr_name || IsAttributeNode())) {
-    if (NodeListsNodeData* lists = RareData()->NodeLists()) {
-      if (ChildNodeList* child_node_list = lists->GetChildNodeList(*this)) {
-        if (change) {
-          child_node_list->ChildrenChanged(*change);
-        } else {
-          child_node_list->InvalidateCache();
+  if (!attr_name || IsAttributeNode()) {
+    if (const NodeRareData* data = RareData()) {
+      if (NodeListsNodeData* lists = data->NodeLists()) {
+        if (ChildNodeList* child_node_list = lists->GetChildNodeList(*this)) {
+          if (change) {
+            child_node_list->ChildrenChanged(*change);
+          } else {
+            child_node_list->InvalidateCache();
+          }
         }
       }
     }

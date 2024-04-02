@@ -5089,9 +5089,12 @@ void LayoutObject::SetModifiedStyleOutsideStyleRecalc(
     ApplyStyleChanges apply_changes) {
   NOT_DESTROYED();
   SetStyle(style, apply_changes);
-  if (IsAnonymous() || !GetNode() || !GetNode()->IsElementNode())
+  if (IsAnonymous()) {
     return;
-  GetNode()->SetComputedStyle(std::move(style));
+  }
+  if (auto* element = DynamicTo<Element>(GetNode())) {
+    element->SetComputedStyle(style);
+  }
 }
 
 LayoutUnit LayoutObject::FlipForWritingModeInternal(

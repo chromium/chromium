@@ -97,8 +97,8 @@ class WebPluginContainerImpl;
 struct PhysicalRect;
 
 const int kElementNamespaceTypeShift = 5;
-const int kNodeStyleChangeShift = 17;
-const int kNodeCustomElementShift = 19;
+const int kNodeStyleChangeShift = 16;
+const int kNodeCustomElementShift = 18;
 
 // Values for kChildNeedsStyleRecalcFlag, controlling whether a node gets its
 // style recalculated.
@@ -316,8 +316,6 @@ class CORE_EXPORT Node : public EventTarget {
       ExceptionState& exception_state);
 
   bool SupportsAltText();
-
-  void SetComputedStyle(const ComputedStyle* computed_style);
 
   // Other methods (not part of DOM)
   ALWAYS_INLINE NodeType getNodeType() const {
@@ -720,8 +718,10 @@ class CORE_EXPORT Node : public EventTarget {
   // in hot code paths.
   // Note that if a Node has a layoutObject, it's parentNode is guaranteed to
   // have one as well.
-  LayoutObject* GetLayoutObject() const { return data_->GetLayoutObject(); }
-  void SetLayoutObject(LayoutObject*);
+  LayoutObject* GetLayoutObject() const { return layout_object_.Get(); }
+  void SetLayoutObject(LayoutObject* layout_object) {
+    layout_object_ = layout_object;
+  }
   // Use these two methods with caution.
   LayoutBox* GetLayoutBox() const;
   LayoutBoxModelObject* GetLayoutBoxModelObject() const;
@@ -949,7 +949,7 @@ class CORE_EXPORT Node : public EventTarget {
   void AddDOMPart(Part& part) { EnsureRareData().AddDOMPart(part); }
   void RemoveDOMPart(Part& part) { EnsureRareData().RemoveDOMPart(part); }
   PartsList* GetDOMParts() const {
-    return HasRareData() ? RareData()->GetDOMParts() : nullptr;
+    return data_ ? data_->GetDOMParts() : nullptr;
   }
 
   // For the imperative slot distribution API.
@@ -1022,54 +1022,52 @@ class CORE_EXPORT Node : public EventTarget {
     kIsContainerFlag = 1 << 4,
     kElementNamespaceTypeMask = 0x3 << kElementNamespaceTypeShift,
 
-    kHasRareDataFlag = 1 << 7,
-
     // Changes based on if the element should be treated like a link,
     // ex. When setting the href attribute on an <a>.
-    kIsLinkFlag = 1 << 8,
+    kIsLinkFlag = 1 << 7,
 
     // Changes based on :hover, :active and :focus state.
-    kIsUserActionElementFlag = 1 << 9,
+    kIsUserActionElementFlag = 1 << 8,
 
     // Tree state flags. These change when the element is added/removed
     // from a DOM tree.
-    kIsConnectedFlag = 1 << 10,
-    kIsInShadowTreeFlag = 1 << 11,
+    kIsConnectedFlag = 1 << 9,
+    kIsInShadowTreeFlag = 1 << 10,
 
     // Set by the parser when the children are done parsing.
-    kIsFinishedParsingChildrenFlag = 1 << 12,
+    kIsFinishedParsingChildrenFlag = 1 << 11,
 
     // Flags related to recalcStyle.
-    kHasCustomStyleCallbacksFlag = 1 << 13,
-    kChildNeedsStyleInvalidationFlag = 1 << 14,
-    kNeedsStyleInvalidationFlag = 1 << 15,
-    kChildNeedsStyleRecalcFlag = 1 << 16,
+    kHasCustomStyleCallbacksFlag = 1 << 12,
+    kChildNeedsStyleInvalidationFlag = 1 << 13,
+    kNeedsStyleInvalidationFlag = 1 << 14,
+    kChildNeedsStyleRecalcFlag = 1 << 15,
     kStyleChangeMask = 0x3 << kNodeStyleChangeShift,
 
     kCustomElementStateMask = 0x7 << kNodeCustomElementShift,
 
-    kHasNameOrIsEditingTextFlag = 1 << 22,
+    kHasNameOrIsEditingTextFlag = 1 << 21,
 
-    kNeedsReattachLayoutTree = 1 << 23,
-    kChildNeedsReattachLayoutTree = 1 << 24,
+    kNeedsReattachLayoutTree = 1 << 22,
+    kChildNeedsReattachLayoutTree = 1 << 23,
 
-    kHasDuplicateAttributes = 1 << 25,
+    kHasDuplicateAttributes = 1 << 24,
 
-    kForceReattachLayoutTree = 1 << 26,
+    kForceReattachLayoutTree = 1 << 25,
 
-    kHasDisplayLockContext = 1 << 27,
+    kHasDisplayLockContext = 1 << 26,
 
-    kSelfOrAncestorHasDirAutoAttribute = 1 << 28,
-    kCachedDirectionalityIsRtl = 1 << 29,
-    kDirAutoInheritsFromParent = 1u << 30,
+    kSelfOrAncestorHasDirAutoAttribute = 1 << 27,
+    kCachedDirectionalityIsRtl = 1 << 28,
+    kDirAutoInheritsFromParent = 1u << 29,
 
     // Indicates that the node was added in a task descendant of a potential
     // soft navigation.
-    kModifiedBySoftNavigation = 1u << 31,
+    kModifiedBySoftNavigation = 1u << 30,
 
     kDefaultNodeFlags = kIsFinishedParsingChildrenFlag,
 
-    // 0 bits remaining.
+    // 1 bit(s) remaining.
   };
 
   ALWAYS_INLINE bool GetFlag(NodeFlags mask) const {
@@ -1139,19 +1137,9 @@ class CORE_EXPORT Node : public EventTarget {
   void MoveEventListenersToNewDocument(Document& old_document,
                                        Document& new_document);
 
-  bool HasRareData() const { return GetFlag(kHasRareDataFlag); }
-
   // |RareData| cannot be replaced or removed once assigned.
-  NodeRareData* RareData() const {
-    SECURITY_DCHECK(HasRareData());
-    return DataAsNodeRareData();
-  }
-  NodeRareData& EnsureRareData() {
-    if (HasRareData())
-      return *RareData();
-
-    return CreateRareData();
-  }
+  NodeRareData* RareData() const { return data_.Get(); }
+  NodeRareData& EnsureRareData() { return data_ ? *data_ : CreateRareData(); }
 
   void SetHasCustomStyleCallbacks() {
     SetFlag(true, kHasCustomStyleCallbacksFlag);
@@ -1166,8 +1154,6 @@ class CORE_EXPORT Node : public EventTarget {
   }
 
   void InvalidateIfHasEffectiveAppearance() const;
-
-  inline const ComputedStyle* GetComputedStyleAssumingElement() const;
 
  private:
   Node* ToNode() final;
@@ -1191,10 +1177,6 @@ class CORE_EXPORT Node : public EventTarget {
   const HeapHashSet<Member<MutationObserverRegistration>>*
   TransientMutationObserverRegistry();
 
-  NodeRareData* DataAsNodeRareData() const {
-    DCHECK(HasRareData());
-    return reinterpret_cast<NodeRareData*>(data_.Get());
-  }
   ShadowRoot* GetSlotAssignmentRoot() const;
 
   // Both parent and tree_scope are hot accessed members. Keep them uncompressed
@@ -1205,8 +1187,8 @@ class CORE_EXPORT Node : public EventTarget {
   // padding.
   Member<Node> previous_;
   Member<Node> next_;
-  // When a node has rare data we move the layoutObject into the rare data.
-  Member<NodeData> data_;
+  Member<LayoutObject> layout_object_;
+  Member<NodeRareData> data_;
   uint32_t node_flags_;
 };
 

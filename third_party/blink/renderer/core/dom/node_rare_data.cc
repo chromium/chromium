@@ -45,12 +45,6 @@
 
 namespace blink {
 
-struct SameSizeAsNodeRareData : NodeData {
-  Member<void*> member_[5];
-};
-
-ASSERT_SIZE(NodeRareData, SameSizeAsNodeRareData);
-
 void NodeMutationObserverData::Trace(Visitor* visitor) const {
   visitor->Trace(registry_);
   visitor->Trace(transient_registry_);
@@ -76,28 +70,6 @@ void NodeMutationObserverData::RemoveRegistration(
     MutationObserverRegistration* registration) {
   DCHECK(registry_.Contains(registration));
   registry_.EraseAt(registry_.Find(registration));
-}
-
-NodeData::NodeData(LayoutObject* layout_object,
-                   const ComputedStyle* computed_style)
-    : computed_style_(computed_style), layout_object_(layout_object) {}
-
-NodeData::NodeData(blink::NodeData&&) = default;
-NodeData::~NodeData() = default;
-
-void NodeData::SetComputedStyle(const ComputedStyle* computed_style) {
-  DCHECK_NE(&SharedEmptyData(), this);
-  computed_style_ = computed_style;
-}
-
-NodeData& NodeData::SharedEmptyData() {
-  DEFINE_STATIC_LOCAL(Persistent<NodeData>, shared_empty_data,
-                      (MakeGarbageCollected<NodeData>(nullptr, nullptr)));
-  return *shared_empty_data;
-}
-void NodeData::Trace(Visitor* visitor) const {
-  visitor->Trace(computed_style_);
-  visitor->Trace(layout_object_);
 }
 
 void NodeRareData::RegisterScrollTimeline(ScrollTimeline* timeline) {
@@ -155,7 +127,6 @@ void NodeRareData::Trace(blink::Visitor* visitor) const {
   visitor->Trace(node_lists_);
   visitor->Trace(scroll_timelines_);
   visitor->Trace(dom_parts_);
-  NodeData::Trace(visitor);
 }
 
 void NodeRareData::IncrementConnectedSubframeCount() {

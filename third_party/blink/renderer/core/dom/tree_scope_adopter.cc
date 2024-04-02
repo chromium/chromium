@@ -70,8 +70,7 @@ void TreeScopeAdopter::MoveTreeToNewScope(Node& root) const {
     if (will_move_to_new_document) {
       MoveNodeToNewDocument(node, old_document,
                             is_document_unmodified_and_uninteracted);
-    } else if (node.HasRareData()) {
-      NodeRareData* rare_data = node.RareData();
+    } else if (NodeRareData* rare_data = node.RareData()) {
       if (rare_data->NodeLists())
         rare_data->NodeLists()->AdoptTreeScope();
     }
@@ -203,8 +202,7 @@ inline void TreeScopeAdopter::MoveNodeToNewDocument(
 
   if (!is_document_unmodified_and_uninteracted) {
     // fast adoption can skip all the checks below
-    if (node.HasRareData()) {
-      NodeRareData* rare_data = node.RareData();
+    if (NodeRareData* rare_data = node.RareData()) {
       if (rare_data->NodeLists()) {
         rare_data->NodeLists()->AdoptDocument(old_document, new_document);
       }

@@ -33,11 +33,9 @@
 
 namespace blink {
 
-class ComputedStyle;
 enum class DynamicRestyleFlags;
 enum class ElementFlags;
 class FlatTreeNodeData;
-class LayoutObject;
 class MutationObserverRegistration;
 class NodeListsNodeData;
 class NodeRareData;
@@ -73,7 +71,7 @@ class NodeMutationObserverData final
   HeapHashSet<Member<MutationObserverRegistration>> transient_registry_;
 };
 
-class NodeData : public GarbageCollected<NodeData> {
+class NodeRareData : public GarbageCollected<NodeRareData> {
  public:
   enum {
     kConnectedFrameCountBits = 10,  // Must fit Page::maxNumberOfFrames.
@@ -81,40 +79,8 @@ class NodeData : public GarbageCollected<NodeData> {
     kNumberOfDynamicRestyleFlags = 14
   };
 
-  virtual ~NodeData();
-  virtual void Trace(Visitor*) const;
-
-  CORE_EXPORT NodeData(LayoutObject*, const ComputedStyle* computed_style);
-  NodeData(const NodeData&) = delete;
-  NodeData(NodeData&&);
-
-  LayoutObject* GetLayoutObject() const { return layout_object_.Get(); }
-  void SetLayoutObject(LayoutObject* layout_object) {
-    DCHECK_NE(&SharedEmptyData(), this);
-    layout_object_ = layout_object;
-  }
-
-  const ComputedStyle* GetComputedStyle() const {
-    return computed_style_.Get();
-  }
-  void SetComputedStyle(const ComputedStyle* computed_style);
-
-  static NodeData& SharedEmptyData();
-  bool IsSharedEmptyData() { return this == &SharedEmptyData(); }
-
- protected:
-  subtle::UncompressedMember<const ComputedStyle> computed_style_;
-  Member<LayoutObject> layout_object_;
-  uint32_t restyle_flags_ : kNumberOfDynamicRestyleFlags = 0u;
-  uint32_t connected_frame_count_ : kConnectedFrameCountBits = 0u;
-  uint32_t element_flags_ : kNumberOfElementFlags = 0u;
-  // 0 bits remaining.
-};
-
-class NodeRareData : public NodeData {
- public:
-  explicit NodeRareData(NodeData&& node_layout_data)
-      : NodeData(std::move(node_layout_data)) {}
+  NodeRareData() = default;
+  virtual ~NodeRareData() = default;
   NodeRareData(const NodeRareData&) = delete;
   NodeRareData& operator=(const NodeRareData&) = delete;
 
@@ -181,7 +147,13 @@ class NodeRareData : public NodeData {
   void RemoveDOMPart(Part& part);
   PartsList* GetDOMParts() const { return dom_parts_.Get(); }
 
-  void Trace(blink::Visitor*) const override;
+  virtual void Trace(Visitor*) const;
+
+ protected:
+  uint32_t restyle_flags_ : kNumberOfDynamicRestyleFlags = 0u;
+  uint32_t connected_frame_count_ : kConnectedFrameCountBits = 0u;
+  uint32_t element_flags_ : kNumberOfElementFlags = 0u;
+  // 0 bits remaining.
 
  private:
   NodeListsNodeData& CreateNodeLists();

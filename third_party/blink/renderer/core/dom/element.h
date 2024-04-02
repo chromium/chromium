@@ -671,9 +671,17 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
                                                NodeCloningData&) {}
 
   // NOTE: This shadows Node::GetComputedStyle().
-  // The definition is in node_computed_style.h.
-  inline const ComputedStyle* GetComputedStyle() const;
-  inline const ComputedStyle& ComputedStyleRef() const;
+  const ComputedStyle* GetComputedStyle() const {
+    return computed_style_.Get();
+  }
+  const ComputedStyle& ComputedStyleRef() const {
+    DCHECK(computed_style_);
+    return *computed_style_;
+  }
+
+  void SetComputedStyle(const ComputedStyle* computed_style) {
+    computed_style_ = computed_style;
+  }
 
   using Node::DetachLayoutTree;
   void AttachLayoutTree(AttachContext&) override;
@@ -1515,12 +1523,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void ScrollFrameBy(const ScrollToOptions*);
   void ScrollFrameTo(const ScrollToOptions*);
 
-  bool HasElementFlag(ElementFlags mask) const {
-    return HasRareData() && HasElementFlagInternal(mask);
-  }
+  bool HasElementFlag(ElementFlags mask) const;
   void SetElementFlag(ElementFlags, bool value = true);
   void ClearElementFlag(ElementFlags);
-  bool HasElementFlagInternal(ElementFlags) const;
 
   bool IsElementNode() const =
       delete;  // This will catch anyone doing an unnecessary check.
@@ -1764,8 +1769,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   virtual Element& CloneWithoutAttributesAndChildren(Document& factory) const;
 
-  QualifiedName tag_name_;
-
   void UpdateNamedItemRegistration(NamedItemType,
                                    const AtomicString& old_name,
                                    const AtomicString& new_name);
@@ -1837,6 +1840,10 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
       const QualifiedName& name,
       const HeapVector<Member<Element>>* given_elements);
 
+  QualifiedName tag_name_;
+  // This `ComputedStyle` field is a hot accessed member. Keep uncompressed for
+  // performance reasons.
+  subtle::UncompressedMember<const ComputedStyle> computed_style_;
   Member<ElementData> element_data_;
 };
 

@@ -547,33 +547,38 @@ bool IsValidShadowHostName(const QualifiedName& tag_name) {
 Element::Element(const QualifiedName& tag_name,
                  Document* document,
                  ConstructionType type)
-    : ContainerNode(document, type), tag_name_(tag_name) {}
+    : ContainerNode(document, type),
+      tag_name_(tag_name),
+      computed_style_(nullptr) {}
 
 Element* Element::GetAnimationTarget() {
   return this;
 }
 
-bool Element::HasElementFlagInternal(ElementFlags mask) const {
-  return GetElementRareData()->HasElementFlag(mask);
+bool Element::HasElementFlag(ElementFlags mask) const {
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->HasElementFlag(mask);
+  }
+  return false;
 }
 
 void Element::SetElementFlag(ElementFlags mask, bool value) {
-  if (!HasRareData() && !value) {
-    return;
+  if (ElementRareDataVector* data = GetElementRareData()) {
+    data->SetElementFlag(mask, value);
+  } else if (value) {
+    EnsureElementRareData().SetElementFlag(mask, value);
   }
-  EnsureElementRareData().SetElementFlag(mask, value);
 }
 
 void Element::ClearElementFlag(ElementFlags mask) {
-  if (!HasRareData()) {
-    return;
+  if (ElementRareDataVector* data = GetElementRareData()) {
+    data->ClearElementFlag(mask);
   }
-  GetElementRareData()->ClearElementFlag(mask);
 }
 
 void Element::ClearTabIndexExplicitlyIfNeeded() {
-  if (HasRareData()) {
-    GetElementRareData()->ClearTabIndexExplicitly();
+  if (ElementRareDataVector* data = GetElementRareData()) {
+    data->ClearTabIndexExplicitly();
   }
 }
 
@@ -1157,7 +1162,6 @@ Vector<AtomicString> Element::getAttributeNames() const {
 }
 
 inline ElementRareDataVector* Element::GetElementRareData() const {
-  DCHECK(HasRareData());
   return static_cast<ElementRareDataVector*>(RareData());
 }
 
@@ -1166,7 +1170,7 @@ inline ElementRareDataVector& Element::EnsureElementRareData() {
 }
 
 void Element::RemovePopoverData() {
-  DCHECK(HasRareData());
+  DCHECK(GetElementRareData());
   GetElementRareData()->RemovePopoverData();
 }
 
@@ -1174,7 +1178,10 @@ PopoverData* Element::EnsurePopoverData() {
   return &EnsureElementRareData().EnsurePopoverData();
 }
 PopoverData* Element::GetPopoverData() const {
-  return HasRareData() ? GetElementRareData()->GetPopoverData() : nullptr;
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->GetPopoverData();
+  }
+  return nullptr;
 }
 
 Element* Element::anchorElement() const {
@@ -1209,8 +1216,8 @@ inline void Element::SynchronizeAttribute(const QualifiedName& name) const {
 }
 
 ElementAnimations* Element::GetElementAnimations() const {
-  if (HasRareData()) {
-    return GetElementRareData()->GetElementAnimations();
+  if (ElementRareDataVector* data = GetElementRareData()) {
+    return data->GetElementAnimations();
   }
   return nullptr;
 }
@@ -1224,13 +1231,11 @@ ElementAnimations& Element::EnsureElementAnimations() {
 }
 
 bool Element::HasAnimations() const {
-  if (!HasRareData()) {
-    return false;
+  if (ElementRareDataVector* data = GetElementRareData()) {
+    const ElementAnimations* element_animations = data->GetElementAnimations();
+    return element_animations && !element_animations->IsEmpty();
   }
-
-  ElementAnimations* element_animations =
-      GetElementRareData()->GetElementAnimations();
-  return element_animations && !element_animations->IsEmpty();
+  return false;
 }
 
 bool Element::hasAttribute(const QualifiedName& name) const {
@@ -1297,7 +1302,10 @@ AtomicString Element::LowercaseIfNecessary(AtomicString name) const {
 }
 
 const AtomicString& Element::nonce() const {
-  return HasRareData() ? GetElementRareData()->GetNonce() : g_null_atom;
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->GetNonce();
+  }
+  return g_null_atom;
 }
 
 void Element::setNonce(const AtomicString& nonce) {
@@ -1501,27 +1509,33 @@ bool Element::ShouldUpdateLastRememberedInlineSize() const {
 }
 
 void Element::SetLastRememberedInlineSize(std::optional<LayoutUnit> size) {
-  if (!size && !HasRareData()) {
-    return;
+  if (ElementRareDataVector* data = GetElementRareData()) {
+    data->SetLastRememberedInlineSize(size);
+  } else if (size) {
+    EnsureElementRareData().SetLastRememberedInlineSize(size);
   }
-  EnsureElementRareData().SetLastRememberedInlineSize(size);
 }
 
 void Element::SetLastRememberedBlockSize(std::optional<LayoutUnit> size) {
-  if (!size && !HasRareData()) {
-    return;
+  if (ElementRareDataVector* data = GetElementRareData()) {
+    data->SetLastRememberedBlockSize(size);
+  } else if (size) {
+    EnsureElementRareData().SetLastRememberedBlockSize(size);
   }
-  EnsureElementRareData().SetLastRememberedBlockSize(size);
 }
 
 std::optional<LayoutUnit> Element::LastRememberedInlineSize() const {
-  return HasRareData() ? GetElementRareData()->LastRememberedInlineSize()
-                       : std::nullopt;
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->LastRememberedInlineSize();
+  }
+  return std::nullopt;
 }
 
 std::optional<LayoutUnit> Element::LastRememberedBlockSize() const {
-  return HasRareData() ? GetElementRareData()->LastRememberedBlockSize()
-                       : std::nullopt;
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->LastRememberedBlockSize();
+  }
+  return std::nullopt;
 }
 
 bool Element::IsViewportScrollElement() {
@@ -2451,11 +2465,10 @@ AccessibleNode* Element::ExistingAccessibleNode() const {
     return nullptr;
   }
 
-  if (!HasRareData()) {
-    return nullptr;
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->GetAccessibleNode();
   }
-
-  return GetElementRareData()->GetAccessibleNode();
+  return nullptr;
 }
 
 AccessibleNode* Element::accessibleNode() {
@@ -2735,11 +2748,10 @@ void Element::ClassAttributeChanged(const AtomicString& new_class_string) {
 
 void Element::UpdateClassList(const AtomicString& old_class_string,
                               const AtomicString& new_class_string) {
-  if (!HasRareData()) {
-    return;
-  }
-  if (DOMTokenList* class_list = GetElementRareData()->GetClassList()) {
-    class_list->DidUpdateAttributeValue(old_class_string, new_class_string);
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    if (DOMTokenList* class_list = data->GetClassList()) {
+      class_list->DidUpdateAttributeValue(old_class_string, new_class_string);
+    }
   }
 }
 
@@ -2884,7 +2896,7 @@ Node::InsertionNotificationRequest Element::InsertedInto(
   // by the time we reach updateId
   ContainerNode::InsertedInto(insertion_point);
 
-  DCHECK(!HasRareData() || !GetElementRareData()->HasPseudoElements());
+  DCHECK(!GetElementRareData() || !GetElementRareData()->HasPseudoElements());
 
   RecomputeDirectionFromParent();
 
@@ -2896,22 +2908,23 @@ Node::InsertionNotificationRequest Element::InsertedInto(
     return kInsertionDone;
   }
 
-  if (isConnected() && HasRareData()) {
-    ElementRareDataVector* rare_data = GetElementRareData();
-    if (ElementIntersectionObserverData* observer_data =
-            rare_data->IntersectionObserverData()) {
-      observer_data->TrackWithController(
-          GetDocument().EnsureIntersectionObserverController());
-      if (!observer_data->IsEmpty()) {
-        if (LocalFrameView* frame_view = GetDocument().View()) {
-          frame_view->SetIntersectionObservationState(
-              LocalFrameView::kRequired);
+  if (isConnected()) {
+    if (ElementRareDataVector* rare_data = GetElementRareData()) {
+      if (ElementIntersectionObserverData* observer_data =
+              rare_data->IntersectionObserverData()) {
+        observer_data->TrackWithController(
+            GetDocument().EnsureIntersectionObserverController());
+        if (!observer_data->IsEmpty()) {
+          if (LocalFrameView* frame_view = GetDocument().View()) {
+            frame_view->SetIntersectionObservationState(
+                LocalFrameView::kRequired);
+          }
         }
       }
-    }
 
-    if (auto* context = rare_data->GetDisplayLockContext()) {
-      context->ElementConnected();
+      if (auto* context = rare_data->GetDisplayLockContext()) {
+        context->ElementConnected();
+      }
     }
   }
 
@@ -3028,9 +3041,7 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
 
   ClearElementFlag(ElementFlags::kIsInCanvasSubtree);
 
-  if (HasRareData()) {
-    ElementRareDataVector* data = GetElementRareData();
-
+  if (ElementRareDataVector* data = GetElementRareData()) {
     data->ClearFocusgroupFlags();
     data->ClearRestyleFlags();
 
@@ -3188,8 +3199,7 @@ void Element::AttachLayoutTree(AttachContext& context) {
 
 void Element::DetachLayoutTree(bool performing_reattach) {
   HTMLFrameOwnerElement::PluginDisposeSuspendScope suspend_plugin_dispose;
-  if (HasRareData()) {
-    ElementRareDataVector* data = GetElementRareData();
+  if (ElementRareDataVector* data = GetElementRareData()) {
     if (!performing_reattach) {
       data->ClearPseudoElements();
       data->ClearContainerQueryData();
@@ -3771,19 +3781,20 @@ StyleRecalcChange Element::RecalcOwnStyle(
 
   StyleRecalcContext new_style_recalc_context = style_recalc_context;
   if (change.RecalcChildren() || change.RecalcContainerQueryDependent(*this)) {
-    if (NeedsStyleRecalc() && HasRareData()) {
-      // This element needs recalc because its parent changed inherited
-      // properties or there was some style change in the ancestry which needed
-      // a full subtree recalc. In that case we cannot use the BaseComputedStyle
-      // optimization.
-      if (ElementAnimations* element_animations =
-              GetElementRareData()->GetElementAnimations()) {
-        element_animations->SetAnimationStyleChange(false);
+    if (NeedsStyleRecalc()) {
+      if (ElementRareDataVector* data = GetElementRareData()) {
+        // This element needs recalc because its parent changed inherited
+        // properties or there was some style change in the ancestry which
+        // needed a full subtree recalc. In that case we cannot use the
+        // BaseComputedStyle optimization.
+        if (ElementAnimations* element_animations =
+                data->GetElementAnimations()) {
+          element_animations->SetAnimationStyleChange(false);
+        }
+        // We can not apply the style incrementally if we're propagating
+        // inherited changes from the parent, as incremental styling would not
+        // include those changes. (Incremental styling is disabled by default.)
       }
-      // We can not apply the style incrementally if we're propagating
-      // inherited changes from the parent, as incremental styling would
-      // not include those changes. (Incremental styling is disabled by
-      // default.)
     }
   } else {
     // We are not propagating inherited changes from the parent,
@@ -3855,21 +3866,22 @@ StyleRecalcChange Element::RecalcOwnStyle(
     old_style = nullptr;
   }
 
-  if (!new_style && HasRareData()) {
-    ElementRareDataVector* rare_data = GetElementRareData();
-    if (ElementAnimations* element_animations =
-            rare_data->GetElementAnimations()) {
-      // The animation should only be canceled when the base style is
-      // display:none. If new_style is otherwise set to display:none, then it
-      // means an animation set display:none, and an animation shouldn't
-      // cancel itself in this case.
-      if (base_is_display_none ||
-          !RuntimeEnabledFeatures::CSSDisplayAnimationEnabled()) {
-        element_animations->CssAnimations().Cancel();
+  if (!new_style) {
+    if (ElementRareDataVector* data = GetElementRareData()) {
+      if (ElementAnimations* element_animations =
+              data->GetElementAnimations()) {
+        // The animation should only be canceled when the base style is
+        // display:none. If new_style is otherwise set to display:none, then it
+        // means an animation set display:none, and an animation shouldn't
+        // cancel itself in this case.
+        if (base_is_display_none ||
+            !RuntimeEnabledFeatures::CSSDisplayAnimationEnabled()) {
+          element_animations->CssAnimations().Cancel();
+        }
       }
+      data->SetContainerQueryEvaluator(nullptr);
+      data->ClearPseudoElements();
     }
-    rare_data->SetContainerQueryEvaluator(nullptr);
-    rare_data->ClearPseudoElements();
   }
   SetComputedStyle(new_style);
 
@@ -4620,11 +4632,17 @@ ShadowRoot& Element::CreateAndAttachShadowRoot(ShadowRootMode type,
 }
 
 ShadowRoot* Element::GetShadowRoot() const {
-  return HasRareData() ? GetElementRareData()->GetShadowRoot() : nullptr;
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->GetShadowRoot();
+  }
+  return nullptr;
 }
 
 EditContext* Element::editContext() const {
-  return HasRareData() ? GetElementRareData()->GetEditContext() : nullptr;
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->GetEditContext();
+  }
+  return nullptr;
 }
 
 void Element::setEditContext(EditContext* edit_context,
@@ -5023,12 +5041,11 @@ void Element::SetAnimationStyleChange(bool animation_style_change) {
   if (animation_style_change && GetDocument().InStyleRecalc()) {
     return;
   }
-  if (!HasRareData()) {
-    return;
-  }
-  if (ElementAnimations* element_animations =
-          GetElementRareData()->GetElementAnimations()) {
-    element_animations->SetAnimationStyleChange(animation_style_change);
+
+  if (ElementRareDataVector* data = GetElementRareData()) {
+    if (ElementAnimations* element_animations = data->GetElementAnimations()) {
+      element_animations->SetAnimationStyleChange(animation_style_change);
+    }
   }
 }
 
@@ -5091,8 +5108,10 @@ void Element::SetRegionCaptureCropId(
 }
 
 const RegionCaptureCropId* Element::GetRegionCaptureCropId() const {
-  return HasRareData() ? GetElementRareData()->GetRegionCaptureCropId()
-                       : nullptr;
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->GetRegionCaptureCropId();
+  }
+  return nullptr;
 }
 
 void Element::SetRestrictionTargetId(std::unique_ptr<RestrictionTargetId> id) {
@@ -5119,8 +5138,10 @@ void Element::SetRestrictionTargetId(std::unique_ptr<RestrictionTargetId> id) {
 }
 
 const RestrictionTargetId* Element::GetRestrictionTargetId() const {
-  return HasRareData() ? GetElementRareData()->GetRestrictionTargetId()
-                       : nullptr;
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->GetRestrictionTargetId();
+  }
+  return nullptr;
 }
 
 void Element::SetIsEligibleForElementCapture(bool value) {
@@ -5134,7 +5155,6 @@ void Element::SetIsEligibleForElementCapture(bool value) {
 
   if (has_checked) {
     const bool old_value =
-        !HasRareData() ||
         HasElementFlag(ElementFlags::kIsEligibleForElementCapture);
 
     if (value != old_value) {
@@ -5172,8 +5192,8 @@ void Element::SetCustomElementDefinition(CustomElementDefinition* definition) {
 }
 
 CustomElementDefinition* Element::GetCustomElementDefinition() const {
-  if (HasRareData()) {
-    return GetElementRareData()->GetCustomElementDefinition();
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->GetCustomElementDefinition();
   }
   return nullptr;
 }
@@ -5184,8 +5204,8 @@ void Element::SetIsValue(const AtomicString& is_value) {
 }
 
 const AtomicString& Element::IsValue() const {
-  if (HasRareData()) {
-    return GetElementRareData()->IsValue();
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->IsValue();
   }
   return g_null_atom;
 }
@@ -5195,7 +5215,10 @@ void Element::SetDidAttachInternals() {
 }
 
 bool Element::DidAttachInternals() const {
-  return HasRareData() && GetElementRareData()->DidAttachInternals();
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->DidAttachInternals();
+  }
+  return false;
 }
 
 ElementInternals& Element::EnsureElementInternals() {
@@ -5203,7 +5226,10 @@ ElementInternals& Element::EnsureElementInternals() {
 }
 
 const ElementInternals* Element::GetElementInternals() const {
-  return HasRareData() ? GetElementRareData()->GetElementInternals() : nullptr;
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->GetElementInternals();
+  }
+  return nullptr;
 }
 
 bool Element::CanAttachShadowRoot() const {
@@ -5572,13 +5598,16 @@ void Element::FinishParsingChildren() {
 }
 
 AttrNodeList* Element::GetAttrNodeList() {
-  return HasRareData() ? GetElementRareData()->GetAttrNodeList() : nullptr;
+  if (ElementRareDataVector* data = GetElementRareData()) {
+    return data->GetAttrNodeList();
+  }
+  return nullptr;
 }
 
 void Element::RemoveAttrNodeList() {
   DCHECK(GetAttrNodeList());
-  if (HasRareData()) {
-    GetElementRareData()->RemoveAttrNodeList();
+  if (ElementRareDataVector* data = GetElementRareData()) {
+    data->RemoveAttrNodeList();
   }
 }
 
@@ -6490,7 +6519,10 @@ bool Element::ActivateDisplayLockIfNeeded(DisplayLockActivationReason reason) {
 }
 
 bool Element::HasUndoStack() const {
-  return HasRareData() && GetElementRareData()->HasUndoStack();
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->HasUndoStack();
+  }
+  return false;
 }
 
 void Element::SetHasUndoStack(bool value) {
@@ -6503,7 +6535,10 @@ void Element::SetScrollbarPseudoElementStylesDependOnFontMetrics(bool value) {
 }
 
 bool Element::HasBeenExplicitlyScrolled() const {
-  return HasRareData() && GetElementRareData()->HasBeenExplicitlyScrolled();
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->HasBeenExplicitlyScrolled();
+  }
+  return false;
 }
 
 void Element::SetHasBeenExplicitlyScrolled() {
@@ -6511,8 +6546,8 @@ void Element::SetHasBeenExplicitlyScrolled() {
 }
 
 bool Element::AffectedBySubjectHas() const {
-  if (HasRareData()) {
-    return GetElementRareData()->AffectedBySubjectHas();
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->AffectedBySubjectHas();
   }
   return false;
 }
@@ -6522,8 +6557,8 @@ void Element::SetAffectedBySubjectHas() {
 }
 
 bool Element::AffectedByNonSubjectHas() const {
-  if (HasRareData()) {
-    return GetElementRareData()->AffectedByNonSubjectHas();
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->AffectedByNonSubjectHas();
   }
   return false;
 }
@@ -6533,8 +6568,8 @@ void Element::SetAffectedByNonSubjectHas() {
 }
 
 bool Element::AncestorsOrAncestorSiblingsAffectedByHas() const {
-  if (HasRareData()) {
-    return GetElementRareData()->AncestorsOrAncestorSiblingsAffectedByHas();
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->AncestorsOrAncestorSiblingsAffectedByHas();
   }
   return false;
 }
@@ -6544,15 +6579,15 @@ void Element::SetAncestorsOrAncestorSiblingsAffectedByHas() {
 }
 
 unsigned Element::GetSiblingsAffectedByHasFlags() const {
-  if (HasRareData()) {
-    return GetElementRareData()->GetSiblingsAffectedByHasFlags();
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->GetSiblingsAffectedByHasFlags();
   }
   return false;
 }
 
 bool Element::HasSiblingsAffectedByHasFlags(unsigned flags) const {
-  if (HasRareData()) {
-    return GetElementRareData()->HasSiblingsAffectedByHasFlags(flags);
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->HasSiblingsAffectedByHasFlags(flags);
   }
   return false;
 }
@@ -6562,7 +6597,10 @@ void Element::SetSiblingsAffectedByHasFlags(unsigned flags) {
 }
 
 bool Element::AffectedByPseudoInHas() const {
-  return HasRareData() ? GetElementRareData()->AffectedByPseudoInHas() : false;
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->AffectedByPseudoInHas();
+  }
+  return false;
 }
 
 void Element::SetAffectedByPseudoInHas() {
@@ -6570,9 +6608,10 @@ void Element::SetAffectedByPseudoInHas() {
 }
 
 bool Element::AncestorsOrSiblingsAffectedByHoverInHas() const {
-  return HasRareData()
-             ? GetElementRareData()->AncestorsOrSiblingsAffectedByHoverInHas()
-             : false;
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->AncestorsOrSiblingsAffectedByHoverInHas();
+  }
+  return false;
 }
 
 void Element::SetAncestorsOrSiblingsAffectedByHoverInHas() {
@@ -6580,9 +6619,10 @@ void Element::SetAncestorsOrSiblingsAffectedByHoverInHas() {
 }
 
 bool Element::AncestorsOrSiblingsAffectedByActiveInHas() const {
-  return HasRareData()
-             ? GetElementRareData()->AncestorsOrSiblingsAffectedByActiveInHas()
-             : false;
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->AncestorsOrSiblingsAffectedByActiveInHas();
+  }
+  return false;
 }
 
 void Element::SetAncestorsOrSiblingsAffectedByActiveInHas() {
@@ -6590,9 +6630,10 @@ void Element::SetAncestorsOrSiblingsAffectedByActiveInHas() {
 }
 
 bool Element::AncestorsOrSiblingsAffectedByFocusInHas() const {
-  return HasRareData()
-             ? GetElementRareData()->AncestorsOrSiblingsAffectedByFocusInHas()
-             : false;
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->AncestorsOrSiblingsAffectedByFocusInHas();
+  }
+  return false;
 }
 
 void Element::SetAncestorsOrSiblingsAffectedByFocusInHas() {
@@ -6600,9 +6641,10 @@ void Element::SetAncestorsOrSiblingsAffectedByFocusInHas() {
 }
 
 bool Element::AncestorsOrSiblingsAffectedByFocusVisibleInHas() const {
-  return HasRareData() ? GetElementRareData()
-                             ->AncestorsOrSiblingsAffectedByFocusVisibleInHas()
-                       : false;
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->AncestorsOrSiblingsAffectedByFocusVisibleInHas();
+  }
+  return false;
 }
 
 void Element::SetAncestorsOrSiblingsAffectedByFocusVisibleInHas() {
@@ -6610,9 +6652,10 @@ void Element::SetAncestorsOrSiblingsAffectedByFocusVisibleInHas() {
 }
 
 bool Element::AffectedByLogicalCombinationsInHas() const {
-  return HasRareData()
-             ? GetElementRareData()->AffectedByLogicalCombinationsInHas()
-             : false;
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->AffectedByLogicalCombinationsInHas();
+  }
+  return false;
 }
 
 void Element::SetAffectedByLogicalCombinationsInHas() {
@@ -6620,7 +6663,10 @@ void Element::SetAffectedByLogicalCombinationsInHas() {
 }
 
 bool Element::AffectedByMultipleHas() const {
-  return HasRareData() ? GetElementRareData()->AffectedByMultipleHas() : false;
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->AffectedByMultipleHas();
+  }
+  return false;
 }
 
 void Element::SetAffectedByMultipleHas() {
@@ -6840,8 +6886,8 @@ void Element::HideNonce() {
 }
 
 ElementIntersectionObserverData* Element::IntersectionObserverData() const {
-  if (HasRareData()) {
-    return GetElementRareData()->IntersectionObserverData();
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->IntersectionObserverData();
   }
   return nullptr;
 }
@@ -6852,8 +6898,8 @@ ElementIntersectionObserverData& Element::EnsureIntersectionObserverData() {
 
 HeapHashMap<Member<ResizeObserver>, Member<ResizeObservation>>*
 Element::ResizeObserverData() const {
-  if (HasRareData()) {
-    return GetElementRareData()->ResizeObserverData();
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->ResizeObserverData();
   }
   return nullptr;
 }
@@ -6865,7 +6911,7 @@ Element::EnsureResizeObserverData() {
 
 DisplayLockContext* Element::GetDisplayLockContextFromRareData() const {
   DCHECK(HasDisplayLockContext());
-  DCHECK(HasRareData());
+  DCHECK(GetElementRareData());
   return GetElementRareData()->GetDisplayLockContext();
 }
 
@@ -6875,10 +6921,10 @@ DisplayLockContext& Element::EnsureDisplayLockContext() {
 }
 
 ContainerQueryData* Element::GetContainerQueryData() const {
-  if (!HasRareData()) {
-    return nullptr;
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->GetContainerQueryData();
   }
-  return GetElementRareData()->GetContainerQueryData();
+  return nullptr;
 }
 
 ContainerQueryEvaluator* Element::GetContainerQueryEvaluator() const {
@@ -6903,7 +6949,10 @@ StyleScopeData& Element::EnsureStyleScopeData() {
 }
 
 StyleScopeData* Element::GetStyleScopeData() const {
-  return HasRareData() ? GetElementRareData()->GetStyleScopeData() : nullptr;
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->GetStyleScopeData();
+  }
+  return nullptr;
 }
 
 OutOfFlowData& Element::EnsureOutOfFlowData() {
@@ -6911,7 +6960,10 @@ OutOfFlowData& Element::EnsureOutOfFlowData() {
 }
 
 OutOfFlowData* Element::GetOutOfFlowData() const {
-  return HasRareData() ? GetElementRareData()->GetOutOfFlowData() : nullptr;
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->GetOutOfFlowData();
+  }
+  return nullptr;
 }
 
 bool Element::SkippedContainerStyleRecalc() const {
@@ -7685,9 +7737,10 @@ void Element::DetachPseudoElement(PseudoId pseudo_id,
 PseudoElement* Element::GetPseudoElement(
     PseudoId pseudo_id,
     const AtomicString& view_transition_name) const {
-  return HasRareData() ? GetElementRareData()->GetPseudoElement(
-                             pseudo_id, view_transition_name)
-                       : nullptr;
+  if (ElementRareDataVector* data = GetElementRareData()) {
+    return data->GetPseudoElement(pseudo_id, view_transition_name);
+  }
+  return nullptr;
 }
 
 PseudoElement* Element::GetNestedPseudoElement(
@@ -7745,11 +7798,12 @@ bool Element::PseudoElementStylesDependOnFontMetrics() const {
   // If we don't generate a PseudoElement, its style must have been cached on
   // the originating element's ComputedStyle. Hence, it remains to check styles
   // on the generated PseudoElements.
-  if (!HasRareData()) {
+  const ElementRareDataVector* rare_data = GetElementRareData();
+  if (!rare_data) {
     return false;
   }
 
-  if (GetElementRareData()->ScrollbarPseudoElementStylesDependOnFontMetrics()) {
+  if (rare_data->ScrollbarPseudoElementStylesDependOnFontMetrics()) {
     return true;
   }
 
@@ -7760,8 +7814,7 @@ bool Element::PseudoElementStylesDependOnFontMetrics() const {
     return false;
   }
 
-  for (PseudoElement* pseudo_element :
-       GetElementRareData()->GetPseudoElements()) {
+  for (PseudoElement* pseudo_element : rare_data->GetPseudoElements()) {
     if (pseudo_element->GetComputedStyle()->DependsOnFontMetrics()) {
       return true;
     }
@@ -8211,7 +8264,10 @@ bool Element::FastAttributeLookupAllowed(const QualifiedName& name) const {
 
 #if DUMP_NODE_STATISTICS
 bool Element::HasNamedNodeMap() const {
-  return HasRareData() && GetElementRareData()->AttributeMap();
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->AttributeMap();
+  }
+  return false;
 }
 #endif
 
@@ -8521,15 +8577,18 @@ void Element::UpdateIdNamedItemRegistration(NamedItemType type,
 }
 
 ScrollOffset Element::SavedLayerScrollOffset() const {
-  return HasRareData() ? GetElementRareData()->SavedLayerScrollOffset()
-                       : ScrollOffset();
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->SavedLayerScrollOffset();
+  }
+  return ScrollOffset();
 }
 
 void Element::SetSavedLayerScrollOffset(const ScrollOffset& size) {
-  if (size.IsZero() && !HasRareData()) {
-    return;
+  if (ElementRareDataVector* data = GetElementRareData()) {
+    return data->SetSavedLayerScrollOffset(size);
+  } else if (!size.IsZero()) {
+    EnsureElementRareData().SetSavedLayerScrollOffset(size);
   }
-  EnsureElementRareData().SetSavedLayerScrollOffset(size);
 }
 
 Attr* Element::AttrIfExists(const QualifiedName& name) {
@@ -8602,7 +8661,7 @@ void Element::AdjustStyle(ComputedStyleBuilder&) {
 }
 
 void Element::CloneAttributesFrom(const Element& other) {
-  if (HasRareData()) {
+  if (GetElementRareData()) {
     DetachAllAttrNodesFromElement();
   }
 
@@ -9127,13 +9186,14 @@ void Element::LogUpdateAttributeIfIsolatedWorldAndInDocument(
 }
 
 void Element::Trace(Visitor* visitor) const {
+  visitor->Trace(computed_style_);
   visitor->Trace(element_data_);
   ContainerNode::Trace(visitor);
 }
 
 bool Element::HasPart() const {
-  if (HasRareData()) {
-    if (auto* part = GetElementRareData()->GetPart()) {
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    if (auto* part = data->GetPart()) {
       return part->length() > 0;
     }
   }
@@ -9141,7 +9201,10 @@ bool Element::HasPart() const {
 }
 
 DOMTokenList* Element::GetPart() const {
-  return HasRareData() ? GetElementRareData()->GetPart() : nullptr;
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->GetPart();
+  }
+  return nullptr;
 }
 
 DOMTokenList& Element::part() {
@@ -9160,7 +9223,10 @@ bool Element::HasPartNamesMap() const {
 }
 
 const NamesMap* Element::PartNamesMap() const {
-  return HasRareData() ? GetElementRareData()->PartNamesMap() : nullptr;
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->PartNamesMap();
+  }
+  return nullptr;
 }
 
 bool Element::ChildStyleRecalcBlockedByDisplayLock() const {
@@ -9345,10 +9411,13 @@ bool Element::IsInertRoot() const {
 
 FocusgroupFlags Element::GetFocusgroupFlags() const {
   ExecutionContext* context = GetExecutionContext();
-  if (!RuntimeEnabledFeatures::FocusgroupEnabled(context) || !HasRareData()) {
+  if (!RuntimeEnabledFeatures::FocusgroupEnabled(context)) {
     return FocusgroupFlags::kNone;
   }
-  return GetElementRareData()->GetFocusgroupFlags();
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->GetFocusgroupFlags();
+  }
+  return FocusgroupFlags::kNone;
 }
 
 bool Element::checkVisibility(CheckVisibilityOptions* options) const {
@@ -9768,14 +9837,16 @@ AnchorPositionScrollData& Element::EnsureAnchorPositionScrollData() {
 }
 
 void Element::RemoveAnchorPositionScrollData() {
-  if (HasRareData()) {
-    GetElementRareData()->RemoveAnchorPositionScrollData();
+  if (ElementRareDataVector* data = GetElementRareData()) {
+    data->RemoveAnchorPositionScrollData();
   }
 }
 
 AnchorPositionScrollData* Element::GetAnchorPositionScrollData() const {
-  return HasRareData() ? GetElementRareData()->GetAnchorPositionScrollData()
-                       : nullptr;
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->GetAnchorPositionScrollData();
+  }
+  return nullptr;
 }
 
 void Element::IncrementImplicitlyAnchoredElementCount() {
@@ -9789,16 +9860,21 @@ void Element::IncrementImplicitlyAnchoredElementCount() {
   EnsureElementRareData().IncrementImplicitlyAnchoredElementCount();
 }
 void Element::DecrementImplicitlyAnchoredElementCount() {
-  DCHECK(HasRareData());
+  DCHECK(GetElementRareData());
   GetElementRareData()->DecrementImplicitlyAnchoredElementCount();
 }
 bool Element::HasImplicitlyAnchoredElement() const {
-  return HasRareData() && GetElementRareData()->HasImplicitlyAnchoredElement();
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->HasImplicitlyAnchoredElement();
+  }
+  return false;
 }
 
 AnchorElementObserver* Element::GetAnchorElementObserver() const {
-  return HasRareData() ? GetElementRareData()->GetAnchorElementObserver()
-                       : nullptr;
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->GetAnchorElementObserver();
+  }
+  return nullptr;
 }
 
 AnchorElementObserver& Element::EnsureAnchorElementObserver() {

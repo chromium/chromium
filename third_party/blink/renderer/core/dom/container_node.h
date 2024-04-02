@@ -544,14 +544,18 @@ class CORE_EXPORT ContainerNode : public Node {
   void NotifyNodeRemoved(Node&);
 
   bool HasRestyleFlag(DynamicRestyleFlags mask) const {
-    return HasRareData() && HasRestyleFlagInternal(mask);
+    if (const NodeRareData* data = RareData()) {
+      return data->HasRestyleFlag(mask);
+    }
+    return false;
   }
   bool HasRestyleFlags() const {
-    return HasRareData() && HasRestyleFlagsInternal();
+    if (const NodeRareData* data = RareData()) {
+      return data->HasRestyleFlags();
+    }
+    return false;
   }
   void SetRestyleFlag(DynamicRestyleFlags);
-  bool HasRestyleFlagInternal(DynamicRestyleFlags) const;
-  bool HasRestyleFlagsInternal() const;
 
   bool RecheckNodeInsertionStructuralPrereq(const NodeVector&,
                                             const Node* next,

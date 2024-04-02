@@ -155,15 +155,9 @@ namespace blink {
 using ReattachHookScope = LayoutShiftTracker::ReattachHookScope;
 
 struct SameSizeAsNode : EventTarget {
-  subtle::UncompressedMember<int> first_uncompressed;
-  subtle::UncompressedMember<int> second_uncompressed;
-  Member<void*> willbe_member_[2];
-  Member<NodeData> member_;
+  subtle::UncompressedMember<int> uncompressed[2];
+  Member<void*> members[4];
   uint32_t node_flags_;
-  // Increasing size of Member increases size of Node.
-  static_assert(kBlinkMemberGCHasDebugChecks ||
-                    sizeof(Member<NodeData>) <= sizeof(void*),
-                "Member<NodeData> should stay small");
 };
 
 ASSERT_SIZE(Node, SameSizeAsNode);
@@ -200,7 +194,7 @@ void Node::DumpStatistics() {
   {
     ScriptForbiddenScope forbid_script_during_raw_iteration;
     for (Node* node : LiveNodeSet()) {
-      if (node->HasRareData()) {
+      if (node->data_) {
         ++nodes_with_rare_data;
         if (auto* element = DynamicTo<Element>(node)) {
           ++elements_with_rare_data;
@@ -310,7 +304,8 @@ Node::Node(TreeScope* tree_scope, ConstructionType type)
       tree_scope_(tree_scope),
       previous_(nullptr),
       next_(nullptr),
-      data_(&NodeData::SharedEmptyData()),
+      layout_object_(nullptr),
+      data_(nullptr),
       node_flags_(type) {
   DCHECK(tree_scope_ || type == kCreateDocument || type == kCreateShadowRoot);
 #if DUMP_NODE_STATISTICS
@@ -337,14 +332,11 @@ Node* Node::FromDomNodeId(DOMNodeId dom_node_id) {
 
 NodeRareData& Node::CreateRareData() {
   if (IsElementNode()) {
-    data_ = MakeGarbageCollected<ElementRareDataVector>(data_);
+    data_ = MakeGarbageCollected<ElementRareDataVector>();
   } else {
-    data_ = MakeGarbageCollected<NodeRareData>(std::move(*data_));
+    data_ = MakeGarbageCollected<NodeRareData>();
   }
-
-  DCHECK(data_);
-  SetFlag(kHasRareDataFlag);
-  return *RareData();
+  return *data_;
 }
 
 Node* Node::ToNode() {
@@ -962,50 +954,6 @@ LayoutBox* Node::GetLayoutBox() const {
   return DynamicTo<LayoutBox>(GetLayoutObject());
 }
 
-void Node::SetLayoutObject(LayoutObject* layout_object) {
-  DCHECK(!layout_object || layout_object->GetNode() == this);
-
-  // Already pointing to a non empty NodeData so just set the pointer
-  // to the new LayoutObject.
-  if (!data_->IsSharedEmptyData()) {
-    data_->SetLayoutObject(layout_object);
-    return;
-  }
-
-  if (!layout_object)
-    return;
-
-  // Swap the NodeData to point to a new NodeData instead of
-  // the static SharedEmptyData instance.
-  DCHECK(!data_->GetComputedStyle());
-  data_ = MakeGarbageCollected<NodeData>(layout_object, nullptr);
-}
-
-void Node::SetComputedStyle(const ComputedStyle* computed_style) {
-  // We don't set computed style for text nodes.
-  DCHECK(IsElementNode());
-
-  // Already pointing to a non empty NodeData so just set the pointer
-  // to the new LayoutObject.
-  if (!data_->IsSharedEmptyData()) {
-    data_->SetComputedStyle(computed_style);
-    return;
-  }
-
-  if (!computed_style)
-    return;
-
-  // Ensure we only set computed style for elements which are not part of the
-  // flat tree unless it's enforced for getComputedStyle().
-  DCHECK(computed_style->IsEnsuredInDisplayNone() ||
-         LayoutTreeBuilderTraversal::Parent(*this));
-
-  // Swap the NodeData to point to a new NodeData instead of
-  // the static SharedEmptyData instance.
-  DCHECK(!data_->GetLayoutObject());
-  data_ = MakeGarbageCollected<NodeData>(nullptr, computed_style);
-}
-
 LayoutBoxModelObject* Node::GetLayoutBoxModelObject() const {
   return DynamicTo<LayoutBoxModelObject>(GetLayoutObject());
 }
@@ -1318,7 +1266,7 @@ void Node::SetNeedsStyleRecalc(StyleChangeType change_type,
 void Node::ClearNeedsStyleRecalc() {
   node_flags_ &= ~kStyleChangeMask;
   ClearFlag(kForceReattachLayoutTree);
-  if (!HasRareData()) {
+  if (!data_) {
     return;
   }
   if (auto* element = DynamicTo<Element>(this)) {
@@ -1364,7 +1312,7 @@ unsigned Node::NodeIndex() const {
 }
 
 NodeListsNodeData* Node::NodeLists() {
-  return HasRareData() ? RareData()->NodeLists() : nullptr;
+  return data_ ? data_->NodeLists() : nullptr;
 }
 
 void Node::ClearNodeLists() {
@@ -1376,8 +1324,9 @@ FlatTreeNodeData& Node::EnsureFlatTreeNodeData() {
 }
 
 FlatTreeNodeData* Node::GetFlatTreeNodeData() const {
-  if (!HasRareData())
+  if (!data_) {
     return nullptr;
+  }
   return RareData()->GetFlatTreeNodeData();
 }
 
@@ -2679,9 +2628,10 @@ void Node::MoveEventListenersToNewDocument(Document& old_document,
 
 const HeapVector<Member<MutationObserverRegistration>>*
 Node::MutationObserverRegistry() {
-  if (!HasRareData())
+  if (!data_) {
     return nullptr;
-  NodeMutationObserverData* data = RareData()->MutationObserverData();
+  }
+  NodeMutationObserverData* data = data_->MutationObserverData();
   if (!data)
     return nullptr;
   return &data->Registry();
@@ -2689,9 +2639,10 @@ Node::MutationObserverRegistry() {
 
 const HeapHashSet<Member<MutationObserverRegistration>>*
 Node::TransientMutationObserverRegistry() {
-  if (!HasRareData())
+  if (!data_) {
     return nullptr;
-  NodeMutationObserverData* data = RareData()->MutationObserverData();
+  }
+  NodeMutationObserverData* data = data_->MutationObserverData();
   if (!data)
     return nullptr;
   return &data->TransientRegistry();
@@ -3000,7 +2951,7 @@ bool Node::WillRespondToMouseClickEvents() {
 }
 
 unsigned Node::ConnectedSubframeCount() const {
-  return HasRareData() ? RareData()->ConnectedSubframeCount() : 0;
+  return data_ ? data_->ConnectedSubframeCount() : 0;
 }
 
 void Node::IncrementConnectedSubframeCount() {
@@ -3346,10 +3297,11 @@ void Node::SetCachedDirectionality(TextDirection direction) {
 
 void Node::Trace(Visitor* visitor) const {
   visitor->Trace(parent_or_shadow_host_node_);
+  visitor->Trace(tree_scope_);
   visitor->Trace(previous_);
   visitor->Trace(next_);
+  visitor->Trace(layout_object_);
   visitor->Trace(data_);
-  visitor->Trace(tree_scope_);
   EventTarget::Trace(visitor);
 }
 
