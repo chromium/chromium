@@ -514,16 +514,6 @@ async function main() {
                                                 metrics.LaunchType.DEFAULT;
 
   await DeviceOperator.initializeInstance();
-  try {
-    await filesystem.initialize();
-    const cameraDir = filesystem.getCameraDirectory();
-    if (!shouldHandleIntentResult) {
-      await resultSaver.initialize(cameraDir);
-    }
-  } catch (error) {
-    reportError(ErrorType.FILE_SYSTEM_FAILURE, ErrorLevel.ERROR, error);
-    nav.open(ViewName.WARNING, WarningType.FILESYSTEM_FAILURE);
-  }
 
   // Create a promise to finish the intent, that runs in parallel with starting
   // camera.
@@ -547,6 +537,17 @@ async function main() {
 
   await cameraResourceInitialized.wait();
   const cameraStartSuccessful = await cameraManager.requestResume();
+
+  try {
+    await filesystem.initialize();
+    const cameraDir = filesystem.getCameraDirectory();
+    if (!shouldHandleIntentResult) {
+      await resultSaver.initialize(cameraDir);
+    }
+  } catch (error) {
+    reportError(ErrorType.FILE_SYSTEM_FAILURE, ErrorLevel.ERROR, error);
+    nav.open(ViewName.WARNING, WarningType.FILESYSTEM_FAILURE);
+  }
 
   // To align window behavior with other apps, defaultWindowSize is only applied
   // when the camera app is first opened. Later, the window will be opened in
