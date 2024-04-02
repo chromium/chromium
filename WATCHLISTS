@@ -1869,6 +1869,9 @@
     'privacy_sandbox': {
       'filepath': 'privacy_sandbox|PrivacySandbox',
     },
+    'private_aggregation': {
+      'filepath': 'private_aggregation|aggregation_service',
+    },
     'profile_keyed_service': {
       'filepath': 'chrome/browser/profiles/profile_keyed_service_browsertest.cc',
     },
@@ -3169,6 +3172,7 @@
       'tommasin+watch-privacy-sandbox@chromium.org',
       'olesiamarukhno+watch-privacy-sandbox@google.com'
     ],
+    'private_aggregation': ['alexmt+watch@chromium.org'],
     'profile_keyed_service': ['rsult@google.com'],
     'psm_libs': ['amraboelkher+watch@chromium.org'],
     'push_messaging': ['peter@chromium.org'],
