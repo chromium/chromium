@@ -77,6 +77,10 @@ class OnDeviceModelImpl : public OnDeviceModel {
     return std::make_unique<SessionImpl>(std::move(adaptation_id));
   }
 
+  mojom::SafetyInfoPtr ClassifyTextSafety(const std::string& text) override {
+    return nullptr;
+  }
+
   base::expected<uint32_t, mojom::LoadModelResult> LoadAdaptation(
       mojom::LoadAdaptationParamsPtr params) override {
     return base::ok(++next_adaptation_id_);

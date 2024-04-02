@@ -131,6 +131,23 @@ struct ChromeMLExecutionOutput {
   size_t num_ts_scores;
 };
 
+// Status value indicating the result of ad hoc safety classification.
+enum class ChromeMLSafetyResult {
+  // Safety classification succeeded and the caller's output buffer has been
+  // populated with the requested class scores.
+  kOk,
+
+  // The given ChromeMLModel does not have a valid safety classifier to use.
+  kNoClassifier,
+
+  // The caller's output buffer is insufficient to hold the complete set of
+  // safety scores that would be output by the model's safety classifier.
+  kInsufficientStorage,
+
+  // Classification failed due to an internal model execution error.
+  kModelExecutionFailure,
+};
+
 // Function provided from the library that will cancel the corresponding input
 // and output when called. This is safe to call on any thread.
 using ChromeMLCancelFn = std::function<void()>;
@@ -263,6 +280,26 @@ struct ChromeMLAPI {
   bool (*ExecuteModel)(ChromeMLModel model,
                        const ChromeMLExecuteOptions* options,
                        ChromeMLCancelFn* cancel_fn);
+
+  // Performs ad hoc safety classification on a chunk of text using the
+  // classifier defined by `model`.
+  //
+  // On input, `scores` must point to an output buffer to receive the safety
+  // class scores, and `num_scores` must point to the capacity of that buffer in
+  // number of elements.
+  //
+  // On success this returns kOk on and `*num_scores` is set to the actual
+  // number of score values written into the output buffer. This number is
+  // guaranteed to be no larger than the input value of `*num_scores`.
+  //
+  // If this fails with kInsufficientStorage, no `scores` are populated and
+  // `*num_scores` is set to the correct number scores the caller should expect.
+  //
+  // If `model` does not define a safety classifier, this returns kNoClassifier.
+  ChromeMLSafetyResult (*ClassifyTextSafety)(ChromeMLModel model,
+                                             const char* text,
+                                             float* scores,
+                                             size_t* num_scores);
 
   // Destroys a model that was created by CreateModel().
   void (*DestroyModel)(ChromeMLModel model);

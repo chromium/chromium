@@ -64,6 +64,11 @@ class ModelWrapper : public mojom::OnDeviceModel {
         &ModelWrapper::SessionDisconnected, base::Unretained(this)));
   }
 
+  void ClassifyTextSafety(const std::string& text,
+                          ClassifyTextSafetyCallback callback) override {
+    std::move(callback).Run(model_->ClassifyTextSafety(text));
+  }
+
   void LoadAdaptation(mojom::LoadAdaptationParamsPtr params,
                       mojo::PendingReceiver<mojom::OnDeviceModel> model,
                       LoadAdaptationCallback callback) override {

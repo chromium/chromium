@@ -139,6 +139,11 @@ interface OnDeviceModel {
   // one has completed, the previous session will be canceled.
   StartSession(pending_receiver<Session> session);
 
+  // Infers multiclass safety scores for the given `text` using this model's
+  // underlying safety classifier, if any. Returns null if classification fails
+  // or there is no classifier available.
+  ClassifyTextSafety(string text) => (SafetyInfo? safety_info);
+
   // Loads an adaptation with the specified params. This will always load the
   // adaptation on top of the base model.
   LoadAdaptation(

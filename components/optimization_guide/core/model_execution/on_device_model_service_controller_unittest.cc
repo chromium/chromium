@@ -182,6 +182,11 @@ class FakeOnDeviceModel : public on_device_model::mojom::OnDeviceModel {
     receivers_.Add(std::make_unique<FakeOnDeviceSession>(), std::move(session));
   }
 
+  void ClassifyTextSafety(const std::string& text,
+                          ClassifyTextSafetyCallback callback) override {
+    std::move(callback).Run(nullptr);
+  }
+
   void LoadAdaptation(
       on_device_model::mojom::LoadAdaptationParamsPtr params,
       mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,

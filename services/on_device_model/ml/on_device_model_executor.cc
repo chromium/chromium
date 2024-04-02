@@ -371,6 +371,34 @@ OnDeviceModelExecutor::CreateSession(std::optional<uint32_t> adaptation_id) {
                                        adaptation_id);
 }
 
+on_device_model::mojom::SafetyInfoPtr OnDeviceModelExecutor::ClassifyTextSafety(
+    const std::string& text) {
+  if (!chrome_ml_->api().ClassifyTextSafety) {
+    return nullptr;
+  }
+
+  // First query the API to see how much storage we need for class scores.
+  size_t num_scores = 0;
+  if (chrome_ml_->api().ClassifyTextSafety(model_, text.c_str(), nullptr,
+                                           &num_scores) !=
+      ChromeMLSafetyResult::kInsufficientStorage) {
+    return nullptr;
+  }
+
+  auto safety_info = on_device_model::mojom::SafetyInfo::New();
+  safety_info->class_scores.resize(num_scores);
+  const auto result = chrome_ml_->api().ClassifyTextSafety(
+      model_, text.c_str(), safety_info->class_scores.data(), &num_scores);
+  if (result != ChromeMLSafetyResult::kOk) {
+    return nullptr;
+  }
+  CHECK_EQ(num_scores, safety_info->class_scores.size());
+  if (language_detector_) {
+    safety_info->language = language_detector_->DetectLanguage(text);
+  }
+  return safety_info;
+}
+
 DISABLE_CFI_DLSYM
 base::expected<uint32_t, LoadModelResult> OnDeviceModelExecutor::LoadAdaptation(
     on_device_model::mojom::LoadAdaptationParamsPtr params) {
