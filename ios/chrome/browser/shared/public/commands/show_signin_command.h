@@ -36,12 +36,6 @@ enum class AuthenticationOperation {
   // Operation to start a forced sign-in operation. The user is presented with
   // the sign-in page with information about the policy and cannot dimiss it.
   kForcedSigninAndSync,
-  // Operation to start a sign-in and sync operation. The user is presented with
-  // the sign-in page with the user consent. The views are the newer FRE style
-  // views with the first being a screen that asks the user if they want to
-  // sign in and the second being the "tangible sync" screen.
-  // TODO(crbug.com/330333634): Unused now, remove.
-  kSigninAndSyncWithTwoScreens,
   // Operation to trigger sign-in only operation, without presenting UI if an
   // identity is selected in `-ShowSigninCommand.identity`. Otherwise,
   // a dialog to choose an identity is presented and the user is signed in as

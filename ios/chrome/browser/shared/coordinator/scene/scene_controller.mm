@@ -1841,14 +1841,6 @@ using UserFeedbackDataCallback =
                                                 browser:mainBrowser
                                             accessPoint:command.accessPoint];
       break;
-    case AuthenticationOperation::kSigninAndSyncWithTwoScreens:
-      self.signinCoordinator = [SigninCoordinator
-          twoScreensSigninCoordinatorWithBaseViewController:baseViewController
-                                                    browser:mainBrowser
-                                                accessPoint:command.accessPoint
-                                                promoAction:command
-                                                                .promoAction];
-      break;
     case AuthenticationOperation::kInstantSignin:
       self.signinCoordinator = [SigninCoordinator
           instantSigninCoordinatorWithBaseViewController:baseViewController

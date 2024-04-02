@@ -70,19 +70,6 @@ class PrefRegistrySyncable;
                                       accessPoint:(signin_metrics::AccessPoint)
                                                       accessPoint;
 
-// Returns a coordinator for the sign-in and sync workflow. The views will be
-// the newer FRE style views. `viewController` presents the sign-in.
-+ (instancetype)
-    twoScreensSigninCoordinatorWithBaseViewController:
-        (UIViewController*)viewController
-                                              browser:(Browser*)browser
-                                          accessPoint:
-                                              (signin_metrics::AccessPoint)
-                                                  accessPoint
-                                          promoAction:
-                                              (signin_metrics::PromoAction)
-                                                  promoAction;
-
 // Returns a coordinator for upgrade sign-in workflow.
 // `viewController` presents the sign-in.
 + (instancetype)upgradeSigninPromoCoordinatorWithBaseViewController:

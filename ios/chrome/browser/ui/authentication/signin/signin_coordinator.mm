@@ -78,19 +78,6 @@ using signin_metrics::PromoAction;
 }
 
 + (instancetype)
-    twoScreensSigninCoordinatorWithBaseViewController:
-        (UIViewController*)viewController
-                                              browser:(Browser*)browser
-                                          accessPoint:(AccessPoint)accessPoint
-                                          promoAction:(PromoAction)promoAction {
-  return [[TwoScreensSigninCoordinator alloc]
-      initWithBaseViewController:viewController
-                         browser:browser
-                     accessPoint:accessPoint
-                     promoAction:promoAction];
-}
-
-+ (instancetype)
     upgradeSigninPromoCoordinatorWithBaseViewController:
         (UIViewController*)viewController
                                                 browser:(Browser*)browser {
