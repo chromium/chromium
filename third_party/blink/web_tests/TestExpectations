@@ -7109,3 +7109,6 @@ crbug.com/331237019 external/wpt/permissions-policy/payment-extension-allowed-by
 
 # Branch Gardener 2024-03-27
 crbug.com/331358162 [ Win11-arm64 ] http/tests/navigation/back-to-redirect-with-frame.php [ Failure ]
+
+# Gardener (AEST) 2024-04-02
+crbug.com/332068449 [ Mac ] external/wpt/focus/cross-origin-ancestor-activeelement-after-child-lose-focus.sub.html [ Failure Pass ]
