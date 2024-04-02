@@ -7,11 +7,15 @@
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "content/public/test/browser_test.h"
+
 class ProductSpecificationsTest : public WebUIMochaBrowserTest {
  protected:
   ProductSpecificationsTest() {
     set_test_loader_host(commerce::kChromeUICompareHost);
-    scoped_feature_list_.InitAndEnableFeature(commerce::kProductSpecifications);
+    scoped_feature_list_.InitWithFeatures(
+        {commerce::kProductSpecifications,
+         commerce::kProductSpecificationsSync},
+        {});
   }
 
  private:
