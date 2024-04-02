@@ -1,0 +1,4 @@
+simple-insert.cpp:25:7: error: [iterator-checker] Potentially invalid iterator used.
+  if (it != std::end(v)) {
+      ^
+1 error generated.

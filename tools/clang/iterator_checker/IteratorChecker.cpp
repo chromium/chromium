@@ -92,7 +92,7 @@ static llvm::DenseMap<llvm::StringRef, llvm::DenseMap<llvm::StringRef, uint8_t>>
                 {"crend", Annotation::kReturnIterator},
                 {"data", Annotation::kNone},
                 {"emplace",
-                 Annotation::kInvalidateAll | Annotation::kInvalidateAll},
+                 Annotation::kReturnIterator | Annotation::kInvalidateAll},
                 {"emplace_back", Annotation::kInvalidateAll},
                 {"empty", Annotation::kNone},
                 {"end", Annotation::kReturnEndIterator},
@@ -528,22 +528,6 @@ class InvalidIteratorAnalysis
       return;
     }
 
-    if (annotation & Annotation::kReturnIterator ||
-        annotation & Annotation::kReturnEndIterator) {
-      TransferCallReturningIterator(&callexpr, *container,
-                                    annotation & Annotation::kReturnEndIterator
-                                        ? env.getBoolLiteralValue(false)
-                                        : env.makeAtomicBoolValue(),
-                                    annotation & Annotation::kReturnEndIterator
-                                        ? env.getBoolLiteralValue(true)
-                                        : env.makeAtomicBoolValue(),
-                                    env);
-    }
-
-    if (annotation & Annotation::kReturnIteratorPair) {
-      //  TODO(https://crbug.com/1455371): Iterator pair are not yet supported.
-    }
-
     if (annotation & Annotation::kInvalidateArgs) {
       bool found_iterator = false;
 
@@ -562,14 +546,28 @@ class InvalidIteratorAnalysis
         // invalidate everything instead:
         InfoStream() << "INVALIDATING MANY: Container: " << container << '\n';
         InvalidateContainer(env, *container);
-        return;
       }
     }
 
     if (annotation & Annotation::kInvalidateAll) {
       InfoStream() << "INVALIDATING MANY: Container: " << container << '\n';
       InvalidateContainer(env, *container);
-      return;
+    }
+
+    if (annotation & Annotation::kReturnIterator ||
+        annotation & Annotation::kReturnEndIterator) {
+      TransferCallReturningIterator(&callexpr, *container,
+                                    annotation & Annotation::kReturnEndIterator
+                                        ? env.getBoolLiteralValue(false)
+                                        : env.makeAtomicBoolValue(),
+                                    annotation & Annotation::kReturnEndIterator
+                                        ? env.getBoolLiteralValue(true)
+                                        : env.makeAtomicBoolValue(),
+                                    env);
+    }
+
+    if (annotation & Annotation::kReturnIteratorPair) {
+      //  TODO(https://crbug.com/1455371): Iterator pair are not yet supported.
     }
   }
 
