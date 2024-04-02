@@ -1009,25 +1009,28 @@ bool SQLitePersistentCookieStore::Backend::MakeCookiesFromSQLStatement(
     }
     // Returns nullptr if the resulting cookie is not canonical.
     std::unique_ptr<net::CanonicalCookie> cc = CanonicalCookie::FromStorage(
-        statement.ColumnString(3),  // name
-        value,                      // value
-        statement.ColumnString(1),  // domain
-        statement.ColumnString(5),  // path
-        statement.ColumnTime(0),    // creation_utc
-        statement.ColumnTime(6),    // expires_utc
-        statement.ColumnTime(9),    // last_access_utc
-        statement.ColumnTime(17),   // last_update_utc
-        statement.ColumnBool(7),    // secure
-        statement.ColumnBool(8),    // http_only
-        DBCookieSameSiteToCookieSameSite(static_cast<DBCookieSameSite>(
-            statement.ColumnInt(14))),  // samesite
-        DBCookiePriorityToCookiePriority(static_cast<DBCookiePriority>(
-            statement.ColumnInt(12))),                    // priority
-        std::move(partition_key.value()),                 // partition_key
-        DBToCookieSourceScheme(statement.ColumnInt(15)),  // source_scheme
-        statement.ColumnInt(16),                          // source_port
-        DBCookieSourceTypeToCookieSourceType(static_cast<DBCookieSourceType>(
-            statement.ColumnInt(18))));  // source_type
+        /*name=*/statement.ColumnString(3),        //
+        value,                                     //
+        /*domain=*/statement.ColumnString(1),      //
+        /*path=*/statement.ColumnString(5),        //
+        /*creation=*/statement.ColumnTime(0),      //
+        /*expiration=*/statement.ColumnTime(6),    //
+        /*last_access=*/statement.ColumnTime(9),   //
+        /*last_update=*/statement.ColumnTime(17),  //
+        /*secure=*/statement.ColumnBool(7),        //
+        /*httponly=*/statement.ColumnBool(8),      //
+                                                   /*same_site=*/
+        DBCookieSameSiteToCookieSameSite(
+            static_cast<DBCookieSameSite>(statement.ColumnInt(14))),  //
+        /*priority=*/
+        DBCookiePriorityToCookiePriority(
+            static_cast<DBCookiePriority>(statement.ColumnInt(12))),        //
+        /*partition_key=*/std::move(partition_key.value()),                 //
+        /*source_scheme=*/DBToCookieSourceScheme(statement.ColumnInt(15)),  //
+        /*source_port=*/statement.ColumnInt(16),                            //
+        /*source_type=*/
+        DBCookieSourceTypeToCookieSourceType(
+            static_cast<DBCookieSourceType>(statement.ColumnInt(18))));  //
     if (cc) {
       DLOG_IF(WARNING, cc->CreationDate() > Time::Now())
           << "CreationDate too recent";
