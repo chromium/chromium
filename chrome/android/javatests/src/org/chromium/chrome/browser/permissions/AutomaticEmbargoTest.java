@@ -115,7 +115,7 @@ public class AutomaticEmbargoTest {
     @LargeTest
     @Feature({"MIDI"})
     public void testMIDIEmbargo() throws Exception {
-        runTest(MIDI_TEST_FILE, "", "fail", /* withGesture= */ true);
+        runTest(MIDI_TEST_FILE, "", "fail", /* withGesture= */ false);
     }
 
     @Test
