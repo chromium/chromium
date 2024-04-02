@@ -177,6 +177,7 @@ class ASH_EXPORT UnifiedSystemTrayController
   }
 
  private:
+  friend class AccessibilityFeaturePodControllerTest;
   friend class SystemTrayTestApi;
   friend class UnifiedBrightnessViewTest;
   friend class UnifiedMessageCenterBubbleTest;

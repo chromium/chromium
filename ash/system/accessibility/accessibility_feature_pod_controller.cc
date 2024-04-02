@@ -101,6 +101,10 @@ void AccessibilityFeaturePodController::OnAccessibilityStatusChanged() {
 
 std::unique_ptr<FeatureTile> AccessibilityFeaturePodController::CreateTile(
     bool compact) {
+  // Should not create the A11y tile if it already exists. Currently it's only
+  // created once and used in the qs bubble.
+  CHECK(!tile_);
+
   auto feature_tile = std::make_unique<FeatureTile>(
       base::BindRepeating(&FeaturePodControllerBase::OnIconPressed,
                           weak_ptr_factory_.GetWeakPtr()));
@@ -110,6 +114,16 @@ std::unique_ptr<FeatureTile> AccessibilityFeaturePodController::CreateTile(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY));
   feature_tile->SetSubLabelVisibility(false);
   feature_tile->CreateDecorativeDrillInArrow();
+  // The labels are created based on the title container size. So the label need
+  // to be updated if the bounds of its container is changed. Even without
+  // manually calling `SetSize` for the container, its bounds can still change
+  // after the label is created. For example, when the labels are created, the
+  // title container might not be rendered yet. It uses 0 as the size to create
+  // the label first. Then after the container is rendered, it will be updated
+  // to the actual size.
+  feature_tile->SetOnTitleBoundsChangedCallback(base::BindRepeating(
+      &AccessibilityFeaturePodController::UpdateTileStateIfExists,
+      weak_ptr_factory_.GetWeakPtr()));
 
   AccessibilityDelegate* delegate = Shell::Get()->accessibility_delegate();
   LoginStatus login_status = Shell::Get()->session_controller()->login_status();

@@ -2079,6 +2079,10 @@ AccessibilityController::GetAccessibilityEventRewriterForTest() {
   return accessibility_event_rewriter_;
 }
 
+void AccessibilityController::DisableAutoClickConfirmationDialogForTest() {
+  no_auto_click_confirmation_dialog_for_testing_ = true;
+}
+
 void AccessibilityController::
     DisableSwitchAccessDisableConfirmationDialogTesting() {
   no_switch_access_disable_confirmation_dialog_for_testing_ = true;
@@ -2835,7 +2839,8 @@ void AccessibilityController::UpdateFeatureFromPref(FeatureType feature) {
   switch (feature) {
     case FeatureType::kAutoclick:
       Shell::Get()->autoclick_controller()->SetEnabled(
-          enabled, !is_managed /* show confirmation dialog */);
+          enabled, /*show_confirmation_dialog=*/
+          !no_auto_click_confirmation_dialog_for_testing_ && !is_managed);
       break;
     case FeatureType::kCaretHighlight:
       UpdateAccessibilityHighlightingFromPrefs();

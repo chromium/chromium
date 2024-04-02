@@ -592,6 +592,9 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
     return switch_access_bubble_controller_.get();
   }
 
+  // Disables the dialog shown when Auto Click is turned on.
+  // Used in tests.
+  void DisableAutoClickConfirmationDialogForTest();
   // Disables the dialog shown when Switch Access is turned off.
   // Used in tests.
   void DisableSwitchAccessDisableConfirmationDialogTesting();
@@ -720,6 +723,8 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
   std::unique_ptr<SwitchAccessMenuBubbleController>
       switch_access_bubble_controller_;
   raw_ptr<AccessibilityEventRewriter> accessibility_event_rewriter_ = nullptr;
+  // Used in tests to disable the dialog shown when Auto Click is turned on.
+  bool no_auto_click_confirmation_dialog_for_testing_ = false;
   bool no_switch_access_disable_confirmation_dialog_for_testing_ = false;
   bool switch_access_disable_dialog_showing_ = false;
   bool skip_switch_access_notification_ = false;

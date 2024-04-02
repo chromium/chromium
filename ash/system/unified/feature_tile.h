@@ -114,6 +114,10 @@ class ASH_EXPORT FeatureTile : public views::Button {
   // Sets the `callback` for clicks on `icon_button_`.
   void SetIconClickCallback(base::RepeatingCallback<void()> callback);
 
+  // Sets the `on_title_container_bounds_changed_` callback.
+  void SetOnTitleBoundsChangedCallback(
+      base::RepeatingCallback<void()> callback);
+
   // Creates a decorative `drill_in_arrow_` on the right side of the tile. This
   // indicates to the user that the tile shows a detailed view when pressed.
   void CreateDecorativeDrillInArrow();
@@ -181,6 +185,9 @@ class ASH_EXPORT FeatureTile : public views::Button {
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void AddLayerToRegion(ui::Layer* layer, views::LayerRegion region) override;
   void RemoveLayerFromRegions(ui::Layer* layer) override;
+
+  // views::ViewObserver:
+  void OnViewBoundsChanged(views::View* observed_view) override;
 
   base::WeakPtr<FeatureTile> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -313,6 +320,9 @@ class ASH_EXPORT FeatureTile : public views::Button {
   // The download progress, as an integer percentage in the range [0, 100]. Only
   // has meaning when the tile is in an active download state.
   int download_progress_percent_ = 0;
+
+  // Runs when `title_container_`'s bounds is changed.
+  base::RepeatingClosure on_title_container_bounds_changed_;
 
   base::WeakPtrFactory<FeatureTile> weak_ptr_factory_{this};
 };
