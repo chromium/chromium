@@ -490,7 +490,7 @@ class MetaBuildWrapper:
     return 0
 
   def CmdIsolateEverything(self):
-    vals = self.Lookup()
+    vals = self.GetConfig()
     return self.RunGNGenAllIsolates(vals)
 
   def CmdHelp(self):
