@@ -153,7 +153,7 @@ const base::FeatureParam<int> kAutofillRankingFormulaVirtualCardBoostHalfLife{
 // TODO(crbug.com/1381477): Clean up when launched.
 BASE_FEATURE(kAutofillRelaxCreditCardImport,
              "AutofillRelaxCreditCardImport",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, autofill will fill <selectlist> elements.
 // TODO(crbug.com/1427153) Remove once autofilling <selectlist> is launched.
