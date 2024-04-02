@@ -1415,20 +1415,20 @@ bool ValidateLstmCell(const IdToOperandMap& id_to_operand_map,
     return false;
   }
 
-  const std::optional<uint32_t> bias_operand_id = lstm_cell.bias_operand_id;
+  const std::optional<uint64_t> bias_operand_id = lstm_cell.bias_operand_id;
   if (bias_operand_id.has_value() &&
       (!id_to_operand_map.contains(bias_operand_id.value()) ||
        !processed_operands.contains(bias_operand_id.value()))) {
     return false;
   }
-  const std::optional<uint32_t> recurrent_bias_operand_id =
+  const std::optional<uint64_t> recurrent_bias_operand_id =
       lstm_cell.recurrent_bias_operand_id;
   if (recurrent_bias_operand_id.has_value() &&
       (!id_to_operand_map.contains(recurrent_bias_operand_id.value()) ||
        !processed_operands.contains(recurrent_bias_operand_id.value()))) {
     return false;
   }
-  const std::optional<uint32_t> peephole_weight_operand_id =
+  const std::optional<uint64_t> peephole_weight_operand_id =
       lstm_cell.peephole_weight_operand_id;
   if (peephole_weight_operand_id.has_value() &&
       (!id_to_operand_map.contains(peephole_weight_operand_id.value()) ||
