@@ -59,14 +59,6 @@ constexpr char kHatsSurveyTriggerSettingsSecurity[] = "settings-security";
 constexpr char kHatsSurveyTriggerExtensions[] = "extensions";
 constexpr char kHatsSurveyTriggerSuggestedPasswordsExperiment[] =
     "suggested-passwords-experiment";
-constexpr char kHatsSurveyTriggerTrackingProtectionControlImmediate[] =
-    "tracking-protection-control-immediate";
-constexpr char kHatsSurveyTriggerTrackingProtectionTreatmentImmediate[] =
-    "tracking-protection-treatment-immediate";
-constexpr char kHatsSurveyTriggerTrackingProtectionControlDelayed[] =
-    "tracking-protection-control-delayed";
-constexpr char kHatsSurveyTriggerTrackingProtectionTreatmentDelayed[] =
-    "tracking-protection-treatment-delayed";
 constexpr char kHatsSurveyTriggerTrustSafetyPrivacySandbox4ConsentAccept[] =
     "ts-ps4-consent-accept";
 constexpr char kHatsSurveyTriggerTrustSafetyPrivacySandbox4ConsentDecline[] =
@@ -238,43 +230,6 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
   survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForNtpPhotosOptOut,
       kHatsSurveyTriggerNtpPhotosModuleOptOut);
-
-  // Tracking Protection Sentiment Surveys
-  survey_configs.emplace_back(
-      &features::kTrackingProtectionSentimentSurvey,
-      kHatsSurveyTriggerTrackingProtectionControlImmediate,
-      features::kTrackingProtectionSentimentSurveyControlImmediateTriggerId
-          .Get(),
-      std::vector<std::string>{
-          "Onboarding Settings Clicked", "3P cookies blocked", "Is Mode B'",
-          "Topics enabled", "Fledge enabled", "Measurement enabled"},
-      std::vector<std::string>{"Seconds to acknowledge"});
-  survey_configs.emplace_back(
-      &features::kTrackingProtectionSentimentSurvey,
-      kHatsSurveyTriggerTrackingProtectionTreatmentImmediate,
-      features::kTrackingProtectionSentimentSurveyTreatmentImmediateTriggerId
-          .Get(),
-      std::vector<std::string>{
-          "Onboarding Settings Clicked", "3P cookies blocked", "Is Mode B'",
-          "Topics enabled", "Fledge enabled", "Measurement enabled"},
-      std::vector<std::string>{"Seconds to acknowledge"});
-  survey_configs.emplace_back(
-      &features::kTrackingProtectionSentimentSurvey,
-      kHatsSurveyTriggerTrackingProtectionControlDelayed,
-      features::kTrackingProtectionSentimentSurveyControlDelayedTriggerId.Get(),
-      std::vector<std::string>{
-          "Onboarding Settings Clicked", "3P cookies blocked", "Is Mode B'",
-          "Topics enabled", "Fledge enabled", "Measurement enabled"},
-      std::vector<std::string>{"Seconds to acknowledge"});
-  survey_configs.emplace_back(
-      &features::kTrackingProtectionSentimentSurvey,
-      kHatsSurveyTriggerTrackingProtectionTreatmentDelayed,
-      features::kTrackingProtectionSentimentSurveyTreatmentDelayedTriggerId
-          .Get(),
-      std::vector<std::string>{
-          "Onboarding Settings Clicked", "3P cookies blocked", "Is Mode B'",
-          "Topics enabled", "Fledge enabled", "Measurement enabled"},
-      std::vector<std::string>{"Seconds to acknowledge"});
 
   // Trust & Safety Sentiment surveys.
   survey_configs.emplace_back(

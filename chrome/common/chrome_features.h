@@ -738,45 +738,6 @@ BASE_DECLARE_FEATURE(kThirdPartyModulesBlocking);
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kTreatUnsafeDownloadsAsActive);
 
-// TrackingProtectionSentimentSurvey
-#if !BUILDFLAG(IS_ANDROID)
-COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE(kTrackingProtectionSentimentSurvey);
-
-// Probability to pick "IMMEDIATE" over "DELAYED" surveying.
-// A value of 0.0 means Always choose "DELAYED"
-// A value of 1.0 means Always choose "IMMEDIATE"
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<double>
-    kTrackingProtectionSentimentSurveyImmediateOverDelayedProbability;
-
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<double>
-    kTrackingProtectionSentimentSurveyControlImmediateProbability;
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<double>
-    kTrackingProtectionSentimentSurveyTreatmentImmediateProbability;
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<double>
-    kTrackingProtectionSentimentSurveyControlDelayedProbability;
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<double>
-    kTrackingProtectionSentimentSurveyTreatmentDelayedProbability;
-
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<std::string>
-    kTrackingProtectionSentimentSurveyControlImmediateTriggerId;
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<std::string>
-    kTrackingProtectionSentimentSurveyTreatmentImmediateTriggerId;
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<std::string>
-    kTrackingProtectionSentimentSurveyControlDelayedTriggerId;
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<std::string>
-    kTrackingProtectionSentimentSurveyTreatmentDelayedTriggerId;
-#endif
-
 // TrustSafetySentimentSurvey
 #if !BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(CHROME_FEATURES)
