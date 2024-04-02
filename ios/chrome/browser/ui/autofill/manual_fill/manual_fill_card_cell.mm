@@ -539,6 +539,9 @@ using autofill::CreditCard::RecordType::kVirtualCard;
   virtualCardInstructionTextView.textColor =
       [UIColor colorNamed:kTextSecondaryColor];
   virtualCardInstructionTextView.backgroundColor = UIColor.clearColor;
+  virtualCardInstructionTextView.textContainerInset =
+      UIEdgeInsetsMake(0, 0, 0, 0);
+  virtualCardInstructionTextView.textContainer.lineFragmentPadding = 0;
   return virtualCardInstructionTextView;
 }
 
