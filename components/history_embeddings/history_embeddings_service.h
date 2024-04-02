@@ -10,10 +10,12 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequence_bound.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/history_embeddings/sql_database.h"
@@ -23,7 +25,6 @@
 
 namespace history_embeddings {
 
-using PassagesCallback = base::OnceCallback<void(UrlPassages)>;
 using ComputeEmbeddingsCallback =
     base::OnceCallback<std::vector<Embedding>(const UrlPassages&)>;
 
@@ -52,8 +53,8 @@ class HistoryEmbeddingsService : public KeyedService,
   // Initiate async passage extraction from given host's main frame.
   // When extraction completes, the passages will be stored in the database
   // and then given to the callback.
-  void RetrievePassages(content::RenderFrameHost& host,
-                        PassagesCallback callback);
+  void RetrievePassages(const history::VisitRow& visit_row,
+                        content::RenderFrameHost& host);
 
   // Find top `count` URL visit info entries nearest given `query`. Pass
   // results to given `callback` when search completes.
@@ -70,6 +71,7 @@ class HistoryEmbeddingsService : public KeyedService,
                           const history::DeletionInfo& deletion_info) override;
 
  private:
+  friend class HistoryEmbeddingsBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(HistoryEmbeddingsTest,
                            ConstructsAndComputesEmbeddings);
 
@@ -94,7 +96,7 @@ class HistoryEmbeddingsService : public KeyedService,
   };
 
   // Called indirectly via RetrievePassages when passage extraction completes.
-  void OnPassagesRetrieved(PassagesCallback callback, UrlPassages passages);
+  void OnPassagesRetrieved(UrlPassages passages);
 
   // Finishes a search result by combining found data with additional data from
   // history database. Moves each ScoredUrl into a more complete structure with
@@ -116,6 +118,12 @@ class HistoryEmbeddingsService : public KeyedService,
   // Storage is bound to a separate sequence.
   // This will be null if the feature flag is disabled.
   base::SequenceBound<Storage> storage_;
+
+  // Callback called when `ProcessAndStorePassages` completes. Needed for tests
+  // as the blink dependency doesn't have a 'wait for pending requests to
+  // complete' mechanism.
+  base::RepeatingCallback<void(UrlPassages)> callback_for_tests_ =
+      base::DoNothing();
 
   base::WeakPtrFactory<HistoryEmbeddingsService> weak_ptr_factory_;
 };

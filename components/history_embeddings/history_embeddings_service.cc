@@ -14,6 +14,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/sql_database.h"
@@ -121,8 +122,9 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
 
 HistoryEmbeddingsService::~HistoryEmbeddingsService() = default;
 
-void HistoryEmbeddingsService::RetrievePassages(content::RenderFrameHost& host,
-                                                PassagesCallback callback) {
+void HistoryEmbeddingsService::RetrievePassages(
+    const history::VisitRow& visit_row,
+    content::RenderFrameHost& host) {
   const base::TimeTicks start_time = base::TimeTicks::Now();
   mojo::Remote<blink::mojom::InnerTextAgent> agent;
   host.GetRemoteInterfaces()->GetInterface(agent.BindNewPipeAndPassReceiver());
@@ -135,12 +137,10 @@ void HistoryEmbeddingsService::RetrievePassages(content::RenderFrameHost& host,
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           base::BindOnce(
               &OnGotInnerText, std::move(agent), start_time,
-              // TODO(orinj): These IDs should come from history observer or
-              // the like once history metadata is plumbed through.
-              UrlPassages(1, 1, base::Time::Now()),
+              UrlPassages(visit_row.url_id, visit_row.visit_id,
+                          visit_row.visit_time),
               base::BindOnce(&HistoryEmbeddingsService::OnPassagesRetrieved,
-                             weak_ptr_factory_.GetWeakPtr(),
-                             std::move(callback))),
+                             weak_ptr_factory_.GetWeakPtr())),
           nullptr));
 }
 
@@ -202,11 +202,10 @@ std::vector<ScoredUrl> HistoryEmbeddingsService::Storage::Search(
   return scored_urls;
 }
 
-void HistoryEmbeddingsService::OnPassagesRetrieved(PassagesCallback callback,
-                                                   UrlPassages url_passages) {
+void HistoryEmbeddingsService::OnPassagesRetrieved(UrlPassages url_passages) {
   storage_.AsyncCall(&Storage::ProcessAndStorePassages)
       .WithArgs(base::BindOnce(&StubComputePassagesEmbeddings), url_passages)
-      .Then(base::BindOnce(std::move(callback), url_passages));
+      .Then(base::BindOnce(callback_for_tests_, url_passages));
 }
 
 void HistoryEmbeddingsService::OnSearchCompleted(

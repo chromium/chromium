@@ -1687,6 +1687,17 @@ bool HistoryBackend::GetMostRecentVisitsForURL(URLID id,
   return false;
 }
 
+QueryURLResult HistoryBackend::GetMostRecentVisitsForGurl(GURL url,
+                                                          int max_visits) {
+  QueryURLResult result;
+  if (db_ && GetURL(url, &result.row) &&
+      db_->GetMostRecentVisitsForURL(result.row.id(), max_visits,
+                                     &result.visits)) {
+    result.success = true;
+  }
+  return result;
+}
+
 bool HistoryBackend::GetForeignVisit(const std::string& originator_cache_guid,
                                      VisitID originator_visit_id,
                                      VisitRow* visit_row) {

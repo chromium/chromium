@@ -37,7 +37,7 @@ class PageUsageData;
 // Container for a list of URLs.
 typedef std::vector<GURL> RedirectList;
 
-typedef int64_t SegmentID;        // URL segments for the most visited view.
+typedef int64_t SegmentID;  // URL segments for the most visited view.
 
 // The enumeration of all possible sources of visits is listed below.
 // The source will be propagated along with a URL or a visit item
@@ -417,7 +417,9 @@ struct QueryOptions {
 
 // QueryURLResult -------------------------------------------------------------
 
-// QueryURLResult encapsulates the result of a call to HistoryBackend::QueryURL.
+// QueryURLResult encapsulates the result of a call to
+// `HistoryBackend::QueryURL()` or
+// `HistoryBackend::GetMostRecentVisitsForGurl()`.
 struct QueryURLResult {
   QueryURLResult();
   QueryURLResult(const QueryURLResult&);
@@ -426,8 +428,8 @@ struct QueryURLResult {
   QueryURLResult& operator=(QueryURLResult&&) noexcept;
   ~QueryURLResult();
 
-  // Indicates whether the call to HistoryBackend::QueryURL was successful
-  // or not. If false, then both `row` and `visits` fields are undefined.
+  // Indicates whether the call was successful. If false, then both `row` and
+  // `visits` fields are undefined.
   bool success = false;
   URLRow row;
   VisitVector visits;

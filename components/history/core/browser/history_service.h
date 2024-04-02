@@ -488,6 +488,15 @@ class HistoryService : public KeyedService,
       GetDailyVisitsToHostCallback callback,
       base::CancelableTaskTracker* tracker);
 
+  // Generic operations --------------------------------------------------------
+
+  // Returns the `URLRow` and most recent `VisitRow`s for `url`.
+  base::CancelableTaskTracker::TaskId GetMostRecentVisitsForGurl(
+      GURL url,
+      int max_visits,
+      QueryURLCallback callback,
+      base::CancelableTaskTracker* tracker);
+
   // Database management operations --------------------------------------------
 
   // Delete all the information related to a list of urls.  (Deleting

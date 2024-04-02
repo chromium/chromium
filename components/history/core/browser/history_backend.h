@@ -621,15 +621,28 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   bool GetAllTypedURLs(URLRows* urls);
 
+  // TODO(manukh): It's confusing to have 5 methods for fetching URLs' visits
+  //   and continuously adding more methods for each use case. Maybe we can
+  //   satisfy all the callsites with just a few generic methods. E.g.:
+  //   - GetMostRecentVisitsForUrlId(URLID id, int max_visits)
+  //   - GetMostRecentVisitsForGurl(GURL url, int max_visits)
+  //   - GetMostRecentVisitsForEachGurl(std::vector<GURL> urls, int max_visits)
+
+  // TODO(manukh): DEPRECATED (see above comment)
   bool GetVisitsForURL(URLID id, VisitVector* visits);
 
+  // TODO(manukh): Rename to `GetMostRecentVisitsForEachGurl`.
   std::map<GURL, VisitRow> GetMostRecentVisitForEachURL(
       const std::vector<GURL>& urls);
 
+  // TODO(manukh): DEPRECATED (see above comment)
   bool GetMostRecentVisitForURL(URLID id, VisitRow* visit_row) override;
 
   // Fetches up to `max_visits` most recent visits for the passed URL.
+  // TODO(manukh): Rename to `GetMostRecentVisitsForUrlId`.
   bool GetMostRecentVisitsForURL(URLID id, int max_visits, VisitVector* visits);
+
+  QueryURLResult GetMostRecentVisitsForGurl(GURL url, int max_visits);
 
   // Searches for a visit with the given `originator_visit_id` coming from
   // another device (identified by `originator_cache_guid`). If found, returns

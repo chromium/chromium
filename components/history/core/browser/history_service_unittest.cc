@@ -46,6 +46,7 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/test/database_test_utils.h"
 #include "components/history/core/test/test_history_database.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace history {
@@ -469,8 +470,8 @@ TEST_F(HistoryServiceTest, SetTitle) {
 
   // Add a URL.
   const GURL existing_url("http://www.google.com/");
-  history_service_->AddPage(
-      existing_url, base::Time::Now(), history::SOURCE_BROWSED);
+  history_service_->AddPage(existing_url, base::Time::Now(),
+                            history::SOURCE_BROWSED);
 
   // Set some title.
   const std::u16string existing_title = u"Google";
@@ -900,7 +901,6 @@ TEST_F(HistoryServiceTest, CountMonthlyVisitedHosts) {
 
   AddPageInThePast(history, "https://www.yahoo.com/foo", 29);
   EXPECT_EQ(3, GetMonthlyHostCountHelper(history, &tracker_));
-
 }
 
 TEST_F(HistoryServiceTest, GetDomainDiversityShortBasetimeRange) {
@@ -1264,6 +1264,36 @@ TEST_F(HistoryServiceTest, GetDomainDiversityLocalVsSynced) {
   TestDomainMetricSet(local_res[0], 1, -1, -1);
   // The "all" result should also include synced visits.
   TestDomainMetricSet(all_res[0], 3, -1, -1);
+}
+
+TEST_F(HistoryServiceTest, GetMostRecentVisitsForGurl) {
+  HistoryService* history = history_service_.get();
+  ASSERT_TRUE(history);
+
+  // Should not return older visits.
+  AddPageInThePast(history, "http://www.google.com/", 6);
+  // Should not return visits to a different URL.
+  AddPageInThePast(history, "http://www.not-google.com/", 1);
+  AddPageInThePast(history, "http://www.google.com/", 1);
+  // Should return visits in order of visit time.
+  AddPageInThePast(history, "http://www.google.com/", 3);
+  AddPageInThePast(history, "http://www.google.com/", 2);
+  // Should not return older visits.
+  AddPageInThePast(history, "http://www.google.com/", 6);
+
+  base::test::TestFuture<QueryURLResult> future;
+  history->GetMostRecentVisitsForGurl(GURL("http://www.google.com/"), 3,
+                                      future.GetCallback(), &tracker_);
+  const auto result = future.Take();
+  EXPECT_EQ(result.row.id(), 1);
+  EXPECT_THAT(result.visits,
+              testing::ElementsAre(
+                  testing::AllOf(testing::Field(&VisitRow::url_id, 1),
+                                 testing::Field(&VisitRow::visit_id, 3)),
+                  testing::AllOf(testing::Field(&VisitRow::url_id, 1),
+                                 testing::Field(&VisitRow::visit_id, 5)),
+                  testing::AllOf(testing::Field(&VisitRow::url_id, 1),
+                                 testing::Field(&VisitRow::visit_id, 4))));
 }
 
 }  // namespace history

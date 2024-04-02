@@ -11,6 +11,7 @@
 #include "chrome/browser/complex_tasks/task_tab_helper.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_tab_helper.h"
+#include "chrome/browser/history_embeddings/history_embeddings_tab_helper.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
@@ -377,6 +378,12 @@ void HistoryTabHelper::DidFinishNavigation(
           HistoryClustersTabHelper::FromWebContents(web_contents())) {
     clusters_tab_helper->OnUpdatedHistoryForNavigation(
         navigation_handle->GetNavigationId(), timestamp, add_page_args.url);
+  }
+
+  if (HistoryEmbeddingsTabHelper* embeddings_tab_helper =
+          HistoryEmbeddingsTabHelper::FromWebContents(web_contents())) {
+    embeddings_tab_helper->OnUpdatedHistoryForNavigation(
+        navigation_handle, timestamp, add_page_args.url);
   }
 }
 

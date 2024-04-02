@@ -18,9 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/bookmarks/browser/bookmark_model.h"
-#include "components/history/core/browser/history_backend.h"
-#include "components/history/core/browser/history_database.h"
-#include "components/history/core/browser/history_db_task.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/history_clusters/core/url_constants.h"
@@ -40,36 +38,6 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {
-
-using UrlAndVisitCallback =
-    base::OnceCallback<void(history::URLRow, history::VisitVector)>;
-
-// Gets the 2 most recent visits to a URL. Used to associate a memories visit
-// with its history rows and compute the `duration_since_last_visit`
-// context annotation.
-class GetMostRecentVisitsToUrl : public history::HistoryDBTask {
- public:
-  GetMostRecentVisitsToUrl(const GURL& url, UrlAndVisitCallback callback)
-      : url_(url), callback_(std::move(callback)) {}
-
-  bool RunOnDBThread(history::HistoryBackend* backend,
-                     history::HistoryDatabase* db) override {
-    if (backend->GetURL(url_, &url_row_))
-      backend->GetMostRecentVisitsForURL(url_row_.id(), 2, &visits_);
-    return true;
-  }
-
-  void DoneRunOnMainThread() override {
-    DCHECK_LE(visits_.size(), 2u);
-    std::move(callback_).Run(url_row_, visits_);
-  }
-
- private:
-  const GURL url_;
-  history::URLRow url_row_;
-  history::VisitVector visits_;
-  UrlAndVisitCallback callback_;
-};
 
 bool IsPageInTabGroup(content::WebContents* contents) {
   DCHECK(contents);
@@ -177,65 +145,63 @@ void HistoryClustersTabHelper::OnUpdatedHistoryForNavigation(
     // `HistoryTabHelper::UpdateHistoryForNavigation()`, invoked prior to
     // `OnUpdatedHistoryForNavigation()`, will have posted a task to add the
     // visit associated to `incomplete_visit_context_annotations`.
-    history_service->ScheduleDBTask(
-        FROM_HERE,
-        std::make_unique<GetMostRecentVisitsToUrl>(
-            url,
-            base::BindOnce(
-                [](HistoryClustersTabHelper* history_clusters_tab_helper,
-                   history_clusters::HistoryClustersService*
-                       history_clusters_service,
-                   int64_t navigation_id, base::Time timestamp,
-                   history_clusters::IncompleteVisitContextAnnotations&
-                       incomplete_visit_context_annotations,
-                   history::URLRow url_row, history::VisitVector visits) {
-                  DCHECK(history_clusters_tab_helper);
-                  DCHECK(history_clusters_service);
-                  // This can happen for navigations that don't result in a
-                  // visit being added to the DB, e.g. navigations to
-                  // "chrome://" URLs.
-                  if (visits.empty()) {
-                    return;
-                  }
-                  DCHECK(url_row.id());
-                  DCHECK(visits[0].visit_id);
-                  DCHECK_EQ(url_row.id(), visits[0].url_id);
-                  // Make sure the visit we got actually corresponds to the
-                  // navigation by comparing the timestamps.
-                  if (visits[0].visit_time != timestamp) {
-                    return;
-                  }
-                  // Make sure the latest visit (the first one in the array) is
-                  // a local one. That should almost always be the case, since
-                  // this gets called just after a local visit happened, but in
-                  // some rare cases it might not be, e.g. if another device
-                  // sent us a visit "from the future". If this turns out to be
-                  // a problem, consider implementing a
-                  // GetMostRecent*Local*VisitsForURL().
-                  if (!visits[0].originator_cache_guid.empty()) {
-                    return;
-                  }
-                  incomplete_visit_context_annotations.url_row = url_row;
-                  incomplete_visit_context_annotations.visit_row = visits[0];
-                  if (visits.size() > 1) {
-                    incomplete_visit_context_annotations.context_annotations
-                        .duration_since_last_visit =
-                        TimeElapsedBetweenVisits(visits[1], visits[0]);
-                  }
-                  // If the navigation has already ended, record the page end
-                  // metrics.
-                  incomplete_visit_context_annotations.status.history_rows =
-                      true;
-                  if (incomplete_visit_context_annotations.status
-                          .navigation_ended) {
-                    DCHECK(!incomplete_visit_context_annotations.status
-                                .navigation_end_signals);
-                    history_clusters_tab_helper->RecordPageEndMetricsIfNeeded(
-                        navigation_id);
-                  }
-                },
-                this, history_clusters_service, navigation_id, timestamp,
-                std::ref(incomplete_visit_context_annotations))),
+    history_service->GetMostRecentVisitsForGurl(
+        url, 2,
+        base::BindOnce(
+            [](HistoryClustersTabHelper* history_clusters_tab_helper,
+               history_clusters::HistoryClustersService*
+                   history_clusters_service,
+               int64_t navigation_id, base::Time timestamp,
+               history_clusters::IncompleteVisitContextAnnotations&
+                   incomplete_visit_context_annotations,
+               history::QueryURLResult result) {
+              DCHECK(history_clusters_tab_helper);
+              DCHECK(history_clusters_service);
+              // visit being added to the DB, e.g. navigations to
+              // "chrome://" URLs.
+              if (!result.success || result.visits.empty()) {
+                return;
+              }
+              const history::URLRow& url_row = result.row;
+              const history::VisitVector& visits = result.visits;
+              DCHECK(url_row.id());
+              DCHECK(visits[0].visit_id);
+              DCHECK_EQ(url_row.id(), visits[0].url_id);
+              // Make sure the visit we got actually corresponds to the
+              // navigation by comparing the timestamps.
+              if (visits[0].visit_time != timestamp) {
+                return;
+              }
+              // Make sure the latest visit (the first one in the array) is
+              // a local one. That should almost always be the case, since
+              // this gets called just after a local visit happened, but in
+              // some rare cases it might not be, e.g. if another device
+              // sent us a visit "from the future". If this turns out to be
+              // a problem, consider implementing a
+              // GetMostRecent*Local*VisitsForURL().
+              if (!visits[0].originator_cache_guid.empty()) {
+                return;
+              }
+              incomplete_visit_context_annotations.url_row = url_row;
+              incomplete_visit_context_annotations.visit_row = visits[0];
+              if (visits.size() > 1) {
+                incomplete_visit_context_annotations.context_annotations
+                    .duration_since_last_visit =
+                    TimeElapsedBetweenVisits(visits[1], visits[0]);
+              }
+              // If the navigation has already ended, record the page end
+              // metrics.
+              incomplete_visit_context_annotations.status.history_rows = true;
+              if (incomplete_visit_context_annotations.status
+                      .navigation_ended) {
+                DCHECK(!incomplete_visit_context_annotations.status
+                            .navigation_end_signals);
+                history_clusters_tab_helper->RecordPageEndMetricsIfNeeded(
+                    navigation_id);
+              }
+            },
+            this, history_clusters_service, navigation_id, timestamp,
+            std::ref(incomplete_visit_context_annotations)),
         &task_tracker_);
   }
 }

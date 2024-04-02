@@ -1260,6 +1260,22 @@ base::CancelableTaskTracker::TaskId HistoryService::GetDailyVisitsToHost(
       std::move(callback));
 }
 
+// Generic operations ----------------------------------------------------------
+
+base::CancelableTaskTracker::TaskId HistoryService::GetMostRecentVisitsForGurl(
+    GURL url,
+    int max_visits,
+    QueryURLCallback callback,
+    base::CancelableTaskTracker* tracker) {
+  DCHECK(backend_task_runner_) << "History service being called after cleanup";
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return tracker->PostTaskAndReplyWithResult(
+      backend_task_runner_.get(), FROM_HERE,
+      base::BindOnce(&HistoryBackend::GetMostRecentVisitsForGurl,
+                     history_backend_, url, max_visits),
+      std::move(callback));
+}
+
 // Downloads -------------------------------------------------------------------
 
 // Handle creation of a download by creating an entry in the history service's
