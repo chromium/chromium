@@ -939,6 +939,10 @@ chromium-metrics-reviews@google.com.
     A credential exists for an affiliated site but not for the current security
     origin.
   </int>
+  <int value="4" label="Grouped website">
+    A credential exists for a web site, which is grouped with the current domain
+    by the AffiliationService.
+  </int>
 </enum>
 
 <enum name="PasswordManagerOfferedAndroidCredentials">

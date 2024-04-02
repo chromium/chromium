@@ -562,6 +562,9 @@ void PasswordFormMetricsRecorder::RecordMatchedFormType(
     case password_manager_util::GetLoginMatchType::kPSL:
       match_type = FormMatchType::kPublicSuffixMatch;
       break;
+    case password_manager_util::GetLoginMatchType::kGrouped:
+      match_type = FormMatchType::kGroupedWebsites;
+      break;
   }
   UMA_HISTOGRAM_ENUMERATION("PasswordManager.MatchedFormType", match_type);
 }

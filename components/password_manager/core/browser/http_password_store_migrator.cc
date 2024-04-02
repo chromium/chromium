@@ -117,7 +117,7 @@ void HttpPasswordStoreMigrator::OnHSTSQueryResult(HSTSResult is_hsts) {
 }
 
 void HttpPasswordStoreMigrator::ProcessPasswordStoreResults() {
-  // Ignore PSL, affiliated and other matches.
+  // Ignore PSL, affiliated, grouped and other matches.
   std::erase_if(results_, [](const std::unique_ptr<PasswordForm>& form) {
     return password_manager_util::GetMatchType(*form) !=
            password_manager_util::GetLoginMatchType::kExact;

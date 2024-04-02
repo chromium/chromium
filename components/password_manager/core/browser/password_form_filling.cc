@@ -167,7 +167,8 @@ LikelyFormFilling SendFillInformationToRenderer(
   // Note that we provide the choices but don't actually prefill a value if:
   // (1) we are in Incognito mode, or
   // (2) if it matched using public suffix domain matching, or
-  // (3) it would result in unexpected filling in a form with new password
+  // (3) if is matched by the `AffiliationService`, or
+  // (4) it would result in unexpected filling in a form with new password
   //     fields.
   using WaitForUsernameReason =
       PasswordFormMetricsRecorder::WaitForUsernameReason;
@@ -188,6 +189,9 @@ LikelyFormFilling SendFillInformationToRenderer(
   } else if (preferred_match &&
              GetMatchType(*preferred_match) == GetLoginMatchType::kPSL) {
     wait_for_username_reason = WaitForUsernameReason::kPublicSuffixMatch;
+  } else if (preferred_match &&
+             GetMatchType(*preferred_match) == GetLoginMatchType::kGrouped) {
+    wait_for_username_reason = WaitForUsernameReason::kGroupedMatch;
   } else if (!IsSameOrigin(client->GetLastCommittedOrigin(),
                            GURL(observed_form.signon_realm))) {
     wait_for_username_reason = WaitForUsernameReason::kCrossOriginIframe;

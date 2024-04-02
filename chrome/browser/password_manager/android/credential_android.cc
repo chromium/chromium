@@ -18,6 +18,7 @@ base::android::ScopedJavaLocalRef<jobject> CreateNativeCredential(
     int position) {
   using base::android::ConvertUTF16ToJavaString;
   using base::android::ConvertUTF8ToJavaString;
+  // Origin URL should be shown for the PSL, affiliated and grouped matches.
   std::string origin_url =
       password_manager_util::GetMatchType(password_form) ==
               password_manager_util::GetLoginMatchType::kExact

@@ -139,6 +139,9 @@ bool ShouldPromptUserToSavePassword(const PasswordFormManager& manager) {
         // credentials should be automatically saved in order to be autofilled
         // on next login.
         return false;
+      case password_manager_util::GetLoginMatchType::kGrouped:
+        // User successfully signed-in with grouped match credentials.
+        break;
     }
   }
 

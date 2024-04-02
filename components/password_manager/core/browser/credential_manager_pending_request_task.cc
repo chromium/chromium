@@ -116,7 +116,8 @@ void FilterIrrelevantForms(std::vector<std::unique_ptr<PasswordForm>>& forms,
 bool IsFormValidForAutoSignIn(const PasswordForm* form) {
   GetLoginMatchType match_type = GetMatchType(*form);
   // Only exactly matching form, or affiliated android app can be used for auto
-  // sign in.
+  // sign in. PLS, non-Android affiliations and grouped credentials cannot be
+  // used.
   if (match_type == GetLoginMatchType::kExact ||
       (match_type == GetLoginMatchType::kAffiliated &&
        affiliations::IsValidAndroidFacetURI(form->signon_realm))) {

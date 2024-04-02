@@ -133,8 +133,8 @@ CredentialsItemView::CredentialsItemView(
     lower_label_ = text_container->AddChildView(std::move(lower_label));
   }
 
-  // Add info icon with a tooltip providing the source of the credential if
-  // this is not an exact match.
+  // Add info icon with a tooltip providing the source of the PSL, affiliated
+  // and grouped credentials.
   if (form->match_type.has_value() &&
       password_manager_util::GetMatchType(*form) !=
           password_manager_util::GetLoginMatchType::kExact) {

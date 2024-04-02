@@ -221,7 +221,10 @@ class PasswordFormMetricsRecorder
     // Form is in an iframe with an origin that differs from the main frame
     // origin.
     kCrossOriginIframe = 12,
-    kMaxValue = kCrossOriginIframe,
+    // A credential with a different domain was grouped with the current domain
+    // by the `AffiliationService`.
+    kGroupedMatch = 13,
+    kMaxValue = kGroupedMatch,
   };
 
   // Used in UMA histogram, please do NOT reorder.
@@ -245,7 +248,10 @@ class PasswordFormMetricsRecorder
     // A credential exists for an affiliated matched site but not for the
     // current security origin.
     kAffiliatedWebsites = 3,
-    kMaxValue = kAffiliatedWebsites,
+    // A credential exists for a web site, which is grouped with the current
+    // domain by the `AffiliationService`.
+    kGroupedWebsites = 4,
+    kMaxValue = kGroupedWebsites,
   };
 
   // This metric records the user experience with the passwords filling. The

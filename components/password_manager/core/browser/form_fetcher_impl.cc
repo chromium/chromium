@@ -198,7 +198,8 @@ bool FormFetcherImpl::IsMovingBlocked(const signin::GaiaIdHash& destination,
       // entries anyway).
       if (form->IsUsingAccountStore())
         continue;
-      // Ignore non-exact matches for blocking moving.
+      // Ignore non-exact matches for blocking moving. PLS, affiliated and
+      // grouped matches are ignored.
       if (GetMatchType(*form) !=
           password_manager_util::GetLoginMatchType::kExact) {
         continue;
@@ -289,7 +290,8 @@ void FormFetcherImpl::SplitResults(
   insecure_credentials_.clear();
   for (auto& form : forms) {
     if (form->blocked_by_user) {
-      // Ignore non-exact matches for blocklisted entries.
+      // Ignore non-exact matches for blocklisted entries. PLS, affiliated and
+      // grouped matches are ignored.
       if (password_manager_util::GetMatchType(*form) ==
               password_manager_util::GetLoginMatchType::kExact &&
           form->scheme == form_digest_.scheme) {

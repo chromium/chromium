@@ -184,6 +184,8 @@ PendingCredentialsState ComputePendingCredentialsState(
   // If the autofilled credentials were a PSL match, store a copy with the
   // current origin and signon realm. This ensures that on the next visit, a
   // precise match is found.
+  // TODO(b/331409076): Investigate whether affiliated and grouped matches
+  // should be handled the same way.
   if (password_manager_util::GetMatchType(*similar_saved_form) ==
       password_manager_util::GetLoginMatchType::kPSL) {
     return PendingCredentialsState::AUTOMATIC_SAVE;

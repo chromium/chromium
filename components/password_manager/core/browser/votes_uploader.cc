@@ -173,6 +173,8 @@ bool IsAddingUsernameToExistingMatch(
     return false;
   }
 
+  // TODO(b/331409076): investigate if affiliated and grouped matches should be
+  // skipped as well.
   if (password_manager_util::GetMatchType(*match) ==
       password_manager_util::GetLoginMatchType::kPSL) {
     return false;

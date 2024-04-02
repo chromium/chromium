@@ -89,6 +89,9 @@ std::ostream& operator<<(std::ostream& os, const UiCredential& credential) {
     case password_manager_util::GetLoginMatchType::kPSL:
       match_type = "PSL match";
       break;
+    case password_manager_util::GetLoginMatchType::kGrouped:
+      match_type = "grouped match";
+      break;
   }
   return os << "(user: \"" << credential.username() << "\", " << "pwd: \""
             << credential.password() << "\", " << "origin: \""

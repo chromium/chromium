@@ -42,6 +42,10 @@ enum class GetLoginMatchType {
   kAffiliated,
   // eTLD + 1 match.
   kPSL,
+  // Singon realm is grouped with the requesting page URL as determined by the
+  // `AffiliationService`. This relation to the requesting page is weaker than
+  // `kAffiliated`.
+  kGrouped,
 };
 
 // Update |credential| to reflect usage.

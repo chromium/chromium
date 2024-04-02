@@ -228,7 +228,8 @@ void CredentialManagerImpl::OnProvisionalSaveComplete() {
   if (form.match_type.has_value()) {
     // Having PSL or affiliated web match implies there is no credential with an
     // exactly matching origin and username. In order to avoid showing a save
-    // bubble to the user Save() is called directly.
+    // bubble to the user Save() is called directly. Save prompt is still
+    // offered for grouped credentials.
     GetLoginMatchType match_type = GetMatchType(form);
     if (match_type == GetLoginMatchType::kPSL ||
         (match_type == GetLoginMatchType::kAffiliated &&

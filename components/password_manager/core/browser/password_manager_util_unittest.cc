@@ -238,16 +238,9 @@ TEST(PasswordManagerUtil, GetMatchType_Web) {
 
   form.match_type = PasswordForm::MatchType::kPSL;
   EXPECT_EQ(GetLoginMatchType::kPSL, GetMatchType(form));
-}
 
-TEST(PasswordManagerUtil, GetMatchType_Grouped) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      password_manager::features::kFillingAcrossGroupedSites);
-
-  PasswordForm form = GetTestAndroidCredential();
   form.match_type = PasswordForm::MatchType::kGrouped;
-  EXPECT_EQ(GetLoginMatchType::kAffiliated, GetMatchType(form));
+  EXPECT_EQ(GetLoginMatchType::kGrouped, GetMatchType(form));
 }
 
 TEST(PasswordManagerUtil, FindBestMatches) {
