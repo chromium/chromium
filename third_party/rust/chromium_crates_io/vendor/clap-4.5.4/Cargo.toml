@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.74"
 name = "clap"
-version = "4.5.3"
+version = "4.5.4"
 include = [
     "build.rs",
     "src/**/*",
@@ -382,7 +382,7 @@ version = "=4.5.2"
 default-features = false
 
 [dependencies.clap_derive]
-version = "=4.5.3"
+version = "=4.5.4"
 optional = true
 
 [dev-dependencies.humantime]

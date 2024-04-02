@@ -22,4 +22,4 @@
 use crate::builder::*;
 
 pub use super::chapter_1 as next;
-pub use crate::_tutorial as table_of_contents;
+pub use crate::_derive::_tutorial as table_of_contents;
