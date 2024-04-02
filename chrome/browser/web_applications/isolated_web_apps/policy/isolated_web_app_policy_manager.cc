@@ -264,7 +264,7 @@ void BulkIwaInstaller::OnUpdateManifestParsed(
       update_manifest.GetLatestVersion(
           // TODO(b/294481776): In the future, we will support channel selection
           // via policy. For now, we always use the "default" channel.
-          UpdateManifest::kDefaultUpdateChannelId);
+          UpdateChannelId::default_id());
   if (!latest_version.has_value()) {
     FinishWithResult(
         InstallResult(InstallResult::Type::kErrorWebBundleUrlCantBeDetermined));
