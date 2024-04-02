@@ -33,8 +33,7 @@ bool UsesSplitStoresAndUPMForLocal(PrefService* pref_service) {
 bool IsGmsCoreUpdateRequired(PrefService* pref_service,
                              bool is_pwd_sync_enabled,
                              std::string gms_version_str) {
-  if (!password_manager::features::
-          IsUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled()) {
+  if (!features::IsUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled()) {
     return false;
   }
 
@@ -52,20 +51,17 @@ bool IsGmsCoreUpdateRequired(PrefService* pref_service,
   // GMSCore version is post-UPM with local passwords, no update required.
   bool is_automotive = base::android::BuildInfo::GetInstance()->is_automotive();
   if (is_automotive &&
-      gms_version >=
-          base::GetFieldTrialParamByFeatureAsInt(
-              kUnifiedPasswordManagerSyncOnlyInGMSCore,
-              password_manager::features::kLocalUpmMinGmsVersionParamForAuto,
-              password_manager::features::
-                  kDefaultLocalUpmMinGmsVersionForAuto)) {
+      gms_version >= base::GetFieldTrialParamByFeatureAsInt(
+                         kUnifiedPasswordManagerSyncOnlyInGMSCore,
+                         features::kLocalUpmMinGmsVersionParamForAuto,
+                         features::kDefaultLocalUpmMinGmsVersionForAuto)) {
     return false;
   }
   if (!is_automotive &&
-      gms_version >=
-          base::GetFieldTrialParamByFeatureAsInt(
-              kUnifiedPasswordManagerSyncOnlyInGMSCore,
-              password_manager::features::kLocalUpmMinGmsVersionParam,
-              password_manager::features::kDefaultLocalUpmMinGmsVersion)) {
+      gms_version >= base::GetFieldTrialParamByFeatureAsInt(
+                         kUnifiedPasswordManagerSyncOnlyInGMSCore,
+                         features::kLocalUpmMinGmsVersionParam,
+                         features::kDefaultLocalUpmMinGmsVersion)) {
     return false;
   }
 
@@ -75,13 +71,19 @@ bool IsGmsCoreUpdateRequired(PrefService* pref_service,
     return true;
   }
 
+  // There are no local passwords so GMSCore can be used regardless of
+  // unenrolled or initial UPM migration status.
+  if (pref_service->GetBoolean(prefs::kEmptyProfileStoreLoginDatabase)) {
+    return false;
+  }
+
   // If the user was unenrolled or has never done the initial migration, update
   // to the GMSCore version with local passwords support is required.
   bool is_initial_migration_missing =
       pref_service->GetInteger(
           kCurrentMigrationVersionToGoogleMobileServices) == 0;
   bool is_user_unenrolled = pref_service->GetBoolean(
-      password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors);
+      prefs::kUnenrolledFromGoogleMobileServicesDueToErrors);
   return is_user_unenrolled || is_initial_migration_missing;
 }
 
