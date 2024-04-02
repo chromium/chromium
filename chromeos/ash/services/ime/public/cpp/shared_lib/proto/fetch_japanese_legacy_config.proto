@@ -63,13 +63,13 @@ message FetchJapaneseLegacyConfigResponse {
   optional PreeditMethod preedit_method = 1;
   optional PunctuationMethod punctuation_method = 2;
   optional SymbolMethod symbol_method = 3;
-  optional FundamentalCharacterForm fundamental_character_form = 4;
+  optional FundamentalCharacterForm space_character_form = 4;
   optional SelectionShortcut selection_shortcut = 5;
   optional SessionKeymap session_keymap = 6;
-  optional bool automatically_switch_type = 7;
+  optional bool use_auto_conversion = 7;
   optional ShiftKeyModeSwitch shift_key_mode_switch = 8;
-  optional bool use_input_history = 9;
-  optional bool use_system_dictionary = 10;
+  optional bool use_history_suggest = 9;
+  optional bool use_dictionary_suggest = 10;
   optional int32 suggestion_size = 11;
   optional bool incognito_mode = 12;
   optional bool upload_usage_stats = 13;
