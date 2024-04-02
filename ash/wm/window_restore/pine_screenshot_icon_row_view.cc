@@ -25,7 +25,7 @@ namespace ash {
 namespace {
 
 constexpr gfx::Insets kIconRowInsets =
-    gfx::Insets::TLBR(pine::kScreenshotPreviewRadius + 4, 4, 4, 4);
+    gfx::Insets::TLBR(pine::kPreviewContainerRadius + 4, 4, 4, 4);
 constexpr int kIconRowHeight = pine::kScreenshotIconRowIconSize +
                                kIconRowInsets.top() + kIconRowInsets.bottom();
 
@@ -36,7 +36,7 @@ constexpr int kIconRowHeight = pine::kScreenshotIconRowIconSize +
 gfx::Size GetPreferredSizeOfTheRow(int child_number, bool one_browser_window) {
   int width = child_number * pine::kScreenshotIconRowIconSize +
               kIconRowInsets.left() + kIconRowInsets.right() +
-              pine::kScreenshotPreviewRadius;
+              pine::kPreviewContainerRadius;
   if (one_browser_window) {
     width += 2 * pine::kScreenshotIconRowChildSpacing +
              (child_number - 2) * pine::kScreenshotFaviconSpacing +
@@ -121,11 +121,11 @@ void PineScreenshotIconRowView::OnBoundsChanged(
   const auto bottom_left = SkPoint::Make(0.f, kIconRowHeight);
   const auto bottom_right = SkPoint::Make(width, height);
 
-  const int cutout_curve1_end_x = pine::kScreenshotPreviewRadius;
-  const int cutout_curve1_end_y = pine::kScreenshotPreviewRadius;
+  const int cutout_curve1_end_x = pine::kPreviewContainerRadius;
+  const int cutout_curve1_end_y = pine::kPreviewContainerRadius;
 
-  const int cutout_curve2_end_x = width - pine::kScreenshotPreviewRadius;
-  const int cutout_curve2_end_y = 2 * pine::kScreenshotPreviewRadius;
+  const int cutout_curve2_end_x = width - pine::kPreviewContainerRadius;
+  const int cutout_curve2_end_y = 2 * pine::kPreviewContainerRadius;
 
   auto clip_path =
       SkPathBuilder()
@@ -135,19 +135,19 @@ void PineScreenshotIconRowView::OnBoundsChanged(
           // connecting it to the top-right rounded corner.
           .arcTo(SkPoint::Make(0, cutout_curve1_end_y),
                  SkPoint::Make(cutout_curve1_end_x, cutout_curve1_end_y),
-                 pine::kScreenshotPreviewRadius)
+                 pine::kPreviewContainerRadius)
           // Draw the top-right rounded corner and a vertical line connecting
           // it to the bottom-right concave arc.
           .arcTo(SkPoint::Make(cutout_curve2_end_x, cutout_curve1_end_y),
                  SkPoint::Make(cutout_curve2_end_x, cutout_curve2_end_y),
-                 pine::kScreenshotPreviewRadius)
+                 pine::kPreviewContainerRadius)
           // Draw the bottom-right concave arc and a horizontal line
           // connecting it to the bottom-left rounded corner.
           .arcTo(SkPoint::Make(cutout_curve2_end_x, kIconRowHeight),
-                 bottom_right, pine::kScreenshotPreviewRadius)
+                 bottom_right, pine::kPreviewContainerRadius)
           // Draw the bottom-left rounded corner and the vertical line
           // connecting it to the top-left point.
-          .arcTo(bottom_left, top_left, pine::kScreenshotPreviewRadius)
+          .arcTo(bottom_left, top_left, pine::kPreviewContainerRadius)
           .close()
           .detach();
   SetClipPath(clip_path);

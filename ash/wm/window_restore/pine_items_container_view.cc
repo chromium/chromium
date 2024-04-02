@@ -4,27 +4,14 @@
 
 #include "ash/wm/window_restore/pine_items_container_view.h"
 
-#include "ash/public/cpp/saved_desk_delegate.h"
-#include "ash/shell.h"
 #include "ash/wm/window_restore/pine_constants.h"
 #include "ash/wm/window_restore/pine_item_view.h"
 #include "ash/wm/window_restore/pine_items_overflow_view.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
-#include "ui/gfx/image/image_skia.h"
 #include "ui/views/background.h"
-#include "ui/views/border.h"
-#include "ui/views/controls/image_view.h"
-#include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout_view.h"
 
 namespace ash {
-
-namespace {
-
-constexpr gfx::Insets kItemsContainerInsets = gfx::Insets::VH(15, 15);
-constexpr int kItemsContainerRounding = 15;
-
-}  // namespace
 
 PineItemsContainerView::PineItemsContainerView(
     const PineContentsData::AppsInfos& apps_infos) {
@@ -32,9 +19,9 @@ PineItemsContainerView::PineItemsContainerView(
   CHECK_GT(elements, 0);
 
   SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysSystemBaseElevated, kItemsContainerRounding));
+      cros_tokens::kCrosSysSystemBaseElevated, pine::kPreviewContainerRadius));
   SetBetweenChildSpacing(pine::kItemsContainerChildSpacing);
-  SetInsideBorderInsets(kItemsContainerInsets);
+  SetInsideBorderInsets(pine::kItemsContainerInsets);
   SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kStart);
   SetOrientation(views::BoxLayout::Orientation::kVertical);
 

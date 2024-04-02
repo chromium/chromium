@@ -56,8 +56,8 @@ inline constexpr ui::ColorId kIconBackgroundColorId =
 // preview can be either the items view or the screenshot.
 inline constexpr int kPreviewContainerWidth = 344;
 
-// Corner radius of the screenshot preview inside the pine dialog.
-inline constexpr int kScreenshotPreviewRadius = 12;
+// Corner radius of the preview container inside the pine dialog.
+inline constexpr int kPreviewContainerRadius = 12;
 
 inline constexpr gfx::Size kOverflowIconPreferredSize(20, 20);
 

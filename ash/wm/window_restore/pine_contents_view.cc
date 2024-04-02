@@ -97,7 +97,6 @@ PineContentsView::PineContentsView() : creation_time_(base::TimeTicks::Now()) {
                                          : IDS_ASH_PINE_DIALOG_DESCRIPTION;
 
   views::View* spacer;
-  views::BoxLayoutView* preview_container_view;
   auto* actions_container_view = AddChildView(
       // This box layout view is the container for the left hand side (in LTR)
       // of the contents view. It contains the title, buttons container and
@@ -170,6 +169,7 @@ PineContentsView::PineContentsView() : creation_time_(base::TimeTicks::Now()) {
 
   gfx::Size screenshot_size;
   showing_list_view_ = pine_contents_data->image.isNull();
+  views::BoxLayoutView* preview_container_view;
   if (showing_list_view_) {
     preview_container_view =
         AddChildView(std::make_unique<PineItemsContainerView>(
@@ -214,7 +214,7 @@ PineContentsView::PineContentsView() : creation_time_(base::TimeTicks::Now()) {
 
     image_view->layer()->SetFillsBoundsOpaquely(false);
     image_view->layer()->SetRoundedCornerRadius(
-        gfx::RoundedCornersF(pine::kScreenshotPreviewRadius));
+        gfx::RoundedCornersF(pine::kPreviewContainerRadius));
     icon_row_container->layer()->SetFillsBoundsOpaquely(false);
 
     icon_row_container->AddChildView(
