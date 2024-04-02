@@ -251,7 +251,8 @@ constexpr char kSchema[] = R"(
                     "CLIPBOARD",
                     "FILE_ATTACH",
                     "FILE_DOWNLOAD",
-                    "PRINTING"
+                    "PRINTING",
+                    "SCREENSHOT"
                   ],
                   "type": "string"
                 },
@@ -389,7 +390,49 @@ constexpr std::pair<const char*, const char16_t*> kInvalidTestCases[] = {
             }
           ])",
         u"Error at PolicyForTesting[0].sources: Keys \"incognito\" cannot be "
-        u"set in the same dictionary as the \"os_clipboard\" keys"}};
+        u"set in the same dictionary as the \"os_clipboard\" keys"},
+    {
+        R"([
+             {
+               "destinations": { "urls": [ "google.com" ] },
+               "restrictions": [
+                 {
+                   "class": "SCREENSHOT",
+                   "level": "BLOCK"
+                 }
+               ]
+             }
+          ])",
+        u"Error at PolicyForTesting[0]: \"destinations\" is not a supported "
+        u"condition for \"SCREENSHOT\""},
+    {
+        R"([
+             {
+               "sources": { "urls": [ "google.com" ] },
+               "restrictions": [
+                 {
+                   "class": "SCREENSHOT",
+                   "level": "WARN"
+                 }
+               ]
+             }
+          ])",
+        u"Error at PolicyForTesting[0]: \"SCREENSHOT\" cannot be set to "
+        u"\"WARN\""},
+    {
+        R"([
+             {
+               "restrictions": [
+                 {
+                   "class": "PRINTING",
+                   "level": "WARN"
+                 }
+               ]
+             }
+          ])",
+        u"Error at PolicyForTesting[0]: \"PRINTING\" is not a supported "
+        u"restriction on this platform"},
+};
 
 class DataControlsPolicyHandlerTest : public testing::Test {
  public:

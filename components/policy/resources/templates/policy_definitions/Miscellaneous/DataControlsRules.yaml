@@ -247,6 +247,7 @@ schema:
               - FILE_ATTACH
               - FILE_DOWNLOAD
               - PRINTING
+              - SCREENSHOT
               type: string
             level:
               enum:

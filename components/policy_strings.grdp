@@ -412,6 +412,15 @@ Additional details:
   <message name="IDS_POLICY_DATA_CONTROLS_MUTUALLY_EXCLUSIVE_KEY_SETS" desc="The text displayed in the status column of the DataControlsRules policy when one of its rules contains incoherent values">
     Keys "<ph name="DATA_CONTROLS_FIRST_KEY_SET">$1<ex>"destinations", "sources"</ex></ph>" cannot be set in the same dictionary as the "<ph name="DATA_CONTROLS_SECOND_KEY_SET">$2<ex>"and", "or"</ex></ph>" keys
   </message>
+  <message name="IDS_POLICY_DATA_CONTROLS_UNSUPPORTED_CONDITION" desc="The text displayed in the status column of the DataControlsRules policy when one of its rules contains an unsupported condition">
+    "<ph name="DATA_CONTROLS_ATTRIBUTE">$1<ex>destination</ex></ph>" is not a supported condition for "<ph name="DATA_CONTROLS_RESTRICTION">$2<ex>SCREENSHOT</ex></ph>"
+  </message>
+  <message name="IDS_POLICY_DATA_CONTROLS_UNSUPPORTED_RESTRICTION" desc="The text displayed in the status column of the DataControlsRules policy when one of its rules contains an unsupported restriction">
+    "<ph name="DATA_CONTROLS_RESTRICTION">$1<ex>SCREENSHARE</ex></ph>" is not a supported restriction on this platform
+  </message>
+  <message name="IDS_POLICY_DATA_CONTROLS_UNSUPPORTED_LEVEL" desc="The text displayed in the status column of the DataControlsRules policy when one of its rules contains an unsupported restriction level">
+    "<ph name="DATA_CONTROLS_RESTRICTION">$1<ex>SCREENSHOT</ex></ph>" cannot be set to "<ph name="DATA_CONTROLS_LEVEL">$2<ex>WARN</ex></ph>"
+  </message>
 
   <!-- chrome://policy -->
   <message name="IDS_POLICY_TITLE" desc="Page title and the title of the section that lists policies.">

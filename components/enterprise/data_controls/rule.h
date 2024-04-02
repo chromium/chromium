@@ -102,7 +102,7 @@ class Rule {
   // relevant context to `errors. It is assumed `value` has had its schema
   // validated by SchemaValidatingPolicyHandler.
   static bool ValidateRuleValue(const char* policy_name,
-                                const base::Value::Dict& value,
+                                const base::Value::Dict& root_value,
                                 policy::PolicyErrorPath error_path,
                                 policy::PolicyErrorMap* errors);
 
@@ -148,12 +148,41 @@ class Rule {
   static base::flat_map<Rule::Restriction, Rule::Level> GetRestrictions(
       const base::Value::Dict& value);
 
-  // Helper called by `ValidateRuleValue` to populate errors related to mutually
-  // exclusive fields being used in a rule.
+  // Helper used to recursively validate a rule. This should only be called by
+  // itself and `ValidateRuleValue`.
+  static bool ValidateRuleSubValues(
+      const char* policy_name,
+      const base::Value::Dict& value,
+      const base::flat_map<Rule::Restriction, Rule::Level>& restrictions,
+      policy::PolicyErrorPath error_path,
+      policy::PolicyErrorMap* errors);
+
+  // Helper called by `ValidateRuleSubValues` to populate errors related to
+  // mutually exclusive fields being used in a rule.
   static void AddMutuallyExclusiveErrors(
       const std::vector<base::StringPiece>& oneof_conditions,
       const std::vector<base::StringPiece>& anyof_conditions,
       const char* policy_name,
+      policy::PolicyErrorPath error_path,
+      policy::PolicyErrorMap* errors);
+
+  // Helper called by `ValidateRuleSubValues` to check that all attributes
+  // included in a rule are meaningful to the restrictions included in that
+  // rule. Returns false if at least one error was added.
+  static bool AddUnsupportedAttributeErrors(
+      const std::vector<base::StringPiece>& oneof_conditions,
+      const std::vector<base::StringPiece>& anyof_conditions,
+      base::flat_map<Rule::Restriction, Rule::Level> restrictions,
+      const char* policy_name,
+      policy::PolicyErrorPath error_path,
+      policy::PolicyErrorMap* errors);
+
+  // Helper called by `ValidateRuleSubValues` to check that all given
+  // restrictions are applicable to the rule provided in `value`. Returns false
+  // if at least one error was added.
+  static bool AddUnsupportedRestrictionErrors(
+      const char* policy_name,
+      const base::flat_map<Rule::Restriction, Rule::Level>& restrictions,
       policy::PolicyErrorPath error_path,
       policy::PolicyErrorMap* errors);
 
