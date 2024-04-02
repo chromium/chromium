@@ -88,14 +88,13 @@ const base::Feature* GetFeatureToUseToCheckSettingsVisibility(
   }
 }
 
-base::flat_set<proto::ModelExecutionFeature>
-GetAllowedFeaturesForUnsignedUser() {
-  std::vector<proto::ModelExecutionFeature> allowed_features;
+base::flat_set<UserVisibleFeatureKey> GetAllowedFeaturesForUnsignedUser() {
+  std::vector<UserVisibleFeatureKey> allowed_features;
   for (auto key : kAllUserVisibleFeatureKeys) {
     const auto* feature = GetFeatureToUseToCheckSettingsVisibility(key);
     if (GetFieldTrialParamByFeatureAsBool(*feature, "allow_unsigned_user",
                                           false)) {
-      allowed_features.push_back(ToModelExecutionFeatureProto(key));
+      allowed_features.push_back(key);
     }
   }
   return allowed_features;

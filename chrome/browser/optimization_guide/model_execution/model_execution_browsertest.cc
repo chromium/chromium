@@ -412,22 +412,7 @@ class ModelExecutionEnabledBrowserTest : public ModelExecutionBrowserTestBase {
         ->model_execution_features_controller_
         ->ShouldFeatureBeCurrentlyAllowedForLogging(feature);
   }
-
-  bool ShouldFeatureBeCurrentlyAllowedForLogging(
-      proto::ModelExecutionFeature feature) {
-    return GetOptGuideKeyedService()
-        ->model_execution_features_controller_
-        ->ShouldFeatureBeCurrentlyAllowedForLogging(feature);
-  }
 };
-
-IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
-                       ShouldFeatureBeCurrentlyAllowedForLoggingTestFeatures) {
-  EXPECT_FALSE(ShouldFeatureBeCurrentlyAllowedForLogging(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST));
-  EXPECT_FALSE(ShouldFeatureBeCurrentlyAllowedForLogging(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED));
-}
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
                        ModelExecutionDisabledInIncognito) {

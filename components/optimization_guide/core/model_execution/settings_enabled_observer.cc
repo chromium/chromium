@@ -8,10 +8,6 @@
 namespace optimization_guide {
 
 SettingsEnabledObserver::SettingsEnabledObserver(UserVisibleFeatureKey feature)
-    : feature_(ToModelExecutionFeatureProto(feature)) {}
-
-SettingsEnabledObserver::SettingsEnabledObserver(
-    proto::ModelExecutionFeature feature)
     : feature_(feature) {}
 
 SettingsEnabledObserver::~SettingsEnabledObserver() = default;

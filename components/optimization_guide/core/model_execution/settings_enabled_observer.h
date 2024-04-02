@@ -16,7 +16,6 @@ namespace optimization_guide {
 class SettingsEnabledObserver : public base::CheckedObserver {
  public:
   explicit SettingsEnabledObserver(UserVisibleFeatureKey feature);
-  explicit SettingsEnabledObserver(proto::ModelExecutionFeature feature);
   ~SettingsEnabledObserver() override;
 
   // Notifies the consumers whenever the feature enabled state is changed.
@@ -29,10 +28,10 @@ class SettingsEnabledObserver : public base::CheckedObserver {
   SettingsEnabledObserver(const SettingsEnabledObserver&) = delete;
   SettingsEnabledObserver& operator=(const SettingsEnabledObserver&) = delete;
 
-  proto::ModelExecutionFeature feature() const { return feature_; }
+  UserVisibleFeatureKey feature() const { return feature_; }
 
  private:
-  const proto::ModelExecutionFeature feature_;
+  const UserVisibleFeatureKey feature_;
 };
 
 }  // namespace optimization_guide

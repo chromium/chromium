@@ -48,8 +48,7 @@ const base::Feature* GetFeatureToUseToCheckSettingsVisibility(
 
 // Returns the features allowed to be shown in the settings UI, and can be
 // enabled, even for unsigned users.
-base::flat_set<proto::ModelExecutionFeature>
-GetAllowedFeaturesForUnsignedUser();
+base::flat_set<UserVisibleFeatureKey> GetAllowedFeaturesForUnsignedUser();
 
 }  // namespace internal
 }  // namespace features
