@@ -1010,6 +1010,20 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // Clear the timer of system switch/not switch decision.
   void ResetSystemSwitchTimestamp(bool is_input);
 
+  // Checks if a given set of devices is seen before. If seen, return the
+  // preferred device.
+  const std::optional<AudioDevice> GetPreferredDeviceIfDeviceSetSeenBefore(
+      bool is_input,
+      const AudioDeviceList& devices) const;
+
+  // Syncs device preference set map with currently activated device, called
+  // whenever user perefences have changed.
+  void SyncDevicePrefSetMap(bool is_input);
+
+  // Handles the regular user hotplug case. Show notification for unseen device
+  // set.
+  void HandleHotPlugDeviceWithNotification(const AudioDevice& hotplug_device);
+
   // Static helper function to abstract the |AudioSurvey| from input
   // |survey_specific_data|.
   static std::unique_ptr<CrasAudioHandler::AudioSurvey> AbstractAudioSurvey(
@@ -1106,6 +1120,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   std::optional<base::TimeTicks> output_switched_by_system_at_ = std::nullopt;
   std::optional<base::TimeTicks> output_not_switched_by_system_at_ =
       std::nullopt;
+
+  // Stores the user preferred device among a set of devices. The key is the
+  // concatenation of a list of sorted audio stable id string. The value is the
+  // stable id string of the preferred device. TODO(zhangwenyu): To be replaced
+  // by real interaction with Pref service.
+  std::map<std::string, std::string> output_device_pref_set_map_;
+  std::map<std::string, std::string> input_device_pref_set_map_;
 
   // Task runner of browser main thread. All member variables should be accessed
   // on this thread.

@@ -26,6 +26,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/audio/audio_device.h"
 #include "chromeos/ash/components/audio/audio_device_encoding.h"
+#include "chromeos/ash/components/audio/audio_device_id.h"
 #include "chromeos/ash/components/audio/audio_devices_pref_handler_stub.h"
 #include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
 #include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
@@ -1327,6 +1328,11 @@ void CrasAudioHandler::SetActiveDevice(const AudioDevice& active_device,
     NotifyActiveNodeChanged(active_device.is_input);
   }
 
+  // Active device has changed, update user preference.
+  if (features::IsAudioSelectionImprovementEnabled()) {
+    SyncDevicePrefSetMap(active_device.is_input);
+  }
+
   // Save active state for the nodes.
   for (const auto& item : audio_devices_) {
     const AudioDevice& device = item.second;
@@ -2016,6 +2022,11 @@ void CrasAudioHandler::SwitchToDevice(const AudioDevice& device,
 
   SetActiveDevice(device, notify, activate_by);
 
+  // Active device has changed, update user preference.
+  if (features::IsAudioSelectionImprovementEnabled()) {
+    SyncDevicePrefSetMap(device.is_input);
+  }
+
   // content::MediaStreamManager listens to
   // base::SystemMonitor::DevicesChangedObserver for audio devices,
   // and updates EnumerateDevices when OnDevicesChanged is called.
@@ -2262,6 +2273,11 @@ void CrasAudioHandler::HandleHotPlugDeviceByUserPriority(
   // initialization phase, in which a non-simple-usage node may appear like
   // a hotplug node.
   if (!hotplug_device.is_for_simple_usage()) {
+    return;
+  }
+
+  if (features::IsAudioSelectionImprovementEnabled()) {
+    HandleHotPlugDeviceWithNotification(hotplug_device);
     return;
   }
 
@@ -2917,6 +2933,69 @@ void CrasAudioHandler::HandleGetNumberOfArcStreams(
   }
 
   num_arc_streams_ = *new_num_arc_streams;
+}
+
+const std::optional<AudioDevice>
+CrasAudioHandler::GetPreferredDeviceIfDeviceSetSeenBefore(
+    bool is_input,
+    const AudioDeviceList& devices) const {
+  const std::map<std::string, std::string>& device_pref_set_map =
+      is_input ? input_device_pref_set_map_ : output_device_pref_set_map_;
+  const std::string ids = GetDeviceSetIdString(devices);
+  const auto iter = device_pref_set_map.find(ids);
+  if (iter == device_pref_set_map.end()) {
+    return std::nullopt;
+  }
+
+  std::optional<uint64_t> id = ParseDeviceId(iter->second);
+  if (!id.has_value()) {
+    return std::nullopt;
+  }
+
+  const AudioDevice* device = GetDeviceFromStableDeviceId(id.value());
+  if (!device) {
+    return std::nullopt;
+  }
+
+  return *device;
+}
+
+void CrasAudioHandler::SyncDevicePrefSetMap(bool is_input) {
+  const uint64_t& active_node_id =
+      is_input ? active_input_node_id_ : active_output_node_id_;
+  const AudioDevice* active_device = GetDeviceFromId(active_node_id);
+  if (!active_device) {
+    VLOG(1) << "SyncDevicePrefSetMap: No active device found.";
+  }
+
+  std::map<std::string, std::string>& device_pref_set_map =
+      is_input ? input_device_pref_set_map_ : output_device_pref_set_map_;
+  const std::string ids = GetDeviceSetIdString(
+      GetSimpleUsageAudioDevices(audio_devices_, is_input));
+  device_pref_set_map[ids] = GetDeviceIdString(*active_device);
+}
+
+void CrasAudioHandler::HandleHotPlugDeviceWithNotification(
+    const AudioDevice& hotplug_device) {
+  // Check if current set of audio devices was seen before.
+  const std::optional<AudioDevice> preferred_device =
+      GetPreferredDeviceIfDeviceSetSeenBefore(
+          hotplug_device.is_input,
+          GetSimpleUsageAudioDevices(audio_devices_,
+                                     /*is_input=*/hotplug_device.is_input));
+  // If the device set was seen and the preferred device is the hotplug device,
+  // activate it. This is the only case that the hot plug device will be
+  // activated.
+  if (preferred_device.has_value() &&
+      preferred_device->stable_device_id == hotplug_device.stable_device_id) {
+    SwitchToDevice(hotplug_device, /*notify=*/true, ACTIVATE_BY_PRIORITY);
+    return;
+  }
+
+  // Otherwise sync the device preference set map.
+  SyncDevicePrefSetMap(hotplug_device.is_input);
+
+  // TODO(zhangwenyu): Show notification if device set is not seen before.
 }
 
 ScopedCrasAudioHandlerForTesting::ScopedCrasAudioHandlerForTesting() {
