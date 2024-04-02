@@ -2314,15 +2314,6 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_MANAGED_SIGNIN_WITH_USER_POLICY_CONTINUE_BUTTON_LABEL" desc="The title of the Continue button of the Sign in to a managed account dialog when User Policy is enabled. [iOS only]">
         Continue
       </message>
-      <message name="IDS_IOS_MANAGED_SWITCH_ACCEPT_BUTTON" desc="The title of the Accept button of the Switch from a managed account dialog. [40em]">
-        Accept and switch accounts
-      </message>
-      <message name="IDS_IOS_MANAGED_SWITCH_TITLE" desc="The title of the Switch from a managed account dialog. [40em]">
-        Sign out of managed account
-      </message>
-      <message name="IDS_IOS_MANAGED_SYNC_TITLE" desc="The title of the Sync with a managed account dialog (alternative to IDS_IOS_MANAGED_SIGNIN_TITLE). Is only used when the User Policy feature is enabled using the --enable-user-policy-for-ios flag. [40em][iOS only]">
-        Sync With Managed Account
-      </message>
       <message name="IDS_IOS_MANAGE_DATA_IN_YOUR_ACCOUNT_DESCRIPTION" desc="Subtitle for the cell to open 'Data from Chromium sync' web page where the user can control all their data data from sync.">
         Review your account data
       </message>
@@ -2687,24 +2678,6 @@ Handoff must also be enabled in the General section of Settings, and your device
       </message>
       <message name="IDS_IOS_OPTIONS_GENERAL_TAB_LABEL" desc="The title of the Basics section of the Settings page. [iOS only]" meaning="The title of the Basics section of the Settings page.">
         Basics
-      </message>
-      <message name="IDS_IOS_OPTIONS_IMPORT_DATA_CONTINUE_BUTTON" desc="The title of Continue button in the Import Data settings screen [30em]">
-        Continue
-      </message>
-      <message name="IDS_IOS_OPTIONS_IMPORT_DATA_IMPORT_SUBTITLE" desc="The subtitle of the Import Data option on the Import Data settings screen. [400em]">
-        Add existing data to <ph name="USER_EMAIL">$1<ex>john@doe.com</ex></ph>.
-      </message>
-      <message name="IDS_IOS_OPTIONS_IMPORT_DATA_IMPORT_TITLE" desc="The title of the Import Data option on the Import Data settings screen. [60em]">
-        Combine my data
-      </message>
-      <message name="IDS_IOS_OPTIONS_IMPORT_DATA_KEEP_SEPARATE_SUBTITLE" desc="The subtitle of the Keep Data Separate option on the Import Data settings screen. [400em]">
-        Delete existing data.
-      </message>
-      <message name="IDS_IOS_OPTIONS_IMPORT_DATA_KEEP_SEPARATE_TITLE" desc="The title of the Keep Data Separate option on the Import Data settings screen. [60em]">
-        Keep my data separate
-      </message>
-      <message name="IDS_IOS_OPTIONS_IMPORT_DATA_TITLE" desc="The title of the Import Data settings screen. [30em]">
-        Manage Data
       </message>
       <message name="IDS_IOS_OPTIONS_INACTIVE_TABS_DISABLED" desc="Option description to disable inactive tabs. (Title case)">
         Never Move

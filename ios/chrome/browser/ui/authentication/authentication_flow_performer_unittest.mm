@@ -85,68 +85,6 @@ class AuthenticationFlowPerformerTest : public PlatformTest {
   ProtocolFake* fake_command_endpoint_ = nil;
 };
 
-// Tests interrupt call with `SigninCoordinatorInterrupt::UIShutdownNoDismiss`.
-// The interrupt completion block is called synchronously by the interrupt
-// method.
-TEST_F(AuthenticationFlowPerformerTest, TestSimpleInterruptUIShutdown) {
-  // Prompt for the merge case dialog.
-  UIViewController* view_controller = [[UIViewController alloc] init];
-  OCMExpect([authentication_flow_performer_delegate_mock_
-      presentViewController:[OCMArg any]
-                   animated:YES
-                 completion:[OCMArg any]]);
-  [authentication_flow_performer_ promptMergeCaseForIdentity:fake_identity_
-                                                     browser:browser_.get()
-                                              viewController:view_controller];
-  // Interrupt flow performer with `UIShutdownNoDismiss`.
-  __block BOOL completion_called = NO;
-  [authentication_flow_performer_
-      interruptWithAction:SigninCoordinatorInterrupt::UIShutdownNoDismiss
-               completion:^() {
-                 completion_called = YES;
-               }];
-  // Expect the interrupt completion to be called synchronously.
-  EXPECT_TRUE(completion_called);
-}
-
-// Tests interrupt call with `SigninCoordinatorInterrupt::DismissWithAnimation`.
-// The interrupt completion block is called when the view controller has been
-// dismissed.
-TEST_F(AuthenticationFlowPerformerTest,
-       TestSimpleInterruptDismissWithAnimation) {
-  // Prompt for the merge case dialog.
-  UIViewController* view_controller = [[UIViewController alloc] init];
-  OCMExpect([authentication_flow_performer_delegate_mock_
-      presentViewController:[OCMArg any]
-                   animated:YES
-                 completion:[OCMArg any]]);
-  [authentication_flow_performer_ promptMergeCaseForIdentity:fake_identity_
-                                                     browser:browser_.get()
-                                              viewController:view_controller];
-  // Interrupt with animated dismiss.
-  __block ProceduralBlock dismiss_completion_block = nil;
-  OCMExpect([authentication_flow_performer_delegate_mock_
-      dismissPresentingViewControllerAnimated:YES
-                                   completion:[OCMArg checkWithBlock:^BOOL(
-                                                          ProceduralBlock
-                                                              block) {
-                                     EXPECT_EQ(nil, dismiss_completion_block);
-                                     dismiss_completion_block = block;
-                                     return YES;
-                                   }]]);
-  __block BOOL completion_called = NO;
-  [authentication_flow_performer_
-      interruptWithAction:SigninCoordinatorInterrupt::DismissWithAnimation
-               completion:^() {
-                 completion_called = YES;
-               }];
-  EXPECT_FALSE(completion_called);
-  // Expect the interrupt completion block to be called once the dialog has been
-  // dismissed.
-  dismiss_completion_block();
-  EXPECT_TRUE(completion_called);
-}
-
 // Tests the AuthenticationFlowPerformer is interrupted and the interrupt
 // completion is called.
 TEST_F(AuthenticationFlowPerformerTest,

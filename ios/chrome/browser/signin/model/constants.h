@@ -23,12 +23,6 @@ typedef enum {
   TIMED_OUT_FETCH_POLICY = -210,
 } AuthenticationErrorCode;
 
-typedef enum {
-  SHOULD_CLEAR_DATA_USER_CHOICE,
-  SHOULD_CLEAR_DATA_CLEAR_DATA,
-  SHOULD_CLEAR_DATA_MERGE_DATA,
-} ShouldClearData;
-
 // Enum is used to represent the action to be taken by the authentication once
 // the user is successfully signed in.
 enum class PostSignInAction {
@@ -36,16 +30,6 @@ enum class PostSignInAction {
   kNone,
   // Shows a snackbar displaying the account that just signed-in.
   kShowSnackbar,
-  // TODO(crbug.com/40067025): Turn on sync was deprecated. Delete this enum
-  // after phase 2 launches on iOS. See ConsentLevel::kSync documentation for
-  // details.
-  // Starts sign-in flow for a sync consent.
-  // The owner of `AuthenticationFlow` still needs to:
-  //  * Record the sync dialog strings.
-  //  * Grand the sync consent in AuthenticationService.
-  //  * Record the first setup complete.
-  // Related crbug.com/1254359.
-  kCommitSync,
 };
 
 // Enum for identity avatar size. See GetSizeForIdentityAvatarSize() to convert

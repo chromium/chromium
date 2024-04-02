@@ -293,16 +293,6 @@
 // Returns matcher for the accounts collection view.
 + (id<GREYMatcher>)settingsAccountsCollectionView;
 
-// Returns matcher for the Import Data cell in switch sync account view.
-+ (id<GREYMatcher>)settingsImportDataImportButton;
-
-// Returns matcher for the Keep Data Separate cell in switch sync account view.
-+ (id<GREYMatcher>)settingsImportDataKeepSeparateButton;
-
-// Returns matcher for the Continue navigation button in switch sync account
-// view.
-+ (id<GREYMatcher>)settingsImportDataContinueButton;
-
 // Returns matcher for the safety check table view.
 + (id<GREYMatcher>)settingsSafetyCheckTableView;
 

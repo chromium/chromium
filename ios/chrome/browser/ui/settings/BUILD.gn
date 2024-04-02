@@ -70,8 +70,6 @@ source_set("settings") {
   sources = [
     "about_chrome_table_view_controller.h",
     "about_chrome_table_view_controller.mm",
-    "import_data_table_view_controller.h",
-    "import_data_table_view_controller.mm",
     "search_engine_table_view_controller.h",
     "search_engine_table_view_controller.mm",
     "settings_navigation_controller.mm",
@@ -294,7 +292,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "about_chrome_table_view_controller_unittest.mm",
-    "import_data_table_view_controller_unittest.mm",
     "search_engine_table_view_controller_eea_unittest.mm",
     "search_engine_table_view_controller_non_eea_unittest.mm",
     "search_engine_table_view_controller_unittest.h",

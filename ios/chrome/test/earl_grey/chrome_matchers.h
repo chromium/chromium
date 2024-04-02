@@ -303,17 +303,6 @@ id<GREYMatcher> SettingsAccountButton();
 // Returns a matcher for the accounts collection view.
 id<GREYMatcher> SettingsAccountsCollectionView();
 
-// Returns a matcher for the Import Data cell in switch sync account view.
-id<GREYMatcher> SettingsImportDataImportButton();
-
-// Returns a matcher for the Keep Data Separate cell in switch sync account
-// view.
-id<GREYMatcher> SettingsImportDataKeepSeparateButton();
-
-// Returns a matcher for the Keep Data Separate cell in switch sync account
-// view.
-id<GREYMatcher> SettingsImportDataContinueButton();
-
 // Returns a matcher for the safety check table view.
 id<GREYMatcher> SettingsSafetyCheckTableView();
 

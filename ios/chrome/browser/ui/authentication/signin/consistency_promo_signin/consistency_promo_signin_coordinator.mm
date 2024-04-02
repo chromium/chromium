@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -296,8 +295,6 @@
                                       accessPoint:self.accessPoint
                                  postSignInAction:PostSignInAction::kNone
                          presentingViewController:self.navigationController];
-  authenticationFlow.dispatcher = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), BrowsingDataCommands);
   authenticationFlow.precedingHistorySync = YES;
   [self.consistencyPromoSigninMediator
       signinWithAuthenticationFlow:authenticationFlow];

@@ -376,17 +376,6 @@ enum class AccountReconcilorState {
   kMaxValue = kInactive,
 };
 
-// Values of Signin.AccountType histogram. This histogram records if the user
-// uses a gmail account or a managed account when signing in.
-enum class SigninAccountType : int {
-  // Gmail account.
-  kRegular = 0,
-  // Managed account.
-  kManaged = 1,
-  // Always the last enumerated type.
-  kMaxValue = kManaged,
-};
-
 // This is the relationship between the account used to sign into chrome, and
 // the account(s) used to sign into the content area/cookie jar. This enum
 // gets messy because we're trying to capture quite a few things, if there was
@@ -602,12 +591,6 @@ void RecordRefreshTokenUpdatedFromSource(bool refresh_token_is_valid,
 
 // Records the source that revoked a refresh token.
 void RecordRefreshTokenRevokedFromSource(SourceForRefreshTokenOperation source);
-
-#if BUILDFLAG(IS_IOS)
-// Records the account type when the user signs in.
-void RecordSigninAccountType(signin::ConsentLevel consent_level,
-                             bool is_managed_account);
-#endif
 
 // -----------------------------------------------------------------------------
 // User actions

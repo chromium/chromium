@@ -377,18 +377,6 @@ id<GREYMatcher> SettingsAccountsCollectionView() {
   return [ChromeMatchersAppInterface settingsAccountsCollectionView];
 }
 
-id<GREYMatcher> SettingsImportDataImportButton() {
-  return [ChromeMatchersAppInterface settingsImportDataImportButton];
-}
-
-id<GREYMatcher> SettingsImportDataKeepSeparateButton() {
-  return [ChromeMatchersAppInterface settingsImportDataKeepSeparateButton];
-}
-
-id<GREYMatcher> SettingsImportDataContinueButton() {
-  return [ChromeMatchersAppInterface settingsImportDataContinueButton];
-}
-
 id<GREYMatcher> SettingsSafetyCheckTableView() {
   return [ChromeMatchersAppInterface settingsSafetyCheckTableView];
 }

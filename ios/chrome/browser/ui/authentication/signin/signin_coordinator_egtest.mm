@@ -56,9 +56,6 @@ using chrome_test_util::SecondarySignInButton;
 using chrome_test_util::SettingsAccountButton;
 using chrome_test_util::SettingsCollectionView;
 using chrome_test_util::SettingsDoneButton;
-using chrome_test_util::SettingsImportDataContinueButton;
-using chrome_test_util::SettingsImportDataImportButton;
-using chrome_test_util::SettingsImportDataKeepSeparateButton;
 using chrome_test_util::SettingsSignInRowMatcher;
 using chrome_test_util::StaticTextWithAccessibilityLabelId;
 using l10n_util::GetNSString;
@@ -74,6 +71,13 @@ typedef NS_ENUM(NSInteger, OpenSigninMethod) {
 };
 
 namespace {
+
+// Duplicated from ios/chrome/browser/ui/authentication/authentication_flow.mm,
+// which is fine since the enum values should never be renumbered.
+enum class SigninAccountType {
+  kRegular = 0,
+  kManaged = 1,
+};
 
 // Label used to find the 'Learn more' link.
 NSString* const kLearnMoreLabel = @"Learn More";
@@ -91,8 +95,7 @@ void SetParentalControlsCapabilityForIdentity(FakeSystemIdentity* identity) {
   [SigninEarlGrey setIsSubjectToParentalControls:YES forIdentity:identity];
 }
 
-void ExpectSigninConsentHistogram(
-    signin_metrics::SigninAccountType signinAccountType) {
+void ExpectSigninConsentHistogram(SigninAccountType signinAccountType) {
   NSError* error = [MetricsAppInterface
       expectTotalCount:1
           forHistogram:@"Signin.AccountType.SigninConsent"];
@@ -100,18 +103,6 @@ void ExpectSigninConsentHistogram(
   error = [MetricsAppInterface expectCount:1
                                  forBucket:static_cast<int>(signinAccountType)
                               forHistogram:@"Signin.AccountType.SigninConsent"];
-  GREYAssertNil(error, @"Failed to record show count histogram");
-}
-
-void ExpectNoSyncConsentHistogram(
-    signin_metrics::SigninAccountType signinAccountType) {
-  NSError* error =
-      [MetricsAppInterface expectTotalCount:0
-                               forHistogram:@"Signin.AccountType.SyncConsent"];
-  GREYAssertNil(error, @"Failed to record show count histogram");
-  error = [MetricsAppInterface expectCount:0
-                                 forBucket:static_cast<int>(signinAccountType)
-                              forHistogram:@"Signin.AccountType.SyncConsent"];
   GREYAssertNil(error, @"Failed to record show count histogram");
 }
 
@@ -157,8 +148,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
   // Check `fakeIdentity` is signed-in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
-  ExpectSigninConsentHistogram(signin_metrics::SigninAccountType::kRegular);
-  ExpectNoSyncConsentHistogram(signin_metrics::SigninAccountType::kRegular);
+  ExpectSigninConsentHistogram(SigninAccountType::kRegular);
 }
 
 // Tests that opening the sign-in screen from the Settings and signing in works
@@ -286,8 +276,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   // Sign-in with a managed account.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeManagedIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
-  ExpectSigninConsentHistogram(signin_metrics::SigninAccountType::kManaged);
-  ExpectNoSyncConsentHistogram(signin_metrics::SigninAccountType::kManaged);
+  ExpectSigninConsentHistogram(SigninAccountType::kManaged);
 
   [SigninEarlGreyUI signOut];
 }

@@ -272,27 +272,6 @@ void RecordRefreshTokenRevokedFromSource(
   UMA_HISTOGRAM_ENUMERATION("Signin.RefreshTokenRevoked.Source", source);
 }
 
-#if BUILDFLAG(IS_IOS)
-void RecordSigninAccountType(signin::ConsentLevel consent_level,
-                             bool is_managed_account) {
-  SigninAccountType account_type = is_managed_account
-                                       ? SigninAccountType::kManaged
-                                       : SigninAccountType::kRegular;
-  switch (consent_level) {
-    case signin::ConsentLevel::kSignin:
-      base::UmaHistogramEnumeration("Signin.AccountType.SigninConsent",
-                                    account_type);
-      break;
-    // TODO(crbug.com/40066949): Remove kSync usage after phase 3 migration. See
-    // ConsentLevel::kSync documentation for more details.
-    case signin::ConsentLevel::kSync:
-      base::UmaHistogramEnumeration("Signin.AccountType.SyncConsent",
-                                    account_type);
-      break;
-  }
-}
-#endif
-
 // --------------------------------------------------------------
 // User actions
 // --------------------------------------------------------------

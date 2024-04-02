@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/tos_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -205,8 +204,6 @@
                                       accessPoint:_accessPoint
                                  postSignInAction:PostSignInAction::kNone
                          presentingViewController:self.viewController];
-  authenticationFlow.dispatcher = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), BrowsingDataCommands);
   authenticationFlow.precedingHistorySync = YES;
   __weak __typeof(self) weakSelf = self;
   ProceduralBlock completion = ^() {

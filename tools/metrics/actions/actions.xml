@@ -34642,6 +34642,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_AuthenticationFlowPerformer_SwitchDialog_Canceled">
+  <obsolete>Removed 04/2024.</obsolete>
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <description>
@@ -34651,6 +34652,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_AuthenticationFlowPerformer_SwitchDialog_Confirmed">
+  <obsolete>Removed 04/2024.</obsolete>
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <description>
@@ -34660,6 +34662,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_AuthenticationFlowPerformer_SwitchDialog_Presented">
+  <obsolete>Removed 04/2024.</obsolete>
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <description>

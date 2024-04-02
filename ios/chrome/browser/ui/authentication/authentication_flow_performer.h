@@ -15,7 +15,6 @@
 class Browser;
 @protocol BrowsingDataCommands;
 class ChromeBrowserState;
-class PrefService;
 @protocol SystemIdentity;
 
 // Performs the sign-in steps and user interactions as part of the sign-in flow.
@@ -50,32 +49,12 @@ class PrefService;
 // Immediately signs out `browserState` without waiting for dependent services.
 - (void)signOutImmediatelyFromBrowserState:(ChromeBrowserState*)browserState;
 
-// Asks the user whether to clear or merge their previous identity's data with
-// that of `identity` or cancel sign-in, sending `didChooseClearDataPolicy:`
-// or `didChooseCancel` to the delegate when complete according to the user
-// action.
-- (void)promptMergeCaseForIdentity:(id<SystemIdentity>)identity
-                           browser:(Browser*)browser
-                    viewController:(UIViewController*)viewController;
-
-// Clears browsing data from the bowser state assoiciated with `browser`, using
-// `handler` to perform the removal. When removal is comeplete, the delegate is
-// informed (via -didClearData).
-- (void)clearDataFromBrowser:(Browser*)browser
-              commandHandler:(id<BrowsingDataCommands>)handler;
-
-// Determines whether the user must decide what to do with `identity`'s browsing
-// data before signing in.
-- (BOOL)shouldHandleMergeCaseForIdentity:(id<SystemIdentity>)identity
-                       browserStatePrefs:(PrefService*)prefs;
-
 // Shows a confirmation dialog for signing in to an account managed by
 // `hostedDomain`. The confirmation dialog's content will be different depending
-// on the status of User Policy and the `syncConsent`.
+// on the status of User Policy.
 - (void)showManagedConfirmationForHostedDomain:(NSString*)hostedDomain
                                 viewController:(UIViewController*)viewController
-                                       browser:(Browser*)browser
-                                   syncConsent:(BOOL)syncConsent;
+                                       browser:(Browser*)browser;
 
 // Shows a snackbar confirming sign-in with `identity` and an undo button to
 // sign out the user.

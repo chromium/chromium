@@ -45,7 +45,6 @@
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_coordinator.h"
-#import "ios/chrome/browser/ui/settings/import_data_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_coordinator_delegate.h"
@@ -380,32 +379,6 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   // SettingsNavigationController.
   navigationController.overrideUserInterfaceStyle =
       controller.overrideUserInterfaceStyle;
-  return navigationController;
-}
-
-+ (instancetype)
-    importDataControllerForBrowser:(Browser*)browser
-                          delegate:
-                              (id<SettingsNavigationControllerDelegate>)delegate
-                importDataDelegate:
-                    (id<ImportDataControllerDelegate>)importDataDelegate
-                         fromEmail:(NSString*)fromEmail
-                           toEmail:(NSString*)toEmail {
-  UIViewController* controller =
-      [[ImportDataTableViewController alloc] initWithDelegate:importDataDelegate
-                                                    fromEmail:fromEmail
-                                                      toEmail:toEmail];
-
-  SettingsNavigationController* navigationController =
-      [[SettingsNavigationController alloc]
-          initWithRootViewController:controller
-                             browser:browser
-                            delegate:delegate];
-
-  // Make sure the cancel button is always present, as the Save Passwords screen
-  // isn't just shown from Settings.
-  [controller navigationItem].leftBarButtonItem =
-      [navigationController cancelButton];
   return navigationController;
 }
 

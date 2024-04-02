@@ -14,7 +14,6 @@
 
 @class AuthenticationFlowPerformer;
 class Browser;
-@protocol BrowsingDataCommands;
 @class UIViewController;
 @protocol SystemIdentity;
 
@@ -65,9 +64,6 @@ class Browser;
 //
 // Does noting if the sign-in flow is already done
 - (void)interruptWithAction:(SigninCoordinatorInterrupt)action;
-
-// The dispatcher used to clear browsing data.
-@property(nonatomic, weak) id<BrowsingDataCommands> dispatcher;
 
 // The delegate.
 @property(nonatomic, weak) id<AuthenticationFlowDelegate> delegate;
