@@ -19,13 +19,13 @@
 namespace ash {
 namespace {
 
+using ::testing::_;
 using ::testing::AllOf;
 using ::testing::AnyNumber;
-using ::testing::AtLeast;
 using ::testing::Contains;
 using ::testing::ElementsAre;
 using ::testing::Field;
-using ::testing::IsSupersetOf;
+using ::testing::IsEmpty;
 using ::testing::Not;
 using ::testing::Property;
 using ::testing::VariantWith;
@@ -41,7 +41,12 @@ MATCHER_P(LastElement, matcher, "") {
          ExplainMatchResult(matcher, arg.back(), result_listener);
 }
 
-class PickerSearchAggregatorTest : public testing::Test {
+struct TestCase {
+  PickerSearchSource source;
+  PickerSectionType section_type;
+};
+
+class PickerSearchAggregatorTest : public testing::TestWithParam<TestCase> {
  protected:
   base::test::SingleThreadTaskEnvironment& task_environment() {
     return task_environment_;
@@ -52,7 +57,44 @@ class PickerSearchAggregatorTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
-TEST_F(PickerSearchAggregatorTest, DoesNotPublishResultsDuringBurnIn) {
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    PickerSearchAggregatorTest,
+    testing::Values(
+        TestCase{
+            .source = PickerSearchSource::kOmnibox,
+            .section_type = PickerSectionType::kLinks,
+        },
+        TestCase{
+            .source = PickerSearchSource::kTenor,
+            .section_type = PickerSectionType::kGifs,
+        },
+        TestCase{
+            .source = PickerSearchSource::kEmoji,
+            .section_type = PickerSectionType::kExpressions,
+        },
+        TestCase{
+            .source = PickerSearchSource::kDate,
+            .section_type = PickerSectionType::kSuggestions,
+        },
+        TestCase{
+            .source = PickerSearchSource::kCategory,
+            .section_type = PickerSectionType::kCategories,
+        },
+        TestCase{
+            .source = PickerSearchSource::kLocalFile,
+            .section_type = PickerSectionType::kFiles,
+        },
+        TestCase{
+            .source = PickerSearchSource::kDrive,
+            .section_type = PickerSectionType::kDriveFiles,
+        },
+        TestCase{
+            .source = PickerSearchSource::kMath,
+            .section_type = PickerSectionType::kSuggestions,
+        }));
+
+TEST_P(PickerSearchAggregatorTest, DoesNotPublishResultsDuringBurnIn) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(0);
 
@@ -60,197 +102,344 @@ TEST_F(PickerSearchAggregatorTest, DoesNotPublishResultsDuringBurnIn) {
       /*burn_in_period=*/base::Milliseconds(100),
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
+
+  aggregator.HandleSearchSourceResults(GetParam().source,
+                                       {PickerSearchResult::Text(u"test")});
   task_environment().FastForwardBy(base::Milliseconds(99));
 }
 
-TEST_F(PickerSearchAggregatorTest, ShowGifResultsLast) {
+TEST_P(PickerSearchAggregatorTest,
+       PublishesResultsInCorrectSectionAfterBurnIn) {
   MockSearchResultsCallback search_results_callback;
-  EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
-  EXPECT_CALL(
-      search_results_callback,
-      Call(LastElement(AllOf(
-          Property("type", &PickerSearchResultsSection::type,
-                   PickerSectionType::kGifs),
-          Property(
-              "results", &PickerSearchResultsSection::results,
-              Contains(Property(
-                  "data", &PickerSearchResult::data,
-                  VariantWith<PickerSearchResult::GifData>(AllOf(
-                      Field("full_url", &PickerSearchResult::GifData::full_url,
-                            Property("spec", &GURL::spec,
-                                     "https://media.tenor.com/GOabrbLMl4AAAAAC/"
-                                     "plink-cat-plink.gif")),
-                      Field("content_description",
-                            &PickerSearchResult::GifData::content_description,
-                            u"cat blink"))))))))))
-      .Times(AtLeast(1));
+  EXPECT_CALL(search_results_callback,
+              Call(ElementsAre(AllOf(
+                  Property("type", &PickerSearchResultsSection::type,
+                           GetParam().section_type),
+                  Property("results", &PickerSearchResultsSection::results,
+                           ElementsAre(Property(
+                               "data", &PickerSearchResult::data,
+                               VariantWith<PickerSearchResult::TextData>(Field(
+                                   "primary_text",
+                                   &PickerSearchResult::TextData::primary_text,
+                                   u"test")))))))))
+      .Times(1);
 
   PickerSearchAggregator aggregator(
       kBurnInPeriod,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
-  aggregator.HandleSearchSourceResults(
-      PickerSearchSource::kOmnibox,
-      {ash::PickerSearchResult::BrowsingHistory(
-          GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
-          ui::ImageModel())});
-  aggregator.HandleSearchSourceResults(
-      PickerSearchSource::kTenor,
-      {ash::PickerSearchResult::Gif(
-          GURL("https://media.tenor.com/GOabrbLMl4AAAAAd/plink-cat-plink.gif"),
-          GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
-          gfx::Size(360, 360),
-          GURL("https://media.tenor.com/GOabrbLMl4AAAAAC/plink-cat-plink.gif"),
-          gfx::Size(480, 480), u"cat blink")});
+
+  aggregator.HandleSearchSourceResults(GetParam().source,
+                                       {PickerSearchResult::Text(u"test")});
   task_environment().FastForwardBy(kBurnInPeriod);
 }
 
-TEST_F(PickerSearchAggregatorTest, CombinesSearchResults) {
+TEST_P(PickerSearchAggregatorTest, PublishesResultsPostBurnIn) {
   MockSearchResultsCallback search_results_callback;
-  EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
+  EXPECT_CALL(search_results_callback,
+              Call(ElementsAre(AllOf(
+                  Property("type", &PickerSearchResultsSection::type,
+                           GetParam().section_type),
+                  Property("results", &PickerSearchResultsSection::results,
+                           ElementsAre(Property(
+                               "data", &PickerSearchResult::data,
+                               VariantWith<PickerSearchResult::TextData>(Field(
+                                   "primary_text",
+                                   &PickerSearchResult::TextData::primary_text,
+                                   u"test")))))))))
+      .Times(1);
+
+  PickerSearchAggregator aggregator(
+      kBurnInPeriod,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+
+  aggregator.HandleSearchSourceResults(GetParam().source,
+                                       {PickerSearchResult::Text(u"test")});
+  task_environment().FastForwardBy(kBurnInPeriod);
+}
+
+TEST_P(PickerSearchAggregatorTest, DoNotPublishEmptySectionsAfterBurnIn) {
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(search_results_callback, Call(_)).Times(AnyNumber());
+  EXPECT_CALL(search_results_callback,
+              Call(Contains(Property("type", &PickerSearchResultsSection::type,
+                                     GetParam().section_type))))
+      .Times(0);
+
+  PickerSearchAggregator aggregator(
+      kBurnInPeriod,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+
+  aggregator.HandleSearchSourceResults(GetParam().source, {});
+  task_environment().FastForwardBy(kBurnInPeriod);
+}
+
+TEST_P(PickerSearchAggregatorTest, DoNotPublishEmptySectionsPostBurnIn) {
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(search_results_callback, Call(_)).Times(AnyNumber());
+  EXPECT_CALL(search_results_callback,
+              Call(Contains(Property("type", &PickerSearchResultsSection::type,
+                                     GetParam().section_type))))
+      .Times(0);
+
+  PickerSearchAggregator aggregator(
+      kBurnInPeriod,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+  task_environment().FastForwardBy(kBurnInPeriod);
+
+  aggregator.HandleSearchSourceResults(GetParam().source, {});
+}
+
+class PickerSearchAggregatorMultipleSourcesTest : public testing::Test {
+ protected:
+  base::test::SingleThreadTaskEnvironment& task_environment() {
+    return task_environment_;
+  }
+
+ private:
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+};
+
+TEST_F(PickerSearchAggregatorMultipleSourcesTest,
+       PublishesEmptySectionsIfNoResultsCameBeforeBurnIn) {
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(1);
+
+  PickerSearchAggregator aggregator(
+      kBurnInPeriod,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+  task_environment().FastForwardBy(kBurnInPeriod);
+}
+
+TEST_F(PickerSearchAggregatorMultipleSourcesTest,
+       PublishesEmptySectionsIfOnlyEmptyResultsCameBeforeBurnIn) {
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(1);
+
+  PickerSearchAggregator aggregator(
+      kBurnInPeriod,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kOmnibox, {});
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kTenor, {});
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kEmoji, {});
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kDate, {});
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kCategory, {});
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kLocalFile, {});
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kDrive, {});
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kMath, {});
+  task_environment().FastForwardBy(kBurnInPeriod);
+}
+
+TEST_F(PickerSearchAggregatorMultipleSourcesTest,
+       CombinesSearchResultsInNewOrderBeforeBurnIn) {
+  MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(
       search_results_callback,
-      Call(IsSupersetOf({
+      Call(ElementsAre(
           AllOf(
               Property("type", &PickerSearchResultsSection::type,
-                       PickerSectionType::kGifs),
+                       PickerSectionType::kSuggestions),
               Property(
                   "results", &PickerSearchResultsSection::results,
-                  Contains(Property(
-                      "data", &PickerSearchResult::data,
-                      VariantWith<PickerSearchResult::GifData>(AllOf(
-                          Field("full_url",
-                                &PickerSearchResult::GifData::full_url,
-                                Property("spec", &GURL::spec,
-                                         "https://media.tenor.com/"
-                                         "GOabrbLMl4AAAAAC/"
-                                         "plink-cat-plink.gif")),
-                          Field(
-                              "content_description",
-                              &PickerSearchResult::GifData::content_description,
-                              u"cat blink"))))))),
-          AllOf(
-              Property("type", &PickerSearchResultsSection::type,
-                       PickerSectionType::kLinks),
-              Property(
-                  "results", &PickerSearchResultsSection::results,
-                  ElementsAre(Property(
-                      "data", &PickerSearchResult::data,
-                      VariantWith<PickerSearchResult::BrowsingHistoryData>(
-                          Field(
-                              "url",
-                              &PickerSearchResult::BrowsingHistoryData::url,
-                              Property(
-                                  "spec", &GURL::spec,
-                                  "https://www.google.com/search?q=cat"))))))),
-      })))
-      .Times(AtLeast(1));
+                  ElementsAre(
+                      Property("data", &PickerSearchResult::data,
+                               VariantWith<PickerSearchResult::TextData>(Field(
+                                   "primary_text",
+                                   &PickerSearchResult::TextData::primary_text,
+                                   u"date"))),
+                      Property("data", &PickerSearchResult::data,
+                               VariantWith<PickerSearchResult::TextData>(Field(
+                                   "primary_text",
+                                   &PickerSearchResult::TextData::primary_text,
+                                   u"math")))))),
+          AllOf(Property("type", &PickerSearchResultsSection::type,
+                         PickerSectionType::kCategories),
+                Property("results", &PickerSearchResultsSection::results,
+                         ElementsAre(Property(
+                             "data", &PickerSearchResult::data,
+                             VariantWith<PickerSearchResult::TextData>(Field(
+                                 "primary_text",
+                                 &PickerSearchResult::TextData::primary_text,
+                                 u"category")))))),
+          AllOf(Property("type", &PickerSearchResultsSection::type,
+                         PickerSectionType::kExpressions),
+                Property("results", &PickerSearchResultsSection::results,
+                         ElementsAre(Property(
+                             "data", &PickerSearchResult::data,
+                             VariantWith<PickerSearchResult::TextData>(Field(
+                                 "primary_text",
+                                 &PickerSearchResult::TextData::primary_text,
+                                 u"emoji")))))),
+          AllOf(Property("type", &PickerSearchResultsSection::type,
+                         PickerSectionType::kLinks),
+                Property("results", &PickerSearchResultsSection::results,
+                         ElementsAre(Property(
+                             "data", &PickerSearchResult::data,
+                             VariantWith<PickerSearchResult::TextData>(Field(
+                                 "primary_text",
+                                 &PickerSearchResult::TextData::primary_text,
+                                 u"omnibox")))))),
+          AllOf(Property("type", &PickerSearchResultsSection::type,
+                         PickerSectionType::kFiles),
+                Property("results", &PickerSearchResultsSection::results,
+                         ElementsAre(Property(
+                             "data", &PickerSearchResult::data,
+                             VariantWith<PickerSearchResult::TextData>(Field(
+                                 "primary_text",
+                                 &PickerSearchResult::TextData::primary_text,
+                                 u"local")))))),
+          AllOf(Property("type", &PickerSearchResultsSection::type,
+                         PickerSectionType::kDriveFiles),
+                Property("results", &PickerSearchResultsSection::results,
+                         ElementsAre(Property(
+                             "data", &PickerSearchResult::data,
+                             VariantWith<PickerSearchResult::TextData>(Field(
+                                 "primary_text",
+                                 &PickerSearchResult::TextData::primary_text,
+                                 u"drive")))))),
+          AllOf(Property("type", &PickerSearchResultsSection::type,
+                         PickerSectionType::kGifs),
+                Property("results", &PickerSearchResultsSection::results,
+                         ElementsAre(Property(
+                             "data", &PickerSearchResult::data,
+                             VariantWith<PickerSearchResult::TextData>(Field(
+                                 "primary_text",
+                                 &PickerSearchResult::TextData::primary_text,
+                                 u"tenor")))))))))
+      .Times(1);
 
   PickerSearchAggregator aggregator(
       kBurnInPeriod,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
-  aggregator.HandleSearchSourceResults(
-      PickerSearchSource::kOmnibox,
-      {ash::PickerSearchResult::BrowsingHistory(
-          GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
-          ui::ImageModel())});
-  aggregator.HandleSearchSourceResults(
-      PickerSearchSource::kTenor,
-      {ash::PickerSearchResult::Gif(
-          GURL("https://media.tenor.com/GOabrbLMl4AAAAAd/plink-cat-plink.gif"),
-          GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
-          gfx::Size(360, 360),
-          GURL("https://media.tenor.com/GOabrbLMl4AAAAAC/plink-cat-plink.gif"),
-          gfx::Size(480, 480), u"cat blink")});
+
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kOmnibox,
+                                       {PickerSearchResult::Text(u"omnibox")});
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kTenor,
+                                       {PickerSearchResult::Text(u"tenor")});
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kEmoji,
+                                       {PickerSearchResult::Text(u"emoji")});
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kDate,
+                                       {PickerSearchResult::Text(u"date")});
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kCategory,
+                                       {PickerSearchResult::Text(u"category")});
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kLocalFile,
+                                       {PickerSearchResult::Text(u"local")});
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kDrive,
+                                       {PickerSearchResult::Text(u"drive")});
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kMath,
+                                       {PickerSearchResult::Text(u"math")});
   task_environment().FastForwardBy(kBurnInPeriod);
 }
 
-TEST_F(PickerSearchAggregatorTest, DoNotShowEmptySectionsDuringBurnIn) {
+TEST_F(PickerSearchAggregatorMultipleSourcesTest,
+       AppendsSearchResultsPostBurnIn) {
   MockSearchResultsCallback search_results_callback;
-  EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
-  EXPECT_CALL(
-      search_results_callback,
-      Call(Not(Contains(Property("type", &PickerSearchResultsSection::type,
-                                 PickerSectionType::kLinks)))))
-      .Times(AtLeast(1));
+  testing::InSequence seq;
+  EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(1);
+  // Suggested section do not appear post burn-in.
+  EXPECT_CALL(search_results_callback,
+              Call(ElementsAre(AllOf(
+                  Property("type", &PickerSearchResultsSection::type,
+                           PickerSectionType::kLinks),
+                  Property("results", &PickerSearchResultsSection::results,
+                           ElementsAre(Property(
+                               "data", &PickerSearchResult::data,
+                               VariantWith<PickerSearchResult::TextData>(Field(
+                                   "primary_text",
+                                   &PickerSearchResult::TextData::primary_text,
+                                   u"omnibox")))))))))
+      .Times(1);
+  EXPECT_CALL(search_results_callback,
+              Call(ElementsAre(AllOf(
+                  Property("type", &PickerSearchResultsSection::type,
+                           PickerSectionType::kDriveFiles),
+                  Property("results", &PickerSearchResultsSection::results,
+                           ElementsAre(Property(
+                               "data", &PickerSearchResult::data,
+                               VariantWith<PickerSearchResult::TextData>(Field(
+                                   "primary_text",
+                                   &PickerSearchResult::TextData::primary_text,
+                                   u"drive")))))))))
+      .Times(1);
+  EXPECT_CALL(search_results_callback,
+              Call(ElementsAre(AllOf(
+                  Property("type", &PickerSearchResultsSection::type,
+                           PickerSectionType::kGifs),
+                  Property("results", &PickerSearchResultsSection::results,
+                           ElementsAre(Property(
+                               "data", &PickerSearchResult::data,
+                               VariantWith<PickerSearchResult::TextData>(Field(
+                                   "primary_text",
+                                   &PickerSearchResult::TextData::primary_text,
+                                   u"tenor")))))))))
+      .Times(1);
+  EXPECT_CALL(search_results_callback,
+              Call(ElementsAre(AllOf(
+                  Property("type", &PickerSearchResultsSection::type,
+                           PickerSectionType::kExpressions),
+                  Property("results", &PickerSearchResultsSection::results,
+                           ElementsAre(Property(
+                               "data", &PickerSearchResult::data,
+                               VariantWith<PickerSearchResult::TextData>(Field(
+                                   "primary_text",
+                                   &PickerSearchResult::TextData::primary_text,
+                                   u"emoji")))))))))
+      .Times(1);
+  EXPECT_CALL(search_results_callback,
+              Call(ElementsAre(AllOf(
+                  Property("type", &PickerSearchResultsSection::type,
+                           PickerSectionType::kCategories),
+                  Property("results", &PickerSearchResultsSection::results,
+                           ElementsAre(Property(
+                               "data", &PickerSearchResult::data,
+                               VariantWith<PickerSearchResult::TextData>(Field(
+                                   "primary_text",
+                                   &PickerSearchResult::TextData::primary_text,
+                                   u"category")))))))))
+      .Times(1);
+  EXPECT_CALL(search_results_callback,
+              Call(ElementsAre(AllOf(
+                  Property("type", &PickerSearchResultsSection::type,
+                           PickerSectionType::kFiles),
+                  Property("results", &PickerSearchResultsSection::results,
+                           ElementsAre(Property(
+                               "data", &PickerSearchResult::data,
+                               VariantWith<PickerSearchResult::TextData>(Field(
+                                   "primary_text",
+                                   &PickerSearchResult::TextData::primary_text,
+                                   u"local")))))))))
+      .Times(1);
 
   PickerSearchAggregator aggregator(
       kBurnInPeriod,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kOmnibox, {});
-  aggregator.HandleSearchSourceResults(
-      PickerSearchSource::kTenor,
-      {ash::PickerSearchResult::Gif(
-          GURL("https://media.tenor.com/GOabrbLMl4AAAAAd/plink-cat-plink.gif"),
-          GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
-          gfx::Size(360, 360),
-          GURL("https://media.tenor.com/GOabrbLMl4AAAAAC/plink-cat-plink.gif"),
-          gfx::Size(480, 480), u"cat blink")});
+
   task_environment().FastForwardBy(kBurnInPeriod);
-}
-
-TEST_F(PickerSearchAggregatorTest, DoNotShowEmptySectionsAfterBurnIn) {
-  MockSearchResultsCallback search_results_callback;
-  EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
-  EXPECT_CALL(
-      search_results_callback,
-      Call(Not(Contains(Property("type", &PickerSearchResultsSection::type,
-                                 PickerSectionType::kLinks)))))
-      .Times(AtLeast(1));
-
-  PickerSearchAggregator aggregator(
-      kBurnInPeriod,
-      base::BindRepeating(&MockSearchResultsCallback::Call,
-                          base::Unretained(&search_results_callback)));
-  task_environment().FastForwardBy(kBurnInPeriod);
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kOmnibox, {});
-  aggregator.HandleSearchSourceResults(
-      PickerSearchSource::kTenor,
-      {ash::PickerSearchResult::Gif(
-          GURL("https://media.tenor.com/GOabrbLMl4AAAAAd/plink-cat-plink.gif"),
-          GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
-          gfx::Size(360, 360),
-          GURL("https://media.tenor.com/GOabrbLMl4AAAAAC/plink-cat-plink.gif"),
-          gfx::Size(480, 480), u"cat blink")});
-}
-
-TEST_F(PickerSearchAggregatorTest, ShowGifResultsEvenAfterBurnIn) {
-  MockSearchResultsCallback search_results_callback;
-  EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
-  EXPECT_CALL(
-      search_results_callback,
-      Call(Contains(AllOf(
-          Property("type", &PickerSearchResultsSection::type,
-                   PickerSectionType::kGifs),
-          Property(
-              "results", &PickerSearchResultsSection::results,
-              Contains(Property(
-                  "data", &PickerSearchResult::data,
-                  VariantWith<PickerSearchResult::GifData>(AllOf(
-                      Field("full_url", &PickerSearchResult::GifData::full_url,
-                            Property("spec", &GURL::spec,
-                                     "https://media.tenor.com/GOabrbLMl4AAAAAC/"
-                                     "plink-cat-plink.gif")),
-                      Field("content_description",
-                            &PickerSearchResult::GifData::content_description,
-                            u"cat blink"))))))))))
-      .Times(AtLeast(1));
-
-  PickerSearchAggregator aggregator(
-      kBurnInPeriod,
-      base::BindRepeating(&MockSearchResultsCallback::Call,
-                          base::Unretained(&search_results_callback)));
-  task_environment().FastForwardBy(kBurnInPeriod);
-  aggregator.HandleSearchSourceResults(
-      PickerSearchSource::kTenor,
-      {ash::PickerSearchResult::Gif(
-          GURL("https://media.tenor.com/GOabrbLMl4AAAAAd/plink-cat-plink.gif"),
-          GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
-          gfx::Size(360, 360),
-          GURL("https://media.tenor.com/GOabrbLMl4AAAAAC/plink-cat-plink.gif"),
-          gfx::Size(480, 480), u"cat blink")});
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kOmnibox,
+                                       {PickerSearchResult::Text(u"omnibox")});
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kDrive,
+                                       {PickerSearchResult::Text(u"drive")});
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kTenor,
+                                       {PickerSearchResult::Text(u"tenor")});
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kEmoji,
+                                       {PickerSearchResult::Text(u"emoji")});
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kDate,
+                                       {PickerSearchResult::Text(u"date")});
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kCategory,
+                                       {PickerSearchResult::Text(u"category")});
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kLocalFile,
+                                       {PickerSearchResult::Text(u"local")});
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kMath,
+                                       {PickerSearchResult::Text(u"math")});
 }
 
 }  // namespace
