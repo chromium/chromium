@@ -986,7 +986,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.SyncConsentScreen.IsMinorUser" enum="Boolean"
-    expires_after="2024-05-05">
+    expires_after="2024-07-01">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -997,7 +997,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.SyncConsentScreen.LacrosSyncOptIns.DataType.{OsDataType}"
-    enum="BooleanEnabled" expires_after="2024-05-01">
+    enum="BooleanEnabled" expires_after="2024-07-01">
   <owner>bchikhaoui@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -1013,7 +1013,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.SyncConsentScreen.LacrosSyncOptIns.SyncEverything"
-    enum="BooleanEnabled" expires_after="2024-05-01">
+    enum="BooleanEnabled" expires_after="2024-07-01">
   <owner>bchikhaoui@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
