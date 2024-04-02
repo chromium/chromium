@@ -5893,8 +5893,6 @@ ChromeContentBrowserClient::CreateNonNetworkNavigationURLLoaderFactory(
     if (content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(
             browser_context) &&
         !browser_context->ShutdownStarted()) {
-      // TODO(crbug.com/1365848): Only register the factory if we are already in
-      // an isolated storage partition.
       return web_app::IsolatedWebAppURLLoaderFactory::Create(frame_tree_node_id,
                                                              browser_context);
     }
@@ -6203,9 +6201,6 @@ void ChromeContentBrowserClient::
     if (content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(
             browser_context) &&
         !browser_context->ShutdownStarted()) {
-      // TODO(crbug.com/1365848): Only register the factory if we are already
-      // in an isolated storage partition.
-
       if (frame_host != nullptr) {
         factories->emplace(
             chrome::kIsolatedAppScheme,
