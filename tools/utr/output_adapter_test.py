@@ -147,20 +147,20 @@ fake std_out text
 @@@STEP_LOG_END@run_recipe@@@
 @@@STEP_LOG_END@memory_profile@@@
 @@@STEP_CLOSED@@@
-@@@SEED_STEP@fake_step@@@
+@@@SEED_STEP@fake_test@@@
 @@@STEP_CURSOR@fake_test@@@
 @@@STEP_STARTED@@@
 @@@SET_BUILD_PROPERTY@fake_property@"value"@@@
 @@@STEP_LOG_LINE@run_recipe@fake_step_log_line@@@
 @@@STEP_LOG_END@run_recipe@@@
 @@@STEP_LOG_END@memory_profile@@@
-@@@STEP_LINK@shard #0 test results@https://fake-link.com@@@
+@@@STEP_LINK@shard #0 test results@https://fake-url.com@@@
 @@@STEP_LINK@shard #0 (runtime (13m 0s) + overhead (29s): 13m 29s)@https://faker-link.com@@@
 @@@STEP_CLOSED@@@"""
       for line in fake_output.split('\n'):
         adapter.ProcessLine(line)
       self.assertEqual(info_log.output, [
-          'INFO:root:\nRunning: fake_step',
+          'DEBUG:root:Test results for fake_test shard #0: https://fake-url.com'
       ])
 
   def testInfoStepLevelOutput(self):

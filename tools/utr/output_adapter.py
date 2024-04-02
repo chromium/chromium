@@ -189,7 +189,7 @@ class LegacyOutputAdapter:
   def _ProcessResult(self, line):
     matches = self._result_links_re.match(line)
     if matches:
-      logging.log(self._current_log_level, 'Test results for %s shard %d: %s',
+      logging.log(self._current_log_level, 'Test results for %s shard %s: %s',
                   self._current_step_name, matches[1], matches[2])
 
   def ProcessLine(self, line):
