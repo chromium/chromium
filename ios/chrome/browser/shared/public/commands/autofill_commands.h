@@ -37,6 +37,10 @@ struct VirtualCardEnrollUiModel;
     (autofill::AutofillErrorDialogContext)errorContext;
 - (void)dismissAutofillErrorDialog;
 
+// Commands to manage the Autofill progress dialog.
+- (void)showAutofillProgressDialog;
+- (void)dismissAutofillProgressDialog;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_AUTOFILL_COMMANDS_H_

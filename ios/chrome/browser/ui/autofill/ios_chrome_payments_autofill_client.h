@@ -9,6 +9,10 @@
 
 #import <memory>
 
+#import "base/functional/callback.h"
+#import "base/memory/raw_ref.h"
+#import "base/memory/weak_ptr.h"
+#import "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #import "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
 
 class ChromeBrowserState;
@@ -43,6 +47,12 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
   void ShowAutofillErrorDialog(
       AutofillErrorDialogContext error_context) override;
   PaymentsNetworkInterface* GetPaymentsNetworkInterface() override;
+  void ShowAutofillProgressDialog(
+      AutofillProgressDialogType autofill_progress_dialog_type,
+      base::OnceClosure cancel_callback) override;
+  void CloseAutofillProgressDialog(
+      bool show_confirmation_before_closing,
+      base::OnceClosure no_interactive_authentication_callback) override;
 
   std::unique_ptr<AutofillProgressDialogControllerImpl>
   GetProgressDialogModel() {
@@ -54,8 +64,14 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
 
   std::unique_ptr<PaymentsNetworkInterface> payments_network_interface_;
 
+  // The unique_ptr reference is only temporarily valid until the corresponding
+  // coordinator takes the ownership of the model controller from this class.
+  // The WeakPtr reference should be used to invoke the model controller from
+  // this class.
   std::unique_ptr<AutofillProgressDialogControllerImpl>
       progress_dialog_controller_;
+  base::WeakPtr<AutofillProgressDialogControllerImpl>
+      progress_dialog_controller_weak_;
 };
 
 }  // namespace payments

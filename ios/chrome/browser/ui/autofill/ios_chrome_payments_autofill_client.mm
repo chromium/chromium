@@ -5,10 +5,14 @@
 #import "ios/chrome/browser/ui/autofill/ios_chrome_payments_autofill_client.h"
 
 #import "base/check_deref.h"
+#import "base/functional/callback.h"
+#import "base/memory/raw_ref.h"
 #import "base/memory/weak_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #import "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #import "components/autofill/core/browser/payments/payments_network_interface.h"
+#import "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/ui/autofill/chrome_autofill_client_ios.h"
@@ -40,6 +44,27 @@ void IOSChromePaymentsAutofillClient::LoadRiskData(
 void IOSChromePaymentsAutofillClient::CreditCardUploadCompleted(
     bool card_saved) {
   NOTIMPLEMENTED();
+}
+
+void IOSChromePaymentsAutofillClient::ShowAutofillProgressDialog(
+    AutofillProgressDialogType autofill_progress_dialog_type,
+    base::OnceClosure cancel_callback) {
+  progress_dialog_controller_ =
+      std::make_unique<AutofillProgressDialogControllerImpl>(
+          autofill_progress_dialog_type, std::move(cancel_callback));
+  progress_dialog_controller_weak_ =
+      progress_dialog_controller_->GetImplWeakPtr();
+  [client_->commands_handler() showAutofillProgressDialog];
+}
+
+void IOSChromePaymentsAutofillClient::CloseAutofillProgressDialog(
+    bool show_confirmation_before_closing,
+    base::OnceClosure no_interactive_authentication_callback) {
+  if (progress_dialog_controller_weak_) {
+    progress_dialog_controller_weak_->DismissDialog(
+        show_confirmation_before_closing,
+        std::move(no_interactive_authentication_callback));
+  }
 }
 
 void IOSChromePaymentsAutofillClient::ShowAutofillErrorDialog(

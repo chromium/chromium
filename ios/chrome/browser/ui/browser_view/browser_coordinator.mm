@@ -135,6 +135,7 @@
 #import "ios/chrome/browser/ui/autofill/error_dialog/autofill_error_dialog_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_password_coordinator.h"
+#import "ios/chrome/browser/ui/autofill/progress_dialog/autofill_progress_dialog_coordinator.h"
 #import "ios/chrome/browser/ui/bookmarks/home/bookmarks_coordinator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_coordinator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
@@ -351,6 +352,10 @@ enum class ToolbarKind {
 // Coordinator to add new credit card.
 @property(nonatomic, strong)
     AutofillAddCreditCardCoordinator* addCreditCardCoordinator;
+
+// Coordinator to show the Autofill progress dialog.
+@property(nonatomic, strong)
+    AutofillProgressDialogCoordinator* autofillProgressDialogCoordinator;
 
 // Presents a QLPreviewController in order to display USDZ format 3D models.
 @property(nonatomic, strong) ARQuickLookCoordinator* ARQuickLookCoordinator;
@@ -720,6 +725,8 @@ enum class ToolbarKind {
   self.virtualCardEnrollmentBottomSheetCoordinator = nil;
 
   [self dismissAutofillErrorDialog];
+
+  [self dismissAutofillProgressDialog];
 
   [_sendTabToSelfCoordinator stop];
   _sendTabToSelfCoordinator = nil;
@@ -1241,6 +1248,9 @@ enum class ToolbarKind {
   /* autofillErrorDialogCoordinator is created and started by a BrowserCommand
    */
 
+  /* autofillProgressDialogCoordinator is created and started by a
+   * BrowserCommand */
+
   /* PriceNotificationsViewCoordinator is created and started by a
    * BrowserCommand */
 
@@ -1377,6 +1387,8 @@ enum class ToolbarKind {
   self.virtualCardEnrollmentBottomSheetCoordinator = nil;
 
   [self dismissAutofillErrorDialog];
+
+  [self dismissAutofillProgressDialog];
 
   [self.printCoordinator stop];
   self.printCoordinator = nil;
@@ -1697,6 +1709,23 @@ enum class ToolbarKind {
 - (void)dismissAutofillErrorDialog {
   [self.autofillErrorDialogCoordinator stop];
   self.autofillErrorDialogCoordinator = nil;
+}
+
+- (void)showAutofillProgressDialog {
+  if (self.autofillProgressDialogCoordinator) {
+    [self.autofillProgressDialogCoordinator stop];
+  }
+
+  self.autofillProgressDialogCoordinator =
+      [[AutofillProgressDialogCoordinator alloc]
+          initWithBaseViewController:self.viewController
+                             browser:self.browser];
+  [self.autofillProgressDialogCoordinator start];
+}
+
+- (void)dismissAutofillProgressDialog {
+  [self.autofillProgressDialogCoordinator stop];
+  self.autofillProgressDialogCoordinator = nil;
 }
 
 #pragma mark - BrowserCoordinatorCommands
