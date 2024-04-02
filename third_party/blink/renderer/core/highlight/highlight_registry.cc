@@ -38,6 +38,7 @@ const char HighlightRegistry::kSupplementName[] = "HighlightRegistry";
 void HighlightRegistry::Trace(blink::Visitor* visitor) const {
   visitor->Trace(highlights_);
   visitor->Trace(frame_);
+  visitor->Trace(active_highlights_in_node_);
   ScriptWrappable::Trace(visitor);
   Supplement<LocalDOMWindow>::Trace(visitor);
 }
@@ -72,6 +73,7 @@ void HighlightRegistry::ValidateHighlightMarkers() {
   dom_tree_version_for_validate_highlight_markers_ = document->DomTreeVersion();
   style_version_for_validate_highlight_markers_ = document->StyleVersion();
   force_markers_validation_ = false;
+  active_highlights_in_node_.clear();
 
   DocumentMarkerController& markers_controller = document->Markers();
 
@@ -118,13 +120,22 @@ void HighlightRegistry::ValidateHighlightMarkers() {
   // update the markers to avoid overlaps.
   markers_controller.MergeOverlappingMarkers(DocumentMarker::kCustomHighlight);
 
-  // We need to invalidate ink overflow for nodes with highlights that now have
+  // Set up the map of nodes to active highlights. We also need to invalidate
+  // ink overflow for nodes with highlights that now have
   // visual overflow. At the same time, record the overflow status on the marker
   // so that we know that recalculation will be required when the marker is
   // removed.
   markers_controller.ApplyToMarkersOfType(
-      [&nodes_with_overflow](const Text& node, DocumentMarker* marker) {
+      [&nodes_with_overflow, &active = active_highlights_in_node_](
+          const Text& node, DocumentMarker* marker) {
         auto& highlight_marker = To<CustomHighlightMarker>(*marker);
+        const auto& iterator = active.find(&node);
+        if (iterator == active.end()) {
+          active.insert(&node, HashSet<AtomicString>(
+                                   {highlight_marker.GetHighlightName()}));
+        } else {
+          iterator->value.insert(highlight_marker.GetHighlightName());
+        }
         bool has_visual_overflow =
             HighlightStyleUtils::CustomHighlightHasVisualOverflow(
                 node, highlight_marker.GetHighlightName());
@@ -144,6 +155,12 @@ void HighlightRegistry::ValidateHighlightMarkers() {
       layout_object->InvalidateVisualOverflow();
     }
   }
+}
+
+const HashSet<AtomicString>& HighlightRegistry::GetActiveHighlights(
+    const Text& node) const {
+  DCHECK(active_highlights_in_node_.Contains(&node));
+  return active_highlights_in_node_.find(&node)->value;
 }
 
 void HighlightRegistry::ScheduleRepaint() {

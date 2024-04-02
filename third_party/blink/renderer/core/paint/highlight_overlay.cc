@@ -303,20 +303,34 @@ HeapVector<HighlightLayer> HighlightOverlay::ComputeLayers(
   HeapVector<HighlightLayer> layers{};
   layers.emplace_back(HighlightLayerType::kOriginating);
 
-  // We must be able to store the layer index within 16 bits. Enforce
-  // that now when making layers.
-  unsigned max_custom_layers =
-      std::numeric_limits<uint16_t>::max() -
-      static_cast<unsigned>(HighlightLayerType::kSelection);
-  for (const auto& marker : custom) {
-    auto* custom_marker = To<CustomHighlightMarker>(marker.Get());
-    HighlightLayer layer{HighlightLayerType::kCustom,
-                         custom_marker->GetHighlightName()};
-    if (!layers.Contains(layer)) {
+  const auto* text_node = DynamicTo<Text>(node);
+  if (!text_node) {
+    DCHECK(custom.empty() && grammar.empty() && spelling.empty() &&
+           target.empty())
+        << "markers can not be painted without a valid Text node";
+    if (selection) {
+      layers.emplace_back(HighlightLayerType::kSelection);
+    }
+    return layers;
+  }
+
+  if (!custom.empty()) {
+    // We must be able to store the layer index within 16 bits. Enforce
+    // that now when making layers.
+    unsigned max_custom_layers =
+        std::numeric_limits<uint16_t>::max() -
+        static_cast<unsigned>(HighlightLayerType::kSelection);
+    const HashSet<AtomicString>& active_highlights =
+        registry->GetActiveHighlights(*text_node);
+    auto highlight_iter = active_highlights.begin();
+    unsigned layer_count = 0;
+    while (highlight_iter != active_highlights.end() &&
+           layer_count < max_custom_layers) {
+      HighlightLayer layer{HighlightLayerType::kCustom, *highlight_iter};
+      DCHECK(!layers.Contains(layer));
       layers.push_back(layer);
-      if (layers.size() > max_custom_layers) {
-        break;
-      }
+      highlight_iter++;
+      layer_count++;
     }
   }
   if (!grammar.empty())
