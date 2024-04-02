@@ -140,11 +140,8 @@ bool ContentCache::StartWriteBytes(const OpenedCloudFile& file,
   if (it == lru_cache_.end()) {
     // No `CacheFileContext` as this is the first write to the cache, let's
     // create it with the supplied version_tag.
-    // TODO(b/331692532): Introduce a constructor to make `version_tag`
-    // mandatory.
-    CacheFileContext ctx;
-    ctx.version_tag = file.version_tag;
-    it = lru_cache_.Put(file.file_path, std::move(ctx));
+    it = lru_cache_.Put(
+        PathContextPair(file.file_path, CacheFileContext(file.version_tag)));
   }
 
   CacheFileContext& ctx = it->second;

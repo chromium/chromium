@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_CONTENT_CACHE_CONTENT_LRU_CACHE_H_
 #define CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_CONTENT_CACHE_CONTENT_LRU_CACHE_H_
 
+#include <list>
+
 #include "base/containers/lru_cache.h"
 #include "base/files/file_path.h"
 #include "base/time/time.h"
