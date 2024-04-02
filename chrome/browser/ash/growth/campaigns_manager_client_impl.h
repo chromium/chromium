@@ -5,13 +5,16 @@
 #ifndef CHROME_BROWSER_ASH_GROWTH_CAMPAIGNS_MANAGER_CLIENT_IMPL_H_
 #define CHROME_BROWSER_ASH_GROWTH_CAMPAIGNS_MANAGER_CLIENT_IMPL_H_
 
+#include <map>
 #include <memory>
+#include <string>
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/growth/metrics.h"
 #include "chrome/browser/ash/growth/ui_action_performer.h"
 #include "chrome/browser/component_updater/cros_component_manager.h"
+#include "chromeos/ash/components/growth/campaigns_configuration_provider.h"
 #include "chromeos/ash/components/growth/campaigns_manager_client.h"
 
 namespace base {
@@ -42,6 +45,9 @@ class CampaignsManagerClientImpl : public growth::CampaignsManagerClient,
   growth::ActionMap GetCampaignsActions() override;
   void RegisterSyntheticFieldTrial(const std::optional<int> study_id,
                                    const int campaign_id) const override;
+  void NotifyEvent(const std::string& event_name) override;
+  bool WouldTriggerHelpUI(
+      const std::map<std::string, std::string>& params) override;
 
   // UiActionPerformer::Observer:
   void OnReadyToLogImpression(int campaign_id) override;
@@ -49,14 +55,15 @@ class CampaignsManagerClientImpl : public growth::CampaignsManagerClient,
   void OnButtonPressed(int campaign_id,
                        CampaignButtonId button_id,
                        bool should_mark_dismissed) override;
-  void NotifyEvent(const std::string& event_name) override;
 
  private:
   void OnComponentDownloaded(
       growth::CampaignComponentLoadedCallback loaded_callback,
       component_updater::CrOSComponentManager::Error error,
       const base::FilePath& path);
+  void UpdateConfig(const std::map<std::string, std::string>& params);
 
+  growth::CampaignsConfigurationProvider config_provider_;
   std::unique_ptr<growth::CampaignsManager> campaigns_manager_;
 
   // Reset before `campaigns_manager_`, because `this` observes one of the

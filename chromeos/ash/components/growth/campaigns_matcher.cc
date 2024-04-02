@@ -10,7 +10,9 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/strings/stringprintf.h"
 #include "base/version.h"
 #include "chromeos/ash/components/demo_mode/utils/dimensions_utils.h"
 #include "chromeos/ash/components/growth/campaigns_manager_client.h"
@@ -23,6 +25,24 @@ namespace growth {
 namespace {
 
 inline constexpr char kCampaignsExperimentTag[] = "exp_tag";
+inline constexpr char kEventUsedKey[] = "event_used";
+inline constexpr char kEventTriggerKey[] = "event_trigger";
+inline constexpr char kEvent1Key[] = "event_1";
+inline constexpr char kEventUsedParam[] =
+    "name:ChromeOSAshGrowthCampaigns_EventUsed;comparator:any;window:1;storage:"
+    "1";
+inline constexpr char kEventTriggerParam[] =
+    "name:ChromeOSAshGrowthCampaigns_EventTrigger;comparator:any;window:1;"
+    "storage:1";
+
+inline constexpr char kEventImpressionKey[] = "event_impression";
+inline constexpr char kEventDismissalKey[] = "event_dismissal";
+inline constexpr char kEventImpressionParam[] =
+    "name:ChromeOSAshGrowthCampaigns_Campaign%d_Impression;comparator:<%d;"
+    "window:365;storage:365";
+inline constexpr char kEventDismissalParam[] =
+    "name:ChromeOSAshGrowthCampaigns_Campaign%d_Dismissed;comparator:<%d;"
+    "window:365;storage:365";
 
 bool MatchPref(const base::Value::List* criterias,
                std::string_view pref_path,
@@ -137,7 +157,12 @@ const Campaign* CampaignsMatcher::GetCampaignBySlot(Slot slot) const {
 
     const auto* targetings = GetTargetings(campaign);
 
-    if (Matched(targetings)) {
+    const auto campaign_id = GetCampaignId(campaign);
+    if (!campaign_id) {
+      return nullptr;
+    }
+
+    if (Matched(targetings, campaign_id.value())) {
       return campaign;
     }
   }
@@ -314,6 +339,68 @@ bool CampaignsMatcher::MatchOpenedApp(
   return false;
 }
 
+bool CampaignsMatcher::MatchEvents(std::unique_ptr<EventsTargeting> config,
+                                   int campaign_id) const {
+  if (!config) {
+    // Campaign matched if there is no events targeting.
+    return true;
+  }
+
+  std::map<std::string, std::string> conditions_params;
+  // `event_used` and `event_trigger` are required for feature_engagement
+  // config, although they are not used in campaign matching.
+  conditions_params[kEventUsedKey] = kEventUsedParam;
+  conditions_params[kEventTriggerKey] = kEventTriggerParam;
+
+  // Check impression cap and dismissal cap.
+  int impression_cap = config->GetImpressionCap();
+  conditions_params[kEventImpressionKey] =
+      base::StringPrintf(kEventImpressionParam, campaign_id, impression_cap);
+
+  int dismissal_cap = config->GetDismissalCap();
+  conditions_params[kEventDismissalKey] =
+      base::StringPrintf(kEventDismissalParam, campaign_id, dismissal_cap);
+
+  // TODO: b/332059520 - Check the impress and dismissal caps separately to
+  // improve the efficiency.
+  // Here is to handle custom events targeting conditions.
+  // The outer loop is AND logic and the inner loop is OR logic.
+  const base::Value::List* conditions = config->GetEventsConditions();
+  for (const auto& condition : *conditions) {
+    if (!condition.is_list()) {
+      // TODO: b/332405607 - Add metrics to track wrong configurations.
+      LOG(ERROR) << "Invalid events targeting conditions.";
+      return false;
+    }
+
+    bool any_event_matched = false;
+    for (const auto& param : condition.GetList()) {
+      if (!param.is_string()) {
+        // TODO: b/332405607 - Add metrics to track wrong configurations.
+        LOG(ERROR) << "Invalid events targeting condition.";
+        return false;
+      }
+
+      std::string param_str = param.GetString();
+
+      // Put param in any `event_` config.
+      conditions_params[kEvent1Key] = param_str;
+      if (client_->WouldTriggerHelpUI(conditions_params)) {
+        any_event_matched = true;
+        // Can break the loop if any condition is met.
+        break;
+      }
+    }
+
+    if (!any_event_matched) {
+      // Can return if no condition is met.
+      return false;
+    }
+  }
+
+  return true;
+}
+
 bool CampaignsMatcher::MatchSessionTargeting(
     const SessionTargeting& targeting) const {
   if (!targeting.IsValid()) {
@@ -324,18 +411,20 @@ bool CampaignsMatcher::MatchSessionTargeting(
   return MatchExperimentTags(targeting.GetExperimentTags());
 }
 
-bool CampaignsMatcher::MatchRuntimeTargeting(
-    const RuntimeTargeting& targeting) const {
+bool CampaignsMatcher::MatchRuntimeTargeting(const RuntimeTargeting& targeting,
+                                             int campaign_id) const {
   if (!targeting.IsValid()) {
     // Campaigns matched if there is no runtime targeting.
     return true;
   }
 
   return MatchSchedulings(targeting.GetSchedulings()) &&
-         MatchOpenedApp(targeting.GetAppsOpened());
+         MatchOpenedApp(targeting.GetAppsOpened()) &&
+         MatchEvents(targeting.GetEventsConfig(), campaign_id);
 }
 
-bool CampaignsMatcher::Matched(const Targetings* targetings) const {
+bool CampaignsMatcher::Matched(const Targetings* targetings,
+                               int campaign_id) const {
   // TODO(b/299305911): Add metrics to track matching latency.
   if (!targetings || targetings->empty()) {
     return true;
@@ -354,7 +443,7 @@ bool CampaignsMatcher::Matched(const Targetings* targetings) const {
   return MatchSessionTargeting(SessionTargeting(targeting)) &&
          MaybeMatchDemoModeTargeting(DemoModeTargeting(targeting)) &&
          MatchDeviceTargeting(DeviceTargeting(targeting)) &&
-         MatchRuntimeTargeting(RuntimeTargeting(targeting));
+         MatchRuntimeTargeting(RuntimeTargeting(targeting), campaign_id);
 }
 
 }  // namespace growth

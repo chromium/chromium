@@ -239,6 +239,42 @@ class AppTargeting {
   raw_ptr<const base::Value::Dict> app_dict_;
 };
 
+// Wrapper around events targeting dictionary.
+//
+// The structure looks like:
+// {
+//   "events": {
+//     // A list of list of conditions to meet.
+//     // The inside list condition is logic OR.
+//     // The outer list condition is logic AND.
+//     // conditions_met = (A || B || C) && D;
+//     "conditions": [// Thsese two conditions are logic AND.
+//       [ // These three conditions are logic OR.
+//         "name:A;comparator:==2;window:365;storage:365",
+//         "name:B;comparator:==5;window:365;storage:365",
+//         "name:C;comparator:==8;window:365;storage:365"
+//       ],
+//       [
+//         "name:D;comparator:<3;window:365;storage:365"
+//       ]
+//     ]
+//   }
+// }
+class EventsTargeting {
+ public:
+  explicit EventsTargeting(const base::Value::Dict* config);
+  EventsTargeting(const EventsTargeting&) = delete;
+  EventsTargeting& operator=(const EventsTargeting) = delete;
+  ~EventsTargeting();
+
+  int GetImpressionCap() const;
+  int GetDismissalCap() const;
+  const base::Value::List* GetEventsConditions() const;
+
+ private:
+  raw_ptr<const base::Value::Dict> config_dict_;
+};
+
 // Wrapper around runtime targeting dictionary.
 //
 // The structure looks like:
@@ -259,6 +295,8 @@ class RuntimeTargeting : public TargetingBase {
       const;
   // Returns a list of apps to be matched against the current opened app.
   const std::vector<std::unique_ptr<AppTargeting>> GetAppsOpened() const;
+
+  std::unique_ptr<EventsTargeting> GetEventsConfig() const;
 };
 
 // Wrapper around the action dictionary for performing an action, including

@@ -57,6 +57,14 @@ inline constexpr char kSessionTargeting[] = "session";
 // Experiment Tag Targeting paths.
 inline constexpr char kExperimentTargetings[] = "experimentTags";
 
+// Events Targeting paths.
+inline constexpr char kEventsTargetings[] = "events";
+inline constexpr char kImpressionCap[] = "impressionCap";
+inline constexpr char kDismissalCap[] = "dismissalCap";
+inline constexpr char kEventsConditions[] = "conditions";
+inline constexpr int kImpressionCapDefaultValue = 3;
+inline constexpr int kDismissalCapDefaultValue = 1;
+
 // Runtime Targeting paths.
 inline constexpr char kRuntimeTargeting[] = "runtime";
 
@@ -249,6 +257,26 @@ const std::string* AppTargeting::GetAppId() const {
   return app_dict_->FindString(kAppId);
 }
 
+// Events Targeting.
+EventsTargeting::EventsTargeting(const base::Value::Dict* config_dict)
+    : config_dict_(config_dict) {}
+
+EventsTargeting::~EventsTargeting() = default;
+
+int EventsTargeting::GetImpressionCap() const {
+  auto cap = config_dict_->FindInt(kImpressionCap);
+  return cap.value_or(kImpressionCapDefaultValue);
+}
+
+int EventsTargeting::GetDismissalCap() const {
+  auto cap = config_dict_->FindInt(kDismissalCap);
+  return cap.value_or(kDismissalCapDefaultValue);
+}
+
+const base::Value::List* EventsTargeting::GetEventsConditions() const {
+  return config_dict_->FindList(kEventsConditions);
+}
+
 // Scheduling Targeting.
 TimeWindowTargeting::TimeWindowTargeting(
     const base::Value::Dict* time_window_dict)
@@ -329,6 +357,15 @@ RuntimeTargeting::GetAppsOpened() const {
   }
 
   return app_targetings;
+}
+
+std::unique_ptr<EventsTargeting> RuntimeTargeting::GetEventsConfig() const {
+  auto* config = GetDictCriteria(kEventsTargetings);
+  if (!config) {
+    return nullptr;
+  }
+
+  return std::make_unique<EventsTargeting>(config);
 }
 
 // Action.

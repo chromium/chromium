@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/growth/campaigns_manager_client_impl.h"
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -31,6 +32,7 @@
 #include "chromeos/ash/components/growth/campaigns_constants.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/variations/synthetic_trials.h"
 
@@ -144,6 +146,30 @@ void CampaignsManagerClientImpl::RegisterSyntheticFieldTrial(
                                                             group_name);
 }
 
+void CampaignsManagerClientImpl::NotifyEvent(const std::string& event_name) {
+  auto* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserContext(GetProfile());
+  if (!tracker || !tracker->IsInitialized()) {
+    LOG(ERROR) << "Feature Engagement tracer is not available";
+    return;
+  }
+
+  tracker->NotifyEvent(event_name);
+}
+
+bool CampaignsManagerClientImpl::WouldTriggerHelpUI(
+    const std::map<std::string, std::string>& params) {
+  auto* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserContext(GetProfile());
+  if (!tracker || !tracker->IsInitialized()) {
+    LOG(ERROR) << "Feature Engagement tracer is not available";
+    return false;
+  }
+
+  UpdateConfig(params);
+  return tracker->WouldTriggerHelpUI(feature_engagement::kIPHGrowthFramework);
+}
+
 void CampaignsManagerClientImpl::OnReadyToLogImpression(int campaign_id) {
   RecordImpression(campaign_id);
   campaigns_manager_->NotifyEventForTargeting(
@@ -174,17 +200,6 @@ void CampaignsManagerClientImpl::OnButtonPressed(int campaign_id,
   }
 }
 
-void CampaignsManagerClientImpl::NotifyEvent(const std::string& event_name) {
-  auto* tracker =
-      feature_engagement::TrackerFactory::GetForBrowserContext(GetProfile());
-  if (!tracker || !tracker->IsInitialized()) {
-    LOG(ERROR) << "Feature Engagement tracer is not available";
-    return;
-  }
-
-  tracker->NotifyEvent(event_name);
-}
-
 void CampaignsManagerClientImpl::OnComponentDownloaded(
     growth::CampaignComponentLoadedCallback loaded_callback,
     component_updater::CrOSComponentManager::Error error,
@@ -195,4 +210,18 @@ void CampaignsManagerClientImpl::OnComponentDownloaded(
   }
 
   std::move(loaded_callback).Run(path);
+}
+
+void CampaignsManagerClientImpl::UpdateConfig(
+    const std::map<std::string, std::string>& params) {
+  auto* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserContext(GetProfile());
+  if (!tracker || !tracker->IsInitialized()) {
+    LOG(ERROR) << "Feature Engagement tracer is not available";
+    return;
+  }
+
+  config_provider_.SetConfig(params);
+  tracker->UpdateConfig(feature_engagement::kIPHGrowthFramework,
+                        &config_provider_);
 }

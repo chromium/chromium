@@ -45,8 +45,11 @@ class CampaignsMatcher {
   bool MatchOpenedApp(
       std::vector<std::unique_ptr<AppTargeting>> apps_opened_targeting) const;
   bool MatchSessionTargeting(const SessionTargeting& targeting) const;
-  bool MatchRuntimeTargeting(const RuntimeTargeting& targeting) const;
-  bool Matched(const Targetings* targetings) const;
+  bool MatchRuntimeTargeting(const RuntimeTargeting& targeting,
+                             int campaign_id) const;
+  bool MatchEvents(std::unique_ptr<EventsTargeting> config,
+                   int campaign_id) const;
+  bool Matched(const Targetings* targetings, int campaign_id) const;
 
   // Owned by CampaignsManager.
   raw_ptr<const CampaignsPerSlot> campaigns_ = nullptr;

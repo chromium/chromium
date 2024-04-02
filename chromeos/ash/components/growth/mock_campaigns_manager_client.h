@@ -38,6 +38,10 @@ class MockCampaignsManagerClient : public CampaignsManagerClient {
               (const std::optional<int> study_id, const int campaign_id),
               (const, override));
   MOCK_METHOD(void, NotifyEvent, (const std::string& event), (override));
+  MOCK_METHOD(bool,
+              WouldTriggerHelpUI,
+              ((const std::map<std::string, std::string>& params)),
+              (override));
 };
 
 }  // namespace growth
