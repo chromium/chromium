@@ -54,26 +54,6 @@ extern "C" {
 #define WITH_XSLT_DEBUG
 #endif
 
-#if @WITH_MEM_DEBUG@
-/**
- * DEBUG_MEMORY:
- *
- * should be activated only when debugging libxslt. It replaces the
- * allocator with a collect and debug shell to the libc allocator.
- * Use configure --with-mem-debug to activate it on both library
- */
-#define DEBUG_MEMORY
-
-/**
- * DEBUG_MEMORY_LOCATION:
- *
- * should be activated only when debugging libxslt.
- * DEBUG_MEMORY_LOCATION should be activated only when libxml has
- * been configured with --with-debug-mem too
- */
-#define DEBUG_MEMORY_LOCATION
-#endif
-
 /**
  * XSLT_NEED_TRIO:
  *

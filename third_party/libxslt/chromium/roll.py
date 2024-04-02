@@ -71,7 +71,6 @@ import tempfile
 # this is helpful.
 
 PATCHES = [
-    'remove-label.patch',
     'xslt-locale.patch',
 ]
 

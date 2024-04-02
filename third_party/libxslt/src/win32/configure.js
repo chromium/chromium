@@ -180,7 +180,6 @@ function discoverVersion()
 	cf.Close();
 	vf.WriteLine("WITH_TRIO=" + (withTrio? "1" : "0"));
 	vf.WriteLine("WITH_DEBUG=" + (withXsltDebug? "1" : "0"));
-	vf.WriteLine("WITH_MEM_DEBUG=" + (withMemDebug? "1" : "0"));
 	vf.WriteLine("WITH_DEBUGGER=" + (withDebugger? "1" : "0"));
 	vf.WriteLine("WITH_ICONV=" + (withIconv? "1" : "0"));
 	vf.WriteLine("WITH_ZLIB=" + (withZlib? "1" : "0"));
@@ -230,8 +229,6 @@ function configureXslt()
 			of.WriteLine(s.replace(/\@WITH_TRIO\@/, withTrio? "1" : "0"));
 		} else if (s.search(/\@WITH_XSLT_DEBUG\@/) != -1) {
 			of.WriteLine(s.replace(/\@WITH_XSLT_DEBUG\@/, withXsltDebug? "1" : "0"));
-		} else if (s.search(/\@WITH_MEM_DEBUG\@/) != -1) {
-			of.WriteLine(s.replace(/\@WITH_MEM_DEBUG\@/, withMemDebug? "1" : "0"));
 		} else if (s.search(/\@WITH_DEBUGGER\@/) != -1) {
 			of.WriteLine(s.replace(/\@WITH_DEBUGGER\@/, withDebugger? "1" : "0"));
 		} else if (s.search(/\@WITH_MODULES\@/) != -1) {
@@ -303,8 +300,6 @@ function configureLibxsltPy()
 			of.WriteLine(s.replace(/\@WITH_TRIO\@/, withTrio? "1" : "0"));
 		} else if (s.search(/\@WITH_XSLT_DEBUG\@/) != -1) {
 			of.WriteLine(s.replace(/\@WITH_XSLT_DEBUG\@/, withXsltDebug? "1" : "0"));
-		} else if (s.search(/\@WITH_MEM_DEBUG\@/) != -1) {
-			of.WriteLine(s.replace(/\@WITH_MEM_DEBUG\@/, withMemDebug? "1" : "0"));
 		} else if (s.search(/\@WITH_DEBUGGER\@/) != -1) {
 			of.WriteLine(s.replace(/\@WITH_DEBUGGER\@/, withDebugger? "1" : "0"));
 		} else if (s.search(/\@WITH_MODULES\@/) != -1) {

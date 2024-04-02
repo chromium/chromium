@@ -793,7 +793,11 @@ exsltFuncResultElem (xsltTransformContextPtr ctxt,
 			     "exsltFuncResultElem: ret == NULL\n");
 	    data->error = 1;
 	} else {
-	    ret->boolval = 0; /* Freeing is not handled there anymore */
+            /*
+             * This stops older libxml2 versions from freeing the nodes
+             * in the tree.
+             */
+	    ret->boolval = 0;
 	}
     } else {
 	/* If the func:result element has empty content and does not

@@ -88,8 +88,6 @@ xsltDocDefaultLoaderFunc(const xmlChar * URI, xmlDictPtr dict, int options,
 	return(NULL);
     }
     inputPush(pctxt, inputStream);
-    if (pctxt->directory == NULL)
-        pctxt->directory = xmlParserGetDirectory((const char *) URI);
 
     xmlParseDocument(pctxt);
 
