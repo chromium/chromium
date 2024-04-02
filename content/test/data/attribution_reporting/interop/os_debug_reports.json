@@ -1,6 +1,8 @@
 {
   "description": "OS debug reports",
-  "needs_cross_app_web": true,
+  "api_config": {
+    "needs_cross_app_web": true
+  },
   "input": {
     "registrations": [
       {

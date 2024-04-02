@@ -1,6 +1,5 @@
 {
   "description": "Aggregatable report with trigger context ID",
-  "needs_trigger_context_id": true,
   "input": {
     "registrations": [
       {

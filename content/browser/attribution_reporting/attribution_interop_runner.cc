@@ -35,6 +35,7 @@
 #include "base/task/thread_pool.h"
 #include "base/task/updateable_sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
@@ -44,6 +45,7 @@
 #include "components/aggregation_service/features.h"
 #include "components/attribution_reporting/eligibility.h"
 #include "components/attribution_reporting/event_level_epsilon.h"
+#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/privacy_math.h"
@@ -75,6 +77,7 @@
 #include "content/public/test/test_browser_context.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/attribution_reporting_runtime_features.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/trigger_verification.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/attribution.mojom.h"
@@ -82,6 +85,7 @@
 #include "services/network/test/test_utils.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -413,7 +417,33 @@ void FastForwardUntilReportsConsumed(AttributionManager& manager,
 
 base::expected<AttributionInteropOutput, std::string>
 RunAttributionInteropSimulation(base::Value::Dict input,
-                                const AttributionConfig& config) {
+                                const AttributionInteropConfig& config) {
+  std::vector<base::test::FeatureRef> enabled_features(
+      {blink::features::kKeepAliveInBrowserMigration,
+       blink::features::kAttributionReportingInBrowserMigration});
+
+  std::optional<AttributionOsLevelManager::ScopedApiStateForTesting>
+      scoped_api_state;
+  if (config.needs_cross_app_web) {
+    enabled_features.emplace_back(
+        network::features::kAttributionReportingCrossAppWeb);
+    scoped_api_state.emplace(AttributionOsLevelManager::ApiState::kEnabled);
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      enabled_features,
+      /*disabled_features=*/{
+          // This UMA records a sample every 30s via a periodic task which
+          // interacts poorly with TaskEnvironment::FastForward using day long
+          // delays (we need to run the uma update every 30s for that
+          // interval)
+          network::features::kGetCookiesStringUma,
+      });
+
+  attribution_reporting::ScopedMaxEventLevelEpsilonForTesting
+      scoped_max_event_level_epsilon(config.max_event_level_epsilon);
+
   // Prerequisites for using an environment with mock time.
   BrowserTaskEnvironment task_environment(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
@@ -483,7 +513,8 @@ RunAttributionInteropSimulation(base::Value::Dict input,
       /*user_data_directory=*/base::FilePath(),
       /*max_pending_events=*/std::numeric_limits<size_t>::max(),
       /*special_storage_policy=*/nullptr,
-      std::make_unique<ControllableStorageDelegate>(config, events),
+      std::make_unique<ControllableStorageDelegate>(config.attribution_config,
+                                                    events),
       std::move(fake_cookie_checker),
       std::make_unique<AttributionReportNetworkSender>(
           test_url_loader_factory.GetSafeWeakWrapper()),

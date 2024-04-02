@@ -12,14 +12,14 @@
 
 namespace content {
 
-struct AttributionConfig;
+struct AttributionInteropConfig;
 struct AttributionInteropOutput;
 
 // Simulates the Attribution Reporting API for a single user on sources and
 // triggers specified in `input`. Returns the generated reports.
 base::expected<AttributionInteropOutput, std::string>
 RunAttributionInteropSimulation(base::Value::Dict input,
-                                const AttributionConfig&);
+                                const AttributionInteropConfig&);
 
 }  // namespace content
 

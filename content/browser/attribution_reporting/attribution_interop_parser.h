@@ -91,6 +91,7 @@ ParseAttributionInteropInput(base::Value::Dict input, base::Time offset_time);
 struct AttributionInteropConfig {
   AttributionConfig attribution_config;
   double max_event_level_epsilon = 0;
+  bool needs_cross_app_web = false;
 
   friend bool operator==(const AttributionInteropConfig&,
                          const AttributionInteropConfig&) = default;

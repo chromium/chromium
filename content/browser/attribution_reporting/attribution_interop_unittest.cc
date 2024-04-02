@@ -13,20 +13,13 @@
 #include "base/path_service.h"
 #include "base/strings/string_piece.h"
 #include "base/test/gmock_expected_support.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/types/expected.h"
 #include "base/values.h"
-#include "components/attribution_reporting/event_level_epsilon.h"
-#include "components/attribution_reporting/features.h"
-#include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_interop_parser.h"
 #include "content/browser/attribution_reporting/attribution_interop_runner.h"
-#include "content/browser/attribution_reporting/attribution_os_level_manager.h"
-#include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 
 namespace content {
 
@@ -93,21 +86,11 @@ class AttributionInteropTest : public ::testing::TestWithParam<base::FilePath> {
             GetInputDir().AppendASCII(kDefaultConfigFileName))));
   }
 
-  AttributionInteropTest() {
-    // This UMA records a sample every 30s via a periodic task which
-    // interacts poorly with TaskEnvironment::FastForward using day long
-    // delays (we need to run the uma update every 30s for that
-    // interval)
-    scoped_feature_list_.InitAndDisableFeature(
-        network::features::kGetCookiesStringUma);
-  }
-
  protected:
   static AttributionInteropConfig GetConfig() { return g_config_; }
 
  private:
   static AttributionInteropConfig g_config_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // static
@@ -119,33 +102,10 @@ TEST_P(AttributionInteropTest, HasExpectedOutput) {
   AttributionInteropConfig config = GetConfig();
   base::Value::Dict dict = base::test::ParseJsonDictFromFile(GetParam());
 
-  std::vector<base::test::FeatureRef> enabled_features(
-      {blink::features::kKeepAliveInBrowserMigration,
-       blink::features::kAttributionReportingInBrowserMigration});
-  if (dict.FindBool("needs_trigger_context_id").value_or(false)) {
-    enabled_features.emplace_back(
-        attribution_reporting::features::kAttributionReportingTriggerContextId);
-  }
-
-  std::optional<AttributionOsLevelManager::ScopedApiStateForTesting>
-      scoped_api_state;
-  if (dict.FindBool("needs_cross_app_web")) {
-    enabled_features.emplace_back(
-        network::features::kAttributionReportingCrossAppWeb);
-    scoped_api_state.emplace(AttributionOsLevelManager::ApiState::kEnabled);
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(enabled_features,
-                                       /*disabled_features=*/{});
-
   if (const base::Value* api_config = dict.Find("api_config")) {
     ASSERT_TRUE(api_config->is_dict());
     ASSERT_EQ("", MergeAttributionInteropConfig(api_config->GetDict(), config));
   }
-
-  attribution_reporting::ScopedMaxEventLevelEpsilonForTesting
-      scoped_max_event_level_epsilon(config.max_event_level_epsilon);
 
   std::optional<base::Value> input = dict.Extract("input");
   ASSERT_TRUE(input && input->is_dict());
@@ -159,8 +119,7 @@ TEST_P(AttributionInteropTest, HasExpectedOutput) {
 
   ASSERT_OK_AND_ASSIGN(
       AttributionInteropOutput actual_output,
-      RunAttributionInteropSimulation(std::move(*input).TakeDict(),
-                                      config.attribution_config));
+      RunAttributionInteropSimulation(std::move(*input).TakeDict(), config));
 
   PreProcessOutput(expected_output);
   PreProcessOutput(actual_output);

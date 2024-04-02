@@ -177,6 +177,9 @@ class AttributionInteropParser {
       const base::Value::Dict& dict,
       AttributionInteropConfig& interop_config,
       bool required) && {
+    interop_config.needs_cross_app_web =
+        ParseBool(dict, "needs_cross_app_web").value_or(false);
+
     AttributionConfig& config = interop_config.attribution_config;
 
     ParseInt(dict, "max_sources_per_origin", config.max_sources_per_origin,
