@@ -4,6 +4,8 @@
 
 #include "base/nix/xdg_util.h"
 
+#include <string_view>
+
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/environment.h"
@@ -29,9 +31,9 @@ namespace {
 
 class MockEnvironment : public Environment {
  public:
-  MOCK_METHOD2(GetVar, bool(StringPiece, std::string* result));
-  MOCK_METHOD2(SetVar, bool(StringPiece, const std::string& new_value));
-  MOCK_METHOD1(UnSetVar, bool(StringPiece));
+  MOCK_METHOD2(GetVar, bool(std::string_view, std::string* result));
+  MOCK_METHOD2(SetVar, bool(std::string_view, const std::string& new_value));
+  MOCK_METHOD1(UnSetVar, bool(std::string_view));
 };
 
 // Needs to be const char* to make gmock happy.
