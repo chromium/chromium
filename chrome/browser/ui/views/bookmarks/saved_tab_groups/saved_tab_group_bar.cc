@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_overflow_button.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -479,7 +480,7 @@ void SavedTabGroupBar::Layout(PassKey) {
   const int overflow_button_width =
       overflow_button_->GetPreferredSize().width() + kBetweenElementSpacing;
 
-  if (base::FeatureList::IsEnabled(features::kTabGroupsSaveV2)) {
+  if (IsTabGroupsSaveUIUpdateEnabled()) {
     if (stg_bar_width == 0) {
       return;
     } else {
@@ -496,7 +497,7 @@ void SavedTabGroupBar::Layout(PassKey) {
 
 int SavedTabGroupBar::V2CalculatePreferredWidthRestrictedBy(
     int max_width) const {
-  DCHECK(base::FeatureList::IsEnabled(features::kTabGroupsSaveV2));
+  DCHECK(IsTabGroupsSaveUIUpdateEnabled());
 
   // For V2, the preferred width of Saved tab groups bar depends on the number
   // of pinned tab groups (pinned state is WIP) in bookmark bar (plus Everything
@@ -522,7 +523,7 @@ int SavedTabGroupBar::V2CalculatePreferredWidthRestrictedBy(
 }
 
 int SavedTabGroupBar::CalculatePreferredWidthRestrictedBy(int max_width) const {
-  if (base::FeatureList::IsEnabled(features::kTabGroupsSaveV2)) {
+  if (IsTabGroupsSaveUIUpdateEnabled()) {
     return V2CalculatePreferredWidthRestrictedBy(max_width);
   }
 

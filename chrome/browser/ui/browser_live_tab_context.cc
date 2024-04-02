@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/buildflags.h"
+#include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/sessions/content/content_live_tab.h"
 #include "components/sessions/content/content_platform_specific_tab_data.h"
@@ -154,7 +155,7 @@ BrowserLiveTabContext::GetVisualDataForGroup(
 const std::optional<base::Uuid>
 BrowserLiveTabContext::GetSavedTabGroupIdForGroup(
     const tab_groups::TabGroupId& group) const {
-  if (!base::FeatureList::IsEnabled(features::kTabGroupsSaveV2)) {
+  if (!tab_groups::IsTabGroupsSaveV2Enabled()) {
     return std::nullopt;
   }
 

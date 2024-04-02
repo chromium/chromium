@@ -44,6 +44,7 @@
 #include "components/javascript_dialogs/app_modal_dialog_view.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/saved_tab_groups/features.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
 #include "components/tab_groups/tab_group_color.h"
@@ -2008,7 +2009,7 @@ class TabRestoreSavedGroupsTest : public TabRestoreTest {
  public:
   TabRestoreSavedGroupsTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kTabGroupsSave, features::kTabGroupsSaveV2}, {});
+        {features::kTabGroupsSave, tab_groups::kTabGroupsSaveV2}, {});
   }
 
   // Adds tabs to the given browser, all navigated to the new tab page. Returns

@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/saved_tab_groups/features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -31,15 +32,15 @@ namespace tab_groups {
 SavedTabGroupOverflowButton::SavedTabGroupOverflowButton(
     PressedCallback callback)
     : views::MenuButton(std::move(callback)) {
-  bool v2_enabled = base::FeatureList::IsEnabled(features::kTabGroupsSaveV2);
   SetAccessibilityProperties(
       ax::mojom::Role::kMenu,
-      l10n_util::GetStringUTF16(v2_enabled
+      l10n_util::GetStringUTF16(IsTabGroupsSaveUIUpdateEnabled()
                                     ? IDS_ACCNAME_TAB_GROUPS_EVERYTHING
                                     : IDS_ACCNAME_SAVED_TAB_GROUPS_CHEVRON));
   SetTooltipText(l10n_util::GetStringUTF16(
-      v2_enabled ? IDS_TAB_GROUPS_EVERYTHING_BUTTON_TOOLTIP
-                 : IDS_SAVED_TAB_GROUPS_OVERFLOW_BUTTON_TOOLTIP));
+      IsTabGroupsSaveUIUpdateEnabled()
+          ? IDS_TAB_GROUPS_EVERYTHING_BUTTON_TOOLTIP
+          : IDS_SAVED_TAB_GROUPS_OVERFLOW_BUTTON_TOOLTIP));
   SetFlipCanvasOnPaintForRTLUI(true);
   ConfigureInkDropForToolbar(this);
   SetImageLabelSpacing(ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -75,12 +76,12 @@ void SavedTabGroupOverflowButton::OnThemeChanged() {
   const gfx::VectorIcon& icon = features::IsChromeRefresh2023()
                                     ? kBookmarkbarOverflowRefreshIcon
                                     : kOverflowChevronIcon;
-  SetImageModel(views::Button::STATE_NORMAL,
-                ui::ImageModel::FromVectorIcon(
-                    base::FeatureList::IsEnabled(features::kTabGroupsSaveV2)
-                        ? kSavedTabGroupBarEverythingIcon
-                        : icon,
-                    overflow_color));
+  SetImageModel(
+      views::Button::STATE_NORMAL,
+      ui::ImageModel::FromVectorIcon(IsTabGroupsSaveUIUpdateEnabled()
+                                         ? kSavedTabGroupBarEverythingIcon
+                                         : icon,
+                                     overflow_color));
   return;
 }
 

@@ -290,12 +290,6 @@ BASE_FEATURE(kTabGroupsCollapseFreezing,
 // https://crbug.com/1223929
 BASE_FEATURE(kTabGroupsSave, "TabGroupsSave", base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Builds off of the original TabGroupsSave feature by making some UI tweaks and
-// adjustments. b/325123353
-BASE_FEATURE(kTabGroupsSaveV2,
-             "TabGroupsSaveV2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables preview images in tab-hover cards.
 // https://crbug.com/928954
 BASE_FEATURE(kTabHoverCardImages,

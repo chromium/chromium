@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/reading_list/core/reading_list_model.h"
+#include "components/saved_tab_groups/features.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/sessions/content/content_live_tab.h"
 #include "components/sessions/core/session_id.h"
@@ -203,7 +204,7 @@ void BrowserTabStripModelDelegate::CreateHistoricalGroup(
 
     const bool saved_tab_groups_enabled =
         base::FeatureList::IsEnabled(features::kTabGroupsSave) ||
-        base::FeatureList::IsEnabled(features::kTabGroupsSaveV2);
+        tab_groups::IsTabGroupsSaveV2Enabled();
     if (saved_tab_groups_enabled) {
       tab_groups::SavedTabGroupKeyedService* saved_tab_group_service =
           tab_groups::SavedTabGroupServiceFactory::GetForProfile(

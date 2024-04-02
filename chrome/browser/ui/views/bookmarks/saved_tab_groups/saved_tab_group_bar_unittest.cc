@@ -16,6 +16,7 @@
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/saved_tab_groups/features.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/views/view_utils.h"
@@ -58,16 +59,16 @@ class SavedTabGroupBarUnitTest : public ChromeViewsTestBase,
  public:
   SavedTabGroupBarUnitTest()
       : saved_tab_group_model_(std::make_unique<SavedTabGroupModel>()) {
-    if (IsV2Enabled()) {
+    if (IsV2UIEnabled()) {
       feature_list_.InitWithFeatures(
-          {features::kTabGroupsSave, features::kTabGroupsSaveV2}, {});
+          {features::kTabGroupsSave, tab_groups::kTabGroupsSaveUIUpdate}, {});
     } else {
       feature_list_.InitWithFeatures({features::kTabGroupsSave},
-                                     {features::kTabGroupsSaveV2});
+                                     {tab_groups::kTabGroupsSaveUIUpdate});
     }
   }
 
-  bool IsV2Enabled() const { return GetParam(); }
+  bool IsV2UIEnabled() const { return GetParam(); }
   SavedTabGroupBar* saved_tab_group_bar() { return saved_tab_group_bar_.get(); }
   SavedTabGroupModel* saved_tab_group_model() {
     return saved_tab_group_model_.get();
@@ -162,7 +163,7 @@ TEST_P(SavedTabGroupBarUnitTest, EverthingButtonAlwaysVisibleForV2) {
   EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
 
   const views::View* overflow_button = saved_tab_group_bar()->children()[0];
-  if (IsV2Enabled()) {
+  if (IsV2UIEnabled()) {
     // Everything button shows by default.
     saved_tab_group_bar()->SetBounds(
         0, 2, saved_tab_group_bar()->CalculatePreferredWidthRestrictedBy(400),
@@ -191,7 +192,7 @@ TEST_P(SavedTabGroupBarUnitTest, EverthingButtonAlwaysVisibleForV2) {
 }
 
 TEST_P(SavedTabGroupBarUnitTest, OverflowMenuVisibleWhenFifthButtonAdded) {
-  if (IsV2Enabled()) {
+  if (IsV2UIEnabled()) {
     GTEST_SKIP() << "N/A for V2";
   }
 
@@ -222,7 +223,7 @@ TEST_P(SavedTabGroupBarUnitTest, OverflowMenuVisibleWhenFifthButtonAdded) {
 // Verifies that when a 5th saved group is removed, the overflow menu is not
 // visible.
 TEST_P(SavedTabGroupBarUnitTest, OverflowMenuHiddenWhenFifthButtonRemoved) {
-  if (IsV2Enabled()) {
+  if (IsV2UIEnabled()) {
     GTEST_SKIP() << "N/A for V2";
   }
 
@@ -258,7 +259,7 @@ TEST_P(SavedTabGroupBarUnitTest, OverflowMenuHiddenWhenFifthButtonRemoved) {
 // Verifies that when a 5th saved group is added and the first group is removed,
 // the overflow menu is not visible and the 5th button is visible.
 TEST_P(SavedTabGroupBarUnitTest, OverflowMenuHiddenWhenFirstButtonRemoved) {
-  if (IsV2Enabled()) {
+  if (IsV2UIEnabled()) {
     GTEST_SKIP() << "N/A for V2";
   }
 
@@ -396,7 +397,7 @@ TEST_P(SavedTabGroupBarUnitTest, MoveButtonFromModelMove) {
 
 // If the restriction is exactly the expected size all should be visible
 TEST_P(SavedTabGroupBarUnitTest, CalculatePreferredWidthRestrictedByExactSize) {
-  if (IsV2Enabled()) {
+  if (IsV2UIEnabled()) {
     GTEST_SKIP() << "N/A for V2";
   }
 
@@ -428,7 +429,7 @@ TEST_P(SavedTabGroupBarUnitTest, CalculatePreferredWidthRestrictedByExactSize) {
 // If the restriction is more than the expected size all should be visible
 TEST_P(SavedTabGroupBarUnitTest,
        CalculatePreferredWidthRestrictedByLargerSize) {
-  if (IsV2Enabled()) {
+  if (IsV2UIEnabled()) {
     GTEST_SKIP() << "N/A for V2";
   }
 
@@ -459,7 +460,7 @@ TEST_P(SavedTabGroupBarUnitTest,
 // visible, and second to last should be visible.
 TEST_P(SavedTabGroupBarUnitTest,
        CalculatePreferredWidthRestrictedBySmallerSize) {
-  if (IsV2Enabled()) {
+  if (IsV2UIEnabled()) {
     GTEST_SKIP() << "N/A for V2";
   }
 

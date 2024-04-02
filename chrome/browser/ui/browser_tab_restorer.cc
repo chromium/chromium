@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
@@ -220,8 +221,7 @@ void RestoreTab(Browser* browser) {
   }
 
   if (service->IsLoaded()) {
-    if (!base::FeatureList::IsEnabled(features::kTabGroupsSaveV2) ||
-        service->entries().empty()) {
+    if (!tab_groups::IsTabGroupsSaveV2Enabled() || service->entries().empty()) {
       // Restore normally.
       service->RestoreMostRecentEntry(browser->live_tab_context());
       return;

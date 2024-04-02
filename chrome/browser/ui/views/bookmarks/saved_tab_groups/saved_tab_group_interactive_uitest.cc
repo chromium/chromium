@@ -31,6 +31,7 @@
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/power_bookmarks/core/power_bookmark_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -63,17 +64,17 @@ class SavedTabGroupInteractiveTest
   ~SavedTabGroupInteractiveTest() override = default;
 
   void SetUp() override {
-    if (IsV2Enabled()) {
+    if (IsV2UIEnabled()) {
       scoped_feature_list_.InitWithFeatures(
-          {features::kTabGroupsSave, features::kTabGroupsSaveV2}, {});
+          {features::kTabGroupsSave, tab_groups::kTabGroupsSaveUIUpdate}, {});
     } else {
-      scoped_feature_list_.InitWithFeatures({features::kTabGroupsSave},
-                                            {features::kTabGroupsSaveV2});
+      scoped_feature_list_.InitWithFeatures(
+          {features::kTabGroupsSave}, {tab_groups::kTabGroupsSaveUIUpdate});
     }
     InteractiveBrowserTest::SetUp();
   }
 
-  bool IsV2Enabled() const { return GetParam(); }
+  bool IsV2UIEnabled() const { return GetParam(); }
 
   MultiStep ShowBookmarksBar() {
     return Steps(PressButton(kToolbarAppMenuButtonElementId),
@@ -470,11 +471,11 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
                        EverythingButtonAlwaysShowsForV2) {
   const tab_groups::TabGroupId group_id =
       browser()->tab_strip_model()->AddToNewGroup({0});
-  const bool is_v2_enabled = IsV2Enabled();
+  const bool is_v2_ui_enabled = IsV2UIEnabled();
 
   RunTestSequence(
       FinishTabstripAnimations(), ShowBookmarksBar(),
-      CheckEverythingButtonVisibility(is_v2_enabled),
+      CheckEverythingButtonVisibility(is_v2_ui_enabled),
 
       // Ensure no tab groups save buttons in the bookmarks bar are present.
       EnsureNotPresent(kSavedTabGroupButtonElementId),
@@ -483,7 +484,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
       // Click the tab group header to close the menu.
       FlushEvents(), HoverTabGroupHeader(group_id),
       ClickMouse(ui_controls::LEFT), FinishTabstripAnimations(),
-      CheckEverythingButtonVisibility(is_v2_enabled),
+      CheckEverythingButtonVisibility(is_v2_ui_enabled),
 
       // Press the enter/return key on the button to open the context menu.
       WithElement(kSavedTabGroupButtonElementId,
@@ -500,12 +501,12 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
       SelectMenuItem(SavedTabGroupButton::kDeleteGroupMenuItem),
       // Ensure the button is no longer present.
       FinishTabstripAnimations(), WaitForHide(kSavedTabGroupButtonElementId),
-      CheckEverythingButtonVisibility(is_v2_enabled));
+      CheckEverythingButtonVisibility(is_v2_ui_enabled));
 }
 
 IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
                        FiveSavedGroupsShowsOverflowMenuButton) {
-  if (IsV2Enabled()) {
+  if (IsV2UIEnabled()) {
     GTEST_SKIP() << "N/A for V2";
   }
   // Add 4 additional tabs to the browser.

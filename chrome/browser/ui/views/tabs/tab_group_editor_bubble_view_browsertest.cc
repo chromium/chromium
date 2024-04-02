@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/saved_tab_groups/features.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/test/browser_test.h"
 #include "ui/events/event.h"
@@ -229,7 +230,7 @@ class TabGroupEditorBubbleViewDialogBrowserTestWithSavedGroupV2
  public:
   TabGroupEditorBubbleViewDialogBrowserTestWithSavedGroupV2() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kTabGroupsSave, features::kTabGroupsSaveV2}, {});
+        {features::kTabGroupsSave, tab_groups::kTabGroupsSaveUIUpdate}, {});
   }
 
  private:

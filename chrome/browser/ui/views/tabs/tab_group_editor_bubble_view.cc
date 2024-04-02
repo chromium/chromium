@@ -48,6 +48,7 @@
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/saved_tab_groups/features.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -478,7 +479,7 @@ void TabGroupEditorBubbleView::OnSaveTogglePressed() {
 
     saved_tab_group_service->SaveGroup(
         group_,
-        /*is_pinned=*/base::FeatureList::IsEnabled(features::kTabGroupsSaveV2));
+        /*is_pinned=*/tab_groups::IsTabGroupsSaveUIUpdateEnabled());
 
     views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
         kTabGroupSavedCustomEventId, save_group_toggle_);
@@ -513,7 +514,7 @@ void TabGroupEditorBubbleView::NewTabInGroupPressed() {
 
 void TabGroupEditorBubbleView::UngroupPressed() {
   if (base::FeatureList::IsEnabled(features::kTabGroupsSave) &&
-      base::FeatureList::IsEnabled(features::kTabGroupsSaveV2) &&
+      tab_groups::IsTabGroupsSaveUIUpdateEnabled() &&
       save_group_toggle_->GetIsOn()) {
     browser_->tab_group_deletion_dialog_controller()->MaybeShowDialog(
         tab_groups::DeletionDialogController::DialogType::UngroupSingle,

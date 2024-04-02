@@ -4,6 +4,8 @@
 
 source_set("core") {
   sources = [
+    "features.cc",
+    "features.h",
     "saved_tab_group.cc",
     "saved_tab_group.h",
     "saved_tab_group_model.cc",
