@@ -7914,7 +7914,7 @@
   {
     "name": "third-party-profile-management",
     "owners": [ "igorruvinov@chromium.org", "ydago@chromium.org", "zmin@chromium.org" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 135
   },
   {
     "name": "third-party-storage-partitioning",
