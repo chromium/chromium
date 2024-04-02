@@ -14,8 +14,8 @@
 #include "ios/web/public/web_state_observer.h"
 #include "ios/web/public/web_state_user_data.h"
 
-@class LegacySnapshotStorage;
 @class LegacySnapshotManager;
+@class SnapshotStorageWrapper;
 @protocol SnapshotGeneratorDelegate;
 
 namespace web {
@@ -37,7 +37,7 @@ class SnapshotTabHelper : public web::WebStateObserver,
 
   // Sets the snapshot storage to be used to store and retrieve snapshots. This
   // is not owned by the tab helper.
-  void SetSnapshotStorage(LegacySnapshotStorage* snapshot_storage);
+  void SetSnapshotStorage(SnapshotStorageWrapper* snapshot_storage);
 
   // Retrieves a color snapshot for the current page, invoking `callback` with
   // the image. The callback may be called synchronously if there is a cached

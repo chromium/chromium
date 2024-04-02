@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 class SnapshotID;
-@class LegacySnapshotStorage;
+@class SnapshotStorageWrapper;
 @class LegacySnapshotGenerator;
 @protocol SnapshotGeneratorDelegate;
 
@@ -24,7 +24,7 @@ class SnapshotID;
 
 // Weak reference to the snapshot storage which is used to store and retrieve
 // snapshots. SnapshotStorage is owned by SnapshotBrowserAgent.
-@property(nonatomic, weak) LegacySnapshotStorage* snapshotStorage;
+@property(nonatomic, weak) SnapshotStorageWrapper* snapshotStorage;
 
 // The snapshot ID.
 @property(nonatomic, readonly) SnapshotID snapshotID;

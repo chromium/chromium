@@ -17,9 +17,9 @@
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
-#import "ios/chrome/browser/snapshots/model/legacy_snapshot_storage.h"
 #import "ios/chrome/browser/snapshots/model/model_swift.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id_wrapper.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_storage_wrapper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/tabs/model/tabs_closer.h"
@@ -88,7 +88,7 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   // The list of inactive tabs.
   raw_ptr<WebStateList> _webStateList;
   // The snapshot storage of _webStateList.
-  __weak LegacySnapshotStorage* _snapshotStorage;
+  __weak SnapshotStorageWrapper* _snapshotStorage;
   // The observers of _webStateList.
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserverBridge;
   std::unique_ptr<ScopedWebStateListObservation> _scopedWebStateListObservation;
@@ -112,7 +112,7 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                          prefService:(PrefService*)prefService
-                     snapshotStorage:(LegacySnapshotStorage*)snapshotStorage
+                     snapshotStorage:(SnapshotStorageWrapper*)snapshotStorage
                           tabsCloser:(std::unique_ptr<TabsCloser>)tabsCloser {
   CHECK(IsInactiveTabsAvailable());
   CHECK(webStateList);

@@ -4,6 +4,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
 #import "base/files/scoped_temp_dir.h"
@@ -438,17 +439,10 @@ class ImageFileManagerTest : public PlatformTest {
       return false;
     }
 
-    NSURL* storage_url = [NSURL
-        fileURLWithPath:[NSString stringWithUTF8String:scoped_temp_directory_
-                                                           .GetPath()
-                                                           .value()
-                                                           .c_str()]];
-    NSURL* legacy_url = [NSURL
-        fileURLWithPath:[NSString
-                            stringWithUTF8String:
-                                scoped_temp_directory_for_legacy_path_.GetPath()
-                                    .value()
-                                    .c_str()]];
+    NSURL* storage_url =
+        base::apple::FilePathToNSURL(scoped_temp_directory_.GetPath());
+    NSURL* legacy_url = base::apple::FilePathToNSURL(
+        scoped_temp_directory_for_legacy_path_.GetPath());
     image_file_manager_ =
         [[ImageFileManager alloc] initWithStorageDirectoryUrl:storage_url
                                            legacyDirectoryUrl:legacy_url];

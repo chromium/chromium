@@ -10,7 +10,7 @@
 #import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/snapshots/model/legacy_snapshot_generator.h"
 #import "ios/chrome/browser/snapshots/model/legacy_snapshot_manager.h"
-#import "ios/chrome/browser/snapshots/model/legacy_snapshot_storage.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_storage_wrapper.h"
 #import "ios/web/public/web_state.h"
 
 namespace {
@@ -50,7 +50,7 @@ void SnapshotTabHelper::SetDelegate(id<SnapshotGeneratorDelegate> delegate) {
 }
 
 void SnapshotTabHelper::SetSnapshotStorage(
-    LegacySnapshotStorage* snapshot_storage) {
+    SnapshotStorageWrapper* snapshot_storage) {
   snapshot_manager_.snapshotStorage = snapshot_storage;
 }
 

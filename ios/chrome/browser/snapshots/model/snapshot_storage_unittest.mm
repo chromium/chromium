@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/snapshots/model/legacy_snapshot_storage+Testing.h"
-#import "ios/chrome/browser/snapshots/model/legacy_snapshot_storage.h"
-
 #import <UIKit/UIKit.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
 #import "base/files/scoped_temp_dir.h"
 #import "base/run_loop.h"
 #import "components/sessions/core/session_id.h"
 #import "ios/chrome/browser/snapshots/model/features.h"
+#import "ios/chrome/browser/snapshots/model/legacy_snapshot_storage+Testing.h"
+#import "ios/chrome/browser/snapshots/model/legacy_snapshot_storage.h"
 #import "ios/chrome/browser/snapshots/model/model_swift.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id_wrapper.h"
@@ -503,16 +503,9 @@ class SnapshotStorageTest : public PlatformTest {
       return false;
     }
 
-    NSURL* storage_url = [NSURL
-        fileURLWithPath:[NSString stringWithUTF8String:scoped_temp_directory_
-                                                           .GetPath()
-                                                           .value()
-                                                           .c_str()]];
-    NSURL* legacy_url =
-        [NSURL fileURLWithPath:[NSString stringWithUTF8String:base::FilePath()
-                                                                  .value()
-                                                                  .c_str()]];
-
+    NSURL* storage_url =
+        base::apple::FilePathToNSURL(scoped_temp_directory_.GetPath());
+    NSURL* legacy_url = base::apple::FilePathToNSURL(base::FilePath());
     snapshot_storage_ =
         [[SnapshotStorage alloc] initWithStorageDirectoryUrl:storage_url
                                           legacyDirectoryUrl:legacy_url];
@@ -809,12 +802,8 @@ TEST_F(SnapshotStorageTest, MigrateCache) {
   ASSERT_TRUE(base::CreateDirectory(legacy_path));
   ASSERT_TRUE(base::WriteFile(legacy_path.Append(kFilename), ""));
 
-  NSURL* storage_url = [NSURL
-      fileURLWithPath:[NSString
-                          stringWithUTF8String:storage_path.value().c_str()]];
-  NSURL* legacy_url = [NSURL
-      fileURLWithPath:[NSString
-                          stringWithUTF8String:legacy_path.value().c_str()]];
+  NSURL* storage_url = base::apple::FilePathToNSURL(storage_path);
+  NSURL* legacy_url = base::apple::FilePathToNSURL(legacy_path);
   SnapshotStorage* storage =
       [[SnapshotStorage alloc] initWithStorageDirectoryUrl:storage_url
                                         legacyDirectoryUrl:legacy_url];
@@ -836,14 +825,9 @@ TEST_F(SnapshotStorageTest, MigrateCache_EmptyLegacyPath) {
 
   const base::FilePath storage_path =
       root.Append(kSnapshots).Append(kIdentifier);
-  NSURL* storage_url = [NSURL
-      fileURLWithPath:[NSString
-                          stringWithUTF8String:storage_path.value().c_str()]];
-  NSURL* legacy_url =
-      [NSURL fileURLWithPath:[NSString stringWithUTF8String:base::FilePath()
-                                                                .value()
-                                                                .c_str()]];
 
+  NSURL* storage_url = base::apple::FilePathToNSURL(storage_path);
+  NSURL* legacy_url = base::apple::FilePathToNSURL(base::FilePath());
   SnapshotStorage* storage =
       [[SnapshotStorage alloc] initWithStorageDirectoryUrl:storage_url
                                         legacyDirectoryUrl:legacy_url];
@@ -867,12 +851,8 @@ TEST_F(SnapshotStorageTest, MigrateCache_NoLegacyStorage) {
 
   ASSERT_FALSE(base::DirectoryExists(legacy_path));
 
-  NSURL* storage_url = [NSURL
-      fileURLWithPath:[NSString
-                          stringWithUTF8String:storage_path.value().c_str()]];
-  NSURL* legacy_url = [NSURL
-      fileURLWithPath:[NSString
-                          stringWithUTF8String:legacy_path.value().c_str()]];
+  NSURL* storage_url = base::apple::FilePathToNSURL(storage_path);
+  NSURL* legacy_url = base::apple::FilePathToNSURL(legacy_path);
   SnapshotStorage* storage =
       [[SnapshotStorage alloc] initWithStorageDirectoryUrl:storage_url
                                         legacyDirectoryUrl:legacy_url];
@@ -904,13 +884,8 @@ TEST_F(SnapshotStorageTest, MigrateCache_FailCreatingCache) {
   ASSERT_TRUE(base::CreateDirectory(storage_path.DirName()));
   ASSERT_TRUE(base::WriteFile(storage_path, ""));
 
-  NSURL* storage_url = [NSURL
-      fileURLWithPath:[NSString
-                          stringWithUTF8String:storage_path.value().c_str()]];
-  NSURL* legacy_url =
-      [NSURL fileURLWithPath:[NSString stringWithUTF8String:base::FilePath()
-                                                                .value()
-                                                                .c_str()]];
+  NSURL* storage_url = base::apple::FilePathToNSURL(storage_path);
+  NSURL* legacy_url = base::apple::FilePathToNSURL(base::FilePath());
   SnapshotStorage* storage =
       [[SnapshotStorage alloc] initWithStorageDirectoryUrl:storage_url
                                         legacyDirectoryUrl:legacy_url];
