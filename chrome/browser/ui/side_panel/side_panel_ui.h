@@ -82,8 +82,6 @@ class SidePanelUI : public base::SupportsUserData::Data {
   // does not exist.
   virtual content::WebContents* GetWebContentsForTest(SidePanelEntryId id) = 0;
 
-  virtual void DisableAnimationsForTesting() = 0;
-
  private:
   static const int kUserDataKey = 0;
 };

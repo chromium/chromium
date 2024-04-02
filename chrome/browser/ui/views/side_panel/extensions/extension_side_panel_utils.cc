@@ -27,7 +27,11 @@ void ToggleExtensionSidePanel(Browser* browser,
 
   SidePanelEntry::Key extension_key =
       SidePanelEntry::Key(SidePanelEntry::Id::kExtension, extension_id);
-  side_panel_ui->Toggle(extension_key, SidePanelOpenTrigger::kExtension);
+  if (side_panel_ui->IsSidePanelEntryShowing(extension_key)) {
+    side_panel_ui->Close();
+  } else {
+    side_panel_ui->Show(extension_key);
+  }
 }
 
 // Declared in extension_side_panel_utils.h
