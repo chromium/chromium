@@ -94,6 +94,7 @@ std::unique_ptr<PickerListItemView> CreateListItemViewForSearchResult(
 
 PickerZeroStateView::PickerZeroStateView(
     base::span<const PickerCategory> available_categories,
+    bool show_suggested_results,
     int picker_view_width,
     SelectCategoryCallback select_category_callback,
     SelectSearchResultCallback select_result_callback)
@@ -108,11 +109,13 @@ PickerZeroStateView::PickerZeroStateView(
   section_list_view_ =
       AddChildView(std::make_unique<PickerSectionListView>(picker_view_width));
 
-  clipboard_provider_ = std::make_unique<PickerClipboardProvider>();
-  clipboard_provider_->FetchResults(
-      base::BindRepeating(&PickerZeroStateView::OnFetchSuggestedResults,
-                          weak_ptr_factory_.GetWeakPtr()),
-      kClipboardRecency);
+  if (show_suggested_results) {
+    clipboard_provider_ = std::make_unique<PickerClipboardProvider>();
+    clipboard_provider_->FetchResults(
+        base::BindRepeating(&PickerZeroStateView::OnFetchSuggestedResults,
+                            weak_ptr_factory_.GetWeakPtr()),
+        kClipboardRecency);
+  }
 
   for (PickerCategory category : available_categories) {
     auto item_view = std::make_unique<PickerListItemView>(

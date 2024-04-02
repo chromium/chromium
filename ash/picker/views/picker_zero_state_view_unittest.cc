@@ -58,8 +58,8 @@ class PickerZeroStateViewTest : public views::ViewsTestBase {
 };
 
 TEST_F(PickerZeroStateViewTest, CreatesCategorySections) {
-  PickerZeroStateView view(kAllCategories, kPickerWidth, base::DoNothing(),
-                           base::DoNothing());
+  PickerZeroStateView view(kAllCategories, true, kPickerWidth,
+                           base::DoNothing(), base::DoNothing());
 
   EXPECT_THAT(view.section_views_for_testing(),
               ElementsAre(Key(PickerCategoryType::kEditors),
@@ -73,8 +73,8 @@ TEST_F(PickerZeroStateViewTest, LeftClickSelectsCategory) {
   widget->SetFullscreen(true);
   base::test::TestFuture<PickerCategory> future;
   auto* view = widget->SetContentsView(std::make_unique<PickerZeroStateView>(
-      std::vector<PickerCategory>{PickerCategory::kExpressions}, kPickerWidth,
-      future.GetRepeatingCallback(), base::DoNothing()));
+      std::vector<PickerCategory>{PickerCategory::kExpressions}, false,
+      kPickerWidth, future.GetRepeatingCallback(), base::DoNothing()));
   widget->Show();
   ASSERT_THAT(view->section_views_for_testing(),
               Contains(Key(PickerCategoryType::kGeneral)));
@@ -97,7 +97,7 @@ TEST_F(PickerZeroStateViewTest, ClickingOkInCapsNudgeHidesCapsNudge) {
   widget->SetFullscreen(true);
   base::test::TestFuture<PickerCategory> future;
   auto* view = widget->SetContentsView(std::make_unique<PickerZeroStateView>(
-      kAllCategories, kPickerWidth, future.GetRepeatingCallback(),
+      kAllCategories, false, kPickerWidth, future.GetRepeatingCallback(),
       base::DoNothing()));
   widget->Show();
 
@@ -129,7 +129,7 @@ TEST_F(PickerZeroStateViewTest, ShowsClipboardItems) {
   widget->SetFullscreen(true);
   base::test::TestFuture<const PickerSearchResult&> future;
   auto* view = widget->SetContentsView(std::make_unique<PickerZeroStateView>(
-      kAllCategories, kPickerWidth, base::DoNothing(),
+      kAllCategories, true, kPickerWidth, base::DoNothing(),
       future.GetRepeatingCallback()));
   widget->Show();
 
@@ -145,6 +145,17 @@ TEST_F(PickerZeroStateViewTest, ShowsClipboardItems) {
       PickerSearchResult::Clipboard(
           item_id, PickerSearchResult::ClipboardData::DisplayFormat::kText,
           u"test", /*display_image=*/{}));
+}
+
+TEST_F(PickerZeroStateViewTest, DoesntShowClipboardItems) {
+  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  widget->SetFullscreen(true);
+  auto* view = widget->SetContentsView(std::make_unique<PickerZeroStateView>(
+      kAllCategories, false, kPickerWidth, base::DoNothing(),
+      base::DoNothing()));
+  widget->Show();
+
+  EXPECT_THAT(view->SuggestedSectionForTesting(), IsNull());
 }
 
 }  // namespace

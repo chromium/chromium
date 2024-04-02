@@ -23,6 +23,8 @@ class ASH_EXPORT PickerModel {
 
   std::vector<PickerCategory> GetAvailableCategories() const;
 
+  bool has_selected_text() const { return has_selected_text_; }
+
  private:
   bool has_selected_text_;
 };

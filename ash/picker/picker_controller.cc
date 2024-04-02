@@ -251,6 +251,10 @@ std::vector<PickerCategory> PickerController::GetAvailableCategories() {
                            : model_->GetAvailableCategories();
 }
 
+bool PickerController::ShouldShowSuggestedResults() {
+  return model_ && !model_->has_selected_text();
+}
+
 void PickerController::GetResultsForCategory(PickerCategory category,
                                              SearchResultsCallback callback) {
   // TODO: b/325977099 - Get actual results for each category.

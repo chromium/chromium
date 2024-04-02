@@ -82,6 +82,8 @@ class FakePickerViewDelegate : public PickerViewDelegate {
     return options_.available_categories;
   }
 
+  bool ShouldShowSuggestedResults() override { return true; }
+
   void GetResultsForCategory(PickerCategory category,
                              SearchResultsCallback callback) override {
     callback.Run({});

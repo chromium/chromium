@@ -29,6 +29,9 @@ class ASH_EXPORT PickerViewDelegate {
 
   virtual std::vector<PickerCategory> GetAvailableCategories() = 0;
 
+  // Returns whether we should show suggested results in zero state view.
+  virtual bool ShouldShowSuggestedResults() = 0;
+
   // Gets initially suggested results for category. Results will be returned via
   // `callback`, which may be called multiples times to update the results.
   virtual void GetResultsForCategory(PickerCategory category,
