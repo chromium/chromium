@@ -226,8 +226,8 @@ class GalleryWatchManagerTest : public GalleryWatchManagerObserver,
   raw_ptr<base::RunLoop> pending_loop_;
 };
 
-// TODO(crbug.com/936065): Flaky on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+// TODO(crbug.com/41443722): Flaky on ChromeOS and macOS.
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
 #define MAYBE_Basic DISABLED_Basic
 #else
 #define MAYBE_Basic Basic
@@ -400,7 +400,8 @@ TEST_F(GalleryWatchManagerTest, MAYBE_DropWatchOnStorageRemoved) {
   success_loop.Run();
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
+// Test is flaky. https://crbug.com/40752685
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 #define MAYBE_TestWatchOperation DISABLED_TestWatchOperation
 #else
 #define MAYBE_TestWatchOperation TestWatchOperation
