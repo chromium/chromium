@@ -168,7 +168,7 @@ void AXMediaAppUntrustedHandlerTest::WaitForOcringPages(
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PageMetadataUpdated) {
-  const std::vector<std::string> kPageIds{"five", "page", "ids", "in", "list"};
+  const std::vector<std::string> kPageIds{"four", "ids", "in", "list"};
   const size_t kTestNumPages = kPageIds.size();
   constexpr gfx::RectF kRect(0, 0, 10, 15);
   std::vector<PageMetadataPtr> fake_metadata;
@@ -179,6 +179,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PageMetadataUpdated) {
     fake_metadata.push_back(std::move(page));
   }
   handler_->PageMetadataUpdated(std::move(fake_metadata));
+  WaitForOcringPages(kTestNumPages);
 
   const std::map<const std::string, AXMediaAppPageMetadata>&
       actual_page_metadata = handler_->GetPageMetadataForTesting();
@@ -188,6 +189,30 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PageMetadataUpdated) {
     EXPECT_EQ(actual_page_metadata.at(kPageIds[i]).page_num, i + 1u);
     EXPECT_EQ(actual_page_metadata.at(kPageIds[i]).rect, kRect);
   }
+
+  const std::map<const std::string, std::unique_ptr<ui::AXTreeManager>>& pages =
+      handler_->GetPagesForTesting();
+  ASSERT_EQ(kTestNumPages, pages.size());
+  for (size_t i = 0; const auto& [page_id, page] : pages) {
+    EXPECT_EQ(page_id, kPageIds[i++]);
+    EXPECT_NE(nullptr, page.get());
+    EXPECT_NE(nullptr, page->ax_tree());
+  }
+  EXPECT_EQ(
+      "AXTree has_parent_tree title=PDF document\n"
+      "id=1 pdfRoot FOCUSABLE name=PDF document containing 4 pages "
+      "name_from=attribute clips_children child_ids=2,3,4,5 (0, 0)-(10, 15) "
+      "text_align=left restriction=readonly scroll_x_min=0 scroll_y_min=0 "
+      "scrollable=true is_line_breaking_object=true\n"
+      "  id=2 region name=Page 1 name_from=attribute has_child_tree (0, "
+      "0)-(10, 15) restriction=readonly is_page_breaking_object=true\n"
+      "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, "
+      "0)-(10, 15) restriction=readonly is_page_breaking_object=true\n"
+      "  id=4 region name=Page 3 name_from=attribute has_child_tree (0, "
+      "0)-(10, 15) restriction=readonly is_page_breaking_object=true\n"
+      "  id=5 region name=Page 4 name_from=attribute has_child_tree (0, "
+      "0)-(10, 15) restriction=readonly is_page_breaking_object=true\n",
+      handler_->GetDocumentTreeToStringForTesting());
 }
 
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
@@ -213,27 +238,60 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
-                       DISABLED_PageMetadataUpdatedWithDeleteAndUndoDelete) {
+                       PageMetadataUpdatedWithDeleteAndUndoDelete) {
+  const std::string kDocumentTree(
+      "AXTree has_parent_tree title=PDF document\n"
+      "id=1 pdfRoot FOCUSABLE name=PDF document containing 3 pages "
+      "name_from=attribute clips_children child_ids=2,3,4 (0, 0)-(10, 15) "
+      "text_align=left restriction=readonly scroll_x_min=0 scroll_y_min=0 "
+      "scrollable=true is_line_breaking_object=true\n"
+      "  id=2 region name=Page 1 name_from=attribute has_child_tree (0, "
+      "0)-(10, 15) restriction=readonly is_page_breaking_object=true\n"
+      "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, "
+      "0)-(10, 15) restriction=readonly is_page_breaking_object=true\n"
+      "  id=4 region name=Page 3 name_from=attribute has_child_tree (0, "
+      "0)-(10, 15) restriction=readonly is_page_breaking_object=true\n");
+
+  const std::string kDocumentTreeWithDeletedPage(
+      "AXTree has_parent_tree title=PDF document\n"
+      "id=1 pdfRoot FOCUSABLE name=PDF document containing 2 pages "
+      "name_from=attribute clips_children child_ids=2,3 (0, 0)-(10, 15) "
+      "text_align=left restriction=readonly scroll_x_min=0 scroll_y_min=0 "
+      "scrollable=true is_line_breaking_object=true\n"
+      "  id=2 region name=Page 1 name_from=attribute has_child_tree (0, "
+      "0)-(10, 15) restriction=readonly is_page_breaking_object=true\n"
+      "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, "
+      "0)-(10, 15) restriction=readonly is_page_breaking_object=true\n");
+
+  constexpr gfx::RectF kRect(0, 0, 10, 15);
   const std::vector<std::string> kPageIds{"pageX", "pageY", "pageZ"};
   const size_t kTestNumPages = kPageIds.size();
   std::vector<PageMetadataPtr> fake_metadata;
   for (size_t i = 0; i < kTestNumPages; ++i) {
     PageMetadataPtr page = ash::media_app_ui::mojom::PageMetadata::New();
     page->id = kPageIds[i];
-    gfx::RectF rect(0, 0, 10, 15);
-    page->rect = rect;
+    page->rect = kRect;
     fake_metadata.push_back(std::move(page));
   }
-
-  handler_->PageMetadataUpdated(std::move(fake_metadata));
+  handler_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
+  WaitForOcringPages(kTestNumPages);
 
   const std::map<const std::string, AXMediaAppPageMetadata>&
-      actual_page_metadata1 = handler_->GetPageMetadataForTesting();
-  EXPECT_EQ(actual_page_metadata1.size(), kTestNumPages);
-  // Check the page numbers of each page were set correctly.
+      page_metadata_before_deletion = handler_->GetPageMetadataForTesting();
+  ASSERT_EQ(page_metadata_before_deletion.size(), kTestNumPages);
   for (size_t i = 1; i <= kTestNumPages; ++i) {
-    EXPECT_EQ(actual_page_metadata1.at(kPageIds[i - 1]).page_num, i);
+    EXPECT_EQ(page_metadata_before_deletion.at(kPageIds[i - 1]).page_num, i);
   }
+
+  const std::map<const std::string, std::unique_ptr<ui::AXTreeManager>>&
+      pages_before_deletion = handler_->GetPagesForTesting();
+  ASSERT_EQ(kTestNumPages, pages_before_deletion.size());
+  for (size_t i = 0; const auto& [page_id, page] : pages_before_deletion) {
+    EXPECT_EQ(page_id, kPageIds[i++]);
+    EXPECT_NE(nullptr, page.get());
+    EXPECT_NE(nullptr, page->ax_tree());
+  }
+  EXPECT_EQ(kDocumentTree, handler_->GetDocumentTreeToStringForTesting());
 
   // Delete "pageY" by excluding it from the metadata.
   std::vector<PageMetadataPtr> fake_metadataWithDeletedPage;
@@ -243,19 +301,49 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
     }
     PageMetadataPtr page = ash::media_app_ui::mojom::PageMetadata::New();
     page->id = kPageIds[i];
-    gfx::RectF rect(0, 0, 10, 15);
-    page->rect = rect;
+    page->rect = kRect;
     fake_metadataWithDeletedPage.push_back(std::move(page));
   }
   handler_->PageMetadataUpdated(std::move(fake_metadataWithDeletedPage));
 
-  std::map<const std::string, AXMediaAppPageMetadata>& actual_page_metadata2 =
-      handler_->GetPageMetadataForTesting();
-  EXPECT_EQ(actual_page_metadata2.size(), kTestNumPages);
-  // Check the page numbers of each page were set correctly.
-  EXPECT_EQ(actual_page_metadata2["pageX"].page_num, 1u);
-  EXPECT_EQ(actual_page_metadata2["pageY"].page_num, 0u);
-  EXPECT_EQ(actual_page_metadata2["pageZ"].page_num, 2u);
+  std::map<const std::string, AXMediaAppPageMetadata>&
+      page_metadata_after_deletion = handler_->GetPageMetadataForTesting();
+  ASSERT_EQ(page_metadata_after_deletion.size(), kTestNumPages);
+  EXPECT_EQ(page_metadata_after_deletion.at("pageX").page_num, 1u);
+  EXPECT_EQ(page_metadata_after_deletion.at("pageY").page_num, 0u);
+  EXPECT_EQ(page_metadata_after_deletion.at("pageZ").page_num, 2u);
+
+  const std::map<const std::string, std::unique_ptr<ui::AXTreeManager>>&
+      pages_after_deletion = handler_->GetPagesForTesting();
+  ASSERT_EQ(kTestNumPages, pages_after_deletion.size());
+  for (size_t i = 0; const auto& [page_id, page] : pages_after_deletion) {
+    EXPECT_EQ(page_id, kPageIds[i++]);
+    EXPECT_NE(nullptr, page.get());
+    EXPECT_NE(nullptr, page->ax_tree());
+  }
+  EXPECT_EQ(kDocumentTreeWithDeletedPage,
+            handler_->GetDocumentTreeToStringForTesting());
+
+  // Add pageY back.
+  handler_->PageMetadataUpdated(std::move(fake_metadata));
+
+  const std::map<const std::string, AXMediaAppPageMetadata>&
+      page_metadata_after_undo_deletion = handler_->GetPageMetadataForTesting();
+  ASSERT_EQ(page_metadata_after_undo_deletion.size(), kTestNumPages);
+  for (size_t i = 1; i <= kTestNumPages; ++i) {
+    EXPECT_EQ(page_metadata_after_undo_deletion.at(kPageIds[i - 1]).page_num,
+              i);
+  }
+
+  const std::map<const std::string, std::unique_ptr<ui::AXTreeManager>>&
+      pages_after_undo_deletion = handler_->GetPagesForTesting();
+  ASSERT_EQ(kTestNumPages, pages_after_undo_deletion.size());
+  for (size_t i = 0; const auto& [page_id, page] : pages_after_undo_deletion) {
+    EXPECT_EQ(page_id, kPageIds[i++]);
+    EXPECT_NE(nullptr, page.get());
+    EXPECT_NE(nullptr, page->ax_tree());
+  }
+  EXPECT_EQ(kDocumentTree, handler_->GetDocumentTreeToStringForTesting());
 }
 
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
@@ -344,7 +432,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
   const std::map<const std::string, std::unique_ptr<ui::AXTreeManager>>& pages =
       handler_->GetPagesForTesting();
   ASSERT_EQ(3u, pages.size());
-  for (auto const& [_, page] : pages) {
+  for (const auto& [_, page] : pages) {
     ASSERT_NE(nullptr, page.get());
     ASSERT_NE(nullptr, page->ax_tree());
   }
@@ -394,7 +482,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
   const std::map<const std::string, std::unique_ptr<ui::AXTreeManager>>&
       pages2 = handler_->GetPagesForTesting();
   ASSERT_EQ(3u, pages2.size());
-  for (auto const& [_, page] : pages2) {
+  for (const auto& [_, page] : pages2) {
     ASSERT_NE(nullptr, page.get());
     ASSERT_NE(nullptr, page->ax_tree());
   }
