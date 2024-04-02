@@ -6,37 +6,24 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//testing/test.gni")
 
+assert(enable_print_preview || is_win)
+
 source_set("lib") {
-  sources = []
+  sources = [
+    "printing_service.cc",
+    "printing_service.h",
+  ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [ "//printing" ]
 
-  public_deps = [ "//chrome/services/printing/public/mojom" ]
-
-  if (enable_print_preview) {
-    sources += [
-      "pdf_nup_converter.cc",
-      "pdf_nup_converter.h",
-      "pdf_to_pwg_raster_converter.cc",
-      "pdf_to_pwg_raster_converter.h",
-    ]
-
-    public_deps += [
-      "//base",
-      "//mojo/public/cpp/bindings",
-    ]
-
-    deps += [
-      "//build:chromeos_buildflags",
-      "//components/crash/core/common:crash_key",
-      "//components/pwg_encoder",
-      "//pdf",
-      "//printing/backend",
-      "//printing/mojom",
-    ]
-  }
+  public_deps = [
+    "//base",
+    "//chrome/services/printing/public/mojom",
+    "//mojo/public/cpp/bindings",
+    "//printing/buildflags",
+  ]
 
   if (is_chromeos) {
     sources += [
@@ -79,15 +66,21 @@ source_set("lib") {
     ]
   }
 
-  if (enable_print_preview || is_win) {
+  if (enable_print_preview) {
     sources += [
-      "printing_service.cc",
-      "printing_service.h",
+      "pdf_nup_converter.cc",
+      "pdf_nup_converter.h",
+      "pdf_to_pwg_raster_converter.cc",
+      "pdf_to_pwg_raster_converter.h",
     ]
 
-    public_deps += [
-      "//mojo/public/cpp/bindings",
-      "//printing/buildflags",
+    deps += [
+      "//build:chromeos_buildflags",
+      "//components/crash/core/common:crash_key",
+      "//components/pwg_encoder",
+      "//pdf",
+      "//printing/backend",
+      "//printing/mojom",
     ]
   }
 
@@ -95,11 +88,6 @@ source_set("lib") {
     sources += [
       "print_backend_service_impl.cc",
       "print_backend_service_impl.h",
-    ]
-
-    public_deps += [
-      "//base",
-      "//mojo/public/cpp/bindings",
     ]
 
     deps += [
