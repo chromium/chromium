@@ -236,6 +236,19 @@
       on-click="onMoreOptionsClick_">
   </cr-icon-button>
 
+   <!-- The more options menu is a menu of cr-icon-buttons that should be
+       hidden behind a separate menu if the Read Anything toolbar overflows.
+       All Reading Mode menu items should be wrapped with a cr-lazy-render for
+       efficiency, but given that we must first render all the menu items
+       in the more options menu to handle menu positioning, it doesn't
+       make sense to lazily render the more options menu. Therefore, this
+       menu should just stay as a cr-action-menu, rendered on load.
+       TODO(b/329676284): Ensure the moreOptionsMenu isn't rendered by default
+       via a dom-if or a hidden attribute.
+       TODO(b/329676284): Investigate refactor to handle the menu item
+       positioning via data binding, so that styling can happen without
+       rendering the menu.
+       -->
   <cr-action-menu id="moreOptionsMenu" on-keydown="onToolbarKeyDown_">
     <template is="dom-repeat" items="[[moreOptionsButtons_]]">
       <cr-icon-button
