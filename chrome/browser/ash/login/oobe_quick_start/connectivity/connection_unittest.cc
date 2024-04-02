@@ -451,8 +451,8 @@ TEST_F(ConnectionTest, RequestWifiCredentials) {
       parsed_wifi_request_payload_json.value().GetDict();
 
   EXPECT_TRUE(wifi_request_payload.FindBool("request_wifi"));
-  EXPECT_EQ(wifi_request_payload.FindInt("SESSION_ID"),
-            static_cast<int>(kSessionId));
+  EXPECT_EQ(*wifi_request_payload.FindString("SESSION_ID"),
+            base::NumberToString(kSessionId));
 
   std::string shared_secret_str(kSecondarySharedSecret.begin(),
                                 kSecondarySharedSecret.end());
@@ -678,7 +678,8 @@ TEST_F(ConnectionTest, NotifySourceOfUpdate_Success) {
 
   EXPECT_EQ(parsed_payload.FindBool(kNotifySourceOfUpdateMessageKey), true);
 
-  EXPECT_EQ(parsed_payload.FindInt("SESSION_ID"), static_cast<int>(kSessionId));
+  EXPECT_EQ(*parsed_payload.FindString("SESSION_ID"),
+            base::NumberToString(kSessionId));
 
   std::string shared_secret_str(kSecondarySharedSecret.begin(),
                                 kSecondarySharedSecret.end());
