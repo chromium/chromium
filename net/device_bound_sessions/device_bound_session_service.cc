@@ -15,7 +15,7 @@ namespace {
 class DeviceBoundSessionServiceImpl : public DeviceBoundSessionService {
  public:
   // TODO(kristianm): Implement RegisterBoundSession
-  void RegisterBoundSession(const BoundSessionRegistrationFetcherParam&
+  void RegisterBoundSession(const DeviceBoundSessionRegistrationFetcherParam&
                                 registration_params) override {}
 };
 }  // namespace

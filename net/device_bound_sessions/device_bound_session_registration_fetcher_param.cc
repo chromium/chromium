@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/device_bound_sessions/bound_session_registration_fetcher_param.h"
+#include "net/device_bound_sessions/device_bound_session_registration_fetcher_param.h"
 
 #include "base/base64url.h"
 #include "base/logging.h"
@@ -39,26 +39,31 @@ std::optional<crypto::SignatureVerifier::SignatureAlgorithm> AlgoFromString(
 
 namespace net {
 
-BoundSessionRegistrationFetcherParam::BoundSessionRegistrationFetcherParam(
-    BoundSessionRegistrationFetcherParam&& other) = default;
+DeviceBoundSessionRegistrationFetcherParam::
+    DeviceBoundSessionRegistrationFetcherParam(
+        DeviceBoundSessionRegistrationFetcherParam&& other) = default;
 
-BoundSessionRegistrationFetcherParam&
-BoundSessionRegistrationFetcherParam::operator=(
-    BoundSessionRegistrationFetcherParam&& other) noexcept = default;
+DeviceBoundSessionRegistrationFetcherParam&
+DeviceBoundSessionRegistrationFetcherParam::
+    operator=(
+        DeviceBoundSessionRegistrationFetcherParam&& other) noexcept = default;
 
-BoundSessionRegistrationFetcherParam::~BoundSessionRegistrationFetcherParam() =
-    default;
+DeviceBoundSessionRegistrationFetcherParam::
+    ~DeviceBoundSessionRegistrationFetcherParam() =
+        default;
 
-BoundSessionRegistrationFetcherParam::BoundSessionRegistrationFetcherParam(
-    GURL registration_endpoint,
-    std::vector<crypto::SignatureVerifier::SignatureAlgorithm> supported_algos,
-    std::string challenge)
-    : registration_endpoint_(std::move(registration_endpoint)),
-      supported_algos_(std::move(supported_algos)),
-      challenge_(std::move(challenge)) {}
+DeviceBoundSessionRegistrationFetcherParam::
+    DeviceBoundSessionRegistrationFetcherParam(
+        GURL registration_endpoint,
+        std::vector<crypto::SignatureVerifier::SignatureAlgorithm>
+            supported_algos,
+        std::string challenge)
+        : registration_endpoint_(std::move(registration_endpoint)),
+          supported_algos_(std::move(supported_algos)),
+          challenge_(std::move(challenge)) {}
 
-std::optional<BoundSessionRegistrationFetcherParam>
-BoundSessionRegistrationFetcherParam::ParseItem(
+std::optional<DeviceBoundSessionRegistrationFetcherParam>
+DeviceBoundSessionRegistrationFetcherParam::ParseItem(
     const GURL& request_url,
     structured_headers::Item item,
     structured_headers::Parameters params) {
@@ -105,13 +110,14 @@ BoundSessionRegistrationFetcherParam::ParseItem(
     return {};
   }
 
-  return BoundSessionRegistrationFetcherParam(std::move(registration_endpoint),
-                                              std::move(supported_algos),
-                                              std::move(challenge));
+  return DeviceBoundSessionRegistrationFetcherParam(
+      std::move(registration_endpoint),
+      std::move(supported_algos),
+      std::move(challenge));
 }
 
-std::vector<BoundSessionRegistrationFetcherParam>
-BoundSessionRegistrationFetcherParam::CreateIfValid(
+std::vector<DeviceBoundSessionRegistrationFetcherParam>
+DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
     const GURL& request_url,
     const net::HttpResponseHeaders* headers) {
   if (!request_url.is_valid()) {
@@ -130,7 +136,7 @@ BoundSessionRegistrationFetcherParam::CreateIfValid(
     return {};
   }
 
-  std::vector<BoundSessionRegistrationFetcherParam> params;
+  std::vector<DeviceBoundSessionRegistrationFetcherParam> params;
   for (const auto& item : *list) {
     // Header spec does not support inner lists
     if (item.member_is_inner_list) {
@@ -143,7 +149,7 @@ BoundSessionRegistrationFetcherParam::CreateIfValid(
     // Sec-Session-Registration: "path1"; challenge=:Y2hhbGxlbmdl:; es256;
     // instead of:
     // Sec-Session-Registration: ("path1"; challenge=:Y2hhbGxlbmdl:; es256;)
-    std::optional<BoundSessionRegistrationFetcherParam> param =
+    std::optional<DeviceBoundSessionRegistrationFetcherParam> param =
         ParseItem(request_url, item.member[0].item, item.params);
     if (param) {
       params.push_back(std::move(*param));

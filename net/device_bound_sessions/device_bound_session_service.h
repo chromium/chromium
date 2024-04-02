@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "net/base/net_export.h"
-#include "net/device_bound_sessions/bound_session_registration_fetcher_param.h"
+#include "net/device_bound_sessions/device_bound_session_registration_fetcher_param.h"
 
 namespace net {
 
@@ -19,7 +19,8 @@ class NET_EXPORT DeviceBoundSessionService {
   static std::unique_ptr<DeviceBoundSessionService> Create();
 
   virtual void RegisterBoundSession(
-      const BoundSessionRegistrationFetcherParam& registration_params) = 0;
+      const DeviceBoundSessionRegistrationFetcherParam&
+          registration_params) = 0;
 
   virtual ~DeviceBoundSessionService() = default;
 };

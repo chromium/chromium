@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/device_bound_sessions/bound_session_registration_fetcher_param.h"
+#include "net/device_bound_sessions/device_bound_session_registration_fetcher_param.h"
 
 #include <optional>
 
@@ -41,12 +41,12 @@ scoped_refptr<net::HttpResponseHeaders> CreateHeaders(
       .Build();
 }
 
-TEST(BoundSessionRegistrationFetcherParamTest, BasicValid) {
+TEST(DeviceBoundSessionRegistrationFetcherParamTest, BasicValid) {
   GURL registration_request = GURL("https://www.example.com/registration");
   scoped_refptr<net::HttpResponseHeaders> response_headers =
       CreateHeaders("startsession", "es256;rs256", kChallenge);
-  std::vector<BoundSessionRegistrationFetcherParam> params =
-      BoundSessionRegistrationFetcherParam::CreateIfValid(
+  std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
+      DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
           registration_request, response_headers.get());
   ASSERT_EQ(params.size(), 1U);
   auto param = std::move(params[0]);
@@ -57,12 +57,13 @@ TEST(BoundSessionRegistrationFetcherParamTest, BasicValid) {
   EXPECT_EQ(param.challenge(), kDecodedChallenge);
 }
 
-TEST(BoundSessionRegistrationFetcherParamTest, ExtraUnrecognizedAlgorithm) {
+TEST(DeviceBoundSessionRegistrationFetcherParamTest,
+    ExtraUnrecognizedAlgorithm) {
   GURL registration_request = GURL("https://www.example.com/registration");
   scoped_refptr<net::HttpResponseHeaders> response_headers =
       CreateHeaders("startsession", "es256;bf512", kChallenge);
-  std::vector<BoundSessionRegistrationFetcherParam> params =
-      BoundSessionRegistrationFetcherParam::CreateIfValid(
+  std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
+      DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
           registration_request, response_headers.get());
   ASSERT_EQ(params.size(), 1U);
   auto param = std::move(params[0]);
@@ -72,25 +73,25 @@ TEST(BoundSessionRegistrationFetcherParamTest, ExtraUnrecognizedAlgorithm) {
   EXPECT_EQ(param.challenge(), kDecodedChallenge);
 }
 
-TEST(BoundSessionRegistrationFetcherParamTest, NoHeader) {
+TEST(DeviceBoundSessionRegistrationFetcherParamTest, NoHeader) {
   GURL registration_request = GURL("https://www.example.com/registration");
   scoped_refptr<net::HttpResponseHeaders> response_headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("");
-  std::vector<BoundSessionRegistrationFetcherParam> params =
-      BoundSessionRegistrationFetcherParam::CreateIfValid(
+  std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
+      DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
           registration_request, response_headers.get());
   ASSERT_TRUE(params.empty());
 }
 
-TEST(BoundSessionRegistrationFetcherParamTest, ChallengeFirst) {
+TEST(DeviceBoundSessionRegistrationFetcherParamTest, ChallengeFirst) {
   GURL registration_request = GURL("https://www.example.com/registration");
   scoped_refptr<net::HttpResponseHeaders> response_headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("");
   response_headers->SetHeader("Sec-Session-Registration",
                               base::StrCat({"\"startsession\";", "challenge=",
                                             kChallenge, "; ", "rs256;es256"}));
-  std::vector<BoundSessionRegistrationFetcherParam> params =
-      BoundSessionRegistrationFetcherParam::CreateIfValid(
+  std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
+      DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
           registration_request, response_headers.get());
   ASSERT_EQ(params.size(), 1U);
   auto param = std::move(params[0]);
@@ -101,15 +102,15 @@ TEST(BoundSessionRegistrationFetcherParamTest, ChallengeFirst) {
   EXPECT_EQ(param.challenge(), kDecodedChallenge);
 }
 
-TEST(BoundSessionRegistrationFetcherParamTest, NoSpaces) {
+TEST(DeviceBoundSessionRegistrationFetcherParamTest, NoSpaces) {
   GURL registration_request = GURL("https://www.example.com/registration");
   scoped_refptr<net::HttpResponseHeaders> response_headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("");
   response_headers->SetHeader("Sec-Session-Registration",
                               base::StrCat({"\"startsession\";challenge=",
                                             kChallenge, ";rs256;es256"}));
-  std::vector<BoundSessionRegistrationFetcherParam> params =
-      BoundSessionRegistrationFetcherParam::CreateIfValid(
+  std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
+      DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
           registration_request, response_headers.get());
   ASSERT_EQ(params.size(), 1U);
   auto param = std::move(params[0]);
@@ -120,7 +121,7 @@ TEST(BoundSessionRegistrationFetcherParamTest, NoSpaces) {
   EXPECT_EQ(param.challenge(), kDecodedChallenge);
 }
 
-TEST(BoundSessionRegistrationFetcherParamTest, TwoRegistrations) {
+TEST(DeviceBoundSessionRegistrationFetcherParamTest, TwoRegistrations) {
   GURL registration_request = GURL("https://www.example.com/registration");
   scoped_refptr<net::HttpResponseHeaders> response_headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("");
@@ -129,8 +130,8 @@ TEST(BoundSessionRegistrationFetcherParamTest, TwoRegistrations) {
                                             kChallenge, ";rs256;es256"}));
   response_headers->AddHeader("Sec-Session-Registration",
                               "\"new\";challenge=:Y29kZWQ=:;es256");
-  std::vector<BoundSessionRegistrationFetcherParam> params =
-      BoundSessionRegistrationFetcherParam::CreateIfValid(
+  std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
+      DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
           registration_request, response_headers.get());
   ASSERT_EQ(params.size(), 2U);
   auto p1 = std::move(params[0]);
@@ -146,7 +147,7 @@ TEST(BoundSessionRegistrationFetcherParamTest, TwoRegistrations) {
   EXPECT_EQ(p2.challenge(), "coded");
 }
 
-TEST(BoundSessionRegistrationFetcherParamTest, ValidInvalid) {
+TEST(DeviceBoundSessionRegistrationFetcherParamTest, ValidInvalid) {
   GURL registration_request = GURL("https://www.example.com/registration");
   scoped_refptr<net::HttpResponseHeaders> response_headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("");
@@ -155,8 +156,8 @@ TEST(BoundSessionRegistrationFetcherParamTest, ValidInvalid) {
                                             kChallenge, ";rs256;es256"}));
   response_headers->AddHeader("Sec-Session-Registration",
                               "\"new\";challenge=:Y29kZWQ=:");
-  std::vector<BoundSessionRegistrationFetcherParam> params =
-      BoundSessionRegistrationFetcherParam::CreateIfValid(
+  std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
+      DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
           registration_request, response_headers.get());
   ASSERT_EQ(params.size(), 1U);
   auto p1 = std::move(params[0]);
@@ -167,43 +168,43 @@ TEST(BoundSessionRegistrationFetcherParamTest, ValidInvalid) {
   EXPECT_EQ(p1.challenge(), kDecodedChallenge);
 }
 
-TEST(BoundSessionRegistrationFetcherParamTest, AddedNonsenseCharacters) {
+TEST(DeviceBoundSessionRegistrationFetcherParamTest, AddedNonsenseCharacters) {
   GURL registration_request = GURL("https://www.example.com/registration");
   scoped_refptr<net::HttpResponseHeaders> response_headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("");
   response_headers->AddHeader("Sec-Session-Registration",
                               "\"new\";challenge=:Y29kZWQ=:;rs256;;=;");
-  std::vector<BoundSessionRegistrationFetcherParam> params =
-      BoundSessionRegistrationFetcherParam::CreateIfValid(
+  std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
+      DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
           registration_request, response_headers.get());
   ASSERT_TRUE(params.empty());
 }
 
-TEST(BoundSessionRegistrationFetcherParamTest, AlgAsString) {
+TEST(DeviceBoundSessionRegistrationFetcherParamTest, AlgAsString) {
   GURL registration_request = GURL("https://www.example.com/registration");
   scoped_refptr<net::HttpResponseHeaders> response_headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("");
   response_headers->AddHeader("Sec-Session-Registration",
                               "\"new\";challenge=:Y29kZWQ=:;\"rs256\"");
-  std::vector<BoundSessionRegistrationFetcherParam> params =
-      BoundSessionRegistrationFetcherParam::CreateIfValid(
+  std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
+      DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
           registration_request, response_headers.get());
   ASSERT_TRUE(params.empty());
 }
 
-TEST(BoundSessionRegistrationFetcherParamTest, ChallengeAsString) {
+TEST(DeviceBoundSessionRegistrationFetcherParamTest, ChallengeAsString) {
   GURL registration_request = GURL("https://www.example.com/registration");
   scoped_refptr<net::HttpResponseHeaders> response_headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("");
   response_headers->AddHeader("Sec-Session-Registration",
                               "\"new\";challenge=\"Y29kZWQ=\";rs256");
-  std::vector<BoundSessionRegistrationFetcherParam> params =
-      BoundSessionRegistrationFetcherParam::CreateIfValid(
+  std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
+      DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
           registration_request, response_headers.get());
   ASSERT_TRUE(params.empty());
 }
 
-TEST(BoundSessionRegistrationFetcherParamTest, ValidInvalidValid) {
+TEST(DeviceBoundSessionRegistrationFetcherParamTest, ValidInvalidValid) {
   GURL registration_request = GURL("https://www.example.com/registration");
   scoped_refptr<net::HttpResponseHeaders> response_headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("");
@@ -214,8 +215,8 @@ TEST(BoundSessionRegistrationFetcherParamTest, ValidInvalidValid) {
                               "\"new\";challenge=:Y29kZWQ=:");
   response_headers->AddHeader("Sec-Session-Registration",
                               "\"new\";challenge=:Y29kZWQ=:;es256");
-  std::vector<BoundSessionRegistrationFetcherParam> params =
-      BoundSessionRegistrationFetcherParam::CreateIfValid(
+  std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
+      DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
           registration_request, response_headers.get());
   ASSERT_EQ(params.size(), 2U);
   auto p1 = std::move(params[0]);
@@ -231,7 +232,7 @@ TEST(BoundSessionRegistrationFetcherParamTest, ValidInvalidValid) {
   EXPECT_EQ(p2.challenge(), "coded");
 }
 
-TEST(BoundSessionRegistrationFetcherParamTest, ThreeRegistrations) {
+TEST(DeviceBoundSessionRegistrationFetcherParamTest, ThreeRegistrations) {
   GURL registration_request = GURL("https://www.example.com/registration");
   scoped_refptr<net::HttpResponseHeaders> response_headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("");
@@ -242,8 +243,8 @@ TEST(BoundSessionRegistrationFetcherParamTest, ThreeRegistrations) {
                               "\"new\";challenge=:Y29kZWQ=:;es256");
   response_headers->AddHeader("Sec-Session-Registration",
                               "\"third\";challenge=:YW5vdGhlcg==:;es256");
-  std::vector<BoundSessionRegistrationFetcherParam> params =
-      BoundSessionRegistrationFetcherParam::CreateIfValid(
+  std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
+      DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
           registration_request, response_headers.get());
   ASSERT_EQ(params.size(), 3U);
   auto p1 = std::move(params[0]);
@@ -264,7 +265,7 @@ TEST(BoundSessionRegistrationFetcherParamTest, ThreeRegistrations) {
   EXPECT_EQ(p3.challenge(), "another");
 }
 
-TEST(BoundSessionRegistrationFetcherParamTest, ThreeRegistrationsList) {
+TEST(DeviceBoundSessionRegistrationFetcherParamTest, ThreeRegistrationsList) {
   GURL registration_request = GURL("https://www.example.com/registration");
   scoped_refptr<net::HttpResponseHeaders> response_headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("");
@@ -274,8 +275,8 @@ TEST(BoundSessionRegistrationFetcherParamTest, ThreeRegistrationsList) {
   response_headers->AddHeader("Sec-Session-Registration",
                               "\"new\";challenge=:Y29kZWQ=:;es256, "
                               "\"third\";challenge=:YW5vdGhlcg==:;es256");
-  std::vector<BoundSessionRegistrationFetcherParam> params =
-      BoundSessionRegistrationFetcherParam::CreateIfValid(
+  std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
+      DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
           registration_request, response_headers.get());
   ASSERT_EQ(params.size(), 3U);
   auto p1 = std::move(params[0]);
@@ -296,12 +297,12 @@ TEST(BoundSessionRegistrationFetcherParamTest, ThreeRegistrationsList) {
   EXPECT_EQ(p3.challenge(), "another");
 }
 
-TEST(BoundSessionRegistrationFetcherParamTest, StartWithSlash) {
+TEST(DeviceBoundSessionRegistrationFetcherParamTest, StartWithSlash) {
   GURL registration_request = GURL("https://www.example.com/registration");
   scoped_refptr<net::HttpResponseHeaders> response_headers =
       CreateHeaders("/startsession", "es256;rs256", kChallenge);
-  std::vector<BoundSessionRegistrationFetcherParam> params =
-      BoundSessionRegistrationFetcherParam::CreateIfValid(
+  std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
+      DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
           registration_request, response_headers.get());
   ASSERT_EQ(params.size(), 1U);
   auto param = std::move(params[0]);
@@ -312,12 +313,12 @@ TEST(BoundSessionRegistrationFetcherParamTest, StartWithSlash) {
   EXPECT_EQ(param.challenge(), kDecodedChallenge);
 }
 
-TEST(BoundSessionRegistrationFetcherParamTest, EscapeOnce) {
+TEST(DeviceBoundSessionRegistrationFetcherParamTest, EscapeOnce) {
   GURL registration_request = GURL("https://www.example.com/registration");
   scoped_refptr<net::HttpResponseHeaders> response_headers =
       CreateHeaders("/%2561", "es256;rs256", kChallenge);
-  std::vector<BoundSessionRegistrationFetcherParam> params =
-      BoundSessionRegistrationFetcherParam::CreateIfValid(
+  std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
+      DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
           registration_request, response_headers.get());
   ASSERT_EQ(params.size(), 1U);
   auto param = std::move(params[0]);
@@ -327,22 +328,22 @@ TEST(BoundSessionRegistrationFetcherParamTest, EscapeOnce) {
   EXPECT_EQ(param.challenge(), kDecodedChallenge);
 }
 
-TEST(BoundSessionRegistrationFetcherParamTest, InvalidUrl) {
+TEST(DeviceBoundSessionRegistrationFetcherParamTest, InvalidUrl) {
   GURL registration_request = GURL("https://[/");
   scoped_refptr<net::HttpResponseHeaders> response_headers =
       CreateHeaders("[", "es256;rs256", kChallenge);
-  std::vector<BoundSessionRegistrationFetcherParam> params =
-      BoundSessionRegistrationFetcherParam::CreateIfValid(
+  std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
+      DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
           registration_request, response_headers.get());
   ASSERT_EQ(params.size(), 0U);
 }
 
-TEST(BoundSessionRegistrationFetcherParamTest, HasUrlEncoded) {
+TEST(DeviceBoundSessionRegistrationFetcherParamTest, HasUrlEncoded) {
   GURL registration_request = GURL("https://www.example.com/registration");
   scoped_refptr<net::HttpResponseHeaders> response_headers =
       CreateHeaders("test%2Fstart", "es256;rs256", kChallenge);
-  std::vector<BoundSessionRegistrationFetcherParam> params =
-      BoundSessionRegistrationFetcherParam::CreateIfValid(
+  std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
+      DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
           registration_request, response_headers.get());
   ASSERT_EQ(params.size(), 1U);
   auto param = std::move(params[0]);
@@ -353,12 +354,12 @@ TEST(BoundSessionRegistrationFetcherParamTest, HasUrlEncoded) {
   EXPECT_EQ(param.challenge(), kDecodedChallenge);
 }
 
-TEST(BoundSessionRegistrationFetcherParamTest, FullUrl) {
+TEST(DeviceBoundSessionRegistrationFetcherParamTest, FullUrl) {
   GURL registration_request = GURL("https://www.example.com/registration");
   scoped_refptr<net::HttpResponseHeaders> response_headers = CreateHeaders(
       "https://accounts.example.com/startsession", "es256;rs256", kChallenge);
-  std::vector<BoundSessionRegistrationFetcherParam> params =
-      BoundSessionRegistrationFetcherParam::CreateIfValid(
+  std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
+      DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
           registration_request, response_headers.get());
   ASSERT_EQ(params.size(), 1U);
   auto param = std::move(params[0]);
@@ -369,12 +370,12 @@ TEST(BoundSessionRegistrationFetcherParamTest, FullUrl) {
   EXPECT_EQ(param.challenge(), kDecodedChallenge);
 }
 
-TEST(BoundSessionRegistrationFetcherParamTest, SwapAlgo) {
+TEST(DeviceBoundSessionRegistrationFetcherParamTest, SwapAlgo) {
   GURL registration_request = GURL("https://www.example.com/registration");
   scoped_refptr<net::HttpResponseHeaders> response_headers =
       CreateHeaders("startsession", "es256;rs256", kChallenge);
-  std::vector<BoundSessionRegistrationFetcherParam> params =
-      BoundSessionRegistrationFetcherParam::CreateIfValid(
+  std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
+      DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
           registration_request, response_headers.get());
   ASSERT_EQ(params.size(), 1U);
   auto param = std::move(params[0]);
@@ -385,12 +386,12 @@ TEST(BoundSessionRegistrationFetcherParamTest, SwapAlgo) {
   EXPECT_EQ(param.challenge(), kDecodedChallenge);
 }
 
-TEST(BoundSessionRegistrationFetcherParamTest, OneAlgo) {
+TEST(DeviceBoundSessionRegistrationFetcherParamTest, OneAlgo) {
   GURL registration_request = GURL("https://www.example.com/registration");
   scoped_refptr<net::HttpResponseHeaders> response_headers =
       CreateHeaders("startsession", "rs256", kChallenge);
-  std::vector<BoundSessionRegistrationFetcherParam> params =
-      BoundSessionRegistrationFetcherParam::CreateIfValid(
+  std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
+      DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
           registration_request, response_headers.get());
   ASSERT_EQ(params.size(), 1U);
   auto param = std::move(params[0]);
@@ -400,12 +401,12 @@ TEST(BoundSessionRegistrationFetcherParamTest, OneAlgo) {
   EXPECT_EQ(param.challenge(), kDecodedChallenge);
 }
 
-TEST(BoundSessionRegistrationFetcherParamTest, AddedParameter) {
+TEST(DeviceBoundSessionRegistrationFetcherParamTest, AddedParameter) {
   GURL registration_request = GURL("https://www.example.com/registration");
   scoped_refptr<net::HttpResponseHeaders> response_headers =
       CreateHeaders("startsession", "rs256;lolcat", kChallenge);
-  std::vector<BoundSessionRegistrationFetcherParam> params =
-      BoundSessionRegistrationFetcherParam::CreateIfValid(
+  std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
+      DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
           registration_request, response_headers.get());
   ASSERT_EQ(params.size(), 1U);
   auto param = std::move(params[0]);
@@ -415,7 +416,7 @@ TEST(BoundSessionRegistrationFetcherParamTest, AddedParameter) {
   EXPECT_EQ(param.challenge(), kDecodedChallenge);
 }
 
-TEST(BoundSessionRegistrationFetcherParamTest, InvalidInputs) {
+TEST(DeviceBoundSessionRegistrationFetcherParamTest, InvalidInputs) {
   struct Input {
     std::string request_url;
     std::optional<std::string> path;
@@ -452,8 +453,8 @@ TEST(BoundSessionRegistrationFetcherParamTest, InvalidInputs) {
         CreateHeaders(input.path, input.algos, input.challenge);
     SCOPED_TRACE(registration_request.spec() + "; " +
                  response_headers->raw_headers());
-    std::vector<BoundSessionRegistrationFetcherParam> params =
-        BoundSessionRegistrationFetcherParam::CreateIfValid(
+    std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
+        DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
             registration_request, response_headers.get());
     EXPECT_TRUE(params.empty());
   }

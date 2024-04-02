@@ -5,7 +5,7 @@
 #ifndef NET_DEVICE_BOUND_SESSIONS_TEST_UTIL_H_
 #define NET_DEVICE_BOUND_SESSIONS_TEST_UTIL_H_
 
-#include "net/device_bound_sessions/bound_session_registration_fetcher_param.h"
+#include "net/device_bound_sessions/device_bound_session_registration_fetcher_param.h"
 #include "net/device_bound_sessions/device_bound_session_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -16,10 +16,11 @@ class DeviceBoundSessionServiceMock : public DeviceBoundSessionService {
   DeviceBoundSessionServiceMock();
   ~DeviceBoundSessionServiceMock() override;
 
-  MOCK_METHOD(void,
-              RegisterBoundSession,
-              (const BoundSessionRegistrationFetcherParam& registration_params),
-              (override));
+  MOCK_METHOD(
+      void,
+      RegisterBoundSession,
+      (const DeviceBoundSessionRegistrationFetcherParam& registration_params),
+      (override));
 };
 
 }  // namespace net

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NET_DEVICE_BOUND_SESSIONS_BOUND_SESSION_REGISTRATION_FETCHER_PARAM_H_
-#define NET_DEVICE_BOUND_SESSIONS_BOUND_SESSION_REGISTRATION_FETCHER_PARAM_H_
+#ifndef NET_DEVICE_BOUND_SESSIONS_DEVICE_BOUND_SESSION_REGISTRATION_FETCHER_PARAM_H_
+#define NET_DEVICE_BOUND_SESSIONS_DEVICE_BOUND_SESSION_REGISTRATION_FETCHER_PARAM_H_
 
 #include <string>
 #include <vector>
@@ -20,23 +20,23 @@ namespace net {
 // Class to parse Sec-Session-Registration header.
 // See explainer for details:
 // https://github.com/WICG/dbsc/blob/main/README.md#start-session
-class NET_EXPORT BoundSessionRegistrationFetcherParam {
+class NET_EXPORT DeviceBoundSessionRegistrationFetcherParam {
  public:
-  BoundSessionRegistrationFetcherParam(
-      BoundSessionRegistrationFetcherParam&& other);
-  BoundSessionRegistrationFetcherParam& operator=(
-      BoundSessionRegistrationFetcherParam&& other) noexcept;
+  DeviceBoundSessionRegistrationFetcherParam(
+      DeviceBoundSessionRegistrationFetcherParam&& other);
+  DeviceBoundSessionRegistrationFetcherParam& operator=(
+      DeviceBoundSessionRegistrationFetcherParam&& other) noexcept;
 
   // Disabled to make accidental copies compile errors.
-  BoundSessionRegistrationFetcherParam(
-      const BoundSessionRegistrationFetcherParam& other) = delete;
-  BoundSessionRegistrationFetcherParam& operator=(
-      const BoundSessionRegistrationFetcherParam&) = delete;
-  ~BoundSessionRegistrationFetcherParam();
+  DeviceBoundSessionRegistrationFetcherParam(
+      const DeviceBoundSessionRegistrationFetcherParam& other) = delete;
+  DeviceBoundSessionRegistrationFetcherParam& operator=(
+      const DeviceBoundSessionRegistrationFetcherParam&) = delete;
+  ~DeviceBoundSessionRegistrationFetcherParam();
 
   // Returns a vector of valid instances.
   // TODO(chlily): Get IsolationInfo from the request as well
-  static std::vector<BoundSessionRegistrationFetcherParam> CreateIfValid(
+  static std::vector<DeviceBoundSessionRegistrationFetcherParam> CreateIfValid(
       const GURL& request_url,
       const HttpResponseHeaders* headers);
 
@@ -50,12 +50,12 @@ class NET_EXPORT BoundSessionRegistrationFetcherParam {
   const std::string& challenge() const { return challenge_; }
 
  private:
-  BoundSessionRegistrationFetcherParam(
+  DeviceBoundSessionRegistrationFetcherParam(
       GURL registration_endpoint,
       std::vector<crypto::SignatureVerifier::SignatureAlgorithm>
           supported_algos,
       std::string challenge);
-  static std::optional<BoundSessionRegistrationFetcherParam> ParseItem(
+  static std::optional<DeviceBoundSessionRegistrationFetcherParam> ParseItem(
       const GURL& request_url,
       structured_headers::Item item,
       structured_headers::Parameters params);
@@ -69,4 +69,4 @@ class NET_EXPORT BoundSessionRegistrationFetcherParam {
 
 }  // namespace net
 
-#endif  // NET_DEVICE_BOUND_SESSIONS_BOUND_SESSION_REGISTRATION_FETCHER_PARAM_H_
+#endif  // NET_DEVICE_BOUND_SESSIONS_DEVICE_BOUND_SESSION_REGISTRATION_FETCHER_PARAM_H_
