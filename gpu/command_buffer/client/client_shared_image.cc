@@ -42,8 +42,7 @@ uint32_t ComputeTextureTargetForSharedImage(
   // The target to use on IOS is always GL_TEXTURE_2D, regardless of whether
   // native buffers are being used or not.
   return GL_TEXTURE_2D;
-#endif
-
+#else  // BUILDFLAG(IS_IOS)
   bool client_side_native_buffer_used =
       client_gmb_type != gfx::EMPTY_BUFFER &&
       client_gmb_type != gfx::SHARED_MEMORY_BUFFER;
@@ -80,8 +79,9 @@ uint32_t ComputeTextureTargetForSharedImage(
   return 0;
 #else
   return GL_TEXTURE_EXTERNAL_OES;
-#endif
-#endif
+#endif  // BUILDFLAG(IS_FUCHSIA)
+#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_IOS)
 }
 
 }  // namespace
