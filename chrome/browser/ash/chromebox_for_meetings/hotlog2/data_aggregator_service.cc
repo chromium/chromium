@@ -76,18 +76,20 @@ void DataAggregatorService::GetDataSourceNames(
 
 void DataAggregatorService::AddDataSource(
     const std::string& source_name,
-    mojo::PendingRemote<mojom::DataSource> new_data_source) {
+    mojo::PendingRemote<mojom::DataSource> new_data_source,
+    AddDataSourceCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(b/330866098): execute callback here to alert caller?
   if (data_source_map_.count(source_name) != 0) {
     LOG(ERROR) << "Attempted to add source name " << source_name
                << " more than once. Disregarding this one.";
+    std::move(callback).Run(false /* success */);
     return;
   }
 
   mojo::Remote<mojom::DataSource> data_source(std::move(new_data_source));
   data_source_map_[source_name] = std::move(data_source);
+  std::move(callback).Run(true /* success */);
 }
 
 void DataAggregatorService::AddWatchDog(
@@ -105,10 +107,9 @@ void DataAggregatorService::AddWatchDog(
     return;
   }
 
-  // TODO(b/330866098): can this fail? Returning "true" in the callback
-  // might be disingenuous here.
-  data_source_map_[source_name]->AddWatchDog(std::move(watch_dog));
-  std::move(callback).Run(true /* success */);
+  // Pass the callback through to the data source and run it there.
+  data_source_map_[source_name]->AddWatchDog(std::move(watch_dog),
+                                             std::move(callback));
 }
 
 void DataAggregatorService::AddLocalCommandSource(const std::string& command) {

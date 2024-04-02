@@ -45,9 +45,9 @@ class DataAggregatorService : public CfmObserver,
 
   // mojom::DataAggregator implementation
   void GetDataSourceNames(GetDataSourceNamesCallback callback) override;
-  void AddDataSource(
-      const std::string& source_name,
-      mojo::PendingRemote<mojom::DataSource> new_data_source) override;
+  void AddDataSource(const std::string& source_name,
+                     mojo::PendingRemote<mojom::DataSource> new_data_source,
+                     AddDataSourceCallback callback) override;
   void AddWatchDog(const std::string& source_name,
                    mojo::PendingRemote<mojom::DataWatchDog> watch_dog,
                    AddWatchDogCallback callback) override;

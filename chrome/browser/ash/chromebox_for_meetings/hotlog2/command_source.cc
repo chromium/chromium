@@ -52,9 +52,11 @@ void CommandSource::Fetch(FetchCallback callback) {
 }
 
 void CommandSource::AddWatchDog(
-    mojo::PendingRemote<mojom::DataWatchDog> watch_dog) {
+    mojo::PendingRemote<mojom::DataWatchDog> watch_dog,
+    AddWatchDogCallback callback) {
   // TODO: (b/326440932)
   (void)watch_dog;
+  (void)callback;
 }
 
 void CommandSource::Flush() {
