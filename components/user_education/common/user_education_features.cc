@@ -40,7 +40,7 @@ inline constexpr char kMaxSnoozeCountParamName[] = "max_snooze_count";
 inline constexpr int kDefaultMaxSnoozeCount = 3;
 
 inline constexpr char kMaxPromoShowCount[] = "max_promo_show_count";
-inline constexpr int kDefaultMaxPromoShowCount = 12;
+inline constexpr int kDefaultMaxPromoShowCount = 3;
 
 inline constexpr char kNewBadgeShowCount[] = "new_badge_show_count";
 inline constexpr int kDefaultNewBadgeShowCount = 10;

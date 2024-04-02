@@ -524,8 +524,33 @@ TEST_P(FeaturePromoLifecycleTypesTest, SnoozeNonInteractedIPH) {
 TEST_P(FeaturePromoLifecycleTypesTest, MaxShowCountReached) {
   FeaturePromoData data;
   data.show_count = features::GetMaxPromoShowCount();
-  data.first_show_time = base::Time::Now();
-  data.last_show_time = base::Time::Now();
+  const auto abort_cooldown = features::GetAbortCooldown();
+  data.first_show_time = base::Time::Now() - abort_cooldown * 3;
+  data.last_show_time = base::Time::Now() - abort_cooldown * 2;
+  storage_service_.SavePromoData(kTestIPHFeature, data);
+  auto lifecycle = CreateLifecycle(kTestIPHFeature);
+  EXPECT_EQ(GetExceededResult(), lifecycle->CanShow());
+}
+
+TEST_P(FeaturePromoLifecycleTypesTest, MaxShowCountNotReachedDueToSnooze) {
+  FeaturePromoData data;
+  data.show_count = features::GetMaxPromoShowCount();
+  data.snooze_count = 1;
+  const auto abort_cooldown = features::GetAbortCooldown();
+  data.first_show_time = base::Time::Now() - abort_cooldown * 3;
+  data.last_show_time = base::Time::Now() - abort_cooldown * 2;
+  storage_service_.SavePromoData(kTestIPHFeature, data);
+  auto lifecycle = CreateLifecycle(kTestIPHFeature);
+  EXPECT_EQ(FeaturePromoResult::Success(), lifecycle->CanShow());
+}
+
+TEST_P(FeaturePromoLifecycleTypesTest, MaxShowCountReachedAfterSnooze) {
+  FeaturePromoData data;
+  data.show_count = features::GetMaxPromoShowCount() + 2;
+  data.snooze_count = 2;
+  const auto abort_cooldown = features::GetAbortCooldown();
+  data.first_show_time = base::Time::Now() - abort_cooldown * 3;
+  data.last_show_time = base::Time::Now() - abort_cooldown * 2;
   storage_service_.SavePromoData(kTestIPHFeature, data);
   auto lifecycle = CreateLifecycle(kTestIPHFeature);
   EXPECT_EQ(GetExceededResult(), lifecycle->CanShow());

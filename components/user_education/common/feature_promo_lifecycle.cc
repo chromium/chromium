@@ -68,25 +68,38 @@ FeaturePromoResult FeaturePromoLifecycle::CanShow() const {
   }
 
   switch (promo_subtype_) {
-    case PromoSubtype::kNormal:
-      if (features::IsUserEducationV2() &&
-          data->show_count >= features::GetMaxPromoShowCount()) {
-        return FeaturePromoResult::kExceededMaxShowCount;
-      }
+    case PromoSubtype::kNormal: {
+      FeaturePromoResult result;
       switch (promo_type_) {
         case PromoType::kLegacy:
         case PromoType::kToast:
-          return data->is_dismissed ? FeaturePromoResult::kPermanentlyDismissed
-                                    : FeaturePromoResult::Success();
+          result = data->is_dismissed
+                       ? FeaturePromoResult::kPermanentlyDismissed
+                       : FeaturePromoResult::Success();
+          break;
         case PromoType::kCustomAction:
         case PromoType::kSnooze:
         case PromoType::kTutorial:
-          return CanShowSnoozePromo(*data);
+          result = CanShowSnoozePromo(*data);
+          break;
         case PromoType::kUnspecified:
           NOTREACHED();
-          return FeaturePromoResult::kPermanentlyDismissed;
+          result = FeaturePromoResult::kPermanentlyDismissed;
+          break;
       }
-      break;
+      // Even if the promo could show, it may have exceeded its maximum show
+      // count. This is always the last consideration since it is the least
+      // descriptive return value.
+      //
+      // Note that snoozes do not count towards the show cap; the cap only
+      // applies to showing when the IPH is neither dismissed nor snoozed.
+      if (result && features::IsUserEducationV2() &&
+          data->show_count - data->snooze_count >=
+              features::GetMaxPromoShowCount()) {
+        result = FeaturePromoResult::kExceededMaxShowCount;
+      }
+      return result;
+    }
     case PromoSubtype::kPerApp:
       return base::Contains(data->shown_for_apps, app_id_)
                  ? FeaturePromoResult::kPermanentlyDismissed
