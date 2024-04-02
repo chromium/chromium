@@ -6322,9 +6322,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Projector.CreationFlow.{TabletOrClamshell}"
-    enum="ProjectorCreationFlow" expires_after="2024-08-18">
+    enum="ProjectorCreationFlow" expires_after="2024-10-01">
   <owner>dorianbrandon@google.com</owner>
-  <owner>ligeng@google.com</owner>
+  <owner>bzielinski@google.com</owner>
   <owner>cros-projector@google.com</owner>
   <summary>
     Tracks how the user progresses through the creation flow in
@@ -6335,9 +6335,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Projector.CreationFlowError.{TabletOrClamshell}"
-    enum="ProjectorCreationFlowError" expires_after="2024-04-17">
+    enum="ProjectorCreationFlowError" expires_after="2024-10-01">
   <owner>dorianbrandon@google.com</owner>
-  <owner>ligeng@google.com</owner>
+  <owner>bzielinski@google.com</owner>
   <owner>cros-projector@google.com</owner>
   <summary>
     Tracks the most common errors during the screencast recording creation
@@ -6347,9 +6347,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Projector.MarkerColor.{TabletOrClamshell}"
-    enum="ProjectorMarkerColor" expires_after="2024-08-18">
+    enum="ProjectorMarkerColor" expires_after="2024-10-01">
   <owner>dorianbrandon@google.com</owner>
-  <owner>ligeng@google.com</owner>
+  <owner>bzielinski@google.com</owner>
   <owner>cros-projector@google.com</owner>
   <summary>
     Recorded whenever the user chooses a marker color on the Projector toolbar
@@ -6361,9 +6361,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Projector.OnDeviceToServerSpeechRecognitionFallbackReason"
     enum="OnDeviceToServerSpeechRecognitionFallbackReason"
-    expires_after="2024-09-29">
+    expires_after="2024-10-01">
   <owner>dorianbrandon@google.com</owner>
-  <owner>ligeng@google.com</owner>
+  <owner>bzielinski@google.com</owner>
   <owner>cros-projector@google.com</owner>
   <summary>
     Records the fallback reason of using server based speech recognition instead
@@ -6373,9 +6373,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Projector.PendingScreencastBatchIOTaskDuration" units="ms"
-    expires_after="2024-08-18">
+    expires_after="2024-10-01">
   <owner>dorianbrandon@google.com</owner>
-  <owner>ligeng@google.com</owner>
+  <owner>bzielinski@google.com</owner>
   <owner>cros-projector@google.com</owner>
   <summary>
     Tracks the processing time of batch pending screencast files validation on
@@ -6384,9 +6384,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Projector.PendingScreencastChangeInterval" units="ms"
-    expires_after="2024-04-17">
+    expires_after="2024-10-01">
   <owner>dorianbrandon@google.com</owner>
-  <owner>ligeng@google.com</owner>
+  <owner>bzielinski@google.com</owner>
   <owner>cros-projector@google.com</owner>
   <summary>
     Tracks the interval between UI updates during screencast uploading. Recorded
@@ -6396,9 +6396,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Projector.SpeechRecognitionEndState.{Location}"
-    enum="SpeechRecognitionEndState" expires_after="2024-08-18">
+    enum="SpeechRecognitionEndState" expires_after="2024-10-01">
   <owner>dorianbrandon@google.com</owner>
-  <owner>ligeng@google.com</owner>
+  <owner>bzielinski@google.com</owner>
   <owner>cros-projector@google.com</owner>
   <summary>
     For a recognition session happening at {Location}, this histogram records
@@ -6408,9 +6408,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Projector.Toolbar.{TabletOrClamshell}"
-    enum="ProjectorToolbar" expires_after="2024-08-18">
+    enum="ProjectorToolbar" expires_after="2024-10-01">
   <owner>dorianbrandon@google.com</owner>
-  <owner>ligeng@google.com</owner>
+  <owner>bzielinski@google.com</owner>
   <owner>cros-projector@google.com</owner>
   <summary>
     Recorded whenever the user opens, closes, or presses a button the Projector
@@ -6420,9 +6420,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Projector.TranscriptsCount.{TabletOrClamshell}"
-    units="Number of transcripts" expires_after="2024-04-17">
+    units="Number of transcripts" expires_after="2024-10-01">
   <owner>dorianbrandon@google.com</owner>
-  <owner>ligeng@google.com</owner>
+  <owner>bzielinski@google.com</owner>
   <owner>cros-projector@google.com</owner>
   <summary>
     Tracks the number of transcripts generated during a recording in
@@ -6975,9 +6975,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.ServerBasedSpeechRecognition.AudioLengthLeftWhenAudioCaptureEnd"
-    units="ms" expires_after="2024-09-29">
+    units="ms" expires_after="2024-10-01">
   <owner>dorianbrandon@google.com</owner>
-  <owner>ligeng@google.com</owner>
+  <owner>bzielinski@google.com</owner>
   <owner>cros-projector@google.com</owner>
   <summary>
     Records the length of remaining un-transcribed audio when the audio capture
@@ -6987,9 +6987,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.ServerBasedSpeechRecognition.EndOfRecognitionSignalLatency"
-    units="ms" expires_after="2024-06-16">
+    units="ms" expires_after="2024-10-01">
   <owner>dorianbrandon@google.com</owner>
-  <owner>ligeng@google.com</owner>
+  <owner>bzielinski@google.com</owner>
   <owner>cros-projector@google.com</owner>
   <summary>
     Records the time user needs to wait to get the final speech recognition
@@ -6998,9 +6998,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.ServerBasedSpeechRecognition.ErrorCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-06-16">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-10-01">
   <owner>dorianbrandon@google.com</owner>
-  <owner>ligeng@google.com</owner>
+  <owner>bzielinski@google.com</owner>
   <owner>cros-projector@google.com</owner>
   <summary>
     Records the network error or HTTP response code of server based speech
@@ -7386,9 +7386,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SpeechRecognitionSessionLength.{Location}" units="ms"
-    expires_after="2024-09-01">
+    expires_after="2024-10-01">
   <owner>dorianbrandon@google.com</owner>
-  <owner>ligeng@google.com</owner>
+  <owner>bzielinski@google.com</owner>
   <owner>cros-projector@google.com</owner>
   <summary>
     The length of the speech recognition session happening on {Location}. This
