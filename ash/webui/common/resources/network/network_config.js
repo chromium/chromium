@@ -913,7 +913,7 @@ Polymer({
       this.shareNetwork_ = this.shareDefault;
       return;
     }
-    if (this.shareAllowEnable) {
+    if (this.shareAllowEnable && !this.shareDefault) {
       // By default, Wi-Fi networks which require passwords are not shared,
       // but "insecure" networks with no passwords are shared. In either case,
       // the user can change the sharing setting by updating the toggle in the
