@@ -1,0 +1,24 @@
+Test setting the port attribute of the URL in HTMLAnchorElement.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+Default port as number
+PASS a.href is 'https://www.mydomain.com/path/testurl.html?key=value'
+Default port as string
+PASS a.href is 'https://www.mydomain.com/path/testurl.html?key=value'
+Set port to 0
+PASS a.href is 'https://www.mydomain.com:0/path/testurl.html?key=value'
+Set port to non-number
+PASS a.href is 'https://www.mydomain.com:4/path/testurl.html?key=value'
+Set port to null
+PASS a.href is 'https://www.mydomain.com:8080/path/testurl.html?key=value'
+Set port to empty string
+PASS a.href is 'https://www.mydomain.com/path/testurl.html?key=value'
+Set port to undefined
+PASS a.href is 'https://www.mydomain.com:8080/path/testurl.html?key=value'
+Set port to URL with foo: protocol
+PASS a.href is 'foo://bar:50/'
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

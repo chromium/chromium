@@ -1,0 +1,38 @@
+The following table shows how URLs are parsed and canonicalized. The base URI for this document is file:///BASE/.
+
+URL	href	host	pathname
+	file:///BASE/		/BASE/
+test	file:///BASE/test		/BASE/test
+/	file:///		/
+/test	file:///test		/test
+//	file:///		/
+//test	file://test/	test	/
+///	file:///		/
+///test	file:///test		/test
+file:	file:///BASE/		/BASE/
+file:test	file:///BASE/test		/BASE/test
+file:/	file:///		/
+file:/test	file:///test		/test
+file://	file:///		/
+file://test	file://test/	test	/
+file:///	file:///		/
+file:///test	file:///test		/test
+file://localhost	file://localhost/	localhost	/
+file://localhost/	file://localhost/	localhost	/
+file://localhost/test	file://localhost/test	localhost	/test
+http:	http:		
+http:/	http:/		
+http://	http://		
+http:///	http:///		
+http:////	http:////		
+http://localhost	http://localhost/	localhost	/
+http://localhost/	http://localhost/	localhost	/
+http://localhost/test	http://localhost/test	localhost	/test
+x-webkit:	x-webkit:		
+x-webkit:test	x-webkit:test		test
+x-webkit:/	x-webkit:/		/
+x-webkit:/test	x-webkit:/test		/test
+x-webkit://	x-webkit://		
+x-webkit://test	x-webkit://test	test	
+x-webkit:///	x-webkit:///		/
+x-webkit:///test	x-webkit:///test		/test

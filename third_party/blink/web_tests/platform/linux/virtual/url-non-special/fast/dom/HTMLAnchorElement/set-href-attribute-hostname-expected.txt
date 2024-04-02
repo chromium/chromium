@@ -1,0 +1,28 @@
+Test setting the hostname attribute of the URL in HTMLAnchorElement.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+Basic test
+PASS a.href is 'https://www.otherdomain.com:8080/path/'
+Extra slashes before hostname
+PASS a.href is 'https://www.mydomain.com:8080/path/'
+Set hostname to URL with foo: protocol
+PASS a.href is 'foo://www.otherdomain.com/path/'
+Set hostname to null
+PASS a.href is 'https://null:8080/path/'
+Set hostname to empty string
+PASS a.href is 'https://www.mydomain.com:8080/path/'
+Set hostname to URL with 2 colons
+PASS a.href is 'really:bad:url'
+Set a hostname that contains space in it
+FAIL a.href should be http://www.my domain.com/path/. Was http://www.other%20domain.com/path/.
+Set hostname on a local file
+FAIL a.href should be file://a/C:/path/testurl.html. Was c://a/path/testurl.html.
+Set hostname to 'localhost' on a local file
+FAIL a.href should be file:///C:/path/testurl.html. Was c://localhost/path/testurl.html.
+Set hostname to undefined
+PASS a.href is 'https://undefined:8080/path/'
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

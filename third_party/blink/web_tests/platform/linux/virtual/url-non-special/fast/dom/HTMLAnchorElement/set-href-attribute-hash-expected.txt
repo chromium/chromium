@@ -1,0 +1,28 @@
+Test setting the hash attribute of the URL in HTMLAnchorElement.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+Hash value does not start with '#'
+PASS a.href is 'https://www.mydomain.com:8080/path/testurl.html#hash-value'
+Hash value starts with '#'
+PASS a.href is 'file:///path/testurl.html#hash_value'
+'?' in hash value
+PASS a.href is 'http://www.mydomain.com/path/testurl.html#hash?value'
+'#' in hash value, and illegal characters in hostname
+PASS a.href is 'https://www.my"d(){}|~om?ain#com/path/testurl.html#middle'
+Set hash to null
+PASS a.href is 'https://www.mydomain.com/path/testurl.html#null'
+Set hash to empty string
+PASS a.href is 'https://www.mydomain.com/path/testurl.html'
+Add hash to mailto: protocol
+PASS a.href is 'mailto:e-mail_address@goes_here#hash-value'
+Add hash to file: protocol
+PASS a.href is 'file:///some%20path#hash%20value'
+Set hash to '#'
+PASS a.href is 'http://mydomain.com/#'
+Add hash to non-standard protocol
+PASS a.href is 'foo:bar#hash'
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

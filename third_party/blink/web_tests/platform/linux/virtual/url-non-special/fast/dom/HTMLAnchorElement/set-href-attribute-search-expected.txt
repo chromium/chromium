@@ -1,0 +1,22 @@
+Test setting the search attribute of the URL in HTMLAnchorElement .
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+Set search without '?'
+PASS a.href is 'https://www.mydomain.com/path/?value=key'
+Set search that starts with '?' and contains spaces
+PASS a.href is 'https://www.mydomain.com/path/?val%20ue=%20key?'
+Set search to a malformed URL
+PASS a.href is 's:www.mydomain.com/path/?%'
+Set search containing '#'
+PASS a.href is 'https://www.mydomain.com/path/?value%23key#hash'
+Set search to a malformed URL
+FAIL a.href should be bad:/|/url?value=key. Was bad:/%7C/url?value=key.
+Set search to null
+PASS a.href is 'https://www.mydomain.com/path/?null'
+Set search to empty string
+PASS a.href is 'https://www.mydomain.com/path/'
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
