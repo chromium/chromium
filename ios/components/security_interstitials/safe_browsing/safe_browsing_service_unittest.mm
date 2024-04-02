@@ -711,6 +711,9 @@ TEST_F(SafeBrowsingServiceInitializationTest,
       /*count=*/1);
   histogram_tester.ExpectUniqueSample("SafeBrowsing.Pref.Enhanced",
                                       /*sample=*/0, /*count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.Pref.Enhanced.RegularProfile",
+      /*sample=*/0, /*count=*/1);
 
   safe_browsing_service->ShutDown();
   task_environment.RunUntilIdle();
@@ -744,6 +747,9 @@ TEST_F(SafeBrowsingServiceInitializationTest,
       /*count=*/1);
   histogram_tester.ExpectUniqueSample("SafeBrowsing.Pref.Enhanced",
                                       /*sample=*/1, /*count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.Pref.Enhanced.RegularProfile",
+      /*sample=*/1, /*count=*/1);
 
   safe_browsing_service->ShutDown();
   task_environment.RunUntilIdle();
@@ -776,6 +782,9 @@ TEST_F(SafeBrowsingServiceInitializationTest, PreferenceMetricsNoSafeBrowsing) {
       /*count=*/1);
   histogram_tester.ExpectUniqueSample("SafeBrowsing.Pref.Enhanced",
                                       /*sample=*/0, /*count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.Pref.Enhanced.RegularProfile",
+      /*sample=*/0, /*count=*/1);
 
   safe_browsing_service->ShutDown();
   task_environment.RunUntilIdle();

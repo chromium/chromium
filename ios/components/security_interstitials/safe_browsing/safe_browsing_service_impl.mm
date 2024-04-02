@@ -117,7 +117,12 @@ void SafeBrowsingServiceImpl::Initialize(
   UMA_HISTOGRAM_BOOLEAN(
       safe_browsing::kSafeBrowsingEnabledHistogramName,
       pref_change_registrar_->prefs()->GetBoolean(prefs::kSafeBrowsingEnabled));
+  // TODO(crbug.com/40886668): Deprecate SafeBrowsing.Pref.Enhanced.
   UMA_HISTOGRAM_BOOLEAN("SafeBrowsing.Pref.Enhanced",
+                        prefs->GetBoolean(prefs::kSafeBrowsingEnhanced));
+  // TODO(crbug.com/332512508): We will need to update the
+  // SafeBrowsing.Pref.Enhanced.RegularProfile metric to support multi-profile.
+  UMA_HISTOGRAM_BOOLEAN("SafeBrowsing.Pref.Enhanced.RegularProfile",
                         prefs->GetBoolean(prefs::kSafeBrowsingEnhanced));
   safe_browsing::RecordExtendedReportingMetrics(*prefs);
   UpdateSafeBrowsingEnabledState();
