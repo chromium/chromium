@@ -40,7 +40,7 @@ class HostResolverManagerTest : public TestWithTaskEnvironment {
 
   void CreateResolver(bool check_ipv6_on_wifi = true);
 
-  void DestroyResolver();
+  virtual void DestroyResolver();
 
   // This HostResolverManager will only allow 1 outstanding resolve at a time
   // and perform no retries.
@@ -123,6 +123,11 @@ class HostResolverManagerDnsTest : public HostResolverManagerTest {
 
   ~HostResolverManagerDnsTest() override;
 
+  void DestroyResolver() override;
+
+  // Note that this clears `mock_dns_client_`.
+  void SetDnsClient(std::unique_ptr<DnsClient> dns_client);
+
   void Ipv6UnreachableTest(bool is_async);
   void Ipv6UnreachableInvalidConfigTest(bool is_async);
 
@@ -190,7 +195,7 @@ class HostResolverManagerDnsTest : public HostResolverManagerTest {
   std::unique_ptr<SystemDnsConfigChangeNotifier> notifier_;
 
   // Owned by `resolver_`.
-  raw_ptr<MockDnsClient, DanglingUntriaged> dns_client_ = nullptr;
+  raw_ptr<MockDnsClient> mock_dns_client_ = nullptr;
 };
 
 }  // namespace net
