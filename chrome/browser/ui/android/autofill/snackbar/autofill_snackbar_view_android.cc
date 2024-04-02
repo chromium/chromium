@@ -38,12 +38,9 @@ void AutofillSnackbarViewAndroid::Show() {
 
   java_object_.Reset(Java_AutofillSnackbarController_create(
       env, reinterpret_cast<intptr_t>(this), window_android->GetJavaObject()));
-  Java_AutofillSnackbarController_show(
-      env, java_object_,
-      base::android::ConvertUTF16ToJavaString(env,
-                                              controller_->GetMessageText()),
-      base::android::ConvertUTF16ToJavaString(
-          env, controller_->GetActionButtonText()));
+  Java_AutofillSnackbarController_show(env, java_object_,
+                                       controller_->GetMessageText(),
+                                       controller_->GetActionButtonText());
 }
 
 void AutofillSnackbarViewAndroid::Dismiss() {

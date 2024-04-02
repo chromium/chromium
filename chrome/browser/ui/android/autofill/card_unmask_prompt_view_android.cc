@@ -62,24 +62,19 @@ void CardUnmaskPromptViewAndroid::Dismiss() {
 bool CardUnmaskPromptViewAndroid::CheckUserInputValidity(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jstring>& response) {
-  return controller_->InputCvcIsValid(
-      base::android::ConvertJavaStringToUTF16(env, response));
+    const std::u16string& response) {
+  return controller_->InputCvcIsValid(response);
 }
 
-void CardUnmaskPromptViewAndroid::OnUserInput(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jstring>& cvc,
-    const JavaParamRef<jstring>& month,
-    const JavaParamRef<jstring>& year,
-    jboolean enable_fido_auth,
-    jboolean was_checkbox_visible) {
-  controller_->OnUnmaskPromptAccepted(
-      base::android::ConvertJavaStringToUTF16(env, cvc),
-      base::android::ConvertJavaStringToUTF16(env, month),
-      base::android::ConvertJavaStringToUTF16(env, year), enable_fido_auth,
-      was_checkbox_visible);
+void CardUnmaskPromptViewAndroid::OnUserInput(JNIEnv* env,
+                                              const JavaParamRef<jobject>& obj,
+                                              const std::u16string& cvc,
+                                              const std::u16string& month,
+                                              const std::u16string& year,
+                                              jboolean enable_fido_auth,
+                                              jboolean was_checkbox_visible) {
+  controller_->OnUnmaskPromptAccepted(cvc, month, year, enable_fido_auth,
+                                      was_checkbox_visible);
 }
 
 void CardUnmaskPromptViewAndroid::OnNewCardLinkClicked(

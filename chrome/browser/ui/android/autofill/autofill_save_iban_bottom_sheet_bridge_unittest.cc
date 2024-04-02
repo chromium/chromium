@@ -23,7 +23,7 @@ namespace {
 using SaveIbanOfferUserDecision = AutofillClient::SaveIbanOfferUserDecision;
 
 std::u16string_view kIbanLabel = u"CH56 0483 5012 3456 7800 9";
-std::u16string_view kUserProvidedNickname = u"My Doctor's IBAN";
+std::u16string kUserProvidedNickname = u"My Doctor's IBAN";
 
 class AutofillSaveIbanBottomSheetBridgeTest
     : public ChromeRenderViewHostTestHarness {
@@ -62,12 +62,7 @@ TEST_F(AutofillSaveIbanBottomSheetBridgeTest, BridgeCallsOnUiAccepted) {
   EXPECT_CALL(delegate_reference, OnUiAccepted);
 
   JNIEnv* env = base::android::AttachCurrentThread();
-  auto j_string =
-      base::android::ConvertUTF16ToJavaString(env, kUserProvidedNickname);
-  base::android::JavaParamRef<jstring> user_provided_nickname(env,
-                                                              j_string.obj());
-
-  bridge.OnUiAccepted(env, user_provided_nickname);
+  bridge.OnUiAccepted(env, kUserProvidedNickname);
 }
 
 // Check OnUiCanceled() is called in delegate.

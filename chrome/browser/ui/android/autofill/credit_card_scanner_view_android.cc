@@ -57,12 +57,12 @@ void CreditCardScannerViewAndroid::ScanCancelled(
 void CreditCardScannerViewAndroid::ScanCompleted(
     JNIEnv* env,
     const JavaParamRef<jobject>& object,
-    const JavaParamRef<jstring>& card_holder_name,
-    const JavaParamRef<jstring>& card_number,
+    const std::u16string& card_holder_name,
+    const std::u16string& card_number,
     jint expiration_month,
     jint expiration_year) {
   CreditCard card;
-  card.SetNumber(base::android::ConvertJavaStringToUTF16(env, card_number));
+  card.SetNumber(card_number);
   card.SetExpirationMonth(static_cast<int>(expiration_month));
   card.SetExpirationYear(static_cast<int>(expiration_year));
 

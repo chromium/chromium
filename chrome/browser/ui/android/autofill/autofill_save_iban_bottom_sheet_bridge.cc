@@ -32,19 +32,18 @@ void AutofillSaveIbanBottomSheetBridge::RequestShowContent(
   JNIEnv* env = base::android::AttachCurrentThread();
   save_iban_delegate_ = std::move(delegate);
   Java_AutofillSaveIbanBottomSheetBridge_requestShowContent(
-      env, java_autofill_save_iban_bottom_sheet_bridge_,
-      base::android::ConvertUTF16ToJavaString(env, iban_label));
+      env, java_autofill_save_iban_bottom_sheet_bridge_, iban_label);
 }
 
 void AutofillSaveIbanBottomSheetBridge::OnUiAccepted(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& user_provided_nickname) {
+    const std::u16string& user_provided_nickname) {
   if (save_iban_delegate_) {
     save_iban_delegate_->OnUiAccepted(
         base::BindOnce(
             &AutofillSaveIbanBottomSheetBridge::ResetSaveIbanDelegate,
             base::Unretained(this)),
-        base::android::ConvertJavaStringToUTF16(env, user_provided_nickname));
+        user_provided_nickname);
   }
 }
 

@@ -8,6 +8,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -68,7 +69,7 @@ public class AutofillSnackbarController implements SnackbarManager.SnackbarContr
      * @param action Label for the action button in the snackbar.
      */
     @CalledByNative
-    void show(String message, String action) {
+    void show(@JniType("std::u16string") String message, @JniType("std::u16string") String action) {
         Snackbar snackBar =
                 Snackbar.make(
                                 message,

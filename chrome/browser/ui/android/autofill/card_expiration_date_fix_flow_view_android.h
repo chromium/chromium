@@ -34,8 +34,8 @@ class CardExpirationDateFixFlowViewAndroid
 
   void OnUserAccept(JNIEnv* env,
                     const base::android::JavaParamRef<jobject>& obj,
-                    const base::android::JavaParamRef<jstring>& month,
-                    const base::android::JavaParamRef<jstring>& year);
+                    const std::u16string& month,
+                    const std::u16string& year);
   void OnUserDismiss(JNIEnv* env,
                      const base::android::JavaParamRef<jobject>& obj);
   void PromptDismissed(JNIEnv* env,

@@ -8,6 +8,7 @@ import android.app.Activity;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.task.PostTask;
@@ -52,9 +53,9 @@ final class AutofillNameFixFlowBridge implements AutofillNameFixFlowPromptDelega
     @CalledByNative
     private static AutofillNameFixFlowBridge create(
             long nativeNameFixFlowPrompt,
-            String title,
-            String inferredName,
-            String confirmButtonLabel,
+            @JniType("std::u16string") String title,
+            @JniType("std::u16string") String inferredName,
+            @JniType("std::u16string") String confirmButtonLabel,
             int iconId,
             WindowAndroid windowAndroid) {
         return new AutofillNameFixFlowBridge(
@@ -119,6 +120,6 @@ final class AutofillNameFixFlowBridge implements AutofillNameFixFlowPromptDelega
         void onUserAccept(
                 long nativeCardNameFixFlowViewAndroid,
                 AutofillNameFixFlowBridge caller,
-                String name);
+                @JniType("std::u16string") String name);
     }
 }

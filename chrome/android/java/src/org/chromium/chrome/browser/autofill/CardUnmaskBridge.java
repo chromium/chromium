@@ -9,6 +9,7 @@ import android.os.Handler;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.autofill.CardUnmaskPrompt.CardUnmaskPromptDelegate;
@@ -219,14 +220,14 @@ public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
         boolean checkUserInputValidity(
                 long nativeCardUnmaskPromptViewAndroid,
                 CardUnmaskBridge caller,
-                String userResponse);
+                @JniType("std::u16string") String userResponse);
 
         void onUserInput(
                 long nativeCardUnmaskPromptViewAndroid,
                 CardUnmaskBridge caller,
-                String cvc,
-                String month,
-                String year,
+                @JniType("std::u16string") String cvc,
+                @JniType("std::u16string") String month,
+                @JniType("std::u16string") String year,
                 boolean enableFidoAuth,
                 boolean wasCheckboxVisible);
 

@@ -20,8 +20,6 @@
 
 namespace autofill {
 
-using base::android::ConvertUTF16ToJavaString;
-
 AutofillVCNEnrollBottomSheetBridge::AutofillVCNEnrollBottomSheetBridge()
     : java_bridge_(Java_AutofillVcnEnrollBottomSheetBridge_Constructor(
           base::android::AttachCurrentThread())) {}
@@ -51,28 +49,20 @@ bool AutofillVCNEnrollBottomSheetBridge::RequestShowContent(
 
   return Java_AutofillVcnEnrollBottomSheetBridge_requestShowContent(
       env, java_bridge_, reinterpret_cast<jlong>(this), java_web_contents,
-      ConvertUTF16ToJavaString(env, delegate_->GetMessageText()),
-      ConvertUTF16ToJavaString(env, delegate_->GetDescriptionText()),
-      ConvertUTF16ToJavaString(env, delegate_->GetLearnMoreLinkText()),
-      ConvertUTF16ToJavaString(
-          env,
-          l10n_util::GetStringFUTF16(
-              IDS_AUTOFILL_VIRTUAL_CARD_CONTAINER_ACCESSIBILITY_DESCRIPTION,
-              delegate_->GetCardLabel())),
+      delegate_->GetMessageText(), delegate_->GetDescriptionText(),
+      delegate_->GetLearnMoreLinkText(),
+      l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_VIRTUAL_CARD_CONTAINER_ACCESSIBILITY_DESCRIPTION,
+          delegate_->GetCardLabel()),
       gfx::ConvertToJavaBitmap(*delegate_->GetIssuerIcon()->bitmap()),
-      ConvertUTF16ToJavaString(env, delegate_->GetCardLabel()),
-      ConvertUTF16ToJavaString(
-          env,
-          l10n_util::GetStringUTF16(IDS_AUTOFILL_VIRTUAL_CARD_ENTRY_PREFIX)),
+      delegate_->GetCardLabel(),
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_VIRTUAL_CARD_ENTRY_PREFIX),
       LegalMessageLineAndroid::ConvertToJavaLinkedList(
           delegate_->GetGoogleLegalMessage()),
       LegalMessageLineAndroid::ConvertToJavaLinkedList(
           delegate_->GetIssuerLegalMessage()),
-      ConvertUTF16ToJavaString(
-          env, delegate_->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_OK)),
-      ConvertUTF16ToJavaString(
-          env,
-          delegate_->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_CANCEL)));
+      delegate_->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_OK),
+      delegate_->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_CANCEL));
 }
 
 void AutofillVCNEnrollBottomSheetBridge::OnAccept(JNIEnv* env) {

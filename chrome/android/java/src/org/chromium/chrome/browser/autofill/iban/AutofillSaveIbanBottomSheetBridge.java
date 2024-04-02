@@ -9,6 +9,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 /** JNI wrapper to trigger Android bottom sheet prompting the user to save their IBAN locally. */
@@ -48,7 +49,7 @@ public class AutofillSaveIbanBottomSheetBridge {
      * @param ibanLabel String value of the IBAN being saved, i.e. CH56 0483 5012 3456 7800 9.
      */
     @CalledByNative
-    public void requestShowContent(String ibanLabel) {
+    public void requestShowContent(@JniType("std::u16string_view") String ibanLabel) {
         if (mNativeAutofillSaveIbanBottomSheetBridge != 0) {
             mCoordinator = mCoordinatorFactory.create(this);
             mCoordinator.requestShowContent(ibanLabel);
@@ -97,7 +98,8 @@ public class AutofillSaveIbanBottomSheetBridge {
     @NativeMethods
     public interface Natives {
         void onUiAccepted(
-                long nativeAutofillSaveIbanBottomSheetBridge, String userProvidedNickname);
+                long nativeAutofillSaveIbanBottomSheetBridge,
+                @JniType("std::u16string") String userProvidedNickname);
 
         void onUiCanceled(long nativeAutofillSaveIbanBottomSheetBridge);
 

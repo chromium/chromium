@@ -32,9 +32,7 @@ class AutofillSaveIbanBottomSheetBridge {
   void RequestShowContent(std::u16string_view iban_label,
                           std::unique_ptr<AutofillSaveIbanDelegate> delegate);
 
-  void OnUiAccepted(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& user_provided_nickname);
+  void OnUiAccepted(JNIEnv* env, const std::u16string& user_provided_nickname);
   void OnUiCanceled(JNIEnv* env);
   void OnUiIgnored(JNIEnv* env);
 
