@@ -10,9 +10,11 @@
 
 #include "base/auto_reset.h"
 #include "base/containers/adapters.h"
+#include "base/metrics/histogram.h"
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
+#include "cc/base/histograms.h"
 #include "cc/base/region.h"
 #include "cc/slim/frame_data.h"
 #include "cc/slim/frame_sink_impl.h"
@@ -546,12 +548,20 @@ void LayerTreeImpl::GenerateCompositorFrame(
       args.frame_time, frame_data.deadline_in_frames.value_or(0u),
       args.interval, frame_data.use_default_lower_bound_deadline);
 
+  size_t total_quad_count = 0;
   for (const auto& pass : out_frame.render_pass_list) {
+    total_quad_count += pass->quad_list.size();
     for (const auto* quad : pass->quad_list) {
       for (viz::ResourceId resource_id : quad->resources) {
         out_resource_ids.insert(resource_id);
       }
     }
+  }
+
+  if (const char* client_name = GetClientNameForMetrics()) {
+    UMA_HISTOGRAM_COUNTS_1000(
+        base::StringPrintf("Compositing.%s.CompositorFrame.Quads", client_name),
+        total_quad_count);
   }
 
   if (!presentation_callback_for_next_frame_.empty() ||
