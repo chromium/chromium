@@ -30,18 +30,15 @@
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/files/drive_search_provider.h"
 #include "chrome/browser/ash/app_list/search/files/file_search_provider.h"
-#include "chrome/browser/ash/app_list/search/files/file_title.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_lacros_provider.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_provider.h"
 #include "chrome/browser/ash/app_list/search/search_engine.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
-#include "chrome/browser/ash/fileapi/recent_file.h"
-#include "chrome/browser/ash/fileapi/recent_model.h"
-#include "chrome/browser/ash/fileapi/recent_model_factory.h"
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/picker/picker_file_suggester.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom-forward.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom-shared.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -49,8 +46,6 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "storage/browser/file_system/file_system_context.h"
-#include "storage/browser/file_system/file_system_url.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
@@ -64,17 +59,16 @@ namespace {
 constexpr int kMaxGifsToSearch = 4;
 constexpr base::span<std::string_view> kImageExtensions = {
     (std::string_view[]){".jpg", ".jpeg", ".png", ".gif", ".webp"}};
-constexpr base::TimeDelta kMaxFileRecencyDelta = base::Days(30);
 
-storage::FileSystemContext* GetFileSystemContextForProfile(Profile* profile) {
-  content::StoragePartition* storage = profile->GetDefaultStoragePartition();
-  return storage->GetFileSystemContext();
-}
-
-ash::PickerSearchResult CreateSearchResultForRecentFile(
-    const ash::RecentFile& file) {
-  const base::FilePath& path = file.url().path();
-  return ash::PickerSearchResult::LocalFile(app_list::GetFileTitle(path), path);
+std::vector<ash::PickerSearchResult> CreateSearchResultsForRecentLocalFiles(
+    std::vector<PickerFileSuggester::LocalFile> files) {
+  std::vector<ash::PickerSearchResult> results;
+  results.reserve(files.size());
+  for (PickerFileSuggester::LocalFile& file : files) {
+    results.push_back(ash::PickerSearchResult::LocalFile(std::move(file.title),
+                                                         std::move(file.path)));
+  }
+  return results;
 }
 
 int GetAllAutocompleteProviderTypes() {
@@ -304,29 +298,9 @@ void PickerClientImpl::ShowEditor() {
 }
 
 void PickerClientImpl::GetRecentFileResults(RecentFilesCallback callback) {
-  const scoped_refptr<storage::FileSystemContext> file_system_context =
-      GetFileSystemContextForProfile(profile_);
-  if (!file_system_context) {
-    return;
-  }
-
-  ash::RecentModel* model = ash::RecentModelFactory::GetForProfile(profile_);
-  if (!model) {
-    return;
-  }
-
-  model->GetRecentFiles(
-      file_system_context.get(), GURL(), /*query=*/"", kMaxFileRecencyDelta,
-      ash::RecentModel::FileType::kAll,
-      /*invalidate_cache=*/false,
-      base::BindOnce([](const std::vector<ash::RecentFile>& files) {
-        std::vector<ash::PickerSearchResult> results;
-        results.reserve(files.size());
-        for (const ash::RecentFile& file : files) {
-          results.push_back(CreateSearchResultForRecentFile(file));
-        }
-        return results;
-      }).Then(std::move(callback)));
+  file_suggester_->GetRecentLocalFiles(
+      base::BindOnce(CreateSearchResultsForRecentLocalFiles)
+          .Then(std::move(callback)));
 }
 
 void PickerClientImpl::GetSuggestedLinkResults(
@@ -377,6 +351,8 @@ void PickerClientImpl::SetProfile(Profile* profile) {
   search_engine_->AddProvider(CreateDriveSearchProvider(profile_));
 
   zero_state_links_search_engine_.reset();
+
+  file_suggester_ = std::make_unique<PickerFileSuggester>(profile_);
 }
 
 std::unique_ptr<app_list::SearchProvider>

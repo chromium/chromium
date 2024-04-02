@@ -27,6 +27,7 @@
 class EndpointFetcher;
 class Profile;
 class ChromeSearchResult;
+class PickerFileSuggester;
 
 namespace app_list {
 class SearchEngine;
@@ -130,6 +131,8 @@ class PickerClientImpl
   // A dedicated cros search engine for filtered searches.
   std::unique_ptr<app_list::SearchEngine> filtered_search_engine_;
   std::optional<ash::PickerCategory> current_filter_category_;
+
+  std::unique_ptr<PickerFileSuggester> file_suggester_;
 
   // A dedicated cros search engine for zero state results for links.
   // TODO: b/330938446 - Replace with proper zero-state logic.
