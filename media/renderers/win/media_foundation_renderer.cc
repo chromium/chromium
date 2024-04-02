@@ -231,7 +231,7 @@ HRESULT MediaFoundationRenderer::CreateMediaEngine(
   RETURN_IF_FAILED(InitializeVirtualVideoWindow());
 
   // The OnXxx() callbacks are invoked by MF threadpool thread, we would like
-  // to bind the callbacks to |task_runner_| MessgaeLoop.
+  // to bind the callbacks to |task_runner_| MessageLoop.
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   auto weak_this = weak_factory_.GetWeakPtr();
   RETURN_IF_FAILED(MakeAndInitialize<MediaEngineNotifyImpl>(
