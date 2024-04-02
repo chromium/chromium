@@ -230,7 +230,7 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
   };
 
   PdfViewWebPlugin(std::unique_ptr<Client> client,
-                   mojo::AssociatedRemote<pdf::mojom::PdfService> pdf_service,
+                   mojo::AssociatedRemote<pdf::mojom::PdfHost> pdf_host,
                    const blink::WebPluginParams& params);
   PdfViewWebPlugin(const PdfViewWebPlugin& other) = delete;
   PdfViewWebPlugin& operator=(const PdfViewWebPlugin& other) = delete;
@@ -630,7 +630,7 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
   std::unique_ptr<Client> const client_;
 
   // Used to access the services provided by the browser.
-  mojo::AssociatedRemote<pdf::mojom::PdfService> const pdf_service_;
+  mojo::AssociatedRemote<pdf::mojom::PdfHost> const pdf_host_;
 
   mojo::Receiver<pdf::mojom::PdfListener> listener_receiver_{this};
 

@@ -318,7 +318,7 @@ class FakePdfViewWebPluginClient : public PdfViewWebPlugin::Client {
               (override));
 };
 
-class FakePdfService : public pdf::mojom::PdfService {
+class FakePdfHost : public pdf::mojom::PdfHost {
  public:
   MOCK_METHOD(void,
               SetListener,
@@ -385,7 +385,7 @@ class PdfViewWebPluginWithoutInitializeTest
     plugin_ =
         std::unique_ptr<PdfViewWebPlugin, PluginDeleter>(new PdfViewWebPlugin(
             std::move(client),
-            mojo::AssociatedRemote<pdf::mojom::PdfService>(
+            mojo::AssociatedRemote<pdf::mojom::PdfHost>(
                 pdf_receiver_.BindNewEndpointAndPassDedicatedRemote()),
             params));
   }
@@ -420,8 +420,8 @@ class PdfViewWebPluginWithoutInitializeTest
     plugin_->OnMessage(message);
   }
 
-  NiceMock<FakePdfService> pdf_service_;
-  mojo::AssociatedReceiver<pdf::mojom::PdfService> pdf_receiver_{&pdf_service_};
+  NiceMock<FakePdfHost> pdf_host_;
+  mojo::AssociatedReceiver<pdf::mojom::PdfHost> pdf_receiver_{&pdf_host_};
 
   // Must outlive raw_ptrs below.
   std::unique_ptr<PdfViewWebPlugin, PluginDeleter> plugin_;
@@ -602,7 +602,7 @@ TEST_F(PdfViewWebPluginWithoutInitializeTest, InitializeForPrintPreview) {
 
 TEST_F(PdfViewWebPluginTest, CreateUrlLoader) {
   EXPECT_CALL(*client_ptr_, DidStartLoading).Times(0);
-  EXPECT_CALL(pdf_service_, UpdateContentRestrictions).Times(0);
+  EXPECT_CALL(pdf_host_, UpdateContentRestrictions).Times(0);
   plugin_->CreateUrlLoader();
 
   EXPECT_EQ(PdfViewWebPlugin::DocumentLoadState::kLoading,
@@ -612,9 +612,8 @@ TEST_F(PdfViewWebPluginTest, CreateUrlLoader) {
 
 TEST_F(PdfViewWebPluginFullFrameTest, CreateUrlLoader) {
   EXPECT_CALL(*client_ptr_, DidStartLoading);
-  EXPECT_CALL(pdf_service_,
-              UpdateContentRestrictions(kContentRestrictionSave |
-                                        kContentRestrictionPrint));
+  EXPECT_CALL(pdf_host_, UpdateContentRestrictions(kContentRestrictionSave |
+                                                   kContentRestrictionPrint));
   plugin_->CreateUrlLoader();
 
   EXPECT_EQ(PdfViewWebPlugin::DocumentLoadState::kLoading,
@@ -654,7 +653,7 @@ TEST_F(PdfViewWebPluginTest, DocumentLoadComplete) {
   EXPECT_CALL(*accessibility_data_handler_ptr_, SetAccessibilityDocInfo)
       .Times(0);
   EXPECT_CALL(*client_ptr_, DidStopLoading).Times(0);
-  EXPECT_CALL(pdf_service_, UpdateContentRestrictions).Times(0);
+  EXPECT_CALL(pdf_host_, UpdateContentRestrictions).Times(0);
   plugin_->DocumentLoadComplete();
 
   EXPECT_EQ(PdfViewWebPlugin::DocumentLoadState::kComplete,
@@ -683,10 +682,10 @@ TEST_F(PdfViewWebPluginFullFrameTest, DocumentLoadComplete) {
   EXPECT_CALL(*accessibility_data_handler_ptr_, SetAccessibilityDocInfo)
       .Times(0);
   EXPECT_CALL(*client_ptr_, DidStopLoading);
-  EXPECT_CALL(pdf_service_, UpdateContentRestrictions(kContentRestrictionPrint |
-                                                      kContentRestrictionPaste |
-                                                      kContentRestrictionCut |
-                                                      kContentRestrictionCopy));
+  EXPECT_CALL(pdf_host_, UpdateContentRestrictions(kContentRestrictionPrint |
+                                                   kContentRestrictionPaste |
+                                                   kContentRestrictionCut |
+                                                   kContentRestrictionCopy));
   plugin_->DocumentLoadComplete();
 
   EXPECT_EQ(PdfViewWebPlugin::DocumentLoadState::kComplete,
@@ -722,7 +721,7 @@ TEST_F(PdfViewWebPluginTest, DocumentHasUnsupportedFeature) {
   EXPECT_CALL(*client_ptr_, RecordComputedAction("PDF_Unsupported_feature2"));
 
   // `HasUnsupportedFeature()` is not called if the viewer is not full-frame.
-  EXPECT_CALL(pdf_service_, HasUnsupportedFeature).Times(0);
+  EXPECT_CALL(pdf_host_, HasUnsupportedFeature).Times(0);
 
   plugin_->DocumentHasUnsupportedFeature("feature1");
   plugin_->DocumentHasUnsupportedFeature("feature2");
@@ -736,7 +735,7 @@ TEST_F(PdfViewWebPluginTest, DocumentHasUnsupportedFeatureWithRepeatedFeature) {
   EXPECT_CALL(*client_ptr_, RecordComputedAction("PDF_Unsupported_feature"));
 
   // `HasUnsupportedFeature()` is not called if the viewer is not full-frame.
-  EXPECT_CALL(pdf_service_, HasUnsupportedFeature).Times(0);
+  EXPECT_CALL(pdf_host_, HasUnsupportedFeature).Times(0);
 
   plugin_->DocumentHasUnsupportedFeature("feature");
   plugin_->DocumentHasUnsupportedFeature("feature");
@@ -750,7 +749,7 @@ TEST_F(PdfViewWebPluginFullFrameTest, DocumentHasUnsupportedFeature) {
   EXPECT_CALL(*client_ptr_, RecordComputedAction("PDF_Unsupported_feature2"));
 
   // `HasUnsupportedFeature()` is called once for all features.
-  EXPECT_CALL(pdf_service_, HasUnsupportedFeature);
+  EXPECT_CALL(pdf_host_, HasUnsupportedFeature);
 
   plugin_->DocumentHasUnsupportedFeature("feature1");
   plugin_->DocumentHasUnsupportedFeature("feature2");
@@ -765,7 +764,7 @@ TEST_F(PdfViewWebPluginFullFrameTest,
   EXPECT_CALL(*client_ptr_, RecordComputedAction("PDF_Unsupported_feature"));
 
   // `HasUnsupportedFeature()` is called once for all features.
-  EXPECT_CALL(pdf_service_, HasUnsupportedFeature);
+  EXPECT_CALL(pdf_host_, HasUnsupportedFeature);
 
   plugin_->DocumentHasUnsupportedFeature("feature");
   plugin_->DocumentHasUnsupportedFeature("feature");
@@ -1524,8 +1523,8 @@ TEST_F(PdfViewWebPluginTest, SelectionChanged) {
   SetDocumentDimensions({16, 9});
 
   AccessibilityViewportInfo viewport_info;
-  EXPECT_CALL(pdf_service_, SelectionChanged(gfx::PointF(-8.0f, -20.0f), 40,
-                                             gfx::PointF(52.0f, 60.0f), 80));
+  EXPECT_CALL(pdf_host_, SelectionChanged(gfx::PointF(-8.0f, -20.0f), 40,
+                                          gfx::PointF(52.0f, 60.0f), 80));
   EXPECT_CALL(*accessibility_data_handler_ptr_, SetAccessibilityViewportInfo)
       .WillOnce(SaveArg<0>(&viewport_info));
   plugin_->SelectionChanged({-10, -20, 30, 40}, {50, 60, 70, 80});
@@ -1541,8 +1540,8 @@ TEST_F(PdfViewWebPluginTest, SelectionChangedNegativeOrigin) {
   SetDocumentDimensions({16, 9});
 
   AccessibilityViewportInfo viewport_info;
-  EXPECT_CALL(pdf_service_, SelectionChanged(gfx::PointF(-8.0f, -20.0f), 40,
-                                             gfx::PointF(52.0f, 60.0f), 80));
+  EXPECT_CALL(pdf_host_, SelectionChanged(gfx::PointF(-8.0f, -20.0f), 40,
+                                          gfx::PointF(52.0f, 60.0f), 80));
   EXPECT_CALL(*accessibility_data_handler_ptr_, SetAccessibilityViewportInfo)
       .WillOnce(SaveArg<0>(&viewport_info));
   plugin_->SelectionChanged({-10, -20, 30, 40}, {50, 60, 70, 80});
@@ -1558,8 +1557,8 @@ TEST_F(PdfViewWebPluginTest, SelectionChangedScaled) {
   SetDocumentDimensions({16, 9});
 
   AccessibilityViewportInfo viewport_info;
-  EXPECT_CALL(pdf_service_, SelectionChanged(gfx::PointF(-8.0f, -20.0f), 40,
-                                             gfx::PointF(52.0f, 60.0f), 80));
+  EXPECT_CALL(pdf_host_, SelectionChanged(gfx::PointF(-8.0f, -20.0f), 40,
+                                          gfx::PointF(52.0f, 60.0f), 80));
   EXPECT_CALL(*accessibility_data_handler_ptr_, SetAccessibilityViewportInfo)
       .WillOnce(SaveArg<0>(&viewport_info));
   plugin_->SelectionChanged({-20, -40, 60, 80}, {100, 120, 140, 160});
@@ -1693,7 +1692,7 @@ TEST_F(PdfViewWebPluginTest, CaretChange) {
 }
 
 TEST_F(PdfViewWebPluginTest, EnteredEditMode) {
-  EXPECT_CALL(pdf_service_, SetPluginCanSave(true));
+  EXPECT_CALL(pdf_host_, SetPluginCanSave(true));
   EXPECT_CALL(*client_ptr_, PostMessage).Times(AnyNumber());
   EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(R"({
     "type": "setIsEditing",
@@ -1942,7 +1941,7 @@ TEST_F(PdfViewWebPluginSaveTest, AnnotationInNonEditMode) {
   AddDataToValue(base::make_span(TestPDFiumEngine::kLoadedData),
                  expected_response);
 
-  EXPECT_CALL(pdf_service_, SetPluginCanSave(true));
+  EXPECT_CALL(pdf_host_, SetPluginCanSave(true));
   ExpectUpdateTextInputState(blink::WebTextInputType::kWebTextInputTypeNone);
   EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(expected_response)));
 
@@ -1968,7 +1967,7 @@ TEST_F(PdfViewWebPluginSaveTest, AnnotationInEditMode) {
   AddDataToValue(base::make_span(TestPDFiumEngine::kSaveData),
                  expected_response);
 
-  EXPECT_CALL(pdf_service_, SetPluginCanSave(true));
+  EXPECT_CALL(pdf_host_, SetPluginCanSave(true));
   ExpectUpdateTextInputState(blink::WebTextInputType::kWebTextInputTypeNone);
   EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(expected_response)));
 
@@ -1984,13 +1983,12 @@ TEST_F(PdfViewWebPluginSaveTest, AnnotationInEditMode) {
 
 TEST_F(PdfViewWebPluginSaveTest, OriginalInNonEditMode) {
   {
-    InSequence pdf_service_sequence;
+    InSequence pdf_host_sequence;
 
-    EXPECT_CALL(pdf_service_, SetPluginCanSave(false));
-    EXPECT_CALL(
-        pdf_service_,
-        SaveUrlAs(GURL(kPdfUrl), network::mojom::ReferrerPolicy::kDefault));
-    EXPECT_CALL(pdf_service_, SetPluginCanSave(false));
+    EXPECT_CALL(pdf_host_, SetPluginCanSave(false));
+    EXPECT_CALL(pdf_host_, SaveUrlAs(GURL(kPdfUrl),
+                                     network::mojom::ReferrerPolicy::kDefault));
+    EXPECT_CALL(pdf_host_, SetPluginCanSave(false));
   }
 
   ExpectUpdateTextInputState(blink::WebTextInputType::kWebTextInputTypeNone);
@@ -2013,13 +2011,12 @@ TEST_F(PdfViewWebPluginSaveTest, OriginalInEditMode) {
   pdf_receiver_.FlushForTesting();
 
   {
-    InSequence pdf_service_sequence;
+    InSequence pdf_host_sequence;
 
-    EXPECT_CALL(pdf_service_, SetPluginCanSave(false));
-    EXPECT_CALL(
-        pdf_service_,
-        SaveUrlAs(GURL(kPdfUrl), network::mojom::ReferrerPolicy::kDefault));
-    EXPECT_CALL(pdf_service_, SetPluginCanSave(true));
+    EXPECT_CALL(pdf_host_, SetPluginCanSave(false));
+    EXPECT_CALL(pdf_host_, SaveUrlAs(GURL(kPdfUrl),
+                                     network::mojom::ReferrerPolicy::kDefault));
+    EXPECT_CALL(pdf_host_, SetPluginCanSave(true));
   }
 
   ExpectUpdateTextInputState(blink::WebTextInputType::kWebTextInputTypeNone);
@@ -2374,7 +2371,7 @@ TEST_F(PdfViewWebPluginPrintPreviewTest, DocumentLoadComplete) {
   EXPECT_CALL(*accessibility_data_handler_ptr_, SetAccessibilityDocInfo)
       .Times(0);
   EXPECT_CALL(*client_ptr_, DidStopLoading).Times(0);
-  EXPECT_CALL(pdf_service_, UpdateContentRestrictions).Times(0);
+  EXPECT_CALL(pdf_host_, UpdateContentRestrictions).Times(0);
   plugin_->DocumentLoadComplete();
 
   EXPECT_EQ(PdfViewWebPlugin::DocumentLoadState::kComplete,

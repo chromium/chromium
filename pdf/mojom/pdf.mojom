@@ -20,8 +20,8 @@ interface PdfListener {
   SetSelectionBounds(gfx.mojom.PointF base, gfx.mojom.PointF extent);
 };
 
-// Browser-side interface shared by PDF plugins and PDF renderers.
-interface PdfService {
+// Browser-side interface used by PDF renderers.
+interface PdfHost {
   SetListener(pending_remote<PdfListener> client);
 
   // Updates the content restrictions, i.e. to disable print/copy.

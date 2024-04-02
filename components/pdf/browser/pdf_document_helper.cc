@@ -25,8 +25,8 @@
 namespace pdf {
 
 // static
-void PDFDocumentHelper::BindPdfService(
-    mojo::PendingAssociatedReceiver<mojom::PdfService> pdf_service,
+void PDFDocumentHelper::BindPdfHost(
+    mojo::PendingAssociatedReceiver<mojom::PdfHost> pdf_host,
     content::RenderFrameHost* rfh,
     std::unique_ptr<PDFDocumentHelperClient> client) {
   auto* pdf_helper = PDFDocumentHelper::GetForCurrentDocument(rfh);
@@ -34,15 +34,14 @@ void PDFDocumentHelper::BindPdfService(
     PDFDocumentHelper::CreateForCurrentDocument(rfh, std::move(client));
     pdf_helper = PDFDocumentHelper::GetForCurrentDocument(rfh);
   }
-  pdf_helper->pdf_service_receivers_.Bind(rfh, std::move(pdf_service));
+  pdf_helper->pdf_host_receivers_.Bind(rfh, std::move(pdf_host));
 }
 
 PDFDocumentHelper::PDFDocumentHelper(
     content::RenderFrameHost* rfh,
     std::unique_ptr<PDFDocumentHelperClient> client)
     : content::DocumentUserData<PDFDocumentHelper>(rfh),
-      pdf_service_receivers_(content::WebContents::FromRenderFrameHost(rfh),
-                             this),
+      pdf_host_receivers_(content::WebContents::FromRenderFrameHost(rfh), this),
       client_(std::move(client)) {}
 
 PDFDocumentHelper::~PDFDocumentHelper() {
@@ -125,7 +124,7 @@ void PDFDocumentHelper::SelectionChanged(const gfx::PointF& left,
 }
 
 void PDFDocumentHelper::SetPluginCanSave(bool can_save) {
-  client_->SetPluginCanSave(pdf_service_receivers_.GetCurrentTargetFrame(),
+  client_->SetPluginCanSave(pdf_host_receivers_.GetCurrentTargetFrame(),
                             can_save);
 }
 
@@ -347,7 +346,7 @@ void PDFDocumentHelper::SaveUrlAs(const GURL& url,
 void PDFDocumentHelper::UpdateContentRestrictions(
     int32_t content_restrictions) {
   client_->UpdateContentRestrictions(
-      pdf_service_receivers_.GetCurrentTargetFrame(), content_restrictions);
+      pdf_host_receivers_.GetCurrentTargetFrame(), content_restrictions);
 }
 
 DOCUMENT_USER_DATA_KEY_IMPL(PDFDocumentHelper);

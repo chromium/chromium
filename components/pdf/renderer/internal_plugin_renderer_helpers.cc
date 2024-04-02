@@ -67,12 +67,12 @@ blink::WebPlugin* CreateInternalPlugin(
   CHECK(!delegate->IsAllowedOrigin(frame->GetSecurityOrigin()));
   CHECK(parent_frame->IsWebRemoteFrame());
 
-  mojo::AssociatedRemote<pdf::mojom::PdfService> pdf_service;
+  mojo::AssociatedRemote<pdf::mojom::PdfHost> pdf_host;
   render_frame->GetRemoteAssociatedInterfaces()->GetInterface(
-      pdf_service.BindNewEndpointAndPassReceiver());
+      pdf_host.BindNewEndpointAndPassReceiver());
   return new chrome_pdf::PdfViewWebPlugin(
       std::make_unique<PdfViewWebPluginClient>(render_frame),
-      std::move(pdf_service), params);
+      std::move(pdf_host), params);
 }
 
 }  // namespace pdf

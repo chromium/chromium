@@ -281,13 +281,13 @@ PdfViewWebPlugin::Client::CreateAccessibilityDataHandler(
 
 PdfViewWebPlugin::PdfViewWebPlugin(
     std::unique_ptr<Client> client,
-    mojo::AssociatedRemote<pdf::mojom::PdfService> pdf_service,
+    mojo::AssociatedRemote<pdf::mojom::PdfHost> pdf_host,
     const blink::WebPluginParams& params)
     : client_(std::move(client)),
-      pdf_service_(std::move(pdf_service)),
+      pdf_host_(std::move(pdf_host)),
       initial_params_(params) {
-  DCHECK(pdf_service_);
-  pdf_service_->SetListener(listener_receiver_.BindNewPipeAndPassRemote());
+  DCHECK(pdf_host_);
+  pdf_host_->SetListener(listener_receiver_.BindNewPipeAndPassRemote());
 }
 
 PdfViewWebPlugin::~PdfViewWebPlugin() = default;
@@ -1067,8 +1067,8 @@ std::unique_ptr<UrlLoader> PdfViewWebPlugin::CreateUrlLoader() {
     // Disable save and print until the document is fully loaded, since they
     // would generate an incomplete document. This needs to be done each time
     // DidStartLoading() is called because that resets the content restrictions.
-    pdf_service_->UpdateContentRestrictions(kContentRestrictionSave |
-                                            kContentRestrictionPrint);
+    pdf_host_->UpdateContentRestrictions(kContentRestrictionSave |
+                                         kContentRestrictionPrint);
   }
 
   return std::make_unique<UrlLoader>(weak_factory_.GetWeakPtr());
@@ -1133,7 +1133,7 @@ void PdfViewWebPlugin::DocumentLoadComplete() {
     return;
 
   DidStopLoading();
-  pdf_service_->UpdateContentRestrictions(GetContentRestrictions());
+  pdf_host_->UpdateContentRestrictions(GetContentRestrictions());
 }
 
 void PdfViewWebPlugin::DocumentLoadFailed() {
@@ -1161,7 +1161,7 @@ void PdfViewWebPlugin::DocumentHasUnsupportedFeature(
     return;
 
   notified_browser_about_unsupported_feature_ = true;
-  pdf_service_->HasUnsupportedFeature();
+  pdf_host_->HasUnsupportedFeature();
 }
 
 void PdfViewWebPlugin::DocumentLoadProgress(uint32_t available,
@@ -1218,8 +1218,8 @@ void PdfViewWebPlugin::SelectionChanged(const gfx::Rect& left,
   left_point.Scale(inverse_scale);
   right_point.Scale(inverse_scale);
 
-  pdf_service_->SelectionChanged(left_point, left.height() * inverse_scale,
-                                 right_point, right.height() * inverse_scale);
+  pdf_host_->SelectionChanged(left_point, left.height() * inverse_scale,
+                              right_point, right.height() * inverse_scale);
 
   if (accessibility_state_ == AccessibilityState::kLoaded)
     PrepareAndSetAccessibilityViewportInfo();
@@ -1227,7 +1227,7 @@ void PdfViewWebPlugin::SelectionChanged(const gfx::Rect& left,
 
 void PdfViewWebPlugin::EnteredEditMode() {
   edit_mode_ = true;
-  pdf_service_->SetPluginCanSave(true);
+  pdf_host_->SetPluginCanSave(true);
 
   base::Value::Dict message;
   message.Set("type", "setIsEditing");
@@ -1464,16 +1464,16 @@ void PdfViewWebPlugin::HandleSaveMessage(const base::Value::Dict& message) {
 #if BUILDFLAG(ENABLE_INK)
       // In annotation mode, assume the user will make edits and prefer saving
       // using the plugin data.
-      pdf_service_->SetPluginCanSave(true);
+      pdf_host_->SetPluginCanSave(true);
       SaveToBuffer(token);
 #else
       NOTREACHED();
 #endif  // BUILDFLAG(ENABLE_INK)
       break;
     case SaveRequestType::kOriginal:
-      pdf_service_->SetPluginCanSave(false);
+      pdf_host_->SetPluginCanSave(false);
       SaveToFile(token);
-      pdf_service_->SetPluginCanSave(edit_mode_);
+      pdf_host_->SetPluginCanSave(edit_mode_);
       break;
     case SaveRequestType::kEdited:
       SaveToBuffer(token);
@@ -1679,7 +1679,7 @@ void PdfViewWebPlugin::SaveToFile(const std::string& token) {
   message.Set("token", token);
   client_->PostMessage(std::move(message));
 
-  pdf_service_->SaveUrlAs(GURL(url_), network::mojom::ReferrerPolicy::kDefault);
+  pdf_host_->SaveUrlAs(GURL(url_), network::mojom::ReferrerPolicy::kDefault);
 }
 
 void PdfViewWebPlugin::InvalidatePluginContainer() {
