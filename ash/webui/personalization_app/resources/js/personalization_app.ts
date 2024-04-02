@@ -119,7 +119,7 @@ export {GooglePhotosZeroStateElement} from './wallpaper/google_photos_zero_state
 export {DEFAULT_COLOR_SCHEME} from './theme/utils.js';
 export {LocalImagesElement} from './wallpaper/local_images_element.js';
 export * from 'chrome://resources/ash/common/sea_pen/sea_pen_actions.js';
-export {getRecentSeaPenImages, selectRecentSeaPenImage, searchSeaPenThumbnails} from 'chrome://resources/ash/common/sea_pen/sea_pen_controller.js';
+export {getRecentSeaPenImages, selectRecentSeaPenImage, searchSeaPenThumbnails, selectSeaPenWallpaper} from 'chrome://resources/ash/common/sea_pen/sea_pen_controller.js';
 export {SeaPenFeedbackElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_feedback_element.js';
 export {SeaPenImageLoadingElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_image_loading_element.js';
 export {SeaPenImagesElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_images_element.js';

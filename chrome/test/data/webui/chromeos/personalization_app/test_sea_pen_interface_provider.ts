@@ -71,6 +71,10 @@ export class TestSeaPenProvider extends TestBrowserProxy implements
       ReturnType<SeaPenProviderInterface['selectSeaPenThumbnail']> =
           Promise.resolve({success: true});
 
+  selectSeaPenRecentImageResponse:
+      ReturnType<SeaPenProviderInterface['selectRecentSeaPenImage']> =
+          Promise.resolve({success: true});
+
   shouldShowSeaPenTermsOfServiceDialogResponse = true;
 
   constructor() {
@@ -105,7 +109,7 @@ export class TestSeaPenProvider extends TestBrowserProxy implements
     assertTrue(
         isSeaPenImageId(id), `id must be SeaPenImageId but received: ${id}`);
     this.methodCalled('selectRecentSeaPenImage', id);
-    return Promise.resolve({success: true});
+    return this.selectSeaPenRecentImageResponse;
   }
 
   getRecentSeaPenImages() {

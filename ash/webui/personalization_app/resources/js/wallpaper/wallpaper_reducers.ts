@@ -155,6 +155,15 @@ function loadingReducer(
       return {...state, selected: {...state.selected, image: false}};
     case WallpaperActionName.SET_ATTRIBUTION:
       return {...state, selected: {...state.selected, attribution: false}};
+    case SeaPenActionName.END_SELECT_SEA_PEN_THUMBNAIL:
+    case SeaPenActionName.END_SELECT_RECENT_SEA_PEN_IMAGE:
+      // End loading state if selecting a SeaPen image failed. There are no
+      // incoming events from wallpaper_observer.ts to reset the loading state
+      // from wallpaper side, as the SeaPen image was not saved and applied.
+      if (!action.success) {
+        return {...state, selected: {image: false, attribution: false}};
+      }
+      return state;
     case WallpaperActionName.BEGIN_UPDATE_DAILY_REFRESH_IMAGE:
       return {...state, refreshWallpaper: true};
     case WallpaperActionName.SET_UPDATED_DAILY_REFRESH_IMAGE:

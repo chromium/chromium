@@ -11,8 +11,9 @@ import {isNonEmptyArray} from './sea_pen_utils.js';
 export async function selectRecentSeaPenImage(
     id: SeaPenImageId, provider: SeaPenProviderInterface,
     store: SeaPenStoreInterface): Promise<void> {
+  const originalCurrentSelected = store.data.currentSelected;
   // Returns if the selected image is the current wallpaper.
-  if (id === store.data.currentSelected) {
+  if (id === originalCurrentSelected) {
     return;
   }
   // Batch these changes together to reduce polymer churn as multiple state
@@ -28,6 +29,11 @@ export async function selectRecentSeaPenImage(
   store.dispatch(seaPenAction.endSelectRecentSeaPenImageAction(id, success));
   if (!success) {
     console.warn('Error setting wallpaper');
+  }
+  if (store.data.loading.setImage === 0) {
+    // Mark the image as applied or revert back to the old one.
+    store.dispatch(seaPenAction.setSelectedRecentSeaPenImageAction(
+        success ? id : originalCurrentSelected));
   }
   store.endBatchUpdate();
 }
@@ -47,17 +53,23 @@ export async function searchSeaPenThumbnails(
 export async function selectSeaPenWallpaper(
     thumbnail: SeaPenThumbnail, provider: SeaPenProviderInterface,
     store: SeaPenStoreInterface): Promise<void> {
+  const originalCurrentSelected = store.data.currentSelected;
+
   store.dispatch(seaPenAction.beginSelectSeaPenThumbnailAction(thumbnail));
   const {success} = await provider.selectSeaPenThumbnail(thumbnail.id);
+
+  store.beginBatchUpdate();
   store.dispatch(
       seaPenAction.endSelectSeaPenThumbnailAction(thumbnail, success));
+
   if (store.data.loading.setImage === 0) {
     // If the user has not already clicked on another thumbnail, treat this
     // thumbnail as set.
     // TODO(b/321252838) improve this with an async observer for VC Background.
     store.dispatch(seaPenAction.setSelectedRecentSeaPenImageAction(
-        success ? thumbnail.id : null));
+        success ? thumbnail.id : originalCurrentSelected));
   }
+  store.endBatchUpdate();
   // Re-fetches the recent Sea Pen image if setting sea pen wallpaper
   // successfully, which means the file has been downloaded successfully.
   if (success) {
