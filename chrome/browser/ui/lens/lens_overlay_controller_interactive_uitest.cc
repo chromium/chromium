@@ -5,7 +5,6 @@
 // This class runs CUJ tests for lens overlay. These tests simulate input events
 // and cannot be run in parallel.
 
-#include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/tabs/tab_features.h"
@@ -44,26 +43,17 @@ class LensOverlayControllerCUJTest : public InteractiveBrowserTest {
         "body",
     };
 
-    DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
-                                        kFirstPaintState);
-    return Steps(
-        InstrumentTab(kActiveTab), NavigateWebContents(kActiveTab, url),
-        EnsurePresent(kActiveTab, kPathToBody),
-        // TODO(https://crbug.com/331859922): This functionality should be built
-        // into test framework.
-        PollState(kFirstPaintState,
-                  [this]() {
-                    return browser()
-                        ->tab_strip_model()
-                        ->GetActiveTab()
-                        ->contents()
-                        ->CompletedFirstVisuallyNonEmptyPaint();
-                  }),
-        MoveMouseTo(kActiveTab, kPathToBody), ClickMouse(ui_controls::RIGHT),
-        WaitForShow(RenderViewContextMenu::kRegionSearchItem),
-        FlushEvents(),  // Required to fully render the menu before selection.
-
-        SelectMenuItem(RenderViewContextMenu::kRegionSearchItem));
+    return Steps(InstrumentTab(kActiveTab),
+                 NavigateWebContents(kActiveTab, url),
+                 // TODO(https://crbug.com/328501283): Use a UI entry point.
+                 Do([&]() {
+                   browser()
+                       ->tab_strip_model()
+                       ->GetActiveTab()
+                       ->tab_features()
+                       ->lens_overlay_controller()
+                       ->ShowUI();
+                 }));
   }
 
  private:
@@ -79,12 +69,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, OpenAndClose) {
 
   const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
 
-  // In kDocumentWithNamedElement.
-  const DeepQuery kPathToBody{
-      "body",
-  };
-
-  // In the lens overlay.
   const DeepQuery kPathToCloseButton{
       "lens-overlay-app",
       "#closeButton",
