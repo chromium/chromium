@@ -9000,6 +9000,74 @@ IN_PROC_BROWSER_TEST_F(
   RunAuctionAndWaitForURLAndNavigateIframe(auction_config, expected_url);
 }
 
+class DeprecatedRenderURLReplacementsAndCookieDeprecationBrowserTest
+    : public InterestGroupBrowserTest {
+ public:
+  DeprecatedRenderURLReplacementsAndCookieDeprecationBrowserTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{blink::features::
+                                  kFledgeDeprecatedRenderURLReplacements,
+                              features::kCookieDeprecationFacilitatedTesting},
+        /*disabled_features=*/{});
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// If both DeprecatedRenderURLReplacements and cookie deprecation trial are on,
+// we turn DeprecatedRenderURLReplacements off, so it won't affect the study.
+IN_PROC_BROWSER_TEST_F(
+    DeprecatedRenderURLReplacementsAndCookieDeprecationBrowserTest,
+    RenderURLReplacementsHaveNoEffect) {
+  GURL test_url =
+      embedded_https_test_server().GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url = GURL(embedded_https_test_server()
+                         .GetURL("c.test", "/%%echo%%?${INTEREST_GROUP_NAME}")
+                         .spec());
+
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                /*owner=*/test_origin,
+                /*name=*/"cars",
+                /*priority=*/0.0, /*execution_mode=*/
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+                /*bidding_url=*/
+                embedded_https_test_server().GetURL(
+                    "a.test", "/interest_group/bidding_logic.js"),
+                /*ads=*/{{{ad_url, R"({"ad":"metadata","here":[1,2]})"}}}));
+
+  for (bool use_promise : {false, true}) {
+    SCOPED_TRACE(use_promise);
+    ASSERT_TRUE(ExecJs(shell(), MaybePromiseFunction(use_promise)));
+    std::string auction_config = JsReplace(
+        R"({
+          seller: $1,
+          decisionLogicURL: $2,
+          interestGroupBuyers: [$1],
+          // Signal for verifying that what goes into scoreAd matches
+          // the deprecatedRenderURLReplacements.
+          sellerSignals: {deprecatedRenderURLReplacementsExpected: undefined},
+          deprecatedRenderURLReplacements:
+              maybePromise({$3: "render_cars", "%%echo%%": "echo"})
+        })",
+        test_origin,
+        embedded_https_test_server().GetURL(
+            "a.test",
+            "/interest_group/"
+            "decision_logic_deprecated_render_url_replacements_validator.js"),
+        "${INTEREST_GROUP_NAME}");
+    auto result = RunAuctionAndWait(auction_config,
+                                    /*execution_target=*/std::nullopt);
+    GURL urn_url = GURL(result.ExtractString());
+    EXPECT_TRUE(urn_url.is_valid());
+    EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece());
+    NavigateIframeAndCheckURL(web_contents(), urn_url, ad_url);
+  }
+}
+
 class DeprecatedRenderURLReplacementsDisabledTest
     : public InterestGroupBrowserTest {
  public:
