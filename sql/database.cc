@@ -1777,8 +1777,10 @@ int Database::GetLastErrno() const {
     return -1;
 
   int err = 0;
-  if (SQLITE_OK != sqlite3_file_control(db_, nullptr, SQLITE_LAST_ERRNO, &err))
+  if (SQLITE_OK !=
+      sqlite3_file_control(db_, nullptr, SQLITE_FCNTL_LAST_ERRNO, &err)) {
     return -2;
+  }
 
   return err;
 }

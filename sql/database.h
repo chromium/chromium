@@ -649,8 +649,7 @@ class COMPONENT_EXPORT(SQL) Database {
   // Returns the error code associated with the last sqlite operation.
   int GetErrorCode() const;
 
-  // Returns the errno associated with GetErrorCode().  See
-  // SQLITE_LAST_ERRNO in SQLite documentation.
+  // Returns the errno associated with GetErrorCode(). See <errno.h>.
   int GetLastErrno() const;
 
   // Returns a pointer to a statically allocated string associated with the
