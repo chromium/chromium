@@ -723,6 +723,12 @@ void OmniboxViewIOS::OnSelectedMatchForAppending(const std::u16string& str) {
   // trigger that manually.
   [field_ sendActionsForControlEvents:UIControlEventEditingChanged];
   this->FocusOmnibox();
+  if (base::FeatureList::IsEnabled(kIOSNewOmniboxImplementation)) {
+    if (@available(iOS 17, *)) {
+      // Set the caret pos to the end of the text (crbug.com/331622199).
+      this->SetCaretPos(str.length());
+    }
+  }
 }
 
 void OmniboxViewIOS::OnSelectedMatchForOpening(
