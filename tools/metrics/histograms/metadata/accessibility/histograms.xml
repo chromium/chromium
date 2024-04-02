@@ -1068,6 +1068,37 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Accessibility.CrosStatusArea.{FeatureName}"
+    enum="BooleanToggled" expires_after="2025-02-28">
+  <owner>anastasi@google.com</owner>
+  <owner>katie@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records when the ChromeOS feature, {FeatureName}, is toggled from the status
+    area, also known as &quot;Quick Settings&quot;.
+  </summary>
+  <token key="FeatureName">
+    <variant name="Autoclick"/>
+    <variant name="CaretHighlight"/>
+    <variant name="ColorCorrection"/>
+    <variant name="CursorHighlight"/>
+    <variant name="Dictation"/>
+    <variant name="DockedMagnifier"/>
+    <variant name="FaceGaze"/>
+    <variant name="FocusHighlight"/>
+    <variant name="HighContrast"/>
+    <variant name="LargeCursor"/>
+    <variant name="LiveCaption"/>
+    <variant name="MonoAudio"/>
+    <variant name="ScreenMagnifier"/>
+    <variant name="SelectToSpeak"/>
+    <variant name="SpokenFeedback"/>
+    <variant name="StickyKeys"/>
+    <variant name="SwitchAccess"/>
+    <variant name="VirtualKeyboard"/>
+  </token>
+</histogram>
+
 <histogram name="Accessibility.CrosStickyKeys" enum="BooleanEnabled"
     expires_after="2025-02-28">
   <owner>dtseng@chromium.org</owner>

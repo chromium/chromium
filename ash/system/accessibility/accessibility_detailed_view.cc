@@ -689,6 +689,8 @@ void AccessibilityDetailedView::HandleViewClicked(views::View* view) {
     RecordAction(new_state
                      ? UserMetricsAction("StatusArea_SpokenFeedbackEnabled")
                      : UserMetricsAction("StatusArea_SpokenFeedbackDisabled"));
+    base::UmaHistogramBoolean("Accessibility.CrosStatusArea.SpokenFeedback",
+                              new_state);
     controller->SetSpokenFeedbackEnabled(new_state, A11Y_NOTIFICATION_NONE);
   } else if ((view == select_to_speak_top_view_ ||
               view == select_to_speak_view_) &&
@@ -697,18 +699,24 @@ void AccessibilityDetailedView::HandleViewClicked(views::View* view) {
     RecordAction(new_state
                      ? UserMetricsAction("StatusArea_SelectToSpeakEnabled")
                      : UserMetricsAction("StatusArea_SelectToSpeakDisabled"));
+    base::UmaHistogramBoolean("Accessibility.CrosStatusArea.SelectToSpeak",
+                              new_state);
     controller->select_to_speak().SetEnabled(new_state);
   } else if ((view == dictation_top_view_ || view == dictation_view_) &&
              !controller->IsEnterpriseIconVisibleForDictation()) {
     bool new_state = !controller->dictation().enabled();
     RecordAction(new_state ? UserMetricsAction("StatusArea_DictationEnabled")
                            : UserMetricsAction("StatusArea_DictationDisabled"));
+    base::UmaHistogramBoolean("Accessibility.CrosStatusArea.Dictation",
+                              new_state);
     controller->dictation().SetEnabled(new_state);
   } else if ((view == facegaze_view_ || view == facegaze_top_view_) &&
              !controller->IsEnterpriseIconVisibleForFaceGaze()) {
     bool new_state = !controller->face_gaze().enabled();
     RecordAction(new_state ? UserMetricsAction("StatusArea_FaceGazeEnabled")
                            : UserMetricsAction("StatusArea_FaceGazeDisabled"));
+    base::UmaHistogramBoolean("Accessibility.CrosStatusArea.FaceGaze",
+                              new_state);
     controller->face_gaze().SetEnabled(new_state);
   } else if ((view == color_correction_view_ ||
               view == color_correction_top_view_) &&
@@ -717,6 +725,8 @@ void AccessibilityDetailedView::HandleViewClicked(views::View* view) {
     RecordAction(new_state
                      ? UserMetricsAction("StatusArea_ColorCorrectionEnabled")
                      : UserMetricsAction("StatusArea_ColorCorrectionDisabled"));
+    base::UmaHistogramBoolean("Accessibility.CrosStatusArea.ColorCorrection",
+                              new_state);
     controller->color_correction().SetEnabled(new_state);
   } else if ((view == high_contrast_top_view_ || view == high_contrast_view_) &&
              !controller->IsEnterpriseIconVisibleForHighContrast()) {
@@ -724,6 +734,8 @@ void AccessibilityDetailedView::HandleViewClicked(views::View* view) {
     RecordAction(new_state
                      ? UserMetricsAction("StatusArea_HighContrastEnabled")
                      : UserMetricsAction("StatusArea_HighContrastDisabled"));
+    base::UmaHistogramBoolean("Accessibility.CrosStatusArea.HighContrast",
+                              new_state);
     controller->high_contrast().SetEnabled(new_state);
   } else if ((view == screen_magnifier_top_view_ ||
               view == screen_magnifier_view_) &&
@@ -731,6 +743,8 @@ void AccessibilityDetailedView::HandleViewClicked(views::View* view) {
     bool new_state = !delegate->IsMagnifierEnabled();
     RecordAction(new_state ? UserMetricsAction("StatusArea_MagnifierEnabled")
                            : UserMetricsAction("StatusArea_MagnifierDisabled"));
+    base::UmaHistogramBoolean("Accessibility.CrosStatusArea.ScreenMagnifier",
+                              new_state);
     delegate->SetMagnifierEnabled(new_state);
   } else if ((view == docked_magnifier_top_view_ ||
               view == docked_magnifier_view_) &&
@@ -748,6 +762,8 @@ void AccessibilityDetailedView::HandleViewClicked(views::View* view) {
     RecordAction(new_state
                      ? UserMetricsAction("StatusArea_DockedMagnifierEnabled")
                      : UserMetricsAction("StatusArea_DockedMagnifierDisabled"));
+    base::UmaHistogramBoolean("Accessibility.CrosStatusArea.DockedMagnifier",
+                              new_state);
     docked_magnifier_controller->SetEnabled(new_state);
   } else if ((view == large_cursor_top_view_ || view == large_cursor_view_) &&
              !controller->IsEnterpriseIconVisibleForLargeCursor()) {
@@ -755,12 +771,16 @@ void AccessibilityDetailedView::HandleViewClicked(views::View* view) {
     RecordAction(new_state
                      ? UserMetricsAction("StatusArea_LargeCursorEnabled")
                      : UserMetricsAction("StatusArea_LargeCursorDisabled"));
+    base::UmaHistogramBoolean("Accessibility.CrosStatusArea.LargeCursor",
+                              new_state);
     controller->large_cursor().SetEnabled(new_state);
   } else if ((view == autoclick_top_view_ || view == autoclick_view_) &&
              !controller->IsEnterpriseIconVisibleForAutoclick()) {
     bool new_state = !controller->autoclick().enabled();
     RecordAction(new_state ? UserMetricsAction("StatusArea_AutoClickEnabled")
                            : UserMetricsAction("StatusArea_AutoClickDisabled"));
+    base::UmaHistogramBoolean("Accessibility.CrosStatusArea.Autoclick",
+                              new_state);
     controller->autoclick().SetEnabled(new_state);
   } else if ((view == virtual_keyboard_top_view_ ||
               view == virtual_keyboard_view_) &&
@@ -769,6 +789,8 @@ void AccessibilityDetailedView::HandleViewClicked(views::View* view) {
     RecordAction(new_state
                      ? UserMetricsAction("StatusArea_VirtualKeyboardEnabled")
                      : UserMetricsAction("StatusArea_VirtualKeyboardDisabled"));
+    base::UmaHistogramBoolean("Accessibility.CrosStatusArea.VirtualKeyboard",
+                              new_state);
     controller->virtual_keyboard().SetEnabled(new_state);
   } else if ((view == switch_access_top_view_ || view == switch_access_view_) &&
              !controller->IsEnterpriseIconVisibleForSwitchAccess()) {
@@ -776,12 +798,16 @@ void AccessibilityDetailedView::HandleViewClicked(views::View* view) {
     RecordAction(new_state
                      ? UserMetricsAction("StatusArea_SwitchAccessEnabled")
                      : UserMetricsAction("StatusArea_SwitchAccessDisabled"));
+    base::UmaHistogramBoolean("Accessibility.CrosStatusArea.SwitchAccess",
+                              new_state);
     controller->switch_access().SetEnabled(new_state);
   } else if (view == live_caption_top_view_ || view == live_caption_view_) {
     bool new_state = !controller->live_caption().enabled();
     RecordAction(new_state
                      ? UserMetricsAction("StatusArea_LiveCaptionEnabled")
                      : UserMetricsAction("StatusArea_LiveCaptionDisabled"));
+    base::UmaHistogramBoolean("Accessibility.CrosStatusArea.LiveCaption",
+                              new_state);
     controller->live_caption().SetEnabled(new_state);
   } else if ((view == caret_highlight_top_view_ ||
               view == caret_highlight_view_) &&
@@ -790,12 +816,16 @@ void AccessibilityDetailedView::HandleViewClicked(views::View* view) {
     RecordAction(new_state
                      ? UserMetricsAction("StatusArea_CaretHighlightEnabled")
                      : UserMetricsAction("StatusArea_CaretHighlightDisabled"));
+    base::UmaHistogramBoolean("Accessibility.CrosStatusArea.CaretHighlight",
+                              new_state);
     controller->caret_highlight().SetEnabled(new_state);
   } else if ((view == mono_audio_top_view_ || view == mono_audio_view_) &&
              !controller->IsEnterpriseIconVisibleForMonoAudio()) {
     bool new_state = !controller->mono_audio().enabled();
     RecordAction(new_state ? UserMetricsAction("StatusArea_MonoAudioEnabled")
                            : UserMetricsAction("StatusArea_MonoAudioDisabled"));
+    base::UmaHistogramBoolean("Accessibility.CrosStatusArea.MonoAudio",
+                              new_state);
     controller->mono_audio().SetEnabled(new_state);
   } else if ((view == highlight_mouse_cursor_top_view_ ||
               view == highlight_mouse_cursor_view_) &&
@@ -805,6 +835,8 @@ void AccessibilityDetailedView::HandleViewClicked(views::View* view) {
         new_state
             ? UserMetricsAction("StatusArea_HighlightMouseCursorEnabled")
             : UserMetricsAction("StatusArea_HighlightMouseCursorDisabled"));
+    base::UmaHistogramBoolean("Accessibility.CrosStatusArea.CursorHighlight",
+                              new_state);
     controller->cursor_highlight().SetEnabled(new_state);
   } else if ((view == highlight_keyboard_focus_top_view_ ||
               view == highlight_keyboard_focus_view_) &&
@@ -814,6 +846,8 @@ void AccessibilityDetailedView::HandleViewClicked(views::View* view) {
         new_state
             ? UserMetricsAction("StatusArea_HighlightKeyboardFocusEnabled")
             : UserMetricsAction("StatusArea_HighlightKeyboardFocusDisabled"));
+    base::UmaHistogramBoolean("Accessibility.CrosStatusArea.FocusHighlight",
+                              new_state);
     controller->focus_highlight().SetEnabled(new_state);
   } else if ((view == sticky_keys_top_view_ || view == sticky_keys_view_) &&
              !controller->IsEnterpriseIconVisibleForStickyKeys()) {
@@ -821,6 +855,8 @@ void AccessibilityDetailedView::HandleViewClicked(views::View* view) {
     RecordAction(new_state
                      ? UserMetricsAction("StatusArea_StickyKeysEnabled")
                      : UserMetricsAction("StatusArea_StickyKeysDisabled"));
+    base::UmaHistogramBoolean("Accessibility.CrosStatusArea.StickyKeys",
+                              new_state);
     controller->sticky_keys().SetEnabled(new_state);
   }
 }
