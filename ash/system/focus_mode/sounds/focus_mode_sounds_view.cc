@@ -14,22 +14,14 @@
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/focus_mode/focus_mode_detailed_view.h"
 #include "ash/system/focus_mode/sounds/focus_mode_sounds_controller.h"
+#include "ash/system/focus_mode/sounds/playlist_image_button.h"
 #include "base/functional/bind.h"
-#include "base/location.h"
-#include "base/task/sequenced_task_runner.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
-#include "ui/gfx/geometry/rounded_corners_f.h"
-#include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/image/image_skia_operations.h"
-#include "ui/views/controls/button/image_button.h"
-#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout_view.h"
-#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view_class_properties.h"
 
 namespace ash {
@@ -81,10 +73,11 @@ class PlaylistView : public views::BoxLayoutView {
     SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter);
     SetBetweenChildSpacing(kSinglePlaylistViewSpacingBetweenChild);
 
-    thumbnail_view_ = AddChildView(std::make_unique<views::ImageView>());
-    thumbnail_view_->SetImage(playlist_data->thumbnail);
-    thumbnail_view_->SetImageSize(
-        gfx::Size(kSinglePlaylistViewWidth, kSinglePlaylistViewWidth));
+    // TODO: Use a non-empty callback to create the `PlaylistImageButton`
+    // after we know how to play the stream.
+    thumbnail_view_ = AddChildView(std::make_unique<PlaylistImageButton>(
+        playlist_data->thumbnail, views::Button::PressedCallback()));
+    thumbnail_view_->SetTooltipText(base::UTF8ToUTF16(playlist_data->title));
 
     title_label_ = AddChildView(std::make_unique<views::Label>(
         base::UTF8ToUTF16(playlist_data->title)));
@@ -101,29 +94,10 @@ class PlaylistView : public views::BoxLayoutView {
 
   std::string playlist_id() const { return playlist_id_; }
 
-  FocusModeSoundsController::Playlist UpdateContent(
-      const FocusModeSoundsController::Playlist* new_playlist_data) {
-    auto old_content = FocusModeSoundsController::Playlist{
-        .playlist_id = playlist_id_,
-        .title = base::UTF16ToUTF8(title_label_->GetText()),
-        .thumbnail = thumbnail_view_->GetImage(),
-    };
-
-    playlist_id_ = new_playlist_data->playlist_id;
-    title_label_->SetText(base::UTF8ToUTF16(new_playlist_data->title));
-    title_label_->SetTooltipText(title_label_->GetText());
-    thumbnail_view_->SetImage(new_playlist_data->thumbnail);
-    return old_content;
-  }
-
  private:
-  // We will add the media controls when clicking `thumbnail_view_` and also
-  // update the view according to its media playback state.
-  void OnThumbnailButtonToggled() {}
-
   std::string playlist_id_;
   raw_ptr<views::Label> title_label_ = nullptr;
-  raw_ptr<views::ImageView> thumbnail_view_ = nullptr;
+  raw_ptr<PlaylistImageButton> thumbnail_view_ = nullptr;
 };
 
 BEGIN_METADATA(PlaylistView)
