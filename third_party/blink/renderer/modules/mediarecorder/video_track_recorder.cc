@@ -837,10 +837,13 @@ void VideoTrackRecorderImpl::OnVideoFrameForTesting(
     DCHECK(!initialize_encoder_cb_.is_null());
     initialize_encoder_cb_.Run(allow_vea_encoder, frame, timestamp);
   }
-  encoder_.AsyncCall(&Encoder::StartFrameEncode)
-      .WithArgs(WTF::CrossThreadBindRepeating(
-                    [](base::TimeTicks now) { return now; }, timestamp),
-                std::move(frame), timestamp);
+  // The encoder can be null in the case of the initialization failure.
+  if (encoder_) {
+    encoder_.AsyncCall(&Encoder::StartFrameEncode)
+        .WithArgs(WTF::CrossThreadBindRepeating(
+                      [](base::TimeTicks now) { return now; }, timestamp),
+                  std::move(frame), timestamp);
+  }
 }
 
 void VideoTrackRecorderImpl::ForceKeyFrameForNextFrameForTesting() {

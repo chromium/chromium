@@ -365,6 +365,59 @@ class VideoTrackRecorderTest : public VideoTrackRecorderTestBase {
   }
 };
 
+class VideoTrackRecorderTestWithAllCodecs : public ::testing::Test,
+                                            public VideoTrackRecorderTest {
+ public:
+  VideoTrackRecorderTestWithAllCodecs() = default;
+  ~VideoTrackRecorderTestWithAllCodecs() override = default;
+};
+
+TEST_F(VideoTrackRecorderTestWithAllCodecs, NoCrashInConfigureEncoder) {
+  constexpr std::pair<VideoTrackRecorder::CodecId, bool> kCodecIds[] = {
+      {VideoTrackRecorder::CodecId::kVp8, true},
+      {VideoTrackRecorder::CodecId::kVp9, true},
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+      {VideoTrackRecorder::CodecId::kH264,
+#if BUILDFLAG(ENABLE_OPENH264)
+       true
+#else
+       false
+#endif  // BUILDFLAG(ENABLE_OPENH264)
+      },
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+      {VideoTrackRecorder::CodecId::kAv1,
+#if BUILDFLAG(ENABLE_LIBAOM)
+       true
+#else
+       false
+#endif  // BUILDFLAG(ENABLE_LIBAOM)
+      },
+  };
+  for (auto [codec_id, can_sw_encode] : kCodecIds) {
+    InitializeRecorder(codec_id);
+    const scoped_refptr<media::VideoFrame> video_frame =
+        CreateFrameForTest(TestFrameType::kI420,
+                           gfx::Size(kVEAEncoderMinResolutionWidth,
+                                     kVEAEncoderMinResolutionHeight),
+                           /*encode_alpha_channel=*/false, /*padding=*/0);
+    if (!video_frame) {
+      ASSERT_TRUE(!!video_frame);
+    }
+    base::RunLoop run_loop;
+    InSequence s;
+    if (can_sw_encode) {
+      EXPECT_CALL(*mock_callback_interface_, OnEncodedVideo)
+          .WillOnce(RunClosure(run_loop.QuitClosure()));
+    } else {
+      EXPECT_CALL(*mock_callback_interface_, OnVideoEncodingError)
+          .WillOnce(RunClosure(run_loop.QuitClosure()));
+    }
+    Encode(video_frame, base::TimeTicks::Now());
+    run_loop.Run();
+    EXPECT_EQ(HasEncoderInstance(), can_sw_encode);
+  }
+}
+
 class VideoTrackRecorderTestWithCodec
     : public TestWithParam<testing::tuple<VideoTrackRecorder::CodecId, bool>>,
       public VideoTrackRecorderTest,
