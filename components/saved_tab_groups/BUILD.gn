@@ -2,6 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
+}
+
 source_set("core") {
   sources = [
     "features.cc",
@@ -28,7 +34,56 @@ source_set("core") {
     "//ui/gfx",
     "//url",
   ]
+
+  if (is_android) {
+    sources += [
+      "android/tab_group_sync_service_android.cc",
+      "android/tab_group_sync_service_android.h",
+    ]
+
+    deps += [ ":jni_headers" ]
+  }
+
   public_deps = []
+}
+
+if (is_android) {
+  android_library("java") {
+    sources = [
+      "android/java/src/org/chromium/components/tab_group_sync/SavedTabGroup.java",
+      "android/java/src/org/chromium/components/tab_group_sync/SavedTabGroupTab.java",
+      "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncService.java",
+      "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncServiceImpl.java",
+    ]
+
+    deps = [
+      "//base:base_java",
+      "//components/tab_groups:tab_groups_java",
+      "//net/android:net_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+      "//url:gurl_java",
+    ]
+
+    srcjar_deps = [
+      ":jni_headers",
+      ":tab_group_sync_enums_java",
+    ]
+  }
+
+  generate_jni("jni_headers") {
+    visibility = [
+      ":*",
+      "//chrome/browser",
+    ]
+
+    sources = [ "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncServiceImpl.java" ]
+  }
+
+  java_cpp_enum("tab_group_sync_enums_java") {
+    visibility = [ ":*" ]
+    sources = [ "tab_group_sync_service.h" ]
+  }
 }
 
 source_set("unit_tests") {

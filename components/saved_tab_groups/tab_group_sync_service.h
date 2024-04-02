@@ -18,23 +18,28 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/gfx/range/range.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_android.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace tab_groups {
+
+// Whether the update was originated by a change in the local or remote
+// client.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.tab_group_sync
+enum class TriggerSource {
+  // The source is a remote chrome client.
+  REMOTE = 0,
+
+  // The source is the local chrome client.
+  LOCAL = 1,
+};
 
 // The core service class for handling tab group sync across devices. Provides
 // mutation methods to propagate local changes to remote and observer interface
 // to propagate remote changes to the local client.
 class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
  public:
-  // Whether the update was originated by a change in the local or remote
-  // client.
-  enum TriggerSource {
-    // The source is a remote chrome client.
-    REMOTE = 0,
-
-    // The source is the local chrome client.
-    LOCAL = 1,
-  };
-
   // Observers observing updates to the sync data which can be originated by
   // either the local or remote clients.
   class Observer : public base::CheckedObserver {
@@ -44,9 +49,16 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
     virtual void OnTabGroupAddedOrUpdated(const SavedTabGroup& group,
                                           TriggerSource source) = 0;
 
-    // Tab group corresponding to the |sync_id| was removed.
-    virtual void OnTabGroupRemoved(const base::Uuid& sync_id) = 0;
+    // Tab group corresponding to the |local_id| was removed.
+    virtual void OnTabGroupRemoved(const tab_groups::TabGroupId& local_id) = 0;
   };
+
+#if BUILDFLAG(IS_ANDROID)
+  // Returns a Java object of the type TabGroupSyncService for the given
+  // TabGroupSyncService.
+  static base::android::ScopedJavaLocalRef<jobject> GetJavaObject(
+      TabGroupSyncService* tab_group_sync_service);
+#endif  // BUILDFLAG(IS_ANDROID)
 
   TabGroupSyncService() = default;
   ~TabGroupSyncService() override = default;

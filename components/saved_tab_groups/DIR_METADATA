@@ -1,6 +1,1 @@
-monorail: {
-  component: "UI>Browser>TopChrome>TabStrip>TabGroups"
-}
-buganizer_public: {
-  component_id: 1457512
-}
+mixins: "//components/saved_tab_groups/COMMON_METADATA"
