@@ -2288,11 +2288,6 @@
     "expiry_milestone": 88
   },
   {
-    "name": "enable-async-dns",
-    "owners": [ "horo@chromium.org", "net-dev@chromium.org" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "enable-audio-focus-enforcement",
     "owners": [ "liberato@chromium.org", "steimel@chromium.org", "meganlfu@chromium.org", "media-dev@chromium.org" ],
     "expiry_milestone": 125
