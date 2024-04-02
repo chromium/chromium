@@ -31,7 +31,41 @@ public abstract class StripLayoutView implements VirtualView {
                 }
             };
 
-    boolean mVisible = true;
+    /** A property for animations to use for changing the X offset of the tab. */
+    public static final FloatProperty<StripLayoutView> X_OFFSET =
+            new FloatProperty<>("offsetX") {
+                @Override
+                public void setValue(StripLayoutView object, float value) {
+                    object.setOffsetX(value);
+                }
+
+                @Override
+                public Float get(StripLayoutView object) {
+                    return object.getOffsetX();
+                }
+            };
+
+    private float mIdealX;
+    private float mOffsetX;
+    private boolean mVisible = true;
+
+    /**
+     * This is used to help calculate the view's position and is not used for rendering.
+     *
+     * @param x The ideal position, in an infinitely long strip, of this view.
+     */
+    public void setIdealX(float x) {
+        mIdealX = x;
+    }
+
+    /**
+     * This is used to help calculate the view's position and is not used for rendering.
+     *
+     * @return The ideal position, in an infinitely long strip, of this view.
+     */
+    public float getIdealX() {
+        return mIdealX;
+    }
 
     /**
      * @return The horizontal position of the view.
@@ -72,6 +106,24 @@ public abstract class StripLayoutView implements VirtualView {
      * @param height The height of the view.
      */
     public abstract void setHeight(float height);
+
+    /**
+     * This is used to help calculate the view's position and is not used for rendering.
+     *
+     * @param offsetX The offset of the view (used for drag and drop, slide animating, etc).
+     */
+    public void setOffsetX(float offsetX) {
+        mOffsetX = offsetX;
+    }
+
+    /**
+     * This is used to help calculate the tab's position and is not used for rendering.
+     *
+     * @return The offset of the view (used for drag and drop, slide animating, etc).
+     */
+    public float getOffsetX() {
+        return mOffsetX;
+    }
 
     /**
      * @return Whether or not this {@link StripLayoutView} should be drawn.

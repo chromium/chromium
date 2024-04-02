@@ -9,9 +9,9 @@ import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.ui.base.LocalizationUtils;
 
 /**
- * An interface that defines how to stack tabs and how they should look visually.  This lets
- * certain components customize how the {@link StripLayoutHelper} functions and how other
- * {@link Layout}s visually order tabs.
+ * An interface that defines how to stack views and how they should look visually. This lets certain
+ * components customize how the {@link StripLayoutHelper} functions and how other {@link Layout}s
+ * visually order tabs.
  */
 public abstract class StripStacker {
     /**
@@ -22,7 +22,7 @@ public abstract class StripStacker {
      * @param selectedIndex The selected index of the tabs.
      * @param indexOrderedTabs A list of tabs ordered by index.
      * @param outVisualOrderedTabs The new list of tabs, ordered from back (low z-index) to front
-     *                             (high z-index) visually.
+     *     (high z-index) visually.
      */
     public void createVisualOrdering(
             int selectedIndex,
@@ -44,15 +44,15 @@ public abstract class StripStacker {
     }
 
     /**
-     * Computes and sets the draw X, draw Y, visibility and content offset for each tab.
+     * Computes and sets the draw X, draw Y, visibility and content offset for each view.
      *
-     * @param indexOrderedTabs A list of tabs ordered by index.
+     * @param indexOrderedViews A list of tabs ordered by index.
      * @param tabClosing Whether a tab is being closed.
      * @param tabCreating Whether a tab is being created.
      * @param cachedTabWidth Whether The ideal tab width.
      */
-    public abstract void setTabOffsets(
-            StripLayoutTab[] indexOrderedTabs,
+    public abstract void setViewOffsets(
+            StripLayoutView[] indexOrderedViews,
             boolean tabClosing,
             boolean tabCreating,
             float cachedTabWidth);

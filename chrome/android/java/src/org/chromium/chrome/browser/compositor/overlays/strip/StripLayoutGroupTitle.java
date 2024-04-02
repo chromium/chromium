@@ -20,7 +20,6 @@ import org.chromium.ui.base.LocalizationUtils;
  * onto the GL canvas.
  */
 public class StripLayoutGroupTitle extends StripLayoutView {
-
     /** A property for animations to use for changing the width of the bottom indicator. */
     public static final FloatProperty<StripLayoutGroupTitle> BOTTOM_INDICATOR_WIDTH =
             new FloatProperty<>("bottomIndicatorWidth") {

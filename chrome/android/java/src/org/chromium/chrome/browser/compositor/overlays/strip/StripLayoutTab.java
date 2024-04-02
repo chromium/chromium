@@ -56,25 +56,12 @@ public class StripLayoutTab extends StripLayoutView {
 
         /**
          * Handles close button click actions.
-         * @param tab  The tab whose close button was clicked.
+         *
+         * @param tab The tab whose close button was clicked.
          * @param time The time the close button was clicked.
          */
         void handleCloseButtonClick(StripLayoutTab tab, long time);
     }
-
-    /** A property for animations to use for changing the X offset of the tab. */
-    public static final FloatProperty<StripLayoutTab> X_OFFSET =
-            new FloatProperty<>("offsetX") {
-                @Override
-                public void setValue(StripLayoutTab object, float value) {
-                    object.setOffsetX(value);
-                }
-
-                @Override
-                public Float get(StripLayoutTab object) {
-                    return object.getOffsetX();
-                }
-            };
 
     /** A property for animations to use for changing the Y offset of the tab. */
     public static final FloatProperty<StripLayoutTab> Y_OFFSET =
@@ -191,8 +178,6 @@ public class StripLayoutTab extends StripLayoutView {
     private String mAccessibilityDescription = "";
 
     // Ideal intermediate parameters
-    private float mIdealX;
-    private float mTabOffsetX;
     private float mTabOffsetY;
     private float mTrailingMargin;
 
@@ -748,38 +733,7 @@ public class StripLayoutTab extends StripLayoutView {
 
     /**
      * This is used to help calculate the tab's position and is not used for rendering.
-     * @param offsetX The offset of the tab (used for drag and drop, slide animating, etc).
-     */
-    public void setOffsetX(float offsetX) {
-        mTabOffsetX = offsetX;
-    }
-
-    /**
-     * This is used to help calculate the tab's position and is not used for rendering.
-     * @return The offset of the tab (used for drag and drop, slide animating, etc).
-     */
-    public float getOffsetX() {
-        return mTabOffsetX;
-    }
-
-    /**
-     * This is used to help calculate the tab's position and is not used for rendering.
-     * @param x The ideal position, in an infinitely long strip, of this tab.
-     */
-    public void setIdealX(float x) {
-        mIdealX = x;
-    }
-
-    /**
-     * This is used to help calculate the tab's position and is not used for rendering.
-     * @return The ideal position, in an infinitely long strip, of this tab.
-     */
-    public float getIdealX() {
-        return mIdealX;
-    }
-
-    /**
-     * This is used to help calculate the tab's position and is not used for rendering.
+     *
      * @param offsetY The vertical offset of the tab.
      */
     public void setOffsetY(float offsetY) {

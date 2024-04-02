@@ -2001,15 +2001,16 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         updateScrollOffsetLimits();
         computeTabInitialPositions();
 
-        // 3. Add tab drawX animators to reposition the tabs correctly.
-        for (StripLayoutTab tab : mStripTabs) {
+        // 3. Add drawX animators to reposition the views correctly.
+        for (int i = 0; i < mStripViews.length; ++i) {
+            final StripLayoutView view = mStripViews[i];
             CompositorAnimator drawXAnimator =
                     CompositorAnimator.ofFloatProperty(
                             mUpdateHost.getAnimationHandler(),
-                            tab,
-                            StripLayoutTab.DRAW_X,
-                            tab.getDrawX(),
-                            tab.getIdealX(),
+                            view,
+                            StripLayoutView.DRAW_X,
+                            view.getDrawX(),
+                            view.getIdealX(),
                             ANIM_TAB_DRAW_X_MS);
             tabStripAnimators.add(drawXAnimator);
         }
@@ -2721,8 +2722,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         computeTabInitialPositions();
 
         // 3. Calculate the tab stacking and ensure that tabs are sized correctly.
-        mStripStacker.setTabOffsets(
-                mStripTabs, mMultiStepTabCloseAnimRunning, mTabCreating, mCachedTabWidth);
+        mStripStacker.setViewOffsets(
+                mStripViews, mMultiStepTabCloseAnimRunning, mTabCreating, mCachedTabWidth);
 
         // 4. Calculate which tabs are visible.
         float stripWidth = getVisibleRightBound() - getVisibleLeftBound();
@@ -2764,17 +2765,16 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         for (int i = 0; i < mStripViews.length; i++) {
             final StripLayoutView view = mStripViews[i];
+
+            // idealX represents where a tab should be placed in the tab strip.
             float delta;
             if (view instanceof StripLayoutTab tab) {
-                // idealX represents where a tab should be placed in the tab strip. mCachedTabWidth
-                // may be different than tab.getWidth() when a tab is closing because for the
-                // improved tab strip animations the tab width expansion animations will not have
-                // run yet.
-                tab.setIdealX(tabPosition);
+                // mCachedTabWidth may be different than tab.getWidth() when a tab is closing
+                // because for the improved tab strip animations the tab width expansion animations
+                // will not have run yet.
+                view.setIdealX(tabPosition);
                 float tabWidth = mMultiStepTabCloseAnimRunning ? mCachedTabWidth : tab.getWidth();
                 delta = (tabWidth - mTabOverlapWidth) * tab.getWidthWeight();
-
-                // For Tab Group Indicators, skip trailing margin to match desktop behavior.
                 if ((mInReorderMode || mTabGroupMarginAnimRunning)) {
                     delta += tab.getTrailingMargin();
                 }
@@ -2788,7 +2788,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                 }
 
                 if (!mStripViewSliding) {
-                    view.setDrawX(tabPosition + drawXOffset);
+                    view.setIdealX(tabPosition + drawXOffset);
                 }
                 delta = view.getWidth() + deltaOffset;
             }
@@ -3192,7 +3192,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                         CompositorAnimator.ofFloatProperty(
                                 mUpdateHost.getAnimationHandler(),
                                 mInteractingTab,
-                                StripLayoutTab.X_OFFSET,
+                                StripLayoutView.X_OFFSET,
                                 mInteractingTab.getOffsetX(),
                                 0f,
                                 ANIM_TAB_MOVE_MS));
@@ -4062,7 +4062,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                         CompositorAnimator.ofFloatProperty(
                                 mUpdateHost.getAnimationHandler(),
                                 slideTab,
-                                StripLayoutTab.X_OFFSET,
+                                StripLayoutView.X_OFFSET,
                                 animationLength,
                                 0f,
                                 ANIM_TAB_MOVE_MS);
