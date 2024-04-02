@@ -92,7 +92,9 @@ bool OnDeviceModelService::PreSandboxInit() {
         props.adapterType == wgpu::AdapterType::DiscreteGPU) {
       const wgpu::DeviceDescriptor descriptor;
       wgpu::Device device{adapter.CreateDevice(&descriptor)};
-      device.Destroy();
+      if (device) {
+        device.Destroy();
+      }
     }
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
