@@ -37,11 +37,14 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler.AppMenuItemType;
 import org.chromium.chrome.browser.ui.appmenu.test.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighterTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.modelutil.MVCListAdapter;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.test.util.UiDisableIf;
@@ -453,6 +456,126 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
                 "Menu item text incorrect",
                 newText,
                 ((TextView) itemView.findViewById(R.id.menu_item_text)).getText());
+    }
+
+    @Test
+    @MediumTest
+    public void testMenuItemRemoved() throws TimeoutException, ExecutionException {
+        showMenuAndAssert();
+        Assert.assertEquals(3, mAppMenuHandler.getModelListForTesting().size());
+        View itemView = getViewAtPosition(1);
+        Assert.assertEquals(
+                "Menu item text incorrect",
+                "Menu Item Two",
+                ((TextView) itemView.findViewById(R.id.menu_item_text)).getText());
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mAppMenuHandler.getModelListForTesting().removeAt(1));
+
+        itemView = getViewAtPosition(1);
+        Assert.assertEquals(
+                "Menu item text incorrect",
+                "Menu Item Three",
+                ((TextView) itemView.findViewById(R.id.menu_item_text)).getText());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertEquals(
+                            0,
+                            mAppMenuHandler
+                                    .getAppMenu()
+                                    .getMenuItemPropertyModel(R.id.menu_item_one)
+                                    .get(AppMenuItemProperties.POSITION));
+
+                    Assert.assertEquals(
+                            1,
+                            mAppMenuHandler
+                                    .getAppMenu()
+                                    .getMenuItemPropertyModel(R.id.menu_item_three)
+                                    .get(AppMenuItemProperties.POSITION));
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testMenuItemRangeRemoved() throws TimeoutException, ExecutionException {
+        showMenuAndAssert();
+        Assert.assertEquals(3, mAppMenuHandler.getModelListForTesting().size());
+        View itemView = getViewAtPosition(1);
+        Assert.assertEquals(
+                "Menu item text incorrect",
+                "Menu Item Two",
+                ((TextView) itemView.findViewById(R.id.menu_item_text)).getText());
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mAppMenuHandler.getModelListForTesting().removeRange(0, 2));
+
+        Assert.assertEquals(1, mAppMenuHandler.getModelListForTesting().size());
+        itemView = getViewAtPosition(0);
+        Assert.assertEquals(
+                "Menu item text incorrect",
+                "Menu Item Three",
+                ((TextView) itemView.findViewById(R.id.menu_item_text)).getText());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertEquals(
+                            0,
+                            mAppMenuHandler
+                                    .getAppMenu()
+                                    .getMenuItemPropertyModel(R.id.menu_item_three)
+                                    .get(AppMenuItemProperties.POSITION));
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testMenuItemAdded() throws TimeoutException {
+        showMenuAndAssert();
+        Assert.assertEquals(3, mAppMenuHandler.getModelListForTesting().size());
+        View itemView = getViewAtPosition(1);
+        Assert.assertEquals(
+                "Menu item text incorrect",
+                "Menu Item Two",
+                ((TextView) itemView.findViewById(R.id.menu_item_text)).getText());
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PropertyModel model =
+                            new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
+                                    .with(AppMenuItemProperties.MENU_ITEM_ID, 13)
+                                    .with(AppMenuItemProperties.TITLE, "new item title")
+                                    .build();
+                    mAppMenuHandler
+                            .getModelListForTesting()
+                            .add(0, new MVCListAdapter.ListItem(AppMenuItemType.STANDARD, model));
+                });
+        // ensure clicking on the newly added item doesn't break anything
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mAppMenuHandler.getAppMenu().onItemClick(null, null, 0, 0));
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PropertyModel m = mAppMenuHandler.getAppMenu().getMenuItemPropertyModel(13);
+                    Assert.assertNotNull(m.get(AppMenuItemProperties.CLICK_HANDLER));
+                    Assert.assertEquals(0, m.get(AppMenuItemProperties.POSITION));
+                    Assert.assertEquals(
+                            1,
+                            mAppMenuHandler
+                                    .getAppMenu()
+                                    .getMenuItemPropertyModel(R.id.menu_item_one)
+                                    .get(AppMenuItemProperties.POSITION));
+                    Assert.assertEquals(
+                            2,
+                            mAppMenuHandler
+                                    .getAppMenu()
+                                    .getMenuItemPropertyModel(R.id.menu_item_two)
+                                    .get(AppMenuItemProperties.POSITION));
+                    Assert.assertEquals(
+                            3,
+                            mAppMenuHandler
+                                    .getAppMenu()
+                                    .getMenuItemPropertyModel(R.id.menu_item_three)
+                                    .get(AppMenuItemProperties.POSITION));
+                });
     }
 
     @Test
