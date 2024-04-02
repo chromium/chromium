@@ -463,15 +463,14 @@ void LensOverlayController::DidAddContents(tabs::TabModel* tab,
   LensOverlayControllerTabGlue::CreateForWebContents(contents, this);
 }
 
-void LensOverlayController::IssueLensRequest(
-    lens::mojom::CenterRotatedBoxPtr region) {
+void LensOverlayController::IssueLensRequest(const ::gfx::RectF& region) {
   lens::proto::LensOverlayRequest request;
   request.set_type(lens::proto::LensOverlayRequest::REGION_SEARCH);
   auto* request_region = request.mutable_region();
-  request_region->set_x(region->box.x());
-  request_region->set_y(region->box.y());
-  request_region->set_width(region->box.width());
-  request_region->set_height(region->box.height());
+  request_region->set_x(region.x());
+  request_region->set_y(region.y());
+  request_region->set_width(region.width());
+  request_region->set_height(region.height());
 
   lens_overlay_query_controller_->SendInteraction(
       request, base::BindOnce(&LensOverlayController::HandleInteractionResponse,

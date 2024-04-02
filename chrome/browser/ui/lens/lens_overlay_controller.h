@@ -8,7 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/lens/core/mojom/geometry.mojom.h"
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
 #include "chrome/browser/resources/lens/server/proto/lens_overlay_response.pb.h"
@@ -178,7 +177,7 @@ class LensOverlayController : public TabStripModelObserver,
 
   // lens::mojom::LensPageHandler overrides.
   void CloseRequestedByOverlay() override;
-  void IssueLensRequest(lens::mojom::CenterRotatedBoxPtr region) override;
+  void IssueLensRequest(const ::gfx::RectF& region) override;
 
   // Calls CloseUI() asynchronously.
   void CloseUIAsync();

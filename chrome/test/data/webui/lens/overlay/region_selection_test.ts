@@ -6,8 +6,6 @@ import 'chrome-untrusted://lens/selection_overlay.js';
 
 import type {RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 import {BrowserProxyImpl} from 'chrome-untrusted://lens/browser_proxy.js';
-import {CenterRotatedBox_CoordinateType} from 'chrome-untrusted://lens/geometry.mojom-webui.js';
-import type {CenterRotatedBox} from 'chrome-untrusted://lens/geometry.mojom-webui.js';
 import type {SelectionOverlayElement} from 'chrome-untrusted://lens/selection_overlay.js';
 import {assertDeepEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
@@ -55,26 +53,11 @@ suite('ManualRegionSelection', function() {
     return flushTasks();
   }
 
-  // Normalizes the given values to the size of selection overlay.
-  function normalizedBox(box: RectF): RectF {
-    const boundingRect = selectionOverlayElement.getBoundingClientRect();
-    return {
-      x: box.x / boundingRect.width,
-      y: box.y / boundingRect.height,
-      width: box.width / boundingRect.width,
-      height: box.height / boundingRect.height,
-    };
-  }
-
   test(
       'verify that completing a drag issues lens request via mojo',
       async () => {
         await doDrag({x: 10, y: 10}, {x: 100, y: 100});
-        const expectedRect: CenterRotatedBox = {
-          box: normalizedBox({x: 55, y: 55, width: 90, height: 90}),
-          rotation: 0,
-          coordinateType: CenterRotatedBox_CoordinateType.kNormalized,
-        };
+        const expectedRect: RectF = {x: 10, y: 10, width: 90, height: 90};
         const rect =
             await testBrowserProxy.handler.whenCalled('issueLensRequest');
         assertDeepEquals(expectedRect, rect);

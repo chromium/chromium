@@ -4,7 +4,6 @@
 
 module lens.mojom;
 
-import "chrome/browser/lens/core/mojom/geometry.mojom";
 import "chrome/browser/lens/core/mojom/text.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
@@ -30,9 +29,9 @@ interface LensPageHandler {
   // When this method is called, the C++ coordinator sends a Lens request with
   // the given bounding region to the Lens servers and display results in the
   // Chrome side panel. The region should be normalized between 0 and 1.
-  // TODO(b/329262670): Verify normalization does not cause off-by-1 pixel
+  // TODO(b/329262670): Verify normalization dpoes not cause off-by-1 pixel
   // errors.
-  IssueLensRequest(CenterRotatedBox region);
+  IssueLensRequest(gfx.mojom.RectF region);
 };
 
 // WebUI page handler for request from Browser side. (C++ -> TypeScript)

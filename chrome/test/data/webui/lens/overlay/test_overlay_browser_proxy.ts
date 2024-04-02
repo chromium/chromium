@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 import type {BrowserProxy} from 'chrome-untrusted://lens/browser_proxy.js';
-import type {CenterRotatedBox} from 'chrome-untrusted://lens/geometry.mojom-webui.js';
 import {LensPageCallbackRouter, type LensPageHandlerInterface} from 'chrome-untrusted://lens/lens.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome-untrusted://webui-test/test_browser_proxy.js';
 
@@ -21,7 +21,7 @@ export class TestLensOverlayPageHandler extends TestBrowserProxy implements
     this.methodCalled('closeRequestedByOverlay');
   }
 
-  issueLensRequest(rect: CenterRotatedBox) {
+  issueLensRequest(rect: RectF) {
     this.methodCalled('issueLensRequest', rect);
   }
 }
