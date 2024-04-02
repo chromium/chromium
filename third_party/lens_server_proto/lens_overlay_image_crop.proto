@@ -1,0 +1,26 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto3';
+
+option optimize_for = LITE_RUNTIME;
+
+package lens;
+
+import "lens_overlay_geometry.proto";
+import "lens_overlay_payload.proto";
+
+// User-selected / auto-detected cropped image region.
+message ImageCrop {
+  // The ID of the cropped image region.
+  string crop_id = 1;
+
+  // The image content of the cropped image region.
+  ClientImage image = 2;
+
+  // The zoomed crop properties of the cropped image region.
+  ZoomedCrop zoomed_crop = 3;
+
+  reserved 4;
+}

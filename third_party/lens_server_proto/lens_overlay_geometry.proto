@@ -32,3 +32,17 @@ message Geometry {
 
   reserved 2, 3, 4, 5, 6;
 }
+
+// A cropped and potentially re-scaled image region, rectangular subregion of a
+// canonical image.
+message ZoomedCrop {
+  // The cropped region of the parent image in parent coordinates.
+  optional CenterRotatedBox crop = 1;
+  // Width of the parent image.
+  optional int32 parent_width = 2;
+  // Height of the parent image.
+  optional int32 parent_height = 3;
+  // The ratio of the pixel dimensions of the child image to the pixel
+  // dimensions of the 'crop' in parent coordinates.
+  optional float zoom = 4;
+}

@@ -1,8 +1,8 @@
 Name: Lens Protos
 Short Name: lens_overlay_proto
 URL: This is the canonical public repository
-Version: 618924756
-Date: 2024-03-25 UTC
+Version: 621262147
+Date: 2024-04-02 UTC
 License: BSD
 License File: LICENSE
 Shipped: yes
@@ -20,4 +20,4 @@ blaze run //lens/chrome/scripts/proto_export -- \
 
 
 Local Modifications:
-Changed CHROMIUM enum.
+Unchanged from the output of the export script.

@@ -25,10 +25,13 @@ message LensOverlayClientContext {
   // Required. Name of the package which sends the request to Lens Frontend.
   string app_id = 6;
 
+  // The rendering context info.
+  RenderingContext rendering_context = 20;
+
   // Logging data.
   ClientLoggingData client_logging_data = 23;
 
-  reserved 3, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22;
+  reserved 3, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22;
 }
 
 // Describes locale context.
@@ -41,6 +44,19 @@ message LocaleContext {
 
   // The CLDR time zone ID used to identify the timezone of the client.
   string time_zone = 3;
+}
+
+// The possible rendering environments.
+enum RenderingEnvironment {
+  RENDERING_ENV_UNSPECIFIED = 0;
+  RENDERING_ENV_CHROMNIENT = 14;
+}
+
+message RenderingContext {
+  // The rendering environment.
+  RenderingEnvironment rendering_environment = 2;
+
+  reserved 1;
 }
 
 // Contains data that can be used for logging purposes.

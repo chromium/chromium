@@ -23,8 +23,7 @@ message ImagePayload {
   // Required. Image byte array.
   bytes image_bytes = 1;
 
-  // Required. Metadata related to the image.
-  ImageMetadata image_metadata = 2 [deprecated = true];
+  reserved 2;
 }
 
 message ImageMetadata {
