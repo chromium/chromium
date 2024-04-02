@@ -146,7 +146,7 @@ function getUrlHostname(url: string): string {
   const anchor = document.createElement('a');
   anchor.href = url;
   // Return entire url if parsing failed (which means the URL is bogus).
-  return anchor.hostname || url;
+  return anchor.hostname || encodeURI(url);
 }
 
 function getProxy(): BrowserSwitchProxy {
