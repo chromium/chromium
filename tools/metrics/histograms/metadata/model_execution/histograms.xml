@@ -27,7 +27,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="ModelExecution.Session.{SessionType}.ExecutionRequestSize"
-    units="bytes" expires_after="2024-07-29">
+    units="bytes" expires_after="2024-09-29">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
   <summary>
@@ -61,7 +61,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ModelExecution.Session.{SessionType}.ExecutionResponseStatus"
-    enum="ModelExecutionResponseStatus" expires_after="2024-07-29">
+    enum="ModelExecutionResponseStatus" expires_after="2024-09-29">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
   <summary>
@@ -72,7 +72,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ModelExecution.{SessionType}.APIUsage"
-    enum="ModelExecutionAPI" expires_after="2024-07-29">
+    enum="ModelExecutionAPI" expires_after="2024-09-29">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
   <summary>
@@ -84,7 +84,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ModelExecution.{SessionType}.Availability"
-    enum="ModelExecutionAvailability" expires_after="2024-07-29">
+    enum="ModelExecutionAvailability" expires_after="2024-09-29">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
   <summary>

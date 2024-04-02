@@ -96,7 +96,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Preloading.Experimental.UpdateSpeculationCandidatesReason"
     enum="PreloadingUpdateSpeculationCandidatesReason"
-    expires_after="2024-07-28">
+    expires_after="2024-09-29">
   <owner>taiyo@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>

@@ -164,7 +164,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.HoldingSpaceWallpaperNudge.SuppressedReason"
     enum="HoldingSpaceWallpaperNudgeSuppressedReason"
-    expires_after="2024-06-01">
+    expires_after="2024-09-29">
   <owner>dmblack@google.com</owner>
   <owner>teresachow@google.com</owner>
   <summary>

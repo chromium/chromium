@@ -42,14 +42,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NaCl.Client.OSArch" enum="NaClOSArchEnum"
-    expires_after="2024-07-31">
+    expires_after="2024-09-29">
   <owner>dschuff@chromium.org</owner>
   <owner>fabiansommer@chromium.org</owner>
   <summary>The OS/Architecture of a nexe that was loaded.</summary>
 </histogram>
 
 <histogram name="NaCl.EmbedderType" enum="NaClEmbedderTypeEnum"
-    expires_after="2024-07-31">
+    expires_after="2024-09-29">
   <owner>dschuff@chromium.org</owner>
   <owner>fabiansommer@chromium.org</owner>
   <summary>
@@ -99,7 +99,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NaCl.LoadStatus.Plugin" enum="NaClPluginErrorCode"
-    expires_after="2024-07-31">
+    expires_after="2024-09-29">
   <owner>dschuff@chromium.org</owner>
   <owner>fabiansommer@chromium.org</owner>
   <summary>The error code returned by NaCl's Chrome plugin.</summary>
