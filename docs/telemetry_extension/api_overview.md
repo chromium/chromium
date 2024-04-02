@@ -319,7 +319,7 @@ extension-event based interface in M119. The interface is described in
 | bytesTested | number | Number of bytes tested in the memory routine |
 | result | MemtesterResult | Contains the memtester test results |
 
-### RunMemoryRoutineArguments
+### CreateMemoryRoutineArguments
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
 | maxTestingMemKib | number | An optional field to indicate how much memory should be tested. If the value is null, memory test will run with as much memory as possible |
@@ -347,7 +347,7 @@ extension-event based interface in M119. The interface is described in
 | failed_fan_ids | Array<number\> | The ids of fans that cannot be controlled |
 | fan_count_status | HardwarePresenceStatus | Whether the number of fan probed is matched |
 
-### RunFanRoutineArguments
+### CreateFanRoutineArguments
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
 
@@ -363,7 +363,7 @@ extension-event based interface in M119. The interface is described in
 | uuid | string | UUID of the routine that entered this state  |
 | has_passed | boolean | Whether the routine finished successfully |
 
-### RunVolumeButtonRoutineArguments
+### CreateVolumeButtonRoutineArguments
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
 | button_type | VolumeButtonType | The volume button to be tested |
@@ -395,12 +395,12 @@ extension-event based interface in M119. The interface is described in
 ------------ | ------------- | ------------- | ------------- |
 | startRoutine | (params: StartRoutineRequest) => Promise<void\> | `os.diagnostics` | M119 |
 | cancelRoutine | (params: CancelRoutineRequest) => Promise<void\> | `os.diagnostics` | M119 |
-| createMemoryRoutine | (args: RunMemoryRoutineArguments) => Promise<CreateRoutineResponse\> | `os.diagnostics` | M119 |
-| createFanRoutine | (args: RunFanRoutineArguments) => Promise<CreateRoutineResponse\> | `os.diagnostics` | M121 |
-| createVolumeButtonRoutine | (args: RunVolumeButtonRoutineArguments) => Promise<CreateRoutineResponse\> | `os.diagnostics` | M121 |
-| isMemoryRoutineArgumentSupported | (args: RunMemoryRoutineArguments) => Promise<RoutineSupportStatusInfo\> | `os.diagnostics` | M119 |
-| isFanRoutineArgumentSupported | (args: RunFanRoutineArguments) => Promise<RoutineSupportStatusInfo\> | `os.diagnostics` | M121 |
-| isVolumeButtonRoutineArgumentSupported | (args: RunVolumeButtonRoutineArguments) => Promise<RoutineSupportStatusInfo\> | `os.diagnostics` | M121 |
+| createMemoryRoutine | (args: CreateMemoryRoutineArguments) => Promise<CreateRoutineResponse\> | `os.diagnostics` | M119 |
+| createFanRoutine | (args: CreateFanRoutineArguments) => Promise<CreateRoutineResponse\> | `os.diagnostics` | M121 |
+| createVolumeButtonRoutine | (args: CreateVolumeButtonRoutineArguments) => Promise<CreateRoutineResponse\> | `os.diagnostics` | M121 |
+| isMemoryRoutineArgumentSupported | (args: CreateMemoryRoutineArguments) => Promise<RoutineSupportStatusInfo\> | `os.diagnostics` | M119 |
+| isFanRoutineArgumentSupported | (args: CreateFanRoutineArguments) => Promise<RoutineSupportStatusInfo\> | `os.diagnostics` | M121 |
+| isVolumeButtonRoutineArgumentSupported | (args: CreateVolumeButtonRoutineArguments) => Promise<RoutineSupportStatusInfo\> | `os.diagnostics` | M121 |
 
 ## Events
 

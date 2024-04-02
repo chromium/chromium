@@ -297,7 +297,7 @@ namespace os.diagnostics {
     MemtesterResult? result;
   };
 
-  dictionary RunMemoryRoutineArguments {
+  dictionary CreateMemoryRoutineArguments {
     // An optional field to indicate how much memory should be tested. If the
     // value is null, memory test will run with as much memory as possible.
     long? maxTestingMemKib;
@@ -315,7 +315,7 @@ namespace os.diagnostics {
     boolean? has_passed;
   };
 
-  dictionary RunVolumeButtonRoutineArguments {
+  dictionary CreateVolumeButtonRoutineArguments {
     // The volume button to be tested.
     VolumeButtonType button_type;
     // Length of time to listen to the volume button events. The value should be
@@ -352,7 +352,7 @@ namespace os.diagnostics {
     HardwarePresenceStatus? fan_count_status;
   };
 
-  dictionary RunFanRoutineArguments {
+  dictionary CreateFanRoutineArguments {
   };
 
   // This is a union type. Exactly one field should be set.
@@ -506,33 +506,33 @@ namespace os.diagnostics {
         CancelRoutineCallback callback);
 
     static void createMemoryRoutine(
-        RunMemoryRoutineArguments args,
+        CreateMemoryRoutineArguments args,
         CreateRoutineCallback callback);
 
-    // Checks whether a certain `RunMemoryRoutineArguments` is supported on the
-    // platform.
+    // Checks whether a certain `CreateMemoryRoutineArguments` is supported on
+    // the platform.
     static void isMemoryRoutineArgumentSupported(
-        RunMemoryRoutineArguments args,
+        CreateMemoryRoutineArguments args,
         RoutineSupportStatusInfoCallback callback);
 
     static void createVolumeButtonRoutine(
-        RunVolumeButtonRoutineArguments args,
+        CreateVolumeButtonRoutineArguments args,
         CreateRoutineCallback callback);
 
-    // Checks whether a certain `RunVolumeButtonRoutineArguments` is supported
-    // on the platform.
+    // Checks whether a certain `CreateVolumeButtonRoutineArguments` is
+    // supported on the platform.
     static void isVolumeButtonRoutineArgumentSupported(
-        RunVolumeButtonRoutineArguments args,
+        CreateVolumeButtonRoutineArguments args,
         RoutineSupportStatusInfoCallback callback);
 
     static void createFanRoutine(
-        RunFanRoutineArguments args,
+        CreateFanRoutineArguments args,
         CreateRoutineCallback callback);
 
-    // Checks whether a certain `RunFanRoutineArguments` is supported on the
+    // Checks whether a certain `CreateFanRoutineArguments` is supported on the
     // platform.
     static void isFanRoutineArgumentSupported(
-        RunFanRoutineArguments args,
+        CreateFanRoutineArguments args,
         RoutineSupportStatusInfoCallback callback);
   };
 
