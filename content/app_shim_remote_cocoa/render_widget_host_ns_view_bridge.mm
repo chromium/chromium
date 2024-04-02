@@ -43,6 +43,9 @@ RenderWidgetHostNSViewBridge::RenderWidgetHostNSViewBridge(
     : destroy_callback_(std::move(destroy_callback)) {
   cocoa_view_ = [[RenderWidgetHostViewCocoa alloc] initWithHost:host
                                                  withHostHelper:host_helper];
+  // Make the initial view visibility state in sync with that of
+  // `RenderWidgetHostViewMac::is_visible_`, which is false.
+  cocoa_view_.hidden = true;
 
   background_layer_ = [[CALayer alloc] init];
   display_ca_layer_tree_ =

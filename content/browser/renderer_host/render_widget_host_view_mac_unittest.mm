@@ -531,6 +531,7 @@ class RenderWidgetHostViewMacTest : public RenderViewHostImplTestHarness {
     window_.pretendIsKeyWindow = YES;
     [window_.contentView addSubview:rwhv_cocoa_];
     [rwhv_cocoa_ setFrame:window_.contentView.bounds];
+    rwhv_mac_->Show();
 
     base::RunLoop().RunUntilIdle();
     process_host_->sink().ClearMessages();
