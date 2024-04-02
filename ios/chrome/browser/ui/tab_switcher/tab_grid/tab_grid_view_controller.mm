@@ -1734,9 +1734,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
                    }];
 }
 
-- (void)pinnedTabsViewController:
-            (PinnedTabsViewController*)pinnedTabsViewController
-               didMoveItemWithID:(web::WebStateID)itemID {
+- (void)pinnedTabsViewControllerDidMoveItem:
+    (PinnedTabsViewController*)pinnedTabsViewController {
   [self setCurrentIdlePageStatus:NO];
 }
 
@@ -1888,16 +1887,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // No-op
 }
 
-- (void)gridViewController:(BaseGridViewController*)gridViewController
-         didMoveItemWithID:(web::WebStateID)itemID
-                   toIndex:(NSUInteger)destinationIndex {
+- (void)gridViewControllerDidMoveItem:
+    (BaseGridViewController*)gridViewController {
   [self setCurrentIdlePageStatus:NO];
-
-  if (gridViewController == self.regularTabsViewController) {
-    [self.regularGridHandler moveItemWithID:itemID toIndex:destinationIndex];
-  } else if (gridViewController == self.incognitoTabsViewController) {
-    [self.incognitoGridHandler moveItemWithID:itemID toIndex:destinationIndex];
-  }
 }
 
 - (void)gridViewController:(BaseGridViewController*)gridViewController

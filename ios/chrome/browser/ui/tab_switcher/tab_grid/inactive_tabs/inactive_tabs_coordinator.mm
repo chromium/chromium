@@ -329,9 +329,8 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
   }
 }
 
-- (void)gridViewController:(BaseGridViewController*)gridViewController
-         didMoveItemWithID:(web::WebStateID)itemID
-                   toIndex:(NSUInteger)destinationIndex {
+- (void)gridViewControllerDidMoveItem:
+    (BaseGridViewController*)gridViewController {
   NOTREACHED();
 }
 

@@ -1222,35 +1222,26 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
 }
 
-- (void)moveItemWithID:(web::WebStateID)itemID toIndex:(NSUInteger)toIndex {
+- (void)moveItem:(GridItemIdentifier*)item
+      beforeItem:(GridItemIdentifier*)nextItemIdentifier {
   if (_mode == TabGridModeSearch) {
     // Prevent moving items while viewing search results.
     return;
   }
 
-  NSInteger section = [self.diffableDataSource
-      indexForSectionIdentifier:kGridOpenTabsSectionIdentifier];
-
-  NSIndexPath* fromIndexPath = [self indexPathForID:itemID];
-  NSIndexPath* toIndexPath = [NSIndexPath indexPathForItem:toIndex
-                                                 inSection:section];
-  // If this move would be a no-op, early return and avoid spurious UI updates.
-  if (toIndex == NSNotFound || [fromIndexPath isEqual:toIndexPath] ||
-      !fromIndexPath) {
+  if (!item) {
     return;
   }
 
   __weak __typeof(self) weakSelf = self;
   [self
       performModelAndViewUpdates:^(GridSnapshot* snapshot) {
-        [weakSelf applyModelAndViewUpdatesForMoveOfItemWithID:itemID
-                                                    fromIndex:fromIndexPath
-                                                      toIndex:toIndexPath
-                                                     snapshot:snapshot];
+        [weakSelf applyModelAndViewUpdatesForMoveOfItem:item
+                                             beforeItem:nextItemIdentifier
+                                               snapshot:snapshot];
       }
       completion:^{
-        [weakSelf modelAndViewUpdatesForMoveDidCompleteForItemWithID:itemID
-                                                             toIndex:toIndex];
+        [weakSelf modelAndViewUpdatesForMoveDidComplete];
       }];
 }
 
@@ -1444,30 +1435,39 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 }
 
 // Makes the required changes to the data source when an existing item is moved.
-- (void)applyModelAndViewUpdatesForMoveOfItemWithID:(web::WebStateID)itemID
-                                          fromIndex:(NSIndexPath*)fromIndex
-                                            toIndex:(NSIndexPath*)toIndex
-                                           snapshot:(GridSnapshot*)snapshot {
-  GridItemIdentifier* fromItemIdentifier =
-      [self.diffableDataSource itemIdentifierForIndexPath:fromIndex];
-  GridItemIdentifier* toItemIdentifier =
-      [self.diffableDataSource itemIdentifierForIndexPath:toIndex];
-  if (fromIndex.item < toIndex.item) {
-    [snapshot moveItemWithIdentifier:fromItemIdentifier
-             afterItemWithIdentifier:toItemIdentifier];
+- (void)applyModelAndViewUpdatesForMoveOfItem:(GridItemIdentifier*)item
+                                   beforeItem:
+                                       (GridItemIdentifier*)nextItemIdentifier
+                                     snapshot:(GridSnapshot*)snapshot {
+  if (nextItemIdentifier) {
+    [snapshot moveItemWithIdentifier:item
+            beforeItemWithIdentifier:nextItemIdentifier];
   } else {
-    [snapshot moveItemWithIdentifier:fromItemIdentifier
-            beforeItemWithIdentifier:toItemIdentifier];
+    NSInteger section = [self.diffableDataSource
+        indexForSectionIdentifier:kGridOpenTabsSectionIdentifier];
+    NSIndexPath* lastIndexPath =
+        [NSIndexPath indexPathForItem:[self numberOfTabs] - 1
+                            inSection:section];
+    GridItemIdentifier* lastItem =
+        [self.diffableDataSource itemIdentifierForIndexPath:lastIndexPath];
+    if (lastItem == item) {
+      return;
+    }
+
+    // If the moved item was pinned, it does not belong to the collection view
+    // yet.
+    if ([snapshot indexOfItemIdentifier:item] == NSNotFound) {
+      [snapshot insertItemsWithIdentifiers:@[ item ]
+                   afterItemWithIdentifier:lastItem];
+    } else {
+      [snapshot moveItemWithIdentifier:item afterItemWithIdentifier:lastItem];
+    }
   }
 }
 
-// Makes the required changes when a new item has been moved.
-- (void)modelAndViewUpdatesForMoveDidCompleteForItemWithID:
-            (web::WebStateID)itemID
-                                                   toIndex:(NSUInteger)toIndex {
-  [self.delegate gridViewController:self
-                  didMoveItemWithID:itemID
-                            toIndex:toIndex];
+// Makes the required changes when an item has been moved.
+- (void)modelAndViewUpdatesForMoveDidComplete {
+  [self.delegate gridViewControllerDidMoveItem:self];
 }
 
 #pragma mark - Private properties

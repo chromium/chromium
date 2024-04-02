@@ -54,10 +54,12 @@ class WebStateID;
 - (void)replaceItem:(GridItemIdentifier*)item
     withReplacementItem:(GridItemIdentifier*)replacementItem;
 
-// Tells the consumer to move the item with id `itemID` to `toIndex`. Note that
-// the ID of the selected item isn't changed by this method, although the index
-// of that item might be.
-- (void)moveItemWithID:(web::WebStateID)itemID toIndex:(NSUInteger)toIndex;
+// Tells the consumer to move the `item` before `nextItemIdentifier`. If
+// `nextItemIdentifier` is nil, `item` is moved to the end of the collection
+// view. Note that the selected item isn't changed by this method, although the
+// index of that item might be.
+- (void)moveItem:(GridItemIdentifier*)item
+      beforeItem:(GridItemIdentifier*)nextItemIdentifier;
 
 // Dismisses any presented modal UI.
 - (void)dismissModals;

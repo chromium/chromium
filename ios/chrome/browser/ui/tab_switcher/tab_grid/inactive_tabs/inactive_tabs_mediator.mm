@@ -341,10 +341,6 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   NOTREACHED_NORETURN();
 }
 
-- (void)moveItemWithID:(web::WebStateID)itemID toIndex:(NSUInteger)index {
-  NOTREACHED_NORETURN();
-}
-
 - (void)closeItemsWithIDs:(const std::set<web::WebStateID>&)itemIDs {
   NOTREACHED_NORETURN();
 }

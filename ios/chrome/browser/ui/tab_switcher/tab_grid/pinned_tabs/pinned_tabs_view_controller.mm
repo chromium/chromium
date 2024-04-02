@@ -401,8 +401,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   __weak __typeof(self) weakSelf = self;
   ProceduralBlock collectionViewUpdatesCompletion = ^{
     [weakSelf updateCollectionViewAfterMovingItemToIndex:toIndex];
-    [weakSelf.delegate pinnedTabsViewController:weakSelf
-                              didMoveItemWithID:itemID];
+    [weakSelf.delegate pinnedTabsViewControllerDidMoveItem:weakSelf];
   };
 
   [self.collectionView

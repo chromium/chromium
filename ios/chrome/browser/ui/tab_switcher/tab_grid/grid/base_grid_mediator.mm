@@ -410,20 +410,31 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
     case WebStateListChange::Type::kMove: {
       const WebStateListChangeMove& moveChange =
           change.As<WebStateListChangeMove>();
-      if (![self isPinnedWebState:moveChange.moved_to_index()]) {
-        // BaseGridMediator handles only non pinned tabs because pinned tabs are
-        // handled in PinnedTabsMediator.
-        NSUInteger itemIndex =
-            [self itemIndexFromWebStateListIndex:moveChange.moved_to_index()];
-        [self.consumer
-            moveItemWithID:moveChange.moved_web_state()->GetUniqueIdentifier()
-                   toIndex:itemIndex];
-      }
 
-      // The pinned state can be updated when a tab is moved.
       if (moveChange.pinned_state_changed()) {
+        // The pinned state can be updated when a tab is moved.
         [self changePinnedStateForWebState:moveChange.moved_web_state()
                                    atIndex:moveChange.moved_to_index()];
+      } else if (![self isPinnedWebState:moveChange.moved_to_index()]) {
+        // BaseGridMediator handles only non pinned tabs because pinned tabs are
+        // handled in PinnedTabsMediator.
+        NSUInteger nextItemIndex = moveChange.moved_to_index() + 1;
+        GridItemIdentifier* nextItem = nil;
+        if (webStateList->ContainsIndex(nextItemIndex)) {
+          const TabGroup* group =
+              webStateList->GetGroupOfWebStateAt(nextItemIndex);
+          if (group) {
+            nextItem = [GridItemIdentifier groupIdentifier:group
+                                          withWebStateList:webStateList];
+          } else {
+            nextItem = [GridItemIdentifier
+                tabIdentifier:webStateList->GetWebStateAt(nextItemIndex)];
+          }
+        }
+
+        [self.consumer moveItem:[GridItemIdentifier
+                                    tabIdentifier:moveChange.moved_web_state()]
+                     beforeItem:nextItem];
       }
       break;
     }
@@ -599,20 +610,6 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
 
 - (void)insertNewItemAtIndex:(NSUInteger)index {
   [self insertNewItemAtIndex:index withURL:GURL(kChromeUINewTabURL)];
-}
-
-- (void)moveItemWithID:(web::WebStateID)itemID
-               toIndex:(NSUInteger)destinationIndex {
-  int sourceIndex = GetWebStateIndex(
-      self.webStateList, WebStateSearchCriteria{
-                             .identifier = itemID,
-                         });
-  if (sourceIndex != WebStateList::kInvalidIndex) {
-    int destinationWebStateListIndex =
-        [self webStateListIndexFromItemIndex:destinationIndex];
-    self.webStateList->MoveWebStateAt(sourceIndex,
-                                      destinationWebStateListIndex);
-  }
 }
 
 - (void)selectItemWithID:(web::WebStateID)itemID pinned:(BOOL)pinned {
@@ -1393,6 +1390,23 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
   [self.consumer insertItem:item
                 beforeItemID:nextItemIdentifier
       selectedItemIdentifier:GetActiveNonPinnedIdentifier(self.webStateList)];
+}
+
+// Moves the item with identifier `itemID` to `index`. If there is no item with
+// that identifier, no move should be made. It is an error to pass a value for
+// `index` outside of the bounds of the web state list.
+- (void)moveItemWithID:(web::WebStateID)itemID
+               toIndex:(NSUInteger)destinationIndex {
+  int sourceIndex =
+      GetWebStateIndex(self.webStateList, WebStateSearchCriteria{
+                                              .identifier = itemID,
+                                          });
+  if (sourceIndex != WebStateList::kInvalidIndex) {
+    int destinationWebStateListIndex =
+        [self webStateListIndexFromItemIndex:destinationIndex];
+    self.webStateList->MoveWebStateAt(sourceIndex,
+                                      destinationWebStateListIndex);
+  }
 }
 
 #pragma mark - TabGridPageMutator

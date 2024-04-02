@@ -42,9 +42,8 @@
   // No-op for unittests. This is only called when a user taps on a cell, not
   // generically when selectedIndex is updated.
 }
-- (void)gridViewController:(BaseGridViewController*)gridViewController
-         didMoveItemWithID:(web::WebStateID)itemID
-                   toIndex:(NSUInteger)destinationIndex {
+- (void)gridViewControllerDidMoveItem:
+    (BaseGridViewController*)gridViewController {
   // No-op for unittests. This is only called when a user interactively moves
   // an item, not generically when items are moved in the data source.
 }
@@ -299,9 +298,12 @@ TEST_P(BaseGridViewControllerTest, ReplaceItemNotFound) {
 
 // Tests that the selected item is moved.
 TEST_P(BaseGridViewControllerTest, MoveSelectedItem) {
+  TabSwitcherItem* item_a =
+      [[TabSwitcherItem alloc] initWithIdentifier:identifier_a_];
   // Previously: The grid had 2 items and selectedIndex was 0. The delegate had
   // an itemCount of 2.
-  [view_controller_ moveItemWithID:identifier_a_ toIndex:1];
+  [view_controller_ moveItem:[[GridItemIdentifier alloc] initWithTabItem:item_a]
+                  beforeItem:nil];
   EXPECT_EQ(identifier_a_, IdentifierForIndex(1));
   EXPECT_EQ(1U, view_controller_.selectedIndex);
   EXPECT_EQ(2U, delegate_.itemCount);
@@ -309,9 +311,15 @@ TEST_P(BaseGridViewControllerTest, MoveSelectedItem) {
 
 // Tests that a non-selected item is moved.
 TEST_P(BaseGridViewControllerTest, MoveUnselectedItem) {
+  TabSwitcherItem* item_a =
+      [[TabSwitcherItem alloc] initWithIdentifier:identifier_a_];
+  TabSwitcherItem* item_b =
+      [[TabSwitcherItem alloc] initWithIdentifier:identifier_b_];
   // Previously: The grid had 2 items and selectedIndex was 0. The delegate had
   // an itemCount of 2.
-  [view_controller_ moveItemWithID:identifier_b_ toIndex:0];
+  [view_controller_
+        moveItem:[[GridItemIdentifier alloc] initWithTabItem:item_b]
+      beforeItem:[[GridItemIdentifier alloc] initWithTabItem:item_a]];
   EXPECT_EQ(identifier_a_, IdentifierForIndex(1));
   EXPECT_EQ(1U, view_controller_.selectedIndex);
   EXPECT_EQ(2U, delegate_.itemCount);

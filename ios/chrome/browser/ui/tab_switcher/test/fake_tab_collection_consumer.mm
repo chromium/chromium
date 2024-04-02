@@ -60,10 +60,18 @@
   *it = replacementItem.tabSwitcherItem.identifier;
 }
 
-- (void)moveItemWithID:(web::WebStateID)itemID toIndex:(NSUInteger)toIndex {
-  auto it = std::remove(_items.begin(), _items.end(), itemID);
+- (void)moveItem:(GridItemIdentifier*)item
+      beforeItem:(GridItemIdentifier*)nextItemIdentifier {
+  web::WebStateID moved_id = item.tabSwitcherItem.identifier;
+  auto it = std::remove(_items.begin(), _items.end(), moved_id);
   _items.erase(it, _items.end());
-  _items.insert(_items.begin() + toIndex, itemID);
+  if (nextItemIdentifier) {
+    _items.insert(std::find(std::begin(_items), std::end(_items),
+                            nextItemIdentifier.tabSwitcherItem.identifier),
+                  moved_id);
+  } else {
+    _items.push_back(moved_id);
+  }
 }
 
 - (void)dismissModals {

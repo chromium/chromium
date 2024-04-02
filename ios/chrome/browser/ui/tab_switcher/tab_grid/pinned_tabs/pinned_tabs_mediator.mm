@@ -180,18 +180,18 @@ web::WebStateID GetActivePinnedTabID(WebStateList* web_state_list) {
     case WebStateListChange::Type::kMove: {
       const WebStateListChangeMove& moveChange =
           change.As<WebStateListChangeMove>();
-      if (webStateList->IsWebStatePinnedAt(moveChange.moved_to_index())) {
+
+      if (moveChange.pinned_state_changed()) {
+        // The pinned state can be updated when a tab is moved.
+        [self changePinnedStateForWebState:moveChange.moved_web_state()
+                                   atIndex:moveChange.moved_to_index()];
+      } else if (webStateList->IsWebStatePinnedAt(
+                     moveChange.moved_to_index())) {
         // PinnedTabsMediator handles only pinned tabs because non pinned tabs
         // are handled in BaseGridMediator.
         [self.consumer
             moveItemWithID:moveChange.moved_web_state()->GetUniqueIdentifier()
                    toIndex:moveChange.moved_to_index()];
-      }
-
-      // The pinned state can be updated when a tab is moved.
-      if (moveChange.pinned_state_changed()) {
-        [self changePinnedStateForWebState:moveChange.moved_web_state()
-                                   atIndex:moveChange.moved_to_index()];
       }
       break;
     }

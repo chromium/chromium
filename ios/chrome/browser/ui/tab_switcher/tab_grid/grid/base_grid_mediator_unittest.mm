@@ -340,38 +340,6 @@ TEST_P(BaseGridMediatorTest, InsertNewItemWithNoBrowserCommand) {
   EXPECT_EQ(1, browser_->GetWebStateList()->active_index());
 }
 
-// Tests that when `-moveItemFromIndex:toIndex:` is called, there is no change
-// in the item count in WebStateList, but that the constituent web states
-// have been reordered.
-TEST_P(BaseGridMediatorTest, MoveItemCommand) {
-  // Capture ordered original IDs.
-  std::vector<web::WebStateID> pre_move_ids;
-  for (int i = 0; i < 3; i++) {
-    web::WebState* web_state = browser_->GetWebStateList()->GetWebStateAt(i);
-    pre_move_ids.push_back(web_state->GetUniqueIdentifier());
-  }
-  web::WebStateID pre_move_selected_id =
-      pre_move_ids[browser_->GetWebStateList()->active_index()];
-  // Items start ordered [A, B, C].
-  [mediator_ moveItemWithID:consumer_.items[0] toIndex:2];
-  // Items should now be ordered [B, C, A] -- the pre-move identifiers should
-  // still be in this order.
-  // Item count hasn't changed.
-  EXPECT_EQ(3, browser_->GetWebStateList()->count());
-  // Active index has moved -- it was 1, now 0.
-  EXPECT_EQ(0, browser_->GetWebStateList()->active_index());
-  // Identifier at 0, 1, 2 should match the original_identifier_ at 1, 2, 0.
-  for (int index = 0; index < 2; index++) {
-    web::WebState* web_state =
-        browser_->GetWebStateList()->GetWebStateAt(index);
-    ASSERT_TRUE(web_state);
-    web::WebStateID identifier = web_state->GetUniqueIdentifier();
-    EXPECT_EQ(identifier, pre_move_ids[(index + 1) % 3]);
-    EXPECT_EQ(identifier, consumer_.items[index]);
-  }
-  EXPECT_EQ(pre_move_selected_id, consumer_.selectedItemID);
-}
-
 // Tests that when `-searchItemsWithText:` is called, there is no change in the
 // items in WebStateList and the correct items are populated by the consumer.
 TEST_P(BaseGridMediatorTest, SearchItemsWithTextCommand) {

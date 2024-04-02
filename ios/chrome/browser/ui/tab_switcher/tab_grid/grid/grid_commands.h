@@ -26,10 +26,6 @@ class WebStateID;
 // Tells the receiver to select the item with identifier `itemID`. If there is
 // no item with that identifier, no change in selection should be made.
 - (BOOL)isItemWithIDSelected:(web::WebStateID)itemID;
-// Tells the receiver to move the item with identifier `itemID` to `index`. If
-// there is no item with that identifier, no move should be made. It is an error
-// to pass a value for `index` outside of the bounds of the items array.
-- (void)moveItemWithID:(web::WebStateID)itemID toIndex:(NSUInteger)index;
 // Tells the receiver to close the items with the identifiers in `itemIDs`.
 // ItemIDs which are not associated with any item are ignored.
 - (void)closeItemsWithIDs:(const std::set<web::WebStateID>&)itemIDs;

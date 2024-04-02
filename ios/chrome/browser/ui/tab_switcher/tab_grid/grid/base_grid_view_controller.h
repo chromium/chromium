@@ -44,11 +44,9 @@ class WebStateID;
 // `gridViewController`.
 - (void)gridViewController:(BaseGridViewController*)gridViewController
         didCloseItemWithID:(web::WebStateID)itemID;
-// Tells the delegate that the item with `itemID` was moved to
-// `destinationIndex`.
-- (void)gridViewController:(BaseGridViewController*)gridViewController
-         didMoveItemWithID:(web::WebStateID)itemID
-                   toIndex:(NSUInteger)destinationIndex;
+// Tells the delegate that an item was moved.
+- (void)gridViewControllerDidMoveItem:
+    (BaseGridViewController*)gridViewController;
 // Tells the delegate that the the number of items in `gridViewController`
 // changed to `count`.
 - (void)gridViewController:(BaseGridViewController*)gridViewController
