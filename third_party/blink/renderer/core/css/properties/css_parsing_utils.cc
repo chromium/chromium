@@ -7242,6 +7242,209 @@ CSSValue* ConsumePositionTryOptions(CSSParserTokenRange& range,
                                    context);
 }
 
+namespace {
+
+struct InsetAreaKeyword {
+  STACK_ALLOCATED();
+
+ public:
+  enum Type {
+    // [ span-all | center ]
+    kGeneral,
+    // [ left | right | span-left | span-right | x-start | x-end |
+    //   span-x-start | span-x-end | x-self-start | x-self-end |
+    //   span-x-self-start | span-x-self-end ]
+    kHorizontal,
+    // [ top | bottom | span-top | span-bottom | y-start | y-end |
+    //   span-y-start | span-y-end | y-self-start | y-self-end |
+    //   span-y-self-start | span-y-self-end ]
+    kVertical,
+    // [ inline-start | inline-end | span-inline-start | span-inline-end |
+    //   self-inline-start | self-inline-end | span-self-inline-start |
+    //   span-self-inline-end ]
+    kInline,
+    // [ block-start | block-end | span-block-start | span-block-end ]
+    kBlock,
+    // [ self-inline-start | self-inline-end | span-self-inline-start |
+    //   span-self-inline-end ]
+    kSelfInline,
+    // [ self-block-start | self-block-end | span-self-block-start |
+    //   span-self-block-end ]
+    kSelfBlock,
+    // [ start | end | span-start | span-end ]
+    kStartEnd,
+    // [ self-start | self-end | span-self-start | span-self-end ]
+    kSelfStartEnd,
+  };
+
+  static bool IsCompatiblePair(const InsetAreaKeyword& first,
+                               const InsetAreaKeyword& second) {
+    if (first.type == kGeneral || second.type == kGeneral) {
+      return true;
+    }
+    // The values must have been flipped in the canonical order before calling
+    // this method.
+    DCHECK(!(first.type == kVertical && second.type == kHorizontal));
+    DCHECK(!(first.type == kInline && second.type == kBlock));
+    DCHECK(!(first.type == kSelfInline && second.type == kSelfBlock));
+    return (first.type == kHorizontal && second.type == kVertical) ||
+           (first.type == kBlock && second.type == kInline) ||
+           (first.type == kSelfBlock && second.type == kSelfInline) ||
+           (first.type == second.type &&
+            (first.type == kStartEnd || first.type == kSelfStartEnd));
+  }
+
+  const CSSIdentifierValue* value;
+  Type type;
+};
+
+std::optional<InsetAreaKeyword> ConsumeInsetAreaKeyword(
+    CSSParserTokenRange& range) {
+  InsetAreaKeyword::Type type = InsetAreaKeyword::kGeneral;
+  switch (range.Peek().Id()) {
+    case CSSValueID::kSpanAll:
+    case CSSValueID::kCenter:
+      // General keywords
+      break;
+    case CSSValueID::kLeft:
+    case CSSValueID::kRight:
+    case CSSValueID::kSpanLeft:
+    case CSSValueID::kSpanRight:
+    case CSSValueID::kXStart:
+    case CSSValueID::kXEnd:
+    case CSSValueID::kSpanXStart:
+    case CSSValueID::kSpanXEnd:
+    case CSSValueID::kXSelfStart:
+    case CSSValueID::kXSelfEnd:
+    case CSSValueID::kSpanXSelfStart:
+    case CSSValueID::kSpanXSelfEnd:
+      type = InsetAreaKeyword::kHorizontal;
+      break;
+    case CSSValueID::kTop:
+    case CSSValueID::kBottom:
+    case CSSValueID::kSpanTop:
+    case CSSValueID::kSpanBottom:
+    case CSSValueID::kYStart:
+    case CSSValueID::kYEnd:
+    case CSSValueID::kSpanYStart:
+    case CSSValueID::kSpanYEnd:
+    case CSSValueID::kYSelfStart:
+    case CSSValueID::kYSelfEnd:
+    case CSSValueID::kSpanYSelfStart:
+    case CSSValueID::kSpanYSelfEnd:
+      type = InsetAreaKeyword::kVertical;
+      break;
+    case CSSValueID::kBlockStart:
+    case CSSValueID::kBlockEnd:
+    case CSSValueID::kSpanBlockStart:
+    case CSSValueID::kSpanBlockEnd:
+      type = InsetAreaKeyword::kBlock;
+      break;
+    case CSSValueID::kInlineStart:
+    case CSSValueID::kInlineEnd:
+    case CSSValueID::kSpanInlineStart:
+    case CSSValueID::kSpanInlineEnd:
+      type = InsetAreaKeyword::kInline;
+      break;
+    case CSSValueID::kSelfBlockStart:
+    case CSSValueID::kSelfBlockEnd:
+    case CSSValueID::kSpanSelfBlockStart:
+    case CSSValueID::kSpanSelfBlockEnd:
+      type = InsetAreaKeyword::kSelfBlock;
+      break;
+    case CSSValueID::kSelfInlineStart:
+    case CSSValueID::kSelfInlineEnd:
+    case CSSValueID::kSpanSelfInlineStart:
+    case CSSValueID::kSpanSelfInlineEnd:
+      type = InsetAreaKeyword::kSelfInline;
+      break;
+    case CSSValueID::kStart:
+    case CSSValueID::kEnd:
+    case CSSValueID::kSpanStart:
+    case CSSValueID::kSpanEnd:
+      type = InsetAreaKeyword::kStartEnd;
+      break;
+    case CSSValueID::kSelfStart:
+    case CSSValueID::kSelfEnd:
+    case CSSValueID::kSpanSelfStart:
+    case CSSValueID::kSpanSelfEnd:
+      type = InsetAreaKeyword::kSelfStartEnd;
+      break;
+    default:
+      return std::nullopt;
+  }
+  return InsetAreaKeyword(css_parsing_utils::ConsumeIdent(range), type);
+}
+
+}  // namespace
+
+// <inset-area> = [
+//                  [ left | center | right | span-left | span-right |
+//                    x-start | x-end | span-x-start | span-x-end |
+//                    x-self-start | x-self-end | span-x-self-start |
+//                    span-x-self-end | span-all ] ||
+//                  [ top | center | bottom | span-top | span-bottom |
+//                    y-start | y-end | span-y-start | span-y-end |
+//                    y-self-start | y-self-end | span-y-self-start |
+//                    span-y-self-end | span-all ]
+//                 |
+//                  [ block-start | center | block-end | span-block-start |
+//                    span-block-end | span-all ] ||
+//                  [ inline-start | center | inline-end | span-inline-start |
+//                    span-inline-end | span-all ]
+//                 |
+//                  [ self-block-start | center | self-block-end |
+//                    span-self-block-start | span-self-block-end |
+//                    span-all ] ||
+//                  [ self-inline-start | center | self-inline-end |
+//                    span-self-inline-start | span-self-inline-end |
+//                    span-all ]
+//                 |
+//                  [ start | center | end | span-start | span-end |
+//                    span-all ]{1,2}
+//                 |
+//                  [ self-start | center | self-end | span-self-start |
+//                    span-self-end | span-all ]{1,2}
+//                ]
+const CSSValue* ConsumeInsetArea(CSSParserTokenRange& range) {
+  std::optional<InsetAreaKeyword> first = ConsumeInsetAreaKeyword(range);
+  if (!first.has_value()) {
+    return nullptr;
+  }
+  std::optional<InsetAreaKeyword> second = ConsumeInsetAreaKeyword(range);
+  if (!second.has_value()) {
+    return first.value().value;
+  }
+  if (first.value().type == InsetAreaKeyword::kVertical ||
+      first.value().type == InsetAreaKeyword::kInline ||
+      first.value().type == InsetAreaKeyword::kSelfInline ||
+      second.value().type == InsetAreaKeyword::kHorizontal ||
+      second.value().type == InsetAreaKeyword::kBlock ||
+      second.value().type == InsetAreaKeyword::kSelfBlock) {
+    // Use grammar order.
+    std::swap(first, second);
+  }
+  if (!InsetAreaKeyword::IsCompatiblePair(first.value(), second.value())) {
+    return nullptr;
+  }
+  const CSSIdentifierValue* first_value = first.value().value;
+  const CSSIdentifierValue* second_value = second.value().value;
+  if (first_value->GetValueID() == second_value->GetValueID()) {
+    return first_value;
+  }
+  if (first_value->GetValueID() == CSSValueID::kSpanAll &&
+      !css_parsing_utils::IsRepeatedInsetAreaValue(
+          second_value->GetValueID())) {
+    return second_value;
+  }
+  if (second_value->GetValueID() == CSSValueID::kSpanAll &&
+      !css_parsing_utils::IsRepeatedInsetAreaValue(first_value->GetValueID())) {
+    return first_value;
+  }
+  return MakeGarbageCollected<CSSValuePair>(first_value, second_value,
+                                            CSSValuePair::kDropIdenticalValues);
+}
+
 bool IsRepeatedInsetAreaValue(CSSValueID value_id) {
   switch (value_id) {
     case CSSValueID::kCenter:

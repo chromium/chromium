@@ -580,6 +580,9 @@ CSSValue* ConsumeFontSizeAdjust(CSSParserTokenRange&, const CSSParserContext&);
 bool ShouldLowerCaseCounterStyleNameOnParse(const AtomicString&,
                                             const CSSParserContext&);
 
+// https://drafts.csswg.org/css-anchor-position-1/#typedef-inset-area
+const CSSValue* ConsumeInsetArea(CSSParserTokenRange&);
+
 // inset-area can take one or two keywords. If the second is omitted, either the
 // first is repeated, or the second is span-all. This method returns true if the
 // omitted value should be the first one repeated.

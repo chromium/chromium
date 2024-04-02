@@ -23,11 +23,12 @@
 
 namespace blink {
 
+class ComputedStyle;
 class CSSNumericLiteralValue;
 class CSSStyleValue;
 class CSSValue;
-class ComputedStyle;
 class FontFamily;
+class InsetArea;
 class StyleColor;
 class StyleIntrinsicLength;
 class StylePropertyShorthand;
@@ -347,7 +348,7 @@ class CORE_EXPORT ComputedStyleUtils {
                                            const StyleIntrinsicLength&);
   static CSSValue* ValueForScrollStart(const ComputedStyle&,
                                        const ScrollStartData&);
-  static CSSValue* ValueForPositionTryOptions(const blink::PositionTryOptions*);
+  static CSSValue* ValueForInsetArea(const blink::InsetArea&);
   static std::unique_ptr<CrossThreadStyleValue>
   CrossThreadStyleValueFromCSSStyleValue(CSSStyleValue* style_value);
 
