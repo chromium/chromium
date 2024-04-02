@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/strings/stringprintf.h"
+#include "cc/paint/draw_looper.h"
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_op.h"
 #include "cc/paint/paint_op_buffer_iterator.h"
@@ -510,9 +511,7 @@ class PaintOpHelper {
     return "SkPathEffect";
   }
 
-  static std::string ToString(const SkDrawLooper& looper) {
-    return "SkDrawLooper";
-  }
+  static std::string ToString(const DrawLooper& looper) { return "DrawLooper"; }
 
   static std::string ToString(PaintCanvas::AnnotationType type) {
     switch (type) {

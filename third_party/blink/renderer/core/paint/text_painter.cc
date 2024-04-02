@@ -74,7 +74,7 @@ SelectionStyleScope::~SelectionStyleScope() {
   SVGResources::ClearPaints(layout_object_, &selection_style_);
 }
 
-sk_sp<SkDrawLooper> CreateDrawLooper(
+sk_sp<cc::DrawLooper> CreateDrawLooper(
     const ShadowList* shadow_list,
     DrawLooperBuilder::ShadowAlphaMode alpha_mode,
     const Color& current_color,

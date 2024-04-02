@@ -9,8 +9,8 @@
 
 #include "base/compiler_specific.h"
 #include "cc/paint/color_filter.h"
+#include "cc/paint/draw_looper.h"
 #include "cc/paint/paint_export.h"
-#include "third_party/skia/include/core/SkDrawLooper.h"
 #include "third_party/skia/include/core/SkMaskFilter.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPathEffect.h"
@@ -205,10 +205,10 @@ class CC_PAINT_EXPORT PaintFlags {
   }
   void setImageFilter(sk_sp<PaintFilter> filter);
 
-  ALWAYS_INLINE const sk_sp<SkDrawLooper>& getLooper() const {
+  ALWAYS_INLINE const sk_sp<DrawLooper>& getLooper() const {
     return draw_looper_;
   }
-  ALWAYS_INLINE void setLooper(sk_sp<SkDrawLooper> looper) {
+  ALWAYS_INLINE void setLooper(sk_sp<DrawLooper> looper) {
     draw_looper_ = std::move(looper);
   }
 
@@ -224,10 +224,11 @@ class CC_PAINT_EXPORT PaintFlags {
   template <typename Proc>
   void DrawToSk(SkCanvas* canvas, Proc proc) const {
     SkPaint paint = ToSkPaint();
-    if (const sk_sp<SkDrawLooper>& looper = getLooper())
-      looper->apply(canvas, paint, proc);
-    else
+    if (const sk_sp<DrawLooper>& looper = getLooper()) {
+      looper->Apply(canvas, paint, proc);
+    } else {
       proc(canvas, paint);
+    }
   }
 
   static SkSamplingOptions FilterQualityToSkSamplingOptions(
@@ -246,7 +247,7 @@ class CC_PAINT_EXPORT PaintFlags {
   sk_sp<PaintShader> shader_;
   sk_sp<SkMaskFilter> mask_filter_;
   sk_sp<ColorFilter> color_filter_;
-  sk_sp<SkDrawLooper> draw_looper_;
+  sk_sp<DrawLooper> draw_looper_;
   sk_sp<PaintFilter> image_filter_;
 
   // Match(ish) SkPaint defaults.  SkPaintDefaults is not public, so this

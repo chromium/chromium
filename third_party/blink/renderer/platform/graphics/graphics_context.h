@@ -447,7 +447,7 @@ class PLATFORM_EXPORT GraphicsContext {
   // not necessarily non-empty), even when the context is disabled.
   PaintRecord EndRecording();
 
-  void SetDrawLooper(sk_sp<SkDrawLooper>);
+  void SetDrawLooper(sk_sp<cc::DrawLooper>);
 
   void DrawFocusRingPath(const SkPath&,
                          const Color&,

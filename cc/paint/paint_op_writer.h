@@ -42,6 +42,7 @@ namespace cc {
 class ColorFilter;
 class DecodedDrawImage;
 class DrawImage;
+class DrawLooper;
 class PaintShader;
 
 class CC_PAINT_EXPORT PaintOpWriter {
@@ -152,6 +153,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
   static size_t SerializedSize(const gfx::HDRMetadata& hdr_metadata);
   static size_t SerializedSize(const SkGainmapInfo& gainmap_info);
   static size_t SerializedSize(const ColorFilter* filter);
+  static size_t SerializedSize(const DrawLooper* looper);
   static size_t SerializedSize(const PaintFilter* filter);
 
   template <typename T>
@@ -238,6 +240,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
              PaintFlags::FilterQuality quality,
              const SkM44& current_ctm);
   void Write(const ColorFilter* filter);
+  void Write(const DrawLooper* looper);
   void Write(const PaintFilter* filter, const SkM44& current_ctm);
   void Write(const gfx::HDRMetadata& hdr_metadata);
 

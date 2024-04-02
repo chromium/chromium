@@ -33,11 +33,11 @@
 
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
+#include "cc/paint/draw_looper.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/skia/include/core/SkDrawLooper.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
 namespace blink {
@@ -92,11 +92,11 @@ class PLATFORM_EXPORT GraphicsContextState final {
   TextPaintOrder GetTextPaintOrder() const { return text_paint_order_; }
 
   // Shadow. (This will need tweaking if we use draw loopers for other things.)
-  SkDrawLooper* DrawLooper() const {
+  cc::DrawLooper* DrawLooper() const {
     DCHECK_EQ(fill_flags_.getLooper(), stroke_flags_.getLooper());
     return fill_flags_.getLooper().get();
   }
-  void SetDrawLooper(sk_sp<SkDrawLooper>);
+  void SetDrawLooper(sk_sp<cc::DrawLooper>);
 
   // Text. (See TextModeFill & friends.)
   TextDrawingModeFlags TextDrawingMode() const { return text_drawing_mode_; }

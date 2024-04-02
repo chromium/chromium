@@ -62,7 +62,7 @@ void GraphicsContextState::SetFillColor(const Color& color) {
 }
 
 // Shadow. (This will need tweaking if we use draw loopers for other things.)
-void GraphicsContextState::SetDrawLooper(sk_sp<SkDrawLooper> draw_looper) {
+void GraphicsContextState::SetDrawLooper(sk_sp<cc::DrawLooper> draw_looper) {
   // Grab a new ref for stroke.
   stroke_flags_.setLooper(draw_looper);
   // Pass the existing ref to fill (to minimize refcount churn).

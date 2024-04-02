@@ -14,6 +14,7 @@
 #include "base/test/bind.h"
 #include "cc/paint/decoded_draw_image.h"
 #include "cc/paint/display_item_list.h"
+#include "cc/paint/draw_looper.h"
 #include "cc/paint/image_provider.h"
 #include "cc/paint/image_transfer_cache_entry.h"
 #include "cc/paint/paint_flags.h"
@@ -40,6 +41,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
+#include "third_party/skia/include/core/SkBlurTypes.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkClipOp.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -56,7 +58,6 @@
 #include "third_party/skia/include/core/SkTileMode.h"
 #include "third_party/skia/include/effects/SkColorMatrixFilter.h"
 #include "third_party/skia/include/effects/SkDashPathEffect.h"
-#include "third_party/skia/include/effects/SkLayerDrawLooper.h"
 #include "third_party/skia/include/private/chromium/SkChromeRemoteGlyphCache.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
 
@@ -1189,15 +1190,11 @@ std::vector<PaintFlags> test_flags = {
       flags.setColorFilter(ColorFilter::MakeBlend({0.4f, 0.3f, 0.2f, 0.1f},
                                                   SkBlendMode::kMultiply));
 
-      SkLayerDrawLooper::Builder looper_builder;
-      looper_builder.addLayer();
-      looper_builder.addLayer(2.3f, 4.5f);
-      SkLayerDrawLooper::LayerInfo layer_info;
-      layer_info.fPaintBits |= SkLayerDrawLooper::kMaskFilter_Bit;
-      layer_info.fColorMode = SkBlendMode::kDst;
-      layer_info.fOffset.set(-1.f, 5.2f);
-      looper_builder.addLayer(layer_info);
-      flags.setLooper(looper_builder.detach());
+      DrawLooperBuilder looper_builder;
+      looper_builder.AddUnmodifiedContent();
+      looper_builder.AddShadow({2.3f, 4.5f}, 0, SkColors::kBlack, 0);
+      looper_builder.AddShadow({-1.f, 5.2f}, 0, SkColors::kBlack, 0);
+      flags.setLooper(looper_builder.Detach());
 
       sk_sp<PaintShader> shader =
           PaintShader::MakeColor(SkColors::kTransparent);
@@ -3143,13 +3140,12 @@ TEST(PaintOpBufferTest, ReplacesImagesFromProvider) {
 TEST(PaintOpBufferTest, DrawImageRectOpWithLooperNoImageProvider) {
   PaintOpBuffer buffer;
   PaintImage image = CreateDiscardablePaintImage(gfx::Size(100, 100));
-  SkLayerDrawLooper::Builder sk_draw_looper_builder;
-  sk_draw_looper_builder.addLayer(20.0, 20.0);
-  SkLayerDrawLooper::LayerInfo info_unmodified;
-  sk_draw_looper_builder.addLayerOnTop(info_unmodified);
+  DrawLooperBuilder draw_looper_builder;
+  draw_looper_builder.AddShadow({20.0f, 20.0f}, 0, SkColors::kBlack, 0);
+  draw_looper_builder.AddUnmodifiedContent(/*add_on_top=*/true);
 
   PaintFlags paint_flags;
-  paint_flags.setLooper(sk_draw_looper_builder.detach());
+  paint_flags.setLooper(draw_looper_builder.Detach());
   buffer.push<DrawImageRectOp>(image, SkRect::MakeWH(100, 100),
                                SkRect::MakeWH(100, 100), SkSamplingOptions(),
                                &paint_flags, SkCanvas::kFast_SrcRectConstraint);
@@ -3166,13 +3162,12 @@ TEST(PaintOpBufferTest, DrawImageRectOpWithLooperNoImageProvider) {
 TEST(PaintOpBufferTest, DrawImageRectOpWithLooperWithImageProvider) {
   PaintOpBuffer buffer;
   PaintImage image = CreateDiscardablePaintImage(gfx::Size(100, 100));
-  SkLayerDrawLooper::Builder sk_draw_looper_builder;
-  sk_draw_looper_builder.addLayer(20.0, 20.0);
-  SkLayerDrawLooper::LayerInfo info_unmodified;
-  sk_draw_looper_builder.addLayerOnTop(info_unmodified);
+  DrawLooperBuilder draw_looper_builder;
+  draw_looper_builder.AddShadow({20.0f, 20.0f}, 0, SkColors::kBlack, 0);
+  draw_looper_builder.AddUnmodifiedContent(/*add_on_top=*/true);
 
   PaintFlags paint_flags;
-  paint_flags.setLooper(sk_draw_looper_builder.detach());
+  paint_flags.setLooper(draw_looper_builder.Detach());
   buffer.push<DrawImageRectOp>(image, SkRect::MakeWH(100, 100),
                                SkRect::MakeWH(100, 100), SkSamplingOptions(),
                                &paint_flags, SkCanvas::kFast_SrcRectConstraint);

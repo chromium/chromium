@@ -7,6 +7,7 @@
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
 #include "base/timer/lap_timer.h"
+#include "cc/paint/draw_looper.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "cc/paint/paint_op_buffer_serializer.h"
 #include "cc/paint/paint_op_writer.h"
@@ -14,10 +15,11 @@
 #include "cc/test/test_options_provider.h"
 #include "skia/ext/font_utils.h"
 #include "testing/perf/perf_result_reporter.h"
+#include "third_party/skia/include/core/SkBlurTypes.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkMaskFilter.h"
 #include "third_party/skia/include/effects/SkColorMatrixFilter.h"
 #include "third_party/skia/include/effects/SkDashPathEffect.h"
-#include "third_party/skia/include/effects/SkLayerDrawLooper.h"
 
 namespace cc {
 namespace {
@@ -128,12 +130,11 @@ TEST_F(PaintOpPerfTest, ManyFlagsOps) {
       SkBlurStyle::kOuter_SkBlurStyle, 4.3));
   flags.setColorFilter(ColorFilter::MakeLuma());
 
-  SkLayerDrawLooper::Builder looper_builder;
-  looper_builder.addLayer();
-  looper_builder.addLayer(2.3f, 4.5f);
-  SkLayerDrawLooper::LayerInfo layer_info;
-  looper_builder.addLayer(layer_info);
-  flags.setLooper(looper_builder.detach());
+  DrawLooperBuilder looper_builder;
+  looper_builder.AddUnmodifiedContent();
+  looper_builder.AddShadow({2.3f, 4.5f}, 0, SkColors::kBlack, 0);
+  looper_builder.AddUnmodifiedContent();
+  flags.setLooper(looper_builder.Detach());
 
   sk_sp<PaintShader> shader = PaintShader::MakeColor(SkColors::kTransparent);
   flags.setShader(std::move(shader));

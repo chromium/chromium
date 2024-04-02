@@ -24,6 +24,7 @@
 #include "base/types/optional_util.h"
 #include "cc/base/features.h"
 #include "cc/paint/color_filter.h"
+#include "cc/paint/draw_looper.h"
 #include "cc/paint/image_transfer_cache_entry.h"
 #include "cc/paint/paint_cache.h"
 #include "cc/paint/paint_flags.h"
@@ -318,15 +319,14 @@ void PaintOpReader::Read(PaintFlags* flags) {
   Read(&flags->color_filter_);
 
   if (enable_security_constraints_) {
-    size_t bytes = 0;
-    ReadSize(&bytes);
-    if (bytes != 0u) {
+    bool has_looper = false;
+    ReadSimple(&has_looper);
+    if (has_looper) {
       SetInvalid(DeserializationError::kDrawLooperForbidden);
       return;
     }
   } else {
-    ReadFlattenable(&flags->draw_looper_, SkDrawLooper::Deserialize,
-                    DeserializationError::kSkDrawLooperUnflattenFailure);
+    Read(&flags->draw_looper_);
   }
 
   Read(&flags->image_filter_);
@@ -625,6 +625,41 @@ void PaintOpReader::Read(sk_sp<sktext::gpu::Slug>* slug) {
     SetInvalid(DeserializationError::kSlugDeserializeFailure);
     return;
   }
+}
+
+void PaintOpReader::Read(sk_sp<DrawLooper>* looper) {
+  bool has_looper = false;
+  ReadSimple(&has_looper);
+  if (!has_looper) {
+    *looper = nullptr;
+    return;
+  }
+
+  DrawLooperBuilder builder;
+  size_t count;
+  ReadSize(&count);
+  if (!valid_) {
+    *looper = nullptr;
+    return;
+  }
+
+  for (size_t i = 0; i < count; ++i) {
+    SkPoint offset;
+    float blur_sigma;
+    SkColor4f color;
+    uint32_t flags;
+
+    ReadSimple(&offset);
+    ReadSimple(&blur_sigma);
+    ReadSimple(&color);
+    ReadSimple(&flags);
+    if (!valid_) {
+      *looper = nullptr;
+      return;
+    }
+    builder.AddShadow(offset, blur_sigma, color, flags);
+  }
+  *looper = builder.Detach();
 }
 
 void PaintOpReader::Read(sk_sp<PaintShader>* shader) {

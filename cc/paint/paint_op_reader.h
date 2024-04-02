@@ -11,6 +11,7 @@
 #include "base/bits.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/stack_allocated.h"
+#include "cc/paint/draw_looper.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_op_writer.h"
@@ -83,6 +84,7 @@ class CC_PAINT_EXPORT PaintOpReader {
             PaintFlags::DynamicRangeLimitMixture dynamic_range_limit);
   void Read(sk_sp<SkData>* data);
   void Read(sk_sp<sktext::gpu::Slug>* slug);
+  void Read(sk_sp<DrawLooper>* looper);
   void Read(sk_sp<PaintFilter>* filter);
   void Read(sk_sp<PaintShader>* shader);
   void Read(SkMatrix* matrix);

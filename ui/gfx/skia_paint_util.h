@@ -12,8 +12,11 @@
 #include "ui/gfx/gfx_export.h"
 #include "ui/gfx/shadow_value.h"
 
-class SkDrawLooper;
 class SkMatrix;
+
+namespace cc {
+class DrawLooper;
+}
 
 namespace gfx {
 
@@ -50,7 +53,7 @@ GFX_EXPORT sk_sp<cc::PaintShader> CreateGradientShader(
 // Creates a draw looper to generate |shadows|. The caller owns the draw looper.
 // NULL is returned if |shadows| is empty since no draw looper is needed in
 // this case.
-GFX_EXPORT sk_sp<SkDrawLooper> CreateShadowDrawLooper(
+GFX_EXPORT sk_sp<cc::DrawLooper> CreateShadowDrawLooper(
     const std::vector<ShadowValue>& shadows);
 
 }  // namespace gfx

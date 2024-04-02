@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "cc/paint/color_filter.h"
 #include "cc/paint/draw_image.h"
+#include "cc/paint/draw_looper.h"
 #include "cc/paint/image_provider.h"
 #include "cc/paint/image_transfer_cache_entry.h"
 #include "cc/paint/paint_cache.h"
@@ -132,6 +133,24 @@ size_t PaintOpWriter::SerializedSize(const ColorFilter* filter) {
   }
   base::CheckedNumeric<size_t> size = SerializedSize(filter->type_);
   size += filter->SerializedDataSize();
+  return size.ValueOrDie();
+}
+
+// static
+size_t PaintOpWriter::SerializedSize(const DrawLooper* looper) {
+  if (!looper) {
+    return SerializedSizeSimple<bool>();
+  }
+  size_t count = looper->layers_.size();
+  base::CheckedNumeric<size_t> size =
+      SerializedSizeSimple<bool>() + SerializedSize(count);
+  if (count > 0) {
+    const DrawLooper::Layer& layer = looper->layers_.front();
+    base::CheckedNumeric<size_t> layer_size =
+        SerializedSize(layer.offset) + SerializedSize(layer.blur_sigma) +
+        SerializedSize(layer.color) + SerializedSize(layer.flags);
+    size += layer_size * count;
+  }
   return size.ValueOrDie();
 }
 
@@ -278,7 +297,7 @@ void PaintOpWriter::Write(const PaintFlags& flags, const SkM44& current_ctm) {
         // flags.color_filter_.
         base::checked_cast<uint8_t>(ColorFilter::Type::kNull),
         // flags.draw_looper_.
-        uint32_t{0}, uint32_t{0},
+        false,
         // flags.image_filter_.
         base::checked_cast<uint8_t>(PaintFilter::Type::kNullFilter),
         // flags.shader_.
@@ -296,9 +315,10 @@ void PaintOpWriter::Write(const PaintFlags& flags, const SkM44& current_ctm) {
   Write(flags.color_filter_.get());
 
   if (enable_security_constraints_) {
-    WriteSize(static_cast<size_t>(0u));
+    const bool has_looper = false;
+    WriteSimple(has_looper);
   } else {
-    WriteFlattenable(flags.draw_looper_.get());
+    Write(flags.draw_looper_.get());
   }
 
   Write(flags.image_filter_.get(), current_ctm);
@@ -712,6 +732,23 @@ void PaintOpWriter::Write(const ColorFilter* filter) {
   }
   WriteEnum(filter->type_);
   filter->SerializeData(*this);
+}
+
+void PaintOpWriter::Write(const DrawLooper* looper) {
+  if (!looper) {
+    WriteSimple(false);
+    return;
+  }
+
+  WriteSimple(true);
+  WriteSize(looper->layers_.size());
+
+  for (auto const& layer : looper->layers_) {
+    WriteSimple(layer.offset);
+    WriteSimple(layer.blur_sigma);
+    WriteSimple(layer.color);
+    WriteSimple(layer.flags);
+  }
 }
 
 void PaintOpWriter::Write(const PaintFilter* filter, const SkM44& current_ctm) {

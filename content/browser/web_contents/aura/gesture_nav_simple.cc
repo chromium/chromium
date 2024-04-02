@@ -17,7 +17,6 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/overscroll_configuration.h"
 #include "content/public/browser/preloading.h"
-#include "third_party/skia/include/core/SkDrawLooper.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_delegate.h"

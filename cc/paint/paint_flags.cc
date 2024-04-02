@@ -198,8 +198,8 @@ bool PaintFlags::EqualsForTesting(const PaintFlags& other) const {
                                           other.mask_filter_) &&
          AreValuesEqualForTesting(color_filter_,  // IN-TEST
                                   other.color_filter_) &&
-         AreSkFlattenablesEqualForTesting(draw_looper_,  // IN-TEST
-                                          other.draw_looper_) &&
+         AreValuesEqualForTesting(draw_looper_,  // IN-TEST
+                                  other.draw_looper_) &&
          AreValuesEqualForTesting(image_filter_,  // IN-TEST
                                   other.image_filter_) &&
          AreValuesEqualForTesting(shader_, other.shader_);  // IN-TEST

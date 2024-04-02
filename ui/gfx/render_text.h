@@ -39,11 +39,11 @@
 #include "ui/gfx/shadow_value.h"
 #include "ui/gfx/text_constants.h"
 
-class SkDrawLooper;
 struct SkPoint;
 class SkTypeface;
 
 namespace cc {
+class DrawLooper;
 class PaintCanvas;
 }
 
@@ -68,7 +68,7 @@ class GFX_EXPORT SkiaTextRenderer {
   SkiaTextRenderer& operator=(const SkiaTextRenderer&) = delete;
   virtual ~SkiaTextRenderer();
 
-  void SetDrawLooper(sk_sp<SkDrawLooper> draw_looper);
+  void SetDrawLooper(sk_sp<cc::DrawLooper> draw_looper);
   void SetFontRenderParams(const FontRenderParams& params,
                            bool subpixel_rendering_suppressed);
   void SetTypeface(sk_sp<SkTypeface> typeface);

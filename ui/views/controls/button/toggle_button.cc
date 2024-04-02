@@ -11,7 +11,6 @@
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "cc/paint/paint_flags.h"
-#include "third_party/skia/include/core/SkDrawLooper.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
