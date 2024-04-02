@@ -1341,6 +1341,8 @@ enum HeaderBehaviour {
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     if (IsModernTabStripOrRaccoonEnabled()) {
       [self.tabStripCoordinator start];
+      const bool canShowTabStrip = IsRegularXRegularSizeClass(self);
+      [self.tabStripCoordinator hideTabStrip:!canShowTabStrip];
     } else {
       self.legacyTabStripCoordinator.presentationProvider = self;
       [self.legacyTabStripCoordinator start];
