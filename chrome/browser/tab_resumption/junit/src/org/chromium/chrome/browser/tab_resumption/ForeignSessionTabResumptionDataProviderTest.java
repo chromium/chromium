@@ -22,6 +22,8 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab_resumption.ForeignSessionTabResumptionDataSource.DataChangedObserver;
+import org.chromium.chrome.browser.tab_resumption.TabResumptionDataProvider.ResultStrength;
+import org.chromium.chrome.browser.tab_resumption.TabResumptionDataProvider.SuggestionsResult;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -75,11 +77,13 @@ public class ForeignSessionTabResumptionDataProviderTest extends TestSupport {
     public void testMainFlow() {
         when(mSource.canUseData()).thenReturn(true);
         when(mSource.getCurrentTimeMs()).thenReturn(CURRENT_TIME_MS);
+        // Initial fetch yields TENTATIVE results.
         when(mSource.getSuggestions())
                 .thenReturn(new ArrayList<>(Arrays.asList(ENTRY1, ENTRY2, ENTRY3)));
-
         mDataProvider.fetchSuggestions(
-                (List<SuggestionEntry> suggestions) -> {
+                (SuggestionsResult result) -> {
+                    Assert.assertEquals(result.strength, ResultStrength.TENTATIVE);
+                    List<SuggestionEntry> suggestions = result.suggestions;
                     Assert.assertEquals(3, suggestions.size());
                     Assert.assertEquals(ENTRY1, suggestions.get(0));
                     Assert.assertEquals(ENTRY2, suggestions.get(1));
@@ -87,28 +91,98 @@ public class ForeignSessionTabResumptionDataProviderTest extends TestSupport {
                 });
         Assert.assertEquals(0, mStatusChangedCallbackCounter);
 
-        // ForeignSessionDataChanged event lead to dispatch (causing module refresh).
+        // Non-permission data change event triggers dispatch (causing module refresh).
         mDataProvider.onForeignSessionDataChanged(/* isPermissionUpdate= */ false);
         Assert.assertEquals(1, mStatusChangedCallbackCounter);
+        // Fetch now yields STABLE results.
+        when(mSource.getSuggestions()).thenReturn(new ArrayList<>(Arrays.asList(ENTRY2, ENTRY3)));
+        mDataProvider.fetchSuggestions(
+                (SuggestionsResult result) -> {
+                    Assert.assertEquals(result.strength, ResultStrength.STABLE);
+                    List<SuggestionEntry> suggestions = result.suggestions;
+                    Assert.assertEquals(2, suggestions.size());
+                    Assert.assertEquals(ENTRY2, suggestions.get(0));
+                    Assert.assertEquals(ENTRY3, suggestions.get(1));
+                });
+
+        // Results are stable: Subsequent non-permission events do not trigger dispatch.
+        mDataProvider.onForeignSessionDataChanged(/* isPermissionUpdate= */ false);
+        Assert.assertEquals(1, mStatusChangedCallbackCounter);
+        mDataProvider.onForeignSessionDataChanged(/* isPermissionUpdate= */ false);
+        Assert.assertEquals(1, mStatusChangedCallbackCounter);
+
+        // However, fetching would still yield updated data. This is useful for forced refresh.
+        when(mSource.getSuggestions()).thenReturn(new ArrayList<>(Arrays.asList(ENTRY3)));
+        mDataProvider.fetchSuggestions(
+                (SuggestionsResult result) -> {
+                    Assert.assertEquals(result.strength, ResultStrength.STABLE);
+                    List<SuggestionEntry> suggestions = result.suggestions;
+                    Assert.assertEquals(1, suggestions.size());
+                    Assert.assertEquals(ENTRY3, suggestions.get(0));
+                });
+
+        // Permission events still triggered dispatches.
         mDataProvider.onForeignSessionDataChanged(/* isPermissionUpdate= */ true);
         Assert.assertEquals(2, mStatusChangedCallbackCounter);
+        // Fetch now yields FORCED_NULL results with null suggestions, not actual suggestions.
+        when(mSource.getSuggestions()).thenReturn(new ArrayList<>(Arrays.asList(ENTRY2, ENTRY3)));
+        mDataProvider.fetchSuggestions(
+                (SuggestionsResult result) -> {
+                    Assert.assertEquals(result.strength, ResultStrength.FORCED_NULL);
+                    List<SuggestionEntry> suggestions = result.suggestions;
+                    Assert.assertNull(suggestions);
+                });
 
-        // 3s elapsed, same as before; if ForeignSessionTabResumptionDataSource receives new
-        // data at this time, it can still cause module refresh.
-        when(mSource.getCurrentTimeMs()).thenReturn(CURRENT_TIME_MS + TimeUnit.SECONDS.toMillis(3));
-        mDataProvider.onForeignSessionDataChanged(/* isPermissionUpdate= */ false);
+        mDataProvider.onForeignSessionDataChanged(/* isPermissionUpdate= */ true);
         Assert.assertEquals(3, mStatusChangedCallbackCounter);
-        mDataProvider.onForeignSessionDataChanged(/* isPermissionUpdate= */ true);
-        Assert.assertEquals(4, mStatusChangedCallbackCounter);
+    }
 
-        // 1min elapsed, well beyond lock threshold.
+    @Test
+    @SmallTest
+    public void testStabilityFromTimeOut() {
+        when(mSource.canUseData()).thenReturn(true);
+        when(mSource.getCurrentTimeMs()).thenReturn(CURRENT_TIME_MS);
+        // Initial fetch yields TENTATIVE results.
+        when(mSource.getSuggestions())
+                .thenReturn(new ArrayList<>(Arrays.asList(ENTRY1, ENTRY2, ENTRY3)));
+        mDataProvider.fetchSuggestions(
+                (SuggestionsResult result) -> {
+                    Assert.assertEquals(result.strength, ResultStrength.TENTATIVE);
+                    List<SuggestionEntry> suggestions = result.suggestions;
+                    Assert.assertEquals(3, suggestions.size());
+                    Assert.assertEquals(ENTRY1, suggestions.get(0));
+                    Assert.assertEquals(ENTRY2, suggestions.get(1));
+                    Assert.assertEquals(ENTRY3, suggestions.get(2));
+                });
+        Assert.assertEquals(0, mStatusChangedCallbackCounter);
+
+        // 1 min elapses: Any new suggestions should be discounted.
         when(mSource.getCurrentTimeMs()).thenReturn(CURRENT_TIME_MS + TimeUnit.MINUTES.toMillis(1));
-        // Data is now locked: Non-permission update no longer cause module refresh.
+
+        // Non-permission data change event no longer triggers dispatch.
         mDataProvider.onForeignSessionDataChanged(/* isPermissionUpdate= */ false);
-        Assert.assertEquals(4, mStatusChangedCallbackCounter);
-        // Permission update (login or sync state change) can cause module refresh.
+        Assert.assertEquals(0, mStatusChangedCallbackCounter);
+
+        // Results are stable: Subsequent non-permission events do not trigger dispatch.
+        mDataProvider.onForeignSessionDataChanged(/* isPermissionUpdate= */ false);
+        Assert.assertEquals(0, mStatusChangedCallbackCounter);
+        mDataProvider.onForeignSessionDataChanged(/* isPermissionUpdate= */ false);
+        Assert.assertEquals(0, mStatusChangedCallbackCounter);
+
+        // Permission events still triggered dispatches.
         mDataProvider.onForeignSessionDataChanged(/* isPermissionUpdate= */ true);
-        Assert.assertEquals(5, mStatusChangedCallbackCounter);
+        Assert.assertEquals(1, mStatusChangedCallbackCounter);
+        // Fetch now yields FORCED_NULL results with null suggestions, ignoring existing data.
+        when(mSource.getSuggestions()).thenReturn(new ArrayList<>(Arrays.asList(ENTRY2, ENTRY3)));
+        mDataProvider.fetchSuggestions(
+                (SuggestionsResult result) -> {
+                    Assert.assertEquals(result.strength, ResultStrength.FORCED_NULL);
+                    List<SuggestionEntry> suggestions = result.suggestions;
+                    Assert.assertNull(suggestions);
+                });
+
+        mDataProvider.onForeignSessionDataChanged(/* isPermissionUpdate= */ true);
+        Assert.assertEquals(2, mStatusChangedCallbackCounter);
     }
 
     @Test
@@ -120,8 +194,10 @@ public class ForeignSessionTabResumptionDataProviderTest extends TestSupport {
                 .thenReturn(new ArrayList<>(Arrays.asList(ENTRY1, ENTRY2, ENTRY3)));
 
         mDataProvider.fetchSuggestions(
-                (List<SuggestionEntry> suggestions) -> {
-                    Assert.assertEquals(0, suggestions.size());
+                (SuggestionsResult result) -> {
+                    Assert.assertEquals(result.strength, ResultStrength.FORCED_NULL);
+                    List<SuggestionEntry> suggestions = result.suggestions;
+                    Assert.assertNull(suggestions);
                 });
     }
 }
