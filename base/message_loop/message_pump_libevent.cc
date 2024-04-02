@@ -41,12 +41,7 @@ namespace base {
 
 #if BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
 namespace {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
 bool g_use_epoll = true;
-#else
-// TODO(crbug.com/1243354): Enable by default on chromeos.
-bool g_use_epoll = false;
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
 }  // namespace
 
 BASE_FEATURE(kMessagePumpEpoll, "MessagePumpEpoll", FEATURE_ENABLED_BY_DEFAULT);
