@@ -1,0 +1,21 @@
+include_rules = [
+  "-content",
+  "-chrome/browser",
+  "+chrome/browser/ash/display",
+]
+
+specific_include_rules = {
+  ".*quirks_manager_delegate_impl\.cc": [
+    "+chrome/browser/ash/settings/cros_settings.h",
+  ],
+  ".*refresh_rate_controller\.h": [
+    "+chrome/browser/ash/game_mode/game_mode_controller.h",
+  ],
+  ".*_browsertest\.cc": [
+    "+chrome/browser/browser_process.h",
+    "+content/public/test",
+  ],
+  ".*refresh_rate_controller_unittest\.cc": [
+    "+chrome/browser/ash/game_mode",
+  ],
+}
