@@ -25,8 +25,6 @@
 
 namespace activity_services {
 
-// TODO(crbug.com/1468530): Adopt consistent casing in these functions.
-
 ShareToData* ShareToDataForWebState(web::WebState* web_state,
                                     const GURL& share_url) {
   CHECK(web_state);
@@ -92,25 +90,25 @@ ShareToData* ShareToDataForWebState(web::WebState* web_state,
                                   linkMetadata:nil];
 }
 
-ShareToData* ShareToDataForURL(const GURL& URL,
+ShareToData* ShareToDataForURL(const GURL& url,
                                NSString* title,
-                               NSString* additionalText,
-                               LPLinkMetadata* linkMetadata) {
-  return [[ShareToData alloc] initWithShareURL:URL
-                                    visibleURL:URL
+                               NSString* additional_text,
+                               LPLinkMetadata* link_metadata) {
+  return [[ShareToData alloc] initWithShareURL:url
+                                    visibleURL:url
                                          title:title
-                                additionalText:additionalText
+                                additionalText:additional_text
                                isOriginalTitle:YES
                                isPagePrintable:NO
                               isPageSearchable:NO
                               canSendTabToSelf:NO
                                      userAgent:web::UserAgentType::NONE
                             thumbnailGenerator:nil
-                                  linkMetadata:linkMetadata];
+                                  linkMetadata:link_metadata];
 }
 
-ShareToData* ShareToDataForURLWithTitle(URLWithTitle* URLWithTitle) {
-  return ShareToDataForURL(URLWithTitle.URL, URLWithTitle.title, nil, nil);
+ShareToData* ShareToDataForURLWithTitle(URLWithTitle* url_with_title) {
+  return ShareToDataForURL(url_with_title.URL, url_with_title.title, nil, nil);
 }
 
 }  // namespace activity_services
