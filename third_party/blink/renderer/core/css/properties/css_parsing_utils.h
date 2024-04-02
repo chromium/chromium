@@ -505,10 +505,14 @@ CSSValue* ConsumeWidthOrHeight(CSSParserTokenRange&,
                                const CSSParserContext&,
                                UnitlessQuirk = UnitlessQuirk::kForbid);
 
-CSSValue* ConsumeMarginOrOffset(CSSParserTokenRange&,
-                                const CSSParserContext&,
-                                UnitlessQuirk,
-                                CSSAnchorQueryTypes = kCSSAnchorQueryTypesNone);
+CSSValue* ConsumeMargin(CSSParserTokenRange&,
+                        const CSSParserContext&,
+                        UnitlessQuirk,
+                        CSSAnchorQueryTypes = kCSSAnchorQueryTypesNone);
+CSSValue* ConsumeOffset(CSSParserTokenRange&,
+                        const CSSParserContext&,
+                        UnitlessQuirk,
+                        CSSAnchorQueryTypes = kCSSAnchorQueryTypesNone);
 CSSValue* ConsumeScrollPadding(CSSParserTokenRange&, const CSSParserContext&);
 CSSValue* ConsumeScrollStart(CSSParserTokenRange&, const CSSParserContext&);
 CSSValue* ConsumeScrollStartTarget(CSSParserTokenRange&);

@@ -2966,19 +2966,19 @@ WebPrintPageDescription Document::GetPageDescriptionNoLifecycleUpdate(
   if (!print_params.ignore_css_margins) {
     if (!style.MarginTop().IsAuto()) {
       description.margin_top =
-          IntValueForLength(style.MarginTop(), description.size.height());
+          FloatValueForLength(style.MarginTop(), description.size.height());
     }
     if (!style.MarginRight().IsAuto()) {
       description.margin_right =
-          IntValueForLength(style.MarginRight(), description.size.width());
+          FloatValueForLength(style.MarginRight(), description.size.width());
     }
     if (!style.MarginBottom().IsAuto()) {
       description.margin_bottom =
-          IntValueForLength(style.MarginBottom(), description.size.height());
+          FloatValueForLength(style.MarginBottom(), description.size.height());
     }
     if (!style.MarginLeft().IsAuto()) {
       description.margin_left =
-          IntValueForLength(style.MarginLeft(), description.size.width());
+          FloatValueForLength(style.MarginLeft(), description.size.width());
     }
   }
 

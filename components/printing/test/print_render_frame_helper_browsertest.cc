@@ -1511,7 +1511,7 @@ TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewHTMLWithPageMarginsCss) {
   OnPrintPreview();
 
   EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
-  VerifyDefaultPageLayout(519, 432, 216, 144, 21, 72, false, false);
+  VerifyDefaultPageLayout(518, 432, 216, 144, 22, 72, false, false);
   VerifyDidPreviewPage(true, 0);
   VerifyPreviewPageCount(1);
   VerifyPrintPreviewCancelled(false);
@@ -1714,7 +1714,7 @@ TEST_F(PrintRenderFrameHelperPreviewTest,
   EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
   // Since PRINT_TO_PDF is selected, pdf page size is equal to print media page
   // size.
-  VerifyDefaultPageLayout(915, 648, 216, 144, 21, 72, true, true);
+  VerifyDefaultPageLayout(914, 648, 216, 144, 22, 72, true, true);
   VerifyDidPreviewPage(true, 0);
   VerifyPreviewPageCount(1);
   VerifyPrintPreviewCancelled(false);

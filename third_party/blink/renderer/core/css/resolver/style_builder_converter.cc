@@ -33,6 +33,8 @@
 #include "base/containers/adapters.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "third_party/blink/public/web/web_print_page_description.h"
+#include "third_party/blink/public/web/web_print_params.h"
 #include "third_party/blink/renderer/core/css/basic_shape_functions.h"
 #include "third_party/blink/renderer/core/css/css_alternate_value.h"
 #include "third_party/blink/renderer/core/css/css_axis_value.h"
@@ -2131,13 +2133,63 @@ EPaintOrder StyleBuilderConverter::ConvertPaintOrder(
   return kPaintOrderNormal;
 }
 
-Length StyleBuilderConverter::ConvertQuirkyLength(StyleResolverState& state,
-                                                  const CSSValue& value) {
+Length StyleBuilderConverter::ConvertMargin(StyleResolverState& state,
+                                            CSSPropertyID property,
+                                            const CSSValue& value) {
+  if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(&value)) {
+    if (identifier_value->GetValueID() == CSSValueID::kInternalUserMargin) {
+      float default_page_margin = 0;
+      if (state.GetDocument().Printing()) {
+        const WebPrintParams& params =
+            state.GetDocument().GetFrame()->GetPrintParams();
+        const WebPrintPageDescription& description =
+            params.default_page_description;
+        switch (property) {
+          case CSSPropertyID::kMarginTop:
+            default_page_margin = description.margin_top;
+            break;
+          case CSSPropertyID::kMarginRight:
+            default_page_margin = description.margin_right;
+            break;
+          case CSSPropertyID::kMarginBottom:
+            default_page_margin = description.margin_bottom;
+            break;
+          case CSSPropertyID::kMarginLeft:
+            default_page_margin = description.margin_left;
+            break;
+          default:
+            NOTREACHED();
+        }
+      }
+      return Length::Fixed(default_page_margin);
+    }
+  }
+
   Length length = ConvertLengthOrAuto(state, value);
   // This is only for margins which use __qem
   auto* numeric_literal = DynamicTo<CSSNumericLiteralValue>(value);
   length.SetQuirk(numeric_literal && numeric_literal->IsQuirkyEms());
   return length;
+}
+
+Length StyleBuilderConverter::ConvertMarginTop(StyleResolverState& state,
+                                               const CSSValue& value) {
+  return ConvertMargin(state, CSSPropertyID::kMarginTop, value);
+}
+
+Length StyleBuilderConverter::ConvertMarginRight(StyleResolverState& state,
+                                                 const CSSValue& value) {
+  return ConvertMargin(state, CSSPropertyID::kMarginRight, value);
+}
+
+Length StyleBuilderConverter::ConvertMarginBottom(StyleResolverState& state,
+                                                  const CSSValue& value) {
+  return ConvertMargin(state, CSSPropertyID::kMarginBottom, value);
+}
+
+Length StyleBuilderConverter::ConvertMarginLeft(StyleResolverState& state,
+                                                const CSSValue& value) {
+  return ConvertMargin(state, CSSPropertyID::kMarginLeft, value);
 }
 
 scoped_refptr<QuotesData> StyleBuilderConverter::ConvertQuotes(

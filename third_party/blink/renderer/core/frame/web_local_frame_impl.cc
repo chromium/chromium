@@ -88,6 +88,7 @@
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 
 #include <algorithm>
+#include <cmath>
 #include <memory>
 #include <numeric>
 #include <utility>
@@ -417,8 +418,8 @@ class ChromePrintContext : public PrintContext {
           GetFrame()->GetDocument()->GetPageDescription(page_index);
 
       AffineTransform transform;
-      transform.Translate(description.margin_left,
-                          current_height + description.margin_top);
+      transform.Translate(std::floor(description.margin_left),
+                          current_height + std::floor(description.margin_top));
 
       if (description.orientation == PageOrientation::kUpright) {
         current_height += description.size.height() + 1;

@@ -245,7 +245,13 @@ class StyleBuilderConverter {
   static LengthPoint ConvertOffsetPosition(StyleResolverState&,
                                            const CSSValue&);
   static float ConvertPerspective(StyleResolverState&, const CSSValue&);
-  static Length ConvertQuirkyLength(StyleResolverState&, const CSSValue&);
+  static Length ConvertMargin(StyleResolverState&,
+                              CSSPropertyID,
+                              const CSSValue&);
+  static Length ConvertMarginTop(StyleResolverState&, const CSSValue&);
+  static Length ConvertMarginRight(StyleResolverState&, const CSSValue&);
+  static Length ConvertMarginBottom(StyleResolverState&, const CSSValue&);
+  static Length ConvertMarginLeft(StyleResolverState&, const CSSValue&);
   static scoped_refptr<QuotesData> ConvertQuotes(StyleResolverState&,
                                                  const CSSValue&);
   static LengthSize ConvertRadius(StyleResolverState&, const CSSValue&);
