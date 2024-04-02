@@ -18290,6 +18290,38 @@
             ]
         }
     ],
+    "SysUiHoldbackStudy": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Default",
+                    "disable_features": [
+                        "SysUiShouldHoldbackGifRecording",
+                        "SysUiShouldHoldbackTaskManagement"
+                    ]
+                },
+                {
+                    "name": "SysUiHoldbackStudy",
+                    "enable_features": [
+                        "SysUiShouldHoldbackGifRecording",
+                        "SysUiShouldHoldbackTaskManagement"
+                    ]
+                },
+                {
+                    "name": "NoFirstPartyIntegrations",
+                    "enable_features": [
+                        "SysUiShouldHoldbackTaskManagement"
+                    ],
+                    "disable_features": [
+                        "SysUiShouldHoldbackGifRecording"
+                    ]
+                }
+            ]
+        }
+    ],
     "SystemEmojiPickerGIFSupportByDefault": [
         {
             "platforms": [
