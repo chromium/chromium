@@ -591,12 +591,14 @@ ts_deps: See |deps| in ts_library(). Also used for webui_path_mappings().
          Optional parameter.
 ts_extra_deps: See |extra_deps| in ts_library(). Optional parameter.
 ts_path_mappings: See |path_mappings| in ts_library(). Optional parameter.
-ts_tsconfig_base: The tsconfig file to use for ts_library(). Optional, defaults
-                  to "//tools/typescript/tsconfig_base_polymer.json" for Polymer
-                  UIs (i.e. UIs that specify |web_component_files| and/or
-                  |icons_html_files| and do not set |html_to_wrapper_template|
-                  to "native"). Defaults to
-                  "//tools/typescript/tsconfig_base.json" for non-Polymer UIs.
+ts_tsconfig_base: The tsconfig file to use for ts_library(). Optional. Defaults
+                  to "//tools/typescript/tsconfig_base_polymer.json" for UIs
+                  that depend on Polymer (i.e. have
+                  "//third_party/polymer/v3_0:library" in their |ts_deps|).
+                  Defaults to "//tools/typescript/tsconfig_base_lit.json" for
+                  UIs that do not depend on Polymer and depend on Lit (i.e. have
+                  "//third_party/lit/v3_0:build_ts" in |ts_deps|). Defaults to
+                  "//tools/typescript/tsconfig_base.json" for all other UIs.
 
 HTML/CSS/JS optimization related params:
 optimize: Specifies whether any optimization steps will be used. Defaults to the

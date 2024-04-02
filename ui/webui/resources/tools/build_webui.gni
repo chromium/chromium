@@ -324,15 +324,23 @@ template("build_webui") {
 
     if (defined(invoker.ts_tsconfig_base)) {
       tsconfig_base = invoker.ts_tsconfig_base
-    } else {
-      if ((defined(invoker.web_component_files) ||
-           defined(invoker.icons_html_files)) &&
-          (!defined(invoker.html_to_wrapper_template) ||
-           invoker.html_to_wrapper_template != "native")) {
-        # Default tsconfig is tsconfig_base_polymer.json for Polymer UIs.
-        # tsconfig_base is left unset (defaults to
-        # //tools/typescript/tsconfig_base.json) for non-Polymer UIs.
+    } else if (defined(invoker.ts_deps)) {
+      # Default tsconfig is set to tsconfig_base_polymer.json for targets
+      # with a Polymer dependency, set to tsconfig_base_lit.json for
+      # targets with a Lit dependency and no Polymer dependency, and left
+      # unset (defaults to //tools/typescript/tsconfig_base.json) for other
+      # non-Polymer, non-Lit targets.
+      has_polymer =
+          filter_include(invoker.ts_deps,
+                         [ "//third_party/polymer/v3_0:library" ]) != []
+      if (has_polymer) {
         tsconfig_base = "//tools/typescript/tsconfig_base_polymer.json"
+      } else {
+        has_lit = filter_include(invoker.ts_deps,
+                                 [ "//third_party/lit/v3_0:build_ts" ]) != []
+        if (has_lit) {
+          tsconfig_base = "//tools/typescript/tsconfig_base_lit.json"
+        }
       }
     }
 
