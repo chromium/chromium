@@ -22,6 +22,7 @@
 #include "media/base/video_frame.h"
 #include "media/formats/mp4/box_definitions.h"
 #include "media/media_buildflags.h"
+#include "media/mojo/clients/mojo_audio_encoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -59,6 +60,7 @@ using ::testing::TestWithParam;
 using ::testing::ValuesIn;
 
 #if BUILDFLAG(IS_WIN)
+#include "base/test/scoped_os_info_override_win.h"
 #include "media/gpu/windows/mf_audio_encoder.h"
 #define HAS_AAC_ENCODER 1
 #endif
@@ -186,6 +188,22 @@ class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
   }
   bool hasAudioRecorders() const {
     return !media_recorder_handler_->audio_recorders_.empty();
+  }
+
+  bool IsTargetAudioCodecSupported(const String& codecs) {
+    if (codecs.Find("mp4a.40.2") != kNotFound) {
+#if !defined(HAS_AAC_ENCODER)
+      return false;
+#else
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+      return media::MojoAudioEncoder::IsSupported(media::AudioCodec::kAAC);
+#else
+      return false;
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+#endif  // !defined(HAS_AAC_ENCODER)
+    }
+
+    return true;
   }
 
   void OnVideoFrameForTesting(scoped_refptr<media::VideoFrame> frame) {
@@ -381,14 +399,6 @@ class MediaRecorderHandlerTest : public TestWithParam<MediaRecorderTestParams>,
     return true;
   }
 
-  bool IsAacCodecInUnSupportedPlatform(const String codecs) {
-#if !defined(HAS_AAC_ENCODER)
-    return codecs.Find("mp4a.40.2") != kNotFound;
-#else
-    return false;
-#endif
-  }
-
   bool IsAv1CodecSupported(const String codecs) {
 #if BUILDFLAG(ENABLE_LIBAOM)
     return true;
@@ -475,6 +485,10 @@ TEST_P(MediaRecorderHandlerTest, SupportsBitrateMode) {
     return;
   }
 
+  if (!IsTargetAudioCodecSupported(codecs)) {
+    return;
+  }
+
   EXPECT_TRUE(media_recorder_handler_->Initialize(
       recorder, registry_.test_stream(), mime_type, codecs,
       AudioTrackRecorder::BitrateMode::kVariable));
@@ -496,11 +510,11 @@ TEST_P(MediaRecorderHandlerTest, InitializeFailedWhenMP4MuxerFeatureDisabled) {
   const String mime_type(GetParam().mime_type);
   const String codecs(GetParam().codecs);
 
-  if (IsAacCodecInUnSupportedPlatform(codecs)) {
+  if (!IsAv1CodecSupported(codecs)) {
     return;
   }
 
-  if (!IsAv1CodecSupported(codecs)) {
+  if (!IsTargetAudioCodecSupported(codecs)) {
     return;
   }
 
@@ -536,7 +550,7 @@ TEST_P(MediaRecorderHandlerTest, EncodeVideoFrames) {
     return;
   }
 
-  if (IsAacCodecInUnSupportedPlatform(GetParam().codecs)) {
+  if (!IsTargetAudioCodecSupported(GetParam().codecs)) {
     return;
   }
 
@@ -802,6 +816,10 @@ TEST_P(MediaRecorderHandlerTest, ActualMimeType) {
     return;
   }
 
+  if (!IsTargetAudioCodecSupported(codecs)) {
+    return;
+  }
+
   EXPECT_TRUE(media_recorder_handler_->Initialize(
       recorder, registry_.test_stream(), mime_type, codecs,
       AudioTrackRecorder::BitrateMode::kVariable));
@@ -952,6 +970,10 @@ static const MediaRecorderTestParams kMediaRecorderTestParamsForMp4[] = {
 
 TEST_P(MediaRecorderHandlerTestForMp4,
        InitializeFailedWhenMP4MuxerFeatureDisabled) {
+  if (!IsTargetAudioCodecSupported(GetParam().codecs)) {
+    return;
+  }
+
   // When feature is disabled, Initialize will fail.
   AddTracks();
   V8TestingScope scope;
@@ -1017,6 +1039,9 @@ TEST_P(MediaRecorderHandlerIsSupportedTypeTestForMp4,
 
     for (const auto& type : good_mp4_video_mime_types) {
       for (const auto& codec : good_mp4_audio_codecs) {
+        if (!IsTargetAudioCodecSupported(codec)) {
+          continue;
+        }
         EXPECT_TRUE(media_recorder_handler_->CanSupportMimeType(type, codec));
       }
     }
@@ -1024,6 +1049,9 @@ TEST_P(MediaRecorderHandlerIsSupportedTypeTestForMp4,
     for (const auto& type : good_mp4_video_mime_types) {
       for (const auto& video_codec : good_mp4_video_codecs) {
         for (const auto& audio_codec : good_mp4_audio_codecs) {
+          if (!IsTargetAudioCodecSupported(audio_codec)) {
+            continue;
+          }
           String codecs = video_codec + "," + audio_codec;
           EXPECT_TRUE(
               media_recorder_handler_->CanSupportMimeType(type, codecs));
@@ -1066,6 +1094,9 @@ TEST_P(MediaRecorderHandlerIsSupportedTypeTestForMp4,
     // success cases.
     for (const auto& type : good_mp4_audio_mime_types) {
       for (const auto& codec : good_mp4_audio_codecs) {
+        if (!IsTargetAudioCodecSupported(codec)) {
+          continue;
+        }
         EXPECT_TRUE(media_recorder_handler_->CanSupportMimeType(type, codec));
       }
     }
@@ -1147,6 +1178,33 @@ TEST_P(MediaRecorderHandlerIsSupportedTypeTestForMp4,
 #endif
   }
 }
+
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_PROPRIETARY_CODECS)
+TEST_P(MediaRecorderHandlerIsSupportedTypeTestForMp4,
+       CanSupportAacCodecForWinNSku) {
+  if (!GetParam()) {
+    GTEST_SKIP();
+  }
+
+  if (!IsTargetAudioCodecSupported("mp4a.40.2")) {
+    return;
+  }
+
+  {
+    base::test::ScopedOSInfoOverride scoped_os_info_override(
+        base::test::ScopedOSInfoOverride::Type::kWin11Home);
+    EXPECT_TRUE(
+        media_recorder_handler_->CanSupportMimeType("audio/mp4", "mp4a.40.2"));
+  }
+
+  {
+    base::test::ScopedOSInfoOverride scoped_os_info_override(
+        base::test::ScopedOSInfoOverride::Type::kWin11HomeN);
+    EXPECT_FALSE(
+        media_recorder_handler_->CanSupportMimeType("audio/mp4", "mp4a.40.2"));
+  }
+}
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 INSTANTIATE_TEST_SUITE_P(
     All,
@@ -1354,13 +1412,17 @@ class MediaRecorderHandlerWinAacCodecTest : public TestWithParam<unsigned int>,
 };
 
 TEST_P(MediaRecorderHandlerWinAacCodecTest, AudioBitsPerSeconds) {
+  const String codecs("mp4a.40.2");
+  if (!IsTargetAudioCodecSupported(codecs)) {
+    return;
+  }
+
   AddTracks();
 
   V8TestingScope scope;
   auto* recorder = MakeGarbageCollected<MockMediaRecorder>(scope);
 
   const String mime_type("audio/mp4");
-  const String codecs("mp4a.40.2");
   EXPECT_TRUE(media_recorder_handler_->Initialize(
       recorder, registry_.test_stream(), mime_type, codecs,
       AudioTrackRecorder::BitrateMode::kVariable));

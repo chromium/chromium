@@ -163,6 +163,9 @@ class BASE_EXPORT OSInfo {
   // Returns the "ReleaseId" (Windows 10 release number) from the registry.
   const std::string& release_id() const { return release_id_; }
 
+  // It returns true if the Windows SKU is N edition.
+  bool IsWindowsNSku() const;
+
  private:
   friend class base::test::ScopedOSInfoOverride;
   FRIEND_TEST_ALL_PREFIXES(OSInfo, MajorMinorBuildToVersion);
@@ -235,6 +238,7 @@ class BASE_EXPORT OSInfo {
   WowProcessMachine wow_process_machine_;
   WowNativeMachine wow_native_machine_;
   std::string processor_model_name_;
+  DWORD os_type_;
 };
 
 // Because this is by far the most commonly-requested value from the above

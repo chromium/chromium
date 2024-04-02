@@ -13,6 +13,7 @@ include_rules = [
     "+base/task/task_traits.h",
     "+base/threading/sequenced_task_runner_handle.h",
     "+base/threading/thread_restrictions.h",
+    "+base/win/windows_version.h",
     "+cc/paint",
     "+media",
     "+skia/ext/platform_canvas.h",

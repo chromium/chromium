@@ -26,6 +26,7 @@
 #include "media/base/video_frame.h"
 #include "media/formats/mp4/mp4_status.h"
 #include "media/media_buildflags.h"
+#include "media/mojo/clients/mojo_audio_encoder.h"
 #include "media/mojo/clients/mojo_video_encoder_metrics_provider.h"
 #include "media/muxers/live_webm_muxer_delegate.h"
 #include "media/muxers/mp4_muxer.h"
@@ -323,6 +324,11 @@ bool MediaRecorderHandler::CanSupportMimeType(const String& type,
     }
 
     if (!match) {
+      return false;
+    }
+
+    if (codec_string == "mp4a.40.2" &&
+        !media::MojoAudioEncoder::IsSupported(media::AudioCodec::kAAC)) {
       return false;
     }
 
