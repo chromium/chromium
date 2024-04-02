@@ -1120,6 +1120,14 @@ void Widget::RunShellDrag(View* view,
     observer.OnWidgetDragComplete(this);
 }
 
+void Widget::CancelShellDrag(View* view) {
+  if (!native_widget_) {
+    return;
+  }
+
+  native_widget_->CancelShellDrag(view);
+}
+
 void Widget::SchedulePaintInRect(const gfx::Rect& rect) {
   // This happens when DestroyRootView removes all children from the
   // RootView which triggers a SchedulePaint that ends up here. This happens

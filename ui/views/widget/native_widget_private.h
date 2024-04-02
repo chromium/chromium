@@ -222,6 +222,7 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
                             const gfx::Point& location,
                             int operation,
                             ui::mojom::DragEventSource source) = 0;
+  virtual void CancelShellDrag(View* view) = 0;
   virtual void SchedulePaintInRect(const gfx::Rect& rect) = 0;
   virtual void ScheduleLayout() = 0;
   virtual void SetCursor(const ui::Cursor& cursor) = 0;

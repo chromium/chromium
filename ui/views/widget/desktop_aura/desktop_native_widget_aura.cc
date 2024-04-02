@@ -1064,6 +1064,14 @@ void DesktopNativeWidgetAura::RunShellDrag(
                       source);
 }
 
+void DesktopNativeWidgetAura::CancelShellDrag(View* view) {
+  if (!content_window_) {
+    return;
+  }
+
+  views::CancelShellDrag(content_window_);
+}
+
 void DesktopNativeWidgetAura::SchedulePaintInRect(const gfx::Rect& rect) {
   if (content_window_)
     content_window_->SchedulePaintInRect(rect);

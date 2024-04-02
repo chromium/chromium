@@ -20,6 +20,8 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -49,10 +51,14 @@
 #include "ui/views/window/dialog_delegate.h"
 #include "ui/wm/public/activation_client.h"
 
+#if BUILDFLAG(ENABLE_DESKTOP_AURA)
+#include "ui/aura/env.h"
+#include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
-#include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 #include "ui/views/win/hwnd_util.h"
 #endif
 
@@ -216,6 +222,97 @@ class NestedLoopCaptureView : public View {
 
 BEGIN_METADATA(NestedLoopCaptureView)
 END_METADATA
+
+#if BUILDFLAG(ENABLE_DESKTOP_AURA)
+// A view that runs closures in response to drag events.
+class DragView : public View, public DragController {
+  METADATA_HEADER(DragView, View)
+
+ public:
+  DragView(base::OnceClosure on_drag_enter,
+           base::OnceClosure on_drag_exit,
+           base::OnceClosure on_capture_lost,
+           base::OnceClosure on_mouse_exit)
+      : on_drag_enter_(std::move(on_drag_enter)),
+        on_drag_exit_(std::move(on_drag_exit)),
+        on_capture_lost_(std::move(on_capture_lost)),
+        on_mouse_exit_(std::move(on_mouse_exit)) {
+    set_drag_controller(this);
+  }
+
+  DragView(const DragView&) = delete;
+  DragView& operator=(const DragView&) = delete;
+
+  ~DragView() override = default;
+
+ private:
+  // DragController:
+  bool CanStartDragForView(views::View* sender,
+                           const gfx::Point& press_pt,
+                           const gfx::Point& current_pt) override {
+    EXPECT_EQ(sender, this);
+    return true;
+  }
+
+  int GetDragOperationsForView(views::View* sender,
+                               const gfx::Point& press_pt) override {
+    EXPECT_EQ(sender, this);
+    return ui::DragDropTypes::DRAG_COPY;
+  }
+
+  void WriteDragDataForView(views::View* sender,
+                            const gfx::Point& press_pt,
+                            ui::OSExchangeData* data) override {
+    data->provider().SetString(u"test");
+
+    // Without this, Lacros won't add the chromium/x-data-transfer-endpoint MIME
+    // type to the list of available types, and without that Exo won't start a
+    // drag session.
+    data->SetSource(
+        std::make_unique<ui::DataTransferEndpoint>(ui::EndpointType::kDefault));
+  }
+
+  // View:
+  bool GetDropFormats(
+      int* formats,
+      std::set<ui::ClipboardFormatType>* format_types) override {
+    *formats = ui::OSExchangeData::STRING;
+    return true;
+  }
+
+  bool CanDrop(const OSExchangeData& data) override { return true; }
+
+  void OnDragEntered(const ui::DropTargetEvent& event) override {
+    if (on_drag_enter_) {
+      std::move(on_drag_enter_).Run();
+    }
+  }
+
+  void OnDragExited() override {
+    if (on_drag_exit_) {
+      std::move(on_drag_exit_).Run();
+    }
+  }
+
+  void OnMouseCaptureLost() override {
+    if (on_capture_lost_) {
+      std::move(on_capture_lost_).Run();
+    }
+  }
+
+  void OnMouseExited(const ui::MouseEvent& event) override {
+    if (on_mouse_exit_) {
+      std::move(on_mouse_exit_).Run();
+    }
+  }
+
+  base::OnceClosure on_drag_enter_, on_drag_exit_, on_capture_lost_,
+      on_mouse_exit_;
+};
+
+BEGIN_METADATA(DragView)
+END_METADATA
+#endif  // BUILDFLAG(ENABLE_DESKTOP_AURA)
 
 ui::WindowShowState GetWidgetShowState(const Widget* widget) {
   // Use IsMaximized/IsMinimized/IsFullScreen instead of GetWindowPlacement
@@ -2220,5 +2317,132 @@ TEST_F(WidgetInputMethodInteractiveTest, AcceleratorInTextfield) {
   widget->OnKeyEvent(&key_event2);
   EXPECT_FALSE(key_event2.stopped_propagation());
 }
+
+#if BUILDFLAG(ENABLE_DESKTOP_AURA)
+
+class DesktopWidgetDragTestInteractive : public DesktopWidgetTestInteractive,
+                                         public WidgetObserver {
+ public:
+  DesktopWidgetDragTestInteractive() = default;
+
+  DesktopWidgetDragTestInteractive(const DesktopWidgetDragTestInteractive&) =
+      delete;
+  DesktopWidgetDragTestInteractive& operator=(
+      const DesktopWidgetDragTestInteractive&) = delete;
+
+  ~DesktopWidgetDragTestInteractive() override = default;
+
+ protected:
+  static constexpr gfx::Rect bounds = gfx::Rect(0, 0, 200, 200);
+
+  void InitWidget(Widget* widget,
+                  base::OnceClosure on_drag_enter,
+                  base::OnceClosure on_drag_exit,
+                  base::OnceClosure on_capture_lost) {
+    widget->AddObserver(this);
+
+    Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+    params.native_widget = new DesktopNativeWidgetAura(widget);
+    params.bounds = bounds;
+    widget->Init(std::move(params));
+
+    // On X11 and Lacros, we need another mouse event after the drag has started
+    // for `DragView::OnDragEntered()` to be called. The best way to wait for
+    // the drag to start seems to be to wait for `DragView::OnMouseExited()`,
+    // which on these platforms happens only after the drag has started.
+    auto on_mouse_exit = base::BindLambdaForTesting([]() {
+      gfx::Point target_location =
+          aura::Env::GetInstance()->last_mouse_location();
+      target_location += gfx::Vector2d(1, 1);
+      EXPECT_TRUE(
+          ui_controls::SendMouseMove(target_location.x(), target_location.y()));
+    });
+
+    widget->client_view()->AddChildView(std::make_unique<DragView>(
+        std::move(on_drag_enter), std::move(on_drag_exit),
+        std::move(on_capture_lost), std::move(on_mouse_exit)));
+
+    // Update view layout to make sure `DragView` is sized correctly. Else it
+    // might still have empty bounds when the drag event is received, preventing
+    // it from receiving the event.
+    widget->LayoutRootViewIfNecessary();
+
+    ShowSync(widget);
+  }
+
+  void StartDrag() {
+    // Move the mouse to the widget's center, press the left mouse button, and
+    // drag the mouse a bit.
+    gfx::Point start_location(bounds.width() / 2, bounds.height() / 2);
+    gfx::Point target_location = start_location + gfx::Vector2d(10, 10);
+    base::RunLoop move_loop;
+    EXPECT_TRUE(ui_controls::SendMouseMoveNotifyWhenDone(
+        start_location.x(), start_location.y(), move_loop.QuitClosure()));
+    move_loop.Run();
+    base::RunLoop press_loop;
+    EXPECT_TRUE(ui_controls::SendMouseEventsNotifyWhenDone(
+        ui_controls::MouseButton::LEFT, ui_controls::MouseButtonState::DOWN,
+        press_loop.QuitClosure()));
+    press_loop.Run();
+
+    // `SendMouseMoveNotifyWhenDone()` might not call the closure until the drag
+    // ends.
+    EXPECT_TRUE(
+        ui_controls::SendMouseMove(target_location.x(), target_location.y()));
+  }
+
+  void WaitForDragEnd() {
+    drag_wait_loop_.Run();
+    EXPECT_TRUE(drag_entered_);
+  }
+
+  bool drag_entered_ = false;
+
+ private:
+  // WidgetObserver:
+  void OnWidgetDragComplete(Widget* widget) override { drag_wait_loop_.Quit(); }
+
+  base::RunLoop drag_wait_loop_;
+};
+
+// Cancels a DnD session started by `RunShellDrag()`.
+TEST_F(DesktopWidgetDragTestInteractive, CancelShellDrag) {
+  WidgetAutoclosePtr widget(new Widget);
+
+  auto cancel = [&]() {
+    drag_entered_ = true;
+
+    widget->CancelShellDrag(widget->client_view());
+
+#if BUILDFLAG(IS_WIN)
+    // On Windows we can't just cancel the drag when we want, only the next time
+    // the drag is updated. Send another mouse move to give us a chance to
+    // cancel the drag.
+    gfx::Point target_location =
+        aura::Env::GetInstance()->last_mouse_location();
+    target_location += gfx::Vector2d(1, 1);
+    EXPECT_TRUE(
+        ui_controls::SendMouseMove(target_location.x(), target_location.y()));
+#endif  // BUILDFLAG(IS_WIN)
+  };
+
+  // See the comment in `DesktopWidgetDragTestInteractive::StartDrag()`.
+#if BUILDFLAG(IS_WIN)
+  base::OnceClosure on_capture_lost = base::BindLambdaForTesting(cancel);
+#else
+  base::OnceClosure on_capture_lost = base::DoNothing();
+#endif  // BUILDFLAG(IS_WIN)
+
+  InitWidget(widget.get(), /*on_drag_enter=*/base::BindLambdaForTesting(cancel),
+             /*on_drag_exit=*/base::DoNothing(), std::move(on_capture_lost));
+
+  StartDrag();
+
+  // Wait for the drag to be cancelled by `DragView::OnDragEntered()` /
+  // `DragView::OnMouseCaptureLost()`.
+  WaitForDragEnd();
+}
+
+#endif  // BUILDFLAG(ENABLE_DESKTOP_AURA)
 
 }  // namespace views::test

@@ -19,12 +19,16 @@ class Point;
 namespace views {
 class Widget;
 
-// Starts a drag operation. This blocks until the drag operation completes.
+// Starts a drag operation. This blocks until the drag operation completes or is
+// cancelled by calling `CancelShellDrag()`.
 VIEWS_EXPORT void RunShellDrag(gfx::NativeView view,
                                std::unique_ptr<ui::OSExchangeData> data,
                                const gfx::Point& location,
                                int operation,
                                ui::mojom::DragEventSource source);
+
+// Cancels a currently running drag operation.
+VIEWS_EXPORT void CancelShellDrag(gfx::NativeView view);
 
 // Returns the device scale for the display associated with this |widget|'s
 // native view.

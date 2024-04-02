@@ -879,6 +879,12 @@ void NativeWidgetAura::RunShellDrag(View* view,
     views::RunShellDrag(window_, std::move(data), location, operation, source);
 }
 
+void NativeWidgetAura::CancelShellDrag(View* view) {
+  if (window_) {
+    views::CancelShellDrag(window_);
+  }
+}
+
 void NativeWidgetAura::SchedulePaintInRect(const gfx::Rect& rect) {
   if (window_)
     window_->SchedulePaintInRect(rect);

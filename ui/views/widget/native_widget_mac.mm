@@ -789,6 +789,13 @@ void NativeWidgetMac::RunShellDrag(View* view,
                                                         operation, source);
 }
 
+void NativeWidgetMac::CancelShellDrag(View* view) {
+  if (!ns_window_host_) {
+    return;
+  }
+  ns_window_host_->drag_drop_client()->EndDrag();
+}
+
 void NativeWidgetMac::SchedulePaintInRect(const gfx::Rect& rect) {
   // |rect| is relative to client area of the window.
   NSWindow* window = GetNativeWindow().GetNativeNSWindow();

@@ -148,6 +148,7 @@ class VIEWS_EXPORT NativeWidgetAura : public internal::NativeWidgetPrivate,
                     const gfx::Point& location,
                     int operation,
                     ui::mojom::DragEventSource source) override;
+  void CancelShellDrag(View* view) override;
   void SchedulePaintInRect(const gfx::Rect& rect) override;
   void ScheduleLayout() override;
   void SetCursor(const ui::Cursor& cursor) override;

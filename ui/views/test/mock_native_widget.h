@@ -133,6 +133,7 @@ class MockNativeWidget : public internal::NativeWidgetPrivate {
                int operation,
                ui::mojom::DragEventSource source),
               (override));
+  MOCK_METHOD(void, CancelShellDrag, (View * view), (override));
   MOCK_METHOD(void, SchedulePaintInRect, (const gfx::Rect& rect), (override));
   MOCK_METHOD(void, ScheduleLayout, (), (override));
   MOCK_METHOD(void, SetCursor, (const ui::Cursor& cursor), (override));
