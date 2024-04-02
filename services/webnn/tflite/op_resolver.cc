@@ -20,6 +20,14 @@ OpResolver::OpResolver() {
              ::tflite::ops::builtin::Register_AVERAGE_POOL_2D(),
              /* min_version */ 1,
              /* max_version */ 3);
+  AddBuiltin(::tflite::BuiltinOperator_ARG_MAX,
+             ::tflite::ops::builtin::Register_ARG_MAX(),
+             /* min_version = */ 1,
+             /* max_version = */ 2);
+  AddBuiltin(::tflite::BuiltinOperator_ARG_MIN,
+             ::tflite::ops::builtin::Register_ARG_MIN(),
+             /* min_version = */ 1,
+             /* max_version = */ 2);
   AddBuiltin(::tflite::BuiltinOperator_CONCATENATION,
              ::tflite::ops::builtin::Register_CONCATENATION(),
              /* min_version = */ 1,

@@ -139,6 +139,8 @@ class GraphBuilder final {
 
   // Serialize functions for members of the mojom::Operation union. Keep these
   // functions in the same order as in webnn_graph.mojom.
+  base::expected<OperatorOffset, std::string> SerializeArgMinMax(
+      const mojom::ArgMinMax& arg_min_max);
   base::expected<OperatorOffset, std::string> SerializeClamp(
       const mojom::Clamp& clamp);
   base::expected<OperatorOffset, std::string> SerializeConv2d(

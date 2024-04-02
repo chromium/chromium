@@ -15,6 +15,7 @@
 #include "base/types/expected_macros.h"
 #include "components/ml/webnn/graph_validation_utils.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
+#include "services/webnn/webnn_utils.h"
 #include "third_party/tflite/src/tensorflow/lite/schema/schema_generated.h"
 
 namespace webnn::tflite {
@@ -297,6 +298,11 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
     const mojom::Operation& op) {
   OperatorOffset operator_offset;
   switch (op.which()) {
+    case mojom::Operation::Tag::kArgMinMax: {
+      ASSIGN_OR_RETURN(operator_offset,
+                       SerializeArgMinMax(*op.get_arg_min_max()));
+      break;
+    }
     case mojom::Operation::Tag::kClamp: {
       ASSIGN_OR_RETURN(operator_offset, SerializeClamp(*op.get_clamp()));
       break;
@@ -369,8 +375,6 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
     case mojom::Operation::Tag::kTranspose:
       operator_offset = SerializeTranspose(*op.get_transpose());
       break;
-    case mojom::Operation::Tag::kArgMinMax:
-      return base::unexpected("argMinMax is not implemented");
     case mojom::Operation::Tag::kBatchNormalization:
       return base::unexpected("batchNormalization is not implemented");
     case mojom::Operation::Tag::kExpand:
@@ -658,6 +662,62 @@ int32_t GraphBuilder::InsertTransposeOperation(
       input_tensor_index, output_tensor_index, permutation));
 
   return output_tensor_index;
+}
+
+auto GraphBuilder::SerializeArgMinMax(const mojom::ArgMinMax& arg_min_max)
+    -> base::expected<OperatorOffset, std::string> {
+  // The axis is a scalar constraint in arg_min_max::Prepare() function here
+  // third_party/tflite/src/tensorflow/lite/kernels/arg_min_max.cc, the tensor
+  // axes are being discussed in the working group here
+  // https://github.com/webmachinelearning/webnn/issues/629.
+  // TODO(crbug.com/331977830): Support empty axis that means no dimensions are
+  // reduced.
+  if (arg_min_max.axes.size() != 1) {
+    return base::unexpected(OpKindToString(arg_min_max.kind) +
+                            ": Only supports scalar axis.");
+  }
+  if (arg_min_max.select_last_index) {
+    return base::unexpected(OpKindToString(arg_min_max.kind) +
+                            ": Only first index can be selected.");
+  }
+  ASSIGN_OR_RETURN(std::vector<int32_t> signed_axes,
+                   ToSignedDimensions(arg_min_max.axes));
+  const std::array<int32_t, 1> axis_tensor_shape = {
+      base::checked_cast<int32_t>(signed_axes.size())};
+  const int32_t axis_tensor_index =
+      SerializeTensorWithBuffer<int32_t>(signed_axes, axis_tensor_shape);
+
+  ::tflite::BuiltinOperator operator_code;
+  ::tflite::BuiltinOptions builtin_options_type;
+  flatbuffers::Offset<void> builtin_options;
+  ::tflite::TensorType output_type = ::tflite::TensorType_INT64;
+  switch (arg_min_max.kind) {
+    case mojom::ArgMinMax::Kind::kMax: {
+      operator_code = ::tflite::BuiltinOperator_ARG_MAX;
+      builtin_options_type = ::tflite::BuiltinOptions_ArgMaxOptions;
+      builtin_options =
+          ::tflite::CreateArgMaxOptions(builder_, output_type).Union();
+      break;
+    }
+    case mojom::ArgMinMax::Kind::kMin: {
+      operator_code = ::tflite::BuiltinOperator_ARG_MIN;
+      builtin_options_type = ::tflite::BuiltinOptions_ArgMinOptions;
+      builtin_options =
+          ::tflite::CreateArgMinOptions(builder_, output_type).Union();
+      break;
+    }
+  }
+
+  const uint32_t operator_code_index = GetOperatorCodeIndex(operator_code);
+  const std::array<int32_t, 2> op_inputs = {
+      operand_to_index_map_.at(arg_min_max.input_operand_id),
+      axis_tensor_index};
+  const std::array<int32_t, 1> op_outputs = {
+      operand_to_index_map_.at(arg_min_max.output_operand_id)};
+  return ::tflite::CreateOperator(builder_, operator_code_index,
+                                  builder_.CreateVector<int32_t>(op_inputs),
+                                  builder_.CreateVector<int32_t>(op_outputs),
+                                  builtin_options_type, builtin_options);
 }
 
 auto GraphBuilder::SerializeClamp(const mojom::Clamp& clamp)
