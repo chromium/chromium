@@ -42,10 +42,6 @@ BASE_DECLARE_FEATURE(kClearUndecryptablePasswordsOnSync);
 BASE_DECLARE_FEATURE(kFetchGaiaHashOnSignIn);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// This flag enables password filling across grouped websites. Information about
-// website groups is provided by the affiliation service.
-BASE_DECLARE_FEATURE(kFillingAcrossGroupedSites);
-
 // Enables the experiment for the password manager to only fill on account
 // selection, rather than autofilling on page load, with highlighting of fields.
 BASE_DECLARE_FEATURE(kFillOnAccountSelect);

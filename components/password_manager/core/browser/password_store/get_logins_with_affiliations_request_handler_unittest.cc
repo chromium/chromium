@@ -274,9 +274,10 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, AffiliationsArePSLTest) {
   RunUntilIdle();
 }
 
-TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, GroupedMatchesOnlyTest) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kFillingAcrossGroupedSites);
+// TODO(b/331409076): Enable this test once filtering is done on the caller
+// side.
+TEST_F(GetLoginsWithAffiliationsRequestHandlerTest,
+       DISABLED_GroupedMatchesOnlyTest) {
   backend()->AddLoginAsync(CreateForm(kGroupWebURL, u"username", u"password"),
                            base::DoNothing());
   RunUntilIdle();
@@ -306,10 +307,7 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, GroupedMatchesOnlyTest) {
   RunUntilIdle();
 }
 
-// Since kFillingAcrossGroupedSites is disabled grouped matches aren't returned.
 TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, GroupedMatchesClearedTest) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kFillingAcrossGroupedSites);
   backend()->AddLoginAsync(CreateForm(kGroupWebURL, u"username", u"password"),
                            base::DoNothing());
   RunUntilIdle();
@@ -341,10 +339,10 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, GroupedMatchesClearedTest) {
       1);
 }
 
+// TODO(b/331409076): Enable this test once filtering is done on the caller
+// side.
 TEST_F(GetLoginsWithAffiliationsRequestHandlerTest,
-       GroupedAndAffiliatedMatchesIntersectTest) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kFillingAcrossGroupedSites);
+       DISABLED_GroupedAndAffiliatedMatchesIntersectTest) {
   backend()->AddLoginAsync(
       CreateForm(kAffiliatedAndroidApp, u"username1", u"password"),
       base::DoNothing());

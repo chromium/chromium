@@ -45,10 +45,6 @@ BASE_FEATURE(kFetchGaiaHashOnSignIn,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kFillingAcrossGroupedSites,
-             "FillingAcrossGroupedSites",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kFillOnAccountSelect,
              "fill-on-account-select",
              base::FEATURE_DISABLED_BY_DEFAULT);

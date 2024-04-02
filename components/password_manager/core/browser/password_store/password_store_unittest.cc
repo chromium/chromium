@@ -1105,21 +1105,9 @@ INSTANTIATE_TEST_SUITE_P(Federation,
                          PasswordStoreFederationTest,
                          testing::Bool());
 
-// The 'bool' param corresponds to 'kFillingAcrossGroupedSites'.
-class PasswordStoreGroupsTest : public PasswordStoreTest,
-                                      public testing::WithParamInterface<bool> {
+class PasswordStoreGroupsTest : public PasswordStoreTest {
   void SetUp() override {
     PasswordStoreTest::SetUp();
-    feature_list_.Reset();
-    if (GetParam()) {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{features::kFillingAcrossGroupedSites},
-          /*disabled_features=*/{});
-    } else {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{},
-          /*disabled_features=*/{features::kFillingAcrossGroupedSites});
-    }
     store_ = CreatePasswordStore();
     auto owning_mock_match_helper =
         std::make_unique<MockAffiliatedMatchHelper>(&affiliation_service_);
@@ -1180,7 +1168,7 @@ class PasswordStoreGroupsTest : public PasswordStoreTest,
 
 // Retrieve matching passwords for affiliated groups credentials and make sure
 // the properties are set correctly.
-TEST_P(PasswordStoreGroupsTest, GetLoginsWithWebGroup) {
+TEST_F(PasswordStoreGroupsTest, GetLoginsWithWebGroup) {
   std::vector<std::unique_ptr<PasswordForm>> all_credentials =
       CreateCredentialsAndAddToStore();
 
@@ -1201,19 +1189,10 @@ TEST_P(PasswordStoreGroupsTest, GetLoginsWithWebGroup) {
   expected_results.back().match_type =
       PasswordForm::MatchType::kAffiliated | PasswordForm::MatchType::kPSL;
 
-  // Credential that is a group match of the observed form.
-  if (base::FeatureList::IsEnabled(features::kFillingAcrossGroupedSites)) {
-    expected_results.push_back(*all_credentials[3]);
-    expected_results.back().match_type = PasswordForm::MatchType::kGrouped;
-  }
-
   // In the production 'kTestWebRealm1' won't be in the list but the code should
   // protect against it.
   std::vector<std::string> affiliated_realms = {kTestWebRealm1, kTestWebRealm2};
   std::vector<std::string> grouped_realms;
-  if (base::FeatureList::IsEnabled(features::kFillingAcrossGroupedSites)) {
-    grouped_realms.emplace_back(kTestGroupRealm);
-  }
   mock_affiliated_match_helper_->ExpectCallToGetAffiliatedAndGrouped(
       observed_form, affiliated_realms, grouped_realms);
 
@@ -1226,10 +1205,6 @@ TEST_P(PasswordStoreGroupsTest, GetLoginsWithWebGroup) {
   store_->GetLogins(observed_form, mock_consumer.GetWeakPtr());
   WaitForPasswordStore();
 }
-
-INSTANTIATE_TEST_SUITE_P(Groups,
-                         PasswordStoreGroupsTest,
-                         testing::Bool());
 
 TEST_F(PasswordStoreTest, DelegatesGetAllLoginsToBackend) {
   auto [store, mock_backend] = CreateUnownedStoreWithOwnedMockBackend();

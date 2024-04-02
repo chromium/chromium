@@ -1794,12 +1794,6 @@ const char kDrawImmediatelyWhenInteractiveDescription[] =
     "Causes viz to activate and draw frames immediately during a touch "
     "interaction or scroll.";
 
-const char kFillingAcrossGroupedSitesName[] =
-    "Password filling across grouped websites";
-const char kFillingAcrossGroupedSitesDescription[] =
-    "This flag enables password filling across grouped websites. Information "
-    "about website groups is provided by the affiliation service.";
-
 const char kFluentOverlayScrollbarsName[] = "Fluent Overlay scrollbars.";
 const char kFluentOverlayScrollbarsDescription[] =
     "Stylizes scrollbars with Microsoft Fluent design and makes them overlay "

@@ -8868,14 +8868,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     "ContentLanguagesInLanguagePicker")},
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-    {"filling-across-grouped-sites",
-     flag_descriptions::kFillingAcrossGroupedSitesName,
-     flag_descriptions::kFillingAcrossGroupedSitesDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kFillingAcrossGroupedSites)},
-#endif  // !BUILDFLAG(IS_ANDROID)
-
     {"draw-predicted-ink-point", flag_descriptions::kDrawPredictedPointsName,
      flag_descriptions::kDrawPredictedPointsDescription, kOsAll,
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kDrawPredictedInkPoint,

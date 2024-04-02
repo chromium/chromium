@@ -1022,9 +1022,6 @@ extern const char kFileSystemObserverDescription[];
 extern const char kDrawImmediatelyWhenInteractiveName[];
 extern const char kDrawImmediatelyWhenInteractiveDescription[];
 
-extern const char kFillingAcrossGroupedSitesName[];
-extern const char kFillingAcrossGroupedSitesDescription[];
-
 extern const char kFluentOverlayScrollbarsName[];
 extern const char kFluentOverlayScrollbarsDescription[];
 
