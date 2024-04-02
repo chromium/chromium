@@ -242,7 +242,8 @@ suite('PasswordManagerAppTest', function() {
                    .includes(testEmail));
   });
 
-  test('settings password moved toast', async () => {
+  // TODO(crbug.com/331450809): This test is flaky.
+  test.skip('settings password moved toast', async () => {
     const testEmail = 'test.user@gmail.com';
     const group = createCredentialGroup({
       name: 'test.com',
