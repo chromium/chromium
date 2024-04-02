@@ -670,6 +670,17 @@ enum class ProcessIncomingPasswordSharingInvitationResult {
 };
 
 #if BUILDFLAG(IS_ANDROID)
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Keep in sync with `
+// `LocalPwdMigrationProgressState` in the passwords' enums.xml.
+enum class LocalPwdMigrationProgressState {
+  kScheduled = 0,
+  kStarted = 1,
+  // Finished is recorded irrespective of success status.
+  kFinished = 2,
+  kMaxValue = kFinished,
+};
+
 // Enum that describes different outcomes on the attempt of triggering the
 // Touch-To-Fill bottom sheet for password generation.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -871,6 +882,13 @@ void LogProcessIncomingPasswordSharingInvitationResult(
 // Logs GroupedPasswordFetchResult.
 void LogGroupedPasswordsResults(
     const std::vector<password_manager::PasswordForm>& logins);
+
+#if BUILDFLAG(IS_ANDROID)
+// Records the scheduling state of the local passwords migration to the
+// Android backend.
+void LogLocalPwdMigrationProgressState(
+    LocalPwdMigrationProgressState scheduling_state);
+#endif
 
 // Wraps |callback| into another callback that measures the elapsed time between
 // construction and actual execution of the callback. Records the result to

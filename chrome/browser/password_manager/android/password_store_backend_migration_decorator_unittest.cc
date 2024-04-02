@@ -8,11 +8,13 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/password_store.h"
@@ -117,6 +119,26 @@ class PasswordStoreBackendMigrationDecoratorTest : public testing::Test {
   std::unique_ptr<PasswordStoreBackendMigrationDecorator>
       backend_migration_decorator_;
 };
+
+TEST_F(PasswordStoreBackendMigrationDecoratorTest,
+       RecordsSchedulingOfLocalPwdMigration) {
+  base::HistogramTester histogram_tester;
+  prefs().SetInteger(
+      prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          prefs::UseUpmLocalAndSeparateStoresState::kOffAndMigrationPending));
+  backend_migration_decorator()->InitBackend(
+      /*affiliated_match_helper=*/nullptr,
+      /*remote_form_changes_received=*/base::DoNothing(),
+      /*sync_enabled_or_disabled_cb=*/base::DoNothing(),
+      /*completion=*/base::DoNothing());
+  // Migration should be scheduled.
+  ASSERT_EQ(1, GetPendingMainThreadTaskCount());
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.UnifiedPasswordManager.MigrationForLocalUsers."
+      "ProgressState",
+      metrics_util::LocalPwdMigrationProgressState::kScheduled, 1);
+}
 
 TEST_F(PasswordStoreBackendMigrationDecoratorTest, GetAllLoginsAsync) {
   EXPECT_CALL(built_in_backend(), GetAllLoginsAsync);
