@@ -28,13 +28,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the main spec repository
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
         with:
           repository: ${{ github.event.inputs.repository || 'w3c/webdriver-bidi' }}
           ref: ${{ github.event.inputs.source_ref || 'main' }}
           path: webdriver-bidi
       - name: Check out w3c/permissions spec repository
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
         with:
           repository: w3c/permissions
           ref: main
@@ -62,14 +62,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out mapper repository
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
       - name: Set up Python
-        uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.0.0
+        uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d # v5.1.0
         with:
           python-version: '3.11'
           cache: pip
       - name: Setup Go
-        uses: actions/setup-go@6c1fd22b67f7a7c42ad9a45c0f4197434035e429 # v5.0.0
+        uses: actions/setup-go@be1aa1186e83689f3e45adaf3697af86f816fb2e # v5.0.0
         with:
           go-version: '1.21.x'
       - name: Install cddlconv
@@ -101,7 +101,7 @@ jobs:
       - name: Run formatter
         run: npm run format || npm run format
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@a4f52f8033a6168103c2538976c07b467e8163bc # v6.0.1
+        uses: peter-evans/create-pull-request@70a41aba780001da0a30141984ae2a0c95d8704e # v6.0.2
         with:
           token: ${{ secrets.BROWSER_AUTOMATION_BOT_TOKEN }}
           branch: browser-automation-bot/update-bidi-types

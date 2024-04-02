@@ -40,7 +40,7 @@ jobs:
     if: contains(github.event.pull_request.labels.*.name, 'puppeteer')
     steps:
       - name: Checkout Chromium-BiDi
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
         with:
           path: 'bidi'
       - name: Set up FFmpeg
@@ -63,7 +63,7 @@ jobs:
         run: npm link
 
       - name: Checkout
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
         with:
           repository: 'puppeteer/puppeteer'
           path: 'puppeteer'
@@ -79,7 +79,7 @@ jobs:
         run: |
           npm link chromium-bidi -w puppeteer-core
       - name: Setup cache for browser binaries
-        uses: actions/cache@ab5e6d0c87105b4c9c2047343972218f562e4319 # v4.0.1
+        uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
         with:
           path: ~/.cache/chromium-bidi
           key: ${{ runner.os }}-browsers-${{ hashFiles('.browser') }}) }}

@@ -18,19 +18,19 @@ jobs:
   pre-commit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
       - name: Set up Node.js
         uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
         with:
           node-version-file: '.nvmrc'
           cache: npm
       - name: Setup Go
-        uses: actions/setup-go@6c1fd22b67f7a7c42ad9a45c0f4197434035e429 # v5.0.0
+        uses: actions/setup-go@be1aa1186e83689f3e45adaf3697af86f816fb2e # v5.0.0
         with:
           go-version: '1.21.x'
       - uses: google/wireit@4aad131006ea85c1e42af927534ebb13426dd730 # setup-github-actions-caching/v1.0.2
       - run: npm ci
-      - uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.0.0
+      - uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d # v5.1.0
         with:
           python-version: '3.11'
           cache: pip

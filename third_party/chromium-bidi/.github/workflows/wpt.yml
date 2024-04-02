@@ -61,14 +61,14 @@ jobs:
           cp out/wptreport.html out/site/index.html
           cp out/wptreport-2023.html out/site/2023.html
       - name: Setup Pages
-        uses: actions/configure-pages@1f0c5cde4bc74cd7e1254d0cb4de8d49e9068c7d # v4.0.0
+        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
         with:
           path: out/site
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@decdde0ac072f6dcbe43649d82d9c635fff5b4e4 # v4.0.4
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
   wpt-auto-commit:
     name: WPT auto-commit expectations
     needs: wpt
@@ -80,7 +80,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
       - run: rm -rf wpt-metadata/chromedriver/headless/*
       - run: rm -rf wpt-metadata/chromedriver/headful/*
       - run: rm -rf wpt-metadata/mapper/headless/*
@@ -117,7 +117,7 @@ jobs:
             head: headful
     steps:
       - name: Checkout
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
         with:
           submodules: true
       - name: Set up Node.js
@@ -131,7 +131,7 @@ jobs:
       - name: Setup dirs
         run: mkdir -p out
       - name: Set up Python
-        uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.0.0
+        uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d # v5.1.0
         with:
           python-version: '3.11'
           cache: 'pip'
@@ -141,7 +141,7 @@ jobs:
         run: ./wpt make-hosts-file | sudo tee -a /etc/hosts
         working-directory: wpt
       - name: Setup cache for browser binaries
-        uses: actions/cache@ab5e6d0c87105b4c9c2047343972218f562e4319 # v4.0.1
+        uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
         with:
           path: ~/.cache/chromium-bidi
           key: ${{ runner.os }}-browsers-${{ hashFiles('.browser') }}) }}
