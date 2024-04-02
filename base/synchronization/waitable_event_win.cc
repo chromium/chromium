@@ -48,8 +48,6 @@ WaitableEvent::WaitableEvent(win::ScopedHandle handle)
   CHECK(handle_.is_valid()) << "Tried to create WaitableEvent from NULL handle";
 }
 
-WaitableEvent::~WaitableEvent() = default;
-
 void WaitableEvent::Reset() {
   ResetEvent(handle_.get());
 }

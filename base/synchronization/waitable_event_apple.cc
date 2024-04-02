@@ -41,8 +41,6 @@ WaitableEvent::WaitableEvent(ResetPolicy reset_policy,
   }
 }
 
-WaitableEvent::~WaitableEvent() = default;
-
 void WaitableEvent::Reset() {
   PeekPort(receive_right_->Name(), true);
 }

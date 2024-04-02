@@ -50,8 +50,6 @@ WaitableEvent::WaitableEvent(ResetPolicy reset_policy,
                              InitialState initial_state)
     : kernel_(new WaitableEventKernel(reset_policy, initial_state)) {}
 
-WaitableEvent::~WaitableEvent() = default;
-
 void WaitableEvent::Reset() {
   base::AutoLock locked(kernel_->lock_);
   kernel_->signaled_ = false;

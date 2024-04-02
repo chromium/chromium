@@ -7,8 +7,30 @@
 #include "base/check.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/trace_event/base_tracing.h"
+#include "base/tracing_buildflags.h"
 
 namespace base {
+
+WaitableEvent::~WaitableEvent() {
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+  // As requested in the documentation of perfetto::Flow::FromPointer, we should
+  // emit a TerminatingFlow(this) from our destructor if we ever emitted a
+  // Flow(this) which may be unmatched since the ptr value of `this` may be
+  // reused after this destructor. This can happen if a signaled event is never
+  // waited upon (or isn't the one to satisfy a WaitMany condition).
+  if (!only_used_while_idle_) {
+    // Check the tracing state to avoid an unnecessary syscall on destruction
+    // (which can be performance sensitive, crbug.com/40275035).
+    static const uint8_t* flow_enabled =
+        TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED("wakeup.flow,toplevel.flow");
+    if (*flow_enabled && IsSignaled()) {
+      TRACE_EVENT_INSTANT("wakeup.flow,toplevel.flow",
+                          "~WaitableEvent while Signaled",
+                          perfetto::TerminatingFlow::FromPointer(this));
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
+}
 
 void WaitableEvent::Signal() {
   // Must be ordered before SignalImpl() to guarantee it's emitted before the
