@@ -34,7 +34,6 @@
 #include "remoting/host/desktop_environment.h"
 #include "remoting/host/input_injector.h"
 #include "remoting/host/keyboard_layout_monitor.h"
-#include "remoting/host/mojo_video_capturer.h"
 #include "remoting/host/mojom/desktop_session.mojom-shared.h"
 #include "remoting/host/remote_input_filter.h"
 #include "remoting/host/remote_open_url/url_forwarder_configurator.h"
@@ -154,7 +153,7 @@ DesktopSessionAgent::~DesktopSessionAgent() {
   DCHECK(!desktop_environment_);
   DCHECK(!network_channel_);
   DCHECK(!screen_controls_);
-  DCHECK(!video_capturer_);
+  DCHECK(video_capturers_.IsEmpty());
   DCHECK(!session_file_operations_handler_);
 }
 
@@ -213,7 +212,7 @@ void DesktopSessionAgent::Start(
   DCHECK(!desktop_environment_);
   DCHECK(!input_injector_);
   DCHECK(!screen_controls_);
-  DCHECK(!video_capturer_);
+  DCHECK(video_capturers_.IsEmpty());
   DCHECK(!session_file_operations_handler_);
 
   if (started_) {
@@ -273,15 +272,12 @@ void DesktopSessionAgent::Start(
         base::BindOnce(&DesktopSessionAgent::StartAudioCapturer, this));
   }
 
-  // Start the video capturer and mouse cursor monitor.
-  video_capturer_ = std::make_unique<MojoVideoCapturer>(
-      desktop_environment_->CreateVideoCapturer(webrtc::kFullDesktopScreenId),
-      caller_task_runner_);
-  video_capturer_->set_event_handler(desktop_session_event_handler_.get());
-  video_capturer_->Start();
-  mouse_cursor_monitor_ = desktop_environment_->CreateMouseCursorMonitor();
-  mouse_cursor_monitor_->Init(this,
-                              webrtc::MouseCursorMonitor::SHAPE_AND_POSITION);
+  // Start the mouse cursor monitor.
+  mouse_shape_pump_ = std::make_unique<MouseShapePump>(
+      desktop_environment_->CreateMouseCursorMonitor(),
+      /*CursorShapeStub*/ nullptr);
+  mouse_shape_pump_->SetMouseCursorMonitorCallback(this);
+
   // Unretained is sound because callback will never be invoked after
   // |keyboard_layout_monitor_| is destroyed.
   keyboard_layout_monitor_ = desktop_environment_->CreateKeyboardLayoutMonitor(
@@ -323,18 +319,14 @@ void DesktopSessionAgent::OnMouseCursor(webrtc::MouseCursor* cursor) {
     desktop_session_event_handler_->OnMouseCursorChanged(*owned_cursor);
   }
 
-  if (video_capturer_) {
-    video_capturer_->SetMouseCursor(std::move(owned_cursor));
-  }
+  video_capturers_.SetMouseCursor(*owned_cursor);
 }
 
 void DesktopSessionAgent::OnMouseCursorPosition(
     const webrtc::DesktopVector& position) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
-  if (video_capturer_) {
-    video_capturer_->SetMouseCursorPosition(position);
-  }
+  video_capturers_.SetMouseCursorPosition(position);
 }
 
 void DesktopSessionAgent::OnClipboardEvent(
@@ -393,12 +385,6 @@ void DesktopSessionAgent::Stop() {
     weak_factory_.InvalidateWeakPtrs();
     client_jid_.clear();
 
-    // Avoid dangling pointer in the video-capturer when resetting the
-    // event-handler below.
-    if (video_capturer_) {
-      video_capturer_->set_event_handler(nullptr);
-    }
-
     desktop_session_event_handler_.reset();
     desktop_session_state_handler_.reset();
     desktop_session_control_.reset();
@@ -426,31 +412,17 @@ void DesktopSessionAgent::Stop() {
         FROM_HERE,
         base::BindOnce(&DesktopSessionAgent::StopAudioCapturer, this));
 
-    // Stop the video capturer.
-    video_capturer_.reset();
-    mouse_cursor_monitor_.reset();
+    // Stop the video capturers.
+    video_capturers_.Clear();
+    mouse_shape_pump_.reset();
   }
 }
 
-void DesktopSessionAgent::CaptureFrame() {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
-  CHECK(started_);
-
-  mouse_cursor_monitor_->Capture();
-
-  // webrtc::DesktopCapturer supports a very few (currently 2) outstanding
-  // capture requests. The requests are serialized on
-  // |video_capture_task_runner()| task runner. If the client issues more
-  // requests, pixel data in captured frames will likely be corrupted but
-  // stability of webrtc::DesktopCapturer will not be affected.
-  video_capturer_->CaptureFrame();
-}
-
-void DesktopSessionAgent::SelectSource(int id) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
-  CHECK(started_);
-
-  video_capturer_->SelectSource(id);
+void DesktopSessionAgent::CreateVideoCapturer(
+    int64_t desktop_display_id,
+    CreateVideoCapturerCallback callback) {
+  std::move(callback).Run(video_capturers_.CreateVideoCapturer(
+      desktop_display_id, desktop_environment_.get(), caller_task_runner_));
 }
 
 void DesktopSessionAgent::InjectClipboardEvent(
@@ -495,10 +467,8 @@ void DesktopSessionAgent::InjectMouseEvent(const protocol::MouseEvent& event) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
   CHECK(started_);
 
-  if (video_capturer_) {
-    video_capturer_->SetComposeEnabled(event.has_delta_x() ||
-                                       event.has_delta_y());
-  }
+  video_capturers_.SetComposeEnabled(event.has_delta_x() ||
+                                     event.has_delta_y());
 
   // InputStub implementations must verify events themselves, so we don't need
   // verification here. This matches HostEventDispatcher.

@@ -27,8 +27,10 @@
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/desktop_display_info.h"
 #include "remoting/host/file_transfer/session_file_operations_handler.h"
+#include "remoting/host/mojo_video_capturer_list.h"
 #include "remoting/host/mojom/desktop_session.mojom.h"
 #include "remoting/host/mojom/remoting_mojom_traits.h"
+#include "remoting/host/mouse_shape_pump.h"
 #include "remoting/proto/url_forwarder_control.pb.h"
 #include "remoting/protocol/clipboard_stub.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
@@ -53,7 +55,6 @@ class DesktopEnvironment;
 class DesktopEnvironmentFactory;
 class InputInjector;
 class KeyboardLayoutMonitor;
-class MojoVideoCapturer;
 class RemoteInputFilter;
 class RemoteWebAuthnStateChangeNotifier;
 class ScreenControls;
@@ -126,8 +127,8 @@ class DesktopSessionAgent
              StartCallback callback) override;
 
   // mojom::DesktopSessionControl implementation.
-  void CaptureFrame() override;
-  void SelectSource(int id) override;
+  void CreateVideoCapturer(int64_t desktop_display_id,
+                           CreateVideoCapturerCallback callback) override;
   void SetScreenResolution(const ScreenResolution& resolution) override;
   void LockWorkstation() override;
   void InjectSendAttentionSequence() override;
@@ -222,11 +223,12 @@ class DesktopSessionAgent
   // True if the desktop session agent has been started.
   bool started_ = false;
 
-  // Captures the screen and composites with the mouse cursor if necessary.
-  std::unique_ptr<MojoVideoCapturer> video_capturer_;
+  // Per-display capturers which capture the screen and composite with the mouse
+  // cursor if necessary.
+  MojoVideoCapturerList video_capturers_;
 
   // Captures mouse shapes.
-  std::unique_ptr<webrtc::MouseCursorMonitor> mouse_cursor_monitor_;
+  std::unique_ptr<MouseShapePump> mouse_shape_pump_;
 
   // Watches for keyboard layout changes.
   std::unique_ptr<KeyboardLayoutMonitor> keyboard_layout_monitor_;

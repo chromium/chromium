@@ -9,10 +9,12 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
+#include "base/functional/callback.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "remoting/host/mojom/desktop_session.mojom.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
@@ -22,7 +24,8 @@ namespace remoting {
 class AutoThreadTaskRunner;
 class DesktopCapturer;
 
-class MojoVideoCapturer : public webrtc::DesktopCapturer::Callback {
+class MojoVideoCapturer : public webrtc::DesktopCapturer::Callback,
+                          public mojom::VideoCapturer {
  public:
   MojoVideoCapturer(std::unique_ptr<DesktopCapturer> capturer,
                     scoped_refptr<AutoThreadTaskRunner> caller_task_runner);
@@ -30,13 +33,18 @@ class MojoVideoCapturer : public webrtc::DesktopCapturer::Callback {
   MojoVideoCapturer& operator=(const MojoVideoCapturer&) = delete;
   ~MojoVideoCapturer() override;
 
-  void set_event_handler(mojom::DesktopSessionEventHandler* event_handler) {
-    event_handler_ = event_handler;
-  }
+  // Notifies the handler if the channel becomes disconnected. The handler may
+  // delete this object. Must only be called after Start(), which binds the Mojo
+  // endpoints.
+  void SetDisconnectHandler(base::OnceClosure handler);
 
-  void Start();
-  void SelectSource(webrtc::DesktopCapturer::SourceId id);
-  void CaptureFrame();
+  // Starts the capturer, creating new Mojo endpoints to return to the network
+  // process.
+  mojom::CreateVideoCapturerResultPtr Start();
+
+  // mojom::VideoCapturer implementation.
+  void CaptureFrame() override;
+
   void SetComposeEnabled(bool enabled);
   void SetMouseCursor(std::unique_ptr<webrtc::MouseCursor> mouse_cursor);
   void SetMouseCursorPosition(const webrtc::DesktopVector& position);
@@ -61,8 +69,11 @@ class MojoVideoCapturer : public webrtc::DesktopCapturer::Callback {
   // before it's received.
   std::unique_ptr<webrtc::DesktopFrame> last_frame_;
 
-  // Event-handler used for sending capturer events to the network process.
-  raw_ptr<mojom::DesktopSessionEventHandler> event_handler_ = nullptr;
+  // Endpoint for receiving capturer commands from the network process.
+  mojo::Receiver<mojom::VideoCapturer> capturer_control_{this};
+
+  // Endpoint for sending capturer events to the network process.
+  mojo::Remote<mojom::VideoCapturerEventHandler> event_handler_;
 
   base::WeakPtr<MojoVideoCapturer> weak_ptr_;
   base::WeakPtrFactory<MojoVideoCapturer> weak_factory_{this};

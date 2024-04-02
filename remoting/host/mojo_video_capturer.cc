@@ -37,12 +37,15 @@ MojoVideoCapturer::MojoVideoCapturer(
 
 MojoVideoCapturer::~MojoVideoCapturer() = default;
 
-void MojoVideoCapturer::Start() {
-  video_capturer_->Start(this);
+void MojoVideoCapturer::SetDisconnectHandler(base::OnceClosure handler) {
+  capturer_control_.set_disconnect_handler(std::move(handler));
 }
 
-void MojoVideoCapturer::SelectSource(webrtc::DesktopCapturer::SourceId id) {
-  video_capturer_->SelectSource(id);
+mojom::CreateVideoCapturerResultPtr MojoVideoCapturer::Start() {
+  video_capturer_->Start(this);
+  return mojom::CreateVideoCapturerResult::New(
+      capturer_control_.BindNewPipeAndPassRemote(),
+      event_handler_.BindNewPipeAndPassReceiver());
 }
 
 void MojoVideoCapturer::CaptureFrame() {

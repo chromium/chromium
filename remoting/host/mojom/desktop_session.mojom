@@ -398,11 +398,10 @@ union BeginFileWriteResult {
 // The remote for this interface is owned in the low-privilege network process
 // and the receiver is bound in the high-privilege desktop integration process.
 interface DesktopSessionControl {
-  // Requests that a new frame be captured.
-  CaptureFrame();
-
-  // Selects a display source in a multi-monitor system.
-  SelectSource(int32 desktop_display_id);
+  // Requests the Desktop process to create a new video-capturer for the
+  // specified display device.
+  CreateVideoCapturer(int64 desktop_display_id) =>
+      (CreateVideoCapturerResult result);
 
   // Changes the screen resolution in the desktop session.
   SetScreenResolution(ScreenResolution new_resolution);
@@ -446,6 +445,45 @@ interface DesktopSessionControl {
   // Opens a new file for writing when the remote user chooses to upload a file.
   BeginFileWrite(mojo_base.mojom.FilePath file_path)
       => (BeginFileWriteResult result);
+};
+
+struct CreateVideoCapturerResult {
+  pending_remote<VideoCapturer> video_capturer;
+  pending_receiver<VideoCapturerEventHandler> video_capturer_event_handler;
+};
+
+// Enables capturing from a display device.
+// The remote for this interface is owned in the low-privilege network process
+// and the receiver is bound in the high-privilege desktop integration process.
+interface VideoCapturer {
+  // Requests that a new frame be captured. Video-frames are returned via
+  // VideoCapturerEventHandler (rather than in response to this CaptureFrame()
+  // request). This ensures the frames are correctly ordered relative to the
+  // shared-memory events.
+  CaptureFrame();
+};
+
+// Enables receiving capture information (shared-memory, video-frames) from a
+// display device.
+// The remote for this interface is owned in the high-privilege desktop
+// integration process and the receiver is bound in the low-privilege network
+// process.
+interface VideoCapturerEventHandler {
+  // Notifies the network process that a new shared memory region has been
+  // created to use for passing video frames between processes. |id| refers to
+  // the new shared memory region and is included in each capture result to
+  // indicate which region the frame data resides in.
+  OnSharedMemoryRegionCreated(
+      int32 id, mojo_base.mojom.ReadOnlySharedMemoryRegion region, uint32 size);
+
+  // Notifies the network process that a shared memory region has been released
+  // and should no longer be used.
+  OnSharedMemoryRegionReleased(int32 id);
+
+  // Notifies the network process that new frame data is available in the shared
+  // memory region along with the details on how to access it (e.g. stride,
+  // size, etc.), otherwise provides the error reason the capture failed.
+  OnCaptureResult(CaptureResult result);
 };
 
 // |frame| is set and contains valid frame data when a frame is captured
@@ -503,24 +541,6 @@ interface DesktopSessionEventHandler {
 
   // Forwards an audio packet captured from the desktop session to the client.
   OnAudioPacket(AudioPacket audio_packet);
-
-  // Notifies the network process that a new shared memory region has been
-  // created to use for passing video frames between processes. |id| refers to
-  // the new shared memory region and is included in each capture result to
-  // indicate which region the frame data resides in.
-  // TODO(joedow): Look into refactoring our shared memory and capture impl
-  // to use a message pipe per shared memory region.
-  OnSharedMemoryRegionCreated(
-      int32 id, mojo_base.mojom.ReadOnlySharedMemoryRegion region, uint32 size);
-
-  // Notifies the network process that a shared memory region has been released
-  // and should no longer be used.
-  OnSharedMemoryRegionReleased(int32 id);
-
-  // Notifies the network process that new frame data is available in the shared
-  // memory region along with the details on how to access it (e.g. stride,
-  // size, etc.), otherwise provides the error reason the capture failed.
-  OnCaptureResult(CaptureResult result);
 
   // Notifies the network process that the host display layout has changed.
   OnDesktopDisplayChanged(VideoLayout layout);

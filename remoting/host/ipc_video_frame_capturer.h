@@ -10,6 +10,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "remoting/host/mojom/desktop_session.mojom.h"
 #include "remoting/protocol/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
@@ -23,24 +25,24 @@ class IpcSharedBufferCore;
 // session agent running in the desktop integration process.
 // GetSourceList() and SelectSource() functions are not implemented, they always
 // return false.
-class IpcVideoFrameCapturer : public DesktopCapturer {
+class IpcVideoFrameCapturer : public DesktopCapturer,
+                              public mojom::VideoCapturerEventHandler {
  public:
-  IpcVideoFrameCapturer();
+  explicit IpcVideoFrameCapturer(
+      scoped_refptr<DesktopSessionProxy> desktop_session_proxy);
 
   IpcVideoFrameCapturer(const IpcVideoFrameCapturer&) = delete;
   IpcVideoFrameCapturer& operator=(const IpcVideoFrameCapturer&) = delete;
 
   ~IpcVideoFrameCapturer() override;
 
-  // Sets the Mojo implementation for sending video-capture requests to the
-  // Desktop process. `control` may be nullptr to indicate the Mojo endpoint is
-  // disconnected.
-  void SetDesktopSessionControl(mojom::DesktopSessionControl* control);
+  // Sets the new Mojo endpoints for the capturer.
+  void OnCreateVideoCapturerResult(mojom::CreateVideoCapturerResultPtr result);
 
   // Returns a WeakPtr to this capturer. Used by DesktopSessionProxy to set
-  // the Mojo implementation when the endpoints are re-created during a
-  // DetachFromDesktop/Reattach sequence. A WeakPtr is needed since the
-  // lifetime of this capturer is bound to the VideoStream.
+  // the Mojo endpoints for this capturer (on initial creation, and after a
+  // desktop detach/attach sequence. A WeakPtr is needed since the lifetime of
+  // this capturer is bound to the VideoStream.
   base::WeakPtr<IpcVideoFrameCapturer> GetWeakPtr();
 
   // webrtc::DesktopCapturer interface.
@@ -49,13 +51,12 @@ class IpcVideoFrameCapturer : public DesktopCapturer {
   bool GetSourceList(SourceList* sources) override;
   bool SelectSource(SourceId id) override;
 
-  // Called by DesktopSessionProxy's implementation of
-  // mojom::DesktopSessionEventHandler.
+  // mojom::VideoCapturerEventHandler interface.
   void OnSharedMemoryRegionCreated(int id,
                                    base::ReadOnlySharedMemoryRegion region,
-                                   uint32_t size);
-  void OnSharedMemoryRegionReleased(int id);
-  void OnCaptureResult(mojom::CaptureResultPtr result);
+                                   uint32_t size) override;
+  void OnSharedMemoryRegionReleased(int id) override;
+  void OnCaptureResult(mojom::CaptureResultPtr result) override;
 
  private:
   typedef std::map<int, scoped_refptr<IpcSharedBufferCore>> SharedBuffers;
@@ -71,16 +72,22 @@ class IpcVideoFrameCapturer : public DesktopCapturer {
   // Points to the callback passed to webrtc::DesktopCapturer::Start().
   raw_ptr<webrtc::DesktopCapturer::Callback> callback_ = nullptr;
 
-  // Points to the IPC channel to the desktop session agent. This is owned by
-  // DesktopSessionProxy which is responsible for setting/unsetting this
-  // whenever the Mojo Remote is bound/unbound.
-  raw_ptr<mojom::DesktopSessionControl> desktop_session_control_ = nullptr;
+  // Mojo endpoint for sending capturer commands to the Desktop process.
+  mojo::Remote<mojom::VideoCapturer> capturer_control_;
+
+  // Mojo endpoint for receiving capturer events from the Desktop process.
+  mojo::Receiver<mojom::VideoCapturerEventHandler> event_handler_{this};
 
   int pending_capture_frame_requests_ = 0;
 
   // Shared memory buffers by Id. Each buffer is owned by the corresponding
   // frame.
   SharedBuffers shared_buffers_;
+
+  // Used by SelectSource() in the single-stream case. Changing the display
+  // requires creating a new video-capturer in the Desktop process, and
+  // connecting the new Mojo endpoints.
+  scoped_refptr<DesktopSessionProxy> desktop_session_proxy_;
 
   // Used to cancel tasks pending on the capturer when it is stopped.
   base::WeakPtrFactory<IpcVideoFrameCapturer> weak_factory_{this};

@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/map_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -95,17 +96,20 @@ std::unique_ptr<DesktopCapturer> DesktopSessionProxy::CreateVideoCapturer(
 
   // Cursor compositing is done by the desktop process if necessary so just
   // return a non-composing frame capturer.
-  auto video_capturer = std::make_unique<IpcVideoFrameCapturer>();
+  auto video_capturer = std::make_unique<IpcVideoFrameCapturer>(this);
 
-  DCHECK(!video_capturer_) << "Multi-stream is not supported.";
-  video_capturer_ = video_capturer->GetWeakPtr();
+  DCHECK(!base::FindPtrOrNull(video_capturers_, id))
+      << "Multiple capturers created for screen-id " << id;
+  auto capturer_weakptr = video_capturer->GetWeakPtr();
+  video_capturers_[id] = capturer_weakptr;
+
+  // If the session-control endpoint is not bound, the Mojo endpoints will
+  // be requested for each IpcVideFrameCapturer when the Desktop process
+  // becomes attached.
   if (desktop_session_control_) {
-    video_capturer->SetDesktopSessionControl(desktop_session_control_.get());
+    RequestMojoVideoCapturer(id, capturer_weakptr);
   }
 
-  // `id` can be ignored for single-stream mode - it will always be
-  // kFullDesktopScreenId, which is what the Desktop process will use by
-  // default.
   return video_capturer;
 }
 
@@ -286,10 +290,6 @@ bool DesktopSessionProxy::AttachToDesktop(
 void DesktopSessionProxy::DetachFromDesktop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (video_capturer_) {
-    video_capturer_->SetDesktopSessionControl(nullptr);
-  }
-
   desktop_channel_.reset();
   desktop_session_agent_.reset();
   desktop_session_control_.reset();
@@ -318,13 +318,15 @@ void DesktopSessionProxy::OnDesktopSessionAgentStarted(
   // process. This is needed as the desktop may crash and the daemon process
   // will restart it however the remote will still be bound to the previous
   // process since DetachFromDesktop() will not be called.
-  if (video_capturer_) {
-    video_capturer_->SetDesktopSessionControl(nullptr);
-  }
   desktop_session_control_.reset();
   desktop_session_control_.Bind(std::move(pending_remote));
-  if (video_capturer_) {
-    video_capturer_->SetDesktopSessionControl(desktop_session_control_.get());
+
+  // Create new capturers in the Desktop process and bind the Mojo endpoints
+  // to each video-capturer.
+  for (auto& [id, capturer] : video_capturers_) {
+    if (capturer) {
+      RequestMojoVideoCapturer(id, capturer);
+    }
   }
 
   if (client_session_events_) {
@@ -351,6 +353,39 @@ void DesktopSessionProxy::SetKeyboardLayoutMonitor(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   keyboard_layout_monitor_ = std::move(keyboard_layout_monitor);
+}
+
+void DesktopSessionProxy::RebindSingleVideoCapturer(
+    webrtc::ScreenId new_id,
+    base::WeakPtr<IpcVideoFrameCapturer> capturer_weakptr) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (video_capturers_.size() > 1U) {
+    // SelectSource() should not be called in multi-stream mode, but
+    // WebrtcVideoStream currently calls it when setting the screen ID for
+    // stats-reporting.
+    // TODO: b/331679617 - Fix ClientSession/WebrtcVideoStream to not call
+    // SelectSource() in multi-stream mode.
+    LOG(WARNING) << "Ignoring SelectSource() for multi-stream.";
+    return;
+  }
+
+  if (base::FindPtrOrNull(video_capturers_, new_id) == capturer_weakptr.get()) {
+    // The capturer is already bound to `new_id`, so there's no value in
+    // recreating it.
+    LOG(WARNING) << "Ignoring SelectSource() for the same ID: " << new_id;
+    return;
+  }
+
+  video_capturers_.clear();
+  video_capturers_[new_id] = capturer_weakptr;
+
+  // If the session-control endpoint is not bound, the Mojo endpoints will
+  // be requested for each IpcVideFrameCapturer when the Desktop process
+  // becomes attached.
+  if (desktop_session_control_) {
+    RequestMojoVideoCapturer(new_id, capturer_weakptr);
+  }
 }
 
 const std::optional<protocol::KeyboardLayout>&
@@ -589,11 +624,6 @@ void DesktopSessionProxy::OnUrlForwarderStateChange(
 DesktopSessionProxy::~DesktopSessionProxy() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Avoid dangling pointer in the video-capturer.
-  if (video_capturer_) {
-    video_capturer_->SetDesktopSessionControl(nullptr);
-  }
-
   if (desktop_session_connector_.get() && is_desktop_session_connected_) {
     desktop_session_connector_->DisconnectTerminal(this);
   }
@@ -607,25 +637,6 @@ void DesktopSessionProxy::OnAudioPacket(
   audio_capture_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&IpcAudioCapturer::OnAudioPacket,
                                 audio_capturer_, std::move(audio_packet)));
-}
-
-void DesktopSessionProxy::OnSharedMemoryRegionCreated(
-    int id,
-    base::ReadOnlySharedMemoryRegion region,
-    uint32_t size) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (video_capturer_) {
-    video_capturer_->OnSharedMemoryRegionCreated(id, std::move(region), size);
-  }
-}
-
-void DesktopSessionProxy::OnSharedMemoryRegionReleased(int id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (video_capturer_) {
-    video_capturer_->OnSharedMemoryRegionReleased(id);
-  }
 }
 
 void DesktopSessionProxy::OnDesktopDisplayChanged(
@@ -643,14 +654,6 @@ void DesktopSessionProxy::OnDesktopDisplayChanged(
     auto layout = std::make_unique<protocol::VideoLayout>();
     layout->CopyFrom(displays);
     client_session_control_->OnDesktopDisplayChanged(std::move(layout));
-  }
-}
-
-void DesktopSessionProxy::OnCaptureResult(mojom::CaptureResultPtr result) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (video_capturer_) {
-    video_capturer_->OnCaptureResult(std::move(result));
   }
 }
 
@@ -711,6 +714,17 @@ void DesktopSessionProxy::SignalWebAuthnExtension() {
   if (desktop_session_control_) {
     desktop_session_control_->SignalWebAuthnExtension();
   }
+}
+
+void DesktopSessionProxy::RequestMojoVideoCapturer(
+    webrtc::ScreenId id,
+    base::WeakPtr<IpcVideoFrameCapturer> capturer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(desktop_session_control_);
+  DCHECK(capturer);
+  desktop_session_control_->CreateVideoCapturer(
+      id, base::BindOnce(&IpcVideoFrameCapturer::OnCreateVideoCapturerResult,
+                         capturer));
 }
 
 }  // namespace remoting

@@ -14,16 +14,26 @@
 
 namespace remoting {
 
-IpcVideoFrameCapturer::IpcVideoFrameCapturer() = default;
+IpcVideoFrameCapturer::IpcVideoFrameCapturer(
+    scoped_refptr<DesktopSessionProxy> desktop_session_proxy)
+    : desktop_session_proxy_(desktop_session_proxy) {}
 
 IpcVideoFrameCapturer::~IpcVideoFrameCapturer() = default;
 
-void IpcVideoFrameCapturer::SetDesktopSessionControl(
-    mojom::DesktopSessionControl* control) {
-  desktop_session_control_ = control;
-  if (!control) {
+void IpcVideoFrameCapturer::OnCreateVideoCapturerResult(
+    mojom::CreateVideoCapturerResultPtr result) {
+  if (capturer_control_) {
+    // Perform cleanup, just as if the previous endpoint became disconnected.
+    // This replies to any pending frame requests, clears any shared-memory
+    // buffers, and resets the Mojo endpoints.
     OnDisconnect();
   }
+
+  capturer_control_.Bind(std::move(result->video_capturer));
+  event_handler_.Bind(std::move(result->video_capturer_event_handler));
+
+  capturer_control_.set_disconnect_handler(base::BindOnce(
+      &IpcVideoFrameCapturer::OnDisconnect, base::Unretained(this)));
 }
 
 base::WeakPtr<IpcVideoFrameCapturer> IpcVideoFrameCapturer::GetWeakPtr() {
@@ -37,9 +47,9 @@ void IpcVideoFrameCapturer::Start(Callback* callback) {
 }
 
 void IpcVideoFrameCapturer::CaptureFrame() {
-  if (desktop_session_control_) {
+  if (capturer_control_) {
     ++pending_capture_frame_requests_;
-    desktop_session_control_->CaptureFrame();
+    capturer_control_->CaptureFrame();
   } else {
     callback_->OnCaptureResult(webrtc::DesktopCapturer::Result::ERROR_TEMPORARY,
                                nullptr);
@@ -52,9 +62,11 @@ bool IpcVideoFrameCapturer::GetSourceList(SourceList* sources) {
 }
 
 bool IpcVideoFrameCapturer::SelectSource(SourceId id) {
-  if (desktop_session_control_) {
-    desktop_session_control_->SelectSource(id);
-  }
+  // This should only be called in single-stream mode. DesktopSessionProxy will
+  // request a new capturer be created in the Desktop process. When the new Mojo
+  // endpoints are received by OnCreateVideoCapturerResult(), the old endpoints
+  // will be disconnected and the Desktop process will delete the old capturer.
+  desktop_session_proxy_->RebindSingleVideoCapturer(id, GetWeakPtr());
   return true;
 }
 
@@ -112,6 +124,11 @@ void IpcVideoFrameCapturer::OnCaptureResult(mojom::CaptureResultPtr result) {
 
 void IpcVideoFrameCapturer::OnDisconnect() {
   shared_buffers_.clear();
+
+  // Reset the endpoints so that any further calls to CaptureFrame()
+  // do not try to send Mojo commands.
+  capturer_control_.reset();
+  event_handler_.reset();
 
   // Generate fake responses to keep the frame scheduler in sync.
   while (pending_capture_frame_requests_) {

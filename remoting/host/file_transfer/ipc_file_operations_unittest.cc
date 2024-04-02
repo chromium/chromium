@@ -136,8 +136,8 @@ class FakeDesktopSessionAgent : public mojom::DesktopSessionControl {
   ~FakeDesktopSessionAgent() override = default;
 
   // mojom::DesktopSessionControl implementation.
-  void CaptureFrame() override;
-  void SelectSource(int id) override;
+  void CreateVideoCapturer(int64_t desktop_display_id,
+                           CreateVideoCapturerCallback callback) override;
   void SetScreenResolution(const ScreenResolution& resolution) override;
   void LockWorkstation() override;
   void InjectSendAttentionSequence() override;
@@ -185,9 +185,9 @@ FakeDesktopSessionAgent::FakeDesktopSessionAgent(
     : session_file_operations_handler_(
           std::make_unique<LocalFileOperations>(std::move(ui_task_runner))) {}
 
-void FakeDesktopSessionAgent::CaptureFrame() {}
-
-void FakeDesktopSessionAgent::SelectSource(int id) {}
+void FakeDesktopSessionAgent::CreateVideoCapturer(
+    int64_t desktop_display_id,
+    CreateVideoCapturerCallback callback) {}
 
 void FakeDesktopSessionAgent::SetScreenResolution(
     const ScreenResolution& resolution) {}

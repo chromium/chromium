@@ -144,6 +144,15 @@ class DesktopSessionProxy
   const std::optional<protocol::KeyboardLayout>& GetKeyboardCurrentLayout()
       const;
 
+  // Implements SelectSource() for a single video-capture. Must only be called
+  // in single-stream mode.
+  // TODO: b/326319067 - When single-stream support is no longer needed,
+  // remove this method, remove desktop_session_proxy_ from
+  // IpcVideoFrameCapturer, and remove all SelectSource() methods.
+  void RebindSingleVideoCapturer(
+      webrtc::ScreenId new_id,
+      base::WeakPtr<IpcVideoFrameCapturer> capturer_weakptr);
+
   // APIs used to implement the InputInjector interface.
   void InjectClipboardEvent(const protocol::ClipboardEvent& event);
   void InjectKeyEvent(const protocol::KeyEvent& event);
@@ -170,11 +179,6 @@ class DesktopSessionProxy
   void OnClipboardEvent(const protocol::ClipboardEvent& event) override;
   void OnUrlForwarderStateChange(mojom::UrlForwarderState state) override;
   void OnAudioPacket(std::unique_ptr<AudioPacket> audio_packet) override;
-  void OnSharedMemoryRegionCreated(int id,
-                                   base::ReadOnlySharedMemoryRegion region,
-                                   uint32_t size) override;
-  void OnSharedMemoryRegionReleased(int id) override;
-  void OnCaptureResult(mojom::CaptureResultPtr capture_result) override;
   void OnDesktopDisplayChanged(const protocol::VideoLayout& layout) override;
   void OnMouseCursorChanged(const webrtc::MouseCursor& mouse_cursor) override;
   void OnKeyboardLayoutChanged(const protocol::KeyboardLayout& layout) override;
@@ -216,6 +220,12 @@ class DesktopSessionProxy
 
   void SignalWebAuthnExtension();
 
+  // This sends a Mojo CreateVideoCapturer() request to the desktop process.
+  // The response will contain Mojo endpoints which will be provided to
+  // `capturer`.
+  void RequestMojoVideoCapturer(webrtc::ScreenId id,
+                                base::WeakPtr<IpcVideoFrameCapturer> capturer);
+
   // Task runners:
   //   - |audio_capturer_| is called back on |audio_capture_task_runner_|.
   //   - public methods of this class (with some exceptions) are called on
@@ -245,9 +255,14 @@ class DesktopSessionProxy
   base::WeakPtr<DesktopSessionConnector> desktop_session_connector_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // Points to the video capturer receiving captured video frames.
-  base::WeakPtr<IpcVideoFrameCapturer> video_capturer_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  // List of video-capturers receiving captured video frames. These are
+  // stored so that, when the Desktop process is re-attached, new Mojo
+  // endpoints can be requested for each capturer. WeakPtrs are needed
+  // since the capturers are owned by the VideoStreams, which can be
+  // independently created or destroyed when displays are added or
+  // removed.
+  std::map<webrtc::ScreenId, base::WeakPtr<IpcVideoFrameCapturer>>
+      video_capturers_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Points to the mouse cursor monitor receiving mouse cursor changes.
   base::WeakPtr<IpcMouseCursorMonitor> mouse_cursor_monitor_
