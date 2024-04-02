@@ -64,21 +64,6 @@ who = "ChromeOS"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 version = "0.4.3"
 
-[[audits.chromeos.audits.itoa]]
-who = "ChromeOS"
-criteria = ["safe-to-run", "does-not-implement-crypto"]
-version = "1.0.5"
-
-[[audits.chromeos.audits.itoa]]
-who = "George Burgess IV <gbiv@google.com>"
-criteria = ["safe-to-run", "does-not-implement-crypto"]
-delta = "1.0.5 -> 1.0.6"
-
-[[audits.chromeos.audits.itoa]]
-who = "George Burgess IV <gbiv@google.com>"
-criteria = ["safe-to-run", "does-not-implement-crypto"]
-delta = "1.0.6 -> 1.0.9"
-
 [[audits.chromeos.audits.log]]
 who = "ChromeOS"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
