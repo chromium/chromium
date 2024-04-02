@@ -18,7 +18,7 @@ namespace {
 NSString* const kWhyAmISeeingThisTitleAccessibilityIdentifier =
     @"WhyAmISeeingThisTitleAccessibilityIdentifier";
 // Empty line between two paragraphs.
-NSString* const kEmptyLine = @"\n \n";
+NSString* const kEmptyLine = @"\n\n";
 //
 NSString* const kBeginBoldTag = @"<b>";
 NSString* const kEndBoldTag = @"</b>";
