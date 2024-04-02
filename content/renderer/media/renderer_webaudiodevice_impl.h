@@ -71,6 +71,8 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
              const media::AudioGlitchInfo& glitch_info,
              media::AudioBus* dest) override;
 
+  // This callback method may be called from either the main thread or non-main
+  // threads.
   void OnRenderError() override;
 
   void SetSilentSinkTaskRunnerForTesting(

@@ -210,7 +210,6 @@ int AudioDestination::Render(base::TimeDelta delay,
 }
 
 void AudioDestination::OnRenderError() {
-  DCHECK(IsMainThread());
   callback_->OnRenderError();
 }
 
