@@ -15,6 +15,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
@@ -338,8 +339,7 @@ bool IsModelQualityLoggingEnabled();
 
 // Whether model quality logging is enabled for a feature.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool IsModelQualityLoggingEnabledForFeature(
-    proto::ModelExecutionFeature feature);
+bool IsModelQualityLoggingEnabledForFeature(UserVisibleFeatureKey feature);
 
 // Returns whether the `model_version` for `opt_target` is part of emergency
 // killswitch, and this model should be stopped serving immediately.

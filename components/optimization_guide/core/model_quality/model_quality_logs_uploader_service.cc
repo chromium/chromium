@@ -9,6 +9,7 @@
 #include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
 #include "components/optimization_guide/core/access_token_helper.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/model_quality/model_quality_util.h"
@@ -201,7 +202,7 @@ ModelQualityLogsUploaderService::ModelQualityLogsUploaderService(
 ModelQualityLogsUploaderService::~ModelQualityLogsUploaderService() = default;
 
 bool ModelQualityLogsUploaderService::CanUploadLogs(
-    optimization_guide::proto::ModelExecutionFeature feature) {
+    UserVisibleFeatureKey feature) {
   return false;
 }
 

@@ -11,6 +11,7 @@
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "build/build_config.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -76,6 +77,12 @@ std::string TimeToYYYYMMDDString(base::Time ts) {
 }  // namespace
 
 namespace optimization_guide {
+
+std::string_view GetStringNameForModelExecutionFeature(
+    UserVisibleFeatureKey feature) {
+  return GetStringNameForModelExecutionFeature(
+      ToModelExecutionFeatureProto(feature));
+}
 
 std::string_view GetStringNameForModelExecutionFeature(
     proto::ModelExecutionFeature feature) {

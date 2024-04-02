@@ -11,6 +11,7 @@
 
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_permissions_util.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
@@ -42,6 +43,8 @@ enum class OptimizationGuideDecision;
 
 // Returns the equivalent string name for a `feature`. The returned string can
 // be used to index persistent data (e.g., prefs, histograms etc.).
+std::string_view GetStringNameForModelExecutionFeature(
+    UserVisibleFeatureKey feature);
 std::string_view GetStringNameForModelExecutionFeature(
     proto::ModelExecutionFeature feature);
 

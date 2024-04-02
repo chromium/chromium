@@ -39,8 +39,7 @@ class ChromeModelQualityLogsUploaderService
 
   // Checks user consent, enterprise check for logging. Returns false if any one
   // of the check is not enabled.
-  bool CanUploadLogs(UserVisibleFeatureKey feature);
-  bool CanUploadLogs(proto::ModelExecutionFeature feature) override;
+  bool CanUploadLogs(UserVisibleFeatureKey feature) override;
 
   // Sets system profile proto for logging.
   void SetSystemProfileProto(proto::LoggingMetadata* logging_metadata) override;

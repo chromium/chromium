@@ -14,6 +14,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_quality/model_quality_logs_uploader.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "url/gurl.h"
@@ -41,8 +42,7 @@ class ModelQualityLogsUploaderService {
 
   // Does various checks like metrics consent, enterprise check before uploading
   // the logs.
-  virtual bool CanUploadLogs(
-      optimization_guide::proto::ModelExecutionFeature feature);
+  virtual bool CanUploadLogs(UserVisibleFeatureKey feature);
 
   // Sets system profile proto corresponding to the logging_metadata.
   virtual void SetSystemProfileProto(proto::LoggingMetadata* logging_metadata);

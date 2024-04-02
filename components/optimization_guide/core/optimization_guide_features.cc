@@ -19,6 +19,7 @@
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "components/optimization_guide/core/insertion_ordered_set.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
@@ -279,39 +280,25 @@ bool IsModelQualityLoggingEnabled() {
   return base::FeatureList::IsEnabled(kModelQualityLogging);
 }
 
-bool IsModelQualityLoggingEnabledForFeature(
-    proto::ModelExecutionFeature feature) {
+bool IsModelQualityLoggingEnabledForFeature(UserVisibleFeatureKey key) {
   if (!IsModelQualityLoggingEnabled()) {
     return false;
   }
 
-  // Always disable logging for test features.
-  if (feature ==
-          proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED ||
-      feature == proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST) {
-    return false;
-  }
-
   bool default_logging_enabled = false;
-  switch (feature) {
-    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE:
-    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION:
-    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH:
+  switch (key) {
+    case UserVisibleFeatureKey::kCompose:
+    case UserVisibleFeatureKey::kTabOrganization:
+    case UserVisibleFeatureKey::kWallpaperSearch:
       // Enable logging when you have approvals. For new features please
       // consult with components/optimization_guide/core/model_quality/OWNERS to
       // discuss if you need logging or not for your feature.
       default_logging_enabled = true;
       break;
-    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
-    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST:
-    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEXT_SAFETY:
-      // Logging disabled.
-      NOTREACHED();
-      break;
   }
 
-  std::string param_name =
-      base::ToLowerASCII(proto::ModelExecutionFeature_Name(feature));
+  std::string param_name = base::ToLowerASCII(
+      proto::ModelExecutionFeature_Name(ToModelExecutionFeatureProto(key)));
   return GetFieldTrialParamByFeatureAsBool(kModelQualityLogging, param_name,
                                            default_logging_enabled);
 }

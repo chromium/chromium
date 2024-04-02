@@ -25,7 +25,7 @@
 namespace {
 
 void RecordUploadStatusHistogram(
-    optimization_guide::proto::ModelExecutionFeature feature,
+    optimization_guide::UserVisibleFeatureKey feature,
     optimization_guide::ModelQualityLogsUploadStatus status) {
   base::UmaHistogramEnumeration(
       base::StrCat(
@@ -51,11 +51,6 @@ ChromeModelQualityLogsUploaderService::
 
 bool ChromeModelQualityLogsUploaderService::CanUploadLogs(
     optimization_guide::UserVisibleFeatureKey feature) {
-  return CanUploadLogs(ToModelExecutionFeatureProto(feature));
-}
-
-bool ChromeModelQualityLogsUploaderService::CanUploadLogs(
-    optimization_guide::proto::ModelExecutionFeature feature) {
   // Model quality logging requires user consent. Skip upload if consent is
   // missing.
   if (!g_browser_process->GetMetricsServicesManager()
