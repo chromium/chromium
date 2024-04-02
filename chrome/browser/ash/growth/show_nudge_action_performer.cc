@@ -439,6 +439,7 @@ void ShowNudgeActionPerformer::CancelNudge() {
   if (triggering_widget_) {
     triggering_widget_->RemoveObserver(this);
     triggering_widget_ = nullptr;
+    scoped_observation_.Reset();
   }
   ash::Shell::Get()->anchored_nudge_manager()->Cancel(kGrowthNudgeId);
 }
