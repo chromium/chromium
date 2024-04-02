@@ -1690,24 +1690,29 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenRange& range) {
     case CSSSelector::kPseudoViewTransitionImagePair:
     case CSSSelector::kPseudoViewTransitionOld:
     case CSSSelector::kPseudoViewTransitionNew: {
-      const CSSParserToken& ident = block.Consume();
-      std::optional<AtomicString> name_or_wildcard;
-      if (ident.GetType() == kIdentToken) {
-        name_or_wildcard = ident.Value().ToAtomicString();
-      } else if (ident.GetType() == kDelimiterToken &&
-                 ident.Delimiter() == '*') {
-        name_or_wildcard = CSSSelector::UniversalSelectorAtom();
-      }
-
-      // TODO(https://github.com/w3c/csswg-drafts/issues/9874)
-      // Consider allowing (.class) without *.
-      if (!name_or_wildcard) {
-        return false;
-      }
-
       std::unique_ptr<Vector<AtomicString>> name_and_classes =
           std::make_unique<Vector<AtomicString>>();
-      name_and_classes->push_back(*name_or_wildcard);
+      if (RuntimeEnabledFeatures::CSSViewTransitionClassEnabled()) {
+        if (block.Peek().GetType() == kDelimiterToken &&
+            block.Peek().Delimiter() == '.') {
+          name_and_classes->push_back(CSSSelector::UniversalSelectorAtom());
+        }
+      }
+
+      if (name_and_classes->empty()) {
+        const CSSParserToken& ident = block.Consume();
+        if (ident.GetType() == kIdentToken) {
+          name_and_classes->push_back(ident.Value().ToAtomicString());
+        } else if (ident.GetType() == kDelimiterToken &&
+                   ident.Delimiter() == '*') {
+          name_and_classes->push_back(CSSSelector::UniversalSelectorAtom());
+        } else {
+          return false;
+        }
+      }
+
+      CHECK_EQ(name_and_classes->size(), 1ull);
+
       if (RuntimeEnabledFeatures::CSSViewTransitionClassEnabled()) {
         while (!block.AtEnd() && block.Peek().GetType() != kWhitespaceToken) {
           if (block.Peek().GetType() != kDelimiterToken ||
