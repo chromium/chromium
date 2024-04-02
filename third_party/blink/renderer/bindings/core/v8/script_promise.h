@@ -52,10 +52,10 @@ class ScriptFunction;
 template <typename IDLResolvedType>
 class ScriptPromise;
 
-// ScriptPromiseUntyped is the class for representing Promise values in C++
-// world. ScriptPromiseUntyped holds a Promise. Holding a `ScriptPromiseUntyped`
-// is rarely needed — typically you hold a `ScriptPromiseResolverBase` when
-// creating a Promise and passing it *to* JavaScript — but is necessary when
+// ScriptPromise is the class for representing Promise values in C++
+// world. ScriptPromise holds a Promise. Holding a `ScriptPromise`
+// is rarely needed — typically you hold a `ScriptPromiseResolver` when creating
+// a Promise and passing it *to* JavaScript — but is necessary when
 // holding a promise received *from* JavaScript. If a promise is exposed as an
 // attribute in IDL and you need to return the same promise on multiple
 // invocations, use ScriptPromiseProperty.
@@ -110,7 +110,7 @@ class CORE_EXPORT ScriptPromiseUntyped {
   // resolved with `value`.
   // Returns `value` itself if it is a Promise.
   // This is intended only for cases where we are receiving an arbitrary
-  // `value` of unknown type from script. If constructing a ScriptPromiseUntyped
+  // `value` of unknown type from script. If constructing a ScriptPromise
   // of known type, use ToResolvedPromise<>.
   static ScriptPromiseUntyped FromUntypedValueForBindings(ScriptState*,
                                                           v8::Local<v8::Value>);
