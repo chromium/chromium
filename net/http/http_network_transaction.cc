@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/sparse_histogram.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -1197,7 +1198,11 @@ int HttpNetworkTransaction::DoReadHeadersComplete(int result) {
     DCHECK(IsSecureRequest());
     // Unclear if this is needed. Copied behavior from an earlier version of
     // Chrome.
+    //
+    // TODO(https://crbug.com/332234173): Assuming this isn't hit, replace with
+    // a CHECK.
     if (!response_.cert_request_info) {
+      DUMP_WILL_BE_NOTREACHED_NORETURN();
       response_.cert_request_info = base::MakeRefCounted<SSLCertRequestInfo>();
     }
     total_received_bytes_ += stream_->GetTotalReceivedBytes();

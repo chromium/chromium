@@ -9,6 +9,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -875,15 +876,16 @@ int HttpStreamParser::HandleReadHeaderResult(int result) {
   }
 
   if (result < 0) {
-    // The `request_->url.SchemeIsCryptographic()` check should not be needed,
-    // as this should only happen when this layer is talking directly to an SSL
-    // destination.
-    //
-    // TODO(https://crbug.com/332234173): Look into removing that check.
-    if (result == ERR_SSL_CLIENT_AUTH_CERT_NEEDED &&
-        request_->url.SchemeIsCryptographic()) {
-      response_->cert_request_info = base::MakeRefCounted<SSLCertRequestInfo>();
-      stream_socket_->GetSSLCertRequestInfo(response_->cert_request_info.get());
+    if (result == ERR_SSL_CLIENT_AUTH_CERT_NEEDED) {
+      // TODO(https://crbug.com/332234173): Assuming this isn't hit, remove the
+      // SchemeIsCryptographic() check.
+      DUMP_WILL_BE_CHECK(request_->url.SchemeIsCryptographic());
+      if (request_->url.SchemeIsCryptographic()) {
+        response_->cert_request_info =
+            base::MakeRefCounted<SSLCertRequestInfo>();
+        stream_socket_->GetSSLCertRequestInfo(
+            response_->cert_request_info.get());
+      }
     }
     io_state_ = STATE_DONE;
     return result;
