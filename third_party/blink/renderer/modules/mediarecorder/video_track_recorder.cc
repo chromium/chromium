@@ -239,11 +239,18 @@ void UmaHistogramForCodec(bool uses_acceleration, CodecId codec_id) {
 }
 
 bool MustUseVEA(CodecId codec_id) {
+  switch (codec_id) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS) && !BUILDFLAG(ENABLE_OPENH264)
-  return codec_id == CodecId::kH264;
-#else
-  return false;
+    case CodecId::kH264:
+      return true;
 #endif
+#if !BUILDFLAG(ENABLE_LIBAOM)
+    case CodecId::kAv1:
+      return true;
+#endif
+    default:
+      return false;
+  }
 }
 
 // Returns the default codec profile for |codec_id|.
@@ -1000,7 +1007,6 @@ void VideoTrackRecorderImpl::InitializeEncoderOnEncoderSupportKnown(
   const bool can_use_vea = CanUseAcceleratedEncoder(
       codec_profile, input_size.width(), input_size.height());
 
-#if BUILDFLAG(USE_PROPRIETARY_CODECS) && !BUILDFLAG(ENABLE_OPENH264)
   if (MustUseVEA(codec_profile.codec_id) &&
       (!allow_vea_encoder || !can_use_vea)) {
     // This should only happen if the H264 isn't supported by the VEA or an
@@ -1011,7 +1017,6 @@ void VideoTrackRecorderImpl::InitializeEncoderOnEncoderSupportKnown(
     }
     return;
   }
-#endif
 
   // If |can_use_vea| is true, codec_profile.profile must be filled after
   // CanUseAcceleratedEncoder().
