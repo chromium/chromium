@@ -13,18 +13,18 @@ cargo_crate("buildrs_support") {
   epoch = "1"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/autocfg-1.1.0/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/autocfg-1.2.0/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/autocfg-1.1.0/src/error.rs",
-    "//third_party/rust/chromium_crates_io/vendor/autocfg-1.1.0/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/autocfg-1.1.0/src/tests.rs",
-    "//third_party/rust/chromium_crates_io/vendor/autocfg-1.1.0/src/version.rs",
+    "//third_party/rust/chromium_crates_io/vendor/autocfg-1.2.0/src/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/autocfg-1.2.0/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/autocfg-1.2.0/src/tests.rs",
+    "//third_party/rust/chromium_crates_io/vendor/autocfg-1.2.0/src/version.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2015"
-  cargo_pkg_version = "1.1.0"
+  cargo_pkg_version = "1.2.0"
   cargo_pkg_authors = "Josh Stone <cuviper@gmail.com>"
   cargo_pkg_name = "autocfg"
   cargo_pkg_description = "Automatic cfg for Rust compiler features"

@@ -50,7 +50,7 @@ criteria = ["does-not-implement-crypto", "safe-to-run"]
 [policy."anyhow:1.0.81"]
 criteria = ["does-not-implement-crypto", "safe-to-run"]
 
-[policy."autocfg:1.1.0"]
+[policy."autocfg:1.2.0"]
 criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 
 [policy."base64:0.13.1"]

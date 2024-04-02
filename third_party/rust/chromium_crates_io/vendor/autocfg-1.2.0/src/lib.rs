@@ -83,6 +83,8 @@ mod tests;
 pub struct AutoCfg {
     out_dir: PathBuf,
     rustc: PathBuf,
+    rustc_wrapper: Option<PathBuf>,
+    rustc_workspace_wrapper: Option<PathBuf>,
     rustc_version: Version,
     target: Option<OsString>,
     no_std: bool,
@@ -119,7 +121,7 @@ pub fn rerun_env(var: &str) {
     println!("cargo:rerun-if-env-changed={}", var);
 }
 
-/// Create a new `AutoCfg` instance.
+/// Creates a new `AutoCfg` instance.
 ///
 /// # Panics
 ///
@@ -129,7 +131,7 @@ pub fn new() -> AutoCfg {
 }
 
 impl AutoCfg {
-    /// Create a new `AutoCfg` instance.
+    /// Creates a new `AutoCfg` instance.
     ///
     /// # Common errors
     ///
@@ -144,7 +146,7 @@ impl AutoCfg {
         }
     }
 
-    /// Create a new `AutoCfg` instance with the specified output directory.
+    /// Creates a new `AutoCfg` instance with the specified output directory.
     ///
     /// # Common errors
     ///
@@ -168,6 +170,8 @@ impl AutoCfg {
 
         let mut ac = AutoCfg {
             rustflags: rustflags(&target, &dir),
+            rustc_wrapper: get_rustc_wrapper(false),
+            rustc_workspace_wrapper: get_rustc_wrapper(true),
             out_dir: dir,
             rustc: rustc,
             rustc_version: rustc_version,
@@ -188,7 +192,34 @@ impl AutoCfg {
         Ok(ac)
     }
 
-    /// Test whether the current `rustc` reports a version greater than
+    /// Returns whether `AutoCfg` is using `#![no_std]` in its probes.
+    ///
+    /// This is automatically detected during construction -- if an empty probe
+    /// fails while one with `#![no_std]` succeeds, then the attribute will be
+    /// used for all further probes. This is usually only necessary when the
+    /// `TARGET` lacks `std` altogether. If neither succeeds, `no_std` is not
+    /// set, but that `AutoCfg` will probably only work for version checks.
+    ///
+    /// This attribute changes the implicit [prelude] from `std` to `core`,
+    /// which may affect the paths you need to use in other probes. It also
+    /// restricts some types that otherwise get additional methods in `std`,
+    /// like floating-point trigonometry and slice sorting.
+    ///
+    /// See also [`set_no_std`](#method.set_no_std).
+    ///
+    /// [prelude]: https://doc.rust-lang.org/reference/crates-and-source-files.html#preludes-and-no_std
+    pub fn no_std(&self) -> bool {
+        self.no_std
+    }
+
+    /// Sets whether `AutoCfg` should use `#![no_std]` in its probes.
+    ///
+    /// See also [`no_std`](#method.no_std).
+    pub fn set_no_std(&mut self, no_std: bool) {
+        self.no_std = no_std;
+    }
+
+    /// Tests whether the current `rustc` reports a version greater than
     /// or equal to "`major`.`minor`".
     pub fn probe_rustc_version(&self, major: usize, minor: usize) -> bool {
         self.rustc_version >= Version::new(major, minor, 0)
@@ -207,7 +238,18 @@ impl AutoCfg {
         static ID: AtomicUsize = ATOMIC_USIZE_INIT;
 
         let id = ID.fetch_add(1, Ordering::Relaxed);
-        let mut command = Command::new(&self.rustc);
+
+        // Build the command with possible wrappers.
+        let mut rustc = self
+            .rustc_wrapper
+            .iter()
+            .chain(self.rustc_workspace_wrapper.iter())
+            .chain(Some(&self.rustc));
+        let mut command = Command::new(rustc.next().unwrap());
+        for arg in rustc {
+            command.arg(arg);
+        }
+
         command
             .arg("--crate-name")
             .arg(format!("probe{}", id))
@@ -405,7 +447,7 @@ fn dir_contains_target(
 
                 cargo_target_dir
                     .to_str()
-                    .map(|cargo_target_dir| dir.contains(&cargo_target_dir))
+                    .map(|cargo_target_dir| dir.contains(cargo_target_dir))
             })
         })
         .unwrap_or(false)
@@ -450,4 +492,28 @@ fn rustflags(target: &Option<OsString>, dir: &Path) -> Vec<String> {
     }
 
     Vec::new()
+}
+
+fn get_rustc_wrapper(workspace: bool) -> Option<PathBuf> {
+    // We didn't really know whether the workspace wrapper is applicable until Cargo started
+    // deliberately setting or unsetting it in rust-lang/cargo#9601. We'll use the encoded
+    // rustflags as a proxy for that change for now, but we could instead check version 1.55.
+    if workspace && env::var_os("CARGO_ENCODED_RUSTFLAGS").is_none() {
+        return None;
+    }
+
+    let name = if workspace {
+        "RUSTC_WORKSPACE_WRAPPER"
+    } else {
+        "RUSTC_WRAPPER"
+    };
+
+    if let Some(wrapper) = env::var_os(name) {
+        // NB: `OsStr` didn't get `len` or `is_empty` until 1.9.
+        if wrapper != OsString::new() {
+            return Some(wrapper.into());
+        }
+    }
+
+    None
 }

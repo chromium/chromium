@@ -138,6 +138,16 @@ https://source.chromium.org/chromium/chromium/src/+/591a0f30c5eac93b6a3d981c2714
 The CL description contains a link to a Google-internal document with audit details.
 """
 
+[[audits.autocfg]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "1.1.0 -> 1.2.0"
+notes = '''
+Grepped for `-i cipher`, `-i crypto`, `'\bfs\b'``, `'\bnet\b'``, `'\bunsafe\b'``
+and nothing changed from the baseline audit of 1.1.0.  Skimmed through the
+1.1.0 => 1.2.0 delta and everything seemed okay.
+'''
+
 [[audits.base64]]
 who = "Adam Langley <agl@chromium.org>"
 criteria = ["ub-risk-0", "safe-to-deploy", "does-not-implement-crypto"]

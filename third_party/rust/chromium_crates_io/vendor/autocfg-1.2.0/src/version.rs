@@ -47,9 +47,15 @@ impl Version {
 
         // Split the version into semver components.
         let mut iter = version.splitn(3, '.');
-        let major = try!(iter.next().ok_or(error::from_str("missing major version")));
-        let minor = try!(iter.next().ok_or(error::from_str("missing minor version")));
-        let patch = try!(iter.next().ok_or(error::from_str("missing patch version")));
+        let major = try!(iter
+            .next()
+            .ok_or_else(|| error::from_str("missing major version")));
+        let minor = try!(iter
+            .next()
+            .ok_or_else(|| error::from_str("missing minor version")));
+        let patch = try!(iter
+            .next()
+            .ok_or_else(|| error::from_str("missing patch version")));
 
         Ok(Version::new(
             try!(major.parse().map_err(error::from_num)),
