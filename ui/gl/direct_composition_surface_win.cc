@@ -128,8 +128,28 @@ gfx::SwapResult DirectCompositionSurfaceWin::SwapBuffers(
   if (!success)
     return gfx::SwapResult::SWAP_FAILED;
 
-  if (!layer_tree_->CommitAndClearPendingOverlays(root_surface_.get()))
+  Microsoft::WRL::ComPtr<IUnknown> root_visual_content;
+  if (root_surface_->swap_chain()) {
+    root_visual_content = root_surface_->swap_chain();
+  } else {
+    root_visual_content = root_surface_->dcomp_surface();
+  }
+
+  if (root_visual_content) {
+    // Add a placeholder overlay for the root surface, at a z-order of 0.
+    auto root_params = std::make_unique<DCLayerOverlayParams>();
+    root_params->z_order = 0;
+    root_params->overlay_image = std::make_optional<DCLayerOverlayImage>(
+        root_surface_->GetSize(), std::move(root_visual_content),
+        root_surface_->dcomp_surface_serial());
+    root_params->content_rect = gfx::RectF(root_params->overlay_image->size());
+    root_params->quad_rect = gfx::Rect(root_params->overlay_image->size());
+    CHECK(ScheduleDCLayer(std::move(root_params)));
+  }
+
+  if (!layer_tree_->CommitAndClearPendingOverlays()) {
     return gfx::SwapResult::SWAP_FAILED;
+  }
 
   return gfx::SwapResult::SWAP_ACK;
 }

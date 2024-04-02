@@ -11,15 +11,12 @@
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/color_space_win.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/transform_util.h"
-#include "ui/gl/direct_composition_child_surface_win.h"
 #include "ui/gl/direct_composition_support.h"
-#include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/swap_chain_presenter.h"
 
@@ -1165,8 +1162,7 @@ void DCLayerTree::VisualTree::GetSwapChainVisualInfoForTesting(
   }
 }
 
-bool DCLayerTree::CommitAndClearPendingOverlays(
-    DirectCompositionChildSurfaceWin* root_surface) {
+bool DCLayerTree::CommitAndClearPendingOverlays() {
   TRACE_EVENT1("gpu", "DCLayerTree::CommitAndClearPendingOverlays",
                "num_pending_overlays", pending_overlays_.size());
   DCHECK(!needs_rebuild_visual_tree_ || ink_renderer_->HasBeenInitialized());
@@ -1174,46 +1170,21 @@ bool DCLayerTree::CommitAndClearPendingOverlays(
   {
     Microsoft::WRL::ComPtr<IDXGISwapChain1> root_swap_chain;
     Microsoft::WRL::ComPtr<IDCompositionSurface> root_dcomp_surface;
-    if (root_surface) {
-      root_swap_chain = root_surface->swap_chain();
-      root_dcomp_surface = root_surface->dcomp_surface();
-
-      Microsoft::WRL::ComPtr<IUnknown> root_visual_content;
-      if (root_swap_chain) {
-        root_visual_content = root_swap_chain;
-      } else {
-        root_visual_content = root_dcomp_surface;
+    auto it = base::ranges::find(pending_overlays_, 0,
+                                 &DCLayerOverlayParams::z_order);
+    if (it != pending_overlays_.end() && (*it)->overlay_image) {
+      Microsoft::WRL::ComPtr<IUnknown> root_visual_content =
+          (*it)->overlay_image->dcomp_visual_content();
+      CHECK(root_visual_content);
+      HRESULT hr = root_visual_content.As(&root_swap_chain);
+      if (hr == E_NOINTERFACE) {
+        DCHECK_EQ(nullptr, root_swap_chain);
+        hr = root_visual_content.As(&root_dcomp_surface);
       }
-
-      // Add a placeholder overlay for the root surface, at a z-order of 0.
-      auto root_params = std::make_unique<DCLayerOverlayParams>();
-      root_params->z_order = 0;
-      root_params->overlay_image = DCLayerOverlayImage(
-          root_surface->GetSize(), std::move(root_visual_content),
-          root_surface->dcomp_surface_serial());
-      root_params->content_rect =
-          gfx::RectF(root_params->overlay_image->size());
-      root_params->quad_rect = gfx::Rect(root_params->overlay_image->size());
-      ScheduleDCLayer(std::move(root_params));
+      CHECK_EQ(S_OK, hr);
     } else {
-      auto it = std::find_if(
-          pending_overlays_.begin(), pending_overlays_.end(),
-          [](const std::unique_ptr<DCLayerOverlayParams>& overlay) {
-            return overlay->z_order == 0;
-          });
-      if (it != pending_overlays_.end() && (*it)->overlay_image) {
-        Microsoft::WRL::ComPtr<IUnknown> root_visual_content =
-            (*it)->overlay_image->dcomp_visual_content();
-        HRESULT hr = root_visual_content.As(&root_swap_chain);
-        if (hr == E_NOINTERFACE) {
-          DCHECK_EQ(nullptr, root_swap_chain);
-          hr = root_visual_content.As(&root_dcomp_surface);
-        }
-        CHECK_EQ(S_OK, hr);
-      } else {
-        // Note: this is allowed in tests, but not expected otherwise.
-        DLOG(WARNING) << "No root surface in overlay list";
-      }
+      // Note: this is allowed in tests, but not expected otherwise.
+      DLOG(WARNING) << "No root surface in overlay list";
     }
 
     if (root_swap_chain != root_swap_chain_ ||

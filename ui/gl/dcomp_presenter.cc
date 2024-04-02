@@ -114,7 +114,7 @@ void DCompPresenter::Present(SwapCompletionCallback completion_callback,
                       /*create_query=*/create_query_this_frame_);
   create_query_this_frame_ = false;
 
-  if (!layer_tree_->CommitAndClearPendingOverlays(nullptr)) {
+  if (!layer_tree_->CommitAndClearPendingOverlays()) {
     std::move(completion_callback)
         .Run(gfx::SwapCompletionResult(gfx::SwapResult::SWAP_FAILED));
     return;

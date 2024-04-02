@@ -16,7 +16,6 @@
 #include "base/containers/flat_map.h"
 #include "base/moving_window.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "ui/gfx/color_space_win.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/dc_layer_overlay_params.h"
 #include "ui/gl/delegated_ink_point_renderer_gpu.h"
@@ -32,7 +31,6 @@ class DelegatedInkMetadata;
 
 namespace gl {
 
-class DirectCompositionChildSurfaceWin;
 class SwapChainPresenter;
 
 // Cache video processor and its size.
@@ -140,8 +138,7 @@ class GL_EXPORT DCLayerTree {
 
   // Present pending overlay layers, and perform a direct composition commit if
   // necessary.  Returns true if presentation and commit succeeded.
-  bool CommitAndClearPendingOverlays(
-      DirectCompositionChildSurfaceWin* root_surface);
+  bool CommitAndClearPendingOverlays();
 
   // Schedule an overlay layer for the next CommitAndClearPendingOverlays call.
   bool ScheduleDCLayer(std::unique_ptr<DCLayerOverlayParams> params);

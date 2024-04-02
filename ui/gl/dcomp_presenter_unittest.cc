@@ -681,7 +681,7 @@ TEST_F(DCompPresenterTest, BuildTreeNoCrashWithRootSurfaceVisualNull) {
   layer_tree->SetDelegatedInkTrailStartPoint(std::move(metadata));
 
   EXPECT_FALSE(layer_tree->HasPendingOverlaysForTesting());
-  EXPECT_TRUE(layer_tree->CommitAndClearPendingOverlays(nullptr));
+  EXPECT_TRUE(layer_tree->CommitAndClearPendingOverlays());
 }
 
 class DCompPresenterPixelTest : public DCompPresenterTest {
