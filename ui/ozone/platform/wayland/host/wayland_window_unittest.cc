@@ -492,12 +492,10 @@ TEST_P(WaylandWindowTest, ApplyPendingStatesAndCommit) {
 // Checks that decoration insets do not change final bounds and that
 // WaylandToplevelWindow::HandleToplevelConfigure does correct rounding when
 // some sides of insets divides by 2 with remainder.
-TEST_P(WaylandWindowTest, SetDecorationInsets) {
+TEST_P(WaylandWindowTest, CalculateDecorationInsets) {
   constexpr gfx::Rect kNormalBounds{956, 556};
   constexpr auto kHiDpiScale = 2;
   const BoundsChange kHiDpiBounds{false};
-
-  window_->SetBoundsInDIP(kNormalBounds);
 
   auto state = InitializeWlArrayWithActivatedState();
 
@@ -513,7 +511,10 @@ TEST_P(WaylandWindowTest, SetDecorationInsets) {
   const auto kDecorationInsets = gfx::Insets::TLBR(24, 28, 32, 28);
   auto bounds_with_insets = kNormalBounds;
   bounds_with_insets.Inset(kDecorationInsets);
-  EXPECT_CALL(delegate_, OnBoundsChanged(_)).Times(0);
+  EXPECT_CALL(delegate_, CalculateInsetsInDIP())
+      .Times(1)
+      .WillOnce(Return(kDecorationInsets));
+  EXPECT_CALL(delegate_, OnBoundsChanged(_));
   PostToServerAndWait([id = surface_id_, bounds_with_insets](
                           wl::TestWaylandServerThread* server) {
     wl::MockSurface* surface = server->GetObject<wl::MockSurface>(id);
@@ -521,9 +522,13 @@ TEST_P(WaylandWindowTest, SetDecorationInsets) {
     wl::MockXdgSurface* xdg_surface = surface->xdg_surface();
     EXPECT_CALL(*xdg_surface, SetWindowGeometry(bounds_with_insets));
   });
-  window_->SetDecorationInsets(&kDecorationInsets);
+  window_->SetBoundsInDIP(kNormalBounds);
   AdvanceFrameToCurrent(window_.get(), delegate_);
+  VerifyAndClearExpectations();
 
+  EXPECT_CALL(delegate_, CalculateInsetsInDIP())
+      .Times(1)
+      .WillOnce(Return(kDecorationInsets));
   EXPECT_CALL(delegate_, OnBoundsChanged(_)).Times(0);
   PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
     wl::MockSurface* surface = server->GetObject<wl::MockSurface>(id);
@@ -540,6 +545,9 @@ TEST_P(WaylandWindowTest, SetDecorationInsets) {
   // Change scale.  This is the only time when we expect the pixel position to
   // change.
   EXPECT_CALL(delegate_, OnBoundsChanged(Eq(kHiDpiBounds))).Times(1);
+  EXPECT_CALL(delegate_, CalculateInsetsInDIP())
+      .Times(1)
+      .WillOnce(Return(kDecorationInsets));
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     auto* output = server->output();
     output->SetScale(kHiDpiScale);
@@ -550,8 +558,6 @@ TEST_P(WaylandWindowTest, SetDecorationInsets) {
   // Pretend we are already rendering using new scale.
   window_->root_surface()->set_surface_buffer_scale(kHiDpiScale);
 
-  // Set new insets so that rounding does not result in integer.
-  constexpr auto kDecorationInsets_2x = gfx::Insets::TLBR(48, 55, 63, 55);
   PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
     wl::MockSurface* surface = server->GetObject<wl::MockSurface>(id);
     ASSERT_TRUE(surface);
@@ -560,13 +566,15 @@ TEST_P(WaylandWindowTest, SetDecorationInsets) {
         .Times(1);
   });
 
-  window_->SetDecorationInsets(&kDecorationInsets_2x);
   AdvanceFrameToCurrent(window_.get(), delegate_);
   VerifyAndClearExpectations();
 
   // Now send configure events many times - bounds mustn't change.
   for (size_t i = 0; i < 10; i++) {
     EXPECT_CALL(delegate_, OnBoundsChanged(_)).Times(0);
+    EXPECT_CALL(delegate_, CalculateInsetsInDIP())
+        .Times(1)
+        .WillOnce(Return(kDecorationInsets));
     PostToServerAndWait(
         [id = surface_id_](wl::TestWaylandServerThread* server) {
           wl::MockSurface* surface = server->GetObject<wl::MockSurface>(id);
@@ -586,8 +594,6 @@ TEST_P(WaylandWindowTest, OnlyChangeDecorationInsets) {
   // The bounds never change throughout this test
   constexpr gfx::Rect kBounds{980, 1188};
 
-  window_->SetBoundsInDIP(kBounds);
-
   auto state = InitializeWlArrayWithActivatedState();
 
   PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
@@ -601,7 +607,9 @@ TEST_P(WaylandWindowTest, OnlyChangeDecorationInsets) {
   const auto kInitialInsets = gfx::Insets::TLBR(20, 36, 52, 36);
   auto bounds_with_insets = kBounds;
   bounds_with_insets.Inset(kInitialInsets);
-  EXPECT_CALL(delegate_, OnBoundsChanged(_)).Times(0);
+  EXPECT_CALL(delegate_, OnBoundsChanged(_)).Times(1);
+  EXPECT_CALL(delegate_, CalculateInsetsInDIP())
+      .WillRepeatedly(Return(kInitialInsets));
   PostToServerAndWait([id = surface_id_, bounds_with_insets](
                           wl::TestWaylandServerThread* server) {
     wl::MockSurface* surface = server->GetObject<wl::MockSurface>(id);
@@ -609,13 +617,17 @@ TEST_P(WaylandWindowTest, OnlyChangeDecorationInsets) {
     wl::MockXdgSurface* xdg_surface = surface->xdg_surface();
     EXPECT_CALL(*xdg_surface, SetWindowGeometry(bounds_with_insets));
   });
-  window_->SetDecorationInsets(&kInitialInsets);
+
+  window_->SetBoundsInDIP(kBounds);
   AdvanceFrameToCurrent(window_.get(), delegate_);
 
+  // Next, change insets and check SetWindowGeometry is called.
   const auto kNewInsets = gfx::Insets::TLBR(10, 10, 10, 10);
   bounds_with_insets = kBounds;
   bounds_with_insets.Inset(kNewInsets);
   EXPECT_CALL(delegate_, OnBoundsChanged(_)).Times(0);
+  EXPECT_CALL(delegate_, CalculateInsetsInDIP())
+      .WillRepeatedly(Return(kNewInsets));
   PostToServerAndWait([id = surface_id_, bounds_with_insets](
                           wl::TestWaylandServerThread* server) {
     wl::MockSurface* surface = server->GetObject<wl::MockSurface>(id);
@@ -624,11 +636,100 @@ TEST_P(WaylandWindowTest, OnlyChangeDecorationInsets) {
     EXPECT_CALL(*xdg_surface, SetWindowGeometry(bounds_with_insets));
   });
 
-  // Change insets here so that these are detected when a new state is requested
-  // from the server.
-  window_->SetDecorationInsets(&kNewInsets);
+  // Set the same bounds again to trigger the insets change. Since the bounds is
+  // the same, it should NOT trigger OnBoundsChanged.
+  window_->SetBoundsInDIP(kBounds);
+
   SendConfigureEvent(surface_id_, bounds_with_insets.size(), state);
   AdvanceFrameToCurrent(window_.get(), delegate_);
+}
+
+// Checks that decoration insets and bounds state is synchronized.
+TEST_P(WaylandWindowTest, ChangeBothBoundsAndDecorationInsets) {
+  constexpr gfx::Rect kFirstBounds{410, 310};
+  constexpr gfx::Insets kFirstInsets(5);
+
+  constexpr gfx::Rect kSecondBounds{520, 420};
+  constexpr gfx::Insets kSecondInsets(10);
+
+  constexpr gfx::Rect kThirdBounds{540, 440};
+  constexpr gfx::Insets kThirdInsets(20);
+
+  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
+    wl::TestOutput* output = server->output();
+    // Send the window to `output`.
+    wl::MockSurface* surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(surface);
+    wl_surface_send_enter(surface->resource(), output->resource());
+  });
+
+  // 1. Set bounds to kFirstBounds with the insets kFirstInsets.
+  EXPECT_CALL(delegate_, CalculateInsetsInDIP())
+      .Times(1)
+      .WillOnce(Return(kFirstInsets));
+  window_->SetBoundsInDIP(kFirstBounds);
+  auto geometry1 = kFirstBounds;
+  geometry1.Inset(kFirstInsets);
+  auto state = InitializeWlArrayWithActivatedState();
+  VerifyAndClearExpectations();
+
+  // 2. Set bounds to kSecondBounds with the insets kSecondInsets.
+  EXPECT_CALL(delegate_, CalculateInsetsInDIP())
+      .Times(1)
+      .WillOnce(Return(kSecondInsets));
+  window_->SetBoundsInDIP(kSecondBounds);
+  auto geometry2 = kSecondBounds;
+  geometry2.Inset(kSecondInsets);
+  state = InitializeWlArrayWithActivatedState();
+  VerifyAndClearExpectations();
+
+  // 3. Set bounds to kThirdBounds with the insets kThirdInsets. Note that
+  // geometry2 and geometry3 are the same.
+  EXPECT_CALL(delegate_, CalculateInsetsInDIP())
+      .Times(1)
+      .WillOnce(Return(kThirdInsets));
+  window_->SetBoundsInDIP(kThirdBounds);
+  auto geometry3 = kThirdBounds;
+  geometry3.Inset(kThirdInsets);
+  state = InitializeWlArrayWithActivatedState();
+  VerifyAndClearExpectations();
+
+  // 4. Process the request for step 1.
+  PostToServerAndWait([id = surface_id_, geometry = geometry1](
+                          wl::TestWaylandServerThread* server) {
+    wl::MockSurface* surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(surface);
+    wl::MockXdgSurface* xdg_surface = surface->xdg_surface();
+    EXPECT_CALL(*xdg_surface, SetWindowGeometry(geometry));
+  });
+
+  AdvanceFrameToGivenVizSequenceId(window_.get(), delegate_, /*viz_seq=*/1);
+  VerifyAndClearExpectations();
+
+  // 5. Process the request for step 2.
+  PostToServerAndWait([id = surface_id_, geometry = geometry2](
+                          wl::TestWaylandServerThread* server) {
+    wl::MockSurface* surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(surface);
+    wl::MockXdgSurface* xdg_surface = surface->xdg_surface();
+    EXPECT_CALL(*xdg_surface, SetWindowGeometry(geometry));
+  });
+
+  AdvanceFrameToGivenVizSequenceId(window_.get(), delegate_, /*viz_seq=*/2);
+  VerifyAndClearExpectations();
+
+  // 6. Process the request for step 3. Geometry is not changed, but it's set
+  // again if bounds or insets has been changed.
+  PostToServerAndWait([id = surface_id_, geometry = geometry3](
+                          wl::TestWaylandServerThread* server) {
+    wl::MockSurface* surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(surface);
+    wl::MockXdgSurface* xdg_surface = surface->xdg_surface();
+    EXPECT_CALL(*xdg_surface, SetWindowGeometry(geometry));
+  });
+
+  AdvanceFrameToGivenVizSequenceId(window_.get(), delegate_, /*viz_seq=*/3);
+  VerifyAndClearExpectations();
 }
 
 #if BUILDFLAG(IS_LINUX)
@@ -809,6 +910,7 @@ TEST_P(WaylandWindowTest, RestoredBoundsSetWithCorrectOrigin) {
 
   window_->HandleToplevelConfigure(kMaximizedBounds.width(),
                                    kMaximizedBounds.height(), window_states);
+  window_->HandleSurfaceConfigure(2);
 
   EXPECT_EQ(PlatformWindowState::kMaximized, window_->GetPlatformWindowState());
   EXPECT_EQ(window_->GetRestoredBoundsInDIP(), kNormalBounds);
@@ -847,10 +949,9 @@ TEST_P(WaylandWindowTest, MaximizeAndRestore) {
   // calls) invoke SetWindowGeometry(), but that should not happen during the
   // change of the window state.
   // See https://crbug.com/1223005.
-  EXPECT_CALL(delegate_, OnWindowStateChanged(_, _))
-      .Times(1)
-      .WillOnce(
-          testing::Invoke([this]() { window_->SetDecorationInsets({}); }));
+  EXPECT_CALL(delegate_, CalculateInsetsInDIP())
+      .WillRepeatedly(Return(gfx::Insets()));
+  EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(1);
   window_->Maximize();
   SendConfigureEvent(surface_id_, kMaximizedBounds.size(), active_maximized);
   AdvanceFrameToCurrent(window_.get(), delegate_);
@@ -893,10 +994,9 @@ TEST_P(WaylandWindowTest, MaximizeAndRestore) {
   // calls) invoke SetWindowGeometry(), but that should not happen during the
   // change of the window state.
   // See https://crbug.com/1223005.
-  EXPECT_CALL(delegate_, OnWindowStateChanged(_, _))
-      .Times(1)
-      .WillOnce(
-          testing::Invoke([this]() { window_->SetDecorationInsets({}); }));
+  EXPECT_CALL(delegate_, CalculateInsetsInDIP())
+      .WillRepeatedly(Return(gfx::Insets()));
+  EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(1);
   EXPECT_CALL(delegate_, OnActivationChanged(_)).Times(0);
   EXPECT_CALL(delegate_, OnBoundsChanged(Eq(kDefaultBoundsChange)));
   PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
@@ -1130,7 +1230,13 @@ TEST_P(WaylandWindowTest, StartWithFullscreen) {
         server->GetObject<wl::MockSurface>(surface_id);
     EXPECT_FALSE(mock_surface->xdg_surface());
   });
-  EXPECT_CALL(delegate, OnWindowStateChanged(_, _)).Times(0);
+
+  // We must receive a state change after SetFullscreen.
+  EXPECT_CALL(delegate,
+              OnWindowStateChanged(Eq(PlatformWindowState::kNormal),
+                                   Eq(PlatformWindowState::kFullScreen)))
+      .Times(1);
+
   window->SetFullscreen(true, display::kInvalidDisplayId);
   // The state of the window must already be fullscreen one.
   EXPECT_EQ(window->GetPlatformWindowState(), PlatformWindowState::kFullScreen);
@@ -1139,16 +1245,8 @@ TEST_P(WaylandWindowTest, StartWithFullscreen) {
 
   Mock::VerifyAndClearExpectations(&delegate);
 
-  // We must receive a state change after Show is called.
-  EXPECT_CALL(delegate,
-              OnWindowStateChanged(Eq(PlatformWindowState::kNormal),
-                                   Eq(PlatformWindowState::kFullScreen)))
-      .Times(1);
-
   // Show and Activate the surface.
   window->Show(false);
-
-  Mock::VerifyAndClearExpectations(&delegate);
 
   // We mustn't receive any state changes if that does not differ from the last
   // state.
@@ -1187,7 +1285,12 @@ TEST_P(WaylandWindowTest, StartMaximized) {
         server->GetObject<wl::MockSurface>(surface_id);
     EXPECT_FALSE(mock_surface->xdg_surface());
   });
-  EXPECT_CALL(delegate, OnWindowStateChanged(_, _)).Times(0);
+
+  // We must receive a state change after Show is called.
+  EXPECT_CALL(delegate,
+              OnWindowStateChanged(Eq(PlatformWindowState::kNormal),
+                                   Eq(PlatformWindowState::kMaximized)))
+      .Times(1);
 
   window->Maximize();
   // The state of the window must already be fullscreen one.
@@ -1197,16 +1300,8 @@ TEST_P(WaylandWindowTest, StartMaximized) {
 
   Mock::VerifyAndClearExpectations(&delegate);
 
-  // We must receive a state change after Show is called.
-  EXPECT_CALL(delegate,
-              OnWindowStateChanged(Eq(PlatformWindowState::kNormal),
-                                   Eq(PlatformWindowState::kMaximized)))
-      .Times(1);
-
   // Show the window now.
   window->Show(false);
-
-  Mock::VerifyAndClearExpectations(&delegate);
 
   // Window show state should be already up to date, so delegate is not
   // notified.
@@ -1233,8 +1328,8 @@ TEST_P(WaylandWindowTest, CompositorSideStateChanges) {
   // Set nonzero insets and ensure that they are only used when the window has
   // normal state.
   // See https://crbug.com/1274629
-  window_->SetDecorationInsets(&kInsets);
-
+  EXPECT_CALL(delegate_, CalculateInsetsInDIP())
+      .WillRepeatedly(Return(gfx::Insets()));
   EXPECT_CALL(delegate_,
               OnWindowStateChanged(_, Eq(PlatformWindowState::kMaximized)))
       .Times(1);
@@ -1252,6 +1347,8 @@ TEST_P(WaylandWindowTest, CompositorSideStateChanges) {
   EXPECT_EQ(window_->GetPlatformWindowState(), PlatformWindowState::kMaximized);
 
   // Unmaximize
+  EXPECT_CALL(delegate_, CalculateInsetsInDIP())
+      .WillRepeatedly(Return(kInsets));
   EXPECT_CALL(delegate_,
               OnWindowStateChanged(_, Eq(PlatformWindowState::kNormal)))
       .Times(1);
@@ -1278,6 +1375,8 @@ TEST_P(WaylandWindowTest, CompositorSideStateChanges) {
                                       PlatformFullscreenType::kPlain))
       .Times(1);
 #endif
+  EXPECT_CALL(delegate_, CalculateInsetsInDIP())
+      .WillRepeatedly(Return(gfx::Insets()));
   EXPECT_CALL(delegate_,
               OnWindowStateChanged(_, Eq(PlatformWindowState::kFullScreen)))
       .Times(1);
@@ -1297,6 +1396,8 @@ TEST_P(WaylandWindowTest, CompositorSideStateChanges) {
                                                  PlatformFullscreenType::kNone))
       .Times(1);
 #endif
+  EXPECT_CALL(delegate_, CalculateInsetsInDIP())
+      .WillRepeatedly(Return(kInsets));
   EXPECT_CALL(delegate_,
               OnWindowStateChanged(_, Eq(PlatformWindowState::kNormal)))
       .Times(1);
@@ -1317,6 +1418,8 @@ TEST_P(WaylandWindowTest, CompositorSideStateChanges) {
   AdvanceFrameToCurrent(window_.get(), delegate_);
 
   // Now, maximize, fullscreen and restore.
+  EXPECT_CALL(delegate_, CalculateInsetsInDIP())
+      .WillRepeatedly(Return(gfx::Insets()));
   EXPECT_CALL(delegate_,
               OnWindowStateChanged(_, Eq(PlatformWindowState::kMaximized)))
       .Times(1);
@@ -1337,6 +1440,8 @@ TEST_P(WaylandWindowTest, CompositorSideStateChanges) {
                                       PlatformFullscreenType::kPlain))
       .Times(1);
 #endif
+  EXPECT_CALL(delegate_, CalculateInsetsInDIP())
+      .WillRepeatedly(Return(gfx::Insets()));
   EXPECT_CALL(delegate_,
               OnWindowStateChanged(_, Eq(PlatformWindowState::kFullScreen)))
       .Times(1);
@@ -1356,6 +1461,8 @@ TEST_P(WaylandWindowTest, CompositorSideStateChanges) {
                                                  PlatformFullscreenType::kNone))
       .Times(1);
 #endif
+  EXPECT_CALL(delegate_, CalculateInsetsInDIP())
+      .WillRepeatedly(Return(kInsets));
   EXPECT_CALL(delegate_,
               OnWindowStateChanged(_, Eq(PlatformWindowState::kNormal)))
       .Times(1);
@@ -2327,6 +2434,8 @@ TEST_P(WaylandWindowTest, ConvertEventToTarget) {
   auto bounds_with_insets = kMainWindowBounds;
   bounds_with_insets.Inset(kMainWindowInsets);
   EXPECT_CALL(delegate_, OnBoundsChanged(_));
+  EXPECT_CALL(delegate_, CalculateInsetsInDIP())
+      .WillRepeatedly(Return(kMainWindowInsets));
   PostToServerAndWait([id = surface_id_, bounds_with_insets](
                           wl::TestWaylandServerThread* server) {
     wl::MockSurface* mock_surface = server->GetObject<wl::MockSurface>(id);
@@ -2335,7 +2444,6 @@ TEST_P(WaylandWindowTest, ConvertEventToTarget) {
     EXPECT_CALL(*xdg_surface, SetWindowGeometry(bounds_with_insets));
   });
   window_->SetBoundsInDIP(kMainWindowBounds);
-  window_->SetDecorationInsets(&kMainWindowInsets);
   AdvanceFrameToCurrent(window_.get(), delegate_);
 
   // Create a menu.
@@ -4790,6 +4898,7 @@ TEST_P(WaylandWindowTest, StartWithMinimized) {
     window_->HandleSurfaceConfigure(3);
     EXPECT_EQ(window_->GetPlatformWindowState(),
               PlatformWindowState::kMinimized);
+    EXPECT_EQ(gfx::Rect(), window_->GetBoundsInDIP());
     Mock::VerifyAndClearExpectations(&delegate_);
   } else {
     EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(1);
@@ -4806,19 +4915,21 @@ TEST_P(WaylandWindowTest, StartWithMinimized) {
     // It must be still the same minimized state.
     EXPECT_EQ(window_->GetPlatformWindowState(),
               PlatformWindowState::kMinimized);
-  }
+    EXPECT_EQ(gfx::Rect(800, 600), window_->GetBoundsInDIP());
 
-  // The window geometry has to be set to the current bounds of the window for
-  // minimized state.
-  EXPECT_EQ(gfx::Rect(800, 600), window_->GetBoundsInDIP());
-  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
-    auto* surface = server->GetObject<wl::MockSurface>(id);
-    auto* xdg_surface = surface->xdg_surface();
-    EXPECT_CALL(*xdg_surface, SetWindowGeometry(_)).Times(0);
-  });
-  // Send one additional empty configuration event for minimized state.
-  // (which means the surface is not maximized, fullscreen or activated)
-  SendConfigureEvent(surface_id_, {0, 0}, wl::ScopedWlArray({}));
+    // The window geometry has to be set to the current bounds of the window for
+    // minimized state.
+    PostToServerAndWait(
+        [id = surface_id_](wl::TestWaylandServerThread* server) {
+          auto* surface = server->GetObject<wl::MockSurface>(id);
+          auto* xdg_surface = surface->xdg_surface();
+          EXPECT_CALL(*xdg_surface, SetWindowGeometry(_)).Times(0);
+        });
+    // Send one additional empty configuration event for minimized state.
+    // (which means the surface is not maximized, fullscreen or activated)
+    SendConfigureEvent(surface_id_, {0, 0}, wl::ScopedWlArray({}));
+    EXPECT_EQ(gfx::Rect(), window_->GetBoundsInDIP());
+  }
 }
 
 class BlockableWaylandToplevelWindow : public WaylandToplevelWindow {
