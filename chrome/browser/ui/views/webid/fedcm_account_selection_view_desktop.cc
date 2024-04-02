@@ -672,13 +672,18 @@ content::WebContents* FedCmAccountSelectionView::ShowModalDialog(
     popup_window_ = std::make_unique<FedCmModalDialogView>(
         delegate_->GetWebContents(), this);
   }
-  // TODO(crbug.com/331166928): This is only null in one test. Fix the test to match
-  // production.
-  if (input_protector_) {
-    input_protector_->VisibilityChanged(false);
-  }
-  if (GetDialogWidget()) {
-    GetDialogWidget()->Hide();
+
+  // The loading modal should not be hidden when the pop-up window is displayed
+  // for better UX.
+  if (GetSheetType() != SheetType::LOADING) {
+    // TODO(crbug.com/331166928): This is only null in one test. Fix the test to
+    // match production.
+    if (input_protector_) {
+      input_protector_->VisibilityChanged(false);
+    }
+    if (GetDialogWidget()) {
+      GetDialogWidget()->Hide();
+    }
   }
   return popup_window_->ShowPopupWindow(url);
 }

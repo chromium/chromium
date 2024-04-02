@@ -1700,6 +1700,23 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, DismissLoadingModal) {
   observer->OnCloseButtonClicked(CreateMouseEvent());
 }
 
+// Tests that the loading modal is not hidden when a pop-up window is displayed.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       ButtonFlowLoadingModalNotHiddenDuringLoginToIdP) {
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShowLoadingDialog();
+  EXPECT_TRUE(dialog_widget_->IsVisible());
+
+  // Emulate user clicking on a button to sign in with an IDP via button flow.
+  auto popup_window = std::make_unique<MockFedCmModalDialogView>(
+      test_web_contents_.get(), controller.get());
+  EXPECT_CALL(*popup_window, ShowPopupWindow).Times(1);
+  controller->SetIdpSigninPopupWindowForTesting(std::move(popup_window));
+  controller->ShowModalDialog(GURL(u"https://example.com"));
+
+  EXPECT_TRUE(dialog_widget_->IsVisible());
+}
+
 // Tests that opening an IDP sign-in pop-up during the loading modal, then
 // closing the pop-up, does not crash. (This simulates the user triggering a
 // button flow, then an IDP sign-in pop-up shows up because the user is logged
