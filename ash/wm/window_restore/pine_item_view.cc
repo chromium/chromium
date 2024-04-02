@@ -80,7 +80,7 @@ PineItemView::PineItemView(const PineContentsData::AppInfo& app_info,
     // restore. `cache` might be null in a test environment.
     // TODO(http://b/328830102): Title should be updated once app is installed.
     std::string title = app_info.title;
-    if (cache && !IsBrowserAppId(app_info.app_id)) {
+    if (cache && (title.empty() || !IsBrowserAppId(app_info.app_id))) {
       cache->ForOneApp(
           app_info.app_id,
           [&title](const apps::AppUpdate& update) { title = update.Name(); });

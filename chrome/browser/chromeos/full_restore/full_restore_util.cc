@@ -6,6 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "components/sessions/core/session_types.h"
+#include "content/public/common/url_constants.h"
 
 namespace full_restore {
 
@@ -54,10 +55,15 @@ crosapi::mojom::SessionWindowPtr ToSessionWindowPtr(
 
     const sessions::SerializedNavigationEntry& entry = navigations[index];
 
-    // Use the tab title if possible. Otherwise we will default to the app
-    // title, "Chrome".
-    if (active_tab_title.empty() && !entry.title().empty()) {
+    // Use the tab title if possible. If no tab title is available and it is a
+    // chrome WebUI, use the host piece (history, extensions, etc.). Otherwise
+    // we will default to the app title, "Chrome".
+    if (active_tab_title.empty()) {
       active_tab_title = base::UTF16ToUTF8(entry.title());
+      if (active_tab_title.empty() &&
+          entry.original_request_url().SchemeIs(content::kChromeUIScheme)) {
+        active_tab_title = entry.original_request_url().host_piece();
+      }
     }
 
     tab_urls.push_back(entry.original_request_url());
