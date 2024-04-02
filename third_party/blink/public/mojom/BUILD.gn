@@ -26,6 +26,7 @@ mojom("mojom_platform") {
   generate_java = true
   sources = [
     "ad_tagging/ad_evidence.mojom",
+    "aggregation_service/aggregatable_report.mojom",
     "annotation/annotation.mojom",
     "app_banner/app_banner.mojom",
     "array_buffer/array_buffer_contents.mojom",
@@ -182,7 +183,6 @@ mojom("mojom_platform") {
     "preloading/anchor_element_interaction_host.mojom",
     "prerender/prerender.mojom",
     "presentation/presentation.mojom",
-    "private_aggregation/aggregatable_report.mojom",
     "private_aggregation/private_aggregation_host.mojom",
     "push_messaging/push_messaging.mojom",
     "push_messaging/push_messaging_status.mojom",

@@ -22,7 +22,7 @@
 #include "content/browser/aggregation_service/public_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
+#include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 #include "third_party/distributed_point_functions/shim/buildflags.h"
 #include "url/gurl.h"
 

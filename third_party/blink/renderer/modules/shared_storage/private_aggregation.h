@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom-blink.h"
+#include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom-blink.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom-blink.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom-blink-forward.h"
 #include "third_party/blink/renderer/modules/modules_export.h"

@@ -20,7 +20,7 @@
 #include "base/values.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "content/common/content_export.h"
-#include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
+#include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 

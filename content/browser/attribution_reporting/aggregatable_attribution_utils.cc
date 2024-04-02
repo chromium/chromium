@@ -33,7 +33,7 @@
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
-#include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
+#include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 
 namespace content {
 

@@ -35,7 +35,7 @@
 #include "content/browser/aggregation_service/public_key.h"
 #include "content/browser/aggregation_service/public_key_parsing_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
+#include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
 #include "url/gurl.h"
 #include "url/origin.h"
