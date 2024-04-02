@@ -4094,6 +4094,7 @@
 <translation id="4090103403438682346">允许已通过验证的访问凭证</translation>
 <translation id="4090947011087001172">要重置 <ph name="SITE" /> 的网站权限吗？</translation>
 <translation id="4092636882861724179">您可在 <ph name="GOOGLE_PASSWORD_MANAGER" />中查看和管理您已保存的密码。</translation>
+<translation id="4092709865241032354">请添加您在此网站上使用的用户名，以便 Google 密码管理工具保存您的登录信息</translation>
 <translation id="4093865285251893588">个人资料图片</translation>
 <translation id="4093955363990068916">本地文件：</translation>
 <translation id="4094647278880271855">您使用了不受支持的环境变量：<ph name="BAD_VAR" />。稳定性和安全性会有所下降。</translation>
@@ -4669,7 +4670,6 @@
 <translation id="4546692474302123343">Google 助理语音输入</translation>
 <translation id="4547659257713117923">没有从其他设备打开的标签页</translation>
 <translation id="4547672827276975204">自动设置</translation>
-<translation id="4548858987594081919">为帮助 Google 密码管理工具保存您的登录信息，请添加您在此网站中使用的用户名</translation>
 <translation id="4549791035683739768">您的安全密钥未存储任何指纹</translation>
 <translation id="4550737096585299960">请过几分钟再试。</translation>
 <translation id="4550926046134589611">部分受支持的链接仍会在“<ph name="APP_NAME" />”中打开。</translation>

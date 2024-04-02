@@ -4095,6 +4095,7 @@
 <translation id="4090103403438682346">確認済みアクセスを有効にする</translation>
 <translation id="4090947011087001172"><ph name="SITE" /> のサイト権限をリセットしますか？</translation>
 <translation id="4092636882861724179"><ph name="GOOGLE_PASSWORD_MANAGER" /> に保存されたパスワードを表示、管理できます。</translation>
+<translation id="4092709865241032354">Google パスワード マネージャーでログイン情報を保存するには、このサイトのユーザー名を追加してください</translation>
 <translation id="4093865285251893588">プロフィール画像</translation>
 <translation id="4093955363990068916">ローカル ファイル:</translation>
 <translation id="4094647278880271855">サポートされていない環境変数が使用されています: <ph name="BAD_VAR" />。これにより、安全性とセキュリティが損なわれます。</translation>
@@ -4669,7 +4670,6 @@
 <translation id="4546692474302123343">Google アシスタントの音声入力</translation>
 <translation id="4547659257713117923">他のデバイスからのタブはありません</translation>
 <translation id="4547672827276975204">自動的に設定する</translation>
-<translation id="4548858987594081919">Google パスワード マネージャーでログイン情報を保存するには、このサイトのユーザー名を追加してください</translation>
 <translation id="4549791035683739768">セキュリティ キーにフィンガープリントは保存されていません</translation>
 <translation id="4550737096585299960">しばらくしてからもう一度お試しください。</translation>
 <translation id="4550926046134589611">サポートされているリンクの一部は、引き続き <ph name="APP_NAME" /> で開かれます。</translation>

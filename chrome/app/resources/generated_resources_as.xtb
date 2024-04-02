@@ -4115,6 +4115,7 @@
 <translation id="4090103403438682346">প্ৰমাণিত এক্সেছ সক্ষম কৰক</translation>
 <translation id="4090947011087001172"><ph name="SITE" />ৰ ছাইট অনুমতি ৰিছেট কৰিব নেকি?</translation>
 <translation id="4092636882861724179">আপুনি <ph name="GOOGLE_PASSWORD_MANAGER" />ত ছেভ কৰি থোৱা পাছৱৰ্ডসমূহ চাব আৰু পৰিচালনা কৰিব পাৰে।</translation>
+<translation id="4092709865241032354">Google Password Managerক আপোনাৰ ছাইন ইনৰ তথ্য ছেভ কৰাত সহায় কৰিবলৈ, এই ছাইটটোৰ বাবে আপোনাৰ ব্যৱহাৰকাৰী নামটো যোগ দিয়ক</translation>
 <translation id="4093865285251893588">প্ৰ’ফাইলৰ প্রতিচ্ছবি</translation>
 <translation id="4093955363990068916">স্থানীয় ফাইল:</translation>
 <translation id="4094647278880271855">আপুনি এটা অসমর্থিত পাৰিপাৰ্শ্বিক চলক ব্যৱহাৰ কৰি আছে: <ph name="BAD_VAR" />। স্থিৰতা আৰু সুৰক্ষাত বেয়া প্ৰভাৱ পৰিব।</translation>
@@ -4691,7 +4692,6 @@
 <translation id="4546692474302123343">Google Assistantৰ ভইচ ইনপুট</translation>
 <translation id="4547659257713117923">অন্য ডিভাইচৰ কোনো টেব নাই</translation>
 <translation id="4547672827276975204">স্বয়ংক্ৰিয়াভাৱে ছেট কৰক</translation>
-<translation id="4548858987594081919">Google Password Managerক আপোনাৰ ছাইন ইনৰ তথ্য ছেভ কৰাত সহায় কৰিবলৈ, এই ছাইটটোৰ বাবে আপোনাৰ ব্যৱহাৰকাৰী নামটো যোগ দিয়ক</translation>
 <translation id="4549791035683739768">আপোনাৰ সুৰক্ষা চাবিটোত কোনো ফিংগাৰপ্ৰিণ্ট ষ্ট’ৰ হৈ নাই</translation>
 <translation id="4550737096585299960">অনুগ্ৰহ কৰি কেইমিনিটমান পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="4550926046134589611"><ph name="APP_NAME" />ত কিছুমান সমৰ্থিত লিংক তথাপিও খুলিব।</translation>

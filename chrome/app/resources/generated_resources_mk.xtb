@@ -4119,6 +4119,7 @@
 <translation id="4090103403438682346">Овозможи потврден пристап</translation>
 <translation id="4090947011087001172">Да се ресетираат дозволите за <ph name="SITE" />?</translation>
 <translation id="4092636882861724179">Може да ги прегледате и да управувате со зачуваните лозинки во <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
+<translation id="4092709865241032354">За да му помогнете на Google Password Manager да ги зачува вашите податоци за најавување, додајте го вашето корисничко име за сајтов</translation>
 <translation id="4093865285251893588">Профилна слика</translation>
 <translation id="4093955363990068916">Локална датотека:</translation>
 <translation id="4094647278880271855">Користите неподдржана променлива за средината: <ph name="BAD_VAR" />. Ќе настрадаат стабилноста и безбедноста.</translation>
@@ -4695,7 +4696,6 @@
 <translation id="4546692474302123343">Гласовно внесување на „Помошникот на Google“</translation>
 <translation id="4547659257713117923">Нема картички од други уреди</translation>
 <translation id="4547672827276975204">Постави автоматски</translation>
-<translation id="4548858987594081919">За да му помогнете на Google Password Manager да ги зачува вашите податоци за најавување, додајте го вашето корисничко име за сајтов</translation>
 <translation id="4549791035683739768">Вашиот безбедносен клуч нема складирани отпечатоци</translation>
 <translation id="4550737096585299960">Обидете се повторно за неколку минути.</translation>
 <translation id="4550926046134589611">Некои поддржани линкови сѐ уште ќе се отвораат во <ph name="APP_NAME" />.</translation>

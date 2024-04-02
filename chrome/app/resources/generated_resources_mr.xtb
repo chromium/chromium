@@ -4115,6 +4115,7 @@
 <translation id="4090103403438682346">पडताळणीने दिलेला ॲक्सेस सक्षम करा</translation>
 <translation id="4090947011087001172"><ph name="SITE" /> साठी साइट परवानग्या रीसेट करायच्या?</translation>
 <translation id="4092636882861724179">सेव्ह केलेले पासवर्ड तुम्ही <ph name="GOOGLE_PASSWORD_MANAGER" /> मध्ये पाहू आणि व्यवस्थापित करू शकता.</translation>
+<translation id="4092709865241032354">Google Password Manager ला तुमची साइन-इनसंबंधित माहिती सेव्ह करण्यात मदत करण्यासाठी, या साइटवर तुमचे वापरकर्ता नाव जोडा</translation>
 <translation id="4093865285251893588">प्रोफाइल फोटो</translation>
 <translation id="4093955363990068916">स्थानिक फाईल:</translation>
 <translation id="4094647278880271855">तुम्ही सपोर्ट नसलेले पर्यावरण व्हेरिएबल वापरत आहात: <ph name="BAD_VAR" />. स्थिरता आणि सुरक्षेवर परिणाम होईल.</translation>
@@ -4691,7 +4692,6 @@
 <translation id="4546692474302123343">Google Assistant व्हॉइस इनपुट</translation>
 <translation id="4547659257713117923">अन्य डिव्हाइसवरील कोणतेही टॅब नाहीत</translation>
 <translation id="4547672827276975204">आपोआप सेट करा</translation>
-<translation id="4548858987594081919">Google Password Manager ला तुमची साइन-इनसंबंधित माहिती सेव्ह करण्यात मदत करण्यासाठी, या साइटवर तुमचे वापरकर्ता नाव जोडा</translation>
 <translation id="4549791035683739768">तुमच्या सिक्युरिटी कीवर कोणतीही फिंगरप्रिंट स्टोअर केलेली नाहीत</translation>
 <translation id="4550737096585299960">कृपया काही मिनिटांनी पुन्हा प्रयत्न करा.</translation>
 <translation id="4550926046134589611">सपोर्ट असलेल्या काही लिंक तरीही <ph name="APP_NAME" /> मध्ये उघडतील.</translation>

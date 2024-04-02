@@ -4106,6 +4106,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4090103403438682346">Activer l'accès validé</translation>
 <translation id="4090947011087001172">Réinitialiser les autorisations du site <ph name="SITE" />?</translation>
 <translation id="4092636882861724179">Vous pouvez afficher et gérer les mots de passe enregistrés dans le <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
+<translation id="4092709865241032354">Pour aider le gestionnaire de mots de passe Google à enregistrer vos renseignements de connexion, ajoutez votre nom d'utilisateur pour ce site</translation>
 <translation id="4093865285251893588">Image de profil</translation>
 <translation id="4093955363990068916">Fichier local :</translation>
 <translation id="4094647278880271855">Vous utilisez une variable d'environnement incompatible : <ph name="BAD_VAR" />. Cela aura un impact sur la stabilité et la sécurité.</translation>
@@ -4681,7 +4682,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4546692474302123343">Entrée vocale pour l'Assistant Google</translation>
 <translation id="4547659257713117923">Pas d'onglets provenant d'autres appareils</translation>
 <translation id="4547672827276975204">Définir automatiquement</translation>
-<translation id="4548858987594081919">Pour aider le gestionnaire de mots de passe Google à enregistrer vos informations de connexion, ajoutez votre nom d'utilisateur pour ce site</translation>
 <translation id="4549791035683739768">Votre clé de sécurité ne contient aucune empreinte digitale enregistrée</translation>
 <translation id="4550737096585299960">Veuillez réessayer dans quelques minutes.</translation>
 <translation id="4550926046134589611">Certains liens pris en charge continueront de s'ouvrir dans <ph name="APP_NAME" />.</translation>

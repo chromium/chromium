@@ -2153,7 +2153,7 @@
 <translation id="2589658397149952302">ไม่ต้องแสดงไฟล์ในไดรฟ์</translation>
 <translation id="25899519884572181">ออกจากโหมดผู้อ่าน</translation>
 <translation id="2593499352046705383">ตรวจสอบว่าคุณได้สำรองข้อมูลไว้แล้วก่อนที่จะเริ่ม การติดตั้ง <ph name="DEVICE_OS" /> จะเขียนทับข้อมูลในฮาร์ดไดรฟ์ ดูข้อมูลเพิ่มเติมที่ g.co/flex/InstallGuide</translation>
-<translation id="2594832159966169099">จัดการการรักษาความปลอดภัยของ V8</translation>
+<translation id="2594832159966169099">จัดการความปลอดภัย V8</translation>
 <translation id="2594999711683503743">ค้นหาด้วย Google หรือพิมพ์ URL</translation>
 <translation id="2597073208962000830">การแชร์ใกล้เคียงใช้การสแกนหาบลูทูธเพื่อค้นหาอุปกรณ์ที่อยู่ใกล้เคียง</translation>
 <translation id="2598710988533271874">Chrome เวอร์ชันใหม่พร้อมใช้งานแล้ว</translation>
@@ -4103,6 +4103,7 @@
 <translation id="4090103403438682346">เปิดใช้การเข้าถึงที่ได้รับการยืนยัน</translation>
 <translation id="4090947011087001172">รีเซ็ตสิทธิ์เว็บไซต์สำหรับ <ph name="SITE" /> ไหม</translation>
 <translation id="4092636882861724179">คุณดูและจัดการรหัสผ่านที่บันทึกไว้ได้ใน <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
+<translation id="4092709865241032354">เพิ่มชื่อผู้ใช้สำหรับเว็บไซต์นี้เพื่อช่วยเครื่องมือจัดการรหัสผ่านบน Google บันทึกข้อมูลการลงชื่อเข้าใช้</translation>
 <translation id="4093865285251893588">รูปโปรไฟล์</translation>
 <translation id="4093955363990068916">ไฟล์ในเครื่อง:</translation>
 <translation id="4094647278880271855">คุณใช้ตัวแปรสภาพแวดล้อมที่ระบบไม่รองรับ: <ph name="BAD_VAR" /> ซึ่งจะส่งผลต่อความเสถียรและความปลอดภัย</translation>
@@ -4678,7 +4679,6 @@
 <translation id="4546692474302123343">การป้อนข้อมูลด้วยเสียงของ Google Assistant</translation>
 <translation id="4547659257713117923">ไม่มีแท็บจากอุปกรณ์อื่น</translation>
 <translation id="4547672827276975204">ตั้งค่าโดยอัตโนมัติ</translation>
-<translation id="4548858987594081919">เพิ่มชื่อผู้ใช้สำหรับเว็บไซต์นี้เพื่อช่วยเครื่องมือจัดการรหัสผ่านบน Google บันทึกข้อมูลการลงชื่อเข้าใช้</translation>
 <translation id="4549791035683739768">คีย์ความปลอดภัยไม่มีลายนิ้วมือบันทึกไว้</translation>
 <translation id="4550737096585299960">โปรดลองอีกครั้งในอีกสักครู่</translation>
 <translation id="4550926046134589611">ลิงก์ที่รองรับบางลิงก์จะยังคงเปิดใน <ph name="APP_NAME" /></translation>

@@ -4119,6 +4119,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4090103403438682346">Aktivér Verificeret adgang</translation>
 <translation id="4090947011087001172">Vil du nulstille tilladelserne for <ph name="SITE" />?</translation>
 <translation id="4092636882861724179">Du kan se og administrere dine gemte adgangskoder i <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
+<translation id="4092709865241032354">Tilføj dit brugernavn for dette website for at hjælpe Google Adgangskodeadministrator med at gemme dine loginoplysninger</translation>
 <translation id="4093865285251893588">Profilbillede</translation>
 <translation id="4093955363990068916">Lokal fil:</translation>
 <translation id="4094647278880271855">Du bruger en variabel for miljøet, der ikke understøttes: <ph name="BAD_VAR" />. Dette går ud over stabiliteten og sikkerheden.</translation>
@@ -4695,7 +4696,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4546692474302123343">Indtaling i Google Assistent</translation>
 <translation id="4547659257713117923">Ingen faner fra andre enheder</translation>
 <translation id="4547672827276975204">Indstil automatisk</translation>
-<translation id="4548858987594081919">Tilføj dit brugernavn for dette website for at hjælpe Google Adgangskodeadministrator med at gemme dine loginoplysninger</translation>
 <translation id="4549791035683739768">Der er ikke gemt nogen fingeraftryk i din sikkerhedsnøgle</translation>
 <translation id="4550737096585299960">Prøv igen om et par minutter.</translation>
 <translation id="4550926046134589611">Nogle understøttede links åbnes fortsat i <ph name="APP_NAME" />.</translation>

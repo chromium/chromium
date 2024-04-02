@@ -201,7 +201,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1150565364351027703">Sunčane naočale</translation>
 <translation id="1151917987301063366">Hostu <ph name="HOST" /> uvijek dopusti pristup senzorima</translation>
 <translation id="1152346050262092795">Ponovo unesite zaporku da biste potvrdili račun.</translation>
-<translation id="1153636665119721804">Googleov program Napredne zaštite</translation>
+<translation id="1153636665119721804">Googleov Program napredne zaštite</translation>
 <translation id="1155545602507378023">Ne, samo na ovom uređaju</translation>
 <translation id="1155816283571436363">Povezivanje s vašim telefonom</translation>
 <translation id="1157952955648710254">Zatvorite bočnu ploču Google pretraživanja</translation>
@@ -4106,6 +4106,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="4090103403438682346">Omogući potvrđeni pristup</translation>
 <translation id="4090947011087001172">Želite li poništiti dopuštenja web-lokacije za <ph name="SITE" />?</translation>
 <translation id="4092636882861724179">Spremljene zaporke možete pregledavati i upravljati njima u aplikaciji <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
+<translation id="4092709865241032354">Da biste pomogli Google upravitelju zaporki da spremi vaše podatke za prijavu, dodajte svoje korisničko ime za ovu web-lokaciju</translation>
 <translation id="4093865285251893588">Profilna slika</translation>
 <translation id="4093955363990068916">Lokalna datoteka:</translation>
 <translation id="4094647278880271855">Koristite nepodržanu varijablu okruženja: <ph name="BAD_VAR" />. Ugrožena je stabilnost i sigurnost.</translation>
@@ -4130,7 +4131,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="4104944259562794668">Možete ga omogućiti kasnije u odjeljku Postavke &gt; Sigurnost i privatnost &gt; Zaključavanje zaslona i prijava</translation>
 <translation id="4106054677122819586">Idemo organizirati vaše kartice</translation>
 <translation id="4107048419833779140">Prepoznaj i izbaci uređaje za pohranu</translation>
-<translation id="4107522742068568249">Otvorite sigurnosnu provjeru</translation>
+<translation id="4107522742068568249">Provjeri sad</translation>
 <translation id="4108314971463891922">Prati</translation>
 <translation id="4109135793348361820">Premjesti prozor korisniku <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Vrati upozorenje</translation>
@@ -4681,7 +4682,6 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="4546692474302123343">Glasovni unos za Google asistenta</translation>
 <translation id="4547659257713117923">Nema kartica s drugih uređaja</translation>
 <translation id="4547672827276975204">Postavi automatski</translation>
-<translation id="4548858987594081919">Da biste pomogli Google upravitelju zaporki da spremi vaše podatke o prijavi, dodajte svoje korisničko ime za ovu web-lokaciju</translation>
 <translation id="4549791035683739768">Na vašem sigurnosnom ključu nema pohranjenih otisaka prstiju</translation>
 <translation id="4550737096585299960">Pokušajte ponovno za nekoliko minuta.</translation>
 <translation id="4550926046134589611">Neke podržane veze i dalje će se otvarati u aplikaciji <ph name="APP_NAME" />.</translation>
@@ -6057,7 +6057,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="563821631542362636">Dopusti web-lokaciji da sprema podatke</translation>
 <translation id="5638309510554459422">Pronađite proširenja i teme u <ph name="BEGIN_LINK" />Chrome Web Storeu<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Ponovo učitajte ovu stranicu, zadržite da biste vidjeli više opcija</translation>
-<translation id="5640133431808313291">Upravljajte sigurnosnim ključevima</translation>
+<translation id="5640133431808313291">Upravljanje sigurnosnim ključevima</translation>
 <translation id="5640159004008030285">Zaporka se sprema samo na ovaj uređaj. Da biste je upotrebljavali na svojim drugim uređajima, <ph name="BEGIN_LINK" />spremite je na svoj Google račun<ph name="END_LINK" />.</translation>
 <translation id="5641608986289282154">Počnite upotrebljavati <ph name="DEVICE_OS" /></translation>
 <translation id="5641648607875312660">Uređivač snimki zaslona</translation>

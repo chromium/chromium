@@ -4111,6 +4111,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4090103403438682346">Slå på Bekreftet tilgang</translation>
 <translation id="4090947011087001172">Vil du tilbakestille nettstedstillatelser for <ph name="SITE" />?</translation>
 <translation id="4092636882861724179">Du kan se og administrere lagrede passord i <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
+<translation id="4092709865241032354">For å hjelpe Google Passordlagring med å lagre påloggingsinformasjonen din, legg til brukernavnet ditt for dette nettstedet</translation>
 <translation id="4093865285251893588">Profilbilde</translation>
 <translation id="4093955363990068916">Lokal fil:</translation>
 <translation id="4094647278880271855">Du bruker en miljøvariabel som ikke støttes: <ph name="BAD_VAR" />. Stabiliteten og sikkerheten blir rammet.</translation>
@@ -4686,7 +4687,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4546692474302123343">Google Assistent-taleinndata</translation>
 <translation id="4547659257713117923">Ingen faner fra andre enheter</translation>
 <translation id="4547672827276975204">Angi automatisk</translation>
-<translation id="4548858987594081919">For å hjelpe Google Passordlagring med å lagre påloggingsinformasjonen din, legg til brukernavnet ditt for dette nettstedet</translation>
 <translation id="4549791035683739768">Det er ikke lagret noen fingeravtrykk på sikkerhetsnøkkelen</translation>
 <translation id="4550737096585299960">Prøv igjen om noen minutter.</translation>
 <translation id="4550926046134589611">Noen støttede linker åpnes fremdeles i <ph name="APP_NAME" />.</translation>

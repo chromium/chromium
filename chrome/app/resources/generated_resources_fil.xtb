@@ -4119,6 +4119,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4090103403438682346">I-enable ang Bine-verify na Access</translation>
 <translation id="4090947011087001172">I-reset ang mga pahintulot sa site para sa <ph name="SITE" />?</translation>
 <translation id="4092636882861724179">Puwede mong tingnan at pamahalaan ang mga naka-save na password sa <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
+<translation id="4092709865241032354">Para makatulong na ma-save ng Google Password Manager ang iyong impormasyon sa pag-sign in, idagdag ang username mo para sa site na ito</translation>
 <translation id="4093865285251893588">Larawan sa profile</translation>
 <translation id="4093955363990068916">Lokal na file:</translation>
 <translation id="4094647278880271855">Gumagamit ka ng hindi sinusuportahang variable ng environment: <ph name="BAD_VAR" />. Magkakaproblema sa stability at seguridad.</translation>
@@ -4695,7 +4696,6 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4546692474302123343">Input na boses ng Google Assistant</translation>
 <translation id="4547659257713117923">Walang Mga Tab Mula Sa Ibang Mga Device</translation>
 <translation id="4547672827276975204">Awtomatikong itakda</translation>
-<translation id="4548858987594081919">Para makatulong na ma-save ng Google Password Manager ang iyong impormasyon sa pag-sign in, idagdag ang username mo para sa site na ito</translation>
 <translation id="4549791035683739768">Walang naka-store na fingerprint sa iyong security key</translation>
 <translation id="4550737096585299960">Pakisubukan ulit sa loob ng ilang minuto.</translation>
 <translation id="4550926046134589611">Bubukas pa rin ang ilang sinusuportahang link sa <ph name="APP_NAME" />.</translation>

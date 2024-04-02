@@ -4105,6 +4105,7 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="4090103403438682346">Iespējot verificētu piekļuvi</translation>
 <translation id="4090947011087001172">Vai atiestatīt vietnes <ph name="SITE" /> atļaujas?</translation>
 <translation id="4092636882861724179">Varat skatīt un pārvaldīt saglabātās paroles pakalpojumā <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
+<translation id="4092709865241032354">Lai palīdzētu Google paroļu pārvaldniekā saglabāt pierakstīšanās informāciju, pievienojiet savu lietotājvārdu šajā vietnē.</translation>
 <translation id="4093865285251893588">Profila attēls</translation>
 <translation id="4093955363990068916">Lokālais fails:</translation>
 <translation id="4094647278880271855">Jūs izmantojat neatbalstītu vides mainīgo: <ph name="BAD_VAR" />. Pasliktināsies stabilitāte un drošība.</translation>
@@ -4680,7 +4681,6 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="4546692474302123343">Google asistenta balss ievade</translation>
 <translation id="4547659257713117923">Nav ciļņu no citām ierīcēm</translation>
 <translation id="4547672827276975204">Iestatīt automātiski</translation>
-<translation id="4548858987594081919">Lai palīdzētu Google paroļu pārvaldniekā saglabāt informāciju par pierakstīšanos, pievienojiet savu lietotājvārdu šajā vietnē.</translation>
 <translation id="4549791035683739768">Jūsu drošības atslēgā nav saglabātu pirkstu nospiedumu</translation>
 <translation id="4550737096585299960">Pēc dažām minūtēm, lūdzu, mēģiniet vēlreiz.</translation>
 <translation id="4550926046134589611">Dažas atbalstītas saites joprojām tiks atvērtas lietotnē <ph name="APP_NAME" />.</translation>

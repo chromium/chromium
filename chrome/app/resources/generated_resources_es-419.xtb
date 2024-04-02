@@ -4100,6 +4100,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4090103403438682346">Habilitar el acceso verificado</translation>
 <translation id="4090947011087001172">¿Quieres restablecer los permisos del sitio <ph name="SITE" />?</translation>
 <translation id="4092636882861724179">Puedes ver y administrar las contraseñas guardadas en <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
+<translation id="4092709865241032354">Para ayudar al Administrador de contraseñas de Google a guardar tu información de acceso, agrega tu nombre de usuario en este sitio</translation>
 <translation id="4093865285251893588">Imagen de perfil</translation>
 <translation id="4093955363990068916">Archivo local:</translation>
 <translation id="4094647278880271855">Usas una variable de entorno no compatible: <ph name="BAD_VAR" />. Se verán afectadas la estabilidad y la seguridad.</translation>
@@ -4675,7 +4676,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4546692474302123343">Entrada de voz del Asistente de Google</translation>
 <translation id="4547659257713117923">No hay pestañas de otros dispositivos</translation>
 <translation id="4547672827276975204">Establecer automáticamente</translation>
-<translation id="4548858987594081919">Para ayudar al Administrador de contraseñas de Google a guardar tu información de acceso, agrega tu nombre de usuario en este sitio</translation>
 <translation id="4549791035683739768">Tu llave de seguridad no tiene huellas digitales almacenadas</translation>
 <translation id="4550737096585299960">Vuelve a intentarlo en algunos minutos.</translation>
 <translation id="4550926046134589611">Algunos vínculos compatibles se seguirán abriendo en <ph name="APP_NAME" />.</translation>

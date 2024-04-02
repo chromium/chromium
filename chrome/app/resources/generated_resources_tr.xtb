@@ -4101,6 +4101,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="4090103403438682346">Doğrulanmış Erişimi Etkinleştir</translation>
 <translation id="4090947011087001172"><ph name="SITE" /> için site izinleri sıfırlansın mı?</translation>
 <translation id="4092636882861724179">Kayıtlı şifreleri <ph name="GOOGLE_PASSWORD_MANAGER" /> uygulamasında görüntüleyebilir ve yönetebilirsiniz.</translation>
+<translation id="4092709865241032354">Google Şifre Yöneticisi'nin oturum açma bilgilerinizi kaydetmesini sağlamak için bu sitedeki kullanıcı adınızı ekleyin</translation>
 <translation id="4093865285251893588">Profil resmi</translation>
 <translation id="4093955363990068916">Yerel dosya:</translation>
 <translation id="4094647278880271855">Desteklenmeyen bir ortam değişkeni kullanıyorsunuz: <ph name="BAD_VAR" />. Kararlılık ve güvenlikle ilgili sorun olacaktır.</translation>
@@ -4676,7 +4677,6 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="4546692474302123343">Google Asistan ses girişi</translation>
 <translation id="4547659257713117923">Diğer Cihazlardan Sekme Yok</translation>
 <translation id="4547672827276975204">Otomatik olarak ayarla</translation>
-<translation id="4548858987594081919">Google Şifre Yöneticisi'nin oturum açma bilgilerinizi kaydetmesini sağlamak için bu sitedeki kullanıcı adınızı ekleyin</translation>
 <translation id="4549791035683739768">Güvenlik anahtarınızda depolanmış parmak izi yok</translation>
 <translation id="4550737096585299960">Lütfen birkaç dakika sonra tekrar deneyin.</translation>
 <translation id="4550926046134589611">Bazı desteklenen uygulamalar <ph name="APP_NAME" /> uygulamasında açılmaya devam eder.</translation>

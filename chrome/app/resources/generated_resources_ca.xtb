@@ -4102,6 +4102,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4090103403438682346">Activa l'accés verificat</translation>
 <translation id="4090947011087001172">Vols restablir els permisos del lloc web <ph name="SITE" />?</translation>
 <translation id="4092636882861724179">Pots veure i gestionar les contrasenyes desades al <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
+<translation id="4092709865241032354">Per ajudar el gestor de contrasenyes de Google a desar la teva informació d'inici de sessió, afegeix el teu nom d'usuari per a aquest lloc web</translation>
 <translation id="4093865285251893588">Imatge de perfil</translation>
 <translation id="4093955363990068916">Fitxer local:</translation>
 <translation id="4094647278880271855">Utilitzes una variable d'entorn que no és compatible: <ph name="BAD_VAR" />. L'estabilitat i la seguretat quedaran afectades.</translation>
@@ -4677,7 +4678,6 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4546692474302123343">Entrada de veu de l'Assistent de Google</translation>
 <translation id="4547659257713117923">Cap pestanya d'altres dispositius</translation>
 <translation id="4547672827276975204">Defineix automàticament</translation>
-<translation id="4548858987594081919">Per ajudar el gestor de contrasenyes de Google a desar la teva informació d'inici de sessió, afegeix el teu nom d'usuari per a aquest lloc web</translation>
 <translation id="4549791035683739768">La clau de seguretat no té empremtes digitals emmagatzemades</translation>
 <translation id="4550737096585299960">Torna-ho a provar d'aquí a uns quants minuts.</translation>
 <translation id="4550926046134589611">Alguns enllaços admesos es continuaran obrint a <ph name="APP_NAME" />.</translation>

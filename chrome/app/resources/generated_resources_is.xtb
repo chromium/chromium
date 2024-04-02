@@ -4119,6 +4119,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4090103403438682346">Virkja staðfestan aðgang</translation>
 <translation id="4090947011087001172">Viltu endurstilla heimildir fyrir <ph name="SITE" />?</translation>
 <translation id="4092636882861724179">Þú getur skoðað og haft umsjón með vistuðum aðgangsorðum í <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
+<translation id="4092709865241032354">Bættu við notandanafni þínu fyrir þetta vefsvæði til að hjálpa Google-aðgangsorðastjórnun að vista innskráningarupplýsingarnar þínar</translation>
 <translation id="4093865285251893588">Prófílmynd</translation>
 <translation id="4093955363990068916">Staðbundin skrá:</translation>
 <translation id="4094647278880271855">Þú ert að nota óstudda umhverfisbreytu: <ph name="BAD_VAR" />. Þetta hefur áhrif á stöðugleika og öryggi.</translation>
@@ -4695,7 +4696,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4546692474302123343">Raddinntak Google hjálpara</translation>
 <translation id="4547659257713117923">Engir flipar frá öðrum tækjum</translation>
 <translation id="4547672827276975204">Stilla sjálfkrafa</translation>
-<translation id="4548858987594081919">Bættu við notandanafni þínu fyrir þetta vefsvæði til að hjálpa Google-aðgangsorðastjórnun að vista innskráningarupplýsingarnar þínar</translation>
 <translation id="4549791035683739768">Engin fingraför eru vistuð í öryggislyklinum þínum</translation>
 <translation id="4550737096585299960">Reyndu aftur eftir nokkrar mínútur.</translation>
 <translation id="4550926046134589611">Sumir studdir tenglar munu áfram opnast í <ph name="APP_NAME" />.</translation>

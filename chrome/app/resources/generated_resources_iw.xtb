@@ -4118,6 +4118,7 @@
 <translation id="4090103403438682346">הפעלת גישה מאומתת</translation>
 <translation id="4090947011087001172">לאפס את ההרשאות של האתר <ph name="SITE" />?</translation>
 <translation id="4092636882861724179">יש לך אפשרות לראות את הסיסמאות השמורות ולנהל אותן ב<ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
+<translation id="4092709865241032354">‏כדי לעזור למנהל הסיסמאות של Google לשמור את פרטי הכניסה, עליך להוסיף את שם המשתמש שלך באתר הזה</translation>
 <translation id="4093865285251893588">תמונת הפרופיל</translation>
 <translation id="4093955363990068916">קובץ מקומי:</translation>
 <translation id="4094647278880271855">נעשה שימוש במשתנה סביבה שאינו נתמך: <ph name="BAD_VAR" />. השימוש בו פוגע ביציבות ובאבטחה.</translation>
@@ -4695,7 +4696,6 @@
 <translation id="4546692474302123343">‏קלט קולי ב-Google Assistant</translation>
 <translation id="4547659257713117923">אין כרטיסיות ממכשירים אחרים</translation>
 <translation id="4547672827276975204">הגדרה באופן אוטומטי</translation>
-<translation id="4548858987594081919">‏עליך להוסיף את שם המשתמש שלך באתר הזה כדי לעזור למנהל הסיסמאות של Google לשמור את פרטי הכניסה</translation>
 <translation id="4549791035683739768">לא נשמרו טביעות אצבעות במפתח האבטחה</translation>
 <translation id="4550737096585299960">אפשר לנסות שוב בעוד כמה דקות.</translation>
 <translation id="4550926046134589611">חלק מהקישורים הנתמכים ימשיכו להיפתח ב-<ph name="APP_NAME" />.</translation>
@@ -6843,7 +6843,7 @@
 <translation id="6241530762627360640">‏פרטי גישה של מכשירי Bluetooth המותאמים למערכת שלך ומגלים מכשירי Bluetooth קרובים.</translation>
 <translation id="6241844896329831164">אין צורך בגישה</translation>
 <translation id="6242574558232861452">המערכת בודקת אם הקובץ עומד בדרישות של מדיניות האבטחה של הארגון.</translation>
-<translation id="6242589501614145408">איפוס מפתח האבטחה שלך</translation>
+<translation id="6242589501614145408">איפוס מפתח האבטחה</translation>
 <translation id="6242605626259978229">הדפדפן והפרופיל שלך מנוהלים</translation>
 <translation id="6242852299490624841">הדגשת הכרטיסייה הזו</translation>
 <translation id="6243774244933267674">השרת אינו זמין</translation>

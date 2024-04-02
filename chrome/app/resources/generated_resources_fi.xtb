@@ -4114,6 +4114,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="4090103403438682346">Ota käyttöön vahvistettu käyttö</translation>
 <translation id="4090947011087001172">Nollataanko sivuston <ph name="SITE" /> käyttöoikeudet?</translation>
 <translation id="4092636882861724179">Voit katsella ja hallinnoida salasanoja täällä: <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
+<translation id="4092709865241032354">Lisää käyttäjätunnuksesi tälle sivustolle, jotta Google Salasanat voi tallentaa sisäänkirjautumistiedot</translation>
 <translation id="4093865285251893588">Profiilikuva</translation>
 <translation id="4093955363990068916">Paikallinen tiedosto:</translation>
 <translation id="4094647278880271855">Käytät ympäristön muuttujaa, jota ei tueta: <ph name="BAD_VAR" />. Tämä heikentää vakautta ja tietoturvaa.</translation>
@@ -4690,7 +4691,6 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="4546692474302123343">Google Assistantin äänisyöte</translation>
 <translation id="4547659257713117923">Ei välilehtiä muista laitteista</translation>
 <translation id="4547672827276975204">Aseta automaattisesti</translation>
-<translation id="4548858987594081919">Lisää käyttäjätunnuksesi tälle sivustolle, jotta Google Salasanat voi tallentaa kirjautumistietosi</translation>
 <translation id="4549791035683739768">Suojausavaimeesi ei ole tallennettu sormenjälkiä.</translation>
 <translation id="4550737096585299960">Yritä uudelleen muutaman minuutin kuluttua.</translation>
 <translation id="4550926046134589611">Jotkin tuetut linkit avautuvat edelleen tässä sovelluksessa: <ph name="APP_NAME" />.</translation>

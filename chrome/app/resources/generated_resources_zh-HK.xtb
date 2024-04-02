@@ -4114,6 +4114,7 @@
 <translation id="4090103403438682346">啟用已驗證存取權</translation>
 <translation id="4090947011087001172">要重設 <ph name="SITE" /> 的網站權限嗎？</translation>
 <translation id="4092636882861724179">您可在「<ph name="GOOGLE_PASSWORD_MANAGER" />」查看和管理已儲存的密碼。</translation>
+<translation id="4092709865241032354">請新增你在此網站的使用者名稱，「Google 密碼管理工具」才能儲存登入資料</translation>
 <translation id="4093865285251893588">個人檔案圖片</translation>
 <translation id="4093955363990068916">本機檔案：</translation>
 <translation id="4094647278880271855">您使用的環境變數 (<ph name="BAD_VAR" />) 目前不受支援，有可能會影響穩定性和安全性。</translation>
@@ -4690,7 +4691,6 @@
 <translation id="4546692474302123343">「Google 助理」語音輸入</translation>
 <translation id="4547659257713117923">沒有其他裝置的分頁</translation>
 <translation id="4547672827276975204">自動設定</translation>
-<translation id="4548858987594081919">請新增你在此網站的使用者名稱，「Google 密碼管理工具」才能儲存登入資料</translation>
 <translation id="4549791035683739768">您的安全密鑰並未儲存任何指紋</translation>
 <translation id="4550737096585299960">請於幾分鐘後再試。</translation>
 <translation id="4550926046134589611">部分支援連結將仍會在 <ph name="APP_NAME" /> 中開啟。</translation>

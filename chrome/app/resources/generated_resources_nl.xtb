@@ -4103,6 +4103,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser 
 <translation id="4090103403438682346">Verified Access aanzetten</translation>
 <translation id="4090947011087001172">Siterechten voor <ph name="SITE" /> resetten?</translation>
 <translation id="4092636882861724179">Je kunt opgeslagen wachtwoorden bekijken en beheren in <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
+<translation id="4092709865241032354">Voeg je gebruikersnaam voor deze site toe, zodat Google Wachtwoordmanager je inloggegevens kan opslaan</translation>
 <translation id="4093865285251893588">Profielafbeelding</translation>
 <translation id="4093955363990068916">Lokaal bestand:</translation>
 <translation id="4094647278880271855">Je gebruikt een niet-ondersteunde omgevingsvariabele: <ph name="BAD_VAR" />. Dit heeft negatieve gevolgen voor de stabiliteit en beveiliging.</translation>
@@ -4677,7 +4678,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4546692474302123343">Google Assistent-spraakinvoer</translation>
 <translation id="4547659257713117923">Geen tabbladen van andere apparaten</translation>
 <translation id="4547672827276975204">Automatisch instellen</translation>
-<translation id="4548858987594081919">Voeg je gebruikersnaam voor deze site toe, zodat Google Wachtwoordmanager je inloggegevens kan opslaan</translation>
 <translation id="4549791035683739768">Je beveiligingssleutel heeft geen opgeslagen vingerafdrukken</translation>
 <translation id="4550737096585299960">Probeer het over een paar minuten opnieuw.</translation>
 <translation id="4550926046134589611">Bepaalde ondersteunde links worden nog steeds geopend in <ph name="APP_NAME" />.</translation>

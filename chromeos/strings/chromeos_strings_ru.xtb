@@ -354,7 +354,7 @@
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Удалить страницу?}=1{Удалить страницу {PAGE_NUMBER}?}one{Удалить страницу {PAGE_NUMBER}?}few{Удалить страницу {PAGE_NUMBER}?}many{Удалить страницу {PAGE_NUMBER}?}other{Удалить страницу {PAGE_NUMBER}?}}</translation>
 <translation id="3140130301071865159">снег</translation>
 <translation id="3146655726035122603">Эксклюзивно для <ph name="PRODUCT_NAME" /></translation>
-<translation id="315116470104423982">Мобильное подключение</translation>
+<translation id="315116470104423982">Мобильный интернет</translation>
 <translation id="3156846309055100599">Сканирование страницы <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Обнаружена страница входа</translation>
 <translation id="3160172848211257835">Отправить <ph name="BEGIN_LINK1" />сведения о системе и приложениях<ph name="END_LINK1" />, а также <ph name="BEGIN_LINK2" />статистику<ph name="END_LINK2" /></translation>
