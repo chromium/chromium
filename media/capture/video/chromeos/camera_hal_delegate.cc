@@ -260,8 +260,8 @@ class CameraHalDelegate::VCDInfoMonitorImpl
     vcd_info_observers_.set_disconnect_handler(base::BindRepeating(
         &VCDInfoMonitorImpl::RemoveObserver, weak_factory_.GetWeakPtr()));
     auto* proxy = ash::mojo_service_manager::GetServiceManagerProxy();
-    // TODO(b/315966244): Add service name to chromeos::mojo_services.
-    proxy->Register("VideoCaptureDeviceInfoMonitor",
+    proxy->Register(/*service_name=*/chromeos::mojo_services::
+                        kVideoCaptureDeviceInfoMonitor,
                     provider_receiver_.BindNewPipeAndPassRemote());
   }
 

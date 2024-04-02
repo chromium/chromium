@@ -143,8 +143,7 @@ class CameraHalDispatcherImpl::VCDInfoObserverImpl
       : on_get_camera_id_to_device_id_callback_(
             on_get_camera_id_to_device_id_callback) {
     mojo_service_manager_observer_ = MojoServiceManagerObserver::Create(
-        // TODO(b/315966244): Add service name to chromeos::mojo_services.
-        "VideoCaptureDeviceInfoMonitor",
+        chromeos::mojo_services::kVideoCaptureDeviceInfoMonitor,
         base::BindRepeating(
             &VCDInfoObserverImpl::ConnectToVCDInfoMonitorService,
             weak_factory_.GetWeakPtr()),
@@ -165,8 +164,9 @@ class CameraHalDispatcherImpl::VCDInfoObserverImpl
   void ConnectToVCDInfoMonitorService() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     ash::mojo_service_manager::GetServiceManagerProxy()->Request(
-        // TODO(b/315966244): Add service name to chromeos::mojo_services.
-        "VideoCaptureDeviceInfoMonitor", std::nullopt,
+        /*service_name=*/chromeos::mojo_services::
+            kVideoCaptureDeviceInfoMonitor,
+        std::nullopt,
         vcd_info_monitor_.BindNewPipeAndPassReceiver().PassPipe());
     vcd_info_monitor_->AddVideoCaptureDeviceInfoObserver(
         observer_receiver_.BindNewPipeAndPassRemote());
