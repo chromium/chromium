@@ -182,7 +182,6 @@ base::FilePath SodaInstallerImplChromeOS::GetLanguagePath(
   }
   auto it = installed_language_paths_.find(available_it->second.language_code);
   if (it == installed_language_paths_.end()) {
-    LOG(DFATAL) << "Asked for path to not installed language " << language;
     return base::FilePath();
   }
   return it->second;
@@ -235,7 +234,8 @@ void SodaInstallerImplChromeOS::InstallLanguage(const std::string& language,
       install_request,
       base::BindOnce(&SodaInstallerImplChromeOS::OnLanguageInstalled,
                      base::Unretained(this),
-                     language_info->second.language_code, base::Time::Now()),
+                     language_info->second.language_code, language,
+                     base::Time::Now()),
       base::BindRepeating(&SodaInstallerImplChromeOS::OnLanguageProgress,
                           base::Unretained(this),
                           language_info->second.language_code));
@@ -336,6 +336,7 @@ void SodaInstallerImplChromeOS::OnSodaInstalled(
 
 void SodaInstallerImplChromeOS::OnLanguageInstalled(
     const LanguageCode language_code,
+    const std::string language,
     const base::Time start_time,
     const ash::DlcserviceClient::InstallResult& install_result) {
   language_pack_progress_.erase(language_code);
@@ -346,7 +347,7 @@ void SodaInstallerImplChromeOS::OnLanguageInstalled(
       NotifyOnSodaInstalled(language_code);
     }
     base::UmaHistogramTimes(
-        GetInstallationSuccessTimeMetricForLanguagePack(language_code),
+        GetInstallationSuccessTimeMetricForLanguage(language),
         base::Time::Now() - start_time);
 
   } else {
@@ -356,13 +357,12 @@ void SodaInstallerImplChromeOS::OnLanguageInstalled(
                              DlcCodeToSodaErrorCode(install_result.error));
 
     base::UmaHistogramTimes(
-        GetInstallationFailureTimeMetricForLanguagePack(language_code),
+        GetInstallationFailureTimeMetricForLanguage(language),
         base::Time::Now() - start_time);
   }
 
-  base::UmaHistogramBoolean(
-      GetInstallationResultMetricForLanguagePack(language_code),
-      install_result.error == dlcservice::kErrorNone);
+  base::UmaHistogramBoolean(GetInstallationResultMetricForLanguage(language),
+                            install_result.error == dlcservice::kErrorNone);
 }
 
 void SodaInstallerImplChromeOS::OnSodaProgress(double progress) {

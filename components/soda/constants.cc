@@ -225,24 +225,38 @@ const std::string GetInstallationSuccessTimeMetricForLanguagePack(
     const LanguageCode& language_code) {
   auto config = GetLanguageComponentConfig(language_code);
   DCHECK(config && config->language_name);
-  return base::StrCat({"SodaInstaller.Language.", config->language_name,
-                       ".InstallationSuccessTime"});
+  return GetInstallationSuccessTimeMetricForLanguage(config->language_name);
+}
+const std::string GetInstallationSuccessTimeMetricForLanguage(
+    const std::string& language) {
+  return base::StrCat(
+      {"SodaInstaller.Language.", language, ".InstallationSuccessTime"});
 }
 
 const std::string GetInstallationFailureTimeMetricForLanguagePack(
     const LanguageCode& language_code) {
   auto config = GetLanguageComponentConfig(language_code);
   DCHECK(config && config->language_name);
-  return base::StrCat({"SodaInstaller.Language.", config->language_name,
-                       ".InstallationFailureTime"});
+  return GetInstallationFailureTimeMetricForLanguage(config->language_name);
+}
+
+const std::string GetInstallationFailureTimeMetricForLanguage(
+    const std::string& language) {
+  return base::StrCat(
+      {"SodaInstaller.Language.", language, ".InstallationFailureTime"});
 }
 
 const std::string GetInstallationResultMetricForLanguagePack(
     const LanguageCode& language_code) {
   auto config = GetLanguageComponentConfig(language_code);
   DCHECK(config && config->language_name);
-  return base::StrCat({"SodaInstaller.Language.", config->language_name,
-                       ".InstallationResult"});
+  return speech::GetInstallationResultMetricForLanguage(config->language_name);
+}
+
+const std::string GetInstallationResultMetricForLanguage(
+    const std::string& language) {
+  return base::StrCat(
+      {"SodaInstaller.Language.", language, ".InstallationResult"});
 }
 
 std::vector<std::string> GetLiveCaptionEnabledLanguages() {

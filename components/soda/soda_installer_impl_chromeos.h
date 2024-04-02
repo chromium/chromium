@@ -65,6 +65,7 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstallerImplChromeOS
       const ash::DlcserviceClient::InstallResult& install_result);
   void OnLanguageInstalled(
       const LanguageCode language_code,
+      const std::string language_name,
       const base::Time start_time,
       const ash::DlcserviceClient::InstallResult& install_result);
 
