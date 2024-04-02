@@ -1762,6 +1762,13 @@ void SkiaOutputSurfaceImpl::DetileOverlay(gpu::Mailbox input,
   EnqueueGpuTask(std::move(task), {input_sync_token}, /*make_current=*/false,
                  /*need_framebuffer=*/false);
 }
+
+void SkiaOutputSurfaceImpl::CleanupImageProcessor() {
+  auto task = base::BindOnce(&SkiaOutputSurfaceImplOnGpu::CleanupImageProcessor,
+                             base::Unretained(impl_on_gpu_.get()));
+  EnqueueGpuTask(std::move(task), {}, /*make_current=*/false,
+                 /*need_framebuffer=*/false);
+}
 #endif
 
 }  // namespace viz

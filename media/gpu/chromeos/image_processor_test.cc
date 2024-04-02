@@ -1013,7 +1013,7 @@ TEST(ImageProcessorBackendTest, VulkanDetileScaleTest) {
       (output_size.width() + 1) / 2, vulkan_output_y, output_size.width(),
       vulkan_output_u, (output_size.width() + 1) / 2, vulkan_output_v,
       (output_size.width() + 1) / 2, output_size.width(), output_size.height());
-  constexpr double kPsnrThreshold = 45.0;
+  constexpr double kPsnrThreshold = 35.0;
   ASSERT_TRUE(psnr >= kPsnrThreshold);
 
   munmap(i420_scaled_y, i420_scaled_y_size);

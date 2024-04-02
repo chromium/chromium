@@ -34,7 +34,8 @@ class MEDIA_GPU_EXPORT VulkanImageProcessor {
   ~VulkanImageProcessor();
 
   static std::unique_ptr<VulkanImageProcessor> Create(
-      TiledImageFormat format = kMM21);
+      TiledImageFormat format = kMM21,
+      const gfx::Size& max_size = gfx::Size(3840, 2160));
 
   // Note: |crop_rect| is actually the crop *in addition* to the |visible_rect|
   // cropping. It is equivalent to |uv_rect| in an OverlayCandidate.
@@ -59,6 +60,7 @@ class MEDIA_GPU_EXPORT VulkanImageProcessor {
   class VulkanCommandBufferWrapper;
   class VulkanCommandPoolWrapper;
   class VulkanTextureImage;
+  class VulkanSampler;
 
   VulkanImageProcessor(
       std::unique_ptr<gpu::VulkanImplementation> vulkan_implementation,
@@ -66,18 +68,37 @@ class MEDIA_GPU_EXPORT VulkanImageProcessor {
           vulkan_device_queue,
       std::unique_ptr<VulkanImageProcessor::VulkanCommandPoolWrapper>
           command_pool,
-      std::unique_ptr<VulkanImageProcessor::VulkanRenderPass> render_pass,
-      std::unique_ptr<VulkanImageProcessor::VulkanPipeline> pipeline,
+      std::unique_ptr<VulkanImageProcessor::VulkanRenderPass>
+          convert_render_pass,
+      std::unique_ptr<VulkanImageProcessor::VulkanRenderPass>
+          transform_render_pass,
+      std::unique_ptr<VulkanImageProcessor::VulkanPipeline> convert_pipeline,
+      std::unique_ptr<VulkanImageProcessor::VulkanPipeline> transform_pipeline,
       std::unique_ptr<VulkanImageProcessor::VulkanDescriptorPool>
-          descriptor_pool);
+          convert_descriptor_pool,
+      std::unique_ptr<VulkanImageProcessor::VulkanDescriptorPool>
+          transform_descriptor_pool,
+      std::unique_ptr<VulkanImageProcessor::VulkanSampler> sampler,
+      std::unique_ptr<gpu::VulkanImage> pivot_image,
+      std::unique_ptr<VulkanImageProcessor::VulkanTextureImage> pivot_texture);
 
   std::unique_ptr<gpu::VulkanImplementation> vulkan_implementation_;
   std::unique_ptr<VulkanImageProcessor::VulkanDeviceQueueWrapper>
       vulkan_device_queue_;
   std::unique_ptr<VulkanImageProcessor::VulkanCommandPoolWrapper> command_pool_;
-  std::unique_ptr<VulkanImageProcessor::VulkanRenderPass> render_pass_;
-  std::unique_ptr<VulkanImageProcessor::VulkanPipeline> pipeline_;
-  std::unique_ptr<VulkanImageProcessor::VulkanDescriptorPool> descriptor_pool_;
+  std::unique_ptr<VulkanImageProcessor::VulkanRenderPass> convert_render_pass_;
+  std::unique_ptr<VulkanImageProcessor::VulkanRenderPass>
+      transform_render_pass_;
+  std::unique_ptr<VulkanImageProcessor::VulkanPipeline> convert_pipeline_;
+  std::unique_ptr<VulkanImageProcessor::VulkanPipeline> transform_pipeline_;
+  std::unique_ptr<VulkanImageProcessor::VulkanDescriptorPool>
+      convert_descriptor_pool_;
+  std::unique_ptr<VulkanImageProcessor::VulkanDescriptorPool>
+      transform_descriptor_pool_;
+  std::unique_ptr<VulkanImageProcessor::VulkanSampler> sampler_;
+
+  std::unique_ptr<gpu::VulkanImage> pivot_image_;
+  std::unique_ptr<VulkanImageProcessor::VulkanTextureImage> pivot_texture_;
 };
 
 }  // namespace media

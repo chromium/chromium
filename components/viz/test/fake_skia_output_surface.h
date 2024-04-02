@@ -178,6 +178,8 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
                      const gfx::RectF& display_rect,
                      const gfx::RectF& crop_rect,
                      gfx::OverlayTransform transform) override {}
+
+  void CleanupImageProcessor() override {}
 #endif
 
  protected:

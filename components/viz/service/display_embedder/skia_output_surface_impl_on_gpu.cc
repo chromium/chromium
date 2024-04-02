@@ -2959,6 +2959,10 @@ void SkiaOutputSurfaceImplOnGpu::DetileOverlay(
     const gfx::RectF& display_rect,
     const gfx::RectF& crop_rect,
     gfx::OverlayTransform transform) {
+  if (!vulkan_image_processor_) {
+    vulkan_image_processor_ = media::VulkanImageProcessor::Create();
+  }
+
   // Note that we don't want to get the device queue from the
   // VulkanContextProvider because we actually need a special protected device
   // queue.
@@ -2992,6 +2996,10 @@ void SkiaOutputSurfaceImplOnGpu::DetileOverlay(
   }
 
   output_representation->SetCleared();
+}
+
+void SkiaOutputSurfaceImplOnGpu::CleanupImageProcessor() {
+  vulkan_image_processor_ = nullptr;
 }
 #endif
 

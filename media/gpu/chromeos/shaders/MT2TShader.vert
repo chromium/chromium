@@ -1,22 +1,15 @@
-// Vertex shader for MM21->ARGB conversion.
-// We produce 2 right triangles for each MM21 tile. This allows us to
-// compute a few important values in the vertex shader instead of the
-// fragment shader. This is desirable because the vertex shader only runs
-// 6 times (once for each vertex) per tile, which means the cost is amortized
-// over 16*32/6 ~= 85 pixels.
+// Vertex shader for MT2T->AR30 conversion.
+// This shader is very similar to its MM21 counterpart, with the important
+// difference being that the linear base address needs to take into account the
+// packed LSB data, so we multiply it by 10/8=5/4.
 
 #version 450
 
 precision highp float;
 precision highp int;
 
-// We can actually exploit the rasterizer to figure out the intra tile
-// coordinates for us.
 layout(location = 0) out vec2 intraTileX;
 layout(location = 1) out vec2 intraTileY;
-
-// Every pixel within a tile will have the same base address, we just need to
-// adjust the address by the intra tile coordinates.
 layout(location = 2) out flat ivec2 linearBase;
 
 layout( push_constant ) uniform constants {
@@ -39,16 +32,6 @@ const vec2 intraTileCoords[6] = vec2[6](
 );
 
 void main() {
-  // We really want something like:
-  // int tileIdx = gl_VertexIndex / 6;
-  // int tileVertIdx = gl_VertexIndex % 6;
-  // But integer division and modulo are *very* expensive on mobile GPUs, so
-  // we use floating point multiplication, subtraction, and flooring to
-  // approximate these operations.
-  // 0.1 is a fudge factor to counteract floating point rounding errors.
-  // Note that we multiply this value by 6, so using 0.5 like we do in the frag
-  // shader isn't appropriate because that will genuinely change the integer
-  // answer.
   float tileIdx = floor(float(gl_VertexIndex) * (1.0 / 6.0)) + 0.1;
   uint tileVertIdx = gl_VertexIndex - uint(tileIdx * 6.0);
   highp ivec2 tileCoords;
@@ -58,9 +41,9 @@ void main() {
   pos = pos * 2 / pushConstants.dims - vec2(1.0, 1.0);
   gl_Position = vec4(pos, 0.0, 1.0);
 
-  // Compute the base address for the whole tile.
   linearBase.r = int(tileIdx) * kLumaTileSize;
   linearBase.g = linearBase.r / 4;
+  linearBase = linearBase * 5 / 4;
 
   vec4 intraTileCoord = vec4(intraTileCoords[tileVertIdx],
   			     intraTileCoords[tileVertIdx] / 2.0);

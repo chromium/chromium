@@ -306,6 +306,8 @@ class SkiaOutputSurfaceImplOnGpu
                      const gfx::RectF& display_rect,
                      const gfx::RectF& crop_rect,
                      gfx::OverlayTransform transform);
+
+  void CleanupImageProcessor();
 #endif
 
  private:
@@ -655,8 +657,7 @@ class SkiaOutputSurfaceImplOnGpu
 
 #if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_CHROMEOS) && \
     BUILDFLAG(USE_V4L2_CODEC)
-  std::unique_ptr<media::VulkanImageProcessor> vulkan_image_processor_ =
-      media::VulkanImageProcessor::Create();
+  std::unique_ptr<media::VulkanImageProcessor> vulkan_image_processor_;
 #endif
 
   base::WeakPtr<SkiaOutputSurfaceImplOnGpu> weak_ptr_;

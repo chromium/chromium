@@ -1213,6 +1213,7 @@ gpu::Mailbox SkiaRenderer::GetProtectedSharedImage() {
 void SkiaRenderer::MaybeFreeProtectedPool() {
   if (is_protected_pool_idle_ && protected_buffer_queue_) {
     protected_buffer_queue_->DestroyBuffers();
+    skia_output_surface_->CleanupImageProcessor();
   } else {
     is_protected_pool_idle_ = true;
   }
