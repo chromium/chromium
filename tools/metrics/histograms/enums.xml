@@ -34633,12 +34633,14 @@ This is true even if the type has been removed from the mojom file.
 </enum>
 
 <enum name="WebUISettingsPathHashes">
+  <int value="-2108276563" label="/adPrivacy/sites"/>
   <int value="-2088016711" label="/startupPages"/>
   <int value="-2082028555" label="/androidApps/details"/>
   <int value="-2019732586" label="/printing"/>
   <int value="-1950073287" label="/crostini/details"/>
   <int value="-1930329480" label="/signOut"/>
   <int value="-1924511305" label="/help"/>
+  <int value="-1837289930" label="/adPrivacy/interests"/>
   <int value="-1820397898" label="/manageAccessibility"/>
   <int value="-1795544471" label="/languages/inputMethods"/>
   <int value="-1791818691" label="/content/camera"/>
@@ -34719,6 +34721,7 @@ This is true even if the type has been removed from the mojom file.
   <int value="8030578" label="/crostini/sharedUsbDevices"/>
   <int value="8530592" label="/syncSetup/advanced"/>
   <int value="16287984" label="/languages/details"/>
+  <int value="22120718" label="/adPrivacy"/>
   <int value="53341592" label="/privacySandbox"/>
   <int value="60238454" label="/content/ads"/>
   <int value="91791837" label="/content/localFonts"/>
@@ -34761,6 +34764,7 @@ This is true even if the type has been removed from the mojom file.
   <int value="1384165448" label="/stylus"/>
   <int value="1462185522" label="/dateTime"/>
   <int value="1463148011" label="/securityKeys"/>
+  <int value="1476368807" label="/adPrivacy/measurement"/>
   <int value="1513138656" label="/passwordsAndForms"/>
   <int value="1602314362" label="/storage"/>
   <int value="1641570017" label="/defaultBrowser"/>
