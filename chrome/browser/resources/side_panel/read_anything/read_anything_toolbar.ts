@@ -32,9 +32,9 @@ import type {VoiceSelectionMenuElement} from './voice_selection_menu.js';
 export interface ReadAnythingToolbarElement {
   $: {
     rateMenu: CrLazyRenderElement<CrActionMenuElement>,
-    colorMenu: CrActionMenuElement,
-    lineSpacingMenu: CrActionMenuElement,
-    letterSpacingMenu: CrActionMenuElement,
+    colorMenu: CrLazyRenderElement<CrActionMenuElement>,
+    lineSpacingMenu: CrLazyRenderElement<CrActionMenuElement>,
+    letterSpacingMenu: CrLazyRenderElement<CrActionMenuElement>,
     fontMenu: CrLazyRenderElement<CrActionMenuElement>,
     fontSizeMenu: CrLazyRenderElement<CrActionMenuElement>,
     moreOptionsMenu: CrActionMenuElement,
@@ -289,19 +289,19 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       id: 'color',
       icon: 'read-anything:color',
       ariaLabel: loadTimeData.getString('themeTitle'),
-      menuToOpen: () => this.$.colorMenu,
+      menuToOpen: () => this.$.colorMenu.get(),
     },
     {
       id: 'line-spacing',
       icon: 'read-anything:line-spacing',
       ariaLabel: loadTimeData.getString('lineSpacingTitle'),
-      menuToOpen: () => this.$.lineSpacingMenu,
+      menuToOpen: () => this.$.lineSpacingMenu.get(),
     },
     {
       id: 'letter-spacing',
       icon: 'read-anything:letter-spacing',
       ariaLabel: loadTimeData.getString('letterSpacingTitle'),
-      menuToOpen: () => this.$.letterSpacingMenu,
+      menuToOpen: () => this.$.letterSpacingMenu.get(),
     },
   ];
 
@@ -317,6 +317,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   private isHighlightOn_: boolean = true;
   private activeButton_: HTMLElement|null;
   private areFontsLoaded_: boolean = false;
+  private colorSuffix_: string = '';
 
   private toolbarContainerObserver_: ResizeObserver|null;
   private dragResizeCallback_: () => void;
@@ -424,6 +425,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   restoreSettingsFromPrefs(colorSuffix?: string) {
+    this.colorSuffix_ = colorSuffix ? colorSuffix : '';
     this.restoreFontMenu_();
 
     this.updateLinkToggleButton();
@@ -438,19 +440,17 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
           chrome.readingMode.highlightGranularity ===
           chrome.readingMode.highlightOn);
     }
-    this.setCheckMarkForMenu_(
-        this.$.colorMenu,
+    this.setCheckMarkForLazyMenu_(
+        this.$.colorMenu.getIfExists(),
         this.getIndexOfSetting_(this.colorOptions_, colorSuffix));
-    this.setCheckMarkForMenu_(
-        this.$.lineSpacingMenu,
+    this.setCheckMarkForLazyMenu_(
+        this.$.lineSpacingMenu.getIfExists(),
         this.getIndexOfSetting_(
-            this.lineSpacingOptions_,
-            parseFloat(chrome.readingMode.lineSpacing.toFixed(2))));
-    this.setCheckMarkForMenu_(
-        this.$.letterSpacingMenu,
+            this.lineSpacingOptions_, this.getCurrentLineSpacing()));
+    this.setCheckMarkForLazyMenu_(
+        this.$.letterSpacingMenu.get(),
         this.getIndexOfSetting_(
-            this.letterSpacingOptions_,
-            parseFloat(chrome.readingMode.letterSpacing.toFixed(2))));
+            this.letterSpacingOptions_, this.getCurrentLetterSpacing()));
   }
 
   private getIndexOfSetting_(
@@ -470,12 +470,38 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     return item !== this.fontOptions_.indexOf(chrome.readingMode.fontName);
   }
 
+  private isColorItemSelected_(item: number): boolean {
+    return item !==
+        this.getIndexOfSetting_(this.colorOptions_, this.colorSuffix_);
+  }
+
+  private isLineSpacingItemSelected_(item: number): boolean {
+    return item !==
+        this.getIndexOfSetting_(
+            this.lineSpacingOptions_, this.getCurrentLineSpacing());
+  }
+
+  private isLetterSpacingItemSelected_(item: number): boolean {
+    return item !==
+        this.getIndexOfSetting_(
+            this.letterSpacingOptions_, this.getCurrentLetterSpacing());
+  }
+
   private isRateItemSelected_(item: number): boolean {
     return item !== this.rateOptions_.indexOf(this.getCurrentSpeechRate());
   }
 
+
   private getCurrentSpeechRate(): number {
     return parseFloat(chrome.readingMode.speechRate.toFixed(1));
+  }
+
+  private getCurrentLineSpacing(): number {
+    return parseFloat(chrome.readingMode.lineSpacing.toFixed(2));
+  }
+
+  private getCurrentLetterSpacing(): number {
+    return parseFloat(chrome.readingMode.letterSpacing.toFixed(2));
   }
 
   // Instead of using areFontsLoaded_ directly in this method, we pass
@@ -500,9 +526,9 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
   private closeMenus_() {
     this.$.rateMenu.getIfExists()?.close();
-    this.$.colorMenu.close();
-    this.$.lineSpacingMenu.close();
-    this.$.letterSpacingMenu.close();
+    this.$.colorMenu.getIfExists()?.close();
+    this.$.lineSpacingMenu.getIfExists()?.close();
+    this.$.letterSpacingMenu.getIfExists()?.close();
     this.$.fontMenu.getIfExists()?.close();
   }
 
@@ -592,20 +618,20 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   private onLetterSpacingClick_(event: DomRepeatEvent<MenuStateItem<number>>) {
     this.onTextStyleClick_(
         event, ReadAnythingSettingsChange.LETTER_SPACING_CHANGE,
-        this.$.letterSpacingMenu,
+        this.$.letterSpacingMenu.get(),
         ReadAnythingElement.prototype.updateLetterSpacing);
   }
 
   private onLineSpacingClick_(event: DomRepeatEvent<MenuStateItem<number>>) {
     this.onTextStyleClick_(
         event, ReadAnythingSettingsChange.LINE_HEIGHT_CHANGE,
-        this.$.lineSpacingMenu,
+        this.$.lineSpacingMenu.get(),
         ReadAnythingElement.prototype.updateLineSpacing);
   }
 
   private onColorClick_(event: DomRepeatEvent<MenuStateItem<string>>) {
     this.onTextStyleClick_(
-        event, ReadAnythingSettingsChange.THEME_CHANGE, this.$.colorMenu,
+        event, ReadAnythingSettingsChange.THEME_CHANGE, this.$.colorMenu.get(),
         ReadAnythingElement.prototype.updateThemeFromWebUi);
   }
 
@@ -620,7 +646,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     if (this.contentPage) {
       contentPageCallback.call(this.contentPage, event.model.item.data);
     }
-    this.setCheckMarkForMenu_(menuClicked, event.model.index);
+    this.setCheckMarkForLazyMenu_(menuClicked, event.model.index);
     this.closeMenus_();
   }
 

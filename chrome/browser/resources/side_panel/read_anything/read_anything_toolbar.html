@@ -295,36 +295,53 @@
       </cr-action-menu>
     </template>
   </cr-lazy-render>
-  <cr-action-menu id="colorMenu">
-    <template is="dom-repeat" items="[[colorOptions_]]">
-      <button class="dropdown-item" on-click="onColorClick_">
-        <iron-icon class="button-image check-mark"
-            icon="read-anything-20:check-mark"></iron-icon>
-        <iron-icon class="button-image" icon="[[item.icon]]"></iron-icon>
-        [[item.title]]
-      </button>
+  <cr-lazy-render id="colorMenu">
+    <template>
+      <cr-action-menu>
+        <template is="dom-repeat" items="[[colorOptions_]]" index-as="index">
+          <button class="dropdown-item" on-click="onColorClick_">
+            <iron-icon class$="button-image check-mark-for-lazy-render
+                              check-mark-hidden-[[isColorItemSelected_(index)]]"
+                icon="read-anything-20:check-mark"></iron-icon>
+            <iron-icon class="button-image" icon="[[item.icon]]"></iron-icon>
+            [[item.title]]
+          </button>
+        </template>
+      </cr-action-menu>
     </template>
-  </cr-action-menu>
-  <cr-action-menu id="lineSpacingMenu">
-    <template is="dom-repeat" items="[[lineSpacingOptions_]]">
-      <button class="dropdown-item" on-click="onLineSpacingClick_">
-        <iron-icon class="button-image check-mark"
-            icon="read-anything-20:check-mark"></iron-icon>
-        <iron-icon class="button-image" icon="[[item.icon]]"></iron-icon>
-        [[item.title]]
-      </button>
+  </cr-lazy-render>
+  <cr-lazy-render id="lineSpacingMenu">
+    <template>
+      <cr-action-menu>
+        <template is="dom-repeat"
+                  items="[[lineSpacingOptions_]]" index-as="index">
+          <button class="dropdown-item" on-click="onLineSpacingClick_">
+            <iron-icon class$="button-image check-mark-for-lazy-render
+                        check-mark-hidden-[[isLineSpacingItemSelected_(index)]]"
+                icon="read-anything-20:check-mark"></iron-icon>
+            <iron-icon class="button-image" icon="[[item.icon]]"></iron-icon>
+            [[item.title]]
+          </button>
+        </template>
+      </cr-action-menu>
     </template>
-  </cr-action-menu>
-  <cr-action-menu id="letterSpacingMenu">
-    <template is="dom-repeat" items="[[letterSpacingOptions_]]">
-      <button class="dropdown-item" on-click="onLetterSpacingClick_">
-        <iron-icon class="button-image check-mark"
-            icon="read-anything-20:check-mark"></iron-icon>
-        <iron-icon class="button-image" icon="[[item.icon]]"></iron-icon>
-        [[item.title]]
-      </button>
+  </cr-lazy-render>
+  <cr-lazy-render id="letterSpacingMenu">
+    <template>
+      <cr-action-menu>
+        <template is="dom-repeat"
+                  items="[[letterSpacingOptions_]]" index-as="index">
+          <button class="dropdown-item" on-click="onLetterSpacingClick_">
+            <iron-icon class$="button-image check-mark-for-lazy-render
+                      check-mark-hidden-[[isLetterSpacingItemSelected_(index)]]"
+                icon="read-anything-20:check-mark"></iron-icon>
+            <iron-icon class="button-image" icon="[[item.icon]]"></iron-icon>
+            [[item.title]]
+          </button>
+        </template>
+      </cr-action-menu>
     </template>
-  </cr-action-menu>
+  </cr-lazy-render>
   <cr-lazy-render id="fontMenu">
     <template>
       <cr-action-menu>
