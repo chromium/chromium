@@ -190,10 +190,6 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, AppManagementToggleRow) {
   RunSettingsTest("app_management/toggle_row_test.js");
 }
 
-IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, CellularNetworksList) {
-  RunSettingsTest("cellular_networks_list_test.js");
-}
-
 IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, CellularRoamingToggleButton) {
   RunSettingsTest("cellular_roaming_toggle_button_test.js");
 }
@@ -722,6 +718,11 @@ class OSSettingsInternetTestApnAndHotspotAndPasspointEnabled
 IN_PROC_BROWSER_TEST_F(OSSettingsInternetTestApnAndHotspotAndPasspointEnabled,
                        InternetPage) {
   RunSettingsTest("internet_page_tests.js");
+}
+
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
+                       InternetPageCellularNetworksList) {
+  RunSettingsTest("internet_page/cellular_networks_list_test.js");
 }
 
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, InternetPageCellularSetupDialog) {

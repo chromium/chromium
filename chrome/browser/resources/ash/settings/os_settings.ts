@@ -119,6 +119,7 @@ export {IronDropdownElement} from 'chrome://resources/polymer/v3_0/iron-dropdown
 export {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 export {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 export {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
+export {PaperSpinnerLiteElement} from 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 export {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 export {AppLanguageSelectionDialogEntryPoint} from './common/app_language_selection_dialog/app_language_selection_dialog.js';
 export {addApp, AppManagementActions, changeApp, removeApp, updateSelectedAppId, updateSubAppToParentAppId} from './common/app_management/actions.js';

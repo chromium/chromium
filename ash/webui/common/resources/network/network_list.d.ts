@@ -4,10 +4,12 @@
 
 import {LegacyElementMixin} from '//resources/polymer/v3_0/polymer/lib/legacy/legacy-element-mixin.js';
 
+import {NetworkList} from './network_list_types.js';
 import {OncMojo} from './onc_mojo.js';
 
 interface NetworkListElement extends LegacyElementMixin, HTMLElement {
   networks: OncMojo.NetworkStateProperties[];
+  customItems: NetworkList.CustomItemState[];
 }
 
 declare global {
