@@ -17,7 +17,7 @@
 static jlong JNI_ProxyNativeTask_Init(JNIEnv* env,
                                       const JavaParamRef<jobject>& jobj,
                                       jint task_id,
-                                      const JavaParamRef<jstring>& jextras,
+                                      std::string& extras,
                                       const JavaParamRef<jobject>& jcallback) {
   std::unique_ptr<background_task::BackgroundTask> background_task =
       ChromeBackgroundTaskFactory::GetNativeBackgroundTaskFromTaskId(task_id);
@@ -25,9 +25,8 @@ static jlong JNI_ProxyNativeTask_Init(JNIEnv* env,
   background_task::TaskParameters params;
   params.task_id = task_id;
 
-  if (!jextras.is_null()) {
-    params.extras = base::android::ConvertJavaStringToUTF8(
-        jni_zero::AttachCurrentThread(), jextras);
+  if (!extras.empty()) {
+    params.extras = extras;
   }
 
   background_task::TaskFinishedCallback finish_callback =

@@ -64,8 +64,6 @@
 #include "url/gurl.h"
 
 using base::android::AttachCurrentThread;
-using base::android::ConvertUTF16ToJavaString;
-using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
@@ -260,12 +258,11 @@ jboolean BookmarkBridge::AreAccountBookmarkFoldersActive(JNIEnv* env) {
 
 void BookmarkBridge::GetImageUrlForBookmark(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_url,
+    const GURL& url,
     bool is_account_bookmark,
     const JavaParamRef<jobject>& j_callback) {
   ScopedJavaGlobalRef<jobject> callback(j_callback);
-  GetImageUrlForBookmarkImpl(*url::GURLAndroid::ToNativeGURL(env, j_url),
-                             is_account_bookmark,
+  GetImageUrlForBookmarkImpl(url, is_account_bookmark,
                              base::BindOnce(&HandleImageUrlResponse, callback));
 }
 
@@ -290,14 +287,11 @@ void BookmarkBridge::GetImageUrlForBookmarkImpl(
 }
 
 base::android::ScopedJavaLocalRef<jobject>
-BookmarkBridge::GetMostRecentlyAddedUserBookmarkIdForUrl(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& j_url) {
+BookmarkBridge::GetMostRecentlyAddedUserBookmarkIdForUrl(JNIEnv* env,
+                                                         const GURL& url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_url);
-  CHECK(url);
 
-  const BookmarkNode* node = GetMostRecentlyAddedUserBookmarkIdForUrlImpl(*url);
+  const BookmarkNode* node = GetMostRecentlyAddedUserBookmarkIdForUrlImpl(url);
   if (node) {
     return JavaBookmarkIdCreateBookmarkId(env, node->id(),
                                           GetBookmarkType(node));
@@ -711,16 +705,13 @@ BookmarkBridge::GetDefaultBookmarkFolder(JNIEnv* env) {
   return GetMobileFolderId(env);
 }
 
-base::android::ScopedJavaLocalRef<jstring>
-BookmarkBridge::GetBookmarkGuidByIdForTesting(
-    JNIEnv* env,
-    jlong id,
-    jint type) {
+std::string BookmarkBridge::GetBookmarkGuidByIdForTesting(JNIEnv* env,
+                                                          jlong id,
+                                                          jint type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const BookmarkNode* node = GetNodeByID(id, type);
   DCHECK(node) << "Bookmark with id " << id << " doesn't exist.";
-  return base::android::ConvertUTF8ToJavaString(
-      env, node->uuid().AsLowercaseString());
+  return node->uuid().AsLowercaseString();
 }
 
 jint BookmarkBridge::GetChildCount(JNIEnv* env, jlong id, jint type) {
@@ -821,13 +812,11 @@ jint BookmarkBridge::GetTotalBookmarkCount(
 void BookmarkBridge::SetBookmarkTitle(JNIEnv* env,
                                       jlong id,
                                       jint type,
-                                      const JavaParamRef<jstring>& j_title) {
+                                      const std::u16string& title) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(IsLoaded());
 
   const BookmarkNode* bookmark = GetNodeByID(id, type);
-  const std::u16string title =
-      base::android::ConvertJavaStringToUTF16(env, j_title);
 
   if (partner_bookmarks_shim_->IsPartnerBookmark(bookmark)) {
     partner_bookmarks_shim_->RenameBookmark(bookmark, title);
@@ -846,11 +835,10 @@ void BookmarkBridge::SetBookmarkTitle(JNIEnv* env,
 void BookmarkBridge::SetBookmarkUrl(JNIEnv* env,
                                     jlong id,
                                     jint type,
-                                    const JavaParamRef<jobject>& url) {
+                                    const GURL& url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(IsLoaded());
-  bookmark_model_->SetURL(GetNodeByID(id, type),
-                          *url::GURLAndroid::ToNativeGURL(env, url),
+  bookmark_model_->SetURL(GetNodeByID(id, type), url,
                           bookmarks::metrics::BookmarkEditSource::kUser);
 }
 
@@ -972,7 +960,7 @@ jboolean BookmarkBridge::IsFolderVisible(JNIEnv* env, jlong id, jint type) {
 
 void BookmarkBridge::SearchBookmarks(JNIEnv* env,
                                      const JavaParamRef<jobject>& j_list,
-                                     const JavaParamRef<jstring>& j_query,
+                                     const std::u16string& j_query,
                                      const JavaParamRef<jobjectArray>& j_tags,
                                      jint type,
                                      jint max_results) {
@@ -980,8 +968,7 @@ void BookmarkBridge::SearchBookmarks(JNIEnv* env,
   DCHECK(bookmark_model_->loaded());
 
   power_bookmarks::PowerBookmarkQueryFields query;
-  query.word_phrase_query = std::make_unique<std::u16string>(
-      base::android::ConvertJavaStringToUTF16(env, j_query));
+  query.word_phrase_query = std::make_unique<std::u16string>(j_query);
   if (query.word_phrase_query->empty()) {
     query.word_phrase_query.reset();
   }
@@ -1043,7 +1030,7 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::AddFolder(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_parent_id_obj,
     jint index,
-    const JavaParamRef<jstring>& j_title) {
+    const std::u16string& title) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(IsLoaded());
 
@@ -1051,9 +1038,8 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::AddFolder(
   int type = JavaBookmarkIdGetType(env, j_parent_id_obj);
   const BookmarkNode* parent = GetNodeByID(bookmark_id, type);
 
-  const BookmarkNode* new_node = bookmark_model_->AddFolder(
-      parent, static_cast<size_t>(index),
-      base::android::ConvertJavaStringToUTF16(env, j_title));
+  const BookmarkNode* new_node =
+      bookmark_model_->AddFolder(parent, static_cast<size_t>(index), title);
   DCHECK(new_node);
   ScopedJavaLocalRef<jobject> new_java_obj = JavaBookmarkIdCreateBookmarkId(
       env, new_node->id(), GetBookmarkType(new_node));
@@ -1219,19 +1205,16 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::AddBookmark(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_parent_id_obj,
     jint index,
-    const JavaParamRef<jstring>& j_title,
-    const JavaParamRef<jobject>& j_url) {
+    const std::u16string& title,
+    const GURL& url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(IsLoaded());
   long bookmark_id = JavaBookmarkIdGetId(env, j_parent_id_obj);
   int type = JavaBookmarkIdGetType(env, j_parent_id_obj);
   const BookmarkNode* parent = GetNodeByID(bookmark_id, type);
 
-  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_url);
-
   const BookmarkNode* new_node = bookmark_model_->AddNewURL(
-      parent, static_cast<size_t>(index),
-      base::android::ConvertJavaStringToUTF16(env, j_title), *url);
+      parent, static_cast<size_t>(index), title, url);
   DCHECK(new_node);
   ScopedJavaLocalRef<jobject> new_java_obj = JavaBookmarkIdCreateBookmarkId(
       env, new_node->id(), GetBookmarkType(new_node));
@@ -1241,8 +1224,8 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::AddBookmark(
 ScopedJavaLocalRef<jobject> BookmarkBridge::AddToReadingList(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_parent_id_obj,
-    const JavaParamRef<jstring>& j_title,
-    const JavaParamRef<jobject>& j_url) {
+    const std::string& title,
+    const GURL& url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(IsLoaded());
 
@@ -1252,9 +1235,7 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::AddToReadingList(
   ReadingListManager* manager =
       GetReadingListManagerFromParentNode(parent_node);
 
-  const BookmarkNode* node =
-      manager->Add(*url::GURLAndroid::ToNativeGURL(env, j_url),
-                   base::android::ConvertJavaStringToUTF8(env, j_title));
+  const BookmarkNode* node = manager->Add(url, title);
   return node ? JavaBookmarkIdCreateBookmarkId(env, node->id(),
                                                GetBookmarkType(node))
               : ScopedJavaLocalRef<jobject>();
@@ -1347,10 +1328,9 @@ void BookmarkBridge::EndGroupingUndos(JNIEnv* env) {
   grouped_bookmark_actions_.reset();
 }
 
-bool BookmarkBridge::IsBookmarked(JNIEnv* env,
-                                  const JavaParamRef<jobject>& j_url) {
+bool BookmarkBridge::IsBookmarked(JNIEnv* env, const GURL& url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return !GetMostRecentlyAddedUserBookmarkIdForUrl(env, j_url).is_null();
+  return !GetMostRecentlyAddedUserBookmarkIdForUrl(env, url).is_null();
 }
 
 std::u16string BookmarkBridge::GetTitle(const BookmarkNode* node) const {
@@ -1386,8 +1366,7 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::CreateJavaBookmark(
   // TODO(crbug.com/1467559): Folders need to use most recent child's time for
   // date_last_used.
   return Java_BookmarkBridge_createBookmarkItem(
-      env, node->id(), type, ConvertUTF16ToJavaString(env, GetTitle(node)),
-      url::GURLAndroid::FromNativeGURL(env, url), node->is_folder(), parent_id,
+      env, node->id(), type, GetTitle(node), url, node->is_folder(), parent_id,
       GetBookmarkType(parent), IsEditable(node), IsManaged(node),
       node->date_added().InMillisecondsSinceUnixEpoch(), read,
       node->date_last_used().InMillisecondsSinceUnixEpoch(),
