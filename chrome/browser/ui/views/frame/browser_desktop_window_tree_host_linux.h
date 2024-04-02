@@ -88,7 +88,6 @@ class BrowserDesktopWindowTreeHostLinux
   bool IsOverrideRedirect() const override;
 
   // ui::PlatformWindowDelegate
-  gfx::Insets CalculateInsetsInDIP() const override;
   void OnBoundsChanged(const BoundsChange& change) override;
   void OnWindowStateChanged(ui::PlatformWindowState old_state,
                             ui::PlatformWindowState new_state) override;

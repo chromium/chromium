@@ -20,33 +20,26 @@ bool IsPlatformWindowStateFullscreen(PlatformWindowState state) {
          state == PlatformWindowState::kTrustedPinnedFullscreen;
 }
 
-bool PlatformWindowDelegate::State::WillProduceFrameOnUpdateFrom(
+bool PlatformWindowDelegate::State::ProducesFrameOnUpdateFrom(
     const State& old) const {
-  // Changing the bounds origin won't produce a new frame. AuxiliaryFrameData
-  // update is is also ignored. Anything else will produce a frame, except for
-  // the occlusion state. We do not check that here since there isn't enough
-  // information to determine if it will produce a frame, as it depends on
-  // whether native occlusion is enabled and if the ui compositor changes
+  // Changing the bounds origin won't produce a new frame. Anything else will,
+  // except for the occlusion state. We do not check that here since there isn't
+  // enough information to determine if it will produce a frame, as it depends
+  // on whether native occlusion is enabled and if the ui compositor changes
   // visibility.
-  // Note: Changing the window state produces a new frame as
-  // OnWindowStateChanged will schedule relayout even without the bounds change.
-  return old.window_state != window_state ||
-         old.bounds_dip.size() != bounds_dip.size() || old.size_px != size_px ||
-         old.window_scale != window_scale || old.raster_scale != raster_scale;
+  return old.bounds_dip.size() != bounds_dip.size() || old.size_px != size_px ||
+         old.window_scale != window_scale || old.raster_scale != raster_scale ||
+         old.insets != insets;
 }
 
 std::string PlatformWindowDelegate::State::ToString() const {
   std::stringstream result;
   result << "State {";
-  result << "window_state = " << static_cast<int>(window_state);
-  result << ", bounds_dip = " << bounds_dip.ToString();
+  result << "bounds_dip = " << bounds_dip.ToString();
   result << ", size_px = " << size_px.ToString();
   result << ", window_scale = " << window_scale;
   result << ", raster_scale = " << raster_scale;
-  result << ", occlusion_state = " << static_cast<int>(occlusion_state);
-  result << ", AuxiliaryFrameData {";
-  result << "insets_dip = " << auxiliary_data.insets_dip.ToString();
-  result << "}";
+  result << ", insets = " << insets.ToString();
   result << "}";
   return result.str();
 }
@@ -54,10 +47,6 @@ std::string PlatformWindowDelegate::State::ToString() const {
 PlatformWindowDelegate::PlatformWindowDelegate() = default;
 
 PlatformWindowDelegate::~PlatformWindowDelegate() = default;
-
-gfx::Insets PlatformWindowDelegate::CalculateInsetsInDIP() const {
-  return gfx::Insets();
-}
 
 #if BUILDFLAG(IS_LINUX)
 void PlatformWindowDelegate::OnWindowTiledStateChanged(
@@ -132,11 +121,6 @@ gfx::Rect PlatformWindowDelegate::ConvertRectToDIP(
 gfx::PointF PlatformWindowDelegate::ConvertScreenPointToLocalDIP(
     const gfx::Point& screen_in_pixels) const {
   return gfx::PointF(screen_in_pixels);
-}
-
-gfx::Insets PlatformWindowDelegate::ConvertInsetsToPixels(
-    const gfx::Insets& insets_dip) const {
-  return insets_dip;
 }
 
 void PlatformWindowDelegate::DisableNativeWindowOcclusion() {}

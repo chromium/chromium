@@ -91,7 +91,7 @@ class WaylandToplevelWindow : public WaylandWindow,
   bool OnInitialize(PlatformWindowInitProperties properties,
                     PlatformWindowDelegate::State* state) override;
   bool IsActive() const override;
-  void SetWindowGeometry(const PlatformWindowDelegate::State& state) override;
+  void SetWindowGeometry(gfx::Size size_dip) override;
   bool IsScreenCoordinatesEnabled() const override;
   bool SupportsConfigureMinimizedState() const override;
   bool SupportsConfigurePinnedState() const override;
@@ -211,7 +211,7 @@ class WaylandToplevelWindow : public WaylandWindow,
 
   void UpdateSystemModal();
 
-  void TriggerStateChanges(PlatformWindowState window_state);
+  void TriggerStateChanges();
 
   // Sets the new window `state` to the window. `target_display_id` gets ignored
   // unless the state is `PlatformWindowState::kFullscreen`.
@@ -256,11 +256,10 @@ class WaylandToplevelWindow : public WaylandWindow,
   // Wrappers around shell surface.
   std::unique_ptr<ShellToplevelWrapper> shell_toplevel_;
 
-  // True if it's maximized before requesting the window state change from the
-  // client.
-  // TODO(b/328109805): Move this logic to server side on Lacros.
-  bool previously_maximized_ = false;
-
+  // Contains the current state of the window.
+  PlatformWindowState state_ = PlatformWindowState::kUnknown;
+  // Contains the previous state of the window.
+  PlatformWindowState previous_state_ = PlatformWindowState::kUnknown;
   // The display ID to switch to in case the state is `kFullscreen`.
   int64_t fullscreen_display_id_ = display::kInvalidDisplayId;
 

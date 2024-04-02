@@ -364,7 +364,7 @@ void WaylandWindow::CancelDrag() {
 void WaylandWindow::Show(bool inactive) {
   // Initially send the window geometry. After this, we only update window
   // geometry when the value in latched_state_ updates.
-  SetWindowGeometry(latched_state_);
+  SetWindowGeometry(latched_state_.bounds_dip.size());
   frame_manager_->MaybeProcessPendingFrame();
 }
 
@@ -414,9 +414,10 @@ void WaylandWindow::DumpState(std::ostream& out) const {
       << ", bounds_in_pixels=" << GetBoundsInPixels().ToString()
       << ", restore_bounds_dip=" << restored_bounds_dip_.ToString()
       << ", overlay_delegation="
-      << (wayland_overlay_delegation_enabled_ ? "enabled" : "disabled")
-      << ", frame_insets_dip="
-      << applied_state().auxiliary_data.insets_dip.ToString();
+      << (wayland_overlay_delegation_enabled_ ? "enabled" : "disabled");
+  if (frame_insets_px_) {
+    out << ", frame_insets=" << frame_insets_px_->ToString();
+  }
   if (has_touch_focus_) {
     out << ", has_touch_focus";
   }
@@ -597,6 +598,19 @@ bool WaylandWindow::ShouldWindowContentsBeTransparent() const {
 
 void WaylandWindow::SetAspectRatio(const gfx::SizeF& aspect_ratio) {
   NOTIMPLEMENTED_LOG_ONCE();
+}
+
+void WaylandWindow::SetDecorationInsets(const gfx::Insets* insets_px) {
+  // TODO(crbug.com/1395267): Add window geometry to WaylandWindow::State.
+  if ((!frame_insets_px_ && !insets_px) ||
+      (frame_insets_px_ && insets_px && *frame_insets_px_ == *insets_px)) {
+    return;
+  }
+  if (insets_px) {
+    frame_insets_px_ = *insets_px;
+  } else {
+    frame_insets_px_ = std::nullopt;
+  }
 }
 
 void WaylandWindow::SetWindowIcons(const gfx::ImageSkia& window_icon,
@@ -873,12 +887,7 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
   }
 
   PlatformWindowDelegate::State state;
-  state.window_state = PlatformWindowState::kNormal;
   state.bounds_dip = properties.bounds;
-
-  // Properties contain pixel insets but the buffer scale is initially 1 so it's
-  // OK to assign to insets_dip.
-  state.auxiliary_data.insets_dip = properties.frame_insets_px;
 
   // Make sure we don't store empty bounds, or else later on we might send an
   // xdg_toplevel.set_window_geometry() request with zero width and height,
@@ -914,6 +923,8 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
 
   connection_->window_manager()->AddWindow(GetWidget(), this);
 
+  SetDecorationInsets(&properties.frame_insets_px);
+
   if (!OnInitialize(std::move(properties), &state)) {
     return false;
   }
@@ -944,12 +955,23 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
   return true;
 }
 
-void WaylandWindow::SetWindowGeometry(
-    const PlatformWindowDelegate::State& state) {}
+void WaylandWindow::SetWindowGeometry(gfx::Size size_dip) {}
 
 gfx::Vector2d WaylandWindow::GetWindowGeometryOffsetInDIP() const {
-  const auto& insets_dip = applied_state().auxiliary_data.insets_dip;
-  return {insets_dip.left(), insets_dip.top()};
+  if (!frame_insets_px_.has_value()) {
+    return {};
+  }
+
+  auto scale = applied_state().window_scale;
+  return {static_cast<int>(frame_insets_px_->left() / scale),
+          static_cast<int>(frame_insets_px_->top() / scale)};
+}
+
+gfx::Insets WaylandWindow::GetDecorationInsetsInDIP() const {
+  auto scale = latched_state().window_scale;
+  return frame_insets_px_.has_value()
+             ? gfx::ScaleToRoundedInsets(*frame_insets_px_, 1.f / scale)
+             : gfx::Insets{};
 }
 
 WaylandWindow* WaylandWindow::GetRootParentWindow() {
@@ -1255,9 +1277,6 @@ void WaylandWindow::ProcessPendingConfigureState(uint32_t serial) {
   // For values not specified in pending_configure_state_, use the latest
   // requested values.
   auto state = GetLatestRequestedState();
-  if (pending_configure_state_.window_state) {
-    state.window_state = pending_configure_state_.window_state.value();
-  }
   if (pending_configure_state_.bounds_dip.has_value()) {
     state.bounds_dip = pending_configure_state_.bounds_dip.value();
   }
@@ -1337,6 +1356,9 @@ void WaylandWindow::RequestState(PlatformWindowDelegate::State state,
   state.size_px = gfx::ScaleToEnclosingRectIgnoringError(state.bounds_dip,
                                                          state.window_scale)
                       .size();
+  // This will ensure that if insets at the time of the request changed, a new
+  // frame is produced when the state is applied.
+  state.insets = GetDecorationInsetsInDIP();
 
   StateRequest req{.state = state, .serial = serial};
   if (in_flight_requests_.empty()) {
@@ -1471,6 +1493,8 @@ void WaylandWindow::LatchStateRequest(const StateRequest& req) {
   // Latch the most up to date state we have a frame back for.
   auto old_state = latched_state_;
   latched_state_ = req.state;
+  auto old_latched_insets = latched_insets_;
+  latched_insets_ = GetDecorationInsetsInDIP();
 
   // Update the geometry if the bounds are different or the window scale has
   // been changed or if the insets have changed since the last latched request.
@@ -1479,13 +1503,14 @@ void WaylandWindow::LatchStateRequest(const StateRequest& req) {
   // the device scale factor known from the display. It can be different from
   // the one that the |latch_state_.window_scale| has. As a result, the geometry
   // is set with wrong values as Wayland requires them to be in DIP.
-  // TODO(crbug.com/328011220): Investigate whether we can remove
-  // `window_scale` check from here.
   if (req.state.bounds_dip.size() != old_state.bounds_dip.size() ||
       req.state.window_scale != old_state.window_scale ||
-      req.state.auxiliary_data.insets_dip !=
-          old_state.auxiliary_data.insets_dip) {
-    SetWindowGeometry(req.state);
+      // If insets change that is a geometry change even when the bounds or
+      // scale remain the same. The updated insets may not be known at the time
+      // of the request, hence the need to check this if there are changes in
+      // insets since it latched the last time.
+      old_latched_insets != latched_insets_) {
+    SetWindowGeometry(req.state.bounds_dip.size());
   }
   UpdateWindowMask();
   if (req.serial != -1) {
@@ -1532,15 +1557,8 @@ void WaylandWindow::MaybeApplyLatestStateRequest(bool force) {
   // OnStateUpdate may return -1 if the state update does not require a new
   // frame to be considered synchronized. For example, this can happen if the
   // old and new states are the same, or it only changes the origin of the
-  // bounds or auxiliary_data.
+  // bounds.
   latest.viz_seq = delegate()->OnStateUpdate(old, latest.state);
-
-  // Calculate insets and set it to both `applied_state_` and `latest.state.
-  // This must run after setting `applied_state_` so that we can calculate the
-  // insets based on the updated window state.
-  auto insets_dip = delegate()->CalculateInsetsInDIP();
-  applied_state_.auxiliary_data.insets_dip = insets_dip;
-  latest.state.auxiliary_data.insets_dip = insets_dip;
 
   // If we have state requests which don't require synchronization to latch, or
   // if no frames will be produced, ack them immediately. Using -2 (or any
