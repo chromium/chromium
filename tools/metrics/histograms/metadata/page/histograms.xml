@@ -1408,7 +1408,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.ThirdParty.Frames.Opaque.NavigationToFirstContentfulPaint"
-    units="ms" expires_after="2024-07-28">
+    units="ms" expires_after="2024-09-29">
   <owner>awillia@chromium.org</owner>
   <owner>djmitche@chromium.org</owner>
   <summary>
@@ -1553,7 +1553,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.Zstd.PaintTiming.NavigationToFirstContentfulPaint"
-    units="ms" expires_after="2024-07-28">
+    units="ms" expires_after="2024-09-29">
   <owner>nidhijaju@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -1567,7 +1567,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.Zstd.PaintTiming.NavigationToLargestContentfulPaint"
-    units="ms" expires_after="2024-07-28">
+    units="ms" expires_after="2024-09-29">
   <owner>nidhijaju@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -1583,7 +1583,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Clients.Zstd.ParseTiming.NavigationToParseStart"
-    units="ms" expires_after="2024-07-28">
+    units="ms" expires_after="2024-09-29">
   <owner>nidhijaju@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -2777,7 +2777,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.LayoutInstability.CumulativeShiftScore"
-    units="scorex10" expires_after="2024-07-28">
+    units="scorex10" expires_after="2024-09-29">
   <owner>bmcquade@chromium.org</owner>
   <owner>skobes@chromium.org</owner>
   <summary>
