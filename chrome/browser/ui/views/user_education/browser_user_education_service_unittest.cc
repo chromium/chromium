@@ -36,3 +36,28 @@ TEST(BrowserUserEducationServiceTest, CheckFeaturePromoHistograms) {
          "//tools/metrics/histograms/metadata/feature_engagement/"
          "histograms.xml";
 }
+
+TEST(BrowserUserEducationServiceTest, CheckNewBadgeHistograms) {
+  std::optional<base::HistogramVariantsEntryMap> new_badge_features;
+  std::vector<std::string> missing_features;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    new_badge_features = base::ReadVariantsFromHistogramsXml("NewBadgeFeature",
+                                                             "user_education");
+    ASSERT_TRUE(new_badge_features.has_value());
+  }
+  user_education::NewBadgeRegistry registry;
+  MaybeRegisterChromeNewBadges(registry);
+  const auto& new_badge_specifications = registry.feature_data();
+  for (const auto& [feature, spec] : new_badge_specifications) {
+    if (!base::Contains(*new_badge_features, feature->name)) {
+      missing_features.emplace_back(feature->name);
+    }
+  }
+  ASSERT_TRUE(missing_features.empty())
+      << "New Badge Features:\n"
+      << base::JoinString(missing_features, ", ")
+      << "\nconfigured in browser_user_education_service.cc but no "
+         "corresponding variants were added to NewBadgeFeature variants in "
+         "//tools/metrics/histograms/metadata/user_education/histograms.xml";
+}

@@ -24,6 +24,18 @@ class NewBadgePolicy {
                                   int used_count,
                                   base::TimeDelta time_since_enabled) const;
 
+  // Records metrics for "New" Badge. Call when the badge will be shown.
+  virtual void RecordNewBadgeShown(const base::Feature& feature, int count);
+
+  // Records metrics when the associated `feature` for a "New" Badge was used.
+  virtual void RecordFeatureUsed(const base::Feature& feature, int count);
+
+  // Returns the recommended number of times to record that the feature was
+  // used in prefs, which should be greater than `uses_before_dismiss` to allow
+  // the limits to be adjusted up or down via Finch config. Guaranteed to be
+  // significantly larger than the use cap.
+  virtual int GetFeatureUsedStorageCap() const;
+
  protected:
   // Constructor that sets the default number of times a badge can be shown or
   // its associated entry point used before the badge disappears.

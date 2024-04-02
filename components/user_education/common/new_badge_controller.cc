@@ -58,6 +58,7 @@ bool NewBadgeController::MaybeShowNewBadge(const base::Feature& feature) {
 
   ++data.show_count;
   storage_service_->SaveNewBadgeData(feature, data);
+  policy_->RecordNewBadgeShown(feature, data.show_count);
   return true;
 }
 
@@ -77,8 +78,15 @@ void NewBadgeController::NotifyFeatureUsedImpl(const base::Feature& feature,
   }
 
   NewBadgeData data = storage_service_->ReadNewBadgeData(feature);
-  ++data.used_count;
-  storage_service_->SaveNewBadgeData(feature, data);
+
+  // Maybe record histograms.
+  policy_->RecordFeatureUsed(feature, ++data.used_count);
+
+  // Maybe save the updated data.
+  const int cap = policy_->GetFeatureUsedStorageCap();
+  if (data.used_count <= cap) {
+    storage_service_->SaveNewBadgeData(feature, data);
+  }
 }
 
 bool NewBadgeController::CheckPrerequisites(const base::Feature& feature,

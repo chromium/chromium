@@ -22,6 +22,15 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="NewBadgeFeature">
+  <variant name="Compose"
+      summary="For Compose feature; shown in web context menu."/>
+  <variant name="ComposeNudge"
+      summary="For Compose feature; shown on autofill popup."/>
+  <variant name="NewBadgeTestFeature"
+      summary="Used for testing purposes only."/>
+</variants>
+
 <variants name="TutorialID">
   <variant name="" summary="any tutorial"/>
   <variant name=".CustomizeChromeSidePanel"
@@ -125,6 +134,33 @@ chromium-metrics-reviews@google.com.
     the behavior of the IPH, which can be many varieties (e.g. toast, snooze,
     custom action, etc.).
   </summary>
+</histogram>
+
+<histogram name="UserEducation.NewBadge.{NewBadgeFeature}.MaxShownReached"
+    enum="BooleanCompleted" expires_after="2024-12-01">
+  <owner>dfried@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Recorded when a &quot;New&quot; Badge is shown. Recorded as
+    &quot;Completed&quot; if the maximum number of shows has been reached and
+    the badge will not show again for this user, otherwise recorded as &quot;Not
+    Completed&quot;.
+  </summary>
+  <token key="NewBadgeFeature" variants="NewBadgeFeature"/>
+</histogram>
+
+<histogram name="UserEducation.NewBadge.{NewBadgeFeature}.MaxUsedReached"
+    enum="BooleanCompleted" expires_after="2024-12-01">
+  <owner>dfried@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Recorded when the feature promoted by a &quot;New&quot; Badge is used,
+    typically via entry point promoted by the badge. Recorded as
+    &quot;Completed&quot; if the maximum number of uses has been reached and the
+    badge will not show again for this user, otherwise recorded as &quot;Not
+    Completed&quot;.
+  </summary>
+  <token key="NewBadgeFeature" variants="NewBadgeFeature"/>
 </histogram>
 
 <histogram name="UserEducation.Session.ActivePeriodDuration.Min.Under1Hour"

@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
@@ -32,6 +33,8 @@ BASE_FEATURE(kOtherTestFeature,
 // Mock for testing `NewBadgeController` without a live `NewBadgePolicy`.
 class MockNewBadgePolicy : public NewBadgePolicy {
  public:
+  static constexpr int kDefaultStorageCap = 5;
+
   MockNewBadgePolicy() = default;
   ~MockNewBadgePolicy() override = default;
 
@@ -39,6 +42,17 @@ class MockNewBadgePolicy : public NewBadgePolicy {
               ShouldShowNewBadge,
               (const base::Feature&, int, int, base::TimeDelta),
               (const, override));
+  MOCK_METHOD(void,
+              RecordNewBadgeShown,
+              (const base::Feature&, int),
+              (override));
+  MOCK_METHOD(void, RecordFeatureUsed, (const base::Feature&, int), (override));
+
+  int GetFeatureUsedStorageCap() const override { return mock_storage_cap_; }
+  void set_mock_storage_cap(int new_cap) { mock_storage_cap_ = new_cap; }
+
+ private:
+  int mock_storage_cap_ = kDefaultStorageCap;
 };
 
 // A `NewBadgePolicy` that allows direct setting of the parameters.
@@ -105,6 +119,7 @@ class NewBadgeControllerTest : public testing::Test {
   std::unique_ptr<NewBadgeController> controller_;
   raw_ptr<MockNewBadgePolicy> mock_policy_;
   base::test::ScopedFeatureList feature_list_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(NewBadgeControllerTest, MaybeShowNewBadgeCallsPolicyReturnsTrue) {
@@ -113,6 +128,8 @@ TEST_F(NewBadgeControllerTest, MaybeShowNewBadgeCallsPolicyReturnsTrue) {
       *mock_policy_,
       ShouldShowNewBadge(testing::Ref(kNewBadgeTestFeature), 0, 0, testing::_))
       .WillOnce(testing::Return(true));
+  EXPECT_CALL(*mock_policy_,
+              RecordNewBadgeShown(testing::Ref(kNewBadgeTestFeature), 1));
   EXPECT_TRUE(controller_->MaybeShowNewBadge(kNewBadgeTestFeature));
   CheckData(kNewBadgeTestFeature, NewBadgeData{1, 0});
 }
@@ -136,12 +153,16 @@ TEST_F(NewBadgeControllerTest, NewBadgesDisabledForTesting) {
 
 TEST_F(NewBadgeControllerTest, NotifyFeatureUsed) {
   CreateWithMockPolicy();
+  EXPECT_CALL(*mock_policy_,
+              RecordFeatureUsed(testing::Ref(kNewBadgeTestFeature), 1));
   controller_->NotifyFeatureUsed(kNewBadgeTestFeature);
   CheckData(kNewBadgeTestFeature, NewBadgeData{0, 1});
 }
 
 TEST_F(NewBadgeControllerTest, NotifyFeatureUsedIfValidIsValid) {
   CreateWithMockPolicy();
+  EXPECT_CALL(*mock_policy_,
+              RecordFeatureUsed(testing::Ref(kNewBadgeTestFeature), 1));
   controller_->NotifyFeatureUsedIfValid(kNewBadgeTestFeature);
   CheckData(kNewBadgeTestFeature, NewBadgeData{0, 1});
 }
@@ -158,6 +179,27 @@ TEST_F(NewBadgeControllerTest, NotifyFeatureUsedIfValidNotEnabled) {
   CheckData(kNewBadgeTestFeature, NewBadgeData{0, 0});
 }
 
+TEST_F(NewBadgeControllerTest, NotifyFeatureUsedDoesNotRecord) {
+  constexpr int kStorageCap = 2;
+
+  CreateWithMockPolicy();
+  mock_policy_->set_mock_storage_cap(kStorageCap);
+
+  for (int i = 0; i <= kStorageCap; ++i) {
+    // The count passed to RecordFeatureUsed will top out just above the cap;
+    // this isn't a problem for histograms, because they stop recording at the
+    // max used count, which is (by design) lower than the storage cap.
+    const int expected_count = std::min(i, kStorageCap) + 1;
+    EXPECT_CALL(
+        *mock_policy_,
+        RecordFeatureUsed(testing::Ref(kNewBadgeTestFeature), expected_count));
+    controller_->NotifyFeatureUsed(kNewBadgeTestFeature);
+  }
+
+  // The number stored in prefs won't grow past the cap, however.
+  CheckData(kNewBadgeTestFeature, NewBadgeData{0, kStorageCap});
+}
+
 TEST_F(NewBadgeControllerTest, DoesNotShowIfFeatureDisabled) {
   CreateWithTestPolicy(/*enable_feature=*/false);
   EXPECT_FALSE(controller_->MaybeShowNewBadge(kNewBadgeTestFeature));
@@ -170,6 +212,12 @@ TEST_F(NewBadgeControllerTest, ShowsUntilMaxCount) {
     EXPECT_EQ(i <= kMaxShows,
               controller_->MaybeShowNewBadge(kNewBadgeTestFeature))
         << "On show #" << i;
+    histogram_tester_.ExpectBucketCount(
+        "UserEducation.NewBadge.NewBadgeTestFeature.MaxShownReached", false,
+        std::min(i, kMaxShows - 1));
+    histogram_tester_.ExpectBucketCount(
+        "UserEducation.NewBadge.NewBadgeTestFeature.MaxShownReached", true,
+        i >= kMaxShows ? 1 : 0);
   }
   CheckData(kNewBadgeTestFeature, NewBadgeData{kMaxShows, 0});
 }
@@ -178,12 +226,36 @@ TEST_F(NewBadgeControllerTest, ShowsUntilMaxUsed) {
   CreateWithTestPolicy();
   for (int i = 0; i < kMaxUsed - 1; ++i) {
     controller_->NotifyFeatureUsed(kNewBadgeTestFeature);
+    histogram_tester_.ExpectBucketCount(
+        "UserEducation.NewBadge.NewBadgeTestFeature.MaxUsedReached", false,
+        i + 1);
+    histogram_tester_.ExpectBucketCount(
+        "UserEducation.NewBadge.NewBadgeTestFeature.MaxUsedReached", true, 0);
   }
   EXPECT_TRUE(controller_->MaybeShowNewBadge(kNewBadgeTestFeature));
   controller_->NotifyFeatureUsed(kNewBadgeTestFeature);
+
+  // Verify both histograms are recorded.
+  histogram_tester_.ExpectBucketCount(
+      "UserEducation.NewBadge.NewBadgeTestFeature.MaxUsedReached", false,
+      kMaxUsed - 1);
+  histogram_tester_.ExpectBucketCount(
+      "UserEducation.NewBadge.NewBadgeTestFeature.MaxUsedReached", true, 1);
+  histogram_tester_.ExpectBucketCount(
+      "UserEducation.NewBadge.NewBadgeTestFeature.MaxShownReached", false, 1);
+
   EXPECT_FALSE(controller_->MaybeShowNewBadge(kNewBadgeTestFeature));
   controller_->NotifyFeatureUsed(kNewBadgeTestFeature);
   EXPECT_FALSE(controller_->MaybeShowNewBadge(kNewBadgeTestFeature));
+
+  // Verify no changes in histograms.
+  histogram_tester_.ExpectBucketCount(
+      "UserEducation.NewBadge.NewBadgeTestFeature.MaxUsedReached", false,
+      kMaxUsed - 1);
+  histogram_tester_.ExpectBucketCount(
+      "UserEducation.NewBadge.NewBadgeTestFeature.MaxUsedReached", true, 1);
+  histogram_tester_.ExpectBucketCount(
+      "UserEducation.NewBadge.NewBadgeTestFeature.MaxShownReached", false, 1);
 
   CheckData(kNewBadgeTestFeature, NewBadgeData{1, kMaxUsed + 1});
 }
@@ -194,6 +266,10 @@ TEST_F(NewBadgeControllerTest, WindowBlocksBadge) {
   EXPECT_TRUE(controller_->MaybeShowNewBadge(kNewBadgeTestFeature));
   test_clock_.Advance(base::Minutes(10));
   EXPECT_FALSE(controller_->MaybeShowNewBadge(kNewBadgeTestFeature));
+
+  // Verify that histogram is only recorded for the first show.
+  histogram_tester_.ExpectBucketCount(
+      "UserEducation.NewBadge.NewBadgeTestFeature.MaxShownReached", false, 1);
 }
 
 }  // namespace user_education
