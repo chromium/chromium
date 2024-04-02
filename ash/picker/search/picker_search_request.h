@@ -29,6 +29,7 @@ class EmojiSearch;
 namespace ash {
 
 class PickerClient;
+class PickerClipboardProvider;
 
 // Represents a single Picker search query. Constructing this class starts a
 // search, and destructing it stops the search.
@@ -66,8 +67,11 @@ class ASH_EXPORT PickerSearchRequest {
   void HandleEmojiSearchResults(emoji::EmojiSearchResult results);
   void HandleDateSearchResults(std::vector<PickerSearchResult> results);
   void HandleMathSearchResults(std::optional<PickerSearchResult> result);
+  void HandleClipboardSearchResults(std::vector<PickerSearchResult> results);
 
   const raw_ref<PickerClient> client_;
+
+  std::unique_ptr<PickerClipboardProvider> clipboard_provider_;
 
   const raw_ref<emoji::EmojiSearch> emoji_search_;
 
@@ -79,6 +83,7 @@ class ASH_EXPORT PickerSearchRequest {
   std::optional<base::TimeTicks> emoji_search_start_;
   std::optional<base::TimeTicks> category_search_start_;
   std::optional<base::TimeTicks> math_search_start_;
+  std::optional<base::TimeTicks> clipboard_search_start_;
 
   PickerSearchDebouncer gif_search_debouncer_;
 

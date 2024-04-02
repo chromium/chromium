@@ -16,8 +16,8 @@ enum class PickerSearchSource {
   kLocalFile,
   kDrive,
   kMath,
+  kClipboard,
 };
-
 }
 
 #endif  // ASH_PICKER_SEARCH_PICKER_SEARCH_SOURCE_H_

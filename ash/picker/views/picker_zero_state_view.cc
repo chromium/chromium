@@ -114,7 +114,7 @@ PickerZeroStateView::PickerZeroStateView(
     clipboard_provider_->FetchResults(
         base::BindRepeating(&PickerZeroStateView::OnFetchSuggestedResults,
                             weak_ptr_factory_.GetWeakPtr()),
-        kClipboardRecency);
+        u"", kClipboardRecency);
   }
 
   for (PickerCategory category : available_categories) {

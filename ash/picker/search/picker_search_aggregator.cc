@@ -32,6 +32,7 @@ PickerSectionType SectionTypeFromSearchSource(PickerSearchSource source) {
       return PickerSectionType::kExpressions;
     case PickerSearchSource::kDate:
     case PickerSearchSource::kMath:
+    case PickerSearchSource::kClipboard:
       return PickerSectionType::kSuggestions;
     case PickerSearchSource::kCategory:
       return PickerSectionType::kCategories;
@@ -98,7 +99,8 @@ void PickerSearchAggregator::HandleSearchSourceResults(
   // Suggested results have multiple sources, which we store in any order and
   // explicitly do not append if post-burn-in.
   if (source == PickerSearchSource::kDate ||
-      source == PickerSearchSource::kMath) {
+      source == PickerSearchSource::kMath ||
+      source == PickerSearchSource::kClipboard) {
     base::ranges::move(results, std::back_inserter(suggested_results_));
     return;
   }
@@ -117,6 +119,7 @@ void PickerSearchAggregator::HandleSearchSourceResults(
   switch (source) {
     case PickerSearchSource::kDate:
     case PickerSearchSource::kMath:
+    case PickerSearchSource::kClipboard:
       // These should be caught by the above "move into suggested results"
       // if block.
       NOTREACHED() << "Tried assigning suggested results";

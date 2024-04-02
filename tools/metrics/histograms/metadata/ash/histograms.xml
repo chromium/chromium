@@ -5951,6 +5951,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Provider">
     <variant name="Category"/>
+    <variant name="Clipboard"/>
     <variant name="Date"/>
     <variant name="Drive"/>
     <variant name="Emoji"/>

@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/picker/picker_clipboard_provider.h"
 #include "ash/picker/search/picker_category_search.h"
 #include "ash/picker/search/picker_date_search.h"
 #include "ash/picker/search/picker_math_search.h"
@@ -68,6 +69,15 @@ PickerSearchRequest::PickerSearchRequest(
         query, category,
         base::BindRepeating(&PickerSearchRequest::HandleCrosSearchResults,
                             weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  if (!category.has_value() || category == PickerCategory::kClipboard) {
+    clipboard_provider_ = std::make_unique<PickerClipboardProvider>();
+    clipboard_search_start_ = base::TimeTicks::Now();
+    clipboard_provider_->FetchResults(
+        base::BindOnce(&PickerSearchRequest::HandleClipboardSearchResults,
+                       weak_ptr_factory_.GetWeakPtr()),
+        query);
   }
 
   // These searches do not have category-specific search.
@@ -247,6 +257,16 @@ void PickerSearchRequest::HandleMathSearchResults(
     results.push_back(*std::move(result));
   }
   HandleSearchSourceResults(PickerSearchSource::kMath, std::move(results));
+}
+
+void PickerSearchRequest::HandleClipboardSearchResults(
+    std::vector<PickerSearchResult> results) {
+  if (clipboard_search_start_.has_value()) {
+    base::TimeDelta elapsed = base::TimeTicks::Now() - *clipboard_search_start_;
+    base::UmaHistogramTimes("Ash.Picker.Search.ClipboardProvider.QueryTime",
+                            elapsed);
+  }
+  HandleSearchSourceResults(PickerSearchSource::kClipboard, std::move(results));
 }
 
 }  // namespace ash

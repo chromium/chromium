@@ -8,6 +8,9 @@
 #include <string>
 #include <utility>
 
+#include "ash/clipboard/clipboard_history_item.h"
+#include "ash/clipboard/test_support/clipboard_history_item_builder.h"
+#include "ash/clipboard/test_support/mock_clipboard_history_controller.h"
 #include "ash/picker/search/picker_search_request.h"
 #include "ash/picker/search/picker_search_source.h"
 #include "ash/picker/views/picker_view_delegate.h"
@@ -39,6 +42,7 @@ using ::testing::AtLeast;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
+using ::testing::FieldsAre;
 using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::IsSupersetOf;
@@ -789,6 +793,59 @@ TEST_F(PickerSearchRequestTest, OnlyStartCrosSearchForCertainCategories) {
                                 base::DoNothing(), &client(), &emoji_search(),
                                 kAllCategories);
   }
+}
+
+TEST_F(PickerSearchRequestTest, ShowsResultsFromClipboardSearch) {
+  testing::StrictMock<MockClipboardHistoryController> mock_clipboard;
+  EXPECT_CALL(mock_clipboard, GetHistoryValues)
+      .WillOnce(
+          [](ClipboardHistoryController::GetHistoryValuesCallback callback) {
+            ClipboardHistoryItemBuilder builder;
+            std::move(callback).Run(
+                {builder.SetFormat(ui::ClipboardInternalFormat::kText)
+                     .SetText("cat")
+                     .Build()});
+          });
+
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
+  EXPECT_CALL(
+      search_results_callback,
+      Call(PickerSearchSource::kClipboard,
+           ElementsAre(Property(
+               "data", &PickerSearchResult::data,
+               VariantWith<PickerSearchResult::ClipboardData>(FieldsAre(
+                   _, PickerSearchResult::ClipboardData::DisplayFormat::kText,
+                   u"cat", std::nullopt))))))
+      .Times(1);
+
+  PickerSearchRequest request(
+      u"cat", std::nullopt,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)),
+      &client(), &emoji_search(), kAllCategories);
+}
+
+TEST_F(PickerSearchRequestTest, RecordsClipboardMetrics) {
+  testing::StrictMock<MockClipboardHistoryController> mock_clipboard;
+  EXPECT_CALL(mock_clipboard, GetHistoryValues)
+      .WillOnce(
+          [this](
+              ClipboardHistoryController::GetHistoryValuesCallback callback) {
+            task_environment().FastForwardBy(kMetricMetricTime);
+            std::move(callback).Run({});
+          });
+  base::HistogramTester histogram;
+  NiceMock<MockSearchResultsCallback> search_results_callback;
+
+  PickerSearchRequest request(
+      u"cat", std::nullopt,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)),
+      &client(), &emoji_search(), kAllCategories);
+
+  histogram.ExpectUniqueTimeSample(
+      "Ash.Picker.Search.ClipboardProvider.QueryTime", kMetricMetricTime, 1);
 }
 
 }  // namespace
