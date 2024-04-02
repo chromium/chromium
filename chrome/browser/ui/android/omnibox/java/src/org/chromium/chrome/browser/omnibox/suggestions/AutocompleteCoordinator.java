@@ -131,6 +131,7 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
                         bookmarkState,
                         omniboxActionDelegate,
                         lifecycleDispatcher,
+                        dropdownEmbedder,
                         windowAndroid);
         mMediator.initDefaultProcessors();
 

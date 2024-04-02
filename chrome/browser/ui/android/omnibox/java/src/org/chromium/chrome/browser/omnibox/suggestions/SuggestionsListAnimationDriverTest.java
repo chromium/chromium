@@ -32,6 +32,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 public class SuggestionsListAnimationDriverTest {
 
+    private static final int VERTICAL_OFFSET = 20;
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private SuggestionsListAnimationDriver mDriver;
@@ -40,14 +41,18 @@ public class SuggestionsListAnimationDriverTest {
     private PropertyModel mListModel = new PropertyModel(SuggestionListProperties.ALL_KEYS);
     @Mock private WindowAndroid mWindowAndroid;
     @Mock InsetObserver mInsetObserver;
+    private float mTranslation;
 
     @Before
     public void setUp() {
+        mTranslation = 0.0f;
         InsetObserverSupplier.setInstanceForTesting(mInsetObserver);
         mImeAnimation = new WindowInsetsAnimationCompat(WindowInsetsCompat.Type.ime(), null, 160);
         mNonImeAnimation =
                 new WindowInsetsAnimationCompat(WindowInsetsCompat.Type.statusBars(), null, 160);
-        mDriver = new SuggestionsListAnimationDriver(mWindowAndroid, mListModel);
+        mDriver =
+                new SuggestionsListAnimationDriver(
+                        mWindowAndroid, mListModel, () -> mTranslation, VERTICAL_OFFSET);
     }
 
     @Test
@@ -58,23 +63,37 @@ public class SuggestionsListAnimationDriverTest {
 
         mDriver.onPrepare(mImeAnimation);
         mImeAnimation.setFraction(0.4f);
+        mTranslation = 200.0f;
         mDriver.onProgress(new WindowInsetsCompat.Builder().build(), List.of(mImeAnimation));
 
         assertEquals(mListModel.get(SuggestionListProperties.ALPHA), 0.4f, MathUtils.EPSILON);
+        assertEquals(
+                mListModel.get(SuggestionListProperties.TRANSLATION_Y),
+                200.0f + VERTICAL_OFFSET * 0.6f,
+                MathUtils.EPSILON);
 
         mImeAnimation.setFraction(0.7f);
+        mTranslation = 100.0f;
         mDriver.onProgress(new WindowInsetsCompat.Builder().build(), List.of(mImeAnimation));
 
         assertEquals(mListModel.get(SuggestionListProperties.ALPHA), 0.7f, MathUtils.EPSILON);
+        assertEquals(
+                mListModel.get(SuggestionListProperties.TRANSLATION_Y),
+                100.0f + VERTICAL_OFFSET * 0.3f,
+                MathUtils.EPSILON);
 
         mDriver.onEnd(mImeAnimation);
         verify(mInsetObserver).removeWindowInsetsAnimationListener(mDriver);
         assertEquals(mListModel.get(SuggestionListProperties.ALPHA), 1.0f, MathUtils.EPSILON);
+        assertEquals(
+                mListModel.get(SuggestionListProperties.TRANSLATION_Y), 0.0f, MathUtils.EPSILON);
 
         mImeAnimation.setFraction(0.9f);
         mDriver.onProgress(new WindowInsetsCompat.Builder().build(), List.of(mImeAnimation));
         /// Progress updates after onEnd should be ignored.
         assertEquals(mListModel.get(SuggestionListProperties.ALPHA), 1.0f, MathUtils.EPSILON);
+        assertEquals(
+                mListModel.get(SuggestionListProperties.TRANSLATION_Y), 0.0f, MathUtils.EPSILON);
     }
 
     @Test

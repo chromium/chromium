@@ -77,6 +77,7 @@ found in the LICENSE file.
     <dimen name="omnibox_suggestion_list_non_active_top_big_margin">12dp</dimen>
     <dimen name="omnibox_suggestion_list_toolbar_overlap">0dp</dimen>
     <dimen name="omnibox_suggestion_list_elevation">6dp</dimen>
+    <dimen name="omnibox_suggestion_list_animation_added_vertical_offset">12dp</dimen>
     <dimen name="omnibox_carousel_suggestion_padding">12dp</dimen>
     <dimen name="omnibox_carousel_suggestion_padding_smaller">5dp</dimen>
     <dimen name="omnibox_carousel_suggestion_minimum_item_spacing">12dp</dimen>

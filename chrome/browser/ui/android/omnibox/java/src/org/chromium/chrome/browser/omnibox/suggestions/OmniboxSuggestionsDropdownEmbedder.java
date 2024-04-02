@@ -16,11 +16,13 @@ import java.util.Objects;
 
 /** Provider of capabilities required to embed the omnibox suggestion list into the UI. */
 public interface OmniboxSuggestionsDropdownEmbedder {
+
     /**
      * POD type that encapsulates the "alignment" (position, width, padding) of the omnibox
      * dropdown.
      */
     class OmniboxAlignment {
+
         public static final OmniboxAlignment UNSPECIFIED =
                 new OmniboxAlignment(-1, -1, -1, -1, -1, -1);
         public final int left;
@@ -127,4 +129,7 @@ public interface OmniboxSuggestionsDropdownEmbedder {
      * alignment recalculation.
      */
     void onDetachedFromWindow();
+
+    /** The vertical translation that should be used during focus animations. */
+    float getVerticalTranslationForAnimation();
 }

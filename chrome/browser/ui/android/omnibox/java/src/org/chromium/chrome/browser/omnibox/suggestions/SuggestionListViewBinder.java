@@ -37,6 +37,9 @@ class SuggestionListViewBinder {
         if (SuggestionListProperties.ALPHA.equals(propertyKey)) {
             View dropdownView = view.dropdown.getViewGroup();
             dropdownView.setAlpha(model.get(SuggestionListProperties.ALPHA));
+        } else if (SuggestionListProperties.TRANSLATION_Y.equals(propertyKey)) {
+            View dropdownView = view.dropdown.getViewGroup();
+            dropdownView.setTranslationY(model.get(SuggestionListProperties.TRANSLATION_Y));
         } else if (SuggestionListProperties.VISIBLE.equals(propertyKey)) {
             boolean visible = model.get(SuggestionListProperties.VISIBLE);
             // Actual View showing the dropdown.

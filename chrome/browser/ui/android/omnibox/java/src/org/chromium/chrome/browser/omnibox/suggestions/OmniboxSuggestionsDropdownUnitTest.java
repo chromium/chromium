@@ -114,6 +114,11 @@ public class OmniboxSuggestionsDropdownUnitTest {
                 public OmniboxAlignment getCurrentAlignment() {
                     return mOmniboxAlignmentSupplier.get();
                 }
+
+                @Override
+                public float getVerticalTranslationForAnimation() {
+                    return 0.0f;
+                }
             };
 
     @Before

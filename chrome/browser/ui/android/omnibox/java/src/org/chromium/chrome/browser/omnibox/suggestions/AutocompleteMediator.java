@@ -186,6 +186,7 @@ class AutocompleteMediator
             @NonNull BookmarkState bookmarkState,
             @NonNull OmniboxActionDelegate omniboxActionDelegate,
             @NonNull ActivityLifecycleDispatcher lifecycleDispatcher,
+            @NonNull OmniboxSuggestionsDropdownEmbedder embedder,
             WindowAndroid windowAndroid) {
         mContext = context;
         mDelegate = delegate;
@@ -216,7 +217,16 @@ class AutocompleteMediator
                 SuggestionListProperties.DRAW_OVER_ANCHOR,
                 OmniboxFeatures.shouldShowModernizeVisualUpdate(mContext)
                         && DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext));
-        mAnimationDriver = new SuggestionsListAnimationDriver(windowAndroid, mListPropertyModel);
+        int addedVerticalOffset =
+                context.getResources()
+                        .getDimensionPixelOffset(
+                                R.dimen.omnibox_suggestion_list_animation_added_vertical_offset);
+        mAnimationDriver =
+                new SuggestionsListAnimationDriver(
+                        windowAndroid,
+                        mListPropertyModel,
+                        embedder::getVerticalTranslationForAnimation,
+                        addedVerticalOffset);
     }
 
     /** Initialize the Mediator with default set of suggestion processors. */

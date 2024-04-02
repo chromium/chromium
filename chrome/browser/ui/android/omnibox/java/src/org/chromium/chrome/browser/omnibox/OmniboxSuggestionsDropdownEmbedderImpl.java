@@ -42,7 +42,7 @@ class OmniboxSuggestionsDropdownEmbedderImpl
     private final @NonNull WindowAndroid mWindowAndroid;
     private final @NonNull WindowDelegate mWindowDelegate;
     private final @NonNull View mAnchorView;
-    private final @NonNull View mHorizontalAlignmentView;
+    private final @NonNull View mAlignmentView;
     private final boolean mForcePhoneStyleOmnibox;
     private final @NonNull Context mContext;
     // Reusable int array to pass to positioning methods that operate on a two element int array.
@@ -61,8 +61,9 @@ class OmniboxSuggestionsDropdownEmbedderImpl
      * @param anchorView View to which the dropdown should be "anchored" i.e. vertically positioned
      *     next to and matching the width of. This must be a descendant of the top-level content
      *     (android.R.id.content) view.
-     * @param horizontalAlignmentView View to which the dropdown should be horizontally aligned when
-     *     its width is smaller than the anchor view. This must be a descendant of the anchor view.
+     * @param alignmentView View to which: 1. The dropdown should be horizontally aligned to when
+     *     its width is smaller than the anchor view. 2. The dropdown should vertically align to
+     *     during animations. This must be a descendant of the anchor view.
      * @param baseChromeLayout The base view hosting Chrome that certain views (e.g. the omnibox
      *     suggestion list) will position themselves relative to. If null, the content view will be
      *     used.
@@ -71,13 +72,13 @@ class OmniboxSuggestionsDropdownEmbedderImpl
             @NonNull WindowAndroid windowAndroid,
             @NonNull WindowDelegate windowDelegate,
             @NonNull View anchorView,
-            @NonNull View horizontalAlignmentView,
+            @NonNull View alignmentView,
             boolean forcePhoneStyleOmnibox,
             @Nullable View baseChromeLayout) {
         mWindowAndroid = windowAndroid;
         mWindowDelegate = windowDelegate;
         mAnchorView = anchorView;
-        mHorizontalAlignmentView = horizontalAlignmentView;
+        mAlignmentView = alignmentView;
         mForcePhoneStyleOmnibox = forcePhoneStyleOmnibox;
         mContext = mAnchorView.getContext();
         mContext.registerComponentCallbacks(this);
@@ -114,7 +115,7 @@ class OmniboxSuggestionsDropdownEmbedderImpl
     @Override
     public void onAttachedToWindow() {
         mAnchorView.addOnLayoutChangeListener(this);
-        mHorizontalAlignmentView.addOnLayoutChangeListener(this);
+        mAlignmentView.addOnLayoutChangeListener(this);
         mAnchorView.getViewTreeObserver().addOnGlobalLayoutListener(this);
         mDeferredIMEWindowInsetApplicationCallback =
                 new DeferredIMEWindowInsetApplicationCallback(this::recalculateOmniboxAlignment);
@@ -126,7 +127,7 @@ class OmniboxSuggestionsDropdownEmbedderImpl
     @Override
     public void onDetachedFromWindow() {
         mAnchorView.removeOnLayoutChangeListener(this);
-        mHorizontalAlignmentView.removeOnLayoutChangeListener(this);
+        mAlignmentView.removeOnLayoutChangeListener(this);
         mAnchorView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
         if (mDeferredIMEWindowInsetApplicationCallback != null) {
             mDeferredIMEWindowInsetApplicationCallback.detach();
@@ -177,6 +178,11 @@ class OmniboxSuggestionsDropdownEmbedderImpl
     @Override
     public void onLowMemory() {}
 
+    @Override
+    public float getVerticalTranslationForAnimation() {
+        return mAlignmentView.getTranslationY();
+    }
+
     /**
      * Recalculates the desired alignment of the omnibox and sends the updated alignment data to any
      * observers. Currently will send an update message unconditionally. This method is called
@@ -224,8 +230,7 @@ class OmniboxSuggestionsDropdownEmbedderImpl
         int paddingLeft;
         int paddingRight;
         if (isTablet()) {
-            ViewUtils.getRelativeLayoutPosition(
-                    mAnchorView, mHorizontalAlignmentView, mPositionArray);
+            ViewUtils.getRelativeLayoutPosition(mAnchorView, mAlignmentView, mPositionArray);
             if (OmniboxFeatures.shouldShowModernizeVisualUpdate(mContext)) {
                 // Case 1: tablets with revamp enabled. Width equal to alignment view and left
                 // equivalent to left of alignment view. Top minus a small overlap.
@@ -234,7 +239,7 @@ class OmniboxSuggestionsDropdownEmbedderImpl
                                 .getDimensionPixelSize(
                                         R.dimen.omnibox_suggestion_list_toolbar_overlap);
                 int sideSpacing = OmniboxResourceProvider.getDropdownSideSpacing(mContext);
-                width = mHorizontalAlignmentView.getMeasuredWidth() + 2 * sideSpacing;
+                width = mAlignmentView.getMeasuredWidth() + 2 * sideSpacing;
 
                 if (mAnchorView.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL) {
                     // The view will be shifted to the left, so the adjustment needs to be negative.
@@ -256,7 +261,7 @@ class OmniboxSuggestionsDropdownEmbedderImpl
                 paddingLeft = mPositionArray[0];
                 paddingRight =
                         mAnchorView.getMeasuredWidth()
-                                - mHorizontalAlignmentView.getMeasuredWidth()
+                                - mAlignmentView.getMeasuredWidth()
                                 - mPositionArray[0];
             }
         } else {

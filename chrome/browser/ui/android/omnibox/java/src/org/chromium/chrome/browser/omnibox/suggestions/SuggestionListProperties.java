@@ -16,6 +16,8 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 @interface SuggestionListProperties {
     static final WritableFloatPropertyKey ALPHA = new WritableFloatPropertyKey();
 
+    static final WritableFloatPropertyKey TRANSLATION_Y = new WritableFloatPropertyKey();
+
     /** Whether the suggestion list is visible. */
     static final WritableBooleanPropertyKey VISIBLE = new WritableBooleanPropertyKey();
 
@@ -64,6 +66,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
     static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 ALPHA,
+                TRANSLATION_Y,
                 VISIBLE,
                 EMBEDDER,
                 SUGGESTION_MODELS,
