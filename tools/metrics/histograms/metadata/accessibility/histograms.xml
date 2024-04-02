@@ -865,10 +865,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.CrosMonoAudio.Enabled" enum="BooleanEnabled"
+    expires_after="2025-02-28">
+  <owner>katie@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the Chrome OS Mono Audio feature is on (logged once 45 secs after
+    startup).
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.CrosScreenMagnifier" enum="BooleanEnabled"
     expires_after="2025-02-28">
   <owner>dtseng@chromium.org</owner>
-  <owner>josiahk@google.com</owner>
   <owner>kenjibaheux@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1029,6 +1038,16 @@ chromium-metrics-reviews@google.com.
     stable for 10 seconds, or the settings window in which the value is set gets
     closed (if the setting changes multiple times in quick succession, only the
     final value will be reported).
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosSpokenFeedback.BrailleDisplayConnected"
+    enum="BooleanConnected" expires_after="2025-02-28">
+  <owner>dtseng@chromium.org</owner>
+  <owner>katie@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether a braille display is connected (logged once 45 secs after startup).
   </summary>
 </histogram>
 
@@ -2797,7 +2816,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TextToSpeech.Settings.GetVoiceBytes"
     enum="TextToSpeechGetVoiceBytes" expires_after="2025-02-28">
-  <owner>josiahk@chromium.org</owner>
   <owner>akihiroota@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>

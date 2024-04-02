@@ -1832,6 +1832,11 @@ void AccessibilityManager::UpdateChromeOSAccessibilityHistograms() {
                             IsSelectToSpeakEnabled());
   base::UmaHistogramBoolean("Accessibility.CrosSwitchAccess",
                             IsSwitchAccessEnabled());
+  base::UmaHistogramBoolean("Accessibility.CrosMonoAudio.Enabled",
+                            IsMonoAudioEnabled());
+  base::UmaHistogramBoolean(
+      "Accessibility.CrosSpokenFeedback.BrailleDisplayConnected",
+      IsBrailleDisplayConnected());
 }
 
 void AccessibilityManager::PlayVolumeAdjustSound() {
