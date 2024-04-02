@@ -1721,7 +1721,7 @@ bool VideoResourceUpdater::WriteYUVPixelsForAllPlanesToTexture(
     // be reconciled.
     const bool needs_conversion = IsFormat16BitFloat(yuv_si_format) ||
                                   needs_bit_downshifting ||
-                                  needs_bit_downshifting;
+                                  needs_bit_upshifting;
     const uint8_t* pixels;
     int pixels_stride_in_bytes;
     if (!needs_conversion) {
