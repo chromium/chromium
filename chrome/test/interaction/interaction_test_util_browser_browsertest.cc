@@ -2,17 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/test/interaction/feature_engagement_initialized_observer.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/test/interaction/feature_engagement_initialized_observer.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
+#include "components/user_education/common/new_badge_controller.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interaction_test_util.h"
@@ -63,6 +65,19 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest, CompareScreenshot_View) {
                   Screenshot(kToolbarAppMenuButtonElementId,
                              /*screenshot_name=*/"AppMenuButton",
                              /*baseline_cl=*/"3924454"));
+}
+
+IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest,
+                       CompareScreenshot_Surface) {
+  const auto lock =
+      user_education::NewBadgeController::DisableNewBadgesForTesting();
+  RunTestSequence(SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                                          kSkipPixelTestsReason),
+                  InstrumentTab(kWebContentsElementId),
+                  PressButton(kToolbarAppMenuButtonElementId),
+                  ScreenshotSurface(AppMenuModel::kMoreToolsMenuItem,
+                                    /*screenshot_name=*/"EntireAppMenu",
+                                    /*baseline_cl=*/"5406870"));
 }
 
 IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest,

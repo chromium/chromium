@@ -62,6 +62,15 @@ class InteractionTestUtilBrowser : public ui::test::InteractionTestUtil {
       ui::TrackedElement* element,
       const std::string& screenshot_name,
       const std::string& baseline_cl);
+
+  // As `CompareScreenshot()` but takes a screenshot of the entire surface
+  // containing `element_in_surface`, not just the element itself. Be careful
+  // when taking screenshots of e.g. a browser window that can be resized, as
+  // different-sized windows may result in different-sized images.
+  static ui::test::ActionResult CompareSurfaceScreenshot(
+      ui::TrackedElement* element_in_surface,
+      const std::string& screenshot_name,
+      const std::string& baseline_cl);
 };
 
 #endif  // CHROME_TEST_INTERACTION_INTERACTION_TEST_UTIL_BROWSER_H_

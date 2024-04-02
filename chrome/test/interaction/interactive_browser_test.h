@@ -89,6 +89,14 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
                                        const std::string& screenshot_name,
                                        const std::string& baseline_cl);
 
+  // As `Screenshot()` but takes a screenshot of the entire surface (widget,
+  // WebUI, etc.) containing `element_in_surface`. See `Screenshot()` for more
+  // information.
+  [[nodiscard]] StepBuilder ScreenshotSurface(
+      ElementSpecifier element_in_surface,
+      const std::string& screenshot_name,
+      const std::string& baseline_cl);
+
   struct CurrentBrowser {};
   struct AnyBrowser {};
 
