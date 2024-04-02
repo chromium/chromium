@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <windows.h>
-
-#include <ncrypt.h>
+#include "crypto/unexportable_key_win.h"
 
 #include <string>
 #include <tuple>
@@ -20,7 +18,6 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "crypto/random.h"
-#include "crypto/scoped_cng_types.h"
 #include "crypto/sha2.h"
 #include "crypto/unexportable_key.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
@@ -449,21 +446,8 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
 
     ScopedNCryptProvider provider;
     ScopedNCryptKey key;
-    {
-      SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
-      if (FAILED(NCryptOpenStorageProvider(
-              ScopedNCryptProvider::Receiver(provider).get(),
-              MS_PLATFORM_CRYPTO_PROVIDER, /*flags=*/0))) {
-        return nullptr;
-      }
-
-      if (FAILED(NCryptImportKey(
-              provider.get(), /*hImportKey=*/NULL, BCRYPT_OPAQUE_KEY_BLOB,
-              /*pParameterList=*/nullptr, ScopedNCryptKey::Receiver(key).get(),
-              const_cast<PBYTE>(wrapped.data()), wrapped.size(),
-              /*dwFlags=*/NCRYPT_SILENT_FLAG))) {
-        return nullptr;
-      }
+    if (!LoadWrappedTPMKey(wrapped, provider, key)) {
+      return nullptr;
     }
 
     const std::optional<std::vector<uint8_t>> algo_bytes =
@@ -756,6 +740,27 @@ class VirtualUnexportableKeyProviderWin
 };
 
 }  // namespace
+
+bool LoadWrappedTPMKey(base::span<const uint8_t> wrapped,
+                       ScopedNCryptProvider& provider,
+                       ScopedNCryptKey& key) {
+  SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
+  if (FAILED(NCryptOpenStorageProvider(
+          ScopedNCryptProvider::Receiver(provider).get(),
+          MS_PLATFORM_CRYPTO_PROVIDER,
+          /*flags=*/0))) {
+    return false;
+  }
+
+  if (FAILED(NCryptImportKey(
+          provider.get(), /*hImportKey=*/NULL, BCRYPT_OPAQUE_KEY_BLOB,
+          /*pParameterList=*/nullptr, ScopedNCryptKey::Receiver(key).get(),
+          const_cast<PBYTE>(wrapped.data()), wrapped.size(),
+          /*dwFlags=*/NCRYPT_SILENT_FLAG))) {
+    return false;
+  }
+  return true;
+}
 
 std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProviderWin() {
   return std::make_unique<UnexportableKeyProviderWin>();

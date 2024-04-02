@@ -65,21 +65,37 @@ bssl::UniquePtr<EVP_PKEY> GetClientCertPublicKey(
     return nullptr;
   }
 
-  CBS cbs;
-  CBS_init(&cbs, reinterpret_cast<const uint8_t*>(spki.data()), spki.size());
-  bssl::UniquePtr<EVP_PKEY> key(EVP_parse_public_key(&cbs));
-  if (!key || CBS_len(&cbs) != 0) {
-    LOG(ERROR) << "Could not parse public key.";
-    return nullptr;
-  }
-
-  return key;
+  return ParseSpki(base::as_byte_span(spki));
 }
 
 bool GetClientCertInfo(const X509Certificate* certificate,
                        int* out_type,
                        size_t* out_max_length) {
   bssl::UniquePtr<EVP_PKEY> key = GetClientCertPublicKey(certificate);
+  if (!key) {
+    return false;
+  }
+
+  *out_type = EVP_PKEY_id(key.get());
+  *out_max_length = EVP_PKEY_size(key.get());
+  return true;
+}
+
+bssl::UniquePtr<EVP_PKEY> ParseSpki(base::span<const uint8_t> spki) {
+  CBS cbs;
+  CBS_init(&cbs, spki.data(), spki.size());
+  bssl::UniquePtr<EVP_PKEY> key(EVP_parse_public_key(&cbs));
+  if (!key || CBS_len(&cbs) != 0) {
+    LOG(ERROR) << "Could not parse public key.";
+    return nullptr;
+  }
+  return key;
+}
+
+bool GetPublicKeyInfo(base::span<const uint8_t> spki,
+                      int* out_type,
+                      size_t* out_max_length) {
+  auto key = ParseSpki(spki);
   if (!key) {
     return false;
   }

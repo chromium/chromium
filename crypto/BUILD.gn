@@ -109,6 +109,7 @@ component("crypto") {
       "scoped_capi_types.h",
       "scoped_cng_types.h",
       "unexportable_key_win.cc",
+      "unexportable_key_win.h",
       "user_verifying_key_win.cc",
     ]
     libs = [ "ncrypt.lib" ]

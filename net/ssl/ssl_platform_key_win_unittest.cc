@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "crypto/scoped_capi_types.h"
 #include "crypto/scoped_cng_types.h"
+#include "crypto/unexportable_key.h"
 #include "net/base/features.h"
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_private_key.h"
@@ -377,5 +378,26 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Combine(testing::ValuesIn(kTestKeys),
                                           testing::Bool()),
                          TestParamsToString);
+
+TEST(UnexportableSSLPlatformKeyWinTest, WrapUnexportableKeySlowly) {
+  auto provider = crypto::GetUnexportableKeyProvider({});
+  if (!provider) {
+    GTEST_SKIP() << "Hardware-backed keys are not supported.";
+  }
+
+  const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {
+      crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
+      crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256};
+  auto key = provider->GenerateSigningKeySlowly(algorithms);
+  if (!key) {
+    // Could be hitting crbug.com/41494935. Fine to skip the test as the
+    // UnexportableKeyProvider logic is covered in another test suite.
+    GTEST_SKIP()
+        << "Workaround for https://issues.chromium.org/issues/41494935";
+  }
+
+  auto ssl_private_key = WrapUnexportableKeySlowly(*key);
+  ASSERT_TRUE(ssl_private_key);
+}
 
 }  // namespace net
