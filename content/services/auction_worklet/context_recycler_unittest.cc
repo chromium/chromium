@@ -1709,6 +1709,85 @@ TEST_F(ContextRecyclerTest, SharedStorageMethodsPermissionsPolicyDisabled) {
   }
 }
 
+TEST_F(ContextRecyclerTest, SellerBrowserSignalsLazyFiller) {
+  const char kScript[] = R"(
+    function test(browserSignals) {
+      if (!browserSignals.renderUrl)
+        return typeof browserSignals.renderUrl;
+      return JSON.stringify(browserSignals.renderUrl);
+    }
+  )";
+
+  v8::Local<v8::UnboundScript> script = Compile(kScript);
+  ASSERT_FALSE(script.IsEmpty());
+
+  GURL browser_signal_render_url_1("https://a.org/render_url1");
+  GURL browser_signal_render_url_2("https://a.org/render_url2");
+
+  v8::Isolate* isolate = helper_->isolate();
+  ContextRecycler context_recycler(helper_.get());
+
+  v8::Local<v8::Object> o1;
+  v8::Local<v8::Object> o2;
+
+  {
+    // Fill in o1.
+    ContextRecyclerScope scope(context_recycler);
+    o1 = v8::Object::New(isolate);
+    context_recycler.AddSellerBrowserSignalsLazyFiller();
+    EXPECT_TRUE(
+        context_recycler.seller_browser_signals_lazy_filler()->FillInObject(
+            browser_signal_render_url_1, o1));
+
+    EXPECT_EQ("\"https://a.org/render_url1\"",
+              RunExpectString(scope, script, "test", o1));
+  }
+
+  {
+    // Fill in o2 with a different value.
+    ContextRecyclerScope scope(context_recycler);
+    o2 = v8::Object::New(isolate);
+
+    EXPECT_TRUE(
+        context_recycler.seller_browser_signals_lazy_filler()->FillInObject(
+            browser_signal_render_url_2, o2));
+
+    EXPECT_EQ("\"https://a.org/render_url2\"",
+              RunExpectString(scope, script, "test", o2));
+    // o1 was already accessed with url 1.
+    EXPECT_EQ("\"https://a.org/render_url1\"",
+              RunExpectString(scope, script, "test", o1));
+  }
+
+  {
+    // Make a new object that isn't filled.
+    ContextRecyclerScope scope(context_recycler);
+    o1 = v8::Object::New(isolate);
+
+    EXPECT_EQ(R"(undefined)", RunExpectString(scope, script, "test", o1));
+
+    // Now fill it in for later but don't access it.
+    EXPECT_TRUE(
+        context_recycler.seller_browser_signals_lazy_filler()->FillInObject(
+            browser_signal_render_url_1, o1));
+  }
+
+  {
+    // Filling in o2 will overwrite the unaccessed value for o1.
+    ContextRecyclerScope scope(context_recycler);
+
+    o2 = v8::Object::New(isolate);
+    EXPECT_TRUE(
+        context_recycler.seller_browser_signals_lazy_filler()->FillInObject(
+            browser_signal_render_url_2, o2));
+
+    EXPECT_EQ("\"https://a.org/render_url2\"",
+              RunExpectString(scope, script, "test", o2));
+    EXPECT_EQ("\"https://a.org/render_url2\"",
+              RunExpectString(scope, script, "test", o1));
+  }
+}
+
 TEST_F(ContextRecyclerTest, AuctionConfigLazyFiller) {
   std::optional<GURL> decision_logic_url;
   std::optional<GURL> trusted_scoring_signals_url;

@@ -29,7 +29,6 @@
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/auction_v8_logger.h"
 #include "content/services/auction_worklet/context_recycler.h"
-#include "content/services/auction_worklet/deprecated_url_lazy_filler.h"
 #include "content/services/auction_worklet/direct_from_seller_signals_requester.h"
 #include "content/services/auction_worklet/for_debugging_only_bindings.h"
 #include "content/services/auction_worklet/private_aggregation_bindings.h"
@@ -791,10 +790,11 @@ void SellerWorklet::V8State::ScoreAd(
   v8::Local<v8::Object> browser_signals = v8::Object::New(isolate);
   gin::Dictionary browser_signals_dict(isolate, browser_signals);
 
-  DeprecatedUrlLazyFiller deprecated_render_url(
-      v8_helper_.get(), &v8_logger, &browser_signal_render_url,
-      "browserSignals.renderUrl is deprecated."
-      " Please use browserSignals.renderURL instead.");
+  if (!context_recycler->seller_browser_signals_lazy_filler()) {
+    context_recycler->AddSellerBrowserSignalsLazyFiller();
+  }
+  context_recycler->seller_browser_signals_lazy_filler()->FillInObject(
+      browser_signal_render_url, browser_signals);
   if (!browser_signals_dict.Set("topWindowHostname",
                                 top_window_origin_.host()) ||
       !AddOtherSeller(browser_signals_other_seller.get(),
@@ -804,9 +804,6 @@ void SellerWorklet::V8State::ScoreAd(
           browser_signal_interest_group_owner.Serialize()) ||
       !browser_signals_dict.Set("renderURL",
                                 browser_signal_render_url.spec()) ||
-      // TODO(crbug.com/1441988): Remove deprecated `renderUrl` alias.
-      !deprecated_render_url.AddDeprecatedUrlGetter(browser_signals,
-                                                    "renderUrl") ||
       !browser_signals_dict.Set("biddingDurationMsec",
                                 browser_signal_bidding_duration_msecs) ||
       !browser_signals_dict.Set("bidCurrency",
@@ -1271,10 +1268,9 @@ void SellerWorklet::V8State::ReportResult(
   v8::Local<v8::Object> browser_signals = v8::Object::New(isolate);
   gin::Dictionary browser_signals_dict(isolate, browser_signals);
 
-  DeprecatedUrlLazyFiller deprecated_render_url(
-      v8_helper_.get(), &v8_logger, &browser_signal_render_url,
-      "browserSignals.renderUrl is deprecated."
-      " Please use browserSignals.renderURL instead.");
+  context_recycler.AddSellerBrowserSignalsLazyFiller();
+  context_recycler.seller_browser_signals_lazy_filler()->FillInObject(
+      browser_signal_render_url, browser_signals);
 
   if (!browser_signals_dict.Set("topWindowHostname",
                                 top_window_origin_.host()) ||
@@ -1289,9 +1285,6 @@ void SellerWorklet::V8State::ReportResult(
            *browser_signal_buyer_and_seller_reporting_id)) ||
       !browser_signals_dict.Set("renderURL",
                                 browser_signal_render_url.spec()) ||
-      // TODO(crbug.com/1441988): Remove deprecated `renderUrl` alias.
-      !deprecated_render_url.AddDeprecatedUrlGetter(browser_signals,
-                                                    "renderUrl") ||
       !browser_signals_dict.Set("bid", browser_signal_bid) ||
       !browser_signals_dict.Set(
           "bidCurrency",

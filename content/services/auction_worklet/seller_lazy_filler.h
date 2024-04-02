@@ -16,6 +16,30 @@
 
 namespace auction_worklet {
 
+class CONTENT_EXPORT SellerBrowserSignalsLazyFiller
+    : public PersistedLazyFiller {
+ public:
+  // `v8_helper` and  `v8_logger` must outlive `this`.
+  explicit SellerBrowserSignalsLazyFiller(AuctionV8Helper* v8_helper,
+                                          AuctionV8Logger* v8_logger);
+
+  // Returns success/failure. `browser_signal_render_url` must live until
+  // Reset() is called.
+  bool FillInObject(const GURL& browser_signal_render_url,
+                    v8::Local<v8::Object> object);
+
+  void Reset() override;
+
+ private:
+  static void HandleDeprecatedRenderUrl(
+      v8::Local<v8::Name> name,
+      const v8::PropertyCallbackInfo<v8::Value>& info);
+
+  raw_ptr<const GURL> browser_signal_render_url_ = nullptr;
+
+  const raw_ptr<AuctionV8Logger> v8_logger_;
+};
+
 class CONTENT_EXPORT AuctionConfigLazyFiller : public PersistedLazyFiller {
  public:
   // `v8_helper`, `v8_logger` must outlive `this`.

@@ -173,6 +173,45 @@ bool CreateAdSizeObject(v8::Isolate* isolate,
 
 }  // namespace
 
+SellerBrowserSignalsLazyFiller::SellerBrowserSignalsLazyFiller(
+    AuctionV8Helper* v8_helper,
+    AuctionV8Logger* v8_logger)
+    : PersistedLazyFiller(v8_helper), v8_logger_(v8_logger) {}
+
+void SellerBrowserSignalsLazyFiller::Reset() {
+  browser_signal_render_url_ = nullptr;
+}
+
+bool SellerBrowserSignalsLazyFiller::FillInObject(
+    const GURL& browser_signal_render_url,
+    v8::Local<v8::Object> object) {
+  browser_signal_render_url_ = &browser_signal_render_url;
+  // TODO(crbug.com/1441988): Remove deprecated `renderUrl` alias.
+  if (!DefineLazyAttribute(object, "renderUrl", &HandleDeprecatedRenderUrl)) {
+    return false;
+  }
+  return true;
+}
+
+void SellerBrowserSignalsLazyFiller::HandleDeprecatedRenderUrl(
+    v8::Local<v8::Name> name,
+    const v8::PropertyCallbackInfo<v8::Value>& info) {
+  SellerBrowserSignalsLazyFiller* self =
+      GetSelf<SellerBrowserSignalsLazyFiller>(info);
+  self->v8_logger_->LogConsoleWarning(
+      "browserSignals.renderUrl is deprecated."
+      " Please use browserSignals.renderURL instead.");
+
+  AuctionV8Helper* v8_helper = self->v8_helper();
+  v8::Isolate* isolate = v8_helper->isolate();
+  v8::Local<v8::Value> value;
+  if (self->browser_signal_render_url_ &&
+      gin::TryConvertToV8(isolate, self->browser_signal_render_url_->spec(),
+                          &value)) {
+    SetResult(info, value);
+  }
+}
+
 AuctionConfigLazyFiller::AuctionConfigLazyFiller(AuctionV8Helper* v8_helper,
                                                  AuctionV8Logger* v8_logger)
     : PersistedLazyFiller(v8_helper), v8_logger_(v8_logger) {}

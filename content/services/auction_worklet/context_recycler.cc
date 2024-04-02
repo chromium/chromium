@@ -106,6 +106,13 @@ void ContextRecycler::AddBiddingBrowserSignalsLazyFiller() {
       std::make_unique<BiddingBrowserSignalsLazyFiller>(v8_helper_);
 }
 
+void ContextRecycler::AddSellerBrowserSignalsLazyFiller() {
+  DCHECK(!seller_browser_signals_lazy_filler_);
+  seller_browser_signals_lazy_filler_ =
+      std::make_unique<SellerBrowserSignalsLazyFiller>(v8_helper_,
+                                                       v8_logger_.get());
+}
+
 void ContextRecycler::EnsureAuctionConfigLazyFillers(size_t required) {
   // We may see different limits in the same worklet if it's used for multiple
   // auctions.  In that case, we have to be sure to never shrink the vector
@@ -153,6 +160,9 @@ void ContextRecycler::ResetForReuse() {
     bidding_browser_signals_lazy_filler_->Reset();
   if (interest_group_lazy_filler_)
     interest_group_lazy_filler_->Reset();
+  if (seller_browser_signals_lazy_filler_) {
+    seller_browser_signals_lazy_filler_->Reset();
+  }
   for (const auto& auction_config_lazy_filler : auction_config_lazy_fillers_) {
     auction_config_lazy_filler->Reset();
   }
