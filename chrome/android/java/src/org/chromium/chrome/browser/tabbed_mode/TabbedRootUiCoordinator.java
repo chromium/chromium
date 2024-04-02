@@ -667,7 +667,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                                 mModalDialogManagerSupplier.get(),
                                                 tabModelSelector,
                                                 () -> {
-                                                    mTabSwitcherSupplier.get().refreshTabList();
+                                                    if (mTabSwitcherSupplier.get() != null) {
+                                                        mTabSwitcherSupplier.get().refreshTabList();
+                                                    }
                                                 });
                     });
         }
