@@ -384,6 +384,12 @@ AutofillProfile* PersonalDataManager::GetProfileByGUID(
   return address_data_manager_->GetProfileByGUID(guid);
 }
 
+AutofillProfile* PersonalDataManager::GetTestAddressByGUID(
+    const std::string& guid) {
+  auto it = base::ranges::find(test_addresses_, guid, &AutofillProfile::guid);
+  return it == test_addresses_.end() ? nullptr : &*it;
+}
+
 bool PersonalDataManager::IsEligibleForAddressAccountStorage() const {
   // The CONTACT_INFO data type is only running for eligible users. See
   // ContactInfoModelTypeController.

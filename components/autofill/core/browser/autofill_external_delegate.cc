@@ -389,6 +389,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case PopupItemId::kAddressEntry:
     case PopupItemId::kCreditCardEntry:
     case PopupItemId::kFillEverythingFromAddressProfile:
+    case PopupItemId::kDevtoolsTestAddressEntry:
       FillAutofillFormData(
           suggestion.popup_item_id, backend_id, true,
           {.trigger_source =
@@ -464,7 +465,6 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case PopupItemId::kSeePromoCodeDetails:
     case PopupItemId::kMixedFormMessage:
     case PopupItemId::kDevtoolsTestAddresses:
-    case PopupItemId::kDevtoolsTestAddressEntry:
       break;
     case PopupItemId::kSeparator:
     case PopupItemId::kPasswordEntry:
@@ -994,8 +994,13 @@ void AutofillExternalDelegate::FillAutofillFormData(
                  : mojom::ActionPersistence::kFill;
 
   PersonalDataManager* pdm = manager_->client().GetPersonalDataManager();
-  if (const AutofillProfile* profile = pdm->GetProfileByGUID(
-          absl::get<Suggestion::Guid>(backend_id).value())) {
+  const AutofillProfile* profile =
+      popup_item_id == PopupItemId::kDevtoolsTestAddressEntry
+          ? pdm->GetTestAddressByGUID(
+                absl::get<Suggestion::Guid>(backend_id).value())
+          : pdm->GetProfileByGUID(
+                absl::get<Suggestion::Guid>(backend_id).value());
+  if (profile) {
     manager_->FillOrPreviewProfileForm(action_persistence, query_form_,
                                        query_field_, *profile, trigger_details);
   } else if (const CreditCard* credit_card = pdm->GetCreditCardByGUID(
@@ -1129,7 +1134,6 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
       ShowDeleteAddressProfileDialog(
           suggestion.GetBackendId<Suggestion::Guid>().value());
       break;
-    case PopupItemId::kDevtoolsTestAddresses:
     case PopupItemId::kDevtoolsTestAddressEntry:
       FillAutofillFormData(
           suggestion.popup_item_id,
