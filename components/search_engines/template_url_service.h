@@ -285,12 +285,6 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // by TemplateURLService and should not be deleted.
   TemplateURLVector GetTemplateURLs();
 
-  // Returns the list of prepopulated template URLs for the current country
-  // shuffled for display in a search engine choice screen.
-  // DEPRECATED: Prefer using `GetChoiceScreenData()`.
-  // TODO(crbug.com/325015554): Remove iOS usage.
-  OwnedTemplateURLVector GetTemplateURLsForChoiceScreen();
-
   // Returns key information needed to show a search engine choice screen, like
   // the template URLs for the engines to show. See
   // `search_engines::ChoiceScreenData` for more details.

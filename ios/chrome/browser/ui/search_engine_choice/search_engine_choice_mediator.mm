@@ -12,6 +12,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/search_engines/choice_made_location.h"
 #import "components/search_engines/prepopulated_engines.h"
+#import "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #import "components/search_engines/search_engine_choice_utils.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_service.h"
@@ -56,9 +57,9 @@ SnippetSearchEngineElement* CreateSnippetSearchEngineElementFromTemplateURL(
   raw_ptr<TemplateURLService> _templateURLService;  // weak
   std::unique_ptr<SearchEngineObserverBridge> _observerTemplateURLService;
   raw_ptr<PrefService> _prefService;
-  // The list of URLs of prepopulated search engines and search engines that are
-  // created by policy.
-  std::vector<std::unique_ptr<TemplateURL>> _templateUrlList;
+  // The template URLs to be shown on the choice screen and some associated
+  // data.
+  std::unique_ptr<search_engines::ChoiceScreenData> _choiceScreenData;
   NSString* _selectedSearchEngineKeyword;
 }
 
@@ -88,14 +89,17 @@ SnippetSearchEngineElement* CreateSnippetSearchEngineElementFromTemplateURL(
   std::u16string keyword =
       base::SysNSStringToUTF16(_selectedSearchEngineKeyword);
   TemplateURL* selectedTemplateURL = nil;
-  for (auto& templateURL : _templateUrlList) {
+  for (auto& templateURL : _choiceScreenData->search_engines()) {
     if (templateURL->keyword() == keyword) {
       selectedTemplateURL = templateURL.get();
+      break;
     }
   }
   CHECK(selectedTemplateURL);
   _templateURLService->SetUserSelectedDefaultSearchProvider(
       selectedTemplateURL, search_engines::ChoiceMadeLocation::kChoiceScreen);
+  _searchEngineChoiceService->MaybeRecordChoiceScreenDisplayState(
+      _choiceScreenData->display_state());
 }
 
 - (void)disconnect {
@@ -128,14 +132,15 @@ SnippetSearchEngineElement* CreateSnippetSearchEngineElementFromTemplateURL(
 
 #pragma mark - Private
 
-// Loads all search engines in `_templateUrlList` and updates the consumer.
+// Loads all the data for the choice screen in `_choiceScreenData` and updates
+// the consumer.
 - (void)loadSearchEngines {
-  _templateUrlList = _templateURLService->GetTemplateURLsForChoiceScreen();
+  _choiceScreenData = _templateURLService->GetChoiceScreenData();
   NSMutableArray<SnippetSearchEngineElement*>* searchEngineList =
       [[NSMutableArray<SnippetSearchEngineElement*> alloc]
-          initWithCapacity:_templateUrlList.size()];
+          initWithCapacity:_choiceScreenData->search_engines().size()];
   // Convert TemplateURLs to SnippetSearchEngineElements.
-  for (auto& templateURL : _templateUrlList) {
+  for (auto& templateURL : _choiceScreenData->search_engines()) {
     SnippetSearchEngineElement* element =
         CreateSnippetSearchEngineElementFromTemplateURL(*templateURL);
     [searchEngineList addObject:element];
