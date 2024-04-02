@@ -205,6 +205,7 @@ void NavigateEvent::commit(ExceptionState& exception_state) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "commit() may only be used if { commit: "
                                       "'after-transition' } was specified.");
+    return;
   }
   if (IsBeingDispatched()) {
     exception_state.ThrowDOMException(
