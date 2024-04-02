@@ -4,6 +4,7 @@
 
 #include "base/synchronization/waitable_event.h"
 
+#include "base/check.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/trace_event/base_tracing.h"
 
@@ -45,6 +46,21 @@ bool WaitableEvent::TimedWait(TimeDelta wait_delta) {
   }
 
   return result;
+}
+
+size_t WaitableEvent::WaitMany(WaitableEvent** events, size_t count) {
+  DCHECK(count) << "Cannot wait on no events";
+  internal::ScopedBlockingCallWithBaseSyncPrimitives scoped_blocking_call(
+      FROM_HERE, BlockingType::MAY_BLOCK);
+
+  const size_t signaled_id = WaitManyImpl(events, count);
+  WaitableEvent* const signaled_event = events[signaled_id];
+  if (!signaled_event->only_used_while_idle_) {
+    TRACE_EVENT_INSTANT("wakeup.flow,toplevel.flow",
+                        "WaitableEvent::WaitMany Complete",
+                        perfetto::TerminatingFlow::FromPointer(signaled_event));
+  }
+  return signaled_id;
 }
 
 }  // namespace base

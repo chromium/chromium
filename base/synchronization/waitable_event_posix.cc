@@ -230,11 +230,8 @@ cmp_fst_addr(const std::pair<WaitableEvent*, unsigned> &a,
 
 // static
 // NO_THREAD_SAFETY_ANALYSIS: Complex control flow.
-size_t WaitableEvent::WaitMany(WaitableEvent** raw_waitables,
-                               size_t count) NO_THREAD_SAFETY_ANALYSIS {
-  DCHECK(count) << "Cannot wait on no events";
-  internal::ScopedBlockingCallWithBaseSyncPrimitives scoped_blocking_call(
-      FROM_HERE, BlockingType::MAY_BLOCK);
+size_t WaitableEvent::WaitManyImpl(WaitableEvent** raw_waitables,
+                                   size_t count) NO_THREAD_SAFETY_ANALYSIS {
   // We need to acquire the locks in a globally consistent order. Thus we sort
   // the array of waitables by address. We actually sort a pairs so that we can
   // map back to the original index values later.

@@ -124,10 +124,8 @@ bool WaitableEvent::TimedWaitImpl(TimeDelta wait_delta) {
 }
 
 // static
-size_t WaitableEvent::WaitMany(WaitableEvent** raw_waitables, size_t count) {
-  DCHECK(count) << "Cannot wait on no events";
-  internal::ScopedBlockingCallWithBaseSyncPrimitives scoped_blocking_call(
-      FROM_HERE, BlockingType::MAY_BLOCK);
+size_t WaitableEvent::WaitManyImpl(WaitableEvent** raw_waitables,
+                                   size_t count) {
   // On macOS 10.11+, using Mach port sets may cause system instability, per
   // https://crbug.com/756102. On macOS 10.12+, a kqueue can be used
   // instead to work around that.
