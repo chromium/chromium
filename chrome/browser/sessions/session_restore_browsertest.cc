@@ -3814,8 +3814,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, MAYBE_RestoreAppMinimized) {
 // These tests currently fail on linux due to http://crbug.com/1196493.
 // In order to keep the coverage from the rest of the test, the checks that
 // fail on linux are explicitly disabled.
-// Flaky on Lacros https://crbug.com/1256498
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_RestoreMaximizedApp DISABLED_RestoreMaximizedApp
 #else
 #define MAYBE_RestoreMaximizedApp RestoreMaximizedApp
@@ -3828,9 +3827,12 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, MAYBE_RestoreMaximizedApp) {
   // Open a PWA.
   webapps::AppId app_id = InstallPWA(profile, example_url);
   Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
+  ASSERT_TRUE(app_browser);
 
   // Maximize.
   app_browser->window()->Maximize();
+  ASSERT_TRUE(ui_test_utils::WaitForMaximized(app_browser));
+  EXPECT_TRUE(app_browser->window()->IsMaximized());
 
   // Pretend to 'close the browser'.
   // Just shutdown the services as we would if the browser is shutting down for
@@ -3864,6 +3866,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, MAYBE_RestoreMaximizedApp) {
     if (browser->type() == Browser::Type::TYPE_APP) {
       EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(browser, app_id));
 #if !BUILDFLAG(IS_LINUX)
+      EXPECT_TRUE(ui_test_utils::WaitForMaximized(browser));
       EXPECT_TRUE(browser->window()->IsMaximized());
 #endif
       EXPECT_EQ(browser->tab_strip_model()->GetWebContentsAt(0)->GetURL(),

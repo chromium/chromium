@@ -488,6 +488,14 @@ bool WaitForMinimized(Browser* browser) {
   return minimize_waiter.Wait();
 }
 
+bool WaitForMaximized(Browser* browser) {
+  views::test::PropertyWaiter maximize_waiter(
+      base::BindRepeating(&BrowserWindow::IsMaximized,
+                          base::Unretained(browser->window())),
+      true);
+  return maximize_waiter.Wait();
+}
+
 views::AsyncWidgetRequestWaiter CreateAsyncWidgetRequestWaiter(
     Browser& browser) {
   auto* widget = views::Widget::GetWidgetForNativeWindow(

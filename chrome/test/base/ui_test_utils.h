@@ -205,6 +205,10 @@ void WaitForAutocompleteDone(Browser* browser);
 // Returns success or not.
 bool WaitForMinimized(Browser* browser);
 
+// Waits until the window gets maximized.
+// Returns success or not.
+bool WaitForMaximized(Browser* browser);
+
 // See comment on views::AsyncWidgetRequestWaiter.
 [[nodiscard]] views::AsyncWidgetRequestWaiter CreateAsyncWidgetRequestWaiter(
     Browser& browser);
