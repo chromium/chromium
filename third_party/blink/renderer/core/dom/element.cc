@@ -5789,7 +5789,7 @@ bool Element::hasAttributeNS(const AtomicString& namespace_uri,
   return GetElementData()->Attributes().Find(q_name);
 }
 
-bool Element::DelegatesFocus() const {
+bool Element::IsShadowHostWithDelegatesFocus() const {
   return GetShadowRoot() && GetShadowRoot()->delegatesFocus();
 }
 
@@ -5804,7 +5804,7 @@ Element* Element::GetFocusableArea(bool in_descendant_traversal) const {
          FocusController::AdjustedTabIndex(*this) < 0);
 
   // TODO(crbug.com/1018619): Support AREA -> IMG delegation.
-  if (!DelegatesFocus()) {
+  if (!IsShadowHostWithDelegatesFocus()) {
     return nullptr;
   }
   Document& doc = GetDocument();
@@ -5834,7 +5834,7 @@ Element* Element::GetFocusDelegate(bool in_descendant_traversal) const {
   }
 
   const ContainerNode* where_to_look = this;
-  if (shadowroot && shadowroot->delegatesFocus()) {
+  if (IsShadowHostWithDelegatesFocus()) {
     where_to_look = shadowroot;
   }
 
@@ -6313,7 +6313,7 @@ bool Element::SupportsFocus(UpdateBehavior update_behavior) const {
   // SupportsFocus must return true when the element is editable, or else
   // it won't be focusable. Furthermore, supportsFocus cannot just return true
   // always or else tabIndex() will change for all HTML elements.
-  if (DelegatesFocus()) {
+  if (IsShadowHostWithDelegatesFocus()) {
     return false;
   }
 

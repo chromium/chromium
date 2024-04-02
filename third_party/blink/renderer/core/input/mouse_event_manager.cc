@@ -513,7 +513,7 @@ WebInputEventResult MouseEventManager::HandleMouseFocus(
   // delegatesFocus, we should focus the custom element's focus delegate.
   if (auto* label = DynamicTo<HTMLLabelElement>(element)) {
     auto* control = label->control();
-    if (control && control->DelegatesFocus()) {
+    if (control && control->IsShadowHostWithDelegatesFocus()) {
       element = control;
     }
   }
@@ -521,11 +521,12 @@ WebInputEventResult MouseEventManager::HandleMouseFocus(
   for (; element; element = element->ParentOrShadowHostElement()) {
     if (element->IsFocusable() && element->IsFocusedElementInDocument())
       return WebInputEventResult::kNotHandled;
-    if (element->IsFocusable() || element->DelegatesFocus()) {
+    if (element->IsFocusable() || element->IsShadowHostWithDelegatesFocus()) {
       break;
     }
   }
-  DCHECK(!element || element->IsFocusable() || element->DelegatesFocus());
+  DCHECK(!element || element->IsFocusable() ||
+         element->IsShadowHostWithDelegatesFocus());
 
   // To fix <rdar://problem/4895428> Can't drag selected ToDo, we don't focus
   // a node on mouse down if it's selected and inside a focused node. It will

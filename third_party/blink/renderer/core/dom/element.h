@@ -869,7 +869,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   // Returns true if this is a shadow host, and its ShadowRoot has
   // delegatesFocus flag.
-  bool DelegatesFocus() const;
+  bool IsShadowHostWithDelegatesFocus() const;
   // in_descendant_traversal is used in GetFocusableArea and GetFocusDelegate to
   // indicate that GetFocusDelegate is currently iterating over all descendants
   // in a DOM subtree. Since GetFocusDelegate calls GetFocusableArea and
