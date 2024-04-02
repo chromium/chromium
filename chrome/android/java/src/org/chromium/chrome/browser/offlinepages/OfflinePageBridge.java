@@ -11,6 +11,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -89,13 +90,13 @@ public class OfflinePageBridge {
          * Delivers result of saving a page.
          *
          * @param savePageResult Result of the saving. Uses {@see
-         *         org.chromium.components.offlinepages.SavePageResult} enum.
+         *     org.chromium.components.offlinepages.SavePageResult} enum.
          * @param url URL of the saved page.
          * @see OfflinePageBridge#savePage(WebContents, ClientId, OfflinePageOrigin,
-         *         SavePageCallback)
+         *     SavePageCallback)
          */
         @CalledByNative("SavePageCallback")
-        void onSavePageDone(int savePageResult, String url, long offlineId);
+        void onSavePageDone(int savePageResult, @JniType("std::string") String url, long offlineId);
     }
 
     /** Base observer class listeners to be notified of changes to the offline page model. */
@@ -142,7 +143,7 @@ public class OfflinePageBridge {
      * @return the string representing the origin of the tab.
      */
     @CalledByNative
-    private static String getEncodedOriginApp(Tab tab) {
+    private static @JniType("std::string") String getEncodedOriginApp(Tab tab) {
         return new OfflinePageOrigin(ContextUtils.getApplicationContext(), tab)
                 .encodeAsJsonString();
     }
@@ -450,10 +451,11 @@ public class OfflinePageBridge {
 
     /**
      * Retrieves the extra request header to reload the offline page.
+     *
      * @param webContents Contents of the page to reload.
      * @return The extra request header string.
      */
-    public String getOfflinePageHeaderForReload(WebContents webContents) {
+    public @Nullable String getOfflinePageHeaderForReload(WebContents webContents) {
         return org.chromium.chrome.browser.offlinepages.OfflinePageBridgeJni.get()
                 .getOfflinePageHeaderForReload(
                         mNativeOfflinePageBridge, OfflinePageBridge.this, webContents);
@@ -662,17 +664,17 @@ public class OfflinePageBridge {
     @CalledByNative
     private static void createOfflinePageAndAddToList(
             List<OfflinePageItem> offlinePagesList,
-            String url,
+            @JniType("std::string") String url,
             long offlineId,
-            String clientNamespace,
-            String clientId,
-            String title,
-            String filePath,
+            @JniType("std::string") String clientNamespace,
+            @JniType("std::string") String clientId,
+            @JniType("std::u16string") String title,
+            @JniType("std::string") String filePath,
             long fileSize,
             long creationTime,
             int accessCount,
             long lastAccessTimeMs,
-            String requestOrigin) {
+            @JniType("std::string") String requestOrigin) {
         offlinePagesList.add(
                 createOfflinePageItem(
                         url,
@@ -690,17 +692,17 @@ public class OfflinePageBridge {
 
     @CalledByNative
     private static OfflinePageItem createOfflinePageItem(
-            String url,
+            @JniType("std::string") String url,
             long offlineId,
-            String clientNamespace,
-            String clientId,
-            String title,
-            String filePath,
+            @JniType("std::string") String clientNamespace,
+            @JniType("std::string") String clientId,
+            @JniType("std::u16string") String title,
+            @JniType("std::string") String filePath,
             long fileSize,
             long creationTime,
             int accessCount,
             long lastAccessTimeMs,
-            String requestOrigin) {
+            @JniType("std::string") String requestOrigin) {
         return new OfflinePageItem(
                 url,
                 offlineId,
@@ -716,19 +718,25 @@ public class OfflinePageBridge {
     }
 
     @CalledByNative
-    private static ClientId createClientId(String clientNamespace, String id) {
+    private static ClientId createClientId(
+            @JniType("std::string") String clientNamespace, @JniType("std::string") String id) {
         return new ClientId(clientNamespace, id);
     }
 
     @CalledByNative
     private static DeletedPageInfo createDeletedPageInfo(
-            long offlineId, String clientNamespace, String clientId, String requestOrigin) {
+            long offlineId,
+            @JniType("std::string") String clientNamespace,
+            @JniType("std::string") String clientId,
+            @JniType("std::string") String requestOrigin) {
         return new DeletedPageInfo(offlineId, clientNamespace, clientId, requestOrigin);
     }
 
     @CalledByNative
     private static LoadUrlParams createLoadUrlParams(
-            String url, String extraHeaderKey, String extraHeaderValue) {
+            @JniType("std::string") String url,
+            @JniType("std::string") String extraHeaderKey,
+            @JniType("std::string") String extraHeaderValue) {
         LoadUrlParams loadUrlParams = new LoadUrlParams(url);
         if (!TextUtils.isEmpty(extraHeaderKey) && !TextUtils.isEmpty(extraHeaderValue)) {
             // Set both map-based and collapsed headers to support all use scenarios.
@@ -773,14 +781,14 @@ public class OfflinePageBridge {
                 long nativeOfflinePageBridge,
                 OfflinePageBridge caller,
                 List<OfflinePageItem> result,
-                String requestOrigin,
+                @JniType("std::string") String requestOrigin,
                 Callback<List<OfflinePageItem>> callback);
 
         void getPagesByNamespace(
                 long nativeOfflinePageBridge,
                 OfflinePageBridge caller,
                 List<OfflinePageItem> result,
-                String nameSpace,
+                @JniType("std::string") String nameSpace,
                 Callback<List<OfflinePageItem>> callback);
 
         void deletePagesByClientId(
@@ -795,7 +803,7 @@ public class OfflinePageBridge {
                 OfflinePageBridge caller,
                 String[] namespaces,
                 String[] ids,
-                String origin,
+                @JniType("std::string") String origin,
                 Callback<Integer> callback);
 
         void deletePagesByOfflineId(
@@ -813,7 +821,7 @@ public class OfflinePageBridge {
         void publishInternalPageByGuid(
                 long nativeOfflinePageBridge,
                 OfflinePageBridge caller,
-                String guid,
+                @JniType("std::string") String guid,
                 Callback<String> publishedCallback);
 
         void selectPageForOnlineUrl(
@@ -828,10 +836,11 @@ public class OfflinePageBridge {
                 OfflinePageBridge caller,
                 SavePageCallback callback,
                 WebContents webContents,
-                String clientNamespace,
-                String clientId,
-                String origin);
+                @JniType("std::string") String clientNamespace,
+                @JniType("std::string") String clientId,
+                @JniType("std::string") String origin);
 
+        @Nullable
         String getOfflinePageHeaderForReload(
                 long nativeOfflinePageBridge, OfflinePageBridge caller, WebContents webContents);
 
@@ -845,19 +854,23 @@ public class OfflinePageBridge {
                 long nativeOfflinePageBridge,
                 OfflinePageBridge caller,
                 WebContents webContents,
-                String nameSpace,
-                String url,
+                @JniType("std::string") String nameSpace,
+                @JniType("std::string") String url,
                 int uiAction,
-                String origin);
+                @JniType("std::string") String origin);
 
         boolean isOfflinePage(
                 long nativeOfflinePageBridge, OfflinePageBridge caller, WebContents webContents);
 
         boolean isInPrivateDirectory(
-                long nativeOfflinePageBridge, OfflinePageBridge caller, String filePath);
+                long nativeOfflinePageBridge,
+                OfflinePageBridge caller,
+                @JniType("std::string") String filePath);
 
         boolean isTemporaryNamespace(
-                long nativeOfflinePageBridge, OfflinePageBridge caller, String nameSpace);
+                long nativeOfflinePageBridge,
+                OfflinePageBridge caller,
+                @JniType("std::string") String nameSpace);
 
         OfflinePageItem getOfflinePage(
                 long nativeOfflinePageBridge, OfflinePageBridge caller, WebContents webContents);
@@ -875,7 +888,7 @@ public class OfflinePageBridge {
         void getLoadUrlParamsForOpeningMhtmlFileOrContent(
                 long nativeOfflinePageBridge,
                 OfflinePageBridge caller,
-                String url,
+                @JniType("std::string") String url,
                 Callback<LoadUrlParams> callback);
 
         void acquireFileAccessPermission(

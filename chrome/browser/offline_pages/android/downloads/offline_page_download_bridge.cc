@@ -131,7 +131,7 @@ void DownloadUIAdapterDelegate::OpenItem(
     const offline_items_collection::OpenParams& open_params) {
   JNIEnv* env = AttachCurrentThread();
   Java_OfflinePageDownloadBridge_openItem(
-      env, ConvertUTF8ToJavaString(env, item.url.spec()), offline_id,
+      env, item.url.spec(), offline_id,
       static_cast<int>(open_params.launch_location),
       open_params.open_in_incognito,
       offline_pages::ShouldOfflinePagesInDownloadHomeOpenInCct());
@@ -371,7 +371,7 @@ void OfflinePageDownloadBridge::Destroy(JNIEnv* env,
 void JNI_OfflinePageDownloadBridge_StartDownload(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_tab,
-    const JavaParamRef<jstring>& j_origin) {
+    std::string& origin) {
   TabAndroid* tab = TabAndroid::GetNativeTab(env, j_tab);
   if (!tab)
     return;
@@ -380,7 +380,6 @@ void JNI_OfflinePageDownloadBridge_StartDownload(
   if (!web_contents)
     return;
 
-  std::string origin = ConvertJavaStringToUTF8(env, j_origin);
   ScopedJavaGlobalRef<jobject> j_tab_ref(env, j_tab);
 
   // Ensure that the storage permission is granted since the target file

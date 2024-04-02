@@ -15,6 +15,7 @@ import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ApplicationStatus;
@@ -81,7 +82,7 @@ public class OfflinePageDownloadBridge {
      */
     @CalledByNative
     private static void openItem(
-            final String url,
+            final @JniType("std::string") String url,
             final long offlineId,
             final int location,
             final boolean isIncognito,
@@ -221,6 +222,6 @@ public class OfflinePageDownloadBridge {
 
         void destroy(long nativeOfflinePageDownloadBridge, OfflinePageDownloadBridge caller);
 
-        void startDownload(Tab tab, String origin);
+        void startDownload(Tab tab, @JniType("std::string") String origin);
     }
 }

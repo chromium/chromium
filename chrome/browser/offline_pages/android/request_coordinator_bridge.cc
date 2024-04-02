@@ -17,8 +17,6 @@
 #include "chrome/browser/profiles/profile_android.h"
 #include "components/offline_pages/core/background/request_coordinator.h"
 
-using base::android::ConvertJavaStringToUTF8;
-using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
@@ -103,19 +101,12 @@ ScopedJavaLocalRef<jobjectArray> CreateJavaSavePageRequests(
 
   for (size_t i = 0; i < requests.size(); ++i) {
     const SavePageRequest& request = *(requests[i]);
-    ScopedJavaLocalRef<jstring> name_space =
-        ConvertUTF8ToJavaString(env, request.client_id().name_space);
-    ScopedJavaLocalRef<jstring> id =
-        ConvertUTF8ToJavaString(env, request.client_id().id);
-    ScopedJavaLocalRef<jstring> url =
-        ConvertUTF8ToJavaString(env, request.url().spec());
-    ScopedJavaLocalRef<jstring> origin =
-        ConvertUTF8ToJavaString(env, request.request_origin());
-
     ScopedJavaLocalRef<jobject> j_save_page_request =
         Java_SavePageRequest_create(
             env, static_cast<int>(request.request_state()),
-            request.request_id(), url, name_space, id, origin,
+            request.request_id(), request.url().spec(),
+            request.client_id().name_space, request.client_id().id,
+            request.request_origin(),
             static_cast<int>(request.auto_fetch_notification_state()));
     env->SetObjectArrayElement(joa, i, j_save_page_request.obj());
   }
@@ -127,16 +118,16 @@ JNI_EXPORT void JNI_RequestCoordinatorBridge_SavePageLater(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile,
     const JavaParamRef<jobject>& j_callback_obj,
-    const JavaParamRef<jstring>& j_url,
-    const JavaParamRef<jstring>& j_namespace,
-    const JavaParamRef<jstring>& j_client_id,
-    const JavaParamRef<jstring>& j_origin,
+    std::string& url_spec,
+    std::string& namespace_str,
+    std::string& client_id_str,
+    std::string& origin,
     jboolean user_requested) {
   DCHECK(j_callback_obj);
 
   offline_pages::ClientId client_id;
-  client_id.name_space = ConvertJavaStringToUTF8(env, j_namespace);
-  client_id.id = ConvertJavaStringToUTF8(env, j_client_id);
+  client_id.name_space = namespace_str;
+  client_id.id = client_id_str;
 
   RequestCoordinator* coordinator = GetRequestCoordinator(j_profile);
 
@@ -147,12 +138,12 @@ JNI_EXPORT void JNI_RequestCoordinatorBridge_SavePageLater(
   }
 
   RequestCoordinator::SavePageLaterParams params;
-  params.url = GURL(ConvertJavaStringToUTF8(env, j_url));
+  params.url = GURL(url_spec);
   params.client_id = client_id;
   params.user_requested = static_cast<bool>(user_requested);
   params.availability =
       RequestCoordinator::RequestAvailability::ENABLED_FOR_OFFLINER;
-  params.request_origin = ConvertJavaStringToUTF8(env, j_origin);
+  params.request_origin = origin;
 
   coordinator->SavePageLater(
       params, base::BindOnce(&SavePageLaterCallback,

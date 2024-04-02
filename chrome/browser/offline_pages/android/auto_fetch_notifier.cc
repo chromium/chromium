@@ -64,11 +64,7 @@ void ShowAutoFetchCompleteNotification(const std::u16string& pageTitle,
                                        int64_t offline_id) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_AutoFetchNotifier_showCompleteNotification(
-      env,
-      base::android::ConvertUTF8ToJavaString(env, base::UTF16ToUTF8(pageTitle)),
-      base::android::ConvertUTF8ToJavaString(env, original_url),
-      base::android::ConvertUTF8ToJavaString(env, final_url), android_tab_id,
-      offline_id);
+      env, pageTitle, original_url, final_url, android_tab_id, offline_id);
 }
 
 }  // namespace offline_pages
