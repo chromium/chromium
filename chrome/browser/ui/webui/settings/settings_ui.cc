@@ -566,15 +566,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                               features::kAutomaticFullscreenContentSetting));
 
   // AI
-  optimization_guide::proto::ModelExecutionFeature
-      optimization_guide_features[3] = {
-          optimization_guide::proto::ModelExecutionFeature::
-              MODEL_EXECUTION_FEATURE_COMPOSE,
-          optimization_guide::proto::ModelExecutionFeature::
-              MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION,
-          optimization_guide::proto::ModelExecutionFeature::
-              MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH,
-      };
+  optimization_guide::UserVisibleFeatureKey optimization_guide_features[3] = {
+      optimization_guide::UserVisibleFeatureKey::kCompose,
+      optimization_guide::UserVisibleFeatureKey::kTabOrganization,
+      optimization_guide::UserVisibleFeatureKey::kWallpaperSearch,
+  };
 
   auto* optimization_guide_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);

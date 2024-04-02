@@ -134,7 +134,7 @@ void ModelValidatorKeyedService::StartModelExecutionValidation() {
   proto::StringValue request;
   request.set_value(model_execution_input);
   opt_guide_service->ExecuteModel(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST, request,
+      ModelBasedCapabilityKey::kTest, request,
       base::BindOnce(&ModelValidatorKeyedService::OnModelExecuteResponse,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -160,9 +160,9 @@ void ModelValidatorKeyedService::PerformOnDeviceModelExecutionValidation(
   if (!opt_guide_service) {
     return;
   }
-  on_device_validation_session_ = opt_guide_service->StartSession(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE,
-      /*config_params=*/std::nullopt);
+  on_device_validation_session_ =
+      opt_guide_service->StartSession(ModelBasedCapabilityKey::kCompose,
+                                      /*config_params=*/std::nullopt);
   on_device_validation_session_->ExecuteModel(
       *request, base::RepeatingCallback(base::BindRepeating(
                     &ModelValidatorKeyedService::OnDeviceModelExecuteResponse,

@@ -68,8 +68,7 @@ class ComposeEnablingBrowserTestBase : public InProcessBrowserTest {
     // Enable Compose via the Optimization Guide's pref.
     browser()->profile()->GetPrefs()->SetInteger(
         optimization_guide::prefs::GetSettingEnabledPrefName(
-            optimization_guide::proto::ModelExecutionFeature::
-                MODEL_EXECUTION_FEATURE_COMPOSE),
+            optimization_guide::UserVisibleFeatureKey::kCompose),
         static_cast<int>(
             optimization_guide::prefs::FeatureOptInState::kEnabled));
   }
@@ -125,16 +124,14 @@ IN_PROC_BROWSER_TEST_F(ComposeEnablingBrowserTest,
   // Checks that Compose is immediately enabled.
   EXPECT_EQ(base::ok(), GetComposeEnabling().IsEnabled());
   EXPECT_TRUE(GetOptimizationGuide()->ShouldFeatureBeCurrentlyEnabledForUser(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_COMPOSE));
+      optimization_guide::UserVisibleFeatureKey::kCompose));
 }
 
 // Checks that after the browser restarts required features are enabled.
 IN_PROC_BROWSER_TEST_F(ComposeEnablingBrowserTest, EnableComposeViaSettings) {
   EXPECT_EQ(base::ok(), GetComposeEnabling().IsEnabled());
   EXPECT_TRUE(GetOptimizationGuide()->ShouldFeatureBeCurrentlyEnabledForUser(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_COMPOSE));
+      optimization_guide::UserVisibleFeatureKey::kCompose));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -28,8 +28,7 @@ bool IsWallpaperSearchEnabledForProfile(Profile* profile) {
          (optimization_guide_keyed_service &&
           optimization_guide_keyed_service
               ->ShouldFeatureBeCurrentlyEnabledForUser(
-                  optimization_guide::proto::ModelExecutionFeature::
-                      MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+                  optimization_guide::UserVisibleFeatureKey::kWallpaperSearch));
 }
 
 }  // namespace customize_chrome

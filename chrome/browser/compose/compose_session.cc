@@ -37,6 +37,7 @@
 #include "components/compose/core/browser/compose_metrics.h"
 #include "components/compose/core/browser/compose_utils.h"
 #include "components/compose/core/browser/config.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -226,8 +227,7 @@ ComposeSession::ComposeSession(
   most_recent_ok_state_ = std::make_unique<ComposeState>();
   if (executor_) {
     session_ = executor_->StartSession(
-        optimization_guide::proto::ModelExecutionFeature::
-            MODEL_EXECUTION_FEATURE_COMPOSE,
+        optimization_guide::ModelBasedCapabilityKey::kCompose,
         /*config_params=*/std::nullopt);
   }
 }
@@ -781,7 +781,7 @@ bool ComposeSession::CanShowFeedbackPage() {
           Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
   if (!opt_guide_keyed_service ||
       !opt_guide_keyed_service->ShouldFeatureBeCurrentlyAllowedForLogging(
-          optimization_guide::proto::MODEL_EXECUTION_FEATURE_COMPOSE)) {
+          optimization_guide::UserVisibleFeatureKey::kCompose)) {
     return false;
   }
 

@@ -44,8 +44,7 @@ class TabSearchContainerBrowserTest : public InProcessBrowserTest {
     PrefService* prefs = browser()->profile()->GetPrefs();
     prefs->SetInteger(
         optimization_guide::prefs::GetSettingEnabledPrefName(
-            optimization_guide::proto::ModelExecutionFeature::
-                MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION),
+            optimization_guide::UserVisibleFeatureKey::kTabOrganization),
         static_cast<int>(
             optimization_guide::prefs::FeatureOptInState::kEnabled));
   }

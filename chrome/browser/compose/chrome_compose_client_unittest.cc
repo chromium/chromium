@@ -80,12 +80,12 @@ class MockModelExecutor
  public:
   MOCK_METHOD(std::unique_ptr<Session>,
               StartSession,
-              (optimization_guide::proto::ModelExecutionFeature feature,
+              (optimization_guide::ModelBasedCapabilityKey feature,
                const std::optional<optimization_guide::SessionConfigParams>&
                    config_params));
   MOCK_METHOD(void,
               ExecuteModel,
-              (optimization_guide::proto::ModelExecutionFeature feature,
+              (optimization_guide::ModelBasedCapabilityKey feature,
                const google::protobuf::MessageLite& request_metadata,
                optimization_guide::OptimizationGuideModelExecutionResultCallback
                    callback));

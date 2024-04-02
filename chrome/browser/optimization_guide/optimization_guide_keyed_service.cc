@@ -576,32 +576,15 @@ OptimizationGuideKeyedService::StartSession(
     optimization_guide::ModelBasedCapabilityKey feature,
     const std::optional<optimization_guide::SessionConfigParams>&
         config_params) {
-  return StartSession(optimization_guide::ToModelExecutionFeatureProto(feature),
-                      config_params);
-}
-
-std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
-OptimizationGuideKeyedService::StartSession(
-    optimization_guide::proto::ModelExecutionFeature feature,
-    const std::optional<optimization_guide::SessionConfigParams>&
-        config_params) {
   if (!model_execution_manager_) {
     return nullptr;
   }
-  return model_execution_manager_->StartSession(feature, config_params);
+  return model_execution_manager_->StartSession(
+      optimization_guide::ToModelExecutionFeatureProto(feature), config_params);
 }
 
 void OptimizationGuideKeyedService::ExecuteModel(
     optimization_guide::ModelBasedCapabilityKey feature,
-    const google::protobuf::MessageLite& request_metadata,
-    optimization_guide::OptimizationGuideModelExecutionResultCallback
-        callback) {
-  ExecuteModel(optimization_guide::ToModelExecutionFeatureProto(feature),
-               request_metadata, std::move(callback));
-}
-
-void OptimizationGuideKeyedService::ExecuteModel(
-    optimization_guide::proto::ModelExecutionFeature feature,
     const google::protobuf::MessageLite& request_metadata,
     optimization_guide::OptimizationGuideModelExecutionResultCallback
         callback) {
@@ -616,9 +599,10 @@ void OptimizationGuideKeyedService::ExecuteModel(
         nullptr);
     return;
   }
-  model_execution_manager_->ExecuteModel(feature, request_metadata,
-                                         /*log_ai_data_request=*/nullptr,
-                                         std::move(callback));
+  model_execution_manager_->ExecuteModel(
+      optimization_guide::ToModelExecutionFeatureProto(feature),
+      request_metadata,
+      /*log_ai_data_request=*/nullptr, std::move(callback));
 }
 
 void OptimizationGuideKeyedService::UploadModelQualityLogs(
@@ -687,12 +671,6 @@ void OptimizationGuideKeyedService::OverrideTargetModelForTesting(
 
 bool OptimizationGuideKeyedService::IsSettingVisible(
     optimization_guide::UserVisibleFeatureKey feature) const {
-  return IsSettingVisible(
-      optimization_guide::ToModelExecutionFeatureProto(feature));
-}
-
-bool OptimizationGuideKeyedService::IsSettingVisible(
-    optimization_guide::proto::ModelExecutionFeature feature) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!model_execution_features_controller_) {
     return false;
@@ -702,12 +680,6 @@ bool OptimizationGuideKeyedService::IsSettingVisible(
 
 bool OptimizationGuideKeyedService::ShouldFeatureBeCurrentlyEnabledForUser(
     optimization_guide::UserVisibleFeatureKey feature) const {
-  return ShouldFeatureBeCurrentlyEnabledForUser(
-      optimization_guide::ToModelExecutionFeatureProto(feature));
-}
-
-bool OptimizationGuideKeyedService::ShouldFeatureBeCurrentlyEnabledForUser(
-    optimization_guide::proto::ModelExecutionFeature feature) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!model_execution_features_controller_) {
     return false;
@@ -718,12 +690,6 @@ bool OptimizationGuideKeyedService::ShouldFeatureBeCurrentlyEnabledForUser(
 
 bool OptimizationGuideKeyedService::ShouldFeatureBeCurrentlyAllowedForLogging(
     optimization_guide::UserVisibleFeatureKey feature) const {
-  return ShouldFeatureBeCurrentlyAllowedForLogging(
-      optimization_guide::ToModelExecutionFeatureProto(feature));
-}
-
-bool OptimizationGuideKeyedService::ShouldFeatureBeCurrentlyAllowedForLogging(
-    optimization_guide::proto::ModelExecutionFeature feature) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!model_execution_features_controller_) {
     return false;
@@ -744,21 +710,17 @@ bool OptimizationGuideKeyedService::ShouldShowExperimentalAIPromo() const {
   // At least one of the two features should be visible to user in settings, and
   // not currently enabled.
   if (model_execution_features_controller_->IsSettingVisible(
-          optimization_guide::proto::ModelExecutionFeature::
-              MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION) &&
+          optimization_guide::UserVisibleFeatureKey::kTabOrganization) &&
       !model_execution_features_controller_
            ->ShouldFeatureBeCurrentlyEnabledForUser(
-               optimization_guide::proto::ModelExecutionFeature::
-                   MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION)) {
+               optimization_guide::UserVisibleFeatureKey::kTabOrganization)) {
     return true;
   }
   if (model_execution_features_controller_->IsSettingVisible(
-          optimization_guide::proto::ModelExecutionFeature::
-              MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH) &&
+          optimization_guide::UserVisibleFeatureKey::kWallpaperSearch) &&
       !model_execution_features_controller_
            ->ShouldFeatureBeCurrentlyEnabledForUser(
-               optimization_guide::proto::ModelExecutionFeature::
-                   MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH)) {
+               optimization_guide::UserVisibleFeatureKey::kWallpaperSearch)) {
     return true;
   }
   return false;

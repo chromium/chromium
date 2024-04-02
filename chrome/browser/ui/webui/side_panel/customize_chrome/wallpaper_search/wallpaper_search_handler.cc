@@ -375,9 +375,7 @@ void WallpaperSearchHandler::GetWallpaperSearchResults(
     }
   }
   optimization_guide_keyed_service->ExecuteModel(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH,
-      request,
+      optimization_guide::ModelBasedCapabilityKey::kWallpaperSearch, request,
       base::BindOnce(&WallpaperSearchHandler::OnWallpaperSearchResultsRetrieved,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      base::ElapsedTimer()));
@@ -570,8 +568,7 @@ void WallpaperSearchHandler::ShowFeedbackPage() {
       OptimizationGuideKeyedServiceFactory::GetForProfile(browser->profile());
   if (!opt_guide_keyed_service ||
       !opt_guide_keyed_service->ShouldFeatureBeCurrentlyAllowedForLogging(
-          optimization_guide::proto::
-              MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH)) {
+          optimization_guide::UserVisibleFeatureKey::kWallpaperSearch)) {
     return;
   }
   base::Value::Dict feedback_metadata;

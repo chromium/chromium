@@ -7,6 +7,7 @@
 
 #include "base/test/gmock_callback_support.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 class TestingPrefServiceSimple;
@@ -60,22 +61,22 @@ class MockOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
       (override));
   MOCK_METHOD(std::unique_ptr<Session>,
               StartSession,
-              (optimization_guide::proto::ModelExecutionFeature feature,
+              (optimization_guide::ModelBasedCapabilityKey feature,
                const std::optional<optimization_guide::SessionConfigParams>&
                    config_params));
   MOCK_METHOD(
       void,
       ExecuteModel,
-      (optimization_guide::proto::ModelExecutionFeature,
+      (optimization_guide::ModelBasedCapabilityKey,
        const google::protobuf::MessageLite&,
        optimization_guide::OptimizationGuideModelExecutionResultCallback));
   MOCK_METHOD(bool,
               ShouldFeatureBeCurrentlyEnabledForUser,
-              (optimization_guide::proto::ModelExecutionFeature),
+              (optimization_guide::UserVisibleFeatureKey),
               (const));
   MOCK_METHOD(bool,
               ShouldFeatureBeCurrentlyAllowedForLogging,
-              (optimization_guide::proto::ModelExecutionFeature feature),
+              (optimization_guide::UserVisibleFeatureKey feature),
               (const));
   MOCK_METHOD(void,
               UploadModelQualityLogs,

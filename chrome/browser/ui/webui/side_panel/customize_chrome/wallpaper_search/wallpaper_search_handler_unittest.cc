@@ -36,6 +36,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/image_fetcher/core/mock_image_decoder.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -507,7 +508,7 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_Success) {
   EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _))
       .WillOnce(Invoke(
           [&request, &done_callback](
-              optimization_guide::proto::ModelExecutionFeature feature_arg,
+              optimization_guide::ModelBasedCapabilityKey feature_arg,
               const google::protobuf::MessageLite& request_arg,
               optimization_guide::OptimizationGuideModelExecutionResultCallback
                   done_callback_arg) {
@@ -671,7 +672,7 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_MultipleRequests) {
   EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _))
       .WillOnce(Invoke(
           [&request1, &done_callback1](
-              optimization_guide::proto::ModelExecutionFeature feature_arg,
+              optimization_guide::ModelBasedCapabilityKey feature_arg,
               const google::protobuf::MessageLite& request_arg,
               optimization_guide::OptimizationGuideModelExecutionResultCallback
                   done_callback_arg) {
@@ -732,7 +733,7 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_MultipleRequests) {
   EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _))
       .WillOnce(Invoke(
           [&request2, &done_callback2](
-              optimization_guide::proto::ModelExecutionFeature feature_arg,
+              optimization_guide::ModelBasedCapabilityKey feature_arg,
               const google::protobuf::MessageLite& request_arg,
               optimization_guide::OptimizationGuideModelExecutionResultCallback
                   done_callback_arg) {
@@ -835,7 +836,7 @@ TEST_F(WallpaperSearchHandlerTest,
   EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _))
       .WillOnce(Invoke(
           [&request](
-              optimization_guide::proto::ModelExecutionFeature feature_arg,
+              optimization_guide::ModelBasedCapabilityKey feature_arg,
               const google::protobuf::MessageLite& request_arg,
               optimization_guide::OptimizationGuideModelExecutionResultCallback
                   done_callback_arg) {
@@ -869,7 +870,7 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_ConvertsHueToHex) {
   EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _))
       .WillOnce(Invoke(
           [&request](
-              optimization_guide::proto::ModelExecutionFeature feature_arg,
+              optimization_guide::ModelBasedCapabilityKey feature_arg,
               const google::protobuf::MessageLite& request_arg,
               optimization_guide::OptimizationGuideModelExecutionResultCallback
                   done_callback_arg) {
@@ -905,7 +906,7 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_NoResponse) {
   EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _))
       .WillOnce(Invoke(
           [&request, &done_callback](
-              optimization_guide::proto::ModelExecutionFeature feature_arg,
+              optimization_guide::ModelBasedCapabilityKey feature_arg,
               const google::protobuf::MessageLite& request_arg,
               optimization_guide::OptimizationGuideModelExecutionResultCallback
                   done_callback_arg) {
@@ -985,7 +986,7 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_NoImages) {
   EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _))
       .WillOnce(Invoke(
           [&request, &done_callback](
-              optimization_guide::proto::ModelExecutionFeature feature_arg,
+              optimization_guide::ModelBasedCapabilityKey feature_arg,
               const google::protobuf::MessageLite& request_arg,
               optimization_guide::OptimizationGuideModelExecutionResultCallback
                   done_callback_arg) {
@@ -1065,7 +1066,7 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_RequestThrottled) {
   EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _))
       .WillOnce(Invoke(
           [&request, &done_callback](
-              optimization_guide::proto::ModelExecutionFeature feature_arg,
+              optimization_guide::ModelBasedCapabilityKey feature_arg,
               const google::protobuf::MessageLite& request_arg,
               optimization_guide::OptimizationGuideModelExecutionResultCallback
                   done_callback_arg) {
@@ -1265,7 +1266,7 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
   EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _))
       .WillOnce(Invoke(
           [&request, &done_callback](
-              optimization_guide::proto::ModelExecutionFeature feature_arg,
+              optimization_guide::ModelBasedCapabilityKey feature_arg,
               const google::protobuf::MessageLite& request_arg,
               optimization_guide::OptimizationGuideModelExecutionResultCallback
                   done_callback_arg) {
@@ -1451,7 +1452,7 @@ TEST_F(WallpaperSearchHandlerTest, SetUserFeedback) {
   EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _))
       .WillOnce(Invoke(
           [&request1, &done_callback1](
-              optimization_guide::proto::ModelExecutionFeature feature_arg,
+              optimization_guide::ModelBasedCapabilityKey feature_arg,
               const google::protobuf::MessageLite& request_arg,
               optimization_guide::OptimizationGuideModelExecutionResultCallback
                   done_callback_arg) {
@@ -1494,7 +1495,7 @@ TEST_F(WallpaperSearchHandlerTest, SetUserFeedback) {
   EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _))
       .WillOnce(Invoke(
           [&request2, &done_callback2](
-              optimization_guide::proto::ModelExecutionFeature feature_arg,
+              optimization_guide::ModelBasedCapabilityKey feature_arg,
               const google::protobuf::MessageLite& request_arg,
               optimization_guide::OptimizationGuideModelExecutionResultCallback
                   done_callback_arg) {

@@ -172,8 +172,7 @@ base::expected<void, compose::ComposeShowStatus> ComposeEnabling::CheckEnabling(
   // TODO(b/314199871): Remove test bypass once this check becomes mock-able.
   if (!skip_user_check_for_testing_ &&
       !opt_guide->ShouldFeatureBeCurrentlyEnabledForUser(
-          optimization_guide::proto::ModelExecutionFeature::
-              MODEL_EXECUTION_FEATURE_COMPOSE)) {
+          optimization_guide::UserVisibleFeatureKey::kCompose)) {
     DVLOG(2) << "Feature not available for this user";
     return base::unexpected(
         compose::ComposeShowStatus::kUserNotAllowedByOptimizationGuide);

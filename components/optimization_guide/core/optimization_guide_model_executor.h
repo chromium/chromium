@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/types/expected.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
@@ -112,13 +113,13 @@ class OptimizationGuideModelExecutor {
   // May return nullptr if model execution is not supported. This session should
   // not outlive OptimizationGuideModelExecutor.
   virtual std::unique_ptr<Session> StartSession(
-      proto::ModelExecutionFeature feature,
+      optimization_guide::ModelBasedCapabilityKey feature,
       const std::optional<SessionConfigParams>& config_params) = 0;
 
   // Executes the model for `feature` with `request_metadata` and invokes the
   // `callback` with the result.
   virtual void ExecuteModel(
-      proto::ModelExecutionFeature feature,
+      optimization_guide::ModelBasedCapabilityKey feature,
       const google::protobuf::MessageLite& request_metadata,
       OptimizationGuideModelExecutionResultCallback callback) = 0;
 };

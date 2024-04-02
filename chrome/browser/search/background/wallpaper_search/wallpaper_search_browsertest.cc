@@ -57,8 +57,7 @@ IN_PROC_BROWSER_TEST_F(WallpaperSearchBrowserTest,
   // GM3 should enable itself when the browser restarts.
   browser()->profile()->GetPrefs()->SetInteger(
       optimization_guide::prefs::GetSettingEnabledPrefName(
-          optimization_guide::proto::ModelExecutionFeature::
-              MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH),
+          optimization_guide::UserVisibleFeatureKey::kWallpaperSearch),
       static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
 }
 
@@ -68,8 +67,7 @@ IN_PROC_BROWSER_TEST_F(WallpaperSearchBrowserTest,
   auto* keyed_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile());
   EXPECT_TRUE(keyed_service->ShouldFeatureBeCurrentlyEnabledForUser(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+      optimization_guide::UserVisibleFeatureKey::kWallpaperSearch));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -95,8 +93,7 @@ IN_PROC_BROWSER_TEST_P(WallpaperSearchServiceBrowserChromeAshTest,
   // GM3 should enable itself when the browser restarts.
   browser()->profile()->GetPrefs()->SetInteger(
       optimization_guide::prefs::GetSettingEnabledPrefName(
-          optimization_guide::proto::ModelExecutionFeature::
-              MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH),
+          optimization_guide::UserVisibleFeatureKey::kWallpaperSearch),
       static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
 
   // Declare if the user is the device owner.
@@ -111,7 +108,6 @@ IN_PROC_BROWSER_TEST_P(WallpaperSearchServiceBrowserChromeAshTest,
   auto* keyed_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile());
   EXPECT_TRUE(keyed_service->ShouldFeatureBeCurrentlyEnabledForUser(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+      optimization_guide::UserVisibleFeatureKey::kWallpaperSearch));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

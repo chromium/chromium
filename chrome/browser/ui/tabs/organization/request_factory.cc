@@ -186,8 +186,7 @@ void PerformTabOrganizationExecution(
   OptimizationGuideKeyedService* optimization_guide_keyed_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
   optimization_guide_keyed_service->ExecuteModel(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION,
+      optimization_guide::ModelBasedCapabilityKey::kTabOrganization,
       tab_organization_request,
       base::BindOnce(OnTabOrganizationModelExecutionResult, profile,
                      std::move(on_completion), std::move(on_failure)));

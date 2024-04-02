@@ -389,8 +389,7 @@ class OptimizationGuideKeyedServiceBrowserTest
   bool IsSettingVisible(optimization_guide::UserVisibleFeatureKey feature) {
     return OptimizationGuideKeyedServiceFactory::GetForProfile(
                browser()->profile())
-        ->IsSettingVisible(
-            optimization_guide::ToModelExecutionFeatureProto(feature));
+        ->IsSettingVisible(feature);
   }
 
   void SetMetricsConsent(bool consent) {

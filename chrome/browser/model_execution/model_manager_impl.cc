@@ -8,6 +8,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
@@ -78,9 +79,7 @@ void ModelManagerImpl::CreateGenericSession(
 
   std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
       session = service->StartSession(
-          optimization_guide::proto::ModelExecutionFeature::
-              MODEL_EXECUTION_FEATURE_TEST,
-          config_params);
+          optimization_guide::ModelBasedCapabilityKey::kTest, config_params);
   // TODO(leimy): after this check is done by optimization guide and we can
   // return that from `CanStartModelExecutionSession()`, we should replace this
   // block by a CHECK, and stop returning any boolean value from this method.

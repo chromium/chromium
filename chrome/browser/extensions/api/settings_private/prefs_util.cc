@@ -1138,15 +1138,13 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       [optimization_guide::prefs::kModelExecutionMainToggleSettingState] =
           settings_api::PrefType::kNumber;
   (*s_allowlist)[optimization_guide::prefs::GetSettingEnabledPrefName(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_COMPOSE)] = settings_api::PrefType::kNumber;
-  (*s_allowlist)[optimization_guide::prefs::GetSettingEnabledPrefName(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION)] =
+      optimization_guide::UserVisibleFeatureKey::kCompose)] =
       settings_api::PrefType::kNumber;
   (*s_allowlist)[optimization_guide::prefs::GetSettingEnabledPrefName(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH)] =
+      optimization_guide::UserVisibleFeatureKey::kTabOrganization)] =
+      settings_api::PrefType::kNumber;
+  (*s_allowlist)[optimization_guide::prefs::GetSettingEnabledPrefName(
+      optimization_guide::UserVisibleFeatureKey::kWallpaperSearch)] =
       settings_api::PrefType::kNumber;
 
   return *s_allowlist;

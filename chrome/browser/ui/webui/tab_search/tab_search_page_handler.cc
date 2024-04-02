@@ -182,8 +182,7 @@ TabSearchPageHandler::TabSearchPageHandler(
     TopChromeWebUIController* webui_controller,
     MetricsReporter* metrics_reporter)
     : optimization_guide::SettingsEnabledObserver(
-          optimization_guide::proto::ModelExecutionFeature::
-              MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION),
+          optimization_guide::UserVisibleFeatureKey::kTabOrganization),
       receiver_(this, std::move(receiver)),
       page_(std::move(page)),
       web_ui_(web_ui),
@@ -589,8 +588,7 @@ void TabSearchPageHandler::TriggerFeedback(int32_t session_id) {
       OptimizationGuideKeyedServiceFactory::GetForProfile(browser->profile());
   if (!opt_guide_keyed_service ||
       !opt_guide_keyed_service->ShouldFeatureBeCurrentlyAllowedForLogging(
-          optimization_guide::proto::
-              MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION)) {
+          optimization_guide::UserVisibleFeatureKey::kTabOrganization)) {
     return;
   }
   base::Value::Dict feedback_metadata;

@@ -468,8 +468,8 @@ NewTabPageHandler::NewTabPageHandler(
         customize_chrome_feature_promo_helper,
     const base::Time& ntp_navigation_start_time,
     const std::vector<std::pair<const std::string, int>>* module_id_names)
-    : SettingsEnabledObserver(optimization_guide::proto::ModelExecutionFeature::
-                                  MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH),
+    : SettingsEnabledObserver(
+          optimization_guide::UserVisibleFeatureKey::kWallpaperSearch),
       ntp_background_service_(
           NtpBackgroundServiceFactory::GetForProfile(profile)),
       ntp_custom_background_service_(ntp_custom_background_service),

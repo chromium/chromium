@@ -14,6 +14,7 @@
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/search/ntp_features.h"
@@ -91,8 +92,8 @@ IN_PROC_BROWSER_TEST_F(WallpaperSearchInteractiveTest,
       Steps(InstrumentTab(kNewTabPageElementId, 0), Do([=]() {
               browser()->profile()->GetPrefs()->SetInteger(
                   optimization_guide::prefs::GetSettingEnabledPrefName(
-                      optimization_guide::proto::ModelExecutionFeature::
-                          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH),
+                      optimization_guide::UserVisibleFeatureKey::
+                          kWallpaperSearch),
                   static_cast<int>(
                       optimization_guide::prefs::FeatureOptInState::kEnabled));
             }),
@@ -106,8 +107,7 @@ IN_PROC_BROWSER_TEST_F(WallpaperSearchInteractiveTest,
       Do([=]() {
         browser()->profile()->GetPrefs()->SetInteger(
             optimization_guide::prefs::GetSettingEnabledPrefName(
-                optimization_guide::proto::ModelExecutionFeature::
-                    MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH),
+                optimization_guide::UserVisibleFeatureKey::kWallpaperSearch),
             static_cast<int>(
                 optimization_guide::prefs::FeatureOptInState::kDisabled));
       }),
@@ -117,8 +117,7 @@ IN_PROC_BROWSER_TEST_F(WallpaperSearchInteractiveTest,
       Do([=]() {
         browser()->profile()->GetPrefs()->SetInteger(
             optimization_guide::prefs::GetSettingEnabledPrefName(
-                optimization_guide::proto::ModelExecutionFeature::
-                    MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH),
+                optimization_guide::UserVisibleFeatureKey::kWallpaperSearch),
             static_cast<int>(
                 optimization_guide::prefs::FeatureOptInState::kEnabled));
       }),
@@ -190,18 +189,18 @@ class WallpaperSearchOptimizationGuideInteractiveTest
   }
 
   InteractiveTestApi::MultiStep OpenNewTabPage() {
-    return Steps(InstrumentTab(kNewTabPageElementId, 0), Do([this]() {
-                   ON_CALL(
-                       mock_optimization_guide_keyed_service(),
-                       ShouldFeatureBeCurrentlyEnabledForUser(
-                           optimization_guide::proto::ModelExecutionFeature::
-                               MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH))
-                       .WillByDefault(testing::Return(true));
-                 }),
-                 NavigateWebContents(kNewTabPageElementId,
-                                     GURL(chrome::kChromeUINewTabPageURL)),
-                 WaitForWebContentsReady(kNewTabPageElementId,
-                                         GURL(chrome::kChromeUINewTabPageURL)));
+    return Steps(
+        InstrumentTab(kNewTabPageElementId, 0), Do([this]() {
+          ON_CALL(
+              mock_optimization_guide_keyed_service(),
+              ShouldFeatureBeCurrentlyEnabledForUser(
+                  optimization_guide::UserVisibleFeatureKey::kWallpaperSearch))
+              .WillByDefault(testing::Return(true));
+        }),
+        NavigateWebContents(kNewTabPageElementId,
+                            GURL(chrome::kChromeUINewTabPageURL)),
+        WaitForWebContentsReady(kNewTabPageElementId,
+                                GURL(chrome::kChromeUINewTabPageURL)));
   }
 
   InteractiveTestApi::MultiStep OpenCustomizeChromeAt(
@@ -227,11 +226,11 @@ class WallpaperSearchOptimizationGuideInteractiveTest
     return Do([this]() {
       EXPECT_CALL(
           mock_optimization_guide_keyed_service(),
-          ExecuteModel(optimization_guide::proto::ModelExecutionFeature::
-                           MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH,
-                       testing::_, testing::_))
+          ExecuteModel(
+              optimization_guide::ModelBasedCapabilityKey::kWallpaperSearch,
+              testing::_, testing::_))
           .WillOnce(testing::Invoke(
-              [](optimization_guide::proto::ModelExecutionFeature feature_arg,
+              [](optimization_guide::ModelBasedCapabilityKey feature_arg,
                  const google::protobuf::MessageLite& request_arg,
                  optimization_guide::
                      OptimizationGuideModelExecutionResultCallback
@@ -392,8 +391,7 @@ IN_PROC_BROWSER_TEST_F(WallpaperSearchOptimizationGuideInteractiveTest,
                        FeedbackDialogShowsOnThumbsDown) {
   EXPECT_CALL(mock_optimization_guide_keyed_service(),
               ShouldFeatureBeCurrentlyAllowedForLogging(
-                  optimization_guide::proto::ModelExecutionFeature::
-                      MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH))
+                  optimization_guide::UserVisibleFeatureKey::kWallpaperSearch))
       .WillOnce(testing::Return(true));
 
   // Intercept Wallpaper Search descriptor fetches, and respond with data.

@@ -119,18 +119,9 @@ class OptimizationGuideKeyedService
   std::unique_ptr<Session> StartSession(
       optimization_guide::ModelBasedCapabilityKey feature,
       const std::optional<optimization_guide::SessionConfigParams>&
-          config_params);
-  std::unique_ptr<Session> StartSession(
-      optimization_guide::proto::ModelExecutionFeature feature,
-      const std::optional<optimization_guide::SessionConfigParams>&
           config_params) override;
   void ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey feature,
-      const google::protobuf::MessageLite& request_metadata,
-      optimization_guide::OptimizationGuideModelExecutionResultCallback
-          callback);
-  void ExecuteModel(
-      optimization_guide::proto::ModelExecutionFeature feature,
       const google::protobuf::MessageLite& request_metadata,
       optimization_guide::OptimizationGuideModelExecutionResultCallback
           callback) override;
@@ -147,17 +138,13 @@ class OptimizationGuideKeyedService
   // Note that the return value here may not match the feature enable state on
   // chrome settings page since the latter takes effect on browser restart.
   // Virtualized for testing.
-  bool ShouldFeatureBeCurrentlyEnabledForUser(
-      optimization_guide::UserVisibleFeatureKey feature) const;
   virtual bool ShouldFeatureBeCurrentlyEnabledForUser(
-      optimization_guide::proto::ModelExecutionFeature feature) const;
+      optimization_guide::UserVisibleFeatureKey feature) const;
 
   // Returns whether the `feature` should be currently allowed for logging model
   // quality logs.
-  bool ShouldFeatureBeCurrentlyAllowedForLogging(
-      optimization_guide::UserVisibleFeatureKey feature) const;
   virtual bool ShouldFeatureBeCurrentlyAllowedForLogging(
-      optimization_guide::proto::ModelExecutionFeature feature) const;
+      optimization_guide::UserVisibleFeatureKey feature) const;
 
   // Adds `observer` which can observe the change in feature settings.
   void AddModelExecutionSettingsEnabledObserver(
@@ -269,9 +256,6 @@ class OptimizationGuideKeyedService
   // given `feature`. This should only be called by settings UX.
   bool IsSettingVisible(
       optimization_guide::UserVisibleFeatureKey feature) const;
-  // TODO: b/331306557 - Remove after migration.
-  bool IsSettingVisible(
-      optimization_guide::proto::ModelExecutionFeature feature) const;
 
   // Returns whether all conditions are met to show the IPH promo for
   // experimental AI.
