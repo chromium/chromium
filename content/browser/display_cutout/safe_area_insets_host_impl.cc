@@ -107,10 +107,13 @@ RenderFrameHostImpl* SafeAreaInsetsHostImpl::ActiveRenderFrameHost() {
 
 blink::mojom::ViewportFit SafeAreaInsetsHostImpl::GetValueOrDefault(
     RenderFrameHost* rfh) const {
-  DCHECK(rfh);
-  SafeAreaUserData* data = SafeAreaUserData::GetForCurrentDocument(rfh);
-  if (data) {
-    return data->viewport_fit();
+  // The active RenderFrameHost can be null in some cases, such as if fullscreen
+  // mode is exited before the navigation finishes.
+  if (rfh) {
+    SafeAreaUserData* data = SafeAreaUserData::GetForCurrentDocument(rfh);
+    if (data) {
+      return data->viewport_fit();
+    }
   }
   return blink::mojom::ViewportFit::kAuto;
 }

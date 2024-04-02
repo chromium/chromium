@@ -217,7 +217,7 @@ class DisplayCutoutBrowserTest : public ContentBrowserTest {
     return static_cast<WebContentsImpl*>(shell()->web_contents());
   }
 
- private:
+ protected:
   base::ScopedTempDir temp_dir_;
 };
 
@@ -366,5 +366,36 @@ IN_PROC_BROWSER_TEST_F(DisplayCutoutBrowserTest, PublishSafeAreaVariables) {
   EXPECT_EQ("3px", GetCurrentSafeAreaValue("bottom"));
   EXPECT_EQ("4px", GetCurrentSafeAreaValue("right"));
 }
+
+#if BUILDFLAG(IS_ANDROID)
+class DisplayCutoutBrowserWithEdgeToEdgeTest : public DisplayCutoutBrowserTest {
+ public:
+  DisplayCutoutBrowserWithEdgeToEdgeTest() = default;
+
+  DisplayCutoutBrowserWithEdgeToEdgeTest(
+      const DisplayCutoutBrowserWithEdgeToEdgeTest&) = delete;
+  DisplayCutoutBrowserWithEdgeToEdgeTest& operator=(
+      const DisplayCutoutBrowserWithEdgeToEdgeTest&) = delete;
+
+  void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+
+    embedded_test_server()->ServeFilesFromDirectory(temp_dir_.GetPath());
+    ASSERT_TRUE(embedded_test_server()->Start());
+
+    ContentBrowserTest::SetUp();
+  }
+};
+
+// Sometimes, the fullscreen exit logic is triggered before navigation
+// completes, causing a check to the RenderFrameHost before it's been set. This
+// ensures that flow doesn't cause a crash.
+IN_PROC_BROWSER_TEST_F(DisplayCutoutBrowserWithEdgeToEdgeTest,
+                       FullscreenExitBeforeNavigationCompletes) {
+  TestWebContentsObserver observer(web_contents_impl());
+  SimulateFullscreenExit();
+}
+
+#endif
 
 }  //  namespace content
