@@ -332,6 +332,9 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       {"wallpaperSearchButton", IDS_NTP_WALLPAPER_SEARCH_PAGE_HEADER},
 
       // Voice search.
+      // TODO(crbug.com/328827188): Consider moving the voice search overlay
+      // code (here and elsewhere) into the searchbox directories or a new
+      // component.
       {"audioError", IDS_NEW_TAB_VOICE_AUDIO_ERROR},
       {"close", IDS_NEW_TAB_VOICE_CLOSE_TOOLTIP},
       {"details", IDS_NEW_TAB_VOICE_DETAILS},
@@ -346,11 +349,11 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       {"permissionError", IDS_NEW_TAB_VOICE_PERMISSION_ERROR},
       {"speak", IDS_NEW_TAB_VOICE_READY},
       {"tryAgain", IDS_NEW_TAB_VOICE_TRY_AGAIN},
-      {"voiceSearchButtonLabel", IDS_TOOLTIP_MIC_SEARCH},
       {"waiting", IDS_NEW_TAB_VOICE_WAITING},
 
       // Lens image search.
-      {"lensSearchButtonLabel", IDS_TOOLTIP_LENS_SEARCH},
+      // TODO(crbug.com/328827188): Consider moving the Lens upload dialog code
+      // (here and elsewhere) into the searchbox directories or a new component.
       {"lensSearchUploadDialogCloseButtonLabel",
        IDS_LENS_SEARCH_UPLOAD_DIALOG_CLOSE_BUTTON_LABEL},
       {"lensSearchUploadDialogTitle",

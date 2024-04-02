@@ -417,11 +417,13 @@ searchbox::mojom::AutocompleteResultPtr CreateAutocompleteResult(
 void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
                                             Profile* profile) {
   static constexpr webui::LocalizedString kStrings[] = {
-      {"searchBoxHint", IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MD},
+      {"hideSuggestions", IDS_TOOLTIP_HEADER_HIDE_SUGGESTIONS_BUTTON},
+      {"lensSearchButtonLabel", IDS_TOOLTIP_LENS_SEARCH},
       {"realboxSeparator", IDS_AUTOCOMPLETE_MATCH_DESCRIPTION_SEPARATOR},
       {"removeSuggestion", IDS_OMNIBOX_REMOVE_SUGGESTION},
-      {"hideSuggestions", IDS_TOOLTIP_HEADER_HIDE_SUGGESTIONS_BUTTON},
-      {"showSuggestions", IDS_TOOLTIP_HEADER_SHOW_SUGGESTIONS_BUTTON}};
+      {"searchBoxHint", IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MD},
+      {"showSuggestions", IDS_TOOLTIP_HEADER_SHOW_SUGGESTIONS_BUTTON},
+      {"voiceSearchButtonLabel", IDS_TOOLTIP_MIC_SEARCH}};
   source->AddLocalizedStrings(kStrings);
 
   source->AddBoolean(
