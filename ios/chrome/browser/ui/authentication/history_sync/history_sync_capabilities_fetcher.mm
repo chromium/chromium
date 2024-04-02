@@ -122,18 +122,23 @@ constexpr base::TimeDelta kFetchImmediatelyAvailableCapabilityDeadline =
 
   if (!_restrictionCapabilityReceived) {
     __weak __typeof(self) weakSelf = self;
-    // AccountInfo::capabilities is not immediately avaiable.
-    // Start fetching system capabilities.
-    id<SystemIdentity> identity = _authenticationService->GetPrimaryIdentity(
-        signin::ConsentLevel::kSignin);
-    CHECK(identity);
-    GetApplicationContext()
-        ->GetSystemIdentityManager()
-        ->CanShowHistorySyncOptInsWithoutMinorModeRestrictions(
-            identity, base::BindOnce(^(SystemIdentityCapabilityResult result) {
-              [weakSelf onRestrictionCapabilityReceived:
-                            signin::TriboolFromCapabilityResult(result)];
-            }));
+
+    if (base::FeatureList::IsEnabled(
+            switches::kUseSystemCapabilitiesForMinorModeRestrictions)) {
+      // AccountInfo::capabilities is not immediately avaiable.
+      // Start fetching system capabilities.
+      id<SystemIdentity> identity = _authenticationService->GetPrimaryIdentity(
+          signin::ConsentLevel::kSignin);
+      CHECK(identity);
+      GetApplicationContext()
+          ->GetSystemIdentityManager()
+          ->CanShowHistorySyncOptInsWithoutMinorModeRestrictions(
+              identity,
+              base::BindOnce(^(SystemIdentityCapabilityResult result) {
+                [weakSelf onRestrictionCapabilityReceived:
+                              signin::TriboolFromCapabilityResult(result)];
+              }));
+    }
 
     // Set timeout with fallback capability value.
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(

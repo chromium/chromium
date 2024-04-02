@@ -42,8 +42,12 @@ class HistorySyncCapabilitiesFetcherTest : public PlatformTest {
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state_.get(),
         std::make_unique<FakeAuthenticationServiceDelegate>());
-    feature_list_.InitAndEnableFeature(
-        switches::kMinorModeRestrictionsForHistorySyncOptIn);
+    feature_list_
+        .InitWithFeatures(/*enabled_features=*/
+                          {switches::kMinorModeRestrictionsForHistorySyncOptIn,
+                           switches::
+                               kUseSystemCapabilitiesForMinorModeRestrictions},
+                          /*disabled_features=*/{});
   }
 
   void TearDown() override {
