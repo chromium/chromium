@@ -18,12 +18,10 @@ promise_test(async t => {
   const stream = new iframe.contentWindow.TransformStream();
   const NestedTypeError = iframe.contentWindow.TypeError;
   const readPromise = stream.readable.getReader().read();
+  readPromise.then(t.unreached_func("read should not resolve"),
+                   t.unreached_func("read should not reject"));
   const writer = stream.writable.getWriter();
   iframe.remove();
-  return Promise.all([
-    promise_rejects_js(t, NestedTypeError, writer.write('A'),
-                       'TypeError should be thrown'),
-    promise_rejects_js(t, NestedTypeError, readPromise,
-                       'TypeError should be thrown'),
-  ]);
+  return promise_rejects_js(t, NestedTypeError, writer.write('A'),
+                            'TypeError should be thrown');
 }, 'TransformStream: write in detached realm should fail');

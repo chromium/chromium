@@ -249,12 +249,12 @@ void ReadableStream::IterationSource::AsyncIteratorReturn(ScriptValue arg) {
   // 4. If iterator's prevent cancel is false:
   if (!prevent_cancel_) {
     // 4.1. Let result be ! ReadableStreamReaderGenericCancel(reader, arg).
-    v8::Local<v8::Promise> result = ReadableStreamGenericReader::GenericCancel(
+    auto result = ReadableStreamGenericReader::GenericCancel(
         script_state, reader_, arg.V8Value());
     // 4.2. Perform ! ReadableStreamDefaultReaderRelease(reader).
     ReadableStreamDefaultReader::Release(script_state, reader_);
     // 4.3. Return result.
-    TakePendingPromiseResolver()->Resolve(result);
+    TakePendingPromiseResolver()->Resolve(result.V8Value());
     return;
   }
 
@@ -499,28 +499,29 @@ bool ReadableStream::locked() const {
   return IsLocked(this);
 }
 
-ScriptPromiseUntyped ReadableStream::cancel(ScriptState* script_state,
-                                            ExceptionState& exception_state) {
+ScriptPromise<IDLUndefined> ReadableStream::cancel(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   return cancel(script_state,
                 ScriptValue(script_state->GetIsolate(),
                             v8::Undefined(script_state->GetIsolate())),
                 exception_state);
 }
 
-ScriptPromiseUntyped ReadableStream::cancel(ScriptState* script_state,
-                                            ScriptValue reason,
-                                            ExceptionState& exception_state) {
+ScriptPromise<IDLUndefined> ReadableStream::cancel(
+    ScriptState* script_state,
+    ScriptValue reason,
+    ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#rs-cancel
   // 2. If ! IsReadableStreamLocked(this) is true, return a promise rejected
   //    with a TypeError exception.
   if (IsLocked(this)) {
     exception_state.ThrowTypeError("Cannot cancel a locked stream");
-    return ScriptPromiseUntyped();
+    return ScriptPromise<IDLUndefined>();
   }
 
   // 3. Return ! ReadableStreamCancel(this, reason).
-  v8::Local<v8::Promise> result = Cancel(script_state, this, reason.V8Value());
-  return ScriptPromiseUntyped(script_state, result);
+  return Cancel(script_state, this, reason.V8Value());
 }
 
 V8ReadableStreamReader* ReadableStream::getReader(
@@ -615,8 +616,8 @@ ReadableStream* ReadableStream::pipeThrough(ScriptState* script_state,
   // 4. Let promise be ! ReadableStreamPipeTo(this, transform["writable"],
   //    options["preventClose"], options["preventAbort"],
   //    options["preventCancel"], signal).
-  ScriptPromiseUntyped promise = PipeTo(script_state, this, writable_stream,
-                                        pipe_options, exception_state);
+  auto promise = PipeTo(script_state, this, writable_stream, pipe_options,
+                        exception_state);
 
   // 5. Set promise.[[PromiseIsHandled]] to true.
   promise.MarkAsHandled();
@@ -625,30 +626,32 @@ ReadableStream* ReadableStream::pipeThrough(ScriptState* script_state,
   return readable_stream;
 }
 
-ScriptPromiseUntyped ReadableStream::pipeTo(ScriptState* script_state,
-                                            WritableStream* destination,
-                                            ExceptionState& exception_state) {
+ScriptPromise<IDLUndefined> ReadableStream::pipeTo(
+    ScriptState* script_state,
+    WritableStream* destination,
+    ExceptionState& exception_state) {
   return pipeTo(script_state, destination, StreamPipeOptions::Create(),
                 exception_state);
 }
 
-ScriptPromiseUntyped ReadableStream::pipeTo(ScriptState* script_state,
-                                            WritableStream* destination,
-                                            const StreamPipeOptions* options,
-                                            ExceptionState& exception_state) {
+ScriptPromise<IDLUndefined> ReadableStream::pipeTo(
+    ScriptState* script_state,
+    WritableStream* destination,
+    const StreamPipeOptions* options,
+    ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#rs-pipe-to
   // 1. If ! IsReadableStreamLocked(this) is true, return a promise rejected
   //    with a TypeError exception.
   if (IsLocked(this)) {
     exception_state.ThrowTypeError("Cannot pipe a locked stream");
-    return ScriptPromiseUntyped();
+    return ScriptPromise<IDLUndefined>();
   }
 
   // 2. If ! IsWritableStreamLocked(destination) is true, return a promise
   //    rejected with a TypeError exception.
   if (WritableStream::IsLocked(destination)) {
     exception_state.ThrowTypeError("Cannot pipe to a locked stream");
-    return ScriptPromiseUntyped();
+    return ScriptPromise<IDLUndefined>();
   }
 
   // 3. Let signal be options["signal"] if it exists, or undefined otherwise.
@@ -983,11 +986,12 @@ ReadableStream* ReadableStream::Deserialize(
   return readable;
 }
 
-ScriptPromiseUntyped ReadableStream::PipeTo(ScriptState* script_state,
-                                            ReadableStream* readable,
-                                            WritableStream* destination,
-                                            PipeOptions* pipe_options,
-                                            ExceptionState& exception_state) {
+ScriptPromise<IDLUndefined> ReadableStream::PipeTo(
+    ScriptState* script_state,
+    ReadableStream* readable,
+    WritableStream* destination,
+    PipeOptions* pipe_options,
+    ExceptionState& exception_state) {
   auto* engine = MakeGarbageCollected<PipeToEngine>(script_state, pipe_options);
   return engine->Start(readable, destination, exception_state);
 }
@@ -1044,9 +1048,10 @@ void ReadableStream::AddReadRequest(ScriptState* script_state,
   default_reader->read_requests_.push_back(read_request);
 }
 
-v8::Local<v8::Promise> ReadableStream::Cancel(ScriptState* script_state,
-                                              ReadableStream* stream,
-                                              v8::Local<v8::Value> reason) {
+ScriptPromise<IDLUndefined> ReadableStream::Cancel(
+    ScriptState* script_state,
+    ReadableStream* stream,
+    v8::Local<v8::Value> reason) {
   // https://streams.spec.whatwg.org/#readable-stream-cancel
   // 1. Set stream.[[disturbed]] to true.
   stream->is_disturbed_ = true;
@@ -1055,14 +1060,14 @@ v8::Local<v8::Promise> ReadableStream::Cancel(ScriptState* script_state,
   //    undefined.
   const auto state = stream->state_;
   if (state == kClosed) {
-    return PromiseResolveWithUndefined(script_state);
+    return ToResolvedUndefinedPromise(script_state);
   }
 
   // 3. If stream.[[state]] is "errored", return a promise rejected with stream.
   //    [[storedError]].
   if (state == kErrored) {
-    return PromiseReject(script_state,
-                         stream->GetStoredError(script_state->GetIsolate()));
+    return ScriptPromise<IDLUndefined>::Reject(
+        script_state, stream->GetStoredError(script_state->GetIsolate()));
   }
 
   // 4. Perform ! ReadableStreamClose(stream).
@@ -1095,22 +1100,45 @@ v8::Local<v8::Promise> ReadableStream::Cancel(ScriptState* script_state,
   v8::Local<v8::Promise> source_cancel_promise =
       stream->readable_stream_controller_->CancelSteps(script_state, reason);
 
-  class ReturnUndefinedFunction final : public PromiseHandler {
+  enum FunctionType { kResolve, kReject };
+  class ResolveUndefinedFunction final : public PromiseHandler {
    public:
-    ReturnUndefinedFunction() = default;
+    ResolveUndefinedFunction(ScriptPromiseResolver<IDLUndefined>* resolver,
+                             FunctionType type)
+        : resolver_(resolver), type_(type) {}
 
-    // The method does nothing; the default value of undefined is returned to
-    // JavaScript.
     void CallWithLocal(ScriptState* script_state,
-                       v8::Local<v8::Value>) override {}
+                       v8::Local<v8::Value> value) override {
+      if (type_ == kResolve) {
+        resolver_->Resolve();
+      } else {
+        resolver_->Reject(value);
+      }
+    }
+
+    void Trace(Visitor* visitor) const override {
+      PromiseHandler::Trace(visitor);
+      visitor->Trace(resolver_);
+    }
+
+   private:
+    Member<ScriptPromiseResolver<IDLUndefined>> resolver_;
+    FunctionType type_;
   };
 
   // 8. Return the result of reacting to sourceCancelPromise with a
   //    fulfillment step that returns undefined.
-  return StreamThenPromise(
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
+  StreamThenPromise(
       script_state->GetContext(), source_cancel_promise,
       MakeGarbageCollected<ScriptFunction>(
-          script_state, MakeGarbageCollected<ReturnUndefinedFunction>()));
+          script_state,
+          MakeGarbageCollected<ResolveUndefinedFunction>(resolver, kResolve)),
+      MakeGarbageCollected<ScriptFunction>(
+          script_state,
+          MakeGarbageCollected<ResolveUndefinedFunction>(resolver, kReject)));
+  return resolver->Promise();
 }
 
 void ReadableStream::Close(ScriptState* script_state, ReadableStream* stream) {
@@ -1134,7 +1162,7 @@ void ReadableStream::Close(ScriptState* script_state, ReadableStream* stream) {
     return;
 
   // 5. Resolve reader.[[closedPromise]] with undefined.
-  reader->ClosedPromise()->ResolveWithUndefined(script_state);
+  reader->ClosedResolver()->Resolve();
 
   // 6. If reader implements ReadableStreamDefaultReader,
   if (reader->IsDefaultReader()) {
@@ -1175,10 +1203,10 @@ void ReadableStream::Error(ScriptState* script_state,
   }
 
   // 6. Reject reader.[[closedPromise]] with e.
-  reader->ClosedPromise()->Reject(script_state, e);
+  reader->ClosedResolver()->Reject(ScriptValue(isolate, e));
 
   // 7. Set reader.[[closedPromise]].[[PromiseIsHandled]] to true.
-  reader->ClosedPromise()->MarkAsHandled(isolate);
+  reader->closed(script_state).MarkAsHandled();
 
   // 8. If reader implements ReadableStreamDefaultReader,
   if (reader->IsDefaultReader()) {

@@ -6,6 +6,6 @@
 [
     Exposed=(Window,Worker,Worklet)
 ] interface mixin ReadableStreamGenericReader {
-    [CallWith=ScriptState] readonly attribute Promise<void> closed;
-    [CallWith=ScriptState, RaisesException] Promise<void> cancel(optional any reason);
+    [CallWith=ScriptState] readonly attribute Promise<undefined> closed;
+    [CallWith=ScriptState, RaisesException] Promise<undefined> cancel(optional any reason);
 };
