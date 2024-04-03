@@ -5864,7 +5864,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.SafeMode.ActionName"
-    enum="AndroidWebViewSafeModeActionName" expires_after="2024-07-28">
+    enum="AndroidWebViewSafeModeActionName" expires_after="never">
+<!-- expires-never: Needed for tracking SafeMode during an incident. -->
+
   <owner>avvall@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -5875,7 +5877,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.SafeMode.ExecutionResult"
-    enum="AndroidWebViewSafeModeResult" expires_after="2025-01-16">
+    enum="AndroidWebViewSafeModeResult" expires_after="never">
+<!-- expires-never: Needed for tracking SafeMode during an incident. -->
+
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -5890,7 +5894,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.SafeMode.QueryAndExecuteBlockingTime"
-    units="ms" expires_after="2025-01-16">
+    units="ms" expires_after="never">
+<!-- expires-never: Needed for tracking SafeMode during an incident. -->
+
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -5903,7 +5909,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.SafeMode.ReceivedFix" enum="BooleanEnabled"
-    expires_after="2024-07-28">
+    expires_after="never">
+<!-- expires-never: Needed for tracking SafeMode during an incident. -->
+
   <owner>avvall@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -5916,7 +5924,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.SafeMode.SafeModeEnabled"
-    enum="BooleanEnabled" expires_after="2024-03-31">
+    enum="BooleanEnabled" expires_after="never">
+<!-- expires-never: Needed for tracking SafeMode during an incident. -->
+
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
