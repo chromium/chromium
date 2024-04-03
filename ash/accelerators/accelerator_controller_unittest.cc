@@ -196,6 +196,7 @@ class DummyBrightnessControlDelegate : public BrightnessControlDelegate {
       base::OnceCallback<void(std::optional<double>)> callback) override {
     std::move(callback).Run(100.0);
   }
+  void SetAmbientLightSensorEnabled(bool enabled) override {}
 
   int handle_brightness_down_count() const {
     return handle_brightness_down_count_;

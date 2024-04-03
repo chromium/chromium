@@ -501,6 +501,27 @@ TEST_F(BrightnessControllerChromeosTest,
       0);
 }
 
+TEST_F(BrightnessControllerChromeosTest, SetAmbientLightSensorEnabled) {
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::ACTIVE);
+  SetBatteryPower();
+
+  // Ambient light sensor is enabled by default.
+  EXPECT_TRUE(power_manager_client()->is_ambient_light_sensor_enabled());
+
+  // Disable the ambient light sensor via the BrightnessControlDelegate.
+  brightness_control_delegate()->SetAmbientLightSensorEnabled(false);
+  // PowerManagerClient should have been invoked, disabling the ambient light
+  // sensor.
+  EXPECT_FALSE(power_manager_client()->is_ambient_light_sensor_enabled());
+
+  // Re-enabled the ambient light sensor via the BrightnessControlDelegate.
+  brightness_control_delegate()->SetAmbientLightSensorEnabled(true);
+  // PowerManagerClient should have been invoked, re-enabling the ambient light
+  // sensor.
+  EXPECT_TRUE(power_manager_client()->is_ambient_light_sensor_enabled());
+}
+
 class BrightnessControllerChromeosTest_NonApplicableSessionStates
     : public BrightnessControllerChromeosTest,
       public testing::WithParamInterface<session_manager::SessionState> {};

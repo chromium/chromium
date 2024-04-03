@@ -146,6 +146,7 @@ class FakeBrightnessControlDelegate : public BrightnessControlDelegate {
       base::OnceCallback<void(std::optional<double>)> callback) override {
     std::move(callback).Run(brightness_percent_);
   }
+  void SetAmbientLightSensorEnabled(bool enabled) override {}
 
   double brightness_percent() const { return brightness_percent_; }
 

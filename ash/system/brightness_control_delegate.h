@@ -30,6 +30,10 @@ class BrightnessControlDelegate {
   // [0.0, 100.0]. In case of error, it is called with nullopt.
   virtual void GetBrightnessPercent(
       base::OnceCallback<void(std::optional<double>)> callback) = 0;
+
+  // Sets whether the ambient light sensor should be used in brightness
+  // calculations.
+  virtual void SetAmbientLightSensorEnabled(bool enabled) = 0;
 };
 
 }  // namespace ash

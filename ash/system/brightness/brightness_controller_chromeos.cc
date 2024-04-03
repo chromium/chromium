@@ -134,6 +134,10 @@ void BrightnessControllerChromeos::GetBrightnessPercent(
       std::move(callback));
 }
 
+void BrightnessControllerChromeos::SetAmbientLightSensorEnabled(bool enabled) {
+  chromeos::PowerManagerClient::Get()->SetAmbientLightSensorEnabled(enabled);
+}
+
 void BrightnessControllerChromeos::OnSessionStateChanged(
     session_manager::SessionState state) {
   // Whenever the SessionState changes (e.g. LOGIN_PRIMARY to ACTIVE), record
