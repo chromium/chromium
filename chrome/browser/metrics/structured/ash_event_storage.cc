@@ -37,8 +37,7 @@ void AshEventStorage::OnReady() {
 }
 
 void AshEventStorage::AddEvent(StructuredEventProto event) {
-  PersistentProto<EventsProto>* event_store_to_write =
-      GetStoreToWriteEvent(event);
+  PersistentProto<EventsProto>* event_store_to_write = GetStoreToWriteEvent();
 
   if (!event_store_to_write) {
     pre_storage_events_.emplace_back(std::move(event));
@@ -91,18 +90,13 @@ void AshEventStorage::Purge() {
 
 void AshEventStorage::AddBatchEvents(
     const google::protobuf::RepeatedPtrField<StructuredEventProto>& events) {
-  for (const auto& event : events) {
-    PersistentProto<EventsProto>* event_store = GetStoreToWriteEvent(event);
-
-    if (event_store) {
-      *event_store->get()->add_non_uma_events() = event;
-      event_store->QueueWrite();
-      continue;
-    }
-
-    if (!is_initialized_) {
-      pre_storage_events_.emplace_back(event);
-    }
+  PersistentProto<EventsProto>* event_store = GetStoreToWriteEvent();
+  if (event_store) {
+    event_store->get()->mutable_non_uma_events()->MergeFrom(events);
+    event_store->QueueWrite();
+  } else if (!is_initialized_) {
+    pre_storage_events_.insert(pre_storage_events_.end(), events.begin(),
+                               events.end());
   }
 }
 
@@ -235,8 +229,7 @@ bool AshEventStorage::IsPreUserStorageReadable() const {
   return pre_user_events_ && is_initialized_;
 }
 
-PersistentProto<EventsProto>* AshEventStorage::GetStoreToWriteEvent(
-    const StructuredEventProto& event) {
+PersistentProto<EventsProto>* AshEventStorage::GetStoreToWriteEvent() {
   // If user storage is ready, all events should be stored in user event store
   // regardless of the type.
   if (IsProfileReady()) {

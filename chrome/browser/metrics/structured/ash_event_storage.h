@@ -65,8 +65,7 @@ class AshEventStorage : public EventStorage<StructuredEventProto>,
 
   // Retrieves the approproiate event store to write the event. Returns nullptr
   // if there is no appropriate place to persist the event.
-  PersistentProto<EventsProto>* GetStoreToWriteEvent(
-      const StructuredEventProto& event);
+  PersistentProto<EventsProto>* GetStoreToWriteEvent();
 
   // Callback to be made when profile event storage is ready to record.
   void OnProfileReady();
