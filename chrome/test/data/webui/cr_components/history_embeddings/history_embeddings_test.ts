@@ -24,7 +24,6 @@ suite('cr-history-embeddings', () => {
     handler = TestMock.fromClass(PageHandlerRemote);
     HistoryEmbeddingsBrowserProxyImpl.setInstance(
         new HistoryEmbeddingsBrowserProxyImpl(handler));
-    handler.setResultFor('doSomething', Promise.resolve(true));
     handler.setResultFor('search', Promise.resolve({items: []}));
 
     element = document.createElement('cr-history-embeddings');
@@ -32,23 +31,29 @@ suite('cr-history-embeddings', () => {
     return flushTasks();
   });
 
-  test('CallsProxy', async () => {
-    await handler.whenCalled('doSomething');
-    assertEquals(1, handler.getCallCount('doSomething'));
-    await handler.whenCalled('search');
-    assertEquals(1, handler.getCallCount('search'));
+  test('Searches', async () => {
+    element.searchQuery = 'some query';
+    const searchArg = await handler.whenCalled('search');
+    assertEquals('some query', searchArg.query);
   });
 
-  test('DisplaysHeading', () => {
-    loadTimeData.overrideValues(
-        {historyEmbeddingsHeading: 'searched for "$1"'});
+  test('DisplaysHeading', async () => {
+    loadTimeData.overrideValues({
+      historyEmbeddingsHeading: 'searched for "$1"',
+      historyEmbeddingsHeadingLoading: 'loading results for "$1"',
+    });
     element.searchQuery = 'my query';
+    assertEquals(
+        'loading results for "my query"',
+        element.$.heading.textContent!.trim());
+    await handler.whenCalled('search');
+    await flushTasks();
     assertEquals(
         'searched for "my query"', element.$.heading.textContent!.trim());
   });
 
   test('DisplaysResults', async () => {
-    element.results = [
+    element.mockResults = [
       {domain: 'google.com', title: 'Google', url: 'http://google.com'},
       {domain: 'youtube.com', title: 'Youtube', url: 'http://youtube.com'},
     ];
@@ -61,7 +66,7 @@ suite('cr-history-embeddings', () => {
   });
 
   test('FiresClick', async () => {
-    element.results = [
+    element.mockResults = [
       {domain: 'google.com', title: 'Google', url: 'http://google.com'},
       {domain: 'youtube.com', title: 'Youtube', url: 'http://youtube.com'},
     ];
@@ -71,11 +76,11 @@ suite('cr-history-embeddings', () => {
     const resultClickEventPromise = eventToPromise('result-click', element);
     resultsElements[0]!.click();
     const resultClickEvent = await resultClickEventPromise;
-    assertEquals(element.results[0], resultClickEvent.detail);
+    assertEquals(element.mockResults[0], resultClickEvent.detail);
   });
 
   test('FiresClickOnMoreActions', async () => {
-    element.results = [
+    element.mockResults = [
       {domain: 'google.com', title: 'Google', url: 'http://google.com'},
       {domain: 'youtube.com', title: 'Youtube', url: 'http://youtube.com'},
     ];
@@ -87,6 +92,6 @@ suite('cr-history-embeddings', () => {
         eventToPromise('more-actions-click', element);
     moreActionsIconButtons[0]!.click();
     const moreActionsClickEvent = await moreActionsClickEventPromise;
-    assertEquals(element.results[0], moreActionsClickEvent.detail);
+    assertEquals(element.mockResults[0], moreActionsClickEvent.detail);
   });
 });

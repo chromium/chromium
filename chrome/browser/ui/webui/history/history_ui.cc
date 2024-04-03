@@ -174,6 +174,8 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
       {"historyEmbeddingsSuggestion2", IDS_HISTORY_EMBEDDINGS_SUGGESTION_2},
       {"historyEmbeddingsSuggestion3", IDS_HISTORY_EMBEDDINGS_SUGGESTION_3},
       {"historyEmbeddingsHeading", IDS_HISTORY_EMBEDDINGS_HEADING},
+      {"historyEmbeddingsHeadingLoading",
+       IDS_HISTORY_EMBEDDINGS_HEADING_LOADING},
       {"historyEmbeddingsFooter", IDS_HISTORY_EMBEDDINGS_FOOTER},
       {"learnMore", IDS_LEARN_MORE},
       {"thumbsUp", IDS_HISTORY_EMBEDDINGS_THUMBS_UP},

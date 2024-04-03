@@ -143,6 +143,9 @@
   <message name="IDS_HISTORY_EMBEDDINGS_HEADING" desc="Heading for history embeddings results." translateable="false">
     Results for "<ph name="SEARCH_QUERY"><ex>pizza</ex>$1</ph>"
   </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_HEADING_LOADING" desc="Heading for history embeddings results while loading." translateable="false">
+    Searching for "<ph name="SEARCH_QUERY"><ex>pizza</ex>$1</ph>"
+  </message>
   <message name="IDS_HISTORY_EMBEDDINGS_FOOTER" desc="Footer text for history embeddings." translateable="false">
     Some text explaining the feature.
   </message>

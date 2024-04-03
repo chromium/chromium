@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
+import '//resources/cr_elements/cr_hidden_style.css.js';
+import '//resources/cr_elements/cr_loading_gradient/cr_loading_gradient.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 
@@ -42,29 +44,26 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
 
   static get properties() {
     return {
-      hasLoaded_: Boolean,
-      searchQuery: String,
-      results: Array,
+      loading_: Boolean,
+      searchQuery: {
+        type: String,
+        observer: 'onSearchQueryChanged_',
+      },
+      mockResults: Array,
     };
   }
 
   private browserProxy_ = HistoryEmbeddingsBrowserProxyImpl.getInstance();
-  private hasLoaded_ = false;
+  private loading_ = false;
   private searchResult_: SearchResult;
   searchQuery: string;
-  results: MockHistoryEntry[];
+  mockResults: MockHistoryEntry[];
 
-  override ready() {
-    super.ready();
-    this.browserProxy_.doSomething().then(success => this.hasLoaded_ = success);
-
-    // This is an example usage to be moved into place as front end develops.
-    const query: SearchQuery = {
-      query: 'this is a placeholder search query',
-      timeRangeStart: null,
-    };
-    this.browserProxy_.search(query).then(
-        result => this.searchResult_ = result);
+  private getHeadingText_() {
+    if (this.loading_) {
+      return this.i18n('historyEmbeddingsHeadingLoading', this.searchQuery);
+    }
+    return this.i18n('historyEmbeddingsHeading', this.searchQuery);
   }
 
   private onMoreActionsClick_(e: DomRepeatEvent<MockHistoryEntry>) {
@@ -74,6 +73,18 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
 
   private onResultClick_(e: DomRepeatEvent<MockHistoryEntry>) {
     this.dispatchEvent(new CustomEvent('result-click', {detail: e.model.item}));
+  }
+
+  private onSearchQueryChanged_() {
+    this.loading_ = true;
+    const query: SearchQuery = {
+      query: this.searchQuery,
+      timeRangeStart: null,
+    };
+    this.browserProxy_.search(query).then((result) => {
+      this.searchResult_ = result;
+      this.loading_ = false;
+    });
   }
 }
 

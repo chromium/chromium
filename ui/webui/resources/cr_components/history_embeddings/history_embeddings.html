@@ -1,4 +1,4 @@
-<style>
+<style include="cr-hidden-style">
 :host {
   display: block;
 }
@@ -23,6 +23,11 @@ h2 {
 
 h2 iron-icon {
   flex-shrink: 0;
+}
+
+#loading {
+  padding: 24px;
+  padding-block-start: 4px;
 }
 
 hr {
@@ -54,28 +59,42 @@ a {
 <div class="card">
   <h2 id="heading">
     <iron-icon icon="history-embeddings:heading"></iron-icon>
-    [[i18n('historyEmbeddingsHeading', searchQuery)]]
+    [[getHeadingText_(loading_, searchQuery)]]
   </h2>
 
-  <div class="result-items">
-    <template is="dom-repeat" items="[[results]]">
-      <cr-url-list-item url="[[item.url]]" title="[[item.title]]"
-          description="[[item.domain]]"
-          on-click="onResultClick_" as-anchor always-show-suffix>
-        <span slot="suffix">[[item.readableTimestamp]]</span>
-        <cr-icon-button slot="suffix" iron-icon="cr:more-vert"
-            on-click="onMoreActionsClick_">
-        </cr-icon-button>
-      </cr-url-list-item>
-      <hr>
-    </template>
+  <div id="loading" hidden$="[[!loading_]]">
+    <cr-loading-gradient>
+      <svg width="482" height="40">
+        <clipPath>
+          <path fill-rule="evenodd" clip-rule="evenodd"
+              d="M8 0C3.58172 0 0 3.58172 0 8V32C0 36.4183 3.58172 40 8 40H32C36.4183 40 40 36.4183 40 32V8C40 3.58172 36.4183 0 32 0H8ZM55 8C55 5.79086 56.7909 4 59 4H478C480.209 4 482 5.79086 482 8V14C482 16.2091 480.209 18 478 18H59C56.7909 18 55 16.2091 55 14V8ZM55 28C55 25.7909 56.7909 24 59 24H371C373.209 24 375 25.7909 375 28V34C375 36.2091 373.209 38 371 38H59C56.7909 38 55 36.2091 55 34V28Z">
+          </path>
+        </clipPath>
+      </svg>
+    </cr-loading-gradient>
   </div>
 
-  <div class="footer">
-    <div>
-      [[i18n('historyEmbeddingsFooter')]]
-      <a href="#" target="_blank">[[i18n('learnMore')]]</a>
+  <div hidden$="[[loading_]]">
+    <div class="result-items">
+      <template is="dom-repeat" items="[[mockResults]]">
+        <cr-url-list-item url="[[item.url]]" title="[[item.title]]"
+            description="[[item.domain]]"
+            on-click="onResultClick_" as-anchor always-show-suffix>
+          <span slot="suffix">[[item.readableTimestamp]]</span>
+          <cr-icon-button slot="suffix" iron-icon="cr:more-vert"
+              on-click="onMoreActionsClick_">
+          </cr-icon-button>
+        </cr-url-list-item>
+        <hr>
+      </template>
     </div>
-    <cr-feedback-buttons></cr-feedback-buttons>
+
+    <div class="footer">
+      <div>
+        [[i18n('historyEmbeddingsFooter')]]
+        <a href="#" target="_blank">[[i18n('learnMore')]]</a>
+      </div>
+      <cr-feedback-buttons></cr-feedback-buttons>
+    </div>
   </div>
 </div>
