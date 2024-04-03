@@ -97,11 +97,6 @@ class EnrollmentScreenBaseTest : public testing::Test {
     enrollment_screen_->SetEnrollmentConfig(config);
   }
 
-  void SetUpEnrollmentScreen() {
-    SetUpEnrollmentScreen(
-        policy::EnrollmentConfig::GetPrescribedEnrollmentConfig());
-  }
-
   // Fast forwards time by the specified amount.
   void FastForwardTime(base::TimeDelta time) {
     task_environment_.FastForwardBy(time);
@@ -376,6 +371,178 @@ INSTANTIATE_TEST_SUITE_P(
                       policy::EnrollmentConfig::MODE_RECOVERY,
                       policy::EnrollmentConfig::MODE_INITIAL_SERVER_FORCED));
 
+class EnrollmentScreenAttestationFlowTest
+    : public EnrollmentScreenBaseTest,
+      public ::testing::WithParamInterface<policy::EnrollmentConfig::Mode> {
+ protected:
+  policy::EnrollmentConfig GetEnrollmentConfig() {
+    policy::EnrollmentConfig config;
+    config.mode = GetParam();
+    config.auth_mechanism =
+        policy::EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE;
+    DCHECK(config.is_mode_attestation())
+        << "Config must be attestation: " << config;
+
+    return config;
+  }
+};
+
+TEST_P(EnrollmentScreenAttestationFlowTest, ShouldFinishEnrollmentScreen) {
+  const policy::EnrollmentConfig config = GetEnrollmentConfig();
+
+  ExpectEnrollmentConfig(config.mode, config.auth_mechanism);
+
+  ExpectAttestationBasedEnrollmentAndReportSuccess();
+  ExpectSuccessScreen();
+  ExpectClearAuth();
+
+  SetUpEnrollmentScreen(config);
+  ShowEnrollmentScreen();
+
+  EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
+}
+
+TEST_P(EnrollmentScreenAttestationFlowTest,
+       ShouldNotAutomaticallyRetryEnrollment) {
+  const policy::EnrollmentConfig config = GetEnrollmentConfig();
+
+  ExpectEnrollmentConfig(config.mode, config.auth_mechanism);
+  ExpectAttestationBasedEnrollmentAndReportFailure();
+  ExpectErrorScreen();
+  ExpectClearAuth();
+
+  SetUpEnrollmentScreen(config);
+  ShowEnrollmentScreen(/*suppress_jitter=*/true);
+
+  FastForwardTime(base::Days(1));
+
+  EXPECT_EQ(GetEnrollmentScreenRetries(), 0);
+  EXPECT_FALSE(last_screen_result().has_value());
+}
+
+TEST_P(EnrollmentScreenAttestationFlowTest, ShouldRetryEnrollmentOnUserAction) {
+  const policy::EnrollmentConfig config = GetEnrollmentConfig();
+
+  {
+    testing::InSequence s;
+    // First view is shown for attestation-based failure.
+    ExpectEnrollmentConfig(config.mode, config.auth_mechanism);
+    ExpectShowView();
+    ExpectAttestationBasedEnrollmentAndReportFailure();
+    ExpectErrorScreen();
+
+    // Second view is shown after user retry.
+    ExpectShowView();
+    ExpectAttestationBasedEnrollmentAndReportSuccess();
+    ExpectSuccessScreen();
+  }
+
+  ExpectClearAuth();
+
+  SetUpEnrollmentScreen(config);
+  ShowEnrollmentScreen();
+
+  EXPECT_FALSE(last_screen_result().has_value());
+
+  UserRetry();
+
+  EXPECT_EQ(GetEnrollmentScreenRetries(), 1);
+  EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AttestationBasedEnrollment,
+    EnrollmentScreenAttestationFlowTest,
+    ::testing::Values(
+        policy::EnrollmentConfig::MODE_ATTESTATION,
+        policy::EnrollmentConfig::MODE_ATTESTATION_LOCAL_FORCED,
+        policy::EnrollmentConfig::MODE_ATTESTATION_SERVER_FORCED,
+        policy::EnrollmentConfig::MODE_ATTESTATION_INITIAL_SERVER_FORCED));
+
+class EnrollmentScreenAttestationFlowWithManualFallbackTest
+    : public EnrollmentScreenAttestationFlowTest {
+ protected:
+  policy::EnrollmentConfig GetEnrollmentConfigForManualFallback() {
+    policy::EnrollmentConfig config;
+    config.mode = policy::EnrollmentConfig::GetManualFallbackMode(GetParam());
+    config.auth_mechanism =
+        policy::EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE;
+    DCHECK(config.is_manual_fallback())
+        << "Config must be manual fallback: " << config;
+
+    return config;
+  }
+};
+
+TEST_P(EnrollmentScreenAttestationFlowWithManualFallbackTest,
+       ShouldAutomaticallyFallbackToManuallEnrollment) {
+  const policy::EnrollmentConfig initial_config = GetEnrollmentConfig();
+  const policy::EnrollmentConfig fallback_config =
+      GetEnrollmentConfigForManualFallback();
+  {
+    testing::InSequence s;
+    // First view is shown for attestation-based failure.
+    ExpectEnrollmentConfig(initial_config.mode, initial_config.auth_mechanism);
+    ExpectShowView();
+    ExpectAttestationBasedEnrollmentAndReportFailureWithAutomaticFallback();
+
+    // Second view is shown for manual fallback.
+    ExpectEnrollmentConfig(fallback_config.mode,
+                           fallback_config.auth_mechanism);
+    ExpectShowViewWithLogin();
+    ExpectManualEnrollmentAndReportSuccess();
+    ExpectSuccessScreen();
+  }
+
+  ExpectClearAuth();
+
+  SetUpEnrollmentScreen(initial_config);
+  ShowEnrollmentScreen();
+
+  EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
+}
+
+TEST_P(EnrollmentScreenAttestationFlowWithManualFallbackTest,
+       ShouldFallbackToManualEnrollmentOnUserAction) {
+  const policy::EnrollmentConfig initial_config = GetEnrollmentConfig();
+  const policy::EnrollmentConfig fallback_config =
+      GetEnrollmentConfigForManualFallback();
+  {
+    testing::InSequence s;
+    // First view is shown for attestation-based failure.
+    ExpectEnrollmentConfig(initial_config.mode, initial_config.auth_mechanism);
+    ExpectShowView();
+    ExpectAttestationBasedEnrollmentAndReportFailure();
+    ExpectErrorScreen();
+
+    // Second view is shown for manual fallback. This should be triggered after
+    // user decides to fallback.
+    ExpectEnrollmentConfig(fallback_config.mode,
+                           fallback_config.auth_mechanism);
+    ExpectShowViewWithLogin();
+    ExpectManualEnrollmentAndReportSuccess();
+    ExpectSuccessScreen();
+  }
+
+  ExpectClearAuth();
+
+  SetUpEnrollmentScreen(initial_config);
+  ShowEnrollmentScreen();
+
+  EXPECT_FALSE(last_screen_result().has_value());
+
+  UserCancel();
+
+  EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ManualFallbackEnrollment,
+    EnrollmentScreenAttestationFlowWithManualFallbackTest,
+    ::testing::Values(
+        policy::EnrollmentConfig::MODE_ATTESTATION_SERVER_FORCED,
+        policy::EnrollmentConfig::MODE_ATTESTATION_INITIAL_SERVER_FORCED));
+
 class EnrollmentScreenRollbackFlowTest : public EnrollmentScreenBaseTest {
  protected:
   EnrollmentScreenRollbackFlowTest() { ConfigureRestoreAfterRollback(); }
@@ -410,7 +577,8 @@ TEST_F(EnrollmentScreenRollbackFlowTest, ShouldFinishEnrollmentScreen) {
   ExpectAttestationBasedEnrollmentAndReportSuccess();
   ExpectClearAuth();
 
-  SetUpEnrollmentScreen();
+  SetUpEnrollmentScreen(
+      policy::EnrollmentConfig::GetPrescribedEnrollmentConfig());
   ShowEnrollmentScreen();
 
   EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
@@ -424,13 +592,43 @@ TEST_F(EnrollmentScreenRollbackFlowTest,
   ExpectErrorScreen();
   ExpectClearAuth();
 
-  SetUpEnrollmentScreen();
+  SetUpEnrollmentScreen(
+      policy::EnrollmentConfig::GetPrescribedEnrollmentConfig());
   ShowEnrollmentScreen(/*suppress_jitter=*/true);
 
   FastForwardTime(base::Days(1));
 
   EXPECT_EQ(GetEnrollmentScreenRetries(), 0);
   EXPECT_FALSE(last_screen_result().has_value());
+}
+
+TEST_F(EnrollmentScreenRollbackFlowTest, ShouldRetryEnrollmentOnUserAction) {
+  {
+    testing::InSequence s;
+    // First view is shown for attestation-based failure.
+    ExpectEnrollmentConfig(rollback_config().mode,
+                           rollback_config().auth_mechanism);
+    ExpectShowView();
+    ExpectAttestationBasedEnrollmentAndReportFailure();
+    ExpectErrorScreen();
+
+    // Second view is shown after user retry.
+    ExpectShowView();
+    ExpectAttestationBasedEnrollmentAndReportSuccess();
+  }
+
+  ExpectClearAuth();
+
+  SetUpEnrollmentScreen(
+      policy::EnrollmentConfig::GetPrescribedEnrollmentConfig());
+  ShowEnrollmentScreen();
+
+  EXPECT_FALSE(last_screen_result().has_value());
+
+  UserRetry();
+
+  EXPECT_EQ(GetEnrollmentScreenRetries(), 1);
+  EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
 }
 
 TEST_F(EnrollmentScreenRollbackFlowTest,
@@ -452,7 +650,8 @@ TEST_F(EnrollmentScreenRollbackFlowTest,
 
   ExpectClearAuth();
 
-  SetUpEnrollmentScreen();
+  SetUpEnrollmentScreen(
+      policy::EnrollmentConfig::GetPrescribedEnrollmentConfig());
   ShowEnrollmentScreen();
 
   EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
@@ -479,7 +678,8 @@ TEST_F(EnrollmentScreenRollbackFlowTest,
 
   ExpectClearAuth();
 
-  SetUpEnrollmentScreen();
+  SetUpEnrollmentScreen(
+      policy::EnrollmentConfig::GetPrescribedEnrollmentConfig());
   ShowEnrollmentScreen();
 
   EXPECT_FALSE(last_screen_result().has_value());
