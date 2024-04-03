@@ -77,18 +77,14 @@ async function addMyFilesAndDriveVolumes():
   // Prepare data for MyFiles.
   const downloadsVolumeInfo =
       volumeManager.getCurrentProfileVolumeInfo(VolumeType.DOWNLOADS)!;
-  store.dispatch(addVolume({
-    volumeInfo: downloadsVolumeInfo,
-    volumeMetadata: createFakeVolumeMetadata(downloadsVolumeInfo),
-  }));
+  store.dispatch(addVolume(
+      downloadsVolumeInfo, createFakeVolumeMetadata(downloadsVolumeInfo)));
   // Prepare data for Drive.
   const driveVolumeInfo =
       volumeManager.getCurrentProfileVolumeInfo(VolumeType.DRIVE)!;
   await driveVolumeInfo.resolveDisplayRoot();
-  store.dispatch(addVolume({
-    volumeInfo: driveVolumeInfo,
-    volumeMetadata: createFakeVolumeMetadata(driveVolumeInfo),
-  }));
+  store.dispatch(
+      addVolume(driveVolumeInfo, createFakeVolumeMetadata(driveVolumeInfo)));
 
   return {
     myFilesFs: downloadsVolumeInfo.fileSystem as MockFileSystem,
@@ -450,10 +446,8 @@ export async function testDirectoryTreeUpdateWithVolumeChanges() {
   const removableVolumeInfo = MockVolumeManager.createMockVolumeInfo(
       VolumeType.REMOVABLE, 'removable', 'Removable 1');
   volumeManager.volumeInfoList.add(removableVolumeInfo);
-  store.dispatch(addVolume({
-    volumeInfo: removableVolumeInfo,
-    volumeMetadata: createFakeVolumeMetadata(removableVolumeInfo),
-  }));
+  store.dispatch(addVolume(
+      removableVolumeInfo, createFakeVolumeMetadata(removableVolumeInfo)));
 
   // Asserts that a removable directory is added after the update.
   await waitUntil(() => directoryTree.items.length === 3);
@@ -469,10 +463,8 @@ export async function testDirectoryTreeUpdateWithVolumeChanges() {
   const archiveVolumeInfo = MockVolumeManager.createMockVolumeInfo(
       VolumeType.ARCHIVE, 'archive', 'Archive 1');
   volumeManager.volumeInfoList.add(archiveVolumeInfo);
-  store.dispatch(addVolume({
-    volumeInfo: archiveVolumeInfo,
-    volumeMetadata: createFakeVolumeMetadata(archiveVolumeInfo),
-  }));
+  store.dispatch(addVolume(
+      archiveVolumeInfo, createFakeVolumeMetadata(archiveVolumeInfo)));
 
   // Asserts that an archive directory is added before the removable
   await waitUntil(() => directoryTree.items.length === 4);
@@ -486,7 +478,7 @@ export async function testDirectoryTreeUpdateWithVolumeChanges() {
       getDirectoryTreeItemLabels(directoryTree));
 
   // Deletes an archive directory.
-  store.dispatch(removeVolume({volumeId: archiveVolumeInfo.volumeId}));
+  store.dispatch(removeVolume(archiveVolumeInfo.volumeId));
 
   // Asserts that an archive directory is deleted.
   await waitUntil(() => directoryTree.items.length === 3);
@@ -523,10 +515,8 @@ export async function testDirectoryTreeWithAndroidDisabled() {
   volumeManager.isDisabled = (volumeType) => {
     return volumeType === VolumeType.ANDROID_FILES;
   };
-  store.dispatch(addVolume({
-    volumeInfo: androidVolumeInfo,
-    volumeMetadata: createFakeVolumeMetadata(androidVolumeInfo),
-  }));
+  store.dispatch(addVolume(
+      androidVolumeInfo, createFakeVolumeMetadata(androidVolumeInfo)));
 
   // Asserts that MyFiles should have 1 child: Android files.
   const myFilesItem = directoryTree.items[0]!;
@@ -573,10 +563,8 @@ export async function testDirectoryTreeWithRemovableDisabled() {
   volumeManager.isDisabled = (volumeType) => {
     return volumeType === VolumeType.REMOVABLE;
   };
-  store.dispatch(addVolume({
-    volumeInfo: removableVolumeInfo,
-    volumeMetadata: createFakeVolumeMetadata(removableVolumeInfo),
-  }));
+  store.dispatch(addVolume(
+      removableVolumeInfo, createFakeVolumeMetadata(removableVolumeInfo)));
 
   // Asserts that a removable directory is added after the update.
   await waitUntil(() => directoryTree.items.length === 3);
@@ -599,7 +587,7 @@ export async function testDirectoryTreeWithRemovableDisabled() {
   assertFalse(removableItem.expanded);
 
   // Unmount the removable and assert that it's removed from the directory.
-  store.dispatch(removeVolume({volumeId: removableVolumeInfo.volumeId}));
+  store.dispatch(removeVolume(removableVolumeInfo.volumeId));
   await waitUntil(() => directoryTree.items.length === 2);
 }
 
@@ -834,10 +822,9 @@ export async function testAddProviderAndSMB() {
   const providerFs =
       assert(volumeManager.volumeInfoList.item(2).fileSystem) as MockFileSystem;
   providerFs.populate(['/fsp_child/']);
-  store.dispatch(addVolume({
-    volumeInfo: nonSmbProviderVolumeInfo,
-    volumeMetadata: createFakeVolumeMetadata(nonSmbProviderVolumeInfo),
-  }));
+  store.dispatch(addVolume(
+      nonSmbProviderVolumeInfo,
+      createFakeVolumeMetadata(nonSmbProviderVolumeInfo)));
 
   // Add a volume representing an smbfs share to the mock filesystem.
   const smbShareVolumeInfo =
@@ -847,10 +834,8 @@ export async function testAddProviderAndSMB() {
   const smbFs =
       assert(volumeManager.volumeInfoList.item(3).fileSystem) as MockFileSystem;
   smbFs.populate(['/smbfs_child/']);
-  store.dispatch(addVolume({
-    volumeInfo: smbShareVolumeInfo,
-    volumeMetadata: createFakeVolumeMetadata(smbShareVolumeInfo),
-  }));
+  store.dispatch(addVolume(
+      smbShareVolumeInfo, createFakeVolumeMetadata(smbShareVolumeInfo)));
 
   // At top level, MyFiles and Drive, 2 volumes should be listed.
   await waitUntil(() => directoryTree.items.length === 4);

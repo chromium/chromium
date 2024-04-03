@@ -27,13 +27,21 @@ export async function testUpdateDeviceConnection(done: () => void) {
   const volumeInfo = MockVolumeManager.createMockVolumeInfo(
       VolumeType.PROVIDED, 'odfs', 'OneDrive', '', ODFS_EXTENSION_ID, '');
   const volumeMetadata = createFakeVolumeMetadata(volumeInfo);
-  store.dispatch(addVolume({
-    volumeInfo,
-    volumeMetadata,
-  }));
+  store.dispatch(addVolume(volumeInfo, volumeMetadata));
 
+  // Expect the volume to be added.
   const odfsVolume =
       convertVolumeInfoAndMetadataToVolume(volumeInfo, volumeMetadata);
+  const want1: Partial<State> = {
+    volumes: {
+      [odfsVolume.volumeId]: {
+        ...odfsVolume,
+        isDisabled: false,
+      },
+    },
+  };
+  await waitDeepEquals(store, want1, (state) => ({volumes: state.volumes}));
+
   let odfsVolumeFileData = getFileData(store.getState(), odfsVolume.rootKey!)!;
   let odfsVolumeEntry =
       getEntry(store.getState(), odfsVolume.rootKey!) as VolumeEntry;
@@ -41,7 +49,6 @@ export async function testUpdateDeviceConnection(done: () => void) {
   assertEquals(
       chrome.fileManagerPrivate.DeviceConnectionState.ONLINE,
       store.getState().device.connection);
-  assertFalse(store.getState().volumes[odfsVolume.volumeId]!.isDisabled);
   assertFalse(odfsVolumeFileData.disabled);
   assertFalse(odfsVolumeEntry.disabled);
 
@@ -51,7 +58,7 @@ export async function testUpdateDeviceConnection(done: () => void) {
   }));
 
   // Expect the volume to be set to disabled.
-  const want: Partial<State> = {
+  const want2: Partial<State> = {
     volumes: {
       [odfsVolume.volumeId]: {
         ...odfsVolume,
@@ -59,9 +66,9 @@ export async function testUpdateDeviceConnection(done: () => void) {
       },
     },
   };
-  await waitDeepEquals(store, want, (state) => ({
-                                      volumes: state.volumes,
-                                    }));
+  await waitDeepEquals(store, want2, (state) => ({
+                                       volumes: state.volumes,
+                                     }));
   assertEquals(
       chrome.fileManagerPrivate.DeviceConnectionState.OFFLINE,
       store.getState().device.connection);

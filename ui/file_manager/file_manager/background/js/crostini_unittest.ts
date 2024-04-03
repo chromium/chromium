@@ -5,20 +5,13 @@
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {installMockChrome} from '../../common/js/mock_chrome.js';
+import {installMockChrome, MockMetrics} from '../../common/js/mock_chrome.js';
 import {MockDirectoryEntry, MockEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {RootType} from '../../common/js/volume_manager_types.js';
 
 import {Crostini} from './crostini.js';
 import type {EntryLocation} from './entry_location_impl.js';
 import type {VolumeManager} from './volume_manager.js';
-
-/**
- * Mock metrics.
- */
-(window as any).metrics = {
-  recordSmallCount: function() {},
-};
 
 let volumeManagerRootType: RootType;
 
@@ -30,6 +23,7 @@ let crostini: Crostini;
 export function setUp() {
   // Mock fileManagerPrivate.onCrostiniChanged.
   const mockChrome = {
+    metricsPrivate: new MockMetrics(),
     fileManagerPrivate: {
       onCrostiniChanged: {
         addListener: () => {},

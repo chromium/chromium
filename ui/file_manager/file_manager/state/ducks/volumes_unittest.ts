@@ -10,6 +10,7 @@ import type {VolumeInfo} from '../../background/js/volume_info.js';
 import {isInteractiveVolume, isSameEntry} from '../../common/js/entry_utils.js';
 import {EntryList, FakeEntryImpl, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {isSinglePartitionFormatEnabled} from '../../common/js/flags.js';
+import {installMockChrome, MockMetrics} from '../../common/js/mock_chrome.js';
 import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {str} from '../../common/js/translations.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
@@ -21,8 +22,14 @@ import {getEmptyState, getEntry} from '../store.js';
 
 import {addVolume, convertVolumeInfoAndMetadataToVolume, driveRootEntryListKey, removeVolume, updateIsInteractiveVolume} from './volumes.js';
 
+
 export function setUp() {
   setUpFileManagerOnWindow();
+  // Mock Chrome APIs.
+  const mockChrome = {
+    metricsPrivate: new MockMetrics(),
+  };
+  installMockChrome(mockChrome);
 }
 
 /** Generate MyFiles entry with fake entry list. */
@@ -77,10 +84,7 @@ export async function testAddMyFilesVolume(done: () => void) {
   const {fileData, volumeInfo} = createMyFilesDataWithVolumeEntry();
   const myFilesVolumeEntry = fileData.entry as VolumeEntry;
   const volumeMetadata = createFakeVolumeMetadata(volumeInfo);
-  store.dispatch(addVolume({
-    volumeInfo,
-    volumeMetadata,
-  }));
+  store.dispatch(addVolume(volumeInfo, volumeMetadata));
 
   // Expect the newly added volume is in the store.
   myFilesVolumeEntry.addEntry(playFilesEntry);
@@ -91,6 +95,7 @@ export async function testAddMyFilesVolume(done: () => void) {
       [linuxFilesEntry.toURL()]: convertEntryToFileData(linuxFilesEntry),
       [myFilesVolumeEntry.toURL()]: {
         ...fileData,
+        canExpand: true,
         children: [playFilesEntry.toURL(), linuxFilesEntry.toURL()],
       },
     },
@@ -141,10 +146,7 @@ export async function testAddNestedMyFilesVolume(done: () => void) {
       VolumeType.ANDROID_FILES, 'playFilesId', playFilesUiEntry.label);
   volumeManager.volumeInfoList.add(playFilesVolumeInfo);
   const playFilesVolumeMetadata = createFakeVolumeMetadata(playFilesVolumeInfo);
-  store.dispatch(addVolume({
-    volumeInfo: playFilesVolumeInfo,
-    volumeMetadata: playFilesVolumeMetadata,
-  }));
+  store.dispatch(addVolume(playFilesVolumeInfo, playFilesVolumeMetadata));
 
   // Expect the new play file volume will be nested inside MyFiles and the old
   // placeholder will be removed from MyFiles children but still in the store.
@@ -154,6 +156,7 @@ export async function testAddNestedMyFilesVolume(done: () => void) {
     allEntries: {
       [myFilesVolumeEntry.toURL()]: {
         ...fileData,
+        canExpand: true,
         children: [playFilesVolumeEntry.toURL()],
       },
       [playFilesUiEntry.toURL()]: convertEntryToFileData(playFilesUiEntry),
@@ -191,10 +194,7 @@ export async function testAddDriveVolume(done: () => void) {
   const driveVolumeMetadata = createFakeVolumeMetadata(driveVolumeInfo);
   // DriveFS takes time to resolve.
   await driveVolumeInfo.resolveDisplayRoot();
-  store.dispatch(addVolume({
-    volumeInfo: driveVolumeInfo,
-    volumeMetadata: driveVolumeMetadata,
-  }));
+  store.dispatch(addVolume(driveVolumeInfo, driveVolumeMetadata));
 
   // Expect all fake entries inside Drive will be added as its children.
   const myFilesFileData = createMyFilesDataWithEntryList();
@@ -219,18 +219,13 @@ export async function testAddDriveVolume(done: () => void) {
       // Fake Drive root entry list.
       [driveRootEntryListKey]: {
         ...convertEntryToFileData(driveFakeRootEntryList),
+        canExpand: true,
         children: [
           driveVolumeEntry.toURL(),
           fakeSharedWithMeEntry.toURL(),
           fakeOfflineEntry.toURL(),
         ],
       },
-      // Computers.
-      [computersDisplayRoot.toURL()]:
-          convertEntryToFileData(computersDisplayRoot),
-      // Team drives.
-      [sharedDriveDisplayRoot.toURL()]:
-          convertEntryToFileData(sharedDriveDisplayRoot),
       // Shared with me.
       [fakeSharedWithMeEntry.toURL()]:
           convertEntryToFileData(fakeSharedWithMeEntry),
@@ -270,10 +265,7 @@ async function addVolumeForSinglePartitionRemovable(done: () => void) {
   const volumeInfo = MockVolumeManager.createMockVolumeInfo(
       VolumeType.REMOVABLE, 'removable:hoge', 'USB Drive', '/device/path/1');
   const volumeMetadata = createFakeVolumeMetadata(volumeInfo);
-  store.dispatch(addVolume({
-    volumeInfo: volumeInfo,
-    volumeMetadata: volumeMetadata,
-  }));
+  store.dispatch(addVolume(volumeInfo, volumeMetadata));
 
   // Expect the volume is in the store.
   const myFilesFileData = createMyFilesDataWithEntryList();
@@ -281,10 +273,12 @@ async function addVolumeForSinglePartitionRemovable(done: () => void) {
   const parentEntry = new EntryList(
       volumeMetadata.driveLabel || '', RootType.REMOVABLE,
       volumeMetadata.devicePath);
-  parentEntry.addEntry(volumeEntry);
 
   // There should be a parent wrapper if the flag is on.
   const hasParentWrapper = isSinglePartitionFormatEnabled();
+  if (hasParentWrapper) {
+    parentEntry.addEntry(volumeEntry);
+  }
 
   const want: Partial<State> = {
     allEntries: {
@@ -309,6 +303,7 @@ async function addVolumeForSinglePartitionRemovable(done: () => void) {
         [parentEntry.toURL()]: {
           ...convertEntryToFileData(parentEntry),
           isEjectable: true,
+          canExpand: true,
           children: [volumeEntry.toURL()],
         },
       } :
@@ -355,10 +350,7 @@ async function addVolumeForMultipleUsbPartitionsGrouping(done: () => void) {
   const partition1VolumeMetadata =
       createFakeVolumeMetadata(partition1VolumeInfo);
   partition1VolumeMetadata.driveLabel = 'USB_Drive';
-  store.dispatch(addVolume({
-    volumeInfo: partition1VolumeInfo,
-    volumeMetadata: partition1VolumeMetadata,
-  }));
+  store.dispatch(addVolume(partition1VolumeInfo, partition1VolumeMetadata));
 
   // Dispatch an action to add partition-2 volume.
   const partition2VolumeInfo = MockVolumeManager.createMockVolumeInfo(
@@ -367,10 +359,7 @@ async function addVolumeForMultipleUsbPartitionsGrouping(done: () => void) {
   const partition2VolumeMetadata =
       createFakeVolumeMetadata(partition2VolumeInfo);
   partition2VolumeMetadata.driveLabel = partition1VolumeMetadata.driveLabel;
-  store.dispatch(addVolume({
-    volumeInfo: partition2VolumeInfo,
-    volumeMetadata: partition2VolumeMetadata,
-  }));
+  store.dispatch(addVolume(partition2VolumeInfo, partition2VolumeMetadata));
 
   // Dispatch an action to add partition-3 volume.
   const partition3VolumeInfo = MockVolumeManager.createMockVolumeInfo(
@@ -379,10 +368,7 @@ async function addVolumeForMultipleUsbPartitionsGrouping(done: () => void) {
   const partition3VolumeMetadata =
       createFakeVolumeMetadata(partition3VolumeInfo);
   partition3VolumeMetadata.driveLabel = partition1VolumeMetadata.driveLabel;
-  store.dispatch(addVolume({
-    volumeInfo: partition3VolumeInfo,
-    volumeMetadata: partition3VolumeMetadata,
-  }));
+  store.dispatch(addVolume(partition3VolumeInfo, partition3VolumeMetadata));
 
   // Expect all 3 partition volumes are in the store and there will be a wrapper
   // entry created to group all 3 partitions.
@@ -422,6 +408,7 @@ async function addVolumeForMultipleUsbPartitionsGrouping(done: () => void) {
       [parentEntry.toURL()]: {
         ...convertEntryToFileData(parentEntry),
         isEjectable: true,
+        canExpand: true,
         children: [
           partition1VolumeEntry.toURL(),
           partition2VolumeEntry.toURL(),
@@ -487,7 +474,7 @@ export async function testAddDisabledVolume(done: () => void) {
   volumeManager.isDisabled = (volumeType) => {
     return volumeType === VolumeType.CROSTINI;
   };
-  store.dispatch(addVolume({volumeInfo, volumeMetadata}));
+  store.dispatch(addVolume(volumeInfo, volumeMetadata));
 
   // Expect the volume entry is being disabled.
   await waitUntil(() => {
@@ -521,8 +508,7 @@ export async function testAddDisabledDriveVolume(done: () => void) {
   volumeManager.isDisabled = (volumeType) => {
     return volumeType === VolumeType.DRIVE;
   };
-  store.dispatch(addVolume(
-      {volumeInfo: driveVolumeInfo, volumeMetadata: driveVolumeMetadata}));
+  store.dispatch(addVolume(driveVolumeInfo, driveVolumeMetadata));
 
   // Expect the volume entry is being disabled.
   await waitUntil(() => {
@@ -554,7 +540,7 @@ export async function testAddArchiveVolume(done: () => void) {
   const volumeMetadata = createFakeVolumeMetadata(volumeInfo);
 
   // Dispatch an action to add the archive volume.
-  store.dispatch(addVolume({volumeInfo, volumeMetadata}));
+  store.dispatch(addVolume(volumeInfo, volumeMetadata));
 
   // Expect the volume will be added from the store.
   const myFilesFileData = createMyFilesDataWithEntryList();
@@ -596,7 +582,7 @@ export async function testRemoveVolume(done: () => void) {
   const store = setupStore(initialState);
 
   // Dispatch an action to remove the volume.
-  store.dispatch(removeVolume({volumeId: volume.volumeId}));
+  store.dispatch(removeVolume(volume.volumeId));
 
   // Expect the volume will be removed from the store.
   await waitDeepEquals(store, {}, (state) => state.volumes);
@@ -640,7 +626,7 @@ export async function testRemoveVolumeFromMyFiles(done: () => void) {
   const store = setupStore(initialState);
 
   // Dispatch an action to remove volume.
-  store.dispatch(removeVolume({volumeId: crostiniVolume.volumeId}));
+  store.dispatch(removeVolume(crostiniVolume.volumeId));
 
   // Expect the volume entry has been removed from MyFiles and the UI entry has
   // been added back.
@@ -648,10 +634,9 @@ export async function testRemoveVolumeFromMyFiles(done: () => void) {
     allEntries: {
       [myFilesVolumeEntry.toURL()]: {
         ...convertEntryToFileData(myFilesVolumeEntry),
+        canExpand: true,
         children: [linuxFilesUiEntry.toURL()],
       },
-      [crostiniVolumeEntry.toURL()]:
-          convertEntryToFileData(crostiniVolumeEntry),
       [linuxFilesUiEntry.toURL()]: convertEntryToFileData(linuxFilesUiEntry),
     },
     volumes: {
@@ -726,7 +711,7 @@ export async function testRemoveGroupedRemovableVolume(done: () => void) {
   const store = setupStore(initialState);
 
   // Dispatch an action to remove partition1.
-  store.dispatch(removeVolume({volumeId: partition1Volume.volumeId}));
+  store.dispatch(removeVolume(partition1Volume.volumeId));
 
   // Expect the partition1 entry has been removed from its parent entry.
   const wantAfterRemovingPartition1: Partial<State> = {
@@ -734,12 +719,14 @@ export async function testRemoveGroupedRemovableVolume(done: () => void) {
       // parent entry.
       [parentEntry.toURL()]: {
         ...parentFileData,
+        canExpand: true,
         children: [partition2VolumeEntry.toURL()],
       },
-      // partition1 entry.
-      [partition1VolumeEntry.toURL()]: partition1FileData,
       // partition2 entry.
-      [partition2VolumeEntry.toURL()]: partition2FileData,
+      [partition2VolumeEntry.toURL()]: {
+        ...partition2FileData,
+        icon: ICON_TYPES.UNKNOWN_REMOVABLE,
+      },
     },
     volumes: {
       [partition2Volume.volumeId]: partition2Volume,
@@ -760,20 +747,25 @@ export async function testRemoveGroupedRemovableVolume(done: () => void) {
       partition2VolumeEntry, uiChildrenAfterRemovingPartition1[0]!));
 
   // Dispatch an action to remove partition2.
-  store.dispatch(removeVolume({volumeId: partition2Volume.volumeId}));
+  store.dispatch(removeVolume(partition2Volume.volumeId));
 
-  // Expect the partition2 entry has been removed from its parent entry.
+  // Expect the partition2 entry has been removed from its parent entry, but it
+  // still exists in the allEntries, waiting for the schedule cleaning.
   const wantAfterRemovingPartition2: Partial<State> = {
     allEntries: {
       // parent entry.
       [parentEntry.toURL()]: {
         ...parentFileData,
-        children: [],
+        canExpand: true,
+        children: [
+          partition2VolumeEntry.toURL(),
+        ],
       },
-      // partition1 entry.
-      [partition1VolumeEntry.toURL()]: partition1FileData,
       // partition2 entry.
-      [partition2VolumeEntry.toURL()]: partition2FileData,
+      [partition2VolumeEntry.toURL()]: {
+        ...partition2FileData,
+        icon: ICON_TYPES.UNKNOWN_REMOVABLE,
+      },
     },
     volumes: {},
     uiEntries: [],

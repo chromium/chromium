@@ -471,10 +471,7 @@ async function createAndAddNonInteractiveDownloadsVolume():
   const volumeMetadata = createFakeVolumeMetadata(volumeInfo);
   const volume =
       convertVolumeInfoAndMetadataToVolume(volumeInfo, volumeMetadata);
-  store.dispatch(addVolume({
-    volumeInfo,
-    volumeMetadata,
-  }));
+  store.dispatch(addVolume(volumeInfo, volumeMetadata));
 
   // Expect the newly added volume is in the store.
   const wantNewVol = {

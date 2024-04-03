@@ -327,8 +327,7 @@ export async function testPlayFilesAddedDuringScanningMyFiles() {
   ]);
   const subDirEntry = downloadsFS.entries['/sub-dir']!;
   // Add MyFiles to the store.
-  store.dispatch(addVolume(
-      {volumeInfo, volumeMetadata: createFakeVolumeMetadata(volumeInfo)}));
+  store.dispatch(addVolume(volumeInfo, createFakeVolumeMetadata(volumeInfo)));
   await waitUntil(() => {
     return !!store.getState().allEntries[myFilesEntry.toURL()];
   });
