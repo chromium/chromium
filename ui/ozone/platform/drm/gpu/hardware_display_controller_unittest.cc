@@ -173,6 +173,7 @@ void MAYBE_HardwareDisplayControllerTest::SetUp() {
 void MAYBE_HardwareDisplayControllerTest::TearDown() {
   controller_.reset();
   drm_->ResetPlaneManagerForTesting();
+  drm_->ClearCallbacks();
   drm_ = nullptr;
 }
 

@@ -986,4 +986,9 @@ void FakeDrmDevice::ResetPlaneManagerForTesting() {
   plane_manager_.reset();
 }
 
+void FakeDrmDevice::ClearCallbacks() {
+  base::queue<PageFlipCallback> empty;
+  callbacks_.swap(empty);
+}
+
 }  // namespace ui

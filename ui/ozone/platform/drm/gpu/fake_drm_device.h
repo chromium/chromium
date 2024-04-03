@@ -374,6 +374,12 @@ class FakeDrmDevice : public DrmDevice {
   // This function can be used to break the cycle in unittests.
   void ResetPlaneManagerForTesting();
 
+  // When CommitProperties has been called with a PageFlipRequest, FakeDrmDevice
+  // holds a reference to the PageFlipRequest, resulting in a reference cycle.
+  // This reference os released as a part of RunCallbacks. ClearCallbacks breaks
+  // the cycle without running the callbacks.
+  void ClearCallbacks();
+
  protected:
   ~FakeDrmDevice() override;
 
