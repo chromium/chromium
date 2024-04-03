@@ -16,6 +16,7 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time_interval.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/cros_system_api/dbus/power_manager/dbus-constants.h"
 
 namespace ash {
 
@@ -123,6 +124,28 @@ void DeviceWeeklyScheduledSuspendController::PowerManagerBecameAvailable(
   OnDeviceWeeklyScheduledSuspendUpdate();
 }
 
+void DeviceWeeklyScheduledSuspendController::SuspendDone(
+    base::TimeDelta sleep_duration) {
+  // Full resumes are signaled by a SuspendDone call, and any full resume
+  // triggered by third-parties will also cancel our full resume.
+  resume_after_ = std::nullopt;
+}
+
+void DeviceWeeklyScheduledSuspendController::DarkSuspendImminent() {
+  // Dark resumes are signaled by a DarkSuspendImminent call. The wake alarm
+  // at the end of a sleep interval also triggers a dark resume, and when it
+  // happens we want to transition to a full resume. Check `resume_after_`
+  // to know when a full resume is due: the first dark resume after this
+  // time will trigger a full resume; earlier events are ignored.
+  if (!resume_after_ || resume_after_.value() > base::Time::Now()) {
+    return;
+  }
+  // Trigger a full resume.
+  resume_after_ = std::nullopt;
+  chromeos::PowerManagerClient::Get()->NotifyUserActivity(
+      power_manager::USER_ACTIVITY_OTHER);
+}
+
 const RepeatingTimeIntervalTaskExecutors&
 DeviceWeeklyScheduledSuspendController::GetIntervalExecutorsForTesting() const {
   return interval_executors_;
@@ -135,7 +158,7 @@ void DeviceWeeklyScheduledSuspendController::SetTaskExecutorFactoryForTesting(
 
 void DeviceWeeklyScheduledSuspendController::
     OnDeviceWeeklyScheduledSuspendUpdate() {
-  // Early return in case the policy gets set before power manager is available.
+  // Early return in case the policy is set before power manager is available.
   if (!power_manager_available_) {
     return;
   }
@@ -165,14 +188,26 @@ void DeviceWeeklyScheduledSuspendController::
 
 void DeviceWeeklyScheduledSuspendController::OnTaskExecutorIntervalStart(
     base::TimeDelta duration) {
+  // Suspend the device for the specified duration. The device does NOT fully
+  // resume automatically; rather, the powerd wake alarm triggers a dark resume
+  // (signaled by a `DarkSuspendImminent` call) and we then need to trigger the
+  // full resume ourselves. Note that we suspend to RAM, to ensure consistent
+  // behavior across models. For more info about dark/full resumes, see:
+  // https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/power_manager/docs/dark_resume.md
   chromeos::PowerManagerClient::Get()->RequestSuspend(
       /*wakeup_count=*/std::nullopt, duration.InSeconds(),
-      power_manager::REQUEST_SUSPEND_DEFAULT);
+      power_manager::REQUEST_SUSPEND_TO_RAM);
+
+  // We want any dark resume that happens within `tolerance` of the wake time
+  // to trigger a full resume. Tolerance is an arbitrary duration that reduces
+  // the chance of missing the end of a sleep interval due to random timing
+  // issues, and is otherwise imperceptible if it causes an early full resume.
+  constexpr auto tolerance = base::Seconds(2);
+  resume_after_ = base::Time::Now() + duration - tolerance;
 }
 
 void DeviceWeeklyScheduledSuspendController::OnTaskExecutorIntervalEnd() {
-  // No device wake-up needed. The `RepeatingTimeIntervalTaskExecutor`'s
-  // underlying `NativeTimer` handles device wake-up at interval end.
+  // TODO(b/330836068): Remove interval end callback.
 }
 
 }  // namespace ash

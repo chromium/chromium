@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/app_mode/auto_sleep/repeating_time_interval_task_executor.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -35,6 +36,8 @@ class DeviceWeeklyScheduledSuspendController
 
   // chromeos::PowerManagerClient::Observer:
   void PowerManagerBecameAvailable(bool available) override;
+  void SuspendDone(base::TimeDelta sleep_duration) override;
+  void DarkSuspendImminent() override;
 
   const RepeatingTimeIntervalTaskExecutors& GetIntervalExecutorsForTesting()
       const;
@@ -58,6 +61,10 @@ class DeviceWeeklyScheduledSuspendController
 
   // Interval executors used to schedule device suspension and wake-up.
   RepeatingTimeIntervalTaskExecutors interval_executors_;
+
+  // Marks the end of the current sleep interval. Null while not sleeping.
+  // See `OnTaskExecutorIntervalStart` definition for more info.
+  std::optional<base::Time> resume_after_;
 
   bool power_manager_available_ = false;
 
