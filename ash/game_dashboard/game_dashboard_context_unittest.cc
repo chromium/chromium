@@ -799,6 +799,15 @@ TEST_F(GameDashboardContextTest, GameControlsSetupNudge) {
   EXPECT_FALSE(test_api_->GetGameControlsSetupNudge());
   test_api_->CloseTheMainMenu();
 
+  // Enter the setting page immediately, the nudge should disappear.
+  test_api_->OpenTheMainMenu();
+  EXPECT_TRUE(test_api_->GetGameControlsSetupNudge());
+  LeftClickOn(test_api_->GetMainMenuSettingsButton());
+  EXPECT_FALSE(test_api_->GetGameControlsSetupNudge());
+  LeftClickOn(test_api_->GetSettingsViewBackButton());
+  EXPECT_TRUE(test_api_->GetGameControlsSetupNudge());
+  test_api_->CloseTheMainMenu();
+
   // Test setup nudge for O4C games.
   game_window_->SetProperty(
       kArcGameControlsFlagsKey,

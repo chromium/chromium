@@ -444,6 +444,15 @@ class GameDashboardMainMenuView::GameControlsDetailsRow : public views::Button {
   GameControlsDetailsRow& operator=(const GameControlsDetailsRow) = delete;
   ~GameControlsDetailsRow() override = default;
 
+  // views::View:
+  void VisibilityChanged(views::View* starting_from, bool is_visible) override {
+    if (is_visible) {
+      MaybeDecorateSetupButton();
+    } else {
+      RemoveSetupButtonDecorationIfAny();
+    }
+  }
+
   PillButton* setup_button() { return setup_button_; }
   Switch* feature_switch() { return feature_switch_; }
 
@@ -526,6 +535,109 @@ class GameDashboardMainMenuView::GameControlsDetailsRow : public views::Button {
 
   aura::Window* GetGameWindow() { return main_menu_->context_->game_window(); }
 
+  // Adds pulse animation and an education nudge for
+  // `game_controls_setup_button_` if it exists, is enabled and not optimized
+  // for ChromeOS.
+  void MaybeDecorateSetupButton() {
+    const auto flags =
+        game_dashboard_utils::GetGameControlsFlag(GetGameWindow());
+    CHECK(flags);
+
+    if (!setup_button_ || !setup_button_->GetEnabled() ||
+        game_dashboard_utils::IsFlagSet(*flags, ArcGameControlsFlag::kO4C)) {
+      return;
+    }
+
+    ShowNudgeForSetupButton();
+    PerformPulseAnimationForSetupButton(/*pulse_count=*/0);
+  }
+
+  // Performs pulse animation for `game_controls_setup_button_`.
+  void PerformPulseAnimationForSetupButton(int pulse_count) {
+    DCHECK(setup_button_);
+
+    // Destroy the pulse layer if it pulses after `kSetupPulseTimes` times.
+    if (pulse_count >= kSetupPulseTimes) {
+      gc_setup_button_pulse_layer_.reset();
+      return;
+    }
+
+    auto* widget = GetWidget();
+    DCHECK(widget);
+
+    // Initiate pulse layer if it starts to pulse for the first time.
+    if (pulse_count == 0) {
+      gc_setup_button_pulse_layer_ =
+          std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR);
+      widget->GetLayer()->Add(gc_setup_button_pulse_layer_.get());
+      gc_setup_button_pulse_layer_->SetColor(
+          widget->GetColorProvider()->GetColor(
+              cros_tokens::kCrosSysHighlightText));
+    }
+
+    DCHECK(gc_setup_button_pulse_layer_);
+
+    // Initial setup button bounds in its widget coordinate.
+    const auto setup_bounds =
+        setup_button_->ConvertRectToWidget(gfx::Rect(setup_button_->size()));
+
+    // Set initial properties.
+    const float initial_corner_radius = setup_bounds.height() / 2.0f;
+    gc_setup_button_pulse_layer_->SetBounds(setup_bounds);
+    gc_setup_button_pulse_layer_->SetOpacity(1.0f);
+    gc_setup_button_pulse_layer_->SetRoundedCornerRadius(
+        gfx::RoundedCornersF(initial_corner_radius));
+
+    // Animate to target bounds, opacity and rounded corner radius.
+    auto target_bounds = setup_bounds;
+    target_bounds.Outset(kSetupPulseExtraHalfSize);
+    views::AnimationBuilder()
+        .SetPreemptionStrategy(
+            ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+        .OnEnded(base::BindOnce(
+            &GameControlsDetailsRow::PerformPulseAnimationForSetupButton,
+            base::Unretained(this), pulse_count + 1))
+        .Once()
+        .SetDuration(kSetupPulseDuration)
+        .SetBounds(gc_setup_button_pulse_layer_.get(), target_bounds,
+                   gfx::Tween::ACCEL_0_40_DECEL_100)
+        .SetOpacity(gc_setup_button_pulse_layer_.get(), 0.0f,
+                    gfx::Tween::ACCEL_0_80_DECEL_80)
+        .SetRoundedCorners(gc_setup_button_pulse_layer_.get(),
+                           gfx::RoundedCornersF(initial_corner_radius +
+                                                kSetupPulseExtraHalfSize),
+                           gfx::Tween::ACCEL_0_40_DECEL_100);
+  }
+
+  // Shows education nudge for `game_controls_setup_button_`.
+  void ShowNudgeForSetupButton() {
+    DCHECK(setup_button_);
+
+    auto nudge_data = AnchoredNudgeData(
+        kSetupNudgeId, NudgeCatalogName::kGameDashboardControlsNudge,
+        l10n_util::GetStringUTF16(
+            IDS_ASH_GAME_DASHBOARD_GC_KEYBOARD_SETUP_NUDGE_SUB_TITLE),
+        this);
+    nudge_data.image_model =
+        ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
+            IDR_GAME_DASHBOARD_CONTROLS_SETUP_NUDGE);
+    nudge_data.title_text = l10n_util::GetStringUTF16(
+        IDS_ASH_GAME_DASHBOARD_GC_KEYBOARD_SETUP_NUDGE_TITLE);
+    nudge_data.arrow = views::BubbleBorder::LEFT_CENTER;
+    nudge_data.background_color_id = cros_tokens::kCrosSysBaseHighlight;
+    nudge_data.image_background_color_id = cros_tokens::kCrosSysOnBaseHighlight;
+    nudge_data.duration = NudgeDuration::kMediumDuration;
+    nudge_data.highlight_anchor_button = false;
+
+    Shell::Get()->anchored_nudge_manager()->Show(nudge_data);
+  }
+
+  // Removes the setup button pulse animation and nudge if there is any.
+  void RemoveSetupButtonDecorationIfAny() {
+    gc_setup_button_pulse_layer_.reset();
+    Shell::Get()->anchored_nudge_manager()->Cancel(kSetupNudgeId);
+  }
+
   const raw_ptr<GameDashboardMainMenuView> main_menu_;
 
   raw_ptr<FeatureHeader> header_ = nullptr;
@@ -534,6 +646,9 @@ class GameDashboardMainMenuView::GameControlsDetailsRow : public views::Button {
 
   // App name from the app where this view is anchored.
   std::string app_name_;
+
+  // Layer for setup button pulse animation.
+  std::unique_ptr<ui::Layer> gc_setup_button_pulse_layer_;
 };
 
 BEGIN_METADATA(GameDashboardMainMenuView, GameControlsDetailsRow)
@@ -935,11 +1050,6 @@ void GameDashboardMainMenuView::VisibilityChanged(views::View* starting_from,
       kArcGameControlsFlagsKey,
       game_dashboard_utils::UpdateFlag(*flags, ArcGameControlsFlag::kMenu,
                                        /*enable_flag=*/is_visible));
-
-  if (is_visible) {
-    MaybeDecorateSetupButton(
-        game_dashboard_utils::IsFlagSet(*flags, ArcGameControlsFlag::kO4C));
-  }
 }
 
 void GameDashboardMainMenuView::UpdateRecordGameTile(
@@ -968,93 +1078,6 @@ void GameDashboardMainMenuView::UpdateRecordGameTile(
       record_game_tile_->IsToggled()
           ? IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_TOOLTIPS_RECORD_STOP
           : IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_TOOLTIPS_RECORD_START));
-}
-
-void GameDashboardMainMenuView::MaybeDecorateSetupButton(bool is_o4c) {
-  if (!GetGameControlsSetupButton() || is_o4c) {
-    return;
-  }
-  ShowNudgeForSetupButton();
-  PerformPulseAnimationForSetupButton(/*pulse_count=*/0);
-}
-
-void GameDashboardMainMenuView::PerformPulseAnimationForSetupButton(
-    int pulse_count) {
-  auto* setup_button = GetGameControlsSetupButton();
-  DCHECK(setup_button);
-
-  // Destroy the pulse layer if it pulses after `kSetupPulseTimes` times.
-  if (pulse_count >= kSetupPulseTimes) {
-    gc_setup_button_pulse_layer_.reset();
-    return;
-  }
-
-  auto* widget = GetWidget();
-  DCHECK(widget);
-
-  // Initiate pulse layer if it starts to pulse for the first time.
-  if (pulse_count == 0) {
-    gc_setup_button_pulse_layer_ =
-        std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR);
-    widget->GetLayer()->Add(gc_setup_button_pulse_layer_.get());
-    gc_setup_button_pulse_layer_->SetColor(widget->GetColorProvider()->GetColor(
-        cros_tokens::kCrosSysHighlightText));
-  }
-
-  DCHECK(gc_setup_button_pulse_layer_);
-
-  // Initial setup button bounds in its widget coordinate.
-  const auto setup_bounds =
-      setup_button->ConvertRectToWidget(gfx::Rect(setup_button->size()));
-
-  // Set initial properties.
-  const float initial_corner_radius = setup_bounds.height() / 2.0f;
-  gc_setup_button_pulse_layer_->SetBounds(setup_bounds);
-  gc_setup_button_pulse_layer_->SetOpacity(1.0f);
-  gc_setup_button_pulse_layer_->SetRoundedCornerRadius(
-      gfx::RoundedCornersF(initial_corner_radius));
-
-  // Animate to target bounds, opacity and rounded corner radius.
-  auto target_bounds = setup_bounds;
-  target_bounds.Outset(kSetupPulseExtraHalfSize);
-  views::AnimationBuilder()
-      .SetPreemptionStrategy(
-          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
-      .OnEnded(base::BindOnce(
-          &GameDashboardMainMenuView::PerformPulseAnimationForSetupButton,
-          base::Unretained(this), pulse_count + 1))
-      .Once()
-      .SetDuration(kSetupPulseDuration)
-      .SetBounds(gc_setup_button_pulse_layer_.get(), target_bounds,
-                 gfx::Tween::ACCEL_0_40_DECEL_100)
-      .SetOpacity(gc_setup_button_pulse_layer_.get(), 0.0f,
-                  gfx::Tween::ACCEL_0_80_DECEL_80)
-      .SetRoundedCorners(gc_setup_button_pulse_layer_.get(),
-                         gfx::RoundedCornersF(initial_corner_radius +
-                                              kSetupPulseExtraHalfSize),
-                         gfx::Tween::ACCEL_0_40_DECEL_100);
-}
-
-void GameDashboardMainMenuView::ShowNudgeForSetupButton() {
-  DCHECK(GetGameControlsSetupButton());
-
-  auto nudge_data = AnchoredNudgeData(
-      kSetupNudgeId, NudgeCatalogName::kGameDashboardControlsNudge,
-      l10n_util::GetStringUTF16(
-          IDS_ASH_GAME_DASHBOARD_GC_KEYBOARD_SETUP_NUDGE_SUB_TITLE),
-      game_controls_details_);
-  nudge_data.image_model =
-      ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
-          IDR_GAME_DASHBOARD_CONTROLS_SETUP_NUDGE);
-  nudge_data.title_text = l10n_util::GetStringUTF16(
-      IDS_ASH_GAME_DASHBOARD_GC_KEYBOARD_SETUP_NUDGE_TITLE);
-  nudge_data.arrow = views::BubbleBorder::LEFT_CENTER;
-  nudge_data.background_color_id = cros_tokens::kCrosSysBaseHighlight;
-  nudge_data.image_background_color_id = cros_tokens::kCrosSysOnBaseHighlight;
-  nudge_data.duration = NudgeDuration::kMediumDuration;
-  nudge_data.highlight_anchor_button = false;
-
-  Shell::Get()->anchored_nudge_manager()->Show(nudge_data);
 }
 
 void GameDashboardMainMenuView::AddSettingsViews() {

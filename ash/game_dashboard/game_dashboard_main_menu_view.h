@@ -129,15 +129,6 @@ class ASH_EXPORT GameDashboardMainMenuView
   // the default UI.
   void UpdateRecordGameTile(bool is_recording_game_window);
 
-  // Adds pulse animation and an education nudge for
-  // `game_controls_setup_button_` if it exists and `is_o4c` is false. `is_o4c`
-  // is true if the ARC game is optimized for ChromeOS.
-  void MaybeDecorateSetupButton(bool is_o4c);
-  // Performs pulse animation for `game_controls_setup_button_`.
-  void PerformPulseAnimationForSetupButton(int pulse_count);
-  // Shows education nudge for `game_controls_setup_button_`.
-  void ShowNudgeForSetupButton();
-
   // Creates the `settings_view_container_` and adds all rows pertaining to the
   // settings view to it.
   void AddSettingsViews();
@@ -189,9 +180,6 @@ class ASH_EXPORT GameDashboardMainMenuView
 
   // Back button in the `settings_view_container_`. Visible for testing.
   raw_ptr<IconButton> settings_view_back_button_ = nullptr;
-
-  // Layer for setup button pulse animation.
-  std::unique_ptr<ui::Layer> gc_setup_button_pulse_layer_;
 };
 
 }  // namespace ash
