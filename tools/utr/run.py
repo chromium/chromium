@@ -10,12 +10,16 @@ same way it's done on the bots. See the README.md in //tools/utr/ for more info.
 
 import argparse
 import logging
+import os
 import pathlib
 import sys
 
 import builders
 import cipd
 import recipe
+
+_THIS_DIR = pathlib.Path(__file__).resolve().parent
+_SRC_DIR = _THIS_DIR.parents[1]
 
 
 def add_common_args(parser):
@@ -108,6 +112,13 @@ def main():
   args = parse_args()
   logging.basicConfig(level=logging.DEBUG if args.verbosity else logging.INFO,
                       format='%(message)s')
+
+  cipd_bin_path = _SRC_DIR.joinpath('third_party', 'depot_tools', '.cipd_bin')
+  if not cipd_bin_path.exists():
+    logging.warning(
+        ".cipd_bin folder not found. 'gclient sync' may need to be run")
+  else:
+    os.environ["PATH"] = str(cipd_bin_path) + os.pathsep + os.environ["PATH"]
 
   if not recipe.check_rdb_auth():
     return 1

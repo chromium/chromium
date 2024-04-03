@@ -10,6 +10,7 @@ import os
 import pathlib
 import shutil
 import subprocess
+import sys
 import tempfile
 
 from collections import namedtuple
@@ -210,7 +211,7 @@ class LegacyRunner:
         while not proc.stdout.at_eof():
           try:
             line = await proc.stdout.readline()
-            adapter.ProcessLine(line.decode('utf-8').strip('\n'))
+            adapter.ProcessLine(line.decode('utf-8').strip(os.linesep))
           except ValueError:
             logging.exception('Failed to parse line from the recipe')
         await proc.wait()
