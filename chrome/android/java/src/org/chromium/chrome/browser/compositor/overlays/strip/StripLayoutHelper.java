@@ -186,6 +186,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     // An observer that is notified of changes to a {@link TabGroupModelFilter} object.
     private final TabGroupModelFilterObserver mTabGroupModelFilterObserver =
             new TabGroupModelFilterObserver() {
+                int mSourceRootId = Tab.INVALID_TAB_ID;
+
                 @Override
                 public void willMoveTabGroup(int tabModelOldIndex, int tabModelNewIndex) {
                     mMovingGroup = true;
@@ -199,6 +201,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
                 @Override
                 public void didMergeTabToGroup(Tab movedTab, int selectedTabIdInGroup) {
+                    updateGroupAccessibilityDescription(movedTab.getRootId());
                     // Removing the tab at the end of a group through the GTS will result in the
                     // width of a group changing without a tab moving. This means a rebuild won't
                     // occur, and we'll need to manually update the bottom indicator here.
@@ -209,7 +212,15 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                 }
 
                 @Override
+                public void willMoveTabOutOfGroup(Tab movedTab, int newRootId) {
+                    // TODO(crbug.com/326494015): Refactor #didMoveTabOutOfGroup to pass in previous
+                    //  root ID.
+                    mSourceRootId = movedTab.getRootId();
+                }
+
+                @Override
                 public void didMoveTabOutOfGroup(Tab movedTab, int prevFilterIndex) {
+                    updateGroupAccessibilityDescription(mSourceRootId);
                     // Removing the tab at the end of a group through the GTS will result in the
                     // width of a group changing without a tab moving. This means a rebuild won't
                     // occur, and we'll need to manually update the bottom indicator here.
@@ -217,6 +228,12 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                         buildBottomIndicator();
                         mRenderHost.requestRender();
                     }
+                }
+
+                @Override
+                public void didMoveWithinGroup(
+                        Tab movedTab, int tabModelOldIndex, int tabModelNewIndex) {
+                    updateGroupAccessibilityDescription(movedTab.getRootId());
                 }
 
                 @Override
@@ -231,6 +248,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
                     int widthPx = mLayerTitleCache.getGroupTitleWidth(mIncognito, newTitle);
                     updateGroupTitle(rootId, newTitle, widthPx);
+                    updateGroupAccessibilityDescription(groupTitle);
 
                     // TODO(crbug.com/331664842): When group title bitmaps are culled, guard this
                     //  with groupTitle.isVisible() check to avoid creating when unneeded.
@@ -1015,10 +1033,23 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     }
 
     /**
-     * Called when a tab is being closed. When called, the closing tab will not
-     * be part of the model.
+     * Called when a tab will be closed. When called, the closing tab will be part of the model.
+     *
      * @param time The current time of the app in ms.
-     * @param id   The id of the tab being closed.
+     * @param tab The tab that will be closed.
+     */
+    public void willCloseTab(long time, Tab tab) {
+        if (tab != null) {
+            updateGroupAccessibilityDescription(tab.getRootId());
+        }
+    }
+
+    /**
+     * Called when a tab is being closed. When called, the closing tab will not be part of the
+     * model.
+     *
+     * @param time The current time of the app in ms.
+     * @param id The id of the tab being closed.
      */
     public void tabClosed(long time, int id) {
         if (findTabById(id) == null) return;
@@ -1078,21 +1109,25 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         // Otherwise, 2. Build any tabs that are missing.
         finishAnimationsAndPushTabUpdates();
         List<Animator> animationList = computeAndUpdateTabOrders(false, !onStartup);
-        if (animationList == null) animationList = new ArrayList<>();
+        Tab tab = getTabById(id);
+        if (tab != null) {
+            updateGroupAccessibilityDescription(tab.getRootId());
+        }
 
         // 3. Start an animation for the newly created tab.
-        StripLayoutTab tab = findTabById(id);
-        if (tab != null && !onStartup) {
-            runTabAddedAnimator(animationList, tab);
+        if (animationList == null) animationList = new ArrayList<>();
+        StripLayoutTab stripTab = findTabById(id);
+        if (stripTab != null && !onStartup) {
+            runTabAddedAnimator(animationList, stripTab);
         }
 
         // 4. If the new tab will be selected, scroll it to view. If the new tab will not be
         // selected, scroll the currently selected tab to view. Skip auto-scrolling if the tab is
         // being created due to a tab closure being undone.
-        if (tab != null && !closureCancelled) {
+        if (stripTab != null && !closureCancelled) {
             boolean animate = !onStartup && !mAnimationsDisabledForTesting;
             if (selected) {
-                float delta = calculateDeltaToMakeTabVisible(tab);
+                float delta = calculateDeltaToMakeTabVisible(stripTab);
                 setScrollForScrollingTabStacker(delta, animate, time);
             } else {
                 bringSelectedTabToVisibleArea(time, animate);
@@ -2295,6 +2330,53 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         return animationList;
     }
 
+    private String buildGroupAccessibilityDescription(@NonNull StripLayoutGroupTitle groupTitle) {
+        final String contentDescriptionSeparator = " - ";
+        Resources res = mContext.getResources();
+        StringBuilder builder = new StringBuilder();
+
+        String groupDescription = groupTitle.getTitle();
+        if (TextUtils.isEmpty(groupDescription)) {
+            // "Unnamed group"
+            int titleRes = R.string.accessibility_tabstrip_group_identifier_unnamed;
+            groupDescription = res.getString(titleRes);
+        }
+        builder.append(groupDescription);
+
+        List<Tab> relatedTabs =
+                mTabGroupModelFilter.getRelatedTabListForRootId(groupTitle.getRootId());
+        int relatedTabsCount = relatedTabs.size();
+        if (relatedTabsCount > 0) {
+            // " - "
+            builder.append(contentDescriptionSeparator);
+
+            String firstTitle = relatedTabs.get(0).getTitle();
+            String tabsDescription;
+            if (relatedTabsCount == 1) {
+                // <title>
+                tabsDescription = firstTitle;
+            } else {
+                // <title> and <num> other tabs
+                int descriptionRes = R.string.accessibility_tabstrip_group_identifier_multiple_tabs;
+                tabsDescription = res.getString(descriptionRes, firstTitle, relatedTabsCount - 1);
+            }
+            builder.append(tabsDescription);
+        }
+
+        return builder.toString();
+    }
+
+    @VisibleForTesting
+    void updateGroupAccessibilityDescription(int rootId) {
+        StripLayoutGroupTitle groupTitle = findGroupTitle(rootId);
+        updateGroupAccessibilityDescription(groupTitle);
+    }
+
+    private void updateGroupAccessibilityDescription(StripLayoutGroupTitle groupTitle) {
+        if (groupTitle == null) return;
+        groupTitle.setAccessibilityDescription(buildGroupAccessibilityDescription(groupTitle));
+    }
+
     private void updateGroupTitle(int rootId, String title, int widthPx) {
         StripLayoutGroupTitle groupTitle = findGroupTitle(rootId);
         if (groupTitle == null) return;
@@ -2342,6 +2424,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         StripLayoutGroupTitle groupTitle =
                 new StripLayoutGroupTitle(mIncognito, rootId, titleString, textWidth, color);
+        updateGroupAccessibilityDescription(groupTitle);
         pushPropertiesToGroupTitle(groupTitle);
 
         return groupTitle;

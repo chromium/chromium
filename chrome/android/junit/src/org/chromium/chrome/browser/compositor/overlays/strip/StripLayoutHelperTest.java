@@ -239,6 +239,61 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    @Feature({"Accessibility"})
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
+    public void testGroupIndicatorAccessibilityDescriptions_OneTab() {
+        // Setup and group first tab.
+        initializeTest(false, false, 0);
+        groupTabs(0, 1);
+
+        // Verify.
+        String expectedDescription = "Unnamed group - Tab 1";
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        assertTrue("First should be a group title.", views[0] instanceof StripLayoutGroupTitle);
+        assertEquals(
+                "A11y description for group title was wrong.",
+                expectedDescription,
+                views[0].getAccessibilityDescription());
+    }
+
+    @Test
+    @Feature({"Accessibility"})
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
+    public void testGroupIndicatorAccessibilityDescriptions_MultipleTabs() {
+        // Setup and group first three tabs.
+        initializeTest(false, false, 0);
+        groupTabs(0, 3);
+
+        // Verify.
+        String expectedDescription = "Unnamed group - Tab 1 and 2 other tabs";
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        assertTrue("First should be a group title.", views[0] instanceof StripLayoutGroupTitle);
+        assertEquals(
+                "A11y description for group title was wrong.",
+                expectedDescription,
+                views[0].getAccessibilityDescription());
+    }
+
+    @Test
+    @Feature({"Accessibility"})
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
+    public void testGroupIndicatorAccessibilityDescriptions_MultipleTabs_NamedGroup() {
+        // Setup and group first three tabs. Name the group.
+        when(mTabGroupModelFilter.getTabGroupTitle(0)).thenReturn("Group name");
+        initializeTest(false, false, 0);
+        groupTabs(0, 3);
+
+        // Verify.
+        String expectedDescription = "Group name - Tab 1 and 2 other tabs";
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        assertTrue("First should be a group title.", views[0] instanceof StripLayoutGroupTitle);
+        assertEquals(
+                "A11y description for group title was wrong.",
+                expectedDescription,
+                views[0].getAccessibilityDescription());
+    }
+
+    @Test
     public void testAllTabsClosed() {
         initializeTest(false, false, 0);
         assertTrue(
@@ -3158,13 +3213,18 @@ public class StripLayoutHelperTest {
     private void groupTabs(int startIndex, int endIndex) {
         int groupRootId = mModel.getTabAt(startIndex).getId();
         int numTabs = endIndex - startIndex;
-
+        List<Tab> relatedTabs = new ArrayList<>();
         for (int i = startIndex; i < endIndex; i++) {
-            when(mTabGroupModelFilter.isTabInTabGroup(eq(mModel.getTabAt(i)))).thenReturn(true);
-            when(mModel.getTabAt(i).getRootId()).thenReturn(groupRootId);
+            Tab tab = mModel.getTabAt(i);
+            when(mTabGroupModelFilter.isTabInTabGroup(eq(tab))).thenReturn(true);
+            when(tab.getRootId()).thenReturn(groupRootId);
+            relatedTabs.add(tab);
         }
         when(mTabGroupModelFilter.getRelatedTabCountForRootId(eq(groupRootId))).thenReturn(numTabs);
+        when(mTabGroupModelFilter.getRelatedTabListForRootId(eq(groupRootId)))
+                .thenReturn(relatedTabs);
 
+        mStripLayoutHelper.updateGroupAccessibilityDescription(groupRootId);
         mStripLayoutHelper.rebuildStripViews();
     }
 

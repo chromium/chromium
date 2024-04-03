@@ -66,6 +66,8 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     private String mTitle;
     @ColorInt private int mColor;
 
+    private String mAccessibilityDescription = "";
+
     // Bottom indicator variables
     private float mBottomIndicatorWidth;
 
@@ -141,8 +143,11 @@ public class StripLayoutGroupTitle extends StripLayoutView {
 
     @Override
     public String getAccessibilityDescription() {
-        // TODO(crbug.com/326494015): Update when official descriptions are finalized.
-        return "Tab group";
+        return mAccessibilityDescription;
+    }
+
+    protected void setAccessibilityDescription(String accessibilityDescription) {
+        mAccessibilityDescription = accessibilityDescription;
     }
 
     @Override

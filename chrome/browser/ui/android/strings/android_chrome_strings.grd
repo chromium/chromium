@@ -4323,6 +4323,12 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome da
       <message name="IDS_ACCESSIBILITY_TABSTRIP_BTN_INCOGNITO_TOGGLE_INCOGNITO" desc="Content description for the Incognito tabs toggle button when viewing Incognito tabs.">
         Leave Incognito mode
       </message>
+      <message name="IDS_ACCESSIBILITY_TABSTRIP_GROUP_IDENTIFIER_MULTIPLE_TABS" desc="Content description for group identifiers with multiple tabs.">
+        <ph name="WEBSITE_TITLE">%1$s<ex>Crater Lake National Park (U.S. National Park Service)</ex></ph> and <ph name="TAB_COUNT">%2$d<ex>12</ex></ph> other tabs
+      </message>
+      <message name="IDS_ACCESSIBILITY_TABSTRIP_GROUP_IDENTIFIER_UNNAMED" desc="Content description for group identifiers without a name.">
+        Unnamed group
+      </message>
       <message name="IDS_ACCESSIBILITY_TABSTRIP_IDENTIFIER" desc="Content description for tabs that are not selected">
         Tab
       </message>
