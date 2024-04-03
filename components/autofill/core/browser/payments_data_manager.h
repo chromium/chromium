@@ -36,6 +36,7 @@ class SyncService;
 namespace autofill {
 
 class AutofillImageFetcherBase;
+class AutofillOptimizationGuide;
 class BankAccount;
 struct CreditCardArtImage;
 class PaymentsDatabaseHelper;
@@ -114,6 +115,15 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   GetMerchantBenefitByInstrumentIdAndOrigin(
       CreditCardBenefitBase::LinkedCardInstrumentId instrument_id,
       const url::Origin& merchant_origin) const;
+
+  // Returns an applicable benefit description string to display to the user
+  // based on the combination of `credit_card` and `origin`. However, if
+  // `credit_card.IsCardEligibleForBenefits()` == false, the benefit description
+  // will still be returned but not displayed to users.
+  std::u16string GetApplicableBenefitDescriptionForCardAndOrigin(
+      const CreditCard& credit_card,
+      const url::Origin& origin,
+      const AutofillOptimizationGuide* optimization_guide) const;
 
   // Returns just LOCAL_CARD cards.
   virtual std::vector<CreditCard*> GetLocalCreditCards() const;

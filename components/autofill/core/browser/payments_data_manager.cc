@@ -10,6 +10,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
+#include "components/autofill/core/browser/autofill_optimization_guide.h"
 #include "components/autofill/core/browser/autofill_shared_storage_handler.h"
 #include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/data_model/credit_card_art_image.h"
@@ -528,6 +529,54 @@ PaymentsDataManager::GetMerchantBenefitByInstrumentIdAndOrigin(
       instrument_id, [&merchant_origin](const CreditCardMerchantBenefit& b) {
         return b.merchant_domains().contains(merchant_origin);
       });
+}
+
+std::u16string
+PaymentsDataManager::GetApplicableBenefitDescriptionForCardAndOrigin(
+    const CreditCard& credit_card,
+    const url::Origin& origin,
+    const AutofillOptimizationGuide* optimization_guide) const {
+  // Benefits are only supported for app locale set to U.S. English.
+  if (app_locale_ != "en-US") {
+    return std::u16string();
+  }
+  CreditCardBenefitBase::LinkedCardInstrumentId benefit_instrument_id(
+      credit_card.instrument_id());
+
+  // 1. Check merchant benefit.
+  std::optional<CreditCardMerchantBenefit> merchant_benefit =
+      GetMerchantBenefitByInstrumentIdAndOrigin(benefit_instrument_id, origin);
+  if (merchant_benefit && merchant_benefit->IsActiveBenefit()) {
+    return merchant_benefit->benefit_description();
+  }
+
+  // 2. Check category benefit.
+  // TODO(crbug.com/331961211): Query PaymentsDataManager before Optimization
+  // Guide for category benefits
+  if (optimization_guide) {
+    CreditCardCategoryBenefit::BenefitCategory category_benefit_type =
+        optimization_guide->AttemptToGetEligibleCreditCardBenefitCategory(
+            credit_card.issuer_id(), origin);
+    if (category_benefit_type !=
+        CreditCardCategoryBenefit::BenefitCategory::kUnknownBenefitCategory) {
+      std::optional<CreditCardCategoryBenefit> category_benefit =
+          GetCategoryBenefitByInstrumentIdAndCategory(benefit_instrument_id,
+                                                      category_benefit_type);
+      if (category_benefit && category_benefit->IsActiveBenefit()) {
+        return category_benefit->benefit_description();
+      }
+    }
+  }
+
+  // 3. Check flat rate benefit.
+  std::optional<CreditCardFlatRateBenefit> flat_rate_benefit =
+      GetFlatRateBenefitByInstrumentId(benefit_instrument_id);
+  if (flat_rate_benefit && flat_rate_benefit->IsActiveBenefit()) {
+    return flat_rate_benefit->benefit_description();
+  }
+
+  // No eligible benefit to display.
+  return std::u16string();
 }
 
 std::vector<CreditCard*> PaymentsDataManager::GetLocalCreditCards() const {
