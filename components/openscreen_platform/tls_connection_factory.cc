@@ -26,7 +26,7 @@ namespace openscreen {
 class TaskRunner;
 
 std::unique_ptr<TlsConnectionFactory> TlsConnectionFactory::CreateFactory(
-    Client* client,
+    Client& client,
     TaskRunner& task_runner) {
   return std::make_unique<openscreen_platform::TlsConnectionFactory>(client);
 }
@@ -109,7 +109,7 @@ void TlsConnectionFactory::Listen(const IPEndpoint& local_address,
 }
 
 TlsConnectionFactory::TlsConnectionFactory(
-    openscreen::TlsConnectionFactory::Client* client)
+    openscreen::TlsConnectionFactory::Client& client)
     : client_(client) {}
 
 TlsConnectionFactory::TcpConnectRequest::TcpConnectRequest(

@@ -67,7 +67,7 @@ class AudioSenderTest : public ::testing::Test {
         &FakeOpenscreenClock::now, openscreen_task_runner_);
     openscreen_packet_router_ =
         std::make_unique<openscreen::cast::SenderPacketRouter>(
-            mock_openscreen_environment_.get());
+            *mock_openscreen_environment_);
 
     audio_config_.sender_ssrc = 35535;
     audio_config_.receiver_ssrc = 35536;
@@ -82,7 +82,7 @@ class AudioSenderTest : public ::testing::Test {
         ToOpenscreenSessionConfig(audio_config_, /* is_pli_enabled= */ true);
 
     auto openscreen_audio_sender = std::make_unique<openscreen::cast::Sender>(
-        mock_openscreen_environment_.get(), openscreen_packet_router_.get(),
+        *mock_openscreen_environment_, *openscreen_packet_router_,
         openscreen_audio_config, openscreen::cast::RtpPayloadType::kAudioOpus);
     openscreen_audio_sender_ = openscreen_audio_sender.get();
 

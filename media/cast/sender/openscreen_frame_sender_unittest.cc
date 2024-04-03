@@ -94,14 +94,14 @@ class OpenscreenFrameSenderTest : public ::testing::Test,
         openscreen_environment_(openscreen::Clock::now,
                                 openscreen_task_runner_,
                                 openscreen::IPEndpoint::kAnyV4()),
-        openscreen_packet_router_(&openscreen_environment_,
+        openscreen_packet_router_(openscreen_environment_,
                                   20,
                                   std::chrono::milliseconds(10)) {
     auto openscreen_audio_sender = std::make_unique<openscreen::cast::Sender>(
-        &openscreen_environment_, &openscreen_packet_router_,
+        openscreen_environment_, openscreen_packet_router_,
         kOpenscreenAudioConfig, openscreen::cast::RtpPayloadType::kAudioOpus);
     auto openscreen_video_sender = std::make_unique<openscreen::cast::Sender>(
-        &openscreen_environment_, &openscreen_packet_router_,
+        openscreen_environment_, openscreen_packet_router_,
         kOpenscreenVideoConfig, openscreen::cast::RtpPayloadType::kVideoVp8);
 
     audio_sender_ = std::make_unique<OpenscreenFrameSender>(

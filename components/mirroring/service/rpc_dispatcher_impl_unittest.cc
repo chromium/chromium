@@ -63,7 +63,7 @@ class RpcDispatcherImplTest : public ::testing::Test {
   RpcDispatcherImplTest()
       : task_environment_runner_(task_environment_.GetMainThreadTaskRunner()),
         messenger_(
-            &mock_message_port_,
+            mock_message_port_,
             kSourceId,
             kReceiverId,
             [this](openscreen::Error error) { OnMessengerError(error); },

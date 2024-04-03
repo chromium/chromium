@@ -60,18 +60,18 @@ struct OpenscreenTestSenders {
         environment(openscreen::Clock::now,
                     task_runner,
                     openscreen::IPEndpoint::kAnyV4()),
-        sender_packet_router(&environment, 20, std::chrono::milliseconds(10)),
+        sender_packet_router(environment, 20, std::chrono::milliseconds(10)),
         audio_sender(std::make_unique<openscreen::cast::Sender>(
-            &environment,
-            &sender_packet_router,
+            environment,
+            sender_packet_router,
             openscreen::cast::SessionConfig{
                 kFirstSsrc, kFirstSsrc + 1, kRtpTimebase, 2 /* channels */,
                 kDefaultPlayoutDelay, kAesSecretKey, kAesIvMask,
                 true /* is_pli_enabled */},
             openscreen::cast::RtpPayloadType::kAudioVarious)),
         video_sender(std::make_unique<openscreen::cast::Sender>(
-            &environment,
-            &sender_packet_router,
+            environment,
+            sender_packet_router,
             openscreen::cast::SessionConfig{
                 kFirstSsrc + 2, kFirstSsrc + 3, kRtpTimebase, 1 /* channels */,
                 kDefaultPlayoutDelay, kAesSecretKey, kAesIvMask,

@@ -32,7 +32,7 @@ namespace openscreen_platform {
 class TlsConnectionFactory final : public openscreen::TlsConnectionFactory {
  public:
   explicit TlsConnectionFactory(
-      openscreen::TlsConnectionFactory::Client* client);
+      openscreen::TlsConnectionFactory::Client& client);
 
   ~TlsConnectionFactory() final;
 
@@ -100,7 +100,7 @@ class TlsConnectionFactory final : public openscreen::TlsConnectionFactory {
                     mojo::ScopedDataPipeProducerHandle send_stream,
                     const std::optional<net::SSLInfo>& ssl_info);
 
-  raw_ptr<openscreen::TlsConnectionFactory::Client> client_;
+  raw_ref<openscreen::TlsConnectionFactory::Client> client_;
   base::WeakPtrFactory<TlsConnectionFactory> weak_factory_{this};
 };
 

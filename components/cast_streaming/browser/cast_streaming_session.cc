@@ -90,7 +90,7 @@ CastStreamingSession::ReceiverSessionClient::ReceiverSessionClient(
   DCHECK(cast_message_port_converter_);
 
   receiver_session_ = std::make_unique<openscreen::cast::ReceiverSession>(
-      this, &environment_, &cast_message_port_converter_->GetMessagePort(),
+      *this, environment_, cast_message_port_converter_->GetMessagePort(),
       ToOpenscreenConstraints(av_constraints));
 
   if (renderer_controls) {

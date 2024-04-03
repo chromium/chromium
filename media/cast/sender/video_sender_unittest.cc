@@ -89,7 +89,7 @@ class VideoSenderTest : public ::testing::Test {
         &FakeOpenscreenClock::now, openscreen_task_runner_);
     openscreen_packet_router_ =
         std::make_unique<openscreen::cast::SenderPacketRouter>(
-            mock_openscreen_environment_.get());
+            *mock_openscreen_environment_);
     vea_factory_.SetAutoRespond(true);
     last_pixel_value_ = kPixelValue;
   }
@@ -120,7 +120,7 @@ class VideoSenderTest : public ::testing::Test {
     }
 
     auto openscreen_video_sender = std::make_unique<openscreen::cast::Sender>(
-        mock_openscreen_environment_.get(), openscreen_packet_router_.get(),
+        *mock_openscreen_environment_, *openscreen_packet_router_,
         openscreen_video_config, openscreen::cast::RtpPayloadType::kVideoVp8);
     openscreen_video_sender_ = openscreen_video_sender.get();
 

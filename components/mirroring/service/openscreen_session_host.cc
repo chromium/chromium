@@ -328,7 +328,7 @@ OpenscreenSessionHost::OpenscreenSessionHost(
       openscreen::cast::SenderSession::Configuration{
           .remote_address = media::cast::ToOpenscreenIPAddress(
               session_params_.receiver_address),
-          .client = this,
+          .client = *this,
           .environment = openscreen_environment_.get(),
           .message_port = &message_port_,
           .message_source_id = session_params_.source_id,
