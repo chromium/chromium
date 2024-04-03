@@ -31,7 +31,7 @@ SnippetSearchEngineElement* CreateSnippetSearchEngineElementFromTemplateURL(
     const TemplateURL& template_url) {
   SnippetSearchEngineElement* element = nil;
   // Only works for prepopulated search engines.
-  CHECK_GT(template_url.prepopulate_id(), 0, base::NotFatalUntil::M124)
+  CHECK_GT(template_url.prepopulate_id(), 0, base::NotFatalUntil::M127)
       << base::UTF16ToUTF8(template_url.short_name());
   element = [[SnippetSearchEngineElement alloc] init];
   // Add the name and snippet to the element.

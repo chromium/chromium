@@ -640,12 +640,12 @@ const char kUmaSelectDefaultSearchEngine[] =
         base::apple::ObjCCastStrict<SettingsSearchEngineItem>(item);
     if (path.section == firstSection) {
       // Only custom search engine can be deleted.
-      CHECK(item.type == ItemTypeCustomEngine, base::NotFatalUntil::M124);
+      CHECK(item.type == ItemTypeCustomEngine, base::NotFatalUntil::M127);
       // It should not be possible to remove a search engine from the first
       // section, when showing the updated settings. The updated settings should
       // either contains a selected custom search engine (which cannot be
       // removed as long as it is selected), or prepopulated search engine.
-      CHECK(!_shouldShowEEASettings, base::NotFatalUntil::M124);
+      CHECK(!_shouldShowEEASettings, base::NotFatalUntil::M127);
       // The custom search engine in the first section should be the last one.
       DCHECK(path.row == static_cast<int>(_firstList.size()) - 1);
       std::erase(_firstList, engineItem.templateURL);
@@ -656,7 +656,7 @@ const char kUmaSelectDefaultSearchEngine[] =
     // engine to the first prepopulated engine.
     if (engineItem.templateURL ==
         _templateURLService->GetDefaultSearchProvider()) {
-      CHECK(!_shouldShowEEASettings, base::NotFatalUntil::M124);
+      CHECK(!_shouldShowEEASettings, base::NotFatalUntil::M127);
       DCHECK(_firstList.size() > 0);
       _templateURLService->SetUserSelectedDefaultSearchProvider(_firstList[0]);
       resetDefaultEngine = true;
