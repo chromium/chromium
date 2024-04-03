@@ -231,6 +231,7 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest, SelectCredential) {
       }));
 #endif
 
+  EXPECT_CALL(mock_callback, Run());
   credentials_delegate()->SelectPasskey(base::Base64Encode(kCredId2),
                                         mock_callback.Get());
 

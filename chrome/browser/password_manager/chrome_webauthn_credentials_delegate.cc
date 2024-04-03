@@ -56,10 +56,10 @@ void ChromeWebAuthnCredentialsDelegate::SelectPasskey(
   DCHECK(selected_credential_id);
 
 #if BUILDFLAG(IS_ANDROID)
+  std::move(callback).Run();
   auto* request_delegate =
       WebAuthnRequestDelegateAndroid::GetRequestDelegate(web_contents_);
   if (!request_delegate) {
-    std::move(callback).Run();
     return;
   }
   request_delegate->OnWebAuthnAccountSelected(*selected_credential_id);
