@@ -47,6 +47,7 @@ public class AccountManagerTestRule implements TestRule {
                             "test@gmail.com", FakeAccountManagerFacade.toGaiaId("test@gmail.com"))
                     .fullName("Test1 Full")
                     .givenName("Test1 Given")
+                    .accountImage(createAvatar())
                     .build();
 
     // TODO(crbug.com/40890215): Use TEST_ACCOUNT_1 instead.

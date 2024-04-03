@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.prefs.PrefService;
@@ -87,6 +88,8 @@ public class SyncPromoControllerTest {
     @Mock private SyncService mSyncService;
 
     @Mock private PrefService mPrefService;
+
+    @Mock private HistorySyncHelper mHistorySyncHelper;
 
     @Mock private SyncConsentActivityLauncher mSyncConsentActivityLauncher;
 
@@ -399,6 +402,7 @@ public class SyncPromoControllerTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void shouldHideRecentTabsSyncPromoIfTabsIsManagedByPolicy() {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mSyncService.isTypeManagedByPolicy(UserSelectableType.TABS)).thenReturn(true);
@@ -413,6 +417,23 @@ public class SyncPromoControllerTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    public void
+            shouldHideRecentTabsSyncPromoIfTabsIsManagedByPolicy_replaceSyncPromosWithSigninPromosEnabled() {
+        HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
+        when(mHistorySyncHelper.isHistorySyncDisabledByPolicy()).thenReturn(true);
+
+        SyncPromoController syncPromoController =
+                new SyncPromoController(
+                        mProfile,
+                        SigninAccessPoint.RECENT_TABS,
+                        mSyncConsentActivityLauncher,
+                        mSigninAndHistoryOptInActivityLauncher);
+        Assert.assertFalse(syncPromoController.canShowSyncPromo());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void shouldShowRecentTabsSyncPromoIfTabsIsNotManagedByPolicy() {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mSyncService.isTypeManagedByPolicy(UserSelectableType.TABS)).thenReturn(false);
@@ -427,15 +448,46 @@ public class SyncPromoControllerTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    public void
+            shouldHideRecentTabsIfUserAlreadyOptedIn_replaceSyncPromosWithSigninPromosEnabled() {
+        HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
+        when(mHistorySyncHelper.didAlreadyOptIn()).thenReturn(true);
+
+        SyncPromoController syncPromoController =
+                new SyncPromoController(
+                        mProfile,
+                        SigninAccessPoint.RECENT_TABS,
+                        mSyncConsentActivityLauncher,
+                        mSigninAndHistoryOptInActivityLauncher);
+        Assert.assertFalse(syncPromoController.canShowSyncPromo());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    public void
+            shouldShowRecentTabsSyncPromoIfTabsIsNotManagedByPolicyAndUserDidNoOptIn_replaceSyncPromosWithSigninPromosEnabled() {
+        HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
+
+        SyncPromoController syncPromoController =
+                new SyncPromoController(
+                        mProfile,
+                        SigninAccessPoint.RECENT_TABS,
+                        mSyncConsentActivityLauncher,
+                        mSigninAndHistoryOptInActivityLauncher);
+        Assert.assertTrue(syncPromoController.canShowSyncPromo());
+    }
+
+    @Test
     @EnableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
-    public void shouldLaunchSigninFlowReturnsTrue() {
+    public void shouldLaunchBookmarksSigninFlowReturnsTrue() {
         doReturn(false).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
         doReturn(SyncPromoController.GMAIL_DOMAIN)
                 .when(mSigninManager)
                 .extractDomainName(anyString());
 
         Assert.assertTrue(
-                SyncPromoController.shouldLaunchSigninFlow(
+                SyncPromoController.shouldLaunchBookmarksSigninFlow(
                         SigninAccessPoint.BOOKMARK_MANAGER,
                         mIdentityManager,
                         mSigninManager,
@@ -445,14 +497,14 @@ public class SyncPromoControllerTest {
 
     @Test
     @DisableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
-    public void shouldLaunchSigninFlowReturnsFalse_FeatureDisabled() {
+    public void shouldLaunchBookmarksSigninFlowReturnsFalse_FeatureDisabled() {
         doReturn(false).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
         doReturn(SyncPromoController.GMAIL_DOMAIN)
                 .when(mSigninManager)
                 .extractDomainName(anyString());
 
         Assert.assertFalse(
-                SyncPromoController.shouldLaunchSigninFlow(
+                SyncPromoController.shouldLaunchBookmarksSigninFlow(
                         SigninAccessPoint.BOOKMARK_MANAGER,
                         mIdentityManager,
                         mSigninManager,
@@ -462,14 +514,14 @@ public class SyncPromoControllerTest {
 
     @Test
     @EnableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
-    public void shouldLaunchSigninFlowReturnsFalse_NotBookmarkAccessPoint() {
+    public void shouldLaunchBookmarksSigninFlowReturnsFalse_NotBookmarkAccessPoint() {
         doReturn(false).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
         doReturn(SyncPromoController.GMAIL_DOMAIN)
                 .when(mSigninManager)
                 .extractDomainName(anyString());
 
         Assert.assertFalse(
-                SyncPromoController.shouldLaunchSigninFlow(
+                SyncPromoController.shouldLaunchBookmarksSigninFlow(
                         SigninAccessPoint.NTP_CONTENT_SUGGESTIONS,
                         mIdentityManager,
                         mSigninManager,
@@ -479,14 +531,14 @@ public class SyncPromoControllerTest {
 
     @Test
     @EnableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
-    public void shouldLaunchSigninFlowReturnsFalse_SignedIn() {
+    public void shouldLaunchBookmarksSigninFlowReturnsFalse_SignedIn() {
         doReturn(true).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
         doReturn(SyncPromoController.GMAIL_DOMAIN)
                 .when(mSigninManager)
                 .extractDomainName(anyString());
 
         Assert.assertFalse(
-                SyncPromoController.shouldLaunchSigninFlow(
+                SyncPromoController.shouldLaunchBookmarksSigninFlow(
                         SigninAccessPoint.BOOKMARK_MANAGER,
                         mIdentityManager,
                         mSigninManager,
@@ -496,7 +548,7 @@ public class SyncPromoControllerTest {
 
     @Test
     @EnableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
-    public void shouldLaunchSigninFlowReturnsFalse_SyncDataLeft() {
+    public void shouldLaunchBookmarksSigninFlowReturnsFalse_SyncDataLeft() {
         when(mPrefService.getString(Pref.GOOGLE_SERVICES_LAST_SYNCING_GAIA_ID))
                 .thenReturn("gaia_id");
         doReturn(SyncPromoController.GMAIL_DOMAIN)
@@ -504,7 +556,7 @@ public class SyncPromoControllerTest {
                 .extractDomainName(anyString());
 
         Assert.assertFalse(
-                SyncPromoController.shouldLaunchSigninFlow(
+                SyncPromoController.shouldLaunchBookmarksSigninFlow(
                         SigninAccessPoint.BOOKMARK_MANAGER,
                         mIdentityManager,
                         mSigninManager,
@@ -514,12 +566,12 @@ public class SyncPromoControllerTest {
 
     @Test
     @EnableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
-    public void shouldLaunchSigninFlowReturnsFalse_NonGmailDomain() {
+    public void shouldLaunchBookmarksSigninFlowReturnsFalse_NonGmailDomain() {
         doReturn(false).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
         doReturn("nongmail.com").when(mSigninManager).extractDomainName(anyString());
 
         Assert.assertFalse(
-                SyncPromoController.shouldLaunchSigninFlow(
+                SyncPromoController.shouldLaunchBookmarksSigninFlow(
                         SigninAccessPoint.BOOKMARK_MANAGER,
                         mIdentityManager,
                         mSigninManager,
@@ -529,14 +581,14 @@ public class SyncPromoControllerTest {
 
     @Test
     @EnableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
-    public void shouldLaunchSigninFlowReturnsFalse_EmptyAccountList() {
+    public void shouldLaunchBookmarksSigninFlowReturnsFalse_EmptyAccountList() {
         doReturn(false).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
         doReturn(SyncPromoController.GMAIL_DOMAIN)
                 .when(mSigninManager)
                 .extractDomainName(anyString());
 
         Assert.assertFalse(
-                SyncPromoController.shouldLaunchSigninFlow(
+                SyncPromoController.shouldLaunchBookmarksSigninFlow(
                         SigninAccessPoint.BOOKMARK_MANAGER,
                         mIdentityManager,
                         mSigninManager,
@@ -546,14 +598,14 @@ public class SyncPromoControllerTest {
 
     @Test
     @EnableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
-    public void shouldLaunchSigninFlowReturnsFalse_NullAccountList() {
+    public void shouldLaunchBookmarksSigninFlowReturnsFalse_NullAccountList() {
         doReturn(false).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
         doReturn(SyncPromoController.GMAIL_DOMAIN)
                 .when(mSigninManager)
                 .extractDomainName(anyString());
 
         Assert.assertFalse(
-                SyncPromoController.shouldLaunchSigninFlow(
+                SyncPromoController.shouldLaunchBookmarksSigninFlow(
                         SigninAccessPoint.BOOKMARK_MANAGER,
                         mIdentityManager,
                         mSigninManager,
