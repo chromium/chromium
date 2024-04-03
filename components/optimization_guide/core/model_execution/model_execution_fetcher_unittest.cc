@@ -12,9 +12,11 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test.pb.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -74,7 +76,7 @@ class ModelExecutionFetcherTest : public testing::Test {
 
   ~ModelExecutionFetcherTest() override = default;
 
-  void ExecuteModel(proto::ModelExecutionFeature feature,
+  void ExecuteModel(ModelBasedCapabilityKey feature,
                     const google::protobuf::MessageLite& request_metadata) {
     model_execution_fetcher_->ExecuteModel(
         feature, identity_test_env_.identity_manager(), request_metadata,
@@ -162,9 +164,8 @@ class ModelExecutionFetcherTest : public testing::Test {
 TEST_F(ModelExecutionFetcherTest, TestSuccessfulResponse) {
   identity_test_env()->MakePrimaryAccountAvailable(
       "test_email", signin::ConsentLevel::kSignin);
-  ExecuteModel(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH,
-      BuildTestMessage("foo request"));
+  ExecuteModel(ModelBasedCapabilityKey::kWallpaperSearch,
+               BuildTestMessage("foo request"));
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "access_token", base::Time::Max());
   VerifyHasPendingFetchRequest();
@@ -203,9 +204,8 @@ TEST_F(ModelExecutionFetcherTest, TestSuccessfulResponse) {
 TEST_F(ModelExecutionFetcherTest, TestNetErrorResponse) {
   identity_test_env()->MakePrimaryAccountAvailable(
       "test_email", signin::ConsentLevel::kSignin);
-  ExecuteModel(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH,
-      BuildTestMessage("foo request"));
+  ExecuteModel(ModelBasedCapabilityKey::kWallpaperSearch,
+               BuildTestMessage("foo request"));
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "access_token", base::Time::Max());
   VerifyHasPendingFetchRequest();
@@ -231,9 +231,8 @@ TEST_F(ModelExecutionFetcherTest, TestNetErrorResponse) {
 TEST_F(ModelExecutionFetcherTest, TestBadResponse) {
   identity_test_env()->MakePrimaryAccountAvailable(
       "test_email", signin::ConsentLevel::kSignin);
-  ExecuteModel(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH,
-      BuildTestMessage("foo request"));
+  ExecuteModel(ModelBasedCapabilityKey::kWallpaperSearch,
+               BuildTestMessage("foo request"));
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "access_token", base::Time::Max());
   VerifyHasPendingFetchRequest();
@@ -259,9 +258,8 @@ TEST_F(ModelExecutionFetcherTest, TestBadResponse) {
 TEST_F(ModelExecutionFetcherTest, TestRequestCanceled) {
   identity_test_env()->MakePrimaryAccountAvailable(
       "test_email", signin::ConsentLevel::kSignin);
-  ExecuteModel(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH,
-      BuildTestMessage("foo request"));
+  ExecuteModel(ModelBasedCapabilityKey::kWallpaperSearch,
+               BuildTestMessage("foo request"));
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "access_token", base::Time::Max());
   VerifyHasPendingFetchRequest();
@@ -278,14 +276,12 @@ TEST_F(ModelExecutionFetcherTest, TestRequestCanceled) {
 TEST_F(ModelExecutionFetcherTest, TestMultipleParallelRequests) {
   identity_test_env()->MakePrimaryAccountAvailable(
       "test_email", signin::ConsentLevel::kSignin);
-  ExecuteModel(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH,
-      BuildTestMessage("foo request"));
+  ExecuteModel(ModelBasedCapabilityKey::kWallpaperSearch,
+               BuildTestMessage("foo request"));
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "access_token", base::Time::Max());
-  ExecuteModel(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION,
-      BuildTestMessage("foo request"));
+  ExecuteModel(ModelBasedCapabilityKey::kTabOrganization,
+               BuildTestMessage("foo request"));
 
   // The second request should fail immediately.
   histogram_tester_.ExpectUniqueSample(
@@ -315,9 +311,8 @@ TEST_F(ModelExecutionFetcherTest, TestSuccessfulResponseWithLogin) {
   identity_test_env()->MakePrimaryAccountAvailable(
       "test_email", signin::ConsentLevel::kSignin);
 
-  ExecuteModel(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH,
-      BuildTestMessage("foo request"));
+  ExecuteModel(ModelBasedCapabilityKey::kWallpaperSearch,
+               BuildTestMessage("foo request"));
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "access_token", base::Time::Max());
   VerifyHasPendingFetchRequest();
@@ -357,9 +352,8 @@ TEST_F(ModelExecutionFetcherTest, TestAccessTokenFailureWithLogin) {
   identity_test_env()->MakePrimaryAccountAvailable(
       "test_email", signin::ConsentLevel::kSignin);
 
-  ExecuteModel(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH,
-      BuildTestMessage("foo request"));
+  ExecuteModel(ModelBasedCapabilityKey::kWallpaperSearch,
+               BuildTestMessage("foo request"));
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
 
@@ -373,9 +367,8 @@ TEST_F(ModelExecutionFetcherTest, TestAccessTokenFailureWithLogin) {
 }
 
 TEST_F(ModelExecutionFetcherTest, TestNoUserSignIn) {
-  ExecuteModel(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH,
-      BuildTestMessage("foo request"));
+  ExecuteModel(ModelBasedCapabilityKey::kWallpaperSearch,
+               BuildTestMessage("foo request"));
 
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
   histogram_tester_.ExpectUniqueSample(

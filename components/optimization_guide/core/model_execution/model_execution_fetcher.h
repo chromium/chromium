@@ -14,6 +14,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "url/gurl.h"
@@ -47,7 +48,7 @@ class ModelExecutionFetcher {
 
   ~ModelExecutionFetcher();
 
-  void ExecuteModel(proto::ModelExecutionFeature feature,
+  void ExecuteModel(ModelBasedCapabilityKey feature,
                     signin::IdentityManager* identity_manager,
                     const google::protobuf::MessageLite& request_metadata,
                     ModelExecuteResponseCallback callback);
@@ -79,8 +80,7 @@ class ModelExecutionFetcher {
   base::TimeTicks fetch_start_time_;
 
   // The model execution feature the fetch is happening for.
-  proto::ModelExecutionFeature model_execution_feature_ =
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED;
+  std::optional<ModelBasedCapabilityKey> model_execution_feature_;
 
   // Owned by OptimizationGuideKeyedService and outlives `this`.
   raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
