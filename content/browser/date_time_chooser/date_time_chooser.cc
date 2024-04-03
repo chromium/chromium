@@ -4,6 +4,8 @@
 
 #include "content/browser/date_time_chooser/date_time_chooser.h"
 
+#include <string_view>
+
 namespace content {
 
 DateTimeChooser::DateTimeChooser(WebContents* web_contents)
@@ -38,7 +40,7 @@ void DateTimeChooser::CloseDateTimeDialog() {
   ClosePlatformDialog();
 }
 
-void DateTimeChooser::ReportBadMessage(base::StringPiece error) {
+void DateTimeChooser::ReportBadMessage(std::string_view error) {
   date_time_chooser_receiver_.ReportBadMessage(error);
 }
 

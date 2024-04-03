@@ -4,6 +4,8 @@
 
 #include "content/browser/mojo_binder_policy_map_impl.h"
 
+#include <string_view>
+
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "content/common/dom_automation_controller.mojom.h"
@@ -290,13 +292,13 @@ MojoBinderPolicyMapImpl::GetAssociatedMojoBinderPolicyOrDieForTesting(
 }
 
 void MojoBinderPolicyMapImpl::SetPolicyByName(
-    const base::StringPiece& name,
+    const std::string_view& name,
     MojoBinderNonAssociatedPolicy policy) {
   non_associated_policy_map_.emplace(name, policy);
 }
 
 void MojoBinderPolicyMapImpl::SetPolicyByName(
-    const base::StringPiece& name,
+    const std::string_view& name,
     MojoBinderAssociatedPolicy policy) {
   associated_policy_map_.emplace(name, policy);
 }

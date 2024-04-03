@@ -15,6 +15,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -3119,9 +3120,9 @@ std::optional<blink::AdSize> InterestGroupAuction::RequestedAdSize() const {
   return config_->non_shared_params.requested_size;
 }
 
-base::StringPiece GetRejectReasonString(
+std::string_view GetRejectReasonString(
     const auction_worklet::mojom::RejectReason reject_reason) {
-  base::StringPiece reject_reason_str;
+  std::string_view reject_reason_str;
   switch (reject_reason) {
     case auction_worklet::mojom::RejectReason::kNotAvailable:
       reject_reason_str = "not-available";

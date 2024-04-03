@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/navigation_transitions/back_forward_transition_animation_manager_android.h"
+
+#include <string_view>
+
 #include "base/numerics/ranges.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -10,7 +14,6 @@
 #include "cc/slim/layer_tree_impl.h"
 #include "cc/test/pixel_test_utils.h"
 #include "content/browser/browser_context_impl.h"
-#include "content/browser/navigation_transitions/back_forward_transition_animation_manager_android.h"
 #include "content/browser/navigation_transitions/back_forward_transition_animator.h"
 #include "content/browser/navigation_transitions/physics_model.h"
 #include "content/browser/renderer_host/compositor_impl_android.h"
@@ -1424,7 +1427,7 @@ class BrowserUserActivationWaiter
 // activation.
 void InjectBeforeUnloadForMainFrame(WebContentsImpl* web_contents,
                                     EvalJsOptions option) {
-  static constexpr base::StringPiece kScript = R"(
+  static constexpr std::string_view kScript = R"(
     window.onbeforeunload = (event) => {
       // Recommended
       event.preventDefault();

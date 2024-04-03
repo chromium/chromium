@@ -7,6 +7,7 @@
 #include <limits>
 #include <memory>
 #include <set>
+#include <string_view>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -1647,7 +1648,7 @@ void RenderWidgetHostViewAura::ExtendSelectionAndDelete(
 void RenderWidgetHostViewAura::ExtendSelectionAndReplace(
     size_t before,
     size_t after,
-    const base::StringPiece16 replacement_text) {
+    const std::u16string_view replacement_text) {
   auto* input_handler = GetFrameWidgetInputHandlerForFocusedWidget();
   if (!input_handler) {
     return;
@@ -2159,7 +2160,7 @@ void RenderWidgetHostViewAura::OnGestureEvent(ui::GestureEvent* event) {
   event_handler_->OnGestureEvent(event);
 }
 
-base::StringPiece RenderWidgetHostViewAura::GetLogContext() const {
+std::string_view RenderWidgetHostViewAura::GetLogContext() const {
   return "RenderWidgetHostViewAura";
 }
 

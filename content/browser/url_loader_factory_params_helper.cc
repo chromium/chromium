@@ -5,9 +5,9 @@
 #include "content/browser/url_loader_factory_params_helper.h"
 
 #include <optional>
+#include <string_view>
 
 #include "base/command_line.h"
-#include "base/strings/string_piece.h"
 #include "content/browser/devtools/network_service_devtools_observer.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -83,7 +83,7 @@ network::mojom::URLLoaderFactoryParamsPtr CreateParams(
     network::mojom::TrustTokenOperationPolicyVerdict
         trust_token_redemption_policy,
     net::CookieSettingOverrides cookie_setting_overrides,
-    base::StringPiece debug_tag,
+    std::string_view debug_tag,
     bool require_cross_site_request_for_cookies) {
   DCHECK(process);
 
@@ -164,7 +164,7 @@ URLLoaderFactoryParamsHelper::CreateForFrame(
     network::mojom::TrustTokenOperationPolicyVerdict
         trust_token_redemption_policy,
     net::CookieSettingOverrides cookie_setting_overrides,
-    base::StringPiece debug_tag) {
+    std::string_view debug_tag) {
   return CreateParams(
       process,
       frame_origin,  // origin
@@ -264,7 +264,7 @@ URLLoaderFactoryParamsHelper::CreateForWorker(
         url_loader_network_observer,
     mojo::PendingRemote<network::mojom::DevToolsObserver> devtools_observer,
     network::mojom::ClientSecurityStatePtr client_security_state,
-    base::StringPiece debug_tag,
+    std::string_view debug_tag,
     bool require_cross_site_request_for_cookies) {
   return CreateParams(
       process,

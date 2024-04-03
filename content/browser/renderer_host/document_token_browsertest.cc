@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -565,7 +567,7 @@ IN_PROC_BROWSER_TEST_F(DocumentTokenBrowserTest, MismatchedProcessID) {
   RenderFrameHostImpl* main_frame = web_contents()->GetPrimaryMainFrame();
   bool called = false;
   mojo::ReportBadMessageCallback callback =
-      base::BindLambdaForTesting([&called](base::StringPiece reason) {
+      base::BindLambdaForTesting([&called](std::string_view reason) {
         called = true;
         EXPECT_EQ("process ID does not match requested DocumentToken", reason);
       });

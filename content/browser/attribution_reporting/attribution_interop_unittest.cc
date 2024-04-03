@@ -11,7 +11,6 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "base/strings/string_piece.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/values_test_util.h"
 #include "base/types/expected.h"

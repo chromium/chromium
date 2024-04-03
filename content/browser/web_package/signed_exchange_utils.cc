@@ -4,10 +4,11 @@
 
 #include "content/browser/web_package/signed_exchange_utils.h"
 
+#include <string_view>
+
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -100,11 +101,11 @@ std::optional<SignedExchangeVersion> GetSignedExchangeVersion(
 
   // Step 4.Let params be mimeType's parameters. [spec text]
   std::map<std::string, std::string> params;
-  if (semicolon != base::StringPiece::npos) {
+  if (semicolon != std::string_view::npos) {
     net::HttpUtil::NameValuePairsIterator parser(
         content_type.begin() + semicolon + 1, content_type.end(), ';');
     while (parser.GetNext()) {
-      const base::StringPiece name = parser.name_piece();
+      const std::string_view name = parser.name_piece();
       params[base::ToLowerASCII(name)] = parser.value();
     }
     if (!parser.valid())

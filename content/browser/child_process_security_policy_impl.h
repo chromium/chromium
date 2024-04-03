@@ -9,6 +9,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -177,7 +178,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   bool CanAccessDataForOrigin(int child_id, const url::Origin& origin) override;
   bool HostsOrigin(int child_id, const url::Origin& origin) override;
   void AddFutureIsolatedOrigins(
-      base::StringPiece origins_list,
+      std::string_view origins_list,
       IsolatedOriginSource source,
       BrowserContext* browser_context = nullptr) override;
   void AddFutureIsolatedOrigins(
@@ -802,7 +803,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // two into IsolatedOriginPatterns, suitable for addition via
   // AddFutureIsolatedOrigins().
   static std::vector<IsolatedOriginPattern> ParseIsolatedOrigins(
-      base::StringPiece pattern_list);
+      std::string_view pattern_list);
 
   void AddFutureIsolatedOrigins(
       const std::vector<IsolatedOriginPattern>& patterns,

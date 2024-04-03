@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -281,7 +282,7 @@ class FileSystemURLLoaderFactoryTest
         storage::kFileSystemTypeTemporary, file_path);
   }
 
-  void CreateDirectory(const base::StringPiece& dir_name) {
+  void CreateDirectory(const std::string_view& dir_name) {
     std::unique_ptr<FileSystemOperationContext> context(NewOperationContext());
     base::RunLoop loop;
     blocking_task_runner_->PostTask(
@@ -296,7 +297,7 @@ class FileSystemURLLoaderFactoryTest
     loop.Run();
   }
 
-  void WriteFile(const base::StringPiece& file_name,
+  void WriteFile(const std::string_view& file_name,
                  base::span<const uint8_t> buf) {
     FileSystemURL url;
     url = file_system_context_->CreateCrackedFileSystemURL(
@@ -329,7 +330,7 @@ class FileSystemURLLoaderFactoryTest
     EXPECT_EQ(base::File::FILE_OK, result);
   }
 
-  void EnsureFileExists(const base::StringPiece file_name) {
+  void EnsureFileExists(const std::string_view file_name) {
     std::unique_ptr<FileSystemOperationContext> context(NewOperationContext());
 
     base::RunLoop loop;
@@ -344,7 +345,7 @@ class FileSystemURLLoaderFactoryTest
     loop.Run();
   }
 
-  void TruncateFile(const base::StringPiece file_name, int64_t length) {
+  void TruncateFile(const std::string_view file_name, int64_t length) {
     std::unique_ptr<FileSystemOperationContext> context(NewOperationContext());
 
     base::RunLoop loop;

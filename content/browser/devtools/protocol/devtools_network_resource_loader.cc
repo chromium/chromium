@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "content/browser/devtools/protocol/devtools_network_resource_loader.h"
+
 #include <cstddef>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
@@ -101,7 +103,7 @@ void DevToolsNetworkResourceLoader::DownloadAsStream() {
   loader_->DownloadAsStream(url_loader_factory_.get(), this);
 }
 
-void DevToolsNetworkResourceLoader::OnDataReceived(base::StringPiece chunk,
+void DevToolsNetworkResourceLoader::OnDataReceived(std::string_view chunk,
                                                    base::OnceClosure resume) {
   content_.append(chunk);
   std::move(resume).Run();

@@ -5,6 +5,7 @@
 #include "content/browser/media/media_internals_cdm_helper.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/values.h"
 #include "content/browser/media/media_internals.h"
@@ -120,7 +121,7 @@ base::Value::Dict CdmInfoToDict(const CdmInfo& cdm_info) {
   return dict;
 }
 
-std::u16string SerializeUpdate(base::StringPiece function,
+std::u16string SerializeUpdate(std::string_view function,
                                const base::Value::List& value) {
   base::ValueView args[] = {value};
   return content::WebUI::GetJavascriptCall(function, args);

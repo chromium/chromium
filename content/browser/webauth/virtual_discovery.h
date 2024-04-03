@@ -6,10 +6,10 @@
 #define CONTENT_BROWSER_WEBAUTH_VIRTUAL_DISCOVERY_H_
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "device/fido/fido_device_discovery.h"
 #include "device/fido/fido_transport_protocol.h"
 
@@ -32,7 +32,7 @@ class VirtualFidoDiscovery final : public ::device::FidoDeviceDiscovery {
   ~VirtualFidoDiscovery() override;
 
   void AddVirtualDevice(std::unique_ptr<device::VirtualFidoDevice> device);
-  bool RemoveVirtualDevice(base::StringPiece device_id);
+  bool RemoveVirtualDevice(std::string_view device_id);
 
  protected:
   // FidoDeviceDiscovery:

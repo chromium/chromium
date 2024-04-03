@@ -4,6 +4,8 @@
 
 #include "content/browser/bluetooth/bluetooth_blocklist.h"
 
+#include <string_view>
+
 #include "base/check.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_split.h"
@@ -44,7 +46,7 @@ void BluetoothBlocklist::Add(const BluetoothUUID& uuid, Value value) {
 
 // TODO(crbug.com/1348063): Support |blocklist_string| for manufacturer data
 // prefix.
-void BluetoothBlocklist::Add(base::StringPiece blocklist_string) {
+void BluetoothBlocklist::Add(std::string_view blocklist_string) {
   if (blocklist_string.empty())
     return;
   base::StringPairs kv_pairs;

@@ -10,6 +10,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -24,7 +25,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -431,7 +431,7 @@ void AggregationServiceStorageSql::ClearAllPublicKeys() {
 }
 
 bool AggregationServiceStorageSql::ReportingOriginHasCapacity(
-    base::StringPiece serialized_reporting_origin) {
+    std::string_view serialized_reporting_origin) {
   static constexpr char kCountRequestSql[] =
       "SELECT COUNT(*)FROM report_requests WHERE reporting_origin = ?";
   sql::Statement count_request_statement(

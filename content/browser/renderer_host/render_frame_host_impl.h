@@ -16,6 +16,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -33,7 +34,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/checked_math.h"
 #include "base/process/kill.h"
-#include "base/strings/string_piece.h"
 #include "base/supports_user_data.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
@@ -3471,7 +3471,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   network::mojom::URLLoaderFactoryParamsPtr
   CreateURLLoaderFactoryParamsForMainWorld(
       const SubresourceLoaderFactoriesConfig& config,
-      base::StringPiece debug_tag);
+      std::string_view debug_tag);
 
   // Like CreateNetworkServiceDefaultFactoryInternal but also sets up a
   // connection error handler to detect and recover from NetworkService
@@ -4081,7 +4081,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Returns whether the `RenderFrameHost` can use Additional Windowing Controls
   // APIs.
   // https://github.com/ivansandrk/additional-windowing-controls/blob/main/awc-explainer.md
-  bool CanUseWindowingControls(base::StringPiece js_api_name);
+  bool CanUseWindowingControls(std::string_view js_api_name);
 
   // Notifies when the renderer side Widget instance has been created and mojo
   // interfaces to it can be bound.

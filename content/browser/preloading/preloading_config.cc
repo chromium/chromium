@@ -4,9 +4,10 @@
 
 #include "content/browser/preloading/preloading_config.h"
 
+#include <string_view>
+
 #include "base/json/json_reader.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/common/features.h"
@@ -203,8 +204,8 @@ void PreloadingConfig::SetHoldbackForTesting(PreloadingType preloading_type,
       Key(PreloadingTypeToString(preloading_type), predictor.name()), entry);
 }
 
-void PreloadingConfig::SetHoldbackForTesting(base::StringPiece preloading_type,
-                                             base::StringPiece predictor,
+void PreloadingConfig::SetHoldbackForTesting(std::string_view preloading_type,
+                                             std::string_view predictor,
                                              bool holdback) {
   Entry entry;
   entry.holdback_ = holdback;
@@ -217,8 +218,8 @@ double PreloadingConfig::SamplingLikelihood(PreloadingType preloading_type,
   return entry.sampling_likelihood_;
 }
 
-PreloadingConfig::Key::Key(base::StringPiece preloading_type,
-                           base::StringPiece predictor)
+PreloadingConfig::Key::Key(std::string_view preloading_type,
+                           std::string_view predictor)
     : preloading_type_(preloading_type), predictor_(predictor) {}
 
 PreloadingConfig::Key PreloadingConfig::Key::FromEnums(

@@ -5,6 +5,7 @@
 #include "content/browser/code_cache/generated_code_cache.h"
 
 #include <iostream>
+#include <string_view>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -479,7 +480,7 @@ void GeneratedCodeCache::WriteEntry(const GURL& url,
     data = mojo_base::BigBuffer();  // Release the old buffer.
     uint8_t result[crypto::kSHA256Length];
     crypto::SHA256HashString(
-        base::StringPiece(reinterpret_cast<char*>(copy.data()), copy.size()),
+        std::string_view(reinterpret_cast<char*>(copy.data()), copy.size()),
         result, std::size(result));
     std::string checksum_key = base::HexEncode(result);
     DCHECK_EQ(kSHAKeySizeInBytes, checksum_key.length());

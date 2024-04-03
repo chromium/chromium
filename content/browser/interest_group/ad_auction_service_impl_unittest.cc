@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/barrier_closure.h"
@@ -941,7 +942,7 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
   // If `rfh` is nullptr, uses the main frame.
   void JoinInterestGroupAndExpectBadMessage(
       const blink::InterestGroup& interest_group,
-      base::StringPiece expected_bad_message,
+      std::string_view expected_bad_message,
       RenderFrameHost* rfh = nullptr) {
     mojo::Remote<blink::mojom::AdAuctionService> interest_service;
     AdAuctionServiceImpl::CreateMojoService(
@@ -985,7 +986,7 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
   void LeaveInterestGroupAndExpectBadMessage(
       const url::Origin& owner,
       const std::string& name,
-      base::StringPiece expected_bad_message,
+      std::string_view expected_bad_message,
       RenderFrameHost* rfh = nullptr) {
     mojo::Remote<blink::mojom::AdAuctionService> interest_service;
     AdAuctionServiceImpl::CreateMojoService(
@@ -1007,7 +1008,7 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
   // be recorded.
   void ClearOriginJoinedInterestGroupsAndExpectBadMessage(
       const url::Origin& owner,
-      const base::StringPiece expected_bad_message,
+      const std::string_view expected_bad_message,
       RenderFrameHost* rfh = nullptr) {
     mojo::Remote<blink::mojom::AdAuctionService> interest_service;
     AdAuctionServiceImpl::CreateMojoService(

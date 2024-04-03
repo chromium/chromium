@@ -4,6 +4,7 @@
 
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 
+#include <string_view>
 #include <vector>
 
 #include "base/notreached.h"
@@ -252,7 +253,7 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
         test_shared_url_loader_factory_.get());
 
     PrefetchService::SetHostNonUniqueFilterForTesting(
-        [](base::StringPiece) { return false; });
+        [](std::string_view) { return false; });
     PrefetchService::SetServiceWorkerContextForTesting(
         service_worker_context_.get());
 
@@ -1435,7 +1436,7 @@ TEST_F(PrefetchServiceTest, NotEligibleHostnameNonUnique) {
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
   PrefetchService::SetHostNonUniqueFilterForTesting(
-      [](base::StringPiece) { return true; });
+      [](std::string_view) { return true; });
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),

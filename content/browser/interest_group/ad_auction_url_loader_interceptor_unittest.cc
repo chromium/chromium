@@ -4,6 +4,8 @@
 
 #include "content/browser/interest_group/ad_auction_url_loader_interceptor.h"
 
+#include <string_view>
+
 #include "base/base64url.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
@@ -40,7 +42,7 @@ constexpr char kLegitimateAdAuctionSignals[] =
 using FollowRedirectParams =
     network::TestURLLoaderFactory::TestURLLoader::FollowRedirectParams;
 
-std::string base64Decode(base::StringPiece input) {
+std::string base64Decode(std::string_view input) {
   std::string bytes;
   CHECK(base::Base64UrlDecode(
       input, base::Base64UrlDecodePolicy::IGNORE_PADDING, &bytes));

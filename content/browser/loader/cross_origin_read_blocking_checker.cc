@@ -4,6 +4,8 @@
 
 #include "content/browser/loader/cross_origin_read_blocking_checker.h"
 
+#include <string_view>
+
 #include "base/functional/callback.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -161,7 +163,7 @@ void CrossOriginReadBlockingChecker::OnReadComplete(
     return;
   }
 
-  base::StringPiece data(buffer->data(), bytes_read);
+  std::string_view data(buffer->data(), bytes_read);
   network::orb::ResponseAnalyzer::Decision orb_decision =
       orb_analyzer_->Sniff(data);
 

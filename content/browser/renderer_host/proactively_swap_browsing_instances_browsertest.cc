@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -82,14 +84,14 @@ class ProactivelySwapBrowsingInstancesTest : public RenderFrameHostManagerTest {
 
   ~ProactivelySwapBrowsingInstancesTest() override = default;
 
-  void ExpectTotalCount(base::StringPiece name,
+  void ExpectTotalCount(std::string_view name,
                         base::HistogramBase::Count count) {
     FetchHistogramsFromChildProcesses();
     histogram_tester_.ExpectTotalCount(name, count);
   }
 
   template <typename T>
-  void ExpectBucketCount(base::StringPiece name,
+  void ExpectBucketCount(std::string_view name,
                          T sample,
                          base::HistogramBase::Count expected_count) {
     FetchHistogramsFromChildProcesses();

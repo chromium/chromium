@@ -9,9 +9,9 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "content/browser/web_package/signed_exchange_utils.h"
 #include "content/common/content_export.h"
 #include "net/base/hash_value.h"
@@ -46,7 +46,7 @@ class CONTENT_EXPORT SignedExchangeSignatureHeaderField {
   // Parses a value of the Signature header.
   // https://wicg.github.io/webpackage/draft-yasskin-httpbis-origin-signed-exchanges-impl.html#signature-header
   static std::optional<std::vector<Signature>> ParseSignature(
-      base::StringPiece signature_str,
+      std::string_view signature_str,
       SignedExchangeDevToolsProxy* devtools_proxy);
 };
 

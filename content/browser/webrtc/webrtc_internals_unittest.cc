@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
@@ -149,7 +150,7 @@ class WebRtcInternalsTest : public testing::Test {
   }
 
   void VerifyList(const base::Value::Dict& dict,
-                  base::StringPiece key,
+                  std::string_view key,
                   const base::Value::List& expected) {
     const base::Value::List* actual = dict.FindList(key);
     ASSERT_TRUE(actual);

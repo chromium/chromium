@@ -7,13 +7,13 @@
 #include <stddef.h>
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -44,7 +44,7 @@ namespace content {
 namespace {
 
 template <typename Range>
-std::u16string GetJavascriptCallImpl(base::StringPiece function_name,
+std::u16string GetJavascriptCallImpl(std::string_view function_name,
                                      const Range& args) {
   std::vector<std::u16string> json_args;
   for (const auto& arg : args) {
@@ -65,13 +65,13 @@ const WebUI::TypeID WebUI::kNoWebUI = nullptr;
 
 // static
 std::u16string WebUI::GetJavascriptCall(
-    base::StringPiece function_name,
+    std::string_view function_name,
     base::span<const base::ValueView> arg_list) {
   return GetJavascriptCallImpl(function_name, arg_list);
 }
 
 // static
-std::u16string WebUI::GetJavascriptCall(base::StringPiece function_name,
+std::u16string WebUI::GetJavascriptCall(std::string_view function_name,
                                         const base::Value::List& arg_list) {
   return GetJavascriptCallImpl(function_name, arg_list);
 }
@@ -236,7 +236,7 @@ bool WebUIImpl::CanCallJavascript() {
           frame_host_->GetLastCommittedURL().spec() == url::kAboutBlankURL);
 }
 
-void WebUIImpl::CallJavascriptFunctionUnsafe(base::StringPiece function_name) {
+void WebUIImpl::CallJavascriptFunctionUnsafe(std::string_view function_name) {
   DCHECK(base::IsStringASCII(function_name));
   std::u16string javascript =
       base::ASCIIToUTF16(base::StrCat({function_name, "();"}));
@@ -244,13 +244,13 @@ void WebUIImpl::CallJavascriptFunctionUnsafe(base::StringPiece function_name) {
 }
 
 void WebUIImpl::CallJavascriptFunctionUnsafe(
-    base::StringPiece function_name,
+    std::string_view function_name,
     base::span<const base::ValueView> args) {
   DCHECK(base::IsStringASCII(function_name));
   ExecuteJavascript(GetJavascriptCall(function_name, args));
 }
 
-void WebUIImpl::RegisterMessageCallback(base::StringPiece message,
+void WebUIImpl::RegisterMessageCallback(std::string_view message,
                                         MessageCallback callback) {
   message_callbacks_.emplace(message, std::move(callback));
 }

@@ -7,10 +7,10 @@
 
 #include <istream>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/flat_map.h"
-#include "base/strings/string_piece.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "content/browser/first_party_sets/first_party_sets_overrides_policy.h"
@@ -54,7 +54,7 @@ class CONTENT_EXPORT FirstPartySetParser {
   // this ensures that the origin is non-opaque, is HTTPS, and has a registered
   // domain. Returns std::nullopt in case of any error.
   static std::optional<net::SchemefulSite> CanonicalizeRegisteredDomain(
-      const base::StringPiece origin_string,
+      const std::string_view origin_string,
       bool emit_errors);
 
   // Parses two lists of First-Party Sets from `policy` using the "replacements"

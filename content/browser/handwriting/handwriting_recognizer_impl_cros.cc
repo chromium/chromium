@@ -6,13 +6,13 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/mojom/handwriting/handwriting.mojom.h"
@@ -67,14 +67,14 @@ CreateGestureModelDescriptor() {
 // Returns whether the two language tags are semantically the same.
 // TODO(https://crbug.com/1166910): We may need a better language tag matching
 // method (e.g. libicu's LocaleMatcher).
-bool LanguageTagsAreMatching(base::StringPiece a, base::StringPiece b) {
+bool LanguageTagsAreMatching(std::string_view a, std::string_view b) {
   // Per BCP 47, language tag comparisons are case-insensitive.
   return base::EqualsCaseInsensitiveASCII(a, b);
 }
 
 // Returns the model identifier (language in HandwritingRecognizerSpec) for
 // ml_service backend. Returns std::nullopt if language_tag isn't supported.
-std::optional<std::string> GetModelIdentifier(base::StringPiece language_tag) {
+std::optional<std::string> GetModelIdentifier(std::string_view language_tag) {
   if (LanguageTagsAreMatching(language_tag, kLanguageTagEnglish))
     return kModelEn;
 
@@ -220,7 +220,7 @@ void CrOSHandwritingRecognizerImpl::Create(
 
 // static
 bool CrOSHandwritingRecognizerImpl::SupportsLanguageTag(
-    base::StringPiece language_tag) {
+    std::string_view language_tag) {
   return GetModelIdentifier(language_tag).has_value();
 }
 

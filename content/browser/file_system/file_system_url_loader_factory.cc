@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <map>
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -405,8 +405,8 @@ class FileSystemDirectoryURLLoader final : public FileSystemEntryURLLoader {
 
     data_producer_->Write(
         std::make_unique<mojo::StringDataSource>(
-            base::StringPiece(data_), mojo::StringDataSource::AsyncWritingMode::
-                                          STRING_STAYS_VALID_UNTIL_COMPLETION),
+            std::string_view(data_), mojo::StringDataSource::AsyncWritingMode::
+                                         STRING_STAYS_VALID_UNTIL_COMPLETION),
         base::BindOnce(&FileSystemDirectoryURLLoader::OnDirectoryWritten,
                        base::Unretained(this)));
   }
@@ -591,7 +591,7 @@ class FileSystemFileURLLoader final : public FileSystemEntryURLLoader {
         // Only sniff for mime-type in the first block of the file.
         std::string type_hint;
         GetMimeType(url_, &type_hint);
-        SniffMimeType(base::StringPiece(file_data_->data(), result),
+        SniffMimeType(std::string_view(file_data_->data(), result),
                       url_.ToGURL(), type_hint,
                       net::ForceSniffFileUrlsForHtml::kDisabled,
                       &head_->mime_type);
@@ -610,7 +610,7 @@ class FileSystemFileURLLoader final : public FileSystemEntryURLLoader {
   void WriteFileData(int bytes_read) {
     data_producer_->Write(
         std::make_unique<mojo::StringDataSource>(
-            base::StringPiece(file_data_->data(), bytes_read),
+            std::string_view(file_data_->data(), bytes_read),
             mojo::StringDataSource::AsyncWritingMode::
                 STRING_STAYS_VALID_UNTIL_COMPLETION),
         base::BindOnce(&FileSystemFileURLLoader::OnFileDataWritten,

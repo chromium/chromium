@@ -4,6 +4,7 @@
 
 #include "content/browser/web_package/signed_exchange_handler.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/files/file_path.h"
@@ -79,13 +80,13 @@ bool IsCTSupported() {
 }
 
 // "wildcard_example.org.public.pem.cbor" has dummy data in its "ocsp" field.
-constexpr base::StringPiece kDummyOCSPDer = "OCSP";
+constexpr std::string_view kDummyOCSPDer = "OCSP";
 
 class TestBrowserClient : public ContentBrowserClient {
   bool CanAcceptUntrustedExchangesIfNeeded() override { return true; }
 };
 
-std::string GetTestFileContents(base::StringPiece name) {
+std::string GetTestFileContents(std::string_view name) {
   base::FilePath path;
   base::PathService::Get(content::DIR_TEST_DATA, &path);
   path = path.AppendASCII("sxg").AppendASCII(name);
@@ -260,7 +261,7 @@ class SignedExchangeHandlerTest
   }
 
   // Sets up |source_| stream with the contents of |file|.
-  void SetSourceStreamContents(base::StringPiece file) {
+  void SetSourceStreamContents(std::string_view file) {
     // MockSourceStream doesn't take ownership of the buffer, so we must keep it
     // alive.
     source_stream_contents_ = GetTestFileContents(file);

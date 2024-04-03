@@ -4,6 +4,8 @@
 
 #include "content/browser/network/http_cache_backend_file_operations_factory.h"
 
+#include <string_view>
+
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/task/thread_pool.h"
@@ -209,7 +211,7 @@ class HttpCacheBackendFileOperations final
   }
 
  private:
-  bool IsValid(const base::FilePath& path, base::StringPiece tag) const {
+  bool IsValid(const base::FilePath& path, std::string_view tag) const {
     if (!path.IsAbsolute()) {
       mojo::ReportBadMessage(static_cast<std::string>(tag) +
                              ": The path is not an absolute path.");

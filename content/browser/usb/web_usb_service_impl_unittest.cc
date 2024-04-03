@@ -7,6 +7,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -61,8 +62,8 @@ enum ServiceCreationType {
   kCreateForServiceWorker,
 };
 
-constexpr base::StringPiece kDefaultTestUrl{"https://www.google.com/"};
-constexpr base::StringPiece kCrossOriginTestUrl{"https://www.chromium.org"};
+constexpr std::string_view kDefaultTestUrl{"https://www.google.com/"};
+constexpr std::string_view kCrossOriginTestUrl{"https://www.chromium.org"};
 
 MATCHER_P(HasGuid, matcher, "") {
   return ExplainMatchResult(matcher, arg->guid, result_listener);

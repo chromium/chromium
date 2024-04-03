@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_HANDWRITING_HANDWRITING_RECOGNIZER_IMPL_CROS_H_
 #define CONTENT_BROWSER_HANDWRITING_HANDWRITING_RECOGNIZER_IMPL_CROS_H_
 
+#include <string_view>
 #include <vector>
 
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
@@ -38,7 +39,7 @@ class CrOSHandwritingRecognizerImpl final : public HandwritingRecognizerImpl {
   ~CrOSHandwritingRecognizerImpl() override;
 
   // Returns whether the provided |language_tag| is supported.
-  static bool SupportsLanguageTag(base::StringPiece language_tag);
+  static bool SupportsLanguageTag(std::string_view language_tag);
 
   // Returns the description for the model that best satisfies `constraint`.
   // Returns nullptr if we can't find such a model.

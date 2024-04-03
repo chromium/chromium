@@ -5,6 +5,7 @@
 #include "content/public/browser/web_ui_url_loader_factory.h"
 
 #include <optional>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/elapsed_timer.h"
@@ -81,8 +81,8 @@ void ReadData(
   if (replacements) {
     // We won't know the the final output size ahead of time, so we have to
     // use an intermediate string.
-    base::StringPiece input(reinterpret_cast<const char*>(bytes->front()),
-                            bytes->size());
+    std::string_view input(reinterpret_cast<const char*>(bytes->front()),
+                           bytes->size());
     std::string temp_str;
     if (replace_in_js) {
       CHECK(

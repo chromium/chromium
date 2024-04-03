@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_NETWORK_TRUST_TOKEN_BROWSERTEST_H_
 #define CONTENT_BROWSER_NETWORK_TRUST_TOKEN_BROWSERTEST_H_
 
+#include <string_view>
+
 #include "base/memory/raw_ref.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -60,7 +62,7 @@ class TrustTokenBrowsertest : virtual public ContentBrowserTest,
   // TrustTokenRequestHandler. All hosts in |hosts| will be provided identical
   // commitments.
   void ProvideRequestHandlerKeyCommitmentsToNetworkService(
-      std::vector<base::StringPiece> hosts = {});
+      std::vector<std::string_view> hosts = {});
 
   // Given a host (e.g. "a.test"), returns the corresponding storage origin
   // for Trust Tokens state. (This adds the correct scheme---probably https---as

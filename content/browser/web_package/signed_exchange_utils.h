@@ -7,8 +7,8 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "content/browser/web_package/signed_exchange_consts.h"
 #include "content/browser/web_package/signed_exchange_error.h"
 #include "content/browser/web_package/signed_exchange_signature_verifier.h"
@@ -33,7 +33,7 @@ struct URLWithRawString {
   GURL url;
   std::string raw_string;
   URLWithRawString() = default;
-  URLWithRawString(base::StringPiece url_string)
+  URLWithRawString(std::string_view url_string)
       : url(url_string), raw_string(url_string) {}
 };
 

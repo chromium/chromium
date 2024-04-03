@@ -2,9 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/public/common/manifest/manifest.h"
+
 #include <stdint.h>
+
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/command_line.h"
@@ -37,7 +41,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
-#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
@@ -141,7 +144,7 @@ class ManifestBrowserTest : public ContentBrowserTest,
     return console_errors_;
   }
 
-  void OnReceivedConsoleError(base::StringPiece16 message) {
+  void OnReceivedConsoleError(std::u16string_view message) {
     console_errors_.push_back(base::UTF16ToUTF8(message));
   }
 

@@ -12,6 +12,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/base64.h"
@@ -16714,8 +16715,8 @@ TEST_F(AuctionRunnerTest, ModelingSignalsPassed) {
     EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
 
     ASSERT_EQ(result_.report_urls.size(), 1u);
-    base::StringPiece query = result_.report_urls[0].query_piece();
-    std::vector<base::StringPiece> split = base::SplitStringPiece(
+    std::string_view query = result_.report_urls[0].query_piece();
+    std::vector<std::string_view> split = base::SplitStringPiece(
         query, "=", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     ASSERT_EQ(split.size(), 2u);
     int reported_modeling_signals;
@@ -16839,8 +16840,8 @@ TEST_F(AuctionRunnerTest, JoinCountPassedToReportWin) {
     EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
 
     ASSERT_EQ(result_.report_urls.size(), 1u);
-    base::StringPiece query = result_.report_urls[0].query_piece();
-    std::vector<base::StringPiece> split = base::SplitStringPiece(
+    std::string_view query = result_.report_urls[0].query_piece();
+    std::vector<std::string_view> split = base::SplitStringPiece(
         query, "=", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     ASSERT_EQ(split.size(), 2u);
     int reported_join_count;
@@ -16915,8 +16916,8 @@ TEST_F(AuctionRunnerTest, RecencyPassedReportWin) {
     EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
 
     ASSERT_EQ(result_.report_urls.size(), 1u);
-    base::StringPiece query = result_.report_urls[0].query_piece();
-    std::vector<base::StringPiece> split = base::SplitStringPiece(
+    std::string_view query = result_.report_urls[0].query_piece();
+    std::vector<std::string_view> split = base::SplitStringPiece(
         query, "=", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     ASSERT_EQ(split.size(), 2u);
     int reported_recency;

@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -129,15 +130,15 @@ class SandboxedNetworkListBrowserTest : public ContentBrowserTest {
     return (contents1 == contents2);
   }
 
-  base::FilePath GetPersistentPathLocation(base::StringPiece name) {
+  base::FilePath GetPersistentPathLocation(std::string_view name) {
     return shell()->web_contents()->GetBrowserContext()->GetPath().AppendASCII(
         name);
   }
 
  private:
   size_t GetTestPreCount() {
-    constexpr base::StringPiece kPreTestPrefix = "PRE_";
-    base::StringPiece test_name =
+    constexpr std::string_view kPreTestPrefix = "PRE_";
+    std::string_view test_name =
         testing::UnitTest::GetInstance()->current_test_info()->name();
     size_t count = 0;
     while (base::StartsWith(test_name, kPreTestPrefix)) {

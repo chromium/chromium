@@ -4,6 +4,8 @@
 
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
 
+#include <string_view>
+
 #include "base/base64.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
@@ -681,11 +683,11 @@ bool CanUseEntry(const PrefetchedSignedExchangeCacheEntry& entry,
 
 // Deserializes a SHA256HashValue from a string. On error, returns false.
 // This method support the form of "sha256-<base64-hash-value>".
-bool ExtractSHA256HashValueFromString(const base::StringPiece value,
+bool ExtractSHA256HashValueFromString(const std::string_view value,
                                       net::SHA256HashValue* out) {
   if (!base::StartsWith(value, "sha256-"))
     return false;
-  const base::StringPiece base64_str = value.substr(7);
+  const std::string_view base64_str = value.substr(7);
   std::string decoded;
   if (!base::Base64Decode(base64_str, &decoded) ||
       decoded.size() != sizeof(out->data)) {
@@ -720,7 +722,7 @@ std::map<GURL, net::SHA256HashValue> GetAllowedAltSXG(
     if (rel == link_params.end() || header_integrity == link_params.end() ||
         rel->second.value_or("") != std::string(kAllowedAltSxg) ||
         !ExtractSHA256HashValueFromString(
-            base::StringPiece(header_integrity->second.value_or("")),
+            std::string_view(header_integrity->second.value_or("")),
             &header_integrity_value)) {
       continue;
     }

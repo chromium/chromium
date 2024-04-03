@@ -5,11 +5,11 @@
 #include "content/browser/process_internals/process_internals_handler_impl.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/process_internals/process_internals.mojom.h"
 #include "content/browser/process_lock.h"
@@ -199,7 +199,7 @@ void ProcessInternalsHandlerImpl::GetProcessCountInfo(
 
 void ProcessInternalsHandlerImpl::GetIsolationMode(
     GetIsolationModeCallback callback) {
-  std::vector<base::StringPiece> modes;
+  std::vector<std::string_view> modes;
   if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites())
     modes.push_back("Site Per Process");
   if (SiteIsolationPolicy::AreIsolatedOriginsEnabled())

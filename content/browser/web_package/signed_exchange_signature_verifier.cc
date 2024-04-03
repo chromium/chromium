@@ -6,13 +6,13 @@
 
 #include <array>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/format_macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/byte_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -58,7 +58,7 @@ std::optional<crypto::SignatureVerifier::SignatureAlgorithm>
 GetSignatureAlgorithm(scoped_refptr<net::X509Certificate> cert,
                       SignedExchangeDevToolsProxy* devtools_proxy) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("loading"), "GetSignatureAlgorithm");
-  base::StringPiece spki;
+  std::string_view spki;
   if (!net::asn1::ExtractSPKIFromDERCert(
           net::x509_util::CryptoBufferAsStringPiece(cert->cert_buffer()),
           &spki)) {

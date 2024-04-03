@@ -7,6 +7,7 @@
 #include <map>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/base64.h"
@@ -84,7 +85,7 @@ std::string EncodeIcon(const SkBitmap& app_icon) {
   gfx::Image decoded_image = gfx::Image::CreateFrom1xBitmap(app_icon);
   scoped_refptr<base::RefCountedMemory> raw_data = decoded_image.As1xPNGBytes();
   return base::Base64Encode(
-      base::StringPiece(raw_data->front_as<char>(), raw_data->size()));
+      std::string_view(raw_data->front_as<char>(), raw_data->size()));
 }
 
 void CheckRegistrationSuccess(base::OnceCallback<void(bool success)> callback,

@@ -4,6 +4,8 @@
 
 #include "content/browser/renderer_host/renderer_sandboxed_process_launcher_delegate.h"
 
+#include <string_view>
+
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "content/public/browser/content_browser_client.h"
@@ -74,7 +76,7 @@ RendererSandboxedProcessLauncherDelegateWin::
   if (cmd_line.HasSwitch(blink::switches::kJavaScriptFlags)) {
     std::string js_flags =
         cmd_line.GetSwitchValueASCII(blink::switches::kJavaScriptFlags);
-    std::vector<base::StringPiece> js_flag_list = base::SplitStringPiece(
+    std::vector<std::string_view> js_flag_list = base::SplitStringPiece(
         js_flags, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     for (const auto& js_flag : js_flag_list) {
       if (js_flag == "--jitless") {

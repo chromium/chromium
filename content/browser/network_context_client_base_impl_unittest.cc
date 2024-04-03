@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/browser/network_context_client_base.h"
+#include <string_view>
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -14,6 +14,7 @@
 #include "base/test/test_file_util.h"
 #include "build/build_config.h"
 #include "content/browser/child_process_security_policy_impl.h"
+#include "content/public/browser/network_context_client_base.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "net/base/net_errors.h"
@@ -50,8 +51,7 @@ void CreateFile(const base::FilePath& path, const char* content) {
   EXPECT_EQ(bytes_written, content_size);
 }
 
-void ValidateFileContents(base::File& file,
-                          base::StringPiece expected_content) {
+void ValidateFileContents(base::File& file, std::string_view expected_content) {
   int expected_length = expected_content.size();
   ASSERT_EQ(file.GetLength(), expected_length);
   char content[expected_length];

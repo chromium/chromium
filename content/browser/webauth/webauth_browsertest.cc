@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/base64.h"
@@ -471,8 +472,8 @@ class WebAuthBrowserTestContentBrowserClient
 
   // set_webauthn_origins_response sets the fake HTTP response that will be
   // returned for all requests for `.well-known/webauthn-origins` requests.
-  void set_webauthn_origins_response(base::StringPiece content_type,
-                                     base::StringPiece authorized_origin) {
+  void set_webauthn_origins_response(std::string_view content_type,
+                                     std::string_view authorized_origin) {
     auto fake_url_loader_factory =
         std::make_unique<FakeNetworkURLLoaderFactory>(
             base::StrCat(

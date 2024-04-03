@@ -9,12 +9,12 @@
 
 #include <optional>
 #include <set>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ref.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
@@ -180,7 +180,7 @@ class CONTENT_EXPORT AggregationServiceStorageSql
 
   // Whether the reporting origin has space for an extra report to be stored,
   // i.e. has not reached the `max_stored_requests_per_reporting_origin_` limit.
-  bool ReportingOriginHasCapacity(base::StringPiece serialized_reporting_origin)
+  bool ReportingOriginHasCapacity(std::string_view serialized_reporting_origin)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Initializes the database if necessary, and returns whether the database is

@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/command_line.h"
@@ -366,7 +367,7 @@ void UnknownSchemeCallback(
           handled_externally ? net::ERR_ABORTED : net::ERR_UNKNOWN_URL_SCHEME));
 }
 
-void LogQueueTimeHistogram(base::StringPiece name,
+void LogQueueTimeHistogram(std::string_view name,
                            bool is_outermost_main_frame) {
   auto* task = base::TaskAnnotator::CurrentTaskForThread();
   // Only log for non-delayed tasks with a valid queue_time.
@@ -1003,7 +1004,7 @@ void NavigationURLLoaderImpl::OnReceiveResponse(
     // intercepting URLLoaderFactory it gets notified.
     url_loader_->CancelWithError(
         net::ERR_ABORTED,
-        base::StringPiece(base::NumberToString(net::ERR_ABORTED)));
+        std::string_view(base::NumberToString(net::ERR_ABORTED)));
     return;
   }
 
@@ -1101,7 +1102,7 @@ void NavigationURLLoaderImpl::OnReceiveRedirect(
       // intercepting URLLoaderFactory (created through the embedder's
       // ContentBrowserClient::WillCreateURLLoaderFactory) it gets notified.
       url_loader_->CancelWithError(
-          error, base::StringPiece(base::NumberToString(error)));
+          error, std::string_view(base::NumberToString(error)));
     } else {
       // TODO(https://crbug.com/1052242): Make sure ResetWithReason() is called
       // on the original `url_loader_`.

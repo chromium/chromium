@@ -15,7 +15,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/escape.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "content/browser/devtools/devtools_instrumentation.h"

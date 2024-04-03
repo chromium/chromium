@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <string>
-
 #include "content/browser/isolated_origin_util.h"
 
+#include <string>
+#include <string_view>
+
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -17,7 +17,7 @@ const char* kAllSubdomainsWildcard = "[*.]";
 
 namespace content {
 
-IsolatedOriginPattern::IsolatedOriginPattern(base::StringPiece pattern)
+IsolatedOriginPattern::IsolatedOriginPattern(std::string_view pattern)
     : isolate_all_subdomains_(false), is_valid_(false) {
   Parse(pattern);
 }
@@ -35,23 +35,24 @@ IsolatedOriginPattern::IsolatedOriginPattern(IsolatedOriginPattern&& other) =
 IsolatedOriginPattern& IsolatedOriginPattern::operator=(
     IsolatedOriginPattern&& other) = default;
 
-bool IsolatedOriginPattern::Parse(const base::StringPiece& unparsed_pattern) {
+bool IsolatedOriginPattern::Parse(const std::string_view& unparsed_pattern) {
   pattern_ = std::string(unparsed_pattern);
   origin_ = url::Origin();
   isolate_all_subdomains_ = false;
   is_valid_ = false;
 
   size_t host_begin = unparsed_pattern.find(url::kStandardSchemeSeparator);
-  if (host_begin == base::StringPiece::npos || host_begin == 0)
+  if (host_begin == std::string_view::npos || host_begin == 0) {
     return false;
+  }
 
   // Skip over the scheme separator.
   host_begin += strlen(url::kStandardSchemeSeparator);
   if (host_begin >= unparsed_pattern.size())
     return false;
 
-  base::StringPiece scheme_part = unparsed_pattern.substr(0, host_begin);
-  base::StringPiece host_part = unparsed_pattern.substr(host_begin);
+  std::string_view scheme_part = unparsed_pattern.substr(0, host_begin);
+  std::string_view host_part = unparsed_pattern.substr(host_begin);
 
   // Empty schemes or hosts are invalid for isolation purposes.
   if (host_part.size() == 0)

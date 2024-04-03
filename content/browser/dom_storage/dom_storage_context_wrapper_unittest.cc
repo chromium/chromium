@@ -4,6 +4,7 @@
 
 #include "content/browser/dom_storage/dom_storage_context_wrapper.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -65,7 +66,7 @@ class DOMStorageContextWrapperTest : public testing::Test {
   }
 
  protected:
-  void OnBadMessage(base::StringPiece reason) {
+  void OnBadMessage(std::string_view reason) {
     bad_message_called_ = true;
     bad_message_ = std::string(reason);
   }

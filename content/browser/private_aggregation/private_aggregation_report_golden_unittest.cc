@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
@@ -109,8 +109,8 @@ class PrivateAggregationReportGoldenLatestVersionTest : public testing::Test {
       std::vector<blink::mojom::AggregatableReportHistogramContribution>
           contributions,
       PrivateAggregationBudgetKey::Api api_identifier,
-      base::StringPiece report_file,
-      base::StringPiece cleartext_payloads_file) {
+      std::string_view report_file,
+      std::string_view cleartext_payloads_file) {
     const url::Origin kExampleOrigin =
         url::Origin::Create(GURL("https://report.test"));
 
@@ -341,8 +341,8 @@ TEST_F(PrivateAggregationReportGoldenLatestVersionTest, VerifyGoldenReport) {
     std::vector<blink::mojom::AggregatableReportHistogramContribution>
         contributions;
     PrivateAggregationBudgetKey::Api api_identifier;
-    base::StringPiece report_file;
-    base::StringPiece cleartext_payloads_file;
+    std::string_view report_file;
+    std::string_view cleartext_payloads_file;
   } kTestCases[] = {
       {.debug_details = blink::mojom::DebugModeDetails::New(
            /*is_enabled=*/true,
@@ -437,7 +437,7 @@ class PrivateAggregationReportGoldenLegacyVersionTest
 // Currently not exercised as there are no legacy versions.
 // Will be used when the report version is bumped.
 TEST_P(PrivateAggregationReportGoldenLegacyVersionTest, HasExpectedVersion) {
-  static constexpr base::StringPiece prefix = "version_";
+  static constexpr std::string_view prefix = "version_";
 
   base::FilePath dir = GetParam();
 

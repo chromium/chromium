@@ -11,6 +11,7 @@
 #include <ostream>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -22,7 +23,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/abseil_string_number_conversions.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
@@ -57,7 +57,7 @@ constexpr char kResponseKey[] = "response";
 constexpr char kResponsesKey[] = "responses";
 constexpr char kTimestampKey[] = "timestamp";
 
-using Context = absl::variant<base::StringPiece, size_t>;
+using Context = absl::variant<std::string_view, size_t>;
 using ContextPath = std::vector<Context>;
 
 std::string TimeAsUnixMillisecondString(base::Time time) {
@@ -89,12 +89,11 @@ std::ostream& operator<<(std::ostream& out, const ContextPath& path) {
   }
 
   for (Context context : path) {
-    absl::visit(
-        base::Overloaded{
-            [&](base::StringPiece key) { out << "[\"" << key << "\"]"; },
-            [&](size_t index) { out << '[' << index << ']'; },
-        },
-        context);
+    absl::visit(base::Overloaded{
+                    [&](std::string_view key) { out << "[\"" << key << "\"]"; },
+                    [&](size_t index) { out << '[' << index << ']'; },
+                },
+                context);
   }
   return out;
 }
@@ -439,7 +438,7 @@ class AttributionInteropParser {
   }
 
   std::optional<SuitableOrigin> ParseOrigin(const base::Value::Dict& dict,
-                                            base::StringPiece key) {
+                                            std::string_view key) {
     auto context = PushContext(key);
 
     std::optional<SuitableOrigin> origin;
@@ -455,7 +454,7 @@ class AttributionInteropParser {
   }
 
   base::Time ParseTime(const base::Value::Dict& dict,
-                       base::StringPiece key,
+                       std::string_view key,
                        base::Time previous_time,
                        bool strictly_greater,
                        std::optional<base::Time> if_absent = std::nullopt) {
@@ -485,7 +484,7 @@ class AttributionInteropParser {
   }
 
   std::optional<bool> ParseBool(const base::Value::Dict& dict,
-                                base::StringPiece key) {
+                                std::string_view key) {
     auto context = PushContext(key);
 
     const base::Value* v = dict.Find(key);
@@ -603,7 +602,7 @@ class AttributionInteropParser {
   }
 
   bool ParseDict(base::Value::Dict& value,
-                 base::StringPiece key,
+                 std::string_view key,
                  base::FunctionRef<void(base::Value::Dict)> parse_dict) {
     auto context = PushContext(key);
 
@@ -633,9 +632,9 @@ class AttributionInteropParser {
   // successfully.
   template <typename T>
   bool ParseInteger(const base::Value::Dict& dict,
-                    base::StringPiece key,
+                    std::string_view key,
                     T& result,
-                    bool (*convert_func)(base::StringPiece, T*),
+                    bool (*convert_func)(std::string_view, T*),
                     bool required,
                     bool allow_zero) {
     auto context = PushContext(key);
@@ -661,7 +660,7 @@ class AttributionInteropParser {
   }
 
   bool ParseInt(const base::Value::Dict& dict,
-                base::StringPiece key,
+                std::string_view key,
                 int& result,
                 bool required,
                 bool allow_zero = false) {
@@ -670,7 +669,7 @@ class AttributionInteropParser {
   }
 
   bool ParseInt64(const base::Value::Dict& dict,
-                  base::StringPiece key,
+                  std::string_view key,
                   int64_t& result,
                   bool required,
                   bool allow_zero = false) {
@@ -679,7 +678,7 @@ class AttributionInteropParser {
   }
 
   bool ParseUInt128(const base::Value::Dict& dict,
-                    base::StringPiece key,
+                    std::string_view key,
                     absl::uint128& result,
                     bool required,
                     bool allow_zero = false) {
@@ -688,7 +687,7 @@ class AttributionInteropParser {
   }
 
   void ParseDouble(const base::Value::Dict& dict,
-                   base::StringPiece key,
+                   std::string_view key,
                    double& result,
                    bool required) {
     auto context = PushContext(key);

@@ -5,13 +5,13 @@
 #include "content/browser/webauth/virtual_discovery.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "device/fido/fido_device.h"
 #include "device/fido/fido_device_discovery.h"
@@ -40,7 +40,7 @@ void VirtualFidoDiscovery::AddVirtualDevice(
   }
 }
 
-bool VirtualFidoDiscovery::RemoveVirtualDevice(base::StringPiece device_id) {
+bool VirtualFidoDiscovery::RemoveVirtualDevice(std::string_view device_id) {
   DCHECK(is_start_requested());
   return ::device::FidoDeviceDiscovery::RemoveDevice(device_id);
 }

@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -470,8 +471,8 @@ class SharedStorageHeaderObserverTest
   void RunHeaderReceived(const url::Origin& request_origin,
                          std::vector<OperationPtr> operations) {
     base::RunLoop loop;
-    base::OnceCallback<void(base::StringPiece error)> bad_message_callback =
-        base::BindLambdaForTesting([&](base::StringPiece error) {
+    base::OnceCallback<void(std::string_view error)> bad_message_callback =
+        base::BindLambdaForTesting([&](std::string_view error) {
           LOG(ERROR) << error;
           std::move(loop.QuitClosure()).Run();
         });

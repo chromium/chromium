@@ -4,6 +4,8 @@
 
 #include "content/browser/web_package/signed_exchange_envelope.h"
 
+#include <string_view>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
@@ -35,8 +37,8 @@ cbor::Value CBORByteString(const char* str) {
 
 std::optional<SignedExchangeEnvelope> GenerateHeaderAndParse(
     SignedExchangeVersion version,
-    base::StringPiece fallback_url,
-    base::StringPiece signature,
+    std::string_view fallback_url,
+    std::string_view signature,
     const std::map<const char*, const char*>& response_map) {
   cbor::Value::MapValue response_cbor_map;
   for (auto& pair : response_map)
@@ -88,7 +90,7 @@ TEST_P(SignedExchangeEnvelopeTest, ParseGoldenFile) {
   size_t signature_header_field_offset =
       signed_exchange_prologue::BeforeFallbackUrl::kEncodedSizeInBytes +
       prologue_a.ComputeFallbackUrlAndAfterLength();
-  base::StringPiece signature_header_field(
+  std::string_view signature_header_field(
       contents.data() + signature_header_field_offset,
       prologue_b.signature_header_field_length());
   const auto cbor_bytes =

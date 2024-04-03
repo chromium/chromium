@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_MEDIA_MEDIA_INTERNALS_AUDIO_FOCUS_HELPER_H_
 
 #include <map>
+#include <string_view>
 
 #include "base/values.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -56,7 +57,7 @@ class MediaInternalsAudioFocusHelper
       const std::string& id,
       media_session::mojom::MediaSessionDebugInfoPtr info);
 
-  void SerializeAndSendUpdate(base::StringPiece function,
+  void SerializeAndSendUpdate(std::string_view function,
                               const base::Value::Dict& value);
 
   // Build the name of the request to display and inject values from |state|.

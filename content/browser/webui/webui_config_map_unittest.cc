@@ -4,6 +4,8 @@
 
 #include "content/public/browser/webui_config_map.h"
 
+#include <string_view>
+
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
@@ -23,7 +25,7 @@ BrowserContext* kBrowserContext = nullptr;
 
 class TestConfig : public WebUIConfig {
  public:
-  TestConfig(base::StringPiece scheme, base::StringPiece host)
+  TestConfig(std::string_view scheme, std::string_view host)
       : WebUIConfig(scheme, host) {}
   ~TestConfig() override = default;
 

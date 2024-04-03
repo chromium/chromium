@@ -9,6 +9,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -361,7 +362,7 @@ class AttributionManagerImplTest : public testing::Test {
   }
 
   void RegisterAggregatableSourceAndMatchingTrigger(
-      base::StringPiece origin_prefix) {
+      std::string_view origin_prefix) {
     const auto origin = *SuitableOrigin::Deserialize(
         base::StrCat({"https://", origin_prefix, ".example"}));
 

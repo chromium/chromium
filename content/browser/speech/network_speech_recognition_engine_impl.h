@@ -6,14 +6,15 @@
 #define CONTENT_BROWSER_SPEECH_NETWORK_SPEECH_RECOGNITION_ENGINE_IMPL_H_
 
 #include <stdint.h>
+
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "components/speech/audio_encoder.h"
 #include "components/speech/chunked_byte_buffer.h"
 #include "components/speech/downstream_loader.h"
@@ -163,7 +164,7 @@ class CONTENT_EXPORT NetworkSpeechRecognitionEngineImpl
   void OnUpstreamDataComplete(bool success, int response_code) override;
 
   // speech::DownstreamLoaderClient
-  void OnDownstreamDataReceived(base::StringPiece new_response_data) override;
+  void OnDownstreamDataReceived(std::string_view new_response_data) override;
   void OnDownstreamDataComplete(bool success, int response_code) override;
 
   // Entry point for pushing any new external event into the recognizer FSM.

@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_SMS_SMS_PARSER_H_
 #define CONTENT_BROWSER_SMS_SMS_PARSER_H_
 
+#include <string_view>
+
 #include "content/common/content_export.h"
 #include "content/public/browser/sms_fetcher.h"
 #include "url/origin.h"
@@ -48,7 +50,7 @@ class CONTENT_EXPORT SmsParser {
     SmsParsingStatus parsing_status;
   };
 
-  static Result Parse(base::StringPiece sms);
+  static Result Parse(std::string_view sms);
 };
 
 }  // namespace content

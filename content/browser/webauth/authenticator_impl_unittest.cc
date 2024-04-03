@@ -7,6 +7,7 @@
 #include <list>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -867,8 +868,8 @@ TEST_F(AuthenticatorImplTest, ClientDataJSONSerialization) {
     EXPECT_EQ(*parsed->GetDict().FindString("origin"), test.origin.Serialize());
     std::string expected_challenge;
     base::Base64UrlEncode(
-        base::StringPiece(reinterpret_cast<const char*>(test.challenge.data()),
-                          test.challenge.size()),
+        std::string_view(reinterpret_cast<const char*>(test.challenge.data()),
+                         test.challenge.size()),
         base::Base64UrlEncodePolicy::OMIT_PADDING, &expected_challenge);
     EXPECT_EQ(*parsed->GetDict().FindString("challenge"), expected_challenge);
     EXPECT_EQ(*parsed->GetDict().FindBool("crossOrigin"), test.is_cross_origin);
@@ -942,8 +943,8 @@ TEST_F(AuthenticatorImplTest, MakeCredentialPlatformAuthenticator) {
 
 // Parses its arguments as JSON and expects that all the keys in the first are
 // also in the second, and with the same value.
-static void CheckJSONIsSubsetOfJSON(base::StringPiece subset_str,
-                                    base::StringPiece test_str) {
+static void CheckJSONIsSubsetOfJSON(std::string_view subset_str,
+                                    std::string_view test_str) {
   std::optional<base::Value> subset = base::JSONReader::Read(subset_str);
   ASSERT_TRUE(subset);
   ASSERT_TRUE(subset->is_dict());
@@ -2262,7 +2263,7 @@ class AuthenticatorContentBrowserClientTest : public AuthenticatorImplTest {
     const auto& x5c = x5c_it->second.GetArray();
     ASSERT_EQ(1u, x5c.size());
     ASSERT_TRUE(x5c[0].is_bytestring());
-    base::StringPiece cert = x5c[0].GetBytestringAsString();
+    std::string_view cert = x5c[0].GetBytestringAsString();
     EXPECT_TRUE(cert.find(substring) != cert.npos);
   }
 
@@ -3581,7 +3582,7 @@ class MockAuthenticatorRequestDelegateObserver
   MOCK_METHOD1(EmbedderControlsAuthenticatorDispatch,
                bool(const device::FidoAuthenticator&));
   MOCK_METHOD1(FidoAuthenticatorAdded, void(const device::FidoAuthenticator&));
-  MOCK_METHOD1(FidoAuthenticatorRemoved, void(base::StringPiece));
+  MOCK_METHOD1(FidoAuthenticatorRemoved, void(std::string_view));
 
  private:
   InterestingFailureReasonCallback failure_reasons_callback_;

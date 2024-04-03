@@ -7,6 +7,7 @@
 #include <array>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -109,8 +110,8 @@ WebAuthenticationDelegate* GetWebAuthenticationDelegate() {
 std::string Base64UrlEncode(const base::span<const uint8_t> input) {
   std::string ret;
   base::Base64UrlEncode(
-      base::StringPiece(reinterpret_cast<const char*>(input.data()),
-                        input.size()),
+      std::string_view(reinterpret_cast<const char*>(input.data()),
+                       input.size()),
       base::Base64UrlEncodePolicy::OMIT_PADDING, &ret);
   return ret;
 }
@@ -161,12 +162,12 @@ bool AddTransportsFromCertificate(
   static constexpr uint8_t kTransportTypesOID[] = {
       0x2b, 0x06, 0x01, 0x04, 0x01, 0x82, 0xe5, 0x1c, 0x02, 0x01, 0x01};
   bool present, critical;
-  base::StringPiece contents;
+  std::string_view contents;
   if (!net::asn1::ExtractExtensionFromDERCert(
-          base::StringPiece(reinterpret_cast<const char*>(der_cert.data()),
-                            der_cert.size()),
-          base::StringPiece(reinterpret_cast<const char*>(kTransportTypesOID),
-                            sizeof(kTransportTypesOID)),
+          std::string_view(reinterpret_cast<const char*>(der_cert.data()),
+                           der_cert.size()),
+          std::string_view(reinterpret_cast<const char*>(kTransportTypesOID),
+                           sizeof(kTransportTypesOID)),
           &present, &critical, &contents) ||
       !present) {
     return false;

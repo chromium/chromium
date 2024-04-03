@@ -4,6 +4,7 @@
 
 #include "content/browser/tracing/cast_tracing_agent.h"
 
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -29,9 +30,9 @@ namespace {
 
 std::string GetTracingCategories(
     const base::trace_event::TraceConfig& trace_config) {
-  std::vector<base::StringPiece> categories;
+  std::vector<std::string_view> categories;
   for (size_t i = 0; i < chromecast::tracing::kCategoryCount; ++i) {
-    base::StringPiece category(chromecast::tracing::kCategories[i]);
+    std::string_view category(chromecast::tracing::kCategories[i]);
     if (trace_config.category_filter().IsCategoryGroupEnabled(category))
       categories.push_back(category);
   }

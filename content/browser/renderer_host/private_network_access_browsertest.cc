@@ -5,13 +5,13 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/thread_annotations.h"
@@ -248,8 +248,8 @@ class RequestObserver {
 
 // Removes `prefix` from the start of `str`, if present.
 // Returns nullopt otherwise.
-std::optional<base::StringPiece> StripPrefix(base::StringPiece str,
-                                             base::StringPiece prefix) {
+std::optional<std::string_view> StripPrefix(std::string_view str,
+                                            std::string_view prefix) {
   if (!base::StartsWith(str, prefix)) {
     return std::nullopt;
   }
@@ -261,7 +261,7 @@ std::optional<base::StringPiece> StripPrefix(base::StringPiece str,
 // Returns nullptr otherwise.
 const std::string* FindRequestHeader(
     const net::test_server::HttpRequest& request,
-    base::StringPiece header) {
+    std::string_view header) {
   const auto it = request.headers.find(header);
   if (it == request.headers.end()) {
     return nullptr;
@@ -288,7 +288,7 @@ std::string GetContentRangeHeader(const net::HttpByteRange& range,
 // Route: /echorange?<body>
 std::unique_ptr<net::test_server::HttpResponse> HandleRangeRequest(
     const net::test_server::HttpRequest& request) {
-  std::optional<base::StringPiece> query =
+  std::optional<std::string_view> query =
       StripPrefix(request.relative_url, "/echorange?");
   if (!query) {
     return nullptr;
@@ -296,7 +296,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRangeRequest(
 
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
 
-  constexpr std::pair<base::StringPiece, base::StringPiece> kCopiedHeaders[] = {
+  constexpr std::pair<std::string_view, std::string_view> kCopiedHeaders[] = {
       {"Origin", "Access-Control-Allow-Origin"},
       {"Access-Control-Request-Private-Network",
        "Access-Control-Allow-Private-Network"},
@@ -402,7 +402,7 @@ class FakeAddressSpaceServer {
   const RequestObserver& request_observer() const { return request_observer_; }
 
  private:
-  static base::StringPiece IPAddressSpaceToSwitchValue(
+  static std::string_view IPAddressSpaceToSwitchValue(
       network::mojom::IPAddressSpace space) {
     switch (space) {
       case network::mojom::IPAddressSpace::kLocal:
@@ -1118,8 +1118,8 @@ RenderFrameHostImpl* GetFirstChild(RenderFrameHostImpl& parent) {
 //
 // `parent` must not be nullptr.
 RenderFrameHostImpl* AddChildFromURL(RenderFrameHostImpl* parent,
-                                     base::StringPiece url) {
-  constexpr base::StringPiece kScriptTemplate = R"(
+                                     std::string_view url) {
+  constexpr std::string_view kScriptTemplate = R"(
     new Promise((resolve) => {
       const iframe = document.createElement("iframe");
       iframe.src = $1;
@@ -1141,9 +1141,9 @@ RenderFrameHostImpl* AddChildFromURL(RenderFrameHostImpl* parent,
 //
 // `parent` must not be nullptr.
 void AddChildFromURLWithoutWaiting(RenderFrameHostImpl* parent,
-                                   base::StringPiece url) {
+                                   std::string_view url) {
   // Define a variable for better indentation.
-  constexpr base::StringPiece kScriptTemplate = R"(
+  constexpr std::string_view kScriptTemplate = R"(
     const child = document.createElement("iframe");
     child.src = $1;
     document.body.appendChild(child);
@@ -1284,10 +1284,10 @@ RenderFrameHostImpl* OpenWindowFromAboutBlankNoOpener(
 RenderFrameHostImpl* OpenWindowFromURLExpectNoCommit(
     RenderFrameHostImpl* parent,
     const GURL& url,
-    base::StringPiece features = "") {
+    std::string_view features = "") {
   ShellAddedObserver observer;
 
-  base::StringPiece script_template = R"(
+  std::string_view script_template = R"(
     window.open($1, "_blank", $2);
   )";
   EXPECT_TRUE(ExecJs(parent, JsReplace(script_template, url, features)));
@@ -1310,13 +1310,13 @@ RenderFrameHostImpl* OpenWindowInitialEmptyDocNoOpener(
                                          "noopener");
 }
 
-GURL JavascriptURL(base::StringPiece script) {
+GURL JavascriptURL(std::string_view script) {
   return GURL(base::StrCat({"javascript:", script}));
 }
 
 RenderFrameHostImpl* OpenWindowFromJavascriptURL(
     RenderFrameHostImpl* parent,
-    base::StringPiece script = "'foo'") {
+    std::string_view script = "'foo'") {
   // Note: We do not use OpenWindowFromURL() because we do not want to wait for
   // a navigation, since the `javascript:` URL will not commit (`about:blank`
   // will).
@@ -1326,7 +1326,7 @@ RenderFrameHostImpl* OpenWindowFromJavascriptURL(
 // Same as above, but with the "noopener" window feature.
 RenderFrameHostImpl* OpenWindowFromJavascriptURLNoOpener(
     RenderFrameHostImpl* parent,
-    base::StringPiece script) {
+    std::string_view script) {
   // Note: We do not use OpenWindowFromURL() because we do not want to wait for
   // a navigation - none will commit.
   return OpenWindowFromURLExpectNoCommit(parent, JavascriptURL(script),
@@ -3582,7 +3582,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest, PrefixRangePreflight) {
 
   const GURL url = SecureLocalURL("/echorange?this-is-a-test");
 
-  constexpr base::StringPiece kFetchRangeScript = R"(
+  constexpr std::string_view kFetchRangeScript = R"(
     (async () => {
       const url = $1;
       const range = $2;
@@ -3636,7 +3636,7 @@ constexpr char kWorkerScriptWithPnaHeadersPath[] =
 // Instantiates a dedicated worker script from `path`.
 // If it loads successfully, the worker should post a message to its creator to
 // signal success.
-std::string FetchWorkerScript(base::StringPiece path) {
+std::string FetchWorkerScript(std::string_view path) {
   constexpr char kTemplate[] = R"(
     new Promise((resolve) => {
       const worker = new Worker($1);
@@ -3658,7 +3658,7 @@ constexpr char kSharedWorkerScriptWithPnaHeadersPath[] =
 // Instantiates a shared worker script from `path`.
 // If it loads successfully, the worker should post a message to each client
 // that connects to it to signal success.
-std::string FetchSharedWorkerScript(base::StringPiece path) {
+std::string FetchSharedWorkerScript(std::string_view path) {
   constexpr char kTemplate[] = R"(
     new Promise((resolve) => {
       const worker = new SharedWorker($1);
@@ -4165,7 +4165,7 @@ IN_PROC_BROWSER_TEST_F(
   GURL url = InsecureLocalURL(kDefaultPath);
   TestNavigationManager navigation_manager(shell()->web_contents(), url);
 
-  base::StringPiece script_template = R"(
+  std::string_view script_template = R"(
     const form = document.createElement("form");
     form.action = $1;
     form.method = "post";
@@ -4189,7 +4189,7 @@ IN_PROC_BROWSER_TEST_F(
   GURL url = InsecureLocalURL(kDefaultPath);
   TestNavigationManager navigation_manager(shell()->web_contents(), url);
 
-  base::StringPiece script_template = R"(
+  std::string_view script_template = R"(
     const iframe = document.createElement("iframe");
     document.body.appendChild(iframe);
 
@@ -4234,7 +4234,7 @@ IN_PROC_BROWSER_TEST_F(
   TestNavigationManager navigation_manager(shell()->web_contents(),
                                            expected_url);
 
-  base::StringPiece script_template = R"(
+  std::string_view script_template = R"(
     const iframe = document.createElement("iframe");
     document.body.appendChild(iframe);
 
@@ -4283,7 +4283,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForNavigations,
   GURL initiator_url = InsecureLocalURL(kTreatAsPublicAddressPath);
   GURL target_url = InsecureLocalURL(kDefaultPath);
 
-  constexpr base::StringPiece kScriptTemplate = R"(
+  constexpr std::string_view kScriptTemplate = R"(
     function addChild(name, src) {
       return new Promise((resolve) => {
         const iframe = document.createElement("iframe");

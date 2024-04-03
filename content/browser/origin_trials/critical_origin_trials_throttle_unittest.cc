@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "content/browser/origin_trials/critical_origin_trials_throttle.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
 #include "net/http/http_response_headers.h"
@@ -104,8 +104,8 @@ class MockOriginTrialsDelegate
       const base::Time current_time) override {}
   void ClearPersistedTokens() override { persisted_trials_.clear(); }
 
-  void AddPersistedTrialForTest(const base::StringPiece url,
-                                const base::StringPiece trial_name) {
+  void AddPersistedTrialForTest(const std::string_view url,
+                                const std::string_view trial_name) {
     url::Origin key = url::Origin::Create(GURL(url));
     persisted_trials_[key].emplace(trial_name);
   }
@@ -121,7 +121,7 @@ class CriticalOriginTrialsThrottleTest : public ::testing::Test {
 
   ~CriticalOriginTrialsThrottleTest() override = default;
 
-  std::string CreateHeaderLines(const base::StringPiece prefix,
+  std::string CreateHeaderLines(const std::string_view prefix,
                                 const base::span<std::string> values) {
     std::string line;
     for (const std::string& value : values)
@@ -130,7 +130,7 @@ class CriticalOriginTrialsThrottleTest : public ::testing::Test {
     return line;
   }
 
-  void StartRequest(const base::StringPiece url, ResourceType resource_type) {
+  void StartRequest(const std::string_view url, ResourceType resource_type) {
     network::ResourceRequest request;
     request.url = GURL(url);
     request.resource_type = static_cast<int>(resource_type);
@@ -139,7 +139,7 @@ class CriticalOriginTrialsThrottleTest : public ::testing::Test {
   }
 
   blink::URLLoaderThrottle::RestartWithURLReset BeforeWillProcess(
-      const base::StringPiece url,
+      const std::string_view url,
       const base::span<std::string> origin_trial_tokens = {},
       const base::span<std::string> critical_origin_trials = {}) {
     network::mojom::URLResponseHead response_head;

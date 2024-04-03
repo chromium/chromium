@@ -8,6 +8,7 @@
 
 #include <list>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 
@@ -53,7 +54,7 @@ namespace content {
 
 namespace {
 
-std::u16string SerializeUpdate(base::StringPiece function,
+std::u16string SerializeUpdate(std::string_view function,
                                const base::ValueView value) {
   base::ValueView args[] = {value};
   return content::WebUI::GetJavascriptCall(function, args);
@@ -685,8 +686,8 @@ void MediaInternals::EraseSavedEvents(RenderProcessHost* host) {
 }
 
 void MediaInternals::UpdateAudioLog(AudioLogUpdateType type,
-                                    base::StringPiece cache_key,
-                                    base::StringPiece function,
+                                    std::string_view cache_key,
+                                    std::string_view function,
                                     const base::Value::Dict& value) {
   {
     base::AutoLock auto_lock(lock_);

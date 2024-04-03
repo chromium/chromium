@@ -5,6 +5,7 @@
 #include "content/browser/media/media_browsertest.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
@@ -154,7 +155,7 @@ class MediaTest : public testing::WithParamInterface<bool>,
     MediaBrowserTest::SetUpCommandLine(command_line);
   }
 
-  void MaybePlayVideo(base::StringPiece codec_string,
+  void MaybePlayVideo(std::string_view codec_string,
                       const std::string& file_name) {
     constexpr char kTestVideoPlaybackScript[] = R"({
       const video = document.createElement('video');

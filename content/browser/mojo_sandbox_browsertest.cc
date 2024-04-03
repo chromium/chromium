@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include <stdint.h>
+
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/command_line.h"
@@ -14,7 +16,6 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "content/browser/utility_process_host.h"
@@ -82,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(MojoSandboxTest, SubprocessReadOnlySharedMemoryRegion) {
         base::ReadOnlySharedMemoryMapping mapping = region.Map();
         ASSERT_TRUE(mapping.IsValid());
         auto span = mapping.GetMemoryAsSpan<const char>();
-        EXPECT_EQ(kTestMessage, base::StringPiece(span.data(), span.size()));
+        EXPECT_EQ(kTestMessage, std::string_view(span.data(), span.size()));
         run_loop.Quit();
       }));
   run_loop.Run();
@@ -106,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(MojoSandboxTest, SubprocessWritableSharedMemoryRegion) {
         base::WritableSharedMemoryMapping mapping = region.Map();
         ASSERT_TRUE(mapping.IsValid());
         auto span = mapping.GetMemoryAsSpan<const char>();
-        EXPECT_EQ(kTestMessage, base::StringPiece(span.data(), span.size()));
+        EXPECT_EQ(kTestMessage, std::string_view(span.data(), span.size()));
         run_loop.Quit();
       }));
   run_loop.Run();
@@ -130,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(MojoSandboxTest, SubprocessUnsafeSharedMemoryRegion) {
         base::WritableSharedMemoryMapping mapping = region.Map();
         ASSERT_TRUE(mapping.IsValid());
         auto span = mapping.GetMemoryAsSpan<const char>();
-        EXPECT_EQ(kTestMessage, base::StringPiece(span.data(), span.size()));
+        EXPECT_EQ(kTestMessage, std::string_view(span.data(), span.size()));
         run_loop.Quit();
       }));
   run_loop.Run();

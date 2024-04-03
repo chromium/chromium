@@ -5,6 +5,7 @@
 #include "content/browser/payments/payment_app_info_fetcher.h"
 
 #include <limits>
+#include <string_view>
 #include <utility>
 
 #include "base/base64.h"
@@ -288,7 +289,7 @@ void PaymentAppInfoFetcher::SelfDeleteFetcher::OnIconFetched(
   std::vector<unsigned char> bitmap_data;
   bool success = gfx::PNGCodec::EncodeBGRASkBitmap(icon, false, &bitmap_data);
   DCHECK(success);
-  fetched_payment_app_info_->icon = base::Base64Encode(base::StringPiece(
+  fetched_payment_app_info_->icon = base::Base64Encode(std::string_view(
       reinterpret_cast<const char*>(&bitmap_data[0]), bitmap_data.size()));
   RunCallbackAndDestroy();
 }

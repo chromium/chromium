@@ -7,6 +7,7 @@
 
 #include <map>
 #include <optional>
+#include <string_view>
 
 #include "base/dcheck_is_on.h"
 #include "base/functional/callback_forward.h"
@@ -121,7 +122,7 @@ class CONTENT_EXPORT PrefetchService {
   // testing.
   static void SetServiceWorkerContextForTesting(ServiceWorkerContext* context);
   static void SetHostNonUniqueFilterForTesting(
-      bool (*filter)(base::StringPiece));
+      bool (*filter)(std::string_view));
 
   // Sets the URLLoaderFactory to be used during testing instead of the
   // |PrefetchNetworkContext| associated with each |PrefetchContainer|. Note

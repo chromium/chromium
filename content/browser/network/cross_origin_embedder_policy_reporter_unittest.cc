@@ -5,9 +5,9 @@
 #include "content/browser/network/cross_origin_embedder_policy_reporter.h"
 
 #include <optional>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
@@ -99,9 +99,9 @@ class CrossOriginEmbedderPolicyReporterTest : public testing::Test {
   }
   void InvalidateWeakPtrs() { storage_partition_.InvalidateWeakPtrs(); }
   const TestNetworkContext& network_context() const { return network_context_; }
-  base::Value::Dict CreateBodyForCorp(base::StringPiece blocked_url,
+  base::Value::Dict CreateBodyForCorp(std::string_view blocked_url,
                                       RequestDestination destination,
-                                      base::StringPiece disposition) const {
+                                      std::string_view disposition) const {
     base::Value::Dict dict;
     for (const auto& pair :
          CreateBodyForCorpInternal(blocked_url, destination, disposition)) {
@@ -110,8 +110,8 @@ class CrossOriginEmbedderPolicyReporterTest : public testing::Test {
     return dict;
   }
 
-  base::Value::Dict CreateBodyForNavigation(base::StringPiece blocked_url,
-                                            base::StringPiece disposition) {
+  base::Value::Dict CreateBodyForNavigation(std::string_view blocked_url,
+                                            std::string_view disposition) {
     base::Value::Dict dict;
     for (const auto& pair :
          CreateBodyInternal("navigation", blocked_url, disposition)) {
@@ -121,8 +121,8 @@ class CrossOriginEmbedderPolicyReporterTest : public testing::Test {
   }
 
   base::Value::Dict CreateBodyForWorkerInitialization(
-      base::StringPiece blocked_url,
-      base::StringPiece disposition) {
+      std::string_view blocked_url,
+      std::string_view disposition) {
     base::Value::Dict dict;
     for (const auto& pair : CreateBodyInternal("worker initialization",
                                                blocked_url, disposition)) {
@@ -132,9 +132,9 @@ class CrossOriginEmbedderPolicyReporterTest : public testing::Test {
   }
 
   blink::mojom::ReportBodyPtr CreateMojomBodyForCorp(
-      base::StringPiece blocked_url,
+      std::string_view blocked_url,
       RequestDestination destination,
-      base::StringPiece disposition) {
+      std::string_view disposition) {
     auto body = blink::mojom::ReportBody::New();
     for (const auto& pair :
          CreateBodyForCorpInternal(blocked_url, destination, disposition)) {
@@ -145,8 +145,8 @@ class CrossOriginEmbedderPolicyReporterTest : public testing::Test {
   }
 
   blink::mojom::ReportBodyPtr CreateMojomBodyForNavigation(
-      base::StringPiece blocked_url,
-      base::StringPiece disposition) {
+      std::string_view blocked_url,
+      std::string_view disposition) {
     auto body = blink::mojom::ReportBody::New();
     for (const auto& pair :
          CreateBodyInternal("navigation", blocked_url, disposition)) {
@@ -157,8 +157,8 @@ class CrossOriginEmbedderPolicyReporterTest : public testing::Test {
   }
 
   blink::mojom::ReportBodyPtr CreateMojomBodyForWorkerInitialization(
-      base::StringPiece blocked_url,
-      base::StringPiece disposition) {
+      std::string_view blocked_url,
+      std::string_view disposition) {
     auto body = blink::mojom::ReportBody::New();
     for (const auto& pair : CreateBodyInternal("worker initialization",
                                                blocked_url, disposition)) {
@@ -170,9 +170,9 @@ class CrossOriginEmbedderPolicyReporterTest : public testing::Test {
 
  private:
   std::vector<std::pair<std::string, std::string>> CreateBodyForCorpInternal(
-      base::StringPiece blocked_url,
+      std::string_view blocked_url,
       RequestDestination destination,
-      base::StringPiece disposition) const {
+      std::string_view disposition) const {
     return {std::make_pair("type", "corp"),
             std::make_pair("blockedURL", std::string(blocked_url)),
             std::make_pair("destination",
@@ -181,9 +181,9 @@ class CrossOriginEmbedderPolicyReporterTest : public testing::Test {
   }
 
   std::vector<std::pair<std::string, std::string>> CreateBodyInternal(
-      base::StringPiece type,
-      base::StringPiece blocked_url,
-      base::StringPiece disposition) const {
+      std::string_view type,
+      std::string_view blocked_url,
+      std::string_view disposition) const {
     return {std::make_pair("type", std::string(type)),
             std::make_pair("blockedURL", std::string(blocked_url)),
             std::make_pair("disposition", std::string(disposition))};

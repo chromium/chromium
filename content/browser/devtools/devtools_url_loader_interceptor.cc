@@ -5,6 +5,7 @@
 #include "content/browser/devtools/devtools_url_loader_interceptor.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/barrier_closure.h"
 #include "base/base64.h"
@@ -12,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/strings/pattern.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -1228,8 +1228,8 @@ Response InterceptionJob::ProcessResponseOverride(
           std::min(body_size, static_cast<size_t>(net::kMaxBytesToSniff));
       const std::string hint = head->mime_type;
       net::SniffMimeType(
-          base::StringPiece(body->front_as<const char>() + response_body_offset,
-                            bytes_to_sniff),
+          std::string_view(body->front_as<const char>() + response_body_offset,
+                           bytes_to_sniff),
           url, hint, net::ForceSniffFileUrlsForHtml::kDisabled,
           &head->mime_type);
       head->did_mime_sniff = true;
@@ -1288,7 +1288,7 @@ void InterceptionJob::ProcessSetCookies(const net::HttpResponseHeaders& headers,
     server_time = std::make_optional(response_date);
   base::Time now = base::Time::Now();
 
-  const base::StringPiece name("Set-Cookie");
+  const std::string_view name("Set-Cookie");
   std::string cookie_line;
   size_t iter = 0;
   while (headers.EnumerateHeader(&iter, name, &cookie_line)) {

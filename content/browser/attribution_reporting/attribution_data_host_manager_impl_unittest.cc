@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -3002,7 +3003,7 @@ TEST_F(AttributionDataHostManagerImplTest, HeadersSize_SourceMetricsRecorded) {
 
   auto reporting_url = GURL("https://report.test");
   auto source_origin = *SuitableOrigin::Deserialize("https://source.test");
-  base::StringPiece os_registration(R"("https://r.test/x")");
+  std::string_view os_registration(R"("https://r.test/x")");
 
   data_host_manager_.NotifyFencedFrameReportingBeaconStarted(
       kBeaconId,
@@ -3356,7 +3357,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
 
   // OS
   {
-    base::StringPiece os_header_value(R"("https://r.test/x")");
+    std::string_view os_header_value(R"("https://r.test/x")");
     data_host_manager_.NotifyBackgroundRegistrationStarted(
         kBackgroundId,
         AttributionSuitableContext::CreateForTesting(

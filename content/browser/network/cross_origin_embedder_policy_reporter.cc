@@ -4,7 +4,8 @@
 
 #include "content/browser/network/cross_origin_embedder_policy_reporter.h"
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "base/values.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/request_destination.h"
@@ -93,7 +94,7 @@ void CrossOriginEmbedderPolicyReporter::Clone(
 }
 
 void CrossOriginEmbedderPolicyReporter::QueueAndNotify(
-    std::initializer_list<std::pair<base::StringPiece, base::StringPiece>> body,
+    std::initializer_list<std::pair<std::string_view, std::string_view>> body,
     bool report_only) {
   const std::optional<std::string>& endpoint =
       report_only ? report_only_endpoint_ : endpoint_;

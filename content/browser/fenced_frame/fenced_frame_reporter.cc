@@ -10,6 +10,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -115,7 +116,7 @@ constexpr net::NetworkTrafficAnnotationTag kReportingBeaconNetworkTag =
         }
       )");
 
-base::StringPiece ReportingDestinationAsString(
+std::string_view ReportingDestinationAsString(
     const blink::FencedFrame::ReportingDestination& destination) {
   switch (destination) {
     case blink::FencedFrame::ReportingDestination::kBuyer:
@@ -132,7 +133,7 @@ base::StringPiece ReportingDestinationAsString(
   NOTREACHED();
 }
 
-base::StringPiece InvokingAPIAsString(
+std::string_view InvokingAPIAsString(
     const PrivacySandboxInvokingAPI invoking_api) {
   switch (invoking_api) {
     case PrivacySandboxInvokingAPI::kProtectedAudience:

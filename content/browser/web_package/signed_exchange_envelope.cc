@@ -4,12 +4,12 @@
 
 #include "content/browser/web_package/signed_exchange_envelope.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/format_macros.h"
 #include "base/functional/callback.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "components/cbor/reader.h"
@@ -23,7 +23,7 @@ namespace content {
 
 namespace {
 
-bool IsUncachedHeader(base::StringPiece name) {
+bool IsUncachedHeader(std::string_view name) {
   DCHECK_EQ(name, base::ToLowerASCII(name));
 
   const char* const kUncachedHeaders[] = {
@@ -105,7 +105,7 @@ bool IsCacheableBySharedCache(const SignedExchangeEnvelope::HeaderMap& headers,
       net::HttpUtil::NameValuePairsIterator::Values::NOT_REQUIRED,
       net::HttpUtil::NameValuePairsIterator::Quotes::STRICT_QUOTES);
   while (it.GetNext()) {
-    base::StringPiece name = it.name_piece();
+    std::string_view name = it.name_piece();
     if (name == "no-store" || name == "private") {
       signed_exchange_utils::ReportErrorAndTraceEvent(
           devtools_proxy,
@@ -150,7 +150,7 @@ bool ParseResponseMap(const cbor::Value& value,
         devtools_proxy, ":status is not found or not a bytestring.");
     return false;
   }
-  base::StringPiece response_code_str =
+  std::string_view response_code_str =
       status_iter->second.GetBytestringAsString();
   int response_code;
   if (!base::StringToInt(response_code_str, &response_code)) {
@@ -174,7 +174,7 @@ bool ParseResponseMap(const cbor::Value& value,
           devtools_proxy, "Non-bytestring value in the response map.");
       return false;
     }
-    base::StringPiece name_str = it.first.GetBytestringAsString();
+    std::string_view name_str = it.first.GetBytestringAsString();
     if (name_str == kStatusKey)
       continue;
     if (!net::HttpUtil::IsValidHeaderName(name_str)) {
@@ -210,7 +210,7 @@ bool ParseResponseMap(const cbor::Value& value,
       return false;
     }
 
-    base::StringPiece value_str = it.second.GetBytestringAsString();
+    std::string_view value_str = it.second.GetBytestringAsString();
     if (!net::HttpUtil::IsValidHeaderValue(value_str)) {
       signed_exchange_utils::ReportErrorAndTraceEvent(devtools_proxy,
                                                       "Invalid header value.");
@@ -288,7 +288,7 @@ bool ParseResponseMap(const cbor::Value& value,
 std::optional<SignedExchangeEnvelope> SignedExchangeEnvelope::Parse(
     SignedExchangeVersion version,
     const signed_exchange_utils::URLWithRawString& fallback_url,
-    base::StringPiece signature_header_field,
+    std::string_view signature_header_field,
     base::span<const uint8_t> cbor_header,
     SignedExchangeDevToolsProxy* devtools_proxy) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("loading"),
@@ -351,8 +351,8 @@ SignedExchangeEnvelope::~SignedExchangeEnvelope() = default;
 SignedExchangeEnvelope& SignedExchangeEnvelope::operator=(
     SignedExchangeEnvelope&&) = default;
 
-bool SignedExchangeEnvelope::AddResponseHeader(base::StringPiece name,
-                                               base::StringPiece value) {
+bool SignedExchangeEnvelope::AddResponseHeader(std::string_view name,
+                                               std::string_view value) {
   std::string name_str(name);
   DCHECK_EQ(name_str, base::ToLowerASCII(name))
       << "Response header names should be always lower-cased.";
@@ -363,8 +363,8 @@ bool SignedExchangeEnvelope::AddResponseHeader(base::StringPiece name,
   return true;
 }
 
-void SignedExchangeEnvelope::SetResponseHeader(base::StringPiece name,
-                                               base::StringPiece value) {
+void SignedExchangeEnvelope::SetResponseHeader(std::string_view name,
+                                               std::string_view value) {
   std::string name_str(name);
   DCHECK_EQ(name_str, base::ToLowerASCII(name))
       << "Response header names should be always lower-cased.";
@@ -396,8 +396,8 @@ void SignedExchangeEnvelope::set_cbor_header(base::span<const uint8_t> data) {
 net::SHA256HashValue SignedExchangeEnvelope::ComputeHeaderIntegrity() const {
   net::SHA256HashValue hash;
   crypto::SHA256HashString(
-      base::StringPiece(reinterpret_cast<const char*>(cbor_header().data()),
-                        cbor_header().size()),
+      std::string_view(reinterpret_cast<const char*>(cbor_header().data()),
+                       cbor_header().size()),
       &hash, sizeof(net::SHA256HashValue));
   return hash;
 }

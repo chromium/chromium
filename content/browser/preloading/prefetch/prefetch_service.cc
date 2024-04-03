@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -76,7 +77,7 @@ namespace {
 
 static ServiceWorkerContext* g_service_worker_context_for_testing = nullptr;
 
-bool (*g_host_non_unique_filter)(base::StringPiece) = nullptr;
+bool (*g_host_non_unique_filter)(std::string_view) = nullptr;
 
 static network::mojom::URLLoaderFactory* g_url_loader_factory_for_testing =
     nullptr;
@@ -1768,7 +1769,7 @@ void PrefetchService::SetServiceWorkerContextForTesting(
 
 // static
 void PrefetchService::SetHostNonUniqueFilterForTesting(
-    bool (*filter)(base::StringPiece)) {
+    bool (*filter)(std::string_view)) {
   g_host_non_unique_filter = filter;
 }
 

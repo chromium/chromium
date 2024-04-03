@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "content/browser/webauth/webauth_request_security_checker.h"
+
+#include <string_view>
+
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -53,7 +55,7 @@ blink::ParsedPermissionsPolicy CreatePolicyToAllowWebPayments() {
 }
 
 struct TestCase {
-  TestCase(const base::StringPiece& url,
+  TestCase(const std::string_view& url,
            const blink::ParsedPermissionsPolicy& policy,
            WebAuthRequestSecurityChecker::RequestType request_type,
            bool expected_is_cross_origin,
@@ -66,7 +68,7 @@ struct TestCase {
 
   ~TestCase() = default;
 
-  const base::StringPiece url;
+  const std::string_view url;
   const blink::ParsedPermissionsPolicy policy;
   const WebAuthRequestSecurityChecker::RequestType request_type;
   const bool expected_is_cross_origin;
@@ -333,8 +335,8 @@ INSTANTIATE_TEST_SUITE_P(
 
 class WebAuthRequestSecurityCheckerWellKnownJSONTest : public testing::Test {
  protected:
-  blink::mojom::AuthenticatorStatus Test(base::StringPiece caller_origin_str,
-                                         base::StringPiece json) {
+  blink::mojom::AuthenticatorStatus Test(std::string_view caller_origin_str,
+                                         std::string_view json) {
     std::optional<base::Value> parsed =
         base::JSONReader::Read(json, base::JSON_PARSE_RFC);
     CHECK(parsed) << json;

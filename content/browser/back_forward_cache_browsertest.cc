@@ -6,6 +6,7 @@
 
 #include <climits>
 #include <optional>
+#include <string_view>
 #include <unordered_map>
 
 #include "base/command_line.h"
@@ -15,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/system/sys_info.h"
 #include "base/task/common/task_annotator.h"
 #include "base/task/single_thread_task_runner.h"
@@ -3135,7 +3135,7 @@ class BackForwardCacheWithSubframeNavigationBrowserTest
       BeforeUnloadBlockingDelegate& beforeunload_pauser,
       RenderFrameHostImpl* sub_rfh,
       const GURL& subframe_navigate_url,
-      const base::StringPiece iframe_id) {
+      const std::string_view iframe_id) {
     ASSERT_TRUE(ExecJs(sub_rfh, R"(
       window.addEventListener('beforeunload', e =>
         e.returnValue='blocked'
@@ -3173,7 +3173,7 @@ class BackForwardCacheWithSubframeNavigationBrowserTest
       const GURL& subframe_navigate_url,
       RenderFrameHostImplWrapper& sub_rfh,
       TestNavigationManager& subframe_navigation_manager,
-      const base::StringPiece iframe_id) {
+      const std::string_view iframe_id) {
     FrameTreeNode* child_ftn =
         web_contents()->GetPrimaryFrameTree().root()->child_at(0);
     {

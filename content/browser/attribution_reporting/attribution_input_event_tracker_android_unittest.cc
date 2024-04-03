@@ -7,12 +7,12 @@
 #include <jni.h>
 
 #include <memory>
+#include <string_view>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -61,7 +61,7 @@ class AttributionInputEventTrackerAndroidTest
  protected:
   // The Java strings are used as standins for the input events.
   base::android::ScopedJavaLocalRef<jstring> GetJavaString(
-      base::StringPiece str) {
+      std::string_view str) {
     return base::android::ConvertUTF8ToJavaString(env_, str);
   }
 

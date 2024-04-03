@@ -9,6 +9,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 
@@ -179,7 +180,7 @@ class FirstPartySchemeContentBrowserClient
   ~FirstPartySchemeContentBrowserClient() override = default;
 
   bool ShouldTreatURLSchemeAsFirstPartyWhenTopLevel(
-      base::StringPiece scheme,
+      std::string_view scheme,
       bool is_embedded_origin_secure) override {
     if (is_embedded_origin_secure && scheme == "trustmeifembeddingsecure")
       return true;
@@ -2367,7 +2368,7 @@ class ScopedInterfaceRequestMonitor
     : public blink::mojom::BrowserInterfaceBrokerInterceptorForTesting {
  public:
   ScopedInterfaceRequestMonitor(RenderFrameHostImpl* render_frame_host,
-                                base::StringPiece interface_name,
+                                std::string_view interface_name,
                                 base::RepeatingClosure callback)
       : rfhi_(render_frame_host),
         impl_(receiver().SwapImplForTesting(this)),

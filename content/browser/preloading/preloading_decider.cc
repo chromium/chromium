@@ -4,6 +4,7 @@
 
 #include "content/browser/preloading/preloading_decider.h"
 
+#include <string_view>
 #include <vector>
 
 #include "base/check_op.h"
@@ -35,9 +36,9 @@ using EagernessSet =
                   blink::mojom::SpeculationEagerness::kMinValue,
                   blink::mojom::SpeculationEagerness::kMaxValue>;
 
-EagernessSet EagernessSetFromFeatureParam(base::StringPiece value) {
+EagernessSet EagernessSetFromFeatureParam(std::string_view value) {
   EagernessSet set;
-  for (base::StringPiece piece : base::SplitStringPiece(
+  for (std::string_view piece : base::SplitStringPiece(
            value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
     if (piece == "conservative") {
       set.Put(blink::mojom::SpeculationEagerness::kConservative);

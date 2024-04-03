@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <string>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
@@ -20,22 +21,22 @@
 
 namespace {
 
-constexpr base::StringPiece kDecodeTestFile = "decode_capabilities_test.html";
-constexpr base::StringPiece kSupported = "SUPPORTED";
-constexpr base::StringPiece16 kSupported16 = u"SUPPORTED";
-constexpr base::StringPiece kUnsupported = "UNSUPPORTED";
-constexpr base::StringPiece16 kUnsupported16 = u"UNSUPPORTED";
-constexpr base::StringPiece kError = "ERROR";
-constexpr base::StringPiece16 kError16 = u"ERROR";
-constexpr base::StringPiece kFileString = "file";
-constexpr base::StringPiece kMediaSourceString = "media-source";
-constexpr base::StringPiece kWebRtcString = "webrtc";
-constexpr base::StringPiece kInvalid = "INVALID";
+constexpr std::string_view kDecodeTestFile = "decode_capabilities_test.html";
+constexpr std::string_view kSupported = "SUPPORTED";
+constexpr std::u16string_view kSupported16 = u"SUPPORTED";
+constexpr std::string_view kUnsupported = "UNSUPPORTED";
+constexpr std::u16string_view kUnsupported16 = u"UNSUPPORTED";
+constexpr std::string_view kError = "ERROR";
+constexpr std::u16string_view kError16 = u"ERROR";
+constexpr std::string_view kFileString = "file";
+constexpr std::string_view kMediaSourceString = "media-source";
+constexpr std::string_view kWebRtcString = "webrtc";
+constexpr std::string_view kInvalid = "INVALID";
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-constexpr base::StringPiece kPropSupported = kSupported;
+constexpr std::string_view kPropSupported = kSupported;
 #else
-constexpr base::StringPiece kPropSupported = kUnsupported;
+constexpr std::string_view kPropSupported = kUnsupported;
 #endif  // USE_PROPRIETARY_CODECS
 
 enum StreamType {
@@ -66,29 +67,29 @@ class MediaCapabilitiesTest : public ContentBrowserTest {
                                     "MediaCapabilitiesDynamicRange");
   }
 
-  std::string CanDecodeAudio(base::StringPiece config_type,
-                             base::StringPiece content_type) {
+  std::string CanDecodeAudio(std::string_view config_type,
+                             std::string_view content_type) {
     return CanDecode(config_type, content_type, StreamType::kAudio);
   }
 
-  std::string CanDecodeVideo(base::StringPiece config_type,
-                             base::StringPiece content_type) {
+  std::string CanDecodeVideo(std::string_view config_type,
+                             std::string_view content_type) {
     return CanDecode(config_type, content_type, StreamType::kVideo);
   }
 
-  std::string CanDecodeAudioWithSpatialRendering(base::StringPiece config_type,
-                                                 base::StringPiece content_type,
+  std::string CanDecodeAudioWithSpatialRendering(std::string_view config_type,
+                                                 std::string_view content_type,
                                                  bool spatial_rendering) {
     return CanDecode(config_type, content_type,
                      StreamType::kAudioWithSpatialRendering, spatial_rendering);
   }
 
   std::string CanDecodeVideoWithHdrMetadata(
-      base::StringPiece config_type,
-      base::StringPiece content_type,
-      base::StringPiece color_gamut,
-      base::StringPiece transfer_function,
-      base::StringPiece hdr_metadata_type = "") {
+      std::string_view config_type,
+      std::string_view content_type,
+      std::string_view color_gamut,
+      std::string_view transfer_function,
+      std::string_view hdr_metadata_type = "") {
     StreamType stream_type = StreamType::kVideoWithHdrMetadata;
     if (hdr_metadata_type == "")
       stream_type = StreamType::kVideoWithoutHdrMetadata;
@@ -98,13 +99,13 @@ class MediaCapabilitiesTest : public ContentBrowserTest {
                      color_gamut, transfer_function);
   }
 
-  std::string CanDecode(base::StringPiece config_type,
-                        base::StringPiece content_type,
+  std::string CanDecode(std::string_view config_type,
+                        std::string_view content_type,
                         StreamType stream_type,
                         bool spatial_rendering = false,
-                        base::StringPiece hdr_metadata_type = "",
-                        base::StringPiece color_gamut = "",
-                        base::StringPiece transfer_function = "") {
+                        std::string_view hdr_metadata_type = "",
+                        std::string_view color_gamut = "",
+                        std::string_view transfer_function = "") {
     std::string command;
     if (stream_type == StreamType::kAudio) {
       base::StringAppendF(&command, "testAudioConfig(");
@@ -151,7 +152,7 @@ class MediaCapabilitiesTestWithConfigType
     : public MediaCapabilitiesTest,
       public testing::WithParamInterface<ConfigType> {
  public:
-  base::StringPiece GetTypeString() const {
+  std::string_view GetTypeString() const {
     switch (GetParam()) {
       case ConfigType::kFile:
         return kFileString;
@@ -175,9 +176,9 @@ IN_PROC_BROWSER_TEST_P(MediaCapabilitiesTestWithConfigType,
   const auto config_type = GetTypeString();
 
   // Content types below are not supported for WebRtc.
-  const base::StringPiece type_supported =
+  const std::string_view type_supported =
       GetParam() != kWebRtc ? kSupported : kUnsupported;
-  const base::StringPiece prop_type_supported =
+  const std::string_view prop_type_supported =
       GetParam() != kWebRtc ? kPropSupported : kUnsupported;
 
   EXPECT_TRUE(
@@ -231,9 +232,9 @@ IN_PROC_BROWSER_TEST_P(MediaCapabilitiesTestWithConfigType,
   const auto config_type = GetTypeString();
 
   // Content types below are not supported for WebRtc.
-  const base::StringPiece type_supported =
+  const std::string_view type_supported =
       GetParam() != kWebRtc ? kSupported : kUnsupported;
-  const base::StringPiece prop_type_supported =
+  const std::string_view prop_type_supported =
       GetParam() != kWebRtc ? kPropSupported : kUnsupported;
 
   EXPECT_TRUE(
@@ -267,7 +268,7 @@ IN_PROC_BROWSER_TEST_P(MediaCapabilitiesTestWithConfigType,
   const auto config_type = GetTypeString();
 
   // Content types below are supported for src=, but not MediaSource or WebRtc.
-  const base::StringPiece type_supported =
+  const std::string_view type_supported =
       GetParam() == kFile ? kSupported : kUnsupported;
 
   EXPECT_TRUE(
@@ -305,9 +306,9 @@ IN_PROC_BROWSER_TEST_P(MediaCapabilitiesTestWithConfigType,
   const auto config_type = GetTypeString();
 
   // Content types below are not supported for WebRtc.
-  const base::StringPiece type_supported =
+  const std::string_view type_supported =
       GetParam() != kWebRtc ? kSupported : kUnsupported;
-  const base::StringPiece prop_type_supported =
+  const std::string_view prop_type_supported =
       GetParam() != kWebRtc ? kPropSupported : kUnsupported;
 
   EXPECT_TRUE(
@@ -379,14 +380,14 @@ IN_PROC_BROWSER_TEST_P(MediaCapabilitiesTestWithConfigType,
 // Cover basic HDR support.
 IN_PROC_BROWSER_TEST_P(MediaCapabilitiesTestWithConfigType,
                        VideoTypesWithDynamicRange) {
-  constexpr base::StringPiece kSrgb = "srgb";
-  constexpr base::StringPiece kP3 = "p3";
-  constexpr base::StringPiece kRec2020 = "rec2020";
-  constexpr base::StringPiece kPq = "pq";
-  constexpr base::StringPiece kHlg = "hlg";
-  constexpr base::StringPiece kSmpteSt2086 = "smpteSt2086";
-  constexpr base::StringPiece kSmpteSt2094_10 = "smpteSt2094-10";
-  constexpr base::StringPiece kSmpteSt2094_40 = "smpteSt2094-40";
+  constexpr std::string_view kSrgb = "srgb";
+  constexpr std::string_view kP3 = "p3";
+  constexpr std::string_view kRec2020 = "rec2020";
+  constexpr std::string_view kPq = "pq";
+  constexpr std::string_view kHlg = "hlg";
+  constexpr std::string_view kSmpteSt2086 = "smpteSt2086";
+  constexpr std::string_view kSmpteSt2094_10 = "smpteSt2094-10";
+  constexpr std::string_view kSmpteSt2094_40 = "smpteSt2094-40";
 
   base::FilePath file_path =
       media::GetTestDataFilePath(std::string(kDecodeTestFile));
@@ -394,9 +395,9 @@ IN_PROC_BROWSER_TEST_P(MediaCapabilitiesTestWithConfigType,
   const auto config_type = GetTypeString();
 
   // None of the content types below are supported for WebRtc.
-  const base::StringPiece type_supported =
+  const std::string_view type_supported =
       GetParam() != kWebRtc ? kSupported : kUnsupported;
-  const base::StringPiece prop_type_supported =
+  const std::string_view prop_type_supported =
       GetParam() != kWebRtc ? kPropSupported : kUnsupported;
 
   EXPECT_TRUE(

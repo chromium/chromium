@@ -7,6 +7,7 @@
 #include <optional>
 #include <ostream>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -20,7 +21,6 @@
 #include "base/process/process.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -29,7 +29,7 @@ namespace content {
 
 namespace {
 
-base::FilePath GetExecPath(base::StringPiece name) {
+base::FilePath GetExecPath(std::string_view name) {
   base::FilePath path;
   base::PathService::Get(base::DIR_EXE, &path);
   return path.AppendASCII(name);
@@ -77,7 +77,7 @@ class SqlIndexMatcher {
 
  private:
   void DescribeTo(std::ostream*, bool negated) const;
-  size_t FindIndexStart(base::StringPiece plan) const;
+  size_t FindIndexStart(std::string_view plan) const;
 
   std::string name_;
   std::vector<std::string> columns_;
@@ -86,7 +86,7 @@ class SqlIndexMatcher {
 
 bool SqlIndexMatcher::MatchAndExplain(const SqlQueryPlan& plan,
                                       std::ostream*) const {
-  base::StringPiece plan_piece(plan.plan);
+  std::string_view plan_piece(plan.plan);
 
   size_t start_pos = FindIndexStart(plan_piece);
   if (start_pos == std::string::npos) {
@@ -95,7 +95,7 @@ bool SqlIndexMatcher::MatchAndExplain(const SqlQueryPlan& plan,
 
   size_t end_pos = plan_piece.find("\n", start_pos);
 
-  base::StringPiece index_text =
+  std::string_view index_text =
       plan_piece.substr(start_pos, end_pos - start_pos);
 
   return base::ranges::all_of(columns_, [index_text](const std::string& col) {
@@ -103,7 +103,7 @@ bool SqlIndexMatcher::MatchAndExplain(const SqlQueryPlan& plan,
   });
 }
 
-size_t SqlIndexMatcher::FindIndexStart(base::StringPiece plan) const {
+size_t SqlIndexMatcher::FindIndexStart(std::string_view plan) const {
   std::string covering_prefix = base::StrCat({"USING COVERING INDEX ", name_});
   std::string noncovering_prefix = base::StrCat({"USING INDEX ", name_});
   std::string primary_prefix = "USING PRIMARY KEY ";
@@ -119,7 +119,7 @@ size_t SqlIndexMatcher::FindIndexStart(base::StringPiece plan) const {
       return plan.find(integer_primary_prefix);
     }
     case SqlIndexMatcher::Type::kAny:
-      for (const base::StringPiece prefix :
+      for (const std::string_view prefix :
            {covering_prefix, noncovering_prefix, primary_prefix,
             integer_primary_prefix}) {
         size_t pos = plan.find(prefix);

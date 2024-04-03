@@ -6,10 +6,11 @@
 #define CONTENT_BROWSER_LOADER_MERKLE_INTEGRITY_SOURCE_STREAM_H_
 
 #include <stdint.h>
+
 #include <string>
+#include <string_view>
 
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "content/common/content_export.h"
 #include "net/filter/filter_source_stream.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
@@ -23,7 +24,7 @@ namespace content {
 class CONTENT_EXPORT MerkleIntegritySourceStream
     : public net::FilterSourceStream {
  public:
-  MerkleIntegritySourceStream(base::StringPiece digest_header_value,
+  MerkleIntegritySourceStream(std::string_view digest_header_value,
                               std::unique_ptr<SourceStream> upstream);
 
   MerkleIntegritySourceStream(const MerkleIntegritySourceStream&) = delete;

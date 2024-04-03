@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/renderer_host/private_network_access_util.h"
+
 #include <array>
 #include <ostream>
+#include <string_view>
 #include <tuple>
 #include <vector>
-
-#include "content/browser/renderer_host/private_network_access_util.h"
 
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
@@ -53,7 +54,7 @@ struct DerivePolicyInput {
   }
 };
 
-base::StringPiece RequestContextToStringPiece(RequestContext request_context) {
+std::string_view RequestContextToStringPiece(RequestContext request_context) {
   switch (request_context) {
     case RequestContext::kSubresource:
       return "subresource";

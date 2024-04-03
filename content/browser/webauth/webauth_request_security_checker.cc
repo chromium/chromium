@@ -4,6 +4,8 @@
 
 #include "content/browser/webauth/webauth_request_security_checker.h"
 
+#include <string_view>
+
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -93,8 +95,8 @@ WebAuthRequestSecurityChecker::RemoteValidation::Create(
   url::CanonicalizeHostVerbose(relying_party_id.data(),
                                url::Component(0, relying_party_id.size()),
                                &canon_output, &host_info);
-  const base::StringPiece canonicalized_domain(canon_output.data(),
-                                               canon_output.length());
+  const std::string_view canonicalized_domain(canon_output.data(),
+                                              canon_output.length());
   if (host_info.family != url::CanonHostInfo::Family::NEUTRAL ||
       !net::IsCanonicalizedHostCompliant(canonicalized_domain)) {
     // The RP ID must look like a hostname, e.g. not an IP address.

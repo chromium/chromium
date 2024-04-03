@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 
@@ -285,27 +286,27 @@ void StoreString(std::string* result,
   std::move(callback).Run();
 }
 
-int GetInt(const base::Value::Dict& dict, base::StringPiece key) {
+int GetInt(const base::Value::Dict& dict, std::string_view key) {
   std::optional<int> out = dict.FindInt(key);
   EXPECT_TRUE(out.has_value());
   return out.value_or(0);
 }
 
-std::string GetString(const base::Value::Dict& dict, base::StringPiece key) {
+std::string GetString(const base::Value::Dict& dict, std::string_view key) {
   const std::string* out = dict.FindString(key);
   EXPECT_TRUE(out);
   return out ? *out : std::string();
 }
 
-bool GetBoolean(const base::Value::Dict& dict, base::StringPiece key) {
+bool GetBoolean(const base::Value::Dict& dict, std::string_view key) {
   std::optional<bool> out = dict.FindBool(key);
   EXPECT_TRUE(out.has_value());
   return out.value_or(false);
 }
 
 bool CheckHeader(const base::Value::Dict& dict,
-                 base::StringPiece header_name,
-                 base::StringPiece header_value) {
+                 std::string_view header_name,
+                 std::string_view header_value) {
   const base::Value::List* headers = dict.FindList("headers");
   if (!headers) {
     ADD_FAILURE();
@@ -340,7 +341,7 @@ bool CheckHeader(const base::Value::Dict& dict,
   return false;
 }
 
-bool HasHeader(const base::Value::Dict& dict, base::StringPiece header_name) {
+bool HasHeader(const base::Value::Dict& dict, std::string_view header_name) {
   const base::Value::List* headers = dict.FindList("headers");
   if (!headers) {
     ADD_FAILURE();
@@ -4624,7 +4625,7 @@ class ServiceWorkerWarmUpBrowserTestBase : public ServiceWorkerBrowserTest {
     // Register a service worker.
     WorkerRunningStatusObserver observer1(public_context());
     EXPECT_TRUE(NavigateToURL(shell(), url));
-    const base::StringPiece script = R"(
+    const std::string_view script = R"(
       (async () => {
         await navigator.serviceWorker.register('fetch_event.js', {scope: $1});
         await navigator.serviceWorker.ready;
@@ -4645,7 +4646,7 @@ class ServiceWorkerWarmUpBrowserTestBase : public ServiceWorkerBrowserTest {
   }
 
   void AddAnchor(const std::string& id, const GURL& url) {
-    const base::StringPiece script = R"(
+    const std::string_view script = R"(
       const a = document.createElement('a');
       a.id = $1;
       a.href = $2;

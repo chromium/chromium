@@ -4,11 +4,12 @@
 
 #include "content/browser/web_package/signed_exchange_certificate_chain.h"
 
+#include <string_view>
+
 #include "base/command_line.h"
 #include "base/format_macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
@@ -68,7 +69,7 @@ std::unique_ptr<SignedExchangeCertificateChain> ParseCertChain(
     return nullptr;
   }
 
-  std::vector<base::StringPiece> der_certs;
+  std::vector<std::string_view> der_certs;
   der_certs.reserve(top_level_array.size() - 1);
   std::string ocsp;
   std::string sct;
@@ -233,7 +234,7 @@ bool SignedExchangeCertificateChain::IgnoreErrorsSPKIList::
   if (hash_set_.empty())
     return false;
 
-  base::StringPiece spki;
+  std::string_view spki;
   if (!net::asn1::ExtractSPKIFromDERCert(
           net::x509_util::CryptoBufferAsStringPiece(certificate->cert_buffer()),
           &spki)) {

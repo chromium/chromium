@@ -10,7 +10,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "content/browser/speech/endpointer/endpointer.h"
 #include "content/browser/speech/speech_recognition_engine.h"
 #include "content/browser/speech/speech_recognizer.h"

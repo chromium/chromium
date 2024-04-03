@@ -12,7 +12,6 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/escape.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "content/public/browser/global_request_id.h"
 #include "mojo/public/cpp/bindings/message.h"

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -166,7 +167,7 @@ void NetworkSpeechRecognitionEngineImpl::OnUpstreamDataComplete(
 }
 
 void NetworkSpeechRecognitionEngineImpl::OnDownstreamDataReceived(
-    base::StringPiece new_response_data) {
+    std::string_view new_response_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DVLOG(1) << "Downstream length: " << new_response_data.size();

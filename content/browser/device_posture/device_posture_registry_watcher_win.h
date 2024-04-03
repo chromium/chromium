@@ -11,7 +11,6 @@
 
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "base/win/registry.h"
 #include "content/browser/device_posture/device_posture_platform_provider_win.h"

@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_PRELOADING_PRELOADING_DATA_IMPL_H_
 
 #include <memory>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
@@ -105,7 +106,7 @@ class CONTENT_EXPORT PreloadingDataImpl
   // number of buckets that will be used for UMA aggregation and should be less
   // than 101.
   void AddExperimentalPreloadingPrediction(
-      base::StringPiece name,
+      std::string_view name,
       PreloadingURLMatchCallback url_match_predicate,
       float score,
       float min_score,

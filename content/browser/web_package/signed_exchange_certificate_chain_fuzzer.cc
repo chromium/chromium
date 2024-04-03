@@ -4,7 +4,6 @@
 
 #include "content/browser/web_package/signed_exchange_certificate_chain.h"  // nogncheck
 
-#include "base/strings/string_piece.h"
 
 namespace content {
 

@@ -11,6 +11,7 @@
 #include <optional>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <variant>
 #include <vector>
@@ -190,7 +191,7 @@ const blink::InterestGroup::AdditionalBidKey kPublicKeyWithNoMatchingSignature =
      0xd1, 0x8d, 0x16, 0x57, 0x5c, 0xe7, 0x3a, 0x2c, 0x60, 0x22, 0xfb,
      0x44, 0xe4, 0xc8, 0x5a, 0xb5, 0x41, 0xee, 0xf9, 0x34, 0xee};
 
-std::string base64Decode(base::StringPiece input) {
+std::string base64Decode(std::string_view input) {
   std::string bytes;
   CHECK(base::Base64UrlDecode(
       input, base::Base64UrlDecodePolicy::IGNORE_PADDING, &bytes));

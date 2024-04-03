@@ -16,7 +16,6 @@
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "content/browser/child_process_launcher.h"
@@ -57,7 +56,7 @@ namespace {
 
 const char kTestProcessName[] = "test_process";
 
-constexpr base::StringPiece kTestMessage{"hello from shared memory"};
+constexpr std::string_view kTestMessage{"hello from shared memory"};
 
 }  // namespace
 
@@ -189,8 +188,8 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
     auto mapping = region.Map();
     ASSERT_EQ(kTestMessage.size(), mapping.size());
     EXPECT_EQ(kTestMessage,
-              base::StringPiece(static_cast<const char*>(mapping.memory()),
-                                kTestMessage.size()));
+              std::string_view(static_cast<const char*>(mapping.memory()),
+                               kTestMessage.size()));
     ResetService();
     GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(done_closure_));
   }

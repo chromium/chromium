@@ -11,6 +11,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -37,7 +38,6 @@
 #include "base/observer_list.h"
 #include "base/process/process.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -7749,7 +7749,7 @@ std::u16string NormalizeLineBreaks(const std::u16string& source) {
   static const base::NoDestructor<std::u16string> kReturn(u"\r");
   static const base::NoDestructor<std::u16string> kNewline(u"\n");
 
-  std::vector<base::StringPiece16> pieces;
+  std::vector<std::u16string_view> pieces;
 
   for (const auto& rn_line : base::SplitStringPieceUsingSubstr(
            source, *kReturnNewline, base::KEEP_WHITESPACE,
@@ -10278,7 +10278,7 @@ WebContentsImpl::ParseDownloadHeaders(const std::string& headers) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::ParseDownloadHeaders",
                         "headers", headers);
   download::DownloadUrlParameters::RequestHeadersType request_headers;
-  for (const base::StringPiece& key_value : base::SplitStringPiece(
+  for (const std::string_view& key_value : base::SplitStringPiece(
            headers, "\r\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
     std::vector<std::string> pair = base::SplitString(
         key_value, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);

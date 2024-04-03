@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "content/browser/preloading/preloading_data_impl.h"
+
 #include <limits>
+#include <string_view>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
@@ -137,7 +139,7 @@ void PreloadingDataImpl::AddPreloadingPrediction(
 }
 
 void PreloadingDataImpl::AddExperimentalPreloadingPrediction(
-    base::StringPiece name,
+    std::string_view name,
     PreloadingURLMatchCallback url_match_predicate,
     float score,
     float min_score,

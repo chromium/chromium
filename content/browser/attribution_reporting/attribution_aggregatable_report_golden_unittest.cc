@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
@@ -104,8 +104,8 @@ class AttributionAggregatableReportGoldenLatestVersionTest
 
  protected:
   void AssembleAndVerifyReport(AttributionReport report,
-                               base::StringPiece report_file,
-                               base::StringPiece cleartext_payloads_file) {
+                               std::string_view report_file,
+                               std::string_view cleartext_payloads_file) {
     base::Value expected_report =
         ParseJsonFromFile(input_dir_.AppendASCII(report_file));
     ASSERT_TRUE(expected_report.is_dict());
@@ -333,8 +333,8 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
 
   struct {
     AttributionReport report;
-    base::StringPiece report_file;
-    base::StringPiece cleartext_payloads_file;
+    std::string_view report_file;
+    std::string_view cleartext_payloads_file;
   } kTestCases[] = {
       {.report =
            ReportBuilder(
@@ -647,7 +647,7 @@ class AttributionAggregatableReportGoldenLegacyVersionTest
 
 TEST_P(AttributionAggregatableReportGoldenLegacyVersionTest,
        HasExpectedVersion) {
-  static constexpr base::StringPiece prefix = "version_";
+  static constexpr std::string_view prefix = "version_";
 
   base::FilePath dir = GetParam();
 

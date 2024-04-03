@@ -4,6 +4,7 @@
 
 #include <set>
 #include <string>
+#include <string_view>
 
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
@@ -2503,14 +2504,14 @@ TEST_P(ChildProcessSecurityPolicyTest,
 }
 
 TEST_P(ChildProcessSecurityPolicyTest, IsolatedOriginPattern) {
-  const base::StringPiece etld1_wild("https://[*.]foo.com");
+  const std::string_view etld1_wild("https://[*.]foo.com");
   url::Origin etld1_wild_origin = url::Origin::Create(GURL("https://foo.com"));
   IsolatedOriginPattern p(etld1_wild);
   EXPECT_TRUE(p.isolate_all_subdomains());
   EXPECT_TRUE(p.is_valid());
   EXPECT_EQ(p.origin(), etld1_wild_origin);
 
-  const base::StringPiece etld2_wild("https://[*.]bar.foo.com");
+  const std::string_view etld2_wild("https://[*.]bar.foo.com");
   url::Origin etld2_wild_origin =
       url::Origin::Create(GURL("https://bar.foo.com"));
   bool result = p.Parse(etld2_wild);
@@ -2520,7 +2521,7 @@ TEST_P(ChildProcessSecurityPolicyTest, IsolatedOriginPattern) {
   EXPECT_EQ(p.origin(), etld2_wild_origin);
   EXPECT_FALSE(p.origin().opaque());
 
-  const base::StringPiece etld1("https://baz.com");
+  const std::string_view etld1("https://baz.com");
   url::Origin etld1_origin = url::Origin::Create(GURL("https://baz.com"));
   result = p.Parse(etld1);
   EXPECT_TRUE(result);
@@ -2529,35 +2530,35 @@ TEST_P(ChildProcessSecurityPolicyTest, IsolatedOriginPattern) {
   EXPECT_EQ(p.origin(), etld1_origin);
   EXPECT_FALSE(p.origin().opaque());
 
-  const base::StringPiece bad_scheme("ftp://foo.com");
+  const std::string_view bad_scheme("ftp://foo.com");
   result = p.Parse(bad_scheme);
   EXPECT_FALSE(result);
   EXPECT_FALSE(p.isolate_all_subdomains());
   EXPECT_FALSE(p.is_valid());
   EXPECT_TRUE(p.origin().opaque());
 
-  const base::StringPiece no_scheme_sep("httpsfoo.com");
+  const std::string_view no_scheme_sep("httpsfoo.com");
   result = p.Parse(no_scheme_sep);
   EXPECT_FALSE(result);
   EXPECT_FALSE(p.isolate_all_subdomains());
   EXPECT_FALSE(p.is_valid());
   EXPECT_TRUE(p.origin().opaque());
 
-  const base::StringPiece bad_registry("https://co.uk");
+  const std::string_view bad_registry("https://co.uk");
   result = p.Parse(bad_registry);
   EXPECT_FALSE(result);
   EXPECT_FALSE(p.isolate_all_subdomains());
   EXPECT_FALSE(p.is_valid());
   EXPECT_TRUE(p.origin().opaque());
 
-  const base::StringPiece trailing_dot("https://bar.com.");
+  const std::string_view trailing_dot("https://bar.com.");
   result = p.Parse(trailing_dot);
   EXPECT_FALSE(result);
   EXPECT_FALSE(p.isolate_all_subdomains());
   EXPECT_FALSE(p.is_valid());
   EXPECT_TRUE(p.origin().opaque());
 
-  const base::StringPiece ip_addr("https://10.20.30.40");
+  const std::string_view ip_addr("https://10.20.30.40");
   url::Origin ip_origin = url::Origin::Create(GURL("https://10.20.30.40"));
   result = p.Parse(ip_addr);
   EXPECT_TRUE(result);
@@ -2566,7 +2567,7 @@ TEST_P(ChildProcessSecurityPolicyTest, IsolatedOriginPattern) {
   EXPECT_TRUE(p.is_valid());
   EXPECT_EQ(p.origin(), ip_origin);
 
-  const base::StringPiece wild_ip_addr("https://[*.]10.20.30.40");
+  const std::string_view wild_ip_addr("https://[*.]10.20.30.40");
   result = p.Parse(wild_ip_addr);
   EXPECT_FALSE(result);
   EXPECT_FALSE(p.isolate_all_subdomains());

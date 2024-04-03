@@ -5,6 +5,7 @@
 #include "content/browser/media/media_internals_audio_focus_helper.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
@@ -216,7 +217,7 @@ void MediaInternalsAudioFocusHelper::DidGetAudioFocusDebugInfo(
 }
 
 void MediaInternalsAudioFocusHelper::SerializeAndSendUpdate(
-    base::StringPiece function,
+    std::string_view function,
     const base::Value::Dict& value) {
   base::ValueView args[] = {value};
   return MediaInternals::GetInstance()->SendUpdate(

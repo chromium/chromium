@@ -5,12 +5,12 @@
 #include "content/browser/web_package/signed_exchange_cert_fetcher.h"
 
 #include <optional>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
@@ -186,7 +186,7 @@ class SignedExchangeCertFetcherTest : public testing::Test {
     return net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
   }
 
-  static std::string CreateCertMessage(const base::StringPiece& cert_data) {
+  static std::string CreateCertMessage(const std::string_view& cert_data) {
     cbor::Value::MapValue cbor_map;
     cbor_map[cbor::Value("sct")] =
         cbor::Value("SCT", cbor::Value::Type::BYTE_STRING);
@@ -207,7 +207,7 @@ class SignedExchangeCertFetcherTest : public testing::Test {
                        serialized->size());
   }
 
-  static base::StringPiece CreateCertMessageFromCert(
+  static std::string_view CreateCertMessageFromCert(
       const net::X509Certificate& cert) {
     return net::x509_util::CryptoBufferAsStringPiece(cert.cert_buffer());
   }

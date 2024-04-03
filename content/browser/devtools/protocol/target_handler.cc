@@ -5,6 +5,7 @@
 #include "content/browser/devtools/protocol/target_handler.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/containers/contains.h"
@@ -240,8 +241,8 @@ class BrowserToPageConnector {
 
   void DispatchProtocolMessage(DevToolsAgentHost* agent_host,
                                base::span<const uint8_t> message) {
-    base::StringPiece message_sp(reinterpret_cast<const char*>(message.data()),
-                                 message.size());
+    std::string_view message_sp(reinterpret_cast<const char*>(message.data()),
+                                message.size());
     if (agent_host == page_host_.get()) {
       std::optional<base::Value> value = base::JSONReader::Read(message_sp);
       if (!value || !value->is_dict()) {
@@ -494,7 +495,7 @@ class TargetHandler::Session : public DevToolsAgentHostClient {
 
     if (throttle_ || worker_throttle_) {
       std::optional<base::Value> value =
-          base::JSONReader::Read(base::StringPiece(
+          base::JSONReader::Read(std::string_view(
               reinterpret_cast<const char*>(message.data()), message.size()));
       const std::string* method;
       if (value.has_value() && value->is_dict() &&
@@ -658,7 +659,7 @@ class TargetHandler::TargetFilter {
 
   bool Match(DevToolsAgentHost& host) const { return Match(host.GetType()); }
 
-  bool Match(base::StringPiece type) const {
+  bool Match(std::string_view type) const {
     for (const auto& entry : entries_) {
       if (!entry->HasType() || entry->GetType("") == type) {
         return !entry->GetExclude(false);

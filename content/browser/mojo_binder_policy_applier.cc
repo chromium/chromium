@@ -4,6 +4,8 @@
 
 #include "content/browser/mojo_binder_policy_applier.h"
 
+#include <string_view>
+
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "content/public/browser/mojo_binder_policy_map.h"
@@ -20,9 +22,8 @@ namespace {
 // 3. Bind these receivers to a generic implementation, and terminate the
 //    execution context if it receives a synchronous message.
 // Stores the list of interface names that declare sync methods.
-constexpr auto kSyncMethodInterfaces =
-    base::MakeFixedFlatSet<base::StringPiece>(
-        {"blink.mojom.NotificationService"});
+constexpr auto kSyncMethodInterfaces = base::MakeFixedFlatSet<std::string_view>(
+    {"blink.mojom.NotificationService"});
 
 }  // namespace
 

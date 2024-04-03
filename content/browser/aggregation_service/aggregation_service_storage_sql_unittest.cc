@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -60,7 +60,7 @@ const char kExampleUrl[] =
 const std::vector<PublicKey> kExampleKeys{
     aggregation_service::TestHpkeKey("dummy_id").GetPublicKey()};
 
-std::string RemoveQuotes(base::StringPiece input) {
+std::string RemoveQuotes(std::string_view input) {
   std::string output;
   base::RemoveChars(input, "\"", &output);
   return output;

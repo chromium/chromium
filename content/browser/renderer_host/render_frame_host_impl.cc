@@ -9,6 +9,7 @@
 #include <limits>
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <tuple>
 #include <unordered_map>
 #include <utility>
@@ -39,7 +40,6 @@
 #include "base/state_transitions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/syslog_logging.h"
 #include "base/task/sequenced_task_runner.h"
@@ -6793,7 +6793,7 @@ void RenderFrameHostImpl::FullscreenStateChanged(
 }
 
 bool RenderFrameHostImpl::CanUseWindowingControls(
-    base::StringPiece js_api_name) {
+    std::string_view js_api_name) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   mojo::ReportBadMessage(
       base::StrCat({js_api_name,
@@ -11664,7 +11664,7 @@ RenderFrameHostImpl::FindLatestNavigationRequestThatIsStillCommitting() {
 network::mojom::URLLoaderFactoryParamsPtr
 RenderFrameHostImpl::CreateURLLoaderFactoryParamsForMainWorld(
     const SubresourceLoaderFactoriesConfig& config,
-    base::StringPiece debug_tag) {
+    std::string_view debug_tag) {
   return URLLoaderFactoryParamsHelper::CreateForFrame(
       this, config.origin(), config.isolation_info(),
       config.GetClientSecurityState(), config.GetCoepReporter(), GetProcess(),

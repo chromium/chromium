@@ -4,6 +4,7 @@
 
 #include "content/browser/download/save_file_manager.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -11,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "components/download/public/common/download_task_runner.h"
@@ -128,7 +128,7 @@ class SaveFileManager::SimpleURLLoaderHelper
   }
 
   // network::SimpleURLLoaderStreamConsumer implementation:
-  void OnDataReceived(base::StringPiece string_piece,
+  void OnDataReceived(std::string_view string_piece,
                       base::OnceClosure resume) override {
     // TODO(jcivelli): we should make threading sane and avoid copying
     // |string_piece| bytes.

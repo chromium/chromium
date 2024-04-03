@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_BACK_FORWARD_CACHE_TEST_UTIL_H_
 #define CONTENT_BROWSER_BACK_FORWARD_CACHE_TEST_UTIL_H_
 
+#include <string_view>
 #include <vector>
 
 #include "base/location.h"
@@ -91,7 +92,7 @@ class BackForwardCacheMetricsTestMatcher {
       base::Location location);
 
   template <typename T>
-  void ExpectBucketCount(base::StringPiece name,
+  void ExpectBucketCount(std::string_view name,
                          T sample,
                          base::HistogramBase::Count expected_count) {
     histogram_tester().ExpectBucketCount(name, sample, expected_count);

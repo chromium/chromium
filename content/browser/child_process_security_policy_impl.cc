@@ -4,6 +4,7 @@
 
 #include "content/browser/child_process_security_policy_impl.h"
 
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -2220,7 +2221,7 @@ void ChildProcessSecurityPolicyImpl::AddFutureIsolatedOrigins(
 }
 
 void ChildProcessSecurityPolicyImpl::AddFutureIsolatedOrigins(
-    base::StringPiece origins_to_add,
+    std::string_view origins_to_add,
     IsolatedOriginSource source,
     BrowserContext* browser_context) {
   std::vector<IsolatedOriginPattern> patterns =
@@ -2514,7 +2515,7 @@ bool ChildProcessSecurityPolicyImpl::GetMatchingProcessIsolatedOrigin(
   if (it == isolated_origins_.end() && site_url.has_host() &&
       site_url.host_piece().back() == '.') {
     GURL::Replacements replacements;
-    base::StringPiece host(site_url.host_piece());
+    std::string_view host(site_url.host_piece());
     host.remove_suffix(1);
     replacements.SetHostStr(host);
     it = isolated_origins_.find(site_url.ReplaceComponents(replacements));
@@ -2917,15 +2918,16 @@ ChildProcessSecurityPolicyImpl::GetSecurityState(int child_id) {
 
 std::vector<IsolatedOriginPattern>
 ChildProcessSecurityPolicyImpl::ParseIsolatedOrigins(
-    base::StringPiece pattern_list) {
-  std::vector<base::StringPiece> origin_strings = base::SplitStringPiece(
+    std::string_view pattern_list) {
+  std::vector<std::string_view> origin_strings = base::SplitStringPiece(
       pattern_list, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   std::vector<IsolatedOriginPattern> patterns;
   patterns.reserve(origin_strings.size());
 
-  for (const base::StringPiece& origin_string : origin_strings)
+  for (const std::string_view& origin_string : origin_strings) {
     patterns.emplace_back(origin_string);
+  }
 
   return patterns;
 }

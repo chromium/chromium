@@ -4,6 +4,8 @@
 
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 
+#include <string_view>
+
 #include "build/build_config.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -51,8 +53,9 @@ class StubDevToolsAgentHostClient : public content::DevToolsAgentHostClient {
     // Return a false in case that the url is a fenced frame test url to detach
     // the attached client in order to test that a fenced frame calls
     // OnNavigationRequestWillBeSent through the outer document.
-    if (url.path_piece().find(kFencedFramePath) != base::StringPiece::npos)
+    if (url.path_piece().find(kFencedFramePath) != std::string_view::npos) {
       return false;
+    }
     return true;
   }
 };

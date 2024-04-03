@@ -6,9 +6,9 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -121,14 +121,14 @@ void TrustTokenBrowsertest::SetUpOnMainThread() {
 }
 
 void TrustTokenBrowsertest::ProvideRequestHandlerKeyCommitmentsToNetworkService(
-    std::vector<base::StringPiece> hosts) {
-  base::flat_map<url::Origin, base::StringPiece> origins_and_commitments;
+    std::vector<std::string_view> hosts) {
+  base::flat_map<url::Origin, std::string_view> origins_and_commitments;
   std::string key_commitments = request_handler_.GetKeyCommitmentRecord();
 
   // TODO(davidvc): This could be extended to make the request handler aware
   // of different origins, which would allow using different key commitments
   // per origin.
-  for (base::StringPiece host : hosts) {
+  for (std::string_view host : hosts) {
     GURL::Replacements replacements;
     replacements.SetHostStr(host);
     origins_and_commitments.insert_or_assign(
@@ -320,8 +320,8 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, IframeSendRedemptionRecord) {
 
   EXPECT_EQ("Success", EvalJs(shell(), command));
 
-  auto execute_op_via_iframe = [&](base::StringPiece path,
-                                   base::StringPiece trust_token) {
+  auto execute_op_via_iframe = [&](std::string_view path,
+                                   std::string_view trust_token) {
     // It's important to set the trust token arguments before updating src, as
     // the latter triggers a load.
     EXPECT_TRUE(ExecJs(
@@ -357,8 +357,8 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   GURL start_url = server_.GetURL("a.test", "/page_with_iframe.html");
   ASSERT_TRUE(NavigateToURL(shell(), start_url));
 
-  auto fail_to_execute_op_via_iframe = [&](base::StringPiece path,
-                                           base::StringPiece trust_token) {
+  auto fail_to_execute_op_via_iframe = [&](std::string_view path,
+                                           std::string_view trust_token) {
     // It's important to set the trust token arguments before updating src, as
     // the latter triggers a load.
     EXPECT_TRUE(ExecJs(

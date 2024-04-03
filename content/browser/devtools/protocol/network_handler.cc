@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/barrier_closure.h"
@@ -2794,7 +2795,7 @@ void NetworkHandler::ContinueInterceptedRequest(
       LOG(WARNING) << "Can't find headers in raw response";
       header_size = 0;
     } else {
-      raw_headers = net::HttpUtil::AssembleRawHeaders(base::StringPiece(
+      raw_headers = net::HttpUtil::AssembleRawHeaders(std::string_view(
           reinterpret_cast<const char*>(raw.data()), header_size));
     }
     CHECK_LE(header_size, raw.size());
@@ -3314,7 +3315,7 @@ namespace {
 
 mojo::PendingRemote<network::mojom::URLLoaderFactory>
 CreateNetworkFactoryForDevTools(
-    base::StringPiece scheme,
+    std::string_view scheme,
     RenderProcessHost* host,
     int routing_id,
     const url::Origin& origin,

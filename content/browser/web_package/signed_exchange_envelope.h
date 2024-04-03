@@ -8,9 +8,9 @@
 #include <map>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "content/browser/web_package/signed_exchange_signature_header_field.h"
 #include "content/common/content_export.h"
@@ -38,7 +38,7 @@ class CONTENT_EXPORT SignedExchangeEnvelope {
   static std::optional<SignedExchangeEnvelope> Parse(
       SignedExchangeVersion version,
       const signed_exchange_utils::URLWithRawString& fallback_url,
-      base::StringPiece signature_header_field,
+      std::string_view signature_header_field,
       base::span<const uint8_t> cbor_header,
       SignedExchangeDevToolsProxy* devtools_proxy);
   SignedExchangeEnvelope();
@@ -49,10 +49,10 @@ class CONTENT_EXPORT SignedExchangeEnvelope {
 
   // AddResponseHeader returns false on duplicated keys. |name| must be
   // lower-cased.
-  bool AddResponseHeader(base::StringPiece name, base::StringPiece value);
+  bool AddResponseHeader(std::string_view name, std::string_view value);
   // SetResponseHeader replaces existing value, if any. |name| must be
   // lower-cased.
-  void SetResponseHeader(base::StringPiece name, base::StringPiece value);
+  void SetResponseHeader(std::string_view name, std::string_view value);
   scoped_refptr<net::HttpResponseHeaders> BuildHttpResponseHeaders() const;
 
   const base::span<const uint8_t> cbor_header() const {

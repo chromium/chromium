@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <string_view>
+
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -255,7 +257,7 @@ bool PluginList::GetPluginInfoArray(
     return is_stale;
 
   std::string extension =
-      base::ToLowerASCII(base::StringPiece(path).substr(last_dot + 1));
+      base::ToLowerASCII(std::string_view(path).substr(last_dot + 1));
   std::string actual_mime_type;
   for (const WebPluginInfo& plugin : plugins_list_) {
     if (SupportsExtension(plugin, extension, &actual_mime_type)) {

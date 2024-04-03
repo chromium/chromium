@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "base/i18n/time_formatting.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -689,7 +689,7 @@ class FileURLLoader : public network::mojom::URLLoader {
     if (!net::GetMimeTypeFromFile(full_path, &head->mime_type)) {
       std::string new_type;
       net::SniffMimeType(
-          base::StringPiece(initial_read_buffer.data(), read_result.bytes_read),
+          std::string_view(initial_read_buffer.data(), read_result.bytes_read),
           request.url, head->mime_type,
           GetContentClient()->browser()->ForceSniffingFileUrlsForHtml()
               ? net::ForceSniffFileUrlsForHtml::kEnabled

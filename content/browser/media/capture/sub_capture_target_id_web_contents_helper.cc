@@ -5,6 +5,7 @@
 #include "content/browser/media/capture/sub_capture_target_id_web_contents_helper.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -40,7 +41,7 @@ base::Token SubCaptureTargetIdWebContentsHelper::GUIDToToken(
   base::RemoveChars(lowercase, "-", &lowercase);
   DCHECK_EQ(lowercase.length(), 32u);  // 32 hex-chars; 0 hyphens.
 
-  base::StringPiece string_piece(lowercase);
+  std::string_view string_piece(lowercase);
 
   uint64_t high = 0;
   bool success = base::HexStringToUInt64(string_piece.substr(0, 16), &high);

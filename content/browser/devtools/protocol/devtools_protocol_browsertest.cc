@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/base64.h"
@@ -3888,7 +3889,7 @@ class NetworkResponseProtocolECHTest : public NetworkResponseProtocolTest {
     SetReplaceSystemDnsConfig();
   }
 
-  GURL GetURL(base::StringPiece path) {
+  GURL GetURL(std::string_view path) {
     return ech_server_.GetURL(kHostname, path);
   }
 

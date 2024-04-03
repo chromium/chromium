@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot.h"
+
+#include <string_view>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -9,7 +12,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "cc/test/pixel_test_utils.h"
 #include "content/browser/browser_context_impl.h"
-#include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_cache.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_manager.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_transition_utils.h"
@@ -330,7 +332,7 @@ class NavigationEntryScreenshotBrowserTest
 
   std::string GetNextHost() { return host_getter_->Get(); }
 
-  GURL GetNextUrl(base::StringPiece path) {
+  GURL GetNextUrl(std::string_view path) {
     return embedded_test_server()->GetURL(GetNextHost(), path);
   }
 

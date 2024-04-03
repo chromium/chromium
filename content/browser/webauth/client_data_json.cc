@@ -4,6 +4,8 @@
 
 #include "content/browser/webauth/client_data_json.h"
 
+#include <string_view>
+
 #include "base/base64url.h"
 #include "base/check.h"
 #include "base/rand_util.h"
@@ -18,15 +20,15 @@ namespace {
 std::string Base64UrlEncode(const base::span<const uint8_t> input) {
   std::string ret;
   base::Base64UrlEncode(
-      base::StringPiece(reinterpret_cast<const char*>(input.data()),
-                        input.size()),
+      std::string_view(reinterpret_cast<const char*>(input.data()),
+                       input.size()),
       base::Base64UrlEncodePolicy::OMIT_PADDING, &ret);
   return ret;
 }
 
 // ToJSONString encodes |in| as a JSON string, using the specific escaping rules
 // required by https://github.com/w3c/webauthn/pull/1375.
-std::string ToJSONString(base::StringPiece in) {
+std::string ToJSONString(std::string_view in) {
   std::string ret;
   ret.reserve(in.size() + 2);
   ret.push_back('"');

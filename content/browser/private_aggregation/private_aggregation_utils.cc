@@ -5,9 +5,9 @@
 #include "content/browser/private_aggregation/private_aggregation_utils.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 
 namespace content::private_aggregation {
@@ -23,7 +23,7 @@ std::string GetReportingPath(PrivateAggregationBudgetKey::Api api,
   static constexpr char kSharedStorageReportingPathSuffix[] =
       "report-shared-storage";
 
-  base::StringPiece api_suffix;
+  std::string_view api_suffix;
   switch (api) {
     case PrivateAggregationBudgetKey::Api::kProtectedAudience:
       api_suffix = kProtectedAudienceReportingPathSuffix;

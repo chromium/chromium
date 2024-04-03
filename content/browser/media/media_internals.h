@@ -9,6 +9,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
@@ -163,8 +164,8 @@ class CONTENT_EXPORT MediaInternals : public media::AudioLogFactory,
     UPDATE_AND_DELETE,  // Deletes an existing AudioLog cache entry.
   };
   void UpdateAudioLog(AudioLogUpdateType type,
-                      base::StringPiece cache_key,
-                      base::StringPiece function,
+                      std::string_view cache_key,
+                      std::string_view function,
                       const base::Value::Dict& value);
 
   std::unique_ptr<AudioLogImpl> CreateAudioLogImpl(AudioComponent component,

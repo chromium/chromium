@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -239,7 +240,7 @@ void TracingControllerImpl::GenerateMetadataPacketFieldTrials(
   // Do not include low anonymity field trials, to prevent them from being
   // included in chrometto reports.
   std::vector<variations::ActiveGroupId> active_group_ids;
-  variations::GetFieldTrialActiveGroupIds(base::StringPiece(),
+  variations::GetFieldTrialActiveGroupIds(std::string_view(),
                                           &active_group_ids);
 
   for (const auto& active_group_id : active_group_ids) {
@@ -292,7 +293,7 @@ std::optional<base::Value::Dict> TracingControllerImpl::GenerateMetadataDict() {
   // obtained from process maps since library can be mapped from apk directly.
   // This is not added as part of memory-infra os dumps since it is special case
   // only for chrome library.
-  std::optional<base::StringPiece> soname =
+  std::optional<std::string_view> soname =
       base::debug::ReadElfLibraryName(&__ehdr_start);
   if (soname)
     metadata_dict.Set("chrome-library-name", *soname);
@@ -593,7 +594,7 @@ void TracingControllerImpl::OnReadBuffersComplete() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void TracingControllerImpl::OnMachineStatisticsLoaded() {
-  if (const std::optional<base::StringPiece> hardware_class =
+  if (const std::optional<std::string_view> hardware_class =
           ash::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
               ash::system::kHardwareClassKey)) {
     hardware_class_ = std::string(hardware_class.value());
