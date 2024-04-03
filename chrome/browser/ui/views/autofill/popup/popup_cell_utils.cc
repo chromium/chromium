@@ -64,7 +64,7 @@ constexpr int kAutofillPopupAdditionalDoubleRowHeight = 22;
 constexpr int kAutofillPopupAdditionalDoubleRowHeightNewStyle = 16;
 
 // The additional padding of the row in case it has three lines of text.
-constexpr int kAutofillPopupAdditionalPadding = 16;
+constexpr int kAutofillPopupAdditionalVerticalPadding = 16;
 
 // Vertical spacing between labels in one row.
 constexpr int kAdjacentLabelsVerticalSpacing = 2;
@@ -278,6 +278,10 @@ std::u16string GetVoiceOverStringFromSuggestion(const Suggestion& suggestion) {
   return base::JoinString(text, u" ");
 }
 
+// TODO(b/330912574): Refactor this code that is today confusing. Horizontal
+// margins are being set both here and in the popup row. Furthermore, there is a
+// `PopupBaseView::GetHorizontalMargin()` that makes things even more
+// complicated.
 gfx::Insets GetMarginsForContentCell(bool has_control_element) {
   int left_margin = PopupBaseView::GetHorizontalMargin();
   int right_margin = left_margin;
@@ -453,8 +457,11 @@ void AddSuggestionContentToView(
   // If there are three rows in total, add extra padding to avoid cramming.
   DCHECK_LE(subtext_views.size(), 2u);
   if (subtext_views.size() == 2u) {
-    layout.set_inside_border_insets(gfx::Insets::VH(
-        kAutofillPopupAdditionalPadding, PopupBaseView::GetHorizontalMargin()));
+    layout.set_inside_border_insets(
+        gfx::Insets::TLBR(kAutofillPopupAdditionalVerticalPadding,
+                          layout.inside_border_insets().left(),
+                          kAutofillPopupAdditionalVerticalPadding,
+                          layout.inside_border_insets().right()));
   }
 
   // The leading icon.
