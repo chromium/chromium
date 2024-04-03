@@ -79,6 +79,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":sharing",
+    "//components/affiliations/core/browser:test_support",
     "//components/password_manager/core/browser:password_form",
     "//components/password_manager/core/browser:test_support",
     "//components/password_manager/core/browser/features:password_features",

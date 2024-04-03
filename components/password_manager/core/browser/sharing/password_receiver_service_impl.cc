@@ -173,6 +173,10 @@ ProcessIncomingSharingInvitationTask::~ProcessIncomingSharingInvitationTask() =
 
 void ProcessIncomingSharingInvitationTask::OnGetPasswordStoreResults(
     std::vector<std::unique_ptr<PasswordForm>> results) {
+  // Grouped credentials are ignored because they have different domains.
+  std::erase_if(results, [](const auto& form) {
+    return form->match_type == PasswordForm::MatchType::kGrouped;
+  });
   // TODO(crbug.com/1448235): process PSL and affilated credentials if needed.
   // TODO(crbug.com/1448235): process conflicting passwords differently if
   // necessary.
