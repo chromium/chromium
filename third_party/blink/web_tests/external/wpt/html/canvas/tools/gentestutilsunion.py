@@ -29,8 +29,8 @@
 #
 # * Test the tests, add new ones to Git, remove deleted ones from Git, etc.
 
-from typing import Any, DefaultDict, List, Mapping, MutableMapping, Optional
-from typing import Set, Tuple
+from typing import Any, DefaultDict, FrozenSet, List, Mapping, MutableMapping
+from typing import Optional, Set, Tuple
 
 import re
 import collections
@@ -253,10 +253,6 @@ class _CanvasType(str, enum.Enum):
     WORKER = 'Worker'
 
 
-def _get_enabled_canvas_types(test: _TestParams) -> Set[_CanvasType]:
-    return {_CanvasType(t) for t in test.get('canvas_types', _CanvasType)}
-
-
 @dataclasses.dataclass
 class _OutputPaths:
     element: str
@@ -350,28 +346,41 @@ def _get_file_name(params: _TestParams) -> str:
     return file_name
 
 
+def _get_canvas_types(params: _TestParams) -> FrozenSet[_CanvasType]:
+    canvas_types = params.get('canvas_types', _CanvasType)
+    invalid_types = {
+        type
+        for type in canvas_types if type not in list(_CanvasType)
+    }
+    if invalid_types:
+        raise InvalidTestDefinitionError(
+            f'Invalid canvas_types: {list(invalid_types)}. '
+            f'Accepted values are: {[t.value for t in _CanvasType]}')
+    return frozenset(_CanvasType(t) for t in canvas_types)
+
+
 def _finalize_params(jinja_env: jinja2.Environment,
                      params: _MutableTestParams) -> None:
     params['name'] = _get_variant_name(jinja_env, params)
     params['file_name'] = _get_file_name(params)
+    params['canvas_types'] = _get_canvas_types(params)
 
 
 def _write_reference_test(jinja_env: jinja2.Environment, params: _TestParams,
-                          enabled_tests: Set[_CanvasType],
-                          output_files: _OutputPaths) -> None:
-    if _CanvasType.HTML_CANVAS in enabled_tests:
+                          output_files: _OutputPaths):
+    if _CanvasType.HTML_CANVAS in params['canvas_types']:
         html_params = dict(params)
         html_params.update({'canvas_type': _CanvasType.HTML_CANVAS.value})
         pathlib.Path(f'{output_files.element}.html').write_text(
             _render(jinja_env, 'reftest_element.html', html_params), 'utf-8')
-    if _CanvasType.OFFSCREEN_CANVAS in enabled_tests:
+    if _CanvasType.OFFSCREEN_CANVAS in params['canvas_types']:
         offscreen_params = dict(params)
         offscreen_params.update(
             {'canvas_type': _CanvasType.OFFSCREEN_CANVAS.value})
         pathlib.Path(f'{output_files.offscreen}.html').write_text(
             _render(jinja_env, 'reftest_offscreen.html', offscreen_params),
             'utf-8')
-    if _CanvasType.WORKER in enabled_tests:
+    if _CanvasType.WORKER in params['canvas_types']:
         worker_params = dict(params)
         worker_params.update({'canvas_type': _CanvasType.WORKER.value})
         pathlib.Path(f'{output_files.offscreen}.w.html').write_text(
@@ -385,26 +394,26 @@ def _write_reference_test(jinja_env: jinja2.Environment, params: _TestParams,
         'code': js_ref or html_ref
     })
     ref_template_name = 'reftest_element.html' if js_ref else 'reftest.html'
-    if _CanvasType.HTML_CANVAS in enabled_tests:
+    if _CanvasType.HTML_CANVAS in params['canvas_types']:
         pathlib.Path(f'{output_files.element}-expected.html').write_text(
             _render(jinja_env, ref_template_name, ref_params), 'utf-8')
-    if {_CanvasType.OFFSCREEN_CANVAS, _CanvasType.WORKER} & enabled_tests:
+    if {_CanvasType.OFFSCREEN_CANVAS, _CanvasType.WORKER
+        } & params['canvas_types']:
         pathlib.Path(f'{output_files.offscreen}-expected.html').write_text(
             _render(jinja_env, ref_template_name, ref_params), 'utf-8')
 
 
 def _write_testharness_test(jinja_env: jinja2.Environment, params: _TestParams,
-                            enabled_tests: Set[_CanvasType],
-                            output_files: _OutputPaths) -> None:
+                            output_files: _OutputPaths):
     # Create test cases for canvas and offscreencanvas.
-    if _CanvasType.HTML_CANVAS in enabled_tests:
+    if _CanvasType.HTML_CANVAS in params['canvas_types']:
         html_params = dict(params)
         html_params.update({'canvas_type': _CanvasType.HTML_CANVAS.value})
         pathlib.Path(f'{output_files.element}.html').write_text(
             _render(jinja_env, 'testharness_element.html', html_params),
             'utf-8')
 
-    if _CanvasType.OFFSCREEN_CANVAS in enabled_tests:
+    if _CanvasType.OFFSCREEN_CANVAS in params['canvas_types']:
         offscreen_params = dict(params)
         offscreen_params.update(
             {'canvas_type': _CanvasType.OFFSCREEN_CANVAS.value})
@@ -412,7 +421,7 @@ def _write_testharness_test(jinja_env: jinja2.Environment, params: _TestParams,
             _render(jinja_env, 'testharness_offscreen.html', offscreen_params),
             'utf-8')
 
-    if _CanvasType.WORKER in enabled_tests:
+    if _CanvasType.WORKER in params['canvas_types']:
         worker_params = dict(params)
         worker_params.update({'canvas_type': _CanvasType.WORKER.value})
         pathlib.Path(f'{output_files.offscreen}.worker.js').write_text(
@@ -420,10 +429,12 @@ def _write_testharness_test(jinja_env: jinja2.Environment, params: _TestParams,
             'utf-8')
 
 
-def _generate_expected_image(expected: str, name: str,
-                             enabled_canvas_types: Set[_CanvasType],
+def _generate_expected_image(params: _MutableTestParams,
                              output_dirs: _OutputPaths) -> str:
     """Creates a reference image using Cairo and returns the file location."""
+    expected = params['expected']
+    name = params['name']
+
     if expected == 'green':
         return '/images/green-100x50.png'
     if expected == 'clear':
@@ -436,7 +447,7 @@ def _generate_expected_image(expected: str, name: str,
         r'\ncr = cairo.Context(surface)', expected)
 
     output_paths = output_dirs.sub_path(name)
-    if _CanvasType.HTML_CANVAS in enabled_canvas_types:
+    if _CanvasType.HTML_CANVAS in params['canvas_types']:
         expected_canvas = (
             f'{expected}\n'
             f'surface.write_to_png("{output_paths.element}.png")\n')
@@ -444,7 +455,7 @@ def _generate_expected_image(expected: str, name: str,
              {'cairo': cairo})
 
     if {_CanvasType.OFFSCREEN_CANVAS, _CanvasType.WORKER
-        } & enabled_canvas_types:
+        } & params['canvas_types']:
         expected_offscreen = (
             f'{expected}\n'
             f'surface.write_to_png("{output_paths.offscreen}.png")\n')
@@ -461,13 +472,11 @@ def _generate_test(test: _TestParams, jinja_env: jinja2.Environment,
 
     name = test['name']
 
-    enabled_canvas_types = _get_enabled_canvas_types(test)
+    enabled_canvas_types = test['canvas_types']
 
     expected_img = None
     if 'expected' in test and test['expected'] is not None:
-        expected_img = _generate_expected_image(test['expected'], name,
-                                                enabled_canvas_types,
-                                                output_dirs)
+        expected_img = _generate_expected_image(test, output_dirs)
 
     params = dict(test)
     params.update({
@@ -484,11 +493,9 @@ def _generate_test(test: _TestParams, jinja_env: jinja2.Environment,
     output_files = output_dirs.sub_path(params['file_name'])
 
     if 'reference' in test or 'html_reference' in test:
-        _write_reference_test(jinja_env, params, enabled_canvas_types,
-                              output_files)
+        _write_reference_test(jinja_env, params, output_files)
     else:
-        _write_testharness_test(jinja_env, params, enabled_canvas_types,
-                                output_files)
+        _write_testharness_test(jinja_env, params, output_files)
 
 
 def _recursive_expand_variant_matrix(original_test: _TestParams,
