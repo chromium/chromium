@@ -10,14 +10,15 @@
 #include <memory>
 
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/sys_byteorder.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "content/browser/speech/network_speech_recognition_engine_impl.h"
@@ -175,9 +176,8 @@ std::string MakeGoodResponse() {
 
   // Prepend 4 byte prefix length indication to the protobuf message as
   // envisaged by the google streaming recognition webservice protocol.
-  uint32_t prefix =
-      base::HostToNet32(base::checked_cast<uint32_t>(msg_string.size()));
-  msg_string.insert(0, reinterpret_cast<char*>(&prefix), sizeof(prefix));
+  msg_string.insert(0u, base::as_string_view(base::numerics::U32ToBigEndian(
+                            base::checked_cast<uint32_t>(msg_string.size()))));
   return msg_string;
 }
 

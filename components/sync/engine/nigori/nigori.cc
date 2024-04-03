@@ -11,13 +11,14 @@
 
 #include "base/base64.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/sys_byteorder.h"
 #include "base/time/default_tick_clock.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
@@ -45,9 +46,8 @@ class NigoriStream {
   // Append the big-endian representation of the length of |value| with 32 bits,
   // followed by |value| itself to the stream.
   NigoriStream& operator<<(const std::string& value) {
-    uint32_t size = base::HostToNet32(value.size());
-
-    stream_.write(reinterpret_cast<char*>(&size), sizeof(uint32_t));
+    stream_ << base::as_string_view(
+        base::numerics::U32ToBigEndian(value.size()));
     stream_ << value;
     return *this;
   }
@@ -56,10 +56,9 @@ class NigoriStream {
   // followed by the big-endian representation of the value of |type|, with 32
   // bits, to the stream.
   NigoriStream& operator<<(const Nigori::Type type) {
-    uint32_t size = base::HostToNet32(sizeof(uint32_t));
-    stream_.write(reinterpret_cast<char*>(&size), sizeof(uint32_t));
-    uint32_t value = base::HostToNet32(type);
-    stream_.write(reinterpret_cast<char*>(&value), sizeof(uint32_t));
+    stream_ << base::as_string_view(
+        base::numerics::U32ToBigEndian(sizeof(uint32_t)));
+    stream_ << base::as_string_view(base::numerics::U32ToBigEndian(type));
     return *this;
   }
 

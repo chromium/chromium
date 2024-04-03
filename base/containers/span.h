@@ -1094,6 +1094,8 @@ constexpr auto as_chars(span<T, X> s) noexcept {
 
 // as_string_view() converts a span over byte-sized primitives (holding chars or
 // uint8_t) into a std::string_view, where each byte is represented as a char.
+// It also accepts any type that can implicitly convert to a span, such as
+// arrays.
 //
 // If you want to view an arbitrary span type as a string, first explicitly
 // convert it to bytes via `base::as_bytes()`.

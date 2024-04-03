@@ -10,10 +10,12 @@
 #include <memory>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/byte_conversions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "base/sys_byteorder.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -100,11 +102,8 @@ class P2PSocketTcpTestBase : public testing::Test {
   }
 
   std::string IntToSize(int size) {
-    std::string result;
-    uint16_t size16 = base::HostToNet16(size);
-    result.resize(sizeof(size16));
-    memcpy(&result[0], &size16, sizeof(size16));
-    return result;
+    return std::string(base::as_string_view(
+        base::numerics::U16ToBigEndian(base::checked_cast<uint16_t>(size))));
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -331,7 +330,8 @@ TEST_F(P2PSocketTcpTest, SendDataWithPacketOptions) {
   std::vector<uint8_t> packet;
   CreateRandomPacket(&packet);
   // Make it a RTP packet.
-  *reinterpret_cast<uint16_t*>(&*packet.begin()) = base::HostToNet16(0x8000);
+  base::span(packet).first<2>().copy_from(
+      base::numerics::U16ToBigEndian(uint16_t{0x8000}));
   socket_impl_->Send(packet, P2PPacketInfo(dest_.ip_address, options, 0));
 
   std::string expected_data;

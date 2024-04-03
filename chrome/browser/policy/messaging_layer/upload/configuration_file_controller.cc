@@ -11,10 +11,11 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/sys_byteorder.h"
+#include "base/numerics/byte_conversions.h"
 #include "chrome/browser/policy/messaging_layer/upload/record_upload_request_builder.h"
 #include "components/reporting/encryption/primitives.h"
 #include "components/reporting/encryption/verification.h"
@@ -113,11 +114,9 @@ Status ConfigurationFileController::VerifySignature(ConfigFile config_file) {
 
   // Verify the value signed on the server using the big-endian representation
   // of the configuration file version.
-  const int32_t version_to_verify = base::HostToNet32(config_file.version());
-  return verifier_.Verify(
-      std::string_view(reinterpret_cast<const char*>(&version_to_verify),
-                       sizeof(int32_t)),
-      config_file.config_file_signature());
+  return verifier_.Verify(base::as_string_view(base::numerics::U32ToBigEndian(
+                              config_file.version())),
+                          config_file.config_file_signature());
 }
 
 // static

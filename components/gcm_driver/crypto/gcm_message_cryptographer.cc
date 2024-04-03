@@ -8,12 +8,14 @@
 #include <stdint.h>
 
 #include <algorithm>
-#include <sstream>
+#include <string>
 
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/numerics/ostream_operators.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/strcat.h"
 #include "base/sys_byteorder.h"
@@ -84,31 +86,31 @@ class WebPushEncryptionDraft03
       EncodingType type,
       const base::StringPiece& recipient_public_key,
       const base::StringPiece& sender_public_key) override {
-    std::stringstream info_stream;
-    info_stream << "Content-Encoding: ";
+    std::string info;
+    info += "Content-Encoding: ";
 
     switch (type) {
       case EncodingType::CONTENT_ENCRYPTION_KEY:
-        info_stream << "aesgcm";
+        info += "aesgcm";
         break;
       case EncodingType::NONCE:
-        info_stream << "nonce";
+        info += "nonce";
         break;
     }
 
-    info_stream << '\x00' << "P-256" << '\x00';
+    info += '\x00';
+    info += "P-256";
+    info += '\x00';
 
-    uint16_t local_len =
-        base::HostToNet16(static_cast<uint16_t>(recipient_public_key.size()));
-    info_stream.write(reinterpret_cast<char*>(&local_len), sizeof(local_len));
-    info_stream << recipient_public_key;
+    info += base::as_string_view(base::numerics::U16ToBigEndian(
+        base::checked_cast<uint16_t>(recipient_public_key.size())));
+    info += recipient_public_key;
 
-    uint16_t peer_len =
-        base::HostToNet16(static_cast<uint16_t>(sender_public_key.size()));
-    info_stream.write(reinterpret_cast<char*>(&peer_len), sizeof(peer_len));
-    info_stream << sender_public_key;
+    info += base::as_string_view(base::numerics::U16ToBigEndian(
+        base::checked_cast<uint16_t>(sender_public_key.size())));
+    info += sender_public_key;
 
-    return info_stream.str();
+    return info;
   }
 
   // draft-ietf-webpush-encryption-03 defines that the padding is included at
@@ -208,20 +210,20 @@ class WebPushEncryptionDraft08
       EncodingType type,
       const base::StringPiece& /* recipient_public_key */,
       const base::StringPiece& /* sender_public_key */) override {
-    std::stringstream info_stream;
-    info_stream << "Content-Encoding: ";
+    std::string info;
+    info += "Content-Encoding: ";
 
     switch (type) {
       case EncodingType::CONTENT_ENCRYPTION_KEY:
-        info_stream << "aes128gcm";
+        info += "aes128gcm";
         break;
       case EncodingType::NONCE:
-        info_stream << "nonce";
+        info += "nonce";
         break;
     }
 
-    info_stream << '\x00';
-    return info_stream.str();
+    info += '\x00';
+    return info;
   }
 
   // draft-ietf-webpush-encryption-08 defines that the padding follows the

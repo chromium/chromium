@@ -7,9 +7,10 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/sys_byteorder.h"
+#include "base/numerics/byte_conversions.h"
 #include "crypto/hmac.h"
 #include "crypto/secure_util.h"
 #include "remoting/base/constants.h"
@@ -74,8 +75,10 @@ bool DecodeBinaryValueFromXml(const jingle_xmpp::XmlElement* message,
 }
 
 std::string PrefixWithLength(const std::string& str) {
-  uint32_t length = base::HostToNet32(str.size());
-  return std::string(reinterpret_cast<char*>(&length), sizeof(length)) + str;
+  std::string out;
+  out += base::as_string_view(base::numerics::U32ToBigEndian(str.size()));
+  out += str;
+  return out;
 }
 
 }  // namespace

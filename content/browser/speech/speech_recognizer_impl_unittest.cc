@@ -2,22 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/speech/speech_recognizer_impl.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
 #include <memory>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/sys_byteorder.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread.h"
 #include "content/browser/speech/network_speech_recognition_engine_impl.h"
-#include "content/browser/speech/speech_recognizer_impl.h"
 #include "content/public/browser/google_streaming_api.pb.h"
 #include "content/public/browser/speech_recognition_event_listener.h"
 #include "content/public/common/content_features.h"
@@ -516,9 +518,8 @@ TEST_F(SpeechRecognizerImplTest, StopWithData) {
   proto_alternative->set_transcript("123");
   std::string msg_string;
   proto_event.SerializeToString(&msg_string);
-  uint32_t prefix =
-      base::HostToNet32(base::checked_cast<uint32_t>(msg_string.size()));
-  msg_string.insert(0, reinterpret_cast<char*>(&prefix), sizeof(prefix));
+  msg_string.insert(0u, base::as_string_view(base::numerics::U32ToBigEndian(
+                            base::checked_cast<uint32_t>(msg_string.size()))));
 
   // Issue the network callback to complete the process.
   const network::TestURLLoaderFactory::PendingRequest* downstream_request;
