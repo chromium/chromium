@@ -837,7 +837,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Mac.AggregateDeviceCompositionPropertyIsNull"
-    enum="Boolean" expires_after="2024-03-31">
+    enum="Boolean" expires_after="2025-03-31">
   <owner>agpalak@chromium.org</owner>
   <owner>dalecurtis@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
