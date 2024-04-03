@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "base/auto_reset.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
@@ -17,6 +18,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/notimplemented.h"
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/to_address.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
@@ -54,24 +56,9 @@ constexpr ui::AXNodeID kStartPageAXNodeId = 2;
 
 // The maximum number of pages supported by the OCR service. This maximum is
 // used both to validate the number of pages (untrusted data) coming from the
-// MediaApp and manage resources (caps the number of pages stored at a time).
-constexpr size_t kMaxPages = 10000;
-
-namespace {
-
-bool ReportIfNonExistentPageId(
-    const std::string& context,
-    const std::string& page_id,
-    const std::map<const std::string, AXMediaAppPageMetadata>& metadata) {
-  if (!metadata.contains(page_id)) {
-    mojo::ReportBadMessage(
-        std::format("{} called with previously non-existent page ID", context));
-    return true;
-  }
-  return false;
-}
-
-}  // namespace
+// MediaApp, and manage resources (i.e. caps the number of pages stored at a
+// time).
+constexpr size_t kMaxPages = 10000u;
 
 AXMediaAppUntrustedHandler::AXMediaAppUntrustedHandler(
     content::BrowserContext& context,
@@ -206,7 +193,7 @@ void AXMediaAppUntrustedHandler::PerformAction(
       }
       CHECK_NE(action_data.target_node_id, ui::kInvalidAXNodeID);
       CHECK_EQ(pages_.size(), document_.GetRoot()->GetUnignoredChildCount());
-      for (size_t page_index = 0u; const auto& page : pages_) {
+      for (int32_t page_index = 0; const auto& page : pages_) {
         const std::unique_ptr<ui::AXTreeManager>& page_manager = page.second;
         if (page_manager->GetTreeID() != action_data.target_tree_id) {
           ++page_index;
@@ -297,6 +284,12 @@ void AXMediaAppUntrustedHandler::OnAXModeAdded(ui::AXMode mode) {
 void AXMediaAppUntrustedHandler::PageMetadataUpdated(
     const std::vector<ash::media_app_ui::mojom::PageMetadataPtr>
         page_metadata) {
+  // `mojo::GetBadMessageCallback` only works when in a non-test environment.
+  base::AutoReset<std::optional<mojo::ReportBadMessageCallback>> call_resetter(
+      &bad_message_callback_,
+      !media_app_ && mojo::IsInMessageDispatch()
+          ? std::make_optional(mojo::GetBadMessageCallback())
+          : std::nullopt);
   if (page_metadata.empty()) {
     mojo::ReportBadMessage(
         "`PageMetadataUpdated()` called with no page metadata");
@@ -330,8 +323,7 @@ void AXMediaAppUntrustedHandler::PageMetadataUpdated(
   std::set<const std::string> page_id_updated;
   for (size_t i = 0; i < page_metadata.size(); ++i) {
     const std::string& page_id = page_metadata.at(i)->id;
-    if (ReportIfNonExistentPageId("PageMetadataUpdated()", page_id,
-                                  page_metadata_)) {
+    if (HasRendererTerminatedDueToBadPageId("PageMetadataUpdated", page_id)) {
       return;
     }
     page_metadata_.at(page_id).page_num = i + 1;  // 1-indexed.
@@ -368,6 +360,12 @@ void AXMediaAppUntrustedHandler::PageMetadataUpdated(
 
 void AXMediaAppUntrustedHandler::PageContentsUpdated(
     const std::string& dirty_page_id) {
+  // `mojo::GetBadMessageCallback` only works when in a non-test environment.
+  base::AutoReset<std::optional<mojo::ReportBadMessageCallback>> call_resetter(
+      &bad_message_callback_,
+      !media_app_ && mojo::IsInMessageDispatch()
+          ? std::make_optional(mojo::GetBadMessageCallback())
+          : std::nullopt);
   if (!page_metadata_.contains(dirty_page_id)) {
     mojo::ReportBadMessage(
         "`PageContentsUpdated()` called with a non-existent page ID");
@@ -442,7 +440,8 @@ void AXMediaAppUntrustedHandler::SendAXTreeToAccessibilityService(
 
 void AXMediaAppUntrustedHandler::ViewportUpdated(const gfx::RectF& viewport_box,
                                                  float scale_factor) {
-  // TODO(nektar): Use scale factor to convert to device independent pixels.
+  // TODO(nektar): Use scale factor to convert to device independent
+  // pixels.
   viewport_box_ = viewport_box;
   if (!document_.GetRoot()) {
     return;
@@ -476,8 +475,9 @@ void AXMediaAppUntrustedHandler::ViewportUpdated(const gfx::RectF& viewport_box,
 void AXMediaAppUntrustedHandler::UpdatePageLocation(
     const std::string& page_id,
     const gfx::RectF& page_location) {
-  if (ReportIfNonExistentPageId("UpdatePageLocation()", page_id,
-                                page_metadata_)) {
+  // `bad_message_callback_` (used by `HasRendererTerminatedDueToBadPageId`)
+  // should have been set by `PageMetadataUpdated`, which calls this method.
+  if (HasRendererTerminatedDueToBadPageId("UpdatePageLocation", page_id)) {
     return;
   }
   CHECK(pages_.contains(page_id));
@@ -684,8 +684,7 @@ void AXMediaAppUntrustedHandler::OnPageOcred(
   }
   ui::AXTreeUpdate complete_tree_update = tree_update;
   complete_tree_update.tree_data.parent_tree_id = document_tree_id_;
-  if (ReportIfNonExistentPageId("OnPageOcred()", dirty_page_id,
-                                page_metadata_)) {
+  if (HasRendererTerminatedDueToBadPageId("OnPageOcred", dirty_page_id)) {
     return;
   }
   if (!pages_.contains(dirty_page_id)) {
@@ -726,6 +725,22 @@ void AXMediaAppUntrustedHandler::OnPageOcred(
   SendAXTreeToAccessibilityService(*pages_.at(dirty_page_id),
                                    *page_serializers_.at(dirty_page_id));
   OcrNextDirtyPageIfAny();
+}
+
+bool AXMediaAppUntrustedHandler::HasRendererTerminatedDueToBadPageId(
+    const std::string& method_name,
+    const std::string& page_id) {
+  if (!page_metadata_.contains(page_id)) {
+    const std::string error_str = std::format(
+        "`{}` called with previously non-existent page ID", method_name);
+    if (bad_message_callback_ && !(*bad_message_callback_).is_null()) {
+      std::move(*bad_message_callback_).Run(error_str);
+    } else {
+      mojo::ReportBadMessage(error_str);
+    }
+    return true;
+  }
+  return false;
 }
 
 }  // namespace ash

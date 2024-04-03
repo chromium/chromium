@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "ash/webui/media_app_ui/media_app_ui_untrusted.mojom.h"
@@ -134,6 +135,8 @@ class AXMediaAppUntrustedHandler
   content::RenderFrameHost* GetMediaAppRenderFrameHost() const;
   ui::AXNodeID GetMediaAppRootNodeID() const;
   void StitchDocumentTree();
+  bool HasRendererTerminatedDueToBadPageId(const std::string& method_name,
+                                           const std::string& page_id);
 
   base::ScopedObservation<ui::AXPlatform, ui::AXModeObserver>
       ax_mode_observation_{this};
@@ -144,6 +147,8 @@ class AXMediaAppUntrustedHandler
   base::circular_deque<std::string> dirty_page_ids_;
   ui::AXTreeID document_tree_id_ = ui::AXTreeID::CreateNewAXTreeID();
   SEQUENCE_CHECKER(sequence_checker_);
+  std::optional<mojo::ReportBadMessageCallback> bad_message_callback_ =
+      std::nullopt;
   base::WeakPtrFactory<AXMediaAppUntrustedHandler> weak_ptr_factory_{this};
 };
 
