@@ -6119,11 +6119,6 @@ static_library("browser") {
       "//ui/views/controls/webview",
     ]
 
-    if (is_chrome_for_testing) {
-      public_deps +=
-          [ "//chrome/browser/chrome_for_testing:chrome_for_testing" ]
-    }
-
     deps += [
       ":chrome_process_finder",
       "//base/win:base_win_buildflags",
@@ -8094,6 +8089,10 @@ static_library("browser") {
         "//components/metrics/structured/lib",
       ]
     }
+  }
+
+  if (is_chrome_for_testing) {
+    deps += [ "//chrome/browser/chrome_for_testing" ]
   }
 }
 

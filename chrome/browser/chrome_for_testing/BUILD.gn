@@ -4,102 +4,18 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/chrome_build.gni")
-import("//components/nacl/features.gni")
 
-if (is_chrome_for_testing) {
-  group("chrome_for_testing") {
-    deps = [ ":generate_about_file" ]
+assert(is_chrome_for_testing)
 
-    if (is_linux) {
-      deps += [ ":strip_linux_files" ]
-    }
-  }
+group("chrome_for_testing") {
+  deps = [ ":generate_about_file" ]
 }
 
-if (is_linux) {
-  import("//build/linux/strip_binary.gni")
-}
-
-if (is_linux && is_chrome_for_testing) {
-  group("strip_linux_files") {
-    deps = [
-      ":strip_chrome_binary",
-      ":strip_chrome_crashpad_handler",
-      ":strip_chrome_sandbox",
-      ":strip_headless_shell_binary",
-      ":strip_libEGL_shlib",
-      ":strip_libGLESv2_shlib",
-      ":strip_libvk_swiftshader_shlib",
-      ":strip_libvulkan_shlib",
-    ]
-    if (enable_nacl) {
-      deps += [
-        ":strip_nacl_helper",
-        ":strip_nacl_helper_bootstrap",
-      ]
-    }
-  }
-
-  strip_binary("strip_chrome_binary") {
-    binary_input = "$root_out_dir/chrome"
-    deps = [ "//chrome" ]
-  }
-
-  strip_binary("strip_chrome_crashpad_handler") {
-    binary_input = "$root_out_dir/chrome_crashpad_handler"
-    deps = [ "//components/crash/core/app:chrome_crashpad_handler" ]
-  }
-
-  strip_binary("strip_chrome_sandbox") {
-    binary_input = "$root_out_dir/chrome_sandbox"
-    deps = [ "//sandbox/linux:chrome_sandbox" ]
-  }
-
-  strip_binary("strip_libEGL_shlib") {
-    binary_input = "$root_out_dir/libEGL.so"
-    deps = [ "//third_party/angle:libEGL" ]
-  }
-
-  strip_binary("strip_libGLESv2_shlib") {
-    binary_input = "$root_out_dir/libGLESv2.so"
-    deps = [ "//third_party/angle:libGLESv2" ]
-  }
-
-  strip_binary("strip_libvulkan_shlib") {
-    binary_input = "$root_out_dir/libvulkan.so.1"
-    deps = [ "//third_party/vulkan-deps/vulkan-loader/src:libvulkan" ]
-  }
-
-  strip_binary("strip_libvk_swiftshader_shlib") {
-    binary_input = "$root_out_dir/libvk_swiftshader.so"
-    deps = [ "//third_party/swiftshader/src/Vulkan:swiftshader_libvulkan" ]
-  }
-
-  strip_binary("strip_headless_shell_binary") {
-    binary_input = "$root_out_dir/headless_shell"
-    deps = [ "//headless:headless_shell" ]
-  }
-
-  if (enable_nacl) {
-    strip_binary("strip_nacl_helper") {
-      binary_input = "$root_out_dir/nacl_helper"
-      deps = [ "//components/nacl/loader:nacl_helper" ]
-    }
-
-    strip_binary("strip_nacl_helper_bootstrap") {
-      binary_input = "$root_out_dir/nacl_helper_bootstrap"
-      deps = [ "//native_client/src/trusted/service_runtime/linux:bootstrap" ]
-    }
-  }
-}
-
-if (is_chrome_for_testing) {
-  action("generate_about_file") {
-    script = "//chrome/browser/chrome_for_testing/tools/generate_about_file.py"
-    args = [
-      "--output-file",
-      rebase_path("$root_out_dir/ABOUT"),
-    ]
-    outputs = [ "$root_out_dir/ABOUT" ]
-  }
+action("generate_about_file") {
+  script = "//chrome/browser/chrome_for_testing/tools/generate_about_file.py"
+  args = [
+    "--output-file",
+    rebase_path("$root_out_dir/ABOUT"),
+  ]
+  outputs = [ "$root_out_dir/ABOUT" ]
 }
