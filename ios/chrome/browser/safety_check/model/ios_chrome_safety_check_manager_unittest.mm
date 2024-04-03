@@ -351,6 +351,14 @@ TEST_F(IOSChromeSafetyCheckManagerTest, ConvertsPasswordCheckStateIdle) {
                 PasswordCheckState::kIdle, populated_credentials_list,
                 PasswordSafetyCheckState::kRunning),
             PasswordSafetyCheckState::kSafe);
+  EXPECT_EQ(CalculatePasswordSafetyCheckState(PasswordCheckState::kIdle,
+                                              populated_credentials_list,
+                                              PasswordSafetyCheckState::kError),
+            PasswordSafetyCheckState::kError);
+  EXPECT_EQ(CalculatePasswordSafetyCheckState(PasswordCheckState::kIdle,
+                                              empty_credentials_list,
+                                              PasswordSafetyCheckState::kError),
+            PasswordSafetyCheckState::kError);
 }
 
 // Tests an Omaha response that exceeds `kOmahaNetworkWaitTime` wait time is

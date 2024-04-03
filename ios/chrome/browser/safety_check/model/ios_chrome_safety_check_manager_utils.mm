@@ -63,6 +63,10 @@ PasswordSafetyCheckState CalculatePasswordSafetyCheckState(
         return PasswordSafetyCheckState::kSafe;
       }
 
+      if (previous_check_state != PasswordSafetyCheckState::kSafe) {
+        return previous_check_state;
+      }
+
       return PasswordSafetyCheckState::kDefault;
     default:
       return PasswordSafetyCheckState::kDefault;
