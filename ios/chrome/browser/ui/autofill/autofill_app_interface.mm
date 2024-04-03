@@ -463,12 +463,20 @@ static std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
 + (NSString*)saveMaskedCreditCardEnrolledInVirtualCard {
   autofill::PersonalDataManager* personalDataManager =
       [self personalDataManager];
+  size_t card_count = personalDataManager->GetCreditCards().size();
   autofill::CreditCard card =
       autofill::test::GetMaskedServerCardEnrolledIntoVirtualCardNumber();
   CHECK_NE(card.record_type(), autofill::CreditCard::RecordType::kLocalCard);
 
   personalDataManager->AddServerCreditCardForTest(
       std::make_unique<autofill::CreditCard>(card));
+
+  // Confirm card is present in personalDataManager
+  CHECK(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForFileOperationTimeout, ^bool {
+        return (personalDataManager->GetCreditCards().size() == card_count + 1);
+      }));
+
   personalDataManager->NotifyPersonalDataObserver();
   return base::SysUTF16ToNSString(card.NetworkAndLastFourDigits());
 }

@@ -519,11 +519,6 @@ NSString* ExpirationDateNSString() {
 // Tests that both the virtual card and the original card are shown
 // in the Payments Bottom Sheet.
 - (void)testPaymentsBottomSheetShowsVirtualCard {
-  // TODO(b/324870929): This test is flaky on iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Fails flakily on iPad.");
-  }
-
   // Add a credit card enrolled in VCN to the Personal Data Manager.
   NSString* enrolledCardNameAndLastFour =
       [AutofillAppInterface saveMaskedCreditCardEnrolledInVirtualCard];
