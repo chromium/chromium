@@ -150,6 +150,45 @@ class EnrollmentScreenBaseTest : public testing::Test {
         });
   }
 
+  void ExpectManualEnrollmentAndReportFailure(policy::EnrollmentStatus status) {
+    EXPECT_NE(status.enrollment_code(),
+              policy::EnrollmentStatus::Code::kSuccess)
+        << "Cannot not expect failure with a success code";
+
+    EXPECT_CALL(mock_enrollment_launcher_, EnrollUsingAuthCode(kTestAuthCode))
+        .Times(AnyNumber())
+        .WillOnce([this, status]() {
+          ExpectEnrollmentScreenIsEnrollmentStatusConsumer();
+          enrollment_screen_->OnEnrollmentError(status);
+        });
+  }
+
+  void ExpectManualEnrollmentAndReportFailure() {
+    ExpectManualEnrollmentAndReportFailure(
+        policy::EnrollmentStatus::ForRegistrationError(
+            policy::DeviceManagementStatus::DM_STATUS_TEMPORARY_UNAVAILABLE));
+  }
+
+  void ExpectSuccessScreen() {
+    EXPECT_CALL(mock_view_, ShowEnrollmentStatus(
+                                policy::EnrollmentStatus::ForEnrollmentCode(
+                                    policy::EnrollmentStatus::Code::kSuccess)))
+        .WillOnce([this]() { enrollment_screen_->OnConfirmationClosed(); });
+  }
+
+  void ExpectErrorScreen(policy::EnrollmentStatus status) {
+    EXPECT_NE(status.enrollment_code(),
+              policy::EnrollmentStatus::Code::kSuccess)
+        << "Cannot not expect failure with a success code";
+
+    EXPECT_CALL(mock_view_, ShowEnrollmentStatus(status));
+  }
+
+  void ExpectErrorScreen() {
+    ExpectErrorScreen(policy::EnrollmentStatus::ForRegistrationError(
+        policy::DeviceManagementStatus::DM_STATUS_TEMPORARY_UNAVAILABLE));
+  }
+
   void ExpectClearAuth() {
     EXPECT_CALL(mock_enrollment_launcher_, ClearAuth(_))
         .Times(AnyNumber())
@@ -185,6 +224,8 @@ class EnrollmentScreenBaseTest : public testing::Test {
   }
 
   void UserCancel() { enrollment_screen_->OnCancel(); }
+
+  void UserRetry() { enrollment_screen_->OnRetry(); }
 
   int GetEnrollmentScreenRetries() const {
     return enrollment_screen_->num_retries_;
@@ -242,6 +283,99 @@ class EnrollmentScreenBaseTest : public testing::Test {
   std::optional<EnrollmentScreen::Result> last_screen_result_;
 };
 
+class EnrollmentScreenManualFlowTest
+    : public EnrollmentScreenBaseTest,
+      public ::testing::WithParamInterface<policy::EnrollmentConfig::Mode> {
+ protected:
+  policy::EnrollmentConfig GetEnrollmentConfig() {
+    policy::EnrollmentConfig config;
+    config.mode = GetParam();
+    config.auth_mechanism =
+        policy::EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE;
+    DCHECK(!config.is_mode_attestation())
+        << "Config must not be attestation: " << config;
+
+    return config;
+  }
+};
+
+TEST_P(EnrollmentScreenManualFlowTest, ShouldFinishEnrollmentScreen) {
+  const policy::EnrollmentConfig config = GetEnrollmentConfig();
+
+  ExpectEnrollmentConfig(config.mode, config.auth_mechanism);
+
+  ExpectShowViewWithLogin();
+  ExpectManualEnrollmentAndReportSuccess();
+  ExpectSuccessScreen();
+  ExpectClearAuth();
+
+  SetUpEnrollmentScreen(config);
+  ShowEnrollmentScreen();
+
+  EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
+}
+
+TEST_P(EnrollmentScreenManualFlowTest, ShouldNotAutomaticallyRetryEnrollment) {
+  const policy::EnrollmentConfig config = GetEnrollmentConfig();
+
+  ExpectEnrollmentConfig(config.mode, config.auth_mechanism);
+
+  ExpectShowViewWithLogin();
+  ExpectManualEnrollmentAndReportFailure();
+  ExpectErrorScreen();
+  ExpectClearAuth();
+
+  SetUpEnrollmentScreen(config);
+  ShowEnrollmentScreen();
+
+  FastForwardTime(base::Days(1));
+
+  EXPECT_EQ(GetEnrollmentScreenRetries(), 0);
+  EXPECT_FALSE(last_screen_result().has_value());
+}
+
+TEST_P(EnrollmentScreenManualFlowTest, ShouldRetryEnrollmentOnUserAction) {
+  const policy::EnrollmentConfig config = GetEnrollmentConfig();
+
+  {
+    testing::InSequence s;
+    // First view is shown for attestation-based failure.
+    ExpectEnrollmentConfig(config.mode, config.auth_mechanism);
+    ExpectShowViewWithLogin();
+    ExpectManualEnrollmentAndReportFailure();
+    ExpectErrorScreen();
+
+    // Second view is shown after user retry.
+    ExpectShowViewWithLogin();
+    ExpectManualEnrollmentAndReportSuccess();
+    ExpectSuccessScreen();
+  }
+
+  ExpectClearAuth();
+
+  SetUpEnrollmentScreen(config);
+  ShowEnrollmentScreen();
+
+  EXPECT_FALSE(last_screen_result().has_value());
+
+  UserRetry();
+
+  EXPECT_EQ(GetEnrollmentScreenRetries(), 1);
+  EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ManualEnrollment,
+    EnrollmentScreenManualFlowTest,
+    ::testing::Values(policy::EnrollmentConfig::MODE_MANUAL,
+                      policy::EnrollmentConfig::MODE_MANUAL_REENROLLMENT,
+                      policy::EnrollmentConfig::MODE_LOCAL_FORCED,
+                      policy::EnrollmentConfig::MODE_LOCAL_ADVERTISED,
+                      policy::EnrollmentConfig::MODE_SERVER_FORCED,
+                      policy::EnrollmentConfig::MODE_SERVER_ADVERTISED,
+                      policy::EnrollmentConfig::MODE_RECOVERY,
+                      policy::EnrollmentConfig::MODE_INITIAL_SERVER_FORCED));
+
 class EnrollmentScreenRollbackFlowTest : public EnrollmentScreenBaseTest {
  protected:
   EnrollmentScreenRollbackFlowTest() { ConfigureRestoreAfterRollback(); }
@@ -287,6 +421,7 @@ TEST_F(EnrollmentScreenRollbackFlowTest,
   ExpectEnrollmentConfig(rollback_config().mode,
                          rollback_config().auth_mechanism);
   ExpectAttestationBasedEnrollmentAndReportFailure();
+  ExpectErrorScreen();
   ExpectClearAuth();
 
   SetUpEnrollmentScreen();
@@ -332,6 +467,7 @@ TEST_F(EnrollmentScreenRollbackFlowTest,
                            rollback_config().auth_mechanism);
     ExpectShowView();
     ExpectAttestationBasedEnrollmentAndReportFailure();
+    ExpectErrorScreen();
 
     // Second view is shown for manual fallback. This should be triggered after
     // user decides to fallback.

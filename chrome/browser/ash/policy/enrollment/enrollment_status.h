@@ -90,6 +90,9 @@ class EnrollmentStatus {
     return attestation_status_;
   }
 
+  friend bool operator==(const EnrollmentStatus&,
+                         const EnrollmentStatus&) = default;
+
  private:
   Code enrollment_code_ = EnrollmentStatus::Code::kSuccess;
   DeviceManagementStatus client_status_ =
