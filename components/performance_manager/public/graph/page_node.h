@@ -11,8 +11,6 @@
 
 #include "base/containers/flat_set.h"
 #include "base/functional/function_ref.h"
-#include "base/memory/raw_ptr.h"
-#include "components/performance_manager/public/freezing/freezing.h"
 #include "components/performance_manager/public/graph/node.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
 #include "components/performance_manager/public/mojom/lifecycle.mojom.h"
@@ -240,16 +238,6 @@ class PageNode : public Node {
   // dereferenced on the UI thread.
   virtual const WebContentsProxy& GetContentsProxy() const = 0;
 
-  // Indicates if there's a freezing vote for this page node. This has 3
-  // possible values:
-  //   - std::nullopt: There's no active freezing vote for this page.
-  //   - freezing::FreezingVoteValue::kCanFreeze: There's one or more positive
-  //     freezing vote for this page and no negative vote.
-  //   - freezing::FreezingVoteValue::kCannotFreeze: There's at least one
-  //     negative freezing vote for this page.
-  virtual const std::optional<freezing::FreezingVote>& GetFreezingVote()
-      const = 0;
-
   // Returns the current page state. See "PageNodeObserver::OnPageStateChanged".
   virtual PageState GetPageState() const = 0;
 
@@ -377,11 +365,6 @@ class PageNodeObserver {
   // for more detail.
   virtual void OnAboutToBeDiscarded(const PageNode* page_node,
                                     const PageNode* new_page_node) = 0;
-
-  // Called every time the aggregated freezing vote changes or gets invalidated.
-  virtual void OnFreezingVoteChanged(
-      const PageNode* page_node,
-      std::optional<freezing::FreezingVote> previous_vote) = 0;
 };
 
 // Default implementation of observer that provides dummy versions of each
@@ -428,9 +411,6 @@ class PageNode::ObserverDefaultImpl : public PageNodeObserver {
   void OnFaviconUpdated(const PageNode* page_node) override {}
   void OnAboutToBeDiscarded(const PageNode* page_node,
                             const PageNode* new_page_node) override {}
-  void OnFreezingVoteChanged(
-      const PageNode* page_node,
-      std::optional<freezing::FreezingVote> previous_vote) override {}
 };
 
 // std::ostream support for PageNode::EmbeddingType.

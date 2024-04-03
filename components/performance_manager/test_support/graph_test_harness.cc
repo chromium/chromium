@@ -30,10 +30,12 @@ TestGraphImpl::~TestGraphImpl() = default;
 TestNodeWrapper<FrameNodeImpl> TestGraphImpl::CreateFrameNodeAutoId(
     ProcessNodeImpl* process_node,
     PageNodeImpl* page_node,
-    FrameNodeImpl* parent_frame_node) {
+    FrameNodeImpl* parent_frame_node,
+    content::BrowsingInstanceId browsing_instance_id) {
   return TestNodeWrapper<FrameNodeImpl>::Create(
       this, process_node, page_node, parent_frame_node,
-      /*outer_document_for_fenced_frame=*/nullptr, NextTestFrameRoutingId());
+      /*outer_document_for_fenced_frame=*/nullptr, NextTestFrameRoutingId(),
+      blink::LocalFrameToken(), browsing_instance_id);
 }
 
 TestNodeWrapper<ProcessNodeImpl> TestGraphImpl::CreateBrowserProcessNode() {

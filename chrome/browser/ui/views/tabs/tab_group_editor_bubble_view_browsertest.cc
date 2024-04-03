@@ -216,13 +216,13 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(3, tsm->count());
   std::optional<tab_groups::TabGroupId> group = tsm->AddToNewGroup({0, 1});
 
-  ASSERT_FALSE(browser_view->tabstrip()->tab_at(0)->HasFreezingVoteToken());
-  ASSERT_FALSE(browser_view->tabstrip()->tab_at(1)->HasFreezingVoteToken());
-  ASSERT_FALSE(browser_view->tabstrip()->tab_at(2)->HasFreezingVoteToken());
+  ASSERT_FALSE(browser_view->tabstrip()->tab_at(0)->HasFreezingVote());
+  ASSERT_FALSE(browser_view->tabstrip()->tab_at(1)->HasFreezingVote());
+  ASSERT_FALSE(browser_view->tabstrip()->tab_at(2)->HasFreezingVote());
   browser_view->tabstrip()->ToggleTabGroupCollapsedState(group.value());
-  EXPECT_TRUE(browser_view->tabstrip()->tab_at(0)->HasFreezingVoteToken());
-  EXPECT_TRUE(browser_view->tabstrip()->tab_at(1)->HasFreezingVoteToken());
-  EXPECT_FALSE(browser_view->tabstrip()->tab_at(2)->HasFreezingVoteToken());
+  EXPECT_TRUE(browser_view->tabstrip()->tab_at(0)->HasFreezingVote());
+  EXPECT_TRUE(browser_view->tabstrip()->tab_at(1)->HasFreezingVote());
+  EXPECT_FALSE(browser_view->tabstrip()->tab_at(2)->HasFreezingVote());
 }
 
 class TabGroupEditorBubbleViewDialogBrowserTestWithSavedGroupV2

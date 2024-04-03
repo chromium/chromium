@@ -229,12 +229,6 @@ const WebContentsProxy& PageNodeImpl::GetContentsProxy() const {
   return contents_proxy();
 }
 
-const std::optional<freezing::FreezingVote>& PageNodeImpl::GetFreezingVote()
-    const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return freezing_vote_.value();
-}
-
 PageState PageNodeImpl::GetPageState() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return page_state_.value();
@@ -512,12 +506,6 @@ void PageNodeImpl::set_has_nonempty_beforeunload(
     bool has_nonempty_beforeunload) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   has_nonempty_beforeunload_ = has_nonempty_beforeunload;
-}
-
-void PageNodeImpl::set_freezing_vote(
-    std::optional<freezing::FreezingVote> freezing_vote) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  freezing_vote_.SetAndMaybeNotify(this, freezing_vote);
 }
 
 void PageNodeImpl::set_page_state(PageState page_state) {

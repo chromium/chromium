@@ -6,6 +6,7 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_TEST_SUPPORT_GRAPH_TEST_HARNESS_H_
 
 #include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -25,6 +26,7 @@
 #include "components/performance_manager/public/browser_child_process_host_proxy.h"
 #include "components/performance_manager/public/render_process_host_id.h"
 #include "components/performance_manager/public/render_process_host_proxy.h"
+#include "content/public/browser/browsing_instance_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -248,7 +250,9 @@ class TestGraphImpl : public GraphImpl {
   TestNodeWrapper<FrameNodeImpl> CreateFrameNodeAutoId(
       ProcessNodeImpl* process_node,
       PageNodeImpl* page_node,
-      FrameNodeImpl* parent_frame_node = nullptr);
+      FrameNodeImpl* parent_frame_node = nullptr,
+      content::BrowsingInstanceId browsing_instance_id =
+          content::BrowsingInstanceId());
 
   // Wrappers around Create<ProcessNodeImpl>(...) that make the type of process
   // more clear.
@@ -295,9 +299,11 @@ class GraphTestHarness : public ::testing::Test {
   TestNodeWrapper<FrameNodeImpl> CreateFrameNodeAutoId(
       ProcessNodeImpl* process_node,
       PageNodeImpl* page_node,
-      FrameNodeImpl* parent_frame_node = nullptr) {
-    return graph()->CreateFrameNodeAutoId(process_node, page_node,
-                                          parent_frame_node);
+      FrameNodeImpl* parent_frame_node = nullptr,
+      content::BrowsingInstanceId browsing_instance_id =
+          content::BrowsingInstanceId()) {
+    return graph()->CreateFrameNodeAutoId(
+        process_node, page_node, parent_frame_node, browsing_instance_id);
   }
 
   TestNodeWrapper<ProcessNodeImpl> CreateBrowserProcessNode() {

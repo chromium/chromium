@@ -9,7 +9,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/performance_manager/graph/page_node_impl.h"
-#include "components/performance_manager/public/freezing/freezing.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
 #include "components/performance_manager/public/graph/node_data_describer_util.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
@@ -19,14 +18,6 @@ namespace performance_manager {
 namespace {
 
 const char kDescriberName[] = "PageNodeImpl";
-
-const char* FreezingVoteToString(
-    std::optional<freezing::FreezingVote> freezing_vote) {
-  if (!freezing_vote)
-    return "None";
-
-  return freezing::FreezingVoteValueToString(freezing_vote->value());
-}
 
 const char* PermissionStatusToString(
     std::optional<blink::mojom::PermissionStatus> permission_status) {
@@ -103,8 +94,6 @@ base::Value::Dict PageNodeImplDescriber::DescribePageNodeData(
     result.Set("embedding_type",
                PageNode::ToString(page_node_impl->embedding_type_));
   }
-  result.Set("freezing_vote",
-             FreezingVoteToString(page_node_impl->GetFreezingVote()));
   result.Set("resource_context",
              page_node_impl->GetResourceContext().ToString());
 

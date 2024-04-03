@@ -5,24 +5,28 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_FREEZING_FREEZING_POLICY_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_FREEZING_FREEZING_POLICY_H_
 
-#include <array>
+#include <memory>
 
-#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
+#include "components/performance_manager/freezing/cannot_freeze_reason.h"
+#include "components/performance_manager/freezing/freezer.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
-#include "components/performance_manager/public/freezing/freezing.h"
+#include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
+#include "components/performance_manager/public/graph/graph_registered.h"
+#include "components/performance_manager/public/graph/node_data_describer.h"
 #include "components/performance_manager/public/graph/page_node.h"
+#include "content/public/browser/browsing_instance_id.h"
 
 namespace performance_manager {
 
-class Freezer;
-
-// A simple freezing policy that attempts to freeze pages when their associated
-// freezing vote is positive.
+// Freezes browsing instances when all their pages have a freezing vote and
+// there is no reason not to freeze it.
 //
-// Tabs in one of the following states won't be frozen:
+// Reasons not to freeze a browsing instance:
+//   - Visible;
 //   - Audible;
 //   - Recently audible;
 //   - Holding at least one WebLock.
@@ -34,48 +38,57 @@ class Freezer;
 //   - Mirrored;
 //   - Capturing window;
 //   - Capturing display;
-//
-// Note that visible tabs can't be frozen and tabs that becomes visible are
-// automatically unfrozen, there's no need to track this feature here.
 class FreezingPolicy : public GraphObserver,
                        public GraphOwnedDefaultImpl,
+                       public GraphRegisteredImpl<FreezingPolicy>,
                        public PageNode::ObserverDefaultImpl,
-                       public PageLiveStateObserverDefaultImpl {
+                       public FrameNode::ObserverDefaultImpl,
+                       public PageLiveStateObserverDefaultImpl,
+                       public NodeDataDescriberDefaultImpl {
  public:
   FreezingPolicy();
   FreezingPolicy(const FreezingPolicy&) = delete;
-  FreezingPolicy(FreezingPolicy&&) = delete;
   FreezingPolicy& operator=(const FreezingPolicy&) = delete;
-  FreezingPolicy& operator=(FreezingPolicy&&) = delete;
   ~FreezingPolicy() override;
 
   void SetFreezerForTesting(std::unique_ptr<Freezer> freezer) {
     freezer_ = std::move(freezer);
   }
 
+  // Add or remove a freezing vote for `page_node`. A browsing instance is
+  // frozen if all its pages have a freezing vote and none have a
+  // `CannotFreezeReason`.
+  void AddFreezeVote(PageNode* page_node);
+  void RemoveFreezeVote(PageNode* page_node);
+
   static constexpr base::TimeDelta kAudioProtectionTime = base::Minutes(1);
 
- protected:
-  // List of states that prevent a tab from being frozen.
-  enum CannotFreezeReason {
-    kAudible = 0,
-    kRecentlyAudible,
-    kHoldingWebLock,
-    kHoldingIndexedDBLock,
-    kConnectedToUsbDevice,
-    kConnectedToBluetoothDevice,
-    kCapturingVideo,
-    kCapturingAudio,
-    kBeingMirrored,
-    kCapturingWindow,
-    kCapturingDisplay,
-    kCount,
+ private:
+  // State of a browsing instance.
+  struct BrowsingInstanceState {
+    BrowsingInstanceState();
+    ~BrowsingInstanceState();
+
+    // Pages that belong to this browsing instance (typically only 1 page, but
+    // may contain an unbounded amount of pages connected via opener
+    // relationship).
+    base::flat_set<const PageNode*> pages;
+    // Whether pages in the browsing instance are currently frozen.
+    bool frozen = false;
   };
 
-  // Helper function to convert a |CannotFreezeReason| to a string.
-  static const char* CannotFreezeReasonToString(CannotFreezeReason reason);
+  // Returns browsing instance id(s) for `page`.
+  base::flat_set<content::BrowsingInstanceId> GetBrowsingInstances(
+      const PageNode* page) const;
 
- private:
+  // Updates frozen state for `page_node`'s browsing instance(s).
+  void UpdateFrozenState(const PageNode* page_node);
+
+  // Helper to add or remove a `CannotFreezeReason` for `page_node`.
+  void OnCannotFreezeReasonChange(const PageNode* page_node,
+                                  bool add,
+                                  CannotFreezeReason reason);
+
   // GraphObserver implementation:
   void OnBeforeGraphDestroyed(Graph* graph) override;
 
@@ -85,15 +98,17 @@ class FreezingPolicy : public GraphObserver,
   // PageNodeObserver implementation:
   void OnPageNodeAdded(const PageNode* page_node) override;
   void OnBeforePageNodeRemoved(const PageNode* page_node) override;
+  void OnIsVisibleChanged(const PageNode* page_node) override;
   void OnIsAudibleChanged(const PageNode* page_node) override;
   void OnPageIsHoldingWebLockChanged(const PageNode* page_node) override;
   void OnPageIsHoldingIndexedDBLockChanged(const PageNode* page_node) override;
-  void OnFreezingVoteChanged(
-      const PageNode* page_node,
-      std::optional<performance_manager::freezing::FreezingVote> previous_vote)
-      override;
   void OnLoadingStateChanged(const PageNode* page_node,
                              PageNode::LoadingState previous_state) override;
+
+  // FrameNodeObserver implementation:
+  void OnFrameNodeAdded(const FrameNode* frame_node) override;
+  void OnBeforeFrameNodeRemoved(const FrameNode* frame_node) override;
+  void OnIsAudibleChanged(const FrameNode* frame_node) override;
 
   // PageLiveStateObserverDefaultImpl:
   void OnIsConnectedToUSBDeviceChanged(const PageNode* page_node) override;
@@ -105,35 +120,15 @@ class FreezingPolicy : public GraphObserver,
   void OnIsCapturingWindowChanged(const PageNode* page_node) override;
   void OnIsCapturingDisplayChanged(const PageNode* page_node) override;
 
-  // Helper function that either calls SubmitNegativeVote() or
-  // InvalidateNegativeVote() when the value of a property changes.
-  void OnPropertyChanged(const PageNode* page_node,
-                         bool submit_vote,
-                         CannotFreezeReason reason);
+  // NodeDataDescriber:
+  base::Value::Dict DescribePageNodeData(const PageNode* node) const override;
 
-  // Submits or invalidates a negative freezing vote for |page_node| for
-  // |reason|. There can only be one vote associated with this reason.
-  void SubmitNegativeFreezingVote(const PageNode* page_node,
-                                  CannotFreezeReason reason);
-  void InvalidateNegativeFreezingVote(const PageNode* page_node,
-                                      CannotFreezeReason reason);
-
-  // Holds one voting channel per CannotFreezeReason.
-  std::array<freezing::FreezingVotingChannel, CannotFreezeReason::kCount>
-      voting_channels_;
-
-  // Map that associates the PageNodes that have recently been audible with a
-  // timer used to clear the negative freezing vote used to protect these pages
-  // from freezing.
-  base::flat_map<const PageNode*, std::unique_ptr<base::OneShotTimer>>
-      page_nodes_recently_audible_;
-
-  // The page node being removed, used to avoid freezing a page node while it's
-  // being removed.
-  raw_ptr<const PageNode> page_node_being_removed_ = nullptr;
-
-  // The freezing mechanism used to do the actual freezing.
+  // Used to freeze pages.
   std::unique_ptr<Freezer> freezer_;
+
+  // State of each browsing instance.
+  std::map<content::BrowsingInstanceId, BrowsingInstanceState>
+      browsing_instances_;
 };
 
 }  // namespace performance_manager

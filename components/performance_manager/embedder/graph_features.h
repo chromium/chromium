@@ -42,7 +42,6 @@ class GraphFeatures {
       // (3) Add the feature to the implementation of ConfigureGraph().
       bool execution_context_registry : 1;
       bool frame_visibility_decorator : 1;
-      bool freezing_vote_decorator : 1;
       bool metrics_collector : 1;
       bool node_impl_describers : 1;
       bool page_load_tracker_decorator : 1;
@@ -68,11 +67,6 @@ class GraphFeatures {
 
   constexpr GraphFeatures& EnableFrameVisibilityDecorator() {
     flags_.frame_visibility_decorator = true;
-    return *this;
-  }
-
-  constexpr GraphFeatures& EnableFreezingVoteDecorator() {
-    flags_.freezing_vote_decorator = true;
     return *this;
   }
 
@@ -150,7 +144,6 @@ class GraphFeatures {
   constexpr GraphFeatures& EnableDefault() {
     EnableExecutionContextRegistry();
     EnableFrameVisibilityDecorator();
-    EnableFreezingVoteDecorator();
     EnableMetricsCollector();
     EnableNodeImplDescribers();
     EnablePageLoadTrackerDecorator();

@@ -18,7 +18,6 @@
 #include "base/types/token_type.h"
 #include "components/performance_manager/graph/node_attached_data.h"
 #include "components/performance_manager/graph/node_base.h"
-#include "components/performance_manager/public/freezing/freezing.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/web_contents_proxy.h"
 #include "url/gurl.h"
@@ -99,7 +98,6 @@ class PageNodeImpl
   bool HadFormInteraction() const override;
   bool HadUserEdits() const override;
   const WebContentsProxy& GetContentsProxy() const override;
-  const std::optional<freezing::FreezingVote>& GetFreezingVote() const override;
   PageState GetPageState() const override;
   uint64_t EstimateResidentSetSize() const override;
   uint64_t EstimatePrivateFootprintSize() const override;
@@ -154,7 +152,6 @@ class PageNodeImpl
   void ClearEmbedderFrameNodeAndEmbeddingType();
 
   void set_has_nonempty_beforeunload(bool has_nonempty_beforeunload);
-  void set_freezing_vote(std::optional<freezing::FreezingVote> freezing_vote);
   void set_page_state(PageState page_state);
 
   void SetLifecycleStateForTesting(LifecycleState lifecycle_state) {
@@ -392,14 +389,6 @@ class PageNodeImpl
   ObservedProperty::
       NotifiesOnlyOnChanges<bool, &PageNodeObserver::OnHadUserEditsChanged>
           had_user_edits_ GUARDED_BY_CONTEXT(sequence_checker_){false};
-  // The freezing vote associated with this page, see the comment of to
-  // Page::GetFreezingVote for a description of the different values this can
-  // take.
-  ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<
-      std::optional<freezing::FreezingVote>,
-      std::optional<freezing::FreezingVote>,
-      &PageNodeObserver::OnFreezingVoteChanged>
-      freezing_vote_ GUARDED_BY_CONTEXT(sequence_checker_);
   // The state of this page.
   ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<
       PageState,

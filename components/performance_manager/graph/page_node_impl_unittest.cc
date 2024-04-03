@@ -32,10 +32,6 @@ const std::string kPdfMimeType = "application/pdf";
 const blink::mojom::PermissionStatus kAskNotificationPermission =
     blink::mojom::PermissionStatus::ASK;
 
-static const freezing::FreezingVote kFreezingVote(
-    freezing::FreezingVoteValue::kCannotFreeze,
-    "cannot freeze");
-
 const PageNode* ToPublic(PageNodeImpl* page_node) {
   return page_node;
 }
@@ -245,21 +241,6 @@ TEST_F(PageNodeImplTest, HadUserEdits) {
   EXPECT_FALSE(page_node->HadUserEdits());
 }
 
-TEST_F(PageNodeImplTest, GetFreezingVote) {
-  MockSinglePageInSingleProcessGraph mock_graph(graph());
-  auto* page_node = mock_graph.page.get();
-
-  // This should be initialized to std::nullopt.
-  EXPECT_FALSE(page_node->GetFreezingVote());
-
-  page_node->set_freezing_vote(kFreezingVote);
-  ASSERT_TRUE(page_node->GetFreezingVote().has_value());
-  EXPECT_EQ(kFreezingVote, page_node->GetFreezingVote().value());
-
-  page_node->set_freezing_vote(std::nullopt);
-  EXPECT_FALSE(page_node->GetFreezingVote());
-}
-
 namespace {
 
 class LenientMockObserver : public PageNodeImpl::Observer {
@@ -292,8 +273,6 @@ class LenientMockObserver : public PageNodeImpl::Observer {
   MOCK_METHOD1(OnFaviconUpdated, void(const PageNode*));
   MOCK_METHOD1(OnHadFormInteractionChanged, void(const PageNode*));
   MOCK_METHOD1(OnHadUserEditsChanged, void(const PageNode*));
-  MOCK_METHOD2(OnFreezingVoteChanged,
-               void(const PageNode*, std::optional<freezing::FreezingVote>));
   MOCK_METHOD2(OnPageStateChanged, void(const PageNode*, PageNode::PageState));
   MOCK_METHOD2(OnAboutToBeDiscarded, void(const PageNode*, const PageNode*));
 
@@ -387,12 +366,6 @@ TEST_F(PageNodeImplTest, ObserverWorks) {
   EXPECT_CALL(obs, OnFaviconUpdated(_))
       .WillOnce(Invoke(&obs, &MockObserver::SetNotifiedPageNode));
   page_node->OnFaviconUpdated();
-  EXPECT_EQ(raw_page_node, obs.TakeNotifiedPageNode());
-
-  EXPECT_CALL(obs, OnFreezingVoteChanged(_, testing::Eq(std::nullopt)))
-      .WillOnce(testing::WithArg<0>(
-          Invoke(&obs, &MockObserver::SetNotifiedPageNode)));
-  page_node->set_freezing_vote(kFreezingVote);
   EXPECT_EQ(raw_page_node, obs.TakeNotifiedPageNode());
 
   // Release the page node and expect a call to "OnBeforePageNodeRemoved".

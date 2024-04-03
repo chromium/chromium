@@ -8,7 +8,6 @@
 
 #include "build/build_config.h"
 #include "components/performance_manager/decorators/frame_visibility_decorator.h"
-#include "components/performance_manager/decorators/freezing_vote_decorator.h"
 #include "components/performance_manager/decorators/page_load_tracker_decorator.h"
 #include "components/performance_manager/decorators/process_hosted_content_types_aggregator.h"
 #include "components/performance_manager/decorators/process_priority_aggregator.h"
@@ -46,9 +45,6 @@ void GraphFeatures::ConfigureGraph(Graph* graph) const {
   }
   if (flags_.frame_visibility_decorator) {
     Install<FrameVisibilityDecorator>(graph);
-  }
-  if (flags_.freezing_vote_decorator) {
-    Install<FreezingVoteDecorator>(graph);
   }
   if (flags_.metrics_collector) {
     Install<MetricsCollector>(graph);

@@ -951,13 +951,14 @@ void Tab::SetTabNeedsAttention(bool attention) {
   SchedulePaint();
 }
 
-void Tab::SetFreezingVoteToken(
-    std::unique_ptr<performance_manager::freezing::FreezingVoteToken> token) {
-  freezing_token_ = std::move(token);
+void Tab::CreateFreezingVote(content::WebContents* contents) {
+  if (!freezing_vote_.has_value()) {
+    freezing_vote_.emplace(contents);
+  }
 }
 
-void Tab::ReleaseFreezingVoteToken() {
-  freezing_token_.reset();
+void Tab::ReleaseFreezingVote() {
+  freezing_vote_.reset();
 }
 
 // static

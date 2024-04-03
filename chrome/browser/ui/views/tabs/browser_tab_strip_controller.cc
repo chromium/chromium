@@ -698,14 +698,10 @@ void BrowserTabStripController::OnTabGroupChanged(
           if (base::FeatureList::IsEnabled(
                   features::kTabGroupsCollapseFreezing)) {
             if (new_visuals->is_collapsed()) {
-              tabstrip_->tab_at(i)->SetFreezingVoteToken(
-                  performance_manager::freezing::EmitFreezingVoteForWebContents(
-                      model_->GetWebContentsAt(i),
-                      performance_manager::freezing::FreezingVoteValue::
-                          kCanFreeze,
-                      "Collapsed Tab Group"));
+              tabstrip_->tab_at(i)->CreateFreezingVote(
+                  model_->GetWebContentsAt(i));
             } else {
-              tabstrip_->tab_at(i)->ReleaseFreezingVoteToken();
+              tabstrip_->tab_at(i)->ReleaseFreezingVote();
             }
           }
         }
