@@ -40,7 +40,8 @@ chromium-metrics-reviews@google.com.
   <owner>clumptini@google.com</owner>
   <summary>
     Recorded each time a Crostini app is launched, recording whether the app is
-    the built in terminal, a registered app, or an unknown app.
+    the built in (old) terminal, a registered app, or an unknown app. The
+    SWA-based terminal (default as of late 2021) is NOT included.
   </summary>
 </histogram>
 
@@ -49,7 +50,7 @@ chromium-metrics-reviews@google.com.
   <owner>davidmunro@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>
-    The result of attempting to launch a Crostini app (including Terminal).
+    The result of attempting to launch a Crostini app (excluding Terminal).
   </summary>
 </histogram>
 
@@ -60,7 +61,7 @@ chromium-metrics-reviews@google.com.
   <summary>The result of attempting to launch {Variant}.</summary>
   <token key="Variant">
     <variant name="Registered" summary="a registered GUI app"/>
-    <variant name="Terminal" summary="the Crostini Terminal"/>
+    <variant name="Terminal" summary="the non-SWA Crostini Terminal"/>
     <variant name="Unknown" summary="an unknown/unregistered app"/>
   </token>
 </histogram>
