@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics/diagnostics_api_converters.h"
+
+#include "base/time/time.h"
 #include "chrome/common/chromeos/extensions/api/diagnostics.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -281,6 +283,85 @@ TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
                 cx_diag::VolumeButtonType::kVolumeDown),
             crosapi::TelemetryDiagnosticVolumeButtonRoutineArgument::
                 ButtonType::kVolumeDown);
+}
+
+TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
+     ConvertRoutineArgumentsUnionErrorWithMultipleNonnullFields) {
+  auto args_union = cx_diag::CreateRoutineArgumentsUnion();
+  args_union.memory = cx_diag::CreateMemoryRoutineArguments();
+  args_union.fan = cx_diag::CreateFanRoutineArguments();
+  auto result = ConvertRoutineArgumentsUnion(std::move(args_union));
+  EXPECT_FALSE(result.has_value());
+}
+
+TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
+     ConvertRoutineArgumentsUnionSuccessWithAllFieldsAreNull) {
+  auto result =
+      ConvertRoutineArgumentsUnion(cx_diag::CreateRoutineArgumentsUnion());
+  ASSERT_TRUE(result.has_value());
+  ASSERT_FALSE(result.value().is_null());
+  EXPECT_TRUE(result.value()->is_unrecognizedArgument());
+}
+
+TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
+     ConvertRoutineArgumentsUnionSuccessWithMemoryArgs) {
+  auto args = cx_diag::CreateMemoryRoutineArguments();
+  args.max_testing_mem_kib = 42;
+  auto args_union = cx_diag::CreateRoutineArgumentsUnion();
+  args_union.memory = std::move(args);
+  auto result = ConvertRoutineArgumentsUnion(std::move(args_union));
+  ASSERT_TRUE(result.has_value());
+  ASSERT_FALSE(result.value().is_null());
+  ASSERT_TRUE(result.value()->is_memory());
+  EXPECT_EQ(result.value()->get_memory()->max_testing_mem_kib, 42);
+}
+
+TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
+     ConvertRoutineArgumentsUnionErrorWithInvalidMemoryArgs) {
+  auto args = cx_diag::CreateMemoryRoutineArguments();
+  args.max_testing_mem_kib = -1;
+  auto args_union = cx_diag::CreateRoutineArgumentsUnion();
+  args_union.memory = std::move(args);
+  auto result = ConvertRoutineArgumentsUnion(std::move(args_union));
+  EXPECT_FALSE(result.has_value());
+}
+
+TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
+     ConvertRoutineArgumentsUnionSuccessWithVolumeButtonArgs) {
+  auto args = cx_diag::CreateVolumeButtonRoutineArguments();
+  args.timeout_seconds = 42;
+  args.button_type = cx_diag::VolumeButtonType::kVolumeUp;
+  auto args_union = cx_diag::CreateRoutineArgumentsUnion();
+  args_union.volume_button = std::move(args);
+  auto result = ConvertRoutineArgumentsUnion(std::move(args_union));
+  ASSERT_TRUE(result.has_value());
+  ASSERT_FALSE(result.value().is_null());
+  ASSERT_TRUE(result.value()->is_volume_button());
+  EXPECT_EQ(result.value()->get_volume_button()->type,
+            crosapi::TelemetryDiagnosticVolumeButtonRoutineArgument::
+                ButtonType::kVolumeUp);
+  EXPECT_EQ(result.value()->get_volume_button()->timeout, base::Seconds(42));
+}
+
+TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
+     ConvertRoutineArgumentsUnionErrorWithInvalidVolumeButtonArgs) {
+  auto args = cx_diag::CreateVolumeButtonRoutineArguments();
+  args.timeout_seconds = -1;
+  args.button_type = cx_diag::VolumeButtonType::kNone;
+  auto args_union = cx_diag::CreateRoutineArgumentsUnion();
+  args_union.volume_button = std::move(args);
+  auto result = ConvertRoutineArgumentsUnion(std::move(args_union));
+  EXPECT_FALSE(result.has_value());
+}
+
+TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
+     ConvertRoutineArgumentsUnionSuccessWithFanArgs) {
+  auto args_union = cx_diag::CreateRoutineArgumentsUnion();
+  args_union.fan = cx_diag::CreateFanRoutineArguments();
+  auto result = ConvertRoutineArgumentsUnion(std::move(args_union));
+  ASSERT_TRUE(result.has_value());
+  ASSERT_FALSE(result.value().is_null());
+  EXPECT_TRUE(result.value()->is_fan());
 }
 
 }  // namespace chromeos::converters::diagnostics

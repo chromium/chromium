@@ -493,6 +493,52 @@ void OsDiagnosticsRunFanRoutineFunction::RunIfAllowed() {
   GetRemoteService()->RunFanRoutine(GetOnResult());
 }
 
+// OsDiagnosticsCreateRoutineFunction ------------------------------------
+
+void OsDiagnosticsCreateRoutineFunction::RunIfAllowed() {
+  std::optional<cx_diag::CreateRoutine::Params> params(
+      cx_diag::CreateRoutine::Params::Create(args()));
+  if (!params.has_value()) {
+    Respond(BadMessage());
+    return;
+  }
+
+  cx_diag::CreateRoutineArgumentsUnion args_union;
+  if (!cx_diag::CreateRoutineArgumentsUnion::Populate(
+          params->args.additional_properties, args_union)) {
+    RespondWithError("Routine arguments are invalid.");
+    return;
+  }
+
+  std::optional<crosapi::mojom::TelemetryDiagnosticRoutineArgumentPtr>
+      mojo_arg = converters::diagnostics::ConvertRoutineArgumentsUnion(
+          std::move(args_union));
+  if (!mojo_arg.has_value()) {
+    RespondWithError("Routine arguments are invalid.");
+    return;
+  }
+
+  auto* routines_manager = DiagnosticRoutineManager::Get(browser_context());
+  auto result = routines_manager->CreateRoutine(extension_id(),
+                                                std::move(mojo_arg.value()));
+
+  if (!result.has_value()) {
+    switch (result.error()) {
+      case DiagnosticRoutineManager::kAppUiClosed:
+        Respond(Error("Companion app UI is not open."));
+        break;
+      case DiagnosticRoutineManager::kExtensionUnloaded:
+        Respond(Error("Extension has been unloaded."));
+        break;
+    }
+    return;
+  }
+
+  cx_diag::CreateRoutineResponse response;
+  response.uuid = result->AsLowercaseString();
+  Respond(ArgumentList(cx_diag::CreateRoutine::Results::Create(response)));
+}
+
 // OsDiagnosticsCreateMemoryRoutineFunction ------------------------------------
 
 void OsDiagnosticsCreateMemoryRoutineFunction::RunIfAllowed() {
@@ -653,6 +699,54 @@ void OsDiagnosticsCancelRoutineFunction::RunIfAllowed() {
       extension_id(), base::Uuid::ParseLowercase(params.value().request.uuid));
 
   Respond(NoArguments());
+}
+
+// OsDiagnosticsIsRoutineArgumentSupportedFunction -----------------------
+
+void OsDiagnosticsIsRoutineArgumentSupportedFunction::RunIfAllowed() {
+  auto params = GetParams<cx_diag::IsRoutineArgumentSupported::Params>();
+  if (!params.has_value()) {
+    return;
+  }
+
+  cx_diag::CreateRoutineArgumentsUnion args_union;
+  if (!cx_diag::CreateRoutineArgumentsUnion::Populate(
+          params->args.additional_properties, args_union)) {
+    RespondWithError("Routine arguments are invalid.");
+    return;
+  }
+
+  std::optional<crosapi::mojom::TelemetryDiagnosticRoutineArgumentPtr>
+      mojo_arg = converters::diagnostics::ConvertRoutineArgumentsUnion(
+          std::move(args_union));
+  if (!mojo_arg.has_value()) {
+    RespondWithError("Routine arguments are invalid.");
+    return;
+  }
+
+  auto* routines_manager = DiagnosticRoutineManager::Get(browser_context());
+  routines_manager->IsRoutineArgumentSupported(
+      std::move(mojo_arg.value()),
+      base::BindOnce(&OsDiagnosticsIsRoutineArgumentSupportedFunction::OnResult,
+                     this));
+}
+
+void OsDiagnosticsIsRoutineArgumentSupportedFunction::OnResult(
+    crosapi::mojom::TelemetryExtensionSupportStatusPtr result) {
+  if (result.is_null()) {
+    RespondWithError("API internal error.");
+    return;
+  }
+
+  auto response = ParseRoutineArgumentSupportResult(std::move(result));
+
+  if (!response.has_value()) {
+    RespondWithError(response.error());
+    return;
+  }
+
+  Respond(ArgumentList(
+      cx_diag::IsRoutineArgumentSupported::Results::Create(response.value())));
 }
 
 // OsDiagnosticsIsMemoryRoutineArgumentSupportedFunction -----------------------

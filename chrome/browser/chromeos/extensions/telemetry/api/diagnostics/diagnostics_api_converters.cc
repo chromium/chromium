@@ -4,7 +4,10 @@
 
 #include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics/diagnostics_api_converters.h"
 
+#include <optional>
+
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "chrome/common/chromeos/extensions/api/diagnostics.h"
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
@@ -15,6 +18,53 @@ namespace {
 
 namespace cx_diag = ::chromeos::api::os_diagnostics;
 namespace crosapi = ::crosapi::mojom;
+
+// Populates a `TelemetryDiagnosticRoutineArgumentPtr` object from a
+// `CreateMemoryRoutineArguments` instance. Returns whether `out` was
+// successfully populated.
+bool PopulateMemoryRoutineArguments(
+    const cx_diag::CreateMemoryRoutineArguments& cx_args,
+    crosapi::TelemetryDiagnosticRoutineArgumentPtr& out) {
+  if (cx_args.max_testing_mem_kib.has_value() &&
+      cx_args.max_testing_mem_kib.value() < 0) {
+    return false;
+  }
+
+  auto args = crosapi::TelemetryDiagnosticMemoryRoutineArgument::New();
+  args->max_testing_mem_kib = cx_args.max_testing_mem_kib;
+  out = crosapi::TelemetryDiagnosticRoutineArgument::NewMemory(std::move(args));
+  return true;
+}
+
+// Populates a `TelemetryDiagnosticRoutineArgumentPtr` object from a
+// `CreateVolumeButtonRoutineArguments` instance. Returns whether `out` was
+// successfully populated.
+bool PopulateVolumeButtonRoutineArguments(
+    const cx_diag::CreateVolumeButtonRoutineArguments& cx_args,
+    crosapi::TelemetryDiagnosticRoutineArgumentPtr& out) {
+  if (cx_args.timeout_seconds <= 0 ||
+      cx_args.button_type == cx_diag::VolumeButtonType::kNone) {
+    return false;
+  }
+
+  auto args = crosapi::TelemetryDiagnosticVolumeButtonRoutineArgument::New();
+  args->type = ConvertVolumeButtonRoutineButtonType(cx_args.button_type);
+  args->timeout = base::Seconds(cx_args.timeout_seconds);
+  out = crosapi::TelemetryDiagnosticRoutineArgument::NewVolumeButton(
+      std::move(args));
+  return true;
+}
+
+// Populates a `TelemetryDiagnosticRoutineArgumentPtr` object from a
+// `CreateFanRoutineArguments` instance. Returns whether `out` was successfully
+// populated.
+bool PopulateFanRoutineArguments(
+    const cx_diag::CreateFanRoutineArguments& cx_args,
+    crosapi::TelemetryDiagnosticRoutineArgumentPtr& out) {
+  out = crosapi::TelemetryDiagnosticRoutineArgument::NewFan(
+      crosapi::TelemetryDiagnosticFanRoutineArgument::New());
+  return true;
+}
 
 }  // namespace
 
@@ -234,6 +284,41 @@ ConvertVolumeButtonRoutineButtonType(
       return crosapi::TelemetryDiagnosticVolumeButtonRoutineArgument::
           ButtonType::kVolumeDown;
   }
+}
+
+std::optional<crosapi::TelemetryDiagnosticRoutineArgumentPtr>
+ConvertRoutineArgumentsUnion(
+    cx_diag::CreateRoutineArgumentsUnion extension_union) {
+  // Implementation note: when more than one field is set in `extension_union`,
+  // return std::nullopt because it is an invalid union.
+
+  crosapi::TelemetryDiagnosticRoutineArgumentPtr result;
+  if (extension_union.memory) {
+    if (result || !PopulateMemoryRoutineArguments(
+                      extension_union.memory.value(), result)) {
+      return std::nullopt;
+    }
+  }
+  if (extension_union.volume_button) {
+    if (result || !PopulateVolumeButtonRoutineArguments(
+                      extension_union.volume_button.value(), result)) {
+      return std::nullopt;
+    }
+  }
+  if (extension_union.fan) {
+    if (result ||
+        !PopulateFanRoutineArguments(extension_union.fan.value(), result)) {
+      return std::nullopt;
+    }
+  }
+  if (result) {
+    return result;
+  }
+  // When extension is newer than the brwowser, extension might pass in a
+  // routine argument that cannot be recognized by the browser. For better
+  // developer experience, don't treat it as an invalid union.
+  return crosapi::TelemetryDiagnosticRoutineArgument::NewUnrecognizedArgument(
+      false);
 }
 
 }  // namespace chromeos::converters::diagnostics

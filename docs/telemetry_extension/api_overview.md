@@ -384,16 +384,18 @@ extension-event based interface in M119. The interface is described in
 
 ## Functions
 
-| Function Name | Definition | Permission needed to access | Released in Chrome version |
------------- | ------------- | ------------- | ------------- |
-| startRoutine | (params: StartRoutineRequest) => Promise<void\> | `os.diagnostics` | M119 |
-| cancelRoutine | (params: CancelRoutineRequest) => Promise<void\> | `os.diagnostics` | M119 |
-| createMemoryRoutine | (args: CreateMemoryRoutineArguments) => Promise<CreateRoutineResponse\> | `os.diagnostics` | M119 |
-| createFanRoutine | (args: CreateFanRoutineArguments) => Promise<CreateRoutineResponse\> | `os.diagnostics` | M121 |
-| createVolumeButtonRoutine | (args: CreateVolumeButtonRoutineArguments) => Promise<CreateRoutineResponse\> | `os.diagnostics` | M121 |
-| isMemoryRoutineArgumentSupported | (args: CreateMemoryRoutineArguments) => Promise<RoutineSupportStatusInfo\> | `os.diagnostics` | M119 |
-| isFanRoutineArgumentSupported | (args: CreateFanRoutineArguments) => Promise<RoutineSupportStatusInfo\> | `os.diagnostics` | M121 |
-| isVolumeButtonRoutineArgumentSupported | (args: CreateVolumeButtonRoutineArguments) => Promise<RoutineSupportStatusInfo\> | `os.diagnostics` | M121 |
+| Function Name | Definition | Permission needed to access | Released in Chrome version | Description |
+------------ | ------------- | ------------- | ------------- | ------------- |
+| createRoutine | (args: CreateRoutineArgumentsUnion) => Promise<CreateRoutineResponse\> | `os.diagnostics` | M125 | Create a routine with `CreateRoutineArgumentsUnion`. Exactly one routine should be set in `CreateRoutineArgumentsUnion`. |
+| isRoutineArgumentSupported | (args: CreateRoutineArgumentsUnion) => Promise<RoutineSupportStatusInfo\> | `os.diagnostics` | M125 | Checks whether a certain `CreateRoutineArgumentsUnion` is supported on the platform. Exactly one routine should be set in `CreateRoutineArgumentsUnion`. |
+| startRoutine | (params: StartRoutineRequest) => Promise<void\> | `os.diagnostics` | M119 | Starts execution of a routine. This can only be expected to work after `onRoutineInitialized` was emitted for the routine with `UUID`. |
+| cancelRoutine | (params: CancelRoutineRequest) => Promise<void\> | `os.diagnostics` | M119 | Stops executing the routine identified by `UUID` and removes all related resources from the system. |
+| createMemoryRoutine | (args: CreateMemoryRoutineArguments) => Promise<CreateRoutineResponse\> | `os.diagnostics` | M119 | (Deprecated in M125, use `createRoutine` with `memory` arg) Create a memory routine. |
+| createFanRoutine | (args: CreateFanRoutineArguments) => Promise<CreateRoutineResponse\> | `os.diagnostics` | M121 | (Deprecated in M125, use `createRoutine` with `fan` arg) Create a fan routine. |
+| createVolumeButtonRoutine | (args: CreateVolumeButtonRoutineArguments) => Promise<CreateRoutineResponse\> | `os.diagnostics` | M121 | (Deprecated in M125, use `createRoutine` with `volumeButton` arg) Create a volume button routine. |
+| isMemoryRoutineArgumentSupported | (args: CreateMemoryRoutineArguments) => Promise<RoutineSupportStatusInfo\> | `os.diagnostics` | M119 | (Deprecated in M125, use `isRoutineArgumentSupported` with `memory` arg) Checks whether a certain `CreateMemoryRoutineArguments` is supported on the platform. |
+| isFanRoutineArgumentSupported | (args: CreateFanRoutineArguments) => Promise<RoutineSupportStatusInfo\> | `os.diagnostics` | M121 | (Deprecated in M125, use `isRoutineArgumentSupported` with `fan` arg) Checks whether a certain `CreateFanRoutineArguments` is supported on the platform. |
+| isVolumeButtonRoutineArgumentSupported | (args: CreateVolumeButtonRoutineArguments) => Promise<RoutineSupportStatusInfo\> | `os.diagnostics` | M121 | (Deprecated in M125, use `isRoutineArgumentSupported` with `volumeButton` arg) Checks whether a certain `CreateVolumeButtonRoutineArguments` is supported on the platform. |
 
 ## Events
 

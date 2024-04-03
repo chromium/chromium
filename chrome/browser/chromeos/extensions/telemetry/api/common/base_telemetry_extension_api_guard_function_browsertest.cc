@@ -204,6 +204,17 @@ std::string GetServiceWorkerForError(const std::string& error) {
         );
         chrome.test.succeed();
       },
+      async function createRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.createRoutine({
+              memory: {}
+            }),
+            'Error: Unauthorized access to ' +
+            'chrome.os.diagnostics.createRoutine. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
       async function createVolumeButtonRoutine() {
         await chrome.test.assertPromiseRejects(
             chrome.os.diagnostics.createVolumeButtonRoutine({
@@ -256,6 +267,17 @@ std::string GetServiceWorkerForError(const std::string& error) {
             }),
             'Error: Unauthorized access to ' +
             'chrome.os.diagnostics.isMemoryRoutineArgumentSupported. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
+      async function isRoutineArgumentSupported() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.isRoutineArgumentSupported({
+              memory: {},
+            }),
+            'Error: Unauthorized access to ' +
+            'chrome.os.diagnostics.isRoutineArgumentSupported. ' +
             '%s'
         );
         chrome.test.succeed();

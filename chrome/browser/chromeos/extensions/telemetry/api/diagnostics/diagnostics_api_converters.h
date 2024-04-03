@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_DIAGNOSTICS_DIAGNOSTICS_API_CONVERTERS_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_DIAGNOSTICS_DIAGNOSTICS_API_CONVERTERS_H_
 
+#include <optional>
+
 #include "chrome/common/chromeos/extensions/api/diagnostics.h"
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
@@ -35,6 +37,14 @@ crosapi::mojom::DiagnosticsNvmeSelfTestTypeEnum ConvertNvmeSelfTestRoutineType(
 crosapi::mojom::TelemetryDiagnosticVolumeButtonRoutineArgument::ButtonType
 ConvertVolumeButtonRoutineButtonType(
     chromeos::api::os_diagnostics::VolumeButtonType volume_button_type);
+
+// Converts the web IDL union to the Mojo union type. Returns std::nullopt when
+// the conversion fails. Returns an `unrecognizedArgument` if all fields in
+// `extension_union` are null to handle the case when extension is newer than
+// the browser.
+std::optional<crosapi::mojom::TelemetryDiagnosticRoutineArgumentPtr>
+ConvertRoutineArgumentsUnion(
+    chromeos::api::os_diagnostics::CreateRoutineArgumentsUnion extension_union);
 
 }  // namespace chromeos::converters::diagnostics
 

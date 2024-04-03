@@ -351,6 +351,13 @@ namespace os.diagnostics {
   };
 
   // This is a union type. Exactly one field should be set.
+  dictionary CreateRoutineArgumentsUnion {
+    CreateMemoryRoutineArguments? memory;
+    CreateVolumeButtonRoutineArguments? volumeButton;
+    CreateFanRoutineArguments? fan;
+  };
+
+  // This is a union type. Exactly one field should be set.
   dictionary RoutineFinishedDetailUnion {
     MemoryRoutineFinishedDetail? memory;
     FanRoutineFinishedDetail? fan;
@@ -484,6 +491,28 @@ namespace os.diagnostics {
 
     // ----------------- DIAGNOSTICS API V2 -----------------
 
+    // Checks whether a certain routine arguments (expected to be of type
+    // `CreateRoutineArgumentsUnion`) is supported on the platform. Exactly one
+    // routine should be set in `CreateRoutineArgumentsUnion`.
+    //
+    // Use `object` instead of `CreateRoutineArgumentsUnion` as the type of
+    // `args` to handle unrecognized routine name caused by version skew between
+    // the extenion and the browser.
+    static void isRoutineArgumentSupported(
+        object args,
+        RoutineSupportStatusInfoCallback callback);
+
+    // Create a routine with routine arguments (expected to be of type
+    // `CreateRoutineArgumentsUnion`). Exactly one routine should be set in
+    // `CreateRoutineArgumentsUnion`.
+    //
+    // Use `object` instead of `CreateRoutineArgumentsUnion` as the type of
+    // `args` to handle unrecognized routine name caused by version skew between
+    // the extenion and the browser.
+    static void createRoutine(
+        object args,
+        CreateRoutineCallback callback);
+
     // Starts execution of a routine. This can only be expected to work after
     // `onRoutineInitialized` was emitted for the routine with `UUID`.
     static void startRoutine(
@@ -496,30 +525,39 @@ namespace os.diagnostics {
         CancelRoutineRequest request,
         CancelRoutineCallback callback);
 
+    // ----------------- DEPRECATED DIAGNOSTICS API V2 -----------------
+    // TODO(b/331540565): Remove legacy APIs.
+
+    // Deprecated. Use `createRoutine` instead.
     static void createMemoryRoutine(
         CreateMemoryRoutineArguments args,
         CreateRoutineCallback callback);
 
+    // Deprecated. Use `isRoutineArgumentSupported` instead.
     // Checks whether a certain `CreateMemoryRoutineArguments` is supported on
     // the platform.
     static void isMemoryRoutineArgumentSupported(
         CreateMemoryRoutineArguments args,
         RoutineSupportStatusInfoCallback callback);
 
+    // Deprecated. Use `createRoutine` instead.
     static void createVolumeButtonRoutine(
         CreateVolumeButtonRoutineArguments args,
         CreateRoutineCallback callback);
 
+    // Deprecated. Use `isRoutineArgumentSupported` instead.
     // Checks whether a certain `CreateVolumeButtonRoutineArguments` is
     // supported on the platform.
     static void isVolumeButtonRoutineArgumentSupported(
         CreateVolumeButtonRoutineArguments args,
         RoutineSupportStatusInfoCallback callback);
 
+    // Deprecated. Use `createRoutine` instead.
     static void createFanRoutine(
         CreateFanRoutineArguments args,
         CreateRoutineCallback callback);
 
+    // Deprecated. Use `isRoutineArgumentSupported` instead.
     // Checks whether a certain `CreateFanRoutineArguments` is supported on the
     // platform.
     static void isFanRoutineArgumentSupported(

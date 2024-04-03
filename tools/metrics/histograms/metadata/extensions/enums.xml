@@ -2728,6 +2728,8 @@ Called by update_extension_histograms.py.-->
   <int value="1874" label="FILEMANAGERPRIVATE_READMATERIALIZEDVIEW"/>
   <int value="1875"
       label="FILESYSTEMPROVIDERINTERNAL_OPENFILEREQUESTEDSUCCESS"/>
+  <int value="1876" label="OS_DIAGNOSTICS_CREATEROUTINE"/>
+  <int value="1877" label="OS_DIAGNOSTICS_ISROUTINEARGUMENTSUPPORTED"/>
 </enum>
 
 <enum name="ExtensionInstallationCrxInstallError">
