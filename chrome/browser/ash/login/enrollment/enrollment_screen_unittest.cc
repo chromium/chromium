@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/test/task_environment.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/ash/login/enrollment/mock_enrollment_launcher.h"
 #include "chrome/browser/ash/login/enrollment/mock_enrollment_screen.h"
 #include "chrome/browser/ash/login/screens/mock_error_screen.h"
+#include "chrome/browser/ash/login/ui/fake_login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
@@ -31,9 +33,11 @@
 
 namespace ash {
 
+constexpr char kTestUserEmail[] = "user@test.org";
+constexpr char kTestAuthCode[] = "test_auth_code";
+
 using ::testing::_;
 using ::testing::AnyNumber;
-using ::testing::Invoke;
 using ::testing::NiceMock;
 
 namespace {
@@ -71,12 +75,6 @@ class EnrollmentScreenBaseTest : public testing::Test {
   EnrollmentScreenBaseTest& operator=(const EnrollmentScreenBaseTest&) = delete;
 
  protected:
-  enum class AttestationEnrollmentStatus {
-    SUCCESS,
-    DEVICE_NOT_SETUP_FOR_ZERO_TOUCH,
-    DMSERVER_ERROR
-  };
-
   EnrollmentScreenBaseTest()
       : mock_error_screen_(mock_error_view_.AsWeakPtr()) {
     RegisterLocalState(pref_service_.registry());
@@ -99,54 +97,83 @@ class EnrollmentScreenBaseTest : public testing::Test {
     enrollment_screen_->SetEnrollmentConfig(config);
   }
 
+  void SetUpEnrollmentScreen() {
+    SetUpEnrollmentScreen(
+        policy::EnrollmentConfig::GetPrescribedEnrollmentConfig());
+  }
+
   // Fast forwards time by the specified amount.
   void FastForwardTime(base::TimeDelta time) {
     task_environment_.FastForwardBy(time);
   }
 
-  // Closure passed to EnrollmentLauncher::SetupEnrollmentHelperMock
-  // which creates the MockEnrollmentLauncher object that will
-  // eventually be tied to the EnrollmentScreen. It also sets up the
-  // appropriate expectations for testing with the Google Mock framework.
-  // The template parameter should_enroll indicates whether or not
-  // the EnrollmentLauncher should be mocked to successfully enroll.
-  void SetupMockEnrollmentLauncher(AttestationEnrollmentStatus status) {
-    if (status == AttestationEnrollmentStatus::SUCCESS) {
-      // Define behavior of EnrollUsingAttestation to successfully enroll.
-      EXPECT_CALL(mock_enrollment_launcher_, EnrollUsingAttestation())
-          .Times(AnyNumber())
-          .WillRepeatedly(Invoke([this]() {
-            EnrollmentScreen* enrollment_screen =
-                static_cast<EnrollmentScreen*>(
-                    mock_enrollment_launcher_.status_consumer());
-            EXPECT_EQ(enrollment_screen, enrollment_screen_.get());
-            enrollment_screen->ShowEnrollmentStatusOnSuccess();
-          }));
-    } else {
-      // Define behavior of EnrollUsingAttestation to fail to enroll.
-      const policy::EnrollmentStatus enrollment_status =
-          policy::EnrollmentStatus::ForRegistrationError(
-              status == AttestationEnrollmentStatus::
-                            DEVICE_NOT_SETUP_FOR_ZERO_TOUCH
-                  ? policy::DeviceManagementStatus::
-                        DM_STATUS_SERVICE_DEVICE_NOT_FOUND
-                  : policy::DeviceManagementStatus::
-                        DM_STATUS_TEMPORARY_UNAVAILABLE);
-      EXPECT_CALL(mock_enrollment_launcher_, EnrollUsingAttestation())
-          .Times(AnyNumber())
-          .WillRepeatedly(Invoke([this, enrollment_status]() {
-            EnrollmentScreen* enrollment_screen =
-                static_cast<EnrollmentScreen*>(
-                    mock_enrollment_launcher_.status_consumer());
-            EXPECT_EQ(enrollment_screen, enrollment_screen_.get());
-            enrollment_screen->OnEnrollmentError(enrollment_status);
-          }));
-    }
-    // Define behavior of ClearAuth to only run the callback it is given.
+  void ExpectAttestationBasedEnrollmentAndReportSuccess() {
+    EXPECT_CALL(mock_enrollment_launcher_, EnrollUsingAttestation())
+        .WillOnce([this]() {
+          ExpectEnrollmentScreenIsEnrollmentStatusConsumer();
+          enrollment_screen_->ShowEnrollmentStatusOnSuccess();
+        });
+  }
+
+  void ExpectAttestationBasedEnrollmentAndReportFailure(
+      policy::EnrollmentStatus status) {
+    EXPECT_NE(status.enrollment_code(),
+              policy::EnrollmentStatus::Code::kSuccess)
+        << "Cannot not expect failure with a success code";
+
+    EXPECT_CALL(mock_enrollment_launcher_, EnrollUsingAttestation())
+        .Times(AnyNumber())
+        .WillOnce([this, status]() {
+          ExpectEnrollmentScreenIsEnrollmentStatusConsumer();
+          enrollment_screen_->OnEnrollmentError(status);
+        });
+  }
+
+  void ExpectAttestationBasedEnrollmentAndReportFailure() {
+    ExpectAttestationBasedEnrollmentAndReportFailure(
+        policy::EnrollmentStatus::ForRegistrationError(
+            policy::DeviceManagementStatus::DM_STATUS_TEMPORARY_UNAVAILABLE));
+  }
+
+  void ExpectAttestationBasedEnrollmentAndReportFailureWithAutomaticFallback() {
+    ExpectAttestationBasedEnrollmentAndReportFailure(
+        policy::EnrollmentStatus::ForRegistrationError(
+            policy::DeviceManagementStatus::
+                DM_STATUS_SERVICE_DEVICE_NOT_FOUND));
+  }
+
+  void ExpectManualEnrollmentAndReportSuccess() {
+    EXPECT_CALL(mock_enrollment_launcher_, EnrollUsingAuthCode(kTestAuthCode))
+        .WillOnce([this]() {
+          ExpectEnrollmentScreenIsEnrollmentStatusConsumer();
+          enrollment_screen_->ShowEnrollmentStatusOnSuccess();
+        });
+  }
+
+  void ExpectClearAuth() {
     EXPECT_CALL(mock_enrollment_launcher_, ClearAuth(_))
         .Times(AnyNumber())
-        .WillRepeatedly(Invoke(
-            [](base::OnceClosure callback) { std::move(callback).Run(); }));
+        .WillRepeatedly(
+            [](base::OnceClosure callback) { std::move(callback).Run(); });
+  }
+
+  void ExpectEnrollmentConfig(policy::EnrollmentConfig::Mode mode,
+                              policy::EnrollmentConfig::AuthMechanism auth) {
+    EXPECT_CALL(
+        mock_view_,
+        SetEnrollmentConfig(testing::AllOf(
+            testing::Field(&policy::EnrollmentConfig::mode, mode),
+            testing::Field(&policy::EnrollmentConfig::auth_mechanism, auth))));
+  }
+
+  void ExpectShowView() { EXPECT_CALL(mock_view_, Show()); }
+
+  void ExpectShowViewWithLogin() {
+    EXPECT_CALL(mock_view_, Show()).WillOnce([this]() {
+      enrollment_screen_->OnLoginDone(
+          kTestUserEmail, static_cast<int>(policy::LicenseType::kEnterprise),
+          kTestAuthCode);
+    });
   }
 
   void ShowEnrollmentScreen(bool suppress_jitter = false) {
@@ -154,28 +181,31 @@ class EnrollmentScreenBaseTest : public testing::Test {
       // Remove jitter to enable deterministic testing.
       enrollment_screen_->retry_policy_.jitter_factor = 0;
     }
-    enrollment_screen_->Show(&wizard_context_);
+    enrollment_screen_->Show(&wizard_context());
   }
 
-  int GetEnrollmentScreenRetries() { return enrollment_screen_->num_retries_; }
+  void UserCancel() { enrollment_screen_->OnCancel(); }
 
-  void TestEnrollmentFlowShouldComplete(
-      const policy::EnrollmentConfig& config) {
-    // Define behavior of MockEnrollmentLauncher to successfully enroll.
-    SetupMockEnrollmentLauncher(AttestationEnrollmentStatus::SUCCESS);
+  int GetEnrollmentScreenRetries() const {
+    return enrollment_screen_->num_retries_;
+  }
 
-    ScopedEnrollmentLauncherFactoryOverrideForTesting
-        enrollment_launcher_factory_override(base::BindRepeating(
-            FakeEnrollmentLauncher::Create, &mock_enrollment_launcher_));
+  const auto& last_screen_result() const { return last_screen_result_; }
 
-    SetUpEnrollmentScreen(config);
+  WizardContext& wizard_context() {
+    return CHECK_DEREF(fake_login_display_host_.GetWizardContext());
+  }
 
-    ShowEnrollmentScreen();
+ private:
+  void HandleScreenExit(EnrollmentScreen::Result screen_result) {
+    EXPECT_FALSE(last_screen_result_.has_value());
+    last_screen_result_ = screen_result;
+  }
 
-    // Verify that enrollment flow finished and exited cleanly without
-    // additional user input required.
-    ASSERT_TRUE(last_screen_result_.has_value());
-    EXPECT_EQ(EnrollmentScreen::Result::COMPLETED, last_screen_result_.value());
+  void ExpectEnrollmentScreenIsEnrollmentStatusConsumer() {
+    EXPECT_EQ(mock_enrollment_launcher_.status_consumer(),
+              enrollment_screen_.get())
+        << "EnrollmentScreen is not status consumer of EnrollmentLauncher";
   }
 
   base::test::TaskEnvironment task_environment_{
@@ -190,20 +220,21 @@ class EnrollmentScreenBaseTest : public testing::Test {
   // Network portal must be initialized before destroying.
   NiceMock<MockErrorScreen> mock_error_screen_;
   NiceMock<MockEnrollmentLauncher> mock_enrollment_launcher_;
+  ScopedEnrollmentLauncherFactoryOverrideForTesting
+      scoped_enrollment_launcher_factory_override_{
+          base::BindRepeating(FakeEnrollmentLauncher::Create,
+                              &mock_enrollment_launcher_)};
 
-  WizardContext wizard_context_;
-
- private:
-  void HandleScreenExit(EnrollmentScreen::Result screen_result) {
-    EXPECT_FALSE(last_screen_result_.has_value());
-    last_screen_result_ = screen_result;
-  }
-
+  // Used by `enrollment_screen_`.
   ScopedStubInstallAttributes test_install_attributes_;
 
+  // Used by `EnrollmentRequisitionManager`.
   TestingPrefServiceSimple pref_service_;
 
-  system::ScopedFakeStatisticsProvider statistics_provider_;
+  // Used by `EnrollmentRequisitionManager`.
+  system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+
+  FakeLoginDisplayHost fake_login_display_host_;
 
   std::unique_ptr<EnrollmentScreen> enrollment_screen_;
 
@@ -215,61 +246,111 @@ class EnrollmentScreenRollbackFlowTest : public EnrollmentScreenBaseTest {
  protected:
   EnrollmentScreenRollbackFlowTest() { ConfigureRestoreAfterRollback(); }
 
+  static const policy::EnrollmentConfig& rollback_config() {
+    static policy::EnrollmentConfig config;
+    config.mode = policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED;
+    config.auth_mechanism =
+        policy::EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE;
+    return config;
+  }
+
+  static const policy::EnrollmentConfig& rollback_fallback_config() {
+    static policy::EnrollmentConfig config;
+    config.mode =
+        policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_MANUAL_FALLBACK;
+    config.auth_mechanism =
+        policy::EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE;
+    return config;
+  }
+
  private:
   void ConfigureRestoreAfterRollback() {
-    wizard_context_.configuration.Set(configuration::kRestoreAfterRollback,
-                                      true);
+    wizard_context().configuration.Set(configuration::kRestoreAfterRollback,
+                                       true);
   }
 };
 
-TEST_F(EnrollmentScreenRollbackFlowTest, ConfigAfterRollback) {
-  policy::EnrollmentConfig config;
-  config.mode = policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED;
-  config.auth_mechanism =
-      policy::EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE;
-
-  // Expect that rollback enrollment config is passed to the view.
-  EXPECT_CALL(
-      mock_view_,
-      SetEnrollmentConfig(testing::AllOf(
-          testing::Field(
-              &policy::EnrollmentConfig::mode,
-              policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED),
-          testing::Field(
-              &policy::EnrollmentConfig::auth_mechanism,
-              policy::EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE))));
-
-  EnrollmentScreenBaseTest::SetUpEnrollmentScreen(config);
-}
-
 TEST_F(EnrollmentScreenRollbackFlowTest, ShouldFinishEnrollmentScreen) {
-  policy::EnrollmentConfig config;
-  config.mode = policy::EnrollmentConfig::MODE_MANUAL_REENROLLMENT;
-  config.auth_mechanism =
-      policy::EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE;
-  TestEnrollmentFlowShouldComplete(config);
+  ExpectEnrollmentConfig(rollback_config().mode,
+                         rollback_config().auth_mechanism);
+  ExpectAttestationBasedEnrollmentAndReportSuccess();
+  ExpectClearAuth();
+
+  SetUpEnrollmentScreen();
+  ShowEnrollmentScreen();
+
+  EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
 }
 
-TEST_F(EnrollmentScreenRollbackFlowTest, ShouldNotRetryEnrollment) {
-  policy::EnrollmentConfig config;
-  config.mode = policy::EnrollmentConfig::MODE_MANUAL_REENROLLMENT;
-  config.auth_mechanism =
-      policy::EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE;
+TEST_F(EnrollmentScreenRollbackFlowTest,
+       ShouldNotAutomaticallyRetryEnrollment) {
+  ExpectEnrollmentConfig(rollback_config().mode,
+                         rollback_config().auth_mechanism);
+  ExpectAttestationBasedEnrollmentAndReportFailure();
+  ExpectClearAuth();
 
-  // Define behavior of MockEnrollmentLauncher to always fail enrollment.
-  SetupMockEnrollmentLauncher(AttestationEnrollmentStatus::DMSERVER_ERROR);
-
-  ScopedEnrollmentLauncherFactoryOverrideForTesting
-      enrollment_launcher_factory_override(base::BindRepeating(
-          FakeEnrollmentLauncher::Create, &mock_enrollment_launcher_));
-
-  SetUpEnrollmentScreen(config);
-
+  SetUpEnrollmentScreen();
   ShowEnrollmentScreen(/*suppress_jitter=*/true);
 
   FastForwardTime(base::Days(1));
 
   EXPECT_EQ(GetEnrollmentScreenRetries(), 0);
+  EXPECT_FALSE(last_screen_result().has_value());
+}
+
+TEST_F(EnrollmentScreenRollbackFlowTest,
+       ShouldAutomaticallyFallbackToManuallEnrollment) {
+  {
+    testing::InSequence s;
+    // First view is shown for attestation-based failure.
+    ExpectEnrollmentConfig(rollback_config().mode,
+                           rollback_config().auth_mechanism);
+    ExpectShowView();
+    ExpectAttestationBasedEnrollmentAndReportFailureWithAutomaticFallback();
+
+    // Second view is shown for manual fallback.
+    ExpectEnrollmentConfig(rollback_fallback_config().mode,
+                           rollback_fallback_config().auth_mechanism);
+    ExpectShowViewWithLogin();
+    ExpectManualEnrollmentAndReportSuccess();
+  }
+
+  ExpectClearAuth();
+
+  SetUpEnrollmentScreen();
+  ShowEnrollmentScreen();
+
+  EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
+}
+
+TEST_F(EnrollmentScreenRollbackFlowTest,
+       ShouldFallbackToManualEnrollmentOnUserAction) {
+  {
+    testing::InSequence s;
+    // First view is shown for attestation-based failure.
+    ExpectEnrollmentConfig(rollback_config().mode,
+                           rollback_config().auth_mechanism);
+    ExpectShowView();
+    ExpectAttestationBasedEnrollmentAndReportFailure();
+
+    // Second view is shown for manual fallback. This should be triggered after
+    // user decides to fallback.
+    ExpectEnrollmentConfig(rollback_fallback_config().mode,
+                           rollback_fallback_config().auth_mechanism);
+    ExpectShowViewWithLogin();
+    ExpectManualEnrollmentAndReportSuccess();
+  }
+
+  ExpectClearAuth();
+
+  SetUpEnrollmentScreen();
+  ShowEnrollmentScreen();
+
+  EXPECT_FALSE(last_screen_result().has_value());
+
+  UserCancel();
+
+  EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
 }
 
 }  // namespace ash
