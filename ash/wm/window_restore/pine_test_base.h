@@ -16,10 +16,10 @@ class PineTestBase : public AshTestBase {
   PineTestBase& operator=(const PineTestBase&) = delete;
   ~PineTestBase() override;
 
+  PrefService* GetTestPrefService();
+
   // AshTestBase:
   void SetUp() override;
-
-  PrefService* GetTestPrefService();
 };
 
 }  // namespace ash

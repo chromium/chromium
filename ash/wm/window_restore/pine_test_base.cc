@@ -27,7 +27,11 @@ PineTestBase::~PineTestBase() {
   switches::SetIgnoreForestSecretKeyForTest(false);
 }
 
-// AshTestBase:
+PrefService* PineTestBase::GetTestPrefService() {
+  return GetSessionControllerClient()->GetUserPrefService(
+      AccountId::FromUserEmail(kTestUserEmail));
+}
+
 void PineTestBase::SetUp() {
   AshTestBase::SetUp();
 
@@ -57,11 +61,6 @@ void PineTestBase::SetUp() {
   session_controller->SwitchActiveUser(
       AccountId::FromUserEmail(kTestUserEmail));
   session_controller->SetSessionState(session_manager::SessionState::ACTIVE);
-}
-
-PrefService* PineTestBase::GetTestPrefService() {
-  return GetSessionControllerClient()->GetUserPrefService(
-      AccountId::FromUserEmail(kTestUserEmail));
 }
 
 }  // namespace ash

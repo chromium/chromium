@@ -177,14 +177,6 @@ class PineTest : public PineTestBase {
   static inline base::TimeTicks fake_time_ticks_;
 };
 
-TEST_F(PineTest, StartOverviewPineSession) {
-  Shell::Get()
-      ->pine_controller()
-      ->MaybeStartPineOverviewSessionDevAccelerator();
-  WaitForOverviewEntered();
-  StartPineOverviewSession(MakeTestAppIds(1));
-}
-
 TEST_F(PineTest, NoOverflow) {
   // Start a Pine session with restore data for one window.
   StartPineOverviewSession(MakeTestAppIds(1));
@@ -288,17 +280,15 @@ TEST_F(PineTest, NoScreenshotWithDifferentDisplayOrientation) {
   TakeAndSavePineScreenshot(file_path);
   ASSERT_TRUE(base::PathExists(file_path));
 
-  // Rotate the display and trigger the accelerator to show the pine dialog.
+  // Rotate the display and show the pine dialog.
   test_api.SetDisplayRotation(display::Display::ROTATE_270,
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(test_api.GetCurrentOrientation(),
             chromeos::OrientationType::kPortraitPrimary);
 
-  auto* pine_controller = Shell::Get()->pine_controller();
-  pine_controller->MaybeStartPineOverviewSessionDevAccelerator();
-  WaitForOverviewEntered();
+  StartPineOverviewSession(MakeTestAppIds(1));
   const PineContentsData* pine_contents_data =
-      pine_controller->pine_contents_data();
+      Shell::Get()->pine_controller()->pine_contents_data();
   ASSERT_TRUE(pine_contents_data);
   // The image inside `PineContentsData` should be null when the landscape image
   // is going to be shown inside a display in the portrait orientation.
@@ -383,15 +373,12 @@ TEST_F(PineTest, NudgePreferences) {
       &PineTest::FakeTimeNow,
       /*time_ticks_override=*/nullptr, /*thread_ticks_override=*/nullptr);
 
-  auto* pine_controller = Shell::Get()->pine_controller();
   auto* anchored_nudge_manager = Shell::Get()->anchored_nudge_manager();
 
-  auto test_start_and_end_overview = [&pine_controller,
-                                      &anchored_nudge_manager]() {
+  auto test_start_and_end_overview = [&]() {
     // Reset the nudge if it's currently showing.
     anchored_nudge_manager->Cancel(kEducationNudgeId);
-    pine_controller->MaybeStartPineOverviewSessionDevAccelerator();
-    WaitForOverviewEntered();
+    StartPineOverviewSession(MakeTestAppIds(1));
     ToggleOverview();
   };
 
@@ -424,10 +411,8 @@ TEST_F(PineTest, NudgePreferences) {
 
 // Tests that we only show the nudge for pine overview.
 TEST_F(PineTest, NudgePine) {
-  Shell::Get()
-      ->pine_controller()
-      ->MaybeStartPineOverviewSessionDevAccelerator();
-  WaitForOverviewEntered();
+  StartPineOverviewSession(MakeTestAppIds(1));
+
   ToggleOverview();
   auto* anchored_nudge_manager = Shell::Get()->anchored_nudge_manager();
   EXPECT_TRUE(anchored_nudge_manager->GetShownNudgeForTest(kEducationNudgeId));
@@ -499,10 +484,7 @@ TEST_F(PineTest, TimeToActionMetrics) {
       /*thread_ticks_override=*/nullptr);
 
   base::HistogramTester histogram_tester;
-  Shell::Get()
-      ->pine_controller()
-      ->MaybeStartPineOverviewSessionDevAccelerator();
-  WaitForOverviewEntered();
+  StartPineOverviewSession(MakeTestAppIds(1));
 
   // Click the restore button after one second.
   SetFakeTimeTicksNow(base::TimeTicks::Now() + base::Seconds(1));
@@ -516,10 +498,7 @@ TEST_F(PineTest, TimeToActionMetrics) {
       1u,
       histogram_tester.GetAllSamples("Ash.Pine.TimeToAction.Listview").size());
 
-  Shell::Get()
-      ->pine_controller()
-      ->MaybeStartPineOverviewSessionDevAccelerator();
-  WaitForOverviewEntered();
+  StartPineOverviewSession(MakeTestAppIds(1));
 
   // Click the cancel button after 2 seconds.
   SetFakeTimeTicksNow(base::TimeTicks::Now() + base::Seconds(2));
@@ -619,10 +598,7 @@ TEST_F(PineTest, CloseDialogMetrics) {
 // Tests that if we exit overview without clicking the restore or cancel
 // buttons, the pine widget gets shown when entering overview next.
 TEST_F(PineTest, ToggleOverviewToExit) {
-  Shell::Get()
-      ->pine_controller()
-      ->MaybeStartPineOverviewSessionDevAccelerator();
-  WaitForOverviewEntered();
+  StartPineOverviewSession(MakeTestAppIds(1));
 
   OverviewGrid* overview_grid =
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
@@ -640,10 +616,7 @@ TEST_F(PineTest, ToggleOverviewToExit) {
 }
 
 TEST_F(PineTest, ClickRestoreToExit) {
-  Shell::Get()
-      ->pine_controller()
-      ->MaybeStartPineOverviewSessionDevAccelerator();
-  WaitForOverviewEntered();
+  StartPineOverviewSession(MakeTestAppIds(1));
 
   OverviewGrid* overview_grid =
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
@@ -688,10 +661,7 @@ TEST_F(PineTest, PineItemView) {
 // Tests that the pine dialog remains in the center after zooming the display up
 // or down.
 TEST_F(PineTest, ZoomDisplay) {
-  Shell::Get()
-      ->pine_controller()
-      ->MaybeStartPineOverviewSessionDevAccelerator();
-  WaitForOverviewEntered();
+  StartPineOverviewSession(MakeTestAppIds(1));
 
   aura::Window* root = Shell::GetPrimaryRootWindow();
   OverviewGrid* overview_grid = GetOverviewGridForRoot(root);
@@ -735,10 +705,7 @@ TEST_F(PineTest, ShowSavedDeskLibrary) {
                     base::Time::Now(), DeskTemplateType::kSaveAndRecall);
 
   // Start a pine overview session.
-  Shell::Get()
-      ->pine_controller()
-      ->MaybeStartPineOverviewSessionDevAccelerator();
-  WaitForOverviewEntered();
+  StartPineOverviewSession(MakeTestAppIds(1));
 
   views::Widget* pine_widget =
       OverviewGridTestApi(GetOverviewGridForRoot(Shell::GetPrimaryRootWindow()))

@@ -21,6 +21,7 @@
 #include "ash/wm/window_restore/pine_test_base.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/app_constants/constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/user_type.h"
@@ -67,9 +68,10 @@ TEST_F(PineContextMenuModelTest, LayoutAndCommands) {
 // Tests that pressing the settings button in Pine properly displays the inline
 // context menu.
 TEST_F(PineContextMenuModelTest, ShowContextMenuOnSettingsButtonClicked) {
-  Shell::Get()
-      ->pine_controller()
-      ->MaybeStartPineOverviewSessionDevAccelerator();
+  auto contents_data = std::make_unique<PineContentsData>();
+  contents_data->apps_infos.emplace_back(app_constants::kChromeAppId, "Title");
+  Shell::Get()->pine_controller()->MaybeStartPineOverviewSession(
+      std::move(contents_data));
   WaitForOverviewEntered();
 
   // Get the active Pine widget.
