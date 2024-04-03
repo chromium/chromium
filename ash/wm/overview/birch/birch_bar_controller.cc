@@ -87,7 +87,7 @@ void BirchBarController::RegisterBar(
 
   // Directly initialize the bar view if data fetching is done.
   if (!birch_model_observer_.IsObserving() && !data_fetch_in_progress_) {
-    InitBar(bar_view);
+    InitBarWithItems(bar_view, items_);
   }
 }
 
@@ -170,31 +170,38 @@ void BirchBarController::OnItemsFetchedFromModel() {
   // When data fetching completes, use the fetched items to initialize all the
   // bar views.
   data_fetch_in_progress_ = false;
-  items_ = Shell::Get()->birch_model()->GetItemsForDisplay();
+
+  // Cache the new items in a temp variable to avoid dangling ptrs when update
+  // the birch bar.
+  auto items = Shell::Get()->birch_model()->GetItemsForDisplay();
 
   // Record an impression if there are suggestion chips to show.
-  if (!items_.empty()) {
+  if (!items.empty()) {
     base::UmaHistogramBoolean("Ash.Birch.Bar.Impression", true);
   }
   // Record impressions for the suggestion chips.
-  for (const auto& item : items_) {
+  for (const auto& item : items) {
     base::UmaHistogramEnumeration("Ash.Birch.Chip.Impression", item->GetType());
   }
   // Record number of chips being shown.
-  base::UmaHistogramCustomCounts("Ash.Birch.ChipCount", items_.size(),
+  base::UmaHistogramCustomCounts("Ash.Birch.ChipCount", items.size(),
                                  /*min=*/0, /*exclusive_max=*/10,
                                  /*buckets=*/10);
 
   for (auto& bar_and_callback : bar_map_) {
-    InitBar(bar_and_callback.first);
+    InitBarWithItems(bar_and_callback.first, items);
   }
+
+  items_ = std::move(items);
 }
 
-void BirchBarController::InitBar(BirchBarView* bar_view) {
+void BirchBarController::InitBarWithItems(
+    BirchBarView* bar_view,
+    const std::vector<std::unique_ptr<BirchItem>>& items) {
   CHECK(!data_fetch_in_progress_);
 
   std::vector<raw_ptr<BirchItem>> items_to_show;
-  for (auto& item : items_) {
+  for (auto& item : items) {
     if (items_to_show.size() == BirchBarView::kMaxChipsNum) {
       break;
     }
@@ -203,8 +210,8 @@ void BirchBarController::InitBar(BirchBarView* bar_view) {
 
   bar_view->SetupChips(items_to_show);
 
-  // Only run bar initialized callback if there are fetched items.
-  if (items_.size() && !bar_map_[bar_view].is_null()) {
+  // Only run bar initialized callback if there are valid items.
+  if (items.size() && !bar_map_[bar_view].is_null()) {
     std::move(bar_map_[bar_view]).Run();
   }
 }

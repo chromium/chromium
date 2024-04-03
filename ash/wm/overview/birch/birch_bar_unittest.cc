@@ -46,6 +46,11 @@ namespace ash {
 
 namespace {
 
+// Returns the pref service to use for Birch bar prefs.
+PrefService* GetPrefService() {
+  return Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // TestBirchItem:
 class TestBirchItem : public BirchItem {
@@ -87,8 +92,9 @@ class TestBirchDataProvider : public BirchDataProvider {
   using DataFetchedCallback =
       base::RepeatingCallback<void(const std::vector<T>&)>;
 
-  explicit TestBirchDataProvider(DataFetchedCallback data_fetched_callback)
-      : data_fetched_callback_(data_fetched_callback) {}
+  TestBirchDataProvider(DataFetchedCallback data_fetched_callback,
+                        const std::string& pref_name)
+      : data_fetched_callback_(data_fetched_callback), pref_name_(pref_name) {}
   TestBirchDataProvider(const TestBirchDataProvider&) = delete;
   TestBirchDataProvider& operator=(const TestBirchDataProvider&) = delete;
   ~TestBirchDataProvider() override = default;
@@ -98,10 +104,16 @@ class TestBirchDataProvider : public BirchDataProvider {
   void ClearItems() { items_.clear(); }
 
   // BirchDataProvider:
-  void RequestBirchDataFetch() override { data_fetched_callback_.Run(items_); }
+  void RequestBirchDataFetch() override {
+    data_fetched_callback_.Run(
+        (pref_name_.empty() || GetPrefService()->GetBoolean(pref_name_))
+            ? items_
+            : std::vector<T>());
+  }
 
  private:
   DataFetchedCallback data_fetched_callback_;
+  const std::string pref_name_;
   std::vector<T> items_;
 };
 
@@ -114,17 +126,21 @@ class TestBirchClient : public BirchClient {
     calendar_provider_ =
         std::make_unique<TestBirchDataProvider<BirchCalendarItem>>(
             base::BindRepeating(&TestBirchClient::HandleCalendarFetch,
-                                base::Unretained(this)));
+                                base::Unretained(this)),
+            prefs::kBirchUseCalendar);
     file_provider_ = std::make_unique<TestBirchDataProvider<BirchFileItem>>(
         base::BindRepeating(&BirchModel::SetFileSuggestItems,
-                            base::Unretained(birch_model)));
+                            base::Unretained(birch_model)),
+        prefs::kBirchUseFileSuggest);
     tab_provider_ = std::make_unique<TestBirchDataProvider<BirchTabItem>>(
         base::BindRepeating(&BirchModel::SetRecentTabItems,
-                            base::Unretained(birch_model)));
+                            base::Unretained(birch_model)),
+        prefs::kBirchUseRecentTabs);
     release_notes_provider_ =
         std::make_unique<TestBirchDataProvider<BirchReleaseNotesItem>>(
             base::BindRepeating(&BirchModel::SetReleaseNotesItems,
-                                base::Unretained(birch_model)));
+                                base::Unretained(birch_model)),
+            std::string());
     EXPECT_TRUE(test_dir_.CreateUniqueTempDir());
   }
   TestBirchClient(const TestBirchClient&) = delete;
@@ -211,13 +227,24 @@ class BirchBarTest : public AshTestBase {
   void SetUp() override {
     switches::SetIgnoreForestSecretKeyForTest(true);
     AshTestBase::SetUp();
+
+    // Set prefs of all suggestion types and show suggestions enabled.
+    for (const auto& pref_name :
+         {prefs::kBirchShowSuggestions, prefs::kBirchUseCalendar,
+          prefs::kBirchUseWeather, prefs::kBirchUseFileSuggest,
+          prefs::kBirchUseRecentTabs, prefs::kBirchUseReleaseNotes}) {
+      GetPrefService()->SetBoolean(pref_name, true);
+    }
+
+    // Create test birch client and weather provider.
     auto* birch_model = Shell::Get()->birch_model();
     birch_client_ = std::make_unique<TestBirchClient>(birch_model);
     birch_model->SetClientAndInit(birch_client_.get());
     auto weather_provider =
         std::make_unique<TestBirchDataProvider<BirchWeatherItem>>(
             base::BindRepeating(&BirchModel::SetWeatherItems,
-                                base::Unretained(birch_model)));
+                                base::Unretained(birch_model)),
+            prefs::kBirchUseWeather);
     weather_provider_ = weather_provider.get();
     birch_model->OverrideWeatherProviderForTest(std::move(weather_provider));
     base::RunLoop run_loop;
@@ -228,7 +255,7 @@ class BirchBarTest : public AshTestBase {
     run_loop.Run();
 
     // Prepare a file item for test.
-    SetFileItems(/*rankings=*/{1.0f});
+    SetFileItems(/*num=*/1);
   }
 
   void TearDown() override {
@@ -240,24 +267,24 @@ class BirchBarTest : public AshTestBase {
   }
 
  protected:
-  // Adds several file birch items to data source with given `rankings`.
-  void SetFileItems(const std::vector<float>& rankings) {
+  // Adds a number of `num` file birch items to data source.
+  void SetFileItems(size_t num) {
     std::vector<BirchFileItem> item_list;
-    for (size_t i = 0; i < rankings.size(); i++) {
+    for (size_t i = 0; i < num; i++) {
       item_list.emplace_back(
           /*file_path=*/base::FilePath(base::StringPrintf("test path %lu", i)),
           /*justification=*/u"suggestion",
           /*timestamp=*/base::Time(),
           /*file_id=*/base::StringPrintf("file_id_%lu", i));
-      item_list.back().set_ranking(rankings[i]);
+      item_list.back().set_ranking(1.0f);
     }
     birch_client_->SetFileSuggestItems(item_list);
   }
 
-  // Adds several calendar birch items to data source with given `rankings`.
-  void SetCalendarItems(const std::vector<float>& rankings) {
+  // Adds a number of `num` calendar birch items to data source.
+  void SetCalendarItems(size_t num) {
     std::vector<BirchCalendarItem> item_list;
-    for (size_t i = 0; i < rankings.size(); i++) {
+    for (size_t i = 0; i < num; i++) {
       item_list.emplace_back(
           /*title=*/u"Event " + base::NumberToString16(i),
           /*start_time=*/base::Time(),
@@ -265,46 +292,45 @@ class BirchBarTest : public AshTestBase {
           /*calendar_url=*/GURL(),
           /*conference_url=*/GURL(),
           /*event_id=*/base::StringPrintf("event_id_%ld", i));
-      item_list.back().set_ranking(rankings[i]);
+      item_list.back().set_ranking(1.0f);
     }
     birch_client_->SetCalendarItems(item_list);
   }
 
-  // Adds several tab birch items to data source with given `rankings`.
-  void SetTabItems(const std::vector<float>& rankings) {
+  // Adds a  number of `num` tab birch items to data source.
+  void SetTabItems(size_t num) {
     std::vector<BirchTabItem> item_list;
-    for (auto ranking : rankings) {
+    for (size_t i = 0; i < num; i++) {
       item_list.emplace_back(
           /*title=*/u"tab", /*url*/ GURL("foo.bar"), /*timestamp=*/base::Time(),
           /*favicon_url=*/GURL("favicon"), /*session_name=*/"session",
           /*form_factor=*/BirchTabItem::DeviceFormFactor::kDesktop);
-      item_list.back().set_ranking(ranking);
+      item_list.back().set_ranking(1.0f);
     }
     birch_client_->SetRecentTabsItems(item_list);
   }
 
-  // Adds several release notes birch items to data source with given
-  // `rankings`.
-  void SetReleaseNotesItems(const std::vector<float>& rankings) {
+  // Adds a number of `num` release notes birch items to data source.
+  void SetReleaseNotesItems(size_t num) {
     std::vector<BirchReleaseNotesItem> item_list;
-    for (auto ranking : rankings) {
+    for (size_t i = 0; i < num; i++) {
       item_list.emplace_back(/*release_notes_title=*/u"note",
                              /*release_notes_text=*/u"explore",
                              /*url=*/GURL("foo.bar"),
                              /*first_seen=*/base::Time());
-      item_list.back().set_ranking(ranking);
+      item_list.back().set_ranking(1.0f);
     }
     birch_client_->SetReleaseNotesItems(item_list);
   }
 
-  // Adds several weather birch items to data source with given `rankings`.
-  void SetWeatherItems(const std::vector<float>& rankings) {
+  // Adds a number of `num` weather birch items to data source.
+  void SetWeatherItems(size_t num) {
     std::vector<BirchWeatherItem> item_list;
-    for (auto ranking : rankings) {
+    for (size_t i = 0; i < num; i++) {
       item_list.emplace_back(/*weather_description=*/u"cloudy",
                              /*temperature=*/u"16 c",
                              /*icon*/ ui::ImageModel());
-      item_list.back().set_ranking(ranking);
+      item_list.back().set_ranking(1.0f);
     }
     weather_provider_->set_items(item_list);
   }
@@ -431,12 +457,12 @@ class BirchBarMenuTest : public BirchBarTest {
 };
 
 // Tests that removing a suggestion from context menu.
-TEST_F(BirchBarMenuTest, RemoveChipFromContextMenu) {
+TEST_F(BirchBarMenuTest, RemoveChip) {
   // Create 5 suggestions with different item types.
-  SetWeatherItems(/*rankings=*/{1.0f});
-  SetCalendarItems(/*rankings=*/{2.0f, 5.0f});
-  SetFileItems(/*rankings=*/{3.0f});
-  SetTabItems(/*rankings=*/{4.0f});
+  SetWeatherItems(/*num=*/1);
+  SetCalendarItems(/*num=*/2);
+  SetFileItems(/*num=*/1);
+  SetTabItems(/*num=*/1);
 
   // Add another screen such that we will have two synchronized bar views.
   UpdateDisplay("1000x800,1000x800");
@@ -513,18 +539,13 @@ TEST_F(BirchBarMenuTest, RemoveChipFromContextMenu) {
   chips_match_items(3);
 }
 
-// Tests that showing/hiding suggestions from context menu.
-TEST_F(BirchBarMenuTest, ShowHideBarFromContextMenu) {
+// Tests showing/hiding suggestions from context menu.
+TEST_F(BirchBarMenuTest, ShowHideBar) {
   // Create a suggestion for test.
-  SetFileItems(/*rankings=*/{1.0f});
+  SetFileItems(/*num=*/1);
 
   // Add another screen such that we will have two synchronized bar views.
   UpdateDisplay("1000x800,1000x800");
-
-  auto* pref_service =
-      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
-  // Set show suggestions initially.
-  pref_service->SetBoolean(prefs::kBirchShowSuggestions, true);
 
   // Enter Overview and check the two bar views are created.
   EnterOverview();
@@ -603,6 +624,104 @@ TEST_F(BirchBarMenuTest, ShowHideBarFromContextMenu) {
   // The birch bars should be hidden on both displays.
   EXPECT_TRUE(grid_test_api_1->birch_bar_view());
   EXPECT_TRUE(grid_test_api_2->birch_bar_view());
+}
+
+// Tests customizing suggestions from context menu.
+TEST_F(BirchBarMenuTest, CustomizeSuggestions) {
+  // Create 4 suggestions, one for each customizable suggestion type.
+  SetWeatherItems(/*num=*/1);
+  SetCalendarItems(/*num=*/1);
+  SetFileItems(/*num=*/1);
+  SetTabItems(/*num=*/1);
+
+  auto* pref_service =
+      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+  // Set show suggestions initially.
+  pref_service->SetBoolean(prefs::kBirchShowSuggestions, true);
+
+  // Enter Overview and check the two bar views are created.
+  EnterOverview();
+
+  auto* root_window = Shell::GetPrimaryRootWindow();
+  auto grid_test_api = OverviewGridTestApi(root_window);
+
+  // The birch bars should be shown.
+  EXPECT_TRUE(grid_test_api.birch_bar_view());
+
+  // Cache the chips.
+  const auto& bar_chips = grid_test_api.GetBirchChips();
+
+  // The functor to check if given suggestion types are shown in the bar chips.
+  auto has_suggestion_types =
+      [](const std::vector<BirchItemType>& types,
+         const std::vector<raw_ptr<BirchChipButton>>& chips) -> bool {
+    return base::ranges::all_of(types, [&](BirchItemType type) {
+      return base::ranges::any_of(chips, [&](raw_ptr<BirchChipButton> chip) {
+        return chip->item()->GetType() == type;
+      });
+    });
+  };
+
+  // At the beginning, all types should be shown on the bar.
+  EXPECT_TRUE(
+      has_suggestion_types({BirchItemType::kWeather, BirchItemType::kCalendar,
+                            BirchItemType::kFile, BirchItemType::kTab},
+                           bar_chips));
+
+  auto* root_window_controller = RootWindowController::ForWindow(root_window);
+  // Right clicking on the wallpaper of the first display to show the context
+  // menu.
+  RightClickOn(root_window_controller->wallpaper_widget_controller()
+                   ->GetWidget()
+                   ->GetContentsView());
+
+  auto* model_adapter =
+      root_window_controller->menu_model_adapter_for_testing();
+  EXPECT_TRUE(model_adapter->IsShowingMenu());
+
+  base::flat_map<BirchItemType, views::MenuItemView*> type_to_item;
+  auto* sub_menu = model_adapter->root_for_testing()->GetSubmenu();
+  auto* weather_item = sub_menu->GetMenuItemAt(1);
+  EXPECT_EQ(weather_item->GetCommand(),
+            base::to_underlying(
+                BirchBarContextMenuModel::CommandId::kWeatherSuggestions));
+  type_to_item[BirchItemType::kWeather] = weather_item;
+
+  auto* calendar_item = sub_menu->GetMenuItemAt(2);
+  EXPECT_EQ(calendar_item->GetCommand(),
+            base::to_underlying(
+                BirchBarContextMenuModel::CommandId::kCalendarSuggestions));
+  type_to_item[BirchItemType::kCalendar] = calendar_item;
+
+  auto* file_item = sub_menu->GetMenuItemAt(3);
+  EXPECT_EQ(file_item->GetCommand(),
+            base::to_underlying(
+                BirchBarContextMenuModel::CommandId::kDriveSuggestions));
+  type_to_item[BirchItemType::kFile] = file_item;
+
+  auto* tab_item = sub_menu->GetMenuItemAt(4);
+  EXPECT_EQ(tab_item->GetCommand(),
+            base::to_underlying(
+                BirchBarContextMenuModel::CommandId::kOtherDeviceSuggestions));
+  type_to_item[BirchItemType::kTab] = tab_item;
+
+  // Deselect all types of suggestions one by one.
+  for (auto type : {BirchItemType::kWeather, BirchItemType::kCalendar,
+                    BirchItemType::kFile, BirchItemType::kTab}) {
+    LeftClickOn(type_to_item[type]);
+    EXPECT_FALSE(has_suggestion_types({type}, bar_chips));
+  }
+
+  // There is no suggestions showing on the bar.
+  EXPECT_TRUE(bar_chips.empty());
+
+  // Re-select all types of suggestions one by one.
+  std::vector<BirchItemType> new_types;
+  for (auto type : {BirchItemType::kWeather, BirchItemType::kCalendar,
+                    BirchItemType::kFile, BirchItemType::kTab}) {
+    LeftClickOn(type_to_item[type]);
+    EXPECT_TRUE(has_suggestion_types(new_types, bar_chips));
+  }
 }
 
 // The parameter structure for birch bar responsive layout tests.

@@ -74,8 +74,9 @@ class BirchBarController : public BirchModel::Observer {
   // timed out.
   void OnItemsFetchedFromModel();
 
-  // initialize the given `bar_view` with the items fetched from model.
-  void InitBar(BirchBarView* bar_view);
+  // initialize the given `bar_view` with the `items`.
+  void InitBarWithItems(BirchBarView* bar_view,
+                        const std::vector<std::unique_ptr<BirchItem>>& items);
 
   // Called when the context menu is closed.
   void OnChipContextMenuClosed();
