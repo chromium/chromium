@@ -42,13 +42,7 @@ def main():
     parser.add_argument('--rust-sysroot',
                         default=DEFAULT_SYSROOT,
                         help='use cargo and rustc from here')
-    parser.add_argument('--out-dir',
-                        default='out/gnrt',
-                        help='put target and cargo home dir here')
     (args, unrecognized_args) = parser.parse_known_args()
-
-    target_dir = os.path.abspath(os.path.join(args.out_dir, 'target'))
-    home_dir = os.path.abspath(os.path.join(target_dir, 'cargo_home'))
 
     # Avoid clobbering `config.toml` - see
     # https://github.com/mozilla/cargo-vet/issues/589 and note that `gnrt
@@ -59,7 +53,7 @@ def main():
     _CARGO_ARGS = ['-Zunstable-options', '-C', _MANIFEST_DIR]
     _EXTRA_VET_ARGS = ['--cargo-arg=-Zbindeps', '--no-registry-suggestions']
     success = RunCargo(
-        args.rust_sysroot, home_dir,
+        args.rust_sysroot, None,
         _CARGO_ARGS + ['vet'] + unrecognized_args + _EXTRA_VET_ARGS)
 
     # Unclober `config.toml` changes if desirable.
