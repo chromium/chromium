@@ -209,21 +209,6 @@ class DrmGpuDisplayManagerTest : public testing::Test {
     return scoped_refptr<FakeDrmDevice>(fake_drm);
   }
 
-  // Returns the CRTC ID.
-  uint32_t AddPlaneOnCrtcAndGetCrtcId(FakeDrmDevice::MockDrmState& drm_state,
-                                      size_t num_of_planes = 1u) {
-    const auto& crtc = drm_state.AddCrtc();
-    for (size_t i = 0; i < num_of_planes; ++i) {
-      drm_state.AddPlane(crtc.id, DRM_PLANE_TYPE_PRIMARY);
-      for (size_t j = 0; j < num_of_planes - 1; ++j) {
-        drm_state.AddPlane(crtc.id, DRM_PLANE_TYPE_OVERLAY);
-      }
-      drm_state.AddPlane(crtc.id, DRM_PLANE_TYPE_CURSOR);
-    }
-
-    return crtc.id;
-  }
-
   bool ConfigureDisplays(const MovableDisplaySnapshots& display_snapshots,
                          display::ModesetFlags modeset_flag) {
     std::vector<display::DisplayConfigurationParams> config_requests;
@@ -258,7 +243,7 @@ TEST_F(DrmGpuDisplayManagerTest, CapOutOnMaxDrmDeviceCount) {
         FakeDrmDevice::MockDrmState::CreateStateWithAllProperties();
 
     // Add 1 CRTC
-    AddPlaneOnCrtcAndGetCrtcId(drm_state);
+    drm_state.AddPlaneOnCrtcAndGetCrtcId();
 
     // Add one encoder
     auto& encoder = drm_state.AddEncoder();
@@ -285,7 +270,7 @@ TEST_F(DrmGpuDisplayManagerTest, CapOutOnMaxConnectorCount) {
   // Add |kMaxDrmConnectors| + 1 connector, each with one active display.
   for (size_t i = 0; i < kMaxDrmConnectors + 1; ++i) {
     // Add 1 CRTC
-    AddPlaneOnCrtcAndGetCrtcId(drm_state);
+    drm_state.AddPlaneOnCrtcAndGetCrtcId();
 
     // Add one encoder
     auto& encoder = drm_state.AddEncoder();
@@ -319,7 +304,7 @@ TEST_F(DrmGpuDisplayManagerTest,
 
   // Add 3 connectors, each with one active display.
   for (size_t i = 0; i < 3; ++i) {
-    AddPlaneOnCrtcAndGetCrtcId(drm_state);
+    drm_state.AddPlaneOnCrtcAndGetCrtcId();
 
     auto& encoder = drm_state.AddEncoder();
     encoder.possible_crtcs = 1 << i;
@@ -376,7 +361,7 @@ TEST_F(DrmGpuDisplayManagerTest,
     auto drm_state =
         FakeDrmDevice::MockDrmState::CreateStateWithAllProperties();
 
-    AddPlaneOnCrtcAndGetCrtcId(drm_state);
+    drm_state.AddPlaneOnCrtcAndGetCrtcId();
 
     auto& encoder = drm_state.AddEncoder();
     encoder.possible_crtcs = 0b1;
@@ -433,7 +418,7 @@ TEST_F(DrmGpuDisplayManagerTest,
   // Add three connectors, each with one active display.
   for (size_t i = 0; i < 3; ++i) {
     // Add 1 CRTC
-    AddPlaneOnCrtcAndGetCrtcId(drm_state);
+    drm_state.AddPlaneOnCrtcAndGetCrtcId();
 
     // Add one encoder
     auto& encoder = drm_state.AddEncoder();
@@ -512,7 +497,7 @@ TEST_F(DrmGpuDisplayManagerTest, TestEdidIdConflictResolution) {
 
   // First, add the internal display.
   {
-    AddPlaneOnCrtcAndGetCrtcId(drm_state);
+    drm_state.AddPlaneOnCrtcAndGetCrtcId();
 
     auto& encoder = drm_state.AddEncoder();
     encoder.possible_crtcs = 0b1;
@@ -528,7 +513,7 @@ TEST_F(DrmGpuDisplayManagerTest, TestEdidIdConflictResolution) {
   // Next, add two external displays that will produce an EDID-based ID
   // collision, since their EDIDs do not include viable serial numbers.
   {
-    AddPlaneOnCrtcAndGetCrtcId(drm_state);
+    drm_state.AddPlaneOnCrtcAndGetCrtcId();
 
     auto& encoder = drm_state.AddEncoder();
     encoder.possible_crtcs = 0b10;
@@ -543,7 +528,7 @@ TEST_F(DrmGpuDisplayManagerTest, TestEdidIdConflictResolution) {
   }
 
   {
-    AddPlaneOnCrtcAndGetCrtcId(drm_state);
+    drm_state.AddPlaneOnCrtcAndGetCrtcId();
 
     auto& encoder = drm_state.AddEncoder();
     encoder.possible_crtcs = 0b100;
@@ -607,9 +592,9 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
   auto drm_state = FakeDrmDevice::MockDrmState::CreateStateWithAllProperties();
 
   // Create a pool of 3 CRTCs
-  const uint32_t crtc_1 = AddPlaneOnCrtcAndGetCrtcId(drm_state);
-  AddPlaneOnCrtcAndGetCrtcId(drm_state);
-  const uint32_t crtc_3 = AddPlaneOnCrtcAndGetCrtcId(drm_state);
+  const uint32_t crtc_1 = drm_state.AddPlaneOnCrtcAndGetCrtcId();
+  drm_state.AddPlaneOnCrtcAndGetCrtcId();
+  const uint32_t crtc_3 = drm_state.AddPlaneOnCrtcAndGetCrtcId();
 
   uint32_t primary_connector_id, secondary_connector_id;
 
@@ -710,9 +695,9 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
   auto drm_state = FakeDrmDevice::MockDrmState::CreateStateWithAllProperties();
 
   // Create a pool of 3 CRTCs
-  const uint32_t crtc_1 = AddPlaneOnCrtcAndGetCrtcId(drm_state);
-  AddPlaneOnCrtcAndGetCrtcId(drm_state);
-  const uint32_t crtc_3 = AddPlaneOnCrtcAndGetCrtcId(drm_state);
+  const uint32_t crtc_1 = drm_state.AddPlaneOnCrtcAndGetCrtcId();
+  drm_state.AddPlaneOnCrtcAndGetCrtcId();
+  const uint32_t crtc_3 = drm_state.AddPlaneOnCrtcAndGetCrtcId();
 
   uint32_t primary_connector_id, secondary_connector_id;
 
@@ -803,9 +788,9 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
   auto drm_state = FakeDrmDevice::MockDrmState::CreateStateWithAllProperties();
 
   // Create a pool of 3 CRTCs
-  AddPlaneOnCrtcAndGetCrtcId(drm_state);
-  AddPlaneOnCrtcAndGetCrtcId(drm_state);
-  AddPlaneOnCrtcAndGetCrtcId(drm_state);
+  drm_state.AddPlaneOnCrtcAndGetCrtcId();
+  drm_state.AddPlaneOnCrtcAndGetCrtcId();
+  drm_state.AddPlaneOnCrtcAndGetCrtcId();
 
   // First, add a display with high bandwidth mode.
   {
@@ -868,8 +853,8 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
   auto drm_state = FakeDrmDevice::MockDrmState::CreateStateWithAllProperties();
 
   // Create a pool of 2 CRTCs
-  AddPlaneOnCrtcAndGetCrtcId(drm_state);
-  AddPlaneOnCrtcAndGetCrtcId(drm_state);
+  drm_state.AddPlaneOnCrtcAndGetCrtcId();
+  drm_state.AddPlaneOnCrtcAndGetCrtcId();
 
   {
     auto& encoder = drm_state.AddEncoder();
@@ -919,9 +904,9 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
   auto drm_state = FakeDrmDevice::MockDrmState::CreateStateWithAllProperties();
 
   // Create a pool of 3 CRTCs
-  const uint32_t crtc_1 = AddPlaneOnCrtcAndGetCrtcId(drm_state);
-  AddPlaneOnCrtcAndGetCrtcId(drm_state);
-  const uint32_t crtc_3 = AddPlaneOnCrtcAndGetCrtcId(drm_state);
+  const uint32_t crtc_1 = drm_state.AddPlaneOnCrtcAndGetCrtcId();
+  drm_state.AddPlaneOnCrtcAndGetCrtcId();
+  const uint32_t crtc_3 = drm_state.AddPlaneOnCrtcAndGetCrtcId();
 
   uint32_t primary_connector_id, secondary_connector_id;
 

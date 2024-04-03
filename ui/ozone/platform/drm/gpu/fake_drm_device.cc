@@ -313,6 +313,20 @@ bool FakeDrmDevice::MockDrmState::HasResources() const {
          !encoder_properties.empty();
 }
 
+uint32_t FakeDrmDevice::MockDrmState::AddPlaneOnCrtcAndGetCrtcId(
+    size_t num_of_planes) {
+  const auto& crtc = AddCrtc();
+  for (size_t i = 0; i < num_of_planes; ++i) {
+    AddPlane(crtc.id, DRM_PLANE_TYPE_PRIMARY);
+    for (size_t j = 0; j < num_of_planes - 1; ++j) {
+      AddPlane(crtc.id, DRM_PLANE_TYPE_OVERLAY);
+    }
+    AddPlane(crtc.id, DRM_PLANE_TYPE_CURSOR);
+  }
+
+  return crtc.id;
+}
+
 FakeDrmDevice::FakeDrmDevice(std::unique_ptr<GbmDevice> gbm_device)
     : DrmDevice(base::FilePath(),
                 base::ScopedFD(),

@@ -183,6 +183,8 @@ class FakeDrmDevice : public DrmDevice {
                               uint32_t type);
     bool HasResources() const;
 
+    uint32_t AddPlaneOnCrtcAndGetCrtcId(size_t num_of_planes = 1u);
+
     std::vector<CrtcProperties> crtc_properties;
     std::vector<ConnectorProperties> connector_properties;
     std::vector<EncoderProperties> encoder_properties;
