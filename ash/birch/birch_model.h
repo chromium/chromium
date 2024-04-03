@@ -116,6 +116,8 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   void OverrideClockForTest(base::Clock* clock);
 
  private:
+  friend class BirchModelTest;
+
   // Timer and callback for a pending data fetch request.
   // The callback will be run if the timer expires before all data is fetched.
   struct PendingRequest {
@@ -151,6 +153,9 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   void OnRecentTabPrefChanged();
   void OnWeatherPrefChanged();
   void OnReleaseNotesPrefChanged();
+
+  // Records metrics on which providers are hidden based on prefs.
+  void RecordProviderHiddenHistograms();
 
   // Whether `item_remover_` is created and initialized.
   bool IsItemRemoverInitialized();

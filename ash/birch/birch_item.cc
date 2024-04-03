@@ -60,6 +60,8 @@ void DownloadImageFromUrl(
 
 }  // namespace
 
+int BirchItem::action_count_ = 0;
+
 BirchItem::BirchItem(const std::u16string& title,
                      const std::u16string& subtitle)
     : title_(title),
@@ -83,6 +85,18 @@ void BirchItem::RecordActionMetrics() {
   base::UmaHistogramBoolean("Ash.Birch.Bar.Activate", true);
   // Record which chip type was activated.
   base::UmaHistogramEnumeration("Ash.Birch.Chip.Activate", GetType());
+  // Record the ranking of the activated chip.
+  base::UmaHistogramCounts100("Ash.Birch.Chip.ActivatedRanking",
+                              static_cast<int>(ranking()));
+  // Record the types of the first 3 actions in a session.
+  ++action_count_;
+  if (action_count_ == 1) {
+    base::UmaHistogramEnumeration("Ash.Birch.Chip.ActivateFirst", GetType());
+  } else if (action_count_ == 2) {
+    base::UmaHistogramEnumeration("Ash.Birch.Chip.ActivateSecond", GetType());
+  } else if (action_count_ == 3) {
+    base::UmaHistogramEnumeration("Ash.Birch.Chip.ActivateThird", GetType());
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

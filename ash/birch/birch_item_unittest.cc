@@ -49,11 +49,63 @@ class BirchItemTest : public testing::Test {
     new_window_delegate_provider_ =
         std::make_unique<TestNewWindowDelegateProvider>(
             std::move(new_window_delegate));
+    BirchItem::set_action_count_for_test(0);
   }
+
+  ~BirchItemTest() override { BirchItem::set_action_count_for_test(0); }
 
   std::unique_ptr<TestNewWindowDelegateProvider> new_window_delegate_provider_;
   raw_ptr<TestNewWindowDelegateImpl> new_window_delegate_ = nullptr;
 };
+
+TEST_F(BirchItemTest, RecordActionMetrics_Basics) {
+  base::HistogramTester histograms;
+  BirchWeatherItem item(u"item", u"72 deg", ui::ImageModel());
+  item.set_ranking(5.f);
+  item.RecordActionMetrics();
+  histograms.ExpectBucketCount("Ash.Birch.Bar.Activate", true, 1);
+  histograms.ExpectBucketCount("Ash.Birch.Chip.Activate",
+                               BirchItemType::kWeather, 1);
+  histograms.ExpectBucketCount("Ash.Birch.Chip.ActivatedRanking", 5, 1);
+}
+
+TEST_F(BirchItemTest, RecordActionMetrics_FirstSecondThird) {
+  base::HistogramTester histograms;
+  BirchWeatherItem item(u"item", u"72 deg", ui::ImageModel());
+
+  // First action records in "ActivateFirst" metric.
+  item.RecordActionMetrics();
+  histograms.ExpectBucketCount("Ash.Birch.Chip.ActivateFirst",
+                               BirchItemType::kWeather, 1);
+  histograms.ExpectTotalCount("Ash.Birch.Chip.ActivateSecond", 0);
+  histograms.ExpectTotalCount("Ash.Birch.Chip.ActivateThird", 0);
+
+  // Second action records in "ActivateSecond" metric.
+  item.RecordActionMetrics();
+  histograms.ExpectBucketCount("Ash.Birch.Chip.ActivateFirst",
+                               BirchItemType::kWeather, 1);
+  histograms.ExpectBucketCount("Ash.Birch.Chip.ActivateSecond",
+                               BirchItemType::kWeather, 1);
+  histograms.ExpectTotalCount("Ash.Birch.Chip.ActivateThird", 0);
+
+  // Third action records in "ActivateThird" metric.
+  item.RecordActionMetrics();
+  histograms.ExpectBucketCount("Ash.Birch.Chip.ActivateFirst",
+                               BirchItemType::kWeather, 1);
+  histograms.ExpectBucketCount("Ash.Birch.Chip.ActivateSecond",
+                               BirchItemType::kWeather, 1);
+  histograms.ExpectBucketCount("Ash.Birch.Chip.ActivateThird",
+                               BirchItemType::kWeather, 1);
+
+  // Fourth action doesn't change the metrics.
+  item.RecordActionMetrics();
+  histograms.ExpectBucketCount("Ash.Birch.Chip.ActivateFirst",
+                               BirchItemType::kWeather, 1);
+  histograms.ExpectBucketCount("Ash.Birch.Chip.ActivateSecond",
+                               BirchItemType::kWeather, 1);
+  histograms.ExpectBucketCount("Ash.Birch.Chip.ActivateThird",
+                               BirchItemType::kWeather, 1);
+}
 
 // When both conference URL and calendar URL are set, the conference URL is
 // preferred.

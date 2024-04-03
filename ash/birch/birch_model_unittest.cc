@@ -188,6 +188,10 @@ class BirchModelTest : public AshTestBase {
     switches::SetIgnoreForestSecretKeyForTest(false);
   }
 
+  void RecordProviderHiddenHistograms() {
+    Shell::Get()->birch_model()->RecordProviderHiddenHistograms();
+  }
+
  protected:
   base::test::ScopedFeatureList feature_list_;
   StubBirchClient stub_birch_client_;
@@ -1219,6 +1223,48 @@ TEST_F(BirchModelTest, SetClientObservation) {
   // Set the client and expect model observer to be notified.
   model->SetClientAndInit(&stub_birch_client_);
   EXPECT_TRUE(test_observer.birch_client_set());
+}
+
+TEST_F(BirchModelTest, RemoveItemRecordsHistogram) {
+  base::HistogramTester histograms;
+  BirchModel* model = Shell::Get()->birch_model();
+
+  // Add a calendar item to the model.
+  std::vector<BirchCalendarItem> calendar_item_list =
+      MakeCalendarItemList(/*event_count=*/1);
+  model->SetCalendarItems(calendar_item_list);
+
+  // Remove the calendar item, as if a user hid the suggestion chip.
+  model->RemoveItem(&calendar_item_list[0]);
+
+  // Histogram was recorded.
+  histograms.ExpectBucketCount("Ash.Birch.Chip.Hidden",
+                               BirchItemType::kCalendar, 1);
+}
+
+TEST_F(BirchModelTest, RecordProviderHiddenHistograms) {
+  base::HistogramTester histograms;
+
+  // Disable all the prefs, as if the user had hidden each data type.
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+  ASSERT_TRUE(prefs);
+  prefs->SetBoolean(prefs::kBirchUseCalendar, false);
+  prefs->SetBoolean(prefs::kBirchUseFileSuggest, false);
+  prefs->SetBoolean(prefs::kBirchUseRecentTabs, false);
+  prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
+  prefs->SetBoolean(prefs::kBirchUseWeather, false);
+
+  // Record histograms.
+  RecordProviderHiddenHistograms();
+
+  // Histograms are recorded. All types are hidden.
+  histograms.ExpectBucketCount("Ash.Birch.ProviderHidden.Calendar", true, 1);
+  histograms.ExpectBucketCount("Ash.Birch.ProviderHidden.FileSuggest", true, 1);
+  histograms.ExpectBucketCount("Ash.Birch.ProviderHidden.RecentTabs", true, 1);
+  histograms.ExpectBucketCount("Ash.Birch.ProviderHidden.Weather", true, 1);
+  histograms.ExpectBucketCount("Ash.Birch.ProviderHidden.ReleaseNotes", true,
+                               1);
 }
 
 }  // namespace ash

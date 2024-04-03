@@ -824,6 +824,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Birch.Chip.ActivatedRanking" units="rank"
+    expires_after="2024-09-19">
+  <owner>jamescook@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    The ranking of a chip from the triggers and priorities specification.
+    Recorded when the user clicks or taps on a chip.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Birch.Chip.Activate{When}" enum="BirchItemType"
+    expires_after="2024-09-19">
+  <owner>jamescook@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    The type of the chip the user clicked or tapped. Recorded the {When} time
+    the user clicks or taps on a chip in a login session.
+  </summary>
+  <token key="When">
+    <variant name="First" summary="first"/>
+    <variant name="Second" summary="second"/>
+    <variant name="Third" summary="third"/>
+  </token>
+</histogram>
+
+<histogram name="Ash.Birch.Chip.Hidden" enum="BirchItemType"
+    expires_after="2024-09-19">
+  <owner>jamescook@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>Recorded when the user hides a suggestion.</summary>
+</histogram>
+
 <histogram name="Ash.Birch.Chip.Impression" enum="BirchItemType"
     expires_after="2024-09-19">
   <owner>jamescook@chromium.org</owner>
@@ -838,6 +870,23 @@ chromium-metrics-reviews@google.com.
     The number of chips when the birch bar is shown to the user. May be zero if
     there were no chips to show.
   </summary>
+</histogram>
+
+<histogram name="Ash.Birch.ProviderHidden{Type}" units="count"
+    expires_after="2024-09-19">
+  <owner>jamescook@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    Whether the user is hiding birch results of {Type} type. Recorded on
+    startup.
+  </summary>
+  <token key="Type">
+    <variant name=".Calendar" summary="calendar"/>
+    <variant name=".FileSuggest" summary="file suggest"/>
+    <variant name=".RecentTabs" summary="recent tabs"/>
+    <variant name=".ReleaseNotes" summary="release notes"/>
+    <variant name=".Weather" summary="weather"/>
+  </token>
 </histogram>
 
 <histogram name="Ash.Birch.ResultsReturned{Type}" units="count"

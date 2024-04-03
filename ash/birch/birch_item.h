@@ -72,6 +72,8 @@ class ASH_EXPORT BirchItem {
     return secondary_action_;
   }
 
+  static void set_action_count_for_test(int value) { action_count_ = value; }
+
  protected:
   void set_secondary_action(const std::u16string& action_name) {
     secondary_action_ = action_name;
@@ -89,6 +91,9 @@ class ASH_EXPORT BirchItem {
   std::optional<std::u16string> secondary_action_;
 
   float ranking_;  // Lower is better.
+
+  // Clicks or taps on birch chips, across this login session. Used for metrics.
+  static int action_count_;
 };
 
 // A birch item which contains calendar event information.

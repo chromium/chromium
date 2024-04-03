@@ -345,6 +345,9 @@ void BirchModel::RemoveItem(BirchItem* item) {
   if (!IsItemRemoverInitialized()) {
     return;
   }
+  // Record that the user hid a chip, with the type of the chip.
+  base::UmaHistogramEnumeration("Ash.Birch.Chip.Hidden", item->GetType());
+
   item_remover_->RemoveItem(item);
 }
 
@@ -353,6 +356,7 @@ void BirchModel::OnActiveUserSessionChanged(const AccountId& account_id) {
     // This is the initial notification on signin.
     has_active_user_session_changed_ = true;
     InitPrefChangeRegistrars();
+    RecordProviderHiddenHistograms();
     return;
   }
 
@@ -508,6 +512,20 @@ void BirchModel::OnReleaseNotesPrefChanged() {
   } else {
     is_release_notes_data_fresh_ = false;
   }
+}
+
+void BirchModel::RecordProviderHiddenHistograms() {
+  PrefService* prefs = GetPrefService();
+  base::UmaHistogramBoolean("Ash.Birch.ProviderHidden.Calendar",
+                            !prefs->GetBoolean(prefs::kBirchUseCalendar));
+  base::UmaHistogramBoolean("Ash.Birch.ProviderHidden.FileSuggest",
+                            !prefs->GetBoolean(prefs::kBirchUseFileSuggest));
+  base::UmaHistogramBoolean("Ash.Birch.ProviderHidden.RecentTabs",
+                            !prefs->GetBoolean(prefs::kBirchUseRecentTabs));
+  base::UmaHistogramBoolean("Ash.Birch.ProviderHidden.Weather",
+                            !prefs->GetBoolean(prefs::kBirchUseWeather));
+  base::UmaHistogramBoolean("Ash.Birch.ProviderHidden.ReleaseNotes",
+                            !prefs->GetBoolean(prefs::kBirchUseReleaseNotes));
 }
 
 bool BirchModel::IsItemRemoverInitialized() {
