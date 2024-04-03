@@ -222,7 +222,20 @@ void PreFreezeBackgroundMemoryTrimmer::OnPreFreezeInternal() {
     return;
   }
 
-  while (!background_tasks_.empty()) {
+  // We check |num_pending_tasks-- > 0| so that we have an upper limit on the
+  // number of tasks that we run.
+  // We check |!background_tasks_.empty()| so that we exit as soon as we have
+  // no more tasks to run.
+  //
+  // This handles both the case where we have tasks that post other tasks (we
+  // won't run endlessly because of the upper limit), and the case where tasks
+  // cancel other tasks (we exit as soon as the queue is empty).
+  //
+  // Note that the current implementation may run some tasks that were posted
+  // by earlier tasks, if some other tasks are also cancelled, but we
+  // stop eventually due to the upper limit.
+  size_t num_pending_tasks = background_tasks_.size();
+  while (num_pending_tasks-- > 0 && !background_tasks_.empty()) {
     auto background_task = std::move(background_tasks_.front());
     background_tasks_.pop_front();
     // We release the lock here for two reasons:

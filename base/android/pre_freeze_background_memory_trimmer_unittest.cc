@@ -205,6 +205,30 @@ TEST_F(PreFreezeBackgroundMemoryTrimmerTest, AddDuringPreFreeze) {
 
   PreFreezeBackgroundMemoryTrimmer::OnPreFreezeForTesting();
 
+  ASSERT_EQ(pending_task_count(), 1u);
+  EXPECT_EQ(s_counter, 0);
+
+  PreFreezeBackgroundMemoryTrimmer::OnPreFreezeForTesting();
+
+  ASSERT_EQ(pending_task_count(), 0u);
+
+  EXPECT_EQ(s_counter, 1);
+}
+
+TEST_F(PreFreezeBackgroundMemoryTrimmerTest, AddDuringPreFreezeRunNormally) {
+  PreFreezeBackgroundMemoryTrimmer::PostDelayedBackgroundTask(
+      SingleThreadTaskRunner::GetCurrentDefault(), FROM_HERE,
+      base::BindRepeating(&PostDelayedIncGlobal), base::Seconds(10));
+
+  ASSERT_EQ(pending_task_count(), 1u);
+
+  PreFreezeBackgroundMemoryTrimmer::OnPreFreezeForTesting();
+
+  ASSERT_EQ(pending_task_count(), 1u);
+  EXPECT_EQ(s_counter, 0);
+
+  task_environment_.FastForwardBy(base::Seconds(30));
+
   ASSERT_EQ(pending_task_count(), 0u);
 
   EXPECT_EQ(s_counter, 1);
