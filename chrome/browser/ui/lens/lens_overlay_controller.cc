@@ -432,10 +432,29 @@ void LensOverlayController::IssueLensRequest(
   lens::proto::LensOverlayRequest request;
   request.set_type(lens::proto::LensOverlayRequest::REGION_SEARCH);
   auto* request_region = request.mutable_region();
-  request_region->set_x(region->box.x());
-  request_region->set_y(region->box.y());
+  request_region->set_center_x(region->box.x());
+  request_region->set_center_y(region->box.y());
   request_region->set_width(region->box.width());
   request_region->set_height(region->box.height());
+  request_region->set_rotation_z(region->rotation);
+
+  switch (region->coordinate_type) {
+    case lens::mojom::CenterRotatedBox_CoordinateType::kNormalized:
+      request_region->set_coordinate_type(
+          lens::proto::LensOverlayRequest::CenterRotatedBox::NORMALIZED);
+      break;
+    case lens::mojom::CenterRotatedBox_CoordinateType::kImage:
+      request_region->set_coordinate_type(
+          lens::proto::LensOverlayRequest::CenterRotatedBox::IMAGE);
+      break;
+    case lens::mojom::CenterRotatedBox_CoordinateType::kUnspecified:
+      [[fallthrough]];  // Fall through to default unspecified case.
+    default:
+      request_region->set_coordinate_type(
+          lens::proto::LensOverlayRequest::CenterRotatedBox::
+              COORDINATE_TYPE_UNSPECIFIED);
+      break;
+  }
 
   lens_overlay_query_controller_->SendInteraction(
       request, base::BindOnce(&LensOverlayController::HandleInteractionResponse,

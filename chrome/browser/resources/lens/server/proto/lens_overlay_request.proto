@@ -24,13 +24,26 @@ message LensOverlayRequest {
   Type type = 1;
 
   // Bounding box selected to region search.
-  message Region {
-    float x = 1;
-    float y = 2;
+  message CenterRotatedBox {
+    float center_x = 1;
+    float center_y = 2;
     float width = 3;
     float height = 4;
+    // Clockwise rotation around the center in radians. The rotation angle is
+    // computed before normalizing the coordinates.
+    float rotation_z = 5;
+
+    enum CoordinateType {
+      // Unspecified default value, per proto best practice.
+      COORDINATE_TYPE_UNSPECIFIED = 0;
+      // Normalized coordinates.
+      NORMALIZED = 1;
+      // Image pixel coordinates.
+      IMAGE = 2;
+    }
+    CoordinateType coordinate_type = 6;
   }
-  Region region = 2;
+  CenterRotatedBox region = 2;
 
   // Unstructured text query to add to an image query.
   string text_query = 3;
