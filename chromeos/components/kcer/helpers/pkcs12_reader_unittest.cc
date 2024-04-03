@@ -34,12 +34,6 @@ namespace {
 
 const char kPkcs12FilePassword[] = "12345";
 
-// Custom X509 object creation allows to avoid calls to X509_free()
-// after every test where X509 objects are required.
-struct X509Deleter {
-  void operator()(X509* cert) { X509_free(cert); }
-};
-using ScopedX509 = std::unique_ptr<X509, X509Deleter>;
 ScopedX509 X509New() {
   return ScopedX509(X509_new());
 }

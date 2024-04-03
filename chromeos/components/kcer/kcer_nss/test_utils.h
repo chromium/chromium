@@ -91,6 +91,10 @@ std::unique_ptr<net::CertBuilder> MakeCertBuilder(
     net::CertBuilder* issuer,
     const std::vector<uint8_t>& public_key);
 
+// Reads a file with the `file_name` from net::GetTestCertsDirectory()
+// directory.
+std::vector<uint8_t> ReadTestFile(const std::string& file_name);
+
 }  // namespace kcer
 
 #endif  // CHROMEOS_COMPONENTS_KCER_KCER_NSS_TEST_UTILS_H_

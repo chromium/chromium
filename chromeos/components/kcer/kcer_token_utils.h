@@ -42,6 +42,9 @@ base::expected<PublicKey, Error> MakeEcPublicKey(
 class KcerTokenUtils {
  public:
   using ObjectHandle = SessionChapsClient::ObjectHandle;
+  using ImportPkcs12Callback =
+      base::OnceCallback<void(bool /*did_modify*/,
+                              base::expected<void, Error> /*result*/)>;
 
   // `chaps_client` must outlive KcerTokenUtils.
   KcerTokenUtils(Token token, HighLevelChapsClient* chaps_client);
@@ -60,10 +63,10 @@ class KcerTokenUtils {
   // Creates a certificate object in Chaps. Does not check whether such an
   // object already exists. If `kcer_error` is not empty - import failed without
   // talking with Chaps. Otherwise returns the result from Chaps.
-  void ImportCert(bssl::UniquePtr<X509> cert,
-                  Pkcs11Id pkcs11_id,
-                  std::string nickname,
-                  CertDer cert_der,
+  void ImportCert(const bssl::UniquePtr<X509>& cert,
+                  const Pkcs11Id& pkcs11_id,
+                  const std::string& nickname,
+                  const CertDer& cert_der,
                   bool is_hardware_backed,
                   bool mark_as_migrated,
                   base::OnceCallback<void(std::optional<Error> kcer_error,
@@ -87,6 +90,12 @@ class KcerTokenUtils {
     int attemps_left = 5;
   };
   void ImportKey(ImportKeyTask task);
+
+  void ImportPkcs12(KeyData key_data,
+                    std::vector<CertData> certs_data,
+                    bool hardware_backed,
+                    bool mark_as_migrated,
+                    ImportPkcs12Callback callback);
 
  private:
   void ImportRsaKey(ImportKeyTask task);
@@ -119,6 +128,46 @@ class KcerTokenUtils {
                     ObjectHandle priv_key_handle,
                     ObjectHandle pub_key_handle,
                     uint32_t result_code);
+
+  void ImportPkc12DidImportKey(kcer::KeyType key_type,
+                               Pkcs11Id pkcs11_id,
+                               std::vector<CertData> certs_data,
+                               bool hardware_backed,
+                               bool mark_as_migrated,
+                               ImportPkcs12Callback callback,
+                               base::expected<PublicKey, Error> imported_key);
+
+  struct ImportAllCertsTask {
+    ImportAllCertsTask(Pkcs11Id in_pkcs11_id,
+                       std::vector<CertData> in_certs_data,
+                       bool in_hardware_backed,
+                       bool in_mark_as_migrated,
+                       bool in_multi_cert_import,
+                       KeyType in_key_type,
+                       ImportPkcs12Callback in_callback);
+    ImportAllCertsTask(ImportAllCertsTask&& other);
+    ~ImportAllCertsTask();
+
+    Pkcs11Id pkcs11_id;
+    std::vector<CertData> certs_data;
+    const bool hardware_backed;
+    const bool mark_as_migrated;
+    const bool multi_cert_import;
+    KeyType key_type;
+    ImportPkcs12Callback callback;
+    int attemps_left = 5;
+  };
+  void ImportAllCerts(ImportAllCertsTask task);
+  void ImportAllCertsImpl(ImportAllCertsTask task,
+                          std::vector<const CertData*> certs_data,
+                          int imports_failed);
+  void ImportAllCertsDidImportOneCert(
+      ImportAllCertsTask task,
+      std::vector<const CertData*> certs_data,
+      int imports_failed,
+      std::optional<Error> kcer_error,
+      SessionChapsClient::ObjectHandle cert_handle,
+      uint32_t result_code);
 
   const Token token_;
   // The id of the slot associated with this token. It's used to perform D-Bus

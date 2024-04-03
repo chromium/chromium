@@ -2455,9 +2455,8 @@ TEST_F(KcerNssImportPkcs12Test, ImportPkcs12RetryToCreateCert) {
 
   // Simulate that the key is found to skip its creation for simplicity.
   EXPECT_CALL(chaps_client_, FindObjects)
-      .Times(kDefaultAttempts)
-      .WillRepeatedly(RunOnceCallbackRepeatedly<2>(
-          std::vector<ObjectHandle>{ObjectHandle(1)}, chromeos::PKCS11_CKR_OK));
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>{ObjectHandle(1)},
+                                   chromeos::PKCS11_CKR_OK));
 
   EXPECT_CALL(chaps_client_, CreateObject)
       .Times(kDefaultAttempts)
@@ -2483,8 +2482,8 @@ TEST_F(KcerNssImportPkcs12Test, ImportPkcs12RetryToCreateCert) {
             base::Bucket(KcerPkcs12ImportEvent::SuccessPkcs12ChapsImport, 0),
             base::Bucket(KcerPkcs12ImportEvent::AttemptedPkcs12ChapsImportTask,
                          6),
-            base::Bucket(KcerPkcs12ImportEvent::AttemptedEcKeyImportTask, 5),
-            base::Bucket(KcerPkcs12ImportEvent::SuccessEcKeyImportTask, 5),
+            base::Bucket(KcerPkcs12ImportEvent::AttemptedEcKeyImportTask, 1),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessEcKeyImportTask, 1),
             base::Bucket(KcerPkcs12ImportEvent::SuccessEcCertImportTask, 0)));
   }
 }
@@ -2617,7 +2616,7 @@ TEST_F(KcerNssImportPkcs12Test, WrongPassword) {
             base::Bucket(KcerPkcs12ImportEvent::AttemptedPkcs12ChapsImport, 1),
             base::Bucket(KcerPkcs12ImportEvent::SuccessPkcs12ChapsImport, 0),
             base::Bucket(KcerPkcs12ImportEvent::AttemptedPkcs12ChapsImportTask,
-                         1),
+                         0),
             base::Bucket(KcerPkcs12ImportEvent::AttemptedRsaKeyImportTask, 0),
             base::Bucket(KcerPkcs12ImportEvent::SuccessEcKeyImportTask, 0)));
   }

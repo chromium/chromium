@@ -159,53 +159,6 @@ class COMPONENT_EXPORT(KCER) KcerTokenImplNss
   KeyPermissionsAttributeId GetKeyPermissionsAttributeId() const;
   CertProvisioningIdAttributeId GetCertProvisioningIdAttributeId() const;
 
-  struct ImportPkcs12CertTask {
-    ImportPkcs12CertTask(
-        Pkcs12Blob in_pkcs12_blob,
-        std::string in_password,
-        bool in_hardware_backed,
-        bool in_mark_as_migrated,
-        base::OnceCallback<void(bool /*did_modify*/,
-                                base::expected<void, Error> /*result*/)>
-            callback);
-    ImportPkcs12CertTask(ImportPkcs12CertTask&& other);
-    ~ImportPkcs12CertTask();
-
-    const Pkcs12Blob pkcs12_blob;
-    const std::string password;
-    const bool hardware_backed;
-    const bool mark_as_migrated;
-    base::OnceCallback<void(bool /*did_modify*/,
-                            base::expected<void, Error> /*result*/)>
-        callback;
-    int attemps_left = 5;
-  };
-  void ImportPkcs12CertImpl(ImportPkcs12CertTask task);
-  void ImportPkcs12ImportKey(ImportPkcs12CertTask task,
-                             KeyData key_data,
-                             std::vector<CertData> certs_data);
-  void ImportPkcs12DidImportKey(ImportPkcs12CertTask task,
-                                std::vector<CertData> certs_data,
-                                Pkcs11Id pkcs11_id,
-                                KeyType key_type,
-                                base::expected<PublicKey, Error> imported_key);
-  void ImportPkcs12ImportAllCerts(ImportPkcs12CertTask task,
-                                  std::vector<CertData> certs_data,
-                                  Pkcs11Id pkcs11_id,
-                                  kcer::KeyType key_type,
-                                  bool is_multiple_cert,
-                                  int imports_failed);
-  void ImportPkcs12DidImportOneCert(
-      ImportPkcs12CertTask task,
-      std::vector<CertData> certs_data,
-      Pkcs11Id pkcs11_id,
-      kcer::KeyType key_type,
-      bool is_multiple_cert,
-      int imports_failed,
-      std::optional<Error> kcer_error,
-      SessionChapsClient::ObjectHandle cert_handle,
-      uint32_t result_code);
-
   // Indicates whether fake attribute ids should be used (for testing).
   bool translate_attributes_for_testing_ = false;
   // Indicates whether the task queue is blocked. Task queue should be blocked

@@ -11,10 +11,14 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "chromeos/components/kcer/cert_cache.h"
 #include "chromeos/components/kcer/helpers/pkcs12_reader.h"
+#include "chromeos/components/kcer/kcer.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
 #include "third_party/boringssl/src/include/openssl/pkcs8.h"
@@ -45,98 +49,56 @@ std::string AddUniqueIndex(std::string old_name, int unique_number) {
   return old_name + " " + base::NumberToString(unique_number);
 }
 
-Pkcs12ReaderStatusCode MakeNicknameUnique(PK11SlotInfo* slot,
-                                          const std::string& nickname,
-                                          const Pkcs12Reader& pkcs12_reader,
-                                          std::string& unique_nickname) {
+Pkcs12ReaderStatusCode MakeNicknameUnique(
+    const base::flat_set<std::string_view>& existing_nicknames,
+    const std::string& nickname,
+    const Pkcs12Reader& pkcs12_reader,
+    std::string& unique_nickname) {
   int unique_counter = 0;
   std::string temp_nickname;
-  bool is_nickname_used = true;
-  while (is_nickname_used &&
-         unique_counter < kMaxAttemptUniqueNicknameCreation) {
+  while (unique_counter < kMaxAttemptUniqueNicknameCreation) {
     temp_nickname = AddUniqueIndex(nickname, unique_counter);
-    Pkcs12ReaderStatusCode nickname_search_result =
-        pkcs12_reader.IsCertWithNicknameInSlots(temp_nickname,
-                                                is_nickname_used);
-    if (nickname_search_result != Pkcs12ReaderStatusCode::kSuccess) {
-      LOG(ERROR) << MakePkcs12CertImportErrorMessage(nickname_search_result);
-      return nickname_search_result;
+    if (!base::Contains(existing_nicknames, temp_nickname)) {
+      unique_nickname = temp_nickname;
+      return Pkcs12ReaderStatusCode::kSuccess;
     }
     unique_counter++;
   }
 
-  if (unique_counter == kMaxAttemptUniqueNicknameCreation) {
-    return Pkcs12ReaderStatusCode::kPkcs12ReachedMaxAttemptForUniqueness;
-  }
-  unique_nickname = temp_nickname;
-
-  return Pkcs12ReaderStatusCode::kSuccess;
+  return Pkcs12ReaderStatusCode::kPkcs12ReachedMaxAttemptForUniqueness;
 }
 
 Pkcs12ReaderStatusCode GetFirstCertNicknameWithSubject(
-    PK11SlotInfo* slot,
+    const std::vector<scoped_refptr<const Cert>>& existing_certs,
     const Pkcs12Reader& pkcs12_reader,
     base::span<const uint8_t> required_subject_name,
     std::string& previously_used_nickname) {
-  CERTCertificateList* found_certs_ptr = nullptr;
-  Pkcs12ReaderStatusCode fetch_cert_status =
-      pkcs12_reader.FindRawCertsWithSubject(slot, required_subject_name,
-                                            &found_certs_ptr);
-  // Wrapping into ScopedCERTCertificateList for proper cleanup.
-  Pkcs12ScopedCERTCertificateList found_certs(found_certs_ptr);
-
-  if (fetch_cert_status != Pkcs12ReaderStatusCode::kSuccess) {
-    LOG(ERROR) << MakePkcs12CertImportErrorMessage(fetch_cert_status);
-    return fetch_cert_status;
-  }
-
-  if (found_certs) {
-    for (int certIndex = 0; certIndex < found_certs->len; certIndex++) {
-      const unsigned char* der_cert_data = found_certs->certs[certIndex].data;
-      int der_cert_len = found_certs->certs[certIndex].len;
-      bssl::UniquePtr<X509> x509_cert;
-
-      Pkcs12ReaderStatusCode get_cert_result = pkcs12_reader.GetCertFromDerData(
-          der_cert_data, der_cert_len, x509_cert);
-      if (get_cert_result != Pkcs12ReaderStatusCode::kSuccess) {
-        LOG(ERROR) << MakePkcs12CertImportErrorMessage(get_cert_result);
-        continue;
-      }
-
-      std::string nickname;
-      Pkcs12ReaderStatusCode label_fetch_result =
-          pkcs12_reader.GetLabel(x509_cert.get(), nickname);
-      if (label_fetch_result != Pkcs12ReaderStatusCode::kSuccess) {
-        LOG(ERROR) << MakePkcs12CertImportErrorMessage(label_fetch_result);
-        continue;
-      }
-      if (!nickname.empty()) {
-        previously_used_nickname = nickname;
-        return Pkcs12ReaderStatusCode::kSuccess;
-      }
+  for (const scoped_refptr<const Cert>& cert : existing_certs) {
+    ScopedX509 x509(
+        X509_parse_from_buffer(cert.get()->GetX509Cert()->cert_buffer()));
+    if (!x509) {
+      continue;
     }
+
+    base::span<const uint8_t> current_subject_name;
+    if (pkcs12_reader.GetSubjectNameDer(x509.get(), current_subject_name) !=
+        Pkcs12ReaderStatusCode::kSuccess) {
+      continue;
+    }
+
+    if (!base::ranges::equal(required_subject_name, current_subject_name)) {
+      continue;
+    }
+
+    if (cert.get()->GetNickname().empty()) {
+      continue;
+    }
+
+    previously_used_nickname = cert.get()->GetNickname();
+    return Pkcs12ReaderStatusCode::kSuccess;
   }
 
   return Pkcs12ReaderStatusCode::kPkcs12NoNicknamesWasExtracted;
-}
-
-Pkcs12ReaderStatusCode GetScopedCert(
-    X509* cert,
-    const Pkcs12Reader& pkcs12_reader,
-    scoped_refptr<net::X509Certificate>& scoped_cert) {
-  int cert_der_size = 0;
-  bssl::UniquePtr<uint8_t> cert_der;
-  Pkcs12ReaderStatusCode get_cert_der_result =
-      pkcs12_reader.GetDerEncodedCert(cert, cert_der, cert_der_size);
-  if (get_cert_der_result != Pkcs12ReaderStatusCode::kSuccess) {
-    LOG(ERROR) << MakePkcs12CertImportErrorMessage(get_cert_der_result);
-    return get_cert_der_result;
-  }
-
-  scoped_cert = net::X509Certificate::CreateFromBytes(
-      base::make_span(cert_der.get(), static_cast<size_t>(cert_der_size)));
-
-  return Pkcs12ReaderStatusCode::kSuccess;
 }
 
 }  // namespace
@@ -147,10 +109,12 @@ std::string MakePkcs12CertImportErrorMessage(
          base::NumberToString(static_cast<int>(error_code));
 }
 
-Pkcs12ReaderStatusCode GetNickname(PK11SlotInfo* slot,
-                                   X509* cert,
-                                   const Pkcs12Reader& pkcs12_reader,
-                                   std::string& cert_nickname) {
+Pkcs12ReaderStatusCode GetNickname(
+    const std::vector<scoped_refptr<const Cert>>& existing_certs,
+    const base::flat_set<std::string_view>& existing_nicknames,
+    X509* cert,
+    const Pkcs12Reader& pkcs12_reader,
+    std::string& cert_nickname) {
   base::span<const uint8_t> required_subject;
   Pkcs12ReaderStatusCode get_subject_name_result =
       pkcs12_reader.GetSubjectNameDer(cert, required_subject);
@@ -161,7 +125,7 @@ Pkcs12ReaderStatusCode GetNickname(PK11SlotInfo* slot,
 
   std::string already_used_nickname;
   Pkcs12ReaderStatusCode fetch_certs_result = GetFirstCertNicknameWithSubject(
-      slot, pkcs12_reader, required_subject, already_used_nickname);
+      existing_certs, pkcs12_reader, required_subject, already_used_nickname);
 
   bool acceptable_fetch_certs_result =
       fetch_certs_result == Pkcs12ReaderStatusCode::kSuccess ||
@@ -179,8 +143,8 @@ Pkcs12ReaderStatusCode GetNickname(PK11SlotInfo* slot,
     return Pkcs12ReaderStatusCode::kSuccess;
   }
 
-  // No certs with the same subject were found in slot,
-  // will try to extract nickname from the cert.
+  // No certs with the same subject were found, will try to extract nickname
+  // from the cert.
   std::string nickname;
   Pkcs12ReaderStatusCode nickname_extraction_result =
       pkcs12_reader.GetLabel(cert, nickname);
@@ -195,8 +159,8 @@ Pkcs12ReaderStatusCode GetNickname(PK11SlotInfo* slot,
   }
 
   std::string new_unique_nickname;
-  Pkcs12ReaderStatusCode make_nickname_uniq_result =
-      MakeNicknameUnique(slot, nickname, pkcs12_reader, new_unique_nickname);
+  Pkcs12ReaderStatusCode make_nickname_uniq_result = MakeNicknameUnique(
+      existing_nicknames, nickname, pkcs12_reader, new_unique_nickname);
   if (make_nickname_uniq_result != Pkcs12ReaderStatusCode::kSuccess) {
     LOG(ERROR) << MakePkcs12CertImportErrorMessage(make_nickname_uniq_result);
     return make_nickname_uniq_result;
@@ -206,41 +170,27 @@ Pkcs12ReaderStatusCode GetNickname(PK11SlotInfo* slot,
   return Pkcs12ReaderStatusCode::kSuccess;
 }
 
-Pkcs12ReaderStatusCode CanFindInstalledCert(PK11SlotInfo* slot,
-                                            X509* cert,
-                                            const Pkcs12Reader& pkcs12_reader,
-                                            bool& is_cert_installed) {
-  scoped_refptr<net::X509Certificate> scoped_cert;
-  Pkcs12ReaderStatusCode scoped_cert_result =
-      GetScopedCert(cert, pkcs12_reader, scoped_cert);
-  if (scoped_cert_result != Pkcs12ReaderStatusCode::kSuccess) {
-    LOG(ERROR) << MakePkcs12CertImportErrorMessage(scoped_cert_result);
-    return scoped_cert_result;
-  }
-
-  Pkcs12ReaderStatusCode res =
-      pkcs12_reader.IsCertInSlot(slot, scoped_cert, is_cert_installed);
-  if (res != Pkcs12ReaderStatusCode::kSuccess) {
-    LOG(ERROR) << MakePkcs12CertImportErrorMessage(res);
-  }
-
-  return res;
-}
-
 Pkcs12ReaderStatusCode ValidateAndPrepareCertData(
-    PK11SlotInfo* slot,
+    const CertCache& cert_cache,
     const Pkcs12Reader& pkcs12_reader,
     bssl::UniquePtr<STACK_OF(X509)> certs,
     KeyData& key_data,
     std::vector<CertData>& valid_certs_data) {
-  if (!slot) {
-    return Pkcs12ReaderStatusCode::kMissedSlotInfo;
-  }
   if (!certs) {
     return Pkcs12ReaderStatusCode::kCertificateDataMissed;
   }
   if (!key_data.key) {
     return Pkcs12ReaderStatusCode::kKeyDataMissed;
+  }
+
+  std::vector<scoped_refptr<const Cert>> existing_certs =
+      cert_cache.GetAllCerts();
+
+  std::vector<std::string_view> existing_nicknames;
+  existing_nicknames.reserve(existing_certs.size());
+  for (const auto& existing_cert : existing_certs) {
+    existing_nicknames.push_back(
+        std::string_view(existing_cert->GetNickname()));
   }
 
   // Normal case if there is one private key and one certificate in pkcs12, but
@@ -252,6 +202,22 @@ Pkcs12ReaderStatusCode ValidateAndPrepareCertData(
     if (!cert) {
       LOG(WARNING) << MakePkcs12CertImportErrorMessage(
           Pkcs12ReaderStatusCode::kCertificateDataMissed);
+      continue;
+    }
+
+    int cert_der_size = 0;
+    bssl::UniquePtr<uint8_t> cert_der;
+    Pkcs12ReaderStatusCode get_cert_der_result =
+        pkcs12_reader.GetDerEncodedCert(cert.get(), cert_der, cert_der_size);
+    if (get_cert_der_result != Pkcs12ReaderStatusCode::kSuccess) {
+      LOG(ERROR) << MakePkcs12CertImportErrorMessage(get_cert_der_result);
+      return get_cert_der_result;
+    }
+    CertDer cert_der_typed(
+        std::vector<uint8_t>(cert_der.get(), cert_der.get() + cert_der_size));
+
+    if (cert_cache.FindCert(cert_der_typed.value())) {
+      LOG(WARNING) << "Cert is already installed, skipping";
       continue;
     }
 
@@ -270,7 +236,8 @@ Pkcs12ReaderStatusCode ValidateAndPrepareCertData(
 
     if (cert_nickname.empty()) {
       Pkcs12ReaderStatusCode get_cert_nickname_result =
-          GetNickname(slot, cert.get(), pkcs12_reader, cert_nickname);
+          GetNickname(existing_certs, existing_nicknames, cert.get(),
+                      pkcs12_reader, cert_nickname);
       if (get_cert_nickname_result != Pkcs12ReaderStatusCode::kSuccess) {
         LOG(WARNING) << "Can not get nickname for the certificate due to: "
                      << MakePkcs12CertImportErrorMessage(
@@ -279,22 +246,10 @@ Pkcs12ReaderStatusCode ValidateAndPrepareCertData(
       }
     }
 
-    bool is_cert_installed = false;
-    Pkcs12ReaderStatusCode cert_installed_result = CanFindInstalledCert(
-        slot, cert.get(), pkcs12_reader, is_cert_installed);
-    if (cert_installed_result != Pkcs12ReaderStatusCode::kSuccess) {
-      LOG(ERROR) << "Failed to find installed cert in slot due to: "
-                 << MakePkcs12CertImportErrorMessage(cert_installed_result);
-      continue;
-    }
-    if (is_cert_installed) {
-      LOG(WARNING) << "Cert is already installed, skipping";
-      continue;
-    }
-
     CertData& cert_data = valid_certs_data.emplace_back();
     cert_data.x509 = std::move(cert);
-    cert_data.nickname = cert_nickname;
+    cert_data.nickname = std::move(cert_nickname);
+    cert_data.cert_der = std::move(cert_der_typed);
   }
 
   if (valid_certs_data.size() > 0) {

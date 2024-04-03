@@ -15,10 +15,12 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "chromeos/components/kcer/kcer.h"
 #include "net/cert/x509_certificate.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/pkcs7.h"
 #include "third_party/boringssl/src/include/openssl/stack.h"
+#include "third_party/boringssl/src/include/openssl/x509.h"
 
 namespace kcer::internal {
 
@@ -72,12 +74,13 @@ enum class Pkcs12ReaderCertSearchType {
   kPlainType,
 };
 
-struct CertData {
+struct COMPONENT_EXPORT(KCER) CertData {
   CertData();
   CertData(CertData&& other);
   ~CertData();
   bssl::UniquePtr<X509> x509;
   std::string nickname;
+  CertDer cert_der;
 };
 
 struct COMPONENT_EXPORT(KCER) KeyData {
@@ -88,6 +91,12 @@ struct COMPONENT_EXPORT(KCER) KeyData {
   bssl::UniquePtr<EVP_PKEY> key;
   std::vector<uint8_t> cka_id_value;
 };
+
+// A helper for std::unique_ptr to call X509_free.
+struct X509Deleter {
+  void operator()(X509* cert) { X509_free(cert); }
+};
+using ScopedX509 = std::unique_ptr<X509, X509Deleter>;
 
 // Helper class for working with boringssl and related objects.
 // TODO(miersh): Rename, don't mention PKCS#12.

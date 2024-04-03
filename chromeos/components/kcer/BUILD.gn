@@ -104,6 +104,7 @@ source_set("unit_tests") {
     "chaps/session_chaps_client_unittest.cc",
     "helpers/key_helper_unittest.cc",
     "helpers/pkcs12_reader_unittest.cc",
+    "helpers/pkcs12_validator_unittest.cc",
     "kcer_nss/kcer_nss_unittest.cc",
     "kcer_token_impl_unittest.cc",
     "token_key_finder_unittest.cc",

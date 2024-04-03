@@ -7,6 +7,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/hash/sha1.h"
 #include "chromeos/components/kcer/helpers/key_helper.h"
+#include "chromeos/components/kcer/kcer_histograms.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/openssl_util.h"
 
@@ -23,6 +24,23 @@ base::OnceCallback<void(uint32_t)> Bind(
     Error error) {
   return base::IgnoreArgs<uint32_t>(
       base::BindOnce(std::move(callback), base::unexpected(error)));
+}
+
+void RecordUmaImportSuccess(KeyType key_type, bool is_multiple_cert) {
+  if (key_type == kcer::KeyType::kRsa) {
+    RecordKcerPkcs12ImportUmaEvent(
+        kcer::internal::KcerPkcs12ImportEvent::SuccessRsaCertImportTask);
+  } else {
+    RecordKcerPkcs12ImportUmaEvent(
+        kcer::internal::KcerPkcs12ImportEvent::SuccessEcCertImportTask);
+  }
+
+  RecordKcerPkcs12ImportUmaEvent(
+      kcer::internal::KcerPkcs12ImportEvent::SuccessPkcs12ChapsImport);
+  if (is_multiple_cert) {
+    RecordKcerPkcs12ImportUmaEvent(
+        kcer::internal::KcerPkcs12ImportEvent::SuccessMultipleCertImport);
+  }
 }
 
 }  // namespace
@@ -181,10 +199,10 @@ void KcerTokenUtils::FindPrivateKey(
 //==============================================================================
 
 void KcerTokenUtils::ImportCert(
-    bssl::UniquePtr<X509> cert,
-    Pkcs11Id pkcs11_id,
-    std::string nickname,
-    CertDer cert_der,
+    const bssl::UniquePtr<X509>& cert,
+    const Pkcs11Id& pkcs11_id,
+    const std::string& nickname,
+    const CertDer& cert_der,
     bool is_hardware_backed,
     bool mark_as_migrated,
     base::OnceCallback<void(std::optional<Error> kcer_error,
@@ -622,6 +640,175 @@ void KcerTokenUtils::DidImportKey(ImportKeyTask task,
         Bind(std::move(task.callback), Error::kFailedToImportKey));
   }
   return std::move(task.callback).Run(kcer_public_key);
+}
+
+//==============================================================================
+
+void KcerTokenUtils::ImportPkcs12(KeyData key_data,
+                                  std::vector<CertData> certs_data,
+                                  bool hardware_backed,
+                                  bool mark_as_migrated,
+                                  ImportPkcs12Callback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  kcer::KeyType key_type;
+  if (IsKeyRsaType(key_data.key)) {
+    RecordKcerPkcs12ImportUmaEvent(
+        KcerPkcs12ImportEvent::AttemptedRsaKeyImportTask);
+    key_type = KeyType::kRsa;
+  } else if (IsKeyEcType(key_data.key)) {
+    RecordKcerPkcs12ImportUmaEvent(
+        KcerPkcs12ImportEvent::AttemptedEcKeyImportTask);
+    key_type = KeyType::kEcc;
+  } else {
+    LOG(ERROR) << "Unexpected key type";
+    return std::move(callback).Run(/*did_modify=*/false,
+                                   base::unexpected(Error::kUnknownKeyType));
+  }
+
+  auto import_callback = base::BindOnce(
+      &KcerTokenUtils::ImportPkc12DidImportKey, weak_factory_.GetWeakPtr(),
+      key_type, Pkcs11Id(key_data.cka_id_value), std::move(certs_data),
+      hardware_backed, mark_as_migrated, std::move(callback));
+
+  ImportKey(ImportKeyTask(std::move(key_data), hardware_backed,
+                          mark_as_migrated, std::move(import_callback)));
+}
+
+void KcerTokenUtils::ImportPkc12DidImportKey(
+    kcer::KeyType key_type,
+    Pkcs11Id pkcs11_id,
+    std::vector<CertData> certs_data,
+    bool hardware_backed,
+    bool mark_as_migrated,
+    ImportPkcs12Callback callback,
+    base::expected<PublicKey, Error> imported_key) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (!imported_key.has_value()) {
+    return std::move(callback).Run(/*did_modify=*/false,
+                                   base::unexpected(imported_key.error()));
+  }
+  if (key_type == kcer::KeyType::kRsa) {
+    RecordKcerPkcs12ImportUmaEvent(
+        KcerPkcs12ImportEvent::SuccessRsaKeyImportTask);
+  } else {
+    RecordKcerPkcs12ImportUmaEvent(
+        KcerPkcs12ImportEvent::SuccessEcKeyImportTask);
+  }
+
+  bool is_multi_cert_import = (certs_data.size() > 1);
+  if (is_multi_cert_import) {
+    RecordKcerPkcs12ImportUmaEvent(
+        KcerPkcs12ImportEvent::AttemptedMultipleCertImport);
+  }
+
+  ImportAllCerts(ImportAllCertsTask(
+      std::move(pkcs11_id), std::move(certs_data), hardware_backed,
+      mark_as_migrated, is_multi_cert_import, key_type, std::move(callback)));
+}
+
+//==============================================================================
+
+KcerTokenUtils::ImportAllCertsTask::ImportAllCertsTask(
+    Pkcs11Id in_pkcs11_id,
+    std::vector<CertData> in_certs_data,
+    bool in_hardware_backed,
+    bool in_mark_as_migrated,
+    bool in_multi_cert_import,
+    KeyType in_key_type,
+    ImportPkcs12Callback in_callback)
+    : pkcs11_id(std::move(in_pkcs11_id)),
+      certs_data(std::move(in_certs_data)),
+      hardware_backed(in_hardware_backed),
+      mark_as_migrated(in_mark_as_migrated),
+      multi_cert_import(in_multi_cert_import),
+      key_type(in_key_type),
+      callback(std::move(in_callback)) {}
+KcerTokenUtils::ImportAllCertsTask::ImportAllCertsTask(
+    ImportAllCertsTask&& other) = default;
+KcerTokenUtils::ImportAllCertsTask::~ImportAllCertsTask() = default;
+
+void KcerTokenUtils::ImportAllCerts(ImportAllCertsTask task) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  RecordKcerPkcs12ImportUmaEvent(
+      KcerPkcs12ImportEvent::AttemptedPkcs12ChapsImportTask);
+  task.attemps_left--;
+  if (task.attemps_left < 0) {
+    return std::move(task.callback)
+        .Run(/*did_modify=*/false,
+             base::unexpected(Error::kPkcs11SessionFailure));
+  }
+
+  // The original vector of certs has to stay unchanged in case a retry is
+  // required. Create an additional vector to track which certs still need to be
+  // processed in the current attempt. Raw pointers must not outlive the
+  // originals stored in the `task`.
+  std::vector<const CertData*> certs_data;
+  certs_data.reserve(task.certs_data.size());
+  for (const CertData& data : task.certs_data) {
+    certs_data.push_back(&data);
+  }
+
+  return ImportAllCertsImpl(std::move(task), std::move(certs_data),
+                            /*imports_failed=*/0);
+}
+
+void KcerTokenUtils::ImportAllCertsImpl(ImportAllCertsTask task,
+                                        std::vector<const CertData*> certs_data,
+                                        int imports_failed) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (certs_data.empty()) {
+    base::expected<void, Error> result;
+    if (imports_failed != 0) {
+      result = base::unexpected(Error::kFailedToImportCertificate);
+    } else {
+      RecordUmaImportSuccess(task.key_type, task.multi_cert_import);
+    }
+    return std::move(task.callback).Run(/*did_modify=*/true, std::move(result));
+  }
+
+  const CertData* cur_cert = certs_data.back();
+  certs_data.pop_back();
+
+  Pkcs11Id pkcs11_id = task.pkcs11_id;
+  bool hardware_backed = task.hardware_backed;
+  bool mark_as_migrated = task.mark_as_migrated;
+
+  auto callback =
+      base::BindOnce(&KcerTokenUtils::ImportAllCertsDidImportOneCert,
+                     weak_factory_.GetWeakPtr(), std::move(task),
+                     std::move(certs_data), imports_failed);
+
+  return ImportCert(cur_cert->x509, pkcs11_id, cur_cert->nickname,
+                    cur_cert->cert_der, hardware_backed, mark_as_migrated,
+                    std::move(callback));
+}
+
+void KcerTokenUtils::ImportAllCertsDidImportOneCert(
+    ImportAllCertsTask task,
+    std::vector<const CertData*> certs_data,
+    int imports_failed,
+    std::optional<Error> kcer_error,
+    SessionChapsClient::ObjectHandle cert_handle,
+    uint32_t result_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (SessionChapsClient::IsSessionError(result_code)) {
+    // Try again from the beginning. If some keys or certs were imported before
+    // the session got closed, they will be found and skipped on the next
+    // attempt.
+    return ImportAllCerts(std::move(task));
+  }
+
+  if (kcer_error.has_value() || (result_code != chromeos::PKCS11_CKR_OK)) {
+    ++imports_failed;
+  }
+
+  return ImportAllCertsImpl(std::move(task), std::move(certs_data),
+                            imports_failed);
 }
 
 }  // namespace kcer::internal
