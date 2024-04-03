@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/ui/default_promo/base_default_browser_promo_view_provider.h"
 
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/promos_manager/model/promo_config.h"
@@ -13,6 +16,8 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
+using base::RecordAction;
+using base::UserMetricsAction;
 using l10n_util::GetNSString;
 
 @interface BaseDefaultBrowserPromoViewProvider ()
@@ -56,36 +61,51 @@ using l10n_util::GetNSString;
 }
 
 - (void)promoWasDisplayed {
-  // TODO: Record metrics.
+  [self recordDefaultBrowserPromoShown];
 }
 
 #pragma mark - StandardPromoActionHandler
 
 // The "Primary Action" was touched.
 - (void)standardPromoPrimaryAction {
+  RecordAction(
+      UserMetricsAction("IOS.DefaultBrowserPromo.TailoredFullscreen.Accepted"));
+  LogDefaultBrowserPromoHistogramForAction(
+      self.defaultBrowserPromoType,
+      IOSDefaultBrowserPromoAction::kActionButton);
+  LogUserInteractionWithTailoredFullscreenPromo();
+
   [self openSettings];
   [self dissmissPromo];
-
-  // TODO: Record metrics.
 }
 
 // The "Secondary Action" was touched.
 - (void)standardPromoSecondaryAction {
-  [self dissmissPromo];
+  RecordAction(
+      UserMetricsAction("IOS.DefaultBrowserPromo.TailoredFullscreen.Cancel"));
+  LogDefaultBrowserPromoHistogramForAction(
+      self.defaultBrowserPromoType, IOSDefaultBrowserPromoAction::kCancel);
+  LogUserInteractionWithTailoredFullscreenPromo();
 
-  // TODO: Record metrics.
+  [self dissmissPromo];
 }
 
 // The "Learn More" button was touched.
 - (void)standardPromoLearnMoreAction {
-  [self showLearnMoreView];
+  base::RecordAction(base::UserMetricsAction(
+      "IOS.DefaultBrowserPromo.TailoredFullscreen.MoreInfoTapped"));
+  LogUserInteractionWithTailoredFullscreenPromo();
 
-  // TODO: Record metrics.
+  [self showLearnMoreView];
 }
 
 // Gesture-based actions.
 - (void)standardPromoDismissSwipe {
-  // TODO: Record metrics.
+  RecordAction(
+      UserMetricsAction("IOS.DefaultBrowserPromo.TailoredFullscreen.Dismiss"));
+  LogDefaultBrowserPromoHistogramForAction(
+      self.defaultBrowserPromoType, IOSDefaultBrowserPromoAction::kDismiss);
+  LogUserInteractionWithTailoredFullscreenPromo();
 }
 
 #pragma mark - StandardPromoViewProvider
@@ -151,4 +171,18 @@ using l10n_util::GetNSString;
   self.promoViewController.secondaryActionString =
       GetNSString(IDS_IOS_DEFAULT_BROWSER_SECONDARY_BUTTON_TEXT);
 }
+
+// Records that a default browser promo has been shown.
+- (void)recordDefaultBrowserPromoShown {
+  // Record the current state before updating the local storage.
+  RecordPromoDisplayStatsToUMA();
+
+  RecordAction(
+      UserMetricsAction("IOS.DefaultBrowserPromo.TailoredFullscreen.Appear"));
+  base::UmaHistogramEnumeration(
+      "IOS.DefaultBrowserPromo.Shown",
+      DefaultPromoTypeForUMA(self.defaultBrowserPromoType));
+  LogFullscreenDefaultBrowserPromoDisplayed();
+}
+
 @end
