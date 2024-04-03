@@ -20,10 +20,26 @@
 #include "components/variations/service/variations_service.h"
 #include "net/base/load_flags.h"
 
+std::string GetAidaEndpoint() {
+  if (base::FeatureList::IsEnabled(
+          ::features::kDevToolsConsoleInsightsDogfood)) {
+    return features::kDevToolsConsoleInsightsDogfoodAidaEndpoint.Get();
+  }
+  return features::kDevToolsConsoleInsightsAidaEndpoint.Get();
+}
+
+std::string GetAidaScope() {
+  if (base::FeatureList::IsEnabled(
+          ::features::kDevToolsConsoleInsightsDogfood)) {
+    return features::kDevToolsConsoleInsightsDogfoodAidaScope.Get();
+  }
+  return features::kDevToolsConsoleInsightsAidaScope.Get();
+}
+
 AidaClient::AidaClient(Profile* profile)
     : profile_(*profile),
-      aida_endpoint_(features::kDevToolsConsoleInsightsAidaEndpoint.Get()),
-      aida_scope_(features::kDevToolsConsoleInsightsAidaScope.Get()) {}
+      aida_endpoint_(GetAidaEndpoint()),
+      aida_scope_(GetAidaScope()) {}
 
 AidaClient::~AidaClient() = default;
 

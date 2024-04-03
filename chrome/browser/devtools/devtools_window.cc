@@ -1256,6 +1256,32 @@ DevToolsWindow* DevToolsWindow::Create(
                             inspected_web_contents, can_dock, opened_by);
 }
 
+std::string GetConsoleInsightsModelId() {
+  if (base::FeatureList::IsEnabled(
+          ::features::kDevToolsConsoleInsightsDogfood)) {
+    return features::kDevToolsConsoleInsightsDogfoodModelId.Get();
+  }
+  return features::kDevToolsConsoleInsightsModelId.Get();
+}
+
+std::string GetConsoleInsightsTemperature() {
+  if (base::FeatureList::IsEnabled(
+          ::features::kDevToolsConsoleInsightsDogfood)) {
+    return base::NumberToString(
+        features::kDevToolsConsoleInsightsDogfoodTemperature.Get());
+  }
+  return base::NumberToString(
+      features::kDevToolsConsoleInsightsTemperature.Get());
+}
+
+bool GetConsoleInsightsOptIn() {
+  if (base::FeatureList::IsEnabled(
+          ::features::kDevToolsConsoleInsightsDogfood)) {
+    return features::kDevToolsConsoleInsightsDogfoodOptIn.Get();
+  }
+  return features::kDevToolsConsoleInsightsOptIn.Get();
+}
+
 // static
 GURL DevToolsWindow::GetDevToolsURL(Profile* profile,
                                     FrontendType frontend_type,
@@ -1293,12 +1319,9 @@ GURL DevToolsWindow::GetDevToolsURL(Profile* profile,
       }
       blocked_reason = AidaClient::CanUseAida(profile);
       if (!blocked_reason.blocked_by_feature_flag) {
-        url += "&enableAida=true&aidaModelId=" +
-               features::kDevToolsConsoleInsightsModelId.Get() +
-               "&aidaTemperature=" +
-               base::NumberToString(
-                   features::kDevToolsConsoleInsightsTemperature.Get());
-        if (features::kDevToolsConsoleInsightsOptIn.Get()) {
+        url += "&enableAida=true&aidaModelId=" + GetConsoleInsightsModelId() +
+               "&aidaTemperature=" + GetConsoleInsightsTemperature();
+        if (GetConsoleInsightsOptIn()) {
           url += "&ci_disabledByDefault=true";
         }
       }

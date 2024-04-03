@@ -33,6 +33,7 @@ extern const base::FeatureParam<bool>
 
 BASE_DECLARE_FEATURE(kDestroyProfileOnBrowserClose);
 BASE_DECLARE_FEATURE(kDestroySystemProfiles);
+
 BASE_DECLARE_FEATURE(kDevToolsConsoleInsights);
 extern const base::FeatureParam<std::string> kDevToolsConsoleInsightsAidaScope;
 extern const base::FeatureParam<std::string>
@@ -40,7 +41,18 @@ extern const base::FeatureParam<std::string>
 extern const base::FeatureParam<std::string> kDevToolsConsoleInsightsModelId;
 extern const base::FeatureParam<double> kDevToolsConsoleInsightsTemperature;
 extern const base::FeatureParam<bool> kDevToolsConsoleInsightsOptIn;
+
 BASE_DECLARE_FEATURE(kDevToolsConsoleInsightsDogfood);
+extern const base::FeatureParam<std::string>
+    kDevToolsConsoleInsightsDogfoodAidaScope;
+extern const base::FeatureParam<std::string>
+    kDevToolsConsoleInsightsDogfoodAidaEndpoint;
+extern const base::FeatureParam<std::string>
+    kDevToolsConsoleInsightsDogfoodModelId;
+extern const base::FeatureParam<double>
+    kDevToolsConsoleInsightsDogfoodTemperature;
+extern const base::FeatureParam<bool> kDevToolsConsoleInsightsDogfoodOptIn;
+
 BASE_DECLARE_FEATURE(kDevToolsConsoleInsightsSettingVisible);
 extern const base::FeatureParam<std::string>
     kDevToolsConsoleInsightsSettingVisibleBlockedReason;
