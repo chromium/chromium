@@ -15,6 +15,7 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
+#include "components/account_id/account_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "url/gurl.h"
@@ -136,6 +137,15 @@ class ASH_PUBLIC_EXPORT AppListClient {
   // Returns the sorting order that is saved in perf service and gets shared
   // among synced devices.
   virtual ash::AppListSortOrder GetPermanentSortingOrder() const = 0;
+
+  // If present, indicates whether the user associated with the given
+  // `account_id` is considered new across all ChromeOS devices (i,e, it is the
+  // first device the user has ever logged into). A user is considered new if
+  // the first app list sync in the session was the first sync ever across all
+  // ChromeOS devices and sessions for the given user. As such, this value is
+  // absent until the first app list sync of the session is completed. NOTE:
+  // Currently only the primary user profile is supported.
+  virtual std::optional<bool> IsNewUser(const AccountId& account_id) const = 0;
 
  protected:
   virtual ~AppListClient() = default;

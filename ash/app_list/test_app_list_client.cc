@@ -130,5 +130,9 @@ void TestAppListClient::OnZeroStateSearchDone(base::OnceClosure on_done) {
   zero_state_search_done_count_++;
   std::move(on_done).Run();
 }
+std::optional<bool> TestAppListClient::IsNewUser(
+    const AccountId& account_id) const {
+  return is_new_user_;
+}
 
 }  // namespace ash

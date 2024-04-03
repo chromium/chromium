@@ -38,6 +38,7 @@ class AppsCollectionsControllerTest : public NoSessionAshTestBase {
   void SetUp() override {
     NoSessionAshTestBase::SetUp();
 
+    GetTestAppListClient()->set_is_new_user(true);
     SimulateNewUserFirstLogin("primary@test");
   }
 
@@ -143,11 +144,18 @@ class AppsCollectionsControllerUserElegibilityTest
       public ::testing::WithParamInterface<std::tuple<
           /*is_new_user_locally=*/bool,
           /*is_managed_user=*/bool,
-          user_manager::UserType>> {
+          user_manager::UserType,
+          /*is_user_first_login_to_chromeos=*/std::optional<bool>>> {
  public:
   AppsCollectionsControllerUserElegibilityTest() {
     scoped_feature_list_.InitWithFeatures({app_list_features::kAppsCollections},
                                           {});
+  }
+
+  // NoSessionAshTestBase:
+  void SetUp() override {
+    NoSessionAshTestBase::SetUp();
+    GetTestAppListClient()->set_is_new_user(IsUserFirstLogInToChromeOS());
   }
 
   // Returns the user type based on test parameterization.
@@ -159,6 +167,12 @@ class AppsCollectionsControllerUserElegibilityTest
   // Returns whether the user should be considered "new" locally based on test
   // parameterization.
   bool IsNewUserLocally() const { return std::get<0>(GetParam()); }
+
+  // Returns whether the user should be considered "new" across all devices
+  // based on test parameterization.
+  std::optional<bool> IsUserFirstLogInToChromeOS() const {
+    return std::get<3>(GetParam());
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -176,7 +190,11 @@ INSTANTIATE_TEST_SUITE_P(
                           user_manager::UserType::kKioskApp,
                           user_manager::UserType::kPublicAccount,
                           user_manager::UserType::kRegular,
-                          user_manager::UserType::kWebKioskApp)));
+                          user_manager::UserType::kWebKioskApp),
+        /*is_user_first_login_to_chromeos=*/
+        ::testing::Values(std::make_optional(true),
+                          std::make_optional(false),
+                          std::nullopt)));
 
 TEST_P(AppsCollectionsControllerUserElegibilityTest, EnforcesUserEligibility) {
   // A user is eligible for showing AppsCollections if and only if the user
@@ -184,10 +202,11 @@ TEST_P(AppsCollectionsControllerUserElegibilityTest, EnforcesUserEligibility) {
   // (1) known to be "new" locally, and
   // (2) not a managed user, and
   // (3) a regular user.
+  // (4) a known to be 'new' user across the ChromeOS ecosystem.
   const bool is_user_eligibility_expected =
-      (IsNewUserLocally() && !IsManagedUser() &&
-       GetUserType() == user_manager::UserType::kRegular);
-
+      IsNewUserLocally() && !IsManagedUser() &&
+      GetUserType() == user_manager::UserType::kRegular &&
+      IsUserFirstLogInToChromeOS().value_or(false);
   // Add a user based on test parameterization.
   const AccountId primary_account_id = AccountId::FromUserEmail("primary@test");
   TestSessionControllerClient* const session = GetSessionControllerClient();
@@ -205,6 +224,30 @@ TEST_P(AppsCollectionsControllerUserElegibilityTest, EnforcesUserEligibility) {
 
   auto* apps_collections_page = helper->GetBubbleAppsCollectionsPage();
   EXPECT_EQ(apps_collections_page->GetVisible(), is_user_eligibility_expected);
+}
+
+// Verifies that regardless of the user elegibility parameters, secondary users
+// are not presented with apps collections. This is a self-imposed restriction.
+TEST_P(AppsCollectionsControllerUserElegibilityTest, SecondaryUserNotElegible) {
+  SimulateNewUserFirstLogin("primary@test");
+  // Add a user based on test parameterization.
+  const AccountId secondary_account_id =
+      AccountId::FromUserEmail("secondary@test");
+  TestSessionControllerClient* const session = GetSessionControllerClient();
+  session->AddUserSession(secondary_account_id.GetUserEmail(), GetUserType(),
+                          /*provide_pref_service=*/true,
+                          /*is_new_profile=*/IsNewUserLocally(),
+                          /*given_name=*/std::string(), IsManagedUser());
+  session->SwitchActiveUser(secondary_account_id);
+
+  // Activate the user session.
+  session->SetSessionState(session_manager::SessionState::ACTIVE);
+
+  auto* helper = GetAppListTestHelper();
+  helper->ShowAppList();
+
+  auto* apps_collections_page = helper->GetBubbleAppsCollectionsPage();
+  EXPECT_FALSE(apps_collections_page->GetVisible());
 }
 
 }  // namespace

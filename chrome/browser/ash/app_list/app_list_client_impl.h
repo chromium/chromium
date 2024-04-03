@@ -22,12 +22,15 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
+#include "chrome/browser/profiles/profile_manager_observer.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/display/types/display_constants.h"
+
+class ProfileManager;
 
 namespace app_list {
 class SearchController;
@@ -44,7 +47,8 @@ class AppListClientImpl
       public AppListControllerDelegate,
       public user_manager::UserManager::UserSessionStateObserver,
       public session_manager::SessionManagerObserver,
-      public TemplateURLServiceObserver {
+      public TemplateURLServiceObserver,
+      public ProfileManagerObserver {
  public:
   // Indicates the launcher usage state during the session started by a new user
   // (i.e. the session completing the OOBE flow) but before any account
@@ -111,6 +115,7 @@ class AppListClientImpl
       override;
   void LoadIcon(int profile_id, const std::string& app_id) override;
   ash::AppListSortOrder GetPermanentSortingOrder() const override;
+  std::optional<bool> IsNewUser(const AccountId& account_id) const override;
 
   // user_manager::UserManager::UserSessionStateObserver:
   void ActiveUserChanged(user_manager::User* active_user) override;
@@ -130,6 +135,10 @@ class AppListClientImpl
                const GURL& url,
                ui::PageTransition transition,
                WindowOpenDisposition disposition) override;
+
+  // ProfileManagerObserver:
+  void OnProfileAdded(Profile* profile) override;
+  void OnProfileManagerDestroying() override;
 
   // Associates this client with the current active user, called when this
   // client is accessed or active user is changed.
@@ -240,6 +249,18 @@ class AppListClientImpl
 
   bool app_list_target_visibility_ = false;
   bool app_list_visible_ = false;
+
+  // If present, indicates whether the user associated with the primary profile
+  // is considered new. A user is considered new if the first app list sync in
+  // the session was the first sync ever across all ChromeOS devices and
+  // sessions for the given user. As such, this value is absent until the first
+  // app list sync of the session is completed.
+  std::optional<bool> is_primary_profile_new_user_;
+
+  // The profile manager is observed in order to ensure that the AppList has the
+  // necessary dependencies to identify new users.
+  base::ScopedObservation<ProfileManager, ProfileManagerObserver>
+      profile_manager_observation_{this};
 
   base::WeakPtrFactory<AppListClientImpl> weak_ptr_factory_{this};
 };

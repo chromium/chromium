@@ -38,6 +38,7 @@
 #include "chrome/browser/ash/app_list/search/search_controller_factory.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/url_handler_ash.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -54,6 +55,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
 #include "chromeos/crosapi/cpp/gurl_os_handler_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -135,10 +137,31 @@ class ScopedIphSessionImpl : public ash::ScopedIphSession {
   const raw_ref<const base::Feature> iph_feature_;
 };
 
+app_list::AppListSyncableService* GetAppListSyncableService(Profile* profile) {
+  return app_list::AppListSyncableServiceFactory::GetForProfile(profile);
+}
+
+Profile* GetProfile(const AccountId& account_id) {
+  return Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          account_id));
+}
+
+bool IsPrimaryProfile(Profile* profile) {
+  return user_manager::UserManager::Get()->IsPrimaryUser(
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile));
+}
+
 }  // namespace
 
 AppListClientImpl::AppListClientImpl()
     : app_list_controller_(ash::AppListController::Get()) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  profile_manager_observation_.Observe(profile_manager);
+  for (Profile* profile : profile_manager->GetLoadedProfiles()) {
+    OnProfileAdded(profile);
+  }
+
   app_list_controller_->SetClient(this);
   user_manager::UserManager::Get()->AddSessionStateObserver(this);
   session_manager::SessionManager::Get()->AddObserver(this);
@@ -532,6 +555,7 @@ AppListModelUpdater* AppListClientImpl::GetModelUpdaterForTest() {
 void AppListClientImpl::InitializeAsIfNewUserLoginForTest() {
   new_user_session_activation_time_ = base::Time::Now();
   state_for_new_user_ = StateForNewUser();
+  is_primary_profile_new_user_ = true;
 }
 
 void AppListClientImpl::OnSessionStateChanged() {
@@ -652,6 +676,36 @@ void AppListClientImpl::OpenURL(Profile* profile,
     params.disposition = disposition;
     Navigate(&params);
   }
+}
+
+void AppListClientImpl::OnProfileAdded(Profile* profile) {
+  // NOTE: Apps Collections in Ash is currently only supported for the primary
+  // user profile. This is a self-imposed restriction.
+  if (!IsPrimaryProfile(profile)) {
+    return;
+  }
+
+  // Since we only currently support the primary user profile, we can stop
+  // observing the profile manager once it has been added.
+  profile_manager_observation_.Reset();
+
+  // Cache whether the user associated with the primary profile is considered
+  // new, based on whether the first app list sync in the session was the first
+  // sync ever across all ChromeOS devices and sessions for the given user.
+  if (auto* app_list_syncable_service = GetAppListSyncableService(profile)) {
+    app_list_syncable_service->OnFirstSync(base::BindOnce(
+        [](const base::WeakPtr<AppListClientImpl>& self,
+           bool was_first_sync_ever) {
+          if (self) {
+            self->is_primary_profile_new_user_ = was_first_sync_ever;
+          }
+        },
+        weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void AppListClientImpl::OnProfileManagerDestroying() {
+  profile_manager_observation_.Reset();
 }
 
 ash::AppListNotifier* AppListClientImpl::GetNotifier() {
@@ -865,4 +919,13 @@ void AppListClientImpl::MaybeRecordLauncherAction(
           kTimeMetricsBucketCount);
     }
   }
+}
+
+std::optional<bool> AppListClientImpl::IsNewUser(
+    const AccountId& account_id) const {
+  // NOTE: Apps Collections in Ash is currently only supported for the primary
+  // user profile. This is a self-imposed restriction.
+  auto* const profile = GetProfile(account_id);
+  CHECK(IsPrimaryProfile(profile));
+  return is_primary_profile_new_user_;
 }

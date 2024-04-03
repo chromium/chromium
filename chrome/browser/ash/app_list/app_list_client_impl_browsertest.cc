@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/app_list/app_list_client_impl.h"
+
 #include <stddef.h>
 
 #include <memory>
@@ -21,12 +23,14 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/one_shot_event.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
@@ -36,7 +40,6 @@
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
-#include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/app_list_model_updater_observer.h"
@@ -52,12 +55,14 @@
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
@@ -71,16 +76,20 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
+#include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
+#include "components/user_manager/user_type.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -97,6 +106,8 @@
 
 // Browser Test for AppListClientImpl.
 using AppListClientImplBrowserTest = extensions::PlatformAppBrowserTest;
+using ::testing::Invoke;
+using ::testing::NiceMock;
 
 namespace {
 
@@ -123,6 +134,33 @@ class TestObserver : public app_list::AppListSyncableService::Observer {
                           app_list::AppListSyncableService::Observer>
       observer_{this};
   size_t add_or_update_count_ = 0;
+};
+
+// A fake for AppListSyncableService that allows easy modifications.
+class AppListSyncableServiceFake : public app_list::AppListSyncableService {
+ public:
+  AppListSyncableServiceFake(Profile* profile,
+                             bool was_first_sync_ever,
+                             base::OneShotEvent* on_first_sync)
+      : app_list::AppListSyncableService(profile),
+        on_first_sync_(on_first_sync),
+        was_first_sync_ever_(was_first_sync_ever) {}
+  ~AppListSyncableServiceFake() override = default;
+  AppListSyncableServiceFake(const AppListSyncableServiceFake&) = delete;
+  AppListSyncableServiceFake& operator=(const AppListSyncableServiceFake&) =
+      delete;
+
+  void OnFirstSync(
+      base::OnceCallback<void(bool was_first_sync_ever)> callback) override {
+    on_first_sync_->Post(
+        FROM_HERE, base::BindOnce(std::move(callback), was_first_sync_ever_));
+  }
+
+  // The event to signal when the first app list sync in the session has been
+  // completed.
+  const raw_ptr<base::OneShotEvent> on_first_sync_;
+
+  bool was_first_sync_ever_;
 };
 
 }  // namespace
@@ -1149,4 +1187,101 @@ IN_PROC_BROWSER_TEST_F(
   tester.ExpectTotalCount(
       "Apps.TimeDurationBetweenNewUserSessionActivationAndAppsCollectionShown",
       0);
+}
+
+class AppListClientNewUserTest : public InProcessBrowserTest,
+                                 public testing::WithParamInterface<bool> {
+ public:
+  AppListClientNewUserTest() = default;
+  ~AppListClientNewUserTest() override = default;
+
+ public:
+  // Returns the event to signal when the first app list sync in the session has
+  // been completed.
+  base::OneShotEvent& on_first_sync() { return on_first_sync_; }
+
+  // Returns whether the first app list sync in the session was the first sync
+  // ever across all ChromeOS devices and sessions for the given user, based on
+  // test parameterization.
+  bool was_first_sync_ever() const { return GetParam(); }
+
+  // Returns the `AccountId` for the primary `profile()`.
+  const AccountId& account_id() const { return account_id_; }
+
+ private:
+  // InProcessBrowserTest:
+  void SetUpOnMainThread() override {
+    SetUpEnvironment();
+    // Inject the testing profile into the client, since once a user session was
+    // created, with one browser, the client stops observing the profile
+    // manager.
+    AppListClientImpl::GetInstance()->OnProfileAdded(profile_);
+    InProcessBrowserTest::SetUpOnMainThread();
+  }
+
+  // Sets up profile and user manager. Should be called only once on test setup.
+  void SetUpEnvironment() {
+    account_id_ = AccountId::FromUserEmailGaiaId("test@test-user", "gaia-id");
+
+    TestingProfile::Builder profile_builder;
+    profile_builder.AddTestingFactory(
+        app_list::AppListSyncableServiceFactory::GetInstance(),
+        base::BindLambdaForTesting([&](content::BrowserContext* browser_context)
+                                       -> std::unique_ptr<KeyedService> {
+          return std::make_unique<AppListSyncableServiceFake>(
+              Profile::FromBrowserContext(browser_context),
+              was_first_sync_ever(), &on_first_sync_);
+        }));
+    profile_builder.SetProfileName("test@test-user");
+    profile_builder.SetPath(
+        ash::BrowserContextHelper::Get()->GetBrowserContextPathByUserIdHash(
+            user_manager::FakeUserManager::GetFakeUsernameHash(account_id_)));
+
+    std::unique_ptr<TestingProfile> testing_profile = profile_builder.Build();
+    profile_ = testing_profile.get();
+    g_browser_process->profile_manager()->RegisterTestingProfile(
+        std::move(testing_profile), true);
+
+    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
+    user_manager->AddUserWithAffiliationAndTypeAndProfile(
+        account_id_, true, user_manager::UserType::kRegular, profile_);
+    user_manager->LoginUser(account_id_);
+
+    user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::move(user_manager));
+  }
+
+  void TearDownOnMainThread() override {
+    profile_ = nullptr;
+    base::RunLoop().RunUntilIdle();
+    user_manager_enabler_.reset();
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
+  std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
+  // The event to signal when the first app list sync in the session has been
+  // completed.
+  base::OneShotEvent on_first_sync_;
+  raw_ptr<TestingProfile> profile_;
+  AccountId account_id_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All, AppListClientNewUserTest, testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(AppListClientNewUserTest, IsNewUser) {
+  // Until the first app list sync in the session has been completed, it is
+  // not known whether a given user can be considered new.
+  EXPECT_EQ(AppListClientImpl::GetInstance()->IsNewUser(account_id()),
+            std::nullopt);
+
+  // Signal that the first app list sync in the session has been completed.
+  on_first_sync().Signal();
+
+  // Once the first app list sync in the session has been completed, a task
+  // will be posted to the `AppListClient` which will cache whether the given
+  // user can be considered new.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return AppListClientImpl::GetInstance()->IsNewUser(account_id()) ==
+           was_first_sync_ever();
+  }));
 }

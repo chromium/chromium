@@ -344,6 +344,7 @@ void AppListControllerImpl::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
 void AppListControllerImpl::SetClient(AppListClient* client) {
   client_ = client;
+  apps_collections_controller_->SetClient(client);
 }
 
 AppListClient* AppListControllerImpl::GetClient() {

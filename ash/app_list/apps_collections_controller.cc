@@ -4,8 +4,11 @@
 
 #include "ash/app_list/apps_collections_controller.h"
 
+#include <memory>
 #include <optional>
+#include <utility>
 
+#include "ash/public/cpp/app_list/app_list_client.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/shell.h"
 #include "base/metrics/histogram_functions.h"
@@ -58,10 +61,23 @@ bool AppsCollectionsController::ShouldShowAppsCollection() {
     return false;
   }
 
-  // TODO(anasalazar): Consider adding check for UserEdicationApi for new users
-  // cross-device, similar to how UserEducation features check for new users.
+  if (!session_controller->IsUserFirstLogin()) {
+    return false;
+  }
 
-  return session_controller->IsUserFirstLogin();
+  // NOTE: Currently only supported for the primary user profile. This is a
+  // self-imposed restriction.
+  if (!session_controller->IsUserPrimary()) {
+    return false;
+  }
+
+  const std::optional<bool>& is_new_user =
+      client_->IsNewUser(session_controller->GetActiveAccountId());
+
+  // If it is not known whether the user is "new" or "existing" when this code
+  // is reached, the user is treated as "existing" since the Welcome Tour
+  // cannot be delayed and we want to err on the side of being conservative.
+  return is_new_user.value_or(false);
 }
 
 void AppsCollectionsController::SetAppsCollectionDismissed(
@@ -70,6 +86,10 @@ void AppsCollectionsController::SetAppsCollectionDismissed(
 
   base::UmaHistogramEnumeration("Apps.AppList.AppsCollections.DismissedReason",
                                 reason);
+}
+
+void AppsCollectionsController::SetClient(AppListClient* client) {
+  client_ = client;
 }
 
 }  // namespace ash

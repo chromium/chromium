@@ -14,6 +14,7 @@
 #include "ash/public/cpp/app_list/app_list_client.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/memory/weak_ptr.h"
+#include "components/account_id/account_id.h"
 
 namespace ash {
 
@@ -63,6 +64,7 @@ class TestAppListClient : public AppListClient {
   std::unique_ptr<ScopedIphSession> CreateLauncherSearchIphSession() override;
   void LoadIcon(int profile_id, const std::string& app_id) override;
   ash::AppListSortOrder GetPermanentSortingOrder() const override;
+  std::optional<bool> IsNewUser(const AccountId& account_id) const override;
 
   int start_zero_state_search_count() const {
     return start_zero_state_search_count_;
@@ -109,6 +111,10 @@ class TestAppListClient : public AppListClient {
     search_callback_ = std::move(callback);
   }
 
+  void set_is_new_user(std::optional<bool> is_new_user) {
+    is_new_user_ = is_new_user;
+  }
+
  private:
   // Called in response to StartZeroStateSearch() when
   // `run_zero_state_callback_immediately_` is false. Counts calls via
@@ -126,6 +132,7 @@ class TestAppListClient : public AppListClient {
   std::vector<std::string> loaded_icon_app_ids_;
 
   std::vector<AppListSearchControlCategory> toggleable_categories_for_test_;
+  std::optional<bool> is_new_user_;
 
   // If not null, callback that will be run on each search request. It can be
   // used by tests to inject results to search model in response to search
