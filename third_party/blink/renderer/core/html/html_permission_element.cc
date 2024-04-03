@@ -12,6 +12,7 @@
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
+#include "third_party/blink/renderer/core/css/font_size_functions.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_instances.h"
 #include "third_party/blink/renderer/core/css/properties/longhand.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
@@ -420,19 +421,14 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
   // that it's not too big.
 
   // TODO(crbug.com/1462930): Set text direction (ltr\rtl) based on language.
-
-  // TODO(crbug.com/1462930): Ensure font-size at least as large as the
-  // equivalent of 'small'.
 }
 
 void HTMLPermissionElement::DidRecalcStyle(const StyleRecalcChange change) {
-  if (!GetComputedStyle() || AreColorsNonOpaque(GetComputedStyle()) ||
-      ContrastBetweenColorAndBackgroundColor(GetComputedStyle()) <
-          kMinimumAllowedContrast) {
-    DisableClickingIndefinitely(DisableReason::kInvalidStyle);
-  } else {
+  if (IsStyleValid()) {
     EnableClickingAfterDelay(DisableReason::kInvalidStyle,
                              kDefaultDisableTimeout);
+  } else {
+    DisableClickingIndefinitely(DisableReason::kInvalidStyle);
   }
 }
 
@@ -642,6 +638,37 @@ void HTMLPermissionElement::OnIntersectionChanged(
     EnableClickingAfterDelay(DisableReason::kIntersectionChanged,
                              kDefaultDisableTimeout);
   }
+}
+
+bool HTMLPermissionElement::IsStyleValid() {
+  // No computed style when using `display: none`.
+  if (!GetComputedStyle()) {
+    return false;
+  }
+
+  if (AreColorsNonOpaque(GetComputedStyle())) {
+    return false;
+  }
+  if (ContrastBetweenColorAndBackgroundColor(GetComputedStyle()) <
+      kMinimumAllowedContrast) {
+    return false;
+  }
+
+  if (GetComputedStyle()->ComputedFontSize() <
+      FontSizeFunctions::FontSizeForKeyword(
+          &GetDocument(), FontSizeFunctions::KeywordSize(CSSValueID::kSmall),
+          GetComputedStyle()->GetFontDescription().IsMonospace())) {
+    return false;
+  }
+
+  if (GetComputedStyle()->ComputedFontSize() >
+      FontSizeFunctions::FontSizeForKeyword(
+          &GetDocument(), FontSizeFunctions::KeywordSize(CSSValueID::kXxxLarge),
+          GetComputedStyle()->GetFontDescription().IsMonospace())) {
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace blink

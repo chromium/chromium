@@ -391,6 +391,17 @@ class ClickingEnabledChecker {
     }
   }
 
+  void ResetClickingEnabled() {
+    element_->EnableClicking(
+        HTMLPermissionElement::DisableReason::kRecentlyAttachedToDOM);
+    element_->EnableClicking(
+        HTMLPermissionElement::DisableReason::kIntersectionChanged);
+    element_->EnableClicking(
+        HTMLPermissionElement::DisableReason::kInvalidStyle);
+
+    EXPECT_EQ(element_->IsClickingEnabled(), true);
+  }
+
  private:
   Persistent<HTMLPermissionElement> element_;
   std::unique_ptr<base::RunLoop> run_loop_;
@@ -767,6 +778,56 @@ TEST_F(HTMLPemissionElementSimTest, BadContrastDisablesElement) {
           "color: rgba(255, 255, 0, 0.99); background-color: purple;"));
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   checker.CheckClickingEnabled(/*enabled=*/false);
+}
+
+TEST_F(HTMLPemissionElementSimTest, FontSizeCanDisableElement) {
+  GetDocument().GetSettings()->SetDefaultFontSize(12);
+  auto* permission_element =
+      MakeGarbageCollected<HTMLPermissionElement>(GetDocument());
+  ClickingEnabledChecker checker(permission_element);
+
+  // Permission element doesn't allow clicking if there is no type set.
+  permission_element->setAttribute(html_names::kTypeAttr,
+                                   AtomicString("camera"));
+  GetDocument().body()->AppendChild(permission_element);
+
+  // Normal font-size for baseline.
+  permission_element->setAttribute(html_names::kStyleAttr,
+                                   AtomicString("font-size: normal;"));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
+                                         /*expected_enabled=*/true);
+
+  struct {
+    std::string fontSizeString;
+    bool enabled;
+  } kTests[] = {
+      // px values.
+      {"2px", false},
+      {"100px", false},
+      {"20px", true},
+      // Keywords
+      {"xlarge", true},
+      // em based values
+      {"1.5em", true},
+      {"0.5em", false},
+      {"6em", false},
+      // Calculation values
+      {"min(2px, 20px)", false},
+      {"max(xsmall, large)", true},
+  };
+
+  std::string font_size_string;
+
+  for (const auto& test : kTests) {
+    SCOPED_TRACE(test.fontSizeString);
+    font_size_string = "font-size: " + test.fontSizeString + ";";
+    permission_element->setAttribute(html_names::kStyleAttr,
+                                     AtomicString(font_size_string.c_str()));
+    GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+    checker.CheckClickingEnabled(test.enabled);
+    checker.ResetClickingEnabled();
+  }
 }
 
 class HTMLPemissionElementFencedFrameTest : public HTMLPemissionElementSimTest {

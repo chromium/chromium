@@ -176,6 +176,8 @@ class CORE_EXPORT HTMLPermissionElement final
 
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner();
 
+  bool IsStyleValid();
+
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
 
   // Holds all `PermissionObserver` receivers connected with remotes in browser
