@@ -18,7 +18,6 @@ import java.util.Arrays;
 import java.util.List;
 
 /** Bridge class that lets Android code access native code to execute translate on a tab. */
-// TODO(crbug.com/1410601): Pass in the profile and remove GetActiveUserProfile in C++.
 public class TranslateBridge {
     /**
      * Translates the given tab when the necessary state has been computed (e.g. source language).
