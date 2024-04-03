@@ -29,7 +29,7 @@ import {ChromeVoxRange} from './chromevox_range.js';
 import {ChromeVoxState} from './chromevox_state.js';
 import {DownloadHandler} from './download_handler.js';
 import {Earcons} from './earcons.js';
-import {EditingRangeObserver} from './editing/editing.js';
+import {EditingRangeObserver} from './editing/editing_range_observer.js';
 import {DesktopAutomationHandler} from './event/desktop_automation_handler.js';
 import {FocusAutomationHandler} from './event/focus_automation_handler.js';
 import {MediaAutomationHandler} from './event/media_automation_handler.js';
