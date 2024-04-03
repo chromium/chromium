@@ -57,16 +57,26 @@ enum class AppListSearchResultType;
 namespace {
 
 constexpr int kMaxGifsToSearch = 4;
-constexpr base::span<std::string_view> kImageExtensions = {
-    (std::string_view[]){".jpg", ".jpeg", ".png", ".gif", ".webp"}};
+
+bool IsSupportedLocalFileFormat(const base::FilePath& file_path) {
+  for (std::string_view extension :
+       {".jpg", ".jpeg", ".png", ".gif", ".webp"}) {
+    if (file_path.MatchesFinalExtension(extension)) {
+      return true;
+    }
+  }
+  return false;
+}
 
 std::vector<ash::PickerSearchResult> CreateSearchResultsForRecentLocalFiles(
     std::vector<PickerFileSuggester::LocalFile> files) {
   std::vector<ash::PickerSearchResult> results;
   results.reserve(files.size());
   for (PickerFileSuggester::LocalFile& file : files) {
-    results.push_back(ash::PickerSearchResult::LocalFile(std::move(file.title),
-                                                         std::move(file.path)));
+    if (IsSupportedLocalFileFormat(file.path)) {
+      results.push_back(ash::PickerSearchResult::LocalFile(
+          std::move(file.title), std::move(file.path)));
+    }
   }
   return results;
 }
@@ -120,15 +130,7 @@ std::vector<ash::PickerSearchResult> ConvertSearchResults(
       }
       case ash::AppListSearchResultType::kFileSearch: {
         // TODO: b/322926411 - Move this filtering to the search provider.
-        bool is_image = false;
-        for (std::string_view extension : kImageExtensions) {
-          if (result->filePath().MatchesFinalExtension(extension)) {
-            is_image = true;
-            break;
-          }
-        }
-
-        if (is_image) {
+        if (IsSupportedLocalFileFormat(result->filePath())) {
           picker_results.push_back(ash::PickerSearchResult::LocalFile(
               result->title(), result->filePath()));
         }

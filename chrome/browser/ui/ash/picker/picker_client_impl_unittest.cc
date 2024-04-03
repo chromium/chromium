@@ -210,13 +210,14 @@ TEST_F(PickerClientImplTest, GetRecentFilesWithNoFiles) {
   EXPECT_THAT(future.Get(), IsEmpty());
 }
 
-TEST_F(PickerClientImplTest, GetRecentFilesReturnsFiles) {
+TEST_F(PickerClientImplTest, GetRecentFilesReturnsFilteredFiles) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
   base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
   SetRecentFiles(profile(), {
                                 CreateRecentFile(base::FilePath("aaa.jpg")),
                                 CreateRecentFile(base::FilePath("bbb.mp4")),
+                                CreateRecentFile(base::FilePath("ccc.png")),
                             });
 
   client.GetRecentFileResults(future.GetCallback());
@@ -236,10 +237,10 @@ TEST_F(PickerClientImplTest, GetRecentFilesReturnsFiles) {
               "data", &ash::PickerSearchResult::data,
               VariantWith<ash::PickerSearchResult::LocalFileData>(AllOf(
                   Field("title", &ash::PickerSearchResult::LocalFileData::title,
-                        u"bbb.mp4"),
+                        u"ccc.png"),
                   Field("file_path",
                         &ash::PickerSearchResult::LocalFileData::file_path,
-                        base::FilePath("bbb.mp4")))))));
+                        base::FilePath("ccc.png")))))));
 }
 
 TEST_F(PickerClientImplTest, GetRecentFilesDoesNotReturnOldFiles) {
