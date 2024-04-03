@@ -4,10 +4,11 @@
 
 package org.chromium.chrome.browser.magic_stack;
 
-
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -85,4 +86,8 @@ public interface ModuleDelegate {
 
     /** Gets the instance of the module {@link ModuleProvider} of the given type. */
     ModuleProvider getModuleProvider(@ModuleType int moduleType);
+
+    /** Gets the local Tab that is showing on the magic stack. */
+    @Nullable
+    Tab getTrackingTab();
 }

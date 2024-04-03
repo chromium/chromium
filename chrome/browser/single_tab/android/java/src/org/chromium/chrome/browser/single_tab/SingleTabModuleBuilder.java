@@ -67,7 +67,7 @@ public class SingleTabModuleBuilder implements ModuleProviderBuilder, ModuleConf
 
         // If the host surface is NTP and there isn't a last visited Tab to track, don't create the
         // single Tab module.
-        if (isShownOnNtp && moduleDelegateHost.getTrackingTab() == null) {
+        if (isShownOnNtp && moduleDelegate.getTrackingTab() == null) {
             return false;
         }
         SingleTabSwitcherCoordinator singleTabSwitcherCoordinator =
@@ -79,11 +79,7 @@ public class SingleTabModuleBuilder implements ModuleProviderBuilder, ModuleConf
                         isShownOnNtp,
                         DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity),
                         moduleDelegateHost.showScrollableMvt(),
-                        isShownOnNtp
-                                ? ((HomeModulesCoordinator) moduleDelegate)
-                                        .getModuleDelegateHost()
-                                        .getTrackingTab()
-                                : null,
+                        isShownOnNtp ? moduleDelegate.getTrackingTab() : null,
                         singleTabCardClickedCallback,
                         snapshotParentViewRunnable,
                         mTabContentManagerSupplier.get(),
