@@ -1423,8 +1423,6 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
       ClearCollectionScope<HeapVector<NodeToLayout>>
           fragmented_descendants_scope(&fragmented_descendants);
       fragmentainer_consumed_block_size_ = LayoutUnit();
-      auto& children = FragmentationContextChildren();
-      wtf_size_t num_children = children.size();
 
       // Even if all OOFs are done creating fragments, we need to create enough
       // fragmentainers to encompass all monolithic overflow when printing.
@@ -1437,11 +1435,12 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
       // Layout the OOF descendants in order of fragmentainer index.
       for (wtf_size_t index = 0; index < descendants_to_layout.size();
            index++) {
-        const PhysicalFragment* fragment = nullptr;
-        if (index < num_children)
-          fragment = children[index].fragment;
-        else if (column_balancing_info_)
+        const PhysicalBoxFragment* fragment = nullptr;
+        if (index < ChildCount()) {
+          fragment = &GetChildFragment(index);
+        } else if (column_balancing_info_) {
           column_balancing_info_->num_new_columns++;
+        }
 
         // Skip over any column spanners.
         if (!fragment || fragment->IsFragmentainerBox()) {
@@ -1475,7 +1474,7 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
           // column balancing, though, since this is only needed when adding
           // OOFs to the builder in the true layout pass.
           if (!column_balancing_info_) {
-            fragment = children[index].fragment;
+            fragment = &GetChildFragment(index);
             fragmentainer_consumed_block_size_ +=
                 fragment->Size()
                     .ConvertToLogical(
@@ -1495,8 +1494,7 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
         if (index == descendants_to_layout.size() - 1 &&
             (last_fragmentainer_has_break_inside ||
              monolithic_overflow > LayoutUnit() ||
-             (!fragmented_descendants.empty() &&
-              index + 1 < FragmentationContextChildren().size()))) {
+             (!fragmented_descendants.empty() && index + 1 < ChildCount()))) {
           descendants_to_layout.resize(index + 2);
         }
       }
@@ -2298,8 +2296,7 @@ void OutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
     LayoutUnit* monolithic_overflow,
     bool* has_actual_break_inside,
     HeapVector<NodeToLayout>* fragmented_descendants) {
-  auto& children = FragmentationContextChildren();
-  wtf_size_t num_children = children.size();
+  wtf_size_t num_children = ChildCount();
   bool is_new_fragment = index >= num_children;
   bool is_last_fragmentainer_so_far = index + 1 >= num_children;
 
@@ -2326,19 +2323,19 @@ void OutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
   // If we are a new fragment, find a non-spanner fragmentainer as a basis.
   wtf_size_t original_index = index;
   while (index >= num_children ||
-         !children[index].fragment->IsFragmentainerBox()) {
+         !GetChildFragment(index).IsFragmentainerBox()) {
     DCHECK_GT(num_children, 0u);
     index--;
   }
 
   const ConstraintSpace& space = GetFragmentainerConstraintSpace(index);
-  const auto& fragmentainer = children[index];
-  DCHECK(fragmentainer.fragment->IsFragmentainerBox());
+  const LogicalFragmentLink& container_link =
+      FragmentationContextChildren()[index];
   const BlockNode& node = container_builder_->Node();
-  const auto* fragment = To<PhysicalBoxFragment>(fragmentainer.fragment.Get());
+  const PhysicalBoxFragment* fragmentainer = &GetChildFragment(index);
   FragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
-  LogicalOffset fragmentainer_offset = fragmentainer.offset;
+  LogicalOffset fragmentainer_offset = container_link.offset;
   if (is_new_fragment) {
     fragmentainer_offset += fragmentainer_progression;
   }
@@ -2349,15 +2346,14 @@ void OutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
     // create and add new fragments to the builder until a later layout pass.
     // However, the break token is only needed when we are actually adding to
     // the builder, so it is ok to leave this as nullptr in such cases.
-    previous_break_token =
-        PreviousFragmentainerBreakToken(*container_builder_, original_index);
+    previous_break_token = PreviousFragmentainerBreakToken(original_index);
   }
   LayoutAlgorithmParams params(node, fragment_geometry, space,
                                previous_break_token,
                                /* early_break */ nullptr);
   // This algorithm will be used to add new OOFs. The existing fragment passed
   // is the last fragmentainer created so far.
-  SimplifiedOofLayoutAlgorithm algorithm(params, *fragment);
+  SimplifiedOofLayoutAlgorithm algorithm(params, *fragmentainer);
 
   if (has_oofs_in_later_fragmentainer) {
     algorithm.SetHasSubsequentChildren();
@@ -2386,7 +2382,7 @@ void OutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
   const LayoutResult* fragmentainer_result = algorithm.Layout();
   const auto& new_fragmentainer =
       To<PhysicalBoxFragment>(fragmentainer_result->GetPhysicalFragment());
-  const PhysicalBoxFragment* updated_fragmentainer = fragment;
+  const PhysicalBoxFragment* updated_fragmentainer = fragmentainer;
 
   if (is_new_fragment) {
     // Add the new fragmentainer to the builder.
@@ -2548,8 +2544,7 @@ void OutOfFlowLayoutPart::AddOOFToFragmentainer(
       // as the initial containing block:
       // https://www.w3.org/TR/CSS22/page.html#page-box
       DCHECK(container_builder_->Node().IsPaginatedRoot());
-      container = To<PhysicalBoxFragment>(
-          FragmentationContextChildren()[0].fragment.Get());
+      container = &GetChildFragment(0);
     }
 
     LogicalOffset legacy_offset =
@@ -2566,17 +2561,15 @@ void OutOfFlowLayoutPart::AddOOFToFragmentainer(
 
 ConstraintSpace OutOfFlowLayoutPart::GetFragmentainerConstraintSpace(
     wtf_size_t index) {
-  auto& children = FragmentationContextChildren();
-  wtf_size_t num_children = children.size();
-  DCHECK_LT(index, num_children);
-  const auto& fragment = To<PhysicalBoxFragment>(*children[index].fragment);
+  DCHECK_LT(index, ChildCount());
+  const PhysicalBoxFragment& fragment = GetChildFragment(index);
   DCHECK(fragment.IsFragmentainerBox());
   const WritingMode container_writing_mode =
       container_builder_->Style().GetWritingMode();
-  LogicalSize column_size =
+  LogicalSize fragmentainer_size =
       fragment.Size().ConvertToLogical(container_writing_mode);
   LogicalSize percentage_resolution_size =
-      LogicalSize(column_size.inline_size,
+      LogicalSize(fragmentainer_size.inline_size,
                   container_builder_->ChildAvailableSize().block_size);
 
   // In the current implementation it doesn't make sense to restrict imperfect
@@ -2587,7 +2580,7 @@ ConstraintSpace OutOfFlowLayoutPart::GetFragmentainerConstraintSpace(
   BreakAppeal min_break_appeal = kBreakAppealLastResort;
 
   return CreateConstraintSpaceForFragmentainer(
-      GetConstraintSpace(), GetFragmentainerType(), column_size,
+      GetConstraintSpace(), GetFragmentainerType(), fragmentainer_size,
       percentage_resolution_size, /* balance_columns */ false,
       min_break_appeal);
 }
@@ -2600,7 +2593,6 @@ void OutOfFlowLayoutPart::ComputeStartFragmentIndexAndRelativeOffset(
     std::optional<LayoutUnit> clipped_container_block_offset,
     wtf_size_t* start_index,
     LogicalOffset* offset) const {
-  wtf_size_t child_index = 0;
   // The sum of all previous fragmentainers' block size.
   LayoutUnit used_block_size;
   // The sum of all previous fragmentainers' block size + the current one.
@@ -2624,12 +2616,13 @@ void OutOfFlowLayoutPart::ComputeStartFragmentIndexAndRelativeOffset(
     target_block_offset =
         std::max(target_block_offset, *clipped_container_block_offset);
   }
-  auto& children = FragmentationContextChildren();
   // TODO(bebeaudr): There is a possible performance improvement here as we'll
   // repeat this for each abspos in a same fragmentainer.
-  for (auto& child : children) {
-    if (child.fragment->IsFragmentainerBox()) {
-      fragmentainer_block_size = child.fragment->Size()
+  wtf_size_t child_index = 0;
+  for (; child_index < ChildCount(); child_index++) {
+    const PhysicalBoxFragment& child_fragment = GetChildFragment(child_index);
+    if (child_fragment.IsFragmentainerBox()) {
+      fragmentainer_block_size = child_fragment.Size()
                                      .ConvertToLogical(default_writing_mode)
                                      .block_size;
       fragmentainer_block_size =
@@ -2652,7 +2645,6 @@ void OutOfFlowLayoutPart::ComputeStartFragmentIndexAndRelativeOffset(
       }
       used_block_size = current_max_block_size;
     }
-    child_index++;
   }
   // If the right fragmentainer hasn't been found yet, the OOF element will
   // start its layout in a proxy fragment.
@@ -2685,6 +2677,17 @@ LogicalStaticPosition OutOfFlowLayoutPart::ToStaticPositionForLegacy(
   if (const auto* break_token = container_builder_->PreviousBreakToken())
     position.offset.block_offset += break_token->ConsumedBlockSizeForLegacy();
   return position;
+}
+
+const BlockBreakToken* OutOfFlowLayoutPart::PreviousFragmentainerBreakToken(
+    wtf_size_t index) const {
+  for (wtf_size_t i = index; i > 0; --i) {
+    const PhysicalBoxFragment& previous_fragment = GetChildFragment(i - 1);
+    if (previous_fragment.IsFragmentainerBox()) {
+      return previous_fragment.GetBreakToken();
+    }
+  }
+  return nullptr;
 }
 
 void OutOfFlowLayoutPart::ColumnBalancingInfo::PropagateSpaceShortage(

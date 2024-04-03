@@ -1328,22 +1328,6 @@ ConstraintSpace CreateConstraintSpaceForMulticol(const BlockNode& multicol) {
   return space_builder.ToConstraintSpace();
 }
 
-const BlockBreakToken* PreviousFragmentainerBreakToken(
-    const BoxFragmentBuilder& container_builder,
-    wtf_size_t index) {
-  const BlockBreakToken* previous_break_token = nullptr;
-  for (wtf_size_t i = index; i > 0; --i) {
-    auto* previous_fragment =
-        container_builder.Children()[i - 1].fragment.Get();
-    if (previous_fragment->IsFragmentainerBox()) {
-      previous_break_token = To<BlockBreakToken>(
-          To<PhysicalBoxFragment>(previous_fragment)->GetBreakToken());
-      break;
-    }
-  }
-  return previous_break_token;
-}
-
 const BlockBreakToken* FindPreviousBreakToken(
     const PhysicalBoxFragment& fragment) {
   const LayoutBox* box = To<LayoutBox>(fragment.GetLayoutObject());

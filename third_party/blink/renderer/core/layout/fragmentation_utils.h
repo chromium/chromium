@@ -501,13 +501,6 @@ inline LayoutUnit AdjustedMarginAfterFinalChildFragment(
   return std::min(block_end_margin, space_left.ClampNegativeToZero());
 }
 
-// Note: This should only be used for a builder that represents a
-// fragmentation context root. Returns the the break token of the
-// previous fragmentainer to the child at |index|.
-const BlockBreakToken* PreviousFragmentainerBreakToken(
-    const BoxFragmentBuilder& container_builder,
-    wtf_size_t index);
-
 // Return the break token that led to the creation of the fragment specified, or
 // nullptr if this is the first fragment. Note that this operation is O(n)
 // (number of fragments generated from the node), and should be avoided when

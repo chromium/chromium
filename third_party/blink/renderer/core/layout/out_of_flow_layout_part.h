@@ -390,6 +390,22 @@ class CORE_EXPORT OutOfFlowLayoutPart {
                                   : container_builder_->Children();
   }
 
+  // Get the child / descendant fragment at the specified index. These are
+  // normally fragmentainers, but for multicol, column spanners are also
+  // included. For paginated layout, a fragmentainer (page area fragment) is
+  // always returned.
+  const PhysicalBoxFragment& GetChildFragment(wtf_size_t index) const {
+    return To<PhysicalBoxFragment>(*FragmentationContextChildren()[index]);
+  }
+
+  wtf_size_t ChildCount() const {
+    return FragmentationContextChildren().size();
+  }
+
+  // Return the break token of the previous fragmentainer to the child at
+  // `index`.
+  const BlockBreakToken* PreviousFragmentainerBreakToken(wtf_size_t) const;
+
   BoxFragmentBuilder* container_builder_;
   // The builder for the outer block fragmentation context when this is an inner
   // layout of nested block fragmentation.
