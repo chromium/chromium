@@ -1599,8 +1599,11 @@ class EnclaveManager::StateMachine {
 
     state_ = State::kJoiningPINToDomain;
     join_request_ = manager_->trusted_vault_conn_->RegisterAuthenticationFactor(
-        *primary_account_info_, store_keys_args_for_joining_->keys,
-        store_keys_args_for_joining_->last_key_version, *secure_box_pub_key,
+        *primary_account_info_,
+        trusted_vault::GetTrustedVaultKeysWithVersions(
+            store_keys_args_for_joining_->keys,
+            store_keys_args_for_joining_->last_key_version),
+        *secure_box_pub_key,
         trusted_vault::GpmPin(action_->wrapped_pin->SerializeAsString()),
         base::BindOnce(&StateMachine::OnJoinedSecurityDomain,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -1642,9 +1645,11 @@ class EnclaveManager::StateMachine {
         trusted_vault::SecureBoxPublicKey::CreateByImport(
             ToSpan(user_->member_public_key()));
     join_request_ = manager_->trusted_vault_conn_->RegisterAuthenticationFactor(
-        *primary_account_info_, store_keys_args_for_joining_->keys,
-        store_keys_args_for_joining_->last_key_version, *secure_box_pub_key,
-        trusted_vault::PhysicalDevice(),
+        *primary_account_info_,
+        trusted_vault::GetTrustedVaultKeysWithVersions(
+            store_keys_args_for_joining_->keys,
+            store_keys_args_for_joining_->last_key_version),
+        *secure_box_pub_key, trusted_vault::PhysicalDevice(),
         base::BindOnce(&StateMachine::OnJoinedSecurityDomain,
                        weak_ptr_factory_.GetWeakPtr()));
   }

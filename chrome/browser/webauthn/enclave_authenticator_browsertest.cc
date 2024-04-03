@@ -128,8 +128,7 @@ class MockTrustedVaultConnection
       std::unique_ptr<Request>,
       RegisterAuthenticationFactor,
       (const CoreAccountInfo& account_info,
-       const std::vector<std::vector<uint8_t>>& trusted_vault_keys,
-       int last_trusted_vault_key_version,
+       const trusted_vault::MemberKeysSource& member_key_source,
        const trusted_vault::SecureBoxPublicKey&
            authentication_factor_public_key,
        trusted_vault::AuthenticationFactorType authentication_factor_type,

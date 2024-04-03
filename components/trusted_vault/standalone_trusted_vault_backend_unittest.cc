@@ -58,6 +58,17 @@ using testing::NotNull;
 using testing::Return;
 using testing::SaveArg;
 
+MATCHER_P(MatchTrustedVaultKeyAndVersions, expected, "") {
+  const auto* trusted_vault_keys =
+      absl::get_if<std::vector<TrustedVaultKeyAndVersion>>(&arg);
+  if (!trusted_vault_keys) {
+    *result_listener << "does not hold a vector of TrustedVaultKeyAndVersion";
+    return false;
+  }
+  return testing::ExplainMatchResult(*trusted_vault_keys, expected,
+                                     result_listener);
+}
+
 MATCHER_P(DegradedRecoverabilityStateEq, expected_state, "") {
   const trusted_vault_pb::LocalTrustedVaultDegradedRecoverabilityState&
       given_state = arg;
@@ -142,8 +153,7 @@ class MockTrustedVaultConnection : public TrustedVaultConnection {
   MOCK_METHOD(std::unique_ptr<Request>,
               RegisterAuthenticationFactor,
               (const CoreAccountInfo& account_info,
-               const std::vector<std::vector<uint8_t>>& trusted_vault_keys,
-               int last_trusted_vault_key_version,
+               const MemberKeysSource& member_keys_source,
                const SecureBoxPublicKey& authentication_factor_public_key,
                AuthenticationFactorType authentication_factor_type,
                RegisterAuthenticationFactorCallback callback),
@@ -279,14 +289,16 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
     TrustedVaultConnection::RegisterAuthenticationFactorCallback
         device_registration_callback;
 
-    EXPECT_CALL(*connection_,
-                RegisterAuthenticationFactor(
-                    Eq(account_info), Eq(vault_keys), last_vault_key_version, _,
-                    Eq(AuthenticationFactorType(PhysicalDevice())), _))
+    EXPECT_CALL(
+        *connection_,
+        RegisterAuthenticationFactor(
+            Eq(account_info),
+            MatchTrustedVaultKeyAndVersions(GetTrustedVaultKeysWithVersions(
+                vault_keys, last_vault_key_version)),
+            _, Eq(AuthenticationFactorType(PhysicalDevice())), _))
         .WillOnce(
             [&](const CoreAccountInfo&,
-                const std::vector<std::vector<uint8_t>>& vault_keys,
-                int last_vault_key_version,
+                const MemberKeysSource& member_keys_source,
                 const SecureBoxPublicKey& device_public_key,
                 AuthenticationFactorType,
                 TrustedVaultConnection::RegisterAuthenticationFactorCallback
@@ -814,12 +826,14 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldRegisterDevice) {
   TrustedVaultConnection::RegisterAuthenticationFactorCallback
       device_registration_callback;
   std::vector<uint8_t> serialized_public_device_key;
-  EXPECT_CALL(*connection(),
-              RegisterAuthenticationFactor(
-                  Eq(account_info), ElementsAre(kVaultKey), kLastKeyVersion, _,
-                  Eq(AuthenticationFactorType(PhysicalDevice())), _))
-      .WillOnce([&](const CoreAccountInfo&,
-                    const std::vector<std::vector<uint8_t>>&, int,
+  EXPECT_CALL(
+      *connection(),
+      RegisterAuthenticationFactor(
+          Eq(account_info),
+          MatchTrustedVaultKeyAndVersions(
+              GetTrustedVaultKeysWithVersions({kVaultKey}, kLastKeyVersion)),
+          _, Eq(AuthenticationFactorType(PhysicalDevice())), _))
+      .WillOnce([&](const CoreAccountInfo&, const MemberKeysSource&,
                     const SecureBoxPublicKey& device_public_key,
                     AuthenticationFactorType,
                     TrustedVaultConnection::RegisterAuthenticationFactorCallback
@@ -874,12 +888,15 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   TrustedVaultConnection::RegisterAuthenticationFactorCallback
       device_registration_callback;
-  EXPECT_CALL(*connection(),
-              RegisterAuthenticationFactor(
-                  Eq(account_info), ElementsAre(kVaultKey), kLastKeyVersion, _,
-                  Eq(AuthenticationFactorType(PhysicalDevice())), _))
+  EXPECT_CALL(
+      *connection(),
+      RegisterAuthenticationFactor(
+          Eq(account_info),
+          MatchTrustedVaultKeyAndVersions(
+              GetTrustedVaultKeysWithVersions({kVaultKey}, kLastKeyVersion)),
+          _, Eq(AuthenticationFactorType(PhysicalDevice())), _))
       .WillOnce([&](const CoreAccountInfo&,
-                    const std::vector<std::vector<uint8_t>>&, int,
+                    const MemberKeysSource& member_keys_source,
                     const SecureBoxPublicKey& device_public_key,
                     AuthenticationFactorType,
                     TrustedVaultConnection::RegisterAuthenticationFactorCallback
@@ -982,10 +999,13 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   backend()->StoreKeys(account_info.gaia, {kVaultKey}, kLastKeyVersion);
 
-  EXPECT_CALL(*connection(),
-              RegisterAuthenticationFactor(
-                  Eq(account_info), ElementsAre(kVaultKey), kLastKeyVersion, _,
-                  Eq(AuthenticationFactorType(PhysicalDevice())), _));
+  EXPECT_CALL(
+      *connection(),
+      RegisterAuthenticationFactor(
+          Eq(account_info),
+          MatchTrustedVaultKeyAndVersions(
+              GetTrustedVaultKeysWithVersions({kVaultKey}, kLastKeyVersion)),
+          _, Eq(AuthenticationFactorType(PhysicalDevice())), _));
 
   base::HistogramTester histogram_tester;
   backend()->SetPrimaryAccount(
@@ -1001,10 +1021,13 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   Mock::VerifyAndClearExpectations(connection());
 
   // When the auth error is resolved, the registration should be retried.
-  EXPECT_CALL(*connection(),
-              RegisterAuthenticationFactor(
-                  Eq(account_info), ElementsAre(kVaultKey), kLastKeyVersion, _,
-                  Eq(AuthenticationFactorType(PhysicalDevice())), _));
+  EXPECT_CALL(
+      *connection(),
+      RegisterAuthenticationFactor(
+          Eq(account_info),
+          MatchTrustedVaultKeyAndVersions(
+              GetTrustedVaultKeysWithVersions({kVaultKey}, kLastKeyVersion)),
+          _, Eq(AuthenticationFactorType(PhysicalDevice())), _));
 
   base::HistogramTester histogram_tester2;
   backend()->SetPrimaryAccount(
@@ -1028,10 +1051,13 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   EXPECT_CALL(*connection(), RegisterDeviceWithoutKeys).Times(0);
 
-  EXPECT_CALL(*connection(),
-              RegisterAuthenticationFactor(
-                  Eq(account_info), ElementsAre(kVaultKey), kLastKeyVersion, _,
-                  Eq(AuthenticationFactorType(PhysicalDevice())), _));
+  EXPECT_CALL(
+      *connection(),
+      RegisterAuthenticationFactor(
+          Eq(account_info),
+          MatchTrustedVaultKeyAndVersions(
+              GetTrustedVaultKeysWithVersions({kVaultKey}, kLastKeyVersion)),
+          _, Eq(AuthenticationFactorType(PhysicalDevice())), _));
 
   base::HistogramTester histogram_tester;
   SetPrimaryAccountWithUnknownAuthError(account_info);
@@ -1089,10 +1115,13 @@ TEST_F(StandaloneTrustedVaultBackendTest,
                    .device_registered());
 
   // StoreKeys() should trigger a registration nevertheless.
-  EXPECT_CALL(*connection(),
-              RegisterAuthenticationFactor(
-                  Eq(account_info), ElementsAre(kNewKeys), kNewKeysVersion, _,
-                  Eq(AuthenticationFactorType(PhysicalDevice())), _));
+  EXPECT_CALL(
+      *connection(),
+      RegisterAuthenticationFactor(
+          Eq(account_info),
+          MatchTrustedVaultKeyAndVersions(
+              GetTrustedVaultKeysWithVersions({kNewKeys}, kNewKeysVersion)),
+          _, Eq(AuthenticationFactorType(PhysicalDevice())), _));
 
   backend()->StoreKeys(account_info.gaia, {kNewKeys}, kNewKeysVersion);
 }
@@ -1108,8 +1137,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
       device_registration_callback;
   ON_CALL(*connection(), RegisterAuthenticationFactor)
       .WillByDefault(
-          [&](const CoreAccountInfo&, const std::vector<std::vector<uint8_t>>&,
-              int, const SecureBoxPublicKey&, AuthenticationFactorType,
+          [&](const CoreAccountInfo&, const MemberKeysSource&,
+              const SecureBoxPublicKey&, AuthenticationFactorType,
               TrustedVaultConnection::RegisterAuthenticationFactorCallback
                   callback) {
             device_registration_callback = std::move(callback);
@@ -1164,8 +1193,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
       device_registration_callback;
   ON_CALL(*connection(), RegisterAuthenticationFactor)
       .WillByDefault(
-          [&](const CoreAccountInfo&, const std::vector<std::vector<uint8_t>>&,
-              int, const SecureBoxPublicKey&, AuthenticationFactorType,
+          [&](const CoreAccountInfo&, const MemberKeysSource&,
+              const SecureBoxPublicKey&, AuthenticationFactorType,
               TrustedVaultConnection::RegisterAuthenticationFactorCallback
                   callback) {
             device_registration_callback = std::move(callback);
@@ -1209,8 +1238,8 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldNotThrottleUponNetworkError) {
       device_registration_callback;
   ON_CALL(*connection(), RegisterAuthenticationFactor)
       .WillByDefault(
-          [&](const CoreAccountInfo&, const std::vector<std::vector<uint8_t>>&,
-              int, const SecureBoxPublicKey&, AuthenticationFactorType,
+          [&](const CoreAccountInfo&, const MemberKeysSource&,
+              const SecureBoxPublicKey&, AuthenticationFactorType,
               TrustedVaultConnection::RegisterAuthenticationFactorCallback
                   callback) {
             device_registration_callback = std::move(callback);
@@ -1247,8 +1276,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
       device_registration_callback;
   ON_CALL(*connection(), RegisterAuthenticationFactor)
       .WillByDefault(
-          [&](const CoreAccountInfo&, const std::vector<std::vector<uint8_t>>&,
-              int, const SecureBoxPublicKey&, AuthenticationFactorType,
+          [&](const CoreAccountInfo&, const MemberKeysSource&,
+              const SecureBoxPublicKey&, AuthenticationFactorType,
               TrustedVaultConnection::RegisterAuthenticationFactorCallback
                   callback) {
             device_registration_callback = std::move(callback);
@@ -1664,10 +1693,13 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldRedoDeviceRegistration) {
       *connection(),
       RegisterAuthenticationFactor(
           Eq(account_info),
-          ElementsAre(GetConstantTrustedVaultKey(), kVaultKey), kLastKeyVersion,
+          MatchTrustedVaultKeyAndVersions(
+              std::vector<TrustedVaultKeyAndVersion>{
+                  TrustedVaultKeyAndVersion(GetConstantTrustedVaultKey(),
+                                            kLastKeyVersion - 1),
+                  TrustedVaultKeyAndVersion(kVaultKey, kLastKeyVersion)}),
           _, Eq(AuthenticationFactorType(PhysicalDevice())), _))
-      .WillOnce([&](const CoreAccountInfo&,
-                    const std::vector<std::vector<uint8_t>>&, int,
+      .WillOnce([&](const CoreAccountInfo&, const MemberKeysSource&,
                     const SecureBoxPublicKey& device_public_key,
                     AuthenticationFactorType,
                     TrustedVaultConnection::RegisterAuthenticationFactorCallback
@@ -1871,15 +1903,17 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldAddTrustedRecoveryMethod) {
 
   TrustedVaultConnection::RegisterAuthenticationFactorCallback
       registration_callback;
-  EXPECT_CALL(*connection(),
-              RegisterAuthenticationFactor(
-                  Eq(account_info), Eq(kVaultKeys), kLastKeyVersion,
-                  PublicKeyWhenExportedEq(kPublicKey),
-                  Eq(AuthenticationFactorType(
-                      UnspecifiedAuthenticationFactorType(kMethodTypeHint))),
-                  _))
-      .WillOnce([&](const CoreAccountInfo&,
-                    const std::vector<std::vector<uint8_t>>&, int,
+  EXPECT_CALL(
+      *connection(),
+      RegisterAuthenticationFactor(
+          Eq(account_info),
+          MatchTrustedVaultKeyAndVersions(
+              GetTrustedVaultKeysWithVersions({kVaultKeys}, kLastKeyVersion)),
+          PublicKeyWhenExportedEq(kPublicKey),
+          Eq(AuthenticationFactorType(
+              UnspecifiedAuthenticationFactorType(kMethodTypeHint))),
+          _))
+      .WillOnce([&](const CoreAccountInfo&, const MemberKeysSource&,
                     const SecureBoxPublicKey& device_public_key,
                     AuthenticationFactorType,
                     TrustedVaultConnection::RegisterAuthenticationFactorCallback
@@ -1949,19 +1983,20 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   // and one for the AddTrustedRecoveryMethod() call being tested here.
   TrustedVaultConnection::RegisterAuthenticationFactorCallback
       registration_callback;
+  EXPECT_CALL(*connection(),
+              RegisterAuthenticationFactor(
+                  _, _, _, Eq(AuthenticationFactorType(PhysicalDevice())), _));
   EXPECT_CALL(
       *connection(),
       RegisterAuthenticationFactor(
-          _, _, _, _, Eq(AuthenticationFactorType(PhysicalDevice())), _));
-  EXPECT_CALL(*connection(),
-              RegisterAuthenticationFactor(
-                  Eq(account_info), Eq(kVaultKeys), kLastKeyVersion,
-                  PublicKeyWhenExportedEq(kPublicKey),
-                  Eq(AuthenticationFactorType(
-                      UnspecifiedAuthenticationFactorType(kMethodTypeHint))),
-                  _))
-      .WillOnce([&](const CoreAccountInfo&,
-                    const std::vector<std::vector<uint8_t>>&, int,
+          Eq(account_info),
+          MatchTrustedVaultKeyAndVersions(
+              GetTrustedVaultKeysWithVersions({kVaultKeys}, kLastKeyVersion)),
+          PublicKeyWhenExportedEq(kPublicKey),
+          Eq(AuthenticationFactorType(
+              UnspecifiedAuthenticationFactorType(kMethodTypeHint))),
+          _))
+      .WillOnce([&](const CoreAccountInfo&, const MemberKeysSource&,
                     const SecureBoxPublicKey& device_public_key,
                     AuthenticationFactorType,
                     TrustedVaultConnection::RegisterAuthenticationFactorCallback
@@ -2015,15 +2050,17 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   // Upon resolving the auth error, the request should be issued.
   TrustedVaultConnection::RegisterAuthenticationFactorCallback
       registration_callback;
-  EXPECT_CALL(*connection(),
-              RegisterAuthenticationFactor(
-                  Eq(account_info), Eq(kVaultKeys), kLastKeyVersion,
-                  PublicKeyWhenExportedEq(kPublicKey),
-                  Eq(AuthenticationFactorType(
-                      UnspecifiedAuthenticationFactorType(kMethodTypeHint))),
-                  _))
-      .WillOnce([&](const CoreAccountInfo&,
-                    const std::vector<std::vector<uint8_t>>&, int,
+  EXPECT_CALL(
+      *connection(),
+      RegisterAuthenticationFactor(
+          Eq(account_info),
+          MatchTrustedVaultKeyAndVersions(
+              GetTrustedVaultKeysWithVersions({kVaultKeys}, kLastKeyVersion)),
+          PublicKeyWhenExportedEq(kPublicKey),
+          Eq(AuthenticationFactorType(
+              UnspecifiedAuthenticationFactorType(kMethodTypeHint))),
+          _))
+      .WillOnce([&](const CoreAccountInfo&, const MemberKeysSource&,
                     const SecureBoxPublicKey& device_public_key,
                     AuthenticationFactorType,
                     TrustedVaultConnection::RegisterAuthenticationFactorCallback
@@ -2078,12 +2115,14 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   TrustedVaultConnection::RegisterAuthenticationFactorCallback
       redo_device_registration_callback;
-  EXPECT_CALL(*connection(),
-              RegisterAuthenticationFactor(
-                  Eq(account_info), kTrustedVaultKeys, kLastKeyVersion, _,
-                  Eq(AuthenticationFactorType(PhysicalDevice())), _))
-      .WillOnce([&](const CoreAccountInfo&,
-                    const std::vector<std::vector<uint8_t>>&, int,
+  EXPECT_CALL(
+      *connection(),
+      RegisterAuthenticationFactor(
+          Eq(account_info),
+          MatchTrustedVaultKeyAndVersions(GetTrustedVaultKeysWithVersions(
+              {kTrustedVaultKeys}, kLastKeyVersion)),
+          _, Eq(AuthenticationFactorType(PhysicalDevice())), _))
+      .WillOnce([&](const CoreAccountInfo&, const MemberKeysSource&,
                     const SecureBoxPublicKey& device_public_key,
                     AuthenticationFactorType,
                     TrustedVaultConnection::RegisterAuthenticationFactorCallback
@@ -2170,7 +2209,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   // downloading with new keys.
   EXPECT_CALL(*connection(),
               RegisterAuthenticationFactor(
-                  Eq(account_info), _, _, _,
+                  Eq(account_info), _, _,
                   Eq(AuthenticationFactorType(PhysicalDevice())), _))
       .WillRepeatedly([&]() {
         return std::make_unique<TrustedVaultConnection::Request>();
@@ -2213,12 +2252,15 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   TrustedVaultConnection::RegisterAuthenticationFactorCallback
       registration_callback;
   std::vector<uint8_t> registered_public_key_bytes;
-  EXPECT_CALL(*connection(),
-              RegisterAuthenticationFactor(
-                  Eq(account_info), ElementsAre(kVaultKey), kLastKeyVersion, _,
-                  Eq(AuthenticationFactorType(LockScreenKnowledgeFactor())), _))
+  EXPECT_CALL(
+      *connection(),
+      RegisterAuthenticationFactor(
+          Eq(account_info),
+          MatchTrustedVaultKeyAndVersions(
+              GetTrustedVaultKeysWithVersions({kVaultKey}, kLastKeyVersion)),
+          _, Eq(AuthenticationFactorType(LockScreenKnowledgeFactor())), _))
       .WillOnce([&](const CoreAccountInfo&,
-                    const std::vector<std::vector<uint8_t>>&, int,
+                    const MemberKeysSource& member_keys_source,
                     const SecureBoxPublicKey& auth_factor_public_key,
                     AuthenticationFactorType,
                     TrustedVaultConnection::RegisterAuthenticationFactorCallback

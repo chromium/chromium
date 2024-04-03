@@ -19,6 +19,24 @@ TrustedVaultKeyAndVersion& TrustedVaultKeyAndVersion::operator=(
 
 TrustedVaultKeyAndVersion::~TrustedVaultKeyAndVersion() = default;
 
+bool TrustedVaultKeyAndVersion::operator==(
+    const TrustedVaultKeyAndVersion& other) const = default;
+
+PrecomputedMemberKeys::PrecomputedMemberKeys(
+    int in_version,
+    std::vector<uint8_t> in_wrapped_key,
+    std::vector<uint8_t> in_proof)
+    : version(in_version),
+      wrapped_key(std::move(in_wrapped_key)),
+      proof(std::move(in_proof)) {}
+
+PrecomputedMemberKeys::PrecomputedMemberKeys(PrecomputedMemberKeys&&) = default;
+
+PrecomputedMemberKeys& PrecomputedMemberKeys::operator=(
+    PrecomputedMemberKeys&&) = default;
+
+PrecomputedMemberKeys::~PrecomputedMemberKeys() = default;
+
 DownloadAuthenticationFactorsRegistrationStateResult::
     DownloadAuthenticationFactorsRegistrationStateResult() = default;
 

@@ -50,8 +50,7 @@ class TrustedVaultConnectionImpl : public TrustedVaultConnection {
 
   std::unique_ptr<Request> RegisterAuthenticationFactor(
       const CoreAccountInfo& account_info,
-      const std::vector<std::vector<uint8_t>>& trusted_vault_keys,
-      int last_trusted_vault_key_version,
+      const MemberKeysSource& member_keys_source,
       const SecureBoxPublicKey& authentication_factor_public_key,
       AuthenticationFactorType authentication_factor_type,
       RegisterAuthenticationFactorCallback callback) override;
@@ -79,8 +78,7 @@ class TrustedVaultConnectionImpl : public TrustedVaultConnection {
  private:
   std::unique_ptr<Request> SendJoinSecurityDomainsRequest(
       const CoreAccountInfo& account_info,
-      const std::vector<std::vector<uint8_t>>& trusted_vault_keys,
-      int last_trusted_vault_key_version,
+      const MemberKeysSource& member_keys_source,
       const SecureBoxPublicKey& authentication_factor_public_key,
       AuthenticationFactorType authentication_factor_type,
       JoinSecurityDomainsCallback callback);

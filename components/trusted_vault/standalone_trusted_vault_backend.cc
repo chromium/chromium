@@ -689,8 +689,11 @@ void StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod(
   // base::Unretained() here.
   ongoing_add_recovery_method_request_ =
       connection_->RegisterAuthenticationFactor(
-          *primary_account_, GetAllVaultKeys(*per_user_vault),
-          per_user_vault->last_vault_key_version(), *imported_public_key,
+          *primary_account_,
+          GetTrustedVaultKeysWithVersions(
+              GetAllVaultKeys(*per_user_vault),
+              per_user_vault->last_vault_key_version()),
+          *imported_public_key,
           UnspecifiedAuthenticationFactorType(method_type_hint),
           base::IgnoreArgs<TrustedVaultRegistrationStatus, int>(base::BindOnce(
               &StandaloneTrustedVaultBackend::OnTrustedRecoveryMethodAdded,
@@ -902,9 +905,11 @@ StandaloneTrustedVaultBackend::MaybeRegisterDevice() {
   if (HasNonConstantKey(*per_user_vault)) {
     ongoing_device_registration_request_ =
         connection_->RegisterAuthenticationFactor(
-            *primary_account_, GetAllVaultKeys(*per_user_vault),
-            per_user_vault->last_vault_key_version(), key_pair->public_key(),
-            PhysicalDevice(),
+            *primary_account_,
+            GetTrustedVaultKeysWithVersions(
+                GetAllVaultKeys(*per_user_vault),
+                per_user_vault->last_vault_key_version()),
+            key_pair->public_key(), PhysicalDevice(),
             base::BindOnce(&StandaloneTrustedVaultBackend::OnDeviceRegistered,
                            base::Unretained(this)));
   } else {
@@ -1271,9 +1276,11 @@ void StandaloneTrustedVaultBackend::AddRecoveryKeyToSecurityDomain(
   // that this doesn't spam the server.
   ongoing_recovery_key_registration_request_ =
       connection_->RegisterAuthenticationFactor(
-          *primary_account_, GetAllVaultKeys(*per_user_vault),
-          per_user_vault->last_vault_key_version(), *public_key,
-          LockScreenKnowledgeFactor(),
+          *primary_account_,
+          GetTrustedVaultKeysWithVersions(
+              GetAllVaultKeys(*per_user_vault),
+              per_user_vault->last_vault_key_version()),
+          *public_key, LockScreenKnowledgeFactor(),
           base::BindOnce(&StandaloneTrustedVaultBackend::
                              OnRecoveryKeyAddedToSecurityDomain,
                          base::Unretained(this), std::move(callback)));
