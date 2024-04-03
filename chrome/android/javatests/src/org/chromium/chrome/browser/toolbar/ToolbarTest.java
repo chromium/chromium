@@ -305,6 +305,7 @@ public class ToolbarTest {
     @MediumTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
     @EnableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
+    @DisabledTest(message = "https://crbug.com/330213938")
     public void testOnTopResumedActivityChanged() {
         ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
