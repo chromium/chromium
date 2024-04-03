@@ -434,6 +434,19 @@ void WebStateImpl::SerializeToProto(proto::WebStateStorage& storage) const {
   pimpl_->SerializeToProto(storage);
 }
 
+void WebStateImpl::SerializeMetadataToProto(
+    proto::WebStateMetadataStorage& storage) const {
+  if (pimpl_) {
+    proto::WebStateStorage full_storage;
+    pimpl_->SerializeToProto(full_storage);
+    DCHECK(full_storage.has_metadata());
+    storage.Swap(full_storage.mutable_metadata());
+    return;
+  }
+
+  saved_->SerializeMetadataToProto(storage);
+}
+
 WebStateDelegate* WebStateImpl::GetDelegate() {
   return LIKELY(pimpl_) ? pimpl_->GetDelegate() : nullptr;
 }

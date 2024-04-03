@@ -57,6 +57,9 @@ FakeWebState::~FakeWebState() {
 
 void FakeWebState::SerializeToProto(proto::WebStateStorage& storage) const {}
 
+void FakeWebState::SerializeMetadataToProto(
+    proto::WebStateMetadataStorage& storage) const {}
+
 WebStateDelegate* FakeWebState::GetDelegate() {
   return nil;
 }

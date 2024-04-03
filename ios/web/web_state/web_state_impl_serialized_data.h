@@ -54,6 +54,9 @@ class WebStateImpl::SerializedData {
   CRWSessionStorage* GetSessionStorage() const;
   void SetSessionStorage(CRWSessionStorage* storage);
 
+  // Serializes the metadata to `storage`.
+  void SerializeMetadataToProto(proto::WebStateMetadataStorage& storage) const;
+
   // Returns the callback used to load the complete data from disk.
   WebStateStorageLoader TakeStorageLoader();
 

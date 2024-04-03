@@ -58,6 +58,23 @@ void WebStateImpl::SerializedData::SetSessionStorage(
   DCHECK(session_storage_);
 }
 
+void WebStateImpl::SerializedData::SerializeMetadataToProto(
+    proto::WebStateMetadataStorage& storage) const {
+  storage.set_navigation_item_count(navigation_item_count_);
+  SerializeTimeToProto(creation_time_, *storage.mutable_creation_time());
+  SerializeTimeToProto(last_active_time_, *storage.mutable_last_active_time());
+
+  if (page_visible_url_.is_valid() || !page_title_.empty()) {
+    proto::PageMetadataStorage& page_storage = *storage.mutable_active_page();
+    if (page_visible_url_.is_valid()) {
+      page_storage.set_page_url(page_visible_url_.spec());
+    }
+    if (!page_title_.empty()) {
+      page_storage.set_page_title(base::UTF16ToUTF8(page_title_));
+    }
+  }
+}
+
 WebState::WebStateStorageLoader
 WebStateImpl::SerializedData::TakeStorageLoader() {
   return std::move(storage_loader_);

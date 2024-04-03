@@ -214,6 +214,11 @@ class WebState : public base::SupportsUserData {
   // on a WebState that is not realized.
   virtual void SerializeToProto(proto::WebStateStorage& storage) const = 0;
 
+  // Serializes the object metadata to `storage`. It is valid to call this
+  // method on an unrealized WebState.
+  virtual void SerializeMetadataToProto(
+      proto::WebStateMetadataStorage& storage) const = 0;
+
   // Gets/Sets the delegate.
   virtual WebStateDelegate* GetDelegate() = 0;
   virtual void SetDelegate(WebStateDelegate* delegate) = 0;
