@@ -7676,12 +7676,12 @@ bool AXPlatformNodeWin::ShouldHideChildrenForUIA() const {
 
 ULONG AXPlatformNodeWin::InternalAddRef() {
   // Instances of AXPlatformNodeWin hold a reference to themselves (acquired in
-  // `Create`; released in `Dispose`). When the refcount rises from 1 to 2,
-  // infer that the instance is being used for some COM-ish purpose; for
-  // example, being handed to an accessibility tool via a WM_GETOBJECT message
-  // handler.
+  // `Create`; released in `Dispose`). When the refcount rises from 1 to 2
+  // before the node has been disposed, infer that the instance is being used
+  // for some COM-ish purpose; for example, being handed to an accessibility
+  // tool via a WM_GETOBJECT message handler.
   const auto ref_count = SequenceAffineComObjectRoot::InternalAddRef();
-  if (ref_count == 2) {
+  if (delegate_ && ref_count == 2) {
     OnReferenced();
   }
   return ref_count;
@@ -7689,9 +7689,10 @@ ULONG AXPlatformNodeWin::InternalAddRef() {
 
 ULONG AXPlatformNodeWin::InternalRelease() {
   // As above, infer that the instance is no longer being used for some COM-ish
-  // purpose when the refcount drops back down from 2 to 1.
+  // purpose when the refcount drops back down to 1 (if it has yet to be
+  // disposed) or 0 (if it has been).
   const auto ref_count = SequenceAffineComObjectRoot::InternalRelease();
-  if (ref_count == 1) {
+  if (ref_count == (delegate_ ? 1 : 0)) {
     OnDereferenced();
   }
   return ref_count;

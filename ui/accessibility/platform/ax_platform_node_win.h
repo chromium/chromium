@@ -492,12 +492,12 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
   ULONG InternalAddRef();
   ULONG InternalRelease();
 
-  // Invoked when the instance's refcount rises above 1. This generally means
-  // that a reference to an interface pointer is being handed out to an
-  // accessibility consumer.
+  // Invoked when the instance is first referenced. This generally means that a
+  // reference to an interface pointer is being handed out to an accessibility
+  // consumer.
   virtual void OnReferenced();
 
-  // Invoked when the instance's refcount drops to 1. This generally means that
+  // Invoked when the instance is fully dereferenced. This generally means that
   // an accessibility consumer has released its last reference to the instance.
   virtual void OnDereferenced();
 
