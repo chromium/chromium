@@ -33,10 +33,11 @@ AppInstallDialogUI::AppInstallDialogUI(content::WebUI* web_ui)
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"cancel", IDS_CANCEL},
+      {"close", IDS_CLOSE},
       {"install", IDS_INSTALL},
       {"installing", IDS_OFFICE_INSTALL_PWA_INSTALLING_BUTTON},
       {"openApp", IDS_OPEN_APP},
-      {"developerInformation", IDS_DEVELOPER_INFORMATION},
+      {"appDetails", IDS_APP_DETAILS},
       {"installingApp", IDS_INSTALLING_APP},
       {"appInstalled", IDS_APP_INSTALLED},
   };

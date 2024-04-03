@@ -132,6 +132,9 @@ class AppInstallDialogElement extends HTMLElement {
   private changeDialogState(state: DialogState) {
     const installButton = this.$<Button>('.install-button')!;
     assert(installButton);
+    const cancelButton = this.$<Button>('.cancel-button');
+    assert(cancelButton);
+
     switch (state) {
       case DialogState.INSTALL:
         this.$<HTMLElement>('#title-icon-install').style.display = 'block';
@@ -144,6 +147,8 @@ class AppInstallDialogElement extends HTMLElement {
         installButton.addEventListener(
             'click', this.onInstallButtonClick.bind(this), {once: true});
 
+        cancelButton.label = loadTimeData.getString('cancel');
+
         this.$<HTMLElement>('#installing-icon').setAttribute('slot', '');
         this.$<HTMLElement>('#install-icon')
             .setAttribute('slot', 'leading-icon');
@@ -155,6 +160,8 @@ class AppInstallDialogElement extends HTMLElement {
         installButton.disabled = true;
         installButton.label = loadTimeData.getString('installing');
         installButton.classList.replace('install', 'installing');
+
+        cancelButton.label = loadTimeData.getString('cancel');
 
         this.$<HTMLElement>('#install-icon').setAttribute('slot', '');
         this.$<HTMLElement>('#installing-icon')
@@ -171,6 +178,8 @@ class AppInstallDialogElement extends HTMLElement {
         installButton.classList.replace('installing', 'installed');
         installButton.addEventListener(
             'click', this.onOpenAppButtonClick.bind(this));
+
+        cancelButton.label = loadTimeData.getString('close');
 
         this.$<HTMLElement>('#installing-icon').setAttribute('slot', '');
         this.$<HTMLElement>('#installed-icon')
