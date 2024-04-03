@@ -63,7 +63,6 @@ aggregate_vector_icons("chrome_vector_icons") {
     "copy.icon",
     "copy_menu.icon",
     "crashed_tab.icon",
-    "create_new_tab_group.icon",
     "credit_card.icon",
     "credit_card_chrome_refresh.icon",
     "cut_menu.icon",

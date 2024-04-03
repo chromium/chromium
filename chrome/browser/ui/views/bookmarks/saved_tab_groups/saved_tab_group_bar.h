@@ -10,7 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_button.h"
-#include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_model_observer.h"
 #include "content/public/browser/page.h"
@@ -152,11 +151,6 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // group into the tabstrip.
   void MaybeShowOverflowMenu();
 
-  // When called, display a menu that shows a "Create new tab group" option and
-  // all the saved tab groups (if there are any). Pressing on the saved tab
-  // groups opens the group into the tab strip.
-  void ShowEverythingMenu();
-
   // Updates the contents of the overflow menu if it is open.
   void UpdateOverflowMenu();
 
@@ -209,8 +203,6 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   base::RepeatingCallback<content::PageNavigator*()> GetPageNavigatorGetter();
 
   raw_ptr<views::MenuButton, AcrossTasksDanglingUntriaged> overflow_button_;
-
-  std::unique_ptr<STGEverythingMenu> everything_menu_;
 
   // Used to show the overflow menu when clicked.
   raw_ptr<views::BubbleDialogDelegate> bubble_delegate_ = nullptr;

@@ -221,11 +221,9 @@ SavedTabGroupBar::SavedTabGroupBar(Browser* browser,
 
   saved_tab_group_model_->AddObserver(this);
 
-  overflow_button_ = AddChildView(std::make_unique<SavedTabGroupOverflowButton>(
-      base::BindRepeating(IsTabGroupsSaveUIUpdateEnabled()
-                              ? &SavedTabGroupBar::ShowEverythingMenu
-                              : &SavedTabGroupBar::MaybeShowOverflowMenu,
-                          base::Unretained(this))));
+  overflow_button_ = AddChildView(
+      std::make_unique<SavedTabGroupOverflowButton>(base::BindRepeating(
+          &SavedTabGroupBar::MaybeShowOverflowMenu, base::Unretained(this))));
 
   HideOverflowButton();
   LoadAllButtonsFromModel();
@@ -239,25 +237,12 @@ SavedTabGroupBar::SavedTabGroupBar(Browser* browser,
                        animations_enabled) {}
 
 SavedTabGroupBar::~SavedTabGroupBar() {
-  everything_menu_.reset();
-
   // Remove all buttons from the hierarchy
   RemoveAllButtons();
 
   if (saved_tab_group_model_) {
     saved_tab_group_model_->RemoveObserver(this);
   }
-}
-
-void SavedTabGroupBar::ShowEverythingMenu() {
-  CHECK(IsTabGroupsSaveUIUpdateEnabled());
-  if (everything_menu_ && everything_menu_->IsShowing()) {
-    return;
-  }
-
-  everything_menu_ = std::make_unique<STGEverythingMenu>(
-      overflow_button_->button_controller(), GetWidget(), browser_);
-  everything_menu_->RunMenu();
 }
 
 void SavedTabGroupBar::GetAccessibleNodeData(ui::AXNodeData* node_data) {
