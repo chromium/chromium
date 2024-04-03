@@ -16,10 +16,10 @@ enum class ClientBehaviorConstants {
   // Note that the number of the behavior, not the name, is sent in the JSON
   // request to Payments.
 
-  // For more information on this signal, see AutofillEnableNewSaveCardBubbleUi
-  // flag. This enum is to be always included in the client_behavior_signals
-  // from M113 onwards as this retrieves the correct TOS footer for
-  // FasterAndProtected bubble.
+  // Originally used for the AutofillEnableNewSaveCardBubbleUi rollout. This
+  // enum was provided to certain upload card requests between M113 and M123 in
+  // order to retrieve the correct TOS footer from the Payments server. It is
+  // now deprecated and should no longer be used.
   kUsingFasterAndProtectedUi = 1,
 
   // From M114 onwards, this enum is added to the client_behavior_signals in the
