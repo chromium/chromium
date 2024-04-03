@@ -15,6 +15,12 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {getTemplate} from './autofill_metadata_app.html.js';
 import {FeedbackBrowserProxyImpl} from './js/feedback_browser_proxy.js';
 
+export interface AutofillMetadataAppElement {
+  $: {
+    title: HTMLElement,
+  };
+}
+
 export class AutofillMetadataAppElement extends PolymerElement {
   static get is() {
     return 'autofill-metadata-app';
