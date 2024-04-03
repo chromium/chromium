@@ -26739,6 +26739,7 @@ Called by update_use_counter_css.py.-->
   <int value="788" label="position-anchor"/>
   <int value="789" label="position-visibility"/>
   <int value="790" label="types"/>
+  <int value="791" label="line-clamp"/>
 </enum>
 
 <enum name="MediaEncryptionType">

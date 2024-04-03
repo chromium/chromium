@@ -2820,5 +2820,12 @@
     "args": ["--disable-blink-features=HTMLPopoverActionHover",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Feb 1, 2025"
+  },
+  {
+    "prefix": "css-line-clamp",
+    "platforms": ["Linux"],
+    "bases": ["external/wpt/css/css-overflow", "fast/overflow"],
+    "args": ["--enable-blink-features=CSSLineClamp"],
+    "owners": ["abotella@igalia.com"]
   }
 ]

@@ -5348,6 +5348,33 @@ const CSSValue* LineBreak::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.GetLineBreak());
 }
 
+const CSSValue* LineClamp::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  if (range.Peek().Id() == CSSValueID::kNone) {
+    const CSSIdentifierValue* value = css_parsing_utils::ConsumeIdent(range);
+    if (!range.AtEnd()) {
+      return nullptr;
+    }
+    return value;
+  } else {
+    return css_parsing_utils::ConsumePositiveInteger(range, context);
+  }
+}
+
+const CSSValue* LineClamp::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  if (!style.HasStandardLineClamp()) {
+    return CSSIdentifierValue::Create(CSSValueID::kNone);
+  }
+  return CSSNumericLiteralValue::Create(style.StandardLineClamp(),
+                                        CSSPrimitiveValue::UnitType::kNumber);
+}
+
 const CSSValue* LineHeight::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
@@ -9648,10 +9675,10 @@ const CSSValue* WebkitLineClamp::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  if (!style.HasLineClamp()) {
+  if (style.WebkitLineClamp() == 0) {
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   }
-  return CSSNumericLiteralValue::Create(style.LineClamp(),
+  return CSSNumericLiteralValue::Create(style.WebkitLineClamp(),
                                         CSSPrimitiveValue::UnitType::kNumber);
 }
 

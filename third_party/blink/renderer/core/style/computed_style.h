@@ -603,8 +603,16 @@ class ComputedStyle final : public ComputedStyleBase {
   // content
   ContentData* GetContentData() const { return ContentInternal().Get(); }
 
-  // -webkit-line-clamp
-  bool HasLineClamp() const { return LineClamp() > 0; }
+  // line-clamp and -webkit-line-clamp
+  bool HasStandardLineClamp() const { return StandardLineClamp() != 0; }
+  int LineClamp() const {
+    if (HasStandardLineClamp()) {
+      DCHECK(RuntimeEnabledFeatures::CSSLineClampEnabled());
+      return StandardLineClamp();
+    }
+    return WebkitLineClamp();
+  }
+  bool HasLineClamp() const { return LineClamp() != 0; }
 
   bool OpacityChangedStackingContext(const ComputedStyle& other) const {
     // We only need do layout for opacity changes if adding or losing opacity

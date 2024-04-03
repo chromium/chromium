@@ -894,6 +894,9 @@
       status: "stable"
     },
     {
+      name: "CSSLineClamp",
+    },
+    {
       name: "CSSLogicalOverflow",
       status: "test",
     },

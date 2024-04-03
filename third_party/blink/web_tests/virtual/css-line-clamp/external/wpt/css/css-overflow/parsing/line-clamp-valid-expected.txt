@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] e.style['line-clamp'] = "7 none" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['line-clamp'] = "8 auto" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['line-clamp'] = "9 \\" etc., etc. \\"" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+Harness: the test ran to completion.
+

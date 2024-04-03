@@ -7,7 +7,7 @@
 
 #include <optional>
 
-#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -38,6 +38,10 @@ struct LineClampData {
 
   bool IsPastClampPoint() const {
     return state == kEnabled && lines_until_clamp <= 0;
+  }
+
+  bool ShouldHideForPaint() const {
+    return RuntimeEnabledFeatures::CSSLineClampEnabled() && IsPastClampPoint();
   }
 
   bool operator==(const LineClampData& other) const {

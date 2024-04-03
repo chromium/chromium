@@ -403,6 +403,15 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
     }
   }
 
+  // With the CSSLineClamp feature, if we're past the clamp point, we mark every
+  // inline item in the line as hidden for paint.
+  if (UNLIKELY(GetConstraintSpace().GetLineClampData().ShouldHideForPaint())) {
+    container_builder_.SetIsHiddenForPaint(true);
+    for (auto& child : *line_box) {
+      child.is_hidden_for_paint = true;
+    }
+  }
+
   // Negative margins can make the position negative, but the inline size is
   // always positive or 0.
   inline_size = inline_size.ClampNegativeToZero();

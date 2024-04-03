@@ -478,6 +478,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.LightingColor() == b.LightingColor();
     case CSSPropertyID::kLineBreak:
       return a.GetLineBreak() == b.GetLineBreak();
+    case CSSPropertyID::kLineClamp:
+      return a.StandardLineClamp() == b.StandardLineClamp();
     case CSSPropertyID::kLineHeight:
       return a.SpecifiedLineHeight() == b.SpecifiedLineHeight();
     case CSSPropertyID::kTabSize:
@@ -774,6 +776,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kWebkitFontSmoothing:
       return a.GetFontDescription().FontSmoothing() ==
              b.GetFontDescription().FontSmoothing();
+    case CSSPropertyID::kWebkitLineClamp:
+      return a.WebkitLineClamp() == b.WebkitLineClamp();
     case CSSPropertyID::kWebkitLocale:
       return a.Locale() == b.Locale();
     case CSSPropertyID::kWebkitMaskBoxImageOutset:
@@ -1050,7 +1054,6 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kWebkitBoxPack:
     case CSSPropertyID::kWebkitBoxReflect:
     case CSSPropertyID::kWebkitLineBreak:
-    case CSSPropertyID::kWebkitLineClamp:
     case CSSPropertyID::kWebkitMaskBoxImageRepeat:
     case CSSPropertyID::kWebkitPrintColorAdjust:
     case CSSPropertyID::kWebkitRtlOrdering:

@@ -650,7 +650,9 @@ inline const LayoutResult* BlockLayoutAlgorithm::Layout(
     abort_when_bfc_block_offset_updated_ = true;
   }
 
-  if (Style().IsDeprecatedWebkitBoxWithVerticalLineClamp()) {
+  if (Style().HasLineClamp() &&
+      (Style().HasStandardLineClamp() ||
+       Style().IsDeprecatedWebkitBoxWithVerticalLineClamp())) {
     line_clamp_data_.UpdateLinesFromStyle(Style().LineClamp());
   } else if (Style().HasLineClamp()) {
     UseCounter::Count(Node().GetDocument(),
@@ -923,8 +925,7 @@ inline const LayoutResult* BlockLayoutAlgorithm::Layout(
                                      previous_inflow_position);
   }
 
-  if (UNLIKELY(constraint_space.IsNewFormattingContext() &&
-               line_clamp_data_.ShouldRelayoutWithNoForcedTruncate())) {
+  if (UNLIKELY(line_clamp_data_.ShouldRelayoutWithNoForcedTruncate())) {
     // Truncation of the last line was forced, but there are no lines after the
     // truncated line. Rerun layout without forcing truncation. This is only
     // done if line-clamp was specified on the element as the element containing
@@ -2925,6 +2926,10 @@ ConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
     builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchImplicit);
   }
 
+  if (UNLIKELY(line_clamp_data_.ShouldHideForPaint())) {
+    builder.SetIsHiddenForPaint(true);
+  }
+
   builder.SetAvailableSize(child_available_size);
   builder.SetPercentageResolutionSize(child_percentage_size_);
   builder.SetReplacedPercentageResolutionSize(replaced_child_percentage_size_);
@@ -3379,6 +3384,10 @@ void BlockLayoutAlgorithm::HandleRubyText(BlockNode ruby_text_child) {
   if (IsParallelWritingMode(GetConstraintSpace().GetWritingMode(),
                             rt_style.GetWritingMode())) {
     builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchImplicit);
+  }
+
+  if (UNLIKELY(line_clamp_data_.ShouldHideForPaint())) {
+    builder.SetIsHiddenForPaint(true);
   }
 
   const LayoutResult* result =
