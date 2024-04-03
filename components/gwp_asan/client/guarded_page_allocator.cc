@@ -373,15 +373,15 @@ bool GuardedPageAllocator::ReserveSlotAndMetadata(
   if (num_alloced_pages_ == max_alloced_pages_ ||
       !free_slots_->Allocate(slot, type)) {
     if (!oom_hit_) {
-      if (++consecutive_failed_allocations_ == kOutOfMemoryCount) {
+      if (++consecutive_oom_hits_ == kOutOfMemoryCount) {
         oom_hit_ = true;
-        size_t allocations = total_allocations_ - kOutOfMemoryCount;
         base::AutoUnlock unlock(lock_);
-        std::move(oom_callback_).Run(allocations);
+        std::move(oom_callback_).Run(total_allocations_);
       }
     }
     return false;
   }
+  consecutive_oom_hits_ = 0;
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_GWP_ASAN_STORE)
   if (!partition_alloc::GwpAsanSupport::CanReuse(state_.SlotToAddr(*slot))) {
@@ -407,7 +407,6 @@ bool GuardedPageAllocator::ReserveSlotAndMetadata(
 
   num_alloced_pages_++;
   total_allocations_++;
-  consecutive_failed_allocations_ = 0;
   return true;
 }
 

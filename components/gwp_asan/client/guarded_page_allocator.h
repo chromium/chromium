@@ -232,7 +232,7 @@ class GWP_ASAN_EXPORT GuardedPageAllocator {
   // Maintain a count of total allocations and consecutive failed allocations
   // to report allocator OOM.
   size_t total_allocations_ GUARDED_BY(lock_) = 0;
-  size_t consecutive_failed_allocations_ GUARDED_BY(lock_) = 0;
+  size_t consecutive_oom_hits_ GUARDED_BY(lock_) = 0;
   bool oom_hit_ GUARDED_BY(lock_) = false;
   OutOfMemoryCallback oom_callback_;
 
