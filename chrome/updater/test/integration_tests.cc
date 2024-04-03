@@ -1600,7 +1600,13 @@ TEST_F(IntegrationTest, UninstallCmdLine) {
   ASSERT_TRUE(WaitForUpdaterExit());
 }
 
-TEST_F(IntegrationTest, AppLogoUrl) {
+// TODO(https://crbug.com/332654156): Test is flaky on win-asan.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_AppLogoUrl DISABLED_AppLogoUrl
+#else
+#define MAYBE_AppLogoUrl AppLogoUrl
+#endif
+TEST_F(IntegrationTest, MAYBE_AppLogoUrl) {
   ScopedServer test_server(test_commands_);
   const std::string kAppId("test");
 
