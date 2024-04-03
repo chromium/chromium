@@ -655,12 +655,13 @@ void HatsServiceDesktop::CheckSurveyStatusAndMaybeShow(
                           base::TimeToValue(base::Time::Now()));
 
   DCHECK(!hats_next_dialog_exists_);
-  const auto& trigger_id =
-      supplied_trigger_id.has_value()
-          ? std::string(supplied_trigger_id.value())
-          : survey_configs_by_triggers_[trigger].trigger_id;
+  if (supplied_trigger_id.has_value()) {
+    survey_configs_by_triggers_[trigger].trigger_id =
+        std::string(supplied_trigger_id.value());
+  }
   browser->window()->ShowHatsDialog(
-      trigger_id, std::move(success_callback), std::move(failure_callback),
+      survey_configs_by_triggers_[trigger].trigger_id,
+      std::move(success_callback), std::move(failure_callback),
       product_specific_bits_data, product_specific_string_data);
   hats_next_dialog_exists_ = true;
 }
