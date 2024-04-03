@@ -621,8 +621,6 @@ class PersonalDataManager : public KeyedService,
     return test_addresses_;
   }
 
-  AutofillProfile* GetTestAddressByGUID(const std::string& guid);
-
   // Adds `credit_card` to the web database as a full server card.
   //
   // It is no longer possible for users to reach this path as full server cards
