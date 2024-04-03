@@ -53,6 +53,8 @@ constexpr CGFloat kMorePillButtonVerticalPadding = 17.;
 constexpr CGFloat kMoreArrowMargin = 4.;
 // Animation duration when the floating SetAsDefault button appears.
 constexpr NSTimeInterval kFloatingSetAsDefaultAnimationDuration = .3;
+// Height of the separator shown in the floating container.
+constexpr CGFloat kFloatingContainerSeparatorHeight = 1.;
 
 // URL for the "Learn more" link.
 const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
@@ -179,6 +181,10 @@ UIButton* CreateMorePillButton() {
   // Container to display the "Set as Default" button on top of the scroll view.
   // Related to `_floatingSetAsDefaultButton`.
   UIView* _floatingSetAsDefaultButtonContainer;
+  // Horizontal separator at the top of `_floatingSetAsDefaultButtonContainer`.
+  // It should be visible only when `_floatingSetAsDefaultButtonContainer` is
+  // covering `_searchEngineStackView`.
+  UIView* _floatingContainerSeparator;
   // Button to confirm the default search engine selection. This button is
   // visually identical to `_inlineSetAsDefaultButton` but it is inside
   // `_floatingSetAsDefaultButtonContainer`.
@@ -332,6 +338,12 @@ UIButton* CreateMorePillButton() {
   _floatingSetAsDefaultButtonContainer.hidden = YES;
   _floatingSetAsDefaultButtonContainer.backgroundColor = view.backgroundColor;
 
+  // Add separator at the top of the floating container.
+  _floatingContainerSeparator = [[UIView alloc] init];
+  _floatingContainerSeparator.translatesAutoresizingMaskIntoConstraints = NO;
+  [_floatingSetAsDefaultButtonContainer addSubview:_floatingContainerSeparator];
+  _floatingContainerSeparator.backgroundColor = UIColor.separatorColor;
+
   // Add floating "Set as Default" button.
   _floatingSetAsDefaultButton = CreateSetAsDefaultButton();
   _floatingSetAsDefaultButton.translatesAutoresizingMaskIntoConstraints = NO;
@@ -431,12 +443,24 @@ UIButton* CreateMorePillButton() {
     // _floatingSetAsDefaultButtonContainer constraints.
     [_floatingSetAsDefaultButtonContainer.bottomAnchor
         constraintEqualToAnchor:view.bottomAnchor],
-    // The container width should be smaller than the _scrollView width to not
-    // hide the vertical scroller on the right.
-    [_floatingSetAsDefaultButtonContainer.widthAnchor
-        constraintEqualToAnchor:_searchEngineStackView.widthAnchor],
-    [_floatingSetAsDefaultButtonContainer.centerXAnchor
-        constraintEqualToAnchor:_searchEngineStackView.centerXAnchor],
+    // It needs to be as large as the screen so the separator can be as large
+    // as the screen.
+    [_floatingSetAsDefaultButtonContainer.leadingAnchor
+        constraintEqualToAnchor:view.leadingAnchor],
+    [_floatingSetAsDefaultButtonContainer.trailingAnchor
+        constraintEqualToAnchor:view.trailingAnchor],
+
+    // _floatingContainerSeparator constraints.
+    [_floatingContainerSeparator.topAnchor
+        constraintEqualToAnchor:_floatingSetAsDefaultButtonContainer.topAnchor],
+    [_floatingContainerSeparator.leadingAnchor
+        constraintEqualToAnchor:_floatingSetAsDefaultButtonContainer
+                                    .leadingAnchor],
+    [_floatingContainerSeparator.trailingAnchor
+        constraintEqualToAnchor:_floatingSetAsDefaultButtonContainer
+                                    .trailingAnchor],
+    [_floatingContainerSeparator.heightAnchor
+        constraintEqualToConstant:kFloatingContainerSeparatorHeight],
 
     // _floatingSetAsDefaultButton constraints.
     [_floatingSetAsDefaultButton.topAnchor
@@ -446,12 +470,10 @@ UIButton* CreateMorePillButton() {
         constraintEqualToAnchor:_floatingSetAsDefaultButtonContainer
                                     .safeAreaLayoutGuide.bottomAnchor
                        constant:-kButtonMargin],
-    [_floatingSetAsDefaultButton.leadingAnchor
-        constraintEqualToAnchor:_floatingSetAsDefaultButtonContainer
-                                    .leadingAnchor],
-    [_floatingSetAsDefaultButton.trailingAnchor
-        constraintEqualToAnchor:_floatingSetAsDefaultButtonContainer
-                                    .trailingAnchor],
+    [_floatingSetAsDefaultButton.widthAnchor
+        constraintEqualToAnchor:_searchEngineStackView.widthAnchor],
+    [_floatingSetAsDefaultButton.centerXAnchor
+        constraintEqualToAnchor:_searchEngineStackView.centerXAnchor],
   ]];
   // No need to update the more and SetAsDefault buttons. They will be updated
   // when the view will be appearing.
@@ -496,6 +518,9 @@ UIButton* CreateMorePillButton() {
   dispatch_async(dispatch_get_main_queue(), ^{
     [weakSelf updateDidReachBottomFlag];
   });
+  // Adjust the inset vertical scroller since floating container size might have
+  // be updated.
+  [self adjustInsetVerticalScroller];
 }
 
 #pragma mark - Private
@@ -582,7 +607,7 @@ UIButton* CreateMorePillButton() {
     }
     animationStartFrame.origin.y = animationStartOriginPoint.y;
     _floatingSetAsDefaultButtonContainer.frame = animationStartFrame;
-    _floatingSetAsDefaultButtonContainer.hidden = NO;
+    [self makeFloatingSetAsDefaultButtonContainerVisible];
   }
 
   // 3- At the end of the animation, if the floating SetAsDefault container
@@ -680,9 +705,27 @@ UIButton* CreateMorePillButton() {
   [self updateDidReachBottomFlag];
 }
 
-// Tests if the scroll view reached the end of the last search engine button
-// for the first time, and hides the more button accordingly.
+// Updates views:
+// 1- The horizontal separator in the floating SetAsDefault is visible only
+//    when the floating SetAsDefault container is on top of the search engine
+//    stack view
+// 2- If the scroll view reaches the end of the last search engine button
+//    for the first time, and hides the more button accordingly.
+// 3- If the scroll view reaches the bottom, the inline SetAsDefault container
+//    is hidden, and the floating SetAsDefault container is visible.
 - (void)updateDidReachBottomFlag {
+  // 1- Tests if the stack view is covered by the floating SetAsDefault
+  //    container, and makes `_floatingContainerSeparator` visible if it is
+  //    the case.
+  CGPoint stackViewBottomPoint =
+      CGPointMake(_searchEngineStackView.frame.origin.x,
+                  _searchEngineStackView.bounds.origin.y +
+                      _searchEngineStackView.bounds.size.height);
+  stackViewBottomPoint = [self.view convertPoint:stackViewBottomPoint
+                                        fromView:_searchEngineStackView];
+  _floatingContainerSeparator.hidden =
+      stackViewBottomPoint.y <
+      _floatingSetAsDefaultButtonContainer.frame.origin.y + 1;
   if (!_viewIsAppearingCalled || _showFloatingSetAsDefaultButton ||
       !self.presentingViewController || !_searchEnginesLoaded) {
     // Don't update the value if the view is not ready to appear.
@@ -693,6 +736,9 @@ UIButton* CreateMorePillButton() {
   }
   CGFloat scrollPosition =
       _scrollView.contentOffset.y + _scrollView.frame.size.height;
+
+  // 2- Hides `_morePillButton` if the scroll view reaches the end of the stack
+  //    view.
   // The limit to remove the more button is when `_searchEngineStackView` is
   // fully visible.
   CGFloat bottomStackViewLimit = _searchEngineStackView.frame.origin.y +
@@ -700,15 +746,36 @@ UIButton* CreateMorePillButton() {
   if (scrollPosition >= bottomStackViewLimit) {
     _morePillButton.hidden = YES;
   }
+
+  // 3- Reveals the floating SetAsDefault container, and hides the inline
+  //    SetAsDefault container, if the scroll view reaches the bottom.
   CGFloat scrollLimit =
       _scrollView.contentSize.height + _scrollView.adjustedContentInset.bottom;
   if (scrollPosition >= scrollLimit) {
     // Scroll reached the bottom, the inline SetAsDefault button needs to be
     // hidden, and the floating SetAsDefault button needs to be visible.
     _showFloatingSetAsDefaultButton = YES;
-    _floatingSetAsDefaultButtonContainer.hidden = NO;
     _inlineSetAsDefaultButtonContainer.hidden = YES;
+    [self makeFloatingSetAsDefaultButtonContainerVisible];
   }
+}
+
+// Makes the floating container visible.
+- (void)makeFloatingSetAsDefaultButtonContainerVisible {
+  _floatingSetAsDefaultButtonContainer.hidden = NO;
+  [self adjustInsetVerticalScroller];
+}
+
+// Adjust the vertical scroller inset if the floating container is visible.
+- (void)adjustInsetVerticalScroller {
+  if (_floatingSetAsDefaultButtonContainer.hidden) {
+    return;
+  }
+  // The bottom inset should not include the safe area height.
+  CGFloat bottomInset = _floatingSetAsDefaultButtonContainer.frame.size.height -
+                        _scrollView.adjustedContentInset.bottom;
+  _scrollView.verticalScrollIndicatorInsets =
+      UIEdgeInsetsMake(0, 0, bottomInset, 0);
 }
 
 #pragma mark - UITextViewDelegate
