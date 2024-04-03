@@ -104,8 +104,11 @@ class GitCL:
         return self._host.executive.run_command(
             command, cwd=self._cwd, return_stderr=False, ignore_stderr=True)
 
-    def close(self):
-        self.run(['set-close'])
+    def close(self, issue: Optional[int] = None):
+        command = ['set-close']
+        if issue:
+            command.append(f'--issue={issue}')
+        self.run(command)
 
     def trigger_try_jobs(self, builders, bucket=None):
         """Triggers try jobs on the given builders.
@@ -147,8 +150,11 @@ class GitCL:
             return output[output.index('number:') + 1]
         return 'None'
 
-    def get_cl_status(self) -> str:
-        return self.run(['status', '--field=status']).strip()
+    def get_cl_status(self, issue: Optional[int] = None) -> str:
+        command = ['status', '--field=status']
+        if issue:
+            command.append(f'--issue={issue}')
+        return self.run(command).strip()
 
     def _get_latest_patchset(self):
         return self.run(['status', '--field=patch']).strip()
@@ -185,29 +191,32 @@ class GitCL:
             message=' for try jobs')
 
     def wait_for_closed_status(self,
-                               poll_delay_seconds=2 * 60,
-                               timeout_seconds=30 * 60):
+                               poll_delay_seconds: float = 2 * 60,
+                               timeout_seconds: float = 30 * 60,
+                               issue: Optional[int] = None,
+                               start: Optional[float] = None) -> Optional[str]:
         """Waits until git cl reports that the current CL is closed."""
 
         def closed_status_or_none():
-            status = self.get_cl_status()
+            status = self.get_cl_status(issue)
             _log.debug('CL status is: %s', status)
             if status == 'closed':
                 self._host.print_('CL is closed.')
                 return status
             return None
 
-        return self._wait_for(
-            closed_status_or_none,
-            poll_delay_seconds,
-            timeout_seconds,
-            message=' for closed status')
+        return self._wait_for(closed_status_or_none,
+                              poll_delay_seconds,
+                              timeout_seconds,
+                              message=' for closed status',
+                              start=start)
 
     def _wait_for(self,
                   poll_function,
                   poll_delay_seconds,
                   timeout_seconds,
-                  message=''):
+                  message='',
+                  start: Optional[float] = None):
         """Waits for the given poll_function to return something other than None.
 
         Args:
@@ -216,14 +225,22 @@ class GitCL:
             poll_delay_seconds: Time to wait between fetching results.
             timeout_seconds: Time to wait before aborting.
             message: Message to print indicate what is being waited for.
+            start: A UNIX-epoch timestamp that each polled duration should be
+                calculated against. Defaults to the time of the call. This
+                method will poll at least once, so passing an already timed-out
+                start is safe.
 
         Returns:
             The value returned by poll_function, or None on timeout.
         """
-        start = self._host.time()
-        self._host.print_(
-            'Waiting%s, timeout: %d seconds.' % (message, timeout_seconds))
+        if start is None:
+            start = self._host.time()
+        self._host.print_('Waiting%s, timeout: %d seconds.' %
+                          (message, timeout_seconds))
         while (self._host.time() - start) < timeout_seconds:
+            # TODO(crbug.com/40631540): The poll delay is actually twice what is
+            # documented because we `sleep()` twice per loop. Get rid of one and
+            # fix the tests that broke.
             self._host.sleep(poll_delay_seconds)
             value = poll_function()
             if value is not None:
@@ -232,7 +249,8 @@ class GitCL:
                               (message, self._host.time() - start))
             self._host.sleep(poll_delay_seconds)
         self._host.print_('Timed out waiting%s.' % message)
-        return None
+        # Poll one more time in case the result recently changed.
+        return poll_function()
 
     def latest_try_jobs(self,
                         issue_number=None,

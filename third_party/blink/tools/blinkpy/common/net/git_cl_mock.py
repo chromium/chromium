@@ -52,8 +52,14 @@ class MockGitCL(object):
             command.extend(['-b', builder])
         self.run(command)
 
+    def close(self, issue: Optional[int] = None):
+        self.run(['set-close'])
+
     def get_issue_number(self):
         return self._issue_number
+
+    def get_cl_status(self, issue: Optional[int] = None) -> str:
+        return self._status
 
     def try_job_results(self, **_):
         return self._try_job_results
@@ -64,7 +70,11 @@ class MockGitCL(object):
         return CLStatus(self._status,
                         self.filter_latest(self._try_job_results))
 
-    def wait_for_closed_status(self, **_):
+    def wait_for_closed_status(self,
+                               poll_delay_seconds: float = 2 * 60,
+                               timeout_seconds: float = 30 * 60,
+                               issue: Optional[int] = None,
+                               start: Optional[float] = None) -> Optional[str]:
         if self._time_out:
             return None
         return 'closed'
