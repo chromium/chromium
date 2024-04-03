@@ -420,9 +420,9 @@ subsetTest(promise_test, async test => {
         let bid = browserSignals.forDebuggingOnlyInCooldownOrLockout ? 1 : 2;
         return {bid: bid, render: '${renderURL}'};`,
       reportWin: `
-        if (browserSignals.bid == 1)
+        if (browserSignals.bid === 1)
           sendReportTo('${bidderReportURL1}');
-        if (browserSignals.bid == 2)
+        if (browserSignals.bid === 2)
           sendReportTo('${bidderReportURL2}');`
 
     })
@@ -443,9 +443,9 @@ subsetTest(promise_test, async test => {
             browserSignals.forDebuggingOnlyInCooldownOrLockout ? 1 : 2;
         return {desirability: desirability};`,
       reportResult: `
-        if (browserSignals.desirability == 1)
+        if (browserSignals.desirability === 1)
           sendReportTo('${sellerReportURL1}');
-        if (browserSignals.desirability == 2)
+        if (browserSignals.desirability === 2)
           sendReportTo('${sellerReportURL2}');`
     })
   };

@@ -177,7 +177,7 @@ async function waitForObservedRequestsIgnoreDebugOnlyReports(
 function createBiddingScriptURL(params = {}) {
   let origin = params.origin ? params.origin : new URL(BASE_URL).origin;
   let url = new URL(`${origin}${RESOURCE_PATH}bidding-logic.sub.py`);
-  // These checks use "==" to ignore null and not provided arguments, while
+  // These checks use "!=" to ignore null and not provided arguments, while
   // treating '' as a valid argument.
   if (params.generateBid != null)
     url.searchParams.append('generateBid', params.generateBid);
@@ -213,7 +213,7 @@ function createDecisionScriptURL(uuid, params = {}) {
   let origin = params.origin ? params.origin : new URL(BASE_URL).origin;
   let url = new URL(`${origin}${RESOURCE_PATH}decision-logic.sub.py`);
   url.searchParams.append('uuid', uuid);
-  // These checks use "==" to ignore null and not provided arguments, while
+  // These checks use "!=" to ignore null and not provided arguments, while
   // treating '' as a valid argument.
   if (params.scoreAd != null)
     url.searchParams.append('scoreAd', params.scoreAd);
@@ -230,8 +230,8 @@ function createDecisionScriptURL(uuid, params = {}) {
 // be last.  "signalsParams" also has no effect, but is used by
 // trusted-scoring-signals.py to affect the response.
 function createRenderURL(uuid, script, signalsParams, origin) {
-  // These checks use "==" to ignore null and not provided arguments, while
-  // treating '' as a valid argument.
+  // These checks use "==" and "!=" to ignore null and not provided
+  // arguments, while treating '' as a valid argument.
   if (origin == null)
     origin = new URL(BASE_URL).origin;
   let url = new URL(`${origin}${RESOURCE_PATH}fenced-frame.sub.py`);
@@ -298,7 +298,7 @@ async function joinNegativeInterestGroup(
     name: name,
     additionalBidKey: additionalBidKey
   };
-  if (owner != window.location.origin) {
+  if (owner !== window.location.origin) {
     let iframe = await createIframe(test, owner, 'join-ad-interest-group');
     await runInFrame(
       test, iframe,
@@ -557,7 +557,7 @@ async function runInFrame(test, child_window, script, param) {
 
   let promise = new Promise(function(resolve, reject) {
     function WaitForMessage(event) {
-      if (event.data.messageUuid != messageUuid)
+      if (event.data.messageUuid !== messageUuid)
         return;
       receivedResponse = event.data;
       if (event.data.result === 'success') {
@@ -589,7 +589,7 @@ async function createFrame(test, origin, is_iframe = true, permissions = null) {
       `${origin}${RESOURCE_PATH}subordinate-frame.sub.html?uuid=${frameUuid}`;
   let promise = new Promise(function(resolve, reject) {
     function WaitForMessage(event) {
-      if (event.data.messageUuid != frameUuid)
+      if (event.data.messageUuid !== frameUuid)
         return;
       if (event.data.result === 'load complete') {
         resolve();
@@ -703,35 +703,35 @@ function directFromSellerSignalsValidatorCode(uuid, expectedSellerSignals,
   return {
     // Seller worklets
     scoreAd:
-      `if (directFromSellerSignals === null ||
+      `if (directFromSellerSignals == null ||
            directFromSellerSignals.sellerSignals !== ${expectedSellerSignals} ||
            directFromSellerSignals.auctionSignals !== ${expectedAuctionSignals} ||
-           Object.keys(directFromSellerSignals).length != 2) {
+           Object.keys(directFromSellerSignals).length !== 2) {
               throw 'Failed to get expected directFromSellerSignals in scoreAd(): ' +
                 JSON.stringify(directFromSellerSignals);
           }`,
     reportResultSuccessCondition:
-      `directFromSellerSignals !== null &&
+      `directFromSellerSignals != null &&
            directFromSellerSignals.sellerSignals === ${expectedSellerSignals} &&
            directFromSellerSignals.auctionSignals === ${expectedAuctionSignals} &&
-           Object.keys(directFromSellerSignals).length == 2`,
+           Object.keys(directFromSellerSignals).length === 2`,
     reportResult:
       `sendReportTo("${createSellerReportURL(uuid)}");`,
 
     // Bidder worklets
     generateBid:
-      `if (directFromSellerSignals === null ||
+      `if (directFromSellerSignals == null ||
            directFromSellerSignals.perBuyerSignals !== ${expectedPerBuyerSignals} ||
            directFromSellerSignals.auctionSignals !== ${expectedAuctionSignals} ||
-           Object.keys(directFromSellerSignals).length != 2) {
+           Object.keys(directFromSellerSignals).length !== 2) {
               throw 'Failed to get expected directFromSellerSignals in generateBid(): ' +
                 JSON.stringify(directFromSellerSignals);
         }`,
     reportWinSuccessCondition:
-      `directFromSellerSignals !== null &&
+      `directFromSellerSignals != null &&
            directFromSellerSignals.perBuyerSignals === ${expectedPerBuyerSignals} &&
            directFromSellerSignals.auctionSignals === ${expectedAuctionSignals} &&
-           Object.keys(directFromSellerSignals).length == 2`,
+           Object.keys(directFromSellerSignals).length === 2`,
     reportWin:
       `sendReportTo("${createBidderReportURL(uuid)}");`,
   };
