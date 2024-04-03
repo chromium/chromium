@@ -1653,6 +1653,7 @@ bool LineBreaker::HandleTextForFastMinContent(InlineItemResult* item_result,
     saved_line_break_type = break_iterator_.BreakType();
     break_iterator_.SetBreakType(LineBreakType::kBreakCharacter);
   }
+  const unsigned saved_start_offset = break_iterator_.StartOffset();
 
   // Break the text at every break opportunity and measure each word.
   DCHECK_EQ(shape_result.StartIndex(), item.StartOffset());
@@ -1665,6 +1666,9 @@ bool LineBreaker::HandleTextForFastMinContent(InlineItemResult* item_result,
   unsigned end_offset = start_offset + 1;
   std::optional<LayoutUnit> hyphen_inline_size;
   while (start_offset < item.EndOffset()) {
+    // TODO(crbug.com/332328872): `following()` scans back to the start of the
+    // string. Resetting the ICU `BreakIterator` is faster than the scanning.
+    break_iterator_.SetStartOffset(start_offset);
     end_offset =
         break_iterator_.NextBreakOpportunity(end_offset, item.EndOffset());
 
@@ -1739,6 +1743,7 @@ bool LineBreaker::HandleTextForFastMinContent(InlineItemResult* item_result,
 
   if (saved_line_break_type.has_value())
     break_iterator_.SetBreakType(*saved_line_break_type);
+  break_iterator_.SetStartOffset(saved_start_offset);
 
   // If there was only one break opportunity in this item, it may form a word
   // with previous and/or next item. Fallback to |HandleText()|.
