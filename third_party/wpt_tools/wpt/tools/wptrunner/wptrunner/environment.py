@@ -7,8 +7,11 @@ import signal
 import socket
 import sys
 import time
+from typing import Optional
 
+import mozprocess
 from mozlog import get_default_logger, handlers
+from mozlog.structuredlog import StructuredLogger
 
 from . import mpcontext
 from .wptlogging import LogLevelRewriter, QueueHandler, LogQueueThread
@@ -331,7 +334,11 @@ class TestdriverLoader:
         return self._handler(request, response)
 
 
-def wait_for_service(logger, host, port, timeout=60, server_process=None):
+def wait_for_service(logger: StructuredLogger,
+                     host: str,
+                     port: int,
+                     timeout: float = 60,
+                     server_process: Optional[mozprocess.ProcessHandler] = None) -> bool:
     """Waits until network service given as a tuple of (host, port) becomes
     available, `timeout` duration is reached, or the `server_process` exits at
     which point ``socket.error`` is raised."""
