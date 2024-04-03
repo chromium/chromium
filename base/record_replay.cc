@@ -602,6 +602,10 @@ void ExitReplayCode() {
   V8RecordReplayExitReplayCode();
 }
 
+bool AreEventsUnavailable(const char* why) {
+  return AreEventsDisallowed(why) || HasDivergedFromRecording();
+}
+
 AutoMarkReplayCode::AutoMarkReplayCode() {
   V8RecordReplayEnterReplayCode();
 }

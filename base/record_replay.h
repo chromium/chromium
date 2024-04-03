@@ -74,6 +74,9 @@ void BeginDisallowEvents();
 void BeginDisallowEventsWithLabel(const char* label);
 
 void EndDisallowEvents();
+
+// Whether we are in a code path that we have explicitely identified as
+// divergent.
 bool AreEventsDisallowed(const char* why = nullptr);
 
 void EnterReplayCode();
@@ -99,6 +102,13 @@ struct AutoDisallowEvents {
   ~AutoDisallowEvents() { EndDisallowEvents(); }
 };
 
+// Whether we have intentionally diverged from recording at a pause point.
+// After diverging, we:
+// 1. Cannot interact with the recording stream any longer.
+// 2. Are guaranteed that no runToPoint will follow.
+// 
+// The above two constraints allow us to execute arbitrary code without fear
+// of causing downstream divergences.
 bool HasDivergedFromRecording();
 bool AllowSideEffects();
 
@@ -122,6 +132,10 @@ void Crash(const char* format, ...);
 
 // Return whether record/replay specific scripts are executing.
 bool IsInReplayCode(const char* why = nullptr);
+
+// Return whether we are in a divergent code segment where we cannot
+// read/write the recording stream.
+bool AreEventsUnavailable(const char* why = nullptr);
 
 
 // Mark a region where record/replay specific scripts are executing.

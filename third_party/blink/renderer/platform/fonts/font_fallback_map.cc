@@ -38,7 +38,7 @@ scoped_refptr<FontFallbackList> FontFallbackMap::Get(
 }
 
 void FontFallbackMap::Remove(const FontDescription& font_description) {
-    if (recordreplay::IsRecordingOrReplaying("FontFallbackMap::Remove")) {
+    if (recordreplay::IsRecordingOrReplaying("leak-references","FontFallbackMap::Remove")) {
     // [RUN-3109] Leak FontFallbackList.
     return;
   }
@@ -53,7 +53,7 @@ void FontFallbackMap::Remove(const FontDescription& font_description) {
 }
 
 void FontFallbackMap::InvalidateAll() {
-    if (recordreplay::AreEventsDisallowed("FontFallbackMap::InvalidateAll")) {
+    if (recordreplay::AreEventsDisallowed("leak-references")) {
     // Leak fallback_list_for_description_ contents.
     return;
   }
@@ -91,7 +91,7 @@ void FontFallbackMap::InvalidateInternal(Predicate predicate) {
 
 void FontFallbackMap::FontsNeedUpdate(FontSelector*,
                                       FontInvalidationReason reason) {
-  if (recordreplay::AreEventsDisallowed("FontFallbackMap::FontsNeedUpdate")) {
+  if (recordreplay::AreEventsDisallowed("leak-references")) {
     // Leak fallback_list_for_description_ contents to avoid divergence down the
     // road.
     return;
