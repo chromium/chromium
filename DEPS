@@ -277,11 +277,11 @@ vars = {
   # screen-ai CIPD packages
   # TODO(b/281483558): Use a tag to download the latest version of screen-ai
   # (e.g. 'version:121.3') and find a way to automate updating //DEPS with it.
-  'screen_ai_linux': 'x8c4xOQj3V2uyBicjNa2YkN71brkj5FZg157RueHF_oC',
-  'screen_ai_macos_amd64': 'STOrwjObcsaURUq2izEeXtnwtRhC5HLOTrcfXssSSioC',
-  'screen_ai_macos_arm64': 'bxhon5NsSW9znRLRHd79tTy_bkPCZojzLWb57La9RxsC',
-  'screen_ai_windows_amd64': 'jxeZ_Mu4hREELgylzJLpMTOlHwJ_hfLSi8g3f4eIfwAC',
-  'screen_ai_windows_386': 'mQzGSGd8C3VtF9Rywg1s4yVKGobA6AkiwXWH5lab3PsC',
+  'screen_ai_linux': 'version:123.6',
+  'screen_ai_macos_amd64': 'version:123.6',
+  'screen_ai_macos_arm64': 'version:123.6',
+  'screen_ai_windows_amd64': 'version:123.6',
+  'screen_ai_windows_386': 'version:123.6',
 
   # The path of the sysroots.json file.
   # This is used by vendor builds like Electron.
