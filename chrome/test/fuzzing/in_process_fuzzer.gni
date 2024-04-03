@@ -12,9 +12,17 @@ import("//third_party/protobuf/proto_library.gni")
 #
 # It accepts all the same arguments as //testing/libfuzzer/fuzzer_test.gni's
 # fuzzer_test template.
+#
+# This template also accepts the argument `target_type`. This defaults to
+# `fuzzer_test`.
 template("in_process_fuzzer") {
   if (fuzzing_engine_supports_custom_main) {
-    fuzzer_test(target_name) {
+    if (defined(invoker.target_type)) {
+      target_type = invoker.target_type
+    } else {
+      target_type = "fuzzer_test"
+    }
+    target(target_type, target_name) {
       deps = [ "//chrome/test/fuzzing:in_process_fuzzer_runner" ]
       if (defined(invoker.deps)) {
         deps += invoker.deps
@@ -233,26 +241,14 @@ template("in_process_proto_fuzzer") {
 # Parameters:
 #  see parameters for //mojo/public/tools/fuzzers/mojolpm.gni:mojolpm_fuzzer_test
 template("in_process_mojolpm_fuzzer") {
-  if (fuzzing_engine_supports_custom_main) {
-    mojolpm_fuzzer_test(target_name) {
-      deps = [ "//chrome/test/fuzzing:in_process_fuzzer_runner" ]
-      if (defined(invoker.deps)) {
-        deps += invoker.deps
-      }
-      forward_variables_from(invoker,
-                             "*",
-                             [
-                               "deps",
-                               "exclude_main",
-                             ])
-      exclude_main = true
-    }
-  } else {
-    # noop if the fuzzer harness always provides its own main
-    not_needed(invoker, "*")
-
-    group(target_name) {
-    }
+  in_process_fuzzer(target_name) {
+    target_type = "mojolpm_fuzzer_test"
+    forward_variables_from(invoker,
+                           "*",
+                           [
+                             "testonly",
+                             "visibility",
+                           ])
   }
 }
 
@@ -262,25 +258,13 @@ template("in_process_mojolpm_fuzzer") {
 # Parameters:
 #  see parameters for //mojo/public/tools/fuzzers/mojolpm.gni:mojolpm_generated_fuzzer
 template("in_process_mojolpm_generated_fuzzer") {
-  if (fuzzing_engine_supports_custom_main) {
-    mojolpm_generated_fuzzer(target_name) {
-      deps = [ "//chrome/test/fuzzing:in_process_fuzzer_runner" ]
-      if (defined(invoker.deps)) {
-        deps += invoker.deps
-      }
-      forward_variables_from(invoker,
-                             "*",
-                             [
-                               "deps",
-                               "exclude_main",
-                             ])
-      exclude_main = true
-    }
-  } else {
-    # noop if the fuzzer harness always provides its own main
-    not_needed(invoker, "*")
-
-    group(target_name) {
-    }
+  in_process_fuzzer(target_name) {
+    target_type = "mojolpm_generated_fuzzer"
+    forward_variables_from(invoker,
+                           "*",
+                           [
+                             "testonly",
+                             "visibility",
+                           ])
   }
 }

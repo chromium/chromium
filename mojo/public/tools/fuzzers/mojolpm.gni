@@ -145,6 +145,14 @@ template("mojolpm_fuzzer_test") {
     }
 
     fuzzer_test(target_name) {
+      forward_variables_from(invoker,
+                             "*",
+                             [
+                               "sources",
+                               "deps",
+                               "seed_corpus_sources",
+                               "exclude_main",
+                             ])
       sources = invoker.sources
       deps = [
         ":${proto_target_name}",
