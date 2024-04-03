@@ -381,9 +381,11 @@ ExternalTexture CreateExternalTexture(
         /*use_visible_rect=*/true);
   } else {
     const gfx::Rect dest_rect = media_video_frame->visible_rect();
+    // Delegate video transformation to Dawn.
     if (!DrawVideoFrameIntoResourceProvider(
             std::move(media_video_frame), resource_provider,
-            raster_context_provider, dest_rect, video_renderer)) {
+            raster_context_provider, dest_rect, video_renderer,
+            /* ignore_video_transformation */ true)) {
       return {};
     }
   }
