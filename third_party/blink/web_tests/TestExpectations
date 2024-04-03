@@ -3460,7 +3460,7 @@ crbug.com/1031667 external/wpt/css/css-pseudo/marker-content-011.tentative.html 
 crbug.com/1097992 external/wpt/css/css-pseudo/marker-font-variant-numeric-normal.html [ Failure ]
 crbug.com/1060007 external/wpt/css/css-pseudo/marker-text-combine-upright.html [ Failure ]
 
-crbug.com/1498015 [ Mac11 ] external/wpt/css/printing/page-size-011-print.html [ Timeout ]
+crbug.com/1498015 [ Mac11 ] external/wpt/css/css-page/page-size-011-print.html [ Timeout ]
 crbug.com/325836823 external/wpt/css/printing/table-overflow-quirks-frameset-crash-print.html [ Crash Timeout ]
 
 # iframe tests time out if the request is blocked as mixed content.
@@ -5433,12 +5433,12 @@ crbug.com/1358312 [ Linux ] external/wpt/touch-events/single-touch-vertical-rl.h
 
 # unskip print ref tests
 crbug.com/1090628 external/wpt/css/css-break/float-with-large-margin-bottom-cross-page-001-print.html [ Failure ]
+crbug.com/1487479 external/wpt/css/css-page/remote-origin-iframe-print.html [ Failure ]
+crbug.com/1090628 external/wpt/css/printing/fragmented-inline-block-002-print.html [ Failure ]
 crbug.com/1090628 external/wpt/html/browsers/windows/iframe-cross-origin-print.sub.html [ Failure ]
 crbug.com/1090628 external/wpt/html/browsers/windows/iframe-cross-origin-scaled-print.sub.html [ Failure ]
 crbug.com/1090628 external/wpt/infrastructure/reftest/reftest_match_fail-print.html [ Failure ]
 crbug.com/1090628 external/wpt/infrastructure/reftest/reftest_mismatch_fail-print.html [ Failure ]
-crbug.com/1090628 external/wpt/css/printing/fragmented-inline-block-002-print.html [ Failure ]
-crbug.com/1487479 external/wpt/css/printing/remote-origin-iframe-print.html [ Failure ]
 
 crbug.com/1367113 fast/dom/shadow/event-path-load.html [ Crash Failure Pass Timeout ]
 crbug.com/1367113 http/tests/security/cors-check-for-cached-image.html [ Crash Failure Pass Timeout ]
