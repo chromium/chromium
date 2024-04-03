@@ -6842,7 +6842,7 @@
   {
     "name": "productivity-launcher-image-search",
     "owners": [ "wcwang@chromium.org", "yulunwu@chromium.org","cros-system-ui-eng@google.com" ],
-    "expiry_milestone": 124
+    "expiry_milestone": 130
   },
   {
     "name": "profiles-reordering",
