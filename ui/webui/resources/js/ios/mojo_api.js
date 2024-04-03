@@ -207,11 +207,13 @@ class MojoWatcher {
 
   /*
    * Cancels a handle watch.
+   * @return {Object=} Response from Mojo backend.
    */
   cancel() {
-    Mojo.internal.sendMessage(
+    const result = Mojo.internal.sendMessage(
         {name: 'MojoWatcher.cancel', args: {watchId: this.watchId_}});
     Mojo.internal.watchCallbacksHolder.removeWatchCallback(this.watchId_);
+    return result;
   }
 }
 

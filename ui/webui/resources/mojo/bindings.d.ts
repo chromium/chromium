@@ -36,13 +36,73 @@ declare global {
     RESULT_SHOULD_WAIT = 17,
   }
 
+  namespace Mojo {
+    // The following constants already belong to the `MojoResult` enum, but code
+    // already references these constants as Mojo.MOJO_RESULT_NAME. To preserve
+    // that functionality, redefine these as constants in the Mojo namespace
+    // here. This allows us to keep the `Mojo` a namespace (the alternative is a
+    // undefined const variable typed to &MojoResult with additional APIs, but
+    // this causes issues with clients using the bindings as externs only as
+    // calling the APIs results in 'Mojo is undefined' errors).
+    const RESULT_OK = MojoResult.RESULT_OK;
+    const RESULT_CANCELLED = MojoResult.RESULT_CANCELLED;
+    const RESULT_UNKNOWN = MojoResult.RESULT_UNKNOWN;
+    const RESULT_INVALID_ARGUMENT = MojoResult.RESULT_INVALID_ARGUMENT;
+    const RESULT_DEADLINE_EXCEEDED = MojoResult.RESULT_DEADLINE_EXCEEDED;
+    const RESULT_NOT_FOUND = MojoResult.RESULT_NOT_FOUND;
+    const RESULT_ALREADY_EXISTS = MojoResult.RESULT_ALREADY_EXISTS;
+    const RESULT_PERMISSION_DENIED = MojoResult.RESULT_PERMISSION_DENIED;
+    const RESULT_RESOURCE_EXHAUSTED = MojoResult.RESULT_RESOURCE_EXHAUSTED;
+    const RESULT_FAILED_PRECONDITION = MojoResult.RESULT_FAILED_PRECONDITION;
+    const RESULT_ABORTED = MojoResult.RESULT_ABORTED;
+    const RESULT_OUT_OF_RANGE = MojoResult.RESULT_OUT_OF_RANGE;
+    const RESULT_UNIMPLEMENTED = MojoResult.RESULT_UNIMPLEMENTED;
+    const RESULT_INTERNAL = MojoResult.RESULT_INTERNAL;
+    const RESULT_UNAVAILABLE = MojoResult.RESULT_UNAVAILABLE;
+    const RESULT_DATA_LOSS = MojoResult.RESULT_DATA_LOSS;
+    const RESULT_BUSY = MojoResult.RESULT_BUSY;
+    const RESULT_SHOULD_WAIT = MojoResult.RESULT_SHOULD_WAIT;
+  }
+
+  interface MojoHandleSignals {
+    readable?: boolean;
+    writable?: boolean;
+    peerClosed?: boolean;
+  }
+
+  type MojoWatchCallback = (result: MojoResult) => void;
+
+  interface MojoWatcher {
+    cancel(): MojoResult;
+  }
+
+  interface MojoReadMessageFlags {
+    mayDiscard: boolean;
+  }
+
+  interface MojoReadMessageResult {
+    result: MojoResult;
+    buffer: ArrayBuffer;
+    handles: MojoHandle[];
+  }
+
   interface MojoMapBufferResult {
     buffer: ArrayBuffer;
     result: MojoResult;
   }
 
   interface MojoHandle {
+    close(): void;
+    watch(signals: MojoHandleSignals, callback: MojoWatchCallback): MojoWatcher;
+    writeMessage(buffer: BufferSource, handles: MojoHandle[]): MojoResult;
+    readMessage(flags?: MojoReadMessageFlags): MojoReadMessageResult;
     mapBuffer(start: number, end: number): MojoMapBufferResult;
+  }
+
+  interface MojoCreateMessagePipeResult {
+    result: MojoResult;
+    handle0: MojoHandle;
+    handle1: MojoHandle;
   }
 
   interface MojoCreateSharedBufferResult {
@@ -50,9 +110,12 @@ declare global {
     result: MojoResult;
   }
 
-  const Mojo: typeof MojoResult&{
-    createSharedBuffer(numBytes: number): MojoCreateSharedBufferResult,
-  };
+  namespace Mojo {
+    function createMessagePipe(): MojoCreateMessagePipeResult;
+    function createSharedBuffer(numBytes: number): MojoCreateSharedBufferResult;
+    function bindInterface(
+        interfaceName: string, requestHandle: MojoHandle, scope?: string): void;
+  }
 
   interface MojoInterfaceRequestEvent {
     handle: MojoHandle;
