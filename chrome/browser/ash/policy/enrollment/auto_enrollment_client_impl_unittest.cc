@@ -23,6 +23,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/login/oobe_configuration.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_state.h"
+#include "chrome/browser/ash/policy/enrollment/flex_enrollment_test_helper.h"
 #include "chrome/browser/ash/policy/enrollment/psm/fake_rlwe_dmserver_client.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
 #include "chrome/browser/browser_process.h"
@@ -70,14 +71,6 @@ const bool kWithLicense = true;
 
 const char kNoLicenseType[] = "";
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-const char kFlexEnrollmentToken[] = "test_flex_token";
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
-const char kFlexEnrollmentTokenOobeConfig[] = R"({
-  "flexToken": "test_flex_token"
-})";
-
 // Start and limit powers for the hash dance clients.
 const int kPowerStart = 4;
 const int kPowerLimit = 8;
@@ -107,12 +100,10 @@ class AutoEnrollmentClientImplBaseTest : public testing::Test {
       : scoped_testing_local_state_(TestingBrowserProcess::GetGlobal()),
         local_state_(scoped_testing_local_state_.Get()),
         protocol_(protocol) {
-    ash::OobeConfigurationClient::InitializeFake();
     CreateClient(kPowerStart, kPowerLimit);
   }
 
   ~AutoEnrollmentClientImplBaseTest() override {
-    ash::OobeConfigurationClient::Shutdown();
     // Flush any deletion tasks.
     base::RunLoop().RunUntilIdle();
   }
@@ -146,7 +137,8 @@ class AutoEnrollmentClientImplBaseTest : public testing::Test {
           AutoEnrollmentClientImpl::FactoryImpl().CreateForInitialEnrollment(
               progress_callback, service_.get(), local_state_,
               shared_url_loader_factory_, kSerialNumber, kBrandCode,
-              std::move(fake_psm_rlwe_dmserver_client), &oobe_configuration_);
+              std::move(fake_psm_rlwe_dmserver_client),
+              flex_test_helper_.oobe_configuration());
     }
   }
 
@@ -394,18 +386,6 @@ class AutoEnrollmentClientImplBaseTest : public testing::Test {
     EXPECT_EQ(*actual_license_type, expected_license_type);
   }
 
-  void SetUpFlexEnrollmentToken() {
-    static_cast<ash::FakeOobeConfigurationClient*>(
-        ash::OobeConfigurationClient::Get())
-        ->SetConfiguration(kFlexEnrollmentTokenOobeConfig);
-    oobe_configuration_.CheckConfiguration();
-  }
-
-  void SetUpFlexDevice() {
-    command_line_.GetProcessCommandLine()->AppendSwitch(
-        ash::switches::kRevenBranding);
-  }
-
   const em::DeviceAutoEnrollmentRequest& auto_enrollment_request() {
     return last_request_.auto_enrollment_request();
   }
@@ -423,8 +403,8 @@ class AutoEnrollmentClientImplBaseTest : public testing::Test {
     return static_cast<AutoEnrollmentClientImpl*>(client_.release());
   }
 
-  ash::OobeConfiguration oobe_configuration_;
   base::test::ScopedCommandLine command_line_;
+  test::FlexEnrollmentTestHelper flex_test_helper_{&command_line_};
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
@@ -1940,7 +1920,7 @@ TEST_F(AutoEnrollmentClientImplInitialEnrollmentTest,
 // token is present on a non-Flex device for some reason).
 TEST_F(AutoEnrollmentClientImplInitialEnrollmentTest,
        FlexEnrollmentTokenIgnoredWhenNotOnFlex) {
-  SetUpFlexEnrollmentToken();
+  flex_test_helper_.SetUpFlexEnrollmentTokenConfig();
   const base::TimeDelta kOneSecondTimeDelta = base::Seconds(1);
   const base::Time kExpectedPsmDeterminationTimestamp =
       base::Time::NowFromSystemTime() + kOneSecondTimeDelta;
@@ -1979,8 +1959,8 @@ TEST_F(AutoEnrollmentClientImplInitialEnrollmentTest,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 TEST_F(AutoEnrollmentClientImplInitialEnrollmentTest,
        FlexAutoEnrollmentServerRespondsWithSuccess) {
-  SetUpFlexDevice();
-  SetUpFlexEnrollmentToken();
+  flex_test_helper_.SetUpFlexDevice();
+  flex_test_helper_.SetUpFlexEnrollmentTokenConfig();
   CreateClient(kPowerStart, kPowerLimit);
   ServerWillSendStateForInitialEnrollment(
       "example.com", kNotWithLicense,
@@ -1995,7 +1975,7 @@ TEST_F(AutoEnrollmentClientImplInitialEnrollmentTest,
             em::DeviceRegisterRequest::PSM_SKIPPED_FOR_FLEX_AUTO_ENROLLMENT);
   EXPECT_EQ(last_request_.device_initial_enrollment_state_request()
                 .enrollment_token(),
-            kFlexEnrollmentToken);
+            test::kFlexEnrollmentToken);
   EXPECT_EQ(state_retrieval_job_type_, GetExpectedStateRetrievalJobType());
   EXPECT_EQ(state_, AutoEnrollmentResult::kEnrollment);
   VerifyServerBackedState("example.com", kDeviceStateInitialModeTokenEnrollment,
@@ -2009,8 +1989,8 @@ TEST_F(AutoEnrollmentClientImplInitialEnrollmentTest,
 // enrollment request/response.
 TEST_F(AutoEnrollmentClientImplInitialEnrollmentTest,
        FlexAutoEnrollmentServerRespondsWithEnrollmentModeNone) {
-  SetUpFlexDevice();
-  SetUpFlexEnrollmentToken();
+  flex_test_helper_.SetUpFlexDevice();
+  flex_test_helper_.SetUpFlexEnrollmentTokenConfig();
   CreateClient(kPowerStart, kPowerLimit);
   ServerWillSendStateForInitialEnrollment(
       "", kNotWithLicense, em::DeviceInitialEnrollmentStateResponse::NOT_EXIST,
@@ -2023,7 +2003,7 @@ TEST_F(AutoEnrollmentClientImplInitialEnrollmentTest,
             em::DeviceRegisterRequest::PSM_SKIPPED_FOR_FLEX_AUTO_ENROLLMENT);
   EXPECT_EQ(last_request_.device_initial_enrollment_state_request()
                 .enrollment_token(),
-            kFlexEnrollmentToken);
+            test::kFlexEnrollmentToken);
   EXPECT_EQ(state_retrieval_job_type_, GetExpectedStateRetrievalJobType());
   EXPECT_EQ(state_, AutoEnrollmentResult::kNoEnrollment);
   VerifyServerBackedState(
@@ -2033,8 +2013,8 @@ TEST_F(AutoEnrollmentClientImplInitialEnrollmentTest,
 
 TEST_F(AutoEnrollmentClientImplInitialEnrollmentTest,
        FlexAutoEnrollmentServerRespondsWithError) {
-  SetUpFlexDevice();
-  SetUpFlexEnrollmentToken();
+  flex_test_helper_.SetUpFlexDevice();
+  flex_test_helper_.SetUpFlexEnrollmentTokenConfig();
   CreateClient(kPowerStart, kPowerLimit);
   ServerWillFail(net::OK, DeviceManagementService::kServiceUnavailable);
 

@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/login/oobe_configuration.h"
+#include "chrome/browser/ash/policy/enrollment/flex_enrollment_test_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/oobe_config/fake_oobe_configuration_client.h"
@@ -40,9 +41,6 @@ constexpr char kSerialNumberValue[] = "a_value";
 constexpr char kBrandCodeValue[] = "brand_code";
 constexpr char kActivateDateValue[] = "activated";
 constexpr char kMalformedEmbargoDateValue[] = "adventure_time";
-constexpr char kFlexTokenOobeConfig[] = R"({
-  "flexToken": "test_flex_token"
-})";
 
 std::string ToUTCString(const base::Time& time) {
   return base::UnlocalizedTimeFormatWithPattern(time, "yyyy-MM-dd",
@@ -58,10 +56,6 @@ class AutoEnrollmentTypeCheckerTest : public testing::Test {
   AutoEnrollmentTypeCheckerTest() = default;
   ~AutoEnrollmentTypeCheckerTest() override = default;
 
-  void SetUp() override { ash::OobeConfigurationClient::InitializeFake(); }
-
-  void TearDown() override { ash::OobeConfigurationClient::Shutdown(); }
-
  protected:
   void SetUpNonchromeDevice() {
     fake_statistics_provider_.SetMachineStatistic(
@@ -71,8 +65,7 @@ class AutoEnrollmentTypeCheckerTest : public testing::Test {
 
   void SetUpFlexDevice() {
     SetUpNonchromeDevice();
-    command_line_.GetProcessCommandLine()->AppendSwitch(
-        ash::switches::kRevenBranding);
+    flex_test_helper_.SetUpFlexDevice();
   }
 
   void SetUpFlexDeviceWithCommandLineSwitchToAlways() {
@@ -80,13 +73,6 @@ class AutoEnrollmentTypeCheckerTest : public testing::Test {
     command_line_.GetProcessCommandLine()->AppendSwitchASCII(
         ash::switches::kEnterpriseEnableForcedReEnrollmentOnFlex,
         AutoEnrollmentTypeChecker::kForcedReEnrollmentAlways);
-  }
-
-  void SetUpFlexToken(const char config[] = kFlexTokenOobeConfig) {
-    static_cast<ash::FakeOobeConfigurationClient*>(
-        ash::OobeConfigurationClient::Get())
-        ->SetConfiguration(config);
-    ash::OobeConfiguration::Get()->CheckConfiguration();
   }
 
   void SetupFREEnabled() {
@@ -168,8 +154,8 @@ class AutoEnrollmentTypeCheckerTest : public testing::Test {
   static constexpr bool is_google_branded_ = false;
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-  ash::OobeConfiguration oobe_configuration_;
   base::test::ScopedCommandLine command_line_;
+  test::FlexEnrollmentTestHelper flex_test_helper_{&command_line_};
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 };
 
@@ -461,7 +447,7 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
 TEST_F(AutoEnrollmentTypeCheckerTest,
        DetermineAutoEnrollmentCheckTypeOnFlexWhenTokenPresent) {
   SetUpFlexDevice();
-  SetUpFlexToken();
+  flex_test_helper_.SetUpFlexEnrollmentTokenConfig();
   fake_statistics_provider_.SetMachineStatistic(
       ash::system::kSerialNumberKeyForTest, kSerialNumberValue);
   fake_statistics_provider_.SetMachineStatistic(ash::system::kRlzBrandCodeKey,
@@ -486,7 +472,7 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
 // retrieval request).
 TEST_F(AutoEnrollmentTypeCheckerTest,
        DetermineAutoEnrollmentCheckTypeNotOnFlexWhenTokenPresent) {
-  SetUpFlexToken();
+  flex_test_helper_.SetUpFlexEnrollmentTokenConfig();
   fake_statistics_provider_.SetMachineStatistic(
       ash::system::kSerialNumberKeyForTest, kSerialNumberValue);
   fake_statistics_provider_.SetMachineStatistic(ash::system::kRlzBrandCodeKey,
@@ -528,7 +514,7 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
   constexpr char kEmptyFlexTokenOobeConfig[] = R"({
     "flexToken": ""
   })";
-  SetUpFlexToken(kEmptyFlexTokenOobeConfig);
+  flex_test_helper_.SetUpFlexEnrollmentTokenConfig(kEmptyFlexTokenOobeConfig);
   SetUpFlexDevice();
   fake_statistics_provider_.SetMachineStatistic(
       ash::system::kSerialNumberKeyForTest, kSerialNumberValue);
