@@ -28,6 +28,7 @@ interface TouchToFillCreditCardComponent {
 
         /**
          * Called when the user selects a card.
+         *
          * @param uniqueId A backend id of the card.
          * @param isVirtual A boolean to identify if the card is a virtual card.
          */
@@ -52,8 +53,11 @@ interface TouchToFillCreditCardComponent {
             Delegate delegate,
             BottomSheetFocusHelper bottomSheetFocusHelper);
 
-    /** Displays a new bottom sheet. */
+    /** Displays a new credit card bottom sheet. */
     void showSheet(PersonalDataManager.CreditCard[] cards, boolean shouldShowScanCreditCard);
+
+    /** Displays a new IBAN bottom sheet. */
+    void showSheet(PersonalDataManager.Iban[] ibans);
 
     /** Hides the bottom sheet if shown. */
     void hideSheet();

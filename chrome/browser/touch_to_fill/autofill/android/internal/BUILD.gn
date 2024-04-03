@@ -59,6 +59,7 @@ android_resources("java_resources") {
     "java/res/layout/touch_to_fill_credit_card_footer_item.xml",
     "java/res/layout/touch_to_fill_credit_card_header_item.xml",
     "java/res/layout/touch_to_fill_credit_card_sheet_item.xml",
+    "java/res/layout/touch_to_fill_iban_sheet_item.xml",
     "java/res/values/dimens.xml",
   ]
 }

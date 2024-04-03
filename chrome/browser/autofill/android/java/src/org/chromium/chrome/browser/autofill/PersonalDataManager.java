@@ -455,7 +455,7 @@ public class PersonalDataManager implements Destroyable {
         }
 
         @CalledByNative("Iban")
-        private static Iban create(
+        public static Iban create(
                 String guid,
                 String label,
                 String nickname,

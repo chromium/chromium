@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCred
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.FILL_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.FOOTER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.HEADER;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.IBAN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.VISIBLE;
 
@@ -21,6 +22,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
+import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -71,6 +73,11 @@ public class TouchToFillCreditCardCoordinator implements TouchToFillCreditCardCo
     }
 
     @Override
+    public void showSheet(Iban[] ibans) {
+        mMediator.showSheet(ibans);
+    }
+
+    @Override
     public void hideSheet() {
         mMediator.hideSheet();
     }
@@ -92,6 +99,10 @@ public class TouchToFillCreditCardCoordinator implements TouchToFillCreditCardCo
                 CREDIT_CARD,
                 TouchToFillCreditCardViewBinder::createCardItemView,
                 TouchToFillCreditCardViewBinder::bindCardItemView);
+        adapter.registerType(
+                IBAN,
+                TouchToFillCreditCardViewBinder::createIbanItemView,
+                TouchToFillCreditCardViewBinder::bindIbanItemView);
         adapter.registerType(
                 HEADER,
                 TouchToFillCreditCardViewBinder::createHeaderItemView,

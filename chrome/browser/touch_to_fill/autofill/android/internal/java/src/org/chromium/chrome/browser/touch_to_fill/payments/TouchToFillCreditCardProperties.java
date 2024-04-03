@@ -36,11 +36,15 @@ class TouchToFillCreditCardProperties {
         // A section containing the credit card data.
         int CREDIT_CARD = 1;
 
-        // A "Continue" button, which is shown when there is 1 credit card only.
-        int FILL_BUTTON = 2;
+        // A section containing the IBAN data.
+        int IBAN = 2;
+
+        // A "Continue" button, which is shown when there is only one payment
+        // method available.
+        int FILL_BUTTON = 3;
 
         // A footer section containing additional actions.
-        int FOOTER = 3;
+        int FOOTER = 4;
     }
 
     /** Metadata associated with a card's image. */
@@ -96,6 +100,22 @@ class TouchToFillCreditCardProperties {
         private CreditCardProperties() {}
     }
 
+    /** Properties for an IBAN entry in the TouchToFill sheet for payments. */
+    static class IbanProperties {
+        static final PropertyModel.ReadableObjectPropertyKey<String> IBAN_VALUE =
+                new PropertyModel.ReadableObjectPropertyKey<>("iban_value");
+        static final PropertyModel.ReadableObjectPropertyKey<String> IBAN_NICKNAME =
+                new PropertyModel.ReadableObjectPropertyKey<>("iban_nickname");
+        static final PropertyModel.ReadableObjectPropertyKey<Runnable> ON_IBAN_CLICK_ACTION =
+                new PropertyModel.ReadableObjectPropertyKey<>("on_iban_click_action");
+
+        static final PropertyKey[] NON_TRANSFORMING_IBAN_KEYS = {
+            IBAN_VALUE, IBAN_NICKNAME, ON_IBAN_CLICK_ACTION
+        };
+
+        private IbanProperties() {}
+    }
+
     /**
      * Properties defined here reflect the visible state of the header in the TouchToFill sheet for
      * payments.
@@ -119,13 +139,13 @@ class TouchToFillCreditCardProperties {
         static final PropertyModel.ReadableObjectPropertyKey<Runnable> SCAN_CREDIT_CARD_CALLBACK =
                 new ReadableObjectPropertyKey<>("scan_credit_card_callback");
         static final PropertyModel.ReadableObjectPropertyKey<Runnable>
-                SHOW_CREDIT_CARD_SETTINGS_CALLBACK =
-                        new ReadableObjectPropertyKey<>("show_credit_card_settings_callback");
+                SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK =
+                        new ReadableObjectPropertyKey<>("show_payment_method_settings_callback");
 
         static final PropertyKey[] ALL_KEYS = {
             SHOULD_SHOW_SCAN_CREDIT_CARD,
             SCAN_CREDIT_CARD_CALLBACK,
-            SHOW_CREDIT_CARD_SETTINGS_CALLBACK
+            SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK
         };
 
         private FooterProperties() {}

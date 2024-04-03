@@ -15,8 +15,11 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCred
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.FooterProperties.SCAN_CREDIT_CARD_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.FooterProperties.SHOULD_SHOW_SCAN_CREDIT_CARD;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.FooterProperties.SHOW_CREDIT_CARD_SETTINGS_CALLBACK;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.FooterProperties.SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.IbanProperties.IBAN_NICKNAME;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.IbanProperties.IBAN_VALUE;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.IbanProperties.ON_IBAN_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.VISIBLE;
 
@@ -111,6 +114,19 @@ class TouchToFillCreditCardViewBinder {
         return cardItem;
     }
 
+    /**
+     * Factory used to create an IBAN item inside the ListView inside the TouchToFillCreditCardView.
+     *
+     * @param parent The parent {@link ViewGroup} of the new item.
+     */
+    static View createIbanItemView(ViewGroup parent) {
+        View ibanItem =
+                LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.touch_to_fill_iban_sheet_item, parent, false);
+        AutofillUiUtils.setFilterTouchForSecurity(ibanItem);
+        return ibanItem;
+    }
+
     /** Binds the item view to the model properties. */
     static void bindCardItemView(PropertyModel model, View view, PropertyKey propertyKey) {
         TextView cardName = view.findViewById(R.id.card_name);
@@ -149,8 +165,27 @@ class TouchToFillCreditCardViewBinder {
         }
     }
 
+    static void bindIbanItemView(PropertyModel model, View view, PropertyKey propertyKey) {
+        // TODO(b/309163063): Upload IBAN icon file and add getIbanIcon method.
+        if (propertyKey == IBAN_VALUE) {
+            TextView ibanValue = view.findViewById(R.id.iban_value);
+            ibanValue.setText(model.get(IBAN_VALUE));
+        } else if (propertyKey == IBAN_NICKNAME) {
+            TextView ibanNickname = view.findViewById(R.id.iban_nickname);
+            if (!model.get(IBAN_NICKNAME).isEmpty()) {
+                ibanNickname.setText(model.get(IBAN_NICKNAME));
+                ibanNickname.setVisibility(View.VISIBLE);
+            }
+        } else if (propertyKey == ON_IBAN_CLICK_ACTION) {
+            view.setOnClickListener(unusedView -> model.get(ON_IBAN_CLICK_ACTION).run());
+        } else {
+            assert false : "Unhandled update to property:" + propertyKey;
+        }
+    }
+
     /**
      * Factory used to create a new header inside the ListView inside the TouchToFillCreditCardView.
+     *
      * @param parent The parent {@link ViewGroup} of the new item.
      */
     static View createHeaderItemView(ViewGroup parent) {
@@ -188,12 +223,18 @@ class TouchToFillCreditCardViewBinder {
             view.setOnClickListener(unusedView -> model.get(ON_CLICK_ACTION).run());
             TextView buttonTitleText = view.findViewById(R.id.touch_to_fill_button_title);
             buttonTitleText.setText(R.string.autofill_credit_card_continue_button);
+        } else if (propertyKey == ON_IBAN_CLICK_ACTION) {
+            view.setOnClickListener(unusedView -> model.get(ON_IBAN_CLICK_ACTION).run());
+            TextView buttonTitleText = view.findViewById(R.id.touch_to_fill_button_title);
+            buttonTitleText.setText(R.string.autofill_credit_card_continue_button);
         } else if (propertyKey == CARD_IMAGE
                 || propertyKey == NETWORK_NAME
                 || propertyKey == CARD_NAME
                 || propertyKey == CARD_NUMBER
                 || propertyKey == CARD_EXPIRATION
                 || propertyKey == VIRTUAL_CARD_LABEL
+                || propertyKey == IBAN_VALUE
+                || propertyKey == IBAN_NICKNAME
                 || propertyKey == ITEM_COLLECTION_INFO) {
             // Skip, because none of these changes affect the button
         } else {
@@ -221,8 +262,9 @@ class TouchToFillCreditCardViewBinder {
             setScanCreditCardButton(view, model.get(SHOULD_SHOW_SCAN_CREDIT_CARD));
         } else if (propertyKey == SCAN_CREDIT_CARD_CALLBACK) {
             setScanCreditCardCallback(view, model.get(SCAN_CREDIT_CARD_CALLBACK));
-        } else if (propertyKey == SHOW_CREDIT_CARD_SETTINGS_CALLBACK) {
-            setShowCreditCardSettingsCallback(view, model.get(SHOW_CREDIT_CARD_SETTINGS_CALLBACK));
+        } else if (propertyKey == SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK) {
+            setShowCreditCardSettingsCallback(
+                    view, model.get(SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK));
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }

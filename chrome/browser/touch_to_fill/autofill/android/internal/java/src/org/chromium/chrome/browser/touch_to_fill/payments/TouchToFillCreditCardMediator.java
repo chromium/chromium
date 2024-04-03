@@ -8,10 +8,12 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCred
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.ON_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.FooterProperties.SCAN_CREDIT_CARD_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.FooterProperties.SHOULD_SHOW_SCAN_CREDIT_CARD;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.FooterProperties.SHOW_CREDIT_CARD_SETTINGS_CALLBACK;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.FooterProperties.SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.IbanProperties.ON_IBAN_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.CREDIT_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.FILL_BUTTON;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.IBAN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.VISIBLE;
 
@@ -24,6 +26,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
+import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionInfo;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardComponent.Delegate;
@@ -89,6 +92,7 @@ class TouchToFillCreditCardMediator {
     private TouchToFillCreditCardComponent.Delegate mDelegate;
     private PropertyModel mModel;
     private List<CreditCard> mCards;
+    private List<Iban> mIbans;
     private BottomSheetFocusHelper mBottomSheetFocusHelper;
 
     private InputProtector mInputProtector = new InputProtector();
@@ -135,7 +139,7 @@ class TouchToFillCreditCardMediator {
         }
 
         sheetItems.add(0, buildHeader(hasOnlyLocalCards(cards)));
-        sheetItems.add(buildFooter(shouldShowScanCreditCard));
+        sheetItems.add(buildFooterForCreditCard(shouldShowScanCreditCard));
 
         mBottomSheetFocusHelper.registerForOneTimeUse();
         mModel.set(VISIBLE, true);
@@ -143,11 +147,41 @@ class TouchToFillCreditCardMediator {
         RecordHistogram.recordCount100Histogram(TOUCH_TO_FILL_NUMBER_OF_CARDS_SHOWN, cards.length);
     }
 
+    public void showSheet(Iban[] ibans) {
+        mInputProtector.markShowTime();
+
+        assert ibans != null;
+        mIbans = Arrays.asList(ibans);
+
+        ModelList sheetItems = mModel.get(SHEET_ITEMS);
+        sheetItems.clear();
+
+        for (int i = 0; i < ibans.length; ++i) {
+            Iban iban = ibans[i];
+            final PropertyModel model = createIbanModel(iban);
+            sheetItems.add(new ListItem(IBAN, model));
+        }
+
+        if (ibans.length == 1) {
+            // Use the IBAN model as the property model for the fill button too.
+            assert sheetItems.get(0).type == IBAN;
+            sheetItems.add(new ListItem(FILL_BUTTON, sheetItems.get(0).model));
+        }
+
+        sheetItems.add(0, buildHeader(/* hasOnlyLocalPaymentMethods= */ true));
+        sheetItems.add(buildFooterForIban());
+
+        mBottomSheetFocusHelper.registerForOneTimeUse();
+        mModel.set(VISIBLE, true);
+        // TODO(b/332193789): Add IBAN-related metrics.
+    }
+
     void hideSheet() {
         onDismissed(BottomSheetController.StateChangeReason.NONE);
     }
 
     public void onDismissed(@StateChangeReason int reason) {
+        // TODO(b/332193789): Add IBAN-related metrics.
         if (!mModel.get(VISIBLE)) return; // Dismiss only if not dismissed yet.
         mModel.set(VISIBLE, false);
         boolean dismissedByUser =
@@ -168,7 +202,7 @@ class TouchToFillCreditCardMediator {
         recordTouchToFillOutcomeHistogram(TouchToFillCreditCardOutcome.SCAN_NEW_CARD);
     }
 
-    public void showCreditCardSettings() {
+    public void showPaymentMethodSettings() {
         mDelegate.showCreditCardSettings();
         recordTouchToFillOutcomeHistogram(TouchToFillCreditCardOutcome.MANAGE_PAYMENTS);
     }
@@ -182,6 +216,8 @@ class TouchToFillCreditCardMediator {
                         : TouchToFillCreditCardOutcome.CREDIT_CARD);
         RecordHistogram.recordCount100Histogram(TOUCH_TO_FILL_INDEX_SELECTED, mCards.indexOf(card));
     }
+
+    public void onSelectedIban(Iban iban) {}
 
     private PropertyModel createCardModel(
             CreditCard card,
@@ -236,25 +272,52 @@ class TouchToFillCreditCardMediator {
         return creditCardModelBuilder.build();
     }
 
-    private ListItem buildHeader(boolean hasOnlyLocalCards) {
+    private PropertyModel createIbanModel(Iban iban) {
+        PropertyModel.Builder ibanModelBuilder =
+                new PropertyModel.Builder(
+                                TouchToFillCreditCardProperties.IbanProperties
+                                        .NON_TRANSFORMING_IBAN_KEYS)
+                        .with(
+                                TouchToFillCreditCardProperties.IbanProperties.IBAN_VALUE,
+                                iban.getLabel())
+                        .with(
+                                TouchToFillCreditCardProperties.IbanProperties.IBAN_NICKNAME,
+                                iban.getNickname())
+                        .with(ON_IBAN_CLICK_ACTION, () -> this.onSelectedIban(iban));
+        return ibanModelBuilder.build();
+    }
+
+    private ListItem buildHeader(boolean hasOnlyLocalPaymentMethods) {
         return new ListItem(
                 TouchToFillCreditCardProperties.ItemType.HEADER,
                 new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
                         .with(
                                 IMAGE_DRAWABLE_ID,
-                                hasOnlyLocalCards
+                                hasOnlyLocalPaymentMethods
                                         ? R.drawable.fre_product_logo
                                         : R.drawable.google_pay)
                         .build());
     }
 
-    private ListItem buildFooter(boolean hasScanCardButton) {
+    private ListItem buildFooterForCreditCard(boolean hasScanCardButton) {
         return new ListItem(
                 TouchToFillCreditCardProperties.ItemType.FOOTER,
                 new PropertyModel.Builder(FooterProperties.ALL_KEYS)
                         .with(SHOULD_SHOW_SCAN_CREDIT_CARD, hasScanCardButton)
                         .with(SCAN_CREDIT_CARD_CALLBACK, this::scanCreditCard)
-                        .with(SHOW_CREDIT_CARD_SETTINGS_CALLBACK, this::showCreditCardSettings)
+                        .with(
+                                SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK,
+                                this::showPaymentMethodSettings)
+                        .build());
+    }
+
+    private ListItem buildFooterForIban() {
+        return new ListItem(
+                TouchToFillCreditCardProperties.ItemType.FOOTER,
+                new PropertyModel.Builder(FooterProperties.ALL_KEYS)
+                        .with(
+                                SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK,
+                                this::showPaymentMethodSettings)
                         .build());
     }
 

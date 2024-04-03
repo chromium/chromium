@@ -35,12 +35,14 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
+import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.components.autofill.IbanRecordType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.ui.test.util.RenderTestRule.Component;
@@ -50,8 +52,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * These tests render screenshots of touch to fill for credit cards sheet and compare them to a gold
- * standard.
+ * These tests render screenshots of touch to fill for credit cards/IBANs sheet and compare them to
+ * a gold standard.
  */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
@@ -145,6 +147,21 @@ public class TouchToFillCreditCardRenderTest {
                     /* iconId= */ R.drawable.mc_metadata_card,
                     /* cardNameForAutofillDisplay= */ "MasterCard-GPay",
                     /* obfuscatedLastFourDigits= */ "• • • • 5454");
+    private static final Iban LOCAL_IBAN =
+            Iban.create(
+                    /* guid= */ "000000111111",
+                    /* label= */ "CH56 •••• •••• •••• •800 9",
+                    /* nickname= */ "My brother's IBAN",
+                    /* recordType= */ IbanRecordType.LOCAL_IBAN,
+                    /* value= */ "CH5604835012345678009");
+
+    private static final Iban LOCAL_IBAN_NO_NICKNAME =
+            Iban.create(
+                    /* guid= */ "000000222222",
+                    /* label= */ "FR76 •••• •••• •••• •••• •••0 189",
+                    /* nickname= */ "",
+                    /* recordType= */ IbanRecordType.LOCAL_IBAN,
+                    /* value= */ "FR7630006000011234567890189");
 
     private BottomSheetController mBottomSheetController;
     private TouchToFillCreditCardCoordinator mCoordinator;
@@ -346,5 +363,67 @@ public class TouchToFillCreditCardRenderTest {
         View bottomSheetView = mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet);
         mRenderTestRule.render(
                 bottomSheetView, "touch_to_fill_credit_card_sheet_scan_credit_card_hidden");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testShowsOneIban() throws IOException {
+        runOnUiThreadBlocking(
+                () -> {
+                    mCoordinator.showSheet(new Iban[] {LOCAL_IBAN});
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        View bottomSheetView = mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet);
+        mRenderTestRule.render(bottomSheetView, "touch_to_fill_iban_sheet_one_iban");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testShowsOneIbanHalfState() throws IOException {
+        runOnUiThreadBlocking(
+                () -> {
+                    mCoordinator.showSheet(new Iban[] {LOCAL_IBAN});
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        ViewGroup bottomSheetParentView =
+                (ViewGroup)
+                        mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet).getParent();
+        mRenderTestRule.render(
+                bottomSheetParentView, "touch_to_fill_iban_sheet_one_iban_half_state");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testShowsTwoIbans() throws IOException {
+        runOnUiThreadBlocking(
+                () -> {
+                    mCoordinator.showSheet(new Iban[] {LOCAL_IBAN, LOCAL_IBAN_NO_NICKNAME});
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        View bottomSheetView = mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet);
+        mRenderTestRule.render(bottomSheetView, "touch_to_fill_iban_sheet_two_ibans");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testShowsTwoIbansHalfState() throws IOException {
+        runOnUiThreadBlocking(
+                () -> {
+                    mCoordinator.showSheet(new Iban[] {LOCAL_IBAN, LOCAL_IBAN_NO_NICKNAME});
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        ViewGroup bottomSheetParentView =
+                (ViewGroup)
+                        mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet).getParent();
+        mRenderTestRule.render(
+                bottomSheetParentView, "touch_to_fill_iban_sheet_two_ibans_half_state");
     }
 }

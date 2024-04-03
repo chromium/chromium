@@ -9,6 +9,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -26,11 +27,14 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCred
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.ON_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.FooterProperties.SCAN_CREDIT_CARD_CALLBACK;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.FooterProperties.SHOW_CREDIT_CARD_SETTINGS_CALLBACK;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.FooterProperties.SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.IbanProperties.IBAN_NICKNAME;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.IbanProperties.IBAN_VALUE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.CREDIT_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.FILL_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.FOOTER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.HEADER;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.IBAN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.VISIBLE;
 
@@ -58,9 +62,11 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
+import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardMediator.TouchToFillCreditCardOutcome;
 import org.chromium.components.autofill.AutofillFeatures;
+import org.chromium.components.autofill.IbanRecordType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -123,6 +129,22 @@ public class TouchToFillCreditCardControllerRobolectricTest {
                     /* iconId= */ 0,
                     /* cardNameForAutofillDisplay= */ "Visa",
                     /* obfuscatedLastFourDigits= */ "• • • • 1111");
+
+    private static final Iban LOCAL_IBAN =
+            Iban.create(
+                    /* guid= */ "000000111111",
+                    /* label= */ "CH56 **** **** **** *800 9",
+                    /* nickname= */ "My brother's IBAN",
+                    /* recordType= */ IbanRecordType.LOCAL_IBAN,
+                    /* value= */ "CH5604835012345678009");
+
+    private static final Iban LOCAL_IBAN_NO_NICKNAME =
+            Iban.create(
+                    /* guid= */ "000000222222",
+                    /* label= */ "FR76 **** **** **** **** ***0 189",
+                    /* nickname= */ "",
+                    /* recordType= */ IbanRecordType.LOCAL_IBAN,
+                    /* value= */ "FR7630006000011234567890189");
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
@@ -223,7 +245,7 @@ public class TouchToFillCreditCardControllerRobolectricTest {
     }
 
     @Test
-    public void testScanNewCard() {
+    public void testScanNewCardIsShownForCreditCards() {
         mCoordinator.showSheet(new CreditCard[] {VISA, MASTER_CARD}, true);
         int lastItemPos = mTouchToFillCreditCardModel.get(SHEET_ITEMS).size() - 1;
         mTouchToFillCreditCardModel
@@ -241,14 +263,14 @@ public class TouchToFillCreditCardControllerRobolectricTest {
     }
 
     @Test
-    public void testShowCreditCardSettings() {
+    public void testShowPaymentMethodSettingsForCreditCards() {
         mCoordinator.showSheet(new CreditCard[] {VISA, MASTER_CARD}, true);
         int lastItemPos = mTouchToFillCreditCardModel.get(SHEET_ITEMS).size() - 1;
         mTouchToFillCreditCardModel
                 .get(SHEET_ITEMS)
                 .get(lastItemPos)
                 .model
-                .get(SHOW_CREDIT_CARD_SETTINGS_CALLBACK)
+                .get(SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK)
                 .run();
         verify(mDelegateMock).showCreditCardSettings();
         assertEquals(
@@ -374,7 +396,7 @@ public class TouchToFillCreditCardControllerRobolectricTest {
     public void testManagePaymentMethodsClick() {
         mCoordinator.showSheet(new CreditCard[] {VISA, MASTER_CARD}, false);
         ModelList itemList = mTouchToFillCreditCardModel.get(SHEET_ITEMS);
-        getModelsOfType(itemList, FOOTER).get(0).get(SHOW_CREDIT_CARD_SETTINGS_CALLBACK).run();
+        getModelsOfType(itemList, FOOTER).get(0).get(SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK).run();
 
         verify(mDelegateMock).showCreditCardSettings();
     }
@@ -409,6 +431,93 @@ public class TouchToFillCreditCardControllerRobolectricTest {
         assertTrue(cardModel.get().get(NETWORK_NAME).isEmpty());
     }
 
+    @Test
+    public void testCreatesValidDefaultIbanModel() {
+        assertNotNull(mTouchToFillCreditCardModel.get(SHEET_ITEMS));
+        assertNotNull(mTouchToFillCreditCardModel.get(DISMISS_HANDLER));
+        assertThat(mTouchToFillCreditCardModel.get(VISIBLE), is(false));
+
+        mCoordinator.showSheet(new Iban[] {LOCAL_IBAN});
+
+        assertThat(mTouchToFillCreditCardModel.get(VISIBLE), is(true));
+    }
+
+    @Test
+    public void testScanNewCardNotShownForIbans() {
+        mCoordinator.showSheet(new Iban[] {LOCAL_IBAN});
+        int lastItemPos = mTouchToFillCreditCardModel.get(SHEET_ITEMS).size() - 1;
+
+        assertNull(
+                mTouchToFillCreditCardModel
+                        .get(SHEET_ITEMS)
+                        .get(lastItemPos)
+                        .model
+                        .get(SCAN_CREDIT_CARD_CALLBACK));
+    }
+
+    @Test
+    public void testShowIbansWithOneEntry() throws TimeoutException {
+        mCoordinator.showSheet(new Iban[] {LOCAL_IBAN});
+
+        ModelList itemList = mTouchToFillCreditCardModel.get(SHEET_ITEMS);
+        assertThat(getModelsOfType(itemList, IBAN).size(), is(1));
+
+        assertThat(getModelsOfType(itemList, HEADER).size(), is(1));
+
+        Optional<PropertyModel> ibanModel = getIbanModelByAutofillName(itemList, LOCAL_IBAN);
+        assertTrue(ibanModel.isPresent());
+        assertThat(ibanModel.get().get(IBAN_VALUE), is(LOCAL_IBAN.getLabel()));
+        assertThat(ibanModel.get().get(IBAN_NICKNAME), is(LOCAL_IBAN.getNickname()));
+    }
+
+    @Test
+    public void testShowIbansWithTwoEntries() throws TimeoutException {
+        mCoordinator.showSheet(new Iban[] {LOCAL_IBAN, LOCAL_IBAN_NO_NICKNAME});
+
+        ModelList itemList = mTouchToFillCreditCardModel.get(SHEET_ITEMS);
+        assertThat(getModelsOfType(itemList, IBAN).size(), is(2));
+
+        assertThat(getModelsOfType(itemList, HEADER).size(), is(1));
+
+        Optional<PropertyModel> ibanModel = getIbanModelByAutofillName(itemList, LOCAL_IBAN);
+        assertTrue(ibanModel.isPresent());
+        assertThat(ibanModel.get().get(IBAN_VALUE), is(LOCAL_IBAN.getLabel()));
+        assertThat(ibanModel.get().get(IBAN_NICKNAME), is(LOCAL_IBAN.getNickname()));
+
+        ibanModel = getIbanModelByAutofillName(itemList, LOCAL_IBAN_NO_NICKNAME);
+        assertThat(ibanModel.get().get(IBAN_VALUE), is(LOCAL_IBAN_NO_NICKNAME.getLabel()));
+        assertThat(ibanModel.get().get(IBAN_NICKNAME), is(LOCAL_IBAN_NO_NICKNAME.getNickname()));
+    }
+
+    @Test
+    public void testShowPaymentMethodSettingsForIbans() {
+        mCoordinator.showSheet(new Iban[] {LOCAL_IBAN, LOCAL_IBAN_NO_NICKNAME});
+        int lastItemPos = mTouchToFillCreditCardModel.get(SHEET_ITEMS).size() - 1;
+        mTouchToFillCreditCardModel
+                .get(SHEET_ITEMS)
+                .get(lastItemPos)
+                .model
+                .get(SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK)
+                .run();
+        verify(mDelegateMock).showCreditCardSettings();
+    }
+
+    @Test
+    public void testShowsContinueButtonWhenOneIban() {
+        mCoordinator.showSheet(new Iban[] {LOCAL_IBAN});
+
+        ModelList itemList = mTouchToFillCreditCardModel.get(SHEET_ITEMS);
+        assertEquals(getModelsOfType(itemList, FILL_BUTTON).size(), 1);
+    }
+
+    @Test
+    public void testNoContinueButtonWhenManyIbans() {
+        mCoordinator.showSheet(new Iban[] {LOCAL_IBAN, LOCAL_IBAN_NO_NICKNAME});
+
+        ModelList itemList = mTouchToFillCreditCardModel.get(SHEET_ITEMS);
+        assertEquals(getModelsOfType(itemList, FILL_BUTTON).size(), 0);
+    }
+
     private static List<PropertyModel> getModelsOfType(ModelList items, int type) {
         return StreamSupport.stream(items.spliterator(), false)
                 .filter(item -> item.type == type)
@@ -425,6 +534,16 @@ public class TouchToFillCreditCardControllerRobolectricTest {
                                         && item.model
                                                 .get(CARD_NAME)
                                                 .equals(card.getCardNameForAutofillDisplay()))
+                .findFirst()
+                .map(item -> item.model);
+    }
+
+    private static Optional<PropertyModel> getIbanModelByAutofillName(ModelList items, Iban iban) {
+        return StreamSupport.stream(items.spliterator(), false)
+                .filter(
+                        item ->
+                                item.type == IBAN
+                                        && item.model.get(IBAN_VALUE).equals(iban.getLabel()))
                 .findFirst()
                 .map(item -> item.model);
     }

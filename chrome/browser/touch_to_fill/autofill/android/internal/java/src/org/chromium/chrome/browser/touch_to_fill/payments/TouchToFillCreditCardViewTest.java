@@ -22,6 +22,7 @@ import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createVirt
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.CREDIT_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.FILL_BUTTON;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.IBAN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.VISIBLE;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
@@ -48,10 +49,12 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
+import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionInfo;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.components.autofill.IbanRecordType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
@@ -111,6 +114,14 @@ public class TouchToFillCreditCardViewTest {
                     "• • • • 1111",
                     0,
                     "visa");
+
+    private static final Iban LOCAL_IBAN =
+            Iban.create(
+                    /* guid= */ "000000111111",
+                    /* label= */ "CH56 **** **** **** *800 9",
+                    /* nickname= */ "My brother's IBAN",
+                    /* recordType= */ IbanRecordType.LOCAL_IBAN,
+                    /* value= */ "CH5604835012345678009");
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -481,6 +492,59 @@ public class TouchToFillCreditCardViewTest {
                 is(LONG_CARD_NAME_CARD.getObfuscatedLastFourDigits()));
     }
 
+    @Test
+    @MediumTest
+    public void testIbanViewFiltersTouchEvents() {
+        runOnUiThreadBlocking(
+                () -> {
+                    PropertyModel ibanModel = createIbanModel(LOCAL_IBAN, () -> fail());
+                    mTouchToFillCreditCardModel.get(SHEET_ITEMS).add(new ListItem(IBAN, ibanModel));
+                    mTouchToFillCreditCardModel
+                            .get(SHEET_ITEMS)
+                            .add(new ListItem(FILL_BUTTON, ibanModel));
+                    mTouchToFillCreditCardModel.set(VISIBLE, true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        // Make sure touch events are ignored if something is drawn on top the the bottom sheet.
+        onView(withText(LOCAL_IBAN.getLabel()))
+                .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
+        onView(withText(LOCAL_IBAN.getLabel()))
+                .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED));
+        onView(
+                        withText(
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getString(R.string.autofill_credit_card_continue_button)))
+                .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
+        onView(
+                        withText(
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getString(R.string.autofill_credit_card_continue_button)))
+                .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED));
+    }
+
+    @Test
+    @MediumTest
+    public void testIbanValueAndNicknameForIban() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mTouchToFillCreditCardModel
+                            .get(SHEET_ITEMS)
+                            .add(new ListItem(IBAN, createIbanModel(LOCAL_IBAN)));
+                    mTouchToFillCreditCardModel.set(VISIBLE, true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        TextView ibanValue =
+                mTouchToFillCreditCardView.getContentView().findViewById(R.id.iban_value);
+        assertThat(ibanValue.getLayout().getText().toString(), is(LOCAL_IBAN.getLabel()));
+        TextView ibanNickname =
+                mTouchToFillCreditCardView.getContentView().findViewById(R.id.iban_nickname);
+        assertThat(ibanNickname.getLayout().getText().toString(), is(LOCAL_IBAN.getNickname()));
+    }
+
     private RecyclerView getCreditCards() {
         return mTouchToFillCreditCardView.getContentView().findViewById(R.id.sheet_item_list);
     }
@@ -542,6 +606,27 @@ public class TouchToFillCreditCardViewTest {
                     card.getFormattedExpirationDate(ContextUtils.getApplicationContext()));
         }
         return creditCardModelBuilder.build();
+    }
+
+    private static PropertyModel createIbanModel(Iban iban) {
+        return createIbanModel(iban, () -> {});
+    }
+
+    private static PropertyModel createIbanModel(Iban iban, Runnable actionCallback) {
+        PropertyModel.Builder ibanModelBuilder =
+                new PropertyModel.Builder(
+                                TouchToFillCreditCardProperties.IbanProperties
+                                        .NON_TRANSFORMING_IBAN_KEYS)
+                        .with(
+                                TouchToFillCreditCardProperties.IbanProperties.IBAN_VALUE,
+                                iban.getLabel())
+                        .with(
+                                TouchToFillCreditCardProperties.IbanProperties.IBAN_NICKNAME,
+                                iban.getNickname())
+                        .with(
+                                TouchToFillCreditCardProperties.IbanProperties.ON_IBAN_CLICK_ACTION,
+                                actionCallback);
+        return ibanModelBuilder.build();
     }
 
     private static String getVirtualCardLabel() {
