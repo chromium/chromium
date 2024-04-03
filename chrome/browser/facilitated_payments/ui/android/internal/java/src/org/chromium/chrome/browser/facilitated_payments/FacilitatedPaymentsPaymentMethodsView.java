@@ -8,20 +8,47 @@ import android.content.Context;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
-/** The contents of facilitated payments bottom sheet. */
-/*package*/ class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
+/**
+ * This class is responsible for rendering the bottom sheet which displays the FacilitatedPayments
+ * instruments. It is a View in this Model-View-Controller component and doesn't inherit but holds
+ * Android Views.
+ */
+class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
+    private final BottomSheetController mBottomSheetController;
     private final View mView;
 
-    FacilitatedPaymentsPaymentMethodsView(Context context) {
+    private RecyclerView mSheetItemListView;
+
+    FacilitatedPaymentsPaymentMethodsView(
+            Context context, BottomSheetController bottomSheetController) {
+        mBottomSheetController = bottomSheetController;
         mView = new View(context);
+        mSheetItemListView = new RecyclerView(context);
+    }
+
+    public boolean setVisible(boolean isVisible) {
+        if (isVisible) {
+            if (!mBottomSheetController.requestShowContent(this, true)) {
+                return false;
+            }
+        } else {
+            mBottomSheetController.hideContent(this, true);
+        }
+        return true;
     }
 
     @Override
     public View getContentView() {
         return mView;
+    }
+
+    public void setSheetItemListAdapter(RecyclerView.Adapter adapter) {
+        mSheetItemListView.setAdapter(adapter);
     }
 
     @Nullable
@@ -66,5 +93,10 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
     @Override
     public int getSheetClosedAccessibilityStringId() {
         return R.string.ok;
+    }
+
+    @Override
+    public boolean hasCustomLifecycle() {
+        return true;
     }
 }

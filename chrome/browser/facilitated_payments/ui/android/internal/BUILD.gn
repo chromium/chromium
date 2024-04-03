@@ -13,7 +13,11 @@ android_library("java") {
   resources_package = "org.chromium.chrome.browser.facilitated_payments"
 
   sources = [
+    "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsPaymentMethodsCoordinator.java",
+    "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsPaymentMethodsMediator.java",
+    "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsPaymentMethodsProperties.java",
     "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsPaymentMethodsView.java",
+    "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsPaymentMethodsViewBinder.java",
     "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsPaymentMethodsViewBridge.java",
   ]
 
@@ -25,7 +29,9 @@ android_library("java") {
     "//components/browser_ui/bottomsheet/android:java",
     "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/jni_zero:jni_zero_java",
+    "//ui/android:ui_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
 }

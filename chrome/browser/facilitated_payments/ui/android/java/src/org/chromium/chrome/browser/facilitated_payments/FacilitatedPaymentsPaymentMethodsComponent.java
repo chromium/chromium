@@ -4,4 +4,20 @@
 
 package org.chromium.chrome.browser.facilitated_payments;
 
-interface FacilitatedPaymentsPaymentMethodsComponent {}
+import android.content.Context;
+
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+
+/**
+ * This component allows to select a facilitated payments method. It acts as a 1-tap surface (bottom
+ * sheet).
+ */
+interface FacilitatedPaymentsPaymentMethodsComponent {
+    interface Delegate {}
+
+    /** Initializes the component. */
+    void initialize(Context context, BottomSheetController bottomSheetController);
+
+    /** Displays a new bottom sheet. */
+    void showSheet();
+}

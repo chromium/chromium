@@ -54,7 +54,7 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
         Context mApplicationContext = ApplicationProvider.getApplicationContext();
         mWindow = new WindowAndroid(mApplicationContext);
         BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
-        mViewBridge = new FacilitatedPaymentsPaymentMethodsViewBridge();
+        mViewBridge = FacilitatedPaymentsPaymentMethodsViewBridge.create(mWindow);
     }
 
     @After
@@ -68,7 +68,7 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
     public void requestShowContent_callsControllerRequestShowContent() {
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
 
-        mViewBridge.requestShowContent(mWebContents);
+        mViewBridge.requestShowContent();
 
         verify(mBottomSheetController)
                 .requestShowContent(
@@ -80,13 +80,13 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
     public void requestShowContent_bottomSheetContentImplIsStubbed() {
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
 
-        mViewBridge.requestShowContent(mWebContents);
+        mViewBridge.requestShowContent();
 
         ArgumentCaptor<FacilitatedPaymentsPaymentMethodsView> contentCaptor =
                 ArgumentCaptor.forClass(FacilitatedPaymentsPaymentMethodsView.class);
         verify(mBottomSheetController)
                 .requestShowContent(contentCaptor.capture(), /* animate= */ anyBoolean());
-                FacilitatedPaymentsPaymentMethodsView content = contentCaptor.getValue();
+        FacilitatedPaymentsPaymentMethodsView content = contentCaptor.getValue();
         assertThat(content.getContentView(), notNullValue());
         assertThat(content.getSheetContentDescriptionStringId(), equalTo(R.string.ok));
         assertThat(content.getSheetHalfHeightAccessibilityStringId(), equalTo(R.string.ok));

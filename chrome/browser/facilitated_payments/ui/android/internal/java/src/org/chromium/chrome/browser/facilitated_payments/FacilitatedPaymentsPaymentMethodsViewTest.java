@@ -15,24 +15,35 @@ import android.view.View;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 
 /** Unit test for {@link FacilitatedPaymentsPaymentMethodsView}. */
 @SmallTest
 public final class FacilitatedPaymentsPaymentMethodsViewTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private Context mContext;
     private FacilitatedPaymentsPaymentMethodsView mContent;
     private View mView;
 
+    @Mock private ManagedBottomSheetController mBottomSheetController;
+
     @Before
     public void setUp() {
+        MockitoAnnotations.initMocks(this);
         mContext = RuntimeEnvironment.getApplication().getApplicationContext();
         mView = new View(mContext);
-        mContent = new FacilitatedPaymentsPaymentMethodsView(mContext);
+        mContent = new FacilitatedPaymentsPaymentMethodsView(mContext, mBottomSheetController);
     }
 
     @Test

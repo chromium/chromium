@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.facilitated_payments;
 
 import android.content.Context;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -13,45 +14,50 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
- * Bridge class providing an entry point for facilitated payments client to trigger the
- * bottom sheet.
+ * Bridge class providing an entry point for facilitated payments client to trigger the bottom
+ * sheet.
  */
 @JNINamespace("payments::facilitated")
 public class FacilitatedPaymentsPaymentMethodsViewBridge {
-    private Context mContext;
-    private BottomSheetController mBottomSheetController;
+    private final FacilitatedPaymentsPaymentMethodsComponent mComponent;
+
+    private FacilitatedPaymentsPaymentMethodsViewBridge(
+            Context context, BottomSheetController bottomSheetController) {
+        mComponent = new FacilitatedPaymentsPaymentMethodsCoordinator();
+        mComponent.initialize(context, bottomSheetController);
+    }
 
     @CalledByNative
     @VisibleForTesting
-    /* package */ FacilitatedPaymentsPaymentMethodsViewBridge() {}
+    static @Nullable FacilitatedPaymentsPaymentMethodsViewBridge create(
+            WindowAndroid windowAndroid) {
+        if (windowAndroid == null) return null;
+
+        Context context = windowAndroid.getContext().get();
+        if (context == null) return null;
+
+        BottomSheetController bottomSheetController =
+                BottomSheetControllerProvider.from(windowAndroid);
+        if (bottomSheetController == null) return null;
+
+        return new FacilitatedPaymentsPaymentMethodsViewBridge(context, bottomSheetController);
+    }
 
     /**
      * Requests to show the bottom sheet.
      *
-     * The bottom sheet may not be shown in some cases.
-     * {@see BottomSheetController#requestShowContent}
+     * <p>The bottom sheet may not be shown in some cases. {@see
+     * BottomSheetController#requestShowContent}
      *
-     * @return True if shown. False if it was suppressed. Content is suppressed if higher
-     *         priority content is in the sheet, the sheet is expanded beyond the peeking state,
-     *         or the browser is in a mode that does not support showing the sheet.
+     * @return True if shown. False if it was suppressed. Content is suppressed if higher priority
+     *     content is in the sheet, the sheet is expanded beyond the peeking state, or the browser
+     *     is in a mode that does not support showing the sheet.
      */
     @CalledByNative
-    public boolean requestShowContent(WebContents webContents) {
-        if (webContents == null || webContents.isDestroyed()) return false;
-
-        WindowAndroid window = webContents.getTopLevelNativeWindow();
-        if (window == null) return false;
-
-        mBottomSheetController = BottomSheetControllerProvider.from(window);
-
-        mContext = window.getContext().get();
-        return (mContext == null)
-                ? false
-                : mBottomSheetController.requestShowContent(
-                        new FacilitatedPaymentsPaymentMethodsView(mContext), /* animate= */ true);
+    public void requestShowContent() {
+        mComponent.showSheet();
     }
 }

@@ -10,9 +10,8 @@
 
 namespace payments::facilitated {
 
-FacilitatedPaymentsBottomSheetBridge::FacilitatedPaymentsBottomSheetBridge()
-    : java_bridge_(Java_FacilitatedPaymentsPaymentMethodsViewBridge_Constructor(
-          base::android::AttachCurrentThread())) {}
+FacilitatedPaymentsBottomSheetBridge::FacilitatedPaymentsBottomSheetBridge() =
+    default;
 
 FacilitatedPaymentsBottomSheetBridge::~FacilitatedPaymentsBottomSheetBridge() =
     default;
@@ -23,16 +22,22 @@ bool FacilitatedPaymentsBottomSheetBridge::RequestShowContent(
     return false;
   }
 
-  base::android::ScopedJavaLocalRef<jobject> java_web_contents =
-      web_contents->GetJavaWebContents();
-  if (!java_web_contents) {
-    return false;
+  if (!web_contents->GetNativeView() ||
+      !web_contents->GetNativeView()->GetWindowAndroid()) {
+    return false;  // No window attached (yet or anymore).
   }
 
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  return Java_FacilitatedPaymentsPaymentMethodsViewBridge_requestShowContent(
-      env, java_bridge_, java_web_contents);
+  java_bridge_.Reset(Java_FacilitatedPaymentsPaymentMethodsViewBridge_create(
+      env, web_contents->GetTopLevelNativeWindow()->GetJavaObject()));
+  if (!java_bridge_) {
+    return false;
+  }
+
+  Java_FacilitatedPaymentsPaymentMethodsViewBridge_requestShowContent(
+      env, java_bridge_);
+  return true;
 }
 
 }  // namespace payments::facilitated

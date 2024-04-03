@@ -37,4 +37,6 @@ group("jni_headers") {
 
 android_library("public_java") {
   sources = [ "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsPaymentMethodsComponent.java" ]
+
+  deps = [ "//components/browser_ui/bottomsheet/android:java" ]
 }
