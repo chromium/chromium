@@ -42,6 +42,7 @@ constexpr CGFloat kTitleContainerCenterYOffset = -2;
 - (void)prepareForReuse {
   [super prepareForReuse];
   self.titleContainerBackgroundColor = nil;
+  self.collapsed = NO;
 }
 
 #pragma mark - Setters
@@ -62,6 +63,14 @@ constexpr CGFloat kTitleContainerCenterYOffset = -2;
     return;
   }
   _groupStrokeView.backgroundColor = color;
+  [self updateGroupStroke];
+}
+
+- (void)setCollapsed:(BOOL)collapsed {
+  if (_collapsed == collapsed) {
+    return;
+  }
+  _collapsed = collapsed;
   [self updateGroupStroke];
 }
 
@@ -90,6 +99,7 @@ constexpr CGFloat kTitleContainerCenterYOffset = -2;
 
 #pragma mark - Private
 
+// Sets up constraints.
 - (void)setupConstraints {
   UIView* contentView = self.contentView;
   AddSameConstraintsToSidesWithInsets(
@@ -115,6 +125,7 @@ constexpr CGFloat kTitleContainerCenterYOffset = -2;
       .active = YES;
 }
 
+// Updates the group stroke path, hides the group stroke if necessary.
 - (void)updateGroupStroke {
   if (!_groupStrokeView.backgroundColor) {
     _groupStrokeView.hidden = YES;
@@ -140,12 +151,23 @@ constexpr CGFloat kTitleContainerCenterYOffset = -2;
   UIBezierPath* rightPath = [UIBezierPath bezierPath];
   CGPoint rightPoint = CGPointZero;
   [rightPath moveToPoint:rightPoint];
-  // TODO(crbug.com/329091020): If the group is collapsed, the path should
-  // update accordingly.
-  rightPoint.x += TabStripGroupItemConstants.titleContainerHorizontalPadding;
-  rightPoint.x += TabStripGroupItemConstants.titleContainerHorizontalMargin;
-  rightPoint.x += TabStripTabItemConstants.horizontalSpacing;
-  [rightPath addLineToPoint:rightPoint];
+  if (self.collapsed) {
+    // If the group is collapsed, then the right end of the stroke should just
+    // be a quarter circle.
+    rightPoint.y += lineWidth / 2;
+    [rightPath addArcWithCenter:rightPoint
+                         radius:lineWidth / 2
+                     startAngle:M_PI + M_PI_2
+                       endAngle:0
+                      clockwise:YES];
+  } else {
+    // If the group is not collapse, the right end of the stroke should extend
+    // to reach the left end of the next tab.
+    rightPoint.x += TabStripGroupItemConstants.titleContainerHorizontalPadding;
+    rightPoint.x += TabStripGroupItemConstants.titleContainerHorizontalMargin;
+    rightPoint.x += TabStripTabItemConstants.horizontalSpacing;
+    [rightPath addLineToPoint:rightPoint];
+  }
   [_groupStrokeView setRightPath:rightPath.CGPath];
 }
 

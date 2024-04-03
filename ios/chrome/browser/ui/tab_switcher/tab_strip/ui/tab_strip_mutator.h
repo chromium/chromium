@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_STRIP_UI_TAB_STRIP_MUTATOR_H_
 #define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_STRIP_UI_TAB_STRIP_MUTATOR_H_
 
+@class TabGroupItem;
 @class TabSwitcherItem;
 
 /// Protocol that the tabstrip UI uses to update the model.
@@ -24,6 +25,12 @@
 
 /// Tells the receiver to create a new group containing `item`.
 - (void)createNewGroupWithItem:(TabSwitcherItem*)item;
+
+/// Tells the receiver to collapse the group associated with `tabGroupItem`.
+- (void)collapseGroup:(TabGroupItem*)tabGroupItem;
+
+/// Tells the receiver to expand the group associated with `tabGroupItem`.
+- (void)expandGroup:(TabGroupItem*)tabGroupItem;
 
 @end
 

@@ -62,4 +62,10 @@
   func updateItemData(
     _ updatedItemData: [TabStripItemIdentifier: TabStripItemData], reconfigureItems: Bool)
 
+  /// Collapses `group` so as to make its children hidden.
+  func collapseGroup(_ group: TabGroupItem)
+
+  /// Expands `group` so as to make its children visible.
+  func expandGroup(_ group: TabGroupItem)
+
 }

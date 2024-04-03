@@ -213,9 +213,11 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
     var snapshot = NSDiffableDataSourceSectionSnapshot<TabStripItemIdentifier>()
     for itemIdentifier in itemIdentifiers {
       switch itemIdentifier.item {
-      case .group(_):
+      case .group(let tabGroupItem):
         snapshot.append([itemIdentifier])
-        snapshot.expand([itemIdentifier])
+        if !tabGroupItem.collapsed {
+          snapshot.expand([itemIdentifier])
+        }
       case .tab(_):
         snapshot.append([itemIdentifier], to: TabStripItemIdentifier(itemParents[itemIdentifier]))
       }
@@ -373,6 +375,22 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
     }
   }
 
+  func collapseGroup(_ group: TabGroupItem) {
+    var snapshot = dataSource.snapshot(for: .tabs)
+    snapshot.collapse([TabStripItemIdentifier(group)])
+    applySnapshot(
+      dataSource: dataSource, snapshot: snapshot, animatingDifferences: true,
+      numberOfVisibleItemsChanged: true)
+  }
+
+  func expandGroup(_ group: TabGroupItem) {
+    var snapshot = dataSource.snapshot(for: .tabs)
+    snapshot.expand([TabStripItemIdentifier(group)])
+    applySnapshot(
+      dataSource: dataSource, snapshot: snapshot, animatingDifferences: true,
+      numberOfVisibleItemsChanged: true)
+  }
+
   // MARK: - TabStripCommands
 
   func setNewTabButtonOnTabStripIPHHighlighted(_ iphHighlighted: Bool) {
@@ -507,6 +525,7 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
       let itemData = self.itemData[itemIdentifier] as? TabStripItemData
       cell.title = item.title
       cell.titleContainerBackgroundColor = item.groupColor
+      cell.collapsed = item.collapsed
       cell.setGroupStrokeColor(itemData?.groupStrokeColor)
       cell.accessibilityIdentifier = self.tabTripGroupCellAccessibilityIdentifier(
         index: indexPath.item)
@@ -753,9 +772,12 @@ extension TabStripViewController: UICollectionViewDelegateFlowLayout {
     switch itemIdentifier.item {
     case .tab(let tabSwitcherItem):
       mutator?.activate(tabSwitcherItem)
-    case .group(_):
-      // TODO(crbug.com/329091020): Make tab groups collapsible.
-      break
+    case .group(let tabGroupItem):
+      if tabGroupItem.collapsed {
+        mutator?.expandGroup(tabGroupItem)
+      } else {
+        mutator?.collapseGroup(tabGroupItem)
+      }
     }
   }
 

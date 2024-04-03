@@ -51,6 +51,10 @@ const CGFloat kFaviconSize = 16;
   return (NSUInteger)_webStateList->GetGroupRange(_tabGroup).count();
 }
 
+- (BOOL)collapsed {
+  return _tabGroup->visual_data().is_collapsed();
+}
+
 - (void)fetchGroupTabInfos:(GroupTabInfosFetchingCompletionBlock)completion {
   NSUInteger numberOfRequestedImages = 0;
   for (int index : _webStateList->GetGroupRange(_tabGroup)) {

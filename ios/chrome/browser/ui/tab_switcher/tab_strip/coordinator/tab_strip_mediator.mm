@@ -7,6 +7,7 @@
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "components/tab_groups/tab_group_color.h"
 #import "components/tab_groups/tab_group_visual_data.h"
@@ -78,8 +79,9 @@ TabStripItemData* CreateGroupItemData(const TabGroup* group) {
 // TabGroups are not included in the result.
 NSMutableArray<TabStripItemData*>* CreateItemData(
     WebStateList* web_state_list,
-    WebStateList::Range range = WebStateList::Range::InvalidRange(),
-    bool including_group_items = true) {
+    bool including_hidden_tab_items = true,
+    bool including_group_items = true,
+    WebStateList::Range range = WebStateList::Range::InvalidRange()) {
   CHECK(web_state_list);
   if (!range.IsValid()) {
     range = {0, web_state_list->count()};
@@ -87,16 +89,28 @@ NSMutableArray<TabStripItemData*>* CreateItemData(
   CHECK_GE(range.range_begin(), 0);
   CHECK_LE(range.range_end(), web_state_list->count());
   NSMutableArray<TabStripItemData*>* data = [[NSMutableArray alloc] init];
-  for (int index = range.range_begin(); index < range.range_end(); index++) {
+  for (int index : range) {
+    const TabGroup* group_of_web_state = nullptr;
     if ([TabStripFeaturesUtils isModernTabStripWithTabGroups]) {
+      group_of_web_state = web_state_list->GetGroupOfWebStateAt(index);
       if (including_group_items) {
-        if (const TabGroup* group =
-                FindTabGroupStartingAtIndex(index, web_state_list)) {
-          [data addObject:CreateGroupItemData(group)];
+        const TabGroup* group_starting_at_index =
+            FindTabGroupStartingAtIndex(index, web_state_list);
+        if (group_starting_at_index) {
+          [data addObject:CreateGroupItemData(group_starting_at_index)];
         }
       }
     }
-    [data addObject:CreateTabItemData(index, web_state_list)];
+    // The tab associated with WebState at `index` should be included in the
+    // output if it has no group, or its group is not collapsed, or
+    // `including_hidden_tab_items` is true.
+    const bool should_include_tab_item =
+        !group_of_web_state ||
+        !group_of_web_state->visual_data().is_collapsed() ||
+        including_hidden_tab_items;
+    if (should_include_tab_item) {
+      [data addObject:CreateTabItemData(index, web_state_list)];
+    }
   }
   return data;
 }
@@ -126,8 +140,9 @@ TabStripItemIdentifier* CreateGroupItemIdentifier(
 // TabGroups are not included in the result.
 NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
     WebStateList* web_state_list,
-    WebStateList::Range range = WebStateList::Range::InvalidRange(),
-    bool including_group_items = true) {
+    bool including_hidden_tab_items = true,
+    bool including_group_items = true,
+    WebStateList::Range range = WebStateList::Range::InvalidRange()) {
   CHECK(web_state_list);
   if (!range.IsValid()) {
     range = {0, web_state_list->count()};
@@ -136,18 +151,31 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   CHECK_LE(range.range_end(), web_state_list->count());
   NSMutableArray<TabStripItemIdentifier*>* item_identifiers =
       [[NSMutableArray alloc] init];
-  for (int index = range.range_begin(); index < range.range_end(); index++) {
+  for (int index : range) {
+    const TabGroup* group_of_web_state = nullptr;
     if ([TabStripFeaturesUtils isModernTabStripWithTabGroups]) {
+      group_of_web_state = web_state_list->GetGroupOfWebStateAt(index);
       if (including_group_items) {
-        if (const TabGroup* group =
-                FindTabGroupStartingAtIndex(index, web_state_list)) {
+        const TabGroup* group_starting_at_index =
+            FindTabGroupStartingAtIndex(index, web_state_list);
+        if (group_starting_at_index) {
           [item_identifiers
-              addObject:CreateGroupItemIdentifier(group, web_state_list)];
+              addObject:CreateGroupItemIdentifier(group_starting_at_index,
+                                                  web_state_list)];
         }
       }
     }
-    web::WebState* web_state = web_state_list->GetWebStateAt(index);
-    [item_identifiers addObject:CreateTabItemIdentifier(web_state)];
+    // The tab associated with WebState at `index` should be included in the
+    // output if it has no group, or its group is not collapsed, or
+    // `including_hidden_tab_items` is true.
+    const bool should_include_tab_item =
+        !group_of_web_state ||
+        !group_of_web_state->visual_data().is_collapsed() ||
+        including_hidden_tab_items;
+    if (should_include_tab_item) {
+      web::WebState* web_state = web_state_list->GetWebStateAt(index);
+      [item_identifiers addObject:CreateTabItemIdentifier(web_state)];
+    }
   }
   return item_identifiers;
 }
@@ -364,21 +392,38 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
       TabStripItemData* groupItemData = CreateGroupItemData(group);
       [self.consumer updateItemData:@{groupItemIdentifier : groupItemData}
                    reconfigureItems:NO];
+      // Determine the destination item for the new group item.
       const int pivotIndex = webStateList->GetGroupRange(group).range_begin();
-      TabStripItemIdentifier* pivotItemIdentifier = nil;
-      if (webStateList->ContainsIndex(pivotIndex)) {
-        pivotItemIdentifier =
-            CreateTabItemIdentifier(webStateList->GetWebStateAt(pivotIndex));
-      }
+      TabStripItemIdentifier* destinationItemIdentifier =
+          [self destinationItemAtIndex:pivotIndex parentGroup:nullptr];
       [self.consumer insertItems:@[ groupItemIdentifier ]
-                      beforeItem:pivotItemIdentifier];
+                      beforeItem:destinationItemIdentifier];
+      // Ensure the group item is expanded if the group is not collapsed.
+      // This is needed because items in a collection view are collapsed by
+      // default.
+      if (!group->visual_data().is_collapsed()) {
+        [self.consumer expandGroup:groupItemIdentifier.tabGroupItem];
+      }
       break;
     }
     case WebStateListChange::Type::kGroupVisualDataUpdate: {
       const WebStateListChangeGroupVisualDataUpdate& visualDataChange =
           change.As<WebStateListChangeGroupVisualDataUpdate>();
-      [self updateDataAndReconfigureItemsInGroup:visualDataChange
-                                                     .updated_group()];
+      const TabGroup* updatedGroup = visualDataChange.updated_group();
+      TabGroupItem* updatedGroupItem =
+          [[TabGroupItem alloc] initWithTabGroup:updatedGroup
+                                    webStateList:webStateList];
+      const bool oldCollapsed =
+          visualDataChange.old_visual_data().is_collapsed();
+      const bool newCollapsed = updatedGroup->visual_data().is_collapsed();
+      if (oldCollapsed != newCollapsed) {
+        if (newCollapsed) {
+          [self.consumer collapseGroup:updatedGroupItem];
+        } else {
+          [self.consumer expandGroup:updatedGroupItem];
+        }
+      }
+      [self updateDataAndReconfigureItemsInGroup:updatedGroup];
       break;
     }
     case WebStateListChange::Type::kGroupMove: {
@@ -496,6 +541,32 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
                                           });
 
   _webStateList->ActivateWebStateAt(index);
+}
+
+- (void)collapseGroup:(TabGroupItem*)tabGroupItem {
+  if (!self.webStateList) {
+    return;
+  }
+  base::RecordAction(base::UserMetricsAction("MobileTabStripGroupCollapse"));
+  const tab_groups::TabGroupVisualData oldVisualData =
+      tabGroupItem.tabGroup->visual_data();
+  const tab_groups::TabGroupVisualData newVisualData{
+      oldVisualData.title(), oldVisualData.color(), /*is_collapsed=*/true};
+  self.webStateList->UpdateGroupVisualData(tabGroupItem.tabGroup,
+                                           newVisualData);
+}
+
+- (void)expandGroup:(TabGroupItem*)tabGroupItem {
+  if (!self.webStateList) {
+    return;
+  }
+  base::RecordAction(base::UserMetricsAction("MobileTabStripGroupExpand"));
+  const tab_groups::TabGroupVisualData oldVisualData =
+      tabGroupItem.tabGroup->visual_data();
+  const tab_groups::TabGroupVisualData newVisualData{
+      oldVisualData.title(), oldVisualData.color(), /*is_collapsed=*/false};
+  self.webStateList->UpdateGroupVisualData(tabGroupItem.tabGroup,
+                                           newVisualData);
 }
 
 - (void)closeItem:(TabSwitcherItem*)item {
@@ -742,8 +813,8 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
       CreateTabItemIdentifier(sourceWebState);
 
   // Simulating the move.
-  NSMutableArray<TabStripItemIdentifier*>* items =
-      CreateItemIdentifiers(_webStateList);
+  NSMutableArray<TabStripItemIdentifier*>* items = CreateItemIdentifiers(
+      _webStateList, /*including_hidden_tab_items=*/false);
   [items removeObject:sourceItemIdentifier];
   [items insertObject:sourceItemIdentifier atIndex:itemIndexAfterUpdate];
   const WebStateList::InsertionParams insertionParams =
@@ -797,8 +868,8 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   webState->GetNavigationManager()->LoadURLWithParams(loadParams);
 
   // Simulating the insertion.
-  NSMutableArray<TabStripItemIdentifier*>* items =
-      CreateItemIdentifiers(_webStateList);
+  NSMutableArray<TabStripItemIdentifier*>* items = CreateItemIdentifiers(
+      _webStateList, /*including_hidden_tab_items=*/false);
   [items insertObject:CreateTabItemIdentifier(webState.get()) atIndex:index];
 
   const WebStateList::InsertionParams insertionParams =
@@ -826,6 +897,11 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
        itemIndex++) {
     if (items[itemIndex].itemType == TabStripItemTypeTab) {
       webStateListInsertionIndex++;
+      continue;
+    }
+    const TabGroup* group = items[itemIndex].tabGroupItem.tabGroup;
+    if (group->visual_data().is_collapsed()) {
+      webStateListInsertionIndex += _webStateList->GetGroupRange(group).count();
     }
   }
   return WebStateList::InsertionParams::AtIndex(webStateListInsertionIndex)
@@ -883,21 +959,13 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 // For each WebState in `group`, the associated item is reconfigured with an
 // up-to-date `TabStripItemData`.
 - (void)updateDataAndReconfigureItemsInGroup:(const TabGroup*)group {
-  // Update group item.
-  TabStripItemIdentifier* groupItemIdentifier =
-      CreateGroupItemIdentifier(group, _webStateList);
-  TabStripItemData* groupItemData = CreateGroupItemData(group);
-  [self.consumer updateItemData:@{groupItemIdentifier : groupItemData}
-               reconfigureItems:YES];
-  // TODO(crbug.com/329091020): When a group is collapsed, its children tab
-  // items should not be reconfigured.
   const WebStateList::Range range = _webStateList->GetGroupRange(group);
   NSArray<TabStripItemIdentifier*>* tabItemIdentifiers =
-      CreateItemIdentifiers(_webStateList, range,
-                            /*including_group_items=*/false);
+      CreateItemIdentifiers(_webStateList, /*including_hidden_tab_items=*/false,
+                            /*including_group_items=*/true, range);
   NSArray<TabStripItemData*>* tabItemData =
-      CreateItemData(_webStateList, range,
-                     /*including_group_items=*/false);
+      CreateItemData(_webStateList, /*including_hidden_tab_items=*/false,
+                     /*including_group_items=*/true, range);
   NSDictionary<TabStripItemIdentifier*, TabStripItemData*>* tabItemDataDict =
       [NSDictionary dictionaryWithObjects:tabItemData
                                   forKeys:tabItemIdentifiers];
@@ -906,8 +974,12 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 
 // Reconfigures the item associated with `webState`.
 - (void)reconfigureItemForWebState:(web::WebState*)webState {
-  // TODO(crbug.com/329091020): If `webState` is in a group which is collapsed,
-  // the associated item should not be reconfigured.
+  const int webStateIndex = _webStateList->GetIndexOfWebState(webState);
+  const TabGroup* group = _webStateList->GetGroupOfWebStateAt(webStateIndex);
+  if (group && group->visual_data().is_collapsed()) {
+    // If group is collapsed then tab cells cannot be reconfigured.
+    return;
+  }
   [self.consumer reconfigureItems:@[ CreateTabItemIdentifier(webState) ]];
 }
 
@@ -963,11 +1035,13 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
                    newGroup:(const TabGroup*)newGroup {
   TabStripItemIdentifier* itemIdentifier = CreateTabItemIdentifier(webState);
 
-  // TODO(crbug.com/329091020): If `newGroup` is collapsed, `itemIdentifier`
-  // should not be reconfigured.
-  TabStripItemData* itemData = CreateTabItemData(toIndex, _webStateList);
-  [self.consumer updateItemData:@{itemIdentifier : itemData}
-               reconfigureItems:YES];
+  // Update item data.
+  bool itemIsVisible = !newGroup || !newGroup->visual_data().is_collapsed();
+  if (itemIsVisible) {
+    TabStripItemData* itemData = CreateTabItemData(toIndex, _webStateList);
+    [self.consumer updateItemData:@{itemIdentifier : itemData}
+                 reconfigureItems:YES];
+  }
 
   // Move item to new position.
   if (fromIndex != toIndex || oldGroup != newGroup) {

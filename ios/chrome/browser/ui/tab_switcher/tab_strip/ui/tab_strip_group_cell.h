@@ -13,6 +13,9 @@
 // Background color of the title container.
 @property(nonatomic, strong) UIColor* titleContainerBackgroundColor;
 
+// Whether the cell is that of a collapsed group. Default value is NO.
+@property(nonatomic, assign) BOOL collapsed;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_STRIP_UI_TAB_STRIP_GROUP_CELL_H_

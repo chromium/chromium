@@ -43,6 +43,8 @@
     NSMutableDictionary<TabStripItemIdentifier*, TabStripItemData*>* itemData;
 @property(nonatomic, strong)
     NSMutableDictionary<TabStripItemIdentifier*, TabGroupItem*>* itemParents;
+@property(nonatomic, strong)
+    NSMutableSet<TabStripItemIdentifier*>* expandedItems;
 
 @end
 
@@ -60,6 +62,12 @@
   self.selectedItem = selectedItem;
   self.itemData = [NSMutableDictionary dictionaryWithDictionary:itemData];
   self.itemParents = [NSMutableDictionary dictionaryWithDictionary:itemParents];
+  self.expandedItems = [NSMutableSet set];
+  for (TabStripItemIdentifier* item in self.items) {
+    if (item.tabGroupItem && !item.tabGroupItem.collapsed) {
+      [self.expandedItems addObject:item];
+    }
+  }
 }
 
 - (void)selectItem:(TabSwitcherItem*)item {
@@ -90,11 +98,10 @@
 
 - (void)insertItems:(NSArray<TabStripItemIdentifier*>*)items
          beforeItem:(TabStripItemIdentifier*)destinationItem {
-  if (!destinationItem) {
-    [self.items addObjectsFromArray:items];
-    return;
+  int destinationIndex = self.items.count;
+  if (destinationItem) {
+    destinationIndex = [self.items indexOfObject:destinationItem];
   }
-  NSInteger destinationIndex = [self.items indexOfObject:destinationItem];
   for (TabStripItemIdentifier* item in items) {
     [self.items insertObject:item atIndex:destinationIndex++];
     self.itemParents[item] = self.itemParents[destinationItem];
@@ -155,6 +162,7 @@
 - (void)removeItems:(NSArray<TabStripItemIdentifier*>*)items {
   [self.items removeObjectsInArray:items];
   [self.itemData removeObjectsForKeys:items];
+  [self.expandedItems minusSet:[NSSet setWithArray:items]];
 }
 
 - (void)replaceItem:(TabSwitcherItem*)oldTab withItem:(TabSwitcherItem*)newTab {
@@ -183,6 +191,20 @@
   if (reconfigureItems) {
     [self reconfigureItems:updatedItemData.allKeys];
   }
+}
+
+- (void)collapseGroup:(TabGroupItem*)group {
+  TabStripItemIdentifier* groupItemIdentifier =
+      [TabStripItemIdentifier groupIdentifier:group];
+  CHECK([self.expandedItems containsObject:groupItemIdentifier]);
+  [self.expandedItems removeObject:groupItemIdentifier];
+}
+
+- (void)expandGroup:(TabGroupItem*)group {
+  TabStripItemIdentifier* groupItemIdentifier =
+      [TabStripItemIdentifier groupIdentifier:group];
+  CHECK(![self.expandedItems containsObject:groupItemIdentifier]);
+  [self.expandedItems addObject:groupItemIdentifier];
 }
 
 @end
@@ -915,4 +937,73 @@ TEST_F(TabStripMediatorTest, DeleteAllWebState) {
   AddWebState();
 
   EXPECT_EQ(web_state_list_->count(), (int)consumer_.items.count);
+}
+
+// Tests that the model and consumer are correctly updated after creating a new
+// group from an item.
+TEST_F(TabStripMediatorTest, CreateNewGroupWithItem) {
+  AddWebState();
+  AddWebState();
+
+  InitializeMediator();
+
+  const int web_state_index = 1;
+  web::WebState* web_state = web_state_list_->GetWebStateAt(web_state_index);
+  TabSwitcherItem* tab_switcher_item =
+      [[WebStateTabSwitcherItem alloc] initWithWebState:web_state];
+  [mediator_ createNewGroupWithItem:tab_switcher_item];
+
+  // Model has a new group.
+  const TabGroup* group =
+      web_state_list_->GetGroupOfWebStateAt(web_state_index);
+  EXPECT_NE(nullptr, group);
+
+  // The consumer has a new group item.
+  ASSERT_EQ(web_state_list_->count() + 1, (int)consumer_.items.count);
+  EXPECT_EQ(consumer_.items[1].tabGroupItem.tabGroup, group);
+  EXPECT_EQ(consumer_.items[2].tabSwitcherItem.identifier,
+            web_state->GetUniqueIdentifier());
+}
+
+// Tests that the consumer is correctly updated after collapsing/expanding a
+// group.
+TEST_F(TabStripMediatorTest, CollapseExpandGroup) {
+  AddWebState();
+  AddWebState();
+  AddWebState();
+  AddWebState();
+  const TabGroup* group = web_state_list_->CreateGroup({1, 2}, {});
+  TabGroupItem* group_item =
+      [[TabGroupItem alloc] initWithTabGroup:group
+                                webStateList:web_state_list_];
+  TabStripItemIdentifier* group_item_identifier =
+      [TabStripItemIdentifier groupIdentifier:group_item];
+
+  // Ensure the group is expanded initially.
+  const tab_groups::TabGroupVisualData visual_data = group->visual_data();
+  const auto expanded_visual_data = tab_groups::TabGroupVisualData(
+      visual_data.title(), visual_data.color(), /*is_collapsed=*/false);
+  web_state_list_->UpdateGroupVisualData(group, expanded_visual_data);
+
+  InitializeMediator();
+
+  ASSERT_EQ(web_state_list_->count() + 1, (int)consumer_.items.count);
+  EXPECT_TRUE([consumer_.expandedItems containsObject:group_item_identifier]);
+  EXPECT_FALSE(group->visual_data().is_collapsed());
+
+  // Collapsing/expanding through the mutator interface.
+  [mediator_ collapseGroup:group_item];
+  EXPECT_FALSE([consumer_.expandedItems containsObject:group_item_identifier]);
+  EXPECT_TRUE(group->visual_data().is_collapsed());
+  [mediator_ expandGroup:group_item];
+  EXPECT_TRUE([consumer_.expandedItems containsObject:group_item_identifier]);
+  EXPECT_FALSE(group->visual_data().is_collapsed());
+
+  // Collapsing/expanding through the WebStateList.
+  const auto collapsed_visual_data = tab_groups::TabGroupVisualData(
+      visual_data.title(), visual_data.color(), /*is_collapsed=*/true);
+  web_state_list_->UpdateGroupVisualData(group, collapsed_visual_data);
+  EXPECT_FALSE([consumer_.expandedItems containsObject:group_item_identifier]);
+  web_state_list_->UpdateGroupVisualData(group, expanded_visual_data);
+  EXPECT_TRUE([consumer_.expandedItems containsObject:group_item_identifier]);
 }
