@@ -270,9 +270,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Returns true if keep-alive is enabled.
   bool IsKeepAliveEnabled() const;
 
-  // Returns true if crosapi interface supports GetFeedbackData API.
-  bool GetFeedbackDataSupported() const;
-
   using GetFeedbackDataCallback = base::OnceCallback<void(base::Value::Dict)>;
   // Gathers Lacros feedback data.
   // Virtual for testing.
@@ -665,11 +662,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
       crosapi::mojom::OpenUrlParams_WindowOpenDisposition disposition,
       crosapi::mojom::OpenUrlFrom from,
       NavigateParams::PathBehavior path_behavior);
-
-  // Returns true if the crosapi interface of the currently running lacros
-  // supports NewGuestWindow API. If lacros is older or lacros is not running,
-  // this returns false.
-  bool IsNewGuestWindowSupported() const;
 
   // Creates windows from template data.
   void RestoreWindowsFromTemplate();

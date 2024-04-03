@@ -663,16 +663,11 @@ void BrowserManager::PrelaunchAtLoginScreen() {
                                        /*launching_at_login_screen=*/true));
 }
 
-bool BrowserManager::GetFeedbackDataSupported() const {
-  return browser_service_.has_value() &&
-         browser_service_->interface_version >=
-             crosapi::mojom::BrowserService::kGetFeedbackDataMinVersion;
-}
-
 // TODO(neis): Create BrowserAction also for this and others, perhaps even
 // UpdateKeepAlive.
 void BrowserManager::GetFeedbackData(GetFeedbackDataCallback callback) {
-  DCHECK(GetFeedbackDataSupported());
+  CHECK_GE(browser_service_->interface_version,
+           crosapi::mojom::BrowserService::kGetFeedbackDataMinVersion);
   browser_service_->service->GetFeedbackData(std::move(callback));
 }
 
@@ -1322,13 +1317,12 @@ bool BrowserManager::IsKeepAliveEnabled() const {
 }
 
 void BrowserManager::UpdateKeepAliveInBrowserIfNecessary(bool enabled) {
-  if (shutdown_requested_ || !browser_service_.has_value() ||
-      browser_service_->interface_version <
-          crosapi::mojom::BrowserService::kUpdateKeepAliveMinVersion) {
-    // Shutdown has started, the browser is not running now, or Lacros is too
-    // old. Just give up.
+  if (shutdown_requested_ || !browser_service_.has_value()) {
+    // Shutdown has started or the browser is not running now. Just give up.
     return;
   }
+  CHECK_GE(browser_service_->interface_version,
+           crosapi::mojom::BrowserService::kUpdateKeepAliveMinVersion);
   browser_service_->service->UpdateKeepAlive(enabled);
 }
 

@@ -198,8 +198,7 @@ std::unique_ptr<SupportToolHandler> GetSupportToolHandler(
                 std::make_unique<system_logs::DBusLogSource>()));
         break;
       case support_tool::CHROMEOS_CROS_API:
-        if (crosapi::BrowserManager::Get()->IsRunning() &&
-            crosapi::BrowserManager::Get()->GetFeedbackDataSupported()) {
+        if (crosapi::BrowserManager::Get()->IsRunning()) {
           handler->AddDataCollector(std::make_unique<
                                     SystemLogSourceDataCollectorAdaptor>(
               "Gets Lacros system information log data if Lacros is running "
@@ -323,8 +322,7 @@ GetAllAvailableDataCollectorsOnDevice() {
   if (crosapi::browser_util::IsLacrosEnabled()) {
     data_collectors.push_back(support_tool::CHROMEOS_LACROS);
   }
-  if (crosapi::BrowserManager::Get()->IsRunning() &&
-      crosapi::BrowserManager::Get()->GetFeedbackDataSupported()) {
+  if (crosapi::BrowserManager::Get()->IsRunning()) {
     data_collectors.push_back(support_tool::CHROMEOS_CROS_API);
   }
 #if BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)

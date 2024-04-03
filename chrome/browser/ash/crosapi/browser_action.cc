@@ -54,6 +54,8 @@ class NewWindowAction final : public BrowserAction {
 
   void Perform(const VersionedBrowserService& service,
                BrowserManagerCallback on_performed) override {
+    CHECK_GE(service.interface_version,
+             crosapi::mojom::BrowserService::kNewWindowMinVersion);
     if (incognito_) {
       Profile* profile = ProfileManager::GetPrimaryUserProfile();
       if (!profile || !IncognitoModePrefs::IsIncognitoAllowed(profile))
@@ -87,12 +89,8 @@ class NewWindowForDetachingTabAction final : public BrowserAction {
 
   void Perform(const VersionedBrowserService& service,
                BrowserManagerCallback on_performed) override {
-    if (service.interface_version <
-        mojom::BrowserService::kNewWindowForDetachingTabMinVersion) {
-      Cancel(crosapi::mojom::CreationResult::kUnsupported);
-      return;
-    }
-
+    CHECK_GE(service.interface_version,
+             mojom::BrowserService::kNewWindowForDetachingTabMinVersion);
     service.service->NewWindowForDetachingTab(
         tab_id_str_, group_id_str_,
         base::BindOnce(&NewWindowForDetachingTabAction::OnPerformed,
@@ -129,6 +127,8 @@ class NewTabAction final : public BrowserAction {
 
   void Perform(const VersionedBrowserService& service,
                BrowserManagerCallback on_performed) override {
+    CHECK_GE(service.interface_version,
+             mojom::BrowserService::kNewTabMinVersion);
     service.service->NewTab(profile_id_,
                             base::BindOnce(&NewTabAction::OnPerformed,
                                            weak_ptr_factory_.GetWeakPtr(),
@@ -151,15 +151,8 @@ class LaunchAction final : public BrowserAction {
 
   void Perform(const VersionedBrowserService& service,
                BrowserManagerCallback on_performed) override {
-    if (service.interface_version < mojom::BrowserService::kLaunchMinVersion) {
-      LOG(WARNING)
-          << "Lacros too old for Launch action - falling back to NewTab";
-      service.service->NewTab(std::nullopt,
-                              base::BindOnce(&LaunchAction::OnPerformed,
-                                             weak_ptr_factory_.GetWeakPtr(),
-                                             std::move(on_performed)));
-      return;
-    }
+    CHECK_GE(service.interface_version,
+             mojom::BrowserService::kLaunchMinVersion);
     service.service->Launch(target_display_id_, profile_id_,
                             base::BindOnce(&LaunchAction::OnPerformed,
                                            weak_ptr_factory_.GetWeakPtr(),
@@ -200,10 +193,8 @@ class OpenUrlAction final : public BrowserAction {
 
   void Perform(const VersionedBrowserService& service,
                BrowserManagerCallback on_performed) override {
-    if (service.interface_version < mojom::BrowserService::kOpenUrlMinVersion) {
-      LOG(ERROR) << "BrowserService does not support OpenUrl";
-      return;
-    }
+    CHECK_GE(service.interface_version,
+             mojom::BrowserService::kOpenUrlMinVersion);
     auto params = crosapi::mojom::OpenUrlParams::New();
     params->disposition = disposition_;
     params->from = from_;
@@ -254,10 +245,8 @@ class NewGuestWindowAction final : public BrowserAction {
 
   void Perform(const VersionedBrowserService& service,
                BrowserManagerCallback on_performed) override {
-    if (service.interface_version <
-        crosapi::mojom::BrowserService::kNewGuestWindowMinVersion) {
-      return;
-    }
+    CHECK_GE(service.interface_version,
+             crosapi::mojom::BrowserService::kNewGuestWindowMinVersion);
     service.service->NewGuestWindow(
         target_display_id_, base::BindOnce(&NewGuestWindowAction::OnPerformed,
                                            weak_ptr_factory_.GetWeakPtr(),
@@ -278,10 +267,8 @@ class HandleTabScrubbingAction final : public BrowserAction {
 
   void Perform(const VersionedBrowserService& service,
                BrowserManagerCallback on_performed) override {
-    if (service.interface_version <
-        crosapi::mojom::BrowserService::kHandleTabScrubbingMinVersion) {
-      return;
-    }
+    CHECK_GE(service.interface_version,
+             crosapi::mojom::BrowserService::kHandleTabScrubbingMinVersion);
     service.service->HandleTabScrubbing(x_offset_, is_fling_scroll_event_);
   }
 
@@ -303,11 +290,8 @@ class NewFullscreenWindowAction final : public BrowserAction {
 
   void Perform(const VersionedBrowserService& service,
                BrowserManagerCallback on_performed) override {
-    if (service.interface_version <
-        crosapi::mojom::BrowserService::kNewFullscreenWindowMinVersion) {
-      Cancel(crosapi::mojom::CreationResult::kUnsupported);
-      return;
-    }
+    CHECK_GE(service.interface_version,
+             crosapi::mojom::BrowserService::kNewFullscreenWindowMinVersion);
     service.service->NewFullscreenWindow(
         url_, target_display_id_,
         base::BindOnce(&NewFullscreenWindowAction::OnPerformed,
@@ -342,6 +326,8 @@ class RestoreTabAction final : public BrowserAction {
 
   void Perform(const VersionedBrowserService& service,
                BrowserManagerCallback on_performed) override {
+    CHECK_GE(service.interface_version,
+             crosapi::mojom::BrowserService::kRestoreTabMinVersion);
     service.service->RestoreTab(base::BindOnce(&RestoreTabAction::OnPerformed,
                                                weak_ptr_factory_.GetWeakPtr(),
                                                std::move(on_performed)));
@@ -358,6 +344,8 @@ class OpenForFullRestoreAction final : public BrowserAction {
 
   void Perform(const VersionedBrowserService& service,
                BrowserManagerCallback on_performed) override {
+    CHECK_GE(service.interface_version,
+             crosapi::mojom::BrowserService::kOpenForFullRestoreMinVersion);
     service.service->OpenForFullRestore(skip_crash_restore_);
   }
 
@@ -419,6 +407,8 @@ class OpenProfileManagerAction final : public BrowserAction {
 
   void Perform(const VersionedBrowserService& service,
                BrowserManagerCallback on_performed) override {
+    CHECK_GE(service.interface_version,
+             crosapi::mojom::BrowserService::kOpenProfileManagerMinVersion);
     service.service->OpenProfileManager();
   }
 };

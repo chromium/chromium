@@ -121,7 +121,7 @@ class BrowserManagerFake : public BrowserManager {
     SetStatePublic(State::STARTING);
     OnBrowserServiceConnected(*crosapi_id_,
                               mojo::RemoteSetElementId::FromUnsafeValue(70),
-                              browser_service, 70);
+                              browser_service, mojom::BrowserService::Version_);
   }
 
   // Make the State enum publicly available.

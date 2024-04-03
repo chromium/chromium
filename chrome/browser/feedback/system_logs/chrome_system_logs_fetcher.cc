@@ -108,8 +108,7 @@ SystemLogsFetcher* BuildChromeSystemLogsFetcher(Profile* profile,
   // Add CrosapiSystemLogSource to get lacros system information log data
   // if Lacros is running and the crosapi version supports the Lacros remote
   // data source.
-  if (crosapi::BrowserManager::Get()->IsRunning() &&
-      crosapi::BrowserManager::Get()->GetFeedbackDataSupported()) {
+  if (crosapi::BrowserManager::Get()->IsRunning()) {
     fetcher->AddSource(std::make_unique<CrosapiSystemLogSource>());
   }
 #endif
