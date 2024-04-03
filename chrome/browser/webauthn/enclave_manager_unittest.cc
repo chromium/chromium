@@ -128,6 +128,11 @@ constexpr std::string_view kSampleRecoverableKeyStoreSigXML = R"(
   <value>n6kI2dGZKz5CGbXnbz79m51QTDt+WszzNOvcqXsGm6g3ObmpjkghTU3wPmrJ0c5zUD1l4QQEmTKRBIACgK7Sp64JdC4IGP5y+z8HhXPslP3Dc5aySOk4b++m7AIbkAuw63SbPD8L2nQ20CMNiaVVBqZJ0uWUV04qN8IOll1L8NbeZLhjFUcx9riYBrzWOr9uis5IANkfPTFgFyPFjqFk9XrbVpPcNCRtz7Pew+L7OW5z7sh5rW8iZmjhhV/e4VDTgYBFq/Js5W4yalRI9uuEXLJqG1/US4L5cMnJoZOxPmz48an0ug/Pi8yV9cIq+xvER/XaeeUG53Fqy9cn2qG6ROwxH109toaLx3TZaLjdVh7wcJCLtOY6WngHksQbIyU1mDYzz7uWItCss2Nb0NbZ+QMn3k1GxDGIwlY/HXdt7OihPQWLRM2H/QRqlI9p8i1L+DaPrhyGrGHzYKN8z9qGZYx1AsQUWQCR0YeXvlxjtSvBEPtWkfEE0RrZPJtFh+bvrD55Id7XapnGKKXYMmYf9KbDJ3GMD1aT6xgMhlAhtltN5vNg08LSH5Ma4TXhmNpKny5JQqlAUTby1wIhgdElQSdU0jYpmle8N0wsuLoX+e3bHFKxWVkrwvXDC0v2wqH5mzm8FLhxXZDA2ApnGT+eOC1gjd8qTuouzm5GuMhjvig=</value>
 </signature>
 )";
+constexpr std::string_view kTestPINPublicKey =
+    "\x04\xe4\x72\x4c\x87\xf9\x42\xbe\x2a\xd1\xe6\xac\xa3\x52\x85\xea\x08\xf7"
+    "\xe9\x6d\xea\xf2\xf0\x7f\xa9\xde\x89\xe2\x9e\x69\x36\xc4\x4c\xf9\x56\xe9"
+    "\xa1\x1f\x08\xfe\x55\xca\x1b\x84\xb9\xe5\x1e\xc3\x26\x69\x16\xa0\x6b\x03"
+    "\xfa\x42\x08\xa8\xaf\x7d\xd9\x14\xb4\xfc\x1a";
 
 std::unique_ptr<sync_pb::WebauthnCredentialSpecifics> GetTestEntity() {
   auto ret = std::make_unique<sync_pb::WebauthnCredentialSpecifics>();
@@ -471,7 +476,7 @@ TEST_F(EnclaveManagerTest, Basic) {
 
   BoolCallback add_callback;
   ASSERT_TRUE(manager_.AddDeviceToAccount(
-      /*serialized_wrapped_pin=*/std::nullopt, add_callback.callback()));
+      /*pin_metadata=*/std::nullopt, add_callback.callback()));
   ASSERT_FALSE(manager_.is_idle());
   add_callback.WaitForCallback();
   ASSERT_TRUE(std::get<0>(add_callback.result().value()));
@@ -499,7 +504,7 @@ TEST_F(EnclaveManagerTest, SecretsArriveBeforeRegistrationRequested) {
                      /*last_key_version=*/417);
   BoolCallback add_callback;
   ASSERT_TRUE(manager_.AddDeviceToAccount(
-      /*serialized_wrapped_pin=*/std::nullopt, add_callback.callback()));
+      /*pin_metadata=*/std::nullopt, add_callback.callback()));
   add_callback.WaitForCallback();
 
   ASSERT_TRUE(manager_.is_idle());
@@ -521,7 +526,7 @@ TEST_F(EnclaveManagerTest, SecretsArriveBeforeRegistrationCompleted) {
                      /*last_key_version=*/417);
   BoolCallback add_callback;
   ASSERT_TRUE(manager_.AddDeviceToAccount(
-      /*serialized_wrapped_pin=*/std::nullopt, add_callback.callback()));
+      /*pin_metadata=*/std::nullopt, add_callback.callback()));
   add_callback.WaitForCallback();
   register_callback.WaitForCallback();
 
@@ -652,7 +657,8 @@ TEST_F(EnclaveManagerTest, AddWithExistingPIN) {
                      /*last_key_version=*/417);
   BoolCallback add_callback;
   ASSERT_TRUE(manager_.AddDeviceToAccount(
-      /*serialized_wrapped_pin=*/GetTestWrappedPIN().SerializeAsString(),
+      trusted_vault::GpmPinMetadata(std::string(kTestPINPublicKey),
+                                    GetTestWrappedPIN().SerializeAsString()),
       add_callback.callback()));
   add_callback.WaitForCallback();
 
@@ -675,14 +681,18 @@ TEST_F(EnclaveManagerTest, InvalidWrappedPIN) {
 
   BoolCallback add_callback;
   // A wrapped PIN that isn't a valid protobuf should be rejected.
-  EXPECT_FALSE(manager_.AddDeviceToAccount("nonsense wrapped PIN",
-                                           add_callback.callback()));
+  EXPECT_FALSE(manager_.AddDeviceToAccount(
+      trusted_vault::GpmPinMetadata(std::string(kTestPINPublicKey),
+                                    "nonsense wrapped PIN"),
+      add_callback.callback()));
 
   // A valid protobuf, but which fails invariants, should be rejected.
   webauthn_pb::EnclaveLocalState::WrappedPIN wrapped_pin = GetTestWrappedPIN();
   wrapped_pin.set_wrapped_pin("too short");
-  EXPECT_FALSE(manager_.AddDeviceToAccount(wrapped_pin.SerializeAsString(),
-                                           add_callback.callback()));
+  EXPECT_FALSE(manager_.AddDeviceToAccount(
+      trusted_vault::GpmPinMetadata(std::string(kTestPINPublicKey),
+                                    wrapped_pin.SerializeAsString()),
+      add_callback.callback()));
 }
 
 TEST_F(EnclaveManagerTest, SetupWithPIN) {
@@ -787,7 +797,8 @@ TEST_F(EnclaveManagerTest, EnclaveForgetsClient_AddDeviceToAccount) {
                      /*last_key_version=*/417);
   BoolCallback add_callback;
   ASSERT_TRUE(manager_.AddDeviceToAccount(
-      /*serialized_wrapped_pin=*/GetTestWrappedPIN().SerializeAsString(),
+      trusted_vault::GpmPinMetadata(std::string(kTestPINPublicKey),
+                                    GetTestWrappedPIN().SerializeAsString()),
       add_callback.callback()));
   add_callback.WaitForCallback();
   EXPECT_FALSE(std::get<0>(add_callback.result().value()));
@@ -836,7 +847,7 @@ TEST_F(EnclaveManagerTest, MAYBE_HardwareKeyLost) {
 
   BoolCallback add_callback;
   ASSERT_TRUE(manager_.AddDeviceToAccount(
-      /*serialized_wrapped_pin=*/std::nullopt, add_callback.callback()));
+      /*pin_metadata=*/std::nullopt, add_callback.callback()));
   ASSERT_FALSE(manager_.is_idle());
   add_callback.WaitForCallback();
   mock_hw_provider_.reset();
@@ -907,7 +918,7 @@ TEST_F(EnclaveUVTest, UserVerifyingKeyAvailable) {
 
   BoolCallback add_callback;
   ASSERT_TRUE(manager_.AddDeviceToAccount(
-      /*serialized_wrapped_pin=*/std::nullopt, add_callback.callback()));
+      /*pin_metadata=*/std::nullopt, add_callback.callback()));
   ASSERT_FALSE(manager_.is_idle());
   add_callback.WaitForCallback();
 
@@ -935,7 +946,7 @@ TEST_F(EnclaveUVTest, UserVerifyingKeyUnavailable) {
 
   BoolCallback add_callback;
   ASSERT_TRUE(manager_.AddDeviceToAccount(
-      /*serialized_wrapped_pin=*/std::nullopt, add_callback.callback()));
+      /*pin_metadata=*/std::nullopt, add_callback.callback()));
   ASSERT_FALSE(manager_.is_idle());
   add_callback.WaitForCallback();
   ASSERT_TRUE(manager_.is_registered());
@@ -962,7 +973,7 @@ TEST_F(EnclaveUVTest, UserVerifyingKeyLost) {
 
   BoolCallback add_callback;
   ASSERT_TRUE(manager_.AddDeviceToAccount(
-      /*serialized_wrapped_pin=*/std::nullopt, add_callback.callback()));
+      /*pin_metadata=*/std::nullopt, add_callback.callback()));
   ASSERT_FALSE(manager_.is_idle());
   add_callback.WaitForCallback();
 
@@ -1023,7 +1034,7 @@ TEST_F(EnclaveUVTest, UserVerifyingKeyUseExisting) {
 
   BoolCallback add_callback;
   ASSERT_TRUE(manager_.AddDeviceToAccount(
-      /*serialized_wrapped_pin=*/std::nullopt, add_callback.callback()));
+      /*pin_metadata=*/std::nullopt, add_callback.callback()));
   ASSERT_FALSE(manager_.is_idle());
   add_callback.WaitForCallback();
 
@@ -1053,7 +1064,7 @@ TEST_F(EnclaveUVTest, ChromeHandlesBiometrics) {
 
   BoolCallback add_callback;
   ASSERT_TRUE(manager_.AddDeviceToAccount(
-      /*serialized_wrapped_pin=*/std::nullopt, add_callback.callback()));
+      /*pin_metadata=*/std::nullopt, add_callback.callback()));
   ASSERT_FALSE(manager_.is_idle());
   add_callback.WaitForCallback();
 

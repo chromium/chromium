@@ -87,6 +87,7 @@ struct EnclaveManager::PendingAction {
   bool setup_account = false;
   std::string pin;
   std::unique_ptr<EnclaveLocalState::WrappedPIN> wrapped_pin;
+  std::optional<std::string> pin_public_key;
 };
 
 namespace {
@@ -269,6 +270,9 @@ std::optional<int> CheckInvariants(const EnclaveLocalState::User& user) {
     return __LINE__;
   }
 
+  if (user.has_wrapped_pin() != user.has_pin_public_key()) {
+    return __LINE__;
+  }
   if (user.has_wrapped_pin()) {
     return CheckPINInvariants(user.wrapped_pin());
   }
@@ -1366,6 +1370,7 @@ class EnclaveManager::StateMachine {
 
     if (action_->wrapped_pin) {
       *user_->mutable_wrapped_pin() = std::move(*action_->wrapped_pin);
+      user_->set_pin_public_key(std::move(*action_->pin_public_key));
       action_->wrapped_pin.reset();
     }
 
@@ -1593,9 +1598,14 @@ class EnclaveManager::StateMachine {
     action_->wrapped_pin =
         BuildWrappedPIN(*hashed_pin_, /*generation=*/0, vault_.get(),
                         store_keys_args_for_joining_->keys.back());
+    const std::string& vault_public_key =
+        vault_->application_keys()[0].asymmetric_key_pair().public_key();
     const auto secure_box_pub_key =
-        trusted_vault::SecureBoxPublicKey::CreateByImport(ToSpan(
-            vault_->application_keys()[0].asymmetric_key_pair().public_key()));
+        trusted_vault::SecureBoxPublicKey::CreateByImport(
+            ToSpan(vault_public_key));
+
+    *user_->mutable_wrapped_pin() = std::move(*action_->wrapped_pin);
+    user_->set_pin_public_key(vault_public_key);
 
     state_ = State::kJoiningPINToDomain;
     join_request_ = manager_->trusted_vault_conn_->RegisterAuthenticationFactor(
@@ -1625,7 +1635,6 @@ class EnclaveManager::StateMachine {
     }
 
     store_keys_args_for_joining_->last_key_version = key_version;
-    *user_->mutable_wrapped_pin() = std::move(*action_->wrapped_pin);
     action_->wrapped_pin.reset();
 
     if (!StoreWrappedSecrets(
@@ -1872,14 +1881,14 @@ void EnclaveManager::SetupWithPIN(std::string pin,
 }
 
 bool EnclaveManager::AddDeviceToAccount(
-    std::optional<std::string> serialized_wrapped_pin,
+    std::optional<trusted_vault::GpmPinMetadata> pin_metadata,
     EnclaveManager::Callback callback) {
   CHECK(has_pending_keys());
 
   std::unique_ptr<EnclaveLocalState::WrappedPIN> wrapped_pin;
-  if (serialized_wrapped_pin.has_value()) {
+  if (pin_metadata.has_value()) {
     wrapped_pin = std::make_unique<EnclaveLocalState::WrappedPIN>();
-    if (!wrapped_pin->ParseFromString(*serialized_wrapped_pin) ||
+    if (!wrapped_pin->ParseFromString(pin_metadata->wrapped_pin) ||
         CheckPINInvariants(*wrapped_pin).has_value()) {
       return false;
     }
@@ -1889,6 +1898,9 @@ bool EnclaveManager::AddDeviceToAccount(
   action->callback = std::move(callback);
   action->store_keys_args = std::move(pending_keys_);
   action->wrapped_pin = std::move(wrapped_pin);
+  if (pin_metadata) {
+    action->pin_public_key = std::move(pin_metadata->public_key);
+  }
   pending_actions_.emplace_back(std::move(action));
   Act();
   return true;

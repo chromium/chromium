@@ -49,6 +49,10 @@ class EnclaveLocalState_User;
 class EnclaveLocalState_WrappedPIN;
 }  // namespace webauthn_pb
 
+namespace trusted_vault {
+struct GpmPinMetadata;
+}
+
 // EnclaveManager stores and manages the passkey enclave state. One instance
 // exists per-profile, owned by `EnclaveManagerFactory`.
 //
@@ -126,14 +130,15 @@ class EnclaveManager : public KeyedService {
   void SetupWithPIN(std::string pin, Callback callback);
   // Adds the current device to the security domain. Only valid to call after
   // `StoreKeys` has been called and thus `has_pending_keys` returns true. If
-  // `serialized_wrapped_pin` has a value then it is taken to be the contents
-  // of a WrappedPIN protobuf for the current GPM PIN. If you want to add a
-  // new PIN to the account, see `AddDeviceAndPINToAccount`.
+  // `pin_metadata` has a value then it is taken to be the current GPM PIN.
+  // If you want to add a new PIN to the account, see
+  // `AddDeviceAndPINToAccount`.
   //
   // Returns false if `serialized_wrapped_pin` fails to parse and true
   // otherwise.
-  bool AddDeviceToAccount(std::optional<std::string> serialized_wrapped_pin,
-                          Callback callback);
+  bool AddDeviceToAccount(
+      std::optional<trusted_vault::GpmPinMetadata> pin_metadata,
+      Callback callback);
   // Adds the current device, and a GPM PIN, to the security domain. Only valid
   // to call after `StoreKeys` has been called and thus `has_pending_keys`
   // returns true.

@@ -446,7 +446,7 @@ class ChromeAuthenticatorRequestDelegate
 
   // Contains the bytes of a WrappedPIN structure, downloaded from the security
   // domain service.
-  std::optional<std::string> serialized_wrapped_pin_;
+  std::optional<trusted_vault::GpmPinMetadata> pin_metadata_;
 
   // Hold the GPM PIN in the special case where we prompt for a PIN to add one
   // to the account, but then immediately need it in order to satisfy UV for

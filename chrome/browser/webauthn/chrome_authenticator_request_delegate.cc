@@ -1383,10 +1383,10 @@ void ChromeAuthenticatorRequestDelegate::OnKeysStored() {
   CHECK(enclave_manager_->has_pending_keys());
   CHECK(!enclave_manager_->is_ready());
 
-  if (serialized_wrapped_pin_.has_value()) {
+  if (pin_metadata_.has_value()) {
     // The account already has a GPM PIN.
     if (!enclave_manager_->AddDeviceToAccount(
-            serialized_wrapped_pin_,
+            std::move(pin_metadata_),
             base::BindOnce(&ChromeAuthenticatorRequestDelegate::OnDeviceAdded,
                            weak_ptr_factory_.GetWeakPtr()))) {
       // TODO(enclave): move the UI to a to-be-created error state.
@@ -1503,7 +1503,7 @@ void ChromeAuthenticatorRequestDelegate::OnAccountStateDownloaded(
                   << ", has PIN: " << result.gpm_pin_metadata.has_value();
 
   if (result.gpm_pin_metadata) {
-    serialized_wrapped_pin_ = std::move(result.gpm_pin_metadata->wrapped_pin);
+    pin_metadata_ = std::move(result.gpm_pin_metadata);
   }
 }
 

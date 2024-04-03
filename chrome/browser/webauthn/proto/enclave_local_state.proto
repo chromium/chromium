@@ -97,6 +97,9 @@ message EnclaveLocalState {
 
     // The wrapped Google Password Manager PIN.
     optional WrappedPIN wrapped_pin = 11;
+
+    // The public key of the GPM PIN member of the security domain.
+    optional bytes pin_public_key = 12;
   }
 
   map<string, User> users = 1;
