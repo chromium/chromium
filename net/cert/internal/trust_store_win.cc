@@ -271,8 +271,6 @@ class TrustStoreWin::Impl {
     cert_issuer_blob.pbData = const_cast<uint8_t*>(issuer_span.data());
 
     PCCERT_CONTEXT cert_from_store = nullptr;
-    // TODO(https://crbug.com/1239270): figure out if this is thread-safe or if
-    // we need locking here
     while ((cert_from_store = CertFindCertificateInStore(
                 all_certs_store_.get(), X509_ASN_ENCODING, 0,
                 CERT_FIND_SUBJECT_NAME, &cert_issuer_blob, cert_from_store))) {
@@ -314,8 +312,6 @@ class TrustStoreWin::Impl {
       }
     }
 
-    // TODO(https://crbug.com/1239270): figure out if this is thread-safe or if
-    // we need locking here
     while ((cert_from_store = CertFindCertificateInStore(
                 root_cert_store_.get(), X509_ASN_ENCODING, 0,
                 CERT_FIND_SHA1_HASH, &cert_hash_blob, cert_from_store))) {
