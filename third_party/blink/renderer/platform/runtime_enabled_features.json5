@@ -1015,7 +1015,7 @@
     {
       // https://drafts.csswg.org/css-scroll-snap-2/#snap-events
       name: "CSSScrollSnapEvents",
-      status: "test",
+      status: "experimental",
       implied_by: ["CSSSnapChangedEvent", "CSSSnapChangingEvent"],
     },
     {
@@ -1044,14 +1044,14 @@
       name: "CSSSizingKeywordAnimation",
     },
     {
-      // https://drafts.csswg.org/css-scroll-snap-2/#snap-events
+      // https://drafts.csswg.org/css-scroll-snap-2/#snapchanged
       name: "CSSSnapChangedEvent",
-      status: "test",
+      status: "experimental",
     },
     {
-      // https://drafts.csswg.org/css-scroll-snap-2/#snap-events
+      // https://drafts.csswg.org/css-scroll-snap-2/#snapchanging
       name: "CSSSnapChangingEvent",
-      status: "test",
+      status: "experimental",
     },
     {
       name: "CSSSnapContainerQueries",
