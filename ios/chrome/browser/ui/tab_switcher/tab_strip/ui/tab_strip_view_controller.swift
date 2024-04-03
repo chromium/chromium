@@ -786,10 +786,10 @@ extension TabStripViewController: UICollectionViewDelegateFlowLayout {
     contextMenuConfiguration configuration: UIContextMenuConfiguration,
     highlightPreviewForItemAt indexPath: IndexPath
   ) -> UITargetedPreview? {
-    guard let cell = collectionView.cellForItem(at: indexPath) as? TabStripTabCell else {
+    guard let tabStripCell = collectionView.cellForItem(at: indexPath) as? TabStripCell else {
       return nil
     }
-    return UITargetedPreview(view: cell, parameters: cell.dragPreviewParameters)
+    return UITargetedPreview(view: tabStripCell, parameters: tabStripCell.dragPreviewParameters)
   }
 
   func collectionView(

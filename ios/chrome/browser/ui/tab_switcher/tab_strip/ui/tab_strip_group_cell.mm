@@ -11,9 +11,9 @@
 
 namespace {
 
-constexpr CGFloat kTitleContainerCornerRadius = 12;
 constexpr CGFloat kTitleContainerVerticalPadding = 4;
 constexpr CGFloat kTitleContainerCenterYOffset = -2;
+constexpr CGFloat kGroupStrokeViewMinimumWidth = 14;
 
 }  // namespace
 
@@ -35,6 +35,17 @@ constexpr CGFloat kTitleContainerCenterYOffset = -2;
     [self updateGroupStroke];
   }
   return self;
+}
+
+#pragma mark - TabStripCell
+
+- (UIDragPreviewParameters*)dragPreviewParameters {
+  UIBezierPath* visiblePath = [UIBezierPath
+      bezierPathWithRoundedRect:_titleContainer.frame
+                   cornerRadius:_titleContainer.layer.cornerRadius];
+  UIDragPreviewParameters* params = [[UIDragPreviewParameters alloc] init];
+  params.visiblePath = visiblePath;
+  return params;
 }
 
 #pragma mark - UICollectionViewCell
@@ -82,7 +93,7 @@ constexpr CGFloat kTitleContainerCenterYOffset = -2;
   titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
   titleLabel.font = [UIFont systemFontOfSize:TabStripTabItemConstants.fontSize
                                       weight:UIFontWeightMedium];
-  titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+  titleLabel.textColor = [UIColor colorNamed:kSolidWhiteColor];
   titleLabel.adjustsFontSizeToFitWidth = YES;
   return titleLabel;
 }
@@ -91,7 +102,8 @@ constexpr CGFloat kTitleContainerCenterYOffset = -2;
 - (UIView*)createTitleContainer {
   UIView* titleContainer = [[UIView alloc] init];
   titleContainer.translatesAutoresizingMaskIntoConstraints = NO;
-  titleContainer.layer.cornerRadius = kTitleContainerCornerRadius;
+  titleContainer.layer.cornerRadius =
+      TabStripGroupItemConstants.titleContainerHorizontalPadding;
   _titleLabel = [self createTitleLabel];
   [titleContainer addSubview:_titleLabel];
   return titleContainer;
@@ -119,10 +131,22 @@ constexpr CGFloat kTitleContainerCenterYOffset = -2;
           TabStripGroupItemConstants.titleContainerHorizontalPadding,
           kTitleContainerVerticalPadding,
           TabStripGroupItemConstants.titleContainerHorizontalPadding));
-  AddSameConstraintsToSides(_groupStrokeView, _titleLabel,
-                            LayoutSides::kLeading | LayoutSides::kTrailing);
-  [_groupStrokeView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor]
+  const CGFloat titleLabelMinimumHeight =
+      2 * (TabStripGroupItemConstants.titleContainerHorizontalPadding -
+           kTitleContainerVerticalPadding);
+  [_titleLabel.heightAnchor
+      constraintGreaterThanOrEqualToConstant:titleLabelMinimumHeight]
       .active = YES;
+  [NSLayoutConstraint activateConstraints:@[
+    [_groupStrokeView.leftAnchor
+        constraintLessThanOrEqualToAnchor:_titleLabel.leftAnchor],
+    [_groupStrokeView.rightAnchor
+        constraintGreaterThanOrEqualToAnchor:_titleLabel.rightAnchor],
+    [_groupStrokeView.widthAnchor
+        constraintGreaterThanOrEqualToConstant:kGroupStrokeViewMinimumWidth],
+    [_groupStrokeView.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
+    [_groupStrokeView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
+  ]];
 }
 
 // Updates the group stroke path, hides the group stroke if necessary.

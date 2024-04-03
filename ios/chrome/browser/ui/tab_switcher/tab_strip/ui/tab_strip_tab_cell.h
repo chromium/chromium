@@ -51,9 +51,6 @@
 // Whether the cell is the last of its group. Default value is NO.
 @property(nonatomic, assign) BOOL isLastTabInGroup;
 
-// Preview parameters of the cell when dragged.
-@property(nonatomic, readonly) UIDragPreviewParameters* dragPreviewParameters;
-
 // The item associated with this cell. Passed as an opaque NSObject to use the
 // isEqual method on it.
 @property(nonatomic, weak) NSObject* item;

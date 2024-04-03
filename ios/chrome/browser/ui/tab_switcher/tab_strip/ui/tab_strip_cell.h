@@ -13,6 +13,9 @@
 // The title of the cell.
 @property(nonatomic, copy) NSString* title;
 
+// Preview parameters of the cell when dragged.
+@property(nonatomic, readonly) UIDragPreviewParameters* dragPreviewParameters;
+
 // Sets the color of this cell's group stroke.
 // Subclasses should override this method. Default implementation is no-op.
 - (void)setGroupStrokeColor:(UIColor*)groupStrokeColor

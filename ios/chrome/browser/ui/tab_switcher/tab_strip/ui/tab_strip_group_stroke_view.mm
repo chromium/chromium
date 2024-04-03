@@ -72,6 +72,13 @@
   _groupStrokeRightLayer.strokeColor = color.CGColor;
 }
 
+#pragma mark - UITraitEnvironment
+
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  _groupStrokeLeftLayer.strokeColor = self.backgroundColor.CGColor;
+  _groupStrokeRightLayer.strokeColor = self.backgroundColor.CGColor;
+}
+
 #pragma mark - Public
 
 - (void)setLeftPath:(CGPathRef)path {

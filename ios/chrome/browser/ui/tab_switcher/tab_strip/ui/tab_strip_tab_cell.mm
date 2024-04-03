@@ -203,6 +203,8 @@ UIImage* DefaultFavicon() {
   }
 }
 
+#pragma mark - TabStripCell
+
 - (UIDragPreviewParameters*)dragPreviewParameters {
   UIBezierPath* visiblePath =
       [UIBezierPath bezierPathWithRoundedRect:self.contentView.bounds
