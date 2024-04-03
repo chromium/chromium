@@ -1277,6 +1277,7 @@ interface Observable
     method first
     method flatMap
     method forEach
+    method last
     method map
     method subscribe
     method switchMap

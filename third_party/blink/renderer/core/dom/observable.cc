@@ -30,6 +30,17 @@ namespace blink {
 
 namespace {
 
+// A helper wrapper since we cannot hold `Member<ScriptValue>` directly.
+class ScriptValueHolder final : public GarbageCollected<ScriptValueHolder> {
+ public:
+  explicit ScriptValueHolder(ScriptValue value) : value_(value) {}
+  const ScriptValue& Value() const { return value_; }
+  void Trace(Visitor* visitor) const { visitor->Trace(value_); }
+
+ private:
+  ScriptValue value_;
+};
+
 class RejectPromiseAbortAlgorithm final : public AbortSignal::Algorithm {
  public:
   RejectPromiseAbortAlgorithm(ScriptPromiseResolverBase* resolver,
@@ -139,6 +150,54 @@ class ToArrayInternalObserver final : public ObservableInternalObserver {
   Member<ScriptPromiseResolver<IDLSequence<IDLAny>>> resolver_;
   HeapVector<ScriptValue> values_;
   Member<AbortSignal::AlgorithmHandle> abort_algorithm_handle_;
+};
+
+// This is the internal observer associated with the `last()` operator. See
+// https://wicg.github.io/observable/#dom-observable-last for its definition
+// and spec prose quoted below.
+class OperatorLastInternalObserver final : public ObservableInternalObserver {
+ public:
+  OperatorLastInternalObserver(ScriptPromiseResolver<IDLAny>* resolver,
+                               AbortSignal::AlgorithmHandle* handle)
+      : resolver_(resolver), abort_algorithm_handle_(handle) {}
+
+  void Next(ScriptValue value) override {
+    last_value_ = MakeGarbageCollected<ScriptValueHolder>(value);
+  }
+  void Error(ScriptState* script_state, ScriptValue error_value) override {
+    abort_algorithm_handle_.Clear();
+
+    // "Reject p with the passed in error."
+    resolver_->Reject(error_value);
+  }
+  void Complete() override {
+    abort_algorithm_handle_.Clear();
+
+    // "If lastValue is not null, resolve p with lastValue."
+    if (last_value_) {
+      resolver_->Resolve(last_value_->Value());
+      return;
+    }
+
+    // "Otherwise, reject p with a new RangeError."
+    v8::Isolate* isolate = resolver_->GetScriptState()->GetIsolate();
+    resolver_->Reject(
+        ScriptValue(isolate, V8ThrowException::CreateRangeError(
+                                 isolate, "No values in Observable")));
+  }
+
+  void Trace(Visitor* visitor) const override {
+    ObservableInternalObserver::Trace(visitor);
+
+    visitor->Trace(resolver_);
+    visitor->Trace(abort_algorithm_handle_);
+    visitor->Trace(last_value_);
+  }
+
+ private:
+  Member<ScriptPromiseResolver<IDLAny>> resolver_;
+  Member<AbortSignal::AlgorithmHandle> abort_algorithm_handle_;
+  Member<ScriptValueHolder> last_value_;
 };
 
 // This is the internal observer associated with the `first()` operator. See
@@ -1706,6 +1765,35 @@ ScriptPromise<IDLAny> Observable::first(ScriptState* script_state,
 
   SubscribeInternal(script_state, /*observer_union=*/nullptr, internal_observer,
                     internal_options);
+
+  return promise;
+}
+
+ScriptPromise<IDLAny> Observable::last(ScriptState* script_state,
+                                       SubscribeOptions* options) {
+  ScriptPromiseResolver<IDLAny>* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(script_state);
+  ScriptPromise<IDLAny> promise = resolver->Promise();
+
+  AbortSignal::AlgorithmHandle* algorithm_handle = nullptr;
+
+  if (options->hasSignal()) {
+    if (options->signal()->aborted()) {
+      resolver->Reject(options->signal()->reason(script_state));
+      return promise;
+    }
+
+    algorithm_handle = options->signal()->AddAlgorithm(
+        MakeGarbageCollected<RejectPromiseAbortAlgorithm>(resolver,
+                                                          options->signal()));
+  }
+
+  OperatorLastInternalObserver* internal_observer =
+      MakeGarbageCollected<OperatorLastInternalObserver>(resolver,
+                                                         algorithm_handle);
+
+  SubscribeInternal(script_state, /*observer_union=*/nullptr, internal_observer,
+                    options);
 
   return promise;
 }

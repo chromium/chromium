@@ -53,5 +53,6 @@ interface Observable {
   [CallWith=ScriptState] Promise<sequence<any>> toArray(optional SubscribeOptions options = {});
   [CallWith=ScriptState] Promise<undefined> forEach(Visitor callback, optional SubscribeOptions options = {});
   [CallWith=ScriptState] Promise<any> first(optional SubscribeOptions options = {});
+  [CallWith=ScriptState] Promise<any> last(optional SubscribeOptions options = {});
 };
 
