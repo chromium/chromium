@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/auto_reset.h"
+#include "base/debug/alias.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -631,6 +632,11 @@ void ClientTagBasedModelTypeProcessor::GetLocalChanges(
   DCHECK(IsConnected());
   DCHECK(!model_error_);
 
+  // Use base::debug::Alias() to ensure that crash dumps in reports include
+  // ModelType.
+  const ModelType model_type = type_;
+  base::debug::Alias(&model_type);
+
   // In some cases local changes may be requested before entity tracker is
   // loaded. Just invoke the callback with empty list.
   if (!entity_tracker_) {
@@ -674,6 +680,11 @@ void ClientTagBasedModelTypeProcessor::OnCommitCompleted(
   DCHECK(entity_tracker_)
       << "Received commit response when entity tracker is null. Type: "
       << ModelTypeToDebugString(type_);
+
+  // Use base::debug::Alias() to ensure that crash dumps in reports include
+  // ModelType.
+  const ModelType model_type = type_;
+  base::debug::Alias(&model_type);
 
   // |error_response_list| is ignored, because all errors are treated as
   // transientand the processor with eventually retry.
@@ -756,6 +767,11 @@ void ClientTagBasedModelTypeProcessor::OnCommitFailed(
   DCHECK(IsConnected());
   DCHECK(!model_error_);
 
+  // Use base::debug::Alias() to ensure that crash dumps in reports include
+  // ModelType.
+  const ModelType model_type = type_;
+  base::debug::Alias(&model_type);
+
   switch (bridge_->OnCommitAttemptFailed(commit_error)) {
     case ModelTypeSyncBridge::CommitAttemptFailedBehavior::
         kShouldRetryOnNextCycle:
@@ -780,6 +796,11 @@ void ClientTagBasedModelTypeProcessor::OnUpdateReceived(
   DCHECK(IsConnected());
   DCHECK(!model_error_);
   DCHECK(!model_type_state.progress_marker().has_gc_directive());
+
+  // Use base::debug::Alias() to ensure that crash dumps in reports include
+  // ModelType.
+  const ModelType model_type = type_;
+  base::debug::Alias(&model_type);
 
   if (!ValidateUpdate(model_type_state, updates, gc_directive)) {
     return;
@@ -830,6 +851,12 @@ void ClientTagBasedModelTypeProcessor::StorePendingInvalidations(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(IsConnected());
   CHECK(bridge_);
+
+  // Use base::debug::Alias() to ensure that crash dumps in reports include
+  // ModelType.
+  const ModelType model_type = type_;
+  base::debug::Alias(&model_type);
+
   if (model_error_ || !entity_tracker_) {
     // It's possible to have incoming invalidations while the data type is not
     // fully initialized (e.g. before the initial sync).
