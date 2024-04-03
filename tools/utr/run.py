@@ -18,6 +18,8 @@ import builders
 import cipd
 import recipe
 
+from rich.logging import RichHandler
+
 _THIS_DIR = pathlib.Path(__file__).resolve().parent
 _SRC_DIR = _THIS_DIR.parents[1]
 
@@ -111,7 +113,13 @@ def parse_args(args=None):
 def main():
   args = parse_args()
   logging.basicConfig(level=logging.DEBUG if args.verbosity else logging.INFO,
-                      format='%(message)s')
+                      format='%(message)s',
+                      handlers=[
+                          RichHandler(show_time=False,
+                                      show_level=False,
+                                      show_path=False,
+                                      markup=True)
+                      ])
 
   cipd_bin_path = _SRC_DIR.joinpath('third_party', 'depot_tools', '.cipd_bin')
   if not cipd_bin_path.exists():

@@ -275,7 +275,8 @@ class LegacyRunner:
           md = pretty_md if pretty_md else 'Unknown error'
           self._console_printer.print(md, style='red')
         else:
-          logging.info(output_adapter.as_green('Success!'))
+          logging.info('[green]Success![/]')
+
         results_link = adapter.GetTestResultsLink()
         if results_link:
           logging.info('')
@@ -289,9 +290,8 @@ class LegacyRunner:
         props_to_use = get_prompt_resp(rerun_prop_options)
       else:
         logging.warning(
-            output_adapter.as_yellow(
-                'Proceeding despite the recipe warning due to the presence '
-                'of "--force".'))
+            '[yellow]Proceeding despite the recipe warning due to the presence '
+            'of "--force".[/]')
         if len(rerun_prop_options) < 1 or len(rerun_prop_options[0]) < 2:
           return 1, 'Received bad run options from the recipe'
         # Properties of the first option is the default path

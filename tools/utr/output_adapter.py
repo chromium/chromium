@@ -11,29 +11,17 @@ import logging
 import re
 import sys
 
-import colorama
-
-
-def as_green(text):
-  """Surrounds the text with ANSI codes to color it green."""
-  return colorama.Fore.GREEN + text + colorama.Style.RESET_ALL
-
-
-def as_red(text):
-  """Surrounds the text with ANSI codes to color it red."""
-  return colorama.Fore.RED + text + colorama.Style.RESET_ALL
-
-
-def as_yellow(text):
-  """Surrounds the text with ANSI codes to color it yellow."""
-  return colorama.Fore.YELLOW + text + colorama.Style.RESET_ALL
-
+# Create a logger that avoids rich formatting as we can't control recipe
+# formatting from here
+basic_logger = logging.getLogger('basic_logger')
+basic_logger.addHandler(logging.StreamHandler(sys.stdout))
+basic_logger.propagate = False
 
 class PassthroughAdapter:
   """Doesn't filter anything, just logs everything from the recipe run."""
 
   def ProcessLine(self, line):
-    logging.log(logging.DEBUG, line)
+    basic_logger.log(logging.DEBUG, line)
 
   def GetTestResultsLink(self):
     return None
@@ -127,17 +115,17 @@ class LegacyOutputAdapter:
   def _StdoutProcessLine(self, line):
     if not line.startswith(self.ANNOTATOR_PREFIX_SUFIX):
       # Pass through any non-engine text
-      logging.log(self._current_log_level, line)
+      basic_logger.log(self._current_log_level, line)
 
   def _StepNameProcessLine(self, line):
     if line.startswith(self.SEED_STEP_TEXT):
       # Always print the step name to info
       logging.log(self._current_log_level,
-                  '\nRunning: ' + self._current_step_name)
+                  '\n[cyan]Running: ' + self._current_step_name + '[/]')
       return
     if not line.startswith(self.ANNOTATOR_PREFIX_SUFIX):
       # Pass through any non-engine text
-      logging.log(self._current_log_level, line)
+      basic_logger.log(self._current_log_level, line)
 
   def _ProcessTriggerLine(self, line):
     if line.startswith(self.SEED_STEP_TEXT + self.TRIGGER_STEP_PREFIX):
@@ -152,26 +140,26 @@ class LegacyOutputAdapter:
       matches = self._trigger_link_re.match(line)
       if matches:
         task_name = self._current_step_name[len(self.TRIGGER_STEP_PREFIX):]
-        logging.log(self._current_log_level,
-                    f'Triggered {task_name}: ' + matches[1])
+        basic_logger.log(self._current_log_level,
+                         f'Triggered {task_name}: ' + matches[1])
     else:
       self._StdoutProcessLine(line)
 
   def _ProcessCompileLine(self, line):
     if line.startswith(self.SEED_STEP_TEXT):
-      logging.info('\nRunning: ' + self._current_step_name)
+      logging.info('\n[cyan]Running: ' + self._current_step_name + '[/]')
       return
     matches = self._ninja_status_re.match(line)
     if matches:
       self._single_line_logger.log(self._current_log_level, '\33[2K\r' + line)
       return
     if self._last_line.startswith('['):
-      logging.log(self._current_log_level, '')
+      basic_logger.log(self._current_log_level, '')
     self._StdoutProcessLine(line)
 
   def _ProcessCollectLine(self, line):
     if line.startswith(self.SEED_STEP_TEXT):
-      logging.info('\nRunning: ' + self._current_step_name)
+      logging.info('\n[cyan]Running: ' + self._current_step_name + '[/]')
     matches = self._collect_wait_re.match(line)
     if matches:
       task_ids = json.loads(matches[2])['task_id']
@@ -184,13 +172,14 @@ class LegacyOutputAdapter:
     if line == self.STEP_CLOSED_TEXT:
       self._single_line_logger.log(self._current_log_level,
                                    '\33[2K\rStill waiting on: 0 shard(s)...')
-      logging.log(self._current_log_level, '')
+      basic_logger.log(self._current_log_level, '')
 
   def _ProcessResult(self, line):
     matches = self._result_links_re.match(line)
     if matches:
-      logging.log(self._current_log_level, 'Test results for %s shard %s: %s',
-                  self._current_step_name, matches[1], matches[2])
+      basic_logger.log(self._current_log_level,
+                       'Test results for %s shard %s: %s',
+                       self._current_step_name, matches[1], matches[2])
 
   def ProcessLine(self, line):
     # If we're in a new step see if it needs to be parsed differently
