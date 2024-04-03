@@ -459,7 +459,9 @@ void InstallUpdaterAndApp(UpdaterScope scope,
   ASSERT_FALSE(path.empty());
   base::CommandLine command_line(path);
   command_line.AppendSwitchASCII(kInstallSwitch, tag);
-  command_line.AppendSwitchASCII(kAppIdSwitch, app_id);
+  if (!app_id.empty()) {
+    command_line.AppendSwitchASCII(kAppIdSwitch, app_id);
+  }
   if (is_silent_install) {
     ASSERT_TRUE(child_window_text_to_find.empty());
     command_line.AppendSwitch(kSilentSwitch);
