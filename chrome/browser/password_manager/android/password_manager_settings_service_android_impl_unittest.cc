@@ -1756,6 +1756,73 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
 }
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+       DefaultSettingsMigrationResetsIfLocalPwdMigrationOff) {
+  pref_service()->SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
+  pref_service()->ClearPref(password_manager::prefs::kCredentialsEnableService);
+  pref_service()->ClearPref(
+      password_manager::prefs::kCredentialsEnableAutosignin);
+
+  // Setting the settings migration pref to true to mimic the case when it was
+  // incorrectly set to true.
+  pref_service()->SetBoolean(
+      password_manager::prefs::kSettingsMigratedToUPMLocal, true);
+
+  InitializeSettingsService(/*password_sync_enabled=*/false,
+                            /*setting_sync_enabled=*/false);
+
+  EXPECT_FALSE(pref_service()->GetBoolean(
+      password_manager::prefs::kSettingsMigratedToUPMLocal));
+}
+
+TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+       DefaultSettingsMigrationDoesntResetIfLocalPwdMigrationPending) {
+  pref_service()->SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::
+              kOffAndMigrationPending));
+  pref_service()->ClearPref(password_manager::prefs::kCredentialsEnableService);
+  pref_service()->ClearPref(
+      password_manager::prefs::kCredentialsEnableAutosignin);
+
+  // Setting the settings migration pref to true to mimic the case when it was
+  // already set to true.
+  pref_service()->SetBoolean(
+      password_manager::prefs::kSettingsMigratedToUPMLocal, true);
+
+  InitializeSettingsService(/*password_sync_enabled=*/false,
+                            /*setting_sync_enabled=*/false);
+
+  EXPECT_TRUE(pref_service()->GetBoolean(
+      password_manager::prefs::kSettingsMigratedToUPMLocal));
+}
+
+TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+       DefaultSettingsMigrationDoesntResetIfLocalPwdMigrationOn) {
+  pref_service()->SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
+  pref_service()->ClearPref(password_manager::prefs::kCredentialsEnableService);
+  pref_service()->ClearPref(
+      password_manager::prefs::kCredentialsEnableAutosignin);
+
+  // Setting the settings migration pref to true to mimic the case when it was
+  // already set to true.
+  pref_service()->SetBoolean(
+      password_manager::prefs::kSettingsMigratedToUPMLocal, true);
+
+  InitializeSettingsService(/*password_sync_enabled=*/false,
+                            /*setting_sync_enabled=*/false);
+
+  EXPECT_TRUE(pref_service()->GetBoolean(
+      password_manager::prefs::kSettingsMigratedToUPMLocal));
+}
+
+TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
        MigrateSettingsSettingGmsPrefFailed) {
   base::test::ScopedFeatureList scoped_feature_list{
       password_manager::features::
