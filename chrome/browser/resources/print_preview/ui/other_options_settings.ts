@@ -13,11 +13,13 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {Settings} from '../data/model.js';
+
 import {getTemplate} from './other_options_settings.html.js';
 import {SettingsMixin} from './settings_mixin.js';
 
 interface CheckboxOption {
-  name: string;
+  name: keyof Settings;
   label: string;
   value?: boolean;
   managed?: boolean;
@@ -82,7 +84,8 @@ export class PrintPreviewOtherOptionsSettingsElement extends
    * @param settingName The name of the setting to updated.
    * @param newValue The new value for the setting.
    */
-  private updateSettingWithTimeout_(settingName: string, newValue: boolean) {
+  private updateSettingWithTimeout_(
+      settingName: keyof Settings, newValue: boolean) {
     const timeout = this.timeouts_.get(settingName);
     if (timeout !== null) {
       clearTimeout(timeout);

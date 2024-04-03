@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {MarginsSetting, PrintPreviewMarginControlContainerElement, PrintPreviewMarginControlElement, PrintPreviewModelElement} from 'chrome://print/print_preview.js';
+import type {MarginsSetting, PrintPreviewMarginControlContainerElement, PrintPreviewMarginControlElement, PrintPreviewModelElement, Settings} from 'chrome://print/print_preview.js';
 import {CustomMarginsOrientation, Margins, MarginsType, MeasurementSystem, MeasurementSystemUnitType, Size, State} from 'chrome://print/print_preview.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -212,7 +212,7 @@ suite('CustomMarginsTest', function() {
    * @return Promise that resolves when the check is complete.
    */
   function validateMarginsClearedForSetting(
-      settingName: string, newValue: any) {
+      settingName: keyof Settings, newValue: any) {
     const marginValues = setupCustomMargins();
     return finishSetup().then(() => {
       // Simulate setting custom margins.

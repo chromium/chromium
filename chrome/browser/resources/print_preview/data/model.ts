@@ -74,6 +74,7 @@ export interface Settings {
   pin: Setting;
   pinValue: Setting;
   // </if>
+  recentDestinations: Setting;
 }
 
 export interface SerializedSettings {
@@ -232,7 +233,7 @@ export function whenReady(): Promise<void> {
 /**
  * Sticky setting names in alphabetical order.
  */
-const STICKY_SETTING_NAMES: string[] = [
+const STICKY_SETTING_NAMES: Array<keyof Settings> = [
   'recentDestinations',
   'borderless',
   'collate',
@@ -711,7 +712,7 @@ export class PrintPreviewModelElement extends PolymerElement {
         new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
   }
 
-  getSetting(settingName: string): Setting {
+  getSetting(settingName: keyof Settings): Setting {
     const setting = (this.get(settingName, this.settings) as Setting);
     assert(setting, 'Setting is missing: ' + settingName);
     return setting;
@@ -721,7 +722,7 @@ export class PrintPreviewModelElement extends PolymerElement {
    * @param settingName Name of the setting to get the value for.
    * @return The value of the setting, accounting for availability.
    */
-  getSettingValue(settingName: string): any {
+  getSettingValue(settingName: keyof Settings): any {
     const setting = this.getSetting(settingName);
     return setting.available ? setting.value : setting.unavailableValue;
   }
@@ -732,7 +733,7 @@ export class PrintPreviewModelElement extends PolymerElement {
    * getSettingValue().
    */
   private setSettingPath_(settingPath: string, value: any) {
-    const settingName = settingPath.split('.')[0];
+    const settingName = settingPath.split('.')[0] as keyof Settings;
     const setting = this.getSetting(settingName);
     const oldValue = this.getSettingValue(settingName);
     this.set(`settings.${settingPath}`, value);
@@ -751,7 +752,7 @@ export class PrintPreviewModelElement extends PolymerElement {
    * @param value The value to set the setting to.
    * @param noSticky Whether to avoid stickying the setting. Defaults to false.
    */
-  setSetting(settingName: string, value: any, noSticky?: boolean) {
+  setSetting(settingName: keyof Settings, value: any, noSticky?: boolean) {
     const setting = this.getSetting(settingName);
     if (setting.setByPolicy) {
       return;
@@ -774,7 +775,7 @@ export class PrintPreviewModelElement extends PolymerElement {
    * @param noSticky Whether to avoid stickying the setting. Defaults to false.
    */
   setSettingSplice(
-      settingName: string, start: number, end: number, newValue: any,
+      settingName: keyof Settings, start: number, end: number, newValue: any,
       noSticky?: boolean) {
     const setting = this.getSetting(settingName);
     if (setting.setByPolicy) {
@@ -799,7 +800,7 @@ export class PrintPreviewModelElement extends PolymerElement {
    * @param settingName Name of the setting to set
    * @param valid Whether the setting value is currently valid.
    */
-  setSettingValid(settingName: string, valid: boolean) {
+  setSettingValid(settingName: keyof Settings, valid: boolean) {
     const setting = this.getSetting(settingName);
     // Should not set the setting to invalid if it is not available, as there
     // is no way for the user to change the value in this case.
@@ -1550,7 +1551,8 @@ export class PrintPreviewModelElement extends PolymerElement {
         }
         if (policyEntry.value !== undefined &&
             !policyEntry.applyOnDestinationUpdate) {
-          this.setSetting(settingName, policyEntry.value, true);
+          this.setSetting(
+              settingName as keyof Settings, policyEntry.value, true);
           if (policyEntry.managed) {
             this.set(`settings.${settingName}.setByPolicy`, true);
           }
@@ -1667,7 +1669,8 @@ export class PrintPreviewModelElement extends PolymerElement {
   }
 
   private updateManaged_() {
-    let managedSettings = ['cssBackground', 'headerFooter'];
+    let managedSettings: Array<keyof Settings> =
+        ['cssBackground', 'headerFooter'];
     // <if expr="is_chromeos">
     managedSettings =
         managedSettings.concat(['color', 'duplex', 'duplexShortEdge', 'pin']);

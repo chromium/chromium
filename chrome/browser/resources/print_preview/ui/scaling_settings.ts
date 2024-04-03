@@ -10,6 +10,7 @@ import './settings_section.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {Settings} from '../data/model.js';
 import {ScalingType} from '../data/scaling.js';
 
 import {getTemplate} from './scaling_settings.html.js';
@@ -89,7 +90,7 @@ export class PrintPreviewScalingSettingsElement extends
   private customSelected_: boolean;
   private dropdownDisabled_: boolean;
   private inputValid_: boolean;
-  private settingKey_: string;
+  private settingKey_: keyof Settings;
 
   private lastValidScaling_: string = '';
 

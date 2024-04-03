@@ -189,7 +189,7 @@ suite('RestoreStateTest', function() {
   test('SaveValues', async function() {
     interface TestCase {
       section: string;
-      settingName: string;
+      settingName: keyof Settings;
       key: string;
       value: any;
     }

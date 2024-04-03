@@ -21,26 +21,27 @@ export const SettingsMixin = dedupingMixin(
 
         settings: Settings;
 
-        getSetting(settingName: string): Setting {
+        getSetting(settingName: keyof Settings): Setting {
           return getInstance().getSetting(settingName);
         }
 
-        getSettingValue(settingName: string): any {
+        getSettingValue(settingName: keyof Settings): any {
           return getInstance().getSettingValue(settingName);
         }
 
-        setSetting(settingName: string, value: any, noSticky?: boolean) {
+        setSetting(
+            settingName: keyof Settings, value: any, noSticky?: boolean) {
           getInstance().setSetting(settingName, value, noSticky);
         }
 
         setSettingSplice(
-            settingName: string, start: number, end: number, newValue: any,
-            noSticky?: boolean) {
+            settingName: keyof Settings, start: number, end: number,
+            newValue: any, noSticky?: boolean) {
           getInstance().setSettingSplice(
               settingName, start, end, newValue, noSticky);
         }
 
-        setSettingValid(settingName: string, valid: boolean) {
+        setSettingValid(settingName: keyof Settings, valid: boolean) {
           getInstance().setSettingValid(settingName, valid);
         }
       }
@@ -55,13 +56,13 @@ export interface SettingsMixinInterface {
    * @param settingName Name of the setting to get.
    * @return The setting object.
    */
-  getSetting(settingName: string): Setting;
+  getSetting(settingName: keyof Settings): Setting;
 
   /**
    * @param settingName Name of the setting to get the value for.
    * @return The value of the setting, accounting for availability.
    */
-  getSettingValue(settingName: string): any;
+  getSettingValue(settingName: keyof Settings): any;
 
   /**
    * Sets settings.settingName.value to |value|, unless updating the setting is
@@ -72,7 +73,7 @@ export interface SettingsMixinInterface {
    * @param value The value to set the setting to.
    * @param noSticky Whether to avoid stickying the setting. Defaults to false.
    */
-  setSetting(settingName: string, value: any, noSticky?: boolean): void;
+  setSetting(settingName: keyof Settings, value: any, noSticky?: boolean): void;
 
   /**
    * @param settingName Name of the setting to set
@@ -80,7 +81,7 @@ export interface SettingsMixinInterface {
    * @param noSticky Whether to avoid stickying the setting. Defaults to false.
    */
   setSettingSplice(
-      settingName: string, start: number, end: number, newValue: any,
+      settingName: keyof Settings, start: number, end: number, newValue: any,
       noSticky?: boolean): void;
 
   /**
@@ -89,5 +90,5 @@ export interface SettingsMixinInterface {
    * @param settingName Name of the setting to set
    * @param valid Whether the setting value is currently valid.
    */
-  setSettingValid(settingName: string, valid: boolean): void;
+  setSettingValid(settingName: keyof Settings, valid: boolean): void;
 }

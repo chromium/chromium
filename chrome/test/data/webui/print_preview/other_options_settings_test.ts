@@ -4,7 +4,7 @@
 
 import 'chrome://print/print_preview.js';
 
-import type {CrCheckboxElement, PrintPreviewModelElement, PrintPreviewOtherOptionsSettingsElement} from 'chrome://print/print_preview.js';
+import type {CrCheckboxElement, PrintPreviewModelElement, PrintPreviewOtherOptionsSettingsElement, Settings} from 'chrome://print/print_preview.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
@@ -63,7 +63,7 @@ suite('OtherOptionsSettingsTest', function() {
   });
 
   test('set with checkbox', async () => {
-    function testOptionCheckbox(settingName: string): Promise<void> {
+    function testOptionCheckbox(settingName: keyof Settings): Promise<void> {
       const element =
           otherOptionsSection.shadowRoot!.querySelector<CrCheckboxElement>(
               `#${settingName}`)!;
@@ -90,18 +90,19 @@ suite('OtherOptionsSettingsTest', function() {
   });
 
   test('update from setting', function() {
-    ['headerFooter', 'cssBackground', 'rasterize', 'selectionOnly'].forEach(
-        setting => {
-          const checkbox =
-              otherOptionsSection.shadowRoot!.querySelector<CrCheckboxElement>(
-                  `#${setting}`)!;
-          // Set true and then false.
-          [true, false].forEach((value: boolean) => {
-            otherOptionsSection.setSetting(setting, value);
-            // Element expected to be checked when setting is true.
-            assertEquals(value, checkbox.checked);
-          });
-        });
+    const keys: Array<keyof Settings> =
+        ['headerFooter', 'cssBackground', 'rasterize', 'selectionOnly'];
+    keys.forEach(setting => {
+      const checkbox =
+          otherOptionsSection.shadowRoot!.querySelector<CrCheckboxElement>(
+              `#${setting}`)!;
+      // Set true and then false.
+      [true, false].forEach((value: boolean) => {
+        otherOptionsSection.setSetting(setting, value);
+        // Element expected to be checked when setting is true.
+        assertEquals(value, checkbox.checked);
+      });
+    });
   });
 
   // Tests that if settings are enforced by enterprise policy the checkbox

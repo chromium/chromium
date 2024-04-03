@@ -24,7 +24,7 @@ import type {Destination} from '../data/destination.js';
 import type {Margins, MarginsSetting} from '../data/margins.js';
 import {CustomMarginsOrientation, MarginsType} from '../data/margins.js';
 import type {MeasurementSystem} from '../data/measurement_system.js';
-import type {MediaSizeValue, Ticket} from '../data/model.js';
+import type {MediaSizeValue, Settings, Ticket} from '../data/model.js';
 import {DuplexMode} from '../data/model.js';
 import {ScalingType} from '../data/scaling.js';
 import {Size} from '../data/size.js';
@@ -695,7 +695,7 @@ export class PrintPreviewPreviewAreaElement extends
   }
 
   /** @return Appropriate key for the scaling type setting. */
-  private getScalingSettingKey_(): string {
+  private getScalingSettingKey_(): keyof Settings {
     return this.getSetting('scalingTypePdf').available ? 'scalingTypePdf' :
                                                          'scalingType';
   }

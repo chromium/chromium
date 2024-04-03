@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ColorOption, DpiOption, DuplexOption, PrintPreviewModelElement, PrintTicket, RecentDestination} from 'chrome://print/print_preview.js';
+import type {ColorOption, DpiOption, DuplexOption, PrintPreviewModelElement, PrintTicket, RecentDestination, Settings} from 'chrome://print/print_preview.js';
 import {
   // <if expr="is_chromeos">
   ColorModeRestriction,
@@ -105,7 +105,7 @@ suite('ModelTest', function() {
      *     reset to its default value.
      */
     const testStickySetting = function(
-        setting: string, field: string): Promise<void> {
+        setting: keyof Settings, field: string): Promise<void> {
       const promise = eventToPromise('sticky-setting-changed', model);
       model.setSetting(setting, stickySettingsChange[field]);
       settingsSet.push(field);
