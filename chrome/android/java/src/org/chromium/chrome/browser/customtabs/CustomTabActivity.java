@@ -34,6 +34,8 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.cached_flags.AllCachedFieldTrialParameters;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.BackupSigninProcessor;
 import org.chromium.chrome.browser.IntentHandler;
@@ -452,7 +454,9 @@ public class CustomTabActivity extends BaseCustomTabActivity {
             LoadUrlParams params =
                     SearchActivityUtils.getOmniboxResult(requestCode, resultCode, data);
             if (params == null) return;
-            mTabProvider.getTab().loadUrl(params);
+            // Yield to give the called activity time to close.
+            // Loading URL directly will result in Activity closing after URL loading completes.
+            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> mTabProvider.getTab().loadUrl(params));
         }
 
         if (HistoryManager.isAppSpecificHistoryEnabled()
