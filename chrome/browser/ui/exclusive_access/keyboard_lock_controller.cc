@@ -92,12 +92,7 @@ bool KeyboardLockController::IsKeyboardLockActive() const {
 
 void KeyboardLockController::RequestKeyboardLock(WebContents* web_contents,
                                                  bool esc_key_locked) {
-  if (!web_contents->IsFullscreen()) {
-    return;
-  }
-
   DCHECK(!exclusive_access_tab() || exclusive_access_tab() == web_contents);
-
   LockKeyboard(web_contents, esc_key_locked);
 }
 
@@ -148,7 +143,10 @@ void KeyboardLockController::CancelKeyboardLockRequest(WebContents* tab) {
 
 void KeyboardLockController::LockKeyboard(content::WebContents* web_contents,
                                           bool esc_key_locked) {
-  if (web_contents->GotResponseToKeyboardLockRequest(true)) {
+  // Call GotResponseToKeyboardLockRequest() to notify `web_contents` of the
+  // result, regardless of the fullscreen state.
+  if (web_contents->GotResponseToKeyboardLockRequest(true) &&
+      web_contents->IsFullscreen()) {
     KeyboardLockState new_lock_state =
         esc_key_locked ? KeyboardLockState::kLockedWithEsc
                        : KeyboardLockState::kLockedWithoutEsc;

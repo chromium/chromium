@@ -15,6 +15,7 @@
 #include "base/containers/queue.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -61,6 +62,7 @@
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-test-utils.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
+#include "third_party/blink/public/mojom/keyboard_lock/keyboard_lock.mojom-shared.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-shared.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -75,7 +77,6 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_handle.h"
 #endif
-
 
 namespace gfx {
 class Point;
@@ -1129,8 +1130,10 @@ RenderWidgetHost* GetMouseLockWidget(WebContents* web_contents);
 // |codes| represents the set of keys to lock.  If |codes| has no value, then
 // all keys will be considered locked.  If |codes| has a value, then at least
 // one key must be specified.
-bool RequestKeyboardLock(WebContents* web_contents,
-                         std::optional<base::flat_set<ui::DomCode>> codes);
+void RequestKeyboardLock(
+    WebContents* web_contents,
+    std::optional<base::flat_set<ui::DomCode>> codes,
+    base::OnceCallback<void(blink::mojom::KeyboardLockRequestResult)> callback);
 void CancelKeyboardLock(WebContents* web_contents);
 
 // Returns the screen orientation provider that's been set via

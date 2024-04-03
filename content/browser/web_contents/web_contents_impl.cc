@@ -4405,6 +4405,7 @@ bool WebContentsImpl::RequestKeyboardLock(
   // KeyboardLock is only supported when called by the top-level browsing
   // context and is not supported in embedded content scenarios.
   if (GetOuterWebContents()) {
+    render_widget_host->GotResponseToKeyboardLockRequest(false);
     return false;
   }
 
@@ -6085,23 +6086,20 @@ bool WebContentsImpl::GotResponseToKeyboardLockRequest(bool allowed) {
   OPTIONAL_TRACE_EVENT1("content",
                         "WebContentsImpl::GotResponseToKeyboardLockRequest",
                         "allowed", allowed);
-
   if (!keyboard_lock_widget_) {
     return false;
   }
-
   if (WebContentsImpl::FromRenderWidgetHostImpl(keyboard_lock_widget_) !=
       this) {
     NOTREACHED();
     return false;
   }
-
   // KeyboardLock is only supported when called by the top-level browsing
   // context and is not supported in embedded content scenarios.
   if (GetOuterWebContents()) {
+    keyboard_lock_widget_->GotResponseToKeyboardLockRequest(false);
     return false;
   }
-
   keyboard_lock_widget_->GotResponseToKeyboardLockRequest(allowed);
   return true;
 }

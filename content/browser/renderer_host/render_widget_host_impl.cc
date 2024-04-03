@@ -2101,11 +2101,11 @@ void RenderWidgetHostImpl::InsertVisualStateCallback(
 
 RenderProcessHostPriorityClient::Priority RenderWidgetHostImpl::GetPriority() {
   RenderProcessHostPriorityClient::Priority priority = {
-    is_hidden_,
-    frame_depth_,
-    intersects_viewport_,
+      is_hidden_,
+      frame_depth_,
+      intersects_viewport_,
 #if BUILDFLAG(IS_ANDROID)
-    importance_,
+      importance_,
 #endif
   };
   if (owner_delegate_ &&
@@ -3069,27 +3069,29 @@ void RenderWidgetHostImpl::OnInvalidFrameToken(uint32_t frame_token) {
                                   bad_message::RWH_INVALID_FRAME_TOKEN);
 }
 
-bool RenderWidgetHostImpl::RequestKeyboardLock(
-    std::optional<base::flat_set<ui::DomCode>> codes) {
+void RenderWidgetHostImpl::RequestKeyboardLock(
+    std::optional<base::flat_set<ui::DomCode>> codes,
+    base::OnceCallback<void(blink::mojom::KeyboardLockRequestResult)>
+        keyboard_lock_request_callback) {
+  // If the callback from a previous request is still pending, reject it.
+  if (keyboard_lock_request_callback_) {
+    std::move(keyboard_lock_request_callback_)
+        .Run(blink::mojom::KeyboardLockRequestResult::kRequestFailedError);
+  }
+  keyboard_lock_request_callback_ = std::move(keyboard_lock_request_callback);
+
   if (!delegate_) {
     CancelKeyboardLock();
-    return false;
+    return;
   }
 
   DCHECK(!codes.has_value() || !codes.value().empty());
   keyboard_keys_to_lock_ = std::move(codes);
-  keyboard_lock_requested_ = true;
 
   const bool esc_requested =
       !keyboard_keys_to_lock_.has_value() ||
       base::Contains(keyboard_keys_to_lock_.value(), ui::DomCode::ESCAPE);
-
-  if (!delegate_->RequestKeyboardLock(this, esc_requested)) {
-    CancelKeyboardLock();
-    return false;
-  }
-
-  return true;
+  delegate_->RequestKeyboardLock(this, esc_requested);
 }
 
 void RenderWidgetHostImpl::CancelKeyboardLock() {
@@ -3100,7 +3102,6 @@ void RenderWidgetHostImpl::CancelKeyboardLock() {
   UnlockKeyboard();
 
   keyboard_lock_allowed_ = false;
-  keyboard_lock_requested_ = false;
   keyboard_keys_to_lock_.reset();
 }
 
@@ -3453,7 +3454,6 @@ bool RenderWidgetHostImpl::GotResponseToPointerLockRequest(
 }
 
 void RenderWidgetHostImpl::GotResponseToKeyboardLockRequest(bool allowed) {
-  DCHECK(keyboard_lock_requested_);
   keyboard_lock_allowed_ = allowed;
 
   if (keyboard_lock_allowed_) {
@@ -3756,21 +3756,40 @@ void RenderWidgetHostImpl::SetScreenOrientationForTesting(
   SynchronizeVisualProperties();
 }
 
-bool RenderWidgetHostImpl::LockKeyboard() {
+void RenderWidgetHostImpl::LockKeyboard() {
   if (!keyboard_lock_allowed_ || !is_focused_ || !view_) {
-    return false;
+    if (keyboard_lock_request_callback_) {
+      std::move(keyboard_lock_request_callback_)
+          .Run(blink::mojom::KeyboardLockRequestResult::kRequestFailedError);
+    }
+    return;
   }
-
+  // Even if the page isn't in fullscreen, we still want to call
+  // `keyboard_lock_request_callback_` to let it know whether it has the
+  // permission to lock the keyboard, but we don't actually lock the
+  // keyboard until it enters fullscreen. LockKeyboard() will be called again
+  // when the page enters fullscreen.
+  if (keyboard_lock_request_callback_) {
+    std::move(keyboard_lock_request_callback_)
+        .Run(blink::mojom::KeyboardLockRequestResult::kSuccess);
+  }
+  if (!delegate_->IsFullscreen()) {
+    return;
+  }
   // KeyboardLock can be activated and deactivated several times per request,
   // for example when a fullscreen tab loses and gains focus multiple times,
   // so we need to retain a copy of the keys requested.
   std::optional<base::flat_set<ui::DomCode>> copy = keyboard_keys_to_lock_;
-  return view_->LockKeyboard(std::move(copy));
+  view_->LockKeyboard(std::move(copy));
 }
 
 void RenderWidgetHostImpl::UnlockKeyboard() {
   if (IsKeyboardLocked()) {
     view_->UnlockKeyboard();
+  }
+  if (keyboard_lock_request_callback_) {
+    std::move(keyboard_lock_request_callback_)
+        .Run(blink::mojom::KeyboardLockRequestResult::kRequestFailedError);
   }
 }
 

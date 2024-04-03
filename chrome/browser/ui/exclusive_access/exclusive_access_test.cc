@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/run_loop.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -120,7 +121,25 @@ bool ExclusiveAccessTest::RequestKeyboardLock(bool esc_key_locked) {
   else
     codes = base::flat_set<ui::DomCode>({ui::DomCode::US_A});
 
-  return content::RequestKeyboardLock(tab, std::move(codes));
+  bool success = false;
+  bool callback_called = false;
+  base::OnceCallback<void(blink::mojom::KeyboardLockRequestResult)> callback =
+      base::BindOnce(
+          [](bool* success, bool* callback_called,
+             blink::mojom::KeyboardLockRequestResult result) {
+            *success =
+                result == blink::mojom::KeyboardLockRequestResult::kSuccess;
+            *callback_called = true;
+          },
+          &success, &callback_called);
+  content::RequestKeyboardLock(tab, std::move(codes), std::move(callback));
+  // We currently assume that content::RequestKeyboardLock() calls the callback
+  // synchronously. We'd need to change the test code here if the assumption no
+  // longer holds. However, we cannot use base::RunLoop as-is, since this code
+  // may be used with base::TestMockTimeTaskRunner::ScopedContext, which cannot
+  // be used together with base::RunLoop.
+  CHECK(callback_called);
+  return success;
 }
 
 void ExclusiveAccessTest::RequestToLockPointer(bool user_gesture,

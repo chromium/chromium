@@ -212,7 +212,11 @@ void WebContentsDelegate::RequestPointerLock(WebContents* web_contents,
 
 void WebContentsDelegate::RequestKeyboardLock(WebContents* web_contents,
                                               bool esc_key_locked) {
-  web_contents->GotResponseToKeyboardLockRequest(false);
+  // Notify `web_contents` that the request is accepted and the JavaScript
+  // promise for the request can be resolved. This can be overridden by a
+  // subclass that wants to conditionally accept the request, e.g., depending
+  // on the permissions state.
+  web_contents->GotResponseToKeyboardLockRequest(true);
 }
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE)

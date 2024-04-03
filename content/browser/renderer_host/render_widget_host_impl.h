@@ -61,6 +61,7 @@
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_context.mojom.h"
+#include "third_party/blink/public/mojom/keyboard_lock/keyboard_lock.mojom.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/page/widget.mojom.h"
 #include "third_party/blink/public/mojom/widget/platform_widget.mojom.h"
@@ -827,11 +828,14 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void SetScreenOrientationForTesting(uint16_t angle,
                                       display::mojom::ScreenOrientation type);
 
-  // Requests Keyboard lock.  Note: the lock may not take effect until later.
-  // If |codes| has no value then all keys will be locked, otherwise only the
-  // keys specified will be intercepted and routed to the web page.
-  // Returns true if the lock request was successfully registered.
-  bool RequestKeyboardLock(std::optional<base::flat_set<ui::DomCode>> codes);
+  // Requests keyboard lock. If `codes` has no value then all keys will be
+  // locked, otherwise only the keys specified will be intercepted and routed to
+  // the web page. `request_keyboard_lock_callback` gets called with the result
+  // of the request, possibly before the lock actually takes effect.
+  void RequestKeyboardLock(
+      std::optional<base::flat_set<ui::DomCode>> codes,
+      base::OnceCallback<void(blink::mojom::KeyboardLockRequestResult)>
+          request_keyboard_lock_callback);
 
   // Cancels a previous keyboard lock request.
   void CancelKeyboardLock();
@@ -1205,7 +1209,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void SetupInputRouter();
 
   // Start intercepting system keyboard events.
-  bool LockKeyboard();
+  void LockKeyboard();
 
   // Stop intercepting system keyboard events.
   void UnlockKeyboard();
@@ -1429,8 +1433,9 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   bool pointer_lock_raw_movement_ = false;
   // Stores the keyboard keys to lock while waiting for a pending lock request.
   std::optional<base::flat_set<ui::DomCode>> keyboard_keys_to_lock_;
-  bool keyboard_lock_requested_ = false;
   bool keyboard_lock_allowed_ = false;
+  base::OnceCallback<void(blink::mojom::KeyboardLockRequestResult)>
+      keyboard_lock_request_callback_;
 
   // Used when locking to indicate when a target application has voluntarily
   // unlocked and desires to relock the mouse. If the mouse is unlocked due

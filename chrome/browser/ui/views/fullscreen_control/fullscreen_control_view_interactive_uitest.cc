@@ -8,6 +8,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
+#include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -141,8 +142,21 @@ class FullscreenControlViewTest : public InProcessBrowserTest {
 
   bool EnableKeyboardLock() {
     std::optional<base::flat_set<ui::DomCode>> codes({ui::DomCode::ESCAPE});
-    return content::RequestKeyboardLock(GetActiveWebContents(),
-                                        std::move(codes));
+    bool success = false;
+    base::RunLoop run_loop;
+    base::OnceCallback<void(blink::mojom::KeyboardLockRequestResult)> callback =
+        base::BindOnce(
+            [](bool* success, base::RunLoop* run_loop,
+               blink::mojom::KeyboardLockRequestResult result) {
+              *success =
+                  result == blink::mojom::KeyboardLockRequestResult::kSuccess;
+              run_loop->Quit();
+            },
+            &success, &run_loop);
+    content::RequestKeyboardLock(GetActiveWebContents(), std::move(codes),
+                                 std::move(callback));
+    run_loop.Run();
+    return success;
   }
 
   void SetPopupVisibilityChangedCallback(base::OnceClosure callback) {

@@ -188,8 +188,7 @@ void FakeKeyboardLockWebContentsDelegate::RequestKeyboardLock(
     WebContents* web_contents,
     bool esc_key_locked) {
   keyboard_lock_requested_ = true;
-  if (is_fullscreen_)
-    web_contents->GotResponseToKeyboardLockRequest(/*allowed=*/true);
+  web_contents->GotResponseToKeyboardLockRequest(/*allowed=*/true);
 }
 
 void FakeKeyboardLockWebContentsDelegate::CancelKeyboardLockRequest(

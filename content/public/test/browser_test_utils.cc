@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 #include "content/public/test/browser_test_utils.h"
-#include "base/memory/raw_ptr.h"
-#include "content/public/test/synchronize_visual_properties_interceptor.h"
 
 #include <stddef.h>
 
@@ -17,8 +15,10 @@
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/process/kill.h"
 #include "base/ranges/algorithm.h"
@@ -84,6 +84,7 @@
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/simple_url_loader_test_helper.h"
+#include "content/public/test/synchronize_visual_properties_interceptor.h"
 #include "content/public/test/test_fileapi_operation_waiter.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_launcher.h"
@@ -126,6 +127,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-test-utils.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom.h"
+#include "third_party/blink/public/mojom/keyboard_lock/keyboard_lock.mojom-shared.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
@@ -412,8 +414,7 @@ bool HasGzipHeader(const base::RefCountedMemory& maybe_gzipped) {
   const char* header_end = nullptr;
   while (header_status == net::GZipHeader::INCOMPLETE_HEADER) {
     header_status = header.ReadMore(maybe_gzipped.front_as<char>(),
-                                    maybe_gzipped.size(),
-                                    &header_end);
+                                    maybe_gzipped.size(), &header_end);
   }
   return header_status == net::GZipHeader::COMPLETE_HEADER;
 }
@@ -524,9 +525,7 @@ class ResizeObserver : public RenderWidgetHostObserver {
       run_loop_.Quit();
   }
 
-  void Wait() {
-    run_loop_.Run();
-  }
+  void Wait() { run_loop_.Run(); }
 
  private:
   raw_ptr<RenderWidgetHost> widget_host_;
@@ -2124,8 +2123,8 @@ void WaitForAccessibilityTreeToChange(WebContents* web_contents) {
 
 void WaitForAccessibilityTreeToContainNodeWithName(WebContents* web_contents,
                                                    base::StringPiece name) {
-  WebContentsImpl* web_contents_impl = static_cast<WebContentsImpl*>(
-      web_contents);
+  WebContentsImpl* web_contents_impl =
+      static_cast<WebContentsImpl*>(web_contents);
   RenderFrameHostImpl* main_frame = static_cast<RenderFrameHostImpl*>(
       web_contents_impl->GetPrimaryMainFrame());
   BrowserAccessibilityManager* main_frame_manager =
@@ -2264,14 +2263,19 @@ RenderWidgetHost* GetMouseLockWidget(WebContents* web_contents) {
       ->mouse_lock_widget_for_testing();
 }
 
-bool RequestKeyboardLock(WebContents* web_contents,
-                         std::optional<base::flat_set<ui::DomCode>> codes) {
+void RequestKeyboardLock(
+    WebContents* web_contents,
+    std::optional<base::flat_set<ui::DomCode>> codes,
+    base::OnceCallback<void(blink::mojom::KeyboardLockRequestResult)>
+        callback) {
   DCHECK(!codes.has_value() || !codes.value().empty());
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(web_contents);
   RenderWidgetHostImpl* render_widget_host_impl =
       web_contents_impl->GetPrimaryMainFrame()->GetRenderWidgetHost();
-  return render_widget_host_impl->RequestKeyboardLock(std::move(codes));
+  render_widget_host_impl->Focus();
+  render_widget_host_impl->RequestKeyboardLock(std::move(codes),
+                                               std::move(callback));
 }
 
 void CancelKeyboardLock(WebContents* web_contents) {
@@ -3748,7 +3752,6 @@ void VerifyStaleContentOnFrameEviction(
 
 #endif  // defined(USE_AURA)
 
-
 // static
 void BlobURLStoreInterceptor::InterceptDeprecated(
     GURL target_url,
@@ -3911,7 +3914,6 @@ bool TestGuestAutoresize(WebContents* embedder_web_contents,
                              current_id.child_sequence_number() + 1,
                              current_id.embed_token());
 }
-
 
 RenderWidgetHostMouseEventMonitor::RenderWidgetHostMouseEventMonitor(
     RenderWidgetHost* host)

@@ -57,16 +57,15 @@ void KeyboardLockServiceImpl::CreateMojoService(
 void KeyboardLockServiceImpl::RequestKeyboardLock(
     const std::vector<std::string>& key_codes,
     RequestKeyboardLockCallback callback) {
-  if (key_codes.empty())
+  if (key_codes.empty()) {
     LogKeyboardLockMethodCalled(KeyboardLockMethods::kRequestAllKeys);
-  else
+  } else {
     LogKeyboardLockMethodCalled(KeyboardLockMethods::kRequestSomeKeys);
-
+  }
   if (render_frame_host().GetParentOrOuterDocument()) {
     std::move(callback).Run(KeyboardLockRequestResult::kChildFrameError);
     return;
   }
-
   if (!render_frame_host().IsActive()) {
     std::move(callback).Run(KeyboardLockRequestResult::kFrameDetachedError);
     return;
@@ -101,19 +100,30 @@ void KeyboardLockServiceImpl::RequestKeyboardLock(
   }
 
   std::optional<base::flat_set<ui::DomCode>> dom_code_set;
-  if (!dom_codes.empty())
+  if (!dom_codes.empty()) {
     dom_code_set = std::move(dom_codes);
-
-  if (frame_host_impl.GetRenderWidgetHost()->RequestKeyboardLock(
-          std::move(dom_code_set))) {
-    std::move(callback).Run(KeyboardLockRequestResult::kSuccess);
-    feature_handle_ =
-        static_cast<RenderFrameHostImpl&>(render_frame_host())
-            .RegisterBackForwardCacheDisablingNonStickyFeature(
-                blink::scheduler::WebSchedulerTrackedFeature::kKeyboardLock);
-  } else {
-    std::move(callback).Run(KeyboardLockRequestResult::kRequestFailedError);
   }
+  frame_host_impl.GetRenderWidgetHost()->RequestKeyboardLock(
+      std::move(dom_code_set),
+      // We use a lambda function here instead of binding to a method because
+      // we want the Mojo callback to be called even if `this` goes out of
+      // scope.
+      base::BindOnce(
+          [](base::WeakPtr<KeyboardLockServiceImpl> weak_this,
+             RequestKeyboardLockCallback callback,
+             blink::mojom::KeyboardLockRequestResult result) {
+            std::move(callback).Run(result);
+            if (weak_this &&
+                result == blink::mojom::KeyboardLockRequestResult::kSuccess) {
+              weak_this->feature_handle_ =
+                  static_cast<RenderFrameHostImpl&>(
+                      weak_this->render_frame_host())
+                      .RegisterBackForwardCacheDisablingNonStickyFeature(
+                          blink::scheduler::WebSchedulerTrackedFeature::
+                              kKeyboardLock);
+            }
+          },
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void KeyboardLockServiceImpl::CancelKeyboardLock() {
