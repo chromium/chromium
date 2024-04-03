@@ -22,6 +22,23 @@ TrustedVaultKeyAndVersion::~TrustedVaultKeyAndVersion() = default;
 bool TrustedVaultKeyAndVersion::operator==(
     const TrustedVaultKeyAndVersion& other) const = default;
 
+GpmPinMetadata::GpmPinMetadata(std::optional<std::string> in_public_key,
+                               std::string in_wrapped_pin)
+    : public_key(std::move(in_public_key)),
+      wrapped_pin(std::move(in_wrapped_pin)) {}
+
+GpmPinMetadata::GpmPinMetadata(const GpmPinMetadata&) = default;
+
+GpmPinMetadata& GpmPinMetadata::operator=(const GpmPinMetadata&) = default;
+
+GpmPinMetadata::GpmPinMetadata(GpmPinMetadata&&) = default;
+
+GpmPinMetadata& GpmPinMetadata::operator=(GpmPinMetadata&&) = default;
+
+GpmPinMetadata::~GpmPinMetadata() = default;
+
+bool GpmPinMetadata::operator==(const GpmPinMetadata&) const = default;
+
 PrecomputedMemberKeys::PrecomputedMemberKeys(
     int in_version,
     std::vector<uint8_t> in_wrapped_key,

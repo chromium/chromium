@@ -1500,9 +1500,11 @@ void ChromeAuthenticatorRequestDelegate::OnAccountStateDownloaded(
 
   FIDO_LOG(EVENT) << "Download account state result: " << state_str
                   << ", key_version: " << result.key_version.value_or(0)
-                  << ", has PIN: " << result.serialized_wrapped_pin.has_value();
+                  << ", has PIN: " << result.gpm_pin_metadata.has_value();
 
-  serialized_wrapped_pin_ = std::move(result.serialized_wrapped_pin);
+  if (result.gpm_pin_metadata) {
+    serialized_wrapped_pin_ = std::move(result.gpm_pin_metadata->wrapped_pin);
+  }
 }
 
 void ChromeAuthenticatorRequestDelegate::MaybeHashPinAndStartEnclaveTransaction(

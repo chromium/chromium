@@ -129,13 +129,13 @@ trusted_vault_pb::SecurityDomainMember CreateSecurityDomainMember(
             // domain member, and so is set in
             // `CreateJoinSecurityDomainsRequest`.
           },
-          [&member](const GpmPin& gpm_pin) {
+          [&member](const GpmPinMetadata& gpm_pin_metadata) {
             member.set_member_type(trusted_vault_pb::SecurityDomainMember::
                                        MEMBER_TYPE_GOOGLE_PASSWORD_MANAGER_PIN);
             auto* member_metadata = member.mutable_member_metadata();
             auto* pin_metadata =
                 member_metadata->mutable_google_password_manager_pin_metadata();
-            pin_metadata->set_encrypted_pin_hash(gpm_pin.value());
+            pin_metadata->set_encrypted_pin_hash(gpm_pin_metadata.wrapped_pin);
           }},
       authentication_factor_type);
   return member;
@@ -177,6 +177,11 @@ trusted_vault_pb::JoinSecurityDomainsRequest CreateJoinSecurityDomainsRequest(
           absl::get_if<UnspecifiedAuthenticationFactorType>(
               &authentication_factor_type)) {
     request.set_member_type_hint(unspecified_type->value());
+  } else if (auto* gpm_pin_metadata =
+                 absl::get_if<GpmPinMetadata>(&authentication_factor_type)) {
+    if (gpm_pin_metadata->public_key) {
+      request.set_current_public_key_to_replace(*gpm_pin_metadata->public_key);
+    }
   }
   return request;
 }
@@ -398,10 +403,10 @@ class DownloadAuthenticationFactorsRegistrationStateRequest
       if (member.member_type() == trusted_vault_pb::SecurityDomainMember::
                                       MEMBER_TYPE_GOOGLE_PASSWORD_MANAGER_PIN &&
           member.member_metadata().has_google_password_manager_pin_metadata()) {
-        result_.serialized_wrapped_pin =
-            member.member_metadata()
-                .google_password_manager_pin_metadata()
-                .encrypted_pin_hash();
+        result_.gpm_pin_metadata.emplace(
+            member.public_key(), member.member_metadata()
+                                     .google_password_manager_pin_metadata()
+                                     .encrypted_pin_hash());
       }
     }
 
@@ -448,7 +453,7 @@ GetURLFetchReasonForUMAForJoinSecurityDomainsRequest(
             return TrustedVaultURLFetchReasonForUMA::
                 kRegisterUnspecifiedAuthenticationFactor;
           },
-          [](const GpmPin&) {
+          [](const GpmPinMetadata&) {
             return TrustedVaultURLFetchReasonForUMA::kRegisterGpmPin;
           }},
       authentication_factor_type);

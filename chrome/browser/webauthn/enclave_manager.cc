@@ -1604,7 +1604,9 @@ class EnclaveManager::StateMachine {
             store_keys_args_for_joining_->keys,
             store_keys_args_for_joining_->last_key_version),
         *secure_box_pub_key,
-        trusted_vault::GpmPin(action_->wrapped_pin->SerializeAsString()),
+        trusted_vault::GpmPinMetadata(
+            /*public_key=*/std::nullopt,
+            action_->wrapped_pin->SerializeAsString()),
         base::BindOnce(&StateMachine::OnJoinedSecurityDomain,
                        weak_ptr_factory_.GetWeakPtr()));
   }

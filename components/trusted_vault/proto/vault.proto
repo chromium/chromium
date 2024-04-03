@@ -77,6 +77,7 @@ message JoinSecurityDomainsRequest {
   SecurityDomainMember security_domain_member = 2;
   repeated SharedMemberKey shared_member_key = 3;
   int32 member_type_hint = 4;
+  bytes current_public_key_to_replace = 5;
 }
 
 message JoinSecurityDomainsResponse {

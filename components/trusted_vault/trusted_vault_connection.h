@@ -78,6 +78,29 @@ enum class TrustedVaultRecoverabilityStatus {
   kMaxValue = kError,
 };
 
+// Contains information about a Google Password Manager PIN that is stored in
+// a trusted vault.
+struct GpmPinMetadata {
+  GpmPinMetadata(std::optional<std::string> public_key,
+                 std::string wrapped_pin);
+  GpmPinMetadata(const GpmPinMetadata&);
+  GpmPinMetadata& operator=(const GpmPinMetadata&);
+  GpmPinMetadata(GpmPinMetadata&&);
+  GpmPinMetadata& operator=(GpmPinMetadata&&);
+  ~GpmPinMetadata();
+
+  bool operator==(const GpmPinMetadata&) const;
+
+  // The securebox public key for the virtual member. This will always have a
+  // value when this metadata is downloaded with
+  // `DownloadAuthenticationFactorsRegistrationState`. When used with
+  // `RegisterAuthenticationFactor`, this can be empty to upload the first GPM
+  // PIN to an account, or non-empty to replace a GPM PIN.
+  std::optional<std::string> public_key;
+  // The encrypted PIN value, for validation.
+  std::string wrapped_pin;
+};
+
 // The result of calling
 // DownloadAuthenticationFactorsRegistrationState.
 struct DownloadAuthenticationFactorsRegistrationStateResult {
@@ -111,7 +134,7 @@ struct DownloadAuthenticationFactorsRegistrationStateResult {
 
   // If a Google Password Manager PIN is a member of the domain, and is usable
   // for retrieval, then this will contain its metadata.
-  std::optional<std::string> serialized_wrapped_pin;
+  std::optional<GpmPinMetadata> gpm_pin_metadata;
 };
 
 // Authentication factor types:
@@ -122,14 +145,12 @@ using LockScreenKnowledgeFactor =
 // UnspecifiedAuthenticationFactorType carries a type hint for the backend.
 using UnspecifiedAuthenticationFactorType =
     base::StrongAlias<class UnspecifiedAuthenticationFactorTypeTag, int>;
-// GPM PINs carry a bytestring of opaque metadata.
-using GpmPin = base::StrongAlias<class GpmPinTag, std::string>;
 
 using AuthenticationFactorType =
     absl::variant<PhysicalDevice,
                   LockScreenKnowledgeFactor,
                   UnspecifiedAuthenticationFactorType,
-                  GpmPin>;
+                  GpmPinMetadata>;
 
 struct TrustedVaultKeyAndVersion {
   TrustedVaultKeyAndVersion(const std::vector<uint8_t>& key, int version);

@@ -81,6 +81,7 @@ trusted_vault_pb::JoinSecurityDomainsResponse MakeJoinSecurityDomainsResponse(
 }
 
 constexpr char kTestSerializedWrappedPIN[] = "wrapped PIN";
+constexpr char kTestMemberPublicKey[] = "public key";
 constexpr int kTestKeyVersion = 100;
 
 enum class Member {
@@ -101,6 +102,7 @@ trusted_vault_pb::ListSecurityDomainMembersResponse MakeSecurityDomainMembers(
     trusted_vault_pb::SecurityDomainMember* member =
         response.add_security_domain_members();
     member->set_name("name");
+    member->set_public_key(kTestMemberPublicKey);
     member->add_memberships()->set_security_domain("other security domain");
     auto* membership = member->add_memberships();
     auto* key = membership->add_keys();
@@ -121,6 +123,8 @@ trusted_vault_pb::ListSecurityDomainMembersResponse MakeSecurityDomainMembers(
         member->mutable_member_metadata()->set_usable_for_retrieval(true);
         break;
       case Member::kGooglePasswordManagerPIN:
+        member->set_member_type(trusted_vault_pb::SecurityDomainMember::
+                                    MEMBER_TYPE_GOOGLE_PASSWORD_MANAGER_PIN);
         member->mutable_member_metadata()->set_usable_for_retrieval(true);
         member->mutable_member_metadata()
             ->mutable_google_password_manager_pin_metadata()
@@ -465,6 +469,7 @@ TEST_P(TrustedVaultConnectionImplTest,
 
 TEST_P(TrustedVaultConnectionImplTest,
        ShouldSendJoinSecurityDomainsRequestGpmPinMetadata) {
+  const std::string old_public_key = "old_public_key";
   const std::string metadata = "metadata";
   std::unique_ptr<SecureBoxKeyPair> key_pair = MakeTestKeyPair();
   ASSERT_THAT(key_pair, NotNull());
@@ -474,7 +479,7 @@ TEST_P(TrustedVaultConnectionImplTest,
           /*account_info=*/CoreAccountInfo(),
           GetTrustedVaultKeysWithVersions(kTrustedVaultKeys,
                                           /*last_key_version=*/1234),
-          key_pair->public_key(), GpmPin(metadata),
+          key_pair->public_key(), GpmPinMetadata(old_public_key, metadata),
           TrustedVaultConnection::RegisterAuthenticationFactorCallback());
   EXPECT_THAT(request, NotNull());
 
@@ -489,6 +494,8 @@ TEST_P(TrustedVaultConnectionImplTest,
   trusted_vault_pb::JoinSecurityDomainsRequest deserialized_body;
   ASSERT_TRUE(deserialized_body.ParseFromString(
       network::GetUploadData(resource_request)));
+  EXPECT_THAT(deserialized_body.current_public_key_to_replace(),
+              Eq(old_public_key));
   EXPECT_THAT(deserialized_body.security_domain_member().member_type(),
               Eq(trusted_vault_pb::SecurityDomainMember::
                      MEMBER_TYPE_GOOGLE_PASSWORD_MANAGER_PIN));
@@ -1051,6 +1058,18 @@ MATCHER_P(HasRecoveryState,
   return arg.state == state;
 }
 
+MATCHER_P2(
+    HasGpmPinMetadata,
+    public_key,
+    wrapped_pin,
+    "DownloadAuthenticationFactorsRegistrationStateResult::GpmPinMetadata") {
+  if (!arg.gpm_pin_metadata) {
+    return false;
+  }
+  return testing::ExplainMatchResult(*arg.gpm_pin_metadata,
+                                     GpmPinMetadata(public_key, wrapped_pin));
+}
+
 TEST_P(TrustedVaultConnectionImplTest,
        DownloadAuthenticationFactorsRegistrationState_Basic) {
   base::MockCallback<TrustedVaultConnection::
@@ -1081,86 +1100,88 @@ TEST_P(TrustedVaultConnectionImplTest,
 TEST_P(TrustedVaultConnectionImplTest,
        DownloadAuthenticationFactorsRegistrationState_Cases) {
   using State = DownloadAuthenticationFactorsRegistrationStateResult::State;
+  const GpmPinMetadata gpm_pin_metadata(kTestMemberPublicKey,
+                                        kTestSerializedWrappedPIN);
   const struct TestCase {
     // responses contains the set of security domain members included in each
     // page of results from the "server".
     std::vector<std::vector<Member>> responses;
     State expected_result;
     std::optional<int> expected_key_version;
-    std::optional<std::string> expected_wrapped_pin;
+    std::optional<GpmPinMetadata> expected_gpm_pin_metadata;
   } kTestCases[] = {
       {
           {{}},
           State::kEmpty,
           /*expected_key_version=*/std::nullopt,
-          /*expected_wrapped_pin=*/std::nullopt,
+          /*expected_gpm_pin_metadata=*/std::nullopt,
       },
       {
           {{}, {}},
           State::kEmpty,
           /*expected_key_version=*/std::nullopt,
-          /*expected_wrapped_pin=*/std::nullopt,
+          /*expected_gpm_pin_metadata=*/std::nullopt,
       },
       {
           {{Member::kOtherSecurityDomain}, {Member::kOtherSecurityDomain}},
           State::kEmpty,
           /*expected_key_version=*/std::nullopt,
-          /*expected_wrapped_pin=*/std::nullopt,
+          /*expected_gpm_pin_metadata=*/std::nullopt,
       },
       {
           {{Member::kPhysical}},
           State::kIrrecoverable,
           /*expected_key_version=*/kTestKeyVersion,
-          /*expected_wrapped_pin=*/std::nullopt,
+          /*expected_gpm_pin_metadata=*/std::nullopt,
       },
       {
           {{Member::kPhysical, Member::kUsableVirtual}},
           State::kRecoverable,
           /*expected_key_version=*/kTestKeyVersion,
-          /*expected_wrapped_pin=*/std::nullopt,
+          /*expected_gpm_pin_metadata=*/std::nullopt,
       },
       {
           {{Member::kPhysical, Member::kUnusableVirtual}},
           State::kIrrecoverable,
           /*expected_key_version=*/kTestKeyVersion,
-          /*expected_wrapped_pin=*/std::nullopt,
+          /*expected_gpm_pin_metadata=*/std::nullopt,
       },
       {
           {{Member::kPhysical}, {}, {Member::kUsableVirtual}},
           State::kRecoverable,
           /*expected_key_version=*/kTestKeyVersion,
-          /*expected_wrapped_pin=*/std::nullopt,
+          /*expected_gpm_pin_metadata=*/std::nullopt,
       },
       {
           {{Member::kUsableVirtual}, {}, {Member::kPhysical}},
           State::kRecoverable,
           /*expected_key_version=*/kTestKeyVersion,
-          /*expected_wrapped_pin=*/std::nullopt,
+          /*expected_gpm_pin_metadata=*/std::nullopt,
       },
       {
           {{Member::kPhysical}, {}, {Member::kUnusableVirtual}},
           State::kIrrecoverable,
           /*expected_key_version=*/kTestKeyVersion,
-          /*expected_wrapped_pin=*/std::nullopt,
+          /*expected_gpm_pin_metadata=*/std::nullopt,
       },
       {
           {{Member::kPhysical}, {}, {Member::kOtherSecurityDomain}},
           State::kIrrecoverable,
           /*expected_key_version=*/kTestKeyVersion,
-          /*expected_wrapped_pin=*/std::nullopt,
+          /*expected_gpm_pin_metadata=*/std::nullopt,
       },
       {
           {{Member::kGooglePasswordManagerPIN}, {Member::kOtherSecurityDomain}},
           State::kRecoverable,
           /*expected_key_version=*/kTestKeyVersion,
-          /*expected_wrapped_pin=*/kTestSerializedWrappedPIN,
+          /*expected_gpm_pin_metadata=*/gpm_pin_metadata,
       },
       {
           {{Member::kGooglePasswordManagerPIN},
            {Member::kGooglePasswordManagerPIN}},
           State::kRecoverable,
           /*expected_key_version=*/kTestKeyVersion,
-          /*expected_wrapped_pin=*/kTestSerializedWrappedPIN,
+          /*expected_gpm_pin_metadata=*/gpm_pin_metadata,
       },
   };
 
@@ -1207,6 +1228,7 @@ TEST_P(TrustedVaultConnectionImplTest,
 
     EXPECT_EQ(num_pages_downloaded, test.responses.size());
     EXPECT_EQ(result->state, test.expected_result);
+    EXPECT_EQ(result->gpm_pin_metadata, test.expected_gpm_pin_metadata);
   }
 }
 
