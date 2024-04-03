@@ -186,9 +186,16 @@ views::BoxLayout* ConfigureFeatureRowLayout(views::Button* button,
   views::HighlightPathGenerator::Install(
       button, std::make_unique<views::RoundRectHighlightPathGenerator>(
                   gfx::Insets(), corners));
-  StyleUtil::SetUpInkDropForButton(button, gfx::Insets(),
-                                   /*highlight_on_hover=*/false,
-                                   /*highlight_on_focus=*/true);
+
+  // Set up press ripple.
+  auto* ink_drop = views::InkDrop::Get(button);
+  ink_drop->SetMode(views::InkDropHost::InkDropMode::ON);
+  ink_drop->GetInkDrop()->SetShowHighlightOnHover(false);
+  ink_drop->GetInkDrop()->SetShowHighlightOnFocus(false);
+  ink_drop->SetVisibleOpacity(1.0f);
+  ink_drop->SetBaseColorId(cros_tokens::kCrosSysRippleNeutralOnSubtle);
+
+  // Set up focus ring.
   auto* focus_ring = views::FocusRing::Get(button);
   focus_ring->SetHaloInset(-5);
   focus_ring->SetHaloThickness(2);
@@ -222,7 +229,7 @@ class FeatureHeader : public views::View {
     icon_container->SetBackground(views::CreateThemedRoundedRectBackground(
         is_enabled ? cros_tokens::kCrosSysSystemOnBase
                    : cros_tokens::kCrosSysDisabledContainer,
-        /*radius=*/16.0f));
+        /*radius=*/12.0f));
     icon_container->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(6, 6)));
     icon_container->SetProperty(views::kMarginsKey,
                                 gfx::Insets::TLBR(0, 0, 0, 16));
