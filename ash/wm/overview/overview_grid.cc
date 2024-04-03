@@ -2822,7 +2822,7 @@ std::vector<gfx::RectF> OverviewGrid::GetWindowRects(
                            &max_right);
   }
 
-  MaybeCenterOverviewItems(rects);
+  MaybeCenterOverviewItems(rects, ignored_items);
 
   gfx::Vector2dF offset(0, (total_bounds.bottom() - max_bottom) / 2.f);
   for (auto& rect : rects)
@@ -2978,7 +2978,8 @@ bool OverviewGrid::FitWindowRectsInBounds(
 }
 
 void OverviewGrid::MaybeCenterOverviewItems(
-    std::vector<gfx::RectF>& out_window_rects) {
+    std::vector<gfx::RectF>& out_window_rects,
+    const base::flat_set<OverviewItemBase*>& ignored_items) {
   if (!features::IsForestFeatureEnabled() || out_window_rects.empty()) {
     return;
   }
@@ -2990,10 +2991,6 @@ void OverviewGrid::MaybeCenterOverviewItems(
 
   // Batch process to center overview items within the same row.
   auto batch_center_overview_items = [&](size_t end_index) {
-    // Undo the pre-added extra spacing.
-    current_row_union_range.set_end(current_row_union_range.end() -
-                                    kHorizontalSpaceBetweenItemsDp);
-
     // Calculate the shift amount `current_diff` required to center the overview
     // items.
     const float range_center =
@@ -3006,6 +3003,10 @@ void OverviewGrid::MaybeCenterOverviewItems(
   };
 
   for (size_t i = 0; i < out_window_rects.size(); i++) {
+    if (ShouldExcludeItemFromGridLayout(item_list_[i].get(), ignored_items)) {
+      continue;
+    }
+
     gfx::RectF& rect = out_window_rects[i];
     if (rect.y() != current_row_y) {
       // As a new row begins processing, batch-shift the previous row's rects
@@ -3018,8 +3019,7 @@ void OverviewGrid::MaybeCenterOverviewItems(
 
     // Extend the range by adding the `rect`'s width and extra in-between items
     // spacing.
-    current_row_union_range.set_end(rect.right() +
-                                    kHorizontalSpaceBetweenItemsDp);
+    current_row_union_range.set_end(rect.right());
   }
 
   // Post-processing rects in the last row.

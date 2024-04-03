@@ -11255,4 +11255,59 @@ TEST_F(OakTest, CenterOverviewItems) {
               union_bounds.CenterPoint().x(), 1);
 }
 
+// Tests that the drop target bounds are configured to match the overview item
+// it is a placeholder for with the center overview items processing. See
+// regression at http://b/330386194.
+TEST_F(OakTest, DropTargetBounds) {
+  // Pre-add a desk to prevent the desks bar from expanding when dragging
+  // starts.
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+
+  auto window0 = CreateAppWindow(gfx::Rect(10, 10, 200, 100));
+  auto window1 = CreateAppWindow(gfx::Rect(20, 20, 300, 200));
+  auto window2 = CreateAppWindow(gfx::Rect(30, 30, 220, 110));
+  auto window3 = CreateAppWindow(gfx::Rect(30, 20, 300, 200));
+  auto window4 = CreateAppWindow(gfx::Rect(40, 30, 400, 300));
+  auto window5 = CreateAppWindow(gfx::Rect(50, 40, 500, 400));
+
+  OverviewController* overview_controller = OverviewController::Get();
+  overview_controller->StartOverview(OverviewStartAction::kTests,
+                                     OverviewEnterExitType::kImmediateEnter);
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+
+  aura::Window* primary_root_window = Shell::GetPrimaryRootWindow();
+  auto* overview_grid = GetOverviewGridForRoot(primary_root_window);
+  ASSERT_TRUE(overview_grid);
+  const auto& item_list = overview_grid->window_list();
+  ASSERT_EQ(6u, item_list.size());
+
+  for (const auto& overview_item : item_list) {
+    auto* event_generator = GetEventGenerator();
+    const gfx::RectF target_bounds_before_dragging =
+        overview_item->target_bounds();
+    for (const bool by_touch : {false, true}) {
+      DragItemToPoint(overview_item.get(),
+                      primary_root_window->GetBoundsInScreen().CenterPoint(),
+                      event_generator, by_touch, /*drop=*/false);
+      ASSERT_TRUE(overview_controller->InOverviewSession());
+
+      auto* drop_target = overview_grid->drop_target();
+      ASSERT_TRUE(drop_target);
+
+      // Verify that the bounds of the `drop_target` will be the same as the
+      // `target_bounds_before_dragging`.
+      ASSERT_EQ(gfx::RectF(drop_target->target_bounds()),
+                target_bounds_before_dragging);
+
+      if (by_touch) {
+        event_generator->ReleaseTouch();
+      } else {
+        event_generator->ReleaseLeftButton();
+      }
+    }
+  }
+}
+
 }  // namespace ash
