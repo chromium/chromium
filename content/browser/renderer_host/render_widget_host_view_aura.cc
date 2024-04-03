@@ -564,12 +564,11 @@ void RenderWidgetHostViewAura::NotifyHostAndDelegateOnWasShown(
   DCHECK_NE(visibility_, Visibility::VISIBLE);
 
   auto* wth = window()->GetHost();
-  if (wth && allocate_local_surface_id_on_next_show_) {
+  if (wth && !wth->window()->GetLocalSurfaceId().is_valid()) {
     wth->window()->AllocateLocalSurfaceId();
     wth->compositor()->SetLocalSurfaceIdFromParent(
         wth->window()->GetLocalSurfaceId());
   }
-  allocate_local_surface_id_on_next_show_ = false;
 
   visibility_ = Visibility::VISIBLE;
 

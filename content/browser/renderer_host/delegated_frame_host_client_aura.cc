@@ -60,7 +60,6 @@ void DelegatedFrameHostClientAura::InvalidateLocalSurfaceIdOnEviction() {
     host->window()->InvalidateLocalSurfaceId();
     host->compositor()->SetLocalSurfaceIdFromParent(
         host->window()->GetLocalSurfaceId());
-    render_widget_host_view_->AllocateLocalSurfaceIdOnNextShow();
   }
 
   render_widget_host_view_->InvalidateLocalSurfaceIdOnEviction();
