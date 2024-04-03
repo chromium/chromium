@@ -2209,9 +2209,6 @@ void AutofillSuggestionGenerator::SetCardArtURL(
     bool virtual_card_option) const {
   const GURL card_art_url = personal_data().GetCardArtURL(credit_card);
 
-  if (card_art_url.is_empty() || !card_art_url.is_valid())
-    return;
-
   // The Capital One icon for virtual cards is not card metadata, it only helps
   // distinguish FPAN from virtual cards when metadata is unavailable. FPANs
   // should only ever use the network logo or rich card art. The Capital One

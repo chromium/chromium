@@ -4041,25 +4041,40 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
   }
 }
 
-// Verifies that the custom icon is set correctly. The card art should be shown
-// when the metadata card art flag is enabled. Capital One virtual card icon is
-// an exception which should only and always be shown for virtual cards.
+// TODO(crbug.com/332595462): Improve card art url unittest coverage to include
+// potential edge cases.
+//  Verifies that the custom icon is set correctly. The card art should be shown
+//  when the metadata card art flag is enabled. Capital One virtual card icon is
+//  an exception which should only and always be shown for virtual cards.
 TEST_P(AutofillSuggestionGeneratorTestForMetadata,
-       CreateCreditCardSuggestion_CustomCardIcon) {
+       GetSuggestionsForCreditCards_CustomCardIcon) {
   // Create a server card.
   CreditCard server_card = CreateServerCard();
   GURL card_art_url =
       GURL(card_has_capital_one_icon() ? kCapitalOneCardArtUrl
                                        : "https://www.example.com/card-art");
   server_card.set_card_art_url(card_art_url);
+  server_card.set_virtual_card_enrollment_state(
+      CreditCard::VirtualCardEnrollmentState::kEnrolled);
   gfx::Image fake_image = CustomIconForTest();
+  personal_data().AddServerCreditCard(server_card);
   personal_data().AddCardArtImage(card_art_url, fake_image);
 
-  Suggestion virtual_card_suggestion =
-      test_api(suggestion_generator())
-          .CreateCreditCardSuggestion(server_card, CREDIT_CARD_NUMBER,
-                                      /*virtual_card_option=*/true,
-                                      /*card_linked_offer_available=*/false);
+  bool unused_with_offer;
+  bool unused_with_cvc;
+  autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
+  std::vector<Suggestion> suggestions =
+      suggestion_generator().GetSuggestionsForCreditCards(
+          FormFieldData(), CREDIT_CARD_NUMBER, kDefaultTriggerSource,
+          /*should_show_scan_credit_card=*/false,
+          /*should_show_cards_from_account=*/false, unused_with_offer,
+          unused_with_cvc, metadata_logging_context);
+
+  // Suggestions in `suggestions` are persisted in order of their presentation
+  // to the user in the Autofill dropdown and currently virtual cards are shown
+  // before their associated FPAN suggestion.
+  Suggestion virtual_card_suggestion = suggestions[0];
+  Suggestion fpan_card_suggestion = suggestions[1];
 
   // Verify that for virtual cards, the custom icon is shown if the card art is
   // the Capital One virtual card art or if the metadata card art is enabled.
@@ -4067,15 +4082,9 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
                                           fake_image),
             card_has_capital_one_icon() || card_art_image_enabled());
 
-  Suggestion real_card_suggestion =
-      test_api(suggestion_generator())
-          .CreateCreditCardSuggestion(server_card, CREDIT_CARD_NUMBER,
-                                      /*virtual_card_option=*/false,
-                                      /*card_linked_offer_available=*/false);
-
   // Verify that for FPAN, the custom icon is shown if the card art is not the
   // Capital One virtual card art and the metadata card art is enabled.
-  EXPECT_EQ(VerifyCardArtImageExpectation(real_card_suggestion, card_art_url,
+  EXPECT_EQ(VerifyCardArtImageExpectation(fpan_card_suggestion, card_art_url,
                                           fake_image),
             !card_has_capital_one_icon() && card_art_image_enabled());
 }
