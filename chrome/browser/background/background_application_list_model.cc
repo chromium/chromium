@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/one_shot_event.h"
 #include "base/strings/string_number_conversions.h"
@@ -60,8 +61,7 @@ class ExtensionNameComparator {
 
 // Background application representation, private to the
 // BackgroundApplicationListModel class.
-class BackgroundApplicationListModel::Application
-    : public base::SupportsWeakPtr<Application> {
+class BackgroundApplicationListModel::Application final {
  public:
   Application(BackgroundApplicationListModel* model,
               const Extension* an_extension);
@@ -78,6 +78,9 @@ class BackgroundApplicationListModel::Application
   raw_ptr<const Extension> extension_;
   gfx::ImageSkia icon_;
   raw_ptr<BackgroundApplicationListModel> model_;
+
+ private:
+  base::WeakPtrFactory<Application> weak_ptr_factory_{this};
 };
 
 namespace {
@@ -144,9 +147,9 @@ void BackgroundApplicationListModel::Application::RequestIcon(
       extensions::IconsInfo::GetIconResource(
           extension_, size, ExtensionIconSet::MATCH_BIGGER);
   extensions::ImageLoader::Get(model_->profile_)
-      ->LoadImageAsync(
-          extension_, resource, gfx::Size(size, size),
-          base::BindOnce(&Application::OnImageLoaded, AsWeakPtr()));
+      ->LoadImageAsync(extension_, resource, gfx::Size(size, size),
+                       base::BindOnce(&Application::OnImageLoaded,
+                                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 BackgroundApplicationListModel::~BackgroundApplicationListModel() = default;

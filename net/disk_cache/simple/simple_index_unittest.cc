@@ -60,8 +60,7 @@ class EntryMetadataTest : public testing::Test {
   }
 };
 
-class MockSimpleIndexFile : public SimpleIndexFile,
-                            public base::SupportsWeakPtr<MockSimpleIndexFile> {
+class MockSimpleIndexFile final : public SimpleIndexFile {
  public:
   explicit MockSimpleIndexFile(net::CacheType cache_type)
       : SimpleIndexFile(nullptr,
@@ -99,12 +98,17 @@ class MockSimpleIndexFile : public SimpleIndexFile,
   int load_index_entries_calls() const { return load_index_entries_calls_; }
   int disk_writes() const { return disk_writes_; }
 
+  base::WeakPtr<MockSimpleIndexFile> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   base::OnceClosure load_callback_;
   raw_ptr<SimpleIndexLoadResult> load_result_ = nullptr;
   int load_index_entries_calls_ = 0;
   int disk_writes_ = 0;
   SimpleIndex::EntrySet disk_write_entry_set_;
+  base::WeakPtrFactory<MockSimpleIndexFile> weak_ptr_factory_{this};
 };
 
 class SimpleIndexTest : public net::TestWithTaskEnvironment,

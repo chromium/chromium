@@ -13,7 +13,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -127,8 +126,7 @@ MATCHER_P2(PlaybackRateChanged, old_rate_string, new_rate_string, "") {
                                   std::string(new_rate_string));
 }
 
-class MockMediaObserver : public media::MediaObserver,
-                          public base::SupportsWeakPtr<MockMediaObserver> {
+class MockMediaObserver : public media::MediaObserver {
  public:
   MOCK_METHOD1(OnBecameDominantVisibleContent, void(bool));
   MOCK_METHOD1(OnMetadataChanged, void(const media::PipelineMetadata&));
@@ -140,6 +138,13 @@ class MockMediaObserver : public media::MediaObserver,
   MOCK_METHOD0(OnFrozen, void());
   MOCK_METHOD1(OnDataSourceInitialized, void(const GURL&));
   MOCK_METHOD1(SetClient, void(media::MediaObserverClient*));
+
+  base::WeakPtr<MediaObserver> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<MediaObserver> weak_ptr_factory_{this};
 };
 
 class MockWebMediaPlayerClient : public WebMediaPlayerClient {

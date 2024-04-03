@@ -40,9 +40,8 @@ std::unique_ptr<RAWINPUTDEVICE> GetRawInputDevices(HWND hwnd, DWORD flags) {
 
 // This is the actual implementation of event monitoring. It's separated from
 // UserInputMonitorWin since it needs to be deleted on the UI thread.
-class UserInputMonitorWinCore
-    : public base::SupportsWeakPtr<UserInputMonitorWinCore>,
-      public base::CurrentThread::DestructionObserver,
+class UserInputMonitorWinCore final
+    : public base::CurrentThread::DestructionObserver,
       public ui::KeyboardHookObserver {
  public:
   enum EventBitMask {
@@ -70,6 +69,10 @@ class UserInputMonitorWinCore
   void StartMonitorWithMapping(base::WritableSharedMemoryMapping mapping);
   void StopMonitor();
 
+  base::WeakPtr<UserInputMonitorWinCore> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   // Handles WM_INPUT messages.
   LRESULT OnInput(HRAWINPUT input_handle);
@@ -94,6 +97,8 @@ class UserInputMonitorWinCore
 
   bool pause_monitoring_ = false;
   bool start_monitoring_after_hook_removed_ = false;
+
+  base::WeakPtrFactory<UserInputMonitorWinCore> weak_ptr_factory_{this};
 };
 
 class UserInputMonitorWin : public UserInputMonitorBase {

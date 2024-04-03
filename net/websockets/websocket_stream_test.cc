@@ -90,10 +90,16 @@ std::unique_ptr<SequencedSocketData> BuildNullSocketData() {
   return std::make_unique<SequencedSocketData>();
 }
 
-class MockWeakTimer : public base::MockOneShotTimer,
-                      public base::SupportsWeakPtr<MockWeakTimer> {
+class MockWeakTimer : public base::MockOneShotTimer {
  public:
   MockWeakTimer() = default;
+
+  base::WeakPtr<MockWeakTimer> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<MockWeakTimer> weak_ptr_factory_{this};
 };
 
 constexpr char kOrigin[] = "http://www.example.org";

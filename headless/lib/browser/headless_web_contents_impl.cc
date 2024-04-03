@@ -218,9 +218,8 @@ namespace {
 constexpr uint64_t kBeginFrameSourceId = viz::BeginFrameArgs::kManualSourceId;
 }
 
-class HeadlessWebContentsImpl::PendingFrame
-    : public base::RefCounted<HeadlessWebContentsImpl::PendingFrame>,
-      public base::SupportsWeakPtr<HeadlessWebContentsImpl::PendingFrame> {
+class HeadlessWebContentsImpl::PendingFrame final
+    : public base::RefCounted<HeadlessWebContentsImpl::PendingFrame> {
  public:
   PendingFrame(uint64_t sequence_number, FrameFinishedCallback callback)
       : sequence_number_(sequence_number), callback_(std::move(callback)) {}
@@ -245,6 +244,10 @@ class HeadlessWebContentsImpl::PendingFrame
     bitmap_ = std::make_unique<SkBitmap>(bitmap);
   }
 
+  base::WeakPtr<PendingFrame> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   friend class base::RefCounted<PendingFrame>;
 
@@ -257,6 +260,7 @@ class HeadlessWebContentsImpl::PendingFrame
   FrameFinishedCallback callback_;
   bool has_damage_ = false;
   std::unique_ptr<SkBitmap> bitmap_;
+  base::WeakPtrFactory<PendingFrame> weak_ptr_factory_{this};
 };
 
 // static

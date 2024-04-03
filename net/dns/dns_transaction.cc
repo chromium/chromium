@@ -1164,8 +1164,7 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
 // ResolveContext::NextClassicFallbackPeriod(). The first server to attempt on
 // each query is given by ResolveContext::NextFirstServerIndex, and the order is
 // round-robin afterwards. Each server is attempted DnsConfig::attempts times.
-class DnsTransactionImpl : public DnsTransaction,
-                           public base::SupportsWeakPtr<DnsTransactionImpl> {
+class DnsTransactionImpl final : public DnsTransaction {
  public:
   DnsTransactionImpl(DnsSession* session,
                      std::string hostname,
@@ -1236,8 +1235,8 @@ class DnsTransactionImpl : public DnsTransaction,
       // they may interfere with this posted result.
       ClearAttempts(result.attempt);
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&DnsTransactionImpl::DoCallback, AsWeakPtr(), result));
+          FROM_HERE, base::BindOnce(&DnsTransactionImpl::DoCallback,
+                                    weak_ptr_factory_.GetWeakPtr(), result));
     }
   }
 
@@ -1773,6 +1772,8 @@ class DnsTransactionImpl : public DnsTransaction,
   RequestPriority request_priority_ = DEFAULT_PRIORITY;
 
   THREAD_CHECKER(thread_checker_);
+
+  base::WeakPtrFactory<DnsTransactionImpl> weak_ptr_factory_{this};
 };
 
 // ----------------------------------------------------------------------------

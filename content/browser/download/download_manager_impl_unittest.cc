@@ -345,9 +345,7 @@ download::DownloadItemImpl* MockDownloadItemFactory::CreateSavePageItem(
   return result;
 }
 
-class MockDownloadFileFactory
-    : public download::DownloadFileFactory,
-      public base::SupportsWeakPtr<MockDownloadFileFactory> {
+class MockDownloadFileFactory final : public download::DownloadFileFactory {
  public:
   MockDownloadFileFactory() {}
   ~MockDownloadFileFactory() override {}
@@ -365,6 +363,13 @@ class MockDownloadFileFactory
       base::WeakPtr<download::DownloadDestinationObserver> observer) override {
     return MockCreateFile(*save_info, stream.get());
   }
+
+  base::WeakPtr<MockDownloadFileFactory> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<MockDownloadFileFactory> weak_ptr_factory_{this};
 };
 
 class MockDownloadManagerObserver : public DownloadManager::Observer {

@@ -29,8 +29,7 @@ namespace autofill {
 
 namespace {
 
-class MockDelegate : public AddressBubbleControllerDelegate,
-                     public base::SupportsWeakPtr<MockDelegate> {
+class MockDelegate : public AddressBubbleControllerDelegate {
  public:
   MockDelegate() = default;
   MockDelegate(MockDelegate&) = delete;
@@ -47,6 +46,13 @@ class MockDelegate : public AddressBubbleControllerDelegate,
               (const AutofillProfile&, const std::u16string&, bool),
               (override));
   MOCK_METHOD(void, OnBubbleClosed, (), (override));
+
+  base::WeakPtr<MockDelegate> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<MockDelegate> weak_ptr_factory_{this};
 };
 }  // namespace
 

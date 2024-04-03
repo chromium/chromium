@@ -22,8 +22,7 @@ using WriteKeyPressCallback =
 // Provides a unified interface for using user input monitors of unrelated
 // classes.
 // TODO(crbug.com/1096425): remove this when non-Ozone path is deprecated.
-class UserInputMonitorAdapter
-    : public base::SupportsWeakPtr<UserInputMonitorAdapter> {
+class UserInputMonitorAdapter {
  public:
   UserInputMonitorAdapter() = default;
   UserInputMonitorAdapter(const UserInputMonitorAdapter&) = delete;
@@ -36,11 +35,12 @@ class UserInputMonitorAdapter
       WriteKeyPressCallback callback,
       base::WritableSharedMemoryMapping mapping) = 0;
   virtual void StopMonitor() = 0;
+  virtual base::WeakPtr<UserInputMonitorAdapter> AsWeakPtr() = 0;
 };
 
 // Wraps a specific user input monitor into UserInputMonitorAdapter interface.
 template <typename Impl>
-class UserInputMonitorLinuxCore : public UserInputMonitorAdapter {
+class UserInputMonitorLinuxCore final : public UserInputMonitorAdapter {
  public:
   explicit UserInputMonitorLinuxCore(std::unique_ptr<Impl> user_input_monitor)
       : user_input_monitor_(std::move(user_input_monitor)) {}
@@ -71,9 +71,13 @@ class UserInputMonitorLinuxCore : public UserInputMonitorAdapter {
       return;
     user_input_monitor_->StopMonitor();
   }
+  base::WeakPtr<UserInputMonitorAdapter> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
  private:
   std::unique_ptr<Impl> user_input_monitor_;
+  base::WeakPtrFactory<UserInputMonitorAdapter> weak_ptr_factory_{this};
 };
 
 class UserInputMonitorLinux : public UserInputMonitorBase {

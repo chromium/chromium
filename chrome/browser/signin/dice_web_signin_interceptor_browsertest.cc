@@ -98,10 +98,16 @@ const char kMultiloginSuccessResponse[] =
 
 class FakeDiceWebSigninInterceptorDelegate;
 
-class FakeBubbleHandle : public ScopedWebSigninInterceptionBubbleHandle,
-                         public base::SupportsWeakPtr<FakeBubbleHandle> {
+class FakeBubbleHandle final : public ScopedWebSigninInterceptionBubbleHandle {
  public:
   ~FakeBubbleHandle() override = default;
+
+  base::WeakPtr<FakeBubbleHandle> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<FakeBubbleHandle> weak_ptr_factory_{this};
 };
 
 // Dummy interception delegate that automatically accepts multi user

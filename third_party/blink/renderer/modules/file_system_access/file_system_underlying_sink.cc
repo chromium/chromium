@@ -157,7 +157,7 @@ namespace {
 // success when both succeeded, or an error when either operation failed.
 //
 // This class deletes itself after calling its callback.
-class WriterHelper : public base::SupportsWeakPtr<WriterHelper> {
+class WriterHelper {
  public:
   explicit WriterHelper(
       base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr result,
@@ -183,6 +183,8 @@ class WriterHelper : public base::SupportsWeakPtr<WriterHelper> {
     producer_result_ = std::move(result);
     MaybeCallCallbackAndDeleteThis();
   }
+
+  virtual base::WeakPtr<WriterHelper> AsWeakPtr() = 0;
 
  private:
   void MaybeCallCallbackAndDeleteThis() {
@@ -227,7 +229,7 @@ class WriterHelper : public base::SupportsWeakPtr<WriterHelper> {
 // WriterHelper implementation that is used when data is being produced by a
 // mojo::DataPipeProducer, generally because the data was passed in as an
 // ArrayBuffer or String.
-class StreamWriterHelper : public WriterHelper {
+class StreamWriterHelper final : public WriterHelper {
  public:
   StreamWriterHelper(
       std::unique_ptr<mojo::DataPipeProducer> producer,
@@ -250,14 +252,19 @@ class StreamWriterHelper : public WriterHelper {
     }
   }
 
+  base::WeakPtr<WriterHelper> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   std::unique_ptr<mojo::DataPipeProducer> producer_;
+  base::WeakPtrFactory<WriterHelper> weak_ptr_factory_{this};
 };
 
 // WriterHelper implementation that is used when data is being produced by a
 // Blob.
-class BlobWriterHelper : public mojom::blink::BlobReaderClient,
-                         public WriterHelper {
+class BlobWriterHelper final : public mojom::blink::BlobReaderClient,
+                               public WriterHelper {
  public:
   BlobWriterHelper(
       mojo::PendingReceiver<mojom::blink::BlobReaderClient> receiver,
@@ -291,6 +298,10 @@ class BlobWriterHelper : public mojom::blink::BlobReaderClient,
     }
   }
 
+  base::WeakPtr<WriterHelper> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   void OnDisconnect() {
     if (!complete_called_) {
@@ -303,6 +314,7 @@ class BlobWriterHelper : public mojom::blink::BlobReaderClient,
 
   mojo::Receiver<mojom::blink::BlobReaderClient> receiver_;
   bool complete_called_ = false;
+  base::WeakPtrFactory<WriterHelper> weak_ptr_factory_{this};
 };
 
 // Creates a mojo data pipe, where the capacity of the data pipe is derived from
