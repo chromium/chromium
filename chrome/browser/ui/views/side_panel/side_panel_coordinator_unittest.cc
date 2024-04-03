@@ -472,6 +472,7 @@ TEST_F(SidePanelCoordinatorTest,
   coordinator_->Close();
 
   EXPECT_FALSE(browser_view()->unified_side_panel()->GetVisible());
+  coordinator_->RemoveSidePanelViewStateObserver(&view_state_observer);
 }
 
 TEST_F(SidePanelCoordinatorTest, OpeningSidePanelCallsOnSidePanelObserver) {
