@@ -72,7 +72,7 @@ bool WriteMetadataFileOnBlockingThread(const base::FilePath& destination_path,
   // the file has been tampered with to overwrite. Try to delete the file before
   // proceeding. `DeleteFile` will succeed if the file does not exist.
   if (!base::DeleteFile(destination_path)) {
-    LOG(ERROR) << "Failed to remove existing metadata file";
+    PLOG(ERROR) << "Failed to remove existing metadata file";
     return false;
   }
   return base::WriteFile(destination_path, contents);
