@@ -39,6 +39,7 @@
 #include "services/network/public/mojom/attribution.mojom.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "url/gurl.h"
 
 namespace content {
 
@@ -339,7 +340,7 @@ class AttributionInteropParser {
       auto context = PushContext(kResponsesKey);
       ParseListOfDicts(
           dict.Find(kResponsesKey), [&](base::Value::Dict response) {
-            auto reporting_origin = ParseOrigin(response, "url");
+            auto url = ParseUrl(response, "url");
 
             const bool debug_permission = ParseDebugPermission(response);
 
@@ -382,9 +383,8 @@ class AttributionInteropParser {
                   events.emplace_back(
                       response_time,
                       AttributionSimulationEvent::Response(
-                          request_id, std::move(*reporting_origin),
-                          builder.Build(), std::move(randomized_response),
-                          debug_permission));
+                          request_id, std::move(url), builder.Build(),
+                          std::move(randomized_response), debug_permission));
 
                 });
           });
@@ -451,6 +451,21 @@ class AttributionInteropParser {
     }
 
     return origin;
+  }
+
+  GURL ParseUrl(const base::Value::Dict& dict, std::string_view key) {
+    auto context = PushContext(key);
+
+    GURL url;
+    if (const std::string* s = dict.FindString(key)) {
+      url = GURL(*s);
+    }
+
+    if (!url.is_valid()) {
+      *Error() << "must be a valid URL";
+    }
+
+    return url;
   }
 
   base::Time ParseTime(const base::Value::Dict& dict,
@@ -729,12 +744,12 @@ AttributionSimulationEvent& AttributionSimulationEvent::operator=(
 
 AttributionSimulationEvent::Response::Response(
     int64_t request_id,
-    attribution_reporting::SuitableOrigin reporting_origin,
+    GURL url,
     scoped_refptr<net::HttpResponseHeaders> response_headers,
     attribution_reporting::RandomizedResponse randomized_response,
     bool debug_permission)
     : request_id(request_id),
-      reporting_origin(std::move(reporting_origin)),
+      url(std::move(url)),
       response_headers(std::move(response_headers)),
       randomized_response(std::move(randomized_response)),
       debug_permission(debug_permission) {}

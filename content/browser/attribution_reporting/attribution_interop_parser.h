@@ -38,14 +38,14 @@ struct AttributionSimulationEvent {
 
   struct Response {
     int64_t request_id;
-    attribution_reporting::SuitableOrigin reporting_origin;
+    GURL url;
     scoped_refptr<net::HttpResponseHeaders> response_headers;
     // Only relevant for sources, not triggers.
     attribution_reporting::RandomizedResponse randomized_response;
     bool debug_permission = false;
 
     Response(int64_t request_id,
-             attribution_reporting::SuitableOrigin reporting_origin,
+             GURL url,
              scoped_refptr<net::HttpResponseHeaders>,
              attribution_reporting::RandomizedResponse,
              bool debug_permission);

@@ -1,0 +1,53 @@
+{
+  "description": "Unsuitable URLs cannot register and receive no debug reports",
+  "input": {
+    "registrations": [
+      {
+        "timestamp": "0",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "event-source"
+        },
+        "responses": [
+          {
+            "url": "http://reporter.test/register-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "1",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "http://reporter.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Trigger": {
+                "debug_reporting": true,
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "7"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "output": {
+    "reports": []
+  }
+}

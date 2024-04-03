@@ -28,6 +28,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "url/gurl.h"
 
 namespace content {
 namespace {
@@ -101,7 +102,7 @@ TEST(AttributionInteropParserTest, ValidRegistrationsParse) {
         "context_origin": "https://a.s.test"
       },
       "responses": [{
-        "url": "https://a.r.test",
+        "url": "https://a.r.test/x",
         "debug_permission": true,
         "response": {
           "Attribution-Reporting-Register-Source": {"a": "b"}
@@ -116,7 +117,7 @@ TEST(AttributionInteropParserTest, ValidRegistrationsParse) {
       },
       "responses": [
         {
-          "url": "https://b.r.test",
+          "url": "https://b.r.test/y",
           "randomized_response": [{
             "trigger_data": 5,
             "report_window_index": 1
@@ -126,7 +127,7 @@ TEST(AttributionInteropParserTest, ValidRegistrationsParse) {
           }
         },
         {
-          "url": "https://c.r.test",
+          "url": "https://c.r.test/z",
           "timestamp": "102",
           "response": {
             "Attribution-Reporting-Register-Trigger": "***"
@@ -162,8 +163,7 @@ TEST(AttributionInteropParserTest, ValidRegistrationsParse) {
           AllOf(SimulationEventTimeIs(kExpectedTime1),
                 ResponseIs(AllOf(
                     RequestIdIs(kExpectedRequestId1),
-                    Field(&Response::reporting_origin,
-                          *SuitableOrigin::Deserialize("https://a.r.test")),
+                    Field(&Response::url, GURL("https://a.r.test/x")),
                     Field(&Response::response_headers,
                           ::testing::ResultOf(
                               [](const auto& headers) {
@@ -189,9 +189,7 @@ TEST(AttributionInteropParserTest, ValidRegistrationsParse) {
                                     }))),
                           Field(&Response::debug_permission, false)))),
           AllOf(SimulationEventTimeIs(kExpectedTime3),
-                ResponseIs(
-                    Field(&Response::reporting_origin,
-                          *SuitableOrigin::Deserialize("https://c.r.test")))),
+                ResponseIs(Field(&Response::url, GURL("https://c.r.test/z")))),
           AllOf(SimulationEventTimeIs(kExpectedTime3),
                 EndRequestIs(RequestIdIs(kExpectedRequestId2)))));
 }
@@ -342,7 +340,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["registrations"][0]["responses"][0]["url"]: must be a valid, secure origin)",
+        R"(["registrations"][0]["responses"][0]["url"]: must be a valid URL)",
         R"json({"registrations": [{
           "timestamp": "1643235574000",
           "registration_request": {

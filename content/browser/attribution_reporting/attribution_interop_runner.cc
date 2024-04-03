@@ -240,6 +240,11 @@ void Handle(const AttributionSimulationEvent::StartRequest& event,
     return;
   }
 
+  auto suitable_context = AttributionSuitableContext::CreateForTesting(
+      event.context_origin,
+      /*is_nested_within_fenced_frame=*/false, kFrameId,
+      /*last_navigation_id=*/kNavigationId);
+
   std::optional<blink::AttributionSrcToken> attribution_src_token;
   if (event.eligibility == AttributionReportingEligibility::kNavigationSource) {
     attribution_src_token.emplace();
@@ -247,21 +252,14 @@ void Handle(const AttributionSimulationEvent::StartRequest& event,
         *attribution_src_token,
         /*background_registrations_count=*/1);
     data_host_manager.NotifyNavigationRegistrationStarted(
-        AttributionSuitableContext::CreateForTesting(
-            event.context_origin,
-            /*is_nested_within_fenced_frame=*/false, kFrameId,
-            /*last_navigation_id=*/kNavigationId),
-        *attribution_src_token, kNavigationId,
+        suitable_context, *attribution_src_token, kNavigationId,
         /*devtools_request_id=*/"");
     data_host_manager.NotifyNavigationRegistrationCompleted(
         *attribution_src_token);
   }
 
   data_host_manager.NotifyBackgroundRegistrationStarted(
-      BackgroundRegistrationsId(event.request_id),
-      AttributionSuitableContext::CreateForTesting(
-          event.context_origin,
-          /*is_nested_within_fenced_frame=*/false, kFrameId, kNavigationId),
+      BackgroundRegistrationsId(event.request_id), std::move(suitable_context),
       *eligibility, attribution_src_token,
       /*devtools_request_id=*/"");
 }
@@ -270,8 +268,7 @@ void Handle(const AttributionSimulationEvent::Response& event,
             AttributionDataHostManager& data_host_manager) {
   data_host_manager.NotifyBackgroundRegistrationData(
       BackgroundRegistrationsId(event.request_id), event.response_headers.get(),
-      event.reporting_origin->GetURL(),
-      {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
+      event.url, {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
       /*trigger_verification=*/{});
 }
 
