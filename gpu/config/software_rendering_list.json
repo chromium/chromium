@@ -1137,7 +1137,8 @@
         "all",
         {"exceptions": [
           "accelerated_gl",
-          "accelerated_webgl"
+          "accelerated_webgl",
+          "skia_graphite"
         ]}
       ]
     },
@@ -1447,6 +1448,19 @@
       "vendor_id": "0x4d4f4351",
       "features": [
         "webnn"
+      ]
+    },
+    {
+      "id": 181,
+      "cr_bugs": [329702368],
+      "description": "Corrupted browser/webpage rendering on Win10/Intel HD Graphics 4400",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "device_id": ["0x0a16"],
+      "features": [
+        "skia_graphite"
       ]
     }
   ]

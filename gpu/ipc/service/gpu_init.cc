@@ -1154,6 +1154,15 @@ scoped_refptr<gl::GLSurface> GpuInit::TakeDefaultOffscreenSurface() {
 
 bool GpuInit::InitializeDawn() {
 #if BUILDFLAG(SKIA_USE_DAWN)
+  if (gpu_feature_info_.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE] !=
+          kGpuFeatureStatusEnabled &&
+      !gpu::DawnContextProvider::DefaultForceFallbackAdapter()) {
+    // Return false, if skia_graphite is blocked in
+    // gpu/config/software_rendering_list.json. Unless dawn is using the
+    // fallback adaptor (SwiftShader) for testing.
+    return false;
+  }
+
   dawn_context_provider_ = gpu::DawnContextProvider::Create(
       gpu_preferences_,
       GpuDriverBugWorkarounds(
