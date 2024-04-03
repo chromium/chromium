@@ -32,7 +32,8 @@ class COMPONENT_EXPORT(MANTA) SnapperProvider : virtual public BaseProvider {
   // arguments.
   SnapperProvider(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      signin::IdentityManager* identity_manager);
+      signin::IdentityManager* identity_manager,
+      bool is_demo_mode);
 
   SnapperProvider(const SnapperProvider&) = delete;
   SnapperProvider& operator=(const SnapperProvider&) = delete;
@@ -51,6 +52,7 @@ class COMPONENT_EXPORT(MANTA) SnapperProvider : virtual public BaseProvider {
  private:
   friend class FakeSnapperProvider;
 
+  const bool is_demo_mode_;
   base::WeakPtrFactory<SnapperProvider> weak_ptr_factory_{this};
 };
 

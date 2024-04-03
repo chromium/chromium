@@ -88,7 +88,7 @@ std::unique_ptr<SnapperProvider> MantaService::CreateSnapperProvider() {
     return nullptr;
   }
   return std::make_unique<SnapperProvider>(shared_url_loader_factory_,
-                                           identity_manager_);
+                                           identity_manager_, is_demo_mode_);
 }
 
 std::unique_ptr<MahiProvider> MantaService::CreateMahiProvider() {

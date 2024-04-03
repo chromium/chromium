@@ -30,15 +30,17 @@ constexpr char kOauthConsumerName[] = "manta_snapper";
 
 SnapperProvider::SnapperProvider(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    signin::IdentityManager* identity_manager)
-    : BaseProvider(url_loader_factory, identity_manager) {}
+    signin::IdentityManager* identity_manager,
+    bool is_demo_mode)
+    : BaseProvider(url_loader_factory, identity_manager),
+      is_demo_mode_(is_demo_mode) {}
 
 SnapperProvider::~SnapperProvider() = default;
 
 void SnapperProvider::Call(const manta::proto::Request& request,
                            net::NetworkTrafficAnnotationTag traffic_annotation,
                            MantaProtoResponseCallback done_callback) {
-  if (!identity_manager_observation_.IsObserving()) {
+  if (!is_demo_mode_ && !identity_manager_observation_.IsObserving()) {
     std::move(done_callback)
         .Run(nullptr, {MantaStatusCode::kNoIdentityManager});
     return;
@@ -46,14 +48,25 @@ void SnapperProvider::Call(const manta::proto::Request& request,
   std::string serialized_request;
   request.SerializeToString(&serialized_request);
 
-  std::unique_ptr<EndpointFetcher> fetcher = CreateEndpointFetcher(
-      GURL{GetProviderEndpoint(features::IsSeaPenUseProdServerEnabled())},
-      kOauthConsumerName, traffic_annotation, serialized_request);
+  if (is_demo_mode_) {
+    std::unique_ptr<EndpointFetcher> fetcher = CreateEndpointFetcherForDemoMode(
+        GURL{GetProviderEndpoint(features::IsSeaPenUseProdServerEnabled())},
+        traffic_annotation, serialized_request);
+    EndpointFetcher* const fetcher_ptr = fetcher.get();
+    fetcher_ptr->PerformRequest(
+        base::BindOnce(&OnEndpointFetcherComplete, std::move(done_callback),
+                       std::move(fetcher)),
+        nullptr);
+  } else {
+    std::unique_ptr<EndpointFetcher> fetcher = CreateEndpointFetcher(
+        GURL{GetProviderEndpoint(features::IsSeaPenUseProdServerEnabled())},
+        kOauthConsumerName, traffic_annotation, serialized_request);
 
-  EndpointFetcher* const fetcher_ptr = fetcher.get();
-  fetcher_ptr->Fetch(base::BindOnce(&OnEndpointFetcherComplete,
-                                    std::move(done_callback),
-                                    std::move(fetcher)));
+    EndpointFetcher* const fetcher_ptr = fetcher.get();
+    fetcher_ptr->Fetch(base::BindOnce(&OnEndpointFetcherComplete,
+                                      std::move(done_callback),
+                                      std::move(fetcher)));
+  }
 }
 
 }  // namespace manta
