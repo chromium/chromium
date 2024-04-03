@@ -229,7 +229,7 @@ int ChromePasswordProtectionService::GetStoredVerdictCount(
 }
 
 void ChromePasswordProtectionService::MaybeReportPasswordReuseDetected(
-    safe_browsing::PasswordProtectionRequest* request,
+    const GURL& main_frame_url,
     const std::string& username,
     PasswordType password_type,
     bool is_phishing_url,

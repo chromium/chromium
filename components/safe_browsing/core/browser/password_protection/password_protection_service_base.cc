@@ -204,7 +204,8 @@ void PasswordProtectionServiceBase::RequestFinished(
 // Disabled on Android, because enterprise reporting extension is not supported.
 #if !BUILDFLAG(IS_ANDROID)
     MaybeReportPasswordReuseDetected(
-        request, request->username(), request->password_type(),
+        request->main_frame_url(), request->username(),
+        request->password_type(),
         verdict == LoginReputationClientResponse::PHISHING, warning_shown);
 #endif
 

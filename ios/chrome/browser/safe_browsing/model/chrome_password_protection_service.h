@@ -98,7 +98,7 @@ class ChromePasswordProtectionService
       override;
 
   void MaybeReportPasswordReuseDetected(
-      safe_browsing::PasswordProtectionRequest* request,
+      const GURL& main_frame_url,
       const std::string& username,
       safe_browsing::PasswordType password_type,
       bool is_phishing_url,
