@@ -30,7 +30,7 @@ class StandardManagementPolicyProviderTest : public testing::Test {
  public:
   StandardManagementPolicyProviderTest()
       : settings_(std::make_unique<ExtensionManagement>(&profile_)),
-        provider_(settings_.get(), &profile_) {}
+        provider_(settings_.get()) {}
 
  protected:
   scoped_refptr<const Extension> CreateExtension(ManifestLocation location) {

@@ -102,7 +102,7 @@ ExtensionManagement::ExtensionManagement(Profile* profile)
       InstallStageTracker::InstallCreationStage::
           NOTIFIED_FROM_MANAGEMENT_INITIAL_CREATION_NOT_FORCED);
   providers_.push_back(
-      std::make_unique<StandardManagementPolicyProvider>(this, profile_.get()));
+      std::make_unique<StandardManagementPolicyProvider>(this));
   providers_.push_back(
       std::make_unique<PermissionsBasedManagementPolicyProvider>(this));
 }
