@@ -74,6 +74,7 @@ source_set("startup") {
   deps = [
     ":startup_basic",
     "//base",
+    "//components/crash/core/app",
     "//components/password_manager/core/browser",
     "//components/search_engines:search_engines",
     "//ios/chrome/app",

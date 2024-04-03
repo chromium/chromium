@@ -5,6 +5,7 @@
 #import "ios/chrome/app/startup/provider_registration.h"
 
 #import "base/system/sys_info.h"
+#import "components/crash/core/app/crashpad.h"
 #import "ios/public/provider/chrome/browser/app_utils/app_utils_api.h"
 #import "ios/public/provider/chrome/browser/raccoon/raccoon_api.h"
 
@@ -15,7 +16,14 @@
   ios::provider::Initialize();
 
   if (ios::provider::IsRaccoonEnabled()) {
-    base::SysInfo::OverrideHardwareModelName("iPad0,0");
+    const std::string name = "iPad0,0";
+    // Reset the "platform" value in the crash report that was initialized by
+    // StartCrashController().
+    crash_reporter::OverridePlatformValue(name);
+
+    // Override the hardware model name. This will be used in
+    // base::SysInfo::HardwareModelName().
+    base::SysInfo::OverrideHardwareModelName(std::move(name));
   }
 }
 

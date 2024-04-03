@@ -48,6 +48,13 @@
 
 namespace crash_reporter {
 
+#if BUILDFLAG(IS_IOS)
+crashpad::StringAnnotation<24>& PlatformStorage() {
+  static crashpad::StringAnnotation<24> platform("platform");
+  return platform;
+}
+#endif  // BUILDFLAG(IS_IOS)
+
 namespace {
 
 void AbslAbortHook(const char* file,
@@ -152,8 +159,7 @@ bool InitializeCrashpadImpl(bool initial_client,
   osarch_key.Set(base::SysInfo::OperatingSystemArchitecture());
 #else
   // "platform" is used to determine device_model on the crash server.
-  static crashpad::StringAnnotation<24> platform("platform");
-  platform.Set(base::SysInfo::HardwareModelName());
+  PlatformStorage().Set(base::SysInfo::HardwareModelName());
 #endif  // !BUILDFLAG(IS_IOS)
 
   // If clients called CRASHPAD_SIMULATE_CRASH() instead of
@@ -271,7 +277,11 @@ void DumpWithoutCrashAndDeferProcessingAtPath(const base::FilePath& path) {
   CRASHPAD_SIMULATE_CRASH_AND_DEFER_PROCESSING_AT_PATH(path);
 }
 
-#endif
+void OverridePlatformValue(const std::string& platform_value) {
+  // "platform" is used to determine device_model on the crash server.
+  PlatformStorage().Set(platform_value);
+}
+#endif  // BUILDFLAG(IS_IOS)
 
 #endif
 

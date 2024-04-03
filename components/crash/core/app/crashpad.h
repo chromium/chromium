@@ -163,7 +163,10 @@ bool ProcessExternalDump(
     const std::string& source_name,
     base::span<const uint8_t> dump_data,
     const std::map<std::string, std::string>& override_annotations = {});
-#endif
+
+// "platform", used to determine device_model, can be overridden.
+void OverridePlatformValue(const std::string& platform_value);
+#endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 // Logs message and immediately crashes the current process without triggering a
