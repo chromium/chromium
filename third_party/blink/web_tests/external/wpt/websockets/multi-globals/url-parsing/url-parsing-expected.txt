@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Multiple globals for base URL in WebSocket constructor
-  Failed to construct 'WebSocket': The URL 'foo' is invalid.
-Harness: the test ran to completion.
-

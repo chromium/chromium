@@ -126,8 +126,8 @@ TEST_F(WebSocketStreamTest, ConstructWithBadURL) {
   EXPECT_EQ(DOMExceptionCode::kSyntaxError,
             exception_state.CodeAs<DOMExceptionCode>());
   EXPECT_EQ(
-      "The URL's scheme must be either 'ws' or 'wss'. 'bad-scheme' is not "
-      "allowed.",
+      "The URL's scheme must be either 'http', 'https', 'ws', or 'wss'. "
+      "'bad-scheme' is not allowed.",
       exception_state.Message());
 }
 
