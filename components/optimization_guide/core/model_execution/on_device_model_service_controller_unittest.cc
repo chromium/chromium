@@ -17,6 +17,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "base/uuid.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_config_interpreter.h"
@@ -229,6 +230,20 @@ class FakeOnDeviceModelService
     model_receivers_.Add(std::move(test_model), std::move(model));
     std::move(callback).Run(load_model_result_);
   }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void LoadPlatformModel(
+      const base::Uuid& uuid,
+      mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
+      LoadModelCallback callback) override {
+    if (drop_connection_request_) {
+      std::move(callback).Run(load_model_result_);
+      return;
+    }
+    auto test_model = std::make_unique<FakeOnDeviceModel>();
+    model_receivers_.Add(std::move(test_model), std::move(model));
+    std::move(callback).Run(load_model_result_);
+  }
+#endif
   void GetEstimatedPerformanceClass(
       GetEstimatedPerformanceClassCallback callback) override {
     std::move(callback).Run(

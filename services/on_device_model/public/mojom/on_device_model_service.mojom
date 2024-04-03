@@ -6,6 +6,7 @@ module on_device_model.mojom;
 
 import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/read_only_file.mojom";
+import "mojo/public/mojom/base/uuid.mojom";
 import "sandbox/policy/mojom/context.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 import "services/on_device_model/public/mojom/on_device_model.mojom";
@@ -47,9 +48,18 @@ struct LoadModelParams {
 [ServiceSandbox=sandbox.mojom.Sandbox.kOnDeviceModelExecution,
  RequireContext=sandbox.mojom.Context.kBrowser]
 interface OnDeviceModelService {
-  // Initializes a new model instance given `assets`. If the model can not be
+  // Initializes a new model instance given `params`. If the model can not be
   // created the model pipe will be reset.
   LoadModel(LoadModelParams params, pending_receiver<OnDeviceModel> model) =>
+      (LoadModelResult result);
+
+  // Initializes a new model instance given platform model `uuid`, this can be
+  // used on some specific platforms(e.g. ChromeOS). The model can be either
+  // a base model or a base model with an adaptation layer. If the model can
+  // not be created the model pipe will be reset.
+  [EnableIf=is_chromeos_ash]
+  LoadPlatformModel(mojo_base.mojom.Uuid uuid,
+                    pending_receiver<OnDeviceModel> model) =>
       (LoadModelResult result);
 
   // Returns the performance class based on benchmarks run on the device.

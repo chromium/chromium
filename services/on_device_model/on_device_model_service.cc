@@ -6,8 +6,14 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/uuid.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "services/on_device_model/platform_model_loader.h"
 #include "services/on_device_model/public/cpp/on_device_model.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "services/on_device_model/platform_model_loader_chromeos.h"
+#endif
 
 namespace on_device_model {
 namespace {
@@ -101,7 +107,11 @@ class ModelWrapper : public mojom::OnDeviceModel {
 
 OnDeviceModelService::OnDeviceModelService(
     mojo::PendingReceiver<mojom::OnDeviceModelService> receiver)
-    : receiver_(this, std::move(receiver)) {}
+    : receiver_(this, std::move(receiver)) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  platform_model_loader_ = std::make_unique<ChromeosPlatformModelLoader>(*this);
+#endif
+}
 
 OnDeviceModelService::~OnDeviceModelService() = default;
 
@@ -124,6 +134,22 @@ void OnDeviceModelService::LoadModel(
                      base::Unretained(this))));
   std::move(callback).Run(mojom::LoadModelResult::kSuccess);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void OnDeviceModelService::LoadPlatformModel(
+    const base::Uuid& uuid,
+    mojo::PendingReceiver<mojom::OnDeviceModel> model,
+    LoadModelCallback callback) {
+  if (!platform_model_loader_) {
+    LOG(ERROR) << "No valid platform model loader.";
+    std::move(callback).Run(mojom::LoadModelResult::kFailedToLoadLibrary);
+    return;
+  }
+
+  platform_model_loader_->LoadModelWithUuid(uuid, std::move(model),
+                                            std::move(callback));
+}
+#endif
 
 void OnDeviceModelService::GetEstimatedPerformanceClass(
     GetEstimatedPerformanceClassCallback callback) {

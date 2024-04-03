@@ -5,3 +5,8 @@ include_rules = [
   "+components/optimization_guide/core/optimization_guide_features.h",
 ]
 
+specific_include_rules = {
+  "platform_model_loader_chromeos\.*": [
+    "+chromeos/ash/components/dbus",
+  ],
+}
