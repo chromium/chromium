@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "content/public/browser/audio_service.h"
+
 namespace media_effects {
 
 FakeAudioService::FakeAudioService() = default;
@@ -41,5 +43,12 @@ void FakeAudioService::BindStreamFactory(
     mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver) {
   on_bind_stream_factory_callback_.Run();
 }
+
+ScopedFakeAudioService::ScopedFakeAudioService() {
+  fake_audio_service_auto_reset_.emplace(
+      content::OverrideAudioServiceForTesting(this));
+}
+
+ScopedFakeAudioService::~ScopedFakeAudioService() = default;
 
 }  // namespace media_effects

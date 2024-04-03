@@ -4,6 +4,8 @@
 
 #include "components/media_effects/test/fake_video_capture_service.h"
 
+#include "content/public/browser/video_capture_service.h"
+
 namespace media_effects {
 
 void FakeVideoCaptureService::AddFakeCamera(
@@ -30,6 +32,14 @@ void FakeVideoCaptureService::SetOnGetVideoSourceCallback(
 void FakeVideoCaptureService::ConnectToVideoSourceProvider(
     mojo::PendingReceiver<video_capture::mojom::VideoSourceProvider> receiver) {
   fake_provider_.Bind(std::move(receiver));
+}
+
+ScopedFakeVideoCaptureService::ScopedFakeVideoCaptureService() {
+  content::OverrideVideoCaptureServiceForTesting(this);
+}
+
+ScopedFakeVideoCaptureService::~ScopedFakeVideoCaptureService() {
+  content::OverrideVideoCaptureServiceForTesting(nullptr);
 }
 
 }  // namespace media_effects

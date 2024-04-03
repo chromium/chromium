@@ -22,8 +22,6 @@ class FakeAudioService : public audio::mojom::AudioService {
 
   FakeAudioService(const FakeAudioService&) = delete;
   FakeAudioService& operator=(const FakeAudioService&) = delete;
-  FakeAudioService(FakeAudioService&&) = delete;
-  FakeAudioService& operator=(FakeAudioService&&) = delete;
 
   // Simulate connecting and disconnecting a mic device with the given
   // `descriptor`.
@@ -66,6 +64,19 @@ class FakeAudioService : public audio::mojom::AudioService {
   FakeAudioSystemInfo fake_system_info_;
 
   base::RepeatingClosure on_bind_stream_factory_callback_ = base::DoNothing();
+};
+
+class ScopedFakeAudioService : FakeAudioService {
+ public:
+  ScopedFakeAudioService();
+  ~ScopedFakeAudioService() override;
+
+  ScopedFakeAudioService(const ScopedFakeAudioService&) = delete;
+  ScopedFakeAudioService& operator=(const ScopedFakeAudioService&) = delete;
+
+ private:
+  std::optional<base::AutoReset<audio::mojom::AudioService*>>
+      fake_audio_service_auto_reset_;
 };
 
 }  // namespace media_effects

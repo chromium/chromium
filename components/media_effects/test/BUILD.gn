@@ -14,10 +14,14 @@ source_set("test_support") {
     "fake_video_capture_service.h",
     "fake_video_source_provider.cc",
     "fake_video_source_provider.h",
+    "scoped_media_device_info.cc",
+    "scoped_media_device_info.h",
   ]
 
   deps = [
     "//base",
+    "//components/media_effects:media_effects",
+    "//content/public/browser",
     "//services/audio/public/cpp:test_support",
     "//services/video_capture/public/mojom",
   ]

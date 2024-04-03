@@ -20,8 +20,6 @@ class FakeVideoCaptureService
 
   FakeVideoCaptureService(const FakeVideoCaptureService&) = delete;
   FakeVideoCaptureService& operator=(const FakeVideoCaptureService&) = delete;
-  FakeVideoCaptureService(FakeVideoCaptureService&&) = delete;
-  FakeVideoCaptureService& operator=(FakeVideoCaptureService&&) = delete;
 
   void AddFakeCamera(const media::VideoCaptureDeviceDescriptor& descriptor);
 
@@ -64,6 +62,16 @@ class FakeVideoCaptureService
 
  private:
   FakeVideoSourceProvider fake_provider_;
+};
+
+class ScopedFakeVideoCaptureService : FakeVideoCaptureService {
+ public:
+  ScopedFakeVideoCaptureService();
+  ~ScopedFakeVideoCaptureService() override;
+
+  ScopedFakeVideoCaptureService(const ScopedFakeVideoCaptureService&) = delete;
+  ScopedFakeVideoCaptureService& operator=(
+      const ScopedFakeVideoCaptureService&) = delete;
 };
 
 }  // namespace media_effects
