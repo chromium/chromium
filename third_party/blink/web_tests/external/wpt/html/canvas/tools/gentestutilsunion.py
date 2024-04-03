@@ -343,9 +343,17 @@ def _get_variant_name(jinja_env: jinja2.Environment,
     return name
 
 
+def _get_file_name(params: _TestParams) -> str:
+    file_name = params['name']
+    if 'manual' in params:
+        file_name += '-manual'
+    return file_name
+
+
 def _finalize_params(jinja_env: jinja2.Environment,
                      params: _MutableTestParams) -> None:
     params['name'] = _get_variant_name(jinja_env, params)
+    params['file_name'] = _get_file_name(params)
 
 
 def _write_reference_test(jinja_env: jinja2.Environment, params: _TestParams,
@@ -473,10 +481,7 @@ def _generate_test(test: _TestParams, jinja_env: jinja2.Environment,
             f'Test {name} is defined twice for types {already_tested}')
     used_tests[name].update(enabled_canvas_types)
 
-    file_name = name
-    if 'manual' in test:
-        file_name += '-manual'
-    output_files = output_dirs.sub_path(file_name)
+    output_files = output_dirs.sub_path(params['file_name'])
 
     if 'reference' in test or 'html_reference' in test:
         _write_reference_test(jinja_env, params, enabled_canvas_types,
@@ -593,7 +598,7 @@ def generate_test_files(name_to_dir_file: str) -> None:
             if test['name'] != variant['name']:
                 print(f'  {variant["name"]}')
 
-            sub_dir = _get_test_sub_dir(variant['name'], name_to_sub_dir)
+            sub_dir = _get_test_sub_dir(variant['file_name'], name_to_sub_dir)
             _generate_test(variant, jinja_env, used_tests,
                            output_dirs.sub_path(sub_dir))
 
