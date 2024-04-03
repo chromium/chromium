@@ -14,7 +14,7 @@ namespace blink {
 
 class GridSizingSubtree;
 
-// Grid specific extensions to BlockNode.
+// Grid specific extensions to `BlockNode`.
 class CORE_EXPORT GridNode final : public BlockNode {
  public:
   explicit GridNode(LayoutBox* box) : BlockNode(box) {
@@ -40,10 +40,11 @@ class CORE_EXPORT GridNode final : public BlockNode {
         ->ShouldInvalidateMinMaxSizesCacheFor(layout_data);
   }
 
-  // If |oof_children| is provided, aggregate any out of flow children.
+  // If `oof_children` is provided, aggregate any out of flow children.
   GridItems ConstructGridItems(const GridLineResolver& line_resolver,
-                               HeapVector<Member<LayoutBox>>* oof_children,
-                               bool* has_nested_subgrid = nullptr) const;
+                               bool* must_invalidate_placement_cache,
+                               HeapVector<Member<LayoutBox>>* opt_oof_children,
+                               bool* opt_has_nested_subgrid = nullptr) const;
 
   void AppendSubgriddedItems(GridItems* grid_items) const;
 
@@ -62,8 +63,9 @@ class CORE_EXPORT GridNode final : public BlockNode {
       const ComputedStyle& parent_grid_style,
       bool must_consider_grid_items_for_column_sizing,
       bool must_consider_grid_items_for_row_sizing,
-      HeapVector<Member<LayoutBox>>* oof_children = nullptr,
-      bool* has_nested_subgrid = nullptr) const;
+      bool* must_invalidate_placement_cache,
+      HeapVector<Member<LayoutBox>>* opt_oof_children = nullptr,
+      bool* opt_has_nested_subgrid = nullptr) const;
 };
 
 template <>

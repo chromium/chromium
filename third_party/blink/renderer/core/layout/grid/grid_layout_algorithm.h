@@ -66,16 +66,17 @@ class CORE_EXPORT GridLayoutAlgorithm
   friend class GridLayoutAlgorithmTest;
 
   // Aggregate all direct out of flow children from the current grid container
-  // to |oof_children|, unless |oof_children| is not provided.
+  // to `opt_oof_children`, unless it's not provided.
   wtf_size_t BuildGridSizingSubtree(
       GridSizingTree* sizing_tree,
-      HeapVector<Member<LayoutBox>>* oof_children = nullptr,
+      HeapVector<Member<LayoutBox>>* opt_oof_children,
       const SubgriddedItemData& opt_subgrid_data = kNoSubgriddedItemData,
-      const GridLineResolver* parent_line_resolver = nullptr,
+      const GridLineResolver* opt_parent_line_resolver = nullptr,
+      bool must_invalidate_placement_cache = false,
       bool must_ignore_children = false) const;
 
   GridSizingTree BuildGridSizingTree(
-      HeapVector<Member<LayoutBox>>* oof_children = nullptr) const;
+      HeapVector<Member<LayoutBox>>* opt_oof_children = nullptr) const;
   GridSizingTree BuildGridSizingTreeIgnoringChildren() const;
 
   const LayoutResult* LayoutInternal();

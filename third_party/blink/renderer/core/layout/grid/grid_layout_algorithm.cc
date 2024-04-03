@@ -505,9 +505,10 @@ FragmentGeometry CalculateInitialFragmentGeometryForSubgrid(
 
 wtf_size_t GridLayoutAlgorithm::BuildGridSizingSubtree(
     GridSizingTree* sizing_tree,
-    HeapVector<Member<LayoutBox>>* oof_children,
+    HeapVector<Member<LayoutBox>>* opt_oof_children,
     const SubgriddedItemData& opt_subgrid_data,
-    const GridLineResolver* parent_line_resolver,
+    const GridLineResolver* opt_parent_line_resolver,
+    bool must_invalidate_placement_cache,
     bool must_ignore_children) const {
   DCHECK(sizing_tree);
 
@@ -526,8 +527,8 @@ wtf_size_t GridLayoutAlgorithm::BuildGridSizingSubtree(
 
   // Initialize this grid's line resolver.
   const auto line_resolver =
-      parent_line_resolver
-          ? GridLineResolver(style, *parent_line_resolver, subgrid_area,
+      opt_parent_line_resolver
+          ? GridLineResolver(style, *opt_parent_line_resolver, subgrid_area,
                              column_auto_repetitions, row_auto_repetitions)
           : GridLineResolver(style, column_auto_repetitions,
                              row_auto_repetitions);
@@ -538,8 +539,9 @@ wtf_size_t GridLayoutAlgorithm::BuildGridSizingSubtree(
 
   if (!must_ignore_children) {
     // Construct grid items that are not subgridded.
-    sizing_node.grid_items = node.ConstructGridItems(
-        line_resolver, oof_children, &has_nested_subgrid);
+    sizing_node.grid_items =
+        node.ConstructGridItems(line_resolver, &must_invalidate_placement_cache,
+                                opt_oof_children, &has_nested_subgrid);
 
     column_start_offset = node.CachedPlacementData().column_start_offset;
     row_start_offset = node.CachedPlacementData().row_start_offset;
@@ -641,9 +643,9 @@ wtf_size_t GridLayoutAlgorithm::BuildGridSizingSubtree(
         {grid_item.node, fragment_geometry, space});
 
     sizing_node.subtree_size += subgrid_algorithm.BuildGridSizingSubtree(
-        sizing_tree, /* oof_children */ nullptr,
+        sizing_tree, /*opt_oof_children=*/nullptr,
         SubgriddedItemData(grid_item, sizing_node.layout_data, writing_mode),
-        &line_resolver);
+        &line_resolver, must_invalidate_placement_cache);
 
     // After we accommodate subgridded items in their respective sizing track
     // collections, their placement indices might be incorrect, so we want to
@@ -667,7 +669,7 @@ wtf_size_t GridLayoutAlgorithm::BuildGridSizingSubtree(
 }
 
 GridSizingTree GridLayoutAlgorithm::BuildGridSizingTree(
-    HeapVector<Member<LayoutBox>>* oof_children) const {
+    HeapVector<Member<LayoutBox>>* opt_oof_children) const {
   GridSizingTree sizing_tree;
 
   if (const auto* layout_subtree =
@@ -676,16 +678,22 @@ GridSizingTree GridLayoutAlgorithm::BuildGridSizingTree(
     auto& [grid_items, layout_data, subtree_size] =
         sizing_tree.CreateSizingData(node);
 
-    grid_items =
-        node.ConstructGridItems(node.CachedLineResolver(), oof_children);
-    layout_data = layout_subtree->LayoutData();
+    bool must_invalidate_placement_cache = false;
+    grid_items = node.ConstructGridItems(node.CachedLineResolver(),
+                                         &must_invalidate_placement_cache,
+                                         opt_oof_children);
 
+    DCHECK(!must_invalidate_placement_cache)
+        << "We shouldn't need to invalidate the placement cache if we relied "
+           "on the cached line resolver; it must produce the same placement.";
+
+    layout_data = layout_subtree->LayoutData();
     for (auto& grid_item : grid_items) {
       grid_item.ComputeSetIndices(layout_data.Columns());
       grid_item.ComputeSetIndices(layout_data.Rows());
     }
   } else {
-    BuildGridSizingSubtree(&sizing_tree, oof_children);
+    BuildGridSizingSubtree(&sizing_tree, opt_oof_children);
   }
   return sizing_tree;
 }
@@ -693,10 +701,11 @@ GridSizingTree GridLayoutAlgorithm::BuildGridSizingTree(
 GridSizingTree GridLayoutAlgorithm::BuildGridSizingTreeIgnoringChildren()
     const {
   GridSizingTree sizing_tree;
-  BuildGridSizingSubtree(&sizing_tree, /* oof_children */ nullptr,
-                         /* opt_subgrid_data */ kNoSubgriddedItemData,
-                         /* parent_line_resolver */ nullptr,
-                         /* must_ignore_children */ true);
+  BuildGridSizingSubtree(&sizing_tree, /*opt_oof_children=*/nullptr,
+                         /*opt_subgrid_data=*/kNoSubgriddedItemData,
+                         /*opt_parent_line_resolver=*/nullptr,
+                         /*must_invalidate_placement_cache=*/false,
+                         /*must_ignore_children=*/true);
   return sizing_tree;
 }
 

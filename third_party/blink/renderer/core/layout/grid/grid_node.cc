@@ -12,13 +12,15 @@ namespace blink {
 
 GridItems GridNode::ConstructGridItems(
     const GridLineResolver& line_resolver,
-    HeapVector<Member<LayoutBox>>* oof_children,
-    bool* has_nested_subgrid) const {
+    bool* must_invalidate_placement_cache,
+    HeapVector<Member<LayoutBox>>* opt_oof_children,
+    bool* opt_has_nested_subgrid) const {
   return ConstructGridItems(line_resolver, /*root_grid_style=*/Style(),
                             /*parent_grid_style=*/Style(),
                             line_resolver.HasStandaloneAxis(kForColumns),
                             line_resolver.HasStandaloneAxis(kForRows),
-                            oof_children, has_nested_subgrid);
+                            must_invalidate_placement_cache, opt_oof_children,
+                            opt_has_nested_subgrid);
 }
 
 GridItems GridNode::ConstructGridItems(
@@ -27,10 +29,14 @@ GridItems GridNode::ConstructGridItems(
     const ComputedStyle& parent_grid_style,
     bool must_consider_grid_items_for_column_sizing,
     bool must_consider_grid_items_for_row_sizing,
-    HeapVector<Member<LayoutBox>>* oof_children,
-    bool* has_nested_subgrid) const {
-  if (has_nested_subgrid)
-    *has_nested_subgrid = false;
+    bool* must_invalidate_placement_cache,
+    HeapVector<Member<LayoutBox>>* opt_oof_children,
+    bool* opt_has_nested_subgrid) const {
+  DCHECK(must_invalidate_placement_cache);
+
+  if (opt_has_nested_subgrid) {
+    *opt_has_nested_subgrid = false;
+  }
 
   GridItems grid_items;
   auto* layout_grid = To<LayoutGrid>(box_.Get());
@@ -44,12 +50,20 @@ GridItems GridNode::ConstructGridItems(
     grid_items.ReserveInitialCapacity(
         cached_placement_data->grid_item_positions.size());
 
-    if (line_resolver != cached_placement_data->line_resolver) {
+    if (*must_invalidate_placement_cache ||
+        line_resolver != cached_placement_data->line_resolver) {
       // We need to recompute grid item placement if the automatic column/row
-      // repetitions changed due to updates in the container's style.
+      // repetitions changed due to updates in the container's style or if any
+      // grid in the ancestor chain invalidated its subtree's placement cache.
       cached_placement_data = nullptr;
     }
   }
+
+  // Placement cache gets invalidated when there are significant changes in this
+  // grid's computed style. However, these changes might alter the placement of
+  // subgridded items, so this flag is used to signal that we need to recurse
+  // into subgrids to recompute their placement.
+  *must_invalidate_placement_cache |= !cached_placement_data;
 
   {
     bool should_sort_grid_items_by_order_property = false;
@@ -57,8 +71,9 @@ GridItems GridNode::ConstructGridItems(
 
     for (auto child = FirstChild(); child; child = child.NextSibling()) {
       if (child.IsOutOfFlowPositioned()) {
-        if (oof_children)
-          oof_children->emplace_back(child.GetLayoutBox());
+        if (opt_oof_children) {
+          opt_oof_children->emplace_back(child.GetLayoutBox());
+        }
         continue;
       }
 
@@ -72,9 +87,9 @@ GridItems GridNode::ConstructGridItems(
           child.Style().Order() != initial_order;
 
       // Check whether we'll need to further append subgridded items.
-      if (has_nested_subgrid)
-        *has_nested_subgrid |= grid_item->IsSubgrid();
-
+      if (opt_has_nested_subgrid) {
+        *opt_has_nested_subgrid |= grid_item->IsSubgrid();
+      }
       grid_items.Append(std::move(grid_item));
     }
 
@@ -117,12 +132,18 @@ void GridNode::AppendSubgriddedItems(GridItems* grid_items) const {
       continue;
     }
 
+    bool must_invalidate_placement_cache = false;
     const auto subgrid = To<GridNode>(current_item.node);
 
     auto subgridded_items = subgrid.ConstructGridItems(
         subgrid.CachedLineResolver(), root_grid_style, subgrid.Style(),
         current_item.must_consider_grid_items_for_column_sizing,
-        current_item.must_consider_grid_items_for_row_sizing);
+        current_item.must_consider_grid_items_for_row_sizing,
+        &must_invalidate_placement_cache);
+
+    DCHECK(!must_invalidate_placement_cache)
+        << "We shouldn't need to invalidate the placement cache if we relied "
+           "on the cached line resolver; it must produce the same placement.";
 
     auto TranslateSubgriddedItem =
         [&current_item](GridSpan& subgridded_item_span,
