@@ -7,7 +7,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/side_panel/customize_chrome/customize_chrome_tab_helper.h"
-#include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -89,8 +88,6 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,
                        ContextualCustomizeChromeSidePanel) {
-  SidePanelUI::GetSidePanelUIForBrowser(browser())
-      ->DisableAnimationsForTesting();
   // The Customize Chrome side panel should be contextual, opening on one tab
   // should not open it on other tabs.
   AppendTab(browser(), GURL(chrome::kChromeUINewTabURL));
@@ -112,8 +109,6 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,
                        HideCustomizeChromeSidePanel) {
-  SidePanelUI::GetSidePanelUIForBrowser(browser())
-      ->DisableAnimationsForTesting();
   auto* customize_chrome_tab_helper = GetTabHelper(browser());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL(chrome::kChromeUINewTabURL)));

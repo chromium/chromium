@@ -88,7 +88,6 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
 
   // Returns the web contents in a side panel if one exists.
   content::WebContents* GetWebContentsForTest(SidePanelEntryId id) override;
-  void DisableAnimationsForTesting() override;
 
   // TODO(crbug.com/1341399): Move this method to `SidePanelUI` after decoupling
   // `SidePanelEntry` from views.
@@ -102,7 +101,9 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
 
   // Prevent content swapping delays from happening for testing.
   // This should be called before the side panel is first shown.
-  void SetNoDelaysForTesting(bool no_delays_for_testing);
+  void SetNoDelaysForTesting(bool no_delays_for_testing) {
+    no_delays_for_testing_ = no_delays_for_testing;
+  }
 
   SidePanelEntry* GetCurrentSidePanelEntryForTesting() {
     return current_entry_.get();
@@ -141,7 +142,6 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   void Show(SidePanelEntry* entry,
             std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger =
                 std::nullopt);
-  void OnClosed();
 
   views::View* GetContentContainerView() const;
 
