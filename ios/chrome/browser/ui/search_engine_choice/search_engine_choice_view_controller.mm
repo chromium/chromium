@@ -29,8 +29,6 @@ namespace {
 
 // Chrome logo with 40pt size.
 NSString* const kChromeIcon40pt = @"chrome_icon_40";
-// Line width for the bottom separator.
-constexpr CGFloat kLineWidth = 1.;
 // Space between the Chrome logo and the top of the screen.
 constexpr CGFloat kLogoTopMargin = 24.;
 // Logo dimensions.
@@ -106,6 +104,38 @@ void SetPillButtonTitle(UIButton* pill_button, int string_id) {
   pill_button.configuration = buttonConfiguration;
 }
 
+// Configures a "Set as Default" button to be enabled or disabled.
+void EnableSetAsDefaultButton(UIButton* button, BOOL is_enabled) {
+  UIButtonConfiguration* button_configuration = button.configuration;
+  if (is_enabled) {
+    button_configuration.background.backgroundColor =
+        [UIColor colorNamed:kBlueColor];
+    button_configuration.baseForegroundColor =
+        [UIColor colorNamed:kSolidButtonTextColor];
+  } else {
+    button_configuration.background.backgroundColor =
+        [UIColor colorNamed:kTertiaryBackgroundColor];
+    button_configuration.baseForegroundColor =
+        [UIColor colorNamed:kDisabledTintColor];
+  }
+  button.configuration = button_configuration;
+  button.enabled = is_enabled;
+}
+
+// Creates a "Set as Default" button. The button is returned as disabled.
+UIButton* CreateSetAsDefaultButton() {
+  UIButton* button = PrimaryActionButton(/*pointer_interaction_enabled=*/YES);
+  SetConfigurationTitle(
+      button, l10n_util::GetNSString(IDS_SEARCH_ENGINE_CHOICE_BUTTON_TITLE));
+  button.translatesAutoresizingMaskIntoConstraints = NO;
+  button.accessibilityIdentifier = kSetAsDefaultSearchEngineIdentifier;
+  // Add semantic group, so the user can skip all the search engine stack view,
+  // and jump to the SetAsDefault button, using VoiceOver.
+  button.accessibilityContainerType = UIAccessibilityContainerTypeSemanticGroup;
+  EnableSetAsDefaultButton(button, /*is_enabled=*/NO);
+  return button;
+}
+
 // Create a more pill button.
 UIButton* CreateMorePillButton() {
   UIButton* morePillButton =
@@ -129,17 +159,24 @@ UIButton* CreateMorePillButton() {
 @end
 
 @implementation SearchEngineChoiceViewController {
-  // Button to confirm the default search engine selection.
-  UIButton* _primaryButton;
   // The view title.
   UILabel* _titleLabel;
-  // Scrollable content containing everything above the primary button.
+  // Scroll view that contains the logo, the title, the subtitle,
+  // the search engine list, and the inline SetAsDefault button.
   UIScrollView* _scrollView;
   // Contains the list of search engine buttons.
   UIStackView* _searchEngineStackView;
   // Button floating on top of the scroll view to scroll down to the bottom.
   // If the user already scroll onces to the button, the button will be hidden.
   UIButton* _morePillButton;
+  // Container to display the "Set as Default" button in the scroll view.
+  // Related to `_inlineSetAsDefaultButton`. This container is used in
+  // the animation to transition to `_floatingSetAsDefaultButtonContainer`.
+  UIView* _inlineSetAsDefaultButtonContainer;
+  // Button to confirm the default search engine selection. This button is
+  // visually identical to `_floatingSetAsDefaultButton` but it is part of
+  // `_inlineSetAsDefaultButtonContainer`.
+  UIButton* _inlineSetAsDefaultButton;
   // Whether the choice screen is being displayed for the FRE.
   BOOL _isForFRE;
   // The horizontal margin.
@@ -195,7 +232,7 @@ UIButton* CreateMorePillButton() {
   // Add view title.
   _titleLabel = [[UILabel alloc] init];
   // Add semantic group, so the user can skip all the search engine stack view,
-  // and jump to the primary button, using VoiceOver.
+  // and jump to the SetAsDefault button, using VoiceOver.
   _titleLabel.accessibilityContainerType =
       UIAccessibilityContainerTypeSemanticGroup;
   [scrollContentView addSubview:_titleLabel];
@@ -252,7 +289,7 @@ UIButton* CreateMorePillButton() {
   // Add stack view for the search engine buttons.
   _searchEngineStackView = [[UIStackView alloc] init];
   // Add semantic group, so the user can skip all the search engine stack view,
-  // and jump to the primary button, using VoiceOver.
+  // and jump to the SetAsDefault button, using VoiceOver.
   _searchEngineStackView.accessibilityContainerType =
       UIAccessibilityContainerTypeSemanticGroup;
   _searchEngineStackView.backgroundColor =
@@ -263,25 +300,18 @@ UIButton* CreateMorePillButton() {
   _searchEngineStackView.axis = UILayoutConstraintAxisVertical;
   [scrollContentView addSubview:_searchEngineStackView];
 
-  // Add separator for the primary button.
-  UIView* separatorView = [[UIView alloc] init];
-  [view addSubview:separatorView];
-  separatorView.backgroundColor = [UIColor colorNamed:kSeparatorColor];
-  [view bringSubviewToFront:separatorView];
-  separatorView.translatesAutoresizingMaskIntoConstraints = NO;
+  // Add inline "Set as Default" button container.
+  _inlineSetAsDefaultButtonContainer = [[UIView alloc] init];
+  _inlineSetAsDefaultButtonContainer.translatesAutoresizingMaskIntoConstraints =
+      NO;
+  [scrollContentView addSubview:_inlineSetAsDefaultButtonContainer];
 
-  // Add primary button.
-  _primaryButton = CreateMorePrimaryButton();
-  UpdatePrimaryButton(_primaryButton, /*didScrollToBottom=*/YES,
-                      /*didSelectARow=*/NO);
-  [view addSubview:_primaryButton];
-  [_primaryButton addTarget:self
-                     action:@selector(primaryButtonAction)
-           forControlEvents:UIControlEventTouchUpInside];
-  // Add semantic group, so the user can skip all the search engine stack view,
-  // and jump to the primary button, using VoiceOver.
-  _primaryButton.accessibilityContainerType =
-      UIAccessibilityContainerTypeSemanticGroup;
+  // Add inline "Set as Default" button.
+  _inlineSetAsDefaultButton = CreateSetAsDefaultButton();
+  [_inlineSetAsDefaultButtonContainer addSubview:_inlineSetAsDefaultButton];
+  [_inlineSetAsDefaultButton addTarget:self
+                                action:@selector(setAsDefaultButtonAction)
+                      forControlEvents:UIControlEventTouchUpInside];
 
   // Add more/continue button.
   _morePillButton = CreateMorePillButton();
@@ -292,13 +322,12 @@ UIButton* CreateMorePillButton() {
             forControlEvents:UIControlEventTouchUpInside];
 
   [NSLayoutConstraint activateConstraints:@[
-    // Scroll view constraints.
-    [_scrollView.topAnchor
-        constraintEqualToAnchor:view.safeAreaLayoutGuide.topAnchor],
-    [_scrollView.widthAnchor
-        constraintEqualToAnchor:view.safeAreaLayoutGuide.widthAnchor],
-    [_scrollView.centerXAnchor
-        constraintEqualToAnchor:view.safeAreaLayoutGuide.centerXAnchor],
+    // Scroll view constraints. It needs to be the full size of the view,
+    // so the content is visible in the safe area too.
+    [_scrollView.topAnchor constraintEqualToAnchor:view.topAnchor],
+    [_scrollView.widthAnchor constraintEqualToAnchor:view.widthAnchor],
+    [_scrollView.centerXAnchor constraintEqualToAnchor:view.centerXAnchor],
+    [_scrollView.bottomAnchor constraintEqualToAnchor:view.bottomAnchor],
 
     // Scroll content view constraints.
     [scrollContentView.topAnchor
@@ -340,9 +369,6 @@ UIButton* CreateMorePillButton() {
     [_searchEngineStackView.topAnchor
         constraintEqualToAnchor:subtitleTextView.bottomAnchor
                        constant:kSubtitleSearchEngineStackMargin],
-    [_searchEngineStackView.bottomAnchor
-        constraintLessThanOrEqualToAnchor:scrollContentView.bottomAnchor
-                                 constant:-_marginWidth],
     [_searchEngineStackView.leadingAnchor
         constraintEqualToAnchor:scrollContentView.leadingAnchor
                        constant:_marginWidth],
@@ -352,30 +378,37 @@ UIButton* CreateMorePillButton() {
     [_searchEngineStackView.centerXAnchor
         constraintEqualToAnchor:scrollContentView.centerXAnchor],
 
+    // _inlineSetAsDefaultButtonContainer constraints.
+    [_inlineSetAsDefaultButtonContainer.topAnchor
+        constraintGreaterThanOrEqualToAnchor:_searchEngineStackView
+                                                 .bottomAnchor],
+    [_inlineSetAsDefaultButtonContainer.leadingAnchor
+        constraintEqualToAnchor:_searchEngineStackView.leadingAnchor],
+    [_inlineSetAsDefaultButtonContainer.trailingAnchor
+        constraintEqualToAnchor:_searchEngineStackView.trailingAnchor],
+    [_inlineSetAsDefaultButtonContainer.bottomAnchor
+        constraintEqualToAnchor:scrollContentView.bottomAnchor],
+
+    // _inlineSetAsDefaultButton constraints.
+    [_inlineSetAsDefaultButton.topAnchor
+        constraintEqualToAnchor:_inlineSetAsDefaultButtonContainer.topAnchor
+                       constant:kButtonMargin],
+    [_inlineSetAsDefaultButton.bottomAnchor
+        constraintEqualToAnchor:_inlineSetAsDefaultButtonContainer.bottomAnchor
+                       constant:-kButtonMargin],
+    [_inlineSetAsDefaultButton.widthAnchor
+        constraintEqualToAnchor:_searchEngineStackView.widthAnchor],
+    [_inlineSetAsDefaultButton.centerXAnchor
+        constraintEqualToAnchor:_searchEngineStackView.centerXAnchor],
+
     // More pill button constraints.
     [_morePillButton.bottomAnchor
         constraintEqualToAnchor:view.safeAreaLayoutGuide.bottomAnchor
                        constant:-kMorePillButtonBottomMargin],
     [_morePillButton.centerXAnchor constraintEqualToAnchor:view.centerXAnchor],
-
-    // Separator constraints.
-    [separatorView.topAnchor constraintEqualToAnchor:_scrollView.bottomAnchor],
-    [separatorView.heightAnchor constraintEqualToConstant:kLineWidth],
-    [separatorView.widthAnchor constraintEqualToAnchor:view.widthAnchor],
-    [separatorView.centerXAnchor constraintEqualToAnchor:view.centerXAnchor],
-
-    // Primary button constraints.
-    [_primaryButton.topAnchor constraintEqualToAnchor:separatorView.bottomAnchor
-                                             constant:kButtonMargin],
-    [_primaryButton.bottomAnchor
-        constraintEqualToAnchor:view.safeAreaLayoutGuide.bottomAnchor
-                       constant:-kButtonMargin],
-    [_primaryButton.widthAnchor
-        constraintEqualToAnchor:_searchEngineStackView.widthAnchor],
-    [_primaryButton.centerXAnchor
-        constraintEqualToAnchor:_searchEngineStackView.centerXAnchor],
   ]];
-  [self updatePrimaryActionButton];
+  // No need to update the more and SetAsDefault buttons. They will be updated
+  // when the view will be appearing.
   [self loadSearchEngineButtons];
 }
 
@@ -411,8 +444,8 @@ UIButton* CreateMorePillButton() {
   // properly scaled.
   UIFontTextStyle textStyle = GetTitleLabelFontTextStyle(self);
   _titleLabel.font = GetFRETitleFont(textStyle);
-  // Update the primary button once the layout changes take effect to have the
-  // right measurements to evaluate the scroll position.
+  // Update the SetAsDefault button once the layout changes take effect to have
+  // the right measurements to evaluate the scroll position.
   __weak __typeof(self) weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
     [weakSelf updateDidReachBottomFlag];
@@ -423,19 +456,24 @@ UIButton* CreateMorePillButton() {
 
 // Called when the tap on a SnippetSearchEngineButton.
 - (void)searchEngineTapAction:(SnippetSearchEngineButton*)button {
+  BOOL wasSelectedYet = _selectedSearchEngineButton != nil;
   [self.mutator selectSearchEnginewWithKeyword:button.searchEngineKeyword];
   _selectedSearchEngineButton.checked = NO;
   _selectedSearchEngineButton = button;
   _selectedSearchEngineButton.checked = YES;
-  [self updatePrimaryActionButton];
+  if (wasSelectedYet) {
+    return;
+  }
+  EnableSetAsDefaultButton(_inlineSetAsDefaultButton,
+                           /*is_enabled=*/_selectedSearchEngineButton != nil);
   if (!_morePillButton.hidden) {
     SetPillButtonTitle(_morePillButton,
                        IDS_SEARCH_ENGINE_CHOICE_CONTINUE_BUTTON);
   }
 }
 
-// Called when the user taps on the primary button.
-- (void)primaryButtonAction {
+// Called when the user taps on the SetAsDefault button.
+- (void)setAsDefaultButtonAction {
   [self.actionDelegate didTapPrimaryButton];
 }
 
@@ -508,15 +546,7 @@ UIButton* CreateMorePillButton() {
   if (scrollPosition >= bottomStackViewLimit) {
     _morePillButton.hidden = YES;
     _didReachBottom = YES;
-    [self updatePrimaryActionButton];
   }
-}
-
-// Update the primary action button based on whether the user has scrolled to
-// the bottom and whether they have selected a row.
-- (void)updatePrimaryActionButton {
-  UpdatePrimaryButton(_primaryButton, _didReachBottom,
-                      _selectedSearchEngineButton != nil);
 }
 
 #pragma mark - UITextViewDelegate

@@ -11,18 +11,6 @@ class TemplateURL;
 
 // UI Util containing helper methods for the choice screen UI.
 
-// Creates a grey and disabled "Set as Default" primary button.
-UIButton* CreateDisabledPrimaryButton();
-
-// Creates a "More" button with an arrow that allows scrolling down.
-UIButton* CreateMorePrimaryButton();
-
-// Update the primary action button based on whether it should be the "More"
-// button or the confirmation button and whether it should be enabled.
-void UpdatePrimaryButton(UIButton* button,
-                         BOOL isConfirmButton,
-                         BOOL isEnabled);
-
 // Returns embedded favicon for search engine from `template_url`. The search
 // engine has to be prepopulated.
 UIImage* SearchEngineFaviconFromTemplateURL(const TemplateURL& template_url);
