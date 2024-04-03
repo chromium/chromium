@@ -60,7 +60,8 @@ namespace {
 // actual value of 0xFFFF'FFFF coming in from JS is not treated as
 // WGPU_DEPTH_SLICE_UNDEFINED, so it injects an error in that case.
 std::string ValidateColorAttachmentsDepthSlice(
-    const HeapVector<Member<GPURenderPassColorAttachment>>& in) {
+    const HeapVector<Member<GPURenderPassColorAttachment>>& in,
+    const char* desc_label) {
   for (wtf_size_t i = 0; i < in.size(); ++i) {
     if (!in[i]) {
       continue;
@@ -71,7 +72,11 @@ std::string ValidateColorAttachmentsDepthSlice(
         attachment->depthSlice() == WGPU_DEPTH_SLICE_UNDEFINED) {
       std::ostringstream error;
       error << "depthSlice (" << attachment->depthSlice()
-            << ") in colorAttachments[" << i << "] is too large";
+            << ") is too large when validating [GPURenderPassDescriptor";
+      if (desc_label != nullptr && strlen(desc_label) != 0) {
+        error << " '" << desc_label << "'";
+      }
+      error << "] against the colorAttachment (" << i << ").";
       return error.str();
     }
   }
@@ -84,9 +89,11 @@ std::string ValidateColorAttachmentsDepthSlice(
 // actual value of 0xFFFF'FFFF coming in from JS is not treated as
 // WGPU_QUERY_SET_INDEX_UNDEFINED, so it injects an error in that case.
 template <typename GPUTimestampWrites, typename WGPUTimestampWrites>
-const char* ValidateAndConvertTimestampWrites(
+std::string ValidateAndConvertTimestampWrites(
     const GPUTimestampWrites* webgpu_desc,
-    WGPUTimestampWrites* dawn_desc) {
+    WGPUTimestampWrites* dawn_desc,
+    const char* desc_type,
+    const char* desc_label) {
   DCHECK(webgpu_desc);
   DCHECK(webgpu_desc->querySet());
 
@@ -94,7 +101,15 @@ const char* ValidateAndConvertTimestampWrites(
   if (webgpu_desc->hasBeginningOfPassWriteIndex()) {
     beginningOfPassWriteIndex = webgpu_desc->beginningOfPassWriteIndex();
     if (beginningOfPassWriteIndex == WGPU_QUERY_SET_INDEX_UNDEFINED) {
-      return "beginningOfPassWriteIndex is too large";
+      std::ostringstream error;
+      error << "beginningOfPassWriteIndex (" << beginningOfPassWriteIndex
+            << ") is too large when validating [" << desc_type;
+      if (desc_label != nullptr && strlen(desc_label) != 0) {
+        error << " '" << desc_label << "'";
+      }
+      error << "].";
+
+      return error.str();
     }
   } else {
     beginningOfPassWriteIndex = WGPU_QUERY_SET_INDEX_UNDEFINED;
@@ -104,7 +119,14 @@ const char* ValidateAndConvertTimestampWrites(
   if (webgpu_desc->hasEndOfPassWriteIndex()) {
     endOfPassWriteIndex = webgpu_desc->endOfPassWriteIndex();
     if (endOfPassWriteIndex == WGPU_QUERY_SET_INDEX_UNDEFINED) {
-      return "endOfPassWriteIndex is too large";
+      std::ostringstream error;
+      error << "endOfPassWriteIndex (" << endOfPassWriteIndex
+            << ") is too large when validating [" << desc_type;
+      if (desc_label != nullptr && strlen(desc_label) != 0) {
+        error << " '" << desc_label << "'";
+      }
+      error << "].";
+      return error.str();
     }
   } else {
     endOfPassWriteIndex = WGPU_QUERY_SET_INDEX_UNDEFINED;
@@ -115,7 +137,7 @@ const char* ValidateAndConvertTimestampWrites(
   dawn_desc->beginningOfPassWriteIndex = beginningOfPassWriteIndex;
   dawn_desc->endOfPassWriteIndex = endOfPassWriteIndex;
 
-  return nullptr;
+  return std::string();
 }
 
 WGPURenderPassDepthStencilAttachment AsDawnType(
@@ -223,8 +245,8 @@ GPURenderPassEncoder* GPUCommandEncoder::beginRenderPass(
   std::unique_ptr<WGPURenderPassColorAttachment[]> color_attachments;
   dawn_desc.colorAttachmentCount = descriptor->colorAttachments().size();
   if (dawn_desc.colorAttachmentCount > 0) {
-    std::string error =
-        ValidateColorAttachmentsDepthSlice(descriptor->colorAttachments());
+    std::string error = ValidateColorAttachmentsDepthSlice(
+        descriptor->colorAttachments(), label.c_str());
     if (!error.empty()) {
       GetProcs().commandEncoderInjectValidationError(GetHandle(),
                                                      error.c_str());
@@ -253,10 +275,12 @@ GPURenderPassEncoder* GPUCommandEncoder::beginRenderPass(
   if (descriptor->hasTimestampWrites()) {
     GPURenderPassTimestampWrites* timestamp_writes =
         descriptor->timestampWrites();
-    const char* error =
-        ValidateAndConvertTimestampWrites(timestamp_writes, &timestampWrites);
-    if (error) {
-      GetProcs().commandEncoderInjectValidationError(GetHandle(), error);
+    std::string error = ValidateAndConvertTimestampWrites(
+        timestamp_writes, &timestampWrites, "GPURenderPassDescriptor",
+        label.c_str());
+    if (!error.empty()) {
+      GetProcs().commandEncoderInjectValidationError(GetHandle(),
+                                                     error.c_str());
     } else {
       dawn_desc.timestampWrites = &timestampWrites;
     }
@@ -290,10 +314,12 @@ GPUComputePassEncoder* GPUCommandEncoder::beginComputePass(
   if (descriptor->hasTimestampWrites()) {
     GPUComputePassTimestampWrites* timestamp_writes =
         descriptor->timestampWrites();
-    const char* error =
-        ValidateAndConvertTimestampWrites(timestamp_writes, &timestampWrites);
-    if (error) {
-      GetProcs().commandEncoderInjectValidationError(GetHandle(), error);
+    std::string error = ValidateAndConvertTimestampWrites(
+        timestamp_writes, &timestampWrites, "GPUComputePassDescriptor",
+        label.c_str());
+    if (!error.empty()) {
+      GetProcs().commandEncoderInjectValidationError(GetHandle(),
+                                                     error.c_str());
     } else {
       dawn_desc.timestampWrites = &timestampWrites;
     }

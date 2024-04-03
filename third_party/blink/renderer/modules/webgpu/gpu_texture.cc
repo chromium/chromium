@@ -108,21 +108,35 @@ WGPUTextureViewDescriptor AsDawnType(
 // Blink must make sure that an actual value of 0xFFFF'FFFF coming in from JS
 // is not treated as the special `undefined` value, so it injects an error in
 // that case.
-const char* ValidateTextureMipLevelAndArrayLayerCounts(
+std::string ValidateTextureMipLevelAndArrayLayerCounts(
     const GPUTextureViewDescriptor* webgpu_desc) {
   DCHECK(webgpu_desc);
 
   if (webgpu_desc->hasMipLevelCount() &&
       webgpu_desc->mipLevelCount() == WGPU_MIP_LEVEL_COUNT_UNDEFINED) {
-    return "mipLevelCount in GPUTextureViewDescriptor is too large";
+    std::ostringstream error;
+    error << "mipLevelCount (" << webgpu_desc->mipLevelCount()
+          << ") is too large when validating [GPUTextureViewDescriptor";
+    if (!webgpu_desc->label().empty()) {
+      error << " '" << webgpu_desc->label().Utf8() << "'";
+    }
+    error << "].";
+    return error.str();
   }
 
   if (webgpu_desc->hasArrayLayerCount() &&
       webgpu_desc->arrayLayerCount() == WGPU_ARRAY_LAYER_COUNT_UNDEFINED) {
-    return "arrayLayerCount in GPUTextureViewDescriptor is too large";
+    std::ostringstream error;
+    error << "arrayLayerCount (" << webgpu_desc->arrayLayerCount()
+          << ") is too large when validating [GPUTextureViewDescriptor";
+    if (!webgpu_desc->label().empty()) {
+      error << " '" << webgpu_desc->label().Utf8() << "'";
+    }
+    error << "].";
+    return error.str();
   }
 
-  return nullptr;
+  return std::string();
 }
 
 }  // anonymous namespace
@@ -213,9 +227,9 @@ GPUTextureView* GPUTexture::createView(
     return nullptr;
   }
 
-  const char* error = ValidateTextureMipLevelAndArrayLayerCounts(webgpu_desc);
-  if (error) {
-    device()->InjectError(WGPUErrorType_Validation, error);
+  std::string error = ValidateTextureMipLevelAndArrayLayerCounts(webgpu_desc);
+  if (!error.empty()) {
+    device()->InjectError(WGPUErrorType_Validation, error.c_str());
     return MakeGarbageCollected<GPUTextureView>(
         device(), GetProcs().textureCreateErrorView(GetHandle(), nullptr),
         String());
