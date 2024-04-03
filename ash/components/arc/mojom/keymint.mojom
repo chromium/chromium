@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 1
+// Next MinVersion: 2
 
 // This file defines the mojo interface between Android and Chrome OS for the
 // keymint implementation used in ARC.
@@ -34,6 +34,7 @@ interface KeyMintInstance {
 // refer to Android's KeyMint AIDL files for a more detailed description on how
 // the methods and structs below should function.
 // https://cs.android.com/android/_/android/platform/hardware/interfaces/+/466f3c55a90631f5dd9a6fa949278a2a0a435b71:security/keymint/aidl/android/hardware/security/keymint/;bpv=1
+// Next Method ID: 25
 interface KeyMintServer {
 
   // Sets the Android version information used.
@@ -161,6 +162,16 @@ interface KeyMintServer {
 
   // Generates an authenticated timestamp for ISecureClock.
   GenerateTimeStamp@23(uint64 challenge) => (TimeStampTokenOrError response);
+
+  // Generates a new ECDSA P-256 key pair that can be attested by the remote
+  // server.
+  // |test_mode| indicates whether the returned public key should be marked
+  // as such for testing in order to differentiate them from private keys.
+  // If |test_mode| is accidentally set with production keys, an error is
+  // returned. Similarly, an error is returned if test keys are being used
+  // with |test_mode| set to false.
+  [MinVersion=1] GenerateEcdsaP256KeyPair@24(bool test_mode) =>
+      (GenerateEcdsaP256KeyPairResultOrError response);
 };
 
 struct AttestationKey {
@@ -383,6 +394,29 @@ struct FinishRequest {
   // Tag.TRUSTED_CONFIRMATION_REQUIRED.
   array<uint8>? confirmation_token;
 };
+
+// Remote Provisioning Component Structs - from here.
+// Blob Structs for Remote Provisioning Component are using array of bytes
+// since the AIDL interface between Keystore and Android KeyMint HAL is defined
+// in such a way.
+struct KeyMintKeyBlob {
+  array<uint8> key_material;
+};
+
+struct KeyMintBlob {
+  array<uint8> data;
+};
+
+struct GenerateEcdsaP256KeyPairResult {
+  KeyMintBlob maced_public_key;
+  KeyMintKeyBlob handle_to_private_key;
+};
+
+union GenerateEcdsaP256KeyPairResultOrError {
+  GenerateEcdsaP256KeyPairResult key_pair_result;
+  int32 error;
+};
+// Remote Provisioning Component Structs - till here.
 
 union KeyCharacteristicsArrayOrError {
   array<KeyCharacteristics> key_characteristics;
