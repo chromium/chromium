@@ -89,9 +89,13 @@ SnippetSearchEngineElement* CreateSnippetSearchEngineElementFromTemplateURL(
   std::u16string keyword =
       base::SysNSStringToUTF16(_selectedSearchEngineKeyword);
   TemplateURL* selectedTemplateURL = nil;
-  for (auto& templateURL : _choiceScreenData->search_engines()) {
+  search_engines::ChoiceScreenDisplayState display_state =
+      _choiceScreenData->display_state();
+  for (size_t i = 0; i < _choiceScreenData->search_engines().size(); ++i) {
+    auto& templateURL = _choiceScreenData->search_engines()[i];
     if (templateURL->keyword() == keyword) {
       selectedTemplateURL = templateURL.get();
+      display_state.selected_engine_index = i;
       break;
     }
   }
@@ -99,7 +103,7 @@ SnippetSearchEngineElement* CreateSnippetSearchEngineElementFromTemplateURL(
   _templateURLService->SetUserSelectedDefaultSearchProvider(
       selectedTemplateURL, search_engines::ChoiceMadeLocation::kChoiceScreen);
   _searchEngineChoiceService->MaybeRecordChoiceScreenDisplayState(
-      _choiceScreenData->display_state());
+      display_state);
 }
 
 - (void)disconnect {

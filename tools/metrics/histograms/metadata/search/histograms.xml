@@ -217,6 +217,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Search.ChoiceScreenSelectedEngineIndex" units="index"
+    expires_after="2024-08-04">
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <summary>
+    Records the index among the options listed on the choice screen for the
+    search engine that was chosen by the user. Gets recorded when a search
+    engine choice is made on the choice screen.
+  </summary>
+</histogram>
+
 <histogram name="Search.ChoiceScreenShowedEngineAt.Index{Index}"
     enum="OmniboxSearchEngineType" expires_after="2024-08-04">
   <owner>dgn@chromium.org</owner>

@@ -262,34 +262,6 @@ TEST_F(SearchEngineChoiceDialogServiceTest, NotifyChoiceMade) {
       1);
 }
 
-TEST_F(SearchEngineChoiceDialogServiceTest, NotifyChoiceMade_Unknown) {
-  TemplateURLData template_url_data;
-  template_url_data.prepopulate_id =
-      TemplateURLPrepopulateData::kMaxPrepopulatedEngineID + 1;
-  template_url_data.SetURL("https://www.example.com/?q={searchTerms}");
-  auto* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(profile());
-  template_url_service->SetUserSelectedDefaultSearchProvider(
-      template_url_service->Add(
-          std::make_unique<TemplateURL>(template_url_data)));
-
-  SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
-      GetSearchEngineChoiceDialogService(/*force_fetch_search_engines=*/true);
-
-  search_engine_choice_dialog_service->NotifyChoiceMade(
-      TemplateURLPrepopulateData::kMaxPrepopulatedEngineID + 1,
-      SearchEngineChoiceDialogService::EntryPoint::kDialog);
-  histogram_tester().ExpectBucketCount(
-      search_engines::kSearchEngineChoiceScreenEventsHistogram,
-      search_engines::SearchEngineChoiceScreenEvents::kDefaultWasSet, 1);
-
-  // We don't end up calling `SetUserSelectedDefaultSearchProvider()` so this
-  // doesn't get recorded.
-  histogram_tester().ExpectTotalCount(
-      search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
-      0);
-}
-
 TEST_F(SearchEngineChoiceDialogServiceTest,
        DoNotDisplayDialogIfPolicyIsSetDynamically) {
   SearchEngineChoiceDialogService* search_engine_choice_dialog_service =

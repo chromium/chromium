@@ -27,6 +27,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/search_engines/eea_countries_ids.h"
 #include "components/search_engines/prepopulated_engines.h"
+#include "components/search_engines/search_engine_choice_utils.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_switches.h"
@@ -1057,11 +1058,15 @@ TEST_F(SearchEngineChoiceServiceTest, MaybeRecordChoiceScreenDisplayState) {
            &TemplateURLPrepopulateData::yahoo}),
       kBelgiumCountryId,
       /*list_is_modified_by_current_default=*/false, SearchTermsData());
+  ChoiceScreenDisplayState display_state = choice_screen_data.display_state();
+  display_state.selected_engine_index = 2;
 
   base::HistogramTester histogram_tester;
   search_engine_choice_service().MaybeRecordChoiceScreenDisplayState(
-      choice_screen_data.display_state());
+      display_state);
 
+  histogram_tester.ExpectUniqueSample(
+      kSearchEngineChoiceScreenSelectedEngineIndexHistogram, 2, 1);
   histogram_tester.ExpectUniqueSample(
       base::StringPrintf(
           kSearchEngineChoiceScreenShowedEngineAtHistogramPattern, 0),
@@ -1074,6 +1079,12 @@ TEST_F(SearchEngineChoiceServiceTest, MaybeRecordChoiceScreenDisplayState) {
       base::StringPrintf(
           kSearchEngineChoiceScreenShowedEngineAtHistogramPattern, 2),
       SEARCH_ENGINE_YAHOO, 1);
+
+  // There is no search engine shown at index 3, since we have only 3 options.
+  histogram_tester.ExpectTotalCount(
+      base::StringPrintf(
+          kSearchEngineChoiceScreenShowedEngineAtHistogramPattern, 3),
+      0);
 }
 
 TEST_F(SearchEngineChoiceServiceTest,
@@ -1085,10 +1096,12 @@ TEST_F(SearchEngineChoiceServiceTest,
            &TemplateURLPrepopulateData::yahoo}),
       kBelgiumCountryId,
       /*list_is_modified_by_current_default=*/true, SearchTermsData());
+  ChoiceScreenDisplayState display_state = choice_screen_data.display_state();
+  display_state.selected_engine_index = 0;
 
   base::HistogramTester histogram_tester;
   search_engine_choice_service().MaybeRecordChoiceScreenDisplayState(
-      choice_screen_data.display_state());
+      display_state);
 
   histogram_tester.ExpectTotalCount(
       base::StringPrintf(
@@ -1106,6 +1119,8 @@ TEST_F(SearchEngineChoiceServiceTest,
       base::StringPrintf(
           kSearchEngineChoiceScreenShowedEngineAtHistogramPattern, 3),
       0);
+  histogram_tester.ExpectTotalCount(
+      kSearchEngineChoiceScreenSelectedEngineIndexHistogram, 0);
 }
 
 TEST_F(SearchEngineChoiceServiceTest,
@@ -1122,9 +1137,15 @@ TEST_F(SearchEngineChoiceServiceTest,
         OwnedTemplateURLVectorFromPrepopulatedEngines(engines),
         country_codes::kCountryIDUnknown,
         /*list_is_modified_by_current_default=*/false, SearchTermsData());
+    ChoiceScreenDisplayState display_state = choice_screen_data.display_state();
+    display_state.selected_engine_index = 0;
+
     search_engine_choice_service().MaybeRecordChoiceScreenDisplayState(
-        choice_screen_data.display_state());
+        display_state);
   }
+
+  histogram_tester.ExpectTotalCount(
+      kSearchEngineChoiceScreenSelectedEngineIndexHistogram, 0);
 
   {
     // Non-EEA country.
@@ -1133,9 +1154,14 @@ TEST_F(SearchEngineChoiceServiceTest,
     ChoiceScreenData choice_screen_data(
         OwnedTemplateURLVectorFromPrepopulatedEngines(engines), kUsaCountryId,
         /*list_is_modified_by_current_default=*/false, SearchTermsData());
+    ChoiceScreenDisplayState display_state = choice_screen_data.display_state();
+    display_state.selected_engine_index = 0;
     search_engine_choice_service().MaybeRecordChoiceScreenDisplayState(
-        choice_screen_data.display_state());
+        display_state);
   }
+
+  histogram_tester.ExpectTotalCount(
+      kSearchEngineChoiceScreenSelectedEngineIndexHistogram, 0);
 
   {
     // Mismatch between the variations and choice screen data country.
@@ -1145,11 +1171,16 @@ TEST_F(SearchEngineChoiceServiceTest,
         OwnedTemplateURLVectorFromPrepopulatedEngines(engines),
         kBelgiumCountryId,
         /*list_is_modified_by_current_default=*/false, SearchTermsData());
+    ChoiceScreenDisplayState display_state = choice_screen_data.display_state();
+    display_state.selected_engine_index = 0;
     search_engine_choice_service().MaybeRecordChoiceScreenDisplayState(
-        choice_screen_data.display_state());
+        display_state);
   }
 
-  // None of the above should have logged anything.
+  histogram_tester.ExpectBucketCount(
+      kSearchEngineChoiceScreenSelectedEngineIndexHistogram, 0, 1);
+
+  // None of the above should have logged the full list of indices.
   histogram_tester.ExpectTotalCount(
       base::StringPrintf(
           kSearchEngineChoiceScreenShowedEngineAtHistogramPattern, 0),

@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
@@ -90,64 +91,69 @@ SearchEngineChoiceDialogService::SearchEngineChoiceDialogService(
 
 void SearchEngineChoiceDialogService::NotifyChoiceMade(int prepopulate_id,
                                                        EntryPoint entry_point) {
-  PrefService* pref_service = profile_->GetPrefs();
-
   int country_id = search_engine_choice_service_->GetCountryId();
   SCOPED_CRASH_KEY_STRING32(
       "ChoiceService", "choice_country",
       country_codes::CountryIDToCountryString(country_id));
   SCOPED_CRASH_KEY_NUMBER("ChoiceService", "prepopulate_id", prepopulate_id);
+  SCOPED_CRASH_KEY_BOOL(
+      "ChoiceService", "default_added",
+      choice_screen_data_->display_state().list_is_modified_by_current_default);
   SCOPED_CRASH_KEY_NUMBER("ChoiceService", "entry_point",
                           static_cast<int>(entry_point));
 
-  // A custom search engine would have a `prepopulate_id` of 0.
-  // Having a custom search engine displayed on the choice screen would mean
-  // that it is already the default search engine so we don't need to change
-  // anything.
-  const int kCustomSearchEngineId = 0;
-  if (prepopulate_id != kCustomSearchEngineId &&
+  TemplateURL* selected_engine = nullptr;
+  int selected_engine_index = -1;
+  for (size_t i = 0; i < choice_screen_data_->search_engines().size(); ++i) {
+    if (choice_screen_data_->search_engines()[i]->prepopulate_id() ==
+        prepopulate_id) {
+      selected_engine_index = i;
+      selected_engine = choice_screen_data_->search_engines()[i].get();
+      break;
+    }
+  }
+
+  // Checking for states we don't expect to be possible. We are not crashing
+  // the browser immediately due to the criticality of the launch and because
+  // we have a fallback, which is just letting the user proceed without
+  // attempting to apply the choice. Many failure cases come from an unexpected
+  // default being included in the list.
+  // The conditions are explained below, and we set up crash keys to
+  // investigate failures in case they happen.
+  // TODO(https://crbug.com/318824817): Clean this up by M127.
+  if (
+      // The ID associated with the selection was not found in the cached list
+      // of search engines. That could be maybe caused by something like
+      // https://crbug.com/328041262.
+      selected_engine == nullptr ||
+      // A custom search engine would have a `prepopulate_id` of 0, We don't
+      // expect to trigger the choice screen if it was the current default, per
+      // `SearchEngineChoiceService::GetDynamicChoiceScreenConditions`.
+      prepopulate_id == 0 ||
       // Distribution custom search engines are not part of the prepopulated
-      // data but still have an ID, assigned starting from 1000.
+      // data but still have an ID, assigned starting from 1000. We should also
+      // not be prompting when that's the default.
       // TODO(crbug.com/324880292): Revisit how we should handle them.
-      prepopulate_id <= TemplateURLPrepopulateData::kMaxPrepopulatedEngineID) {
-    std::unique_ptr<TemplateURLData> search_engine =
-        TemplateURLPrepopulateData::GetPrepopulatedEngine(
-            pref_service, &search_engine_choice_service_.get(), prepopulate_id);
+      prepopulate_id > TemplateURLPrepopulateData::kMaxPrepopulatedEngineID) {
+    SCOPED_CRASH_KEY_BOOL("ChoiceService", "selected_engine_found",
+                          selected_engine != nullptr);
 
-    if (!search_engine) {
-      // Attempt to find the search engine if it was not in the country's list.
-      search_engine =
-          TemplateURLPrepopulateData::GetPrepopulatedEngineFromFullList(
-              pref_service, &search_engine_choice_service_.get(),
-              prepopulate_id);
-    }
-
-    if (!search_engine) {
-      // The recovery attempt above can fail if the user selected a previously
-      // default search engine that has been removed from Chrome's built-in
-      // data. This case should normally have been handled in
-      // `ComputeDialogConditions()` and we don't expect to reach here.
-      // If we were to continue here (while the error is not fatal), we would
-      // be handling this the same way as for custom search engines, which is
-      // intended.
-      NOTREACHED(base::NotFatalUntil::M125);
-    } else {
-      TemplateURL search_engine_template_url = TemplateURL(*search_engine);
-      template_url_service_->SetUserSelectedDefaultSearchProvider(
-          &search_engine_template_url,
-          search_engines::ChoiceMadeLocation::kChoiceScreen);
-    }
-  } else {
-    // Safety checks.
     const TemplateURL* default_search_provider =
         template_url_service_->GetDefaultSearchProvider();
-    SCOPED_CRASH_KEY_NUMBER("ChoiceService", "custom_engine_mismatch",
+    SCOPED_CRASH_KEY_NUMBER("ChoiceService", "current_dse_id",
                             default_search_provider
                                 ? default_search_provider->prepopulate_id()
                                 : -1);
-    CHECK(default_search_provider, base::NotFatalUntil::M125);
-    CHECK_EQ(default_search_provider->prepopulate_id(), prepopulate_id,
-             base::NotFatalUntil::M125);
+    SCOPED_CRASH_KEY_STRING64(
+        "ChoiceService", "current_dse_keyword",
+        default_search_provider
+            ? base::UTF16ToUTF8(default_search_provider->keyword())
+            : "<null>");
+
+    NOTREACHED(base::NotFatalUntil::M127);
+  } else {
+    template_url_service_->SetUserSelectedDefaultSearchProvider(
+        selected_engine, search_engines::ChoiceMadeLocation::kChoiceScreen);
   }
 
   // Closes the dialogs that are open on other browser windows that
@@ -173,9 +179,14 @@ void SearchEngineChoiceDialogService::NotifyChoiceMade(int prepopulate_id,
       choice_made_in_profile_picker_ = true;
       break;
   }
+
+  search_engines::ChoiceScreenDisplayState display_state =
+      choice_screen_data_->display_state();
+  display_state.selected_engine_index = selected_engine_index;
+
   search_engines::RecordChoiceScreenEvent(event);
   search_engine_choice_service_->MaybeRecordChoiceScreenDisplayState(
-      choice_screen_data_->display_state());
+      display_state);
 }
 
 void SearchEngineChoiceDialogService::NotifyDialogOpened(

@@ -347,40 +347,36 @@ void SearchEngineChoiceService::RecordChoiceMade(
 
 void SearchEngineChoiceService::MaybeRecordChoiceScreenDisplayState(
     const ChoiceScreenDisplayState& display_state) const {
-  if (!CanLogChoiceScreenDisplayState(display_state)) {
-    // TODO(crbug.com/325015554): Persist the display state for a limited time,
-    // maybe we would be able to send it later.
+  if (!IsEeaChoiceCountry(display_state.country_id)) {
+    // Tests or command line can force this, but we want to avoid polluting the
+    // histograms with unwanted country data.
     return;
   }
 
-  RecordChoiceScreenPositions(display_state.search_engines);
-}
-
-bool SearchEngineChoiceService::CanLogChoiceScreenDisplayState(
-    const ChoiceScreenDisplayState& display_state) const {
   if (display_state.list_is_modified_by_current_default) {
     // This typically indicates that we have an extra search engine added to the
     // usual ones. This should be very rare (see histogram data from
     // `RecordIsDefaultProviderAddedToChoices()`) and might point to some corner
     // case we might have not handled correctly. To avoid messing up the main
     // metrics, we don't record positions here.
-    return false;
+    return;
   }
 
-  if (!IsEeaChoiceCountry(display_state.country_id)) {
-    // Tests or command line can force this, but we want to avoid polluting the
-    // sparse histograms with unwanted country data.
-    return false;
+  if (display_state.selected_engine_index.has_value()) {
+    RecordChoiceScreenSelectedIndex(
+        display_state.selected_engine_index.value());
   }
 
   if (display_state.country_id != variations_country_id_) {
-    // Not recording if adding this data, which can be used as a proxy for the
-    // profile country, would add new hard to control location info to a logs
-    // session.
-    return false;
+    // Not recording if adding position data, which can be used as a proxy for
+    // the profile country, would add new hard to control location info to a
+    // logs session.
+    // TODO(crbug.com/325015554): Persist the display state for a limited time,
+    // maybe we would be able to send it later.
+    return;
   }
 
-  return true;
+  RecordChoiceScreenPositions(display_state.search_engines);
 }
 
 void SearchEngineChoiceService::PreprocessPrefsForReprompt() {

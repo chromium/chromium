@@ -25,6 +25,7 @@ extern const char kSearchEngineChoiceScreenProfileInitConditionsHistogram[];
 extern const char kSearchEngineChoiceScreenNavigationConditionsHistogram[];
 extern const char kSearchEngineChoiceScreenEventsHistogram[];
 extern const char kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram[];
+extern const char kSearchEngineChoiceScreenSelectedEngineIndexHistogram[];
 extern const char kSearchEngineChoiceScreenShowedEngineAtHistogramPattern[];
 extern const char kSearchEngineChoiceWipeReasonHistogram[];
 extern const char kSearchEngineChoiceRepromptHistogram[];
@@ -147,9 +148,12 @@ enum class RepromptResult {
 
 struct ChoiceScreenDisplayState {
  public:
-  ChoiceScreenDisplayState(std::vector<SearchEngineType> search_engines,
-                           int country_id,
-                           bool list_is_modified_by_current_default);
+  ChoiceScreenDisplayState(
+      std::vector<SearchEngineType> search_engines,
+      int country_id,
+      bool list_is_modified_by_current_default,
+      std::optional<int> selected_engine_index = std::nullopt);
+  ChoiceScreenDisplayState(const ChoiceScreenDisplayState& other);
   ~ChoiceScreenDisplayState();
 
   // `SearchEngineType`s of the search engines displayed on the choice screen,
@@ -157,6 +161,12 @@ struct ChoiceScreenDisplayState {
   // Note that the screen shows items from a list specific for each EEA
   // country, and these items are randomized before they are presented.
   const std::vector<SearchEngineType> search_engines;
+
+  // Index of the selected search engine. Obviously can't be populated until
+  // the choice has been made, so instances describing purely the state at the
+  // time of the display won't have a value, while the ones describing it at
+  // the moment of the choice will have it populated.
+  std::optional<int> selected_engine_index;
 
   // The country used when generating the list. It should be the country
   // used to determine the set of search engines to show for the current
@@ -239,6 +249,10 @@ void RecordChoiceScreenEvent(SearchEngineChoiceScreenEvents event);
 // Records the type of the default search engine that was chosen by the user
 // in the search engine choice screen or in the settings page.
 void RecordChoiceScreenDefaultSearchProviderType(SearchEngineType engine_type);
+
+// Records the index of the search engine that was chosen by the user as it was
+// displayed on the choice screen.
+void RecordChoiceScreenSelectedIndex(int selected_engine_index);
 
 // Records the positions of search engines in a choice screen. Intended to be
 // recorded when a choice happens, so that we emit it at most once per choice

@@ -79,9 +79,6 @@ class SearchEngineChoiceService : public KeyedService {
       const ChoiceScreenDisplayState& display_state) const;
 
  private:
-  bool CanLogChoiceScreenDisplayState(
-      const ChoiceScreenDisplayState& display_state) const;
-
   // Checks if the search engine choice should be prompted again, based on
   // experiment parameters. If a reprompt is needed, some preferences related to
   // the choice are cleared, which triggers a reprompt on the next page load.
