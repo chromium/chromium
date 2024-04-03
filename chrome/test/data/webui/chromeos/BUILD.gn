@@ -44,7 +44,6 @@ if (include_js2gtest_tests) {
       "ash_common/post_message_api/post_message_api_browsertest.js",
       "assertions.js",
       "async_gen.js",
-      "bluetooth_pairing_dialog_browsertest.js",
       "borealis_installer/borealis_installer_browsertest.js",
       "cloud_upload/cloud_upload_dialog_browsertest.js",
       "cloud_upload/connect_onedrive_browsertest.js",
@@ -161,7 +160,6 @@ webui_ts_library("build_ts") {
   composite = true
   tsconfig_base = "../tsconfig_base.json"
   in_files = [
-    "bluetooth_pairing_test.js",
     "chai_assert.js",
     "cr_focus_row_behavior_test.ts",
     "crostini_installer_app_test.js",
