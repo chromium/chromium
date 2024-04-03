@@ -7661,6 +7661,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableEdgeDetectionDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ui::kEnableEdgeDetection)},
 
+    {"enable-fast-touchpad-click",
+     flag_descriptions::kEnableFastTouchpadClickName,
+     flag_descriptions::kEnableFastTouchpadClickDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ui::kEnableFastTouchpadClick)},
+
     {"fast-pair-debug-metadata", flag_descriptions::kFastPairDebugMetadataName,
      flag_descriptions::kFastPairDebugMetadataDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kFastPairDebugMetadata)},

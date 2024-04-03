@@ -6,6 +6,10 @@
 
 namespace ui {
 
+BASE_FEATURE(kEnableFastTouchpadClick,
+             "EnableFastTouchpadClick",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEnableHeatmapPalmDetection,
              "EnableHeatmapPalmDetection",
              base::FEATURE_DISABLED_BY_DEFAULT);

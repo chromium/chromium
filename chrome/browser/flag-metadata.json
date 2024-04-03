@@ -2882,6 +2882,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "enable-fast-touchpad-click",
+    "owners": ["seobrien@chromium.org","hbarnor@chromium.org"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "enable-federated-service",
     "owners": [ "alanlxl@chromium.org", "amoylan@chromium.org"],
     "expiry_milestone": 128

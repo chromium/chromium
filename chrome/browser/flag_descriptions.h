@@ -3609,6 +3609,9 @@ extern const char kEnableNeuralStylusPalmRejectionDescription[];
 extern const char kEnableEdgeDetectionName[];
 extern const char kEnableEdgeDetectionDescription[];
 
+extern const char kEnableFastTouchpadClickName[];
+extern const char kEnableFastTouchpadClickDescription[];
+
 extern const char kEnablePalmSuppressionName[];
 extern const char kEnablePalmSuppressionDescription[];
 
