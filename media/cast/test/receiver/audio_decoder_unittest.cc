@@ -101,18 +101,22 @@ class AudioDecoderTest : public ::testing::TestWithParam<TestScenario> {
                                                           &interleaved.front());
     if (GetParam().codec == Codec::kAudioPcm16) {
       encoded_frame->data.resize(num_elements * sizeof(int16_t));
-      int16_t* const pcm_data =
-          reinterpret_cast<int16_t*>(encoded_frame->mutable_bytes());
-      for (size_t i = 0; i < interleaved.size(); ++i)
-        pcm_data[i] = static_cast<int16_t>(base::HostToNet16(interleaved[i]));
+      auto pcm_data = encoded_frame->mutable_bytes();
+      for (int16_t val : interleaved) {
+        auto [write, rem] = pcm_data.split_at<sizeof(int16_t)>();
+        write.copy_from(
+            base::numerics::U16ToBigEndian(static_cast<uint16_t>(val)));
+        pcm_data = rem;
+      }
     } else if (GetParam().codec == Codec::kAudioOpus) {
       OpusEncoder* const opus_encoder =
           reinterpret_cast<OpusEncoder*>(opus_encoder_memory_.get());
       const int kOpusEncodeBufferSize = 4000;
       encoded_frame->data.resize(kOpusEncodeBufferSize);
-      const int payload_size = opus_encode(
-          opus_encoder, &interleaved.front(), audio_bus->frames(),
-          encoded_frame->mutable_bytes(), encoded_frame->data.size());
+      auto bytes = encoded_frame->mutable_bytes();
+      const int payload_size =
+          opus_encode(opus_encoder, &interleaved.front(), audio_bus->frames(),
+                      bytes.data(), bytes.size());
       CHECK_GT(payload_size, 1);
       encoded_frame->data.resize(payload_size);
     } else {

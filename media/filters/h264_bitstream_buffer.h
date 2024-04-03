@@ -12,6 +12,7 @@
 
 #include <stdint.h>
 
+#include "base/containers/heap_array.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -88,8 +89,11 @@ class MEDIA_EXPORT H264BitstreamBuffer {
   size_t BitsInBuffer() const;
 
   // Return a pointer to the stream. FinishNALU() must be called before
-  // accessing the stream, otherwise some bits may still be cached and not
-  // in the buffer.
+  // accessing the stream, otherwise some bits may still be cached and not in
+  // the buffer.
+  //
+  // TODO(crbug.com/40284755): Return a span up to `pos_` which is the range of
+  // initialized bytes in `data_`.
   const uint8_t* data() const;
 
  private:
@@ -133,16 +137,13 @@ class MEDIA_EXPORT H264BitstreamBuffer {
   // is called.
   RegType reg_;
 
-  // Current capacity of data_, in bytes.
-  size_t capacity_;
-
   // Current byte offset in data_ (points to the start of unwritten bits).
   size_t pos_;
   // Current last bit in data_ (points to the start of unwritten bit).
   size_t bits_in_buffer_;
 
-  // Buffer for stream data.
-  raw_ptr<uint8_t, DanglingUntriaged | AllowPtrArithmetic> data_;
+  // Buffer for stream data. Only the bytes before `pos_` have been initialized.
+  base::HeapArray<uint8_t> data_;
 };
 
 }  // namespace media

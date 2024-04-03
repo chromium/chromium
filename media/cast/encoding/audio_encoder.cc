@@ -11,11 +11,14 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/sys_byteorder.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -710,8 +713,8 @@ class AudioEncoder::Pcm16Impl final : public AudioEncoder::ImplBase {
                  sampling_rate / kDefaultFramesPerSecond, /* 10 ms frames */
                  0 /* bitrate, which is unused for the PCM16 implementation */,
                  std::move(callback)),
-        buffer_(
-            std::make_unique<int16_t[]>(num_channels * samples_per_frame_)) {
+        buffer_(base::HeapArray<int16_t>::WithSize(num_channels *
+                                                   samples_per_frame_)) {
     if (ImplBase::operational_status_ != STATUS_UNINITIALIZED)
       return;
     operational_status_ = STATUS_INITIALIZED;
@@ -729,22 +732,25 @@ class AudioEncoder::Pcm16Impl final : public AudioEncoder::ImplBase {
                                  int num_samples) final {
     audio_bus->ToInterleavedPartial<SignedInt16SampleTypeTraits>(
         source_offset, num_samples,
-        buffer_.get() + buffer_fill_offset * num_channels_);
+        buffer_.data() + buffer_fill_offset * num_channels_);
   }
 
   bool EncodeFromFilledBuffer(std::string* out) final {
     // Output 16-bit PCM integers in big-endian byte order.
-    out->resize(num_channels_ * samples_per_frame_ * sizeof(int16_t));
-    const int16_t* src = buffer_.get();
-    const int16_t* const src_end = src + num_channels_ * samples_per_frame_;
-    uint16_t* dest = reinterpret_cast<uint16_t*>(&out->at(0));
-    for (; src < src_end; ++src, ++dest)
-      *dest = base::HostToNet16(*src);
+    out->resize(buffer_.size() * sizeof(int16_t));
+    base::span<int16_t> src = buffer_.as_span();
+    base::span<uint8_t> out_span = base::as_writable_byte_span(*out);
+    for (int16_t src_value : src) {
+      auto [write, rem] = out_span.split_at<sizeof(int16_t)>();
+      write.copy_from(
+          base::numerics::U16ToBigEndian(static_cast<uint16_t>(src_value)));
+      out_span = rem;
+    }
     return true;
   }
 
  private:
-  const std::unique_ptr<int16_t[]> buffer_;
+  base::HeapArray<int16_t> buffer_;
 };
 
 AudioEncoder::AudioEncoder(

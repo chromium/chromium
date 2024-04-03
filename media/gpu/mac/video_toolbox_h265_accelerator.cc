@@ -4,9 +4,10 @@
 
 #include "media/gpu/mac/video_toolbox_h265_accelerator.h"
 
+#include <array>
 #include <utility>
 
-#include "base/sys_byteorder.h"
+#include "base/numerics/byte_conversions.h"
 #include "media/base/media_log.h"
 
 namespace media {
@@ -307,19 +308,19 @@ VideoToolboxH265Accelerator::Status VideoToolboxH265Accelerator::SubmitDecode(
   }
 
   // Copy each NALU into the buffer, prefixed with a length header.
-  size_t offset = 0;
+  size_t offset = 0u;
   for (const auto& nalu_data : combined_nalu_data) {
     // Write length header.
-    uint32_t header =
-        base::HostToNet32(static_cast<uint32_t>(nalu_data.size()));
-    status = CMBlockBufferReplaceDataBytes(&header, data.get(), offset,
-                                           kNALUHeaderLength);
+    std::array<uint8_t, kNALUHeaderLength> header =
+        base::numerics::U32ToBigEndian(static_cast<uint32_t>(nalu_data.size()));
+    status = CMBlockBufferReplaceDataBytes(header.data(), data.get(), offset,
+                                           header.size());
     if (status != noErr) {
       OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
           << "CMBlockBufferReplaceDataBytes()";
       return Status::kFail;
     }
-    offset += kNALUHeaderLength;
+    offset += header.size();
 
     // Write NALU data.
     status = CMBlockBufferReplaceDataBytes(nalu_data.data(), data.get(), offset,

@@ -10,6 +10,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 #include <iterator>
 #include <memory>
 
@@ -25,11 +26,11 @@
 #include "base/memory/scoped_policy.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/sys_byteorder.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -1319,18 +1320,19 @@ void VTVideoDecodeAccelerator::DecodeTaskH264(
   }
 
   // Copy NALU data into the CMBlockBuffer, inserting length headers.
-  size_t offset = 0;
+  size_t offset = 0u;
   for (size_t i = 0; i < nalus.size(); i++) {
     H264NALU& nalu_ref = nalus[i];
-    uint32_t header = base::HostToNet32(static_cast<uint32_t>(nalu_ref.size));
-    status = CMBlockBufferReplaceDataBytes(&header, data.get(), offset,
-                                           kNALUHeaderLength);
+    std::array<uint8_t, kNALUHeaderLength> header =
+        base::numerics::U32ToBigEndian(static_cast<uint32_t>(nalu_ref.size));
+    status = CMBlockBufferReplaceDataBytes(header.data(), data.get(), offset,
+                                           header.size());
     if (status) {
       NOTIFY_STATUS("CMBlockBufferReplaceDataBytes()", status,
                     SFT_PLATFORM_ERROR);
       return;
     }
-    offset += kNALUHeaderLength;
+    offset += header.size();
     status = CMBlockBufferReplaceDataBytes(nalu_ref.data, data.get(), offset,
                                            nalu_ref.size);
     if (status) {
@@ -1752,18 +1754,19 @@ void VTVideoDecodeAccelerator::DecodeTaskHEVC(
   }
 
   // Copy NALU data into the CMBlockBuffer, inserting length headers.
-  size_t offset = 0;
+  size_t offset = 0u;
   for (size_t i = 0; i < nalus.size(); i++) {
     H265NALU& nalu_ref = nalus[i];
-    uint32_t header = base::HostToNet32(static_cast<uint32_t>(nalu_ref.size));
-    status = CMBlockBufferReplaceDataBytes(&header, data.get(), offset,
-                                           kNALUHeaderLength);
+    std::array<uint8_t, kNALUHeaderLength> header =
+        base::numerics::U32ToBigEndian(static_cast<uint32_t>(nalu_ref.size));
+    status = CMBlockBufferReplaceDataBytes(header.data(), data.get(), offset,
+                                           header.size());
     if (status) {
       NOTIFY_STATUS("CMBlockBufferReplaceDataBytes()", status,
                     SFT_PLATFORM_ERROR);
       return;
     }
-    offset += kNALUHeaderLength;
+    offset += header.size();
     status = CMBlockBufferReplaceDataBytes(nalu_ref.data, data.get(), offset,
                                            nalu_ref.size);
     if (status) {

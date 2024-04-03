@@ -59,8 +59,8 @@ class VideoDecoder::ImplBase
     last_frame_id_ = encoded_frame->frame_id;
 
     const scoped_refptr<VideoFrame> decoded_frame =
-        Decode(encoded_frame->mutable_bytes(),
-               static_cast<int>(encoded_frame->data.size()));
+        Decode(encoded_frame->mutable_bytes().data(),
+               base::checked_cast<int>(encoded_frame->mutable_bytes().size()));
     if (!decoded_frame) {
       VLOG(2) << "Decoding of frame " << encoded_frame->frame_id << " failed.";
       cast_environment_->PostTask(

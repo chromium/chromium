@@ -9,8 +9,11 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/numerics/checked_math.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/sys_byteorder.h"
+#include "base/types/optional_util.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/stream_parser_buffer.h"
 #include "media/base/timestamp_constants.h"
@@ -236,7 +239,6 @@ WebMParserClient* WebMClusterParser::OnListStart(int id) {
     cluster_start_time_ = kNoTimestamp;
   } else if (id == kWebMIdBlockGroup) {
     block_data_.reset();
-    block_data_size_ = -1;
     block_duration_ = -1;
     discard_padding_ = -1;
     discard_padding_set_ = false;
@@ -244,7 +246,6 @@ WebMParserClient* WebMClusterParser::OnListStart(int id) {
   } else if (id == kWebMIdBlockAdditions) {
     block_add_id_ = -1;
     block_additional_data_.reset();
-    block_additional_data_size_ = 0;
   }
 
   return this;
@@ -255,21 +256,28 @@ bool WebMClusterParser::OnListEnd(int id) {
     return true;
 
   // Make sure the BlockGroup actually had a Block.
-  if (block_data_size_ == -1) {
+  if (!block_data_) {
     MEDIA_LOG(ERROR, media_log_) << "Block missing from BlockGroup.";
     return false;
   }
 
-  bool result = ParseBlock(
-      false, block_data_.get(), block_data_size_, block_additional_data_.get(),
-      block_additional_data_size_, block_duration_,
-      discard_padding_set_ ? discard_padding_ : 0, reference_block_set_);
+  base::span<uint8_t> data;
+  if (block_data_.has_value()) {
+    data = base::span(block_data_.value());
+  }
+  base::span<uint8_t> additional;
+  if (block_additional_data_.has_value()) {
+    additional = base::span(block_additional_data_.value());
+  }
+
+  bool result = ParseBlock(false, data.data(), data.size(), additional.data(),
+                           additional.size(), block_duration_,
+                           discard_padding_set_ ? discard_padding_ : 0,
+                           reference_block_set_);
   block_data_.reset();
-  block_data_size_ = -1;
   block_duration_ = -1;
   block_add_id_ = -1;
   block_additional_data_.reset();
-  block_additional_data_size_ = 0;
   discard_padding_ = -1;
   discard_padding_set_ = false;
   reference_block_set_ = false;
@@ -344,10 +352,15 @@ bool WebMClusterParser::ParseBlock(bool is_simple_block,
                  is_keyframe);
 }
 
-bool WebMClusterParser::OnBinary(int id, const uint8_t* data, int size) {
+bool WebMClusterParser::OnBinary(int id, const uint8_t* data_ptr, int size) {
+  auto data =
+      // TODO(crbug.com/40284755): This function should receive a span, not a
+      // pointer/size pair.
+      UNSAFE_BUFFERS(base::span(data_ptr, base::checked_cast<size_t>(size)));
   switch (id) {
     case kWebMIdSimpleBlock:
-      return ParseBlock(true, data, size, NULL, 0, -1, 0, false);
+      return ParseBlock(true, data.data(), data.size(), nullptr, 0, -1, 0,
+                        false);
 
     case kWebMIdBlock:
       if (block_data_) {
@@ -356,13 +369,12 @@ bool WebMClusterParser::OnBinary(int id, const uint8_t* data, int size) {
                "supported.";
         return false;
       }
-      block_data_.reset(new uint8_t[size]);
-      memcpy(block_data_.get(), data, size);
-      block_data_size_ = size;
+      block_data_ = base::HeapArray<uint8_t>::Uninit(data.size());
+      base::span(*block_data_).copy_from(data);
       return true;
 
     case kWebMIdBlockAdditional: {
-      uint64_t block_add_id = base::HostToNet64(block_add_id_);
+      uint64_t block_add_id = base::numerics::ByteSwap(block_add_id_);
       if (block_additional_data_) {
         // TODO(vigneshv): Technically, more than 1 BlockAdditional is allowed
         // as per matroska spec. But for now we don't have a use case to
@@ -375,11 +387,12 @@ bool WebMClusterParser::OnBinary(int id, const uint8_t* data, int size) {
       // First 8 bytes of side_data in DecoderBuffer is the BlockAddID
       // element's value in Big Endian format. This is done to mimic ffmpeg
       // demuxer's behavior.
-      block_additional_data_size_ = size + sizeof(block_add_id);
-      block_additional_data_.reset(new uint8_t[block_additional_data_size_]);
-      memcpy(block_additional_data_.get(), &block_add_id,
-             sizeof(block_add_id));
-      memcpy(block_additional_data_.get() + 8, data, size);
+      block_additional_data_ =
+          base::HeapArray<uint8_t>::Uninit(sizeof(block_add_id) + data.size());
+      auto [additional_id, additional_data] =
+          base::span(*block_additional_data_).split_at<sizeof(block_add_id)>();
+      additional_id.copy_from(base::byte_span_from_ref(block_add_id));
+      additional_data.copy_from(data);
       return true;
     }
     case kWebMIdDiscardPadding: {

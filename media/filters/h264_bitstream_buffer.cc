@@ -5,26 +5,20 @@
 #include "media/filters/h264_bitstream_buffer.h"
 
 #include "base/bits.h"
-#include "base/sys_byteorder.h"
+#include "base/containers/span.h"
+#include "base/numerics/byte_conversions.h"
 
 namespace media {
 
 H264BitstreamBuffer::H264BitstreamBuffer(bool insert_emulation_prevention_bytes)
-    : insert_emulation_prevention_bytes_(insert_emulation_prevention_bytes),
-      data_(nullptr) {
+    : insert_emulation_prevention_bytes_(insert_emulation_prevention_bytes) {
   Reset();
 }
 
-H264BitstreamBuffer::~H264BitstreamBuffer() {
-  free(data_);
-  data_ = nullptr;
-}
+H264BitstreamBuffer::~H264BitstreamBuffer() = default;
 
 void H264BitstreamBuffer::Reset() {
-  free(data_);
-  data_ = nullptr;
-
-  capacity_ = 0;
+  data_ = base::HeapArray<uint8_t>();
   pos_ = 0;
   bits_in_buffer_ = 0;
   reg_ = 0;
@@ -37,75 +31,78 @@ void H264BitstreamBuffer::Reset() {
 }
 
 void H264BitstreamBuffer::Grow() {
-  data_ = static_cast<uint8_t*>(realloc(data_, capacity_ + kGrowBytes));
-  CHECK(data_) << "Failed growing the buffer";
-  capacity_ += kGrowBytes;
+  auto grown = base::HeapArray<uint8_t>::Uninit(data_.size() + kGrowBytes);
+  // The first `pos_` bytes in `data_` are initialized. Copy them but don't read
+  // from the uninitialized stuff after it.
+  grown.first(pos_).copy_from(data_.first(pos_));
+  data_ = std::move(grown);
 }
 
 void H264BitstreamBuffer::FlushReg() {
   // Flush all bytes that have at least one bit cached, but not more
   // (on Flush(), reg_ may not be full).
   size_t bits_in_reg = kRegBitSize - bits_left_in_reg_;
-  if (bits_in_reg == 0)
+  if (bits_in_reg == 0u) {
     return;
+  }
 
-  size_t bytes_in_reg = base::bits::AlignUp(bits_in_reg, size_t{8}) / 8;
+  size_t bytes_in_reg = base::bits::AlignUp(bits_in_reg, size_t{8}) / 8u;
   reg_ <<= (kRegBitSize - bits_in_reg);
 
   // Convert to MSB and append as such to the stream.
-  reg_ = base::HostToNet64(reg_);
+  std::array<uint8_t, 8> reg_be = base::numerics::U64ToBigEndian(reg_);
 
   if (insert_emulation_prevention_bytes_ && in_nalu_) {
     // The EPB only works on complete bytes being flushed.
-    CHECK_EQ(bits_in_reg % 8, 0u);
+    CHECK_EQ(bits_in_reg % 8u, 0u);
     // Insert emulation prevention bytes (spec 7.3.1).
-    static const uint8_t kEmulationByte = 0x03;
+    constexpr uint8_t kEmulationByte = 0x03u;
 
-    uint8_t* byte_ptr = reinterpret_cast<uint8_t*>(&reg_);
     for (size_t i = 0; i < bytes_in_reg; ++i) {
       // This will possibly check the NALU header byte. However the
       // CHECK_NE(nalu_type, 0) makes sure that it is not 0.
-      if (pos_ >= 2 && data_[pos_ - 2] == 0 && data_[pos_ - 1] == 0 &&
-          byte_ptr[i] <= kEmulationByte) {
-        if (pos_ + 1 > capacity_) {
+      if (pos_ >= 2u && data_[pos_ - 2u] == 0 && data_[pos_ - 1u] == 0u &&
+          reg_be[i] <= kEmulationByte) {
+        if (pos_ + 1u > data_.size()) {
           Grow();
         }
         data_[pos_++] = kEmulationByte;
-        bits_in_buffer_ += 8;
+        bits_in_buffer_ += 8u;
       }
-      if (pos_ + 1 > capacity_) {
+      if (pos_ + 1u > data_.size()) {
         Grow();
       }
-      data_[pos_++] = byte_ptr[i];
-      bits_in_buffer_ += 8;
+      data_[pos_++] = reg_be[i];
+      bits_in_buffer_ += 8u;
     }
   } else {
-    // Make sure we have enough space. Grow() will CHECK() on allocation
-    // failure.
-    if (pos_ + bytes_in_reg > capacity_) {
+    // Make sure we have enough space.
+    if (pos_ + bytes_in_reg > data_.size()) {
       Grow();
     }
 
-    memcpy(data_ + pos_, &reg_, bytes_in_reg);
-    bits_in_buffer_ = pos_ * 8 + bits_in_reg;
+    data_.subspan(pos_, bytes_in_reg)
+        .copy_from(base::span(reg_be).first(bytes_in_reg));
+    bits_in_buffer_ = pos_ * 8u + bits_in_reg;
     pos_ += bytes_in_reg;
   }
 
-  reg_ = 0;
+  reg_ = 0u;
   bits_left_in_reg_ = kRegBitSize;
 }
 
 void H264BitstreamBuffer::AppendU64(size_t num_bits, uint64_t val) {
   CHECK_LE(num_bits, kRegBitSize);
 
-  while (num_bits > 0) {
-    if (bits_left_in_reg_ == 0)
+  while (num_bits > 0u) {
+    if (bits_left_in_reg_ == 0u) {
       FlushReg();
+    }
 
     uint64_t bits_to_write =
         num_bits > bits_left_in_reg_ ? bits_left_in_reg_ : num_bits;
     uint64_t val_to_write = (val >> (num_bits - bits_to_write));
-    if (bits_to_write < 64) {
+    if (bits_to_write < 64u) {
       val_to_write &= ((1ull << bits_to_write) - 1);
       reg_ <<= bits_to_write;
       reg_ |= val_to_write;
@@ -118,11 +115,12 @@ void H264BitstreamBuffer::AppendU64(size_t num_bits, uint64_t val) {
 }
 
 void H264BitstreamBuffer::AppendBool(bool val) {
-  if (bits_left_in_reg_ == 0)
+  if (bits_left_in_reg_ == 0u) {
     FlushReg();
+  }
 
   reg_ <<= 1;
-  reg_ |= (static_cast<uint64_t>(val) & 1);
+  reg_ |= (static_cast<uint64_t>(val) & 1u);
   --bits_left_in_reg_;
 }
 
@@ -134,8 +132,8 @@ void H264BitstreamBuffer::AppendSE(int val) {
 }
 
 void H264BitstreamBuffer::AppendUE(unsigned int val) {
-  size_t num_zeros = 0;
-  unsigned int v = val + 1;
+  size_t num_zeros = 0u;
+  unsigned int v = val + 1u;
 
   while (v > 1) {
     v >>= 1;
@@ -143,7 +141,7 @@ void H264BitstreamBuffer::AppendUE(unsigned int val) {
   }
 
   AppendBits(num_zeros, 0);
-  AppendBits(num_zeros + 1, val + 1);
+  AppendBits(num_zeros + 1, val + 1u);
 }
 
 #define DCHECK_FINISHED()                                                      \
@@ -194,10 +192,10 @@ size_t H264BitstreamBuffer::BytesInBuffer() const {
 }
 
 const uint8_t* H264BitstreamBuffer::data() const {
-  DCHECK(data_);
+  DCHECK(!data_.empty());
   DCHECK_FINISHED();
 
-  return data_;
+  return data_.data();
 }
 
 }  // namespace media
