@@ -6482,6 +6482,14 @@
     "expiry_milestone": 112
   },
   {
+    "name": "page-info-sharing",
+    "owners":[
+      "salg@google.com",
+      "ssid@chromium.org"
+    ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "page-visibility-page-content-annotations",
     "owners": [ "sophiechang@chromium.org", "mcrouse@chromium.org", "chrome-intelligence-core@google.com"],
     "expiry_milestone": 130

@@ -3817,6 +3817,10 @@ const char kAndroidOpenPdfInlineName[] = "Open PDF Inline on Android";
 const char kAndroidOpenPdfInlineDescription[] =
     "Enable Open PDF Inline on Android.";
 
+const char kChromePageInfoSharingName[] = "Page Info Sharing";
+const char kChromePageInfoSharingDescription[] =
+    "Enable Page Info Sharing on Android.";
+
 const char kAndroidTabDeclutterName[] = "Android Tab Declutter";
 const char kAndroidTabDeclutterDescription[] =
     "Enables auto-archival and deletion of inactive tabs.";
