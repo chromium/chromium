@@ -29,6 +29,13 @@ def __get(ctx, key):
         for cfg in ctx.flags["config"].split(","):
             if cfg == key:
                 return True
+    if ctx.fs.exists("../.citc"):
+        # on cog, .citc directory exist in parent directory of exec root.
+        # disable race strategy as "builder".
+        # enable "remote-*" on cog
+        # TODO: b/308405411 - enable "remote-devtools-frontend-typescript"
+        if key in ("builder", "remote-library-link", "remote-exec-link"):
+            return True
     return False
 
 config = module(
