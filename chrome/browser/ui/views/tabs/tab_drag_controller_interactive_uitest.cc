@@ -4311,7 +4311,7 @@ void DragTabToWindowInSeparateDisplayStep2(
 
 // Drags from browser to another browser on a second display and releases input.
 // TODO(crbug.com/329747667): Test is flaky on "Linux ChromiumOS MSan Tests"
-#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(MEMORY_SANITIZER)
 #define MAYBE_DragTabToWindowInSeparateDisplay \
   DISABLED_DragTabToWindowInSeparateDisplay
 #else
