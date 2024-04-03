@@ -119,6 +119,7 @@
   fuzzy_test_computed_color(`rgb(from rgb(none none none / none) r g b / alpha)`, `color(srgb 0 0 0 / 0)`);
   fuzzy_test_computed_color(`rgb(from rgb(20% none 60%) r g b)`, `color(srgb 0.2 0 0.6)`);
   fuzzy_test_computed_color(`rgb(from rgb(20% 40% 60% / none) r g b / alpha)`, `color(srgb 0.2 0.4 0.6 / 0)`);
+  fuzzy_test_computed_color(`color-mix(in srgb, rgb(from rebeccapurple none g b), rebeccapurple)`, `color(srgb 0.4 0.2 0.6)`);
 
   // color-mix
   fuzzy_test_computed_color(`rgb(from color-mix(in srgb, red, red) r g b / alpha)`, `color(srgb 1 0 0)`);
@@ -195,6 +196,7 @@
   fuzzy_test_computed_color(`hsl(from hsl(120deg none 50% / .5) h s l)`, `color(srgb 0.5 0.5 0.5 / 0.5)`);
   fuzzy_test_computed_color(`hsl(from hsl(120deg 20% 50% / none) h s l / alpha)`, `color(srgb 0.4 0.6 0.4 / 0)`);
   fuzzy_test_computed_color(`hsl(from hsl(none 20% 50% / .5) h s l / alpha)`, `color(srgb 0.6 0.4 0.4 / 0.5)`);
+  fuzzy_test_computed_color(`color-mix(in hsl, hsl(from rebeccapurple none s l), rebeccapurple)`, `color(srgb 0.4 0.2 0.6)`);
 
   // color-mix
   fuzzy_test_computed_color(`hsl(from color-mix(in srgb, red, red) h s l / alpha)`, `color(srgb 1 0 0)`);
@@ -270,6 +272,7 @@
   fuzzy_test_computed_color(`hwb(from hwb(120deg none 50% / .5) h w b)`, `color(srgb 0 0.5 0 / 0.5)`);
   fuzzy_test_computed_color(`hwb(from hwb(120deg 20% 50% / none) h w b / alpha)`, `color(srgb 0.2 0.5 0.2 / 0)`);
   fuzzy_test_computed_color(`hwb(from hwb(none 20% 50% / .5) h w b / alpha)`, `color(srgb 0.5 0.2 0.2 / 0.5)`);
+  fuzzy_test_computed_color(`color-mix(in hwb, hwb(from rebeccapurple none w b), rebeccapurple)`, `color(srgb 0.4 0.2 0.6)`);
 
   // color-mix
   fuzzy_test_computed_color(`hwb(from color-mix(in srgb, red, red) h w b / alpha)`, `color(srgb 1 0 0)`);
@@ -338,6 +341,7 @@
   fuzzy_test_computed_color(`lab(from lab(none none none / none) l a b / alpha)`, `lab(0 0 0 / 0)`);
   fuzzy_test_computed_color(`lab(from lab(25 none 50) l a b)`, `lab(25 0 50)`);
   fuzzy_test_computed_color(`lab(from lab(25 20 50 / none) l a b / alpha)`, `lab(25 20 50 / 0)`);
+  fuzzy_test_computed_color(`color-mix(in lab, lab(from lab(25 20 50) none a b), lab(25 20 50))`, `lab(25 20 50)`);
 
   // color-mix
   fuzzy_test_computed_color(`lab(from color-mix(in lab, lab(25 20 50), lab(25 20 50)) l a b / alpha)`, `lab(25 20 50)`);
@@ -406,6 +410,7 @@
   fuzzy_test_computed_color(`oklab(from oklab(none none none / none) l a b / alpha)`, `oklab(0 0 0 / 0)`);
   fuzzy_test_computed_color(`oklab(from oklab(0.25 none 0.5) l a b)`, `oklab(0.25 0 0.5)`);
   fuzzy_test_computed_color(`oklab(from oklab(0.25 0.2 0.5 / none) l a b / alpha)`, `oklab(0.25 0.2 0.5 / 0)`);
+  fuzzy_test_computed_color(`color-mix(in oklab, oklab(from oklab(0.25 0.2 0.5) none a b), oklab(0.25 0.2 0.5))`, `oklab(0.25 0.2 0.5)`);
 
   // color-mix
   fuzzy_test_computed_color(`oklab(from color-mix(in oklab, oklab(0.25 0.2 0.5), oklab(0.25 0.2 0.5)) l a b / alpha)`, `oklab(0.25 0.2 0.5)`);
@@ -482,6 +487,7 @@
   fuzzy_test_computed_color(`lch(from lch(none none none / none) l c h / alpha)`,                        `lch(0 0 0 / 0)`);
   fuzzy_test_computed_color(`lch(from lch(0.7 none 30) l c h)`,                                          `lch(0.7 0 30)`);
   fuzzy_test_computed_color(`lch(from lch(0.7 45 30 / none) l c h / alpha)`,                             `lch(0.7 45 30 / 0)`);
+  fuzzy_test_computed_color(`color-mix(in lch, lch(from lch(0.7 45 30) l c none), lch(0.7 45 30))`,      `lch(0.7 45 30)`);
 
   // color-mix
   fuzzy_test_computed_color(`lch(from color-mix(in lch, lch(70 45 30), lch(70 45 30)) l c h / alpha)`, `lch(70 45 30)`);
@@ -559,6 +565,7 @@
   fuzzy_test_computed_color(`oklch(from oklch(none none none / none) l c h / alpha)`,                        `oklch(0 0 0 / 0)`);
   fuzzy_test_computed_color(`oklch(from oklch(0.7 none 30) l c h)`,                                          `oklch(0.7 0 30)`);
   fuzzy_test_computed_color(`oklch(from oklch(0.7 0.45 30 / none) l c h / alpha)`,                             `oklch(0.7 0.45 30 / 0)`);
+  fuzzy_test_computed_color(`color-mix(in oklch, oklch(from oklch(0.7 0.45 30) l c none), oklch(0.7 0.45 30))`, `oklch(0.7 0.45 30)`);
 
   // color-mix
   fuzzy_test_computed_color(`oklch(from color-mix(in oklch, oklch(0.7 0.45 30), oklch(0.7 0.45 30)) l c h / alpha)`, `oklch(0.7 0.45 30)`);
