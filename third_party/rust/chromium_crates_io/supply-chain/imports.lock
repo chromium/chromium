@@ -64,6 +64,25 @@ who = "ChromeOS"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 version = "0.4.3"
 
+[[audits.chromeos.audits.libc]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "0.2.146"
+notes = """
+Much like the getrandom crate, this exports interfaces to APIs which perform
+crypto, but does not implement any crypto itself.
+"""
+
+[[audits.chromeos.audits.libc]]
+who = "George Burgess IV <gbiv@google.com>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.2.146 -> 0.2.147"
+
+[[audits.chromeos.audits.libc]]
+who = "Daniel Verkamp <dverkamp@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.2.147 -> 0.2.153"
+
 [[audits.chromeos.audits.log]]
 who = "ChromeOS"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
