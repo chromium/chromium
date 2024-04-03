@@ -16,6 +16,7 @@ class Time;
 }  // namespace base
 
 @protocol SnapshotStorageObserver;
+@class SnapshotStorage;
 
 // The wrapper class for LegacySnapshotStorage and SnapshotStorage.
 // The APIs are exactly the same as LegacySnapshotStorage and the new
@@ -24,6 +25,8 @@ class Time;
 // TODO(crbug.com/1502841): Remove this class once the new implementation
 // written in Swift is used by default.
 @interface SnapshotStorageWrapper : NSObject
+
+@property(readonly) SnapshotStorage* snapshotStorage;
 
 // Designated initializer. `storagePath` is the file path where all images
 // managed by this LegacySnapshotStorage are stored. `storagePath` is not

@@ -12,10 +12,10 @@ import UIKit
 
   // Weak reference to the snapshot storage which is used to store and retrieve snapshots.
   // SnapshotStorage is owned by SnapshotBrowserAgent.
-  private weak var snapshotStorage: SnapshotStorage?
+  weak var snapshotStorage: SnapshotStorage?
 
   // The unique ID for WebState's snapshot.
-  private let snapshotID: SnapshotIDWrapper
+  let snapshotID: SnapshotIDWrapper
 
   // Designated initializer.
   init(generator: SnapshotGenerator, snapshotID: SnapshotIDWrapper) {
