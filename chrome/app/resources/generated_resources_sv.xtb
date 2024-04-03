@@ -7021,7 +7021,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6388577073199278153">Ingen åtkomst till mobilkontot</translation>
 <translation id="6389957561769636527">Organisera flikar</translation>
 <translation id="6390020764191254941">Flytta fliken till ett nytt fönster</translation>
-<translation id="6391131092053186625">Enhetens IMEI-kod är <ph name="IMEI_NUMBER" />. Detta nummer kan användas för att aktivera tjänsten.</translation>
+<translation id="6391131092053186625">Enhetens IMEI-nummer är <ph name="IMEI_NUMBER" />. Detta nummer kan användas för att aktivera tjänsten.</translation>
 <translation id="6393156038355142111">Föreslå ett starkt lösenord</translation>
 <translation id="6393550101331051049">Får visa osäkert innehåll</translation>
 <translation id="6395423953133416962">Skicka <ph name="BEGIN_LINK1" />systeminformation<ph name="END_LINK1" /> och <ph name="BEGIN_LINK2" />statistik<ph name="END_LINK2" /></translation>
@@ -8607,7 +8607,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7637253234491814483">Tryck på fingeravtryckssensorn högst upp till höger på tangentbordet bredvid av/på-knappen. Fingeravtrycksdata lagras på ett säkert sätt och lämnar aldrig din <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7637593984496473097">Det finns inte tillräckligt med utrymme på hårddisken</translation>
 <translation id="7639914187072011620">Det gick inte att hämta SAML-omdirigeringsadressen från servern</translation>
-<translation id="7640256527901510478">Enhetens IMEI-kod är <ph name="IMEI_NUMBER" /> och enhetens serienummer är <ph name="SERIAL_NUMBER" />. Dessa nummer kan användas för att aktivera tjänsten.</translation>
+<translation id="7640256527901510478">Enhetens IMEI-nummer är <ph name="IMEI_NUMBER" /> och enhetens serienummer är <ph name="SERIAL_NUMBER" />. Dessa nummer kan användas för att aktivera tjänsten.</translation>
 <translation id="7640308610547854367">Du har återställt till en tidigare version av ChromeOS. Om du vill få uppdateringar väntar du tills nästa version är tillgänglig.</translation>
 <translation id="7641513591566880111">Nytt profilnamn</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> har lagts till</translation>
@@ -9367,7 +9367,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8180786512391440389"><ph name="EXTENSION" /> kan läsa och ta bort bilder, video och ljudfiler på de markerade platserna.</translation>
 <translation id="8182105986296479640">Appen svarar inte.</translation>
 <translation id="8182412589359523143"><ph name="BEGIN_LINK" />Klicka här<ph name="END_LINK" /> om du vill radera all data från denna <ph name="DEVICE_TYPE" />.</translation>
-<translation id="8183703640399301650">Enhetens EID är <ph name="EID_NUMBER" /> och IMEI-kod är <ph name="IMEI_NUMBER" />. Dessa nummer kan användas för att aktivera tjänsten.</translation>
+<translation id="8183703640399301650">Enhetens EID är <ph name="EID_NUMBER" /> och IMEI-nummer är <ph name="IMEI_NUMBER" />. Dessa nummer kan användas för att aktivera tjänsten.</translation>
 <translation id="8184288427634747179">Växla till <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Mer info</translation>
 <translation id="8184472985242519288">Jämnhög</translation>
