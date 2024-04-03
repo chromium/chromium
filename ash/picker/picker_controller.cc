@@ -269,8 +269,13 @@ void PickerController::GetResultsForCategory(PickerCategory category,
     case PickerCategory::kExpressions:
       NOTREACHED_NORETURN();
     case PickerCategory::kDriveFiles:
+      client_->GetRecentDriveFileResults(
+          base::BindRepeating(CreateSingleSectionFromResults,
+                              PickerSectionType::kRecentlyUsed)
+              .Then(std::move(callback)));
+      return;
     case PickerCategory::kLocalFiles:
-      client_->GetRecentFileResults(
+      client_->GetRecentLocalFileResults(
           base::BindRepeating(CreateSingleSectionFromResults,
                               PickerSectionType::kRecentlyUsed)
               .Then(std::move(callback)));

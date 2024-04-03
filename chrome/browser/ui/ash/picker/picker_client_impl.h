@@ -71,7 +71,8 @@ class PickerClientImpl
                        CrosSearchResultsCallback callback) override;
   void StopCrosQuery() override;
   void ShowEditor() override;
-  void GetRecentFileResults(RecentFilesCallback callback) override;
+  void GetRecentLocalFileResults(RecentFilesCallback callback) override;
+  void GetRecentDriveFileResults(RecentFilesCallback callback) override;
   void GetSuggestedLinkResults(SuggestedLinksCallback callback) override;
 
   // user_manager::UserManager::UserSessionStateObserver:

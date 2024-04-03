@@ -12,6 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/fileapi/recent_file.h"
+#include "url/gurl.h"
 
 class Profile;
 
@@ -22,8 +23,15 @@ class PickerFileSuggester {
     base::FilePath path;
   };
 
+  struct DriveFile {
+    std::u16string title;
+    GURL url;
+  };
+
   using RecentLocalFilesCallback =
       base::OnceCallback<void(std::vector<LocalFile>)>;
+  using RecentDriveFilesCallback =
+      base::OnceCallback<void(std::vector<DriveFile>)>;
 
   explicit PickerFileSuggester(Profile* profile);
   ~PickerFileSuggester();
@@ -32,9 +40,12 @@ class PickerFileSuggester {
 
   // Any in-flight requests are cancelled when this object is destroyed.
   void GetRecentLocalFiles(RecentLocalFilesCallback callback);
+  void GetRecentDriveFiles(RecentDriveFilesCallback callback);
 
  private:
   void OnGetRecentLocalFiles(RecentLocalFilesCallback callback,
+                             const std::vector<ash::RecentFile>& recent_files);
+  void OnGetRecentDriveFiles(RecentDriveFilesCallback callback,
                              const std::vector<ash::RecentFile>& recent_files);
 
   raw_ptr<Profile> profile_;

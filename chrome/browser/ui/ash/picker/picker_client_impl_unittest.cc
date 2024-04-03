@@ -201,17 +201,17 @@ TEST_F(PickerClientImplTest, StartCrosSearch) {
   ASSERT_TRUE(test_done.Wait());
 }
 
-TEST_F(PickerClientImplTest, GetRecentFilesWithNoFiles) {
+TEST_F(PickerClientImplTest, GetRecentLocalFilesWithNoFiles) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
   base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
 
-  client.GetRecentFileResults(future.GetCallback());
+  client.GetRecentLocalFileResults(future.GetCallback());
 
   EXPECT_THAT(future.Get(), IsEmpty());
 }
 
-TEST_F(PickerClientImplTest, GetRecentFilesReturnsFilteredFiles) {
+TEST_F(PickerClientImplTest, GetRecentLocalFilesReturnsFilteredFiles) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
   base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
@@ -227,7 +227,7 @@ TEST_F(PickerClientImplTest, GetRecentFilesReturnsFilteredFiles) {
                                       storage::kFileSystemTypeDriveFs),
                  });
 
-  client.GetRecentFileResults(future.GetCallback());
+  client.GetRecentLocalFileResults(future.GetCallback());
 
   EXPECT_THAT(
       future.Get(),
@@ -250,7 +250,7 @@ TEST_F(PickerClientImplTest, GetRecentFilesReturnsFilteredFiles) {
                         base::FilePath("ccc.png")))))));
 }
 
-TEST_F(PickerClientImplTest, GetRecentFilesDoesNotReturnOldFiles) {
+TEST_F(PickerClientImplTest, GetRecentLocalFilesDoesNotReturnOldFiles) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
   base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
@@ -261,7 +261,7 @@ TEST_F(PickerClientImplTest, GetRecentFilesDoesNotReturnOldFiles) {
                                       base::Time::Now() - base::Days(31)),
                  });
 
-  client.GetRecentFileResults(future.GetCallback());
+  client.GetRecentLocalFileResults(future.GetCallback());
 
   EXPECT_THAT(future.Get(), IsEmpty());
 }

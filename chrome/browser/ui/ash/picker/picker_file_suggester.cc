@@ -52,6 +52,13 @@ void PickerFileSuggester::GetRecentLocalFiles(
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void PickerFileSuggester::GetRecentDriveFiles(
+    RecentDriveFilesCallback callback) {
+  // TODO: b/330634632 - Implement recent Drive file results.
+  NOTIMPLEMENTED_LOG_ONCE();
+  std::move(callback).Run({});
+}
+
 void PickerFileSuggester::OnGetRecentLocalFiles(
     RecentLocalFilesCallback callback,
     const std::vector<ash::RecentFile>& recent_files) {

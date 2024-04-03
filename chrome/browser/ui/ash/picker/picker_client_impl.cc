@@ -81,6 +81,17 @@ std::vector<ash::PickerSearchResult> CreateSearchResultsForRecentLocalFiles(
   return results;
 }
 
+std::vector<ash::PickerSearchResult> CreateSearchResultsForRecentDriveFiles(
+    std::vector<PickerFileSuggester::DriveFile> files) {
+  std::vector<ash::PickerSearchResult> results;
+  results.reserve(files.size());
+  for (PickerFileSuggester::DriveFile& file : files) {
+    results.push_back(ash::PickerSearchResult::DriveFile(std::move(file.title),
+                                                         std::move(file.url)));
+  }
+  return results;
+}
+
 int GetAllAutocompleteProviderTypes() {
   return AutocompleteProvider::TYPE_BOOKMARK |
          AutocompleteProvider::TYPE_HISTORY_QUICK |
@@ -299,9 +310,15 @@ void PickerClientImpl::ShowEditor() {
   editor_mediator->HandleTrigger();
 }
 
-void PickerClientImpl::GetRecentFileResults(RecentFilesCallback callback) {
+void PickerClientImpl::GetRecentLocalFileResults(RecentFilesCallback callback) {
   file_suggester_->GetRecentLocalFiles(
       base::BindOnce(CreateSearchResultsForRecentLocalFiles)
+          .Then(std::move(callback)));
+}
+
+void PickerClientImpl::GetRecentDriveFileResults(RecentFilesCallback callback) {
+  file_suggester_->GetRecentDriveFiles(
+      base::BindOnce(CreateSearchResultsForRecentDriveFiles)
           .Then(std::move(callback)));
 }
 
