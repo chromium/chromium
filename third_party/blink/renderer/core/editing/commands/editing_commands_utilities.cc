@@ -637,12 +637,17 @@ void DispatchInputEventEditableContentChanged(
 
 SelectionInDOMTree CorrectedSelectionAfterCommand(
     const SelectionForUndoStep& passed_selection,
-    const Document* document) {
+    Document* document) {
   if (!passed_selection.Anchor().IsValidFor(*document) ||
       !passed_selection.Focus().IsValidFor(*document)) {
     return SelectionInDOMTree();
   }
-  return passed_selection.AsSelection();
+  if (RuntimeEnabledFeatures::RemoveVisibleSelectionInDOMSelectionEnabled()) {
+    document->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
+    return CreateVisibleSelection(passed_selection.AsSelection()).AsSelection();
+  } else {
+    return passed_selection.AsSelection();
+  }
 }
 
 void ChangeSelectionAfterCommand(LocalFrame* frame,

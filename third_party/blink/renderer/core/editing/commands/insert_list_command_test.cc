@@ -119,11 +119,8 @@ TEST_F(InsertListCommandTest, InsertListOnEmptyHiddenElements) {
 
   // Crash happens here.
   EXPECT_FALSE(command->Apply());
-  EXPECT_EQ(
-      "<button>"
-      "|<ul><li><br></li></ul>"
-      "</button>",
-      GetSelectionTextFromBody());
+  EXPECT_EQ("^<button><ul><li><br></li></ul></button>|",
+            GetSelectionTextFromBody());
 }
 
 // Refer https://crbug.com/797520
@@ -140,11 +137,7 @@ TEST_F(InsertListCommandTest, InsertListWithCollapsedVisibility) {
 
   // Crash happens here.
   EXPECT_FALSE(command->Apply());
-  EXPECT_EQ(
-      "<dl>"
-      "<ol></ol><ul>^a|</ul>"
-      "</dl>",
-      GetSelectionTextFromBody());
+  EXPECT_EQ("^<dl><ol></ol><ul>a</ul></dl>|", GetSelectionTextFromBody());
 }
 
 // Refer https://crbug.com/1183158
@@ -251,7 +244,7 @@ TEST_F(InsertListCommandTest, NonCanonicalVisiblePosition) {
   // Crash happens here.
   EXPECT_TRUE(command->Apply());
   EXPECT_EQ(
-      "<ul><li><textarea></textarea>^<svg></svg><select></select></li>"
+      "<ul><li><textarea></textarea><svg></svg>^<select></select></li>"
       "<li><input>|</li></ul>",
       GetSelectionTextFromBody());
 }

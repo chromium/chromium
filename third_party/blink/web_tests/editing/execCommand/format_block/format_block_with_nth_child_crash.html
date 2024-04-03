@@ -15,10 +15,10 @@ selection_test(
   [
     '<style>li:nth-child(2){display:table-column-group;}</style>',
     '<div contenteditable>',
-    '<pre></pre>',
+    '^<pre></pre>',
     '<li></li>',
     '<canvas></canvas>',
-    '</div>'
+    '|</div>'
   ],
   'Should not crash');
 </script>

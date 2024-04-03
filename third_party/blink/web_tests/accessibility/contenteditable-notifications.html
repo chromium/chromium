@@ -20,7 +20,7 @@ async_test((t) => {
   const expectedSelectedTextChangedIntents = [];
 
   function checkAllNotificationsReceived() {
-    if (valueChangedCount >= 6 && selectedTextChangedCount >= 11)
+    if (valueChangedCount >= 5 && selectedTextChangedCount >= 11)
       t.done();
   }
 
@@ -122,10 +122,6 @@ async_test((t) => {
   ]);
   eventSender.keyDown('ArrowUp', []);
 
-  // ValueChanged at 4.
-  expectedValueChangedIntents.push([
-    'AXEventIntent(insert,insertParagraph,none,none)'
-  ]);
   // SelectedTextChanged at 9.
   expectedSelectedTextChangedIntents.push([
     'AXEventIntent(insert,insertParagraph,none,none)',
@@ -133,7 +129,7 @@ async_test((t) => {
   ]);
   eventSender.keyDown('Enter', []);
 
-  // ValueChanged at 5.
+  // ValueChanged at 4.
   expectedValueChangedIntents.push([
     'AXEventIntent(delete,deleteContentBackward,none,none)',
   ]);

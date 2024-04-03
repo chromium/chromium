@@ -144,7 +144,7 @@ const String& NonBreakingSpaceString();
 CORE_EXPORT void TidyUpHTMLStructure(Document&);
 
 SelectionInDOMTree CorrectedSelectionAfterCommand(const SelectionForUndoStep&,
-                                                  const Document*);
+                                                  Document*);
 void ChangeSelectionAfterCommand(LocalFrame*,
                                  const SelectionInDOMTree&,
                                  const SetSelectionOptions&);
