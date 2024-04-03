@@ -311,4 +311,40 @@ TEST(ClientSharedImageTest,
 }
 #endif
 
+#if !BUILDFLAG(IS_APPLE)
+// On non-Apple platforms, the target for native buffers should be used if a
+// legacy multiplanar format is passed.
+TEST(ClientSharedImageTest, GetTextureTarget_LegacyMultiplanarFormats) {
+  // For expedience, disable a CHECK in ClientSharedImage that external sampling
+  // is used only if the client passed a native buffer.
+  ClientSharedImage::AllowExternalSamplingWithoutNativeBuffersForTesting(true);
+
+  auto sii = base::MakeRefCounted<TestSharedImageInterface>();
+  const gfx::Size kSize(256, 256);
+  const uint32_t kUsage =
+      SHARED_IMAGE_USAGE_RASTER_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ;
+
+  for (auto format : viz::LegacyMultiPlaneFormat::kAll) {
+    SharedImageInfo si_info{format,
+                            kSize,
+                            gfx::ColorSpace(),
+                            kTopLeft_GrSurfaceOrigin,
+                            kOpaque_SkAlphaType,
+                            kUsage,
+                            ""};
+
+    auto client_si = sii->CreateSharedImage(si_info, kNullSurfaceHandle);
+
+#if BUILDFLAG(IS_FUCHSIA)
+    EXPECT_EQ(client_si->GetTextureTarget(), 0u);
+#else
+    EXPECT_EQ(client_si->GetTextureTarget(),
+              static_cast<uint32_t>(GL_TEXTURE_EXTERNAL_OES));
+#endif
+  }
+
+  ClientSharedImage::AllowExternalSamplingWithoutNativeBuffersForTesting(false);
+}
+#endif
+
 }  // namespace gpu
