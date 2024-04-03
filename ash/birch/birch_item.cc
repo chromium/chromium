@@ -400,7 +400,7 @@ void BirchTabItem::PerformAction() {
   RecordActionMetrics();
   NewWindowDelegate::GetInstance()->OpenUrl(
       url_, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
-      NewWindowDelegate::Disposition::kNewForegroundTab);
+      NewWindowDelegate::Disposition::kSwitchToTab);
 }
 
 void BirchTabItem::PerformSecondaryAction() {
