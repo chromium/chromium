@@ -1009,6 +1009,13 @@ class _AvdInstance:
           self.GetSnapshotName(),
       ]
 
+      avd_type = self._avd_name.split('_')[1]
+      logging.info('Emulator Type: %s', avd_type)
+
+      if avd_type == 'car':
+        logging.info('Auto emulator will start slow')
+        is_slow_start = True
+
       if wipe_data:
         emulator_cmd.append('-wipe-data')
       if disk_size:
