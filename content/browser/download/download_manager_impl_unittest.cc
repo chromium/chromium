@@ -78,6 +78,8 @@ class MockDownloadManagerDelegate : public DownloadManagerDelegate {
   ~MockDownloadManagerDelegate() override;
 
   MOCK_METHOD0(Shutdown, void());
+  MOCK_METHOD1(OnDownloadCanceledAtShutdown,
+               void(download::DownloadItem* item));
   void GetNextId(DownloadIdCallback cb) override { GetNextId_(cb); }
   MOCK_METHOD1(GetNextId_, void(DownloadIdCallback&));
   MOCK_METHOD2(DetermineDownloadTarget,
@@ -962,6 +964,40 @@ TEST_F(DownloadManagerWithExpirationTest, DeleteExpiredDownload) {
                                      download::DownloadItem::COMPLETE);
   EXPECT_TRUE(download_item)
       << "Expired complete download will not be deleted.";
+}
+
+class DownloadManagerShutdownTest : public DownloadManagerTest {
+ public:
+  void TearDown() override { download_manager_.reset(); }
+
+ protected:
+  void RunOnDownloadCanceledAtShutdownCalledTest(
+      download::DownloadItem::DownloadState state,
+      int expected_canceled_call_times) {
+    download::MockDownloadItemImpl& item(AddItemToManager());
+
+    EXPECT_CALL(item, GetState()).WillRepeatedly(Return(state));
+    EXPECT_CALL(item, Cancel(false)).Times(expected_canceled_call_times);
+    EXPECT_CALL(GetMockDownloadManagerDelegate(),
+                OnDownloadCanceledAtShutdown(&item))
+        .Times(expected_canceled_call_times);
+    EXPECT_CALL(GetMockObserver(), ManagerGoingDown(download_manager_.get()))
+        .WillOnce(Return());
+    download_manager_->Shutdown();
+    base::RunLoop().RunUntilIdle();
+  }
+};
+
+TEST_F(DownloadManagerShutdownTest,
+       OnDownloadCanceledAtShutdownCalledForInProgressDownload) {
+  RunOnDownloadCanceledAtShutdownCalledTest(download::DownloadItem::IN_PROGRESS,
+                                            /*expected_canceled_call_times=*/1);
+}
+
+TEST_F(DownloadManagerShutdownTest,
+       OnDownloadCanceledAtShutdownNotCalledForCompleteDownload) {
+  RunOnDownloadCanceledAtShutdownCalledTest(download::DownloadItem::COMPLETE,
+                                            /*expected_canceled_call_times=*/0);
 }
 
 }  // namespace content

@@ -550,6 +550,15 @@ void ChromeDownloadManagerDelegate::Shutdown() {
   }
 }
 
+void ChromeDownloadManagerDelegate::OnDownloadCanceledAtShutdown(
+    download::DownloadItem* item) {
+  // Be careful, limited objects are still alive at this point. This function is
+  // called at profile shutdown. Only keyed service, downloadItem and objects
+  // directly owned by the browser process are available.
+  // TODO(crbug.com/329471668): Call SafeBrowsingService::SendDownloadReport
+  // here.
+}
+
 content::DownloadIdCallback
 ChromeDownloadManagerDelegate::GetDownloadIdReceiverCallback() {
   return base::BindOnce(&ChromeDownloadManagerDelegate::SetNextId,

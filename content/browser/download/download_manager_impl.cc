@@ -555,6 +555,9 @@ void DownloadManagerImpl::Shutdown() {
     if (download != nullptr &&
         download->GetState() == download::DownloadItem::IN_PROGRESS) {
       download->Cancel(false);
+      if (delegate_) {
+        delegate_->OnDownloadCanceledAtShutdown(download);
+      }
     }
   }
 

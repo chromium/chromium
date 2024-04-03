@@ -98,6 +98,7 @@ class ChromeDownloadManagerDelegate
 
   // content::DownloadManagerDelegate
   void Shutdown() override;
+  void OnDownloadCanceledAtShutdown(download::DownloadItem* item) override;
   void GetNextId(content::DownloadIdCallback callback) override;
   bool DetermineDownloadTarget(
       download::DownloadItem* item,
