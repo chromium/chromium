@@ -27,8 +27,7 @@ const gfx::VectorIcon& GetVectorIconForPickerCategory(PickerCategory category) {
       // TODO: b/322926823 - Use correct icons.
       return kFolderIcon;
     case PickerCategory::kLocalFiles:
-      // TODO: b/322926823 - Use correct icons.
-      return kFolderIcon;
+      return kPickerLocalFilesIcon;
     case PickerCategory::kDatesTimes:
       // TODO: b/322926823 - Use correct icons.
       return kCalendarEventIcon;
