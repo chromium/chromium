@@ -23,8 +23,7 @@
 
 - (void)start {
   [super start];
-  _viewController = [[SearchEngineChoiceLearnMoreViewController alloc]
-      initWithStyle:ChromeTableViewStyle()];
+  _viewController = [[SearchEngineChoiceLearnMoreViewController alloc] init];
   _viewController.delegate = self;
   // Creates the navigation controller and presents.
   UINavigationController* navigationController = [[UINavigationController alloc]

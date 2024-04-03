@@ -10,19 +10,20 @@ source_set("search_engine_choice_learn_more") {
     "search_engine_choice_learn_more_view_controller.mm",
   ]
   deps = [
+    "resources:search_bar_ipad",
+    "resources:search_bar_iphone",
     "//base",
     "//components/strings",
-    "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/shared/ui/list_model",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
-    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/ui/keyboard",
     "//ios/chrome/browser/ui/search_engine_choice:constants",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/common/ui/util",
     "//ui/base",
   ]

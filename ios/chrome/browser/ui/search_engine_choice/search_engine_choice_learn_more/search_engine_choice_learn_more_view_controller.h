@@ -21,8 +21,7 @@
 @end
 
 // A base view controller for showing an informational screen.
-@interface SearchEngineChoiceLearnMoreViewController
-    : LegacyChromeTableViewController
+@interface SearchEngineChoiceLearnMoreViewController : UIViewController
 
 // View controller delegate.
 @property(nonatomic, weak) id<SearchEngineChoiceLearnMoreDelegate> delegate;
