@@ -302,6 +302,15 @@ TestingProfile::TestingProfile(
 }
 
 void TestingProfile::Init(bool is_supervised_profile) {
+  if (!g_browser_process) {
+    // This is intentionally not a CHECK because that would exonerate any
+    // EXPECT_CHECK_DEATH()s for the wrong reason by printing "Check failed" to
+    // the log. See https://crbug.com/332587367.
+    LOG(FATAL) << "g_browser_process not set yet, if this is happening during "
+                  "some variant of EXPECT_DEATH, EXPECT_CHECK_DEATH etc, see "
+                  "https://crbug.com/332587367. The TestingBrowserProcess has "
+                  "not been set up yet.";
+  }
   base::ScopedAllowBlockingForTesting allow_blocking;
   // If threads have been initialized, we should be on the UI thread.
   DCHECK(!content::BrowserThread::IsThreadInitialized(
