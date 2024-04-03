@@ -3182,6 +3182,11 @@
       base_feature: "none",
     },
     {
+      // See https://issues.chromium.org/issues/41311101
+      name: "RemoveVisibleSelectionInDOMSelection",
+      status: "test",
+    },
+    {
       // See https://github.com/whatwg/html/issues/10034
       name: "RenderBlockingInlineModuleScript",
       status: "stable",

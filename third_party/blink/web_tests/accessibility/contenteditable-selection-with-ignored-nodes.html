@@ -78,9 +78,9 @@ async_test((t) => {
 
   testSteps.push((t) => {
     expectedSelection.push({
-      anchorObject: axTextBox,
+      anchorObject: axLine1,
       anchorOffset: 0,
-      focusObject: axTextBox,
+      focusObject: axLine1,
       focusOffset: 0,
       selectedText: ''});
     expectedIntents.push('AXEventIntent(setSelection,none,character,forward)');

@@ -49,10 +49,12 @@
         let textbox = document.getElementById("contenteditable-textbox");
         textbox.focus();
         let textboxAccessible = accessibilityController.accessibleElementById("contenteditable-textbox");
+        let line1Accessible = accessibilityController.accessibleElementById("contenteditable-line1");
+        let line1TextAccessible = line1Accessible.childAtIndex(0);
 
-        assert_equals(textboxAccessible.selectionAnchorObject, textboxAccessible);
+        assert_equals(textboxAccessible.selectionAnchorObject, line1TextAccessible);
         assert_equals(textboxAccessible.selectionAnchorOffset, 0);
-        assert_equals(textboxAccessible.selectionFocusObject, textboxAccessible);
+        assert_equals(textboxAccessible.selectionFocusObject, line1TextAccessible);
         assert_equals(textboxAccessible.selectionFocusOffset, 0);
     }, "Moving the focus to an ARIA textbox should place the caret at its beginning.");
 

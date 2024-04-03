@@ -6170,9 +6170,15 @@ void Element::UpdateSelectionOnFocus(
     // FocusController::setFocusedElement() and we don't want to change the
     // focus to a new Element.
     frame->Selection().SetSelection(
-        SelectionInDOMTree::Builder()
-            .Collapse(FirstPositionInOrBeforeNode(*this))
-            .Build(),
+        RuntimeEnabledFeatures::RemoveVisibleSelectionInDOMSelectionEnabled()
+            ? CreateVisibleSelection(
+                  SelectionInDOMTree::Builder()
+                      .Collapse(FirstPositionInOrBeforeNode(*this))
+                      .Build())
+                  .AsSelection()
+            : SelectionInDOMTree::Builder()
+                  .Collapse(FirstPositionInOrBeforeNode(*this))
+                  .Build(),
         SetSelectionOptions::Builder()
             .SetShouldCloseTyping(true)
             .SetShouldClearTypingStyle(true)
