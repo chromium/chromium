@@ -173,9 +173,11 @@ void MahiManagerImpl::OnContextMenuClicked(
         return;
       }
 
+      // When the user sends a question from the context menu, we treat it as
+      // the start of a new journey, so we set `current_panel_content` false.
       static_cast<MahiPanelWidget*>(mahi_panel_widget_.get())
           ->SendQuestion(context_menu_request->question.value(),
-                         /*current_panel_content=*/true);
+                         /*current_panel_content=*/false);
       return;
     case MahiContextMenuActionType::kSettings:
       // TODO(b/318565610): Update the behaviour of kSettings
