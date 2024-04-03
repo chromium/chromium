@@ -223,6 +223,8 @@ class ServiceWorkerContainerHostTest : public testing::Test {
                                 1 /* route_id */),
         PolicyContainerPolicies(), std::move(reporter),
         ukm::UkmRecorder::GetNewSourceID());
+    // After the navigation commit, it is ready to call the container's methods.
+    container_host->SetContainerReady();
   }
 
   blink::mojom::ServiceWorkerErrorType Register(

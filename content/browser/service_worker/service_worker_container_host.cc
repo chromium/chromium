@@ -485,6 +485,9 @@ void ServiceWorkerContainerHost::EnsureFileAccess(
 
 void ServiceWorkerContainerHost::OnExecutionReady() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Since `OnExecutionReady()` is a part of `ServiceWorkerContainerHost`,
+  // this method is called only if `is_container_ready_` is true.
+  CHECK(is_container_ready_);
 
   if (!IsContainerForClient()) {
     mojo::ReportBadMessage("SWPH_OER_NOT_CLIENT");
@@ -737,6 +740,7 @@ void ServiceWorkerContainerHost::SendSetControllerServiceWorker(
     bool notify_controllerchange) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsContainerForClient());
+  CHECK(is_container_ready_);
 
   if (!controller_ || !context_) {
     // Do not set |fetch_request_window_id| when |controller_| is not available.
@@ -1547,8 +1551,18 @@ void ServiceWorkerContainerHost::UpdateController(
   // SetController message should be sent only for clients.
   DCHECK(IsContainerForClient());
 
-  if (!is_execution_ready())
+  // No need to `SetController` if the container is not ready because
+  // when the container gets ready, `ControllerServiceWorkerInfoPtr` is also
+  // sent in the same IPC call. Moreover, it is harmful to resend the past
+  // SetController to the renderer because it moves the controller in the
+  // renderer to the past one.
+  if (!is_container_ready_) {
     return;
+  }
+
+  if (!is_execution_ready()) {
+    return;
+  }
 
   SendSetControllerServiceWorker(notify_controllerchange);
 }

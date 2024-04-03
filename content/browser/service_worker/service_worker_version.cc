@@ -1773,6 +1773,7 @@ void ServiceWorkerVersion::PostMessageToClient(
   // As we don't track tasks between workers and renderers, we can nullify the
   // message's parent task ID.
   message.parent_task_id = std::nullopt;
+  // TODO(crbug.com/332583998): may queue the post message?
   container_host->PostMessageToClient(this, std::move(message));
 }
 
