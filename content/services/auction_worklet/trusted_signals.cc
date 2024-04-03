@@ -136,16 +136,16 @@ std::map<std::string, AuctionV8Helper::SerializedValue> ParseChildKeyValueMap(
   return ParseKeyValueMap(v8_helper, named_object_value.As<v8::Object>(), keys);
 }
 
-// Attempts to parse the `priorityVector` value in `per_interest_group_data`,
-// expecting it to be a string-to-number mapping. Writes the parsed mapping to
-// `priority_vector`. Returns true on success. Any case where `priorityVector`
-// exists and is an object is considered a success, even if it's empty, or
-// some/all keys in it are mapped to things other than numbers.
+// Attempts to parse the `priorityVector` value in `v8_per_interest_group_data`,
+// expecting it to be a string-to-number mapping. Returns the parsed mapping, or
+// nullopt upon failure to find or parse the field. Any case where
+// `priorityVector` exists and is an object is considered a success, even if
+// it's empty, or some/all keys in it are mapped to things other than numbers.
 std::optional<TrustedSignals::Result::PriorityVector> ParsePriorityVector(
     AuctionV8Helper* v8_helper,
-    v8::Local<v8::Object> per_interest_group_data) {
+    v8::Local<v8::Object> v8_per_interest_group_data) {
   v8::Local<v8::Value> priority_vector_value;
-  if (!per_interest_group_data
+  if (!v8_per_interest_group_data
            ->Get(v8_helper->scratch_context(),
                  v8_helper->CreateStringFromLiteral("priorityVector"))
            .ToLocal(&priority_vector_value) ||
@@ -190,10 +190,31 @@ std::optional<TrustedSignals::Result::PriorityVector> ParsePriorityVector(
       std::move(priority_vector_pairs));
 }
 
+// Attempts to parse the `updateIfOlderThanMs` value in
+// `v8_per_interest_group_data`, expecting it to be a double duration in
+// milliseconds. Returns the time delta, or nullopt upon failure to find or
+// parse the value.
+std::optional<base::TimeDelta> ParseUpdateIfOlderThan(
+    AuctionV8Helper* v8_helper,
+    v8::Local<v8::Object> v8_per_interest_group_data) {
+  v8::Local<v8::Value> update_if_older_than_ms_value;
+  double update_if_older_than_ms;
+  if (!v8_per_interest_group_data
+           ->Get(v8_helper->scratch_context(),
+                 v8_helper->CreateStringFromLiteral("updateIfOlderThanMs"))
+           .ToLocal(&update_if_older_than_ms_value) ||
+      !update_if_older_than_ms_value->IsNumber() ||
+      !update_if_older_than_ms_value->NumberValue(v8_helper->scratch_context())
+           .To(&update_if_older_than_ms)) {
+    return std::nullopt;
+  }
+  return base::Milliseconds(update_if_older_than_ms);
+}
+
 // Attempts to parse the `perInterestGroupData` value in `v8_object`, extracting
 // the `priorityVector` fields of all interest group in `interest_group_names`,
-// and putting them all in the returned PriorityVectorMap.
-TrustedSignals::Result::PriorityVectorMap
+// and putting them all in the returned PerInterestGroupDataMap.
+TrustedSignals::Result::PerInterestGroupDataMap
 ParsePriorityVectorsInPerInterestGroupMap(
     AuctionV8Helper* v8_helper,
     v8::Local<v8::Object> v8_object,
@@ -212,7 +233,7 @@ ParsePriorityVectorsInPerInterestGroupMap(
   v8::Local<v8::Object> per_group_data_object =
       per_group_data_value.As<v8::Object>();
 
-  TrustedSignals::Result::PriorityVectorMap out;
+  TrustedSignals::Result::PerInterestGroupDataMap out;
   for (const auto& interest_group_name : interest_group_names) {
     v8::Local<v8::String> v8_name;
     if (!v8_helper->CreateUtf8String(interest_group_name).ToLocal(&v8_name)) {
@@ -229,12 +250,16 @@ ParsePriorityVectorsInPerInterestGroupMap(
       continue;
     }
 
-    v8::Local<v8::Object> per_interest_group_data =
+    v8::Local<v8::Object> v8_per_interest_group_data =
         per_interest_group_data_value.As<v8::Object>();
     std::optional<TrustedSignals::Result::PriorityVector> priority_vector =
-        ParsePriorityVector(v8_helper, per_interest_group_data);
-    if (priority_vector) {
-      out.emplace(interest_group_name, std::move(*priority_vector));
+        ParsePriorityVector(v8_helper, v8_per_interest_group_data);
+    std::optional<base::TimeDelta> update_if_older_than =
+        ParseUpdateIfOlderThan(v8_helper, v8_per_interest_group_data);
+    if (priority_vector || update_if_older_than) {
+      out.emplace(interest_group_name, TrustedSignals::Result::PerGroupData(
+                                           std::move(priority_vector),
+                                           std::move(update_if_older_than)));
     }
   }
   return out;
@@ -270,11 +295,23 @@ v8::Local<v8::Object> CreateObjectFromMap(
 
 }  // namespace
 
+TrustedSignals::Result::PerGroupData::PerGroupData(
+    std::optional<PriorityVector> priority_vector,
+    std::optional<base::TimeDelta> update_if_older_than)
+    : priority_vector(std::move(priority_vector)),
+      update_if_older_than(std::move(update_if_older_than)) {}
+
+TrustedSignals::Result::PerGroupData::~PerGroupData() = default;
+
+TrustedSignals::Result::PerGroupData::PerGroupData(PerGroupData&&) = default;
+TrustedSignals::Result::PerGroupData&
+TrustedSignals::Result::PerGroupData::operator=(PerGroupData&&) = default;
+
 TrustedSignals::Result::Result(
-    std::map<std::string, base::flat_map<std::string, double>> priority_vectors,
+    PerInterestGroupDataMap per_interest_group_data,
     std::map<std::string, AuctionV8Helper::SerializedValue> bidder_data,
     std::optional<uint32_t> data_version)
-    : priority_vectors_(std::move(priority_vectors)),
+    : per_interest_group_data_(std::move(per_interest_group_data)),
       bidder_data_(std::move(bidder_data)),
       data_version_(data_version) {}
 
@@ -286,12 +323,12 @@ TrustedSignals::Result::Result(
       ad_component_data_(std::move(ad_component_data)),
       data_version_(data_version) {}
 
-const TrustedSignals::Result::PriorityVector*
-TrustedSignals::Result::GetPriorityVector(
+const TrustedSignals::Result::PerGroupData*
+TrustedSignals::Result::GetPerGroupData(
     const std::string& interest_group_name) const {
-  DCHECK(priority_vectors_.has_value());
-  auto result = priority_vectors_->find(interest_group_name);
-  if (result == priority_vectors_->end()) {
+  DCHECK(per_interest_group_data_.has_value());
+  auto result = per_interest_group_data_->find(interest_group_name);
+  if (result == per_interest_group_data_->end()) {
     return nullptr;
   }
   return &result->second;
@@ -630,7 +667,8 @@ void TrustedSignals::HandleDownloadResultOnV8Thread(
         format_version != 2);
     if (format_version == 1) {
       result = base::MakeRefCounted<Result>(
-          /*priority_vectors=*/TrustedSignals::Result::PriorityVectorMap(),
+          /*per_interest_group_data=*/TrustedSignals::Result::
+              PerInterestGroupDataMap(),
           ParseKeyValueMap(v8_helper.get(), v8_object, *bidding_signals_keys),
           maybe_data_version);
       error_msg = base::StringPrintf(

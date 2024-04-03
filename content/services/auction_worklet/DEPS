@@ -12,3 +12,10 @@ include_rules = [
   "+third_party/inspector_protocol/crdtp",
   "+v8",
 ]
+
+specific_include_rules = {
+  # Some unit tests use extra gmock matchers for EXPECT_THAT().
+  ".*_unittest\.cc": [
+    "+third_party/googletest/src/googlemock/include/gmock",
+  ],
+}

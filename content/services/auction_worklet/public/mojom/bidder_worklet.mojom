@@ -225,9 +225,14 @@ interface GenerateBidClient {
   //
   //  `trusted_signals_fetch_latency` The amount of time taken fetching trusted
   //  bidding signals. If no trusted signals were fetched, returns a 0 duration.
+  //
+  //  `update_if_older_than` If present, indicates that the interest group
+  //  should potentially be updated even if its last update was less than 24
+  //  hours ago, if the last update was less recent than `update_if_older_than`.
   OnBiddingSignalsReceived(
       map<string, double> priority_vector,
-      mojo_base.mojom.TimeDelta trusted_signals_fetch_latency) => ();
+      mojo_base.mojom.TimeDelta trusted_signals_fetch_latency,
+      mojo_base.mojom.TimeDelta? update_if_older_than) => ();
 
   // Invoked once GenerateBid completes, either having successfully generated
   // bids, or having failed to generate one for any reason.

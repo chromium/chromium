@@ -519,6 +519,7 @@ void BidderWorklet::BeginGenerateBid(
   generate_bid_task->generate_bid_client->OnBiddingSignalsReceived(
       /*priority_vector=*/{},
       /*trusted_signals_fetch_latency=*/base::TimeDelta(),
+      /*update_if_older_than=*/std::nullopt,
       base::BindOnce(&BidderWorklet::SignalsReceivedCallback,
                      base::Unretained(this), generate_bid_task));
 }
@@ -1915,10 +1916,10 @@ void BidderWorklet::OnTrustedBiddingSignalsDownloaded(
     std::optional<std::string> error_msg) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
-  const TrustedSignals::Result::PriorityVector* priority_vector = nullptr;
+  const TrustedSignals::Result::PerGroupData* per_group_data = nullptr;
   if (result) {
-    priority_vector =
-        result->GetPriorityVector(task->bidder_worklet_non_shared_params->name);
+    per_group_data =
+        result->GetPerGroupData(task->bidder_worklet_non_shared_params->name);
   }
 
   task->trusted_bidding_signals_error_msg = std::move(error_msg);
@@ -1929,10 +1930,13 @@ void BidderWorklet::OnTrustedBiddingSignalsDownloaded(
   // abort this callback, so it's safe to use Unretained(this) and
   // `generate_bid_task` here.
   task->generate_bid_client->OnBiddingSignalsReceived(
-      priority_vector ? *priority_vector
-                      : TrustedSignals::Result::PriorityVector(),
+      per_group_data && per_group_data->priority_vector
+          ? *per_group_data->priority_vector
+          : TrustedSignals::Result::PriorityVector(),
       /*trusted_signals_fetch_latency=*/base::TimeTicks::Now() -
           task->trace_wait_deps_start,
+      /*update_if_older_than=*/
+      per_group_data ? per_group_data->update_if_older_than : std::nullopt,
       base::BindOnce(&BidderWorklet::SignalsReceivedCallback,
                      base::Unretained(this), task));
 }

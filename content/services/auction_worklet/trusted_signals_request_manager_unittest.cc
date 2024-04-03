@@ -462,7 +462,8 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsOneRequestNullKeys) {
           /*trusted_bidding_signals_keys=*/std::nullopt);
   ASSERT_TRUE(signals);
   EXPECT_FALSE(error_msg_.has_value());
-  const auto* priority_vector = signals->GetPriorityVector("name1");
+  const auto priority_vector =
+      signals->GetPerGroupData("name1")->priority_vector;
   ASSERT_TRUE(priority_vector);
   EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
             *priority_vector);
@@ -480,7 +481,8 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsOneRequest) {
   EXPECT_FALSE(error_msg_.has_value());
   EXPECT_EQ(R"({"key2":[2],"key1":1})",
             ExtractBiddingSignals(signals.get(), kKeys));
-  const auto* priority_vector = signals->GetPriorityVector("name1");
+  const auto priority_vector =
+      signals->GetPerGroupData("name1")->priority_vector;
   ASSERT_TRUE(priority_vector);
   EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
             *priority_vector);
@@ -544,7 +546,7 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsSequentialRequests) {
   EXPECT_FALSE(error_msg_.has_value());
   EXPECT_EQ(R"({"key1":1,"key3":3})",
             ExtractBiddingSignals(signals1.get(), kKeys1));
-  const auto* priority_vector = signals1->GetPriorityVector("name1");
+  auto priority_vector = signals1->GetPerGroupData("name1")->priority_vector;
   ASSERT_TRUE(priority_vector);
   EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
             *priority_vector);
@@ -563,7 +565,7 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsSequentialRequests) {
   EXPECT_FALSE(error_msg_.has_value());
   EXPECT_EQ(R"({"key2":[2],"key3":[3]})",
             ExtractBiddingSignals(signals2.get(), kKeys2));
-  priority_vector = signals2->GetPriorityVector("name2");
+  priority_vector = signals2->GetPerGroupData("name2")->priority_vector;
   ASSERT_TRUE(priority_vector);
   EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 2}}),
             *priority_vector);
@@ -700,7 +702,7 @@ TEST_F(TrustedSignalsRequestManagerTest,
   ASSERT_TRUE(signals1);
   EXPECT_EQ(R"({"key1":1,"key3":3})",
             ExtractBiddingSignals(signals1.get(), kKeys1));
-  const auto* priority_vector = signals1->GetPriorityVector("name1");
+  auto priority_vector = signals1->GetPerGroupData("name1")->priority_vector;
   ASSERT_TRUE(priority_vector);
   EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
             *priority_vector);
@@ -710,7 +712,7 @@ TEST_F(TrustedSignalsRequestManagerTest,
   ASSERT_TRUE(signals2);
   EXPECT_EQ(R"({"key2":[2],"key3":[3]})",
             ExtractBiddingSignals(signals2.get(), kKeys2));
-  priority_vector = signals2->GetPriorityVector("name2");
+  priority_vector = signals2->GetPerGroupData("name2")->priority_vector;
   ASSERT_TRUE(priority_vector);
   EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 2}}),
             *priority_vector);
@@ -853,7 +855,7 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsBatchedRequests) {
   ASSERT_TRUE(signals1);
   EXPECT_EQ(R"({"key1":1,"key3":"3"})",
             ExtractBiddingSignals(signals1.get(), kKeys1));
-  const auto* priority_vector = signals1->GetPriorityVector("name1");
+  auto priority_vector = signals1->GetPerGroupData("name1")->priority_vector;
   ASSERT_TRUE(priority_vector);
   EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
             *priority_vector);
@@ -863,7 +865,7 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsBatchedRequests) {
   ASSERT_TRUE(signals2);
   EXPECT_EQ(R"({"key2":[2],"key3":"3"})",
             ExtractBiddingSignals(signals2.get(), kKeys2));
-  priority_vector = signals2->GetPriorityVector("name2");
+  priority_vector = signals2->GetPerGroupData("name2")->priority_vector;
   ASSERT_TRUE(priority_vector);
   EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 2}}),
             *priority_vector);
@@ -1012,7 +1014,8 @@ TEST_F(TrustedSignalsRequestManagerTest, CancelOneRequest) {
   EXPECT_FALSE(error_msg2);
   ASSERT_TRUE(signals2);
   EXPECT_EQ(R"({"key2":[2]})", ExtractBiddingSignals(signals2.get(), kKeys2));
-  const auto* priority_vector = signals2->GetPriorityVector("name2");
+  const auto priority_vector =
+      signals2->GetPerGroupData("name2")->priority_vector;
   ASSERT_TRUE(priority_vector);
   EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 2}}),
             *priority_vector);
@@ -1087,7 +1090,8 @@ TEST_F(TrustedSignalsRequestManagerTest, CancelOneLiveRequest) {
   EXPECT_FALSE(error_msg2);
   ASSERT_TRUE(signals2);
   EXPECT_EQ(R"({"key2":[2]})", ExtractBiddingSignals(signals2.get(), kKeys2));
-  const auto* priority_vector = signals2->GetPriorityVector("name2");
+  const auto priority_vector =
+      signals2->GetPerGroupData("name2")->priority_vector;
   ASSERT_TRUE(priority_vector);
   EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 2}}),
             *priority_vector);
@@ -1341,7 +1345,8 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingExperimentGroupIds) {
   EXPECT_FALSE(error_msg);
   ASSERT_TRUE(signals);
   EXPECT_EQ(R"({"key1":1})", ExtractBiddingSignals(signals.get(), kKeys));
-  const auto* priority_vector = signals->GetPriorityVector("name1");
+  const auto priority_vector =
+      signals->GetPerGroupData("name1")->priority_vector;
   ASSERT_TRUE(priority_vector);
   EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
             *priority_vector);
@@ -1413,7 +1418,8 @@ TEST_F(TrustedSignalsRequestManagerSplitURLTest,
   EXPECT_FALSE(error_msg_.has_value());
   EXPECT_EQ(R"({"key2":[2],"key1":1})",
             ExtractBiddingSignals(signals.get(), kKeys));
-  const auto* priority_vector = signals->GetPriorityVector("name1");
+  const auto priority_vector =
+      signals->GetPerGroupData("name1")->priority_vector;
   ASSERT_TRUE(priority_vector);
   EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
             *priority_vector);
@@ -1477,7 +1483,8 @@ TEST_F(TrustedSignalsRequestManagerSplitURLTest,
   EXPECT_FALSE(error_msg_.has_value());
   EXPECT_EQ(R"({"key2":[2],"key1":1})",
             ExtractBiddingSignals(signals.get(), kKeys));
-  const auto* priority_vector = signals->GetPriorityVector("name1");
+  const auto priority_vector =
+      signals->GetPerGroupData("name1")->priority_vector;
   ASSERT_TRUE(priority_vector);
   EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
             *priority_vector);
@@ -1541,7 +1548,8 @@ TEST_F(TrustedSignalsRequestManagerSplitURLTest,
   EXPECT_FALSE(error_msg_.has_value());
   EXPECT_EQ(R"({"key2":[2],"key1":1})",
             ExtractBiddingSignals(signals.get(), kKeys));
-  const auto* priority_vector = signals->GetPriorityVector("name1");
+  const auto priority_vector =
+      signals->GetPerGroupData("name1")->priority_vector;
   ASSERT_TRUE(priority_vector);
   EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
             *priority_vector);
@@ -1631,7 +1639,7 @@ TEST_F(TrustedSignalsRequestManagerSplitURLTest,
   ASSERT_TRUE(signals1);
   EXPECT_EQ(R"({"key1":1,"key3":"3"})",
             ExtractBiddingSignals(signals1.get(), kKeys1));
-  const auto* priority_vector = signals1->GetPriorityVector("name1");
+  auto priority_vector = signals1->GetPerGroupData("name1")->priority_vector;
   ASSERT_TRUE(priority_vector);
   EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
             *priority_vector);
@@ -1641,7 +1649,7 @@ TEST_F(TrustedSignalsRequestManagerSplitURLTest,
   ASSERT_TRUE(signals2);
   EXPECT_EQ(R"({"key2":[2],"key3":"3"})",
             ExtractBiddingSignals(signals2.get(), kKeys2));
-  priority_vector = signals2->GetPriorityVector("name2");
+  priority_vector = signals2->GetPerGroupData("name2")->priority_vector;
   ASSERT_TRUE(priority_vector);
   EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 2}}),
             *priority_vector);
@@ -1784,7 +1792,7 @@ TEST_F(TrustedSignalsRequestManagerSplitURLTest,
   ASSERT_TRUE(signals1);
   EXPECT_EQ(R"({"key1":1,"key3":3})",
             ExtractBiddingSignals(signals1.get(), kKeys1));
-  const auto* priority_vector = signals1->GetPriorityVector("name1");
+  auto priority_vector = signals1->GetPerGroupData("name1")->priority_vector;
   ASSERT_TRUE(priority_vector);
   EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
             *priority_vector);
@@ -1794,7 +1802,7 @@ TEST_F(TrustedSignalsRequestManagerSplitURLTest,
   ASSERT_TRUE(signals2);
   EXPECT_EQ(R"({"key2":[2],"key3":[3]})",
             ExtractBiddingSignals(signals2.get(), kKeys2));
-  priority_vector = signals2->GetPriorityVector("name2");
+  priority_vector = signals2->GetPerGroupData("name2")->priority_vector;
   ASSERT_TRUE(priority_vector);
   EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 2}}),
             *priority_vector);
@@ -1953,7 +1961,7 @@ TEST_F(TrustedSignalsRequestManagerSplitURLTest,
   ASSERT_TRUE(signals1);
   EXPECT_EQ(R"({"key1":1,"key3":"3"})",
             ExtractBiddingSignals(signals1.get(), kKeys1));
-  const auto* priority_vector = signals1->GetPriorityVector("name1");
+  auto priority_vector = signals1->GetPerGroupData("name1")->priority_vector;
   ASSERT_TRUE(priority_vector);
   EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
             *priority_vector);
@@ -1963,7 +1971,7 @@ TEST_F(TrustedSignalsRequestManagerSplitURLTest,
   ASSERT_TRUE(signals2);
   EXPECT_EQ(R"({"key2":[2],"key3":"3"})",
             ExtractBiddingSignals(signals2.get(), kKeys2));
-  priority_vector = signals2->GetPriorityVector("name2");
+  priority_vector = signals2->GetPerGroupData("name2")->priority_vector;
   ASSERT_TRUE(priority_vector);
   EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 2}}),
             *priority_vector);
@@ -1973,7 +1981,7 @@ TEST_F(TrustedSignalsRequestManagerSplitURLTest,
   ASSERT_TRUE(signals3);
   EXPECT_EQ(R"({"key1":[2],"key2":[3]})",
             ExtractBiddingSignals(signals3.get(), kKeys3));
-  priority_vector = signals3->GetPriorityVector("name3");
+  priority_vector = signals3->GetPerGroupData("name3")->priority_vector;
   ASSERT_TRUE(priority_vector);
   EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 3}}),
             *priority_vector);
@@ -2160,8 +2168,8 @@ TEST_F(TrustedSignalsRequestManagerSplitURLTest,
   ASSERT_TRUE(signals1);
   EXPECT_EQ(R"({"key1":[2],"key3":[3]})",
             ExtractBiddingSignals(signals1.get(), kKeys1));
-  const auto* priority_vector =
-      signals1->GetPriorityVector("extremelyLongName");
+  auto priority_vector =
+      signals1->GetPerGroupData("extremelyLongName")->priority_vector;
   ASSERT_TRUE(priority_vector);
   EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 3}}),
             *priority_vector);
@@ -2171,7 +2179,7 @@ TEST_F(TrustedSignalsRequestManagerSplitURLTest,
   ASSERT_TRUE(signals2);
   EXPECT_EQ(R"({"key2":[2],"key3":"3"})",
             ExtractBiddingSignals(signals2.get(), kKeys2));
-  priority_vector = signals2->GetPriorityVector("name1");
+  priority_vector = signals2->GetPerGroupData("name1")->priority_vector;
   ASSERT_TRUE(priority_vector);
   EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
             *priority_vector);
@@ -2181,7 +2189,7 @@ TEST_F(TrustedSignalsRequestManagerSplitURLTest,
   ASSERT_TRUE(signals3);
   EXPECT_EQ(R"({"key1":1,"key2":[2]})",
             ExtractBiddingSignals(signals3.get(), kKeys3));
-  priority_vector = signals3->GetPriorityVector("name2");
+  priority_vector = signals3->GetPerGroupData("name2")->priority_vector;
   ASSERT_TRUE(priority_vector);
   EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 2}}),
             *priority_vector);
@@ -2343,7 +2351,7 @@ TEST_F(TrustedSignalsRequestManagerSplitURLTest,
   run_loop1.Run();
   EXPECT_FALSE(error_msg1);
   ASSERT_TRUE(signals1);
-  const auto* priority_vector = signals1->GetPriorityVector("name");
+  auto priority_vector = signals1->GetPerGroupData("name")->priority_vector;
   ASSERT_TRUE(priority_vector);
   EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
             *priority_vector);
@@ -2351,7 +2359,7 @@ TEST_F(TrustedSignalsRequestManagerSplitURLTest,
   run_loop2.Run();
   EXPECT_FALSE(error_msg2);
   ASSERT_TRUE(signals2);
-  priority_vector = signals2->GetPriorityVector("name");
+  priority_vector = signals2->GetPerGroupData("name")->priority_vector;
   ASSERT_TRUE(priority_vector);
   EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
             *priority_vector);

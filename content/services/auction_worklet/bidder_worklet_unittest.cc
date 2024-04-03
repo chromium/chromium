@@ -49,11 +49,14 @@
 #include "third_party/blink/public/common/interest_group/ad_display_size.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
+#include "third_party/googletest/src/googlemock/include/gmock/gmock-more-matchers.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 using testing::HasSubstr;
+using testing::IsEmpty;
 using testing::StartsWith;
+using testing::UnorderedElementsAre;
 
 namespace auction_worklet {
 namespace {
@@ -132,6 +135,7 @@ class GenerateBidClientWithCallbacks : public mojom::GenerateBidClient {
   using OnBiddingSignalsReceivedCallback = base::OnceCallback<void(
       const base::flat_map<std::string, double>& priority_vector,
       base::TimeDelta trusted_signals_fetch_latency,
+      std::optional<base::TimeDelta> update_if_older_than,
       base::OnceClosure callback)>;
 
   using GenerateBidCallback = base::OnceCallback<void(
@@ -211,6 +215,7 @@ class GenerateBidClientWithCallbacks : public mojom::GenerateBidClient {
   void OnBiddingSignalsReceived(
       const base::flat_map<std::string, double>& priority_vector,
       base::TimeDelta trusted_signals_fetch_latency,
+      std::optional<base::TimeDelta> update_if_older_than,
       base::OnceClosure callback) override {
     // May only be called once.
     EXPECT_FALSE(on_bidding_signals_received_invoked_);
@@ -219,7 +224,7 @@ class GenerateBidClientWithCallbacks : public mojom::GenerateBidClient {
     if (on_bidding_signals_received_callback_) {
       std::move(on_bidding_signals_received_callback_)
           .Run(priority_vector, trusted_signals_fetch_latency,
-               std::move(callback));
+               update_if_older_than, std::move(callback));
       return;
     }
     std::move(callback).Run();
@@ -6071,6 +6076,7 @@ TEST_F(BidderWorkletTest, GenerateBidOnBiddingSignalsReceivedNoTrustedSignals) {
   auto on_bidding_signals_received_callback = base::BindLambdaForTesting(
       [&](const base::flat_map<std::string, double>& priority_vector,
           base::TimeDelta trusted_signals_fetch_latency,
+          std::optional<base::TimeDelta> update_if_older_than,
           base::OnceClosure callback) {
         EXPECT_TRUE(priority_vector.empty());
         EXPECT_EQ(base::TimeDelta(), trusted_signals_fetch_latency);
@@ -6111,6 +6117,7 @@ TEST_F(BidderWorkletTest, GenerateBidOnBiddingSignalsReceivedFetchFails) {
   auto on_bidding_signals_received_callback = base::BindLambdaForTesting(
       [&](const base::flat_map<std::string, double>& priority_vector,
           base::TimeDelta trusted_signals_fetch_latency,
+          std::optional<base::TimeDelta> update_if_older_than,
           base::OnceClosure callback) {
         EXPECT_TRUE(priority_vector.empty());
         on_bidding_signals_received_run_loop.Quit();
@@ -6161,6 +6168,7 @@ TEST_F(BidderWorkletTest,
   auto on_bidding_signals_received_callback = base::BindLambdaForTesting(
       [&](const base::flat_map<std::string, double>& priority_vector,
           base::TimeDelta trusted_signals_fetch_latency,
+          std::optional<base::TimeDelta> update_if_older_than,
           base::OnceClosure callback) {
         EXPECT_TRUE(priority_vector.empty());
         on_bidding_signals_received_run_loop.Quit();
@@ -6209,8 +6217,171 @@ TEST_F(BidderWorkletTest,
   auto on_bidding_signals_received_callback = base::BindLambdaForTesting(
       [&](const base::flat_map<std::string, double>& priority_vector,
           base::TimeDelta trusted_signals_fetch_latency,
+          std::optional<base::TimeDelta> update_if_older_than,
           base::OnceClosure callback) {
         EXPECT_TRUE(priority_vector.empty());
+        EXPECT_EQ(std::nullopt, update_if_older_than);
+        on_bidding_signals_received_run_loop.Quit();
+        on_bidding_signals_received_continue_callback = std::move(callback);
+      });
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  GenerateBid(bidder_worklet.get(),
+              GenerateBidClientWithCallbacks::Create(
+                  base::BindOnce(&BidderWorkletTest::GenerateBidCallback,
+                                 base::Unretained(this)),
+                  std::move(on_bidding_signals_received_callback)));
+
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(on_bidding_signals_received_run_loop.AnyQuitCalled());
+  EXPECT_FALSE(load_script_run_loop_->AnyQuitCalled());
+
+  AddBidderJsonResponse(&url_loader_factory_, kFullSignalsUrl, kJson);
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(on_bidding_signals_received_run_loop.AnyQuitCalled());
+  EXPECT_FALSE(load_script_run_loop_->AnyQuitCalled());
+  ASSERT_TRUE(on_bidding_signals_received_continue_callback);
+
+  std::move(on_bidding_signals_received_continue_callback).Run();
+  load_script_run_loop_->Run();
+}
+
+// Same as GenerateBidOnBiddingSignalsReceivedNoPriorityVectorReceived, but
+// the priority vector is received, and verified in the signals received
+// callback.
+TEST_F(BidderWorkletTest,
+       GenerateBidOnBiddingSignalsReceivedPriorityVectorReceived) {
+  interest_group_trusted_bidding_signals_url_ = GURL("https://signals.test/");
+  const GURL kFullSignalsUrl(
+      "https://signals.test/?hostname=top.window.test&interestGroupNames=Fred");
+
+  const char kJson[] = R"({"perInterestGroupData":
+                            {"Fred": {"priorityVector": {"foo": 1.0}}}
+                          })";
+
+  auto bidder_worklet = CreateWorklet();
+  AddJavascriptResponse(
+      &url_loader_factory_, interest_group_bidding_url_,
+      CreateGenerateBidScript(CreateBasicGenerateBidScript()));
+
+  base::RunLoop on_bidding_signals_received_run_loop;
+  base::OnceClosure on_bidding_signals_received_continue_callback;
+  auto on_bidding_signals_received_callback = base::BindLambdaForTesting(
+      [&](const base::flat_map<std::string, double>& priority_vector,
+          base::TimeDelta trusted_signals_fetch_latency,
+          std::optional<base::TimeDelta> update_if_older_than,
+          base::OnceClosure callback) {
+        EXPECT_THAT(priority_vector,
+                    UnorderedElementsAre(std::make_pair("foo", 1.0)));
+        EXPECT_EQ(std::nullopt, update_if_older_than);
+        on_bidding_signals_received_run_loop.Quit();
+        on_bidding_signals_received_continue_callback = std::move(callback);
+      });
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  GenerateBid(bidder_worklet.get(),
+              GenerateBidClientWithCallbacks::Create(
+                  base::BindOnce(&BidderWorkletTest::GenerateBidCallback,
+                                 base::Unretained(this)),
+                  std::move(on_bidding_signals_received_callback)));
+
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(on_bidding_signals_received_run_loop.AnyQuitCalled());
+  EXPECT_FALSE(load_script_run_loop_->AnyQuitCalled());
+
+  AddBidderJsonResponse(&url_loader_factory_, kFullSignalsUrl, kJson);
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(on_bidding_signals_received_run_loop.AnyQuitCalled());
+  EXPECT_FALSE(load_script_run_loop_->AnyQuitCalled());
+  ASSERT_TRUE(on_bidding_signals_received_continue_callback);
+
+  std::move(on_bidding_signals_received_continue_callback).Run();
+  load_script_run_loop_->Run();
+}
+
+// Same as GenerateBidOnBiddingSignalsReceivedNoPriorityVectorReceived, but the
+// updateIfOlderThanMs field is present, but priorityVector is not -- this is
+// verified in the signals received callback.
+TEST_F(
+    BidderWorkletTest,
+    GenerateBidOnBiddingSignalsReceivedNoPriorityVectorYesUpdateIfOlderThanMsReceived) {
+  interest_group_trusted_bidding_signals_url_ = GURL("https://signals.test/");
+  const GURL kFullSignalsUrl(
+      "https://signals.test/?hostname=top.window.test&interestGroupNames=Fred");
+
+  const char kJson[] = R"({"perInterestGroupData":
+                            {"Fred": {"updateIfOlderThanMs": 3600000}}
+                          })";
+
+  auto bidder_worklet = CreateWorklet();
+  AddJavascriptResponse(
+      &url_loader_factory_, interest_group_bidding_url_,
+      CreateGenerateBidScript(CreateBasicGenerateBidScript()));
+
+  base::RunLoop on_bidding_signals_received_run_loop;
+  base::OnceClosure on_bidding_signals_received_continue_callback;
+  auto on_bidding_signals_received_callback = base::BindLambdaForTesting(
+      [&](const base::flat_map<std::string, double>& priority_vector,
+          base::TimeDelta trusted_signals_fetch_latency,
+          std::optional<base::TimeDelta> update_if_older_than,
+          base::OnceClosure callback) {
+        EXPECT_THAT(priority_vector, IsEmpty());
+        EXPECT_EQ(base::Milliseconds(3600000), update_if_older_than);
+        on_bidding_signals_received_run_loop.Quit();
+        on_bidding_signals_received_continue_callback = std::move(callback);
+      });
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  GenerateBid(bidder_worklet.get(),
+              GenerateBidClientWithCallbacks::Create(
+                  base::BindOnce(&BidderWorkletTest::GenerateBidCallback,
+                                 base::Unretained(this)),
+                  std::move(on_bidding_signals_received_callback)));
+
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(on_bidding_signals_received_run_loop.AnyQuitCalled());
+  EXPECT_FALSE(load_script_run_loop_->AnyQuitCalled());
+
+  AddBidderJsonResponse(&url_loader_factory_, kFullSignalsUrl, kJson);
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(on_bidding_signals_received_run_loop.AnyQuitCalled());
+  EXPECT_FALSE(load_script_run_loop_->AnyQuitCalled());
+  ASSERT_TRUE(on_bidding_signals_received_continue_callback);
+
+  std::move(on_bidding_signals_received_continue_callback).Run();
+  load_script_run_loop_->Run();
+}
+
+// Same as GenerateBidOnBiddingSignalsReceivedNoPriorityVectorReceived, but the
+// priorityVector and updateIfOlderThanMs fields are present -- this is verified
+// in the signals received callback.
+TEST_F(
+    BidderWorkletTest,
+    GenerateBidOnBiddingSignalsReceivedYesPriorityVectorYesUpdateIfOlderThanMsReceived) {
+  interest_group_trusted_bidding_signals_url_ = GURL("https://signals.test/");
+  const GURL kFullSignalsUrl(
+      "https://signals.test/?hostname=top.window.test&interestGroupNames=Fred");
+
+  const char kJson[] = R"({"perInterestGroupData": {
+                              "Fred": {
+                                "priorityVector": {"foo": 1.0},
+                                "updateIfOlderThanMs": 3600000
+                              }
+                            }
+                          })";
+
+  auto bidder_worklet = CreateWorklet();
+  AddJavascriptResponse(
+      &url_loader_factory_, interest_group_bidding_url_,
+      CreateGenerateBidScript(CreateBasicGenerateBidScript()));
+
+  base::RunLoop on_bidding_signals_received_run_loop;
+  base::OnceClosure on_bidding_signals_received_continue_callback;
+  auto on_bidding_signals_received_callback = base::BindLambdaForTesting(
+      [&](const base::flat_map<std::string, double>& priority_vector,
+          base::TimeDelta trusted_signals_fetch_latency,
+          std::optional<base::TimeDelta> update_if_older_than,
+          base::OnceClosure callback) {
+        EXPECT_THAT(priority_vector,
+                    UnorderedElementsAre(std::make_pair("foo", 1.0)));
+        EXPECT_EQ(base::Milliseconds(3600000), update_if_older_than);
         on_bidding_signals_received_run_loop.Quit();
         on_bidding_signals_received_continue_callback = std::move(callback);
       });
@@ -6290,6 +6461,7 @@ TEST_F(BidderWorkletTest, GenerateBidCancelWhileRunningJavascript) {
   auto on_bidding_signals_received_callback = base::BindLambdaForTesting(
       [&](const base::flat_map<std::string, double>& priority_vector,
           base::TimeDelta trusted_signals_fetch_latency,
+          std::optional<base::TimeDelta> update_if_older_than,
           base::OnceClosure callback) {
         EXPECT_TRUE(priority_vector.empty());
         on_bidding_signals_received_continue_callback = std::move(callback);

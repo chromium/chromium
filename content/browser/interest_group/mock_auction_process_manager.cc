@@ -230,7 +230,7 @@ void MockBidderWorklet::InvokeGenerateBidCallback(
   generate_bid_client_->OnBiddingSignalsReceived(
       /*priority_vector=*/{},
       /*trusted_signals_fetch_latency=*/trusted_signals_fetch_latency_,
-      run_loop.QuitClosure());
+      /*update_if_older_than=*/std::nullopt, run_loop.QuitClosure());
   run_loop.Run();
 
   if (!dependency_latencies) {
