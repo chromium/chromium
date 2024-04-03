@@ -220,6 +220,7 @@ void BirchModel::RequestBirchDataFetch(bool is_post_login,
     return;
   }
 
+  is_post_login_fetch_ = is_post_login;
   fetch_start_time_ = GetNow();
 
   bool did_fetch = false;
@@ -445,8 +446,12 @@ void BirchModel::MaybeRespondToDataFetchRequest() {
   bool was_fetch = !pending_requests_.empty();
   if (was_fetch) {
     // All data providers have replied, so compute total latency.
-    base::UmaHistogramTimes("Ash.Birch.TotalLatency",
-                            GetNow() - fetch_start_time_);
+    base::TimeDelta latency = GetNow() - fetch_start_time_;
+    if (is_post_login_fetch_) {
+      base::UmaHistogramTimes("Ash.Birch.TotalLatencyPostLogin", latency);
+    } else {
+      base::UmaHistogramTimes("Ash.Birch.TotalLatency", latency);
+    }
   }
 
   std::vector<base::OnceClosure> callbacks;

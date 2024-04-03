@@ -932,6 +932,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Birch.TotalLatencyPostLogin" units="ms"
+    expires_after="2024-09-19">
+  <owner>jamescook@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    The total latency to fetch all birch data via all data providers on the
+    first fetch post login. Recorded when the birch bar is shown post login.
+  </summary>
+</histogram>
+
 <histogram name="Ash.BrowserContext.UnexpectedGetPrimaryUserProfile"
     enum="Boolean" expires_after="2024-09-01">
   <owner>hidehiko@chromium.org</owner>

@@ -321,6 +321,39 @@ TEST_F(BirchModelTest, RequestBirchDataFetchRecordsHistograms) {
   histograms.ExpectTotalCount("Ash.Birch.TotalLatency", 1);
 }
 
+TEST_F(BirchModelTest, RequestBirchDataFetchRecordsTotalLatencyHistogram) {
+  base::HistogramTester histograms;
+  BirchModel* model = Shell::Get()->birch_model();
+
+  // Make a data fetch request for post-login.
+  model->RequestBirchDataFetch(/*is_post_login=*/true, base::DoNothing());
+
+  // Simulate each data provider replying.
+  model->SetCalendarItems({});
+  model->SetAttachmentItems({});
+  model->SetRecentTabItems({});
+  model->SetFileSuggestItems({});
+  model->SetWeatherItems({});
+  model->SetReleaseNotesItems({});
+
+  // Total latency post login was recorded.
+  histograms.ExpectTotalCount("Ash.Birch.TotalLatencyPostLogin", 1);
+
+  // Make a data fetch request for non-post-login.
+  model->RequestBirchDataFetch(/*is_post_login=*/false, base::DoNothing());
+
+  // Simulate each data provider replying.
+  model->SetCalendarItems({});
+  model->SetAttachmentItems({});
+  model->SetRecentTabItems({});
+  model->SetFileSuggestItems({});
+  model->SetWeatherItems({});
+  model->SetReleaseNotesItems({});
+
+  // Regular latency histogram was recorded.
+  histograms.ExpectTotalCount("Ash.Birch.TotalLatency", 1);
+}
+
 TEST_F(BirchModelTest, DataFetchForNonPrimaryUserClearsModel) {
   BirchModel* model = Shell::Get()->birch_model();
   TestModelConsumer consumer;

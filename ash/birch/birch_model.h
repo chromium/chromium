@@ -160,6 +160,9 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   // Whether `item_remover_` is created and initialized.
   bool IsItemRemoverInitialized();
 
+  // Whether this is a post-login fetch (occurring right after login).
+  bool is_post_login_fetch_ = false;
+
   // Whether the calendar event data is freshly fetched.
   bool is_calendar_data_fresh_ = false;
 
