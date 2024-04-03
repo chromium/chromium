@@ -2448,7 +2448,7 @@ void PaintLayer::SetInvisibleForPositionVisibility(
         // descendants_need_check_position_visibility_hidden_ during
         // UpdateDescendantDependentFlags().
         !needs_descendant_dependent_flags_update_ &&
-        !HasSelfPaintingLayerDescendant()) {
+        HasSelfPaintingLayerDescendant()) {
       // This flag is cleared during UpdateDescendantDependentFlags() only, so
       // it may have false-positives which affects performance only in rare
       // cases.
