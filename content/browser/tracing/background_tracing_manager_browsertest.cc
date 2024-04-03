@@ -585,8 +585,14 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
 }
 
 // This tests that non-allowlisted args get stripped if required.
+// TODO(https://crbug.com/332743783): Flakey on Linux TSan.
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_NotAllowlistedArgsStripped DISABLED_NotAllowlistedArgsStripped
+#else
+#define MAYBE_NotAllowlistedArgsStripped NotAllowlistedArgsStripped
+#endif
 IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
-                       NotAllowlistedArgsStripped) {
+                       MAYBE_NotAllowlistedArgsStripped) {
   TestBackgroundTracingHelper background_tracing_helper;
 
   constexpr const char kScenarioConfig[] = R"pb(
