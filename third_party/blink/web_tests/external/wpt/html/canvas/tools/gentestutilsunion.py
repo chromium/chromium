@@ -471,24 +471,13 @@ def _generate_expected_image(params: _MutableTestParams,
 
 
 def _generate_test(test: _TestParams, jinja_env: jinja2.Environment,
-                   used_tests: DefaultDict[str, Set[_CanvasType]],
                    output_dirs: _OutputPaths) -> None:
     _validate_test(test)
-
-    name = test['name']
-
-    enabled_canvas_types = test['canvas_types']
 
     params = dict(test)
     params.update({
         'code': _expand_test_code(test['code']),
     })
-
-    already_tested = used_tests[name].intersection(enabled_canvas_types)
-    if already_tested:
-        raise InvalidTestDefinitionError(
-            f'Test {name} is defined twice for types {already_tested}')
-    used_tests[name].update(enabled_canvas_types)
 
     output_files = output_dirs.sub_path(params['file_name'])
 
@@ -544,6 +533,15 @@ def _get_variants(test: _TestParams) -> List[_MutableTestParams]:
     _recursive_expand_variant_matrix(test, variants, current_selection,
                                      test_variants)
     return test_variants
+
+
+def _check_uniqueness(tested: DefaultDict[str, Set[_CanvasType]], name: str,
+                      canvas_types: FrozenSet[_CanvasType]) -> None:
+    already_tested = tested[name].intersection(canvas_types)
+    if already_tested:
+        raise InvalidTestDefinitionError(
+            f'Test {name} is defined twice for types {already_tested}')
+    tested[name].update(canvas_types)
 
 
 def generate_test_files(name_to_dir_file: str) -> None:
@@ -608,7 +606,9 @@ def generate_test_files(name_to_dir_file: str) -> None:
             sub_dir = _get_test_sub_dir(variant['file_name'], name_to_sub_dir)
             output_sub_dirs = output_dirs.sub_path(sub_dir)
 
+            _check_uniqueness(used_tests, variant['name'],
+                              variant['canvas_types'])
             _generate_expected_image(variant, output_sub_dirs)
-            _generate_test(variant, jinja_env, used_tests, output_sub_dirs)
+            _generate_test(variant, jinja_env, output_sub_dirs)
 
     print()
