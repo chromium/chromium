@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.about_settings;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 /** Bridge providing access to native data about Chrome application and OS. */
@@ -24,8 +25,10 @@ public class AboutSettingsBridge {
 
     @NativeMethods
     interface Natives {
+        @JniType("std::string")
         String getApplicationVersion();
 
+        @JniType("std::string")
         String getOSVersion();
     }
 }

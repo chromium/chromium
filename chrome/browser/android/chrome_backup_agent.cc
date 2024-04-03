@@ -39,12 +39,10 @@ const char* const kBackedUpBoolPreferences[] = {
 
 }  // namespace
 
-static base::android::ScopedJavaLocalRef<jobjectArray>
-JNI_ChromeBackupAgentImpl_GetBoolBackupNames(
+static std::vector<std::string> JNI_ChromeBackupAgentImpl_GetBoolBackupNames(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller) {
-  return base::android::ToJavaArrayOfStrings(env,
-                                             android::GetBackupBoolPrefNames());
+  return android::GetBackupBoolPrefNames();
 }
 
 static base::android::ScopedJavaLocalRef<jbooleanArray>
@@ -66,10 +64,8 @@ JNI_ChromeBackupAgentImpl_GetBoolBackupValues(
 static void JNI_ChromeBackupAgentImpl_SetBoolBackupPrefs(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,
-    const base::android::JavaParamRef<jobjectArray>& names,
+    std::vector<std::string>& pref_names,
     const base::android::JavaParamRef<jbooleanArray>& values) {
-  std::vector<std::string> pref_names;
-  base::android::AppendJavaStringArrayToStringVector(env, names, &pref_names);
   std::vector<bool> pref_values;
   base::android::JavaBooleanArrayToBoolVector(env, values, &pref_values);
   std::unordered_set<std::string> valid_prefs(
@@ -84,16 +80,13 @@ static void JNI_ChromeBackupAgentImpl_SetBoolBackupPrefs(
   prefs->CommitPendingWrite();
 }
 
-static base::android::ScopedJavaLocalRef<jstring>
-JNI_ChromeBackupAgentImpl_GetAccountSettingsBackupName(
+static std::string JNI_ChromeBackupAgentImpl_GetAccountSettingsBackupName(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller) {
-  return base::android::ConvertUTF8ToJavaString(
-      env, syncer::prefs::internal::kSelectedTypesPerAccount);
+  return syncer::prefs::internal::kSelectedTypesPerAccount;
 }
 
-static base::android::ScopedJavaLocalRef<jstring>
-JNI_ChromeBackupAgentImpl_GetAccountSettingsBackupValue(
+static std::string JNI_ChromeBackupAgentImpl_GetAccountSettingsBackupValue(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller) {
   PrefService* prefs = ProfileManager::GetLastUsedProfile()->GetPrefs();
@@ -104,7 +97,7 @@ JNI_ChromeBackupAgentImpl_GetAccountSettingsBackupValue(
   JSONStringValueSerializer serializer(&serialized_dict);
   const bool serializer_result = serializer.Serialize(account_settings);
   CHECK(serializer_result);
-  return base::android::ConvertUTF8ToJavaString(env, serialized_dict);
+  return serialized_dict;
 }
 
 namespace android {
@@ -118,7 +111,7 @@ std::string GetBackupAccountSettingsPrefName() {
   return syncer::prefs::internal::kSelectedTypesPerAccount;
 }
 
-base::android::ScopedJavaLocalRef<jobjectArray> GetBoolBackupNamesForTesting(
+std::vector<std::string> GetBoolBackupNamesForTesting(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller) {
   return JNI_ChromeBackupAgentImpl_GetBoolBackupNames(env, jcaller);
@@ -133,20 +126,19 @@ base::android::ScopedJavaLocalRef<jbooleanArray> GetBoolBackupValuesForTesting(
 void SetBoolBackupPrefsForTesting(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,
-    const base::android::JavaParamRef<jobjectArray>& names,
+    std::vector<std::string>& pref_names,
     const base::android::JavaParamRef<jbooleanArray>& values) {
-  JNI_ChromeBackupAgentImpl_SetBoolBackupPrefs(env, jcaller, names, values);
+  JNI_ChromeBackupAgentImpl_SetBoolBackupPrefs(env, jcaller, pref_names,
+                                               values);
 }
 
-base::android::ScopedJavaLocalRef<jstring>
-GetAccountSettingsBackupNameForTesting(
+std::string GetAccountSettingsBackupNameForTesting(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller) {
   return JNI_ChromeBackupAgentImpl_GetAccountSettingsBackupName(env, jcaller);
 }
 
-base::android::ScopedJavaLocalRef<jstring>
-GetAccountSettingsBackupValueForTesting(
+std::string GetAccountSettingsBackupValueForTesting(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller) {
   return JNI_ChromeBackupAgentImpl_GetAccountSettingsBackupValue(env, jcaller);

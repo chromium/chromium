@@ -172,11 +172,11 @@ void InstalledWebappGeolocationBridge::OnNewLocationAvailable(
   OnLocationUpdate(std::move(result));
 }
 
-void InstalledWebappGeolocationBridge::OnNewErrorAvailable(JNIEnv* env,
-                                                           jstring message) {
+void InstalledWebappGeolocationBridge::OnNewErrorAvailable(
+    JNIEnv* env,
+    std::string& message) {
   OnLocationUpdate(device::mojom::GeopositionResult::NewError(
       device::mojom::GeopositionError::New(
-          device::mojom::GeopositionErrorCode::kPositionUnavailable,
-          base::android::ConvertJavaStringToUTF8(env, message),
+          device::mojom::GeopositionErrorCode::kPositionUnavailable, message,
           /*error_technical=*/"")));
 }

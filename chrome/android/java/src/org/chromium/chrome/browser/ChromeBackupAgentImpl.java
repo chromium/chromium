@@ -14,6 +14,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -728,14 +729,20 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
 
     @NativeMethods
     interface Natives {
+        @JniType("std::vector<std::string>")
         String[] getBoolBackupNames(ChromeBackupAgentImpl caller);
 
         boolean[] getBoolBackupValues(ChromeBackupAgentImpl caller);
 
-        void setBoolBackupPrefs(ChromeBackupAgentImpl caller, String[] name, boolean[] value);
+        void setBoolBackupPrefs(
+                ChromeBackupAgentImpl caller,
+                @JniType("std::vector<std::string>") String[] prefNames,
+                boolean[] values);
 
+        @JniType("std::string")
         String getAccountSettingsBackupName(ChromeBackupAgentImpl caller);
 
+        @JniType("std::string")
         String getAccountSettingsBackupValue(ChromeBackupAgentImpl caller);
     }
 }

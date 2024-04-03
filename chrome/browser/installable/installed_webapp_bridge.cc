@@ -45,8 +45,8 @@ InstalledWebappBridge::GetInstalledWebappPermissions(ContentSettingsType type) {
 
   InstalledWebappProvider::RuleList rules;
   for (auto j_permission : j_permissions.ReadElements<jobject>()) {
-    GURL origin(ConvertJavaStringToUTF8(
-        Java_InstalledWebappBridge_getOriginFromPermission(env, j_permission)));
+    GURL origin(
+        Java_InstalledWebappBridge_getOriginFromPermission(env, j_permission));
     ContentSetting setting = IntToContentSetting(
         Java_InstalledWebappBridge_getSettingFromPermission(env, j_permission));
     rules.push_back(std::make_pair(origin, setting));
@@ -74,11 +74,7 @@ void InstalledWebappBridge::DecidePermission(ContentSettingsType type,
   // be destroyed in RunPermissionCallback.
   auto* callback_ptr = new PermissionCallback(std::move(callback));
 
-  ScopedJavaLocalRef<jstring> j_origin_url =
-      base::android::ConvertUTF8ToJavaString(env, origin_url.spec());
-  ScopedJavaLocalRef<jstring> j_last_committed_url =
-      base::android::ConvertUTF8ToJavaString(env, last_committed_url.spec());
   Java_InstalledWebappBridge_decidePermission(
-      env, static_cast<int>(type), j_origin_url, j_last_committed_url,
+      env, static_cast<int>(type), origin_url.spec(), last_committed_url.spec(),
       reinterpret_cast<jlong>(callback_ptr));
 }

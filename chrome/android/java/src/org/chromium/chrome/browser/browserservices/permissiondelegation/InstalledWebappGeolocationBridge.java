@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.browser.trusted.TrustedWebActivityCallback;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.task.PostTask;
@@ -140,6 +141,8 @@ public class InstalledWebappGeolocationBridge {
                 boolean hasSpeed,
                 double speed);
 
-        void onNewErrorAvailable(long nativeInstalledWebappGeolocationBridge, String message);
+        void onNewErrorAvailable(
+                long nativeInstalledWebappGeolocationBridge,
+                @JniType("std::string") String message);
     }
 }

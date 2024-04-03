@@ -25,10 +25,9 @@ void UrlFilterBridge::Destroy(JNIEnv* env,
   delete this;
 }
 
-bool UrlFilterBridge::MatchesUrl(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jstring>& jurl) const {
-  GURL url(base::android::ConvertJavaStringToUTF8(env, jurl));
+bool UrlFilterBridge::MatchesUrl(JNIEnv* env,
+                                 const JavaParamRef<jobject>& obj,
+                                 std::string& url_spec) const {
+  GURL url(url_spec);
   return url_filter_.Run(url);
 }

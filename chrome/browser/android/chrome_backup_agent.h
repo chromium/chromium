@@ -16,7 +16,7 @@ std::vector<std::string> GetBackupBoolPrefNames();
 std::string GetBackupAccountSettingsPrefName();
 
 // Test interface wrapping the static functions that are only called from Java.
-base::android::ScopedJavaLocalRef<jobjectArray> GetBoolBackupNamesForTesting(
+std::vector<std::string> GetBoolBackupNamesForTesting(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller);
 base::android::ScopedJavaLocalRef<jbooleanArray> GetBoolBackupValuesForTesting(
@@ -25,14 +25,12 @@ base::android::ScopedJavaLocalRef<jbooleanArray> GetBoolBackupValuesForTesting(
 void SetBoolBackupPrefsForTesting(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,
-    const base::android::JavaParamRef<jobjectArray>& names,
+    std::vector<std::string>& pref_names,
     const base::android::JavaParamRef<jbooleanArray>& values);
-base::android::ScopedJavaLocalRef<jstring>
-GetAccountSettingsBackupNameForTesting(
+std::string GetAccountSettingsBackupNameForTesting(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller);
-base::android::ScopedJavaLocalRef<jstring>
-GetAccountSettingsBackupValueForTesting(
+std::string GetAccountSettingsBackupValueForTesting(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller);
 
