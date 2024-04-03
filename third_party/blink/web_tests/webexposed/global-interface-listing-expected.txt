@@ -6833,6 +6833,7 @@ interface Observable
     method constructor
     method drop
     method filter
+    method first
     method flatMap
     method forEach
     method map

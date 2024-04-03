@@ -52,5 +52,6 @@ interface Observable {
   // See https://wicg.github.io/observable/#promise-returning-operators.
   [CallWith=ScriptState] Promise<sequence<any>> toArray(optional SubscribeOptions options = {});
   [CallWith=ScriptState] Promise<undefined> forEach(Visitor callback, optional SubscribeOptions options = {});
+  [CallWith=ScriptState] Promise<any> first(optional SubscribeOptions options = {});
 };
 

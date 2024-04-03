@@ -141,6 +141,56 @@ class ToArrayInternalObserver final : public ObservableInternalObserver {
   Member<AbortSignal::AlgorithmHandle> abort_algorithm_handle_;
 };
 
+// This is the internal observer associated with the `first()` operator. See
+// https://wicg.github.io/observable/#dom-observable-first for its definition
+// and spec prose quoted below.
+class OperatorFirstInternalObserver final : public ObservableInternalObserver {
+ public:
+  OperatorFirstInternalObserver(ScriptPromiseResolver<IDLAny>* resolver,
+                                AbortController* controller,
+                                AbortSignal::AlgorithmHandle* handle)
+      : resolver_(resolver),
+        controller_(controller),
+        abort_algorithm_handle_(handle) {}
+
+  void Next(ScriptValue value) override {
+    abort_algorithm_handle_.Clear();
+
+    // "Resolve p with the passed in value."
+    resolver_->Resolve(value);
+    // "Signal abort controller".
+    controller_->abort(resolver_->GetScriptState());
+  }
+  void Error(ScriptState* script_state, ScriptValue error_value) override {
+    abort_algorithm_handle_.Clear();
+
+    // "Reject p with the passed in error."
+    resolver_->Reject(error_value);
+  }
+  void Complete() override {
+    abort_algorithm_handle_.Clear();
+
+    // "Reject p with a new RangeError."
+    v8::Isolate* isolate = resolver_->GetScriptState()->GetIsolate();
+    resolver_->Reject(
+        ScriptValue(isolate, V8ThrowException::CreateRangeError(
+                                 isolate, "No values in Observable")));
+  }
+
+  void Trace(Visitor* visitor) const override {
+    ObservableInternalObserver::Trace(visitor);
+
+    visitor->Trace(resolver_);
+    visitor->Trace(controller_);
+    visitor->Trace(abort_algorithm_handle_);
+  }
+
+ private:
+  Member<ScriptPromiseResolver<IDLAny>> resolver_;
+  Member<AbortController> controller_;
+  Member<AbortSignal::AlgorithmHandle> abort_algorithm_handle_;
+};
+
 class OperatorForEachInternalObserver final
     : public ObservableInternalObserver {
  public:
@@ -1605,6 +1655,54 @@ ScriptPromise<IDLUndefined> Observable::forEach(ScriptState* script_state,
   OperatorForEachInternalObserver* internal_observer =
       MakeGarbageCollected<OperatorForEachInternalObserver>(
           resolver, visitor_callback_controller, callback, algorithm_handle);
+
+  SubscribeInternal(script_state, /*observer_union=*/nullptr, internal_observer,
+                    internal_options);
+
+  return promise;
+}
+
+ScriptPromise<IDLAny> Observable::first(ScriptState* script_state,
+                                        SubscribeOptions* options) {
+  ScriptPromiseResolver<IDLAny>* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(script_state);
+  ScriptPromise<IDLAny> promise = resolver->Promise();
+
+  AbortController* controller = AbortController::Create(script_state);
+  HeapVector<Member<AbortSignal>> signals;
+
+  // The internal observer associated with this operator must have the ability
+  // to unsubscribe from `this`. This happens in the internal observer's
+  // `next()` handler, when the first value is emitted.
+  //
+  // This means we have to maintain a separate, internal `AbortController` that
+  // will abort the subscription. Consequently, this means we have to subscribe
+  // with an internal `SubscribeOptions`, whose signal is always present, and is
+  // a composite signal derived from:
+  //   1. The aforementioned controller.
+  signals.push_back(controller->signal());
+  //   2. The given `options`'s signal, if present.
+  if (options->hasSignal()) {
+    signals.push_back(options->signal());
+  }
+
+  SubscribeOptions* internal_options = MakeGarbageCollected<SubscribeOptions>();
+  internal_options->setSignal(
+      MakeGarbageCollected<AbortSignal>(script_state, signals));
+
+  if (internal_options->signal()->aborted()) {
+    resolver->Reject(options->signal()->reason(script_state));
+    return promise;
+  }
+
+  AbortSignal::AlgorithmHandle* algorithm_handle =
+      internal_options->signal()->AddAlgorithm(
+          MakeGarbageCollected<RejectPromiseAbortAlgorithm>(
+              resolver, internal_options->signal()));
+
+  OperatorFirstInternalObserver* internal_observer =
+      MakeGarbageCollected<OperatorFirstInternalObserver>(resolver, controller,
+                                                          algorithm_handle);
 
   SubscribeInternal(script_state, /*observer_union=*/nullptr, internal_observer,
                     internal_options);
