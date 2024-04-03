@@ -7266,7 +7266,7 @@
       name: "types",
       is_descriptor: true,
       is_property: false,
-      runtime_flag: "ViewTransitionTypes",
+      runtime_flag: "ViewTransitionOnNavigation",
     },
     {
       name: "inset-area",

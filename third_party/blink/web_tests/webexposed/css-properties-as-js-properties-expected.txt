@@ -484,7 +484,6 @@ transitionDuration
 transitionProperty
 transitionTimingFunction
 translate
-types
 unicodeBidi
 unicodeRange
 userSelect
