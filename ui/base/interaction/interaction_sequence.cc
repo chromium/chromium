@@ -273,8 +273,6 @@ InteractionSequence::StepBuilder::SetElementName(
 InteractionSequence::StepBuilder& InteractionSequence::StepBuilder::SetContext(
     StepContext context) {
   DCHECK(context != StepContext(ElementContext()));
-  DCHECK(context == StepContext(ContextMode::kAny) ||
-         !step_->uses_named_element());
   step_->context = context;
   if (const ContextMode* mode = absl::get_if<ContextMode>(&context)) {
     step_->in_any_context = *mode == ContextMode::kAny;
