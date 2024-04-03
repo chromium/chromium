@@ -2619,9 +2619,9 @@ crbug.com/626703 [ Mac ] external/wpt/mediacapture-insertable-streams/legacy/Med
 crbug.com/626703 external/wpt/uievents/mouse/mouse_boundary_events_after_removing_last_over_element.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/626703 [ Mac14 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/compression-dictionary/dictionary-fetch-with-link-element.tentative.https.html [ Failure Timeout ]
-crbug.com/626703 [ Mac13 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/compression-dictionary/dictionary-fetch-with-link-element.tentative.https.html [ Failure Timeout ]
-crbug.com/626703 [ Mac12 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/compression-dictionary/dictionary-fetch-with-link-element.tentative.https.html [ Failure Timeout ]
+crbug.com/332571361 [ Mac14 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/compression-dictionary/dictionary-fetch-with-link-element.tentative.https.html [ Failure Timeout ]
+crbug.com/332571361 [ Mac13 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/compression-dictionary/dictionary-fetch-with-link-element.tentative.https.html [ Failure Timeout ]
+crbug.com/332571361 [ Mac12 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/compression-dictionary/dictionary-fetch-with-link-element.tentative.https.html [ Failure Timeout ]
 crbug.com/332370892 external/wpt/fetch/api/request/request-bad-port.any.html [ Timeout ]
 crbug.com/332370892 external/wpt/fetch/api/request/request-bad-port.any.sharedworker.html [ Timeout ]
 crbug.com/332370892 external/wpt/fetch/api/request/request-bad-port.any.worker.html [ Timeout ]

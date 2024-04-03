@@ -32,8 +32,8 @@ crbug.com/1517847 virtual/oopr-canvas2d/fast/canvas/fillrect_gradient.html [ Pas
 crbug.com/1518086 external/wpt/html/semantics/embedded-content/media-elements/ready-states/autoplay-hidden.optional.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/626703 virtual/view-transition/external/wpt/css/css-view-transitions/pseudo-with-classes-match-multiple-wildcard.html [ Failure ]
-crbug.com/626703 virtual/view-transition/external/wpt/css/css-view-transitions/pseudo-with-classes-match-wildcard-no-star.html [ Failure ]
+crbug.com/332572759 virtual/view-transition/external/wpt/css/css-view-transitions/pseudo-with-classes-match-multiple-wildcard.html [ Failure ]
+crbug.com/332572759 virtual/view-transition/external/wpt/css/css-view-transitions/pseudo-with-classes-match-wildcard-no-star.html [ Failure ]
 crbug.com/332345862 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/pseudo-with-classes-new-with-class-old-without.html [ Failure ]
 crbug.com/332345830 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/pseudo-with-classes-match-multiple-wildcard.html [ Failure ]
 crbug.com/332345830 virtual/view-transition/external/wpt/css/css-view-transitions/pseudo-with-classes-match-multiple.html [ Failure ]
