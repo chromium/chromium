@@ -27,7 +27,6 @@
 
 namespace {
 
-constexpr CGFloat kDefaultMargin = 16;
 // Default margin between the subtitle and the content view.
 constexpr CGFloat kDefaultSubtitleBottomMargin = 22;
 // Top margin for no background header image in percentage of the dialog size.
@@ -43,8 +42,6 @@ constexpr CGFloat kTallBannerMultiplier = 0.35;
 constexpr CGFloat kExtraTallBannerMultiplier = 0.5;
 constexpr CGFloat kDefaultBannerMultiplier = 0.25;
 constexpr CGFloat kShortBannerMultiplier = 0.2;
-constexpr CGFloat kContentWidthMultiplier = 0.8;
-constexpr CGFloat kContentOptimalWidth = 327;
 constexpr CGFloat kMoreArrowMargin = 4;
 constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
 constexpr CGFloat kSeparatorHeight = 1;
@@ -147,7 +144,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     _titleHorizontalMargin = kTitleHorizontalMargin;
     _subtitleBottomMargin = kDefaultSubtitleBottomMargin;
     _headerImageShadowInset = kHeaderImageShadowShadowInset;
-    _headerImageBottomMargin = kDefaultMargin;
+    _headerImageBottomMargin = kPromoStyleDefaultMargin;
     _noBackgroundHeaderImageTopMarginPercentage =
         kNoBackgroundHeaderImageTopMarginPercentage;
     _primaryButtonEnabled = YES;
@@ -232,14 +229,13 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 
   // Create a layout guide to constrain the width of the content, while still
   // allowing the scroll view to take the full screen width.
-  UILayoutGuide* widthLayoutGuide = [[UILayoutGuide alloc] init];
-  [view addLayoutGuide:widthLayoutGuide];
+  UILayoutGuide* widthLayoutGuide = AddPromoStyleWidthLayoutGuide(view);
 
   if (disclaimerView) {
     [NSLayoutConstraint activateConstraints:@[
       [disclaimerView.topAnchor
           constraintEqualToAnchor:specificContentView.bottomAnchor
-                         constant:kDefaultMargin],
+                         constant:kPromoStyleDefaultMargin],
       [disclaimerView.leadingAnchor
           constraintEqualToAnchor:_scrollContentView.leadingAnchor],
       [disclaimerView.trailingAnchor
@@ -264,21 +260,6 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   }
 
   [NSLayoutConstraint activateConstraints:@[
-    // Content width layout guide constraints. Constrain the width to both at
-    // least 65% of the view width, and to the full view width with margins.
-    // This is to accomodate the iPad layout, which cannot be isolated out using
-    // the traitCollection because of the FormSheet presentation style
-    // (iPad FormSheet is considered compact).
-    [widthLayoutGuide.centerXAnchor
-        constraintEqualToAnchor:view.safeAreaLayoutGuide.centerXAnchor],
-    [widthLayoutGuide.widthAnchor
-        constraintGreaterThanOrEqualToAnchor:view.safeAreaLayoutGuide
-                                                 .widthAnchor
-                                  multiplier:kContentWidthMultiplier],
-    [widthLayoutGuide.widthAnchor
-        constraintLessThanOrEqualToAnchor:view.safeAreaLayoutGuide.widthAnchor
-                                 constant:-2 * kDefaultMargin],
-
     // Scroll view constraints.
     [_scrollView.topAnchor
         constraintEqualToAnchor:view.safeAreaLayoutGuide.topAnchor],
@@ -313,7 +294,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
         constraintLessThanOrEqualToAnchor:_scrollContentView.widthAnchor
                                  constant:-2 * self.titleHorizontalMargin],
     [_subtitleLabel.topAnchor constraintEqualToAnchor:titleLabel.bottomAnchor
-                                             constant:kDefaultMargin],
+                                             constant:kPromoStyleDefaultMargin],
     [_subtitleLabel.centerXAnchor
         constraintEqualToAnchor:_scrollContentView.centerXAnchor],
     [_subtitleLabel.widthAnchor
@@ -473,7 +454,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   _buttonsVerticalAnchorConstraints = @[
     [_scrollView.bottomAnchor
         constraintEqualToAnchor:_actionButtonsStackView.topAnchor
-                       constant:-kDefaultMargin],
+                       constant:-kPromoStyleDefaultMargin],
     [_actionButtonsStackView.bottomAnchor
         constraintLessThanOrEqualToAnchor:view.bottomAnchor
                                  constant:-kActionsBottomMargin * 2],
@@ -482,18 +463,6 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
                                  constant:-kActionsBottomMargin],
   ];
   [NSLayoutConstraint activateConstraints:_buttonsVerticalAnchorConstraints];
-
-  // This constraint is added to enforce that the content width should be as
-  // close to the optimal width as possible, within the range already activated
-  // for "widthLayoutGuide.widthAnchor" previously, with a higher priority.
-  // In this case, the content width in iPad and iPhone landscape mode should be
-  // the safe layout width multiplied by kContentWidthMultiplier, while the
-  // content width for a iPhone portrait mode should be kContentOptimalWidth.
-  NSLayoutConstraint* contentLayoutGuideWidthConstraint =
-      [widthLayoutGuide.widthAnchor
-          constraintEqualToConstant:kContentOptimalWidth];
-  contentLayoutGuideWidthConstraint.priority = UILayoutPriorityRequired - 1;
-  contentLayoutGuideWidthConstraint.active = YES;
 
   // Also constrain the bottom of the action stack view to the bottom of the
   // safe area, but with a lower priority, so that the action stack view is put
@@ -917,7 +886,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
       [self.bannerImageView.heightAnchor constraintEqualToConstant:0],
       [self.bannerImageView.topAnchor
           constraintEqualToAnchor:_scrollContentView.topAnchor
-                         constant:kDefaultMargin]
+                         constant:kPromoStyleDefaultMargin]
     ]];
   } else if (self.shouldBannerFillTopSpace) {
     NSLayoutDimension* dimFromToOfViewToBottomOfBanner = [self.view.topAnchor
@@ -1225,8 +1194,9 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     _buttonsVerticalAnchorConstraints = @[
       [_scrollView.bottomAnchor
           constraintEqualToAnchor:_actionButtonsStackView.topAnchor
-                         constant:self.tertiaryActionString ? 0
-                                                            : -kDefaultMargin],
+                         constant:self.tertiaryActionString
+                                      ? 0
+                                      : -kPromoStyleDefaultMargin],
       [_actionButtonsStackView.bottomAnchor
           constraintLessThanOrEqualToAnchor:self.view.bottomAnchor
                                    constant:-kActionsBottomMargin],

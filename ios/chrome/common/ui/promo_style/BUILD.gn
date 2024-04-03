@@ -46,6 +46,9 @@ source_set("utils") {
     "utils.h",
     "utils.mm",
   ]
-  deps = [ "//ios/chrome/common/ui/util" ]
+  deps = [
+    ":constants",
+    "//ios/chrome/common/ui/util",
+  ]
   frameworks = [ "Foundation.framework" ]
 }

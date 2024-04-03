@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/common/ui/promo_style/constants.h"
+
 #import <Foundation/Foundation.h>
 
 NSString* const kPromoStyleHeaderViewBackgroundAccessibilityIdentifier =
@@ -25,3 +26,5 @@ NSString* const kPromoStyleDisclaimerViewAccessibilityIdentifier =
     @"PromoStyleDisclaimerViewAccessibilityIdentifier";
 NSString* const kPromoStyleScrollViewAccessibilityIdentifier =
     @"PromoStyleScrollViewAccessibilityIdentifier";
+
+const CGFloat kPromoStyleDefaultMargin = 16.;

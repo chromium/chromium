@@ -31,7 +31,6 @@
 @property(nonatomic, weak) id<SearchEngineChoiceMutator> mutator;
 
 - (instancetype)initWithFirstRunMode:(BOOL)isForFRE
-                     wideMarginWidth:(BOOL)wideMarginWidth
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil
                          bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;

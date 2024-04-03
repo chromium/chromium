@@ -37,4 +37,7 @@ extern NSString* const kPromoStyleDisclaimerViewAccessibilityIdentifier;
 // A11y Identifier for the scroll view that contains all the labels and buttons.
 extern NSString* const kPromoStyleScrollViewAccessibilityIdentifier;
 
+// Default margin for the promo view controller.
+extern const CGFloat kPromoStyleDefaultMargin;
+
 #endif  // IOS_CHROME_COMMON_UI_PROMO_STYLE_CONSTANTS_H_

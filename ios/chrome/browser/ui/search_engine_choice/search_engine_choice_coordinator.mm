@@ -80,10 +80,8 @@
 - (void)start {
   [super start];
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  ui::DeviceFormFactor deviceFormFactor = ui::GetDeviceFormFactor();
-  _viewController = [[SearchEngineChoiceViewController alloc]
-      initWithFirstRunMode:_firstRun
-           wideMarginWidth:(deviceFormFactor != ui::DEVICE_FORM_FACTOR_PHONE)];
+  _viewController =
+      [[SearchEngineChoiceViewController alloc] initWithFirstRunMode:_firstRun];
   _viewController.actionDelegate = self;
   TemplateURLService* templateURLService =
       ios::TemplateURLServiceFactory::GetForBrowserState(browserState);
@@ -104,6 +102,7 @@
         search_engines::SearchEngineChoiceScreenEvents::
             kFreChoiceScreenWasDisplayed);
   } else {
+    ui::DeviceFormFactor deviceFormFactor = ui::GetDeviceFormFactor();
     if (deviceFormFactor == ui::DEVICE_FORM_FACTOR_PHONE) {
       AppState* appState = self.browser->GetSceneState().appState;
       _scopedIphonePortraitOnly =

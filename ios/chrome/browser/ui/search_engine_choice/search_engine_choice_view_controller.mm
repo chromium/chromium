@@ -41,9 +41,6 @@ constexpr CGFloat kTitleSubtitleMargin = 8.;
 constexpr CGFloat kSubtitleSearchEngineStackMargin = 20.;
 // Margin above and below the button.
 constexpr CGFloat kButtonMargin = 16.;
-// Width margin (wide or narrow, depending on the desired layout).
-constexpr CGFloat kWidthMarginWide = 54.;
-constexpr CGFloat kWidthMarginNarrow = 24.;
 // Bottom margin for the "More" pill button.
 constexpr CGFloat kMorePillButtonBottomMargin = 34.;
 // Corner radius for the "More" pill button.
@@ -188,8 +185,6 @@ UIButton* CreateMorePillButton() {
   UIButton* _floatingSetAsDefaultButton;
   // Whether the choice screen is being displayed for the FRE.
   BOOL _isForFRE;
-  // The horizontal margin.
-  CGFloat _marginWidth;
   // YES, when showing the floating button and hidding the inline button.
   // NO, when showing the inline button and hidding the floating button.
   BOOL _showFloatingSetAsDefaultButton;
@@ -203,12 +198,10 @@ UIButton* CreateMorePillButton() {
 
 @synthesize searchEngines = _searchEngines;
 
-- (instancetype)initWithFirstRunMode:(BOOL)isForFRE
-                     wideMarginWidth:(BOOL)wideMarginWidth {
+- (instancetype)initWithFirstRunMode:(BOOL)isForFRE {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _isForFRE = isForFRE;
-    _marginWidth = wideMarginWidth ? kWidthMarginWide : kWidthMarginNarrow;
   }
   return self;
 }
@@ -349,6 +342,10 @@ UIButton* CreateMorePillButton() {
                                   action:@selector(setAsDefaultButtonAction)
                         forControlEvents:UIControlEventTouchUpInside];
 
+  // Create a layout guide to constrain the width of the content, while still
+  // allowing the scroll view to take the full screen width.
+  UILayoutGuide* widthLayoutGuide = AddPromoStyleWidthLayoutGuide(view);
+
   [NSLayoutConstraint activateConstraints:@[
     // Scroll view constraints. It needs to be the full size of the view,
     // so the content is visible in the safe area too.
@@ -367,7 +364,7 @@ UIButton* CreateMorePillButton() {
     [scrollContentView.centerXAnchor
         constraintEqualToAnchor:_scrollView.centerXAnchor],
     [scrollContentView.widthAnchor
-        constraintEqualToAnchor:_scrollView.widthAnchor],
+        constraintEqualToAnchor:widthLayoutGuide.widthAnchor],
 
     // Logo constraints.
     [logoImageView.topAnchor constraintEqualToAnchor:scrollContentView.topAnchor
@@ -398,13 +395,9 @@ UIButton* CreateMorePillButton() {
         constraintEqualToAnchor:subtitleTextView.bottomAnchor
                        constant:kSubtitleSearchEngineStackMargin],
     [_searchEngineStackView.leadingAnchor
-        constraintEqualToAnchor:scrollContentView.leadingAnchor
-                       constant:_marginWidth],
+        constraintEqualToAnchor:scrollContentView.leadingAnchor],
     [_searchEngineStackView.trailingAnchor
-        constraintEqualToAnchor:scrollContentView.trailingAnchor
-                       constant:-_marginWidth],
-    [_searchEngineStackView.centerXAnchor
-        constraintEqualToAnchor:scrollContentView.centerXAnchor],
+        constraintEqualToAnchor:scrollContentView.trailingAnchor],
 
     // _inlineSetAsDefaultButtonContainer constraints.
     [_inlineSetAsDefaultButtonContainer.topAnchor
