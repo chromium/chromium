@@ -658,7 +658,8 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 }
 
 // Tests that the user interface style is respected after a drag and drop.
-- (void)testTraitCollection {
+// TODO(crbug.com/332714545): Test is flaky.
+- (void)FLAKY_testTraitCollection {
   [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
   [ChromeEarlGrey openNewTab];
@@ -1789,7 +1790,8 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
 // Tests that the scrim view is always shown when the search bar is empty in the
 // search mode.
-- (void)testScrimVisibleInSearchModeWhenSearchBarIsEmpty {
+// TODO(crbug.com/332714545): Test is flaky.
+- (void)FLAKY_testScrimVisibleInSearchModeWhenSearchBarIsEmpty {
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGreyUI openTabGrid];
 
@@ -1852,7 +1854,8 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
 // Tests that searching in open tabs in the regular mode will filter the tabs
 // correctly.
-- (void)testSearchRegularOpenTabs {
+// TODO(crbug.com/332714545): Test is flaky.
+- (void)FLAKY_testSearchRegularOpenTabs {
   [self loadTestURLsInNewTabs];
   [ChromeEarlGreyUI openTabGrid];
 
