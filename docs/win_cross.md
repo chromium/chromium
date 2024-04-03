@@ -111,9 +111,9 @@ Then just build, e.g.
 
     ninja -C out/gnwin base_unittests.exe
 
-## Goma
+## RBE
 
-This should be supported by the default (Goma RBE) backend.
+This should be supported by the default RBE (remote execution).
 
 ## Copying and running chrome
 
