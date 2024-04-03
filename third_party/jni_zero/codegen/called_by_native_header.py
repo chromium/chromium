@@ -31,10 +31,10 @@ def _return_type_cpp(return_type):
 
 
 def _param_type_cpp(java_type):
-  if converted_type := java_type.converted_type():
+  if type_str := java_type.converted_type():
     if java_type.is_primitive():
-      return converted_type
-    return f'{converted_type} const&'
+      return type_str
+    return f'{type_str} const&'
   ret = java_type.to_cpp()
   if java_type.is_primitive():
     if ret == 'jint':
@@ -68,7 +68,7 @@ def _jni_function_name(called_by_native):
   return f'Call{call}Method'
 
 
-def _method_stub(sb, cbn):
+def _single_method(sb, cbn):
   java_class = cbn.java_class
   escaped_name = common.escape_class_name(java_class.full_name_with_slashes)
   reciever_arg_is_class = cbn.static or cbn.is_constructor
@@ -81,16 +81,14 @@ def _method_stub(sb, cbn):
   if cbn.is_system_class:
     sb('[[maybe_unused]] ')
   sb(f'static {_return_type_cpp(return_type)} ')
-  sb(f'Java_{java_class.nested_name}_{cbn.method_id_function_name}(\n')
-  with sb.indent(4):
-    sb('JNIEnv* env')
+  sb(f'Java_{java_class.nested_name}_{cbn.method_id_function_name}')
+  with sb.param_list() as plist:
+    plist.append('JNIEnv* env')
     if not reciever_arg_is_class:
-      sb(',\nconst jni_zero::JavaRef<jobject>& obj')
-    for param in cbn.params:
-      sb(f',\n{_param_type_cpp(param.java_type)} {param.name}')
-    sb(') {\n')
+      plist.append('const jni_zero::JavaRef<jobject>& obj')
+    plist.extend(f'{_param_type_cpp(p.java_type)} {p.name}' for p in cbn.params)
 
-  with sb.indent(2):
+  with sb.block():
     sb('static std::atomic<jmethodID> cached_method_id(nullptr);\n')
     class_accessor = header_common.class_accessor_expression(java_class)
     receiver_arg = 'clazz' if reciever_arg_is_class else 'obj.obj()'
@@ -104,33 +102,28 @@ def _method_stub(sb, cbn):
 
     checked_str = 'false' if cbn.unchecked else 'true'
     method_id_type = 'TYPE_STATIC' if cbn.static else 'TYPE_INSTANCE'
-    sb(f"""
-jni_zero::internal::JniJavaCallContext<{checked_str}> call_context;
-call_context.Init<jni_zero::MethodID::{method_id_type}>(
-    env,
-    clazz,
-    "{cbn.name}",
-    "{cbn.signature.to_descriptor()}",
-    &cached_method_id);
-""")
+    sb(f'jni_zero::internal::JniJavaCallContext<{checked_str}> call_context;\n')
+    with sb.statement():
+      sb(f'call_context.Init<jni_zero::MethodID::{method_id_type}>')
+      sb.param_list([
+          'env', 'clazz', f'"{cbn.name}"', f'"{cbn.signature.to_descriptor()}"',
+          '&cached_method_id'
+      ])
 
     for param in cbn.params:
       if converted_type := param.java_type.converted_type():
-        sb(
-            convert_type.to_jni_assignment(f'{param.name}_converted',
-                                           param.name, param.java_type))
+        convert_type.to_jni_assignment(sb, f'{param.name}_converted',
+                                       param.name, param.java_type)
 
     if not is_void:
       return_rvalue = 'ret'
       sb(f'auto ret = ')
 
-    sb(f"""\
-env->{_jni_function_name(cbn)}(
-    {receiver_arg},
-    call_context.method_id()""")
-    for param in cbn.params:
-      sb(f',\n    {_param_expression_cpp(param)}')
-    sb(');\n')
+    with sb.statement():
+      sb(f'env->{_jni_function_name(cbn)}')
+      with sb.param_list() as plist:
+        plist += [receiver_arg, 'call_context.method_id()']
+        plist.extend(_param_expression_cpp(p) for p in cbn.params)
 
     if not is_void:
       if not return_type.is_primitive():
@@ -139,23 +132,23 @@ env->{_jni_function_name(cbn)}(
           return_rvalue = 'ret2'
           sb(f'{jobject_type} ret2 = static_cast<{jobject_type}>(ret);\n')
 
-      if return_type.converted_type():
-        expr = convert_type.from_jni_expression(return_rvalue, return_type)
-        sb(f'return {expr};\n')
-      elif not return_type.is_primitive():
-        sb(f'return jni_zero::ScopedJavaLocalRef<{jobject_type}>(env, '
-           f'{return_rvalue});\n')
-      else:
-        sb(f'return {return_rvalue};\n')
-  sb('}\n')
+      with sb.statement():
+        sb('return ')
+        if return_type.converted_type():
+          convert_type.from_jni_expression(sb, return_rvalue, return_type)
+        elif not return_type.is_primitive():
+          sb(f'jni_zero::ScopedJavaLocalRef<{jobject_type}>(env, '
+             f'{return_rvalue})')
+        else:
+          sb(return_rvalue)
 
 
-def method_stubs(called_by_natives):
+def methods(called_by_natives):
   if not called_by_natives:
     return ''
   sb = common.StringBuilder()
   sb('// Native to Java functions\n')
   for called_by_native in called_by_natives:
-    _method_stub(sb, called_by_native)
+    _single_method(sb, called_by_native)
     sb('\n')
   return sb.to_string()

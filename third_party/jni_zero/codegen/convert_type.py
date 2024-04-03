@@ -34,17 +34,19 @@ namespace jni_zero {{
 """
 
 
-def to_jni_expression(rvalue, java_type, clazz_param=None):
+def to_jni_expression(sb, rvalue, java_type, clazz_param=None):
   """Returns a conversion call expression from specified @JniType to default jni type."""
   if java_type.is_primitive():
     if java_type.primitive_name == 'int':
       rvalue = f'as_jint({rvalue})'
-    return f'static_cast<{java_type.to_cpp()}>({rvalue})'
+    sb(f'static_cast<{java_type.to_cpp()}>({rvalue})')
+    return
 
   T = java_type.converted_type()
   if not java_type.is_array():
-    J = java_type.to_cpp()
-    return f'jni_zero::ToJniType<{T}, {J}>(env, {rvalue})'
+    sb(f'jni_zero::ToJniType<{T}, {java_type.to_cpp()}>')
+    sb.param_list(['env', rvalue])
+    return
 
   element_type = java_type.to_array_element_type()
   if element_type.is_array():
@@ -52,7 +54,9 @@ def to_jni_expression(rvalue, java_type, clazz_param=None):
         '@JniType() for multi-dimensional arrays are not yet supported. '
         'Found ' + T)
   if element_type.is_primitive():
-    return (f'jni_zero::ConvertArray<{T}>::ToJniType(env, {rvalue})')
+    sb(f'jni_zero::ConvertArray<{T}>::ToJniType')
+    sb.param_list(['env', rvalue])
+    return
 
   if clazz_param:
     clazz_expr = clazz_param.name
@@ -60,32 +64,36 @@ def to_jni_expression(rvalue, java_type, clazz_param=None):
     clazz_expr = header_common.class_accessor_expression(
         element_type.java_class)
   J = element_type.to_cpp()
-  return (f'jni_zero::ConvertArray<{T}>::ToJniType<{J}>(env, {rvalue}, '
-          f'{clazz_expr})')
+  sb(f'jni_zero::ConvertArray<{T}>::ToJniType<{J}>')
+  sb.param_list(['env', rvalue, clazz_expr])
 
 
-def to_jni_assignment(dest_var_name, src_var_name, java_type):
+def to_jni_assignment(sb, dest_var_name, src_var_name, java_type):
   """Returns a conversion statement from specified @JniType to default jni type."""
-  if java_type.is_primitive():
-    var_type = java_type.to_cpp()
-  else:
-    var_type = f'jni_zero::ScopedJavaLocalRef<{java_type.to_cpp()}>'
-  expr = to_jni_expression(src_var_name, java_type)
-  return f'{var_type} {dest_var_name} = {expr};\n'
+  with sb.statement():
+    if java_type.is_primitive():
+      var_type = java_type.to_cpp()
+    else:
+      var_type = f'jni_zero::ScopedJavaLocalRef<{java_type.to_cpp()}>'
+    sb(f'{var_type} {dest_var_name} = ')
+    to_jni_expression(sb, src_var_name, java_type)
 
 
-def from_jni_expression(rvalue, java_type):
+def from_jni_expression(sb, rvalue, java_type):
   """Returns a conversion call expression from default jni type to specified @JniType."""
   T = java_type.converted_type()
   J = java_type.to_cpp()
   if java_type.is_primitive():
-    return f'static_cast<{T}>({rvalue})'
+    sb(f'static_cast<{T}>({rvalue})')
+    return
 
   if not java_type.is_primitive():
     rvalue = header_common.java_param_ref_expression(J, rvalue)
 
   if not java_type.is_array():
-    return f'jni_zero::FromJniType<{T}, {J}>(env, {rvalue})'
+    sb(f'jni_zero::FromJniType<{T}, {J}>')
+    sb.param_list(['env', rvalue])
+    return
 
   element_type = java_type.to_array_element_type()
   if element_type.is_array():
@@ -93,14 +101,17 @@ def from_jni_expression(rvalue, java_type):
         '@JniType() for multi-dimensional arrays are not yet supported. '
         'Found ' + T)
   if element_type.is_primitive():
-    return f'jni_zero::ConvertArray<{T}>::FromJniType(env, {rvalue})'
+    sb(f'jni_zero::ConvertArray<{T}>::FromJniType')
+    sb.param_list(['env', rvalue])
+    return
 
   J = java_type.to_array_element_type().to_cpp()
-  return f'jni_zero::ConvertArray<{T}>::FromJniType<{J}>(env, {rvalue})'
+  sb(f'jni_zero::ConvertArray<{T}>::FromJniType<{J}>')
+  sb.param_list(['env', rvalue])
 
 
-def from_jni_assignment(dst_var_name, src_var_name, java_type):
+def from_jni_assignment(sb, dst_var_name, src_var_name, java_type):
   """Returns a conversion statement from default jni type to specified @JniType."""
-  var_type = java_type.converted_type()
-  expr = from_jni_expression(src_var_name, java_type)
-  return f'{var_type} {dst_var_name} = {expr};'
+  with sb.statement():
+    sb(f'{java_type.converted_type()} {dst_var_name} = ')
+    from_jni_expression(sb, src_var_name, java_type)

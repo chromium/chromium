@@ -25,17 +25,17 @@ inline jclass org_jni_1zero_SampleUniqueAnnotations_clazz(JNIEnv* env) {
 namespace jni_zero {
 template<> std::string FromJniType<std::string, jstring>(JNIEnv*, const JavaRef<jstring>&);
 }  // namespace jni_zero
-
-// Method stubs.
-static jint JNI_SampleUniqueAnnotations_Bar(JNIEnv* env, jint x,
-    jint y);
+// Java to native functions
+// Forward declaration. To be implemented by the including .cc file.
+static jint JNI_SampleUniqueAnnotations_Bar(JNIEnv* env, jint x, jint y);
 
 JNI_BOUNDARY_EXPORT jint Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleUniqueAnnotations_1bar(
     JNIEnv* env,
     jclass jcaller,
     jint x,
     jint y) {
-  return JNI_SampleUniqueAnnotations_Bar(env, x, y);
+  auto ret = JNI_SampleUniqueAnnotations_Bar(env, x, y);
+  return ret;
 }
 
 JNI_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleUniqueAnnotations_1foo(
@@ -44,10 +44,11 @@ JNI_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleUniq
     jlong nativePtr,
     jstring arg) {
   FooAndroid::BarDelegate* native = reinterpret_cast<FooAndroid::BarDelegate*>(nativePtr);
-  CHECK_NATIVE_PTR(env, jcaller, native, "Foo");
-  std::string arg_converted = jni_zero::FromJniType<std::string, jstring>(env,
+  CHECK_NATIVE_PTR(env, jcaller, native, "Foo")
+  std::string arg_converted = jni_zero::FromJniType<std::string, jstring>(
+      env,
       jni_zero::JavaParamRef<jstring>(env, arg));
-  return native->Foo(env, arg_converted);
+  native->Foo(env, arg_converted);
 }
 
 JNI_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleUniqueAnnotations_nativeCallWithQualifiedObject(
@@ -55,8 +56,10 @@ JNI_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleUniqueAnnotations_nativeCallWi
     jobject jcaller,
     jlong nativePtr) {
   Foo::Bar* native = reinterpret_cast<Foo::Bar*>(nativePtr);
-  CHECK_NATIVE_PTR(env, jcaller, native, "CallWithQualifiedObject");
-  return native->CallWithQualifiedObject(env, jni_zero::JavaParamRef<jobject>(env, jcaller));
+  CHECK_NATIVE_PTR(env, jcaller, native, "CallWithQualifiedObject")
+  native->CallWithQualifiedObject(
+      env,
+      jni_zero::JavaParamRef<jobject>(env, jcaller));
 }
 
 // Native to Java functions
@@ -66,7 +69,6 @@ static void Java_SampleUniqueAnnotations_useBar1(
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_SampleUniqueAnnotations_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz);
-
   jni_zero::internal::JniJavaCallContext<true> call_context;
   call_context.Init<jni_zero::MethodID::TYPE_STATIC>(
       env,
@@ -74,13 +76,8 @@ static void Java_SampleUniqueAnnotations_useBar1(
       "useBar1",
       "(Lorg/jni_zero/Bar1$Inner;)V",
       &cached_method_id);
-  env->CallStaticVoidMethod(
-      clazz,
-      call_context.method_id(),
-      inner.obj());
+  env->CallStaticVoidMethod(clazz, call_context.method_id(), inner.obj());
 }
 
 
-
 #endif  // org_jni_zero_SampleUniqueAnnotations_JNI
-

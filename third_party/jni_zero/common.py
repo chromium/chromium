@@ -12,6 +12,11 @@ import pathlib
 import zipfile
 
 
+# Only some methods respect line length, so this is more of a best-effort
+# limit.
+_TARGET_LINE_LENGTH = 80
+
+
 class StringBuilder:
 
   def __init__(self):
@@ -26,6 +31,47 @@ class StringBuilder:
         self._sb.append(' ' * self._indent)
       self._sb.append(line)
       self._start_of_line = line[-1] == '\n'
+
+  def _cur_line_length(self):
+    ret = 0
+    for l in reversed(self._sb):
+      if l.endswith('\n'):
+        break
+      ret += len(l)
+    return ret
+
+  @contextlib.contextmanager
+  def _param_list_generator(self):
+    values = []
+    yield values
+    self.param_list(values)
+
+  def param_list(self, values=None):
+    if values is None:
+      return self._param_list_generator()
+
+    self('(')
+    punctuation_size = 2 * len(values) # punctuation: ", ()"
+    single_line_size = sum(len(v) for v in values) + punctuation_size
+    if self._cur_line_length() + single_line_size < _TARGET_LINE_LENGTH:
+      self(', '.join(values))
+    else:
+      self('\n')
+      with self.indent(4):
+        self(',\n'.join(values))
+    self(')')
+
+  @contextlib.contextmanager
+  def statement(self):
+    yield
+    self(';\n')
+
+  @contextlib.contextmanager
+  def block(self):
+    self(' {\n')
+    with self.indent(2):
+      yield
+    self('}\n')
 
   @contextlib.contextmanager
   def indent(self, amount):

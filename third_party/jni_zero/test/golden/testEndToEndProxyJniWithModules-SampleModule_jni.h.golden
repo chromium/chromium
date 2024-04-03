@@ -10,26 +10,26 @@
 
 #include "third_party/jni_zero/jni_export.h"
 #include "third_party/jni_zero/jni_zero_helper.h"
-
-// Method stubs.
+// Java to native functions
+// Forward declaration. To be implemented by the including .cc file.
 static jboolean JNI_SampleModule_Bar(JNIEnv* env, jint a);
 
 JNI_BOUNDARY_EXPORT jboolean Java_J_module_1N_MejItBT4(
     JNIEnv* env,
     jclass jcaller,
     jint a) {
-  return JNI_SampleModule_Bar(env, a);
+  auto ret = JNI_SampleModule_Bar(env, a);
+  return ret;
 }
 
+// Forward declaration. To be implemented by the including .cc file.
 static void JNI_SampleModule_Foo(JNIEnv* env);
 
 JNI_BOUNDARY_EXPORT void Java_J_module_1N_MqDgXQiH(
     JNIEnv* env,
     jclass jcaller) {
-  return JNI_SampleModule_Foo(env);
+  JNI_SampleModule_Foo(env);
 }
 
 
-
 #endif  // org_jni_zero_SampleModule_JNI
-

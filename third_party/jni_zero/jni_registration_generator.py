@@ -17,6 +17,7 @@ import sys
 import zipfile
 
 from codegen import header_common
+from codegen import natives_header
 import common
 import java_types
 import jni_generator
@@ -394,8 +395,7 @@ ${REGISTER_NATIVES}
       'KMETHODS':
       registration_dict['PROXY_NATIVE_METHOD_ARRAY'],
       'REGISTRATION_NAME':
-      jni_generator.GetRegistrationFunctionName(
-          gen_jni_class.full_name_with_slashes),
+      _GetRegistrationFunctionName(gen_jni_class.full_name_with_slashes),
   }
 
   if registration_dict['PROXY_NATIVE_METHOD_ARRAY']:
@@ -512,6 +512,11 @@ def _GetJavaToNativeParamsList(param_types):
   return 'jint switch_num, ' + ', '.join(params_in_stub)
 
 
+def _GetRegistrationFunctionName(fully_qualified_class):
+  """Returns the register name with a given class."""
+  return 'RegisterNative_' + common.escape_class_name(fully_qualified_class)
+
+
 class DictionaryGenerator(object):
   """Generates an inline header file for JNI registration."""
   def __init__(self, jni_obj, options):
@@ -568,20 +573,11 @@ class DictionaryGenerator(object):
 
   def _AddForwardDeclaration(self):
     """Add the content of the forward declaration to the dictionary."""
-    template = string.Template("""\
-JNI_BOUNDARY_EXPORT ${RETURN} ${STUB_NAME}(
-    JNIEnv* env,
-    ${PARAMS_IN_STUB});
-""")
-    forward_declaration = ''
+    sb = common.StringBuilder()
     for native in self.natives:
-      value = {
-          'RETURN': native.proxy_return_type.to_cpp(),
-          'STUB_NAME': self.jni_obj.GetStubName(native),
-          'PARAMS_IN_STUB': jni_generator.GetParamsInStub(native),
-      }
-      forward_declaration += template.substitute(value)
-    self._SetDictValue('FORWARD_DECLARATIONS', forward_declaration)
+      with sb.statement():
+        natives_header.proxy_declaration(sb, self.jni_obj, native)
+    self._SetDictValue('FORWARD_DECLARATIONS', sb.to_string())
 
   def _AddRegisterNativesCalls(self):
     """Add the body of the RegisterNativesImpl method to the dictionary."""
@@ -596,7 +592,7 @@ JNI_BOUNDARY_EXPORT ${RETURN} ${STUB_NAME}(
 """)
     value = {
         'REGISTER_NAME':
-        jni_generator.GetRegistrationFunctionName(self.fully_qualified_class)
+        _GetRegistrationFunctionName(self.fully_qualified_class)
     }
     register_body = template.substitute(value)
     self._SetDictValue('REGISTER_NATIVES', register_body)
@@ -711,9 +707,8 @@ ${NATIVES}\
 """)
     values = {
         'REGISTER_NAME':
-        jni_generator.GetRegistrationFunctionName(self.fully_qualified_class),
-        'NATIVES':
-        natives
+        _GetRegistrationFunctionName(self.fully_qualified_class),
+        'NATIVES': natives
     }
     self._SetDictValue('JNI_NATIVE_METHOD', template.substitute(values))
 

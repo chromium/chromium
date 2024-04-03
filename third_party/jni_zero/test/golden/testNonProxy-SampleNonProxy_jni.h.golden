@@ -10,10 +10,11 @@
 
 #include "third_party/jni_zero/jni_export.h"
 #include "third_party/jni_zero/jni_zero_helper.h"
-
-// Method stubs.
-static jlong JNI_SampleNonProxy_AddBookmark(JNIEnv* env, const jni_zero::JavaParamRef<jobject>&
-    jcaller,
+// Java to native functions
+// Forward declaration. To be implemented by the including .cc file.
+static jlong JNI_SampleNonProxy_AddBookmark(
+    JNIEnv* env,
+    const jni_zero::JavaParamRef<jobject>& jcaller,
     jint nativeChromeBrowserProvider,
     const jni_zero::JavaParamRef<jstring>& url,
     const jni_zero::JavaParamRef<jstring>& title,
@@ -28,13 +29,21 @@ JNI_BOUNDARY_EXPORT jlong Java_org_jni_1zero_SampleNonProxy_nativeAddBookmark(
     jstring title,
     jboolean isFolder,
     jlong parentId) {
-  return JNI_SampleNonProxy_AddBookmark(env, jni_zero::JavaParamRef<jobject>(env, jcaller),
-      nativeChromeBrowserProvider, jni_zero::JavaParamRef<jstring>(env, url),
-      jni_zero::JavaParamRef<jstring>(env, title), isFolder, parentId);
+  auto ret = JNI_SampleNonProxy_AddBookmark(
+      env,
+      jni_zero::JavaParamRef<jobject>(env, jcaller),
+      nativeChromeBrowserProvider,
+      jni_zero::JavaParamRef<jstring>(env, url),
+      jni_zero::JavaParamRef<jstring>(env, title),
+      isFolder,
+      parentId);
+  return ret;
 }
 
-static jlong JNI_SampleNonProxy_AddBookmarkFromAPI(JNIEnv* env, const
-    jni_zero::JavaParamRef<jobject>& jcaller,
+// Forward declaration. To be implemented by the including .cc file.
+static jlong JNI_SampleNonProxy_AddBookmarkFromAPI(
+    JNIEnv* env,
+    const jni_zero::JavaParamRef<jobject>& jcaller,
     jint nativeChromeBrowserProvider,
     const jni_zero::JavaParamRef<jstring>& url,
     const jni_zero::JavaParamRef<jobject>& created,
@@ -55,16 +64,24 @@ JNI_BOUNDARY_EXPORT jlong Java_org_jni_1zero_SampleNonProxy_nativeAddBookmarkFro
     jbyteArray favicon,
     jstring title,
     jobject visits) {
-  return JNI_SampleNonProxy_AddBookmarkFromAPI(env, jni_zero::JavaParamRef<jobject>(env, jcaller),
-      nativeChromeBrowserProvider, jni_zero::JavaParamRef<jstring>(env, url),
-      jni_zero::JavaParamRef<jobject>(env, created), jni_zero::JavaParamRef<jobject>(env,
-      isBookmark), jni_zero::JavaParamRef<jobject>(env, date),
-      jni_zero::JavaParamRef<jbyteArray>(env, favicon), jni_zero::JavaParamRef<jstring>(env, title),
+  auto ret = JNI_SampleNonProxy_AddBookmarkFromAPI(
+      env,
+      jni_zero::JavaParamRef<jobject>(env, jcaller),
+      nativeChromeBrowserProvider,
+      jni_zero::JavaParamRef<jstring>(env, url),
+      jni_zero::JavaParamRef<jobject>(env, created),
+      jni_zero::JavaParamRef<jobject>(env, isBookmark),
+      jni_zero::JavaParamRef<jobject>(env, date),
+      jni_zero::JavaParamRef<jbyteArray>(env, favicon),
+      jni_zero::JavaParamRef<jstring>(env, title),
       jni_zero::JavaParamRef<jobject>(env, visits));
+  return ret;
 }
 
-static void JNI_SampleNonProxy_CreateHistoricalTabFromState(JNIEnv* env, const
-    jni_zero::JavaParamRef<jbyteArray>& state,
+// Forward declaration. To be implemented by the including .cc file.
+static void JNI_SampleNonProxy_CreateHistoricalTabFromState(
+    JNIEnv* env,
+    const jni_zero::JavaParamRef<jbyteArray>& state,
     jint tabIndex);
 
 JNI_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleNonProxy_nativeCreateHistoricalTabFromState(
@@ -72,61 +89,85 @@ JNI_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleNonProxy_nativeCreateHistorica
     jclass jcaller,
     jbyteArray state,
     jint tabIndex) {
-  return JNI_SampleNonProxy_CreateHistoricalTabFromState(env,
-      jni_zero::JavaParamRef<jbyteArray>(env, state), tabIndex);
+  JNI_SampleNonProxy_CreateHistoricalTabFromState(
+      env,
+      jni_zero::JavaParamRef<jbyteArray>(env, state),
+      tabIndex);
 }
 
-static void JNI_SampleNonProxy_Destroy(JNIEnv* env, const jni_zero::JavaParamRef<jobject>& jcaller,
+// Forward declaration. To be implemented by the including .cc file.
+static void JNI_SampleNonProxy_Destroy(
+    JNIEnv* env,
+    const jni_zero::JavaParamRef<jobject>& jcaller,
     jint nativeChromeBrowserProvider);
 
 JNI_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleNonProxy_nativeDestroy(
     JNIEnv* env,
     jobject jcaller,
     jint nativeChromeBrowserProvider) {
-  return JNI_SampleNonProxy_Destroy(env, jni_zero::JavaParamRef<jobject>(env, jcaller),
+  JNI_SampleNonProxy_Destroy(
+      env,
+      jni_zero::JavaParamRef<jobject>(env, jcaller),
       nativeChromeBrowserProvider);
 }
 
-static jint JNI_SampleNonProxy_FindAll(JNIEnv* env, const jni_zero::JavaParamRef<jobject>& jcaller,
+// Forward declaration. To be implemented by the including .cc file.
+static jint JNI_SampleNonProxy_FindAll(
+    JNIEnv* env,
+    const jni_zero::JavaParamRef<jobject>& jcaller,
     const jni_zero::JavaParamRef<jstring>& find);
 
 JNI_BOUNDARY_EXPORT jint Java_org_jni_1zero_SampleNonProxy_nativeFindAll(
     JNIEnv* env,
     jobject jcaller,
     jstring find) {
-  return JNI_SampleNonProxy_FindAll(env, jni_zero::JavaParamRef<jobject>(env, jcaller),
+  auto ret = JNI_SampleNonProxy_FindAll(
+      env,
+      jni_zero::JavaParamRef<jobject>(env, jcaller),
       jni_zero::JavaParamRef<jstring>(env, find));
+  return ret;
 }
 
-static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleNonProxy_GetAutofillProfileGUIDs(JNIEnv*
-    env);
+// Forward declaration. To be implemented by the including .cc file.
+static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleNonProxy_GetAutofillProfileGUIDs(
+    JNIEnv* env);
 
 JNI_BOUNDARY_EXPORT jobjectArray Java_org_jni_1zero_SampleNonProxy_nativeGetAutofillProfileGUIDs(
     JNIEnv* env,
     jclass jcaller) {
-  return JNI_SampleNonProxy_GetAutofillProfileGUIDs(env).Release();
+  auto ret = JNI_SampleNonProxy_GetAutofillProfileGUIDs(env);
+  return ret.Release();
 }
 
-static jni_zero::ScopedJavaLocalRef<jstring> JNI_SampleNonProxy_GetDomainAndRegistry(JNIEnv* env,
+// Forward declaration. To be implemented by the including .cc file.
+static jni_zero::ScopedJavaLocalRef<jstring> JNI_SampleNonProxy_GetDomainAndRegistry(
+    JNIEnv* env,
     const jni_zero::JavaParamRef<jstring>& url);
 
 JNI_BOUNDARY_EXPORT jstring Java_org_jni_1zero_SampleNonProxy_nativeGetDomainAndRegistry(
     JNIEnv* env,
     jclass jcaller,
     jstring url) {
-  return JNI_SampleNonProxy_GetDomainAndRegistry(env, jni_zero::JavaParamRef<jstring>(env,
-      url)).Release();
+  auto ret = JNI_SampleNonProxy_GetDomainAndRegistry(
+      env,
+      jni_zero::JavaParamRef<jstring>(env, url));
+  return ret.Release();
 }
 
-static jni_zero::ScopedJavaLocalRef<jobject> JNI_SampleNonProxy_GetInnerClass(JNIEnv* env);
+// Forward declaration. To be implemented by the including .cc file.
+static jni_zero::ScopedJavaLocalRef<jobject> JNI_SampleNonProxy_GetInnerClass(
+    JNIEnv* env);
 
 JNI_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleNonProxy_nativeGetInnerClass(
     JNIEnv* env,
     jclass jcaller) {
-  return JNI_SampleNonProxy_GetInnerClass(env).Release();
+  auto ret = JNI_SampleNonProxy_GetInnerClass(env);
+  return ret.Release();
 }
 
-static jni_zero::ScopedJavaLocalRef<jbyteArray> JNI_SampleNonProxy_GetStateAsByteArray(JNIEnv* env,
+// Forward declaration. To be implemented by the including .cc file.
+static jni_zero::ScopedJavaLocalRef<jbyteArray> JNI_SampleNonProxy_GetStateAsByteArray(
+    JNIEnv* env,
     const jni_zero::JavaParamRef<jobject>& jcaller,
     const jni_zero::JavaParamRef<jobject>& view);
 
@@ -134,12 +175,17 @@ JNI_BOUNDARY_EXPORT jbyteArray Java_org_jni_1zero_SampleNonProxy_nativeGetStateA
     JNIEnv* env,
     jobject jcaller,
     jobject view) {
-  return JNI_SampleNonProxy_GetStateAsByteArray(env, jni_zero::JavaParamRef<jobject>(env, jcaller),
-      jni_zero::JavaParamRef<jobject>(env, view)).Release();
+  auto ret = JNI_SampleNonProxy_GetStateAsByteArray(
+      env,
+      jni_zero::JavaParamRef<jobject>(env, jcaller),
+      jni_zero::JavaParamRef<jobject>(env, view));
+  return ret.Release();
 }
 
-static void JNI_SampleNonProxy_GotOrientation(JNIEnv* env, const jni_zero::JavaParamRef<jobject>&
-    jcaller,
+// Forward declaration. To be implemented by the including .cc file.
+static void JNI_SampleNonProxy_GotOrientation(
+    JNIEnv* env,
+    const jni_zero::JavaParamRef<jobject>& jcaller,
     jint nativeDataFetcherImplAndroid,
     jdouble alpha,
     jdouble beta,
@@ -152,39 +198,62 @@ JNI_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleNonProxy_nativeGotOrientation(
     jdouble alpha,
     jdouble beta,
     jdouble gamma) {
-  return JNI_SampleNonProxy_GotOrientation(env, jni_zero::JavaParamRef<jobject>(env, jcaller),
-      nativeDataFetcherImplAndroid, alpha, beta, gamma);
+  JNI_SampleNonProxy_GotOrientation(
+      env,
+      jni_zero::JavaParamRef<jobject>(env, jcaller),
+      nativeDataFetcherImplAndroid,
+      alpha,
+      beta,
+      gamma);
 }
 
-static jint JNI_SampleNonProxy_Init(JNIEnv* env, const jni_zero::JavaParamRef<jobject>& jcaller);
+// Forward declaration. To be implemented by the including .cc file.
+static jint JNI_SampleNonProxy_Init(
+    JNIEnv* env,
+    const jni_zero::JavaParamRef<jobject>& jcaller);
 
 JNI_BOUNDARY_EXPORT jint Java_org_jni_1zero_SampleNonProxy_nativeInit(
     JNIEnv* env,
     jobject jcaller) {
-  return JNI_SampleNonProxy_Init(env, jni_zero::JavaParamRef<jobject>(env, jcaller));
+  auto ret = JNI_SampleNonProxy_Init(
+      env,
+      jni_zero::JavaParamRef<jobject>(env, jcaller));
+  return ret;
 }
 
-static jint JNI_SampleNonProxy_Init(JNIEnv* env, const jni_zero::JavaParamRef<jobject>& jcaller);
+// Forward declaration. To be implemented by the including .cc file.
+static jint JNI_SampleNonProxy_Init(
+    JNIEnv* env,
+    const jni_zero::JavaParamRef<jobject>& jcaller);
 
 JNI_BOUNDARY_EXPORT jint Java_org_jni_1zero_SampleNonProxy_nativeInit(
     JNIEnv* env,
     jobject jcaller) {
-  return JNI_SampleNonProxy_Init(env, jni_zero::JavaParamRef<jobject>(env, jcaller));
+  auto ret = JNI_SampleNonProxy_Init(
+      env,
+      jni_zero::JavaParamRef<jobject>(env, jcaller));
+  return ret;
 }
 
-static jni_zero::ScopedJavaLocalRef<jthrowable> JNI_SampleNonProxy_MessWithJavaException(JNIEnv*
-    env, const jni_zero::JavaParamRef<jthrowable>& e);
+// Forward declaration. To be implemented by the including .cc file.
+static jni_zero::ScopedJavaLocalRef<jthrowable> JNI_SampleNonProxy_MessWithJavaException(
+    JNIEnv* env,
+    const jni_zero::JavaParamRef<jthrowable>& e);
 
 JNI_BOUNDARY_EXPORT jthrowable Java_org_jni_1zero_SampleNonProxy_nativeMessWithJavaException(
     JNIEnv* env,
     jclass jcaller,
     jthrowable e) {
-  return JNI_SampleNonProxy_MessWithJavaException(env, jni_zero::JavaParamRef<jthrowable>(env,
-      e)).Release();
+  auto ret = JNI_SampleNonProxy_MessWithJavaException(
+      env,
+      jni_zero::JavaParamRef<jthrowable>(env, e));
+  return ret.Release();
 }
 
-static jni_zero::ScopedJavaLocalRef<jobject> JNI_SampleNonProxy_QueryBitmap(JNIEnv* env, const
-    jni_zero::JavaParamRef<jobject>& jcaller,
+// Forward declaration. To be implemented by the including .cc file.
+static jni_zero::ScopedJavaLocalRef<jobject> JNI_SampleNonProxy_QueryBitmap(
+    JNIEnv* env,
+    const jni_zero::JavaParamRef<jobject>& jcaller,
     jint nativeChromeBrowserProvider,
     const jni_zero::JavaParamRef<jobjectArray>& projection,
     const jni_zero::JavaParamRef<jstring>& selection,
@@ -199,14 +268,21 @@ JNI_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleNonProxy_nativeQueryBitmap(
     jstring selection,
     jobjectArray selectionArgs,
     jstring sortOrder) {
-  return JNI_SampleNonProxy_QueryBitmap(env, jni_zero::JavaParamRef<jobject>(env, jcaller),
-      nativeChromeBrowserProvider, jni_zero::JavaParamRef<jobjectArray>(env, projection),
-      jni_zero::JavaParamRef<jstring>(env, selection), jni_zero::JavaParamRef<jobjectArray>(env,
-      selectionArgs), jni_zero::JavaParamRef<jstring>(env, sortOrder)).Release();
+  auto ret = JNI_SampleNonProxy_QueryBitmap(
+      env,
+      jni_zero::JavaParamRef<jobject>(env, jcaller),
+      nativeChromeBrowserProvider,
+      jni_zero::JavaParamRef<jobjectArray>(env, projection),
+      jni_zero::JavaParamRef<jstring>(env, selection),
+      jni_zero::JavaParamRef<jobjectArray>(env, selectionArgs),
+      jni_zero::JavaParamRef<jstring>(env, sortOrder));
+  return ret.Release();
 }
 
-static void JNI_SampleNonProxy_SetRecognitionResults(JNIEnv* env, const
-    jni_zero::JavaParamRef<jobject>& jcaller,
+// Forward declaration. To be implemented by the including .cc file.
+static void JNI_SampleNonProxy_SetRecognitionResults(
+    JNIEnv* env,
+    const jni_zero::JavaParamRef<jobject>& jcaller,
     jint sessionId,
     const jni_zero::JavaParamRef<jobjectArray>& results);
 
@@ -215,11 +291,12 @@ JNI_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleNonProxy_nativeSetRecognitionR
     jobject jcaller,
     jint sessionId,
     jobjectArray results) {
-  return JNI_SampleNonProxy_SetRecognitionResults(env, jni_zero::JavaParamRef<jobject>(env,
-      jcaller), sessionId, jni_zero::JavaParamRef<jobjectArray>(env, results));
+  JNI_SampleNonProxy_SetRecognitionResults(
+      env,
+      jni_zero::JavaParamRef<jobject>(env, jcaller),
+      sessionId,
+      jni_zero::JavaParamRef<jobjectArray>(env, results));
 }
 
 
-
 #endif  // org_jni_zero_SampleNonProxy_JNI
-
