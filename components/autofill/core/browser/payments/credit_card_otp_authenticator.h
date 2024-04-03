@@ -161,9 +161,6 @@ class CreditCardOtpAuthenticator : public OtpUnmaskDelegate {
   // AutofillClient that owns `this`.
   const raw_ref<AutofillClient> autofill_client_;
 
-  // The associated PaymentsNetworkInterface.
-  raw_ptr<payments::PaymentsNetworkInterface> payments_network_interface_;
-
   // Weak pointer to object that is requesting authentication.
   base::WeakPtr<Requester> requester_;
 

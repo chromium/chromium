@@ -19,9 +19,7 @@ CreditCardOtpAuthenticator::OtpAuthenticationResponse::
     ~OtpAuthenticationResponse() = default;
 
 CreditCardOtpAuthenticator::CreditCardOtpAuthenticator(AutofillClient* client)
-    : autofill_client_(CHECK_DEREF(client)),
-      payments_network_interface_(
-          client->GetPaymentsAutofillClient()->GetPaymentsNetworkInterface()) {}
+    : autofill_client_(CHECK_DEREF(client)) {}
 
 CreditCardOtpAuthenticator::~CreditCardOtpAuthenticator() = default;
 
@@ -126,8 +124,11 @@ void CreditCardOtpAuthenticator::OnChallengeOptionSelected(
 
   // Asynchronously prepare `payments_network_interface`. This is only needed
   // once per session.
-  CHECK(payments_network_interface_);
-  payments_network_interface_->Prepare();
+  auto* payments_network_interface =
+      autofill_client_->GetPaymentsAutofillClient()
+          ->GetPaymentsNetworkInterface();
+  CHECK(payments_network_interface);
+  payments_network_interface->Prepare();
 
   // Send user selected challenge option to server.
   SendSelectChallengeOptionRequest();
@@ -149,10 +150,13 @@ void CreditCardOtpAuthenticator::SendSelectChallengeOptionRequest() {
 
   // Send SelectChallengeOption request to server, the callback is
   // |OnDidSelectChallengeOption|.
-  payments_network_interface_->SelectChallengeOption(
-      *select_challenge_option_request_,
-      base::BindOnce(&CreditCardOtpAuthenticator::OnDidSelectChallengeOption,
-                     weak_ptr_factory_.GetWeakPtr()));
+  autofill_client_->GetPaymentsAutofillClient()
+      ->GetPaymentsNetworkInterface()
+      ->SelectChallengeOption(
+          *select_challenge_option_request_,
+          base::BindOnce(
+              &CreditCardOtpAuthenticator::OnDidSelectChallengeOption,
+              weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CreditCardOtpAuthenticator::OnDidSelectChallengeOption(
@@ -244,10 +248,11 @@ void CreditCardOtpAuthenticator::OnDidGetUnmaskRiskData(
 void CreditCardOtpAuthenticator::SendUnmaskCardRequest() {
   unmask_request_->risk_data = risk_data_;
   unmask_card_request_timestamp_ = base::TimeTicks::Now();
-  payments_network_interface_->UnmaskCard(
-      *unmask_request_,
-      base::BindOnce(&CreditCardOtpAuthenticator::OnDidGetRealPan,
-                     weak_ptr_factory_.GetWeakPtr()));
+  autofill_client_->GetPaymentsAutofillClient()
+      ->GetPaymentsNetworkInterface()
+      ->UnmaskCard(*unmask_request_,
+                   base::BindOnce(&CreditCardOtpAuthenticator::OnDidGetRealPan,
+                                  weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CreditCardOtpAuthenticator::OnDidGetRealPan(
@@ -378,7 +383,9 @@ void CreditCardOtpAuthenticator::OnDidGetRealPan(
 
 void CreditCardOtpAuthenticator::Reset() {
   weak_ptr_factory_.InvalidateWeakPtrs();
-  payments_network_interface_->CancelRequest();
+  autofill_client_->GetPaymentsAutofillClient()
+      ->GetPaymentsNetworkInterface()
+      ->CancelRequest();
   card_ = nullptr;
   selected_challenge_option_ = CardUnmaskChallengeOption();
   otp_ = std::u16string();
