@@ -32,6 +32,7 @@ COMPONENT_EXPORT(DEVICE_FIDO)
 void Transact(raw_ptr<network::mojom::NetworkContext> network_context,
               const EnclaveIdentity& enclave,
               std::string access_token,
+              std::optional<std::string> reauthentication_token,
               cbor::Value request,
               SigningCallback signing_callback,
               base::OnceCallback<void(std::optional<cbor::Value>)> callback);

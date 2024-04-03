@@ -39,6 +39,7 @@ class EnclaveWebSocketClient : public network::mojom::WebSocketHandshakeClient,
   EnclaveWebSocketClient(
       const GURL& service_url,
       std::string access_token,
+      std::optional<std::string> reauthentication_token,
       raw_ptr<network::mojom::NetworkContext> network_context,
       OnResponseCallback on_reponse);
   ~EnclaveWebSocketClient() override;
@@ -90,6 +91,7 @@ class EnclaveWebSocketClient : public network::mojom::WebSocketHandshakeClient,
   State state_;
   const GURL service_url_;
   const std::string access_token_;
+  const std::optional<std::string> reauthentication_token_;
   const raw_ptr<network::mojom::NetworkContext> network_context_;
   OnResponseCallback on_response_;
 

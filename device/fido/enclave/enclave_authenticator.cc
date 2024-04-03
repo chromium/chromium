@@ -97,6 +97,7 @@ void EnclaveAuthenticator::MakeCredential(CtapMakeCredentialRequest request,
 
   Transact(network_context_, GetEnclaveIdentity(),
            std::move(ui_request_->access_token),
+           /*reauthentication_token=*/std::nullopt,
            BuildMakeCredentialCommand(
                std::move(pending_make_credential_request_->options.json),
                std::move(ui_request_->claimed_pin),
@@ -117,6 +118,7 @@ void EnclaveAuthenticator::GetAssertion(CtapGetAssertionRequest request,
 
   Transact(network_context_, GetEnclaveIdentity(),
            std::move(ui_request_->access_token),
+           /*reauthentication_token=*/std::nullopt,
            BuildGetAssertionCommand(
                *ui_request_->entity,
                std::move(pending_get_assertion_request_->options.json),

@@ -132,6 +132,7 @@ struct Transaction : base::RefCounted<Transaction> {
 void Transact(raw_ptr<network::mojom::NetworkContext> network_context,
               const EnclaveIdentity& enclave,
               std::string access_token,
+              std::optional<std::string> reauthentication_token,
               cbor::Value request,
               SigningCallback signing_callback,
               base::OnceCallback<void(std::optional<cbor::Value>)> callback) {
@@ -140,8 +141,8 @@ void Transact(raw_ptr<network::mojom::NetworkContext> network_context,
       std::move(callback));
 
   transaction->set_client(std::make_unique<EnclaveWebSocketClient>(
-      enclave.url, std::move(access_token), network_context,
-      base::BindRepeating(&Transaction::OnData, transaction)));
+      enclave.url, std::move(access_token), std::move(reauthentication_token),
+      network_context, base::BindRepeating(&Transaction::OnData, transaction)));
 
   transaction->Start();
 }

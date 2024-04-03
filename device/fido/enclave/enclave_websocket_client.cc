@@ -76,11 +76,13 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 EnclaveWebSocketClient::EnclaveWebSocketClient(
     const GURL& service_url,
     std::string access_token,
+    std::optional<std::string> reauthentication_token,
     raw_ptr<network::mojom::NetworkContext> network_context,
     OnResponseCallback on_response)
     : state_(State::kInitialized),
       service_url_(service_url),
       access_token_(std::move(access_token)),
+      reauthentication_token_(std::move(reauthentication_token)),
       network_context_(network_context),
       on_response_(std::move(on_response)),
       readable_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL) {}
@@ -120,6 +122,10 @@ void EnclaveWebSocketClient::Connect() {
   std::vector<network::mojom::HttpHeaderPtr> additional_headers;
   additional_headers.emplace_back(network::mojom::HttpHeader::New(
       net::HttpRequestHeaders::kAuthorization, "Bearer " + access_token_));
+  if (reauthentication_token_) {
+    additional_headers.emplace_back(network::mojom::HttpHeader::New(
+        "Reauthentication", *reauthentication_token_));
+  }
 
   network_context_->CreateWebSocket(
       service_url_, {kEnclaveWebSocketProtocol}, net::SiteForCookies(),

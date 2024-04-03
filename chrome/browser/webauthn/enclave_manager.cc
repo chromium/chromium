@@ -1265,6 +1265,7 @@ class EnclaveManager::StateMachine {
     std::string token = std::move(absl::get_if<AccessToken>(&event)->value());
     enclave::Transact(manager_->network_context_, enclave::GetEnclaveIdentity(),
                       std::move(token),
+                      /*reauthentication_token=*/std::nullopt,
                       BuildRegistrationMessage(user_->device_id(),
                                                manager_->hardware_key_->key(),
                                                manager_->user_verifying_key_),
@@ -1321,6 +1322,7 @@ class EnclaveManager::StateMachine {
     enclave::Transact(
         manager_->network_context_, enclave::GetEnclaveIdentity(),
         std::move(token),
+        /*reauthentication_token=*/std::nullopt,
         cbor::Value(
             BuildSecretWrappingEnclaveRequest(new_security_domain_secrets_)),
         manager_->HardwareKeySigningCallback(),
@@ -1476,6 +1478,7 @@ class EnclaveManager::StateMachine {
     enclave::Transact(
         manager_->network_context_, enclave::GetEnclaveIdentity(),
         std::move(token),
+        /*reauthentication_token=*/std::nullopt,
         ConcatEnclaveRequests(
             BuildPINWrappingEnclaveRequest(hashed_pin_->hashed,
                                            std::move(*cert_xml_),
