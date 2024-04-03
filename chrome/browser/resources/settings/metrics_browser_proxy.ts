@@ -39,8 +39,9 @@ export enum PrivacyElementInteractions {
   THIRD_PARTY_COOKIES_BLOCK = 22,
   BLOCK_ALL_THIRD_PARTY_COOKIES = 23,
   IP_PROTECTION = 24,
+  FINGERPRINTING_PROTECTION = 25,
   // Max value should be updated whenever new entries are added.
-  MAX_VALUE = 25,
+  MAX_VALUE = 26,
 }
 
 /**
