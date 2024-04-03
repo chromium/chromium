@@ -5225,8 +5225,6 @@ HSPLorg/chromium/chrome/browser/share/link_to_text/LinkToTextIPHController;-><in
 Lorg/chromium/chrome/browser/share/link_to_text/LinkToTextIPHController$1;
 HSPLorg/chromium/chrome/browser/share/link_to_text/LinkToTextIPHController$1;-><init>(Lorg/chromium/chrome/browser/share/link_to_text/LinkToTextIPHController;Lorg/chromium/base/supplier/ObservableSupplier;)V
 HSPLorg/chromium/chrome/browser/share/link_to_text/LinkToTextIPHController$1;->onPageLoadFinished(Lorg/chromium/chrome/browser/tab/Tab;Lorg/chromium/url/GURL;)V
-Lorg/chromium/chrome/browser/sharing/SharingServiceProxy;
-HSPLorg/chromium/chrome/browser/sharing/SharingServiceProxy;->onProxyCreated(J)V
 PLorg/chromium/chrome/browser/signin/SigninCheckerProvider;->get()Lorg/chromium/chrome/browser/signin/services/SigninChecker;
 Lorg/chromium/chrome/browser/signin/SigninManagerImpl;
 HSPLorg/chromium/chrome/browser/signin/SigninManagerImpl;-><init>(JLorg/chromium/components/signin/identitymanager/AccountTrackerService;Lorg/chromium/components/signin/identitymanager/IdentityManager;Lorg/chromium/components/signin/identitymanager/IdentityMutator;)V

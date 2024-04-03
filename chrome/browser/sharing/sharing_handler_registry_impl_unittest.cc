@@ -54,6 +54,7 @@ class SharingHandlerRegistryImplTest : public testing::Test {
 
 }  // namespace
 
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(SharingHandlerRegistryImplTest, SharedClipboard_IsAdded) {
   sharing_device_registration_.SetIsSharedClipboardSupported(true);
   auto handler_registry = CreateHandlerRegistry();
@@ -73,6 +74,7 @@ TEST_F(SharingHandlerRegistryImplTest, SharedClipboard_NotAdded) {
   EXPECT_FALSE(handler_registry->GetSharingHandler(
       chrome_browser_sharing::SharingMessage::kSharedClipboardMessage));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(SharingHandlerRegistryImplTest, SharedClipboard_AddRemoveManually) {
   sharing_device_registration_.SetIsSharedClipboardSupported(false);

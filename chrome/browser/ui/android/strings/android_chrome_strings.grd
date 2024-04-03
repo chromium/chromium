@@ -5098,51 +5098,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome da
         Make sure a phone app is enabled on this device
       </message>
 
-      <!-- Sharing content types -->
-      <message name="IDS_BROWSER_SHARING_CONTENT_TYPE_TEXT" desc="This will be used as a placeholder in the message 'Can't share [content type].' so it should be lower-case unless this is a language where nouns are upper case." meaning="text as placeholder">
-        text
-      </message>
-
-      <!-- Sharing notification error messages -->
-      <message name="IDS_BROWSER_SHARING_ERROR_DIALOG_TITLE_GENERIC_ERROR" desc="The label to be shown as the title of the dialog when we encounter an error that can be fixed by the user. Eg, device not connected to internet or sync turned off.">
-        Can't share <ph name="CONTENT_TYPE">%1$s<ex>video</ex></ph>
-      </message>
-      <message name="IDS_BROWSER_SHARING_ERROR_DIALOG_TITLE_INTERNAL_ERROR" desc="The label to be shown as the title of the dialog when an internal error occurred while sending the message.">
-        Couldn't share <ph name="CONTENT_TYPE">%1$s<ex>video</ex></ph>
-      </message>
-
-      <message name="IDS_BROWSER_SHARING_ERROR_DIALOG_TEXT_DEVICE_NOT_FOUND" desc="The text to be shown on the dialog when an error occurred because the device is not synced.">
-        Make sure <ph name="TARGET_DEVICE_NAME">%1$s<ex>Pixel XL</ex></ph> has sync turned on in Chrome
-      </message>
-      <message name="IDS_BROWSER_SHARING_ERROR_DIALOG_TEXT_NETWORK_ERROR" desc="The text to be shown on the dialog when the sender device has network issues.">
-        Make sure this device is connected to the internet
-      </message>
-      <message name="IDS_BROWSER_SHARING_ERROR_DIALOG_TEXT_DEVICE_ACK_TIMEOUT" desc="The text to be shown on the dialog when the recipient device has network issues.">
-        Make sure <ph name="TARGET_DEVICE_NAME">%1$s<ex>Pixel XL</ex></ph> is connected to the internet
-      </message>
-      <message name="IDS_BROWSER_SHARING_ERROR_DIALOG_TEXT_INTERNAL_ERROR" desc="The text to be shown on the dialog when an internal error occurred while sending the message.">
-        Something went wrong. Try again later.
-      </message>
-
-      <!-- Shared clipboard error message for notification. Could potentially be made generic -->
-      <message name="IDS_BROWSER_SHARING_SHARED_CLIPBOARD_ERROR_DIALOG_TITLE_PAYLOAD_TOO_LARGE" desc="The label to be shown as the title of the dialog when the text shared is too large.">
-        Text is too large
-      </message>
-      <message name="IDS_BROWSER_SHARING_SHARED_CLIPBOARD_ERROR_DIALOG_TEXT_PAYLOAD_TOO_LARGE" desc="The text to be shown on the dialog when the text shared is too large.">
-        Try sharing the text in smaller chunks
-      </message>
-
-      <!-- Shared Clipboard -->
-      <message name="IDS_SHARED_CLIPBOARD_NOTIFICATION_TITLE_UNKNOWN_DEVICE" desc="Title text displayed in a shared clipboard notification when the source device name is unknown.">
-        Text shared from other device
-      </message>
-      <message name="IDS_SHARED_CLIPBOARD_NOTIFICATION_TITLE" desc="Title text displayed in a shared clipboard notification when the source device name is known.">
-        Text shared from <ph name="DEVICE_NAME">%1$s<ex>Pixel 3</ex></ph>
-      </message>
-      <message name="IDS_SHARED_CLIPBOARD_NOTIFICATION_TEXT" desc="Content text displayed in a shared clipboard notification.">
-        Copied to your clipboard
-      </message>
-
       <!-- Sms Fetcher -->
       <message name="IDS_SMS_FETCHER_NOTIFICATION_TITLE" desc="Title text shown when the Android Chrome receives a ONE_TIME_CODE from an incoming SMS and ask users for permission to submit the code to their linked Desktop Chrome">
         Submit <ph name="ONE_TIME_CODE">%1$s<ex>123</ex></ph> on <ph name="CLIENT_NAME">%2$s<ex>Zoe's Macbook</ex></ph>?

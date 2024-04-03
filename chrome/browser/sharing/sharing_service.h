@@ -24,10 +24,6 @@
 #include "components/sync/service/sync_service_observer.h"
 #include "net/base/backoff_entry.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/sharing/sharing_service_proxy_android.h"
-#endif  // BUILDFLAG(IS_ANDROID)
-
 namespace syncer {
 class SyncService;
 }  // namespace syncer
@@ -165,10 +161,6 @@ class SharingService : public KeyedService, public syncer::SyncServiceObserver {
 
   net::BackoffEntry backoff_entry_;
   State state_;
-
-#if BUILDFLAG(IS_ANDROID)
-  SharingServiceProxyAndroid sharing_service_proxy_android_{this};
-#endif  // BUILDFLAG(IS_ANDROID)
 
   // Map of notification id to notification handler callback.
   std::map<std::string, NotificationActionCallback>

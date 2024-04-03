@@ -16,7 +16,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/sharing/click_to_call/click_to_call_message_handler_android.h"
-#include "chrome/browser/sharing/shared_clipboard/shared_clipboard_message_handler_android.h"
 #include "chrome/browser/sharing/sms/sms_fetch_request_handler.h"
 #else
 #include "chrome/browser/sharing/shared_clipboard/shared_clipboard_message_handler_desktop.h"
@@ -62,20 +61,17 @@ SharingHandlerRegistryImpl::SharingHandlerRegistryImpl(
                            kOptimizationGuidePushNotification});
   }
 
+#if !BUILDFLAG(IS_ANDROID)
   if (sharing_device_registration->IsSharedClipboardSupported()) {
     std::unique_ptr<SharingMessageHandler> shared_clipboard_message_handler;
-#if BUILDFLAG(IS_ANDROID)
-    shared_clipboard_message_handler =
-        std::make_unique<SharedClipboardMessageHandlerAndroid>(device_source);
-#else
     shared_clipboard_message_handler =
         std::make_unique<SharedClipboardMessageHandlerDesktop>(device_source,
                                                                profile);
-#endif  // BUILDFLAG(IS_ANDROID)
     AddSharingHandler(
         std::move(shared_clipboard_message_handler),
         {chrome_browser_sharing::SharingMessage::kSharedClipboardMessage});
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
