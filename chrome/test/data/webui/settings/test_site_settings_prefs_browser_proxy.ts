@@ -121,6 +121,10 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
       this.categoryList_.push(ContentSettingsTypes.AUTOMATIC_FULLSCREEN);
     }
 
+    if (loadTimeData.getBoolean('capturedSurfaceControlEnabled')) {
+      this.categoryList_.push(ContentSettingsTypes.CAPTURED_SURFACE_CONTROL);
+    }
+
     this.prefs_ = createSiteSettingsPrefs([], [], []);
   }
 

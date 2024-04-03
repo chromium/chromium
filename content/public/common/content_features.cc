@@ -164,7 +164,7 @@ BASE_FEATURE(kCapturedSurfaceControlKillswitch,
 // If disabled, CSC permissions are scoped to the capture session's duration.
 BASE_FEATURE(kCapturedSurfaceControlStickyPermissions,
              "CapturedSurfaceControlStickyPermissions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This serves as an overall kill switch to kill CdmStorageDatabase. If
 // disabled, which it is by default, no operations will be routed through the
