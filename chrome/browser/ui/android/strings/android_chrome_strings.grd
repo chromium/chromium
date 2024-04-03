@@ -6009,6 +6009,21 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome da
       <message name="IDS_SHARE_WITH_SUMMARY_SHEET_CLOSED" desc="Accessibility string that describes closing a bottomsheet that appears when generating a summary to share along a web page." formatter_data="android_java" is_accessibility_with_no_ui="true">
         Share with summary sheet closed
       </message>
+      <message name="IDS_SHARE_WITH_SUMMARY_FEEDBACK_SHEET_TITLE" desc="Title of a bottom sheet that appears when providing feedback for a generated web page summary.">
+        Select an issue
+      </message>
+      <message name="IDS_SHARE_WITH_SUMMARY_FEEDBACK_SHEET_DESCRIPTION" desc="Accessibility string that describes a bottomsheet that appears when providing feedback on a generated web page summary." formatter_data="android_java" is_accessibility_with_no_ui="true">
+        Share with summary feedback sheet
+      </message>
+      <message name="IDS_SHARE_WITH_SUMMARY_FEEDBACK_SHEET_OPENED" desc="Accessibility string that describes opening a bottomsheet that appears when providing feedback on a generated web page summary." formatter_data="android_java" is_accessibility_with_no_ui="true">
+        Share with summary feedback sheet opened
+      </message>
+      <message name="IDS_SHARE_WITH_SUMMARY_FEEDBACK_SHEET_CLOSED" desc="Accessibility string that describes closing a bottomsheet that appears when providing feedback on a generated web page summary." formatter_data="android_java" is_accessibility_with_no_ui="true">
+        Share with summary feedback sheet closed
+      </message>
+      <message name="IDS_SHARE_WITH_SUMMARY_FEEDBACK_DISCLAIMER" desc="Disclaimer at the bottom of a bottom sheet to provide feedback for a generated web page summary.">
+        The URL of the page you\u2019re providing feedback for will be sent by Google and may be reviewed by humans to improve this feature
+      </message>
 
       <!-- Data Sharing -->
       <message name="IDS_SHARED_IMAGE_TILES_COUNT" desc="The count string for number of tiles that overflows from shared image tiles. |COUNT_NUMBER| will be a number between 1 and 99 (it will be 1-2 digits at most). [CHAR_LIMIT=3]">

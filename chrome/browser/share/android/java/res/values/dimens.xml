@@ -33,4 +33,5 @@ found in the LICENSE file.
     <dimen name="page_info_icon_button_size">48dp</dimen>
     <dimen name="page_info_action_button_area_height">60dp</dimen>
     <dimen name="page_info_feedback_area_height">64dp</dimen>
+    <dimen name="page_summary_feedback_sheet_item_margin">12dp</dimen>
 </resources>

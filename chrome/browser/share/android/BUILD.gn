@@ -23,9 +23,14 @@ android_resources("java_resources") {
     "java/res/drawable/thumb_down.xml",
     "java/res/drawable/thumb_up.xml",
     "java/res/layout/page_info_bottom_sheet_content.xml",
+    "java/res/layout/page_summary_feedback_sheet.xml",
     "java/res/layout/qrcode_dialog.xml",
     "java/res/layout/qrcode_share_layout.xml",
     "java/res/layout/screenshot_share_sheet.xml",
     "java/res/values/dimens.xml",
   ]
+}
+
+android_resources("java_test_resources") {
+  sources = [ "javatests/res/values/strings.xml" ]
 }

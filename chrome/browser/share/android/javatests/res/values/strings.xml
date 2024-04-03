@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources>
+  <string name="test_radio_button_item_1">Option 1</string>
+  <string name="test_radio_button_item_2">Option 2</string>
+  <string name="test_radio_button_item_3">Option 3</string>
+
+</resources>
