@@ -50,6 +50,15 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewCrosBrowserTest, DestinationManagerTest) {
 }
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewCrosBrowserTest,
+                       DestinationRowControllerTest) {
+  RunTestAtPath("destination_row_controller_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewCrosBrowserTest, DestinationRowTest) {
+  RunTestAtPath("destination_row_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewCrosBrowserTest,
                        DestinationSelectControllerTest) {
   RunTestAtPath("destination_select_controller_test.js");
 }

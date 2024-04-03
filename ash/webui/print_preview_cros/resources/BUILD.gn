@@ -20,6 +20,7 @@ build_webui("build") {
     "js/data/destination_manager.ts",
     "js/data/print_ticket_manager.ts",
     "js/destination_dropdown_controller.ts",
+    "js/destination_row_controller.ts",
     "js/destination_select_controller.ts",
     "js/summary_panel_controller.ts",
     "js/fakes/fake_destination_provider.ts",
@@ -31,6 +32,7 @@ build_webui("build") {
 
   web_component_files = [
     "js/destination_dropdown.ts",
+    "js/destination_row.ts",
     "js/destination_select.ts",
     "js/print_preview_cros_app.ts",
     "js/summary_panel.ts",
