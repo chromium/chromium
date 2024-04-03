@@ -13,7 +13,6 @@ namespace optimization_guide {
 namespace {
 
 using features::internal::GetAllowedFeaturesForUnsignedUser;
-using proto::ModelExecutionFeature;
 using testing::UnorderedElementsAre;
 
 TEST(ModelExecutionFeature, GetAllowedFeaturesForUnsignedUser) {

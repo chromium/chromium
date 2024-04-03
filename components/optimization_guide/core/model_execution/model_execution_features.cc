@@ -44,10 +44,6 @@ BASE_FEATURE(kModelExecutionCapabilityDisable,
              "ModelExecutionCapabilityDisable",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool IsGraduatedFeature(proto::ModelExecutionFeature feature) {
-  return IsGraduatedFeature(ToUserVisibleFeatureKey(feature).value());
-}
-
 bool IsGraduatedFeature(UserVisibleFeatureKey feature) {
   bool is_graduated = false;
   switch (feature) {
@@ -68,12 +64,6 @@ bool IsGraduatedFeature(UserVisibleFeatureKey feature) {
       << "Feature should not be both graduated and visible in settings: "
       << GetFeatureToUseToCheckSettingsVisibility(feature)->name;
   return is_graduated;
-}
-
-const base::Feature* GetFeatureToUseToCheckSettingsVisibility(
-    proto::ModelExecutionFeature feature) {
-  return GetFeatureToUseToCheckSettingsVisibility(
-      ToUserVisibleFeatureKey(feature).value());
 }
 
 const base::Feature* GetFeatureToUseToCheckSettingsVisibility(

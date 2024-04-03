@@ -616,9 +616,8 @@ void OptimizationGuideKeyedService::UploadModelQualityLogs(
     return;
   }
 
-  optimization_guide::proto::ModelExecutionFeature feature =
-      optimization_guide::GetModelExecutionFeature(
-          log_entry->log_ai_data_request()->feature_case());
+  auto feature = optimization_guide::GetModelExecutionFeature(
+      log_entry->log_ai_data_request()->feature_case());
 
   TRACE_EVENT1(
       "browser", "OptimizationGuideKeyedService::UploadModelQualityLogs",

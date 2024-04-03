@@ -6,6 +6,7 @@
 
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_test_util.h"
 #include "components/optimization_guide/proto/loading_predictor_metadata.pb.h"
@@ -98,14 +99,11 @@ TEST_F(OptimizationGuideUtilTest, ParsedAnyMetadataTestWithNoPackageName) {
 
 TEST_F(OptimizationGuideUtilTest, GetModelQualityClientId) {
   int64_t compose_client_id = GetOrCreateModelQualityClientId(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE,
-      &pref_service_);
+      UserVisibleFeatureKey::kCompose, &pref_service_);
   int64_t wallpaper_search_client_id = GetOrCreateModelQualityClientId(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH,
-      &pref_service_);
+      UserVisibleFeatureKey::kWallpaperSearch, &pref_service_);
   int64_t tab_organization_client_id = GetOrCreateModelQualityClientId(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION,
-      &pref_service_);
+      UserVisibleFeatureKey::kTabOrganization, &pref_service_);
   EXPECT_NE(compose_client_id, wallpaper_search_client_id);
   EXPECT_NE(wallpaper_search_client_id, tab_organization_client_id);
   EXPECT_NE(tab_organization_client_id, compose_client_id);
@@ -114,8 +112,7 @@ TEST_F(OptimizationGuideUtilTest, GetModelQualityClientId) {
   // different.
   task_environment_.AdvanceClock(base::Days(2));
   int64_t new_compose_client_id = GetOrCreateModelQualityClientId(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE,
-      &pref_service_);
+      UserVisibleFeatureKey::kCompose, &pref_service_);
   EXPECT_NE(compose_client_id, new_compose_client_id);
 }
 

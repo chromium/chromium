@@ -36,10 +36,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       PrefRegistry::LOSSY_PREF);
 }
 
-const char* GetEnterprisePolicyPrefName(proto::ModelExecutionFeature feature) {
-  return GetEnterprisePolicyPrefName(ToUserVisibleFeatureKey(feature).value());
-}
-
 const char* GetEnterprisePolicyPrefName(UserVisibleFeatureKey feature) {
   switch (feature) {
     case UserVisibleFeatureKey::kCompose:

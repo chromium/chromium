@@ -17,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/grit/optimization_guide_internals_resources.h"
 #include "components/grit/optimization_guide_internals_resources_map.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/prediction_manager.h"
 #include "components/optimization_guide/optimization_guide_internals/webui/optimization_guide_internals.mojom.h"
@@ -114,15 +115,13 @@ void OptimizationGuideInternalsUI::RequestLoggedModelQualityClientIds(
     // feature.
     int64_t client_id_i_compose =
         optimization_guide::GetHashedModelQualityClientId(
-            optimization_guide::proto::ModelExecutionFeature::
-                MODEL_EXECUTION_FEATURE_COMPOSE,
-            day_i, client_id);
+            optimization_guide::UserVisibleFeatureKey::kCompose, day_i,
+            client_id);
 
     int64_t client_id_i_tab_organization =
         optimization_guide::GetHashedModelQualityClientId(
-            optimization_guide::proto::ModelExecutionFeature::
-                MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION,
-            day_i, client_id);
+            optimization_guide::UserVisibleFeatureKey::kTabOrganization, day_i,
+            client_id);
 
     logged_client_ids.push_back(
         optimization_guide_internals::mojom::LoggedClientIds::New(

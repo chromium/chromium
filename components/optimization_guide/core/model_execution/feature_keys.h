@@ -76,48 +76,6 @@ inline proto::ModelExecutionFeature ToModelExecutionFeatureProto(
   return ToModelExecutionFeatureProto(ToModelBasedCapabilityKey(key));
 }
 
-// TODO: crbug.com/331306557 - Cleanup after migration, if possible.
-inline std::optional<ModelBasedCapabilityKey> ToModelBasedCapabilityKey(
-    proto::ModelExecutionFeature key) {
-  switch (key) {
-    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE:
-      return ModelBasedCapabilityKey::kCompose;
-    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION:
-      return ModelBasedCapabilityKey::kTabOrganization;
-    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH:
-      return ModelBasedCapabilityKey::kWallpaperSearch;
-    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST:
-      return ModelBasedCapabilityKey::kTest;
-    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEXT_SAFETY:
-      return ModelBasedCapabilityKey::kTextSafety;
-    default:
-      return std::nullopt;
-  }
-}
-
-// TODO: crbug.com/331306557 - Cleanup after migration, if possible.
-inline std::optional<UserVisibleFeatureKey> ToUserVisibleFeatureKey(
-    ModelBasedCapabilityKey key) {
-  switch (key) {
-    case ModelBasedCapabilityKey::kCompose:
-      return UserVisibleFeatureKey::kCompose;
-    case ModelBasedCapabilityKey::kTabOrganization:
-      return UserVisibleFeatureKey::kTabOrganization;
-    case ModelBasedCapabilityKey::kWallpaperSearch:
-      return UserVisibleFeatureKey::kWallpaperSearch;
-    case ModelBasedCapabilityKey::kTest:
-    case ModelBasedCapabilityKey::kTextSafety:
-      return std::nullopt;
-  }
-}
-
-// TODO: crbug.com/331306557 - Cleanup after migration.
-inline std::optional<UserVisibleFeatureKey> ToUserVisibleFeatureKey(
-    proto::ModelExecutionFeature key) {
-  auto key2 = ToModelBasedCapabilityKey(key);
-  return key2 ? ToUserVisibleFeatureKey(*key2) : std::nullopt;
-}
-
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_FEATURE_KEYS_H_

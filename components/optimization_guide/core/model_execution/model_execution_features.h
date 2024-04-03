@@ -37,14 +37,9 @@ BASE_DECLARE_FEATURE(kModelExecutionCapabilityDisable);
 
 // Checks if the provided `feature` is graduated from experimental AI settings.
 bool IsGraduatedFeature(UserVisibleFeatureKey feature);
-// TODO: crbug.com/331306557 - Cleanup after migration.
-bool IsGraduatedFeature(proto::ModelExecutionFeature feature);
 
 const base::Feature* GetFeatureToUseToCheckSettingsVisibility(
     UserVisibleFeatureKey feature);
-// TODO: crbug.com/331306557 - Cleanup after migration.
-const base::Feature* GetFeatureToUseToCheckSettingsVisibility(
-    proto::ModelExecutionFeature feature);
 
 // Returns the features allowed to be shown in the settings UI, and can be
 // enabled, even for unsigned users.

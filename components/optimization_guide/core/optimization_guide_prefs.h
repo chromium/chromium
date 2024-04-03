@@ -49,9 +49,6 @@ enum class FeatureOptInState {
 // Returns the name of the pref that stores the user's setting opt-in state for
 // the given `feature`.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-std::string GetSettingEnabledPrefName(proto::ModelExecutionFeature feature);
-
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 std::string GetSettingEnabledPrefName(UserVisibleFeatureKey feature);
 
 namespace localstate {

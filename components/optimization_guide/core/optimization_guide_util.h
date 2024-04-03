@@ -44,7 +44,7 @@ enum class OptimizationGuideDecision;
 // Returns the equivalent string name for a `feature`. The returned string can
 // be used to index persistent data (e.g., prefs, histograms etc.).
 std::string_view GetStringNameForModelExecutionFeature(
-    UserVisibleFeatureKey feature);
+    std::optional<UserVisibleFeatureKey> feature);
 std::string_view GetStringNameForModelExecutionFeature(
     ModelBasedCapabilityKey feature);
 std::string_view GetStringNameForModelExecutionFeature(
@@ -55,13 +55,13 @@ std::string_view GetStringNameForModelExecutionFeature(
 bool IsHostValidToFetchFromRemoteOptimizationGuide(const std::string& host);
 
 // Returns the hashed client id with the feature and day.
-int64_t GetHashedModelQualityClientId(proto::ModelExecutionFeature feature,
+int64_t GetHashedModelQualityClientId(UserVisibleFeatureKey feature,
                                       base::Time day,
                                       int64_t client_id);
 
 // Creates a new client id if not persisted to prefs. Returns a different ID for
 // different `feature` for each day.
-int64_t GetOrCreateModelQualityClientId(proto::ModelExecutionFeature feature,
+int64_t GetOrCreateModelQualityClientId(UserVisibleFeatureKey feature,
                                         PrefService* pref_service);
 
 // Validates that the metadata stored in |any_metadata_| is of the same type

@@ -67,11 +67,6 @@ const char kModelExecutionMainToggleSettingState[] =
 const char kPreviousOptimizationTypesWithFilter[] =
     "optimization_guide.previous_optimization_types_with_filter";
 
-// TODO: crbug.com/331306557 - Remove after migration.
-std::string GetSettingEnabledPrefName(proto::ModelExecutionFeature feature) {
-  return GetSettingEnabledPrefName(ToUserVisibleFeatureKey(feature).value());
-}
-
 // Pref that contains user opt-in state for different features.
 std::string GetSettingEnabledPrefName(UserVisibleFeatureKey feature) {
   switch (feature) {

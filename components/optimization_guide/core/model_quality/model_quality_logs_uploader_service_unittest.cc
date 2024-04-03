@@ -16,6 +16,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test.pb.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
@@ -116,7 +117,7 @@ class ModelQualityLogsUploaderServiceTest : public testing::Test {
   }
 
   std::unique_ptr<ModelQualityLogEntry> GetModelQualityLogEntryAndSetFeedback(
-      proto::ModelExecutionFeature feature,
+      UserVisibleFeatureKey feature,
       proto::UserFeedback feedback) {
     std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request(
         new proto::LogAiDataRequest());
@@ -125,21 +126,19 @@ class ModelQualityLogsUploaderServiceTest : public testing::Test {
             std::move(log_ai_data_request),
             model_quality_logs_uploader_service_->GetWeakPtr());
     switch (feature) {
-      case proto::MODEL_EXECUTION_FEATURE_COMPOSE:
+      case UserVisibleFeatureKey::kCompose:
         log_entry->quality_data<ComposeFeatureTypeMap>()->set_user_feedback(
             feedback);
         break;
-      case proto::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION:
+      case UserVisibleFeatureKey::kTabOrganization:
         log_entry->quality_data<TabOrganizationFeatureTypeMap>()
             ->add_organizations()
             ->set_user_feedback(feedback);
         break;
-      case proto::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH:
+      case UserVisibleFeatureKey::kWallpaperSearch:
         log_entry->quality_data<WallpaperSearchFeatureTypeMap>()
             ->set_user_feedback(feedback);
         break;
-      default:
-        NOTREACHED();
     }
 
     return log_entry;
@@ -311,8 +310,7 @@ TEST_F(ModelQualityLogsUploaderServiceTest, TestBadResponse) {
 TEST_F(ModelQualityLogsUploaderServiceTest, WallpaperSearchUserFeedbackUMA) {
   std::unique_ptr<ModelQualityLogEntry> log_entry_1 =
       GetModelQualityLogEntryAndSetFeedback(
-          proto::ModelExecutionFeature::
-              MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH,
+          UserVisibleFeatureKey::kWallpaperSearch,
           proto::USER_FEEDBACK_THUMBS_UP);
   UploadModelQualityLogsWithLogEntry(std::move(log_entry_1));
 
@@ -322,8 +320,7 @@ TEST_F(ModelQualityLogsUploaderServiceTest, WallpaperSearchUserFeedbackUMA) {
 
   std::unique_ptr<ModelQualityLogEntry> log_entry_2 =
       GetModelQualityLogEntryAndSetFeedback(
-          proto::ModelExecutionFeature::
-              MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH,
+          UserVisibleFeatureKey::kWallpaperSearch,
           proto::USER_FEEDBACK_THUMBS_DOWN);
   UploadModelQualityLogsWithLogEntry(std::move(log_entry_2));
   histogram_tester_.ExpectBucketCount(
@@ -334,8 +331,7 @@ TEST_F(ModelQualityLogsUploaderServiceTest, WallpaperSearchUserFeedbackUMA) {
 TEST_F(ModelQualityLogsUploaderServiceTest, TabOrganizationUserFeedbackUMA) {
   std::unique_ptr<ModelQualityLogEntry> log_entry_1 =
       GetModelQualityLogEntryAndSetFeedback(
-          proto::ModelExecutionFeature::
-              MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION,
+          UserVisibleFeatureKey::kTabOrganization,
           proto::USER_FEEDBACK_THUMBS_UP);
   UploadModelQualityLogsWithLogEntry(std::move(log_entry_1));
 
@@ -345,8 +341,7 @@ TEST_F(ModelQualityLogsUploaderServiceTest, TabOrganizationUserFeedbackUMA) {
 
   std::unique_ptr<ModelQualityLogEntry> log_entry_2 =
       GetModelQualityLogEntryAndSetFeedback(
-          proto::ModelExecutionFeature::
-              MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION,
+          UserVisibleFeatureKey::kTabOrganization,
           proto::USER_FEEDBACK_THUMBS_DOWN);
   UploadModelQualityLogsWithLogEntry(std::move(log_entry_2));
   histogram_tester_.ExpectBucketCount(
@@ -385,8 +380,7 @@ TEST_F(ModelQualityLogsUploaderServiceTest,
        TabOrganizationMultipleOrganizationUserFeedbackUMA) {
   std::unique_ptr<ModelQualityLogEntry> log_entry =
       GetModelQualityLogEntryAndSetFeedback(
-          proto::ModelExecutionFeature::
-              MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION,
+          UserVisibleFeatureKey::kTabOrganization,
           proto::USER_FEEDBACK_THUMBS_UP);
   // Add one more tab organization to existing log_entry with user feedback.
   log_entry->quality_data<TabOrganizationFeatureTypeMap>()
@@ -407,9 +401,8 @@ TEST_F(ModelQualityLogsUploaderServiceTest,
 
 TEST_F(ModelQualityLogsUploaderServiceTest, ComposeUserFeedbackUMA) {
   std::unique_ptr<ModelQualityLogEntry> log_entry_1 =
-      GetModelQualityLogEntryAndSetFeedback(
-          proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE,
-          proto::USER_FEEDBACK_THUMBS_UP);
+      GetModelQualityLogEntryAndSetFeedback(UserVisibleFeatureKey::kCompose,
+                                            proto::USER_FEEDBACK_THUMBS_UP);
   UploadModelQualityLogsWithLogEntry(std::move(log_entry_1));
 
   histogram_tester_.ExpectBucketCount(
@@ -417,9 +410,8 @@ TEST_F(ModelQualityLogsUploaderServiceTest, ComposeUserFeedbackUMA) {
       proto::USER_FEEDBACK_THUMBS_UP, 1);
 
   std::unique_ptr<ModelQualityLogEntry> log_entry_2 =
-      GetModelQualityLogEntryAndSetFeedback(
-          proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE,
-          proto::USER_FEEDBACK_THUMBS_DOWN);
+      GetModelQualityLogEntryAndSetFeedback(UserVisibleFeatureKey::kCompose,
+                                            proto::USER_FEEDBACK_THUMBS_DOWN);
   UploadModelQualityLogsWithLogEntry(std::move(log_entry_2));
   histogram_tester_.ExpectBucketCount(
       "OptimizationGuide.ModelQuality.UserFeedback.Compose",
@@ -428,9 +420,8 @@ TEST_F(ModelQualityLogsUploaderServiceTest, ComposeUserFeedbackUMA) {
 
 TEST_F(ModelQualityLogsUploaderServiceTest, CheckUploadOnDestruction) {
   std::unique_ptr<ModelQualityLogEntry> log_entry_1 =
-      GetModelQualityLogEntryAndSetFeedback(
-          proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE,
-          proto::USER_FEEDBACK_THUMBS_UP);
+      GetModelQualityLogEntryAndSetFeedback(UserVisibleFeatureKey::kCompose,
+                                            proto::USER_FEEDBACK_THUMBS_UP);
   // Instead of calling UploadModelQualityLogs, reset the log entry this
   // shouldn't upload the logs as
   // ModelQualityLogsUploaderService::CanCheckUpload will return false.

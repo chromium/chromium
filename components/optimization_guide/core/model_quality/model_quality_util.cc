@@ -4,27 +4,28 @@
 
 #include "components/optimization_guide/core/model_quality/model_quality_util.h"
 
+#include <optional>
+
 #include "base/notreached.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 
 namespace optimization_guide {
 
-proto::ModelExecutionFeature GetModelExecutionFeature(
+std::optional<UserVisibleFeatureKey> GetModelExecutionFeature(
     proto::LogAiDataRequest::FeatureCase feature) {
   switch (feature) {
     case proto::LogAiDataRequest::FeatureCase::kCompose:
-      return proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE;
+      return UserVisibleFeatureKey::kCompose;
     case proto::LogAiDataRequest::FeatureCase::kTabOrganization:
-      return proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION;
+      return UserVisibleFeatureKey::kTabOrganization;
     case proto::LogAiDataRequest::FeatureCase::kWallpaperSearch:
-      return proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH;
+      return UserVisibleFeatureKey::kWallpaperSearch;
     case proto::LogAiDataRequest::FeatureCase::kDefault:
       NOTREACHED();
-      return proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED;
+      return std::nullopt;
     case proto::LogAiDataRequest::FeatureCase::FEATURE_NOT_SET:
       // This can be used for testing.
-      return proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED;
+      return std::nullopt;
   }
 }
 

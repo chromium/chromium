@@ -28,8 +28,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry);
 // Returns the name of the pref to check for enterprise policy for `feature`.
 // Null is returned when no enterprise policy is defined for the `feature`.
 const char* GetEnterprisePolicyPrefName(UserVisibleFeatureKey feature);
-// TODO: crbug.com/331306557 - Cleanup after migration.
-const char* GetEnterprisePolicyPrefName(proto::ModelExecutionFeature feature);
 
 }  // namespace optimization_guide::model_execution::prefs
 

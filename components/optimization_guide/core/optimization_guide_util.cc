@@ -79,9 +79,13 @@ std::string TimeToYYYYMMDDString(base::Time ts) {
 namespace optimization_guide {
 
 std::string_view GetStringNameForModelExecutionFeature(
-    UserVisibleFeatureKey feature) {
+    std::optional<UserVisibleFeatureKey> feature) {
+  if (!feature) {
+    return GetStringNameForModelExecutionFeature(
+        proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED);
+  }
   return GetStringNameForModelExecutionFeature(
-      ToModelExecutionFeatureProto(feature));
+      ToModelExecutionFeatureProto(*feature));
 }
 
 std::string_view GetStringNameForModelExecutionFeature(
@@ -195,15 +199,15 @@ void PopulateApiKeyRequestHeader(network::ResourceRequest* resource_request,
   resource_request->headers.SetHeader(kApiKeyHeader, api_key);
 }
 
-int64_t GetHashedModelQualityClientId(proto::ModelExecutionFeature feature,
+int64_t GetHashedModelQualityClientId(UserVisibleFeatureKey feature,
                                       base::Time day,
                                       int64_t client_id) {
   std::string date = TimeToYYYYMMDDString(day);
-  return base::FastHash(
-      base::NumberToString(client_id + static_cast<int>(feature)) + date);
+  int shift = static_cast<int>(ToModelExecutionFeatureProto(feature));
+  return base::FastHash(base::NumberToString(client_id + shift) + date);
 }
 
-int64_t GetOrCreateModelQualityClientId(proto::ModelExecutionFeature feature,
+int64_t GetOrCreateModelQualityClientId(UserVisibleFeatureKey feature,
                                         PrefService* pref_service) {
   if (!pref_service) {
     return 0;

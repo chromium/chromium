@@ -24,9 +24,7 @@ ModelQualityLogEntry::~ModelQualityLogEntry() {
   // chrome is closed.
   bool uploaded_on_destruction = false;
   if (model_quality_uploader_service_ && log_ai_data_request_) {
-    proto::ModelExecutionFeature feature =
-        GetModelExecutionFeature(log_ai_data_request_->feature_case());
-    auto key = ToUserVisibleFeatureKey(feature);
+    auto key = GetModelExecutionFeature(log_ai_data_request_->feature_case());
 
     if (key && model_quality_uploader_service_->CanUploadLogs(*key)) {
       // Set the system profile proto before upload. We do that here as we need
