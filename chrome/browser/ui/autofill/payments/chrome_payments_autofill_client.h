@@ -30,6 +30,8 @@ enum class OtpUnmaskResult;
 
 namespace payments {
 
+class PaymentsWindowManager;
+
 // Chrome implementation of PaymentsAutofillClient. Used for Chrome Desktop
 // and Clank. Owned by the ChromeAutofillClient. Created lazily in the
 // ChromeAutofillClient when it is needed, and it observes the same
@@ -76,8 +78,9 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       const CardUnmaskChallengeOption& challenge_option,
       base::WeakPtr<OtpUnmaskDelegate> delegate) override;
   void OnUnmaskOtpVerificationResult(OtpUnmaskResult unmask_result) override;
-  payments::PaymentsNetworkInterface* GetPaymentsNetworkInterface() override;
+  PaymentsNetworkInterface* GetPaymentsNetworkInterface() override;
   void ShowAutofillErrorDialog(AutofillErrorDialogContext context) override;
+  PaymentsWindowManager* GetPaymentsWindowManager() override;
 
   AutofillProgressDialogControllerImpl*
   AutofillProgressDialogControllerForTesting() {
@@ -87,8 +90,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
  private:
   const raw_ref<ContentAutofillClient> client_;
 
-  std::unique_ptr<payments::PaymentsNetworkInterface>
-      payments_network_interface_;
+  std::unique_ptr<PaymentsNetworkInterface> payments_network_interface_;
 
   std::unique_ptr<AutofillProgressDialogControllerImpl>
       autofill_progress_dialog_controller_;
@@ -98,6 +100,8 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
 
   std::unique_ptr<CardUnmaskOtpInputDialogControllerImpl>
       card_unmask_otp_input_dialog_controller_;
+
+  std::unique_ptr<PaymentsWindowManager> payments_window_manager_;
 };
 
 }  // namespace payments

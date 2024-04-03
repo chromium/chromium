@@ -123,7 +123,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
   signin::IdentityManager* GetIdentityManager() override;
   FormDataImporter* GetFormDataImporter() override;
   payments::PaymentsAutofillClient* GetPaymentsAutofillClient() override;
-  payments::PaymentsWindowManager* GetPaymentsWindowManager() override;
   StrikeDatabase* GetStrikeDatabase() override;
   ukm::UkmRecorder* GetUkmRecorder() override;
   ukm::SourceId GetUkmSourceId() override;
@@ -293,7 +292,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
   // Therefore, do not access the members directly.
   std::unique_ptr<AutofillCrowdsourcingManager> crowdsourcing_manager_;
   std::unique_ptr<payments::PaymentsAutofillClient> payments_autofill_client_;
-  std::unique_ptr<payments::PaymentsWindowManager> payments_window_manager_;
   std::unique_ptr<CreditCardCvcAuthenticator> cvc_authenticator_;
   std::unique_ptr<CreditCardOtpAuthenticator> otp_authenticator_;
   std::unique_ptr<CreditCardRiskBasedAuthenticator> risk_based_authenticator_;

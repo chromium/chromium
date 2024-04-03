@@ -40,7 +40,7 @@ class TestContentAutofillClientForWindowManagerTest
     GetPaymentsAutofillClient()->set_test_payments_network_interface(
         std::make_unique<payments::TestPaymentsNetworkInterface>(
             nullptr, nullptr, nullptr));
-    set_payments_window_manager(
+    GetPaymentsAutofillClient()->set_payments_window_manager(
         std::make_unique<payments::DesktopPaymentsWindowManager>(this));
   }
   ~TestContentAutofillClientForWindowManagerTest() override = default;
@@ -148,7 +148,7 @@ class DesktopPaymentsWindowManagerInteractiveUiTest : public UiBrowserTest {
 
   DesktopPaymentsWindowManager& window_manager() {
     return *static_cast<DesktopPaymentsWindowManager*>(
-        client()->GetPaymentsWindowManager());
+        client()->GetPaymentsAutofillClient()->GetPaymentsWindowManager());
   }
 
   void set_authentication_response(

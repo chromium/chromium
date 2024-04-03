@@ -5,12 +5,13 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_TEST_PAYMENTS_AUTOFILL_CLIENT_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_TEST_PAYMENTS_AUTOFILL_CLIENT_H_
 
+#include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 
-#include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
-
 namespace autofill::payments {
+
+class PaymentsWindowManager;
 
 // This class is for easier writing of tests. It is owned by TestAutofillClient.
 class TestPaymentsAutofillClient : public PaymentsAutofillClient {
@@ -33,7 +34,7 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
       const LegalMessageLines& legal_message_lines,
       const std::string& user_email,
       const std::vector<MigratableCreditCard>& migratable_credit_cards,
-      payments::PaymentsAutofillClient::LocalCardMigrationCallback
+      PaymentsAutofillClient::LocalCardMigrationCallback
           start_migrating_cards_callback) override;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   TestPaymentsNetworkInterface* GetPaymentsNetworkInterface() override;
@@ -45,6 +46,7 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
       bool show_confirmation_before_closing,
       base::OnceClosure no_user_perceived_authentication_callback) override;
   void ShowAutofillErrorDialog(AutofillErrorDialogContext context) override;
+  PaymentsWindowManager* GetPaymentsWindowManager() override;
 
   void set_migration_card_selections(
       const std::vector<std::string>& migration_card_selection) {
@@ -67,6 +69,11 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
     return autofill_error_dialog_context_;
   }
 
+  void set_payments_window_manager(
+      std::unique_ptr<PaymentsWindowManager> payments_window_manager) {
+    payments_window_manager_ = std::move(payments_window_manager);
+  }
+
  private:
   std::unique_ptr<TestPaymentsNetworkInterface> payments_network_interface_;
 
@@ -84,6 +91,8 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   // specific to the type of error that occurred, and then based on the contents
   // of this context the dialog is shown.
   AutofillErrorDialogContext autofill_error_dialog_context_;
+
+  std::unique_ptr<PaymentsWindowManager> payments_window_manager_;
 };
 
 }  // namespace autofill::payments

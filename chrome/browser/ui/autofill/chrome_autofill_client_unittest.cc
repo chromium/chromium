@@ -20,6 +20,7 @@
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_driver.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
@@ -267,16 +268,6 @@ TEST_F(ChromeAutofillClientTest,
   client()->GetPaymentsAutofillClient()->CreditCardUploadCompleted(false);
 }
 #endif
-
-// Test that there is always an PaymentsWindowManager present if attempted
-// to be retrieved.
-TEST_F(ChromeAutofillClientTest, GetPaymentsWindowManager) {
-  if constexpr (BUILDFLAG(IS_ANDROID)) {
-    EXPECT_EQ(client()->GetPaymentsWindowManager(), nullptr);
-  } else {
-    EXPECT_NE(client()->GetPaymentsWindowManager(), nullptr);
-  }
-}
 
 #if BUILDFLAG(IS_ANDROID)
 // Verify that the prompt to upload save a user's card without CVC is shown in a

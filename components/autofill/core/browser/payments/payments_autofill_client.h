@@ -24,6 +24,7 @@ enum class OtpUnmaskResult;
 namespace payments {
 
 class PaymentsNetworkInterface;
+class PaymentsWindowManager;
 
 // A payments-specific client interface that handles dependency injection, and
 // its implementations serve as the integration for platform-specific code. One
@@ -118,6 +119,9 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // both set, the error dialog that is displayed will have these fields
   // displayed for the title and description, respectively.
   virtual void ShowAutofillErrorDialog(AutofillErrorDialogContext context);
+
+  // Gets the PaymentsWindowManager owned by the client.
+  virtual PaymentsWindowManager* GetPaymentsWindowManager();
 };
 
 }  // namespace payments

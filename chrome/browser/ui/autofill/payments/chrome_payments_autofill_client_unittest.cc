@@ -77,4 +77,15 @@ TEST_F(ChromePaymentsAutofillClientTest,
   chrome_payments_client()->VirtualCardEnrollCompleted(true);
 }
 #endif
+
+// Test that there is always an PaymentsWindowManager present if attempted
+// to be retrieved.
+TEST_F(ChromePaymentsAutofillClientTest, GetPaymentsWindowManager) {
+  if constexpr (BUILDFLAG(IS_ANDROID)) {
+    EXPECT_EQ(chrome_payments_client()->GetPaymentsWindowManager(), nullptr);
+  } else {
+    EXPECT_NE(chrome_payments_client()->GetPaymentsWindowManager(), nullptr);
+  }
+}
+
 }  // namespace autofill

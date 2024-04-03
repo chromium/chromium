@@ -470,7 +470,8 @@ class CreditCardAccessManagerTest : public testing::Test {
     if (challenge_option.type ==
         CardUnmaskChallengeOptionType::kThreeDomainSecure) {
       EXPECT_CALL(*static_cast<payments::MockPaymentsWindowManager*>(
-                      autofill_client_.GetPaymentsWindowManager()),
+                      autofill_client_.GetPaymentsAutofillClient()
+                          ->GetPaymentsWindowManager()),
                   InitVcn3dsAuthentication)
           .Times(1)
           .WillOnce(
@@ -3840,7 +3841,8 @@ TEST_F(CreditCardAccessManagerTest,
       {CardUnmaskChallengeOptionType::kThreeDomainSecure});
 
   EXPECT_CALL(*static_cast<payments::MockPaymentsWindowManager*>(
-                  autofill_client_.GetPaymentsWindowManager()),
+                  autofill_client_.GetPaymentsAutofillClient()
+                      ->GetPaymentsWindowManager()),
               InitVcn3dsAuthentication)
       .Times(1)
       .WillOnce([&](payments::PaymentsWindowManager::Vcn3dsContext context) {

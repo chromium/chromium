@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 
 #include "base/functional/callback.h"
+#include "components/autofill/core/browser/payments/test/mock_payments_window_manager.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
@@ -31,7 +32,7 @@ void TestPaymentsAutofillClient::ConfirmMigrateLocalCardToCloud(
     const LegalMessageLines& legal_message_lines,
     const std::string& user_email,
     const std::vector<MigratableCreditCard>& migratable_credit_cards,
-    payments::PaymentsAutofillClient::LocalCardMigrationCallback
+    PaymentsAutofillClient::LocalCardMigrationCallback
         start_migrating_cards_callback) {
   // If `migration_card_selection_` hasn't been preset by tests, default to
   // selecting all migratable cards.
@@ -67,6 +68,14 @@ void TestPaymentsAutofillClient::ShowAutofillErrorDialog(
     AutofillErrorDialogContext context) {
   autofill_error_dialog_shown_ = true;
   autofill_error_dialog_context_ = std::move(context);
+}
+
+PaymentsWindowManager* TestPaymentsAutofillClient::GetPaymentsWindowManager() {
+  if (!payments_window_manager_) {
+    payments_window_manager_ =
+        std::make_unique<testing::NiceMock<MockPaymentsWindowManager>>();
+  }
+  return payments_window_manager_.get();
 }
 
 }  // namespace autofill::payments

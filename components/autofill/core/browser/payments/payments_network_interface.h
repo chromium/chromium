@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
 #include "components/autofill/core/browser/payments/payments_network_interface_base.h"
+#include "components/autofill/core/browser/payments/payments_window_manager.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "url/origin.h"

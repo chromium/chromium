@@ -62,4 +62,8 @@ PaymentsAutofillClient::GetPaymentsNetworkInterface() {
 void PaymentsAutofillClient::ShowAutofillErrorDialog(
     AutofillErrorDialogContext context) {}
 
+PaymentsWindowManager* PaymentsAutofillClient::GetPaymentsWindowManager() {
+  return nullptr;
+}
+
 }  // namespace autofill::payments

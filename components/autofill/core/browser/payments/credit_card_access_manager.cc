@@ -642,8 +642,9 @@ void CreditCardAccessManager::Authenticate(
       vcn_3ds_context.user_consent_already_given =
           unmask_auth_flow_type_ ==
           UnmaskAuthFlowType::kThreeDomainSecureConsentAlreadyGiven;
-      client_->GetPaymentsWindowManager()->InitVcn3dsAuthentication(
-          std::move(vcn_3ds_context));
+      client_->GetPaymentsAutofillClient()
+          ->GetPaymentsWindowManager()
+          ->InitVcn3dsAuthentication(std::move(vcn_3ds_context));
       break;
     }
     case UnmaskAuthFlowType::kNone:

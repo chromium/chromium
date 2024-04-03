@@ -40,9 +40,7 @@
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/mock_iban_access_manager.h"
-#include "components/autofill/core/browser/payments/payments_window_manager.h"
 #include "components/autofill/core/browser/payments/test/mock_mandatory_reauth_manager.h"
-#include "components/autofill/core/browser/payments/test/mock_payments_window_manager.h"
 #include "components/autofill/core/browser/payments/test/test_credit_card_risk_based_authenticator.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
@@ -214,14 +212,6 @@ class TestAutofillClientTemplate : public T {
           std::make_unique<payments::TestPaymentsAutofillClient>();
     }
     return payments_autofill_client_.get();
-  }
-
-  payments::PaymentsWindowManager* GetPaymentsWindowManager() override {
-    if (!payments_window_manager_) {
-      payments_window_manager_ = std::make_unique<
-          testing::NiceMock<payments::MockPaymentsWindowManager>>();
-    }
-    return payments_window_manager_.get();
   }
 
   TestStrikeDatabase* GetStrikeDatabase() override {
@@ -566,12 +556,6 @@ class TestAutofillClientTemplate : public T {
   }
 
 
-  void set_payments_window_manager(
-      std::unique_ptr<payments::PaymentsWindowManager>
-          payments_window_manager) {
-    payments_window_manager_ = std::move(payments_window_manager);
-  }
-
   void set_test_form_data_importer(
       std::unique_ptr<FormDataImporter> form_data_importer) {
     form_data_importer_ = std::move(form_data_importer);
@@ -750,7 +734,6 @@ class TestAutofillClientTemplate : public T {
   std::unique_ptr<AutofillOfferManager> autofill_offer_manager_;
   std::unique_ptr<payments::TestPaymentsAutofillClient>
       payments_autofill_client_;
-  std::unique_ptr<payments::PaymentsWindowManager> payments_window_manager_;
   std::unique_ptr<testing::NiceMock<MockIbanManager>> mock_iban_manager_;
 
   // The below objects must be destroyed before `PaymentsNetworkInterface`

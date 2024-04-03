@@ -24,6 +24,7 @@
 #include "content/public/browser/web_contents_observer.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/autofill/payments/desktop_payments_window_manager.h"
 #include "chrome/browser/ui/autofill/payments/manage_migration_ui_controller.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
@@ -175,13 +176,12 @@ void ChromePaymentsAutofillClient::OnUnmaskOtpVerificationResult(
 PaymentsNetworkInterface*
 ChromePaymentsAutofillClient::GetPaymentsNetworkInterface() {
   if (!payments_network_interface_) {
-    payments_network_interface_ =
-        std::make_unique<payments::PaymentsNetworkInterface>(
-            Profile::FromBrowserContext(web_contents()->GetBrowserContext())
-                ->GetURLLoaderFactory(),
-            client_->GetIdentityManager(), client_->GetPersonalDataManager(),
-            Profile::FromBrowserContext(web_contents()->GetBrowserContext())
-                ->IsOffTheRecord());
+    payments_network_interface_ = std::make_unique<PaymentsNetworkInterface>(
+        Profile::FromBrowserContext(web_contents()->GetBrowserContext())
+            ->GetURLLoaderFactory(),
+        client_->GetIdentityManager(), client_->GetPersonalDataManager(),
+        Profile::FromBrowserContext(web_contents()->GetBrowserContext())
+            ->IsOffTheRecord());
   }
   return payments_network_interface_.get();
 }
@@ -194,6 +194,20 @@ void ChromePaymentsAutofillClient::ShowAutofillErrorDialog(
       base::BindOnce(&CreateAndShowAutofillErrorDialog,
                      base::Unretained(autofill_error_dialog_controller_.get()),
                      base::Unretained(web_contents())));
+}
+
+PaymentsWindowManager*
+ChromePaymentsAutofillClient::GetPaymentsWindowManager() {
+#if !BUILDFLAG(IS_ANDROID)
+  if (!payments_window_manager_) {
+    payments_window_manager_ =
+        std::make_unique<DesktopPaymentsWindowManager>(&*client_);
+  }
+
+  return payments_window_manager_.get();
+#else
+  return nullptr;
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace autofill::payments

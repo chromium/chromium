@@ -153,7 +153,6 @@
 #include "ui/android/window_android.h"
 #else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/autofill/delete_address_profile_dialog_controller_impl.h"
-#include "chrome/browser/ui/autofill/payments/desktop_payments_window_manager.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_manual_fallback_bubble_controller_impl.h"
@@ -378,20 +377,6 @@ ChromeAutofillClient::GetPaymentsAutofillClient() {
         std::make_unique<payments::ChromePaymentsAutofillClient>(this);
   }
   return payments_autofill_client_.get();
-}
-
-payments::PaymentsWindowManager*
-ChromeAutofillClient::GetPaymentsWindowManager() {
-#if !BUILDFLAG(IS_ANDROID)
-  if (!payments_window_manager_) {
-    payments_window_manager_ =
-        std::make_unique<payments::DesktopPaymentsWindowManager>(this);
-  }
-
-  return payments_window_manager_.get();
-#else
-  return nullptr;
-#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 StrikeDatabase* ChromeAutofillClient::GetStrikeDatabase() {

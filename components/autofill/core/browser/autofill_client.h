@@ -23,7 +23,6 @@
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
-#include "components/autofill/core/browser/payments/payments_window_manager.h"
 #include "components/autofill/core/browser/ui/fast_checkout_client.h"
 #include "components/autofill/core/browser/ui/popup_hiding_reasons.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
@@ -111,7 +110,6 @@ enum class WebauthnDialogState;
 namespace payments {
 class MandatoryReauthManager;
 class PaymentsAutofillClient;
-class PaymentsWindowManager;
 }
 
 // A client interface that needs to be supplied to the Autofill component by the
@@ -460,9 +458,6 @@ class AutofillClient {
 
   // Gets the payments::PaymentsAutofillClient instance owned by the client.
   virtual payments::PaymentsAutofillClient* GetPaymentsAutofillClient();
-
-  // Gets the payments::PaymentsWindowManager owned by the client.
-  virtual payments::PaymentsWindowManager* GetPaymentsWindowManager();
 
   // Gets the StrikeDatabase associated with the client. Note: Nullptr may be
   // returned so check before use.
