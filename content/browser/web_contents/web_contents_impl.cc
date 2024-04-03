@@ -7062,14 +7062,28 @@ std::optional<SkColor> WebContentsImpl::GetBaseBackgroundColor() {
 
 blink::ColorProviderColorMaps WebContentsImpl::GetColorProviderColorMaps()
     const {
-  const auto* source = GetColorProviderSource();
+  const auto* color_mode_source = GetColorProviderSource();
+
+  // Unlike preferred color scheme, ForcedColors should always use the
+  // default color provider source, which reflects the NativeTheme web instance.
+  // This is because the Page colors feature only modifies the Forced colors
+  // mode for web without affecting the UI.
+  const auto* forced_colors_source = DefaultColorProviderSource::GetInstance();
+  ui::ColorProviderKey::ForcedColors forced_colors =
+      forced_colors_source->GetForcedColors();
+  if (forced_colors == ui::ColorProviderKey::ForcedColors::kNone) {
+    forced_colors = ui::ColorProviderKey::ForcedColors::kActive;
+  }
+
   return blink::ColorProviderColorMaps{
-      source->GetRendererColorMap(ui::ColorProviderKey::ColorMode::kLight,
-                                  ui::ColorProviderKey::ForcedColors::kNone),
-      source->GetRendererColorMap(ui::ColorProviderKey::ColorMode::kDark,
-                                  ui::ColorProviderKey::ForcedColors::kNone),
-      source->GetRendererColorMap(source->GetColorMode(),
-                                  ui::ColorProviderKey::ForcedColors::kActive)};
+      color_mode_source->GetRendererColorMap(
+          ui::ColorProviderKey::ColorMode::kLight,
+          ui::ColorProviderKey::ForcedColors::kNone),
+      color_mode_source->GetRendererColorMap(
+          ui::ColorProviderKey::ColorMode::kDark,
+          ui::ColorProviderKey::ForcedColors::kNone),
+      forced_colors_source->GetRendererColorMap(
+          forced_colors_source->GetColorMode(), forced_colors)};
 }
 
 void WebContentsImpl::PrintCrossProcessSubframe(

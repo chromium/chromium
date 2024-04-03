@@ -460,6 +460,45 @@ IN_PROC_BROWSER_TEST_P(ForcedColorsTest, ForcedColorsWithBlockList) {
 
 INSTANTIATE_TEST_SUITE_P(All, ForcedColorsTest, testing::Bool());
 
+// Helper class to test the Page colors feature. Page colors is a feature that
+// simulates Forced colors mode via a browser setting.
+class PageColorsBrowserClientTest : public InProcessBrowserTest {
+ public:
+  PageColorsBrowserClientTest() = default;
+
+  PageColorsBrowserClientTest(const PageColorsBrowserClientTest&) = delete;
+  PageColorsBrowserClientTest& operator=(const PageColorsBrowserClientTest&) =
+      delete;
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PageColorsBrowserClientTest,
+                       PageColorsAffectsWebContents) {
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kApplyPageColorsOnlyOnIncreasedContrast, false);
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kPageColors, ui::NativeTheme::PageColors::kDusk);
+
+  browser()
+      ->tab_strip_model()
+      ->GetActiveWebContents()
+      ->OnWebPreferencesChanged();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("http://foo.com")));
+
+  // Check that the page colors are applied when Forced Colors is enabled. For
+  // the Dusk theme, the color value for Window is 0x2D3236 which corresponds to
+  // rgb(45, 50, 54).
+  std::string expected_bg_color = "rgb(45, 50, 54)";
+  EXPECT_EQ(expected_bg_color,
+            EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                   "window.getComputedStyle(document.body).getPropertyValue('"
+                   "background-color').toString()"));
+}
+
 // Tests for the preferred color scheme for a given WebContents. The first param
 // controls whether the web NativeTheme is light or dark the second controls
 // whether the color mode on the associated color provider is light or dark.
