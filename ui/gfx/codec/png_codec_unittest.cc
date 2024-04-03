@@ -781,6 +781,23 @@ TEST(PNGCodec, DecodeCorrupted) {
 // nominal value is unchanged. If you squint, the 128/255 left half should look
 // darker than the right half.
 //
+// The "as used by libpng" formula for calculating these expected 186, 145 or
+// (unchanged) 128 values can be seen in the diff at
+// https://crrev.com/c/5402327/13/ui/gfx/codec/png_codec_unittest.cc
+// and the same formula is at
+// https://www.w3.org/TR/2003/REC-PNG-20031110/#13Decoder-gamma-handling but
+// note the spec's caveat: "Viewers capable of full colour management... will
+// perform more sophisticated calculations than those described here."
+//
+// Being corrected to 186, 145 or 128 assumes that, like libpng, the PNG
+// decoder honors the gAMA chunk in the checkerboard.gamma*.png files. Those
+// files don't have an iCCP color profile chunk, but since the PNGCodec::Decode
+// API fills in a bag of RGBA pixels (without an associated colorspace), the
+// PNGCodec::Decode implementation nonetheless applies sRGB color correction
+// (approximately exponential) instead of basic gamma correction (literally
+// exponential). This produces slightly different numbers: 188, 146 or 129. The
+// code review in https://crrev.com/c/5402327 gives a little more context.
+//
 // When viewing these images in a browser, make sure to apply the "img {
 // image-rendering: pixelated }" CSS. Otherwise, browsers will often blur when
 // up-scaling (e.g. on high DPI displays), trumping the "two halves should have
