@@ -77,7 +77,7 @@ class NearbyPresenceCredentialManagerImpl
     Creator& operator=(Creator&) = delete;
 
     static Creator* Get();
-    static void SetCredentialManagerForTesting(
+    static void SetNextCredentialManagerInstanceForTesting(
         std::unique_ptr<NearbyPresenceCredentialManager> credential_manager);
 
     void Create(

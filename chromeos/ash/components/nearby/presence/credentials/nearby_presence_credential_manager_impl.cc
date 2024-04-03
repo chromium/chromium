@@ -93,14 +93,15 @@ void NearbyPresenceCredentialManagerImpl::Creator::Create(
 
   on_created_ = (std::move(on_created));
 
-  // This can only be set via `SetCredentialManagerForTesting` since the
-  // class assumes only one CredentialManager is created per lifetime, and
-  // asserts that there isn't an existing CredentialManager outside of unit
+  // This can only be set via `SetNextCredentialManagerInstanceForTesting`
+  // since the class assumes only one CredentialManager is created per lifetime,
+  // and asserts that there isn't an existing CredentialManager outside of unit
   // tests.
   if (g_is_credential_manager_set_for_testing_) {
     CHECK(credential_manager_under_initialization_);
     std::move(on_created_)
         .Run(std::move(credential_manager_under_initialization_));
+    g_is_credential_manager_set_for_testing_ = false;
     return;
   }
 
@@ -130,7 +131,7 @@ void NearbyPresenceCredentialManagerImpl::Creator::Create(
 
 // static
 void NearbyPresenceCredentialManagerImpl::Creator::
-    SetCredentialManagerForTesting(
+    SetNextCredentialManagerInstanceForTesting(
         std::unique_ptr<NearbyPresenceCredentialManager> credential_manager) {
   CHECK(credential_manager);
   CHECK(credential_manager->IsLocalDeviceRegistered());

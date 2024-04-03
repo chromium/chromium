@@ -118,12 +118,7 @@ class NearbyPresenceServiceImplTest : public testing::Test {
             &test_url_loader_factory_),
         push_notification_service_.get());
 
-    auto fake_credential_manager =
-        std::make_unique<FakeNearbyPresenceCredentialManager>();
-    fake_credential_manager_ptr_ = fake_credential_manager.get();
-    NearbyPresenceCredentialManagerImpl::Creator::
-        SetCredentialManagerForTesting(std::move(fake_credential_manager));
-    EXPECT_FALSE(fake_credential_manager_ptr_->WasUpdateCredentialsCalled());
+    InitializeNearbyPresenceService();
   }
 
   void TestStartScan(::nearby::internal::IdentityType identity_type) {
@@ -199,6 +194,30 @@ class NearbyPresenceServiceImplTest : public testing::Test {
       scan_session_;
   raw_ptr<FakeNearbyPresenceCredentialManager> fake_credential_manager_ptr_;
   base::WeakPtrFactory<NearbyPresenceServiceImplTest> weak_ptr_factory_{this};
+
+ private:
+  // This work is collected into a helper function to ensure it all happens
+  // together. Most notably, `SetNextCredentialManagerInstanceForTesting()`
+  // leaves `NearbyPresenceCredentialManagerImpl::Creator` in a dangling state
+  // (holding onto a static test instance) until
+  // `NearbyPresenceCredentialManagerImpl::Creator::Create()` is called (in
+  // `NearbyPresenceService::Initialize`).
+  //
+  // `NearbyPresenceService` should also not be used until it is initialized,
+  // and this function helps codify that.
+  void InitializeNearbyPresenceService() {
+    auto fake_credential_manager =
+        std::make_unique<FakeNearbyPresenceCredentialManager>();
+    fake_credential_manager_ptr_ = fake_credential_manager.get();
+    NearbyPresenceCredentialManagerImpl::Creator::
+        SetNextCredentialManagerInstanceForTesting(
+            std::move(fake_credential_manager));
+    EXPECT_FALSE(fake_credential_manager_ptr_->WasUpdateCredentialsCalled());
+
+    base::MockCallback<base::OnceClosure> mock_on_initialized_callback;
+    EXPECT_CALL(mock_on_initialized_callback, Run);
+    nearby_presence_service_->Initialize(mock_on_initialized_callback.Get());
+  }
 };
 
 TEST_F(NearbyPresenceServiceImplTest, StartPrivateScan) {
@@ -360,15 +379,6 @@ TEST_F(NearbyPresenceServiceImplTest, EndScanBeforeStart) {
   }
 
   EXPECT_TRUE(IsScanSessionActive());
-}
-
-TEST_F(NearbyPresenceServiceImplTest, Initialize) {
-  base::MockCallback<base::OnceClosure> mock_on_initialized_callback;
-  EXPECT_CALL(mock_on_initialized_callback, Run);
-  nearby_presence_service_->Initialize(mock_on_initialized_callback.Get());
-
-  nearby_presence_service_->UpdateCredentials();
-  EXPECT_TRUE(fake_credential_manager_ptr_->WasUpdateCredentialsCalled());
 }
 
 TEST_F(NearbyPresenceServiceImplTest, UpdateCredentials) {
