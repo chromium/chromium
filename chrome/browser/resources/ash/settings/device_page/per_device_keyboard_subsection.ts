@@ -89,6 +89,17 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
         },
       },
 
+      keyboardAutoBrightnessPref: {
+        type: Object,
+        value() {
+          return {
+            key: 'fakekeyboardAutoBrightnessPref',
+            type: chrome.settingsPrivate.PrefType.BOOLEAN,
+            value: false,
+          };
+        },
+      },
+
       isKeyboardBacklightControlInSettingsEnabled: {
         type: Boolean,
         value() {
@@ -172,6 +183,7 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
   private topRowAreFunctionKeysPref: chrome.settingsPrivate.PrefObject;
   private blockMetaFunctionKeyRewritesPref: chrome.settingsPrivate.PrefObject;
   private keyboardBrightnessPercentPref: chrome.settingsPrivate.PrefObject;
+  private keyboardAutoBrightnessPref: chrome.settingsPrivate.PrefObject;
   private remapKeyboardKeysSublabel: string;
   private isInitialized: boolean = false;
   private inputDeviceSettingsProvider: InputDeviceSettingsProviderInterface =

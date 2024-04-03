@@ -374,28 +374,35 @@ suite('<settings-per-device-keyboard-subsection>', () => {
     const keyboardBrightnessSlider = () =>
         subsection.shadowRoot!.querySelector<SettingsSliderElement>(
             '#keyboardBrightnessSlider');
+    const keyboardAutoBrightnessToggle = () =>
+        subsection.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#keyboardAutoBrightnessToggle');
 
-    // Initially, both elements should be visible.
+    // Initially, all elements should be visible.
     assertTrue(isVisible(rgbKeyboardControlLink()));
     assertTrue(isVisible(keyboardBrightnessSlider()));
+    assertTrue(isVisible(keyboardAutoBrightnessToggle()));
 
     // Disable keyboard backlight control flag and reinitialize.
     setKeyboardBacklightControlEnabled(false);
     await initializePerDeviceKeyboardSubsection(fakeKeyboards, true);
     await changeIsExternalState(false);
 
-    // Both elements should be hidden after flag is disabled.
+    // All elements should be hidden after flag is disabled.
     assertFalse(isVisible(rgbKeyboardControlLink()));
     assertFalse(isVisible(keyboardBrightnessSlider()));
+    assertFalse(isVisible(keyboardAutoBrightnessToggle()));
+
 
     // Enable flag but disable RGB keyboard support, then reinitialize.
     setKeyboardBacklightControlEnabled(true);
     await initializePerDeviceKeyboardSubsection(fakeKeyboards, false);
     await changeIsExternalState(false);
 
-    // Link should be hidden while slider should remain visible.
+    // Link should be hidden while slider and toggle should remain visible.
     assertFalse(isVisible(rgbKeyboardControlLink()));
     assertTrue(isVisible(keyboardBrightnessSlider()));
+    assertTrue(isVisible(keyboardAutoBrightnessToggle()));
   });
 
   test('observe keyboard brightness change', async () => {

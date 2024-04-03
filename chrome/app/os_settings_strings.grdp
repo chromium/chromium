@@ -6086,6 +6086,14 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_KEYBOARD_BRIGHTNESS_LABEL" translateable="false" desc="The label for setting the keyboard brightness.">
     Keyboard brightness
   </message>
+  <!-- TODO(b/329861823) Finalize and translate these strings -->
+  <message name="IDS_SETTINGS_KEYBOARD_AUTO_BRIGHNTESS_ENABLE_LABEL" translateable="false" desc="The label for setting the keyboard auto brightness enabled.">
+    Automatically adjust brightness
+  </message>
+  <!-- TODO(b/329861823) Finalize and translate these strings -->
+  <message name="IDS_SETTINGS_KEYBOARD_AUTO_BRIGHNTESS_ENABLE_SUB_LABEL" translateable="false" desc="The sub-label for setting the keyboard auto brightness enabled.">
+    Adjust keyboard backlight based on surrounding light levels
+  </message>
   <message name="IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_ENABLE" desc="The checkbox label for enabling keyboard auto-repeat.">
     Press and hold to automatically repeat the key
   </message>
