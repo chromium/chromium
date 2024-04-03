@@ -433,6 +433,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 
 - (void)locationBarSteadyViewTapped {
   base::RecordAction(base::UserMetricsAction("MobileLocationBarTapped"));
+  TriggerHapticFeedbackForSelectionChange();
   [self.delegate locationBarSteadyViewTapped];
 }
 
