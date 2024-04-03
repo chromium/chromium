@@ -47,6 +47,8 @@ public class SigninAndHistoryOptInActivity extends AsyncInitializationActivity
             "SigninAndHistoryOptInActivity.WithAccountSigninMode";
     private static final String ARGUMENT_HISTORY_OPT_IN_MODE =
             "SigninAndHistoryOptInActivity.HistoryOptInMode";
+    private static final String ARGUMENT_IS_HISTORY_SYNC_DEDICATED_FLOW =
+            "SigninAndHistoryOptInActivity.IsHistorySyncDedicatedFlow";
 
     private OneshotSupplierImpl<Profile> mProfileSupplier = new OneshotSupplierImpl<>();
     private SigninAndHistoryOptInCoordinator mCoordinator;
@@ -76,6 +78,8 @@ public class SigninAndHistoryOptInActivity extends AsyncInitializationActivity
         @HistoryOptInMode
         int historyOptInMode =
                 intent.getIntExtra(ARGUMENT_HISTORY_OPT_IN_MODE, HistoryOptInMode.OPTIONAL);
+        boolean isHistorySyncDedicatedFlow =
+                intent.getBooleanExtra(ARGUMENT_IS_HISTORY_SYNC_DEDICATED_FLOW, false);
 
         mCoordinator =
                 new SigninAndHistoryOptInCoordinator(
@@ -88,7 +92,8 @@ public class SigninAndHistoryOptInActivity extends AsyncInitializationActivity
                         noAccountSigninMode,
                         withAccountSigninMode,
                         historyOptInMode,
-                        signinAccessPoint);
+                        signinAccessPoint,
+                        isHistorySyncDedicatedFlow);
 
         setContentView(mCoordinator.getView());
         onInitialLayoutInflationComplete();
@@ -163,6 +168,22 @@ public class SigninAndHistoryOptInActivity extends AsyncInitializationActivity
         intent.putExtra(ARGUMENT_WITH_ACCOUNT_SIGNIN_MODE, withAccountSigninMode);
         intent.putExtra(ARGUMENT_HISTORY_OPT_IN_MODE, historyOptInMode);
         intent.putExtra(ARGUMENT_ACCESS_POINT, signinAccessPoint);
+        return intent;
+    }
+
+    public static @NonNull Intent createIntentForDedicatedFlow(
+            Context context,
+            @NoAccountSigninMode int noAccountSigninMode,
+            @WithAccountSigninMode int withAccountSigninMode,
+            @SigninAccessPoint int signinAccessPoint) {
+        Intent intent =
+                createIntent(
+                        context,
+                        noAccountSigninMode,
+                        withAccountSigninMode,
+                        HistoryOptInMode.REQUIRED,
+                        signinAccessPoint);
+        intent.putExtra(ARGUMENT_IS_HISTORY_SYNC_DEDICATED_FLOW, true);
         return intent;
     }
 }

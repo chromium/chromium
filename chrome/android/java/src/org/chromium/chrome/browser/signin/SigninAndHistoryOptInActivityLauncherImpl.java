@@ -59,16 +59,43 @@ public final class SigninAndHistoryOptInActivityLauncherImpl
             @SigninAndHistoryOptInCoordinator.WithAccountSigninMode int withAccountSigninMode,
             @SigninAndHistoryOptInCoordinator.HistoryOptInMode int historyOptInMode,
             @AccessPoint int accessPoint) {
+        Intent intent =
+                SigninAndHistoryOptInActivity.createIntent(
+                        context,
+                        noAccountSigninMode,
+                        withAccountSigninMode,
+                        historyOptInMode,
+                        accessPoint);
+        launchActivityOrShowError(context, profile, intent, historyOptInMode, accessPoint);
+    }
+
+    @Override
+    public void launchActivityForHistorySyncDedicatedFlow(
+            Context context,
+            Profile profile,
+            @SigninAndHistoryOptInCoordinator.NoAccountSigninMode int noAccountSigninMode,
+            @SigninAndHistoryOptInCoordinator.WithAccountSigninMode int withAccountSigninMode,
+            @SigninAccessPoint int signinAccessPoint) {
+        Intent intent =
+                SigninAndHistoryOptInActivity.createIntentForDedicatedFlow(
+                        context, noAccountSigninMode, withAccountSigninMode, signinAccessPoint);
+        launchActivityOrShowError(
+                context,
+                profile,
+                intent,
+                SigninAndHistoryOptInCoordinator.HistoryOptInMode.REQUIRED,
+                signinAccessPoint);
+    }
+
+    private void launchActivityOrShowError(
+            Context context,
+            Profile profile,
+            Intent intent,
+            @SigninAndHistoryOptInCoordinator.HistoryOptInMode int historyOptInMode,
+            @SigninAccessPoint int accessPoint) {
         if (SigninAndHistoryOptInCoordinator.willShowSigninUI(profile)
                 || SigninAndHistoryOptInCoordinator.willShowHistorySyncUI(
                         profile, historyOptInMode)) {
-            Intent intent =
-                    SigninAndHistoryOptInActivity.createIntent(
-                            context,
-                            noAccountSigninMode,
-                            withAccountSigninMode,
-                            historyOptInMode,
-                            accessPoint);
             // Set fade-in animation for the sign-in flow.
             Bundle startActivityOptions =
                     ActivityOptionsCompat.makeCustomAnimation(
@@ -79,7 +106,6 @@ public final class SigninAndHistoryOptInActivityLauncherImpl
         // TODO(https://crbug.com/1520783): Update the UI related to sign-in errors, and handle the
         // non-managed case.
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
-        assert signinManager != null;
         if (signinManager.isSigninDisabledByPolicy()) {
             RecordHistogram.recordEnumeratedHistogram(
                     "Signin.SigninDisabledNotificationShown", accessPoint, SigninAccessPoint.MAX);

@@ -421,12 +421,11 @@ public class SyncPromoControllerUITest {
         onView(withText(R.string.signin_promo_turn_on)).perform(click());
 
         verify(mSigninAndHistoryOptInActivityLauncher)
-                .launchActivityIfAllowed(
+                .launchActivityForHistorySyncDedicatedFlow(
                         any(Context.class),
                         any(Profile.class),
                         eq(NoAccountSigninMode.ADD_ACCOUNT),
                         eq(WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET),
-                        eq(HistoryOptInMode.REQUIRED),
                         eq(SigninAccessPoint.RECENT_TABS));
     }
 
@@ -464,12 +463,11 @@ public class SyncPromoControllerUITest {
         onView(withText(R.string.signin_promo_turn_on)).perform(click());
 
         verify(mSigninAndHistoryOptInActivityLauncher)
-                .launchActivityIfAllowed(
+                .launchActivityForHistorySyncDedicatedFlow(
                         any(Context.class),
                         any(Profile.class),
                         eq(NoAccountSigninMode.ADD_ACCOUNT),
                         eq(WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET),
-                        eq(HistoryOptInMode.REQUIRED),
                         eq(SigninAccessPoint.RECENT_TABS));
     }
 
@@ -507,12 +505,11 @@ public class SyncPromoControllerUITest {
         onView(withText(R.string.signin_promo_turn_on)).perform(click());
 
         verify(mSigninAndHistoryOptInActivityLauncher)
-                .launchActivityIfAllowed(
+                .launchActivityForHistorySyncDedicatedFlow(
                         any(Context.class),
                         any(Profile.class),
                         eq(NoAccountSigninMode.ADD_ACCOUNT),
                         eq(WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET),
-                        eq(HistoryOptInMode.REQUIRED),
                         eq(SigninAccessPoint.RECENT_TABS));
     }
 

@@ -155,7 +155,8 @@ public class HistorySyncRenderTest {
                                     mHistorySyncDelegateMock,
                                     ProfileManager.getLastUsedRegularProfile(),
                                     SigninAccessPoint.UNKNOWN,
-                                    false);
+                                    /* showEmailInFooter= */ false,
+                                    /* signOutOnDecline= */ false);
                     mActivityTestRule
                             .getActivity()
                             .setContentView(mHistorySyncCoordinator.getView());

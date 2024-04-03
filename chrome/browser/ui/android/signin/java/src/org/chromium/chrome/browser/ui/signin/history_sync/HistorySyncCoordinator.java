@@ -37,15 +37,24 @@ public class HistorySyncCoordinator {
      * @param accessPoint The entry point for the opt-in.
      * @param showEmailInFooter Whether the user's email should be shown in the UI footer. If the
      *     email is non-displayable, it won't be shown regardless of this value.
+     * @param shouldSignOutOnDecline Whether the user should be signed out if they decline history
+     *     sync.
      */
     public HistorySyncCoordinator(
             Context context,
             HistorySyncDelegate delegate,
             Profile profile,
             @SigninAccessPoint int accessPoint,
-            boolean showEmailInFooter) {
+            boolean showEmailInFooter,
+            boolean shouldSignOutOnDecline) {
         mMediator =
-                new HistorySyncMediator(context, delegate, profile, accessPoint, showEmailInFooter);
+                new HistorySyncMediator(
+                        context,
+                        delegate,
+                        profile,
+                        accessPoint,
+                        showEmailInFooter,
+                        shouldSignOutOnDecline);
         LayoutInflater inflater = LayoutInflater.from(context);
         mView = inflateView(inflater, delegate);
         mPropertyModelChangeProcessor =

@@ -47,11 +47,30 @@ public interface SigninAndHistoryOptInActivityLauncher {
      * @param accessPoint The access point from which the sign-in was triggered.
      */
     @MainThread
-    public void launchActivityIfAllowed(
+    void launchActivityIfAllowed(
             Context context,
             Profile profile,
             @SigninAndHistoryOptInCoordinator.NoAccountSigninMode int noAccountSigninMode,
             @SigninAndHistoryOptInCoordinator.WithAccountSigninMode int withAccountSigninMode,
             @SigninAndHistoryOptInCoordinator.HistoryOptInMode int historyOptInMode,
             @AccessPoint int accessPoint);
+
+    /**
+     * Launches the {@link SigninAndHistoryOptInActivity} from an eligible access point where the
+     * flow is dedicated to enabling history sync. Shows error UI if sign-in is not allowed.
+     *
+     * @param profile the current profile.
+     * @param noAccountSigninMode The type of UI that should be shown for the sign-in step if *
+     *     there's no account on the device.
+     * @param withAccountSigninMode The type of UI that should be shown for the sign-in step if *
+     *     there are 1+ accounts on the device.
+     * @param signinAccessPoint The access point from which the sign-in was triggered.
+     */
+    @MainThread
+    void launchActivityForHistorySyncDedicatedFlow(
+            Context context,
+            Profile profile,
+            @SigninAndHistoryOptInCoordinator.NoAccountSigninMode int noAccountSigninMode,
+            @SigninAndHistoryOptInCoordinator.WithAccountSigninMode int withAccountSigninMode,
+            @SigninAccessPoint int signinAccessPoint);
 }

@@ -126,6 +126,27 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
 
     @Test
     @MediumTest
+    public void testLaunchActivityForHistorySyncDedicatedFlowWhenSigninIsAllowed() {
+        when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SigninAndHistoryOptInActivityLauncherImpl.get()
+                            .launchActivityForHistorySyncDedicatedFlow(
+                                    mContextMock,
+                                    mProfileMock,
+                                    SigninAndHistoryOptInCoordinator.NoAccountSigninMode
+                                            .BOTTOM_SHEET,
+                                    SigninAndHistoryOptInCoordinator.WithAccountSigninMode
+                                            .DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                    SigninAccessPoint.RECENT_TABS);
+                });
+
+        verify(mContextMock).startActivity(notNull(), any());
+    }
+
+    @Test
+    @MediumTest
     public void testLaunchActivityIfAllowedWhenSigninIsNotPossible() {
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(false);
         when(IdentityServicesProvider.get().getIdentityManager(any()))
@@ -204,11 +225,34 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
 
     @Test
     @MediumTest
+    public void testLaunchActivityForHistorySyncDedicatedFlowWhenSigninIsNotAllowed() {
+        when(IdentityServicesProvider.get().getIdentityManager(any()))
+                .thenReturn(mIdentityManagerMock);
+        when(mSigninManagerMock.isSigninAllowed()).thenReturn(false);
+        when(mSigninManagerMock.isSigninDisabledByPolicy()).thenReturn(false);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SigninAndHistoryOptInActivityLauncherImpl.get()
+                            .launchActivityForHistorySyncDedicatedFlow(
+                                    mContextMock,
+                                    mProfileMock,
+                                    SigninAndHistoryOptInCoordinator.NoAccountSigninMode
+                                            .BOTTOM_SHEET,
+                                    SigninAndHistoryOptInCoordinator.WithAccountSigninMode
+                                            .DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                    SigninAccessPoint.RECENT_TABS);
+                });
+
+        verify(mContextMock, never()).startActivity(notNull(), any());
+    }
+
+    @Test
+    @MediumTest
     // TODO(https://crbug.com/1520783): Update this test when the error UI will be implemented.
     public void testLaunchActivityIfAllowedWhenSigninIsDisabledByPolicy() {
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mIdentityManagerMock);
-        when(mIdentityManagerMock.hasPrimaryAccount(eq(ConsentLevel.SIGNIN))).thenReturn(true);
         when(mSigninManagerMock.isSigninDisabledByPolicy()).thenReturn(true);
         HistogramWatcher watchSigninDisabledToastShownHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -227,6 +271,39 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
                                             .DEFAULT_ACCOUNT_BOTTOM_SHEET,
                                     SigninAndHistoryOptInCoordinator.HistoryOptInMode.NONE,
                                     SigninAccessPoint.NTP_SIGNED_OUT_ICON);
+                });
+
+        onView(withText(R.string.managed_by_your_organization))
+                .inRoot(
+                        withDecorView(
+                                not(mActivityTestRule.getActivity().getWindow().getDecorView())))
+                .check(matches(isDisplayed()));
+        watchSigninDisabledToastShownHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    // TODO(https://crbug.com/1520783): Update this test when the error UI will be implemented.
+    public void testLaunchActivityForHistorySyncDedicatedFlowWhenSigninIsDisabledByPolicy() {
+        when(IdentityServicesProvider.get().getIdentityManager(any()))
+                .thenReturn(mIdentityManagerMock);
+        when(mSigninManagerMock.isSigninAllowed()).thenReturn(false);
+        when(mSigninManagerMock.isSigninDisabledByPolicy()).thenReturn(true);
+        HistogramWatcher watchSigninDisabledToastShownHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.SigninDisabledNotificationShown", SigninAccessPoint.RECENT_TABS);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SigninAndHistoryOptInActivityLauncherImpl.get()
+                            .launchActivityForHistorySyncDedicatedFlow(
+                                    mActivityTestRule.getActivity(),
+                                    mProfileMock,
+                                    SigninAndHistoryOptInCoordinator.NoAccountSigninMode
+                                            .BOTTOM_SHEET,
+                                    SigninAndHistoryOptInCoordinator.WithAccountSigninMode
+                                            .DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                    SigninAccessPoint.RECENT_TABS);
                 });
 
         onView(withText(R.string.managed_by_your_organization))

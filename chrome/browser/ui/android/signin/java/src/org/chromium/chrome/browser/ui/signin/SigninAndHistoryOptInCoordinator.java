@@ -64,6 +64,7 @@ public class SigninAndHistoryOptInCoordinator
     private HistorySyncCoordinator mHistorySyncCoordinator;
     private PropertyModel mDialogModel;
     private boolean mDidShowSigninStep;
+    private boolean mIsHistorySyncDedicatedFlow;
 
     /** This is a delegate that the embedder needs to implement. */
     public interface Delegate {
@@ -152,6 +153,8 @@ public class SigninAndHistoryOptInCoordinator
      * @param profileSupplier The supplier of the current profile.
      * @param modalDialogManagerSupplier The supplier of the {@link ModalDialogManager}
      * @param signinAccessPoint The entry point for the sign-in.
+     * @param isHistorySyncDedicatedFlow Whether the flow is dedicated to enabling history sync
+     *     (recent tabs for example).
      */
     public SigninAndHistoryOptInCoordinator(
             @NonNull WindowAndroid windowAndroid,
@@ -163,7 +166,8 @@ public class SigninAndHistoryOptInCoordinator
             @NoAccountSigninMode int noAccountSigninMode,
             @WithAccountSigninMode int withAccountSigninMode,
             @HistoryOptInMode int historyOptInMode,
-            @SigninAccessPoint int signinAccessPoint) {
+            @SigninAccessPoint int signinAccessPoint,
+            boolean isHistorySyncDedicatedFlow) {
         mWindowAndroid = windowAndroid;
         mActivity = activity;
         mDelegate = delegate;
@@ -175,6 +179,7 @@ public class SigninAndHistoryOptInCoordinator
         mWithAccountSigninMode = withAccountSigninMode;
         mHistoryOptInMode = historyOptInMode;
         mSigninAccessPoint = signinAccessPoint;
+        mIsHistorySyncDedicatedFlow = isHistorySyncDedicatedFlow;
         mContainerView =
                 (ViewGroup)
                         LayoutInflater.from(mActivity)
@@ -406,7 +411,12 @@ public class SigninAndHistoryOptInCoordinator
     private void showDialogContentView(Profile profile) {
         mHistorySyncCoordinator =
                 new HistorySyncCoordinator(
-                        mActivity, this, profile, mSigninAccessPoint, mDidShowSigninStep);
+                        mActivity,
+                        this,
+                        profile,
+                        mSigninAccessPoint,
+                        mDidShowSigninStep,
+                        mDidShowSigninStep && mIsHistorySyncDedicatedFlow);
         assert mDialogModel != null;
         mDialogModel.set(ModalDialogProperties.CUSTOM_VIEW, mHistorySyncCoordinator.getView());
         ModalDialogManager manager = mModalDialogManagerSupplier.get();
