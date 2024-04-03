@@ -22,36 +22,6 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
-<histogram name="ChromeOS.Settings.Accessibility.Autoclick.Enabled"
-    enum="BooleanToggled" expires_after="2024-10-16">
-  <owner>katie@chromium.org</owner>
-  <owner>chromium-accessibility@chromium.org</owner>
-  <summary>
-    Records when a user changes the Autoclick setting on the Accessibility page.
-  </summary>
-</histogram>
-
-<histogram name="ChromeOS.Settings.Accessibility.CaretHighlight.Enabled"
-    enum="BooleanToggled" expires_after="2024-10-16">
-  <owner>katie@chromium.org</owner>
-  <owner>chromium-accessibility@chromium.org</owner>
-  <summary>
-    Records when a user changes the highlight text cursor setting on the
-    Accessibility page.
-  </summary>
-</histogram>
-
-<histogram name="ChromeOS.Settings.Accessibility.ColorCorrection.Enabled"
-    enum="BooleanToggled" expires_after="2024-10-16">
-  <owner>katie@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Logged when color correction settings are enabled or disabled by the user
-    from os://settings. Note that color correction settings can also be enabled
-    or disabled in quick settings.
-  </summary>
-</histogram>
-
 <histogram name="ChromeOS.Settings.Accessibility.ColorCorrection.FilterAmount"
     units="%" expires_after="2024-10-16">
   <owner>katie@chromium.org</owner>
@@ -74,60 +44,15 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ChromeOS.Settings.Accessibility.CursorColor.Enabled"
     enum="BooleanToggled" expires_after="2024-10-16">
+<!-- Kept separate from the generic accessibility settings metric because this
+ is not a simple toggle on/off presented to the user, but is a dropdown list
+ of color choices. -->
+
   <owner>katie@chromium.org</owner>
   <owner>chromium-accessibility@chromium.org</owner>
   <summary>
     Records when a user picks any colored cursor (toggled on) vs the black
     cursor (toggled off) on the Accessibility page.
-  </summary>
-</histogram>
-
-<histogram name="ChromeOS.Settings.Accessibility.CursorHighlight.Enabled"
-    enum="BooleanToggled" expires_after="2024-10-16">
-  <owner>katie@chromium.org</owner>
-  <owner>chromium-accessibility@chromium.org</owner>
-  <summary>
-    Records when a user changes the highlight mouse cursor setting on the
-    Accessibility page.
-  </summary>
-</histogram>
-
-<histogram name="ChromeOS.Settings.Accessibility.Dictation.Enabled"
-    enum="BooleanToggled" expires_after="2024-10-16">
-  <owner>katie@chromium.org</owner>
-  <owner>chromium-accessibility@chromium.org</owner>
-  <summary>
-    Records when a user changes the Dictation setting on the Accessibility page.
-  </summary>
-</histogram>
-
-<histogram name="ChromeOS.Settings.Accessibility.DockedMagnifier.Enabled"
-    enum="BooleanToggled" expires_after="2024-10-16">
-  <owner>katie@chromium.org</owner>
-  <owner>chromium-accessibility@chromium.org</owner>
-  <summary>
-    Records when a user changes the Docked Magnifier setting on the
-    Accessibility page.
-  </summary>
-</histogram>
-
-<histogram name="ChromeOS.Settings.Accessibility.FocusHighlight.Enabled"
-    enum="BooleanToggled" expires_after="2024-10-16">
-  <owner>katie@chromium.org</owner>
-  <owner>chromium-accessibility@chromium.org</owner>
-  <summary>
-    Records when a user changes the highlight object with keyboard focus setting
-    on the Accessibility page.
-  </summary>
-</histogram>
-
-<histogram name="ChromeOS.Settings.Accessibility.FullscreenMagnifier.Enabled"
-    enum="BooleanToggled" expires_after="2024-10-16">
-  <owner>katie@chromium.org</owner>
-  <owner>chromium-accessibility@chromium.org</owner>
-  <summary>
-    Records when a user changes the Fullscreen Magnifier setting on the
-    Accessibility page.
   </summary>
 </histogram>
 
@@ -154,114 +79,37 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="ChromeOS.Settings.Accessibility.HighContrast.Enabled"
+<histogram name="ChromeOS.Settings.Accessibility.{SettingType}.Enabled"
     enum="BooleanToggled" expires_after="2024-10-16">
   <owner>katie@chromium.org</owner>
   <owner>chromium-accessibility@chromium.org</owner>
   <summary>
-    Records when a user changes the High Contrast setting on the Accessibility
-    page.
+    Records when a user changes the setting on the Accessibility page for the
+    feature: {SettingType}
   </summary>
-</histogram>
-
-<histogram name="ChromeOS.Settings.Accessibility.LargeCursor.Enabled"
-    enum="BooleanToggled" expires_after="2024-10-16">
-  <owner>katie@chromium.org</owner>
-  <owner>chromium-accessibility@chromium.org</owner>
-  <summary>
-    Records when a user changes the large mouse cursor setting on the
-    Accessibility page.
-  </summary>
-</histogram>
-
-<histogram name="ChromeOS.Settings.Accessibility.LiveCaption.Enabled"
-    enum="BooleanToggled" expires_after="2024-10-16">
-  <owner>katie@chromium.org</owner>
-  <owner>chromium-accessibility@chromium.org</owner>
-  <summary>
-    Records when a user changes the Live Caption setting on the Accessibility
-    page.
-  </summary>
-</histogram>
-
-<histogram name="ChromeOS.Settings.Accessibility.MonoAudio.Enabled"
-    enum="BooleanToggled" expires_after="2024-10-16">
-  <owner>katie@chromium.org</owner>
-  <owner>chromium-accessibility@chromium.org</owner>
-  <summary>
-    Records when a user changes the Mono Audio setting on the Accessibility
-    page.
-  </summary>
-</histogram>
-
-<histogram name="ChromeOS.Settings.Accessibility.OnScreenKeyboard.Enabled"
-    enum="BooleanToggled" expires_after="2024-10-16">
-  <owner>katie@chromium.org</owner>
-  <owner>chromium-accessibility@chromium.org</owner>
-  <summary>
-    Records when a user changes the On Screen Keyboard setting on the
-    Accessibility page.
-  </summary>
-</histogram>
-
-<histogram name="ChromeOS.Settings.Accessibility.OOBEStartupSound.Enabled"
-    enum="BooleanToggled" expires_after="2024-10-16">
-  <owner>katie@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Records when a user changes the kStartupSound setting on the Accessibility
-    page.
-  </summary>
-</histogram>
-
-<histogram name="ChromeOS.Settings.Accessibility.ReducedAnimations.Enabled"
-    enum="BooleanToggled" expires_after="2024-10-16">
-  <owner>katie@chromium.org</owner>
-  <owner>chromium-accessibility@chromium.org</owner>
-  <summary>
-    Records when a user changes the reduced animations setting on the
-    Accessibility page.
-  </summary>
-</histogram>
-
-<histogram name="ChromeOS.Settings.Accessibility.SelectToSpeak.Enabled"
-    enum="BooleanToggled" expires_after="2024-10-16">
-  <owner>katie@chromium.org</owner>
-  <owner>chromium-accessibility@chromium.org</owner>
-  <summary>
-    Records when a user changes the Select to speak setting on the Accessibility
-    page.
-  </summary>
-</histogram>
-
-<histogram name="ChromeOS.Settings.Accessibility.SpokenFeedback.Enabled"
-    enum="BooleanToggled" expires_after="2024-10-16">
-  <owner>katie@chromium.org</owner>
-  <owner>chromium-accessibility@chromium.org</owner>
-  <summary>
-    Records when a user changes the Chromevox Spoken Feedback setting on the
-    Accessibility page.
-  </summary>
-</histogram>
-
-<histogram name="ChromeOS.Settings.Accessibility.StickyKeys.Enabled"
-    enum="BooleanToggled" expires_after="2024-10-16">
-  <owner>katie@chromium.org</owner>
-  <owner>chromium-accessibility@chromium.org</owner>
-  <summary>
-    Records when a user changes the Sticky Keys setting on the Accessibility
-    page.
-  </summary>
-</histogram>
-
-<histogram name="ChromeOS.Settings.Accessibility.SwitchAccess.Enabled"
-    enum="BooleanToggled" expires_after="2024-10-16">
-  <owner>katie@chromium.org</owner>
-  <owner>chromium-accessibility@chromium.org</owner>
-  <summary>
-    Records when a user changes the Switch Access setting on the Accessibility
-    page.
-  </summary>
+  <token key="SettingType">
+    <variant name="Autoclick"/>
+    <variant name="CaretHighlight"/>
+    <variant name="ColorCorrection"
+        summary="ColorCorrection. Note that color correction settings can
+                 also be enabled or disabled in quick settings."/>
+    <variant name="CursorHighlight"/>
+    <variant name="Dictation"/>
+    <variant name="DockedMagnifier"/>
+    <variant name="FocusHighlight"/>
+    <variant name="FullscreenMagnifier"/>
+    <variant name="HighContrast"/>
+    <variant name="LargeCursor"/>
+    <variant name="LiveCaption"/>
+    <variant name="MonoAudio"/>
+    <variant name="OnScreenKeyboard"/>
+    <variant name="OOBEStartupSound"/>
+    <variant name="ReducedAnimations"/>
+    <variant name="SelectToSpeak"/>
+    <variant name="SpokenFeedback" summary="ChromeVox Spoken Feedback"/>
+    <variant name="StickyKeys"/>
+    <variant name="SwitchAccess"/>
+  </token>
 </histogram>
 
 <histogram name="ChromeOS.Settings.Apps.DoNotDisturbOnOff"
