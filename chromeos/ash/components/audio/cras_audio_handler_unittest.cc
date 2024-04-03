@@ -4519,6 +4519,198 @@ TEST_P(CrasAudioHandlerTest, HotPlug35mmHeadphoneAndMic) {
   EXPECT_LT(internal_mic.plugged_time, mic.plugged_time);
 }
 
+// Test the case where 3.5mm headphone and mic will be activated automatically
+// when being hot plugged, under the condition that the
+// kAudioSelectionImprovement flag is on.
+TEST_P(CrasAudioHandlerTest,
+       HotPlug35mmHeadphoneAndMic_AudioSelectionImprovementFlagOn) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
+
+  SetupAudioNodesAndExpectActiveNodes(
+      /*initial_nodes=*/{kInternalSpeaker, kInternalMic},
+      /*expected_active_input_node=*/kInternalMic,
+      /*expected_active_output_node=*/kInternalSpeaker,
+      /*expected_has_alternative_input=*/false,
+      /*expected_has_alternative_output=*/false);
+
+  // Hotplug the 35mm headset with both headphone and mic.
+  AudioNodeList audio_nodes;
+  AudioNode internal_speaker = GenerateAudioNode(kInternalSpeaker);
+  internal_speaker.active = true;
+  audio_nodes.push_back(internal_speaker);
+  AudioNode headphone = GenerateAudioNode(kHeadphone);
+  headphone.active = false;
+  headphone.plugged_time = 50000000;
+  audio_nodes.push_back(headphone);
+  AudioNode internal_mic = GenerateAudioNode(kInternalMic);
+  internal_mic.active = true;
+  audio_nodes.push_back(internal_mic);
+  AudioNode mic = GenerateAudioNode(kMicJack);
+  mic.active = false;
+  mic.plugged_time = 50000000;
+  audio_nodes.push_back(mic);
+  ChangeAudioNodes(audio_nodes);
+
+  // Verify 35mm headphone is selected as active output.
+  AudioDeviceList audio_devices;
+  cras_audio_handler_->GetAudioDevices(&audio_devices);
+  EXPECT_EQ(4u, audio_devices.size());
+  EXPECT_EQ(headphone.id, cras_audio_handler_->GetPrimaryActiveOutputNode());
+  // Verify 35mm mic is selected as active input.
+  EXPECT_EQ(mic.id, cras_audio_handler_->GetPrimaryActiveInputNode());
+
+  // Manually select internal speaker as active output.
+  AudioDevice internal_output(internal_speaker);
+  cras_audio_handler_->SwitchToDevice(internal_output, true,
+                                      CrasAudioHandler::ACTIVATE_BY_USER);
+  // Manually select internal mic as active input.
+  AudioDevice internal_input(internal_mic);
+  cras_audio_handler_->SwitchToDevice(internal_input, true,
+                                      CrasAudioHandler::ACTIVATE_BY_USER);
+
+  // Verify the active output is switched to internal speaker.
+  EXPECT_EQ(internal_speaker.id,
+            cras_audio_handler_->GetPrimaryActiveOutputNode());
+  EXPECT_LT(internal_speaker.plugged_time, headphone.plugged_time);
+  // Verify the active input is switched to internal mic.
+  EXPECT_EQ(internal_mic.id, cras_audio_handler_->GetPrimaryActiveInputNode());
+  EXPECT_LT(internal_mic.plugged_time, mic.plugged_time);
+
+  // Unplug 35mm headphone and mic.
+  audio_nodes.clear();
+  internal_speaker.active = true;
+  audio_nodes.push_back(internal_speaker);
+  internal_mic.active = true;
+  audio_nodes.push_back(internal_mic);
+  ChangeAudioNodes(audio_nodes);
+
+  // Verify internal speaker remains as active output.
+  cras_audio_handler_->GetAudioDevices(&audio_devices);
+  EXPECT_EQ(2u, audio_devices.size());
+  EXPECT_EQ(internal_speaker.id,
+            cras_audio_handler_->GetPrimaryActiveOutputNode());
+  // Verify internal mic remains as active input.
+  EXPECT_EQ(internal_mic.id, cras_audio_handler_->GetPrimaryActiveInputNode());
+
+  // Hotplug 35mm headset again.
+  headphone.active = false;
+  headphone.plugged_time = 90000000;
+  audio_nodes.push_back(headphone);
+  mic.active = false;
+  mic.plugged_time = 90000000;
+  audio_nodes.push_back(mic);
+  ChangeAudioNodes(audio_nodes);
+
+  // Verify 35mm headphone is active again.
+  cras_audio_handler_->GetAudioDevices(&audio_devices);
+  EXPECT_EQ(4u, audio_devices.size());
+  EXPECT_EQ(headphone.id, cras_audio_handler_->GetPrimaryActiveOutputNode());
+  // Make sure headphone is plugged after internal speaker so that headphone is
+  // being hot plugged.
+  EXPECT_LT(internal_speaker.plugged_time, headphone.plugged_time);
+  // Verify 35mm mic is active again.
+  EXPECT_EQ(mic.id, cras_audio_handler_->GetPrimaryActiveInputNode());
+  EXPECT_LT(internal_mic.plugged_time, mic.plugged_time);
+}
+
+// Test the case where bluetooth headphone and mic will be activated
+// automatically when being hot plugged, under the condition that the
+// kAudioSelectionImprovement flag is on.
+TEST_P(CrasAudioHandlerTest,
+       HotPlugBluetoothDevices_AudioSelectionImprovementFlagOn) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
+
+  SetupAudioNodesAndExpectActiveNodes(
+      /*initial_nodes=*/{kInternalSpeaker, kInternalMic},
+      /*expected_active_input_node=*/kInternalMic,
+      /*expected_active_output_node=*/kInternalSpeaker,
+      /*expected_has_alternative_input=*/false,
+      /*expected_has_alternative_output=*/false);
+
+  // Hotplug the bluetooth devices.
+  AudioNodeList audio_nodes;
+  AudioNode internal_speaker = GenerateAudioNode(kInternalSpeaker);
+  internal_speaker.active = true;
+  audio_nodes.push_back(internal_speaker);
+  AudioNode bluetooth_output = GenerateAudioNode(kBluetoothHeadset);
+  bluetooth_output.active = false;
+  bluetooth_output.plugged_time = 50000000;
+  audio_nodes.push_back(bluetooth_output);
+  AudioNode internal_mic = GenerateAudioNode(kInternalMic);
+  internal_mic.active = true;
+  audio_nodes.push_back(internal_mic);
+  AudioNode bluetooth_input = GenerateAudioNode(kBluetoothNbMic);
+  bluetooth_input.active = false;
+  bluetooth_input.plugged_time = 50000000;
+  audio_nodes.push_back(bluetooth_input);
+  ChangeAudioNodes(audio_nodes);
+
+  // Verify bluetooth_output is selected as active output.
+  AudioDeviceList audio_devices;
+  cras_audio_handler_->GetAudioDevices(&audio_devices);
+  EXPECT_EQ(4u, audio_devices.size());
+  EXPECT_EQ(bluetooth_output.id,
+            cras_audio_handler_->GetPrimaryActiveOutputNode());
+  // Verify bluetooth_input is selected as active input.
+  EXPECT_EQ(bluetooth_input.id,
+            cras_audio_handler_->GetPrimaryActiveInputNode());
+
+  // Manually select internal speaker as active output.
+  AudioDevice internal_output(internal_speaker);
+  cras_audio_handler_->SwitchToDevice(internal_output, true,
+                                      CrasAudioHandler::ACTIVATE_BY_USER);
+  // Manually select internal mic as active input.
+  AudioDevice internal_input(internal_mic);
+  cras_audio_handler_->SwitchToDevice(internal_input, true,
+                                      CrasAudioHandler::ACTIVATE_BY_USER);
+
+  // Verify the active output is switched to internal speaker.
+  EXPECT_EQ(internal_speaker.id,
+            cras_audio_handler_->GetPrimaryActiveOutputNode());
+  EXPECT_LT(internal_speaker.plugged_time, bluetooth_output.plugged_time);
+  // Verify the active input is switched to internal mic.
+  EXPECT_EQ(internal_mic.id, cras_audio_handler_->GetPrimaryActiveInputNode());
+  EXPECT_LT(internal_mic.plugged_time, bluetooth_input.plugged_time);
+
+  // Unplug bluetooth_output and bluetooth_input.
+  audio_nodes.clear();
+  internal_speaker.active = true;
+  audio_nodes.push_back(internal_speaker);
+  internal_mic.active = true;
+  audio_nodes.push_back(internal_mic);
+  ChangeAudioNodes(audio_nodes);
+
+  // Verify internal speaker remains as active output.
+  cras_audio_handler_->GetAudioDevices(&audio_devices);
+  EXPECT_EQ(2u, audio_devices.size());
+  EXPECT_EQ(internal_speaker.id,
+            cras_audio_handler_->GetPrimaryActiveOutputNode());
+  // Verify internal mic remains as active input.
+  EXPECT_EQ(internal_mic.id, cras_audio_handler_->GetPrimaryActiveInputNode());
+
+  // Hotplug bluetooth devices again.
+  bluetooth_output.active = false;
+  bluetooth_output.plugged_time = 90000000;
+  audio_nodes.push_back(bluetooth_output);
+  bluetooth_input.active = false;
+  bluetooth_input.plugged_time = 90000000;
+  audio_nodes.push_back(bluetooth_input);
+  ChangeAudioNodes(audio_nodes);
+
+  // Verify bluetooth_output is active again.
+  cras_audio_handler_->GetAudioDevices(&audio_devices);
+  EXPECT_EQ(4u, audio_devices.size());
+  EXPECT_EQ(bluetooth_output.id,
+            cras_audio_handler_->GetPrimaryActiveOutputNode());
+  EXPECT_LT(internal_speaker.plugged_time, bluetooth_output.plugged_time);
+  // Verify bluetooth_input is active again.
+  EXPECT_EQ(bluetooth_input.id,
+            cras_audio_handler_->GetPrimaryActiveInputNode());
+  EXPECT_LT(internal_mic.plugged_time, bluetooth_input.plugged_time);
+}
+
 // Test the case in which an HDMI output is plugged in with other higher
 // priority
 // output devices already plugged and user has manually selected an active

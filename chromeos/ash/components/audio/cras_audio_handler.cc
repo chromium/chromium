@@ -2977,6 +2977,17 @@ void CrasAudioHandler::SyncDevicePrefSetMap(bool is_input) {
 
 void CrasAudioHandler::HandleHotPlugDeviceWithNotification(
     const AudioDevice& hotplug_device) {
+  // Whenever a device with privilege is hot plugged, always pick it as the
+  // active device. Make sure has_privilege is called only when the
+  // kAudioSelectionImprovement flag is on.
+  CHECK(features::IsAudioSelectionImprovementEnabled());
+  if (hotplug_device.has_privilege()) {
+    // TODO(b/328425880): Record metrics for Rule #1, using an enum to
+    // differentiate each type of device.
+    SwitchToDevice(hotplug_device, /*notify=*/true, ACTIVATE_BY_PRIORITY);
+    return;
+  }
+
   // Check if current set of audio devices was seen before.
   const std::optional<AudioDevice> preferred_device =
       GetPreferredDeviceIfDeviceSetSeenBefore(

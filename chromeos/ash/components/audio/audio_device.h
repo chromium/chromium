@@ -79,6 +79,17 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) AudioDevice {
             type == AudioDeviceType::kAlsaLoopback);
   }
 
+  // Indicates if a device has privilege. System will automatically
+  // activate those devices when they are connected, disregarding previously
+  // saved user preferences. In other words, having privilege overrides the
+  // priority stored in user preferences.
+  bool has_privilege() const {
+    return type == AudioDeviceType::kHeadphone ||
+           type == AudioDeviceType::kMic ||
+           type == AudioDeviceType::kBluetooth ||
+           type == AudioDeviceType::kBluetoothNbMic;
+  }
+
   bool IsExternalDevice() const;
 
   bool IsInternalMic() const;
