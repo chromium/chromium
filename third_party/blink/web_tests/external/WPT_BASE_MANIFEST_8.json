@@ -5371,6 +5371,13 @@
        {}
       ]
      ],
+     "caret-display-list-002.html": [
+      "23f0496efd60a8be111de489ca92de4a34874484",
+      [
+       null,
+       {}
+      ]
+     ],
      "caret-display-list.html": [
       "f7c7a740e18925dba2da8704700ee23a5359921f",
       [
@@ -8157,6 +8164,13 @@
      "crashtests": {
       "cross-piping.html": [
        "712d5ecebef8ffd1377c15cc6debd175874b0ea4",
+       [
+        null,
+        {}
+       ]
+      ],
+      "cross-piping2.https.html": [
+       "4616aef479c07bef440e5f80debbcde0ef66ab97",
        [
         null,
         {}
@@ -16376,6 +16390,50 @@
       "cross-document": {
        "002-manual.html": [
         "0a549d3804662aca363cbe3aaed21d4323246837",
+        [
+         null,
+         {}
+        ]
+       ]
+      },
+      "drop": {
+       "events-contenteditable-manual.tentative.html": [
+        "9e513eb836fc78cd086077bee723753adc91643e",
+        [
+         null,
+         {}
+        ]
+       ],
+       "events-contenteditable-same-element-manual.tentative.html": [
+        "907306301fa0b38b139b4753c374bd32f03f811d",
+        [
+         null,
+         {}
+        ]
+       ],
+       "events-input-manual.tentative.html": [
+        "2f9914cca957dbd5c90460f104f9dcfcc12346ef",
+        [
+         null,
+         {}
+        ]
+       ],
+       "events-input-same-element-manual.tentative.html": [
+        "8a578d51ad6b5aa1dbc597a2b91879a6fa1b854f",
+        [
+         null,
+         {}
+        ]
+       ],
+       "events-textarea-manual.tentative.html": [
+        "7fb8bf437f8e4e64df07fa8b743129544a966248",
+        [
+         null,
+         {}
+        ]
+       ],
+       "events-textarea-same-element-manual.tentative.html": [
+        "c856fd4fbead239aeac04fdbd0b3f2e071bb2114",
         [
          null,
          {}
@@ -158207,6 +158265,253 @@
        {}
       ]
      ],
+     "line-clamp-001.tentative.html": [
+      "c8cfcb1066de1a1d5c98e147c8e47499069046be",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/webkit-line-clamp-005-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-clamp-002.tentative.html": [
+      "5f21b545fb32d8ecb2c72287b9fc9fcf9d41de90",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/webkit-line-clamp-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-clamp-003.tentative.html": [
+      "fa3b7472e5e44fe9eb854eb4dadc34f98af16e92",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/webkit-line-clamp-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-clamp-004.tentative.html": [
+      "c766d195b7c27935f099876f8e69a18966623ad9",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/webkit-line-clamp-006-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-clamp-005.tentative.html": [
+      "143aa65d899dc1e83e5be5927f1f349e8f0a399c",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/webkit-line-clamp-009-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-clamp-006.tentative.html": [
+      "f06d94161b635a092ed3446cdf9e6b3ebf830777",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/webkit-line-clamp-010-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-clamp-007.tentative.html": [
+      "c71068641b80530031dc4474422225033959d146",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/webkit-line-clamp-011-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-clamp-008.tentative.html": [
+      "0d91b3612d0cd38a08f56f01d0d38a7e3cc62042",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/webkit-line-clamp-005-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-clamp-009.tentative.html": [
+      "4dfd3d6194a6f3715f4f684b8072b5be55478911",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/webkit-line-clamp-006-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-clamp-010.tentative.html": [
+      "1386b147ce639f511fa1fc58e0c0cd75ab99efc2",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/line-clamp-010-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-clamp-011.tentative.html": [
+      "953f0c4faa9e57975cfabfd10d20ae4e1f9c45a3",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/line-clamp-011-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-clamp-012.tentative.html": [
+      "be39074037745b5bda0092ff29d45c68f93b4442",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/line-clamp-012-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-clamp-013.tentative.html": [
+      "1bda501f028e9cca1f0f7f5930d4459ac26a5607",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/line-clamp-013-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-clamp-014.tentative.html": [
+      "9ca7c8937248f482aec2976490c2c86b945f0dfd",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/webkit-line-clamp-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-clamp-015.tentative.html": [
+      "820300732235ceed5333217a3cc856c224e8e456",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/line-clamp-015-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-clamp-016.tentative.html": [
+      "09714c499de663e621925c74bc63e167dc9f7b85",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/webkit-line-clamp-005-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-clamp-017.tentative.html": [
+      "11d6ceeb556c7469b8de0cd323ddb2594e8b8b34",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/webkit-line-clamp-005-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-clamp-018.tentative.html": [
+      "af75f7dfb0d291f6158fea3081ca5d1042d06989",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/webkit-line-clamp-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-clamp-019.tentative.html": [
+      "b39376d39502ff643d41543c26db8f43abcc35bd",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/reference/webkit-line-clamp-005-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "margin-block-end-scroll-area-001.html": [
       "3b8f4ca3f355718d05fe6eeda200bddccb388f57",
       [
@@ -168736,6 +169041,19 @@
        [
         [
          "/css/css-scoping/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "host-defined.html": [
+      "9e9776754a3f360537e899e064a0d3b36dbe14c3",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
          "=="
         ]
        ],
@@ -323677,6 +323995,26 @@
        "d7125ee2ef3285d461b2172208e23d8d4cc27a64",
        []
       ],
+      "line-clamp-010-ref.html": [
+       "46ca731c5446db88ba4e5fc8a3d6b8b43c4fc056",
+       []
+      ],
+      "line-clamp-011-ref.html": [
+       "04297fff2b5538a8be020d780cba3d82aa30fa9e",
+       []
+      ],
+      "line-clamp-012-ref.html": [
+       "f412e0110d45ac2db2e8e55adfdab3ae9dce57df",
+       []
+      ],
+      "line-clamp-013-ref.html": [
+       "b2eb05e884d781ae9d5fdaa690e17be60607d97f",
+       []
+      ],
+      "line-clamp-015-ref.html": [
+       "1af45c1225c2df9ed258eb69c687f11c4be9a965",
+       []
+      ],
       "overflow-body-no-propagation-ref.html": [
        "9795d1f5861f0affaeb3a36b3644d17fd60e1f4d",
        []
@@ -361383,7 +361721,13 @@
        "028.html": [
         "ab5725ad00221196f48cd88d77803b472b53fcdc",
         []
-       ]
+       ],
+       "support": {
+        "events.js": [
+         "015cead3853c109f25ced64ba4e539fde4968a5d",
+         []
+        ]
+       }
       },
       "dropzone": {
        "001.xhtml": [
@@ -391544,7 +391888,7 @@
        []
       ],
       "moduleSource.tentative.any-expected.txt": [
-       "b5831752fbaeb48c5f0a0face9485c3beed9dd7b",
+       "1e53e51094653d5585dc26a8d23173c5ccc53bfa",
        []
       ],
       "moduleSource.tentative.any.shadowrealm-expected.txt": [
@@ -391552,7 +391896,7 @@
        []
       ],
       "moduleSource.tentative.any.worker-expected.txt": [
-       "b5831752fbaeb48c5f0a0face9485c3beed9dd7b",
+       "1e53e51094653d5585dc26a8d23173c5ccc53bfa",
        []
       ],
       "toString.any.shadowrealm-expected.txt": [
@@ -391893,7 +392237,7 @@
         []
        ],
        "worker-source-phase.js": [
-        "c7a4f0d437cbf0290aaccd69e80a68ed417c00b6",
+        "e1c2703899a50d1e31f73c2a0b76a27c5d6552ea",
         []
        ],
        "worker.js": [
@@ -391905,6 +392249,10 @@
         []
        ]
       },
+      "script-src-allows-wasm.tentative-expected.txt": [
+       "02fbed424c957cecceb34820ecb5319f49cd1546",
+       []
+      ],
       "source-phase.tentative-expected.txt": [
        "7bcdda75c4f0249bbf8e2d122e5c08a340a115fd",
        []
@@ -466362,6 +466710,13 @@
        {}
       ]
      ],
+     "starting-style-adjustment.html": [
+      "addc795e721e0f3a5a705a5038f2744239318f50",
+      [
+       null,
+       {}
+      ]
+     ],
      "starting-style-cascade.html": [
       "cef3e88b656d1d65d3e02179c6f44e878fd246d3",
       [
@@ -475108,7 +475463,7 @@
       ]
      ],
      "dir-pseudo-on-input-element.html": [
-      "25f7a080d7e2e639485a58185a7a715303a3b745",
+      "b1427bf42d6636b42314427a37db724597b24f4a",
       [
        null,
        {}
@@ -476221,6 +476576,13 @@
       ],
       "is-pseudo-containing-sibling-relationship-in-has.html": [
        "bd5f96a3e27a3875ec2bf08a16f424ea851bee6e",
+       [
+        null,
+        {}
+       ]
+      ],
+      "is-where-pseudo-containing-hard-pseudo.html": [
+       "416aacca8c0d0085f0e574852ed6f0cc4cdc9ca0",
        [
         null,
         {}
@@ -654661,7 +655023,7 @@
        ]
       ],
       "moduleSource.tentative.any.js": [
-       "a3d09d55d6ec2eff483b80d7e4d177c649f324c7",
+       "8a94cdd48cd497ad8af1ebe3c49f8483700b4692",
        [
         null,
         {
@@ -655977,8 +656339,22 @@
         {}
        ]
       ],
+      "script-src-allows-wasm.tentative.html": [
+       "07faf9a5a1cff52532c01d0b80c29fbd83fd2dbc",
+       [
+        null,
+        {}
+       ]
+      ],
+      "script-src-blocks-wasm.tentative.html": [
+       "c1232730eab0715b8061689f04b7d2b64c242a51",
+       [
+        null,
+        {}
+       ]
+      ],
       "source-phase.tentative.html": [
-       "eb415a4c6f1666c0cb1901188e60febb299458ff",
+       "870b16bd0a0ce8db80d403fc12aeecaf5e6ccedb",
        [
         null,
         {}
@@ -656007,6 +656383,13 @@
       ],
       "wasm-to-wasm-link-error.tentative.html": [
        "6c43e72b09bfe7ea43ca7d589ada5692297f865e",
+       [
+        null,
+        {}
+       ]
+      ],
+      "worker-import-source-phase.tentative.html": [
+       "e193f3efc69330779408e56fddf09348fb6249fc",
        [
         null,
         {}
