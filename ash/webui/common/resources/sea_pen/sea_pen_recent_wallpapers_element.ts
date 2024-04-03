@@ -121,8 +121,7 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
   private onRecentImagesChanged_(recentImages: SeaPenImageId[]|null) {
     this.recentImagesToDisplay_ = (recentImages || []).filter(id => {
       if (this.recentImageDataLoading_[id] === false) {
-        const data = this.recentImageData_[id];
-        return data && data.url;
+        return isImageDataUrl(this.recentImageData_[id]?.url);
       }
       return true;
     });
@@ -144,10 +143,10 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
     for (let i = this.recentImagesToDisplay_.length - 1; i >= 0; i--) {
       const id = this.recentImagesToDisplay_[i];
       const data = recentImageData[id];
-      const validData = !!data && isImageDataUrl(data.url);
-      const failed = id && recentImageDataLoading[id] === false && !validData;
+      const validData = isImageDataUrl(data?.url);
+      const failed = recentImageDataLoading[id] === false && !validData;
       if (failed) {
-        this.recentImagesToDisplay_.splice(i, 1);
+        this.splice('recentImagesToDisplay_', i, 1);
       }
     }
   }
@@ -173,7 +172,7 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
       return null;
     }
     const data = recentImageData[recentImage];
-    if (!data || !isImageDataUrl(data.url)) {
+    if (!isImageDataUrl(data?.url)) {
       return {url: ''};
     }
     return data.url;
@@ -242,9 +241,9 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
     return i + 1;
   }
 
-  private shouldShowRecentlyUsedWallpapers_(recentImages: SeaPenImageId[]|
-                                            null) {
-    return isNonEmptyArray(recentImages);
+  private shouldShowRecentlyUsedWallpapers_(recentImagesToDisplay:
+                                                SeaPenImageId[]|null) {
+    return isNonEmptyArray(recentImagesToDisplay);
   }
 
   private isRecentImageSelected_(

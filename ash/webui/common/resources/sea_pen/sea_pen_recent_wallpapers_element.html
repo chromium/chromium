@@ -142,7 +142,7 @@
     border-radius: 16px;
   }
 </style>
-<template is="dom-if" if="[[shouldShowRecentlyUsedWallpapers_(recentImages_)]]">
+<template is="dom-if" if="[[shouldShowRecentlyUsedWallpapers_(recentImagesToDisplay_)]]">
   <h2 id="recentImagesHeading" class="wallpaper-collections-heading">[[getRecentPoweredByGoogleMessage_()]]</h2>
   <iron-list id="grid"
       items="[[recentImagesToDisplay_]]"
@@ -155,6 +155,7 @@
       <div class="recent-image-container">
         <wallpaper-grid-item
             class="sea-pen-image recent-used-image"
+            disabled="[[isRecentImageLoading_(image, recentImageDataLoading_)]]"
             index="[[index]]"
             data-sea-pen-image
             aria-label$="[[getAriaLabel_(image, recentImageData_, recentImageDataLoading_)]]"
