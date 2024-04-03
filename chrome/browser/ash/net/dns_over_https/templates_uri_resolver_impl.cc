@@ -49,8 +49,6 @@ constexpr char kIPv6Prefix[] = "0020";
 // unaffiliated.
 constexpr char kDeviceNotManaged[] = "VALUE_NOT_AVAILABLE";
 
-constexpr char kFixedSaltForExperiment[] = "salt for experiment";
-
 // Part before "@" of the given |email| address.
 // "some_email@domain.com" => "some_email"
 //
@@ -258,32 +256,14 @@ void TemplatesUriResolverImpl::Update(PrefService* pref_service) {
   }
 
   effective_templates_ = pref_service->GetString(prefs::kDnsOverHttpsTemplates);
-  if (!features::IsDnsOverHttpsWithIdentifiersEnabled()) {
-    return;
-  }
   // In ChromeOS only, the DnsOverHttpsTemplatesWithIdentifiers policy will
   // overwrite the DnsOverHttpsTemplates policy. For privacy reasons, the
   // replacement only happens if the is a salt specified which will be used to
   // hash the identifiers in the template URI.
   std::string templates_with_identifiers =
       pref_service->GetString(prefs::kDnsOverHttpsTemplatesWithIdentifiers);
-
-  // Until the DnsOverHttpsTemplatesWithIdentifiers policy is added to DPanel,
-  // the templates with identifiers can be specified via the old policy,
-  // `kDnsOverHttpsTemplates` to enable early costumer testing. This testing
-  // mode is controlled by the flag
-  // features::kDnsOverHttpsWithIdentifiersReuseOldPolicy.
-  // TODO(acostinas, srad, b/233845305) Remove when policy is added to DPanel.
-  if (templates_with_identifiers.empty() &&
-      features::IsDnsOverHttpsWithIdentifiersReuseOldPolicyEnabled()) {
-    templates_with_identifiers = effective_templates_;
-  }
   std::string salt = pref_service->GetString(prefs::kDnsOverHttpsSalt);
-  // TODO(acostinas, srad, b/233845305) Remove when policy is added to DPanel.
-  if (salt.empty() &&
-      features::IsDnsOverHttpsWithIdentifiersReuseOldPolicyEnabled()) {
-    salt = kFixedSaltForExperiment;
-  }
+
   if (!salt.empty() &&
       (salt.size() < kMinSaltSize || salt.size() > kMaxSaltSize)) {
     // If the salt is set but the size is not within the specified limits, then

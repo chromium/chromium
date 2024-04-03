@@ -9346,15 +9346,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebMidiDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kWebMidi)},
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"dns-over-https-with-identifiers-reuse-old-policy",
-     flag_descriptions::kDnsOverHttpsWithIdentifiersReuseOldPolicyName,
-     flag_descriptions::kDnsOverHttpsWithIdentifiersReuseOldPolicyDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(
-         ash::features::kDnsOverHttpsWithIdentifiersReuseOldPolicy)},
-#endif
-
     {"enable-commerce-developer", flag_descriptions::kCommerceDeveloperName,
      flag_descriptions::kCommerceDeveloperDescription, kOsAll,
      FEATURE_VALUE_TYPE(commerce::kCommerceDeveloper)},

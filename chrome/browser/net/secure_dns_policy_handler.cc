@@ -154,12 +154,11 @@ bool SecureDnsPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
   templates_is_applicable = is_templates_policy_valid_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (ash::features::IsDnsOverHttpsWithIdentifiersEnabled()) {
     bool templates_valid = CheckDnsOverHttpsTemplatePolicy(
         policies, errors, key::kDnsOverHttpsTemplatesWithIdentifiers, mode_str);
     bool salt_valid = CheckDnsOverHttpsSaltPolicy(policies, errors);
     is_templates_with_identifiers_policy_valid_ = templates_valid && salt_valid;
-  }
+
   templates_is_applicable =
       is_templates_policy_valid_ || is_templates_with_identifiers_policy_valid_;
 
@@ -211,7 +210,6 @@ void SecureDnsPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
     prefs->SetString(prefs::kDnsOverHttpsTemplates, templates->GetString());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (ash::features::IsDnsOverHttpsWithIdentifiersEnabled()) {
     const base::Value* templates_with_identifiers = policies.GetValue(
         key::kDnsOverHttpsTemplatesWithIdentifiers, base::Value::Type::STRING);
     const base::Value* salt =
@@ -230,7 +228,6 @@ void SecureDnsPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
       prefs->SetString(prefs::kDnsOverHttpsSalt,
                        salt ? salt->GetString() : std::string());
     }
-  }
 #endif
 }
 

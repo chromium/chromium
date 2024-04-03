@@ -84,16 +84,7 @@ constexpr char kEffectiveTemplateIdentifiers[] =
     "D60336AF57006D9FD327FD96F4B44F9067A09FB0A4DD83FB67EC0B2C472B9734-"
     "F7E37C960A2F15DD63CE0F694F29A3A76E4BE2700918E01FA22F0692098C6B28/"
     "dns-query{?dns}";
-constexpr char kEffectiveTemplateIdentifiersWithTestSalt[] =
-    "https://dns.google.alternativeuri/"
-    "C3C0177E97A4E05B1642A503F457AF68D40A846A797AC88648A42F3153FEA5FD-"
-    "4F11690A960D3EEEBD383FDD5551318D992408FBE4FA8673BEFB04A35078387A-"
-    "9B7A60CA80571F2BFB83C955416F091084C0BA5679B8FB24A4801060BA353663-"
-    "F260F9A86E34A360934E4C6397993A1CECA6584920512610741E328D67DCE4D6-"
-    "69D97D906733DFAD7B7AEE5B7632DDD65838EAACEF2C35682C022CE121FB7E67-"
-    "F8F33F2554E3E2223391375D12FC6CC8744CE1EBD02F4E73941FEB66FFC3A4CE-"
-    "752F92CB761746F2ACE4DB56D7CCD332E2737A2921B154E280E528532CDA3E1B/"
-    "dns-query{?dns}";
+
 constexpr char kEffectiveTemplateIdentifiersNoSalt[] =
     "https://dns.google.alternativeuri/"
     "B07D2C5D119EB1881671C3B8D84CBE4FE3595C0C9ECBBF7670B18DDFDA072F66-"
@@ -297,45 +288,6 @@ TEST_F(TemplatesUriResolverImplTest, MultipleTemplatesWithIdentifiers) {
                          kEffectiveTemplateIdentifiers);
   EXPECT_EQ(doh_template_uri_resolver_->GetEffectiveTemplates(),
             expected_multiple_templates);
-  EXPECT_TRUE(doh_template_uri_resolver_->GetDohWithIdentifiersActive());
-}
-
-// Tests that reusing the existing policy DnsOverHttpsTemplates for testing
-// template URI with identifiers works as intended.
-TEST_F(TemplatesUriResolverImplTest, ReuseOldPolicyFeature) {
-  SetupAffiliatedUser();
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(
-      features::kDnsOverHttpsWithIdentifiersReuseOldPolicy);
-
-  // Set the templates with identifiers in the existing pref.
-  pref_service()->Set(prefs::kDnsOverHttpsMode,
-                      base::Value(SecureDnsConfig::kModeSecure));
-  pref_service()->Set(prefs::kDnsOverHttpsTemplates,
-                      base::Value(kTemplateIdentifiers));
-  // Extra precaution to ensure the new pref is not set.
-  pref_service()->ClearPref(prefs::kDnsOverHttpsTemplatesWithIdentifiers);
-  doh_template_uri_resolver_->Update(pref_service());
-
-  // `features::kDnsOverHttpsWithIdentifiersReuseOldPolicy` disabled means the
-  // identifiers are not replaced.
-  EXPECT_EQ(doh_template_uri_resolver_->GetDisplayTemplates(), "");
-  EXPECT_EQ(doh_template_uri_resolver_->GetEffectiveTemplates(),
-            kTemplateIdentifiers);
-
-  features.Reset();
-  features.InitAndEnableFeature(
-      features::kDnsOverHttpsWithIdentifiersReuseOldPolicy);
-  doh_template_uri_resolver_->Update(pref_service());
-
-  // `features::kDnsOverHttpsWithIdentifiersReuseOldPolicy` enabled means the
-  // identifiers are replaced.
-  EXPECT_EQ(doh_template_uri_resolver_->GetDisplayTemplates(),
-            kDisplayTemplateIdentifiers);
-  EXPECT_EQ(doh_template_uri_resolver_->GetEffectiveTemplates(),
-            kEffectiveTemplateIdentifiersWithTestSalt);
-  EXPECT_NE(kEffectiveTemplateIdentifiersWithTestSalt,
-            kEffectiveTemplateIdentifiers);
   EXPECT_TRUE(doh_template_uri_resolver_->GetDohWithIdentifiersActive());
 }
 
