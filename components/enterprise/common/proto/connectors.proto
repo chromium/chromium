@@ -186,6 +186,9 @@ message ContentAnalysisRequest {
   }
   optional Reason reason = 19;
 
+  // Indicates whether request is blocking until verdict given.
+  optional bool blocking = 20;
+
   // Reserved to make sure there is no overlap with DeepScanningClientRequest.
   reserved 3, 4, 6 to 8;
 }
