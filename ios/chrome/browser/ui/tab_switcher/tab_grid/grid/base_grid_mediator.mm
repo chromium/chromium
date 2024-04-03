@@ -36,6 +36,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
@@ -596,20 +597,21 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
 #pragma mark - GridCommands
 
 - (BOOL)addNewItem {
+  // The incognito mediator's Browser is briefly set to nil after the last
+  // incognito tab is closed.
+  if (!self.browser) {
+    return NO;
+  }
+
   if (self.browserState &&
       !IsAddNewTabAllowedByPolicy(self.browserState->GetPrefs(),
                                   self.browserState->IsOffTheRecord())) {
     return NO;
   }
 
-  NSUInteger itemIndex =
-      [self itemIndexFromWebStateListIndex:self.webStateList->count()];
-  [self insertNewItemAtIndex:itemIndex];
+  [self insertNewWebStateAtIndex:self.webStateList->count()
+                         withURL:GURL(kChromeUINewTabURL)];
   return YES;
-}
-
-- (void)insertNewItemAtIndex:(NSUInteger)index {
-  [self insertNewItemAtIndex:index withURL:GURL(kChromeUINewTabURL)];
 }
 
 - (void)selectItemWithID:(web::WebStateID)itemID pinned:(BOOL)pinned {
@@ -934,7 +936,8 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
 
 #pragma mark GridCommands helpers
 
-- (void)insertNewItemAtIndex:(NSUInteger)index withURL:(const GURL&)newTabURL {
+// Inserts a new WebState at the given WebStateList `index`.
+- (void)insertNewWebStateAtIndex:(int)index withURL:(const GURL&)newTabURL {
   // The incognito mediator's Browser is briefly set to nil after the last
   // incognito tab is closed.  This occurs because the incognito BrowserState
   // needs to be destroyed to correctly clear incognito browsing data.  Don't
@@ -961,11 +964,9 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
   loadParams.transition_type = ui::PAGE_TRANSITION_TYPED;
   webState->GetNavigationManager()->LoadURLWithParams(loadParams);
 
-  int webStateListIndex = [self webStateListIndexFromItemIndex:index];
-
   self.webStateList->InsertWebState(
       std::move(webState),
-      WebStateList::InsertionParams::AtIndex(webStateListIndex).Activate());
+      WebStateList::InsertionParams::AtIndex(index).Activate());
 }
 
 #pragma mark - TabCollectionDragDropHandler
@@ -1091,7 +1092,9 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
   // Handle URLs from within Chrome synchronously using a local object.
   if ([dragItem.localObject isKindOfClass:[URLInfo class]]) {
     URLInfo* droppedURL = static_cast<URLInfo*>(dragItem.localObject);
-    [self insertNewItemAtIndex:destinationIndex withURL:droppedURL.URL];
+    [self insertNewWebStateAtIndex:
+              [self webStateListIndexFromItemIndex:destinationIndex]
+                           withURL:droppedURL.URL];
     return;
   }
 }
@@ -1110,8 +1113,9 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
         dispatch_async(dispatch_get_main_queue(), ^{
           [placeholderContext deletePlaceholder];
           NSURL* droppedURL = static_cast<NSURL*>(providedItem);
-          [self insertNewItemAtIndex:destinationIndex
-                             withURL:net::GURLWithNSURL(droppedURL)];
+          [self insertNewWebStateAtIndex:
+                    [self webStateListIndexFromItemIndex:destinationIndex]
+                                 withURL:net::GURLWithNSURL(droppedURL)];
         });
       };
   [itemProvider loadObjectOfClass:[NSURL class] completionHandler:loadHandler];
@@ -1186,27 +1190,9 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
   return URLs;
 }
 
-// Converts the WebStateList indexes to the collection view's item indexes by
-// shifting indexes by the number of pinned WebStates.
-- (NSUInteger)itemIndexFromWebStateListIndex:(int)index {
-  if (!IsPinnedTabsEnabled()) {
-    return index;
-  }
-
-  // If WebStateList's index is invalid or it's inside of pinned WebStates
-  // range return invalid index.
-  if (index == WebStateList::kInvalidIndex ||
-      index < self.webStateList->pinned_tabs_count()) {
-    return NSNotFound;
-  }
-
-  return index - self.webStateList->pinned_tabs_count();
-}
-
-// Converts the collection view's item indexes to the WebStateList indexes by
-// shifting indexes by the number of pinned WebStates.
+// Converts the collection view's item index to the WebStateList index.
 - (int)webStateListIndexFromItemIndex:(NSUInteger)index {
-  if (!IsPinnedTabsEnabled()) {
+  if (!IsPinnedTabsEnabled() && !IsTabGroupInGridEnabled()) {
     return index;
   }
 
@@ -1214,7 +1200,21 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
     return WebStateList::kInvalidIndex;
   }
 
-  return index + self.webStateList->pinned_tabs_count();
+  // Shifts `webStateIndex` by the number of pinned WebStates.
+  int webStateIndex = self.webStateList->pinned_tabs_count();
+
+  // Shifts `webStateIndex` by the number of WebStates in the groups before it.
+  for (NSUInteger i = 0; i < index; ++i) {
+    const TabGroup* tabGroup =
+        self.webStateList->GetGroupOfWebStateAt(webStateIndex);
+    if (tabGroup) {
+      webStateIndex += tabGroup->range().count();
+    } else {
+      webStateIndex++;
+    }
+  }
+
+  return webStateIndex;
 }
 
 // Inserts/removes a non pinned item to/from the collection.

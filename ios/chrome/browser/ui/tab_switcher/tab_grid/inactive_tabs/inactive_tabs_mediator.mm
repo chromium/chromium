@@ -333,10 +333,6 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   NOTREACHED_NORETURN();
 }
 
-- (void)insertNewItemAtIndex:(NSUInteger)index {
-  NOTREACHED_NORETURN();
-}
-
 - (BOOL)isItemWithIDSelected:(web::WebStateID)itemID {
   NOTREACHED_NORETURN();
 }

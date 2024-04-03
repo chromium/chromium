@@ -303,39 +303,13 @@ TEST_P(BaseGridMediatorTest, AddNewItemAtEndCommand) {
   EXPECT_EQ(identifier, consumer_.items[3]);
 }
 
-// Tests that when `-insertNewItemAtIndex:` is called, the WebStateList
-// count is incremented, the `active_index` is the newly added index, the new
-// web state has no opener, and the URL is the new tab page.
-// Checks that the consumer has added an item with the correct identifier.
-TEST_P(BaseGridMediatorTest, InsertNewItemCommand) {
-  // Previously there were 3 items and the selected index was 1.
-  [mediator_ insertNewItemAtIndex:0];
-  EXPECT_EQ(4, browser_->GetWebStateList()->count());
-  EXPECT_EQ(0, browser_->GetWebStateList()->active_index());
-  web::WebState* web_state = browser_->GetWebStateList()->GetWebStateAt(0);
-  ASSERT_TRUE(web_state);
-  EXPECT_EQ(web_state->GetBrowserState(), browser_state_.get());
-  EXPECT_FALSE(web_state->HasOpener());
-  // The URL of pending item (i.e. kChromeUINewTabURL) will not be returned
-  // here because WebState doesn't load the URL until it's visible and
-  // NavigationManager::GetVisibleURL requires WebState::IsLoading to be true
-  // to return pending item's URL.
-  EXPECT_EQ("", web_state->GetVisibleURL().spec());
-  web::WebStateID identifier = web_state->GetUniqueIdentifier();
-  EXPECT_FALSE(base::Contains(original_identifiers_, identifier));
-  // Consumer checks.
-  EXPECT_EQ(4UL, consumer_.items.size());
-  EXPECT_EQ(identifier, consumer_.selectedItemID);
-  EXPECT_EQ(identifier, consumer_.items[0]);
-}
-
-// Tests that `-insertNewItemAtIndex:` is a no-op if the mediator's browser
+// Tests that `-addNewItem` is a no-op if the mediator's browser
 // is nullptr.
-TEST_P(BaseGridMediatorTest, InsertNewItemWithNoBrowserCommand) {
+TEST_P(BaseGridMediatorTest, AddNewItemWithNoBrowserCommand) {
   mediator_.browser = nullptr;
   ASSERT_EQ(3, browser_->GetWebStateList()->count());
   ASSERT_EQ(1, browser_->GetWebStateList()->active_index());
-  [mediator_ insertNewItemAtIndex:0];
+  [mediator_ addNewItem];
   EXPECT_EQ(3, browser_->GetWebStateList()->count());
   EXPECT_EQ(1, browser_->GetWebStateList()->active_index());
 }
