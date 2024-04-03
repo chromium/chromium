@@ -283,11 +283,6 @@
     "expiry_milestone": 98
   },
   {
-    "name": "arc-enable-aaudio-mmap",
-    "owners": [ "pteerapong@chromium.org", "chromeos-audio@google.com" ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "arc-enable-virtio-blk-for-data",
     "owners": [ "niwa@chromium.org" ],
     "expiry_milestone": 130

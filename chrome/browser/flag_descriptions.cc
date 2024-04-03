@@ -5594,11 +5594,6 @@ const char kArcXdgModeName[] = "Enable XDG mode for ARC apps.";
 const char kArcXdgModeDesc[] =
     "Switch to XDG-based Wayland protocols for ARC apps.";
 
-const char kArcEnableAAudioMMAPName[] = "Enable ARCVM AAudio MMAP";
-const char kArcEnableAAudioMMAPDescription[] =
-    "Enable AAudio MMAP support for ARCVM which provides low latency audio "
-    "for supported apps.";
-
 const char kArcAAudioMMAPLowLatencyName[] =
     "Enable ARCVM AAudio MMAP low latency";
 const char kArcAAudioMMAPLowLatencyDescription[] =
