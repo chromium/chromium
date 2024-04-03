@@ -98,7 +98,7 @@ class MockLayoutManagerBase : public LayoutManagerBase {
     for (views::View* it : host_view()->children()) {
       if (!IsChildIncludedInLayout(it))
         continue;
-      const gfx::Size preferred_size = it->GetPreferredSize();
+      const gfx::Size preferred_size = it->GetPreferredSize({});
       bool visible = false;
       gfx::Rect bounds;
       const int required_width = preferred_size.width() + 2 * kChildViewPadding;
@@ -455,7 +455,7 @@ TEST_F(LayoutManagerBaseManagerTest, GetPreferredSize) {
   AddChildView(kTallSize);
   const gfx::Size expected(kLongSize.width() + 2 * kChildViewPadding,
                            kTallSize.height() + 2 * kChildViewPadding);
-  EXPECT_EQ(expected, host_view()->GetPreferredSize());
+  EXPECT_EQ(expected, host_view()->GetPreferredSize({}));
 }
 
 TEST_F(LayoutManagerBaseManagerTest, GetPreferredHeightForWidth) {
@@ -488,20 +488,20 @@ TEST_F(LayoutManagerBaseManagerTest, Layout) {
   // This should fit all of the child views and trigger layout.
   host_view()->SetSize({40, 40});
   EXPECT_EQ(1, layout_manager()->num_layouts_generated());
-  EXPECT_EQ(gfx::Rect(kUpperLeft, child(0)->GetPreferredSize()),
+  EXPECT_EQ(gfx::Rect(kUpperLeft, child(0)->GetPreferredSize({})),
             child(0)->bounds());
   EXPECT_TRUE(child(0)->GetVisible());
-  EXPECT_EQ(gfx::Rect(kUpperLeft, child(1)->GetPreferredSize()),
+  EXPECT_EQ(gfx::Rect(kUpperLeft, child(1)->GetPreferredSize({})),
             child(1)->bounds());
   EXPECT_TRUE(child(1)->GetVisible());
-  EXPECT_EQ(gfx::Rect(kUpperLeft, child(2)->GetPreferredSize()),
+  EXPECT_EQ(gfx::Rect(kUpperLeft, child(2)->GetPreferredSize({})),
             child(2)->bounds());
   EXPECT_TRUE(child(2)->GetVisible());
 
   // This should drop out some children.
   host_view()->SetSize({25, 25});
   EXPECT_EQ(2, layout_manager()->num_layouts_generated());
-  EXPECT_EQ(gfx::Rect(kUpperLeft, child(0)->GetPreferredSize()),
+  EXPECT_EQ(gfx::Rect(kUpperLeft, child(0)->GetPreferredSize({})),
             child(0)->bounds());
   EXPECT_TRUE(child(0)->GetVisible());
   EXPECT_FALSE(child(1)->GetVisible());
@@ -519,9 +519,9 @@ TEST_F(LayoutManagerBaseManagerTest, IgnoresChildWithViewIgnoredByLayoutKey) {
   // Makes enough room for all views, and triggers layout.
   host_view()->SetSize({50, 50});
 
-  EXPECT_EQ(child(0)->GetPreferredSize(), child(0)->size());
+  EXPECT_EQ(child(0)->GetPreferredSize({}), child(0)->size());
   EXPECT_EQ(kLargeSize, child(1)->size());
-  EXPECT_EQ(child(2)->GetPreferredSize(), child(2)->size());
+  EXPECT_EQ(child(2)->GetPreferredSize({}), child(2)->size());
 }
 
 TEST_F(LayoutManagerBaseManagerTest, ViewVisibilitySet) {
@@ -535,10 +535,10 @@ TEST_F(LayoutManagerBaseManagerTest, ViewVisibilitySet) {
   host_view()->SetSize({50, 50});
 
   EXPECT_TRUE(child(0)->GetVisible());
-  EXPECT_EQ(child(0)->GetPreferredSize(), child(0)->size());
+  EXPECT_EQ(child(0)->GetPreferredSize({}), child(0)->size());
   EXPECT_FALSE(child(1)->GetVisible());
   EXPECT_TRUE(child(2)->GetVisible());
-  EXPECT_EQ(child(2)->GetPreferredSize(), child(2)->size());
+  EXPECT_EQ(child(2)->GetPreferredSize({}), child(2)->size());
 
   // Turn the second child view back on and verify it's present in the layout
   // again.
@@ -546,11 +546,11 @@ TEST_F(LayoutManagerBaseManagerTest, ViewVisibilitySet) {
   test::RunScheduledLayout(host_view());
 
   EXPECT_TRUE(child(0)->GetVisible());
-  EXPECT_EQ(child(0)->GetPreferredSize(), child(0)->size());
+  EXPECT_EQ(child(0)->GetPreferredSize({}), child(0)->size());
   EXPECT_TRUE(child(1)->GetVisible());
-  EXPECT_EQ(child(1)->GetPreferredSize(), child(1)->size());
+  EXPECT_EQ(child(1)->GetPreferredSize({}), child(1)->size());
   EXPECT_TRUE(child(2)->GetVisible());
-  EXPECT_EQ(child(2)->GetPreferredSize(), child(2)->size());
+  EXPECT_EQ(child(2)->GetPreferredSize({}), child(2)->size());
 }
 
 TEST_F(LayoutManagerBaseManagerTest, ViewAdded) {
@@ -561,16 +561,16 @@ TEST_F(LayoutManagerBaseManagerTest, ViewAdded) {
   host_view()->SetSize({50, 50});
 
   EXPECT_TRUE(child(0)->GetVisible());
-  EXPECT_EQ(child(0)->GetPreferredSize(), child(0)->size());
+  EXPECT_EQ(child(0)->GetPreferredSize({}), child(0)->size());
   EXPECT_TRUE(child(1)->GetVisible());
-  EXPECT_EQ(child(1)->GetPreferredSize(), child(1)->size());
+  EXPECT_EQ(child(1)->GetPreferredSize({}), child(1)->size());
 
   // Add a new view and verify it is being laid out.
   View* new_view = AddChildView(kSquarishSize);
   test::RunScheduledLayout(host_view());
 
   EXPECT_TRUE(new_view->GetVisible());
-  EXPECT_EQ(new_view->GetPreferredSize(), new_view->size());
+  EXPECT_EQ(new_view->GetPreferredSize({}), new_view->size());
 }
 
 TEST_F(LayoutManagerBaseManagerTest, ViewAdded_NotVisible) {
@@ -581,9 +581,9 @@ TEST_F(LayoutManagerBaseManagerTest, ViewAdded_NotVisible) {
   host_view()->SetSize({50, 50});
 
   EXPECT_TRUE(child(0)->GetVisible());
-  EXPECT_EQ(child(0)->GetPreferredSize(), child(0)->size());
+  EXPECT_EQ(child(0)->GetPreferredSize({}), child(0)->size());
   EXPECT_TRUE(child(1)->GetVisible());
-  EXPECT_EQ(child(1)->GetPreferredSize(), child(1)->size());
+  EXPECT_EQ(child(1)->GetPreferredSize({}), child(1)->size());
 
   // Add a new view that is not visible and ensure that the layout manager
   // doesn't touch it during layout.
@@ -604,11 +604,11 @@ TEST_F(LayoutManagerBaseManagerTest, ViewRemoved) {
   host_view()->SetSize({50, 50});
 
   EXPECT_TRUE(child(0)->GetVisible());
-  EXPECT_EQ(child(0)->GetPreferredSize(), child(0)->size());
+  EXPECT_EQ(child(0)->GetPreferredSize({}), child(0)->size());
   EXPECT_TRUE(child(1)->GetVisible());
-  EXPECT_EQ(child(1)->GetPreferredSize(), child(1)->size());
+  EXPECT_EQ(child(1)->GetPreferredSize({}), child(1)->size());
   EXPECT_TRUE(child(2)->GetVisible());
-  EXPECT_EQ(child(2)->GetPreferredSize(), child(2)->size());
+  EXPECT_EQ(child(2)->GetPreferredSize({}), child(2)->size());
 
   std::unique_ptr<View> owned_child_view =
       host_view()->RemoveChildViewT(child_view);
@@ -616,9 +616,9 @@ TEST_F(LayoutManagerBaseManagerTest, ViewRemoved) {
   test::RunScheduledLayout(host_view());
 
   EXPECT_TRUE(child(0)->GetVisible());
-  EXPECT_EQ(child(0)->GetPreferredSize(), child(0)->size());
+  EXPECT_EQ(child(0)->GetPreferredSize({}), child(0)->size());
   EXPECT_TRUE(child(1)->GetVisible());
-  EXPECT_EQ(child(1)->GetPreferredSize(), child(1)->size());
+  EXPECT_EQ(child(1)->GetPreferredSize({}), child(1)->size());
 
   EXPECT_TRUE(owned_child_view->GetVisible());
   EXPECT_EQ(kLargeSize, owned_child_view->size());

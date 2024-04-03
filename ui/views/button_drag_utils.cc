@@ -106,7 +106,7 @@ void SetDragImage(const GURL& url,
                           ui::ImageModel::FromImageSkia(icon));
   }
 
-  gfx::Size size(button->GetPreferredSize());
+  gfx::Size size(button->GetPreferredSize({}));
   // drag_widget's size must be set to show the drag image in RTL.
   // However, on Windows, calling Widget::SetSize() resets
   // the LabelButton's bounds via OnNativeWidgetSizeChanged().

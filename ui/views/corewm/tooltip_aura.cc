@@ -225,7 +225,7 @@ void TooltipAura::Update(aura::Window* window,
   new_tooltip_view->SetMaxWidth(GetMaxWidth(anchor_point));
   new_tooltip_view->SetText(tooltip_text);
   ui::OwnedWindowAnchor anchor;
-  auto bounds = GetTooltipBounds(new_tooltip_view->GetPreferredSize(),
+  auto bounds = GetTooltipBounds(new_tooltip_view->GetPreferredSize({}),
                                  anchor_point, trigger, &anchor);
   CreateTooltipWidget(bounds, anchor);
   widget_->SetTooltipView(std::move(new_tooltip_view));

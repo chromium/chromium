@@ -235,14 +235,14 @@ TEST_F(BoxLayoutTest, EmptyPreferredSize) {
     // During vertical layout, due to stretching caused by vertical axis
     // alignment, the width of v1 is 10 instead of 0.
     if (orientation == BoxLayout::Orientation::kHorizontal) {
-      EXPECT_EQ(v1->GetPreferredSize().width(), v1->bounds().width()) << i;
+      EXPECT_EQ(v1->GetPreferredSize({}).width(), v1->bounds().width()) << i;
       EXPECT_EQ(host_->bounds().height(), v1->bounds().height()) << i;
     } else {
       EXPECT_EQ(host_->bounds().width(), v1->bounds().width()) << i;
-      EXPECT_EQ(v1->GetPreferredSize().height(), v1->bounds().height()) << i;
+      EXPECT_EQ(v1->GetPreferredSize({}).height(), v1->bounds().height()) << i;
     }
-    EXPECT_EQ(v2->GetPreferredSize().width(), v2->bounds().width()) << i;
-    EXPECT_EQ(v2->GetPreferredSize().height(), v2->bounds().height()) << i;
+    EXPECT_EQ(v2->GetPreferredSize({}).width(), v2->bounds().width()) << i;
+    EXPECT_EQ(v2->GetPreferredSize({}).height(), v2->bounds().height()) << i;
   }
 }
 

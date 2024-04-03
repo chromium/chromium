@@ -34,7 +34,7 @@ gfx::Size LayoutManager::GetMinimumSize(const View* host) const {
   // to call GetPreferredSize() on the host view instead. The default
   // views::View behavior will be to call GetPreferredSize() on this layout
   // manager, so the fallback behavior in all other cases is as expected.
-  return host->GetPreferredSize();
+  return host->GetPreferredSize({});
 }
 
 int LayoutManager::GetPreferredHeightForWidth(const View* host,

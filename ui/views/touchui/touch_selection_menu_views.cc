@@ -97,7 +97,7 @@ void TouchSelectionMenuViews::ShowMenu(const gfx::Rect& anchor_rect,
   // show the menu and adjust anchor rect properly if needed, just in case the
   // menu is needed to be shown under the selection.
   gfx::Rect adjusted_anchor_rect(anchor_rect);
-  int menu_width = GetPreferredSize().width();
+  int menu_width = GetPreferredSize({}).width();
   // TODO(mfomitchev): This assumes that the handles are center-aligned to the
   // |achor_rect| edges, which is not true. We should fix this, perhaps by
   // passing down the cumulative width occupied by the handles within

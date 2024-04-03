@@ -925,7 +925,7 @@ gfx::Rect BubbleDialogDelegate::GetBubbleBounds() {
   gfx::Rect anchor_rect = GetAnchorRect();
   bool has_anchor = GetAnchorView() || anchor_rect != gfx::Rect();
   return GetBubbleFrameView()->GetUpdatedWindowBounds(
-      anchor_rect, arrow(), GetWidget()->client_view()->GetPreferredSize(),
+      anchor_rect, arrow(), GetWidget()->client_view()->GetPreferredSize({}),
       adjust_if_offscreen_ && !anchor_minimized && has_anchor);
 }
 

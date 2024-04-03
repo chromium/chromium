@@ -487,7 +487,7 @@ std::optional<double> BubbleFrameView::GetProgress() const {
 
 gfx::Size BubbleFrameView::CalculatePreferredSize() const {
   // Get the preferred size of the client area.
-  gfx::Size client_size = GetWidget()->client_view()->GetPreferredSize();
+  gfx::Size client_size = GetWidget()->client_view()->GetPreferredSize({});
   // Expand it to include the bubble border and space for the arrow.
   return GetWindowBoundsForClientBounds(gfx::Rect(client_size)).size();
 }
@@ -519,7 +519,7 @@ gfx::Size BubbleFrameView::GetMaximumSize() const {
 #endif  // BUILDFLAG(IS_MAC)
   // Non-dialog bubbles should be non-resizable, so its max size is its
   // preferred size.
-  return GetPreferredSize();
+  return GetPreferredSize({});
 #endif
 }
 
@@ -578,7 +578,7 @@ void BubbleFrameView::Layout(PassKey) {
   }
 
   // Lay out the title.
-  gfx::Size title_icon_pref_size(title_icon_->GetPreferredSize());
+  gfx::Size title_icon_pref_size(title_icon_->GetPreferredSize({}));
   const int title_icon_padding =
       title_icon_pref_size.width() > 0 ? title_margins_.left() : 0;
   const int title_label_x = bounds.x() + title_icon_pref_size.width() +
@@ -614,8 +614,8 @@ void BubbleFrameView::Layout(PassKey) {
   title_icon_->SetBounds(bounds.x(), bounds.y(), title_icon_pref_size.width(),
                          title_height);
 
-  main_image_->SetBounds(0, 0, main_image_->GetPreferredSize().width(),
-                         main_image_->GetPreferredSize().height());
+  main_image_->SetBounds(0, 0, main_image_->GetPreferredSize({}).width(),
+                         main_image_->GetPreferredSize({}).height());
 
   // Lay out the footnote.
   // Only account for footnote_container_'s height if it's visible, because
@@ -1056,7 +1056,7 @@ gfx::Size BubbleFrameView::GetFrameSizeForClientSize(
 
   if (main_image_->GetVisible()) {
     size.set_height(
-        std::max(size.height(), main_image_->GetPreferredSize().height()));
+        std::max(size.height(), main_image_->GetPreferredSize({}).height()));
   }
 
   return size;
@@ -1066,8 +1066,8 @@ bool BubbleFrameView::HasTitle() const {
   return (custom_title_ != nullptr &&
           GetWidget()->widget_delegate()->ShouldShowWindowTitle()) ||
          (default_title_ != nullptr &&
-          default_title_->GetPreferredSize().height() > 0) ||
-         title_icon_->GetPreferredSize().height() > 0;
+          default_title_->GetHeightForWidth(default_title_->width()) > 0) ||
+         title_icon_->GetPreferredSize({}).height() > 0;
 }
 
 BubbleFrameView::ButtonsPositioning BubbleFrameView::GetButtonsPositioning()
@@ -1106,7 +1106,7 @@ gfx::Insets BubbleFrameView::GetTitleLabelInsetsFromFrame() const {
   }
 
   insets_right = std::max(insets_right, title_margins_.right());
-  const gfx::Size title_icon_pref_size = title_icon_->GetPreferredSize();
+  const gfx::Size title_icon_pref_size = title_icon_->GetPreferredSize({});
   const int title_icon_padding =
       title_icon_pref_size.width() > 0 ? title_margins_.left() : 0;
   const int insets_left = GetMainImageLeftInsets() + title_margins_.left() +
@@ -1134,7 +1134,7 @@ gfx::Insets BubbleFrameView::GetClientInsetsForFrameWidth(
                              GetMainImageLeftInsets(), 0, 0);
   }
 
-  const int icon_height = title_icon_->GetPreferredSize().height();
+  const int icon_height = title_icon_->GetPreferredSize({}).height();
   const int label_height = title_container_->GetHeightForWidth(
       frame_width - GetTitleLabelInsetsFromFrame().width());
   const int title_height =
@@ -1165,7 +1165,7 @@ int BubbleFrameView::GetMainImageLeftInsets() const {
   if (!main_image_->GetVisible()) {
     return 0;
   }
-  return main_image_->GetPreferredSize().width() -
+  return main_image_->GetPreferredSize({}).width() -
          main_image_->GetBorder()->GetInsets().right();
 }
 

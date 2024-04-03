@@ -170,7 +170,7 @@ class CheckboxControl : public Checkbox {
     // LabelButton::Layout().
     image_container_view()->SetBorder(CreateEmptyBorder(gfx::Insets::TLBR(
         (label_line_height_ -
-         image_container_view()->GetPreferredSize().height()) /
+         image_container_view()->GetPreferredSize({}).height()) /
             2,
         0, 0, 0)));
   }
@@ -224,7 +224,7 @@ class LayoutConsensusGroup {
     gfx::Size size;
     for (View* child : children_) {
       DCHECK_EQ(1u, child->children().size());
-      size.SetToMax(child->children().front()->GetPreferredSize());
+      size.SetToMax(child->children().front()->GetPreferredSize({}));
     }
     return size;
   }
@@ -259,7 +259,7 @@ class LayoutConsensusView : public View {
   gfx::Size CalculatePreferredSize() const override {
     const gfx::Size group_preferred_size = group_->GetMaxPreferredSize();
     DCHECK_EQ(1u, children().size());
-    const gfx::Size child_preferred_size = children()[0]->GetPreferredSize();
+    const gfx::Size child_preferred_size = children()[0]->GetPreferredSize({});
     // TODO(pbos): This uses the max width, but could be configurable to use
     // either direction.
     return gfx::Size(group_preferred_size.width(),

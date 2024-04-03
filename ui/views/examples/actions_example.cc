@@ -225,7 +225,7 @@ ProposedLayout FlowLayout::CalculateProposedLayout(
   int max_height = 0;
   for (views::View* view : host_view()->children()) {
     bool view_visible = view->GetVisible();
-    gfx::Size preferred_size = view->GetPreferredSize();
+    gfx::Size preferred_size = view->GetPreferredSize(size_bounds);
     if (view_visible) {
       max_height = std::max(max_height, preferred_size.height());
       if (x > 0 && (x + preferred_size.width() > size_bounds.width())) {

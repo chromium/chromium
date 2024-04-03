@@ -832,7 +832,7 @@ TEST_F(BubbleFrameViewTest,
 TEST_F(BubbleFrameViewTest, GetPreferredSize) {
   // Test border/insets.
   TestBubbleFrameView frame(this);
-  gfx::Rect preferred_rect(frame.GetPreferredSize());
+  gfx::Rect preferred_rect(frame.GetPreferredSize({}));
   // Expect that a border has been added to the preferred size.
   preferred_rect.Inset(frame.GetBorderInsets());
 
@@ -846,23 +846,23 @@ TEST_F(BubbleFrameViewTest, GetPreferredSizeWithFootnote) {
   TestBubbleFrameView frame(this);
 
   constexpr int kFootnoteHeight = 20;
-  const gfx::Size no_footnote_size = frame.GetPreferredSize();
+  const gfx::Size no_footnote_size = frame.GetPreferredSize({});
   std::unique_ptr<View> footnote =
       std::make_unique<StaticSizedView>(gfx::Size(10, kFootnoteHeight));
   footnote->SetVisible(false);
   View* footnote_dummy_view = footnote.get();
   frame.SetFootnoteView(std::move(footnote));
-  EXPECT_EQ(no_footnote_size, frame.GetPreferredSize());  // No change.
+  EXPECT_EQ(no_footnote_size, frame.GetPreferredSize({}));  // No change.
 
   footnote_dummy_view->SetVisible(true);
   gfx::Size with_footnote_size = no_footnote_size;
   constexpr int kFootnoteTopBorderThickness = 1;
   with_footnote_size.Enlarge(0, kFootnoteHeight + kFootnoteTopBorderThickness +
                                     frame.GetContentMargins().height());
-  EXPECT_EQ(with_footnote_size, frame.GetPreferredSize());
+  EXPECT_EQ(with_footnote_size, frame.GetPreferredSize({}));
 
   footnote_dummy_view->SetVisible(false);
-  EXPECT_EQ(no_footnote_size, frame.GetPreferredSize());
+  EXPECT_EQ(no_footnote_size, frame.GetPreferredSize({}));
 }
 
 TEST_F(BubbleFrameViewTest, GetMinimumSize) {
@@ -897,21 +897,21 @@ TEST_F(BubbleFrameViewTest, LayoutWithHeader) {
   TestBubbleFrameView frame(this);
 
   constexpr int kHeaderHeight = 20;
-  const gfx::Size no_header_size = frame.GetPreferredSize();
+  const gfx::Size no_header_size = frame.GetPreferredSize({});
   std::unique_ptr<View> header =
       std::make_unique<StaticSizedView>(gfx::Size(10, kHeaderHeight));
   header->SetVisible(false);
   View* header_raw_pointer = header.get();
   frame.SetHeaderView(std::move(header));
-  EXPECT_EQ(no_header_size, frame.GetPreferredSize());  // No change.
+  EXPECT_EQ(no_header_size, frame.GetPreferredSize({}));  // No change.
 
   header_raw_pointer->SetVisible(true);
   gfx::Size with_header_size = no_header_size;
   with_header_size.Enlarge(0, kHeaderHeight);
-  EXPECT_EQ(with_header_size, frame.GetPreferredSize());
+  EXPECT_EQ(with_header_size, frame.GetPreferredSize({}));
 
   header_raw_pointer->SetVisible(false);
-  EXPECT_EQ(no_header_size, frame.GetPreferredSize());
+  EXPECT_EQ(no_header_size, frame.GetPreferredSize({}));
 }
 
 TEST_F(BubbleFrameViewTest, LayoutWithHeaderAndCloseButton) {
@@ -1063,7 +1063,7 @@ TEST_F(BubbleFrameViewTest, WidthSnaps) {
     TestWidthSnapDelegate* const delegate =
         new TestWidthSnapDelegate(&anchor, true);
     WidgetAutoclosePtr widget(delegate->GetWidget());
-    EXPECT_EQ(delegate->GetPreferredSize().width(),
+    EXPECT_EQ(delegate->GetPreferredSize({}).width(),
               delegate->GetWidget()->GetWindowBoundsInScreen().width());
   }
 
@@ -1085,7 +1085,7 @@ TEST_F(BubbleFrameViewTest, WidthSnaps) {
     TestWidthSnapDelegate* const delegate =
         new TestWidthSnapDelegate(&anchor, false);
     WidgetAutoclosePtr widget(delegate->GetWidget());
-    EXPECT_EQ(delegate->GetPreferredSize().width(),
+    EXPECT_EQ(delegate->GetPreferredSize({}).width(),
               delegate->GetWidget()->GetWindowBoundsInScreen().width());
   }
 }
@@ -1108,13 +1108,13 @@ TEST_F(BubbleFrameViewTest, LayoutEdgeCases) {
   // Even though the bubble has default margins, the dialog view should have
   // been given its preferred size.
   EXPECT_FALSE(delegate->margins().IsEmpty());
-  EXPECT_EQ(delegate->size(), delegate->GetPreferredSize());
+  EXPECT_EQ(delegate->size(), delegate->GetPreferredSize({}));
 
   // Starting with a short title.
   std::u16string title(1, 'i');
   delegate->ChangeTitle(title);
   const int min_bubble_height = bubble->GetWindowBoundsInScreen().height();
-  EXPECT_LT(delegate->GetPreferredSize().height(), min_bubble_height);
+  EXPECT_LT(delegate->GetPreferredSize({}).height(), min_bubble_height);
 
   // Grow the title incrementally until word wrap is required. There should
   // never be a point where the BubbleFrameView over- or under-estimates the
@@ -1125,7 +1125,7 @@ TEST_F(BubbleFrameViewTest, LayoutEdgeCases) {
     title += ' ';
     title += 'i';
     delegate->ChangeTitle(title);
-    EXPECT_EQ(delegate->GetPreferredSize(), delegate->size()) << title;
+    EXPECT_EQ(delegate->GetPreferredSize({}), delegate->size()) << title;
   }
 
   // Sanity check that something interesting happened. The bubble should have
@@ -1151,8 +1151,8 @@ TEST_F(BubbleFrameViewTest, LayoutEdgeCases) {
   EXPECT_EQ(300, bubble->GetWindowBoundsInScreen().width());
 
   // Now we are allowed to diverge from the client view width, but not height.
-  EXPECT_EQ(delegate->GetPreferredSize().height(), delegate->height());
-  EXPECT_LT(delegate->GetPreferredSize().width(), delegate->width());
+  EXPECT_EQ(delegate->GetPreferredSize({}).height(), delegate->height());
+  EXPECT_LT(delegate->GetPreferredSize({}).width(), delegate->width());
   EXPECT_GT(300, delegate->width());  // Greater, since there are margins.
 
   const gfx::Size snapped_size = delegate->size();
@@ -1246,13 +1246,13 @@ TEST_F(BubbleFrameViewTest, LayoutSubtitleEdgeCases) {
   // Even though the bubble has default margins, the dialog view should have
   // been given its preferred size.
   EXPECT_FALSE(delegate->margins().IsEmpty());
-  EXPECT_EQ(delegate->size(), delegate->GetPreferredSize());
+  EXPECT_EQ(delegate->size(), delegate->GetPreferredSize({}));
 
   // Add title to bubble frame view.
   delegate->ChangeTitle(u"This is a title");
 
   int min_bubble_height = bubble->GetWindowBoundsInScreen().height();
-  EXPECT_LT(delegate->GetPreferredSize().height(), min_bubble_height);
+  EXPECT_LT(delegate->GetPreferredSize({}).height(), min_bubble_height);
 
   // Add a short subtitle to guarantee a one-line addition.
   // Line height can vary depending on the platform so check
@@ -1345,7 +1345,7 @@ TEST_F(BubbleFrameViewTest, NoElideTitle) {
   // very narrow.
   EXPECT_EQ(gfx::ELIDE_TAIL, title_label->GetElideBehavior());
   EXPECT_TRUE(title_label->GetMultiLine());
-  EXPECT_GT(empty_bubble_width, title_label->size().width());
+  EXPECT_GT(empty_bubble_width, title_label->width());
   EXPECT_EQ(empty_bubble_width, bubble->GetClientAreaBoundsInScreen().width());
 
   // Set the title to a non-eliding label.
@@ -1353,16 +1353,16 @@ TEST_F(BubbleFrameViewTest, NoElideTitle) {
   title_label->SetMultiLine(false);
 
   // The title/bubble should now be bigger than in multiline tail-eliding mode.
-  EXPECT_LT(empty_bubble_width, title_label->size().width());
+  EXPECT_LT(empty_bubble_width, title_label->width());
   EXPECT_LT(empty_bubble_width, bubble->GetClientAreaBoundsInScreen().width());
 
   // Make sure the bubble is wide enough to fit the title's full size. Frame
   // sizing is done off the title label's minimum size. But since that label is
   // set to NO_ELIDE, the minimum size should match the preferred size.
   EXPECT_GE(bubble->GetClientAreaBoundsInScreen().width(),
-            title_label->GetPreferredSize().width());
-  EXPECT_LE(title_label->GetPreferredSize().width(),
-            title_label->size().width());
+            title_label->GetPreferredSize({title_label->width(), {}}).width());
+  EXPECT_LE(title_label->GetPreferredSize({title_label->width(), {}}).width(),
+            title_label->width());
   EXPECT_EQ(title, title_label->GetDisplayTextForTesting());
 }
 

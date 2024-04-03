@@ -266,7 +266,7 @@ void DialogExample::ResizeDialog() {
   DCHECK(last_dialog_);
   Widget* widget = last_dialog_->GetWidget();
   gfx::Rect preferred_bounds(widget->GetRestoredBounds());
-  preferred_bounds.set_size(widget->non_client_view()->GetPreferredSize());
+  preferred_bounds.set_size(widget->non_client_view()->GetPreferredSize({}));
 
   // Q: Do we need NonClientFrameView::GetWindowBoundsForClientBounds() here?
   // A: When DialogCientView properly feeds back sizes, we do not.
