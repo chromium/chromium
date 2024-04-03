@@ -3985,6 +3985,8 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_G_ICON_DESCRIPTION" desc="Description for Safe Browsing enhanced protection G icon.">
         When you're signed in, protects you across Google services.
       </message>
+      <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_INFOBAR_BUTTON_TEXT" desc="The Enhanced Safe Browsing infobar promo button's text. When the button is clicked, the user is navigated to the Safe Browsing settings page.">Turn on</message>
+      <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_INFOBAR_TITLE" desc="The Enhanced Safe Browsing infobar promo's title.">Get more security</message>
       <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_KEY_ICON_DESCRIPTION" desc="Description for Safe Browsing enhanced protection key icon.">
         Warns you if you use a password that has been compromised in a data breach.
       </message>

@@ -765,6 +765,7 @@ For more settings that use data to improve your Chromium experience, go to <ph n
       <message name="IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_BULLET_TWO" desc="Second bullet point under the Safe Browsing standard protection mode.">
         Checks URLs with a list of unsafe sites stored in Chromium. If a site tries to steal your password, or when you download a harmful file, Chromium may also send URLs, including bits of page content, to Safe Browsing.
       </message>
+      <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_INFOBAR_DESCRIPTION" desc="The Enhanced Safe Browsing infobar promo's description.">Chromium recommends enhanced protection</message>
       <message name="IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_LEAK_CHECK_FRIENDLIER_SUMMARY" desc="Friendlier summary for the switch toggling whether Chrome should check that entered credentials have been part of a leak.">
         When you use a password, Chromium warns you if it has been published online. When doing this, your passwords and usernames are encrypted, so they can’t be read by anyone, including Google.
       </message>
