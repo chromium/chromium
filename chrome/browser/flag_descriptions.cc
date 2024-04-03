@@ -5452,6 +5452,11 @@ const char kAmbientModeThrottleAnimationDescription[] =
     "same user-visible smoothness. This flag applies to all ambient Lottie "
     "animations that have throttling specified in the file.";
 
+const char kApnPoliciesName[] = "APN Policies";
+const char kApnPoliciesDescription[] =
+    "Enables the ChromeOS APN Policies, which gives admins the ability to set "
+    "APN policies for managed eSIM networks and pSIMs.";
+
 const char kApnRevampName[] = "APN Revamp";
 const char kApnRevampDescription[] =
     "Enables the ChromeOS APN Revamp, which updates cellular network APN "

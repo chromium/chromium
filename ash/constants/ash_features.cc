@@ -121,6 +121,9 @@ BASE_FEATURE(kAmbientModeManagedScreensaver,
              "ChromeOSAmbientModeManagedScreensaver",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Adds Managed APN Policies support.
+BASE_FEATURE(kApnPolicies, "ApnPolicies", base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kApnRevamp, "ApnRevamp", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Adds Borealis support to Almanac app install URIs.
@@ -3193,6 +3196,10 @@ bool IsAmbientModePhotoPreviewEnabled() {
 
 bool IsAmbientModeThrottleAnimationEnabled() {
   return base::FeatureList::IsEnabled(kAmbientModeThrottleAnimation);
+}
+
+bool IsApnPoliciesEnabled() {
+  return base::FeatureList::IsEnabled(kApnPolicies);
 }
 
 bool IsApnRevampEnabled() {
