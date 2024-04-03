@@ -929,22 +929,21 @@ specific:
      (DPAPI)](https://msdn.microsoft.com/en-us/library/ms995355.aspx) to bind
      your passwords to your user account and store them on disk encrypted with
      a key only accessible to processes running as the same logged on user.
-*    On macOS, Chrome previously stored credentials directly in the user's
+*    On macOS and iOS, Chrome previously stored credentials directly in the user's
      Keychain, but for technical reasons, it has switched to storing the
      credentials in "Login Data" in the Chrome users profile directory, but
      encrypted on disk with a key that is then stored in the user's Keychain.
-     See [Issue 466638](https://crbug.com/466638) for further explanation.
+     See [Issue 466638](https://crbug.com/466638) and [Issue 520437](https://crbug.com/520437) for further explanation.
 *    On Linux, Chrome previously stored credentials directly in the user's
      Gnome Secret Service or KWallet, but for technical reasons, it has switched to
      storing the credentials in "Login Data" in the Chrome user's profile directory,
      but encrypted on disk with a key that is then stored in the user's Gnome
      Secret Service or KWallet. If there is no available Secret Service or KWallet,
      the data is not encrypted when stored.
-*    On iOS, passwords are currently stored directly in the iOS Keychain and
-     referenced from the rest of the metadata stored in a separate DB. The plan
-     there is to just store them in plain text in the DB, because iOS gives
-     strong guarantees about only Chrome being able to access its storage. See
-     [Issue 520437](https://crbug.com/520437) to follow this migration.
+*    On Android, Chrome doesn't store in the profile anymore, instead it uses Google
+     Play Services to access passwords stored on a device.
+*    On ChromeOS passwords are only obfuscated since all profile data is encrypted
+     by the OS.
 
 <a name="TOC-If-theres-a-way-to-see-stored-passwords-without-entering-a-password--is-this-a-security-bug-"></a>
 ### If there's a way to see stored passwords without entering a password, is this a security bug?
