@@ -163,6 +163,13 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     const parentWidth = toolbar.offsetParent.clientWidth;
     if (toolbar.clientWidth > parentWidth) {
       ReadAnythingToolbarElement.showElement(moreOptionsButton);
+
+      // Ensure the more options menu is visible.
+      const moreOptionsMenu =
+          toolbar.querySelector<HTMLElement>('#moreOptionsMenu');
+      assert(moreOptionsMenu, 'more options menu doesn\'t exist');
+      ReadAnythingToolbarElement.showElement(moreOptionsMenu);
+
       // Hide all the buttons on the toolbar that are in the more options menu
       buttonsOnToolbarToMaybeHide.forEach(btn => {
         ReadAnythingToolbarElement.hideElement(btn as HTMLElement, true);

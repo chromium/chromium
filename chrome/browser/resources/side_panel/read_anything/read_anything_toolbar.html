@@ -233,6 +233,7 @@
       title="$i18n{moreOptionsLabel}"
       aria-haspopup="menu"
       iron-icon="cr:more-vert"
+      hidden
       on-click="onMoreOptionsClick_">
   </cr-icon-button>
 
@@ -243,13 +244,12 @@
        in the more options menu to handle menu positioning, it doesn't
        make sense to lazily render the more options menu. Therefore, this
        menu should just stay as a cr-action-menu, rendered on load.
-       TODO(b/329676284): Ensure the moreOptionsMenu isn't rendered by default
-       via a dom-if or a hidden attribute.
        TODO(b/329676284): Investigate refactor to handle the menu item
        positioning via data binding, so that styling can happen without
        rendering the menu.
        -->
-  <cr-action-menu id="moreOptionsMenu" on-keydown="onToolbarKeyDown_">
+  <cr-action-menu id="moreOptionsMenu" on-keydown="onToolbarKeyDown_"
+        hidden>
     <template is="dom-repeat" items="[[moreOptionsButtons_]]">
       <cr-icon-button
         id="[[item.id]]"
