@@ -3273,6 +3273,12 @@ const char kTabGroupsSaveDescription[] =
     "Enable saving and recalling of tab groups. Right click a tab group to "
     "save it. Recall groups from the bookmarks bar.";
 
+const char kTabGroupsSaveV2Id[] = "tab-groups-save-v2";
+const char kTabGroupsSaveV2Name[] = "Tab Groups Save and Sync V2";
+const char kTabGroupsSaveV2Description[] =
+    "Enables saving and recalling of tab groups but enhanced. Highly "
+    "experimental.";
+
 const char kTabHoverCardImagesName[] = "Tab Hover Card Images";
 const char kTabHoverCardImagesDescription[] =
     "Shows a preview image in tab hover cards, if tab hover cards are enabled.";
