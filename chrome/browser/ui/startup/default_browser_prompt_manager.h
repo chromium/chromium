@@ -30,7 +30,17 @@ class DefaultBrowserPromptManager : public BrowserTabStripTrackerDelegate,
   DefaultBrowserPromptManager& operator=(const DefaultBrowserPromptManager&) =
       delete;
 
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnShowAppMenuPromptChanged() = 0;
+  };
+
   static DefaultBrowserPromptManager* GetInstance();
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
+  bool get_show_app_menu_prompt() const { return show_app_menu_prompt_; }
 
   // Enrolls this client with a synthetic field trial based on the Finch params.
   // Should be called when the default browser prompt is potentially shown, then
@@ -47,7 +57,6 @@ class DefaultBrowserPromptManager : public BrowserTabStripTrackerDelegate,
   ~DefaultBrowserPromptManager() override;
 
   void MaybeShowPrompt();
-  void MaybeShowPromptForTesting();
 
   void CreateInfoBarForWebContents(content::WebContents* contents,
                                    Profile* profile);
@@ -69,8 +78,12 @@ class DefaultBrowserPromptManager : public BrowserTabStripTrackerDelegate,
   void OnAccept() override;
   void OnDismiss() override;
 
+  void MaybeShowPromptForTesting();
+
   bool ShouldShowInfoBarPromptForTesting(
       PrefService* local_state = g_browser_process->local_state());
+
+  void SetShowAppMenuPromptVisibilityForTesting(bool show);
 
  private:
   // Reports to the launch study for the default browser prompt synthetic trial.
@@ -79,11 +92,16 @@ class DefaultBrowserPromptManager : public BrowserTabStripTrackerDelegate,
   bool ShouldShowInfoBarPrompt(
       PrefService* local_state = g_browser_process->local_state());
 
+  void SetShowAppMenuPromptVisibility(bool show);
+
   std::unique_ptr<BrowserTabStripTracker> browser_tab_strip_tracker_;
 
   std::map<content::WebContents*, infobars::InfoBar*> infobars_;
 
-  bool user_initiated_close_pending_ = false;
+  bool user_initiated_info_bar_close_pending_ = false;
+
+  bool show_app_menu_prompt_ = false;
+  base::ObserverList<Observer> observers_;
 };
 
 #endif  // CHROME_BROWSER_UI_STARTUP_DEFAULT_BROWSER_PROMPT_MANAGER_H_

@@ -28,6 +28,13 @@ DefaultBrowserPromptManager* DefaultBrowserPromptManager::GetInstance() {
   return base::Singleton<DefaultBrowserPromptManager>::get();
 }
 
+void DefaultBrowserPromptManager::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+void DefaultBrowserPromptManager::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 // static
 void DefaultBrowserPromptManager::MaybeJoinDefaultBrowserPromptCohort() {
   PrefService* local_state = g_browser_process->local_state();
@@ -75,10 +82,6 @@ void DefaultBrowserPromptManager::MaybeShowPrompt() {
         std::make_unique<BrowserTabStripTracker>(this, this);
     browser_tab_strip_tracker_->Init();
   }
-}
-
-void DefaultBrowserPromptManager::MaybeShowPromptForTesting() {
-  MaybeShowPrompt();
 }
 
 void DefaultBrowserPromptManager::CreateInfoBarForWebContents(
@@ -142,9 +145,9 @@ void DefaultBrowserPromptManager::OnInfoBarRemoved(infobars::InfoBar* infobar,
   static_cast<ConfirmInfoBarDelegate*>(infobar->delegate())
       ->RemoveObserver(this);
 
-  if (user_initiated_close_pending_) {
+  if (user_initiated_info_bar_close_pending_) {
     CloseAllInfoBars();
-    user_initiated_close_pending_ = false;
+    user_initiated_info_bar_close_pending_ = false;
   }
 }
 
@@ -153,16 +156,25 @@ void DefaultBrowserPromptManager::OnAccept() {
                               g_browser_process->local_state()->GetInteger(
                                   prefs::kDefaultBrowserDeclinedCount) +
                                   1);
-  user_initiated_close_pending_ = true;
+  user_initiated_info_bar_close_pending_ = true;
 }
 
 void DefaultBrowserPromptManager::OnDismiss() {
-  user_initiated_close_pending_ = true;
+  user_initiated_info_bar_close_pending_ = true;
+}
+
+void DefaultBrowserPromptManager::MaybeShowPromptForTesting() {
+  MaybeShowPrompt();
 }
 
 bool DefaultBrowserPromptManager::ShouldShowInfoBarPromptForTesting(
     PrefService* local_state) {
   return ShouldShowInfoBarPrompt(local_state);
+}
+
+void DefaultBrowserPromptManager::SetShowAppMenuPromptVisibilityForTesting(
+    bool show) {
+  SetShowAppMenuPromptVisibility(show);
 }
 
 // static
@@ -205,4 +217,14 @@ bool DefaultBrowserPromptManager::ShouldShowInfoBarPrompt(
       features::kRepromptDuration.Get() *
       std::pow(features::kRepromptDurationMultiplier.Get(), declined_count - 1);
   return (base::Time::Now() - last_declined_time) > reprompt_duration;
+}
+
+void DefaultBrowserPromptManager::SetShowAppMenuPromptVisibility(bool show) {
+  if (show == show_app_menu_prompt_) {
+    return;
+  }
+  show_app_menu_prompt_ = show;
+  for (auto& obs : observers_) {
+    obs.OnShowAppMenuPromptChanged();
+  }
 }

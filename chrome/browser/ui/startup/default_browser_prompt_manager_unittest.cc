@@ -16,14 +16,35 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-class DefaultBrowserPromptManagerTest : public testing::Test {
+class DefaultBrowserPromptManagerTest : public testing::Test,
+                                        DefaultBrowserPromptManager::Observer {
  protected:
   void SetUp() override {
+    auto* service = DefaultBrowserPromptManager::GetInstance();
+    service->SetShowAppMenuPromptVisibilityForTesting(false);
+    service->AddObserver(this);
+    ResetHasAppMenuPromptChanged();
+
     local_state_.registry()->RegisterTimePref(
         prefs::kDefaultBrowserLastDeclinedTime, base::Time());
     local_state_.registry()->RegisterIntegerPref(
         prefs::kDefaultBrowserDeclinedCount, 0);
   }
+
+  void TearDown() override {
+    DefaultBrowserPromptManager::GetInstance()->RemoveObserver(this);
+  }
+
+  // DefaultBrowserPromptManager::Observer
+  void OnShowAppMenuPromptChanged() override {
+    has_app_menu_prompt_changed_ = true;
+  }
+
+  bool get_has_app_menu_prompt_changed() const {
+    return has_app_menu_prompt_changed_;
+  }
+
+  void ResetHasAppMenuPromptChanged() { has_app_menu_prompt_changed_ = false; }
 
   void EnableDefaultBrowserPromptRefreshFeatureWithParams(
       std::map<std::string, std::string> params) {
@@ -60,7 +81,26 @@ class DefaultBrowserPromptManagerTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList scoped_feature_list;
   TestingPrefServiceSimple local_state_;
+  bool has_app_menu_prompt_changed_ = false;
 };
+
+TEST_F(DefaultBrowserPromptManagerTest, NotifiesObservers) {
+  auto* service = DefaultBrowserPromptManager::GetInstance();
+  EXPECT_FALSE(get_has_app_menu_prompt_changed());
+
+  service->SetShowAppMenuPromptVisibilityForTesting(true);
+  EXPECT_TRUE(get_has_app_menu_prompt_changed());
+}
+
+TEST_F(DefaultBrowserPromptManagerTest, DoesNotNotifyObserversWhenValueIsSame) {
+  auto* service = DefaultBrowserPromptManager::GetInstance();
+  service->SetShowAppMenuPromptVisibilityForTesting(true);
+  EXPECT_TRUE(get_has_app_menu_prompt_changed());
+
+  ResetHasAppMenuPromptChanged();
+  service->SetShowAppMenuPromptVisibilityForTesting(true);
+  EXPECT_FALSE(get_has_app_menu_prompt_changed());
+}
 
 TEST_F(DefaultBrowserPromptManagerTest, MaxPromptCount) {
   // If max prompt count is negative, do not limit the number of times the
