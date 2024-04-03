@@ -38,7 +38,7 @@ BASE_FEATURE(kForgotPasswordFormSupport,
 // least one credential saved in their password manager.
 BASE_FEATURE(kIOSPasswordBottomSheet,
              "IOSPasswordBottomSheet",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables password bottom sheet to be triggered on autofocus events (on iOS).
 BASE_FEATURE(kIOSPasswordBottomSheetAutofocus,
