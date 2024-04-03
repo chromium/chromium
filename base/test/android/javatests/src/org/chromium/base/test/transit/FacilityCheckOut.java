@@ -22,11 +22,13 @@ class FacilityCheckOut extends Transition {
      * Constructor. FacilityCheckOut is instantiated to leave a {@link StationFacility}.
      *
      * @param facility the {@link StationFacility} to leave.
+     * @param options the {@link TransitionOptions}.
      * @param trigger the action that triggers the transition out of the facility. e.g. clicking a
      *     View.
      */
-    FacilityCheckOut(StationFacility facility, @Nullable Trigger trigger) {
-        super(trigger);
+    FacilityCheckOut(
+            StationFacility facility, TransitionOptions options, @Nullable Trigger trigger) {
+        super(options, trigger);
         mFacility = facility;
     }
 
@@ -77,7 +79,7 @@ class FacilityCheckOut extends Transition {
 
     private void waitUntilExit(List<ConditionWaiter.ConditionWaitStatus> transitionConditions) {
         try {
-            ConditionWaiter.waitFor(transitionConditions);
+            ConditionWaiter.waitFor(transitionConditions, mOptions);
         } catch (AssertionError e) {
             throw TravelException.newExitFacilityException(mFacility, e);
         }

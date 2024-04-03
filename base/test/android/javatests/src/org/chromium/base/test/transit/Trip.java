@@ -30,8 +30,12 @@ public class Trip extends Transition {
 
     private static int sLastTripId;
 
-    private Trip(@Nullable TransitStation origin, TransitStation destination, Trigger trigger) {
-        super(trigger);
+    private Trip(
+            @Nullable TransitStation origin,
+            TransitStation destination,
+            TransitionOptions options,
+            Trigger trigger) {
+        super(options, trigger);
         mOrigin = origin;
         mDestination = destination;
         mId = ++sLastTripId;
@@ -52,23 +56,18 @@ public class Trip extends Transition {
      */
     public static <T extends TransitStation> T travelSync(
             @Nullable TransitStation origin, T destination, Trigger trigger) {
-        Trip trip = new Trip(origin, destination, trigger);
+        Trip trip = new Trip(origin, destination, TransitionOptions.DEFAULT, trigger);
         trip.travelSyncInternal();
         return destination;
     }
 
-    /**
-     * Version of #travelSync() with extra Transition conditions.
-     *
-     * @param transitionConditions a list of the extra Conditions to wait for in the Transition
-     */
+    /** Version of #travelSync() with extra TransitionOptions. */
     public static <T extends TransitStation> T travelSync(
             @Nullable TransitStation origin,
             T destination,
-            List<Condition> transitionConditions,
+            TransitionOptions options,
             Trigger trigger) {
-        Trip trip = new Trip(origin, destination, trigger);
-        trip.addTransitionConditions(transitionConditions);
+        Trip trip = new Trip(origin, destination, options, trigger);
         trip.travelSyncInternal();
         return destination;
     }
@@ -108,7 +107,7 @@ public class Trip extends Transition {
         // prints the state of all conditions. The timeout can be reduced when explicitly looking
         // for flakiness due to tight timeouts.
         try {
-            ConditionWaiter.waitFor(mWaitStatuses);
+            ConditionWaiter.waitFor(mWaitStatuses, mOptions);
         } catch (AssertionError e) {
             throw TravelException.newTripException(mOrigin, mDestination, e);
         }

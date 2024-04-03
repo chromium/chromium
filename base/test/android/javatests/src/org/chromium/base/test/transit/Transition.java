@@ -21,24 +21,12 @@ public class Transition {
         void triggerTransition();
     }
 
+    protected final TransitionOptions mOptions;
     @Nullable private final Trigger mTrigger;
 
-    @Nullable private List<Condition> mConditions;
-
-    Transition(@Nullable Trigger trigger) {
+    Transition(TransitionOptions options, @Nullable Trigger trigger) {
+        mOptions = options;
         mTrigger = trigger;
-    }
-
-    /**
-     * Add a |condition| to the Transition that is not in the exit or enter conditions of the states
-     * involved. The condition will be waited in parallel with the exit and enter conditions of the
-     * states.
-     */
-    public void addTransitionConditions(List<Condition> conditions) {
-        if (mConditions == null) {
-            mConditions = new ArrayList<>();
-        }
-        mConditions.addAll(conditions);
     }
 
     protected void triggerTransition() {
@@ -48,10 +36,60 @@ public class Transition {
     }
 
     protected List<Condition> getTransitionConditions() {
-        if (mConditions == null) {
+        if (mOptions.mTransitionConditions == null) {
             return Collections.EMPTY_LIST;
         } else {
-            return mConditions;
+            return mOptions.mTransitionConditions;
+        }
+    }
+
+    /**
+     * @return builder to specify Transition options.
+     *     <p>e.g.: Transition.newOptions().withTimeout(10000L).build()
+     */
+    public static TransitionOptions.Builder newOptions() {
+        return new TransitionOptions().new Builder();
+    }
+
+    /** Convenience method equivalent to newOptions().withTimeout().build(). */
+    public static TransitionOptions timeoutOption(long timeoutMs) {
+        return newOptions().withTimeout(timeoutMs).build();
+    }
+
+    /** Options to configure the Transition. */
+    public static class TransitionOptions {
+
+        static final TransitionOptions DEFAULT = new TransitionOptions();
+        @Nullable List<Condition> mTransitionConditions;
+        long mTimeoutMs;
+
+        private TransitionOptions() {}
+
+        /** Builder for TransitionOptions. Call {@link Transition#newOptions()} to instantiate. */
+        public class Builder {
+            public TransitionOptions build() {
+                return TransitionOptions.this;
+            }
+
+            /**
+             * Add an extra |condition| to the Transition that is not in the exit or enter
+             * conditions of the states involved.
+             */
+            public Builder withCondition(Condition condition) {
+                if (mTransitionConditions == null) {
+                    mTransitionConditions = new ArrayList<>();
+                }
+                mTransitionConditions.add(condition);
+                return this;
+            }
+
+            /**
+             * @param timeoutMs how long to poll for during the transition
+             */
+            public Builder withTimeout(long timeoutMs) {
+                mTimeoutMs = timeoutMs;
+                return this;
+            }
         }
     }
 }

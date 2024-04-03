@@ -12,6 +12,7 @@ import androidx.annotation.IntDef;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
+import org.chromium.base.test.transit.Transition.TransitionOptions;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 
@@ -187,9 +188,11 @@ public class ConditionWaiter {
      * <p>TODO(crbug.com/1489462): Make the timeout configurable per transition.
      *
      * @param conditionStatuses the {@link ConditionWaitStatus}es to wait for.
+     * @param options the {@link TransitionOptions} to configure the polling parameters.
      * @throws AssertionError if not all {@link Condition}s are fulfilled before timing out.
      */
-    public static void waitFor(List<ConditionWaitStatus> conditionStatuses) {
+    public static void waitFor(
+            List<ConditionWaitStatus> conditionStatuses, TransitionOptions options) {
         if (conditionStatuses.isEmpty()) {
             Log.i(TAG, "No conditions to fulfill.");
         }
@@ -215,7 +218,8 @@ public class ConditionWaiter {
                     }
                 };
 
-        CriteriaHelper.pollInstrumentationThread(checker, MAX_TIME_TO_POLL, POLLING_INTERVAL);
+        long timeoutMs = options.mTimeoutMs != 0 ? options.mTimeoutMs : MAX_TIME_TO_POLL;
+        CriteriaHelper.pollInstrumentationThread(checker, timeoutMs, POLLING_INTERVAL);
     }
 
     private static CriteriaNotSatisfiedException buildWaitConditionsException(

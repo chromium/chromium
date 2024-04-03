@@ -16,6 +16,7 @@ import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.StationFacility;
 import org.chromium.base.test.transit.TransitStation;
+import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.transit.Trip;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.util.CallbackHelper;
@@ -355,6 +356,10 @@ public class PageStation extends TransitStation {
                             .getActivityTab()
                             .loadUrl(new LoadUrlParams(url, transitionType));
                 };
-        return Trip.travelSync(this, destination, () -> ThreadUtils.runOnUiThread(r));
+        return Trip.travelSync(
+                this,
+                destination,
+                Transition.timeoutOption(10000),
+                () -> ThreadUtils.runOnUiThread(r));
     }
 }

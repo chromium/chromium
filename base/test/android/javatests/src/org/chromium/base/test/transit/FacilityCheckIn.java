@@ -21,11 +21,13 @@ class FacilityCheckIn extends Transition {
      * Constructor. FacilityCheckIn is instantiated to enter a {@link StationFacility}.
      *
      * @param facility the {@link StationFacility} to enter.
+     * @param options the {@link TransitionOptions}.
      * @param trigger the action that triggers the transition into the facility. e.g. clicking a
      *     View.
      */
-    FacilityCheckIn(StationFacility facility, @Nullable Trigger trigger) {
-        super(trigger);
+    FacilityCheckIn(
+            StationFacility facility, TransitionOptions options, @Nullable Trigger trigger) {
+        super(options, trigger);
         mFacility = facility;
     }
 
@@ -77,7 +79,7 @@ class FacilityCheckIn extends Transition {
 
     private void waitUntilEntry(List<ConditionWaiter.ConditionWaitStatus> transitionConditions) {
         try {
-            ConditionWaiter.waitFor(transitionConditions);
+            ConditionWaiter.waitFor(transitionConditions, mOptions);
         } catch (AssertionError e) {
             throw TravelException.newEnterFacilityException(mFacility, e);
         }
