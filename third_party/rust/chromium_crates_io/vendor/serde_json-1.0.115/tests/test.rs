@@ -2335,6 +2335,8 @@ fn test_raw_value_in_map_key() {
     #[repr(transparent)]
     struct RawMapKey(RawValue);
 
+    #[allow(unknown_lints)]
+    #[allow(non_local_definitions)] // false positive: https://github.com/rust-lang/rust/issues/121621
     impl<'de> Deserialize<'de> for &'de RawMapKey {
         fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
         where

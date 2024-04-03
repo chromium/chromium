@@ -20,7 +20,7 @@ use alloc::string::String;
 use serde::de::Visitor;
 
 /// Trait used by the deserializer for iterating over input. This is manually
-/// "specialized" for iterating over &[u8]. Once feature(specialization) is
+/// "specialized" for iterating over `&[u8]`. Once feature(specialization) is
 /// stable we can use actual specialization.
 ///
 /// This trait is sealed and cannot be implemented for types outside of

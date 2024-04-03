@@ -2,7 +2,7 @@
 
 //! Precalculated large powers for 32-bit limbs.
 
-/// Large powers (&[u32]) for base5 operations.
+/// Large powers (`&[u32]`) for base5 operations.
 const POW5_1: [u32; 1] = [5];
 const POW5_2: [u32; 1] = [25];
 const POW5_3: [u32; 1] = [625];

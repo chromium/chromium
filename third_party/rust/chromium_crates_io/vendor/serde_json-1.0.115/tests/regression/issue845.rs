@@ -60,6 +60,7 @@ where
 #[derive(Deserialize, Debug)]
 pub struct Struct {
     #[serde(deserialize_with = "deserialize_integer_or_string")]
+    #[allow(dead_code)]
     pub i: i64,
 }
 
