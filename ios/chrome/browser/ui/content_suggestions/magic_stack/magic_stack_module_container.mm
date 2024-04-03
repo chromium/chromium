@@ -78,6 +78,7 @@ const CGFloat kSeparatorHeight = 0.5;
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
+    self.maximumContentSizeCategory = UIContentSizeCategoryAccessibilityMedium;
     _magicStackModuleContentsFactory = [[MagicStackModuleContentsFactory alloc] init];
 
     self.contentView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
@@ -95,7 +96,7 @@ const CGFloat kSeparatorHeight = 0.5;
                                        forAxis:UILayoutConstraintAxisVertical];
 
     _title = [[UILabel alloc] init];
-    _title.font = [MagicStackModuleContainer fontForTitle];
+    _title.font = [self fontForTitle];
     _title.textColor = [UIColor colorNamed:kTextPrimaryColor];
     _title.numberOfLines = 1;
     _title.lineBreakMode = NSLineBreakByWordWrapping;
@@ -331,8 +332,8 @@ const CGFloat kSeparatorHeight = 0.5;
 }
 
 // Returns the font for the module title string.
-+ (UIFont*)fontForTitle {
-  return CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightSemibold);
+- (UIFont*)fontForTitle {
+  return CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightSemibold, self);
 }
 
 // Returns the font for the module subtitle string.
@@ -345,6 +346,7 @@ const CGFloat kSeparatorHeight = 0.5;
   switch (config.type) {
     case ContentSuggestionsModuleType::kMostVisited:
     case ContentSuggestionsModuleType::kShortcuts:
+    case ContentSuggestionsModuleType::kCompactedSetUpList:
       _contentStackViewBottomMarginAnchor.constant =
           -kReducedContentBottomInset;
       break;
@@ -376,7 +378,7 @@ const CGFloat kSeparatorHeight = 0.5;
   [super traitCollectionDidChange:previousTraitCollection];
   if (previousTraitCollection.preferredContentSizeCategory !=
       self.traitCollection.preferredContentSizeCategory) {
-    _title.font = [MagicStackModuleContainer fontForTitle];
+    _title.font = [self fontForTitle];
   }
 }
 

@@ -159,6 +159,8 @@ struct ViewConfig {
   [super traitCollectionDidChange:previousTraitCollection];
   if (previousTraitCollection.preferredContentSizeCategory !=
       self.traitCollection.preferredContentSizeCategory) {
+    _description.hidden = self.traitCollection.preferredContentSizeCategory >
+                          UIContentSizeCategoryExtraExtraLarge;
     // Force a layout since the size of text components may have changed.
     [self setNeedsLayout];
     [self layoutIfNeeded];

@@ -121,6 +121,8 @@ NSInteger kFeedSymbolPointSize = 17;
   // The background color will be clear for continuity with the overall NTP
   // gradient view.
   self.view.backgroundColor = [UIColor clearColor];
+  self.view.maximumContentSizeCategory =
+      UIContentSizeCategoryAccessibilityMedium;
 
   self.container = [[UIView alloc] init];
 
@@ -134,18 +136,24 @@ NSInteger kFeedSymbolPointSize = 17;
   [self applyHeaderConstraints];
 }
 
+- (void)viewWillLayoutSubviews {
+  [super viewWillLayoutSubviews];
+
+  if ([self.feedControlDelegate isFollowingFeedAvailable]) {
+    [self updateSegmentedControlFont:self.segmentedControl];
+  } else {
+    UIFont* font = [self fontForTitle];
+    self.titleLabel.font = font;
+  }
+}
+
 #pragma mark - UITraitEnvironment
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
   if (previousTraitCollection.preferredContentSizeCategory !=
       self.traitCollection.preferredContentSizeCategory) {
-    if ([self.feedControlDelegate isFollowingFeedAvailable]) {
-      [self updateSegmentedControlFont:self.segmentedControl];
-    } else {
-      UIFont* font = [self fontForTitle];
-      self.titleLabel.font = font;
-    }
+    [self.view setNeedsLayout];
   }
 }
 
@@ -451,7 +459,8 @@ NSInteger kFeedSymbolPointSize = 17;
 }
 
 - (UIFont*)fontForTitle {
-  return CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightMedium);
+  return CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightMedium,
+                           self.view);
 }
 
 // Configures and returns the dot indicating that there is new content in the

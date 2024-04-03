@@ -38,6 +38,9 @@ void MaybeSetUITextFieldScaledFont(BOOL maybe,
                                    UIFont* font);
 // Creates a dynamically scablable custom font based on the given parameters.
 UIFont* CreateDynamicFont(UIFontTextStyle style, UIFontWeight weight);
+UIFont* CreateDynamicFont(UIFontTextStyle style,
+                          UIFontWeight weight,
+                          id<UITraitEnvironment> environment);
 
 enum CaptureViewOption {
   kNoCaptureOption,      // Equivalent to calling CaptureView without options.

@@ -27,7 +27,7 @@ const CGFloat kSeparatorHeight = 0.5;
     [rowsStackView setContentHuggingPriority:UILayoutPriorityDefaultLow
                                      forAxis:UILayoutConstraintAxisVertical];
     // Ensures that rows have similar height.
-    rowsStackView.distribution = UIStackViewDistributionFillProportionally;
+    rowsStackView.distribution = UIStackViewDistributionEqualCentering;
     NSUInteger index = 0;
     for (UIView* view in views) {
       [rowsStackView addArrangedSubview:view];
