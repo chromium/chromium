@@ -32,6 +32,7 @@
 
 #include "gtest/gtest.h"
 #include "absl/base/config.h"
+#include "absl/meta/type_traits.h"
 
 #if defined(ABSL_HAVE_STD_STRING_VIEW) || defined(__ANDROID__)
 // We don't control the death messaging when using std::string_view.

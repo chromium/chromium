@@ -45,12 +45,6 @@ static_assert(IsOwnerAndNotView<std::string>::value,
               "string is an owner, not a view");
 static_assert(IsOwnerAndNotView<std::wstring>::value,
               "wstring is an owner, not a view");
-#ifdef ABSL_HAVE_STD_STRING_VIEW
-static_assert(!IsOwnerAndNotView<std::string_view>::value,
-              "string_view is a view, not an owner");
-static_assert(!IsOwnerAndNotView<std::wstring_view>::value,
-              "wstring_view is a view, not an owner");
-#endif
 
 template <class T, class U>
 struct simple_pair {

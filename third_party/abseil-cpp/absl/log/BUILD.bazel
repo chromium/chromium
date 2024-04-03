@@ -446,6 +446,7 @@ cc_library(
         "//absl/log:globals",
         "//absl/log:log_entry",
         "//absl/log:scoped_mock_log",
+        "//absl/log/internal:globals",
         "//absl/log/internal:test_actions",
         "//absl/log/internal:test_helpers",
         "//absl/log/internal:test_matchers",

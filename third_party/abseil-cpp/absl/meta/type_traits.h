@@ -630,11 +630,6 @@ template <typename T>
 struct IsView : std::integral_constant<bool, std::is_pointer<T>::value ||
                                                  IsViewImpl<T>::value> {};
 
-#ifdef ABSL_HAVE_STD_STRING_VIEW
-template <typename Char, typename Traits>
-struct IsView<std::basic_string_view<Char, Traits>> : std::true_type {};
-#endif
-
 #ifdef __cpp_lib_span
 template <typename T>
 struct IsView<std::span<T>> : std::true_type {};

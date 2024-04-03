@@ -17,6 +17,7 @@
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
+#include <limits>
 #include <numeric>
 #include <random>
 #include <string>
@@ -593,14 +594,17 @@ void BM_EraseIf(benchmark::State& state) {
     auto& table = tables.back();
     for (int64_t i = 0; i < num_elements; i++) {
       // We use random keys to reduce noise.
-      k.push_back(absl::Uniform<int64_t>(rng, 0, ~int64_t{}));
+      k.push_back(
+          absl::Uniform<int64_t>(rng, 0, std::numeric_limits<int64_t>::max()));
       if (!table.insert(k.back()).second) {
         k.pop_back();
         --i;  // duplicated value, retrying
       }
     }
     std::sort(k.begin(), k.end());
-    threshold.push_back(k[num_erased]);
+    threshold.push_back(static_cast<int64_t>(num_erased) < num_elements
+                            ? k[num_erased]
+                            : std::numeric_limits<int64_t>::max());
   }
 
   while (state.KeepRunningBatch(static_cast<int64_t>(kRepetitions) *
