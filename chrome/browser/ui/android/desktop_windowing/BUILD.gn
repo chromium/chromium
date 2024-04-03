@@ -1,0 +1,27 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [ "java/src/org/chromium/chrome/browser/ui/desktop_windowing/AppHeaderUtils.java" ]
+  deps = [
+    "//base:base_java",
+    "//chrome/browser/android/lifecycle:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+}
+
+robolectric_library("junit") {
+  sources = [ "java/src/org/chromium/chrome/browser/ui/desktop_windowing/AppHeaderUtilsUnitTest.java" ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_junit_test_support",
+    "//chrome/browser/android/lifecycle:java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+  ]
+}

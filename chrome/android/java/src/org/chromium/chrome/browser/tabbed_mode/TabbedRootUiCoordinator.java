@@ -123,6 +123,7 @@ import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -1066,7 +1067,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         // TODO(crbug/331844971): Do a smooth transition head into DW mode.
         final boolean animate =
-                !sDisableTopControlsAnimationForTesting && !isInDesktopWindowingMode();
+                !sDisableTopControlsAnimationForTesting
+                        && !AppHeaderUtils.isAppInDesktopWindow(mAppHeaderCoordinator);
         final BrowserControlsSizer browserControlsSizer = mBrowserControlsManager;
 
         boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
@@ -1229,13 +1231,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mBrowserControlsManager.getBrowserVisibilityDelegate(),
                         mInsetObserverViewSupplier.get(),
                         tabStripTransitionCoordinator);
-    }
-
-    // TODO(crbug/325351108): Make it an observable boolean supplier.
-    private boolean isInDesktopWindowingMode() {
-        return VERSION.SDK_INT >= VERSION_CODES.R
-                && mAppHeaderCoordinator != null
-                && mAppHeaderCoordinator.isDesktopWindowingEnabled();
+        mAppHeaderCoordinatorSupplier.set(mAppHeaderCoordinator);
     }
 
     @Override

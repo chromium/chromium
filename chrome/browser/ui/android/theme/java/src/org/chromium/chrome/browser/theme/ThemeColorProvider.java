@@ -13,8 +13,8 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ObserverList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher.ActivityState;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 
 /** An abstract class that provides the current theme color. */
@@ -92,19 +92,12 @@ public abstract class ThemeColorProvider implements TopResumedActivityChangedObs
         mTint = ThemeUtils.getThemedToolbarIconTint(context, BrandedColorScheme.APP_DEFAULT);
 
         // Activity lifecycle observation for activity focus change.
-        // TODO (crbug/328055199): Move this logic to a desktop_windowing helper method.
         if (activityLifecycleDispatcher != null) {
             mActivityLifecycleDispatcher = activityLifecycleDispatcher;
             mActivityLifecycleDispatcher.register(this);
         }
-        // The ActivityState.DESTROYED check here is for when the activity state is unknown,
-        // possibly at the time this class is instantiated during app startup.
         mIsTopResumedActivity =
-                mActivityLifecycleDispatcher == null
-                        || mActivityLifecycleDispatcher.getCurrentActivityState()
-                                <= ActivityState.RESUMED_WITH_NATIVE
-                        || mActivityLifecycleDispatcher.getCurrentActivityState()
-                                == ActivityState.DESTROYED;
+                AppHeaderUtils.isActivityFocusedAtStartup(mActivityLifecycleDispatcher);
 
         mActivityFocusTint =
                 ThemeUtils.getThemedToolbarIconTintForActivityState(

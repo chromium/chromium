@@ -21,6 +21,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.toolbar.top.TabStripTransitionCoordinator;
@@ -36,7 +37,7 @@ import java.util.Collections;
  * from listening the window insets updates, and pushing updates to the tab strip.
  */
 @RequiresApi(api = Build.VERSION_CODES.R)
-public class AppHeaderCoordinator {
+public class AppHeaderCoordinator extends ObservableSupplierImpl<Boolean> {
     private static final String TAG = "AppHeader";
     // TODO(crbug/328446763): Use values from Android V and remove SuppressWarnings.
     private static final int APPEARANCE_TRANSPARENT_CAPTION_BAR_BACKGROUND = 1 << 7;
@@ -106,6 +107,8 @@ public class AppHeaderCoordinator {
             insetsRectUpdateRunnable.onBoundingRectsUpdated(
                     mInsetsRectProvider.getWidestUnoccludedRect());
         }
+
+        set(mDesktopWindowingEnabled);
     }
 
     /** Destroy the instances and remove all the dependencies. */
@@ -143,6 +146,7 @@ public class AppHeaderCoordinator {
         // If whether we are in DW mode does not change, we can end this method now.
         if (desktopWindowingEnabled == mDesktopWindowingEnabled) return;
         mDesktopWindowingEnabled = desktopWindowingEnabled;
+        set(mDesktopWindowingEnabled);
 
         // 1. Enter E2E if we are in desktop windowing mode.
         WindowCompat.setDecorFitsSystemWindows(mActivity.getWindow(), !mDesktopWindowingEnabled);

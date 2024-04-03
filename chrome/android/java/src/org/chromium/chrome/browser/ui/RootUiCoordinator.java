@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.contextualsearch.ContextualSearchObserver;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchSelection;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchSelectionObserver;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
+import org.chromium.chrome.browser.desktop_windowing.AppHeaderCoordinator;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeToolbarButtonController;
@@ -339,6 +340,8 @@ public class RootUiCoordinator
     private @Nullable BoardingPassController mBoardingPassController;
     private @Nullable ObservableSupplier<Integer> mOverviewColorSupplier;
     private @Nullable View mBaseChromeLayout;
+    protected OneshotSupplierImpl<AppHeaderCoordinator> mAppHeaderCoordinatorSupplier =
+            new OneshotSupplierImpl<>();
 
     /**
      * Create a new {@link RootUiCoordinator} for the given activity.

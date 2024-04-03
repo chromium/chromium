@@ -18,6 +18,7 @@ android_library("java") {
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/desktop_windowing:java",
     "//chrome/browser/ui/android/native_page:java",
     "//components/browser_ui/styles/android:java",
     "//components/embedder_support/android:util_java",

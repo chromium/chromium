@@ -44,7 +44,6 @@ import org.chromium.chrome.browser.layouts.SceneOverlay;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher.ActivityState;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
@@ -68,6 +67,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.top.TabStripTransitionCoordinator.TabStripHeightObserver;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
@@ -525,12 +525,7 @@ public class StripLayoutHelperManager
                     mIncognitoHelper.setLayerTitleCache(layerTitleCache);
                 });
 
-        // TODO (crbug/328055199): Move this logic to a desktop_windowing helper method.
-        // The ActivityState.DESTROYED check here is for when the activity state is unknown,
-        // possibly at the time this class is instantiated during app startup.
-        mIsTopResumedActivity =
-                lifecycleDispatcher.getCurrentActivityState() <= ActivityState.RESUMED_WITH_NATIVE
-                        || lifecycleDispatcher.getCurrentActivityState() == ActivityState.DESTROYED;
+        mIsTopResumedActivity = AppHeaderUtils.isActivityFocusedAtStartup(lifecycleDispatcher);
 
         if (ToolbarFeatures.isTabStripWindowLayoutOptimizationEnabled(/* isTablet= */ true)) {
             // Add some large margins to tab strip when flag enabled.
