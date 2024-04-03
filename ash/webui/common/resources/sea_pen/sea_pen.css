@@ -13,6 +13,11 @@ wallpaper-grid-item.sea-pen-image {
 
 .sea-pen-image[aria-selected='true']::part(image) {
   animation: none;
+
+  /* Increase image's border radius to prevent corner border from appearing
+   * around the checkmark. */
+  border-top-left-radius: calc(
+    var(--personalization-app-grid-item-border-radius) + 10px);
 }
 
 .sea-pen-image[aria-selected='true']::part(item) {
