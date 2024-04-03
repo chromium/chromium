@@ -137,6 +137,10 @@ UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
         suggestionText = [suggestionText
             substringToIndex:suggestionText.length -
                              kPasswordFormSuggestionSuffix.length];
+        if ([suggestionText length] == 0) {
+          suggestionText =
+              l10n_util::GetNSString(IDS_IOS_AUTOFILL_PASSWORD_NO_USERNAME);
+        }
       }
     }
 

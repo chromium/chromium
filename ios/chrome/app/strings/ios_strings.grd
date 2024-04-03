@@ -296,6 +296,9 @@
       <message name="IDS_IOS_AUTOFILL_CREDIT_CARD_AUTOFILL_DATA" desc="The accessible name for the button in the keyboard accessory shown when filling out forms used to open the expanded view to see credit card autofill data. This is spoken by VoiceOver. [Length: unlimited] [iOS only]">
         Payment Methods
       </message>
+      <message name="IDS_IOS_AUTOFILL_PASSWORD_NO_USERNAME" desc="Text shown for a password suggestion in the keyboard accessory when the user did not save a username along with the password.">
+        No Username ••••••
+      </message>
       <message name="IDS_IOS_AUTOFILL_ADDRESS_AUTOFILL_DATA" desc="The accessible name for the button in the keyboard accessory shown when filling out forms used to open the expanded view to see address autofill data. This is spoken by VoiceOver. [Length: unlimited] [iOS only]">
         Addresses and more
       </message>
