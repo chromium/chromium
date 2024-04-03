@@ -680,7 +680,6 @@ ANDROID_WATERFALL = """\
         },
         'os_type': 'android',
         'skip_merge_script': True,
-        'skip_output_links': True,
         'test_suites': {
           'gtest_tests': 'foo_tests',
         },
@@ -3099,15 +3098,6 @@ TEST_QUERY_BOTS_OUTPUT = {
                     "device_type": "hammerhead",
                     "os": "Android",
                 },
-                "output_links": [{
-                    "link": [
-                        "https://luci-logdog.appspot.com/v/?s",
-                        "=android%2Fswarming%2Flogcats%2F",
-                        "${TASK_ID}%2F%2B%2Funified_logcats"
-                    ],
-                    "name":
-                    "shard #${SHARD_INDEX} logcats"
-                }]
             }
         }]
     },
@@ -3157,15 +3147,6 @@ TEST_QUERY_BOTS_TESTS_OUTPUT = {
                 "device_type": "hammerhead",
                 "os": "Android"
             },
-            "output_links": [{
-                "link": [
-                    "https://luci-logdog.appspot.com/v/?s",
-                    "=android%2Fswarming%2Flogcats%2F",
-                    "${TASK_ID}%2F%2B%2Funified_logcats"
-                ],
-                "name":
-                "shard #${SHARD_INDEX} logcats"
-            }]
         }
     }]
 }
@@ -3192,17 +3173,6 @@ TEST_QUERY_BOT_OUTPUT = {
                     "device_type": "hammerhead",
                     "os": "Android",
                 },
-                "output_links": [
-                    {
-                        "link": [
-                            "https://luci-logdog.appspot.com/v/?s",
-                            "=android%2Fswarming%2Flogcats%2F",
-                            "${TASK_ID}%2F%2B%2Funified_logcats"
-                        ],
-                        "name":
-                        "shard #${SHARD_INDEX} logcats",
-                    },
-                ],
             },
         },
     ],

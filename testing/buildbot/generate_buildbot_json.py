@@ -739,17 +739,6 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
           'script': ('//build/android/pylib/results/presentation/'
                      'test_results_presentation.py'),
       }
-    if not tester_config.get('skip_output_links', False):
-      result['swarming']['output_links'] = [
-        {
-          'link': [
-            'https://luci-logdog.appspot.com/v/?s',
-            '=android%2Fswarming%2Flogcats%2F',
-            '${TASK_ID}%2F%2B%2Funified_logcats',
-          ],
-          'name': 'shard #${SHARD_INDEX} logcats',
-        },
-      ]
     if args:
       result['args'] = args
 

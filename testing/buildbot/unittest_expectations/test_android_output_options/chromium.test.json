@@ -28,17 +28,7 @@
             "integrity": "high",
             "os": "Android"
           },
-          "expiration": 120,
-          "output_links": [
-            {
-              "link": [
-                "https://luci-logdog.appspot.com/v/?s",
-                "=android%2Fswarming%2Flogcats%2F",
-                "${TASK_ID}%2F%2B%2Funified_logcats"
-              ],
-              "name": "shard #${SHARD_INDEX} logcats"
-            }
-          ]
+          "expiration": 120
         },
         "test": "foo_test"
       }

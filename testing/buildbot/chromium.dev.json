@@ -31,16 +31,6 @@
             "os": "Android"
           },
           "expiration": 10800,
-          "output_links": [
-            {
-              "link": [
-                "https://luci-logdog.appspot.com/v/?s",
-                "=android%2Fswarming%2Flogcats%2F",
-                "${TASK_ID}%2F%2B%2Funified_logcats"
-              ],
-              "name": "shard #${SHARD_INDEX} logcats"
-            }
-          ],
           "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "chrome_public_smoke_test",
