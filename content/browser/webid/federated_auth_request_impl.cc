@@ -342,6 +342,25 @@ FedCmMetrics::NumAccounts ComputeNumMatchingAccounts(
   return FedCmMetrics::NumAccounts::kMultiple;
 }
 
+void FilterAccountsWithLabel(const std::string& label,
+                             IdpNetworkRequestManager::AccountList& accounts) {
+  if (label.empty()) {
+    return;
+  }
+
+  // Remove all accounts whose labels do not match the requested label.
+  // Note that it is technically possible for us to end up with more than one
+  // account afterwards, in which case the multiple account chooser would be
+  // shown.
+  auto filter = [&label](const IdentityRequestAccount& account) {
+    return !base::Contains(account.labels, label);
+  };
+  std::erase_if(accounts, filter);
+  FedCmMetrics::NumAccounts num_matching = ComputeNumMatchingAccounts(accounts);
+  base::UmaHistogramEnumeration("Blink.FedCm.AccountLabel.NumMatchingAccounts",
+                                num_matching);
+}
+
 void FilterAccountsWithLoginHint(
     const std::string& login_hint,
     IdpNetworkRequestManager::AccountList& accounts) {
@@ -1789,7 +1808,8 @@ void FederatedAuthRequestImpl::ShowSingleIdpFailureDialog() {
   // up in ShowFailureDialog().
   bool has_shown_mismatch = has_shown_mismatch_;
   bool has_hints = !idp_info->provider->login_hint.empty() ||
-                   !idp_info->provider->domain_hint.empty();
+                   !idp_info->provider->domain_hint.empty() ||
+                   !idp_info->metadata.requested_label.empty();
   // TODO(crbug.com/329261790): Make ShowFailureDialog() return boolean and use
   // the value to know when to bail out of this method.
   request_dialog_controller_->ShowFailureDialog(
@@ -1884,6 +1904,22 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
     }
     case IdpNetworkRequestManager::ParseStatus::kSuccess: {
       RecordRawAccountsSize(accounts.size());
+      if (IsFedCmAuthzEnabled()) {
+        FilterAccountsWithLabel(idp_info->metadata.requested_label, accounts);
+        if (accounts.empty()) {
+          render_frame_host().AddMessageToConsole(
+              blink::mojom::ConsoleMessageLevel::kError,
+              "Accounts were received, but none matched the label.");
+          // If there are no accounts after filtering based on the label,
+          // treat this exactly the same as if we had received an empty accounts
+          // list, i.e. IdpNetworkRequestManager::ParseStatus::kEmptyListError.
+          HandleAccountsFetchFailure(
+              std::move(idp_info), old_idp_signin_status,
+              FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty,
+              TokenStatus::kAccountsListEmpty);
+          return;
+        }
+      }
       FilterAccountsWithLoginHint(idp_info->provider->login_hint, accounts);
       if (accounts.empty()) {
         render_frame_host().AddMessageToConsole(

@@ -111,6 +111,9 @@ constexpr char kOtherDomainHint[] = "other_domain@corp.com";
 constexpr char kToken[] = "[not a real token]";
 constexpr char kEmptyToken[] = "";
 
+constexpr char kAccountLabelNoMatchMessage[] =
+    "Accounts were received, but none matched the label.";
+
 constexpr char kLoginHintNoMatchMessage[] =
     "Accounts were received, but none matched the loginHint.";
 
@@ -206,7 +209,7 @@ static const std::vector<IdentityRequestAccount>
             GURL(),                                 // picture
             {kAccountIdPeter, kAccountEmailPeter},  // login_hints
             std::vector<std::string>(),             // domain_hints
-            std::vector<std::string>(),             // labels
+            {"label"},                              // labels
             LoginState::kSignIn                     // login_state
         },
         {
@@ -280,6 +283,7 @@ struct MockConfig {
   std::string disconnect_endpoint;
   std::optional<SkColor> brand_background_color;
   std::optional<SkColor> brand_text_color;
+  std::string requested_label;
 };
 
 struct MockIdpInfo {
@@ -491,6 +495,7 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
     idp_metadata.idp_login_url = GURL(config.idp_login_url);
     idp_metadata.brand_background_color = config.brand_background_color;
     idp_metadata.brand_text_color = config.brand_text_color;
+    idp_metadata.requested_label = config.requested_label;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
@@ -4787,6 +4792,54 @@ TEST_F(FederatedAuthRequestImplTest, MetricsEndpointMultiIdpFail) {
       metrics_recorder->get_metrics_endpoints_notified_success().empty());
   EXPECT_THAT(metrics_recorder->get_metrics_endpoints_notified_failure(),
               ElementsAre(kMetricsEndpoint, "https://idp2.example/metrics"));
+}
+
+TEST_F(FederatedAuthRequestImplTest, AccountLabelMultipleAccountsNoMatch) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmAuthz);
+
+  RequestParameters parameters = kDefaultRequestParameters;
+  const RequestExpectations expectations = {
+      RequestTokenStatus::kError,
+      FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty,
+      {kAccountLabelNoMatchMessage},
+      /*selected_idp_config_url=*/std::nullopt};
+
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.idp_info[kProviderUrlFull].config.requested_label =
+      "invalid_label";
+  configuration.idp_info[kProviderUrlFull].accounts =
+      kMultipleAccountsWithHintsAndDomains;
+
+  RunAuthTest(parameters, expectations, configuration);
+  EXPECT_TRUE(DidFetch(FetchedEndpoint::ACCOUNTS));
+  EXPECT_FALSE(did_show_accounts_dialog());
+
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.AccountLabel.NumMatchingAccounts",
+      FedCmMetrics::NumAccounts::kZero, 1);
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.AccountsSize.Raw", 3, 1);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.AccountsSize.ReadyToShow", 0);
+}
+
+TEST_F(FederatedAuthRequestImplTest, AccountLabelMultipleAccountsOneMatch) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmAuthz);
+
+  RequestParameters parameters = kDefaultRequestParameters;
+
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.idp_info[kProviderUrlFull].config.requested_label = "label";
+  configuration.idp_info[kProviderUrlFull].accounts =
+      kMultipleAccountsWithHintsAndDomains;
+
+  RunAuthTest(parameters, kExpectationSuccess, configuration);
+  ASSERT_EQ(displayed_accounts().size(), 1u);
+  EXPECT_EQ(displayed_accounts()[0].id, kAccountIdPeter);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.AccountLabel.NumMatchingAccounts",
+      FedCmMetrics::NumAccounts::kOne, 1);
 }
 
 TEST_F(FederatedAuthRequestImplTest, LoginHintSingleAccountIdMatch) {
