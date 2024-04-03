@@ -68,8 +68,15 @@ source_set("card_unmask_authentication_selection_mediator") {
     "card_unmask_authentication_selection_mediator.h",
     "card_unmask_authentication_selection_mediator.mm",
   ]
-  deps = [ "//components/autofill/core/browser" ]
-  public_deps = [ ":card_unmask_authentication_selection_consumer" ]
+  deps = [
+    ":card_unmask_authentication_selection_mutator_bridge",
+    "//components/autofill/core/browser",
+  ]
+  public_deps = [
+    ":card_unmask_authentication_selection_consumer",
+    ":card_unmask_authentication_selection_mutator_bridge",
+    ":card_unmask_authentication_selection_mutator_bridge_target",
+  ]
 }
 
 source_set("card_unmask_authentication_selection_mediator_unittest") {
@@ -77,6 +84,7 @@ source_set("card_unmask_authentication_selection_mediator_unittest") {
   sources = [ "card_unmask_authentication_selection_mediator_unittest.mm" ]
   deps = [
     ":card_unmask_authentication_selection_mediator",
+    ":card_unmask_authentication_selection_mutator",
     "//components/autofill/core/browser",
     "//components/strings:components_strings_grit",
     "//testing/gtest",
@@ -128,4 +136,21 @@ source_set("card_unmask_authentication_selection_view_controller") {
 
 source_set("card_unmask_authentication_selection_mutator") {
   sources = [ "card_unmask_authentication_selection_mutator.h" ]
+}
+
+source_set("card_unmask_authentication_selection_mutator_bridge") {
+  sources = [
+    "card_unmask_authentication_selection_mutator_bridge.h",
+    "card_unmask_authentication_selection_mutator_bridge.mm",
+  ]
+  deps = [ ":card_unmask_authentication_selection_mutator_bridge_target" ]
+  public_deps = [
+    ":card_unmask_authentication_selection_mutator",
+    "//base",
+  ]
+}
+
+source_set("card_unmask_authentication_selection_mutator_bridge_target") {
+  sources = [ "card_unmask_authentication_selection_mutator_bridge_target.h" ]
+  public_deps = [ "//ios/chrome/browser/autofill/model/authentication:card_unmask_challenge_option_ios" ]
 }

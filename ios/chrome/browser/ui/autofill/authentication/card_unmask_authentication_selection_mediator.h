@@ -8,6 +8,10 @@
 #import "base/memory/weak_ptr.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog.h"
 #import "ios/chrome/browser/ui/autofill/authentication/card_unmask_authentication_selection_consumer.h"
+#import "ios/chrome/browser/ui/autofill/authentication/card_unmask_authentication_selection_mutator_bridge_target.h"
+
+@protocol CardUnmaskAuthenticationSelectionMutator;
+@class CardUnmaskAuthenticationSelectionMutatorBridge;
 
 namespace autofill {
 class CardUnmaskAuthenticationSelectionDialogControllerImpl;
@@ -17,7 +21,8 @@ class CardUnmaskAuthenticationSelectionDialogControllerImpl;
 // CardUnmaskAuthenticationSelectionDialogControllerImpl and view controllers
 // via the CardUnmaskAuthenticationSelectionConsumer interface.
 class CardUnmaskAuthenticationSelectionMediator
-    : public autofill::CardUnmaskAuthenticationSelectionDialog {
+    : public autofill::CardUnmaskAuthenticationSelectionDialog,
+      CardUnmaskAuthenticationSelectionMutatorBridgeTarget {
  public:
   CardUnmaskAuthenticationSelectionMediator(
       base::WeakPtr<
@@ -33,17 +38,27 @@ class CardUnmaskAuthenticationSelectionMediator
 
   virtual ~CardUnmaskAuthenticationSelectionMediator();
 
-  // Handles selecting a challenge option.
-  void DidSelectChallengeOption(CardUnmaskChallengeOptionIOS* option);
+  // CardUnmaskAuthenticationSelectionMutator methods
+  void DidSelectChallengeOption(CardUnmaskChallengeOptionIOS* option) override;
+  void DidAcceptSelection() override;
+  void DidCancelSelection() override;
 
   // autofill::CardUnmaskAuthenticationSelectionDialog
   void Dismiss(bool user_closed_dialog, bool server_success) override;
   void UpdateContent() override;
 
+  // Returns an implementation of the mutator that forwards to this mediator.
+  // We need this bridge since this mediator is C++ whereas the ViewController
+  // expects the Objective-C protocol.
+  id<CardUnmaskAuthenticationSelectionMutator> AsMutator();
+
  private:
   base::WeakPtr<autofill::CardUnmaskAuthenticationSelectionDialogControllerImpl>
       model_controller_;
-  id<CardUnmaskAuthenticationSelectionConsumer> consumer_;
+  __weak id<CardUnmaskAuthenticationSelectionConsumer> consumer_;
+  CardUnmaskAuthenticationSelectionMutatorBridge* mutator_bridge_;
+  base::WeakPtrFactory<CardUnmaskAuthenticationSelectionMutatorBridgeTarget>
+      weak_ptr_factory_{this};
 
   // Converts the autofill challenge options to ios challenge options destined
   // for the CardUnmaskAuthenticationSelectionConsumer.

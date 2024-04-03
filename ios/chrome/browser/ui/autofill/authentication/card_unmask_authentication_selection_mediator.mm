@@ -7,6 +7,7 @@
 #import "base/memory/weak_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
+#import "ios/chrome/browser/ui/autofill/authentication/card_unmask_authentication_selection_mutator_bridge.h"
 
 namespace {
 autofill::CardUnmaskAuthenticationSelectionDialog*
@@ -25,6 +26,8 @@ CardUnmaskAuthenticationSelectionMediator::
             model_controller,
         id<CardUnmaskAuthenticationSelectionConsumer> consumer)
     : model_controller_(model_controller), consumer_(consumer) {
+  mutator_bridge_ = [[CardUnmaskAuthenticationSelectionMutatorBridge alloc]
+      initWithTarget:weak_ptr_factory_.GetWeakPtr()];
   model_controller_->ShowDialog(
       base::BindOnce(&ReturnMediatorIgnoreControllerArg, this));
   [consumer_ setHeaderTitle:base::SysUTF16ToNSString(
@@ -39,6 +42,9 @@ CardUnmaskAuthenticationSelectionMediator::
 CardUnmaskAuthenticationSelectionMediator::
     ~CardUnmaskAuthenticationSelectionMediator() = default;
 
+// Implementation of CardUnmaskAuthenticationSelectionMutatorBridgeTarget
+// follows:
+
 void CardUnmaskAuthenticationSelectionMediator::DidSelectChallengeOption(
     CardUnmaskChallengeOptionIOS* option) {
   model_controller_->SetSelectedChallengeOptionId(option.id);
@@ -46,6 +52,16 @@ void CardUnmaskAuthenticationSelectionMediator::DidSelectChallengeOption(
   [consumer_
       setChallengeAcceptanceLabel:base::SysUTF16ToNSString(
                                       model_controller_->GetOkButtonLabel())];
+}
+
+void CardUnmaskAuthenticationSelectionMediator::DidAcceptSelection() {
+  // TODO(crbug.com/40282545): Implement accepting the authentication selection
+  // option.
+}
+
+void CardUnmaskAuthenticationSelectionMediator::DidCancelSelection() {
+  // TODO(crbug.com/40282545): Implement cancelling out of the authentication
+  // selection.
 }
 
 // Implemention of autofill::CardUnmaskAuthenticationSelectionDialog follows:
@@ -59,6 +75,11 @@ void CardUnmaskAuthenticationSelectionMediator::Dismiss(bool user_closed_dialog,
 
 void CardUnmaskAuthenticationSelectionMediator::UpdateContent() {
   [consumer_ enterPendingState];
+}
+
+id<CardUnmaskAuthenticationSelectionMutator>
+CardUnmaskAuthenticationSelectionMediator::AsMutator() {
+  return mutator_bridge_;
 }
 
 // TODO(crbug.com/40282545): Once the ViewController is implemented, handle

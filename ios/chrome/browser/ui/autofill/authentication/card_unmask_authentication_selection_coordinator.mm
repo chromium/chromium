@@ -53,6 +53,7 @@
   _mediator = std::make_unique<CardUnmaskAuthenticationSelectionMediator>(
       _modelController->GetWeakPtr(),
       /*consumer=*/selectionViewController);
+  selectionViewController.mutator = _mediator->AsMutator();
   _selectionViewController = selectionViewController;
 
   [_baseNavigationController pushViewController:_selectionViewController
@@ -61,6 +62,7 @@
 
 - (void)stop {
   [_baseNavigationController popViewControllerAnimated:YES];
+  _selectionViewController.mutator = nil;
 }
 
 @end

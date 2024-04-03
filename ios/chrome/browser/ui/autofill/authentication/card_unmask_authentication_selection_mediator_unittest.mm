@@ -9,6 +9,7 @@
 #import "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/autofill/authentication/card_unmask_authentication_selection_consumer.h"
+#import "ios/chrome/browser/ui/autofill/authentication/card_unmask_authentication_selection_mutator.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -126,7 +127,7 @@ TEST_F(CardUnmaskAuthenticationSelectionMediatorTest,
       setChallengeAcceptanceLabel:
           l10n_util::GetNSString(
               IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_OK_BUTTON_LABEL_SEND)]);
-  mediator->DidSelectChallengeOption(SmsIOSChallengeOption());
+  [mediator->AsMutator() didSelectChallengeOption:SmsIOSChallengeOption()];
 }
 
 TEST_F(CardUnmaskAuthenticationSelectionMediatorTest,
