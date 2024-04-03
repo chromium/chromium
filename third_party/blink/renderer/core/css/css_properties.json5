@@ -6078,6 +6078,7 @@
       field_group: "*",
       field_template: "primitive",
       default_value: "0",
+      converter: "ConvertIntegerOrNone<0>",
       keywords: ["none"],
       type_name: "int",
       name_for_methods: "StandardLineClamp",

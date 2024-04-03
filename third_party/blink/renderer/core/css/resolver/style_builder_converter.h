@@ -219,6 +219,8 @@ class StyleBuilderConverter {
   static Length ConvertLineHeight(StyleResolverState&, const CSSValue&);
   static float ConvertNumberOrPercentage(StyleResolverState&, const CSSValue&);
   static int ConvertInteger(StyleResolverState&, const CSSValue&);
+  template <int NoneValue = 0>
+  static int ConvertIntegerOrNone(StyleResolverState&, const CSSValue&);
   static ScrollStartData ConvertScrollStart(const StyleResolverState&,
                                             const CSSValue&);
   static float ConvertAlpha(StyleResolverState&,
@@ -494,6 +496,16 @@ AtomicString StyleBuilderConverter::ConvertString(StyleResolverState&,
   }
   DCHECK_EQ(To<CSSIdentifierValue>(value).GetValueID(), IdForNone);
   return g_null_atom;
+}
+
+template <int NoneValue>
+int StyleBuilderConverter::ConvertIntegerOrNone(StyleResolverState& state,
+                                                const CSSValue& value) {
+  if (IsA<CSSPrimitiveValue>(value)) {
+    return ConvertInteger(state, value);
+  }
+  DCHECK_EQ(To<CSSIdentifierValue>(value).GetValueID(), CSSValueID::kNone);
+  return NoneValue;
 }
 
 // Returns the computed <color> value for `value`. Note that it's expected that
