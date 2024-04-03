@@ -401,10 +401,6 @@ Polymer({
     return SMB_SHARE_URL_REGEX.test(this.mountUrl_);
   },
 
-  isJellyEnabled_() {
-    return !!loadTimeData.getBoolean('isJellyEnabled');
-  },
-
   isCrosComponentsEnabled_() {
     return !!loadTimeData.getBoolean('isCrosComponentsEnabled');
   },
