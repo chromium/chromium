@@ -12,3 +12,16 @@ source_set("content_notification_service") {
     "//url:url",
   ]
 }
+
+source_set("content_notification_service_factory") {
+  sources = [
+    "content_notification_service_factory.h",
+    "content_notification_service_factory.mm",
+  ]
+  deps = [
+    ":content_notification_service",
+    "//components/keyed_service/ios",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/public/provider/chrome/browser/content_notification:content_notification_api",
+  ]
+}

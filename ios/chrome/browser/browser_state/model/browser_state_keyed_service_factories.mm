@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_factory.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/consent_auditor/model/consent_auditor_factory.h"
+#import "ios/chrome/browser/content_notification/model/content_notification_service_factory.h"
 #import "ios/chrome/browser/content_settings/model/cookie_settings_factory.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_model_service_factory.h"
 #import "ios/chrome/browser/contextual_panel/model/sample/sample_panel_model_factory.h"
@@ -166,6 +167,7 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   ChromeAccountManagerServiceFactory::GetInstance();
   ChromePasswordProtectionServiceFactory::GetInstance();
   ConsentAuditorFactory::GetInstance();
+  ContentNotificationServiceFactory::GetInstance();
   ContextualPanelModelServiceFactory::GetInstance();
   DeviceSharingManagerFactory::GetInstance();
   DiscoverFeedServiceFactory::GetInstance();
