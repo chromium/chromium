@@ -6,13 +6,18 @@
 #define ASH_WM_WINDOW_RESTORE_PINE_APP_IMAGE_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "base/scoped_observation.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "ui/views/controls/image_view.h"
 
 namespace ash {
 
-// TODO(hewer): Update description when default icon and observer are added.
-// Displays the icon of the given app if available.
-class ASH_EXPORT PineAppImageView : public views::ImageView {
+// TODO(hewer): Update description when default icon is added.
+// Displays the icon of the given app if available, and observes the
+// `AppRegistryCache` to update the icon after it has been marked as ready
+// (installed).
+class ASH_EXPORT PineAppImageView : public views::ImageView,
+                                    public apps::AppRegistryCache::Observer {
   METADATA_HEADER(PineAppImageView, views::ImageView)
 
  public:
@@ -24,9 +29,21 @@ class ASH_EXPORT PineAppImageView : public views::ImageView {
   PineAppImageView& operator=(const PineAppImageView&) = delete;
   ~PineAppImageView() override;
 
+  // apps::AppRegistryCache::Observer:
+  void OnAppUpdate(const apps::AppUpdate& update) override;
+  void OnAppRegistryCacheWillBeDestroyed(
+      apps::AppRegistryCache* cache) override;
+
  private:
   // Sets `icon` as the image for the view.
   void GetIconCallback(const gfx::ImageSkia& icon);
+
+  const std::string app_id_;
+  const Type type_;
+
+  base::ScopedObservation<apps::AppRegistryCache,
+                          apps::AppRegistryCache::Observer>
+      app_registry_cache_observer_{this};
 
   base::WeakPtrFactory<PineAppImageView> weak_ptr_factory_{this};
 };

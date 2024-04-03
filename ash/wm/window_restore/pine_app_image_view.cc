@@ -7,6 +7,7 @@
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/shell.h"
 #include "ash/wm/window_restore/pine_constants.h"
+#include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/background.h"
 
@@ -39,27 +40,66 @@ gfx::Size GetPreferredSizeForType(const PineAppImageView::Type type) {
   }
 }
 
+int GetIconSizeForType(const PineAppImageView::Type type) {
+  switch (type) {
+    case PineAppImageView::Type::kScreenshot:
+      return pine::kScreenshotIconRowIconSize;
+    case PineAppImageView::Type::kItem:
+      return pine::kAppImageSize;
+    case PineAppImageView::Type::kOverflow:
+      return pine::kAppImageSize;
+  }
+}
+
 }  // namespace
 
-PineAppImageView::PineAppImageView(const std::string& app_id, const Type type) {
-  SetImageSize(GetImageSizeForType(type));
-  SetPreferredSize(GetPreferredSizeForType(type));
+PineAppImageView::PineAppImageView(const std::string& app_id, const Type type)
+    : app_id_(app_id), type_(type) {
+  SetImageSize(GetImageSizeForType(type_));
+  SetPreferredSize(GetPreferredSizeForType(type_));
 
-  if (type == Type::kItem) {
+  if (type_ == Type::kItem) {
     SetBackground(views::CreateThemedRoundedRectBackground(
         pine::kIconBackgroundColorId, kItemIconBackgroundRounding));
   }
 
   // The callback may be called synchronously.
   Shell::Get()->saved_desk_delegate()->GetIconForAppId(
-      app_id,
-      type == Type::kScreenshot ? pine::kScreenshotIconRowIconSize
-                                : pine::kAppImageSize,
+      app_id_, GetIconSizeForType(type_),
       base::BindOnce(&PineAppImageView::GetIconCallback,
                      weak_ptr_factory_.GetWeakPtr()));
+
+  // Observe the cache for changes to app readiness.
+  auto* cache = apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(
+      Shell::Get()->session_controller()->GetActiveAccountId());
+  if (cache && !cache->IsAppInstalled(app_id_)) {
+    app_registry_cache_observer_.Observe(cache);
+  }
 }
 
 PineAppImageView::~PineAppImageView() = default;
+
+void PineAppImageView::OnAppUpdate(const apps::AppUpdate& update) {
+  // If the update matches our desired App ID, and it shows a change in
+  // readiness (i.e., the app has been installed), then fetch the icon again.
+  if (update.AppId() == app_id_ && update.Delta() &&
+      update.Delta()->readiness == apps::Readiness::kReady) {
+    auto* delegate = Shell::Get()->saved_desk_delegate();
+
+    // The callback may be called synchronously.
+    delegate->GetIconForAppId(update.AppId(), GetIconSizeForType(type_),
+                              base::BindOnce(&PineAppImageView::GetIconCallback,
+                                             weak_ptr_factory_.GetWeakPtr()));
+
+    // We no longer need to observe after installation.
+    app_registry_cache_observer_.Reset();
+  }
+}
+
+void PineAppImageView::OnAppRegistryCacheWillBeDestroyed(
+    apps::AppRegistryCache* cache) {
+  app_registry_cache_observer_.Reset();
+}
 
 void PineAppImageView::GetIconCallback(const gfx::ImageSkia& icon) {
   // TODO(hewer): Add a default app icon if `icon` is null.

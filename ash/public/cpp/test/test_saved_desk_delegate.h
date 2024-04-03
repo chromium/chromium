@@ -10,6 +10,7 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace aura {
 class Window;
@@ -49,6 +50,10 @@ class ASH_PUBLIC_EXPORT TestSavedDeskDelegate : public SavedDeskDelegate {
     unavailable_app_ids_ = unavailable_app_ids;
   }
 
+  void set_default_app_icon(const gfx::ImageSkia& default_app_icon) {
+    default_app_icon_ = default_app_icon;
+  }
+
   // SavedDeskDelegate:
   void GetAppLaunchDataForSavedDesk(
       aura::Window* window,
@@ -79,6 +84,7 @@ class ASH_PUBLIC_EXPORT TestSavedDeskDelegate : public SavedDeskDelegate {
   raw_ptr<desks_storage::AdminTemplateService, DanglingUntriaged>
       admin_template_service_ = nullptr;
   std::vector<std::string> unavailable_app_ids_;
+  gfx::ImageSkia default_app_icon_;
 };
 
 }  // namespace ash

@@ -7,6 +7,7 @@
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/public/cpp/overview_test_api.h"
 #include "ash/public/cpp/test/in_process_data_decoder.h"
+#include "ash/public/cpp/test/test_saved_desk_delegate.h"
 #include "ash/shell.h"
 #include "ash/style/system_dialog_delegate_view.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
@@ -22,6 +23,7 @@
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/overview/overview_types.h"
 #include "ash/wm/overview/overview_utils.h"
+#include "ash/wm/window_restore/pine_app_image_view.h"
 #include "ash/wm/window_restore/pine_constants.h"
 #include "ash/wm/window_restore/pine_contents_data.h"
 #include "ash/wm/window_restore/pine_contents_view.h"
@@ -40,8 +42,13 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "ui/display/test/display_manager_test_api.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_utils.h"
@@ -639,6 +646,69 @@ TEST_F(PineTest, ShowSavedDeskLibrary) {
   ASSERT_TRUE(library_button);
   LeftClickOn(library_button);
   EXPECT_EQ(0.f, pine_widget->GetLayer()->GetTargetOpacity());
+}
+
+class PineAppIconTest : public PineTest {
+ public:
+  void SetUp() override {
+    PineTest::SetUp();
+
+    AccountId account_id =
+        Shell::Get()->session_controller()->GetActiveAccountId();
+    registry_cache_.SetAccountId(account_id);
+    apps::AppRegistryCacheWrapper::Get().AddAppRegistryCache(account_id,
+                                                             &registry_cache_);
+  }
+
+  void TearDown() override {
+    PineTest::TearDown();
+
+    apps::AppRegistryCacheWrapper::Get().RemoveAppRegistryCache(
+        &registry_cache_);
+    registry_cache_.ReinitializeForTesting();
+  }
+
+  TestSavedDeskDelegate* GetTestSavedDeskDelegate() {
+    return static_cast<TestSavedDeskDelegate*>(
+        Shell::Get()->saved_desk_delegate());
+  }
+
+ protected:
+  apps::AppRegistryCache registry_cache_;
+};
+
+// Tests that `PineAppImageView` properly updates the displayed image when the
+// app with the given ID is installed.
+TEST_F(PineAppIconTest, UpdateAfterSessionStarted) {
+  const std::string test_id = "TEST_ID";
+
+  auto data = std::make_unique<PineContentsData>();
+  data->apps_infos.emplace_back(test_id, "TEST_TITLE");
+  StartPineOverviewSession(std::move(data));
+
+  // The image should be empty before installation.
+  const PineAppImageView* image_view = views::AsViewClass<PineAppImageView>(
+      GetContentsView()->GetViewByID(pine::kItemImageViewID));
+  ASSERT_TRUE(image_view);
+  EXPECT_TRUE(image_view->GetImage().isNull());
+
+  // Update the test delegate to return a valid icon the next time one is
+  // requested.
+  GetTestSavedDeskDelegate()->set_default_app_icon(
+      CreateSolidColorTestImage(gfx::Size(1, 1), SK_ColorRED));
+
+  // Using the existing app ID, mark the app as ready, so `app_image_view` will
+  // update with the new image.
+  apps::AppPtr app = std::make_unique<apps::App>(apps::AppType::kWeb, test_id);
+  app->readiness = apps::Readiness::kReady;
+  std::vector<apps::AppPtr> registry_deltas;
+  registry_deltas.push_back(std::move(app));
+  registry_cache_.OnAppsForTesting(std::move(registry_deltas),
+                                   apps::AppType::kWeb,
+                                   /*should_notify_initialized=*/false);
+
+  // The image should now be valid.
+  EXPECT_FALSE(image_view->GetImage().isNull());
 }
 
 }  // namespace ash

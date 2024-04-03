@@ -47,9 +47,10 @@ PineItemView::PineItemView(const PineContentsData::AppInfo& app_info,
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
 
-  AddChildView(std::make_unique<PineAppImageView>(
+  auto* image_view = AddChildView(std::make_unique<PineAppImageView>(
       app_info.app_id, inside_screenshot_ ? PineAppImageView::Type::kScreenshot
                                           : PineAppImageView::Type::kItem));
+  image_view->SetID(pine::kItemImageViewID);
 
   if (inside_screenshot_) {
     views::Separator* separator =

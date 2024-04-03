@@ -55,7 +55,12 @@ void TestSavedDeskDelegate::GetFaviconForUrl(
 void TestSavedDeskDelegate::GetIconForAppId(
     const std::string& app_id,
     int desired_icon_size,
-    base::OnceCallback<void(const gfx::ImageSkia&)> callback) const {}
+    base::OnceCallback<void(const gfx::ImageSkia&)> callback) const {
+  // `default_app_icon_` will be null if not set.
+  if (!default_app_icon_.isNull()) {
+    std::move(callback).Run(default_app_icon_);
+  }
+}
 
 void TestSavedDeskDelegate::LaunchAppsFromSavedDesk(
     std::unique_ptr<DeskTemplate> saved_desk) {}
