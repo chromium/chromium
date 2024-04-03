@@ -50,7 +50,7 @@ _addTest(function(canvas, ctx) {
 {% endif %}
 
   {# Test body: #}
-  {{ code | trim | indent(2) }}
+  {{ code_element | trim | indent(2) }}
 
 {# Promise vs. async test footer: #}
 {% if test_type == 'promise' %}

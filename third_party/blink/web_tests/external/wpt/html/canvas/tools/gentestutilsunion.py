@@ -306,18 +306,18 @@ def _render_template(jinja_env: jinja2.Environment, template: jinja2.Template,
 
 def _render(jinja_env: jinja2.Environment, template_name: str,
             params: _TestParams):
-    params = dict(params)
-    params.update({
-        # Render the code on its own, as it could contain templates expanding
-        # to multiple lines. This is needed to get proper indentation of the
-        # code in the main template.
-        'code': _render_template(jinja_env,
-                                 jinja_env.from_string(params['code']),
-                                 params)
-    })
-
     return _render_template(jinja_env, jinja_env.get_template(template_name),
                             params)
+
+
+def _preprocess_code(jinja_env: jinja2.Environment, code: str,
+                     params: _TestParams) -> str:
+    code = _expand_test_code(code)
+    # Render the code on its own, as it could contain templates expanding
+    # to multiple lines. This is needed to get proper indentation of the
+    # code in the main template.
+    code = _render_template(jinja_env, jinja_env.from_string(code), params)
+    return code
 
 
 def _add_default_params(test: _TestParams) -> _TestParams:
@@ -379,70 +379,72 @@ def _finalize_params(jinja_env: jinja2.Environment,
     params['file_name'] = _get_file_name(params)
     params['canvas_types'] = _get_canvas_types(params)
     params['template_type'] = _get_template_type(params)
-    params['code'] = _expand_test_code(params['code'])
+
+    if 'reference' in params:
+        params['reference'] = _preprocess_code(jinja_env, params['reference'],
+                                               params)
+
+    if 'html_reference' in params:
+        params['html_reference'] = _preprocess_code(jinja_env,
+                                                    params['html_reference'],
+                                                    params)
+
+    code_params = dict(params)
+    if _CanvasType.HTML_CANVAS in params['canvas_types']:
+        code_params['canvas_type'] = _CanvasType.HTML_CANVAS.value
+        params['code_element'] = _preprocess_code(jinja_env, params['code'],
+                                                  code_params)
+
+    if _CanvasType.OFFSCREEN_CANVAS in params['canvas_types']:
+        code_params['canvas_type'] = _CanvasType.OFFSCREEN_CANVAS.value
+        params['code_offscreen'] = _preprocess_code(jinja_env, params['code'],
+                                                    code_params)
+
+    if _CanvasType.WORKER in params['canvas_types']:
+        code_params['canvas_type'] = _CanvasType.WORKER.value
+        params['code_worker'] = _preprocess_code(jinja_env, params['code'],
+                                                 code_params)
 
 
 def _write_reference_test(jinja_env: jinja2.Environment, params: _TestParams,
                           output_files: _OutputPaths):
     if _CanvasType.HTML_CANVAS in params['canvas_types']:
-        html_params = dict(params)
-        html_params.update({'canvas_type': _CanvasType.HTML_CANVAS.value})
         pathlib.Path(f'{output_files.element}.html').write_text(
-            _render(jinja_env, 'reftest_element.html', html_params), 'utf-8')
+            _render(jinja_env, 'reftest_element.html', params), 'utf-8')
     if _CanvasType.OFFSCREEN_CANVAS in params['canvas_types']:
-        offscreen_params = dict(params)
-        offscreen_params.update(
-            {'canvas_type': _CanvasType.OFFSCREEN_CANVAS.value})
         pathlib.Path(f'{output_files.offscreen}.html').write_text(
-            _render(jinja_env, 'reftest_offscreen.html', offscreen_params),
-            'utf-8')
+            _render(jinja_env, 'reftest_offscreen.html', params), 'utf-8')
     if _CanvasType.WORKER in params['canvas_types']:
-        worker_params = dict(params)
-        worker_params.update({'canvas_type': _CanvasType.WORKER.value})
         pathlib.Path(f'{output_files.offscreen}.w.html').write_text(
-            _render(jinja_env, 'reftest_worker.html', worker_params), 'utf-8')
+            _render(jinja_env, 'reftest_worker.html', params), 'utf-8')
 
-    js_ref = params.get('reference', '')
-    html_ref = params.get('html_reference', '')
-    ref_params = dict(params)
-    ref_params.update({
-        'is_test_reference': True,
-        'code': js_ref or html_ref
-    })
-    ref_template_name = 'reftest_element.html' if js_ref else 'reftest.html'
+    params = dict(params)
+    params['is_test_reference'] = True
+    is_html_ref = params['template_type'] == _TemplateType.HTML_REFERENCE
+    ref_template = 'reftest.html' if is_html_ref else 'reftest_element.html'
     if _CanvasType.HTML_CANVAS in params['canvas_types']:
         pathlib.Path(f'{output_files.element}-expected.html').write_text(
-            _render(jinja_env, ref_template_name, ref_params), 'utf-8')
+            _render(jinja_env, ref_template, params), 'utf-8')
     if {_CanvasType.OFFSCREEN_CANVAS, _CanvasType.WORKER
         } & params['canvas_types']:
         pathlib.Path(f'{output_files.offscreen}-expected.html').write_text(
-            _render(jinja_env, ref_template_name, ref_params), 'utf-8')
+            _render(jinja_env, ref_template, params), 'utf-8')
 
 
 def _write_testharness_test(jinja_env: jinja2.Environment, params: _TestParams,
                             output_files: _OutputPaths):
     # Create test cases for canvas and offscreencanvas.
     if _CanvasType.HTML_CANVAS in params['canvas_types']:
-        html_params = dict(params)
-        html_params.update({'canvas_type': _CanvasType.HTML_CANVAS.value})
         pathlib.Path(f'{output_files.element}.html').write_text(
-            _render(jinja_env, 'testharness_element.html', html_params),
-            'utf-8')
+            _render(jinja_env, 'testharness_element.html', params), 'utf-8')
 
     if _CanvasType.OFFSCREEN_CANVAS in params['canvas_types']:
-        offscreen_params = dict(params)
-        offscreen_params.update(
-            {'canvas_type': _CanvasType.OFFSCREEN_CANVAS.value})
         pathlib.Path(f'{output_files.offscreen}.html').write_text(
-            _render(jinja_env, 'testharness_offscreen.html', offscreen_params),
-            'utf-8')
+            _render(jinja_env, 'testharness_offscreen.html', params), 'utf-8')
 
     if _CanvasType.WORKER in params['canvas_types']:
-        worker_params = dict(params)
-        worker_params.update({'canvas_type': _CanvasType.WORKER.value})
         pathlib.Path(f'{output_files.offscreen}.worker.js').write_text(
-            _render(jinja_env, 'testharness_worker.js', worker_params),
-            'utf-8')
+            _render(jinja_env, 'testharness_worker.js', params), 'utf-8')
 
 
 def _generate_expected_image(params: _MutableTestParams,
@@ -499,7 +501,7 @@ def _generate_test(params: _TestParams, jinja_env: jinja2.Environment,
 def _recursive_expand_variant_matrix(original_test: _TestParams,
                                      variant_matrix: List[_TestParams],
                                      current_selection: List[Tuple[str, Any]],
-                                     test_variants: List[_MutableTestParams]):
+                                     test_variants: List[_TestParams]):
     if len(current_selection) == len(variant_matrix):
         # Selection for each variant is done, so add a new test to test_list.
         test = dict(original_test)
