@@ -36,7 +36,7 @@ class OverviewGridTestApi {
   }
   BirchBarView* birch_bar_view() { return overview_grid_->birch_bar_view_; }
 
-  const std::vector<raw_ptr<BirchChipButton>>& GetBirchChips() const;
+  const std::vector<raw_ptr<BirchChipButtonBase>>& GetBirchChips() const;
 
  private:
   const raw_ptr<OverviewGrid> overview_grid_;

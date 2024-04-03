@@ -7,7 +7,6 @@
 #include "ash/birch/birch_item.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/pill_button.h"
-#include "ash/style/style_util.h"
 #include "ash/style/typography.h"
 #include "ash/wm/overview/birch/birch_bar_context_menu_model.h"
 #include "ash/wm/overview/birch/birch_bar_controller.h"
@@ -16,7 +15,6 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
-#include "ui/views/background.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -24,7 +22,6 @@
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/menu_types.h"
-#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -40,9 +37,6 @@ namespace {
 constexpr gfx::Insets kInteriorMarginsNoAddon =
     gfx::Insets::TLBR(12, 0, 12, 20);
 constexpr gfx::Insets kInteriorMarginsWithAddon = gfx::Insets::VH(12, 0);
-constexpr int kRoundedCornerRadius = 12;
-constexpr ui::ColorId kBackgroundColorId =
-    cros_tokens::kCrosSysSystemOnBaseOpaque;
 
 // The layout parameters of icon.
 constexpr gfx::Size kItemIconSize = gfx::Size(20, 20);
@@ -94,13 +88,8 @@ BirchChipButton::BirchChipButton()
   raw_ptr<views::BoxLayoutView> titles_container = nullptr;
 
   // Build up the chip's contents.
-  views::Builder<views::Button>(this)
+  views::Builder<BirchChipButtonBase>(this)
       .SetLayoutManager(std::move(flex_layout))
-      .SetBorder(std::make_unique<views::HighlightBorder>(
-          kRoundedCornerRadius,
-          views::HighlightBorder::Type::kHighlightBorderNoShadow))
-      .SetBackground(views::CreateThemedRoundedRectBackground(
-          kBackgroundColorId, kRoundedCornerRadius))
       // TODO(zxdan): verbalize all the contents in following changes.
       .SetAccessibleName(u"Birch Chip")
       .AddChildren(
@@ -137,11 +126,6 @@ BirchChipButton::BirchChipButton()
 
   // Add removal chip panel.
   set_context_menu_controller(chip_menu_controller_.get());
-
-  // Install and stylize the focus ring.
-  StyleUtil::InstallRoundedCornerHighlightPathGenerator(
-      this, gfx::RoundedCornersF(kRoundedCornerRadius));
-  StyleUtil::SetUpFocusRingForView(this);
 }
 
 BirchChipButton::~BirchChipButton() = default;
@@ -163,6 +147,14 @@ void BirchChipButton::Init(BirchItem* item) {
   }
   item_->LoadIcon(base::BindOnce(&BirchChipButton::SetIconImage,
                                  weak_factory_.GetWeakPtr()));
+}
+
+const BirchItem* BirchChipButton::GetItem() const {
+  return item_.get();
+}
+
+BirchItem* BirchChipButton::GetItem() {
+  return item_.get();
 }
 
 void BirchChipButton::Shutdown() {

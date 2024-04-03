@@ -5,10 +5,10 @@
 #ifndef ASH_WM_OVERVIEW_BIRCH_BIRCH_CHIP_BUTTON_H_
 #define ASH_WM_OVERVIEW_BIRCH_BIRCH_CHIP_BUTTON_H_
 
+#include "ash/wm/overview/birch/birch_chip_button_base.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/simple_menu_model.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/metadata/view_factory.h"
 
 namespace views {
@@ -24,9 +24,9 @@ class PillButton;
 
 // A compact view of an app, displaying its icon, name, a brief description, and
 // an optional call to action.
-class BirchChipButton : public views::Button,
+class BirchChipButton : public BirchChipButtonBase,
                         public ui::SimpleMenuModel::Delegate {
-  METADATA_HEADER(BirchChipButton, views::Button)
+  METADATA_HEADER(BirchChipButton, BirchChipButtonBase)
 
  public:
   BirchChipButton();
@@ -34,13 +34,8 @@ class BirchChipButton : public views::Button,
   BirchChipButton& operator=(const BirchChipButton&) = delete;
   ~BirchChipButton() override;
 
-  BirchItem* item() { return item_.get(); }
-
   // Chip configuration methods.
   void Init(BirchItem* item);
-
-  // Clears the BirchItem pointer to avoid dangling pointers.
-  void Shutdown();
 
   template <typename T>
   T* SetAddon(std::unique_ptr<T> addon_view) {
@@ -49,7 +44,10 @@ class BirchChipButton : public views::Button,
     return ptr;
   }
 
-  // views::Button:
+  // BirchChipButtonBase:
+  const BirchItem* GetItem() const override;
+  BirchItem* GetItem() override;
+  void Shutdown() override;
   void OnGestureEvent(ui::GestureEvent* event) override;
 
   // ui::SimpleMenuModel::Delegate:
@@ -82,7 +80,7 @@ class BirchChipButton : public views::Button,
   base::WeakPtrFactory<BirchChipButton> weak_factory_{this};
 };
 
-BEGIN_VIEW_BUILDER(/*no export*/, BirchChipButton, views::Button)
+BEGIN_VIEW_BUILDER(/*no export*/, BirchChipButton, BirchChipButtonBase)
 VIEW_BUILDER_METHOD(Init, BirchItem*)
 VIEW_BUILDER_VIEW_TYPE_PROPERTY(views::View, Addon)
 END_VIEW_BUILDER

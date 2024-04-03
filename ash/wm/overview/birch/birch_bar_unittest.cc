@@ -497,7 +497,7 @@ TEST_F(BirchBarMenuTest, RemoveChip) {
           chips.size(),
           std::min(static_cast<size_t>(BirchBarView::kMaxChipsNum), item_num));
       for (size_t i = 0; i < chips.size(); i++) {
-        EXPECT_EQ(chips[i]->item(), cached_items[i].get());
+        EXPECT_EQ(chips[i]->GetItem(), cached_items[i].get());
       }
     }
   };
@@ -654,10 +654,10 @@ TEST_F(BirchBarMenuTest, CustomizeSuggestions) {
   // The functor to check if given suggestion types are shown in the bar chips.
   auto has_suggestion_types =
       [](const std::vector<BirchItemType>& types,
-         const std::vector<raw_ptr<BirchChipButton>>& chips) -> bool {
+         const std::vector<raw_ptr<BirchChipButtonBase>>& chips) -> bool {
     return base::ranges::all_of(types, [&](BirchItemType type) {
-      return base::ranges::any_of(chips, [&](raw_ptr<BirchChipButton> chip) {
-        return chip->item()->GetType() == type;
+      return base::ranges::any_of(chips, [&](raw_ptr<BirchChipButtonBase> chip) {
+        return chip->GetItem()->GetType() == type;
       });
     });
   };

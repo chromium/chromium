@@ -103,7 +103,7 @@ std::unique_ptr<views::Widget> BirchBarView::CreateBirchBarWidget(
 }
 
 void BirchBarView::Shutdown() {
-  for (BirchChipButton* chip : chips_) {
+  for (BirchChipButtonBase* chip : chips_) {
     chip->Shutdown();
   }
 }
@@ -167,13 +167,13 @@ void BirchBarView::AddChip(BirchItem* item) {
 void BirchBarView::RemoveChip(BirchItem* item) {
   auto iter = std::find_if(
       chips_.begin(), chips_.end(),
-      [item](BirchChipButton* chip) { return chip->item() == item; });
+      [item](BirchChipButtonBase* chip) { return chip->GetItem() == item; });
 
   if (iter == chips_.end()) {
     return;
   }
 
-  BirchChipButton* chip = *iter;
+  BirchChipButtonBase* chip = *iter;
   chips_.erase(iter);
 
   // Remove the chip from its owner.

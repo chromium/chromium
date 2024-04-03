@@ -134,7 +134,7 @@ class ASH_EXPORT BirchBarView : public views::BoxLayoutView {
   raw_ptr<BoxLayoutView> secondary_row_ = nullptr;
 
   // The chips are owned by either primary or secondary row.
-  std::vector<raw_ptr<BirchChipButton>> chips_;
+  std::vector<raw_ptr<BirchChipButtonBase>> chips_;
 
   base::RepeatingCallbackList<RelayoutCallback::RunType>
       relayout_callback_list_;
