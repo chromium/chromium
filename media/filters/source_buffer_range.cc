@@ -22,7 +22,6 @@ SourceBufferRange::SourceBufferRange(
     : gap_policy_(gap_policy),
       next_buffer_index_(-1),
       interbuffer_distance_cb_(std::move(interbuffer_distance_cb)),
-      size_in_bytes_(0),
       range_start_pts_(range_start_pts),
       keyframe_map_index_base_(0) {
   DVLOG(3) << __func__;
@@ -122,7 +121,7 @@ void SourceBufferRange::AppendBuffersToEnd(
 
     buffers_.push_back(*itr);
     UpdateEndTime(*itr);
-    size_in_bytes_ += (*itr)->data_size();
+    memory_usage_in_bytes_ += (*itr)->GetMemoryUsage();
 
     if ((*itr)->is_key_frame()) {
       keyframe_map_.insert(std::make_pair(
@@ -331,9 +330,9 @@ size_t SourceBufferRange::DeleteGOPFromFront(BufferQueue* deleted_buffers) {
   // Delete buffers from the beginning of the buffered range up until (but not
   // including) the next keyframe.
   for (int i = 0; i < end_index; i++) {
-    size_t bytes_deleted = buffers_.front()->data_size();
-    DCHECK_GE(size_in_bytes_, bytes_deleted);
-    size_in_bytes_ -= bytes_deleted;
+    size_t bytes_deleted = buffers_.front()->GetMemoryUsage();
+    DCHECK_GE(memory_usage_in_bytes_, bytes_deleted);
+    memory_usage_in_bytes_ -= bytes_deleted;
     total_bytes_deleted += bytes_deleted;
     deleted_buffers->push_back(buffers_.front());
     buffers_.pop_front();
@@ -381,9 +380,9 @@ size_t SourceBufferRange::DeleteGOPFromBack(BufferQueue* deleted_buffers) {
 
   size_t total_bytes_deleted = 0;
   while (buffers_.size() != goal_size) {
-    size_t bytes_deleted = buffers_.back()->data_size();
-    DCHECK_GE(size_in_bytes_, bytes_deleted);
-    size_in_bytes_ -= bytes_deleted;
+    size_t bytes_deleted = buffers_.back()->GetMemoryUsage();
+    DCHECK_GE(memory_usage_in_bytes_, bytes_deleted);
+    memory_usage_in_bytes_ -= bytes_deleted;
     total_bytes_deleted += bytes_deleted;
     // We're removing buffers from the back, so push each removed buffer to the
     // front of |deleted_buffers| so that |deleted_buffers| are in nondecreasing
@@ -432,7 +431,7 @@ size_t SourceBufferRange::GetRemovalGOP(
     BufferQueue::const_iterator next_gop_start =
         buffers_.begin() + next_gop_index;
     for (; buffer_itr != next_gop_start; ++buffer_itr) {
-      gop_size += (*buffer_itr)->data_size();
+      gop_size += (*buffer_itr)->GetMemoryUsage();
     }
 
     bytes_removed += gop_size;
@@ -705,9 +704,9 @@ void SourceBufferRange::FreeBufferRange(
     const BufferQueue::const_iterator& ending_point) {
   for (BufferQueue::const_iterator itr = starting_point; itr != ending_point;
        ++itr) {
-    size_t itr_data_size = static_cast<size_t>((*itr)->data_size());
-    DCHECK_GE(size_in_bytes_, itr_data_size);
-    size_in_bytes_ -= itr_data_size;
+    size_t itr_data_size = static_cast<size_t>((*itr)->GetMemoryUsage());
+    DCHECK_GE(memory_usage_in_bytes_, itr_data_size);
+    memory_usage_in_bytes_ -= itr_data_size;
   }
   buffers_.erase(starting_point, ending_point);
 }

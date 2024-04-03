@@ -342,6 +342,10 @@ class FFmpegDemuxerTest : public testing::Test {
     event.RunAndWaitForStatus(PIPELINE_OK);
   }
 
+  int64_t GetExpectedMemoryUsage(int number_of_buffers, int data_size) const {
+    return number_of_buffers * sizeof(DecoderBuffer) + data_size;
+  }
+
  private:
   void CreateDemuxerInternal(const std::string& name, MediaLog* media_log) {
     CHECK(!demuxer_);
@@ -586,7 +590,7 @@ TEST_F(FFmpegDemuxerTest, Read_Audio) {
   DemuxerStream* audio = GetStream(DemuxerStream::AUDIO);
   Read(audio, FROM_HERE, 29, 0, true);
   Read(audio, FROM_HERE, 27, 3000, true);
-  EXPECT_EQ(166866, demuxer_->GetMemoryUsage());
+  EXPECT_EQ(GetExpectedMemoryUsage(182, 166866), demuxer_->GetMemoryUsage());
 }
 
 TEST_F(FFmpegDemuxerTest, Read_Video) {
@@ -598,7 +602,7 @@ TEST_F(FFmpegDemuxerTest, Read_Video) {
   DemuxerStream* video = GetStream(DemuxerStream::VIDEO);
   Read(video, FROM_HERE, 22084, 0, true);
   Read(video, FROM_HERE, 1057, 33000, false);
-  EXPECT_EQ(148778, demuxer_->GetMemoryUsage());
+  EXPECT_EQ(GetExpectedMemoryUsage(193, 148778), demuxer_->GetMemoryUsage());
 }
 
 TEST_F(FFmpegDemuxerTest, SeekInitialized_NoVideoStartTime) {
@@ -1761,7 +1765,7 @@ TEST_F(FFmpegDemuxerTest, MultitrackMemoryUsage) {
   // the first audio and the first video stream are enabled, so the memory usage
   // shouldn't be too high.
   Read(audio, FROM_HERE, 304, 0, true);
-  EXPECT_EQ(22134, demuxer_->GetMemoryUsage());
+  EXPECT_EQ(GetExpectedMemoryUsage(152, 22134), demuxer_->GetMemoryUsage());
 
   // Now enable all demuxer streams in the file and perform another read, this
   // will buffer the data for additional streams and memory usage will increase.
@@ -1775,7 +1779,7 @@ TEST_F(FFmpegDemuxerTest, MultitrackMemoryUsage) {
 
   // With newly enabled demuxer streams the amount of memory used by the demuxer
   // is much higher.
-  EXPECT_EQ(156011, demuxer_->GetMemoryUsage());
+  EXPECT_EQ(GetExpectedMemoryUsage(896, 156011), demuxer_->GetMemoryUsage());
 }
 
 TEST_F(FFmpegDemuxerTest, SeekOnVideoTrackChangeWontSeekIfEmpty) {

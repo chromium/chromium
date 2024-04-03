@@ -1306,6 +1306,10 @@ class ChunkDemuxerTest : public ::testing::Test {
     return true;
   }
 
+  int64_t GetExpectedMemoryUsage(int number_of_buffers, int data_size) const {
+    return number_of_buffers * sizeof(StreamParserBuffer) + data_size;
+  }
+
   base::test::TaskEnvironment task_environment_;
 
   StrictMock<MockMediaLog> media_log_;
@@ -2108,7 +2112,7 @@ TEST_F(ChunkDemuxerTest, WebMFile_AudioAndVideo) {
 
   ASSERT_TRUE(ParseWebMFile("bear-320x240.webm", buffer_timestamps,
                             base::Milliseconds(2744)));
-  EXPECT_EQ(212949, demuxer_->GetMemoryUsage());
+  EXPECT_EQ(GetExpectedMemoryUsage(248, 212949), demuxer_->GetMemoryUsage());
 }
 
 TEST_F(ChunkDemuxerTest, WebMFile_LiveAudioAndVideo) {
@@ -2130,7 +2134,7 @@ TEST_F(ChunkDemuxerTest, WebMFile_LiveAudioAndVideo) {
   EXPECT_EQ(StreamLiveness::kLive, audio->liveness());
   DemuxerStream* video = GetStream(DemuxerStream::VIDEO);
   EXPECT_EQ(StreamLiveness::kLive, video->liveness());
-  EXPECT_EQ(212949, demuxer_->GetMemoryUsage());
+  EXPECT_EQ(GetExpectedMemoryUsage(248, 212949), demuxer_->GetMemoryUsage());
 }
 
 TEST_F(ChunkDemuxerTest, WebMFile_AudioOnly) {
@@ -2152,7 +2156,7 @@ TEST_F(ChunkDemuxerTest, WebMFile_AudioOnly) {
 
   ASSERT_TRUE(ParseWebMFile("bear-320x240-audio-only.webm", buffer_timestamps,
                             base::Milliseconds(2744), HAS_AUDIO));
-  EXPECT_EQ(18624, demuxer_->GetMemoryUsage());
+  EXPECT_EQ(GetExpectedMemoryUsage(166, 18624), demuxer_->GetMemoryUsage());
 }
 
 TEST_F(ChunkDemuxerTest, WebMFile_VideoOnly) {
@@ -2173,7 +2177,7 @@ TEST_F(ChunkDemuxerTest, WebMFile_VideoOnly) {
 
   ASSERT_TRUE(ParseWebMFile("bear-320x240-video-only.webm", buffer_timestamps,
                             base::Milliseconds(2703), HAS_VIDEO));
-  EXPECT_EQ(194325, demuxer_->GetMemoryUsage());
+  EXPECT_EQ(GetExpectedMemoryUsage(82, 194325), demuxer_->GetMemoryUsage());
 }
 
 TEST_F(ChunkDemuxerTest, WebMFile_AltRefFrames) {
@@ -3660,8 +3664,10 @@ TEST_F(ChunkDemuxerTest, SetMemoryLimitType) {
   ASSERT_TRUE(InitDemuxer(HAS_AUDIO | HAS_VIDEO));
 
   // Set different memory limits for audio and video.
-  demuxer_->SetMemoryLimitsForTest(DemuxerStream::AUDIO, 10 * block_size_);
-  demuxer_->SetMemoryLimitsForTest(DemuxerStream::VIDEO, 5 * block_size_ + 1);
+  demuxer_->SetMemoryLimitsForTest(
+      DemuxerStream::AUDIO, GetExpectedMemoryUsage(10, 10 * block_size_));
+  demuxer_->SetMemoryLimitsForTest(
+      DemuxerStream::VIDEO, GetExpectedMemoryUsage(5, 5 * block_size_) + 1);
 
   base::TimeDelta seek_time = base::Milliseconds(1000);
 
@@ -3697,7 +3703,8 @@ TEST_F(ChunkDemuxerTest, SetMemoryLimitType) {
 
 TEST_F(ChunkDemuxerTest, GCDuringSeek_SingleRange_SeekForward) {
   ASSERT_TRUE(InitDemuxer(HAS_AUDIO));
-  demuxer_->SetMemoryLimitsForTest(DemuxerStream::AUDIO, 10 * block_size_);
+  demuxer_->SetMemoryLimitsForTest(
+      DemuxerStream::AUDIO, GetExpectedMemoryUsage(10, 10 * block_size_));
   // Append some data at position 1000ms
   AppendSingleStreamCluster(kSourceId, kAudioTrackNum, 1000, 10);
   CheckExpectedRanges("{ [1000,1230) }");
@@ -3706,8 +3713,8 @@ TEST_F(ChunkDemuxerTest, GCDuringSeek_SingleRange_SeekForward) {
   // those frames are earlier than the seek target position.
   base::TimeDelta seek_time = base::Milliseconds(2000);
   Seek(seek_time);
-  EXPECT_TRUE(
-      demuxer_->EvictCodedFrames(kSourceId, seek_time, 5 * block_size_));
+  EXPECT_TRUE(demuxer_->EvictCodedFrames(
+      kSourceId, seek_time, GetExpectedMemoryUsage(5, 5 * block_size_)));
 
   // Append data to complete seek operation
   AppendSingleStreamCluster(kSourceId, kAudioTrackNum, 2000, 5);
@@ -3716,7 +3723,8 @@ TEST_F(ChunkDemuxerTest, GCDuringSeek_SingleRange_SeekForward) {
 
 TEST_F(ChunkDemuxerTest, GCDuringSeek_SingleRange_SeekBack) {
   ASSERT_TRUE(InitDemuxer(HAS_AUDIO));
-  demuxer_->SetMemoryLimitsForTest(DemuxerStream::AUDIO, 10 * block_size_);
+  demuxer_->SetMemoryLimitsForTest(
+      DemuxerStream::AUDIO, GetExpectedMemoryUsage(10, 10 * block_size_));
   // Append some data at position 1000ms
   AppendSingleStreamCluster(kSourceId, kAudioTrackNum, 1000, 10);
   CheckExpectedRanges("{ [1000,1230) }");
@@ -3726,8 +3734,8 @@ TEST_F(ChunkDemuxerTest, GCDuringSeek_SingleRange_SeekBack) {
   // evicted to make space for the upcoming append at seek target position.
   base::TimeDelta seek_time = base::TimeDelta();
   Seek(seek_time);
-  EXPECT_TRUE(
-      demuxer_->EvictCodedFrames(kSourceId, seek_time, 5 * block_size_));
+  EXPECT_TRUE(demuxer_->EvictCodedFrames(
+      kSourceId, seek_time, GetExpectedMemoryUsage(5, 5 * block_size_)));
 
   // Append data to complete seek operation
   AppendSingleStreamCluster(kSourceId, kAudioTrackNum, 0, 5);
@@ -3736,7 +3744,8 @@ TEST_F(ChunkDemuxerTest, GCDuringSeek_SingleRange_SeekBack) {
 
 TEST_F(ChunkDemuxerTest, GCDuringSeek_MultipleRanges_SeekForward) {
   ASSERT_TRUE(InitDemuxer(HAS_AUDIO));
-  demuxer_->SetMemoryLimitsForTest(DemuxerStream::AUDIO, 10 * block_size_);
+  demuxer_->SetMemoryLimitsForTest(
+      DemuxerStream::AUDIO, GetExpectedMemoryUsage(10, 10 * block_size_));
   // Append some data at position 1000ms then at 2000ms
   AppendSingleStreamCluster(kSourceId, kAudioTrackNum, 1000, 5);
   AppendSingleStreamCluster(kSourceId, kAudioTrackNum, 2000, 5);
@@ -3746,8 +3755,8 @@ TEST_F(ChunkDemuxerTest, GCDuringSeek_MultipleRanges_SeekForward) {
   // those frames are earlier than the seek target position.
   base::TimeDelta seek_time = base::Milliseconds(3000);
   Seek(seek_time);
-  EXPECT_TRUE(
-      demuxer_->EvictCodedFrames(kSourceId, seek_time, 8 * block_size_));
+  EXPECT_TRUE(demuxer_->EvictCodedFrames(
+      kSourceId, seek_time, GetExpectedMemoryUsage(8, 8 * block_size_)));
 
   // Append data to complete seek operation
   AppendSingleStreamCluster(kSourceId, kAudioTrackNum, 3000, 5);
@@ -3756,7 +3765,8 @@ TEST_F(ChunkDemuxerTest, GCDuringSeek_MultipleRanges_SeekForward) {
 
 TEST_F(ChunkDemuxerTest, GCDuringSeek_MultipleRanges_SeekInbetween1) {
   ASSERT_TRUE(InitDemuxer(HAS_AUDIO));
-  demuxer_->SetMemoryLimitsForTest(DemuxerStream::AUDIO, 10 * block_size_);
+  demuxer_->SetMemoryLimitsForTest(
+      DemuxerStream::AUDIO, GetExpectedMemoryUsage(10, 10 * block_size_));
   // Append some data at position 1000ms then at 2000ms
   AppendSingleStreamCluster(kSourceId, kAudioTrackNum, 1000, 5);
   AppendSingleStreamCluster(kSourceId, kAudioTrackNum, 2000, 5);
@@ -3772,8 +3782,8 @@ TEST_F(ChunkDemuxerTest, GCDuringSeek_MultipleRanges_SeekInbetween1) {
   // the upcoming append and allow seek to proceed.
   base::TimeDelta seek_time = base::Milliseconds(1500);
   Seek(seek_time);
-  EXPECT_TRUE(
-      demuxer_->EvictCodedFrames(kSourceId, seek_time, 8 * block_size_));
+  EXPECT_TRUE(demuxer_->EvictCodedFrames(
+      kSourceId, seek_time, GetExpectedMemoryUsage(8, 8 * block_size_)));
 
   // Append data to complete seek operation
   AppendSingleStreamCluster(kSourceId, kAudioTrackNum, 1500, 5);
@@ -3782,7 +3792,8 @@ TEST_F(ChunkDemuxerTest, GCDuringSeek_MultipleRanges_SeekInbetween1) {
 
 TEST_F(ChunkDemuxerTest, GCDuringSeek_MultipleRanges_SeekInbetween2) {
   ASSERT_TRUE(InitDemuxer(HAS_AUDIO));
-  demuxer_->SetMemoryLimitsForTest(DemuxerStream::AUDIO, 10 * block_size_);
+  demuxer_->SetMemoryLimitsForTest(
+      DemuxerStream::AUDIO, GetExpectedMemoryUsage(10, 10 * block_size_));
 
   // Append some data at position 2000ms first, then at 1000ms, so that the last
   // appended data position is in the first buffered range (that matters to the
@@ -3795,8 +3806,8 @@ TEST_F(ChunkDemuxerTest, GCDuringSeek_MultipleRanges_SeekInbetween2) {
   // without calling Seek(), the GC algorithm should try to preserve data in the
   // first range, since that is most recently appended data.
   base::TimeDelta seek_time = base::Milliseconds(2030);
-  EXPECT_TRUE(
-      demuxer_->EvictCodedFrames(kSourceId, seek_time, 5 * block_size_));
+  EXPECT_TRUE(demuxer_->EvictCodedFrames(
+      kSourceId, seek_time, GetExpectedMemoryUsage(5, 5 * block_size_)));
 
   AppendSingleStreamCluster(kSourceId, kAudioTrackNum, 1500, 5);
   CheckExpectedRanges("{ [1000,1115) [1500,1615) }");
@@ -3804,7 +3815,8 @@ TEST_F(ChunkDemuxerTest, GCDuringSeek_MultipleRanges_SeekInbetween2) {
 
 TEST_F(ChunkDemuxerTest, GCDuringSeek_MultipleRanges_SeekBack) {
   ASSERT_TRUE(InitDemuxer(HAS_AUDIO));
-  demuxer_->SetMemoryLimitsForTest(DemuxerStream::AUDIO, 10 * block_size_);
+  demuxer_->SetMemoryLimitsForTest(
+      DemuxerStream::AUDIO, GetExpectedMemoryUsage(10, 10 * block_size_));
   // Append some data at position 1000ms then at 2000ms
   AppendSingleStreamCluster(kSourceId, kAudioTrackNum, 1000, 5);
   AppendSingleStreamCluster(kSourceId, kAudioTrackNum, 2000, 5);
@@ -3814,8 +3826,8 @@ TEST_F(ChunkDemuxerTest, GCDuringSeek_MultipleRanges_SeekBack) {
   // those frames are earlier than the seek target position.
   base::TimeDelta seek_time = base::TimeDelta();
   Seek(seek_time);
-  EXPECT_TRUE(
-      demuxer_->EvictCodedFrames(kSourceId, seek_time, 8 * block_size_));
+  EXPECT_TRUE(demuxer_->EvictCodedFrames(
+      kSourceId, seek_time, GetExpectedMemoryUsage(8, 8 * block_size_)));
 
   // Append data to complete seek operation
   AppendSingleStreamCluster(kSourceId, kAudioTrackNum, 0, 5);
@@ -3825,7 +3837,8 @@ TEST_F(ChunkDemuxerTest, GCDuringSeek_MultipleRanges_SeekBack) {
 TEST_F(ChunkDemuxerTest, GCDuringSeek) {
   ASSERT_TRUE(InitDemuxer(HAS_AUDIO));
 
-  demuxer_->SetMemoryLimitsForTest(DemuxerStream::AUDIO, 5 * block_size_);
+  demuxer_->SetMemoryLimitsForTest(DemuxerStream::AUDIO,
+                                   GetExpectedMemoryUsage(5, 5 * block_size_));
 
   base::TimeDelta seek_time1 = base::Milliseconds(1000);
   base::TimeDelta seek_time2 = base::Milliseconds(500);
@@ -3870,7 +3883,8 @@ TEST_F(ChunkDemuxerTest, GCDuringSeek) {
 TEST_F(ChunkDemuxerTest, GCKeepPlayhead) {
   ASSERT_TRUE(InitDemuxer(HAS_AUDIO));
 
-  demuxer_->SetMemoryLimitsForTest(DemuxerStream::AUDIO, 5 * block_size_);
+  demuxer_->SetMemoryLimitsForTest(DemuxerStream::AUDIO,
+                                   GetExpectedMemoryUsage(5, 5 * block_size_));
 
   // Append data at the start that can be garbage collected:
   AppendSingleStreamCluster(kSourceId, kAudioTrackNum, 0, 10);
@@ -4227,8 +4241,10 @@ TEST_F(ChunkDemuxerTest, CuesBetweenClusters) {
 
 TEST_F(ChunkDemuxerTest, EvictCodedFramesTest) {
   ASSERT_TRUE(InitDemuxer(HAS_AUDIO | HAS_VIDEO));
-  demuxer_->SetMemoryLimitsForTest(DemuxerStream::AUDIO, 10 * block_size_);
-  demuxer_->SetMemoryLimitsForTest(DemuxerStream::VIDEO, 15 * block_size_);
+  demuxer_->SetMemoryLimitsForTest(
+      DemuxerStream::AUDIO, GetExpectedMemoryUsage(10, 10 * block_size_));
+  demuxer_->SetMemoryLimitsForTest(
+      DemuxerStream::VIDEO, GetExpectedMemoryUsage(15, 15 * block_size_));
   DemuxerStream* audio_stream = GetStream(DemuxerStream::AUDIO);
   DemuxerStream* video_stream = GetStream(DemuxerStream::VIDEO);
 
@@ -4242,11 +4258,12 @@ TEST_F(ChunkDemuxerTest, EvictCodedFramesTest) {
   CheckExpectedBuffers(audio_stream, kAudioStreamInfo);
   CheckExpectedBuffers(video_stream, kVideoStreamInfo);
 
-  // If we want to append 80 more blocks of muxed a+v data and the current
+  // If we want to append 8 more blocks of muxed a+v data and the current
   // position is 0, that will fail, because EvictCodedFrames won't remove the
   // data after the current playback position.
   ASSERT_FALSE(
-      demuxer_->EvictCodedFrames(kSourceId, base::Milliseconds(0), 80));
+      demuxer_->EvictCodedFrames(kSourceId, base::Milliseconds(0),
+                                 GetExpectedMemoryUsage(8, 8 * block_size_)));
   // EvictCodedFrames has failed, so data should be unchanged.
   Seek(base::Milliseconds(0));
   CheckExpectedBuffers(audio_stream, kAudioStreamInfo);
@@ -4255,7 +4272,8 @@ TEST_F(ChunkDemuxerTest, EvictCodedFramesTest) {
   // But if we pretend that playback position has moved to 120ms, that allows
   // EvictCodedFrames to garbage-collect enough data to succeed.
   ASSERT_TRUE(
-      demuxer_->EvictCodedFrames(kSourceId, base::Milliseconds(120), 80));
+      demuxer_->EvictCodedFrames(kSourceId, base::Milliseconds(120),
+                                 GetExpectedMemoryUsage(8, 8 * block_size_)));
 
   Seek(base::Milliseconds(0));
   // Audio stream had 8 buffers, video stream had 15. We told EvictCodedFrames

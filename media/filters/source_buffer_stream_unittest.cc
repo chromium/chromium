@@ -84,7 +84,7 @@ class SourceBufferStreamTest : public testing::Test {
   }
 
   void SetMemoryLimit(size_t buffers_of_data) {
-    stream_->set_memory_limit(buffers_of_data * kDataSize);
+    stream_->set_memory_limit(buffers_of_data * GetMemoryUsagePerBuffer());
   }
 
   void SetStreamInfo(int frames_per_second, int keyframes_per_second) {
@@ -417,6 +417,10 @@ class SourceBufferStreamTest : public testing::Test {
     EXPECT_TRUE(actual.Matches(config))
         << "Expected: " << config.AsHumanReadableString()
         << "\nActual: " << actual.AsHumanReadableString();
+  }
+
+  int GetMemoryUsagePerBuffer() const {
+    return kDataSize + sizeof(StreamParserBuffer);
   }
 
   base::TimeDelta frame_duration() const { return frame_duration_; }
@@ -2584,7 +2588,8 @@ TEST_F(SourceBufferStreamTest,
   // GOP in that first range. Neither can it collect the last appended GOP
   // (which is the entire second range), so GC should return false since it
   // couldn't collect enough.
-  EXPECT_FALSE(GarbageCollect(base::Milliseconds(95), 7));
+  EXPECT_FALSE(
+      GarbageCollect(base::Milliseconds(95), 7 * GetMemoryUsagePerBuffer()));
   CheckExpectedRangesByTimestamp("{ [50,100) [1000,1050) }");
 }
 
@@ -3246,45 +3251,53 @@ TEST_F(SourceBufferStreamTest, GetRemovalRange_BytesToFree) {
   EXPECT_EQ(0, bytes_removed);
 
   // Smaller than the size of GOP.
-  bytes_removed = GetRemovalRangeInMs(300, 1080, 1, &remove_range_end);
+  bytes_removed = GetRemovalRangeInMs(300, 1080, GetMemoryUsagePerBuffer(),
+                                      &remove_range_end);
   EXPECT_EQ(390, remove_range_end);
   // Remove as the size of GOP.
-  EXPECT_EQ(3, bytes_removed);
+  EXPECT_EQ(3 * GetMemoryUsagePerBuffer(), bytes_removed);
 
   // The same size with a GOP.
-  bytes_removed = GetRemovalRangeInMs(300, 1080, 3, &remove_range_end);
+  bytes_removed = GetRemovalRangeInMs(300, 1080, 3 * GetMemoryUsagePerBuffer(),
+                                      &remove_range_end);
   EXPECT_EQ(390, remove_range_end);
-  EXPECT_EQ(3, bytes_removed);
+  EXPECT_EQ(3 * GetMemoryUsagePerBuffer(), bytes_removed);
 
   // The same size with a range.
-  bytes_removed = GetRemovalRangeInMs(300, 1080, 6, &remove_range_end);
+  bytes_removed = GetRemovalRangeInMs(300, 1080, 6 * GetMemoryUsagePerBuffer(),
+                                      &remove_range_end);
   EXPECT_EQ(480, remove_range_end);
-  EXPECT_EQ(6, bytes_removed);
+  EXPECT_EQ(6 * GetMemoryUsagePerBuffer(), bytes_removed);
 
   // A frame larger than a range.
-  bytes_removed = GetRemovalRangeInMs(300, 1080, 7, &remove_range_end);
+  bytes_removed = GetRemovalRangeInMs(300, 1080, 7 * GetMemoryUsagePerBuffer(),
+                                      &remove_range_end);
   EXPECT_EQ(690, remove_range_end);
-  EXPECT_EQ(9, bytes_removed);
+  EXPECT_EQ(9 * GetMemoryUsagePerBuffer(), bytes_removed);
 
   // The same size with two ranges.
-  bytes_removed = GetRemovalRangeInMs(300, 1080, 12, &remove_range_end);
+  bytes_removed = GetRemovalRangeInMs(300, 1080, 12 * GetMemoryUsagePerBuffer(),
+                                      &remove_range_end);
   EXPECT_EQ(780, remove_range_end);
-  EXPECT_EQ(12, bytes_removed);
+  EXPECT_EQ(12 * GetMemoryUsagePerBuffer(), bytes_removed);
 
   // Larger than two ranges.
-  bytes_removed = GetRemovalRangeInMs(300, 1080, 14, &remove_range_end);
+  bytes_removed = GetRemovalRangeInMs(300, 1080, 14 * GetMemoryUsagePerBuffer(),
+                                      &remove_range_end);
   EXPECT_EQ(990, remove_range_end);
-  EXPECT_EQ(15, bytes_removed);
+  EXPECT_EQ(15 * GetMemoryUsagePerBuffer(), bytes_removed);
 
   // The same size with the whole ranges.
-  bytes_removed = GetRemovalRangeInMs(300, 1080, 18, &remove_range_end);
+  bytes_removed = GetRemovalRangeInMs(300, 1080, 18 * GetMemoryUsagePerBuffer(),
+                                      &remove_range_end);
   EXPECT_EQ(1080, remove_range_end);
-  EXPECT_EQ(18, bytes_removed);
+  EXPECT_EQ(18 * GetMemoryUsagePerBuffer(), bytes_removed);
 
   // Larger than the whole ranges.
-  bytes_removed = GetRemovalRangeInMs(300, 1080, 20, &remove_range_end);
+  bytes_removed = GetRemovalRangeInMs(300, 1080, 20 * GetMemoryUsagePerBuffer(),
+                                      &remove_range_end);
   EXPECT_EQ(1080, remove_range_end);
-  EXPECT_EQ(18, bytes_removed);
+  EXPECT_EQ(18 * GetMemoryUsagePerBuffer(), bytes_removed);
 }
 
 TEST_F(SourceBufferStreamTest, GetRemovalRange_Range) {
@@ -3303,54 +3316,64 @@ TEST_F(SourceBufferStreamTest, GetRemovalRange_Range) {
   int bytes_removed = -1;
 
   // Within a GOP and no keyframe.
-  bytes_removed = GetRemovalRangeInMs(630, 660, 20, &remove_range_end);
+  bytes_removed = GetRemovalRangeInMs(630, 660, 20 * GetMemoryUsagePerBuffer(),
+                                      &remove_range_end);
   EXPECT_EQ(-1, remove_range_end);
   EXPECT_EQ(0, bytes_removed);
 
   // Across a GOP and no keyframe.
-  bytes_removed = GetRemovalRangeInMs(630, 750, 20, &remove_range_end);
+  bytes_removed = GetRemovalRangeInMs(630, 750, 20 * GetMemoryUsagePerBuffer(),
+                                      &remove_range_end);
   EXPECT_EQ(-1, remove_range_end);
   EXPECT_EQ(0, bytes_removed);
 
   // The same size with a range.
-  bytes_removed = GetRemovalRangeInMs(600, 780, 20, &remove_range_end);
+  bytes_removed = GetRemovalRangeInMs(600, 780, 20 * GetMemoryUsagePerBuffer(),
+                                      &remove_range_end);
   EXPECT_EQ(780, remove_range_end);
-  EXPECT_EQ(6, bytes_removed);
+  EXPECT_EQ(6 * GetMemoryUsagePerBuffer(), bytes_removed);
 
   // One frame larger than a range.
-  bytes_removed = GetRemovalRangeInMs(570, 810, 20, &remove_range_end);
+  bytes_removed = GetRemovalRangeInMs(570, 810, 20 * GetMemoryUsagePerBuffer(),
+                                      &remove_range_end);
   EXPECT_EQ(780, remove_range_end);
-  EXPECT_EQ(6, bytes_removed);
+  EXPECT_EQ(6 * GetMemoryUsagePerBuffer(), bytes_removed);
 
   // Facing the other ranges.
-  bytes_removed = GetRemovalRangeInMs(480, 900, 20, &remove_range_end);
+  bytes_removed = GetRemovalRangeInMs(480, 900, 20 * GetMemoryUsagePerBuffer(),
+                                      &remove_range_end);
   EXPECT_EQ(780, remove_range_end);
-  EXPECT_EQ(6, bytes_removed);
+  EXPECT_EQ(6 * GetMemoryUsagePerBuffer(), bytes_removed);
 
   // In the midle of the other ranges, but not including any GOP.
-  bytes_removed = GetRemovalRangeInMs(420, 960, 20, &remove_range_end);
+  bytes_removed = GetRemovalRangeInMs(420, 960, 20 * GetMemoryUsagePerBuffer(),
+                                      &remove_range_end);
   EXPECT_EQ(780, remove_range_end);
-  EXPECT_EQ(6, bytes_removed);
+  EXPECT_EQ(6 * GetMemoryUsagePerBuffer(), bytes_removed);
 
   // In the middle of the other ranges.
-  bytes_removed = GetRemovalRangeInMs(390, 990, 20, &remove_range_end);
+  bytes_removed = GetRemovalRangeInMs(390, 990, 20 * GetMemoryUsagePerBuffer(),
+                                      &remove_range_end);
   EXPECT_EQ(990, remove_range_end);
-  EXPECT_EQ(12, bytes_removed);
+  EXPECT_EQ(12 * GetMemoryUsagePerBuffer(), bytes_removed);
 
   // A frame smaller than the whole ranges.
-  bytes_removed = GetRemovalRangeInMs(330, 1050, 20, &remove_range_end);
+  bytes_removed = GetRemovalRangeInMs(330, 1050, 20 * GetMemoryUsagePerBuffer(),
+                                      &remove_range_end);
   EXPECT_EQ(990, remove_range_end);
-  EXPECT_EQ(12, bytes_removed);
+  EXPECT_EQ(12 * GetMemoryUsagePerBuffer(), bytes_removed);
 
   // The same with the whole ranges.
-  bytes_removed = GetRemovalRangeInMs(300, 1080, 20, &remove_range_end);
+  bytes_removed = GetRemovalRangeInMs(300, 1080, 20 * GetMemoryUsagePerBuffer(),
+                                      &remove_range_end);
   EXPECT_EQ(1080, remove_range_end);
-  EXPECT_EQ(18, bytes_removed);
+  EXPECT_EQ(18 * GetMemoryUsagePerBuffer(), bytes_removed);
 
   // Larger than the whole ranges.
-  bytes_removed = GetRemovalRangeInMs(270, 1110, 20, &remove_range_end);
+  bytes_removed = GetRemovalRangeInMs(270, 1110, 20 * GetMemoryUsagePerBuffer(),
+                                      &remove_range_end);
   EXPECT_EQ(1080, remove_range_end);
-  EXPECT_EQ(18, bytes_removed);
+  EXPECT_EQ(18 * GetMemoryUsagePerBuffer(), bytes_removed);
 }
 
 TEST_F(SourceBufferStreamTest, IsNextBufferConfigChanged) {

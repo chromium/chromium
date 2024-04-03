@@ -56,8 +56,11 @@ class MEDIA_EXPORT DecoderBufferQueue {
   // Returns zero if the queue is empty.
   base::TimeDelta Duration();
 
-  // Returns the total size of buffers inside the queue.
-  size_t data_size() const { return data_size_; }
+  // Returns the total memory occupied by this class and the buffers it holds,
+  // including the bookkeeping data and buffered data. For simplicity, the
+  // bookkeeping data of this class itself isn't included as it's relatively
+  // small compared to the other data.
+  size_t memory_usage_in_bytes() const { return memory_usage_in_bytes_; }
 
   // Returns the number of buffers in the queue.
   size_t queue_size() const { return queue_.size(); }
@@ -73,8 +76,8 @@ class MEDIA_EXPORT DecoderBufferQueue {
 
   base::TimeDelta earliest_valid_timestamp_;
 
-  // Total size in bytes of buffers in the queue.
-  size_t data_size_;
+  // Total memory usage in bytes for buffers in the queue.
+  size_t memory_usage_in_bytes_ = 0;
 };
 
 }  // namespace media

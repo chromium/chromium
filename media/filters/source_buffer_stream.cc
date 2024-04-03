@@ -85,7 +85,7 @@ std::string StatusToString(const SourceBufferStreamStatus& status) {
 
 // Helper method for logging, converts a range into a readable string.
 std::string RangeToString(const SourceBufferRange& range) {
-  if (range.size_in_bytes() == 0) {
+  if (range.GetMemoryUsage() == 0) {
     return "[]";
   }
   std::stringstream ss;
@@ -758,7 +758,7 @@ bool SourceBufferStream::GarbageCollectIfNeeded(base::TimeDelta media_time,
   if (!base::FeatureList::IsEnabled(kMemoryPressureBasedSourceBufferGC))
     DCHECK(!end_of_stream_);
   // Compute size of |ranges_|.
-  size_t ranges_size = GetBufferedSize();
+  size_t ranges_size = GetMemoryUsage();
 
   // Sanity and overflow checks
   if ((newDataSize > memory_limit_) ||
@@ -1055,7 +1055,7 @@ size_t SourceBufferStream::FreeBuffers(size_t total_bytes_to_free,
       bytes_freed += bytes_deleted;
     }
 
-    if (current_range->size_in_bytes() == 0) {
+    if (current_range->GetMemoryUsage() == 0) {
       DCHECK_NE(current_range, selected_range_);
       DCHECK(range_for_next_append_ == ranges_.end() ||
              range_for_next_append_->get() != current_range);
@@ -1715,11 +1715,11 @@ base::TimeDelta SourceBufferStream::GetBufferedDuration() const {
   return ranges_.back()->GetBufferedEndTimestamp();
 }
 
-size_t SourceBufferStream::GetBufferedSize() const {
-  size_t ranges_size = 0;
+size_t SourceBufferStream::GetMemoryUsage() const {
+  size_t memory_usage = 0;
   for (const auto& range_ptr : ranges_)
-    ranges_size += range_ptr->size_in_bytes();
-  return ranges_size;
+    memory_usage += range_ptr->GetMemoryUsage();
+  return memory_usage;
 }
 
 void SourceBufferStream::MarkEndOfStream() {

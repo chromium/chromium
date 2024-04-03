@@ -103,8 +103,8 @@ class MEDIA_EXPORT ChunkDemuxerStream : public DemuxerStream {
   // Returns base::TimeDelta() if the stream has no buffered data.
   base::TimeDelta GetBufferedDuration() const;
 
-  // Returns the size of the buffered data in bytes.
-  size_t GetBufferedSize() const;
+  // Returns the memory usage of the buffered data in bytes.
+  size_t GetMemoryUsage() const;
 
   // Signal to the stream that buffers handed in through subsequent calls to
   // Append() belong to a coded frame group that starts at |start_pts|.

@@ -890,7 +890,7 @@ bool FFmpegDemuxerStream::HasAvailableCapacity() {
 }
 
 size_t FFmpegDemuxerStream::MemoryUsage() const {
-  return buffer_queue_.data_size();
+  return buffer_queue_.memory_usage_in_bytes();
 }
 
 std::string FFmpegDemuxerStream::GetMetadata(const char* key) const {

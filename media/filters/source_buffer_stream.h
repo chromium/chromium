@@ -145,8 +145,8 @@ class MEDIA_EXPORT SourceBufferStream {
   // then base::TimeDelta() is returned.
   base::TimeDelta GetBufferedDuration() const;
 
-  // Returns the size of the buffered data in bytes.
-  size_t GetBufferedSize() const;
+  // Returns the memory usage of the buffered data in bytes.
+  size_t GetMemoryUsage() const;
 
   // Notifies this object that end of stream has been signalled.
   void MarkEndOfStream();

@@ -289,9 +289,9 @@ bool SourceBufferState::EvictCodedFrames(base::TimeDelta media_time,
                                          size_t newDataSize) {
   size_t total_buffered_size = 0;
   for (const auto& it : audio_streams_)
-    total_buffered_size += it.second->GetBufferedSize();
+    total_buffered_size += it.second->GetMemoryUsage();
   for (const auto& it : video_streams_)
-    total_buffered_size += it.second->GetBufferedSize();
+    total_buffered_size += it.second->GetMemoryUsage();
 
   DVLOG(3) << __func__ << " media_time=" << media_time.InSecondsF()
            << " newDataSize=" << newDataSize
@@ -302,7 +302,7 @@ bool SourceBufferState::EvictCodedFrames(base::TimeDelta media_time,
 
   bool success = true;
   for (const auto& it : audio_streams_) {
-    uint64_t curr_size = it.second->GetBufferedSize();
+    uint64_t curr_size = it.second->GetMemoryUsage();
     if (curr_size == 0)
       continue;
     uint64_t estimated_new_size = newDataSize * curr_size / total_buffered_size;
@@ -311,7 +311,7 @@ bool SourceBufferState::EvictCodedFrames(base::TimeDelta media_time,
         media_time, static_cast<size_t>(estimated_new_size));
   }
   for (const auto& it : video_streams_) {
-    uint64_t curr_size = it.second->GetBufferedSize();
+    uint64_t curr_size = it.second->GetMemoryUsage();
     if (curr_size == 0)
       continue;
     uint64_t estimated_new_size = newDataSize * curr_size / total_buffered_size;

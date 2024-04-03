@@ -193,13 +193,15 @@ class MEDIA_EXPORT DecoderBuffer
     time_info_.discard_padding = discard_padding;
   }
 
-  // Returns DecryptConfig associated with |this|. Returns null iff |this| is
+  // Returns DecryptConfig associated with |this|. Returns null if |this| is
   // not encrypted.
   const DecryptConfig* decrypt_config() const {
     DCHECK(!end_of_stream());
     return decrypt_config_.get();
   }
 
+  // TODO(b/331652782): integrate the setter function into the constructor to
+  // make |decrypt_config_| immutable.
   void set_decrypt_config(std::unique_ptr<DecryptConfig> decrypt_config) {
     DCHECK(!end_of_stream());
     decrypt_config_ = std::move(decrypt_config);
@@ -231,6 +233,9 @@ class MEDIA_EXPORT DecoderBuffer
   const std::optional<DecoderBufferSideData>& side_data() const {
     return side_data_;
   }
+
+  // TODO(b/331652782): integrate the setter function into the constructor to
+  // make |side_data_| immutable.
   DecoderBufferSideData& WritableSideData();
   void set_side_data(const std::optional<DecoderBufferSideData>& side_data) {
     side_data_ = side_data;
@@ -245,6 +250,10 @@ class MEDIA_EXPORT DecoderBuffer
 
   // Returns a human-readable string describing |*this|.
   std::string AsHumanReadableString(bool verbose = false) const;
+
+  // Returns total memory usage for both bookkeeping and buffered data. The
+  // function is added for more accurately memory management.
+  virtual size_t GetMemoryUsage() const;
 
  protected:
   friend class base::RefCountedThreadSafe<DecoderBuffer>;
