@@ -28,6 +28,25 @@ class AppInstallDialog;
 
 namespace apps {
 
+// These values are persisted to logs.
+// Entries should not be renumbered and numeric values should never be reused.
+// Additions to this enum must be added to the corresponding enum XML in:
+// tools/metrics/histograms/metadata/apps/enums.xml
+enum class AppInstallResult {
+  kUnknown = 0,
+  kSuccess = 1,
+  kAlmanacFetchFailed = 2,
+  kAppDataCorrupted = 3,
+  kAppProviderNotAvailable = 4,
+  kAppTypeNotSupported = 5,
+  kInstallParametersInvalid = 6,
+  kAppAlreadyInstalled = 7,
+  kInstallDialogNotAccepted = 8,
+  kAppTypeInstallFailed = 9,
+  kUserTypeNotPermitted = 10,
+  kMaxValue = kUserTypeNotPermitted,
+};
+
 class AppInstallServiceAsh : public AppInstallService {
  public:
   static base::OnceCallback<void(PackageId)>& InstallAppCallbackForTesting();
@@ -54,6 +73,7 @@ class AppInstallServiceAsh : public AppInstallService {
       base::OnceCallback<void(bool success)> callback) override;
 
  private:
+  bool CanUserInstall() const;
   bool MaybeLaunchApp(const PackageId& package_id);
   void FetchAppInstallData(
       PackageId package_id,

@@ -21,6 +21,8 @@
 #include "chrome/browser/ash/crosapi/web_app_service_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install.mojom.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#include "components/user_manager/user_manager.h"
 // TODO(crbug.com/1488697): Remove circular dependency.
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -40,24 +42,6 @@
 namespace apps {
 
 namespace {
-
-// These values are persisted to logs.
-// Entries should not be renumbered and numeric values should never be reused.
-// Additions to this enum must be added to the corresponding enum XML in:
-// tools/metrics/histograms/metadata/apps/enums.xml
-enum class AppInstallResult {
-  kUnknown = 0,
-  kSuccess = 1,
-  kAlmanacFetchFailed = 2,
-  kAppDataCorrupted = 3,
-  kAppProviderNotAvailable = 4,
-  kAppTypeNotSupported = 5,
-  kInstallParametersInvalid = 6,
-  kAppAlreadyInstalled = 7,
-  kInstallDialogNotAccepted = 8,
-  kAppTypeInstallFailed = 9,
-  kMaxValue = kAppTypeInstallFailed,
-};
 
 AppInstallResult InstallWebAppWithBrowserInstallDialog(
     Profile& profile,
@@ -130,6 +114,12 @@ void AppInstallServiceAsh::InstallApp(
     std::move(InstallAppCallbackForTesting()).Run(package_id);
   }
 
+  if (!CanUserInstall()) {
+    RecordInstallResult(surface, AppInstallResult::kUserTypeNotPermitted);
+    std::move(callback).Run();
+    return;
+  }
+
   if (MaybeLaunchApp(package_id)) {
     RecordInstallResult(surface, AppInstallResult::kAppAlreadyInstalled);
     std::move(callback).Run();
@@ -169,6 +159,29 @@ void AppInstallServiceAsh::InstallAppHeadless(
     AppInstallData data,
     base::OnceCallback<void(bool success)> callback) {
   PerformInstallHeadless(surface, data.package_id, std::move(callback), data);
+}
+
+bool AppInstallServiceAsh::CanUserInstall() const {
+  if (profile_->IsSystemProfile()) {
+    return false;
+  }
+
+  if (!ash::IsUserBrowserContext(&*profile_)) {
+    return false;
+  }
+
+  auto* user_manager = user_manager::UserManager::Get();
+  if (!user_manager) {
+    return false;
+  }
+
+  if (user_manager->IsLoggedInAsManagedGuestSession() ||
+      user_manager->IsLoggedInAsGuest() ||
+      user_manager->IsLoggedInAsAnyKioskApp()) {
+    return false;
+  }
+
+  return true;
 }
 
 bool AppInstallServiceAsh::MaybeLaunchApp(const PackageId& package_id) {
