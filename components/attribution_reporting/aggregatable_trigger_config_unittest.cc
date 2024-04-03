@@ -109,12 +109,6 @@ TEST(AggregatableTriggerConfigTest, ParseTriggerContextId) {
           ValueIs(AggregatableTriggerConfig()),
       },
       {
-          "trigger_context_id_invalid_value",
-          R"json({"trigger_context_id":""})json",
-          ErrorIs(TriggerRegistrationError::kTriggerContextIdInvalidValue),
-          ValueIs(AggregatableTriggerConfig()),
-      },
-      {
           "trigger_context_id_disallowed",
           R"json({
             "aggregatable_source_registration_time":"include",
@@ -182,12 +176,6 @@ TEST(AggregatableTriggerConfigTest, Create) {
           std::nullopt,
           *AggregatableTriggerConfig::Create(
               SourceRegistrationTimeConfig::kInclude, std::nullopt),
-      },
-      {
-          "trigger_context_id_empty",
-          SourceRegistrationTimeConfig::kExclude,
-          "",
-          std::nullopt,
       },
       {
           "trigger_context_id_too_long",

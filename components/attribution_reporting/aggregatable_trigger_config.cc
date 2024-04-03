@@ -63,7 +63,7 @@ std::string SerializeAggregatableSourceRegistrationTime(
 }
 
 bool IsTriggerContextIdValid(const std::string& s) {
-  return !s.empty() && s.length() <= kMaxTriggerContextIdLength;
+  return s.length() <= kMaxTriggerContextIdLength;
 }
 
 bool IsTriggerContextIdAllowed(

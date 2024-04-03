@@ -51,7 +51,10 @@
             "response": {
               "Attribution-Reporting-Info": "report-header-errors",
               "Attribution-Reporting-Register-Trigger": {
-                "trigger_context_id": "" // empty
+                "aggregatable_values": {
+                  "a": 321
+                },
+                "trigger_context_id": ""
               }
             }
           }
@@ -134,16 +137,16 @@
         "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
       },
       {
-        "payload": [{
-           "body": {
-              "context_site": "https://destination.test",
-              "header": "Attribution-Reporting-Register-Trigger",
-              "value": "{\"trigger_context_id\":\"\"}"
-           },
-           "type": "header-parsing-error"
-        }],
+        "payload": {
+           "attribution_destination": "https://destination.test",
+           "histograms": [ {
+              "key": "0x159",
+              "value": 321
+           } ],
+           "trigger_context_id": ""
+        },
         "report_time": "2",
-        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
       },
       {
         "payload": [{
