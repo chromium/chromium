@@ -143,25 +143,16 @@ void UninstallWebAppWithDialogFromStartupSwitch(const webapps::AppId& app_id,
             },
             std::move(scoped_keep_alive)));
   } else {
-    // There is a chance that a previous invalid uninstall operation (due
-    // to a crash or otherwise) could end up orphaning an OsSettings entry.
-    // In this case we clean up the OsSettings entry.
-    web_app::OsHooksOptions options;
-    options[OsHookType::kUninstallationViaOsSettings] = true;
-
-    auto synchronize_barrier =
-        web_app::OsIntegrationManager::GetBarrierForSynchronize(base::BindOnce(
-            [](std::unique_ptr<ScopedKeepAlive> scoped_keep_alive) {},
-            std::move(scoped_keep_alive)));
-    provider->os_integration_manager().UninstallOsHooks(app_id, options,
-                                                        synchronize_barrier);
-
     // This is necessary to remove all OS integrations if the app has
     // been uninstalled.
     SynchronizeOsOptions synchronize_options;
     synchronize_options.force_unregister_os_integration = true;
-    provider->scheduler().SynchronizeOsIntegration(app_id, synchronize_barrier,
-                                                   synchronize_options);
+    provider->scheduler().SynchronizeOsIntegration(
+        app_id,
+        base::BindOnce(
+            [](std::unique_ptr<ScopedKeepAlive> scoped_keep_alive) {},
+            std::move(scoped_keep_alive)),
+        synchronize_options);
   }
 }
 

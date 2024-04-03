@@ -20,27 +20,6 @@
 
 namespace web_app {
 
-namespace {
-
-base::RepeatingCallback<void(Result)> CreateBarrierForSynchronizeWithResult(
-    base::OnceCallback<void(Result)> final_callback) {
-  return base::BarrierCallback<Result>(
-      /*num_callbacks=*/2, base::BindOnce(
-                               [](base::OnceCallback<void(Result)> callback,
-                                  std::vector<Result> combined_results) {
-                                 DCHECK_EQ(2u, combined_results.size());
-                                 Result final_result = Result::kOk;
-                                 if (combined_results[0] == Result::kError ||
-                                     combined_results[1] == Result::kError) {
-                                   final_result = Result::kError;
-                                 }
-                                 std::move(callback).Run(final_result);
-                               },
-                               std::move(final_callback)));
-}
-
-}  // namespace
-
 // static
 std::unique_ptr<UpdateFileHandlerCommand>
 UpdateFileHandlerCommand::CreateForPersistUserChoice(
@@ -93,61 +72,21 @@ void UpdateFileHandlerCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
     return;
   }
 
-  FileHandlerUpdateAction action = file_handling_enabled
-                                       ? FileHandlerUpdateAction::kUpdate
-                                       : FileHandlerUpdateAction::kRemove;
-
   GetMutableDebugValue().Set("was_update_required", true);
 
-  auto callback_for_synchronize = CreateBarrierForSynchronizeWithResult(
+  base::OnceClosure file_handler_update_callback =
       base::BindOnce(&UpdateFileHandlerCommand::OnFileHandlerUpdated,
-                     weak_factory_.GetWeakPtr(), file_handling_enabled));
-
-#if BUILDFLAG(IS_MAC)
-  // On Mac, the file handlers are encoded in the app shortcut. First
-  // unregister the file handlers (verifying that it finishes
-  // synchronously), then update the shortcut.
-  Result unregister_file_handlers_result = Result::kError;
-  lock_->os_integration_manager().UpdateFileHandlers(
-      app_id_, action,
-      base::BindOnce([](Result* result_out,
-                        Result actual_result) { *result_out = actual_result; },
-                     &unregister_file_handlers_result));
-  DCHECK_EQ(Result::kOk, unregister_file_handlers_result);
-
+                     weak_factory_.GetWeakPtr(), file_handling_enabled);
   lock_->os_integration_manager().Synchronize(
-      app_id_, base::BindOnce(callback_for_synchronize, Result::kOk));
-
-  // If we're enabling file handling, yet this app does not have any file
-  // handlers there is no need to update the shortcut, as doing so would be a
-  // no-op anyway.
-  const apps::FileHandlers* handlers =
-      lock_->registrar().GetAppFileHandlers(app_id_);
-
-  if (file_handling_enabled && (!handlers || handlers->empty())) {
-    callback_for_synchronize.Run(Result::kOk);
-  } else {
-    // TODO(crbug.com/1401125): Remove UpdateFileHandlers() and
-    // UpdateShortcuts() once OS integration sub managers have been implemented.
-    lock_->os_integration_manager().UpdateShortcuts(app_id_, /*old_name=*/{},
-                                                    callback_for_synchronize);
-  }
-#else
-  lock_->os_integration_manager().UpdateFileHandlers(app_id_, action,
-                                                     callback_for_synchronize);
-  lock_->os_integration_manager().Synchronize(
-      app_id_, base::BindOnce(callback_for_synchronize, Result::kOk));
-
-#endif
+      app_id_, std::move(file_handler_update_callback));
 }
 
-void UpdateFileHandlerCommand::OnFileHandlerUpdated(bool file_handling_enabled,
-                                                    Result result) {
+void UpdateFileHandlerCommand::OnFileHandlerUpdated(
+    bool file_handling_enabled) {
   DCHECK_EQ(
       file_handling_enabled,
       lock_->registrar().ExpectThatFileHandlersAreRegisteredWithOs(app_id_));
-  CompleteAndSelfDestruct(result == Result::kOk ? CommandResult::kSuccess
-                                                : CommandResult::kFailure);
+  CompleteAndSelfDestruct(CommandResult::kSuccess);
 }
 
 }  // namespace web_app

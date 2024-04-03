@@ -1214,27 +1214,6 @@ void SetWebAppProductIconFields(const WebAppInstallInfo& web_app_info,
   web_app.SetIsGeneratedIcon(web_app_info.is_generated_icon);
 }
 
-void MaybeDisableOsIntegration(const WebAppRegistrar* app_registrar,
-                               const webapps::AppId& app_id,
-                               InstallOsHooksOptions* options) {
-#if !BUILDFLAG(IS_CHROMEOS)  // Deeper OS integration is expected on ChromeOS.
-  DCHECK(app_registrar);
-
-  // Disable OS integration if the app was installed by default only, and not
-  // through any other means like an enterprise policy or store.
-  if (app_registrar->WasInstalledByDefaultOnly(app_id)) {
-    options->add_to_desktop = false;
-    options->add_to_quick_launch_bar = false;
-    options->os_hooks[OsHookType::kShortcuts] = false;
-    options->os_hooks[OsHookType::kRunOnOsLogin] = false;
-    options->os_hooks[OsHookType::kShortcutsMenu] = false;
-    options->os_hooks[OsHookType::kUninstallationViaOsSettings] = false;
-    options->os_hooks[OsHookType::kFileHandlers] = false;
-    options->os_hooks[OsHookType::kProtocolHandlers] = false;
-    options->os_hooks[OsHookType::kUrlHandlers] = false;
-  }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-}
 
 bool CanWebAppUpdateIdentity(const WebApp* web_app) {
   if (web_app->IsPolicyInstalledApp() &&

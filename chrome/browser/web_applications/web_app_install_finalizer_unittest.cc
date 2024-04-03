@@ -142,9 +142,6 @@ class WebAppInstallFinalizerUnitTest : public WebAppTest {
 
  protected:
   std::unique_ptr<TestInstallManagerObserver> install_manager_observer_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(WebAppInstallFinalizerUnitTest, BasicInstallSucceeds) {
@@ -389,7 +386,6 @@ TEST_F(WebAppInstallFinalizerUnitTest, InstallNoCreateOsShorcuts) {
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
   options.add_to_desktop = false;
   options.add_to_quick_launch_bar = false;
-
   FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);

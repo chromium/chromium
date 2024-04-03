@@ -142,11 +142,9 @@ void RunOnOsLoginCommand::SetRunOnOsLoginMode() {
   lock_->registrar().NotifyWebAppRunOnOsLoginModeChanged(app_id_,
                                                          login_mode_.value());
 
-  auto synchronize_barrier = OsIntegrationManager::GetBarrierForSynchronize(
-      base::BindOnce(&RunOnOsLoginCommand::OnOsIntegrationSynchronized,
-                     weak_factory_.GetWeakPtr()));
-  lock_->os_integration_manager().Synchronize(app_id_, synchronize_barrier);
-  UpdateRunOnOsLoginModeWithOsIntegration(synchronize_barrier);
+  lock_->os_integration_manager().Synchronize(
+      app_id_, base::BindOnce(&RunOnOsLoginCommand::OnOsIntegrationSynchronized,
+                              weak_factory_.GetWeakPtr()));
 }
 
 void RunOnOsLoginCommand::SyncRunOnOsLoginMode() {
@@ -171,41 +169,9 @@ void RunOnOsLoginCommand::SyncRunOnOsLoginMode() {
     return;
   }
 
-  auto synchronize_barrier = OsIntegrationManager::GetBarrierForSynchronize(
-      base::BindOnce(&RunOnOsLoginCommand::OnOsIntegrationSynchronized,
-                     weak_factory_.GetWeakPtr()));
-  lock_->os_integration_manager().Synchronize(app_id_, synchronize_barrier);
-  UpdateRunOnOsLoginModeWithOsIntegration(synchronize_barrier);
-}
-
-void RunOnOsLoginCommand::UpdateRunOnOsLoginModeWithOsIntegration(
-    base::RepeatingClosure os_hooks_callback) {
-  std::optional<RunOnOsLoginMode> os_integration_state =
-      lock_->registrar().GetExpectedRunOnOsLoginOsIntegrationState(app_id_);
-
-  if (os_integration_state && login_mode_.value() == *os_integration_state) {
-    RecordCompletionState(
-        RunOnOsLoginCommandCompletionState::kRunOnOsLoginModeAlreadyMatched);
-    std::move(os_hooks_callback).Run();
-    return;
-  }
-
-  // TODO(crbug.com/1401125): Remove InstallOsHooks() and UninstallOsHooks()
-  // once OS integration
-  // sub managers have been implemented.
-  if (login_mode_.value() == RunOnOsLoginMode::kNotRun) {
-    OsHooksOptions os_hooks;
-    os_hooks[OsHookType::kRunOnOsLogin] = true;
-    lock_->os_integration_manager().UninstallOsHooks(
-        app_id_, os_hooks, std::move(os_hooks_callback));
-  } else {
-    InstallOsHooksOptions install_options;
-    install_options.os_hooks[OsHookType::kRunOnOsLogin] = true;
-    install_options.reason = SHORTCUT_CREATION_AUTOMATED;
-    lock_->os_integration_manager().InstallOsHooks(
-        app_id_, std::move(os_hooks_callback), nullptr,
-        std::move(install_options));
-  }
+  lock_->os_integration_manager().Synchronize(
+      app_id_, base::BindOnce(&RunOnOsLoginCommand::OnOsIntegrationSynchronized,
+                              weak_factory_.GetWeakPtr()));
 }
 
 void RunOnOsLoginCommand::OnOsIntegrationSynchronized() {

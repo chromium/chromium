@@ -77,7 +77,7 @@ class WebAppInstallFinalizer {
     // `web_app_info.isolated_web_app_version` is invalid.
     std::optional<IsolatedWebAppStorageLocation> isolated_web_app_location;
 
-    // If true, OsIntegrationManager::InstallOsHooks won't be called at all,
+    // If true, OsIntegrationManager::Synchronize() won't be called at all,
     // meaning that all other OS Hooks related parameters below will be ignored.
     bool bypass_os_hooks = false;
 

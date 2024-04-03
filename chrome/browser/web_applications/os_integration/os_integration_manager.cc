@@ -57,7 +57,6 @@
 namespace web_app {
 
 namespace {
-
 base::AtomicRefCount& GetSuppressCount() {
   static base::AtomicRefCount g_ref_count;
   return g_ref_count;
@@ -79,12 +78,6 @@ OsIntegrationManager::ScopedSuppressForTesting::~ScopedSuppressForTesting() {
 #endif
 }
 
-InstallOsHooksOptions::InstallOsHooksOptions() = default;
-InstallOsHooksOptions::InstallOsHooksOptions(
-    const InstallOsHooksOptions& other) = default;
-InstallOsHooksOptions& InstallOsHooksOptions::operator=(
-    const InstallOsHooksOptions& other) = default;
-
 bool OsIntegrationManager::AreOsHooksSuppressedForTesting() {
   return !GetSuppressCount().IsZero();
 }
@@ -102,16 +95,6 @@ OsIntegrationManager::OsIntegrationManager(
       url_handler_manager_(std::move(url_handler_manager)) {}
 
 OsIntegrationManager::~OsIntegrationManager() = default;
-
-// static
-base::RepeatingClosure OsIntegrationManager::GetBarrierForSynchronize(
-    base::OnceClosure final_callback) {
-  // There are always 2 barriers, one for the normal OS Hook call and one for
-  // Synchronize().
-  auto barrier_callback_for_synchronize =
-      base::BarrierClosure(2, std::move(final_callback));
-  return barrier_callback_for_synchronize;
-}
 
 void OsIntegrationManager::SetProvider(base::PassKey<WebAppProvider>,
                                        WebAppProvider& provider) {
@@ -207,39 +190,6 @@ void OsIntegrationManager::Synchronize(
   }
 }
 
-void OsIntegrationManager::InstallOsHooks(
-    const webapps::AppId& app_id,
-    base::OnceClosure callback,
-    std::unique_ptr<WebAppInstallInfo> web_app_info,
-    InstallOsHooksOptions options) {
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
-                                                           std::move(callback));
-}
-
-void OsIntegrationManager::UninstallAllOsHooks(const webapps::AppId& app_id,
-                                               base::OnceClosure callback) {
-  OsHooksOptions os_hooks;
-  os_hooks.set();
-  UninstallOsHooks(app_id, os_hooks, std::move(callback));
-}
-
-void OsIntegrationManager::UninstallOsHooks(const webapps::AppId& app_id,
-                                            const OsHooksOptions& os_hooks,
-                                            base::OnceClosure callback) {
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
-                                                           std::move(callback));
-}
-
-void OsIntegrationManager::UpdateOsHooks(
-    const webapps::AppId& app_id,
-    std::string_view old_name,
-    FileHandlerUpdateAction file_handlers_need_os_update,
-    const WebAppInstallInfo& web_app_info,
-    base::OnceClosure callback) {
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
-                                                           std::move(callback));
-}
-
 void OsIntegrationManager::GetAppExistingShortCutLocation(
     ShortcutLocationCallback callback,
     std::unique_ptr<ShortcutInfo> shortcut_info) {
@@ -301,16 +251,6 @@ OsIntegrationManager::GetDisallowedHandlersForProtocol(
   return protocol_handler_manager_->GetDisallowedHandlersForProtocol(protocol);
 }
 
-WebAppShortcutManager& OsIntegrationManager::shortcut_manager_for_testing() {
-  CHECK(shortcut_manager_);
-  return *shortcut_manager_;
-}
-
-UrlHandlerManager& OsIntegrationManager::url_handler_manager_for_testing() {
-  CHECK(url_handler_manager_);
-  return *url_handler_manager_;
-}
-
 WebAppProtocolHandlerManager&
 OsIntegrationManager::protocol_handler_manager_for_testing() {
   CHECK(protocol_handler_manager_);
@@ -319,330 +259,6 @@ OsIntegrationManager::protocol_handler_manager_for_testing() {
 
 FakeOsIntegrationManager* OsIntegrationManager::AsTestOsIntegrationManager() {
   return nullptr;
-}
-
-void OsIntegrationManager::CreateShortcuts(const webapps::AppId& app_id,
-                                           bool add_to_desktop,
-                                           ShortcutCreationReason reason,
-                                           CreateShortcutsCallback callback) {
-  if (shortcut_manager_->CanCreateShortcuts()) {
-    shortcut_manager_->CreateShortcuts(app_id, add_to_desktop, reason,
-                                       std::move(callback));
-  } else {
-    std::move(callback).Run(false);
-  }
-}
-
-void OsIntegrationManager::RegisterFileHandlers(const webapps::AppId& app_id,
-                                                ResultCallback callback) {
-  CHECK(file_handler_manager_);
-  ResultCallback metrics_callback =
-      base::BindOnce([](Result result) {
-        base::UmaHistogramBoolean("WebApp.FileHandlersRegistration.Result",
-                                  (result == Result::kOk));
-        return result;
-      }).Then(std::move(callback));
-
-  file_handler_manager_->EnableAndRegisterOsFileHandlers(
-      app_id, std::move(metrics_callback));
-}
-
-void OsIntegrationManager::RegisterProtocolHandlers(
-    const webapps::AppId& app_id,
-    ResultCallback callback) {
-  if (!protocol_handler_manager_) {
-    std::move(callback).Run(Result::kOk);
-    return;
-  }
-
-  protocol_handler_manager_->RegisterOsProtocolHandlers(app_id,
-                                                        std::move(callback));
-}
-
-void OsIntegrationManager::RegisterUrlHandlers(const webapps::AppId& app_id,
-                                               ResultCallback callback) {
-  if (!url_handler_manager_) {
-    std::move(callback).Run(Result::kOk);
-    return;
-  }
-
-  url_handler_manager_->RegisterUrlHandlers(app_id, std::move(callback));
-}
-
-void OsIntegrationManager::RegisterShortcutsMenu(
-    const webapps::AppId& app_id,
-    const std::vector<WebAppShortcutsMenuItemInfo>& shortcuts_menu_item_infos,
-    const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps,
-    ResultCallback callback) {
-  if (!ShouldRegisterShortcutsMenuWithOs()) {
-    std::move(callback).Run(Result::kOk);
-    return;
-  }
-
-  // Exit early if shortcuts_menu_item_infos are not populated.
-  if (shortcuts_menu_item_infos.size() < 1) {
-    std::move(callback).Run(Result::kOk);
-    return;
-  }
-
-  ResultCallback metrics_callback =
-      base::BindOnce([](Result result) {
-        base::UmaHistogramBoolean("WebApp.ShortcutsMenuRegistration.Result",
-                                  (result == Result::kOk));
-        return result;
-      }).Then(std::move(callback));
-
-  CHECK(shortcut_manager_);
-  shortcut_manager_->RegisterShortcutsMenuWithOs(
-      app_id, shortcuts_menu_item_infos, shortcuts_menu_icon_bitmaps,
-      std::move(metrics_callback));
-}
-
-void OsIntegrationManager::ReadAllShortcutsMenuIconsAndRegisterShortcutsMenu(
-    const webapps::AppId& app_id,
-    ResultCallback callback) {
-  if (!ShouldRegisterShortcutsMenuWithOs()) {
-    std::move(callback).Run(Result::kOk);
-    return;
-  }
-
-  std::vector<WebAppShortcutsMenuItemInfo> shortcuts_menu_item_infos =
-      provider_->registrar_unsafe().GetAppShortcutsMenuItemInfos(app_id);
-
-  // Exit early if shortcuts_menu_item_infos are not populated.
-  if (shortcuts_menu_item_infos.size() < 1) {
-    std::move(callback).Run(Result::kOk);
-    return;
-  }
-
-  ResultCallback metrics_callback =
-      base::BindOnce([](Result result) {
-        base::UmaHistogramBoolean("WebApp.ShortcutsMenuRegistration.Result",
-                                  (result == Result::kOk));
-        return result;
-      }).Then(std::move(callback));
-
-  shortcut_manager_->ReadAllShortcutsMenuIconsAndRegisterShortcutsMenu(
-      app_id, shortcuts_menu_item_infos, std::move(metrics_callback));
-}
-
-void OsIntegrationManager::RegisterRunOnOsLogin(const webapps::AppId& app_id,
-                                                ResultCallback callback) {
-  ResultCallback metrics_callback =
-      base::BindOnce([](Result result) {
-        base::UmaHistogramBoolean("WebApp.RunOnOsLogin.Registration.Result",
-                                  (result == Result::kOk));
-        return result;
-      }).Then(std::move(callback));
-
-  GetShortcutInfoForApp(
-      app_id,
-      base::BindOnce(
-          &OsIntegrationManager::OnShortcutInfoRetrievedRegisterRunOnOsLogin,
-          weak_ptr_factory_.GetWeakPtr(), std::move(metrics_callback)));
-}
-
-void OsIntegrationManager::MacAppShimOnAppInstalledForProfile(
-    const webapps::AppId& app_id) {
-#if BUILDFLAG(IS_MAC)
-  AppShimRegistry::Get()->OnAppInstalledForProfile(app_id, profile_->GetPath());
-#endif
-}
-
-void OsIntegrationManager::AddAppToQuickLaunchBar(
-    const webapps::AppId& app_id) {
-  CHECK(provider_);
-  if (provider_->ui_manager().CanAddAppToQuickLaunchBar()) {
-    provider_->ui_manager().AddAppToQuickLaunchBar(app_id);
-  }
-}
-
-void OsIntegrationManager::RegisterWebAppOsUninstallation(
-    const webapps::AppId& app_id,
-    const std::string& name) {
-  if (ShouldRegisterUninstallationViaOsSettingsWithOs()) {
-    RegisterUninstallationViaOsSettingsWithOs(app_id, name,
-                                              profile_->GetPath());
-  }
-}
-
-bool OsIntegrationManager::UnregisterShortcutsMenu(const webapps::AppId& app_id,
-                                                   ResultCallback callback) {
-  if (!ShouldRegisterShortcutsMenuWithOs()) {
-    std::move(callback).Run(Result::kOk);
-    return true;
-  }
-
-  ResultCallback metrics_callback =
-      base::BindOnce([](Result result) {
-        base::UmaHistogramBoolean("WebApp.ShortcutsMenuUnregistered.Result",
-                                  (result == Result::kOk));
-        return result;
-      }).Then(std::move(callback));
-
-  return UnregisterShortcutsMenuWithOs(app_id, profile_->GetPath(),
-                                       std::move(metrics_callback));
-}
-
-void OsIntegrationManager::UnregisterRunOnOsLogin(const webapps::AppId& app_id,
-                                                  ResultCallback callback) {
-  ResultCallback metrics_callback =
-      base::BindOnce([](Result result) {
-        base::UmaHistogramBoolean("WebApp.RunOnOsLogin.Unregistration.Result",
-                                  (result == Result::kOk));
-        return result;
-      }).Then(std::move(callback));
-
-  ScheduleUnregisterRunOnOsLogin(
-      app_id, profile_->GetPath(),
-      base::UTF8ToUTF16(provider_->registrar_unsafe().GetAppShortName(app_id)),
-      std::move(metrics_callback));
-}
-
-void OsIntegrationManager::DeleteShortcuts(
-    const webapps::AppId& app_id,
-    const base::FilePath& shortcuts_data_dir,
-    std::unique_ptr<ShortcutInfo> shortcut_info,
-    ResultCallback callback) {
-  if (shortcut_manager_->CanCreateShortcuts()) {
-    auto shortcuts_callback = base::BindOnce(
-        &OsIntegrationManager::OnShortcutsDeleted,
-        weak_ptr_factory_.GetWeakPtr(), app_id, std::move(callback));
-
-    shortcut_manager_->DeleteShortcuts(app_id, shortcuts_data_dir,
-                                       std::move(shortcut_info),
-                                       std::move(shortcuts_callback));
-  } else {
-    std::move(callback).Run(Result::kOk);
-  }
-}
-
-void OsIntegrationManager::UnregisterFileHandlers(const webapps::AppId& app_id,
-                                                  ResultCallback callback) {
-  CHECK(file_handler_manager_);
-  ResultCallback metrics_callback =
-      base::BindOnce([](Result result) {
-        base::UmaHistogramBoolean("WebApp.FileHandlersUnregistration.Result",
-                                  (result == Result::kOk));
-        return result;
-      }).Then(std::move(callback));
-  file_handler_manager_->DisableAndUnregisterOsFileHandlers(
-      app_id, std::move(metrics_callback));
-}
-
-void OsIntegrationManager::UnregisterProtocolHandlers(
-    const webapps::AppId& app_id,
-    ResultCallback callback) {
-  if (!protocol_handler_manager_) {
-    std::move(callback).Run(Result::kOk);
-    return;
-  }
-
-  protocol_handler_manager_->UnregisterOsProtocolHandlers(app_id,
-                                                          std::move(callback));
-}
-
-void OsIntegrationManager::UnregisterUrlHandlers(const webapps::AppId& app_id) {
-  if (!url_handler_manager_)
-    return;
-
-  url_handler_manager_->UnregisterUrlHandlers(app_id);
-}
-
-void OsIntegrationManager::UnregisterWebAppOsUninstallation(
-    const webapps::AppId& app_id) {
-  if (ShouldRegisterUninstallationViaOsSettingsWithOs()) {
-    UnregisterUninstallationViaOsSettingsWithOs(app_id, profile_->GetPath());
-  }
-}
-
-void OsIntegrationManager::UpdateShortcuts(const webapps::AppId& app_id,
-                                           std::string_view old_name,
-                                           ResultCallback callback) {
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), Result::kOk));
-}
-
-void OsIntegrationManager::UpdateShortcutsMenu(
-    const webapps::AppId& app_id,
-    const WebAppInstallInfo& web_app_info,
-    ResultCallback callback) {
-  if (web_app_info.shortcuts_menu_item_infos.empty()) {
-    UnregisterShortcutsMenu(app_id, std::move(callback));
-  } else {
-    RegisterShortcutsMenu(app_id, web_app_info.shortcuts_menu_item_infos,
-                          web_app_info.shortcuts_menu_icon_bitmaps,
-                          std::move(callback));
-  }
-}
-
-void OsIntegrationManager::UpdateUrlHandlers(
-    const webapps::AppId& app_id,
-    base::OnceCallback<void(bool success)> callback) {
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), true));
-}
-
-void OsIntegrationManager::UpdateFileHandlers(
-    const webapps::AppId& app_id,
-    FileHandlerUpdateAction file_handlers_need_os_update,
-    ResultCallback finished_callback) {
-  // Due to the way UpdateFileHandlerCommand is currently written, this needs
-  // to be synchronously called on Mac.
-#if BUILDFLAG(IS_MAC)
-  std::move(finished_callback).Run(Result::kOk);
-#else
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(finished_callback), Result::kOk));
-#endif
-}
-
-void OsIntegrationManager::UpdateProtocolHandlers(
-    const webapps::AppId& app_id,
-    bool force_shortcut_updates_if_needed,
-    base::OnceClosure callback) {
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
-                                                           std::move(callback));
-}
-
-void OsIntegrationManager::OnShortcutsUpdatedForProtocolHandlers(
-    const webapps::AppId& app_id,
-    base::OnceClosure update_finished_callback) {
-  // Update protocol handlers via complete uninstallation, then reinstallation.
-  ResultCallback unregister_callback = base::BindOnce(
-      [](base::WeakPtr<OsIntegrationManager> os_integration_manager,
-         const webapps::AppId& app_id,
-         base::OnceClosure update_finished_callback, Result result) {
-        // Re-register protocol handlers regardless of `result`.
-        // TODO(https://crbug.com/1250728): Report a UMA metric when
-        // unregistering fails, either here, or at the point of failure. This
-        // might also mean we can remove `result`.
-        if (!os_integration_manager) {
-          std::move(update_finished_callback).Run();
-          return;
-        }
-
-        os_integration_manager->RegisterProtocolHandlers(
-            app_id,
-            base::BindOnce(
-                [](base::OnceClosure update_finished_callback, Result result) {
-                  // TODO(https://crbug.com/1250728): Report
-                  // |result| in an UMA metric.
-                  std::move(update_finished_callback).Run();
-                },
-                std::move(update_finished_callback)));
-      },
-      weak_ptr_factory_.GetWeakPtr(), app_id,
-      std::move(update_finished_callback));
-
-  UnregisterProtocolHandlers(app_id, std::move(unregister_callback));
-}
-
-void OsIntegrationManager::SubManagersUnregistered(
-    const webapps::AppId& app_id,
-    std::unique_ptr<ScopedProfileKeepAlive> keep_alive) {
-  force_unregister_callback_for_testing_.Run(app_id);
-  keep_alive.reset();
 }
 
 void OsIntegrationManager::OnWebAppProfileWillBeDeleted(
@@ -665,12 +281,6 @@ void OsIntegrationManager::OnAppRegistrarDestroyed() {
 void OsIntegrationManager::SetForceUnregisterCalledForTesting(
     base::RepeatingCallback<void(const webapps::AppId&)> on_force_unregister) {
   force_unregister_callback_for_testing_ = on_force_unregister;
-}
-
-std::unique_ptr<ShortcutInfo> OsIntegrationManager::BuildShortcutInfo(
-    const webapps::AppId& app_id) {
-  CHECK(shortcut_manager_);
-  return shortcut_manager_->BuildShortcutInfo(app_id);
 }
 
 void OsIntegrationManager::StartSubManagerExecutionIfRequired(
@@ -750,6 +360,13 @@ void OsIntegrationManager::WriteStateToDB(
   std::move(callback).Run();
 }
 
+void OsIntegrationManager::SubManagersUnregistered(
+    const webapps::AppId& app_id,
+    std::unique_ptr<ScopedProfileKeepAlive> keep_alive) {
+  force_unregister_callback_for_testing_.Run(app_id);
+  keep_alive.reset();
+}
+
 void OsIntegrationManager::ForceUnregisterOsIntegrationOnSubManager(
     const webapps::AppId& app_id,
     size_t index,
@@ -765,28 +382,6 @@ void OsIntegrationManager::ForceUnregisterOsIntegrationOnSubManager(
         std::move(final_callback));
   }
   sub_managers_[index]->ForceUnregister(app_id, std::move(next_callback));
-}
-
-void OsIntegrationManager::OnShortcutsDeleted(const webapps::AppId& app_id,
-                                              ResultCallback callback,
-                                              Result result) {
-#if BUILDFLAG(IS_MAC)
-  bool delete_multi_profile_shortcuts =
-      AppShimRegistry::Get()->OnAppUninstalledForProfile(app_id,
-                                                         profile_->GetPath());
-  if (delete_multi_profile_shortcuts) {
-    internals::ScheduleDeleteMultiProfileShortcutsForApp(app_id,
-                                                         std::move(callback));
-  }
-#else
-  std::move(callback).Run(result);
-#endif
-}
-
-void OsIntegrationManager::OnShortcutInfoRetrievedRegisterRunOnOsLogin(
-    ResultCallback callback,
-    std::unique_ptr<ShortcutInfo> info) {
-  ScheduleRegisterRunOnOsLogin(std::move(info), std::move(callback));
 }
 
 }  // namespace web_app

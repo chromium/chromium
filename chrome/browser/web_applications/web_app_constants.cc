@@ -78,9 +78,6 @@ bool IsIwaType(WebAppManagement::Type type) {
 
 }  // namespace WebAppManagement
 
-static_assert(OsHookType::kShortcuts == 0,
-              "OsHookType enum should be zero based");
-
 std::ostream& operator<<(std::ostream& os, RunOnOsLoginMode mode) {
   switch (mode) {
     case RunOnOsLoginMode::kWindowed:

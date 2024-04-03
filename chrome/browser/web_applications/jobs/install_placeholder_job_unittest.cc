@@ -151,12 +151,6 @@ TEST_F(InstallPlaceholderJobTest, InstallPlaceholder) {
   const webapps::AppId app_id = future.Get<1>();
   EXPECT_TRUE(provider()->registrar_unsafe().IsPlaceholderApp(
       app_id, WebAppManagement::kPolicy));
-  EXPECT_EQ(fake_os_integration_manager().num_create_shortcuts_calls(), 1u);
-  auto last_install_options =
-      fake_os_integration_manager().get_last_install_options();
-  EXPECT_TRUE(last_install_options->add_to_desktop);
-  EXPECT_TRUE(last_install_options->add_to_quick_launch_bar);
-  EXPECT_FALSE(last_install_options->os_hooks[OsHookType::kRunOnOsLogin]);
   std::optional<proto::WebAppOsIntegrationState> os_state =
       provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(os_state.has_value());
@@ -201,7 +195,6 @@ TEST_F(InstallPlaceholderJobTest, InstallPlaceholderWithOverrideIconUrl) {
   const webapps::AppId app_id = future.Get<1>();
   EXPECT_TRUE(provider()->registrar_unsafe().IsPlaceholderApp(
       app_id, WebAppManagement::kPolicy));
-  EXPECT_EQ(fake_os_integration_manager().num_create_shortcuts_calls(), 1u);
   std::optional<proto::WebAppOsIntegrationState> os_state =
       provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(os_state.has_value());

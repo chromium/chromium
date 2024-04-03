@@ -29,60 +29,6 @@ class FakeOsIntegrationManager : public OsIntegrationManager {
       std::unique_ptr<UrlHandlerManager> url_handler_manager);
   ~FakeOsIntegrationManager() override;
 
-  // OsIntegrationManager:
-  void InstallOsHooks(const webapps::AppId& app_id,
-                      base::OnceClosure callback,
-                      std::unique_ptr<WebAppInstallInfo> web_app_info,
-                      InstallOsHooksOptions options) override;
-  void UninstallOsHooks(const webapps::AppId& app_id,
-                        const OsHooksOptions& os_hooks,
-                        base::OnceClosure callback) override;
-  void UninstallAllOsHooks(const webapps::AppId& app_id,
-                           base::OnceClosure callback) override;
-  void UpdateOsHooks(const webapps::AppId& app_id,
-                     std::string_view old_name,
-                     FileHandlerUpdateAction file_handlers_need_os_update,
-                     const WebAppInstallInfo& web_app_info,
-                     base::OnceClosure callback) override;
-
-  size_t num_create_shortcuts_calls() const {
-    return num_create_shortcuts_calls_;
-  }
-
-  size_t num_create_file_handlers_calls() const {
-    return num_create_file_handlers_calls_;
-  }
-
-  size_t num_update_file_handlers_calls() const {
-    return num_update_file_handlers_calls_;
-  }
-
-  size_t num_register_run_on_os_login_calls() const {
-    return num_register_run_on_os_login_calls_;
-  }
-
-  size_t num_unregister_run_on_os_login_calls() const {
-    return num_unregister_run_on_os_login_calls_;
-  }
-
-  size_t num_add_app_to_quick_launch_bar_calls() const {
-    return num_add_app_to_quick_launch_bar_calls_;
-  }
-
-  size_t num_register_url_handlers_calls() const {
-    return num_register_url_handlers_calls_;
-  }
-
-  void set_can_create_shortcuts(bool can_create_shortcuts) {
-    can_create_shortcuts_ = can_create_shortcuts;
-  }
-
-  std::optional<bool> did_add_to_desktop() const { return did_add_to_desktop_; }
-
-  std::optional<InstallOsHooksOptions> get_last_install_options() const {
-    return last_options_;
-  }
-
   void SetNextCreateShortcutsResult(const webapps::AppId& app_id, bool success);
 
   void SetFileHandlerManager(
@@ -97,18 +43,6 @@ class FakeOsIntegrationManager : public OsIntegrationManager {
   FakeOsIntegrationManager* AsTestOsIntegrationManager() override;
 
  private:
-  size_t num_create_shortcuts_calls_ = 0;
-  size_t num_create_file_handlers_calls_ = 0;
-  size_t num_update_file_handlers_calls_ = 0;
-  size_t num_register_run_on_os_login_calls_ = 0;
-  size_t num_unregister_run_on_os_login_calls_ = 0;
-  size_t num_add_app_to_quick_launch_bar_calls_ = 0;
-  size_t num_register_url_handlers_calls_ = 0;
-  std::optional<bool> did_add_to_desktop_;
-  std::optional<InstallOsHooksOptions> last_options_;
-
-  bool can_create_shortcuts_ = true;
-  std::map<webapps::AppId, bool> next_create_shortcut_results_;
   std::unique_ptr<OsIntegrationManager::ScopedSuppressForTesting>
       scoped_suppress_;
 };

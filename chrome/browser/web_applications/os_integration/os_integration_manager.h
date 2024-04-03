@@ -39,26 +39,6 @@ namespace web_app {
 class FakeOsIntegrationManager;
 class WebAppProvider;
 
-// OsHooksOptions contains the (install/uninstall) options of all Os hook
-// deployments.
-using OsHooksOptions = std::bitset<OsHookType::kMaxValue + 1>;
-
-// Used to pass install options configured from upstream caller.
-// All options are disabled by default.
-struct InstallOsHooksOptions {
-  InstallOsHooksOptions();
-  InstallOsHooksOptions(const InstallOsHooksOptions& other);
-  InstallOsHooksOptions& operator=(const InstallOsHooksOptions& other);
-
-  OsHooksOptions os_hooks;
-  bool add_to_desktop = false;
-  bool add_to_quick_launch_bar = false;
-  ShortcutCreationReason reason = SHORTCUT_CREATION_BY_USER;
-};
-
-using BarrierCallback =
-    base::RepeatingCallback<void(OsHookType::Type os_hook, bool completed)>;
-
 // OsIntegrationManager is responsible of creating/updating/deleting
 // all OS hooks during Web App lifecycle.
 // It contains individual OS integration managers and takes
@@ -81,9 +61,6 @@ class OsIntegrationManager : public WebAppRegistrarObserver {
       std::unique_ptr<UrlHandlerManager> url_handler_manager);
   ~OsIntegrationManager() override;
 
-  static base::RepeatingClosure GetBarrierForSynchronize(
-      base::OnceClosure errors_callback);
-
   // Sets internal WebAppProvider reference and threads it through to all sub
   // managers.
   virtual void SetProvider(base::PassKey<WebAppProvider>,
@@ -101,39 +78,6 @@ class OsIntegrationManager : public WebAppRegistrarObserver {
       const webapps::AppId& app_id,
       base::OnceClosure callback,
       std::optional<SynchronizeOsOptions> options = std::nullopt);
-
-  // Install all needed OS hooks for the web app.
-  // If provided |web_app_info| is a nullptr, it will read icons data from disk,
-  // otherwise it will use (SkBitmaps) from |web_app_info|.
-  // virtual for testing
-  virtual void InstallOsHooks(const webapps::AppId& app_id,
-                              base::OnceClosure callback,
-                              std::unique_ptr<WebAppInstallInfo> web_app_info,
-                              InstallOsHooksOptions options);
-
-  // Uninstall specific OS hooks for the web app.
-  // Used when removing specific hooks resulting from an app setting change.
-  // Example: Running on OS login.
-  // TODO(https://crbug.com/1108109) we should record uninstall result and allow
-  // callback. virtual for testing
-  virtual void UninstallOsHooks(const webapps::AppId& app_id,
-                                const OsHooksOptions& os_hooks,
-                                base::OnceClosure callback);
-
-  // Uninstall all OS hooks for the web app.
-  // Used when uninstalling a web app.
-  // virtual for testing
-  virtual void UninstallAllOsHooks(const webapps::AppId& app_id,
-                                   base::OnceClosure callback);
-
-  // Update all needed OS hooks for the web app.
-  // virtual for testing
-  virtual void UpdateOsHooks(
-      const webapps::AppId& app_id,
-      std::string_view old_name,
-      FileHandlerUpdateAction file_handlers_need_os_update,
-      const WebAppInstallInfo& web_app_info,
-      base::OnceClosure callback);
 
   // Proxy calls for WebAppShortcutManager.
   // virtual for testing
@@ -165,10 +109,6 @@ class OsIntegrationManager : public WebAppRegistrarObserver {
     return *file_handler_manager_;
   }
 
-  WebAppShortcutManager& shortcut_manager_for_testing();
-
-  UrlHandlerManager& url_handler_manager_for_testing();
-
   WebAppProtocolHandlerManager& protocol_handler_manager_for_testing();
 
   virtual FakeOsIntegrationManager* AsTestOsIntegrationManager();
@@ -177,26 +117,6 @@ class OsIntegrationManager : public WebAppRegistrarObserver {
       std::unique_ptr<UrlHandlerManager> url_handler_manager) {
     url_handler_manager_ = std::move(url_handler_manager);
   }
-
-  virtual void UpdateUrlHandlers(
-      const webapps::AppId& app_id,
-      base::OnceCallback<void(bool success)> callback);
-
-  virtual void UpdateFileHandlers(
-      const webapps::AppId& app_id,
-      FileHandlerUpdateAction file_handlers_need_os_update,
-      ResultCallback finished_callback);
-
-  // Updates protocol handler registrations with the OS.
-  // If `force_shortcut_updates_if_needed` is true, then also update the
-  // application's shortcuts.
-  virtual void UpdateProtocolHandlers(const webapps::AppId& app_id,
-                                      bool force_shortcut_updates_if_needed,
-                                      base::OnceClosure callback);
-
-  virtual void UpdateShortcuts(const webapps::AppId& app_id,
-                               std::string_view old_name,
-                               ResultCallback callback);
 
   // WebAppRegistrarObserver:
   void OnWebAppProfileWillBeDeleted(const webapps::AppId& app_id) override;
@@ -226,57 +146,6 @@ class OsIntegrationManager : public WebAppRegistrarObserver {
       std::unique_ptr<WebAppProtocolHandlerManager> protocol_handler_manager) {
     protocol_handler_manager_ = std::move(protocol_handler_manager);
   }
-
-  virtual void CreateShortcuts(const webapps::AppId& app_id,
-                               bool add_to_desktop,
-                               ShortcutCreationReason reason,
-                               CreateShortcutsCallback callback);
-
-  // Installation:
-  virtual void RegisterFileHandlers(const webapps::AppId& app_id,
-                                    ResultCallback callback);
-  virtual void RegisterProtocolHandlers(const webapps::AppId& app_id,
-                                        ResultCallback callback);
-  virtual void RegisterUrlHandlers(const webapps::AppId& app_id,
-                                   ResultCallback callback);
-  virtual void RegisterShortcutsMenu(
-      const webapps::AppId& app_id,
-      const std::vector<WebAppShortcutsMenuItemInfo>& shortcuts_menu_item_infos,
-      const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps,
-      ResultCallback callback);
-  virtual void ReadAllShortcutsMenuIconsAndRegisterShortcutsMenu(
-      const webapps::AppId& app_id,
-      ResultCallback callback);
-  virtual void RegisterRunOnOsLogin(const webapps::AppId& app_id,
-                                    ResultCallback callback);
-  virtual void MacAppShimOnAppInstalledForProfile(const webapps::AppId& app_id);
-  virtual void AddAppToQuickLaunchBar(const webapps::AppId& app_id);
-  virtual void RegisterWebAppOsUninstallation(const webapps::AppId& app_id,
-                                              const std::string& name);
-
-  // Uninstallation:
-  virtual bool UnregisterShortcutsMenu(const webapps::AppId& app_id,
-                                       ResultCallback callback);
-  virtual void UnregisterRunOnOsLogin(const webapps::AppId& app_id,
-                                      ResultCallback callback);
-  virtual void DeleteShortcuts(const webapps::AppId& app_id,
-                               const base::FilePath& shortcuts_data_dir,
-                               std::unique_ptr<ShortcutInfo> shortcut_info,
-                               ResultCallback callback);
-  virtual void UnregisterFileHandlers(const webapps::AppId& app_id,
-                                      ResultCallback callback);
-  virtual void UnregisterProtocolHandlers(const webapps::AppId& app_id,
-                                          ResultCallback callback);
-  virtual void UnregisterUrlHandlers(const webapps::AppId& app_id);
-  virtual void UnregisterWebAppOsUninstallation(const webapps::AppId& app_id);
-
-  // Update:
-  virtual void UpdateShortcutsMenu(const webapps::AppId& app_id,
-                                   const WebAppInstallInfo& web_app_info,
-                                   ResultCallback callback);
-  // Utility methods:
-  virtual std::unique_ptr<ShortcutInfo> BuildShortcutInfo(
-      const webapps::AppId& app_id);
 
  private:
   // Synchronize:
@@ -317,22 +186,6 @@ class OsIntegrationManager : public WebAppRegistrarObserver {
       const webapps::AppId& app_id,
       size_t index,
       base::OnceClosure final_callback);
-
-  void OnShortcutsDeleted(const webapps::AppId& app_id,
-                          ResultCallback callback,
-                          Result result);
-
-  void OnShortcutInfoRetrievedRegisterRunOnOsLogin(
-      ResultCallback callback,
-      std::unique_ptr<ShortcutInfo> info);
-
-  // Called after the shortcuts for an app are updated in response
-  // to protocol handler changes.
-  // `update_finished_callback` is the callback provided in
-  // `UpdateProtocolHandlers`.
-  void OnShortcutsUpdatedForProtocolHandlers(
-      const webapps::AppId& app_id,
-      base::OnceClosure update_finished_callback);
 
   const raw_ptr<Profile> profile_;
   raw_ptr<WebAppProvider> provider_ = nullptr;

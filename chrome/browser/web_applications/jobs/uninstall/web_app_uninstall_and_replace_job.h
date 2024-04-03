@@ -56,10 +56,8 @@ class WebAppUninstallAndReplaceJob {
                                   base::OnceClosure on_complete,
                                   ShortcutLocations locations);
 
-  void InstallOsHooksForReplacementApp(base::OnceClosure on_complete,
-                                       ShortcutLocations locations);
-
-  void OnInstallOsHooksCompleted(base::OnceClosure on_complete);
+  void SynchronizeOSIntegrationForReplacementApp(base::OnceClosure on_complete,
+                                                 ShortcutLocations locations);
 
   const raw_ref<Profile> profile_;
   const raw_ref<base::Value::Dict> debug_value_;

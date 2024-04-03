@@ -90,13 +90,6 @@ IN_PROC_BROWSER_TEST_F(InstallFromInfoCommandTest, SuccessInstall) {
   // Ensure histogram is only measured once.
   tester.ExpectBucketCount("WebApp.Install.Result", /*sample=*/true,
                            /*expected_count=*/1);
-  size_t expected_shortcut_creation = 0;
-#if BUILDFLAG(IS_CHROMEOS)
-  // ChromeOS always has OS integration.
-  expected_shortcut_creation = 1;
-#endif
-  EXPECT_EQ(os_integration_manager()->num_create_shortcuts_calls(),
-            expected_shortcut_creation);
 
   const WebApp* web_app =
       provider().registrar_unsafe().GetAppById(result_app_id);
@@ -136,11 +129,6 @@ IN_PROC_BROWSER_TEST_F(InstallFromInfoCommandTest, InstallWithParams) {
           }),
       install_params);
   loop.Run();
-  EXPECT_EQ(os_integration_manager()->num_create_shortcuts_calls(), 1u);
-  auto options = os_integration_manager()->get_last_install_options();
-  EXPECT_TRUE(options->add_to_desktop);
-  EXPECT_TRUE(options->add_to_quick_launch_bar);
-  EXPECT_FALSE(options->os_hooks[OsHookType::kRunOnOsLogin]);
   std::optional<proto::WebAppOsIntegrationState> os_state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
           result_app_id);
@@ -197,10 +185,6 @@ IN_PROC_BROWSER_TEST_F(InstallFromInfoCommandTest,
       }),
       install_params, {old_app});
   loop.Run();
-  auto options = os_integration_manager()->get_last_install_options();
-  EXPECT_FALSE(options->add_to_desktop);
-  EXPECT_TRUE(options->add_to_quick_launch_bar);
-  EXPECT_TRUE(options->os_hooks[OsHookType::kRunOnOsLogin]);
   std::optional<proto::WebAppOsIntegrationState> os_state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
           result_app_id);

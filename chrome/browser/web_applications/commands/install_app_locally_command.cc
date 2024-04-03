@@ -56,45 +56,15 @@ void InstallAppLocallyCommand::StartWithLock(
     }
   }
 
-  // Install OS hooks first.
-  InstallOsHooksOptions options;
-  options.add_to_desktop = true;
-  options.add_to_quick_launch_bar = false;
-  options.os_hooks[OsHookType::kShortcuts] = true;
-  options.os_hooks[OsHookType::kShortcutsMenu] = true;
-  options.os_hooks[OsHookType::kFileHandlers] = true;
-  options.os_hooks[OsHookType::kProtocolHandlers] = true;
-  options.os_hooks[OsHookType::kRunOnOsLogin] =
-      (app_lock_->registrar().GetAppRunOnOsLoginMode(app_id_).value ==
-       RunOnOsLoginMode::kWindowed);
-
-  // Installed WebApp here is user uninstallable app, but it needs to
-  // check user uninstall-ability if there are apps with different source types.
-  // WebApp::CanUserUninstallApp will handles it.
-  const web_app::WebApp* web_app = app_lock_->registrar().GetAppById(app_id_);
-  options.os_hooks[OsHookType::kUninstallationViaOsSettings] =
-      web_app->CanUserUninstallWebApp();
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
-  options.os_hooks[web_app::OsHookType::kUrlHandlers] = true;
-#else
-  options.os_hooks[web_app::OsHookType::kUrlHandlers] = false;
-#endif
-
-  auto os_hooks_barrier = OsIntegrationManager::GetBarrierForSynchronize(
-      base::BindOnce(&InstallAppLocallyCommand::OnOsIntegrationSynchronized,
-                     weak_factory_.GetWeakPtr()));
-
-  app_lock_->os_integration_manager().InstallOsHooks(
-      app_id_, os_hooks_barrier, /*web_app_info=*/nullptr, options);
-
   SynchronizeOsOptions synchronize_options;
-  synchronize_options.add_shortcut_to_desktop = options.add_to_desktop;
-  synchronize_options.add_to_quick_launch_bar = options.add_to_quick_launch_bar;
-  synchronize_options.reason = options.reason;
-  app_lock_->os_integration_manager().Synchronize(app_id_, os_hooks_barrier,
-                                                  synchronize_options);
+  synchronize_options.add_shortcut_to_desktop = true;
+  synchronize_options.add_to_quick_launch_bar = false;
+  synchronize_options.reason = SHORTCUT_CREATION_BY_USER;
+  app_lock_->os_integration_manager().Synchronize(
+      app_id_,
+      base::BindOnce(&InstallAppLocallyCommand::OnOsIntegrationSynchronized,
+                     weak_factory_.GetWeakPtr()),
+      synchronize_options);
 }
 
 void InstallAppLocallyCommand::OnOsIntegrationSynchronized() {

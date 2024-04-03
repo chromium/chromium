@@ -128,16 +128,9 @@ void RemoveWebAppJob::Start(AllAppsLock& lock, Callback callback) {
         base::BindOnce(&RemoveWebAppJob::OnIsolatedWebAppBrowsingDataCleared,
                        weak_ptr_factory_.GetWeakPtr()));
   }
-
-  auto synchronize_barrier = OsIntegrationManager::GetBarrierForSynchronize(
-      base::BindOnce(&RemoveWebAppJob::SynchronizeAndUninstallOsHooks,
-                     weak_ptr_factory_.GetWeakPtr()));
-
-  // TODO(crbug.com/1401125): Remove UninstallAllOsHooks() once OS integration
-  // sub managers have been implemented.
-  lock_->os_integration_manager().UninstallAllOsHooks(app_id_,
-                                                      synchronize_barrier);
-  lock_->os_integration_manager().Synchronize(app_id_, synchronize_barrier);
+  lock_->os_integration_manager().Synchronize(
+      app_id_, base::BindOnce(&RemoveWebAppJob::SynchronizeAndUninstallOsHooks,
+                              weak_ptr_factory_.GetWeakPtr()));
 
   // While sometimes `Synchronize` needs to read icon data, for the uninstall
   // case it never needs to be read. Thus, it is safe to schedule this now and

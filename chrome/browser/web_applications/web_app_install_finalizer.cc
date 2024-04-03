@@ -619,37 +619,10 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
     return;
   }
 
-  InstallOsHooksOptions hooks_options;
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  hooks_options.os_hooks[OsHookType::kUrlHandlers] = true;
-#else
-  hooks_options.os_hooks[OsHookType::kUrlHandlers] = false;
-#endif
-
-  hooks_options.os_hooks[OsHookType::kShortcuts] =
-      finalize_options.add_to_applications_menu;
-  hooks_options.os_hooks[OsHookType::kShortcutsMenu] =
-      finalize_options.add_to_applications_menu;
-
-  {
-    RunOnOsLoginMode current_mode =
-        provider_->registrar_unsafe().GetAppRunOnOsLoginMode(app_id).value;
-    hooks_options.os_hooks[OsHookType::kRunOnOsLogin] =
-        current_mode == RunOnOsLoginMode::kWindowed;
-  }
-
-  hooks_options.add_to_quick_launch_bar =
+  SynchronizeOsOptions synchronize_options;
+  synchronize_options.add_shortcut_to_desktop = finalize_options.add_to_desktop;
+  synchronize_options.add_to_quick_launch_bar =
       finalize_options.add_to_quick_launch_bar;
-  hooks_options.add_to_desktop = finalize_options.add_to_desktop;
-
-  // Apps that can't be uninstalled from users shouldn't register to
-  // OS Settings.
-  hooks_options.os_hooks[OsHookType::kUninstallationViaOsSettings] =
-      web_app->CanUserUninstallWebApp();
-
-  hooks_options.os_hooks[OsHookType::kFileHandlers] = true;
-  hooks_options.os_hooks[OsHookType::kProtocolHandlers] = true;
 
   switch (finalize_options.source) {
     case WebAppManagement::kSystem:
@@ -659,7 +632,7 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
     case WebAppManagement::kOem:
     case WebAppManagement::kApsDefault:
     case WebAppManagement::kIwaShimlessRma:
-      hooks_options.reason = SHORTCUT_CREATION_AUTOMATED;
+      synchronize_options.reason = SHORTCUT_CREATION_AUTOMATED;
       break;
     case WebAppManagement::kKiosk:
     case WebAppManagement::kSubApp:
@@ -667,27 +640,16 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
     case WebAppManagement::kOneDriveIntegration:
     case WebAppManagement::kSync:
     case WebAppManagement::kIwaUserInstalled:
-      hooks_options.reason = SHORTCUT_CREATION_BY_USER;
+      synchronize_options.reason = SHORTCUT_CREATION_BY_USER;
       break;
   }
 
-  auto os_hooks_barrier =
-      OsIntegrationManager::GetBarrierForSynchronize(base::BindOnce(
-          &WebAppInstallFinalizer::OnInstallHooksFinished,
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback), app_id));
-
-  // TODO(crbug.com/1401125): Remove InstallOsHooks() once OS integration
-  // sub managers have been implemented.
-  provider_->os_integration_manager().InstallOsHooks(
-      app_id, os_hooks_barrier, /*web_app_info=*/nullptr, hooks_options);
-
-  SynchronizeOsOptions synchronize_options;
-  synchronize_options.add_shortcut_to_desktop = hooks_options.add_to_desktop;
-  synchronize_options.add_to_quick_launch_bar =
-      hooks_options.add_to_quick_launch_bar;
-  synchronize_options.reason = hooks_options.reason;
-  provider_->os_integration_manager().Synchronize(app_id, os_hooks_barrier,
-                                                  synchronize_options);
+  provider_->os_integration_manager().Synchronize(
+      app_id,
+      base::BindOnce(&WebAppInstallFinalizer::OnInstallHooksFinished,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     app_id),
+      synchronize_options);
 }
 
 void WebAppInstallFinalizer::OnInstallHooksFinished(
@@ -737,17 +699,10 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate(
     return;
   }
 
-  auto os_hooks_barrier =
-      OsIntegrationManager::GetBarrierForSynchronize(base::BindOnce(
-          &WebAppInstallFinalizer::OnUpdateHooksFinished,
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback), app_id));
-
-  // TODO(crbug.com/1401125): Remove UpdateOsHooks() once OS integration
-  // sub managers have been implemented.
-  provider_->os_integration_manager().UpdateOsHooks(
-      app_id, old_name, file_handlers_need_os_update, web_app_info,
-      os_hooks_barrier);
-  provider_->os_integration_manager().Synchronize(app_id, os_hooks_barrier);
+  provider_->os_integration_manager().Synchronize(
+      app_id, base::BindOnce(&WebAppInstallFinalizer::OnUpdateHooksFinished,
+                             weak_ptr_factory_.GetWeakPtr(),
+                             std::move(callback), app_id));
 }
 
 void WebAppInstallFinalizer::OnUpdateHooksFinished(

@@ -117,21 +117,9 @@ void UpdateProtocolHandlerApprovalCommand::
   if (original_protocol_handlers ==
       os_integration_manager.GetAppProtocolHandlers(app_id_)) {
     GetMutableDebugValue().Set("was_update_required", false);
-    OnProtocolHandlersUpdated();
-    return;
+  } else {
+    GetMutableDebugValue().Set("was_update_required", true);
   }
-  GetMutableDebugValue().Set("was_update_required", true);
-
-  // TODO(https://crbug.com/1251062): Can we avoid the delay of startup, if the
-  // action as allowed?
-  lock_->os_integration_manager().UpdateProtocolHandlers(
-      app_id_, /*force_shortcut_updates_if_needed=*/true,
-      base::BindOnce(
-          &UpdateProtocolHandlerApprovalCommand::OnProtocolHandlersUpdated,
-          weak_factory_.GetWeakPtr()));
-}
-
-void UpdateProtocolHandlerApprovalCommand::OnProtocolHandlersUpdated() {
   CompleteAndSelfDestruct(CommandResult::kSuccess);
 }
 

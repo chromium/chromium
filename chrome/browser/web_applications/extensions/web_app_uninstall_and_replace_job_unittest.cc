@@ -136,10 +136,6 @@ TEST_F(WebAppUninstallAndReplaceJobTest,
                                  future.GetCallback());
   EXPECT_TRUE(future.Get());
 
-  auto options = os_integration_manager()->get_last_install_options();
-  EXPECT_TRUE(options->add_to_desktop);
-  EXPECT_TRUE(options->os_hooks[OsHookType::kRunOnOsLogin]);
-  EXPECT_FALSE(options->add_to_quick_launch_bar);
   os_state = provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(
       new_app_id);
   ASSERT_TRUE(os_state.has_value());

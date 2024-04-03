@@ -82,24 +82,6 @@ using WebAppManagementTypes = base::EnumSet<WebAppManagement::Type,
                                             WebAppManagement::kMinValue,
                                             WebAppManagement::kMaxValue>;
 
-// Type of OS hook.
-//
-// This enum should be zero based. It is not strongly typed enum class to
-// support implicit conversion to int. Values are also used as index in
-// OsHooksOptions.
-namespace OsHookType {
-enum Type {
-  kShortcuts = 0,
-  kRunOnOsLogin,
-  kShortcutsMenu,
-  kUninstallationViaOsSettings,
-  kFileHandlers,
-  kProtocolHandlers,
-  kUrlHandlers,
-  kMaxValue = kUrlHandlers,
-};
-}  // namespace OsHookType
-
 // ExternallyManagedAppManager: Where an app was installed from. This affects
 // what flags will be used when installing the app.
 //

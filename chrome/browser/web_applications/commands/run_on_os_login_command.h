@@ -70,8 +70,6 @@ class RunOnOsLoginCommand : public WebAppCommand<AppLock> {
   // Note that this tries to avoid extra work by no-oping if the current
   // OS state matches what is calculated to be the desired stated.
   void SyncRunOnOsLoginMode();
-  void UpdateRunOnOsLoginModeWithOsIntegration(
-      base::RepeatingClosure os_hooks_callback);
   void OnOsIntegrationSynchronized();
   void RecordCompletionState(
       RunOnOsLoginCommandCompletionState completion_state);

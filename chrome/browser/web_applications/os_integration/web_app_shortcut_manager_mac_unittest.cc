@@ -83,10 +83,6 @@ class WebAppShortcutManagerMacTest : public WebAppTest {
     WebAppTest::TearDown();
   }
 
-  WebAppShortcutManager& shortcut_manager() {
-    return provider_->os_integration_manager().shortcut_manager_for_testing();
-  }
-
   base::FilePath GetShortcutPath(const std::string& app_name) {
     std::string shortcut_filename = app_name + ".app";
     return override_registration_->test_override->chrome_apps_folder()

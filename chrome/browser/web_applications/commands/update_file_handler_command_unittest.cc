@@ -48,7 +48,6 @@ class UpdateFileHandlerCommandTest : public WebAppTest {
         std::move(protocol_handler_manager), /*url_handler_manager=*/nullptr);
 
     provider_->SetOsIntegrationManager(std::move(os_integration_manager));
-
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 

@@ -1298,11 +1298,6 @@ TEST_F(ExternalAppResolutionCommandTest, SuccessWithUninstallAndReplace) {
   ASSERT_TRUE(result.app_id.has_value());
   EXPECT_TRUE(registrar().IsLocallyInstalled(*result.app_id));
 
-  EXPECT_TRUE(os_integration_manager()->did_add_to_desktop());
-  auto options = os_integration_manager()->get_last_install_options();
-  EXPECT_FALSE(options->add_to_desktop);
-  EXPECT_TRUE(options->add_to_quick_launch_bar);
-  EXPECT_TRUE(options->os_hooks[OsHookType::kRunOnOsLogin]);
   std::optional<proto::WebAppOsIntegrationState> os_state =
       registrar().GetAppCurrentOsIntegrationState(*result.app_id);
   ASSERT_TRUE(os_state.has_value());

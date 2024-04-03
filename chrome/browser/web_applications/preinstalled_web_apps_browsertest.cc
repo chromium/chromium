@@ -199,20 +199,6 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
       EXPECT_FALSE(provider.registrar_unsafe().GetAppById(expectation.app_id));
     }
   }
-
-  // Note that default web apps *DO* show app icons on Chrome OS however it is
-  // done via the |WebApps| publishing live our current app state to the app
-  // service rather than writing shortcut files as the case on all other desktop
-  // platforms.
-  auto* fake_os_integration_manager =
-      provider.os_integration_manager().AsTestOsIntegrationManager();
-  EXPECT_EQ(fake_os_integration_manager->num_create_shortcuts_calls(), 0u);
-  EXPECT_EQ(fake_os_integration_manager->num_create_file_handlers_calls(), 0u);
-  EXPECT_EQ(fake_os_integration_manager->num_register_run_on_os_login_calls(),
-            0u);
-  EXPECT_EQ(
-      fake_os_integration_manager->num_add_app_to_quick_launch_bar_calls(), 0u);
-  EXPECT_FALSE(fake_os_integration_manager->did_add_to_desktop());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

@@ -37,7 +37,7 @@ class UpdateFileHandlerCommand : public WebAppCommand<AppLock> {
   UpdateFileHandlerCommand(const webapps::AppId& app_id,
                            bool user_choice_to_remember,
                            base::OnceClosure callback);
-  void OnFileHandlerUpdated(bool file_handling_enabled, Result result);
+  void OnFileHandlerUpdated(bool file_handling_enabled);
   void ReportResultAndDestroy(CommandResult result);
 
   std::unique_ptr<AppLock> lock_;
