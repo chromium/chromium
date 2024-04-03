@@ -9,6 +9,7 @@
 #include <linux/input.h>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
@@ -24,6 +25,7 @@
 #include "ui/events/ozone/evdev/event_device_util.h"
 #include "ui/events/ozone/evdev/libgestures_glue/gesture_property_provider.h"
 #include "ui/events/ozone/evdev/libgestures_glue/gesture_timer_provider.h"
+#include "ui/events/ozone/features.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -227,6 +229,14 @@ void GestureInterpreterLibevdevCros::OnLibEvdevCrosOpen(
       const_cast<GesturesTimerProvider*>(&kGestureTimerProvider),
       this);
   GestureInterpreterSetCallback(interpreter_, OnGestureReadyHelper, this);
+
+  if (base::FeatureList::IsEnabled(kEnableFastTouchpadClick)) {
+    GesturesProp* property =
+        property_provider_->GetProperty(id_, "Wiggle Button Down Timeout");
+    if (property) {
+      property->SetDoubleValue(std::vector<double>(1, 0.15));
+    }
+  }
 }
 
 void GestureInterpreterLibevdevCros::OnLibEvdevCrosEvent(Evdev* evdev,
