@@ -139,7 +139,13 @@ void DawnAHardwareBufferImageRepresentation::EndAccess() {
   wgpu::SharedTextureMemoryVkImageLayoutEndState end_layout{};
   end_access_desc.nextInChain = &end_layout;
 
-  CHECK(shared_texture_memory_.EndAccess(texture_, &end_access_desc));
+  if (!shared_texture_memory_.EndAccess(texture_, &end_access_desc)) {
+    // The only case in which this can happen is on device loss.
+    CHECK(shared_texture_memory_.IsDeviceLost());
+    LOG(ERROR) << "Failed to end access for texture due to device loss";
+    return;
+  }
+
   if (end_access_desc.initialized) {
     SetCleared();
   }
