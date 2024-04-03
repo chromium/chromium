@@ -22,12 +22,14 @@
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "components/commerce/core/test_utils.h"
 #include "components/image_fetcher/core/mock_image_fetcher.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "content/public/test/web_contents_tester.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -66,6 +68,8 @@ std::optional<ProductInfo> CreateProductInfo(
 }
 
 }  // namespace
+
+using ukm::builders::Shopping_ShoppingInformation;
 
 class CommerceUiTabHelperTest : public testing::Test {
  public:
@@ -297,6 +301,37 @@ TEST_F(CommerceUiTabHelperTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(tab_helper_->ShouldShowPriceInsightsIconView());
+}
+
+TEST_F(CommerceUiTabHelperTest, TestRecordShoppingInformationUKM) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  shopping_service_->SetIsPriceInsightsEligible(true);
+
+  std::optional<ProductInfo> product_info = CreateProductInfo(
+      kClusterId, GURL(kProductImageUrl), kProductClusterTitle);
+  shopping_service_->SetResponseForGetProductInfoForUrl(product_info);
+
+  std::optional<PriceInsightsInfo> price_insights_info =
+      CreateValidPriceInsightsInfo(true, true, PriceBucket::kLowPrice);
+  shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(
+      price_insights_info);
+
+  SimulateNavigationCommitted(GURL(kProductUrl));
+
+  base::RunLoop().RunUntilIdle();
+
+  auto entries =
+      ukm_recorder.GetEntriesByName(Shopping_ShoppingInformation::kEntryName);
+  ASSERT_EQ(1u, entries.size());
+  ukm_recorder.ExpectEntryMetric(
+      entries[0], Shopping_ShoppingInformation::kHasPriceInsightsName, 1);
+  ukm_recorder.ExpectEntryMetric(
+      entries[0], Shopping_ShoppingInformation::kIsPriceTrackableName, 1);
+  ukm_recorder.ExpectEntryMetric(
+      entries[0], Shopping_ShoppingInformation::kIsShoppingContentName, 1);
+  ukm_recorder.ExpectEntryMetric(
+      entries[0], Shopping_ShoppingInformation::kHasDiscountName, 0);
 }
 
 }  // namespace commerce

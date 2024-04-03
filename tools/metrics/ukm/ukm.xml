@@ -24770,6 +24770,41 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Shopping.ShoppingInformation">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>mdjones@chromium.org</owner>
+  <summary>
+    Recorded when an user navigates to a shopping-related page and reports
+    shopping-related information about this page.
+  </summary>
+  <metric name="HasDiscount" enum="Boolean">
+    <summary>
+      Whether a discount from Chrome is available for this page.
+    </summary>
+  </metric>
+  <metric name="HasPriceInsights" enum="Boolean">
+    <summary>
+      Whether price insights is available for this page.
+    </summary>
+  </metric>
+  <metric name="IsPriceTrackable" enum="Boolean">
+    <summary>
+      Whether the page is price trackable.
+    </summary>
+  </metric>
+  <metric name="IsShoppingContent" enum="Boolean">
+    <summary>
+      Whether the page is classified as shopping content.
+    </summary>
+  </metric>
+  <metric name="PromotedFeature" enum="ShoppingContextualFeature">
+    <summary>
+      Which, if any, contextual shopping feature is promoted in expanded state
+      or in-product highlight.
+    </summary>
+  </metric>
+</event>
+
 <event name="Shopping.WillSendRequest">
   <owner>wychen@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>

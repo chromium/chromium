@@ -76,6 +76,14 @@ enum class ShoppingAction {
   kPriceTracked = 3,
 };
 
+// Shopping features that are contextual. These must be kept in sync with the
+// values in enums.xml.
+enum class ShoppingContextualFeature {
+  kPriceTracking = 0,
+  kPriceInsights = 1,
+  kDiscounts = 2,
+};
+
 // Record the state of a PDP for a navigation.
 void RecordPDPMetrics(optimization_guide::OptimizationGuideDecision decision,
                       const optimization_guide::OptimizationMetadata& metadata,

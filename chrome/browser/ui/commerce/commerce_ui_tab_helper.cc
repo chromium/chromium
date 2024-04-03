@@ -42,6 +42,8 @@
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -51,6 +53,7 @@
 
 using SidePanelWebUIViewT_ShoppingInsightsSidePanelUI =
     SidePanelWebUIViewT<ShoppingInsightsSidePanelUI>;
+using commerce::metrics::ShoppingContextualFeature;
 BEGIN_TEMPLATE_METADATA(SidePanelWebUIViewT_ShoppingInsightsSidePanelUI,
                         SidePanelWebUIViewT)
 END_METADATA
@@ -526,6 +529,8 @@ void CommerceUiTabHelper::ComputePageActionToExpand() {
   // We don't have full control over the discounts icon, so if we detect
   // that it is showing at all, block the others from expanding.
   if (IsShowingDiscountsIcon()) {
+    MaybeRecordShoppingInformationUKM(
+        PageActionIconType::kPaymentsOfferNotification);
     return;
   }
 
@@ -545,6 +550,7 @@ void CommerceUiTabHelper::ComputePageActionToExpand() {
       tracker->Dismissed(
           feature_engagement::kIPHPriceInsightsPageActionIconLabelFeature);
       page_action_to_expand_ = PageActionIconType::kPriceInsights;
+      MaybeRecordShoppingInformationUKM(PageActionIconType::kPriceInsights);
       price_insights_label_type_ = label_type;
       return;
     }
@@ -552,8 +558,10 @@ void CommerceUiTabHelper::ComputePageActionToExpand() {
 
   if (price_tracking_controller_->WantsExpandedUi()) {
     page_action_to_expand_ = PageActionIconType::kPriceTracking;
+    MaybeRecordShoppingInformationUKM(PageActionIconType::kPriceTracking);
     return;
   }
+  MaybeRecordShoppingInformationUKM(std::nullopt);
 }
 
 PriceInsightsIconView::PriceInsightsIconLabelType
@@ -636,6 +644,40 @@ void CommerceUiTabHelper::RecordPriceInsightsIconMetrics(bool from_icon_use) {
   if (ShouldShowPriceInsightsIconView()) {
     RecordIconMetrics(PageActionIconType::kPriceInsights, from_icon_use);
   }
+}
+
+void CommerceUiTabHelper::MaybeRecordShoppingInformationUKM(
+    std::optional<PageActionIconType> page_action_type) {
+  // This is our current definition of shopping content.
+  if (!product_info_for_page_.has_value()) {
+    return;
+  }
+
+  auto ukm_builder = ukm::builders::Shopping_ShoppingInformation(
+      web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
+
+  if (page_action_type.has_value()) {
+    int64_t promoted_feature = 0;
+    if (page_action_type == PageActionIconType::kPaymentsOfferNotification) {
+      promoted_feature =
+          static_cast<int64_t>(ShoppingContextualFeature::kDiscounts);
+    } else if (page_action_type == PageActionIconType::kPriceInsights) {
+      promoted_feature =
+          static_cast<int64_t>(ShoppingContextualFeature::kPriceInsights);
+    } else if (page_action_type == PageActionIconType::kPriceTracking) {
+      promoted_feature =
+          static_cast<int64_t>(ShoppingContextualFeature::kPriceTracking);
+    } else {
+      NOTREACHED();
+    }
+    ukm_builder.SetPromotedFeature(promoted_feature);
+  }
+
+  ukm_builder.SetHasPriceInsights(price_insights_info_.has_value())
+      .SetHasDiscount(IsShowingDiscountsIcon())
+      .SetIsPriceTrackable(true)
+      .SetIsShoppingContent(true)
+      .Record(ukm::UkmRecorder::Get());
 }
 
 PriceTrackingPageActionController*

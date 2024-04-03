@@ -161,6 +161,9 @@ class CommerceUiTabHelper
 
   void RecordPriceInsightsIconMetrics(bool from_icon_use);
 
+  void MaybeRecordShoppingInformationUKM(
+      std::optional<PageActionIconType> page_action_type);
+
   // The shopping service is tied to the lifetime of the browser context
   // which will always outlive this tab helper.
   raw_ptr<ShoppingService, DanglingUntriaged> shopping_service_;
