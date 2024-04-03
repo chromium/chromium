@@ -14,7 +14,7 @@ BASE_FEATURE(kPasswordInfobarDisplayLength,
 // kInfobarBannerDefaultPresentationDuration constant.
 constexpr base::FeatureParam<int> kPasswordInfobarDisplayLengthParam{
     &kPasswordInfobarDisplayLength,
-    /*name=*/"duration-seconds", /*default_value=*/8};
+    /*name=*/"duration-seconds", /*default_value=*/12};
 
 BASE_FEATURE(kCreditCardInfobarDisplayLength,
              "CreditCardInfobarDisplayLength",
@@ -24,7 +24,7 @@ BASE_FEATURE(kCreditCardInfobarDisplayLength,
 // kInfobarBannerDefaultPresentationDuration constant.
 constexpr base::FeatureParam<int> kCreditCardInfobarDisplayLengthParam{
     &kCreditCardInfobarDisplayLength,
-    /*name=*/"duration-seconds", /*default_value=*/8};
+    /*name=*/"duration-seconds", /*default_value=*/12};
 
 BASE_FEATURE(kAddressInfobarDisplayLength,
              "AddressInfobarDisplayLength",
@@ -34,4 +34,4 @@ BASE_FEATURE(kAddressInfobarDisplayLength,
 // kInfobarBannerDefaultPresentationDuration constant.
 constexpr base::FeatureParam<int> kAddressInfobarDisplayLengthParam{
     &kAddressInfobarDisplayLength,
-    /*name=*/"duration-seconds", /*default_value=*/8};
+    /*name=*/"duration-seconds", /*default_value=*/12};
