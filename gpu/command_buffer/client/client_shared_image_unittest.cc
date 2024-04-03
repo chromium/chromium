@@ -343,11 +343,9 @@ TEST(ClientSharedImageTest, GetTextureTarget_MultiplanarFormats) {
 // multiplanar format with external sampling is passed.
 TEST(ClientSharedImageTest,
      GetTextureTarget_MultiplanarFormatsWithExternalSampling) {
-  // For expedience, disable a CHECK in ClientSharedImage that external sampling
-  // is used only if the client passed a native buffer.
-  ClientSharedImage::AllowExternalSamplingWithoutNativeBuffersForTesting(true);
-
   auto sii = base::MakeRefCounted<TestSharedImageInterface>();
+  sii->emulate_client_provided_native_buffer();
+
   const gfx::Size kSize(256, 256);
   const uint32_t kUsage =
       SHARED_IMAGE_USAGE_RASTER_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ;
@@ -376,8 +374,6 @@ TEST(ClientSharedImageTest,
               static_cast<uint32_t>(GL_TEXTURE_EXTERNAL_OES));
 #endif
   }
-
-  ClientSharedImage::AllowExternalSamplingWithoutNativeBuffersForTesting(false);
 }
 #endif
 
@@ -385,11 +381,9 @@ TEST(ClientSharedImageTest,
 // On non-Apple platforms, the target for native buffers should be used if a
 // legacy multiplanar format is passed.
 TEST(ClientSharedImageTest, GetTextureTarget_LegacyMultiplanarFormats) {
-  // For expedience, disable a CHECK in ClientSharedImage that external sampling
-  // is used only if the client passed a native buffer.
-  ClientSharedImage::AllowExternalSamplingWithoutNativeBuffersForTesting(true);
-
   auto sii = base::MakeRefCounted<TestSharedImageInterface>();
+  sii->emulate_client_provided_native_buffer();
+
   const gfx::Size kSize(256, 256);
   const uint32_t kUsage =
       SHARED_IMAGE_USAGE_RASTER_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ;
@@ -412,8 +406,6 @@ TEST(ClientSharedImageTest, GetTextureTarget_LegacyMultiplanarFormats) {
               static_cast<uint32_t>(GL_TEXTURE_EXTERNAL_OES));
 #endif
   }
-
-  ClientSharedImage::AllowExternalSamplingWithoutNativeBuffersForTesting(false);
 }
 #endif
 
