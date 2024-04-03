@@ -103,8 +103,10 @@ gl::GLContextAttribs GenerateGLContextAttribsForCompositor(
     attribs.global_texture_share_group = true;
     attribs.global_semaphore_share_group = true;
 
-    attribs.robust_resource_initialization = true;
-    attribs.robust_buffer_access = true;
+    // Disable resource initialization and buffer bounds checks for trusted
+    // contexts.
+    attribs.robust_resource_initialization = false;
+    attribs.robust_buffer_access = false;
   }
 
   bool force_es2_context = gl::GetGlWorkarounds().disable_es3gl_context;
