@@ -148,6 +148,7 @@ class KeyboardAccessoryMediator
         switch (suggestion.getPopupItemId()) {
             case PopupItemId.INSECURE_CONTEXT_PAYMENT_DISABLED_MESSAGE:
                 // The insecure context warning has a replacement in the fallback sheet.
+            case PopupItemId.TITLE:
             case PopupItemId.SEPARATOR:
             case PopupItemId.CLEAR_FORM:
             case PopupItemId.ALL_SAVED_PASSWORDS_ENTRY:

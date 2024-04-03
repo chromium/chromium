@@ -77,7 +77,7 @@ namespace {
 bool CanAccept(PopupItemId id) {
   return id != PopupItemId::kSeparator &&
          id != PopupItemId::kInsecureContextPaymentDisabledMessage &&
-         id != PopupItemId::kMixedFormMessage;
+         id != PopupItemId::kMixedFormMessage && id != PopupItemId::kTitle;
 }
 
 content::RenderFrameHost* GetRenderFrameHost(AutofillPopupDelegate& delegate) {

@@ -184,6 +184,7 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case PopupItemId::kPasswordEntry:
     case PopupItemId::kScanCreditCard:
     case PopupItemId::kSeePromoCodeDetails:
+    case PopupItemId::kTitle:
     case PopupItemId::kSeparator:
     case PopupItemId::kShowAccountCards:
     case PopupItemId::kWebauthnCredential:
@@ -466,6 +467,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case PopupItemId::kMixedFormMessage:
     case PopupItemId::kDevtoolsTestAddresses:
       break;
+    case PopupItemId::kTitle:
     case PopupItemId::kSeparator:
     case PopupItemId::kPasswordEntry:
     case PopupItemId::kAccountStoragePasswordEntry:
@@ -608,6 +610,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case PopupItemId::kMixedFormMessage:
       // If the selected element is a warning we don't want to do anything.
       break;
+    case PopupItemId::kTitle:
     case PopupItemId::kSeparator:
     case PopupItemId::kPasswordEntry:
     case PopupItemId::kAccountStoragePasswordEntry:
@@ -688,6 +691,7 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case PopupItemId::kSeePromoCodeDetails:
     case PopupItemId::kWebauthnCredential:
     case PopupItemId::kWebauthnSignInWithAnotherDevice:
+    case PopupItemId::kTitle:
     case PopupItemId::kSeparator:
     case PopupItemId::kClearForm:
     case PopupItemId::kMixedFormMessage:

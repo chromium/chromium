@@ -625,6 +625,7 @@ bool IsFooterPopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kMerchantPromoCodeEntry:
     case PopupItemId::kMixedFormMessage:
     case PopupItemId::kPasswordEntry:
+    case PopupItemId::kTitle:
     case PopupItemId::kSeparator:
     case PopupItemId::kVirtualCreditCardEntry:
     case PopupItemId::kWebauthnCredential:
@@ -676,6 +677,7 @@ bool IsExpandablePopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kViewPasswordDetails:
     case PopupItemId::kScanCreditCard:
     case PopupItemId::kSeePromoCodeDetails:
+    case PopupItemId::kTitle:
     case PopupItemId::kSeparator:
     case PopupItemId::kShowAccountCards:
     case PopupItemId::kVirtualCreditCardEntry:

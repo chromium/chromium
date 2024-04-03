@@ -83,6 +83,7 @@ FillingProduct GetFillingProductFromPopupItemId(PopupItemId popup_item_id) {
       return FillingProduct::kPlusAddresses;
     case PopupItemId::kAutofillOptions:
     case PopupItemId::kSeePromoCodeDetails:
+    case PopupItemId::kTitle:
     case PopupItemId::kSeparator:
     case PopupItemId::kClearForm:
     case PopupItemId::kDatalistEntry:

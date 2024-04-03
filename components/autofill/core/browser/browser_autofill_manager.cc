@@ -371,6 +371,7 @@ FillDataType GetEventTypeFromSingleFieldSuggestionPopupItemId(
     case PopupItemId::kViewPasswordDetails:
     case PopupItemId::kScanCreditCard:
     case PopupItemId::kSeePromoCodeDetails:
+    case PopupItemId::kTitle:
     case PopupItemId::kSeparator:
     case PopupItemId::kShowAccountCards:
     case PopupItemId::kVirtualCreditCardEntry:

@@ -84,6 +84,7 @@ enum class PopupItemId : int {
   kWebauthnSignInWithAnotherDevice,
 
   // Other suggestions.
+  kTitle,
   kSeparator,
   kClearForm,
   kMixedFormMessage,
