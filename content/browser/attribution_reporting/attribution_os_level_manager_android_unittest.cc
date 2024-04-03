@@ -19,12 +19,10 @@
 #include "content/browser/attribution_reporting/attribution_os_level_manager.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/os_registration.h"
-#include "content/browser/attribution_reporting/test/mock_content_browser_client.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -105,9 +103,6 @@ TEST_F(AttributionOsLevelManagerAndroidTest, Register) {
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.desc);
-
-    MockAttributionReportingContentBrowserClient browser_client;
-    ScopedContentBrowserClientSetting setting(&browser_client);
 
     base::RunLoop run_loop;
 
