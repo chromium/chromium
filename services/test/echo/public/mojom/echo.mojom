@@ -46,8 +46,4 @@ interface EchoService {
   [EnableIf=is_win]
   LoadNativeLibrary(mojo_base.mojom.FilePath library, bool call_sec32_delayload)
    => (LoadStatus status, uint32 error_code);
-
-   // Calls a function in user32.dll (CharUpper()) to validate pinning user32.
-   [EnableIf=is_win]
-   CallUser32(string lower) => (string upper);
 };

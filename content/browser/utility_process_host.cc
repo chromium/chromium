@@ -206,9 +206,6 @@ void UtilityProcessHost::SetPreloadLibraries(
     const std::vector<base::FilePath>& preloads) {
   preload_libraries_ = preloads;
 }
-void UtilityProcessHost::SetPinUser32() {
-  pin_user32_ = true;
-}
 #endif  // BUILDFLAG(IS_WIN)
 
 void UtilityProcessHost::SetAllowGpuClient() {
@@ -448,9 +445,6 @@ bool UtilityProcessHost::StartProcess() {
 #if BUILDFLAG(IS_WIN)
     if (!preload_libraries_.empty()) {
       delegate->SetPreloadLibraries(preload_libraries_);
-    }
-    if (pin_user32_) {
-      delegate->SetPinUser32();
     }
 #endif  // BUILDFLAG(IS_WIN)
 

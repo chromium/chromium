@@ -49,7 +49,6 @@ class UtilitySandboxedProcessLauncherDelegate
   void SetPreloadLibraries(const std::vector<base::FilePath>& preloads) {
     preload_libraries_ = preloads;
   }
-  void SetPinUser32() { pin_user32_ = true; }
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(USE_ZYGOTE)
@@ -71,7 +70,6 @@ class UtilitySandboxedProcessLauncherDelegate
 
 #if BUILDFLAG(IS_WIN)
   std::vector<base::FilePath> preload_libraries_;
-  bool pin_user32_;
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(USE_ZYGOTE)

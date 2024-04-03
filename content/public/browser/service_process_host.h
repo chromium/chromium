@@ -36,7 +36,6 @@ class Process;
 namespace content {
 // Passkeys for service process host Options.
 class ServiceProcessHostGpuClient;
-class ServiceProcessHostPinUser32;
 class ServiceProcessHostPreloadLibraries;
 
 // Sandbox type for ServiceProcessHost::Launch<remote>() is found by
@@ -112,10 +111,6 @@ class CONTENT_EXPORT ServiceProcessHost {
     Options& WithPreloadedLibraries(
         std::vector<base::FilePath> preload_libraries,
         base::PassKey<ServiceProcessHostPreloadLibraries> passkey);
-
-    // Forces user32 to be loaded into the process before the sandbox is locked
-    // down.
-    Options& WithPinUser32(base::PassKey<ServiceProcessHostPinUser32> passkey);
 #endif  // BUILDFLAG(IS_WIN)
 
     // Allows the viz.mojom.Gpu client to be bound via the process host on
@@ -136,7 +131,6 @@ class CONTENT_EXPORT ServiceProcessHost {
     base::OnceCallback<void(const base::Process&)> process_callback;
 #if BUILDFLAG(IS_WIN)
     std::vector<base::FilePath> preload_libraries;
-    std::optional<bool> pin_user32;
 #endif  // BUILDFLAG(IS_WIN)
     std::optional<bool> allow_gpu_client;
   };
