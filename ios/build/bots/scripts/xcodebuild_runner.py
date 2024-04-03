@@ -338,7 +338,7 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
                        include_disabled: bool = False) -> List[Tuple[str, str]]:
     xctestrun = self._create_xctest_run_enum_tests(include_disabled)
     all_test_classes = []
-    error_message, stdout = "", ""
+    error_message = ""
     num_attempts = 4
     for attempt in range(num_attempts):
       # reset error_message with each attempt
@@ -356,12 +356,23 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
       LOGGER.info(cmd)
 
       start = time.perf_counter()
-      stdout = subprocess.check_output(
-          cmd, stderr=subprocess.STDOUT).decode('utf-8')
+      proc = subprocess.Popen(
+          cmd,
+          env=None,
+          stdout=subprocess.PIPE,
+          stderr=subprocess.STDOUT,
+      )
+      test_runner.print_process_output(proc, timeout=self.readline_timeout)
       end = time.perf_counter()
       elapsed = end - start
       LOGGER.info(f'xcodebuild -enumerate-tests (attempt {attempt + 1} of '
                   f'{num_attempts}) completed in {elapsed:.2f} seconds')
+
+      # enumerate_tests_json will not be written if return code is non-zero
+      if not os.path.isfile(enumerate_tests_json):
+        LOGGER.error(f'xcodebuild -enumerate-tests failed to create '
+                     f'{enumerate_tests_json}')
+        continue
 
       with open(enumerate_tests_json, "r") as f:
         json_output = json.load(f)
@@ -380,7 +391,7 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
     if error_message:
       raise test_runner_errors.XcodeEnumerateTestsError(error_message)
     elif not all_test_classes:
-      raise test_runner_errors.XcodeEnumerateTestsError(stdout)
+      raise test_runner_errors.XcodeEnumerateTestsError()
 
     all_test_names = []
     for test_class in all_test_classes:
