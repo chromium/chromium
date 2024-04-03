@@ -259,10 +259,15 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
         .active = YES;
   }
 
+  NSLayoutConstraint* scrollViewTopConstraint =
+      self.layoutBehindNavigationBar
+          ? [_scrollView.topAnchor constraintEqualToAnchor:view.topAnchor]
+          : [_scrollView.topAnchor
+                constraintEqualToAnchor:view.safeAreaLayoutGuide.topAnchor];
+
   [NSLayoutConstraint activateConstraints:@[
     // Scroll view constraints.
-    [_scrollView.topAnchor
-        constraintEqualToAnchor:view.safeAreaLayoutGuide.topAnchor],
+    scrollViewTopConstraint,
     [_scrollView.leadingAnchor constraintEqualToAnchor:view.leadingAnchor],
     [_scrollView.trailingAnchor constraintEqualToAnchor:view.trailingAnchor],
 
