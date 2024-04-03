@@ -78,12 +78,6 @@ const LayoutResult* PaginatedRootLayoutAlgorithm::Layout() {
   return container_builder_.ToBoxFragment();
 }
 
-MinMaxSizesResult PaginatedRootLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesFloatInput&) {
-  NOTREACHED();
-  return MinMaxSizesResult();
-}
-
 const PhysicalBoxFragment* PaginatedRootLayoutAlgorithm::LayoutPage(
     uint32_t page_index,
     const AtomicString& page_name,

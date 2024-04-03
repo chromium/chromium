@@ -18,8 +18,8 @@ class CORE_EXPORT CustomLayoutAlgorithm
  public:
   explicit CustomLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
-  const LayoutResult* Layout() override;
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
+  const LayoutResult* Layout();
 
  private:
   void AddAnyOutOfFlowPositionedChildren(LayoutInputNode* child);

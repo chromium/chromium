@@ -20,22 +20,6 @@ class ComputedStyle;
 class EarlyBreak;
 class LayoutResult;
 
-// Operations provided by a layout algorithm.
-class LayoutAlgorithmOperations {
- public:
-  // Actual layout function. Lays out the children and descendants within the
-  // constraints given by the ConstraintSpace. Returns a layout result with
-  // the resulting layout information.
-  // TODO(layout-dev): attempt to make this function const.
-  virtual const LayoutResult* Layout() = 0;
-
-  // Computes the min-content and max-content intrinsic sizes for the given box.
-  // The result will not take any min-width, max-width or width properties into
-  // account.
-  virtual MinMaxSizesResult ComputeMinMaxSizes(
-      const MinMaxSizesFloatInput&) = 0;
-};
-
 // Parameters to pass when creating a layout algorithm for a block node.
 struct LayoutAlgorithmParams {
   STACK_ALLOCATED();
@@ -65,11 +49,25 @@ struct LayoutAlgorithmParams {
   const HeapVector<Member<EarlyBreak>>* additional_early_breaks;
 };
 
-// Base class for all LayoutNG algorithms.
+// Base class template for all layout algorithms.
+//
+// Subclassed template specializations (actual layout algorithms) are required
+// to define the following two functions:
+//
+//   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
+//   const LayoutResult* Layout();
+//
+// ComputeMinMaxSizes() should compute the min-content and max-content intrinsic
+// sizes for the given box. The result should not take any min-width, max-width
+// or width properties into account.
+//
+// Layout() is the actual layout function. Lays out the children and descendants
+// within the constraints given by the ConstraintSpace. Returns a layout result
+// with the resulting layout information.
 template <typename InputNodeType,
           typename BoxFragmentBuilderType,
           typename BreakTokenType>
-class CORE_EXPORT LayoutAlgorithm : public LayoutAlgorithmOperations {
+class CORE_EXPORT LayoutAlgorithm {
   STACK_ALLOCATED();
  public:
   LayoutAlgorithm(InputNodeType node,
@@ -106,9 +104,11 @@ class CORE_EXPORT LayoutAlgorithm : public LayoutAlgorithmOperations {
     }
   }
 
-  virtual ~LayoutAlgorithm() = default;
-
  protected:
+  // Protected (non-virtual) destructor, to make sure that the destructor is
+  // invoked directly on subclasses.
+  ~LayoutAlgorithm() = default;
+
   const ConstraintSpace& GetConstraintSpace() const {
     return container_builder_.GetConstraintSpace();
   }

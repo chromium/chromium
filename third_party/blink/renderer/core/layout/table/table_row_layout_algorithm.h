@@ -20,9 +20,9 @@ class CORE_EXPORT TableRowLayoutAlgorithm
  public:
   explicit TableRowLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
-  const LayoutResult* Layout() override;
+  const LayoutResult* Layout();
 
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override {
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) {
     // Table layout doesn't compute min/max sizes on table rows.
     NOTREACHED();
     return MinMaxSizesResult();

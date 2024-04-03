@@ -29,8 +29,8 @@ class CORE_EXPORT SimplifiedOofLayoutAlgorithm
   SimplifiedOofLayoutAlgorithm(const LayoutAlgorithmParams&,
                                const PhysicalBoxFragment& last_fragmentainer);
 
-  const LayoutResult* Layout() override;
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override {
+  const LayoutResult* Layout();
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) {
     NOTREACHED();
     return MinMaxSizesResult();
   }

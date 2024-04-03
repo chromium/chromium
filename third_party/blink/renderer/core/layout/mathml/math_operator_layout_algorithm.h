@@ -18,9 +18,10 @@ class CORE_EXPORT MathOperatorLayoutAlgorithm
  public:
   explicit MathOperatorLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
+  const LayoutResult* Layout();
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
+
  private:
-  const LayoutResult* Layout() final;
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) final;
   UChar32 GetBaseCodePoint() const;
 };
 

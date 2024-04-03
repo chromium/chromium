@@ -21,9 +21,11 @@ class CORE_EXPORT PaginatedRootLayoutAlgorithm
  public:
   explicit PaginatedRootLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
-  const LayoutResult* Layout() override;
+  const LayoutResult* Layout();
 
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) {
+    NOTREACHED_NORETURN();
+  }
 
  private:
   const PhysicalBoxFragment* LayoutPage(

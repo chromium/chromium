@@ -51,14 +51,15 @@ class CORE_EXPORT MathScriptsLayoutAlgorithm
     BlockNode sup = nullptr;
   };
 
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
+  const LayoutResult* Layout();
+
  private:
   void GatherChildren(BlockNode* base,
                       HeapVector<SubSupPair>*,
                       BlockNode* prescripts,
                       unsigned* first_prescript_index,
                       BoxFragmentBuilder* = nullptr) const;
-
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) final;
 
   typedef HeapVector<ChildAndMetrics, 4> ChildrenAndMetrics;
 
@@ -78,8 +79,6 @@ class CORE_EXPORT MathScriptsLayoutAlgorithm
       const ChildAndMetrics& base_metrics,
       const ChildrenAndMetrics& sub_metrics,
       const ChildrenAndMetrics& sup_metrics) const;
-
-  const LayoutResult* Layout() final;
 };
 
 }  // namespace blink

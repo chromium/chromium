@@ -120,12 +120,12 @@ class CORE_EXPORT BlockLayoutAlgorithm
   // Default constructor.
   explicit BlockLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
-  ~BlockLayoutAlgorithm() override;
+  ~BlockLayoutAlgorithm();
 
   void SetBoxType(PhysicalFragment::BoxType type);
 
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
-  const LayoutResult* Layout() override;
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
+  const LayoutResult* Layout();
 
  private:
   NOINLINE const LayoutResult* HandleNonsuccessfulLayoutResult(

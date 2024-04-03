@@ -18,8 +18,8 @@ class CORE_EXPORT FrameSetLayoutAlgorithm
  public:
   explicit FrameSetLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
-  const LayoutResult* Layout() override;
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
+  const LayoutResult* Layout();
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
 
  private:
   Vector<LayoutUnit> LayoutAxis(wtf_size_t count,

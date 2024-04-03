@@ -25,8 +25,8 @@ class CORE_EXPORT FlexLayoutAlgorithm
       const LayoutAlgorithmParams& params,
       const HashMap<wtf_size_t, LayoutUnit>* cross_size_adjustments = nullptr);
 
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
-  const LayoutResult* Layout() override;
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
+  const LayoutResult* Layout();
 
  private:
   const LayoutResult* RelayoutIgnoringChildScrollbarChanges();

@@ -21,9 +21,9 @@ class CORE_EXPORT FieldsetLayoutAlgorithm
  public:
   explicit FieldsetLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
-  const LayoutResult* Layout() override;
+  const LayoutResult* Layout();
 
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
 
   static LayoutUnit ComputeLegendInlineOffset(
       const ComputedStyle& legend_style,

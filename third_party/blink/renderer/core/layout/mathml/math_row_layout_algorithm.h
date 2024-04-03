@@ -43,11 +43,11 @@ class CORE_EXPORT MathRowLayoutAlgorithm
   };
   typedef HeapVector<ChildWithOffsetAndMargins, 4> ChildrenVector;
 
+  const LayoutResult* Layout();
+
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
+
  private:
-  const LayoutResult* Layout() final;
-
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) final;
-
   void LayoutRowItems(ChildrenVector*,
                       LayoutUnit* max_row_block_baseline,
                       LogicalSize* row_total_size);

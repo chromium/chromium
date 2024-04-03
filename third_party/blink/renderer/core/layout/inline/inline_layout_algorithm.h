@@ -47,15 +47,15 @@ class CORE_EXPORT InlineLayoutAlgorithm final
                         const InlineBreakToken*,
                         const ColumnSpannerPath*,
                         InlineChildLayoutContext* context);
-  ~InlineLayoutAlgorithm() override;
+  ~InlineLayoutAlgorithm();
 
   void CreateLine(const LineLayoutOpportunity&,
                   LineInfo*,
                   LogicalLineItems* line_box);
 
-  const LayoutResult* Layout() override;
+  const LayoutResult* Layout();
 
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override {
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) {
     NOTREACHED();
     return MinMaxSizesResult();
   }

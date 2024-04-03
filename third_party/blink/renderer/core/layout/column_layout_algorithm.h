@@ -24,9 +24,9 @@ class CORE_EXPORT ColumnLayoutAlgorithm
  public:
   explicit ColumnLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
-  const LayoutResult* Layout() override;
+  const LayoutResult* Layout();
 
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
 
  private:
   MinMaxSizesResult ComputeSpannersMinMaxSizes(

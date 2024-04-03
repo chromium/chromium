@@ -38,8 +38,8 @@ class CORE_EXPORT GridLayoutAlgorithm
  public:
   explicit GridLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
-  const LayoutResult* Layout() override;
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
+  const LayoutResult* Layout();
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
 
   LayoutUnit ComputeSubgridIntrinsicBlockSize(
       const GridSizingSubtree& sizing_subtree) const;

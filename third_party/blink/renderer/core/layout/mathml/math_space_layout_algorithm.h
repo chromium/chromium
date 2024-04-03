@@ -16,10 +16,9 @@ class CORE_EXPORT MathSpaceLayoutAlgorithm
  public:
   explicit MathSpaceLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
- private:
-  const LayoutResult* Layout() final;
+  const LayoutResult* Layout();
 
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) final;
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
 };
 
 }  // namespace blink

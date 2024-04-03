@@ -204,7 +204,7 @@ inline const LayoutResult* LayoutWithAlgorithm(
     const LayoutAlgorithmParams& params) {
   const LayoutResult* result = nullptr;
   DetermineAlgorithmAndRun(params,
-                           [&result](LayoutAlgorithmOperations* algorithm) {
+                           [&result]<typename Algorithm>(Algorithm* algorithm) {
                              result = algorithm->Layout();
                            });
   return result;
@@ -214,10 +214,10 @@ inline MinMaxSizesResult ComputeMinMaxSizesWithAlgorithm(
     const LayoutAlgorithmParams& params,
     const MinMaxSizesFloatInput& float_input) {
   MinMaxSizesResult result;
-  DetermineAlgorithmAndRun(
-      params, [&result, &float_input](LayoutAlgorithmOperations* algorithm) {
-        result = algorithm->ComputeMinMaxSizes(float_input);
-      });
+  DetermineAlgorithmAndRun(params, [&result, &float_input]<typename Algorithm>(
+                                       Algorithm* algorithm) {
+    result = algorithm->ComputeMinMaxSizes(float_input);
+  });
   return result;
 }
 
