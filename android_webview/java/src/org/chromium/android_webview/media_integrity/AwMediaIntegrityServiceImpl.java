@@ -5,11 +5,11 @@
 package org.chromium.android_webview.media_integrity;
 
 import android.net.Uri;
-import android.util.LruCache;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.android_webview.AwBrowserContext.AwMediaIntegrityProviderKey;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.common.Lifetime;
@@ -42,104 +42,6 @@ import java.util.Objects;
  */
 @Lifetime.WebView
 public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService {
-
-    /**
-     * Static cache of already-initialized Play providers, to speed up calls for new providers from
-     * a similar context.
-     *
-     * <p>Cached entries will remain cached across page loads. While the cache itself is application
-     * global, the {@link ProviderKey} includes the Profile to avoid sharing values between
-     * profiles.
-     *
-     * <p>The cache size is estimated from the {@code Android.WebView.OriginsVisited} histogram,
-     * looking at the 1-day aggregation of a representative app where users browse multiple domains.
-     * The P95 for the metric over 1 day is 15.
-     *
-     * @see ProviderKey
-     */
-    private static final LruCache<ProviderKey, WebViewMediaIntegrityProvider> sProviderCache =
-            new LruCache<>(20) {
-
-                private int mEvictionCounter;
-
-                @Override
-                protected void entryRemoved(
-                        boolean evicted,
-                        ProviderKey key,
-                        WebViewMediaIntegrityProvider oldValue,
-                        WebViewMediaIntegrityProvider newValue) {
-                    // Log evictions due to lack of space.
-                    if (evicted) {
-                        RecordHistogram.recordCount100Histogram(
-                                "Android.WebView.MediaIntegrity"
-                                        + ".TokenProviderCacheEvictionsCumulative2",
-                                ++mEvictionCounter);
-                    }
-                }
-            };
-
-    /**
-     * Cache key for MediaIntegrityProviders. Ensures that values are keyed by
-     *
-     * <ul>
-     *   <li>top frame origin
-     *   <li>source frame origin
-     *   <li>WebView Profile identifier
-     *   <li>Api status
-     *   <li>cloud project number
-     * </ul>
-     */
-    private static final class ProviderKey {
-
-        private final Uri mTopFrameOrigin;
-        private final Uri mSourceOrigin;
-        private final int mProfileIdentifier;
-        @MediaIntegrityApiStatus private final int mRequestMode;
-        private final long mCloudProjectNumber;
-
-        ProviderKey(
-                Uri topFrameOrigin,
-                Uri sourceOrigin,
-                int profileIdentifier,
-                @MediaIntegrityApiStatus int requestMode,
-                long cloudProjectNumber) {
-            mTopFrameOrigin = topFrameOrigin;
-            mSourceOrigin = sourceOrigin;
-            mProfileIdentifier = profileIdentifier;
-            mRequestMode = requestMode;
-            mCloudProjectNumber = cloudProjectNumber;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(
-                    mTopFrameOrigin,
-                    mSourceOrigin,
-                    mProfileIdentifier,
-                    mRequestMode,
-                    mCloudProjectNumber);
-        }
-
-        @Override
-        public boolean equals(@Nullable Object obj) {
-            if (!(obj instanceof ProviderKey other)) {
-                return false;
-            }
-            return Objects.equals(this.mTopFrameOrigin, other.mTopFrameOrigin)
-                    && Objects.equals(this.mSourceOrigin, other.mSourceOrigin)
-                    && this.mProfileIdentifier == other.mProfileIdentifier
-                    && this.mRequestMode == other.mRequestMode
-                    && this.mCloudProjectNumber == other.mCloudProjectNumber;
-        }
-
-        public @MediaIntegrityApiStatus int getRequestMode() {
-            return mRequestMode;
-        }
-
-        public Uri getSourceOrigin() {
-            return mSourceOrigin;
-        }
-    }
 
     private static @WebViewMediaIntegrityErrorCode.EnumType int errorCodeToMojomErrorCode(
             @MediaIntegrityErrorCode int code) {
@@ -214,12 +116,19 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
                 "Android.WebView.MediaIntegrity.GetTokenProviderCumulativeV2",
                 ++sGetTokenProviderCallCounter);
 
-        ProviderKey key = getProviderKey(cloudProjectNumber, apiStatus, sourceOrigin);
+        final AwContents awContents = AwContents.fromWebContents(mWebContents);
+        if (awContents == null) {
+            callback.call(WebViewMediaIntegrityErrorCode.INTERNAL_ERROR);
+            return;
+        }
+
+        AwMediaIntegrityProviderKey key =
+                createProviderKey(awContents, cloudProjectNumber, apiStatus, sourceOrigin);
         if (key == null) {
             callback.call(WebViewMediaIntegrityErrorCode.INTERNAL_ERROR);
             return;
         }
-        WebViewMediaIntegrityProvider cachedProvider = sProviderCache.get(key);
+        WebViewMediaIntegrityProvider cachedProvider = getCachedProvider(awContents, key);
 
         if (cachedProvider != null) {
             ThreadUtils.assertOnUiThread();
@@ -254,7 +163,7 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
                                 if (!key.getSourceOrigin().toString().isEmpty()) {
                                     // Cache the provider only if source origin is
                                     // non-opaque
-                                    sProviderCache.put(key, integrityProvider);
+                                    putProviderInCache(awContents, key, integrityProvider);
                                 }
                             }
 
@@ -268,7 +177,21 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
     }
 
     @Nullable
-    private ProviderKey getProviderKey(
+    private WebViewMediaIntegrityProvider getCachedProvider(
+            @NonNull AwContents awContents, @NonNull AwMediaIntegrityProviderKey key) {
+        return awContents.getBrowserContext().getCachedAwMediaIntegrityProvider(key);
+    }
+
+    private void putProviderInCache(
+            @NonNull AwContents awContents,
+            @NonNull AwMediaIntegrityProviderKey key,
+            @NonNull WebViewMediaIntegrityProvider provider) {
+        awContents.getBrowserContext().putAwMediaIntegrityProviderInCache(key, provider);
+    }
+
+    @Nullable
+    private AwMediaIntegrityProviderKey createProviderKey(
+            @NonNull AwContents awContents,
             long cloudProjectNumber,
             @MediaIntegrityApiStatus int apiStatus,
             @NonNull String sourceOrigin) {
@@ -276,16 +199,14 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
         if (topLevelOrigin == null) {
             return null;
         }
-        final AwContents awContents = AwContents.fromWebContents(mWebContents);
-        if (awContents == null) {
-            return null;
-        }
-        return new ProviderKey(
-                Uri.parse(sourceOrigin),
-                Uri.parse(topLevelOrigin),
-                awContents.getBrowserContext().hashCode(),
-                apiStatus,
-                cloudProjectNumber);
+
+        return awContents
+                .getBrowserContext()
+                .createAwMediaIntegrityProviderKey(
+                        Uri.parse(sourceOrigin),
+                        Uri.parse(topLevelOrigin),
+                        apiStatus,
+                        cloudProjectNumber);
     }
 
     private @MediaIntegrityApiStatus int getMediaIntegrityApiStatus(

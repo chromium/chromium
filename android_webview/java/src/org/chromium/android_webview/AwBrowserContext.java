@@ -6,8 +6,11 @@ package org.chromium.android_webview;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.Uri;
+import android.util.LruCache;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -15,19 +18,23 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.common.Lifetime;
+import org.chromium.android_webview.common.MediaIntegrityApiStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.memory.MemoryPressureMonitor;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.blink.mojom.WebViewMediaIntegrityProvider;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentViewStatics;
 
+import java.util.Objects;
 import java.util.Set;
 
 /**
- * Java side of the Browser Context: contains all the java side objects needed to host one
- * browsing session (i.e. profile).
+ * Java side of the Browser Context: contains all the java side objects needed to host one browsing
+ * session (i.e. profile).
  *
- * Note that historically WebView was running in single process mode, and limitations on renderer
+ * <p>Note that historically WebView was running in single process mode, and limitations on renderer
  * process only being able to use a single browser context, currently there can only be one
  * AwBrowserContext instance, so at this point the class mostly exists for conceptual clarity.
  */
@@ -36,6 +43,41 @@ import java.util.Set;
 public class AwBrowserContext implements BrowserContextHandle {
     private static final String TAG = "AwBrowserContext";
     private static final String BASE_PREFERENCES = "WebViewProfilePrefs";
+
+    /**
+     * Cache storing already-initialized Play providers for the Media Integrity Blink renderer
+     * extension. This cache speeds up calls for new providers from a similar context.
+     *
+     * <p>Cached entries will remain cached across page loads. The cache is Profile-specific to
+     * avoid sharing values between profiles.
+     *
+     * <p>The cache size is estimated from the {@code Android.WebView.OriginsVisited} histogram,
+     * looking at the 1-day aggregation of a representative app where users browse multiple domains.
+     * The P95 for the metric over 1 day is 15.
+     *
+     * @see AwMediaIntegrityProviderKey
+     */
+    private final LruCache<AwMediaIntegrityProviderKey, WebViewMediaIntegrityProvider>
+            mAwMediaIntegrityProviderCache =
+                    new LruCache<>(10) {
+
+                        private int mEvictionCounter;
+
+                        @Override
+                        protected void entryRemoved(
+                                boolean evicted,
+                                AwMediaIntegrityProviderKey key,
+                                WebViewMediaIntegrityProvider oldValue,
+                                WebViewMediaIntegrityProvider newValue) {
+                            // Log evictions due to lack of space.
+                            if (evicted) {
+                                RecordHistogram.recordCount100Histogram(
+                                        "Android.WebView.MediaIntegrity"
+                                                + ".TokenProviderCacheEvictionsCumulativeV2",
+                                        ++mEvictionCounter);
+                            }
+                        }
+                    };
 
     private AwGeolocationPermissions mGeolocationPermissions;
     private AwServiceWorkerController mServiceWorkerController;
@@ -49,6 +91,59 @@ public class AwBrowserContext implements BrowserContextHandle {
     @NonNull private final AwCookieManager mCookieManager;
     private final boolean mIsDefault;
     @NonNull private final SharedPreferences mSharedPreferences;
+
+    /**
+     * Cache key for MediaIntegrityProviders. Ensures that values are keyed by
+     *
+     * <ul>
+     *   <li>top frame origin
+     *   <li>source frame origin
+     *   <li>Api status
+     *   <li>cloud project number
+     * </ul>
+     */
+    public static final class AwMediaIntegrityProviderKey {
+
+        private final Uri mTopFrameOrigin;
+        private final Uri mSourceOrigin;
+        @MediaIntegrityApiStatus private final int mRequestMode;
+        private final long mCloudProjectNumber;
+
+        AwMediaIntegrityProviderKey(
+                Uri topFrameOrigin,
+                Uri sourceOrigin,
+                @MediaIntegrityApiStatus int requestMode,
+                long cloudProjectNumber) {
+            mTopFrameOrigin = topFrameOrigin;
+            mSourceOrigin = sourceOrigin;
+            mRequestMode = requestMode;
+            mCloudProjectNumber = cloudProjectNumber;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(mTopFrameOrigin, mSourceOrigin, mRequestMode, mCloudProjectNumber);
+        }
+
+        @Override
+        public boolean equals(@Nullable Object obj) {
+            if (!(obj instanceof AwMediaIntegrityProviderKey other)) {
+                return false;
+            }
+            return Objects.equals(this.mTopFrameOrigin, other.mTopFrameOrigin)
+                    && Objects.equals(this.mSourceOrigin, other.mSourceOrigin)
+                    && this.mRequestMode == other.mRequestMode
+                    && this.mCloudProjectNumber == other.mCloudProjectNumber;
+        }
+
+        public @MediaIntegrityApiStatus int getRequestMode() {
+            return mRequestMode;
+        }
+
+        public Uri getSourceOrigin() {
+            return mSourceOrigin;
+        }
+    }
 
     public AwBrowserContext(long nativeAwBrowserContext) {
         this(
@@ -156,6 +251,27 @@ public class AwBrowserContext implements BrowserContextHandle {
                                     .getQuotaManagerBridge(mNativeAwBrowserContext));
         }
         return mQuotaManagerBridge;
+    }
+
+    public AwMediaIntegrityProviderKey createAwMediaIntegrityProviderKey(
+            @NonNull Uri sourceOrigin,
+            @NonNull Uri topLevelOrigin,
+            @MediaIntegrityApiStatus int apiStatus,
+            long cloudProjectNumber) {
+        return new AwMediaIntegrityProviderKey(
+                sourceOrigin, topLevelOrigin, apiStatus, cloudProjectNumber);
+    }
+
+    @Nullable
+    public WebViewMediaIntegrityProvider getCachedAwMediaIntegrityProvider(
+            @NonNull AwMediaIntegrityProviderKey key) {
+        return mAwMediaIntegrityProviderCache.get(key);
+    }
+
+    public void putAwMediaIntegrityProviderInCache(
+            @NonNull AwMediaIntegrityProviderKey key,
+            @NonNull WebViewMediaIntegrityProvider provider) {
+        mAwMediaIntegrityProviderCache.put(key, provider);
     }
 
     private void migrateGeolocationPreferences() {
