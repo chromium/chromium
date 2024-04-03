@@ -1846,8 +1846,9 @@ TEST_P(FrameThrottlingTest, ForceUnthrottled) {
   TestIntersectionObserverDelegate* intersection_delegate =
       MakeGarbageCollected<TestIntersectionObserverDelegate>(
           *frame_element->contentDocument());
-  IntersectionObserver* intersection_observer =
-      IntersectionObserver::Create(intersection_init, *intersection_delegate);
+  IntersectionObserver* intersection_observer = IntersectionObserver::Create(
+      intersection_init, *intersection_delegate,
+      LocalFrameUkmAggregator::kJavascriptIntersectionObserver);
   intersection_observer->observe(frame_element->contentDocument()->body());
 
   ResizeObserver::Delegate* resize_delegate =

@@ -85,8 +85,9 @@ bool IntersectionObserverController::ComputeIntersections(
     for (auto& observer : observers_to_process) {
       DCHECK(!observer->RootIsImplicit());
       if (observer->HasObservations()) {
-        if (metrics_timer)
-          metrics_timer->StartInterval(observer->GetUkmMetricId());
+        if (metrics_timer && observer->GetUkmMetricId()) {
+          metrics_timer->StartInterval(observer->GetUkmMetricId().value());
+        }
         int64_t count = observer->ComputeIntersections(
             flags, monotonic_time, accumulated_scroll_delta_since_last_update);
         if (observer->IsInternal())
@@ -99,8 +100,10 @@ bool IntersectionObserverController::ComputeIntersections(
       }
     }
     for (auto& observation : observations_to_process) {
-      if (metrics_timer)
-        metrics_timer->StartInterval(observation->Observer()->GetUkmMetricId());
+      if (metrics_timer && observation->Observer()->GetUkmMetricId()) {
+        metrics_timer->StartInterval(
+            observation->Observer()->GetUkmMetricId().value());
+      }
       std::optional<IntersectionGeometry::RootGeometry> root_geometry;
       int64_t count = observation->ComputeIntersection(
           flags, accumulated_scroll_delta_since_last_update, monotonic_time,
