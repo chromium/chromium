@@ -169,11 +169,16 @@ class WebViewCrxSmokeTests(
   @classmethod
   def AddCommandlineArgs(cls, parser):
     """Adds test suite specific command line arguments"""
-    parser.add_option('--crx-file', action='store', help='Path to CRX file')
-    parser.add_option('--component-name', action='store', help='Component name',
-                      choices=list(_COMPONENT_NAME_TO_DATA.keys()))
-    parser.add_option('--webview-package-name', action='store',
-                      help='WebView package name')
+    parser.add_argument('--crx-file',
+                        action='store',
+                        help='Path to CRX file')
+    parser.add_argument('--component-name',
+                        action='store',
+                        help='Component name',
+                        choices=list(_COMPONENT_NAME_TO_DATA.keys()))
+    parser.add_argument('--webview-package-name',
+                        action='store',
+                        help='WebView package name')
 
   def Test_run_webview_smoke_test(self):
     """Test waits for a javascript condition to be set on the WebView shell"""
