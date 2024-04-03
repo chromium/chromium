@@ -51,6 +51,12 @@ inline constexpr char kAutomaticBeaconEventTypeHistogram[] =
 inline constexpr char kFencedFrameBeaconReportingHttpResultUMA[] =
     "Blink.FencedFrame.BeaconReportingHttpResult";
 
+inline constexpr char kFencedFrameBeaconReportingCountUMA[] =
+    "Navigation.FencedFrameBeaconReportingCountSameOrigin";
+
+inline constexpr char kFencedFrameBeaconReportingCountCrossOriginUMA[] =
+    "Navigation.FencedFrameBeaconReportingCountCrossOrigin";
+
 // Corresponds to the "FencedFrameCreationOutcome" histogram enumeration type in
 // tools/metrics/histograms/enums.xml.
 //

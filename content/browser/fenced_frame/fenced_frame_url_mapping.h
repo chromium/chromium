@@ -155,6 +155,9 @@ class CONTENT_EXPORT FencedFrameURLMapping {
       const GURL& url,
       scoped_refptr<FencedFrameReporter> fenced_frame_reporter = nullptr);
 
+  // Erases the urn_uuid_to_url_map_ and the pending_urn_uuid_to_url_map_.
+  void ClearMapForTesting();
+
   // Return the `SharedStorageBudgetMetadata` associated with `urn_uuid`, or
   // nullptr if there's no metadata associated (i.e. `urn_uuid` was not
   // originated from shared storage). Precondition: `urn_uuid` exists in

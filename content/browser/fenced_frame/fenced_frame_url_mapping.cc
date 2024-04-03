@@ -164,6 +164,11 @@ std::optional<GURL> FencedFrameURLMapping::AddFencedFrameURLForTesting(
   return urn;
 }
 
+void FencedFrameURLMapping::ClearMapForTesting() {
+  urn_uuid_to_url_map_.clear();
+  pending_urn_uuid_to_url_map_.clear();
+}
+
 std::optional<FencedFrameURLMapping::UrnUuidToUrlMap::iterator>
 FencedFrameURLMapping::AddMappingForUrl(const GURL& url) {
   if (IsFull()) {

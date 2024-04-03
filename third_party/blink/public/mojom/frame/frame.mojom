@@ -636,10 +636,14 @@ interface LocalFrameHost {
   // For the list of available reporting destinations, see enum
   // ReportingDestination defined in:
   // third_party/blink/public/mojom/fenced_frame/fenced_frame_config.mojom
+  // `cross_origin_exposed` determines if this event can be used with reporting
+  // metadata that lives in a cross-origin frame. See the comment in
+  // "fence_event.idl" for more details.
   SendFencedFrameReportingBeacon(
       string event_data,
       string event_type,
-      array<ReportingDestination> destinations);
+      array<ReportingDestination> destinations,
+      bool cross_origin_exposed);
 
   // See:
   // https://github.com/WICG/turtledove/blob/main/Fenced_Frames_Ads_Reporting.md
@@ -651,9 +655,13 @@ interface LocalFrameHost {
   // browser to send a beacon to the https URL `destinationURL`, where macros
   // in `destinationURL` will be substituted using the values specified by
   // registerAdMacro in the Protected Audience auction's buyer worklet.
+  // `cross_origin_exposed` determines if this event can be used with reporting
+  // metadata that lives in a cross-origin frame. See the comment in
+  // "fence_event.idl" for more details.
   //
   SendFencedFrameReportingBeaconToCustomURL(
-      url.mojom.Url destination_url);
+      url.mojom.Url destination_url,
+      bool cross_origin_exposed);
 
   // See:
   // https://github.com/WICG/fenced-frame/blob/master/explainer/fenced_frames_with_local_unpartitioned_data_access.md
