@@ -30,11 +30,13 @@
 #include <optional>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/weak_ptr.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -46,6 +48,7 @@ namespace blink {
 
 class Document;
 class Element;
+class IsolatedSVGDocumentHost;
 class LayoutSVGRoot;
 class LocalFrame;
 class Node;
@@ -56,9 +59,9 @@ class SVGSVGElement;
 struct IntrinsicSizingInfo;
 
 // SVGImage does not use Skia to draw images (as BitmapImage does) but instead
-// handles drawing itself. Internally, SVGImage creates a detached & sandboxed
-// Page containing an SVGDocument and reuses the existing paint code in Blink to
-// draw the image. Because a single SVGImage can be referenced by multiple
+// handles drawing itself. Internally, SVGImage creates a
+// IsolatedSVGDocumentHost and reuses the existing paint code in Blink to draw
+// the image. Because a single SVGImage can be referenced by multiple
 // containers (see: SVGImageForContainer.h), each call to SVGImage::draw() may
 // require (re-)laying out the inner SVGDocument.
 //
@@ -127,7 +130,7 @@ class CORE_EXPORT SVGImage final : public Image {
   bool IsSizeAvailable() override;
 
  private:
-  // Accesses m_page.
+  // Accesses |document_host_|.
   friend class SVGImageChromeClient;
   // Forwards calls to the various *ForContainer methods and other parts of
   // the the Image interface.
@@ -221,18 +224,16 @@ class CORE_EXPORT SVGImage final : public Image {
   void ScheduleTimelineRewind();
   void FlushPendingTimelineRewind();
 
-  Page* GetPageForTesting() { return page_; }
-  void LoadCompleted();
   void NotifyAsyncLoadCompleted();
 
   LocalFrame* GetFrame() const;
   SVGSVGElement* RootElement() const;
   LayoutSVGRoot* LayoutRoot() const;
 
-  class SVGImageLocalFrameClient;
+  Page* GetPageForTesting();
 
   Persistent<SVGImageChromeClient> chrome_client_;
-  Persistent<Page> page_;
+  Persistent<IsolatedSVGDocumentHost> document_host_;
   Persistent<AgentGroupScheduler> agent_group_scheduler_;
 
   // When an SVG image has no intrinsic size, the size depends on the default
@@ -243,16 +244,7 @@ class CORE_EXPORT SVGImage final : public Image {
   PhysicalSize intrinsic_size_;
   bool has_pending_timeline_rewind_;
 
-  enum LoadState {
-    kDataChangedNotStarted,
-    kInDataChanged,
-    kWaitingForAsyncLoadCompletion,
-    kLoadCompleted,
-  };
-
-  LoadState load_state_ = kDataChangedNotStarted;
-
-  Persistent<SVGImageLocalFrameClient> frame_client_;
+  base::WeakPtrFactory<SVGImage> weak_ptr_factory_{this};
   FRIEND_TEST_ALL_PREFIXES(ElementFragmentAnchorTest,
                            SVGDocumentDoesntCreateFragment);
   FRIEND_TEST_ALL_PREFIXES(SVGImageTest, SupportsSubsequenceCaching);

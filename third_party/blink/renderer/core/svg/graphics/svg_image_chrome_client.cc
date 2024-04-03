@@ -61,10 +61,11 @@ void SVGImageChromeClient::ChromeDestroyed() {
 }
 
 void SVGImageChromeClient::InvalidateContainer() {
-  // If image_->page_ is null, we're being destructed, so don't fire
+  // If image_->document_host_ is null, we're being destructed, so don't fire
   // |Changed()| in that case.
-  if (image_ && image_->GetImageObserver() && image_->page_)
+  if (image_ && image_->GetImageObserver() && image_->document_host_) {
     image_->GetImageObserver()->Changed(image_);
+  }
 }
 
 void SVGImageChromeClient::SuspendAnimation() {
