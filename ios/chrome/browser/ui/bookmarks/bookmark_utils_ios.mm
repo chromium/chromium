@@ -367,7 +367,8 @@ MDCSnackbarMessage* UpdateBookmarkWithUndoToast(
     text = l10n_util::GetNSString(IDS_IOS_BOOKMARK_NEW_BOOKMARK_UPDATED);
   } else {
     text = messageForAddingBookmarksInFolder(
-        title, /*chosenByUser =*/true,
+        base::SysUTF16ToNSString(folder->GetTitledUrlNodeTitle()),
+        /*chosenByUser =*/true,
         GetBookmarkModelType(folder, local_or_syncable_model, account_model),
         /*showCount=*/false, /*count=*/1, authenticationService, syncService);
   }
