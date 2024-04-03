@@ -5335,11 +5335,6 @@
   },
   'webview_trichrome_64_cts_hostside_tests full_mode': {
     'modifications': {
-      'android-webview-13-x64-dbg-hostside': {
-        'swarming': {
-          'shards': 1,
-        },
-      },
       'android-webview-13-x64-hostside-rel': {
         'swarming': {
           'shards': 1,

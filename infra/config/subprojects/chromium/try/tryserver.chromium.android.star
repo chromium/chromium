@@ -77,11 +77,10 @@ try_.builder(
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
-# TODO(b/329832511): Remove this after it's replaced by android-x64-rel.
-try_.orchestrator_builder(
+try_.builder(
     name = "android-12-x64-rel",
     branch_selector = branches.selector.ANDROID_BRANCHES,
-    description_html = "<h1>NOTE: This bot is deprecated. Please use 'android-x64-rel' instead.</h1>",
+    description_html = "Run Chromium tests on Android 12 emulator.",
     mirrors = [
         "ci/android-12-x64-rel",
     ],
@@ -89,31 +88,10 @@ try_.orchestrator_builder(
         configs = [
             "ci/android-12-x64-rel",
             "release_try_builder",
-            "use_clang_coverage",
-            "use_java_coverage",
-            "partial_code_coverage_instrumentation",
         ],
     ),
-    compilator = "android-12-x64-rel-compilator",
-    coverage_test_types = ["unit", "overall"],
-    experiments = {
-        # go/nplus1shardsproposal
-        "chromium.add_one_test_shard": 10,
-        # crbug/940930
-        "chromium.enable_cleandead": 100,
-    },
-    main_list_view = "try",
-    # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
-    # are addressed
-    # use_orchestrator_pool = True,
-    use_clang_coverage = True,
-    use_java_coverage = True,
-)
-
-try_.compilator_builder(
-    name = "android-12-x64-rel-compilator",
-    branch_selector = branches.selector.ANDROID_BRANCHES,
-    main_list_view = "try",
+    contact_team_email = "clank-engprod@google.com",
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -818,27 +796,6 @@ try_.builder(
             "debug_try_builder",
         ],
     ),
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
-)
-
-# TODO(b/267730567): Delete this after android-webview-13-x64-hostside-rel stabilises.
-try_.builder(
-    name = "android-webview-13-x64-dbg-hostside",
-    description_html = (
-        "This try builder mirrors android-webview-13-x64-dbg-hostside " +
-        "builder/tester to trial run WebView host-driven CTS.<br/>" +
-        "Should be removed after moving to android-webview-13-x64-hostside-rel."
-    ),
-    mirrors = [
-        "ci/android-webview-13-x64-dbg-hostside",
-    ],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/android-webview-13-x64-dbg-hostside",
-            "debug_try_builder",
-        ],
-    ),
-    contact_team_email = "woa-engprod@google.com",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
