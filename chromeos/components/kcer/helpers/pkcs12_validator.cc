@@ -109,6 +109,20 @@ std::string MakePkcs12CertImportErrorMessage(
          base::NumberToString(static_cast<int>(error_code));
 }
 
+Error ConvertPkcs12ParsingError(Pkcs12ReaderStatusCode status) {
+  switch (status) {
+    case Pkcs12ReaderStatusCode::kPkcs12WrongPassword:
+      return Error::kPkcs12WrongPassword;
+    case Pkcs12ReaderStatusCode::kPkcs12InvalidMac:
+      return Error::kPkcs12InvalidMac;
+    case Pkcs12ReaderStatusCode::kPkcs12InvalidFile:
+      return Error::kInvalidPkcs12;
+    case Pkcs12ReaderStatusCode::kPkcs12UnsupportedFile:
+    default:
+      return Error::kFailedToParsePkcs12;
+  }
+}
+
 Pkcs12ReaderStatusCode GetNickname(
     const std::vector<scoped_refptr<const Cert>>& existing_certs,
     const base::flat_set<std::string_view>& existing_nicknames,

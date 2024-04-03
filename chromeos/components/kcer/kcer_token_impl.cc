@@ -18,6 +18,7 @@
 #include "chromeos/components/kcer/chaps/session_chaps_client.h"
 #include "chromeos/components/kcer/helpers/key_helper.h"
 #include "chromeos/components/kcer/helpers/pkcs12_reader.h"
+#include "chromeos/components/kcer/helpers/pkcs12_validator.h"
 #include "chromeos/components/kcer/kcer_token_utils.h"
 #include "chromeos/components/kcer/kcer_utils.h"
 #include "chromeos/constants/pkcs11_definitions.h"
@@ -964,7 +965,66 @@ void KcerTokenImpl::ImportPkcs12Cert(Pkcs12Blob pkcs12_blob,
                                      bool hardware_backed,
                                      bool mark_as_migrated,
                                      Kcer::StatusCallback callback) {
-  // TODO(244409232): Implement.
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (is_blocked_) {
+    return task_queue_.push_back(base::BindOnce(
+        &KcerTokenImpl::ImportPkcs12Cert, weak_factory_.GetWeakPtr(),
+        std::move(pkcs12_blob), std::move(password), hardware_backed,
+        mark_as_migrated, std::move(callback)));
+  }
+  // Block task queue, attach unblocking task to the callback.
+  auto unblocking_callback = BlockQueueGetUnblocker(std::move(callback));
+
+  Pkcs12Reader pkcs12_reader;
+  KeyData key_data;
+  bssl::UniquePtr<STACK_OF(X509)> certs;
+  Pkcs12ReaderStatusCode get_key_and_cert_status =
+      pkcs12_reader.GetPkcs12KeyAndCerts(pkcs12_blob.value(), password,
+                                         key_data.key, certs);
+  if (get_key_and_cert_status != Pkcs12ReaderStatusCode::kSuccess) {
+    return std::move(unblocking_callback)
+        .Run(base::unexpected(
+            ConvertPkcs12ParsingError(get_key_and_cert_status)));
+  }
+
+  Pkcs12ReaderStatusCode enrich_key_data_result =
+      pkcs12_reader.EnrichKeyData(key_data);
+  if ((enrich_key_data_result != Pkcs12ReaderStatusCode::kSuccess) ||
+      key_data.cka_id_value.empty()) {
+    return std::move(unblocking_callback)
+        .Run(base::unexpected(Error::kFailedToGetKeyId));
+  }
+
+  std::vector<CertData> certs_data;
+  Pkcs12ReaderStatusCode prepare_certs_status = ValidateAndPrepareCertData(
+      cert_cache_, pkcs12_reader, std::move(certs), key_data, certs_data);
+  if ((prepare_certs_status != Pkcs12ReaderStatusCode::kSuccess) ||
+      certs_data.empty()) {
+    return std::move(unblocking_callback)
+        .Run(base::unexpected(ConvertPkcs12ParsingError(prepare_certs_status)));
+  }
+
+  auto import_callback = base::BindOnce(&KcerTokenImpl::DidImportPkcs12Cert,
+                                        weak_factory_.GetWeakPtr(),
+                                        std::move(unblocking_callback));
+
+  kcer_utils_.ImportPkcs12(std::move(key_data), std::move(certs_data),
+                           hardware_backed, mark_as_migrated,
+                           std::move(import_callback));
+}
+
+void KcerTokenImpl::DidImportPkcs12Cert(
+    Kcer::StatusCallback callback,
+    bool did_modify,
+    base::expected<void, Error> import_result) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (did_modify) {
+    return NotifyCertsChanged(
+        base::BindOnce(std::move(callback), std::move(import_result)));
+  }
+
+  return std::move(callback).Run(std::move(import_result));
 }
 
 //==============================================================================

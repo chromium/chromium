@@ -1698,6 +1698,44 @@ TEST_F(KcerTokenImplTest, ImportCertFromBytesRetryToCreateCert) {
   EXPECT_EQ(waiter.Get().error(), Error::kPkcs11SessionFailure);
 }
 
+// Test that ImportPkcs12Cert can successfully import a PKCS#12 file. Most of
+// the implementation is shared with KcerTokenImplNss, is covered by the tests
+// for it and is not covered again. TODO(miersh): After KcerTokenImplNss is
+// removed, those tests should be moved here.
+TEST_F(KcerTokenImplTest, ImportPkcs12CertSuccess) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
+      .Times(2)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<2>(std::vector<ObjectHandle>(),
+                                                   chromeos::PKCS11_CKR_OK));
+
+  Pkcs12Blob pkcs12_data(ReadTestFile("client.p12"));
+  std::string password("12345");
+
+  chaps::AttributeList private_key_attrs;
+  chaps::AttributeList public_key_attrs;
+  chaps::AttributeList cert_attrs;
+  EXPECT_CALL(chaps_client_, CreateObject(pkcs11_slot_id_, _, _))
+      .WillOnce(
+          DoAll(MoveArg<1>(&private_key_attrs),
+                RunOnceCallback<2>(ObjectHandle(1), chromeos::PKCS11_CKR_OK)))
+      .WillOnce(
+          DoAll(MoveArg<1>(&public_key_attrs),
+                RunOnceCallback<2>(ObjectHandle(2), chromeos::PKCS11_CKR_OK)))
+      .WillOnce(
+          DoAll(MoveArg<1>(&cert_attrs),
+                RunOnceCallback<2>(ObjectHandle(3), chromeos::PKCS11_CKR_OK)));
+
+  base::test::TestFuture<base::expected<void, Error>> import_waiter;
+  token_.ImportPkcs12Cert(pkcs12_data, password, /*hardware_backed=*/false,
+                          /*mark_as_migrated=*/true,
+                          import_waiter.GetCallback());
+
+  EXPECT_TRUE(import_waiter.Get().has_value());
+  expected_notifications_count_ = 1;
+}
+
 // Test that RemoveKeyAndCerts can successfully remove a key pair and certs by
 // PKCS#11 id.
 TEST_F(KcerTokenImplTest, RemoveKeyAndCertsByIdSuccess) {

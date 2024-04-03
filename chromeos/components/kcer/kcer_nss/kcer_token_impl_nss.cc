@@ -76,20 +76,6 @@ std::vector<uint8_t> SECItemToBytes(const crypto::ScopedSECItem& value) {
                : std::vector<uint8_t>();
 }
 
-Error ConvertPkcs12ParsingError(Pkcs12ReaderStatusCode status) {
-  switch (status) {
-    case Pkcs12ReaderStatusCode::kPkcs12WrongPassword:
-      return Error::kPkcs12WrongPassword;
-    case Pkcs12ReaderStatusCode::kPkcs12InvalidMac:
-      return Error::kPkcs12InvalidMac;
-    case Pkcs12ReaderStatusCode::kPkcs12InvalidFile:
-      return Error::kInvalidPkcs12;
-    case Pkcs12ReaderStatusCode::kPkcs12UnsupportedFile:
-    default:
-      return Error::kFailedToParsePkcs12;
-  }
-}
-
 void CleanUpAndDestroyKeys(crypto::ScopedSECKEYPublicKey public_key,
                            crypto::ScopedSECKEYPrivateKey private_key) {
   // Clean up generated keys. PK11_DeleteTokenPrivateKey and

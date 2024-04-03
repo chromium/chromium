@@ -204,6 +204,10 @@ class COMPONENT_EXPORT(KCER) KcerTokenImpl
                               ObjectHandle cert_handle,
                               uint32_t result_code);
 
+  void DidImportPkcs12Cert(Kcer::StatusCallback callback,
+                           bool did_modify,
+                           base::expected<void, Error> import_result);
+
   struct RemoveKeyAndCertsTask {
     RemoveKeyAndCertsTask(PrivateKeyHandle in_key,
                           Kcer::StatusCallback in_callback);
