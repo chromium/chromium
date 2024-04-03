@@ -46,7 +46,7 @@
 namespace {
 // The time delay after firstSceneWillEnterForeground: before checking for main
 // intent signals.
-const int kMainIntentCheckDelay = 1;
+constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
 }  // namespace
 
 @interface MainApplicationDelegate () <AppStateObserver> {
@@ -345,33 +345,14 @@ const int kMainIntentCheckDelay = 1;
 }
 
 - (void)firstSceneWillEnterForeground:(NSNotification*)notification {
+  // This method may be invoked really early in the application lifetime
+  // even before the creation of the main loop. Thus it is not possible
+  // to use PostTask API here, and we have to use dispatch_async(...).
   __weak MainApplicationDelegate* weakSelf = self;
-  // Delay Main Intent check since signals for intents like spotlight actions
-  // are not guaranteed to occur before firstSceneWillEnterForeground.
   dispatch_after(
-      dispatch_time(DISPATCH_TIME_NOW,
-                    static_cast<int64_t>(kMainIntentCheckDelay * NSEC_PER_SEC)),
+      dispatch_time(DISPATCH_TIME_NOW, kMainIntentCheckDelay.InNanoseconds()),
       dispatch_get_main_queue(), ^{
-        MainApplicationDelegate* strongSelf = weakSelf;
-        if (!strongSelf) {
-          return;
-        }
-
-        BOOL appStartupFromExternalIntent = NO;
-        for (SceneState* scene in strongSelf.appState.connectedScenes) {
-          if (scene.startupHadExternalIntent) {
-            appStartupFromExternalIntent = YES;
-            scene.startupHadExternalIntent = NO;
-          }
-        }
-        if (!appStartupFromExternalIntent) {
-          base::UmaHistogramEnumeration(kAppLaunchSource,
-                                        AppLaunchSource::APP_ICON);
-          base::RecordAction(base::UserMetricsAction("IOSOpenByMainIntent"));
-        } else {
-          [self notifyFETAppStartupFromExternalIntent];
-          base::RecordAction(base::UserMetricsAction("IOSOpenByViewIntent"));
-        }
+        [weakSelf firstSceneDidEnterForeground];
       });
 
   if (_startupInformation.isColdStart) {
@@ -429,6 +410,37 @@ const int kMainIntentCheckDelay = 1;
 }
 
 #pragma mark - Private
+
+// Returns whether the application was started via an external intent or
+// directly (i.e. by tapping on the app button directly).
+- (BOOL)appStartupFromExternalIntent {
+  for (SceneState* scene in self.appState.connectedScenes) {
+    if (scene.startupHadExternalIntent) {
+      return YES;
+    }
+  }
+
+  return NO;
+}
+
+// Invoked on the main sequence after -firstSceneWillEnterForeground: is
+// called, after a small delay. The delay is there to give time for the
+// intents to be received by the application (as they are not guaranteed
+// to happen before -firstSceneWillEnterForeground:).
+- (void)firstSceneDidEnterForeground {
+  if ([self appStartupFromExternalIntent]) {
+    base::RecordAction(base::UserMetricsAction("IOSOpenByViewIntent"));
+    [self applicationStartupFromExternalIntent];
+  } else {
+    base::RecordAction(base::UserMetricsAction("IOSOpenByMainIntent"));
+    base::UmaHistogramEnumeration(kAppLaunchSource, AppLaunchSource::APP_ICON);
+  }
+}
+
+// Invoked when the app is started by an external intent.
+- (void)applicationStartupFromExternalIntent {
+  [self notifyFETAppStartupFromExternalIntent];
+}
 
 // Notifies the Feature Engagement Tracker (FET) that the app has launched from
 // an external intent (i.e. through the share sheet), which is an eligibility
