@@ -366,6 +366,7 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
           /*infobar_manager=*/GetInfoBarManager(),
           /*shared_tab_name=*/u"example.com",
           /*capturer_name=*/u"application.com",
+          /*web_contents=*/nullptr,
           /*role=*/TabSharingInfoBarDelegate::TabRole::kOtherTab,
           /*share_this_tab_instead_button_state=*/
           TabSharingInfoBarDelegate::ButtonState::ENABLED,

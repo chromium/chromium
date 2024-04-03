@@ -484,7 +484,7 @@ void TabSharingUIViews::CreateInfobarForWebContents(WebContents* contents) {
                 : TabSharingInfoBarDelegate::ButtonState::DISABLED;
 
   infobars_[contents] = TabSharingInfoBarDelegate::Create(
-      infobar_manager, shared_tab_name_, capturer_name_,
+      infobar_manager, shared_tab_name_, capturer_name_, contents,
       GetTabRole(is_capturing_tab, is_captured_tab),
       share_this_tab_instead_button_state, focus_target,
       captured_surface_control_active_, this, capture_type_,

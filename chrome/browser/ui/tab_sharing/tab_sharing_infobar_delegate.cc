@@ -9,10 +9,12 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/tab_sharing/tab_sharing_ui.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -23,6 +25,7 @@
 #include "components/url_formatter/elide_url.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_features.h"
 #include "net/base/url_util.h"
@@ -165,11 +168,15 @@ class TabSharingInfoBarDelegate::SwitchToTabButton
 class TabSharingInfoBarDelegate::CscPermissionButton
     : public TabSharingInfoBarDelegate::TabSharingInfoBarDelegateButton {
  public:
-  CscPermissionButton() = default;
+  explicit CscPermissionButton(content::WebContents* web_contents)
+      : web_contents_(web_contents ? web_contents->GetWeakPtr() : nullptr) {}
   ~CscPermissionButton() override = default;
 
   void Click(infobars::InfoBar* infobar) override {
-    // TODO(crbug.com/324468211): Implement
+    if (!web_contents_) {
+      return;
+    }
+    ShowPageInfoDialog(web_contents_.get(), base::DoNothing());
   }
 
   std::u16string GetLabel() const override {
@@ -184,6 +191,9 @@ class TabSharingInfoBarDelegate::CscPermissionButton
                                           ui::kColorSysPrimary,
                                           kCscPermissionButtonIconHeight);
   }
+
+ private:
+  const base::WeakPtr<content::WebContents> web_contents_;
 };
 
 namespace {
@@ -258,6 +268,7 @@ infobars::InfoBar* TabSharingInfoBarDelegate::Create(
     infobars::ContentInfoBarManager* infobar_manager,
     const std::u16string& shared_tab_name,
     const std::u16string& capturer_name,
+    content::WebContents* web_contents,
     TabRole role,
     ButtonState share_this_tab_instead_button_state,
     std::optional<FocusTarget> focus_target,
@@ -268,7 +279,7 @@ infobars::InfoBar* TabSharingInfoBarDelegate::Create(
   DCHECK(infobar_manager);
   return infobar_manager->AddInfoBar(
       CreateTabSharingInfoBar(base::WrapUnique(new TabSharingInfoBarDelegate(
-          shared_tab_name, capturer_name, role,
+          shared_tab_name, capturer_name, web_contents, role,
           share_this_tab_instead_button_state, focus_target,
           captured_surface_control_active, ui, capture_type,
           favicons_used_for_switch_to_tab_button))));
@@ -277,6 +288,7 @@ infobars::InfoBar* TabSharingInfoBarDelegate::Create(
 TabSharingInfoBarDelegate::TabSharingInfoBarDelegate(
     std::u16string shared_tab_name,
     std::u16string capturer_name,
+    content::WebContents* web_contents,
     TabRole role,
     ButtonState share_this_tab_instead_button_state,
     std::optional<FocusTarget> focus_target,
@@ -310,7 +322,8 @@ TabSharingInfoBarDelegate::TabSharingInfoBarDelegate(
   if (role_ == TabRole::kCapturingTab && captured_surface_control_active &&
       base::FeatureList::IsEnabled(
           features::kCapturedSurfaceControlStickyPermissions)) {
-    csc_permission_button_ = std::make_unique<CscPermissionButton>();
+    csc_permission_button_ =
+        std::make_unique<CscPermissionButton>(web_contents);
   }
 }
 

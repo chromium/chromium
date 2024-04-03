@@ -13,6 +13,10 @@
 #include "content/public/browser/global_routing_id.h"
 #include "ui/base/models/image_model.h"
 
+namespace content {
+class WebContents;
+}
+
 namespace infobars {
 class ContentInfoBarManager;
 class InfoBar;
@@ -96,6 +100,7 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
       infobars::ContentInfoBarManager* infobar_manager,
       const std::u16string& shared_tab_name,
       const std::u16string& capturer_name,
+      content::WebContents* web_contents,
       TabRole role,
       ButtonState share_this_tab_instead_button_state,
       std::optional<FocusTarget> focus_target,
@@ -131,6 +136,7 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
  private:
   TabSharingInfoBarDelegate(std::u16string shared_tab_name,
                             std::u16string capturer_name,
+                            content::WebContents* web_contents,
                             TabRole role,
                             ButtonState share_this_tab_instead_button_state,
                             std::optional<FocusTarget> focus_target,
