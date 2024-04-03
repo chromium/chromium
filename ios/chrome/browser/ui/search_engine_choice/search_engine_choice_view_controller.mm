@@ -488,13 +488,13 @@ UIButton* CreateMorePillButton() {
   // Using -[UIViewController viewDidAppear:] is too late. There is an issue on
   // iPad, the More button appears and then disappears.
   [self.view layoutIfNeeded];
-  [self updateDidReachBottomFlag];
+  [self updateViewsBasedOnScrollPosition];
 }
 
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView {
-  [self updateDidReachBottomFlag];
+  [self updateViewsBasedOnScrollPosition];
 }
 
 #pragma mark - SearchEngineChoiceTableConsumer
@@ -516,7 +516,7 @@ UIButton* CreateMorePillButton() {
   // the right measurements to evaluate the scroll position.
   __weak __typeof(self) weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
-    [weakSelf updateDidReachBottomFlag];
+    [weakSelf updateViewsBasedOnScrollPosition];
   });
   // Adjust the inset vertical scroller since floating container size might have
   // be updated.
@@ -702,7 +702,7 @@ UIButton* CreateMorePillButton() {
   button.horizontalSeparatorHidden = YES;
   _searchEnginesLoaded = YES;
   [self.view layoutIfNeeded];
-  [self updateDidReachBottomFlag];
+  [self updateViewsBasedOnScrollPosition];
 }
 
 // Updates views:
@@ -713,7 +713,7 @@ UIButton* CreateMorePillButton() {
 //    for the first time, and hides the more button accordingly.
 // 3- If the scroll view reaches the bottom, the inline SetAsDefault container
 //    is hidden, and the floating SetAsDefault container is visible.
-- (void)updateDidReachBottomFlag {
+- (void)updateViewsBasedOnScrollPosition {
   // 1- Tests if the stack view is covered by the floating SetAsDefault
   //    container, and makes `_floatingContainerSeparator` visible if it is
   //    the case.
@@ -808,7 +808,7 @@ UIButton* CreateMorePillButton() {
         // Recompute if the user reached the bottom, once the animation is done.
         // This needs be done at the beginning of the transition to have a
         // smooth transition.
-        [weakSelf updateDidReachBottomFlag];
+        [weakSelf updateViewsBasedOnScrollPosition];
       }
                       completion:nil];
 }
