@@ -58,7 +58,6 @@ import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserv
 import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.text.EmptyTextWatcher;
@@ -210,6 +209,9 @@ public class NewTabPageLayout extends LinearLayout {
      * @param isNtpAsHomeSurfaceOnTablet {@code true} if the NTP is showing as the home surface on
      *     tablets.
      * @param isSurfacePolishEnabled {@code true} if the NTP surface is polished.
+     * @param isSurfacePolishOmniboxColorEnabled {@code true} if the NTP surface is polished and the
+     *     omnibox should be colorful.
+     * @param isTablet {@code true} if the NTP surface is in tablet mode.
      * @param tabStripHeightSupplier Supplier of the tab strip height.
      */
     public void initialize(
@@ -270,15 +272,14 @@ public class NewTabPageLayout extends LinearLayout {
                                             .getDimensionPixelSize(
                                                     R.dimen.toolbar_height_no_shadow))
                             / 2;
-        } else if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)) {
+        } else if (!mIsTablet) {
             mSearchBoxBoundsVerticalInset =
                     getResources()
                             .getDimensionPixelSize(
                                     R.dimen.ntp_search_box_bounds_vertical_inset_modern);
         }
         mTransitionLengthOffset =
-                mIsSurfacePolishEnabled
-                                && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)
+                mIsSurfacePolishEnabled && !mIsTablet
                         ? getResources()
                                 .getDimensionPixelSize(
                                         R.dimen.ntp_search_box_transition_length_polish_offset)
@@ -462,7 +463,7 @@ public class NewTabPageLayout extends LinearLayout {
             LogoUtils.setLogoViewLayoutParams(
                     logoView,
                     getResources(),
-                    DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext()),
+                    mIsTablet,
                     StartSurfaceConfiguration.SURFACE_POLISH_LESS_BRAND_SPACE.getValue(),
                     StartSurfaceConfiguration.isLogoPolishEnabled(mIsTablet),
                     StartSurfaceConfiguration.getLogoSizeForLogoPolish());
