@@ -99,6 +99,9 @@ public class StubbedHistoryProvider implements HistoryProvider {
     }
 
     @Override
+    public void getAllAppIds() {}
+
+    @Override
     public void getLastVisitToHostBeforeRecentNavigations(
             String hostName, Callback<Long> callback) {
         long timestamp = 0;

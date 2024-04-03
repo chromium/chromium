@@ -154,6 +154,12 @@ class BrowsingHistoryService : public HistoryServiceObserver,
   virtual void QueryHistory(const std::u16string& search_text,
                             const QueryOptions& options);
 
+  // Fetch all the app IDs used in the database.
+  void GetAllAppIds();
+
+  // Callback invoked when the app ID fetching task is completed.
+  void OnGetAllAppIds(GetAllAppIdsResult result);
+
   // Gets a version of the last time any webpage on the given host was visited,
   // by using the min("last navigation time", x minutes ago) as the upper bound
   // of the GetLastVisitToHost query. This is done in order to provide the user

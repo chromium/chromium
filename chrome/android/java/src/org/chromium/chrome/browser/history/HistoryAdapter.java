@@ -143,6 +143,9 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         mIsSearching = true;
         mClearOnNextQueryComplete = true;
         mHistoryProvider.queryHistory(mQueryText, mAppId);
+        // TODO: Query all the app IDs to initialize app filter button.
+        //       mHistoryProvider.getAllAppIds()
+
     }
 
     /** Called when a search is ended. */

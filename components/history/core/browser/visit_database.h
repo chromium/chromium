@@ -149,6 +149,10 @@ class VisitDatabase {
   bool GetAllURLIDsForTransition(ui::PageTransition transition,
                                  std::vector<URLID>* urls);
 
+  // Looks up all the app IDs found in the database entries. Returns a struct
+  // containing the list of the IDs.
+  GetAllAppIdsResult GetAllAppIds();
+
   // Fills all visits in the given time range into the given vector that should
   // be user-visible, which excludes things like redirects and subframes. The
   // begin time is inclusive, the end time is exclusive. Either time can be

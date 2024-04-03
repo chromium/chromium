@@ -77,6 +77,26 @@ void BrowsingHistoryBridge::QueryHistoryContinuation(
   std::move(query_history_continuation_).Run();
 }
 
+void BrowsingHistoryBridge::GetAllAppIds(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    const JavaParamRef<jobject>& j_result_obj) {
+  j_app_ids_result_obj_.Reset(env, j_result_obj);
+  browsing_history_service_->GetAllAppIds();
+}
+
+void BrowsingHistoryBridge::OnGetAllAppIds(
+    const std::vector<std::string>& app_ids) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  for (const std::string& id : app_ids) {
+    Java_BrowsingHistoryBridge_addAppIdToList(
+        env, j_app_ids_result_obj_,
+        base::android::ConvertUTF8ToJavaString(env, id));
+  }
+  Java_BrowsingHistoryBridge_onQueryAppIdComplete(env, j_history_service_obj_,
+                                                  j_app_ids_result_obj_);
+}
+
 void BrowsingHistoryBridge::GetLastVisitToHostBeforeRecentNavigations(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,

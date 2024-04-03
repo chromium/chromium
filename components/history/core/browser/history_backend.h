@@ -369,6 +369,9 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   DomainsVisitedResult GetUniqueDomainsVisited(base::Time begin_time,
                                                base::Time end_time);
 
+  // Gets all the app IDs used in the database entries.
+  GetAllAppIdsResult GetAllAppIds();
+
   // Gets the last time any webpage on the given host was visited within the
   // time range [`begin_time`, `end_time`). If the given host has not been
   // visited in the given time range, the result will have a null base::Time,

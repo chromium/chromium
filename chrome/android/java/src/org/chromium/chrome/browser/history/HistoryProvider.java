@@ -53,19 +53,24 @@ public interface HistoryProvider {
     /**
      * Query browsing history for a particular host. Only one query may be in-flight at any time.
      * See BrowsingHistoryService::QueryHistory.
+     *
      * @param hostName The host name.
      */
     void queryHistoryForHost(String hostName);
 
-    /*
-     * Fetches more results using the previous query's text, only valid to call
-     * after queryHistory is called.
+    /**
+     * Fetches more results using the previous query's text, only valid to call after queryHistory
+     * is called.
      */
     void queryHistoryContinuation();
+
+    /** Fetches all the app IDs used in the database. */
+    void getAllAppIds();
 
     /**
      * Gets the last time any webpage on the given host was visited, excluding the last navigation
      * and with an internal time buffer.
+     *
      * @param hostName The hostname of the query.
      * @param callback The Callback to call with the last visit timestamp in milliseconds.
      */

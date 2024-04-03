@@ -2111,6 +2111,13 @@ DomainsVisitedResult HistoryBackend::GetUniqueDomainsVisited(
   return db_->GetUniqueDomainsVisited(begin_time, end_time);
 }
 
+GetAllAppIdsResult HistoryBackend::GetAllAppIds() {
+  if (!db_) {
+    return {};
+  }
+  return db_->GetAllAppIds();
+}
+
 HistoryLastVisitResult HistoryBackend::GetLastVisitToHost(
     const std::string& host,
     base::Time begin_time,

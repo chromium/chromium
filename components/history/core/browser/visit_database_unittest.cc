@@ -324,6 +324,26 @@ TEST_F(VisitDatabaseTest, GetVisitsForTimes) {
   }
 }
 
+TEST_F(VisitDatabaseTest, GetAllAppIds) {
+  std::vector<VisitRow> test_visit_rows = GetTestVisitRows();
+
+  test_visit_rows[1].app_id = "org.chromium.dino";
+  test_visit_rows[2].app_id = "org.chromium.cactus";
+  test_visit_rows[3].app_id = "org.chromium.cactus";
+
+  for (VisitRow visit_row : test_visit_rows) {
+    EXPECT_TRUE(AddVisit(&visit_row, SOURCE_BROWSED));
+  }
+
+  // Query all the app IDS in the database after deduplicated,
+  // the latest entries first.
+  GetAllAppIdsResult result;
+  result = GetAllAppIds();
+  ASSERT_EQ(2U, result.app_ids.size());
+  ASSERT_EQ(test_visit_rows[1].app_id, result.app_ids[1]);
+  ASSERT_EQ(test_visit_rows[2].app_id, result.app_ids[0]);
+}
+
 TEST_F(VisitDatabaseTest, GetAllVisitsInRange) {
   std::vector<VisitRow> test_visit_rows = GetTestVisitRows();
 

@@ -442,6 +442,13 @@ class HistoryService : public KeyedService,
                                        GetUniqueDomainsVisitedCallback callback,
                                        base::CancelableTaskTracker* tracker);
 
+  // Gets all the app IDs used in the database entries. The callback will be
+  // invoked with a struct containing a vector of the IDs.
+  using GetAllAppIdsCallback = base::OnceCallback<void(GetAllAppIdsResult)>;
+
+  virtual void GetAllAppIds(GetAllAppIdsCallback callback,
+                            base::CancelableTaskTracker* tracker);
+
   using GetLastVisitCallback = base::OnceCallback<void(HistoryLastVisitResult)>;
 
   // Gets the last time any webpage on the given host was visited within the

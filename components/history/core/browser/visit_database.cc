@@ -691,6 +691,19 @@ bool VisitDatabase::GetAllURLIDsForTransition(ui::PageTransition transition,
   return statement.Succeeded();
 }
 
+GetAllAppIdsResult VisitDatabase::GetAllAppIds() {
+  sql::Statement statement(GetDB().GetUniqueStatement(
+      "SELECT DISTINCT app_id FROM visits "
+      "WHERE app_id != '' ORDER BY visit_time DESC"));
+
+  GetAllAppIdsResult result;
+
+  while (statement.Step()) {
+    result.app_ids.push_back(statement.ColumnString(0));
+  }
+  return result;
+}
+
 bool VisitDatabase::GetVisibleVisitsInRange(const QueryOptions& options,
                                             VisitVector* visits) {
   visits->clear();

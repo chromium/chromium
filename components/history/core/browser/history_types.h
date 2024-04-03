@@ -498,6 +498,19 @@ struct FilteredURL {
   ExtendedInfo extended_info;
 };
 
+// GetAllAppIdsResult ----------------------------------------------------
+
+// GetAllAppIdsResult encapsulates a list of all app IDs found in the
+// database entries.
+struct GetAllAppIdsResult {
+  GetAllAppIdsResult();
+  GetAllAppIdsResult(GetAllAppIdsResult&& other);
+  GetAllAppIdsResult& operator=(GetAllAppIdsResult&& other);
+  ~GetAllAppIdsResult();
+
+  std::vector<std::string> app_ids;
+};
+
 // DomainsVisitedResult --------------------------------------------------
 
 // DomainsVisitedResult encapsulates two lists of domains visited locally

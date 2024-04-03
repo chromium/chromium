@@ -334,6 +334,13 @@ void BrowsingHistoryService::QueryHistoryInternal(
   }
 }
 
+void BrowsingHistoryService::GetAllAppIds() {
+  local_history_->GetAllAppIds(
+      base::BindOnce(&BrowsingHistoryService::OnGetAllAppIds,
+                     weak_factory_.GetWeakPtr()),
+      &query_task_tracker_);
+}
+
 void BrowsingHistoryService::GetLastVisitToHostBeforeRecentNavigations(
     const std::string& host_name,
     base::OnceCallback<void(base::Time)> callback) {
@@ -609,6 +616,10 @@ void BrowsingHistoryService::QueryComplete(
 
   if (!web_history_timer_->IsRunning())
     ReturnResultsToDriver(std::move(state));
+}
+
+void BrowsingHistoryService::OnGetAllAppIds(GetAllAppIdsResult result) {
+  driver_->OnGetAllAppIds(result.app_ids);
 }
 
 void BrowsingHistoryService::ReturnResultsToDriver(

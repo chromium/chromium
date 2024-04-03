@@ -76,6 +76,23 @@ public class BrowsingHistoryBridge implements HistoryProvider {
     }
 
     @Override
+    public void getAllAppIds() {
+        BrowsingHistoryBridgeJni.get()
+                .getAllAppIds(
+                        mNativeHistoryBridge, BrowsingHistoryBridge.this, new ArrayList<String>());
+    }
+
+    @CalledByNative
+    public static void addAppIdToList(List<String> items, String appId) {
+        items.add(appId);
+    }
+
+    @CalledByNative
+    public void onQueryAppIdComplete(List<String> items) {
+        // TODO: Notify the app ID query complete event.
+    }
+
+    @Override
     public void getLastVisitToHostBeforeRecentNavigations(
             String hostName, Callback<Long> callback) {
         BrowsingHistoryBridgeJni.get()
@@ -198,5 +215,10 @@ public class BrowsingHistoryBridge implements HistoryProvider {
                 long[] nativeTimestamps);
 
         void removeItems(long nativeBrowsingHistoryBridge, BrowsingHistoryBridge caller);
+
+        void getAllAppIds(
+                long nativeBrowsingHistoryBridge,
+                BrowsingHistoryBridge caller,
+                List<String> appIds);
     }
 }

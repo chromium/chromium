@@ -1197,6 +1197,17 @@ void HistoryService::GetUniqueDomainsVisited(
       std::move(callback));
 }
 
+void HistoryService::GetAllAppIds(GetAllAppIdsCallback callback,
+                                  base::CancelableTaskTracker* tracker) {
+  DCHECK(backend_task_runner_) << "History service being called after cleanup";
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  tracker->PostTaskAndReplyWithResult(
+      backend_task_runner_.get(), FROM_HERE,
+      base::BindOnce(&HistoryBackend::GetAllAppIds, history_backend_),
+      std::move(callback));
+}
+
 base::CancelableTaskTracker::TaskId HistoryService::GetLastVisitToHost(
     const std::string& host,
     base::Time begin_time,

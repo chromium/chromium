@@ -244,6 +244,17 @@ FilteredURL::~FilteredURL() = default;
 
 FilteredURL::ExtendedInfo::ExtendedInfo() = default;
 
+// GetAllAppIdsResult -------------------------------------------------------
+
+GetAllAppIdsResult::GetAllAppIdsResult() = default;
+
+GetAllAppIdsResult::GetAllAppIdsResult(GetAllAppIdsResult&& other) = default;
+
+GetAllAppIdsResult& GetAllAppIdsResult::operator=(GetAllAppIdsResult&& other) =
+    default;
+
+GetAllAppIdsResult::~GetAllAppIdsResult() = default;
+
 // DomainsVisitedResult -------------------------------------------------------
 
 DomainsVisitedResult::DomainsVisitedResult() = default;
