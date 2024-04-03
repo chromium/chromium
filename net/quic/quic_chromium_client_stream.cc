@@ -825,8 +825,9 @@ int QuicChromiumClientStream::DeliverInitialHeaders(
 bool QuicChromiumClientStream::DeliverTrailingHeaders(
     spdy::Http2HeaderBlock* headers,
     int* frame_len) {
-  if (received_trailers().empty())
+  if (trailing_headers_frame_len_ == 0) {
     return false;
+  }
 
   net_log_.AddEvent(
       NetLogEventType::QUIC_CHROMIUM_CLIENT_STREAM_READ_RESPONSE_TRAILERS,
