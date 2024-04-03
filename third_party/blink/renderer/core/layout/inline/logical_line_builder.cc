@@ -424,8 +424,22 @@ void LogicalLineBuilder::PlaceRubyAnnotation(
     wtf_size_t index,
     LineInfo& annotation_line,
     LogicalRubyColumn& logical_column) {
-  // TODO(crbug.com/324111880): Handle annotation lines.
-  // logical_column.annotation_items and ruby_column_list should be updated.
+  auto* line_items = MakeGarbageCollected<LogicalLineItems>();
+  InlineLayoutStateStack state_stack;
+  LogicalLineBuilder annotation_builder(node_, constraint_space_, &state_stack,
+                                        context_);
+  annotation_builder.CreateLine(&annotation_line, line_items,
+                                /* main_line_helper */ nullptr);
+
+  state_stack.ComputeInlinePositions(
+      line_items, LayoutUnit(), /* ignore_box_margin_border_padding */ false);
+  if (state_stack.HasBoxFragments()) {
+    state_stack.CreateBoxFragments(constraint_space_, line_items,
+                                   /* is_opaque */ false);
+  }
+
+  logical_column.annotation_items = line_items;
+  logical_column.ruby_column_list = state_stack.TakeRubyColumnList();
 }
 
 // Place a list marker.

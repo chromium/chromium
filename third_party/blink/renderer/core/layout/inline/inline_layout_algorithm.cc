@@ -435,6 +435,11 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
   const FontHeight& line_box_metrics = box_states_->LineBoxState().metrics;
 
   if (UNLIKELY(Node().HasRuby() && !line_info->IsEmptyLine())) {
+    if (!box_states_->RubyColumnList().empty()) {
+      HeapVector<Member<LogicalRubyColumn>> column_list(
+          box_states_->TakeRubyColumnList());
+      UpdateRubyColumnInlinePositions(*line_box, inline_size, column_list);
+    }
     line_info->SetAnnotationBlockStartAdjustment(
         SetAnnotationOverflow(*line_info, *line_box, line_box_metrics));
   }

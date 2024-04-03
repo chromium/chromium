@@ -219,6 +219,10 @@ class CORE_EXPORT InlineLayoutStateStack {
   HeapVector<Member<LogicalRubyColumn>>& RubyColumnList() {
     return ruby_column_list_;
   }
+  // This should be called after finishing to fill LogicalLineItems.
+  HeapVector<Member<LogicalRubyColumn>>&& TakeRubyColumnList() {
+    return std::move(ruby_column_list_);
+  }
 
   bool HasBoxFragments() const { return !box_data_list_.empty(); }
 

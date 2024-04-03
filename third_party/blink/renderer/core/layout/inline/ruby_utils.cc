@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/core/layout/inline/ruby_utils.h"
 
 #include <tuple>
+
+#include "third_party/blink/renderer/core/layout/inline/inline_box_state.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item_result.h"
 #include "third_party/blink/renderer/core/layout/inline/line_info.h"
@@ -761,6 +763,37 @@ PhysicalRect ComputeRubyEmHeightBox(const PhysicalBoxFragment& box_fragment) {
     NOTREACHED();
   }
   return PhysicalRect({}, box_fragment.Size());
+}
+
+// ================================================================
+
+void UpdateRubyColumnInlinePositions(
+    const LogicalLineItems& line_items,
+    LayoutUnit inline_size,
+    HeapVector<Member<LogicalRubyColumn>>& column_list) {
+  DCHECK(RuntimeEnabledFeatures::RubyLineBreakableEnabled());
+  for (auto& column : column_list) {
+    LayoutUnit inline_offset;
+    wtf_size_t start_index = column->start_index;
+    if (start_index < line_items.size()) {
+      inline_offset = line_items[start_index].rect.offset.inline_offset;
+    } else if (start_index == line_items.size()) {
+      if (line_items.size() > 0) {
+        const LogicalLineItem& last_item = line_items[start_index - 1];
+        inline_offset = last_item.rect.offset.inline_offset +
+                        last_item.rect.InlineEndOffset();
+      } else {
+        inline_offset = inline_size;
+      }
+    } else {
+      NOTREACHED() << " LogicalLineItems::size()=" << line_items.size()
+                   << " LogicalRubyColumn::start_index=" << start_index;
+    }
+    // TODO(crbug.com/324111880): Handle overhang.
+    column->annotation_items->MoveInInlineDirection(inline_offset);
+    UpdateRubyColumnInlinePositions(*column->annotation_items, inline_size,
+                                    column->ruby_column_list);
+  }
 }
 
 }  // namespace blink

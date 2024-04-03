@@ -19,6 +19,7 @@ class PhysicalBoxFragment;
 class ShapeResultView;
 struct FontHeight;
 struct InlineItemResult;
+struct LogicalRubyColumn;
 struct PhysicalRect;
 
 struct RubyItemIndexes {
@@ -94,6 +95,13 @@ AnnotationMetrics ComputeAnnotationOverflow(
     const LogicalLineItems& logical_line,
     const FontHeight& line_box_metrics,
     const ComputedStyle& line_style);
+
+// Update inline positions of LogicalLineItems for all LogicalRubyColumns
+// linked from `column_list`.
+void UpdateRubyColumnInlinePositions(
+    const LogicalLineItems& line_items,
+    LayoutUnit inline_size,
+    HeapVector<Member<LogicalRubyColumn>>& column_list);
 
 }  // namespace blink
 
