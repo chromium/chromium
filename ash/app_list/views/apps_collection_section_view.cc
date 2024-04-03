@@ -261,7 +261,9 @@ void AppsCollectionSectionView::OnAppListItemWillBeDeleted(AppListItem* item) {
   std::optional<size_t> index_to_be_deleted = GetViewIndexForItem(item->id());
 
   if (index_to_be_deleted) {
+    AppListItemView* view = item_views_.view_at(index_to_be_deleted.value());
     item_views_.Remove(index_to_be_deleted.value());
+    delete view;
     PreferredSizeChanged();
   }
 }
