@@ -233,7 +233,7 @@ export class SeaPenImagesElement extends WithSeaPenStore {
     if (isPersonalizationApp()) {
       return null;
     }
-    const cameraFeed = document.createElement('video') as HTMLVideoElement;
+    let cameraFeed: HTMLVideoElement|null = document.createElement('video');
     // Stretch camera stream to cover the whole image.
     cameraFeed.style.objectFit = 'cover';
     // Align camera feed with the clicked image.
@@ -243,12 +243,13 @@ export class SeaPenImagesElement extends WithSeaPenStore {
 
     if (navigator.mediaDevices.getUserMedia) {
       navigator.mediaDevices.getUserMedia({video: true})
-          .then(function(stream) {
-            cameraFeed.srcObject = stream;
-            cameraFeed.play();
+          .then(function(stream: MediaStream) {
+            cameraFeed!.srcObject = stream;
+            cameraFeed!.play();
           })
           .catch(function(err) {
             console.log(err);
+            cameraFeed = null;
           });
     }
 
@@ -260,9 +261,8 @@ export class SeaPenImagesElement extends WithSeaPenStore {
       return;
     }
 
-    if (!this.cameraFeed_) {
-      this.cameraFeed_ = this.maybeCreateCameraFeed_();
-    }
+    this.cameraFeed_?.remove();
+    this.cameraFeed_ = this.maybeCreateCameraFeed_();
 
     if (this.cameraFeed_) {
       // Attached cameraFeed_ to the selected image.
