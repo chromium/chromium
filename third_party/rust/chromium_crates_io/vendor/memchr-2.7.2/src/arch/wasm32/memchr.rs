@@ -8,27 +8,14 @@ available for `wasm32` targets.)
 
 macro_rules! defraw {
     ($ty:ident, $find:ident, $start:ident, $end:ident, $($needles:ident),+) => {{
-        #[cfg(target_feature = "simd128")]
-        {
-            use crate::arch::wasm32::simd128::memchr::$ty;
+        use crate::arch::wasm32::simd128::memchr::$ty;
 
-            debug!("chose simd128 for {}", stringify!($ty));
-            debug_assert!($ty::is_available());
-            // SAFETY: We know that wasm memchr is always available whenever
-            // code is compiled for `wasm32` with the `simd128` target feature
-            // enabled.
-            $ty::new_unchecked($($needles),+).$find($start, $end)
-        }
-        #[cfg(not(target_feature = "simd128"))]
-        {
-            use crate::arch::all::memchr::$ty;
-
-            debug!(
-                "no simd128 feature available, using fallback for {}",
-                stringify!($ty),
-            );
-            $ty::new($($needles),+).$find($start, $end)
-        }
+        debug!("chose simd128 for {}", stringify!($ty));
+        debug_assert!($ty::is_available());
+        // SAFETY: We know that wasm memchr is always available whenever
+        // code is compiled for `wasm32` with the `simd128` target feature
+        // enabled.
+        $ty::new_unchecked($($needles),+).$find($start, $end)
     }}
 }
 

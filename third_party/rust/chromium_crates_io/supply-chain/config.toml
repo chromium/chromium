@@ -131,7 +131,7 @@ criteria = []
 [policy."log:0.4.21"]
 criteria = ["does-not-implement-crypto", "safe-to-run"]
 
-[policy."memchr:2.7.1"]
+[policy."memchr:2.7.2"]
 criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 
 [policy."memoffset:0.6.5"]
@@ -324,15 +324,21 @@ Exemption updated to 0.2.153 in Feb 2024.
 """
 
 [[exemptions.memchr]]
-version = "2.7.1"
+version = "2.7.2"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024
 
-Bumped up the exemptions to 2.7.1 when updating the crates.  When removing
+Bumped up the exemption to 2.7.1 when updating the crates.  When removing
 the exemptions in the future we may want to look at the notes in cl/568617493
 but even with those notes a review of the whole crate (rather than just the
 delta) may be needed for `ub-risk-2`.
+
+Bumped up the exemption to 2.7.2 in April 2024.  The delta was relatively small
+and straightfoward (focusing on `target_feature = \"simd128\"`).  Note that an
+unfinished audit of 2.7.1 has been started at https://crrev.com/c/5367005 and
+I hear that Fuchsia has also been working on reviewing 2.7.1 (so we should check
+later if maybe we can just import their audit).
 """
 
 [[exemptions.memoffset]]

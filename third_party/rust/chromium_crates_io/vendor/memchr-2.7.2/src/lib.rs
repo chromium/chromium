@@ -177,7 +177,7 @@ Originally, this crate was literally just a safe wrapper function around the
 #![cfg_attr(
     not(any(
         all(target_arch = "x86_64", target_feature = "sse2"),
-        target_arch = "wasm32",
+        all(target_arch = "wasm32", target_feature = "simd128"),
         target_arch = "aarch64",
     )),
     allow(dead_code)

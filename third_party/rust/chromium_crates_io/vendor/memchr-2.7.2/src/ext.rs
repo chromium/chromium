@@ -39,11 +39,13 @@ impl<T> Pointer for *mut T {
 }
 
 /// A trait for adding some helper routines to raw bytes.
+#[cfg(test)]
 pub(crate) trait Byte {
     /// Converts this byte to a `char` if it's ASCII. Otherwise panics.
     fn to_char(self) -> char;
 }
 
+#[cfg(test)]
 impl Byte for u8 {
     fn to_char(self) -> char {
         assert!(self.is_ascii());

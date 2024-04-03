@@ -464,7 +464,7 @@ mod aarch64neon {
     }
 }
 
-#[cfg(target_arch = "wasm32")]
+#[cfg(all(target_arch = "wasm32", target_feature = "simd128"))]
 mod wasm_simd128 {
     use core::arch::wasm32::*;
 

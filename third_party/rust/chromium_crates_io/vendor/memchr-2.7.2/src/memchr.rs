@@ -514,7 +514,7 @@ unsafe fn memchr_raw(
         // nor SSE2 (unusual) are available.
         crate::arch::x86_64::memchr::memchr_raw(needle, start, end)
     }
-    #[cfg(target_arch = "wasm32")]
+    #[cfg(all(target_arch = "wasm32", target_feature = "simd128"))]
     {
         crate::arch::wasm32::memchr::memchr_raw(needle, start, end)
     }
@@ -524,7 +524,7 @@ unsafe fn memchr_raw(
     }
     #[cfg(not(any(
         target_arch = "x86_64",
-        target_arch = "wasm32",
+        all(target_arch = "wasm32", target_feature = "simd128"),
         target_arch = "aarch64"
     )))]
     {
@@ -547,7 +547,7 @@ unsafe fn memrchr_raw(
     {
         crate::arch::x86_64::memchr::memrchr_raw(needle, start, end)
     }
-    #[cfg(target_arch = "wasm32")]
+    #[cfg(all(target_arch = "wasm32", target_feature = "simd128"))]
     {
         crate::arch::wasm32::memchr::memrchr_raw(needle, start, end)
     }
@@ -557,7 +557,7 @@ unsafe fn memrchr_raw(
     }
     #[cfg(not(any(
         target_arch = "x86_64",
-        target_arch = "wasm32",
+        all(target_arch = "wasm32", target_feature = "simd128"),
         target_arch = "aarch64"
     )))]
     {
@@ -581,7 +581,7 @@ unsafe fn memchr2_raw(
     {
         crate::arch::x86_64::memchr::memchr2_raw(needle1, needle2, start, end)
     }
-    #[cfg(target_arch = "wasm32")]
+    #[cfg(all(target_arch = "wasm32", target_feature = "simd128"))]
     {
         crate::arch::wasm32::memchr::memchr2_raw(needle1, needle2, start, end)
     }
@@ -591,7 +591,7 @@ unsafe fn memchr2_raw(
     }
     #[cfg(not(any(
         target_arch = "x86_64",
-        target_arch = "wasm32",
+        all(target_arch = "wasm32", target_feature = "simd128"),
         target_arch = "aarch64"
     )))]
     {
@@ -616,7 +616,7 @@ unsafe fn memrchr2_raw(
     {
         crate::arch::x86_64::memchr::memrchr2_raw(needle1, needle2, start, end)
     }
-    #[cfg(target_arch = "wasm32")]
+    #[cfg(all(target_arch = "wasm32", target_feature = "simd128"))]
     {
         crate::arch::wasm32::memchr::memrchr2_raw(needle1, needle2, start, end)
     }
@@ -628,7 +628,7 @@ unsafe fn memrchr2_raw(
     }
     #[cfg(not(any(
         target_arch = "x86_64",
-        target_arch = "wasm32",
+        all(target_arch = "wasm32", target_feature = "simd128"),
         target_arch = "aarch64"
     )))]
     {
@@ -656,7 +656,7 @@ unsafe fn memchr3_raw(
             needle1, needle2, needle3, start, end,
         )
     }
-    #[cfg(target_arch = "wasm32")]
+    #[cfg(all(target_arch = "wasm32", target_feature = "simd128"))]
     {
         crate::arch::wasm32::memchr::memchr3_raw(
             needle1, needle2, needle3, start, end,
@@ -670,7 +670,7 @@ unsafe fn memchr3_raw(
     }
     #[cfg(not(any(
         target_arch = "x86_64",
-        target_arch = "wasm32",
+        all(target_arch = "wasm32", target_feature = "simd128"),
         target_arch = "aarch64"
     )))]
     {
@@ -698,7 +698,7 @@ unsafe fn memrchr3_raw(
             needle1, needle2, needle3, start, end,
         )
     }
-    #[cfg(target_arch = "wasm32")]
+    #[cfg(all(target_arch = "wasm32", target_feature = "simd128"))]
     {
         crate::arch::wasm32::memchr::memrchr3_raw(
             needle1, needle2, needle3, start, end,
@@ -712,7 +712,7 @@ unsafe fn memrchr3_raw(
     }
     #[cfg(not(any(
         target_arch = "x86_64",
-        target_arch = "wasm32",
+        all(target_arch = "wasm32", target_feature = "simd128"),
         target_arch = "aarch64"
     )))]
     {
@@ -732,7 +732,7 @@ unsafe fn count_raw(needle: u8, start: *const u8, end: *const u8) -> usize {
     {
         crate::arch::x86_64::memchr::count_raw(needle, start, end)
     }
-    #[cfg(target_arch = "wasm32")]
+    #[cfg(all(target_arch = "wasm32", target_feature = "simd128"))]
     {
         crate::arch::wasm32::memchr::count_raw(needle, start, end)
     }
@@ -742,7 +742,7 @@ unsafe fn count_raw(needle: u8, start: *const u8, end: *const u8) -> usize {
     }
     #[cfg(not(any(
         target_arch = "x86_64",
-        target_arch = "wasm32",
+        all(target_arch = "wasm32", target_feature = "simd128"),
         target_arch = "aarch64"
     )))]
     {

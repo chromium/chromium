@@ -1,6 +1,6 @@
 [package]
 name = "memchr"
-version = "2.7.1"  #:version
+version = "2.7.2"  #:version
 authors = ["Andrew Gallant <jamslam@gmail.com>", "bluss"]
 description = """
 Provides extremely fast (uses SIMD on x86_64, aarch64 and wasm32) routines for

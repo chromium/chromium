@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.61"
 name = "memchr"
-version = "2.7.1"
+version = "2.7.2"
 authors = [
     "Andrew Gallant <jamslam@gmail.com>",
     "bluss",

@@ -81,14 +81,13 @@ impl Finder {
     /// true then it will always return true.
     #[inline]
     pub fn is_available() -> bool {
-        #[cfg(target_feature = "simd128")]
-        {
-            true
-        }
-        #[cfg(not(target_feature = "simd128"))]
-        {
-            false
-        }
+        // We used to gate on `cfg(target_feature = "simd128")` here, but
+        // we've since required the feature to be enabled at compile time to
+        // even include this module at all. Therefore, it is always enabled
+        // in this context. See the linked issue for why this was changed.
+        //
+        // Ref: https://github.com/BurntSushi/memchr/issues/144
+        true
     }
 
     /// Execute a search using wasm32 v128 vectors and routines.

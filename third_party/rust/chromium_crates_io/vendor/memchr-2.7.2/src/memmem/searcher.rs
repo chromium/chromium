@@ -5,7 +5,7 @@ use crate::arch::all::{
 
 #[cfg(target_arch = "aarch64")]
 use crate::arch::aarch64::neon::packedpair as neon;
-#[cfg(target_arch = "wasm32")]
+#[cfg(all(target_arch = "wasm32", target_feature = "simd128"))]
 use crate::arch::wasm32::simd128::packedpair as simd128;
 #[cfg(all(target_arch = "x86_64", target_feature = "sse2"))]
 use crate::arch::x86_64::{
@@ -109,7 +109,7 @@ impl Searcher {
                 Searcher::twoway(needle, rabinkarp, prestrat)
             }
         }
-        #[cfg(target_arch = "wasm32")]
+        #[cfg(all(target_arch = "wasm32", target_feature = "simd128"))]
         {
             if let Some(pp) = simd128::Finder::with_pair(needle, pair) {
                 if do_packed_search(needle) {
@@ -151,7 +151,7 @@ impl Searcher {
         }
         #[cfg(not(any(
             all(target_arch = "x86_64", target_feature = "sse2"),
-            target_arch = "wasm32",
+            all(target_arch = "wasm32", target_feature = "simd128"),
             target_arch = "aarch64"
         )))]
         {
@@ -251,7 +251,7 @@ union SearcherKind {
     sse2: crate::arch::x86_64::sse2::packedpair::Finder,
     #[cfg(all(target_arch = "x86_64", target_feature = "sse2"))]
     avx2: crate::arch::x86_64::avx2::packedpair::Finder,
-    #[cfg(target_arch = "wasm32")]
+    #[cfg(all(target_arch = "wasm32", target_feature = "simd128"))]
     simd128: crate::arch::wasm32::simd128::packedpair::Finder,
     #[cfg(target_arch = "aarch64")]
     neon: crate::arch::aarch64::neon::packedpair::Finder,
@@ -400,7 +400,7 @@ unsafe fn searcher_kind_avx2(
 /// # Safety
 ///
 /// Callers must ensure that the `searcher.kind.simd128` union field is set.
-#[cfg(target_arch = "wasm32")]
+#[cfg(all(target_arch = "wasm32", target_feature = "simd128"))]
 unsafe fn searcher_kind_simd128(
     searcher: &Searcher,
     _prestate: &mut PrefilterState,
@@ -671,7 +671,7 @@ impl Prefilter {
     }
 
     /// Return a prefilter using a wasm32 simd128 vector algorithm.
-    #[cfg(target_arch = "wasm32")]
+    #[cfg(all(target_arch = "wasm32", target_feature = "simd128"))]
     #[inline]
     fn simd128(finder: simd128::Finder, needle: &[u8]) -> Prefilter {
         trace!("building wasm32 simd128 prefilter");
@@ -761,7 +761,7 @@ union PrefilterKind {
     sse2: crate::arch::x86_64::sse2::packedpair::Finder,
     #[cfg(all(target_arch = "x86_64", target_feature = "sse2"))]
     avx2: crate::arch::x86_64::avx2::packedpair::Finder,
-    #[cfg(target_arch = "wasm32")]
+    #[cfg(all(target_arch = "wasm32", target_feature = "simd128"))]
     simd128: crate::arch::wasm32::simd128::packedpair::Finder,
     #[cfg(target_arch = "aarch64")]
     neon: crate::arch::aarch64::neon::packedpair::Finder,
@@ -833,7 +833,7 @@ unsafe fn prefilter_kind_avx2(
 /// # Safety
 ///
 /// Callers must ensure that the `strat.kind.simd128` union field is set.
-#[cfg(target_arch = "wasm32")]
+#[cfg(all(target_arch = "wasm32", target_feature = "simd128"))]
 unsafe fn prefilter_kind_simd128(
     strat: &Prefilter,
     haystack: &[u8],
