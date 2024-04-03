@@ -15,6 +15,7 @@ usage () {
   echo
   echo "Example: "
   echo "$ ./grep_for_vet_relevant_keywords.sh quote"
+  echo "$ ./grep_for_vet_relevant_keywords.sh syn-2.0.55"
   exit -1
 }
 
@@ -34,12 +35,15 @@ CRATE_DIR=$( find "${VENDOR_DIR}" -maxdepth 1 \
                                   -name "${CRATE_NAME}-[0-9]*"
            )
 if [[ -z "$CRATE_DIR" ]]; then
-  echo "ERROR: Found no directories matching the \"$CRATE_NAME\" crate name..."
-  usage
-  exit -1
+  CRATE_DIR="${VENDOR_DIR}/${CRATE_NAME}"
+  if ! [[ -d "$CRATE_DIR" ]]; then
+    echo "ERROR: No directories matching the \"$CRATE_NAME\" crate name..."
+    usage
+    exit -1
+  fi
 fi
 if [[ `echo "$CRATE_DIR" | wc -l` -ne 1 ]]; then
-  echo "ERROR: Found multiple dirs matching the \"$CRATE_NAME\" crate name..."
+  echo "ERROR: Multiple dirs matching the \"$CRATE_NAME\" crate name..."
   echo "$CRATE_DIR"
   usage
   exit -1
