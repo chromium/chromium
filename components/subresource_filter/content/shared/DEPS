@@ -1,0 +1,4 @@
+include_rules = [
+  "-components/subresource_filter/content",
+  "+components/subresource_filter/content/shared",
+]

@@ -1,0 +1,5 @@
+include_rules = [
+  "+content/public/browser",
+  "+content/public/test",
+  "+ui/base",
+]

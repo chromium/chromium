@@ -61,6 +61,12 @@ In the renderer, ownership looks like:
 `DocumentLoader`=>`SubresourceFilter`=>`WebDocumentSubresourceFilterImpl`=>`DocumentSubresourceFilter`
 
 ### [content](/components/subresource_filter/content)
+#### [content/shared](/components/subresource_filter/content/shared/)
+The code in content/shared is not specific to Safe Browsing, but still depends
+on content/. This will allow other subresource filtering use cases to be built
+on top of the shared code, such as the [Fingerprinting Protection component]
+(/components/fingerprinting_protection_filter/).
+
 #### [content/browser](/components/subresource_filter/content/browser)
 The content/browser code generally orchestrates the whole component.
 

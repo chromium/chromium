@@ -1,0 +1,51 @@
+import("//build/config/features.gni")
+
+static_library("browser") {
+  sources = [
+    "ruleset_publisher_impl.cc",
+    "ruleset_publisher_impl.h",
+    "ruleset_service.cc",
+    "ruleset_service.h",
+    "unindexed_ruleset_stream_generator.cc",
+    "unindexed_ruleset_stream_generator.h",
+  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+  public_deps = [
+    "//base",
+    "//components/prefs",
+    "//components/subresource_filter/core/browser",
+    "//content/public/browser",
+    "//ipc",
+    "//services/network/public/cpp",
+    "//url",
+  ]
+  deps = [
+    "//components/subresource_filter/core/common",
+    "//components/subresource_filter/core/mojom",
+    "//components/url_pattern_index",
+    "//third_party/protobuf:protobuf_lite",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "ruleset_publisher_impl_unittest.cc",
+    "ruleset_service_unittest.cc",
+  ]
+  deps = [
+    ":browser",
+    "//base",
+    "//base/test:test_support",
+    "//components/prefs:test_support",
+    "//components/subresource_filter/core/browser:test_support",
+    "//components/subresource_filter/core/common:test_support",
+    "//components/url_pattern_index/proto:url_pattern_index",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//ipc:test_support",
+    "//testing/gtest",
+    "//ui/base:test_support",
+  ]
+}

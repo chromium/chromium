@@ -91,7 +91,7 @@ include_rules = [
   "+components/spellcheck",
   "+components/startup_metric_utils/common",
   "+components/storage_monitor",
-  "+components/subresource_filter/content/browser",
+  "+components/subresource_filter/content/shared/browser",
   "+components/sync/base",
   "+components/federated_learning",
   "+components/supervised_user/core/browser",
