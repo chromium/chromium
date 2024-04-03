@@ -1749,8 +1749,8 @@ Style notes:
       <message name="IDS_ASH_VIDEO_CONFERENCE_RETURN_TO_APP_HIDE_TOOLTIP" desc="The tooltip text for the expand button (when in expanded state) of the return to app panel.">
         Hide apps
       </message>
-      <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_NAME" desc="Text for name of the background blur effect in the VC bubble.">
-        Background blur
+      <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_NAME" desc="Text for name of the background blur or replace effect in the VC bubble.">
+        Background
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_OFF" desc="Text for background blur 'off' setting, in the VC bubble.">
         Off
