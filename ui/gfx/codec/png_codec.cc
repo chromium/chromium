@@ -126,9 +126,6 @@ bool PNGCodec::Decode(const unsigned char* input,
   if (!bitmap->tryAllocPixels(info)) {
     return false;
   }
-  if (codec->getPixels(bitmap->pixmap()) != SkCodec::kSuccess) {
-    return false;
-  }
 
   // TODO(b/332584706): we have a handful of unit tests which fail if the
   // returned SkBitmap has colorspace information. These unit tests should be
@@ -136,15 +133,7 @@ bool PNGCodec::Decode(const unsigned char* input,
   // its colorspace.
   bitmap->setColorSpace(nullptr);
 
-  // Force the bitmap's alpha type to opaque if all pixels are opaque.
-  // TODO(johnstiles): it is rare to have an opaque PNG with an alpha channel;
-  // in practice, our UI assets don't do this. It should be safe to remove the
-  // `ComputeIsOpaque` check and fix up our unit tests that expect this.
-  if (alpha != kOpaque_SkAlphaType && SkBitmap::ComputeIsOpaque(*bitmap)) {
-    bitmap->setAlphaType(kOpaque_SkAlphaType);
-  }
-
-  return true;
+  return codec->getPixels(bitmap->pixmap()) == SkCodec::kSuccess;
 }
 
 // Encoder --------------------------------------------------------------------

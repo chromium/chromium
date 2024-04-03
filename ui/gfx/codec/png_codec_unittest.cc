@@ -148,7 +148,8 @@ enum ColorType {
   COLOR_TYPE_RGB = PNG_COLOR_TYPE_RGB,
   COLOR_TYPE_RGBA = PNG_COLOR_TYPE_RGBA,
   COLOR_TYPE_BGR,
-  COLOR_TYPE_BGRA
+  COLOR_TYPE_BGRA,
+  COLOR_TYPE_RGBX
 };
 
 // PNG encoder used for testing. Required because PNGCodec::Encode doesn't do
@@ -184,6 +185,11 @@ bool EncodeImage(const std::vector<unsigned char>& input,
       break;
     case COLOR_TYPE_RGBA:
       input_rowbytes = width * 4;
+      break;
+    case COLOR_TYPE_RGBX:
+      output_color_type = static_cast<ColorType>(PNG_COLOR_TYPE_RGB);
+      input_rowbytes = width * 4;
+      transforms |= PNG_TRANSFORM_STRIP_FILLER_AFTER;
       break;
     case COLOR_TYPE_BGR:
       input_rowbytes = width * 3;
@@ -691,8 +697,9 @@ void DecodeInterlacedRGBAtoSkBitmap(bool use_transparency) {
 
   // encode
   std::vector<unsigned char> encoded;
-  ASSERT_TRUE(EncodeImage(original, w, h, COLOR_TYPE_RGBA, &encoded,
-                          PNG_INTERLACE_ADAM7));
+  ASSERT_TRUE(EncodeImage(original, w, h,
+                          use_transparency ? COLOR_TYPE_RGBA : COLOR_TYPE_RGBX,
+                          &encoded, PNG_INTERLACE_ADAM7));
 
   // Decode the encoded string.
   SkBitmap decoded_bitmap;
