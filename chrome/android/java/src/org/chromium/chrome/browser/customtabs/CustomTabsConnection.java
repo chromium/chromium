@@ -1995,30 +1995,6 @@ public class CustomTabsConnection {
     public PageInsightsConfig getPageInsightsConfig(
             BrowserServicesIntentDataProvider intentData,
             @Nullable NavigationHandle navigationHandle,
-            Supplier<Profile> profileSupplier) {
-        // For all params, by default populate the most conservative values.
-        return PageInsightsConfig.newBuilder()
-                .setShouldAutoTrigger(false)
-                .setShouldXsurfaceLog(false)
-                .setIsInitialPage(false)
-                .setServerShouldNotLogOrPersonalize(true)
-                .build();
-    }
-
-    /**
-     * Returns how the Page Insights feature should be configured for the given params. Only applies
-     * if {@link #shouldEnablePageInsightsForIntent(BrowserServicesIntentDataProvider)} returns
-     * true.
-     *
-     * @param intentData {@link BrowserServicesIntentDataProvider} built from the Intent that
-     *     launched this CCT.
-     * @param navigationHandle the {@link NavigationHandle} for the current URL.
-     * @param navigationEntry the {@link NavigationEntry} for the current URL.
-     * @param profileSupplier supplier of the current {@link Profile}.
-     */
-    public PageInsightsConfig getPageInsightsConfig(
-            BrowserServicesIntentDataProvider intentData,
-            @Nullable NavigationHandle navigationHandle,
             @Nullable NavigationEntry navigationEntry,
             Supplier<Profile> profileSupplier) {
         // For all params, by default populate the most conservative values.

@@ -76,11 +76,12 @@ import java.util.function.BooleanSupplier;
 /**
  * PageInsights mediator component listening to various external events to update UI, internal
  * states accordingly:
+ *
  * <ul>
- * <li> Observes browser controls for hide-on-scroll behavior
- * <li> Closes the sheet when the Tab page gets reloaded
- * <li> Resizes contents upon Sheet offset/state changes
- * <li> Adjusts the top corner radius to the sheet height
+ *   <li>Observes browser controls for hide-on-scroll behavior
+ *   <li>Closes the sheet when the Tab page gets reloaded
+ *   <li>Resizes contents upon Sheet offset/state changes
+ *   <li>Adjusts the top corner radius to the sheet height
  * </ul>
  */
 public class PageInsightsMediator extends EmptyTabObserver implements BottomSheetObserver {
@@ -177,6 +178,10 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     private int mAutoTriggerDelayMs;
 
     private int mOldPihState = PageInsightsSheetState.NONE;
+
+    // True if since the Page Insights component was created there has been at least one page load
+    // started.
+    private boolean mHasPageLoadBeenStartedSinceCreation;
 
     @IntDef({
         AutoTriggerStage.CANCELLED_OR_NOT_STARTED,
@@ -439,6 +444,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     @Override
     public void onPageLoadStarted(Tab tab, GURL url) {
         Log.v(TAG, "onPageLoadStarted");
+        mHasPageLoadBeenStartedSinceCreation = true;
         onNewTabOrPage();
     }
 
@@ -495,7 +501,10 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         // triggering with these options is better than not triggering at all.
         PageInsightsConfig config =
                 mPageInsightsConfigProvider.get(
-                        mCurrentNavigationHandle, getLastCommittedNavigationEntry(tab));
+                        new PageInsightsConfigRequest(
+                                mCurrentNavigationHandle,
+                                getLastCommittedNavigationEntry(tab),
+                                mHasPageLoadBeenStartedSinceCreation));
         if (!shouldFetchDataForAutoTrigger(config)) {
             mAutoTriggerStage = AutoTriggerStage.CANCELLED_OR_NOT_STARTED;
             return;
@@ -623,7 +632,10 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         mSheetController.requestShowContent(mSheetContent, true);
         PageInsightsConfig config =
                 mPageInsightsConfigProvider.get(
-                        mCurrentNavigationHandle, getLastCommittedNavigationEntry(tab));
+                        new PageInsightsConfigRequest(
+                                mCurrentNavigationHandle,
+                                getLastCommittedNavigationEntry(tab),
+                                mHasPageLoadBeenStartedSinceCreation));
         mPageInsightsDataLoader.loadInsightsData(
                 tab.getUrl(),
                 /* isUserInitiated= */ true,
