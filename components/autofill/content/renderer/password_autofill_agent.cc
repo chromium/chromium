@@ -1619,7 +1619,7 @@ bool PasswordAutofillAgent::ShowSuggestionsForDomain(
   // Check that all fillable elements are editable.
   if (!element.IsTextField() || !IsElementEditable(element) ||
       (!password_element.IsNull() && !IsElementEditable(password_element))) {
-    return true;
+    return false;
   }
 
   // Don't attempt to autofill with values that are too large.
