@@ -261,6 +261,7 @@ infobars::InfoBar* TabSharingInfoBarDelegate::Create(
     TabRole role,
     ButtonState share_this_tab_instead_button_state,
     std::optional<FocusTarget> focus_target,
+    bool captured_surface_control_active,
     TabSharingUI* ui,
     TabShareType capture_type,
     bool favicons_used_for_switch_to_tab_button) {
@@ -268,7 +269,8 @@ infobars::InfoBar* TabSharingInfoBarDelegate::Create(
   return infobar_manager->AddInfoBar(
       CreateTabSharingInfoBar(base::WrapUnique(new TabSharingInfoBarDelegate(
           shared_tab_name, capturer_name, role,
-          share_this_tab_instead_button_state, focus_target, ui, capture_type,
+          share_this_tab_instead_button_state, focus_target,
+          captured_surface_control_active, ui, capture_type,
           favicons_used_for_switch_to_tab_button))));
 }
 
@@ -278,6 +280,7 @@ TabSharingInfoBarDelegate::TabSharingInfoBarDelegate(
     TabRole role,
     ButtonState share_this_tab_instead_button_state,
     std::optional<FocusTarget> focus_target,
+    bool captured_surface_control_active,
     TabSharingUI* ui,
     TabShareType capture_type,
     bool favicons_used_for_switch_to_tab_button)
@@ -302,11 +305,9 @@ TabSharingInfoBarDelegate::TabSharingInfoBarDelegate(
   // because write-access CapturedSurfaceControl APIs are disallowed
   // in that case anyway.
   //
-  // TODO(crbug.com/324468211): Do not show this button until the first
-  // invocation of a write-access Captured Surface Control API.
   // TODO(crbug.com/324468211): Hide the button if Captured Surface Control
   // is set to BLOCKED or ASK through the user's interaction with PageInfo.
-  if (role_ == TabRole::kCapturingTab &&
+  if (role_ == TabRole::kCapturingTab && captured_surface_control_active &&
       base::FeatureList::IsEnabled(
           features::kCapturedSurfaceControlStickyPermissions)) {
     csc_permission_button_ = std::make_unique<CscPermissionButton>();
@@ -468,10 +469,10 @@ bool TabSharingInfoBarDelegate::QuickNav() {
   return false;
 }
 
-bool TabSharingInfoBarDelegate::OpenCscPermissions() {
+void TabSharingInfoBarDelegate::
+    OnCapturedSurfaceControlActivityIndicatorPressed() {
   DCHECK(csc_permission_button_);
   csc_permission_button_->Click(infobar());
-  return false;
 }
 
 bool TabSharingInfoBarDelegate::IsCloseable() const {

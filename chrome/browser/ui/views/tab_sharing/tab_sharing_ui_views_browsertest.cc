@@ -30,13 +30,16 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/url_formatter/elide_url.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/captured_surface_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -120,6 +123,26 @@ ui::ImageModel GetQuickNavButtonImage(Browser* browser, int tab) {
       ->GetButtonImage(TabSharingInfoBarDelegate::InfoBarButton::kQuickNav);
 }
 
+// TODO(crbug.com/1466247): Rename to "...Indicator".
+bool HasCscPermissionButton(Browser* browser, int tab) {
+  return GetDelegate(browser, tab)->GetButtons() &
+         TabSharingInfoBarDelegate::InfoBarButton::kCscPermission;
+}
+
+std::u16string GetCscPermissionButtonLabel(Browser* browser, int tab) {
+  DCHECK(HasCscPermissionButton(browser, tab));  // Test error otherwise.
+  return GetDelegate(browser, tab)
+      ->GetButtonLabel(
+          TabSharingInfoBarDelegate::InfoBarButton::kCscPermission);
+}
+
+ui::ImageModel GetCscPermissionButtonImage(Browser* browser, int tab) {
+  DCHECK(HasCscPermissionButton(browser, tab));  // Test error otherwise.
+  return GetDelegate(browser, tab)
+      ->GetButtonImage(
+          TabSharingInfoBarDelegate::InfoBarButton::kCscPermission);
+}
+
 std::u16string GetExpectedSwitchToMessage(Browser* browser, int tab) {
   content::RenderFrameHost* const rfh =
       GetWebContents(browser, tab)->GetPrimaryMainFrame();
@@ -179,10 +202,15 @@ class TabSharingUIViewsBrowserTest
     // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
     // disable kHttpsUpgrades feature.
 #if BUILDFLAG(IS_CHROMEOS)
-    features_.InitWithFeatures({features::kTabCaptureBlueBorderCrOS},
-                               {features::kHttpsUpgrades});
+    features_.InitWithFeatureStates(
+        {{features::kTabCaptureBlueBorderCrOS, true},
+         {features::kCapturedSurfaceControlStickyPermissions, true},
+         { features::kHttpsUpgrades,
+           false }});
 #else
-    features_.InitAndDisableFeature(features::kHttpsUpgrades);
+    features_.InitWithFeatureStates(
+        {{features::kHttpsUpgrades, false},
+         {features::kCapturedSurfaceControlStickyPermissions, true}});
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
@@ -241,6 +269,7 @@ class TabSharingUIViewsBrowserTest
     size_t infobar_count = 1;
     bool has_border = true;
     int tab_with_disabled_button = kNullTabIndex;
+    bool has_captured_surface_control_indicator = false;
   };
 
   // Verify that tab sharing infobars are displayed on all tabs, and content
@@ -254,6 +283,8 @@ class TabSharingUIViewsBrowserTest
     const size_t infobar_count = expectations.infobar_count;
     const bool has_border = expectations.has_border;
     const int tab_with_disabled_button = expectations.tab_with_disabled_button;
+    const bool has_captured_surface_control_indicator =
+        expectations.has_captured_surface_control_indicator;
 
     DCHECK((capturing_tab != kNullTabIndex && captured_tab != kNullTabIndex) ||
            (capturing_tab == kNullTabIndex && captured_tab == kNullTabIndex));
@@ -284,6 +315,7 @@ class TabSharingUIViewsBrowserTest
       if (i == capturing_tab && i == captured_tab) {
         // Self-capture.
         EXPECT_FALSE(HasShareThisTabInsteadButton(browser, i));
+        EXPECT_FALSE(HasCscPermissionButton(browser, i));
       } else if (i == capturing_tab) {
         // Capturing-tab's infobar.
         ASSERT_TRUE(HasQuickNavButton(browser, i));
@@ -291,6 +323,18 @@ class TabSharingUIViewsBrowserTest
                   GetExpectedSwitchToMessage(browser, captured_tab));
         EXPECT_EQ(GetQuickNavButtonImage(browser, i),
                   GetFaviconAssociatedWith(browser, captured_tab));
+        EXPECT_EQ(HasCscPermissionButton(browser, i),
+                  has_captured_surface_control_indicator);
+        if (HasCscPermissionButton(browser, i)) {
+          EXPECT_EQ(
+              GetCscPermissionButtonLabel(browser, i),
+              l10n_util::GetStringUTF16(
+                  IDS_TAB_SHARING_INFOBAR_CAPTURED_SURFACE_CONTROL_PERMISSION_BUTTON));
+          EXPECT_EQ(GetCscPermissionButtonImage(browser, i),
+                    ui::ImageModel::FromVectorIcon(
+                        vector_icons::kTouchpadMouseIcon, ui::kColorSysPrimary,
+                        /*icon_size=*/16));
+        }
       } else if (i == captured_tab) {
         // Captured-tab's infobar.
         ASSERT_TRUE(HasQuickNavButton(browser, i));
@@ -298,6 +342,7 @@ class TabSharingUIViewsBrowserTest
                   GetExpectedSwitchToMessage(browser, capturing_tab));
         EXPECT_EQ(GetQuickNavButtonImage(browser, i),
                   GetFaviconAssociatedWith(browser, capturing_tab));
+        EXPECT_FALSE(HasCscPermissionButton(browser, i));
       } else if (infobar_manager->infobars().size() > 0) {
         // Any other infobar.
         ASSERT_TRUE(HasShareThisTabInsteadButton(browser, i));
@@ -308,6 +353,7 @@ class TabSharingUIViewsBrowserTest
         EXPECT_EQ(ShareThisTabInsteadButtonIsEnabled(browser, i),
                   i != tab_with_disabled_button)
             << "Tab: " << i;
+        EXPECT_FALSE(HasCscPermissionButton(browser, i));
       }
     }
   }
@@ -679,6 +725,33 @@ IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
   EXPECT_THAT(
       base::UTF16ToUTF8(GetInfobarMessageText(browser(), kCapturingTab)),
       ::testing::HasSubstr("about:blank"));
+}
+
+IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
+                       InfobarGainsCapturedSurfaceControlIndicator) {
+  // Think of tab #0 as kOtherTab. It is verified by VerifyUi().
+  constexpr int kCapturedTab = 1;
+  constexpr int kCapturingTab = 2;
+
+  // Set up a screen-capture session.
+  AddTabs(browser(), 2);
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 3);
+
+  CreateUiAndStartSharing(browser(), kCapturingTab, kCapturedTab);
+
+  // Start out with CSC "inactive" - CSC indicator not used.
+  UiExpectations expectations{.browser = browser(),
+                              .capturing_tab = kCapturingTab,
+                              .captured_tab = kCapturedTab};
+  ASSERT_FALSE(expectations.has_captured_surface_control_indicator);
+  VerifyUi(expectations);
+
+  // Simulate an invocation of a CSC write-access API, turning CSC "active".
+  // As a result, the capturing tab has its infobar replaced with one which has
+  // the CSC indicator.
+  DidCapturedSurfaceControlForTesting(GetWebContents(browser(), kCapturingTab));
+  expectations.has_captured_surface_control_indicator = true;
+  VerifyUi(expectations);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

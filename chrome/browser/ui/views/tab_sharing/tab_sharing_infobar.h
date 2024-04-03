@@ -45,7 +45,7 @@ class TabSharingInfoBar : public InfoBarView {
   void StopButtonPressed();
   void ShareThisTabInsteadButtonPressed();
   void QuickNavButtonPressed();
-  void CscPermissionButtonPressed();
+  void OnCapturedSurfaceControlActivityIndicatorPressed();
 
   // Returns the width of all content other than the label and link.
   // Layout uses this to determine how much space the label and link can take.

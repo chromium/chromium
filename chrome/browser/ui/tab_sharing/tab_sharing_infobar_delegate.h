@@ -49,6 +49,7 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
     kStop = 1 << 0,
     kShareThisTabInstead = 1 << 1,
     kQuickNav = 1 << 2,
+    // TODO(crbug.com/1466247): Rename to kCapturedSurfaceControlIndicator.
     kCscPermission = 1 << 3,
   };
 
@@ -98,6 +99,7 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
       TabRole role,
       ButtonState share_this_tab_instead_button_state,
       std::optional<FocusTarget> focus_target,
+      bool captured_surface_control_active,
       TabSharingUI* ui,
       TabShareType capture_type,
       bool favicons_used_for_switch_to_tab_button = false);
@@ -112,10 +114,12 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
   bool GetButtonEnabled(InfoBarButton button) const;
   std::u16string GetButtonTooltip(InfoBarButton button) const;
   int GetButtons() const;
+  // TODO(crbug.com/332050422): Remove the return-value and rename as
+  // click-producing.
   bool Stop();
   bool ShareThisTabInstead();
   bool QuickNav();
-  bool OpenCscPermissions();
+  void OnCapturedSurfaceControlActivityIndicatorPressed();
 
   // InfoBarDelegate:
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
@@ -130,6 +134,7 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
                             TabRole role,
                             ButtonState share_this_tab_instead_button_state,
                             std::optional<FocusTarget> focus_target,
+                            bool captured_surface_control_active,
                             TabSharingUI* ui,
                             TabShareType capture_type,
                             bool favicons_used_for_switch_to_tab_button);
@@ -153,6 +158,8 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
 
   std::unique_ptr<ShareTabInsteadButton> share_this_tab_instead_button_;
   std::unique_ptr<SwitchToTabButton> quick_nav_button_;
+  // TODO(crbug.com/324468211): Rename both class and member to remove the word
+  // "permission".
   std::unique_ptr<CscPermissionButton> csc_permission_button_;
 };
 

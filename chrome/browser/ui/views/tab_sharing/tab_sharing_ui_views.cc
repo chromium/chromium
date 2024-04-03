@@ -33,6 +33,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "extensions/common/constants.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -179,6 +180,16 @@ TabSharingUIViews::TabSharingUIViews(
         shared_tab_, capturer_origin_,
         base::BindRepeating(&TabSharingUIViews::StopCaptureDueToPolicy,
                             base::Unretained(this)));
+  }
+
+  WebContents* const capturer_wc = WebContentsFromId(capturer_);
+  if (capturer_wc) {
+    // base::Unretained(this) is safe because `this` owns `csc_observer_` and
+    // will outlive it.
+    csc_observer_ = std::make_unique<CapturedSurfaceControlObserver>(
+        capturer_wc,
+        base::BindOnce(&TabSharingUIViews::OnCapturedSurfaceControlByCapturer,
+                       base::Unretained(this)));
   }
 }
 
@@ -475,7 +486,8 @@ void TabSharingUIViews::CreateInfobarForWebContents(WebContents* contents) {
   infobars_[contents] = TabSharingInfoBarDelegate::Create(
       infobar_manager, shared_tab_name_, capturer_name_,
       GetTabRole(is_capturing_tab, is_captured_tab),
-      share_this_tab_instead_button_state, focus_target, this, capture_type_,
+      share_this_tab_instead_button_state, focus_target,
+      captured_surface_control_active_, this, capture_type_,
       favicons_used_for_switch_to_tab_button_);
 }
 
@@ -662,4 +674,50 @@ bool TabSharingUIViews::IsCapturableByCapturer(const Profile* profile) const {
   }
 
   return profile->GetOriginalProfile() == profile_;
+}
+
+void TabSharingUIViews::OnCapturedSurfaceControlByCapturer() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (!captured_surface_control_active_) {
+    // TODO(crbug.com/332555474): Set `captured_surface_control_active_` to true
+    // in the ctor if this `TabSharingUIViews` object was constructed in
+    // response to a share-this-tab-instead call for a capture-session where CSC
+    // was previously used.
+    captured_surface_control_active_ = true;
+
+    content::WebContents* const capturer_wc = WebContentsFromId(capturer_);
+    if (capturer_wc) {
+      // Recreate the infobar with the CSC indicator in place - triggered by
+      // `captured_surface_control_active_` marking CSC as "active".
+      CreateInfobarForWebContents(capturer_wc);
+    } else {
+      // The capturer died - `TabSharingUIViews` will be destroyed promptly, so
+      // no need to do anything special.
+    }
+  }
+}
+
+TabSharingUIViews::CapturedSurfaceControlObserver::
+    CapturedSurfaceControlObserver(content::WebContents* web_contents,
+                                   base::OnceClosure callback)
+    : callback_(std::move(callback)) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(callback_);
+
+  Observe(web_contents);
+}
+
+TabSharingUIViews::CapturedSurfaceControlObserver::
+    ~CapturedSurfaceControlObserver() = default;
+
+void TabSharingUIViews::CapturedSurfaceControlObserver::
+    OnCapturedSurfaceControl() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  Observe(nullptr);
+
+  if (callback_) {
+    std::move(callback_).Run();
+  }
 }

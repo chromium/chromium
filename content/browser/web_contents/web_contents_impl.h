@@ -341,6 +341,11 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // previous mode.
   void SetAccessibilityMode(ui::AXMode mode);
 
+  // Inform the WebContentsImpl object that a write-access Captured Surface
+  // Control API was invoked (sendWheel, setZoomLevel) for this object.
+  // A notification is then propagated to observers.
+  void DidCapturedSurfaceControl();
+
   // WebContents ------------------------------------------------------
   WebContentsDelegate* GetDelegate() final;
   void SetDelegate(WebContentsDelegate* delegate) override;

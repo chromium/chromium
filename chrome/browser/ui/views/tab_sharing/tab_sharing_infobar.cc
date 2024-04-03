@@ -79,9 +79,9 @@ TabSharingInfoBar::TabSharingInfoBar(
   }
 
   if (buttons & TabSharingInfoBarDelegate::kCscPermission) {
-    csc_permission_button_ =
-        create_button(TabSharingInfoBarDelegate::kCscPermission,
-                      &TabSharingInfoBar::CscPermissionButtonPressed);
+    csc_permission_button_ = create_button(
+        TabSharingInfoBarDelegate::kCscPermission,
+        &TabSharingInfoBar::OnCapturedSurfaceControlActivityIndicatorPressed);
     csc_permission_button_->SetStyle(ui::ButtonStyle::kDefault);
     csc_permission_button_->SetCornerRadius(
         GetLayoutConstant(TOOLBAR_CORNER_RADIUS));
@@ -189,13 +189,11 @@ void TabSharingInfoBar::QuickNavButtonPressed() {
   }
 }
 
-void TabSharingInfoBar::CscPermissionButtonPressed() {
+void TabSharingInfoBar::OnCapturedSurfaceControlActivityIndicatorPressed() {
   if (!owner()) {
     return;  // We're closing; don't call anything, it might access the owner.
   }
-  if (GetDelegate()->OpenCscPermissions()) {
-    RemoveSelf();
-  }
+  GetDelegate()->OnCapturedSurfaceControlActivityIndicatorPressed();
 }
 
 TabSharingInfoBarDelegate* TabSharingInfoBar::GetDelegate() {

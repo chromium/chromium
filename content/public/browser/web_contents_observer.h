@@ -227,6 +227,16 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   virtual void OnCaptureHandleConfigUpdate(
       const blink::mojom::CaptureHandleConfig& config) {}
 
+  // This method is invoked when a write-access Captured Surface Control API is
+  // successfully invoked by a tab-capturing Web application. These include:
+  // * CaptureController.sendWheel()
+  // * CaptureController.setZoomLevel()
+  //
+  // Observing this occurrence allows us to update the UX accordingly; for
+  // example, show the user an indicator that the capturing tab is being
+  // controlled by the capturing tab.
+  virtual void OnCapturedSurfaceControl() {}
+
   // This method is invoked when the `blink::WebView` of the current
   // RenderViewHost is ready, e.g. because we recreated it after a crash.
   virtual void RenderViewReady() {}

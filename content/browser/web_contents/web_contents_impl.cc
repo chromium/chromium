@@ -1935,6 +1935,12 @@ void WebContentsImpl::SetAccessibilityMode(ui::AXMode mode) {
       });
 }
 
+void WebContentsImpl::DidCapturedSurfaceControl() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  observers_.NotifyObservers(&WebContentsObserver::OnCapturedSurfaceControl);
+}
+
 void WebContentsImpl::ResetAccessibility() {
   // In contrast to the above, do not bother with frames in the back-forward
   // cache since the reset is intended to generate new trees for observers of

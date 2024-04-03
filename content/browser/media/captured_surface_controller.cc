@@ -101,9 +101,10 @@ CapturedSurfaceControlResult DoSendWheel(
     blink::mojom::CapturedWheelActionPtr action) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  WebContentsImpl* const capturer_wc = WebContentsImpl::FromRenderFrameHostImpl(
-      RenderFrameHostImpl::FromID(capturer_rfh_id));
-  if (!capturer_wc) {
+  WebContentsImpl* const capturer_wci =
+      WebContentsImpl::FromRenderFrameHostImpl(
+          RenderFrameHostImpl::FromID(capturer_rfh_id));
+  if (!capturer_wci) {
     // The capturing frame or tab appears to have closed asynchronously.
     return CapturedSurfaceControlResult::kCapturerNotFoundError;
   }
@@ -122,7 +123,7 @@ CapturedSurfaceControlResult DoSendWheel(
     return CapturedSurfaceControlResult::kCapturedSurfaceNotFoundError;
   }
 
-  if (capturer_wc == captured_wc.get()) {
+  if (capturer_wci == captured_wc.get()) {
     return CapturedSurfaceControlResult::kDisallowedForSelfCaptureError;
   }
 
@@ -173,6 +174,8 @@ CapturedSurfaceControlResult DoSendWheel(
     captured_rwhi->ForwardWheelEvent(event);
   }
 
+  capturer_wci->DidCapturedSurfaceControl();
+
   return CapturedSurfaceControlResult::kSuccess;
 }
 
@@ -186,9 +189,10 @@ CapturedSurfaceControlResult DoSetZoomLevel(
     int zoom_level) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  WebContentsImpl* const capturer_wc = WebContentsImpl::FromRenderFrameHostImpl(
-      RenderFrameHostImpl::FromID(capturer_rfh_id));
-  if (!capturer_wc) {
+  WebContentsImpl* const capturer_wci =
+      WebContentsImpl::FromRenderFrameHostImpl(
+          RenderFrameHostImpl::FromID(capturer_rfh_id));
+  if (!capturer_wci) {
     // The capturing frame or tab appears to have closed asynchronously.
     return CapturedSurfaceControlResult::kCapturerNotFoundError;
   }
@@ -197,7 +201,7 @@ CapturedSurfaceControlResult DoSetZoomLevel(
     return CapturedSurfaceControlResult::kCapturedSurfaceNotFoundError;
   }
 
-  if (capturer_wc == captured_wc.get()) {
+  if (capturer_wci == captured_wc.get()) {
     return CapturedSurfaceControlResult::kDisallowedForSelfCaptureError;
   }
 
@@ -219,6 +223,9 @@ CapturedSurfaceControlResult DoSetZoomLevel(
   zoom_map->SetTemporaryZoomLevel(
       captured_wc->GetPrimaryMainFrame()->GetGlobalId(),
       blink::PageZoomFactorToZoomLevel(static_cast<double>(zoom_level) / 100));
+
+  capturer_wci->DidCapturedSurfaceControl();
+
   return CapturedSurfaceControlResult::kSuccess;
 }
 
