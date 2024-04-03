@@ -872,6 +872,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Birch.Latency{Type}" units="ms" expires_after="2024-09-19">
+  <owner>jamescook@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    The latency to fetch data of {Type} type via the data provider. Recorded
+    once per fetch (i.e. once per time the birch bar is shown).
+  </summary>
+  <token key="Type">
+    <variant name=".Calendar" summary="calendar"/>
+    <variant name=".File" summary="file"/>
+    <variant name=".ReleaseNotes" summary="release notes"/>
+    <variant name=".Tab" summary="recent tab"/>
+    <variant name=".Weather" summary="weather"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.Birch.ProviderHidden{Type}" units="count"
     expires_after="2024-09-19">
   <owner>jamescook@chromium.org</owner>
@@ -905,6 +921,15 @@ chromium-metrics-reviews@google.com.
     <variant name=".Tab" summary="recent tab"/>
     <variant name=".Weather" summary="weather"/>
   </token>
+</histogram>
+
+<histogram name="Ash.Birch.TotalLatency" units="ms" expires_after="2024-09-19">
+  <owner>jamescook@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    The total latency to fetch all birch data via all data providers. Recorded
+    once per fetch (i.e. once per time the birch bar is shown).
+  </summary>
 </histogram>
 
 <histogram name="Ash.BrowserContext.UnexpectedGetPrimaryUserProfile"

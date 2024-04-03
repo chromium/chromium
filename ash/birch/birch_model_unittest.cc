@@ -280,6 +280,47 @@ TEST_F(BirchModelTest, AddItemNotifiesCallback) {
   EXPECT_THAT(consumer.items_ready_responses(), testing::ElementsAre("0", "1"));
 }
 
+TEST_F(BirchModelTest, RequestBirchDataFetchRecordsHistograms) {
+  base::HistogramTester histograms;
+  BirchModel* model = Shell::Get()->birch_model();
+  TestModelConsumer consumer;
+  EXPECT_TRUE(model);
+
+  // Make a data fetch request.
+  model->RequestBirchDataFetch(/*is_post_login=*/false,
+                               base::BindOnce(&TestModelConsumer::OnItemsReady,
+                                              base::Unretained(&consumer),
+                                              /*id=*/"0"));
+
+  // Simulate each data provider replying.
+  model->SetCalendarItems({});
+  model->SetAttachmentItems({});
+  model->SetRecentTabItems({});
+  model->SetFileSuggestItems({});
+  model->SetWeatherItems({});
+  model->SetReleaseNotesItems({});
+
+  // Callback is called.
+  EXPECT_THAT(consumer.items_ready_responses(), testing::ElementsAre("0"));
+
+  // Histograms were recorded for each type.
+  histograms.ExpectTotalCount("Ash.Birch.Latency.Calendar", 1);
+  histograms.ExpectTotalCount("Ash.Birch.Latency.File", 1);
+  histograms.ExpectTotalCount("Ash.Birch.Latency.Tab", 1);
+  histograms.ExpectTotalCount("Ash.Birch.Latency.Weather", 1);
+  histograms.ExpectTotalCount("Ash.Birch.Latency.ReleaseNotes", 1);
+
+  // Total latency was recorded.
+  histograms.ExpectTotalCount("Ash.Birch.TotalLatency", 1);
+
+  // Simulate a data provider replying outside of a fetch.
+  model->SetFileSuggestItems({});
+
+  // Histograms didn't change.
+  histograms.ExpectTotalCount("Ash.Birch.Latency.File", 1);
+  histograms.ExpectTotalCount("Ash.Birch.TotalLatency", 1);
+}
+
 TEST_F(BirchModelTest, DataFetchForNonPrimaryUserClearsModel) {
   BirchModel* model = Shell::Get()->birch_model();
   TestModelConsumer consumer;
@@ -833,7 +874,13 @@ TEST_F(BirchModelTest, GetAllItems) {
 TEST_F(BirchModelTest, SetItemListRecordsHistogram) {
   base::HistogramTester histograms;
   BirchModel* model = Shell::Get()->birch_model();
+  TestModelConsumer consumer;
 
+  // Simulate a data fetch.
+  model->RequestBirchDataFetch(/*is_post_login=*/false,
+                               base::BindOnce(&TestModelConsumer::OnItemsReady,
+                                              base::Unretained(&consumer),
+                                              /*id=*/"0"));
   // Insert one item of each type.
   model->SetCalendarItems(MakeCalendarItemList(/*event_count=*/1));
   model->SetAttachmentItems(MakeAttachmentItemList(/*item_count=*/1));

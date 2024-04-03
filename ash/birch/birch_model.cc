@@ -74,8 +74,13 @@ void BirchModel::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
 void BirchModel::SetCalendarItems(
     const std::vector<BirchCalendarItem>& calendar_items) {
-  base::UmaHistogramCounts100("Ash.Birch.ResultsReturned.Calendar",
-                              calendar_items.size());
+  if (is_fetching_calendar_) {
+    base::UmaHistogramCounts100("Ash.Birch.ResultsReturned.Calendar",
+                                calendar_items.size());
+    base::UmaHistogramTimes("Ash.Birch.Latency.Calendar",
+                            GetNow() - fetch_start_time_);
+    is_fetching_calendar_ = false;
+  }
   if (calendar_items != calendar_items_) {
     calendar_items_ = std::move(calendar_items);
   }
@@ -85,8 +90,13 @@ void BirchModel::SetCalendarItems(
 
 void BirchModel::SetAttachmentItems(
     const std::vector<BirchAttachmentItem>& attachment_items) {
-  base::UmaHistogramCounts100("Ash.Birch.ResultsReturned.Attachment",
-                              attachment_items.size());
+  if (is_fetching_attachment_) {
+    base::UmaHistogramCounts100("Ash.Birch.ResultsReturned.Attachment",
+                                attachment_items.size());
+    // There is no separate latency measurement for attachments because they
+    // come from the calendar provider.
+    is_fetching_attachment_ = false;
+  }
   if (attachment_items != attachment_items_) {
     attachment_items_ = std::move(attachment_items);
   }
@@ -96,8 +106,13 @@ void BirchModel::SetAttachmentItems(
 
 void BirchModel::SetFileSuggestItems(
     const std::vector<BirchFileItem>& file_suggest_items) {
-  base::UmaHistogramCounts100("Ash.Birch.ResultsReturned.File",
-                              file_suggest_items.size());
+  if (is_fetching_file_suggest_) {
+    base::UmaHistogramCounts100("Ash.Birch.ResultsReturned.File",
+                                file_suggest_items.size());
+    base::UmaHistogramTimes("Ash.Birch.Latency.File",
+                            GetNow() - fetch_start_time_);
+    is_fetching_file_suggest_ = false;
+  }
   if (file_suggest_items_ != file_suggest_items) {
     file_suggest_items_ = std::move(file_suggest_items);
   }
@@ -107,8 +122,13 @@ void BirchModel::SetFileSuggestItems(
 
 void BirchModel::SetRecentTabItems(
     const std::vector<BirchTabItem>& recent_tab_items) {
-  base::UmaHistogramCounts100("Ash.Birch.ResultsReturned.Tab",
-                              recent_tab_items.size());
+  if (is_fetching_recent_tab_) {
+    base::UmaHistogramCounts100("Ash.Birch.ResultsReturned.Tab",
+                                recent_tab_items.size());
+    base::UmaHistogramTimes("Ash.Birch.Latency.Tab",
+                            GetNow() - fetch_start_time_);
+    is_fetching_recent_tab_ = false;
+  }
   if (recent_tab_items_ != recent_tab_items) {
     recent_tab_items_ = std::move(recent_tab_items);
   }
@@ -118,8 +138,13 @@ void BirchModel::SetRecentTabItems(
 
 void BirchModel::SetWeatherItems(
     const std::vector<BirchWeatherItem>& weather_items) {
-  base::UmaHistogramCounts100("Ash.Birch.ResultsReturned.Weather",
-                              weather_items.size());
+  if (is_fetching_weather_) {
+    base::UmaHistogramCounts100("Ash.Birch.ResultsReturned.Weather",
+                                weather_items.size());
+    base::UmaHistogramTimes("Ash.Birch.Latency.Weather",
+                            GetNow() - fetch_start_time_);
+    is_fetching_weather_ = false;
+  }
   if (weather_items_ != weather_items) {
     weather_items_ = std::move(weather_items);
   }
@@ -129,8 +154,13 @@ void BirchModel::SetWeatherItems(
 
 void BirchModel::SetReleaseNotesItems(
     const std::vector<BirchReleaseNotesItem>& release_notes_items) {
-  base::UmaHistogramCounts100("Ash.Birch.ResultsReturned.ReleaseNotes",
-                              release_notes_items.size());
+  if (is_fetching_release_notes_) {
+    base::UmaHistogramCounts100("Ash.Birch.ResultsReturned.ReleaseNotes",
+                                release_notes_items.size());
+    base::UmaHistogramTimes("Ash.Birch.Latency.ReleaseNotes",
+                            GetNow() - fetch_start_time_);
+    is_fetching_release_notes_ = false;
+  }
   if (release_notes_items != release_notes_items_) {
     release_notes_items_ = std::move(release_notes_items);
   }
@@ -190,33 +220,41 @@ void BirchModel::RequestBirchDataFetch(bool is_post_login,
     return;
   }
 
+  fetch_start_time_ = GetNow();
+
   bool did_fetch = false;
   // TODO(b/305094143): Call this before we begin showing birch views.
   if (birch_client_) {
     if (prefs->GetBoolean(prefs::kBirchUseCalendar)) {
       is_calendar_data_fresh_ = false;
       is_attachment_data_fresh_ = false;  // Attachments use the same provider.
+      is_fetching_calendar_ = true;
+      is_fetching_attachment_ = true;
       birch_client_->GetCalendarProvider()->RequestBirchDataFetch();
       did_fetch = true;
     }
     if (prefs->GetBoolean(prefs::kBirchUseFileSuggest)) {
       is_files_data_fresh_ = false;
+      is_fetching_file_suggest_ = true;
       birch_client_->GetFileSuggestProvider()->RequestBirchDataFetch();
       did_fetch = true;
     }
     if (prefs->GetBoolean(prefs::kBirchUseRecentTabs)) {
       is_tabs_data_fresh_ = false;
+      is_fetching_recent_tab_ = true;
       birch_client_->GetRecentTabsProvider()->RequestBirchDataFetch();
       did_fetch = true;
     }
     if (prefs->GetBoolean(prefs::kBirchUseReleaseNotes)) {
       is_release_notes_data_fresh_ = false;
+      is_fetching_release_notes_ = true;
       birch_client_->GetReleaseNotesProvider()->RequestBirchDataFetch();
       did_fetch = true;
     }
   }
   if (weather_provider_ && prefs->GetBoolean(prefs::kBirchUseWeather)) {
     is_weather_data_fresh_ = false;
+    is_fetching_weather_ = true;
     weather_provider_->RequestBirchDataFetch();
     did_fetch = true;
   }
@@ -240,7 +278,7 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() {
   item_remover_->FilterRemovedAttachmentItems(&attachment_items_);
   item_remover_->FilterRemovedFileItems(&file_suggest_items_);
 
-  BirchRanker ranker(GetTime());
+  BirchRanker ranker(GetNow());
   ranker.RankCalendarItems(&calendar_items_);
   ranker.RankAttachmentItems(&attachment_items_);
   ranker.RankFileSuggestItems(&file_suggest_items_);
@@ -402,6 +440,15 @@ void BirchModel::MaybeRespondToDataFetchRequest() {
     return;
   }
 
+  // Was this a real fetch being completed (rather than a provider supplying
+  // data outside of a fetch)?
+  bool was_fetch = !pending_requests_.empty();
+  if (was_fetch) {
+    // All data providers have replied, so compute total latency.
+    base::UmaHistogramTimes("Ash.Birch.TotalLatency",
+                            GetNow() - fetch_start_time_);
+  }
+
   std::vector<base::OnceClosure> callbacks;
   for (auto& request : pending_requests_) {
     callbacks.push_back(std::move(request.second.callback));
@@ -413,7 +460,7 @@ void BirchModel::MaybeRespondToDataFetchRequest() {
   }
 }
 
-base::Time BirchModel::GetTime() const {
+base::Time BirchModel::GetNow() const {
   if (clock_override_) {
     return clock_override_->Now();
   }
