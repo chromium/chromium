@@ -367,6 +367,11 @@ class FakeDrmDevice : public DrmDevice {
   void SetDriverName(std::optional<std::string> name);
   uint32_t GetFramebufferForCrtc(uint32_t crtc_id) const;
 
+  // There is a circular reference between DrmDevice and
+  // HardwareDisplayPlaneManager, as described in https://crbug.com/40263526.
+  // This function can be used to break the cycle in unittests.
+  void ResetPlaneManagerForTesting();
+
  protected:
   ~FakeDrmDevice() override;
 

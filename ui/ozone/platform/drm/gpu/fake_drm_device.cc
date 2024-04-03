@@ -968,4 +968,8 @@ int FakeDrmDevice::modeset_sequence_id() const {
   return modeset_sequence_id_;
 }
 
+void FakeDrmDevice::ResetPlaneManagerForTesting() {
+  plane_manager_.reset();
+}
+
 }  // namespace ui
