@@ -230,15 +230,15 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
 
             Request listJUnit4TestRequest = createListTestRequest(junit4Arguments);
             results.putAll(executorBuilder.build().execute(listJUnit4TestRequest));
+            finish(Activity.RESULT_OK, results);
         } catch (IOException | RuntimeException e) {
             String msg = "Fatal exception when running tests";
             Log.e(TAG, msg, e);
-            // report the exception to instrumentation out
             results.putString(
                     Instrumentation.REPORT_KEY_STREAMRESULT,
                     msg + "\n" + Log.getStackTraceString(e));
+            finish(Activity.RESULT_CANCELED, results);
         }
-        finish(Activity.RESULT_OK, results);
     }
 
     private Request createListTestRequest(Bundle arguments) {

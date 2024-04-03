@@ -248,6 +248,11 @@ def _ParseTestListOutputFromChromiumListener(output):
       continue
     else:
       logging.warning('Unexpected code=%s output: %r', code, bundle)
+
+  # GetResult() cannot be called before IterStatus().
+  code, result = parser.GetResult()
+  if code != instrumentation_parser.RESULT_CODE_OK:
+    raise Exception('Test listing failed: %s' % result.get('stream', result))
   return [{
       'class': class_name,
       'methods': methods,
@@ -282,6 +287,10 @@ def _ParseTestListOutputFromAndroidxListener(output):
       continue
     else:
       logging.warning('Unexpected code=%s output: %r', code, bundle)
+  # GetResult() cannot be called before IterStatus().
+  code, result = parser.GetResult()
+  if code != instrumentation_parser.RESULT_CODE_OK:
+    raise Exception('Test listing failed: %s' % result.get('stream', result))
   return [{
       'class': class_name,
       'methods': methods,
