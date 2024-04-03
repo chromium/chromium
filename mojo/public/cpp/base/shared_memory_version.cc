@@ -1,9 +1,10 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include <limits>
-
 #include "mojo/public/cpp/base/shared_memory_version.h"
+
+#include <atomic>
+#include <limits>
 
 #include "base/check_op.h"
 #include "base/logging.h"
@@ -64,6 +65,21 @@ void SharedMemoryVersionController::Increment() {
 
   // The version wrapping around is not supported and should not happen.
   CHECK_LE(version, std::numeric_limits<VersionType>::max());
+}
+
+void SharedMemoryVersionController::SetVersion(VersionType version) {
+  CHECK(mapped_region_.IsValid());
+
+  // The version wrapping around is not supported and should not happen.
+  CHECK_LT(version, std::numeric_limits<VersionType>::max());
+
+  // Version cannot decrease.
+  CHECK_GE(version, GetSharedVersion());
+
+  // Relaxed memory order because no other memory operation depends on the
+  // version.
+  mapped_region_.mapping.GetMemoryAs<SharedVersionType>()->store(
+      version, std::memory_order_relaxed);
 }
 
 SharedMemoryVersionClient::SharedMemoryVersionClient(

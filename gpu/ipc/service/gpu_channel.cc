@@ -4,6 +4,7 @@
 
 #include "gpu/ipc/service/gpu_channel.h"
 
+#include <cstdint>
 #include <utility>
 
 #include "base/memory/ptr_util.h"
@@ -60,6 +61,7 @@
 #include "gpu/ipc/service/raster_command_buffer_stub.h"
 #include "gpu/ipc/service/webgpu_command_buffer_stub.h"
 #include "ipc/ipc_channel.h"
+#include "mojo/public/cpp/base/shared_memory_version.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/gl/gl_context.h"
@@ -177,6 +179,8 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
   void TerminateForTesting() override;
   void GetChannelToken(GetChannelTokenCallback callback) override;
   void Flush(FlushCallback callback) override;
+  void GetSharedMemoryForFlushId(
+      GetSharedMemoryForFlushIdCallback callback) override;
   void CreateCommandBuffer(
       mojom::CreateCommandBufferParamsPtr config,
       int32_t routing_id,
@@ -188,8 +192,8 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
                             DestroyCommandBufferCallback callback) override;
   void ScheduleImageDecode(mojom::ScheduleImageDecodeParamsPtr params,
                            uint64_t decode_release_count) override;
-  void FlushDeferredRequests(
-      std::vector<mojom::DeferredRequestPtr> requests) override;
+  void FlushDeferredRequests(std::vector<mojom::DeferredRequestPtr> requests,
+                             uint32_t flushed_deferred_message_id) override;
 
   bool IsNativeBufferSupported(gfx::BufferFormat buffer_format,
                                gfx::BufferUsage buffer_usage);
@@ -273,6 +277,8 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
 
   bool allow_process_kill_for_testing_ = false;
 
+  mojo::SharedMemoryVersionController shared_memory_controller_;
+
   mojo::AssociatedReceiver<mojom::GpuChannel> receiver_{this};
 };
 
@@ -344,7 +350,8 @@ SequenceId GpuChannelMessageFilter::GetSequenceId(int32_t route_id) const {
 }
 
 void GpuChannelMessageFilter::FlushDeferredRequests(
-    std::vector<mojom::DeferredRequestPtr> requests) {
+    std::vector<mojom::DeferredRequestPtr> requests,
+    uint32_t flushed_deferred_message_id) {
   TRACE_EVENT0("viz", __PRETTY_FUNCTION__);
   base::AutoLock auto_lock(gpu_channel_lock_);
   if (!gpu_channel_)
@@ -405,6 +412,9 @@ void GpuChannelMessageFilter::FlushDeferredRequests(
   }
 
   scheduler_->ScheduleTasks(std::move(tasks));
+
+  // Update version shared with clients.
+  shared_memory_controller_.SetVersion(flushed_deferred_message_id);
 }
 
 bool GpuChannelMessageFilter::IsNativeBufferSupported(
@@ -534,6 +544,11 @@ void GpuChannelMessageFilter::TerminateForTesting() {
 void GpuChannelMessageFilter::GetChannelToken(
     GetChannelTokenCallback callback) {
   std::move(callback).Run(channel_token_);
+}
+
+void GpuChannelMessageFilter::GetSharedMemoryForFlushId(
+    GetSharedMemoryForFlushIdCallback callback) {
+  std::move(callback).Run(shared_memory_controller_.GetSharedMemoryRegion());
 }
 
 void GpuChannelMessageFilter::Flush(FlushCallback callback) {

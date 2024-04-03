@@ -104,6 +104,11 @@ class COMPONENT_EXPORT(MOJO_BASE) SharedMemoryVersionController {
   // during normal operation. This invariant is guaranteed with a CHECK.
   void Increment();
 
+  // Directly set shared version. `version` must be strictly larger than
+  // previous version. `version` cannot be maximum representable value for
+  // VersionType.
+  void SetVersion(VersionType version);
+
  private:
   base::MappedReadOnlyRegion mapped_region_;
 };
@@ -121,8 +126,10 @@ class COMPONENT_EXPORT(MOJO_BASE) SharedMemoryVersionClient {
   SharedMemoryVersionClient& operator=(const SharedMemoryVersionClient&) =
       delete;
 
-  // Returns true if the shared version is less than (or greater than) the
-  // supplied version.
+  // These functions can be used to form statements such as:
+  // "Skip the IPC if `SharedVersionIsLessThan()` returns true. "
+  // The functions err on the side of caution and return true if the comparison
+  // is impossible since issuing an IPC should always be an option.
   bool SharedVersionIsLessThan(VersionType version);
   bool SharedVersionIsGreaterThan(VersionType version);
 

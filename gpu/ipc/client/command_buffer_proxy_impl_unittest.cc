@@ -13,8 +13,10 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
+#include "base/test/with_feature_override.h"
 #include "gpu/command_buffer/client/gpu_control_client.h"
 #include "gpu/command_buffer/common/context_creation_attribs.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "gpu/ipc/common/mock_command_buffer.h"
@@ -28,6 +30,7 @@
 using ::testing::_;
 using ::testing::Invoke;
 using ::testing::InvokeWithoutArgs;
+using ::testing::Matcher;
 using ::testing::Return;
 
 namespace gpu {
@@ -70,10 +73,15 @@ class MockGpuControlClient : public GpuControlClient {
   MOCK_METHOD1(OnGpuControlReturnData, void(base::span<const uint8_t>));
 };
 
-class CommandBufferProxyImplTest : public testing::Test {
+class CommandBufferProxyImplTest : public base::test::WithFeatureOverride,
+                                   public testing::Test {
  public:
   CommandBufferProxyImplTest()
-      : channel_(base::MakeRefCounted<TestGpuChannelHost>(mock_gpu_channel_)) {}
+      : base::test::WithFeatureOverride(
+            features::kConditionallySkipGpuChannelFlush),
+        skip_flush_if_possible_(base::FeatureList::IsEnabled(
+            features::kConditionallySkipGpuChannelFlush)),
+        channel_(base::MakeRefCounted<TestGpuChannelHost>(mock_gpu_channel_)) {}
 
   ~CommandBufferProxyImplTest() override {
     // Release channel, and run any cleanup tasks it posts.
@@ -136,26 +144,46 @@ class CommandBufferProxyImplTest : public testing::Test {
     EXPECT_EQ(flush_request.put_offset, put_offset);
   }
 
+  void ExpectFlush(int count) {
+    if (skip_flush_if_possible_) {
+      // Under kConditionallySkipGpuChannelFlush the first flush call will be
+      // replaced by GetSharedMemoryForFlushId and later completely avoided
+      // using shared memory. In unit tests proper shared memory channels are
+      // never established so GetSharedMemory() is retried and fully replaces
+      // Flush()
+      EXPECT_CALL(mock_gpu_channel_,
+                  GetSharedMemoryForFlushId(
+                      Matcher<::base::ReadOnlySharedMemoryRegion*>(_)))
+          .Times(count);
+    } else {
+      EXPECT_CALL(mock_gpu_channel_, Flush())
+          .Times(count)
+          .WillRepeatedly(Return(true));
+    }
+  }
+
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
   MockGpuChannel mock_gpu_channel_;
+  const bool skip_flush_if_possible_;
   scoped_refptr<TestGpuChannelHost> channel_;
   std::vector<mojo::PendingAssociatedRemote<mojom::CommandBufferClient>>
       clients_;
 };
 
-TEST_F(CommandBufferProxyImplTest, OrderingBarriersAreCoalescedWithFlush) {
+TEST_P(CommandBufferProxyImplTest, OrderingBarriersAreCoalescedWithFlush) {
   auto proxy1 = CreateAndInitializeProxy();
   auto proxy2 = CreateAndInitializeProxy();
 
-  EXPECT_CALL(mock_gpu_channel_, FlushDeferredRequests(_))
+  EXPECT_CALL(mock_gpu_channel_, FlushDeferredRequests(_, _))
       .Times(1)
-      .WillOnce(Invoke([&](std::vector<mojom::DeferredRequestPtr> requests) {
-        EXPECT_EQ(3u, requests.size());
-        ExpectOrderingBarrier(*requests[0], proxy1->route_id(), 10);
-        ExpectOrderingBarrier(*requests[1], proxy2->route_id(), 20);
-        ExpectOrderingBarrier(*requests[2], proxy1->route_id(), 50);
-      }));
+      .WillOnce(Invoke(
+          [&](std::vector<mojom::DeferredRequestPtr> requests, int32_t id) {
+            EXPECT_EQ(3u, requests.size());
+            ExpectOrderingBarrier(*requests[0], proxy1->route_id(), 10);
+            ExpectOrderingBarrier(*requests[1], proxy2->route_id(), 20);
+            ExpectOrderingBarrier(*requests[2], proxy1->route_id(), 50);
+          }));
 
   proxy1->OrderingBarrier(10);
   proxy2->OrderingBarrier(20);
@@ -169,21 +197,22 @@ TEST_F(CommandBufferProxyImplTest, OrderingBarriersAreCoalescedWithFlush) {
       .WillRepeatedly(Return(true));
 
   // Each proxy sends a sync GpuControl flush on disconnect.
-  EXPECT_CALL(mock_gpu_channel_, Flush()).Times(2).WillRepeatedly(Return(true));
+  ExpectFlush(2);
 }
 
-TEST_F(CommandBufferProxyImplTest, FlushPendingWorkFlushesOrderingBarriers) {
+TEST_P(CommandBufferProxyImplTest, FlushPendingWorkFlushesOrderingBarriers) {
   auto proxy1 = CreateAndInitializeProxy();
   auto proxy2 = CreateAndInitializeProxy();
 
-  EXPECT_CALL(mock_gpu_channel_, FlushDeferredRequests(_))
+  EXPECT_CALL(mock_gpu_channel_, FlushDeferredRequests(_, _))
       .Times(1)
-      .WillOnce(Invoke([&](std::vector<mojom::DeferredRequestPtr> requests) {
-        EXPECT_EQ(3u, requests.size());
-        ExpectOrderingBarrier(*requests[0], proxy1->route_id(), 10);
-        ExpectOrderingBarrier(*requests[1], proxy2->route_id(), 20);
-        ExpectOrderingBarrier(*requests[2], proxy1->route_id(), 30);
-      }));
+      .WillOnce(Invoke(
+          [&](std::vector<mojom::DeferredRequestPtr> requests, int32_t id) {
+            EXPECT_EQ(3u, requests.size());
+            ExpectOrderingBarrier(*requests[0], proxy1->route_id(), 10);
+            ExpectOrderingBarrier(*requests[1], proxy2->route_id(), 20);
+            ExpectOrderingBarrier(*requests[2], proxy1->route_id(), 30);
+          }));
 
   proxy1->OrderingBarrier(10);
   proxy2->OrderingBarrier(20);
@@ -196,10 +225,10 @@ TEST_F(CommandBufferProxyImplTest, FlushPendingWorkFlushesOrderingBarriers) {
       .WillRepeatedly(Return(true));
 
   // Each proxy sends a sync GpuControl flush on disconnect.
-  EXPECT_CALL(mock_gpu_channel_, Flush()).Times(2).WillRepeatedly(Return(true));
+  ExpectFlush(2);
 }
 
-TEST_F(CommandBufferProxyImplTest, EnsureWorkVisibleFlushesOrderingBarriers) {
+TEST_P(CommandBufferProxyImplTest, EnsureWorkVisibleFlushesOrderingBarriers) {
   auto proxy1 = CreateAndInitializeProxy();
   auto proxy2 = CreateAndInitializeProxy();
 
@@ -208,17 +237,18 @@ TEST_F(CommandBufferProxyImplTest, EnsureWorkVisibleFlushesOrderingBarriers) {
     ::testing::InSequence in_sequence;
 
     // First we expect to see a FlushDeferredRequests call.
-    EXPECT_CALL(mock_gpu_channel_, FlushDeferredRequests(_))
+    EXPECT_CALL(mock_gpu_channel_, FlushDeferredRequests(_, _))
         .Times(1)
-        .WillOnce(Invoke([&](std::vector<mojom::DeferredRequestPtr> requests) {
-          EXPECT_EQ(3u, requests.size());
-          ExpectOrderingBarrier(*requests[0], proxy1->route_id(), 10);
-          ExpectOrderingBarrier(*requests[1], proxy2->route_id(), 20);
-          ExpectOrderingBarrier(*requests[2], proxy1->route_id(), 30);
-        }));
+        .WillOnce(Invoke(
+            [&](std::vector<mojom::DeferredRequestPtr> requests, int32_t id) {
+              EXPECT_EQ(3u, requests.size());
+              ExpectOrderingBarrier(*requests[0], proxy1->route_id(), 10);
+              ExpectOrderingBarrier(*requests[1], proxy2->route_id(), 20);
+              ExpectOrderingBarrier(*requests[2], proxy1->route_id(), 30);
+            }));
 
     // Next we expect a full `Flush()`.
-    EXPECT_CALL(mock_gpu_channel_, Flush()).Times(1).RetiresOnSaturation();
+    ExpectFlush(1);
   }
 
   proxy1->OrderingBarrier(10);
@@ -233,10 +263,10 @@ TEST_F(CommandBufferProxyImplTest, EnsureWorkVisibleFlushesOrderingBarriers) {
       .WillRepeatedly(Return(true));
 
   // Each proxy sends a sync GpuControl flush on disconnect.
-  EXPECT_CALL(mock_gpu_channel_, Flush()).Times(2).WillRepeatedly(Return(true));
+  ExpectFlush(2);
 }
 
-TEST_F(CommandBufferProxyImplTest,
+TEST_P(CommandBufferProxyImplTest,
        EnqueueDeferredMessageEnqueuesPendingOrderingBarriers) {
   auto proxy1 = CreateAndInitializeProxy();
 
@@ -253,17 +283,18 @@ TEST_F(CommandBufferProxyImplTest,
 
   // Now we can expect a FlushDeferredRequests to be elicited by the
   // FlushPendingWork call below.
-  EXPECT_CALL(mock_gpu_channel_, FlushDeferredRequests(_))
+  EXPECT_CALL(mock_gpu_channel_, FlushDeferredRequests(_, _))
       .Times(1)
-      .WillOnce(Invoke([&](std::vector<mojom::DeferredRequestPtr> requests) {
-        EXPECT_EQ(2u, requests.size());
-        ExpectOrderingBarrier(*requests[0], proxy1->route_id(), 20);
-        ASSERT_TRUE(requests[1]->params->is_command_buffer_request());
+      .WillOnce(Invoke(
+          [&](std::vector<mojom::DeferredRequestPtr> requests, int32_t id) {
+            EXPECT_EQ(2u, requests.size());
+            ExpectOrderingBarrier(*requests[0], proxy1->route_id(), 20);
+            ASSERT_TRUE(requests[1]->params->is_command_buffer_request());
 
-        auto& request = *requests[1]->params->get_command_buffer_request();
-        ASSERT_TRUE(request.params->is_destroy_transfer_buffer());
-        EXPECT_EQ(3, request.params->get_destroy_transfer_buffer());
-      }));
+            auto& request = *requests[1]->params->get_command_buffer_request();
+            ASSERT_TRUE(request.params->is_destroy_transfer_buffer());
+            EXPECT_EQ(3, request.params->get_destroy_transfer_buffer());
+          }));
 
   proxy1->FlushPendingWork();
 
@@ -272,10 +303,10 @@ TEST_F(CommandBufferProxyImplTest,
       .WillOnce(Return(true));
 
   // The proxy sends a sync GpuControl flush on disconnect.
-  EXPECT_CALL(mock_gpu_channel_, Flush()).Times(1).WillRepeatedly(Return(true));
+  ExpectFlush(1);
 }
 
-TEST_F(CommandBufferProxyImplTest, CreateTransferBufferOOM) {
+TEST_P(CommandBufferProxyImplTest, CreateTransferBufferOOM) {
   auto gpu_control_client = std::unique_ptr<MockGpuControlClient>(
       new testing::StrictMock<MockGpuControlClient>());
 
@@ -326,8 +357,9 @@ TEST_F(CommandBufferProxyImplTest, CreateTransferBufferOOM) {
       .WillOnce(Return(true));
 
   // The proxy sends a sync GpuControl flush on disconnect.
-  EXPECT_CALL(mock_gpu_channel_, Flush()).Times(1).WillRepeatedly(Return(true));
+  ExpectFlush(1);
 }
 
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(CommandBufferProxyImplTest);
 }  // namespace
 }  // namespace gpu
