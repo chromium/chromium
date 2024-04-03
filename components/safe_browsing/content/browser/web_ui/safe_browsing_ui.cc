@@ -418,6 +418,7 @@ void WebUIInfoSingleton::ClearReportingEvents() {
 void WebUIInfoSingleton::AddToDeepScanRequests(
     bool per_profile_request,
     const std::string& access_token,
+    const std::string& upload_info,
     const enterprise_connectors::ContentAnalysisRequest& request) {
   if (!HasListener())
     return;
@@ -442,6 +443,8 @@ void WebUIInfoSingleton::AddToDeepScanRequests(
                                                       static_cast<size_t>(6))),
                       "..."});
   }
+
+  deep_scan_request.upload_info = upload_info;
 
   for (safe_browsing::SafeBrowsingUIHandler* webui_listener :
        webui_instances_) {
@@ -2779,6 +2782,7 @@ base::Value::Dict SerializeReportingEvent(const base::Value::Dict& event) {
 std::string SerializeContentAnalysisRequest(
     bool per_profile_request,
     const std::string& access_token_truncated,
+    const std::string& upload_info,
     const enterprise_connectors::ContentAnalysisRequest& request) {
   base::Value::Dict request_dict;
 
@@ -2892,6 +2896,7 @@ std::string SerializeContentAnalysisRequest(
   request_dict.Set("tags", std::move(tags));
   request_dict.Set("request_token", request.request_token());
   request_dict.Set("access_token", access_token_truncated);
+  request_dict.Set("upload_info", upload_info);
 
   std::string request_serialized;
   JSONStringValueSerializer serializer(&request_serialized);
@@ -2987,9 +2992,9 @@ base::Value::Dict SerializeDeepScanDebugData(const std::string& token,
 
   if (data.request.has_value()) {
     value.Set("request",
-              SerializeContentAnalysisRequest(data.per_profile_request,
-                                              data.access_token_truncated,
-                                              data.request.value()));
+              SerializeContentAnalysisRequest(
+                  data.per_profile_request, data.access_token_truncated,
+                  data.upload_info, data.request.value()));
   }
 
   if (!data.response_time.is_null()) {

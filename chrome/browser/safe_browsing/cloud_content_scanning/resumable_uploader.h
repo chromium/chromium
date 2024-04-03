@@ -86,6 +86,8 @@ class ResumableUploadRequest : public ConnectorUploadRequest {
   // will call `callback_` on the UI thread.
   void Start() override;
 
+  std::string GetUploadInfo() override;
+
  private:
   // Send the metadata information about the file/page to the server.
   void SendMetadataRequest();
@@ -132,6 +134,11 @@ class ResumableUploadRequest : public ConnectorUploadRequest {
   // Retrieved from metadata response to be used in upload content to the
   // server.
   std::string upload_url_;
+  enum {
+    PENDING = 0,
+    METADATA_ONLY = 1,
+    FULL_CONTENT = 2
+  } scan_type_ = PENDING;
   base::WeakPtrFactory<ResumableUploadRequest> weak_factory_{this};
 };
 }  // namespace safe_browsing

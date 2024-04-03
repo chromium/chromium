@@ -134,6 +134,10 @@ void MultipartUploadRequest::Start() {
   SendRequest();
 }
 
+std::string MultipartUploadRequest::GetUploadInfo() {
+  return scan_complete_ ? "Multipart - Complete" : "Multipart - Pending";
+}
+
 std::string MultipartUploadRequest::GenerateRequestBody(
     const std::string& metadata,
     const std::string& data) {
@@ -165,6 +169,10 @@ void MultipartUploadRequest::SetRequestHeaders(
   } else {
     SetAccessTokenAndClearCookieInResourceRequest(request, access_token_);
   }
+}
+
+void MultipartUploadRequest::MarkScanAsCompleteForTesting() {
+  scan_complete_ = true;
 }
 
 void MultipartUploadRequest::SendRequest() {
@@ -286,6 +294,8 @@ void MultipartUploadRequest::CreateDatapipe(
 void MultipartUploadRequest::OnURLLoaderComplete(
     std::optional<std::string> response_body) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  scan_complete_ = true;
+
   int response_code = 0;
   if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers)
     response_code = url_loader_->ResponseInfo()->headers->response_code();

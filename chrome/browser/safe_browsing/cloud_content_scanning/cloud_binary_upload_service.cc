@@ -561,7 +561,7 @@ void CloudBinaryUploadService::OnGetRequestData(Request::Id request_id,
 
   WebUIInfoSingleton::GetInstance()->AddToDeepScanRequests(
       request->per_profile_request(), request->access_token(),
-      request->content_analysis_request());
+      upload_request->GetUploadInfo(), request->content_analysis_request());
 
   // |request| might have been deleted by the call to Start() in tests, so don't
   // dereference it afterwards.
@@ -597,8 +597,6 @@ void CloudBinaryUploadService::OnUploadComplete(
                   enterprise_connectors::ContentAnalysisResponse());
     return;
   }
-
-  active_uploads_.erase(request_id);
 
   // Synchronous scans can return results in the initial response proto, so
   // check for those.
@@ -665,11 +663,15 @@ void CloudBinaryUploadService::FinishRequest(
     Result result,
     enterprise_connectors::ContentAnalysisResponse response) {
   RecordRequestMetrics(request->id(), result, response);
+  std::string upload_info = "None";
+  if (active_uploads_.count(request->id())) {
+    upload_info = active_uploads_[request->id()]->GetUploadInfo();
+  }
 
   // We add the request here in case we never actually uploaded anything, so
   // it wasn't added in OnGetRequestData
   WebUIInfoSingleton::GetInstance()->AddToDeepScanRequests(
-      request->per_profile_request(), request->access_token(),
+      request->per_profile_request(), request->access_token(), upload_info,
       request->content_analysis_request());
   WebUIInfoSingleton::GetInstance()->AddToDeepScanResponses(
       active_tokens_[request->id()], ResultToString(result), response);

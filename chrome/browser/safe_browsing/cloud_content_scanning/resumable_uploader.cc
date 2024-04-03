@@ -116,6 +116,23 @@ void ResumableUploadRequest::Start() {
   SendMetadataRequest();
 }
 
+std::string ResumableUploadRequest::GetUploadInfo() {
+  std::string scan_info;
+  switch (scan_type_) {
+    case PENDING:
+      scan_info = "Pending";
+      break;
+    case FULL_CONTENT:
+      scan_info = "Full content scan";
+      break;
+    case METADATA_ONLY:
+      scan_info = "Metadata only scan";
+      break;
+  }
+
+  return base::StrCat({"Resumable - ", scan_info});
+}
+
 // static
 std::unique_ptr<ConnectorUploadRequest>
 ResumableUploadRequest::CreateFileRequest(
@@ -178,6 +195,7 @@ void ResumableUploadRequest::OnMetadataUploadCompleted(
     base::TimeTicks start_time,
     std::optional<std::string> response_body) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  scan_type_ = METADATA_ONLY;
 
   base::UmaHistogramCustomTimes(
       base::StrCat({"Enterprise.ResumableRequest.MetadataCheck.",
@@ -278,6 +296,7 @@ void ResumableUploadRequest::OnSendContentCompleted(
     base::TimeTicks start_time,
     std::optional<std::string> response_body) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  scan_type_ = FULL_CONTENT;
 
   base::UmaHistogramCustomTimes(
       base::StrCat({"Enterprise.ResumableRequest.ContentCheck.",

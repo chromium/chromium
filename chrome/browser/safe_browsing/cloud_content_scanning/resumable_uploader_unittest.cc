@@ -212,6 +212,7 @@ TEST_P(ResumableUploadSendMetadataRequestTest, SendsCorrectRequest) {
   EXPECT_EQ(method, "POST");
   EXPECT_EQ(body, "metadata\r\n");
   EXPECT_EQ(url, GURL("https://google.com"));
+  EXPECT_EQ(mock_request->GetUploadInfo(), "Resumable - Pending");
 }
 
 TEST_P(ResumableUploadSendMetadataRequestTest, HandlesFailedMetadataScan) {
@@ -250,6 +251,7 @@ TEST_P(ResumableUploadSendMetadataRequestTest, HandlesFailedMetadataScan) {
       "response", network::URLLoaderCompletionStatus(net::OK));
 
   run_loop.Run();
+  EXPECT_EQ(mock_request->GetUploadInfo(), "Resumable - Metadata only scan");
 }
 
 TEST_P(ResumableUploadSendMetadataRequestTest,
@@ -291,6 +293,7 @@ TEST_P(ResumableUploadSendMetadataRequestTest,
       network::URLLoaderCompletionStatus(net::OK));
 
   run_loop.Run();
+  EXPECT_EQ(mock_request->GetUploadInfo(), "Resumable - Metadata only scan");
 }
 
 class ResumableUploadSendContentRequestTest
@@ -377,6 +380,7 @@ TEST_P(ResumableUploadSendContentRequestTest, HandlesSuccessfulContentScan) {
   EXPECT_EQ(content_upload_method, "POST");
   EXPECT_EQ(content_upload_command, "upload, finalize");
   EXPECT_EQ(content_upload_offset, "0");
+  EXPECT_EQ(mock_request->GetUploadInfo(), "Resumable - Full content scan");
 }
 
 TEST_P(ResumableUploadSendContentRequestTest, HandlesFailedContentScan) {
@@ -450,6 +454,7 @@ TEST_P(ResumableUploadSendContentRequestTest, HandlesFailedContentScan) {
   EXPECT_EQ(content_upload_method, "POST");
   EXPECT_EQ(content_upload_command, "upload, finalize");
   EXPECT_EQ(content_upload_offset, "0");
+  EXPECT_EQ(mock_request->GetUploadInfo(), "Resumable - Full content scan");
 }
 
 }  // namespace safe_browsing

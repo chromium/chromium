@@ -90,6 +90,8 @@ class FakeConnectorUploadRequest : public ConnectorUploadRequest {
                              serialized_response);
   }
 
+  std::string GetUploadInfo() override { return "upload info"; }
+
  private:
   bool should_succeed_;
   enterprise_connectors::ContentAnalysisResponse response_;

@@ -86,6 +86,11 @@ class ConnectorUploadRequest {
   // will call `callback_` on the UI thread.
   virtual void Start() = 0;
 
+  // Return the upload protocol and scanning type of the request. E.g.,
+  // "Multipart - Pending", "Multipart - Complete", "Resumable - Pending",
+  // "Resumable - Metadata only scan", "Resumable - Full content scan".
+  virtual std::string GetUploadInfo() = 0;
+
  protected:
   static ConnectorUploadRequestFactory* factory_;
 
