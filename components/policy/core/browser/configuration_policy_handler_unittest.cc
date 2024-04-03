@@ -1127,4 +1127,53 @@ TEST(URLPolicyHandler, CheckOnlyValidURLApplied) {
   EXPECT_EQ(*expected, *value);
 }
 
+TEST(CloudUserOnlyPolicyHandler, CheckValidatesSource) {
+  PolicyMap policy_map;
+  PrefValueMap prefs;
+  std::unique_ptr<base::Value> expected;
+  const base::Value* value;
+  PolicyErrorMap errors;
+  PolicyHandlerParameters params;
+  CloudUserOnlyPolicyHandler handler(std::make_unique<SimplePolicyHandler>(
+      kTestPolicy, kTestPref, base::Value::Type::STRING));
+
+  std::vector<PolicySource> all_sources{
+      POLICY_SOURCE_ENTERPRISE_DEFAULT,
+      POLICY_SOURCE_COMMAND_LINE,
+      POLICY_SOURCE_ACTIVE_DIRECTORY,
+      POLICY_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE_DEPRECATED,
+      POLICY_SOURCE_CLOUD,
+      POLICY_SOURCE_PLATFORM,
+      POLICY_SOURCE_PRIORITY_CLOUD_DEPRECATED,
+      POLICY_SOURCE_MERGED,
+      POLICY_SOURCE_CLOUD_FROM_ASH,
+      POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE};
+
+  std::vector<PolicyScope> all_scopes{POLICY_SCOPE_USER, POLICY_SCOPE_MACHINE};
+
+  for (const PolicyScope scope : all_scopes) {
+    for (const PolicySource source : all_sources) {
+      policy_map.Set(kTestPolicy, POLICY_LEVEL_MANDATORY, scope, source,
+                     base::Value("some_value"), nullptr);
+      if (scope == POLICY_SCOPE_USER &&
+          (source == POLICY_SOURCE_CLOUD ||
+           source == POLICY_SOURCE_CLOUD_FROM_ASH)) {
+        EXPECT_TRUE(handler.CheckPolicySettings(policy_map, &errors));
+        EXPECT_TRUE(errors.empty());
+        errors.Clear();
+
+        handler.ApplyPolicySettingsWithParameters(policy_map, params, &prefs);
+        expected = std::make_unique<base::Value>("some_value");
+        EXPECT_TRUE(prefs.GetValue(kTestPref, &value));
+        EXPECT_EQ(*expected, *value);
+
+      } else {
+        EXPECT_FALSE(handler.CheckPolicySettings(policy_map, &errors));
+        EXPECT_FALSE(errors.empty());
+        errors.Clear();
+      }
+    }
+  }
+}
+
 }  // namespace policy

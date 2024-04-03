@@ -597,6 +597,39 @@ class POLICY_EXPORT CloudOnlyPolicyHandler
                            PolicyErrorMap* errors) override;
 };
 
+// A schema policy handler for complex policies that only accept user scoped
+// sources.
+class POLICY_EXPORT CloudUserOnlyPolicyHandler : public NamedPolicyHandler {
+ public:
+  CloudUserOnlyPolicyHandler(
+      std::unique_ptr<NamedPolicyHandler> policy_handler);
+  ~CloudUserOnlyPolicyHandler() override;
+
+  // Utility method for checking whether a policy is applied by a user-only
+  // source. Useful for user-only policy handlers which currently don't inherit
+  // from `CloudUserOnlyPolicyHandler`.
+  static bool CheckUserOnlyPolicySettings(const char* policy_name,
+                                          const PolicyMap& policies,
+                                          PolicyErrorMap* errors);
+
+  // ConfigurationPolicyHandler methods:
+  bool CheckPolicySettings(const PolicyMap& policies,
+                           PolicyErrorMap* errors) override;
+
+  void ApplyPolicySettingsWithParameters(
+      const policy::PolicyMap& policies,
+      const policy::PolicyHandlerParameters& parameters,
+      PrefValueMap* prefs) override;
+
+ protected:
+  // ConfigurationPolicyHandler methods:
+  void ApplyPolicySettings(const PolicyMap& policies,
+                           PrefValueMap* prefs) override;
+
+ private:
+  std::unique_ptr<NamedPolicyHandler> policy_handler_;
+};
+
 // A schema policy handler string policies expecting a URL.
 class POLICY_EXPORT URLPolicyHandler : public SimplePolicyHandler {
  public:
