@@ -139,7 +139,6 @@ BaseRenderingContext2D::BaseRenderingContext2D(
           this,
           &BaseRenderingContext2D::TryRestoreContextEvent),
       clip_antialiasing_(kNotAntiAliased),
-      origin_tainted_by_content_(false),
       path2d_use_paint_cache_(
           base::FeatureList::IsEnabled(features::kPath2DPaintCache)
               ? UsePaintCache::kEnabled
