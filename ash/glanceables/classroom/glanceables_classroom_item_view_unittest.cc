@@ -66,8 +66,8 @@ TEST_F(GlanceablesClassroomItemViewTest, RendersWithoutDueDateTime) {
       "Algebra", "Solve equation",
       GURL("https://classroom.google.com/test-link-1"), std::nullopt,
       base::Time(), std::nullopt);
-  const auto view = GlanceablesClassroomItemView(
-      &assignment, base::DoNothing(), /*item_index=*/0, /*last_item_index=*/0);
+  const auto view =
+      GlanceablesClassroomItemView(&assignment, base::DoNothing());
 
   const auto* const icon_view = GetIconView(view);
   const auto* const course_work_title_label = GetCourseWorkTitleLabel(view);
@@ -109,8 +109,7 @@ TEST_F(GlanceablesClassroomItemViewTest, RendersWithDueDateTime) {
         GURL("https://classroom.google.com/test-link-1"), due, base::Time(),
         std::nullopt);
     const auto view =
-        GlanceablesClassroomItemView(&assignment, base::DoNothing(),
-                                     /*item_index=*/0, /*last_item_index=*/0);
+        GlanceablesClassroomItemView(&assignment, base::DoNothing());
 
     const auto* const due_date_label = GetDueDateLabel(view);
     const auto* const due_time_label = GetDueTimeLabel(view);
@@ -133,8 +132,8 @@ TEST_F(GlanceablesClassroomItemViewTest, RendersDueTimeIn24HrFormat) {
       "Algebra", "Solve equation",
       GURL("https://classroom.google.com/test-link-1"), due, base::Time(),
       std::nullopt);
-  const auto view = GlanceablesClassroomItemView(
-      &assignment, base::DoNothing(), /*item_index=*/0, /*last_item_index=*/0);
+  const auto view =
+      GlanceablesClassroomItemView(&assignment, base::DoNothing());
   const auto* const due_time_label = GetDueTimeLabel(view);
 
   ASSERT_TRUE(due_time_label);
@@ -153,8 +152,8 @@ TEST_F(GlanceablesClassroomItemViewTest, DoesNotRenderDueTimeFor2359) {
       "Algebra", "Solve equation",
       GURL("https://classroom.google.com/test-link-1"), due, base::Time(),
       std::nullopt);
-  const auto view = GlanceablesClassroomItemView(
-      &assignment, base::DoNothing(), /*item_index=*/0, /*last_item_index=*/0);
+  const auto view =
+      GlanceablesClassroomItemView(&assignment, base::DoNothing());
   const auto* const due_time_label = GetDueTimeLabel(view);
 
   ASSERT_TRUE(due_time_label);

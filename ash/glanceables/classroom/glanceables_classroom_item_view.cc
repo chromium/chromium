@@ -54,16 +54,19 @@ namespace ash {
 namespace {
 
 // Styles for the whole `GlanceablesClassroomItemView`.
-constexpr int kBackgroundRadius = 4;
-constexpr int kLargeBackgroundRadius = 16;
-constexpr auto kInteriorMargin = gfx::Insets::VH(8, 0);
+constexpr int kFocusRingCornerRadius = 14;
 
 // Styles for the icon view.
-constexpr int kIconViewBackgroundRadius = 16;
-constexpr auto kIconViewMargin = gfx::Insets::VH(4, 12);
+constexpr int kIconViewBackgroundRadius = 12;
+constexpr auto kIconViewMargin = gfx::Insets::TLBR(2, 0, 0, 4);
 constexpr auto kIconViewPreferredSize =
     gfx::Size(kIconViewBackgroundRadius * 2, kIconViewBackgroundRadius * 2);
-constexpr int kIconSize = 20;
+constexpr int kIconSize = 16;
+
+// Styles for the assignment labels.
+constexpr int kAssignmentBetweenLabelsSpacing = 4;
+constexpr auto kAssignmentLabelsInsets =
+    gfx::Insets::VH(kAssignmentBetweenLabelsSpacing, 8);
 
 // Styles for the container containing due date and time labels.
 constexpr auto kDueLabelsMargin = gfx::Insets::VH(0, 16);
@@ -130,6 +133,8 @@ std::unique_ptr<views::BoxLayoutView> BuildAssignmentTitleLabels(
       .SetOrientation(views::BoxLayout::Orientation::kVertical)
       .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter)
       .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart)
+      .SetBetweenChildSpacing(kAssignmentBetweenLabelsSpacing)
+      .SetProperty(views::kMarginsKey, kAssignmentLabelsInsets)
       .SetProperty(
           views::kFlexBehaviorKey,
           views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
@@ -186,36 +191,16 @@ std::unique_ptr<views::BoxLayoutView> BuildDueLabels(
       .Build();
 }
 
-// Returns rounded corners used for the item view. A larger radius is used for
-// top corners when the item is the first in the list. A larger radius is used
-// for bottom corners when the item is last in the list.
-gfx::RoundedCornersF GetRoundedCorners(size_t index, size_t last_index) {
-  size_t top_radius = (index == 0) ? kLargeBackgroundRadius : kBackgroundRadius;
-  size_t bottom_radius =
-      (index == last_index) ? kLargeBackgroundRadius : kBackgroundRadius;
-  return gfx::RoundedCornersF(top_radius, top_radius, bottom_radius,
-                              bottom_radius);
-}
-
 }  // namespace
 
 GlanceablesClassroomItemView::GlanceablesClassroomItemView(
     const GlanceablesClassroomAssignment* assignment,
-    base::RepeatingClosure pressed_callback,
-    size_t item_index,
-    size_t last_item_index)
+    base::RepeatingClosure pressed_callback)
     : views::Button(std::move(pressed_callback)) {
   CHECK(assignment);
 
   SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetCrossAxisAlignment(views::LayoutAlignment::kStart)
-      .SetInteriorMargin(kInteriorMargin);
-
-  const gfx::RoundedCornersF corner_radii =
-      GetRoundedCorners(item_index, last_item_index);
-  SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysSystemOnBase, corner_radii));
-
+      ->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
   std::vector<std::u16string> a11y_description_parts{
       base::UTF8ToUTF16(assignment->course_title)};
 
@@ -243,7 +228,7 @@ GlanceablesClassroomItemView::GlanceablesClassroomItemView(
   focus_ring->SetColorId(cros_tokens::kCrosSysFocusRing);
   views::HighlightPathGenerator::Install(
       this, std::make_unique<views::RoundRectHighlightPathGenerator>(
-                gfx::Insets(), corner_radii));
+                gfx::Insets(), gfx::RoundedCornersF(kFocusRingCornerRadius)));
 
   // Prevent the layout manager from setting the focus ring to a default hidden
   // visibility.

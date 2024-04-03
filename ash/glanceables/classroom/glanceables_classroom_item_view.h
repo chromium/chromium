@@ -21,9 +21,7 @@ class ASH_EXPORT GlanceablesClassroomItemView : public views::Button {
 
  public:
   GlanceablesClassroomItemView(const GlanceablesClassroomAssignment* assignment,
-                               base::RepeatingClosure pressed_callback,
-                               size_t item_index,
-                               size_t last_item_index);
+                               base::RepeatingClosure pressed_callback);
 
   GlanceablesClassroomItemView(const GlanceablesClassroomItemView&) = delete;
   GlanceablesClassroomItemView& operator=(const GlanceablesClassroomItemView&) =

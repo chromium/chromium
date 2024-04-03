@@ -28,6 +28,7 @@ class ComboboxModel;
 }
 
 namespace views {
+class BoxLayoutView;
 class FlexLayoutView;
 class Label;
 class View;
@@ -109,7 +110,7 @@ class ASH_EXPORT GlanceablesClassroomStudentView
   // Owned by views hierarchy.
   raw_ptr<views::FlexLayoutView> header_view_ = nullptr;
   raw_ptr<Combobox> combo_box_view_ = nullptr;
-  raw_ptr<views::View> list_container_view_ = nullptr;
+  raw_ptr<views::BoxLayoutView> list_container_view_ = nullptr;
   raw_ptr<GlanceablesListFooterView> list_footer_view_ = nullptr;
   raw_ptr<GlanceablesProgressBarView> progress_bar_ = nullptr;
   raw_ptr<views::Label> empty_list_label_ = nullptr;

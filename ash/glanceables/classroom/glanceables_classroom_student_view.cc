@@ -46,6 +46,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -92,7 +93,7 @@ const char kLastSelectedAssignmentsListPref[] =
 constexpr size_t kMaxAssignments = 3;
 
 constexpr auto kEmptyListLabelMargins = gfx::Insets::TLBR(24, 0, 32, 0);
-constexpr auto kHeaderIconButtonMargins = gfx::Insets::TLBR(0, 0, 0, 4);
+constexpr auto kHeaderIconButtonMargins = gfx::Insets::TLBR(0, 0, 0, 2);
 constexpr auto kViewInteriorMargins = gfx::Insets::TLBR(16, 16, 0, 16);
 
 std::u16string GetAssignmentListName(size_t index) {
@@ -155,9 +156,9 @@ GlanceablesClassroomStudentView::GlanceablesClassroomStudentView()
           base::BindRepeating(
               &GlanceablesClassroomStudentView::OnHeaderIconPressed,
               base::Unretained(this)),
-          IconButton::Type::kMedium, &kGlanceablesClassroomIcon,
+          IconButton::Type::kSmall, &kGlanceablesClassroomIcon,
           IDS_GLANCEABLES_CLASSROOM_HEADER_ICON_ACCESSIBLE_NAME));
-  header_icon->SetBackgroundColor(cros_tokens::kCrosSysBaseElevated);
+  header_icon->SetBackgroundColor(SK_ColorTRANSPARENT);
   header_icon->SetProperty(views::kMarginsKey, kHeaderIconButtonMargins);
   header_icon->SetID(
       base::to_underlying(GlanceablesViewId::kClassroomBubbleHeaderIcon));
@@ -178,13 +179,12 @@ GlanceablesClassroomStudentView::GlanceablesClassroomStudentView()
   progress_bar_ = AddChildView(std::make_unique<GlanceablesProgressBarView>());
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
 
-  list_container_view_ = AddChildView(std::make_unique<views::View>());
+  list_container_view_ = AddChildView(std::make_unique<views::BoxLayoutView>());
   list_container_view_->SetID(
       base::to_underlying(GlanceablesViewId::kClassroomBubbleListContainer));
-  auto* layout =
-      list_container_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kVertical));
-  layout->set_between_child_spacing(2);
+  list_container_view_->SetOrientation(
+      views::BoxLayout::Orientation::kVertical);
+  list_container_view_->SetBetweenChildSpacing(4);
   list_container_view_->SetAccessibleRole(ax::mojom::Role::kList);
 
   const auto* const typography_provider = TypographyProvider::Get();
@@ -372,8 +372,7 @@ void GlanceablesClassroomStudentView::OnGetAssignments(
             assignments[i].get(),
             base::BindRepeating(
                 &GlanceablesClassroomStudentView::OnItemViewPressed,
-                base::Unretained(this), initial_update, assignments[i]->link),
-            /*item_index=*/i, /*last_item_index=*/num_assignments - 1));
+                base::Unretained(this), initial_update, assignments[i]->link)));
   }
   const size_t shown_assignments = list_container_view_->children().size();
   list_footer_view_->UpdateItemsCount(shown_assignments, total_assignments_);
