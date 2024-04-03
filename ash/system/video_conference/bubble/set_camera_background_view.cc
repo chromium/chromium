@@ -12,6 +12,8 @@
 #include "ash/system/video_conference/bubble/bubble_view.h"
 #include "ash/system/video_conference/bubble/bubble_view_ids.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
+#include "ash/wallpaper/wallpaper_utils/sea_pen_metadata_utils.h"
+#include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "skia/ext/image_operations.h"
@@ -81,6 +83,7 @@ class RecentlyUsedImageButton : public views::ImageButton {
  public:
   RecentlyUsedImageButton(
       const gfx::ImageSkia& image,
+      const std::string& metadata,
       const base::RepeatingCallback<void()>& image_button_callback)
       : ImageButton(image_button_callback),
         check_icon_(&kBackgroundSelectionIcon,
@@ -89,6 +92,10 @@ class RecentlyUsedImageButton : public views::ImageButton {
 
     SetImageModel(ButtonState::STATE_NORMAL,
                   ui::ImageModel::FromImageSkia(background_image_));
+
+    // TODO(b/332573200): only construct this button when the metadata is
+    // decodable.
+    SetAccessibilityLabelFromMetadata(metadata);
   }
 
   void SetSelected(bool selected) {
@@ -112,6 +119,34 @@ class RecentlyUsedImageButton : public views::ImageButton {
       // Otherwise, draw the normal background image.
       canvas->DrawImageInt(background_image_, 0, 0);
     }
+  }
+
+  // Extract medata then decode it.
+  void SetAccessibilityLabelFromMetadata(const std::string& metadata) {
+    const std::string extracted_metadata =
+        ExtractDcDescriptionContents(metadata);
+
+    DecodeJsonMetadata(
+        extracted_metadata.empty() ? metadata : extracted_metadata,
+        base::BindOnce(&RecentlyUsedImageButton::
+                           SetAccessibilityLabelFromRecentSeaPenImageInfo,
+                       weak_factory_.GetWeakPtr()));
+  }
+
+  // Called when decoding metadata complete.
+  void SetAccessibilityLabelFromRecentSeaPenImageInfo(
+      personalization_app::mojom::RecentSeaPenImageInfoPtr info) {
+    const auto& text = info->user_visible_query->text;
+    std::u16string query;
+    if (!base::UTF8ToUTF16(text.c_str(), text.size(), &query)) {
+      query.clear();
+    }
+    SetAccessibleRole(ax::mojom::Role::kListItem);
+    SetAccessibleDescription(l10n_util::GetStringUTF16(
+        IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_IMAGE_LIST_ITEM_DESCRIPTION));
+    SetAccessibleName(
+        query, query.empty() ? ax::mojom::NameFrom::kAttributeExplicitlyEmpty
+                             : ax::mojom::NameFrom::kAttribute);
   }
 
   SkPath GetClipPath() {
@@ -152,6 +187,8 @@ class RecentlyUsedImageButton : public views::ImageButton {
 
   bool selected_ = false;
   const ui::ThemedVectorIcon check_icon_;
+
+  base::WeakPtrFactory<RecentlyUsedImageButton> weak_factory_{this};
 };
 
 BEGIN_METADATA(RecentlyUsedImageButton)
@@ -190,9 +227,10 @@ class RecentlyUsedBackgroundView : public views::View {
           kSetCameraBackgroundViewRadius, image);
 
       AddChildView(std::make_unique<RecentlyUsedImageButton>(
-          image, base::BindRepeating(
-                     &RecentlyUsedBackgroundView::OnImageButtonClicked,
-                     weak_factory_.GetWeakPtr(), i, images_info[i].basename)));
+          image, images_info[i].metadata,
+          base::BindRepeating(&RecentlyUsedBackgroundView::OnImageButtonClicked,
+                              weak_factory_.GetWeakPtr(), i,
+                              images_info[i].basename)));
     }
 
     // Because this is async, we need to update the ui when all images are
