@@ -1000,6 +1000,136 @@ INSTANTIATE_TEST_SUITE_P(VersionIncludeStreamDependencySequence,
                          ::testing::ValuesIn(GetTestParams()),
                          ::testing::PrintToStringParamName());
 
+TEST_P(QuicNetworkTransactionTest, BasicRequestAndResponse) {
+  context_.params()->origins_to_force_quic_on.insert(
+      HostPortPair::FromString("mail.example.org:443"));
+
+  MockQuicData quic_data(version_);
+  int packet_num = 1;
+  // HTTP/3 SETTINGS are always the first thing sent on a connection
+  quic_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(packet_num++));
+  // The GET request with no body is sent next.
+  quic_data.AddWrite(
+      SYNCHRONOUS,
+      ConstructClientRequestHeadersPacket(
+          packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true,
+          GetRequestHeaders("GET", "https", "/")));
+  // Read the response headers.
+  quic_data.AddRead(ASYNC, ConstructServerResponseHeadersPacket(
+                               1, GetNthClientInitiatedBidirectionalStreamId(0),
+                               false, GetResponseHeaders("200")));
+  // Read the response body.
+  quic_data.AddRead(SYNCHRONOUS,
+                    ConstructServerDataPacket(
+                        2, GetNthClientInitiatedBidirectionalStreamId(0), true,
+                        ConstructDataFrame(kQuicRespData)));
+  // Acknowledge the previous two received packets.
+  quic_data.AddWrite(SYNCHRONOUS, ConstructClientAckPacket(packet_num++, 2, 1));
+  quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // No more data to read
+  // Connection close on shutdown.
+  quic_data.AddWrite(SYNCHRONOUS,
+                     ConstructClientAckAndConnectionClosePacket(
+                         packet_num++, 2, 1, quic::QUIC_CONNECTION_CANCELLED,
+                         "net error", quic::NO_IETF_QUIC_ERROR));
+
+  quic_data.AddSocketDataToFactory(&socket_factory_);
+
+  CreateSession();
+
+  SendRequestAndExpectQuicResponse(kQuicRespData);
+
+  // Delete the session while the MockQuicData is still in scope.
+  session_.reset();
+}
+
+TEST_P(QuicNetworkTransactionTest, BasicRequestAndResponseWithAsycWrites) {
+  context_.params()->origins_to_force_quic_on.insert(
+      HostPortPair::FromString("mail.example.org:443"));
+
+  MockQuicData quic_data(version_);
+  int packet_num = 1;
+  // HTTP/3 SETTINGS are always the first thing sent on a connection
+  quic_data.AddWrite(ASYNC, ConstructInitialSettingsPacket(packet_num++));
+  // The GET request with no body is sent next.
+  quic_data.AddWrite(
+      ASYNC, ConstructClientRequestHeadersPacket(
+                 packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
+                 true, GetRequestHeaders("GET", "https", "/")));
+  // Read the response headers.
+  quic_data.AddRead(ASYNC, ConstructServerResponseHeadersPacket(
+                               1, GetNthClientInitiatedBidirectionalStreamId(0),
+                               false, GetResponseHeaders("200")));
+  // Read the response body.
+  quic_data.AddRead(SYNCHRONOUS,
+                    ConstructServerDataPacket(
+                        2, GetNthClientInitiatedBidirectionalStreamId(0), true,
+                        ConstructDataFrame(kQuicRespData)));
+  // Acknowledge the previous two received packets.
+  quic_data.AddWrite(ASYNC, ConstructClientAckPacket(packet_num++, 2, 1));
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
+  // Connection close on shutdown.
+  quic_data.AddWrite(ASYNC,
+                     ConstructClientAckAndConnectionClosePacket(
+                         packet_num++, 2, 1, quic::QUIC_CONNECTION_CANCELLED,
+                         "net error", quic::NO_IETF_QUIC_ERROR));
+
+  quic_data.AddSocketDataToFactory(&socket_factory_);
+
+  CreateSession();
+
+  SendRequestAndExpectQuicResponse(kQuicRespData);
+
+  // Delete the session while the MockQuicData is still in scope.
+  session_.reset();
+}
+
+TEST_P(QuicNetworkTransactionTest, BasicRequestAndResponseWithTrailers) {
+  context_.params()->origins_to_force_quic_on.insert(
+      HostPortPair::FromString("mail.example.org:443"));
+
+  MockQuicData quic_data(version_);
+  int packet_num = 1;
+  // HTTP/3 SETTINGS are always the first thing sent on a connection
+  quic_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(packet_num++));
+  // The GET request with no body is sent next.
+  quic_data.AddWrite(
+      SYNCHRONOUS,
+      ConstructClientRequestHeadersPacket(
+          packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true,
+          GetRequestHeaders("GET", "https", "/")));
+  // Read the response headers.
+  quic_data.AddRead(ASYNC, server_maker_.MakeResponseHeadersPacket(
+                               1, GetNthClientInitiatedBidirectionalStreamId(0),
+                               false, GetResponseHeaders("200"), nullptr));
+  // Read the response body.
+  quic_data.AddRead(ASYNC, ConstructServerDataPacket(
+                               2, GetNthClientInitiatedBidirectionalStreamId(0),
+                               false, ConstructDataFrame(kQuicRespData)));
+  // Acknowledge the previous two received packets.
+  quic_data.AddWrite(SYNCHRONOUS, ConstructClientAckPacket(packet_num++, 2, 1));
+  // Read the response trailers.
+  spdy::Http2HeaderBlock trailers;
+  trailers.AppendValueOrAddHeader("foo", "bar");
+  quic_data.AddRead(ASYNC, server_maker_.MakeResponseHeadersPacket(
+                               3, GetNthClientInitiatedBidirectionalStreamId(0),
+                               true, std::move(trailers), nullptr));
+  quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // No more data to read
+  // Connection close on shutdown.
+  quic_data.AddWrite(SYNCHRONOUS,
+                     ConstructClientAckAndConnectionClosePacket(
+                         packet_num++, 3, 1, quic::QUIC_CONNECTION_CANCELLED,
+                         "net error", quic::NO_IETF_QUIC_ERROR));
+
+  quic_data.AddSocketDataToFactory(&socket_factory_);
+
+  CreateSession();
+
+  SendRequestAndExpectQuicResponse(kQuicRespData);
+
+  // Delete the session while the MockQuicData is still in scope.
+  session_.reset();
+}
+
 TEST_P(QuicNetworkTransactionTest, WriteErrorHandshakeConfirmed) {
   context_.params()->retry_without_alt_svc_on_quic_errors = false;
   base::HistogramTester histograms;
