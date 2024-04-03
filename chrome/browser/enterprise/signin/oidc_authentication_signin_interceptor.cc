@@ -41,6 +41,7 @@
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/mojom/themes.mojom.h"
 #include "ui/base/ui_base_features.h"
@@ -271,7 +272,7 @@ void OidcAuthenticationSigninInterceptor::AddAsPrimaryAccount(
 
   CoreAccountId account_id =
       identity_manager->GetAccountsMutator()->AddOrUpdateAccount(
-          gaia_id, user_email_, "refresh_token",
+          gaia_id, user_email_, GaiaConstants::kInvalidRefreshToken,
           /*is_under_advanced_protection=*/false,
           signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
           signin_metrics::SourceForRefreshTokenOperation::
