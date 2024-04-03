@@ -255,8 +255,10 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
       cc::UIResourceId resource_id);
 
   // Apply the `result` to the screenshot and the web page, and tick the
-  // animation effector.
-  void SetLayerTransformationAndTickEffect(const PhysicsModel::Result& result);
+  // animation effector. Returns a boolean indicating if both the `PhysicsModel`
+  // and the `gfx::KeyFrameModels` have finished playing.
+  [[nodiscard]] bool SetLayerTransformationAndTickEffect(
+      const PhysicsModel::Result& result);
 
   void CloneOldSurfaceLayerAndRegisterNewFrameActivationObserver(
       RenderFrameHostImpl* old_host,
