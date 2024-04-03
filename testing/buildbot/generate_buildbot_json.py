@@ -391,8 +391,8 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
         'test_suite_exceptions.pyl')
     args.gn_isolate_map_pyl_path = absolute_file_path('gn_isolate_map.pyl')
     args.variants_pyl_path = absolute_file_path('variants.pyl')
-    args.autoshard_exceptions_json_path = absolute_file_path(
-        'autoshard_exceptions.json')
+    args.autoshard_exceptions_json_path = os.path.join(
+        args.infra_config_dir, 'targets', 'autoshard_exceptions.json')
 
     return args
 
