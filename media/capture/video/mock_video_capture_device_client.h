@@ -54,7 +54,7 @@ class MockVideoCaptureDeviceClient : public VideoCaptureDevice::Client {
               (override));
   MOCK_METHOD(ReserveResult,
               ReserveOutputBuffer,
-              (const gfx::Size&, VideoPixelFormat, int, Buffer*),
+              (const gfx::Size&, VideoPixelFormat, int, Buffer*, int*, int*),
               (override));
   MOCK_METHOD(void,
               OnError,

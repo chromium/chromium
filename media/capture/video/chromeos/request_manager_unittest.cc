@@ -47,6 +47,20 @@ class MockStreamCaptureInterface : public StreamCaptureInterface {
                void(cros::mojom::Camera3CaptureRequestPtr& request,
                     base::OnceCallback<void(int32_t)>& callback));
 
+  void OnNewBuffer(ClientType client_type,
+                   cros::mojom::CameraBufferHandlePtr buffer) override {
+    DoOnNewBuffer(client_type, std::move(buffer));
+  }
+  MOCK_METHOD2(DoOnNewBuffer,
+               void(ClientType client_type,
+                    cros::mojom::CameraBufferHandlePtr buffer));
+
+  void OnBufferRetired(ClientType client_type, uint64_t buffer_id) override {
+    DoOnBufferRetired(client_type, buffer_id);
+  }
+  MOCK_METHOD2(DoOnBufferRetired,
+               void(ClientType client_type, uint64_t buffer_id));
+
   void Flush(base::OnceCallback<void(int32_t)> callback) override {
     DoFlush(callback);
   }

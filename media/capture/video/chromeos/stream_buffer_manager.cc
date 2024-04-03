@@ -18,6 +18,8 @@
 #include "media/capture/video/chromeos/camera_metadata_utils.h"
 #include "media/capture/video/chromeos/pixel_format_utils.h"
 #include "media/capture/video/chromeos/request_builder.h"
+#include "media/capture/video/chromeos/request_manager.h"
+#include "media/capture/video/video_capture_buffer_pool.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "third_party/libyuv/include/libyuv.h"
@@ -27,8 +29,10 @@ namespace media {
 StreamBufferManager::StreamBufferManager(
     CameraDeviceContext* device_context,
     bool video_capture_use_gmb,
-    std::unique_ptr<CameraBufferFactory> camera_buffer_factory)
+    std::unique_ptr<CameraBufferFactory> camera_buffer_factory,
+    std::unique_ptr<VideoCaptureBufferObserver> buffer_observer)
     : device_context_(device_context),
+      buffer_observer_(std::move(buffer_observer)),
       video_capture_use_gmb_(video_capture_use_gmb),
       camera_buffer_factory_(std::move(camera_buffer_factory)) {
   if (video_capture_use_gmb_) {
@@ -433,16 +437,56 @@ void StreamBufferManager::ReserveBufferFromPool(StreamType stream_type) {
   }
   Buffer vcd_buffer;
   auto client_type = kStreamClientTypeMap[static_cast<int>(stream_type)];
+  int require_new_buffer_id = VideoCaptureBufferPool::kInvalidId;
+  int retire_old_buffer_id = VideoCaptureBufferPool::kInvalidId;
   if (!device_context_->ReserveVideoCaptureBufferFromPool(
           client_type, stream_context->buffer_dimension,
-          stream_context->capture_format.pixel_format, &vcd_buffer)) {
+          stream_context->capture_format.pixel_format, &vcd_buffer,
+          &require_new_buffer_id, &retire_old_buffer_id)) {
     DLOG(WARNING) << "Failed to reserve video capture buffer";
     return;
   }
+  if (retire_old_buffer_id != VideoCaptureBufferPool::kInvalidId) {
+    buffer_observer_->OnBufferRetired(
+        client_type, GetBufferIpcId(stream_type, retire_old_buffer_id));
+  }
+
   auto gmb = gmb_support_->CreateGpuMemoryBufferImplFromHandle(
       vcd_buffer.handle_provider->GetGpuMemoryBufferHandle(),
       stream_context->buffer_dimension, *gfx_format,
       stream_context->buffer_usage, base::NullCallback());
+
+  if (require_new_buffer_id != VideoCaptureBufferPool::kInvalidId) {
+    gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle = gmb->CloneHandle();
+    gfx::NativePixmapHandle& native_pixmap_handle =
+        gpu_memory_buffer_handle.native_pixmap_handle;
+    auto buffer_handle = cros::mojom::CameraBufferHandle::New();
+    buffer_handle->buffer_id = GetBufferIpcId(stream_type, vcd_buffer.id);
+    buffer_handle->drm_format =
+        PixFormatVideoToDrm(stream_context->capture_format.pixel_format);
+    buffer_handle->hal_pixel_format = stream_context->stream->format;
+    buffer_handle->has_modifier = true;
+    buffer_handle->modifier = native_pixmap_handle.modifier;
+    buffer_handle->width = stream_context->buffer_dimension.width();
+    buffer_handle->height = stream_context->buffer_dimension.height();
+
+    size_t num_planes = native_pixmap_handle.planes.size();
+    std::vector<StreamCaptureInterface::Plane> planes(num_planes);
+    for (size_t i = 0; i < num_planes; ++i) {
+      mojo::ScopedHandle mojo_fd = mojo::WrapPlatformHandle(
+          mojo::PlatformHandle(std::move(native_pixmap_handle.planes[i].fd)));
+      if (!mojo_fd.is_valid()) {
+        device_context_->SetErrorState(
+            media::VideoCaptureError::
+                kCrosHalV3BufferManagerFailedToWrapGpuMemoryHandle,
+            FROM_HERE, "Failed to wrap gpu memory handle");
+      }
+      buffer_handle->fds.push_back(std::move(mojo_fd));
+      buffer_handle->strides.push_back(native_pixmap_handle.planes[i].stride);
+      buffer_handle->offsets.push_back(native_pixmap_handle.planes[i].offset);
+    }
+    buffer_observer_->OnNewBuffer(client_type, std::move(buffer_handle));
+  }
   stream_context->free_buffers.push(vcd_buffer.id);
   const int id = vcd_buffer.id;
   stream_context->buffers.insert(

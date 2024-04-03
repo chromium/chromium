@@ -104,7 +104,9 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
   ReserveResult ReserveOutputBuffer(const gfx::Size& dimensions,
                                     VideoPixelFormat format,
                                     int frame_feedback_id,
-                                    Buffer* buffer) override;
+                                    Buffer* buffer,
+                                    int* require_new_buffer_id,
+                                    int* retire_old_buffer_id) override;
   void OnIncomingCapturedBuffer(
       Buffer buffer,
       const VideoCaptureFormat& format,

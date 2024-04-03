@@ -93,8 +93,13 @@ class MockClient : public VideoCaptureDevice::Client {
       std::optional<base::TimeTicks> capture_begin_time,
       const gfx::Rect& visible_rect) override {}
 
-  MOCK_METHOD4(ReserveOutputBuffer,
-               ReserveResult(const gfx::Size&, VideoPixelFormat, int, Buffer*));
+  MOCK_METHOD6(ReserveOutputBuffer,
+               ReserveResult(const gfx::Size&,
+                             VideoPixelFormat,
+                             int,
+                             Buffer*,
+                             int*,
+                             int*));
 
   void OnIncomingCapturedBuffer(
       Buffer buffer,
@@ -2202,9 +2207,10 @@ TEST_F(VideoCaptureDeviceMFWinTestWithDXGI, DeliverGMBCaptureBuffers) {
   // Verify that an output capture buffer is reserved from the client
   EXPECT_CALL(*client_, ReserveOutputBuffer)
       .WillOnce(Invoke(
-          [expected_size](const gfx::Size& size, VideoPixelFormat format,
-                          int feedback_id,
-                          VideoCaptureDevice::Client::Buffer* capture_buffer) {
+          [expected_size](
+              const gfx::Size& size, VideoPixelFormat format, int feedback_id,
+              VideoCaptureDevice::Client::Buffer* capture_buffer,
+              int* require_new_buffer_id, int* retire_old_buffer_id) {
             EXPECT_EQ(size.width(), expected_size.width());
             EXPECT_EQ(size.height(), expected_size.height());
             EXPECT_EQ(format, PIXEL_FORMAT_NV12);

@@ -117,7 +117,8 @@ MockVideoCaptureDeviceClient::CreateMockClientWithBufferAllocator(
   ON_CALL(*result, ReserveOutputBuffer)
       .WillByDefault(
           Invoke([](const gfx::Size& dimensions, VideoPixelFormat format, int,
-                    VideoCaptureDevice::Client::Buffer* buffer) {
+                    VideoCaptureDevice::Client::Buffer* buffer,
+                    int* require_new_buffer_id, int* retire_old_buffer_id) {
             EXPECT_GT(dimensions.GetArea(), 0);
             const VideoCaptureFormat frame_format(dimensions, 0.0, format);
             *buffer = CreateStubBuffer(
