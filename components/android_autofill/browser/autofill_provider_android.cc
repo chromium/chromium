@@ -79,9 +79,13 @@ std::unique_ptr<PasswordForm> ParseToPasswordForm(
 }
 
 // Returns whether we should attempt to cache provider responses for this form.
-// Currently, that is the case iff we diagnose it to be a login form.
+// Currently, that is the case iff we diagnose it to be a login form or a change
+// password form.
 bool ShouldCachePasswordForm(const PasswordForm& pw_form) {
-  return pw_form.IsLikelyLoginForm();
+  return pw_form.IsLikelyLoginForm() ||
+         (pw_form.IsLikelyChangePasswordForm() &&
+          base::FeatureList::IsEnabled(
+              features::kAndroidAutofillPrefillRequestsForChangePassword));
 }
 
 // Extracts the underlying value of `check_result` and eliminates all other bits

@@ -223,6 +223,9 @@ public final class ProductionSupportedFlagList {
                         + " form that is used to decide whether to show a bottom sheet is performed"
                         + " by comparing password manager's FormDataParser predictions."),
         Flag.baseFeature(
+                AndroidAutofillFeatures.ANDROID_AUTOFILL_PREFILL_REQUEST_FOR_CHANGE_PASSWORD_NAME,
+                "Enables sending prefill requests for Change Password forms."),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_ENABLE_DEPENDENT_LOCALITY_PARSING,
                 "Enables parsing dependent locality fields (e.g. Bairros in Brazil)."),
         Flag.baseFeature(
