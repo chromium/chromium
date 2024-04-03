@@ -259,8 +259,11 @@ class PrinterSettingsIntegrationTest : public AshIntegrationTest {
   auto AddPrinterManually(std::string_view printer_name) {
     return Steps(
         Log("Opening the add printer dialog"),
+        WaitForElementToExistAndRender(kSettingsWebContentsId,
+                                       kAddManualPrinterButton),
         ClickElement(kSettingsWebContentsId, kAddManualPrinterButton),
         Log("Inserting the printer name"),
+        WaitForElementToExistAndRender(kSettingsWebContentsId, kNameInputQuery),
         ExecuteJsAt(
             kSettingsWebContentsId, kNameInputQuery,
             base::StrCat({"(el) => { el.value = '", printer_name, "'; }"})),
