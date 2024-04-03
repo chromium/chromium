@@ -107,37 +107,37 @@ const char* GetProfileCategorySuffix(AutofillProfileSourceCategory category) {
 SettingsVisibleFieldTypeForMetrics ConvertSettingsVisibleFieldTypeForMetrics(
     FieldType field_type) {
   switch (field_type) {
-    case FieldType::NAME_FULL:
+    case NAME_FULL:
       return SettingsVisibleFieldTypeForMetrics::kName;
 
-    case FieldType::EMAIL_ADDRESS:
+    case EMAIL_ADDRESS:
       return SettingsVisibleFieldTypeForMetrics::kEmailAddress;
 
-    case FieldType::PHONE_HOME_WHOLE_NUMBER:
+    case PHONE_HOME_WHOLE_NUMBER:
       return SettingsVisibleFieldTypeForMetrics::kPhoneNumber;
 
-    case FieldType::ADDRESS_HOME_CITY:
+    case ADDRESS_HOME_CITY:
       return SettingsVisibleFieldTypeForMetrics::kCity;
 
-    case FieldType::ADDRESS_HOME_COUNTRY:
+    case ADDRESS_HOME_COUNTRY:
       return SettingsVisibleFieldTypeForMetrics::kCountry;
 
-    case FieldType::ADDRESS_HOME_ZIP:
+    case ADDRESS_HOME_ZIP:
       return SettingsVisibleFieldTypeForMetrics::kZip;
 
-    case FieldType::ADDRESS_HOME_STATE:
+    case ADDRESS_HOME_STATE:
       return SettingsVisibleFieldTypeForMetrics::kState;
 
-    case FieldType::ADDRESS_HOME_STREET_ADDRESS:
+    case ADDRESS_HOME_STREET_ADDRESS:
       return SettingsVisibleFieldTypeForMetrics::kStreetAddress;
 
-    case FieldType::ADDRESS_HOME_DEPENDENT_LOCALITY:
+    case ADDRESS_HOME_DEPENDENT_LOCALITY:
       return SettingsVisibleFieldTypeForMetrics::kDependentLocality;
 
-    case FieldType::COMPANY_NAME:
+    case COMPANY_NAME:
       return SettingsVisibleFieldTypeForMetrics::kCompany;
 
-    case FieldType::ADDRESS_HOME_ADMIN_LEVEL2:
+    case ADDRESS_HOME_ADMIN_LEVEL2:
       return SettingsVisibleFieldTypeForMetrics::kAdminLevel2;
 
     default:
