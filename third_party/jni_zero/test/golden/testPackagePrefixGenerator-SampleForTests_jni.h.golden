@@ -450,7 +450,7 @@ static jint Java_SampleForTests_javaMethod(
 static void Java_SampleForTests_javaMethodWithAnnotatedParam(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& obj,
-    int foo,
+    MyEnum foo,
     JniIntWrapper bar,
     JniIntWrapper baz,
     long bat) {
@@ -464,7 +464,7 @@ static void Java_SampleForTests_javaMethodWithAnnotatedParam(
       "javaMethodWithAnnotatedParam",
       "(IIIJ)V",
       &cached_method_id);
-  jint foo_converted = static_cast<jint>(as_jint(foo));
+  jint foo_converted = static_cast<jint>(foo);
   jlong bat_converted = static_cast<jlong>(bat);
   env->CallVoidMethod(
       obj.obj(),

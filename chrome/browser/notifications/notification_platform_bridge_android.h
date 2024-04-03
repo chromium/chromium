@@ -43,47 +43,45 @@ class NotificationPlatformBridgeAndroid : public NotificationPlatformBridge {
   ~NotificationPlatformBridgeAndroid() override;
 
   // Called by the Java implementation when the notification has been clicked.
-  void OnNotificationClicked(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& java_object,
-      const base::android::JavaParamRef<jstring>& java_notification_id,
-      jint java_notification_type,
-      const base::android::JavaParamRef<jstring>& java_origin,
-      const base::android::JavaParamRef<jstring>& java_scope_url,
-      const base::android::JavaParamRef<jstring>& java_profile_id,
-      jboolean incognito,
-      const base::android::JavaParamRef<jstring>& java_webapk_package,
-      jint action_index,
-      const base::android::JavaParamRef<jstring>& java_reply);
+  void OnNotificationClicked(JNIEnv* env,
+                             const jni_zero::JavaParamRef<jobject>& java_object,
+                             std::string& notification_id,
+                             jint java_notification_type,
+                             std::string& origin,
+                             std::string& scope_url,
+                             std::string& profile_id,
+                             jboolean incognito,
+                             std::string& webapk_package,
+                             jint action_index,
+                             const jni_zero::JavaParamRef<jstring>& java_reply);
 
   // Called by the Java implementation when the query of WebAPK's package name
   // is done.
   void StoreCachedWebApkPackageForNotificationId(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& java_object,
-      const base::android::JavaParamRef<jstring>& java_notification_id,
-      const base::android::JavaParamRef<jstring>& java_webapk_package);
+      const jni_zero::JavaParamRef<jobject>& java_object,
+      std::string& notification_id,
+      std::string& webapk_package);
 
   // Called by the Java implementation when the notification has been closed.
-  void OnNotificationClosed(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& java_object,
-      const base::android::JavaParamRef<jstring>& java_notification_id,
-      jint java_notification_type,
-      const base::android::JavaParamRef<jstring>& java_origin,
-      const base::android::JavaParamRef<jstring>& java_profile_id,
-      jboolean incognito,
-      jboolean by_user);
+  void OnNotificationClosed(JNIEnv* env,
+                            const jni_zero::JavaParamRef<jobject>& java_object,
+                            std::string& notification_id,
+                            jint java_notification_type,
+                            std::string& origin,
+                            std::string& profile_id,
+                            jboolean incognito,
+                            jboolean by_user);
 
   // Called by the Java implementation when the user commits to unsubscribing
   // from notification from this origin.
   void OnNotificationDisablePermission(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& java_object,
-      const base::android::JavaParamRef<jstring>& java_notification_id,
+      const jni_zero::JavaParamRef<jobject>& java_object,
+      std::string& otification_id,
       jint java_notification_type,
-      const base::android::JavaParamRef<jstring>& java_origin,
-      const base::android::JavaParamRef<jstring>& java_profile_id,
+      std::string& origin,
+      std::string& profile_id,
       jboolean incognito);
 
   // NotificationPlatformBridge implementation.

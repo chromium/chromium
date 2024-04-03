@@ -373,7 +373,7 @@ int main() {
   jni_zero::tests::Java_SampleForTests_methodThatThrowsException(
       env, my_java_object);
   jni_zero::tests::Java_SampleForTests_javaMethodWithAnnotatedParam(
-      env, my_java_object, 42, 13, -1, 99);
+      env, my_java_object, jni_zero::tests::MyEnum::kFirstOption, 13, -1, 99);
 
   jni_zero::tests::Java_SampleForTests_getInnerInterface(env);
   jni_zero::tests::Java_SampleForTests_getInnerEnum(env);

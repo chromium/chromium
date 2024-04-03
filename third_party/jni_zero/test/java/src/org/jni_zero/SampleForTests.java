@@ -140,7 +140,7 @@ class SampleForTests {
     // The generator is not confused by @Annotated parameters.
     @CalledByNative
     void javaMethodWithAnnotatedParam(
-            @SomeAnnotation @JniType("int") int foo,
+            @SomeAnnotation @JniType("MyEnum") int foo,
             final @SomeAnnotation int bar,
             @SomeAnnotation final int baz,
             @SomeAnnotation @JniType("long") final @AnotherAnnotation long bat) {}

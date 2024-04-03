@@ -37,7 +37,7 @@ namespace jni_zero {{
 def to_jni_expression(sb, rvalue, java_type, clazz_param=None):
   """Returns a conversion call expression from specified @JniType to default jni type."""
   if java_type.is_primitive():
-    if java_type.primitive_name == 'int':
+    if java_type.primitive_name == 'int' and not java_type.converted_type():
       rvalue = f'as_jint({rvalue})'
     sb(f'static_cast<{java_type.to_cpp()}>({rvalue})')
     return

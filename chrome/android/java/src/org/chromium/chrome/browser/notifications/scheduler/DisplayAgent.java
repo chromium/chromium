@@ -12,6 +12,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Icon;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -101,13 +102,19 @@ public class DisplayAgent {
 
     @CalledByNative
     private static void addButton(
-            NotificationData notificationData, String text, @ActionButtonType int type, String id) {
+            NotificationData notificationData,
+            @JniType("std::u16string") String text,
+            @ActionButtonType int type,
+            @JniType("std::string") String id) {
         notificationData.buttons.add(new Button(text, type, id));
     }
 
     @CalledByNative
     private static void addIcon(
-            NotificationData notificationData, @IconType int type, Bitmap bitmap, int resourceId) {
+            NotificationData notificationData,
+            @IconType int type,
+            @JniType("SkBitmap") Bitmap bitmap,
+            int resourceId) {
         assert ((bitmap == null && resourceId != 0) || (bitmap != null && resourceId == 0));
         if (resourceId != 0) {
             notificationData.icons.put(type, new IconBundle(resourceId));
@@ -117,7 +124,8 @@ public class DisplayAgent {
     }
 
     @CalledByNative
-    private static NotificationData buildNotificationData(String title, String message) {
+    private static NotificationData buildNotificationData(
+            @JniType("std::u16string") String title, @JniType("std::u16string") String message) {
         return new NotificationData(title, message);
     }
 
@@ -136,7 +144,8 @@ public class DisplayAgent {
     }
 
     @CalledByNative
-    private static SystemData buildSystemData(@SchedulerClientType int type, String guid) {
+    private static SystemData buildSystemData(
+            @SchedulerClientType int type, @JniType("std::string") String guid) {
         return new SystemData(type, guid);
     }
 
@@ -361,8 +370,8 @@ public class DisplayAgent {
         void onUserAction(
                 @SchedulerClientType int clientType,
                 @UserActionType int actionType,
-                String guid,
+                @JniType("std::string") String guid,
                 @ActionButtonType int type,
-                String buttonId);
+                @JniType("std::string") String buttonId);
     }
 }

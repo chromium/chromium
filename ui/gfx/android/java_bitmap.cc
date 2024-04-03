@@ -20,6 +20,30 @@ using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using jni_zero::AttachCurrentThread;
 
+namespace jni_zero {
+
+// Converts |bitmap| to an SkBitmap of the same size and format.
+// Note: |j_bitmap| is assumed to be non-null, non-empty and of format
+// RGBA_8888.
+template <>
+GFX_EXPORT SkBitmap FromJniType<SkBitmap>(JNIEnv* env,
+                                          const JavaRef<jobject>& j_bitmap) {
+  return gfx::CreateSkBitmapFromJavaBitmap(gfx::JavaBitmap(j_bitmap));
+}
+
+// Converts |skbitmap| to a Java-backed bitmap (android.graphics.Bitmap).
+// Note: return nullptr jobject if |skbitmap| is null or empty.
+template <>
+GFX_EXPORT ScopedJavaLocalRef<jobject> ToJniType<SkBitmap>(
+    JNIEnv* env,
+    const SkBitmap& skbitmap) {
+  if (skbitmap.drawsNothing()) {
+    return {};
+  }
+  return gfx::ConvertToJavaBitmap(skbitmap, gfx::OomBehavior::kCrashOnOom);
+}
+}  // namespace jni_zero
+
 namespace gfx {
 namespace {
 
