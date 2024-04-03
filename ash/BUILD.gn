@@ -4688,6 +4688,8 @@ static_library("test_support") {
     "picker/mock_picker_asset_fetcher.h",
     "picker/picker_test_util.cc",
     "picker/picker_test_util.h",
+    "picker/search/mock_search_picker_client.cc",
+    "picker/search/mock_search_picker_client.h",
     "projector/test/mock_projector_metadata_controller.cc",
     "projector/test/mock_projector_metadata_controller.h",
     "projector/test/mock_projector_ui_controller.cc",

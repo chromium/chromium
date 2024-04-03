@@ -10,11 +10,11 @@
 #include <utility>
 
 #include "ash/picker/model/picker_search_results_section.h"
+#include "ash/picker/search/mock_search_picker_client.h"
 #include "ash/picker/search/picker_search_request.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/ash_web_view.h"
-#include "ash/public/cpp/picker/mock_picker_client.h"
 #include "ash/public/cpp/picker/picker_category.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/containers/span.h"
@@ -40,13 +40,11 @@ using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::Invoke;
-using ::testing::InvokeWithoutArgs;
 using ::testing::IsEmpty;
 using ::testing::IsSupersetOf;
 using ::testing::NiceMock;
 using ::testing::Not;
 using ::testing::Property;
-using ::testing::SaveArg;
 using ::testing::VariantWith;
 
 constexpr base::TimeDelta kBurnInPeriod = base::Milliseconds(400);
@@ -75,53 +73,6 @@ MATCHER_P(LastElement, matcher, "") {
   return !arg.empty() &&
          ExplainMatchResult(matcher, arg.back(), result_listener);
 }
-
-// TODO: b/329756078 - Deduplicate this with the `MockSearchPickerClient` in
-// `picker_search_request_unittest`.
-class MockSearchPickerClient : public MockPickerClient {
- public:
-  MockSearchPickerClient() {
-    // Set default behaviours. These can be overridden with `WillOnce` and
-    // `WillRepeatedly`.
-    ON_CALL(*this, StartCrosSearch)
-        .WillByDefault(SaveArg<2>(&cros_search_callback_));
-    ON_CALL(*this, FetchGifSearch)
-        .WillByDefault(
-            Invoke(this, &MockSearchPickerClient::FetchGifSearchToSetCallback));
-    ON_CALL(*this, GetSharedURLLoaderFactory).WillByDefault([]() {
-      ADD_FAILURE()
-          << "GetSharedURLLoaderFactory should not be called in this unittest";
-      return nullptr;
-    });
-  }
-
-  // Set by the default `StartCrosSearch` behaviour. If the behaviour is
-  // overridden, this may not be set on a `StartCrosSearch` callback.
-  CrosSearchResultsCallback& cros_search_callback() {
-    return cros_search_callback_;
-  }
-
-  // Set by the default `FetchGifSearch` behaviour. If the behaviour is
-  // overridden, this may not be set on a `FetchGifSearch` callback.
-  FetchGifsCallback& gif_search_callback() { return gif_search_callback_; }
-
-  // Use `Invoke(&client, &MockPickerClient::FetchGifSearchToSetCallback)` as a
-  // `FetchGifSearch` action to set `gif_search_callback_` when `FetchGifSearch`
-  // is called.
-  // This is already done by default in the constructor, but provided here for
-  // convenience if a test requires this action when overriding the default
-  // action.
-  // TODO: b/73967242 - Use a gMock action for this once gMock supports
-  // move-only arguments in `SaveArg`.
-  void FetchGifSearchToSetCallback(const std::string& query,
-                                   FetchGifsCallback callback) {
-    gif_search_callback_ = std::move(callback);
-  }
-
- private:
-  CrosSearchResultsCallback cros_search_callback_;
-  FetchGifsCallback gif_search_callback_;
-};
 
 using MockSearchResultsCallback =
     ::testing::MockFunction<PickerViewDelegate::SearchResultsCallback>;
