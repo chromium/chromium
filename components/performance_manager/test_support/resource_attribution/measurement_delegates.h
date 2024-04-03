@@ -163,7 +163,7 @@ class SimulatedCPUMeasurementDelegate final : public CPUMeasurementDelegate {
   // List of periods of varying CPU usage.
   std::vector<CPUUsagePeriod> cpu_usage_periods_;
 
-  // If this is not nullot, GetCumulativeCPUUsage() will ignore
+  // If this is not nullopt, GetCumulativeCPUUsage() will ignore
   // `cpu_usage_periods` and return it as an error instead.
   std::optional<ProcessCPUUsageError> error_;
 };

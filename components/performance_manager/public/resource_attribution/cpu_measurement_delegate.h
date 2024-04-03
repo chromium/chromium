@@ -43,9 +43,9 @@ class CPUMeasurementDelegate {
   CPUMeasurementDelegate() = default;
   virtual ~CPUMeasurementDelegate() = default;
 
-  // Requests CPU usage for the process. This is [[nodiscard]] to match the
-  // semantics of ProcessMetrics::GetCumulativeCPUUsage().
-  [[nodiscard]] virtual base::expected<base::TimeDelta, ProcessCPUUsageError>
+  // Requests CPU usage for the process. Should match the semantics of
+  // ProcessMetrics::GetCumulativeCPUUsage().
+  virtual base::expected<base::TimeDelta, ProcessCPUUsageError>
   GetCumulativeCPUUsage() = 0;
 };
 

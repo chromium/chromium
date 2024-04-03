@@ -140,16 +140,14 @@ class BASE_EXPORT ProcessMetrics {
   // Same as the above, but automatically calls GetCumulativeCPUUsage() to
   // determine the current cumulative CPU. Returns nullopt if
   // GetCumulativeCPUUsage() fails.
-  [[nodiscard]] base::expected<double, ProcessCPUUsageError>
-  GetPlatformIndependentCPUUsage();
+  base::expected<double, ProcessCPUUsageError> GetPlatformIndependentCPUUsage();
 
   // Returns the cumulative CPU usage across all threads of the process since
   // process start, or nullopt on error. In case of multi-core processors, a
   // process can consume CPU at a rate higher than wall-clock time, e.g. two
   // cores at full utilization will result in a time delta of 2 seconds/per 1
   // wall-clock second.
-  [[nodiscard]] base::expected<TimeDelta, ProcessCPUUsageError>
-  GetCumulativeCPUUsage();
+  base::expected<TimeDelta, ProcessCPUUsageError> GetCumulativeCPUUsage();
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
     BUILDFLAG(IS_AIX)
