@@ -685,7 +685,7 @@
           "--platform",
           "iPad Air (5th generation)",
           "--version",
-          "17.2",
+          "17.4",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -695,7 +695,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_remoting_unittests iPad Air (5th generation) 17.2",
+        "name": "ios_remoting_unittests iPad Air (5th generation) 17.4",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -718,15 +718,15 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_17_2",
-              "path": "Runtime-ios-17.2"
+              "name": "runtime_ios_17_4",
+              "path": "Runtime-ios-17.4"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_remoting_unittests",
         "test_id_prefix": "ninja://remoting/ios:ios_remoting_unittests/",
-        "variant_id": "iPad Air (5th generation) 17.2"
+        "variant_id": "iPad Air (5th generation) 17.4"
       },
       {
         "args": [
@@ -781,7 +781,7 @@
           "--platform",
           "iPhone 14",
           "--version",
-          "17.2",
+          "17.4",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -791,7 +791,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_remoting_unittests iPhone 14 17.2",
+        "name": "ios_remoting_unittests iPhone 14 17.4",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -814,15 +814,15 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_17_2",
-              "path": "Runtime-ios-17.2"
+              "name": "runtime_ios_17_4",
+              "path": "Runtime-ios-17.4"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_remoting_unittests",
         "test_id_prefix": "ninja://remoting/ios:ios_remoting_unittests/",
-        "variant_id": "iPhone 14 17.2"
+        "variant_id": "iPhone 14 17.4"
       }
     ]
   }

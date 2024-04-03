@@ -112,7 +112,7 @@
           "--platform",
           "iPhone 14",
           "--version",
-          "17.2",
+          "17.4",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -123,7 +123,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "angle_end2end_tests iPhone 14 17.2",
+        "name": "angle_end2end_tests iPhone 14 17.4",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -149,8 +149,8 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_17_2",
-              "path": "Runtime-ios-17.2"
+              "name": "runtime_ios_17_4",
+              "path": "Runtime-ios-17.4"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -158,7 +158,7 @@
         "test": "angle_end2end_tests",
         "test_id_prefix": "ninja://third_party/angle/src/tests:angle_end2end_tests/",
         "use_isolated_scripts_api": true,
-        "variant_id": "iPhone 14 17.2"
+        "variant_id": "iPhone 14 17.4"
       },
       {
         "args": [
@@ -220,7 +220,7 @@
           "--platform",
           "iPhone 14",
           "--version",
-          "17.2",
+          "17.4",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -231,7 +231,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "angle_white_box_tests iPhone 14 17.2",
+        "name": "angle_white_box_tests iPhone 14 17.4",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -257,8 +257,8 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_17_2",
-              "path": "Runtime-ios-17.2"
+              "name": "runtime_ios_17_4",
+              "path": "Runtime-ios-17.4"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -266,7 +266,7 @@
         "test": "angle_white_box_tests",
         "test_id_prefix": "ninja://third_party/angle/src/tests:angle_white_box_tests/",
         "use_isolated_scripts_api": true,
-        "variant_id": "iPhone 14 17.2"
+        "variant_id": "iPhone 14 17.4"
       }
     ]
   },

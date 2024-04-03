@@ -565,16 +565,6 @@
       ],
     },
   },
-  'ios_runtime_cache_17_2': {
-    'swarming': {
-      'named_caches': [
-        {
-          'name': 'runtime_ios_17_2',
-          'path': 'Runtime-ios-17.2',
-        },
-      ],
-    },
-  },
   'ios_runtime_cache_17_4': {
     'swarming': {
       'named_caches': [
