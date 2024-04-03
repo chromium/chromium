@@ -14,6 +14,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/heap_array.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
@@ -771,7 +772,7 @@ void GLES2DecoderTestBase::SetBucketAsCStrings(uint32_t bucket_id,
                                                char str_end) {
   uint32_t header_size = sizeof(GLint) * (count + 1);
   uint32_t total_size = header_size;
-  std::unique_ptr<GLint[]> header(new GLint[count + 1]);
+  auto header = base::HeapArray<GLint>::Uninit(count + 1);
   header[0] = static_cast<GLint>(count_in_header);
   for (GLsizei ii = 0; ii < count; ++ii) {
     header[ii + 1] = str && str[ii] ? strlen(str[ii]) : 0;
@@ -780,7 +781,7 @@ void GLES2DecoderTestBase::SetBucketAsCStrings(uint32_t bucket_id,
   cmd::SetBucketSize cmd1;
   cmd1.Init(bucket_id, total_size);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd1));
-  memcpy(shared_memory_address_, header.get(), header_size);
+  memcpy(shared_memory_address_, header.data(), header_size);
   uint32_t offset = header_size;
   for (GLsizei ii = 0; ii < count; ++ii) {
     if (str && str[ii]) {
