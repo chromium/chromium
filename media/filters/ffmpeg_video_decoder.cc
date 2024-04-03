@@ -213,10 +213,6 @@ int FFmpegVideoDecoder::GetVideoBuffer(struct AVCodecContext* codec_context,
     frame->linesize[plane] = layout->planes()[plane].stride;
   }
 
-  // This seems unsafe, given threaded decoding.  However, `reordered_opaque` is
-  // also going away upstream, so we need a whole new mechanism either way.
-  frame->reordered_opaque = codec_context->reordered_opaque;
-
   // This will be freed by `ReleaseVideoBufferImpl`.
   auto* opaque = new OpaqueData(fb_priv, frame_pool_, data, allocation_size,
                                 std::move(*layout));
