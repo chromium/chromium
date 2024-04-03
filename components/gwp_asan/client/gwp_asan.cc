@@ -240,8 +240,7 @@ bool IsMutuallyExclusiveFeatureAllowed(const base::Feature& feature) {
 // Exported for testing.
 GWP_ASAN_EXPORT std::optional<AllocatorSettings> GetAllocatorSettings(
     const base::Feature& feature,
-    bool boost_sampling,
-    const char* process_type) {
+    bool boost_sampling) {
   if (!base::FeatureList::IsEnabled(feature))
     return std::nullopt;
 
@@ -446,8 +445,8 @@ bool MaybeEnableLightweightDetectorInternal(bool boost_sampling,
 void EnableForMalloc(bool boost_sampling, const char* process_type) {
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
   static bool init_once = [&]() -> bool {
-    auto settings = internal::GetAllocatorSettings(
-        internal::kGwpAsanMalloc, boost_sampling, process_type);
+    auto settings = internal::GetAllocatorSettings(internal::kGwpAsanMalloc,
+                                                   boost_sampling);
     if (!settings)
       return false;
 
@@ -467,7 +466,7 @@ void EnableForPartitionAlloc(bool boost_sampling, const char* process_type) {
 #if BUILDFLAG(USE_PARTITION_ALLOC)
   static bool init_once = [&]() -> bool {
     auto settings = internal::GetAllocatorSettings(
-        internal::kGwpAsanPartitionAlloc, boost_sampling, process_type);
+        internal::kGwpAsanPartitionAlloc, boost_sampling);
     if (!settings)
       return false;
 
