@@ -1358,9 +1358,8 @@ fn ascii_class_as_chars(
 #[cfg(test)]
 mod tests {
     use crate::{
-        ast::{self, parse::ParserBuilder, Ast, Position, Span},
-        hir::{self, Hir, HirKind, Look, Properties},
-        unicode::{self, ClassQuery},
+        ast::{parse::ParserBuilder, Position},
+        hir::{Look, Properties},
     };
 
     use super::*;

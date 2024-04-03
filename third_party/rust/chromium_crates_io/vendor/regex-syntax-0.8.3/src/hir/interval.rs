@@ -479,23 +479,6 @@ pub trait Interval:
         ret
     }
 
-    /// Compute the symmetric difference the given range from this range. This
-    /// returns the union of the two ranges minus its intersection.
-    fn symmetric_difference(
-        &self,
-        other: &Self,
-    ) -> (Option<Self>, Option<Self>) {
-        let union = match self.union(other) {
-            None => return (Some(self.clone()), Some(other.clone())),
-            Some(union) => union,
-        };
-        let intersection = match self.intersect(other) {
-            None => return (Some(self.clone()), Some(other.clone())),
-            Some(intersection) => intersection,
-        };
-        union.difference(&intersection)
-    }
-
     /// Returns true if and only if the two ranges are contiguous. Two ranges
     /// are contiguous if and only if the ranges are either overlapping or
     /// adjacent.

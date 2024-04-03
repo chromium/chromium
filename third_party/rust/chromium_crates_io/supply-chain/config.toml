@@ -179,7 +179,7 @@ criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 [policy."regex-automata:0.4.6"]
 criteria = ["does-not-implement-crypto", "safe-to-run"]
 
-[policy."regex-syntax:0.8.2"]
+[policy."regex-syntax:0.8.3"]
 criteria = ["does-not-implement-crypto", "safe-to-run"]
 
 [policy."regex:1.10.4"]

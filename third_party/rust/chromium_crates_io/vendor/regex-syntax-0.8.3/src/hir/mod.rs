@@ -322,6 +322,22 @@ impl Hir {
     /// let expected = HirKind::Literal(Literal(Box::from("☃".as_bytes())));
     /// assert_eq!(&expected, concat.kind());
     /// ```
+    ///
+    /// # Example: building a literal from a `char`
+    ///
+    /// This example shows how to build a single `Hir` literal from a `char`
+    /// value. Since a [`Literal`] is just bytes, we just need to UTF-8
+    /// encode a `char` value:
+    ///
+    /// ```
+    /// use regex_syntax::hir::{Hir, HirKind, Literal};
+    ///
+    /// let ch = '☃';
+    /// let got = Hir::literal(ch.encode_utf8(&mut [0; 4]).as_bytes());
+    ///
+    /// let expected = HirKind::Literal(Literal(Box::from("☃".as_bytes())));
+    /// assert_eq!(&expected, got.kind());
+    /// ```
     #[inline]
     pub fn literal<B: Into<Box<[u8]>>>(lit: B) -> Hir {
         let bytes = lit.into();
