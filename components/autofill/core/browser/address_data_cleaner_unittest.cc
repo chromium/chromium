@@ -9,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/address_data_cleaner_test_api.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/test_utils/test_profiles.h"
@@ -245,6 +246,30 @@ TEST_F(AddressDataCleanerTest, DeleteDisusedAddresses) {
 
   test_api(data_cleaner_).DeleteDisusedAddresses();
   EXPECT_THAT(test_pdm_.GetProfiles(), UnorderedElementsAre(Pointee(profile2)));
+}
+
+TEST_F(AddressDataCleanerTest, CalculateMinimalIncompatibleTypeSets) {
+  const AutofillProfileComparator comparator("en_US");
+  AutofillProfile profile = test::GetFullProfile();
+  std::vector<AutofillProfile> other_profiles;
+  // FullProfile2 differs from `profile` in numerious ways.
+  other_profiles.push_back(test::GetFullProfile2());
+  // Add a profile that only differs from `profile` in its email address.
+  other_profiles.emplace_back(test::GetFullProfile())
+      .SetRawInfo(EMAIL_ADDRESS, u"other-email@gmail.com");
+  // Expect that the only minimal set is the email address.
+  EXPECT_THAT(AddressDataCleaner::CalculateMinimalIncompatibleTypeSets(
+                  profile, other_profiles, comparator),
+              testing::UnorderedElementsAre(FieldTypeSet{EMAIL_ADDRESS}));
+  // Add one more profile that only differs from `profile` in its phone number.
+  other_profiles.emplace_back(test::GetFullProfile())
+      .SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"+49 1578 7912345");
+  // Expect that both minimal sets are returned.
+  EXPECT_THAT(
+      AddressDataCleaner::CalculateMinimalIncompatibleTypeSets(
+          profile, other_profiles, comparator),
+      testing::UnorderedElementsAre(FieldTypeSet{EMAIL_ADDRESS},
+                                    FieldTypeSet{PHONE_HOME_WHOLE_NUMBER}));
 }
 
 }  // namespace autofill

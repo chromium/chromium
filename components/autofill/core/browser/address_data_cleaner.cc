@@ -146,6 +146,37 @@ void AddressDataCleaner::MaybeCleanupAddressData() {
   DeleteDisusedAddresses();
 }
 
+// static
+std::vector<FieldTypeSet>
+AddressDataCleaner::CalculateMinimalIncompatibleTypeSets(
+    const AutofillProfile& profile,
+    base::span<const AutofillProfile> other_profiles,
+    const AutofillProfileComparator& comparator) {
+  std::vector<FieldTypeSet> min_incompatible_sets;
+  for (const AutofillProfile& other : other_profiles) {
+    if (profile.guid() == other.guid()) {
+      // When computing `CalculateMinimalIncompatibleTypeSets()` for every
+      // profile in a list of profiles, it's convenient to call the function
+      // with that list as `other_profiles`. Skip the `profile` entry.
+      continue;
+    }
+    const std::optional<FieldTypeSet> differing_types =
+        comparator.NonMergeableSettingVisibleTypes(profile, other);
+    if (!differing_types) {
+      continue;
+    }
+    // Replace `min_min_incompatible_sets` if `differing_types->size()` is a new
+    // minimum or add to it, if it matches the current minimum.
+    if (min_incompatible_sets.empty() ||
+        min_incompatible_sets.back().size() > differing_types->size()) {
+      min_incompatible_sets = {*differing_types};
+    } else if (min_incompatible_sets.back().size() == differing_types->size()) {
+      min_incompatible_sets.push_back(*differing_types);
+    }
+  }
+  return min_incompatible_sets;
+}
+
 void AddressDataCleaner::ApplyDeduplicationRoutine() {
   // Since deduplication (more specifically, comparing profiles) depends on the
   // `AlternativeStateNameMap`, make sure that it gets populated first.

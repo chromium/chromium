@@ -5,10 +5,13 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_ADDRESS_DATA_CLEANER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_ADDRESS_DATA_CLEANER_H_
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_updater.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/sync/base/model_type.h"
@@ -44,6 +47,23 @@ class AddressDataCleaner : public PersonalDataManagerObserver,
   // Deduplication is particularly expensive, since it runs in O(#profiles^2).
   // For this reason, it is only run once per milestone.
   void MaybeCleanupAddressData();
+
+  // Computes the `comparator.NonMergeableSettingVisibleTypes()` between
+  // `profile` and every element of `other_profiles`. Returns the subset of them
+  // that have minimum size. Thus, all elements of the returned vector have the
+  // same size.
+  // In profile deduplication context, this indicates what the minimum sets of
+  // types are whose removal makes `profile` a duplicate with specific other
+  // profile in `other_profiles`. In a mathematical sense, the returned vector
+  // is not a set and may contain duplicates. This is intentional, as this means
+  // the same set of types prevented deduplication in multiple cases, which is
+  // used to weight metrics. Profile pairs of different countries are ignored.
+  // See `NonMergeableSettingVisibleTypes()`. As such, the returned vector is
+  // empty if no profile in `other_profiles` has the same country as `profile`.
+  static std::vector<FieldTypeSet> CalculateMinimalIncompatibleTypeSets(
+      const AutofillProfile& profile,
+      base::span<const AutofillProfile> other_profiles,
+      const AutofillProfileComparator& comparator);
 
  private:
   friend class AddressDataCleanerTestApi;
