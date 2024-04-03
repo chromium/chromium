@@ -7,7 +7,6 @@
 #include <memory>
 #include <optional>
 #include <ostream>
-#include <sstream>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -18,6 +17,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/sequence_checker.h"
+#include "base/strings/to_string.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
@@ -60,8 +60,11 @@ InstallIsolatedWebAppCommandSuccess::InstallIsolatedWebAppCommandSuccess(
 
 std::ostream& operator<<(std::ostream& os,
                          const InstallIsolatedWebAppCommandSuccess& success) {
-  return os << "InstallIsolatedWebAppCommandSuccess { installed_version = \""
-            << success.installed_version.GetString() << "\" }.";
+  return os << "InstallIsolatedWebAppCommandSuccess "
+            << base::Value::Dict()
+                   .Set("installed_version",
+                        success.installed_version.GetString())
+                   .Set("location", base::ToString(success.location));
 }
 
 std::ostream& operator<<(std::ostream& os,
@@ -86,12 +89,21 @@ InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
                                    InstallIsolatedWebAppCommandError>>(
           "InstallIsolatedWebAppCommand",
           AppLockDescription(url_info.app_id()),
-          base::BindOnce([](base::expected<InstallIsolatedWebAppCommandSuccess,
-                                           InstallIsolatedWebAppCommandError>
-                                result) {
-            webapps::InstallableMetrics::TrackInstallResult(result.has_value());
-            return result;
-          }).Then(std::move(callback)),
+          base::BindOnce(
+              [](web_package::SignedWebBundleId web_bundle_id,
+                 base::expected<InstallIsolatedWebAppCommandSuccess,
+                                InstallIsolatedWebAppCommandError> result) {
+                webapps::InstallableMetrics::TrackInstallResult(
+                    result.has_value());
+                DVLOG(0) << "Install result of IWA "
+                         << base::ToString(web_bundle_id) << ": "
+                         << (result.has_value()
+                                 ? base::ToString(result.value())
+                                 : base::ToString(result.error()));
+                return result;
+              },
+              url_info.web_bundle_id())
+              .Then(std::move(callback)),
           /*args_for_shutdown=*/
           base::unexpected(InstallIsolatedWebAppCommandError{
               .message = std::string("System shutting down.")})),
@@ -259,9 +271,8 @@ void InstallIsolatedWebAppCommand::OnFinalizeInstall(
   if (install_result_code == webapps::InstallResultCode::kSuccessNewInstall) {
     ReportSuccess();
   } else {
-    std::stringstream os;
-    os << "Error during finalization: " << install_result_code;
-    ReportFailure(os.str());
+    ReportFailure("Error during finalization: " +
+                  base::ToString(install_result_code));
   }
 }
 
