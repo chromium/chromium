@@ -10,6 +10,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/threading/platform_thread.h"
 #include "base/threading/thread_checker.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/frame_timing_details_map.h"
@@ -82,6 +83,7 @@ class RootFrameSink : public base::RefCounted<RootFrameSink>,
   void SubmitChildCompositorFrame(ChildFrame* child_frame);
   viz::FrameTimingDetailsMap TakeChildFrameTimingDetailsMap();
   gfx::Size GetChildFrameSize();
+  base::flat_set<base::PlatformThreadId> GetChildFrameRendererThreadIds();
 
   // viz::mojom::CompositorFrameSinkClient implementation.
   void DidReceiveCompositorFrameAck(
@@ -130,6 +132,7 @@ class RootFrameSink : public base::RefCounted<RootFrameSink>,
   std::unique_ptr<viz::ExternalBeginFrameSource> begin_frame_source_;
 
   std::unique_ptr<ChildCompositorFrameSink> child_sink_support_;
+  base::flat_set<base::PlatformThreadId> child_frame_renderer_thread_ids_;
 
   bool clients_need_begin_frames_ = false;
   bool needs_begin_frames_ = false;

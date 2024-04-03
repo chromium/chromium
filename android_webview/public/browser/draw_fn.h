@@ -20,7 +20,8 @@ typedef struct ASurfaceTransaction ASurfaceTransaction;
 // 1 is Android Q. This matches kAwDrawGLInfoVersion version 3.
 // 2 Adds transfer_function_* and color_space_toXYZD50 to AwDrawFn_DrawGLParams.
 // 3 Adds SurfaceControl related functions.
-static const int kAwDrawFnVersion = 3;
+// 4 Adds AwDrawFn_ReportRenderingThreads to AwDrawFnFunctionTable.
+static const int kAwDrawFnVersion = 4;
 
 // Returns parent ASurfaceControl for WebView overlays. It will be have same
 // geometry as the surface we draw into and positioned below it (underlay).
@@ -265,6 +266,12 @@ typedef int AwDrawFn_CreateFunctor_v3(
 // released, and it should be considered alive & active until that point.
 typedef void AwDrawFn_ReleaseFunctor(int functor);
 
+// Report the list of threads critical for frame production for the given
+// functor. Must be called on render thread.
+typedef void AwDrawFn_ReportRenderingThreads(int functor,
+                                             const int32_t* thread_ids,
+                                             size_t size);
+
 struct AwDrawFnFunctionTable {
   int version;
   AwDrawFn_QueryRenderMode* query_render_mode;
@@ -273,6 +280,8 @@ struct AwDrawFnFunctionTable {
   AwDrawFn_ReleaseFunctor* release_functor;
   // Added in version 3.
   AwDrawFn_CreateFunctor_v3* create_functor_v3;
+  // Added in version 4.
+  AwDrawFn_ReportRenderingThreads* report_rendering_threads;
 };
 
 #ifdef __cplusplus

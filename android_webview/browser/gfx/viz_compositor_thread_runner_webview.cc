@@ -81,6 +81,8 @@ void VizCompositorThreadRunnerWebView::InitFrameSinkManagerOnViz() {
 
   frame_sink_manager_ =
       std::make_unique<viz::FrameSinkManagerImpl>(init_params);
+
+  thread_ids_.insert(base::PlatformThread::CurrentId());
 }
 
 viz::FrameSinkManagerImpl*
@@ -116,6 +118,13 @@ bool VizCompositorThreadRunnerWebView::CreateHintSessionFactory(
     base::flat_set<base::PlatformThreadId> thread_ids,
     base::RepeatingClosure* wake_up_closure) {
   return false;
+}
+
+void VizCompositorThreadRunnerWebView::SetIOThreadId(
+    base::PlatformThreadId io_thread_id) {
+  if (io_thread_id != base::kInvalidThreadId) {
+    thread_ids_.insert(io_thread_id);
+  }
 }
 
 void VizCompositorThreadRunnerWebView::CreateFrameSinkManager(

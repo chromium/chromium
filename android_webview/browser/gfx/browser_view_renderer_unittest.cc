@@ -358,7 +358,8 @@ RENDERING_TEST_F(CompositorNoFrameTest);
 class ClientIsVisibleOnConstructionTest : public RenderingTest {
   void SetUpTestHarness() override {
     browser_view_renderer_ = std::make_unique<BrowserViewRenderer>(
-        this, base::SingleThreadTaskRunner::GetCurrentDefault());
+        this, base::SingleThreadTaskRunner::GetCurrentDefault(),
+        base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
   void StartTest() override {

@@ -88,7 +88,9 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
       CompositorThreadScheduler* compositor_thread_scheduler,
       scoped_refptr<scheduler::WidgetScheduler> widget_scheduler,
       bool needs_input_handler,
-      bool allow_scroll_resampling);
+      bool allow_scroll_resampling,
+      base::PlatformThreadId io_thread_id,
+      base::PlatformThreadId main_thread_id);
 
   WidgetInputHandlerManager(const WidgetInputHandlerManager&) = delete;
   WidgetInputHandlerManager& operator=(const WidgetInputHandlerManager&) =
@@ -199,7 +201,9 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
       bool never_composited,
       CompositorThreadScheduler* compositor_thread_scheduler,
       scoped_refptr<scheduler::WidgetScheduler> widget_scheduler,
-      bool allow_scroll_resampling);
+      bool allow_scroll_resampling,
+      base::PlatformThreadId io_thread_id,
+      base::PlatformThreadId main_thread_id);
   void InitInputHandler();
   void InitOnInputHandlingThread(
       const base::WeakPtr<cc::CompositorDelegateForInput>& compositor_delegate,

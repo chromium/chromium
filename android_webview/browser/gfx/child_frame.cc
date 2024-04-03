@@ -21,7 +21,9 @@ ChildFrame::ChildFrame(
     float device_scale_factor,
     CopyOutputRequestQueue copy_requests,
     bool did_invalidate,
-    const viz::BeginFrameArgs& begin_frame_args)
+    const viz::BeginFrameArgs& begin_frame_args,
+    const base::flat_set<base::PlatformThreadId>& renderer_thread_ids,
+    base::PlatformThreadId browser_io_thread_id)
     : frame_future(std::move(frame_future)),
       frame_sink_id(frame_sink_id),
       viewport_size_for_tile_priority(viewport_size_for_tile_priority),
@@ -30,7 +32,9 @@ ChildFrame::ChildFrame(
       device_scale_factor(device_scale_factor),
       copy_requests(std::move(copy_requests)),
       did_invalidate(did_invalidate),
-      begin_frame_args(begin_frame_args) {}
+      begin_frame_args(begin_frame_args),
+      renderer_thread_ids(renderer_thread_ids),
+      browser_io_thread_id(browser_io_thread_id) {}
 
 ChildFrame::~ChildFrame() {
 }

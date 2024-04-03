@@ -117,7 +117,8 @@ void AwGLFunctor::DrawGL(AwDrawGLInfo* draw_info) {
       for (unsigned int i = 0; i < std::size(params.transform); ++i) {
         params.transform[i] = draw_info->transform[i];
       }
-      render_thread_manager_.DrawOnRT(save_restore, params, OverlaysParams());
+      render_thread_manager_.DrawOnRT(save_restore, params, OverlaysParams(),
+                                      ReportRenderingThreadsCallback());
       break;
     }
   }

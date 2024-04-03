@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
+#include "base/threading/platform_thread.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/surface_id.h"
@@ -39,7 +40,9 @@ class ChildFrame {
       float device_scale_factor,
       CopyOutputRequestQueue copy_requests,
       bool did_invalidate,
-      const viz::BeginFrameArgs& begin_frame_args);
+      const viz::BeginFrameArgs& begin_frame_args,
+      const base::flat_set<base::PlatformThreadId>& renderer_thread_ids,
+      base::PlatformThreadId browser_io_thread_id);
 
   ChildFrame(const ChildFrame&) = delete;
   ChildFrame& operator=(const ChildFrame&) = delete;
@@ -79,6 +82,10 @@ class ChildFrame {
 
   // Indicates if this ChildFrame was rendered at least once.
   bool rendered = false;
+
+  // Thread ids for passing to the HWUI ADPF session.
+  base::flat_set<base::PlatformThreadId> renderer_thread_ids;
+  base::PlatformThreadId browser_io_thread_id;
 };
 
 using ChildFrameQueue = base::circular_deque<std::unique_ptr<ChildFrame>>;

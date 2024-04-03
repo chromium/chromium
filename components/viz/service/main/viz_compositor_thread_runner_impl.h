@@ -52,6 +52,7 @@ class VizCompositorThreadRunnerImpl : public VizCompositorThreadRunner {
   bool CreateHintSessionFactory(
       base::flat_set<base::PlatformThreadId> thread_ids,
       base::RepeatingClosure* wake_up_closure) override;
+  void SetIOThreadId(base::PlatformThreadId io_thread_id) override {}
   void CreateFrameSinkManager(mojom::FrameSinkManagerParamsPtr params,
                               GpuServiceImpl* gpu_service) override;
 

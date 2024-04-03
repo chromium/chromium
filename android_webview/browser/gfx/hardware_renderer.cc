@@ -182,7 +182,8 @@ class HardwareRenderer::OnViz : public viz::DisplayClient {
                         const gfx::ColorSpace& color_space,
                         bool overlays_enabled_by_hwui,
                         ChildFrame* child_frame);
-  void PostDrawOnViz(viz::FrameTimingDetailsMap* timing_details);
+  void PostDrawOnViz(viz::FrameTimingDetailsMap* timing_details,
+                     std::vector<pid_t>* rendering_thread_ids);
   void RemoveOverlaysOnViz();
   void MarkAllowContextLossOnViz();
 
@@ -226,6 +227,8 @@ class HardwareRenderer::OnViz : public viz::DisplayClient {
   // Initialized in ctor and never changes, so it's safe to access from both
   // threads. Can be null, if overlays are disabled.
   raw_ptr<OverlayProcessorWebView> overlay_processor_webview_ = nullptr;
+
+  base::PlatformThreadId browser_io_thread_id_ = base::kInvalidThreadId;
 
   THREAD_CHECKER(viz_thread_checker_);
 };
@@ -290,6 +293,10 @@ void HardwareRenderer::OnViz::DrawAndSwapOnViz(
   if (child_frame->frame) {
     DCHECK(!viz_frame_submission_);
     DCHECK(!child_frame->rendered);
+    // Browser thread is trusted, and can be saved straight away.
+    // Renderer threads are not trusted, and need to go through verification
+    // in SubmitChildCompositorFrame before being reported to the ADPF session.
+    browser_io_thread_id_ = child_frame->browser_io_thread_id;
     without_gpu_->SubmitChildCompositorFrame(child_frame);
   }
 
@@ -457,8 +464,22 @@ void HardwareRenderer::OnViz::DrawAndSwapOnViz(
 }
 
 void HardwareRenderer::OnViz::PostDrawOnViz(
-    viz::FrameTimingDetailsMap* timing_details) {
+    viz::FrameTimingDetailsMap* timing_details,
+    std::vector<pid_t>* rendering_thread_ids) {
   *timing_details = without_gpu_->TakeChildFrameTimingDetailsMap();
+
+  auto renderer_thread_ids = without_gpu_->GetChildFrameRendererThreadIds();
+  *rendering_thread_ids = std::vector<pid_t>(renderer_thread_ids.begin(),
+                                             renderer_thread_ids.end());
+
+  auto gpu_thread_ids =
+      VizCompositorThreadRunnerWebView::GetInstance()->GetThreadIds();
+  std::copy(gpu_thread_ids.begin(), gpu_thread_ids.end(),
+            std::back_inserter(*rendering_thread_ids));
+
+  if (browser_io_thread_id_ != base::kInvalidThreadId) {
+    rendering_thread_ids->push_back(browser_io_thread_id_);
+  }
 }
 
 void HardwareRenderer::OnViz::RemoveOverlaysOnViz() {
@@ -579,7 +600,9 @@ HardwareRenderer::HardwareRenderer(RenderThreadManager* state,
                                    AwVulkanContextProvider* context_provider)
     : render_thread_manager_(state),
       last_egl_context_(eglGetCurrentContext()),
-      output_surface_provider_(context_provider) {
+      output_surface_provider_(context_provider),
+      report_rendering_threads_(
+          base::FeatureList::IsEnabled(::features::kWebViewEnableADPF)) {
   DCHECK_CALLED_ON_VALID_THREAD(render_thread_checker_);
 
   VizCompositorThreadRunnerWebView::GetInstance()->ScheduleOnVizAndBlock(
@@ -629,8 +652,10 @@ bool HardwareRenderer::IsUsingANGLEOverGL() const {
                                  ->IsANGLEExternalContextAndSurfaceSupported();
 }
 
-void HardwareRenderer::DrawAndSwap(const HardwareRendererDrawParams& params,
-                                   const OverlaysParams& overlays_params) {
+void HardwareRenderer::DrawAndSwap(
+    const HardwareRendererDrawParams& params,
+    const OverlaysParams& overlays_params,
+    ReportRenderingThreadsCallback report_rendering_threads_callback) {
   TRACE_EVENT1("android_webview", "HardwareRenderer::Draw", "vulkan",
                IsUsingVulkan());
 
@@ -731,9 +756,15 @@ void HardwareRenderer::DrawAndSwap(const HardwareRendererDrawParams& params,
 
   // Implement proper damage tracking, then deliver FrameTimingDetails
   // through the common begin frame path.
+  std::vector<pid_t> rendering_thread_ids;
   VizCompositorThreadRunnerWebView::GetInstance()->ScheduleOnVizAndBlock(
       base::BindOnce(&HardwareRenderer::OnViz::PostDrawOnViz,
-                     base::Unretained(on_viz_.get()), &timing_details));
+                     base::Unretained(on_viz_.get()), &timing_details,
+                     &rendering_thread_ids));
+  if (report_rendering_threads_ && report_rendering_threads_callback) {
+    std::move(report_rendering_threads_callback)
+        .Run(rendering_thread_ids.data(), rendering_thread_ids.size());
+  }
 
   if (need_to_update_draw_constraints || !timing_details.empty()) {
     // |frame_token| will be reported through the FrameSinkManager so we pass 0
@@ -832,8 +863,10 @@ void HardwareRenderer::ReportDrawMetric(
   did_submit_compositor_frame_ = false;
 }
 
-void HardwareRenderer::Draw(const HardwareRendererDrawParams& params,
-                            const OverlaysParams& overlays_params) {
+void HardwareRenderer::Draw(
+    const HardwareRendererDrawParams& params,
+    const OverlaysParams& overlays_params,
+    ReportRenderingThreadsCallback report_rendering_threads_callback) {
   TRACE_EVENT0("android_webview", "HardwareRenderer::Draw");
 
   for (auto& pruned_frame : WaitAndPruneFrameQueue(&child_frame_queue_)) {
@@ -869,7 +902,8 @@ void HardwareRenderer::Draw(const HardwareRendererDrawParams& params,
     }
   }
 
-  DrawAndSwap(params, overlays_params);
+  DrawAndSwap(params, overlays_params,
+              std::move(report_rendering_threads_callback));
 }
 
 void HardwareRenderer::ReturnChildFrame(

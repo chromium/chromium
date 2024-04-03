@@ -57,6 +57,7 @@ class MockVizCompositorThreadRunner : public VizCompositorThreadRunner {
       base::RepeatingClosure* wake_up_closure) override {
     return false;
   }
+  void SetIOThreadId(base::PlatformThreadId io_thread_id) override {}
   MOCK_METHOD2(CreateFrameSinkManager,
                void(mojom::FrameSinkManagerParamsPtr, GpuServiceImpl*));
 

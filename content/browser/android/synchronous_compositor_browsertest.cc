@@ -61,6 +61,7 @@ class TestSynchronousCompositorClient : public SynchronousCompositorClient {
       SynchronousCompositor* compositor,
       std::unique_ptr<viz::CopyOutputRequest> copy_request) override {}
   void AddBeginFrameCompletionCallback(base::OnceClosure callback) override {}
+  void SetThreadIds(const std::vector<int32_t>& thread_ids) override {}
 
   SynchronousCompositor* GetCompositor(const viz::FrameSinkId& id) {
     auto itr = compositor_map_.find(id);

@@ -410,8 +410,18 @@ void RootFrameSink::SubmitChildCompositorFrame(ChildFrame* child_frame) {
     child_sink_support_ = std::make_unique<ChildCompositorFrameSink>(
         this, child_frame->layer_tree_frame_sink_id,
         child_frame->frame_sink_id);
+    child_frame_renderer_thread_ids_ = {};
   }
-
+  if (child_frame_renderer_thread_ids_ != child_frame->renderer_thread_ids) {
+    child_frame_renderer_thread_ids_ = child_frame->renderer_thread_ids;
+    // Thread IDs from a sandboxed renderer process, thus untrusted and
+    // require verification.
+    // child_frame_renderer_thread_ids_ are used only to avoid unnessary
+    // reverification, they shouldn't be used a source of truth in
+    // GetChildFrameRendererThreadIds.
+    child_sink_support_->support()->SetThreadIds(
+        /*from_untrusted_client=*/true, child_frame->renderer_thread_ids);
+  }
   child_sink_support_->SubmitCompositorFrame(
       child_frame->local_surface_id, std::move(*child_frame->frame),
       std::move(child_frame->hit_test_region_list));
@@ -434,6 +444,14 @@ gfx::Size RootFrameSink::GetChildFrameSize() {
     return child_sink_support_->size();
   }
   return gfx::Size();
+}
+
+base::flat_set<base::PlatformThreadId>
+RootFrameSink::GetChildFrameRendererThreadIds() {
+  if (child_sink_support_) {
+    return child_sink_support_->support()->GetThreadIds();
+  }
+  return {};
 }
 
 void RootFrameSink::EvictChildSurface(const viz::SurfaceId& surface_id) {

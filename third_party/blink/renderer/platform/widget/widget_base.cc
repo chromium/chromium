@@ -238,10 +238,12 @@ void WidgetBase::InitializeCompositing(
   // (e.g.  popups, plugins) must forward their input directly through
   // WidgetBaseInputHandler.
   bool uses_input_handler = frame_widget;
+  base::PlatformThreadId io_thread_id = Platform::Current()->GetIOThreadId();
   widget_input_handler_manager_ = WidgetInputHandlerManager::Create(
       weak_ptr_factory_.GetWeakPtr(), std::move(frame_widget_input_handler),
       never_composited_, widget_compositing_thread_scheduler, widget_scheduler_,
-      uses_input_handler, client_->AllowsScrollResampling());
+      uses_input_handler, client_->AllowsScrollResampling(), io_thread_id,
+      main_thread_id_);
 
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();

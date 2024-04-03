@@ -110,6 +110,7 @@ class CONTENT_EXPORT SynchronousCompositorHost
   void UpdateState(
       blink::mojom::SyncCompositorCommonRendererParamsPtr params) override;
   void SetNeedsBeginFrames(bool needs_begin_frames) override;
+  void SetThreadIds(const std::vector<int32_t>& thread_ids) override;
 
   // viz::BeginFrameObserver implementation.
   void OnBeginFrame(const viz::BeginFrameArgs& args) override;

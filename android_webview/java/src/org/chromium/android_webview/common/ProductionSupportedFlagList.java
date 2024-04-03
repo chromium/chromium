@@ -162,6 +162,11 @@ public final class ProductionSupportedFlagList {
                 "More robust heuristic for calling Invalidate"),
         Flag.baseFeature(VizFeatures.WEBVIEW_VULKAN_INTERMEDIATE_BUFFER, "For debugging vulkan"),
         Flag.baseFeature(
+                VizFeatures.WEBVIEW_ENABLE_ADPF, "Pass WebView threads to HWUI ADPF session"),
+        Flag.baseFeature(
+                VizFeatures.WEBVIEW_ENABLE_ADPF_RENDERER_MAIN,
+                "Include Renderer Main into ADPF session"),
+        Flag.baseFeature(
                 VizFeatures.ALLOW_UNDAMAGED_NONROOT_RENDER_PASS_TO_SKIP,
                 "Enable optimization for skipping undamaged nonroot render passes."),
         Flag.baseFeature(

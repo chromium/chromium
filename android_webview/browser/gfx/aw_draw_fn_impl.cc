@@ -196,6 +196,16 @@ bool AwDrawFnImpl::IsUsingVulkan() {
              AW_DRAW_FN_RENDER_MODE_VULKAN;
 }
 
+// static
+void AwDrawFnImpl::ReportRenderingThreads(int functor,
+                                          const pid_t* thread_ids,
+                                          size_t size) {
+  if (g_draw_fn_function_table && g_draw_fn_function_table->version >= 4) {
+    g_draw_fn_function_table->report_rendering_threads(functor, thread_ids,
+                                                       size);
+  }
+}
+
 AwDrawFnImpl::AwDrawFnImpl()
     : render_thread_manager_(content::GetUIThreadTaskRunner({})) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -288,8 +298,9 @@ void AwDrawFnImpl::DrawGL(AwDrawFn_DrawGLParams* params) {
   HardwareRendererDrawParams hr_params =
       CreateHRDrawParams(params, color_space.get());
   OverlaysParams overlays_params = CreateOverlaysParams(params);
-  render_thread_manager_.DrawOnRT(/*save_restore=*/false, hr_params,
-                                  overlays_params);
+  render_thread_manager_.DrawOnRT(
+      /*save_restore=*/false, hr_params, overlays_params,
+      base::BindOnce(&AwDrawFnImpl::ReportRenderingThreads, functor_handle_));
 }
 
 void AwDrawFnImpl::InitVk(AwDrawFn_InitVkParams* params) {
@@ -341,8 +352,9 @@ void AwDrawFnImpl::DrawVk(AwDrawFn_DrawVkParams* params) {
   // and SkiaOutputSurface* will use it as frame render target.
   scoped_secondary_cb_draw_.emplace(vulkan_context_provider_.get(),
                                     std::move(draw_context));
-  render_thread_manager_.DrawOnRT(false /* save_restore */, hr_params,
-                                  overlays_params);
+  render_thread_manager_.DrawOnRT(
+      false /* save_restore */, hr_params, overlays_params,
+      base::BindOnce(&AwDrawFnImpl::ReportRenderingThreads, functor_handle_));
 }
 
 void AwDrawFnImpl::PostDrawVk(AwDrawFn_PostDrawVkParams* params) {

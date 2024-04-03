@@ -100,7 +100,8 @@ BrowserViewRenderer* BrowserViewRenderer::FromWebContents(
 
 BrowserViewRenderer::BrowserViewRenderer(
     BrowserViewRendererClient* client,
-    const scoped_refptr<base::SingleThreadTaskRunner>& ui_task_runner)
+    const scoped_refptr<base::SingleThreadTaskRunner>& ui_task_runner,
+    const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner)
     : client_(client),
       ui_task_runner_(ui_task_runner),
       current_compositor_frame_consumer_(nullptr),
@@ -122,6 +123,9 @@ BrowserViewRenderer::BrowserViewRenderer(
   root_frame_sink_proxy_ = std::make_unique<RootFrameSinkProxy>(
       ui_task_runner_, this, begin_frame_source_.get());
   UpdateBeginFrameSource();
+  io_task_runner->PostTask(
+      FROM_HERE, base::BindOnce(&BrowserViewRenderer::InitBrowserIOThreadId,
+                                weak_ptr_factory_.GetWeakPtr()));
 }
 
 BrowserViewRenderer::~BrowserViewRenderer() {
@@ -334,7 +338,8 @@ bool BrowserViewRenderer::OnDrawHardware() {
       std::move(future), frame_sink_id_, viewport_size_for_tile_priority,
       external_draw_constraints_.transform, offscreen_pre_raster_, dip_scale_,
       std::move(requests), did_invalidate,
-      begin_frame_source_->LastDispatchedBeginFrameArgs());
+      begin_frame_source_->LastDispatchedBeginFrameArgs(), renderer_thread_ids_,
+      browser_io_thread_id_);
 
   ReturnUnusedResource(
       current_compositor_frame_consumer_->SetFrameOnUI(std::move(child_frame)));
@@ -946,6 +951,10 @@ void BrowserViewRenderer::AddBeginFrameCompletionCallback(
   begin_frame_source_->AddBeginFrameCompletionCallback(std::move(callback));
 }
 
+void BrowserViewRenderer::SetThreadIds(const std::vector<int32_t>& thread_ids) {
+  renderer_thread_ids_ = thread_ids;
+}
+
 void BrowserViewRenderer::PostInvalidate(
     content::SynchronousCompositor* compositor) {
   TRACE_EVENT_INSTANT0("android_webview", "BrowserViewRenderer::PostInvalidate",
@@ -984,6 +993,10 @@ std::string BrowserViewRenderer::ToString() const {
       &str, "on_new_picture_enable: %d ", on_new_picture_enable_);
   base::StringAppendF(&str, "clear_view: %d ", clear_view_);
   return str;
+}
+
+void BrowserViewRenderer::InitBrowserIOThreadId() {
+  browser_io_thread_id_ = base::PlatformThread::CurrentId();
 }
 
 }  // namespace android_webview

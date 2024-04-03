@@ -50,6 +50,10 @@ class VizCompositorThreadRunnerWebView : public viz::VizCompositorThreadRunner {
 
   viz::FrameSinkManagerImpl* GetFrameSinkManager();
 
+  base::flat_set<base::PlatformThreadId> GetThreadIds() const {
+    return thread_ids_;
+  }
+
   // Must be called from the TaskQueueWebView thread. |task| is allowed to call
   // TaskQueueWebView::ScheduleTask.
   void ScheduleOnVizAndBlock(base::OnceClosure task);
@@ -66,6 +70,7 @@ class VizCompositorThreadRunnerWebView : public viz::VizCompositorThreadRunner {
   bool CreateHintSessionFactory(
       base::flat_set<base::PlatformThreadId> thread_ids,
       base::RepeatingClosure* wake_up_closure) override;
+  void SetIOThreadId(base::PlatformThreadId io_thread_id) override;
   void CreateFrameSinkManager(viz::mojom::FrameSinkManagerParamsPtr params,
                               viz::GpuServiceImpl* gpu_service) override;
 
@@ -87,6 +92,7 @@ class VizCompositorThreadRunnerWebView : public viz::VizCompositorThreadRunner {
   std::unique_ptr<viz::ServerSharedBitmapManager> server_shared_bitmap_manager_;
   std::unique_ptr<viz::FrameSinkManagerImpl> frame_sink_manager_;
   raw_ptr<viz::GpuServiceImpl> gpu_service_impl_ = nullptr;
+  base::flat_set<base::PlatformThreadId> thread_ids_;
 };
 
 }  // namespace android_webview

@@ -28,12 +28,15 @@ int CreateFunctor(void* data, AwDrawFnFunctorCallbacks* functor_callbacks) {
 int CreateFunctor_v3(void* data,
                      int version,
                      AwDrawFnFunctorCallbacks* functor_callbacks) {
-  DCHECK_EQ(version, 3);
+  DCHECK_GE(version, 3);
   return Allocator::Get()->allocate(data, functor_callbacks);
 }
 
 void ReleaseFunctor(int functor) {
   Allocator::Get()->MarkReleasedByFunctor(functor);
+}
+
+void ReportRenderingThreads(int functor, const pid_t* thread_ids, size_t size) {
 }
 
 }  // namespace
@@ -43,9 +46,9 @@ void SetDrawFnUseVulkan(bool use_vulkan) {
 }
 
 AwDrawFnFunctionTable* GetDrawFnFunctionTable() {
-  static AwDrawFnFunctionTable table{kAwDrawFnVersion, &QueryRenderMode,
-                                     &CreateFunctor, &ReleaseFunctor,
-                                     &CreateFunctor_v3};
+  static AwDrawFnFunctionTable table{
+      kAwDrawFnVersion, &QueryRenderMode,  &CreateFunctor,
+      &ReleaseFunctor,  &CreateFunctor_v3, &ReportRenderingThreads};
   return &table;
 }
 

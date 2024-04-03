@@ -131,6 +131,19 @@ BASE_FEATURE(kUseSurfaceLayerForVideoDefault,
 BASE_FEATURE(kWebViewNewInvalidateHeuristic,
              "WebViewNewInvalidateHeuristic",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, WebView reports the set of threads involved in frame production
+// to HWUI, and they're included in the HWUI ADPF session.
+BASE_FEATURE(kWebViewEnableADPF,
+             "WebViewEnableADPF",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, Renderer Main is included in the set of threads reported to the
+// HWUI. This feature works only when WebViewEnableADPF is enabled, otherwise
+// this is a no-op.
+BASE_FEATURE(kWebViewEnableADPFRendererMain,
+             "WebViewEnableADPFRendererMain",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kDrawPredictedInkPoint,

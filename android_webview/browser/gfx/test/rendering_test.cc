@@ -32,8 +32,9 @@ class TestBrowserViewRenderer : public BrowserViewRenderer {
  public:
   TestBrowserViewRenderer(
       RenderingTest* rendering_test,
-      const scoped_refptr<base::SingleThreadTaskRunner>& ui_task_runner)
-      : BrowserViewRenderer(rendering_test, ui_task_runner),
+      const scoped_refptr<base::SingleThreadTaskRunner>& ui_task_runner,
+      const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner)
+      : BrowserViewRenderer(rendering_test, ui_task_runner, io_task_runner),
         rendering_test_(rendering_test) {}
 
   ~TestBrowserViewRenderer() override {}
@@ -69,7 +70,8 @@ void RenderingTest::SetUpTestHarness() {
   DCHECK(!browser_view_renderer_.get());
   DCHECK(!functor_.get());
   browser_view_renderer_ = std::make_unique<TestBrowserViewRenderer>(
-      this, base::SingleThreadTaskRunner::GetCurrentDefault());
+      this, base::SingleThreadTaskRunner::GetCurrentDefault(),
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   browser_view_renderer_->SetActiveFrameSinkId(viz::FrameSinkId(1, 0));
   browser_view_renderer_->SetDipScale(1.0f);
   InitializeCompositor();

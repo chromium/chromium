@@ -31,6 +31,7 @@ class VizCompositorThreadRunner {
   virtual bool CreateHintSessionFactory(
       base::flat_set<base::PlatformThreadId> thread_ids,
       base::RepeatingClosure* wake_up_closure) = 0;
+  virtual void SetIOThreadId(base::PlatformThreadId io_thread_id) = 0;
 
   // Creates FrameSinkManager from |params|. If |gpu_service| is null the
   // display compositor will only support software compositing. Should be called

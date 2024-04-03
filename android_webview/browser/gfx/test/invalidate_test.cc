@@ -389,7 +389,9 @@ class InvalidateTest
 
     auto child_frame = std::make_unique<ChildFrame>(
         future, kRootClientSinkId, kFrameSize, gfx::Transform(), false, 1.0f,
-        CopyOutputRequestQueue(), /*did_invalidate=*/invalidated, args);
+        CopyOutputRequestQueue(), /*did_invalidate=*/invalidated, args,
+        /*renderer_thread_ids=*/base::flat_set<base::PlatformThreadId>(),
+        /*browser_io_thread_id=*/base::kInvalidThreadId);
     return child_frame;
   }
 
@@ -413,7 +415,8 @@ class InvalidateTest
     params.color_space = gfx::ColorSpace::CreateSRGB();
 
     render_thread_manager_->DrawOnRT(/*save_restore=*/false, params,
-                                     OverlaysParams());
+                                     OverlaysParams(),
+                                     ReportRenderingThreadsCallback());
 
     if (invalidated)
       last_invalidated_draw_bf_ = args;

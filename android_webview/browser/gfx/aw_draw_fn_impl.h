@@ -23,6 +23,10 @@ class AwDrawFnImpl {
   // Safe to call even on versions where draw_fn functor is not supported.
   static bool IsUsingVulkan();
 
+  static void ReportRenderingThreads(int functor,
+                                     const pid_t* thread_ids,
+                                     size_t size);
+
   AwDrawFnImpl();
 
   AwDrawFnImpl(const AwDrawFnImpl&) = delete;

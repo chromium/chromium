@@ -233,7 +233,9 @@ AwRenderProcessGoneDelegate* AwRenderProcessGoneDelegate::FromWebContents(
 
 AwContents::AwContents(std::unique_ptr<WebContents> web_contents)
     : content::WebContentsObserver(web_contents.get()),
-      browser_view_renderer_(this, content::GetUIThreadTaskRunner({})),
+      browser_view_renderer_(this,
+                             content::GetUIThreadTaskRunner({}),
+                             content::GetIOThreadTaskRunner({})),
       web_contents_(std::move(web_contents)) {
   TRACE_EVENT_BEGIN("android_webview.timeline", "WebView Instance",
                     perfetto::Track::FromPointer(this));

@@ -188,9 +188,11 @@ void RenderThreadManager::UpdateViewTreeForceDarkStateOnRT(
                      ui_thread_weak_ptr_, view_tree_force_dark_state_));
 }
 
-void RenderThreadManager::DrawOnRT(bool save_restore,
-                                   const HardwareRendererDrawParams& params,
-                                   const OverlaysParams& overlays_params) {
+void RenderThreadManager::DrawOnRT(
+    bool save_restore,
+    const HardwareRendererDrawParams& params,
+    const OverlaysParams& overlays_params,
+    ReportRenderingThreadsCallback report_rendering_threads) {
   // Force GL binding init if it's not yet initialized.
   GpuServiceWebView::GetInstance();
 
@@ -216,7 +218,8 @@ void RenderThreadManager::DrawOnRT(bool save_restore,
   }
 
   if (hardware_renderer_)
-    hardware_renderer_->Draw(params, overlays_params);
+    hardware_renderer_->Draw(params, overlays_params,
+                             std::move(report_rendering_threads));
 }
 
 void RenderThreadManager::RemoveOverlaysOnRT(

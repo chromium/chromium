@@ -117,7 +117,6 @@ VizMainImpl::VizMainImpl(Delegate* delegate,
       gpu_init_->gpu_feature_info(), gpu_init_->gpu_info_for_hardware_gpu(),
       gpu_init_->gpu_feature_info_for_hardware_gpu(),
       gpu_init_->gpu_extra_info(), std::move(init_params));
-
   VizDebugger::GetInstance();
 }
 
@@ -221,6 +220,7 @@ void VizMainImpl::CreateGpuService(
                        &io_thread_id, &event));
     event.Wait();
     gpu_process_thread_ids.insert(io_thread_id);
+    viz_compositor_thread_runner_->SetIOThreadId(io_thread_id);
 
     base::RepeatingClosure wake_up_closure;
     if (viz_compositor_thread_runner_->CreateHintSessionFactory(

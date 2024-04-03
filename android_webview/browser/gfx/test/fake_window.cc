@@ -256,7 +256,8 @@ void FakeFunctor::Draw(WindowHooks* hooks) {
   if (!hooks->WillDrawOnRT(&params))
     return;
   render_thread_manager_->DrawOnRT(/*save_restore=*/false, params,
-                                   OverlaysParams());
+                                   OverlaysParams(),
+                                   ReportRenderingThreadsCallback());
   hooks->DidDrawOnRT();
 }
 
