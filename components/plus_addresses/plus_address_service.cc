@@ -130,27 +130,24 @@ std::optional<PlusProfile> PlusAddressService::GetPlusProfile(
   return *it;
 }
 
-void PlusAddressService::SavePlusAddress(url::Origin origin,
-                                         std::string plus_address) {
+void PlusAddressService::SavePlusProfile(url::Origin origin,
+                                         const PlusProfile& profile) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const PlusProfile profile_to_save = {.profile_id = profile.profile_id,
+                                       .facet = GetEtldPlusOne(origin),
+                                       .plus_address = profile.plus_address,
+                                       .is_confirmed = true};
   // New plus addresses are requested directly from the PlusAddress backend. If
   // `IsSyncingPlusAddresses()`, these addresses become later available through
-  // sync.
-  // TODO(b/322147254): Until the address shows up in sync, it should still be
-  // available through `PlusAddressService`, even after reloading the data.
-  // This requires adding the address to the database. However, since the
-  // client is not receiving profile_ids from the backend yet, we can't insert
-  // into the database here. Doing so without the correct profile_id would
-  // create a duplicate once the address arrives via sync.
-
-  // Update the in-memory cache `plus_profiles_` cache.
-  // TODO(b/322147254): Use profile_id, once available. For now, 0 works even in
-  // the sync case, since updates through sync replace the entire cache.
-  plus_profiles_.insert({.profile_id = 0,
-                         .facet = GetEtldPlusOne(origin),
-                         .plus_address = plus_address,
-                         .is_confirmed = true});
-  plus_addresses_.insert(plus_address);
+  // sync. Until the address shows up in sync, it should still be available
+  // through `PlusAddressService`, even after reloading the data. This requires
+  // adding the address to the database.
+  if (webdata_service_ && IsSyncingPlusAddresses()) {
+    webdata_service_->AddOrUpdatePlusProfile(profile_to_save);
+  }
+  // Update the in-memory `plus_profiles_` cache.
+  plus_profiles_.insert(profile_to_save);
+  plus_addresses_.insert(profile_to_save.plus_address);
   for (Observer& o : observers_) {
     o.OnPlusAddressesChanged();
   }
@@ -243,7 +240,7 @@ void PlusAddressService::HandleCreateOrConfirmResponse(
   if (maybe_profile.has_value()) {
     account_is_forbidden_ = false;
     if (maybe_profile->is_confirmed) {
-      SavePlusAddress(origin, maybe_profile->plus_address);
+      SavePlusProfile(origin, *maybe_profile);
     }
   } else {
     HandlePlusAddressRequestError(maybe_profile.error());

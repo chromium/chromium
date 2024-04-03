@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/json/json_reader.h"
+#include "base/strings/string_number_conversions.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,8 +24,9 @@ TEST(PlusAddressParsing, NotValidJson) {
 }
 
 TEST(PlusAddressParsing, FromV1Create_ParsesSuccessfully) {
-  std::string facet = "apple.com";
-  std::string plus_address = "fubar@plus.com";
+  const int64_t kProfileId = 123;
+  const std::string kFacet = "apple.com";
+  const std::string kPlusAddress = "fubar@plus.com";
 
   // Test when the plusMode should set is_confirmed to true.
   std::optional<base::Value> valid_mode =
@@ -33,16 +35,18 @@ TEST(PlusAddressParsing, FromV1Create_ParsesSuccessfully) {
     {
       "plusProfile":  {
         "unwanted": 123,
-        "facet": "$1",
+        "ProfileId": "$1",
+        "facet": "$2",
         "plusEmail" : {
-          "plusAddress": "$2",
+          "plusAddress": "$3",
           "plusMode": "validMode"
         }
       },
       "unwanted": "abc"
     }
     )",
-          {facet, plus_address}, /*offsets=*/nullptr));
+          {base::NumberToString(kProfileId), kFacet, kPlusAddress},
+          /*offsets=*/nullptr));
 
   ASSERT_TRUE(valid_mode.has_value());
   data_decoder::DataDecoder::ValueOrError value = std::move(valid_mode.value());
@@ -50,8 +54,9 @@ TEST(PlusAddressParsing, FromV1Create_ParsesSuccessfully) {
   std::optional<PlusProfile> valid_result =
       ParsePlusProfileFromV1Create(std::move(value));
   ASSERT_TRUE(valid_result.has_value());
-  EXPECT_EQ(valid_result->facet, facet);
-  EXPECT_EQ(valid_result->plus_address, plus_address);
+  EXPECT_EQ(valid_result->profile_id, kProfileId);
+  EXPECT_EQ(valid_result->facet, kFacet);
+  EXPECT_EQ(valid_result->plus_address, kPlusAddress);
   EXPECT_EQ(valid_result->is_confirmed, true);
 
   // Test when the plusMode should set is_confirmed to false.
@@ -61,16 +66,18 @@ TEST(PlusAddressParsing, FromV1Create_ParsesSuccessfully) {
     {
       "plusProfile":  {
         "unwanted": 123,
-        "facet": "$1",
+        "ProfileId": "$1",
+        "facet": "$2",
         "plusEmail" : {
-          "plusAddress": "$2",
+          "plusAddress": "$3",
           "plusMode": "MODE_UNSPECIFIED"
         }
       },
       "unwanted": "abc"
     }
     )",
-          {facet, plus_address}, /*offsets=*/nullptr));
+          {base::NumberToString(kProfileId), kFacet, kPlusAddress},
+          /*offsets=*/nullptr));
   ASSERT_TRUE(invalid_mode.has_value());
   data_decoder::DataDecoder::ValueOrError decoded =
       std::move(invalid_mode.value());
@@ -78,8 +85,9 @@ TEST(PlusAddressParsing, FromV1Create_ParsesSuccessfully) {
   std::optional<PlusProfile> invalid_result =
       ParsePlusProfileFromV1Create(std::move(decoded));
   ASSERT_TRUE(invalid_result.has_value());
-  EXPECT_EQ(invalid_result->facet, facet);
-  EXPECT_EQ(invalid_result->plus_address, plus_address);
+  EXPECT_EQ(invalid_result->profile_id, kProfileId);
+  EXPECT_EQ(invalid_result->facet, kFacet);
+  EXPECT_EQ(invalid_result->plus_address, kPlusAddress);
   EXPECT_EQ(invalid_result->is_confirmed, false);
 }
 
@@ -168,6 +176,7 @@ TEST(PlusAddressParsing, FromV1List_ParsesSuccessfully) {
     {
       "plusProfiles": [
         {
+          "ProfileId": "123",
           "facet": "google.com",
           "plusEmail" : {
             "plusAddress": "foo@plus.com",
@@ -175,6 +184,7 @@ TEST(PlusAddressParsing, FromV1List_ParsesSuccessfully) {
           }
         },
         {
+          "ProfileId": "234",
           "facet": "netflix.com",
           "plusEmail" : {
             "plusAddress": "bar@plus.com",
@@ -199,6 +209,7 @@ TEST(PlusAddressParsing, FromV1List_OnlyParsesProfilesWithFacets) {
   {
       "plusProfiles": [
         {
+          "ProfileId": "123",
           "facet": "google.com",
           "plusEmail" : {
             "plusAddress": "foo@plus.com",
@@ -206,6 +217,7 @@ TEST(PlusAddressParsing, FromV1List_OnlyParsesProfilesWithFacets) {
           }
         },
         {
+          "ProfileId": "234",
           "plusEmail" : {
             "plusAddress": "bar@plus.com",
             "plusMode": "validMode"
@@ -227,6 +239,7 @@ TEST(PlusAddressParsing, FromV1List_OnlyParsesProfilesWithPlusAddresses) {
   {
       "plusProfiles": [
         {
+          "ProfileId": "123",
           "facet": "google.com",
           "plusEmail" : {
             "plusAddress": "foo@plus.com",
@@ -234,6 +247,7 @@ TEST(PlusAddressParsing, FromV1List_OnlyParsesProfilesWithPlusAddresses) {
           }
         },
         {
+          "ProfileId": "234",
           "facet": "netflix.com",
           "plusEmail" : {
             "plusMode": "validMode"
@@ -255,6 +269,7 @@ TEST(PlusAddressParsing, FromV1List_OnlyParsesProfilesWithPlusModes) {
   {
       "plusProfiles": [
         {
+          "ProfileId": "123",
           "facet": "google.com",
           "plusEmail" : {
             "plusAddress": "foo@plus.com",
@@ -262,6 +277,7 @@ TEST(PlusAddressParsing, FromV1List_OnlyParsesProfilesWithPlusModes) {
           }
         },
         {
+          "ProfileId": "234",
           "facet": "netflix.com",
           "plusEmail" : {
             "plusAddress": "bar@plus.com"

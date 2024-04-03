@@ -110,9 +110,9 @@ class PlusAddressService : public KeyedService,
   // of `origin` to its eTLD+1 form.
   std::optional<std::string> GetPlusAddress(const url::Origin& origin) const;
 
-  // Saves a plus address for the given origin, which is converted to its eTLD+1
+  // Saves a plus profile for the given origin, which is converted to its eTLD+1
   // form prior to persistence.
-  void SavePlusAddress(url::Origin origin, std::string plus_address);
+  void SavePlusProfile(url::Origin origin, const PlusProfile& profile);
 
   // Asks the PlusAddressHttpClient to reserve a plus address for use on
   // `origin` and returns the plus address via `on_completed`.

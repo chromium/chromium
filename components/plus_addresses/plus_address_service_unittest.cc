@@ -127,7 +127,7 @@ class PlusAddressServiceTest : public ::testing::Test {
 
 TEST_F(PlusAddressServiceTest, BasicTest) {
   EXPECT_FALSE(service().IsPlusAddress(kPlusAddress));
-  service().SavePlusAddress(kSubdomainOrigin, kPlusAddress);
+  service().SavePlusProfile(kSubdomainOrigin, {.plus_address = kPlusAddress});
   EXPECT_TRUE(service().IsPlusAddress(kPlusAddress));
   EXPECT_EQ(service().GetPlusAddress(kSubdomainOrigin), kPlusAddress);
   EXPECT_EQ(service().GetPlusAddress(url::Origin()), std::nullopt);
@@ -136,7 +136,7 @@ TEST_F(PlusAddressServiceTest, BasicTest) {
 }
 
 TEST_F(PlusAddressServiceTest, EnsureEtldPlusOneScope) {
-  service().SavePlusAddress(kNoSubdomainOrigin, kPlusAddress);
+  service().SavePlusProfile(kNoSubdomainOrigin, {.plus_address = kPlusAddress});
   EXPECT_EQ(service().GetPlusAddress(kNoSubdomainOrigin), kPlusAddress);
   EXPECT_EQ(service().GetPlusAddress(kSubdomainOrigin), kPlusAddress);
   EXPECT_EQ(service().GetPlusProfile(kNoSubdomainOrigin)->plus_address,
@@ -146,7 +146,7 @@ TEST_F(PlusAddressServiceTest, EnsureEtldPlusOneScope) {
 }
 
 TEST_F(PlusAddressServiceTest, EnsureEtldPlusOneScopeSubdomainAddedFirst) {
-  service().SavePlusAddress(kSubdomainOrigin, kPlusAddress);
+  service().SavePlusProfile(kSubdomainOrigin, {.plus_address = kPlusAddress});
   EXPECT_EQ(service().GetPlusAddress(kNoSubdomainOrigin), kPlusAddress);
   EXPECT_EQ(service().GetPlusAddress(kNoSubdomainOrigin), kPlusAddress);
   EXPECT_EQ(service().GetPlusProfile(kNoSubdomainOrigin)->plus_address,
@@ -200,10 +200,10 @@ TEST_F(PlusAddressServiceTest, AbortPlusAddressCreation) {
 
 // Tests that GetPlusProfiles returns all cached plus profiles.
 TEST_F(PlusAddressServiceTest, GetPlusProfiles) {
-  service().SavePlusAddress(url::Origin::Create(GURL("https://foo.com")),
-                            "plus+foo@plus.plus");
-  service().SavePlusAddress(url::Origin::Create(GURL("https://bar.com")),
-                            "plus+bar@plus.plus");
+  service().SavePlusProfile(url::Origin::Create(GURL("https://foo.com")),
+                            {.plus_address = "plus+foo@plus.plus"});
+  service().SavePlusProfile(url::Origin::Create(GURL("https://bar.com")),
+                            {.plus_address = "plus+bar@plus.plus"});
 
   EXPECT_THAT(service().GetPlusProfiles(),
               testing::UnorderedElementsAre(
@@ -904,7 +904,8 @@ TEST_F(PlusAddressServiceEnabledTest, OTRWithExistingAddress) {
                                       {signin::ConsentLevel::kSignin});
   InitService();
 
-  service().SavePlusAddress(kNoSubdomainOrigin, "plus@plus.plus");
+  service().SavePlusProfile(kNoSubdomainOrigin,
+                            {.plus_address = "plus@plus.plus"});
   EXPECT_TRUE(service().SupportsPlusAddresses(kNoSubdomainOrigin,
                                               /*is_off_the_record=*/true));
 }
@@ -958,7 +959,7 @@ TEST_F(PlusAddressServiceSignoutTest, PrimaryAccountCleared_TogglesIsEnabled) {
 
   // Verify behaviors expected when service is enabled.
   url::Origin site = url::Origin::Create(GURL("https://foo.com"));
-  service().SavePlusAddress(site, "plus@plus.plus");
+  service().SavePlusProfile(site, {.plus_address = "plus@plus.plus"});
   EXPECT_TRUE(
       service().SupportsPlusAddresses(site, /*is_off_the_record=*/false));
   EXPECT_TRUE(service().GetPlusAddress(site));
@@ -981,7 +982,7 @@ TEST_F(PlusAddressServiceSignoutTest,
 
   // Verify behaviors expected when service is enabled.
   url::Origin site = url::Origin::Create(GURL("https://foo.com"));
-  service().SavePlusAddress(site, "plus@plus.plus");
+  service().SavePlusProfile(site, {.plus_address = "plus@plus.plus"});
   EXPECT_TRUE(
       service().SupportsPlusAddresses(site, /*is_off_the_record=*/false));
   EXPECT_TRUE(service().GetPlusAddress(site));
@@ -1039,7 +1040,7 @@ class PlusAddressSuggestionsTest : public PlusAddressServiceTest {
 TEST_F(PlusAddressSuggestionsTest, SuggestionsForExistingPlusAddress) {
   base::HistogramTester histogram_tester;
   const auto origin = url::Origin::Create(GURL("https://foo.coom"));
-  service().SavePlusAddress(origin, kPlusAddress);
+  service().SavePlusProfile(origin, {.plus_address = kPlusAddress});
 
   // We offer filling if the field is empty.
   EXPECT_THAT(service().GetSuggestions(
@@ -1080,7 +1081,7 @@ TEST_F(PlusAddressSuggestionsTest,
        SuggestionsForExistingPlusAddressWithManualFallback) {
   base::HistogramTester histogram_tester;
   const auto origin = url::Origin::Create(GURL("https://foo.coom"));
-  service().SavePlusAddress(origin, kPlusAddress);
+  service().SavePlusProfile(origin, {.plus_address = kPlusAddress});
 
   // We offer filling if the field is empty.
   EXPECT_THAT(

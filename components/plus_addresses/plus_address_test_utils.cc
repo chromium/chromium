@@ -6,6 +6,7 @@
 
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 
 namespace plus_addresses::test {
@@ -57,14 +58,17 @@ std::string MakePlusProfile(const PlusProfile& profile) {
   std::string json = base::ReplaceStringPlaceholders(
       R"(
           {
-            "facet": "$1",
+            "ProfileId": "$1",
+            "facet": "$2",
             "plusEmail": {
-              "plusAddress": "$2",
-              "plusMode": "$3"
+              "plusAddress": "$3",
+              "plusMode": "$4"
             }
           }
         )",
-      {profile.facet, profile.plus_address, mode}, nullptr);
+      {base::NumberToString(profile.profile_id), profile.facet,
+       profile.plus_address, mode},
+      nullptr);
   DCHECK(base::JSONReader::Read(json));
   return json;
 }

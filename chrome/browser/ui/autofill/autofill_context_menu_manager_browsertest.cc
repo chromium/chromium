@@ -894,8 +894,8 @@ IN_PROC_BROWSER_TEST_F(PlusAddressContextMenuManagerTest,
   const auto kUrl = GURL("https://foo.bar");
   autofill_client()->set_is_off_the_record(true);
   autofill_client()->set_last_committed_primary_main_frame_url(kUrl);
-  plus_address_service()->SavePlusAddress(url::Origin::Create(kUrl),
-                                          "plus+plus@plus.plus");
+  plus_address_service()->SavePlusProfile(
+      url::Origin::Create(kUrl), {.plus_address = "plus+plus@plus.plus"});
 
   FormData form = CreateAndAttachClassifiedForm();
   autofill_context_menu_manager()->set_params_for_testing(
