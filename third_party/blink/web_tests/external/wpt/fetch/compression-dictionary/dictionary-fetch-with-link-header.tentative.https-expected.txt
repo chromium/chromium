@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Fetch same origin dictionary using link header
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
+Harness: the test ran to completion.
+

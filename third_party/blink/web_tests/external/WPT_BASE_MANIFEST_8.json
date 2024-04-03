@@ -2727,6 +2727,13 @@
         {}
        ]
       ],
+      "block-in-inline-become-float.html": [
+       "6d557b7c3ab1d76a519910053373147f2d16d8f8",
+       [
+        null,
+        {}
+       ]
+      ],
       "body-becomes-spanner-html-becomes-vertical-rl.html": [
        "7cd544b71cb8d214a68ed37da4903ff0b7474a1a",
        [
@@ -35343,6 +35350,19 @@
      "floats": {
       "adjoining-floats-dynamic.html": [
        "3446d972d72ec8832ab8ac320a84dff609676ae3",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "block-in-inline-become-float.html": [
+       "2a415e18380fb022403b7b721a9fe0138082b783",
        [
         null,
         [
@@ -136226,6 +136246,19 @@
       ]
      ],
      "gradient": {
+      "color-scheme-dependent-color-stops.html": [
+       "f95a557703cddd0a629c4f853df618462d368114",
+       [
+        null,
+        [
+         [
+          "/css/css-images/gradient/color-scheme-dependent-color-stops-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "css-color-4-colors-default-to-oklab-gradient.html": [
        "2b1edca0da1e168c3fa921202c54346b911f354a",
        [
@@ -233401,6 +233434,19 @@
        {}
       ]
      ],
+     "pseudo-with-classes-match-wildcard-no-star.html": [
+      "2dc7d00cd18e55405974de169390545f820f5c10",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/pseudo-with-classes-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "pseudo-with-classes-mismatch-ident.html": [
       "97db64fca20022b9b6bc96d3c4af429e8723d40d",
       [
@@ -289229,6 +289275,10 @@
      "027b606e85066d301eb68498f40b62ddc6835e05",
      []
     ],
+    "WEB_FEATURES.yml": [
+     "9b01ed7dae7fa79886cef7f1c4c1b593f6a52b55",
+     []
+    ],
     "generate.py": [
      "505375d55fede4f613f4c37b938c4f4b9e16e3c9",
      []
@@ -290805,6 +290855,10 @@
    "compression": {
     "META.yml": [
      "0afbe29a53e8071333a5d6b6ef790284d63a156a",
+     []
+    ],
+    "WEB_FEATURES.yml": [
+     "c8b072631ea496142e16a2fe6ac5d516af3e2e14",
      []
     ],
     "compression-bad-chunks.tentative.any.shadowrealm-expected.txt": [
@@ -301376,10 +301430,6 @@
       "clip-text-multi-line-ref.html": [
        "455daa7aeabc3fba876eda3d1807b4ddca98c4f9",
        []
-      ],
-      "list.txt": [
-       "52c47ebba998b264b0218b84bacf2cf9784371ea",
-       []
       ]
      },
      "background-clip-color-ref.html": [
@@ -301451,10 +301501,6 @@
       []
      ],
      "background-origin": {
-      "list.txt": [
-       "a6fdedde542b154bbd33a090981da966ce5e6197",
-       []
-      ],
       "support": {
        "yellow-orange-blue-160x160.png": [
         "1372399ddf3c5122d67ae6ae3efcb234c285f8c4",
@@ -319367,6 +319413,10 @@
       []
      ],
      "gradient": {
+      "color-scheme-dependent-color-stops-ref.html": [
+       "28d57bc19c779250d792eafc2d5e4461baece0d5",
+       []
+      ],
       "gradient-eval-001-ref.html": [
        "8f3070fcbe40bf1f8c591de59c76da149cbeaddd",
        []
@@ -333830,11 +333880,19 @@
       "a6d5672c9dfe95c990c538f5596094eb2a9615bc",
       []
      ],
+     "WEB_FEATURES.yml": [
+      "ca13ab5ae1bedbcbdd995938b62fb5768032c999",
+      []
+     ],
      "add-child-in-empty-layer-ref.html": [
       "38ab96aaf35f60fcb1a36e4da7f78cca8d5036bc",
       []
      ],
      "animation": {
+      "WEB_FEATURES.yml": [
+       "831086f99e9f8fd220dbb2264f46945c7a88c1b3",
+       []
+      ],
       "canvas-webgl-translate-in-animation-ref.html": [
        "6610c6f68bb78ba2045489b41bb0f858df0d6ca5",
        []
@@ -334084,6 +334142,12 @@
       "fcead1ea7769eb137bd3780b94c383d53054ea72",
       []
      ],
+     "parsing": {
+      "WEB_FEATURES.yml": [
+       "831086f99e9f8fd220dbb2264f46945c7a88c1b3",
+       []
+      ]
+     },
      "patternTransform": {
       "reference": {
        "svg-patternTransform-combination-ref.html": [
@@ -344616,6 +344680,10 @@
     "README.md": [
      "60559c1f72bdaccdc911b191857e621792034cf6",
      []
+    ],
+    "WEB_FEATURES.yml": [
+     "7bafe10430041b2dfe1c5fab249a07d699e12823",
+     []
     ]
    },
    "direct-sockets": {
@@ -345985,10 +346053,6 @@
     ],
     "README.md": [
      "918997b1646d73d71a79c302953ab9f0f8ed69cc",
-     []
-    ],
-    "fn-lang-expected.txt": [
-     "e9898b11d39100fc617cb5610885755b0e665fdd",
      []
     ],
     "helpers.js": [
@@ -350715,6 +350779,50 @@
       ],
       "response-stream-disturbed-util.js": [
        "50bb586aa0743966e4d626a52e3051ba47b7768c",
+       []
+      ]
+     }
+    },
+    "compression-dictionary": {
+     "dictionary-fetch-with-link-element.tentative.https-expected.txt": [
+      "e17ad283fc708661fcd25e65a27f67af11b49499",
+      []
+     ],
+     "dictionary-fetch-with-link-header.tentative.https-expected.txt": [
+      "c5b620ff05ed38577d30083729e5e32ad34f9555",
+      []
+     ],
+     "resources": {
+      "clear-site-data.py": [
+       "0db51bf797f7e7efb0d16671dcdaa4afe0129b71",
+       []
+      ],
+      "compressed-data.py": [
+       "bf2dceeedd29353753d078d89b5a5517116290e9",
+       []
+      ],
+      "compressed.br-d.data": [
+       "9fbf651c8c4f2e82df641496c3eeb91e0d2552c9",
+       []
+      ],
+      "compressed.zstd-d.data": [
+       "5187b59711c3a9ec234042662fe7a06c170b916d",
+       []
+      ],
+      "compression-dictionary-util.js": [
+       "46d95041d8c48d71752543d8c8be3a0b752f7e22",
+       []
+      ],
+      "echo-headers.py": [
+       "aabd99eb10143a0eafb976d48d502a572dfb6a7f",
+       []
+      ],
+      "empty.html": [
+       "0e76edd65b7baf5316fc9d0c4da59a3502e4c27a",
+       []
+      ],
+      "register-dictionary.py": [
+       "0bd57225ef1355360d6e16fb1243c8f1a465d6d9",
        []
       ]
      }
@@ -372243,6 +372351,10 @@
      "3c4f9b8d42f1822bc96b242a31c2f9f55bb0c1f2",
      []
     ],
+    "WEB_FEATURES.yml": [
+     "e794b88c3e5fb1a00b3c9934e286cf6bdc0d2ce8",
+     []
+    ],
     "capture_reflect-expected.txt": [
      "56c7fa7ab3ea1e4678e18efd0abf6eb7e8846d11",
      []
@@ -372639,6 +372751,10 @@
     ],
     "OWNERS": [
      "841985d7c7974146b72aabeed2ebc8032d8f2ec1",
+     []
+    ],
+    "WEB_FEATURES.yml": [
+     "dc3d7fdc2333cd7321a029e56abed919553ec3d1",
      []
     ],
     "acquiring": {
@@ -374425,6 +374541,10 @@
      "ac2b5a27b5812b5aabf8832b848f113237b76aac",
      []
     ],
+    "WEB_FEATURES.yml": [
+     "1b6a42746fc63ada4e4687bf7dd1a934febb43ad",
+     []
+    ],
     "idlharness.window-expected.txt": [
      "e0b9cdc560cc22615387ae03fa5a67a9b0042f16",
      []
@@ -374480,6 +374600,12 @@
      ],
      "v2-subframe.html": [
       "295bbf047e6523313ce74f2e383ed769c0d5c81b",
+      []
+     ]
+    },
+    "v2": {
+     "WEB_FEATURES.yml": [
+      "e57d67f64157dec36921261d6912cd46abd8dfc9",
       []
      ]
     }
@@ -374545,6 +374671,10 @@
     ],
     "META.yml": [
      "d012c7f9bac05cd71119949a26996ae83bc65c8e",
+     []
+    ],
+    "WEB_FEATURES.yml": [
+     "a81700e1fb0d38b51e7b3116446570249b530a24",
      []
     ],
     "resources": {
@@ -374813,7 +374943,7 @@
     ]
    },
    "lint.ignore": [
-    "4a2faecb576d3e56cba2839140cf8d57d9c1b58e",
+    "61bca89ddc9a88ee8c1590cb37715595d7222bce",
     []
    ],
    "loading": {
@@ -375233,6 +375363,10 @@
     ],
     "README.md": [
      "4511b3e7df8e2a169e52dd6b8bdea2b8b369b21f",
+     []
+    ],
+    "WEB_FEATURES.yml": [
+     "4d03bc3eb4d0e07e366bb03d9541013dfde5ed42",
      []
     ],
     "crashtests": {
@@ -379742,6 +379876,10 @@
     "OWNERS": [
      "9258d114cb426f7eb83fa5835348e44d12296524",
      []
+    ],
+    "WEB_FEATURES.yml": [
+     "61ab30b26b601cd836a9ec579e0b8d014ceb430f",
+     []
     ]
    },
    "preload": {
@@ -382881,6 +383019,10 @@
      "c7f0e4903b5ad46b411f0f0741112af80661cfc7",
      []
     ],
+    "WEB_FEATURES.yml": [
+     "adf4bf2ac173e8bff0978fa19b24e535f4229c2e",
+     []
+    ],
     "css": {
      "animation-fill-outside-range-ref.html": [
       "998576b3a4f2257006232506ee32306bc716895c",
@@ -383459,6 +383601,10 @@
     ],
     "OWNERS": [
      "2746bb927328ec881ad39925f4c5ad3324aa6a78",
+     []
+    ],
+    "WEB_FEATURES.yml": [
+     "8b00e934ea6db38818cf098d9ea634facfca3f94",
      []
     ],
     "idlharness.https.any-expected.txt": [
@@ -389905,6 +390051,10 @@
      "cbf27e2812216b03267171463ee15736feab4565",
      []
     ],
+    "WEB_FEATURES.yml": [
+     "6ea31f1ef8d3838b3b9d84f6dac839b22083ee20",
+     []
+    ],
     "default-policy-report-only.html.headers": [
      "4c1ff15e167a9581839c64532078440689ca741c",
      []
@@ -391027,6 +391177,10 @@
     ],
     "OWNERS": [
      "9f9aedfac3433e18800138c0eb8b36cc1319aeb3",
+     []
+    ],
+    "WEB_FEATURES.yml": [
+     "4eecec544c9907f91d7092e38f238170d0b1e1e9",
      []
     ],
     "helper-resize-event-on-load-overflowing-page.html": [
@@ -394663,6 +394817,10 @@
    "webmidi": {
     "META.yml": [
      "f39d4122887ba252516b12f98caaa08e84b3eb34",
+     []
+    ],
+    "WEB_FEATURES.yml": [
+     "76ddf996a249fd3767422692564ff84d644599f2",
      []
     ],
     "idlharness.https.window-expected.txt": [
@@ -470854,7 +471012,7 @@
        ]
       ],
       "pseudo-elements-invalid.html": [
-       "5a2624d09da7733eebcb1371fb9511dabe27b1c8",
+       "14bd768f76cfc2d631f7b5db841c8f1c37d560dc",
        [
         null,
         {}
@@ -510951,6 +511109,43 @@
        ]
       ]
      }
+    },
+    "compression-dictionary": {
+     "dictionary-clear-site-data.tentative.https.html": [
+      "b583834831f86102b3135e01499178d9dcbe09b3",
+      [
+       null,
+       {}
+      ]
+     ],
+     "dictionary-decompression.tentative.https.html": [
+      "cd2062581603101fc94b095f329420f536b6cbdb",
+      [
+       null,
+       {}
+      ]
+     ],
+     "dictionary-fetch-with-link-element.tentative.https.html": [
+      "a44bd57160a4aafb294b6e0af05782c87c060f6f",
+      [
+       null,
+       {}
+      ]
+     ],
+     "dictionary-fetch-with-link-header.tentative.https.html": [
+      "a4bbf31f967fcccd67a67ca5edfec2c9b7f5c05d",
+      [
+       null,
+       {}
+      ]
+     ],
+     "dictionary-registration.tentative.https.html": [
+      "7921b1294663c0032725a649bb375b4f32e87a3e",
+      [
+       null,
+       {}
+      ]
+     ]
     },
     "connection-pool": {
      "network-partition-key.html": [
