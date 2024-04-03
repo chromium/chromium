@@ -2,23 +2,37 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <stdint.h>
+
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/base_paths.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
+#include "base/json/json_reader.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
+#include "base/strings/abseil_string_number_conversions.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/values_test_util.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "components/attribution_reporting/parsing_utils.h"
+#include "components/cbor/reader.h"
+#include "components/cbor/values.h"
+#include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_interop_parser.h"
 #include "content/browser/attribution_reporting/attribution_interop_runner.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 
 namespace content {
 
@@ -29,6 +43,8 @@ using ::testing::Field;
 using ::testing::UnorderedElementsAreArray;
 
 constexpr char kDefaultConfigFileName[] = "default_config.json";
+
+const aggregation_service::TestHpkeKey kHpkeKey;
 
 base::FilePath GetInputDir() {
   base::FilePath input_dir;
@@ -57,22 +73,137 @@ std::vector<base::FilePath> GetInputs() {
   return input_paths;
 }
 
-void PreProcessOutput(AttributionInteropOutput& output) {
-  // Ensure that integral values for this field are replaced with the equivalent
-  // double, since they are equivalent at the JSON level.
+base::Value::List GetDecryptedPayloads(std::optional<base::Value> payloads,
+                                       const std::string& shared_info) {
+  CHECK(payloads.has_value());
+
+  base::Value::List payloads_list = std::move(*payloads).TakeList();
+  CHECK_EQ(payloads_list.size(), 1u);
+
+  base::Value::Dict& payload_dict = payloads_list.front().GetDict();
+
+  std::optional<base::Value> payload = payload_dict.Extract("payload");
+  CHECK(payload.has_value());
+
+  std::optional<std::vector<uint8_t>> encrypted_payload =
+      base::Base64Decode(payload->GetString());
+  CHECK(encrypted_payload.has_value());
+
+  std::vector<uint8_t> decrypted_payload =
+      aggregation_service::DecryptPayloadWithHpke(
+          *encrypted_payload, kHpkeKey.full_hpke_key(), shared_info);
+  std::optional<cbor::Value> deserialized_payload =
+      cbor::Reader::Read(decrypted_payload);
+  CHECK(deserialized_payload.has_value());
+  const cbor::Value::MapValue& payload_map = deserialized_payload->GetMap();
+  const auto it = payload_map.find(cbor::Value("data"));
+  CHECK(it != payload_map.end());
+
+  base::Value::List list;
+
+  for (const cbor::Value& data : it->second.GetArray()) {
+    const cbor::Value::MapValue& data_map = data.GetMap();
+
+    const cbor::Value::BinaryValue& bucket_byte_string =
+        data_map.at(cbor::Value("bucket")).GetBytestring();
+
+    absl::uint128 bucket;
+    CHECK(
+        base::HexStringToUInt128(base::HexEncode(bucket_byte_string), &bucket));
+
+    const cbor::Value::BinaryValue& value_byte_string =
+        data_map.at(cbor::Value("value")).GetBytestring();
+
+    uint32_t value;
+    CHECK(base::HexStringToUInt(base::HexEncode(value_byte_string), &value));
+
+    // Ignore the paddings.
+    if (bucket == 0 && value == 0) {
+      continue;
+    }
+
+    list.Append(
+        base::Value::Dict()
+            .Set("key", attribution_reporting::HexEncodeAggregationKey(bucket))
+            .Set("value", base::checked_cast<int>(value)));
+  }
+  return list;
+}
+
+class Adjuster : public ReportBodyAdjuster {
+ public:
+  explicit Adjuster(bool actual) : actual_(actual) {}
+
+  ~Adjuster() override = default;
+
+ private:
+  void AdjustEventLevel(base::Value::Dict& report_body) override {
+    if (actual_) {
+      // Report IDs are a source of nondeterminism, so remove them.
+      report_body.Remove("report_id");
+    }
+
+    // Ensure that integral values for this field are replaced with the
+    // equivalent double, since they are equivalent at the JSON level.
+    if (base::Value* rate = report_body.Find("randomized_trigger_rate");
+        rate && rate->is_int()) {
+      // This coerces the integer to a double.
+      *rate = base::Value(rate->GetDouble());
+    }
+  }
+
+  void AdjustVerboseDebug(std::string_view debug_data_type,
+                          base::Value::Dict& body) override {
+    ReportBodyAdjuster::AdjustVerboseDebug(debug_data_type, body);
+
+    if (actual_ && debug_data_type == "header-parsing-error") {
+      // The header error details are implementation-specific.
+      body.Remove("error");
+    }
+  }
+
+  void AdjustAggregatable(base::Value::Dict& report_body) override {
+    if (!actual_) {
+      return;
+    }
+
+    // These fields normally encode a random GUID or the absolute
+    // time and therefore are sources of nondeterminism in the
+    // output.
+
+    // Output attribution_destination from the shared_info field.
+    const std::optional<base::Value> shared_info =
+        report_body.Extract("shared_info");
+    CHECK(shared_info.has_value());
+    const std::string& shared_info_str = shared_info->GetString();
+
+    std::optional<base::Value> shared_info_value =
+        base::JSONReader::Read(shared_info_str, base::JSON_PARSE_RFC);
+    CHECK(shared_info_value.has_value());
+    static constexpr char kKeyAttributionDestination[] =
+        "attribution_destination";
+    std::optional<base::Value> attribution_destination =
+        shared_info_value->GetDict().Extract(kKeyAttributionDestination);
+    CHECK(attribution_destination.has_value());
+    report_body.Set(kKeyAttributionDestination,
+                    std::move(*attribution_destination));
+
+    // The aggregation coordinator may be platform specific.
+    report_body.Remove("aggregation_coordinator_origin");
+
+    report_body.Set("histograms",
+                    GetDecryptedPayloads(
+                        report_body.Extract("aggregation_service_payloads"),
+                        shared_info_str));
+  }
+
+  const bool actual_;
+};
+
+void PreProcessOutput(AttributionInteropOutput& output, const bool actual) {
+  Adjuster adjuster(actual);
   for (auto& report : output.reports) {
-    base::Value::Dict* dict = report.payload.GetIfDict();
-    if (!dict) {
-      continue;
-    }
-
-    base::Value* rate = dict->Find("randomized_trigger_rate");
-    if (!rate || !rate->is_int()) {
-      continue;
-    }
-
-    // This coerces the integer to a double.
-    *rate = base::Value(rate->GetDouble());
+    MaybeAdjustReportBody(report.url, report.payload, adjuster);
   }
 }
 
@@ -119,10 +250,11 @@ TEST_P(AttributionInteropTest, HasExpectedOutput) {
 
   ASSERT_OK_AND_ASSIGN(
       AttributionInteropOutput actual_output,
-      RunAttributionInteropSimulation(std::move(*input).TakeDict(), config));
+      RunAttributionInteropSimulation(std::move(*input).TakeDict(), config,
+                                      kHpkeKey.GetPublicKey()));
 
-  PreProcessOutput(expected_output);
-  PreProcessOutput(actual_output);
+  PreProcessOutput(expected_output, /*actual=*/false);
+  PreProcessOutput(actual_output, /*actual=*/true);
 
   EXPECT_THAT(actual_output,
               Field(&AttributionInteropOutput::reports,
