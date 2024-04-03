@@ -108,18 +108,31 @@ and swarmed test shard capacity available. The suggested process for adding new
 test suites to the CQ builders is to:
 1. File a bug if one isn't already on-file for the addition of the tests, assign
    it to yourself and apply the `Infra>Client>Chrome` component.
-2. Add the tests in post-submit only mode, meaning the test would run on
-   post-submit bots, but not in pre-submit bots (a.k.a CQ bots). This can be
-   achieved by adding the `'ci_only': True` line to the test's definition in
-   the pyl files here.
-   ([Example](https://chromium.googlesource.com/chromium/src/+/79ed7956/testing/buildbot/test_suite_exceptions.pyl#934))
-3. After a sufficient amount of time (suggest 2 weeks), examine the results of
+1. Add the test in both "post-submit only" and "experimental" mode:
+   - Post-submit only mode will make the test run on post-submit bots, but not
+     on pre-submit bots (a.k.a. CQ bots). This can be achieved by adding the
+     `'ci_only': True` line to the test's definition in the pyl files here.
+     ([Example.](https://chromium.googlesource.com/chromium/src/+/79ed7956/testing/buildbot/test_suite_exceptions.pyl#934))
+     See the [infra glossary](../../docs/infra/glossary.md) for the distinction
+     between a pre-submit and post-submit builder.
+   - Experimental mode will prevent the test's failures from failing and turning
+     the build red. This can be achieved by adding the
+     `'experiment_percentage': 100` line to the test's definition in the pyl
+     files here.
+     ([Example.](https://chromium.googlesource.com/chromium/src/+/79ed7956/testing/buildbot/test_suite_exceptions.pyl#888))
+1. After about one day's worth of builds have passed, examine the results of the
+   the test on the affected post-submit builders. If they're green with little
+   to no flakes, it can be promoted out of experimental. If there's more than
+   a handful of flakes (e.g. 1 or more per day), then the test needs to be
+   de-flaked before moving on. Once that's done, it can then be moved out of
+   experimental and you can proceed to the next step.
+1. After a sufficient amount of time (suggest 2 weeks), examine the results of
    the test on the affected post-submit builders to determine the amount of
    regressions they're catching. Note: unless the new test is providing unique
    info/artifacts (e.g. stack traces, log files) that pre-existing tests lack,
    exclude any regressions that _other_ tests also caught. We're only interested
    in the regressions that these new tests catch alone.
-4. If the new tests aren't excessively flaky (use
+1. If the new tests aren't excessively flaky (use
    [this dashboard](http://shortn/_gP9pAC2IS3) to verify) and if they catch a
    sufficient number of regressions over that trial period, then they can be
    promoted to the CQ. To do so, see the steps below.
@@ -134,13 +147,13 @@ test suites to the CQ builders is to:
       can use [this dashboard](http://shortn/_X75IFjffFk) to determine the
       amount of bots required by comparing it to a similar suite on the same
       builder. Do this for each CQ builder and each suite that's being added.
-   2. File a [resource request](http://go/file-chrome-resource-bug) for the
+   1. File a [resource request](http://go/file-chrome-resource-bug) for the
       required amount of machines. Make sure to specify the correct type of bots
       needed (Linux, Windows, Android emulator, Android device, etc).
-   3. If/when the request is approved and the resources have been deployed, you
+   1. If/when the request is approved and the resources have been deployed, you
       can remove the `'ci_only': True` line for the definitions here to start
       running the tests on the CQ.
-5. If the new tests _don't_ catch regressions sufficiently frequently, then they
+1. If the new tests _don't_ catch regressions sufficiently frequently, then they
    don't provide a high-enough signal to warrant running on the CQ.
    Consequently, they should remain in post-submit only with a comment
    explaining why. This can be revisited if things change.
