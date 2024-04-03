@@ -45,6 +45,7 @@ class ShowNudgeActionPerformer : public UiActionPerformer,
                             const base::Value::Dict* action_dict,
                             bool should_mark_dismissed);
   void OnNudgeDismissed(int campaign_id);
+  void MaybeCancelNudge();
   void CancelNudge();
 
   // views::WidgetObserver:
@@ -53,8 +54,12 @@ class ShowNudgeActionPerformer : public UiActionPerformer,
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
 
   raw_ptr<views::Widget> triggering_widget_ = nullptr;
+  bool is_nudge_active_ = false;
+
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       scoped_observation_{this};
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      nudge_widget_scoped_observation_{this};
 
   base::WeakPtrFactory<ShowNudgeActionPerformer> weak_ptr_factory_{this};
 };

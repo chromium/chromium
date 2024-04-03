@@ -1380,6 +1380,11 @@ BASE_FEATURE(kGrowthFramework,
              "GrowthFramework",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Close the nudge when targeted app window is inactive.
+BASE_FEATURE(kGrowthCampaignsCloseNudgeWhenTargetInactivated,
+             "GrowthCampaignsCloseNudgeWhenTargetInactivated",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables CrOS events recording with growth campaigns.
 BASE_FEATURE(kGrowthCampaignsCrOSEvents,
              "GrowthCampaignsCrOSEvents",
@@ -3610,6 +3615,11 @@ bool IsFeatureManagementGrowthFrameworkEnabled() {
 
 bool IsGrowthFrameworkEnabled() {
   return base::FeatureList::IsEnabled(kGrowthFramework);
+}
+
+bool IsGrowthCampaignsCloseNudgeWhenTargetInactivated() {
+  return base::FeatureList::IsEnabled(
+      kGrowthCampaignsCloseNudgeWhenTargetInactivated);
 }
 
 bool IsGrowthCampaignsCrOSEventsEnabled() {

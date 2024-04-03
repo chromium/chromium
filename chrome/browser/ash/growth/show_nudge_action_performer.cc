@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
 #include "ash/root_window_controller.h"
@@ -48,6 +49,8 @@ constexpr char kActiveAppWindowAnchorTypePath[] =
 
 // Nudge ID.
 constexpr char kGrowthNudgeId[] = "growth_campaign_nudge";
+
+constexpr base::TimeDelta kCancelDelay = base::Milliseconds(100);
 
 // These values are deserialized from Growth Campaign, so entries should not
 // be renumbered and numeric values should never be reused.
@@ -327,9 +330,21 @@ bool ShowNudgeActionPerformer::ShowNudge(int campaign_id,
   if (ash::Shell::HasInstance()) {
     ash::Shell::Get()->anchored_nudge_manager()->Show(nudge_data);
 
-    triggering_widget_ = GetTriggeringWindowWidget();
-    if (triggering_widget_) {
-      scoped_observation_.Observe(triggering_widget_);
+    if (ash::features::IsGrowthCampaignsCloseNudgeWhenTargetInactivated()) {
+      auto* nudge =
+          ash::Shell::Get()->anchored_nudge_manager()->GetNudgeIfShown(
+              kGrowthNudgeId);
+      if (nudge) {
+        auto* nudge_widget = nudge->GetWidget();
+        if (nudge_widget) {
+          nudge_widget_scoped_observation_.Observe(nudge_widget);
+        }
+      }
+
+      triggering_widget_ = GetTriggeringWindowWidget();
+      if (triggering_widget_) {
+        scoped_observation_.Observe(triggering_widget_);
+      }
     }
   }
 
@@ -430,16 +445,44 @@ void ShowNudgeActionPerformer::OnWidgetDestroying(views::Widget* widget) {
 
 void ShowNudgeActionPerformer::OnWidgetActivationChanged(views::Widget* widget,
                                                          bool active) {
+  const auto* nudge =
+      ash::Shell::Get()->anchored_nudge_manager()->GetNudgeIfShown(
+          kGrowthNudgeId);
+  if (nudge && widget == nudge->GetWidget()) {
+    // Mark nudge activation state.
+    is_nudge_active_ = active;
+    return;
+  }
+
   if (!active) {
-    CancelNudge();
+    // Targeted app window widget is inactive, cancel the nudge in a delayed
+    // task to make sure the `is_nudge_active` state is set before using.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&ShowNudgeActionPerformer::MaybeCancelNudge,
+                       weak_ptr_factory_.GetWeakPtr()),
+        kCancelDelay);
   }
 }
 
-void ShowNudgeActionPerformer::CancelNudge() {
-  if (triggering_widget_) {
-    triggering_widget_->RemoveObserver(this);
-    triggering_widget_ = nullptr;
-    scoped_observation_.Reset();
+void ShowNudgeActionPerformer::MaybeCancelNudge() {
+  if (is_nudge_active_) {
+    // The active widget is nudge. Skip canceling nudge.
+    return;
   }
+
+  CancelNudge();
+}
+
+void ShowNudgeActionPerformer::CancelNudge() {
+  if (ash::features::IsGrowthCampaignsCloseNudgeWhenTargetInactivated()) {
+    if (triggering_widget_) {
+      scoped_observation_.Reset();
+      triggering_widget_ = nullptr;
+    }
+    is_nudge_active_ = false;
+    nudge_widget_scoped_observation_.Reset();
+  }
+
   ash::Shell::Get()->anchored_nudge_manager()->Cancel(kGrowthNudgeId);
 }

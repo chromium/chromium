@@ -445,6 +445,8 @@ BASE_DECLARE_FEATURE(kFeatureManagementGrowthFramework);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kGrowthFramework);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kGrowthCampaignsCloseNudgeWhenTargetInactivated);
+COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kGrowthCampaignsCrOSEvents);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kGrowthCampaignsInDemoMode);
@@ -1071,6 +1073,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsGrowthCampaignsTriggerByAppOpenEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGrowthCampaignsInDemoModeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGrowthFrameworkEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsGrowthCampaignsCloseNudgeWhenTargetInactivated();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool AreGlanceablesV2Enabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool AreGlanceablesV2EnabledForTrustedTesters();
 COMPONENT_EXPORT(ASH_CONSTANTS)

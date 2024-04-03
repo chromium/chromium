@@ -440,9 +440,6 @@ Image::~Image() = default;
 const gfx::VectorIcon* Image::GetVectorIcon() const {
   const auto icon = GetBuiltInIconType(image_dict_);
   if (!icon || icon.value() != BuiltInIcon::kRedeem) {
-    // TODO: b/329666969 - Record unrecognized built in icon.
-    LOG(ERROR) << "Unrecognized built in icon: "
-               << static_cast<int>(icon.value());
     return nullptr;
   }
 
