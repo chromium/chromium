@@ -168,7 +168,7 @@ class NotificationViewTest : public views::ViewObserver,
       widget->Init(std::move(init_params));
       notification_view_ =
           widget->SetContentsView(std::move(notification_view));
-      widget->SetSize(notification_view_->GetPreferredSize());
+      widget->SetSize(notification_view_->GetPreferredSize({}));
       widget->Show();
       widget->widget_delegate()->SetCanActivate(true);
       widget->Activate();
@@ -264,7 +264,7 @@ class NotificationViewTest : public views::ViewObserver,
   void OnViewPreferredSizeChanged(views::View* observed_view) override {
     EXPECT_EQ(observed_view, notification_view());
     notification_view_->GetWidget()->SetSize(
-        notification_view()->GetPreferredSize());
+        notification_view()->GetPreferredSize({}));
   }
 
   void OnNotificationRemoved(const std::string& notification_id,
@@ -586,7 +586,7 @@ TEST_F(NotificationViewTest, InkDropClipRect) {
 
   // Expect clip rect to honor the insets to draw the shadow.
   gfx::Insets insets = notification_view()->GetInsets();
-  EXPECT_EQ(notification_view()->GetPreferredSize() - insets.size(),
+  EXPECT_EQ(notification_view()->GetPreferredSize({}) - insets.size(),
             clip_rect.size());
   EXPECT_EQ(gfx::Point(insets.left(), insets.top()), clip_rect.origin());
 }
@@ -643,12 +643,12 @@ TEST_F(NotificationViewTest, PreferredSize) {
   // Collapsed preferred width is determined by the header view.
   notification_view()->SetExpanded(false);
   EXPECT_EQ(kNotificationWidth,
-            notification_view()->GetPreferredSize().width());
+            notification_view()->GetPreferredSize({}).width());
 
   // Ensure expanded preferred width is not extended by the image view.
   notification_view()->SetExpanded(true);
   EXPECT_EQ(kNotificationWidth,
-            notification_view()->GetPreferredSize().width());
+            notification_view()->GetPreferredSize({}).width());
 }
 
 TEST_F(NotificationViewTest, ExpandLongMessage) {
@@ -668,7 +668,7 @@ TEST_F(NotificationViewTest, ExpandLongMessage) {
   EXPECT_FALSE(notification_view()->expanded_);
   const int collapsed_height = message_label()->height();
   const int collapsed_preferred_height =
-      notification_view()->GetPreferredSize().height();
+      notification_view()->GetPreferredSize({}).height();
   EXPECT_LT(0, collapsed_height);
   EXPECT_LT(0, collapsed_preferred_height);
 
@@ -676,13 +676,13 @@ TEST_F(NotificationViewTest, ExpandLongMessage) {
   EXPECT_TRUE(notification_view()->expanded_);
   EXPECT_LT(collapsed_height, message_label()->height());
   EXPECT_LT(collapsed_preferred_height,
-            notification_view()->GetPreferredSize().height());
+            notification_view()->GetPreferredSize({}).height());
 
   ToggleExpanded();
   EXPECT_FALSE(notification_view()->expanded_);
   EXPECT_EQ(collapsed_height, message_label()->height());
   EXPECT_EQ(collapsed_preferred_height,
-            notification_view()->GetPreferredSize().height());
+            notification_view()->GetPreferredSize({}).height());
 }
 
 TEST_F(NotificationViewTest, UpdateType) {

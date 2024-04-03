@@ -132,8 +132,10 @@ CompactTitleMessageView::CompactTitleMessageView() {
 }
 
 gfx::Size CompactTitleMessageView::CalculatePreferredSize() const {
-  gfx::Size title_size = title_->GetPreferredSize();
-  gfx::Size message_size = message_->GetPreferredSize();
+  gfx::Size title_size =
+      title_->GetPreferredSize(views::SizeBounds(title_->width(), {}));
+  gfx::Size message_size =
+      message_->GetPreferredSize(views::SizeBounds(message_->width(), {}));
   return gfx::Size(title_size.width() + message_size.width() +
                        kCompactTitleMessageViewSpacing,
                    std::max(title_size.height(), message_size.height()));
@@ -149,8 +151,10 @@ void CompactTitleMessageView::Layout(PassKey) {
   // * If they are short enough, the title is left-aligned and the message is
   //   right-aligned.
   const int message_width = std::min(
-      message_->GetPreferredSize().width(),
-      title_->GetPreferredSize().width() > 0
+      message_->GetPreferredSize(views::SizeBounds(message_->width(), {}))
+          .width(),
+      title_->GetPreferredSize(views::SizeBounds(title_->width(), {})).width() >
+              0
           ? static_cast<int>(kProgressNotificationMessageRatio * width())
           : width());
   const int title_width =
@@ -660,7 +664,7 @@ void NotificationViewBase::CreateOrUpdateActionButtonViews(
       // in the right location in the view hierarchy when
       // SynthesizeMouseMoveEvent() is called.
       DeprecatedLayoutImmediately();
-      widget->SetSize(widget->GetContentsView()->GetPreferredSize());
+      widget->SetSize(widget->GetContentsView()->GetPreferredSize({}));
       widget->SynthesizeMouseMoveEvent();
     }
   }

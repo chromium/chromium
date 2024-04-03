@@ -266,7 +266,7 @@ NotificationView::NotificationView(
   views::InkDrop::Get(this)->SetCreateRippleCallback(base::BindRepeating(
       [](NotificationViewBase* host) -> std::unique_ptr<views::InkDropRipple> {
         return std::make_unique<views::FloodFillInkDropRipple>(
-            views::InkDrop::Get(host), host->GetPreferredSize(),
+            views::InkDrop::Get(host), host->GetPreferredSize({}),
             views::InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
             views::InkDrop::Get(host)->GetBaseColor(),
             views::InkDrop::Get(host)->GetVisibleOpacity());
@@ -281,7 +281,7 @@ NotificationView::NotificationView(
   const int font_list_height = font_list.GetHeight();
   const gfx::Insets& text_view_padding(CalculateTopPadding(font_list_height));
   header_row->ConfigureLabelsStyle(font_list, text_view_padding, false);
-  header_row->SetPreferredSize(header_row->GetPreferredSize() -
+  header_row->SetPreferredSize(header_row->GetPreferredSize({}) -
                                gfx::Size(GetInsets().width(), 0));
   header_row->SetCallback(base::BindRepeating(
       &NotificationView::HeaderRowPressed, base::Unretained(this)));
@@ -661,7 +661,7 @@ void NotificationView::Layout(PassKey) {
 }
 
 void NotificationView::PreferredSizeChanged() {
-  highlight_path_generator_->set_preferred_size(GetPreferredSize());
+  highlight_path_generator_->set_preferred_size(GetPreferredSize({}));
   MessageView::PreferredSizeChanged();
 }
 

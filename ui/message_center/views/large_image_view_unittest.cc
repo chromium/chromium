@@ -56,7 +56,7 @@ TEST_F(LargeImageViewTest, CheckPreferredSize) {
   LargeImageView view(/*max_size=*/{300, 500});
   for (const TestCase& test_case : kTestCases) {
     view.SetImage(CreateTestImageForSize(test_case.input));
-    EXPECT_EQ(view.GetPreferredSize(), test_case.expected_output);
+    EXPECT_EQ(view.GetPreferredSize({}), test_case.expected_output);
   }
 }
 

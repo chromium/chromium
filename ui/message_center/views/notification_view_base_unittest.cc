@@ -264,7 +264,7 @@ void NotificationViewBaseTest::OnViewPreferredSizeChanged(
     return;
   }
   notification_view_->GetWidget()->SetSize(
-      notification_view()->GetPreferredSize());
+      notification_view()->GetPreferredSize({}));
 }
 
 std::vector<ButtonInfo> NotificationViewBaseTest::CreateButtons(int number) {
@@ -293,7 +293,7 @@ void NotificationViewBaseTest::UpdateNotificationViews(
     auto* widget = new views::Widget();
     widget->Init(std::move(init_params));
     notification_view_ = widget->SetContentsView(std::move(notification_view));
-    widget->SetSize(notification_view_->GetPreferredSize());
+    widget->SetSize(notification_view_->GetPreferredSize({}));
     widget->Show();
     widget->widget_delegate()->SetCanActivate(true);
     widget->Activate();
