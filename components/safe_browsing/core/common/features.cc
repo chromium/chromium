@@ -156,7 +156,7 @@ BASE_FEATURE(kLogAccountEnhancedProtectionStateInProtegoPings,
 
 BASE_FEATURE(kMaldocaSkipCheck,
              "MaldocaSkipCheck",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kMmapSafeBrowsingDatabase,
              "MmapSafeBrowsingDatabase",
