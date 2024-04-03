@@ -276,6 +276,10 @@ const base::flat_map<VendorProductId, MouseMetadata>& GetMouseMetadataList() {
           {{0x0461, 0x4e9a},
            {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
             mojom::MouseButtonConfig::kNoConfig}},
+          // HP 910 Mouse
+          {{0x0461, 0x4eef},
+           {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
+            mojom::MouseButtonConfig::kNoConfig}},
           // Logitech Cube
           {{0x046d, 0x4010},
            {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
