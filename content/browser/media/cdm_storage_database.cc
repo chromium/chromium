@@ -624,6 +624,39 @@ void CdmStorageDatabase::OnDatabaseError(int error, sql::Statement* stmt) {
 
   if (last_operation_) {
     sql::UmaHistogramSqliteResult(kUmaPrefix + *last_operation_, error);
+
+    switch (sql::ToSqliteLoggedResultCode(error)) {
+      case sql::SqliteLoggedResultCode::kCantOpen:
+        base::UmaHistogramSparse(
+            base::StrCat({kUmaPrefix, *last_operation_, ".CantOpen.Errno"}),
+            db_.GetLastErrno());
+        break;
+      case sql::SqliteLoggedResultCode::kFullDisk:
+        base::UmaHistogramSparse(
+            base::StrCat({kUmaPrefix, *last_operation_, ".FullDisk.Errno"}),
+            db_.GetLastErrno());
+        break;
+      case sql::SqliteLoggedResultCode::kGeneric:
+        base::UmaHistogramSparse(
+            base::StrCat({kUmaPrefix, *last_operation_, ".Generic.Errno"}),
+            db_.GetLastErrno());
+        break;
+      case sql::SqliteLoggedResultCode::kIoTruncate:
+        base::UmaHistogramSparse(
+            base::StrCat({kUmaPrefix, *last_operation_, ".IoTruncate.Errno"}),
+            db_.GetLastErrno());
+        break;
+      case sql::SqliteLoggedResultCode::kBusy:
+        base::UmaHistogramSparse(
+            base::StrCat({kUmaPrefix, *last_operation_, ".Busy.Errno"}),
+            db_.GetLastErrno());
+        break;
+      default:
+        // Currently, we don't care what happens with other SqliteErrors, so
+        // just break.
+        break;
+    }
+
     last_operation_.reset();
   }
 }

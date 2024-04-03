@@ -2424,6 +2424,40 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Media.EME.CdmStorageDatabaseSQLiteError.{CdmDatabaseOperation}.{SqliteError}.Errno"
+    units="errno" expires_after="2025-02-27">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA records the errno that occur when executing the operation
+    {CdmDatabaseOperation} and getting a specific {SqliteError}. This UMA is
+    recorded every time this operation errors with the specific {SqliteError}.
+  </summary>
+  <token key="CdmDatabaseOperation">
+    <variant name="AlterDatabaseForFileSize"/>
+    <variant name="AlterDatabaseForLastModified"/>
+    <variant name="ClearDatabase"/>
+    <variant name="DeleteFile"/>
+    <variant name="DeleteForStorageKey"/>
+    <variant name="DeleteForTimeFrame"/>
+    <variant name="DeleteIfEmptyDatabase"/>
+    <variant name="GetSizeForFile"/>
+    <variant name="GetSizeForStorageKey"/>
+    <variant name="GetSizeForTimeFrame"/>
+    <variant name="OpenDatabase"/>
+    <variant name="ReadFile"/>
+    <variant name="WriteFile"/>
+  </token>
+  <token key="SqliteError">
+    <variant name="Busy"/>
+    <variant name="CantOpen"/>
+    <variant name="FullDisk"/>
+    <variant name="Generic"/>
+    <variant name="IoTruncate"/>
+  </token>
+</histogram>
+
 <histogram name="Media.EME.CdmStorageManager.DatabaseOpenError"
     enum="CdmStorageOpenError" expires_after="2025-02-27">
   <owner>vpasupathy@chromium.org</owner>
