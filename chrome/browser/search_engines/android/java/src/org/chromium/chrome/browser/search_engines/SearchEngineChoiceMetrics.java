@@ -46,7 +46,8 @@ public class SearchEngineChoiceMetrics {
         EventsV2.CHOICE_REQUEST_METADATA_NULL,
         EventsV2.CHOICE_REQUEST_PARSE_FAILED,
         EventsV2.PREVIOUS_CHOICE_REQUEST_FAILED,
-        EventsV2.CHOICE_REQUEST_SUCCESS
+        EventsV2.CHOICE_REQUEST_SUCCESS,
+        EventsV2.CHOICE_ALREADY_APPLIED
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface EventsV2 {
@@ -58,12 +59,14 @@ public class SearchEngineChoiceMetrics {
         int CHOICE_REQUEST_PARSE_FAILED = 5;
         int PREVIOUS_CHOICE_REQUEST_FAILED = 6;
         int CHOICE_REQUEST_SUCCESS = 7;
-        int MAX = 8;
+        int CHOICE_ALREADY_APPLIED = 8;
+        int MAX = 9;
     }
 
     /**
      * Records an event to the search choice histogram. See {@link Events} and histograms.xml for
      * more details.
+     *
      * @param event The {@link Events} to be reported.
      */
     public static void recordEvent(@Events int event) {

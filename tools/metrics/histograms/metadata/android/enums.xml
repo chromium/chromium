@@ -199,6 +199,7 @@ chromium-metrics-reviews@google.com.
   <int value="6"
       label="Previous attempt to persist search engine metadata failed"/>
   <int value="7" label="Request success"/>
+  <int value="8" label="Choice was already applied"/>
 </enum>
 
 <enum name="AndroidSearchEngineLogoEvents">

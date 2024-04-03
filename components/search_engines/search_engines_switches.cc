@@ -49,6 +49,12 @@ BASE_FEATURE(kSearchEngineChoiceTrigger,
 
 );
 
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kPersistentSearchEngineChoiceImport,
+             "kPersistentSearchEngineChoiceImport",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 const base::FeatureParam<bool> kSearchEngineChoiceTriggerForTaggedProfilesOnly{
     &kSearchEngineChoiceTrigger, /*name=*/"for_tagged_profiles_only", true};

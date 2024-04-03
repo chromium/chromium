@@ -37,6 +37,11 @@ extern const char kForceSearchEngineChoiceScreen[];
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 BASE_DECLARE_FEATURE(kSearchEngineChoiceTrigger);
 
+#if BUILDFLAG(IS_ANDROID)
+COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
+BASE_DECLARE_FEATURE(kPersistentSearchEngineChoiceImport);
+#endif
+
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 extern const base::FeatureParam<bool>
     kSearchEngineChoiceTriggerForTaggedProfilesOnly;
