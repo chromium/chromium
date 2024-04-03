@@ -121,6 +121,14 @@ bool VideoCadenceEstimator::UpdateCadenceEstimate(
   DCHECK_GT(render_interval, base::TimeDelta());
   DCHECK_GT(frame_duration, base::TimeDelta());
 
+  bool render_interval_changed = false;
+  if (last_render_interval_ > base::TimeDelta() &&
+      (last_render_interval_ - render_interval).magnitude() >
+          base::Microseconds(500)) {
+    render_interval_changed = true;
+  }
+  last_render_interval_ = render_interval;
+
   if (frame_duration_deviation > kVariableFPSFactor * render_interval) {
     is_variable_frame_rate_ = true;
   } else if (frame_duration_deviation < kConstantFPSFactor * render_interval) {
@@ -153,6 +161,12 @@ bool VideoCadenceEstimator::UpdateCadenceEstimate(
     HistogramCadenceChangeCount(0);
   }
 
+  // Update the cadence immediately if the render interval has changed.
+  if (render_interval_changed && new_cadence != cadence_) {
+    UpdateCadenceInternal(new_cadence, time_until_max_drift);
+    return true;
+  }
+
   // If nothing changed, do nothing.
   if (new_cadence == cadence_) {
     // Clear cadence hold to pending values from accumulating incorrectly.
@@ -167,14 +181,7 @@ bool VideoCadenceEstimator::UpdateCadenceEstimate(
       cadence_hysteresis_threshold_ <= render_interval) {
     if (++render_intervals_cadence_held_ * render_interval >=
         cadence_hysteresis_threshold_) {
-      DVLOG(1) << "Cadence switch: " << CadenceToString(cadence_) << " -> "
-               << CadenceToString(new_cadence)
-               << " :: Time until drift exceeded: " << time_until_max_drift;
-      cadence_.swap(new_cadence);
-
-      // Note: Because this class is transitively owned by a garbage collected
-      // object, WebMediaPlayer, we log cadence changes as they are encountered.
-      HistogramCadenceChangeCount(++cadence_changes_);
+      UpdateCadenceInternal(new_cadence, time_until_max_drift);
       return true;
     }
 
@@ -191,6 +198,19 @@ bool VideoCadenceEstimator::UpdateCadenceEstimate(
   }
 
   return false;
+}
+
+void VideoCadenceEstimator::UpdateCadenceInternal(
+    Cadence new_cadence,
+    base::TimeDelta time_until_max_drift) {
+  DVLOG(1) << "Cadence switch: " << CadenceToString(cadence_) << " -> "
+           << CadenceToString(new_cadence)
+           << " :: Time until drift exceeded: " << time_until_max_drift;
+  cadence_.swap(new_cadence);
+
+  // Note: Because this class is transitively owned by a garbage collected
+  // object, WebMediaPlayer, we log cadence changes as they are encountered.
+  HistogramCadenceChangeCount(++cadence_changes_);
 }
 
 int VideoCadenceEstimator::GetCadenceForFrame(uint64_t frame_number) const {

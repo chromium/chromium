@@ -148,6 +148,9 @@ class MEDIA_EXPORT VideoCadenceEstimator {
   bool UpdateBresenhamCadenceEstimate(base::TimeDelta render_interval,
                                       base::TimeDelta frame_duration);
 
+  void UpdateCadenceInternal(Cadence new_cadence,
+                             base::TimeDelta time_until_max_drift);
+
   // The approximate best N-frame cadence for all frames seen thus far; updated
   // by UpdateCadenceEstimate().  Empty when no cadence has been detected.
   Cadence cadence_;
@@ -176,6 +179,7 @@ class MEDIA_EXPORT VideoCadenceEstimator {
   const base::TimeDelta minimum_time_until_max_drift_;
 
   bool is_variable_frame_rate_;
+  base::TimeDelta last_render_interval_;
 };
 
 }  // namespace media

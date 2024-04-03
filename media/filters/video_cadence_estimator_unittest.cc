@@ -306,6 +306,31 @@ TEST(VideoCadenceEstimatorTest, CadenceHystersisPreventsOscillation) {
   EXPECT_FALSE(estimator.has_cadence());
 }
 
+TEST(VideoCadenceEstimatorTest, RenderIntervalChangingSkipsHystersis) {
+  VideoCadenceEstimator estimator(kMinimumAcceptableTimeBetweenGlitches);
+
+  const base::TimeDelta render_interval = Interval(60);
+  const base::TimeDelta frame_interval = Interval(30);
+  const base::TimeDelta acceptable_drift = frame_interval / 2;
+  estimator.set_cadence_hysteresis_threshold_for_testing(render_interval * 4);
+
+  // Wait for cadence to be detected.
+  int it_count = 0;
+  while (!estimator.has_cadence()) {
+    estimator.UpdateCadenceEstimate(render_interval, frame_interval,
+                                    base::TimeDelta(), acceptable_drift);
+    it_count++;
+    EXPECT_LE(it_count, 4);
+  }
+
+  // If |render_interval| changes, the hysteresis should be skipped and the
+  // candence should be updated immediately.
+  EXPECT_TRUE(estimator.UpdateCadenceEstimate(render_interval * 2,
+                                              frame_interval, base::TimeDelta(),
+                                              acceptable_drift));
+  EXPECT_TRUE(estimator.has_cadence());
+}
+
 void VerifyCadenceSequence(VideoCadenceEstimator* estimator,
                            double frame_rate,
                            double display_rate,

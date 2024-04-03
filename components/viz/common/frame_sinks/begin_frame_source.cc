@@ -458,10 +458,13 @@ void DelayBasedBeginFrameSource::OnTimerTick() {
 void DelayBasedBeginFrameSource::IssueBeginFrameToObserver(
     BeginFrameObserver* obs,
     const BeginFrameArgs& args) {
+  // We should use |last_args| for margin calculation with
+  // |obs->LastUsedBeginFrameArgs()| cached during last OnBeginFrame, as the
+  // passed in |args| is updated if interval changes since last frame.
   BeginFrameArgs last_args = obs->LastUsedBeginFrameArgs();
   const base::TimeDelta double_tick_margin =
       max_vrr_interval_.has_value() ? base::TimeDelta()
-                                    : args.interval / kDoubleTickDivisor;
+                                    : last_args.interval / kDoubleTickDivisor;
   if (!last_args.IsValid() ||
       (args.frame_time > last_args.frame_time + double_tick_margin)) {
     if (args.type == BeginFrameArgs::MISSED) {
