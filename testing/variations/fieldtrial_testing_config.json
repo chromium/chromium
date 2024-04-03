@@ -15636,6 +15636,22 @@
             ]
         }
     ],
+    "RemotePageMetadataBling": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20240402",
+                    "enable_features": [
+                        "PageContentAnnotationsPersistSalientImageMetadata",
+                        "RemotePageMetadata"
+                    ]
+                }
+            ]
+        }
+    ],
     "RemotePageMetadataDesktopExpansion": [
         {
             "platforms": [
