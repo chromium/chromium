@@ -7,6 +7,8 @@ assert(!is_android, "Lens Overlay is for desktop platforms only")
 
 static_library("lens_overlay") {
   sources = [
+    "lens_overlay_image_helper.cc",
+    "lens_overlay_image_helper.h",
     "lens_overlay_query_controller.cc",
     "lens_overlay_query_controller.h",
   ]
@@ -14,7 +16,12 @@ static_library("lens_overlay") {
   deps = [
     "//base",
     "//chrome/browser/resources/lens/server/proto",
+    "//components/lens:features",
     "//skia",
+    "//third_party/lens_server_proto:lens_overlay_proto",
+    "//ui/gfx:gfx",
+    "//ui/gfx/codec:codec",
+    "//ui/gfx/geometry:geometry",
     "//url",
   ]
 }

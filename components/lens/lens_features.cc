@@ -8,8 +8,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/system/sys_info.h"
 
-namespace lens {
-namespace features {
+namespace lens::features {
 
 BASE_FEATURE(kLensStandalone,
              "LensStandalone",
@@ -52,6 +51,14 @@ const base::FeatureParam<int> kLensOverlayMinRamMb{&kLensOverlay, "min_ram_mb",
                                                    /*default=value=*/-1};
 const base::FeatureParam<std::string> kResultsSearchUrl{
     &kLensOverlay, "results-search-url", "https://www.google.com/search"};
+const base::FeatureParam<int> kLensOverlayImageCompressionQuality{
+    &kLensOverlay, "image-compression-quality", 90};
+const base::FeatureParam<int> kLensOverlayImageMaxArea{
+    &kLensOverlay, "image-dimensions-max-area", 1000000};
+const base::FeatureParam<int> kLensOverlayImageMaxHeight{
+    &kLensOverlay, "image-dimensions-max-height", 1000};
+const base::FeatureParam<int> kLensOverlayImageMaxWidth{
+    &kLensOverlay, "image-dimensions-max-width", 1000};
 
 constexpr base::FeatureParam<std::string> kHomepageURLForLens{
     &kLensStandalone, "lens-homepage-url", "https://lens.google.com/v3/"};
@@ -192,5 +199,20 @@ std::string GetLensOverlayResultsSearchURL() {
   return kResultsSearchUrl.Get();
 }
 
-}  // namespace features
-}  // namespace lens
+int GetLensOverlayImageCompressionQuality() {
+  return kLensOverlayImageCompressionQuality.Get();
+}
+
+int GetLensOverlayImageMaxArea() {
+  return kLensOverlayImageMaxArea.Get();
+}
+
+int GetLensOverlayImageMaxHeight() {
+  return kLensOverlayImageMaxHeight.Get();
+}
+
+int GetLensOverlayImageMaxWidth() {
+  return kLensOverlayImageMaxWidth.Get();
+}
+
+}  // namespace lens::features

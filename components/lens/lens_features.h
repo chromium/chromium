@@ -11,8 +11,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
-namespace lens {
-namespace features {
+namespace lens::features {
 
 // Enables context menu search by image sending to the Lens homepage.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -203,7 +202,23 @@ extern bool IsLensOverlayEnabled();
 // Returns the finch configured results search URL to use as base for queries.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern std::string GetLensOverlayResultsSearchURL();
-}  // namespace features
-}  // namespace lens
+
+// Returns the finch configured image compression quality for the Lens overlay
+// feature.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetLensOverlayImageCompressionQuality();
+
+// Returns the finch configured max image area for the Lens overlay feature.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetLensOverlayImageMaxArea();
+
+// Returns the finch configured max image height for the Lens overlay feature.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetLensOverlayImageMaxHeight();
+
+// Returns the finch configured max image width for the Lens overlay feature.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetLensOverlayImageMaxWidth();
+}  // namespace lens::features
 
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_
