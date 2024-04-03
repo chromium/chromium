@@ -19414,6 +19414,24 @@
             ]
         }
     ],
+    "UnoPhase2FollowUp": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableBatchUploadFromBookmarksManager",
+                        "EnableReviewAccountSettingsPromo",
+                        "HistoryOptInForRestoreShortyAndReSignin",
+                        "LinkAccountSettingsToPrivacyFooter"
+                    ]
+                }
+            ]
+        }
+    ],
     "UnthrottledTabProcessReporting": [
         {
             "platforms": [
