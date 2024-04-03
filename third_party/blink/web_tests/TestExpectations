@@ -588,8 +588,6 @@ crbug.com/1177540 external/wpt/svg/text/reftests/text-text-anchor-203.svg [ Fail
 crbug.com/1177540 external/wpt/svg/text/reftests/text-text-anchor-003.svg [ Failure ]
 crbug.com/670177 external/wpt/svg/rendering/order/z-index.svg [ Failure ]
 crbug.com/863355 [ Mac ] external/wpt/svg/shapes/reftests/pathlength-002.svg [ Failure ]
-crbug.com/1052202 external/wpt/svg/linking/scripted/href-mpath-element.html [ Timeout ]
-crbug.com/1052202 external/wpt/svg/linking/scripted/href-animate-element.html [ Timeout ]
 crbug.com/1222395 external/wpt/svg/path/property/mpath.svg [ Failure ]
 crbug.com/785246 external/wpt/svg/struct/reftests/use-inheritance-001.svg [ Failure ]
 crbug.com/785246 external/wpt/svg/linking/reftests/use-descendant-combinator-003.html [ Failure ]
