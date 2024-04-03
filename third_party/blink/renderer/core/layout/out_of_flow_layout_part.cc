@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/absolute_utils.h"
 #include "third_party/blink/renderer/core/layout/anchor_position_scroll_data.h"
+#include "third_party/blink/renderer/core/layout/anchor_position_visibility_observer.h"
 #include "third_party/blink/renderer/core/layout/anchor_query_map.h"
 #include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/disable_layout_side_effects_scope.h"
@@ -248,6 +249,74 @@ class OOFCandidateStyleIterator {
   // the list of options; otherwise nullopt.
   std::optional<wtf_size_t> try_option_index_;
 };
+
+const Element* GetPositionAnchorElement(const BlockNode& node) {
+  const ComputedStyle& style = node.Style();
+  const LayoutObject* anchor_object =
+      style.PositionAnchor()
+          ? node.GetLayoutBox()->FindTargetAnchor(*style.PositionAnchor())
+          : node.GetLayoutBox()->AcceptableImplicitAnchor();
+  return anchor_object ? DynamicTo<Element>(anchor_object->GetNode()) : nullptr;
+}
+
+// Updates `node`'s associated `PaintLayer` for `position-visibility`. See:
+// https://github.com/w3c/csswg-drafts/issues/7758. The values of `no-overflow`
+// and `anchors-valid` are computed and directly update the `PaintLayer` in this
+// function. The remaining value of `anchors-visible` is computed via an
+// intersection observer set up in this function, and the `PaintLayer` is
+// updated later during the post-layout intersection observer step.
+void UpdatePositionVisibilityAfterLayout(
+    const OutOfFlowLayoutPart::OffsetInfo& offset_info,
+    const BlockNode& node) {
+  if (!RuntimeEnabledFeatures::CSSPositionVisibilityEnabled()) {
+    return;
+  }
+
+  PaintLayer* layer = node.GetLayoutBox()->Layer();
+  CHECK(layer);
+  bool has_no_overflow_visibility =
+      node.Style().HasPositionVisibility(PositionVisibility::kNoOverflow);
+  layer->SetInvisibleForPositionVisibility(
+      PositionVisibility::kNoOverflow,
+      has_no_overflow_visibility && offset_info.overflows_containing_block);
+
+  // TODO(https://github.com/w3c/csswg-drafts/issues/7758#issuecomment-2026137829):
+  // For now we hide the anchored element if it's not anchor positioned. We need
+  // to revisit based on the final decision for the spec of
+  // `position-visibility: anchors-valid`.
+  bool has_anchors_valid_visibility =
+      node.Style().HasPositionVisibility(PositionVisibility::kAnchorsValid);
+  // TODO(wangxianzhu): We may be anchored in cases where we do not need scroll
+  // adjustment, such as when the anchor and anchored have the same containing
+  // block. For now though, these flags are true in this case.
+  bool is_anchor_positioned = offset_info.needs_scroll_adjustment_in_x ||
+                              offset_info.needs_scroll_adjustment_in_y;
+  layer->SetInvisibleForPositionVisibility(
+      PositionVisibility::kAnchorsValid,
+      has_anchors_valid_visibility && !is_anchor_positioned);
+
+  bool has_anchors_visible_visibility =
+      node.Style().HasPositionVisibility(PositionVisibility::kAnchorsVisible);
+  Element* anchored = DynamicTo<Element>(node.GetDOMNode());
+  // TODO(https://github.com/w3c/csswg-drafts/issues/7758#issuecomment-2026137829):
+  // The spec is still in-flux about whether we should use multiple anchors
+  // (from `anchor()` and `anchor-size()`), or just the default/implicit anchor.
+  const Element* anchor = anchored ? GetPositionAnchorElement(node) : nullptr;
+  // TODO(pdr): The position-visibility of the anchor element should also be
+  // based on the `visibility` property of `anchor`. The anchor position
+  // visibility observer, used below, does not consider `visibility`.
+  if (is_anchor_positioned && has_anchors_visible_visibility && anchor) {
+    anchored->EnsureAnchorPositionScrollData()
+        .EnsureAnchorPositionVisibilityObserver()
+        .MonitorAnchor(anchor);
+  } else if (anchored) {
+    if (auto* scroll_data = anchored->GetAnchorPositionScrollData()) {
+      if (auto* observer = scroll_data->GetAnchorPositionVisibilityObserver()) {
+        observer->MonitorAnchor(nullptr);
+      }
+    }
+  }
+}
 
 }  // namespace
 
@@ -2098,35 +2167,8 @@ const LayoutResult* OutOfFlowLayoutPart::Layout(
   layout_result->GetMutableForOutOfFlow().SetNonOverflowingScrollRanges(
       offset_info.non_overflowing_scroll_ranges);
 
-  if (RuntimeEnabledFeatures::CSSPositionVisibilityEnabled()) {
-    PaintLayer* layer =
-        oof_node_to_layout.node_info.node.GetLayoutBox()->Layer();
-    CHECK(layer);
-    bool has_no_overflow_visibility =
-        oof_node_to_layout.node_info.node.Style().HasPositionVisibility(
-            PositionVisibility::kNoOverflow);
-    layer->SetInvisibleForPositionVisibility(
-        PositionVisibility::kNoOverflow,
-        has_no_overflow_visibility && offset_info.overflows_containing_block);
-
-    // TODO(https://github.com/w3c/csswg-drafts/issues/7758#issuecomment-2026137829):
-    // For now we hide the anchored element if it's not anchor positioned. We
-    // need to revisit based on the final decision for the spec of
-    // position-visibility: anchors-valid.
-    bool has_anchors_valid_visibility =
-        oof_node_to_layout.node_info.node.Style().HasPositionVisibility(
-            PositionVisibility::kAnchorsValid);
-    layer->SetInvisibleForPositionVisibility(
-        PositionVisibility::kAnchorsValid,
-        has_anchors_valid_visibility &&
-            // TODO(wangxianzhu): For now this seems equivalent to something
-            // like is_anchor_positioned, but we may change these flags to
-            // actually reflect the needs of scroll adjustments. For example,
-            // we may not need scroll adjustment if the anchor and the anchored
-            // have the same containing block, but for now these flags are true.
-            !offset_info.needs_scroll_adjustment_in_x &&
-            !offset_info.needs_scroll_adjustment_in_y);
-  }
+  UpdatePositionVisibilityAfterLayout(offset_info,
+                                      oof_node_to_layout.node_info.node);
 
   return layout_result;
 }

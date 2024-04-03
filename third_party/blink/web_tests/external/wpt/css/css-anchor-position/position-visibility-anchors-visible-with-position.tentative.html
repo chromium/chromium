@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta name="assert" content="Position-visibility: anchors-visible should hide an element with an out-of-view anchor." />
+<meta name="assert" content="Position-visibility: anchors-visible should hide an element with an out-of-view anchor and a relpos scroller." />
 <title>CSS Anchor Positioning Test: position-visibility: anchors-visible</title>
 <link rel="help" href="https://github.com/w3c/csswg-drafts/issues/7758">
 <link rel="match" href="position-visibility-anchors-visible-ref.html">
@@ -9,6 +9,8 @@
     overflow: hidden scroll;
     width: 300px;
     height: 100px;
+    /* Same as position-visibility-anchors-visible.html, but with relpos here */
+    position: relative;
   }
 
   #anchor {

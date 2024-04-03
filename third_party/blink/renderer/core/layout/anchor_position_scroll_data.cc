@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/layout/anchor_position_visibility_observer.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/non_overflowing_scroll_range.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -286,6 +287,15 @@ bool AnchorPositionScrollData::ShouldScheduleNextService() {
          TakeAndCompareSnapshot(false /*update*/) != SnapshotDiff::kNone;
 }
 
+AnchorPositionVisibilityObserver&
+AnchorPositionScrollData::EnsureAnchorPositionVisibilityObserver() {
+  if (!position_visibility_observer_) {
+    position_visibility_observer_ =
+        MakeGarbageCollected<AnchorPositionVisibilityObserver>(*owner_);
+  }
+  return *position_visibility_observer_;
+}
+
 void AnchorPositionScrollData::InvalidateLayoutAndPaint() {
   DCHECK(IsActive());
   DCHECK(owner_->GetLayoutObject());
@@ -302,6 +312,7 @@ void AnchorPositionScrollData::InvalidatePaint() {
 
 void AnchorPositionScrollData::Trace(Visitor* visitor) const {
   visitor->Trace(owner_);
+  visitor->Trace(position_visibility_observer_);
   ScrollSnapshotClient::Trace(visitor);
   ElementRareDataField::Trace(visitor);
 }

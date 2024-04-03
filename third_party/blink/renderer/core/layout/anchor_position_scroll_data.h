@@ -16,6 +16,7 @@
 
 namespace blink {
 
+class AnchorPositionVisibilityObserver;
 class Element;
 class LayoutObject;
 
@@ -101,6 +102,12 @@ class AnchorPositionScrollData
   bool ShouldScheduleNextService() override;
   bool IsAnchorPositionScrollData() const override { return true; }
 
+  AnchorPositionVisibilityObserver& EnsureAnchorPositionVisibilityObserver();
+  AnchorPositionVisibilityObserver* GetAnchorPositionVisibilityObserver()
+      const {
+    return position_visibility_observer_;
+  }
+
   void Trace(Visitor*) const override;
 
  private:
@@ -161,6 +168,8 @@ class AnchorPositionScrollData
 
   // The accumulated adjustment applied to the additional fallback-bounds rect.
   gfx::Vector2dF additional_bounds_offset_;
+
+  Member<AnchorPositionVisibilityObserver> position_visibility_observer_;
 };
 
 template <>

@@ -7,16 +7,26 @@
     height: 100px;
   }
 
-  #spacer {
-    height: 200px;
+  #anchor {
+    width: 100px;
+    height: 100px;
+    background: orange;
+    margin-bottom: 100px;
+  }
+
+  #target {
+    width: 100px;
+    height: 100px;
+    background: green;
   }
 </style>
 
 <div id="scroll-container">
-  <div id="spacer"></div>
+  <div id="anchor">anchor</div>
 </div>
+<div id="target">target</div>
 
 <script>
   const scroller = document.getElementById('scroll-container');
-  scroller.scrollTop = 100;
+  scroller.scrollTop = 0;
 </script>

@@ -1,9 +1,12 @@
 <!DOCTYPE html>
+<html class=reftest-wait>
 <meta charset="utf-8">
-<meta name="assert" content="Position-visibility: anchors-visible should hide an element with an out-of-view anchor." />
+<meta name="assert" content="Scrolling an anchor out of view should cause a position-visibility: anchors-visible element to disappear." />
 <title>CSS Anchor Positioning Test: position-visibility: anchors-visible</title>
 <link rel="help" href="https://github.com/w3c/csswg-drafts/issues/7758">
-<link rel="match" href="position-visibility-anchors-visible-ref.html">
+<link rel="match" href="position-visibility-anchors-visible-after-scroll-out-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<script src="/common/rendering-utils.js"></script>
 <style>
   #scroll-container {
     overflow: hidden scroll;
@@ -25,7 +28,7 @@
   #target {
     position-anchor: --a1;
     position-visibility: anchors-visible;
-    inset-area: bottom right;
+    inset-area: bottom;
     width: 100px;
     height: 100px;
     background: red;
@@ -42,7 +45,15 @@
 </div>
 
 <script>
-  const scroller = document.getElementById('scroll-container');
-  scroller.scrollTop = 100;
-  // #target should not be visible because #anchor is scrolled out of view.
+  // #target should be initially visible because it is anchored to #anchor,
+  // which is visible.
+
+  waitForAtLeastOneFrame().then(() => {
+    // Scroll #anchor so that it is out of view.
+    const scroller = document.getElementById('scroll-container');
+    scroller.scrollTop = 100;
+
+    // #target should now be invisible.
+    takeScreenshot();
+  });
 </script>
