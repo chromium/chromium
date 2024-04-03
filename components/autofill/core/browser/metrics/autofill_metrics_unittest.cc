@@ -203,129 +203,33 @@ INSTANTIATE_TEST_SUITE_P(AutofillMetricsTest,
                          AutofillMetricsIFrameTest,
                          testing::Bool());
 
-struct Field {
-  FieldType field_type;
-  bool is_autofilled = true;
-  std::optional<std::u16string> value = std::nullopt;
-};
-
-struct PerfectFillingTestCase {
-  std::string description;
-  std::vector<Field> fields;
-  std::vector<Bucket> address_buckets;
-  std::vector<Bucket> credit_card_buckets;
-};
-
-class AutofillPerfectFillingMetricsTest
-    : public AutofillMetricsTest,
-      public ::testing::WithParamInterface<PerfectFillingTestCase> {
- public:
-  std::vector<test::FieldDescription> GetFields(std::vector<Field> fields) {
-    std::vector<test::FieldDescription> fields_to_return;
-    for (const auto& field : fields) {
-      test::FieldDescription f;
-      if (field.value) {
-        f.value = field.value;
-      } else if (field.field_type == NAME_FULL ||
-                 field.field_type == CREDIT_CARD_NAME_FULL) {
-        f.value = u"Elvis Aaron Presley";
-      } else if (field.field_type == EMAIL_ADDRESS) {
-        f.value = u"buddy@gmail.com";
-      } else if (field.field_type == ADDRESS_HOME_CITY) {
-        f.value = u"Munich";
-      } else if (field.field_type == CREDIT_CARD_NUMBER) {
-        f.value = u"01230123012399";
-      } else {
-        NOTREACHED();
-      }
-      f.role = field.field_type;
-      f.is_autofilled = field.is_autofilled;
-      fields_to_return.push_back(f);
-    }
-    return fields_to_return;
-  }
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    AutofillMetricsTest,
-    AutofillPerfectFillingMetricsTest,
-    testing::Values(
-        // Test that we log the perfect filling metric correctly for an address
-        // form in which every field is autofilled.
-        PerfectFillingTestCase{
-            "PerfectFillingForAddresses_AllAutofillFilled",
-            {{NAME_FULL}, {EMAIL_ADDRESS}, {ADDRESS_HOME_CITY}},
-            {Bucket(false, 0), Bucket(true, 1)},
-            {Bucket(false, 0), Bucket(true, 0)}},
-        // Test that we log the perfect filling metric correctly for an address
-        // form in which every field is autofilled or empty.
-        PerfectFillingTestCase{
-            "PerfectFillingForAddresses_AllAutofillFilledOrEmpty",
-            {{NAME_FULL}, {EMAIL_ADDRESS}, {ADDRESS_HOME_CITY, false, u""}},
-            {Bucket(false, 0), Bucket(true, 1)},
-            {Bucket(false, 0), Bucket(true, 0)}},
-        // Test that we log the perfect filling metric correctly for an address
-        // form in which a non-empty field is not autofilled.
-        PerfectFillingTestCase{
-            "PerfectFillingForAddresses_NotAllAutofilled",
-            {{NAME_FULL}, {EMAIL_ADDRESS}, {ADDRESS_HOME_CITY, false}},
-            {Bucket(false, 1), Bucket(true, 0)},
-            {Bucket(false, 0), Bucket(true, 0)}},
-        // Test that we log the perfect filling metric correctly for a credit
-        // card form in which every field is autofilled.
-        PerfectFillingTestCase{"PerfectFillingForCreditCards_AllAutofilled",
-                               {{CREDIT_CARD_NAME_FULL}, {CREDIT_CARD_NUMBER}},
-                               {Bucket(false, 0), Bucket(true, 0)},
-                               {Bucket(false, 0), Bucket(true, 1)}},
-        // Test that we log the perfect filling metric correctly for a credit
-        // card form in which not every field is autofilled or empty.
-        PerfectFillingTestCase{
-            "PerfectFillingForCreditCards_NotAllAutofilled",
-            {{CREDIT_CARD_NAME_FULL}, {CREDIT_CARD_NUMBER, false}},
-            {Bucket(false, 0), Bucket(true, 0)},
-            {Bucket(false, 1), Bucket(true, 0)}},
-        // Test that we log the perfect filling metric correctly for a form that
-        // contains both credit card and address information. Here, the form is
-        // fully autofilled resulting in a perfect count for both addresses and
-        // credit cards.
-        PerfectFillingTestCase{"PerfectFillingForMixedForm_AllAutofilled",
-                               {{NAME_FULL}, {CREDIT_CARD_NUMBER}},
-                               {Bucket(false, 0), Bucket(true, 1)},
-                               {Bucket(false, 0), Bucket(true, 1)}},
-        // Test that we log the perfect filling metric correctly for a form that
-        // contains both credit card and address information.  Here, the form is
-        // not fully autofilled resulting in a non-perfect count for both
-        // addresses and credit cards.
-        PerfectFillingTestCase{"PerfectFillingForMixedForm_NotAllAutofilled",
-                               {{NAME_FULL}, {CREDIT_CARD_NUMBER, false}},
-                               {Bucket(false, 1), Bucket(true, 0)},
-                               {Bucket(false, 1), Bucket(true, 0)}}));
-
-TEST_P(AutofillPerfectFillingMetricsTest,
-       PerfectFilling_Addresses_CreditCards) {
-  auto test_case = GetParam();
-  FormData form =
-      test::GetFormData({.description_for_logging = test_case.description,
-                         .fields = GetFields(test_case.fields),
-                         .renderer_id = test::MakeFormRendererId(),
-                         .main_frame_origin = url::Origin::Create(
-                             autofill_client_->form_origin())});
-
-  std::vector<FieldType> field_types;
-  for (const auto& f : test_case.fields)
-    field_types.push_back(f.field_type);
-
-  autofill_manager().AddSeenForm(form, field_types);
+TEST_F(AutofillMetricsTest, PerfectFilling_Addresses_CreditCards) {
+  FormData address_form = test::GetFormData(
+      {.fields = {{.role = NAME_FULL,
+                   .value = u"Elvis Aaron Presley",
+                   .is_autofilled = true},
+                  {.role = ADDRESS_HOME_CITY, .value = u"Munich"}}});
+  FormData payments_form = test::GetFormData(
+      {.fields = {{.role = CREDIT_CARD_NAME_FULL,
+                   .value = u"Elvis Aaron Presley",
+                   .is_autofilled = true},
+                  {.role = CREDIT_CARD_NUMBER, .value = u"01230123012399"}}});
+  payments_form.fields.back().is_user_edited = true;
+  autofill_manager().AddSeenForm(address_form, {NAME_FULL, ADDRESS_HOME_LINE1});
+  autofill_manager().AddSeenForm(payments_form,
+                                 {CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER});
 
   base::HistogramTester histogram_tester;
-  SubmitForm(form);
+  SubmitForm(address_form);
+  histogram_tester.ExpectUniqueSample("Autofill.PerfectFilling.Addresses", 1,
+                                      1);
+  histogram_tester.ExpectTotalCount("Autofill.PerfectFilling.CreditCards", 0);
 
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.PerfectFilling.Addresses"),
-      BucketsAre(test_case.address_buckets));
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.PerfectFilling.CreditCards"),
-      BucketsAre(test_case.credit_card_buckets));
+  SubmitForm(payments_form);
+  histogram_tester.ExpectUniqueSample("Autofill.PerfectFilling.Addresses", 1,
+                                      1);
+  histogram_tester.ExpectUniqueSample("Autofill.PerfectFilling.CreditCards", 0,
+                                      1);
 }
 
 // Test the emission of collisions between NUMERIC_QUANTITY and server

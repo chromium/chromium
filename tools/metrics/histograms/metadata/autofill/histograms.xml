@@ -3545,12 +3545,16 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     For a form of type {FormType}, log at submission time if the filling
-    experience was perfect. In a perfect filling experience, all non-empty
-    fields have been autofilled without subsequent corrections. Note that the
-    {FormType} is not mutually exclusive. If a single form contains both address
-    and credit card information, the metric is recorded for each {FormType}. In
-    such a combined form, both the address and the credit card information needs
-    to be filled perfectly, in order to record perfect filling.
+    experience was perfect. In a perfect filling experience, the user must have
+    not edited any field, meaning that the filed must either be autofilled
+    without prefix-matching and without further corrections, empty, have the
+    same value as pageload or have its value set by JavaScript.
+
+    Note that the {FormType} is not mutually exclusive. If a single form
+    contains both address and credit card information, the metric is recorded
+    for each {FormType}. In such a combined form, both the address and the
+    credit card information needs to be filled perfectly, in order to record
+    perfect filling.
   </summary>
   <token key="FormType">
     <variant name="Addresses" summary="Form contains address information."/>

@@ -84,9 +84,10 @@ void LogQualityMetrics(
       has_observed_one_time_code_field = true;
     }
 
-    // The form was not perfectly filled if a non-empty field was not
-    // autofilled.
-    if (!field->value.empty() && !field->is_autofilled) {
+    // The form was not perfectly filled if a field was user-edited. Notice that
+    // this means that in a perfect filling, a field must either be autofilled,
+    // empty, have same value as pageload or have value set by JavaScript.
+    if (field->is_user_edited && !field->is_autofilled) {
       perfect_filling = false;
     }
 
