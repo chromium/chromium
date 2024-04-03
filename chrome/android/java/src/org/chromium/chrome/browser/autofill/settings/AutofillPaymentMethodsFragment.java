@@ -214,6 +214,23 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
             }
         }
 
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.AUTOFILL_ENABLE_SYNCING_OF_PIX_BANK_ACCOUNTS)) {
+            String otherFinancialAccountsPrefSummaryString =
+                    getOtherFinancialAccountsPrefSummary(personalDataManager);
+            if (!otherFinancialAccountsPrefSummaryString.isEmpty()) {
+                Preference otherFinancialAccountsPref = new Preference(getStyledContext());
+                otherFinancialAccountsPref.setSingleLineTitle(false);
+                otherFinancialAccountsPref.setTitle(
+                        R.string.settings_manage_other_financial_accounts);
+                otherFinancialAccountsPref.setWidgetLayoutResource(
+                        R.layout.payment_methods_other_financial_accounts_navigate_next_icon);
+                otherFinancialAccountsPref.setSummary(otherFinancialAccountsPrefSummaryString);
+                getPreferenceScreen().addPreference(otherFinancialAccountsPref);
+                // TODO(b/302383443): Set the fragment for the preference.
+            }
+        }
+
         for (CreditCard card : personalDataManager.getCreditCardsForSettings()) {
             // Add a preference for the credit card.
             Preference card_pref = new Preference(getStyledContext());
@@ -550,6 +567,12 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                             }
                         });
         dialog.show();
+    }
+
+    private String getOtherFinancialAccountsPrefSummary(PersonalDataManager personalDataManager) {
+        return personalDataManager.getMaskedBankAccounts().length == 0
+                ? ""
+                : getResources().getString(R.string.settings_manage_other_financial_accounts_pix);
     }
 
     @Override

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.autofill.settings;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -60,6 +61,8 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.components.autofill.MandatoryReauthAuthenticationFlowEvent;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
+import org.chromium.components.autofill.payments.BankAccount;
+import org.chromium.components.autofill.payments.PaymentInstrument;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.prefs.PrefService;
@@ -219,6 +222,17 @@ public class AutofillPaymentMethodsFragmentTest {
                     /* cardNameForAutofillDisplay= */ "",
                     /* obfuscatedLastFourDigits= */ "",
                     /* cvc= */ "123");
+    private static final BankAccount PIX_BANK_ACCOUNT =
+            new BankAccount.Builder()
+                    .setPaymentInstrument(
+                            new PaymentInstrument.Builder()
+                                    .setInstrumentId(100L)
+                                    .setNickname("nickname")
+                                    .setSupportedPaymentRails(new int[] {1})
+                                    .build())
+                    .setBankName("bank_name")
+                    .setAccountNumberSuffix("account_number_suffix")
+                    .build();
 
     private AutofillTestHelper mAutofillTestHelper;
 
@@ -1190,6 +1204,46 @@ public class AutofillPaymentMethodsFragmentTest {
         // Mandatory Reauth toggle + CVC storage toggle + Add Card button + Add IBAN button +
         // Payment Apps.
         Assert.assertEquals(6, getPreferenceScreen(activity).getPreferenceCount());
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SYNCING_OF_PIX_BANK_ACCOUNTS})
+    public void pixAccountAvailable_showOtherFinancialAccountsPreference() throws Exception {
+        AutofillTestHelper.addMaskedBankAccount(PIX_BANK_ACCOUNT);
+
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        // Verify that the preference for 'Manage other financial accounts' is displayed.
+        onView(withText(R.string.settings_manage_other_financial_accounts))
+                .check(matches(isDisplayed()));
+        // Verify that the second line on the preference has 'Pix' displayed.
+        onView(withText(R.string.settings_manage_other_financial_accounts_pix))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SYNCING_OF_PIX_BANK_ACCOUNTS})
+    public void pixAccountNotAvailable_doNotshowOtherFinancialAccountsPreference()
+            throws Exception {
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        // Verify that the preference for 'Manage other financial accounts' is not displayed.
+        onView(withText(R.string.settings_manage_other_financial_accounts)).check(doesNotExist());
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SYNCING_OF_PIX_BANK_ACCOUNTS})
+    public void pixAccountAvailable_expOff_doNotshowOtherFinancialAccountsPreference()
+            throws Exception {
+        AutofillTestHelper.addMaskedBankAccount(PIX_BANK_ACCOUNT);
+
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        // Verify that the preference for 'Manage other financial accounts' is not displayed.
+        onView(withText(R.string.settings_manage_other_financial_accounts)).check(doesNotExist());
     }
 
     private void setUpBiometricAuthenticationResult(boolean success) {

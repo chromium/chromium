@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+
+<if expr="is_android">
+  <!--Payment methods settings pages-->
+  <message name="IDS_SETTINGS_MANAGE_OTHER_FINANCIAL_ACCOUNTS" desc="Title for the preference that allows the user to manage financial accounts other than credit cards like Pix related Bank Accounts, e-Wallets etc." formatter_data="android_java">
+    Manage other financial accounts
+  </message>
+  <!-- Pix related strings -->
+  <message name="IDS_SETTINGS_MANAGE_OTHER_FINANCIAL_ACCOUNTS_PIX" desc="Pix is an instant payment platform used in Brazil. This is the string added to the summary for the 'Manage other financial accounts' preference when user has accounts available to be used with the Pix platform." formatter_data="android_java" translateable="false">
+    Pix
+  </message>
+</if>
+
+</grit-part>

@@ -1064,6 +1064,7 @@ void PaymentsDataManager::ClearAllServerDataForTesting() {
   server_credit_card_cloud_token_data_.clear();
   autofill_offer_data_.clear();
   credit_card_art_images_.clear();
+  masked_bank_accounts_.clear();
 }
 
 void PaymentsDataManager::SetCreditCards(
