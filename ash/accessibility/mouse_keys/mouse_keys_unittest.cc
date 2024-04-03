@@ -183,6 +183,10 @@ class MouseKeysTest : public AshTestBase {
     return Shell::Get()->mouse_keys_controller();
   }
 
+  void SetLeftHanded(bool value) {
+    return Shell::Get()->mouse_keys_controller()->set_left_handed(value);
+  }
+
   void ClearEvents() { event_capturer_.Reset(); }
 
   void PressKey(ui::KeyboardCode key_code, int flags = 0) {
@@ -633,6 +637,74 @@ TEST_F(MouseKeysTest, AccelerationAndMaxSpeed) {
     move_delta += kAccelerationDelta;
     move_delta = std::clamp(move_delta, 0.0, kMaxSpeed);
   }
+}
+
+TEST_F(MouseKeysTest, LeftHanded) {
+  GetEventGenerator()->MoveMouseToWithNative(kDefaultPosition,
+                                             kDefaultPosition);
+
+  ClearEvents();
+  SetEnabled(true);
+  EXPECT_TRUE(GetMouseKeysController()->enabled());
+
+  // We should not see any mouse events initially from the left hand.
+  PressAndReleaseKey(ui::VKEY_1);
+  PressAndReleaseKey(ui::VKEY_2);
+  PressAndReleaseKey(ui::VKEY_3);
+  PressAndReleaseKey(ui::VKEY_Q);
+  PressAndReleaseKey(ui::VKEY_E);
+  PressAndReleaseKey(ui::VKEY_A);
+  PressAndReleaseKey(ui::VKEY_S);
+  PressAndReleaseKey(ui::VKEY_D);
+  PressAndReleaseKey(ui::VKEY_W);
+  EXPECT_EQ(0u, CheckForMouseEvents().size());
+  EXPECT_EQ(18u, CheckForKeyEvents().size());
+
+  // Switch to left handed.
+  SetLeftHanded(true);
+
+  ClearEvents();
+  // We should not see any mouse events from the right hand.
+  PressAndReleaseKey(ui::VKEY_7);
+  PressAndReleaseKey(ui::VKEY_8);
+  PressAndReleaseKey(ui::VKEY_9);
+  PressAndReleaseKey(ui::VKEY_U);
+  PressAndReleaseKey(ui::VKEY_O);
+  PressAndReleaseKey(ui::VKEY_J);
+  PressAndReleaseKey(ui::VKEY_K);
+  PressAndReleaseKey(ui::VKEY_L);
+  PressAndReleaseKey(ui::VKEY_I);
+  EXPECT_EQ(0u, CheckForMouseEvents().size());
+  EXPECT_EQ(18u, CheckForKeyEvents().size());
+
+  // We should be able to click by pressing w.
+  ClearEvents();
+  PressAndReleaseKey(ui::VKEY_W);
+  auto mouse_events = CheckForMouseEvents();
+  EXPECT_EQ(0u, CheckForKeyEvents().size());
+  ASSERT_EQ(2u, mouse_events.size());
+  EXPECT_EQ(ui::ET_MOUSE_PRESSED, mouse_events[0].type());
+  EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & mouse_events[0].flags());
+  EXPECT_EQ(mouse_events[0].location(), kDefaultPosition);
+  EXPECT_EQ(ui::ET_MOUSE_RELEASED, mouse_events[1].type());
+  EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & mouse_events[1].flags());
+  EXPECT_EQ(mouse_events[1].location(), kDefaultPosition);
+
+  // Enable Mouse Keys, and we should be able to move the mouse with 1, 2, 3, q,
+  // e, a, s, d.
+  ClearEvents();
+  EXPECT_TRUE(GetMouseKeysController()->enabled());
+  PressAndReleaseKey(ui::VKEY_1);
+  PressAndReleaseKey(ui::VKEY_2);
+  PressAndReleaseKey(ui::VKEY_3);
+  PressAndReleaseKey(ui::VKEY_Q);
+  PressAndReleaseKey(ui::VKEY_E);
+  PressAndReleaseKey(ui::VKEY_A);
+  PressAndReleaseKey(ui::VKEY_S);
+  PressAndReleaseKey(ui::VKEY_D);
+  EXPECT_EQ(0u, CheckForKeyEvents().size());
+  ExpectMouseMovedInCircularPattern(CheckForMouseEvents(), kDefaultPosition,
+                                    kMoveDeltaDIP);
 }
 
 }  // namespace ash

@@ -7,17 +7,45 @@
 #include "ash/public/cpp/window_tree_host_lookup.h"
 #include "ash/shell.h"
 #include "ash/wm/window_util.h"
+#include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
-#include "ui/events/event.h"
 #include "ui/events/event_sink.h"
 #include "ui/events/event_utils.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
+
+namespace {
+const base::flat_map<ui::DomCode, MouseKeysController::MouseKey>
+    kLeftHandedKeys({
+        {ui::DomCode::US_W, MouseKeysController::kKeyClick},
+        {ui::DomCode::DIGIT1, MouseKeysController::kKeyUpLeft},
+        {ui::DomCode::DIGIT2, MouseKeysController::kKeyUp},
+        {ui::DomCode::DIGIT3, MouseKeysController::kKeyUpRight},
+        {ui::DomCode::US_Q, MouseKeysController::kKeyLeft},
+        {ui::DomCode::US_E, MouseKeysController::kKeyRight},
+        {ui::DomCode::US_A, MouseKeysController::kKeyDownLeft},
+        {ui::DomCode::US_S, MouseKeysController::kKeyDown},
+        {ui::DomCode::US_D, MouseKeysController::kKeyDownRight},
+    });
+
+const base::flat_map<ui::DomCode, MouseKeysController::MouseKey>
+    kRightHandedKeys({
+        {ui::DomCode::US_I, MouseKeysController::kKeyClick},
+        {ui::DomCode::DIGIT7, MouseKeysController::kKeyUpLeft},
+        {ui::DomCode::DIGIT8, MouseKeysController::kKeyUp},
+        {ui::DomCode::DIGIT9, MouseKeysController::kKeyUpRight},
+        {ui::DomCode::US_U, MouseKeysController::kKeyLeft},
+        {ui::DomCode::US_O, MouseKeysController::kKeyRight},
+        {ui::DomCode::US_J, MouseKeysController::kKeyDownLeft},
+        {ui::DomCode::US_K, MouseKeysController::kKeyDown},
+        {ui::DomCode::US_L, MouseKeysController::kKeyDownRight},
+    });
+}  // namespace
 
 MouseKeysController::MouseKeysController() {
   SetMaxSpeed(kDefaultMaxSpeed);
@@ -68,96 +96,11 @@ bool MouseKeysController::RewriteEvent(const ui::Event& event) {
 
   CenterMouseIfUninitialized();
 
-  if (key_event->type() == ui::ET_KEY_PRESSED) {
-    switch (key_event->code()) {
-      case ui::DomCode::US_I:
-        // Ignore key repeat to avoid multiple clicks.
-        if (!(key_event->flags() & ui::EF_IS_REPEAT)) {
-          SendMouseEventToLocation(ui::ET_MOUSE_PRESSED,
-                                   last_mouse_position_dips_);
-        }
-        return true;
-
-      case ui::DomCode::DIGIT7:
-        CheckFlagsAndMaybePressKey(key_event->flags(), kKeyUpLeft);
-        return true;
-
-      case ui::DomCode::DIGIT8:
-        CheckFlagsAndMaybePressKey(key_event->flags(), kKeyUp);
-        return true;
-
-      case ui::DomCode::DIGIT9:
-        CheckFlagsAndMaybePressKey(key_event->flags(), kKeyUpRight);
-        return true;
-
-      case ui::DomCode::US_U:
-        CheckFlagsAndMaybePressKey(key_event->flags(), kKeyLeft);
-        return true;
-
-      case ui::DomCode::US_O:
-        CheckFlagsAndMaybePressKey(key_event->flags(), kKeyRight);
-        return true;
-
-      case ui::DomCode::US_J:
-        CheckFlagsAndMaybePressKey(key_event->flags(), kKeyDownLeft);
-        return true;
-
-      case ui::DomCode::US_K:
-        CheckFlagsAndMaybePressKey(key_event->flags(), kKeyDown);
-        return true;
-
-      case ui::DomCode::US_L:
-        CheckFlagsAndMaybePressKey(key_event->flags(), kKeyDownRight);
-        return true;
-
-      default:
-        break;
-    }
-  } else {
-    switch (key_event->code()) {
-      case ui::DomCode::US_I:
-        // Release the mouse on key up.
-        if (key_event->type() == ui::ET_KEY_RELEASED) {
-          SendMouseEventToLocation(ui::ET_MOUSE_RELEASED,
-                                   last_mouse_position_dips_);
-        }
-        return true;
-
-        // Ignore other key events from bound keys.
-      case ui::DomCode::DIGIT7:
-        ReleaseKey(kKeyUpLeft);
-        return true;
-
-      case ui::DomCode::DIGIT8:
-        ReleaseKey(kKeyUp);
-        return true;
-
-      case ui::DomCode::DIGIT9:
-        ReleaseKey(kKeyUpRight);
-        return true;
-
-      case ui::DomCode::US_U:
-        ReleaseKey(kKeyLeft);
-        return true;
-
-      case ui::DomCode::US_O:
-        ReleaseKey(kKeyRight);
-        return true;
-
-      case ui::DomCode::US_J:
-        ReleaseKey(kKeyDownLeft);
-        return true;
-
-      case ui::DomCode::US_K:
-        ReleaseKey(kKeyDown);
-        return true;
-
-      case ui::DomCode::US_L:
-        ReleaseKey(kKeyDownRight);
-        return true;
-
-      default:
-        break;
+  auto mappings = left_handed_ ? kLeftHandedKeys : kRightHandedKeys;
+  for (auto mapping : mappings) {
+    if (CheckFlagsAndMaybeSendEvent(*key_event, mapping.first,
+                                    mapping.second)) {
+      return true;
     }
   }
 
@@ -223,20 +166,45 @@ void MouseKeysController::CenterMouseIfUninitialized() {
   }
 }
 
-void MouseKeysController::CheckFlagsAndMaybePressKey(int flags, MouseKey key) {
-  if (!(flags & ui::EF_IS_REPEAT)) {
-    PressKey(key);
+bool MouseKeysController::CheckFlagsAndMaybeSendEvent(
+    const ui::KeyEvent& key_event,
+    ui::DomCode input,
+    MouseKey output) {
+  if (key_event.code() != input) {
+    return false;
   }
+
+  // Ignore key repeats but still consume them.
+  if (key_event.flags() & ui::EF_IS_REPEAT) {
+    return true;
+  }
+
+  // All KeyEvents are either ET_KEY_PRESSED or ET_KEY_RELEASED.
+  if (key_event.type() == ui::ET_KEY_PRESSED) {
+    PressKey(output);
+  } else {
+    DCHECK_EQ(key_event.type(), ui::ET_KEY_RELEASED);
+    ReleaseKey(output);
+  }
+  return true;
 }
 
 void MouseKeysController::PressKey(MouseKey key) {
-  pressed_keys_[key] = true;
-  RefreshVelocity();
+  if (key == kKeyClick) {
+    SendMouseEventToLocation(ui::ET_MOUSE_PRESSED, last_mouse_position_dips_);
+  } else {
+    pressed_keys_[key] = true;
+    RefreshVelocity();
+  }
 }
 
 void MouseKeysController::ReleaseKey(MouseKey key) {
-  pressed_keys_[key] = false;
-  RefreshVelocity();
+  if (key == kKeyClick) {
+    SendMouseEventToLocation(ui::ET_MOUSE_RELEASED, last_mouse_position_dips_);
+  } else {
+    pressed_keys_[key] = false;
+    RefreshVelocity();
+  }
 }
 
 void MouseKeysController::RefreshVelocity() {

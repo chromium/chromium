@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "base/timer/timer.h"
+#include "ui/events/event.h"
 #include "ui/events/event_handler.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
@@ -47,12 +48,14 @@ class ASH_EXPORT MouseKeysController : public ui::EventHandler {
   void set_enabled(bool enabled) { enabled_ = enabled; }
   bool enabled() { return enabled_; }
 
+  void set_left_handed(bool left_handed) { left_handed_ = left_handed; }
+  bool left_handed() { return left_handed_; }
+
   void set_acceleration(double acceleration) { acceleration_ = acceleration; }
   void SetMaxSpeed(double factor) {
     max_speed_ = factor * kBaseSpeedDIPPerSecond * kUpdateFrequencyInSeconds;
   }
 
- private:
   enum MouseKey {
     kKeyUpLeft = 0,
     kKeyUp,
@@ -62,9 +65,11 @@ class ASH_EXPORT MouseKeysController : public ui::EventHandler {
     kKeyDownLeft,
     kKeyDown,
     kKeyDownRight,
+    kKeyClick,
     kKeyCount,
   };
 
+ private:
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;
 
@@ -72,7 +77,10 @@ class ASH_EXPORT MouseKeysController : public ui::EventHandler {
   void MoveMouse(const gfx::Vector2d& move_delta_dip);
   void CenterMouseIfUninitialized();
 
-  void CheckFlagsAndMaybePressKey(int flags, MouseKey key);
+  // Returns true if the event was consumed.
+  bool CheckFlagsAndMaybeSendEvent(const ui::KeyEvent& key_event,
+                                   ui::DomCode input,
+                                   MouseKey output);
   void PressKey(MouseKey key);
   void ReleaseKey(MouseKey key);
   void RefreshVelocity();
@@ -80,6 +88,7 @@ class ASH_EXPORT MouseKeysController : public ui::EventHandler {
 
   bool enabled_ = false;
   bool paused_ = false;
+  bool left_handed_ = false;
   double acceleration_ = kDefaultAcceleration;
   double max_speed_;
   gfx::Vector2d move_direction_;
