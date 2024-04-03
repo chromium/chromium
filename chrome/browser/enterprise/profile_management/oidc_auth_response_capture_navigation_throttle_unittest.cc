@@ -172,7 +172,7 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, SuccessfulInterception) {
                     web_contents(),
                     ProfileManagementOicdTokens{.auth_token = auth_token,
                                                 .id_token = id_token},
-                    kExampleUserPrincipleName))
+                    kExampleAuthSubject))
         .WillOnce(testing::Return());
   }
   auto throttle =
@@ -213,11 +213,11 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, MissingIdToken) {
                            NavigationThrottle::CANCEL_AND_IGNORE);
 }
 
-TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, MissingAuthUpnClaim) {
-  std::string auth_token = BuildTokenFromDict(
-      base::Value::Dict().Set(kSubjectClaimName, kExampleAuthSubject));
-  std::string id_token = BuildTokenFromDict(
-      base::Value::Dict().Set(kSubjectClaimName, kExampleIdSubject));
+TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, MissingAuthSubClaim) {
+  std::string auth_token = BuildTokenFromDict(base::Value::Dict().Set(
+      kUserPrincipleNameClaimName, kExampleUserPrincipleName));
+  std::string id_token = BuildTokenFromDict(base::Value::Dict().Set(
+      kUserPrincipleNameClaimName, kExampleUserPrincipleName));
 
   std::string redirection_url = BuildOidcResponseUrl(auth_token, id_token);
 

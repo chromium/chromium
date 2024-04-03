@@ -131,11 +131,10 @@ void OidcAuthResponseCaptureNavigationThrottle::RegisterWithOidcTokens(
     LOG(ERROR) << "Decoded Oauth token payload is empty.";
     return;
   }
-  // TODO(b/329265314): Replace this field with 'sub' claim which is subject
-  // identifier.
-  const std::string* user_email = parsed_json->FindString("upn");
-  if (!user_email || (*user_email).empty()) {
-    LOG(ERROR) << "User email not found in token payload.";
+
+  const std::string* subject_id = parsed_json->FindString("sub");
+  if (!subject_id || (*subject_id).empty()) {
+    LOG(ERROR) << "Subject ID is missing in token payload.";
     return;
   }
 
@@ -144,7 +143,7 @@ void OidcAuthResponseCaptureNavigationThrottle::RegisterWithOidcTokens(
           navigation_handle()->GetWebContents()->GetBrowserContext()));
 
   interceptor->MaybeInterceptOidcAuthentication(
-      navigation_handle()->GetWebContents(), tokens, *user_email);
+      navigation_handle()->GetWebContents(), tokens, *subject_id);
 }
 
 }  // namespace profile_management
