@@ -273,6 +273,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   constructor() {
     super();
+    this.isReadAloudEnabled_ = chrome.readingMode.isReadAloudEnabled;
+    this.isWebUIToolbarVisible_ = chrome.readingMode.isWebUIToolbarVisible;
     if (chrome.readingMode && chrome.readingMode.isWebUIToolbarVisible) {
       ColorChangeUpdater.forDocument().start();
     }
@@ -289,7 +291,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       setTimeout(() => chrome.readingMode.shouldShowUi(), 0);
     });
 
-    this.isReadAloudEnabled_ = chrome.readingMode.isReadAloudEnabled;
     if (chrome.readingMode) {
       chrome.readingMode.onConnected();
     }
@@ -331,8 +332,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       chrome.readingMode.onCopy();
       return false;
     };
-
-    this.isWebUIToolbarVisible_ = chrome.readingMode.isWebUIToolbarVisible;
   }
 
   private buildSubtree_(nodeId: number): Node {
