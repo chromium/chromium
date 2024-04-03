@@ -58,7 +58,15 @@ class StandaloneWindowMigrationNudgeBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(StandaloneWindowMigrationNudgeBrowserTest, CheckNudge) {
+// TODO(https://crbug.com/332642058): Test is flaky on Linux Chromium OS ASan
+// LSan Tests.
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+#define MAYBE_CheckNudge DISABLED_CheckNudge
+#else
+#define MAYBE_CheckNudge CheckNudge
+#endif
+IN_PROC_BROWSER_TEST_F(StandaloneWindowMigrationNudgeBrowserTest,
+                       MAYBE_CheckNudge) {
   GURL app_url = GURL("https://example.org/");
   std::u16string app_name = u"app_name";
 
