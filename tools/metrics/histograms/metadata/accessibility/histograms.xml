@@ -28,6 +28,22 @@ chromium-metrics-reviews@google.com.
                uniques"/>
 </variants>
 
+<variants name="BaseCrosAccessibilityFeatures">
+  <variant name="CaretHighlight"/>
+  <variant name="ColorCorrection"/>
+  <variant name="CursorHighlight"/>
+  <variant name="Dictation"/>
+  <variant name="DockedMagnifier"/>
+  <variant name="FocusHighlight"/>
+  <variant name="HighContrast"/>
+  <variant name="LargeCursor"/>
+  <variant name="ScreenMagnifier"/>
+  <variant name="SelectToSpeak"/>
+  <variant name="StickyKeys"/>
+  <variant name="SwitchAccess"/>
+  <variant name="VirtualKeyboard"/>
+</variants>
+
 <variants name="SodaLanguageCode">
   <variant name="de-DE" summary="German language code"/>
   <variant name="en-US" summary="English language code"/>
@@ -596,30 +612,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.CrosAlwaysShowA11yMenu" enum="BooleanEnabled"
-    expires_after="2025-02-28">
-  <owner>dtseng@chromium.org</owner>
-  <owner>kenjibaheux@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Whether the Chrome OS Accessibility Menu is set to be shown regardless of
-    the state of a11y features.(logged once 45 secs after startup). Warning:
-    this histogram was expired 2023-11-30 to 2024-02-29, data might be missing.
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.CrosAutoclick" enum="BooleanEnabled"
-    expires_after="2025-02-28">
-  <owner>kenjibaheux@google.com</owner>
-  <owner>dtseng@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Whether the Chrome OS Autoclick feature is on (logged once 45 secs after
-    startup). Warning: this histogram was expired 2021-12-31 to 2022-07-07, and
-    2023-11-30 to 2024-02-29, data might be missing.
-  </summary>
-</histogram>
-
 <histogram name="Accessibility.CrosAutoclick.TrayMenu.ChangeAction"
     enum="AutoclickActionType" expires_after="2024-09-29">
   <owner>katie@chromium.org</owner>
@@ -628,26 +620,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Recorded when a user has picked a new autoclick action type from the bubble
     menu.
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.CrosCaretHighlight" enum="BooleanEnabled"
-    expires_after="2025-02-28">
-  <owner>dtseng@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Whether the Chrome OS caret highlighting is on (logged once 45 secs after
-    startup).
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.CrosColorCorrection" enum="BooleanEnabled"
-    expires_after="2024-08-18">
-  <owner>katie@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Whether the Chrome OS color correction settings are on (logged once 45 secs
-    after startup).
   </summary>
 </histogram>
 
@@ -672,38 +644,6 @@ chromium-metrics-reviews@google.com.
     after startup. For how users adjust the setting from settings, see
     ChromeOS.Settings.Accessibility.ColorCorrection.FilterType, which logs each
     time the setting changes.
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.CrosCursorColor" enum="BooleanEnabled"
-    expires_after="2025-02-28">
-  <owner>dtseng@chromium.org</owner>
-  <owner>katie@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Whether the Chrome OS feature to colorize the cursor is enabled (logged once
-    45 secs after startup).
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.CrosCursorHighlight" enum="BooleanEnabled"
-    expires_after="2025-02-28">
-  <owner>dtseng@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Whether the Chrome OS cursor highlighting is on (logged once 45 secs after
-    startup).
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.CrosDictation" enum="BooleanEnabled"
-    expires_after="2025-02-28">
-  <owner>anastasi@google.com</owner>
-  <owner>dtseng@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Whether the ChromeOS dictation feature is enabled (logged once 45 secs after
-    startup).
   </summary>
 </histogram>
 
@@ -811,49 +751,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.CrosDockedMagnifier" enum="BooleanEnabled"
-    expires_after="2025-02-28">
-  <owner>dtseng@chromium.org</owner>
-  <owner>katie@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Whether the Chrome OS Docked Magnifier feature is on (logged once 45 secs
-    after startup).
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.CrosFocusHighlight" enum="BooleanEnabled"
-    expires_after="2025-02-28">
-  <owner>dtseng@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Whether the Chrome OS focus highlighting is on (logged once 45 secs after
-    startup).
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.CrosHighContrast" enum="BooleanEnabled"
-    expires_after="2025-02-28">
-  <owner>dtseng@chromium.org</owner>
-  <owner>kenjibaheux@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Whether the Chrome OS High Contrast mode feature is on (logged once 45 secs
-    after startup).
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.CrosLargeCursor" enum="BooleanEnabled"
-    expires_after="2025-02-28">
-  <owner>dtseng@chromium.org</owner>
-  <owner>kenjibaheux@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Whether the Chrome OS Large Cursor feature is on (logged once 45 secs after
-    startup).
-  </summary>
-</histogram>
-
 <histogram name="Accessibility.CrosLargeCursorSize2" units="dip"
     expires_after="2025-02-28">
   <owner>katie@chromium.org</owner>
@@ -862,38 +759,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Cursor size of the Chrome OS Large Cursor (logged once 45 secs after
     startup). This replaced Accessibility.CrosLargeCursorSize in M124.
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.CrosMonoAudio.Enabled" enum="BooleanEnabled"
-    expires_after="2025-02-28">
-  <owner>katie@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Whether the Chrome OS Mono Audio feature is on (logged once 45 secs after
-    startup).
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.CrosScreenMagnifier" enum="BooleanEnabled"
-    expires_after="2025-02-28">
-  <owner>dtseng@chromium.org</owner>
-  <owner>kenjibaheux@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Whether the Chrome OS Screen Magnifier feature is on (logged once 45 secs
-    after startup).
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.CrosSelectToSpeak" enum="BooleanEnabled"
-    expires_after="2025-02-28">
-  <owner>dtseng@chromium.org</owner>
-  <owner>katie@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Whether the Chrome OS select-to-speak is on (logged once 45 secs after
-    startup).
   </summary>
 </histogram>
 
@@ -1041,16 +906,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.CrosSpokenFeedback.BrailleDisplayConnected"
-    enum="BooleanConnected" expires_after="2025-02-28">
-  <owner>dtseng@chromium.org</owner>
-  <owner>katie@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Whether a braille display is connected (logged once 45 secs after startup).
-  </summary>
-</histogram>
-
 <histogram name="Accessibility.CrosSpokenFeedback{AccessibilityEveryReport}"
     enum="BooleanEnabled" expires_after="2025-02-28">
   <owner>dtseng@chromium.org</owner>
@@ -1077,49 +932,13 @@ chromium-metrics-reviews@google.com.
     Records when the ChromeOS feature, {FeatureName}, is toggled from the status
     area, also known as &quot;Quick Settings&quot;.
   </summary>
-  <token key="FeatureName">
+  <token key="FeatureName" variants="BaseCrosAccessibilityFeatures">
     <variant name="Autoclick"/>
-    <variant name="CaretHighlight"/>
-    <variant name="ColorCorrection"/>
-    <variant name="CursorHighlight"/>
-    <variant name="Dictation"/>
-    <variant name="DockedMagnifier"/>
     <variant name="FaceGaze"/>
-    <variant name="FocusHighlight"/>
-    <variant name="HighContrast"/>
-    <variant name="LargeCursor"/>
     <variant name="LiveCaption"/>
     <variant name="MonoAudio"/>
-    <variant name="ScreenMagnifier"/>
-    <variant name="SelectToSpeak"/>
     <variant name="SpokenFeedback"/>
-    <variant name="StickyKeys"/>
-    <variant name="SwitchAccess"/>
-    <variant name="VirtualKeyboard"/>
   </token>
-</histogram>
-
-<histogram name="Accessibility.CrosStickyKeys" enum="BooleanEnabled"
-    expires_after="2025-02-28">
-  <owner>dtseng@chromium.org</owner>
-  <owner>kenjibaheux@google.com</owner>
-  <owner>tengs@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Whether the Chrome OS Sticky Keys feature is on (logged once 45 secs after
-    startup).
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.CrosSwitchAccess" enum="BooleanEnabled"
-    expires_after="2025-02-28">
-  <owner>dtseng@chromium.org</owner>
-  <owner>anastasi@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Whether the Chrome OS switch access is on (logged once 45 secs after
-    startup).
-  </summary>
 </histogram>
 
 <histogram name="Accessibility.CrosSwitchAccess.AutoScan" enum="BooleanEnabled"
@@ -1202,15 +1021,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.CrosVirtualKeyboard" enum="BooleanEnabled"
-    expires_after="2024-09-29">
+<!-- This set of histograms is recorded once, 45 seconds after startup.
+Do not add new variants to this histogram unless they are recorded in the same way,
+even if they fit the naming pattern. -->
+
+<histogram name="Accessibility.Cros{SettingType}" enum="BooleanEnabled"
+    expires_after="2025-02-28">
   <owner>dtseng@chromium.org</owner>
-  <owner>kenjibaheux@google.com</owner>
+  <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
-    Whether the Chrome OS Virtual Keyboard feature is on (logged once 45 secs
-    after startup).
+    Note: This metric is logged once 45 seconds after startup.
+
+    Whether the user has enabled the Chrome OS feature: {SettingType}
   </summary>
+  <token key="SettingType" variants="BaseCrosAccessibilityFeatures">
+    <variant name="AlwaysShowA11yMenu"
+        summary="to always show the Chrome OS Accessibility Menu, regardless
+                 of the state of a11y features. Warning: this histogram was
+                 expired 2023-11-30 to 2024-02-29, data might be missing."/>
+    <variant name="Autoclick"
+        summary="- Warning: this histogram was expired 2021-12-31 to
+                 2022-07-07, and 2023-11-30 to 2024-02-29, data might be
+                 missing."/>
+    <variant name="CursorColor" summary="colorize the cursor"/>
+    <variant name="MonoAudio.Enabled" summary="MonoAudio"/>
+    <variant name="SpokenFeedback.BrailleDisplayConnected"
+        summary="braille display. An enabled (true) value means that a
+                 braille display is connected to the device."/>
+  </token>
 </histogram>
 
 <histogram name="Accessibility.EventProcessingTime3{Variation}" units="ms"
