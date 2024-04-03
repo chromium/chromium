@@ -95,7 +95,8 @@ enum class SettingsVisibleFieldTypeForMetrics {
   kDependentLocality = 9,
   // kHonorificPrefix = 10,  // Deprecated in M123.
   kCompany = 11,
-  kMaxValue = kCompany
+  kAdminLevel2 = 12,
+  kMaxValue = kAdminLevel2
 };
 
 // Converts a server field type that can be edited in the settings to an enum

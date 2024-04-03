@@ -137,6 +137,9 @@ SettingsVisibleFieldTypeForMetrics ConvertSettingsVisibleFieldTypeForMetrics(
     case FieldType::COMPANY_NAME:
       return SettingsVisibleFieldTypeForMetrics::kCompany;
 
+    case FieldType::ADDRESS_HOME_ADMIN_LEVEL2:
+      return SettingsVisibleFieldTypeForMetrics::kAdminLevel2;
+
     default:
       return SettingsVisibleFieldTypeForMetrics::kUndefined;
   }
