@@ -548,8 +548,10 @@ TEST_F(SessionRestorationBrowserAgentTest,
   EXPECT_EQ(test_session_service_.saveSessionCallsCount, 7);
 }
 
-// Tests that SessionRestorationAgent doesn't restore duplicates in a session.
-TEST_F(SessionRestorationBrowserAgentTest, RestoreSessionFilterOutDuplicates) {
+// Tests that SessionRestorationAgent doesn't restore duplicates in a session
+// and updates the active pinned tab correctly.
+TEST_F(SessionRestorationBrowserAgentTest,
+       RestoreSessionFilterOutDuplicates_ActivePinned) {
   CreateSessionRestorationBrowserAgent();
 
   const web::WebStateID quadruplet_id = web::WebStateID::NewUnique();
@@ -572,7 +574,40 @@ TEST_F(SessionRestorationBrowserAgentTest, RestoreSessionFilterOutDuplicates) {
   session_restoration_agent_->RestoreSessionWindow(window);
   EXPECT_EQ(3, browser_->GetWebStateList()->count());
   EXPECT_EQ(1, browser_->GetWebStateList()->pinned_tabs_count());
-  EXPECT_EQ(1, browser_->GetWebStateList()->active_index());
+  EXPECT_EQ(0, browser_->GetWebStateList()->active_index());
+
+  // Expect a log of 4 duplicates.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnSessionRestore", 4, 1);
+}
+
+// Tests that SessionRestorationAgent doesn't restore duplicates in a session
+// and updates the active unpinned tab correctly.
+TEST_F(SessionRestorationBrowserAgentTest,
+       RestoreSessionFilterOutDuplicates_ActiveUnpinned) {
+  CreateSessionRestorationBrowserAgent();
+
+  const web::WebStateID quadruplet_id = web::WebStateID::NewUnique();
+  const web::WebStateID twin_id = web::WebStateID::NewUnique();
+  const web::WebStateID single_id = web::WebStateID::NewUnique();
+  SessionWindowIOS* window = CreateSessionWindow(SessionInfo<7>{
+      .active_index = 4,
+      .tab_infos =
+          {
+              TabInfo{.pinned = true, .unique_identifier = quadruplet_id},
+              TabInfo{.pinned = true, .unique_identifier = quadruplet_id},
+              TabInfo{.unique_identifier = twin_id},
+              TabInfo{.unique_identifier = quadruplet_id},
+              TabInfo{.unique_identifier = quadruplet_id},
+              TabInfo{.unique_identifier = twin_id},
+              TabInfo{.unique_identifier = single_id},
+          },
+  });
+
+  session_restoration_agent_->RestoreSessionWindow(window);
+  EXPECT_EQ(3, browser_->GetWebStateList()->count());
+  EXPECT_EQ(1, browser_->GetWebStateList()->pinned_tabs_count());
+  EXPECT_EQ(2, browser_->GetWebStateList()->active_index());
 
   // Expect a log of 4 duplicates.
   histogram_tester_.ExpectUniqueSample(

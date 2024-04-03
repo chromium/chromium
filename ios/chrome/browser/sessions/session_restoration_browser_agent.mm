@@ -70,7 +70,7 @@ int OrderControllerSourceFromSessionWindowIOS::GetPinnedCount() const {
   for (CRWSessionStorage* session in session_window_.sessions) {
     CRWSessionUserData* user_data = session.userData;
     NSNumber* pinned_obj = base::apple::ObjCCast<NSNumber>(
-        [user_data objectForKey:kLegacyWebStateListOpenerIndexKey]);
+        [user_data objectForKey:kLegacyWebStateListPinnedStateKey]);
 
     // All pinned items are at the beginning of the list, so stop as
     // soon as the first unpinned tab is found.
