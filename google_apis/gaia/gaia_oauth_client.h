@@ -12,7 +12,6 @@
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
-#include "net/base/request_priority.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -148,7 +147,6 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaOAuthClient {
   void GetAccountCapabilities(
       const std::string& oauth_access_token,
       const std::vector<std::string>& capabilities_names,
-      net::RequestPriority priority,
       int max_retries,
       Delegate* delegate);
 

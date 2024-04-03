@@ -6,7 +6,6 @@
 
 #include <optional>
 
-#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -21,29 +20,8 @@
 
 namespace {
 
-BASE_FEATURE(kSetNetworkPriorityForAccountCapabilitiesFetch,
-             "SetNetworkPriorityForAccountCapabilitiesFetch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 constexpr std::string_view kAccountCapabilitiesFetcherHistogramBaseName =
     "Signin.AccountCapabilities";
-
-net::RequestPriority ToNetworkPriority(
-    AccountCapabilitiesFetcher::FetchPriority priority) {
-  if (!base::FeatureList::IsEnabled(
-          kSetNetworkPriorityForAccountCapabilitiesFetch)) {
-    // Return the default priority value.
-    return net::RequestPriority::IDLE;
-  }
-
-  switch (priority) {
-    case AccountCapabilitiesFetcher::FetchPriority::kForeground:
-      return net::RequestPriority::HIGHEST;
-    case AccountCapabilitiesFetcher::FetchPriority::kBackground:
-      return net::RequestPriority::IDLE;
-  }
-  NOTREACHED_NORETURN() << "Unknown priority: " << static_cast<int>(priority);
-}
 
 std::string_view ToUmaToken(
     AccountCapabilitiesFetcher::FetchPriority priority) {
@@ -115,8 +93,8 @@ void AccountCapabilitiesFetcherGaia::OnGetTokenSuccess(
   const int kMaxRetries = 3;
   gaia_oauth_client_->GetAccountCapabilities(
       token_response.access_token,
-      AccountCapabilities::GetSupportedAccountCapabilityNames(),
-      ToNetworkPriority(fetch_priority()), kMaxRetries, this);
+      AccountCapabilities::GetSupportedAccountCapabilityNames(), kMaxRetries,
+      this);
 }
 
 void AccountCapabilitiesFetcherGaia::OnGetTokenFailure(
