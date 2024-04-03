@@ -8007,6 +8007,11 @@
     "expiry_milestone": 133
   },
   {
+    "name": "tracking-protection-settings-launch",
+    "owners": ["fmacintosh@google.com", "koilos@google.com"],
+    "expiry_milestone": 133
+  },
+  {
     "name": "traffic-counters",
     "owners": ["khorimoto@chromium.org", "cros-connectivity@google.com"],
     "expiry_milestone": 132

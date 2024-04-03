@@ -3428,6 +3428,11 @@ const char kTrackingProtectionOnboardingRollbackName[] =
 const char kTrackingProtectionOnboardingRollbackDescription[] =
     "Enables the tracking protection rollback flow";
 
+const char kTrackingProtectionSettingsLaunchName[] =
+    "Tracking Protection Settings Launch";
+const char kTrackingProtectionSettingsLaunchDescription[] =
+    "Enables the tracking protection settings that will be used for 3PCD 100%.";
+
 const char kUserNotesSidePanelName[] = "User notes side panel";
 const char kUserNotesSidePanelDescription[] =
     "Enables the user notes feature in the side panel. "

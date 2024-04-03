@@ -333,6 +333,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &privacy_sandbox::kTrackingProtectionNoticeRequestTracking,
     &privacy_sandbox::kTrackingProtectionSettingsPageRollbackNotice,
     &privacy_sandbox::kTrackingProtectionOnboardingSkipSecurePageCheck,
+    &privacy_sandbox::kTrackingProtectionSettingsLaunch,
     &query_tiles::features::kQueryTiles,
     &safe_browsing::kFriendlierSafeBrowsingSettingsEnhancedProtection,
     &safe_browsing::kFriendlierSafeBrowsingSettingsStandardProtection,

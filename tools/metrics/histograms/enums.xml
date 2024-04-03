@@ -20838,6 +20838,7 @@ from previous Chrome versions.
   <int value="-52737423" label="EnableMixedContentDownloadDialog:disabled"/>
   <int value="-52483823" label="disable-new-video-renderer"/>
   <int value="-52241456" label="enable-single-click-autofill"/>
+  <int value="-52011769" label="TrackingProtectionSettingsLaunch:enabled"/>
   <int value="-51567065" label="EnableFeedbackPanel:disabled"/>
   <int value="-51041111" label="OpenXrExtendedFeatureSupport:disabled"/>
   <int value="-50628385"
@@ -23586,6 +23587,7 @@ from previous Chrome versions.
   <int value="1194896796" label="PdfHonorJsContentSettings:disabled"/>
   <int value="1194964049" label="AutofillFixOfferInIncognito:enabled"/>
   <int value="1195087468" label="ProminentDarkModeActiveTabTitle:enabled"/>
+  <int value="1196343625" label="TrackingProtectionSettingsLaunch:disabled"/>
   <int value="1196407590" label="SmdsDbusMigration:disabled"/>
   <int value="1196644408" label="performance-monitor-gathering"/>
   <int value="1196670943" label="WebAuthFlowInBrowserTab:enabled"/>

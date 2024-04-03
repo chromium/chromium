@@ -8223,6 +8223,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          privacy_sandbox::kTrackingProtectionOnboardingRollback)},
 
+    {"tracking-protection-settings-launch",
+     flag_descriptions::kTrackingProtectionSettingsLaunchName,
+     flag_descriptions::kTrackingProtectionSettingsLaunchDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(privacy_sandbox::kTrackingProtectionSettingsLaunch)},
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {kClipboardHistoryLongpressInternalName,
      flag_descriptions::kClipboardHistoryLongpressName,
