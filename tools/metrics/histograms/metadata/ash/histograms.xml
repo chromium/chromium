@@ -6827,6 +6827,16 @@ chromium-metrics-reviews@google.com.
   <token key="AppName" variants="SeaPenAppName"/>
 </histogram>
 
+<histogram name="Ash.SeaPen.{AppName}.Visited" enum="BooleanHit"
+    expires_after="2025-03-30">
+  <owner>pzliu@google.com</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Emitted when a user navigates to the SeaPen page in the {AppName} App.
+  </summary>
+  <token key="AppName" variants="SeaPenAppName"/>
+</histogram>
+
 <histogram name="Ash.SeaPen.{TemplateName}.UserFeedback" enum="Boolean"
     expires_after="2024-12-31">
   <owner>pzliu@google.com</owner>

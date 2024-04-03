@@ -43,3 +43,8 @@ export function logRecentImageActionMenuItemClick(
       `Ash.SeaPen.${appName}.RecentImage.ActionMenu`, menuItem,
       RecentImageActionMenuItem.MAX_VALUE + 1);
 }
+
+export function logSeaPenVisited() {
+  const appName = isPersonalizationApp() ? 'Wallpaper' : 'VcBackground';
+  chrome.metricsPrivate.recordBoolean(`Ash.SeaPen.${appName}.Visited`, true);
+}

@@ -20,6 +20,7 @@ import {setThumbnailResponseStatusCodeAction} from './sea_pen_actions.js';
 import {acceptSeaPenTermsOfService, getShouldShowSeaPenTermsOfServiceDialog} from './sea_pen_controller.js';
 import {SeaPenTemplateId} from './sea_pen_generated.mojom-webui.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
+import {logSeaPenVisited} from './sea_pen_metrics_logger.js';
 import {getTemplate} from './sea_pen_router_element.html.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
 import {SeaPenTemplateQueryElement} from './sea_pen_template_query_element.js';
@@ -84,6 +85,7 @@ export class SeaPenRouterElement extends WithSeaPenStore {
         state => state.shouldShowSeaPenTermsOfServiceDialog);
     this.updateFromStore();
     this.fetchTermsOfServiceDialogStatus();
+    logSeaPenVisited();
   }
 
   override disconnectedCallback() {
