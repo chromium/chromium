@@ -8179,6 +8179,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ozone.GestureInterpreterLibevdevCros.TouchpadClick.{MaxTime}"
+    units="mm" expires_after="2024-08-04">
+  <owner>seobrien@chromium.org</owner>
+  <owner>chromeos-tango@google.com</owner>
+  <summary>
+    The movement distance when a touchpad performs a physical click lasting
+    {MaxTime}. Excludes clicks which move more than 10mm, as these are assumed
+    to be intentional drag gestures. All distances are rounded up to the next
+    whole number of mm.
+  </summary>
+  <token key="MaxTime">
+    <variant name="150ms" summary="at most 150ms"/>
+    <variant name="160ms" summary="more than 150ms and at most 160ms"/>
+    <variant name="170ms" summary="more than 160ms and at most 170ms"/>
+    <variant name="180ms" summary="more than 170ms and at most 180ms"/>
+    <variant name="190ms" summary="more than 180ms and at most 190ms"/>
+    <variant name="200ms" summary="more than 190ms and at most 200ms"/>
+    <variant name="250ms" summary="more than 200ms and at most 250ms"/>
+    <variant name="300ms" summary="more than 250ms and at most 200ms"/>
+    <variant name="350ms" summary="more than 300ms and at most 350ms"/>
+    <variant name="450ms" summary="more than 350ms and at most 450ms"/>
+    <variant name="550ms" summary="more than 450ms and at most 550ms"/>
+    <variant name="650ms" summary="more than 550ms and at most 650ms"/>
+    <variant name="750ms" summary="more than 650ms and at most 750ms"/>
+  </token>
+</histogram>
+
 <histogram name="Ozone.NeuralStylusReport.ActivePalmTouchCount"
     units="touch event count" expires_after="2023-06-30">
   <owner>napper@chromium.org</owner>

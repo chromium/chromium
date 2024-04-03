@@ -105,6 +105,7 @@ class COMPONENT_EXPORT(EVDEV) GestureInterpreterLibevdevCros
   void ReleaseKeys(stime_t timestamp);
   bool SetMouseButtonState(unsigned int button, bool down);
   void ReleaseMouseButtons(stime_t timestamp);
+  void RecordClickMetric(stime_t duration, float movement);
 
   // The unique device id.
   int id_;
@@ -135,6 +136,9 @@ class COMPONENT_EXPORT(EVDEV) GestureInterpreterLibevdevCros
   // Last mouse button state.
   static const int kMouseButtonCount = BTN_JOYSTICK - BTN_MOUSE;
   std::bitset<kMouseButtonCount> mouse_button_state_;
+
+  stime_t click_down_time_;
+  gfx::Vector2dF click_movement_;
 
   // Device pointer.
   Evdev* evdev_ = nullptr;
