@@ -533,9 +533,10 @@ UIButton* CreateMorePillButton() {
 }
 
 // Animates the floating SetAsDefault button to:
-//  1- Fade from grey to blue, to become enabled.
-//  2- Appear on the screen by moving from the bottom (if the floating
+//  1- Fades from grey to blue, to become enabled.
+//  2- Appears on the screen by moving from the bottom (if the floating
 //     SetAsDefault is not visible yet).
+//  3- Scrolls up the scrollview to avoid covering the selected search engine.
 - (void)animateFloatingSetAsDefaultContainer {
   CHECK(_morePillButton.hidden, base::NotFatalUntil::M127);
 
@@ -591,19 +592,41 @@ UIButton* CreateMorePillButton() {
     _floatingSetAsDefaultButtonContainer.hidden = NO;
   }
 
+  // 3- At the end of the animation, if the floating SetAsDefault container
+  //    will cover the selected search engine, the scroll view needs to move up
+  //    as much as the floating SetAsDefault container will move up.
+  CGRect selectedButtonRect = _selectedSearchEngineButton.bounds;
+  selectedButtonRect = [self.view convertRect:selectedButtonRect
+                                     fromView:_selectedSearchEngineButton];
+  CGFloat heightToScrollUp = 0.;
+  // Tests if the floating SetAsDefault button will cover the selected search
+  // engine button, after the animation.
+  // If this is true, then scroll view needs to scroll up to compensate
+  // the floating SetAsDefault button animation. This value is
+  // the begining position height minus the end position height.
+  // So the scrollview will move exactly at the same time than the button.
+  if (selectedButtonRect.origin.y + selectedButtonRect.size.height >
+      animationEndFrame.origin.y) {
+    heightToScrollUp = animationEndFrame.origin.y -
+                       _floatingSetAsDefaultButtonContainer.frame.origin.y;
+  }
+
   // Animates everything.
   UIView* floatingSetAsDefaultButtonContainer =
       _floatingSetAsDefaultButtonContainer;
-  // TODO(crbug.com/330675417): If `animationEndFrame.origin.y` is on top of
-  // `_selectedSearchEngineButton`, then scroll view needs to be scrolled of
-  // `_floatingSetAsDefaultButtonContainer.frame.origin.y -
-  // animationEndFrame.origin.y`.
+  UIScrollView* scrollView = _scrollView;
   [UIView animateWithDuration:kFloatingSetAsDefaultAnimationDuration
       animations:^{
         // 1- Fades in.
         fakeButtonForGreyToBlueFading.alpha = 0;
         // 2- Moves from the bottom.
         floatingSetAsDefaultButtonContainer.frame = animationEndFrame;
+        // 3- Scrolls up, if needed.
+        if (heightToScrollUp) {
+          CGPoint contentOffset = scrollView.contentOffset;
+          contentOffset.y -= heightToScrollUp;
+          scrollView.contentOffset = contentOffset;
+        }
       }
       completion:^(BOOL) {
         [fakeButtonForGreyToBlueFading removeFromSuperview];
