@@ -20,7 +20,8 @@ class SessionImpl : public OnDeviceModel::Session {
   SessionImpl& operator=(const SessionImpl&) = delete;
 
   void AddContext(mojom::InputOptionsPtr input,
-                  mojo::PendingRemote<mojom::ContextClient> client) override {
+                  mojo::PendingRemote<mojom::ContextClient> client,
+                  base::OnceClosure on_complete) override {
     std::string text = input->text;
     if (input->token_offset) {
       text.erase(text.begin(), text.begin() + *input->token_offset);
@@ -33,11 +34,12 @@ class SessionImpl : public OnDeviceModel::Session {
       mojo::Remote<mojom::ContextClient> remote(std::move(client));
       remote->OnComplete(text.size());
     }
+    std::move(on_complete).Run();
   }
 
-  void Execute(
-      mojom::InputOptionsPtr input,
-      mojo::PendingRemote<mojom::StreamingResponder> response) override {
+  void Execute(mojom::InputOptionsPtr input,
+               mojo::PendingRemote<mojom::StreamingResponder> response,
+               base::OnceClosure on_complete) override {
     mojo::Remote<mojom::StreamingResponder> remote(std::move(response));
     if (adaptation_id_) {
       auto chunk = mojom::ResponseChunk::New();
@@ -57,7 +59,10 @@ class SessionImpl : public OnDeviceModel::Session {
     chunk->text = "Input: " + input->text + "\n";
     remote->OnResponse(std::move(chunk));
     remote->OnComplete(mojom::ResponseSummary::New());
+    std::move(on_complete).Run();
   }
+
+  void ClearContext() override { context_.clear(); }
 
  private:
   std::vector<std::string> context_;

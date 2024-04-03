@@ -63,7 +63,7 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL) OnDeviceModelService
   static base::expected<std::unique_ptr<OnDeviceModel>, mojom::LoadModelResult>
   CreateModel(mojom::LoadModelParamsPtr params);
 
-  void DeleteModel(mojom::OnDeviceModel* model);
+  void DeleteModel(base::WeakPtr<mojom::OnDeviceModel> model);
 
   mojo::Receiver<mojom::OnDeviceModelService> receiver_;
   std::set<std::unique_ptr<mojom::OnDeviceModel>, base::UniquePtrComparator>

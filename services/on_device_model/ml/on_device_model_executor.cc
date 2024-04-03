@@ -87,9 +87,11 @@ class Responder : public base::SupportsWeakPtr<Responder> {
  public:
   explicit Responder(
       mojo::PendingRemote<on_device_model::mojom::StreamingResponder> responder,
-      scoped_refptr<LanguageDetector> language_detector)
+      scoped_refptr<LanguageDetector> language_detector,
+      base::OnceClosure on_complete)
       : responder_(std::move(responder)),
-        language_detector_(std::move(language_detector)) {
+        language_detector_(std::move(language_detector)),
+        on_complete_(std::move(on_complete)) {
     responder_.set_disconnect_handler(
         base::BindOnce(&Responder::Cancel, base::Unretained(this)));
   }
@@ -153,6 +155,9 @@ class Responder : public base::SupportsWeakPtr<Responder> {
       auto summary = on_device_model::mojom::ResponseSummary::New();
       summary->safety_info = CreateSafetyInfo(output_so_far_, class_scores);
       responder_->OnComplete(std::move(summary));
+      if (!on_complete_.is_null()) {
+        std::move(on_complete_).Run();
+      }
     }
   }
 
@@ -175,6 +180,9 @@ class Responder : public base::SupportsWeakPtr<Responder> {
     if (cancel_) {
       cancel_();
     }
+    if (!on_complete_.is_null()) {
+      std::move(on_complete_).Run();
+    }
   }
 
   base::TimeTicks first_token_time_;
@@ -183,6 +191,7 @@ class Responder : public base::SupportsWeakPtr<Responder> {
   mojo::Remote<on_device_model::mojom::StreamingResponder> responder_;
   const scoped_refptr<LanguageDetector> language_detector_;
   ChromeMLCancelFn cancel_;
+  base::OnceClosure on_complete_;
 };
 
 // Handles calling the ContextClient on completion and canceling the context
@@ -191,8 +200,11 @@ class ContextHolder : public base::SupportsWeakPtr<ContextHolder> {
  public:
   explicit ContextHolder(
       mojo::PendingRemote<on_device_model::mojom::ContextClient> client,
-      base::OnceCallback<void(ContextHolder*)> on_disconnect)
-      : client_(std::move(client)), on_disconnect_(std::move(on_disconnect)) {
+      base::OnceCallback<void(ContextHolder*)> on_disconnect,
+      base::OnceClosure on_complete)
+      : client_(std::move(client)),
+        on_disconnect_(std::move(on_disconnect)),
+        on_complete_(std::move(on_complete)) {
     if (client_) {
       client_.set_disconnect_handler(
           base::BindOnce(&ContextHolder::OnDisconnect, base::Unretained(this)));
@@ -201,6 +213,9 @@ class ContextHolder : public base::SupportsWeakPtr<ContextHolder> {
   ~ContextHolder() {
     if (cancel_) {
       cancel_();
+    }
+    if (!on_complete_.is_null()) {
+      std::move(on_complete_).Run();
     }
   }
 
@@ -222,6 +237,9 @@ class ContextHolder : public base::SupportsWeakPtr<ContextHolder> {
     if (client_) {
       client_->OnComplete(tokens_processed);
     }
+    if (!on_complete_.is_null()) {
+      std::move(on_complete_).Run();
+    }
     OnDisconnect();
   }
 
@@ -236,6 +254,7 @@ class ContextHolder : public base::SupportsWeakPtr<ContextHolder> {
   mojo::Remote<on_device_model::mojom::ContextClient> client_;
   base::OnceCallback<void(ContextHolder*)> on_disconnect_;
   ChromeMLCancelFn cancel_;
+  base::OnceClosure on_complete_;
 };
 
 class SessionImpl : public on_device_model::OnDeviceModel::Session {
@@ -254,12 +273,14 @@ class SessionImpl : public on_device_model::OnDeviceModel::Session {
   SessionImpl& operator=(const SessionImpl&) = delete;
 
   DISABLE_CFI_DLSYM
-  void AddContext(on_device_model::mojom::InputOptionsPtr input,
-                  mojo::PendingRemote<on_device_model::mojom::ContextClient>
-                      client) override {
+  void AddContext(
+      on_device_model::mojom::InputOptionsPtr input,
+      mojo::PendingRemote<on_device_model::mojom::ContextClient> client,
+      base::OnceClosure on_complete) override {
     auto context_holder = std::make_unique<ContextHolder>(
         std::move(client),
-        base::BindOnce(&SessionImpl::RemoveContext, base::Unretained(this)));
+        base::BindOnce(&SessionImpl::RemoveContext, base::Unretained(this)),
+        std::move(on_complete));
     ChromeMLContextSavedFn context_saved_fn =
         context_holder->CreateContextSavedFn();
     ChromeMLExecuteOptions options{
@@ -282,11 +303,12 @@ class SessionImpl : public on_device_model::OnDeviceModel::Session {
   }
 
   DISABLE_CFI_DLSYM
-  void Execute(on_device_model::mojom::InputOptionsPtr input,
-               mojo::PendingRemote<on_device_model::mojom::StreamingResponder>
-                   response) override {
-    responder_ =
-        std::make_unique<Responder>(std::move(response), language_detector_);
+  void Execute(
+      on_device_model::mojom::InputOptionsPtr input,
+      mojo::PendingRemote<on_device_model::mojom::StreamingResponder> response,
+      base::OnceClosure on_complete) override {
+    responder_ = std::make_unique<Responder>(
+        std::move(response), language_detector_, std::move(on_complete));
     ChromeMLExecutionOutputFn output_fn = responder_->CreateOutputFn();
     int32_t ts_interval = -1;
     if (input->safety_interval.has_value()) {
@@ -309,6 +331,8 @@ class SessionImpl : public on_device_model::OnDeviceModel::Session {
     }
     chrome_ml_->api().ExecuteModel(model_, &options, responder_->GetCancelFn());
   }
+
+  void ClearContext() override { clear_context_ = true; }
 
  private:
   void RemoveContext(ContextHolder* context) {

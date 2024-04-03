@@ -296,6 +296,7 @@ void ChromeosPlatformModelLoader::OnInstallDlcComplete(
   params->assets = on_device_model::LoadModelAssets(model_paths);
   params->max_tokens = max_tokens.value_or(kDefaultMaxTokens);
   params->adaptation_ranks = adaptation_ranks;
+  params->support_multiple_sessions = true;
 
   auto platform_model = base::MakeRefCounted<PlatformModel>();
   service_->LoadModel(

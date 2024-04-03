@@ -41,6 +41,11 @@ struct LoadModelParams {
 
   // List of adaptation ranks the model should support.
   array<uint32> adaptation_ranks;
+
+  // If this is true, the multiple sessions support will be enabled.
+  // The previous session will not be canceled when starting new session if
+  // this feature is enabled.
+  bool support_multiple_sessions;
 };
 
 // A service which allows loading trusted models which are stored on-device and

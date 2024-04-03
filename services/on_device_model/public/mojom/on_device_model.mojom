@@ -136,7 +136,12 @@ interface Session {
 // browser and consumers must take care to sanitize inputs.
 interface OnDeviceModel {
   // Starts a session with this model. If a session starts before the previous
-  // one has completed, the previous session will be canceled.
+  // one has completed and the multiple sessions support is not enabled for
+  // this model, the previous session will be canceled, the mojo connection
+  // for the previous session will also be closed, and the ongoing connections
+  // of StreamingResponder & ContextClient will also be closed.
+  // When the multiple sessions support is enabled, nothing will be
+  // disconnected, and the further requests will be queued.
   StartSession(pending_receiver<Session> session);
 
   // Infers multiclass safety scores for the given `text` using this model's
