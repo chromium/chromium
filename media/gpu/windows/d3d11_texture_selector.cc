@@ -88,8 +88,33 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
   };
   // TODO(liberato): add other options here, like "copy to rgb" for NV12.
   switch (decoder_output_format) {
-    case DXGI_FORMAT_NV12:
-    case DXGI_FORMAT_AYUV: {
+    // AYUV output from decoder is always 8-bit 4:4:4 which we prefer to be
+    // rendered in ARGB formats.
+    case DXGI_FORMAT_AYUV:
+      MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder producing "
+                                 << DxgiFormatToString(decoder_output_format);
+      // Avoid chroma-downsampling for non-HDR 8b444 contents.
+      if (!input_color_space.IsHDR() &&
+          supports_fmt(DXGI_FORMAT_B8G8R8A8_UNORM)) {
+        output_pixel_format = PIXEL_FORMAT_ARGB;
+        output_dxgi_format = DXGI_FORMAT_B8G8R8A8_UNORM;
+        output_color_space.reset();
+        MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: Selected ARGB";
+      } else if (!needs_texture_copy || supports_fmt(DXGI_FORMAT_NV12)) {
+        output_pixel_format = PIXEL_FORMAT_NV12;
+        output_dxgi_format = DXGI_FORMAT_NV12;
+        // Leave |output_color_space| the same, since we'll bind either the
+        // original or the copy. Downstream will handle it, either in the
+        // shaders or in the overlay, if needed.
+        output_color_space.reset();
+        MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: Selected NV12";
+      } else {
+        MEDIA_LOG(INFO, media_log)
+            << DxgiFormatToString(decoder_output_format) << " not supported";
+        return nullptr;
+      }
+      break;
+    case DXGI_FORMAT_NV12: {
       MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder producing "
                                  << DxgiFormatToString(decoder_output_format);
       if (!needs_texture_copy || supports_fmt(DXGI_FORMAT_NV12)) {
@@ -112,12 +137,12 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
       }
       break;
     }
-    case DXGI_FORMAT_P010:
     case DXGI_FORMAT_Y416:
     case DXGI_FORMAT_Y216:
-    case DXGI_FORMAT_P016:
     case DXGI_FORMAT_Y410:
-    case DXGI_FORMAT_Y210: {
+    case DXGI_FORMAT_Y210:
+    case DXGI_FORMAT_P010:
+    case DXGI_FORMAT_P016: {
       MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder producing "
                                  << DxgiFormatToString(decoder_output_format);
       // If device support P010 zero copy, then try P010 firstly.
