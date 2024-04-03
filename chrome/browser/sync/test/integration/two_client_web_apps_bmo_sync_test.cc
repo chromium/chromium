@@ -299,8 +299,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, DisplayMode) {
   }
   WebAppProvider::GetForTest(GetProfile(1))
       ->sync_bridge_unsafe()
-      .SetAppUserDisplayMode(app_id, mojom::UserDisplayMode::kBrowser,
-                             /*is_user_action=*/false);
+      .SetAppUserDisplayModeForTesting(app_id,
+                                       mojom::UserDisplayMode::kBrowser);
 
   ASSERT_TRUE(AwaitWebAppQuiescence());
 
@@ -391,8 +391,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, NotSyncedThenSynced) {
   // on profile 0. So changes should propagate from profile 0 to profile 1 now.
   WebAppProvider::GetForTest(GetProfile(0))
       ->sync_bridge_unsafe()
-      .SetAppUserDisplayMode(app_id, mojom::UserDisplayMode::kBrowser,
-                             /*is_user_action=*/false);
+      .SetAppUserDisplayModeForTesting(app_id,
+                                       mojom::UserDisplayMode::kBrowser);
 
   ASSERT_TRUE(AwaitWebAppQuiescence());
 

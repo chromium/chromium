@@ -164,9 +164,8 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
   NavigateViaLinkClickToURLAndWait(browser(), GetInstallableAppURL());
   webapps::AppId app_id = InstallShortcutAppForCurrentUrl();
   // Change launch container to open in window.
-  sync_bridge().SetAppUserDisplayMode(app_id,
-                                      mojom::UserDisplayMode::kStandalone,
-                                      /*is_user_action=*/false);
+  sync_bridge().SetAppUserDisplayModeForTesting(
+      app_id, mojom::UserDisplayMode::kStandalone);
 
   Browser* new_browser =
       NavigateInNewWindowAndAwaitInstallabilityCheck(GetInstallableAppURL());

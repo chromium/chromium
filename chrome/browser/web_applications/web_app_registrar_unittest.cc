@@ -509,9 +509,8 @@ TEST_F(WebAppRegistrarTest, GetAppDataFields) {
     EXPECT_EQ(mojom::UserDisplayMode::kBrowser,
               registrar().GetAppUserDisplayMode(app_id));
 
-    fake_provider().sync_bridge_unsafe().SetAppUserDisplayMode(
-        app_id, mojom::UserDisplayMode::kStandalone,
-        /*is_user_action=*/false);
+    fake_provider().sync_bridge_unsafe().SetAppUserDisplayModeForTesting(
+        app_id, mojom::UserDisplayMode::kStandalone);
     EXPECT_EQ(mojom::UserDisplayMode::kStandalone,
               registrar().GetAppUserDisplayMode(app_id));
     EXPECT_EQ(DisplayMode::kMinimalUi, registrar().GetAppDisplayMode(app_id));

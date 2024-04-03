@@ -11,6 +11,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/commands/set_user_display_mode_command.h"
 #include "chrome/browser/web_applications/extensions/web_app_extension_shortcut.h"
 #include "chrome/browser/web_applications/locks/with_app_resources.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -137,8 +138,9 @@ void WebAppUninstallAndReplaceJob::OnMigrateLauncherState(
         to_app_, app_sorting->GetAppLaunchOrdinal(from_app));
     app_sorting->SetPageOrdinal(to_app_, app_sorting->GetPageOrdinal(from_app));
 
-    to_app_lock_->sync_bridge().SetAppUserDisplayMode(
-        to_app_, GetExtensionUserDisplayMode(&profile_.get(), from_extension),
+    SetUserDisplayModeCommand::DoSetDisplayMode(
+        *to_app_lock_, to_app_,
+        GetExtensionUserDisplayMode(&profile_.get(), from_extension),
         /*is_user_action=*/false);
 
     auto shortcut_info = web_app::ShortcutInfoForExtensionAndProfile(

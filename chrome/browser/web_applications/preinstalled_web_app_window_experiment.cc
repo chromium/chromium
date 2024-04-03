@@ -133,18 +133,8 @@ void PersistStateFromPrefsToWebAppDb(PrefService* pref_service,
     }
   }
   for (const webapps::AppId& app_id : experiment_overrides) {
-    provider.scheduler().ScheduleCallback(
-        "PreinstalledWebAppWindowExperiment:PersistStateFromPrefsToWebAppDb",
-        AppLockDescription(app_id),
-        base::BindOnce(
-            [](webapps::AppId app_id, mojom::UserDisplayMode display_mode,
-               AppLock& lock, base::Value::Dict& debug_value) {
-              lock.sync_bridge().SetAppUserDisplayMode(
-                  app_id, display_mode,
-                  /*is_user_action=*/false);
-            },
-            app_id, *opt_display_mode),
-        base::DoNothing());
+    provider.scheduler().SetUserDisplayMode(app_id, *opt_display_mode,
+                                            base::DoNothing());
   }
 }
 

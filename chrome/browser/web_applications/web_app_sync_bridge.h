@@ -145,10 +145,10 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
 
   void Init(base::OnceClosure callback);
 
-  // TODO(https://crbug.com/1517947): Remove this and use a command instead.
-  void SetAppUserDisplayMode(const webapps::AppId& app_id,
-                             mojom::UserDisplayMode user_display_mode,
-                             bool is_user_action);
+  // Non testing code should use SetUserDisplayModeCommand instead.
+  void SetAppUserDisplayModeForTesting(
+      const webapps::AppId& app_id,
+      mojom::UserDisplayMode user_display_mode);
 
   // TODO(https://crbug.com/1517947): Remove this and use a command instead.
   void SetAppIsDisabled(AppLock& lock,

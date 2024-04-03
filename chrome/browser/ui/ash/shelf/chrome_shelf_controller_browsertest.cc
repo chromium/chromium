@@ -2439,9 +2439,8 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WindowedHostedAndWebApps) {
                             extensions::LAUNCH_TYPE_WINDOW);
   WebAppProvider* provider = WebAppProvider::GetForTest(browser()->profile());
   DCHECK(provider);
-  provider->sync_bridge_unsafe().SetAppUserDisplayMode(
-      web_app_id, web_app::mojom::UserDisplayMode::kStandalone,
-      /*is_user_action=*/false);
+  provider->sync_bridge_unsafe().SetAppUserDisplayModeForTesting(
+      web_app_id, web_app::mojom::UserDisplayMode::kStandalone);
 
   // The apps should be closed.
   EXPECT_EQ(ash::STATUS_CLOSED,

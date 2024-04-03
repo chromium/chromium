@@ -2390,8 +2390,8 @@ void WebAppIntegrationTestDriver::SetOpenInTabFromAppHome(Site site) {
 #if BUILDFLAG(IS_CHROMEOS)
   auto& sync_bridge =
       WebAppProvider::GetForTest(profile())->sync_bridge_unsafe();
-  sync_bridge.SetAppUserDisplayMode(app_id, mojom::UserDisplayMode::kStandalone,
-                                    true);
+  sync_bridge.SetAppUserDisplayModeForTesting(
+      app_id, mojom::UserDisplayMode::kStandalone);
   apps::AppWindowModeWaiter(profile(), app_id, apps::WindowMode::kWindow)
       .Await();
 #else
@@ -2417,8 +2417,8 @@ void WebAppIntegrationTestDriver::SetOpenInTabFromAppSettings(Site site) {
 #if BUILDFLAG(IS_CHROMEOS)
   auto& sync_bridge =
       WebAppProvider::GetForTest(profile())->sync_bridge_unsafe();
-  sync_bridge.SetAppUserDisplayMode(app_id, mojom::UserDisplayMode::kBrowser,
-                                    true);
+  sync_bridge.SetAppUserDisplayModeForTesting(app_id,
+                                              mojom::UserDisplayMode::kBrowser);
   apps::AppWindowModeWaiter(profile(), app_id, apps::WindowMode::kBrowser)
       .Await();
 #else
@@ -2438,8 +2438,8 @@ void WebAppIntegrationTestDriver::SetOpenInWindowFromAppHome(Site site) {
 #if BUILDFLAG(IS_CHROMEOS)
   auto& sync_bridge =
       WebAppProvider::GetForTest(profile())->sync_bridge_unsafe();
-  sync_bridge.SetAppUserDisplayMode(app_id, mojom::UserDisplayMode::kStandalone,
-                                    true);
+  sync_bridge.SetAppUserDisplayModeForTesting(
+      app_id, mojom::UserDisplayMode::kStandalone);
   apps::AppWindowModeWaiter(profile(), app_id, apps::WindowMode::kWindow)
       .Await();
 #else
@@ -2467,8 +2467,8 @@ void WebAppIntegrationTestDriver::SetOpenInWindowFromAppSettings(Site site) {
 #if BUILDFLAG(IS_CHROMEOS)
   auto& sync_bridge =
       WebAppProvider::GetForTest(profile())->sync_bridge_unsafe();
-  sync_bridge.SetAppUserDisplayMode(app_id, mojom::UserDisplayMode::kStandalone,
-                                    true);
+  sync_bridge.SetAppUserDisplayModeForTesting(
+      app_id, mojom::UserDisplayMode::kStandalone);
   apps::AppWindowModeWaiter(profile(), app_id, apps::WindowMode::kWindow)
       .Await();
 #else

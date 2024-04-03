@@ -660,12 +660,12 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppWindowExperimentBrowserTestAll,
   recorded_display_mode_changes_.clear();
 
   // Simulate user setting the display mode on some apps.
-  provider().sync_bridge_unsafe().SetAppUserDisplayMode(
-      kGoogleDriveAppId, UserDisplayMode::kStandalone, /*is_user_action=*/true);
-  provider().sync_bridge_unsafe().SetAppUserDisplayMode(
-      kYoutubeAppId, UserDisplayMode::kStandalone, /*is_user_action=*/true);
-  provider().sync_bridge_unsafe().SetAppUserDisplayMode(
-      kGoogleCalendarAppId, UserDisplayMode::kBrowser, /*is_user_action=*/true);
+  provider().sync_bridge_unsafe().SetAppUserDisplayModeForTesting(
+      kGoogleDriveAppId, UserDisplayMode::kStandalone);
+  provider().sync_bridge_unsafe().SetAppUserDisplayModeForTesting(
+      kYoutubeAppId, UserDisplayMode::kStandalone);
+  provider().sync_bridge_unsafe().SetAppUserDisplayModeForTesting(
+      kGoogleCalendarAppId, UserDisplayMode::kBrowser);
 
   // UI should be notified with the new values.
   ASSERT_TRUE(recorded_display_mode_changes_.contains(kGoogleDriveAppId));
@@ -715,12 +715,12 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppWindowExperimentBrowserTestAll,
   AwaitPreinstalledAppsInstalled();
 
   // Simulate user setting the display mode on some apps.
-  provider().sync_bridge_unsafe().SetAppUserDisplayMode(
-      kGoogleDriveAppId, UserDisplayMode::kStandalone, /*is_user_action=*/true);
-  provider().sync_bridge_unsafe().SetAppUserDisplayMode(
-      kYoutubeAppId, UserDisplayMode::kStandalone, /*is_user_action=*/true);
-  provider().sync_bridge_unsafe().SetAppUserDisplayMode(
-      kGoogleCalendarAppId, UserDisplayMode::kBrowser, /*is_user_action=*/true);
+  provider().sync_bridge_unsafe().SetAppUserDisplayModeForTesting(
+      kGoogleDriveAppId, UserDisplayMode::kStandalone);
+  provider().sync_bridge_unsafe().SetAppUserDisplayModeForTesting(
+      kYoutubeAppId, UserDisplayMode::kStandalone);
+  provider().sync_bridge_unsafe().SetAppUserDisplayModeForTesting(
+      kGoogleCalendarAppId, UserDisplayMode::kBrowser);
 
   // Metrics should be emitted iff experiment is active.
   if (GetUserGroupTestParam() == UserGroup::kUnknown) {

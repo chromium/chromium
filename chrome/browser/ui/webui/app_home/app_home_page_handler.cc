@@ -274,23 +274,8 @@ void AppHomePageHandler::LaunchAppInternal(
 void AppHomePageHandler::SetUserDisplayMode(
     const std::string& app_id,
     web_app::mojom::UserDisplayMode user_display_mode) {
-  web_app_provider_->scheduler().ScheduleCallback(
-      "AppHomePageHandler::SetWebAppDisplayMode",
-      web_app::AppLockDescription(app_id),
-      base::BindOnce(
-          [](const webapps::AppId& app_id,
-             web_app::mojom::UserDisplayMode user_display_mode,
-             web_app::AppLock& lock, base::Value::Dict& debug_value) {
-            if (lock.registrar().IsLocallyInstalled(app_id)) {
-              debug_value.Set("user_display_mode",
-                              base::ToString(user_display_mode));
-              lock.sync_bridge().SetAppUserDisplayMode(app_id,
-                                                       user_display_mode,
-                                                       /*is_user_action=*/true);
-            }
-          },
-          app_id, user_display_mode),
-      /*on_complete=*/base::DoNothing());
+  web_app_provider_->scheduler().SetUserDisplayMode(app_id, user_display_mode,
+                                                    base::DoNothing());
 }
 
 app_home::mojom::AppInfoPtr AppHomePageHandler::GetApp(

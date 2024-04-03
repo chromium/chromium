@@ -1858,8 +1858,8 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   )";
   OverrideManifest(kManifestTemplate, {"standalone", kInstallableIconList});
   webapps::AppId app_id = InstallWebApp();
-  GetProvider().sync_bridge_unsafe().SetAppUserDisplayMode(
-      app_id, mojom::UserDisplayMode::kStandalone, /*is_user_action=*/false);
+  GetProvider().sync_bridge_unsafe().SetAppUserDisplayModeForTesting(
+      app_id, mojom::UserDisplayMode::kStandalone);
 
   OverrideManifest(kManifestTemplate, {"browser", kInstallableIconList});
   EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),

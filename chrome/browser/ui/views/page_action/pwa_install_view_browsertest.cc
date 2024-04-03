@@ -413,8 +413,8 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
   // Change launch container to open in tab.
   web_app::WebAppProvider::GetForTest(browser()->profile())
       ->sync_bridge_unsafe()
-      .SetAppUserDisplayMode(app_id, web_app::mojom::UserDisplayMode::kBrowser,
-                             /*is_user_action=*/false);
+      .SetAppUserDisplayModeForTesting(
+          app_id, web_app::mojom::UserDisplayMode::kBrowser);
 
   // Use a new tab because installed app may have opened in new window.
   OpenTabResult result = OpenTab(GetInstallableAppURL());

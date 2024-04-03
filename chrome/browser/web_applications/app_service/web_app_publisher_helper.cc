@@ -1217,18 +1217,8 @@ void WebAppPublisherHelper::SetWindowMode(const std::string& app_id,
       user_display_mode = mojom::UserDisplayMode::kTabbed;
       break;
   }
-  provider_->scheduler().ScheduleCallback(
-      "WebAppPublisherHelper::SetWindowMode", AppLockDescription(app_id),
-      base::BindOnce(
-          [](webapps::AppId app_id, mojom::UserDisplayMode user_display_mode,
-             AppLock& lock, base::Value::Dict& debug_value) {
-            debug_value.Set("user_display_mode",
-                            base::ToString(user_display_mode));
-            lock.sync_bridge().SetAppUserDisplayMode(app_id, user_display_mode,
-                                                     /*is_user_action=*/true);
-          },
-          app_id, std::move(user_display_mode)),
-      /*on_complete=*/base::DoNothing());
+  provider_->scheduler().SetUserDisplayMode(app_id, user_display_mode,
+                                            base::DoNothing());
 }
 
 apps::WindowMode WebAppPublisherHelper::ConvertDisplayModeToWindowMode(

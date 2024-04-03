@@ -446,6 +446,14 @@ class WebAppCommandScheduler {
       std::optional<SynchronizeOsOptions> synchronize_options = std::nullopt,
       const base::Location& location = FROM_HERE);
 
+  // Sets the user display mode for an app, and also makes sure os integration
+  // is triggered if the new user display mode is one that requires that (i.e.
+  // anything other than "browser").
+  void SetUserDisplayMode(const webapps::AppId& app_id,
+                          mojom::UserDisplayMode user_display_mode,
+                          base::OnceClosure callback,
+                          const base::Location& location = FROM_HERE);
+
   // Finds web apps that share the same install URLs (possibly across different
   // install sources) and dedupes the install URL configs into the most
   // recently installed non-placeholder-like web app.

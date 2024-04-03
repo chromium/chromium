@@ -249,26 +249,9 @@ void WebAppSyncBridge::Init(base::OnceClosure initialized_callback) {
                                          std::move(initialized_callback)));
 }
 
-void WebAppSyncBridge::SetAppUserDisplayMode(
+void WebAppSyncBridge::SetAppUserDisplayModeForTesting(
     const webapps::AppId& app_id,
-    mojom::UserDisplayMode user_display_mode,
-    bool is_user_action) {
-  if (is_user_action) {
-    switch (user_display_mode) {
-      case mojom::UserDisplayMode::kStandalone:
-        base::RecordAction(
-            base::UserMetricsAction("WebApp.SetWindowMode.Window"));
-        break;
-      case mojom::UserDisplayMode::kBrowser:
-        base::RecordAction(base::UserMetricsAction("WebApp.SetWindowMode.Tab"));
-        break;
-      case mojom::UserDisplayMode::kTabbed:
-        base::RecordAction(
-            base::UserMetricsAction("WebApp.SetWindowMode.Tabbed"));
-        break;
-    }
-  }
-
+    mojom::UserDisplayMode user_display_mode) {
   {
     ScopedRegistryUpdate update = BeginUpdate();
     WebApp* web_app = update->UpdateApp(app_id);

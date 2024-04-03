@@ -1225,9 +1225,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, CanInstallOverBrowserTabPwa) {
 
   // Change display mode to open in tab.
   auto* provider = WebAppProvider::GetForTest(profile());
-  provider->sync_bridge_unsafe().SetAppUserDisplayMode(
-      app_id, web_app::mojom::UserDisplayMode::kBrowser,
-      /*is_user_action=*/false);
+  provider->sync_bridge_unsafe().SetAppUserDisplayModeForTesting(
+      app_id, web_app::mojom::UserDisplayMode::kBrowser);
 
   Browser* const new_browser =
       NavigateInNewWindowAndAwaitInstallabilityCheck(GetInstallableAppURL());
@@ -1259,9 +1258,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, NoOpenInAppForBrowserTabPwa) {
 
   // Change display mode to open in tab.
   auto* provider = WebAppProvider::GetForTest(profile());
-  provider->sync_bridge_unsafe().SetAppUserDisplayMode(
-      app_id, web_app::mojom::UserDisplayMode::kBrowser,
-      /*is_user_action=*/false);
+  provider->sync_bridge_unsafe().SetAppUserDisplayModeForTesting(
+      app_id, web_app::mojom::UserDisplayMode::kBrowser);
 
   NavigateViaLinkClickToURLAndWait(browser(), app_url);
   EXPECT_EQ(GetAppMenuCommandState(IDC_CREATE_SHORTCUT, browser()), kEnabled);
@@ -2023,8 +2021,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, NewAppWindow) {
 
   WebAppProvider::GetForTest(profile())
       ->sync_bridge_unsafe()
-      .SetAppUserDisplayMode(app_id, web_app::mojom::UserDisplayMode::kBrowser,
-                             /*is_user_action=*/false);
+      .SetAppUserDisplayModeForTesting(
+          app_id, web_app::mojom::UserDisplayMode::kBrowser);
   EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
 
   ui_test_utils::AllBrowserTabAddedWaiter tab_waiter;

@@ -343,9 +343,8 @@ IN_PROC_BROWSER_TEST_F(
 
   WebAppProvider::GetForTest(browser()->profile())
       ->sync_bridge_unsafe()
-      .SetAppUserDisplayMode(url_info.app_id(),
-                             mojom::UserDisplayMode::kBrowser,
-                             /*is_user_action=*/false);
+      .SetAppUserDisplayModeForTesting(url_info.app_id(),
+                                       mojom::UserDisplayMode::kBrowser);
 
   GURL app_url = url_info.origin().GetURL().Resolve("/index.html");
   auto* app_frame =

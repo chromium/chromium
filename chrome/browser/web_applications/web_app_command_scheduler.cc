@@ -42,6 +42,7 @@
 #include "chrome/browser/web_applications/commands/navigate_and_trigger_install_dialog_command.h"
 #include "chrome/browser/web_applications/commands/os_integration_synchronize_command.h"
 #include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
+#include "chrome/browser/web_applications/commands/set_user_display_mode_command.h"
 #include "chrome/browser/web_applications/commands/update_file_handler_command.h"
 #include "chrome/browser/web_applications/commands/update_protocol_handler_approval_command.h"
 #include "chrome/browser/web_applications/commands/web_app_icon_diagnostic_command.h"
@@ -548,6 +549,17 @@ void WebAppCommandScheduler::SynchronizeOsIntegration(
   provider_->command_manager().ScheduleCommand(
       std::make_unique<OsIntegrationSynchronizeCommand>(
           app_id, synchronize_options, std::move(synchronize_callback)),
+      location);
+}
+
+void WebAppCommandScheduler::SetUserDisplayMode(
+    const webapps::AppId& app_id,
+    mojom::UserDisplayMode user_display_mode,
+    base::OnceClosure callback,
+    const base::Location& location) {
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<SetUserDisplayModeCommand>(app_id, user_display_mode,
+                                                  std::move(callback)),
       location);
 }
 

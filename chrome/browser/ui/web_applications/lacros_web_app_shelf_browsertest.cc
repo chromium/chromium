@@ -241,8 +241,8 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, RunningInTab) {
       EXPECT_TRUE(success_future.Get());
     }
     CloseAndWait(app_browser1);
-    sync_bridge.SetAppUserDisplayMode(app1_id, mojom::UserDisplayMode::kBrowser,
-                                      /*is_user_action=*/true);
+    sync_bridge.SetAppUserDisplayModeForTesting(
+        app1_id, mojom::UserDisplayMode::kBrowser);
     apps::AppWindowModeWaiter(profile(), app1_id, apps::WindowMode::kBrowser)
         .Await();
 
@@ -256,8 +256,8 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, RunningInTab) {
       EXPECT_TRUE(success_future.Get());
     }
     CloseAndWait(app_browser2);
-    sync_bridge.SetAppUserDisplayMode(app2_id, mojom::UserDisplayMode::kBrowser,
-                                      /*is_user_action=*/true);
+    sync_bridge.SetAppUserDisplayModeForTesting(
+        app2_id, mojom::UserDisplayMode::kBrowser);
     apps::AppWindowModeWaiter(profile(), app2_id, apps::WindowMode::kBrowser)
         .Await();
   }
@@ -383,8 +383,8 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, CreateShortcut) {
 
   // Launch app1 in a browser tab (only).
   {
-    sync_bridge.SetAppUserDisplayMode(app1_id, mojom::UserDisplayMode::kBrowser,
-                                      /*is_user_action=*/false);
+    sync_bridge.SetAppUserDisplayModeForTesting(
+        app1_id, mojom::UserDisplayMode::kBrowser);
     apps::AppWindowModeWaiter(profile(), app1_id, apps::WindowMode::kBrowser)
         .Await();
 
