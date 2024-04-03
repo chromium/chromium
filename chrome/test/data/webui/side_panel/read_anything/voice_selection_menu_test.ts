@@ -158,6 +158,38 @@ suite('VoiceSelectionMenuElement', () => {
       assertEquals(italianDropdownItems.length, 1);
     });
 
+    suite('with Seanet voices also available', () => {
+      setup(() => {
+        availableVoices = [
+          previewVoice,
+          {name: 'Google US English 1 (Natural)', lang: 'en-US'} as
+              SpeechSynthesisVoice,
+          {name: 'Google US English 2 (Natural)', lang: 'en-US'} as
+              SpeechSynthesisVoice,
+          selectedVoice,
+        ];
+        setAvailableVoices();
+      });
+
+      test('it orders Seanet voices first', () => {
+        const englishGroup: HTMLElement =
+            voiceSelectionMenu.$.voiceSelectionMenu.get()
+                .querySelector<HTMLElement>('div[data-test-id="group-en-US"]')!;
+        const usEnglishDropdownItems: NodeListOf<HTMLElement> =
+            englishGroup.querySelectorAll('.voice-name');
+
+        assertEquals(
+            usEnglishDropdownItems.item(0).textContent!.trim(),
+            'Google US English 1 (Natural)');
+        assertEquals(
+            usEnglishDropdownItems.item(1).textContent!.trim(),
+            'Google US English 2 (Natural)');
+        assertEquals(
+            usEnglishDropdownItems.item(2).textContent!.trim(), 'test voice 1');
+        assertEquals(
+            usEnglishDropdownItems.item(3).textContent!.trim(), 'test voice 3');
+      });
+    });
 
     suite('with display names for locales', () => {
       setup(() => {

@@ -40,6 +40,10 @@ interface VoiceDropdownItem {
   id: string;
 }
 
+// This string is not localized and will be in English, even for non-English
+// Seanet voices.
+const SEANET_STRING_IDENTIFIER = '(Natural)';
+
 const VoiceSelectionMenuElementBase = WebUiListenerMixin(PolymerElement);
 
 export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
@@ -100,6 +104,10 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
 
           return languageToDropdownItems;
         }, {} as {[language: string]: VoiceDropdownItem[]});
+
+    for (const lang of Object.keys(languageToVoices)) {
+      languageToVoices[lang].sort(voiceQualityRankComparator);
+    }
 
     return Object.entries(languageToVoices).map(([
                                                   language,
@@ -165,6 +173,27 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
   }
 }
 
+function voiceQualityRankComparator(
+    voice1: VoiceDropdownItem,
+    voice2: VoiceDropdownItem,
+    ): number {
+  if (isSeanet(voice1) && isSeanet(voice2)) {
+    return 0;
+  }
+
+  if (!isSeanet(voice1) && !isSeanet(voice2)) {
+    return 0;
+  }
+
+  // voice1 is a Seanet voice and voice2 is not
+  if (isSeanet(voice1)) {
+    return -1;
+  }
+
+  // voice2 is a Seanet voice and voice1 is not
+  return 1;
+}
+
 function voicesAreEqual(
     voice1: SpeechSynthesisVoice|null,
     voice2: SpeechSynthesisVoice|null): boolean {
@@ -176,6 +205,9 @@ function voicesAreEqual(
       voice1.name === voice2.name && voice1.voiceURI === voice2.voiceURI;
 }
 
+function isSeanet(voiceDropdownItem: VoiceDropdownItem) {
+  return voiceDropdownItem.voice.name.includes(SEANET_STRING_IDENTIFIER);
+}
 
 declare global {
   interface HTMLElementTagNameMap {
