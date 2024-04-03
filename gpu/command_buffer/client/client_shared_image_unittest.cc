@@ -16,6 +16,23 @@
 namespace gpu {
 
 namespace {
+
+gfx::GpuMemoryBufferType GetNativeBufferType() {
+#if BUILDFLAG(IS_APPLE)
+  return gfx::IO_SURFACE_BUFFER;
+#elif BUILDFLAG(IS_ANDROID)
+  return gfx::ANDROID_HARDWARE_BUFFER;
+#elif BUILDFLAG(IS_WIN)
+  return gfx::DXGI_SHARED_HANDLE;
+#else
+  // Ozone
+  return gfx::NATIVE_PIXMAP;
+#endif
+}
+
+}  // namespace
+
+namespace {
 // NOTE: If this test implementation starts to grow heavy, consider pulling the
 // viz::TestSharedImageInterface implementation down into //gpu, unifying that
 // with this one, and exposing that as a general-purpose test utility.
@@ -29,9 +46,12 @@ class TestSharedImageInterface : public SharedImageInterface {
       SurfaceHandle surface_handle) override {
     mailbox_for_most_recently_created_shared_image_ =
         gpu::Mailbox::GenerateForSharedImage();
+    auto gmb_handle_type = emulate_client_provided_native_buffer_
+                               ? GetNativeBufferType()
+                               : gfx::EMPTY_BUFFER;
     return base::MakeRefCounted<gpu::ClientSharedImage>(
         mailbox_for_most_recently_created_shared_image_, si_info.meta,
-        SyncToken(), holder_, gfx::EMPTY_BUFFER);
+        SyncToken(), holder_, gmb_handle_type);
   }
   scoped_refptr<ClientSharedImage> CreateSharedImage(
       const SharedImageInfo& si_info,
@@ -116,11 +136,22 @@ class TestSharedImageInterface : public SharedImageInterface {
     return mailbox_for_most_recently_created_shared_image_;
   }
 
+  void emulate_client_provided_native_buffer() {
+    emulate_client_provided_native_buffer_ = true;
+  }
+
+#if BUILDFLAG(IS_MAC)
+  void set_macos_specific_texture_target(uint32_t target) {
+    shared_image_capabilities_.macos_specific_texture_target = target;
+  }
+#endif
+
  private:
   ~TestSharedImageInterface() override = default;
 
   SharedImageCapabilities shared_image_capabilities_;
   Mailbox mailbox_for_most_recently_created_shared_image_;
+  bool emulate_client_provided_native_buffer_ = false;
 };
 
 }  // namespace
@@ -233,6 +264,45 @@ TEST(ClientSharedImageTest,
     auto client_si = sii->CreateSharedImage(si_info, kNullSurfaceHandle);
     EXPECT_EQ(client_si->GetTextureTarget(),
               static_cast<uint32_t>(GL_TEXTURE_2D));
+  }
+}
+
+// When the client provides a native buffer with a single-plane format,
+// GL_TEXTURE_2D should be used as the texture target on all platforms other
+// than Mac, where the MacOS-specific target for native buffers should be used.
+TEST(ClientSharedImageTest,
+     GetTextureTarget_SinglePlaneFormats_ClientNativeBuffer) {
+  auto sii = base::MakeRefCounted<TestSharedImageInterface>();
+  sii->emulate_client_provided_native_buffer();
+
+#if BUILDFLAG(IS_MAC)
+  // Explicitly set the MacOS-specific texture target to a target other than
+  // GL_TEXTURE_2D to ensure that the test is meaningful on Mac.
+  const uint32_t kMacOSSpecificTarget = GL_TEXTURE_RECTANGLE_ARB;
+  sii->set_macos_specific_texture_target(kMacOSSpecificTarget);
+#endif
+
+  const gfx::Size kSize(256, 256);
+  const uint32_t kUsage =
+      SHARED_IMAGE_USAGE_RASTER_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ;
+
+  for (auto format : viz::SinglePlaneFormat::kAll) {
+    SharedImageInfo si_info{format,
+                            kSize,
+                            gfx::ColorSpace(),
+                            kTopLeft_GrSurfaceOrigin,
+                            kOpaque_SkAlphaType,
+                            kUsage,
+                            ""};
+
+    auto client_si = sii->CreateSharedImage(si_info, kNullSurfaceHandle);
+
+#if BUILDFLAG(IS_MAC)
+    const uint32_t expected_texture_target = kMacOSSpecificTarget;
+#else
+    const uint32_t expected_texture_target = GL_TEXTURE_2D;
+#endif
+    EXPECT_EQ(client_si->GetTextureTarget(), expected_texture_target);
   }
 }
 
