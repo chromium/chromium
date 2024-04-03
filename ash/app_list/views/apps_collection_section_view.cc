@@ -179,19 +179,14 @@ void AppsCollectionSectionView::UpdateAppsForCollection() {
       GetAppListItemsForCollection(model_, collection_);
 
   for (AppListItem* app : apps) {
-    auto* item_view =
-        apps_container_->AddChildView(std::make_unique<AppListItemView>(
-            app_list_config_, grid_delegate_.get(), app, view_delegate_,
-            AppListItemView::Context::kAppsCollection));
-    item_view->UpdateAppListConfig(app_list_config_);
-    item_views_.Add(item_view, item_views_.view_size());
-    item_view->InitializeIconLoader();
+    CreateAndAddAppItemView(app);
   }
 
   SetVisible(!apps.empty());
 
   NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged,
                            /*send_native_event=*/true);
+  PreferredSizeChanged();
 }
 
 void AppsCollectionSectionView::SetModel(AppListModel* model) {
@@ -244,8 +239,17 @@ void AppsCollectionSectionView::OnAppListModelStatusChanged() {
 }
 
 void AppsCollectionSectionView::OnAppListItemAdded(AppListItem* item) {
+  if (item->is_folder()) {
+    // Ignore app folder items.
+    return;
+  }
+  if (item->app_status() != AppStatus::kReady) {
+    // Ignore apps that are not ready.
+    return;
+  }
   if (item->collection_id() == collection_) {
-    UpdateAppsForCollection();
+    CreateAndAddAppItemView(item);
+    PreferredSizeChanged();
   }
 }
 
@@ -260,6 +264,16 @@ void AppsCollectionSectionView::OnAppListItemWillBeDeleted(AppListItem* item) {
     item_views_.Remove(index_to_be_deleted.value());
     PreferredSizeChanged();
   }
+}
+
+void AppsCollectionSectionView::CreateAndAddAppItemView(AppListItem* item) {
+  auto* item_view =
+      apps_container_->AddChildView(std::make_unique<AppListItemView>(
+          app_list_config_, grid_delegate_.get(), item, view_delegate_,
+          AppListItemView::Context::kAppsCollection));
+  item_view->UpdateAppListConfig(app_list_config_);
+  item_views_.Add(item_view, item_views_.view_size());
+  item_view->InitializeIconLoader();
 }
 
 BEGIN_METADATA(AppsCollectionSectionView)

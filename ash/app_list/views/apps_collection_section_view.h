@@ -70,6 +70,10 @@ class ASH_EXPORT AppsCollectionSectionView : public AppListModelObserver,
   // `item_views_`, the return value will be null.
   std::optional<size_t> GetViewIndexForItem(const std::string& item_id);
 
+  // Create an AppListItemView from the `item` provided and add it to the
+  // collection view at the end.
+  void CreateAndAddAppItemView(AppListItem* item);
+
   const AppCollection collection_ = AppCollection::kUnknown;
   const raw_ptr<AppListViewDelegate> view_delegate_;
   raw_ptr<const AppListConfig> app_list_config_ = nullptr;
