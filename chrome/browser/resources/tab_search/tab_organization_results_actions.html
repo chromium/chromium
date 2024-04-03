@@ -13,6 +13,7 @@
 <div class="button-row">
   <template is="dom-if" if="[[showClear]]">
     <cr-button id="clearButton" class="tonal-button"
+        aria-label="$i18n{clearAriaLabel}"
         on-click="onClearClick_">
       $i18n{clearSuggestions}
     </cr-button>

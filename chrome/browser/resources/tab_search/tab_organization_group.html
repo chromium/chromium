@@ -103,12 +103,15 @@
       <template is="dom-if" if="[[!showInput_]]">
         <div class="group-name-row">
         <div class="tab-organization-header group-name">[[name]]</div>
-        <cr-icon-button class="icon-edit" on-click="onEditClick_">
+        <cr-icon-button class="icon-edit"
+            aria-label="[[getEditButtonAriaLabel_(name)]]"
+            on-click="onEditClick_">
         </cr-icon-button>
         </div>
       </template>
       <template is="dom-if" if="[[showReject]]">
         <cr-icon-button id="rejectButton"
+            aria-label="[[getRejectButtonAriaLabel_(name)]]"
             class="icon-clear"
             on-click="onRejectGroupClick_">
         </cr-icon-button>

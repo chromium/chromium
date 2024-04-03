@@ -10952,7 +10952,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         You can check for tab group suggestions at any time
       </message>
       <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_FRE" desc="The body text for the first run experience of the not started state in the tab organization UI">
-        You'll get tab group suggestions that group similar tabs. Your open tabs and titles are sent to Google, and may be reviewed by humans to improve this feature.
+        You'll get tab group suggestions that group similar tabs. Your tabs, titles and groups are sent to Google, and may be reviewed by humans to improve this feature.
       </message>
       <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_LINK_FRE" desc="The body text for the first run experience of the not started state in the tab organization UI">
         Learn more about tab group suggestions
@@ -11054,7 +11054,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         Learn more
       </message>
       <message name="IDS_TAB_ORGANIZATION_LEARN_MORE_ARIA_LABEL" desc="The accessible label in the tab organization UI results state for getting more information" is_accessibility_with_no_ui="true">
-        Learn more about using AI tools
+        Learn more about this AI feature
       </message>
       <message name="IDS_TAB_ORGANIZATION_CLOSE_TAB_ARIA_LABEL" desc="The accessible label in the tab organization UI results state for removing a tab" is_accessibility_with_no_ui="true">
         Remove <ph name="TAB_TITLE">$1<ex>New Tab</ex></ph> from tab group
@@ -11065,8 +11065,17 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_TAB_ORGANIZATION_CLEAR_SUGGESTIONS" desc="The button text in the tab organization UI results state for clearing the suggestion list">
         Clear
       </message>
+      <message name="IDS_TAB_ORGANIZATION_CLEAR_ARIA_LABEL" desc="The a11y label of the button in the tab organization UI results state for clearing the suggestion list" is_accessibility_with_no_ui="true">
+        Clear group suggestions
+      </message>
       <message name="IDS_TAB_ORGANIZATION_INPUT_ARIA_LABEL" desc="The a11y label of the tab group name input in the tab organization UI" is_accessibility_with_no_ui="true">
         Tab group name: <ph name="NAME">$1<ex>My tab group</ex></ph>
+      </message>
+      <message name="IDS_TAB_ORGANIZATION_EDIT_ARIA_LABEL" desc="The a11y label of the tab group edit button in the tab organization UI" is_accessibility_with_no_ui="true">
+        Edit group name <ph name="NAME">$1<ex>My tab group</ex></ph>
+      </message>
+      <message name="IDS_TAB_ORGANIZATION_REJECT_ARIA_LABEL" desc="The a11y label of the tab group reject button in the tab organization UI" is_accessibility_with_no_ui="true">
+        Remove group <ph name="NAME">$1<ex>My tab group</ex></ph>
       </message>
       <message name="IDS_TAB_ORGANIZATION_THUMBS_DOWN" desc="Accessibility label for the thumbs down icon that a user can click to provide negative feedback about a tab organization." is_accessibility_with_no_ui="true">
         Thumbs down submits feedback that you dislike this tab group suggestion

@@ -136,6 +136,14 @@ export class TabOrganizationGroupElement extends PolymerElement {
     return loadTimeData.getStringF('inputAriaLabel', this.name);
   }
 
+  private getEditButtonAriaLabel_() {
+    return loadTimeData.getStringF('editAriaLabel', this.name);
+  }
+
+  private getRejectButtonAriaLabel_() {
+    return loadTimeData.getStringF('rejectAriaLabel', this.name);
+  }
+
   private onInputFocus_() {
     const input = this.getInput_();
     if (input) {
