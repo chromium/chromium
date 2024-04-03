@@ -1795,6 +1795,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.OOBEStartupSoundEnabled" enum="BooleanEnabled"
+    expires_after="2025-02-28">
+  <owner>katie@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the Chrome OS OOBE startup sound is enabled (logged once 45 secs
+    after startup).
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.PDF.HasAccessibleText" enum="BooleanExists"
     expires_after="2025-02-28">
   <owner>dtseng@chromium.org</owner>

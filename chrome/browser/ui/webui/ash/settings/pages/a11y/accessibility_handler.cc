@@ -112,6 +112,8 @@ void AccessibilityHandler::HandleSetStartupSoundEnabled(
     enabled = args[0].GetBool();
   }
   AccessibilityManager::Get()->SetStartupSoundEnabled(enabled);
+  base::UmaHistogramBoolean(
+      "ChromeOS.Settings.Accessibility.OOBEStartupSound.Enabled", enabled);
 }
 
 void AccessibilityHandler::HandleRecordSelectedShowShelfNavigationButtonsValue(

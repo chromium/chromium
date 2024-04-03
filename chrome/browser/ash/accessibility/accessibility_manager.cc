@@ -1834,6 +1834,8 @@ void AccessibilityManager::UpdateChromeOSAccessibilityHistograms() {
                             IsSwitchAccessEnabled());
   base::UmaHistogramBoolean("Accessibility.CrosMonoAudio.Enabled",
                             IsMonoAudioEnabled());
+  base::UmaHistogramBoolean("Accessibility.OOBEStartupSoundEnabled",
+                            GetStartupSoundEnabled());
   base::UmaHistogramBoolean(
       "Accessibility.CrosSpokenFeedback.BrailleDisplayConnected",
       IsBrailleDisplayConnected());

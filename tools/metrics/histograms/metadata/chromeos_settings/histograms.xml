@@ -23,7 +23,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="ChromeOS.Settings.Accessibility.ColorCorrection.Enabled"
-    units="%" expires_after="2024-10-16">
+    enum="BooleanToggled" expires_after="2024-10-16">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -73,6 +73,16 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
     Recorded when a user changes the value of the
     kFullscreenMagnifierMouseFollowingMode setting on the Accessibility page.
     Records the value of the setting.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Settings.Accessibility.OOBEStartupSound.Enabled"
+    enum="BooleanToggled" expires_after="2024-10-16">
+  <owner>katie@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records when a user changes the kStartupSound setting on the Accessibility
+    page.
   </summary>
 </histogram>
 
