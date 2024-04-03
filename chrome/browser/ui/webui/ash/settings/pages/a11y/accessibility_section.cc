@@ -1309,7 +1309,93 @@ bool AccessibilitySection::LogMetric(mojom::Setting setting,
           "ChromeOS.Settings.Accessibility.ColorCorrection.FilterAmount",
           value.GetInt());
       return true;
-
+    case mojom::Setting::kLiveCaption:
+      base::UmaHistogramBoolean(
+          "ChromeOS.Settings.Accessibility.LiveCaption.Enabled",
+          value.GetBool());
+      return true;
+    case mojom::Setting::kMonoAudio:
+      base::UmaHistogramBoolean(
+          "ChromeOS.Settings.Accessibility.MonoAudio.Enabled", value.GetBool());
+      return true;
+    case mojom::Setting::kAutoClickWhenCursorStops:
+      base::UmaHistogramBoolean(
+          "ChromeOS.Settings.Accessibility.Autoclick.Enabled", value.GetBool());
+      return true;
+    case mojom::Setting::kDictation:
+      base::UmaHistogramBoolean(
+          "ChromeOS.Settings.Accessibility.Dictation.Enabled", value.GetBool());
+      return true;
+    case mojom::Setting::kOnScreenKeyboard:
+      base::UmaHistogramBoolean(
+          "ChromeOS.Settings.Accessibility.OnScreenKeyboard.Enabled",
+          value.GetBool());
+      return true;
+    case mojom::Setting::kStickyKeys:
+      base::UmaHistogramBoolean(
+          "ChromeOS.Settings.Accessibility.StickyKeys.Enabled",
+          value.GetBool());
+      return true;
+    case mojom::Setting::kEnableSwitchAccess:
+      base::UmaHistogramBoolean(
+          "ChromeOS.Settings.Accessibility.SwitchAccess.Enabled",
+          value.GetBool());
+      return true;
+    case mojom::Setting::kLargeCursor:
+      base::UmaHistogramBoolean(
+          "ChromeOS.Settings.Accessibility.LargeCursor.Enabled",
+          value.GetBool());
+      return true;
+    case mojom::Setting::kEnableCursorColor:
+      base::UmaHistogramBoolean(
+          "ChromeOS.Settings.Accessibility.CursorColor.Enabled",
+          value.GetBool());
+      return true;
+    case mojom::Setting::kHighlightCursorWhileMoving:
+      base::UmaHistogramBoolean(
+          "ChromeOS.Settings.Accessibility.CursorHighlight.Enabled",
+          value.GetBool());
+      return true;
+    case mojom::Setting::kHighlightTextCaret:
+      base::UmaHistogramBoolean(
+          "ChromeOS.Settings.Accessibility.CaretHighlight.Enabled",
+          value.GetBool());
+      return true;
+    case mojom::Setting::kHighContrastMode:
+      base::UmaHistogramBoolean(
+          "ChromeOS.Settings.Accessibility.HighContrast.Enabled",
+          value.GetBool());
+      return true;
+    case mojom::Setting::kFullscreenMagnifier:
+      base::UmaHistogramBoolean(
+          "ChromeOS.Settings.Accessibility.FullscreenMagnifier.Enabled",
+          value.GetBool());
+      return true;
+    case mojom::Setting::kDockedMagnifier:
+      base::UmaHistogramBoolean(
+          "ChromeOS.Settings.Accessibility.DockedMagnifier.Enabled",
+          value.GetBool());
+      return true;
+    case mojom::Setting::kHighlightKeyboardFocus:
+      base::UmaHistogramBoolean(
+          "ChromeOS.Settings.Accessibility.FocusHighlight.Enabled",
+          value.GetBool());
+      return true;
+    case mojom::Setting::kChromeVox:
+      base::UmaHistogramBoolean(
+          "ChromeOS.Settings.Accessibility.SpokenFeedback.Enabled",
+          value.GetBool());
+      return true;
+    case mojom::Setting::kSelectToSpeak:
+      base::UmaHistogramBoolean(
+          "ChromeOS.Settings.Accessibility.SelectToSpeak.Enabled",
+          value.GetBool());
+      return true;
+    case mojom::Setting::kReducedAnimationsEnabled:
+      base::UmaHistogramBoolean(
+          "ChromeOS.Settings.Accessibility.ReducedAnimations.Enabled",
+          value.GetBool());
+      return true;
     default:
       return false;
   }

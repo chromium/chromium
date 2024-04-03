@@ -82,7 +82,61 @@ const PREF_TO_SETTING_MAP: Record<string, SettingAndType> = {
     setting: Setting.kTouchpadSpeed,
     type: PrefType.NUMBER,
   },
+  // os_a11y_page/audio_and_captions_page.ts
+  'accessibility.captions.live_caption_enabled': {
+    setting: Setting.kLiveCaption,
+    type: PrefType.BOOLEAN,
+  },
+  'settings.a11y.mono_audio': {
+    setting: Setting.kMonoAudio,
+    type: PrefType.BOOLEAN,
+  },
+  // os_a11y_page/cursor_and_touchpad_page.ts
+  'settings.a11y.autoclick': {
+    setting: Setting.kAutoClickWhenCursorStops,
+    type: PrefType.BOOLEAN,
+  },
+  'settings.a11y.cursor_highlight': {
+    setting: Setting.kHighlightCursorWhileMoving,
+    type: PrefType.BOOLEAN,
+  },
+  'settings.a11y.cursor_color_enabled': {
+    setting: Setting.kEnableCursorColor,
+    type: PrefType.BOOLEAN,
+  },
+  'settings.a11y.large_cursor_enabled': {
+    setting: Setting.kLargeCursor,
+    type: PrefType.BOOLEAN,
+  },
   // os_a11y_page/display_and_magnification_subpage.ts
+  'ash.docked_magnifier.enabled': {
+    setting: Setting.kDockedMagnifier,
+    type: PrefType.BOOLEAN,
+  },
+  'settings.a11y.color_filtering.enabled': {
+    setting: Setting.kColorCorrectionEnabled,
+    type: PrefType.BOOLEAN,
+  },
+  'settings.a11y.color_filtering.color_vision_correction_amount': {
+    setting: Setting.kColorCorrectionFilterAmount,
+    type: PrefType.NUMBER,
+  },
+  'settings.a11y.color_filtering.color_vision_deficiency_type': {
+    setting: Setting.kColorCorrectionFilterType,
+    type: PrefType.NUMBER,
+  },
+  'settings.a11y.high_contrast_enabled': {
+    setting: Setting.kHighContrastMode,
+    type: PrefType.BOOLEAN,
+  },
+  'settings.a11y.reduced_animations.enabled': {
+    setting: Setting.kReducedAnimationsEnabled,
+    type: PrefType.BOOLEAN,
+  },
+  'settings.a11y.screen_magnifier': {
+    setting: Setting.kFullscreenMagnifier,
+    type: PrefType.BOOLEAN,
+  },
   'settings.a11y.screen_magnifier_focus_following': {
     setting: Setting.kFullscreenMagnifierFocusFollowing,
     type: PrefType.BOOLEAN,
@@ -91,17 +145,39 @@ const PREF_TO_SETTING_MAP: Record<string, SettingAndType> = {
     setting: Setting.kFullscreenMagnifierMouseFollowingMode,
     type: PrefType.NUMBER,
   },
-  'settings.a11y.color_filtering.enabled': {
-    setting: Setting.kColorCorrectionEnabled,
+  // os_a11y_page/keyboard_and_text_input_page.ts
+  'settings.a11y.caret_highlight': {
+    setting: Setting.kHighlightTextCaret,
     type: PrefType.BOOLEAN,
   },
-  'settings.a11y.color_filtering.color_vision_deficiency_type': {
-    setting: Setting.kColorCorrectionFilterType,
-    type: PrefType.NUMBER,
+  'settings.a11y.dictation': {
+    setting: Setting.kDictation,
+    type: PrefType.BOOLEAN,
   },
-  'settings.a11y.color_filtering.color_vision_correction_amount': {
-    setting: Setting.kColorCorrectionFilterAmount,
-    type: PrefType.NUMBER,
+  'settings.a11y.focus_highlight': {
+    setting: Setting.kHighlightKeyboardFocus,
+    type: PrefType.BOOLEAN,
+  },
+  'settings.a11y.sticky_keys_enabled': {
+    setting: Setting.kStickyKeys,
+    type: PrefType.BOOLEAN,
+  },
+  'settings.a11y.switch_access.enabled': {
+    setting: Setting.kEnableSwitchAccess,
+    type: PrefType.BOOLEAN,
+  },
+  'settings.a11y.virtual_keyboard': {
+    setting: Setting.kOnScreenKeyboard,
+    type: PrefType.BOOLEAN,
+  },
+  // os_a11y_page/text_to_speech_subpage.ts
+  'settings.a11y.select_to_speak': {
+    setting: Setting.kSelectToSpeak,
+    type: PrefType.BOOLEAN,
+  },
+  'settings.accessibility': {
+    setting: Setting.kChromeVox,
+    type: PrefType.BOOLEAN,
   },
   // os_privacy_page/os_privacy_page.js
   'cros.device.peripheral_data_access_enabled': {
