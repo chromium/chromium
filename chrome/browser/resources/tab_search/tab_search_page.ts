@@ -647,15 +647,9 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
   private tabData_(
       tab: Tab|RecentlyClosedTab, inActiveWindow: boolean, type: TabItemType,
       tabGroupsMap: Map<string, TabGroup>): TabData {
-    // TOD(crbug.com/329638230): remove logging of invalid URL.
-    try {
-      new URL(tab.url.url);
-    } catch (error) {
-      console.error(error, `URL: ${tab.url.url}`);
-      throw error;
-    }
-
-    const tabData = new TabData(tab, type, new URL(tab.url.url).hostname);
+    // TODO(crbug.com/329638230): figure out why tab.url.url could be empty.
+    const tabData =
+        new TabData(tab, type, new URL(tab.url.url || 'about:blank').hostname);
 
     if (tab.groupId) {
       tabData.tabGroup = tabGroupsMap.get(tokenToString(tab.groupId));
