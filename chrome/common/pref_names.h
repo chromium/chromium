@@ -3459,6 +3459,12 @@ inline constexpr char kRendererAppContainerEnabled[] =
 // ProcessExtensionPointDisablePolicy enabled.
 inline constexpr char kBlockBrowserLegacyExtensionPoints[] =
     "block_browser_legacy_extension_points";
+
+// A boolean that controls whether the Browser process has Application Bound
+// (App-Bound) Encryption enabled.
+inline constexpr char kApplicationBoundEncryptionEnabled[] =
+    "application_bound_encryption_enabled";
+
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)

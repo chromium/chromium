@@ -471,6 +471,7 @@ uploading your change for review.  These are checked by presubmit scripts.
       label="Not supported as the user data dir has been overridden"/>
   <int value="5"
       label="Not supported as the user data dir is on a network drive"/>
+  <int value="6" label="Not supported as it is disabled by policy"/>
 </enum>
 
 <enum name="AppInputEventSource">

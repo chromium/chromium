@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"
@@ -22,10 +23,15 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/os_crypt/test_support.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/elevation_service/elevator.h"
 #include "chrome/install_static/test/scoped_install_details.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/policy_constants.h"
 #include "content/public/test/browser_test.h"
 
 namespace os_crypt {
@@ -80,7 +86,8 @@ class AppBoundEncryptionWinTest : public InProcessBrowserTest {
 
 // Test App-Bound is supported for tests.
 IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, Supported) {
-  EXPECT_EQ(SupportLevel::kSupported, GetAppBoundEncryptionSupportLevel());
+  EXPECT_EQ(SupportLevel::kSupported, GetAppBoundEncryptionSupportLevel(
+                                          g_browser_process->local_state()));
 }
 
 // Test the basic interface to Encrypt and Decrypt data.
@@ -186,6 +193,66 @@ IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTestNoService, DISABLED_NoService) {
   EXPECT_EQ(REGDB_E_CLASSNOTREG, hr);
   EXPECT_EQ(DWORD{ERROR_GEN_FAILURE}, last_error);
 }
+
+// This policy test is here and not in chrome/browser/policy/test as it requires
+// a fake system install to correctly show as kSupported, and this testing class
+// already has the scaffolding in place to achieve this.
+class AppBoundEncryptionWinTestWithPolicy
+    : public AppBoundEncryptionWinTest,
+      public ::testing::WithParamInterface<
+          /*policy::key::kApplicationBoundEncryptionEnabled=*/std::optional<
+              bool>> {
+ private:
+  void SetUp() override {
+    policy_provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+    policy::PolicyMap values;
+    if (GetParam().has_value()) {
+      values.Set(policy::key::kApplicationBoundEncryptionEnabled,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
+                 policy::POLICY_SOURCE_CLOUD, base::Value(*GetParam()),
+                 nullptr);
+    }
+    policy_provider_.UpdateChromePolicy(values);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
+        &policy_provider_);
+    AppBoundEncryptionWinTest::SetUp();
+  }
+
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
+};
+
+IN_PROC_BROWSER_TEST_P(AppBoundEncryptionWinTestWithPolicy,
+                       TestPolicySupported) {
+  const auto support_level =
+      GetAppBoundEncryptionSupportLevel(g_browser_process->local_state());
+  if (!GetParam().has_value()) {
+    EXPECT_EQ(support_level, SupportLevel::kSupported);
+    return;
+  }
+
+  EXPECT_EQ(support_level, *GetParam() ? SupportLevel::kSupported
+                                       : SupportLevel::kDisabledByPolicy);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    Enabled,
+    AppBoundEncryptionWinTestWithPolicy,
+    ::testing::Values(
+        /*policy::key::kApplicationBoundEncryptionEnabled=*/true));
+
+INSTANTIATE_TEST_SUITE_P(
+    Disabled,
+    AppBoundEncryptionWinTestWithPolicy,
+    ::testing::Values(
+        /*policy::key::kApplicationBoundEncryptionEnabled=*/false));
+
+INSTANTIATE_TEST_SUITE_P(
+    NotSet,
+    AppBoundEncryptionWinTestWithPolicy,
+    ::testing::Values(
+        /*policy::key::kApplicationBoundEncryptionEnabled=*/std::nullopt));
 
 // These tests do not function correctly in component builds because they rely
 // on being able to run a standalone executable child process in various

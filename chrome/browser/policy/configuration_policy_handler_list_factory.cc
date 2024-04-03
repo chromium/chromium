@@ -1710,6 +1710,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kNativeHostsExecutablesLaunchDirectly,
     prefs::kNativeHostsExecutablesLaunchDirectly,
     base::Value::Type::BOOLEAN },
+  { key::kApplicationBoundEncryptionEnabled,
+    prefs::kApplicationBoundEncryptionEnabled,
+    base::Value::Type::BOOLEAN },
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)

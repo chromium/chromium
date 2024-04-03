@@ -18,8 +18,10 @@
 #include "base/win/scoped_bstr.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_paths_internal.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/elevation_service/elevation_service_idl.h"
 #include "chrome/install_static/install_util.h"
+#include "components/prefs/pref_service.h"
 
 namespace os_crypt {
 
@@ -27,10 +29,20 @@ namespace {
 bool g_non_standard_user_data_dir_supported_for_testing = false;
 }
 
-SupportLevel GetAppBoundEncryptionSupportLevel() {
+SupportLevel GetAppBoundEncryptionSupportLevel(PrefService* local_state) {
   // Must be a system install.
   if (!install_static::IsSystemInstall()) {
     return SupportLevel::kNotSystemLevel;
+  }
+
+  // Policy allows disabling App-Bound encryption. Note, this will not disable
+  // decryption of existing data.
+
+  if (local_state->HasPrefPath(prefs::kApplicationBoundEncryptionEnabled) &&
+      local_state->IsManagedPreference(
+          prefs::kApplicationBoundEncryptionEnabled) &&
+      !local_state->GetBoolean(prefs::kApplicationBoundEncryptionEnabled)) {
+    return SupportLevel::kDisabledByPolicy;
   }
 
   base::FilePath user_data_dir;

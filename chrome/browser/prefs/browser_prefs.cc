@@ -1708,6 +1708,8 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kRendererAppContainerEnabled, true);
   registry->RegisterBooleanPref(prefs::kBlockBrowserLegacyExtensionPoints,
                                 true);
+  registry->RegisterBooleanPref(prefs::kApplicationBoundEncryptionEnabled,
+                                true);
   registry->RegisterBooleanPref(
       policy::policy_prefs::kNativeWindowOcclusionEnabled, true);
   MediaFoundationServiceMonitor::RegisterPrefs(registry);

@@ -143,7 +143,7 @@ bool MeasureAppBoundEncryptionStatus(PrefService* local_state,
                                      bool record_full_metrics) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  auto support = GetAppBoundEncryptionSupportLevel();
+  auto support = GetAppBoundEncryptionSupportLevel(local_state);
 
   base::UmaHistogramEnumeration("OSCrypt.AppBoundEncryption.SupportLevel",
                                 support);

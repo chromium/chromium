@@ -1,0 +1,17 @@
+[
+  {
+    "os": [ "win" ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "application_bound_encryption_enabled",
+      "pref_location": "local_state",
+      "policy_settings": {
+        "scope": "machine"
+      },
+      "default_value": true,
+      "values_to_test": [
+        false,
+        true
+      ]
+    }
+  }
+]

@@ -130,7 +130,8 @@ void AppBoundEncryptionProviderWin::GetKey(KeyCallback callback) {
   base::UmaHistogramEnumeration(
       "OSCrypt.AppBoundProvider.KeyRetrieval.Status",
       encrypted_key_data.error_or(KeyRetrievalStatus::kSuccess));
-  const auto support_level = os_crypt::GetAppBoundEncryptionSupportLevel();
+  const auto support_level =
+      os_crypt::GetAppBoundEncryptionSupportLevel(local_state_);
   if (support_level == os_crypt::SupportLevel::kNotSystemLevel) {
     // No service. No App-Bound APIs are available, so fail now.
     std::move(callback).Run(kAppBoundDataPrefix, std::nullopt);

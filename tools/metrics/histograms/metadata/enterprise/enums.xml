@@ -2085,6 +2085,7 @@ chromium-metrics-reviews@google.com.
   <int value="1243" label="TasksIntegrationEnabled"/>
   <int value="1244" label="BoundSessionCredentialsEnabled"/>
   <int value="1245" label="UiAutomationProviderEnabled"/>
+  <int value="1246" label="ApplicationBoundEncryptionEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

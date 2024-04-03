@@ -16,11 +16,15 @@
 #include "chrome/browser/os_crypt/app_bound_encryption_provider_win.h"
 #include "chrome/browser/os_crypt/app_bound_encryption_win.h"
 #include "chrome/browser/os_crypt/test_support.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/install_static/test/scoped_install_details.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/policy_constants.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
@@ -60,13 +64,20 @@ enum TestConfiguration {
   // encrypted, then it moved to an unsupported state, decryption will still be
   // attempted.
   kOSCryptAsyncWithAppBoundProviderWithEncryptionUnsupportedUserData,
+  // This is the same as `kOSCryptAsyncWithAppBoundProvider` but with App-Bound
+  // encryption disabled by policy. If run on a fresh profile it should not
+  // generate or store a key. However, if run on a profile where policy was
+  // previously enabled, it should successfully decrypt the key, as there might
+  // have been data encrypted with this key before the policy was disabled.
+  kOSCryptAsyncWithAppBoundProviderDisabledByPolicy,
 };
 
 enum MetricsExpectation {
-  kNoMetrics,
+  kNotChecked,
   kDPAPIMetrics,
   kAppBoundEncryptMetrics,
   kAppBoundDecryptMetrics,
+  kNoMetrics,
 };
 
 struct TestCase {
@@ -74,8 +85,8 @@ struct TestCase {
   bool expect_pass = true;
   TestConfiguration before;
   TestConfiguration after;
-  MetricsExpectation metrics_expectation_before = kNoMetrics;
-  MetricsExpectation metrics_expectation_after = kNoMetrics;
+  MetricsExpectation metrics_expectation_before = kNotChecked;
+  MetricsExpectation metrics_expectation_after = kNotChecked;
 };
 
 }  // namespace
@@ -167,6 +178,32 @@ class CookieEncryptionProviderBrowserTest
         os_crypt::SetNonStandardUserDataDirSupportedForTesting(
             /*supported=*/false);
         break;
+      case kOSCryptAsyncWithAppBoundProviderDisabledByPolicy:
+        if (base::GetCurrentProcessIntegrityLevel() != base::HIGH_INTEGRITY) {
+          GTEST_SKIP() << "Elevation is required for this test.";
+        }
+        maybe_uninstall_service_ = os_crypt::InstallService();
+        EXPECT_TRUE(maybe_uninstall_service_.has_value());
+        enabled_features.push_back(
+            features::kUseOsCryptAsyncForCookieEncryption);
+        enabled_features.push_back(features::kEnableDPAPIEncryptionProvider);
+        enabled_features.push_back(
+            features::kRegisterAppBoundEncryptionProvider);
+        os_crypt_async::AppBoundEncryptionProviderWin::
+            SetEnableEncryptionForTesting(false);
+
+        policy_provider_.SetDefaultReturns(
+            /*is_initialization_complete_return=*/true,
+            /*is_first_policy_load_complete_return=*/true);
+        policy::PolicyMap values;
+        // Disable App-Bound Encryption by policy.
+        values.Set(policy::key::kApplicationBoundEncryptionEnabled,
+                   policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
+                   policy::POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
+        policy_provider_.UpdateChromePolicy(values);
+        policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
+            &policy_provider_);
+        break;
     }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
@@ -178,7 +215,7 @@ class CookieEncryptionProviderBrowserTest
                                    ? GetParam().metrics_expectation_before
                                    : GetParam().metrics_expectation_after;
     switch (metrics_expectation) {
-      case kNoMetrics:
+      case kNotChecked:
         break;
       case kDPAPIMetrics:
         histogram_tester_.ExpectBucketCount("OSCrypt.DPAPIProvider.Status",
@@ -196,6 +233,8 @@ class CookieEncryptionProviderBrowserTest
             "OSCrypt.AppBoundProvider.Encrypt.Time", 1);
         histogram_tester_.ExpectTotalCount(
             "OSCrypt.AppBoundProvider.Encrypt.ResultLastError", 0);
+        histogram_tester_.ExpectTotalCount(
+            "OSCrypt.AppBoundProvider.Decrypt.ResultCode", 0);
         break;
       case kAppBoundDecryptMetrics:
         histogram_tester_.ExpectBucketCount(
@@ -206,6 +245,14 @@ class CookieEncryptionProviderBrowserTest
             "OSCrypt.AppBoundProvider.Decrypt.Time", 1);
         histogram_tester_.ExpectTotalCount(
             "OSCrypt.AppBoundProvider.Decrypt.ResultLastError", 0);
+        histogram_tester_.ExpectTotalCount(
+            "OSCrypt.AppBoundProvider.Encrypt.ResultCode", 0);
+        break;
+      case kNoMetrics:
+        histogram_tester_.ExpectTotalCount(
+            "OSCrypt.AppBoundProvider.Decrypt.ResultCode", 0);
+        histogram_tester_.ExpectTotalCount(
+            "OSCrypt.AppBoundProvider.Encrypt.ResultCode", 0);
         break;
     }
 
@@ -217,6 +264,7 @@ class CookieEncryptionProviderBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
   std::optional<base::ScopedClosureRunner> maybe_uninstall_service_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
 IN_PROC_BROWSER_TEST_P(CookieEncryptionProviderBrowserTest, PRE_CookieStorage) {
@@ -344,5 +392,22 @@ INSTANTIATE_TEST_SUITE_P(
          .before =
              kOSCryptAsyncWithAppBoundProviderWithEncryptionUnsupportedUserData,
          .after = kOSCryptAsyncWithDPAPIProvider},
+        // This test verifies that if App-Bound encryption is disabled by
+        // policy, then the provider does not generate a key. This means any
+        // data encrypted in the first stage of the test should decrypt using
+        // just the DPAPI provider.
+        {.name = "app_bound_encryption_disabled_by_policy",
+         .before = kOSCryptAsyncWithAppBoundProviderDisabledByPolicy,
+         .after = kOSCryptAsyncWithDPAPIProvider,
+         .metrics_expectation_before = kNoMetrics},
+        // This test verifies that if App-Bound encryption is first enabled by
+        // policy (the default), then subsequently disabled by policy, then the
+        // key is still successfully registered as there might be data that was
+        // previously encrypted using the key.
+        {.name = "app_bound_encryption_disabled_by_policy_later",
+         .before = kOSCryptAsyncWithAppBoundProvider,
+         .after = kOSCryptAsyncWithAppBoundProviderDisabledByPolicy,
+         .metrics_expectation_before = kAppBoundEncryptMetrics,
+         .metrics_expectation_after = kAppBoundDecryptMetrics},
     }),
     [](const auto& info) { return info.param.name; });

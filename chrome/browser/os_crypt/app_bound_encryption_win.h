@@ -10,6 +10,8 @@
 #include "base/win/windows_types.h"
 #include "chrome/elevation_service/elevation_service_idl.h"
 
+class PrefService;
+
 namespace os_crypt {
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -21,13 +23,14 @@ enum class SupportLevel {
   kApiFailed = 3,
   kNotUsingDefaultUserDataDir = 4,
   kUserDataDirNotLocalDisk = 5,
-  kMaxValue = kUserDataDirNotLocalDisk,
+  kDisabledByPolicy = 6,
+  kMaxValue = kDisabledByPolicy,
 };
 
 // Returns whether or not app-bound encryption is supported on the current
 // platform configuration. If this does not return kSupported then Encrypt and
 // Decrypt operations will fail. This can be called on any thread.
-SupportLevel GetAppBoundEncryptionSupportLevel();
+SupportLevel GetAppBoundEncryptionSupportLevel(PrefService* local_state);
 
 // Encrypts a string with a Protection level of `level`. See
 // `src/chrome/elevation_service/elevation-service_idl.idl` for the definition
