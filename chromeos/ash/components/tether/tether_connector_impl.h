@@ -94,9 +94,6 @@ class TetherConnectorImpl : public TetherConnector,
   void SetConnectionSucceeded(const std::string& device_id,
                               const std::string& wifi_network_guid);
 
-  void OnTetherHostToConnectFetched(
-      const std::string& device_id,
-      std::optional<multidevice::RemoteDeviceRef> tether_host_to_connect);
   void OnWifiConnection(
       const std::string& device_id,
       base::expected<std::string,

@@ -264,7 +264,7 @@ void TetherService::SuspendDone(base::TimeDelta sleep_duration) {
   UpdateTetherTechnologyState();
 }
 
-void TetherService::OnTetherHostsUpdated() {
+void TetherService::OnTetherHostUpdated() {
   UpdateTetherTechnologyState();
 }
 
@@ -363,7 +363,7 @@ void TetherService::OnFeatureStatesChanged(
 }
 
 bool TetherService::HasSyncedTetherHosts() const {
-  return tether_host_fetcher_->HasSyncedTetherHosts();
+  return tether_host_fetcher_->GetTetherHost().has_value();
 }
 
 void TetherService::UpdateTetherTechnologyState() {

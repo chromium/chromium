@@ -26,9 +26,7 @@
 #include "chromeos/ash/components/tether/wifi_hotspot_disconnector.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 
-namespace ash {
-
-namespace tether {
+namespace ash::tether {
 
 using ConnectionToHostResult =
     HostConnectionMetricsLogger::ConnectionToHostResult;
@@ -155,11 +153,27 @@ void TetherConnectorImpl::ConnectToNetwork(
   error_callback_ = std::move(error_callback);
   active_host_->SetActiveHostConnecting(device_id, tether_network_guid);
 
-  tether_host_fetcher_->FetchTetherHost(
-      device_id_pending_connection_,
-      base::BindOnce(&TetherConnectorImpl::OnTetherHostToConnectFetched,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     device_id_pending_connection_));
+  std::optional<multidevice::RemoteDeviceRef> tether_host_to_connect =
+      tether_host_fetcher_->GetTetherHost();
+
+  if (!tether_host_to_connect ||
+      device_id != tether_host_to_connect->GetDeviceId()) {
+    PA_LOG(ERROR) << "Could not fetch tether host with device ID "
+                  << multidevice::RemoteDeviceRef::TruncateDeviceIdForLogs(
+                         device_id)
+                  << ". Cannot connect.";
+    host_connection_metrics_logger_->RecordConnectionToHostResult(
+        ConnectionToHostResult::INTERNAL_ERROR, device_id_pending_connection_,
+        ConnectionToHostInternalError::CLIENT_CONNECTION_INTERNAL_ERROR);
+    SetConnectionFailed(NetworkConnectionHandler::kErrorConnectFailed);
+    return;
+  }
+
+  connect_tethering_operation_ = ConnectTetheringOperation::Factory::Create(
+      *tether_host_to_connect, device_sync_client_, secure_channel_client_,
+      host_scan_cache_->DoesHostRequireSetup(tether_network_guid));
+  connect_tethering_operation_->AddObserver(this);
+  connect_tethering_operation_->Initialize();
 }
 
 bool TetherConnectorImpl::CancelConnectionAttempt(
@@ -280,41 +294,6 @@ void TetherConnectorImpl::OnConnectTetheringFailure(
   RecordConnectTetheringOperationResult(device_id_pending_connection_,
                                         error_code);
   SetConnectionFailed(NetworkConnectionHandler::kErrorConnectFailed);
-}
-
-void TetherConnectorImpl::OnTetherHostToConnectFetched(
-    const std::string& device_id,
-    std::optional<multidevice::RemoteDeviceRef> tether_host_to_connect) {
-  if (device_id_pending_connection_ != device_id) {
-    PA_LOG(VERBOSE) << "Device to connect to has changed while device with ID "
-                    << multidevice::RemoteDeviceRef::TruncateDeviceIdForLogs(
-                           device_id)
-                    << " was being fetched.";
-    return;
-  }
-
-  if (!tether_host_to_connect) {
-    PA_LOG(ERROR) << "Could not fetch tether host with device ID "
-                  << multidevice::RemoteDeviceRef::TruncateDeviceIdForLogs(
-                         device_id)
-                  << ". Cannot connect.";
-    host_connection_metrics_logger_->RecordConnectionToHostResult(
-        ConnectionToHostResult::INTERNAL_ERROR, device_id_pending_connection_,
-        ConnectionToHostInternalError::CLIENT_CONNECTION_INTERNAL_ERROR);
-    SetConnectionFailed(NetworkConnectionHandler::kErrorConnectFailed);
-    return;
-  }
-
-  DCHECK(device_id == tether_host_to_connect->GetDeviceId());
-
-  const std::string tether_network_guid =
-      device_id_tether_network_guid_map_->GetTetherNetworkGuidForDeviceId(
-          device_id);
-  connect_tethering_operation_ = ConnectTetheringOperation::Factory::Create(
-      *tether_host_to_connect, device_sync_client_, secure_channel_client_,
-      host_scan_cache_->DoesHostRequireSetup(tether_network_guid));
-  connect_tethering_operation_->AddObserver(this);
-  connect_tethering_operation_->Initialize();
 }
 
 void TetherConnectorImpl::SetConnectionFailed(const std::string& error_name) {
@@ -501,6 +480,4 @@ void TetherConnectorImpl::RecordConnectTetheringOperationResult(
   }
 }
 
-}  // namespace tether
-
-}  // namespace ash
+}  // namespace ash::tether

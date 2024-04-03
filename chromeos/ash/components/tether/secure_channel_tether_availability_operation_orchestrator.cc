@@ -46,27 +46,15 @@ SecureChannelTetherAvailabilityOperationOrchestrator::
     ~SecureChannelTetherAvailabilityOperationOrchestrator() = default;
 
 void SecureChannelTetherAvailabilityOperationOrchestrator::Start() {
-  PA_LOG(VERBOSE) << "Fetching potential Tether hosts.";
-  is_fetching_hosts_ = true;
-  tether_host_fetcher_->FetchAllTetherHosts(
-      base::BindOnce(&SecureChannelTetherAvailabilityOperationOrchestrator::
-                         OnTetherHostsFetched,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void SecureChannelTetherAvailabilityOperationOrchestrator::OnTetherHostsFetched(
-    const multidevice::RemoteDeviceRefList& tether_hosts) {
-  is_fetching_hosts_ = false;
-  fetched_tether_hosts_ = tether_hosts;
-  if (fetched_tether_hosts_.empty()) {
+  PA_LOG(VERBOSE) << "Fetching Tether host.";
+  std::optional<multidevice::RemoteDeviceRef> tether_host =
+      tether_host_fetcher_->GetTetherHost();
+  if (!tether_host) {
     PA_LOG(WARNING) << "Could not start host scan. No tether hosts available.";
     NotifyObserversOfFinalScan();
     return;
   }
 
-  for (auto& remote_device : tether_hosts) {
-    StartOperation(remote_device);
-  }
+  StartOperation(*tether_host);
 }
-
 }  // namespace ash::tether

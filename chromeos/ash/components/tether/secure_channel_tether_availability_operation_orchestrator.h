@@ -53,13 +53,7 @@ class SecureChannelTetherAvailabilityOperationOrchestrator
       SecureChannelTetherAvailabilityOperationOrchestratorTest,
       HostFetcher_WillFetchAllDevices);
 
-  void OnTetherHostsFetched(
-      const multidevice::RemoteDeviceRefList& tether_hosts);
-
   raw_ptr<TetherHostFetcher> tether_host_fetcher_;
-  multidevice::RemoteDeviceRefList fetched_tether_hosts_;
-  bool is_fetching_hosts_ = false;
-
   base::WeakPtrFactory<SecureChannelTetherAvailabilityOperationOrchestrator>
       weak_ptr_factory_{this};
 };

@@ -9,9 +9,7 @@
 #include "base/functional/callback.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 
-namespace ash {
-
-namespace tether {
+namespace ash::tether {
 
 TetherHostFetcher::TetherHostFetcher() = default;
 
@@ -25,32 +23,14 @@ void TetherHostFetcher::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void TetherHostFetcher::ProcessFetchAllTetherHostsRequest(
-    const multidevice::RemoteDeviceRefList& remote_device_list,
-    TetherHostListCallback callback) {
-  std::move(callback).Run(remote_device_list);
+std::optional<multidevice::RemoteDeviceRef> TetherHostFetcher::GetTetherHost() {
+  return tether_host_;
 }
 
-void TetherHostFetcher::ProcessFetchSingleTetherHostRequest(
-    const std::string& device_id,
-    const multidevice::RemoteDeviceRefList& remote_device_list,
-    TetherHostCallback callback) {
-  for (auto remote_device : remote_device_list) {
-    if (remote_device.GetDeviceId() == device_id) {
-      std::move(callback).Run(
-          std::make_optional<multidevice::RemoteDeviceRef>(remote_device));
-      return;
-    }
+void TetherHostFetcher::NotifyTetherHostUpdated() {
+  for (auto& observer : observers_) {
+    observer.OnTetherHostUpdated();
   }
-
-  std::move(callback).Run(std::nullopt);
 }
 
-void TetherHostFetcher::NotifyTetherHostsUpdated() {
-  for (auto& observer : observers_)
-    observer.OnTetherHostsUpdated();
-}
-
-}  // namespace tether
-
-}  // namespace ash
+}  // namespace ash::tether

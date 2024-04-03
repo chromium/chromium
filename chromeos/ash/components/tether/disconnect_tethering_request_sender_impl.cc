@@ -13,9 +13,7 @@
 #include "chromeos/ash/components/tether/tether_host_fetcher.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 
-namespace ash {
-
-namespace tether {
+namespace ash::tether {
 
 // static
 DisconnectTetheringRequestSenderImpl::Factory*
@@ -53,33 +51,21 @@ DisconnectTetheringRequestSenderImpl::DisconnectTetheringRequestSenderImpl(
       tether_host_fetcher_(tether_host_fetcher) {}
 
 DisconnectTetheringRequestSenderImpl::~DisconnectTetheringRequestSenderImpl() {
-  for (auto const& entry : device_id_to_operation_map_)
+  for (auto const& entry : device_id_to_operation_map_) {
     entry.second->RemoveObserver(this);
+  }
 }
 
 void DisconnectTetheringRequestSenderImpl::SendDisconnectRequestToDevice(
     const std::string& device_id) {
-  if (base::Contains(device_id_to_operation_map_, device_id))
+  if (base::Contains(device_id_to_operation_map_, device_id)) {
     return;
+  }
 
-  num_pending_host_fetches_++;
-  tether_host_fetcher_->FetchTetherHost(
-      device_id,
-      base::BindOnce(&DisconnectTetheringRequestSenderImpl::OnTetherHostFetched,
-                     weak_ptr_factory_.GetWeakPtr(), device_id));
-}
+  std::optional<multidevice::RemoteDeviceRef> tether_host =
+      tether_host_fetcher_->GetTetherHost();
 
-bool DisconnectTetheringRequestSenderImpl::HasPendingRequests() {
-  return !device_id_to_operation_map_.empty() || num_pending_host_fetches_ > 0;
-}
-
-void DisconnectTetheringRequestSenderImpl::OnTetherHostFetched(
-    const std::string& device_id,
-    std::optional<multidevice::RemoteDeviceRef> tether_host) {
-  num_pending_host_fetches_--;
-  DCHECK(num_pending_host_fetches_ >= 0);
-
-  if (!tether_host) {
+  if (!tether_host || tether_host->GetDeviceId() != device_id) {
     PA_LOG(ERROR) << "Could not fetch device with ID "
                   << multidevice::RemoteDeviceRef::TruncateDeviceIdForLogs(
                          device_id)
@@ -103,6 +89,10 @@ void DisconnectTetheringRequestSenderImpl::OnTetherHostFetched(
   // Start the operation; OnOperationFinished() will be called when finished.
   device_id_to_operation_map_.at(device_id)->AddObserver(this);
   device_id_to_operation_map_.at(device_id)->Initialize();
+}
+
+bool DisconnectTetheringRequestSenderImpl::HasPendingRequests() {
+  return !device_id_to_operation_map_.empty();
 }
 
 void DisconnectTetheringRequestSenderImpl::OnOperationFinished(
@@ -134,11 +124,11 @@ void DisconnectTetheringRequestSenderImpl::OnOperationFinished(
         << " was not being tracked by DisconnectTetheringRequestSender.";
   }
 
-  // If there were pending reqests but now there are none, notify the Observers.
-  if (had_pending_requests && !HasPendingRequests())
+  // If there were pending requests but now there are none, notify the
+  // Observers.
+  if (had_pending_requests && !HasPendingRequests()) {
     NotifyPendingDisconnectRequestsComplete();
+  }
 }
 
-}  // namespace tether
-
-}  // namespace ash
+}  // namespace ash::tether

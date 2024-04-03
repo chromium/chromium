@@ -14,9 +14,7 @@
 #include "chromeos/ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 
-namespace ash {
-
-namespace tether {
+namespace ash::tether {
 
 // Concrete TetherHostFetcher implementation. Despite the asynchronous function
 // prototypes, callbacks are invoked synchronously.
@@ -54,12 +52,6 @@ class TetherHostFetcherImpl
 
   ~TetherHostFetcherImpl() override;
 
-  // TetherHostFetcher:
-  bool HasSyncedTetherHosts() override;
-  void FetchAllTetherHosts(TetherHostListCallback callback) override;
-  void FetchTetherHost(const std::string& device_id,
-                       TetherHostCallback callback) override;
-
   // device_sync::DeviceSyncClient::Observer:
   void OnNewDevicesSynced() override;
   void OnReady() override;
@@ -78,18 +70,15 @@ class TetherHostFetcherImpl
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_);
 
  private:
-  void CacheCurrentTetherHosts();
-  multidevice::RemoteDeviceRefList GenerateHostDeviceList();
+  void CacheCurrentTetherHost();
+  std::optional<multidevice::RemoteDeviceRef> GenerateTetherHost();
 
   raw_ptr<device_sync::DeviceSyncClient> device_sync_client_;
   raw_ptr<multidevice_setup::MultiDeviceSetupClient> multidevice_setup_client_;
 
-  multidevice::RemoteDeviceRefList current_remote_device_list_;
   base::WeakPtrFactory<TetherHostFetcherImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace tether
-
-}  // namespace ash
+}  // namespace ash::tether
 
 #endif  // CHROMEOS_ASH_COMPONENTS_TETHER_TETHER_HOST_FETCHER_IMPL_H_

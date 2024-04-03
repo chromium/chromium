@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/components/tether/secure_channel_tether_availability_operation_orchestrator.h"
+
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "chromeos/ash/components/tether/fake_connection_preserver.h"
@@ -73,10 +74,10 @@ class SecureChannelTetherAvailabilityOperationOrchestratorTest
 };
 
 TEST_F(SecureChannelTetherAvailabilityOperationOrchestratorTest,
-       HostFetcher_StartsOperationForAllFetchedDevices) {
-  const multidevice::RemoteDeviceRefList& expected_devices =
-      multidevice::CreateRemoteDeviceRefListForTest(4);
-  FakeTetherHostFetcher fake_tether_host_fetcher(expected_devices);
+       HostFetcher_StartsOperation) {
+  const multidevice::RemoteDeviceRef test_device =
+      multidevice::CreateRemoteDeviceRefForTest();
+  FakeTetherHostFetcher fake_tether_host_fetcher(test_device);
   FakeTetherAvailabilityOperation::Initializer*
       fake_tether_availability_operation_initializer =
           new FakeTetherAvailabilityOperation::Initializer();
@@ -87,31 +88,19 @@ TEST_F(SecureChannelTetherAvailabilityOperationOrchestratorTest,
   orchestrator->Start();
 
   // Expect an operation was started for each of the expected devices.
-  for (auto& expected_device : expected_devices) {
-    EXPECT_TRUE(fake_tether_availability_operation_initializer
-                    ->has_active_operation_for_device(expected_device));
-  }
+  EXPECT_TRUE(fake_tether_availability_operation_initializer
+                  ->has_active_operation_for_device(test_device));
 
-  // Send a result for each device. At each step, make sure the new
-  // scanned_device_list_so_far_ updates with the new device.
-  uint expected_size = 1;
-  for (auto& expected_device : expected_devices) {
-    auto scanned_device_info = CreateFakeScannedDeviceInfo(expected_device);
-    fake_tether_availability_operation_initializer->send_result(
-        expected_device, scanned_device_info);
-    EXPECT_EQ(expected_size, scanned_device_list_so_far_.size());
-    EXPECT_TRUE(
-        base::Contains(scanned_device_list_so_far_, scanned_device_info));
-
-    expected_size++;
-  }
+  auto scanned_device_info = CreateFakeScannedDeviceInfo(test_device);
+  fake_tether_availability_operation_initializer->send_result(
+      test_device, scanned_device_info);
+  EXPECT_EQ(1u, scanned_device_list_so_far_.size());
+  EXPECT_TRUE(base::Contains(scanned_device_list_so_far_, scanned_device_info));
 }
 
 TEST_F(SecureChannelTetherAvailabilityOperationOrchestratorTest,
        HostFetcher_EndsOrchestratorIfNoDevices) {
-  const multidevice::RemoteDeviceRefList& expected_devices =
-      multidevice::CreateRemoteDeviceRefListForTest(0);
-  FakeTetherHostFetcher fake_tether_host_fetcher(expected_devices);
+  FakeTetherHostFetcher fake_tether_host_fetcher(/*tether_host=*/std::nullopt);
   FakeTetherAvailabilityOperation::Initializer*
       fake_tether_availability_operation_initializer =
           new FakeTetherAvailabilityOperation::Initializer();

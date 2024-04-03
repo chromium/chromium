@@ -116,7 +116,7 @@ class DisconnectTetheringRequestSenderTest : public testing::Test {
     fake_secure_channel_client_ =
         std::make_unique<secure_channel::FakeSecureChannelClient>();
     fake_tether_host_fetcher_ =
-        std::make_unique<FakeTetherHostFetcher>(test_devices_);
+        std::make_unique<FakeTetherHostFetcher>(test_devices_[0]);
 
     fake_operation_factory_ =
         std::make_unique<FakeDisconnectTetheringOperationFactory>();
@@ -228,8 +228,7 @@ TEST_F(DisconnectTetheringRequestSenderTest,
        DISABLED_SendRequest_CannotFetchHost) {
   // Remove hosts from |fake_tether_host_fetcher_|; this will cause the fetcher
   // to return a null RemoteDevice.
-  fake_tether_host_fetcher_->set_tether_hosts(
-      multidevice::RemoteDeviceRefList());
+  fake_tether_host_fetcher_->SetTetherHost(std::nullopt);
 
   disconnect_tethering_request_sender_->SendDisconnectRequestToDevice(
       test_devices_[0].GetDeviceId());

@@ -69,15 +69,10 @@ class DisconnectTetheringRequestSenderImpl
       TetherHostFetcher* tether_host_fetcher);
 
  private:
-  void OnTetherHostFetched(
-      const std::string& device_id,
-      std::optional<multidevice::RemoteDeviceRef> tether_host);
-
   raw_ptr<device_sync::DeviceSyncClient> device_sync_client_;
   raw_ptr<secure_channel::SecureChannelClient> secure_channel_client_;
   raw_ptr<TetherHostFetcher> tether_host_fetcher_;
 
-  int num_pending_host_fetches_ = 0;
   std::map<std::string, std::unique_ptr<DisconnectTetheringOperation>>
       device_id_to_operation_map_;
 

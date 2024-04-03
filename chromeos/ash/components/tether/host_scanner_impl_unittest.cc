@@ -206,7 +206,7 @@ class HostScannerImplTest : public testing::Test {
         std::make_unique<secure_channel::FakeSecureChannelClient>();
     session_manager_ = std::make_unique<session_manager::SessionManager>();
     fake_tether_host_fetcher_ =
-        std::make_unique<FakeTetherHostFetcher>(test_devices_);
+        std::make_unique<FakeTetherHostFetcher>(test_devices_[0]);
     fake_host_scan_device_prioritizer_ =
         std::make_unique<FakeHostScanDevicePrioritizer>();
     mock_tether_host_response_recorder_ =

@@ -6,39 +6,19 @@
 
 #include "base/memory/ptr_util.h"
 
-namespace ash {
-
-namespace tether {
+namespace ash::tether {
 
 FakeTetherHostFetcher::FakeTetherHostFetcher(
-    const multidevice::RemoteDeviceRefList& tether_hosts)
-    : tether_hosts_(tether_hosts) {}
-
-FakeTetherHostFetcher::FakeTetherHostFetcher()
-    : FakeTetherHostFetcher(multidevice::RemoteDeviceRefList()) {}
+    std::optional<multidevice::RemoteDeviceRef> tether_host) {
+  tether_host_ = tether_host;
+}
 
 FakeTetherHostFetcher::~FakeTetherHostFetcher() = default;
 
-void FakeTetherHostFetcher::NotifyTetherHostsUpdated() {
-  TetherHostFetcher::NotifyTetherHostsUpdated();
+void FakeTetherHostFetcher::SetTetherHost(
+    const std::optional<multidevice::RemoteDeviceRef> tether_host) {
+  tether_host_ = tether_host;
+  NotifyTetherHostUpdated();
 }
 
-bool FakeTetherHostFetcher::HasSyncedTetherHosts() {
-  return !tether_hosts_.empty();
-}
-
-void FakeTetherHostFetcher::FetchAllTetherHosts(
-    TetherHostFetcher::TetherHostListCallback callback) {
-  ProcessFetchAllTetherHostsRequest(tether_hosts_, std::move(callback));
-}
-
-void FakeTetherHostFetcher::FetchTetherHost(
-    const std::string& device_id,
-    TetherHostFetcher::TetherHostCallback callback) {
-  ProcessFetchSingleTetherHostRequest(device_id, tether_hosts_,
-                                      std::move(callback));
-}
-
-}  // namespace tether
-
-}  // namespace ash
+}  // namespace ash::tether
