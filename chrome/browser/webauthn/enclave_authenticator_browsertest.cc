@@ -16,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
@@ -53,6 +54,11 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+// These tests are disabled under MSAN. The enclave subprocess is written in
+// Rust and FFI from Rust to C++ doesn't work in Chromium at this time
+// (crbug.com/1369167).
+#if !defined(MEMORY_SANITIZER)
 
 namespace {
 
@@ -470,10 +476,16 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(
-    EnclaveAuthenticatorBrowserTest,
-    // TODO(crbug.com/332193450): Re-enable this test
-    DISABLED_RegisterDeviceWithGpmPin_MakeCredential_Success) {
+// TODO(crbug.com/332193450): Test fails on ARM64 Windows. Fix and re-enable.
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+#define MAYBE_RegisterDeviceWithGpmPin_MakeCredential_Success \
+  DISABLED_RegisterDeviceWithGpmPin_MakeCredential_Success
+#else
+#define MAYBE_RegisterDeviceWithGpmPin_MakeCredential_Success \
+  RegisterDeviceWithGpmPin_MakeCredential_Success
+#endif
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
+                       MAYBE_RegisterDeviceWithGpmPin_MakeCredential_Success) {
   /* Test script:
    *  - Prerequisites:
    *       Enclave not registered
@@ -517,3 +529,5 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
   EXPECT_EQ(script_result, "\"webauthn: OK\"");
 }
+
+#endif  // !defined(MEMORY_SANITIZER)
