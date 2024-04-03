@@ -22,6 +22,26 @@ luci.bucket(
     ],
 )
 
+# Define the shadow bucket of `findit`.
+luci.bucket(
+    name = "findit.shadow",
+    shadows = "findit",
+    # Only the builds with allowed pool and service account can be created
+    # in this bucket.
+    constraints = luci.bucket_constraints(
+        pools = ["luci.chromium.findit"],
+        service_accounts = ["findit-builder@chops-service-accounts.iam.gserviceaccount.com"],
+    ),
+    bindings = [
+        # for led permissions.
+        luci.binding(
+            roles = "role/buildbucket.creator",
+            groups = "project-findit-owners",
+        ),
+    ],
+    dynamic = True,
+)
+
 consoles.list_view(
     name = "findit",
 )
