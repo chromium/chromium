@@ -92,6 +92,8 @@ SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
   source->AddLocalizedString(
       "infoDialogThirdParagraph",
       IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_BODY_THIRD_PARAGRAPH);
+  source->AddLocalizedString("choiceListA11yLabel",
+                             IDS_SEARCH_ENGINE_CHOICE_LIST_A11Y_LABEL);
   source->AddLocalizedString("infoDialogButtonText", IDS_CLOSE);
   source->AddLocalizedString("productLogoAltText",
                              IDS_SHORT_PRODUCT_LOGO_ALT_TEXT);

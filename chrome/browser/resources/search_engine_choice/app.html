@@ -274,7 +274,8 @@
     </a>
   </p>
   <cr-radio-group id="choiceList"
-      selected="{{selectedChoice_}}" role="list">
+      selected="{{selectedChoice_}}" aria-label="$i18n{choiceListA11yLabel}"
+      role="list">
     <template is="dom-repeat" items="[[choiceList_]]">
         <cr-radio-button aria-label$="[[item.name]]" role="listitem"
             class="label-first"
