@@ -185,6 +185,7 @@ std::string GetConfiguredAuthFactorsHistogramSuffix(
       return "";
     case cryptohome::AuthFactorType::kUnknownLegacy:
     case cryptohome::AuthFactorType::kLegacyFingerprint:
+    case cryptohome::AuthFactorType::kFingerprint:
     case cryptohome::AuthFactorType::kKiosk:
       // These factors are not recorded.
       DCHECK(false);

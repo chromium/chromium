@@ -89,6 +89,8 @@ user_data_auth::AuthFactorType ConvertFactorTypeToProto(AuthFactorType type) {
       return user_data_auth::AUTH_FACTOR_TYPE_SMART_CARD;
     case AuthFactorType::kLegacyFingerprint:
       return user_data_auth::AUTH_FACTOR_TYPE_LEGACY_FINGERPRINT;
+    case AuthFactorType::kFingerprint:
+      return user_data_auth::AUTH_FACTOR_TYPE_FINGERPRINT;
   }
 }
 
@@ -111,6 +113,8 @@ std::optional<AuthFactorType> SafeConvertFactorTypeFromProto(
       return AuthFactorType::kKiosk;
     case user_data_auth::AUTH_FACTOR_TYPE_SMART_CARD:
       return AuthFactorType::kSmartCard;
+    case user_data_auth::AUTH_FACTOR_TYPE_FINGERPRINT:
+      return AuthFactorType::kFingerprint;
     default:
       LOG(WARNING)
           << "Unknown auth factor type " << static_cast<int>(type)
@@ -136,6 +140,8 @@ AuthFactorType ConvertFactorTypeFromProto(user_data_auth::AuthFactorType type) {
       return AuthFactorType::kKiosk;
     case user_data_auth::AUTH_FACTOR_TYPE_SMART_CARD:
       return AuthFactorType::kSmartCard;
+    case user_data_auth::AUTH_FACTOR_TYPE_FINGERPRINT:
+      return AuthFactorType::kFingerprint;
     default:
       // Use `--ignore-unknown-auth-factors` to avoid this.
       LOG(FATAL) << "Unknown auth factor type " << static_cast<int>(type);
@@ -211,6 +217,9 @@ void SerializeAuthFactor(const AuthFactor& factor,
       out_proto->mutable_smart_card_metadata()->set_public_key_spki_der(
           factor.GetSmartCardMetadata().public_key_spki_der);
       break;
+    case AuthFactorType::kFingerprint:
+      out_proto->mutable_fingerprint_metadata();
+      break;
     case AuthFactorType::kLegacyFingerprint:
       LOG(FATAL) << "Legacy fingerprint factor type should never be serialized";
     case AuthFactorType::kUnknownLegacy:
@@ -269,6 +278,11 @@ void SerializeAuthInput(const AuthFactorRef& ref,
       // Legacy Fingerprint does not use any information from the Ash side,
       // only the signal. Creating empty input for `oneof` to work.
       out_proto->mutable_legacy_fingerprint_input();
+      break;
+    case AuthFactorType::kFingerprint:
+      // Fingerprint does not use any information from the Ash side,
+      // only the signal. Creating empty input for `oneof` to work.
+      out_proto->mutable_fingerprint_input();
       break;
     case AuthFactorType::kUnknownLegacy:
       LOG(FATAL) << "Unknown factor type should never be serialized";

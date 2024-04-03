@@ -45,6 +45,7 @@ enum class AuthFactorType {
   kRecovery,
   kSmartCard,
   kKiosk,
+  kFingerprint,
 };
 
 using AuthFactorsSet = base::

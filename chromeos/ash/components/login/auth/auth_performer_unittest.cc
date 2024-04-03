@@ -69,6 +69,9 @@ class AuthPerformerTest : public testing::Test {
   AuthPerformerTest()
       : task_environment_(
             base::test::SingleThreadTaskEnvironment::MainThreadType::UI) {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kFingerprintAuthFactor},
+        /*disabled_features=*/{});
     CryptohomeMiscClient::InitializeFake();
     SystemSaltGetter::Initialize();
     context_ = std::make_unique<UserContext>();
@@ -83,6 +86,9 @@ class AuthPerformerTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   ::testing::StrictMock<MockUserDataAuthClient> mock_client_;
   std::unique_ptr<UserContext> context_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Checks that a key that has no type is recognized during StartAuthSession() as
@@ -311,6 +317,46 @@ TEST_F(AuthPerformerTest, AuthenticateWithPinSuccess) {
 
   performer.AuthenticateWithPin("1234", "pin-salt", std::move(context_),
                                 result.GetCallback());
+  // Check for no error
+  ASSERT_TRUE(result.Get<0>());
+  ASSERT_FALSE(result.Get<1>().has_value());
+}
+
+TEST_F(AuthPerformerTest, AuthenticateWithFingerprintSuccess) {
+  SetupUserWithLegacyPasswordFactor(context_.get());
+  // Simulate the already started auth session.
+  context_->SetAuthSessionIds("123", "broadcast");
+
+  // Add two fp factors to session auth factors.
+  cryptohome::AuthFactorRef fp1_ref(cryptohome::AuthFactorType::kFingerprint,
+                                    cryptohome::KeyLabel("fp1"));
+  cryptohome::AuthFactorRef fp2_ref(cryptohome::AuthFactorType::kFingerprint,
+                                    cryptohome::KeyLabel("fp2"));
+  cryptohome::AuthFactor fp_factor1(std::move(fp1_ref),
+                                    cryptohome::AuthFactorCommonMetadata());
+  cryptohome::AuthFactor fp_factor2(std::move(fp2_ref),
+                                    cryptohome::AuthFactorCommonMetadata());
+  context_->SetSessionAuthFactors(
+      SessionAuthFactors({std::move(fp_factor1), std::move(fp_factor2)}));
+
+  AuthPerformer performer(&mock_client_);
+
+  EXPECT_CALL(mock_client_, AuthenticateAuthFactor(_, _))
+      .WillOnce(
+          [](const ::user_data_auth::AuthenticateAuthFactorRequest& request,
+             UserDataAuthClient::AuthenticateAuthFactorCallback callback) {
+            EXPECT_THAT(request.auth_factor_labels(),
+                        UnorderedElementsAre("fp1", "fp2"));
+            EXPECT_TRUE(request.has_auth_input());
+            EXPECT_TRUE(request.auth_input().has_fingerprint_input());
+            ReplyAsSuccess(std::move(callback));
+          });
+  base::test::TestFuture<std::unique_ptr<UserContext>,
+                         std::optional<AuthenticationError>>
+      result;
+
+  performer.AuthenticateWithFingerprint(std::move(context_),
+                                        result.GetCallback());
   // Check for no error
   ASSERT_TRUE(result.Get<0>());
   ASSERT_FALSE(result.Get<1>().has_value());
