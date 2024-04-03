@@ -328,70 +328,30 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, UseHostWhenTitleIsUrl) {
   EXPECT_TRUE(gfx::BitmapsAreEqual(bitmap, generated_icon_bitmap));
 }
 
-class CreateShortcutBrowserTest_CreateShortcutIgnoresManifest
-    : public CreateShortcutBrowserTest,
-      public testing::WithParamInterface<bool> {
- public:
-  CreateShortcutBrowserTest_CreateShortcutIgnoresManifest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          webapps::features::kCreateShortcutIgnoresManifest);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          webapps::features::kCreateShortcutIgnoresManifest);
-    }
-  }
-
-  ~CreateShortcutBrowserTest_CreateShortcutIgnoresManifest() override = default;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(CreateShortcutBrowserTest_CreateShortcutIgnoresManifest,
+IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
                        InstallableSiteDifferentStartUrl) {
-  bool create_shortcut_ignores_manifest = GetParam();
   NavigateViaLinkClickToURLAndWait(browser(), PageWithDifferentStartUrl());
   webapps::AppId app_id = InstallShortcutAppForCurrentUrl();
 
   EXPECT_EQ(registrar().GetAppUserDisplayMode(app_id),
             mojom::UserDisplayMode::kBrowser);
 
-  // Using the manifest makes it a non-shortcut, even though we used "Create
-  // Shortcut". Could be considered a bug (crbug.com/1469482).
-  EXPECT_EQ(registrar().IsShortcutApp(app_id),
-            create_shortcut_ignores_manifest);
+  // Using the manifest makes it a non-shortcut.
+  EXPECT_EQ(registrar().IsShortcutApp(app_id), false);
 
-  if (create_shortcut_ignores_manifest) {
-    // Title set to current page title.
-    EXPECT_EQ(registrar().GetAppShortName(app_id),
-              "Page with manifest with different start URL");
-  } else {
-    // Title from manifest.
-    EXPECT_EQ(registrar().GetAppShortName(app_id), "Basic web app");
-  }
+  // Title from manifest.
+  EXPECT_EQ(registrar().GetAppShortName(app_id), "Basic web app");
 
-  if (create_shortcut_ignores_manifest) {
-    // Start URL set to current page.
-    EXPECT_EQ(registrar().GetAppById(app_id)->start_url(),
-              PageWithDifferentStartUrl());
-  } else {
-    // Start URL from manifest.
-    EXPECT_EQ(registrar().GetAppById(app_id)->start_url(),
-              PageWithDifferentStartUrlManifestStartUrl());
-  }
+  // Start URL from manifest.
+  EXPECT_EQ(registrar().GetAppById(app_id)->start_url(),
+            PageWithDifferentStartUrlManifestStartUrl());
 }
 
-IN_PROC_BROWSER_TEST_P(CreateShortcutBrowserTest_CreateShortcutIgnoresManifest,
-                       CanInstallOverTabShortcutApp) {
+IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, InstallOverTabShortcutApp) {
   NavigateViaLinkClickToURLAndWait(browser(), GetInstallableAppURL());
   webapps::AppId shortcut_app_id = InstallShortcutAppForCurrentUrl();
 
-  bool create_shortcut_ignores_manifest = GetParam();
-  if (create_shortcut_ignores_manifest) {
-    EXPECT_TRUE(registrar().IsShortcutApp(shortcut_app_id));
-  } else {
-    EXPECT_FALSE(registrar().IsShortcutApp(shortcut_app_id));
-  }
+  EXPECT_FALSE(registrar().IsShortcutApp(shortcut_app_id));
 
   Browser* new_browser =
       NavigateInNewWindowAndAwaitInstallabilityCheck(GetInstallableAppURL());
@@ -406,10 +366,5 @@ IN_PROC_BROWSER_TEST_P(CreateShortcutBrowserTest_CreateShortcutIgnoresManifest,
   EXPECT_EQ(shortcut_app_id, web_app_id);
   EXPECT_FALSE(registrar().IsShortcutApp(web_app_id));
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    /*no prefix*/,
-    CreateShortcutBrowserTest_CreateShortcutIgnoresManifest,
-    testing::Bool());
 
 }  // namespace web_app

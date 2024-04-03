@@ -45,8 +45,6 @@ BASE_DECLARE_FEATURE(kPwaUniversalInstallUi);
 BASE_DECLARE_FEATURE(kWebApkInstallFailureNotification);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-BASE_DECLARE_FEATURE(kCreateShortcutIgnoresManifest);
-
 BASE_DECLARE_FEATURE(kInstallPromptSegmentation);
 
 BASE_DECLARE_FEATURE(kAppBannerTriggering);

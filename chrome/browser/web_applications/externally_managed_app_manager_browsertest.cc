@@ -833,13 +833,7 @@ class ExternallyManagedAppManagerBrowserTestShortcut
     : public ExternallyManagedAppManagerBrowserTest,
       public testing::WithParamInterface<bool> {
  public:
-  ExternallyManagedAppManagerBrowserTestShortcut() {
-    scoped_feature_list_.InitWithFeatures(
-        {webapps::features::kCreateShortcutIgnoresManifest}, {});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  ExternallyManagedAppManagerBrowserTestShortcut() = default;
 };
 
 // Tests behavior when ExternalInstallOptions.install_as_shortcut is enabled

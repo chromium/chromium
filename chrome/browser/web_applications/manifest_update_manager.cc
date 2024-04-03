@@ -243,18 +243,15 @@ void ManifestUpdateManager::MaybeUpdate(
     return;
   }
 
-  if (provider_->registrar_unsafe().IsShortcutApp(*app_id) &&
-      (base::FeatureList::IsEnabled(
-           webapps::features::kCreateShortcutIgnoresManifest)
 #if BUILDFLAG(IS_CHROMEOS)
-       || chromeos::features::IsCrosShortstandEnabled()
-#endif
-           )) {
+  if (provider_->registrar_unsafe().IsShortcutApp(*app_id) &&
+      chromeos::features::IsCrosShortstandEnabled()) {
     // When create shortcut ignores manifest, we should not update manifest for
     // shortcuts.
     NotifyResult(url, *app_id, ManifestUpdateResult::kShortcutIgnoresManifest);
     return;
   }
+#endif
 
   if (base::Contains(update_stages_, *app_id)) {
     return;

@@ -501,9 +501,6 @@ extern const char kClearCrossSiteCrossBrowsingContextGroupWindowNameName[];
 extern const char
     kClearCrossSiteCrossBrowsingContextGroupWindowNameDescription[];
 
-extern const char kCreateShortcutIgnoresManifestName[];
-extern const char kCreateShortcutIgnoresManifestDescription[];
-
 extern const char kDisableProcessReuse[];
 extern const char kDisableProcessReuseDescription[];
 

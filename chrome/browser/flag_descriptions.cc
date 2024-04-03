@@ -839,13 +839,6 @@ const char kClearCrossSiteCrossBrowsingContextGroupWindowNameDescription[] =
     "Clear the preserved window.name property when it's a top-level cross-site "
     "navigation that swaps BrowsingContextGroup.";
 
-const char kCreateShortcutIgnoresManifestName[] =
-    "Create Shortcut ignores manifest";
-const char kCreateShortcutIgnoresManifestDescription[] =
-    "When the 'Create Shortcut' menu item is selected, use information from "
-    "the current page, ignoring any web app manifest information that may be "
-    "available.";
-
 const char kDeviceForceScheduledRebootName[] =
     "Enable DeviceScheduledReboot policy for all sessions.";
 const char kDeviceForceScheduledRebootDescription[] =

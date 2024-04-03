@@ -45,17 +45,6 @@ BASE_FEATURE(kWebApkInstallFailureNotification,
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// When the user clicks "Create Shortcut" in the dot menu, the current page is
-// used as start-url, instead of the manifest-supplied value.
-// This allows subpages of web apps to be bookmarked via shortcuts
-// separately from their parent app.
-// For installing the parent app, the existing "Install Site" should be used
-// instead. With this feature, "Install Site" now also shows up for websites
-// without service worker, as long as they have a manifest.
-BASE_FEATURE(kCreateShortcutIgnoresManifest,
-             "CreateShortcutIgnoresManifest",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Use segmentation to decide whether install prompt should be shown.
 BASE_FEATURE(kInstallPromptSegmentation,
              "InstallPromptSegmentation",

@@ -433,13 +433,9 @@ void FetchManifestAndInstallCommand::OnDidPerformInstallableCheck(
                                web_app_info_.get());
   LogInstallInfo(GetMutableDebugValue(), *web_app_info_);
 
-  if (install_surface_ == webapps::WebappInstallSource::MENU_CREATE_SHORTCUT &&
-      (base::FeatureList::IsEnabled(
-           webapps::features::kCreateShortcutIgnoresManifest)
 #if BUILDFLAG(IS_CHROMEOS)
-       || chromeos::features::IsCrosShortstandEnabled()
-#endif
-           )) {
+  if (install_surface_ == webapps::WebappInstallSource::MENU_CREATE_SHORTCUT &&
+      chromeos::features::IsCrosShortstandEnabled()) {
     // When creating a shortcut, the |manifest_id| is not part of the App's
     // primary key. The only thing that identifies a shortcut is the start URL,
     // which is always set to the current page.
@@ -447,6 +443,7 @@ void FetchManifestAndInstallCommand::OnDidPerformInstallableCheck(
         web_contents_->GetLastCommittedURL(), web_contents_->GetTitle(),
         *web_app_info_);
   }
+#endif
 
   icons_from_manifest_ = GetValidIconUrlsToDownload(*web_app_info_);
   for (const IconUrlWithSize& icon_with_size : icons_from_manifest_) {

@@ -5753,45 +5753,4 @@ INSTANTIATE_TEST_SUITE_P(
                             AppIdTestParam::kWithFlagAppIdDialogForIcon)),
     ManifestUpdateManagerBrowserTest_AppIdentityParameterized::ParamToString);
 
-class ManifestUpdateManagerBrowserTest_CreateShortcutIgnoresManifest
-    : public ManifestUpdateManagerBrowserTest {
-  base::test::ScopedFeatureList scoped_feature_list_{
-      webapps::features::kCreateShortcutIgnoresManifest};
-};
-
-IN_PROC_BROWSER_TEST_F(
-    ManifestUpdateManagerBrowserTest_CreateShortcutIgnoresManifest,
-    CheckUpdateSkipped) {
-  // Install an app with no manifest, trigger an update by navigation.
-  GURL no_manifest_url = GetAppURLWithoutManifest();
-  const webapps::AppId app_id = InstallWebAppWithoutManifest();
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  UpdateCheckResultAwaiter result_awaiter(no_manifest_url);
-
-  // Inject new manifest into the page and load the page to trigger update.
-  EXPECT_TRUE(content::ExecJs(
-      web_contents,
-      "addManifestLinkTag('/banners/manifest_for_no_manifest_page.json')"));
-
-  DidFinishLoadObserver load_observer(web_contents, no_manifest_url);
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), no_manifest_url));
-  EXPECT_TRUE(load_observer.AwaitCorrectPageLoaded());
-
-  EXPECT_EQ(ManifestUpdateResult::kShortcutIgnoresManifest,
-            std::move(result_awaiter).AwaitNextResult());
-
-  ManifestUpdateResult expected_result =
-      ManifestUpdateResult::kShortcutIgnoresManifest;
-#if BUILDFLAG(IS_CHROMEOS)
-  if (chromeos::features::IsCrosShortstandEnabled()) {
-    // When Shortstand is enabled, Shortcuts do not count as in scope and
-    // therefore do not manifest update.
-    expected_result = ManifestUpdateResult::kNoAppInScope;
-  }
-#endif
-
-  histogram_tester_.ExpectBucketCount(kUpdateHistogramName, expected_result, 1);
-}
-
 }  // namespace web_app
