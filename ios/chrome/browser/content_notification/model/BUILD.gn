@@ -25,3 +25,19 @@ source_set("content_notification_service_factory") {
     "//ios/public/provider/chrome/browser/content_notification:content_notification_api",
   ]
 }
+
+source_set("content_notification_client") {
+  sources = [
+    "content_notification_client.h",
+    "content_notification_client.mm",
+  ]
+  deps = [
+    ":content_notification_service",
+    ":content_notification_service_factory",
+    "//base",
+    "//ios/chrome/browser/push_notification/model:push_notification_client",
+    "//url:url",
+  ]
+
+  frameworks = [ "UserNotifications.framework" ]
+}
