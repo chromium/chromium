@@ -8,7 +8,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/metrics/metrics_hashes.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/privacy_budget/identifiability_study_state.h"
 #include "chrome/browser/privacy_budget/inspectable_identifiability_study_state.h"
 #include "chrome/common/privacy_budget/privacy_budget_features.h"
@@ -71,10 +70,6 @@ TEST(PrivacyBudgetUkmEntryFilterStandaloneTest, AllowsOtherMetricsByDefault) {
 }
 
 TEST(PrivacyBudgetUkmEntryFilterStandaloneTest, BlockListedMetrics) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kIdentifiabilityStudyMetaExperiment);
-
   constexpr uint64_t kBlockedSurface = 1;
   constexpr uint64_t kUnblockedSurface = 2;
 
