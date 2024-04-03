@@ -68,7 +68,16 @@ class FakeDefaultTickProvider : public MetronomeSource::TickProvider {
 
 class VSyncTickProviderTest : public ::testing::Test {
  public:
-  VSyncTickProviderTest() { DepleteTaskQueues(); }
+  VSyncTickProviderTest() {
+    auto fake_default_tick_provider_holder =
+        std::make_unique<FakeDefaultTickProvider>();
+    fake_default_tick_provider_ = fake_default_tick_provider_holder.get();
+    begin_frame_tick_provider_ = VSyncTickProvider::Create(
+        fake_begin_frame_provider_,
+        base::SequencedTaskRunner::GetCurrentDefault(),
+        std::move(fake_default_tick_provider_holder));
+    DepleteTaskQueues();
+  }
 
   void DepleteTaskQueues() {
     task_environment_.FastForwardBy(base::Seconds(0));
@@ -91,15 +100,9 @@ class VSyncTickProviderTest : public ::testing::Test {
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::unique_ptr<FakeDefaultTickProvider> fake_default_tick_provider_holder_ =
-      std::make_unique<FakeDefaultTickProvider>();
-  raw_ptr<FakeDefaultTickProvider, DanglingUntriaged>
-      fake_default_tick_provider_ = fake_default_tick_provider_holder_.get();
   FakeVSyncProvider fake_begin_frame_provider_;
-  std::unique_ptr<VSyncTickProvider> begin_frame_tick_provider_ =
-      VSyncTickProvider::Create(fake_begin_frame_provider_,
-                                base::SequencedTaskRunner::GetCurrentDefault(),
-                                std::move(fake_default_tick_provider_holder_));
+  std::unique_ptr<VSyncTickProvider> begin_frame_tick_provider_;
+  raw_ptr<FakeDefaultTickProvider> fake_default_tick_provider_;
 };
 
 TEST_F(VSyncTickProviderTest, ReportsDefaultTickPeriod) {

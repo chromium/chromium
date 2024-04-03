@@ -38,6 +38,7 @@ TestingPlatformSupportWithMockScheduler::
 
 TestingPlatformSupportWithMockScheduler::
     ~TestingPlatformSupportWithMockScheduler() {
+  sequence_manager_ = nullptr;
   scheduler_->Shutdown();
 }
 

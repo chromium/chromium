@@ -78,9 +78,8 @@ class LearningExperimentHelperTest : public testing::Test {
   }
 
   LearningTask task_;
-  raw_ptr<MockLearningTaskController, DanglingUntriaged> controller_raw_ =
-      nullptr;
   std::unique_ptr<LearningExperimentHelper> helper_;
+  raw_ptr<MockLearningTaskController> controller_raw_ = nullptr;
 
   FeatureDictionary dict_;
 };

@@ -248,7 +248,7 @@ class WatchTimeReporterTest
     }
 
    private:
-    raw_ptr<WatchTimeReporterTest, DanglingUntriaged> parent_;
+    raw_ptr<WatchTimeReporterTest> parent_;
   };
 
   class FakeMediaMetricsProvider : public media::mojom::MediaMetricsProvider {
@@ -314,6 +314,11 @@ class WatchTimeReporterTest
 
   ~WatchTimeReporterTest() override {
     CycleReportingTimer();
+  }
+
+  void TearDown() override {
+    // Reset the reporter to ensure orderly cleanup.
+    wtr_.reset();
   }
 
  protected:
@@ -710,7 +715,6 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporter) {
 
   if (!has_video_)
     EXPECT_WATCH_TIME_FINALIZED();
-  wtr_.reset();
 }
 
 TEST_P(WatchTimeReporterTest, WatchTimeReporterInfiniteStartTime) {
@@ -767,7 +771,6 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterBasic) {
   CycleReportingTimer();
 
   EXPECT_WATCH_TIME_FINALIZED();
-  wtr_.reset();
 }
 
 TEST_P(WatchTimeReporterTest, WatchTimeReporterStatsOffsetCorrectly) {
@@ -823,7 +826,6 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterStatsOffsetCorrectly) {
   CycleReportingTimer();
 
   EXPECT_WATCH_TIME_FINALIZED();
-  wtr_.reset();
 }
 
 TEST_P(WatchTimeReporterTest, WatchTimeReporterDuration) {
@@ -840,7 +842,6 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterDuration) {
       .Times((has_audio_ && has_video_) ? 3 : 2);
   wtr_->OnDurationChanged(kDuration2);
   CycleReportingTimer();
-  wtr_.reset();
 }
 
 TEST_P(WatchTimeReporterTest, WatchTimeReporterUnderflow) {
@@ -913,7 +914,6 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterUnderflow) {
   // Muted watch time shouldn't finalize until destruction.
   if (has_audio_ && has_video_)
     EXPECT_WATCH_TIME_FINALIZED();
-  wtr_.reset();
 }
 
 TEST_P(WatchTimeReporterTest, WatchTimeReporterUnderflowSpansFinalize) {
@@ -979,7 +979,6 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterUnderflowSpansFinalize) {
   // underflow it corresponded to in the finalize.
   constexpr base::TimeDelta kUnderflowDuration = base::Milliseconds(250);
   wtr_->OnUnderflowComplete(kUnderflowDuration);
-  wtr_.reset();
 }
 
 TEST_P(WatchTimeReporterTest, WatchTimeReporterUnderflowTooLong) {
@@ -1044,7 +1043,6 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterUnderflowTooLong) {
   // Muted watch time shouldn't finalize until destruction.
   if (has_audio_ && has_video_)
     EXPECT_WATCH_TIME_FINALIZED();
-  wtr_.reset();
 }
 
 TEST_P(WatchTimeReporterTest, WatchTimeReporterNoUnderflowDoubleReport) {
@@ -1097,7 +1095,6 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterNoUnderflowDoubleReport) {
   EXPECT_CALL(*this, OnUnderflowDurationUpdate(1, kUnderflowDuration));
 
   EXPECT_WATCH_TIME_FINALIZED();
-  wtr_.reset();
 }
 
 // Verify secondary properties pass through correctly.
@@ -1160,7 +1157,6 @@ TEST_P(WatchTimeReporterTest, SecondaryProperties_SizeIncreased) {
   EXPECT_TRUE(IsMonitoring());
 
   EXPECT_WATCH_TIME_FINALIZED();
-  wtr_.reset();
 }
 
 TEST_P(WatchTimeReporterTest, SecondaryProperties_SizeDecreased) {
@@ -1187,7 +1183,6 @@ TEST_P(WatchTimeReporterTest, SecondaryProperties_SizeDecreased) {
   CycleReportingTimer();
 
   EXPECT_FALSE(IsMonitoring());
-  wtr_.reset();
 }
 
 TEST_P(WatchTimeReporterTest, WatchTimeReporterAutoplayInitiated) {
@@ -1233,7 +1228,6 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterShownHidden) {
   EXPECT_WATCH_TIME(NativeControlsOff, kExpectedForegroundWatchTime);
   EXPECT_WATCH_TIME_IF_VIDEO(DisplayInline, kExpectedForegroundWatchTime);
   EXPECT_WATCH_TIME_FINALIZED();
-  wtr_.reset();
 }
 
 TEST_P(WatchTimeReporterTest, WatchTimeReporterBackgroundHysteresis) {
@@ -1275,7 +1269,6 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterBackgroundHysteresis) {
   EXPECT_BACKGROUND_WATCH_TIME(Eme, kWatchTimeLate);
   EXPECT_BACKGROUND_WATCH_TIME(Mse, kWatchTimeLate);
   EXPECT_WATCH_TIME_FINALIZED();
-  wtr_.reset();
 }
 
 TEST_P(WatchTimeReporterTest, WatchTimeReporterShownHiddenBackground) {
@@ -1314,7 +1307,6 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterShownHiddenBackground) {
   CycleReportingTimer();
 
   EXPECT_WATCH_TIME_FINALIZED();
-  wtr_.reset();
 }
 
 TEST_P(WatchTimeReporterTest, WatchTimeReporterHiddenPausedBackground) {
@@ -1339,7 +1331,6 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterHiddenPausedBackground) {
 
   EXPECT_FALSE(IsBackgroundMonitoring());
   EXPECT_FALSE(IsMonitoring());
-  wtr_.reset();
 }
 
 TEST_P(WatchTimeReporterTest, WatchTimeReporterHiddenSeekedBackground) {
@@ -1363,7 +1354,6 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterHiddenSeekedBackground) {
 
   EXPECT_FALSE(IsBackgroundMonitoring());
   EXPECT_FALSE(IsMonitoring());
-  wtr_.reset();
 }
 
 TEST_P(WatchTimeReporterTest, WatchTimeReporterHiddenPowerBackground) {
@@ -1399,7 +1389,6 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterHiddenPowerBackground) {
 
   EXPECT_FALSE(IsBackgroundMonitoring());
   EXPECT_FALSE(IsMonitoring());
-  wtr_.reset();
 }
 
 TEST_P(WatchTimeReporterTest, WatchTimeReporterHiddenControlsBackground) {
@@ -1434,7 +1423,6 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterHiddenControlsBackground) {
 
   EXPECT_FALSE(IsBackgroundMonitoring());
   EXPECT_FALSE(IsMonitoring());
-  wtr_.reset();
 }
 
 TEST_P(DisplayTypeWatchTimeReporterTest,
@@ -1470,7 +1458,6 @@ TEST_P(DisplayTypeWatchTimeReporterTest,
 
   EXPECT_FALSE(IsBackgroundMonitoring());
   EXPECT_FALSE(IsMonitoring());
-  wtr_.reset();
 }
 
 TEST_P(WatchTimeReporterTest, WatchTimeReporterHiddenMuted) {
@@ -1528,7 +1515,6 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterHiddenMuted) {
   EXPECT_MUTED_WATCH_TIME_IF_AUDIO_VIDEO(NativeControlsOff, kWatchTime);
   if (has_audio_ && has_video_)
     EXPECT_WATCH_TIME_FINALIZED();
-  wtr_.reset();
 }
 
 TEST_P(WatchTimeReporterTest, WatchTimeReporterMultiplePartialFinalize) {
@@ -1571,7 +1557,6 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterMultiplePartialFinalize) {
     CycleReportingTimer();
 
     EXPECT_FALSE(IsMonitoring());
-    wtr_.reset();
   }
 
   // Transition display type and battery. Test only works with video.
@@ -1610,7 +1595,6 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterMultiplePartialFinalize) {
     CycleReportingTimer();
 
     EXPECT_FALSE(IsMonitoring());
-    wtr_.reset();
   }
 
   // Transition controls, battery and display type. Test only works with video.
@@ -1653,7 +1637,6 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterMultiplePartialFinalize) {
     CycleReportingTimer();
 
     EXPECT_FALSE(IsMonitoring());
-    wtr_.reset();
   }
 }
 
@@ -1678,7 +1661,6 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterNonZeroStart) {
   CycleReportingTimer();
 
   EXPECT_WATCH_TIME_FINALIZED();
-  wtr_.reset();
 }
 
 // Tests that seeking causes an immediate finalization.
@@ -1736,7 +1718,6 @@ TEST_P(WatchTimeReporterTest, SeekOnlyClearedByPlaying) {
     EXPECT_WATCH_TIME_FINALIZED();
   EXPECT_WATCH_TIME_FINALIZED();
   EXPECT_WATCH_TIME_FINALIZED();
-  wtr_.reset();
 }
 
 // Tests that seeking causes an immediate finalization, but does not trample a
@@ -1779,7 +1760,6 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterFinalizeOnDestruction) {
   EXPECT_WATCH_TIME(NativeControlsOff, kWatchTime);
   EXPECT_WATCH_TIME_IF_VIDEO(DisplayInline, kWatchTime);
   EXPECT_WATCH_TIME_FINALIZED();
-  wtr_.reset();
 }
 
 // Tests that watch time categories are mapped correctly.
@@ -2141,7 +2121,6 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterMediaFoundation) {
     EXPECT_TRUE(IsMonitoring());
 
     EXPECT_WATCH_TIME_FINALIZED();
-    wtr_.reset();
   }
 }
 
@@ -2170,7 +2149,6 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterMediaFoundationNoEme) {
     EXPECT_TRUE(IsMonitoring());
 
     EXPECT_WATCH_TIME_FINALIZED();
-    wtr_.reset();
   }
 }
 
@@ -2220,7 +2198,6 @@ TEST_P(MutedWatchTimeReporterTest, MutedHysteresis) {
   EXPECT_MUTED_WATCH_TIME_IF_AUDIO_VIDEO(DisplayInline, kWatchTimeLate);
   EXPECT_MUTED_WATCH_TIME_IF_AUDIO_VIDEO(NativeControlsOff, kWatchTimeLate);
   EXPECT_WATCH_TIME_FINALIZED();
-  wtr_.reset();
 }
 
 TEST_P(MutedWatchTimeReporterTest, MuteUnmute) {
@@ -2261,7 +2238,6 @@ TEST_P(MutedWatchTimeReporterTest, MuteUnmute) {
   CycleReportingTimer();
 
   EXPECT_WATCH_TIME_FINALIZED();
-  wtr_.reset();
 }
 
 TEST_P(MutedWatchTimeReporterTest, MutedPaused) {
@@ -2288,7 +2264,6 @@ TEST_P(MutedWatchTimeReporterTest, MutedPaused) {
 
   EXPECT_FALSE(IsMutedMonitoring());
   EXPECT_FALSE(IsMonitoring());
-  wtr_.reset();
 }
 
 TEST_P(MutedWatchTimeReporterTest, MutedSeeked) {
@@ -2314,7 +2289,6 @@ TEST_P(MutedWatchTimeReporterTest, MutedSeeked) {
 
   EXPECT_FALSE(IsMutedMonitoring());
   EXPECT_FALSE(IsMonitoring());
-  wtr_.reset();
 }
 
 TEST_P(MutedWatchTimeReporterTest, MutedPower) {
@@ -2354,7 +2328,6 @@ TEST_P(MutedWatchTimeReporterTest, MutedPower) {
 
   EXPECT_FALSE(IsMutedMonitoring());
   EXPECT_FALSE(IsMonitoring());
-  wtr_.reset();
 }
 
 TEST_P(MutedWatchTimeReporterTest, MutedControls) {
@@ -2395,7 +2368,6 @@ TEST_P(MutedWatchTimeReporterTest, MutedControls) {
 
   EXPECT_FALSE(IsMutedMonitoring());
   EXPECT_FALSE(IsMonitoring());
-  wtr_.reset();
 }
 
 TEST_P(MutedWatchTimeReporterTest, MutedDisplayType) {
@@ -2436,7 +2408,6 @@ TEST_P(MutedWatchTimeReporterTest, MutedDisplayType) {
 
   EXPECT_FALSE(IsMutedMonitoring());
   EXPECT_FALSE(IsMonitoring());
-  wtr_.reset();
 }
 
 INSTANTIATE_TEST_SUITE_P(WatchTimeReporterTest,

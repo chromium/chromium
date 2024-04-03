@@ -158,7 +158,10 @@ class StatsCollectingEncoderTest : public ::testing::Test {
     stats_encoder_.RegisterEncodeCompleteCallback(&encoded_image_callback_);
   }
 
-  void TearDown() override { stats_encoder_.Release(); }
+  void TearDown() override {
+    internal_encoder_ = nullptr;
+    stats_encoder_.Release();
+  }
 
   void StoreProcessingStatsCB(const StatsCollector::StatsKey& stats_key,
                               const StatsCollector::VideoStats& video_stats) {
@@ -217,7 +220,7 @@ class StatsCollectingEncoderTest : public ::testing::Test {
   int spatial_layers_{1};
   bool is_hw_accelerated_{false};
   FakeEncodedImageCallback encoded_image_callback_;
-  raw_ptr<MockEncoder, DanglingUntriaged> internal_encoder_;
+  raw_ptr<MockEncoder> internal_encoder_;
   StatsCollectingEncoder stats_encoder_;
 
   uint32_t frame_counter_{0};

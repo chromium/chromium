@@ -79,25 +79,21 @@ using CodecSupport = webrtc::VideoEncoderFactory::CodecSupport;
 
 class WebrtcEncodingInfoHandlerTests : public ::testing::Test {
  public:
-  WebrtcEncodingInfoHandlerTests()
-      : mock_video_encoder_factory_(new MockVideoEncoderFactory()),
-        video_encoder_factory_(mock_video_encoder_factory_),
-        audio_encoder_factory_(blink::CreateWebrtcAudioEncoderFactory()) {}
-
-  void SetUp() override {}
-
   void VerifyEncodingInfo(
       const std::optional<webrtc::SdpAudioFormat> sdp_audio_format,
       const std::optional<webrtc::SdpVideoFormat> sdp_video_format,
       const std::optional<String> video_scalability_mode,
       const CodecSupport support) {
+    auto video_encoder_factory = std::make_unique<MockVideoEncoderFactory>();
+    rtc::scoped_refptr<webrtc::AudioEncoderFactory> audio_encoder_factory =
+        blink::CreateWebrtcAudioEncoderFactory();
     if (sdp_video_format) {
       const std::optional<std::string> expected_scalability_mode =
           video_scalability_mode
               ? std::make_optional(video_scalability_mode->Utf8())
               : std::nullopt;
 
-      ON_CALL(*mock_video_encoder_factory_, QueryCodecSupport)
+      ON_CALL(*video_encoder_factory, QueryCodecSupport)
           .WillByDefault(testing::Invoke(
               [sdp_video_format, expected_scalability_mode, support](
                   const webrtc::SdpVideoFormat& format,
@@ -106,11 +102,11 @@ class WebrtcEncodingInfoHandlerTests : public ::testing::Test {
                 EXPECT_EQ(scalability_mode, expected_scalability_mode);
                 return support;
               }));
-      EXPECT_CALL(*mock_video_encoder_factory_, QueryCodecSupport)
+      EXPECT_CALL(*video_encoder_factory, QueryCodecSupport)
           .Times(::testing::AtMost(1));
     }
     WebrtcEncodingInfoHandler encoding_info_handler(
-        std::move(video_encoder_factory_), audio_encoder_factory_);
+        std::move(video_encoder_factory), audio_encoder_factory);
     MediaCapabilitiesEncodingInfoCallback encoding_info_callback;
 
     encoding_info_handler.EncodingInfo(
@@ -125,13 +121,6 @@ class WebrtcEncodingInfoHandlerTests : public ::testing::Test {
     EXPECT_EQ(encoding_info_callback.IsPowerEfficient(),
               support.is_power_efficient);
   }
-
- protected:
-  std::vector<webrtc::AudioCodecSpec> kSupportedAudioCodecs;
-  raw_ptr<MockVideoEncoderFactory, DanglingUntriaged>
-      mock_video_encoder_factory_;
-  std::unique_ptr<webrtc::VideoEncoderFactory> video_encoder_factory_;
-  rtc::scoped_refptr<webrtc::AudioEncoderFactory> audio_encoder_factory_;
 };
 
 TEST_F(WebrtcEncodingInfoHandlerTests, BasicAudio) {

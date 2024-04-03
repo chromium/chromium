@@ -79,20 +79,16 @@ using CodecSupport = webrtc::VideoDecoderFactory::CodecSupport;
 
 class WebrtcDecodingInfoHandlerTests : public ::testing::Test {
  public:
-  WebrtcDecodingInfoHandlerTests()
-      : mock_video_decoder_factory_(new MockVideoDecoderFactory()),
-        video_decoder_factory_(mock_video_decoder_factory_),
-        audio_decoder_factory_(blink::CreateWebrtcAudioDecoderFactory()) {}
-
-  void SetUp() override {}
-
   void VerifyDecodingInfo(
       const std::optional<webrtc::SdpAudioFormat> sdp_audio_format,
       const std::optional<webrtc::SdpVideoFormat> sdp_video_format,
       const bool video_spatial_scalability,
       const CodecSupport support) {
+    auto video_decoder_factory = std::make_unique<MockVideoDecoderFactory>();
+    rtc::scoped_refptr<webrtc::AudioDecoderFactory> audio_decoder_factory =
+        blink::CreateWebrtcAudioDecoderFactory();
     if (sdp_video_format) {
-      ON_CALL(*mock_video_decoder_factory_, QueryCodecSupport)
+      ON_CALL(*video_decoder_factory, QueryCodecSupport)
           .WillByDefault(
               testing::Invoke([sdp_video_format, video_spatial_scalability,
                                support](const webrtc::SdpVideoFormat& format,
@@ -101,11 +97,11 @@ class WebrtcDecodingInfoHandlerTests : public ::testing::Test {
                 EXPECT_EQ(spatial_scalability, video_spatial_scalability);
                 return support;
               }));
-      EXPECT_CALL(*mock_video_decoder_factory_, QueryCodecSupport)
+      EXPECT_CALL(*video_decoder_factory, QueryCodecSupport)
           .Times(::testing::AtMost(1));
     }
     WebrtcDecodingInfoHandler decoding_info_handler(
-        std::move(video_decoder_factory_), audio_decoder_factory_);
+        std::move(video_decoder_factory), audio_decoder_factory);
     MediaCapabilitiesDecodingInfoCallback decoding_info_callback;
 
     decoding_info_handler.DecodingInfo(
@@ -120,13 +116,6 @@ class WebrtcDecodingInfoHandlerTests : public ::testing::Test {
     EXPECT_EQ(decoding_info_callback.IsPowerEfficient(),
               support.is_power_efficient);
   }
-
- protected:
-  std::vector<webrtc::AudioCodecSpec> kSupportedAudioCodecs;
-  raw_ptr<MockVideoDecoderFactory, DanglingUntriaged>
-      mock_video_decoder_factory_;
-  std::unique_ptr<webrtc::VideoDecoderFactory> video_decoder_factory_;
-  rtc::scoped_refptr<webrtc::AudioDecoderFactory> audio_decoder_factory_;
 };
 
 TEST_F(WebrtcDecodingInfoHandlerTests, BasicAudio) {

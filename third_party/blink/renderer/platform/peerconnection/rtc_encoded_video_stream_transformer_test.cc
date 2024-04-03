@@ -107,6 +107,7 @@ class RTCEncodedVideoStreamTransformerTest
   }
 
   void TearDown() override {
+    metronome_ = nullptr;
     encoded_video_stream_transformer_.UnregisterTransformedFrameSinkCallback(
         kSSRC);
     EXPECT_FALSE(
@@ -120,7 +121,7 @@ class RTCEncodedVideoStreamTransformerTest
   scoped_refptr<base::SingleThreadTaskRunner> webrtc_task_runner_;
   rtc::scoped_refptr<MockWebRtcTransformedFrameCallback> webrtc_callback_;
   MockTransformerCallbackHolder mock_transformer_callback_holder_;
-  raw_ptr<MockMetronome, DanglingUntriaged> metronome_;
+  raw_ptr<MockMetronome> metronome_;
   RTCEncodedVideoStreamTransformer encoded_video_stream_transformer_;
 };
 

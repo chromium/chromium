@@ -39,18 +39,22 @@ class MockTickProvider : public MetronomeSource::TickProvider {
 
 class MetronomeSourceTest : public ::testing::Test {
  public:
-  std::unique_ptr<MockTickProvider> tick_provider_{
-      std::make_unique<MockTickProvider>()};
-  raw_ptr<MockTickProvider, DanglingUntriaged> tick_provider_ptr_ =
-      tick_provider_.get();
-  std::unique_ptr<MetronomeSource> source_{
-      std::make_unique<MetronomeSource>(std::move(tick_provider_))};
+  MetronomeSourceTest() {
+    auto tick_provider = std::make_unique<MockTickProvider>();
+    tick_provider_ptr_ = tick_provider.get();
+    source_ = std::make_unique<MetronomeSource>(std::move(tick_provider));
+  }
+
+ protected:
+  std::unique_ptr<MetronomeSource> source_;
+  raw_ptr<MockTickProvider> tick_provider_ptr_;
 };
 
 TEST_F(MetronomeSourceTest, SupportsCallsBeyondSourceLifetime) {
   auto metronome = source_->CreateWebRtcMetronome();
 
   metronome->RequestCallOnNextTick([] {});
+  tick_provider_ptr_ = nullptr;
   source_ = nullptr;
 
   // This just makes use of the metronome after the source is gone.
