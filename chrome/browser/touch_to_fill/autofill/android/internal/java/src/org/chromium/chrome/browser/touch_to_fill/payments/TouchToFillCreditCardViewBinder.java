@@ -166,7 +166,6 @@ class TouchToFillCreditCardViewBinder {
     }
 
     static void bindIbanItemView(PropertyModel model, View view, PropertyKey propertyKey) {
-        // TODO(b/309163063): Upload IBAN icon file and add getIbanIcon method.
         if (propertyKey == IBAN_VALUE) {
             TextView ibanValue = view.findViewById(R.id.iban_value);
             ibanValue.setText(model.get(IBAN_VALUE));

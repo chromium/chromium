@@ -143,6 +143,7 @@ android_resources("autofill_payments_java_resources") {
     "payments/java/res/drawable-xxxhdpi/visa_metadata_card.png",
     "payments/java/res/drawable/discover_card.xml",
     "payments/java/res/drawable/elo_card.xml",
+    "payments/java/res/drawable/iban_icon.xml",
     "payments/java/res/drawable/ic_credit_card_black.xml",
     "payments/java/res/drawable/ic_credit_card_primary.xml",
     "payments/java/res/drawable/ic_offer_tag.xml",
