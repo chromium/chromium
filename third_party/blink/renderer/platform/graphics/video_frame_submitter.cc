@@ -322,7 +322,7 @@ void VideoFrameSubmitter::OnContextLost() {
     shared_image_interface_.reset();
   }
 
-  waiting_for_compositor_ack_ = false;
+  waiting_for_compositor_ack_ = 0;
   last_frame_id_.reset();
 
   if (video_frame_provider_)
@@ -369,7 +369,15 @@ void VideoFrameSubmitter::DidReceiveCompositorFrameAck(
     WTF::Vector<viz::ReturnedResource> resources) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   ReclaimResources(std::move(resources));
-  waiting_for_compositor_ack_ = false;
+
+  // `waiting_for_compositor_ack_` may be set to zero during SubmitEmptyFrame()
+  // or upon ContextLost().
+  if (waiting_for_compositor_ack_ == 0) {
+    DCHECK(!last_frame_id_);
+    return;
+  }
+
+  --waiting_for_compositor_ack_;
 }
 
 void VideoFrameSubmitter::OnBeginFrame(
@@ -701,17 +709,17 @@ bool VideoFrameSubmitter::SubmitFrame(
   TRACE_EVENT1("media", "VideoFrameSubmitter::SubmitFrame", "frame",
                video_frame->AsHumanReadableString());
 
-  if (!compositor_frame_sink_ || !ShouldSubmit())
+  if (!compositor_frame_sink_ || !ShouldSubmit()) {
     return false;
+  }
 
   // Not submitting a frame when waiting for a previous ack saves memory by
   // not building up unused remote side resources. See https://crbug.com/830828.
   //
   // Similarly we don't submit the same frame multiple times.
-  if (waiting_for_compositor_ack_ || last_frame_id_ == video_frame->unique_id())
+  if (last_frame_id_ == video_frame->unique_id()) {
     return false;
-
-  last_frame_id_ = video_frame->unique_id();
+  }
 
   gfx::Size frame_size(video_frame->natural_size());
 
@@ -730,11 +738,21 @@ bool VideoFrameSubmitter::SubmitFrame(
     return false;
   }
 
+  bool frame_size_changed = false;
   if (frame_size_ != frame_size) {
     if (!frame_size_.IsEmpty())
       GenerateNewSurfaceId();
     frame_size_ = frame_size;
+    frame_size_changed = true;
   }
+
+  // We can't delay frame size changes even if we have a pending compositor ACK
+  // because a relayout signal is already in flight on the main thread.
+  if (waiting_for_compositor_ack_ > 0 && !frame_size_changed) {
+    return false;
+  }
+
+  last_frame_id_ = video_frame->unique_id();
 
   auto frame_token = ++next_frame_token_;
   auto source_id = begin_frame_ack.frame_id.source_id;
@@ -766,7 +784,7 @@ bool VideoFrameSubmitter::SubmitFrame(
                                     last_begin_frame_args_);
   resource_provider_->ReleaseFrameResources();
 
-  waiting_for_compositor_ack_ = true;
+  ++waiting_for_compositor_ack_;
   return true;
 }
 
@@ -793,8 +811,9 @@ void VideoFrameSubmitter::SubmitEmptyFrame() {
   frame_trackers_.NotifySubmitFrame(frame_token, false, begin_frame_ack,
                                     last_begin_frame_args_);
 
-  // We don't set |waiting_for_compositor_ack_| here since we want to allow a
+  // We set `waiting_for_compositor_ack_` to zero here since we want to allow a
   // subsequent real frame to replace it at any time if needed.
+  waiting_for_compositor_ack_ = 0;
 }
 
 void VideoFrameSubmitter::SubmitSingleFrame() {

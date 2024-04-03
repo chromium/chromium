@@ -1859,7 +1859,6 @@ crbug.com/1005518 external/wpt/css/css-writing-modes/direction-upright-002.html 
 # crbug.com/1218721: These tests fail when libvpx_for_vp8 is enabled.
 crbug.com/1218721 fast/borders/border-radius-mask-video-shadow.html [ Failure ]
 crbug.com/1218721 fast/borders/border-radius-mask-video.html [ Failure ]
-crbug.com/1218721 [ Mac ] http/tests/media/video-frame-size-change.html [ Failure ]
 
 crbug.com/637055 fast/css/outline-offset-large.html [ Crash Failure Pass Timeout ]
 
@@ -4065,9 +4064,6 @@ crbug.com/979422 [ Mac ] fast/borders/border-radius-mask-canvas-padding.html [ F
 crbug.com/979422 [ Mac ] fast/borders/border-radius-mask-canvas-with-mask.html [ Failure ]
 crbug.com/979422 [ Mac ] fast/borders/border-radius-mask-canvas-border.html [ Failure ]
 
-# Sheriff 2019-08-14
-crbug.com/993671 [ Win ] http/tests/media/video-frame-size-change.html [ Failure Pass ]
-
 #Sherrif 2019-08-16
 crbug.com/994692 [ Linux ] compositing/reflections/nested-reflection-anchor-point.html [ Failure Pass ]
 crbug.com/994692 [ Win ] compositing/reflections/nested-reflection-anchor-point.html [ Failure Pass ]
@@ -4160,7 +4156,6 @@ crbug.com/1043357 http/tests/credentialmanagement/credentialscontainer-get-with-
 # rebaselined. TODO(jonross): triage these into any existing bugs or file more
 # specific bugs.
 crbug.com/1043675 [ Linux ] external/wpt/css/filter-effects/backdrop-filter-basic-opacity-2.html [ Failure ]
-crbug.com/1043675 [ Linux ] http/tests/media/video-frame-size-change.html [ Failure ]
 crbug.com/1043675 [ Linux ] svg/custom/svg-root-with-opacity.html [ Failure ]
 crbug.com/1043675 [ Win ] external/wpt/css/filter-effects/backdrop-filter-basic-opacity-2.html [ Failure ]
 crbug.com/1043675 [ Win ] svg/custom/svg-root-with-opacity.html [ Failure ]

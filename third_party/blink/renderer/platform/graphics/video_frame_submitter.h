@@ -160,7 +160,7 @@ class PLATFORM_EXPORT VideoFrameSubmitter
   mojo::Receiver<viz::mojom::blink::CompositorFrameSinkClient> receiver_{this};
   WebContextProviderCallback context_provider_callback_;
   std::unique_ptr<VideoFrameResourceProvider> resource_provider_;
-  bool waiting_for_compositor_ack_ = false;
+  int waiting_for_compositor_ack_ = 0;
 
   // When UseVideoFrameSinkBundle is enabled, this is initialized to a local
   // implementation which batches outgoing Viz requests with those from other

@@ -1077,8 +1077,8 @@ void VideoRendererImpl::PaintFirstFrame() {
   auto first_frame =
       algorithm_->Render(base::TimeTicks(), base::TimeTicks(), nullptr);
   DCHECK(first_frame);
-  CheckForMetadataChanges(first_frame->format(), first_frame->natural_size());
   sink_->PaintSingleFrame(first_frame);
+  CheckForMetadataChanges(first_frame->format(), first_frame->natural_size());
   painted_first_frame_ = true;
   paint_first_frame_cb_.Cancel();
 }
