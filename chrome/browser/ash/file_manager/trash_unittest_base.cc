@@ -6,6 +6,7 @@
 
 #include "base/files/file_util.h"
 #include "base/i18n/time_formatting.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -156,9 +157,10 @@ const std::string TrashBaseTest::CreateTrashInfoContentsFromPath(
                               : base::FilePath("/").Append(prefix_path);
 
   return base::StrCat(
-      {"[Trash Info]\nPath=", prefix.AsEndingWithSeparator().value(),
-       relative_restore_path,
-       "\nDeletionDate=", base::TimeFormatAsIso8601(base::Time::UnixEpoch())});
+      {"[Trash Info]\nPath=",
+       base::EscapePath(prefix.AsEndingWithSeparator().value()),
+       base::EscapePath(relative_restore_path), "\nDeletionDate=",
+       base::TimeFormatAsIso8601(base::Time::UnixEpoch()), "\n"});
 }
 
 const std::string TrashBaseTest::CreateTrashInfoContentsFromPath(
