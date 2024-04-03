@@ -137,9 +137,9 @@ void CacheManagerImpl::OnInitializeForProvider(
     std::move(callback).Run(ContentCacheImpl::Create(cache_directory_path));
   }
 
-  // Notify all observers once the ContentCache is initialisation is complete.
+  // Notify all observers.
   for (auto& observer : observers_) {
-    observer.OnContentCacheInitializeComplete(
+    observer.OnProviderInitializationComplete(
         base64_encoded_provider_folder_name, result);
   }
 }

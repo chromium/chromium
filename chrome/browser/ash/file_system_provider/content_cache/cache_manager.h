@@ -39,9 +39,8 @@ class CacheManager {
   // Observer class to be notified about changes happening in the CacheManager.
   class Observer : public base::CheckedObserver {
    public:
-    // Called when the initialization for a ContentCache for a
-    // FileSystemProvider is complete.
-    virtual void OnContentCacheInitializeComplete(
+    // Called when the initialization for a provider is complete.
+    virtual void OnProviderInitializationComplete(
         base::FilePath base64_encoded_provider_folder_name,
         base::File::Error result) {}
 
