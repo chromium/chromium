@@ -92,6 +92,9 @@ ParseStatus::Or<SourceString> SourceLineIterator::Next() {
   const auto line_end = source_.find_first_of("\r\n");
   if (line_end == std::string_view::npos) {
     ParseStatus st = ParseStatusCode::kInvalidEOL;
+    if (!base::IsStringUTF8AllowingNoncharacters(source_)) {
+      return st;
+    }
     return std::move(st).WithData("source", source_);
   }
 
