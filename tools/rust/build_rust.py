@@ -89,6 +89,8 @@ EXCLUDED_TESTS_MAC = [
     # https://crbug.com/1521497 These fail on Mac.
     os.path.join('tests', 'ui', 'abi', 'stack-probes-lto.rs#x64'),
     os.path.join('tests', 'ui', 'abi', 'stack-probes.rs#x64'),
+    # https://crbug.com/332562251 The test expectations are too strict.
+    os.path.join('tests', 'ui', 'linkage-attr', 'framework.rs#omit'),
 ]
 EXCLUDED_TESTS_MAC_ARM64 = [
     # https://crbug.com/1519640 This fails on Mac/ARM64. We didn't even run it
