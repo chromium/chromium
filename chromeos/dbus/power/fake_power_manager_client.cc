@@ -146,6 +146,10 @@ void FakePowerManagerClient::GetScreenBrightnessPercent(
       base::BindOnce(std::move(callback), screen_brightness_percent_));
 }
 
+void FakePowerManagerClient::SetAmbientLightSensorEnabled(bool enabled) {
+  is_ambient_light_sensor_enabled_ = enabled;
+}
+
 void FakePowerManagerClient::DecreaseKeyboardBrightness() {}
 
 void FakePowerManagerClient::IncreaseKeyboardBrightness() {

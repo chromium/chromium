@@ -127,6 +127,26 @@ MATCHER_P(IsRequestRestart, method_name, "") {
   return true;
 }
 
+// Matcher that verifies a |SetAmbientLightSensorEnabled| dbus::MethodCall.
+MATCHER_P2(IsSetAmbientLightSensorEnabled, method_name, sensor_enabled, "") {
+  if (arg->GetMember() != method_name) {
+    *result_listener << "has member " << arg->GetMember();
+    return false;
+  }
+  dbus::MessageReader reader(arg);
+  bool read_sensor_enabled;
+  if (!reader.PopBool(&read_sensor_enabled)) {
+    *result_listener << "missing value 1 (enabled)";
+    return false;
+  }
+  if (read_sensor_enabled != sensor_enabled) {
+    *result_listener << "expected enabled = " << sensor_enabled << ", got "
+                     << read_sensor_enabled;
+    return false;
+  }
+  return true;
+}
+
 // Runs |callback| with |response|. Needed due to ResponseCallback expecting a
 // bare pointer rather than an std::unique_ptr.
 void RunResponseCallback(dbus::ObjectProxy::ResponseCallback callback,
@@ -841,6 +861,24 @@ TEST_F(PowerManagerClientTest, BatterySaverModeStateChanged) {
   EmitSignal(&signal);
 
   EXPECT_EQ(proto.enabled(), observer.battery_saver_mode_state().enabled());
+}
+
+// Tests that |SetAmbientLightSensorEnabled| calls the DBus method with the same
+// name.
+TEST_F(PowerManagerClientTest, SetAmbientLightSensorEnabled) {
+  bool expected_sensor_enabled = false;
+  EXPECT_CALL(*proxy_.get(), DoCallMethod(IsSetAmbientLightSensorEnabled(
+                                              "SetAmbientLightSensorEnabled",
+                                              expected_sensor_enabled),
+                                          _, _));
+  client_->SetAmbientLightSensorEnabled(expected_sensor_enabled);
+
+  bool expected_sensor_enabled2 = true;
+  EXPECT_CALL(*proxy_.get(), DoCallMethod(IsSetAmbientLightSensorEnabled(
+                                              "SetAmbientLightSensorEnabled",
+                                              expected_sensor_enabled2),
+                                          _, _));
+  client_->SetAmbientLightSensorEnabled(expected_sensor_enabled2);
 }
 
 }  // namespace chromeos

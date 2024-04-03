@@ -328,6 +328,17 @@ class PowerManagerClientImpl : public PowerManagerClient {
             weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
+  void SetAmbientLightSensorEnabled(bool enabled) override {
+    dbus::MethodCall method_call(
+        power_manager::kPowerManagerInterface,
+        power_manager::kSetAmbientLightSensorEnabledMethod);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendBool(enabled);
+    power_manager_proxy_->CallMethod(&method_call,
+                                     dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                                     base::DoNothing());
+  }
+
   void GetKeyboardBrightnessPercent(
       DBusMethodCallback<double> callback) override {
     dbus::MethodCall method_call(

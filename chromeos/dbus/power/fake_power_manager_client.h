@@ -72,6 +72,9 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   double keyboard_brightness_percent() const {
     return keyboard_brightness_percent_.value();
   }
+  bool is_ambient_light_sensor_enabled() const {
+    return is_ambient_light_sensor_enabled_;
+  }
   bool is_projecting() const { return is_projecting_; }
   bool have_video_activity_report() const {
     return !video_activity_reports_.empty();
@@ -108,6 +111,7 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   void SetScreenBrightness(
       const power_manager::SetBacklightBrightnessRequest& request) override;
   void GetScreenBrightnessPercent(DBusMethodCallback<double> callback) override;
+  void SetAmbientLightSensorEnabled(bool enabled) override;
   void DecreaseKeyboardBrightness() override;
   void IncreaseKeyboardBrightness() override;
   void GetKeyboardBrightnessPercent(
@@ -287,6 +291,10 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   // brightness.
   // Initially set to an arbitrary non-null value.
   double requested_screen_brightness_percent_ = 80;
+
+  // Last value set by SetAmbientLightSensorEnabled. Defaults to true to match
+  // system behavior.
+  bool is_ambient_light_sensor_enabled_ = true;
 
   // Last projecting state set in SetIsProjecting().
   bool is_projecting_ = false;

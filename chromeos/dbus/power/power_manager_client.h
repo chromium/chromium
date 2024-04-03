@@ -241,6 +241,10 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
   virtual void GetScreenBrightnessPercent(
       DBusMethodCallback<double> callback) = 0;
 
+  // Sets whether the ambient light sensor should be used in brightness
+  // calculations.
+  virtual void SetAmbientLightSensorEnabled(bool enabled) = 0;
+
   // Decreases the keyboard brightness.
   virtual void DecreaseKeyboardBrightness() = 0;
 
