@@ -705,6 +705,7 @@
     "dawn-try-win10-x86-rel": "try/dawn-try-win10-x86-rel/gn-args.json",
     "dawn-win10-x64-deps-rel": "try/dawn-win10-x64-deps-rel/gn-args.json",
     "dawn-win10-x86-deps-rel": "try/dawn-win10-x86-deps-rel/gn-args.json",
+    "linux-dawn-intel-exp-rel": "try/linux-dawn-intel-exp-rel/gn-args.json",
     "linux-dawn-rel": "try/linux-dawn-rel/gn-args.json",
     "mac-arm64-dawn-rel": "try/mac-arm64-dawn-rel/gn-args.json",
     "mac-dawn-rel": "try/mac-dawn-rel/gn-args.json",

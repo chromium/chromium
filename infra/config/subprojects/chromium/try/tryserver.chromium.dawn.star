@@ -290,6 +290,22 @@ try_.builder(
 )
 
 try_.builder(
+    name = "linux-dawn-intel-exp-rel",
+    description_html = "Runs ToT Dawn tests on experimental Linux/Intel configs",
+    mirrors = [
+        "ci/Dawn Linux x64 Builder",
+        "ci/Dawn Linux x64 Experimental Release (Intel UHD 630)",
+    ],
+    gn_args = "ci/Dawn Linux x64 Builder",
+    pool = "luci.chromium.gpu.linux.intel.try",
+    builderless = True,
+    os = os.LINUX_DEFAULT,
+    test_presentation = resultdb.test_presentation(
+        grouping_keys = ["status", "v.test_suite", "v.gpu"],
+    ),
+)
+
+try_.builder(
     name = "linux-dawn-rel",
     mirrors = [
         "ci/Dawn Linux x64 Builder",

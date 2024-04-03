@@ -90,6 +90,7 @@ chromium/try/linux-chromeos-compile-dbg
 chromium/try/linux-chromeos-dbg
 chromium/try/linux-chromeos-rel
 chromium/try/linux-clobber-rel
+chromium/try/linux-dawn-intel-exp-rel
 chromium/try/linux-dawn-rel
 chromium/try/linux-dcheck-off-rel
 chromium/try/linux-extended-tracing-rel
