@@ -1245,6 +1245,7 @@ policies:
   1244: BoundSessionCredentialsEnabled
   1245: UiAutomationProviderEnabled
   1246: ApplicationBoundEncryptionEnabled
+  1247: DeviceAuthenticationFlowAutoReloadInterval
 atomic_groups:
   1: Homepage
   2: RemoteAccess

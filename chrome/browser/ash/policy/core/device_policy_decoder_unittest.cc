@@ -817,4 +817,20 @@ TEST_F(DevicePolicyDecoderTest,
       ::testing::HasSubstr("Policy parsing error: Invalid JSON string"));
 }
 
+TEST_F(DevicePolicyDecoderTest,
+       DecodeDeviceAuthenticationFlowAutoReloadInterval) {
+  em::ChromeDeviceSettingsProto device_policy;
+
+  DecodeUnsetDevicePolicyTestHelper(
+      device_policy, key::kDeviceAuthenticationFlowAutoReloadInterval);
+
+  base::Value auth_flow_reload_interval(15);
+  device_policy.mutable_deviceauthenticationflowautoreloadinterval()->set_value(
+      auth_flow_reload_interval.GetInt());
+
+  DecodeDevicePolicyTestHelper(device_policy,
+                               key::kDeviceAuthenticationFlowAutoReloadInterval,
+                               std::move(auth_flow_reload_interval));
+}
+
 }  // namespace policy

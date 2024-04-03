@@ -2071,4 +2071,5 @@ message ChromeDeviceSettingsProto {
       1194;
   optional BooleanPolicyProto DeviceExtendedAutoUpdateEnabled = 1195;
   optional StringPolicyProto DeviceWeeklyScheduledSuspend = 1209;
+  optional IntegerPolicyProto DeviceAuthenticationFlowAutoReloadInterval = 1247;
 }

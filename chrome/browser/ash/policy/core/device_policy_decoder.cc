@@ -748,6 +748,19 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
                   POLICY_SOURCE_CLOUD, base::Value(std::move(allowlist)),
                   nullptr);
   }
+
+  if (policy.has_deviceauthenticationflowautoreloadinterval()) {
+    const em::IntegerPolicyProto& container(
+        policy.deviceauthenticationflowautoreloadinterval());
+    if (container.has_value()) {
+      std::unique_ptr<base::Value> value(DecodeIntegerValue(container.value()));
+      if (value) {
+        policies->Set(key::kDeviceAuthenticationFlowAutoReloadInterval,
+                      POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                      POLICY_SOURCE_CLOUD, std::move(*value), nullptr);
+      }
+    }
+  }
 }
 
 void DecodeNetworkPolicies(const em::ChromeDeviceSettingsProto& policy,
