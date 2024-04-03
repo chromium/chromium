@@ -117,23 +117,31 @@ void TabScrubberChromeOS::OnScrollEvent(ui::ScrollEvent* event) {
   }
 #endif
 
-  if (!enabled_)
+  if (!enabled_) {
     return;
+  }
 
   if (event->IsFlingScrollEvent()) {
-    FinishScrub(true);
+    // If we are not scrubbing, do not stop mark the event as handled here so
+    // that other events can consume it.
+    if (FinishScrub(true)) {
+      event->SetHandled();
+    }
     immersive_reveal_lock_.reset();
     return;
   }
 
-  if (event->finger_count() != kFingerCount)
+  if (event->finger_count() != kFingerCount) {
     return;
+  }
 
   Browser* browser = GetActiveBrowser();
   if (!browser || (scrubbing_ && browser_ && browser != browser_) ||
       (highlighted_tab_ != -1 &&
        highlighted_tab_ >= browser->tab_strip_model()->count())) {
-    FinishScrub(false);
+    if (FinishScrub(false)) {
+      event->SetHandled();
+    }
     return;
   }
 
@@ -141,12 +149,14 @@ void TabScrubberChromeOS::OnScrollEvent(ui::ScrollEvent* event) {
   TabStrip* tab_strip = browser_view->tabstrip();
 
   if (tab_strip->IsAnimating()) {
-    FinishScrub(false);
+    if (FinishScrub(false)) {
+      event->SetHandled();
+    }
     return;
   }
 
   // We are handling the event.
-  event->StopPropagation();
+  event->SetHandled();
 
   // The event's x_offset doesn't change in an RTL layout. Negative value means
   // left, positive means right.
@@ -265,7 +275,8 @@ void TabScrubberChromeOS::BeginScrub(BrowserView* browser_view,
   tab_strip_->AddObserver(this);
 }
 
-void TabScrubberChromeOS::FinishScrub(bool activate) {
+bool TabScrubberChromeOS::FinishScrub(bool activate) {
+  const int stops_scrubbing = scrubbing_;
   activate_timer_.Stop();
 
   if (browser_ && browser_->window()) {
@@ -293,6 +304,8 @@ void TabScrubberChromeOS::FinishScrub(bool activate) {
   swipe_y_ = -1;
   scrubbing_ = false;
   highlighted_tab_ = -1;
+
+  return stops_scrubbing;
 }
 
 void TabScrubberChromeOS::ScheduleFinishScrubIfNeeded() {
@@ -300,9 +313,10 @@ void TabScrubberChromeOS::ScheduleFinishScrubIfNeeded() {
   // trigger the timer running.
   const base::TimeDelta delay =
       base::Milliseconds(use_default_activation_delay_ ? 200 : 20000);
-  activate_timer_.Start(FROM_HERE, delay,
-                        base::BindRepeating(&TabScrubberChromeOS::FinishScrub,
-                                            base::Unretained(this), true));
+  activate_timer_.Start(
+      FROM_HERE, delay,
+      base::BindRepeating(base::IgnoreResult(&TabScrubberChromeOS::FinishScrub),
+                          base::Unretained(this), true));
 }
 
 void TabScrubberChromeOS::ScrubDirectionChanged(Direction direction) {
@@ -396,7 +410,7 @@ bool TabScrubberChromeOS::MaybeDelegateHandlingToLacros(
     crosapi::BrowserManager::Get()->HandleTabScrubbing(
         event->x_offset(),
         /*is_fling_scroll_event=*/false);
-    event->StopPropagation();
+    event->SetHandled();
     return true;
   }
 

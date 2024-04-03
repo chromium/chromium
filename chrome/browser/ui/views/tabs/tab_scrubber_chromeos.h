@@ -77,7 +77,8 @@ class TabScrubberChromeOS : public ui::EventHandler,
   Browser* GetActiveBrowser();
 
   void BeginScrub(BrowserView* browser_view, float x_offset);
-  void FinishScrub(bool activate);
+  // Returns true if it does finish the ongoing scrubbing.
+  bool FinishScrub(bool activate);
 
   void ScheduleFinishScrubIfNeeded();
 
