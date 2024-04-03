@@ -69,10 +69,16 @@ DefaultBrowserPromptManager::DefaultBrowserPromptManager() = default;
 
 DefaultBrowserPromptManager::~DefaultBrowserPromptManager() = default;
 
-void DefaultBrowserPromptManager::ShowPrompt() {
-  browser_tab_strip_tracker_ =
-      std::make_unique<BrowserTabStripTracker>(this, this);
-  browser_tab_strip_tracker_->Init();
+void DefaultBrowserPromptManager::MaybeShowPrompt() {
+  if (ShouldShowInfoBarPrompt()) {
+    browser_tab_strip_tracker_ =
+        std::make_unique<BrowserTabStripTracker>(this, this);
+    browser_tab_strip_tracker_->Init();
+  }
+}
+
+void DefaultBrowserPromptManager::MaybeShowPromptForTesting() {
+  MaybeShowPrompt();
 }
 
 void DefaultBrowserPromptManager::CreateInfoBarForWebContents(
@@ -154,6 +160,11 @@ void DefaultBrowserPromptManager::OnDismiss() {
   user_initiated_close_pending_ = true;
 }
 
+bool DefaultBrowserPromptManager::ShouldShowInfoBarPromptForTesting(
+    PrefService* local_state) {
+  return ShouldShowInfoBarPrompt(local_state);
+}
+
 // static
 void DefaultBrowserPromptManager::RegisterSyntheticFieldTrial(
     const std::string& group_name) {
@@ -162,4 +173,36 @@ void DefaultBrowserPromptManager::RegisterSyntheticFieldTrial(
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       "DefaultBrowserPromptRefreshSynthetic", group_name,
       variations::SyntheticTrialAnnotationMode::kCurrentLog);
+}
+
+bool DefaultBrowserPromptManager::ShouldShowInfoBarPrompt(
+    PrefService* local_state) {
+  if (!features::kShowDefaultBrowserInfoBar.Get()) {
+    return false;
+  }
+
+  const int declined_count =
+      local_state->GetInteger(prefs::kDefaultBrowserDeclinedCount);
+  const base::Time last_declined_time =
+      local_state->GetTime(prefs::kDefaultBrowserLastDeclinedTime);
+  const int max_prompt_count = features::kMaxPromptCount.Get();
+
+  // A negative value for the max prompt count indicates that the prompt
+  // should be shown indefinitely. Otherwise, don't show the prompt if
+  // declined count equals or exceeds the max prompt count. A max prompt count
+  // of zero should mean that the prompt is never shown.
+  if (max_prompt_count >= 0 && declined_count >= max_prompt_count) {
+    return false;
+  }
+
+  // Show if the user has never declined the prompt.
+  if (declined_count == 0) {
+    return true;
+  }
+
+  // Show if it has been long enough since the last declined time
+  base::TimeDelta reprompt_duration =
+      features::kRepromptDuration.Get() *
+      std::pow(features::kRepromptDurationMultiplier.Get(), declined_count - 1);
+  return (base::Time::Now() - last_declined_time) > reprompt_duration;
 }

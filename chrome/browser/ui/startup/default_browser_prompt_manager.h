@@ -8,6 +8,8 @@
 #include <map>
 #include <string>
 
+#include "base/gtest_prod_util.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
@@ -44,7 +46,9 @@ class DefaultBrowserPromptManager : public BrowserTabStripTrackerDelegate,
   DefaultBrowserPromptManager();
   ~DefaultBrowserPromptManager() override;
 
-  void ShowPrompt();
+  void MaybeShowPrompt();
+  void MaybeShowPromptForTesting();
+
   void CreateInfoBarForWebContents(content::WebContents* contents,
                                    Profile* profile);
   void CloseAllInfoBars();
@@ -65,9 +69,15 @@ class DefaultBrowserPromptManager : public BrowserTabStripTrackerDelegate,
   void OnAccept() override;
   void OnDismiss() override;
 
+  bool ShouldShowInfoBarPromptForTesting(
+      PrefService* local_state = g_browser_process->local_state());
+
  private:
   // Reports to the launch study for the default browser prompt synthetic trial.
   static void RegisterSyntheticFieldTrial(const std::string& group_name);
+
+  bool ShouldShowInfoBarPrompt(
+      PrefService* local_state = g_browser_process->local_state());
 
   std::unique_ptr<BrowserTabStripTracker> browser_tab_strip_tracker_;
 

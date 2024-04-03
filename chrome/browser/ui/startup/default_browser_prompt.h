@@ -28,8 +28,4 @@ void ResetDefaultBrowserPrompt(Profile* profile);
 // Only used within tests to confirm the behavior of the default browser prompt.
 void ShowPromptForTesting();
 
-// Only used within tests to confirm the triggering logic for the default
-// browser prompt.
-bool ShouldShowDefaultBrowserPromptForTesting(Profile* profile);
-
 #endif  // CHROME_BROWSER_UI_STARTUP_DEFAULT_BROWSER_PROMPT_H_

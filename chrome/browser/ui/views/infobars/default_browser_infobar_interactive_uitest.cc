@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/startup/default_browser_prompt.h"
+#include "chrome/browser/ui/startup/default_browser_prompt_manager.h"
 #include "chrome/browser/ui/startup/infobar_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -56,7 +57,7 @@ class DefaultBrowserInfobarInteractiveTest : public InteractiveBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarInteractiveTest,
-                       ShowsDefaultBrowserPrompt) {
+                       ShowsDefaultBrowserPromptRefreshDisabled) {
   ShowPromptForTesting();
   RunTestSequence(
       WaitForShow(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
@@ -68,10 +69,17 @@ class DefaultBrowserInfobarWithRefreshInteractiveTest
     : public DefaultBrowserInfobarInteractiveTest {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kDefaultBrowserPromptRefresh);
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kDefaultBrowserPromptRefresh,
+        {{features::kShowDefaultBrowserInfoBar.name, "true"}});
 
     DefaultBrowserInfobarInteractiveTest::SetUp();
+  }
+
+  void ShowPrompt() {
+    auto* manager = DefaultBrowserPromptManager::GetInstance();
+    ASSERT_TRUE(manager->ShouldShowInfoBarPromptForTesting());
+    manager->MaybeShowPromptForTesting();
   }
 
  private:
@@ -80,7 +88,7 @@ class DefaultBrowserInfobarWithRefreshInteractiveTest
 
 IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
                        ShowsDefaultBrowserPromptOnNewTab) {
-  ShowPromptForTesting();
+  ShowPrompt();
   RunTestSequence(
       WaitForShow(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
@@ -90,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
 IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
                        HeightStaysConstant) {
   int height;
-  ShowPromptForTesting();
+  ShowPrompt();
   RunTestSequence(
       WaitForShow(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
       WithView(ConfirmInfoBar::kInfoBarElementId,
@@ -112,7 +120,7 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
   chrome::AcceleratorProviderForBrowser(browser())->GetAcceleratorForCommandId(
       IDC_NEW_INCOGNITO_WINDOW, &incognito_accelerator);
 
-  ShowPromptForTesting();
+  ShowPrompt();
   RunTestSequence(
       WaitForShow(ConfirmInfoBar::kInfoBarElementId),
       SendAccelerator(kBrowserViewElementId, incognito_accelerator),
@@ -123,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
                        RemovesAllBrowserPromptsOnAccept) {
-  ShowPromptForTesting();
+  ShowPrompt();
   RunTestSequence(
       WaitForShow(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
@@ -142,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
   const gfx::AnimationTestApi::RenderModeResetter disable_rich_animations_ =
       gfx::AnimationTestApi::SetRichAnimationRenderMode(
           gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
-  ShowPromptForTesting();
+  ShowPrompt();
   RunTestSequence(WaitForShow(ConfirmInfoBar::kInfoBarElementId),
                   PressButton(ConfirmInfoBar::kOkButtonElementId),
                   WaitForHide(ConfirmInfoBar::kInfoBarElementId));
@@ -156,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
   const gfx::AnimationTestApi::RenderModeResetter disable_rich_animations_ =
       gfx::AnimationTestApi::SetRichAnimationRenderMode(
           gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
-  ShowPromptForTesting();
+  ShowPrompt();
   RunTestSequence(WaitForShow(ConfirmInfoBar::kInfoBarElementId),
                   PressButton(ConfirmInfoBar::kDismissButtonElementId),
                   WaitForHide(ConfirmInfoBar::kInfoBarElementId));
@@ -165,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
 IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
                        LogsMetrics) {
   base::HistogramTester histogram_tester;
-  ShowPromptForTesting();
+  ShowPrompt();
   RunTestSequence(WaitForShow(ConfirmInfoBar::kInfoBarElementId),
                   // This flush is needed to prevent TSan builders from flaking.
                   FlushEvents(),
@@ -182,7 +190,7 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
   // stop subscribing to TabStripModelObserver updates when new windows were
   // created.
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabMovedToNewWindowId);
-  ShowPromptForTesting();
+  ShowPrompt();
   RunTestSequence(
       // Open two tabs
       WaitForShow(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),

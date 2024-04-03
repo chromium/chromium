@@ -43,7 +43,7 @@ class DefaultBrowserPromptBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(DefaultBrowserPromptBrowserTest,
                        JoinsSyntheticTrialCohort) {
-  ShouldShowDefaultBrowserPromptForTesting(browser()->profile());
+  DefaultBrowserPromptManager::MaybeJoinDefaultBrowserPromptCohort();
 
   EXPECT_EQ(
       kStudyTestGroupName,
@@ -76,7 +76,7 @@ class DefaultBrowserPromptDisabledBrowserTest
 
 IN_PROC_BROWSER_TEST_F(DefaultBrowserPromptDisabledBrowserTest,
                        DoesNotJoinSyntheticTrialCohort) {
-  ShouldShowDefaultBrowserPromptForTesting(browser()->profile());
+  DefaultBrowserPromptManager::MaybeJoinDefaultBrowserPromptCohort();
 
   EXPECT_EQ("", local_state()->GetString(
                     prefs::kDefaultBrowserPromptRefreshStudyGroup));
