@@ -1,0 +1,70 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "fend_core"
+  epoch = "1"
+  crate_type = "rlib"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/fend-core-1.4.6/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.4.6/src/ast.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.4.6/src/date.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.4.6/src/date/day.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.4.6/src/date/day_of_week.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.4.6/src/date/month.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.4.6/src/date/parser.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.4.6/src/date/year.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.4.6/src/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.4.6/src/eval.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.4.6/src/format.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.4.6/src/ident.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.4.6/src/inline_substitutions.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.4.6/src/interrupt.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.4.6/src/json.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.4.6/src/lexer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.4.6/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.4.6/src/num.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.4.6/src/num/base.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.4.6/src/num/bigrat.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.4.6/src/num/biguint.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.4.6/src/num/complex.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.4.6/src/num/continued_fraction.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.4.6/src/num/dist.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.4.6/src/num/exact.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.4.6/src/num/formatting_style.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.4.6/src/num/real.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.4.6/src/num/unit.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.4.6/src/num/unit/base_unit.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.4.6/src/num/unit/named_unit.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.4.6/src/num/unit/unit_exponent.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.4.6/src/parser.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.4.6/src/result.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.4.6/src/scope.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.4.6/src/serialize.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.4.6/src/units.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.4.6/src/units/builtin.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.4.6/src/value.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.4.6/src/value/built_in_function.rs",
+  ]
+  inputs = []
+
+  build_native_rust_unit_tests = false
+  edition = "2021"
+  cargo_pkg_version = "1.4.6"
+  cargo_pkg_name = "fend-core"
+  cargo_pkg_description = "Arbitrary-precision unit-aware calculator"
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
+  proc_macro_configs -= [ "//build/config/compiler:chromium_code" ]
+  proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
+}

@@ -1,0 +1,9 @@
+Name: fend-core
+URL: https://crates.io/crates/fend-core
+Description: Arbitrary-precision unit-aware calculator
+Version: 1.4.6
+Security Critical: yes
+Shipped: yes
+License: MIT
+License File: //third_party/rust/chromium_crates_io/vendor/fend-core-1.4.6/LICENSE.md
+Revision: 6a01c36409da78fd81f0e927ce0550647cc8a23d

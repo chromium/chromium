@@ -62,6 +62,7 @@ dependencies = [
  "cfg-if",
  "cxx",
  "cxxbridge-cmd",
+ "fend-core",
  "font-types",
  "hex",
  "hex-literal",
@@ -169,6 +170,11 @@ dependencies = [
 [[package]]
 name = "either"
 version = "1.10.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "fend-core"
+version = "1.4.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]

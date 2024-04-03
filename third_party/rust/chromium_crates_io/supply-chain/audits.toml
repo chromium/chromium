@@ -491,6 +491,11 @@ who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "1.9.0 -> 1.10.0"
 
+[[audits.fend-core]]
+who = "jiwan@chromium.org"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+version = "1.4.6"
+
 [[audits.font-types]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["ub-risk-0", "safe-to-deploy", "does-not-implement-crypto"]
