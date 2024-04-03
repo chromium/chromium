@@ -43,6 +43,10 @@ base::TimeDelta GetAnimationDuration(base::TimeDelta duration) {
 // This method updates indicators' visibility set in
 // `PageSpecificContentSettings`.
 void UpdateIndicatorsVisibilityFlags(LocationBarView* location_bar) {
+  if (!location_bar->GetWebContents()) {
+    return;
+  }
+
   content_settings::PageSpecificContentSettings* pscs =
       content_settings::PageSpecificContentSettings::GetForFrame(
           location_bar->GetWebContents()->GetPrimaryMainFrame());
@@ -178,6 +182,13 @@ bool PermissionDashboardController::Update(
       return false;
     }
 
+    // When `WebContents` is nullptr, `indicator_model->is_visible()` is always
+    // false.
+    if (!location_bar_view_->GetWebContents()) {
+      HideIndicators();
+      return true;
+    }
+
     // In case `GetPrimaryMainFrame()` changed, we should immediately hide
     // indicators without the collapse animation.
     bool same_frame = main_frame_id_ == location_bar_view_->GetWebContents()
@@ -272,6 +283,11 @@ bool PermissionDashboardController::Update(
 void PermissionDashboardController::OnChipVisibilityChanged(bool is_visible) {}
 
 void PermissionDashboardController::OnExpandAnimationEnded() {
+  if (!location_bar_view_->GetWebContents()) {
+    HideIndicators();
+    return;
+  }
+
   is_verbose_ = true;
 
   UpdateIndicatorsVisibilityFlags(location_bar_view_);
@@ -280,6 +296,11 @@ void PermissionDashboardController::OnExpandAnimationEnded() {
 }
 
 void PermissionDashboardController::OnCollapseAnimationEnded() {
+  if (!location_bar_view_->GetWebContents()) {
+    HideIndicators();
+    return;
+  }
+
   is_verbose_ = false;
   content_settings::PageSpecificContentSettings* content_settings =
       content_settings::PageSpecificContentSettings::GetForFrame(
@@ -340,7 +361,7 @@ void PermissionDashboardController::HideIndicators() {
 
   // If blocked on the system level, then the indicators will not be shown as
   // blocked in PSCS. Reset them manually.
-  if (blocked_on_system_level_) {
+  if (blocked_on_system_level_ && location_bar_view_->GetWebContents()) {
     content_settings::PageSpecificContentSettings* pscs =
         content_settings::PageSpecificContentSettings::GetForFrame(
             location_bar_view_->GetWebContents()->GetPrimaryMainFrame());
