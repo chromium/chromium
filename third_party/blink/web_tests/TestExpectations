@@ -3236,7 +3236,6 @@ crbug.com/626703 external/wpt/webrtc/RTCPeerConnection-remote-track-mute.https.h
 crbug.com/626703 external/wpt/fetch/content-type/response.window.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-will-change/will-change-abspos-cb-dynamic-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-will-change/will-change-abspos-cb-001.html [ Failure ]
-crbug.com/892337 external/wpt/resource-timing/content-type-parsing.html [ Failure Timeout ]
 
 # origin-border-box tests fail on bots, but some of them seem to pass locally
 crbug.com/626703 external/wpt/css/css-backgrounds/background-origin/origin-border-box.html [ Failure Pass ]
