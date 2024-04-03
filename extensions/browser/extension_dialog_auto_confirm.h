@@ -27,13 +27,6 @@ class ScopedTestDialogAutoConfirm {
   // automatically shown, accepted, or cancelled.
   explicit ScopedTestDialogAutoConfirm(AutoConfirm override_confirm_value);
 
-  // Set up auto confirm value to |override_confirm_value| so the dialog is
-  // automatically shown, accepted, or cancelled. In addition, if a dialog is
-  // accepted and an option can be selected, accept the option specified by
-  // |override_option_to_select|.
-  ScopedTestDialogAutoConfirm(AutoConfirm override_confirm_value,
-                              int override_option_to_select);
-
   ScopedTestDialogAutoConfirm(const ScopedTestDialogAutoConfirm&) = delete;
   ScopedTestDialogAutoConfirm& operator=(const ScopedTestDialogAutoConfirm&) =
       delete;
@@ -42,9 +35,6 @@ class ScopedTestDialogAutoConfirm {
 
   // Return whether the dialog should be showed, accepted, or cancelled.
   static AutoConfirm GetAutoConfirmValue();
-
-  // Return which option is selected for the dialog.
-  static int GetOptionSelected();
 
   // Return the stored string justification.
   static std::string GetJustification();
@@ -56,10 +46,6 @@ class ScopedTestDialogAutoConfirm {
   // Preserve the old auto confirm value so it can be reset when the dialog
   // goes out of scope.
   const AutoConfirm old_auto_confirm_value_;
-
-  // Preserve the old option to select so it can be reset when the dialog goes
-  // out of scope.
-  const int old_option_to_select_;
 
   // Preserve the old justification so it can be reset when the dialog goes out
   // of scope.
