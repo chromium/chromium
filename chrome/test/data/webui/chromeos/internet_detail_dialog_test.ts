@@ -568,27 +568,6 @@ suite('internet-detail-dialog', () => {
         assertTrue(!!apnSelectionDialog);
       });
 
-  [false, true].forEach(isJellyEnabled => {
-    test('Dynamic theme CSS is added when isJellyEnabled is set', async () => {
-      loadTimeData.overrideValues({
-        isJellyEnabled: isJellyEnabled,
-      });
-      await setupCellularNetwork(
-          /*isPrimary=*/ true, /*isInhibited=*/ false);
-      await init();
-
-      const linkEl =
-          document.querySelector('link[href*=\'chrome://theme/colors.css\']');
-      if (isJellyEnabled) {
-        assertTrue(!!linkEl);
-        assertTrue(document.body.classList.contains('jelly-enabled'));
-      } else {
-        assertEquals(null, linkEl);
-        assertFalse(document.body.classList.contains('jelly-enabled'));
-      }
-    });
-  });
-
   test('Show toast on show-error-toast event', async function() {
     loadTimeData.overrideValues({
       apnRevamp: true,

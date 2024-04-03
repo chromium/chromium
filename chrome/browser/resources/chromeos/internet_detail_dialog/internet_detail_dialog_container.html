@@ -5,6 +5,7 @@
     <title>$i18n{title}</title>
     <link rel="stylesheet" href="chrome://resources/chromeos/colors/cros_styles.css">
     <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
+    <link rel="stylesheet" href="chrome://theme/colors.css?sets=legacy,sys">
   </head>
   <style>
     /* The :not(body) selector allows the variable definitions below to 'win'
@@ -37,7 +38,7 @@
       overflow: auto;
     }
   </style>
-  <body>
+  <body class="jelly-enabled">
     <div id="content">
       <internet-detail-dialog></internet-detail-dialog>
       <script type="module" src="internet_detail_dialog.js"></script>

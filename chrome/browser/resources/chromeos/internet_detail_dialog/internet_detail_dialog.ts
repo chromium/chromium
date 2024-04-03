@@ -129,18 +129,6 @@ export class InternetDetailDialogElement extends
       },
 
       /**
-       * Return true if Jelly feature flag is enabled.
-       */
-      isJellyEnabled_: {
-        type: Boolean,
-        readOnly: true,
-        value() {
-          return loadTimeData.valueExists('isJellyEnabled') &&
-              loadTimeData.getBoolean('isJellyEnabled');
-        },
-      },
-
-      /**
        * Return true if custom APNs limit is reached.
        */
       isNumCustomApnsLimitReached_: {
@@ -170,7 +158,6 @@ export class InternetDetailDialogElement extends
   private globalPolicy_: GlobalPolicy;
   private apnExpanded_: boolean;
   private isApnRevampEnabled_: boolean;
-  private isJellyEnabled_: boolean;
   private isNumCustomApnsLimitReached_: boolean;
   private errorToastMessage_: string;
   private didSetFocus_: boolean = false;
@@ -208,16 +195,9 @@ export class InternetDetailDialogElement extends
 
     this.browserProxy_ = InternetDetailDialogBrowserProxyImpl.getInstance();
     const dialogArgs = this.browserProxy_.getDialogArguments();
-    if (this.isJellyEnabled_) {
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = 'chrome://theme/colors.css?sets=legacy,sys';
-      document.head.appendChild(link);
-      document.body.classList.add('jelly-enabled');
-      (function() {
-        ColorChangeUpdater.forDocument().start();
-      })();
-    }
+
+    ColorChangeUpdater.forDocument().start();
+
     let type;
     let name;
     if (dialogArgs) {
