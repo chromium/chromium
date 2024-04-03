@@ -26,6 +26,7 @@
 #include "ui/base/test/ui_controls.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/test/button_test_api.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
 
@@ -112,6 +113,8 @@ class PermissionBubbleInteractiveUITest : public InProcessBrowserTest {
 #else
     SendAcceleratorSync(ui::VKEY_TAB, true, false);
 #endif
+    views::test::RunScheduledLayout(
+        BrowserView::GetBrowserViewForBrowser(browser()));
   }
 
   void OpenBubbleIfRequestChipUiIsShown() {

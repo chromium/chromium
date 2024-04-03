@@ -787,6 +787,7 @@ bool InProcessBrowserTest::AddTabAtIndexToBrowser(
   params.tabstrip_index = index;
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&params);
+  RunScheduledLayouts();
 
   return content::WaitForLoadStop(params.navigated_or_inserted_contents);
 }
@@ -896,7 +897,7 @@ void InProcessBrowserTest::AddBlankTabAndShow(Browser* browser) {
       browser, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   content::TestNavigationObserver observer(blank_tab);
   observer.Wait();
-
+  RunScheduledLayouts();
   browser->window()->Show();
   ASSERT_TRUE(WaitForWindowCreation(browser));
 }

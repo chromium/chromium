@@ -23,6 +23,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
 
@@ -65,6 +66,20 @@ class ConstrainedWindowViewTest : public InProcessBrowserTest {
       delete;
 
   ~ConstrainedWindowViewTest() override = default;
+
+  void CreateNewTabAndLayout(Browser* browser) {
+    chrome::NewTab(browser);
+    // Layout can trigger changes in web content visibility which in turn
+    // affects the visibility of tab modal dialogs.
+    RunScheduledLayouts();
+  }
+
+  void CloseTabAndLayout(Browser* browser) {
+    chrome::CloseTab(browser);
+    // Layout can trigger changes in web content visibility which in turn
+    // affects the visibility of tab modal dialogs.
+    RunScheduledLayouts();
+  }
 };
 
 }  // namespace
@@ -116,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest, MAYBE_FocusTest) {
 
   // Creating a new tab should take focus away from the other tab's dialog.
   const int tab_with_dialog = browser()->tab_strip_model()->active_index();
-  chrome::NewTab(browser());
+  CreateNewTabAndLayout(browser());
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
   EXPECT_NE(dialog2->GetContentsView(), focus_manager->GetFocusedView());
 
@@ -140,8 +155,10 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest, TabCloseTest) {
   views::ViewTracker tracker(dialog);
   EXPECT_EQ(dialog, tracker.view());
   EXPECT_TRUE(dialog->GetWidget()->IsVisible());
-  chrome::CloseTab(browser());
-  content::RunAllPendingInMessageLoop();
+  views::test::WidgetDestroyedWaiter widget_destroyed_waiter(
+      dialog->GetWidget());
+  CloseTabAndLayout(browser());
+  widget_destroyed_waiter.Wait();
   EXPECT_EQ(nullptr, tracker.view());
 }
 
@@ -163,16 +180,18 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest, MAYBE_TabSwitchTest) {
   EXPECT_TRUE(dialog->GetWidget()->IsVisible());
 
   // Open a new tab. The tab-modal window should hide itself.
-  chrome::NewTab(browser());
+  CreateNewTabAndLayout(browser());
   EXPECT_FALSE(dialog->GetWidget()->IsVisible());
 
   // Close the new tab. The tab-modal window should show itself again.
-  chrome::CloseTab(browser());
+  CloseTabAndLayout(browser());
   EXPECT_TRUE(dialog->GetWidget()->IsVisible());
 
   // Close the original tab.
-  chrome::CloseTab(browser());
-  content::RunAllPendingInMessageLoop();
+  views::test::WidgetDestroyedWaiter widget_destroyed_waiter(
+      dialog->GetWidget());
+  CloseTabAndLayout(browser());
+  widget_destroyed_waiter.Wait();
   EXPECT_EQ(nullptr, tracker.view());
 }
 
@@ -194,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest, MAYBE_TabMoveTest) {
 
   // Move the tab to a second browser window; but first create another tab.
   // That prevents the first browser window from closing when its tab is moved.
-  chrome::NewTab(browser());
+  CreateNewTabAndLayout(browser());
   std::unique_ptr<tabs::TabModel> detached_tab =
       browser()->tab_strip_model()->DetachTabAtForInsertion(
           browser()->tab_strip_model()->GetIndexOfWebContents(web_contents));
@@ -205,11 +224,15 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest, MAYBE_TabMoveTest) {
   // Close the first browser.
   chrome::CloseWindow(browser());
   content::RunAllPendingInMessageLoop();
+  // Layout can trigger changes in web content visibility which in turn
+  // affects the visibility of tab modal dialogs.
+  RunScheduledLayouts();
   EXPECT_TRUE(dialog->GetWidget()->IsVisible());
 
   // Close the dialog's browser window.
-  chrome::CloseTab(browser2);
-  content::RunAllPendingInMessageLoop();
+  views::test::WidgetDestroyedWaiter destroyed_waiter(dialog->GetWidget());
+  CloseTabAndLayout(browser2);
+  destroyed_waiter.Wait();
   EXPECT_EQ(nullptr, tracker.view());
 }
 

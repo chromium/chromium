@@ -33,7 +33,9 @@
 
 #if defined(TOOLKIT_VIEWS)
 #include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "ui/views/test/views_test_utils.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "content/public/browser/context_factory.h"
@@ -199,6 +201,12 @@ void BrowserWithTestWindowTest::AddTab(Browser* browser, const GURL& url) {
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&params);
   CommitPendingLoad(&params.navigated_or_inserted_contents->GetController());
+#if defined(TOOLKIT_VIEWS)
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  if (browser_view) {
+    views::test::RunScheduledLayout(browser_view);
+  }
+#endif
 }
 
 void BrowserWithTestWindowTest::CommitPendingLoad(
