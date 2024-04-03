@@ -181,6 +181,7 @@ source_set("unit_tests") {
     "supervised_user_settings_model_type_controller_unittest.cc",
     "supervised_user_settings_service_unittest.cc",
     "supervised_user_url_filter_unittest.cc",
+    "supervised_user_utils_unittest.cc",
   ]
 
   deps = [

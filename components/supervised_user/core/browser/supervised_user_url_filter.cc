@@ -804,6 +804,10 @@ void SupervisedUserURLFilter::SetURLCheckerClientForTesting(
       new safe_search_api::URLChecker(std::move(url_checker_client)));
 }
 
+bool SupervisedUserURLFilter::IsHostInBlocklist(const std::string& host) const {
+  return blocked_host_list_.contains(host);
+}
+
 void SupervisedUserURLFilter::CheckCallback(
     FilteringBehaviorCallback callback,
     const GURL& url,

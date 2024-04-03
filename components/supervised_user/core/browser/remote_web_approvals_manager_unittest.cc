@@ -7,14 +7,19 @@
 #include <string>
 #include <utility>
 #include <vector>
+
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/safe_search_api/fake_url_checker_client.h"
 #include "components/supervised_user/core/browser/permission_request_creator.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
+#include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -101,20 +106,34 @@ class RemoteWebApprovalsManagerTest : public ::testing::Test {
     return remote_web_approvals_manager_;
   }
 
-  void RequestApproval(const GURL& url, AsyncResultHolder* result_holder) {
+  void RequestApproval(const GURL& url,
+                       AsyncResultHolder* result_holder,
+                       supervised_user::FilteringBehaviorReason reason =
+                           supervised_user::FilteringBehaviorReason::DEFAULT) {
+    supervised_user::UrlFormatter url_formatter(filter_, reason);
     remote_web_approvals_manager_.RequestApproval(
-        url, base::BindOnce(&AsyncResultHolder::SetResult,
-                            base::Unretained(result_holder)));
+        url, url_formatter,
+        base::BindOnce(&AsyncResultHolder::SetResult,
+                       base::Unretained(result_holder)));
   }
+
+  supervised_user::SupervisedUserURLFilter& filter() { return filter_; }
 
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  TestingPrefServiceSimple pref_service_;
+  supervised_user::SupervisedUserURLFilter filter_ =
+      supervised_user::SupervisedUserURLFilter(
+          pref_service_,
+          std::make_unique<safe_search_api::FakeURLCheckerClient>(),
+          base::BindRepeating([](const GURL& url) { return false; }));
   supervised_user::RemoteWebApprovalsManager remote_web_approvals_manager_;
 };
 
 TEST_F(RemoteWebApprovalsManagerTest, CreatePermissionRequest) {
   GURL url("http://www.example.com");
+  GURL stripped_url("http://example.com");
 
   // Without any permission request creators, it should be disabled, and any
   // AddURLAccessRequest() calls should fail.
@@ -146,7 +165,7 @@ TEST_F(RemoteWebApprovalsManagerTest, CreatePermissionRequest) {
     AsyncResultHolder result_holder;
     RequestApproval(url, &result_holder);
     ASSERT_EQ(1u, creator->requested_urls().size());
-    EXPECT_EQ(url.spec(), creator->requested_urls()[0].spec());
+    EXPECT_EQ(stripped_url.spec(), creator->requested_urls()[0].spec());
 
     creator->AnswerRequest(0, true);
     EXPECT_TRUE(result_holder.GetResult());
@@ -156,7 +175,7 @@ TEST_F(RemoteWebApprovalsManagerTest, CreatePermissionRequest) {
     AsyncResultHolder result_holder;
     RequestApproval(url, &result_holder);
     ASSERT_EQ(1u, creator->requested_urls().size());
-    EXPECT_EQ(url.spec(), creator->requested_urls()[0].spec());
+    EXPECT_EQ(stripped_url.spec(), creator->requested_urls()[0].spec());
 
     creator->AnswerRequest(0, false);
     EXPECT_FALSE(result_holder.GetResult());
@@ -168,9 +187,15 @@ TEST_F(RemoteWebApprovalsManagerTest, CreatePermissionRequest) {
   remote_web_approvals_manager().AddApprovalRequestCreator(
       base::WrapUnique(creator_2));
 
+  // Add an entry in for the test url in the blocklist in order to get the
+  // unstriped url in the approval.
+  std::map<std::string, bool> url_map;
+  url_map.emplace(url.host(), false);
+  filter().SetManualHosts(url_map);
   {
     AsyncResultHolder result_holder;
-    RequestApproval(url, &result_holder);
+    RequestApproval(url, &result_holder,
+                    supervised_user::FilteringBehaviorReason::MANUAL);
     ASSERT_EQ(1u, creator->requested_urls().size());
     EXPECT_EQ(url.spec(), creator->requested_urls()[0].spec());
 
@@ -181,7 +206,8 @@ TEST_F(RemoteWebApprovalsManagerTest, CreatePermissionRequest) {
 
   {
     AsyncResultHolder result_holder;
-    RequestApproval(url, &result_holder);
+    RequestApproval(url, &result_holder,
+                    supervised_user::FilteringBehaviorReason::MANUAL);
     ASSERT_EQ(1u, creator->requested_urls().size());
     EXPECT_EQ(url.spec(), creator->requested_urls()[0].spec());
 

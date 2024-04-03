@@ -113,8 +113,8 @@ class SupervisedUserInterstitial {
   // The last committed url for this frame.
   GURL url_;
   std::u16string supervised_user_name_;
-
   const FilteringBehaviorReason filtering_behavior_reason_;
+  std::unique_ptr<UrlFormatter> url_formatter_;
 };
 }  // namespace supervised_user
 

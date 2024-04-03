@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/supervised_user/core/browser/remote_web_approvals_manager.h"
+
 #include <string>
 
 #include "base/check.h"
@@ -34,13 +35,14 @@ namespace supervised_user {
 RemoteWebApprovalsManager::RemoteWebApprovalsManager() = default;
 
 RemoteWebApprovalsManager::~RemoteWebApprovalsManager() = default;
-
 void RemoteWebApprovalsManager::RequestApproval(
     const GURL& url,
+    const UrlFormatter& url_formatter,
     ApprovalRequestInitiatedCallback callback) {
+  GURL target_url = url_formatter.FormatUrl(url);
+
   AddApprovalRequestInternal(
-      base::BindRepeating(CreateURLAccessRequest,
-                          supervised_user::NormalizeUrl(url)),
+      base::BindRepeating(CreateURLAccessRequest, target_url),
       std::move(callback), 0);
 }
 

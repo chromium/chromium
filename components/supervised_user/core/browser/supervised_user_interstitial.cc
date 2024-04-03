@@ -5,6 +5,8 @@
 #include "components/supervised_user/core/browser/supervised_user_interstitial.h"
 
 #include <stddef.h>
+
+#include <memory>
 #include <string>
 
 #include "base/functional/bind.h"
@@ -20,6 +22,7 @@
 #include "build/build_config.h"
 #include "components/prefs/pref_service.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
+#include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/browser/web_content_handler.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
@@ -55,7 +58,11 @@ SupervisedUserInterstitial::SupervisedUserInterstitial(
       web_content_handler_(std::move(web_content_handler)),
       url_(url),
       supervised_user_name_(supervised_user_name),
-      filtering_behavior_reason_(reason) {}
+      filtering_behavior_reason_(reason) {
+  CHECK(supervised_user_service.GetURLFilter());
+  url_formatter_ = std::make_unique<UrlFormatter>(
+      *supervised_user_service.GetURLFilter(), reason);
+}
 
 SupervisedUserInterstitial::~SupervisedUserInterstitial() = default;
 
@@ -106,7 +113,7 @@ void SupervisedUserInterstitial::RequestUrlAccessRemote(
   OutputRequestPermissionSourceMetric();
 
   supervised_user_service_->remote_web_approvals_manager().RequestApproval(
-      url_, std::move(callback));
+      url_, *url_formatter_.get(), std::move(callback));
 }
 
 void SupervisedUserInterstitial::RequestUrlAccessLocal(
@@ -119,8 +126,8 @@ void SupervisedUserInterstitial::RequestUrlAccessLocal(
   DLOG_IF(WARNING, supervised_user_name_.empty())
       << "Supervised user name for local web approval request should not be "
          "empty";
-  web_content_handler_->RequestLocalApproval(url_, supervised_user_name_,
-                                             std::move(callback));
+  web_content_handler_->RequestLocalApproval(
+      url_, supervised_user_name_, *url_formatter_.get(), std::move(callback));
 }
 
 void SupervisedUserInterstitial::OutputRequestPermissionSourceMetric() {

@@ -223,6 +223,9 @@ class SupervisedUserURLFilter {
   void SetURLCheckerClientForTesting(
       std::unique_ptr<safe_search_api::URLCheckerClient> url_checker_client);
 
+  // Checks if an exact match for a host exists in the host blocklist.
+  bool IsHostInBlocklist(const std::string& host) const;
+
  private:
   friend class SupervisedUserURLFilterTest;
   friend class SupervisedUserURLFilteringWithConflictsTest;

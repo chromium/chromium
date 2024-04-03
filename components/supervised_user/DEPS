@@ -14,6 +14,7 @@ include_rules = [
   "+components/signin",
   "+components/sync",
   "+components/sync_preferences",
+  "+components/url_formatter",
   "+components/url_matcher",
   "+components/user_manager",
   "+extensions/buildflags",

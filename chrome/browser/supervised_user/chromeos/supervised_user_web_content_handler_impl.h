@@ -21,6 +21,10 @@ namespace favicon {
 class LargeIconService;
 }  // namespace favicon
 
+namespace supervised_user {
+class UrlFormatter;
+}  // namespace supervised_user
+
 class SupervisedUserFaviconRequestHandler;
 
 // Chrome OS specific implementation of web content handler.
@@ -43,6 +47,7 @@ class SupervisedUserWebContentHandlerImpl
   // ChromeSupervisedUserWebContentHandlerBase implementation:
   void RequestLocalApproval(const GURL& url,
                             const std::u16string& child_display_name,
+                            const supervised_user::UrlFormatter& url_formatter,
                             ApprovalRequestInitiatedCallback callback) override;
 
  private:

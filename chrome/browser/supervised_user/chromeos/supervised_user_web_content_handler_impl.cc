@@ -15,6 +15,7 @@
 #include "chromeos/crosapi/mojom/parent_access.mojom.h"
 #include "components/favicon/core/large_icon_service.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/features.h"
 #include "content/public/browser/web_contents.h"
 
@@ -112,6 +113,7 @@ SupervisedUserWebContentHandlerImpl::~SupervisedUserWebContentHandlerImpl() =
 void SupervisedUserWebContentHandlerImpl::RequestLocalApproval(
     const GURL& url,
     const std::u16string& child_display_name,
+    const supervised_user::UrlFormatter& url_formatter,
     ApprovalRequestInitiatedCallback callback) {
   CHECK(web_contents_);
   supervised_user::SupervisedUserSettingsService* settings_service =
@@ -126,13 +128,17 @@ void SupervisedUserWebContentHandlerImpl::RequestLocalApproval(
   crosapi::mojom::ParentAccess* parent_access =
       supervised_user::GetParentAccessApi();
   CHECK(parent_access);
+  GURL target_url = url_formatter.FormatUrl(url);
+
+  // TODO(b/322484529): Standardize the url formatting for local approvals
+  // across platforms.
   parent_access->GetWebsiteParentApproval(
-      url.GetWithEmptyPath(), child_display_name,
+      target_url.GetWithEmptyPath(), child_display_name,
       favicon_handler_->GetFaviconOrFallback(),
       base::BindOnce(
           &SupervisedUserWebContentHandlerImpl::OnLocalApprovalRequestCompleted,
-          weak_ptr_factory_.GetWeakPtr(), std::ref(*settings_service), url,
-          base::TimeTicks::Now()));
+          weak_ptr_factory_.GetWeakPtr(), std::ref(*settings_service),
+          target_url, base::TimeTicks::Now()));
   std::move(callback).Run(true);
 }
 

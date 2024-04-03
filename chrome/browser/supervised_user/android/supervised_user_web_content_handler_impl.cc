@@ -46,6 +46,7 @@ SupervisedUserWebContentHandlerImpl::~SupervisedUserWebContentHandlerImpl() =
 void SupervisedUserWebContentHandlerImpl::RequestLocalApproval(
     const GURL& url,
     const std::u16string& child_display_name,
+    const supervised_user::UrlFormatter& url_formatter,
     ApprovalRequestInitiatedCallback callback) {
   CHECK(web_contents_);
   Profile* profile =
@@ -54,12 +55,14 @@ void SupervisedUserWebContentHandlerImpl::RequestLocalApproval(
   supervised_user::SupervisedUserSettingsService* settings_service =
       SupervisedUserSettingsServiceFactory::GetForKey(profile->GetProfileKey());
 
+  GURL target_url = url_formatter.FormatUrl(url);
+
   WebsiteParentApproval::RequestLocalApproval(
-      web_contents_, supervised_user::NormalizeUrl(url),
+      web_contents_, target_url,
       base::BindOnce(
           &SupervisedUserWebContentHandlerImpl::OnLocalApprovalRequestCompleted,
-          weak_ptr_factory_.GetWeakPtr(), std::ref(*settings_service), url,
-          base::TimeTicks::Now()),
+          weak_ptr_factory_.GetWeakPtr(), std::ref(*settings_service),
+          target_url, base::TimeTicks::Now()),
       *profile);
 
   // Runs the `callback` to inform the caller that the flow initiation was

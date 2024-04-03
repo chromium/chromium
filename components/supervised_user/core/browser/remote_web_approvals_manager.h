@@ -21,6 +21,7 @@ class GURL;
 namespace supervised_user {
 
 class PermissionRequestCreator;
+class UrlFormatter;
 
 // Manages remote web approval requests from Family Link users.
 //
@@ -41,10 +42,11 @@ class RemoteWebApprovalsManager {
 
   ~RemoteWebApprovalsManager();
 
-  // Adds a appnroval request for the `url`.
+  // Adds an approval request for the `url`.
   // The `callback` is run when the request was sent or sending of the request
   // failed.
   void RequestApproval(const GURL& url,
+                       const UrlFormatter& url_formatter,
                        ApprovalRequestInitiatedCallback callback);
 
   // Returns whether approval requests are enabled.

@@ -69,6 +69,7 @@ namespace {
 
 static const char* kExampleHost = "www.example.com";
 static const char* kExampleHost2 = "www.example2.com";
+static const char* kStrippedExampleHost = "example.com";
 static const char* kFamiliesHost = "families.google.com";
 static const char* kIframeHost1 = "www.iframe1.com";
 static const char* kIframeHost2 = "www.iframe2.com";
@@ -220,8 +221,10 @@ class SupervisedUserNavigationThrottleTestBase
                                .embedded_test_server_options =
                                    {.resolver_rules_map_host_list =
                                         "*.example.com, *.example2.com, "
+                                        "example.com, example2.com, "
                                         "*.families.google.com, "
-                                        "*.iframe1.com, *.iframe2.com"},
+                                        "*.iframe1.com, *.iframe2.com, "
+                                        "iframe1.com, iframe2.com"},
                            }),
         prerender_helper_(base::BindRepeating(
             &SupervisedUserNavigationThrottleTestBase::web_contents,
@@ -814,6 +817,107 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,
   // Back button should be hidden only when local web approvals is enabled due
   // to new UI for local web approvals.
   EXPECT_EQ(value, IsLocalWebApprovalsEnabled());
+}
+
+// Tests that the trivial www-subdomain stripping is applied on the url
+// of the interstitial. Blocked urls without further conflicts will be
+// unblocked by a remote approval.
+IN_PROC_BROWSER_TEST_P(
+    SupervisedUserIframeFilterTest,
+    BlockedMainFrameFromClassifyUrlForUnstripedHostIsStrippedInRemoteApproval) {
+  // Classify url blocks the navigation to the target url.
+  // No matching blocklist entry exists for the host of the target url.
+  kids_management_api_mock().RestrictSubsequentClassifyUrl();
+  GURL blocked_url = embedded_test_server()->GetURL(
+      kExampleHost, "/supervised_user/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), blocked_url));
+  EXPECT_TRUE(IsInterstitialBeingShownInMainFrame(browser()));
+
+  auto blocked = GetBlockedFrames();
+  EXPECT_EQ(blocked.size(), 1u);
+  int blocked_frame_id = blocked[0];
+  GURL blocked_frame_url = GetBlockedFrameURL(blocked_frame_id);
+  EXPECT_TRUE(IsInterstitialBeingShownInFrame(blocked_frame_id));
+
+  // Request remote approval.
+  permission_creator()->SetPermissionResult(true);
+  SendCommandToFrame(kRemoteUrlAccessCommand, blocked_frame_id);
+  EXPECT_EQ(permission_creator()->url_requests().size(), 1u);
+  std::string requested_host = permission_creator()->url_requests()[0].host();
+
+  // The trivial "www" subdomain is stripped for the url in the remote approval
+  // request.
+  EXPECT_EQ(requested_host, kStrippedExampleHost);
+  WaitForNavigationFinished(blocked_frame_id, blocked_url);
+  // The unstriped url gets unblocked.
+  EXPECT_FALSE(IsInterstitialBeingShownInFrame(blocked_frame_id));
+}
+
+// Tests that the url stripping is applied on the url on the interstitial, when
+// there is no unstriped host entry in the blocklist.
+IN_PROC_BROWSER_TEST_P(
+    SupervisedUserIframeFilterTest,
+    BlockedMainFrameFromBlockListIsStrippedInRemoteApproval) {
+  // Manual parental blocklist entry blocks the navigation to the target url.
+  BlockHost("*.example.*");
+  kids_management_api_mock().AllowSubsequentClassifyUrl();
+  GURL blocked_url = embedded_test_server()->GetURL(
+      kExampleHost, "/supervised_user/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), blocked_url));
+  EXPECT_TRUE(IsInterstitialBeingShownInMainFrame(browser()));
+
+  auto blocked = GetBlockedFrames();
+  EXPECT_EQ(blocked.size(), 1u);
+  int blocked_frame_id = blocked[0];
+  GURL blocked_frame_url = GetBlockedFrameURL(blocked_frame_id);
+  EXPECT_TRUE(IsInterstitialBeingShownInFrame(blocked_frame_id));
+
+  // Request remote approval.
+  permission_creator()->SetPermissionResult(true);
+  SendCommandToFrame(kRemoteUrlAccessCommand, blocked_frame_id);
+  EXPECT_EQ(permission_creator()->url_requests().size(), 1u);
+  std::string requested_host = permission_creator()->url_requests()[0].host();
+
+  // The trivial "www" subdomain has been stripped from the host in the
+  // interstitial, because the conflicting entry in the blocklist is not a
+  // www-subdomain conflict.
+  EXPECT_EQ(requested_host, kStrippedExampleHost);
+}
+
+// Tests that the url stripping is skipped on the url on the interstitial, when
+// there is a unstriped host entry in the blocklist. Blocked urls without
+// further conflicts will be unblocked by a remote approval.
+IN_PROC_BROWSER_TEST_P(
+    SupervisedUserIframeFilterTest,
+    BlockedMainFrameFromBlockListForUnstripedHostSkipsStrippingInRemoteApproval) {
+  // Manual parental blocklist entry for the unstriped url blocks the
+  // navigation to the target url.
+  BlockHost(kExampleHost);
+  kids_management_api_mock().AllowSubsequentClassifyUrl();
+  GURL blocked_url = embedded_test_server()->GetURL(
+      kExampleHost, "/supervised_user/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), blocked_url));
+  EXPECT_TRUE(IsInterstitialBeingShownInMainFrame(browser()));
+
+  auto blocked = GetBlockedFrames();
+  EXPECT_EQ(blocked.size(), 1u);
+  int blocked_frame_id = blocked[0];
+  GURL blocked_frame_url = GetBlockedFrameURL(blocked_frame_id);
+  EXPECT_TRUE(IsInterstitialBeingShownInFrame(blocked_frame_id));
+
+  // Request remote approval.
+  permission_creator()->SetPermissionResult(true);
+  SendCommandToFrame(kRemoteUrlAccessCommand, blocked_frame_id);
+  EXPECT_EQ(permission_creator()->url_requests().size(), 1u);
+  std::string requested_host = permission_creator()->url_requests()[0].host();
+
+  // The stripping has been skipped for the url of the interstitial, because an
+  // identical entry exists in the blocklist. The interstitial contains the full
+  // url.
+  EXPECT_EQ(requested_host, kExampleHost);
+  // The navigation gets unblocked.
+  WaitForNavigationFinished(blocked_frame_id, blocked_frame_url);
+  EXPECT_FALSE(IsInterstitialBeingShownInFrame(blocked_frame_id));
 }
 
 IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,

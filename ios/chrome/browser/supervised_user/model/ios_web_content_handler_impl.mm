@@ -18,6 +18,7 @@ IOSWebContentHandlerImpl::~IOSWebContentHandlerImpl() = default;
 void IOSWebContentHandlerImpl::RequestLocalApproval(
     const GURL& url,
     const std::u16string& child_display_name,
+    const supervised_user::UrlFormatter& url_formatter,
     ApprovalRequestInitiatedCallback callback) {
   // Method unsupported on iOS.
   NOTREACHED_NORETURN();
