@@ -40,10 +40,10 @@ void FacilitatedPaymentsAgent::TriggerPixCodeDetection(
 
   mojom::PixCodeDetectionResult result =
       mojom::PixCodeDetectionResult::kPixCodeNotFound;
-  constexpr char kPixCodeIdentifier[] = "0014br.gov.bcb.pix";
+  constexpr char kPixCodeIdentifierLowercase[] = "0014br.gov.bcb.pix";
   // Discard the PIX code string.
   render_frame()->GetWebFrame()->GetDocument().FindTextInElementWith(
-      blink::WebString(kPixCodeIdentifier),
+      blink::WebString(kPixCodeIdentifierLowercase),
       [&](const blink::WebString& potential_code) {
         std::string trimmed_result = base::UTF16ToUTF8(base::TrimWhitespace(
             potential_code.Utf16(), base::TrimPositions::TRIM_ALL));

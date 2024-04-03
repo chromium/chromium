@@ -14,7 +14,8 @@ namespace payments::facilitated {
 // 2) The first section is the payload format indicator.
 // 3) The last section is the CRC16.
 // 4) The merchant account information section contains valid subsections,
-//    including the PIX code indicator as the first subsection.
+//    including the PIX code indicator as the first subsection. The case
+//    (upper/lower) of the PIX code indicator is ignored.
 // 5) The additional data field template section, if present, contains valid
 //    subsections.
 //

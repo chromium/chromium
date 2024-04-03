@@ -163,4 +163,17 @@ TEST_F(ContainerNodeTest, FindTextInElementWithSubstringIgnoresComments) {
   EXPECT_EQ(String(" Before comment,  after comment. "), text);
 }
 
+TEST_F(ContainerNodeTest, FindTextInElementWithSubstringIgnoresAsciiCase) {
+  SetBodyContent(R"HTML(
+    <body>
+      <p id="id"> MaGiC RaInBoW. </p>
+    </body>
+  )HTML");
+
+  String text = GetDocument().FindTextInElementWith(
+      AtomicString("magic"), [](const String&) { return true; });
+
+  EXPECT_EQ(String(" MaGiC RaInBoW. "), text);
+}
+
 }  // namespace blink

@@ -19,6 +19,7 @@ FUZZ_TEST(IsValidPixCodeTest, IsValidPixCodeCanParseAnyString)
     .WithSeeds({{""},
                 {"000201260063041D3D"},
                 {"00020126030014br.gov.bcb.pix63041D3D"},
+                {"00020126030014BR.GOV.BCB.PIX63041D3D"},
                 {"00020126180014br.gov.bcb.pix620063041D3D"},
                 {"00020126180014br.gov.bcb.pix630"},
                 {"00020126180014br.gov.bcb.pix63041D3"},

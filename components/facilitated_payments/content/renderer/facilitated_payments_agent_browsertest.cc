@@ -61,6 +61,18 @@ TEST_F(FacilitatedPaymentsAgentTest, TriggerPixCodeDetection_FoundValid) {
   )").get()));
 }
 
+TEST_F(FacilitatedPaymentsAgentTest,
+       TriggerPixCodeDetection_FoundValid_IgnoreCase) {
+  EXPECT_EQ(mojom::PixCodeDetectionResult::kValidPixCodeFound,
+            IsPixCodeFound(CreateAgentFor(R"(
+   <body>
+    <div>
+      00020126370014BR.gov.bcb.PIX2515www.example.com6304EA3F
+    </div>
+  </form>
+  )").get()));
+}
+
 TEST_F(FacilitatedPaymentsAgentTest, TriggerPixCodeDetection_FoundInvalid) {
   EXPECT_EQ(mojom::PixCodeDetectionResult::kInvalidPixCodeFound,
             IsPixCodeFound(CreateAgentFor(R"(

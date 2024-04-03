@@ -14,6 +14,11 @@ TEST(PixCodeValidatorTest, ValidDynamicCode) {
       "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F"));
 }
 
+TEST(PixCodeValidatorTest, ValidDynamicCodeWithSomeUpperCaseLetters) {
+  EXPECT_TRUE(IsValidPixCode(
+      "00020126370014Br.gOv.BcB.piX2515www.example.com6304EA3F"));
+}
+
 TEST(PixCodeValidatorTest, StaticCode) {
   // Code is invalid because merchant account identifier section
   // 26270014br.gov.bcb.pix0105ABCDE does not contain a section for dynamic url
@@ -66,10 +71,10 @@ TEST(PixCodeValidatorTest, MerchantAccountInformationIsNotValid) {
 }
 
 TEST(PixCodeValidatorTest, InvalidPixCodeIndicator) {
-  // Code is invalid because the Pix code indicator is 0014br.gov.bcb.PIX
+  // Code is invalid because the Pix code indicator is 0014br.gov.bcb.pxi
   // instead 0014br.gov.bcb.pix.
   EXPECT_FALSE(IsValidPixCode(
-      "00020126370014br.gov.bcb.PIX2514www.example.com6304EA3F"));
+      "00020126370014br.gov.bcb.pxi2514www.example.com6304EA3F"));
 }
 
 TEST(PixCodeValidatorTest, EmptyAdditionalDataSection) {

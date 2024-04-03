@@ -112,6 +112,18 @@ TEST_F(WebNodeTest, CanFindTextInElementThatIsAContainer) {
                 "Hello world", [](const WebString&) { return true; }));
 }
 
+TEST_F(WebNodeTest, CanFindCaseInsensitiveTextInElement) {
+  SetInnerHTML(R"HTML(
+    <body class="container"><div> HeLLo WoRLd! </div></body>
+  )HTML");
+  WebElement element = Root().QuerySelector(AtomicString(".container"));
+
+  EXPECT_FALSE(element.IsNull());
+  EXPECT_EQ(WebString(" HeLLo WoRLd! "),
+            element.FindTextInElementWith(
+                "hello world", [](const WebString&) { return true; }));
+}
+
 TEST_F(WebNodeTest, CannotFindTextInElementIfValidatorRejectsIt) {
   SetInnerHTML(R"HTML(
     <body class="container"><div> Hello world! </div></body>

@@ -4,6 +4,7 @@
 
 #include "components/facilitated_payments/core/util/pix_code_validator.h"
 
+#include "base/strings/string_util.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace payments::facilitated {
@@ -15,7 +16,7 @@ constexpr char kMerchantAccountInformationSectionId[] = "26";
 constexpr char kMerchantAccountInformationDynamicUrlSectionId[] = "25";
 constexpr char kAdditionalDataFieldTemplateSectionId[] = "62";
 constexpr char kCrc16LastSectionId[] = "63";
-constexpr char kPixCodeIndicator[] = "0014br.gov.bcb.pix";
+constexpr char kPixCodeIndicatorLowercase[] = "0014br.gov.bcb.pix";
 
 struct SectionInfo {
   std::string_view section_id;
@@ -84,7 +85,8 @@ bool IsValidPixCode(std::string_view code) {
       if (!ContainsValidSections(section_info.section_value)) {
         return false;
       }
-      if (section_info.section_value.find(kPixCodeIndicator) != 0) {
+      if (base::ToLowerASCII(section_info.section_value)
+              .find(kPixCodeIndicatorLowercase) != 0) {
         return false;
       }
       // By this time, we have already verified that the sub sections for
@@ -95,7 +97,7 @@ bool IsValidPixCode(std::string_view code) {
       // We expect the dynamic url id to start right after the pix code
       // indicator.
       std::string_view dynamic_url_section_string =
-          section_info.section_value.substr(strlen(kPixCodeIndicator));
+          section_info.section_value.substr(strlen(kPixCodeIndicatorLowercase));
       ParseNextSection(&dynamic_url_section_string, &dynamic_url_section_info);
       if (dynamic_url_section_info.section_id !=
           kMerchantAccountInformationDynamicUrlSectionId) {

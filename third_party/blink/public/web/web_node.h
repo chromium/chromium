@@ -108,7 +108,8 @@ class BLINK_EXPORT WebNode {
 
   // Returns the contents of the first descendant element, if any, that contains
   // only text, a part of which is the given substring, if the given validity
-  // checker returns true for it. The substring search is case-sensitive.
+  // checker returns true for it. The substring search is ASCII case
+  // insensitive.
   WebString FindTextInElementWith(
       const WebString& substring,
       base::FunctionRef<bool(const WebString&)> validity_checker) const;

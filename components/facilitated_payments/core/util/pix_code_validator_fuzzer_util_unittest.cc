@@ -15,6 +15,11 @@ TEST(PixCodeValidatorFuzzerUtilTest, ValidRegexPattern) {
                                   kPixCodeValidatorFuzzerDomainRegexPattern));
 }
 
+TEST(PixCodeValidatorFuzzerUtilTest, ValidRegexPatternWithUpperCase) {
+  EXPECT_TRUE(re2::RE2::FullMatch("00020126180014BR.GOV.BCB.PIX63041D3D",
+                                  kPixCodeValidatorFuzzerDomainRegexPattern));
+}
+
 TEST(PixCodeValidatorFuzzerUtilTest, InValidRegexPattern) {
   EXPECT_FALSE(re2::RE2::FullMatch("A0020126180014br.gov.bcb.pix63041D3D",
                                    kPixCodeValidatorFuzzerDomainRegexPattern));

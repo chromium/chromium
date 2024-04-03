@@ -1577,7 +1577,8 @@ String ContainerNode::FindTextInElementWith(
   for (Element& element : ElementTraversal::DescendantsOf(*this)) {
     if (element.HasOnlyText()) {
       const String& text = element.TextFromChildren();
-      if (text.Find(substring) != WTF::kNotFound && validity_checker(text)) {
+      if (text.FindIgnoringASCIICase(substring) != WTF::kNotFound &&
+          validity_checker(text)) {
         return text;
       }
     }
