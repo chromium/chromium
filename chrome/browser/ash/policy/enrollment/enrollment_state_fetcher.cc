@@ -900,13 +900,10 @@ class EnrollmentStateFetcherImpl::Sequence {
       return ReportResult(AutoEnrollmentResult::kNoEnrollment);
     }
 
-    // Flex devices do not support FRE, hence there is no need to perform state
-    // determination. Users are still able to manually enroll devices though.
-    const bool is_on_flex = ash::switches::IsRevenBranding();
-    base::UmaHistogramBoolean(kUMAStateDeterminationOnFlex, is_on_flex);
-    if (is_on_flex) {
-      return ReportResult(AutoEnrollmentResult::kNoEnrollment);
-    }
+    // Report whether we're doing FRE on Flex or not.
+    base::UmaHistogramBoolean(kUMAStateDeterminationOnFlex,
+                              ash::switches::IsRevenBranding());
+
     // TODO(b/265923216): Investigate the possibility of using bypassing PSM and
     // using state key to directly request state when identifiers are missing.
     if (!device_identifiers_.Retrieve(context_.statistics_provider,

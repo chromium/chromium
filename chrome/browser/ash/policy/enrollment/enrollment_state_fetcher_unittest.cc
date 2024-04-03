@@ -300,17 +300,6 @@ TEST_F(EnrollmentStateFetcherTest, DisabledViaSwitches) {
   EXPECT_EQ(state, AutoEnrollmentResult::kNoEnrollment);
 }
 
-TEST_F(EnrollmentStateFetcherTest, DisabledOnFlex) {
-  base::HistogramTester histograms;
-  command_line_.GetProcessCommandLine()->AppendSwitch(
-      ash::switches::kRevenBranding);
-
-  const AutoEnrollmentState state = FetchEnrollmentState();
-
-  EXPECT_EQ(state, AutoEnrollmentResult::kNoEnrollment);
-  histograms.ExpectUniqueSample(kUMAStateDeterminationOnFlex, true, 1);
-}
-
 TEST_F(EnrollmentStateFetcherTest, SystemClockNotSynchronized) {
   system_clock_.DisableService();
 
@@ -635,49 +624,6 @@ TEST_F(EnrollmentStateFetcherTest, NoEnrollment) {
   const base::Value::Dict& device_state =
       local_state_.GetDict(prefs::kServerBackedDeviceState);
   EXPECT_TRUE(device_state.empty());
-}
-
-TEST_F(EnrollmentStateFetcherTest, UmaHistogramsCounts) {
-  base::HistogramTester histograms;
-  ExpectOwnershipCheck();
-  ExpectOprfRequest();
-  ExpectQueryRequest();
-  ExpectStateKeysRequest();
-  ExpectStateRequest();
-
-  std::ignore = FetchEnrollmentState();
-
-  histograms.ExpectUniqueSample(kUMAStateDeterminationDeviceIdentifierStatus,
-                                0 /*kAllPresent*/, 1);
-  histograms.ExpectUniqueSample(kUMAStateDeterminationEmbargoDatePassed, true,
-                                1);
-  histograms.ExpectUniqueSample(kUMAStateDeterminationEnabled, true, 1);
-  histograms.ExpectUniqueSample(kUMAStateDeterminationOnFlex, false, 1);
-  histograms.ExpectUniqueSample(kUMAStateDeterminationSystemClockSynchronized,
-                                true, 1);
-  histograms.ExpectUniqueSample(
-      kUMAStateDeterminationOwnershipStatus,
-      ash::DeviceSettingsService::OwnershipStatus::kOwnershipNone, 1);
-  histograms.ExpectUniqueSample(
-      kUMAStateDeterminationStateKeysRetrievalErrorType,
-      ServerBackedStateKeysBroker::ErrorType::kNoError, 1);
-  histograms.ExpectUniqueSample(
-      kUMAStateDeterminationPsmRlweOprfRequestDmStatusCode, DM_STATUS_SUCCESS,
-      1);
-  histograms.ExpectUniqueSample(
-      kUMAStateDeterminationPsmRlweOprfRequestNetworkErrorCode, net::OK, 1);
-  histograms.ExpectUniqueSample(
-      kUMAStateDeterminationPsmRlweQueryRequestDmStatusCode, DM_STATUS_SUCCESS,
-      1);
-  histograms.ExpectUniqueSample(
-      kUMAStateDeterminationPsmRlweQueryRequestNetworkErrorCode, net::OK, 1);
-  histograms.ExpectUniqueSample(kUMAStateDeterminationPsmReportedAvailableState,
-                                true, 1);
-  histograms.ExpectUniqueSample(kUMAStateDeterminationStateRequestDmStatusCode,
-                                DM_STATUS_SUCCESS, 1);
-  histograms.ExpectUniqueSample(
-      kUMAStateDeterminationStateRequestNetworkErrorCode, net::OK, 1);
-  histograms.ExpectUniqueSample(kUMAStateDeterminationStateReturned, true, 1);
 }
 
 TEST_F(EnrollmentStateFetcherTest, UmaHistogramsTimes) {
@@ -1211,5 +1157,167 @@ TEST_F(EnrollmentStateFetcherTest, AutoREWithPackagedLicense) {
   EXPECT_EQ(*device_state.FindString(kDeviceStateLicenseType),
             kDeviceStateLicenseTypeEnterprise);
 }
+
+// An enum for the kind of Chromium OS running on the device.
+enum class DeviceOs { Chrome = 0, Flex = 1 };
+
+// This is parameterized by device OS.
+class EnrollmentStateFetcherTestP
+    : public EnrollmentStateFetcherTest,
+      public testing::WithParamInterface<DeviceOs> {
+ public:
+  void SetUp() override {
+    EnrollmentStateFetcherTest::SetUp();
+    if (device_os_ == DeviceOs::Flex) {
+      SetUpFlexDevice();
+    }
+  }
+
+ protected:
+  void SetUpFlexDevice() {
+    statistics_provider_.SetMachineStatistic(
+        ash::system::kFirmwareTypeKey,
+        ash::system::kFirmwareTypeValueNonchrome);
+    command_line_.GetProcessCommandLine()->AppendSwitch(
+        ash::switches::kRevenBranding);
+    command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+        ash::switches::kEnterpriseEnableForcedReEnrollmentOnFlex,
+        AutoEnrollmentTypeChecker::kForcedReEnrollmentAlways);
+  }
+
+  const DeviceOs device_os_ = GetParam();
+};
+
+TEST_P(EnrollmentStateFetcherTestP, ReEnrollmentRequested) {
+  ExpectOwnershipCheck();
+  ExpectOprfRequest();
+  ExpectQueryRequest();
+  ExpectStateKeysRequest();
+  em::DeviceManagementResponse response;
+  auto* state_response = response.mutable_device_state_retrieval_response();
+  state_response->set_restore_mode(
+      em::DeviceStateRetrievalResponse::RESTORE_MODE_REENROLLMENT_REQUESTED);
+  state_response->set_management_domain("example.org");
+  EXPECT_CALL(job_creation_handler_,
+              OnJobCreation(JobWithStateRequest(
+                  kTestStateKey, kTestSerialNumber, kTestBrandCode)))
+      .WillOnce(fake_dm_service_->SendJobOKAsync(response));
+
+  AutoEnrollmentState state = FetchEnrollmentState();
+
+  EXPECT_EQ(state, AutoEnrollmentResult::kEnrollment);
+  const base::Value::Dict& device_state =
+      local_state_.GetDict(prefs::kServerBackedDeviceState);
+  ASSERT_TRUE(device_state.FindString(kDeviceStateMode));
+  EXPECT_EQ(*device_state.FindString(kDeviceStateMode),
+            kDeviceStateRestoreModeReEnrollmentRequested);
+  ASSERT_TRUE(device_state.FindString(kDeviceStateManagementDomain));
+  EXPECT_EQ(*device_state.FindString(kDeviceStateManagementDomain),
+            "example.org");
+  EXPECT_FALSE(device_state.FindString(kDeviceStateDisabledMessage));
+  EXPECT_FALSE(device_state.FindString(kDeviceStateLicenseType));
+  EXPECT_FALSE(device_state.FindString(kDeviceStatePackagedLicense));
+  EXPECT_FALSE(device_state.FindString(kDeviceStateAssignedUpgradeType));
+}
+
+TEST_P(EnrollmentStateFetcherTestP, ReEnrollmentEnforced) {
+  ExpectOwnershipCheck();
+  ExpectOprfRequest();
+  ExpectQueryRequest();
+  ExpectStateKeysRequest();
+  em::DeviceManagementResponse response;
+  auto* state_response = response.mutable_device_state_retrieval_response();
+  state_response->set_restore_mode(
+      em::DeviceStateRetrievalResponse::RESTORE_MODE_REENROLLMENT_ENFORCED);
+  EXPECT_CALL(job_creation_handler_,
+              OnJobCreation(JobWithStateRequest(
+                  kTestStateKey, kTestSerialNumber, kTestBrandCode)))
+      .WillOnce(fake_dm_service_->SendJobOKAsync(response));
+
+  AutoEnrollmentState state = FetchEnrollmentState();
+
+  EXPECT_EQ(state, AutoEnrollmentResult::kEnrollment);
+  const base::Value::Dict& device_state =
+      local_state_.GetDict(prefs::kServerBackedDeviceState);
+  ASSERT_TRUE(device_state.FindString(kDeviceStateMode));
+  EXPECT_EQ(*device_state.FindString(kDeviceStateMode),
+            kDeviceStateRestoreModeReEnrollmentEnforced);
+}
+
+TEST_P(EnrollmentStateFetcherTestP, ReEnrollmentDisabled) {
+  ExpectOwnershipCheck();
+  ExpectOprfRequest();
+  ExpectQueryRequest();
+  ExpectStateKeysRequest();
+  em::DeviceManagementResponse response;
+  auto* state_response = response.mutable_device_state_retrieval_response();
+  state_response->set_restore_mode(
+      em::DeviceStateRetrievalResponse::RESTORE_MODE_DISABLED);
+  state_response->mutable_disabled_state()->set_message(kTestDisabledMessage);
+  EXPECT_CALL(job_creation_handler_,
+              OnJobCreation(JobWithStateRequest(
+                  kTestStateKey, kTestSerialNumber, kTestBrandCode)))
+      .WillOnce(fake_dm_service_->SendJobOKAsync(response));
+
+  AutoEnrollmentState state = FetchEnrollmentState();
+
+  EXPECT_EQ(state, AutoEnrollmentResult::kDisabled);
+  const base::Value::Dict& device_state =
+      local_state_.GetDict(prefs::kServerBackedDeviceState);
+  ASSERT_TRUE(device_state.FindString(kDeviceStateMode));
+  EXPECT_EQ(*device_state.FindString(kDeviceStateMode),
+            kDeviceStateModeDisabled);
+  ASSERT_TRUE(device_state.FindString(kDeviceStateDisabledMessage));
+  EXPECT_EQ(*device_state.FindString(kDeviceStateDisabledMessage),
+            kTestDisabledMessage);
+}
+
+TEST_P(EnrollmentStateFetcherTestP, UmaHistogramsCounts) {
+  base::HistogramTester histograms;
+  ExpectOwnershipCheck();
+  ExpectOprfRequest();
+  ExpectQueryRequest();
+  ExpectStateKeysRequest();
+  ExpectStateRequest();
+
+  std::ignore = FetchEnrollmentState();
+
+  histograms.ExpectUniqueSample(kUMAStateDeterminationDeviceIdentifierStatus,
+                                0 /*kAllPresent*/, 1);
+  histograms.ExpectUniqueSample(kUMAStateDeterminationEmbargoDatePassed, true,
+                                1);
+  histograms.ExpectUniqueSample(kUMAStateDeterminationEnabled, true, 1);
+  histograms.ExpectUniqueSample(kUMAStateDeterminationOnFlex,
+                                device_os_ == DeviceOs::Flex, 1);
+  histograms.ExpectUniqueSample(kUMAStateDeterminationSystemClockSynchronized,
+                                true, 1);
+  histograms.ExpectUniqueSample(
+      kUMAStateDeterminationOwnershipStatus,
+      ash::DeviceSettingsService::OwnershipStatus::kOwnershipNone, 1);
+  histograms.ExpectUniqueSample(
+      kUMAStateDeterminationStateKeysRetrievalErrorType,
+      ServerBackedStateKeysBroker::ErrorType::kNoError, 1);
+  histograms.ExpectUniqueSample(
+      kUMAStateDeterminationPsmRlweOprfRequestDmStatusCode, DM_STATUS_SUCCESS,
+      1);
+  histograms.ExpectUniqueSample(
+      kUMAStateDeterminationPsmRlweOprfRequestNetworkErrorCode, net::OK, 1);
+  histograms.ExpectUniqueSample(
+      kUMAStateDeterminationPsmRlweQueryRequestDmStatusCode, DM_STATUS_SUCCESS,
+      1);
+  histograms.ExpectUniqueSample(
+      kUMAStateDeterminationPsmRlweQueryRequestNetworkErrorCode, net::OK, 1);
+  histograms.ExpectUniqueSample(kUMAStateDeterminationPsmReportedAvailableState,
+                                true, 1);
+  histograms.ExpectUniqueSample(kUMAStateDeterminationStateRequestDmStatusCode,
+                                DM_STATUS_SUCCESS, 1);
+  histograms.ExpectUniqueSample(
+      kUMAStateDeterminationStateRequestNetworkErrorCode, net::OK, 1);
+  histograms.ExpectUniqueSample(kUMAStateDeterminationStateReturned, true, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(EnrollmentStateFetcherTestSuite,
+                         EnrollmentStateFetcherTestP,
+                         testing::Values(DeviceOs::Chrome, DeviceOs::Flex));
 
 }  // namespace policy

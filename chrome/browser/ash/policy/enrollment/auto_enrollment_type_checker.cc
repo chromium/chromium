@@ -254,8 +254,8 @@ bool AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled() {
     return false;
   }
 
-  // TODO(drcrash): Replace with AreFREStateKeysSupported() to enable Flex too.
-  return IsOfficialGoogleChrome();
+  // Devices supporting FRE state keys do support unified state determination.
+  return AreFREStateKeysSupported();
 }
 
 // static

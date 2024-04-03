@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 
 #include <string>
+#include <tuple>
 
 #include "ash/constants/ash_switches.h"
 #include "base/i18n/time_formatting.h"
@@ -62,10 +63,14 @@ class AutoEnrollmentTypeCheckerTest : public testing::Test {
   void TearDown() override { ash::OobeConfigurationClient::Shutdown(); }
 
  protected:
-  void SetUpFlexDevice() {
+  void SetUpNonchromeDevice() {
     fake_statistics_provider_.SetMachineStatistic(
         ash::system::kFirmwareTypeKey,
         ash::system::kFirmwareTypeValueNonchrome);
+  }
+
+  void SetUpFlexDevice() {
+    SetUpNonchromeDevice();
     command_line_.GetProcessCommandLine()->AppendSwitch(
         ash::switches::kRevenBranding);
   }
@@ -735,27 +740,50 @@ TEST_F(AutoEnrollmentTypeCheckerInitializationTest, ActiveVersion) {
                    IsUnifiedStateDeterminationDisabledByKillSwitchForTesting());
 }
 
-// This is parametrized with unified_enrollment_kill_switch.
+// An enum for the kind of Chromium OS running on the device.
+enum class DeviceOs {
+  Chrome = 0,
+  Nonchrome = 1,
+  // TODO(b/331677599): Delete FlexWithoutFRE, and make FlexWithFRE just Flex.
+  FlexWithoutFRE = 2,
+  FlexWithFRE = 3,
+};
+
+// This is parameterized by device OS and USD kill switch enablement.
 class AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP
     : public AutoEnrollmentTypeCheckerTest,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<std::tuple<DeviceOs, bool>> {
  protected:
   void SetUp() override {
     AutoEnrollmentTypeCheckerTest::SetUp();
+    if (device_os_ == DeviceOs::Nonchrome) {
+      SetUpNonchromeDevice();
+    } else if (device_os_ == DeviceOs::FlexWithoutFRE) {
+      SetUpFlexDevice();
+    } else if (device_os_ == DeviceOs::FlexWithFRE) {
+      SetUpFlexDeviceWithCommandLineSwitchToAlways();
+    }
     AutoEnrollmentTypeChecker::SetUnifiedStateDeterminationKillSwitchForTesting(
         kill_switch_enabled_);
   }
 
-  const bool kill_switch_enabled_ = GetParam();
+  bool IsFRESupportedByDevice() {
+    return google_branded_ && (device_os_ == DeviceOs::Chrome ||
+                               device_os_ == DeviceOs::FlexWithFRE);
+  }
+
+  const DeviceOs device_os_ = std::get<0>(GetParam());
+  const bool kill_switch_enabled_ = std::get<1>(GetParam());
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  const bool google_branded_ = true;
+#else
+  const bool google_branded_ = false;
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 };
 
 TEST_P(AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP, Default) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_EQ(AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled(),
-            !kill_switch_enabled_);
-#else
-  EXPECT_FALSE(AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled());
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+            !kill_switch_enabled_ && IsFRESupportedByDevice());
 }
 
 TEST_P(AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP, OfficialBuild) {
@@ -763,12 +791,8 @@ TEST_P(AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP, OfficialBuild) {
       ash::switches::kEnterpriseEnableUnifiedStateDetermination,
       AutoEnrollmentTypeChecker::kUnifiedStateDeterminationOfficialBuild);
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_EQ(AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled(),
-            !kill_switch_enabled_);
-#else
-  EXPECT_FALSE(AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled());
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+            !kill_switch_enabled_ && IsFRESupportedByDevice());
 }
 
 TEST_P(AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP, Never) {
@@ -784,18 +808,37 @@ TEST_P(AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP, Never) {
       AutoEnrollmentTypeChecker::kForcedReEnrollmentNever);
   EXPECT_FALSE(AutoEnrollmentTypeChecker::IsFREEnabled());
 
-  // Check that FRE requirement is read from VPD.
+  command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+      ash::switches::kEnterpriseEnableForcedReEnrollment,
+      AutoEnrollmentTypeChecker::kForcedReEnrollmentAlways);
+  EXPECT_EQ(AutoEnrollmentTypeChecker::IsFREEnabled(),
+            device_os_ != DeviceOs::FlexWithoutFRE);
+
   ash::system::FakeStatisticsProvider statistics_provider;
-  statistics_provider.SetMachineStatistic(ash::system::kCheckEnrollmentKey,
-                                          "0");
-  EXPECT_EQ(AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
-                &statistics_provider),
-            AutoEnrollmentTypeChecker::FRERequirement::kExplicitlyNotRequired);
-  statistics_provider.SetMachineStatistic(ash::system::kCheckEnrollmentKey,
-                                          "1");
-  EXPECT_EQ(AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
-                &statistics_provider),
-            AutoEnrollmentTypeChecker::FRERequirement::kExplicitlyRequired);
+  if (device_os_ == DeviceOs::Chrome) {
+    // Check that the FRE requirement is read from VPD on Chrome.
+    statistics_provider.SetMachineStatistic(ash::system::kCheckEnrollmentKey,
+                                            "0");
+    EXPECT_EQ(
+        AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
+            &statistics_provider),
+        AutoEnrollmentTypeChecker::FRERequirement::kExplicitlyNotRequired);
+    statistics_provider.SetMachineStatistic(ash::system::kCheckEnrollmentKey,
+                                            "1");
+    EXPECT_EQ(AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
+                  &statistics_provider),
+              AutoEnrollmentTypeChecker::FRERequirement::kExplicitlyRequired);
+  } else if (device_os_ == DeviceOs::FlexWithoutFRE) {
+    // Check that the FRE requirement is as expected with FRE disabled on Flex.
+    EXPECT_EQ(AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
+                  &statistics_provider),
+              AutoEnrollmentTypeChecker::FRERequirement::kDisabled);
+  } else if (device_os_ == DeviceOs::FlexWithFRE) {
+    // Check that the FRE requirement is as expected with FRE enabled on Flex.
+    EXPECT_EQ(AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
+                  &statistics_provider),
+              AutoEnrollmentTypeChecker::FRERequirement::kExplicitlyRequired);
+  }
 }
 
 TEST_P(AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP, Always) {
@@ -807,15 +850,22 @@ TEST_P(AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP, Always) {
 
   // Ensure that legacy functions behave as if FRE was explicitly enabled.
   EXPECT_TRUE(AutoEnrollmentTypeChecker::IsFREEnabled());
-  EXPECT_EQ(AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
-                /*statistics_provider=*/nullptr),
-            AutoEnrollmentTypeChecker::FRERequirement::kExplicitlyRequired);
+  EXPECT_EQ(
+      AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
+          /*statistics_provider=*/nullptr),
+      device_os_ == DeviceOs::FlexWithoutFRE
+          ? AutoEnrollmentTypeChecker::FRERequirement::kRequired
+          : AutoEnrollmentTypeChecker::FRERequirement::kExplicitlyRequired);
 }
 
 INSTANTIATE_TEST_SUITE_P(
     AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestSuite,
     AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP,
-    testing::Bool());
+    testing::Combine(testing::Values(DeviceOs::Chrome,
+                                     DeviceOs::Nonchrome,
+                                     DeviceOs::FlexWithoutFRE,
+                                     DeviceOs::FlexWithFRE),
+                     testing::Bool()));
 
 // This is parametrized with dev_disable_boot.
 class AutoEnrollmentTypeCheckerTestP
