@@ -4,8 +4,11 @@
 
 #include "components/commerce/core/product_specifications/product_specifications_service.h"
 
+#include <optional>
+
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
+#include "components/sync/protocol/compare_specifics.pb.h"
 
 namespace commerce {
 
@@ -35,6 +38,19 @@ ProductSpecificationsService::GetAllProductSpecifications() {
         entry.second.name());
   }
   return product_specifications;
+}
+
+const std::optional<const ProductSpecificationsSet>
+ProductSpecificationsService::AddProductSpecificationsSet(
+    const std::string& name,
+    const std::vector<const GURL>& urls) {
+  // TODO(crbug.com/332545064) add for a product specification set being added.
+  std::optional<sync_pb::CompareSpecifics> specifics =
+      bridge_->AddProductSpecifications(name, urls);
+  if (!specifics.has_value()) {
+    return std::nullopt;
+  }
+  return std::optional(ProductSpecificationsSet::FromProto(specifics.value()));
 }
 
 }  // namespace commerce

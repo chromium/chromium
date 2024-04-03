@@ -4,9 +4,11 @@
 
 #include "components/commerce/core/product_specifications/product_specifications_sync_bridge.h"
 
+#include <optional>
 #include <set>
 
 #include "base/strings/stringprintf.h"
+#include "base/uuid.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/model_type_change_processor.h"
@@ -89,10 +91,7 @@ ProductSpecificationsSyncBridge::ApplyIncrementalSyncChanges(
     }
   }
   batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
-  store_->CommitWriteBatch(
-      std::move(batch),
-      base::BindOnce(&ProductSpecificationsSyncBridge::OnCommit,
-                     weak_ptr_factory_.GetWeakPtr()));
+  Commit(std::move(batch));
   return {};
 }
 
@@ -124,6 +123,38 @@ void ProductSpecificationsSyncBridge::GetAllDataForDebugging(
     batch->Put(entry.first, CreateEntityData(entry.second));
   }
   std::move(callback).Run(std::move(batch));
+}
+
+const std::optional<sync_pb::CompareSpecifics>
+ProductSpecificationsSyncBridge::AddProductSpecifications(
+    const std::string& name,
+    const std::vector<const GURL>& urls) {
+  if (!change_processor()->IsTrackingMetadata()) {
+    return std::nullopt;
+  }
+
+  sync_pb::CompareSpecifics specifics;
+  specifics.set_uuid(base::Uuid::GenerateRandomV4().AsLowercaseString());
+  int64_t time_now = base::Time::Now().InMillisecondsSinceUnixEpoch();
+  specifics.set_creation_time_unix_epoch_micros(time_now);
+  specifics.set_update_time_unix_epoch_micros(time_now);
+  specifics.set_name(name);
+  for (const GURL& url : urls) {
+    sync_pb::ComparisonData* comparison_data = specifics.add_data();
+    comparison_data->set_url(url.spec());
+  }
+
+  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
+      store_->CreateWriteBatch();
+
+  change_processor()->Put(specifics.uuid(), CreateEntityData(specifics),
+                          batch->GetMetadataChangeList());
+
+  entries_.emplace(specifics.uuid(), specifics);
+
+  batch->WriteData(specifics.uuid(), specifics.SerializeAsString());
+  Commit(std::move(batch));
+  return std::optional(specifics);
 }
 
 void ProductSpecificationsSyncBridge::OnStoreCreated(
@@ -170,6 +201,14 @@ void ProductSpecificationsSyncBridge::OnReadAllMetadata(
   }
 
   change_processor()->ModelReadyToSync(std::move(metadata_batch));
+}
+
+void ProductSpecificationsSyncBridge::Commit(
+    std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch) {
+  store_->CommitWriteBatch(
+      std::move(batch),
+      base::BindOnce(&ProductSpecificationsSyncBridge::OnCommit,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ProductSpecificationsSyncBridge::OnCommit(

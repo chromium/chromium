@@ -33,7 +33,7 @@ const std::vector<int64_t> kUpdateTime = {
     kCreationTime[1] + 2 * base::Time::kMillisecondsPerDay,
     kCreationTime[2] + base::Time::kMillisecondsPerDay};
 const std::vector<std::vector<std::string>> kCompareUrls = {
-    {"https://foo.com", "https://bar.com"},
+    {"https://foo.com/", "https://bar.com/"},
     {"https://foo-bar.com", "https://bar-foo.com"},
     {"https://amazon.com/dp/12345",
      "https://www.gap.com/browse/product.do?pid=39573"}};
@@ -128,10 +128,14 @@ class ProductSpecificationsSyncBridgeTest : public testing::Test {
   void SetUp() override {
     store_ = syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest();
     AddInitialSpecifics();
+    ON_CALL(processor_, IsTrackingMetadata())
+        .WillByDefault(testing::Return(true));
     bridge_ = std::make_unique<ProductSpecificationsSyncBridge>(
         syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
         processor_.CreateForwardingProcessor());
     base::RunLoop().RunUntilIdle();
+    initial_store_ = GetAllStoreData();
+    initial_entries_ = entries();
   }
 
   ProductSpecificationsSyncBridge& bridge() { return *bridge_; }
@@ -153,6 +157,12 @@ class ProductSpecificationsSyncBridgeTest : public testing::Test {
                        compare_specifics.SerializeAsString());
     }
     CommitToStoreAndWait(std::move(batch));
+  }
+
+  std::optional<sync_pb::CompareSpecifics> AddProductSpecifications(
+      const std::string& name,
+      const std::vector<const GURL> urls) {
+    return bridge().AddProductSpecifications(name, urls);
   }
 
   void CommitToStoreAndWait(
@@ -212,13 +222,31 @@ class ProductSpecificationsSyncBridgeTest : public testing::Test {
     EXPECT_TRUE(entries().find(compare_specifics.uuid()) == entries().end());
   }
 
+  void VerifySpecificsInitialNonExistence(
+      const sync_pb::CompareSpecifics& compare_specifics) {
+    EXPECT_TRUE(initial_store_.find(compare_specifics.uuid()) ==
+                initial_store_.end());
+    EXPECT_TRUE(initial_entries_.find(compare_specifics.uuid()) ==
+                initial_entries_.end());
+  }
+
   void VerifyEntriesAndStoreSize(uint64_t expected_size) {
     EXPECT_EQ(expected_size, GetAllStoreData().size());
     EXPECT_EQ(expected_size, entries().size());
   }
 
+  void VerifyStoreAndEntriesSizeIncreasedBy(uint64_t size) {
+    EXPECT_EQ(GetAllStoreData().size(), initial_store_.size() + size);
+    EXPECT_EQ(entries().size(), initial_entries_.size() + size);
+  }
+
   ProductSpecificationsSyncBridge::CompareSpecificsEntries& entries() {
     return bridge().entries_;
+  }
+
+  void ProcessorNotTrackingMetadata() {
+    ON_CALL(processor_, IsTrackingMetadata())
+        .WillByDefault(testing::Return(false));
   }
 
  private:
@@ -226,6 +254,8 @@ class ProductSpecificationsSyncBridgeTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<syncer::ModelTypeStore> store_;
   std::unique_ptr<ProductSpecificationsSyncBridge> bridge_;
+  ProductSpecificationsSyncBridge::CompareSpecificsEntries initial_entries_;
+  std::map<std::string, sync_pb::CompareSpecifics> initial_store_;
 };
 
 TEST_F(ProductSpecificationsSyncBridgeTest, TestGetStorageKey) {
@@ -381,6 +411,30 @@ TEST_F(ProductSpecificationsSyncBridgeTest, TestDelete) {
                                        std::move(update_changes));
   VerifySpecificsNonExistence(deleted_specifics);
   VerifyEntriesAndStoreSize(2);
+}
+
+TEST_F(ProductSpecificationsSyncBridgeTest, AddProductSpecifications) {
+  const std::optional<sync_pb::CompareSpecifics> new_specifics =
+      AddProductSpecifications(
+          kInitName[0], {GURL(kCompareUrls[0][0]), GURL(kCompareUrls[0][1])});
+  EXPECT_TRUE(new_specifics.has_value());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(new_specifics.has_value());
+  EXPECT_EQ(kInitName[0], new_specifics->name());
+  EXPECT_EQ(kCompareUrls[0][0], new_specifics->data()[0].url());
+  EXPECT_EQ(kCompareUrls[0][1], new_specifics->data()[1].url());
+  VerifySpecificsInitialNonExistence(new_specifics.value());
+  VerifySpecificsExists(new_specifics.value());
+  VerifyStoreAndEntriesSizeIncreasedBy(1);
+}
+
+TEST_F(ProductSpecificationsSyncBridgeTest,
+       AddProductSpecificationsProcessorNotTrackingMetadata) {
+  ProcessorNotTrackingMetadata();
+  const std::optional<sync_pb::CompareSpecifics> new_specifics =
+      AddProductSpecifications(
+          kInitName[0], {GURL(kCompareUrls[0][0]), GURL(kCompareUrls[0][1])});
+  EXPECT_FALSE(new_specifics.has_value());
 }
 
 }  // namespace commerce

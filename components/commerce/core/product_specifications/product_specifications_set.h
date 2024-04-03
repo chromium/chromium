@@ -9,9 +9,12 @@
 
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "components/sync/protocol/compare_specifics.pb.h"
 #include "url/gurl.h"
 
 namespace commerce {
+
+class ProductSpecificationsService;
 
 // Contains a set of product specifications.
 class ProductSpecificationsSet {
@@ -43,6 +46,11 @@ class ProductSpecificationsSet {
   const std::string& name() const { return name_; }
 
  private:
+  friend commerce::ProductSpecificationsService;
+
+  static ProductSpecificationsSet FromProto(
+      const sync_pb::CompareSpecifics& compare_specifics);
+
   const base::Uuid uuid_;
   const base::Time creation_time_;
   const base::Time update_time_;

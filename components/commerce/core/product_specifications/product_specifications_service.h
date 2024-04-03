@@ -29,6 +29,12 @@ class ProductSpecificationsService : public KeyedService {
   const std::vector<const ProductSpecificationsSet>
   GetAllProductSpecifications();
 
+  // Add new product specifications set called |name| with product pages
+  // corresponding to |urls|.
+  const std::optional<const ProductSpecificationsSet>
+  AddProductSpecificationsSet(const std::string& name,
+                              const std::vector<const GURL>& urls);
+
  private:
   std::unique_ptr<ProductSpecificationsSyncBridge> bridge_;
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;

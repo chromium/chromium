@@ -4,6 +4,8 @@
 
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
 
+#include "components/sync/protocol/compare_specifics.pb.h"
+
 namespace commerce {
 
 ProductSpecificationsSet::ProductSpecificationsSet(
@@ -29,5 +31,16 @@ ProductSpecificationsSet::ProductSpecificationsSet(
     const ProductSpecificationsSet&) = default;
 
 ProductSpecificationsSet::~ProductSpecificationsSet() = default;
+
+ProductSpecificationsSet ProductSpecificationsSet::FromProto(
+    const sync_pb::CompareSpecifics& specifics) {
+  std::vector<const GURL> urls;
+  for (const sync_pb::ComparisonData& data : specifics.data()) {
+    urls.push_back(GURL(data.url()));
+  }
+  return ProductSpecificationsSet(
+      specifics.uuid(), specifics.creation_time_unix_epoch_micros(),
+      specifics.update_time_unix_epoch_micros(), urls, specifics.name());
+}
 
 }  // namespace commerce

@@ -4,6 +4,7 @@
 
 #include "components/commerce/core/product_specifications/product_specifications_service.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/run_loop.h"
@@ -11,6 +12,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
 #include "components/commerce/core/product_specifications/product_specifications_sync_bridge.h"
 #include "components/sync/protocol/compare_specifics.pb.h"
@@ -20,6 +22,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
+const char kProductOneUrl[] = "https://example.com/productone";
+const char kProductTwoUrl[] = "https://example.com.com/producttwo";
+const char kProductSpecsName[] = "name";
+const char kUuid[] = "uuid";
+const int kCreationTime = 1000;
+const int kUpdateTime = 1001;
 
 sync_pb::CompareSpecifics BuildCompareSpecifics(
     const std::string& uuid,
@@ -104,6 +113,11 @@ class MockProductSpecificationsSyncBridge
               (DataCallback callback),
               (override));
 
+  MOCK_METHOD(const std::optional<sync_pb::CompareSpecifics>,
+              AddProductSpecifications,
+              (const std::string& name, const std::vector<const GURL>& urls),
+              (override));
+
   void AddCompareSpecifics(const sync_pb::CompareSpecifics& compare_specifics) {
     entries_.emplace(compare_specifics.uuid(), compare_specifics);
   }
@@ -126,6 +140,31 @@ class ProductSpecificationsServiceTest : public testing::Test {
   MockProductSpecificationsSyncBridge* bridge() { return bridge_; }
 
   ProductSpecificationsService* service() { return service_.get(); }
+
+  void MockAddProductSpecifications() {
+    ON_CALL(*bridge_, AddProductSpecifications(testing::_, testing::_))
+        .WillByDefault(
+            [](const std::string& name, const std::vector<const GURL>& urls) {
+              sync_pb::CompareSpecifics specifics;
+              specifics.set_uuid(kUuid);
+              specifics.set_creation_time_unix_epoch_micros(kCreationTime);
+              specifics.set_update_time_unix_epoch_micros(kUpdateTime);
+              specifics.set_name(name);
+              for (const GURL& url : urls) {
+                sync_pb::ComparisonData* data = specifics.add_data();
+                data->set_url(url.spec());
+              }
+              return specifics;
+            });
+  }
+
+  void MockFailedAddProductSpecifications() {
+    ON_CALL(*bridge_, AddProductSpecifications(testing::_, testing::_))
+        .WillByDefault(
+            [](const std::string& name, const std::vector<const GURL>& urls) {
+              return std::nullopt;
+            });
+  }
 
   void CheckSpecsAgainstSpecifics(
       const ProductSpecificationsSet& specifications,
@@ -170,6 +209,24 @@ TEST_F(ProductSpecificationsServiceTest, TestGetProductSpecifications) {
   for (uint64_t i = 0; i < specifications.size(); i++) {
     CheckSpecsAgainstSpecifics(specifications[i], kCompareSpecifics[i]);
   }
+}
+
+TEST_F(ProductSpecificationsServiceTest, TestAddProductSpecificationsSuccess) {
+  MockAddProductSpecifications();
+  std::optional<const ProductSpecificationsSet> product_spec_set =
+      service()->AddProductSpecificationsSet(
+          kProductSpecsName, {GURL(kProductOneUrl), GURL(kProductTwoUrl)});
+  EXPECT_TRUE(product_spec_set.has_value());
+  EXPECT_EQ(kProductSpecsName, product_spec_set.value().name());
+  EXPECT_EQ(kProductOneUrl, product_spec_set.value().urls()[0].spec());
+  EXPECT_EQ(kProductTwoUrl, product_spec_set.value().urls()[1].spec());
+}
+
+TEST_F(ProductSpecificationsServiceTest, TestAddProductSpecificationsFailure) {
+  MockFailedAddProductSpecifications();
+  EXPECT_EQ(std::nullopt, service()->AddProductSpecificationsSet(
+                              kProductSpecsName,
+                              {GURL(kProductOneUrl), GURL(kProductTwoUrl)}));
 }
 
 }  // namespace commerce

@@ -9,7 +9,9 @@
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_sync_bridge.h"
+#include "components/sync/protocol/compare_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
+#include "url/gurl.h"
 
 namespace syncer {
 class MetadataChangeList;
@@ -55,6 +57,10 @@ class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
 
   std::unique_ptr<syncer::ModelTypeStore> store_;
 
+  virtual const std::optional<sync_pb::CompareSpecifics>
+  AddProductSpecifications(const std::string& name,
+                           const std::vector<const GURL>& urls);
+
   void OnStoreCreated(const std::optional<syncer::ModelError>& error,
                       std::unique_ptr<syncer::ModelTypeStore> store);
   void OnReadAllData(
@@ -64,6 +70,7 @@ class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
       std::unique_ptr<syncer::ModelTypeStore::RecordList> record_list,
       const std::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch);
+  void Commit(std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch);
   void OnCommit(const std::optional<syncer::ModelError>& error);
 
   base::WeakPtrFactory<ProductSpecificationsSyncBridge> weak_ptr_factory_{this};

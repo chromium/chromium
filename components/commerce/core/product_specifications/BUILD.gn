@@ -28,6 +28,7 @@ source_set("unit_tests") {
   deps = [
     ":product_specifications",
     "//base/test:test_support",
+    "//components/commerce/core:commerce_types",
     "//components/sync:test_support",
   ]
 }
