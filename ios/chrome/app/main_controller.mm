@@ -233,10 +233,9 @@ NSString* const kPurgeWebSessionStates = @"PurgeWebSessionStates";
 // Constants for deferred favicons clean up.
 NSString* const kFaviconsCleanup = @"FaviconsCleanup";
 
-// The minimum amount of time (2 weeks in seconds) between calculating and
+// The minimum amount of time (2 weeks) between calculating and
 // logging metrics about the amount of device storage space used by Chrome.
-const NSTimeInterval kMinimumTimeBetweenDocumentsSizeLogging =
-    60.0 * 60.0 * 24.0 * 14.0;
+const base::TimeDelta kMinimumTimeBetweenDocumentsSizeLogging = base::Days(14);
 
 // Adapted from chrome/browser/ui/browser_init.cc.
 void RegisterComponentsForUpdate() {
@@ -1369,23 +1368,26 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   if (!base::FeatureList::IsEnabled(kLogApplicationStorageSizeMetrics)) {
     return;
   }
-
-  // TODO(crbug.com/325612236): Rewrite this to use LocalStorage for time
-  // logging and to either do per-profile size logging or to aggregate to a
-  // single value for all profiles summed.
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  NSDate* lastLogged = base::apple::ObjCCast<NSDate>(
-      [defaults objectForKey:kLastApplicationStorageMetricsLogTime]);
-  if (lastLogged && [[NSDate date] timeIntervalSinceDate:lastLogged] <
-                        kMinimumTimeBetweenDocumentsSizeLogging) {
-    return;
+  std::vector<ChromeBrowserState*> loadedBrowserStates =
+      GetApplicationContext()
+          ->GetChromeBrowserStateManager()
+          ->GetLoadedBrowserStates();
+  for (ChromeBrowserState* browserState : loadedBrowserStates) {
+    PrefService* prefService = browserState->GetPrefs();
+    const base::Time lastLogged =
+        prefService->GetTime(prefs::kLastApplicationStorageMetricsLogTime);
+    if (lastLogged != base::Time() &&
+        base::Time::Now() - lastLogged <
+            kMinimumTimeBetweenDocumentsSizeLogging) {
+      continue;
+    }
+    prefService->SetTime(prefs::kLastApplicationStorageMetricsLogTime,
+                         base::Time::Now());
+    base::FilePath profilePath = browserState->GetStatePath();
+    base::FilePath offTheRecordStatePath =
+        browserState->GetOffTheRecordStatePath();
+    LogApplicationStorageMetrics(profilePath, offTheRecordStatePath);
   }
-
-  ChromeBrowserState* browserState = self.appState.mainBrowserState;
-  base::FilePath profilePath = browserState->GetStatePath();
-  base::FilePath offTheRecordStatePath =
-      browserState->GetOffTheRecordStatePath();
-  LogApplicationStorageMetrics(profilePath, offTheRecordStatePath);
 }
 
 - (void)expireFirstUserActionRecorder {

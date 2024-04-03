@@ -9,11 +9,7 @@
 
 #import "base/files/file_path.h"
 
-// A key to NSUserDefaults storing the last time these metrics were logged.
-extern NSString* const kLastApplicationStorageMetricsLogTime;
-
-// Logs metrics about the storage used by the application and then updates the
-// `kLastApplicationStorageMetricsLogTime` user default value. `profile_path`
+// Logs metrics about the storage used by the application. `profile_path`
 // must point to the main user non-incognito profile directory and
 // `off_the_record_state_path` to the incognito state path.
 void LogApplicationStorageMetrics(base::FilePath profile_path,

@@ -577,6 +577,12 @@ inline constexpr char kInsecureFormWarningsEnabled[] =
 // This value is true if the default user agent was changed. To be used
 // only when raccoon is enabled.
 inline constexpr char kUserAgentWasChanged[] = "UserAgentWasChanged";
+
+// A time object storing the last time size metrics of the documents directory
+// were logged.
+inline constexpr char kLastApplicationStorageMetricsLogTime[] =
+    "LastApplicationStorageMetricsLogTime";
+
 }  // namespace prefs
 
 #endif  // IOS_CHROME_BROWSER_PREFS_PREF_NAMES_H_

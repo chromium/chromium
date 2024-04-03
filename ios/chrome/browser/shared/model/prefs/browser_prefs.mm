@@ -778,6 +778,9 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(kObsoleteAccountStorageNoticeShown, false);
 
   registry->RegisterBooleanPref(kPreferencesMigratedToBasic, false);
+
+  registry->RegisterTimePref(prefs::kLastApplicationStorageMetricsLogTime,
+                             base::Time());
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -978,6 +981,10 @@ void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
 
   // Added 03/2024
   prefs->ClearPref(kPreferencesMigratedToBasic);
+
+  // Added 03/2024.
+  MigrateNSDatePreferenceFromUserDefaults(
+      prefs::kLastApplicationStorageMetricsLogTime, prefs, defaults);
 }
 
 void MigrateObsoleteUserDefault() {
