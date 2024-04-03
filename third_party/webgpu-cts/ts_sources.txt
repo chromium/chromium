@@ -712,11 +712,11 @@ src/webgpu/shader/validation/decl/ptr_spelling.spec.ts
 src/webgpu/shader/validation/decl/var.spec.ts
 src/webgpu/shader/validation/decl/var_access_mode.spec.ts
 src/webgpu/shader/validation/expression/access/vector.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/const_override_validation.ts
 src/webgpu/shader/validation/expression/binary/add_sub_mul.spec.ts
 src/webgpu/shader/validation/expression/binary/and_or_xor.spec.ts
 src/webgpu/shader/validation/expression/binary/bitwise_shift.spec.ts
 src/webgpu/shader/validation/expression/binary/comparison.spec.ts
-src/webgpu/shader/validation/expression/call/builtin/const_override_validation.ts
 src/webgpu/shader/validation/expression/call/builtin/abs.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/acos.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/acosh.spec.ts
@@ -756,6 +756,7 @@ src/webgpu/shader/validation/expression/call/builtin/pack4xU8.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/pack4xU8Clamp.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/quantizeToF16.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/radians.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/reflect.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/round.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/saturate.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/shader_stage_utils.ts
