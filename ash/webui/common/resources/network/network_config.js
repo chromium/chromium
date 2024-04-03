@@ -2527,11 +2527,6 @@ Polymer({
    * @private
    */
   eapConfigServerCaCertAllowed_() {
-    if (loadTimeData.getBoolean(
-            'eapDefaultCasWithoutSubjectVerificationAllowed')) {
-      return true;
-    }
-
     const outer = this.eapProperties_.outer;
     if (!(outer === 'EAP-TLS' || outer === 'EAP-TTLS' || outer === 'PEAP')) {
       return true;

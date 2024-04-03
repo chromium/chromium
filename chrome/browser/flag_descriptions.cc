@@ -5410,14 +5410,6 @@ const char kAllowDevtoolsInSystemUIDescription[] =
     "By enabling this flag, you can access them via the context menu or "
     "shortcuts to debug the system UI.";
 
-const char kAllowEapDefaultCasWithoutSubjectVerificationName[] =
-    "Allow EAP network configs with default server CAs without subject "
-    "verification";
-const char kAllowEapDefaultCasWithoutSubjectVerificationDescription[] =
-    "Allows creating EAP network configs which use the default server CA certs "
-    "without specifying subject or domain match options which validate the "
-    "identity of the server.";
-
 const char kAllowScrollSettingsName[] =
     "Allow changes to scroll acceleration/sensitivity for mice.";
 const char kAllowScrollSettingsDescription[] =

@@ -403,54 +403,12 @@ suite('network-config-wifi', function() {
       assertEquals('no-user-cert', networkConfig.selectedUserCertHash_);
     });
 
-    // Testing eapDefaultCasWithoutSubjectVerificationAllowed = True with
-    // default Server CA cert for different WiFi EAP types.
-    // Expected to see no errors because empty fields still allowed.
-    // 'LEAP' is not covered by feature, in this case behavior suppose to be
-    // the same.
-    ['EAP-TLS', 'EAP-TTLS', 'PEAP', 'LEAP'].forEach(eapType => {
-      test('WiFi EAP Default CA Cert Allowed', async function() {
-        const errorMessage = getErrorMessage(eapType);
-        // Setting a feature flag.
-        loadTimeData.overrideValues({
-          'eapDefaultCasWithoutSubjectVerificationAllowed': true,
-        });
-        // No Server CA certificates provided, the default one will be selected.
-        await initiateWiFiEapConfig(kServerCaCertsNotProvided, eapType);
-
-        assertFalse(isConfigErrorsPresent(), errorMessage);
-        assertTrue(isDefaultServerCaSelected(), errorMessage);
-
-        // Set an empty DomainSuffixMatch doesn't trigger errors.
-        await setSerializedDomainSuffixMatch('');
-        assertFalse(isConfigErrorsPresent(), errorMessage);
-
-        // Set an empty SerializedSubjectAltNameMatch doesn't trigger errors.
-        await setSerializedSubjectAltNameMatch('');
-        assertFalse(isConfigErrorsPresent(), errorMessage);
-
-        // Set non empty DomainSuffixMatch doesn't trigger errors.
-        await setSerializedDomainSuffixMatch('test.com');
-        assertFalse(isConfigErrorsPresent(), errorMessage);
-
-        // Set non empty SerializedSubjectAltNameMatch doesn't trigger errors.
-        await setSerializedDomainSuffixMatch('test.com');
-        assertFalse(isConfigErrorsPresent(), errorMessage);
-      });
-    });
-
-    // Testing eapDefaultCasWithoutSubjectVerificationAllowed = False with
-    // default Server CA cert for different WiFi EAP types.
+    // Testing different WiFi EAP types with default Server CA certs.
     // Expected to see errors if both
     // [SerializedDomainSuffixMatch,  SerializedSubjectAltNameMatch] are empty.
     ['EAP-TLS', 'EAP-TTLS', 'PEAP'].forEach(eapType => {
-      test('WiFi EAP Default CA Cert Flag', async function() {
+      test('WiFi EAP Default CA Cert', async function() {
         const errorMessage = getErrorMessage(eapType);
-        // Setting a feature flag.
-        loadTimeData.overrideValues({
-          'eapDefaultCasWithoutSubjectVerificationAllowed': false,
-        });
-
         // No Server CA certificates provided, the default one will be selected.
         await initiateWiFiEapConfig(kServerCaCertsNotProvided, eapType);
 
@@ -461,7 +419,6 @@ suite('network-config-wifi', function() {
         // Set an empty DomainSuffixMatch doesn't clear the error.
         await setSerializedDomainSuffixMatch('');
         assertTrue(isConfigErrorsPresent(), errorMessage);
-
         // Set an empty SerializedSubjectAltNameMatch doesn't clear
         // the error.
         await setSerializedSubjectAltNameMatch('');
@@ -475,14 +432,10 @@ suite('network-config-wifi', function() {
 
     // Testing that managed WiFi EAP networks which use the default Server CA
     // cert are not required to set a SerializedDomainSuffixMatch or
-    // SerializedSubjectAltNameMatch, even when the experiment
-    // eapDefaultCasWithoutSubjectVerificationAllowed is disabled.
+    // SerializedSubjectAltNameMatch.
     ['EAP-TLS', 'EAP-TTLS', 'PEAP'].forEach(eapType => {
       test('WiFi EAP Default CA Cert Managed EAP Settings', async function() {
         const errorMessage = getErrorMessage(eapType);
-        loadTimeData.overrideValues({
-          'eapDefaultCasWithoutSubjectVerificationAllowed': false,
-        });
         mojoApi_.resetForTest();
         const wifi1 = OncMojo.getDefaultManagedProperties(
             NetworkType.kWiFi, 'testguid', '');
@@ -506,14 +459,10 @@ suite('network-config-wifi', function() {
       });
     });
 
-    // Testing eapDefaultCasWithoutSubjectVerificationAllowed with default
-    // Server CA cert and with EAP=LEAP types for Wifi. Expected to see
-    // no errors because 'LEAP' is not covered by this feature.
-    test('WiFi EAP Default CA Cert Flag LEAP', async function() {
-      // Setting a feature flag.
-      loadTimeData.overrideValues({
-        'eapDefaultCasWithoutSubjectVerificationAllowed': false,
-      });
+    // Testing LEAP with default Server CA certs. Expected to see
+    // no errors because LEAP is not a certificate-based authentication
+    // protocol.
+    test('WiFi EAP Default CA Cert LEAP', async function() {
       const eapType = 'LEAP';
 
       // No Server CA certificates, the default one will be selected in UI.
@@ -540,22 +489,14 @@ suite('network-config-wifi', function() {
       assertFalse(isConfigErrorsPresent());
     });
 
-    // Testing eapDefaultCasWithoutSubjectVerificationAllowed =
-    // [True, False] with not default Server CA cert and with different EAP
-    // types for Wifi. Expected to see no errors because empty
-    // [SerializedDomainSuffixMatch,  SerializedSubjectAltNameMatch] are allowed
-    // if not default Server CA is selected.
-    // 'LEAP' is not covered by feature, in this case behavior suppose to be
-    // the same.
+    // Testing different EAP auth methods with a non-default Server CA cert.
+    // Expected to see no errors because empty [SerializedDomainSuffixMatch,
+    // SerializedSubjectAltNameMatch] are allowed if a non-default (i.e.
+    // non-public) Server CA is selected.
     ['EAP-TLS', 'EAP-TTLS', 'PEAP', 'LEAP'].forEach(eapType => {
       [true, false].forEach(isFeatureActive => {
         test('WiFi EAP Not Default CA Cert Flag', async function() {
           const errorMessage = getErrorMessage(eapType);
-
-          // Setting a feature flag.
-          loadTimeData.overrideValues({
-            'eapDefaultCasWithoutSubjectVerificationAllowed': isFeatureActive,
-          });
 
           // Adding Server CA certs, the first one will be selected by default.
           await initiateWiFiEapConfig(kAddServerCaCerts, eapType);

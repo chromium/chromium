@@ -73,13 +73,6 @@ BASE_FEATURE(kAllowDevtoolsInSystemUI,
              "AllowDevtoolsInSystemUI",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Allows network connections which use EAP methods that validate the
-// server certificate to use the default server CA certificate without
-// verifying the servers identity.
-BASE_FEATURE(kAllowEapDefaultCasWithoutSubjectVerification,
-             "AllowEapDefaultCasWithoutSubjectVerification",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether devices are updated before reboot after the first update.
 BASE_FEATURE(kAllowRepeatedUpdates,
              "AllowRepeatedUpdates",
@@ -3179,11 +3172,6 @@ bool IsAllowAmbientEQEnabled() {
 bool IsAllowScrollSettingsEnabled() {
   return IsInputDeviceSettingsSplitEnabled() &&
          base::FeatureList::IsEnabled(kAllowScrollSettings);
-}
-
-bool IsEapDefaultCasWithoutSubjectVerificationAllowed() {
-  return base::FeatureList::IsEnabled(
-      kAllowEapDefaultCasWithoutSubjectVerification);
 }
 
 bool IsAltClickAndSixPackCustomizationEnabled() {

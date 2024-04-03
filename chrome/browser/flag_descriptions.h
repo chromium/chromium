@@ -3135,9 +3135,6 @@ extern const char kLinkCrossDeviceInternalsDescription[];
 extern const char kAllowDevtoolsInSystemUIName[];
 extern const char kAllowDevtoolsInSystemUIDescription[];
 
-extern const char kAllowEapDefaultCasWithoutSubjectVerificationName[];
-extern const char kAllowEapDefaultCasWithoutSubjectVerificationDescription[];
-
 extern const char kAllowScrollSettingsName[];
 extern const char kAllowScrollSettingsDescription[];
 

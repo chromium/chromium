@@ -123,11 +123,6 @@
     "expiry_milestone": 128
   },
   {
-    "name": "allow-eap-default-cas-without-subject-verification",
-    "owners": [ "suprnet@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "allow-insecure-localhost",
     "owners": [ "cthomp@chromium.org", "security-dev@chromium.org" ],
     "expiry_milestone": 130

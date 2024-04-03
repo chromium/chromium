@@ -597,10 +597,6 @@ void AddConfigLocalizedStrings(content::WebUIDataSource* html_source) {
                               ash::LoginState::Get()->IsKioskSession());
 
   html_source->AddBoolean(
-      "eapDefaultCasWithoutSubjectVerificationAllowed",
-      ash::features::IsEapDefaultCasWithoutSubjectVerificationAllowed());
-
-  html_source->AddBoolean(
       "ephemeralNetworkPoliciesEnabled",
       ash::policy_util::AreEphemeralNetworkPoliciesEnabled());
 }
