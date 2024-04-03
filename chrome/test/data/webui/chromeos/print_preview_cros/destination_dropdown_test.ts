@@ -8,6 +8,7 @@ import {PDF_DESTINATION} from 'chrome://os-print/js/data/destination_constants.j
 import {DestinationManager} from 'chrome://os-print/js/data/destination_manager.js';
 import {DestinationDropdownElement} from 'chrome://os-print/js/destination_dropdown.js';
 import {DESTINATION_DROPDOWN_UPDATE_SELECTED_DESTINATION, DestinationDropdownController} from 'chrome://os-print/js/destination_dropdown_controller.js';
+import {DestinationRowElement} from 'chrome://os-print/js/destination_row.js';
 import {createCustomEvent} from 'chrome://os-print/js/utils/event_utils.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
@@ -78,10 +79,13 @@ suite('DestinationDropdown', () => {
         controller.dispatchEvent(testEvent);
         await selectedChangedEvent1;
 
-        const selected = strictQuery<HTMLElement>(
-            selectedDestinationSelector, element.shadowRoot, HTMLElement);
+        const selected = strictQuery<DestinationRowElement>(
+            selectedDestinationSelector, element.shadowRoot,
+            DestinationRowElement);
+        const rowLabel = strictQuery<HTMLElement>(
+            '#label', selected.shadowRoot, HTMLElement);
         assertEquals(
-            '', selected.textContent!.trim(),
+            '', rowLabel.textContent!.trim(),
             `Selected destination not display a destination name`);
 
         // Change result to non-null destination.
@@ -92,7 +96,7 @@ suite('DestinationDropdown', () => {
         await selectedChangedEvent2;
 
         assertEquals(
-            PDF_DESTINATION.displayName, selected.textContent!.trim(),
+            PDF_DESTINATION.displayName, rowLabel.textContent!.trim(),
             `Selected destination should match active destination`);
       });
 });

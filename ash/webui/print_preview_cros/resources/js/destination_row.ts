@@ -6,6 +6,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './destination_row.html.js';
 import {DestinationRowController} from './destination_row_controller.js';
+import {Destination} from './utils/print_preview_cros_app_types.js';
 
 /**
  * @fileoverview
@@ -22,7 +23,14 @@ export class DestinationRowElement extends PolymerElement {
     return getTemplate();
   }
 
+  static get properties() {
+    return {
+      destination: Object,
+    };
+  }
+
   private controller = new DestinationRowController();
+  destination: Destination|null = null;
 
   getControllerForTesting(): DestinationRowController {
     return this.controller;
