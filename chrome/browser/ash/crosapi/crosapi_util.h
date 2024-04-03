@@ -31,7 +31,7 @@ namespace browser_util {
 bool IsSigninProfileOrBelongsToAffiliatedUser(Profile* profile);
 
 // Returns the UUID and version for all tracked interfaces. Exposed for testing.
-base::flat_map<base::Token, uint32_t> GetInterfaceVersions();
+const base::flat_map<base::Token, uint32_t>& GetInterfaceVersions();
 
 // Represents how to launch Lacros Chrome.
 struct InitialBrowserAction {

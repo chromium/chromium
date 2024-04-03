@@ -703,12 +703,15 @@ base::Time GetLastPolicyFetchAttemptTimestamp() {
 
 }  // namespace
 
-base::flat_map<base::Token, uint32_t> GetInterfaceVersions() {
-  base::flat_map<base::Token, uint32_t> versions;
-  for (const auto& entry : kInterfaceVersionEntries) {
-    versions.emplace(entry.uuid, entry.version);
-  }
-  return versions;
+const base::flat_map<base::Token, uint32_t>& GetInterfaceVersions() {
+  static base::NoDestructor<base::flat_map<base::Token, uint32_t>> versions([] {
+    base::flat_map<base::Token, uint32_t> versions;
+    for (const auto& entry : kInterfaceVersionEntries) {
+      versions.emplace(entry.uuid, entry.version);
+    }
+    return versions;
+  }());
+  return *versions;
 }
 
 InitialBrowserAction::InitialBrowserAction(

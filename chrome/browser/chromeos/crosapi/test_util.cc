@@ -17,6 +17,19 @@
 
 namespace crosapi {
 
+namespace internal {
+
+int GetInterfaceVersionImpl(base::Token interface_uuid) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return chromeos::LacrosService::Get()->GetInterfaceVersion(interface_uuid);
+#else
+  auto it = browser_util::GetInterfaceVersions().find(interface_uuid);
+  return it == browser_util::GetInterfaceVersions().end() ? -1 : it->second;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+}
+
+}  // namespace internal
+
 mojom::TestController* GetTestController() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return chromeos::LacrosService::Get()

@@ -270,8 +270,11 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
   //    LacrosService::Get()->GetInterfaceVersion<crosapi::mojom::Arc>();
   template <typename T>
   int GetInterfaceVersion() const {
-    return GetInterfaceVersionImpl(T::Uuid_);
+    return GetInterfaceVersion(T::Uuid_);
   }
+
+  // Prefer using GetInterfaceVersion<T>().
+  int GetInterfaceVersion(base::Token interface_uuid) const;
 
   using Crosapi = crosapi::mojom::Crosapi;
 
@@ -396,9 +399,6 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
             void (Crosapi::*bind_func)(mojo::PendingReceiver<CrosapiInterface>),
             uint32_t MethodMinVersion>
   void ConstructRemote();
-
-  // Similar to GetInterfaceVersion(), but taking UUID
-  int GetInterfaceVersionImpl(base::Token interface_uuid) const;
 
   // Receiver and cache of system idle info updates.
   std::unique_ptr<SystemIdleCache> system_idle_cache_;

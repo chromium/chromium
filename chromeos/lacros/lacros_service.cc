@@ -872,6 +872,19 @@ std::optional<uint32_t> LacrosService::CrosapiVersion() const {
   return chromeos::BrowserParamsProxy::Get()->CrosapiVersion();
 }
 
+int LacrosService::GetInterfaceVersion(base::Token interface_uuid) const {
+  if (!chromeos::BrowserParamsProxy::Get()->InterfaceVersions()) {
+    return -1;
+  }
+  const base::flat_map<base::Token, uint32_t>& versions =
+      chromeos::BrowserParamsProxy::Get()->InterfaceVersions().value();
+  auto it = versions.find(interface_uuid);
+  if (it == versions.end()) {
+    return -1;
+  }
+  return it->second;
+}
+
 void LacrosService::StartSystemIdleCache() {
   system_idle_cache_->Start();
 }
@@ -888,19 +901,6 @@ void LacrosService::ConstructRemote() {
   interfaces_.emplace(CrosapiInterface::Uuid_,
                       std::make_unique<LacrosService::InterfaceEntry<
                           CrosapiInterface, bind_func, MethodMinVersion>>());
-}
-
-int LacrosService::GetInterfaceVersionImpl(base::Token interface_uuid) const {
-  if (!chromeos::BrowserParamsProxy::Get()->InterfaceVersions()) {
-    return -1;
-  }
-  const base::flat_map<base::Token, uint32_t>& versions =
-      chromeos::BrowserParamsProxy::Get()->InterfaceVersions().value();
-  auto it = versions.find(interface_uuid);
-  if (it == versions.end()) {
-    return -1;
-  }
-  return it->second;
 }
 
 void LacrosService::AddObserver(Observer* obs) {

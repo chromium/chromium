@@ -8,12 +8,19 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
+#include "base/token.h"
 
 namespace crosapi {
 
 namespace mojom {
 class TestController;
 }  // namespace mojom
+
+namespace internal {
+
+int GetInterfaceVersionImpl(base::Token interface_uuid);
+
+}  // namespace internal
 
 // Provides access to the test setup's TestController in browsertests only.
 // Can be used in both the Lacros and Ash processes.
@@ -24,6 +31,13 @@ mojom::TestController* GetTestController();
 // Abstraction over testing crosapi::browser_util::GetAshCapabilities() that
 // works in both the Lacros and Ash processes.
 bool AshSupportsCapabilities(const base::flat_set<std::string>& capabilities);
+
+// Abstraction over LacrosService::GetInterfaceVersion() that can be called
+// in Lacros or Ash.
+template <typename T>
+int GetInterfaceVersion() {
+  return internal::GetInterfaceVersionImpl(T::Uuid_);
+}
 
 }  // namespace crosapi
 
