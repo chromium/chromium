@@ -5,6 +5,7 @@
 #include "gpu/command_buffer/client/client_shared_image.h"
 
 #include <GLES2/gl2.h>
+#include <GLES2/gl2extchromium.h>
 
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
@@ -210,5 +211,104 @@ TEST(ClientSharedImageTest, ExportAndImport) {
   EXPECT_EQ(imported_client_si->GetTextureTarget(),
             static_cast<uint32_t>(GL_TEXTURE_2D));
 }
+
+// The default target should be set for single-planar formats with no
+// native buffer used.
+TEST(ClientSharedImageTest,
+     GetTextureTarget_SinglePlaneFormats_NoNativeBuffer) {
+  auto sii = base::MakeRefCounted<TestSharedImageInterface>();
+  const gfx::Size kSize(256, 256);
+  const uint32_t kUsage =
+      SHARED_IMAGE_USAGE_RASTER_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ;
+
+  for (auto format : viz::SinglePlaneFormat::kAll) {
+    SharedImageInfo si_info{format,
+                            kSize,
+                            gfx::ColorSpace(),
+                            kTopLeft_GrSurfaceOrigin,
+                            kOpaque_SkAlphaType,
+                            kUsage,
+                            ""};
+
+    auto client_si = sii->CreateSharedImage(si_info, kNullSurfaceHandle);
+    EXPECT_EQ(client_si->GetTextureTarget(),
+              static_cast<uint32_t>(GL_TEXTURE_2D));
+  }
+}
+
+#if !BUILDFLAG(IS_MAC)
+// When not on Mac, the default target should be used for multi-planar
+// formats if external sampling is not set (the logic for Mac is distinct and is
+// tested separately).
+TEST(ClientSharedImageTest, GetTextureTarget_MultiplanarFormats) {
+  auto sii = base::MakeRefCounted<TestSharedImageInterface>();
+  const gfx::Size kSize(256, 256);
+  const uint32_t kUsage =
+      SHARED_IMAGE_USAGE_RASTER_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ;
+
+  // Pass all the multiplanar formats that are used with hardware GMBs.
+  for (auto format :
+       {viz::MultiPlaneFormat::kYV12, viz::MultiPlaneFormat::kNV12,
+        viz::MultiPlaneFormat::kNV12A, viz::MultiPlaneFormat::kP010}) {
+    SharedImageInfo si_info{format,
+                            kSize,
+                            gfx::ColorSpace(),
+                            kTopLeft_GrSurfaceOrigin,
+                            kOpaque_SkAlphaType,
+                            kUsage,
+                            ""};
+
+    auto client_si = sii->CreateSharedImage(si_info, kNullSurfaceHandle);
+
+    // Since the format does not have external sampling enabled, the default
+    // target should be used.
+    EXPECT_EQ(client_si->GetTextureTarget(),
+              static_cast<uint32_t>(GL_TEXTURE_2D));
+  }
+}
+#endif
+
+#if BUILDFLAG(IS_OZONE)
+// On Ozone, the target for native buffers should be used if a
+// multiplanar format with external sampling is passed.
+TEST(ClientSharedImageTest,
+     GetTextureTarget_MultiplanarFormatsWithExternalSampling) {
+  // For expedience, disable a CHECK in ClientSharedImage that external sampling
+  // is used only if the client passed a native buffer.
+  ClientSharedImage::AllowExternalSamplingWithoutNativeBuffersForTesting(true);
+
+  auto sii = base::MakeRefCounted<TestSharedImageInterface>();
+  const gfx::Size kSize(256, 256);
+  const uint32_t kUsage =
+      SHARED_IMAGE_USAGE_RASTER_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ;
+
+  // Pass all the multiplanar formats that are used with hardware GMBs.
+  for (auto format :
+       {viz::MultiPlaneFormat::kYV12, viz::MultiPlaneFormat::kNV12,
+        viz::MultiPlaneFormat::kNV12A, viz::MultiPlaneFormat::kP010}) {
+    format.SetPrefersExternalSampler();
+    SharedImageInfo si_info{format,
+                            kSize,
+                            gfx::ColorSpace(),
+                            kTopLeft_GrSurfaceOrigin,
+                            kOpaque_SkAlphaType,
+                            kUsage,
+                            ""};
+
+    auto client_si = sii->CreateSharedImage(si_info, kNullSurfaceHandle);
+
+    // Since the format has external sampling enabled, the platform-specific
+    // target for native buffers should be used.
+#if BUILDFLAG(IS_FUCHSIA)
+    EXPECT_EQ(client_si->GetTextureTarget(), 0u);
+#else
+    EXPECT_EQ(client_si->GetTextureTarget(),
+              static_cast<uint32_t>(GL_TEXTURE_EXTERNAL_OES));
+#endif
+  }
+
+  ClientSharedImage::AllowExternalSamplingWithoutNativeBuffersForTesting(false);
+}
+#endif
 
 }  // namespace gpu
