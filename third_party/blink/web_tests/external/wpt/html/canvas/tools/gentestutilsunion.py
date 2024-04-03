@@ -379,6 +379,7 @@ def _finalize_params(jinja_env: jinja2.Environment,
     params['file_name'] = _get_file_name(params)
     params['canvas_types'] = _get_canvas_types(params)
     params['template_type'] = _get_template_type(params)
+    params['code'] = _expand_test_code(params['code'])
 
 
 def _write_reference_test(jinja_env: jinja2.Environment, params: _TestParams,
@@ -485,15 +486,8 @@ def _generate_expected_image(params: _MutableTestParams,
     params['expected_img'] = f'{name}.png'
 
 
-def _generate_test(test: _TestParams, jinja_env: jinja2.Environment,
+def _generate_test(params: _TestParams, jinja_env: jinja2.Environment,
                    output_dirs: _OutputPaths) -> None:
-    _validate_test(test)
-
-    params = dict(test)
-    params.update({
-        'code': _expand_test_code(test['code']),
-    })
-
     output_files = output_dirs.sub_path(params['file_name'])
     if params['template_type'] in (_TemplateType.REFERENCE,
                                    _TemplateType.HTML_REFERENCE):
@@ -612,6 +606,7 @@ def generate_test_files(name_to_dir_file: str) -> None:
     used_tests = collections.defaultdict(set)
     for test in tests:
         print(test['name'])
+        _validate_test(test)
         test = _add_default_params(test)
         for variant in _get_variants(test):
             _finalize_params(jinja_env, variant)
