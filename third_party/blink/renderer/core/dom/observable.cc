@@ -1643,10 +1643,10 @@ ScriptPromise<IDLSequence<IDLAny>> Observable::toArray(
             "toArray() cannot be used unless document is fully active."));
   }
 
-  auto* resolver =
+  ScriptPromiseResolver<IDLSequence<IDLAny>>* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLSequence<IDLAny>>>(
           script_state);
-  auto promise = resolver->Promise();
+  ScriptPromise<IDLSequence<IDLAny>> promise = resolver->Promise();
 
   AbortSignal::AlgorithmHandle* algorithm_handle = nullptr;
 
@@ -1674,9 +1674,9 @@ ScriptPromise<IDLSequence<IDLAny>> Observable::toArray(
 ScriptPromise<IDLUndefined> Observable::forEach(ScriptState* script_state,
                                                 V8Visitor* callback,
                                                 SubscribeOptions* options) {
-  auto* resolver =
+  ScriptPromiseResolver<IDLUndefined>* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
-  auto promise = resolver->Promise();
+  ScriptPromise<IDLUndefined> promise = resolver->Promise();
 
   AbortController* visitor_callback_controller =
       AbortController::Create(script_state);
