@@ -1021,7 +1021,7 @@ base::expected<Operand, std::string> ValidateResample2dAndInferOutput(
     if (scales.size() != 2) {
       return base::unexpected("The length of scales should be 2.");
     }
-    if (scales[0] < 0 || scales[1] < 0) {
+    if (scales[0] <= 0 || scales[1] <= 0) {
       return base::unexpected("All scales should be greater than 0.");
     }
 
