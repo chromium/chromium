@@ -101,12 +101,15 @@
     display: none;
   }
 
-  cr-dialog::part(dialog) {
+  #wallpaperInfoDialog::part(dialog) {
     border-radius: 20px;
+    /* Info dialog should not scroll with the page. This keeps the dialog
+     * centered in the screen. */
+    position: fixed;
   }
 
   @media (max-width: 671px) {
-    cr-dialog::part(dialog) {
+    #wallpaperInfoDialog::part(dialog) {
       width: 440px;
     }
   }
