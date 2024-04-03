@@ -4310,8 +4310,15 @@ void DragTabToWindowInSeparateDisplayStep2(
 }  // namespace
 
 // Drags from browser to another browser on a second display and releases input.
+// TODO(crbug.com/329747667): Test is flaky on "Linux ChromiumOS MSan Tests"
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_DragTabToWindowInSeparateDisplay \
+  DISABLED_DragTabToWindowInSeparateDisplay
+#else
+#define MAYBE_DragTabToWindowInSeparateDisplay DragTabToWindowInSeparateDisplay
+#endif
 IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
-                       DragTabToWindowInSeparateDisplay) {
+                       MAYBE_DragTabToWindowInSeparateDisplay) {
   AddTabsAndResetBrowser(browser(), 1);
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
 
