@@ -46,6 +46,8 @@ _IGNORE_WARNINGS = (
         r'com.no.real.class.needed.receiver',
         # Ignore Unused Rule Warnings for annotations.
         r'@',
+        # Ignore Unused Rule Warnings for * implements Foo (androidx has these).
+        r'class \*+ implements',
         # Ignore rules that opt out of this check.
         r'!cr_allowunused',
         # https://crbug.com/1441225
