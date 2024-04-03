@@ -633,16 +633,9 @@ All changes to this list should go through Blink's feature review process: http:
     grid-column
         grid-column-end
         grid-column-start
-    grid-column-gap
-        column-gap
-    grid-gap
-        column-gap
-        row-gap
     grid-row
         grid-row-end
         grid-row-start
-    grid-row-gap
-        row-gap
     grid-template
         grid-template-areas
         grid-template-columns
@@ -1008,6 +1001,12 @@ All changes to this list should go through Blink's feature review process: http:
         transition-timing-function
     -webkit-user-select
         user-select
+    grid-column-gap
+        column-gap
+    grid-gap
+        gap
+    grid-row-gap
+        row-gap
     word-wrap
         overflow-wrap
 

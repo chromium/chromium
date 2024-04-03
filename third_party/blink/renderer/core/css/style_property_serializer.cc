@@ -695,9 +695,6 @@ String StylePropertySerializer::SerializeShorthand(
       return AlternativeViewTimelineWithInsetValue();
     case CSSPropertyID::kWhiteSpace:
       return WhiteSpaceValue();
-    case CSSPropertyID::kGridColumnGap:
-    case CSSPropertyID::kGridGap:
-    case CSSPropertyID::kGridRowGap:
     case CSSPropertyID::kWebkitColumnBreakAfter:
     case CSSPropertyID::kWebkitColumnBreakBefore:
     case CSSPropertyID::kWebkitColumnBreakInside:

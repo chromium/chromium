@@ -26460,9 +26460,9 @@ Called by update_use_counter_css.py.-->
   <int value="508" label="backdrop-filter"/>
   <int value="509" label="text-combine-upright"/>
   <int value="510" label="text-orientation"/>
-  <int value="511" label="grid-column-gap"/>
-  <int value="512" label="grid-row-gap"/>
-  <int value="513" label="grid-gap"/>
+  <int value="511" label="alias-grid-column-gap"/>
+  <int value="512" label="alias-grid-row-gap"/>
+  <int value="513" label="alias-grid-gap"/>
   <int value="514" label="font-feature-settings"/>
   <int value="515" label="variable"/>
   <int value="516" label="font-display"/>

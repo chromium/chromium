@@ -7699,22 +7699,7 @@
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
     },
     {
-      name: "grid-column-gap",
-      longhands: ["column-gap"],
-      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-    },
-    {
-      name: "grid-row-gap",
-      longhands: ["row-gap"],
-      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-    },
-    {
       name: "gap",
-      longhands: ["row-gap", "column-gap"],
-      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-    },
-    {
-      name: "grid-gap",
       longhands: ["row-gap", "column-gap"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
     },
@@ -8776,6 +8761,18 @@
     {
       name: "word-wrap",
       alias_for: "overflow-wrap",
+    },
+    {
+      name: "grid-column-gap",
+      alias_for: "column-gap",
+    },
+    {
+      name: "grid-row-gap",
+      alias_for: "row-gap",
+    },
+    {
+      name: "grid-gap",
+      alias_for: "gap",
     },
   ],
 }

@@ -1035,6 +1035,9 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kAliasWebkitTransitionTimingFunction:
     case CSSPropertyID::kAliasWebkitUserSelect:
     case CSSPropertyID::kAliasWordWrap:
+    case CSSPropertyID::kAliasGridColumnGap:
+    case CSSPropertyID::kAliasGridRowGap:
+    case CSSPropertyID::kAliasGridGap:
       NOTREACHED()
           << "Aliases CSS properties should be converted to their non-aliased "
              "counterpart before calling this function. CSS property name: "
@@ -1206,10 +1209,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kGrid:
     case CSSPropertyID::kGridArea:
     case CSSPropertyID::kGridColumn:
-    case CSSPropertyID::kGridColumnGap:
-    case CSSPropertyID::kGridGap:
     case CSSPropertyID::kGridRow:
-    case CSSPropertyID::kGridRowGap:
     case CSSPropertyID::kGridTemplate:
     case CSSPropertyID::kListStyle:
     case CSSPropertyID::kMargin:

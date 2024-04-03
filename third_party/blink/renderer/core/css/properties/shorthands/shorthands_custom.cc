@@ -2001,34 +2001,6 @@ const CSSValue* GridColumn::CSSValueFromComputedStyleInternal(
       value_phase);
 }
 
-bool GridColumnGap::ParseShorthand(
-    bool important,
-    CSSParserTokenRange& range,
-    const CSSParserContext& context,
-    const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 64>& properties) const {
-  CSSValue* gap_length = css_parsing_utils::ConsumeGapLength(range, context);
-  if (!gap_length || !range.AtEnd()) {
-    return false;
-  }
-
-  css_parsing_utils::AddProperty(
-      CSSPropertyID::kColumnGap, CSSPropertyID::kGridColumnGap, *gap_length,
-      important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
-      properties);
-  return true;
-}
-
-const CSSValue* GridColumnGap::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject* layout_object,
-    bool allow_visited_style,
-    CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValuesForShorthandProperty(
-      gridColumnGapShorthand(), style, layout_object, allow_visited_style,
-      value_phase);
-}
-
 namespace {
 
 CSSValueList* ConsumeImplicitAutoFlow(
@@ -2229,40 +2201,6 @@ const CSSValue* Grid::CSSValueFromComputedStyleInternal(
       gridShorthand(), style, layout_object, allow_visited_style, value_phase);
 }
 
-bool GridGap::ParseShorthand(
-    bool important,
-    CSSParserTokenRange& range,
-    const CSSParserContext& context,
-    const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 64>& properties) const {
-  DCHECK_EQ(shorthandForProperty(CSSPropertyID::kGridGap).length(), 2u);
-  CSSValue* row_gap = css_parsing_utils::ConsumeGapLength(range, context);
-  CSSValue* column_gap = css_parsing_utils::ConsumeGapLength(range, context);
-  if (!row_gap || !range.AtEnd()) {
-    return false;
-  }
-  if (!column_gap) {
-    column_gap = row_gap;
-  }
-  css_parsing_utils::AddProperty(
-      CSSPropertyID::kRowGap, CSSPropertyID::kGap, *row_gap, important,
-      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
-  css_parsing_utils::AddProperty(
-      CSSPropertyID::kColumnGap, CSSPropertyID::kGap, *column_gap, important,
-      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
-  return true;
-}
-
-const CSSValue* GridGap::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject* layout_object,
-    bool allow_visited_style,
-    CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValuesForShorthandProperty(
-      gridGapShorthand(), style, layout_object, allow_visited_style,
-      value_phase);
-}
-
 bool GridRow::ParseShorthand(
     bool important,
     CSSParserTokenRange& range,
@@ -2299,34 +2237,6 @@ const CSSValue* GridRow::CSSValueFromComputedStyleInternal(
     CSSValuePhase value_phase) const {
   return ComputedStyleUtils::ValuesForGridLineShorthand(
       gridRowShorthand(), style, layout_object, allow_visited_style,
-      value_phase);
-}
-
-bool GridRowGap::ParseShorthand(
-    bool important,
-    CSSParserTokenRange& range,
-    const CSSParserContext& context,
-    const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 64>& properties) const {
-  CSSValue* gap_length = css_parsing_utils::ConsumeGapLength(range, context);
-  if (!gap_length || !range.AtEnd()) {
-    return false;
-  }
-
-  css_parsing_utils::AddProperty(
-      CSSPropertyID::kRowGap, CSSPropertyID::kGridRowGap, *gap_length,
-      important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
-      properties);
-  return true;
-}
-
-const CSSValue* GridRowGap::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject* layout_object,
-    bool allow_visited_style,
-    CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValuesForShorthandProperty(
-      gridRowGapShorthand(), style, layout_object, allow_visited_style,
       value_phase);
 }
 
