@@ -825,8 +825,7 @@ void AutofillExternalDelegate::PreviewFieldByFieldFillingSuggestion(
 
 void AutofillExternalDelegate::FillFieldByFieldFillingSuggestion(
     const Suggestion& suggestion,
-    const SuggestionPosition& position,
-    AutofillSuggestionTriggerSource trigger_source) {
+    const SuggestionPosition& position) {
   CHECK(suggestion.popup_item_id == PopupItemId::kAddressFieldByFieldFilling ||
         suggestion.popup_item_id ==
             PopupItemId::kCreditCardFieldByFieldFilling);
@@ -834,8 +833,7 @@ void AutofillExternalDelegate::FillFieldByFieldFillingSuggestion(
   const auto guid = suggestion.GetBackendId<Suggestion::Guid>().value();
   if (const AutofillProfile* profile =
           manager_->client().GetPersonalDataManager()->GetProfileByGUID(guid)) {
-    FillAddressFieldByFieldFillingSuggestion(*profile, suggestion, position,
-                                             trigger_source);
+    FillAddressFieldByFieldFillingSuggestion(*profile, suggestion, position);
   } else if (const CreditCard* credit_card = manager_->client()
                                                  .GetPersonalDataManager()
                                                  ->GetCreditCardByGUID(guid)) {
@@ -860,8 +858,7 @@ void AutofillExternalDelegate::PreviewAddressFieldByFieldFillingSuggestion(
 void AutofillExternalDelegate::FillAddressFieldByFieldFillingSuggestion(
     const AutofillProfile& profile,
     const Suggestion& suggestion,
-    const SuggestionPosition& position,
-    AutofillSuggestionTriggerSource trigger_source) {
+    const SuggestionPosition& position) {
   const AutofillField* autofill_trigger_field = GetQueriedAutofillField();
   if (autofill_trigger_field) {
     // We target only the triggering field type in the field-by-field filling
@@ -1128,7 +1125,7 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
       break;
     }
     case PopupItemId::kAddressFieldByFieldFilling:
-      FillFieldByFieldFillingSuggestion(suggestion, position, trigger_source_);
+      FillFieldByFieldFillingSuggestion(suggestion, position);
       break;
     case PopupItemId::kEditAddressProfile:
       ShowEditAddressProfileDialog(
@@ -1204,7 +1201,7 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
       }
       break;
     case PopupItemId::kCreditCardFieldByFieldFilling:
-      FillFieldByFieldFillingSuggestion(suggestion, position, trigger_source_);
+      FillFieldByFieldFillingSuggestion(suggestion, position);
       break;
     case PopupItemId::kIbanEntry:
       // User chooses an IBAN suggestion and if it is a local IBAN, full IBAN
