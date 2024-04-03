@@ -296,6 +296,7 @@ source_set("app_shortcut_image") {
   deps = [
     "//base",
     "//cc/paint",
+    "//skia",
     "//ui/gfx",
   ]
 

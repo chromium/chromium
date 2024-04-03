@@ -34,6 +34,7 @@ specific_include_rules = {
   ],
   "app_shortcut_image\.cc": [
     "+cc/paint",
+    "+third_party/skia/include/core",
   ],
   "app_shortcut_image\.h": [
     "+third_party/skia/include/core",

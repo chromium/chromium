@@ -20,6 +20,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
 #include "skia/ext/image_operations.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"

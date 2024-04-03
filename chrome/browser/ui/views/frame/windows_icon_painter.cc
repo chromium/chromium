@@ -6,6 +6,7 @@
 
 #include "base/numerics/safe_conversions.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rrect_f.h"

@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/i18n/rtl.h"
 #include "cc/paint/paint_flags.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"

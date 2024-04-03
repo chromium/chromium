@@ -11,6 +11,7 @@
 #include "skia/ext/font_utils.h"
 #include "third_party/skia/include/core/SkFont.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/rect.h"
