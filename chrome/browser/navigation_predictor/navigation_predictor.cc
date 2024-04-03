@@ -409,8 +409,10 @@ void NavigationPredictor::OnMLModelExecutionTimerFired() {
   auto to_timedelta = [this](std::optional<base::TimeTicks> ts) {
     return ts.has_value() ? NowTicks() - ts.value() : base::TimeDelta();
   };
-  inputs.entered_viewport_to_left_viewport =
-      to_timedelta(anchor.entered_viewport_timestamp);
+  // TODO(329691634): Using the real viewport entry time for
+  // `entered_viewport_to_left_viewport` produces low quality results.
+  // We could remove it from the model, if we can't get this to be useful.
+  inputs.entered_viewport_to_left_viewport = base::TimeDelta();
   inputs.hover_dwell_time = to_timedelta(anchor.pointer_over_timestamp);
   inputs.pointer_hovering_over_count = anchor.pointer_hovering_over_count;
   if (model_score_callback_) {

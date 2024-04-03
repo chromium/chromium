@@ -165,7 +165,6 @@ class NavigationPredictor
     // Following fields are used for computing timing inputs of the ML model.
     base::TimeTicks first_report_timestamp;
     std::optional<base::TimeTicks> pointer_over_timestamp;
-    std::optional<base::TimeTicks> entered_viewport_timestamp;
     size_t pointer_hovering_over_count = 0u;
   };
   std::unordered_map<AnchorId, AnchorElementData, typename AnchorId::Hasher>
