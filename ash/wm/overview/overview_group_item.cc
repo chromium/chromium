@@ -4,6 +4,8 @@
 
 #include "ash/wm/overview/overview_group_item.h"
 
+#include <algorithm>
+
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_constants.h"
@@ -15,6 +17,7 @@
 #include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
+#include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_constants.h"
 #include "base/check_op.h"
@@ -29,49 +32,6 @@
 #include "ui/views/widget/widget.h"
 
 namespace ash {
-
-namespace {
-
-// Insets values for the individual overview items hosted by the overview group
-// item.
-constexpr gfx::InsetsF kLeftItemBoundsInsets =
-    gfx::InsetsF::TLBR(/*top=*/0, /*left=*/0, /*bottom=*/0, /*right=*/1);
-constexpr gfx::InsetsF kRightItemBoundsInsets =
-    gfx::InsetsF::TLBR(/*top=*/0, /*left=*/1, /*bottom=*/0, /*right=*/0);
-
-float CalculateSnapRatioForPrimarySnappedWindow(
-    const aura::Window* primary_window,
-    const aura::Window* secondary_window) {
-  const auto primary_window_bounds_in_screen =
-      primary_window->GetBoundsInScreen();
-  const auto secondary_window_bounds_in_screen =
-      secondary_window->GetBoundsInScreen();
-  // TODO(http://b/309539997): Calculate differently for portrait screen
-  // orientation.
-  return static_cast<float>(primary_window_bounds_in_screen.width()) /
-         (primary_window_bounds_in_screen.width() +
-          secondary_window_bounds_in_screen.width());
-}
-
-// TODO(http://b/309539997): Calculate differently for portrait screen
-// orientation.
-gfx::RectF CalculateScreenBoundsForWindow(const gfx::RectF& union_bounds,
-                                          const float primary_snap_ratio,
-                                          const bool is_primary) {
-  const float snap_ratio =
-      is_primary ? primary_snap_ratio : (1 - primary_snap_ratio);
-  const gfx::PointF origin =
-      is_primary ? union_bounds.origin()
-                 : gfx::PointF(union_bounds.origin().x() +
-                                   union_bounds.width() * primary_snap_ratio,
-                               union_bounds.origin().y());
-  gfx::RectF bounds(origin, gfx::SizeF(union_bounds.width() * snap_ratio,
-                                       union_bounds.height()));
-  bounds.Inset(is_primary ? kLeftItemBoundsInsets : kRightItemBoundsInsets);
-  return bounds;
-}
-
-}  // namespace
 
 OverviewGroupItem::OverviewGroupItem(const Windows& windows,
                                      OverviewSession* overview_session,
@@ -180,29 +140,51 @@ void OverviewGroupItem::SetBounds(const gfx::RectF& target_bounds,
   target_bounds_ = target_bounds;
 
   const int size = overview_items_.size();
+  auto& item0 = overview_items_[0];
   if (size == 1) {
-    return overview_items_[0]->SetBounds(target_bounds, animation_type);
+    return item0->SetBounds(target_bounds, animation_type);
   }
 
   CHECK_EQ(size, 2);
+  auto& item1 = overview_items_[1];
+
+  aura::Window* item0_window = item0->GetWindow();
+  aura::Window* item1_window = item1->GetWindow();
+  const gfx::Rect work_area = display::Screen::GetScreen()
+                                  ->GetDisplayNearestWindow(item0_window)
+                                  .work_area();
+  const bool is_horizontal = IsLayoutHorizontal(item0_window);
   item_widget_->SetBounds(gfx::ToRoundedRect(target_bounds));
 
-  // TODO(http://b/309539997): Set bounds differently based on the screen
-  // orientation.
-  const float primary_window_snap_ratio =
-      CalculateSnapRatioForPrimarySnappedWindow(
-          overview_items_[0]->GetWindow(), overview_items_[1]->GetWindow());
+  if (is_horizontal) {
+    // Calculate the ratio that reflects how much the windows' widths should be
+    // scaled to fit within `target_bounds`.
+    const float ratio =
+        static_cast<float>(target_bounds.width()) / work_area.width();
+    auto item0_bounds = target_bounds;
+    item0_bounds.set_width(ratio * item0_window->bounds().width());
+    item0->SetBounds(item0_bounds, animation_type);
 
-  gfx::RectF sub_bounds1 =
-      CalculateScreenBoundsForWindow(target_bounds, primary_window_snap_ratio,
-                                     /*is_primary=*/true);
-  sub_bounds1.Inset(kLeftItemBoundsInsets);
-  gfx::RectF sub_bounds2 =
-      CalculateScreenBoundsForWindow(target_bounds, primary_window_snap_ratio,
-                                     /*is_primary=*/false);
-  sub_bounds2.Inset(kRightItemBoundsInsets);
-  overview_items_[0]->SetBounds(sub_bounds1, animation_type);
-  overview_items_[1]->SetBounds(sub_bounds2, animation_type);
+    const auto item1_width = ratio * item1_window->bounds().width();
+    auto item1_bounds = target_bounds;
+    item1_bounds.set_width(item1_width);
+    item1_bounds.set_x(target_bounds.right() - item1_width);
+    item1->SetBounds(item1_bounds, animation_type);
+
+    return;
+  }
+
+  const float ratio =
+      static_cast<float>(target_bounds.height()) / work_area.height();
+  auto item0_bounds = target_bounds;
+  item0_bounds.set_height(ratio * item0_window->bounds().height());
+  item0->SetBounds(item0_bounds, animation_type);
+
+  const auto item1_height = ratio * item1_window->bounds().height();
+  auto item1_bounds = target_bounds;
+  item1_bounds.set_height(item1_height);
+  item1_bounds.set_y(target_bounds.bottom() - item1_height);
+  item1->SetBounds(item1_bounds, animation_type);
 }
 
 gfx::Transform OverviewGroupItem::ComputeTargetTransform(
@@ -236,11 +218,59 @@ gfx::RectF OverviewGroupItem::GetTransformedBounds() const {
 }
 
 float OverviewGroupItem::GetItemScale(int height) {
-  // TODO(michelefan): This is a temporary placeholder for the item scale
-  // calculation, which should be updated when we implement the overview for
-  // vertical split screen.
   CHECK(!overview_items_.empty());
-  return overview_items_[0]->GetItemScale(height);
+
+  // Calculate the scaling factor for the group item:
+  //
+  // For horizontal window layout, the title and item height remain consistent
+  // across all items in the group. The larger of the two windows'
+  // `kTopViewInset` properties is applied for the calculation.
+  //
+  //     +--------------------++--------------------+
+  //     | Window 0 Header    || Window 1 Header    |
+  //     +--------------------++--------------------|
+  //     |                    ||                    |
+  //     | Window 0 Preview   || Window 1 Preview   |
+  //     |                    ||                    |
+  //     +--------------------++--------------------+
+  //
+  // In a vertical window layout, double the fixed header height
+  // (`kWindowMiniViewHeaderHeight`) and apply the sum of both windows'
+  // `kTopViewInset` properties for the calculation.
+  //
+  //     +--------------------+
+  //     | Window 0 Header    |
+  //     +--------------------+
+  //     | Window 0 Preview   |
+  //     |                    |
+  //     +--------------------+
+  //     +--------------------+
+  //     | Window 1 Header    |
+  //     +--------------------+
+  //     | Window 1 Preview   |
+  //     |                    |
+  //     +--------------------+
+
+  const bool is_layout_horizontal =
+      IsLayoutHorizontal(overview_items_[0]->GetWindow());
+
+  int top_inset = 0;
+  for (const auto& overview_item : overview_items_) {
+    const int item_top_inset = overview_item->GetTopInset();
+    if (is_layout_horizontal) {
+      top_inset = std::max(item_top_inset, top_inset);
+    } else {
+      top_inset += item_top_inset;
+    }
+  }
+
+  return ScopedOverviewTransformWindow::GetItemScale(
+      /*source_height=*/GetWindowsUnionScreenBounds().height(),
+      /*target_height=*/height,
+      /*top_view_inset=*/top_inset,
+      /*title_height=*/
+      is_layout_horizontal ? kWindowMiniViewHeaderHeight
+                           : 2 * kWindowMiniViewHeaderHeight);
 }
 
 void OverviewGroupItem::ScaleUpSelectedItem(
@@ -357,15 +387,20 @@ gfx::Point OverviewGroupItem::GetMagnifierFocusPointInScreen() const {
 }
 
 const gfx::RoundedCornersF OverviewGroupItem::GetRoundedCorners() const {
-  // TODO(michelefan): Return a different set of rounded corners for vertical
-  // split screen.
-  const gfx::RoundedCornersF& front_rounded_corners =
-      overview_items_.front()->GetRoundedCorners();
-  const gfx::RoundedCornersF& back_rounded_corners =
+  auto& item0 = overview_items_.front();
+  const gfx::RoundedCornersF& primary_rounded_corners =
+      item0->GetRoundedCorners();
+  const gfx::RoundedCornersF& secondary_rounded_corners =
       overview_items_.back()->GetRoundedCorners();
-  return gfx::RoundedCornersF(
-      front_rounded_corners.upper_left(), back_rounded_corners.upper_right(),
-      back_rounded_corners.lower_right(), front_rounded_corners.lower_left());
+  return IsLayoutHorizontal(item0->GetWindow())
+             ? gfx::RoundedCornersF(primary_rounded_corners.upper_left(),
+                                    secondary_rounded_corners.upper_right(),
+                                    secondary_rounded_corners.lower_right(),
+                                    primary_rounded_corners.lower_left())
+             : gfx::RoundedCornersF(primary_rounded_corners.upper_left(),
+                                    primary_rounded_corners.upper_right(),
+                                    secondary_rounded_corners.lower_right(),
+                                    secondary_rounded_corners.lower_left());
 }
 
 void OverviewGroupItem::OnOverviewItemWindowDestroying(

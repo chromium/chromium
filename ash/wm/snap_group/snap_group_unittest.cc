@@ -3007,12 +3007,37 @@ TEST_F(SnapGroupTest, OverviewItemBoundsTest) {
 }
 
 // Tests the rounded corners will be applied to the exposed corners of the
-// overview group item.
-TEST_F(SnapGroupTest, OverviewGroupItemRoundedCorners) {
+// overview group item in horizontal wndow layout.
+TEST_F(SnapGroupTest, OverviewGroupItemRoundedCornersInHorizontal) {
   std::unique_ptr<aura::Window> window0 = CreateAppWindow();
   std::unique_ptr<aura::Window> window1 = CreateAppWindow();
   std::unique_ptr<aura::Window> window2 = CreateAppWindow(gfx::Rect(100, 100));
   SnapTwoTestWindows(window0.get(), window1.get());
+
+  OverviewController* overview_controller = OverviewController::Get();
+  overview_controller->StartOverview(OverviewStartAction::kTests,
+                                     OverviewEnterExitType::kImmediateEnter);
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+
+  const auto* overview_grid =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(overview_grid);
+  const auto& window_list = overview_grid->window_list();
+  ASSERT_EQ(window_list.size(), 2u);
+  for (const auto& overview_item : window_list) {
+    EXPECT_EQ(overview_item->GetRoundedCorners(),
+              gfx::RoundedCornersF(kWindowMiniViewCornerRadius));
+  }
+}
+
+// Tests the rounded corners will be applied to the exposed corners of the
+// overview group item in vertical wndow layout.
+TEST_F(SnapGroupTest, OverviewGroupItemRoundedCornersInVertical) {
+  UpdateDisplay("600x900");
+  std::unique_ptr<aura::Window> window0 = CreateAppWindow();
+  std::unique_ptr<aura::Window> window1 = CreateAppWindow();
+  std::unique_ptr<aura::Window> window2 = CreateAppWindow(gfx::Rect(100, 100));
+  SnapTwoTestWindows(window0.get(), window1.get(), /*horizontal=*/false);
 
   OverviewController* overview_controller = OverviewController::Get();
   overview_controller->StartOverview(OverviewStartAction::kTests,
@@ -3316,11 +3341,11 @@ TEST_F(SnapGroupTest, DropTargetBoundsForGroupItem) {
     EXPECT_TRUE(overview_controller->InOverviewSession());
 
     auto* drop_target = overview_grid->drop_target();
-    EXPECT_TRUE(drop_target);
+    ASSERT_TRUE(drop_target);
 
     // Verify that the bounds of the `drop_target` will be the same as the
     // `target_bounds_before_dragging`.
-    EXPECT_EQ(gfx::RectF(drop_target->item_widget()->GetWindowBoundsInScreen()),
+    EXPECT_EQ(gfx::RectF(drop_target->target_bounds()),
               target_bounds_before_dragging);
     if (by_touch) {
       event_generator->ReleaseTouch();

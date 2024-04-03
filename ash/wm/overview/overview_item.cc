@@ -237,6 +237,10 @@ void OverviewItem::UpdateRoundedCorners() {
   }
 }
 
+int OverviewItem::GetTopInset() const {
+  return transform_window_.GetTopInset();
+}
+
 OverviewAnimationType OverviewItem::GetExitOverviewAnimationType() const {
   if (overview_session_->enter_exit_overview_type() ==
       OverviewEnterExitType::kImmediateExit) {
@@ -445,7 +449,7 @@ gfx::Transform OverviewItem::ComputeTargetTransform(
     transformed_bounds.set_size(gfx::SizeF(*unclipped_size_));
   }
 
-  const int top_view_inset = transform_window_.GetTopInset();
+  const int top_view_inset = GetTopInset();
   gfx::RectF overview_item_bounds =
       transform_window_.ShrinkRectToFitPreservingAspectRatio(
           screen_rect, transformed_bounds, top_view_inset,
@@ -534,8 +538,8 @@ gfx::RectF OverviewItem::GetTransformedBounds() const {
 
 float OverviewItem::GetItemScale(int height) {
   return ScopedOverviewTransformWindow::GetItemScale(
-      GetWindowsUnionScreenBounds().height(), height,
-      transform_window_.GetTopInset(), kWindowMiniViewHeaderHeight);
+      GetWindowsUnionScreenBounds().height(), height, GetTopInset(),
+      kWindowMiniViewHeaderHeight);
 }
 
 void OverviewItem::ScaleUpSelectedItem(OverviewAnimationType animation_type) {
@@ -991,15 +995,14 @@ const gfx::RoundedCornersF OverviewItem::GetRoundedCorners() const {
   aura::Window* window = transform_window_.window();
   const auto header_rounded_corners = overview_item_view_->header_view()
                                           ->GetBackground()
-                                          ->GetRoundedCornerRadii();
-  CHECK(header_rounded_corners.has_value());
+                                          ->GetRoundedCornerRadii()
+                                          .value_or(gfx::RoundedCornersF());
   const auto* layer = window->layer();
   const gfx::RoundedCornersF& transform_window_rounded_corners =
       layer->rounded_corner_radii();
   const float scale = layer->transform().To2dScale().x();
   return gfx::RoundedCornersF(
-      header_rounded_corners->upper_left(),
-      header_rounded_corners->upper_right(),
+      header_rounded_corners.upper_left(), header_rounded_corners.upper_right(),
       transform_window_rounded_corners.lower_right() * scale,
       transform_window_rounded_corners.lower_left() * scale);
 }
@@ -1319,7 +1322,7 @@ void OverviewItem::SetItemBounds(const gfx::RectF& target_bounds,
     // We add 1 to the `top_inset`, because in some cases, the header is not
     // clipped fully due to what seems to be a rounding error.
     // TODO(afakhry|sammiequon): Investigate a proper fix for this.
-    const int top_inset = transform_window_.GetTopInset();
+    const int top_inset = GetTopInset();
     if (top_inset > 0 && !clip_rect.IsEmpty()) {
       clip_rect.Inset(gfx::Insets::TLBR(top_inset + 1, 0, 0, 0));
     }

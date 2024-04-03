@@ -82,6 +82,9 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
   // Updates the rounded corners on `this` only.
   void UpdateRoundedCorners();
 
+  // Returns the `kTopViewInset` of the `transform_window_`.
+  int GetTopInset() const;
+
   OverviewAnimationType GetExitOverviewAnimationType() const;
   OverviewAnimationType GetExitTransformAnimationType() const;
 
