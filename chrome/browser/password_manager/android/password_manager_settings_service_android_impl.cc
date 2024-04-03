@@ -283,16 +283,6 @@ void PasswordManagerSettingsServiceAndroidImpl::Init() {
           base::BindOnce(
               &PasswordManagerSettingsServiceAndroidImpl::MigratePrefsIfNeeded,
               weak_ptr_factory_.GetWeakPtr()));
-
-  // Unset the pref that marks the settings migration done, if the user is not
-  // eligible for split stores and UPM for local. This is useful in case of
-  // rollback and it also fixes the issue of the pref being set to true for
-  // not-yet-enrolled users that had default prefs.
-  if (password_manager_android_util::GetSplitStoresAndLocalUpmPrefValue(
-          pref_service_) == UseUpmLocalAndSeparateStoresState::kOff) {
-    pref_service_->SetBoolean(
-        password_manager::prefs::kSettingsMigratedToUPMLocal, false);
-  }
 }
 
 void PasswordManagerSettingsServiceAndroidImpl::OnChromeForegrounded() {

@@ -5,10 +5,6 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_ANDROID_UTIL_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_ANDROID_UTIL_H_
 
-#include "components/password_manager/core/common/password_manager_pref_names.h"
-
-using password_manager::prefs::UseUpmLocalAndSeparateStoresState;
-
 class PrefService;
 
 namespace base {
@@ -16,11 +12,6 @@ class FilePath;
 }  // namespace base
 
 namespace password_manager_android_util {
-
-// Used to prevent static casting issues with
-// `PasswordsUseUPMLocalAndSeparateStores` pref.
-UseUpmLocalAndSeparateStoresState GetSplitStoresAndLocalUpmPrefValue(
-    PrefService* pref_service);
 
 // Used to decide whether using UPM as backend is possible. The check is based
 // on whether the GMSCore is installed and the internal wiring is present, and
