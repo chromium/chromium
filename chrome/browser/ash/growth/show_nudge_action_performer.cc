@@ -193,6 +193,13 @@ views::View* GetWindowCaptionButtonContainer() {
       chromeos::ViewID::VIEW_ID_CAPTION_BUTTON_CONTAINER);
 }
 
+bool IsCaptionButtonContainer(std::optional<int> app_window_anchor_type) {
+  return app_window_anchor_type &&
+         static_cast<growth::WindowAnchorType>(
+             app_window_anchor_type.value()) ==
+             growth::WindowAnchorType::kCaptionButtonContainer;
+}
+
 }  // namespace
 
 ShowNudgeActionPerformer::ShowNudgeActionPerformer() = default;
@@ -235,9 +242,7 @@ std::optional<views::View*> GetAnchor(const NudgePayload* nudge_payload) {
   // TODO: b/331948797 - Use GetActiveAppWindowAnchorType from
   // `campaigns_model`.
   auto app_window_anchor_type = GetActiveAppWindowAnchorType(nudge_payload);
-  if (app_window_anchor_type &&
-      static_cast<growth::WindowAnchorType>(app_window_anchor_type.value()) ==
-          growth::WindowAnchorType::kCaptionButtonContainer) {
+  if (IsCaptionButtonContainer(app_window_anchor_type)) {
     auto* anchor_view = GetWindowCaptionButtonContainer();
     if (!anchor_view) {
       // Can't find the targeted view. Return nullopt and skip showing nudge.
@@ -293,6 +298,11 @@ bool ShowNudgeActionPerformer::ShowNudge(int campaign_id,
   auto nudge_data = ash::AnchoredNudgeData(
       kGrowthNudgeId, ash::NudgeCatalogName::kGrowthCampaignNudge, nudge_body,
       /*anchor_view=*/anchor_view.value());
+
+  auto app_window_anchor_type = GetActiveAppWindowAnchorType(nudge_payload);
+  if (IsCaptionButtonContainer(app_window_anchor_type) && anchor_view.value()) {
+    nudge_data.set_anchor_view_as_parent = true;
+  }
 
   auto* title = GetNudgeTitle(nudge_payload);
   if (title && !title->empty()) {
