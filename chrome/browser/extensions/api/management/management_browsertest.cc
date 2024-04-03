@@ -15,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -660,6 +661,144 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, ExternalPolicyRefresh) {
   EXPECT_FALSE(
       registry->GetExtensionById(kExtensionId, ExtensionRegistry::EVERYTHING));
 }
+
+// Tests that non-CWS extensions are disabled when force-installed in a low
+// trust environment. See https://b/283274398.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
+                       NonCWSForceInstalledDisabledInLowTrustEnvironment) {
+  // Mark enterprise management authority for platform as COMPUTER_LOCAL, and
+  // for profile as NONE.
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForPlatform(),
+      policy::EnterpriseManagementAuthority::COMPUTER_LOCAL);
+  policy::ScopedManagementServiceOverrideForTesting browser_management(
+      policy::ManagementServiceFactory::GetForProfile(profile()),
+      policy::EnterpriseManagementAuthority::NONE);
+  static constexpr char kExtensionId[] = "ogjcoiohnmldgjemafoockdghcjciccf";
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  embedded_test_server()->ServeFilesFromDirectory(temp_dir.GetPath());
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  base::FilePath crx_path;
+  ASSERT_NO_FATAL_FAILURE(SetUpExtensionUpdatePackage(temp_dir.GetPath(), "v2",
+                                                      "v2.crx", &crx_path));
+  ASSERT_NO_FATAL_FAILURE(SetUpExtensionUpdateResponse(
+      temp_dir.GetPath(), "v2.crx", "manifest_v2.xml.template"));
+
+  ExtensionRegistry* registry = extension_registry();
+
+  base::Value::List forcelist;
+  forcelist.Append(BuildForceInstallPolicyValue(kExtensionId,
+                                                GetUpdateUrl().spec().c_str()));
+  PolicyMap policies;
+  policies.Set(policy::key::kExtensionInstallForcelist,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(std::move(forcelist)),
+               nullptr);
+  extensions::TestExtensionRegistryObserver install_observer(registry);
+  UpdateProviderPolicy(policies);
+  install_observer.WaitForExtensionWillBeInstalled();
+
+  // Extension should be disabled.
+  EXPECT_EQ(1u, registry->disabled_extensions().size());
+  EXPECT_TRUE(registry->disabled_extensions().GetByID(kExtensionId));
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
+                       NonCWSForceInstalledEnabledOnManagedPlatform) {
+  // Mark enterprise management authority for platform as CLOUD, and for profile
+  // as NONE.
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForPlatform(),
+      policy::EnterpriseManagementAuthority::CLOUD);
+  policy::ScopedManagementServiceOverrideForTesting browser_management(
+      policy::ManagementServiceFactory::GetForProfile(profile()),
+      policy::EnterpriseManagementAuthority::NONE);
+  static constexpr char kExtensionId[] = "ogjcoiohnmldgjemafoockdghcjciccf";
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  embedded_test_server()->ServeFilesFromDirectory(temp_dir.GetPath());
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  base::FilePath crx_path;
+  ASSERT_NO_FATAL_FAILURE(SetUpExtensionUpdatePackage(temp_dir.GetPath(), "v2",
+                                                      "v2.crx", &crx_path));
+  ASSERT_NO_FATAL_FAILURE(SetUpExtensionUpdateResponse(
+      temp_dir.GetPath(), "v2.crx", "manifest_v2.xml.template"));
+
+  base::Value::List forcelist;
+  forcelist.Append(BuildForceInstallPolicyValue(kExtensionId,
+                                                GetUpdateUrl().spec().c_str()));
+  PolicyMap policies;
+  policies.Set(policy::key::kExtensionInstallForcelist,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(std::move(forcelist)),
+               nullptr);
+
+  ExtensionRegistry* registry = extension_registry();
+  const size_t size_before = registry->enabled_extensions().size();
+  extensions::TestExtensionRegistryObserver install_observer(registry);
+  UpdateProviderPolicy(policies);
+  install_observer.WaitForExtensionWillBeInstalled();
+
+  // Extension is enabled.
+  EXPECT_EQ(size_before + 1, registry->enabled_extensions().size());
+  EXPECT_TRUE(registry->enabled_extensions().GetByID(kExtensionId));
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
+                       NonCWSForceInstalledEnabledOnManagedProfile) {
+  // Mark enterprise management authority for platform as NONE, and for profile
+  // as CLOUD.
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForPlatform(),
+      policy::EnterpriseManagementAuthority::NONE);
+  policy::ScopedManagementServiceOverrideForTesting browser_management(
+      policy::ManagementServiceFactory::GetForProfile(profile()),
+      policy::EnterpriseManagementAuthority::CLOUD);
+  static constexpr char kExtensionId[] = "ogjcoiohnmldgjemafoockdghcjciccf";
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  embedded_test_server()->ServeFilesFromDirectory(temp_dir.GetPath());
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  base::FilePath crx_path;
+  ASSERT_NO_FATAL_FAILURE(SetUpExtensionUpdatePackage(temp_dir.GetPath(), "v2",
+                                                      "v2.crx", &crx_path));
+  ASSERT_NO_FATAL_FAILURE(SetUpExtensionUpdateResponse(
+      temp_dir.GetPath(), "v2.crx", "manifest_v2.xml.template"));
+
+  base::Value::List forcelist;
+  forcelist.Append(BuildForceInstallPolicyValue(kExtensionId,
+                                                GetUpdateUrl().spec().c_str()));
+  PolicyMap policies;
+  policies.Set(policy::key::kExtensionInstallForcelist,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(std::move(forcelist)),
+               nullptr);
+
+  ExtensionRegistry* registry = extension_registry();
+  const size_t size_before = registry->enabled_extensions().size();
+  extensions::TestExtensionRegistryObserver install_observer(registry);
+  UpdateProviderPolicy(policies);
+  install_observer.WaitForExtensionWillBeInstalled();
+
+  // Extension is enabled.
+  EXPECT_EQ(size_before + 1, registry->enabled_extensions().size());
+  EXPECT_TRUE(registry->enabled_extensions().GetByID(kExtensionId));
+}
+#endif
 
 // See http://crbug.com/103371 and http://crbug.com/120640.
 #if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_WIN)
