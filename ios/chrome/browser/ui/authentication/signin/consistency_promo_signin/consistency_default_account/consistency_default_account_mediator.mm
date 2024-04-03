@@ -39,12 +39,10 @@ NSString* GetPromoLabelString(
     signin_metrics::AccessPoint access_point,
     bool sync_transport_disabled_by_policy,
     syncer::UserSelectableTypeSet sync_types_disabled_by_policy) {
-  // TODO(crbug.com/1468530): Convert DUMP_WILL_BE_CHECKs to CHECKs (some are
-  // probably failing now).
   switch (access_point) {
     case signin_metrics::AccessPoint::ACCESS_POINT_SEND_TAB_TO_SELF_PROMO:
       // Sign-in shouldn't be offered if the feature doesn't work.
-      DUMP_WILL_BE_CHECK(!sync_transport_disabled_by_policy);
+      CHECK(!sync_transport_disabled_by_policy);
       return l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF_SIGN_IN_PROMO_LABEL);
     case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO:
       // Configuring feed interests is independent of sync.
@@ -70,8 +68,8 @@ NSString* GetPromoLabelString(
       // "Sync" is mentioned in the setup list (the card, not this sheet). So it
       // was easier to hide it than come up with new strings. In the future, we
       // could tweak the card strings and return nil here.
-      DUMP_WILL_BE_CHECK(!sync_transport_disabled_by_policy &&
-                         sync_types_disabled_by_policy.empty());
+      CHECK(!sync_transport_disabled_by_policy &&
+            sync_types_disabled_by_policy.empty());
       return l10n_util::GetNSString(IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL);
     case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO:
     case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO:
@@ -79,9 +77,9 @@ NSString* GetPromoLabelString(
       return l10n_util::GetNSString(IDS_IOS_SIGNIN_SHEET_LABEL_FOR_FEED_PROMO);
     case signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS:
       // Sign-in shouldn't be offered if the feature doesn't work.
-      DUMP_WILL_BE_CHECK(!sync_transport_disabled_by_policy &&
-                         !sync_types_disabled_by_policy.Has(
-                             syncer::UserSelectableType::kTabs));
+      CHECK(!sync_transport_disabled_by_policy &&
+            !sync_types_disabled_by_policy.Has(
+                syncer::UserSelectableType::kTabs));
       return l10n_util::GetNSString(IDS_IOS_SIGNIN_SHEET_LABEL_FOR_RECENT_TABS);
     case signin_metrics::AccessPoint::
         ACCESS_POINT_NOTIFICATIONS_OPT_IN_SCREEN_CONTENT_TOGGLE:
