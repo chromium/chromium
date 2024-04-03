@@ -50,12 +50,29 @@ class DisplaySettingsProvider : public mojom::DisplaySettingsProvider,
     kMaxValue = kInternalDisplay,
   };
 
+  // Enum value for measuring display default settings performance.
+  // Note that these values are persisted to histograms so existing values
+  // should remain unchanged and new values should be added to the end.
+  enum class DisplayDefaultSettingsMeasurement {
+    kNewDisplayConnected = 0,
+    kOverrideResolution = 1,
+    kOverrideScaling = 2,
+    kMaxValue = kOverrideScaling,
+  };
+
   // The UMA histogram that records display settings usage.
   static constexpr char kDisplaySettingsHistogramName[] =
       "ChromeOS.Settings.Display";
   // The UMA histogram that records new display connected metrics.
   static constexpr char kNewDisplayConnectedHistogram[] =
       "ChromeOS.Settings.Display.NewDisplayConnected";
+
+  // Records when user overrides the display resolution or scaling within an
+  // hour of the display being connected for the first time.
+  static constexpr char kUserOverrideInternalDisplayDefaultSettingsHistogram[] =
+      "ChromeOS.Settings.Display.Internal.UserOverrideDisplayDefaultSettings";
+  static constexpr char kUserOverrideExternalDisplayDefaultSettingsHistogram[] =
+      "ChromeOS.Settings.Display.External.UserOverrideDisplayDefaultSettings";
 
   void BindInterface(
       mojo::PendingReceiver<mojom::DisplaySettingsProvider> receiver);

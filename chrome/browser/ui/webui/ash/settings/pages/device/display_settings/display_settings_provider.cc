@@ -32,6 +32,10 @@ constexpr int kMaxTimeInHourOfUserOverrideDisplaySettings = 8;
 // The histogram bucket count of user overriding display default settings.
 constexpr int kUserOverrideDisplaySettingsTimeDeltaBucketCount = 100;
 
+// The time threshold whether user override display settings metrics would be
+// fired or not.
+constexpr int kUserOverrideDisplaySettingsTimeThresholdInMinute = 60;
+
 // Get UMA histogram name that records the time elapsed between users changing
 // the display settings and the display is connected.
 const std::string GetUserOverrideDefaultSettingsHistogramName(
@@ -197,6 +201,12 @@ void DisplaySettingsProvider::OnDisplayAdded(
                                   display::IsInternalDisplayId(new_display.id())
                                       ? DisplayType::kInternalDisplay
                                       : DisplayType::kExternalDisplay);
+
+    base::UmaHistogramEnumeration(
+        new_display.IsInternal()
+            ? kUserOverrideInternalDisplayDefaultSettingsHistogram
+            : kUserOverrideExternalDisplayDefaultSettingsHistogram,
+        DisplayDefaultSettingsMeasurement::kNewDisplayConnected);
   }
 }
 
@@ -256,6 +266,16 @@ void DisplaySettingsProvider::RecordChangingDisplaySettings(
           kMinTimeInMinuteOfUserOverrideDisplaySettings,
           base::Hours(kMaxTimeInHourOfUserOverrideDisplaySettings).InMinutes(),
           kUserOverrideDisplaySettingsTimeDeltaBucketCount);
+
+      if (time_delta <= kUserOverrideDisplaySettingsTimeThresholdInMinute) {
+        base::UmaHistogramEnumeration(
+            is_internal_display.value()
+                ? kUserOverrideInternalDisplayDefaultSettingsHistogram
+                : kUserOverrideExternalDisplayDefaultSettingsHistogram,
+            type == mojom::DisplaySettingsType::kResolution
+                ? DisplayDefaultSettingsMeasurement::kOverrideResolution
+                : DisplayDefaultSettingsMeasurement::kOverrideScaling);
+      }
 
       // Once user has overridden the settings, remove it from the map to
       // prevent further recording, in which case, the user does not override

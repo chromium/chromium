@@ -377,6 +377,14 @@ TEST_F(DisplaySettingsProviderTest, ToggleDisplayUnifiedModeStatusHistogram) {
 // Test histogram is recorded only when a display is connected for the first
 // time.
 TEST_F(DisplaySettingsProviderTest, NewDisplayConnectedHistogram) {
+  // Expect no metrics fired before new display added.
+  histogram_tester_.ExpectBucketCount(
+      DisplaySettingsProvider::
+          kUserOverrideExternalDisplayDefaultSettingsHistogram,
+      DisplaySettingsProvider::DisplayDefaultSettingsMeasurement::
+          kNewDisplayConnected,
+      0);
+
   int64_t id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
   provider_->OnDisplayAdded(display::Display(id));
 
@@ -384,6 +392,12 @@ TEST_F(DisplaySettingsProviderTest, NewDisplayConnectedHistogram) {
   histogram_tester_.ExpectBucketCount(
       DisplaySettingsProvider::kNewDisplayConnectedHistogram,
       DisplaySettingsProvider::DisplayType::kExternalDisplay, 1);
+  histogram_tester_.ExpectBucketCount(
+      DisplaySettingsProvider::
+          kUserOverrideExternalDisplayDefaultSettingsHistogram,
+      DisplaySettingsProvider::DisplayDefaultSettingsMeasurement::
+          kNewDisplayConnected,
+      1);
 
   UpdateDisplay("300x200");
   provider_->OnDisplayAdded(display::Display(id));
@@ -393,6 +407,12 @@ TEST_F(DisplaySettingsProviderTest, NewDisplayConnectedHistogram) {
   histogram_tester_.ExpectBucketCount(
       DisplaySettingsProvider::kNewDisplayConnectedHistogram,
       DisplaySettingsProvider::DisplayType::kExternalDisplay, 1);
+  histogram_tester_.ExpectBucketCount(
+      DisplaySettingsProvider::
+          kUserOverrideExternalDisplayDefaultSettingsHistogram,
+      DisplaySettingsProvider::DisplayDefaultSettingsMeasurement::
+          kNewDisplayConnected,
+      1);
 
   // Entering unified desk mode should not count new display connected.
   provider_->OnDisplayAdded(display::Display(display::kUnifiedDisplayId));
@@ -421,6 +441,54 @@ TEST_F(DisplaySettingsProviderTest, UserOverrideDefaultSettingsHistogram) {
       "UserOverrideDisplayDefaultSettingsTimeElapsed.Resolution",
       base::Minutes(kTimeDeltaInMinute) / base::Minutes(1).InMilliseconds(),
       /*expected_count=*/1);
+
+  // Expect user override resolution metrics fired.
+  histogram_tester_.ExpectBucketCount(
+      DisplaySettingsProvider::
+          kUserOverrideExternalDisplayDefaultSettingsHistogram,
+      DisplaySettingsProvider::DisplayDefaultSettingsMeasurement::
+          kOverrideResolution,
+      1);
+
+  // Changing resolution again and expect not fire user override resolution
+  // metrics.
+  value = mojom::DisplaySettingsValue::New();
+  value->is_internal_display = false;
+  value->display_id = id;
+  provider_->RecordChangingDisplaySettings(
+      mojom::DisplaySettingsType::kResolution, std::move(value));
+
+  histogram_tester_.ExpectBucketCount(
+      DisplaySettingsProvider::
+          kUserOverrideExternalDisplayDefaultSettingsHistogram,
+      DisplaySettingsProvider::DisplayDefaultSettingsMeasurement::
+          kOverrideResolution,
+      1);
+}
+
+// Test histogram is not recorded when user overrides system default display
+// settings after 60 minutes.
+TEST_F(DisplaySettingsProviderTest,
+       UserOverrideDefaultSettingsHistogramNotFired) {
+  int64_t id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  provider_->OnDisplayAdded(display::Display(id));
+
+  constexpr uint16_t kTimeDeltaInMinute = 61;
+  FastForwardBy(base::Minutes(kTimeDeltaInMinute));
+
+  auto value = mojom::DisplaySettingsValue::New();
+  value->is_internal_display = false;
+  value->display_id = id;
+  provider_->RecordChangingDisplaySettings(
+      mojom::DisplaySettingsType::kResolution, std::move(value));
+
+  // Expect user override resolution metrics not fired.
+  histogram_tester_.ExpectBucketCount(
+      DisplaySettingsProvider::
+          kUserOverrideExternalDisplayDefaultSettingsHistogram,
+      DisplaySettingsProvider::DisplayDefaultSettingsMeasurement::
+          kOverrideResolution,
+      0);
 }
 
 TEST_F(DisplaySettingsProviderTest, UserToggleDisplayPerformance) {

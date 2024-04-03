@@ -321,6 +321,23 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram
+    name="ChromeOS.Settings.Display.{DisplayType}.UserOverrideDisplayDefaultSettings"
+    enum="DisplayDefaultSettingsMeasurement" expires_after="2025-03-31">
+  <owner>zhangwenyu@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records when user overrides the {DisplayType} display settings (e.g.
+    resolution, scaling) provided by default. Only record when the settings are
+    changed within an hour of the {DisplayType} display being connected for the
+    first time.
+  </summary>
+  <token key="DisplayType">
+    <variant name="External" summary="external"/>
+    <variant name="Internal" summary="internal"/>
+  </token>
+</histogram>
+
+<histogram
     name="ChromeOS.Settings.Display.{DisplayType}.UserOverrideDisplayDefaultSettingsTimeElapsed.{DisplaySettings}"
     units="minutes" expires_after="2024-09-01">
   <owner>zhangwenyu@google.com</owner>

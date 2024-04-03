@@ -26,6 +26,12 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="DisplayDefaultSettingsMeasurement">
+  <int value="0" label="NewDisplayConnected"/>
+  <int value="1" label="OverrideResolution"/>
+  <int value="2" label="OverrideScaling"/>
+</enum>
+
 <enum name="DisplaySettingsBoolean">
   <int value="0" label="Off"/>
   <int value="1" label="On"/>
