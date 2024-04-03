@@ -59,6 +59,7 @@ class ASH_EXPORT PineContentsView : public views::BoxLayoutView {
   const base::TimeTicks creation_time_;
 
   bool showing_list_view_ = true;
+  bool close_metric_recorded_ = false;
 
   raw_ptr<views::ImageButton> settings_button_ = nullptr;
 

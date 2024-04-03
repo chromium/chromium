@@ -6042,6 +6042,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Pine.DialogClosed" enum="ClosePineDialogType"
+    expires_after="2025-04-05">
+  <owner>minch@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
+  <summary>Emitted whenever the pine dialog closes.</summary>
+</histogram>
+
 <histogram name="Ash.Pine.DialogScreenshotVisibility" enum="Boolean"
     expires_after="2025-04-05">
   <owner>minch@chromium.org</owner>

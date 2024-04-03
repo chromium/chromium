@@ -11,6 +11,7 @@ class PrefService;
 
 namespace ash {
 
+inline constexpr char kDialogClosedHistogram[] = "Ash.Pine.DialogClosed";
 inline constexpr char kScreenshotOnShutdownStatus[] =
     "Ash.Pine.ScreenshotOnShutdownStatus";
 inline constexpr char kDialogScreenshotVisibility[] =
@@ -34,6 +35,19 @@ enum class ScreenshotOnShutdownStatus {
   kFailedOnDLP,
   kMaxValue = kFailedOnDLP,
 };
+
+// Enumeration of the ways the pine dialog could be closed. Used for histograms.
+enum class ClosePineDialogType {
+  kListviewRestoreButton,
+  kListviewCancelButton,
+  kListviewOther,
+  kScreenshotRestoreButton,
+  kScreenshotCancelButton,
+  kScreenshotOther,
+  kMaxValue = kScreenshotOther,
+};
+
+void RecordPineDialogClosing(ClosePineDialogType type);
 
 // Records `status` on taking the screenshot on shutdown.
 void RecordScreenshotOnShutdownStatus(ScreenshotOnShutdownStatus status);

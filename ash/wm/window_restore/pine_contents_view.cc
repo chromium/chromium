@@ -257,7 +257,13 @@ PineContentsView::PineContentsView() : creation_time_(base::TimeTicks::Now()) {
       views::HighlightBorder::Type::kHighlightBorderOnShadow));
 }
 
-PineContentsView::~PineContentsView() = default;
+PineContentsView::~PineContentsView() {
+  if (!close_metric_recorded_) {
+    RecordPineDialogClosing(showing_list_view_
+                                ? ClosePineDialogType::kListviewOther
+                                : ClosePineDialogType::kScreenshotOther);
+  }
+}
 
 // static
 std::unique_ptr<views::Widget> PineContentsView::Create(
@@ -304,6 +310,12 @@ void PineContentsView::OnRestoreButtonPressed() {
     if (pine_contents_data->restore_callback) {
       RecordTimeToAction(base::TimeTicks::Now() - creation_time_,
                          showing_list_view_);
+
+      RecordPineDialogClosing(
+          showing_list_view_ ? ClosePineDialogType::kListviewRestoreButton
+                             : ClosePineDialogType::kScreenshotRestoreButton);
+      close_metric_recorded_ = true;
+
       // Destroys `this`.
       std::move(pine_contents_data->restore_callback).Run();
     }
@@ -316,6 +328,11 @@ void PineContentsView::OnCancelButtonPressed() {
     if (pine_contents_data->cancel_callback) {
       RecordTimeToAction(base::TimeTicks::Now() - creation_time_,
                          showing_list_view_);
+      RecordPineDialogClosing(
+          showing_list_view_ ? ClosePineDialogType::kListviewCancelButton
+                             : ClosePineDialogType::kScreenshotCancelButton);
+      close_metric_recorded_ = true;
+
       // Destroys `this`.
       std::move(pine_contents_data->cancel_callback).Run();
     }

@@ -122,10 +122,29 @@ class PineTest : public PineTestBase {
   // ids.
   std::unique_ptr<PineContentsData> MakeTestAppIds(int n) {
     auto data = std::make_unique<PineContentsData>();
+
+    // Create callbacks which close the pine overview session to simulate
+    // production behavior.
+    base::OnceClosure callback = base::BindLambdaForTesting([]() {
+      Shell::Get()->pine_controller()->MaybeEndPineOverviewSession();
+    });
+    std::pair<base::OnceClosure, base::OnceClosure> split =
+        base::SplitOnceCallback(std::move(callback));
+    data->restore_callback = std::move(split.first);
+    data->cancel_callback = std::move(split.second);
+
     for (int i = 0; i < n; ++i) {
       data->apps_infos.emplace_back(app_constants::kChromeAppId, "Title");
     }
 
+    return data;
+  }
+
+  // Similar to above but adds a solid color image so that the screenshot UI
+  // shows up.
+  std::unique_ptr<PineContentsData> MakeTestAppIdsWithImage(int n) {
+    auto data = MakeTestAppIds(n);
+    data->image = CreateSolidColorTestImage(gfx::Size(800, 600), SK_ColorRED);
     return data;
   }
 
@@ -510,6 +529,91 @@ TEST_F(PineTest, TimeToActionMetrics) {
   EXPECT_EQ(
       2u,
       histogram_tester.GetAllSamples("Ash.Pine.TimeToAction.Listview").size());
+}
+
+TEST_F(PineTest, CloseDialogMetrics) {
+  base::HistogramTester histogram_tester_list_view;
+
+  // Test clicking the restore button.
+  StartPineOverviewSession(MakeTestAppIds(1));
+  const views::View* restore_button1 =
+      GetContentsView()->GetViewByID(pine::kRestoreButtonID);
+  LeftClickOn(restore_button1);
+  EXPECT_THAT(
+      histogram_tester_list_view.GetAllSamples(kDialogClosedHistogram),
+      BucketsAre(base::Bucket(
+          base::to_underlying(ClosePineDialogType::kListviewRestoreButton),
+          1)));
+
+  // Test clicking the cancel button.
+  StartPineOverviewSession(MakeTestAppIds(1));
+  const views::View* cancel_button1 =
+      GetContentsView()->GetViewByID(pine::kCancelButtonID);
+  LeftClickOn(cancel_button1);
+  EXPECT_THAT(
+      histogram_tester_list_view.GetAllSamples(kDialogClosedHistogram),
+      BucketsAre(base::Bucket(base::to_underlying(
+                                  ClosePineDialogType::kListviewRestoreButton),
+                              1),
+                 base::Bucket(base::to_underlying(
+                                  ClosePineDialogType::kListviewCancelButton),
+                              1)));
+
+  // Test exiting the pine overview session without clicking any buttons.
+  StartPineOverviewSession(MakeTestAppIds(1));
+  Shell::Get()->pine_controller()->MaybeEndPineOverviewSession();
+  EXPECT_THAT(
+      histogram_tester_list_view.GetAllSamples(kDialogClosedHistogram),
+      BucketsAre(
+          base::Bucket(
+              base::to_underlying(ClosePineDialogType::kListviewRestoreButton),
+              1),
+          base::Bucket(
+              base::to_underlying(ClosePineDialogType::kListviewCancelButton),
+              1),
+          base::Bucket(base::to_underlying(ClosePineDialogType::kListviewOther),
+                       1)));
+
+  // Run the same tests but with the screenshot UI.
+  base::HistogramTester histogram_tester_screenshot;
+
+  StartPineOverviewSession(MakeTestAppIdsWithImage(1));
+  const views::View* restore_button2 =
+      GetContentsView()->GetViewByID(pine::kRestoreButtonID);
+  LeftClickOn(restore_button2);
+  EXPECT_THAT(
+      histogram_tester_screenshot.GetAllSamples(kDialogClosedHistogram),
+      BucketsAre(base::Bucket(
+          base::to_underlying(ClosePineDialogType::kScreenshotRestoreButton),
+          1)));
+
+  StartPineOverviewSession(MakeTestAppIdsWithImage(1));
+  const views::View* cancel_button2 =
+      GetContentsView()->GetViewByID(pine::kCancelButtonID);
+  LeftClickOn(cancel_button2);
+  EXPECT_THAT(
+      histogram_tester_screenshot.GetAllSamples(kDialogClosedHistogram),
+      BucketsAre(
+          base::Bucket(base::to_underlying(
+                           ClosePineDialogType::kScreenshotRestoreButton),
+                       1),
+          base::Bucket(
+              base::to_underlying(ClosePineDialogType::kScreenshotCancelButton),
+              1)));
+
+  StartPineOverviewSession(MakeTestAppIdsWithImage(1));
+  Shell::Get()->pine_controller()->MaybeEndPineOverviewSession();
+  EXPECT_THAT(
+      histogram_tester_screenshot.GetAllSamples(kDialogClosedHistogram),
+      BucketsAre(
+          base::Bucket(base::to_underlying(
+                           ClosePineDialogType::kScreenshotRestoreButton),
+                       1),
+          base::Bucket(
+              base::to_underlying(ClosePineDialogType::kScreenshotCancelButton),
+              1),
+          base::Bucket(
+              base::to_underlying(ClosePineDialogType::kScreenshotOther), 1)));
 }
 
 // Tests that if we exit overview without clicking the restore or cancel

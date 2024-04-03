@@ -10,9 +10,17 @@
 
 namespace ash {
 
+namespace {
+
 constexpr char kHistogramTimeToAction[] = "Ash.Pine.TimeToAction";
 constexpr char kHistogramSuffixListview[] = ".Listview";
 constexpr char kHistogramSuffixScreenshot[] = ".Screenshot";
+
+}  // namespace
+
+void RecordPineDialogClosing(ClosePineDialogType type) {
+  base::UmaHistogramEnumeration(kDialogClosedHistogram, type);
+}
 
 void RecordScreenshotOnShutdownStatus(ScreenshotOnShutdownStatus status) {
   base::UmaHistogramEnumeration(kScreenshotOnShutdownStatus, status);

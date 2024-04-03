@@ -493,6 +493,18 @@ ash/ambient/util/time_of_day_utils.h -->
   <int value="2" label="Student assignment pressed"/>
 </enum>
 
+<enum name="ClosePineDialogType">
+  <int value="0" label="Restore button clicked while showing listview"/>
+  <int value="1" label="Cancel button clicked while showing listview"/>
+  <int value="2"
+      label="Some other way of closing the pine dialog while showing listview"/>
+  <int value="3" label="Restore button clicked while showing screenshot"/>
+  <int value="4" label="Cancel button clicked while showing screenshot"/>
+  <int value="5"
+      label="Some other way of closing the pine dialog while showing
+             screenshot"/>
+</enum>
+
 <enum name="DataFetchEventSource">
   <int value="0" label="PostLoginFullRestore"/>
   <int value="1" label="Overview"/>
