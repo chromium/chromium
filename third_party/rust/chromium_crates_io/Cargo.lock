@@ -21,11 +21,6 @@ version = "1.0.81"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
-name = "autocfg"
-version = "1.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-
-[[package]]
 name = "base64"
 version = "0.13.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -73,7 +68,6 @@ dependencies = [
  "lazy_static",
  "libc",
  "log",
- "memoffset",
  "nom",
  "proc-macro2",
  "prost",
@@ -247,14 +241,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "memchr"
 version = "2.7.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-
-[[package]]
-name = "memoffset"
-version = "0.6.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "autocfg",
-]
 
 [[package]]
 name = "minimal-lexical"

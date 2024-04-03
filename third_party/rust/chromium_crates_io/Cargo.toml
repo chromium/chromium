@@ -57,10 +57,6 @@ features = ["rustc_1_55"]
 version = "1"
 artifact = "bin"
 
-[dependencies.memoffset]
-version = "0.6"
-features = ["unstable_const"]
-
 [dependencies.rstest]
 default-features = false
 version = "0.17"

@@ -1,9 +1,0 @@
-Name: autocfg
-URL: https://crates.io/crates/autocfg
-Description: Automatic cfg for Rust compiler features
-Version: 1.2.0
-Security Critical: yes
-Shipped: yes
-License: Apache 2.0
-License File: //third_party/rust/chromium_crates_io/vendor/autocfg-1.2.0/LICENSE-APACHE
-Revision: c10bc170ca6cc8176b046dce8d7e73e8b24f6d76
