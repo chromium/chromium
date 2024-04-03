@@ -1508,10 +1508,10 @@ def main():
     RunCommand(['ninja', '-C', LLVM_BUILD_DIR, 'cr-check-all'], setenv=True)
 
   if not args.build_mac_arm and args.run_tests:
-    env = None
+    env = os.environ.copy()
+    lit_excludes = []
     if sys.platform.startswith('linux'):
-      env = os.environ.copy()
-      lit_excludes = [
+      lit_excludes += [
           # See SANITIZER_OVERRIDE_INTERCEPTORS above: We disable crypt_r()
           # interception, so its tests can't pass.
           '^SanitizerCommon-(a|l|m|ub|t)san-x86_64-Linux :: Linux/crypt_r.cpp$',
@@ -1522,7 +1522,12 @@ def main():
           # sysroot/host glibc version mismatch, crbug.com/1506551
           '^.*Sanitizer.*mallinfo2.cpp$'
       ]
-      env['LIT_FILTER_OUT'] = '|'.join(lit_excludes)
+    elif sys.platform == 'darwin':
+      lit_excludes += [
+          # Fails on macOS 14, crbug.com/332589870
+          '^.*Sanitizer.*Darwin/malloc_zone.cpp$'
+      ]
+    env['LIT_FILTER_OUT'] = '|'.join(lit_excludes)
     RunCommand(['ninja', '-C', LLVM_BUILD_DIR, 'check-all'],
                env=env,
                setenv=True)
