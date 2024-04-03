@@ -439,6 +439,9 @@ TEST_F(PasswordStoreProxyBackendBaseTest,
 struct UpmVariationParam {
   bool is_sync_enabled = false;
   bool is_unenrolled = false;
+  bool is_M4_feature_enabled = false;
+  bool is_login_db_empty = false;
+  bool is_initial_migration_finished = false;
   bool android_is_main_backend = false;
 };
 
@@ -448,12 +451,9 @@ class PasswordStoreProxyBackendTest
  public:
   void SetUp() override {
     PasswordStoreProxyBackendBaseTest::SetUp();
-    EXPECT_CALL(android_backend(), InitBackend);
-    EXPECT_CALL(built_in_backend(), InitBackend);
-    proxy_backend().InitBackend(nullptr, base::DoNothing(), base::DoNothing(),
-                                base::DoNothing());
-    EXPECT_CALL(android_backend(), OnSyncServiceInitialized(sync_service()));
-    proxy_backend().OnSyncServiceInitialized(sync_service());
+    scoped_feature_list_.InitWithFeatureState(
+        password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore,
+        GetParam().is_M4_feature_enabled);
 
     if (GetParam().is_sync_enabled) {
       EnablePasswordSync();
@@ -462,6 +462,17 @@ class PasswordStoreProxyBackendTest
     }
     prefs()->SetBoolean(prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
                         GetParam().is_unenrolled);
+    prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices,
+                        GetParam().is_initial_migration_finished ? 1 : 0);
+    prefs()->SetBoolean(prefs::kEmptyProfileStoreLoginDatabase,
+                        GetParam().is_login_db_empty);
+
+    EXPECT_CALL(android_backend(), InitBackend);
+    EXPECT_CALL(built_in_backend(), InitBackend);
+    proxy_backend().InitBackend(nullptr, base::DoNothing(), base::DoNothing(),
+                                base::DoNothing());
+    EXPECT_CALL(android_backend(), OnSyncServiceInitialized(sync_service()));
+    proxy_backend().OnSyncServiceInitialized(sync_service());
   }
 
   std::unique_ptr<PasswordStoreProxyBackend> CreateProxyBackend() override {
@@ -484,6 +495,9 @@ class PasswordStoreProxyBackendTest
     return GetParam().android_is_main_backend ? built_in_backend()
                                               : android_backend();
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_P(PasswordStoreProxyBackendTest, UseMainBackendToGetAllLoginsAsync) {
@@ -666,26 +680,210 @@ TEST_P(PasswordStoreProxyBackendTest,
 INSTANTIATE_TEST_SUITE_P(
     PasswordStoreProxyBackendBaseTest,
     PasswordStoreProxyBackendTest,
-    testing::Values(
-        // Profile store, pre-split.
-        UpmVariationParam{.is_sync_enabled = true,
-                          .is_unenrolled = false,
-                          .android_is_main_backend = true},
-        UpmVariationParam{.is_sync_enabled = true,
-                          .is_unenrolled = true,
-                          .android_is_main_backend = false},
-        UpmVariationParam{.is_sync_enabled = false,
-                          .is_unenrolled = true,
-                          .android_is_main_backend = false},
-        UpmVariationParam{.is_sync_enabled = false,
-                          .is_unenrolled = false,
-                          .android_is_main_backend = false}),
+    // PasswordStoreProxyBackend is created only for `ProfilePasswordStore` when
+    // `UseUpmLocalAndSeparateStoresState` is `kOff`. In this configuration
+    // there are 5 possible variables which can influence when `android_backend`
+    // is used. All 32 configurations are tested here.
+    testing::Values(UpmVariationParam{.is_sync_enabled = false,
+                                      .is_unenrolled = false,
+                                      .is_M4_feature_enabled = false,
+                                      .is_login_db_empty = false,
+                                      .is_initial_migration_finished = false,
+                                      .android_is_main_backend = false},
+                    UpmVariationParam{.is_sync_enabled = true,
+                                      .is_unenrolled = false,
+                                      .is_M4_feature_enabled = false,
+                                      .is_login_db_empty = false,
+                                      .is_initial_migration_finished = false,
+                                      .android_is_main_backend = true},
+                    UpmVariationParam{.is_sync_enabled = false,
+                                      .is_unenrolled = true,
+                                      .is_M4_feature_enabled = false,
+                                      .is_login_db_empty = false,
+                                      .is_initial_migration_finished = false,
+                                      .android_is_main_backend = false},
+                    UpmVariationParam{.is_sync_enabled = true,
+                                      .is_unenrolled = true,
+                                      .is_M4_feature_enabled = false,
+                                      .is_login_db_empty = false,
+                                      .is_initial_migration_finished = false,
+                                      .android_is_main_backend = false},
+                    UpmVariationParam{.is_sync_enabled = false,
+                                      .is_unenrolled = false,
+                                      .is_M4_feature_enabled = true,
+                                      .is_login_db_empty = false,
+                                      .is_initial_migration_finished = false,
+                                      .android_is_main_backend = false},
+                    UpmVariationParam{.is_sync_enabled = true,
+                                      .is_unenrolled = false,
+                                      .is_M4_feature_enabled = true,
+                                      .is_login_db_empty = false,
+                                      .is_initial_migration_finished = false,
+                                      .android_is_main_backend = false},
+                    UpmVariationParam{.is_sync_enabled = false,
+                                      .is_unenrolled = true,
+                                      .is_M4_feature_enabled = true,
+                                      .is_login_db_empty = false,
+                                      .is_initial_migration_finished = false,
+                                      .android_is_main_backend = false},
+                    UpmVariationParam{.is_sync_enabled = true,
+                                      .is_unenrolled = true,
+                                      .is_M4_feature_enabled = true,
+                                      .is_login_db_empty = false,
+                                      .is_initial_migration_finished = false,
+                                      .android_is_main_backend = false},
+                    UpmVariationParam{.is_sync_enabled = false,
+                                      .is_unenrolled = false,
+                                      .is_M4_feature_enabled = false,
+                                      .is_login_db_empty = true,
+                                      .is_initial_migration_finished = false,
+                                      .android_is_main_backend = false},
+                    UpmVariationParam{.is_sync_enabled = true,
+                                      .is_unenrolled = false,
+                                      .is_M4_feature_enabled = false,
+                                      .is_login_db_empty = true,
+                                      .is_initial_migration_finished = false,
+                                      .android_is_main_backend = true},
+                    UpmVariationParam{.is_sync_enabled = false,
+                                      .is_unenrolled = true,
+                                      .is_M4_feature_enabled = false,
+                                      .is_login_db_empty = true,
+                                      .is_initial_migration_finished = false,
+                                      .android_is_main_backend = false},
+                    UpmVariationParam{.is_sync_enabled = true,
+                                      .is_unenrolled = true,
+                                      .is_M4_feature_enabled = false,
+                                      .is_login_db_empty = true,
+                                      .is_initial_migration_finished = false,
+                                      .android_is_main_backend = false},
+                    UpmVariationParam{.is_sync_enabled = false,
+                                      .is_unenrolled = false,
+                                      .is_M4_feature_enabled = true,
+                                      .is_login_db_empty = true,
+                                      .is_initial_migration_finished = false,
+                                      .android_is_main_backend = false},
+                    UpmVariationParam{.is_sync_enabled = true,
+                                      .is_unenrolled = false,
+                                      .is_M4_feature_enabled = true,
+                                      .is_login_db_empty = true,
+                                      .is_initial_migration_finished = false,
+                                      .android_is_main_backend = true},
+                    UpmVariationParam{.is_sync_enabled = false,
+                                      .is_unenrolled = true,
+                                      .is_M4_feature_enabled = true,
+                                      .is_login_db_empty = true,
+                                      .is_initial_migration_finished = false,
+                                      .android_is_main_backend = false},
+                    UpmVariationParam{.is_sync_enabled = true,
+                                      .is_unenrolled = true,
+                                      .is_M4_feature_enabled = true,
+                                      .is_login_db_empty = true,
+                                      .is_initial_migration_finished = false,
+                                      .android_is_main_backend = true},
+                    UpmVariationParam{.is_sync_enabled = false,
+                                      .is_unenrolled = false,
+                                      .is_M4_feature_enabled = false,
+                                      .is_login_db_empty = false,
+                                      .is_initial_migration_finished = true,
+                                      .android_is_main_backend = false},
+                    UpmVariationParam{.is_sync_enabled = true,
+                                      .is_unenrolled = false,
+                                      .is_M4_feature_enabled = false,
+                                      .is_login_db_empty = false,
+                                      .is_initial_migration_finished = true,
+                                      .android_is_main_backend = true},
+                    UpmVariationParam{.is_sync_enabled = false,
+                                      .is_unenrolled = true,
+                                      .is_M4_feature_enabled = false,
+                                      .is_login_db_empty = false,
+                                      .is_initial_migration_finished = true,
+                                      .android_is_main_backend = false},
+                    UpmVariationParam{.is_sync_enabled = true,
+                                      .is_unenrolled = true,
+                                      .is_M4_feature_enabled = false,
+                                      .is_login_db_empty = false,
+                                      .is_initial_migration_finished = true,
+                                      .android_is_main_backend = false},
+                    UpmVariationParam{.is_sync_enabled = false,
+                                      .is_unenrolled = false,
+                                      .is_M4_feature_enabled = true,
+                                      .is_login_db_empty = false,
+                                      .is_initial_migration_finished = true,
+                                      .android_is_main_backend = false},
+                    UpmVariationParam{.is_sync_enabled = true,
+                                      .is_unenrolled = false,
+                                      .is_M4_feature_enabled = true,
+                                      .is_login_db_empty = false,
+                                      .is_initial_migration_finished = true,
+                                      .android_is_main_backend = true},
+                    UpmVariationParam{.is_sync_enabled = false,
+                                      .is_unenrolled = true,
+                                      .is_M4_feature_enabled = true,
+                                      .is_login_db_empty = false,
+                                      .is_initial_migration_finished = true,
+                                      .android_is_main_backend = false},
+                    UpmVariationParam{.is_sync_enabled = true,
+                                      .is_unenrolled = true,
+                                      .is_M4_feature_enabled = true,
+                                      .is_login_db_empty = false,
+                                      .is_initial_migration_finished = true,
+                                      .android_is_main_backend = false},
+                    UpmVariationParam{.is_sync_enabled = false,
+                                      .is_unenrolled = false,
+                                      .is_M4_feature_enabled = false,
+                                      .is_login_db_empty = true,
+                                      .is_initial_migration_finished = true,
+                                      .android_is_main_backend = false},
+                    UpmVariationParam{.is_sync_enabled = true,
+                                      .is_unenrolled = false,
+                                      .is_M4_feature_enabled = false,
+                                      .is_login_db_empty = true,
+                                      .is_initial_migration_finished = true,
+                                      .android_is_main_backend = true},
+                    UpmVariationParam{.is_sync_enabled = false,
+                                      .is_unenrolled = true,
+                                      .is_M4_feature_enabled = false,
+                                      .is_login_db_empty = true,
+                                      .is_initial_migration_finished = true,
+                                      .android_is_main_backend = false},
+                    UpmVariationParam{.is_sync_enabled = true,
+                                      .is_unenrolled = true,
+                                      .is_M4_feature_enabled = false,
+                                      .is_login_db_empty = true,
+                                      .is_initial_migration_finished = true,
+                                      .android_is_main_backend = false},
+                    UpmVariationParam{.is_sync_enabled = false,
+                                      .is_unenrolled = false,
+                                      .is_M4_feature_enabled = true,
+                                      .is_login_db_empty = true,
+                                      .is_initial_migration_finished = true,
+                                      .android_is_main_backend = false},
+                    UpmVariationParam{.is_sync_enabled = true,
+                                      .is_unenrolled = false,
+                                      .is_M4_feature_enabled = true,
+                                      .is_login_db_empty = true,
+                                      .is_initial_migration_finished = true,
+                                      .android_is_main_backend = true},
+                    UpmVariationParam{.is_sync_enabled = false,
+                                      .is_unenrolled = true,
+                                      .is_M4_feature_enabled = true,
+                                      .is_login_db_empty = true,
+                                      .is_initial_migration_finished = true,
+                                      .android_is_main_backend = false},
+                    UpmVariationParam{.is_sync_enabled = true,
+                                      .is_unenrolled = true,
+                                      .is_M4_feature_enabled = true,
+                                      .is_login_db_empty = true,
+                                      .is_initial_migration_finished = true,
+                                      .android_is_main_backend = true}),
     [](const ::testing::TestParamInfo<UpmVariationParam>& info) {
-      std::string syncing =
-          info.param.is_sync_enabled ? "Syncing" : "NotSyncing";
-      std::string unenrolled =
-          info.param.is_unenrolled ? "Unenrolled" : "Enrolled";
-      return syncing + unenrolled;
+      std::string name;
+      name += info.param.is_sync_enabled ? "Syncing" : "Local";
+      name += info.param.is_unenrolled ? "Unenrolled" : "";
+      name += info.param.is_initial_migration_finished ? "" : "NotMigrated";
+      name += info.param.is_login_db_empty ? "EmptyDB" : "";
+      name += info.param.is_M4_feature_enabled ? "M4" : "";
+      return name;
     });
 
 struct FallbackParam {

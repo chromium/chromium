@@ -395,19 +395,37 @@ void PasswordStoreProxyBackend::OnRemoteFormChangesReceived(
 }
 
 bool PasswordStoreProxyBackend::UsesAndroidBackendAsMainBackend() {
-  // If this is the profile store being used prior to the store split,
-  // then it would use the Android backend only for enrolled syncing users.
-  // TODO: b/328569021 - check
-  // prefs::kCurrentMigrationVersionToGoogleMobileServices.
-  if (prefs_->GetBoolean(
-          prefs::kUnenrolledFromGoogleMobileServicesDueToErrors)) {
-    return false;
-  }
-
   CHECK(sync_service_);
   if (!IsSyncFeatureEnabledIncludingPasswords(sync_service_)) {
     return false;
   }
+
+  bool is_unenrolled =
+      prefs_->GetBoolean(prefs::kUnenrolledFromGoogleMobileServicesDueToErrors);
+
+  if (!base::FeatureList::IsEnabled(
+          features::kUnifiedPasswordManagerSyncOnlyInGMSCore)) {
+    // If M4 feature flag is disabled use `android_backend` as long as there was
+    // no unenrollment.
+    return !is_unenrolled;
+  }
+
+  // If there are no passwords in the `LoginDatabase` UPM can be enabled
+  // regardless of other factors since if there are no passwords no migration is
+  // required.
+  if (prefs_->GetBoolean(prefs::kEmptyProfileStoreLoginDatabase)) {
+    return true;
+  }
+
+  // There are passwords in the `LoginDatabase`. In order to ensure that those
+  // passwords are available in the `android_backend_` the user has to not be
+  // unrolled and has to have finished the initial migration.
+  if (is_unenrolled ||
+      prefs_->GetInteger(
+          prefs::kCurrentMigrationVersionToGoogleMobileServices) == 0) {
+    return false;
+  }
+
   return true;
 }
 
