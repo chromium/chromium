@@ -5080,6 +5080,9 @@ void AXObjectCacheImpl::MarkAXObjectDirtyWithCleanLayout(AXObject* obj) {
   }
   MarkAXObjectDirtyWithCleanLayoutHelper(obj, active_event_from_,
                                          active_event_from_action_);
+  if (!obj->AccessibilityIsIncludedInTree()) {
+    obj = obj->ParentObjectIncludedInTree();
+  }
   for (auto agent : agents_) {
     agent->AXObjectModified(obj, /*subtree*/ false);
   }
@@ -5096,6 +5099,8 @@ void AXObjectCacheImpl::MarkAXObjectDirty(AXObject* obj) {
 }
 
 void AXObjectCacheImpl::NotifySubtreeDirty(AXObject* obj) {
+  DUMP_WILL_BE_CHECK(obj->AccessibilityIsIncludedInTree());
+
   // Note: if there is no serializer yet, then there is nothing to mark dirty
   // for serialization purposes yet -- effectively everything starts out dirty
   // in a new serializer.
@@ -5111,6 +5116,13 @@ void AXObjectCacheImpl::MarkAXSubtreeDirtyWithCleanLayout(AXObject* obj) {
   if (!obj) {
     return;
   }
+  if (!obj->AccessibilityIsIncludedInTree()) {
+    for (const auto& included_child : obj->ChildrenIncludingIgnored()) {
+      MarkAXSubtreeDirtyWithCleanLayout(included_child);
+    }
+    return;
+  }
+
   MarkAXObjectDirtyWithCleanLayoutHelper(obj, active_event_from_,
                                          active_event_from_action_);
   NotifySubtreeDirty(obj);
