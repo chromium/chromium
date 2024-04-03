@@ -11,7 +11,7 @@ const base::TimeDelta kMaxSessionDuration = base::Minutes(60);
 
 BASE_FEATURE(kFeatureEngagementSessionReset,
              "FeatureEngagementSessionReset",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 IOSTrackerSessionController::IOSTrackerSessionController(
     raw_ptr<base::Clock> clock)
