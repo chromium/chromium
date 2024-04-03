@@ -27,7 +27,7 @@ import "translate_event.proto";
 import "user_action_event.proto";
 import "user_demographics.proto";
 
-// Next tag: 29
+// Next tag: 30
 message ChromeUserMetricsExtension {
   // The product (i.e. end user application) for a given UMA log.
   enum Product {
@@ -94,6 +94,15 @@ message ChromeUserMetricsExtension {
   // numeric sequence (i.e. k, k+1, k+2, k+3, ...), allowing for the detection
   // of dropped, or otherwise lost, records.
   optional int64 record_id = 28;
+
+  // A client-managed id that functions as a sequence number for the log record.
+  // Clients are expected to maintain a counter, incrementing it (by 1) for each
+  // record they finalize, and populate this field. Each record_id is expected
+  // to be unique when scoped to a given client_id. It is further expected that
+  // the record_id values associated to a given client_id form an uninterrupted
+  // numeric sequence (i.e. k, k+1, k+2, k+3, ...), allowing for the detection
+  // of dropped, or otherwise lost, finalized records.
+  optional int64 finalized_record_id = 29;
 
   // Next tag: 4
   message RealLocalTime {
