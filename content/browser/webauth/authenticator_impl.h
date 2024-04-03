@@ -46,10 +46,6 @@ class CONTENT_EXPORT AuthenticatorImpl
       std::unique_ptr<AuthenticatorCommonImpl> authenticator_common_impl);
   ~AuthenticatorImpl() override;
 
-  AuthenticatorCommonImpl* get_authenticator_common_impl_for_testing() {
-    return authenticator_common_impl_.get();
-  }
-
   // mojom::Authenticator
   void MakeCredential(
       blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
