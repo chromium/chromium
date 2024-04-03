@@ -235,12 +235,12 @@ void MemorySystem::Impl::InitializeGwpASan(
 
 #if BUILDFLAG(ENABLE_GWP_ASAN_MALLOC)
   gwp_asan::EnableForMalloc(gwp_asan_parameters.boost_sampling,
-                            gwp_asan_parameters.process_type.c_str());
+                            gwp_asan_parameters.process_type);
 #endif
 
 #if BUILDFLAG(ENABLE_GWP_ASAN_PARTITIONALLOC)
   gwp_asan::EnableForPartitionAlloc(gwp_asan_parameters.boost_sampling,
-                                    gwp_asan_parameters.process_type.c_str());
+                                    gwp_asan_parameters.process_type);
 #endif
 
   gwp_asan::MaybeEnableLightweightDetector(

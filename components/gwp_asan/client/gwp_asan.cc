@@ -9,6 +9,7 @@
 #include <limits>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <tuple>
 
 #include "base/allocator/partition_alloc_support.h"
@@ -27,6 +28,7 @@
 #include "components/gwp_asan/client/guarded_page_allocator.h"
 #include "components/gwp_asan/client/gwp_asan_features.h"
 #include "components/gwp_asan/client/lightweight_detector/poison_metadata_recorder.h"
+#include "components/gwp_asan/client/sampling_helpers.h"
 #include "components/gwp_asan/common/crash_key_name.h"
 
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
@@ -442,7 +444,7 @@ bool MaybeEnableLightweightDetectorInternal(bool boost_sampling,
 
 }  // namespace internal
 
-void EnableForMalloc(bool boost_sampling, const char* process_type) {
+void EnableForMalloc(bool boost_sampling, std::string_view process_type) {
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
   static bool init_once = [&]() -> bool {
     auto settings = internal::GetAllocatorSettings(internal::kGwpAsanMalloc,
@@ -452,7 +454,9 @@ void EnableForMalloc(bool boost_sampling, const char* process_type) {
 
     internal::InstallMallocHooks(
         settings->max_allocated_pages, settings->num_metadata,
-        settings->total_pages, settings->sampling_frequency, base::DoNothing());
+        settings->total_pages, settings->sampling_frequency,
+        internal::CreateOomCallback("Malloc", process_type,
+                                    settings->sampling_frequency));
     return true;
   }();
   std::ignore = init_once;
@@ -462,7 +466,8 @@ void EnableForMalloc(bool boost_sampling, const char* process_type) {
 #endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
 }
 
-void EnableForPartitionAlloc(bool boost_sampling, const char* process_type) {
+void EnableForPartitionAlloc(bool boost_sampling,
+                             std::string_view process_type) {
 #if BUILDFLAG(USE_PARTITION_ALLOC)
   static bool init_once = [&]() -> bool {
     auto settings = internal::GetAllocatorSettings(
@@ -472,7 +477,9 @@ void EnableForPartitionAlloc(bool boost_sampling, const char* process_type) {
 
     internal::InstallPartitionAllocHooks(
         settings->max_allocated_pages, settings->num_metadata,
-        settings->total_pages, settings->sampling_frequency, base::DoNothing());
+        settings->total_pages, settings->sampling_frequency,
+        internal::CreateOomCallback("PartitionAlloc", process_type,
+                                    settings->sampling_frequency));
     return true;
   }();
   std::ignore = init_once;
