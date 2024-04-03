@@ -4313,6 +4313,7 @@ enum WebFeature {
 
   kV8Ink_RequestPresenter_Method = 4935,
   kEventTimingOrphanPointerup = 4936,
+  kNavigatorCookieEnabledThirdParty = 4937,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
