@@ -19,6 +19,8 @@ import org.chromium.chrome.browser.tab_resumption.TabResumptionDataProvider.Sugg
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ModuleNotShownReason;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ModuleShowConfig;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallback;
+import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
+import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
@@ -40,6 +42,8 @@ public class TabResumptionModuleMediator {
 
     protected final TabResumptionDataProvider mDataProvider;
     protected final UrlImageProvider mUrlImageProvider;
+    protected final TabListFaviconProvider mFaviconProvider;
+    protected final ThumbnailProvider mThumbnailProvider;
     protected final SuggestionClickCallback mSuggestionClickCallback;
 
     // The number of tiles shown as a result of the latest suggestion. This determines whether the
@@ -50,21 +54,27 @@ public class TabResumptionModuleMediator {
     private boolean mIsStable;
 
     public TabResumptionModuleMediator(
-            Context context,
-            ModuleDelegate moduleDelegate,
-            PropertyModel model,
-            TabResumptionDataProvider dataProvider,
-            UrlImageProvider urlImageProvider,
-            SuggestionClickCallback suggestionClickCallback) {
+            @NonNull Context context,
+            @NonNull ModuleDelegate moduleDelegate,
+            @NonNull PropertyModel model,
+            @NonNull TabResumptionDataProvider dataProvider,
+            @NonNull UrlImageProvider urlImageProvider,
+            @NonNull TabListFaviconProvider faviconProvider,
+            @NonNull ThumbnailProvider thumbnailProvider,
+            @NonNull SuggestionClickCallback suggestionClickCallback) {
         mContext = context;
         mModuleDelegate = moduleDelegate;
         mModel = model;
         mDataProvider = dataProvider;
         mUrlImageProvider = urlImageProvider;
+        mFaviconProvider = faviconProvider;
+        mThumbnailProvider = thumbnailProvider;
         mSuggestionClickCallback = suggestionClickCallback;
         mTileCount = 0;
 
         mModel.set(TabResumptionModuleProperties.URL_IMAGE_PROVIDER, mUrlImageProvider);
+        mModel.set(TabResumptionModuleProperties.FAVICON_PROVIDER, mFaviconProvider);
+        mModel.set(TabResumptionModuleProperties.THUMBNAIL_PROVIDER, mThumbnailProvider);
         mModel.set(TabResumptionModuleProperties.CLICK_CALLBACK, mSuggestionClickCallback);
     }
 

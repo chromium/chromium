@@ -6,9 +6,13 @@ package org.chromium.chrome.browser.tab_resumption;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallback;
+import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
+import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -25,10 +29,12 @@ public class TabResumptionModuleCoordinator implements ModuleProvider {
     protected final TabResumptionModuleMediator mMediator;
 
     public TabResumptionModuleCoordinator(
-            Context context,
-            ModuleDelegate moduleDelegate,
-            TabResumptionDataProvider dataProvider,
-            UrlImageProvider urlImageProvider) {
+            @NonNull Context context,
+            @NonNull ModuleDelegate moduleDelegate,
+            @NonNull TabResumptionDataProvider dataProvider,
+            @NonNull UrlImageProvider urlImageProvider,
+            @NonNull TabListFaviconProvider faviconProvider,
+            @NonNull ThumbnailProvider thumbnailProvider) {
         mContext = context;
         mModuleDelegate = moduleDelegate;
         mDataProvider = dataProvider;
@@ -45,6 +51,8 @@ public class TabResumptionModuleCoordinator implements ModuleProvider {
                         mModel,
                         mDataProvider,
                         mUrlImageProvider,
+                        faviconProvider,
+                        thumbnailProvider,
                         wrappedClickCallback);
         mDataProvider.setStatusChangedCallback(this::showModule);
     }

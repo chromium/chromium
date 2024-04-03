@@ -36,6 +36,8 @@ import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionDataProvider.ResultStrength;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionDataProvider.SuggestionsResult;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallback;
+import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
+import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -54,6 +56,8 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
     @Mock private ModuleDelegate mModuleDelegate;
     @Mock private TabResumptionDataProvider mDataProvider;
     @Mock private UrlImageProvider mUrlImageProvider;
+    @Mock private TabListFaviconProvider mFaviconProvider;
+    @Mock private ThumbnailProvider mThumbnailProvider;
 
     @Captor private ArgumentCaptor<Callback<SuggestionsResult>> mFetchSuggestionCallbackCaptor;
     @Captor private ArgumentCaptor<GURL> mFetchImagePageUrlCaptor;
@@ -93,6 +97,8 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
                         mModel,
                         mDataProvider,
                         mUrlImageProvider,
+                        mFaviconProvider,
+                        mThumbnailProvider,
                         mClickCallback) {
                     @Override
                     long getCurrentTimeMs() {
@@ -103,6 +109,10 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
         Assert.assertFalse((Boolean) mModel.get(TabResumptionModuleProperties.IS_VISIBLE));
         Assert.assertEquals(
                 mUrlImageProvider, mModel.get(TabResumptionModuleProperties.URL_IMAGE_PROVIDER));
+        Assert.assertEquals(
+                mFaviconProvider, mModel.get(TabResumptionModuleProperties.FAVICON_PROVIDER));
+        Assert.assertEquals(
+                mThumbnailProvider, mModel.get(TabResumptionModuleProperties.THUMBNAIL_PROVIDER));
         // `mClickCallback` may get wrapped, so just check for non-null.
         Assert.assertNotNull(mModel.get(TabResumptionModuleProperties.CLICK_CALLBACK));
     }
@@ -168,11 +178,17 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
                         /* url= */ JUnitTestGURLs.GOOGLE_URL_DOG,
                         /* title= */ "Google Dog",
                         /* timestamp= */ makeTimestamp(16, 0, 0),
-                        /* id= */ 45);
+                        /* id= */ 45,
+                        /* tab= */ null);
         // Invalid due to empty title.
         SuggestionEntry entryInvalid =
                 new SuggestionEntry(
-                        "Desktop", JUnitTestGURLs.RED_2, "", makeTimestamp(17, 0, 0), 123);
+                        "Desktop",
+                        JUnitTestGURLs.RED_2,
+                        "",
+                        makeTimestamp(17, 0, 0),
+                        123,
+                        /* tab= */ null);
 
         List<SuggestionEntry> suggestions = new ArrayList<SuggestionEntry>();
         suggestions.add(entryInvalid);
@@ -205,13 +221,24 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
                         /* url= */ JUnitTestGURLs.GOOGLE_URL_DOG,
                         /* title= */ "Google Dog",
                         /* timestamp= */ makeTimestamp(16, 0, 0),
-                        /* id= */ 45);
+                        /* id= */ 45,
+                        /* tab= */ null);
         SuggestionEntry entryNewer =
                 new SuggestionEntry(
-                        "Phone", JUnitTestGURLs.RED_2, "Red 2", makeTimestamp(13, 0, 0), 3);
+                        "Phone",
+                        JUnitTestGURLs.RED_2,
+                        "Red 2",
+                        makeTimestamp(13, 0, 0),
+                        3,
+                        /* tab= */ null);
         SuggestionEntry entryOldest =
                 new SuggestionEntry(
-                        "Desktop", JUnitTestGURLs.BLUE_1, "Blue 1", makeTimestamp(12, 0, 0), 1000);
+                        "Desktop",
+                        JUnitTestGURLs.BLUE_1,
+                        "Blue 1",
+                        makeTimestamp(12, 0, 0),
+                        1000,
+                        /* tab= */ null);
 
         List<SuggestionEntry> suggestions = new ArrayList<SuggestionEntry>();
         suggestions.add(entryNewest);
@@ -438,7 +465,8 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
                 /* url= */ urlChoices[index],
                 /* title= */ titleChoices[index],
                 /* timestamp= */ makeTimestamp(16, 0, 0),
-                /* id= */ 45);
+                /* id= */ 45,
+                /* tab= */ null);
     }
 
     private void checkModuleState(

@@ -1,11 +1,10 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.single_tab;
+package org.chromium.chrome.browser.tab_resumption;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
@@ -19,17 +18,15 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 
-/** View of the tab on the single tab tab switcher. */
-class SingleTabView extends LinearLayout {
+public class LocalTileView extends LinearLayout {
     private ImageView mFavicon;
     private TextView mTitle;
     @Nullable private TabThumbnailView mTabThumbnail;
     @Nullable private TextView mUrl;
 
     /** Default constructor needed to inflate via XML. */
-    public SingleTabView(Context context, AttributeSet attrs) {
+    public LocalTileView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
@@ -42,40 +39,13 @@ class SingleTabView extends LinearLayout {
         mTabThumbnail = findViewById(R.id.tab_thumbnail);
         mUrl = findViewById(R.id.tab_url_view);
 
-        if (mTabThumbnail != null) {
-            if (StartSurfaceConfiguration.useMagicStack()) {
-                Resources resources = getResources();
-                MarginLayoutParams marginLayoutParams =
-                        (MarginLayoutParams) mTabThumbnail.getLayoutParams();
-                int size =
-                        resources.getDimensionPixelSize(
-                                org.chromium.chrome.browser.tab_ui.R.dimen
-                                        .single_tab_module_tab_thumbnail_size_big);
-                marginLayoutParams.width = size;
-                marginLayoutParams.height = size;
-
-                TextView tabSwitcherTitleDescription =
-                        findViewById(R.id.tab_switcher_title_description);
-                MarginLayoutParams titleDescriptionMarginLayoutParams =
-                        (MarginLayoutParams) tabSwitcherTitleDescription.getLayoutParams();
-                titleDescriptionMarginLayoutParams.bottomMargin =
-                        resources.getDimensionPixelSize(
-                                R.dimen.single_tab_module_title_margin_bottom);
-                tabSwitcherTitleDescription.setText(
-                        resources.getQuantityString(
-                                R.plurals.home_modules_tab_resumption_title, 1));
-            }
-            mTabThumbnail.setScaleType(ScaleType.MATRIX);
-            mTabThumbnail.updateThumbnailPlaceholder(
-                    /* isIncognito= */ false, /* isSelected= */ false);
-        }
+        mTabThumbnail.setScaleType(ScaleType.MATRIX);
+        mTabThumbnail.updateThumbnailPlaceholder(/* isIncognito= */ false, /* isSelected= */ false);
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
-        if (mTabThumbnail == null) return;
 
         Bitmap thumbnail = null;
         Drawable drawable = mTabThumbnail.getDrawable();
@@ -89,6 +59,7 @@ class SingleTabView extends LinearLayout {
 
     /**
      * Set the favicon.
+     *
      * @param favicon The given favicon {@link Drawable}.
      */
     public void setFavicon(Drawable favicon) {
@@ -97,11 +68,10 @@ class SingleTabView extends LinearLayout {
 
     /**
      * Set the Tab thumbnail.
+     *
      * @param thumbnail The given Tab thumbnail {@link Bitmap}.
      */
     public void setTabThumbnail(Bitmap thumbnail) {
-        if (mTabThumbnail == null) return;
-
         if (thumbnail == null || thumbnail.getWidth() <= 0 || thumbnail.getHeight() <= 0) {
             mTabThumbnail.setImageMatrix(new Matrix());
             return;
@@ -113,6 +83,7 @@ class SingleTabView extends LinearLayout {
 
     /**
      * Set the title.
+     *
      * @param title The given title.
      */
     public void setTitle(String title) {
@@ -121,6 +92,7 @@ class SingleTabView extends LinearLayout {
 
     /**
      * Set the URL.
+     *
      * @param url The given URL.
      */
     public void setUrl(String url) {
@@ -130,16 +102,11 @@ class SingleTabView extends LinearLayout {
     private void updateThumbnailMatrix(Bitmap thumbnail) {
         final int width = mTabThumbnail.getMeasuredWidth();
         final int height = mTabThumbnail.getMeasuredHeight();
-        if (width == 0 || height == 0) {
-            mTabThumbnail.setImageMatrix(new Matrix());
-            return;
-        }
-
         final float scale =
                 Math.max(
                         (float) width / thumbnail.getWidth(),
                         (float) height / thumbnail.getHeight());
-        final int xOffset = (int) (width - thumbnail.getWidth() * scale) / 2;
+        final int xOffset = (int) ((width - thumbnail.getWidth() * scale) / 2);
 
         Matrix m = new Matrix();
         m.setScale(scale, scale);

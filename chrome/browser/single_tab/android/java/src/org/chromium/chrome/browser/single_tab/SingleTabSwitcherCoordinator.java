@@ -91,7 +91,8 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher, ModuleProvider
                         activity,
                         false,
                         mIsSurfacePolishEnabled
-                                ? R.dimen.favicon_corner_radius_polished
+                                ? org.chromium.chrome.browser.tab_ui.R.dimen
+                                        .favicon_corner_radius_polished
                                 : R.dimen.default_favicon_corner_radius);
         if (!mIsShownOnNtp) {
             mMediator =

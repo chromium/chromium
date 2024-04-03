@@ -34,11 +34,29 @@ import java.util.concurrent.TimeUnit;
 @Config(manifest = Config.NONE)
 public class ForeignSessionTabResumptionDataProviderTest extends TestSupport {
     static final SuggestionEntry ENTRY1 =
-            new SuggestionEntry("My Tablet", TAB6.url, TAB6.title, TAB6.lastActiveTime, TAB6.id);
+            new SuggestionEntry(
+                    "My Tablet",
+                    TAB6.url,
+                    TAB6.title,
+                    TAB6.lastActiveTime,
+                    TAB6.id,
+                    /* tab= */ null);
     static final SuggestionEntry ENTRY2 =
-            new SuggestionEntry("My Tablet", TAB5.url, TAB5.title, TAB5.lastActiveTime, TAB5.id);
+            new SuggestionEntry(
+                    "My Tablet",
+                    TAB5.url,
+                    TAB5.title,
+                    TAB5.lastActiveTime,
+                    TAB5.id,
+                    /* tab= */ null);
     static final SuggestionEntry ENTRY3 =
-            new SuggestionEntry("My Desktop", TAB1.url, TAB1.title, TAB1.lastActiveTime, TAB1.id);
+            new SuggestionEntry(
+                    "My Desktop",
+                    TAB1.url,
+                    TAB1.title,
+                    TAB1.lastActiveTime,
+                    TAB1.id,
+                    /* tab= */ null);
 
     @Mock private ForeignSessionTabResumptionDataSource mSource;
 
