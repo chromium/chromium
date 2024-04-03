@@ -5,13 +5,12 @@
 #include "chrome/browser/enterprise/signals/device_info_fetcher_mac.h"
 
 #import <Foundation/Foundation.h>
-#include <MacTypes.h>
-#include <dlfcn.h>
 #include <ifaddrs.h>
 #include <net/if.h>
 #include <net/if_dl.h>
 
 #include "base/files/file_util.h"
+#include "base/mac/login_util.h"
 #include "base/mac/mac_util.h"
 #include "base/process/launch.h"
 #include "base/strings/stringprintf.h"
@@ -39,26 +38,12 @@ std::string GetSerialNumber() {
 }
 
 SettingValue GetScreenlockSecured() {
-  // Use the login private framework since there is no official way to
-  // obtain the screen lock value (at least for now).
-  using SACScreenLockEnabledType = Boolean (*)();
-  static const auto SACScreenLockEnabled = []() -> SACScreenLockEnabledType {
-    void* const login_framework = dlopen(
-        "/System/Library/PrivateFrameworks/login.framework/Versions/A/login",
-        RTLD_LAZY | RTLD_LOCAL);
-    if (!login_framework) {
-      return nullptr;
-    }
-    return reinterpret_cast<SACScreenLockEnabledType>(
-        dlsym(login_framework, "SACScreenLockEnabled"));
-  }();
-
-  if (!SACScreenLockEnabled) {
+  std::optional<bool> result = base::mac::IsScreenLockEnabled();
+  if (!result.has_value()) {
     return SettingValue::UNKNOWN;
   }
 
-  return SACScreenLockEnabled() ? SettingValue::ENABLED
-                                : SettingValue::DISABLED;
+  return result.value() ? SettingValue::ENABLED : SettingValue::DISABLED;
 }
 
 SettingValue GetDiskEncrypted() {

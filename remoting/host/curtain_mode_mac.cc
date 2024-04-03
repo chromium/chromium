@@ -9,10 +9,12 @@
 #include <Security/Security.h>
 #include <unistd.h>
 
+#include "base/apple/osstatus_logging.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/mac/login_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "remoting/host/client_session_control.h"
@@ -21,19 +23,6 @@
 namespace remoting {
 
 namespace {
-
-// Standard path to CGSession (pre-Big Sur).
-// Note: This binary was removed for the official Big Sur release.
-// See tracking issues crbug://1169841 and rdar://8977508.
-const char* kCGSessionPath =
-    "/System/Library/CoreServices/Menu Extras/User.menu/Contents/Resources/"
-    "CGSession";
-
-// Alternate path to search for CGSession.
-// Admins can copy the CGSession binary here to get curtain mode to work again
-// on Mac hosts. This is a temporary workaround for CGSession being removed
-// on Big Sur.
-const char* kCGSessionAltPath = "/usr/local/sbin/CGSession";
 
 // Most machines will have < 4 displays but a larger upper bound won't hurt.
 const UInt32 kMaxDisplaysToQuery = 32;
@@ -115,7 +104,7 @@ class SessionWatcher : public base::RefCountedThreadSafe<SessionWatcher> {
   // Used to disconnect the client session.
   base::WeakPtr<ClientSessionControl> client_session_control_;
 
-  EventHandlerRef event_handler_;
+  EventHandlerRef event_handler_ = nullptr;
 };
 
 SessionWatcher::SessionWatcher(
@@ -124,8 +113,7 @@ SessionWatcher::SessionWatcher(
     base::WeakPtr<ClientSessionControl> client_session_control)
     : caller_task_runner_(caller_task_runner),
       ui_task_runner_(ui_task_runner),
-      client_session_control_(client_session_control),
-      event_handler_(nullptr) {}
+      client_session_control_(client_session_control) {}
 
 void SessionWatcher::Start() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
@@ -179,53 +167,34 @@ void SessionWatcher::ActivateCurtain() {
   const void* logged_in =
       CFDictionaryGetValue(session.get(), kCGSessionLoginDoneKey);
   if (logged_in == kCFBooleanTrue && on_console == kCFBooleanTrue) {
-    // If IsRunningHeadless() returns true then we know that CGSession will fail
-    // silently w/o curtaining the session. This is a publicly known issue for
-    // CGSession and has been for several years.  We still want to try to
-    // curtain as the problem could be fixed in a future OS release and the user
-    // could try reconnecting in that case (until we had a real fix deployed).
-    // Issue is tracked via: rdar://42733382
+    // If IsRunningHeadless() returns true then we know that the attempt to
+    // switch to the login window will fail silently. This is a publicly known
+    // issue.  We still want to try to curtain as the problem could be fixed in
+    // a future OS release and the user could try reconnecting in that case
+    // (until we had a real fix deployed). Issue is tracked via: rdar://42733382
     bool is_headless = IsRunningHeadless();
 
-    // Check to see if the CGSession binary is available. If we cannot find it,
-    // then we can't enable curtain mode and need to disconnect the session.
-    const char* cgsession_path = NULL;
-    if (access(kCGSessionPath, X_OK) == 0) {
-      cgsession_path = kCGSessionPath;
-    } else if (access(kCGSessionAltPath, X_OK) == 0) {
-      cgsession_path = kCGSessionAltPath;
-    } else {
+    std::optional<OSStatus> err = base::mac::SwitchToLoginWindow();
+    if (!err.has_value()) {
       // Disconnect the session since we are unable to enter curtain mode.
-      LOG(ERROR) << "Can't find CGSession - unable to enter curtain mode.";
+      LOG(ERROR) << "SACSwitchToLoginWindow unavailable - unable to enter "
+                    "curtain mode.";
       DisconnectSession(protocol::ErrorCode::HOST_CONFIGURATION_ERROR);
       return;
     }
-
-    pid_t child = fork();
-    if (child == 0) {
-      execl(cgsession_path, cgsession_path, "-suspend", nullptr);
-      _exit(1);
-    } else if (child > 0) {
-      int status = 0;
-      waitpid(child, &status, 0);
-      if (status != 0) {
-        LOG(ERROR) << kCGSessionPath << " failed.";
-        DisconnectSession(protocol::ErrorCode::HOST_CONFIGURATION_ERROR);
-        return;
-      }
-      if (is_headless) {
-        // Disconnect the session to prevent the user from unlocking the machine
-        // since the call to CGSession very likely failed.  If we allow them to
-        // unlock the machine, the local desktop would be visible if the local
-        // monitor were plugged in.
-        LOG(ERROR) << "Machine is running in headless mode (no monitors "
-                   << "attached), we attempted to curtain the session but "
-                   << "CGSession is likely to fail in this mode.";
-        DisconnectSession(protocol::ErrorCode::HOST_CONFIGURATION_ERROR);
-        return;
-      }
-    } else {
-      LOG(ERROR) << "fork() failed.";
+    if (err.value() != noErr) {
+      OSSTATUS_LOG(ERROR, err.value()) << "Failed to switch to login window";
+      DisconnectSession(protocol::ErrorCode::HOST_CONFIGURATION_ERROR);
+      return;
+    }
+    if (is_headless) {
+      // Disconnect the session to prevent the user from unlocking the machine
+      // since the call to SACSwitchToLoginWindow very likely failed. If we
+      // allow them to unlock the machine, the local desktop would be visible if
+      // the local monitor were plugged in.
+      LOG(ERROR) << "Machine is running in headless mode (no monitors "
+                 << "attached), we attempted to curtain the session but "
+                 << "SACSwitchToLoginWindow is likely to fail in this mode.";
       DisconnectSession(protocol::ErrorCode::HOST_CONFIGURATION_ERROR);
       return;
     }
