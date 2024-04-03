@@ -1044,6 +1044,11 @@ inline constexpr char kPowerAdaptiveChargingNudgeShown[] =
 // Boolean pref for if ChromeOS battery saver is active.
 inline constexpr char kPowerBatterySaver[] = "power.cros_battery_saver_active";
 
+// Pref recording the charge percent while battery saver is enabled, used to
+// detect charging during sleep or when shut down.
+inline constexpr char kPowerBatterySaverPercent[] =
+    "power.cros_battery_saver_percent";
+
 // Screen brightness percent values to be used when running on battery power.
 // Specified by the policy.
 inline constexpr char kPowerBatteryScreenBrightnessPercent[] =

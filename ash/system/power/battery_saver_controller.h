@@ -45,6 +45,11 @@ class ASH_EXPORT BatterySaverController : public PowerStatus::Observer {
   static constexpr char kBatterySaverToastId[] =
       "battery_saver_mode_state_changed";
 
+  // When Battery Saver is enabled, the amount of percent increase in battery
+  // charge that will trigger disabling. Used to detect charging while asleep or
+  // shut down.
+  static constexpr int kBatterySaverSleepChargeThreshold = 3;
+
   explicit BatterySaverController(PrefService* local_state);
   BatterySaverController(const BatterySaverController&) = delete;
   BatterySaverController& operator=(const BatterySaverController&) = delete;

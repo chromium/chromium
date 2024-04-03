@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/system/power/battery_saver_controller.h"
+
 #include <memory>
 
 #include "ash/constants/ash_features.h"
@@ -15,6 +16,7 @@
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/system/toast/toast_overlay.h"
 #include "ash/test/ash_test_base.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
@@ -180,6 +182,27 @@ TEST_F(BatterySaverControllerTest, AutoEnableDisable) {
   EXPECT_FALSE(IsBatterySaverActive());
 }
 
+// Test that we detect charging while asleep, as seen by a sudden jump in charge
+// while discharging.
+TEST_F(BatterySaverControllerTest, DetectSleepCharging) {
+  // Battery discharging and below activation %, battery saver turns on.
+  UpdatePowerStatus(5.0, eight_hours_, false);
+  EXPECT_TRUE(IsBatterySaverActive());
+
+  // Increase charge while still discharging, but stay below activiation %,
+  // battery saver remains on.
+  UpdatePowerStatus(GetActivationPercent(), eight_hours_, false);
+  EXPECT_TRUE(IsBatterySaverActive());
+
+  // Increase charge again, but this time above the activation %, battery saver
+  // turns off.
+  UpdatePowerStatus(
+      GetActivationPercent() +
+          BatterySaverController::kBatterySaverSleepChargeThreshold,
+      eight_hours_, false);
+  EXPECT_FALSE(IsBatterySaverActive());
+}
+
 TEST_F(BatterySaverControllerTest, EnsureThresholdsCrossed) {
   // Start the test with full battery, discharging.
   UpdatePowerStatus(100.0, eight_hours_, false);
@@ -200,6 +223,19 @@ TEST_F(BatterySaverControllerTest, EnsureThresholdsCrossed) {
   // When we get to percent_threshold-1, it should still be disabled.
   UpdatePowerStatus(GetActivationPercent() - 1, eight_hours_, false);
   EXPECT_FALSE(IsBatterySaverActive());
+}
+
+// Test that Battery Saver remains enabled when charging with a low power USB
+// charger.
+TEST_F(BatterySaverControllerTest, USBCharging) {
+  UpdatePowerStatus(GetActivationPercent() - 5, eight_hours_, false);
+  EXPECT_TRUE(IsBatterySaverActive());
+
+  // Attache a low-power charger and slowly charge, Battery Saver remains on.
+  for (int i = -5; i <= 5; i++) {
+    UpdatePowerStatus(GetActivationPercent() + i, eight_hours_, true, true);
+    EXPECT_TRUE(IsBatterySaverActive());
+  }
 }
 
 // Metrics always logged on enable.
@@ -612,5 +648,109 @@ INSTANTIATE_TEST_SUITE_P(
     BatterySaverControllerNotificationTest,
     testing::Values(features::BatterySaverNotificationBehavior::kBSMAutoEnable,
                     features::BatterySaverNotificationBehavior::kBSMOptIn));
+
+class BatterySaverControllerInitTest : public testing::Test {
+ public:
+  void SetUp() override {
+    BatterySaverController::RegisterLocalStatePrefs(local_state_.registry());
+
+    chromeos::PowerManagerClient::InitializeFake();
+    power_manager_client_ = chromeos::FakePowerManagerClient::Get();
+
+    PowerStatus::Initialize();
+  }
+
+  void TearDown() override {
+    PowerStatus::Shutdown();
+    power_manager_client_ = nullptr;
+    chromeos::PowerManagerClient::Shutdown();
+  }
+
+ protected:
+  void UpdatePowerPropertiesToDischarging(int battery_percent) {
+    power_manager::PowerSupplyProperties proto;
+    proto.set_battery_state(
+        power_manager::PowerSupplyProperties_BatteryState_DISCHARGING);
+    proto.set_external_power(
+        power_manager::PowerSupplyProperties_ExternalPower_DISCONNECTED);
+    proto.set_battery_percent(battery_percent);
+    power_manager_client_->UpdatePowerProperties(proto);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  base::test::SingleThreadTaskEnvironment task_environment_;
+  TestingPrefServiceSimple local_state_;
+  raw_ptr<chromeos::FakePowerManagerClient> power_manager_client_;
+};
+
+// Test that Battery Saver active state is preserved across restarts.
+TEST_F(BatterySaverControllerInitTest, RestoreState) {
+  EXPECT_FALSE(power_manager_client_->battery_saver_mode_enabled());
+
+  // Disabled by default.
+  {
+    local_state_.ClearPref(prefs::kPowerBatterySaver);
+    std::unique_ptr<BatterySaverController> controller =
+        std::make_unique<BatterySaverController>(&local_state_);
+    EXPECT_FALSE(power_manager_client_->battery_saver_mode_enabled());
+  }
+
+  // Restore disabled.
+  {
+    local_state_.SetBoolean(prefs::kPowerBatterySaver, false);
+    std::unique_ptr<BatterySaverController> controller =
+        std::make_unique<BatterySaverController>(&local_state_);
+    EXPECT_FALSE(power_manager_client_->battery_saver_mode_enabled());
+  }
+
+  // Restore enabled.
+  {
+    local_state_.SetBoolean(prefs::kPowerBatterySaver, true);
+    std::unique_ptr<BatterySaverController> controller =
+        std::make_unique<BatterySaverController>(&local_state_);
+    EXPECT_TRUE(power_manager_client_->battery_saver_mode_enabled());
+  }
+}
+
+// Test that Battery Saver is disabled when charging when shut down.
+TEST_F(BatterySaverControllerInitTest, DisableAfterChargingWhenOff) {
+  const int battery_percent = 80;
+  local_state_.SetBoolean(prefs::kPowerBatterySaver, true);
+  local_state_.SetInteger(prefs::kPowerBatterySaverPercent, battery_percent);
+
+  // Set battery_percent above saved pref value to trigger charge detection.
+  UpdatePowerPropertiesToDischarging(
+      battery_percent +
+      BatterySaverController::kBatterySaverSleepChargeThreshold);
+
+  // Initialize BatterySaverController and check that battery saver is OFF.
+  std::unique_ptr<BatterySaverController> controller =
+      std::make_unique<BatterySaverController>(&local_state_);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(power_manager_client_->battery_saver_mode_enabled());
+  EXPECT_FALSE(PowerStatus::Get()->IsBatterySaverActive());
+}
+
+// Test that Battery Saver remains on after charging when shut down if the
+// battery is low enough that it would be re-enabled.
+TEST_F(BatterySaverControllerInitTest, EnableAfterChargingWhenOffAtLowBattery) {
+  const int battery_percent = 5;
+  local_state_.SetBoolean(prefs::kPowerBatterySaver, true);
+  local_state_.SetInteger(prefs::kPowerBatterySaverPercent, battery_percent);
+
+  // Set battery_percent above saved pref value to trigger charge detection.
+  UpdatePowerPropertiesToDischarging(
+      battery_percent +
+      BatterySaverController::kBatterySaverSleepChargeThreshold);
+
+  // Initialize BatterySaverController and check that battery saver is ON.
+  std::unique_ptr<BatterySaverController> controller =
+      std::make_unique<BatterySaverController>(&local_state_);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(power_manager_client_->battery_saver_mode_enabled());
+  EXPECT_TRUE(PowerStatus::Get()->IsBatterySaverActive());
+}
 
 }  // namespace ash

@@ -80,6 +80,9 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   int num_set_backlights_forced_off_calls() const {
     return num_set_backlights_forced_off_calls_;
   }
+  bool battery_saver_mode_enabled() const {
+    return battery_saver_mode_enabled_;
+  }
   void set_enqueue_brightness_changes_on_backlights_forced_off(bool enqueue) {
     enqueue_brightness_changes_on_backlights_forced_off_ = enqueue;
   }
