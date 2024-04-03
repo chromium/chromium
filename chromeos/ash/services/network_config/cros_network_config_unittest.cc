@@ -1684,6 +1684,52 @@ TEST_F(CrosNetworkConfigTest, GetDeviceStateListCarrierUnlocked) {
   ASSERT_FALSE(cellular->is_carrier_locked);
 }
 
+TEST_F(CrosNetworkConfigTest, GetManagedPropertiesCellularProvider) {
+  auto set_home_provider = [this](const std::string_view name,
+                                  const std::string_view code,
+                                  const std::string_view country) {
+    base::Value::Dict home_provider;
+    home_provider.Set("name", name);
+    home_provider.Set("code", code);
+    home_provider.Set("country", country);
+    helper()->device_test()->SetDeviceProperty(
+        kCellularDevicePath, shill::kHomeProviderProperty,
+        base::Value(home_provider.Clone()),
+        /*notify_changed=*/true);
+    base::RunLoop().RunUntilIdle();
+  };
+
+  auto check_home_provider = [this](const std::string_view name,
+                                    const std::string_view code,
+                                    const std::string_view country) {
+    mojom::ManagedPropertiesPtr properties =
+        GetManagedProperties(kCellularGuid);
+    ASSERT_TRUE(properties);
+
+    const mojom::ManagedCellularPropertiesPtr& cellular =
+        properties->type_properties->get_cellular();
+    ASSERT_TRUE(cellular);
+    const mojom::CellularProviderPropertiesPtr& provider =
+        cellular->home_provider;
+    ASSERT_TRUE(provider);
+    EXPECT_EQ(name, provider->name);
+    EXPECT_EQ(code, provider->code);
+    ASSERT_TRUE(provider->country.has_value());
+    EXPECT_EQ(country, *provider->country);
+  };
+
+  const std::string kDefaultName = "MobileNetwork";
+  const std::string kDefaultCode = "000000";
+  set_home_provider(/*name=*/"", /*code=*/"", /*country=*/"");
+  check_home_provider(kDefaultName, kDefaultCode, /*country=*/"");
+
+  const std::string kName = "ProviderName";
+  const std::string kCode = "ProviderCode";
+  const std::string kCountry = "ProviderCountry";
+  set_home_provider(kName, kCode, kCountry);
+  check_home_provider(kName, kCode, kCountry);
+}
+
 TEST_F(CrosNetworkConfigTest, GetManagedPropertiesCarrierLocked) {
   feature_list.InitAndEnableFeature(features::kCellularCarrierLock);
   /* Lock the SIM using network-pin */
