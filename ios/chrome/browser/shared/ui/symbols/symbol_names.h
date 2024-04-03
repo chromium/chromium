@@ -99,7 +99,7 @@ extern NSString* const kRefineQuerySymbol;
 extern NSString* const kLinkActionSymbol;
 extern NSString* const kQRCodeFinderActionSymbol;
 extern NSString* const kNewTabActionSymbol;
-extern NSString* const kNewTabCircleActionSymbol;
+extern NSString* const kPlusInCircleSymbol;
 extern NSString* const kClipboardActionSymbol;
 extern NSString* const kDeleteActionSymbol;
 extern NSString* const kEditActionSymbol;
@@ -210,6 +210,7 @@ extern NSString* const kMoveTabToGroupActionSymbol;
 extern NSString* const kClockSymbol;
 extern NSString* const kUngroupTabGroupSymbol;
 extern NSString* const kPlusInSquareSymbol;
+extern NSString* const kMinusInCircleSymbol;
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

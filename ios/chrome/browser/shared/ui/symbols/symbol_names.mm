@@ -90,7 +90,7 @@ NSString* const kRefineQuerySymbol = @"arrow.up.backward";
 NSString* const kLinkActionSymbol = @"link";
 NSString* const kQRCodeFinderActionSymbol = @"qrcode.viewfinder";
 NSString* const kNewTabActionSymbol = @"plus.square";
-NSString* const kNewTabCircleActionSymbol = @"plus.circle";
+NSString* const kPlusInCircleSymbol = @"plus.circle";
 NSString* const kClipboardActionSymbol = @"doc.on.clipboard";
 NSString* const kDeleteActionSymbol = @"trash";
 NSString* const kEditActionSymbol = @"pencil";
@@ -204,6 +204,7 @@ NSString* const kMoveTabToGroupActionSymbol = @"arrow.up.right.square";
 NSString* const kClockSymbol = @"clock";
 NSString* const kUngroupTabGroupSymbol = @"viewfinder";
 NSString* const kPlusInSquareSymbol = @"plus.square";
+NSString* const kMinusInCircleSymbol = @"minus.circle";
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

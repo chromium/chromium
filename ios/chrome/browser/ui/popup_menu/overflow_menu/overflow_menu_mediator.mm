@@ -563,7 +563,7 @@ bool IsBookmarked(const GURL& url,
   self.openTabAction =
       [self createOverflowMenuActionWithNameID:IDS_IOS_TOOLS_MENU_NEW_TAB
                                     actionType:overflow_menu::ActionType::NewTab
-                                    symbolName:kNewTabCircleActionSymbol
+                                    symbolName:kPlusInCircleSymbol
                                   systemSymbol:YES
                               monochromeSymbol:NO
                                accessibilityID:kToolsMenuNewTabId

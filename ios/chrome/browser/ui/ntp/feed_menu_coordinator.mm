@@ -11,11 +11,17 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/strings/grit/ui_strings.h"
+
+namespace {
+// The size of the icons in the management context menu.
+const CGFloat kManagementContextMenuIconSize = 18;
+}  // namespace
 
 @implementation FeedMenuCoordinator
 
@@ -79,7 +85,7 @@
 }
 
 // Returns the message id to use for the title for an item of the given `type`.
-- (int)titleMessageIdForItem:(FeedMenuItemType)type {
+- (int)titleMessageIdForMenuAction:(FeedMenuItemType)type {
   switch (type) {
     case FeedMenuItemType::kTurnOff:
       return IDS_IOS_DISCOVER_FEED_MENU_TURN_OFF_ITEM;
@@ -96,16 +102,41 @@
   }
 }
 
+// Returns an image icon for the context menu item.
+- (UIImage*)iconForMenuAction:(FeedMenuItemType)type {
+  switch (type) {
+    case FeedMenuItemType::kTurnOff:
+      return DefaultSymbolWithPointSize(kMinusInCircleSymbol,
+                                        kManagementContextMenuIconSize);
+    case FeedMenuItemType::kTurnOn:
+      return DefaultSymbolWithPointSize(kPlusInCircleSymbol,
+                                        kManagementContextMenuIconSize);
+    case FeedMenuItemType::kManage:
+      return DefaultSymbolWithPointSize(kSliderHorizontalSymbol,
+                                        kManagementContextMenuIconSize);
+    case FeedMenuItemType::kManageActivity:
+      return DefaultSymbolWithPointSize(kSliderHorizontalSymbol,
+                                        kManagementContextMenuIconSize);
+    case FeedMenuItemType::kManageInterests:
+      return DefaultSymbolWithPointSize(kSliderHorizontalSymbol,
+                                        kManagementContextMenuIconSize);
+    case FeedMenuItemType::kLearnMore:
+      return DefaultSymbolWithPointSize(kInfoCircleSymbol,
+                                        kManagementContextMenuIconSize);
+  }
+}
+
 // Creates an action to be added to the management menu.
 - (UIAction*)createMenuAction:(FeedMenuItemType)type {
   __weak __typeof(self) weakSelf = self;
-  UIAction* menuAction = [UIAction
-      actionWithTitle:l10n_util::GetNSString([self titleMessageIdForItem:type])
-                image:nil
-           identifier:nil
-              handler:^(UIAction* action) {
-                [weakSelf.delegate didSelectFeedMenuItem:type];
-              }];
+  UIAction* menuAction =
+      [UIAction actionWithTitle:l10n_util::GetNSString(
+                                    [self titleMessageIdForMenuAction:type])
+                          image:[self iconForMenuAction:type]
+                     identifier:nil
+                        handler:^(UIAction* action) {
+                          [weakSelf.delegate didSelectFeedMenuItem:type];
+                        }];
   return menuAction;
 }
 
