@@ -364,7 +364,8 @@ export class FakeShimlessRmaService implements FakeShimlessRmaServiceInterface {
         'getRsuDisableWriteProtectChallengeQrCode', {qrCodeData: qrCodeData});
   }
 
-  setRsuDisableWriteProtectCode(): Promise<{stateResult: StateResult}> {
+  setRsuDisableWriteProtectCode(_code: string):
+      Promise<{stateResult: StateResult}> {
     return this.getNextStateForMethod(
         'setRsuDisableWriteProtectCode', State.kEnterRSUWPDisableCode);
   }

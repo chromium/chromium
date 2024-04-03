@@ -67,6 +67,13 @@ IN_PROC_BROWSER_TEST_F(ShimlessRmaBrowserTest,
       "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ShimlessRmaBrowserTest,
+                       OnboardingEnterRsuWpDisableCodePage) {
+  RunTest(
+      "chromeos/shimless_rma/onboarding_enter_rsu_wp_disable_code_page_test.js",
+      "mocha.run()");
+}
+
 }  // namespace
 
 }  // namespace ash
