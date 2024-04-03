@@ -176,6 +176,9 @@ class MockAccessibilityPrivate {
     /** @private {!Array<chrome.accessibilityPrivate.SyntheticMouseEvent> */
     this.syntheticMouseEvents_ = [];
 
+    /** @private {!Array<chrome.accessibilityPrivate.SyntheticKeyboardEvent>} */
+    this.syntheticKeyEvents_ = [];
+
     // Methods from AccessibilityPrivate API. //
 
     this.onScrollableBoundsForPointRequested = {
@@ -334,9 +337,11 @@ class MockAccessibilityPrivate {
 
   /**
    * Creates a synthetic keyboard event.
-   * @param {Object} unused
+   * @param {chrome.accessibilityPrivate.SyntheticKeyboardEvent} event
    */
-  sendSyntheticKeyEvent(unused) {}
+  sendSyntheticKeyEvent(event) {
+    this.syntheticKeyEvents_.push(event);
+  }
 
   /** @return {?PumpkinData} */
   installPumpkinForDictation(callback) {

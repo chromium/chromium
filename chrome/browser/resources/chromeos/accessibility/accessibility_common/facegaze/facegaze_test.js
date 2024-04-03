@@ -654,3 +654,142 @@ AX_TEST_F('FaceGazeTest', 'DoesNotRepeatGesturesTooSoon', async function() {
       this.mockAccessibilityPrivate.SyntheticMouseEventButton.RIGHT,
       releaseEvent.mouseButton);
 });
+
+AX_TEST_F('FaceGazeTest', 'KeyEvents', async function() {
+  const gestureToMacroName =
+      new Map()
+          .set(FacialGesture.EYE_SQUINT_LEFT, MacroName.KEY_PRESS_SPACE)
+          .set(FacialGesture.EYE_SQUINT_RIGHT, MacroName.KEY_PRESS_UP)
+          .set(FacialGesture.MOUTH_SMILE, MacroName.KEY_PRESS_DOWN)
+          .set(FacialGesture.MOUTH_UPPER_UP, MacroName.KEY_PRESS_LEFT)
+          .set(FacialGesture.EYES_BLINK, MacroName.KEY_PRESS_RIGHT);
+  const gestureToConfidence = new Map()
+                                  .set(FacialGesture.EYE_SQUINT_LEFT, 0.7)
+                                  .set(FacialGesture.EYE_SQUINT_RIGHT, 0.7)
+                                  .set(FacialGesture.MOUTH_SMILE, 0.7)
+                                  .set(FacialGesture.MOUTH_UPPER_UP, 0.7)
+                                  .set(FacialGesture.EYES_BLINK, 0.7);
+  const config = new Config()
+                     .withMouseLocation({x: 600, y: 400})
+                     .withGestureToMacroName(gestureToMacroName)
+                     .withGestureToConfidence(gestureToConfidence)
+                     .withRepeatDelayMs(1000);
+  await this.configureFaceGaze(config);
+
+  const makeResultAndProcess = (gestures) => {
+    const result = new MockFaceLandmarkerResult()
+                       .addGestureWithConfidence(
+                           MediapipeFacialGesture.EYE_SQUINT_LEFT,
+                           gestures.squintLeft ? gestures.squintLeft : 0.3)
+                       .addGestureWithConfidence(
+                           MediapipeFacialGesture.EYE_SQUINT_RIGHT,
+                           gestures.squintRight ? gestures.squintRight : 0.3)
+                       .addGestureWithConfidence(
+                           MediapipeFacialGesture.MOUTH_SMILE_LEFT,
+                           gestures.smileLeft ? gestures.smileLeft : 0.3)
+                       .addGestureWithConfidence(
+                           MediapipeFacialGesture.MOUTH_SMILE_RIGHT,
+                           gestures.smileRight ? gestures.smileRight : 0.3)
+                       .addGestureWithConfidence(
+                           MediapipeFacialGesture.MOUTH_UPPER_UP_LEFT,
+                           gestures.upperUpLeft ? gestures.upperUpLeft : 0.3)
+                       .addGestureWithConfidence(
+                           MediapipeFacialGesture.MOUTH_UPPER_UP_RIGHT,
+                           gestures.upperUpRight ? gestures.upperUpRight : 0.3)
+                       .addGestureWithConfidence(
+                           MediapipeFacialGesture.EYE_BLINK_LEFT,
+                           gestures.blinkLeft ? gestures.blinkLeft : 0.3)
+                       .addGestureWithConfidence(
+                           MediapipeFacialGesture.EYE_BLINK_RIGHT,
+                           gestures.blinkRight ? gestures.blinkRight : 0.3);
+    this.processFaceLandmarkerResult(
+        result, /*triggerMouseControllerInterval=*/ true);
+    return this.mockAccessibilityPrivate.syntheticKeyEvents_;
+  };
+
+  // Squint left for space key press.
+  let keyEvents = makeResultAndProcess({squintLeft: .75});
+  assertEquals(1, keyEvents.length);
+  assertEquals(
+      chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYDOWN,
+      keyEvents[0].type);
+  assertEquals(KeyCode.SPACE, keyEvents[0].keyCode);
+
+  // Stop squinting left for space key release.
+  keyEvents = makeResultAndProcess({});
+  assertEquals(2, keyEvents.length);
+  assertEquals(
+      chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYUP,
+      keyEvents[1].type);
+  assertEquals(KeyCode.SPACE, keyEvents[1].keyCode);
+
+  // Squint right eye for up key press.
+  keyEvents = makeResultAndProcess({squintRight: 0.8});
+  assertEquals(3, keyEvents.length);
+  assertEquals(
+      chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYDOWN,
+      keyEvents[2].type);
+  assertEquals(KeyCode.UP, keyEvents[2].keyCode);
+
+  // Start smiling on both sides to create down arrow key press.
+  keyEvents = makeResultAndProcess(
+      {squintRight: 0.8, smileLeft: 0.9, smileRight: 0.85});
+  assertEquals(4, keyEvents.length);
+  assertEquals(
+      chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYDOWN,
+      keyEvents[3].type);
+  assertEquals(KeyCode.DOWN, keyEvents[3].keyCode);
+
+  // Stop squinting right eye for up arrow key release.
+  keyEvents = makeResultAndProcess({smileLeft: 0.9, smileRight: 0.85});
+  assertEquals(5, keyEvents.length);
+  assertEquals(
+      chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYUP,
+      keyEvents[4].type);
+  assertEquals(KeyCode.UP, keyEvents[4].keyCode);
+
+  // Stop smiling for down arrow key release.
+  keyEvents = makeResultAndProcess({});
+  assertEquals(6, keyEvents.length);
+  assertEquals(
+      chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYUP,
+      keyEvents[5].type);
+  assertEquals(KeyCode.DOWN, keyEvents[5].keyCode);
+
+  // Mouth upper up on both sides for left key press.
+  keyEvents = makeResultAndProcess({upperUpLeft: 0.9, upperUpRight: 0.8});
+  assertEquals(7, keyEvents.length);
+  assertEquals(
+      chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYDOWN,
+      keyEvents[6].type);
+  assertEquals(KeyCode.LEFT, keyEvents[6].keyCode);
+
+  // Blink both eyes for right key press.
+  keyEvents = makeResultAndProcess({
+    upperUpLeft: 0.85,
+    upperUpRight: 0.9,
+    blinkLeft: 0.85,
+    blinkRight: 0.75,
+  });
+  assertEquals(8, keyEvents.length);
+  assertEquals(
+      chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYDOWN,
+      keyEvents[7].type);
+  assertEquals(KeyCode.RIGHT, keyEvents[7].keyCode);
+
+  // Stop blinking, get right key up.
+  keyEvents = makeResultAndProcess({upperUpLeft: 0.85, upperUpRight: 0.95});
+  assertEquals(9, keyEvents.length);
+  assertEquals(
+      chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYUP,
+      keyEvents[8].type);
+  assertEquals(KeyCode.RIGHT, keyEvents[8].keyCode);
+
+  // Stop all gestures, get final left key up.
+  keyEvents = makeResultAndProcess({});
+  assertEquals(10, keyEvents.length);
+  assertEquals(
+      chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYUP,
+      keyEvents[9].type);
+  assertEquals(KeyCode.LEFT, keyEvents[9].keyCode);
+});

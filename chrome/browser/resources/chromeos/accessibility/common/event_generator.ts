@@ -35,11 +35,40 @@ export class EventGenerator {
       keyCode: KeyCode,
       modifiers: chrome.accessibilityPrivate.SyntheticKeyboardModifiers = {},
       useRewriters = false): void {
-    let type = chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYDOWN;
+    EventGenerator.sendKeyDown(keyCode, modifiers, useRewriters);
+    EventGenerator.sendKeyUp(keyCode, modifiers, useRewriters);
+  }
+
+  /**
+   * Sends a single key down event with the given key code and
+   *     keyboard modifiers (whether or not CTRL, ALT, SEARCH, and SHIFT are
+   *     being held).
+   * @param useRewriters If true, uses rewriters for the key event;
+   *     only allowed if used from Dictation. Otherwise indicates that rewriters
+   *     should be skipped.
+   */
+  static sendKeyDown(
+      keyCode: KeyCode,
+      modifiers: chrome.accessibilityPrivate.SyntheticKeyboardModifiers = {},
+      useRewriters = false): void {
+    const type = chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYDOWN;
     chrome.accessibilityPrivate.sendSyntheticKeyEvent(
         {type, keyCode, modifiers}, useRewriters);
+  }
 
-    type = chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYUP;
+  /**
+   * Sends a single key up event with the given key code and
+   *     keyboard modifiers (whether or not CTRL, ALT, SEARCH, and SHIFT are
+   *     being held).
+   * @param useRewriters If true, uses rewriters for the key event;
+   *     only allowed if used from Dictation. Otherwise indicates that rewriters
+   *     should be skipped.
+   */
+  static sendKeyUp(
+      keyCode: KeyCode,
+      modifiers: chrome.accessibilityPrivate.SyntheticKeyboardModifiers = {},
+      useRewriters = false): void {
+    const type = chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYUP;
     chrome.accessibilityPrivate.sendSyntheticKeyEvent(
         {type, keyCode, modifiers}, useRewriters);
   }

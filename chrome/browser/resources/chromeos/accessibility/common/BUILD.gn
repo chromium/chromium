@@ -45,6 +45,7 @@ ts_modules = [
   "action_fulfillment/macros/input_text_view_macro.ts",
   "action_fulfillment/macros/macro.ts",
   "action_fulfillment/macros/nav_sent_macro.ts",
+  "action_fulfillment/macros/key_press_macro.ts",
   "action_fulfillment/macros/repeat_macro.ts",
   "action_fulfillment/macros/repeatable_key_press_macro.ts",
   "action_fulfillment/macros/smart_delete_phrase_macro.ts",

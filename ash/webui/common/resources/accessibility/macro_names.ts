@@ -137,6 +137,21 @@ export enum MacroName {
   // Resets the cursor to a default location in the default screen.
   RESET_CURSOR = 37,
 
+  // Generates a synthetic space key event.
+  KEY_PRESS_SPACE = 38,
+
+  // Generates a synthetic left arrow key event.
+  KEY_PRESS_LEFT = 39,
+
+  // Generates a synthetic right arrow key event.
+  KEY_PRESS_RIGHT = 40,
+
+  // Generates a synthetic up arrow key event.
+  KEY_PRESS_UP = 41,
+
+  // Generates a synthetic down arrow key event.
+  KEY_PRESS_DOWN = 42,
+
   // Any new actions should match with Voice Access's semantic tags where
   // possible.
 }

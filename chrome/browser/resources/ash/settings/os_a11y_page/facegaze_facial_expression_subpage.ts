@@ -60,6 +60,31 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
         value: () => [],
       },
 
+      keyPressSpaceMenuOptions_: {
+        type: Array,
+        value: () => [],
+      },
+
+      keyPressDownMenuOptions_: {
+        type: Array,
+        value: () => [],
+      },
+
+      keyPressLeftMenuOptions_: {
+        type: Array,
+        value: () => [],
+      },
+
+      keyPressRightMenuOptions_: {
+        type: Array,
+        value: () => [],
+      },
+
+      keyPressUpMenuOptions_: {
+        type: Array,
+        value: () => [],
+      },
+
       leftClickPref_: {
         type: Object,
         value(): chrome.settingsPrivate.PrefObject {
@@ -100,6 +125,61 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
             value: '',
             type: chrome.settingsPrivate.PrefType.STRING,
             key: 'TOGGLE_DICTATION_pref',
+          };
+        },
+      },
+
+      keyPressSpacePref_: {
+        type: Object,
+        value(): chrome.settingsPrivate.PrefObject {
+          return {
+            value: '',
+            type: chrome.settingsPrivate.PrefType.STRING,
+            key: 'KEY_PRESS_SPACE_pref',
+          };
+        },
+      },
+
+      keyPressDownPref_: {
+        type: Object,
+        value(): chrome.settingsPrivate.PrefObject {
+          return {
+            value: '',
+            type: chrome.settingsPrivate.PrefType.STRING,
+            key: 'KEY_PRESS_DOWN_pref',
+          };
+        },
+      },
+
+      keyPressLeftPref_: {
+        type: Object,
+        value(): chrome.settingsPrivate.PrefObject {
+          return {
+            value: '',
+            type: chrome.settingsPrivate.PrefType.STRING,
+            key: 'KEY_PRESS_LEFT_pref',
+          };
+        },
+      },
+
+      keyPressRightPref_: {
+        type: Object,
+        value(): chrome.settingsPrivate.PrefObject {
+          return {
+            value: '',
+            type: chrome.settingsPrivate.PrefType.STRING,
+            key: 'KEY_PRESS_RIGHT_pref',
+          };
+        },
+      },
+
+      keyPressUpPref_: {
+        type: Object,
+        value(): chrome.settingsPrivate.PrefObject {
+          return {
+            value: '',
+            type: chrome.settingsPrivate.PrefType.STRING,
+            key: 'KEY_PRESS_UP_pref',
           };
         },
       },
@@ -196,6 +276,11 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
       'updateRightClickPref_(rightClickPref_.*)',
       'updateResetCursorPref_(resetCursorPref_.*)',
       'updateToggleDictationPref_(toggleDictationPref_.*)',
+      'updateKeyPressSpacePref_(keyPressSpacePref_.*)',
+      'updateKeyPressDownPref_(keyPressDownPref_.*)',
+      'updateKeyPressLeftPref_(keyPressLeftPref_.*)',
+      'updateKeyPressRightPref_(keyPressRightPref_.*)',
+      'updateKeyPressUpPref_(keyPressUpPref_.*)',
       'updateBrowInnerUpPref_(browInnerUpPref_.*)',
       'updateBrowsDownPref_(browsDownPref_.*)',
       'updateEyeSquintLeftPref_(eyeSquintLeftPref_.*)',
@@ -218,10 +303,20 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
   private rightClickMenuOptions_: DropdownMenuOptionList;
   private resetCursorMenuOptions_: DropdownMenuOptionList;
   private toggleDictationMenuOptions_: DropdownMenuOptionList;
+  private keyPressSpaceMenuOptions_: DropdownMenuOptionList;
+  private keyPressDownMenuOptions_: DropdownMenuOptionList;
+  private keyPressLeftMenuOptions_: DropdownMenuOptionList;
+  private keyPressRightMenuOptions_: DropdownMenuOptionList;
+  private keyPressUpMenuOptions_: DropdownMenuOptionList;
   private leftClickPref_: chrome.settingsPrivate.PrefObject<string>;
   private rightClickPref_: chrome.settingsPrivate.PrefObject<string>;
   private resetCursorPref_: chrome.settingsPrivate.PrefObject<string>;
   private toggleDictationPref_: chrome.settingsPrivate.PrefObject<string>;
+  private keyPressSpacePref_: chrome.settingsPrivate.PrefObject<string>;
+  private keyPressDownPref_: chrome.settingsPrivate.PrefObject<string>;
+  private keyPressLeftPref_: chrome.settingsPrivate.PrefObject<string>;
+  private keyPressRightPref_: chrome.settingsPrivate.PrefObject<string>;
+  private keyPressUpPref_: chrome.settingsPrivate.PrefObject<string>;
   private browInnerUpPref_: chrome.settingsPrivate.PrefObject<number>;
   private browsDownPref_: chrome.settingsPrivate.PrefObject<number>;
   private eyeSquintLeftPref_: chrome.settingsPrivate.PrefObject<number>;
@@ -245,6 +340,11 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
     this.rightClickMenuOptions_ = this.getGestureMenuOptions_();
     this.resetCursorMenuOptions_ = this.getGestureMenuOptions_();
     this.toggleDictationMenuOptions_ = this.getGestureMenuOptions_();
+    this.keyPressSpaceMenuOptions_ = this.getGestureMenuOptions_();
+    this.keyPressDownMenuOptions_ = this.getGestureMenuOptions_();
+    this.keyPressLeftMenuOptions_ = this.getGestureMenuOptions_();
+    this.keyPressRightMenuOptions_ = this.getGestureMenuOptions_();
+    this.keyPressUpMenuOptions_ = this.getGestureMenuOptions_();
     this.updateVirtualPrefs_();
   }
 
@@ -339,6 +439,16 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
         this.updateVirtualPref_(macrosToGestures, MacroName.RESET_CURSOR);
     this.toggleDictationPref_ =
         this.updateVirtualPref_(macrosToGestures, MacroName.TOGGLE_DICTATION);
+    this.keyPressSpacePref_ =
+        this.updateVirtualPref_(macrosToGestures, MacroName.KEY_PRESS_SPACE);
+    this.keyPressDownPref_ =
+        this.updateVirtualPref_(macrosToGestures, MacroName.KEY_PRESS_DOWN);
+    this.keyPressLeftPref_ =
+        this.updateVirtualPref_(macrosToGestures, MacroName.KEY_PRESS_LEFT);
+    this.keyPressRightPref_ =
+        this.updateVirtualPref_(macrosToGestures, MacroName.KEY_PRESS_RIGHT);
+    this.keyPressUpPref_ =
+        this.updateVirtualPref_(macrosToGestures, MacroName.KEY_PRESS_UP);
   }
 
   private updateVirtualPref_(
@@ -379,6 +489,41 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
         MacroName.TOGGLE_DICTATION, this.toggleDictationPref_.value);
   }
 
+  private updateKeyPressSpacePref_(): void {
+    this.updateFromVirtualPref_(
+        MacroName.KEY_PRESS_SPACE, this.keyPressSpacePref_.value);
+  }
+
+  private updateKeyPressDownPref_(): void {
+    this.updateFromVirtualPref_(
+        MacroName.KEY_PRESS_DOWN, this.keyPressDownPref_.value);
+  }
+
+  private updateKeyPressLeftPref_(): void {
+    this.updateFromVirtualPref_(
+        MacroName.KEY_PRESS_LEFT, this.keyPressLeftPref_.value);
+  }
+
+  private updateKeyPressRightPref_(): void {
+    this.updateFromVirtualPref_(
+        MacroName.KEY_PRESS_RIGHT, this.keyPressRightPref_.value);
+  }
+
+  private updateKeyPressUpPref_(): void {
+    this.updateFromVirtualPref_(
+        MacroName.KEY_PRESS_UP, this.keyPressUpPref_.value);
+  }
+
+  private setDropdownMenuOptionsHiddenForGesture_(
+      menuOptions: DropdownMenuOptionList, gesture: string,
+      hidden: boolean): void {
+    const menuOption = menuOptions.find(
+        (item: {value: number|string}) => item.value === gesture);
+    if (menuOption) {
+      menuOption.hidden = hidden;
+    }
+  }
+
   private updateFromVirtualPref_(macro: MacroName, value: string): void {
     if (value === '') {
       // Initializing.
@@ -391,6 +536,26 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
         Object.assign(this.resetCursorMenuOptions_);
     const newToggleDictationMenuOptions =
         Object.assign(this.toggleDictationMenuOptions_);
+    const newKeyPressSpaceMenuOptions =
+        Object.assign(this.keyPressSpaceMenuOptions_);
+    const newKeyPressDownMenuOptions =
+        Object.assign(this.keyPressDownMenuOptions_);
+    const newKeyPressLeftMenuOptions =
+        Object.assign(this.keyPressLeftMenuOptions_);
+    const newKeyPressRightMenuOptions =
+        Object.assign(this.keyPressRightMenuOptions_);
+    const newKeyPressUpMenuOptions = Object.assign(this.keyPressUpMenuOptions_);
+    const newMenuOptions = [
+      newLeftClickMenuOptions,
+      newRightClickMenuOptions,
+      newResetCursorMenuOptions,
+      newToggleDictationMenuOptions,
+      newKeyPressSpaceMenuOptions,
+      newKeyPressDownMenuOptions,
+      newKeyPressLeftMenuOptions,
+      newKeyPressRightMenuOptions,
+      newKeyPressUpMenuOptions,
+    ];
     const assignedGestures = {
         ...this.get('prefs.settings.a11y.face_gaze.gestures_to_macros.value')};
 
@@ -406,23 +571,10 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
         assignedGestures[currentGesture] = MacroName.UNSPECIFIED;
 
         // Make `currentGesture` visible in all the drop-downs.
-        newLeftClickMenuOptions
-            .find(
-                (item: {value: string}) =>
-                    item.value === currentGesture)!.hidden = false;
-        newRightClickMenuOptions
-            .find(
-                (item: {value: string}) =>
-                    item.value === currentGesture)!.hidden = false;
-        newResetCursorMenuOptions
-            .find(
-                (item: {value: string}) =>
-                    item.value === currentGesture)!.hidden = false;
-        newToggleDictationMenuOptions
-            .find(
-                (item: {value: string}) =>
-                    item.value === currentGesture)!.hidden = false;
-
+        newMenuOptions.forEach((menuOptions) => {
+          this.setDropdownMenuOptionsHiddenForGesture_(
+              menuOptions, currentGesture, false);
+        });
         break;
       }
     }
@@ -433,24 +585,40 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
       }
       // Make 'gesture' hidden in all the other drop-downs.
       if (macro !== MacroName.MOUSE_CLICK_LEFT) {
-        newLeftClickMenuOptions
-            .find((item: {value: string}) => item.value === value)!.hidden =
-            true;
+        this.setDropdownMenuOptionsHiddenForGesture_(
+            newLeftClickMenuOptions, value, true);
       }
       if (macro !== MacroName.MOUSE_CLICK_RIGHT) {
-        newRightClickMenuOptions
-            .find((item: {value: string}) => item.value === value)!.hidden =
-            true;
+        this.setDropdownMenuOptionsHiddenForGesture_(
+            newRightClickMenuOptions, value, true);
       }
       if (macro !== MacroName.RESET_CURSOR) {
-        newResetCursorMenuOptions
-            .find((item: {value: string}) => item.value === value)!.hidden =
-            true;
+        this.setDropdownMenuOptionsHiddenForGesture_(
+            newResetCursorMenuOptions, value, true);
       }
       if (macro !== MacroName.TOGGLE_DICTATION) {
-        newToggleDictationMenuOptions
-            .find((item: {value: string}) => item.value === value)!.hidden =
-            true;
+        this.setDropdownMenuOptionsHiddenForGesture_(
+            newToggleDictationMenuOptions, value, true);
+      }
+      if (macro !== MacroName.KEY_PRESS_SPACE) {
+        this.setDropdownMenuOptionsHiddenForGesture_(
+            newKeyPressSpaceMenuOptions, value, true);
+      }
+      if (macro !== MacroName.KEY_PRESS_DOWN) {
+        this.setDropdownMenuOptionsHiddenForGesture_(
+            newKeyPressDownMenuOptions, value, true);
+      }
+      if (macro !== MacroName.KEY_PRESS_LEFT) {
+        this.setDropdownMenuOptionsHiddenForGesture_(
+            newKeyPressLeftMenuOptions, value, true);
+      }
+      if (macro !== MacroName.KEY_PRESS_RIGHT) {
+        this.setDropdownMenuOptionsHiddenForGesture_(
+            newKeyPressRightMenuOptions, value, true);
+      }
+      if (macro !== MacroName.KEY_PRESS_UP) {
+        this.setDropdownMenuOptionsHiddenForGesture_(
+            newKeyPressUpMenuOptions, value, true);
       }
     }
     this.set(
@@ -467,6 +635,11 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
     this.rightClickMenuOptions_ = newRightClickMenuOptions;
     this.resetCursorMenuOptions_ = newResetCursorMenuOptions;
     this.toggleDictationMenuOptions_ = newToggleDictationMenuOptions;
+    this.keyPressSpaceMenuOptions_ = newKeyPressSpaceMenuOptions;
+    this.keyPressDownMenuOptions_ = newKeyPressDownMenuOptions;
+    this.keyPressLeftMenuOptions_ = newKeyPressLeftMenuOptions;
+    this.keyPressRightMenuOptions_ = newKeyPressRightMenuOptions;
+    this.keyPressUpMenuOptions_ = newKeyPressUpMenuOptions;
   }
 
   private getGestureToConfidencePref_(gestureName: FacialGesture):

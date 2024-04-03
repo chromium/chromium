@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {KeyPressMacro} from '/common/action_fulfillment/macros/key_press_macro.js';
 import {Macro} from '/common/action_fulfillment/macros/macro.js';
 import {MacroName} from '/common/action_fulfillment/macros/macro_names.js';
 import {MouseClickMacro} from '/common/action_fulfillment/macros/mouse_click_macro.js';
@@ -170,6 +171,12 @@ export class GestureHandler {
             this.mouseController_.mouseLocation(), /*leftClick=*/ false);
       case MacroName.RESET_CURSOR:
         return new ResetCursorMacro(this.mouseController_);
+      case MacroName.KEY_PRESS_SPACE:
+      case MacroName.KEY_PRESS_DOWN:
+      case MacroName.KEY_PRESS_LEFT:
+      case MacroName.KEY_PRESS_RIGHT:
+      case MacroName.KEY_PRESS_UP:
+        return new KeyPressMacro(name);
       default:
         return;
     }
