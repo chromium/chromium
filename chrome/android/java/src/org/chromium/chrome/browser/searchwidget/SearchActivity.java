@@ -357,7 +357,7 @@ public class SearchActivity extends AsyncInitializationActivity
         switch (mIntentOrigin) {
             case IntentOrigin.CUSTOM_TAB:
                 // Note: this may be refined by refinePageClassWithProfile().
-                mSearchBoxDataProvider.setPageClassification(PageClassification.OTHER_VALUE);
+                mSearchBoxDataProvider.setPageClassification(PageClassification.OTHER_ON_CCT_VALUE);
                 mLocationBarUiOverrides
                         .setLensEntrypointAllowed(false)
                         .setVoiceEntrypointAllowed(false);
@@ -396,16 +396,16 @@ public class SearchActivity extends AsyncInitializationActivity
 
         // Verify if the PageClassification can be refined.
         var url = SearchActivityUtils.getIntentUrl(getIntent());
-        if (pageClass != PageClassification.OTHER_VALUE || GURL.isEmptyOrInvalid(url)) {
+        if (pageClass != PageClassification.OTHER_ON_CCT_VALUE || GURL.isEmptyOrInvalid(url)) {
             return;
         }
 
         var templateSvc = TemplateUrlServiceFactory.getForProfile(profile);
         if (templateSvc != null && templateSvc.isSearchResultsPageFromDefaultSearchProvider(url)) {
             mSearchBoxDataProvider.setPageClassification(
-                    PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT_VALUE);
+                    PageClassification.SEARCH_RESULT_PAGE_ON_CCT_VALUE);
         } else {
-            mSearchBoxDataProvider.setPageClassification(PageClassification.OTHER_VALUE);
+            mSearchBoxDataProvider.setPageClassification(PageClassification.OTHER_ON_CCT_VALUE);
         }
     }
 

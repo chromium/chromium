@@ -26,14 +26,14 @@ const int kVerbatimMatchRelevanceScore = 1602;
 // Only offer verbatim match on a site visit and SRP (no NTP etc).
 bool IsVerbatimMatchEligible(
     metrics::OmniboxEventProto::PageClassification context) {
+  using OEP = metrics::OmniboxEventProto;
   // Only offer verbatim match on a site visit and SRP (no NTP etc).
-  return context == metrics::OmniboxEventProto::
-                        SEARCH_RESULT_PAGE_DOING_SEARCH_TERM_REPLACEMENT ||
-         context == metrics::OmniboxEventProto::
-                        SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT ||
-         context == metrics::OmniboxEventProto::ANDROID_SEARCH_WIDGET ||
-         context == metrics::OmniboxEventProto::ANDROID_SHORTCUTS_WIDGET ||
-         context == metrics::OmniboxEventProto::OTHER;
+  return context == OEP::SEARCH_RESULT_PAGE_DOING_SEARCH_TERM_REPLACEMENT ||
+         context == OEP::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT ||
+         context == OEP::ANDROID_SEARCH_WIDGET ||
+         context == OEP::ANDROID_SHORTCUTS_WIDGET ||
+         context == OEP::SEARCH_RESULT_PAGE_ON_CCT ||
+         context == OEP::OTHER_ON_CCT || context == OEP::OTHER;
 }
 }  // namespace
 

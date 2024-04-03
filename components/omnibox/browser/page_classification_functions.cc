@@ -22,6 +22,7 @@ bool IsSearchResultsPage(
           OEP::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT) ||
          (classification ==
           OEP::SEARCH_RESULT_PAGE_DOING_SEARCH_TERM_REPLACEMENT) ||
+         (classification == OEP::SEARCH_RESULT_PAGE_ON_CCT) ||
          (classification == OEP::SRP_ZPS_PREFETCH);
 }
 
@@ -29,6 +30,7 @@ bool IsOtherWebPage(
     ::metrics::OmniboxEventProto::PageClassification classification) {
   using OEP = ::metrics::OmniboxEventProto;
   return (classification == OEP::OTHER) ||
+         (classification == OEP::OTHER_ON_CCT) ||
          (classification == OEP::ANDROID_SHORTCUTS_WIDGET) ||
          (classification == OEP::OTHER_ZPS_PREFETCH);
 }

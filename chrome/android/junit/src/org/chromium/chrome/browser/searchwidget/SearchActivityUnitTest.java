@@ -236,9 +236,11 @@ public class SearchActivityUnitTest {
         mActivity.handleNewIntent(new Intent());
 
         assertEquals(
-                PageClassification.OTHER_VALUE, mDataProvider.getPageClassification(true, true));
+                PageClassification.OTHER_ON_CCT_VALUE,
+                mDataProvider.getPageClassification(true, true));
         assertEquals(
-                PageClassification.OTHER_VALUE, mDataProvider.getPageClassification(true, false));
+                PageClassification.OTHER_ON_CCT_VALUE,
+                mDataProvider.getPageClassification(true, false));
         assertFalse(mActivity.getEmbedderUiOverridesForTesting().isLensEntrypointAllowed());
         assertFalse(mActivity.getEmbedderUiOverridesForTesting().isVoiceEntrypointAllowed());
 
@@ -257,10 +259,10 @@ public class SearchActivityUnitTest {
         mActivity.handleNewIntent(new Intent());
 
         assertEquals(
-                PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT_VALUE,
+                PageClassification.SEARCH_RESULT_PAGE_ON_CCT_VALUE,
                 mDataProvider.getPageClassification(true, true));
         assertEquals(
-                PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT_VALUE,
+                PageClassification.SEARCH_RESULT_PAGE_ON_CCT_VALUE,
                 mDataProvider.getPageClassification(true, false));
         assertFalse(mActivity.getEmbedderUiOverridesForTesting().isLensEntrypointAllowed());
         assertFalse(mActivity.getEmbedderUiOverridesForTesting().isVoiceEntrypointAllowed());
@@ -388,7 +390,7 @@ public class SearchActivityUnitTest {
 
     @Test
     public void refinePageClassWithProfile_refinesBasicUrlForSearchResultsPage() {
-        mDataProvider.setPageClassification(PageClassification.OTHER_VALUE);
+        mDataProvider.setPageClassification(PageClassification.OTHER_ON_CCT_VALUE);
 
         doReturn(new GURL("https://abc.xyz")).when(mUtils).getIntentUrl(any());
         doReturn(true).when(mTemplateUrlSvc).isSearchResultsPageFromDefaultSearchProvider(any());
@@ -396,13 +398,13 @@ public class SearchActivityUnitTest {
         mActivity.refinePageClassWithProfile(mProfile);
 
         assertEquals(
-                PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT_VALUE,
+                PageClassification.SEARCH_RESULT_PAGE_ON_CCT_VALUE,
                 mDataProvider.getPageClassification(true, false));
     }
 
     @Test
     public void refinePageClassWithProfile_refinesBasicUrlForWebsite() {
-        mDataProvider.setPageClassification(PageClassification.OTHER_VALUE);
+        mDataProvider.setPageClassification(PageClassification.OTHER_ON_CCT_VALUE);
 
         doReturn(new GURL("https://abc.xyz")).when(mUtils).getIntentUrl(any());
         doReturn(false).when(mTemplateUrlSvc).isSearchResultsPageFromDefaultSearchProvider(any());
@@ -410,12 +412,13 @@ public class SearchActivityUnitTest {
         mActivity.refinePageClassWithProfile(mProfile);
 
         assertEquals(
-                PageClassification.OTHER_VALUE, mDataProvider.getPageClassification(true, false));
+                PageClassification.OTHER_ON_CCT_VALUE,
+                mDataProvider.getPageClassification(true, false));
     }
 
     @Test
     public void refinePageClassWithProfile_ignoresNullUrl() {
-        mDataProvider.setPageClassification(PageClassification.OTHER_VALUE);
+        mDataProvider.setPageClassification(PageClassification.OTHER_ON_CCT_VALUE);
 
         doReturn(null).when(mUtils).getIntentUrl(any());
         doReturn(true).when(mTemplateUrlSvc).isSearchResultsPageFromDefaultSearchProvider(any());
@@ -423,13 +426,14 @@ public class SearchActivityUnitTest {
         mActivity.refinePageClassWithProfile(mProfile);
 
         assertEquals(
-                PageClassification.OTHER_VALUE, mDataProvider.getPageClassification(true, false));
+                PageClassification.OTHER_ON_CCT_VALUE,
+                mDataProvider.getPageClassification(true, false));
         verifyNoMoreInteractions(mTemplateUrlSvc);
     }
 
     @Test
     public void refinePageClassWithProfile_ignoresEmptyUrl() {
-        mDataProvider.setPageClassification(PageClassification.OTHER_VALUE);
+        mDataProvider.setPageClassification(PageClassification.OTHER_ON_CCT_VALUE);
 
         doReturn(GURL.emptyGURL()).when(mUtils).getIntentUrl(any());
         doReturn(true).when(mTemplateUrlSvc).isSearchResultsPageFromDefaultSearchProvider(any());
@@ -437,13 +441,14 @@ public class SearchActivityUnitTest {
         mActivity.refinePageClassWithProfile(mProfile);
 
         assertEquals(
-                PageClassification.OTHER_VALUE, mDataProvider.getPageClassification(true, false));
+                PageClassification.OTHER_ON_CCT_VALUE,
+                mDataProvider.getPageClassification(true, false));
         verifyNoMoreInteractions(mTemplateUrlSvc);
     }
 
     @Test
     public void refinePageClassWithProfile_ignoresInvalidUrl() {
-        mDataProvider.setPageClassification(PageClassification.OTHER_VALUE);
+        mDataProvider.setPageClassification(PageClassification.OTHER_ON_CCT_VALUE);
 
         doReturn(new GURL("a b")).when(mUtils).getIntentUrl(any());
         doReturn(true).when(mTemplateUrlSvc).isSearchResultsPageFromDefaultSearchProvider(any());
@@ -451,13 +456,14 @@ public class SearchActivityUnitTest {
         mActivity.refinePageClassWithProfile(mProfile);
 
         assertEquals(
-                PageClassification.OTHER_VALUE, mDataProvider.getPageClassification(true, false));
+                PageClassification.OTHER_ON_CCT_VALUE,
+                mDataProvider.getPageClassification(true, false));
         verifyNoMoreInteractions(mTemplateUrlSvc);
     }
 
     @Test
     public void refinePageClassWithProfile_noTemplateUrl() {
-        mDataProvider.setPageClassification(PageClassification.OTHER_VALUE);
+        mDataProvider.setPageClassification(PageClassification.OTHER_ON_CCT_VALUE);
 
         doReturn(new GURL("https://abc.xyz")).when(mUtils).getIntentUrl(any());
         doReturn(null).when(mTemplateUrlFactoryJni).getTemplateUrlService(any());
@@ -465,6 +471,7 @@ public class SearchActivityUnitTest {
         mActivity.refinePageClassWithProfile(mProfile);
 
         assertEquals(
-                PageClassification.OTHER_VALUE, mDataProvider.getPageClassification(true, false));
+                PageClassification.OTHER_ON_CCT_VALUE,
+                mDataProvider.getPageClassification(true, false));
     }
 }
