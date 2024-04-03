@@ -306,7 +306,7 @@ void IsCopyToOSClipboardRestricted(
     const content::ClipboardPasteData& data,
     content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback) {
   if (SkipDataControlOrContentAnalysisChecks(source)) {
-    std::move(callback).Run(data, std::nullopt);
+    std::move(callback).Run(metadata.format_type, data, std::nullopt);
     return;
   }
 
@@ -321,13 +321,14 @@ void IsCopyToOSClipboardRestricted(
     // paste time.
     ClipboardObserver::GetInstance()->AddDataToNextSeqno(data);
     std::move(callback).Run(
-        data, /*replacement_data=*/l10n_util::GetStringUTF16(
+        metadata.format_type, data, /*replacement_data=*/
+        l10n_util::GetStringUTF16(
             IDS_ENTERPRISE_DATA_CONTROLS_COPY_PREVENTION_WARNING_MESSAGE));
 
     return;
   }
 
-  std::move(callback).Run(data, std::nullopt);
+  std::move(callback).Run(metadata.format_type, data, std::nullopt);
 }
 
 void OnDataControlsCopyWarning(
@@ -349,7 +350,7 @@ void IsCopyRestrictedByDialog(
     const content::ClipboardPasteData& data,
     content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback) {
   if (SkipDataControlOrContentAnalysisChecks(source)) {
-    std::move(callback).Run(data, std::nullopt);
+    std::move(callback).Run(metadata.format_type, data, std::nullopt);
     return;
   }
 
@@ -446,7 +447,8 @@ void IsClipboardCopyAllowedByPolicy(
           source.browser_context());
   if (!service->IsUrlAllowedToCopy(url, metadata.size.value_or(0),
                                    &replacement_data)) {
-    std::move(callback).Run(data, std::move(replacement_data));
+    std::move(callback).Run(metadata.format_type, data,
+                            std::move(replacement_data));
     return;
   }
 

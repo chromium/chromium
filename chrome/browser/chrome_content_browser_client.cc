@@ -7561,9 +7561,10 @@ void ChromeContentBrowserClient::IsClipboardCopyAllowedByPolicy(
   if (service->IsUrlAllowedToCopy(*source.data_transfer_endpoint()->GetURL(),
                                   metadata.size.value_or(0),
                                   &replacement_data)) {
-    std::move(callback).Run(data, std::nullopt);
+    std::move(callback).Run(metadata.format_type, data, std::nullopt);
   } else {
-    std::move(callback).Run(data, std::move(replacement_data));
+    std::move(callback).Run(metadata.format_type, data,
+                            std::move(replacement_data));
   }
 #endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 }

@@ -303,7 +303,8 @@ class CONTENT_EXPORT ContentBrowserClient {
   // expected to be copied. Otherwise, `replacement_data` should be written in
   // plaintext to the clipboard.
   using IsClipboardCopyAllowedCallback =
-      base::OnceCallback<void(const ClipboardPasteData& data,
+      base::OnceCallback<void(const ui::ClipboardFormatType& type,
+                              const ClipboardPasteData& data,
                               std::optional<std::u16string> replacement_data)>;
 
   virtual ~ContentBrowserClient() = default;

@@ -208,7 +208,8 @@ TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
 }
 
 TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, Default) {
-  base::test::TestFuture<const content::ClipboardPasteData&,
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
                          std::optional<std::u16string>>
       future;
   IsClipboardCopyAllowedByPolicy(
@@ -238,7 +239,8 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, StringReplacement) {
   content::ClipboardMetadata metadata = CopyMetadata();
   metadata.seqno = ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
       ui::ClipboardBuffer::kCopyPaste);
-  base::test::TestFuture<const content::ClipboardPasteData&,
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
                          std::optional<std::u16string>>
       copy_future;
   IsClipboardCopyAllowedByPolicy(
@@ -306,7 +308,8 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest,
   content::ClipboardMetadata metadata = CopyMetadata();
   metadata.seqno = ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
       ui::ClipboardBuffer::kCopyPaste);
-  base::test::TestFuture<const content::ClipboardPasteData&,
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
                          std::optional<std::u16string>>
       copy_future;
   IsClipboardCopyAllowedByPolicy(
@@ -382,10 +385,12 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest,
   content::ClipboardMetadata image_metadata = text_metadata;
   image_metadata.format_type = ui::ClipboardFormatType::PngType();
 
-  base::test::TestFuture<const content::ClipboardPasteData&,
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
                          std::optional<std::u16string>>
       text_copy_future;
-  base::test::TestFuture<const content::ClipboardPasteData&,
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
                          std::optional<std::u16string>>
       image_copy_future;
 
@@ -463,7 +468,8 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, NoStringReplacement) {
                     ]
                   })"});
 
-  base::test::TestFuture<const content::ClipboardPasteData&,
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
                          std::optional<std::u16string>>
       future;
   IsClipboardCopyAllowedByPolicy(

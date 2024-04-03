@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/renderer_host/clipboard_host_impl.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -16,7 +18,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "content/browser/renderer_host/clipboard_host_impl.h"
+#include "base/test/test_future.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
@@ -526,6 +528,151 @@ TEST_F(ClipboardHostImplScanTest, GetSourceEndpoint) {
   EXPECT_TRUE(source_endpoint.data_transfer_endpoint()->IsUrlType());
   EXPECT_FALSE(empty_endpoint.web_contents());
   EXPECT_FALSE(empty_endpoint.browser_context());
+}
+
+TEST_F(ClipboardHostImplScanTest, WriteText) {
+  const std::u16string kText = u"text";
+  clipboard_host_impl()->WriteText(kText);
+  clipboard_host_impl()->CommitWrite();
+
+  base::test::TestFuture<const std::u16string&> future;
+  clipboard_host_impl()->ReadText(ui::ClipboardBuffer::kCopyPaste,
+                                  future.GetCallback());
+  EXPECT_EQ(kText, future.Take());
+}
+
+TEST_F(ClipboardHostImplScanTest, WriteText_Empty) {
+  clipboard_host_impl()->WriteText(u"");
+  clipboard_host_impl()->CommitWrite();
+
+  base::test::TestFuture<const std::u16string&> future;
+  clipboard_host_impl()->ReadText(ui::ClipboardBuffer::kCopyPaste,
+                                  future.GetCallback());
+  EXPECT_TRUE(future.Take().empty());
+}
+
+TEST_F(ClipboardHostImplScanTest, WriteHtml) {
+  const GURL kUrl("https://example.com");
+  const std::u16string kHtml = u"<html>foo</html>";
+  clipboard_host_impl()->WriteHtml(kHtml, kUrl);
+  clipboard_host_impl()->CommitWrite();
+
+  base::test::TestFuture<const std::u16string&, const GURL&, uint32_t, uint32_t>
+      future;
+  clipboard_host_impl()->ReadHtml(ui::ClipboardBuffer::kCopyPaste,
+                                  future.GetCallback());
+
+  EXPECT_EQ(kHtml, future.Get<std::u16string>());
+  EXPECT_EQ(kUrl, future.Get<GURL>());
+  EXPECT_EQ(0u, future.Get<2>());
+  EXPECT_EQ(kHtml.size(), future.Get<3>());
+}
+
+TEST_F(ClipboardHostImplScanTest, WriteHtml_Empty) {
+  clipboard_host_impl()->WriteHtml(u"", GURL());
+  clipboard_host_impl()->CommitWrite();
+
+  base::test::TestFuture<const std::u16string&, const GURL&, uint32_t, uint32_t>
+      future;
+  clipboard_host_impl()->ReadHtml(ui::ClipboardBuffer::kCopyPaste,
+                                  future.GetCallback());
+
+  EXPECT_TRUE(future.Get<std::u16string>().empty());
+  EXPECT_TRUE(future.Get<GURL>().is_empty());
+  EXPECT_EQ(0u, future.Get<2>());
+  EXPECT_EQ(0u, future.Get<3>());
+}
+
+TEST_F(ClipboardHostImplScanTest, WriteSvg) {
+  const std::u16string kSvg = u"svg data";
+  clipboard_host_impl()->WriteSvg(kSvg);
+  clipboard_host_impl()->CommitWrite();
+
+  base::test::TestFuture<const std::u16string&> future;
+  clipboard_host_impl()->ReadSvg(ui::ClipboardBuffer::kCopyPaste,
+                                 future.GetCallback());
+
+  EXPECT_EQ(kSvg, future.Take());
+}
+
+TEST_F(ClipboardHostImplScanTest, WriteSvg_Empty) {
+  clipboard_host_impl()->WriteSvg(u"");
+  clipboard_host_impl()->CommitWrite();
+
+  base::test::TestFuture<const std::u16string&> future;
+  clipboard_host_impl()->ReadSvg(ui::ClipboardBuffer::kCopyPaste,
+                                 future.GetCallback());
+
+  EXPECT_TRUE(future.Take().empty());
+}
+
+TEST_F(ClipboardHostImplScanTest, WriteBitmap) {
+  const SkBitmap kBitmap = gfx::test::CreateBitmap(3, 2);
+  clipboard_host_impl()->WriteImage(kBitmap);
+  clipboard_host_impl()->CommitWrite();
+
+  std::vector<uint8_t> png =
+      ui::clipboard_test_util::ReadPng(system_clipboard());
+  SkBitmap actual;
+  gfx::PNGCodec::Decode(png.data(), png.size(), &actual);
+  EXPECT_TRUE(gfx::BitmapsAreEqual(kBitmap, actual));
+}
+
+TEST_F(ClipboardHostImplScanTest, WriteBitmap_Empty) {
+  const SkBitmap kBitmap;
+  clipboard_host_impl()->WriteImage(SkBitmap());
+  clipboard_host_impl()->CommitWrite();
+
+  std::vector<uint8_t> png =
+      ui::clipboard_test_util::ReadPng(system_clipboard());
+  SkBitmap actual;
+  gfx::PNGCodec::Decode(png.data(), png.size(), &actual);
+  EXPECT_TRUE(gfx::BitmapsAreEqual(kBitmap, actual));
+  EXPECT_TRUE(png.empty());
+}
+
+TEST_F(ClipboardHostImplScanTest, WriteCustomData) {
+  base::flat_map<std::u16string, std::u16string> custom_data;
+  custom_data[u"text/type1"] = u"data1";
+  custom_data[u"text/type2"] = u"data2";
+  custom_data[u"text/type3"] = u"data3";
+
+  clipboard_host_impl()->WriteCustomData(custom_data);
+  clipboard_host_impl()->CommitWrite();
+
+  base::test::TestFuture<const std::u16string&> future_1;
+  base::test::TestFuture<const std::u16string&> future_2;
+  base::test::TestFuture<const std::u16string&> future_3;
+
+  clipboard_host_impl()->ReadCustomData(ui::ClipboardBuffer::kCopyPaste,
+                                        u"text/type1", future_1.GetCallback());
+  clipboard_host_impl()->ReadCustomData(ui::ClipboardBuffer::kCopyPaste,
+                                        u"text/type2", future_2.GetCallback());
+  clipboard_host_impl()->ReadCustomData(ui::ClipboardBuffer::kCopyPaste,
+                                        u"text/type3", future_3.GetCallback());
+
+  EXPECT_EQ(custom_data[u"text/type1"], future_1.Take());
+  EXPECT_EQ(custom_data[u"text/type2"], future_2.Take());
+  EXPECT_EQ(custom_data[u"text/type3"], future_3.Take());
+}
+
+TEST_F(ClipboardHostImplScanTest, WriteCustomData_Empty) {
+  base::flat_map<std::u16string, std::u16string> custom_data;
+  custom_data[u"text/type1"] = u"";
+
+  clipboard_host_impl()->WriteCustomData(custom_data);
+  clipboard_host_impl()->CommitWrite();
+
+  base::test::TestFuture<const std::u16string&> future_1;
+  base::test::TestFuture<const std::u16string&> future_2;
+
+  clipboard_host_impl()->ReadCustomData(ui::ClipboardBuffer::kCopyPaste,
+                                        u"text/type1", future_1.GetCallback());
+  clipboard_host_impl()->ReadCustomData(ui::ClipboardBuffer::kCopyPaste,
+                                        u"text/type2", future_2.GetCallback());
+
+  EXPECT_TRUE(future_1.Take().empty());
+  EXPECT_TRUE(future_2.Take().empty());
 }
 
 }  // namespace content

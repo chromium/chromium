@@ -180,6 +180,16 @@ class CONTENT_EXPORT ClipboardHostImpl
                            IsPasteAllowedRequest_Complete);
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplTest,
                            IsPasteAllowedRequest_IsObsolete);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplScanTest, WriteText);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplScanTest, WriteText_Empty);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplScanTest, WriteHtml);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplScanTest, WriteHtml_Empty);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplScanTest, WriteSvg);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplScanTest, WriteSvg_Empty);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplScanTest, WriteBitmap);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplScanTest, WriteBitmap_Empty);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplScanTest, WriteCustomData);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplScanTest, WriteCustomData_Empty);
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplScanTest,
                            PerformPasteIfAllowed_EmptyData);
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplScanTest, PerformPasteIfAllowed);
@@ -238,14 +248,27 @@ class CONTENT_EXPORT ClipboardHostImpl
   bool IsRendererPasteAllowed(ui::ClipboardBuffer clipboard_buffer,
                               RenderFrameHost& render_frame_host);
 
-  // Helpers to be used when checking if data is allowed to be copied.
+  // Helper to be used when checking if data is allowed to be copied.
+  //
   // If `replacement_data` is null, `clipboard_writer_` will be used to write
-  // the corresponding text/markup data to the clipboard. If it is not, instead
-  // write the replacement string to the clipboard as plaintext. This can be
-  // called asynchronously.
-  void OnCopyTextAllowedResult(const ClipboardPasteData& data,
-                               std::optional<std::u16string> replacement_data);
-  void OnCopyHtmlAllowedResult(const GURL& url,
+  // `data` to the clipboard. `data` should only have one of its fields set
+  // depending on which "Write" method lead to `OnCopyAllowedResult()` being
+  // called. That field should correspond to `data_type`.
+  //
+  // If `replacement_data` is not null, instead that replacement string is
+  // written to the clipboard as plaintext.
+  //
+  // This method can be called asynchronously.
+  void OnCopyAllowedResult(const ui::ClipboardFormatType& data_type,
+                           const ClipboardPasteData& data,
+                           std::optional<std::u16string> replacement_data);
+
+  // Does the same thing as the previous function with an extra `source_url`
+  // used to propagate the URL obtained in the `WriteHtml()` method call.
+  //
+  // This method can be called asynchronously.
+  void OnCopyHtmlAllowedResult(const GURL& source_url,
+                               const ui::ClipboardFormatType& data_type,
                                const ClipboardPasteData& data,
                                std::optional<std::u16string> replacement_data);
 

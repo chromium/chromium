@@ -1432,7 +1432,7 @@ void ContentBrowserClient::IsClipboardCopyAllowedByPolicy(
     const ClipboardMetadata& metadata,
     const ClipboardPasteData& data,
     IsClipboardCopyAllowedCallback callback) {
-  std::move(callback).Run(data, std::nullopt);
+  std::move(callback).Run(metadata.format_type, data, std::nullopt);
 }
 
 #if BUILDFLAG(ENABLE_VR)
