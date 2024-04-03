@@ -29,6 +29,10 @@
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
+namespace syncer {
+class SyncService;
+}  // namespace syncer
+
 namespace autofill {
 
 class AutofillImageFetcherBase;
@@ -47,6 +51,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
       AutofillImageFetcherBase* image_fetcher,
       std::unique_ptr<AutofillSharedStorageHandler> shared_storage_handler,
       PrefService* pref_service,
+      syncer::SyncService* sync_service,
       const std::string& app_locale,
       PersonalDataManager* pdm);
 
@@ -414,6 +419,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // The shared storage handler this instance uses.
   std::unique_ptr<AutofillSharedStorageHandler> shared_storage_handler_;
+
+  // The sync service this instance uses. Must outlive this instance.
+  raw_ptr<syncer::SyncService> sync_service_ = nullptr;
 
   // Stores the |app_locale| supplied on construction.
   const std::string app_locale_;

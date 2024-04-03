@@ -149,7 +149,8 @@ void PersonalDataManager::Init(
       app_locale_);
   payments_data_manager_ = std::make_unique<PaymentsDataManager>(
       profile_database, account_database, image_fetcher,
-      std::move(shared_storage_handler), pref_service, app_locale_, this);
+      std::move(shared_storage_handler), pref_service, sync_service,
+      app_locale_, this);
 
   pref_service_ = pref_service;
 

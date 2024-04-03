@@ -255,11 +255,13 @@ PaymentsDataManager::PaymentsDataManager(
     AutofillImageFetcherBase* image_fetcher,
     std::unique_ptr<AutofillSharedStorageHandler> shared_storage_handler,
     PrefService* pref_service,
+    syncer::SyncService* sync_service,
     const std::string& app_locale,
     PersonalDataManager* pdm)
     : pdm_(pdm),
       image_fetcher_(image_fetcher),
       shared_storage_handler_(std::move(shared_storage_handler)),
+      sync_service_(sync_service),
       app_locale_(app_locale) {
   database_helper_ = std::make_unique<PaymentsDatabaseHelper>(
       this, profile_database, account_database);
@@ -1391,7 +1393,15 @@ bool PaymentsDataManager::AreBankAccountsSupported() const {
 }
 
 void PaymentsDataManager::OnAutofillPaymentsCardBenefitsPrefChange() {
-  if (!prefs::IsPaymentCardBenefitsEnabled(pref_service_)) {
+  if (prefs::IsPaymentCardBenefitsEnabled(pref_service_)) {
+    if (sync_service_) {
+      // Credit card and benefits data reside in AUTOFILL_WALLET_DATA. Turning
+      // off the benefits preference selectively clears benefits data.
+      // `TriggerRefresh` is required to restore benefits.
+      sync_service_->TriggerRefresh(
+          syncer::ModelTypeSet({syncer::AUTOFILL_WALLET_DATA}));
+    }
+  } else {
     ClearAllCreditCardBenefits();
   }
 }

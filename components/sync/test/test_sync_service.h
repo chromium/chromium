@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -79,6 +80,9 @@ class TestSyncService : public SyncService {
   // and SendExplicitPassphraseToPlatformClient() no-ops.
   void SetPassphrasePlatformClientCallback(
       const base::RepeatingClosure& send_passphrase_to_platform_client_cb);
+
+  void SetTriggerRefreshCallback(
+      const base::RepeatingCallback<void(ModelTypeSet)>& trigger_refresh_cb);
 
   void FireStateChanged();
   void FireSyncCycleCompleted();
@@ -181,6 +185,9 @@ class TestSyncService : public SyncService {
 
   // Nullable.
   base::RepeatingClosure send_passphrase_to_platform_client_cb_;
+
+  base::RepeatingCallback<void(syncer::ModelTypeSet)> trigger_refresh_cb_ =
+      base::DoNothing();
 };
 
 }  // namespace syncer

@@ -19,6 +19,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -1622,7 +1623,7 @@ TEST_F(PaymentsDataManagerTest, GetMaskedBankAccounts_DatabaseUpdated) {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(PaymentsDataManagerTest,
-       OnAutofillPaymentsCardBenefitsPrefChange_PrefIsOn_DoesNotClearBenefits) {
+       OnBenefitsPrefChange_PrefIsOn_DoesNotClearBenefitsAndTriggersRefresh) {
   // Add the card benefits to the web database.
   std::vector<CreditCardBenefit> card_benefits;
   card_benefits.push_back(test::GetActiveCreditCardFlatRateBenefit());
@@ -1636,9 +1637,17 @@ TEST_F(PaymentsDataManagerTest,
   ASSERT_EQ(card_benefits.size(),
             test_api(personal_data_->payments_data_manager())
                 .GetCreditCardBenefitsCount());
+  bool callback_called = false;
+  sync_service_.SetTriggerRefreshCallback(base::BindLambdaForTesting(
+      [&callback_called](syncer::ModelTypeSet types) {
+        callback_called = true;
+        ASSERT_TRUE(types.size() == 1 &&
+                    *types.begin() == syncer::AUTOFILL_WALLET_DATA);
+      }));
 
   prefs::SetPaymentCardBenefits(prefs_.get(), true);
 
+  ASSERT_TRUE(callback_called);
   ASSERT_EQ(card_benefits.size(),
             test_api(personal_data_->payments_data_manager())
                 .GetCreditCardBenefitsCount());
@@ -1825,6 +1834,7 @@ TEST_F(PaymentsDataManagerTest,
                           /*image_fetcher=*/nullptr,
                           /*shared_storage_handler=*/nullptr,
                           /*pref_service=*/nullptr,
+                          /*sync_service=*/nullptr,
                           /*app-locale=*/"en-US", personal_data_.get());
 
   histogram_tester.ExpectTotalCount(
