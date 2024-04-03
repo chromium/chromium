@@ -429,9 +429,10 @@ class WebStateList {
   // if any. The WebStates are reordered out of the groups if necessary.
   void RemoveFromGroups(const std::set<int>& indices);
 
-  // Moves the WebStates of `group` to be before the WebState at `to_index`. To
-  // move the group at the end, pass `to_index` greater or equal to `count`.
-  void MoveGroup(const TabGroup* group, int to_index);
+  // Moves the WebStates of `group` to be before the WebState at `before_index`.
+  // To move the group at the end, pass `before_index` greater or equal to
+  // `count`.
+  void MoveGroup(const TabGroup* group, int before_index);
 
   // Removes all WebStates from the group. The WebStates stay where they are.
   // The group is destroyed.

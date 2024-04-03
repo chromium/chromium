@@ -416,10 +416,10 @@ void WebStateList::RemoveFromGroups(const std::set<int>& indices) {
   RemoveFromGroupsImpl(indices);
 }
 
-void WebStateList::MoveGroup(const TabGroup* group, int to_index) {
+void WebStateList::MoveGroup(const TabGroup* group, int before_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto lock = LockForMutation();
-  MoveGroupImpl(group, to_index);
+  MoveGroupImpl(group, before_index);
 }
 
 void WebStateList::DeleteGroup(const TabGroup* group) {
@@ -949,14 +949,14 @@ void WebStateList::DeleteGroupImpl(const TabGroup* group) {
   }
 }
 
-void WebStateList::MoveGroupImpl(const TabGroup* group, int to_index) {
+void WebStateList::MoveGroupImpl(const TabGroup* group, int before_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(locked_);
   DCHECK(group);
 
   // Groups can't move to the pinned tabs section. Keep `count` in, to be able
   // to move a group at the end.
-  to_index = std::clamp(to_index, pinned_tabs_count_, count());
+  int to_index = std::clamp(before_index, pinned_tabs_count_, count());
 
   // Destination can't be in the middle of a group. Update `to_index` to the
   // beginning of the group at the destination, if any.
