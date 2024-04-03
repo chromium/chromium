@@ -116,6 +116,9 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
         "isVcBackgroundReplaceAllowed",
         ash::features::IsVcBackgroundReplaceEnabled() &&
             ash::personalization_app::IsEligibleForSeaPen(profile));
+    source->AddBoolean(
+        "featureManagementShowoff",
+        base::FeatureList::IsEnabled(ash::features::kFeatureManagementShowoff));
 
     // By default, querying the feature flag is what marks a Finch study as
     // active for a client. For features that only happen when the user is

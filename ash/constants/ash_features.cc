@@ -1106,6 +1106,12 @@ BASE_FEATURE(kFeatureManagementBorealis,
              "FeatureManagementBorealis",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Restricts some content in the Help app to the intended target population.
+// This flag is only intended to be modified by the feature management module.
+BASE_FEATURE(kFeatureManagementShowoff,
+             "FeatureManagementShowoff",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Restricts the time-of-day wallpaper/screensaver features to the intended
 // target population, whereas the `kTimeOfDayScreenSaver|Wallpaper` flags
 // control the feature's rollout within said target population. These flags are
