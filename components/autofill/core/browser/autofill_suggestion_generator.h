@@ -246,17 +246,17 @@ class AutofillSuggestionGenerator {
   GetSuggestionMainTextAndMinorTextForCard(const CreditCard& credit_card,
                                            FieldType trigger_field_type) const;
 
-  // Return the labels to be shown in the suggestion. Note this does not account
-  // for virtual cards or card-linked offers. Also writes to
+  // Set the labels to be shown in the suggestion. Note that this does not
+  // account for virtual cards or card-linked offers.
   // `metadata_logging_context` the instrument ids of credit cards for which
   // benefits data is available. When displaying card benefits is disabled,
   // `metadata_logging_context` will be populated but a benefit label will not
   // be shown.
-  std::vector<std::vector<Suggestion::Text>> CreateSuggestionLabelsForCard(
+  void SetSuggestionLabelsForCard(
       const CreditCard& credit_card,
       FieldType trigger_field_type,
-      autofill_metrics::CardMetadataLoggingContext& metadata_logging_context)
-      const;
+      autofill_metrics::CardMetadataLoggingContext& metadata_logging_context,
+      Suggestion& suggestion) const;
 
   // Returns the benefit text to display in credit card suggestions if it is
   // available.

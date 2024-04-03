@@ -1841,15 +1841,9 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
       is_manual_fallback ? CREDIT_CARD_NUMBER : trigger_field_type);
   suggestion.main_text = std::move(main_text);
   suggestion.minor_text = std::move(minor_text);
-  if (std::vector<std::vector<Suggestion::Text>> card_labels =
-          CreateSuggestionLabelsForCard(
-              credit_card,
-              is_manual_fallback ? CREDIT_CARD_NUMBER : trigger_field_type,
-              metadata_logging_context);
-      !card_labels.empty()) {
-    suggestion.labels = std::move(card_labels);
-  }
-
+  SetSuggestionLabelsForCard(
+      credit_card, is_manual_fallback ? CREDIT_CARD_NUMBER : trigger_field_type,
+      metadata_logging_context, suggestion);
   SetCardArtURL(suggestion, credit_card, virtual_card_option);
 
   // For virtual cards, make some adjustments for the suggestion contents.
@@ -1967,28 +1961,28 @@ AutofillSuggestionGenerator::GetSuggestionMainTextAndMinorTextForCard(
       credit_card.GetInfo(trigger_field_type, personal_data().app_locale()));
 }
 
-std::vector<std::vector<Suggestion::Text>>
-AutofillSuggestionGenerator::CreateSuggestionLabelsForCard(
+void AutofillSuggestionGenerator::SetSuggestionLabelsForCard(
     const CreditCard& credit_card,
     FieldType trigger_field_type,
-    autofill_metrics::CardMetadataLoggingContext& metadata_logging_context)
-    const {
+    autofill_metrics::CardMetadataLoggingContext& metadata_logging_context,
+    Suggestion& suggestion) const {
   const std::string& app_locale = personal_data().app_locale();
 
   if (credit_card.record_type() == CreditCard::RecordType::kVirtualCard &&
       autofill_client_->ShouldFormatForLargeKeyboardAccessory()) {
-    return {{Suggestion::Text(
+    suggestion.labels = {{Suggestion::Text(
         l10n_util::GetStringUTF16(
             IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE) +
         u" • " + credit_card.GetInfo(CREDIT_CARD_TYPE, app_locale) + u" " +
         credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
             GetObfuscationLength()))}};
+    return;
   }
 
   // If the focused field is a card number field.
   if (trigger_field_type == CREDIT_CARD_NUMBER) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-    return {{Suggestion::Text(
+    suggestion.labels = {{Suggestion::Text(
         credit_card.GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale))}};
 #else
     std::vector<std::vector<Suggestion::Text>> labels;
@@ -2011,8 +2005,9 @@ AutofillSuggestionGenerator::CreateSuggestionLabelsForCard(
         ShouldSplitCardNameAndLastFourDigits()
             ? credit_card.GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale)
             : credit_card.DescriptiveExpiration(app_locale))});
-    return labels;
+    suggestion.labels = std::move(labels);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+    return;
   }
 
   // If the focused field is not a card number field AND the card number is
@@ -2021,14 +2016,13 @@ AutofillSuggestionGenerator::CreateSuggestionLabelsForCard(
   if (credit_card.number().empty()) {
     DCHECK_EQ(credit_card.record_type(), CreditCard::RecordType::kLocalCard);
 
-    if (credit_card.HasNonEmptyValidNickname())
-      return {{Suggestion::Text(nickname)}};
-
-    if (trigger_field_type != CREDIT_CARD_NAME_FULL) {
-      return {{Suggestion::Text(
+    if (credit_card.HasNonEmptyValidNickname()) {
+      suggestion.labels = {{Suggestion::Text(nickname)}};
+    } else if (trigger_field_type != CREDIT_CARD_NAME_FULL) {
+      suggestion.labels = {{Suggestion::Text(
           credit_card.GetInfo(CREDIT_CARD_NAME_FULL, app_locale))}};
     }
-    return {};
+    return;
   }
 
   // If the focused field is not a card number field AND the card number is NOT
@@ -2036,32 +2030,36 @@ AutofillSuggestionGenerator::CreateSuggestionLabelsForCard(
 
   if constexpr (BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)) {
     if (autofill_client_->ShouldFormatForLargeKeyboardAccessory()) {
-      return {{Suggestion::Text(credit_card.CardNameAndLastFourDigits(
-          nickname, GetObfuscationLength()))}};
+      suggestion.labels = {
+          {Suggestion::Text(credit_card.CardNameAndLastFourDigits(
+              nickname, GetObfuscationLength()))}};
+    } else {
+      // On Mobile, the label is formatted as either "••••1234" or "••1234",
+      // depending on the obfuscation length.
+      suggestion.labels = {{Suggestion::Text(
+          credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
+              GetObfuscationLength()))}};
     }
-
-    // On Mobile, the label is formatted as either "••••1234" or "••1234",
-    // depending on the obfuscation length.
-    return {
-        {Suggestion::Text(credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
-            GetObfuscationLength()))}};
+    return;
   }
 
   if (ShouldSplitCardNameAndLastFourDigits()) {
     // Format the label as "Product Description/Nickname/Network  ••••1234".
     // If the card name is too long, it will be truncated from the tail.
-    return {
+    suggestion.labels = {
         {Suggestion::Text(credit_card.CardNameForAutofillDisplay(nickname),
                           Suggestion::Text::IsPrimary(false),
                           Suggestion::Text::ShouldTruncate(true)),
          Suggestion::Text(credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
              GetObfuscationLength()))}};
+    return;
   }
 
   // Format the label as
   // "Product Description/Nickname/Network  ••••1234, expires on 01/25".
-  return {{Suggestion::Text(
+  suggestion.labels = {{Suggestion::Text(
       credit_card.CardIdentifierStringAndDescriptiveExpiration(app_locale))}};
+  return;
 }
 
 // TODO(crbug.com/1121806): Move non-UI card benefit logic to
