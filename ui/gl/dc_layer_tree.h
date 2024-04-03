@@ -33,18 +33,43 @@ namespace gl {
 
 class SwapChainPresenter;
 
+inline constexpr int kNumVideoProcessorTypes = 2;
+enum class VideoProcessorType : int { kSDR = 0, kHDR = 1 };
+
 // Cache video processor and its size.
 struct VideoProcessorWrapper {
   VideoProcessorWrapper();
   ~VideoProcessorWrapper();
-  VideoProcessorWrapper(VideoProcessorWrapper&& other);
-  VideoProcessorWrapper& operator=(VideoProcessorWrapper&& other);
+  VideoProcessorWrapper(VideoProcessorWrapper&& other) = delete;
+  VideoProcessorWrapper& operator=(VideoProcessorWrapper&& other) = delete;
   VideoProcessorWrapper(const VideoProcessorWrapper&) = delete;
   VideoProcessorWrapper& operator=(VideoProcessorWrapper& other) = delete;
 
-  // Input and output size of video processor .
+  class SizeSmoother {
+   public:
+    SizeSmoother();
+    ~SizeSmoother();
+    SizeSmoother(SizeSmoother&& other) = delete;
+    SizeSmoother& operator=(SizeSmoother&& other) = delete;
+    SizeSmoother(const SizeSmoother& other) = delete;
+    SizeSmoother& operator=(SizeSmoother& other) = delete;
+    void PutSize(gfx::Size size);
+    gfx::Size GetSize() const;
+
+   private:
+    base::MovingMax<int> width_;
+    base::MovingMax<int> height_;
+  };
+
+  // Input and output size of video processor.
   gfx::Size video_input_size;
   gfx::Size video_output_size;
+
+  // Max window filter for each dimension for input and output size.
+  // Used to calculate required size in case there are many different
+  // sizes in use.
+  SizeSmoother input_size_smoother;
+  SizeSmoother output_size_smoother;
 
   bool GetDriverSupportsVpAutoHdr() { return driver_supports_vp_auto_hdr; }
   void SetDriverSupportsVpAutoHdr(bool value) {
@@ -150,6 +175,7 @@ class GL_EXPORT DCLayerTree {
   VideoProcessorWrapper* InitializeVideoProcessor(
       const gfx::Size& input_size,
       const gfx::Size& output_size,
+      bool is_hdr_output,
       bool& video_processor_recreated);
 
   bool disable_nv12_dynamic_textures() const {
@@ -512,17 +538,10 @@ class GL_EXPORT DCLayerTree {
   // since there is no way to procedurally fill a DComp visual.
   std::unique_ptr<SolidColorSurfacePool> solid_color_surface_pool_;
 
-  // Store the largest video processor to avoid problems in
-  // (http://crbug.com/1121061) and (http://crbug.com/1472975).
-  VideoProcessorWrapper video_processor_wrapper_;
-
-  // To reduce resource usage, we keep track of the largest input/output
-  // dimensions for several last VideoProcessor usages. All 4 dimensions must be
-  // tracked separately.
-  base::MovingMax<int> max_video_processor_input_height_;
-  base::MovingMax<int> max_video_processor_input_width_;
-  base::MovingMax<int> max_video_processor_output_height_;
-  base::MovingMax<int> max_video_processor_output_width_;
+  // Store the largest video processor for SDR and HDR content
+  // to avoid problems in (http://crbug.com/1121061) and
+  // (http://crbug.com/1472975).
+  VideoProcessorWrapper video_processor_wrapper_[kNumVideoProcessorTypes];
 
   // Current video processor input and output colorspace.
   gfx::ColorSpace video_input_color_space_;

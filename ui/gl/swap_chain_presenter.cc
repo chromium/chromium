@@ -2386,7 +2386,8 @@ bool SwapChainPresenter::VideoProcessorBlt(
   bool video_processor_recreated = false;
   VideoProcessorWrapper* video_processor_wrapper =
       layer_tree_->InitializeVideoProcessor(
-          content_rect.size(), swap_chain_size_, video_processor_recreated);
+          content_rect.size(), swap_chain_size_, output_color_space.IsHDR(),
+          video_processor_recreated);
   if (!video_processor_wrapper)
     return false;
 
