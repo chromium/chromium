@@ -3982,6 +3982,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxShortcutsAndroidName,
      flag_descriptions::kOmniboxShortcutsAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxShortcutsAndroid)},
+    {"stop-app-indexing-report", flag_descriptions::kStopAppIndexingReportName,
+     flag_descriptions::kStopAppIndexingReportDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kStopAppIndexingReport)},
 #endif  // BUILDFLAG(IS_ANDROID)
     {"show-autofill-type-predictions",
      flag_descriptions::kShowAutofillTypePredictionsName,

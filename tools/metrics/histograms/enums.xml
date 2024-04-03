@@ -23087,6 +23087,7 @@ from previous Chrome versions.
   <int value="957458620" label="MediaRouterOTRInstance:enabled"/>
   <int value="960413971" label="GlanceablesV2CalendarView:disabled"/>
   <int value="960696967" label="TabResumptionModuleAndroid:enabled"/>
+  <int value="962191833" label="StopAppIndexingReport:disabled"/>
   <int value="963457392" label="ChromeHomeModernLayout:disabled"/>
   <int value="963671232" label="DrawOcclusion:disabled"/>
   <int value="964606028"
@@ -24010,6 +24011,7 @@ from previous Chrome versions.
   <int value="1373777956" label="disable-threaded-gpu-rasterization"/>
   <int value="1374350431" label="WebViewEmptyComponentLoaderPolicy:enabled"/>
   <int value="1375165388" label="LazyFrameLoading:enabled"/>
+  <int value="1376062044" label="StopAppIndexingReport:enabled"/>
   <int value="1376139800" label="SeaPen:enabled"/>
   <int value="1376279104" label="TrafficCountersEnabled:enabled"/>
   <int value="1376437124" label="show-cert-link"/>

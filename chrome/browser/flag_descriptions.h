@@ -1857,6 +1857,9 @@ extern const char kSmoothScrollingDescription[];
 extern const char kSplitCacheByNetworkIsolationKeyName[];
 extern const char kSplitCacheByNetworkIsolationKeyDescription[];
 
+extern const char kStopAppIndexingReportName[];
+extern const char kStopAppIndexingReportDescription[];
+
 extern const char kStrictOriginIsolationName[];
 extern const char kStrictOriginIsolationDescription[];
 

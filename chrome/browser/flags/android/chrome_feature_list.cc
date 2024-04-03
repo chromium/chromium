@@ -214,6 +214,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kDrawWebEdgeToEdge,
     &kDynamicTopChrome,
     &kExperimentsForAgsa,
+    &kFeedPositionAndroid,
     &kFocusOmniboxInIncognitoTabIntents,
     &kFullscreenInsetsApiMigration,
     &kFullscreenInsetsApiMigrationOnAutomotive,
@@ -253,12 +254,12 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kReportParentalControlSitesChild,
     &kSearchEnginesPromoV3,
     &kSearchInCCT,
+    &kSearchResumptionModuleAndroid,
     &kShowNtpAtStartupAndroid,
     &kShowScrollableMVTOnNTPAndroid,
     &kShowScrollableMVTOnNtpPhoneAndroid,
     &kSmallerTabStripTitleLimit,
-    &kFeedPositionAndroid,
-    &kSearchResumptionModuleAndroid,
+    &kStopAppIndexingReport,
     &kSuppressToolbarCaptures,
     &kTabDragDropAndroid,
     &kTabAndLinkDragDropAndroid,
@@ -818,6 +819,10 @@ BASE_FEATURE(kShowScrollableMVTOnNtpPhoneAndroid,
 BASE_FEATURE(kSmallerTabStripTitleLimit,
              "SmallerTabStripTitleLimit",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kStopAppIndexingReport,
+             "StopAppIndexingReport",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSuppressToolbarCaptures,
              "SuppressToolbarCaptures",

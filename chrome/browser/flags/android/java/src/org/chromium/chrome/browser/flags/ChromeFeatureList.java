@@ -143,6 +143,8 @@ public abstract class ChromeFeatureList {
 
     // Feature names.
     /* Alphabetical: */
+    public static final String ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW =
+            "AccountReauthenticationRecentTimeWindow";
     public static final String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_TRANSLATE =
             "AdaptiveButtonInTopToolbarTranslate";
     public static final String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_ADD_TO_BOOKMARKS =
@@ -440,8 +442,7 @@ public abstract class ChromeFeatureList {
             "SplitCacheByNetworkIsolationKey";
     public static final String START_SURFACE_ANDROID = "StartSurfaceAndroid";
     public static final String START_SURFACE_RETURN_TIME = "StartSurfaceReturnTime";
-    public static final String ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW =
-            "AccountReauthenticationRecentTimeWindow";
+    public static final String STOP_APP_INDEXING_REPORT = "StopAppIndexingReport";
     public static final String SUGGESTION_ANSWERS_COLOR_REVERSE = "SuggestionAnswersColorReverse";
     public static final String SUPPRESS_TOOLBAR_CAPTURES = "SuppressToolbarCaptures";
     public static final String SURFACE_POLISH = "SurfacePolish";
@@ -516,6 +517,8 @@ public abstract class ChromeFeatureList {
     public static final String XSURFACE_METRICS_REPORTING = "XsurfaceMetricsReporting";
 
     /* Alphabetical: */
+    public static final CachedFlag sAccountReauthenticationRecentTimeWindow =
+            newCachedFlag(ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW, true);
     public static final CachedFlag sAndroidAppIntegration =
             newCachedFlag(ANDROID_APP_INTEGRATION, false);
     public static final CachedFlag sAndroidElegantTextHeight =
@@ -622,8 +625,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(START_SURFACE_ANDROID, true);
     public static final CachedFlag sStartSurfaceReturnTime =
             newCachedFlag(START_SURFACE_RETURN_TIME, true);
-    public static final CachedFlag sAccountReauthenticationRecentTimeWindow =
-            newCachedFlag(ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW, true);
+    public static final CachedFlag sStopAppIndexingReport =
+            newCachedFlag(STOP_APP_INDEXING_REPORT, true);
     public static final CachedFlag sSurfacePolish = newCachedFlag(SURFACE_POLISH, true);
     public static final CachedFlag sTabDragDropAsWindowAndroid =
             newCachedFlag(TAB_DRAG_DROP_ANDROID, false);
@@ -671,6 +674,7 @@ public abstract class ChromeFeatureList {
 
     public static final List<CachedFlag> sFlagsCachedFullBrowser =
             List.of(
+                    sAccountReauthenticationRecentTimeWindow,
                     sAndroidAppIntegration,
                     sAndroidElegantTextHeight,
                     sAndroidHub,
@@ -732,7 +736,7 @@ public abstract class ChromeFeatureList {
                     sSmallerTabStripTitleLimit,
                     sStartSurfaceAndroid,
                     sStartSurfaceReturnTime,
-                    sAccountReauthenticationRecentTimeWindow,
+                    sStopAppIndexingReport,
                     sSurfacePolish,
                     sTabDragDropAsWindowAndroid,
                     sTabGroupPaneAndroid,
