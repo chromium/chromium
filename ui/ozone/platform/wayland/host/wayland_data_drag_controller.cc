@@ -612,7 +612,7 @@ void WaylandDataDragController::PostDataFetchingTask(
       FROM_HERE,
       base::BindOnce(fetch_data_closure, std::move(offered_data), cancel_flag),
       base::BindOnce(&WaylandDataDragController::OnDataFetchingFinished,
-                     weak_factory_.GetWeakPtr(), std::move(start_time)));
+                     weak_factory_.GetWeakPtr(), start_time));
 }
 
 void WaylandDataDragController::OnDataFetchingFinished(
