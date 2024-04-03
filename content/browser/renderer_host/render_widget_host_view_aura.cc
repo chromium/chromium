@@ -749,6 +749,10 @@ void RenderWidgetHostViewAura::ObserveDevicePosturePlatformProvider() {
 
 void RenderWidgetHostViewAura::OnDisplayFeatureBoundsChanged(
     const gfx::Rect& display_feature_bounds) {
+  if (display_feature_overridden_for_testing_) {
+    return;
+  }
+
   display_feature_ = std::nullopt;
   display_feature_bounds_ = gfx::Rect();
   if (display_feature_bounds.IsEmpty()) {

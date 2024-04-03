@@ -3076,6 +3076,10 @@ void RenderWidgetHostViewAndroid::ObserveDevicePosturePlatformProvider() {
 
 void RenderWidgetHostViewAndroid::OnDisplayFeatureBoundsChanged(
     const gfx::Rect& display_feature_bounds) {
+  if (display_feature_overridden_for_testing_) {
+    return;
+  }
+
   display_feature_ = std::nullopt;
   display_feature_bounds_ = gfx::Rect();
   // On some devices like the Galaxy Fold the display feature has a size of
