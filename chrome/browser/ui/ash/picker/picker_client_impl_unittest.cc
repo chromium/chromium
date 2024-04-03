@@ -92,9 +92,10 @@ void AddBookmarks(TestingProfile* profile,
 }
 
 ash::RecentFile CreateRecentFile(const base::FilePath& path,
+                                 storage::FileSystemType type,
                                  base::Time last_modified = base::Time::Now()) {
-  storage::FileSystemURL url = storage::FileSystemURL::CreateForTest(
-      blink::StorageKey(), storage::kFileSystemTypeLocal, path);
+  storage::FileSystemURL url =
+      storage::FileSystemURL::CreateForTest(blink::StorageKey(), type, path);
   return ash::RecentFile(url, last_modified);
 }
 
@@ -214,11 +215,17 @@ TEST_F(PickerClientImplTest, GetRecentFilesReturnsFilteredFiles) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
   base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
-  SetRecentFiles(profile(), {
-                                CreateRecentFile(base::FilePath("aaa.jpg")),
-                                CreateRecentFile(base::FilePath("bbb.mp4")),
-                                CreateRecentFile(base::FilePath("ccc.png")),
-                            });
+  SetRecentFiles(profile(),
+                 {
+                     CreateRecentFile(base::FilePath("aaa.jpg"),
+                                      storage::kFileSystemTypeLocal),
+                     CreateRecentFile(base::FilePath("bbb.mp4"),
+                                      storage::kFileSystemTypeLocal),
+                     CreateRecentFile(base::FilePath("ccc.png"),
+                                      storage::kFileSystemTypeLocal),
+                     CreateRecentFile(base::FilePath("ddd.png"),
+                                      storage::kFileSystemTypeDriveFs),
+                 });
 
   client.GetRecentFileResults(future.GetCallback());
 
@@ -250,6 +257,7 @@ TEST_F(PickerClientImplTest, GetRecentFilesDoesNotReturnOldFiles) {
   SetRecentFiles(profile(),
                  {
                      CreateRecentFile(base::FilePath("abc.jpg"),
+                                      storage::kFileSystemTypeLocal,
                                       base::Time::Now() - base::Days(31)),
                  });
 

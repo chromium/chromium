@@ -13,6 +13,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "storage/common/file_system/file_system_types.h"
 
 namespace {
 
@@ -57,8 +58,11 @@ void PickerFileSuggester::OnGetRecentLocalFiles(
   std::vector<LocalFile> files;
   files.reserve(recent_files.size());
   for (const ash::RecentFile& recent_file : recent_files) {
-    const base::FilePath& path = recent_file.url().path();
-    files.push_back({.title = app_list::GetFileTitle(path), .path = path});
+    const storage::FileSystemURL& url = recent_file.url();
+    if (url.type() == storage::kFileSystemTypeLocal) {
+      const base::FilePath& path = url.path();
+      files.push_back({.title = app_list::GetFileTitle(path), .path = path});
+    }
   }
   std::move(callback).Run(std::move(files));
 }
