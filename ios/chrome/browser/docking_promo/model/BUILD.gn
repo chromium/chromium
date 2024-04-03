@@ -11,8 +11,11 @@ source_set("utils") {
     "//base",
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/promos_manager/model:constants",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/utils",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/ui/start_surface",
   ]
+  frameworks = [ "UIKit.framework" ]
 }
