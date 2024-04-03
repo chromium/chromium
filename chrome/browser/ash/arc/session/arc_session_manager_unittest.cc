@@ -62,9 +62,12 @@
 #include "chromeos/ash/components/dbus/arc/arcvm_data_migrator_client.h"
 #include "chromeos/ash/components/dbus/arc/fake_arcvm_data_migrator_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/resourced/fake_resourced_client.h"
+#include "chromeos/ash/components/dbus/resourced/resourced_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
+#include "chromeos/ash/components/memory/swap_configuration.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
@@ -392,12 +395,20 @@ class ArcSessionManagerTest : public ArcSessionManagerTestBase {
         profile()->GetProfileUserName(), "1234567890"));
     GetFakeUserManager()->AddUser(account_id);
     GetFakeUserManager()->LoginUser(account_id);
+    resourced_client_ = ash::ResourcedClient::InitializeFake();
 
     ASSERT_EQ(ArcSessionManager::State::NOT_INITIALIZED,
               arc_session_manager()->state());
   }
 
-  void TearDown() override { ArcSessionManagerTestBase::TearDown(); }
+  void TearDown() override {
+    resourced_client_ = nullptr;
+    ash::ResourcedClient::Shutdown();
+    ArcSessionManagerTestBase::TearDown();
+  }
+
+ protected:
+  raw_ptr<ash::FakeResourcedClient> resourced_client_ = nullptr;
 };
 
 TEST_F(ArcSessionManagerTest, BaseWorkflow) {
@@ -2290,6 +2301,35 @@ TEST_F(ArcSessionManagerTest, TrimVmMemory) {
       0);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(callback_called);
+}
+
+TEST_F(ArcSessionManagerTest, RequestArcEnableMemoryMargin) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({ash::kCrOSMemoryPressureSignalStudyArc,
+                                 ash::kCrOSMemoryPressureSignalStudyNonArc},
+                                {});
+  arc_session_manager()->SetProfile(profile());
+  arc_session_manager()->Initialize();
+
+  arc_session_manager()->RequestEnable();
+
+  EXPECT_EQ(resourced_client_->get_critical_margin_bps(), 800u);
+  EXPECT_EQ(resourced_client_->get_moderate_margin_bps(), 4000u);
+}
+
+TEST_F(ArcSessionManagerTest, RequestArcDisableMemoryMargin) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({ash::kCrOSMemoryPressureSignalStudyArc,
+                                 ash::kCrOSMemoryPressureSignalStudyNonArc},
+                                {});
+  arc_session_manager()->SetProfile(profile());
+  arc_session_manager()->Initialize();
+  arc_session_manager()->RequestEnable();
+
+  arc_session_manager()->RequestDisable();
+
+  EXPECT_EQ(resourced_client_->get_critical_margin_bps(), 1500u);
+  EXPECT_EQ(resourced_client_->get_moderate_margin_bps(), 4000u);
 }
 
 class ArcTransitionToManagedTest

@@ -63,6 +63,7 @@
 #include "chrome/browser/ui/webui/ash/diagnostics_dialog.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/memory/swap_configuration.h"
 #include "components/account_id/account_id.h"
 #include "components/exo/wm_helper.h"
 #include "components/prefs/pref_service.h"
@@ -1013,6 +1014,7 @@ void ArcSessionManager::RequestEnable() {
     return;
   }
   enable_requested_ = true;
+  ash::ConfigureSwap(true);
   SetArcEnabledStateMetric(true);
 
   VLOG(1) << "ARC opt-in. Starting ARC session.";
@@ -1318,7 +1320,6 @@ void ArcSessionManager::OnActivationNecessityChecked(bool result) {
 void ArcSessionManager::RequestDisable(bool remove_arc_data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(profile_);
-
   if (!enable_requested_) {
     VLOG(1) << "ARC is already disabled. "
             << "Killing an instance for login screen (if any).";
@@ -1343,6 +1344,8 @@ void ArcSessionManager::RequestDisable(bool remove_arc_data) {
   if (remove_arc_data) {
     RequestArcDataRemoval();
   }
+
+  ash::ConfigureSwap(false);
 }
 
 void ArcSessionManager::RequestDisable() {
