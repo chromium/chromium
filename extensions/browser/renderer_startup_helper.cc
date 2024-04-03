@@ -364,8 +364,11 @@ void RendererStartupHelper::SetUserScriptWorldProperties(
     const Extension& extension,
     std::optional<std::string> csp,
     bool enable_messaging) {
+  // TODO(https://crbug.com/331680187): Plumb world ID here to allow
+  // configuration of custom user script worlds.
+  const std::optional<std::string> world_id;
   mojom::UserScriptWorldInfoPtr info = mojom::UserScriptWorldInfo::New(
-      extension.id(), std::move(csp), enable_messaging);
+      extension.id(), world_id, std::move(csp), enable_messaging);
   for (auto& process_entry : process_mojo_map_) {
     content::RenderProcessHost* process = process_entry.first;
     mojom::Renderer* renderer = GetRenderer(process);

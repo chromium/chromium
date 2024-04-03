@@ -60,6 +60,10 @@ struct UserScriptWorldInfo {
   // The corresponding extension ID.
   string extension_id;
 
+  // The ID of the world to configure. If omitted, configures the default
+  // user script world.
+  string? world_id;
+
   // A custom CSP for the user script world, if any.
   string? csp;
 

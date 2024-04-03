@@ -1047,7 +1047,7 @@ void Dispatcher::UpdateDefaultPolicyHostRestrictions(
 
 void Dispatcher::UpdateUserScriptWorld(mojom::UserScriptWorldInfoPtr info) {
   IsolatedWorldManager::GetInstance().SetUserScriptWorldProperties(
-      info->extension_id, info->csp, info->enable_messaging);
+      info->extension_id, info->world_id, info->csp, info->enable_messaging);
 }
 
 void Dispatcher::UpdateUserHostRestrictions(URLPatternSet user_blocked_hosts,

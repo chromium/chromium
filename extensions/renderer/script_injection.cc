@@ -256,7 +256,8 @@ void ScriptInjection::InjectJs(std::set<std::string>* executing_scripts,
     case mojom::ExecutionWorld::kUserScript:
       world_id =
           IsolatedWorldManager::GetInstance().GetOrCreateIsolatedWorldForHost(
-              *injection_host_, execution_world);
+              *injection_host_, execution_world,
+              injector_->GetExecutionWorldId());
       if (injection_host_->id().type == mojom::HostID::HostType::kExtensions &&
           log_activity_) {
         DOMActivityLogger::AttachToWorld(world_id, injection_host_->id().id);

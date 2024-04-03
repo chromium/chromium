@@ -48,6 +48,7 @@ class UserScriptInjector : public ScriptInjector,
   mojom::InjectionType script_type() const override;
   blink::mojom::UserActivationOption IsUserGesture() const override;
   mojom::ExecutionWorld GetExecutionWorld() const override;
+  std::optional<std::string> GetExecutionWorldId() const override;
   mojom::CSSOrigin GetCssOrigin() const override;
   mojom::CSSInjection::Operation GetCSSInjectionOperation() const override;
   blink::mojom::WantResultOption ExpectsResults() const override;

@@ -119,6 +119,7 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
         mojom::HostID(mojom::HostID::HostType::kExtensions, extension_id),
         mojom::CodeInjection::NewJs(mojom::JSInjection::New(
             std::move(sources), mojom::ExecutionWorld::kUserScript,
+            /*world_id=*/std::nullopt,
             blink::mojom::WantResultOption::kWantResult,
             blink::mojom::UserActivationOption::kDoNotActivate,
             blink::mojom::PromiseResultOption::kAwait)),

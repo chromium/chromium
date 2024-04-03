@@ -134,6 +134,7 @@ bool ExecuteCodeFunction::Execute(const std::string& code_string,
     // scripting.executeScript does).
     injection = mojom::CodeInjection::NewJs(mojom::JSInjection::New(
         std::move(sources), mojom::ExecutionWorld::kIsolated,
+        /*world_id=*/std::nullopt,
         wants_result ? blink::mojom::WantResultOption::kWantResult
                      : blink::mojom::WantResultOption::kNoResult,
         user_gesture() ? blink::mojom::UserActivationOption::kActivate

@@ -36,6 +36,11 @@ struct JSInjection {
   // The JS world into which to inject the scripts.
   ExecutionWorld world;
 
+  // An optional world ID. All injections specifying a given world ID will be
+  // injected into the same world. All injections omitting a world ID will be
+  // injected into a "default" world.
+  string? world_id;
+
   // Whether the caller is interested in the result value. Manifest-declared
   // content scripts and executeScript() calls without a response callback
   // are examples of when this will be `kNoResult`.

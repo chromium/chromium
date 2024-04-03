@@ -242,7 +242,11 @@ mojom::UserScriptWorldInfoPtr GetUserScriptWorldInfo(
     }
   }
 
-  return mojom::UserScriptWorldInfo::New(extension_id, csp, enable_messaging);
+  // TODO(https://crbug.com/331680187): Plumb world ID here to allow
+  // configuration of custom user script worlds.
+  const std::optional<std::string> world_id;
+  return mojom::UserScriptWorldInfo::New(extension_id, world_id, csp,
+                                         enable_messaging);
 }
 
 // This function is security sensitive. Bugs could cause problems that break
