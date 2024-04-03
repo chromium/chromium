@@ -15,12 +15,12 @@
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 #include "ui/accessibility/platform/test_ax_node_wrapper.h"
 
-namespace content {
+namespace {
 
 class TestFragmentRootDelegate : public ui::AXFragmentRootDelegateWin {
  public:
   TestFragmentRootDelegate(
-      BrowserAccessibilityManager* browser_accessibility_manager)
+      content::BrowserAccessibilityManager* browser_accessibility_manager)
       : browser_accessibility_manager_(browser_accessibility_manager) {}
   ~TestFragmentRootDelegate() = default;
 
@@ -35,8 +35,11 @@ class TestFragmentRootDelegate : public ui::AXFragmentRootDelegateWin {
 
   bool IsAXFragmentRootAControlElement() override { return true; }
 
-  raw_ptr<BrowserAccessibilityManager> browser_accessibility_manager_;
+  raw_ptr<content::BrowserAccessibilityManager> browser_accessibility_manager_;
 };
+}  // namespace
+
+namespace content {
 
 class BrowserAccessibilityManagerWinTest : public testing::Test {
  public:
