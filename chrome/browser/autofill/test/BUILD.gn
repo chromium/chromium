@@ -27,6 +27,7 @@ android_library("test_java") {
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/google-truth:google_truth_java",
+    "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit:junit",
     "//url:gurl_java",
   ]

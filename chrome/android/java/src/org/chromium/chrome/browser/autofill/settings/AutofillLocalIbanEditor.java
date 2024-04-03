@@ -22,9 +22,12 @@ import org.chromium.base.Callback;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillEditorBase;
+import org.chromium.chrome.browser.autofill.PersonalDataManager;
+import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
+import org.chromium.components.autofill.IbanRecordType;
 
 /**
  * This class creates a view for adding a local IBAN. A local IBAN gets saved to the user's device
@@ -88,8 +91,19 @@ public class AutofillLocalIbanEditor extends AutofillEditorBase implements Profi
 
     @Override
     protected boolean saveEntry() {
-        // TODO(b/320757907): Save IBAN from settings page.
-        return false;
+        Iban iban =
+                Iban.create(
+                        /* guid= */ "",
+                        /* label= */ "",
+                        /* nickname= */ mNickname.getText().toString().trim(),
+                        /* recordType= */ IbanRecordType.UNKNOWN,
+                        /* value= */ mValue.getText().toString());
+        PersonalDataManager personalDataManager =
+                PersonalDataManagerFactory.getForProfile(mProfile);
+        String guid = personalDataManager.addOrUpdateLocalIban(iban);
+        // Return true if the GUID is non-empty (successful operation), and false if the GUID is
+        // empty (unsuccessful).
+        return !guid.isEmpty();
     }
 
     @Override

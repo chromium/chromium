@@ -28,6 +28,7 @@ import org.chromium.url.GURL;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -502,6 +503,26 @@ public class PersonalDataManager implements Destroyable {
             mValue = value;
         }
 
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) return false;
+            if (this == obj) return true;
+            if (getClass() != obj.getClass()) return false;
+
+            Iban otherIban = (Iban) obj;
+
+            return Objects.equals(mGuid, otherIban.getGuid())
+                    && Objects.equals(mLabel, otherIban.getLabel())
+                    && Objects.equals(mNickname, otherIban.getNickname())
+                    && mRecordType == otherIban.getRecordType()
+                    && Objects.equals(mValue, otherIban.getValue());
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(mGuid, mLabel, mNickname, mRecordType, mValue);
+        }
+
         /** Builder for {@link Iban}. */
         public static final class Builder {
             private String mGuid;
@@ -823,12 +844,22 @@ public class PersonalDataManager implements Destroyable {
         return PersonalDataManagerJni.get().getIbanByGuid(mPersonalDataManagerAndroid, guid);
     }
 
+    public Iban[] getLocalIbansForSettings() {
+        ThreadUtils.assertOnUiThread();
+        return PersonalDataManagerJni.get().getLocalIbansForSettings(mPersonalDataManagerAndroid);
+    }
+
     public String addOrUpdateLocalIban(Iban iban) {
         ThreadUtils.assertOnUiThread();
         assert iban.getRecordType() == IbanRecordType.UNKNOWN
                         || iban.getRecordType() == IbanRecordType.LOCAL_IBAN
                 : "Add or update local IBANs only.";
         return PersonalDataManagerJni.get().addOrUpdateLocalIban(mPersonalDataManagerAndroid, iban);
+    }
+
+    public void deleteIban(String guid) {
+        ThreadUtils.assertOnUiThread();
+        PersonalDataManagerJni.get().removeByGUID(mPersonalDataManagerAndroid, guid);
     }
 
     public boolean isValidIban(String ibanValue) {
@@ -1243,6 +1274,8 @@ public class PersonalDataManager implements Destroyable {
         AutofillImageFetcher getOrCreateJavaImageFetcher(long nativePersonalDataManagerAndroid);
 
         Iban getIbanByGuid(long nativePersonalDataManagerAndroid, String guid);
+
+        Iban[] getLocalIbansForSettings(long nativePersonalDataManagerAndroid);
 
         String addOrUpdateLocalIban(long nativePersonalDataManagerAndroid, Iban iban);
 

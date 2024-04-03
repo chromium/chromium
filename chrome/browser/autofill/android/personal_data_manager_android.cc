@@ -744,6 +744,18 @@ ScopedJavaLocalRef<jobject> PersonalDataManagerAndroid::GetIbanByGuid(
   return PersonalDataManagerAndroid::CreateJavaIbanFromNative(env, *iban);
 }
 
+ScopedJavaLocalRef<jobjectArray>
+PersonalDataManagerAndroid::GetLocalIbansForSettings(JNIEnv* env) {
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> j_ibans_list;
+  for (const Iban* iban : personal_data_manager_->GetLocalIbans()) {
+    j_ibans_list.push_back(CreateJavaIbanFromNative(env, *iban));
+  }
+  ScopedJavaLocalRef<jclass> type = base::android::GetClass(
+      env, "org/chromium/chrome/browser/autofill/PersonalDataManager$Iban");
+  return base::android::ToTypedJavaArrayOfObjects(env, j_ibans_list,
+                                                  type.obj());
+}
+
 ScopedJavaLocalRef<jstring> PersonalDataManagerAndroid::AddOrUpdateLocalIban(
     JNIEnv* env,
     const JavaParamRef<jobject>& jiban) {

@@ -322,6 +322,11 @@ public class AutofillTestHelper {
                 () -> getPersonalDataManagerForLastUsedProfile().getIban(guid));
     }
 
+    Iban[] getLocalIbansForSettings() throws TimeoutException {
+        return runOnUiThreadBlockingNoException(
+                () -> getPersonalDataManagerForLastUsedProfile().getLocalIbansForSettings());
+    }
+
     public String addOrUpdateLocalIban(final Iban iban) throws TimeoutException {
         int callCount = mOnPersonalDataChangedHelper.getCallCount();
         String guid =
@@ -357,10 +362,16 @@ public class AutofillTestHelper {
                                         .deleteCreditCard(card.getGUID()));
             }
         }
+        for (Iban iban : getLocalIbansForSettings()) {
+            runOnUiThreadBlocking(
+                    () -> getPersonalDataManagerForLastUsedProfile().deleteIban(iban.getGuid()));
+        }
         // Ensure all data is cleared. Waiting for a single callback for each operation is not
         // enough since tests or production code can also trigger callbacks and not consume them.
         int callCount = mOnPersonalDataChangedHelper.getCallCount();
-        while (getProfilesForSettings().size() > 0 || getCreditCardsForSettings().size() > 0) {
+        while (getProfilesForSettings().size() > 0
+                || getCreditCardsForSettings().size() > 0
+                || getLocalIbansForSettings().length > 0) {
             mOnPersonalDataChangedHelper.waitForCallback(callCount);
             callCount = mOnPersonalDataChangedHelper.getCallCount();
         }

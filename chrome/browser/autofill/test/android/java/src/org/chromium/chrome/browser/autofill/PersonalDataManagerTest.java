@@ -19,6 +19,8 @@ import android.graphics.drawable.BitmapDrawable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.filters.SmallTest;
 
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -48,6 +50,7 @@ import org.chromium.components.image_fetcher.test.TestImageFetcher;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -1306,6 +1309,38 @@ public class PersonalDataManagerTest {
                 "CH56\u2006\u2022\u2022\u2022\u2022\u2006\u2022\u2022\u2022\u2022"
                         + "\u2006\u2022\u2022\u2022\u2022\u2006\u2022800\u20069",
                 storedLocalIban.getLabel());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Autofill"})
+    public void testGetLocalIbansForSettings() throws TimeoutException {
+        Iban ibanOne =
+                new Iban.Builder()
+                        .setGuid("")
+                        .setLabel("")
+                        .setNickname("My IBAN")
+                        .setRecordType(IbanRecordType.UNKNOWN)
+                        .setValue("CH56 0483 5012 3456 7800 9")
+                        .build();
+        Iban ibanTwo =
+                new Iban.Builder()
+                        .setGuid("")
+                        .setLabel("")
+                        .setNickname("My work IBAN")
+                        .setRecordType(IbanRecordType.UNKNOWN)
+                        .setValue("FR76 3000 6000 0112 3456 7890 189")
+                        .build();
+
+        String ibanOneGuid = mHelper.addOrUpdateLocalIban(ibanOne);
+        String ibanTwoGuid = mHelper.addOrUpdateLocalIban(ibanTwo);
+
+        Iban[] actualIbans = mHelper.getLocalIbansForSettings();
+
+        MatcherAssert.assertThat(
+                Arrays.asList(actualIbans),
+                Matchers.containsInAnyOrder(
+                        mHelper.getIban(ibanOneGuid), mHelper.getIban(ibanTwoGuid)));
     }
 
     @Test

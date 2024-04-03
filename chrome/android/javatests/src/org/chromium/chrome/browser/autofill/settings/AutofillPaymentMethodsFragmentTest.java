@@ -50,6 +50,7 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
+import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -59,6 +60,7 @@ import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
+import org.chromium.components.autofill.IbanRecordType;
 import org.chromium.components.autofill.MandatoryReauthAuthenticationFlowEvent;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.components.autofill.payments.BankAccount;
@@ -232,6 +234,21 @@ public class AutofillPaymentMethodsFragmentTest {
                                     .build())
                     .setBankName("bank_name")
                     .setAccountNumberSuffix("account_number_suffix")
+                    .build();
+
+    private static final Iban VALID_BELGIUM_IBAN =
+            new Iban.Builder()
+                    .setGuid("")
+                    .setNickname("My IBAN")
+                    .setRecordType(IbanRecordType.UNKNOWN)
+                    .setValue("BE71096123456769")
+                    .build();
+    private static final Iban VALID_RUSSIA_IBAN =
+            new Iban.Builder()
+                    .setGuid("")
+                    .setNickname("")
+                    .setRecordType(IbanRecordType.UNKNOWN)
+                    .setValue("RU0204452560040702810412345678901")
                     .build();
 
     private AutofillTestHelper mAutofillTestHelper;
@@ -1190,6 +1207,45 @@ public class AutofillPaymentMethodsFragmentTest {
 
     @Test
     @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_LOCAL_IBAN})
+    public void testAddTwoIbans_displaysTwoLocalIbans() throws Exception {
+        mAutofillTestHelper.addOrUpdateLocalIban(VALID_BELGIUM_IBAN);
+        mAutofillTestHelper.addOrUpdateLocalIban(VALID_RUSSIA_IBAN);
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        Assert.assertEquals(
+                2, getPreferenceCountWithKey(activity, AutofillPaymentMethodsFragment.PREF_IBAN));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_LOCAL_IBAN})
+    public void testIbanWithNickname_displaysLabelAndNickname() throws Exception {
+        mAutofillTestHelper.addOrUpdateLocalIban(VALID_BELGIUM_IBAN);
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+        Preference ibanPreference = getFirstPaymentMethodPreference(activity);
+
+        assertThat(ibanPreference.getTitle().toString()).contains("BE71");
+        assertThat(ibanPreference.getSummary().toString()).isEqualTo("My IBAN");
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_LOCAL_IBAN})
+    public void testIbanWithoutNickname_displaysLabelOnly() throws Exception {
+        mAutofillTestHelper.addOrUpdateLocalIban(VALID_RUSSIA_IBAN);
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+        Preference ibanPreference = getFirstPaymentMethodPreference(activity);
+
+        assertThat(ibanPreference.getTitle().toString()).contains("RU02");
+        assertThat(ibanPreference.getSummary().toString()).contains("");
+    }
+
+    @Test
+    @MediumTest
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     @EnableFeatures({
         ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE,
@@ -1310,5 +1366,17 @@ public class AutofillPaymentMethodsFragmentTest {
         }
         Assert.fail("Failed to find the card preference.");
         return null;
+    }
+
+    private int getPreferenceCountWithKey(SettingsActivity activity, String preferenceKey) {
+        int matchingPreferenceCount = 0;
+
+        for (int i = 0; i < getPreferenceScreen(activity).getPreferenceCount(); i++) {
+            Preference preference = getPreferenceScreen(activity).getPreference(i);
+            if (preference.getKey() != null && preference.getKey().equals(preferenceKey)) {
+                matchingPreferenceCount++;
+            }
+        }
+        return matchingPreferenceCount;
     }
 }

@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.autofill.AutofillEditorBase;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
+import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.device_reauth.DeviceAuthSource;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
@@ -64,6 +65,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
     static final String PREF_MANDATORY_REAUTH = "mandatory_reauth";
     static final String PREF_SAVE_CVC = "save_cvc";
     static final String PREF_ADD_IBAN = "add_iban";
+    static final String PREF_IBAN = "iban";
     private static final String PREF_PAYMENT_APPS = "payment_apps";
 
     static final String MANDATORY_REAUTH_EDIT_CARD_HISTOGRAM =
@@ -281,6 +283,19 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
             Bundle args = card_pref.getExtras();
             args.putString(AutofillEditorBase.AUTOFILL_GUID, card.getGUID());
             getPreferenceScreen().addPreference(card_pref);
+        }
+
+        // Display local IBANs.
+        for (Iban iban : personalDataManager.getLocalIbansForSettings()) {
+            Preference iban_pref = new Preference(getStyledContext());
+            iban_pref.setSingleLineTitle(false);
+            iban_pref.setTitle(iban.getLabel());
+            iban_pref.setSummary(iban.getNickname());
+            iban_pref.setFragment(AutofillLocalIbanEditor.class.getName());
+            Bundle args = iban_pref.getExtras();
+            args.putString(AutofillEditorBase.AUTOFILL_GUID, iban.getGuid());
+            getPreferenceScreen().addPreference(iban_pref);
+            iban_pref.setKey(PREF_IBAN);
         }
 
         // Add 'Add credit card' button. Tap of it brings up card editor which allows users type in
