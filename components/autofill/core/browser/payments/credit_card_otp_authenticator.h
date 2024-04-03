@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_client.h"
@@ -157,8 +158,8 @@ class CreditCardOtpAuthenticator : public OtpUnmaskDelegate {
   // Whether there is a SelectChallengeOption request ongoing.
   bool selected_challenge_option_request_ongoing_ = false;
 
-  // The associated autofill client.
-  raw_ptr<AutofillClient> autofill_client_;
+  // AutofillClient that owns `this`.
+  const raw_ref<AutofillClient> autofill_client_;
 
   // The associated PaymentsNetworkInterface.
   raw_ptr<payments::PaymentsNetworkInterface> payments_network_interface_;

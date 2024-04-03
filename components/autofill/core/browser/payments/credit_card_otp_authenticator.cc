@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 
+#include "base/check_deref.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_authentication_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
@@ -18,7 +19,7 @@ CreditCardOtpAuthenticator::OtpAuthenticationResponse::
     ~OtpAuthenticationResponse() = default;
 
 CreditCardOtpAuthenticator::CreditCardOtpAuthenticator(AutofillClient* client)
-    : autofill_client_(client),
+    : autofill_client_(CHECK_DEREF(client)),
       payments_network_interface_(
           client->GetPaymentsAutofillClient()->GetPaymentsNetworkInterface()) {}
 
