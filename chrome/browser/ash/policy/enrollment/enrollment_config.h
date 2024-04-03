@@ -254,6 +254,13 @@ struct EnrollmentConfig {
   std::string enrollment_nudge_email;
 };
 
+std::ostream& operator<<(std::ostream& os, const EnrollmentConfig::Mode& mode);
+
+std::ostream& operator<<(std::ostream& os,
+                         const EnrollmentConfig::AuthMechanism& auth);
+
+std::ostream& operator<<(std::ostream& os, const EnrollmentConfig& config);
+
 }  // namespace policy
 
 #endif  // CHROME_BROWSER_ASH_POLICY_ENROLLMENT_ENROLLMENT_CONFIG_H_

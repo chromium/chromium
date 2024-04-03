@@ -210,10 +210,7 @@ void EnrollmentScreen::SetConfig() {
   }
   // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
   // in the logs.
-  LOG(WARNING) << "EnrollmentScreen::SetConfig()"
-               << " config_.mode = " << static_cast<int>(config_.mode)
-               << ", config_.auth_mechanism = "
-               << static_cast<int>(config_.auth_mechanism);
+  LOG(WARNING) << "EnrollmentScreen::SetConfig() == " << config_;
   if (view_) {
     view_->SetEnrollmentConfig(config_);
   }

@@ -10,6 +10,7 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
@@ -67,6 +68,52 @@ policy::LicenseType GetLicenseTypeToUse(
   }
 
   return policy::LicenseType::kNone;
+}
+
+std::string_view ToStringView(policy::EnrollmentConfig::Mode mode) {
+#define CASE(_name)                           \
+  case policy::EnrollmentConfig::Mode::_name: \
+    return #_name;
+
+  switch (mode) {
+    CASE(MODE_NONE);
+    CASE(MODE_MANUAL);
+    CASE(MODE_MANUAL_REENROLLMENT);
+    CASE(MODE_LOCAL_FORCED);
+    CASE(MODE_LOCAL_ADVERTISED);
+    CASE(MODE_SERVER_FORCED);
+    CASE(MODE_SERVER_ADVERTISED);
+    CASE(MODE_RECOVERY);
+    CASE(MODE_ATTESTATION);
+    CASE(MODE_ATTESTATION_LOCAL_FORCED);
+    CASE(MODE_ATTESTATION_SERVER_FORCED);
+    CASE(MODE_ATTESTATION_MANUAL_FALLBACK);
+    CASE(DEPRECATED_MODE_OFFLINE_DEMO);
+    CASE(DEPRECATED_MODE_ENROLLED_ROLLBACK);
+    CASE(MODE_INITIAL_SERVER_FORCED);
+    CASE(MODE_ATTESTATION_INITIAL_SERVER_FORCED);
+    CASE(MODE_ATTESTATION_INITIAL_MANUAL_FALLBACK);
+    CASE(MODE_ATTESTATION_ROLLBACK_FORCED);
+    CASE(MODE_ATTESTATION_ROLLBACK_MANUAL_FALLBACK);
+  }
+
+  NOTREACHED_NORETURN();
+#undef CASE
+}
+
+std::string_view ToStringView(policy::EnrollmentConfig::AuthMechanism auth) {
+#define CASE(_name)                                    \
+  case policy::EnrollmentConfig::AuthMechanism::_name: \
+    return #_name;
+
+  switch (auth) {
+    CASE(AUTH_MECHANISM_INTERACTIVE);
+    CASE(AUTH_MECHANISM_ATTESTATION);
+    CASE(AUTH_MECHANISM_BEST_AVAILABLE);
+  }
+
+  NOTREACHED_NORETURN();
+#undef CASE
 }
 
 }  // namespace
@@ -275,6 +322,20 @@ EnrollmentConfig::Mode EnrollmentConfig::GetManualFallbackMode(
       NOTREACHED();
   }
   return EnrollmentConfig::MODE_NONE;
+}
+
+std::ostream& operator<<(std::ostream& os, const EnrollmentConfig::Mode& mode) {
+  return os << ToStringView(mode);
+}
+
+std::ostream& operator<<(std::ostream& os,
+                         const EnrollmentConfig::AuthMechanism& auth) {
+  return os << ToStringView(auth);
+}
+
+std::ostream& operator<<(std::ostream& os, const EnrollmentConfig& config) {
+  return os << "EnrollmentConfig(" << config.mode << ", "
+            << config.auth_mechanism << ")";
 }
 
 }  // namespace policy
