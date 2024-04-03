@@ -1005,32 +1005,35 @@ TEST_P(QuicNetworkTransactionTest, BasicRequestAndResponse) {
       HostPortPair::FromString("mail.example.org:443"));
 
   MockQuicData quic_data(version_);
-  int packet_num = 1;
+  int sent_packet_num = 0;
+  int received_packet_num = 0;
+  const quic::QuicStreamId stream_id =
+      GetNthClientInitiatedBidirectionalStreamId(0);
   // HTTP/3 SETTINGS are always the first thing sent on a connection
-  quic_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(packet_num++));
+  quic_data.AddWrite(SYNCHRONOUS,
+                     ConstructInitialSettingsPacket(++sent_packet_num));
   // The GET request with no body is sent next.
-  quic_data.AddWrite(
-      SYNCHRONOUS,
-      ConstructClientRequestHeadersPacket(
-          packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true,
-          GetRequestHeaders("GET", "https", "/")));
+  quic_data.AddWrite(SYNCHRONOUS, ConstructClientRequestHeadersPacket(
+                                      ++sent_packet_num, stream_id, true,
+                                      GetRequestHeaders("GET", "https", "/")));
   // Read the response headers.
   quic_data.AddRead(ASYNC, ConstructServerResponseHeadersPacket(
-                               1, GetNthClientInitiatedBidirectionalStreamId(0),
-                               false, GetResponseHeaders("200")));
+                               ++received_packet_num, stream_id, false,
+                               GetResponseHeaders("200")));
   // Read the response body.
-  quic_data.AddRead(SYNCHRONOUS,
-                    ConstructServerDataPacket(
-                        2, GetNthClientInitiatedBidirectionalStreamId(0), true,
-                        ConstructDataFrame(kQuicRespData)));
+  quic_data.AddRead(SYNCHRONOUS, ConstructServerDataPacket(
+                                     ++received_packet_num, stream_id, true,
+                                     ConstructDataFrame(kQuicRespData)));
   // Acknowledge the previous two received packets.
-  quic_data.AddWrite(SYNCHRONOUS, ConstructClientAckPacket(packet_num++, 2, 1));
+  quic_data.AddWrite(
+      SYNCHRONOUS,
+      ConstructClientAckPacket(++sent_packet_num, received_packet_num, 1));
   quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // No more data to read
   // Connection close on shutdown.
-  quic_data.AddWrite(SYNCHRONOUS,
-                     ConstructClientAckAndConnectionClosePacket(
-                         packet_num++, 2, 1, quic::QUIC_CONNECTION_CANCELLED,
-                         "net error", quic::NO_IETF_QUIC_ERROR));
+  quic_data.AddWrite(SYNCHRONOUS, ConstructClientAckAndConnectionClosePacket(
+                                      ++sent_packet_num, received_packet_num, 1,
+                                      quic::QUIC_CONNECTION_CANCELLED,
+                                      "net error", quic::NO_IETF_QUIC_ERROR));
 
   quic_data.AddSocketDataToFactory(&socket_factory_);
 
@@ -1047,31 +1050,33 @@ TEST_P(QuicNetworkTransactionTest, BasicRequestAndResponseWithAsycWrites) {
       HostPortPair::FromString("mail.example.org:443"));
 
   MockQuicData quic_data(version_);
-  int packet_num = 1;
+  int sent_packet_num = 0;
+  int received_packet_num = 0;
+  const quic::QuicStreamId stream_id =
+      GetNthClientInitiatedBidirectionalStreamId(0);
   // HTTP/3 SETTINGS are always the first thing sent on a connection
-  quic_data.AddWrite(ASYNC, ConstructInitialSettingsPacket(packet_num++));
+  quic_data.AddWrite(ASYNC, ConstructInitialSettingsPacket(++sent_packet_num));
   // The GET request with no body is sent next.
-  quic_data.AddWrite(
-      ASYNC, ConstructClientRequestHeadersPacket(
-                 packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
-                 true, GetRequestHeaders("GET", "https", "/")));
+  quic_data.AddWrite(ASYNC, ConstructClientRequestHeadersPacket(
+                                ++sent_packet_num, stream_id, true,
+                                GetRequestHeaders("GET", "https", "/")));
   // Read the response headers.
   quic_data.AddRead(ASYNC, ConstructServerResponseHeadersPacket(
-                               1, GetNthClientInitiatedBidirectionalStreamId(0),
-                               false, GetResponseHeaders("200")));
+                               ++received_packet_num, stream_id, false,
+                               GetResponseHeaders("200")));
   // Read the response body.
-  quic_data.AddRead(SYNCHRONOUS,
-                    ConstructServerDataPacket(
-                        2, GetNthClientInitiatedBidirectionalStreamId(0), true,
-                        ConstructDataFrame(kQuicRespData)));
+  quic_data.AddRead(SYNCHRONOUS, ConstructServerDataPacket(
+                                     ++received_packet_num, stream_id, true,
+                                     ConstructDataFrame(kQuicRespData)));
   // Acknowledge the previous two received packets.
-  quic_data.AddWrite(ASYNC, ConstructClientAckPacket(packet_num++, 2, 1));
+  quic_data.AddWrite(ASYNC, ConstructClientAckPacket(++sent_packet_num,
+                                                     received_packet_num, 1));
   quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
   // Connection close on shutdown.
-  quic_data.AddWrite(ASYNC,
-                     ConstructClientAckAndConnectionClosePacket(
-                         packet_num++, 2, 1, quic::QUIC_CONNECTION_CANCELLED,
-                         "net error", quic::NO_IETF_QUIC_ERROR));
+  quic_data.AddWrite(ASYNC, ConstructClientAckAndConnectionClosePacket(
+                                ++sent_packet_num, received_packet_num, 1,
+                                quic::QUIC_CONNECTION_CANCELLED, "net error",
+                                quic::NO_IETF_QUIC_ERROR));
 
   quic_data.AddSocketDataToFactory(&socket_factory_);
 
@@ -1088,37 +1093,41 @@ TEST_P(QuicNetworkTransactionTest, BasicRequestAndResponseWithTrailers) {
       HostPortPair::FromString("mail.example.org:443"));
 
   MockQuicData quic_data(version_);
-  int packet_num = 1;
+  int sent_packet_num = 0;
+  int received_packet_num = 0;
+  const quic::QuicStreamId stream_id =
+      GetNthClientInitiatedBidirectionalStreamId(0);
   // HTTP/3 SETTINGS are always the first thing sent on a connection
-  quic_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(packet_num++));
+  quic_data.AddWrite(SYNCHRONOUS,
+                     ConstructInitialSettingsPacket(++sent_packet_num));
   // The GET request with no body is sent next.
-  quic_data.AddWrite(
-      SYNCHRONOUS,
-      ConstructClientRequestHeadersPacket(
-          packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true,
-          GetRequestHeaders("GET", "https", "/")));
+  quic_data.AddWrite(SYNCHRONOUS, ConstructClientRequestHeadersPacket(
+                                      ++sent_packet_num, stream_id, true,
+                                      GetRequestHeaders("GET", "https", "/")));
   // Read the response headers.
   quic_data.AddRead(ASYNC, server_maker_.MakeResponseHeadersPacket(
-                               1, GetNthClientInitiatedBidirectionalStreamId(0),
-                               false, GetResponseHeaders("200"), nullptr));
+                               ++received_packet_num, stream_id, false,
+                               GetResponseHeaders("200"), nullptr));
   // Read the response body.
-  quic_data.AddRead(ASYNC, ConstructServerDataPacket(
-                               2, GetNthClientInitiatedBidirectionalStreamId(0),
-                               false, ConstructDataFrame(kQuicRespData)));
+  quic_data.AddRead(
+      ASYNC, ConstructServerDataPacket(++received_packet_num, stream_id, false,
+                                       ConstructDataFrame(kQuicRespData)));
   // Acknowledge the previous two received packets.
-  quic_data.AddWrite(SYNCHRONOUS, ConstructClientAckPacket(packet_num++, 2, 1));
+  quic_data.AddWrite(
+      SYNCHRONOUS,
+      ConstructClientAckPacket(++sent_packet_num, received_packet_num, 1));
   // Read the response trailers.
   spdy::Http2HeaderBlock trailers;
   trailers.AppendValueOrAddHeader("foo", "bar");
   quic_data.AddRead(ASYNC, server_maker_.MakeResponseHeadersPacket(
-                               3, GetNthClientInitiatedBidirectionalStreamId(0),
-                               true, std::move(trailers), nullptr));
+                               ++received_packet_num, stream_id, true,
+                               std::move(trailers), nullptr));
   quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // No more data to read
   // Connection close on shutdown.
-  quic_data.AddWrite(SYNCHRONOUS,
-                     ConstructClientAckAndConnectionClosePacket(
-                         packet_num++, 3, 1, quic::QUIC_CONNECTION_CANCELLED,
-                         "net error", quic::NO_IETF_QUIC_ERROR));
+  quic_data.AddWrite(SYNCHRONOUS, ConstructClientAckAndConnectionClosePacket(
+                                      ++sent_packet_num, received_packet_num, 1,
+                                      quic::QUIC_CONNECTION_CANCELLED,
+                                      "net error", quic::NO_IETF_QUIC_ERROR));
 
   quic_data.AddSocketDataToFactory(&socket_factory_);
 
