@@ -14,6 +14,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/commerce/product_specifications/product_specifications_service_factory.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
@@ -259,6 +260,7 @@ SyncServiceFactory::SyncServiceFactory()
 #endif  // !BUILDFLAG(IS_ANDROID)
   DependsOn(PasswordReceiverServiceFactory::GetInstance());
   DependsOn(PasswordSenderServiceFactory::GetInstance());
+  DependsOn(commerce::ProductSpecificationsServiceFactory::GetInstance());
   DependsOn(ProfilePasswordStoreFactory::GetInstance());
   DependsOn(PowerBookmarkServiceFactory::GetInstance());
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
