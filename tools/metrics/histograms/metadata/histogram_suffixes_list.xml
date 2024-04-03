@@ -877,8 +877,8 @@ chromium-metrics-reviews@google.com.
   <suffix name="ServerStream" label="A client created by CRAS server."/>
   <suffix name="Test" label="A client created by cras_test_client."/>
   <suffix name="Unknown" label="Unknown client."/>
+  <affected-histogram name="Cras.FetchDelayCount"/>
   <affected-histogram name="Cras.FetchDelayMilliSeconds"/>
-  <affected-histogram name="Cras.FetchDelayNumber"/>
   <affected-histogram name="Cras.StreamCallbackThreshold.Input"/>
   <affected-histogram name="Cras.StreamCallbackThreshold.Output"/>
   <affected-histogram name="Cras.StreamChannelCount.Input"/>
@@ -911,18 +911,18 @@ chromium-metrics-reviews@google.com.
   <suffix name="Default" label="Default"/>
   <suffix name="ProAudio" label="ProAudio"/>
   <suffix name="VoiceCommunication" label="WebRTC"/>
+  <affected-histogram name="Cras.FetchDelayCount.ARC"/>
+  <affected-histogram name="Cras.FetchDelayCount.ARCVM"/>
+  <affected-histogram name="Cras.FetchDelayCount.BOREALIS"/>
+  <affected-histogram name="Cras.FetchDelayCount.Chrome"/>
+  <affected-histogram name="Cras.FetchDelayCount.CrOSVM"/>
+  <affected-histogram name="Cras.FetchDelayCount.LaCrOS"/>
   <affected-histogram name="Cras.FetchDelayMilliSeconds.ARC"/>
   <affected-histogram name="Cras.FetchDelayMilliSeconds.ARCVM"/>
   <affected-histogram name="Cras.FetchDelayMilliSeconds.BOREALIS"/>
   <affected-histogram name="Cras.FetchDelayMilliSeconds.Chrome"/>
   <affected-histogram name="Cras.FetchDelayMilliSeconds.CrOSVM"/>
   <affected-histogram name="Cras.FetchDelayMilliSeconds.LaCrOS"/>
-  <affected-histogram name="Cras.FetchDelayNumber.ARC"/>
-  <affected-histogram name="Cras.FetchDelayNumber.ARCVM"/>
-  <affected-histogram name="Cras.FetchDelayNumber.BOREALIS"/>
-  <affected-histogram name="Cras.FetchDelayNumber.Chrome"/>
-  <affected-histogram name="Cras.FetchDelayNumber.CrOSVM"/>
-  <affected-histogram name="Cras.FetchDelayNumber.LaCrOS"/>
   <affected-histogram name="Cras.StreamRuntime.Input.ARC"/>
   <affected-histogram name="Cras.StreamRuntime.Input.ARCVM"/>
   <affected-histogram name="Cras.StreamRuntime.Input.BOREALIS"/>
