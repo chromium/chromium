@@ -419,7 +419,7 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
       } else if (![self isPinnedWebState:moveChange.moved_to_index()]) {
         // BaseGridMediator handles only non pinned tabs because pinned tabs are
         // handled in PinnedTabsMediator.
-        NSUInteger nextItemIndex = moveChange.moved_to_index() + 1;
+        int nextItemIndex = moveChange.moved_to_index() + 1;
         GridItemIdentifier* nextItem = nil;
         if (webStateList->ContainsIndex(nextItemIndex)) {
           const TabGroup* group =
@@ -508,9 +508,29 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
 
       break;
     }
-    case WebStateListChange::Type::kGroupMove:
-      // TODO(crbug.com/329810998): Handle the tab group move.
+    case WebStateListChange::Type::kGroupMove: {
+      const WebStateListChangeGroupMove& groupMoveChange =
+          change.As<WebStateListChangeGroupMove>();
+      int nextItemIndex = groupMoveChange.moved_to_range().range_end() + 1;
+      GridItemIdentifier* nextItem = nil;
+      if (webStateList->ContainsIndex(nextItemIndex)) {
+        const TabGroup* group =
+            webStateList->GetGroupOfWebStateAt(nextItemIndex);
+        if (group) {
+          nextItem = [GridItemIdentifier groupIdentifier:group
+                                        withWebStateList:webStateList];
+        } else {
+          nextItem = [GridItemIdentifier
+              tabIdentifier:webStateList->GetWebStateAt(nextItemIndex)];
+        }
+      }
+
+      [self.consumer moveItem:[GridItemIdentifier
+                                   groupIdentifier:groupMoveChange.moved_group()
+                                  withWebStateList:webStateList]
+                   beforeItem:nextItem];
       break;
+    }
     case WebStateListChange::Type::kGroupDelete: {
       const WebStateListChangeGroupDelete& groupDeleteChange =
           change.As<WebStateListChangeGroupDelete>();
