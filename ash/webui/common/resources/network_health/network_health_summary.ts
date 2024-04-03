@@ -218,8 +218,8 @@ export class NetworkHealthSummaryElement extends
    * Helper function to toggle the expanded properties when the network
    * container is toggled.
    */
-  private onToggleExpanded_(event: CustomEvent<{model: {network: Network}}>) {
-    const type = event.detail.model.network.type;
+  private onToggleExpanded_(event: Event&{model: {network: Network}}) {
+    const type = event.model.network.type;
     this.set('typeExpanded_.' + type, !this.typeExpanded_[Number(type)]);
   }
 }
