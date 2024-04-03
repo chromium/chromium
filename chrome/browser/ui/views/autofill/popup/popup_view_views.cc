@@ -608,6 +608,8 @@ void PopupViewViews::OnWidgetVisibilityChanged(views::Widget* widget,
       feature_engagement::kIPHAutofillVirtualCardSuggestionFeature);
   browser->window()->MaybeShowFeaturePromo(
       feature_engagement::kIPHAutofillExternalAccountProfileSuggestionFeature);
+  browser->window()->MaybeShowFeaturePromo(
+      feature_engagement::kIPHAutofillCreditCardBenefitFeature);
 }
 
 void PopupViewViews::SetSelectedCell(
@@ -765,6 +767,11 @@ void PopupViewViews::CreateChildViews() {
                              .name) {
             row_view->SetProperty(views::kElementIdentifierKey,
                                   kAutofillSuggestionElementId);
+          } else if (feature_for_iph ==
+                     feature_engagement::kIPHAutofillCreditCardBenefitFeature
+                         .name) {
+            row_view->SetProperty(views::kElementIdentifierKey,
+                                  kAutofillCreditCardBenefitElementId);
           }
       }
     }

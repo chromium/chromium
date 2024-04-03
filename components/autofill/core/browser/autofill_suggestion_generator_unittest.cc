@@ -1094,6 +1094,32 @@ TEST_P(AutofillCreditCardBenefitsLabelTest, BenefitSuggestionLabel_Fpan) {
               CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, /*app_locale=*/"en-US"))}));
 }
 
+// Checks that feature_for_iph is set to display the credit card benefit IPH for
+// FPAN suggestions with benefits labels.
+TEST_P(AutofillCreditCardBenefitsLabelTest,
+       BenefitSuggestionFeatureForIph_Fpan) {
+  EXPECT_EQ(
+      test_api(suggestion_generator())
+          .CreateCreditCardSuggestion(card(), CREDIT_CARD_NUMBER,
+                                      /*virtual_card_option=*/false,
+                                      /*card_linked_offer_available=*/false)
+          .feature_for_iph,
+      feature_engagement::kIPHAutofillCreditCardBenefitFeature.name);
+}
+
+// Checks that feature_for_iph is set to display the virtual card IPH for
+// virtual card suggestions with benefits labels.
+TEST_P(AutofillCreditCardBenefitsLabelTest,
+       BenefitSuggestionFeatureForIph_VirtualCard) {
+  EXPECT_EQ(
+      test_api(suggestion_generator())
+          .CreateCreditCardSuggestion(card(), CREDIT_CARD_NUMBER,
+                                      /*virtual_card_option=*/true,
+                                      /*card_linked_offer_available=*/false)
+          .feature_for_iph,
+      feature_engagement::kIPHAutofillVirtualCardSuggestionFeature.name);
+}
+
 // Checks that for virtual cards suggestion the benefit description is shown
 // with a virtual card label appended.
 TEST_P(AutofillCreditCardBenefitsLabelTest,
