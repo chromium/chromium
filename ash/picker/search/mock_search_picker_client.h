@@ -13,10 +13,12 @@
 namespace ash {
 
 // Mock client used for search tests.
-// By default, `StartCrosSearch` and `FetchGifSearch` will store the supplied
-// callback which can be obtained using `cros_search_callback()` and
-// `gif_search_callback()` respectively, and `GetSharedURLLoaderFactory` will
-// cause the current test to fail.
+// By default:
+// - `StartCrosSearch` and `FetchGifSearch` will store the supplied
+//   callback which can be obtained using `cros_search_callback()` and
+//   `gif_search_callback()` respectively.
+// - `GetSharedURLLoaderFactory` and `ShowEditor` will cause the current test to
+//   fail.
 // These behaviours can be overridden with `WillOnce` and `WillRepeatedly` if
 // necessary.
 class ASH_EXPORT MockSearchPickerClient : public MockPickerClient {
