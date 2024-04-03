@@ -643,16 +643,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Startup.ColdStartFromProcessCreationTimeV2" units="ms"
-    expires_after="never">
-<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
-
-  <owner>djean@chromium.org</owner>
+<histogram name="Startup.ColdStartFromMain" units="ms"
+    expires_after="2025-03-26">
+  <owner>ajuma@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
-  <owner>chrome-analysis-team@google.com</owner>
   <summary>
-    The duration of all initializations from process creation time to UI ready
-    to receive input. iOS specific, from M91+
+    The duration of all initializations from the call to main to UI ready to
+    receive input. iOS specific, from M125+
 
     The process can only be created in response to a user action, either tapping
     the icon, tapping a link that opens in Chrome, or using the app switcher to
@@ -663,15 +660,12 @@ chromium-metrics-reviews@google.com.
     is showing at this point, so there aren't any UI elements for a user to
     interact with.
 
-    It includes code loading and static initializers.
+    It does not include code loading and static initializers.
 
     The total counts in this histogram can be compared with the number of emits
     to the user action MobileWillEnterForeground. The former reports the number
     of cold starts. The latter is only recorded when Chrome comes to the
     foreground on non-cold starts.
-
-    Do not modify this metric in any way without contacting
-    chrome-analysis-team@google.com.
   </summary>
 </histogram>
 
@@ -1023,44 +1017,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Startup.TimeFromProcessCreationToDidFinishLaunchingCall"
-    units="ms" expires_after="2024-06-19">
+<histogram name="Startup.TimeFromMainToDidFinishLaunchingCall" units="ms"
+    expires_after="2025-03-26">
   <owner>olivierrobin@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
-    [IOS] The duration between process spawn (returned by sysctl) and call to
+    [IOS] The duration between the call to main and the call to
     [UIApplicationDelegate didFinishLaunching:]. Recorded when first scene is
     becomes active.
   </summary>
 </histogram>
 
-<histogram name="Startup.TimeFromProcessCreationToLoad" units="ms"
-    expires_after="2024-09-01">
+<histogram name="Startup.TimeFromMainToSceneConnection" units="ms"
+    expires_after="2025-03-26">
   <owner>olivierrobin@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
-    [IOS] The duration between process spawn (returned by sysctl) and library
-    load (logged on +load method). Recorded when first scene is becomes active.
-  </summary>
-</histogram>
-
-<histogram name="Startup.TimeFromProcessCreationToMainCall" units="ms"
-    expires_after="2024-08-11">
-  <owner>olivierrobin@chromium.org</owner>
-  <owner>ajuma@chromium.org</owner>
-  <summary>
-    [IOS] The duration between process spawn (returned by sysctl) and call to
-    main. Recorded when first scene is becomes active.
-  </summary>
-</histogram>
-
-<histogram name="Startup.TimeFromProcessCreationToSceneConnection" units="ms"
-    expires_after="2024-06-19">
-  <owner>olivierrobin@chromium.org</owner>
-  <owner>ajuma@chromium.org</owner>
-  <summary>
-    [IOS] The duration between process spawn (returned by sysctl) and call to
-    the first scene connection. Recorded when first scene is becomes active.
+    [IOS] The duration between the call to main and the call to the first scene
+    connection. Recorded when first scene is becomes active.
   </summary>
 </histogram>
 
