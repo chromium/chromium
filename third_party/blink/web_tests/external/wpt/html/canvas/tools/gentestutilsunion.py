@@ -29,7 +29,8 @@
 #
 # * Test the tests, add new ones to Git, remove deleted ones from Git, etc.
 
-from typing import Any, DefaultDict, List, Mapping, Optional, Set, Tuple
+from typing import Any, DefaultDict, List, Mapping, MutableMapping, Optional
+from typing import Set, Tuple
 
 import re
 import collections
@@ -243,6 +244,7 @@ def _expand_test_code(code: str) -> str:
 
 
 _TestParams = Mapping[str, Any]
+_MutableTestParams = MutableMapping[str, Any]
 
 
 class _CanvasType(str, enum.Enum):
@@ -329,6 +331,21 @@ def _add_default_params(test: _TestParams) -> _TestParams:
     }
     params.update(test)
     return params
+
+
+def _get_variant_name(jinja_env: jinja2.Environment,
+                      params: _TestParams) -> str:
+    name = params['name']
+    if params.get('append_variants_to_name', True):
+        name = '.'.join([name] + params['variant_names'])
+
+    name = jinja_env.from_string(name).render(params)
+    return name
+
+
+def _finalize_params(jinja_env: jinja2.Environment,
+                     params: _MutableTestParams) -> None:
+    params['name'] = _get_variant_name(jinja_env, params)
 
 
 def _write_reference_test(jinja_env: jinja2.Environment, params: _TestParams,
@@ -438,10 +455,6 @@ def _generate_test(test: _TestParams, jinja_env: jinja2.Environment,
 
     enabled_canvas_types = _get_enabled_canvas_types(test)
 
-    # Render parameters used in the test name.
-    name = jinja_env.from_string(name).render(test)
-    print(f'\r({name})', ' ' * 32, '\t')
-
     expected_img = None
     if 'expected' in test and test['expected'] is not None:
         expected_img = _generate_expected_image(test['expected'], name,
@@ -476,7 +489,7 @@ def _generate_test(test: _TestParams, jinja_env: jinja2.Environment,
 def _recursive_expand_variant_matrix(original_test: _TestParams,
                                      variant_matrix: List[_TestParams],
                                      current_selection: List[Tuple[str, Any]],
-                                     test_variants: List[_TestParams]):
+                                     test_variants: List[_MutableTestParams]):
     if len(current_selection) == len(variant_matrix):
         # Selection for each variant is done, so add a new test to test_list.
         test = dict(original_test)
@@ -484,8 +497,6 @@ def _recursive_expand_variant_matrix(original_test: _TestParams,
         for variant_name, variant_params in current_selection:
             test.update(variant_params)
             variant_name_list.append(variant_name)
-            if test.get('append_variants_to_name', True):
-                test['name'] += '.' + variant_name
         # Expose variant names as a list so they can be used from the yaml
         # files, which helps with better naming of tests.
         test.update({'variant_names': variant_name_list})
@@ -501,7 +512,7 @@ def _recursive_expand_variant_matrix(original_test: _TestParams,
             current_selection.pop()
 
 
-def _get_variants(test: _TestParams) -> List[_TestParams]:
+def _get_variants(test: _TestParams) -> List[_MutableTestParams]:
     current_selection = []
     test_variants = []
     variants = test.get('variants', [])
@@ -575,8 +586,13 @@ def generate_test_files(name_to_dir_file: str) -> None:
 
     used_tests = collections.defaultdict(set)
     for test in tests:
+        print(test['name'])
         test = _add_default_params(test)
         for variant in _get_variants(test):
+            _finalize_params(jinja_env, variant)
+            if test['name'] != variant['name']:
+                print(f'  {variant["name"]}')
+
             sub_dir = _get_test_sub_dir(variant['name'], name_to_sub_dir)
             _generate_test(variant, jinja_env, used_tests,
                            output_dirs.sub_path(sub_dir))
