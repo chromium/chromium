@@ -19,10 +19,10 @@ TEST(PickerModel, AvailableCategoriesWithNoFocus) {
   PickerModel model(nullptr);
   EXPECT_THAT(
       model.GetAvailableCategories(),
-      ElementsAre(PickerCategory::kEditor, PickerCategory::kLinks,
-                  PickerCategory::kExpressions, PickerCategory::kClipboard,
-                  PickerCategory::kDriveFiles, PickerCategory::kLocalFiles,
-                  PickerCategory::kDatesTimes, PickerCategory::kUnitsMaths));
+      ElementsAre(PickerCategory::kLinks, PickerCategory::kExpressions,
+                  PickerCategory::kClipboard, PickerCategory::kDriveFiles,
+                  PickerCategory::kLocalFiles, PickerCategory::kDatesTimes,
+                  PickerCategory::kUnitsMaths));
 }
 
 TEST(PickerModel, AvailableCategoriesWithNoSelectedText) {
@@ -32,10 +32,10 @@ TEST(PickerModel, AvailableCategoriesWithNoSelectedText) {
   PickerModel model(&client);
   EXPECT_THAT(
       model.GetAvailableCategories(),
-      ElementsAre(PickerCategory::kEditor, PickerCategory::kLinks,
-                  PickerCategory::kExpressions, PickerCategory::kClipboard,
-                  PickerCategory::kDriveFiles, PickerCategory::kLocalFiles,
-                  PickerCategory::kDatesTimes, PickerCategory::kUnitsMaths));
+      ElementsAre(PickerCategory::kLinks, PickerCategory::kExpressions,
+                  PickerCategory::kClipboard, PickerCategory::kDriveFiles,
+                  PickerCategory::kLocalFiles, PickerCategory::kDatesTimes,
+                  PickerCategory::kUnitsMaths));
 }
 
 TEST(PickerModel, AvailableCategoriesWithSelectedText) {
@@ -43,8 +43,7 @@ TEST(PickerModel, AvailableCategoriesWithSelectedText) {
   client.SetTextAndSelection(u"a", gfx::Range(0, 1));
 
   PickerModel model(&client);
-  EXPECT_THAT(model.GetAvailableCategories(),
-              ElementsAre(PickerCategory::kEditor));
+  EXPECT_THAT(model.GetAvailableCategories(), ElementsAre());
 }
 
 }  // namespace

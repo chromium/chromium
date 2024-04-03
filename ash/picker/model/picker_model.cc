@@ -28,16 +28,14 @@ PickerModel::PickerModel(ui::TextInputClient* focused_client)
 
 std::vector<PickerCategory> PickerModel::GetAvailableCategories() const {
   if (has_selected_text_) {
-    return std::vector<PickerCategory>{
-        PickerCategory::kEditor,
-    };
+    return std::vector<PickerCategory>{};
   }
 
   return std::vector<PickerCategory>{
-      PickerCategory::kEditor,      PickerCategory::kLinks,
-      PickerCategory::kExpressions, PickerCategory::kClipboard,
-      PickerCategory::kDriveFiles,  PickerCategory::kLocalFiles,
-      PickerCategory::kDatesTimes,  PickerCategory::kUnitsMaths,
+      PickerCategory::kLinks,      PickerCategory::kExpressions,
+      PickerCategory::kClipboard,  PickerCategory::kDriveFiles,
+      PickerCategory::kLocalFiles, PickerCategory::kDatesTimes,
+      PickerCategory::kUnitsMaths,
   };
 }
 
