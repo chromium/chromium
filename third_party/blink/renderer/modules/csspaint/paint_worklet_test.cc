@@ -152,6 +152,10 @@ TEST_F(PaintWorkletTest, PaintWithNullPaintArguments) {
 // registered. In the real world, this document paint definition should not be
 // used to paint until we see a second one being registed with the same name.
 TEST_F(PaintWorkletTest, SinglyRegisteredDocumentDefinitionNotUsed) {
+  PaintWorklet* paint_worklet_to_test =
+      PaintWorklet::From(*GetFrame().GetDocument()->domWindow());
+  paint_worklet_to_test->ResetIsPaintOffThreadForTesting();
+
   PaintWorkletGlobalScope* global_scope = GetProxy()->global_scope();
   ClassicScript::CreateUnspecifiedScript(
       "registerPaint('foo', class { paint() { } });")

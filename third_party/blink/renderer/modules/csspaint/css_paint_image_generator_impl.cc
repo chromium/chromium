@@ -73,14 +73,13 @@ bool CSSPaintImageGeneratorImpl::GetValidDocumentDefinition(
   // register that CSSPaintDefinition on the main thread. So for the off-thread
   // case, as long as the DocumentPaintDefinition exists in the map, it should
   // be valid.
-  if (RuntimeEnabledFeatures::OffMainThreadCSSPaintEnabled()) {
+  if (paint_worklet_->IsOffMainThread()) {
     DCHECK(definition);
     return true;
   }
-  if (definition->GetRegisteredDefinitionCount() !=
-      PaintWorklet::kNumGlobalScopesPerThread) {
+  if (definition && definition->GetRegisteredDefinitionCount() !=
+                        PaintWorklet::kNumGlobalScopesPerThread) {
     definition = nullptr;
-    return false;
   }
   return definition;
 }

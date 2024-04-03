@@ -46,6 +46,8 @@ class MODULES_EXPORT PaintWorklet : public Worklet,
                              const CSSStyleValueVector*);
 
   int WorkletId() const { return worklet_id_; }
+  bool IsOffMainThread() const { return is_paint_off_thread_; }
+
   void Trace(Visitor*) const override;
 
   // The DocumentDefinitionMap tracks definitions registered via
