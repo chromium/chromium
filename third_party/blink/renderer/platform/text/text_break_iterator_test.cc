@@ -84,6 +84,24 @@ class TextBreakIteratorTest : public testing::Test {
   scoped_refptr<LayoutLocale> locale_;
 };
 
+TEST_F(TextBreakIteratorTest, PooledBreakIterator) {
+  const AtomicString locale{"en"};
+  const String str{"a"};
+  PooledBreakIterator it1 = AcquireLineBreakIterator(str, locale);
+
+  // Get another and release. It should be a different instance than `it1`.
+  TextBreakIterator* ptr2;
+  {
+    PooledBreakIterator it2 = AcquireLineBreakIterator(str, locale);
+    EXPECT_NE(it2.get(), it1.get());
+    ptr2 = it2.get();
+  }
+
+  // Because `it2` is released, `it3` should be the same instance as `it2`.
+  PooledBreakIterator it3 = AcquireLineBreakIterator(str, locale);
+  EXPECT_EQ(it3.get(), ptr2);
+}
+
 static const LineBreakType all_break_types[] = {
     LineBreakType::kNormal, LineBreakType::kBreakAll,
     LineBreakType::kBreakCharacter, LineBreakType::kKeepAll,

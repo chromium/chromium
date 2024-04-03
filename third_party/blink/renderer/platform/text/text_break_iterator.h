@@ -22,9 +22,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_TEXT_BREAK_ITERATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_TEXT_BREAK_ITERATOR_H_
 
-#include <type_traits>
-
 #include <unicode/brkiter.h>
+
+#include <memory>
+#include <type_traits>
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
@@ -39,6 +40,24 @@ namespace blink {
 
 typedef icu::BreakIterator TextBreakIterator;
 
+struct PLATFORM_EXPORT ReturnBreakIteratorToPool {
+  void operator()(void* ptr) const;
+};
+
+//
+// LineBreakIterator is stocked in a pool to save the construction time.
+// `PooledBreakIterator`, when destructed, returns the instance to the pool
+// instead of deleting it.
+//
+using PooledBreakIterator =
+    std::unique_ptr<TextBreakIterator, ReturnBreakIteratorToPool>;
+
+//
+// Returns a new instance from a pool, or create a new one if the pool is empty.
+//
+PLATFORM_EXPORT PooledBreakIterator
+AcquireLineBreakIterator(StringView, const AtomicString& locale);
+
 // Note: The returned iterator is good only until you get another iterator, with
 // the exception of acquireLineBreakIterator.
 
@@ -52,17 +71,6 @@ PLATFORM_EXPORT TextBreakIterator* WordBreakIterator(const String&,
                                                      int start,
                                                      int length);
 PLATFORM_EXPORT TextBreakIterator* WordBreakIterator(base::span<const UChar>);
-PLATFORM_EXPORT TextBreakIterator* AcquireLineBreakIterator(
-    base::span<const LChar>,
-    const AtomicString& locale,
-    const UChar* prior_context = nullptr,
-    unsigned prior_context_length = 0);
-PLATFORM_EXPORT TextBreakIterator* AcquireLineBreakIterator(
-    base::span<const UChar>,
-    const AtomicString& locale,
-    const UChar* prior_context = nullptr,
-    unsigned prior_context_length = 0);
-PLATFORM_EXPORT void ReleaseLineBreakIterator(TextBreakIterator*);
 PLATFORM_EXPORT TextBreakIterator* SentenceBreakIterator(
     base::span<const UChar>);
 
@@ -125,7 +133,6 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
       LineBreakType break_type = LineBreakType::kNormal)
       : string_(string),
         locale_(locale),
-        iterator_(nullptr),
         break_type_(break_type) {
   }
 
@@ -141,11 +148,6 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
                               other.BreakType()) {
     SetBreakSpace(other.BreakSpace());
     SetStrictness(other.Strictness());
-  }
-
-  ~LazyLineBreakIterator() {
-    if (iterator_)
-      ReleaseLineBreakIterator(iterator_);
   }
 
   const String& GetString() const { return string_; }
@@ -220,13 +222,7 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
   const AtomicString& LocaleWithKeyword() const;
   void InvalidateLocaleWithKeyword();
 
-  void ReleaseIterator() const {
-    if (!iterator_) {
-      return;
-    }
-    ReleaseLineBreakIterator(iterator_);
-    iterator_ = nullptr;
-  }
+  void ReleaseIterator() const { iterator_ = nullptr; }
 
   // Obtain text break iterator, possibly previously cached, where this iterator
   // is (or has been) initialized to use the previously stored string as the
@@ -234,7 +230,7 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
   // non-empty.
   TextBreakIterator* GetIterator() const {
     if (iterator_) {
-      return iterator_;
+      return iterator_.get();
     }
 
     // Create the iterator, or get one from the cache, for the text after
@@ -246,14 +242,9 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
     // |start_offset_|.
     CHECK_LE(start_offset_, string_.length());
     const AtomicString& locale = LocaleWithKeyword();
-    if (string_.Is8Bit()) {
-      iterator_ = AcquireLineBreakIterator(
-          string_.Span8().subspan(start_offset_), locale);
-    } else {
-      iterator_ = AcquireLineBreakIterator(
-          string_.Span16().subspan(start_offset_), locale);
-    }
-    return iterator_;
+    iterator_ =
+        AcquireLineBreakIterator(StringView{string_, start_offset_}, locale);
+    return iterator_.get();
   }
 
   template <typename CharacterType>
@@ -277,7 +268,7 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
   String string_;
   const LayoutLocale* locale_ = nullptr;
   mutable AtomicString locale_with_keyword_;
-  mutable TextBreakIterator* iterator_;
+  mutable PooledBreakIterator iterator_;
   unsigned start_offset_ = 0;
   LineBreakType break_type_;
   BreakSpaceType break_space_ = BreakSpaceType::kAfterSpaceRun;
