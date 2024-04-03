@@ -763,8 +763,8 @@ bool TemplateURLRef::ParseParameter(size_t start,
   } else if (parameter == "google:omniboxFocusType") {
     replacements->push_back(
         Replacement(TemplateURLRef::GOOGLE_OMNIBOX_FOCUS_TYPE, start));
-  } else if (parameter == "google:iOSSearchLanguage") {
-    replacements->push_back(Replacement(GOOGLE_IOS_SEARCH_LANGUAGE, start));
+  } else if (parameter == "google:language") {
+    replacements->push_back(Replacement(GOOGLE_LANGUAGE, start));
   } else if (parameter == "google:contextualSearchVersion") {
     replacements->push_back(
         Replacement(GOOGLE_CONTEXTUAL_SEARCH_VERSION, start));
@@ -1410,10 +1410,13 @@ std::string TemplateURLRef::HandleReplacements(
                           replacement, &url);
         break;
 
-      case GOOGLE_IOS_SEARCH_LANGUAGE:
+      case GOOGLE_LANGUAGE:
 #if BUILDFLAG(IS_IOS)
-        HandleReplacement("hl", search_terms_data.GetApplicationLocale(),
-                          replacement, &url);
+        if (base::FeatureList::IsEnabled(
+                omnibox::kReportApplicationLanguageInSearchRequest)) {
+          HandleReplacement("hl", search_terms_data.GetApplicationLocale(),
+                            replacement, &url);
+        }
 #endif
         break;
 

@@ -165,7 +165,9 @@ BASE_DECLARE_FEATURE(kSiteSearchSettingsPolicy);
 BASE_DECLARE_FEATURE(kPolicyIndicationForManagedDefaultSearch);
 BASE_DECLARE_FEATURE(kStarterPackExpansion);
 
+// Search and Suggest requests and params.
 BASE_DECLARE_FEATURE(kAblateSearchProviderWarmup);
+BASE_DECLARE_FEATURE(kReportApplicationLanguageInSearchRequest);
 
 BASE_DECLARE_FEATURE(kOmniboxShortcutsAndroid);
 

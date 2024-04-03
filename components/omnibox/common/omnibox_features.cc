@@ -556,6 +556,11 @@ BASE_FEATURE(kAblateSearchProviderWarmup,
              "AblateSearchProviderWarmup",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, hl= is reported in search requests (applicable to iOS only).
+BASE_FEATURE(kReportApplicationLanguageInSearchRequest,
+             "ReportApplicationLanguageInSearchRequest",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables storing successful query/match in the shortcut database On Android.
 BASE_FEATURE(kOmniboxShortcutsAndroid,
              "OmniboxShortcutsAndroid",
