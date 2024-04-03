@@ -119,6 +119,9 @@
   <message name="IDS_SEARCH_ENGINE_CHOICE_MORE_BUTTON" desc="Title of the button to scroll the choice screen when it is too small to show everything at once.">
     More
   </message>
+  <message name="IDS_SEARCH_ENGINE_CHOICE_CONTINUE_BUTTON" desc="Button label to continue to the bottom of the list, where the user will be able to confirm their selection and close the screen. On devices with smaller screens, this button is on a screen that appears when the user opens Chrome after updating or installing the app, and it appears when the user has made a selection but still needs to scroll down to the bottom of the list. This text is a verb phrase, and is short for the longer phrase “Continue to the next step”.">
+    Continue
+  </message>
 
   <message name="IDS_SEARCH_ENGINE_CHOICE_CHEVRON_A11Y_LABEL" desc="Accessibility action to expand the search engine description.">
     Search engine details

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_view_controller.h"
 
 #import "base/check.h"
+#import "base/i18n/rtl.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -45,6 +46,16 @@ constexpr CGFloat kButtonMargin = 16.;
 // Width margin (wide or narrow, depending on the desired layout).
 constexpr CGFloat kWidthMarginWide = 54.;
 constexpr CGFloat kWidthMarginNarrow = 24.;
+// Bottom margin for the "More" pill button.
+constexpr CGFloat kMorePillButtonBottomMargin = 34.;
+// Corner radius for the "More" pill button.
+constexpr CGFloat kMorePillButtonCornerRadius = 25.;
+// Horizontal padding for the "More" pill button.
+constexpr CGFloat kMorePillButtonHorizontalPadding = 15.;
+// Horizontal padding for the "More" pill button.
+constexpr CGFloat kMorePillButtonVerticalPadding = 17.;
+// The margin between the text and the arrow on the "More" pill button.
+constexpr CGFloat kMoreArrowMargin = 4.;
 
 // URL for the "Learn more" link.
 const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
@@ -64,6 +75,54 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
   return button;
 }
 
+// Set the tile for a pill button, with its down arrow.
+void SetPillButtonTitle(UIButton* pill_button, int string_id) {
+  UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
+  NSDictionary* textAttributes = @{NSFontAttributeName : font};
+  NSMutableAttributedString* attributedString =
+      [[NSMutableAttributedString alloc]
+          initWithString:l10n_util::GetNSString(string_id)
+              attributes:textAttributes];
+  // Use `ceilf()` when calculating the icon's bounds to ensure the
+  // button's content height does not shrink by fractional points, as the
+  // attributed string's actual height is slightly smaller than the
+  // assigned height.
+  NSTextAttachment* attachment = [[NSTextAttachment alloc] init];
+  attachment.image = [[UIImage imageNamed:@"read_more_arrow"]
+      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  CGFloat height = ceilf(attributedString.size.height);
+  CGFloat capHeight = ceilf(font.capHeight);
+  CGFloat horizontalOffset =
+      base::i18n::IsRTL() ? -1.f * kMoreArrowMargin : kMoreArrowMargin;
+  CGFloat verticalOffset = (capHeight - height) / 2.f;
+  attachment.bounds =
+      CGRectMake(horizontalOffset, verticalOffset, height, height);
+  [attributedString
+      appendAttributedString:[NSAttributedString
+                                 attributedStringWithAttachment:attachment]];
+
+  UIButtonConfiguration* buttonConfiguration = pill_button.configuration;
+  buttonConfiguration.attributedTitle = attributedString;
+  pill_button.configuration = buttonConfiguration;
+}
+
+// Create a more pill button.
+UIButton* CreateMorePillButton() {
+  UIButton* morePillButton =
+      PrimaryActionButton(/*pointer_interaction_enabled=*/YES);
+  morePillButton.layer.cornerRadius = kMorePillButtonCornerRadius;
+  morePillButton.layer.masksToBounds = YES;
+  UIButtonConfiguration* configuration = morePillButton.configuration;
+  configuration.contentInsets = NSDirectionalEdgeInsetsMake(
+      kMorePillButtonHorizontalPadding, kMorePillButtonVerticalPadding,
+      kMorePillButtonHorizontalPadding, kMorePillButtonVerticalPadding);
+  morePillButton.configuration = configuration;
+  SetPillButtonTitle(morePillButton, IDS_SEARCH_ENGINE_CHOICE_MORE_BUTTON);
+  morePillButton.accessibilityContainerType =
+      UIAccessibilityContainerTypeSemanticGroup;
+  return morePillButton;
+}
+
 }  // namespace
 
 @interface SearchEngineChoiceViewController () <UITextViewDelegate>
@@ -76,14 +135,17 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
   UILabel* _titleLabel;
   // Scrollable content containing everything above the primary button.
   UIScrollView* _scrollView;
+  // Contains the list of search engine buttons.
+  UIStackView* _searchEngineStackView;
+  // Button floating on top of the scroll view to scroll down to the bottom.
+  // If the user already scroll onces to the button, the button will be hidden.
+  UIButton* _morePillButton;
   // Whether the choice screen is being displayed for the FRE.
   BOOL _isForFRE;
   // The horizontal margin.
   CGFloat _marginWidth;
   // Whether the scroll view reached the bottom at least once.
   BOOL _didReachBottom;
-  // Contains the list of search engine buttons.
-  UIStackView* _searchEngineStackView;
   // Contains the selected search engine button.
   SnippetSearchEngineButton* _selectedSearchEngineButton;
   // Whether `-[SearchEngineChoiceViewController viewIsAppearing:]` was called.
@@ -109,18 +171,20 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+  UIView* view = self.view;
+  view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
 
   // Add main scroll view with its content view.
   UIView* scrollContentView = [[UIView alloc] init];
   scrollContentView.translatesAutoresizingMaskIntoConstraints = NO;
   _scrollView = [[UIScrollView alloc] init];
-  [self.view addSubview:_scrollView];
+  [view addSubview:_scrollView];
   _scrollView.translatesAutoresizingMaskIntoConstraints = NO;
   _scrollView.accessibilityIdentifier = kSearchEngineChoiceScrollViewIdentifier;
   _scrollView.delegate = self;
   [_scrollView addSubview:scrollContentView];
 
+  // Add logo image.
   // Need to use a regular png instead of custom symbol to have a better control
   // on the size and the margin of the logo.
   UIImage* logoImage = [UIImage imageNamed:kChromeIcon40pt];
@@ -128,6 +192,7 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
   [scrollContentView addSubview:logoImageView];
   logoImageView.translatesAutoresizingMaskIntoConstraints = NO;
 
+  // Add view title.
   _titleLabel = [[UILabel alloc] init];
   // Add semantic group, so the user can skip all the search engine stack view,
   // and jump to the primary button, using VoiceOver.
@@ -147,6 +212,7 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
   _titleLabel.accessibilityTraits |= UIAccessibilityTraitHeader;
   _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
 
+  // Add view subtitle.
   NSMutableAttributedString* subtitleText = [[NSMutableAttributedString alloc]
       initWithString:[l10n_util::GetNSString(
                          IDS_SEARCH_ENGINE_CHOICE_PAGE_SUBTITLE)
@@ -166,7 +232,6 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
   learnMoreAttributedString.accessibilityLabel = l10n_util::GetNSString(
       IDS_SEARCH_ENGINE_CHOICE_PAGE_SUBTITLE_INFO_LINK_A11Y_LABEL);
   [subtitleText appendAttributedString:learnMoreAttributedString];
-
   UITextView* subtitleTextView = [[UITextView alloc] init];
   [scrollContentView addSubview:subtitleTextView];
   [subtitleTextView setAttributedText:subtitleText];
@@ -184,6 +249,7 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
   subtitleTextView.editable = NO;
   subtitleTextView.translatesAutoresizingMaskIntoConstraints = NO;
 
+  // Add stack view for the search engine buttons.
   _searchEngineStackView = [[UIStackView alloc] init];
   // Add semantic group, so the user can skip all the search engine stack view,
   // and jump to the primary button, using VoiceOver.
@@ -197,14 +263,18 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
   _searchEngineStackView.axis = UILayoutConstraintAxisVertical;
   [scrollContentView addSubview:_searchEngineStackView];
 
+  // Add separator for the primary button.
   UIView* separatorView = [[UIView alloc] init];
-  [self.view addSubview:separatorView];
+  [view addSubview:separatorView];
   separatorView.backgroundColor = [UIColor colorNamed:kSeparatorColor];
-  [self.view bringSubviewToFront:separatorView];
+  [view bringSubviewToFront:separatorView];
   separatorView.translatesAutoresizingMaskIntoConstraints = NO;
 
+  // Add primary button.
   _primaryButton = CreateMorePrimaryButton();
-  [self.view addSubview:_primaryButton];
+  UpdatePrimaryButton(_primaryButton, /*didScrollToBottom=*/YES,
+                      /*didSelectARow=*/NO);
+  [view addSubview:_primaryButton];
   [_primaryButton addTarget:self
                      action:@selector(primaryButtonAction)
            forControlEvents:UIControlEventTouchUpInside];
@@ -213,14 +283,22 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
   _primaryButton.accessibilityContainerType =
       UIAccessibilityContainerTypeSemanticGroup;
 
+  // Add more/continue button.
+  _morePillButton = CreateMorePillButton();
+  _morePillButton.translatesAutoresizingMaskIntoConstraints = NO;
+  [view addSubview:_morePillButton];
+  [_morePillButton addTarget:self
+                      action:@selector(moreButtonAction)
+            forControlEvents:UIControlEventTouchUpInside];
+
   [NSLayoutConstraint activateConstraints:@[
     // Scroll view constraints.
     [_scrollView.topAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
+        constraintEqualToAnchor:view.safeAreaLayoutGuide.topAnchor],
     [_scrollView.widthAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.widthAnchor],
+        constraintEqualToAnchor:view.safeAreaLayoutGuide.widthAnchor],
     [_scrollView.centerXAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.centerXAnchor],
+        constraintEqualToAnchor:view.safeAreaLayoutGuide.centerXAnchor],
 
     // Scroll content view constraints.
     [scrollContentView.topAnchor
@@ -234,7 +312,7 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
     [scrollContentView.widthAnchor
         constraintEqualToAnchor:_scrollView.widthAnchor],
 
-    // Logo.
+    // Logo constraints.
     [logoImageView.topAnchor constraintEqualToAnchor:scrollContentView.topAnchor
                                             constant:kLogoTopMargin],
     [logoImageView.heightAnchor constraintEqualToConstant:kLogoSize],
@@ -242,7 +320,7 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
         constraintEqualToAnchor:scrollContentView.centerXAnchor],
     [logoImageView.widthAnchor constraintEqualToConstant:kLogoSize],
 
-    // Title.
+    // Title constraints.
     [_titleLabel.topAnchor constraintEqualToAnchor:logoImageView.bottomAnchor
                                           constant:kLogoTitleMargin],
     [_titleLabel.leadingAnchor
@@ -250,7 +328,7 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
     [_titleLabel.trailingAnchor
         constraintEqualToAnchor:_searchEngineStackView.trailingAnchor],
 
-    // SubtitleTextView.
+    // SubtitleTextView constraints.
     [subtitleTextView.topAnchor constraintEqualToAnchor:_titleLabel.bottomAnchor
                                                constant:kTitleSubtitleMargin],
     [subtitleTextView.leadingAnchor
@@ -258,7 +336,7 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
     [subtitleTextView.trailingAnchor
         constraintEqualToAnchor:_searchEngineStackView.trailingAnchor],
 
-    // Search engine stack view.
+    // Search engine stack view constraints.
     [_searchEngineStackView.topAnchor
         constraintEqualToAnchor:subtitleTextView.bottomAnchor
                        constant:kSubtitleSearchEngineStackMargin],
@@ -274,18 +352,23 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
     [_searchEngineStackView.centerXAnchor
         constraintEqualToAnchor:scrollContentView.centerXAnchor],
 
-    // Separator.
+    // More pill button constraints.
+    [_morePillButton.bottomAnchor
+        constraintEqualToAnchor:view.safeAreaLayoutGuide.bottomAnchor
+                       constant:-kMorePillButtonBottomMargin],
+    [_morePillButton.centerXAnchor constraintEqualToAnchor:view.centerXAnchor],
+
+    // Separator constraints.
     [separatorView.topAnchor constraintEqualToAnchor:_scrollView.bottomAnchor],
     [separatorView.heightAnchor constraintEqualToConstant:kLineWidth],
-    [separatorView.widthAnchor constraintEqualToAnchor:self.view.widthAnchor],
-    [separatorView.centerXAnchor
-        constraintEqualToAnchor:self.view.centerXAnchor],
+    [separatorView.widthAnchor constraintEqualToAnchor:view.widthAnchor],
+    [separatorView.centerXAnchor constraintEqualToAnchor:view.centerXAnchor],
 
-    // Primary button.
+    // Primary button constraints.
     [_primaryButton.topAnchor constraintEqualToAnchor:separatorView.bottomAnchor
                                              constant:kButtonMargin],
     [_primaryButton.bottomAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor
+        constraintEqualToAnchor:view.safeAreaLayoutGuide.bottomAnchor
                        constant:-kButtonMargin],
     [_primaryButton.widthAnchor
         constraintEqualToAnchor:_searchEngineStackView.widthAnchor],
@@ -345,18 +428,23 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
   _selectedSearchEngineButton = button;
   _selectedSearchEngineButton.checked = YES;
   [self updatePrimaryActionButton];
+  if (!_morePillButton.hidden) {
+    SetPillButtonTitle(_morePillButton,
+                       IDS_SEARCH_ENGINE_CHOICE_CONTINUE_BUTTON);
+  }
 }
 
-// Called when the user tap on the primary button.
+// Called when the user taps on the primary button.
 - (void)primaryButtonAction {
-  if (_didReachBottom) {
-    [self.actionDelegate didTapPrimaryButton];
-  } else {
-    CGPoint bottomOffset = CGPointMake(0, _scrollView.contentSize.height -
-                                              _scrollView.bounds.size.height +
-                                              _scrollView.contentInset.bottom);
-    [_scrollView setContentOffset:bottomOffset animated:YES];
-  }
+  [self.actionDelegate didTapPrimaryButton];
+}
+
+// Called when the user taps on the more/continue pill button.
+- (void)moreButtonAction {
+  CGPoint bottomOffset = CGPointMake(
+      0, _scrollView.contentSize.height - _scrollView.bounds.size.height +
+             _scrollView.adjustedContentInset.bottom);
+  [_scrollView setContentOffset:bottomOffset animated:YES];
 }
 
 // Loads the search engine buttons from `_searchEngines`.
@@ -415,10 +503,10 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
       _scrollView.contentOffset.y + _scrollView.frame.size.height;
   // The limit to remove the more button is when `_searchEngineStackView` is
   // fully visible.
-  CGFloat scrollLimit = _searchEngineStackView.frame.origin.y +
-                        _searchEngineStackView.frame.size.height +
-                        _scrollView.contentInset.bottom;
-  if (scrollPosition >= scrollLimit) {
+  CGFloat bottomStackViewLimit = _searchEngineStackView.frame.origin.y +
+                                 _searchEngineStackView.frame.size.height;
+  if (scrollPosition >= bottomStackViewLimit) {
+    _morePillButton.hidden = YES;
     _didReachBottom = YES;
     [self updatePrimaryActionButton];
   }
