@@ -36,6 +36,13 @@ BASE_DECLARE_FEATURE(kIdentifiabilityStudyMetaExperiment);
 extern const base::FeatureParam<double>
     kIdentifiabilityStudyMetaExperimentActivationProbability;
 
+// Default activation probability for the Identifiability Study Meta Experiment.
+// This is a value outside [0, 1], which will be replaced by the default
+// probability depending on the channel in
+// chrome/browser/privacy_budget/identifiability_study_state.cc
+constexpr double
+    kIdentifiabilityStudyMetaExperimentDefaultActivationProbability = -1;
+
 // Root feature for all identifiability study logic.
 //
 // If the feature is disabled, then this browser instance will not be
