@@ -1,0 +1,7 @@
+monorail: {
+  component: "UI>Browser"
+}
+team_email: "lens-chrome-eng+bugs@google.com"
+buganizer_public: {
+  component_id: 1457469
+}

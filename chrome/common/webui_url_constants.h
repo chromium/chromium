@@ -119,6 +119,8 @@ extern const char kChromeUIInterstitialURL[];
 extern const char kChromeUIKillHost[];
 extern const char kChromeUILauncherInternalsHost[];
 extern const char kChromeUILauncherInternalsURL[];
+extern const char kChromeUILensSearchBubbleHost[];
+extern const char kChromeUILensSearchBubbleURL[];
 extern const char kChromeUISensorInfoURL[];
 extern const char kChromeUISensorInfoHost[];
 extern const char kChromeUILocalStateHost[];

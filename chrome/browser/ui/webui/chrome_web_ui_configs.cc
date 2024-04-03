@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/webui/commerce/product_specifications_ui.h"
 #include "chrome/browser/ui/webui/downloads/downloads_ui.h"
 #include "chrome/browser/ui/webui/history/history_ui.h"
+#include "chrome/browser/ui/webui/lens/search_bubble_ui.h"
 #include "chrome/browser/ui/webui/on_device_internals/on_device_internals_ui.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -66,6 +67,7 @@ void RegisterChromeWebUIConfigs() {
       std::make_unique<commerce::ProductSpecificationsUIConfig>());
   map.AddWebUIConfig(std::make_unique<DownloadsUIConfig>());
   map.AddWebUIConfig(std::make_unique<HistoryUIConfig>());
+  map.AddWebUIConfig(std::make_unique<lens::SearchBubbleUIConfig>());
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

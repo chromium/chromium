@@ -40,10 +40,12 @@ class WebUIBubbleDialogView;
 class WebUIBubbleManager : public views::WidgetObserver {
  public:
   template <typename Controller>
-  static std::unique_ptr<WebUIBubbleManager> Create(views::View* anchor_view,
-                                                    Profile* profile,
-                                                    const GURL& webui_url,
-                                                    int task_manager_string_id);
+  static std::unique_ptr<WebUIBubbleManager> Create(
+      views::View* anchor_view,
+      Profile* profile,
+      const GURL& webui_url,
+      int task_manager_string_id,
+      bool force_load_on_create = false);
 
   WebUIBubbleManager(const WebUIBubbleManager&) = delete;
   const WebUIBubbleManager& operator=(const WebUIBubbleManager&) = delete;
@@ -155,11 +157,13 @@ class WebUIBubbleManagerImpl : public WebUIBubbleManager {
   WebUIBubbleManagerImpl(views::View* anchor_view,
                          Profile* profile,
                          const GURL& webui_url,
-                         int task_manager_string_id)
+                         int task_manager_string_id,
+                         bool force_load_on_create)
       : anchor_view_(anchor_view),
         profile_(profile),
         webui_url_(webui_url),
-        task_manager_string_id_(task_manager_string_id) {}
+        task_manager_string_id_(task_manager_string_id),
+        force_load_on_create_(force_load_on_create) {}
   ~WebUIBubbleManagerImpl() override = default;
 
  private:
@@ -174,6 +178,11 @@ class WebUIBubbleManagerImpl : public WebUIBubbleManager {
   const raw_ptr<Profile, DanglingUntriaged> profile_;
   const GURL webui_url_;
   const int task_manager_string_id_;
+
+  // Forces the WebUI through the page load lifecycle when a bubble is created,
+  // if necessary. If set page load is forced regardless of the caching status
+  // of the contents.
+  const bool force_load_on_create_;
 };
 
 template <typename Controller>
@@ -181,9 +190,11 @@ std::unique_ptr<WebUIBubbleManager> WebUIBubbleManager::Create(
     views::View* anchor_view,
     Profile* profile,
     const GURL& webui_url,
-    int task_manager_string_id) {
+    int task_manager_string_id,
+    bool force_load_on_create) {
   return std::make_unique<WebUIBubbleManagerImpl<Controller>>(
-      anchor_view, profile, webui_url, task_manager_string_id);
+      anchor_view, profile, webui_url, task_manager_string_id,
+      force_load_on_create);
 }
 
 template <typename T>
@@ -243,6 +254,14 @@ WebUIBubbleManagerImpl<T>::CreateWebUIBubbleDialog(
     }
 
     contents_wrapper = cached_contents_wrapper();
+  }
+
+  // If the contents has already navigated to the current WebUI page force a
+  // reload. This will force the contents back through the page load lifecycle.
+  if (force_load_on_create_ &&
+      !contents_wrapper->web_contents()
+           ->HasUncommittedNavigationInPrimaryMainFrame()) {
+    contents_wrapper->ReloadWebContents();
   }
 
   auto bubble_view = std::make_unique<WebUIBubbleDialogView>(
