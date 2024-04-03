@@ -101,8 +101,8 @@ class SingleClientPlusAddressSyncTest
         syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
             /*non_unique_name=*/"plus-profile",
             /*client_tag=*/
-            base::NumberToString(specifics.plus_address().profile_id()),
-            specifics, /*creation_time=*/0, /*last_modified_time=*/0));
+            specifics.plus_address().profile_id(), specifics,
+            /*creation_time=*/0, /*last_modified_time=*/0));
   }
 
   // Injects a tombstone for the PLUS_ADDRESS entity with given `client_tag`.

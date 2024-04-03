@@ -92,6 +92,8 @@ PlusAddressSyncBridge::ApplyIncrementalSyncChanges(
       }
       case syncer::EntityChange::ACTION_DELETE: {
         int64_t profile_id;
+        // TODO(b/322147254): Remove conversion once `PlusProfile::profile_id`
+        // is a string.
         CHECK(base::StringToInt64(change->storage_key(), &profile_id));
         if (!GetPlusAddressTable()->RemovePlusProfile(profile_id)) {
           return syncer::ModelError(FROM_HERE,
@@ -170,8 +172,7 @@ std::string PlusAddressSyncBridge::GetClientTag(
 
 std::string PlusAddressSyncBridge::GetStorageKey(
     const syncer::EntityData& entity_data) {
-  return base::NumberToString(
-      entity_data.specifics.plus_address().profile_id());
+  return entity_data.specifics.plus_address().profile_id();
 }
 
 PlusAddressTable* PlusAddressSyncBridge::GetPlusAddressTable() {

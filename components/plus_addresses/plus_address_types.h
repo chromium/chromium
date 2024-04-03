@@ -17,6 +17,7 @@
 namespace plus_addresses {
 
 struct PlusProfile {
+  // TODO(b/322147254): Make this a string.
   int64_t profile_id;
   std::string facet;
   std::string plus_address;

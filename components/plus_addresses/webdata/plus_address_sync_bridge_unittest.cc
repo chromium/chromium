@@ -119,13 +119,13 @@ TEST_F(PlusAddressSyncBridgeTest, IsEntityDataValid) {
       entity.specifics.mutable_plus_address();
   // Missing a profile ID.
   EXPECT_FALSE(bridge().IsEntityDataValid(entity));
-  specifics->set_profile_id(123);
+  specifics->set_profile_id("123");
   EXPECT_TRUE(bridge().IsEntityDataValid(entity));
 }
 
 TEST_F(PlusAddressSyncBridgeTest, GetStorageKey) {
   syncer::EntityData entity;
-  entity.specifics.mutable_plus_address()->set_profile_id(123);
+  entity.specifics.mutable_plus_address()->set_profile_id("123");
   EXPECT_EQ(bridge().GetStorageKey(entity), "123");
 }
 
