@@ -5,6 +5,8 @@
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 
 import {DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, DestinationManager} from './data/destination_manager.js';
+import {createCustomEvent} from './utils/event_utils.js';
+import {Destination} from './utils/print_preview_cros_app_types.js';
 
 /**
  * @fileoverview
@@ -12,6 +14,9 @@ import {DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, DestinationManager} from
  * correctly consume changes from mojo providers and inform the
  * `destination-dropdown` element to update.
  */
+
+export const DESTINATION_DROPDOWN_UPDATE_SELECTED_DESTINATION =
+    'destination-dropdown.update-selected-destination';
 
 export class DestinationDropdownController extends EventTarget {
   private destinationManager = DestinationManager.getInstance();
@@ -28,7 +33,21 @@ export class DestinationDropdownController extends EventTarget {
             this.onDestinationManagerActiveDestinationChanged(e));
   }
 
-  // TODO: Handles logic for notifying UI to update when destination manager
+  // Handles logic for notifying UI to update when destination manager
   // active destination changes.
-  private onDestinationManagerActiveDestinationChanged(_event: Event): void {}
+  private onDestinationManagerActiveDestinationChanged(_event: Event): void {
+    this.dispatchEvent(
+        createCustomEvent(DESTINATION_DROPDOWN_UPDATE_SELECTED_DESTINATION));
+  }
+
+  getSelectedDestination(): Destination|null {
+    return this.destinationManager.getActiveDestination();
+  }
+}
+
+
+declare global {
+  interface HTMLElementEventMap {
+    [DESTINATION_DROPDOWN_UPDATE_SELECTED_DESTINATION]: CustomEvent<void>;
+  }
 }
