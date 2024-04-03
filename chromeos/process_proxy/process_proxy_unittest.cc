@@ -15,10 +15,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/process/kill.h"
 #include "base/process/process.h"
-#include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread.h"
 #include "chromeos/process_proxy/process_proxy_registry.h"
 
@@ -34,12 +34,6 @@ const char kCatCommand[] = "cat";
 const char kFakeUserHash[] = "0123456789abcdef";
 const char kStdoutType[] = "stdout";
 const int kTestLineNum = 100;
-
-void RunOnTaskRunner(
-    base::OnceClosure closure,
-    const scoped_refptr<base::SequencedTaskRunner>& task_runner) {
-  task_runner->PostTask(FROM_HERE, std::move(closure));
-}
 
 class TestRunner {
  public:
@@ -233,26 +227,24 @@ class ProcessProxyTest : public testing::Test {
   }
 
   void RunTest() {
-    base::RunLoop init_registry_waiter;
+    base::test::TestFuture<void> init_registry_waiter;
     ProcessProxyRegistry::GetTaskRunner()->PostTask(
         FROM_HERE,
-        base::BindOnce(
-            &ProcessProxyTest::InitRegistryTest, base::Unretained(this),
-            base::BindOnce(&RunOnTaskRunner, init_registry_waiter.QuitClosure(),
-                           base::SequencedTaskRunner::GetCurrentDefault())));
+        base::BindOnce(&ProcessProxyTest::InitRegistryTest,
+                       base::Unretained(this),
+                       init_registry_waiter.GetSequenceBoundCallback()));
     // Wait until all data from output watcher is received (QuitTask will be
     // fired on watcher thread).
-    init_registry_waiter.Run();
+    ASSERT_TRUE(init_registry_waiter.Wait());
 
-    base::RunLoop end_registry_waiter;
+    base::test::TestFuture<void> end_registry_waiter;
     ProcessProxyRegistry::GetTaskRunner()->PostTask(
         FROM_HERE,
-        base::BindOnce(
-            &ProcessProxyTest::EndRegistryTest, base::Unretained(this),
-            base::BindOnce(&RunOnTaskRunner, end_registry_waiter.QuitClosure(),
-                           base::SequencedTaskRunner::GetCurrentDefault())));
+        base::BindOnce(&ProcessProxyTest::EndRegistryTest,
+                       base::Unretained(this),
+                       end_registry_waiter.GetSequenceBoundCallback()));
     // Wait until we clean up the process proxy.
-    end_registry_waiter.Run();
+    ASSERT_TRUE(end_registry_waiter.Wait());
   }
 
   std::unique_ptr<TestRunner> test_runner_;
