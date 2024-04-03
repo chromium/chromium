@@ -21,7 +21,6 @@
 namespace ash {
 
 class MojoSystemInfoDispatcher;
-class UserBoardViewMojo;
 class UserSelectionScreen;
 
 // ViewsScreenLocker acts like LoginScreenClientImpl::Delegate which handles
@@ -78,7 +77,6 @@ class ViewsScreenLocker : public LoginScreenClientImpl::Delegate,
   void UpdateChallengeResponseAuthAvailability(const AccountId& account_id);
   void OnPinCanAuthenticate(const AccountId& account_id, bool can_authenticate);
 
-  std::unique_ptr<UserBoardViewMojo> user_board_view_mojo_;
   std::unique_ptr<UserSelectionScreen> user_selection_screen_;
 
   // Time when lock was initiated, required for metrics.

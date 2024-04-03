@@ -38,7 +38,6 @@ namespace ash {
 class ExistingUserController;
 class MojoSystemInfoDispatcher;
 class OobeUIDialogDelegate;
-class UserBoardViewMojo;
 class WizardController;
 
 // A LoginDisplayHost instance that sends requests to the views-based signin
@@ -208,7 +207,6 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   };
   std::unique_ptr<AuthState> pending_auth_state_;
 
-  std::unique_ptr<UserBoardViewMojo> user_board_view_mojo_;
   std::unique_ptr<UserSelectionScreen> user_selection_screen_;
 
   base::CallbackListSubscription allow_new_user_subscription_;

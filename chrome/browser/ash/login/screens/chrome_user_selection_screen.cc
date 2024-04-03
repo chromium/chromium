@@ -7,6 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "ash/public/cpp/login_screen.h"
+#include "ash/public/cpp/login_screen_model.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -15,10 +17,11 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/helper.h"
-#include "chrome/browser/ash/login/ui/views/user_board_view.h"
+#include "chrome/browser/ash/login/lock_screen_utils.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chrome/browser/ui/webui/ash/login/l10n_util.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
@@ -96,7 +99,8 @@ void ChromeUserSelectionScreen::CheckForPublicSessionDisplayNameChange(
 
   if (!display_name.empty()) {
     // If a new display name was set by policy, notify the UI about it.
-    view_->SetPublicSessionDisplayName(account_id, display_name);
+    LoginScreen::Get()->GetModel()->SetPublicSessionDisplayName(account_id,
+                                                                display_name);
     return;
   }
 
@@ -161,8 +165,8 @@ void ChromeUserSelectionScreen::SetPublicSessionDisplayName(
     return;
   }
 
-  view_->SetPublicSessionDisplayName(account_id,
-                                     base::UTF16ToUTF8(user->GetDisplayName()));
+  LoginScreen::Get()->GetModel()->SetPublicSessionDisplayName(
+      account_id, base::UTF16ToUTF8(user->GetDisplayName()));
 }
 
 void ChromeUserSelectionScreen::SetPublicSessionLocales(
@@ -190,14 +194,20 @@ void ChromeUserSelectionScreen::SetPublicSessionLocales(
   const bool two_or_more_recommended_locales = recommended_locales.size() >= 2;
 
   // Notify the UI.
-  view_->SetPublicSessionLocales(account_id, std::move(available_locales),
-                                 default_locale,
-                                 two_or_more_recommended_locales);
+  LoginScreen::Get()->GetModel()->SetPublicSessionLocales(
+      account_id,
+      lock_screen_utils::FromListValueToLocaleItem(
+          std::move(available_locales)),
+      default_locale, two_or_more_recommended_locales);
+
+  // Send a request to get keyboard layouts for `default_locale`.
+  LoginScreenClientImpl::Get()->RequestPublicSessionKeyboardLayouts(
+      account_id, default_locale);
 }
 
 void ChromeUserSelectionScreen::SetPublicSessionShowFullManagementDisclosure(
     bool show_full_management_disclosure) {
-  view_->SetPublicSessionShowFullManagementDisclosure(
+  LoginScreen::Get()->GetModel()->SetPublicSessionShowFullManagementDisclosure(
       show_full_management_disclosure);
 }
 

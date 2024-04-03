@@ -36,7 +36,6 @@
 #include "chrome/browser/ash/login/screens/chrome_user_selection_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_screen.h"
 #include "chrome/browser/ash/login/security_token_session_controller.h"
-#include "chrome/browser/ash/login/user_board_view_mojo.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
@@ -174,13 +173,11 @@ LoginDisplayHostMojo::AuthState::AuthState(
 LoginDisplayHostMojo::AuthState::~AuthState() = default;
 
 LoginDisplayHostMojo::LoginDisplayHostMojo(DisplayedScreen displayed_screen)
-    : user_board_view_mojo_(std::make_unique<UserBoardViewMojo>()),
-      user_selection_screen_(
+    : user_selection_screen_(
           std::make_unique<ChromeUserSelectionScreen>(displayed_screen)),
       system_info_updater_(std::make_unique<MojoSystemInfoDispatcher>()) {
   CHECK(!g_login_display_host_mojo);
   g_login_display_host_mojo = this;
-  user_selection_screen_->SetView(user_board_view_mojo_.get());
 
   allow_new_user_subscription_ = CrosSettings::Get()->AddSettingsObserver(
       kAccountsPrefAllowNewUser,

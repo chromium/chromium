@@ -26,7 +26,6 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/login/screens/chrome_user_selection_screen.h"
-#include "chrome/browser/ash/login/user_board_view_mojo.h"
 #include "chrome/browser/ash/system/system_clock.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -48,10 +47,8 @@ namespace ash {
 ViewsScreenLocker::ViewsScreenLocker()
     : system_info_updater_(std::make_unique<MojoSystemInfoDispatcher>()) {
   LoginScreenClientImpl::Get()->SetDelegate(this);
-  user_board_view_mojo_ = std::make_unique<UserBoardViewMojo>();
   user_selection_screen_ =
       std::make_unique<ChromeUserSelectionScreen>(DisplayedScreen::LOCK_SCREEN);
-  user_selection_screen_->SetView(user_board_view_mojo_.get());
 }
 
 ViewsScreenLocker::~ViewsScreenLocker() {
