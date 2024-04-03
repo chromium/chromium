@@ -120,6 +120,9 @@ struct ASH_PUBLIC_EXPORT AnchoredNudgeData {
   // Highlight anchor button by default.
   bool highlight_anchor_button = true;
 
+  // If true, set the `anchor_view` as parent.
+  bool set_anchor_view_as_parent = false;
+
   // Nudge action callbacks.
   HoverStateChangeCallback hover_state_change_callback;
   NudgeClickCallback click_callback;

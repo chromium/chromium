@@ -101,6 +101,9 @@ class ASH_EXPORT AnchoredNudge : public display::DisplayObserver,
   // Whether the nudge should set its bounds anchored by its corners.
   const bool is_corner_anchored_;
 
+  // Whether the nudge should set its parent as the `anchor_view`.
+  const bool set_anchor_view_as_parent_ = false;
+
   // Owned by the views hierarchy. Contents view of the anchored nudge.
   raw_ptr<SystemNudgeView> system_nudge_view_ = nullptr;
 

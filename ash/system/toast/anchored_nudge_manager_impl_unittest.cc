@@ -90,6 +90,10 @@ views::LabelButton* GetNudgeSecondaryButton(const std::string& id) {
   return GetAnchoredNudgeManager()->GetNudgeSecondaryButtonForTest(id);
 }
 
+AnchoredNudge* GetNudgeIfShown(const std::string& id) {
+  return GetAnchoredNudgeManager()->GetNudgeIfShown(id);
+}
+
 }  // namespace
 
 class AnchoredNudgeManagerImplTest : public AshTestBase {
@@ -1176,6 +1180,67 @@ TEST_F(AnchoredNudgeManagerImplTest, TimeToActionMetric) {
   GetAnchoredNudgeManager()->MaybeRecordNudgeAction(kTestCatalogName);
   histogram_tester.ExpectBucketCount(kNudgeTimeToActionWithinSession,
                                      kTestCatalogName, 1);
+}
+
+// Tests that a nudge is parented to its anchor view, which has a widget.
+TEST_F(AnchoredNudgeManagerImplTest, SetParent_AnchorViewWithWidget) {
+  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+
+  // Set up nudge data contents.
+  const std::string id = "id";
+  auto contents_view = std::make_unique<views::View>();
+  auto* anchor_view =
+      contents_view->AddChildView(std::make_unique<views::View>());
+  widget->SetContentsView(contents_view.get());
+
+  auto nudge_data = CreateBaseNudgeData(id, anchor_view);
+  nudge_data.set_anchor_view_as_parent = true;
+
+  // Anchor view exists, the nudge should be created and parented by it.
+  GetAnchoredNudgeManager()->Show(nudge_data);
+  EXPECT_TRUE(GetShownNudge(id));
+  EXPECT_EQ(GetNudgeIfShown(id)->GetWidget()->GetNativeWindow()->parent(),
+            anchor_view->GetWidget()->GetNativeView()->parent());
+}
+
+// Tests that a nudge is not parented to its anchor view if
+// `set_anchor_view_as_parent` is not set to true.
+TEST_F(AnchoredNudgeManagerImplTest, NotSetParent_AnchorViewWithWidget) {
+  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+
+  // Set up nudge data contents.
+  const std::string id = "id";
+  auto contents_view = std::make_unique<views::View>();
+  auto* anchor_view =
+      contents_view->AddChildView(std::make_unique<views::View>());
+  widget->SetContentsView(contents_view.get());
+
+  auto nudge_data = CreateBaseNudgeData(id, anchor_view);
+  nudge_data.set_anchor_view_as_parent = false;
+
+  // Anchor view exists, the nudge should be created but not parented by it.
+  GetAnchoredNudgeManager()->Show(nudge_data);
+  EXPECT_TRUE(GetShownNudge(id));
+  EXPECT_NE(GetNudgeIfShown(id)->GetWidget()->GetNativeWindow()->parent(),
+            anchor_view->GetWidget()->GetNativeView()->parent());
+}
+
+// Tests that a nudge is not created if its anchor view doesn't have a widget
+// but `set_anchor_view_as_parent` is set to true.
+TEST_F(AnchoredNudgeManagerImplTest, SetParent_AnchorViewWithoutWidget) {
+  // Set up nudge data contents.
+  const std::string id = "id";
+  auto contents_view = std::make_unique<views::View>();
+  auto* anchor_view =
+      contents_view->AddChildView(std::make_unique<views::View>());
+  auto nudge_data = CreateBaseNudgeData(id, anchor_view);
+  nudge_data.set_anchor_view_as_parent = true;
+
+  // Attempt to show nudge.
+  GetAnchoredNudgeManager()->Show(nudge_data);
+
+  // Anchor view does not have a widget, the nudge should not be created.
+  EXPECT_FALSE(GetShownNudge(id));
 }
 
 }  // namespace ash
