@@ -11,58 +11,50 @@ namespace optimization_guide {
 // Helper method matches feature to corresponding FeatureTypeMap to set
 // LogAiDataRequest's request data.
 void SetExecutionRequest(
-    proto::ModelExecutionFeature feature,
+    ModelBasedCapabilityKey feature,
     proto::LogAiDataRequest& log_ai_request,
     const google::protobuf::MessageLite& request_metadata) {
   switch (feature) {
-    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH:
+    case ModelBasedCapabilityKey::kWallpaperSearch:
       SetExecutionRequestTemplate<WallpaperSearchFeatureTypeMap>(
           log_ai_request, request_metadata);
       return;
-    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION:
+    case ModelBasedCapabilityKey::kTabOrganization:
       SetExecutionRequestTemplate<TabOrganizationFeatureTypeMap>(
           log_ai_request, request_metadata);
       return;
-    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE:
+    case ModelBasedCapabilityKey::kCompose:
       SetExecutionRequestTemplate<ComposeFeatureTypeMap>(log_ai_request,
                                                          request_metadata);
       return;
-    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEXT_SAFETY:
-    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST:
+    case ModelBasedCapabilityKey::kTextSafety:
+    case ModelBasedCapabilityKey::kTest:
       // Do not log request for test and text safety.
-      return;
-    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
-      // Don't log any request data when the feature is not specified.
-      NOTREACHED();
       return;
   }
 }
 
 // Helper method matches feature to corresponding FeatureTypeMap to set
 // LogAiDataRequest's response data.
-void SetExecutionResponse(proto::ModelExecutionFeature feature,
+void SetExecutionResponse(ModelBasedCapabilityKey feature,
                           proto::LogAiDataRequest& log_ai_request,
                           const proto::Any& response_metadata) {
   switch (feature) {
-    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH:
+    case ModelBasedCapabilityKey::kWallpaperSearch:
       SetExecutionResponseTemplate<WallpaperSearchFeatureTypeMap>(
           log_ai_request, response_metadata);
       return;
-    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION:
+    case ModelBasedCapabilityKey::kTabOrganization:
       SetExecutionResponseTemplate<TabOrganizationFeatureTypeMap>(
           log_ai_request, response_metadata);
       return;
-    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE:
+    case ModelBasedCapabilityKey::kCompose:
       SetExecutionResponseTemplate<ComposeFeatureTypeMap>(log_ai_request,
                                                           response_metadata);
       return;
-    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEXT_SAFETY:
-    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST:
+    case ModelBasedCapabilityKey::kTextSafety:
+    case ModelBasedCapabilityKey::kTest:
       // Do not log response for test and text safety.
-      return;
-    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
-      // Don't log any response data when the feature is not specified.
-      NOTREACHED();
       return;
   }
 }

@@ -85,6 +85,12 @@ std::string_view GetStringNameForModelExecutionFeature(
 }
 
 std::string_view GetStringNameForModelExecutionFeature(
+    ModelBasedCapabilityKey feature) {
+  return GetStringNameForModelExecutionFeature(
+      ToModelExecutionFeatureProto(feature));
+}
+
+std::string_view GetStringNameForModelExecutionFeature(
     proto::ModelExecutionFeature feature) {
   switch (feature) {
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH:

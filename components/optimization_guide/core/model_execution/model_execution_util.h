@@ -53,13 +53,13 @@ void SetExecutionResponseTemplate(proto::LogAiDataRequest& log_ai_request,
 
 // Helper method matches feature to corresponding FeatureTypeMap to set
 // LogAiDataRequest's request data.
-void SetExecutionRequest(proto::ModelExecutionFeature feature,
+void SetExecutionRequest(ModelBasedCapabilityKey feature,
                          proto::LogAiDataRequest& log_ai_request,
                          const google::protobuf::MessageLite& request_metadata);
 
 // Helper method matches feature to corresponding FeatureTypeMap to set
 // LogAiDataRequest's response data.
-void SetExecutionResponse(proto::ModelExecutionFeature feature,
+void SetExecutionResponse(ModelBasedCapabilityKey feature,
                           proto::LogAiDataRequest& log_ai_request,
                           const proto::Any& response_metadata);
 

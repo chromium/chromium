@@ -17,9 +17,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_config_interpreter.h"
 #include "components/optimization_guide/core/model_execution/test_on_device_model_component.h"
+#include "components/optimization_guide/core/model_info.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
@@ -65,8 +67,7 @@ std::vector<std::string> ConcatResponses(
   return concat_responses;
 }
 
-constexpr proto::ModelExecutionFeature kFeature =
-    proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE;
+constexpr auto kFeature = ModelBasedCapabilityKey::kCompose;
 
 class FakeOnDeviceSession final : public on_device_model::mojom::Session {
  public:
@@ -352,7 +353,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
 
   ExecuteRemoteFn CreateExecuteRemoteFn() {
     return base::BindLambdaForTesting(
-        [=](proto::ModelExecutionFeature feature,
+        [=](ModelBasedCapabilityKey feature,
             const google::protobuf::MessageLite& m,
             std::unique_ptr<proto::LogAiDataRequest> l,
             OptimizationGuideModelExecutionResultCallback c) {
@@ -361,7 +362,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
           last_remote_message_->CheckTypeAndMergeFrom(m);
           log_ai_data_request_passed_to_remote_ = std::move(l);
 
-          if (feature == proto::MODEL_EXECUTION_FEATURE_TEXT_SAFETY) {
+          if (feature == ModelBasedCapabilityKey::kTextSafety) {
             last_remote_ts_callback_ = std::move(c);
           }
         });
@@ -369,7 +370,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
 
   void PopulateConfigForFeature(
       proto::OnDeviceModelExecutionFeatureConfig& config) {
-    config.set_feature(kFeature);
+    config.set_feature(ToModelExecutionFeatureProto(kFeature));
     auto& input_config = *config.mutable_input_config();
     input_config.set_request_base_name(proto::ComposeRequest().GetTypeName());
 
@@ -589,8 +590,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
   base::HistogramTester histogram_tester;
   auto session = test_controller_->CreateSession(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE,
-      base::DoNothing(), &logger_, nullptr, /*config_params=*/std::nullopt);
+      ModelBasedCapabilityKey::kCompose, base::DoNothing(), &logger_, nullptr,
+      /*config_params=*/std::nullopt);
   EXPECT_FALSE(session);
 
   histogram_tester.ExpectUniqueSample(
@@ -793,8 +794,8 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionFailsForInvalidFeature) {
   base::HistogramTester histogram_tester;
 
   EXPECT_FALSE(test_controller_->CreateSession(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION,
-      base::DoNothing(), &logger_, nullptr, /*config_params=*/std::nullopt));
+      ModelBasedCapabilityKey::kTabOrganization, base::DoNothing(), &logger_,
+      nullptr, /*config_params=*/std::nullopt));
 
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason."
@@ -874,7 +875,7 @@ TEST_F(OnDeviceModelServiceControllerTest, UpdateSafetyModel) {
 
     proto::TextSafetyModelMetadata model_metadata;
     model_metadata.add_feature_text_safety_configurations()->set_feature(
-        kFeature);
+        ToModelExecutionFeatureProto(kFeature));
     proto::Any any;
     any.set_type_url(
         "type.googleapis.com/optimization_guide.proto.TextSafetyModelMetadata");
@@ -956,7 +957,7 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
 
     proto::TextSafetyModelMetadata model_metadata;
     model_metadata.add_feature_text_safety_configurations()->set_feature(
-        kFeature);
+        ToModelExecutionFeatureProto(kFeature));
     proto::Any any;
     any.set_type_url(
         "type.googleapis.com/optimization_guide.proto.TextSafetyModelMetadata");
@@ -1039,7 +1040,7 @@ TEST_F(OnDeviceModelServiceControllerTest, SafetyModelRetract) {
 
   proto::TextSafetyModelMetadata model_metadata;
   auto* safety_config = model_metadata.add_feature_text_safety_configurations();
-  safety_config->set_feature(kFeature);
+  safety_config->set_feature(ToModelExecutionFeatureProto(kFeature));
   auto* threshold1 = safety_config->add_safety_category_thresholds();
   threshold1->set_output_index(0);
   threshold1->set_threshold(0.5);
@@ -1169,7 +1170,7 @@ TEST_F(OnDeviceModelServiceControllerTest, SafetyModelUsedButNoRetract) {
 
   proto::TextSafetyModelMetadata model_metadata;
   auto* safety_config = model_metadata.add_feature_text_safety_configurations();
-  safety_config->set_feature(kFeature);
+  safety_config->set_feature(ToModelExecutionFeatureProto(kFeature));
   auto* threshold1 = safety_config->add_safety_category_thresholds();
   threshold1->set_output_index(0);
   threshold1->set_threshold(0.5);
@@ -1226,7 +1227,7 @@ TEST_F(OnDeviceModelServiceControllerTest, SafetyModelDarkMode) {
 
   proto::TextSafetyModelMetadata model_metadata;
   auto* safety_config = model_metadata.add_feature_text_safety_configurations();
-  safety_config->set_feature(kFeature);
+  safety_config->set_feature(ToModelExecutionFeatureProto(kFeature));
   auto* threshold1 = safety_config->add_safety_category_thresholds();
   threshold1->set_output_index(0);
   threshold1->set_threshold(0.5);
@@ -1695,7 +1696,7 @@ TEST_F(OnDeviceModelServiceControllerTest, CallsRemoteExecute) {
 
 TEST_F(OnDeviceModelServiceControllerTest, AddContextInvalidConfig) {
   proto::OnDeviceModelExecutionFeatureConfig config;
-  config.set_feature(kFeature);
+  config.set_feature(ToModelExecutionFeatureProto(kFeature));
   Initialize({.config = config});
 
   auto session = test_controller_->CreateSession(
@@ -1725,7 +1726,7 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextInvalidConfig) {
 
 TEST_F(OnDeviceModelServiceControllerTest, ExecuteInvalidConfig) {
   proto::OnDeviceModelExecutionFeatureConfig config;
-  config.set_feature(kFeature);
+  config.set_feature(ToModelExecutionFeatureProto(kFeature));
   Initialize({.config = config});
 
   auto session = test_controller_->CreateSession(
@@ -2564,7 +2565,7 @@ TEST_P(OnDeviceModelServiceControllerTsIntervalTest,
 
   proto::TextSafetyModelMetadata model_metadata;
   auto* safety_config = model_metadata.add_feature_text_safety_configurations();
-  safety_config->set_feature(kFeature);
+  safety_config->set_feature(ToModelExecutionFeatureProto(kFeature));
   auto* threshold1 = safety_config->add_safety_category_thresholds();
   threshold1->set_output_index(0);
   threshold1->set_threshold(0.5);

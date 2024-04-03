@@ -11,6 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/uuid.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
@@ -28,8 +29,7 @@ namespace {
 using ModelExecutionError =
     OptimizationGuideModelExecutionError::ModelExecutionError;
 
-void LogResponseHasRepeats(proto::ModelExecutionFeature feature,
-                           bool has_repeats) {
+void LogResponseHasRepeats(ModelBasedCapabilityKey feature, bool has_repeats) {
   base::UmaHistogramBoolean(
       base::StrCat(
           {"OptimizationGuide.ModelExecution.OnDeviceResponseHasRepeats.",
@@ -140,7 +140,7 @@ class SessionImpl::ContextProcessor
 
 SessionImpl::SessionImpl(
     StartSessionFn start_session_fn,
-    proto::ModelExecutionFeature feature,
+    ModelBasedCapabilityKey feature,
     std::optional<proto::OnDeviceModelVersions> on_device_model_versions,
     scoped_refptr<const OnDeviceModelFeatureAdapter> adapter,
     base::WeakPtr<OnDeviceModelServiceController> controller,
@@ -720,7 +720,7 @@ void SessionImpl::RunTextSafetyRemoteFallbackAndCompletionCallback(
   ts_request_log->set_url(ts_request->url());
 
   execute_remote_fn_.Run(
-      proto::MODEL_EXECUTION_FEATURE_TEXT_SAFETY, *ts_request,
+      ModelBasedCapabilityKey::kTextSafety, *ts_request,
       /*log_ai_data_request=*/nullptr,
       base::BindOnce(&SessionImpl::OnTextSafetyRemoteResponse,
                      on_device_state_->session_weak_ptr_factory_.GetWeakPtr(),

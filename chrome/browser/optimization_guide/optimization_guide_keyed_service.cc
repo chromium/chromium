@@ -579,8 +579,7 @@ OptimizationGuideKeyedService::StartSession(
   if (!model_execution_manager_) {
     return nullptr;
   }
-  return model_execution_manager_->StartSession(
-      optimization_guide::ToModelExecutionFeatureProto(feature), config_params);
+  return model_execution_manager_->StartSession(feature, config_params);
 }
 
 void OptimizationGuideKeyedService::ExecuteModel(
@@ -599,10 +598,9 @@ void OptimizationGuideKeyedService::ExecuteModel(
         nullptr);
     return;
   }
-  model_execution_manager_->ExecuteModel(
-      optimization_guide::ToModelExecutionFeatureProto(feature),
-      request_metadata,
-      /*log_ai_data_request=*/nullptr, std::move(callback));
+  model_execution_manager_->ExecuteModel(feature, request_metadata,
+                                         /*log_ai_data_request=*/nullptr,
+                                         std::move(callback));
 }
 
 void OptimizationGuideKeyedService::UploadModelQualityLogs(

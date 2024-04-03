@@ -11,6 +11,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_fetcher.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_config_interpreter.h"
@@ -32,10 +33,15 @@ namespace optimization_guide {
 
 namespace {
 
+const std::string& ProtoName(ModelBasedCapabilityKey feature) {
+  return proto::ModelExecutionFeature_Name(
+      ToModelExecutionFeatureProto(feature));
+}
+
 class ScopedModelExecutionResponseLogger {
  public:
   ScopedModelExecutionResponseLogger(
-      proto::ModelExecutionFeature feature,
+      ModelBasedCapabilityKey feature,
       OptimizationGuideLogger* optimization_guide_logger)
       : feature_(feature),
         optimization_guide_logger_(optimization_guide_logger) {}
@@ -47,14 +53,14 @@ class ScopedModelExecutionResponseLogger {
     OPTIMIZATION_GUIDE_LOGGER(
         optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
         optimization_guide_logger_)
-        << "OnModelExecutionResponse - Feature : "
-        << proto::ModelExecutionFeature_Name(feature_) << " " << message_;
+        << "OnModelExecutionResponse - Feature : " << ProtoName(feature_) << " "
+        << message_;
   }
 
   void set_message(const std::string& message) { message_ = message; }
 
  private:
-  proto::ModelExecutionFeature feature_;
+  ModelBasedCapabilityKey feature_;
   std::string message_;
 
   // Not owned. Guaranteed to outlive |this| scoped object.
@@ -72,9 +78,8 @@ GURL GetModelExecutionServiceURL() {
   return GURL(kOptimizationGuideServiceModelExecutionDefaultURL);
 }
 
-void RecordSessionUsedRemoteExecutionHistogram(
-    proto::ModelExecutionFeature feature,
-    bool is_remote) {
+void RecordSessionUsedRemoteExecutionHistogram(ModelBasedCapabilityKey feature,
+                                               bool is_remote) {
   base::UmaHistogramBoolean(
       base::StrCat(
           {"OptimizationGuide.ModelExecution.SessionUsedRemoteExecution.",
@@ -82,7 +87,7 @@ void RecordSessionUsedRemoteExecutionHistogram(
       is_remote);
 }
 
-void RecordModelExecutionResultHistogram(proto::ModelExecutionFeature feature,
+void RecordModelExecutionResultHistogram(ModelBasedCapabilityKey feature,
                                          bool result) {
   base::UmaHistogramBoolean(
       base::StrCat({"OptimizationGuide.ModelExecution.Result.",
@@ -91,7 +96,7 @@ void RecordModelExecutionResultHistogram(proto::ModelExecutionFeature feature,
 }
 
 void NoOpExecuteRemoteFn(
-    proto::ModelExecutionFeature feature,
+    ModelBasedCapabilityKey feature,
     const google::protobuf::MessageLite& request,
     std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request,
     OptimizationGuideModelExecutionResultCallback callback) {
@@ -160,7 +165,7 @@ void ModelExecutionManager::Shutdown() {
 }
 
 void ModelExecutionManager::ExecuteModel(
-    proto::ModelExecutionFeature feature,
+    ModelBasedCapabilityKey feature,
     const google::protobuf::MessageLite& request_metadata,
     std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request,
     OptimizationGuideModelExecutionResultCallback callback) {
@@ -179,10 +184,9 @@ void ModelExecutionManager::ExecuteModel(
     OPTIMIZATION_GUIDE_LOGGER(
         optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
         optimization_guide_logger_)
-        << "ExecuteModel: " << proto::ModelExecutionFeature_Name(feature);
+        << "ExecuteModel: " << ProtoName(feature);
     switch (feature) {
-      case proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION: {
+      case ModelBasedCapabilityKey::kTabOrganization: {
         proto::Any any;
         any.set_type_url(request_metadata.GetTypeName());
         request_metadata.SerializeToString(any.mutable_value());
@@ -220,7 +224,8 @@ void ModelExecutionManager::ExecuteModel(
       std::forward_as_tuple(url_loader_factory_, model_execution_service_url_,
                             optimization_guide_logger_));
   fetcher_it.first->second.ExecuteModel(
-      feature, identity_manager_, request_metadata,
+      ToModelExecutionFeatureProto(feature), identity_manager_,
+      request_metadata,
       base::BindOnce(&ModelExecutionManager::OnModelExecuteResponse,
                      weak_ptr_factory_.GetWeakPtr(), feature,
                      std::move(log_ai_data_request), std::move(callback)));
@@ -228,7 +233,7 @@ void ModelExecutionManager::ExecuteModel(
 
 std::unique_ptr<OptimizationGuideModelExecutor::Session>
 ModelExecutionManager::StartSession(
-    proto::ModelExecutionFeature feature,
+    ModelBasedCapabilityKey feature,
     const std::optional<SessionConfigParams>& config_params) {
   bool disable_server_fallback =
       config_params && config_params->disable_server_fallback;
@@ -260,7 +265,7 @@ ModelExecutionManager::StartSession(
 }
 
 void ModelExecutionManager::OnModelExecuteResponse(
-    proto::ModelExecutionFeature feature,
+    ModelBasedCapabilityKey feature,
     std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request,
     OptimizationGuideModelExecutionResultCallback callback,
     base::expected<const proto::ExecuteResponse,
@@ -323,11 +328,9 @@ void ModelExecutionManager::OnModelExecuteResponse(
     OPTIMIZATION_GUIDE_LOGGER(
         optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
         optimization_guide_logger_)
-        << "ExecuteModel Response: "
-        << proto::ModelExecutionFeature_Name(feature);
+        << "ExecuteModel Response: " << ProtoName(feature);
     switch (feature) {
-      case proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION: {
+      case ModelBasedCapabilityKey::kTabOrganization: {
         std::string message = "";
         auto tab_response = optimization_guide::ParsedAnyMetadata<
             optimization_guide::proto::TabOrganizationResponse>(

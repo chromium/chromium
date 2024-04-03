@@ -5,6 +5,7 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_MODEL_SERVICE_CONTROLLER_H_
 
 #include <sys/types.h>
+
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -18,6 +19,7 @@
 #include "base/sequence_checker.h"
 #include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/model_execution/session_impl.h"
 #include "components/optimization_guide/core/model_info.h"
@@ -68,7 +70,7 @@ class OnDeviceModelServiceController
   // model if it is not already loaded. The session will handle updating
   // context, executing input, and sending the response.
   std::unique_ptr<OptimizationGuideModelExecutor::Session> CreateSession(
-      proto::ModelExecutionFeature feature,
+      ModelBasedCapabilityKey feature,
       ExecuteRemoteFn execute_remote_fn,
       OptimizationGuideLogger* logger,
       base::WeakPtr<ModelQualityLogsUploaderService>

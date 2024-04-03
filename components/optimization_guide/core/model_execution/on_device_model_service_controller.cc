@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_config_interpreter.h"
@@ -34,7 +35,7 @@ namespace {
 
 class ScopedEligibilityReasonLogger {
  public:
-  explicit ScopedEligibilityReasonLogger(proto::ModelExecutionFeature feature)
+  explicit ScopedEligibilityReasonLogger(ModelBasedCapabilityKey feature)
       : feature_(feature) {}
   ~ScopedEligibilityReasonLogger() {
     CHECK_NE(reason_, OnDeviceModelEligibilityReason::kUnknown);
@@ -48,7 +49,7 @@ class ScopedEligibilityReasonLogger {
   void set_reason(OnDeviceModelEligibilityReason reason) { reason_ = reason; }
 
  private:
-  proto::ModelExecutionFeature feature_;
+  ModelBasedCapabilityKey feature_;
 
   OnDeviceModelEligibilityReason reason_ =
       OnDeviceModelEligibilityReason::kUnknown;
@@ -147,7 +148,7 @@ void OnDeviceModelServiceController::SetModelPath(
 
 std::unique_ptr<OptimizationGuideModelExecutor::Session>
 OnDeviceModelServiceController::CreateSession(
-    proto::ModelExecutionFeature feature,
+    ModelBasedCapabilityKey feature,
     ExecuteRemoteFn execute_remote_fn,
     OptimizationGuideLogger* optimization_guide_logger,
     base::WeakPtr<ModelQualityLogsUploaderService>
@@ -178,7 +179,8 @@ OnDeviceModelServiceController::CreateSession(
     return nullptr;
   }
   if (safety_model_info_) {
-    safety_config = safety_model_info_->GetConfig(feature);
+    safety_config =
+        safety_model_info_->GetConfig(ToModelExecutionFeatureProto(feature));
     if (!safety_config && features::GetOnDeviceModelMustUseSafetyModel()) {
       logger.set_reason(
           OnDeviceModelEligibilityReason::kSafetyConfigNotAvailableForFeature);
@@ -203,14 +205,14 @@ OnDeviceModelServiceController::CreateSession(
   }
 
   scoped_refptr<const OnDeviceModelFeatureAdapter> adapter =
-      config_interpreter_->GetAdapter(feature);
+      config_interpreter_->GetAdapter(ToModelExecutionFeatureProto(feature));
   if (!adapter) {
     logger.set_reason(
         OnDeviceModelEligibilityReason::kConfigNotAvailableForFeature);
     return nullptr;
   }
 
-  if (feature == proto::MODEL_EXECUTION_FEATURE_COMPOSE &&
+  if (feature == ModelBasedCapabilityKey::kCompose &&
       !base::FeatureList::IsEnabled(
           features::kOptimizationGuideComposeOnDeviceEval)) {
     logger.set_reason(

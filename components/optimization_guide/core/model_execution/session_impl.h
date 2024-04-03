@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
@@ -27,7 +28,7 @@ class OnDeviceModelFeatureAdapter;
 class OnDeviceModelServiceController;
 
 using ExecuteRemoteFn = base::RepeatingCallback<void(
-    proto::ModelExecutionFeature feature,
+    ModelBasedCapabilityKey feature,
     const google::protobuf::MessageLite&,
     std::unique_ptr<proto::LogAiDataRequest>,
     OptimizationGuideModelExecutionResultCallback)>;
@@ -102,7 +103,7 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
 
   SessionImpl(
       StartSessionFn start_session_fn,
-      proto::ModelExecutionFeature feature,
+      ModelBasedCapabilityKey feature,
       std::optional<proto::OnDeviceModelVersions> on_device_model_versions,
       scoped_refptr<const OnDeviceModelFeatureAdapter> adapter,
       base::WeakPtr<OnDeviceModelServiceController> controller,
@@ -147,14 +148,14 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
   // Used to log the result of ExecuteModel.
   class ExecuteModelHistogramLogger {
    public:
-    explicit ExecuteModelHistogramLogger(proto::ModelExecutionFeature feature)
+    explicit ExecuteModelHistogramLogger(ModelBasedCapabilityKey feature)
         : feature_(feature) {}
     ~ExecuteModelHistogramLogger();
 
     void set_result(ExecuteModelResult result) { result_ = result; }
 
    private:
-    const proto::ModelExecutionFeature feature_;
+    const ModelBasedCapabilityKey feature_;
     ExecuteModelResult result_ = ExecuteModelResult::kUsedServer;
   };
 
@@ -265,7 +266,7 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
       const proto::Any& success_response_metadata);
 
   base::WeakPtr<OnDeviceModelServiceController> controller_;
-  const proto::ModelExecutionFeature feature_;
+  const ModelBasedCapabilityKey feature_;
   const std::optional<proto::OnDeviceModelVersions> on_device_model_versions_;
 
   std::optional<proto::FeatureTextSafetyConfiguration> safety_config_;

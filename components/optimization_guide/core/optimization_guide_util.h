@@ -46,6 +46,8 @@ enum class OptimizationGuideDecision;
 std::string_view GetStringNameForModelExecutionFeature(
     UserVisibleFeatureKey feature);
 std::string_view GetStringNameForModelExecutionFeature(
+    ModelBasedCapabilityKey feature);
+std::string_view GetStringNameForModelExecutionFeature(
     proto::ModelExecutionFeature feature);
 
 // Returns false if the host is an IP address, localhosts, or an invalid
