@@ -14,7 +14,7 @@ BASE_FEATURE(kAttributionVerboseDebugReporting,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAttributionHeaderErrorDetails,
-             "AttributioHeaderErrorDetails",
+             "AttributionHeaderErrorDetails",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAttributionReportDeliveryRetryDelays,
