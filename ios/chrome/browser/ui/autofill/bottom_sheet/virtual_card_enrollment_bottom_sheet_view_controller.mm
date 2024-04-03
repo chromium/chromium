@@ -322,14 +322,16 @@ CGFloat const kCreditCardCellHeight = 64;
   if (textView == _explanatoryMessageView) {
     // The learn more link was clicked.
     [self.delegate
-        didTapLinkURL:
-            [[CrURL alloc]
-                initWithGURL:autofill::payments::
-                                 GetVirtualCardEnrollmentSupportUrl()]];
+        didTapLinkURL:[[CrURL alloc]
+                          initWithGURL:autofill::payments::
+                                           GetVirtualCardEnrollmentSupportUrl()]
+                 text:[textView.text substringWithRange:characterRange]];
     return NO;
   } else {
     // A link in a legal message was clicked.
-    [self.delegate didTapLinkURL:[[CrURL alloc] initWithNSURL:URL]];
+    [self.delegate
+        didTapLinkURL:[[CrURL alloc] initWithNSURL:URL]
+                 text:[textView.text substringWithRange:characterRange]];
     return NO;
   }
 }
@@ -346,7 +348,9 @@ CGFloat const kCreditCardCellHeight = 64;
   }
   __weak VirtualCardEnrollmentBottomSheetViewController* weakSelf = self;
   return [UIAction actionWithHandler:^(UIAction* action) {
-    [weakSelf.delegate didTapLinkURL:url];
+    [weakSelf.delegate
+        didTapLinkURL:url
+                 text:[textView.text substringWithRange:textItem.range]];
   }];
 }
 

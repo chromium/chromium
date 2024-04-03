@@ -130,6 +130,7 @@ source_set("virtual_card_enrollment_bottom_sheet_coordinator") {
     "virtual_card_enrollment_bottom_sheet_coordinator.mm",
   ]
   deps = [
+    ":bottom_sheet_link_coordinator",
     ":virtual_card_enrollment_bottom_sheet_consumer",
     ":virtual_card_enrollment_bottom_sheet_delegate",
     ":virtual_card_enrollment_bottom_sheet_mediator",
@@ -139,6 +140,7 @@ source_set("virtual_card_enrollment_bottom_sheet_coordinator") {
     "//ios/chrome/browser/autofill/model/bottom_sheet:virtual_card_enrollment_callbacks",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator:chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state:browser_state",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/web/public:public",
   ]
@@ -245,4 +247,33 @@ source_set("virtual_card_enrollment_bottom_sheet_view_controller") {
 source_set("virtual_card_enrollment_bottom_sheet_delegate") {
   sources = [ "virtual_card_enrollment_bottom_sheet_delegate.h" ]
   deps = []
+}
+
+source_set("bottom_sheet_link_coordinator") {
+  sources = [
+    "bottom_sheet_link_coordinator.h",
+    "bottom_sheet_link_coordinator.mm",
+    "bottom_sheet_link_coordinator_delegate.h",
+  ]
+  deps = [
+    ":bottom_sheet_link_view_controller",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/web/public",
+  ]
+}
+
+source_set("bottom_sheet_link_view_controller") {
+  sources = [
+    "bottom_sheet_link_view_controller.h",
+    "bottom_sheet_link_view_controller.mm",
+    "bottom_sheet_link_view_controller_presentation_delegate.h",
+  ]
+  deps = [
+    "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/tabs/model",
+    "//ios/web/public",
+  ]
 }

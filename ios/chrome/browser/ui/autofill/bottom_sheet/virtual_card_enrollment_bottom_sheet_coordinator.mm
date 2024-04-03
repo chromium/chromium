@@ -5,12 +5,16 @@
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/virtual_card_enrollment_bottom_sheet_coordinator.h"
 #import "components/autofill/core/browser/metrics/payments/virtual_card_enrollment_metrics.h"
 #import "components/autofill/core/browser/payments/virtual_card_enroll_metrics_logger.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/ui/autofill/bottom_sheet/bottom_sheet_link_coordinator.h"
+#import "ios/chrome/browser/ui/autofill/bottom_sheet/bottom_sheet_link_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/virtual_card_enrollment_bottom_sheet_delegate.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/virtual_card_enrollment_bottom_sheet_mediator.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/virtual_card_enrollment_bottom_sheet_view_controller.h"
 
 @interface VirtualCardEnrollmentBottomSheetCoordinator () <
-    VirtualCardEnrollmentBottomSheetDelegate>
+    VirtualCardEnrollmentBottomSheetDelegate,
+    BottomSheetLinkCoordinatorDelegate>
 
 @property(nonatomic, strong) VirtualCardEnrollmentBottomSheetMediator* mediator;
 @property(nonatomic, strong)
@@ -27,6 +31,9 @@
 @implementation VirtualCardEnrollmentBottomSheetCoordinator {
   autofill::VirtualCardEnrollUiModel model_;
   std::optional<autofill::VirtualCardEnrollmentCallbacks> callbacks_;
+  Browser* browser_;
+  ChromeBrowserState* browser_state_;
+  BottomSheetLinkCoordinator* bottom_sheet_link_coordinator_;
 }
 
 @synthesize mediator;
@@ -43,6 +50,8 @@
     self->callbacks_ =
         AutofillBottomSheetTabHelper::FromWebState(activeWebState)
             ->GetVirtualCardEnrollmentCallbacks();
+    self->browser_ = browser;
+    self->browser_state_ = self.browser->GetBrowserState();
   }
   return self;
 }
@@ -99,12 +108,23 @@
   [self stop];
 }
 
-- (void)didTapLinkURL:(CrURL*)url {
-  // TODO(crbug.com/1485376): Implement opening links from the virtual
-  // card enrollment bottom sheet.
+- (void)didTapLinkURL:(CrURL*)url text:(NSString*)text {
+  bottom_sheet_link_coordinator_ = [[BottomSheetLinkCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                             url:url
+                           title:text];
+  bottom_sheet_link_coordinator_.delegate = self;
+  [bottom_sheet_link_coordinator_ start];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
+}
+
+#pragma mark - BottomSheetLinkCoordinatorDelegate
+
+- (void)dismissBottomSheetLinkCoordinator {
+  [bottom_sheet_link_coordinator_ stop];
 }
 
 #pragma mark - Private

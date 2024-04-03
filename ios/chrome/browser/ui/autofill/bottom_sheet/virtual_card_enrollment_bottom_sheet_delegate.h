@@ -16,8 +16,8 @@
 - (void)didCancel;
 
 // Called when the user tapped on a link in the legal message or the learn more
-// link.
-- (void)didTapLinkURL:(CrURL*)url;
+// link. The text of the link is included.
+- (void)didTapLinkURL:(CrURL*)url text:(NSString*)text;
 
 // Called when the view disappeared.
 - (void)viewDidDisappear:(BOOL)animated;
