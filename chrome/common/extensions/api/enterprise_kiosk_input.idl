@@ -4,8 +4,8 @@
 
 // Use the <code>chrome.enterprise.kioskInput</code> API to change input
 // settings for Kiosk sessions.
-// Note: This API is only available extensions and Chrome apps installed
-// by enterprise policy in ChromeOS Kiosk sessions.
+// Note: This API is only available to extensions installed by enterprise
+// policy in ChromeOS Kiosk sessions.
 [platforms = ("chromeos"),
  implemented_in = "chrome/browser/extensions/api/enterprise_kiosk_input/enterprise_kiosk_input_api.h"]
 namespace enterprise.kioskInput {
