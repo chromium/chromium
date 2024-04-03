@@ -6,20 +6,25 @@
 
 #include <utility>
 
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/mock_autofill_agent.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
+#include "chrome/browser/autofill/ui/ui_util.h"
 #include "chrome/browser/fast_checkout/fast_checkout_client_impl.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
+#include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_driver.h"
+#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
@@ -28,12 +33,14 @@
 #include "components/autofill/core/common/form_interactions_flow.h"
 #include "components/plus_addresses/features.h"
 #include "components/prefs/pref_service.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/unified_consent/pref_names.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/autofill/autofill_cvc_save_message_delegate.h"
@@ -266,6 +273,32 @@ TEST_F(ChromeAutofillClientTest,
        CreditCardUploadCompleted_ShowConfirmationBubbleView_CardNotSaved) {
   EXPECT_CALL(save_card_bubble_controller(), ShowConfirmationBubbleView(false));
   client()->GetPaymentsAutofillClient()->CreditCardUploadCompleted(false);
+}
+
+TEST_F(ChromeAutofillClientTest, EditAddressDialogFooter) {
+  EditAddressProfileDialogControllerImpl::CreateForWebContents(web_contents());
+  auto* controller =
+      EditAddressProfileDialogControllerImpl::FromWebContents(web_contents());
+  controller->SetViewFactoryForTest(base::BindRepeating(
+      [](content::WebContents*, EditAddressProfileDialogController*) {
+        return static_cast<AutofillBubbleBase*>(nullptr);
+      }));
+
+  // Non-account profile
+  client()->ShowEditAddressProfileDialog(test::GetFullProfile(),
+                                         base::DoNothing());
+  EXPECT_EQ(controller->GetFooterMessage(), u"");
+
+  // Account profile
+  AutofillProfile profile2 = test::GetFullProfile();
+  profile2.set_source_for_testing(AutofillProfile::Source::kAccount);
+  client()->ShowEditAddressProfileDialog(profile2, base::DoNothing());
+  std::optional<AccountInfo> account = GetPrimaryAccountInfoFromBrowserContext(
+      web_contents()->GetBrowserContext());
+  EXPECT_EQ(controller->GetFooterMessage(),
+            l10n_util::GetStringFUTF16(
+                IDS_AUTOFILL_UPDATE_PROMPT_ACCOUNT_ADDRESS_SOURCE_NOTICE,
+                base::ASCIIToUTF16(account->email)));
 }
 #endif
 

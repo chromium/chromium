@@ -69,6 +69,7 @@
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
@@ -78,6 +79,7 @@
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/offer_notification_options.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
+#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller_impl.h"
@@ -864,12 +866,14 @@ void ChromeAutofillClient::ShowEditAddressProfileDialog(
   std::optional<AccountInfo> account = GetPrimaryAccountInfoFromBrowserContext(
       web_contents()->GetBrowserContext());
   CHECK(account);
+  std::u16string footer_message =
+      profile.source() == AutofillProfile::Source::kAccount
+          ? l10n_util::GetStringFUTF16(
+                IDS_AUTOFILL_UPDATE_PROMPT_ACCOUNT_ADDRESS_SOURCE_NOTICE,
+                base::ASCIIToUTF16(account->email))
+          : u"";
   controller->OfferEdit(
-      /*profile=*/profile,
-      /*footer_message=*/
-      l10n_util::GetStringFUTF16(
-          IDS_AUTOFILL_UPDATE_PROMPT_ACCOUNT_ADDRESS_SOURCE_NOTICE,
-          base::ASCIIToUTF16(account->email)),
+      /*profile=*/profile, footer_message,
       /*is_editing_existing_address=*/false,
       /*is_migration_to_account=*/false,
       /*on_user_decision_callback=*/std::move(on_user_decision_callback));
