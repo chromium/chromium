@@ -177,12 +177,6 @@ assert(!(is_debug && is_official_build), "Can't do official debug builds")
 assert(!(current_os == "ios" && is_component_build),
        "Can't use component build on iOS")
 
-declare_args() {
-  # Unsafe buffers. Location of file used by plugins to track portions of
-  # the codebase which have been made manifestly safe.
-  clang_unsafe_buffers_paths = ""
-}
-
 # ==============================================================================
 # TOOLCHAIN SETUP
 # ==============================================================================
@@ -554,7 +548,7 @@ foreach(_target_type,
         }
       }
       if (_uses_cflags) {
-        inputs += [ clang_unsafe_buffers_paths ]
+        inputs += [ "//build/config/unsafe_buffers_paths.txt" ]
       }
     }
   }
@@ -601,7 +595,7 @@ foreach(_target_type,
         }
       }
       if (_uses_cflags) {
-        inputs += [ clang_unsafe_buffers_paths ]
+        inputs += [ "//build/config/unsafe_buffers_paths.txt" ]
       }
 
       if (!defined(deps)) {
