@@ -1698,7 +1698,6 @@ std::optional<FormData> AutofillAgent::GetSubmittedForm() const {
   auto has_been_user_edited = [this](const FormFieldData& field) {
     return formless_elements_user_edited_.contains(field.renderer_id);
   };
-
   // The three cases handled by this function:
   bool user_autofilled_or_edited_owned_form = !!last_interacted_form().GetId();
   bool user_autofilled_unowned_form = formless_elements_were_autofilled_;
@@ -1710,17 +1709,12 @@ std::optional<FormData> AutofillAgent::GetSubmittedForm() const {
       !unsafe_render_frame()) {
     return std::nullopt;
   }
-
   // Extracts the last-interacted form, with fallback to its last-saved state.
   std::optional<FormData> form = form_util::ExtractFormData(
       unsafe_render_frame()->GetWebFrame()->GetDocument(),
       last_interacted_form().GetForm(), field_data_manager());
-  return !form ||
-                 (user_edited_unowned_form &&
-                  base::ranges::none_of(form->fields, has_been_user_edited) &&
-                  base::FeatureList::IsEnabled(
-                      features::
-                          kAutofillPreferProvisionalFormWhenFormlessFormIsRemoved))
+  return !form || (user_edited_unowned_form &&
+                   base::ranges::none_of(form->fields, has_been_user_edited))
              ? provisionally_saved_form()
              : form;
 }
