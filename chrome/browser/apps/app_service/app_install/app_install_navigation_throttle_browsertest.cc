@@ -47,6 +47,31 @@ class AppInstallNavigationThrottleBrowserTest
     : public InProcessBrowserTest,
       public testing::WithParamInterface<bool> {
  public:
+  class AutoAcceptInstallDialogScope {
+   public:
+    explicit AutoAcceptInstallDialogScope(bool is_ash_dialog_enabled)
+        : is_ash_dialog_enabled_(is_ash_dialog_enabled) {
+      if (is_ash_dialog_enabled_) {
+        crosapi::mojom::TestControllerAsyncWaiter(crosapi::GetTestController())
+            .SetAppInstallDialogAutoAccept(true);
+      } else {
+        web_app::SetAutoAcceptPWAInstallConfirmationForTesting(true);
+      }
+    }
+
+    ~AutoAcceptInstallDialogScope() {
+      if (is_ash_dialog_enabled_) {
+        crosapi::mojom::TestControllerAsyncWaiter(crosapi::GetTestController())
+            .SetAppInstallDialogAutoAccept(false);
+      } else {
+        web_app::SetAutoAcceptPWAInstallConfirmationForTesting(false);
+      }
+    }
+
+   private:
+    const bool is_ash_dialog_enabled_;
+  };
+
   static std::string ParamToString(testing::TestParamInfo<bool> param) {
     return param.param ? "AshDialogEnabled" : "AshDialogDisabled";
   }
@@ -96,15 +121,6 @@ class AppInstallNavigationThrottleBrowserTest
     return std::move(http_response);
   }
 
-  void SetInstallDialogAutoAccept(bool auto_accept) {
-    if (is_ash_dialog_enabled()) {
-      crosapi::mojom::TestControllerAsyncWaiter(crosapi::GetTestController())
-          .SetAppInstallDialogAutoAccept(auto_accept);
-    } else {
-      web_app::SetAutoAcceptPWAInstallConfirmationForTesting(auto_accept);
-    }
-  }
-
   std::map<GURL, std::string> response_map_;
   base::AutoReset<bool> feature_scope_ =
       chromeos::features::SetAppInstallServiceUriEnabledForTesting();
@@ -148,33 +164,33 @@ IN_PROC_BROWSER_TEST_P(AppInstallNavigationThrottleBrowserTest,
   auto* proxy = AppServiceProxyFactory::GetForProfile(browser()->profile());
   ASSERT_TRUE(proxy->AppRegistryCache().IsAppTypeInitialized(AppType::kWeb));
 
-  // Make install prompts auto accept.
-  SetInstallDialogAutoAccept(true);
+  // Make install prompts auto accept for this block.
+  {
+    AutoAcceptInstallDialogScope auto_accept_scope(is_ash_dialog_enabled());
 
-  // Open install-app URI.
-  EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
-  EXPECT_TRUE(content::ExecJs(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      base::StringPrintf("window.open('almanac://install-app?package_id=%s');",
-                         package_id.ToString().c_str())));
+    // Open install-app URI.
+    EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
+    EXPECT_TRUE(content::ExecJs(
+        browser()->tab_strip_model()->GetActiveWebContents(),
+        base::StringPrintf(
+            "window.open('almanac://install-app?package_id=%s');",
+            package_id.ToString().c_str())));
 
-  // This should trigger the sequence:
-  // - AppInstallNavigationThrottle
-  // - AppInstallServiceAsh
-  // - NavigateAndTriggerInstallDialogCommand
+    // This should trigger the sequence:
+    // - AppInstallNavigationThrottle
+    // - AppInstallServiceAsh
+    // - NavigateAndTriggerInstallDialogCommand
 
-  // Await install to complete.
-  web_app::WebAppTestInstallObserver(browser()->profile())
-      .BeginListeningAndWait({app_id});
+    // Await install to complete.
+    web_app::WebAppTestInstallObserver(browser()->profile())
+        .BeginListeningAndWait({app_id});
 
-  // Check that window.open() didn't leave an extra about:blank tab lying
-  // around, there should only be the original about:blank tab and the install
-  // page tab / install dialog.
-  EXPECT_EQ(browser()->tab_strip_model()->count(),
-            is_ash_dialog_enabled() ? 1 : 2);
-
-  // Disable install prompt auto accept.
-  SetInstallDialogAutoAccept(false);
+    // Check that window.open() didn't leave an extra about:blank tab lying
+    // around, there should only be the original about:blank tab and the install
+    // page tab / install dialog.
+    EXPECT_EQ(browser()->tab_strip_model()->count(),
+              is_ash_dialog_enabled() ? 1 : 2);
+  }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // These metrics are emitted on lacros only.
@@ -223,7 +239,7 @@ IN_PROC_BROWSER_TEST_P(AppInstallNavigationThrottleBrowserTest,
       app_id, [](const apps::AppUpdate& update) {}));
 
   // Make install prompts auto accept.
-  SetInstallDialogAutoAccept(true);
+  AutoAcceptInstallDialogScope auto_accept_scope(is_ash_dialog_enabled());
 
   // Create a different browser window so the process doesn't stop when the
   // browser window closes.
@@ -252,9 +268,6 @@ IN_PROC_BROWSER_TEST_P(AppInstallNavigationThrottleBrowserTest,
   // These metrics are emitted on lacros only.
   histograms.ExpectBucketCount("Apps.AppInstallParentWindowFound", true, 0);
   histograms.ExpectBucketCount("Apps.AppInstallParentWindowFound", false, 1);
-
-  // Reset auto accept.
-  SetInstallDialogAutoAccept(false);
 }
 #endif
 
