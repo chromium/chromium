@@ -257,11 +257,17 @@ AbortCallback FakeProvidedFileSystem::OpenFile(const base::FilePath& entry_path,
     entry.write_buffer = entry.contents;
   }
 
+  // Make a copy of the `CloudFileInfo` to pass to the callback.
+  auto cloud_file_info = (entry.metadata && entry.metadata->cloud_file_info)
+                             ? std::make_unique<CloudFileInfo>(
+                                   entry.metadata->cloud_file_info->version_tag)
+                             : nullptr;
+
   const int file_handle = ++last_file_handle_;
   opened_files_[file_handle] = OpenedFile(entry_path, mode);
   return PostAbortableTask(base::BindOnce(std::move(callback), file_handle,
                                           base::File::FILE_OK,
-                                          /*cloud_file_info=*/nullptr));
+                                          std::move(cloud_file_info)));
 }
 
 AbortCallback FakeProvidedFileSystem::CloseFile(
