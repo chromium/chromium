@@ -55,7 +55,13 @@ namespace {
 // greater than 5.
 constexpr int kMaxTimerNestingLevel = 5;
 constexpr base::TimeDelta kMinimumInterval = base::Milliseconds(4);
-constexpr base::TimeDelta kMaxHighResolutionInterval = base::Milliseconds(32);
+
+base::TimeDelta GetMaxHighResolutionInterval() {
+  return base::FeatureList::IsEnabled(
+             features::kLowerHighResolutionTimerThreshold)
+             ? base::Milliseconds(4)
+             : base::Milliseconds(32);
+}
 
 // Maintains a set of DOMTimers for a given ExecutionContext. Assigns IDs to
 // timers; these IDs are the ones returned to web authors from setTimeout or
@@ -271,7 +277,7 @@ DOMTimer::DOMTimer(ExecutionContext& context,
   // may need to run on time to deliver the best user experience.
   // TODO(crbug.com/1153139): Remove IsAlignWakeUpsDisabledForProcess() in M121
   // once workaround is no longer needed by WebRTC apps.
-  bool precise = (timeout < kMaxHighResolutionInterval) ||
+  bool precise = (timeout < GetMaxHighResolutionInterval()) ||
                  scheduler::IsAlignWakeUpsDisabledForProcess();
 
   // Step 11:

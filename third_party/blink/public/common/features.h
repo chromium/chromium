@@ -53,6 +53,8 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kAllowBFCacheWhenClosedMediaStreamTrack);
 
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLowerHighResolutionTimerThreshold);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kAlignFontDisplayAutoTimeoutWithLCPGoal);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
