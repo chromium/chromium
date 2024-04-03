@@ -65,7 +65,7 @@
    */
   :host(.always-show-top) #bottomContainer,
   #topContainer:has(sea-pen-template-query, sea-pen-input-query) + #bottomContainer {
-    top: 172px;
+    top: var(--sea-pen-top-container-min-height);
   }
 
   sea-pen-recent-wallpapers {
