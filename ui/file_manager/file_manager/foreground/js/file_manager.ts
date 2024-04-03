@@ -787,9 +787,9 @@ export class FileManager {
 
     this.initEssentialUi_();
     // Initialize the Store for the whole app.
-    const store = getStore();
-    store.init(getEmptyState());
+    this.store_.init(getEmptyState());
     this.initAdditionalUi_();
+    await this.initPrefs_();
     await this.initSettingsPromise_;
     const fileSystemUIPromise = this.initFileSystemUi_();
     this.initUiFocus_();
@@ -948,6 +948,23 @@ export class FileManager {
     // Arrange the file list.
     this.ui_.listContainer.table.normalizeColumns();
     this.ui_.listContainer.table.redraw();
+  }
+
+  /**
+   * Initializes the prefs in the store.
+   */
+  private async initPrefs_():
+      Promise<chrome.fileManagerPrivate.Preferences|null> {
+    let prefs = null;
+    try {
+      prefs = await getPreferences();
+    } catch (e) {
+      console.error('Cannot get preferences:', e);
+      return null;
+    }
+
+    this.store_.dispatch(updatePreferences(prefs));
+    return prefs;
   }
 
   /**
@@ -1130,7 +1147,6 @@ export class FileManager {
       return;
     }
 
-    // TODO(b/330866402): Extract into separate method.
     // Drive add/removes itself from directory tree in onPreferencesChanged_.
     // Setup a prefs change listener then call onPreferencesChanged_() to add
     // Drive to the directory tree if Drive is enabled by prefs.
@@ -1603,15 +1619,10 @@ export class FileManager {
    * otherwise remove it. This supports dynamic refresh when the pref changes.
    */
   private async onPreferencesChanged_() {
-    let prefs = null;
-    try {
-      prefs = await getPreferences();
-    } catch (e) {
-      console.error('Cannot get preferences:', e);
+    const prefs = await this.initPrefs_();
+    if (!prefs) {
       return;
     }
-
-    this.store_.dispatch(updatePreferences(prefs));
 
     let redraw = false;
     if (this.driveEnabled_ !== prefs.driveEnabled) {
