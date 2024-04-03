@@ -20,8 +20,6 @@ IsUnsupportedTextMimeType(const std::string& mime_type);
 bool BLINK_COMMON_EXPORT
 IsSupportedJavascriptMimeType(const std::string& mime_type);
 bool BLINK_COMMON_EXPORT IsJSONMimeType(const std::string& mime_type);
-bool BLINK_COMMON_EXPORT IsXMLMimeType(const std::string& mime_type);
-bool BLINK_COMMON_EXPORT IsSVGMimeType(const std::string& mime_type);
 
 // Convenience function.
 bool BLINK_COMMON_EXPORT IsSupportedMimeType(const std::string& mime_type);

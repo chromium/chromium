@@ -42,10 +42,11 @@ const run_test_cross_origin = (loader, contentType) => {
 }
 
 const resource_loaders_and_types = [
+  [load.font, ["font/woff", "font/otf"]],
   [load.image, ["image/png", "image/jpg"]],
-  [load.script, ["text/javascript"]],
+  [load.script, ["application/javascript", "text/javascript"]],
   [load.stylesheet, ["text/css"]],
-  [load.xhr_async, ["image/png", "image/jpg"]],
+  [load.xhr_async, ["application/x-gzip", "application/pdf"]],
   [load.iframe, ["text/html"]]
 ];
 
@@ -76,7 +77,7 @@ const run_test_cross_origin_allow_origin = (loader_with_attr,contentType) => {
 
 const resource_loaders_with_attrs_and_types = [
   [load.image_with_attrs, ["image/gif", "image/jpeg"]],
-  [load.script_with_attrs, ["text/javascript"]],
+  [load.script_with_attrs, ["application/javascript", "text/javascript"]],
   [load.stylesheet_with_attrs, ["text/css"]],
 ]
 
