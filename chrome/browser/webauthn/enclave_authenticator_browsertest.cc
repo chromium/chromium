@@ -16,7 +16,6 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/build_config.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
@@ -471,16 +470,10 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
 
 }  // namespace
 
-// TODO(crbug.com/332193450): Test fails on ARM64 Windows. Fix and re-enable.
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
-#define MAYBE_RegisterDeviceWithGpmPin_MakeCredential_Success \
-  DISABLED_RegisterDeviceWithGpmPin_MakeCredential_Success
-#else
-#define MAYBE_RegisterDeviceWithGpmPin_MakeCredential_Success \
-  RegisterDeviceWithGpmPin_MakeCredential_Success
-#endif
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
-                       MAYBE_RegisterDeviceWithGpmPin_MakeCredential_Success) {
+IN_PROC_BROWSER_TEST_F(
+    EnclaveAuthenticatorBrowserTest,
+    // TODO(crbug.com/332193450): Re-enable this test
+    DISABLED_RegisterDeviceWithGpmPin_MakeCredential_Success) {
   /* Test script:
    *  - Prerequisites:
    *       Enclave not registered
