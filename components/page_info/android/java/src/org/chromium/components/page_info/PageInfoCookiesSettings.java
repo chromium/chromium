@@ -57,8 +57,9 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     private boolean mTrackingProtectionUI;
     private boolean mBlockAll3PC;
     private boolean mIsIncognito;
+    private PageInfoControllerDelegate mPageInfoControllerDelegate;
 
-    /**  Parameters to configure the cookie controls view. */
+    /** Parameters to configure the cookie controls view. */
     public static class PageInfoCookiesViewParams {
         // Called when the toggle controlling third-party cookie blocking changes.
         public boolean thirdPartyCookieBlockingEnabled;
@@ -318,7 +319,17 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     }
 
     /**
-     * Returns a boolean indicating if the FPS info has been shown or not.
+     * @param delegate {@link PageInfoControllerDelegate} for showing filtered RWS (Related Website
+     *     Sets) in settings.
+     */
+    public void setPageInfoDelegate(PageInfoControllerDelegate delegate) {
+        mPageInfoControllerDelegate = delegate;
+    }
+
+    /**
+     * Returns a boolean indicating if the FPS info has been shown or not.\
+     *
+     * <p>TODO(b/331453627): change to RWS
      *
      * @param fpsInfo First Party Sets info to show.
      * @param currentOrigin PageInfo current origin.
@@ -348,6 +359,13 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                                 .isPartOfManagedFirstPartySet(currentOrigin);
                     }
                 });
+        if (getSiteSettingsDelegate().shouldShowPrivacySandboxRwsUi()) {
+            mFPSInUse.setOnPreferenceClickListener(
+                    preference -> {
+                        mPageInfoControllerDelegate.showAllSettingsForRws(mFPSInfo.getOwner());
+                        return false;
+                    });
+        }
 
         return true;
     }

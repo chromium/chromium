@@ -125,6 +125,7 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
         mSubPage.setCookieStatus(
                 mCookieControlsVisible, mThirdPartyCookiesBlocked, mEnforcement, mExpiration);
         mSubPage.setSitesCount(mAllowedSites, mBlockedSites);
+        mSubPage.setPageInfoDelegate(getDelegate());
 
         SiteSettingsCategory storageCategory =
                 SiteSettingsCategory.createFromType(

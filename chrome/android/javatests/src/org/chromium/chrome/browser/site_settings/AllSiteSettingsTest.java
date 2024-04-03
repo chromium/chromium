@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.site_settings;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -54,6 +55,9 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 public class AllSiteSettingsTest {
     public static final String TEST_BATCH_NAME = "AllSiteSettingsTest";
+    private static final String A_GITHUB_IO = "a.github.io";
+    private static final String B_GITHUB_IO = "b.github.io";
+    private static final String C_GITHUB_IO = "c.github.io";
 
     @Rule
     public RenderTestRule mRenderTestRule =
@@ -140,13 +144,13 @@ public class AllSiteSettingsTest {
                     WebsitePreferenceBridge.setContentSettingCustomScope(
                             getBrowserContextHandle(),
                             ContentSettingsType.COOKIES,
-                            "a.github.io",
+                            A_GITHUB_IO,
                             "*",
                             ContentSettingValues.ALLOW);
                     WebsitePreferenceBridge.setContentSettingCustomScope(
                             getBrowserContextHandle(),
                             ContentSettingsType.COOKIES,
-                            "b.github.io",
+                            B_GITHUB_IO,
                             "*",
                             ContentSettingValues.ALLOW);
                 });
@@ -154,8 +158,40 @@ public class AllSiteSettingsTest {
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startAllSitesSettings(SiteSettingsCategory.Type.ALL_SITES);
         onViewWaiting(withText(containsString("Clear browsing"))).check(matches(isDisplayed()));
-        onView(withText("a.github.io")).check(matches(isDisplayed()));
-        onView(withText("b.github.io")).check(matches(isDisplayed()));
+        onView(withText(A_GITHUB_IO)).check(matches(isDisplayed()));
+        onView(withText(B_GITHUB_IO)).check(matches(isDisplayed()));
+
+        settingsActivity.finish();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    public void testAllSitesWithRelatedFilter() throws Exception {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    WebsitePreferenceBridge.setContentSettingCustomScope(
+                            getBrowserContextHandle(),
+                            ContentSettingsType.COOKIES,
+                            A_GITHUB_IO,
+                            "*",
+                            ContentSettingValues.ALLOW);
+                    WebsitePreferenceBridge.setContentSettingCustomScope(
+                            getBrowserContextHandle(),
+                            ContentSettingsType.COOKIES,
+                            B_GITHUB_IO,
+                            "*",
+                            ContentSettingValues.ALLOW);
+                });
+        String relatedFilter = String.format("related:%s", C_GITHUB_IO);
+
+        SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startAllSitesSettingsForRws(
+                        SiteSettingsCategory.Type.ALL_SITES, C_GITHUB_IO);
+        onViewWaiting(withText(containsString("Clear browsing"))).check(matches(isDisplayed()));
+        onView(withText(relatedFilter)).check(matches(isDisplayed()));
+        onView(withText(A_GITHUB_IO)).check(doesNotExist());
+        onView(withText(B_GITHUB_IO)).check(doesNotExist());
 
         settingsActivity.finish();
     }

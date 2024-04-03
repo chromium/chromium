@@ -116,8 +116,27 @@ public class WebsiteGroup implements WebsiteEntry {
         return false;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public boolean isPartOfRws() {
+        return getFPSInfo() != null;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String getRwsOwner() {
+        return isPartOfRws() ? getFPSInfo().getOwner() : null;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int getRwsSize() {
+        return isPartOfRws() ? getFPSInfo().getMembersCount() : 0;
+    }
+
     /**
      * Some Google-affiliated domains are not allowed to delete cookies for supervised accounts.
+     *
      * @return true only if every single website in the group has the deletion disabled.
      */
     @Override

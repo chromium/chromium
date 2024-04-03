@@ -134,6 +134,22 @@ public class SiteSettingsTestUtils {
                 InstrumentationRegistry.getInstrumentation().startActivitySync(intent);
     }
 
+    public static SettingsActivity startAllSitesSettingsForRws(
+            @SiteSettingsCategory.Type int type, String rwsPage) {
+        Bundle fragmentArgs = new Bundle();
+        fragmentArgs.putString(
+                AllSiteSettings.EXTRA_CATEGORY, SiteSettingsCategory.preferenceKey(type));
+        fragmentArgs.putString(AllSiteSettings.EXTRA_SEARCH, rwsPage);
+        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+        Intent intent =
+                settingsLauncher.createSettingsActivityIntent(
+                        ApplicationProvider.getApplicationContext(),
+                        AllSiteSettings.class.getName(),
+                        fragmentArgs);
+        return (SettingsActivity)
+                InstrumentationRegistry.getInstrumentation().startActivitySync(intent);
+    }
+
     public static RadioButtonWithDescriptionAndAuxButton getCookieRadioButtonFrom(
             TriStateCookieSettingsPreference cookiePage,
             @CookieControlsMode int cookieControlsMode) {

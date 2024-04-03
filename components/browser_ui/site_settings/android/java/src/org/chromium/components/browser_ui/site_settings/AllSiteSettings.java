@@ -68,14 +68,17 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
     // should only be All Sites or Storage.
     public static final String EXTRA_CATEGORY = "category";
     public static final String EXTRA_TITLE = "title";
+    public static final String EXTRA_SEARCH = "search";
 
     /**
-     * If present, the list of websites will be filtered by domain using
-     * {@link UrlUtilities#getDomainAndRegistry}.
+     * If present, the list of websites will be filtered by domain using {@link
+     * UrlUtilities#getDomainAndRegistry}.
      */
     public static final String EXTRA_SELECTED_DOMAINS = "selected_domains";
 
     public static final String PREF_CLEAR_BROWSING_DATA = "clear_browsing_data_link";
+    // Prefix for Related Website Sets search filter (mobile-desktop feature parity)
+    public static final String RWS_SEARCH_PREFIX = "related:";
 
     // The clear button displayed in the Storage view.
     private Button mClearButton;
@@ -342,6 +345,11 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
                         ? new HashSet<>(getArguments().getStringArrayList(EXTRA_SELECTED_DOMAINS))
                         : null;
 
+        mSearch =
+                getArguments().containsKey(EXTRA_SEARCH)
+                        ? RWS_SEARCH_PREFIX + getArguments().getString(EXTRA_SEARCH)
+                        : mSearch;
+
         setHasOptionsMenu(true);
 
         super.onActivityCreated(savedInstanceState);
@@ -469,7 +477,7 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
             List<WebsiteRowPreference> preferences = new ArrayList<>();
             // Find entries matching the current search.
             for (WebsiteEntry entry : entries) {
-                if (mSearch == null || mSearch.isEmpty() || entry.matches(mSearch)) {
+                if (filterSearchResult(entry)) {
                     WebsiteRowPreference preference =
                             new WebsiteRowPreference(
                                     getStyledContext(),
@@ -506,6 +514,21 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
             }
             mWebsites = websites;
             return !websites.isEmpty();
+        }
+    }
+
+    private boolean filterSearchResult(WebsiteEntry entry) {
+        if (getSiteSettingsDelegate().shouldShowPrivacySandboxRwsUi()
+                && mSearch != null
+                && mSearch.startsWith(RWS_SEARCH_PREFIX)) {
+            return entry.isPartOfRws()
+                    && entry.getRwsOwner()
+                            .contains(
+                                    mSearch.replace(
+                                            RWS_SEARCH_PREFIX,
+                                            "")); // no need to check empty and null
+        } else {
+            return mSearch == null || mSearch.isEmpty() || entry.matches(mSearch);
         }
     }
 

@@ -135,8 +135,12 @@ public abstract class PageInfoControllerDelegate {
     /** Show Tracking Protection settings. */
     public abstract void showTrackingProtectionSettings();
 
+    /** Show RWS (related website sets) sites in all site settings filtered by {@param rwsOwner}. */
+    public abstract void showAllSettingsForRws(String rwsOwner);
+
     /**
      * Shows cookie feedback UI.
+     *
      * @param activity The Activity where the feedback is shown.
      */
     public abstract void showCookieFeedback(Activity activity);

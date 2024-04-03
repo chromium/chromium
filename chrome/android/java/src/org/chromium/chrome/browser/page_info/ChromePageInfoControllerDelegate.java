@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.page_info;
 
+import static org.chromium.components.browser_ui.site_settings.AllSiteSettings.EXTRA_SEARCH;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.ViewGroup;
 
@@ -44,6 +47,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.site_settings.AllSiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsDelegate;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
@@ -221,6 +225,16 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
     public void showTrackingProtectionSettings() {
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
         settingsLauncher.launchSettingsActivity(mContext, TrackingProtectionSettings.class);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void showAllSettingsForRws(String rwsOwner) {
+        Bundle extras = new Bundle();
+        extras.putString(EXTRA_SEARCH, rwsOwner);
+
+        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+        settingsLauncher.launchSettingsActivity(mContext, AllSiteSettings.class, extras);
     }
 
     @Override

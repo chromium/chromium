@@ -197,6 +197,27 @@ public class WebsiteRowPreference extends ChromeImageViewPreference {
             }
         }
 
+        if (mSiteSettingsDelegate.shouldShowPrivacySandboxRwsUi()) {
+            if (mSiteEntry.isPartOfRws()) {
+                String rwsSummary =
+                        getContext()
+                                .getResources()
+                                .getQuantityString(
+                                        R.plurals.rws_summary,
+                                        mSiteEntry.getRwsSize(),
+                                        Integer.toString(mSiteEntry.getRwsSize()),
+                                        mSiteEntry.getRwsOwner());
+                if (summary.isEmpty()) {
+                    summary = rwsSummary;
+                } else {
+                    summary =
+                            getContext()
+                                    .getString(
+                                            R.string.summary_with_one_bullet, summary, rwsSummary);
+                }
+            }
+        }
+
         if (!summary.isEmpty()) {
             setSummary(summary);
         }

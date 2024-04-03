@@ -494,6 +494,24 @@ public final class Website implements WebsiteEntry {
         return getTitle().contains(search);
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public boolean isPartOfRws() {
+        return getFPSCookieInfo() != null;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String getRwsOwner() {
+        return isPartOfRws() ? getFPSCookieInfo().getOwner() : null;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int getRwsSize() {
+        return isPartOfRws() ? getFPSCookieInfo().getMembersCount() : 0;
+    }
+
     @Override
     public boolean isCookieDeletionDisabled(BrowserContextHandle browserContextHandle) {
         return WebsitePreferenceBridge.isCookieDeletionDisabled(
