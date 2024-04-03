@@ -13,8 +13,6 @@
 // Helper function for writing system logs used in Feedback reports. Currently
 // used by chrome://net-internals#chromeos for manual uploading of system logs.
 
-class Profile;
-
 namespace ash {
 namespace system_logs_writer {
 
@@ -23,7 +21,6 @@ namespace system_logs_writer {
 // Runs |callback| on completion with the complete file path on success, or
 // nullopt on failure.
 void WriteSystemLogs(
-    Profile* profile,
     const base::FilePath& dest_dir,
     bool scrub_data,
     base::OnceCallback<void(std::optional<base::FilePath>)> callback);
