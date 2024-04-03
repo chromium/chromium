@@ -163,7 +163,12 @@ class CreditCardAccessManagerTest : public testing::Test {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
     personal_data().SetPrefService(autofill_client_.GetPrefs());
     personal_data().SetSyncServiceForTest(&sync_service_);
-
+#if BUILDFLAG(IS_IOS)
+    // On iOS mandatory reauth is by default enabled. Disable it explicitly
+    // to not interfere with tests that do not test reauth functionalities.
+    autofill_client_.GetPrefs()->SetBoolean(
+        prefs::kAutofillPaymentMethodsMandatoryReauth, false);
+#endif
     accessor_ = std::make_unique<TestAccessor>();
     autofill_driver_ = std::make_unique<TestAutofillDriver>(&autofill_client_);
 

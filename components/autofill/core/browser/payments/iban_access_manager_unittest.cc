@@ -43,6 +43,12 @@ class IbanAccessManagerTest : public testing::Test {
             std::make_unique<MockTestPaymentsNetworkInterface>());
     personal_data().SetSyncingForTest(true);
     personal_data().SetPrefService(autofill_client_.GetPrefs());
+#if BUILDFLAG(IS_IOS)
+    // On iOS mandatory reauth is by default enabled. Disable it explicitly
+    // to not interfere with tests that do not test reauth functionalities.
+    autofill_client_.GetPrefs()->SetBoolean(
+        prefs::kAutofillPaymentMethodsMandatoryReauth, false);
+#endif
     iban_access_manager_ =
         std::make_unique<IbanAccessManager>(&autofill_client_);
   }

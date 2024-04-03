@@ -1590,21 +1590,6 @@
             ]
         }
     ],
-    "AutofillEnablePaymentsMandatoryReauth": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnablePaymentsMandatoryReauth"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillEnableVirtualCardOnFile": [
         {
             "platforms": [

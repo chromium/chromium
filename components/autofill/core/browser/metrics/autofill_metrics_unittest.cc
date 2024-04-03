@@ -1255,6 +1255,9 @@ TEST_F(AutofillMetricsTest, LogStoredCreditCardWithNicknameMetrics) {
 
 // Test that the credit card checkout flow user actions are correctly logged.
 TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
+  // Disable mandatory reauth as it is not part of this test and will
+  // interfere with the card retrieval flow.
+  personal_data().SetPaymentMethodsMandatoryReauthEnabled(false);
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/false,
                       /*include_full_server_credit_card=*/false,
@@ -2306,6 +2309,9 @@ TEST_P(AutofillMetricsIFrameTest,
 
 // Test that we log filled form events for credit cards.
 TEST_P(AutofillMetricsIFrameTest, CreditCardFilledFormEvents) {
+  // Disable mandatory reauth as it is not part of this test and will
+  // interfere with the card retrieval flow.
+  personal_data().SetPaymentMethodsMandatoryReauthEnabled(false);
   // Creating all kinds of cards.
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/true,

@@ -149,11 +149,13 @@ BASE_FEATURE(kAutofillEnablePaymentsAndroidBottomSheetAccountEmail,
 // authentication.
 BASE_FEATURE(kAutofillEnablePaymentsMandatoryReauth,
              "AutofillEnablePaymentsMandatoryReauth",
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_IOS)
              base::FEATURE_ENABLED_BY_DEFAULT);
 #else
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) ||
+        // BUILDFLAG(IS_IOS)
 
 // When enabled, risk data is prefetched during payments autofill flows to reduce
 // user-perceived latency.

@@ -109,10 +109,12 @@ TEST_F(AutofillCreditCardTableViewControllerTest, TestInitialization) {
   CreateController();
   CheckController();
 
-  // Expect one switch section.
-  EXPECT_EQ(1, NumberOfSections());
-  // Expect switch section to contain one row (the credit card Autofill toggle).
+  // Expect two switch sections (the credit card Autofill switch and the
+  // mandatory reauth switch).
+  ASSERT_EQ(2, NumberOfSections());
+  // Expect each switch section to contain one row.
   EXPECT_EQ(1, NumberOfItemsInSection(0));
+  EXPECT_EQ(1, NumberOfItemsInSection(1));
 }
 
 // Adding a single credit card results in a credit card section.
@@ -121,10 +123,11 @@ TEST_F(AutofillCreditCardTableViewControllerTest, TestOneCreditCard) {
   CreateController();
   CheckController();
 
-  // Expect two sections (switch and credit card section).
-  EXPECT_EQ(2, NumberOfSections());
+  // Expect three sections (credit card switch, mandatory reauth switch and
+  // credit card section).
+  ASSERT_EQ(3, NumberOfSections());
   // Expect credit card section to contain one row (the credit card itself).
-  EXPECT_EQ(1, NumberOfItemsInSection(1));
+  EXPECT_EQ(1, NumberOfItemsInSection(2));
 }
 
 // Deleting the only credit card results in item deletion and section deletion.
@@ -134,14 +137,15 @@ TEST_F(AutofillCreditCardTableViewControllerTest,
   CreateController();
   CheckController();
 
-  // Expect two sections (switch and credit card section).
-  EXPECT_EQ(2, NumberOfSections());
+  // Expect three sections (credit card Autofill switch, mandatory reauth switch
+  // and credit card section).
+  ASSERT_EQ(3, NumberOfSections());
   // Expect credit card section to contain one row (the credit card itself).
-  EXPECT_EQ(1, NumberOfItemsInSection(1));
+  EXPECT_EQ(1, NumberOfItemsInSection(2));
 
   // Delete the credit card item and check that the section is removed.
-  EXPECT_TRUE(DeleteItemAndWait(1, 0, ^{
-    return NumberOfSections() == 1;
+  EXPECT_TRUE(DeleteItemAndWait(2, 0, ^{
+    return NumberOfSections() == 2;
   }));
 }
 
