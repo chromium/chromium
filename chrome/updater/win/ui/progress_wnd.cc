@@ -402,17 +402,8 @@ void ProgressWnd::OnWaitingRetryDownload(const std::string& app_id,
   }
 
   cur_state_ = States::STATE_WAITING_TO_DOWNLOAD;
-
-  // Display the next retry time interval if |next_retry_time| is in the future.
-  const auto retry_time_in_sec =
-      (next_retry_time - base::Time::NowFromSystemTime()).InSeconds();
-  if (retry_time_in_sec > 0) {
-    // TODO(crbug.com/1314812) Retry download is not utilized. Adding a
-    // placeholder for IDS_DOWNLOAD_RETRY_BASE.
-    std::wstring s;
-    SetDlgItemText(IDC_INSTALLER_STATE_TEXT, s.c_str());
-    ChangeControlState();
-  }
+  SetDlgItemText(IDC_INSTALLER_STATE_TEXT, L"");
+  ChangeControlState();
 }
 
 void ProgressWnd::OnWaitingToInstall(const std::string& app_id,
