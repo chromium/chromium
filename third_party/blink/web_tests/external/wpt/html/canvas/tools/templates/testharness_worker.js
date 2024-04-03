@@ -17,19 +17,20 @@ var t_fail = t.step_func(function(reason) {
     throw reason;
 });
 t.step(function() {
+
 {% endif %}
 
-{# Test body: #}
+{#- Test body: #}
   var canvas = new OffscreenCanvas({{ size[0] }}, {{ size[1] }});
   var ctx = canvas.getContext('2d'{% if attributes %}, {{ attributes }}{% endif %});
 
   {{ code_worker | trim | indent(2)}}
-  t.done();
 
 {#- Promise vs. async test footer: +#}
 {% if test_type == 'promise' %}
 }, "{{ desc }}");
 {% else %}
+  t.done();
 });
 {% endif %}
 done();
