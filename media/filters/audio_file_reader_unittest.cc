@@ -5,6 +5,7 @@
 #include "media/filters/audio_file_reader.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/hash/md5.h"
 #include "base/time/time.h"
@@ -74,7 +75,7 @@ class AudioFileReaderTest : public testing::Test {
 
         // On the first pass save the MD5 hash of each packet, on subsequent
         // passes ensure it matches.
-        const std::string md5_hash = base::MD5String(base::StringPiece(
+        const std::string md5_hash = base::MD5String(std::string_view(
             reinterpret_cast<char*>(packet.data), packet.size));
         if (i == 0) {
           packet_md5_hashes_.push_back(md5_hash);

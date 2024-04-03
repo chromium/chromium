@@ -5,7 +5,8 @@
 #ifndef MEDIA_MUXERS_MP4_TYPE_CONVERSION_H_
 #define MEDIA_MUXERS_MP4_TYPE_CONVERSION_H_
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "base/time/time.h"
 #include "media/base/media_export.h"
 
@@ -22,7 +23,7 @@ inline constexpr base::Time kMP4Epoch =
 inline constexpr uint16_t kUndefinedLanguageCode = 0x55C4;
 
 uint16_t MEDIA_EXPORT
-ConvertIso639LanguageCodeToU16(const base::StringPiece input_language);
+ConvertIso639LanguageCodeToU16(const std::string_view input_language);
 
 // Convert given default Time unit, e.g. 1000 milliseconds per 1 second, to
 // a given timescale, timescale value per second.

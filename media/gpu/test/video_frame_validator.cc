@@ -6,6 +6,9 @@
 
 #include <sys/mman.h>
 
+#include <string_view>
+
+#include "base/containers/span.h"
 #include "base/cpu.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
@@ -360,14 +363,14 @@ std::string MD5VideoFrameValidator::ComputeMD5FromVideoFrame(
   const VideoPixelFormat format = video_frame.format();
   const gfx::Rect& visible_rect = video_frame.visible_rect();
   for (size_t i = 0; i < VideoFrame::NumPlanes(format); ++i) {
-    const int visible_row_bytes =
+    const size_t visible_row_bytes =
         VideoFrame::RowBytes(i, format, visible_rect.width());
     const int visible_rows = VideoFrame::Rows(i, format, visible_rect.height());
-    const char* data = reinterpret_cast<const char*>(video_frame.data(i));
     const size_t stride = video_frame.stride(i);
     for (int row = 0; row < visible_rows; ++row) {
-      base::MD5Update(&context, base::StringPiece(data + (stride * row),
-                                                  visible_row_bytes));
+      base::MD5Update(&context, base::span<const uint8_t>(
+                                    video_frame.data(i) + (stride * row),
+                                    visible_row_bytes));
     }
   }
   base::MD5Digest digest;

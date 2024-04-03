@@ -4,6 +4,8 @@
 
 #include "media/muxers/live_webm_muxer_delegate.h"
 
+#include <string_view>
+
 #include "base/numerics/ostream_operators.h"
 
 namespace media {
@@ -50,7 +52,7 @@ mkvmuxer::int32 LiveWebmMuxerDelegate::DoWrite(const void* buf,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   write_data_callback_.Run(
-      base::StringPiece(reinterpret_cast<const char*>(buf), len));
+      std::string_view(reinterpret_cast<const char*>(buf), len));
   return 0;
 }
 

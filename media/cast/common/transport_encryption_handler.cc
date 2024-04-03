@@ -68,7 +68,7 @@ bool TransportEncryptionHandler::Initialize(const std::string& aes_key,
 }
 
 bool TransportEncryptionHandler::Encrypt(FrameId frame_id,
-                                         const base::StringPiece& data,
+                                         const std::string_view data,
                                          std::string* encrypted_data) {
   if (!is_activated_)
     return false;
@@ -84,7 +84,7 @@ bool TransportEncryptionHandler::Encrypt(FrameId frame_id,
 }
 
 bool TransportEncryptionHandler::Decrypt(FrameId frame_id,
-                                         const base::StringPiece& ciphertext,
+                                         const std::string_view ciphertext,
                                          std::string* plaintext) {
   if (!is_activated_) {
     return false;

@@ -10,10 +10,10 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "media/gpu/windows/d3d11_status.h"
 #include "media/gpu/windows/scoped_d3d_buffers.h"
 
@@ -84,8 +84,8 @@ class D3DVideoDecoderWrapper {
   virtual std::unique_ptr<ScopedD3DBuffer> GetBuffer(BufferType type,
                                                      uint32_t desired_size) = 0;
 
-  void RecordFailure(base::StringPiece reason, D3D11Status::Codes code) const;
-  void RecordFailure(base::StringPiece reason,
+  void RecordFailure(std::string_view reason, D3D11Status::Codes code) const;
+  void RecordFailure(std::string_view reason,
                      D3D11Status::Codes code,
                      HRESULT hr) const;
 

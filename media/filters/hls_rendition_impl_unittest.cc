@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "media/filters/hls_rendition_impl.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
@@ -80,8 +82,7 @@ class HlsRenditionImplUnittest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  std::unique_ptr<HlsRenditionImpl> MakeVodRendition(
-      base::StringPiece content) {
+  std::unique_ptr<HlsRenditionImpl> MakeVodRendition(std::string_view content) {
     constexpr hls::types::DecimalInteger version = 3;
     auto uri = GURL("https://example.m3u8");
     auto parsed = hls::MediaPlaylist::Parse(content, uri, version, nullptr);
@@ -98,7 +99,7 @@ class HlsRenditionImplUnittest : public testing::Test {
 
   std::unique_ptr<HlsRenditionImpl> MakeLiveRendition(
       GURL uri,
-      base::StringPiece content) {
+      std::string_view content) {
     constexpr hls::types::DecimalInteger version = 3;
     auto parsed = hls::MediaPlaylist::Parse(content, uri, version, nullptr);
     if (!parsed.has_value()) {

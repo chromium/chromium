@@ -11,6 +11,7 @@
 #include <atomic>
 #include <climits>
 #include <numeric>
+#include <string_view>
 #include <utility>
 
 #include "base/bits.h"
@@ -18,7 +19,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/process/memory.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
@@ -1223,10 +1223,10 @@ void VideoFrame::HashFrameForTesting(base::MD5Context* context,
   DCHECK(context);
   for (size_t plane = 0; plane < NumPlanes(frame.format()); ++plane) {
     for (int row = 0; row < frame.rows(plane); ++row) {
-      base::MD5Update(context, base::StringPiece(reinterpret_cast<const char*>(
-                                                     frame.data(plane) +
-                                                     frame.stride(plane) * row),
-                                                 frame.row_bytes(plane)));
+      base::MD5Update(context,
+                      base::span<const uint8_t>(
+                          frame.data(plane) + frame.stride(plane) * row,
+                          static_cast<size_t>(frame.row_bytes(plane))));
     }
   }
 }

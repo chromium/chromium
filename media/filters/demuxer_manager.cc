@@ -4,6 +4,8 @@
 
 #include "media/filters/demuxer_manager.h"
 
+#include <string_view>
+
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
@@ -49,7 +51,7 @@ enum class MimeType {
   kMaxValue = kTextVtt,  // For UMA histograms.
 };
 
-MimeType TranslateMimeTypeToHistogramEnum(const base::StringPiece& mime_type) {
+MimeType TranslateMimeTypeToHistogramEnum(const std::string_view mime_type) {
   constexpr auto kCaseInsensitive = base::CompareCase::INSENSITIVE_ASCII;
   if (base::StartsWith(mime_type, "application/dash+xml", kCaseInsensitive)) {
     return MimeType::kApplicationDashXml;

@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string_view>
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -40,7 +41,7 @@ class ExternalVideoEncoder final : public VideoEncoder {
   // by the sender.
   static bool IsRecommended(
       Codec codec,
-      base::StringPiece receiver_model_name,
+      std::string_view receiver_model_name,
       const std::vector<media::VideoEncodeAccelerator::SupportedProfile>&
           profiles);
 

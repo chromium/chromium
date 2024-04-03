@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -16,7 +17,6 @@
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/video_frame.h"
@@ -51,7 +51,7 @@ static const char kY4MSimpleFrameDelimiter[] = "FRAME";
 static const int kY4MSimpleFrameDelimiterSize = 6;
 static const float kMJpegFrameRate = 30.0f;
 
-int ParseY4MInt(const base::StringPiece& token) {
+int ParseY4MInt(const std::string_view token) {
   int temp_int;
   CHECK(base::StringToInt(token, &temp_int)) << token;
   return temp_int;
@@ -59,7 +59,7 @@ int ParseY4MInt(const base::StringPiece& token) {
 
 // Extract numerator and denominator out of a token that must have the aspect
 // numerator:denominator, both integer numbers.
-void ParseY4MRational(const base::StringPiece& token,
+void ParseY4MRational(const std::string_view token,
                       int* numerator,
                       int* denominator) {
   size_t index_divider = token.find(':');
@@ -86,13 +86,13 @@ void ParseY4MTags(const std::string& file_header,
   format.pixel_format = PIXEL_FORMAT_I420;
   size_t index = 0;
   size_t blank_position = 0;
-  base::StringPiece token;
+  std::string_view token;
   while ((blank_position = file_header.find_first_of("\n ", index)) !=
          std::string::npos) {
     // Every token is supposed to have an identifier letter and a bunch of
     // information immediately after, which we extract into a |token| here.
     token =
-        base::StringPiece(&file_header[index + 1], blank_position - index - 1);
+        std::string_view(&file_header[index + 1], blank_position - index - 1);
     CHECK(!token.empty());
     switch (file_header[index]) {
       case 'W':

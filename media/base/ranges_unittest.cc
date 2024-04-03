@@ -7,8 +7,8 @@
 #include <stddef.h>
 
 #include <sstream>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -26,7 +26,7 @@ std::ostream& operator<<(std::ostream& os, const Ranges<T>& r) {
 // Helper method for asserting stringified form of |r| matches expectation.
 template<class T>
 static void ExpectRanges(const Ranges<T>& r,
-                         const base::StringPiece& expected_string) {
+                         const std::string_view expected_string) {
   std::stringstream ss;
   ss << r;
   ASSERT_EQ(ss.str(), expected_string);

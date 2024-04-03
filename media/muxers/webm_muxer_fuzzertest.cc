@@ -8,11 +8,11 @@
 #include <memory>
 #include <optional>
 #include <random>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/time/time.h"
 #include "media/base/audio_parameters.h"
@@ -43,7 +43,7 @@ struct Env {
 };
 Env* env = new Env();
 
-void OnWriteCallback(base::StringPiece data) {}
+void OnWriteCallback(std::string_view data) {}
 
 // Entry point for LibFuzzer.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {

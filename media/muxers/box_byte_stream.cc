@@ -80,7 +80,7 @@ void BoxByteStream::WriteBytes(const void* buf, size_t len) {
   position_ += len;
 }
 
-void BoxByteStream::WriteString(base::StringPiece value) {
+void BoxByteStream::WriteString(std::string_view value) {
   if (value.empty()) {
     WriteU8(0);
     return;

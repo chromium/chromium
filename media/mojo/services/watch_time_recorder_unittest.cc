@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "base/hash/hash.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_message_loop.h"
@@ -97,11 +97,11 @@ class WatchTimeRecorderTest : public testing::Test {
         media_stream_type, renderer_type));
   }
 
-  void ExpectWatchTime(const std::vector<base::StringPiece>& keys,
+  void ExpectWatchTime(const std::vector<std::string_view>& keys,
                        base::TimeDelta value) {
     for (int i = 0; i <= static_cast<int>(WatchTimeKey::kWatchTimeKeyMax);
          ++i) {
-      const base::StringPiece test_key =
+      const std::string_view test_key =
           ConvertWatchTimeKeyToStringForUma(static_cast<WatchTimeKey>(i));
       if (test_key.empty())
         continue;
@@ -114,8 +114,8 @@ class WatchTimeRecorderTest : public testing::Test {
     }
   }
 
-  void ExpectHelper(const std::vector<base::StringPiece>& full_key_list,
-                    const std::vector<base::StringPiece>& keys,
+  void ExpectHelper(const std::vector<std::string_view>& full_key_list,
+                    const std::vector<std::string_view>& keys,
                     int64_t value) {
     for (auto key : full_key_list) {
       if (base::Contains(keys, key))
@@ -125,16 +125,16 @@ class WatchTimeRecorderTest : public testing::Test {
     }
   }
 
-  void ExpectMtbrTime(const std::vector<base::StringPiece>& keys,
+  void ExpectMtbrTime(const std::vector<std::string_view>& keys,
                       base::TimeDelta value) {
     ExpectHelper(mtbr_keys_, keys, value.InMilliseconds());
   }
 
-  void ExpectZeroRebuffers(const std::vector<base::StringPiece>& keys) {
+  void ExpectZeroRebuffers(const std::vector<std::string_view>& keys) {
     ExpectHelper(smooth_keys_, keys, 0);
   }
 
-  void ExpectRebuffers(const std::vector<base::StringPiece>& keys, int count) {
+  void ExpectRebuffers(const std::vector<std::string_view>& keys, int count) {
     ExpectHelper(smooth_keys_, keys, count);
   }
 
@@ -151,7 +151,7 @@ class WatchTimeRecorderTest : public testing::Test {
     ASSERT_EQ(0u, test_recorder_->entries_count());
   }
 
-  void ExpectUkmWatchTime(const std::vector<base::StringPiece>& keys,
+  void ExpectUkmWatchTime(const std::vector<std::string_view>& keys,
                           base::TimeDelta value) {
     const auto& entries =
         test_recorder_->GetEntriesByName(UkmEntry::kEntryName);
@@ -194,9 +194,9 @@ class WatchTimeRecorderTest : public testing::Test {
   ukm::SourceId source_id_;
   mojo::Remote<mojom::WatchTimeRecorder> wtr_;
   const std::vector<WatchTimeKey> computation_keys_;
-  const std::vector<base::StringPiece> mtbr_keys_;
-  const std::vector<base::StringPiece> smooth_keys_;
-  const std::vector<base::StringPiece> discard_keys_;
+  const std::vector<std::string_view> mtbr_keys_;
+  const std::vector<std::string_view> smooth_keys_;
+  const std::vector<std::string_view> discard_keys_;
 };
 
 TEST_F(WatchTimeRecorderTest, TestBasicReporting) {

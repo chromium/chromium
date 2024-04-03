@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/time/time.h"
 #include "media/base/audio_encoder.h"
@@ -28,7 +29,7 @@ class MEDIA_EXPORT Muxer {
  public:
   // Defines the type of a callback to be called when a derived muxer
   // (e.g. WebmMuxer or Mp4Muxer) is ready to write a chunk of data.
-  using WriteDataCB = base::RepeatingCallback<void(base::StringPiece)>;
+  using WriteDataCB = base::RepeatingCallback<void(std::string_view)>;
 
   // Container for the parameters that muxer uses that is extracted from
   // VideoFrame.

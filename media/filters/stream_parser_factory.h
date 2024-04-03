@@ -7,10 +7,10 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "media/base/media_export.h"
 #include "media/base/media_log.h"
 #include "media/base/mime_util.h"
@@ -42,7 +42,7 @@ class MEDIA_EXPORT StreamParserFactory {
   // supported for the mime type.
   // kMaybeSupported indicates the mime type is supported, but the mime type
   // requires a codecs parameter that is missing.
-  static SupportsType IsTypeSupported(base::StringPiece type,
+  static SupportsType IsTypeSupported(std::string_view type,
                                       base::span<const std::string> codecs);
 
   // Creates a new StreamParser object if the specified |type| and |codecs| list
@@ -66,7 +66,7 @@ class MEDIA_EXPORT StreamParserFactory {
   // error should occur for unsupported or invalid decoder configs during
   // attempted decode.
   static std::unique_ptr<StreamParser> Create(
-      base::StringPiece type,
+      std::string_view type,
       base::span<const std::string> codecs,
       MediaLog* media_log);
   static std::unique_ptr<StreamParser> Create(

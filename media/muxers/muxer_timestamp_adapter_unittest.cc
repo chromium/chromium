@@ -5,8 +5,8 @@
 
 #include <map>
 #include <memory>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "media/base/audio_parameters.h"
@@ -79,11 +79,11 @@ class SuccessfulMuxer : public Muxer {
 class MuxerTimestampAdapterTestBase {
  public:
   struct Frame {
-    Frame& WithData(base::StringPiece v) {
+    Frame& WithData(std::string_view v) {
       data = v;
       return *this;
     }
-    Frame& WithAlphaData(base::StringPiece v) {
+    Frame& WithAlphaData(std::string_view v) {
       alpha_data = v;
       return *this;
     }

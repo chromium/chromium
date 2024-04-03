@@ -5,6 +5,7 @@
 #include "media/cdm/fuchsia/fuchsia_cdm.h"
 
 #include <optional>
+#include <string_view>
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/mem_buffer_util.h"
@@ -49,8 +50,8 @@ fuchsia::media::drm::LicenseServerMessage CreateLicenseServerMessage(
     const std::vector<uint8_t>& response) {
   fuchsia::media::drm::LicenseServerMessage message;
   message.message = base::MemBufferFromString(
-      base::StringPiece(reinterpret_cast<const char*>(response.data()),
-                        response.size()),
+      std::string_view(reinterpret_cast<const char*>(response.data()),
+                       response.size()),
       "cr-drm-license-server-message");
   return message;
 }

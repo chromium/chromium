@@ -131,7 +131,7 @@ const char kDiscardedWatchTimeAudioVideoMse[] =
 const char kDiscardedWatchTimeAudioVideoEme[] =
     "Media.WatchTime.AudioVideo.Discarded.EME";
 
-base::StringPiece ConvertWatchTimeKeyToStringForUma(WatchTimeKey key) {
+std::string_view ConvertWatchTimeKeyToStringForUma(WatchTimeKey key) {
   // WARNING: Returning a non-empty value will log the key to UMA.
   switch (key) {
     case WatchTimeKey::kAudioAll:
@@ -248,7 +248,7 @@ base::StringPiece ConvertWatchTimeKeyToStringForUma(WatchTimeKey key) {
     case WatchTimeKey::kVideoBackgroundBattery:
     case WatchTimeKey::kVideoBackgroundAc:
     case WatchTimeKey::kVideoBackgroundEmbeddedExperience:
-      return base::StringPiece();
+      return std::string_view();
   };
 
   NOTREACHED_NORETURN();

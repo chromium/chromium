@@ -8,10 +8,10 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "crypto/encryptor.h"
 #include "crypto/symmetric_key.h"
 #include "media/base/decoder_buffer.h"
@@ -87,7 +87,7 @@ scoped_refptr<DecoderBuffer> DecryptCencBuffer(
   const std::vector<SubsampleEntry>& subsamples = decrypt_config->subsamples();
   if (subsamples.empty()) {
     std::string decrypted_text;
-    base::StringPiece encrypted_text(sample, sample_size);
+    std::string_view encrypted_text(sample, sample_size);
     if (!encryptor.Decrypt(encrypted_text, &decrypted_text)) {
       DVLOG(1) << "Could not decrypt data.";
       return nullptr;
@@ -130,7 +130,7 @@ scoped_refptr<DecoderBuffer> DecryptCencBuffer(
                  reinterpret_cast<const uint8_t*>(sample),
                  encrypted_bytes.get());
 
-  base::StringPiece encrypted_text(
+  std::string_view encrypted_text(
       reinterpret_cast<const char*>(encrypted_bytes.get()),
       total_encrypted_size);
   std::string decrypted_text;

@@ -15,7 +15,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -45,7 +44,7 @@
 
 namespace media {
 
-typedef bool (*CodecIDValidatorFunction)(base::StringPiece codecs_id,
+typedef bool (*CodecIDValidatorFunction)(std::string_view codecs_id,
                                          MediaLog* media_log);
 
 struct CodecInfo {
@@ -131,14 +130,14 @@ static StreamParser* BuildWebMParser(base::span<const std::string> codecs,
 }
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-static int GetMP4AudioObjectType(base::StringPiece codec_id,
+static int GetMP4AudioObjectType(std::string_view codec_id,
                                  MediaLog* media_log) {
   // From RFC 6381 section 3.3 (ISO Base Media File Format Name Space):
   // When the first element of a ['codecs' parameter value] is 'mp4a' ...,
   // the second element is a hexadecimal representation of the MP4 Registration
   // Authority ObjectTypeIndication (OTI). Note that MP4RA uses a leading "0x"
   // with these values, which is omitted here and hence implied.
-  std::vector<base::StringPiece> tokens = base::SplitStringPiece(
+  std::vector<std::string_view> tokens = base::SplitStringPiece(
       codec_id, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   if (tokens.size() == 3 && tokens[0] == "mp4a" && tokens[1] == "40") {
     // From RFC 6381 section 3.3:
@@ -161,7 +160,7 @@ constexpr int kAACSBRObjectType = 5;
 constexpr int kAACPSObjectType = 29;
 constexpr int kAACXHEObjectType = 42;
 
-bool ValidateMP4ACodecID(base::StringPiece codec_id, MediaLog* media_log) {
+bool ValidateMP4ACodecID(std::string_view codec_id, MediaLog* media_log) {
   int audio_object_type = GetMP4AudioObjectType(codec_id, media_log);
   if (audio_object_type == kAACLCObjectType ||
       audio_object_type == kAACSBRObjectType ||
@@ -638,7 +637,7 @@ static bool VerifyCodec(const CodecInfo* codec_info,
 // The value of each of |factory_function|, |audio_codecs| and |video_codecs| is
 // not updated if it was nullptr initially.
 static SupportsType CheckTypeAndCodecs(
-    base::StringPiece type,
+    std::string_view type,
     base::span<const std::string> codecs,
     MediaLog* media_log,
     ParserFactoryFunction* factory_function,
@@ -719,7 +718,7 @@ static SupportsType CheckTypeAndCodecs(
 
 // static
 SupportsType StreamParserFactory::IsTypeSupported(
-    base::StringPiece type,
+    std::string_view type,
     base::span<const std::string> codecs) {
   // TODO(wolenetz): Questionable MediaLog usage, http://crbug.com/712310
   NullMediaLog media_log;
@@ -729,7 +728,7 @@ SupportsType StreamParserFactory::IsTypeSupported(
 
 // static
 std::unique_ptr<StreamParser> StreamParserFactory::Create(
-    base::StringPiece type,
+    std::string_view type,
     base::span<const std::string> codecs,
     MediaLog* media_log) {
   std::unique_ptr<StreamParser> stream_parser;

@@ -6,6 +6,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
@@ -345,8 +346,8 @@ class AudioDecoderTest
     for (int ch = 0; ch < output->channels(); ++ch) {
       base::MD5Update(
           &context,
-          base::StringPiece(reinterpret_cast<char*>(output->channel(ch)),
-                            output->frames() * sizeof(*output->channel(ch))));
+          std::string_view(reinterpret_cast<char*>(output->channel(ch)),
+                           output->frames() * sizeof(*output->channel(ch))));
     }
     base::MD5Digest digest;
     base::MD5Final(&digest, &context);

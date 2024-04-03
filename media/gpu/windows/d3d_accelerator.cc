@@ -19,13 +19,13 @@ D3DAccelerator::D3DAccelerator(D3D11VideoDecoderClient* client,
 
 D3DAccelerator::~D3DAccelerator() = default;
 
-void D3DAccelerator::RecordFailure(base::StringPiece reason,
+void D3DAccelerator::RecordFailure(std::string_view reason,
                                    D3D11Status::Codes code) const {
   DLOG(ERROR) << reason;
   MEDIA_LOG(ERROR, media_log_) << reason;
 }
 
-void D3DAccelerator::RecordFailure(base::StringPiece reason,
+void D3DAccelerator::RecordFailure(std::string_view reason,
                                    D3D11Status::Codes code,
                                    HRESULT hr) const {
   DCHECK(FAILED(hr));

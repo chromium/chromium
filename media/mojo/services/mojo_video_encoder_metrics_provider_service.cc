@@ -5,6 +5,7 @@
 #include "media/mojo/services/mojo_video_encoder_metrics_provider_service.h"
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -102,7 +103,7 @@ class MojoVideoEncoderMetricsProviderService::EncoderMetricsHandler {
     builder.Record(ukm_recorder);
   }
 
-  base::StringPiece UseCaseStr() const {
+  std::string_view UseCaseStr() const {
     switch (encoder_use_case_) {
       case mojom::VideoEncoderUseCase::kCastMirroring:
         return "CastMirroring";
@@ -117,7 +118,7 @@ class MojoVideoEncoderMetricsProviderService::EncoderMetricsHandler {
   }
 
   void ReportUMA() const {
-    const base::StringPiece use_case_str = UseCaseStr();
+    const std::string_view use_case_str = UseCaseStr();
     if (use_case_str.empty()) {
       mojo::ReportBadMessage(base::StrCat(
           {"Unkown use case",

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
@@ -200,11 +201,10 @@ class HlsManifestDemuxerEngineTest : public testing::Test {
   }
 
   MockHlsRendition* SetUpInterruptTest() {
-    EXPECT_CALL(*mock_mdeh_,
-                SetSequenceMode(base::StringPiece("primary"), true));
+    EXPECT_CALL(*mock_mdeh_, SetSequenceMode("primary", true));
     EXPECT_CALL(*mock_mdeh_, SetDuration(21.021));
-    EXPECT_CALL(*mock_mdeh_, AddRole(base::StringPiece("primary"),
-                                     RelaxedParserSupportedType::kMP2T));
+    EXPECT_CALL(*mock_mdeh_,
+                AddRole("primary", RelaxedParserSupportedType::kMP2T));
     BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
         "http://media.example.com/manifest.m3u8", kSimpleMultivariantPlaylist);
     BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
@@ -344,11 +344,11 @@ TEST_F(HlsManifestDemuxerEngineTest, TestInitFailure) {
 }
 
 TEST_F(HlsManifestDemuxerEngineTest, TestSimpleConfigAddsOnePrimaryRole) {
-  EXPECT_CALL(*mock_mdeh_, SetSequenceMode(base::StringPiece("primary"), true));
+  EXPECT_CALL(*mock_mdeh_, SetSequenceMode("primary", true));
   EXPECT_CALL(*mock_mdeh_, SetDuration(21.021));
-  EXPECT_CALL(*mock_mdeh_, AddRole(base::StringPiece("primary"),
-                                   RelaxedParserSupportedType::kMP2T));
-  EXPECT_CALL(*mock_mdeh_, RemoveRole(base::StringPiece("primary")));
+  EXPECT_CALL(*mock_mdeh_,
+              AddRole("primary", RelaxedParserSupportedType::kMP2T));
+  EXPECT_CALL(*mock_mdeh_, RemoveRole("primary"));
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
       "http://media.example.com/manifest.m3u8", kSimpleMediaPlaylist);
   EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
@@ -358,10 +358,10 @@ TEST_F(HlsManifestDemuxerEngineTest, TestSimpleConfigAddsOnePrimaryRole) {
 }
 
 TEST_F(HlsManifestDemuxerEngineTest, TestSimpleLiveConfigAddsOnePrimaryRole) {
-  EXPECT_CALL(*mock_mdeh_, SetSequenceMode(base::StringPiece("primary"), true));
-  EXPECT_CALL(*mock_mdeh_, AddRole(base::StringPiece("primary"),
-                                   RelaxedParserSupportedType::kMP2T));
-  EXPECT_CALL(*mock_mdeh_, RemoveRole(base::StringPiece("primary")));
+  EXPECT_CALL(*mock_mdeh_, SetSequenceMode("primary", true));
+  EXPECT_CALL(*mock_mdeh_,
+              AddRole("primary", RelaxedParserSupportedType::kMP2T));
+  EXPECT_CALL(*mock_mdeh_, RemoveRole("primary"));
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
       "http://media.example.com/manifest.m3u8", kSimpleLiveMediaPlaylist);
   EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
@@ -371,10 +371,10 @@ TEST_F(HlsManifestDemuxerEngineTest, TestSimpleLiveConfigAddsOnePrimaryRole) {
 }
 
 TEST_F(HlsManifestDemuxerEngineTest, TestMultivariantPlaylistNoAlternates) {
-  EXPECT_CALL(*mock_mdeh_, SetSequenceMode(base::StringPiece("primary"), true));
+  EXPECT_CALL(*mock_mdeh_, SetSequenceMode("primary", true));
   EXPECT_CALL(*mock_mdeh_, SetDuration(21.021));
-  EXPECT_CALL(*mock_mdeh_, AddRole(base::StringPiece("primary"),
-                                   RelaxedParserSupportedType::kMP2T));
+  EXPECT_CALL(*mock_mdeh_,
+              AddRole("primary", RelaxedParserSupportedType::kMP2T));
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
       "http://media.example.com/manifest.m3u8", kSimpleMultivariantPlaylist);
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
@@ -385,14 +385,13 @@ TEST_F(HlsManifestDemuxerEngineTest, TestMultivariantPlaylistNoAlternates) {
 }
 
 TEST_F(HlsManifestDemuxerEngineTest, TestMultivariantPlaylistWithAlternates) {
-  EXPECT_CALL(*mock_mdeh_,
-              SetSequenceMode(base::StringPiece("audio-override"), true));
-  EXPECT_CALL(*mock_mdeh_, SetSequenceMode(base::StringPiece("primary"), true));
+  EXPECT_CALL(*mock_mdeh_, SetSequenceMode("audio-override", true));
+  EXPECT_CALL(*mock_mdeh_, SetSequenceMode("primary", true));
   EXPECT_CALL(*mock_mdeh_, SetDuration(21.021));
-  EXPECT_CALL(*mock_mdeh_, AddRole(base::StringPiece("audio-override"),
-                                   RelaxedParserSupportedType::kMP2T));
-  EXPECT_CALL(*mock_mdeh_, AddRole(base::StringPiece("primary"),
-                                   RelaxedParserSupportedType::kMP2T));
+  EXPECT_CALL(*mock_mdeh_,
+              AddRole("audio-override", RelaxedParserSupportedType::kMP2T));
+  EXPECT_CALL(*mock_mdeh_,
+              AddRole("primary", RelaxedParserSupportedType::kMP2T));
 
   // URL queries in order:
   //  - manifest.m3u8: root manifest
@@ -691,9 +690,9 @@ TEST_F(HlsManifestDemuxerEngineTest, TestTimeUpdateDuringSeek) {
 
 TEST_F(HlsManifestDemuxerEngineTest, TestEndOfStreamAfterAllFetched) {
   // All the expectations set during the initialization process.
-  EXPECT_CALL(*mock_mdeh_, SetSequenceMode(base::StringPiece("primary"), true));
-  EXPECT_CALL(*mock_mdeh_, AddRole(base::StringPiece("primary"),
-                                   RelaxedParserSupportedType::kMP2T));
+  EXPECT_CALL(*mock_mdeh_, SetSequenceMode("primary", true));
+  EXPECT_CALL(*mock_mdeh_,
+              AddRole("primary", RelaxedParserSupportedType::kMP2T));
   EXPECT_CALL(*mock_mdeh_, SetDuration(9.009));
   EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
 
@@ -739,7 +738,7 @@ TEST_F(HlsManifestDemuxerEngineTest, TestEndOfStreamAfterAllFetched) {
   EXPECT_CALL(*mock_mdeh_, SetEndOfStream());
 
   // And then teardown:
-  EXPECT_CALL(*mock_mdeh_, RemoveRole(base::StringPiece("primary")));
+  EXPECT_CALL(*mock_mdeh_, RemoveRole("primary"));
 
   // Setup with a mock codec detector - this will set all the roles, duration,
   // modes, and also make a request for the manifest and the first segment.

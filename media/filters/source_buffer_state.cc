@@ -5,6 +5,7 @@
 #include "media/filters/source_buffer_state.h"
 
 #include <set>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -54,7 +55,7 @@ bool CheckBytestreamTrackIds(const MediaTracks& tracks) {
   return true;
 }
 
-unsigned GetMSEBufferSizeLimitIfExists(base::StringPiece switch_string) {
+unsigned GetMSEBufferSizeLimitIfExists(std::string_view switch_string) {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   unsigned memory_limit;
   if (command_line->HasSwitch(switch_string) &&

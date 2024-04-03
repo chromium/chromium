@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/base64url.h"
@@ -15,7 +16,6 @@
 #include "base/json/string_escape.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "media/base/content_decryption_module.h"
@@ -53,10 +53,10 @@ static base::Value::Dict CreateJSONDictionary(const uint8_t* key,
                                               int key_id_length) {
   std::string key_string, key_id_string;
   base::Base64UrlEncode(
-      base::StringPiece(reinterpret_cast<const char*>(key), key_length),
+      base::span<const uint8_t>(key, static_cast<size_t>(key_length)),
       base::Base64UrlEncodePolicy::OMIT_PADDING, &key_string);
   base::Base64UrlEncode(
-      base::StringPiece(reinterpret_cast<const char*>(key_id), key_id_length),
+      base::span<const uint8_t>(key_id, static_cast<size_t>(key_id_length)),
       base::Base64UrlEncodePolicy::OMIT_PADDING, &key_id_string);
 
   base::Value::Dict jwk;
@@ -301,8 +301,8 @@ void CreateLicenseRequest(const KeyIdList& key_ids,
   for (const auto& key_id : key_ids) {
     std::string key_id_string;
     base::Base64UrlEncode(
-        base::StringPiece(reinterpret_cast<const char*>(key_id.data()),
-                          key_id.size()),
+        std::string_view(reinterpret_cast<const char*>(key_id.data()),
+                         key_id.size()),
         base::Base64UrlEncodePolicy::OMIT_PADDING, &key_id_string);
 
     list.Append(key_id_string);
@@ -334,8 +334,8 @@ base::Value::Dict MakeKeyIdsDictionary(const KeyIdList& key_ids) {
   for (const auto& key_id : key_ids) {
     std::string key_id_string;
     base::Base64UrlEncode(
-        base::StringPiece(reinterpret_cast<const char*>(key_id.data()),
-                          key_id.size()),
+        std::string_view(reinterpret_cast<const char*>(key_id.data()),
+                         key_id.size()),
         base::Base64UrlEncodePolicy::OMIT_PADDING, &key_id_string);
 
     list.Append(key_id_string);

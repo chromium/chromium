@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <vector>
 
@@ -92,7 +93,7 @@ class Mp4MuxerBoxWriterTest : public testing::Test {
   void CreateContext(std::vector<uint8_t>& written_data) {
     auto tracker = std::make_unique<OutputPositionTracker>(base::BindRepeating(
         [&](base::OnceClosure run_loop_quit, std::vector<uint8_t>* written_data,
-            base::StringPiece mp4_data_string) {
+            std::string_view mp4_data_string) {
           // Callback is called per box output.
 
           std::copy(mp4_data_string.begin(), mp4_data_string.end(),

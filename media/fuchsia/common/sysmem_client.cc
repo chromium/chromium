@@ -33,7 +33,7 @@ SysmemCollectionClient::~SysmemCollectionClient() {
 
 void SysmemCollectionClient::Initialize(
     fuchsia::sysmem::BufferCollectionConstraints constraints,
-    base::StringPiece name,
+    std::string_view name,
     uint32_t name_priority) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -64,7 +64,7 @@ void SysmemCollectionClient::Initialize(
 
 void SysmemCollectionClient::CreateSharedToken(
     GetSharedTokenCB cb,
-    base::StringPiece debug_client_name,
+    std::string_view debug_client_name,
     uint64_t debug_client_id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(collection_token_);
@@ -131,7 +131,7 @@ void SysmemCollectionClient::OnError(zx_status_t status) {
     std::move(acquire_buffers_cb_).Run({}, {});
 }
 
-SysmemAllocatorClient::SysmemAllocatorClient(base::StringPiece client_name) {
+SysmemAllocatorClient::SysmemAllocatorClient(std::string_view client_name) {
   allocator_ = base::ComponentContextForProcess()
                    ->svc()
                    ->Connect<fuchsia::sysmem::Allocator>();

@@ -5,6 +5,8 @@
 #ifndef MEDIA_FILTERS_HLS_TEST_HELPERS_H_
 #define MEDIA_FILTERS_HLS_TEST_HELPERS_H_
 
+#include <string_view>
+
 #include "media/filters/hls_data_source_provider.h"
 #include "media/filters/hls_rendition.h"
 #include "media/filters/manifest_demuxer.h"
@@ -48,35 +50,35 @@ class MockManifestDemuxerEngineHost : public ManifestDemuxerEngineHost {
   ~MockManifestDemuxerEngineHost() override;
   MOCK_METHOD(bool,
               AddRole,
-              (base::StringPiece, RelaxedParserSupportedType),
+              (std::string_view, RelaxedParserSupportedType),
               (override));
-  MOCK_METHOD(void, RemoveRole, (base::StringPiece), (override));
-  MOCK_METHOD(void, SetSequenceMode, (base::StringPiece, bool), (override));
+  MOCK_METHOD(void, RemoveRole, (std::string_view), (override));
+  MOCK_METHOD(void, SetSequenceMode, (std::string_view, bool), (override));
   MOCK_METHOD(void, SetDuration, (double), (override));
   MOCK_METHOD(Ranges<base::TimeDelta>,
               GetBufferedRanges,
-              (base::StringPiece),
+              (std::string_view),
               (override));
   MOCK_METHOD(void,
               Remove,
-              (base::StringPiece, base::TimeDelta, base::TimeDelta),
+              (std::string_view, base::TimeDelta, base::TimeDelta),
               (override));
   MOCK_METHOD(
       void,
       RemoveAndReset,
-      (base::StringPiece, base::TimeDelta, base::TimeDelta, base::TimeDelta*),
+      (std::string_view, base::TimeDelta, base::TimeDelta, base::TimeDelta*),
       (override));
   MOCK_METHOD(void,
               SetGroupStartIfParsingAndSequenceMode,
-              (base::StringPiece, base::TimeDelta),
+              (std::string_view, base::TimeDelta),
               (override));
   MOCK_METHOD(void,
               EvictCodedFrames,
-              (base::StringPiece, base::TimeDelta, size_t),
+              (std::string_view, base::TimeDelta, size_t),
               (override));
   MOCK_METHOD(bool,
               AppendAndParseData,
-              (base::StringPiece,
+              (std::string_view,
                base::TimeDelta,
                base::TimeDelta,
                base::TimeDelta*,
@@ -87,7 +89,7 @@ class MockManifestDemuxerEngineHost : public ManifestDemuxerEngineHost {
   MOCK_METHOD(void, RequestSeek, (base::TimeDelta), (override));
   MOCK_METHOD(void,
               SetGroupStartTimestamp,
-              (base::StringPiece role, base::TimeDelta time),
+              (std::string_view role, base::TimeDelta time),
               (override));
   MOCK_METHOD(void, SetEndOfStream, (), (override));
   MOCK_METHOD(void, UnsetEndOfStream, (), (override));

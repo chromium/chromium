@@ -11,8 +11,8 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "media/cast/common/frame_id.h"
 
 namespace crypto {
@@ -36,11 +36,11 @@ class TransportEncryptionHandler {
   bool Initialize(const std::string& aes_key, const std::string& aes_iv_mask);
 
   bool Encrypt(FrameId frame_id,
-               const base::StringPiece& data,
+               const std::string_view data,
                std::string* encrypted_data);
 
   bool Decrypt(FrameId frame_id,
-               const base::StringPiece& ciphertext,
+               const std::string_view ciphertext,
                std::string* plaintext);
 
   bool is_activated() const { return is_activated_; }

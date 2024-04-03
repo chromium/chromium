@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <string>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -19,7 +20,7 @@ TEST(OutputPositionTrackerTest, OutputPositionTracker) {
 
   OutputPositionTracker buffer(base::BindRepeating(
       [](std::string* written_data, base::OnceClosure run_loop_quit,
-         base::StringPiece data) {
+         std::string_view data) {
         written_data->append(data);
         static int called_count = 0;
         if (++called_count == 3) {

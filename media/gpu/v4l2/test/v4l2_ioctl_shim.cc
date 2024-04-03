@@ -10,6 +10,7 @@
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 
+#include <string_view>
 #include <unordered_map>
 
 #include "base/containers/contains.h"
@@ -36,8 +37,8 @@ constexpr int kIoctlOk = 0;
 
 constexpr uint32_t kMaximumDeviceNumber = 150;
 
-constexpr base::StringPiece kDecoderDevicePrefix = "/dev/video";
-constexpr base::StringPiece kMediaDevicePrefix = "/dev/media";
+constexpr char kDecoderDevicePrefix[] = "/dev/video";
+constexpr char kMediaDevicePrefix[] = "/dev/media";
 
 // This map maintains a table with pairs of V4L2 request code
 // and corresponding name. New pair has to be added here
@@ -331,7 +332,7 @@ V4L2IoctlShim::V4L2IoctlShim(const uint32_t coded_fourcc) {
   // support 10 bit profiles. When processing a 10 bit profile the parameters
   // need to be processed before the format can be determined. There are no
   // chipsets that are on kernels older 5.10 and produce 10 bit output.
-  constexpr base::StringPiece kKernelVersion5dot4 = "Linux version 5.4*";
+  constexpr char kKernelVersion5dot4[] = "Linux version 5.4*";
   std::string kernel_version;
   ReadFileToString(base::FilePath("/proc/version"), &kernel_version);
 

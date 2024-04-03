@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/circular_deque.h"
@@ -218,7 +219,7 @@ class VideoRendererImplTest : public testing::Test {
   //   A clip that is four frames long: "0 10 20 30"
   //   A clip that has a decode error: "60 70 error"
   void QueueFrames(const std::string& str) {
-    for (base::StringPiece token : base::SplitString(
+    for (std::string_view token : base::SplitString(
              str, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
       if (token == "abort") {
         scoped_refptr<VideoFrame> null_frame;

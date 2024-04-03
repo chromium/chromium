@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -79,9 +80,9 @@ class WebmMuxerTest : public TestWithParam<TestParams> {
   WebmMuxerTest(const WebmMuxerTest&) = delete;
   WebmMuxerTest& operator=(const WebmMuxerTest&) = delete;
 
-  MOCK_METHOD(void, WriteCallback, (base::StringPiece));
+  MOCK_METHOD(void, WriteCallback, (std::string_view));
 
-  void SaveEncodedDataLen(const base::StringPiece& encoded_data) {
+  void SaveEncodedDataLen(const std::string_view encoded_data) {
     last_encoded_length_ = encoded_data.size();
     accumulated_position_ += encoded_data.size();
   }
@@ -148,7 +149,7 @@ class WebmMuxerTest : public TestWithParam<TestParams> {
 // Checks that the WriteCallback is called with appropriate params when
 // WebmMuxer::Write() method is called.
 TEST_P(WebmMuxerTest, Write) {
-  const base::StringPiece encoded_data("abcdefghijklmnopqrstuvwxyz");
+  const std::string_view encoded_data("abcdefghijklmnopqrstuvwxyz");
 
   EXPECT_CALL(*this, WriteCallback(encoded_data));
   WebmMuxerWrite(encoded_data.data(), encoded_data.size());
@@ -461,7 +462,7 @@ class WebmMuxerTestUnparametrized : public testing::Test {
  private:
   static constexpr int kSentinelVideoBufferTimestampMs = 1000000;
 
-  void SaveChunkAndInvokeWriteCallback(base::StringPiece chunk) {
+  void SaveChunkAndInvokeWriteCallback(std::string_view chunk) {
     OnWrite();
     base::ranges::copy(chunk, std::back_inserter(muxed_data_));
   }

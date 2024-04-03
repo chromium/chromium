@@ -8,6 +8,7 @@
 #include <fuchsia/media/cpp/fidl.h>
 #include <fuchsia/sysmem/cpp/fidl.h>
 
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -51,12 +52,12 @@ class MEDIA_EXPORT SysmemCollectionClient {
   // called before Initialize().
   void CreateSharedToken(
       GetSharedTokenCB cb,
-      base::StringPiece debug_client_name = base::StringPiece(),
+      std::string_view debug_client_name = std::string_view(),
       uint64_t debug_client_id = 0);
 
   // Initializes the collection with the given name and constraints.
   void Initialize(fuchsia::sysmem::BufferCollectionConstraints constraints,
-                  base::StringPiece name,
+                  std::string_view name,
                   uint32_t name_priority = kDefaultNamePriority);
 
   // Create VmoBuffers to access raw memory. Should be called only after
@@ -84,7 +85,7 @@ class MEDIA_EXPORT SysmemCollectionClient {
 // Helper fuchsia.sysmem.Allocator .
 class MEDIA_EXPORT SysmemAllocatorClient {
  public:
-  explicit SysmemAllocatorClient(base::StringPiece client_name);
+  explicit SysmemAllocatorClient(std::string_view client_name);
   ~SysmemAllocatorClient();
 
   SysmemAllocatorClient(const SysmemAllocatorClient&) = delete;

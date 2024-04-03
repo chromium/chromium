@@ -5,6 +5,8 @@
 #include "media/cast/test/receiver/video_decoder.h"
 
 #include <stdint.h>
+
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -197,7 +199,7 @@ class VideoDecoder::FakeImpl final : public VideoDecoder::ImplBase {
     if (!len || data[0] != '{')
       return nullptr;
     std::optional<base::Value> values = base::JSONReader::Read(
-        base::StringPiece(reinterpret_cast<char*>(data), len));
+        std::string_view(reinterpret_cast<char*>(data), len));
     if (!values || !values->is_dict())
       return nullptr;
 

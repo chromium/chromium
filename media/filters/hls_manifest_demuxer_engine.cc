@@ -72,7 +72,7 @@ bool AreAllVideoCodecsSupported(const std::vector<VideoType>& video_types) {
 }
 
 hls::RenditionManager::CodecSupportType GetSupportedTypes(
-    base::StringPiece container,
+    std::string_view container,
     base::span<const std::string> codecs) {
   std::vector<VideoType> video_formats;
   std::vector<AudioType> audio_formats;
@@ -660,7 +660,7 @@ void HlsManifestDemuxerEngine::ParsePlaylist(
 
 hls::ParseStatus::Or<scoped_refptr<hls::MediaPlaylist>>
 HlsManifestDemuxerEngine::ParseMediaPlaylistFromStringSource(
-    base::StringPiece source,
+    std::string_view source,
     GURL uri,
     hls::types::DecimalInteger version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
