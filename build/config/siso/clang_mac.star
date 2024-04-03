@@ -45,6 +45,16 @@ def __filegroups(ctx):
         "type": "glob",
         "includes": sdk_includes,
     }
+
+    # https://b.corp.google.com/issues/332652041#comment2
+    fg[ctx.fs.canonpath("./sdk/xcode_links/MacOSX14.4.sdk") + ":headers"] = {
+        "type": "glob",
+        "includes": sdk_includes,
+    }
+    fg[ctx.fs.canonpath("./sdk/xcode_links/iPhoneSimulator17.4.sdk") + ":headers"] = {
+        "type": "glob",
+        "includes": sdk_includes,
+    }
     fg[ctx.fs.canonpath("./sdk/xcode_links/iPhoneSimulator.platform/Developer/Library/Frameworks") + ":headers"] = {
         "type": "glob",
         "includes": sdk_includes,
