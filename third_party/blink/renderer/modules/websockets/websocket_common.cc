@@ -38,12 +38,17 @@ WebSocketCommon::ConnectResult WebSocketCommon::Connect(
     const Vector<String>& protocols,
     WebSocketChannel* channel,
     ExceptionState& exception_state) {
-  url_ = KURL(execution_context->Url(), url);
+  // CompleteURL is not used here because this is expected to always be UTF-8,
+  // and not match document encoding.
+  url_ = KURL(execution_context->BaseURL(), url);
 
-  if (url_.ProtocolIs("http")) {
-    url_.SetProtocol("ws");
-  } else if (url_.ProtocolIs("https")) {
-    url_.SetProtocol("wss");
+  if (RuntimeEnabledFeatures::WebSocketHTTPURLEnabled(execution_context) &&
+      url_.IsValid()) {
+    if (url_.ProtocolIs("http")) {
+      url_.SetProtocol("ws");
+    } else if (url_.ProtocolIs("https")) {
+      url_.SetProtocol("wss");
+    }
   }
 
   bool upgrade_insecure_requests_set =
