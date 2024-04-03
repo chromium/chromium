@@ -2178,9 +2178,6 @@ extern const char kReduceTransferSizeUpdatedIPCDescription[];
 extern const char kResetShortcutCustomizationsName[];
 extern const char kResetShortcutCustomizationsDescription[];
 
-extern const char kSkipServiceWorkerFetchHandlerName[];
-extern const char kSkipServiceWorkerFetchHandlerDescription[];
-
 extern const char kWebSQLAccessName[];
 extern const char kWebSQLAccessDescription[];
 

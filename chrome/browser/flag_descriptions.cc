@@ -3719,12 +3719,6 @@ const char kUseMultiPlaneFormatForSoftwareVideoDescription[] =
     "Enable single shared image and mailbox for multi-plane formats for "
     "software video decoder";
 
-const char kSkipServiceWorkerFetchHandlerName[] =
-    "Skip Service Worker Fetch Handler if skippable";
-const char kSkipServiceWorkerFetchHandlerDescription[] =
-    "Skips starting the service worker and run the fetch handler if the fetch "
-    "handler is recognized as skippable.";
-
 const char kUseGpuSchedulerDfsName[] = "Use new gpu scheduler.";
 const char kUseGpuSchedulerDfsDescription[] =
     "Enables using the new gpu "
