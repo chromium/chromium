@@ -4639,11 +4639,16 @@ String AXNodeObject::TextAlternative(
   text_alternative =
       NativeTextAlternative(visited, name_from, related_objects, name_sources,
                             &found_text_alternative);
-  const bool has_text_alternative =
-      !text_alternative.empty() ||
+  // An explicitly empty native text alternative can still be overridden if a
+  // viable text alternative is found later in the search, so remember that it
+  // was explicitly empty here but don't terminate the search yet unless we
+  // already found something non-empty.
+  const bool has_explicitly_empty_native_text_alternative =
+      text_alternative.empty() &&
       name_from == ax::mojom::blink::NameFrom::kAttributeExplicitlyEmpty;
-  if (has_text_alternative && !name_sources)
+  if (!text_alternative.empty() && !name_sources) {
     return MaybeAppendFileDescriptionToName(text_alternative);
+  }
 
   // Step 2F / 2G from: http://www.w3.org/TR/accname-aam-1.1 -- from content.
   if (aria_label_or_description_root || SupportsNameFromContents(recursive)) {
@@ -4697,6 +4702,16 @@ String AXNodeObject::TextAlternative(
         return name_source.text;
       }
     }
+  }
+
+  if (has_explicitly_empty_native_text_alternative) {
+    // If the native text alternative is explicitly empty and we
+    // never found another text alternative, then set name_source
+    // to reflect the fact that there was an explicitly empty text
+    // alternative. This is important because an empty `alt` attribute on an
+    // <img> can be used to indicate that the image is presentational and should
+    // be ignored by ATs.
+    name_from = ax::mojom::blink::NameFrom::kAttributeExplicitlyEmpty;
   }
 
   return String();
