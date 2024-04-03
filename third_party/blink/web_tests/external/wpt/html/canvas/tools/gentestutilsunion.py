@@ -305,9 +305,10 @@ def _render_template(jinja_env: jinja2.Environment, template: jinja2.Template,
 
 
 def _render(jinja_env: jinja2.Environment, template_name: str,
-            params: _TestParams):
-    return _render_template(jinja_env, jinja_env.get_template(template_name),
-                            params)
+            params: _TestParams, output_file_name: str):
+    template = jinja_env.get_template(template_name)
+    file_content = _render_template(jinja_env, template, params)
+    pathlib.Path(output_file_name).write_text(file_content, 'utf-8')
 
 
 def _preprocess_code(jinja_env: jinja2.Environment, code: str,
@@ -418,43 +419,40 @@ class _Variant():
                               output_files: _OutputPaths):
         params = dict(self.params)
         if _CanvasType.HTML_CANVAS in params['canvas_types']:
-            pathlib.Path(f'{output_files.element}.html').write_text(
-                _render(jinja_env, 'reftest_element.html', params), 'utf-8')
+            _render(jinja_env, 'reftest_element.html', params,
+                    f'{output_files.element}.html')
         if _CanvasType.OFFSCREEN_CANVAS in params['canvas_types']:
-            pathlib.Path(f'{output_files.offscreen}.html').write_text(
-                _render(jinja_env, 'reftest_offscreen.html', params), 'utf-8')
+            _render(jinja_env, 'reftest_offscreen.html', params,
+                    f'{output_files.offscreen}.html')
         if _CanvasType.WORKER in params['canvas_types']:
-            pathlib.Path(f'{output_files.offscreen}.w.html').write_text(
-                _render(jinja_env, 'reftest_worker.html', params), 'utf-8')
+            _render(jinja_env, 'reftest_worker.html', params,
+                    f'{output_files.offscreen}.w.html')
 
         params['is_test_reference'] = True
         is_html_ref = params['template_type'] == _TemplateType.HTML_REFERENCE
         ref_template = 'reftest.html' if is_html_ref else 'reftest_element.html'
         if _CanvasType.HTML_CANVAS in params['canvas_types']:
-            pathlib.Path(f'{output_files.element}-expected.html').write_text(
-                _render(jinja_env, ref_template, params), 'utf-8')
+            _render(jinja_env, ref_template, params,
+                    f'{output_files.element}-expected.html')
         if {_CanvasType.OFFSCREEN_CANVAS, _CanvasType.WORKER
             } & params['canvas_types']:
-            pathlib.Path(f'{output_files.offscreen}-expected.html').write_text(
-                _render(jinja_env, ref_template, params), 'utf-8')
+            _render(jinja_env, ref_template, params,
+                    f'{output_files.offscreen}-expected.html')
 
     def _write_testharness_test(self, jinja_env: jinja2.Environment,
                                 output_files: _OutputPaths):
         # Create test cases for canvas and offscreencanvas.
         if _CanvasType.HTML_CANVAS in self.params['canvas_types']:
-            pathlib.Path(f'{output_files.element}.html').write_text(
-                _render(jinja_env, 'testharness_element.html', self.params),
-                'utf-8')
+            _render(jinja_env, 'testharness_element.html', self.params,
+                    f'{output_files.element}.html')
 
         if _CanvasType.OFFSCREEN_CANVAS in self.params['canvas_types']:
-            pathlib.Path(f'{output_files.offscreen}.html').write_text(
-                _render(jinja_env, 'testharness_offscreen.html', self.params),
-                'utf-8')
+            _render(jinja_env, 'testharness_offscreen.html', self.params,
+                    f'{output_files.offscreen}.html')
 
         if _CanvasType.WORKER in self.params['canvas_types']:
-            pathlib.Path(f'{output_files.offscreen}.worker.js').write_text(
-                _render(jinja_env, 'testharness_worker.js', self.params),
-                'utf-8')
+            _render(jinja_env, 'testharness_worker.js', self.params,
+                    f'{output_files.offscreen}.worker.js')
 
     def generate_expected_image(self, output_dirs: _OutputPaths) -> None:
         """Creates a reference image using Cairo and save filename in params."""
