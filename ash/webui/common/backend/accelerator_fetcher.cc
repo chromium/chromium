@@ -1,0 +1,92 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ash/webui/common/backend/accelerator_fetcher.h"
+
+#include <algorithm>
+#include <utility>
+#include <vector>
+
+#include "ash/accelerators/accelerator_controller_impl.h"
+#include "ash/accelerators/accelerator_lookup.h"
+#include "ash/accelerators/ash_accelerator_configuration.h"
+#include "ash/public/cpp/accelerator_actions.h"
+#include "ash/public/mojom/accelerator_actions.mojom.h"
+#include "ash/public/mojom/accelerator_info.mojom.h"
+#include "ash/shell.h"
+#include "ui/base/accelerators/accelerator.h"
+
+namespace ash {
+
+namespace {
+
+std::vector<mojom::StandardAcceleratorPropertiesPtr> GetAcceleratorsForActionId(
+    AcceleratorAction action) {
+  CHECK(Shell::HasInstance());
+  const std::vector<AcceleratorLookup::AcceleratorDetails>&
+      available_accelerators =
+          Shell::Get()->accelerator_lookup()->GetAvailableAcceleratorsForAction(
+              action);
+
+  std::vector<mojom::StandardAcceleratorPropertiesPtr> accelerator_properties;
+  accelerator_properties.reserve(available_accelerators.size());
+  for (const auto& available_accelerator : available_accelerators) {
+    accelerator_properties.push_back(mojom::StandardAcceleratorProperties::New(
+        available_accelerator.accelerator, available_accelerator.key_display,
+        /*original_accelerator=*/std::nullopt));
+  }
+
+  return accelerator_properties;
+}
+
+}  // namespace
+
+AcceleratorFetcher::AcceleratorFetcher() {
+  CHECK(::features::IsShortcutCustomizationEnabled());
+  if (Shell::HasInstance()) {
+    Shell::Get()
+        ->accelerator_controller()
+        ->accelerator_configuration()
+        ->AddObserver(this);
+  }
+  accelerator_observers_.set_disconnect_handler(
+      base::BindRepeating(&AcceleratorFetcher::OnObserverDisconnect,
+                          weak_ptr_factory_.GetWeakPtr()));
+}
+
+AcceleratorFetcher::~AcceleratorFetcher() {
+  if (Shell::HasInstance()) {
+    Shell::Get()
+        ->accelerator_controller()
+        ->accelerator_configuration()
+        ->RemoveObserver(this);
+  }
+}
+
+void AcceleratorFetcher::ObserveAcceleratorChanges(
+    const std::vector<AcceleratorAction>& actionIds,
+    mojo::PendingRemote<common::mojom::AcceleratorFetcherObserver> observer) {
+  actions_for_receivers_[accelerator_observers_.Add(std::move(observer))] =
+      actionIds;
+}
+
+void AcceleratorFetcher::OnAcceleratorsUpdated() {
+  for (const auto& [receiver_id, action_ids] : actions_for_receivers_) {
+    for (const auto& action_id : action_ids) {
+      accelerator_observers_.Get(receiver_id)
+          ->OnAcceleratorsUpdated(action_id,
+                                  GetAcceleratorsForActionId(action_id));
+    }
+  }
+}
+
+void AcceleratorFetcher::OnObserverDisconnect(mojo::RemoteSetElementId id) {
+  actions_for_receivers_.erase(id);
+}
+
+void AcceleratorFetcher::FlushMojoForTesting() {
+  accelerator_observers_.FlushForTesting();  // IN-TEST
+}
+
+}  // namespace ash

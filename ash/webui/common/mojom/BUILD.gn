@@ -15,6 +15,7 @@ mojom("mojom") {
   disable_variants = true
 
   public_deps = [
+    ":accelerator_fetcher",
     ":shortcut_input_provider",
     "//mojo/public/mojom/base",
   ]
@@ -28,6 +29,17 @@ mojom("shortcut_input_provider") {
   webui_module_path = "/"
 
   sources = [ "shortcut_input_provider.mojom" ]
+
+  public_deps = [ "//mojo/public/mojom/base" ]
+
+  deps = [ "//ash/public/mojom:mojom" ]
+}
+
+mojom("accelerator_fetcher") {
+  disable_variants = true
+  webui_module_path = "/"
+
+  sources = [ "accelerator_fetcher.mojom" ]
 
   public_deps = [ "//mojo/public/mojom/base" ]
 
