@@ -50,6 +50,10 @@
             {
                 "domain": "Autofill",
                 "async": [ "setAddresses" ]
+            },
+            {
+                "domain": "PWA",
+                "async": [ "getOsAppState" ]
             }
         ]
     },

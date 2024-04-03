@@ -17,6 +17,7 @@
 #include "chrome/browser/devtools/protocol/cast_handler.h"
 #include "chrome/browser/devtools/protocol/emulation_handler.h"
 #include "chrome/browser/devtools/protocol/page_handler.h"
+#include "chrome/browser/devtools/protocol/pwa_handler.h"
 #include "chrome/browser/devtools/protocol/security_handler.h"
 #include "chrome/browser/devtools/protocol/storage_handler.h"
 #include "chrome/browser/devtools/protocol/system_info_handler.h"
@@ -96,6 +97,14 @@ ChromeDevToolsSession::ChromeDevToolsSession(
   if (IsDomainAvailableToUntrustedClient<SystemInfoHandler>() ||
       channel->GetClient()->IsTrusted()) {
     system_info_handler_ = std::make_unique<SystemInfoHandler>(&dispatcher_);
+  }
+  if (agent_host->GetType() == content::DevToolsAgentHost::kTypeBrowser &&
+      channel->GetClient()->AllowUnsafeOperations()) {
+    if (IsDomainAvailableToUntrustedClient<PWAHandler>() ||
+        channel->GetClient()->IsTrusted()) {
+      pwa_handler_ =
+          std::make_unique<PWAHandler>(&dispatcher_, agent_host->GetId());
+    }
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   window_manager_handler_ =
