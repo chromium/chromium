@@ -411,6 +411,53 @@ TEST_F(BirchKeyedServiceTest, BirchFileSuggestProvider) {
             2u);
 }
 
+TEST_F(BirchKeyedServiceTest, BirchFileSuggestProvider_NoFilesAvailable) {
+  WaitUntilFileSuggestServiceReady(
+      ash::FileSuggestKeyedServiceFactory::GetInstance()->GetService(
+          GetProfile()));
+  task_environment()->RunUntilIdle();
+
+  BirchModel* model = Shell::Get()->birch_model();
+  model->SetCalendarItems({});
+  model->SetRecentTabItems({});
+  model->SetWeatherItems({});
+  model->SetReleaseNotesItems({});
+  model->SetAttachmentItems({});
+
+  // Trigger a file update, with no available files.
+  birch_keyed_service()
+      ->GetFileSuggestProviderForTest()
+      ->OnFileSuggestionUpdated(FileSuggestionType::kDriveFile);
+  task_environment()->RunUntilIdle();
+
+  // Check that model data is not fresh, because no file items have yet
+  // been provided.
+  EXPECT_EQ(model->GetFileSuggestItemsForTest().size(), 0u);
+  EXPECT_FALSE(model->IsDataFresh());
+
+  const base::FilePath file_path_1 = mount_point()->CreateArbitraryFile();
+
+  // Once file suggest data has been set and updated, the data should be marked
+  // fresh after the file provider has notified of the change.
+  file_suggest_service()->SetSuggestionsForType(
+      FileSuggestionType::kDriveFile,
+      /*suggestions=*/std::vector<FileSuggestData>{
+          {FileSuggestionType::kDriveFile, file_path_1,
+           FileSuggestionJustificationType::kUnknown,
+           /*new_prediction_reason=*/std::nullopt,
+           /*timestamp=*/std::nullopt,
+           /*secondary_timestamp=*/std::nullopt,
+           /*new_score=*/std::nullopt,
+           /*drive_file_id=*/std::nullopt}});
+  birch_keyed_service()
+      ->GetFileSuggestProviderForTest()
+      ->OnFileSuggestionUpdated(FileSuggestionType::kDriveFile);
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(Shell::Get()->birch_model()->GetFileSuggestItemsForTest().size(),
+            1u);
+  EXPECT_TRUE(model->IsDataFresh());
+}
+
 TEST_F(BirchKeyedServiceTest, BirchRecentTabProvider) {
   WaitUntilFileSuggestServiceReady(
       ash::FileSuggestKeyedServiceFactory::GetInstance()->GetService(

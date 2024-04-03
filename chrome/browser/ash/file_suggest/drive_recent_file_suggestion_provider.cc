@@ -203,6 +203,17 @@ void DriveRecentFileSuggestionProvider::GetSuggestFileData(
   drive::DriveIntegrationService* drive_service =
       drive::DriveIntegrationServiceFactory::FindForProfile(profile_);
 
+  // When drive service is disabled or mount fails, send back an empty list of
+  // results to avoid further waiting for file suggest data. Check
+  // `mount_failed` before checking `IsMounted` to catch the case where not only
+  // are we not mounted, but mounting has completely failed.
+  if (drive_service &&
+      (!drive_service->is_enabled() || drive_service->mount_failed())) {
+    std::move(callback).Run(
+        /*suggest_results=*/std::vector<FileSuggestData>());
+    return;
+  }
+
   // If there is not any available drive service, return early.
   if (!drive_service || !drive_service->IsMounted()) {
     std::move(callback).Run(/*suggest_results=*/std::nullopt);

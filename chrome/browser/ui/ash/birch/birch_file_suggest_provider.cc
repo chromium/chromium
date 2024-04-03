@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/birch/birch_file_suggest_provider.h"
 
+#include <optional>
 #include <vector>
 
 #include "ash/birch/birch_item.h"
@@ -46,6 +47,13 @@ void BirchFileSuggestProvider::OnSuggestedFileDataUpdated(
   if (!Shell::HasInstance()) {
     return;
   }
+
+  if (!suggest_results.has_value()) {
+    // No suggestion results exist yet, so avoid setting file suggest items and
+    // return early.
+    return;
+  }
+
   if (!suggest_results) {
     Shell::Get()->birch_model()->SetFileSuggestItems({});
     return;

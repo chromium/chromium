@@ -302,14 +302,15 @@ TEST_F(DriveRecentFileSuggestionProviderTest, DriveDisabled) {
           FileSuggestionType::kDriveFile,
           base::BindOnce(base::BindLambdaForTesting(
               [&](const std::optional<std::vector<FileSuggestData>>& data) {
-                EXPECT_FALSE(data);
+                EXPECT_TRUE(data.has_value());
+                EXPECT_EQ(data->size(), 0u);
                 result_waiter.Quit();
               })));
   result_waiter.Run();
 }
 
-// Verifies that file suggest service returns empty drive suggestions when drive
-// is not mounted.
+// Verifies that file suggest service returns no suggestions when drive is not
+// mounted.
 TEST_F(DriveRecentFileSuggestionProviderTest, DriveNotMounted) {
   SetUpInvalidDriveMountPoint();
 
