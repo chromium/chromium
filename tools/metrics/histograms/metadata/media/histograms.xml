@@ -4152,13 +4152,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.MediaRecorder.VEAUsed" enum="MediaRecorderVEAUsed"
-    expires_after="M95">
-  <owner>mcasas@chromium.org</owner>
-  <owner>wtlee@chromium.org</owner>
-  <summary>Whether HW video encode is used in MediaRecorder.</summary>
-</histogram>
-
 <histogram name="Media.MediaStreamManager.DesktopVideoDeviceUpdate"
     enum="MediaStreamRequestResult2" expires_after="2023-07-16">
   <owner>eladalon@chromium.org</owner>

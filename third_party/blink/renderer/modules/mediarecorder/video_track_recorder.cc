@@ -1070,7 +1070,6 @@ void VideoTrackRecorderImpl::InitializeEncoderOnEncoderSupportKnown(
     }
   }
 
-  UMA_HISTOGRAM_BOOLEAN("Media.MediaRecorder.VEAUsed", create_vea_encoder);
   UmaHistogramForCodec(create_vea_encoder, codec_profile.codec_id);
   CHECK(encoder);
   base::WeakPtr<Encoder> weak_encoder = encoder->GetWeakPtr();

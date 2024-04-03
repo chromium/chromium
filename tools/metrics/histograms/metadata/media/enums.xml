@@ -1191,11 +1191,6 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="H264_hw"/>
 </enum>
 
-<enum name="MediaRecorderVEAUsed">
-  <int value="0" label="Not used"/>
-  <int value="1" label="Used"/>
-</enum>
-
 <enum name="MediaRouteProviderResult">
   <int value="0" label="UnknownError"/>
   <int value="1" label="Ok"/>
