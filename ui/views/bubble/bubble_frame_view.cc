@@ -5,7 +5,6 @@
 #include "ui/views/bubble/bubble_frame_view.h"
 
 #include <algorithm>
-#include <utility>
 
 #include "build/build_config.h"
 #include "components/vector_icons/vector_icons.h"
@@ -264,6 +263,13 @@ int BubbleFrameView::NonClientHitTest(const gfx::Point& point) {
     auto* dialog_delegate = GetWidget()->widget_delegate()->AsDialogDelegate();
     if (dialog_delegate && dialog_delegate->draggable()) {
       return HTCAPTION;
+    }
+  }
+
+  if (!non_client_hit_test_cb_.is_null()) {
+    const int result = non_client_hit_test_cb_.Run(point);
+    if (result != HTNOWHERE) {
+      return result;
     }
   }
 

@@ -25,6 +25,7 @@ class TestWebUIContentsWrapper final : public WebUIContentsWrapper {
                              /*task_manager_string_id=*/0,
                              /*webui_resizes_host=*/true,
                              /*esc_closes_ui=*/false,
+                             /*supports_draggable_regions=*/false,
                              /*webui_name=*/"Test") {}
   TestWebUIContentsWrapper(const TestWebUIContentsWrapper&) = delete;
   TestWebUIContentsWrapper& operator=(const TestWebUIContentsWrapper&) = delete;

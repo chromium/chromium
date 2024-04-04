@@ -19,6 +19,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/referrer.h"
+#include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 #include "ui/base/models/menu_model.h"
 
 namespace content {
@@ -67,11 +68,12 @@ class WebUIContentsWrapper : public content::WebContentsDelegate,
   };
 
   WebUIContentsWrapper(const GURL& webui_url,
-                        content::BrowserContext* browser_context,
-                        int task_manager_string_id,
-                        bool webui_resizes_host,
-                        bool esc_closes_ui,
-                        const std::string& webui_name);
+                       content::BrowserContext* browser_context,
+                       int task_manager_string_id,
+                       bool webui_resizes_host,
+                       bool esc_closes_ui,
+                       bool supports_draggable_regions,
+                       const std::string& webui_name);
   ~WebUIContentsWrapper() override;
 
   // content::WebContentsDelegate:
@@ -122,6 +124,10 @@ class WebUIContentsWrapper : public content::WebContentsDelegate,
   // True if the host can show the contents immediately.
   bool is_ready_to_show() const { return is_ready_to_show_; }
 
+  bool supports_draggable_regions() const {
+    return supports_draggable_regions_;
+  }
+
   // Gets weak ptr to prevent UAF.
   virtual base::WeakPtr<WebUIContentsWrapper> GetWeakPtr() = 0;
 
@@ -140,9 +146,18 @@ class WebUIContentsWrapper : public content::WebContentsDelegate,
   // Captures the content size when `webui_resizes_host` is true. This
   // size is passed to Host::ResizeDueToAutoResize() host when the host is set.
   gfx::Size contents_requested_size_;
+
   bool is_ready_to_show_ = false;
   // If true will cause the ESC key to close the UI during pre-handling.
   const bool esc_closes_ui_;
+
+  // Set if the wrapped contents should enable web platform draggable regions,
+  // tagged using the -webkit-app-region CSS property.
+  const bool supports_draggable_regions_;
+  // The most recent draggable region set by DraggableRegionsChanged().
+  std::optional<std::vector<blink::mojom::DraggableRegionPtr>>
+      draggable_regions_;
+
   base::WeakPtr<WebUIContentsWrapper::Host> host_;
   std::unique_ptr<content::WebContents> web_contents_;
 };
@@ -154,17 +169,21 @@ class WebUIContentsWrapper : public content::WebContentsDelegate,
 template <typename T>
 class WebUIContentsWrapperT : public WebUIContentsWrapper {
  public:
+  // TODO(tluk): Consider introducing init params to avoid further cluttering
+  // constructor params.
   WebUIContentsWrapperT(const GURL& webui_url,
-                         content::BrowserContext* browser_context,
-                         int task_manager_string_id,
-                         bool webui_resizes_host = true,
-                         bool esc_closes_ui = true)
+                        content::BrowserContext* browser_context,
+                        int task_manager_string_id,
+                        bool webui_resizes_host = true,
+                        bool esc_closes_ui = true,
+                        bool supports_draggable_regions = false)
       : WebUIContentsWrapper(webui_url,
-                              browser_context,
-                              task_manager_string_id,
-                              webui_resizes_host,
-                              esc_closes_ui,
-                              T::GetWebUIName()),
+                             browser_context,
+                             task_manager_string_id,
+                             webui_resizes_host,
+                             esc_closes_ui,
+                             supports_draggable_regions,
+                             T::GetWebUIName()),
         webui_url_(webui_url) {
     static_assert(
         views_metrics::IsValidWebUINameVariant("." + T::GetWebUIName()));

@@ -8,9 +8,11 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager.h"
+#include "chrome/common/chrome_render_frame.mojom.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 
@@ -55,6 +57,17 @@ void EnableAutoResizeForWebContents(content::WebContents* web_contents) {
   }
 }
 
+// Enables the web contents to support web platform defined draggable regions
+// for the current primary render frame host. This should be called each time
+// the primary rfh changes (after navigation for e.g.).
+void EnableDraggableRegions(content::WebContents* web_contents) {
+  if (content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame()) {
+    mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> client;
+    rfh->GetRemoteAssociatedInterfaces()->GetInterface(&client);
+    client->SetSupportsDraggableRegions(true);
+  }
+}
+
 }  // namespace
 
 bool WebUIContentsWrapper::Host::HandleKeyboardEvent(
@@ -84,8 +97,11 @@ WebUIContentsWrapper::WebUIContentsWrapper(
     int task_manager_string_id,
     bool webui_resizes_host,
     bool esc_closes_ui,
+    bool supports_draggable_regions,
     const std::string& webui_name)
-    : webui_resizes_host_(webui_resizes_host), esc_closes_ui_(esc_closes_ui) {
+    : webui_resizes_host_(webui_resizes_host),
+      esc_closes_ui_(esc_closes_ui),
+      supports_draggable_regions_(supports_draggable_regions) {
   MakeContentsResult make_contents_result =
       MakeContents(webui_url, browser_context);
   web_contents_ = std::move(make_contents_result.web_contents);
@@ -102,6 +118,9 @@ WebUIContentsWrapper::WebUIContentsWrapper(
 
   if (webui_resizes_host_) {
     EnableAutoResizeForWebContents(web_contents_.get());
+  }
+  if (supports_draggable_regions_) {
+    EnableDraggableRegions(web_contents_.get());
   }
 }
 
@@ -184,6 +203,11 @@ void WebUIContentsWrapper::RunFileChooser(
 void WebUIContentsWrapper::DraggableRegionsChanged(
     const std::vector<blink::mojom::DraggableRegionPtr>& regions,
     content::WebContents* contents) {
+  // Persist regions to allow support transfer between hosts.
+  draggable_regions_.emplace();
+  base::ranges::transform(regions,
+                          std::back_inserter(draggable_regions_.value()),
+                          &blink::mojom::DraggableRegionPtr::Clone);
   if (host_) {
     host_->DraggableRegionsChanged(regions, contents);
   }
@@ -192,6 +216,10 @@ void WebUIContentsWrapper::DraggableRegionsChanged(
 void WebUIContentsWrapper::PrimaryPageChanged(content::Page& page) {
   if (webui_resizes_host_) {
     EnableAutoResizeForWebContents(web_contents_.get());
+  }
+  if (supports_draggable_regions_) {
+    draggable_regions_.reset();
+    EnableDraggableRegions(web_contents_.get());
   }
 }
 
@@ -234,8 +262,17 @@ void WebUIContentsWrapper::SetHost(
     base::WeakPtr<WebUIContentsWrapper::Host> host) {
   DCHECK(!web_contents_->IsCrashed());
   host_ = std::move(host);
-  if (host_ && webui_resizes_host_ && !contents_requested_size_.IsEmpty()) {
-    ResizeDueToAutoResize(web_contents_.get(), contents_requested_size_);
+  if (!host_) {
+    return;
+  }
+
+  if (webui_resizes_host_ && !contents_requested_size_.IsEmpty()) {
+    host_->ResizeDueToAutoResize(web_contents_.get(), contents_requested_size_);
+  }
+
+  if (supports_draggable_regions_ && draggable_regions_.has_value()) {
+    host_->DraggableRegionsChanged(draggable_regions_.value(),
+                                   web_contents_.get());
   }
 }
 

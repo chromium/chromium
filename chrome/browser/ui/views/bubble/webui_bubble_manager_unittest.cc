@@ -34,12 +34,14 @@ class WebUIContentsWrapperT<TestWebUIController> : public WebUIContentsWrapper {
                         content::BrowserContext* browser_context,
                         int task_manager_string_id,
                         bool webui_resizes_host = true,
-                        bool esc_closes_ui = true)
+                        bool esc_closes_ui = true,
+                        bool supports_draggable_regions = false)
       : WebUIContentsWrapper(webui_url,
                              browser_context,
                              task_manager_string_id,
                              webui_resizes_host,
                              esc_closes_ui,
+                             supports_draggable_regions,
                              "Test") {}
   void ReloadWebContents() override {}
   base::WeakPtr<WebUIContentsWrapper> GetWeakPtr() override {

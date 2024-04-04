@@ -20,6 +20,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 
 namespace views {
 
@@ -39,6 +40,11 @@ class MockHost : public WebUIContentsWrapper::Host {
                              const gfx::Size& new_size) override {
     ++resize_due_to_auto_resize_called_;
   }
+  void DraggableRegionsChanged(
+      const std::vector<blink::mojom::DraggableRegionPtr>& regions,
+      content::WebContents* contents) override {
+    ++draggable_regions_changed_called_;
+  }
 
   base::WeakPtr<MockHost> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -52,12 +58,16 @@ class MockHost : public WebUIContentsWrapper::Host {
   int resize_due_to_auto_resize_called() const {
     return resize_due_to_auto_resize_called_;
   }
+  int draggable_regions_changed_called() const {
+    return draggable_regions_changed_called_;
+  }
 
  private:
   int show_ui_called_ = 0;
   int close_ui_called_ = 0;
   int show_custom_context_menu_called_ = 0;
   int resize_due_to_auto_resize_called_ = 0;
+  int draggable_regions_changed_called_ = 0;
 
   base::WeakPtrFactory<MockHost> weak_ptr_factory_{this};
 };
@@ -66,7 +76,7 @@ class TestWebUIContentsWrapper
     : public WebUIContentsWrapper {
  public:
   explicit TestWebUIContentsWrapper(Profile* profile)
-      : WebUIContentsWrapper(GURL(""), profile, 0, true, true, "Test") {}
+      : WebUIContentsWrapper(GURL(""), profile, 0, true, true, true, "Test") {}
   ~TestWebUIContentsWrapper() override = default;
 
   // WebUIContentsWrapper:
@@ -189,6 +199,33 @@ TEST_F(WebUIContentsWrapperTest, ClosesHostOnWebContentsCrash) {
       base::TerminationStatus::TERMINATION_STATUS_PROCESS_CRASHED);
 
   EXPECT_EQ(1, host.close_ui_called());
+}
+
+TEST_F(WebUIContentsWrapperTest, NotifiesHostWhenDraggableRegionsUpdated) {
+  MockHost host;
+  EXPECT_EQ(0, host.draggable_regions_changed_called());
+
+  // Ensure updates are propagated to the host.
+  std::vector<blink::mojom::DraggableRegionPtr> regions;
+  auto region_rect = blink::mojom::DraggableRegion::New();
+  region_rect->bounds = {10, 10, 100, 100};
+  region_rect->draggable = true;
+  regions.push_back(std::move(region_rect));
+  contents_wrapper()->SetHost(host.GetWeakPtr());
+  contents_wrapper()->DraggableRegionsChanged(
+      regions, contents_wrapper()->web_contents());
+  EXPECT_EQ(1, host.draggable_regions_changed_called());
+
+  // After the host has been unset it should no longer receive updates.
+  contents_wrapper()->SetHost(nullptr);
+  contents_wrapper()->DraggableRegionsChanged(
+      regions, contents_wrapper()->web_contents());
+  EXPECT_EQ(1, host.draggable_regions_changed_called());
+
+  // When a draggable region has been received and a host is set it should be
+  // notified of the most recently set draggable region.
+  contents_wrapper()->SetHost(host.GetWeakPtr());
+  EXPECT_EQ(2, host.draggable_regions_changed_called());
 }
 
 }  // namespace test

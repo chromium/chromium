@@ -7,6 +7,8 @@
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
+#include "third_party/skia/include/core/SkRect.h"
+#include "ui/base/hit_test.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -42,6 +44,18 @@ class WebUIBubbleView : public views::WebView {
     return true;
   }
 };
+
+SkRegion ComputeDraggableRegion(
+    const std::vector<blink::mojom::DraggableRegionPtr>& regions) {
+  SkRegion draggable_region;
+  for (const blink::mojom::DraggableRegionPtr& region : regions) {
+    draggable_region.op(
+        SkIRect::MakeXYWH(region->bounds.x(), region->bounds.y(),
+                          region->bounds.width(), region->bounds.height()),
+        region->draggable ? SkRegion::kUnion_Op : SkRegion::kDifference_Op);
+  }
+  return draggable_region;
+}
 
 BEGIN_METADATA(WebUIBubbleView)
 END_METADATA
@@ -108,6 +122,31 @@ void WebUIBubbleDialogView::AddedToWidget() {
   web_view_->holder()->SetCornerRadii(gfx::RoundedCornersF(GetCornerRadius()));
 }
 
+gfx::Rect WebUIBubbleDialogView::GetBubbleBounds() {
+  // If hosting a draggable bubble do not update widget bounds position while
+  // the bubble is visible. This allows the bubble to position itself according
+  // to the anchor initially while retaining its dragged position as the bubble
+  // resizes.
+  gfx::Rect bubble_bounds = BubbleDialogDelegateView::GetBubbleBounds();
+  const views::Widget* widget = GetWidget();
+  if (contents_wrapper_ && contents_wrapper_->supports_draggable_regions() &&
+      widget && widget->IsVisible()) {
+    bubble_bounds.set_origin(widget->GetWindowBoundsInScreen().origin());
+  }
+  return bubble_bounds;
+}
+
+std::unique_ptr<views::NonClientFrameView>
+WebUIBubbleDialogView::CreateNonClientFrameView(views::Widget* widget) {
+  // TODO(tluk): Improve the current pattern used to compose functionality on
+  // bubble frames and eliminate the need for static cast.
+  auto frame = BubbleDialogDelegateView::CreateNonClientFrameView(widget);
+  static_cast<views::BubbleFrameView*>(frame.get())
+      ->set_non_client_hit_test_cb(base::BindRepeating(
+          &WebUIBubbleDialogView::NonClientHitTest, base::Unretained(this)));
+  return frame;
+}
+
 void WebUIBubbleDialogView::ShowUI() {
   DCHECK(GetWidget());
   GetWidget()->Show();
@@ -133,10 +172,35 @@ bool WebUIBubbleDialogView::HandleKeyboardEvent(
       event, GetFocusManager());
 }
 
+void WebUIBubbleDialogView::DraggableRegionsChanged(
+    const std::vector<blink::mojom::DraggableRegionPtr>& regions,
+    content::WebContents* contents) {
+  draggable_region_ = ComputeDraggableRegion(regions);
+}
+
+bool WebUIBubbleDialogView::ShouldDescendIntoChildForEventHandling(
+    gfx::NativeView child,
+    const gfx::Point& location) {
+  // The bubble should claim events that fall within the draggable region.
+  return !draggable_region_.has_value() ||
+         !draggable_region_->contains(location.x(), location.y());
+}
+
 gfx::Rect WebUIBubbleDialogView::GetAnchorRect() const {
   if (bubble_anchor_)
     return bubble_anchor_.value();
   return BubbleDialogDelegateView::GetAnchorRect();
+}
+
+int WebUIBubbleDialogView::NonClientHitTest(const gfx::Point& point) const {
+  // Convert the point to the WebView's coordinates.
+  gfx::Point point_in_webview =
+      views::View::ConvertPointToTarget(this, web_view_, point);
+  return draggable_region_.has_value() &&
+                 draggable_region_->contains(point_in_webview.x(),
+                                             point_in_webview.y())
+             ? HTCAPTION
+             : HTNOWHERE;
 }
 
 BEGIN_METADATA(WebUIBubbleDialogView)

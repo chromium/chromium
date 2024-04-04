@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
+#include "third_party/skia/include/core/SkRegion.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
@@ -53,6 +54,12 @@ class WebUIBubbleDialogView : public views::WidgetObserver,
   // views::BubbleDialogDelegateView:
   gfx::Size CalculatePreferredSize() const override;
   void AddedToWidget() override;
+  gfx::Rect GetBubbleBounds() override;
+  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
+      views::Widget* widget) override;
+  bool ShouldDescendIntoChildForEventHandling(
+      gfx::NativeView child,
+      const gfx::Point& location) override;
 
   // WebUIContentsWrapper::Host:
   void ShowUI() override;
@@ -62,6 +69,9 @@ class WebUIBubbleDialogView : public views::WidgetObserver,
   bool HandleKeyboardEvent(
       content::WebContents* source,
       const content::NativeWebKeyboardEvent& event) override;
+  void DraggableRegionsChanged(
+      const std::vector<blink::mojom::DraggableRegionPtr>& regions,
+      content::WebContents* contents) override;
 
   WebUIContentsWrapper* get_contents_wrapper_for_testing() {
     return contents_wrapper_.get();
@@ -80,6 +90,9 @@ class WebUIBubbleDialogView : public views::WidgetObserver,
   virtual void Redraw() {}
 
  private:
+  // Additional hit test handling to support webui bubble draggable regions.
+  int NonClientHitTest(const gfx::Point& point) const;
+
   // A handler to handle unhandled keyboard messages coming back from the
   // renderer process.
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
@@ -87,6 +100,11 @@ class WebUIBubbleDialogView : public views::WidgetObserver,
   base::WeakPtr<WebUIContentsWrapper> contents_wrapper_;
   raw_ptr<views::WebView> web_view_;
   std::optional<gfx::Rect> bubble_anchor_;
+
+  // The draggable region set by the contents. When this is set the anchor is
+  // only used to set the initial bounds of the bubble when initially shown, the
+  // bubble will then retain its dragged position until dismissed.
+  std::optional<SkRegion> draggable_region_;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       bubble_widget_observation_{this};
