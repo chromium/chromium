@@ -495,8 +495,7 @@ void ChromeAutofillClientIOS::OfferPlusAddressCreation(
     PlusAddressCallback callback) {
   AutofillBottomSheetTabHelper* bottomSheetTabHelper =
       AutofillBottomSheetTabHelper::FromWebState(web_state_);
-  bottomSheetTabHelper->ShowPlusAddressesBottomSheet(main_frame_origin,
-                                                     std::move(callback));
+  bottomSheetTabHelper->ShowPlusAddressesBottomSheet(std::move(callback));
 }
 
 void ChromeAutofillClientIOS::UpdateAutofillPopupDataListValues(

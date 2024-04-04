@@ -72,7 +72,6 @@ class AutofillBottomSheetTabHelper
   // `kCreateNewPlusAddress` autofill suggestion. Also stores `callback` for
   // if/when the UI completes successfully.
   void ShowPlusAddressesBottomSheet(
-      const url::Origin& main_frame_origin,
       plus_addresses::PlusAddressCallback callback);
 
   // Send a command to show the VCN enrollment Bottom Sheet.

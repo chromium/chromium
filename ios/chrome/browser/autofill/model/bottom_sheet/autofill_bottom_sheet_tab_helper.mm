@@ -74,7 +74,6 @@ void AutofillBottomSheetTabHelper::ShowCardUnmaskAuthenticationSelection(
 }
 
 void AutofillBottomSheetTabHelper::ShowPlusAddressesBottomSheet(
-    const url::Origin& main_frame_origin,
     plus_addresses::PlusAddressCallback callback) {
   pending_plus_address_callback_ = std::move(callback);
   [commands_handler_ showPlusAddressesBottomSheet];
