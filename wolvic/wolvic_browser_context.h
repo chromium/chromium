@@ -9,16 +9,25 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "components/autofill/core/browser/autocomplete_history_manager.h"
+#include "components/password_manager/core/browser/affiliation/affiliation_service_impl.h"
+#include "components/password_manager/core/browser/field_info_manager.h"
+#include "components/password_manager/core/browser/password_store.h"
 #include "components/prefs/pref_name_set.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/visitedlink/browser/visitedlink_delegate.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/resource_context.h"
+#include "wolvic/browser/autocomplete/wolvic_signin_client.h"
 #include "wolvic/browser/downloads/wolvic_download_manager_delegate.h"
 
 class SimpleFactoryKey;
 class PrefService;
-class PrefRegistrySimple;
+
+namespace user_prefs {
+class PrefRegistrySyncable;
+}  // namespace user_prefs
 
 namespace visitedlink {
 class VisitedLinkWriter;
@@ -73,6 +82,26 @@ class WolvicBrowserContext : public BrowserContext,
   // visitedlink::VisitedLinkDelegate implementation.
   void RebuildTable(const scoped_refptr<URLEnumerator>& enumerator) override;
 
+  autofill::AutocompleteHistoryManager* GetAutocompleteHistoryManager() {
+    return autocomplete_history_manager_.get();
+  }
+
+  password_manager::PasswordStore* GetPasswordStore() {
+    return password_store_.get();
+  }
+
+  password_manager::FieldInfoManager* GetFieldInfoManager() {
+    return field_info_manager_.get();
+  }
+
+  signin::IdentityManager* GetIdentityManager() {
+    return identity_manager_.get();
+  }
+
+  wolvic::WolvicSigninClient* GetSigninClient() {
+    return signin_client_.get();
+  }
+
  protected:
   std::unique_ptr<PermissionControllerDelegate> permission_manager_;
   std::unique_ptr<BackgroundSyncController> background_sync_controller_;
@@ -83,6 +112,8 @@ class WolvicBrowserContext : public BrowserContext,
       download_manager_delegate_;
 
  private:
+  friend class password_manager::PasswordStore;
+
   // Performs initialization of the WolvicBrowserContext while IO is still
   // allowed on the current thread.
   void InitWhileIOAllowed();
@@ -90,8 +121,12 @@ class WolvicBrowserContext : public BrowserContext,
 
   base::FilePath GetPrefStorePath();
   void CreateUserPrefService();
-  void RegisterPrefs(PrefRegistrySimple* registry, PrefNameSet* persistent_prefs);
+  void RegisterPrefs(user_prefs::PrefRegistrySyncable* registry,
+                     PrefNameSet* persistent_prefs);
   void MigrateLocalStatePrefs();
+  void CreateAutocompleteHistoryManager();
+  void CreatePasswordStore();
+  void CreateIdentityManger();
 
   const bool off_the_record_;
   std::unique_ptr<ResourceContext> resource_context_;
@@ -99,6 +134,12 @@ class WolvicBrowserContext : public BrowserContext,
   base::FilePath path_;
   std::unique_ptr<SimpleFactoryKey> key_;
   std::unique_ptr<visitedlink::VisitedLinkWriter> visitedlink_writer_;
+  std::unique_ptr<password_manager::AffiliationServiceImpl> affiliation_service_;
+  std::unique_ptr<autofill::AutocompleteHistoryManager> autocomplete_history_manager_;
+  scoped_refptr<password_manager::PasswordStore> password_store_;
+  std::unique_ptr<password_manager::FieldInfoManager> field_info_manager_;
+  std::unique_ptr<signin::IdentityManager> identity_manager_;
+  std::unique_ptr<wolvic::WolvicSigninClient> signin_client_;
 };
 
 }  // namespace content

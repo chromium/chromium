@@ -8,6 +8,7 @@
 #include "base/path_service.h"
 #include "components/cdm/browser/media_drm_storage_impl.h"
 #include "components/embedder_support/user_agent_utils.h"
+#include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_switches.h"
@@ -15,6 +16,7 @@
 #include "content/shell/browser/shell_devtools_manager_delegate.h"
 #include "media/mojo/mojom/media_drm_storage.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "wolvic/browser/dialogs/http_auth_manager.h"
 #include "wolvic/browser/session_settings.h"
 #include "wolvic/wolvic_browser_context.h"
@@ -171,6 +173,21 @@ void WolvicContentBrowserClient::BindMediaServiceReceiver(
   if (auto r = receiver.As<media::mojom::MediaDrmStorage>()) {
     CreateMediaDrmStorage(render_frame_host, std::move(r));
   }
+}
+
+void WolvicContentBrowserClient::
+    RegisterAssociatedInterfaceBindersForRenderFrameHost(
+    content::RenderFrameHost& render_frame_host,
+    blink::AssociatedInterfaceRegistry& associated_registry) {
+  associated_registry.AddInterface<
+      autofill::mojom::PasswordManagerDriver>(base::BindRepeating(
+      [](content::RenderFrameHost* render_frame_host,
+         mojo::PendingAssociatedReceiver<autofill::mojom::PasswordManagerDriver>
+             receiver) {
+        password_manager::ContentPasswordManagerDriverFactory::
+            BindPasswordManagerDriver(std::move(receiver), render_frame_host);
+      },
+      &render_frame_host));
 }
 
 }  // namespace content

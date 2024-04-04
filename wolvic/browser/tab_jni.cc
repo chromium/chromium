@@ -11,6 +11,8 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/page_zoom.h"
 #include "url/gurl.h"
+#include "wolvic/browser/autocomplete/wolvic_autofill_client.h"
+#include "wolvic/browser/autocomplete/wolvic_password_manager_client.h"
 #include "wolvic/browser/wolvic_contents.h"
 #include "wolvic/browser/wolvic_web_contents_delegate.h"
 #include "wolvic/wolvic_browser_context.h"
@@ -86,6 +88,9 @@ void JNI_Tab_SetWebContentsDelegate(
   auto web_contents_delegate =
       std::make_unique<WolvicWebContentsDelegate>(env, jweb_contents_delegate);
   wolvic_contents->SetDelegate(std::move(web_contents_delegate));
+
+  WolvicAutofillClient::CreateForWebContents(web_contents);
+  WolvicPasswordManagerClient::CreateForWebContents(web_contents);
 }
 
 void JNI_Tab_PageZoomIn(JNIEnv* env,

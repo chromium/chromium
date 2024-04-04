@@ -32,9 +32,14 @@
 #include "components/prefs/pref_service_factory.h"
 #include "components/prefs/segregated_pref_store.h"
 #include "components/user_prefs/user_prefs.h"
+#include "components/password_manager/core/browser/password_manager.h"
+#include "components/password_manager/core/browser/password_manager_constants.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/signin/public/identity_manager/identity_manager_builder.h"
 #include "components/visitedlink/browser/visitedlink_writer.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_switches.h"
@@ -48,6 +53,7 @@
 #include "content/test/mock_background_sync_controller.h"
 #include "content/test/mock_reduce_accept_language_controller_delegate.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
+#include "wolvic/browser/autocomplete/wolvic_password_store_backend.h"
 #include "wolvic/browser/downloads/wolvic_download_manager_delegate.h"
 #include "wolvic/wolvic_permission_manager.h"
 
@@ -101,6 +107,61 @@ void WolvicBrowserContext::FinishInitWhileIOAllowed() {
   visitedlink_writer_ =
       std::make_unique<visitedlink::VisitedLinkWriter>(this, this, true);
   visitedlink_writer_->Init();
+
+  CreateAutocompleteHistoryManager();
+  CreateIdentityManger();
+  CreatePasswordStore();
+  field_info_manager_ =
+      std::make_unique<password_manager::FieldInfoManager>(
+          base::SingleThreadTaskRunner::GetCurrentDefault());
+}
+
+void WolvicBrowserContext::CreateAutocompleteHistoryManager() {
+  autocomplete_history_manager_ = std::make_unique<autofill::AutocompleteHistoryManager>();
+  auto local_storage = scoped_refptr<autofill::AutofillWebDataService>(nullptr);
+  autocomplete_history_manager_->Init(local_storage, GetPrefService(), IsOffTheRecord());
+}
+
+void WolvicBrowserContext::CreatePasswordStore() {
+  if (IsOffTheRecord()) {
+    return;
+  }
+
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
+      GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess();
+  auto backend_task_runner = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
+  affiliation_service_ =
+          std::make_unique<password_manager::AffiliationServiceImpl>(
+              url_loader_factory, backend_task_runner);
+
+  base::FilePath database_path =
+      GetPrefStorePath().Append(
+          password_manager::kAffiliationDatabaseFileName);
+  affiliation_service_->Init(content::GetNetworkConnectionTracker(),
+                            database_path);
+
+  auto affiliated_match_helper =
+      std::make_unique<password_manager::AffiliatedMatchHelper>(
+          affiliation_service_.get());
+
+  password_store_ = new password_manager::PasswordStore(
+      std::make_unique<wolvic::WolvicPasswordStoreBackend>());
+  password_store_->Init(GetPrefService(), std::move(affiliated_match_helper));
+}
+
+void WolvicBrowserContext::CreateIdentityManger() {
+  signin::IdentityManagerBuildParams params;
+
+  signin_client_ = std::make_unique<wolvic::WolvicSigninClient>(this);
+
+  params.signin_client = signin_client_.get();
+  params.local_state = GetPrefService();
+  params.network_connection_tracker = content::GetNetworkConnectionTracker();
+  params.pref_service = GetPrefService();
+  params.profile_path = GetPrefStorePath();
+  identity_manager_ = signin::BuildIdentityManager(&params);
 }
 
 base::FilePath WolvicBrowserContext::GetPrefStorePath() {
@@ -130,9 +191,15 @@ void WolvicBrowserContext::CreateUserPrefService() {
   user_prefs::UserPrefs::Set(this, user_pref_service_.get());
 }
 
-void WolvicBrowserContext::RegisterPrefs(PrefRegistrySimple* registry, PrefNameSet* persistent_prefs) {
+void WolvicBrowserContext::RegisterPrefs(
+    user_prefs::PrefRegistrySyncable* registry,
+    PrefNameSet* persistent_prefs) {
   cdm::MediaDrmStorageImpl::RegisterProfilePrefs(registry);
   persistent_prefs->insert(cdm::prefs::kMediaDrmStorage);
+
+  password_manager::PasswordManager::RegisterProfilePrefs(registry);
+  signin::IdentityManager::RegisterProfilePrefs(registry);
+  safe_browsing::RegisterProfilePrefs(registry);
 }
 
 std::unique_ptr<ZoomLevelDelegate>

@@ -58,6 +58,9 @@ class WolvicContentBrowserClient : public ContentBrowserClient {
   XrIntegrationClient* GetXrIntegrationClient() override;
 #endif
   void BindMediaServiceReceiver(RenderFrameHost *render_frame_host, mojo::GenericPendingReceiver receiver) override;
+  void RegisterAssociatedInterfaceBindersForRenderFrameHost(
+      content::RenderFrameHost& render_frame_host,
+      blink::AssociatedInterfaceRegistry& associated_registry) override;
 
  private:
   raw_ptr<WolvicMainParts> browser_main_parts_;
