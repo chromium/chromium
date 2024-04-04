@@ -757,8 +757,12 @@ bool PasswordAutofillAgent::TextDidChangeInTextField(
     iter->second.password_was_edited_last = false;
   }
 
+  // [Wolvic] Do not show suggestions whenever text filed is changed since
+  // we has a different UX.
+  return false;
+
   // Show the popup with the list of available usernames.
-  return ShowSuggestions(element, ShowAll(false));
+  // return ShowSuggestions(element, ShowAll(false));
 }
 
 void PasswordAutofillAgent::UpdateStateForTextChange(

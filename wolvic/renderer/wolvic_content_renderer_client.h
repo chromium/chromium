@@ -1,6 +1,8 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+#ifndef WOLVIC_RENDERER_WOLVIC_CONTENT_RENDERER_CLIENT_H_
+#define WOLVIC_RENDERER_WOLVIC_CONTENT_RENDERER_CLIENT_H_
 
 #include "content/public/renderer/content_renderer_client.h"
 
@@ -24,6 +26,7 @@ class WolvicContentRendererClient : public content::ContentRendererClient {
   void GetSupportedKeySystems(media::GetSupportedKeySystemsCB cb) override;
   void RenderThreadStarted() override;
   void ExposeInterfacesToBrowser(mojo::BinderMap* binders) override;
+  void RenderFrameCreated(content::RenderFrame* render_frame) override;
 
   uint64_t VisitedLinkHash(const char* canonical_url, size_t length) override;
   bool IsLinkVisited(uint64_t link_hash) override;
@@ -37,3 +40,5 @@ private:
 };
 
 }  // namespace wolvic
+
+#endif  // WOLVIC_RENDERER_WOLVIC_CONTENT_RENDERER_CLIENT_H_

@@ -5,9 +5,15 @@
 #include "wolvic/renderer/wolvic_content_renderer_client.h"
 
 #include "components/cdm/renderer/key_system_support_update.h"
+#include "components/autofill/content/renderer/autofill_agent.h"
+#include "components/autofill/content/renderer/password_autofill_agent.h"
 #include "components/visitedlink/renderer/visitedlink_reader.h"
+#include "content/public/renderer/render_frame.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/features.h"
 #include "wolvic/renderer/browser_exposed_renderer_interfaces.h"
+#include "wolvic/renderer/wolvic_render_frame_observer.h"
 
 namespace wolvic {
 
@@ -29,6 +35,21 @@ void WolvicContentRendererClient::ExposeInterfacesToBrowser(mojo::BinderMap* bin
   // definition of |ExposeRendererInterfacesToBrowser()| to ensure security
   // review coverage.
   ExposeRendererInterfacesToBrowser(this, binders);
+}
+
+void WolvicContentRendererClient::RenderFrameCreated(
+    content::RenderFrame* render_frame) {
+  auto* render_frame_observer = new WolvicRenderFrameObserver(render_frame);
+  blink::AssociatedInterfaceRegistry* associated_interfaces =
+      render_frame_observer->associated_interfaces();
+
+  if (!render_frame->IsInFencedFrameTree() ||
+      base::FeatureList::IsEnabled(blink::features::kFencedFramesAPIChanges)) {
+    auto* password_autofill_agent =
+        new autofill::PasswordAutofillAgent(render_frame, associated_interfaces);
+    new autofill::AutofillAgent(render_frame, password_autofill_agent,
+                      nullptr, associated_interfaces);
+  }
 }
 
 uint64_t WolvicContentRendererClient::VisitedLinkHash(const char* canonical_url,
