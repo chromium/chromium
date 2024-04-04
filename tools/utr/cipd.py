@@ -42,8 +42,10 @@ def fetch_recipe_bundle(is_verbose):
       '-log-level',
       'debug' if is_verbose else 'warning',
   ]
-  logging.info('Running bundle install command:')
-  logging.info(' '.join(cmd))
+  logging.info('[cyan]Running bundle install command:[/]')
+  # Use the "basic_logger" to avoid rich from coloring random bits of the
+  # printed command.
+  logging.getLogger('basic_logger').info(' '.join(cmd))
   # The stdout of `cipd install` seems noisy, and all useful logs appear to go
   # to stderr anyway.
   subprocess.check_call(cmd, stdout=subprocess.DEVNULL)
