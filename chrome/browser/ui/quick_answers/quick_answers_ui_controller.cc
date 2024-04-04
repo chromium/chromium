@@ -80,7 +80,6 @@ QuickAnswersUiController::QuickAnswersUiController(
 QuickAnswersUiController::~QuickAnswersUiController() = default;
 
 void QuickAnswersUiController::CreateQuickAnswersView(Profile* profile,
-                                                      const gfx::Rect& bounds,
                                                       const std::string& title,
                                                       const std::string& query,
                                                       bool is_internal) {
@@ -97,7 +96,7 @@ void QuickAnswersUiController::CreateQuickAnswersView(Profile* profile,
 
   auto* view = GetReadWriteCardsUiController().SetQuickAnswersView(
       std::make_unique<quick_answers::QuickAnswersView>(
-          bounds, title, is_internal,
+          title, is_internal,
           /*controller=*/weak_factory_.GetWeakPtr()));
   quick_answers_view_.SetView(view);
 }
@@ -166,14 +165,13 @@ void QuickAnswersUiController::OnRetryLabelPressed() {
 }
 
 void QuickAnswersUiController::RenderQuickAnswersViewWithResult(
-    const gfx::Rect& anchor_bounds,
     const QuickAnswer& quick_answer) {
   if (!IsShowingQuickAnswersView())
     return;
 
   // QuickAnswersView was initiated with a loading page and will be updated
   // when quick answers result from server side is ready.
-  quick_answers_view()->UpdateView(anchor_bounds, quick_answer);
+  quick_answers_view()->UpdateView(quick_answer);
 }
 
 void QuickAnswersUiController::SetActiveQuery(Profile* profile,

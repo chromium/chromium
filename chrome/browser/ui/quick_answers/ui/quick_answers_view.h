@@ -45,8 +45,7 @@ class QuickAnswersView : public chromeos::ReadWriteCardsView {
   METADATA_HEADER(QuickAnswersView, chromeos::ReadWriteCardsView)
 
  public:
-  QuickAnswersView(const gfx::Rect& anchor_view_bounds,
-                   const std::string& title,
+  QuickAnswersView(const std::string& title,
                    bool is_internal,
                    base::WeakPtr<QuickAnswersUiController> controller);
 
@@ -63,22 +62,17 @@ class QuickAnswersView : public chromeos::ReadWriteCardsView {
   views::FocusTraversable* GetPaneFocusTraversable() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   gfx::Size GetMaximumSize() const override;
-  void UpdateBounds() override;
+  void UpdateBoundsForQuickAnswers() override;
 
   // Called when a click happens to trigger Assistant Query.
   void SendQuickAnswersQuery();
 
-  void UpdateAnchorViewBounds(const gfx::Rect& anchor_view_bounds);
-
   // Update the quick answers view with quick answers result.
-  void UpdateView(const gfx::Rect& anchor_view_bounds,
-                  const quick_answers::QuickAnswer& quick_answer);
+  void UpdateView(const quick_answers::QuickAnswer& quick_answer);
 
   void ShowRetryView();
 
   ui::ImageModel GetIconImageModelForTesting();
-
-  gfx::Rect GetAnchorViewBounds() { return anchor_view_bounds_; }
 
  private:
   void InitLayout();
@@ -93,7 +87,6 @@ class QuickAnswersView : public chromeos::ReadWriteCardsView {
   void AddAssistantIcon();
   void AddGoogleIcon();
   void AddDefaultResultTypeIcon();
-  int GetBoundsWidth();
   int GetLabelWidth(bool is_title);
   void ResetContentView();
   void UpdateQuickAnswerResult(const quick_answers::QuickAnswer& quick_answer);
@@ -104,10 +97,6 @@ class QuickAnswersView : public chromeos::ReadWriteCardsView {
   // Invoked when user clicks the phonetics audio button.
   void OnPhoneticsAudioButtonPressed(
       const quick_answers::PhoneticsInfo& phonetics_info);
-
-  // The relative position to the screen for Ash and to the toplevel window for
-  // Lacros.
-  gfx::Rect anchor_view_bounds_;
 
   base::WeakPtr<QuickAnswersUiController> controller_;
   bool has_second_row_answer_ = false;

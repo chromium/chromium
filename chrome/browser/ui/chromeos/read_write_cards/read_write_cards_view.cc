@@ -16,7 +16,9 @@ namespace chromeos {
 ReadWriteCardsView::ReadWriteCardsView(
     chromeos::ReadWriteCardsUiController& read_write_cards_ui_controller)
     : view_shadow_(std::make_unique<views::ViewShadow>(this, /*elevation=*/2)),
-      read_write_cards_ui_controller_(read_write_cards_ui_controller) {}
+      read_write_cards_ui_controller_(read_write_cards_ui_controller) {
+  context_menu_bounds_ = read_write_cards_ui_controller_->context_menu_bounds();
+}
 
 ReadWriteCardsView::~ReadWriteCardsView() = default;
 
@@ -27,7 +29,15 @@ void ReadWriteCardsView::SetContextMenuBounds(
   }
 
   context_menu_bounds_ = context_menu_bounds;
-  UpdateBounds();
+  UpdateBoundsForQuickAnswers();
+}
+
+void ReadWriteCardsView::UpdateBoundsForQuickAnswers() {}
+
+void ReadWriteCardsView::AddedToWidget() {
+  // Make sure the bounds is updated correctly according to
+  // `context_menu_bounds_`.
+  UpdateBoundsForQuickAnswers();
 }
 
 void ReadWriteCardsView::PreferredSizeChanged() {

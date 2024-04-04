@@ -192,7 +192,7 @@ void UserConsentView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetDescription(desc_text);
 }
 
-void UserConsentView::UpdateBounds() {
+void UserConsentView::UpdateBoundsForQuickAnswers() {
   PreferredSizeChanged();
 }
 

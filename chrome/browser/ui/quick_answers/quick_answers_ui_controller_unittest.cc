@@ -12,13 +12,6 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/test/button_test_api.h"
 
-namespace {
-
-constexpr gfx::Rect kDefaultAnchorBoundsInScreen =
-    gfx::Rect(gfx::Point(500, 250), gfx::Size(80, 140));
-
-}  // namespace
-
 class QuickAnswersUiControllerTest : public ChromeQuickAnswersTestBase {
  protected:
   QuickAnswersUiControllerTest() = default;
@@ -59,9 +52,8 @@ TEST_F(QuickAnswersUiControllerTest, TearDownWhileQuickAnswersViewShowing) {
 
   GetQuickAnswersController()->SetVisibility(
       QuickAnswersVisibility::kQuickAnswersVisible);
-  ui_controller()->CreateQuickAnswersView(GetProfile(),
-                                          kDefaultAnchorBoundsInScreen,
-                                          "default_title", "default_query",
+  ui_controller()->CreateQuickAnswersView(GetProfile(), "default_title",
+                                          "default_query",
                                           /*is_internal=*/false);
   EXPECT_TRUE(ui_controller()->IsShowingQuickAnswersView());
 }

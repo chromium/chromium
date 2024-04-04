@@ -124,7 +124,7 @@ void ReadWriteCardsUiController::RemoveMahiView() {
   }
 }
 
-views::View* ReadWriteCardsUiController::GetQuickAnswersViewForTest() {
+ReadWriteCardsView* ReadWriteCardsUiController::GetQuickAnswersViewForTest() {
   return quick_answers_view_;
 }
 

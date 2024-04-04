@@ -49,7 +49,7 @@ class ReadWriteCardsUiController : public views::ViewObserver {
   views::View* SetMahiView(std::unique_ptr<views::View> view);
   void RemoveMahiView();
 
-  views::View* GetQuickAnswersViewForTest();
+  ReadWriteCardsView* GetQuickAnswersViewForTest();
   views::View* GetMahiViewForTest();
 
   // Re-layout a widget and views. This includes updating the widget bounds and
@@ -58,6 +58,8 @@ class ReadWriteCardsUiController : public views::ViewObserver {
   void MaybeRelayout();
 
   void SetContextMenuBounds(const gfx::Rect& context_menu_bounds);
+
+  const gfx::Rect& context_menu_bounds() const { return context_menu_bounds_; }
 
   views::Widget* widget_for_test() const { return widget_.get(); }
 

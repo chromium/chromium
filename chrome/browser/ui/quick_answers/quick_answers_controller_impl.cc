@@ -240,7 +240,7 @@ void QuickAnswersControllerImpl::HandleQuickAnswerRequest(
     visibility_ = QuickAnswersVisibility::kQuickAnswersVisible;
     // TODO(b/327501381): Use `ReadWriteCardsUiController` for this view.
     quick_answers_ui_controller_->CreateQuickAnswersView(
-        profile_, anchor_bounds_, title_, query_,
+        profile_, title_, query_,
         request.context.device_properties.is_internal);
 
     if (IsProcessedRequest(request)) {
@@ -280,7 +280,7 @@ void QuickAnswersControllerImpl::OnQuickAnswerReceived(
           std::make_unique<quick_answers::QuickAnswerText>(title_));
     }
     quick_answers_ui_controller_->RenderQuickAnswersViewWithResult(
-        anchor_bounds_, *quick_answer());
+        *quick_answer());
   } else {
     quick_answers::QuickAnswer quick_answer_with_no_result;
     quick_answer_with_no_result.title.push_back(
@@ -289,7 +289,7 @@ void QuickAnswersControllerImpl::OnQuickAnswerReceived(
         std::make_unique<quick_answers::QuickAnswerResultText>(
             l10n_util::GetStringUTF8(IDS_QUICK_ANSWERS_VIEW_NO_RESULT_V2)));
     quick_answers_ui_controller_->RenderQuickAnswersViewWithResult(
-        anchor_bounds_, quick_answer_with_no_result);
+        quick_answer_with_no_result);
     // Fallback query to title if no result is available.
     query_ = title_;
     quick_answers_ui_controller_->SetActiveQuery(profile_, query_);

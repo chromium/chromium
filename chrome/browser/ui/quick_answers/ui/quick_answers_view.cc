@@ -262,12 +262,10 @@ namespace quick_answers {
 // QuickAnswersView -----------------------------------------------------------
 
 QuickAnswersView::QuickAnswersView(
-    const gfx::Rect& anchor_view_bounds,
     const std::string& title,
     bool is_internal,
     base::WeakPtr<QuickAnswersUiController> controller)
     : chromeos::ReadWriteCardsView(controller->GetReadWriteCardsUiController()),
-      anchor_view_bounds_(anchor_view_bounds),
       controller_(std::move(controller)),
       title_(title),
       is_internal_(is_internal),
@@ -361,10 +359,16 @@ gfx::Size QuickAnswersView::GetMaximumSize() const {
   return gfx::Size(0, MaximumViewHeight());
 }
 
-void QuickAnswersView::UpdateBounds() {
+void QuickAnswersView::UpdateBoundsForQuickAnswers() {
   // Multi-line labels need to be resized to be compatible with bounds width.
   if (first_answer_label_) {
-    first_answer_label_->SizeToFit(GetLabelWidth(/*is_title=*/false));
+    first_answer_label_->SetMaximumWidth(GetLabelWidth(/*is_title=*/false));
+
+    // Directly calls `PreferredSizeChanged` of `this` to propagate a layout
+    // change. A layout change propagation is not working correctly for now
+    // because of the current view tree set up.
+    // TODO(b/331271987): Remove this.
+    PreferredSizeChanged();
   }
 }
 
@@ -374,8 +378,7 @@ void QuickAnswersView::SendQuickAnswersQuery() {
   }
 }
 
-void QuickAnswersView::UpdateView(const gfx::Rect& anchor_view_bounds,
-                                  const QuickAnswer& quick_answer) {
+void QuickAnswersView::UpdateView(const QuickAnswer& quick_answer) {
   has_second_row_answer_ = !quick_answer.second_answer_row.empty();
   retry_label_ = nullptr;
 
@@ -595,12 +598,8 @@ void QuickAnswersView::AddDefaultResultTypeIcon() {
                                      /*icon_size=*/kResultTypeIconSizeDip));
 }
 
-int QuickAnswersView::GetBoundsWidth() {
-  return anchor_view_bounds_.width();
-}
-
 int QuickAnswersView::GetLabelWidth(bool is_title) {
-  int label_width = GetBoundsWidth() - kMainViewInsets.width() -
+  int label_width = context_menu_bounds().width() - kMainViewInsets.width() -
                     GetContentViewInsets().width() - kGoogleIconInsets.width() -
                     kGoogleIconSizeDip;
 
@@ -685,6 +684,7 @@ void QuickAnswersView::UpdateQuickAnswerResult(
           first_answer_view->children().front());
       first_answer_label_->SetMultiLine(true);
       first_answer_label_->SetMaxLines(kMaxRows - /*exclude title*/ 1);
+      UpdateBoundsForQuickAnswers();
     }
   }
 

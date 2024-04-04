@@ -44,7 +44,6 @@ class QuickAnswersUiController {
 
   // Constructs/resets the Quick Answers card view.
   void CreateQuickAnswersView(Profile* profile,
-                              const gfx::Rect& anchor_bounds,
                               const std::string& title,
                               const std::string& query,
                               bool is_internal);
@@ -61,9 +60,7 @@ class QuickAnswersUiController {
 
   void OnRetryLabelPressed();
 
-  // |bounds| is the bound of context menu.
   void RenderQuickAnswersViewWithResult(
-      const gfx::Rect& bounds,
       const quick_answers::QuickAnswer& quick_answer);
 
   void SetActiveQuery(Profile* profile, const std::string& query);

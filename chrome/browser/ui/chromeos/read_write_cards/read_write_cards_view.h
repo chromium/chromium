@@ -37,11 +37,20 @@ class ReadWriteCardsView : public views::View {
 
   void SetContextMenuBounds(const gfx::Rect& context_menu_bounds);
 
+  const gfx::Rect& context_menu_bounds_for_test() const {
+    return context_menu_bounds_;
+  }
+
  protected:
   // Updates bounds according to the new bounds of context menu.
-  virtual void UpdateBounds() = 0;
+  // Use `LayoutManager` for updating bounds in the new code. This is for
+  // QuickAnswers UI only.
+  // TODO(b/331271987): Remove this function once quick answer views fully adopt
+  // `LayoutManager`.
+  virtual void UpdateBoundsForQuickAnswers();
 
   // views::View:
+  void AddedToWidget() override;
   void PreferredSizeChanged() override;
   void ChildPreferredSizeChanged(views::View* child) override;
 

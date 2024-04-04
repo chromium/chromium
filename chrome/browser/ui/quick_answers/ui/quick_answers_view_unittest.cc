@@ -62,8 +62,7 @@ class QuickAnswersViewsTest : public ChromeQuickAnswersTestBase {
         anchor_bounds_);
 
     // TODO(b/222422130): Rewrite QuickAnswersViewsTest to expand coverage.
-    GetUiController()->CreateQuickAnswersView(GetProfile(), anchor_bounds_,
-                                              "title", "query",
+    GetUiController()->CreateQuickAnswersView(GetProfile(), "title", "query",
                                               /*is_internal=*/false);
   }
 

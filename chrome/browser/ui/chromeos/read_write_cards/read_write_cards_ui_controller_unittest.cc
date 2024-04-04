@@ -40,15 +40,15 @@ class TestReadWriteCardsView : public ReadWriteCardsView {
   ~TestReadWriteCardsView() override = default;
 
   // ReadWriteCardsView:
-  void UpdateBounds() override { update_bounds_called_ = true; }
+  void UpdateBoundsForQuickAnswers() override { update_bounds_called_++; }
   gfx::Size GetMaximumSize() const override {
     return gfx::Size(0, maximum_height_);
   }
 
-  bool update_bounds_called() { return update_bounds_called_; }
+  int update_bounds_called() { return update_bounds_called_; }
 
  private:
-  bool update_bounds_called_ = false;
+  int update_bounds_called_ = 0;
   size_t maximum_height_ = 0;
 };
 
@@ -93,6 +93,11 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 TEST_P(ReadWriteCardsUiControllerTest, SetQuickAnswersView) {
   ReadWriteCardsUiController controller;
+
+  gfx::Rect context_menu_bounds =
+      gfx::Rect(gfx::Point(500, 250), gfx::Size(kDefaultWidth, 140));
+  controller.SetContextMenuBounds(context_menu_bounds);
+
   ASSERT_FALSE(controller.widget_for_test());
 
   views::View* test_view = controller.SetQuickAnswersView(
@@ -100,7 +105,10 @@ TEST_P(ReadWriteCardsUiControllerTest, SetQuickAnswersView) {
 
   EXPECT_TRUE(controller.widget_for_test());
   EXPECT_TRUE(controller.widget_for_test()->IsVisible());
-  EXPECT_EQ(test_view, controller.GetQuickAnswersViewForTest());
+
+  auto* qa_view = controller.GetQuickAnswersViewForTest();
+  EXPECT_EQ(test_view, qa_view);
+  EXPECT_EQ(context_menu_bounds, qa_view->context_menu_bounds_for_test());
 
   controller.RemoveQuickAnswersView();
   EXPECT_FALSE(controller.widget_for_test());
@@ -177,11 +185,12 @@ TEST_P(ReadWriteCardsUiControllerTest, ViewUpdateBounds) {
   TestReadWriteCardsView* read_write_cards_view =
       views::AsViewClass<TestReadWriteCardsView>(test_view);
 
-  EXPECT_FALSE(read_write_cards_view->update_bounds_called());
+  // Update bounds is called when the view is added to a widget.
+  EXPECT_EQ(1, read_write_cards_view->update_bounds_called());
 
   controller.SetContextMenuBounds(
       gfx::Rect(gfx::Point(500, 250), gfx::Size(kDefaultWidth, 140)));
-  EXPECT_TRUE(read_write_cards_view->update_bounds_called());
+  EXPECT_EQ(2, read_write_cards_view->update_bounds_called());
 }
 
 TEST_P(ReadWriteCardsUiControllerTest, WidgetBoundsDefault) {
