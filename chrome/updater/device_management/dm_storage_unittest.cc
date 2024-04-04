@@ -288,6 +288,10 @@ TEST(DMStorage, PersistPolicies) {
 
   // Stale policies should be purged.
   EXPECT_FALSE(base::DirectoryExists(stale_poliy));
+
+  EXPECT_TRUE(storage->RemoveAllPolicies());
+  EXPECT_FALSE(base::PathExists(omaha_policy_file));
+  EXPECT_FALSE(base::PathExists(foobar_policy_file));
 }
 
 TEST(DMStorage, GetCachedPolicyInfo) {
@@ -325,6 +329,12 @@ TEST(DMStorage, GetCachedPolicyInfo) {
   EXPECT_TRUE(policy_info->has_key_version());
   EXPECT_EQ(policy_info->key_version(), 15);
   EXPECT_EQ(policy_info->timestamp(), 12340000);
+
+  EXPECT_TRUE(storage->RemoveAllPolicies());
+  policy_info = storage->GetCachedPolicyInfo();
+  EXPECT_TRUE(policy_info->public_key().empty());
+  EXPECT_FALSE(policy_info->has_key_version());
+  EXPECT_EQ(policy_info->timestamp(), 0);
 }
 
 TEST(DMStorage, ReadCachedOmahaPolicy) {

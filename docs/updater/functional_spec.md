@@ -974,6 +974,14 @@ The policies are signed. The verification chain is:
   `base64_encoding{policy_type}/PolicyFetchResponse`. This file is signed by
   the key in `CachedPolicyInfo` using the algorithm specified in this file.
 
+The cached policies are cleared:
+
+* before the device enrollment, to make sure the device management starts
+  from a clean state.
+* after policy fetch succeeds but receives no new policies. This means all
+  existing policies become stale and/or policy cache is in abnormal state that
+  fails all validations. Either way it's a good idea to reset the state.
+
 ### Dynamic Install Parameters
 
 #### `needsadmin`

@@ -153,6 +153,9 @@ class DMStorage : public base::RefCountedThreadSafe<DMStorage> {
   //
   bool PersistPolicies(const DMPolicyMap& policy_map) const;
 
+  // Removes all the cached policies, including the cached policy info.
+  bool RemoveAllPolicies() const;
+
   // Creates a CachedPolicyInfo object and populates it with the public key
   // information loaded from file |policy_cache_root_|\CachedPolicyInfo.
   std::unique_ptr<CachedPolicyInfo> GetCachedPolicyInfo() const;

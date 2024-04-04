@@ -229,6 +229,8 @@ void DMFetch::PostRequest(const std::string& request_type,
       result = DMClient::RequestResult::kNotManaged;
     } else if (!storage_->GetDmToken().empty()) {
       result = DMClient::RequestResult::kAlreadyRegistered;
+    } else {
+      storage_->RemoveAllPolicies();
     }
   } else if (storage_->GetDmToken().empty()) {
     result = DMClient::RequestResult::kNoDMToken;
@@ -336,7 +338,9 @@ void OnDMPolicyFetchRequestComplete(
         storage->GetDeviceID(), validation_results);
 
     if (policies.empty()) {
+      VLOG(1) << "No policy passes the validation, reset the policy cache.";
       result = DMClient::RequestResult::kUnexpectedResponse;
+      storage->RemoveAllPolicies();
     } else {
       VLOG(1) << "Policy fetch request completed, got " << policies.size()
               << " new policies.";
