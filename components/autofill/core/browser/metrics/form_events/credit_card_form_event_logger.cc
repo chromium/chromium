@@ -113,6 +113,19 @@ void CreditCardFormEventLogger::OnDidShowSuggestions(
       metadata_logging_context_,
       HasBeenLogged(has_logged_suggestion_with_metadata_shown_));
   has_logged_suggestion_with_metadata_shown_ = true;
+
+  // Log if any of the suggestions had benefit available.
+  if (!has_logged_suggestion_shown_for_benefits_) {
+    Log(metadata_logging_context_.instrument_ids_with_benefits_available.empty()
+            ? FORM_EVENT_SUGGESTION_FOR_CARD_WITHOUT_BENEFIT_AVAILABLE_SHOWN_ONCE
+            : FORM_EVENT_SUGGESTION_FOR_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE,
+        form);
+    has_logged_suggestion_shown_for_benefits_ = true;
+  }
+  Log(metadata_logging_context_.instrument_ids_with_benefits_available.empty()
+          ? FORM_EVENT_SUGGESTION_FOR_CARD_WITHOUT_BENEFIT_AVAILABLE_SHOWN
+          : FORM_EVENT_SUGGESTION_FOR_CARD_WITH_BENEFIT_AVAILABLE_SHOWN,
+      form);
 }
 
 void CreditCardFormEventLogger::LogDeprecatedCreditCardSelectedMetric(
@@ -161,6 +174,7 @@ void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
       break;
     case CreditCard::RecordType::kMaskedServerCard:
       Log(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED, form);
+
       if (!has_logged_masked_server_card_suggestion_selected_) {
         has_logged_masked_server_card_suggestion_selected_ = true;
         Log(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED_ONCE, form);
@@ -169,7 +183,28 @@ void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
           Log(FORM_EVENT_SERVER_CARD_SUGGESTION_SELECTED_FOR_AN_EXISTING_LOCAL_CARD_ONCE,
               form);
         }
+
+        // Log masked server card selected once events for benefits.
+        Log(metadata_logging_context_.instrument_ids_with_benefits_available
+                    .contains(credit_card.instrument_id())
+                ? FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SELECTED_ONCE
+                : FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_SELECTED_ONCE,
+            form);
+        // Log when a masked server card was selected after benefits were shown.
+        if (!metadata_logging_context_.instrument_ids_with_benefits_available
+                 .empty()) {
+          Log(FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_SELECTED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE,
+              form);
+        }
       }
+
+      // Log masked server card selected events for benefits.
+      Log(metadata_logging_context_.instrument_ids_with_benefits_available
+                  .contains(credit_card.instrument_id())
+              ? FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SELECTED
+              : FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_SELECTED,
+          form);
+
       break;
     case CreditCard::RecordType::kVirtualCard:
       latest_selected_card_was_virtual_card_ = true;

@@ -179,6 +179,7 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   bool has_logged_suggestion_for_card_with_cvc_shown_ = false;
   bool has_logged_suggestion_for_card_with_cvc_selected_ = false;
   bool has_logged_suggestion_for_card_with_cvc_filled_ = false;
+  bool has_logged_suggestion_shown_for_benefits_ = false;
   bool logged_suggestion_filled_was_masked_server_card_ = false;
   bool logged_suggestion_filled_was_virtual_card_ = false;
   // If true, the most recent card to be selected as an Autofill suggestion was
