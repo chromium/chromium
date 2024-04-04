@@ -62,6 +62,9 @@ suite('SeaPenImagesElementTest', function() {
         !!seaPenImagesElement.shadowRoot!.querySelector(
             SeaPenZeroStateSvgElement.is),
         'sea-pen-zero-state-svg is shown initially');
+    assertTrue(
+        !!seaPenImagesElement.shadowRoot!.querySelector('.zero-state-message'),
+        'zero state message is shown');
   });
 
   test('displays loading thumbnail placeholders', async () => {

@@ -59,6 +59,7 @@ void AddSeaPenStrings(content::WebUIDataSource* source) {
       {"seaPenSetWallpaper", IDS_SEA_PEN_SET_WALLPAPER},
       {"seaPenSetCameraBackground", IDS_SEA_PEN_SET_CAMERA_BACKGROUND},
       {"seaPenLabel", IDS_SEA_PEN_LABEL},
+      {"seaPenZeroStateMessage", IDS_SEA_PEN_ZERO_STATE_MESSAGE},
 
       {"ariaLabelLoading", IDS_PERSONALIZATION_APP_ARIA_LABEL_LOADING},
   };

@@ -207,7 +207,7 @@
         <template is="dom-if" if="[[shouldShowWallpaperInfoDialog_(index, currentShowWallpaperInfoDialog_)]]" restamp>
           <cr-dialog id="wallpaperInfoDialog" data-id$="[[index]]" on-close="onCloseDialog_" show-on-attach>
             <div id="wallpaperInfoTitle" slot="title">[[i18n('seaPenAboutDialogTitle')]]</div>
-            <div id="wallpaperInfoBody" slot="body" tabindex="0">
+            <div id="wallpaperInfoBody" slot="body">
               <p class="about-prompt-info">
                 [[getWallpaperInfoPromptMessage_(image, recentImageData_, recentImageDataLoading_)]]
               </p>
