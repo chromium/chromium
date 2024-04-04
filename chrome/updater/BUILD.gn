@@ -1074,6 +1074,7 @@ if (is_win || is_mac || is_linux) {
 
     deps = [
       ":base",
+      ":branding_header",
       ":unit_test_util_sources",
       ":updater_test_sources",
       "//base/test:test_support",
@@ -1113,6 +1114,7 @@ if (is_win || is_mac || is_linux) {
 
     deps = [
       ":base",
+      ":branding_header",
       ":unit_test_util_sources",
       ":updater_test_sources",
       "//base/test:test_support",

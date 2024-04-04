@@ -17,12 +17,15 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/updater/test/integration_test_commands.h"
 #include "chrome/updater/test_scope.h"
+#include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/unit_test_util.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <shlobj.h>
 
+#include <cstdlib>
+#include <cstring>
 #include <memory>
 #include <string>
 
@@ -195,6 +198,20 @@ int main(int argc, char** argv) {
   ScopedSymbolPath scoped_symbol_path_system(/*is_system=*/true);
   ScopedSymbolPath scoped_symbol_path_user(/*is_system=*/false);
 #endif
+
+  // Assume all test bots have the {ISOLATED_OUTDIR} environment variable set.
+  // Otherwise, don't run branded updater tests on a developer's system because
+  // doing so breaks the updater on the system.
+  if (!std::getenv("ISOLATED_OUTDIR") &&
+      std::strcmp(PRODUCT_FULLNAME_STRING, "ChromiumUpdater")) {
+    LOG(ERROR) << "Running branded updater tests breaks the updater for the "
+                  "branded browser. This is unavoidable in the current "
+                  "implementation. If you don't care about broken updaters and "
+                  "want to run the branded updater tests locally, define an "
+                  "environment variable ISOLATED_OUTDIR and set it to a local "
+                  "directory.";
+    return -1;
+  }
 
   // Use the {ISOLATED_OUTDIR} as a log destination for the test suite.
   base::TestSuite test_suite(argc, argv);

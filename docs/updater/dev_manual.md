@@ -8,12 +8,6 @@ including tips and tricks.
 
 ## Code Organization
 
-### Cross-platform Code
-Where possible, cross-platform code is preferred to other alternatives. This
-means that the source code of the updater is organized in sub-directories,
-first by functionality (or feature), and second by platform name. For example,
-the source code contains `updater\net` instead of `updater\mac\net`.
-
 ## Bots & Lab
 >**_NOTE:_** Knowledge in this section may become out-of-date as LUCI evolves
 quickly.
@@ -149,6 +143,22 @@ To update these copies of the updaters:
         changes, 3pp will import the new versions within a few hours.
 3.  Update //DEPS to point to the new versions.
 
+## Developing
+### Cross-platform Code
+Where possible, cross-platform code is preferred to other alternatives. This
+means that the source code of the updater is organized in sub-directories,
+first by functionality (or feature), and second by platform name. For example,
+the source code contains `updater\net` instead of `updater\mac\net`.
+
+### Mind the dependencies
+
+To enforce layering, there are enforced rules about what can be included in
+certain modules. The rules checked by `GN` and the build breaks on bots if the
+dependencies constraints are not satisfied.
+
+Use the following command to check the target dependencies:
+`gn check out\Default chrome/updater:* --check-generated --check-system`
+
 ## Building
 
 ### Configuring the build
@@ -272,6 +282,21 @@ vpython3 tools\code_coverage\coverage.py updater_tests -b out\coverage -o out\re
 ```
 The last command outputs an HTML file and you can open it in browser to see the
 coverages.
+
+
+## Unit tests and integration tests
+### Running tests locally
+
+The updater tests are available as `updater_tests` build target in the `out`
+directory of the build.
+
+In general, running branded unit tests locally is likely to break the updater
+for the browser. To avoid this outcome when unsuspecting developers build and
+run the branded updater tests, the test don't run locally unless the
+developer sets an environment variable `ISOLATED_OUTDIR`. This is an
+environment variable which is present on all bots (see the updater logs
+section below). The presence of `ISOLATED_OUTDIR` does not preserve the
+updater though. It only prevents the tests from being run.
 
 
 ## Debugging
