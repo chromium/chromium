@@ -33,9 +33,10 @@ bool BookmarkNodeData::ClipboardContainsBookmarks() {
   return PasteboardContainsBookmarks(pb);
 }
 
-void BookmarkNodeData::WriteToClipboard() {
+void BookmarkNodeData::WriteToClipboard(bool is_off_the_record) {
   NSPasteboard* pb =
       ui::clipboard_util::PasteboardFromBuffer(ui::ClipboardBuffer::kCopyPaste);
+  // TODO(crbug.com/40945200): Add support for off-the-record bookmarks.
   WriteBookmarksToPasteboard(pb, elements, profile_path_);
 }
 

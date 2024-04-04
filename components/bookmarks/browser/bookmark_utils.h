@@ -76,7 +76,8 @@ void CopyToClipboard(
     BookmarkModel* model,
     const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>& nodes,
     bool remove_nodes,
-    metrics::BookmarkEditSource source);
+    metrics::BookmarkEditSource source,
+    bool is_off_the_record);
 
 // Pastes from the clipboard. The new nodes are added to |parent|, unless
 // |parent| is null in which case this does nothing. The nodes are inserted

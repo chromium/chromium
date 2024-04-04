@@ -14,7 +14,7 @@ bool BookmarkNodeData::ClipboardContainsBookmarks() {
   return false;
 }
 
-void BookmarkNodeData::WriteToClipboard() {
+void BookmarkNodeData::WriteToClipboard(bool is_off_the_record) {
   NOTREACHED();
 }
 

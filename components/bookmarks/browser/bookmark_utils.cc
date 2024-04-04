@@ -259,7 +259,8 @@ void CopyToClipboard(
     BookmarkModel* model,
     const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>& nodes,
     bool remove_nodes,
-    metrics::BookmarkEditSource source) {
+    metrics::BookmarkEditSource source,
+    bool is_off_the_record) {
   if (nodes.empty())
     return;
 
@@ -270,7 +271,7 @@ void CopyToClipboard(
       filtered_nodes.push_back(node);
   }
 
-  BookmarkNodeData(filtered_nodes).WriteToClipboard();
+  BookmarkNodeData(filtered_nodes).WriteToClipboard(is_off_the_record);
 
   if (remove_nodes) {
     ScopedGroupBookmarkActions group_cut(model);

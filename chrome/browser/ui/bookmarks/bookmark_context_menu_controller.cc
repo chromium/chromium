@@ -402,12 +402,14 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
 
     case IDC_CUT:
       bookmarks::CopyToClipboard(model_, selection_, true,
-                                 bookmarks::metrics::BookmarkEditSource::kUser);
+                                 bookmarks::metrics::BookmarkEditSource::kUser,
+                                 profile_->IsOffTheRecord());
       break;
 
     case IDC_COPY:
       bookmarks::CopyToClipboard(model_, selection_, false,
-                                 bookmarks::metrics::BookmarkEditSource::kUser);
+                                 bookmarks::metrics::BookmarkEditSource::kUser,
+                                 profile_->IsOffTheRecord());
       break;
 
     case IDC_PASTE: {

@@ -317,7 +317,7 @@ TEST_F(BookmarkNodeDataTest, WriteToClipboardURL) {
   const std::u16string title(u"blah");
 
   data.ReadFromTuple(url, title);
-  data.WriteToClipboard();
+  data.WriteToClipboard(/*is_off_the_record=*/false);
 
   // Now read the data back in.
   std::u16string clipboard_result;
@@ -345,7 +345,7 @@ TEST_F(BookmarkNodeDataTest, MAYBE_WriteToClipboardMultipleURLs) {
   nodes.push_back(url_node2);
 
   data.ReadFromVector(nodes);
-  data.WriteToClipboard();
+  data.WriteToClipboard(/*is_off_the_record=*/false);
 
   // Now read the data back in.
   std::u16string combined_text;
@@ -376,7 +376,7 @@ TEST_F(BookmarkNodeDataTest, MAYBE_WriteToClipboardEmptyFolder) {
   nodes.push_back(folder);
 
   data.ReadFromVector(nodes);
-  data.WriteToClipboard();
+  data.WriteToClipboard(/*is_off_the_record=*/false);
 
   // Now read the data back in.
   std::u16string clipboard_result;
@@ -405,7 +405,7 @@ TEST_F(BookmarkNodeDataTest, MAYBE_WriteToClipboardFolderWithChildren) {
   nodes.push_back(folder);
 
   data.ReadFromVector(nodes);
-  data.WriteToClipboard();
+  data.WriteToClipboard(/*is_off_the_record=*/false);
 
   // Now read the data back in.
   std::u16string clipboard_result;
@@ -432,7 +432,7 @@ TEST_F(BookmarkNodeDataTest, MAYBE_WriteToClipboardFolderAndURL) {
   nodes.push_back(folder);
 
   data.ReadFromVector(nodes);
-  data.WriteToClipboard();
+  data.WriteToClipboard(/*is_off_the_record=*/false);
 
   // Now read the data back in.
   std::u16string combined_text;

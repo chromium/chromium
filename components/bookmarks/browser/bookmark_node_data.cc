@@ -180,8 +180,13 @@ bool BookmarkNodeData::ReadFromTuple(const GURL& url,
 }
 
 #if !BUILDFLAG(IS_APPLE)
-void BookmarkNodeData::WriteToClipboard() {
+void BookmarkNodeData::WriteToClipboard(bool is_off_the_record) {
   ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
+
+  if (is_off_the_record) {
+    // Data is copied from an incognito window, so mark it as off the record.
+    scw.MarkAsOffTheRecord();
+  }
 
 #if BUILDFLAG(IS_WIN)
   const std::u16string kEOL(u"\r\n");
