@@ -242,7 +242,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     size_t accounts_index = 0;
     CheckHoverableAccountRows(account_rows->children(), {kAccountSuffix},
                               accounts_index);
-    CheckButtonRow(children[2], /*expect_continue_button=*/true,
+    CheckButtonRow(children[2], /*expect_continue_button=*/false,
                    supports_add_account, /*expect_back_button=*/false);
   }
 

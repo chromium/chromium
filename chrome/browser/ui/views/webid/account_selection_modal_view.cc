@@ -443,10 +443,7 @@ void AccountSelectionModalView::ShowSingleAccountConfirmDialog(
         idp_display_data.idp_metadata.idp_login_url);
   }
   AddChildView(CreateButtonRow(
-      base::BindRepeating(
-          &AccountSelectionViewBase::Observer::OnAccountSelected,
-          base::Unretained(observer_), std::cref(account),
-          std::cref(idp_display_data)),
+      /*continue_callback=*/std::nullopt,
       std::move(use_other_account_callback)));
 
   InitDialogWidget();
