@@ -13158,33 +13158,15 @@
     "PartitionAllocBackupRefPtr": [
         {
             "platforms": [
+                "android",
+                "android_weblayer",
+                "android_webview",
                 "chromeos",
                 "chromeos_lacros",
                 "fuchsia",
                 "linux",
                 "mac",
                 "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "brp-mode": "enabled-in-same-slot-mode",
-                        "enabled-processes": "all-processes"
-                    },
-                    "enable_features": [
-                        "PartitionAllocBackupRefPtr"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PartitionAllocBackupRefPtrAndroid": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview"
             ],
             "experiments": [
                 {
