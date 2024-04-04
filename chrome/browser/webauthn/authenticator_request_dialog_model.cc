@@ -2466,7 +2466,7 @@ AuthenticatorRequestDialogController::IndexOfPriorityMechanism() {
           }
         }
       }
-      // If there one of the passkey is a valid default, go to that.
+      // If one of the passkeys is a valid default, go to that.
       if (!multiple_distinct_creds && best_cred.has_value()) {
         return best_cred->first;
       }
@@ -2578,8 +2578,15 @@ AuthenticatorRequestDialogController::IndexOfPriorityMechanism() {
              device::FidoRequestType::kMakeCredential);
 
     if (windows_handles_hybrid) {
-      // If Windows supports hybrid then we defer to Windows in all cases.
-      priority_list.emplace_back(Mechanism::WindowsAPI());
+      // If Windows supports hybrid and the enclave is not available, we defer
+      // to the platform.
+      bool enclave_available = base::ranges::any_of(
+          model_->mechanisms, [](const Mechanism& m) -> bool {
+            return absl::holds_alternative<Mechanism::Enclave>(m.type);
+          });
+      if (!enclave_available) {
+        priority_list.emplace_back(Mechanism::WindowsAPI());
+      }
     }
 
 #if BUILDFLAG(IS_MAC)
