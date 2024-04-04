@@ -81,6 +81,8 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
                  gfx::kGoogleGreyAlpha300);
   mixer[ui::kColorAvatarIconGuest] =
       DeriveDefaultIconColor(ui::kColorPrimaryForeground);
+  mixer[ui::kColorBubbleBackground] = {ui::kColorPrimaryBackground};
+  mixer[ui::kColorBubbleFooterBackground] = {ui::kColorBubbleBackground};
   mixer[ui::kColorButtonBackground] = {GetBgColor("button")};
   mixer[ui::kColorButtonBackgroundProminent] =
       PickGoogleColor(ui::kColorAccent, ui::kColorDialogBackground,

@@ -525,6 +525,8 @@ void QtUi::AddNativeColorMixer(ui::ColorProvider* provider,
       {ui::kColorMenuItemForeground, ColorType::kEntryFg},
       {ui::kColorMenuItemForegroundHighlighted, ColorType::kHighlightFg},
       {ui::kColorMenuItemForegroundSelected, ColorType::kHighlightFg},
+      {ui::kColorBubbleBackground, ColorType::kEntryBg},
+      {ui::kColorBubbleFooterBackground, ColorType::kWindowBg},
 
       // Platform-specific UI elements
       {ui::kColorNativeButtonBorder, ColorType::kMidground},
