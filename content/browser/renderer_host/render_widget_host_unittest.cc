@@ -674,21 +674,21 @@ class RenderWidgetHostTest : public testing::Test {
     return last_simulated_event_time_;
   }
 
-  void SimulateKeyboardEvent(WebInputEvent::Type type) {
-    SimulateKeyboardEvent(type, 0);
+  NativeWebKeyboardEvent CreateNativeWebKeyboardEvent(
+      WebInputEvent::Type type) {
+    return NativeWebKeyboardEvent(type, /*modifiers=*/0,
+                                  GetNextSimulatedEventTime());
   }
 
-  void SimulateKeyboardEvent(WebInputEvent::Type type, int modifiers) {
-    NativeWebKeyboardEvent native_event(type, modifiers,
-                                        GetNextSimulatedEventTime());
-    host_->ForwardKeyboardEvent(native_event);
+  void SimulateKeyboardEvent(WebInputEvent::Type type) {
+    host_->ForwardKeyboardEvent(CreateNativeWebKeyboardEvent(type));
   }
 
   void SimulateKeyboardEventWithCommands(WebInputEvent::Type type) {
-    NativeWebKeyboardEvent native_event(type, 0, GetNextSimulatedEventTime());
     std::vector<blink::mojom::EditCommandPtr> edit_commands;
     edit_commands.push_back(blink::mojom::EditCommand::New("name", "value"));
-    host_->ForwardKeyboardEventWithCommands(native_event, ui::LatencyInfo(),
+    host_->ForwardKeyboardEventWithCommands(CreateNativeWebKeyboardEvent(type),
+                                            ui::LatencyInfo(),
                                             std::move(edit_commands), nullptr);
   }
 
@@ -1517,6 +1517,24 @@ TEST_F(RenderWidgetHostTest, PreHandleRawKeyDownEvent) {
       host_->mock_render_input_router()->GetAndResetDispatchedMessages();
   EXPECT_EQ(0u, dispatched_events.size());
 
+  // Forward the Esc RawKeyDown event.
+  std::vector<blink::mojom::EditCommandPtr> edit_commands;
+  edit_commands.push_back(blink::mojom::EditCommand::New("name", "value"));
+  auto event = CreateNativeWebKeyboardEvent(WebInputEvent::Type::kKeyUp);
+  event.windows_key_code = ui::VKEY_ESCAPE;
+  host_->ForwardKeyboardEventWithCommands(event, ui::LatencyInfo(),
+                                          std::move(edit_commands), nullptr);
+
+  // The event should be prehandled by the browser but will never be sent to the
+  // renderer, no matter the event is handled or not.
+  EXPECT_TRUE(delegate_->prehandle_keyboard_event_called());
+  EXPECT_EQ(WebInputEvent::Type::kKeyUp,
+            delegate_->prehandle_keyboard_event_type());
+
+  dispatched_events =
+      host_->mock_render_input_router()->GetAndResetDispatchedMessages();
+  EXPECT_EQ(0u, dispatched_events.size());
+
   // Simulate a new RawKeyDown event.
   SimulateKeyboardEvent(WebInputEvent::Type::kRawKeyDown);
   dispatched_events =
@@ -2335,8 +2353,8 @@ TEST_F(RenderWidgetHostTest, AddAndRemoveInputEventObserver) {
   host_->AddInputEventObserver(&observer);
 
   // Confirm OnInputEvent is triggered.
-  NativeWebKeyboardEvent native_event(WebInputEvent::Type::kChar, 0,
-                                      GetNextSimulatedEventTime());
+  NativeWebKeyboardEvent native_event =
+      CreateNativeWebKeyboardEvent(WebInputEvent::Type::kChar);
   ui::LatencyInfo latency_info = ui::LatencyInfo();
   ui::EventLatencyMetadata event_latency_metadata;
   EXPECT_CALL(observer, OnInputEvent(_)).Times(1);
@@ -2366,8 +2384,8 @@ TEST_F(RenderWidgetHostTest, ScopedObservationWithInputEventObserver) {
   scoped_observation.Observe(host_.get());
 
   // Confirm OnInputEvent is triggered.
-  NativeWebKeyboardEvent native_event(WebInputEvent::Type::kChar, 0,
-                                      GetNextSimulatedEventTime());
+  NativeWebKeyboardEvent native_event =
+      CreateNativeWebKeyboardEvent(WebInputEvent::Type::kChar);
   ui::LatencyInfo latency_info = ui::LatencyInfo();
   ui::EventLatencyMetadata event_latency_metadata;
   EXPECT_CALL(observer, OnInputEvent(_)).Times(1);
