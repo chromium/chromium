@@ -40,6 +40,11 @@ void CrosHealthdRoutineControl::Start() {
   remote_->Start();
 }
 
+void CrosHealthdRoutineControl::ReplyToInquiry(
+    crosapi::TelemetryDiagnosticRoutineInquiryReplyPtr reply) {
+  remote_->ReplyInquiry(converters::ConvertRoutinePtr(std::move(reply)));
+}
+
 mojo::Remote<healthd::RoutineControl>& CrosHealthdRoutineControl::GetRemote() {
   return remote_;
 }

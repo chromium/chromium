@@ -30,6 +30,8 @@ class CrosHealthdRoutineControl
   // `TelemetryDiagnosticRoutineControl`:
   void GetState(GetStateCallback callback) override;
   void Start() override;
+  void ReplyToInquiry(
+      crosapi::mojom::TelemetryDiagnosticRoutineInquiryReplyPtr reply) override;
 
   mojo::Remote<cros_healthd::mojom::RoutineControl>& GetRemote();
 

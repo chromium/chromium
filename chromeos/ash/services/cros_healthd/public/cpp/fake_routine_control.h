@@ -30,6 +30,7 @@ class FakeRoutineControl : public mojom::RoutineControl {
 
   void SetGetStateResponse(mojom::RoutineStatePtr& state);
   bool has_start_been_called() { return start_called_; }
+  mojom::RoutineInquiryReplyPtr GetLastInquiryReply();
 
   mojo::Remote<mojom::RoutineObserver>* GetObserver();
   mojo::Receiver<mojom::RoutineControl>* GetReceiver();
@@ -39,6 +40,8 @@ class FakeRoutineControl : public mojom::RoutineControl {
   mojom::RoutineStatePtr get_state_response_{mojom::RoutineState::New()};
   // Set to true when `Start` is called.
   bool start_called_ = false;
+  // Set to the last `ReplyInquiry` input.
+  mojom::RoutineInquiryReplyPtr last_inquiry_reply_;
 
   mojo::Remote<mojom::RoutineObserver> routine_observer_;
   mojo::Receiver<mojom::RoutineControl> receiver_;

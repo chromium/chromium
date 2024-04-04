@@ -50,10 +50,40 @@ crosapi::TelemetryDiagnosticRoutineStateRunningPtr UncheckedConvertPtr(
   return crosapi::TelemetryDiagnosticRoutineStateRunning::New();
 }
 
+crosapi::TelemetryDiagnosticRoutineInquiryPtr UncheckedConvertPtr(
+    healthd::RoutineInquiryPtr input) {
+  switch (input->which()) {
+    case healthd::RoutineInquiry::Tag::kUnrecognizedInquiry:
+      return crosapi::TelemetryDiagnosticRoutineInquiry::NewUnrecognizedInquiry(
+          input->get_unrecognizedInquiry());
+    // The LED lit up routine is not in the crosapi yet.
+    // TODO(b/302279338): add LED lit up routine to crosapi and update the
+    // conversion logic.
+    case healthd::RoutineInquiry::Tag::kCheckLedLitUpState:
+      return crosapi::TelemetryDiagnosticRoutineInquiry::NewUnrecognizedInquiry(
+          false);
+  }
+  NOTREACHED_NORETURN();
+}
+
+crosapi::TelemetryDiagnosticRoutineInteractionPtr UncheckedConvertPtr(
+    healthd::RoutineInteractionPtr input) {
+  switch (input->which()) {
+    case healthd::RoutineInteraction::Tag::kUnrecognizedInteraction:
+      return crosapi::TelemetryDiagnosticRoutineInteraction::
+          NewUnrecognizedInteraction(input->get_unrecognizedInteraction());
+    case healthd::RoutineInteraction::Tag::kInquiry:
+      return crosapi::TelemetryDiagnosticRoutineInteraction::NewInquiry(
+          ConvertRoutinePtr(std::move(input->get_inquiry())));
+  }
+  NOTREACHED_NORETURN();
+}
+
 crosapi::TelemetryDiagnosticRoutineStateWaitingPtr UncheckedConvertPtr(
     healthd::RoutineStateWaitingPtr input) {
   return crosapi::TelemetryDiagnosticRoutineStateWaiting::New(
-      Convert(input->reason), input->message);
+      Convert(input->reason), input->message,
+      ConvertRoutinePtr(std::move(input->interaction)));
 }
 
 crosapi::TelemetryDiagnosticRoutineDetailPtr UncheckedConvertPtr(
@@ -171,6 +201,17 @@ healthd::FanRoutineArgumentPtr UncheckedConvertPtr(
   return healthd::FanRoutineArgument::New();
 }
 
+healthd::RoutineInquiryReplyPtr UncheckedConvertPtr(
+    crosapi::TelemetryDiagnosticRoutineInquiryReplyPtr input) {
+  switch (input->which()) {
+    case crosapi::TelemetryDiagnosticRoutineInquiryReply::Tag::
+        kUnrecognizedReply:
+      return healthd::RoutineInquiryReply::NewUnrecognizedReply(
+          input->get_unrecognizedReply());
+  }
+  NOTREACHED_NORETURN();
+}
+
 }  // namespace unchecked
 
 crosapi::TelemetryDiagnosticMemtesterTestItemEnum Convert(
@@ -251,7 +292,7 @@ crosapi::TelemetryDiagnosticRoutineStateWaiting::Reason Convert(
           kWaitingToBeScheduled;
     case healthd::RoutineStateWaiting_Reason::kWaitingInteraction:
       return crosapi::TelemetryDiagnosticRoutineStateWaiting_Reason::
-          kWaitingUserInput;
+          kWaitingForInteraction;
   }
   NOTREACHED_NORETURN();
 }

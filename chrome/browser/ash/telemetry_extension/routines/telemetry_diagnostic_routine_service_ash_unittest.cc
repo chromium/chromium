@@ -201,6 +201,35 @@ TEST_F(TelemetryDiagnosticsRoutineServiceAshTest, GetState) {
           true));
 }
 
+TEST_F(TelemetryDiagnosticsRoutineServiceAshTest, ReplyToInquiry) {
+  mojo::Remote<crosapi::TelemetryDiagnosticRoutineControl> control_remote;
+
+  auto arg =
+      crosapi::TelemetryDiagnosticRoutineArgument::NewUnrecognizedArgument(
+          true);
+  routines_service()->CreateRoutine(std::move(arg),
+                                    control_remote.BindNewPipeAndPassReceiver(),
+                                    GetEmptyObserver());
+
+  FlushForTesting();
+
+  auto* fake_controller =
+      cros_healthd::FakeCrosHealthd::Get()->GetRoutineControlForArgumentTag(
+          healthd::RoutineArgument::Tag::kUnrecognizedArgument);
+  ASSERT_TRUE(fake_controller);
+
+  control_remote->ReplyToInquiry(
+      crosapi::TelemetryDiagnosticRoutineInquiryReply::NewUnrecognizedReply(
+          true));
+
+  control_remote.FlushForTesting();
+  FlushForTesting();
+
+  auto last_reply = fake_controller->GetLastInquiryReply();
+  ASSERT_TRUE(!last_reply.is_null());
+  EXPECT_TRUE(last_reply->is_unrecognizedReply());
+}
+
 TEST_F(TelemetryDiagnosticsRoutineServiceAshTest, CreateAndStartRoutine) {
   TestRoutineObserver observer;
   mojo::Remote<crosapi::TelemetryDiagnosticRoutineControl> control_remote;

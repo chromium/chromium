@@ -71,6 +71,8 @@ cx_diag::RoutineWaitingInfo UncheckedConvertPtr(
   cx_diag::RoutineWaitingInfo result;
   result.uuid = uuid.AsLowercaseString();
   result.reason = Convert(input->reason);
+  // TODO(b/309781398): add conversion for interaction when it is exposed to the
+  // web IDL.
   result.message = input->message;
   result.percentage = percentage;
   return result;
@@ -195,7 +197,7 @@ cx_diag::RoutineWaitingReason Convert(
         kWaitingToBeScheduled:
       return cx_diag::RoutineWaitingReason::kWaitingToBeScheduled;
     case crosapi::TelemetryDiagnosticRoutineStateWaiting::Reason::
-        kWaitingUserInput:
+        kWaitingForInteraction:
       return cx_diag::RoutineWaitingReason::kWaitingUserInput;
   }
   NOTREACHED_NORETURN();

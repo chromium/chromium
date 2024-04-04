@@ -36,6 +36,12 @@ UncheckedConvertPtr(cros_healthd::mojom::RoutineStateInitializedPtr input);
 crosapi::mojom::TelemetryDiagnosticRoutineStateRunningPtr UncheckedConvertPtr(
     cros_healthd::mojom::RoutineStateRunningPtr input);
 
+crosapi::mojom::TelemetryDiagnosticRoutineInquiryPtr UncheckedConvertPtr(
+    cros_healthd::mojom::RoutineInquiryPtr input);
+
+crosapi::mojom::TelemetryDiagnosticRoutineInteractionPtr UncheckedConvertPtr(
+    cros_healthd::mojom::RoutineInteractionPtr input);
+
 crosapi::mojom::TelemetryDiagnosticRoutineStateWaitingPtr UncheckedConvertPtr(
     cros_healthd::mojom::RoutineStateWaitingPtr input);
 
@@ -62,6 +68,9 @@ cros_healthd::mojom::VolumeButtonRoutineArgumentPtr UncheckedConvertPtr(
 
 cros_healthd::mojom::FanRoutineArgumentPtr UncheckedConvertPtr(
     crosapi::mojom::TelemetryDiagnosticFanRoutineArgumentPtr input);
+
+cros_healthd::mojom::RoutineInquiryReplyPtr UncheckedConvertPtr(
+    crosapi::mojom::TelemetryDiagnosticRoutineInquiryReplyPtr input);
 
 }  // namespace unchecked
 

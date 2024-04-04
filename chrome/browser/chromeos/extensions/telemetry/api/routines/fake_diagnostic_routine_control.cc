@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/notimplemented.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -50,6 +51,11 @@ void FakeDiagnosticRoutineControl::Start() {
           crosapi::TelemetryDiagnosticRoutineStateRunning::New());
 
   SetState(std::move(running_state));
+}
+
+void FakeDiagnosticRoutineControl::ReplyToInquiry(
+    crosapi::TelemetryDiagnosticRoutineInquiryReplyPtr reply) {
+  NOTIMPLEMENTED();
 }
 
 void FakeDiagnosticRoutineControl::SetState(

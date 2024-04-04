@@ -81,6 +81,18 @@ TEST(TelemetryDiagnosticRoutineConvertersTest, ConvertFanRoutineArgumentPtr) {
   ASSERT_TRUE(result);
 }
 
+TEST(TelemetryDiagnosticRoutineConvertersTest, ConvertRoutineInquiryReplyPtr) {
+  auto input =
+      crosapi::TelemetryDiagnosticRoutineInquiryReply::NewUnrecognizedReply(
+          true);
+
+  const auto result = ConvertRoutinePtr(std::move(input));
+
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->is_unrecognizedReply());
+  EXPECT_TRUE(result->get_unrecognizedReply());
+}
+
 TEST(TelemetryDiagnosticRoutineConvertersTest,
      ConvertTelemetryDiagnosticRoutineStateInitializedPtr) {
   EXPECT_EQ(ConvertRoutinePtr(healthd::RoutineStateInitialized::New()),
@@ -93,12 +105,34 @@ TEST(TelemetryDiagnosticRoutineConvertersTest,
             crosapi::TelemetryDiagnosticRoutineStateRunning::New());
 }
 
+TEST(TelemetryDiagnosticRoutineConvertersTest, ConvertRoutineInquiryPtr) {
+  auto input = healthd::RoutineInquiry::NewUnrecognizedInquiry(true);
+
+  const auto result = ConvertRoutinePtr(std::move(input));
+
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->is_unrecognizedInquiry());
+  EXPECT_TRUE(result->get_unrecognizedInquiry());
+}
+
+TEST(TelemetryDiagnosticRoutineConvertersTest,
+     ConvertRoutineInquiryCheckLedLitUpStatePtr) {
+  auto input = healthd::RoutineInquiry::NewCheckLedLitUpState(
+      healthd::CheckLedLitUpStateInquiry::New());
+
+  const auto result = ConvertRoutinePtr(std::move(input));
+
+  ASSERT_TRUE(result);
+  EXPECT_TRUE(result->is_unrecognizedInquiry());
+}
+
 TEST(TelemetryDiagnosticRoutineConvertersTest,
      ConvertTelemetryDiagnosticRoutineStateWaitingPtr) {
   constexpr char kMessage[] = "TEST";
 
   auto input = healthd::RoutineStateWaiting::New(
-      healthd::RoutineStateWaiting::Reason::kWaitingToBeScheduled, kMessage);
+      healthd::RoutineStateWaiting::Reason::kWaitingToBeScheduled, kMessage,
+      healthd::RoutineInteraction::NewUnrecognizedInteraction(true));
 
   auto result = ConvertRoutinePtr(std::move(input));
 
@@ -106,6 +140,9 @@ TEST(TelemetryDiagnosticRoutineConvertersTest,
   EXPECT_EQ(result->reason, crosapi::TelemetryDiagnosticRoutineStateWaiting::
                                 Reason::kWaitingToBeScheduled);
   EXPECT_EQ(result->message, kMessage);
+  ASSERT_TRUE(result->interaction);
+  EXPECT_TRUE(result->interaction->is_unrecognizedInteraction());
+  EXPECT_TRUE(result->interaction->get_unrecognizedInteraction());
 }
 
 TEST(TelemetryDiagnosticRoutineConvertersTest,

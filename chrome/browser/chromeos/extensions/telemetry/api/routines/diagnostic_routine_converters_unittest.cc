@@ -331,7 +331,7 @@ TEST(TelemetryExtensionDiagnosticRoutineConvertersTest, RoutineWaitingReason) {
             cx_diag::RoutineWaitingReason::kWaitingToBeScheduled);
 
   EXPECT_EQ(Convert(crosapi::TelemetryDiagnosticRoutineStateWaiting::Reason::
-                        kWaitingUserInput),
+                        kWaitingForInteraction),
             cx_diag::RoutineWaitingReason::kWaitingUserInput);
 }
 

@@ -41,6 +41,8 @@ class FakeDiagnosticRoutineControl
   // `TelemetryDiagnosticRoutineControl`:
   void GetState(GetStateCallback callback) override;
   void Start() override;
+  void ReplyToInquiry(
+      crosapi::mojom::TelemetryDiagnosticRoutineInquiryReplyPtr reply) override;
 
   // Notifies an observer if the observer is bound.
   void NotifyObserverAboutCurrentState();
