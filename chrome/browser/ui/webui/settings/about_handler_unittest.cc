@@ -158,8 +158,8 @@ TEST_F(AboutHandlerTest, GetEndOfLifeInfoWithoutExtendedUpdatesDate) {
   SetEolDateUtc("30 Oct 2023");
 
   const auto& response = CallWebUIMessage("getEndOfLifeInfo").GetDict();
-  EXPECT_FALSE(*response.FindBool("isExtendedDatePassed"));
-  EXPECT_FALSE(*response.FindBool("isExtendedOptInRequired"));
+  EXPECT_FALSE(*response.FindBool("isExtendedUpdatesDatePassed"));
+  EXPECT_FALSE(*response.FindBool("isExtendedUpdatesOptInRequired"));
 }
 
 TEST_F(AboutHandlerTest, GetEndOfLifeInfoWithExtendedUpdatesDatePassed) {
@@ -174,8 +174,8 @@ TEST_F(AboutHandlerTest, GetEndOfLifeInfoWithExtendedUpdatesDatePassed) {
   });
 
   const auto& response = CallWebUIMessage("getEndOfLifeInfo").GetDict();
-  EXPECT_TRUE(*response.FindBool("isExtendedDatePassed"));
-  EXPECT_TRUE(*response.FindBool("isExtendedOptInRequired"));
+  EXPECT_TRUE(*response.FindBool("isExtendedUpdatesDatePassed"));
+  EXPECT_TRUE(*response.FindBool("isExtendedUpdatesOptInRequired"));
   EXPECT_THAT(*response.FindString("aboutPageEndOfLifeMessage"),
               HasSubstr("June 2019"));
 }
@@ -192,8 +192,8 @@ TEST_F(AboutHandlerTest, GetEndOfLifeInfoWithExtendedUpdatesDateNotPassed) {
   });
 
   const auto& response = CallWebUIMessage("getEndOfLifeInfo").GetDict();
-  EXPECT_FALSE(*response.FindBool("isExtendedDatePassed"));
-  EXPECT_TRUE(*response.FindBool("isExtendedOptInRequired"));
+  EXPECT_FALSE(*response.FindBool("isExtendedUpdatesDatePassed"));
+  EXPECT_TRUE(*response.FindBool("isExtendedUpdatesOptInRequired"));
   EXPECT_THAT(*response.FindString("aboutPageEndOfLifeMessage"),
               HasSubstr("June 2021"));
 }
@@ -215,8 +215,8 @@ TEST_F(AboutHandlerTest, GetEndOfLifeInfoWithExtendedUpdatesOptedIn) {
   EXPECT_CALL(mock_controller, IsOptedIn()).WillOnce(Return(true));
 
   const auto& response = CallWebUIMessage("getEndOfLifeInfo").GetDict();
-  EXPECT_FALSE(*response.FindBool("isExtendedDatePassed"));
-  EXPECT_TRUE(*response.FindBool("isExtendedOptInRequired"));
+  EXPECT_FALSE(*response.FindBool("isExtendedUpdatesDatePassed"));
+  EXPECT_TRUE(*response.FindBool("isExtendedUpdatesOptInRequired"));
   EXPECT_THAT(*response.FindString("aboutPageEndOfLifeMessage"),
               HasSubstr("October 2023"));
 }

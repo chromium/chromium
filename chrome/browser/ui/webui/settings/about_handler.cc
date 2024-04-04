@@ -733,8 +733,8 @@ void AboutHandler::OnGetEndOfLifeInfo(
   response.Set("aboutPageEndOfLifeMessage", eol_message);
   response.Set("shouldShowEndOfLifeIncentive", show_eol_incentive);
   response.Set("shouldShowOfferText", show_offer_text);
-  response.Set("isExtendedDatePassed", extended_date_passed);
-  response.Set("isExtendedOptInRequired", extended_opt_in_required);
+  response.Set("isExtendedUpdatesDatePassed", extended_date_passed);
+  response.Set("isExtendedUpdatesOptInRequired", extended_opt_in_required);
 
   ResolveJavascriptCallback(base::Value(callback_id), response);
 }
