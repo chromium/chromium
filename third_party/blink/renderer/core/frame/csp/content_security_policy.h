@@ -357,11 +357,11 @@ class CORE_EXPORT ContentSecurityPolicy final
 
   bool ExperimentalFeaturesEnabled() const;
 
-  // Returns true if `CSPDirectiveListIsReportOnly` returns false
-  // and `CSPDirectiveListIsBaseRestrictionReasonable`,
-  // `CSPDirectiveListIsObjectRestrictionReasonable` and
-  // `CSPDirectiveListIsScriptRestrictionReasonable` return true.
-  // See also: https://web.dev/articles/strict-csp
+  // CSP can be set from multiple sources; if a directive is set by multiple
+  // sources, the strictest one will be used. A CSP can be considered strict
+  // if the `base-uri`, `object-src`, and `script-src` directives are all
+  // strict enough (even if the strictest directives come from different CSP
+  // sources).
   bool IsStrictPolicyEnforced() const;
 
   // Returns true if trusted types are required.
