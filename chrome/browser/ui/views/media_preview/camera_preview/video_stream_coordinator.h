@@ -60,11 +60,11 @@ class VideoStreamCoordinator
     frame_received_callback_for_test_ = std::move(callback);
   }
 
+  VideoStreamView* GetVideoStreamView();
+
  private:
   void StopInternal(mojo::Remote<video_capture::mojom::VideoSourceProvider>
                         video_source_provider = {});
-
-  VideoStreamView* GetVideoStreamView();
 
   views::ViewTracker video_stream_view_tracker_;
   std::unique_ptr<capture_mode::CameraVideoFrameHandler> video_frame_handler_;
