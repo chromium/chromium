@@ -1036,25 +1036,25 @@ class ForestFullRestoreServiceTest : public FullRestoreServiceTest {
   }
 };
 
-// Tests that if the system is crash, even if there is no full restore file, we
-// show the pine dialog.
+// If the system is crash, and there is no full restore file, don't show the
+// pine dialog.
 TEST_F(ForestFullRestoreServiceTest, Crash) {
   ExitTypeService::GetInstanceForProfile(profile())
       ->SetLastSessionExitTypeForTest(ExitType::kCrashed);
   auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
   EXPECT_CALL(*mock_delegate, MaybeStartPineOverviewSession(testing::_))
-      .Times(1);
+      .Times(0);
   CreateFullRestoreServiceForTesting(std::move(mock_delegate));
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
 }
 
-// Tests that if the OS restore setting is 'Ask every time', even if there is no
-// full restore file, we show the pine dialog.
+// If the OS restore setting is 'Ask every time', and there is no full restore
+// file, don't show the pine dialog.
 TEST_F(ForestFullRestoreServiceTest, AskEveryTime) {
   SetRestoreOption(RestoreOption::kAskEveryTime);
   auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
   EXPECT_CALL(*mock_delegate, MaybeStartPineOverviewSession(testing::_))
-      .Times(1);
+      .Times(0);
   CreateFullRestoreServiceForTesting(std::move(mock_delegate));
   VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 1);
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
@@ -1073,17 +1073,13 @@ TEST_F(ForestFullRestoreServiceTest, Always) {
   EXPECT_TRUE(CanPerformRestore(account_id()));
 }
 
-// If the OS restore setting is 'Do not restore', after reboot, start a
-// zero-state pine session.
+// If the OS restore setting is 'Do not restore', after reboot, don't show the
+// pine dialog and verify the restore flag.
 TEST_F(ForestFullRestoreServiceTest, NotRestore) {
   SetRestoreOption(RestoreOption::kDoNotRestore);
   auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
   EXPECT_CALL(*mock_delegate, MaybeStartPineOverviewSession(testing::_))
-      .WillOnce([](std::unique_ptr<PineContentsData> data) {
-        ASSERT_TRUE(data);
-        EXPECT_TRUE(data->apps_infos.empty());
-      });
-
+      .Times(0);
   CreateFullRestoreServiceForTesting(std::move(mock_delegate));
   VerifyRestoreInitSettingHistogram(RestoreOption::kDoNotRestore, 1);
   EXPECT_EQ(RestoreOption::kDoNotRestore, GetRestoreOption());

@@ -192,10 +192,8 @@ class FullRestoreService : public KeyedService,
       const SessionWindowsMap& session_windows_map,
       bool last_session_crashed);
 
-  // Starts overview or the pine onboarding dialog when there is no restore
-  // data.
-  // TODO(sophiewen|sammiequon): Rename this and the `PineController` API.
-  void MaybeStartPineOverviewSession(bool last_session_crashed);
+  // Starts pine onboarding dialog when there is no restore data.
+  void MaybeShowPineOnboarding();
 
   raw_ptr<Profile> profile_ = nullptr;
   PrefChangeRegistrar pref_change_registrar_;

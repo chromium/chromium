@@ -471,7 +471,6 @@ TEST_F(PineTest, OnboardingMetrics) {
   dialog = PineTestApi().GetOnboardingDialog();
   LeftClickOn(dialog->GetAcceptButtonForTesting());
   views::test::WidgetDestroyedWaiter(dialog->GetWidget()).Wait();
-  WaitForOverviewEntered();
   histogram_tester.ExpectTotalCount(kPineOnboardingHistogram, 2);
 }
 

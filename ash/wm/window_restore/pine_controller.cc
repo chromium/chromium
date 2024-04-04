@@ -98,10 +98,6 @@ PineController::~PineController() {
   Shell::Get()->overview_controller()->RemoveObserver(this);
 }
 
-bool PineController::ShouldShowPineDialog() const {
-  return !!pine_contents_data_ && !pine_contents_data_->apps_infos.empty();
-}
-
 void PineController::MaybeShowPineOnboardingMessage(bool restore_on) {
   if (onboarding_widget_) {
     return;
@@ -369,14 +365,17 @@ void PineController::OnOnboardingAcceptPressed(bool restore_on) {
   // Wait until the onboarding widget is destroyed before starting overview,
   // since we disallow entering overview while system modal windows are open.
   // Use a weak ptr since `this` can be deleted before we close all windows.
-  onboarding_widget_->widget_delegate()->RegisterDeleteDelegateCallback(
-      base::BindOnce(
-          [](const base::WeakPtr<PineController>& weak_this) {
-            if (weak_this) {
-              weak_this->StartPineOverviewSession();
-            }
-          },
-          weak_ptr_factory_.GetWeakPtr()));
+  // Only do this if we have pine contents data.
+  if (pine_contents_data_) {
+    onboarding_widget_->widget_delegate()->RegisterDeleteDelegateCallback(
+        base::BindOnce(
+            [](const base::WeakPtr<PineController>& weak_this) {
+              if (weak_this) {
+                weak_this->StartPineOverviewSession();
+              }
+            },
+            weak_ptr_factory_.GetWeakPtr()));
+  }
   if (restore_on) {
     return;
   }

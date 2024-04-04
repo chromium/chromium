@@ -536,7 +536,7 @@ bool ShouldShowBirchBar(aura::Window* root_window) {
 bool ShouldShowPineDialog(aura::Window* root_window) {
   return root_window == Shell::GetPrimaryRootWindow() &&
          features::IsForestFeatureEnabled() &&
-         Shell::Get()->pine_controller()->ShouldShowPineDialog();
+         !!Shell::Get()->pine_controller()->pine_contents_data();
 }
 
 }  // namespace

@@ -499,9 +499,8 @@ IN_PROC_BROWSER_TEST_F(PineBrowserTest, RestoreOff) {
   views::test::WidgetDestroyedWaiter(onboarding_dialog->GetWidget()).Wait();
   EXPECT_FALSE(PineTestApi().GetOnboardingDialog());
 
-  // Verify we have entered overview with no pine contents.
-  WaitForOverviewEnterAnimation();
-  EXPECT_FALSE(GetPineContentsView());
+  // Verify we do not enter overview.
+  EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
 
   // Verify the restore pref is updated.
   EXPECT_EQ(static_cast<int>(RestoreOption::kAskEveryTime),
@@ -528,9 +527,8 @@ IN_PROC_BROWSER_TEST_F(PineBrowserTest, NoRestoreData) {
   views::test::WidgetDestroyedWaiter(onboarding_dialog->GetWidget()).Wait();
   EXPECT_FALSE(PineTestApi().GetOnboardingDialog());
 
-  // Verify we have entered overview with no pine contents.
-  WaitForOverviewEnterAnimation();
-  EXPECT_FALSE(GetPineContentsView());
+  // Verify we do not enter overview.
+  EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
 }
 
 IN_PROC_BROWSER_TEST_F(PineBrowserTest, PRE_Onboarding) {

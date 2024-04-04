@@ -35,10 +35,6 @@ class ASH_EXPORT PineController : public OverviewObserver,
     return pine_contents_data_.get();
   }
 
-  // Returns true if `this` contains `pine_contents_data_` with non-empty app
-  // restore data.
-  bool ShouldShowPineDialog() const;
-
   // Shows the onboarding message. If `restore_on` is true, only the
   // "Continue" button will be shown. Otherwise shows both buttons.
   void MaybeShowPineOnboardingMessage(bool restore_on);
