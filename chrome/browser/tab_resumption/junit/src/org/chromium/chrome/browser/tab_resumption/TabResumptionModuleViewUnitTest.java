@@ -41,7 +41,7 @@ import org.chromium.base.test.util.Features.JUnitProcessor;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallback;
+import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallbacks;
 import org.chromium.chrome.browser.tab_resumption.UrlImageProvider.UrlImageCallback;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
@@ -77,10 +77,11 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
     private Size mThumbnailSize;
     private TabResumptionTileContainerView mTileContainerView;
 
-    private SuggestionClickCallback mClickCallback;
+    private SuggestionClickCallbacks mClickCallbacks;
     private SuggestionBundle mSuggestionBundle;
 
     private GURL mLastClickUrl;
+    private int mLastClickTabId;
     private int mClickCount;
 
     @Before
@@ -106,14 +107,23 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
                                         .single_tab_module_tab_thumbnail_size_big);
         mThumbnailSize = new Size(size, size);
 
-        mClickCallback =
-                (GURL url) -> {
-                    mLastClickUrl = url;
-                    ++mClickCount;
+        mClickCallbacks =
+                new SuggestionClickCallbacks() {
+                    @Override
+                    public void onSuggestionClickByUrl(GURL gurl) {
+                        mLastClickUrl = gurl;
+                        ++mClickCount;
+                    }
+
+                    @Override
+                    public void onSuggestionClickByTabId(int tabId) {
+                        mLastClickTabId = tabId;
+                        ++mClickCount;
+                    }
                 };
         mSuggestionBundle = new SuggestionBundle(CURRENT_TIME_MS);
         mModuleView.setUrlImageProvider(mUrlImageProvider);
-        mModuleView.setClickCallback(mClickCallback);
+        mModuleView.setClickCallbacks(mClickCallbacks);
         mModuleView.setFaviconProvider(mFaviconProvider);
         mModuleView.setThumbnailProvider(mThumbnailProvider);
         mTileContainerView = mModuleView.getTileContainerViewForTesting();
@@ -262,7 +272,12 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
                 ((TabThumbnailView) localTileView.findViewById(R.id.tab_thumbnail))
                         .getIconDrawableForTesting());
 
-        // TODO(b/332588018) Simulate click on Tab.
+        // Simulate click on the local Tab.
+        Assert.assertEquals(0, mClickCount);
+        Assert.assertEquals(0, mLastClickTabId);
+        localTileView.performClick();
+        Assert.assertEquals(1, mClickCount);
+        Assert.assertEquals(TAB_ID, mLastClickTabId);
     }
 
     @Test
@@ -422,11 +437,18 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
         Assert.assertNotNull(drawable2);
         Assert.assertEquals(bitmap2, drawable2.getBitmap());
 
-        // TODO(b/332588018): Update to simulate click on Tab.
         Assert.assertEquals(0, mClickCount);
         Assert.assertEquals(null, mLastClickUrl);
+        Assert.assertEquals(0, mLastClickTabId);
+
+        // Simulate click on a local Tab.
         tile1.performClick();
         Assert.assertEquals(1, mClickCount);
-        Assert.assertEquals(JUnitTestGURLs.URL_1, mLastClickUrl);
+        Assert.assertEquals(TAB_ID, mLastClickTabId);
+
+        // Simulate click on a remote Tab.
+        tile2.performClick();
+        Assert.assertEquals(2, mClickCount);
+        Assert.assertEquals(JUnitTestGURLs.GOOGLE_URL_DOG, mLastClickUrl);
     }
 }

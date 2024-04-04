@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallback;
+import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallbacks;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 
@@ -23,7 +23,7 @@ public class TabResumptionModuleView extends LinearLayout {
     private UrlImageProvider mUrlImageProvider;
     private TabListFaviconProvider mFaviconProvider;
     private ThumbnailProvider mThumbnailProvider;
-    private SuggestionClickCallback mClickCallback;
+    private SuggestionClickCallbacks mClickCallbacks;
     private SuggestionBundle mBundle;
 
     private boolean mIsSuggestionBundleReady;
@@ -59,8 +59,8 @@ public class TabResumptionModuleView extends LinearLayout {
         renderIfReady();
     }
 
-    void setClickCallback(SuggestionClickCallback clickCallback) {
-        mClickCallback = clickCallback;
+    void setClickCallbacks(SuggestionClickCallbacks clickCallbacks) {
+        mClickCallbacks = clickCallbacks;
         renderIfReady();
     }
 
@@ -84,7 +84,7 @@ public class TabResumptionModuleView extends LinearLayout {
     private void renderIfReady() {
         if (mIsSuggestionBundleReady
                 && mUrlImageProvider != null
-                && mClickCallback != null
+                && mClickCallbacks != null
                 && mFaviconProvider != null
                 && mThumbnailProvider != null) {
             if (mBundle == null) {
@@ -97,7 +97,7 @@ public class TabResumptionModuleView extends LinearLayout {
                                 mUrlImageProvider,
                                 mFaviconProvider,
                                 mThumbnailProvider,
-                                mClickCallback);
+                                mClickCallbacks);
             }
             setContentDescriptionOfTabResumption();
         }

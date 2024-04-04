@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
-import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallback;
+import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallbacks;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -40,9 +40,17 @@ public class TabResumptionModuleCoordinator implements ModuleProvider {
         mDataProvider = dataProvider;
         mUrlImageProvider = urlImageProvider;
         mModel = new PropertyModel(TabResumptionModuleProperties.ALL_KEYS);
-        SuggestionClickCallback wrappedClickCallback =
-                (GURL url) -> {
-                    mModuleDelegate.onUrlClicked(url, getModuleType());
+        SuggestionClickCallbacks wrappedClickCallbacks =
+                new SuggestionClickCallbacks() {
+                    @Override
+                    public void onSuggestionClickByUrl(GURL gurl) {
+                        mModuleDelegate.onUrlClicked(gurl, getModuleType());
+                    }
+
+                    @Override
+                    public void onSuggestionClickByTabId(int tabId) {
+                        moduleDelegate.onTabClicked(tabId, getModuleType());
+                    }
                 };
         mMediator =
                 new TabResumptionModuleMediator(
@@ -53,7 +61,7 @@ public class TabResumptionModuleCoordinator implements ModuleProvider {
                         mUrlImageProvider,
                         faviconProvider,
                         thumbnailProvider,
-                        wrappedClickCallback);
+                        wrappedClickCallbacks);
         mDataProvider.setStatusChangedCallback(this::showModule);
     }
 

@@ -25,8 +25,12 @@ import java.util.concurrent.TimeUnit;
 public class TabResumptionModuleUtils {
 
     /** Callback to handle click on suggestion tiles. */
-    public interface SuggestionClickCallback {
-        void onSuggestionClick(GURL gurl);
+    public interface SuggestionClickCallbacks {
+        // Called to open a URL.
+        void onSuggestionClickByUrl(GURL gurl);
+
+        // Called to switch to an existing Tab.
+        void onSuggestionClickByTabId(int tabId);
     }
 
     /**

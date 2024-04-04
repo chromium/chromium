@@ -19,7 +19,7 @@ import android.widget.LinearLayout;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallback;
+import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallbacks;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 
@@ -63,7 +63,7 @@ public class TabResumptionTileContainerView extends LinearLayout {
             UrlImageProvider urlImageProvider,
             TabListFaviconProvider faviconProvider,
             ThumbnailProvider thumbnailProvider,
-            SuggestionClickCallback suggestionClickCallback) {
+            SuggestionClickCallbacks suggestionClickCallbacks) {
         removeAllViews();
 
         String allTilesTexts = "";
@@ -90,7 +90,8 @@ public class TabResumptionTileContainerView extends LinearLayout {
                                         entry,
                                         bundle.referenceTimeMs,
                                         faviconProvider,
-                                        thumbnailProvider)
+                                        thumbnailProvider,
+                                        suggestionClickCallbacks)
                                 + ". ";
             } else {
                 int layoutId =
@@ -104,7 +105,7 @@ public class TabResumptionTileContainerView extends LinearLayout {
                         loadTileTexts(entry, bundle.referenceTimeMs, isSingle, tileView) + ". ";
                 loadTileUrlImage(entry, urlImageProvider, tileView);
                 tileView.bindSuggestionClickCallback(
-                        suggestionClickCallback, entry.url, entryCount, entryIndex);
+                        suggestionClickCallbacks, entry.url, entry.tab, entryCount, entryIndex);
                 addView(tileView);
             }
             ++entryIndex;
@@ -158,7 +159,8 @@ public class TabResumptionTileContainerView extends LinearLayout {
             SuggestionEntry entry,
             long referenceTimeMs,
             TabListFaviconProvider faviconProvider,
-            ThumbnailProvider thumbnailProvider) {
+            ThumbnailProvider thumbnailProvider,
+            SuggestionClickCallbacks suggestionClickCallback) {
         Tab tab = entry.tab;
         Resources res = getContext().getResources();
         String recencyString =
@@ -193,6 +195,8 @@ public class TabResumptionTileContainerView extends LinearLayout {
                 /* forceUpdate= */ true,
                 /* writeToCache= */ true,
                 /* isSelected= */ false);
+        tileView.setOnClickListener(
+                view -> suggestionClickCallback.onSuggestionClickByTabId(entry.tab.getId()));
         parentView.addView(tileView);
         return tab.getTitle() + ", " + postInfoText;
     }

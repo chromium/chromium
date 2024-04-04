@@ -13,8 +13,9 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ClickInfo;
-import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallback;
+import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallbacks;
 import org.chromium.url.GURL;
 
 /**
@@ -65,14 +66,22 @@ public class TabResumptionTileView extends RelativeLayout {
 
     /** Binds the click handler with an associated URL. */
     public void bindSuggestionClickCallback(
-            SuggestionClickCallback callback, GURL url, int tileCount, int tileIndex) {
+            SuggestionClickCallbacks callbacks,
+            @Nullable GURL url,
+            @Nullable Tab tab,
+            int tileCount,
+            int tileIndex) {
         setOnClickListener(
                 v -> {
                     @ClickInfo
                     int clickInfo =
                             TabResumptionModuleMetricsUtils.computeClickInfo(tileCount, tileIndex);
                     TabResumptionModuleMetricsUtils.recordClickInfo(clickInfo);
-                    callback.onSuggestionClick(url);
+                    if (tab != null) {
+                        callbacks.onSuggestionClickByTabId(tab.getId());
+                    } else {
+                        callbacks.onSuggestionClickByUrl(url);
+                    }
                 });
         // Handle and return false to avoid obstructing long click handling of containing Views.
         setOnLongClickListener(v -> false);

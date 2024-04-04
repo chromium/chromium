@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.tab_resumption;
 
-import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallback;
+import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallbacks;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -19,7 +19,7 @@ interface TabResumptionModuleProperties {
             new WritableObjectPropertyKey();
     WritableObjectPropertyKey<ThumbnailProvider> THUMBNAIL_PROVIDER =
             new WritableObjectPropertyKey();
-    WritableObjectPropertyKey<SuggestionClickCallback> CLICK_CALLBACK =
+    WritableObjectPropertyKey<SuggestionClickCallbacks> CLICK_CALLBACK =
             new WritableObjectPropertyKey();
     WritableObjectPropertyKey<SuggestionBundle> SUGGESTION_BUNDLE = new WritableObjectPropertyKey();
     WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey();

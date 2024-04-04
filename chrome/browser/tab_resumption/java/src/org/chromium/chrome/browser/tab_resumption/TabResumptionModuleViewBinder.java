@@ -26,7 +26,7 @@ class TabResumptionModuleViewBinder {
             moduleView.setThumbnailProvider(
                     model.get(TabResumptionModuleProperties.THUMBNAIL_PROVIDER));
         } else if (TabResumptionModuleProperties.CLICK_CALLBACK == propertyKey) {
-            moduleView.setClickCallback(model.get(TabResumptionModuleProperties.CLICK_CALLBACK));
+            moduleView.setClickCallbacks(model.get(TabResumptionModuleProperties.CLICK_CALLBACK));
         } else if (TabResumptionModuleProperties.SUGGESTION_BUNDLE == propertyKey) {
             moduleView.setSuggestionBundle(
                     model.get(TabResumptionModuleProperties.SUGGESTION_BUNDLE));
