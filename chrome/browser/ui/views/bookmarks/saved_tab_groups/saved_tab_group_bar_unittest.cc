@@ -143,6 +143,72 @@ class SavedTabGroupBarUnitTest : public ChromeViewsTestBase,
   static constexpr int button_height_ = 20;
 };
 
+class STGEverythingMenuUnitTest : public SavedTabGroupBarUnitTest {
+ public:
+  void SetUp() override {
+    SavedTabGroupBarUnitTest::SetUp();
+    everything_menu_ =
+        std::make_unique<STGEverythingMenu>(nullptr, nullptr, browser());
+  }
+
+  void TearDown() override {
+    everything_menu_.reset();
+    SavedTabGroupBarUnitTest::TearDown();
+  }
+
+  SavedTabGroupModel* saved_tab_group_model_from_browser() {
+    return const_cast<SavedTabGroupModel*>(
+        everything_menu_->GetSavedTabGroupModelFromBrowser());
+  }
+
+  std::unique_ptr<ui::SimpleMenuModel> menu_model() {
+    return everything_menu_->CreateMenuModel();
+  }
+
+ protected:
+  // Used to mock time elapsed between two tab groups creation.
+  static constexpr base::TimeDelta interval_ = base::Seconds(3);
+
+  std::unique_ptr<STGEverythingMenu> everything_menu_;
+};
+
+TEST_P(STGEverythingMenuUnitTest, TabGroupItemsSortedByCreationTime) {
+  if (!IsV2UIEnabled()) {
+    GTEST_SKIP() << "N/A for V1";
+  }
+
+  // Only the "Create new tab group" is added.
+  EXPECT_EQ(menu_model()->GetItemCount(), 1u);
+
+  // Add three test groups.
+  const SavedTabGroup saved_tab_group1(std::u16string(u"test_title_1"),
+                                       tab_groups::TabGroupColorId::kGrey, {},
+                                       std::nullopt);
+  saved_tab_group_model_from_browser()->Add(saved_tab_group1);
+
+  task_environment()->FastForwardBy(interval_);
+  const SavedTabGroup saved_tab_group2(std::u16string(u"test_title_2"),
+                                       tab_groups::TabGroupColorId::kGrey, {},
+                                       std::nullopt);
+  saved_tab_group_model_from_browser()->Add(saved_tab_group2);
+
+  task_environment()->FastForwardBy(interval_);
+  const SavedTabGroup saved_tab_group3(std::u16string(u"test_title_3"),
+                                       tab_groups::TabGroupColorId::kGrey, {},
+                                       std::nullopt);
+  saved_tab_group_model_from_browser()->Add(saved_tab_group3);
+
+  // A separator is also added.
+  auto model = menu_model();
+  EXPECT_EQ(model->GetItemCount(), 5u);
+
+  // The three added tab group items starts from model index 2. They are sorted
+  // by most recent created first.
+  EXPECT_EQ(model->GetLabelAt(2), u"test_title_3");
+  EXPECT_EQ(model->GetLabelAt(3), u"test_title_2");
+  EXPECT_EQ(model->GetLabelAt(4), u"test_title_1");
+}
+
 TEST_P(SavedTabGroupBarUnitTest, AddsButtonFromModelAdd) {
   // Verify the initial count of saved tab group buttons. Even when visibly
   // empty, the SavedTabGroupBar still contains an invisible overflow menu
@@ -489,6 +555,10 @@ TEST_P(SavedTabGroupBarUnitTest,
 
 INSTANTIATE_TEST_SUITE_P(SavedTabGroupBar,
                          SavedTabGroupBarUnitTest,
+                         testing::Bool());
+
+INSTANTIATE_TEST_SUITE_P(SavedTabGroupEverythingMenu,
+                         STGEverythingMenuUnitTest,
                          testing::Bool());
 
 }  // namespace tab_groups
