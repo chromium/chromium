@@ -63,12 +63,6 @@ class MEDIA_EXPORT VideoFrameYUVConverter {
   void ReleaseCachedData();
 
  private:
-  bool ConvertFromVideoFrameYUVWithGrContext(
-      const VideoFrame* video_frame,
-      viz::RasterContextProvider* raster_context_provider,
-      const gpu::MailboxHolder& dest_mailbox_holder,
-      const GrParams& gr_params);
-
   std::unique_ptr<VideoFrameYUVMailboxesHolder> holder_;
 };
 }  // namespace media
