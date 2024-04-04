@@ -55,7 +55,7 @@ BASE_FEATURE(kAndroidAutofillPrefillRequestsForLoginForms,
 // for more details on the API.
 BASE_FEATURE(kAndroidAutofillSupportVisibilityChanges,
              "AndroidAutofillSupportVisibilityChanges",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, username and password field predictions are taken from
 // `password_manager::FormDataParser` and overwrite Autofill's native
