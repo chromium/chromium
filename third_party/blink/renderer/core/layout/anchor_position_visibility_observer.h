@@ -12,31 +12,42 @@
 
 namespace blink {
 
+enum class LayerPositionVisibility : uint8_t;
 class Element;
 class IntersectionObserver;
 class IntersectionObserverEntry;
 
 // Monitors visibility of an anchor element for an anchored element, to support
-// `position-visibility: anchors-visible` (see:
-// https://github.com/w3c/csswg-drafts/issues/7758). When the anchor is detected
+// `position-visibility: anchors-visible` [1]. When the anchor is detected
 // as newly-visible or newly-invisible, the anchored element's `PaintLayer` is
 // updated via `PaintLayer::SetInvisibleForPositionVisibility`.
-// TODO(pdr): The position-visibility of the anchor element should also be based
-// on the `visibility` property of `anchor`, which is not tracked here.
+//
+// There are two aspects of `anchors-visible` visibility:
+// 1. Intersection, which is updated with a post-layout intersection observer
+//    setup in `MonitorAnchor`.
+// 2. CSS visibility, which is checked for all used anchors during all lifecycle
+//    updates with `UpdateForCssAnchorVisibility`. This is needed to ensure we
+//    catch CSS visibility changes on anchor elements.
+//
+// [1] Spec: https://github.com/w3c/csswg-drafts/issues/7758
 class AnchorPositionVisibilityObserver final
     : public GarbageCollected<AnchorPositionVisibilityObserver> {
  public:
   explicit AnchorPositionVisibilityObserver(Element& anchored_element);
 
-  // Sets the currently monitored anchor element.
+  // Sets the anchor element which will be monitored for intersection and CSS
+  // visibility changes.
   void MonitorAnchor(const Element*);
+
+  // Update visibility based on the anchor element's CSS visibility.
+  void UpdateForCssAnchorVisibility();
 
   void Trace(Visitor*) const;
 
  private:
-  void UpdateLayerInvisible(bool);
+  void SetLayerInvisible(LayerPositionVisibility, bool invisible);
 
-  void OnVisibilityChanged(
+  void OnIntersectionVisibilityChanged(
       const HeapVector<Member<IntersectionObserverEntry>>&);
 
   Member<IntersectionObserver> observer_;

@@ -311,7 +311,7 @@ void UpdatePositionVisibilityAfterLayout(
   bool has_no_overflow_visibility =
       node.Style().HasPositionVisibility(PositionVisibility::kNoOverflow);
   layer->SetInvisibleForPositionVisibility(
-      PositionVisibility::kNoOverflow,
+      LayerPositionVisibility::kNoOverflow,
       has_no_overflow_visibility && offset_info.overflows_containing_block);
 
   // TODO(https://github.com/w3c/csswg-drafts/issues/7758#issuecomment-2026137829):
@@ -326,7 +326,7 @@ void UpdatePositionVisibilityAfterLayout(
   bool is_anchor_positioned = offset_info.needs_scroll_adjustment_in_x ||
                               offset_info.needs_scroll_adjustment_in_y;
   layer->SetInvisibleForPositionVisibility(
-      PositionVisibility::kAnchorsValid,
+      LayerPositionVisibility::kAnchorsValid,
       has_anchors_valid_visibility && !is_anchor_positioned);
 
   bool has_anchors_visible_visibility =
@@ -336,9 +336,6 @@ void UpdatePositionVisibilityAfterLayout(
   // The spec is still in-flux about whether we should use multiple anchors
   // (from `anchor()` and `anchor-size()`), or just the default/implicit anchor.
   const Element* anchor = anchored ? GetPositionAnchorElement(node) : nullptr;
-  // TODO(pdr): The position-visibility of the anchor element should also be
-  // based on the `visibility` property of `anchor`. The anchor position
-  // visibility observer, used below, does not consider `visibility`.
   if (is_anchor_positioned && has_anchors_visible_visibility && anchor) {
     anchored->EnsureAnchorPositionScrollData()
         .EnsureAnchorPositionVisibilityObserver()

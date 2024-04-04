@@ -27,11 +27,12 @@ void AnchorPositionVisibilityObserver::MonitorAnchor(const Element* anchor) {
 
   anchor_element_ = anchor;
 
+  // Setup an intersection observer to monitor intersection visibility.
   if (anchor_element_) {
     observer_ = IntersectionObserver::Create(
         anchor_element_->GetDocument(),
         WTF::BindRepeating(
-            &AnchorPositionVisibilityObserver::OnVisibilityChanged,
+            &AnchorPositionVisibilityObserver::OnIntersectionVisibilityChanged,
             WrapWeakPersistent(this)),
         // Do not record metrics for this internal intersection observer.
         std::nullopt,
@@ -45,7 +46,8 @@ void AnchorPositionVisibilityObserver::MonitorAnchor(const Element* anchor) {
     // TODO(pdr): Refactor intersection observer to take const objects.
     observer_->observe(const_cast<Element*>(anchor_element_.Get()));
   } else {
-    UpdateLayerInvisible(false);
+    SetLayerInvisible(LayerPositionVisibility::kAnchorsIntersectionVisible,
+                      false);
   }
 }
 
@@ -55,24 +57,36 @@ void AnchorPositionVisibilityObserver::Trace(Visitor* visitor) const {
   visitor->Trace(anchor_element_);
 }
 
-void AnchorPositionVisibilityObserver::UpdateLayerInvisible(bool invisible) {
+void AnchorPositionVisibilityObserver::UpdateForCssAnchorVisibility() {
+  bool invisible = false;
+  if (anchor_element_) {
+    if (LayoutObject* anchor = anchor_element_->GetLayoutObject()) {
+      invisible = anchor->StyleRef().Visibility() != EVisibility::kVisible;
+    }
+  }
+  SetLayerInvisible(LayerPositionVisibility::kAnchorsCssVisible, invisible);
+}
+
+void AnchorPositionVisibilityObserver::SetLayerInvisible(
+    LayerPositionVisibility position_visibility,
+    bool invisible) {
   LayoutBoxModelObject* layout_object =
       anchored_element_->GetLayoutBoxModelObject();
   if (!layout_object) {
     return;
   }
   if (PaintLayer* layer = layout_object->Layer()) {
-    layer->SetInvisibleForPositionVisibility(
-        PositionVisibility::kAnchorsVisible, invisible);
+    layer->SetInvisibleForPositionVisibility(position_visibility, invisible);
   }
 }
 
-void AnchorPositionVisibilityObserver::OnVisibilityChanged(
+void AnchorPositionVisibilityObserver::OnIntersectionVisibilityChanged(
     const HeapVector<Member<IntersectionObserverEntry>>& entries) {
   CHECK_EQ(entries.size(), 1u);
   CHECK_EQ(entries.front()->target(), anchor_element_);
-
-  UpdateLayerInvisible(!entries.front()->isIntersecting());
+  bool invisible = !entries.front()->isIntersecting();
+  SetLayerInvisible(LayerPositionVisibility::kAnchorsIntersectionVisible,
+                    invisible);
 }
 
 }  // namespace blink

@@ -2422,12 +2422,11 @@ void PaintLayer::SetPreviousPaintResult(PaintResult result) {
 }
 
 void PaintLayer::SetInvisibleForPositionVisibility(
-    PositionVisibility visibility,
+    LayerPositionVisibility visibility,
     bool invisible) {
   if (!RuntimeEnabledFeatures::CSSPositionVisibilityEnabled()) {
     return;
   }
-  CHECK_NE(visibility, PositionVisibility::kAlways);
   bool already_invisible = InvisibleForPositionVisibility();
   if (invisible) {
     invisible_for_position_visibility_ |= static_cast<int>(visibility);

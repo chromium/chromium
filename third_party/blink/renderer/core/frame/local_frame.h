@@ -906,6 +906,8 @@ class CORE_EXPORT LocalFrame final
 
   void ScheduleNextServiceForScrollSnapshotClients();
 
+  void CheckPositionAnchorsForCssVisibilityChanges();
+
   using BlockingDetailsList = Vector<mojom::blink::BlockingDetailsPtr>;
   static BlockingDetailsList ConvertFeatureAndLocationToMojomStruct(
       const BFCacheBlockingFeatureAndLocations&,

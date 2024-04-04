@@ -170,6 +170,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_controller.h"
 #include "third_party/blink/renderer/core/layout/anchor_position_scroll_data.h"
+#include "third_party/blink/renderer/core/layout/anchor_position_visibility_observer.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
@@ -3876,6 +3877,20 @@ void LocalFrame::ScheduleNextServiceForScrollSnapshotClients() {
     if (client->ShouldScheduleNextService()) {
       View()->ScheduleAnimation();
       return;
+    }
+  }
+}
+
+void LocalFrame::CheckPositionAnchorsForCssVisibilityChanges() {
+  if (!RuntimeEnabledFeatures::CSSPositionVisibilityEnabled()) {
+    return;
+  }
+  for (auto& client : scroll_snapshot_clients_) {
+    if (AnchorPositionScrollData* scroll_data =
+            DynamicTo<AnchorPositionScrollData>(client.Get())) {
+      if (auto* observer = scroll_data->GetAnchorPositionVisibilityObserver()) {
+        observer->UpdateForCssAnchorVisibility();
+      }
     }
   }
 }

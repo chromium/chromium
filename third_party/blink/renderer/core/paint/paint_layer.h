@@ -90,6 +90,17 @@ enum PaintLayerIteration {
       kNegativeZOrderChildren | kNormalFlowChildren | kPositiveZOrderChildren
 };
 
+enum class LayerPositionVisibility : uint8_t {
+  // anchors-valid.
+  kAnchorsValid = 1,
+  // anchors-visible, anchor intersection.
+  kAnchorsIntersectionVisible = 1 << 1,
+  // anchors-visible, anchor CSS visibility.
+  kAnchorsCssVisible = 1 << 2,
+  // no-overflow.
+  kNoOverflow = 1 << 3,
+};
+
 // PaintLayer is an old object that handles lots of unrelated operations.
 //
 // We want it to die at some point and be replaced by more focused objects,
@@ -523,9 +534,9 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   PhysicalRect LocalBoundingBoxIncludingSelfPaintingDescendants() const;
 
   // If `invisible` is true, the whole subtree will be omitted in painting and
-  // hit-testing. The invisible status of each PositionVisibility value is
+  // hit-testing. The invisible status of each LayerPositionVisibility value is
   // tracked separately.
-  void SetInvisibleForPositionVisibility(PositionVisibility visibility,
+  void SetInvisibleForPositionVisibility(LayerPositionVisibility visibility,
                                          bool invisible);
   // Returns true if any bit of the flag is set.
   bool InvisibleForPositionVisibility() const {
@@ -739,7 +750,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   unsigned static_inline_edge_ : 2;
   unsigned static_block_edge_ : 2;
 
-  unsigned invisible_for_position_visibility_ : 3 = 0;
+  unsigned invisible_for_position_visibility_ : 4 = 0;
   unsigned descendant_needs_check_position_visibility_ : 1 = false;
 
 #if DCHECK_IS_ON()

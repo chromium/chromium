@@ -2597,6 +2597,7 @@ bool LocalFrameView::RunPrePaintLifecyclePhase(
     frame_->GetPage()->GetValidationMessageClient().UpdatePrePaint();
     ForAllNonThrottledLocalFrameViews([](LocalFrameView& view) {
       view.frame_->UpdateFrameColorOverlayPrePaint();
+      view.frame_->CheckPositionAnchorsForCssVisibilityChanges();
     });
     if (auto* web_local_frame_impl = WebLocalFrameImpl::FromFrame(frame_))
       web_local_frame_impl->UpdateDevToolsOverlaysPrePaint();
