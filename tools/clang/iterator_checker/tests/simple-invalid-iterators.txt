@@ -1,9 +1,12 @@
-simple-invalid-iterators.cpp:8:31: error: [iterator-checker] Potentially invalid iterator used.
+simple-invalid-iterators.cpp:9:31: error: [iterator-checker] Potentially invalid iterator used.
   for (; it != std::end(v); ++it) {
                               ^
-simple-invalid-iterators.cpp:8:31: error: [iterator-checker] Potentially invalid iterator used.
-simple-invalid-iterators.cpp:8:31: error: [iterator-checker] Potentially invalid iterator used.
-simple-invalid-iterators.cpp:30:5: error: [iterator-checker] Potentially invalid iterator used.
+simple-invalid-iterators.cpp:9:31: error: [iterator-checker] Potentially invalid iterator used.
+simple-invalid-iterators.cpp:9:31: error: [iterator-checker] Potentially invalid iterator used.
+simple-invalid-iterators.cpp:31:5: error: [iterator-checker] Potentially invalid iterator used.
   ++it;
     ^
-4 errors generated.
+simple-invalid-iterators.cpp:38:12: error: [iterator-checker] Potentially invalid iterator used.
+  v2.erase(it);
+           ^
+5 errors generated.
