@@ -358,17 +358,18 @@ public class LaunchIntentDispatcher {
         IntentUtils.safeRemoveExtra(mIntent, IntentHandler.EXTRA_LAUNCHED_FROM_PACKAGE);
 
         Intent intent = new Intent(mIntent);
-        String packageName = mActivity.getCallingPackage();
-        boolean identityShared = false;
+        String packageName = mActivity.getCallingPackage(); // from startActivityForResult
+        String packageNameIdentitySharing = getCallingPackageIdentitySharing();
+        if (packageName == null) packageName = packageNameIdentitySharing;
         if (packageName != null) {
             intent.putExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, packageName);
-        } else {
-            packageName = getCallingPackageIdentitySharing();
-            if (packageName != null) {
-                identityShared = true;
-                intent.putExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, packageName);
-                intent.putExtra(IntentHandler.EXTRA_LAUNCHED_FROM_PACKAGE, packageName);
-            }
+        }
+
+        // Pass the package name obtained via identity sharing API separately from the one
+        // obtained via startActivityForResult.
+        boolean identityShared = packageNameIdentitySharing != null;
+        if (identityShared) {
+            intent.putExtra(IntentHandler.EXTRA_LAUNCHED_FROM_PACKAGE, packageNameIdentitySharing);
         }
         // Create and fire a launch intent.
         Intent launchIntent = createCustomTabActivityIntent(mActivity, intent);
