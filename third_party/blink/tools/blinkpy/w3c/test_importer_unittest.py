@@ -468,11 +468,12 @@ class TestImporterTest(LoggingTestCase):
     def test_commit_message(self):
         importer = self._get_test_importer(self.mock_host())
         self.assertEqual(
-            importer.commit_message('aaaa', CommitRange('0000', '1111')),
+            importer.commit_message('aaaa',
+                                    CommitRange('0123456789', 'a123456789')),
             textwrap.dedent("""\
-                Import wpt@1111
+                Import wpt@a123456789
 
-                https://github.com/web-platform-tests/wpt/compare/0000...1111
+                https://github.com/web-platform-tests/wpt/compare/012345678...a12345678
 
                 Using wpt-import in Chromium aaaa.
                 """))
@@ -503,7 +504,7 @@ class TestImporterTest(LoggingTestCase):
 
     def test_cl_description_with_empty_environ(self):
         host = self.mock_host()
-        host.executive = MockExecutive(output='Last commit message\n')
+        host.executive = MockExecutive(output='Last commit message\n\n')
         importer = self._get_test_importer(host)
         description = importer.cl_description(directory_owners={})
         self.assertEqual(
@@ -527,7 +528,7 @@ class TestImporterTest(LoggingTestCase):
 
     def test_cl_description_with_directory_owners(self):
         host = self.mock_host()
-        host.executive = MockExecutive(output='Last commit message\n')
+        host.executive = MockExecutive(output='Last commit message\n\n')
         importer = self._get_test_importer(host)
         description = importer.cl_description(
             directory_owners={
@@ -664,7 +665,7 @@ class TestImporterTest(LoggingTestCase):
         git.commit_locally_with_message(f'Import wpt@{"f" * 40}')
 
         local_wpt = MockLocalWPT()
-        gerrit_cl = mock.Mock(messages=[])
+        gerrit_cl = mock.Mock(messages=[], number=999)
         gerrit_api = mock.Mock()
         gerrit_api.query_cls.return_value = [gerrit_cl]
         self.buganizer_client.NewIssue.side_effect = lambda issue: BuganizerIssue(
@@ -697,7 +698,7 @@ class TestImporterTest(LoggingTestCase):
                 crbug.com/444 external/wpt/foo/do-not-modify.html [ Failure ]
                 """))
         expected_message = textwrap.dedent("""\
-            [wpt-import] Update `TestExpectations` with bugs for new failures
+            Update `TestExpectations` with bugs filed for crrev.com/c/999
 
             Bug: 111
             """)
@@ -779,7 +780,7 @@ class TestImporterTest(LoggingTestCase):
         }
         notifier.main.return_value = {
             'external/wpt/foo': BuganizerIssue('New failures', '', '', 111),
-        }
+        }, mock.Mock()
 
         with importer:
             importer.file_and_record_bugs(notifier)

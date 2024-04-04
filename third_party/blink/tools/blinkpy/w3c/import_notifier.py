@@ -58,8 +58,9 @@ _log = logging.getLogger(__name__)
 
 GITHUB_COMMIT_PREFIX = WPT_GH_URL + 'commit/'
 CHECKS_URL_TEMPLATE = 'https://chromium-review.googlesource.com/c/chromium/src/+/{}/{}?checksPatchset=1&tab=checks'
-
 BUGANIZER_WPT_COMPONENT = '1456176'
+
+IssuesByDir = Mapping[str, BuganizerIssue]
 
 
 class ImportNotifier:
@@ -89,7 +90,7 @@ class ImportNotifier:
         self.owners_extractor = DirectoryOwnersExtractor(host)
         self.new_failures_by_directory = defaultdict(DirectoryFailures)
 
-    def main(self, dry_run: bool = False) -> Mapping[str, BuganizerIssue]:
+    def main(self, dry_run: bool = False) -> Tuple[IssuesByDir, GerritCL]:
         """Files bug reports for new failures.
 
         Arguments:
@@ -111,7 +112,7 @@ class ImportNotifier:
         _log.info(f'Identifying failures for {repo}@{import_rev} ({cl.url})')
         if self._bugs_already_filed(cl):
             _log.info(f'Bugs have already been filed.')
-            return {}
+            return {}, cl
         wpt_start_rev, _ = self.latest_wpt_import(f'{import_rev}~1')
 
         self.examine_baseline_changes(import_rev, cl.current_revision_id)
@@ -124,7 +125,7 @@ class ImportNotifier:
             cl.post_comment(
                 self.COMMENT_PREAMBLE +
                 ', '.join(sorted(bug.link for bug in filed_bugs.values())))
-        return filed_bugs
+        return filed_bugs, cl
 
     @memoized
     def latest_wpt_import(

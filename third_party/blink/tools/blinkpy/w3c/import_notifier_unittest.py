@@ -238,7 +238,7 @@ class ImportNotifierTest(unittest.TestCase):
         with mock.patch.object(self.notifier.owners_extractor,
                                'read_dir_metadata',
                                return_value=dir_metadata):
-            bugs = self.notifier.main()
+            bugs, _ = self.notifier.main()
 
         self.assertEqual(set(bugs), {'external/wpt/foo'})
         self.assertEqual(bugs['external/wpt/foo'].link,
@@ -278,7 +278,8 @@ class ImportNotifierTest(unittest.TestCase):
         with mock.patch.object(self.notifier.owners_extractor,
                                'read_dir_metadata',
                                return_value=dir_metadata):
-            self.assertEqual(self.notifier.main(), {})
+            bugs, _ = self.notifier.main()
+            self.assertEqual(bugs, {})
 
         self.buganizer_client.NewIssue.assert_not_called()
         self.assertEqual(len(self.host.web.requests), 0,
@@ -293,7 +294,8 @@ class ImportNotifierTest(unittest.TestCase):
         with mock.patch.object(self.notifier.owners_extractor,
                                'read_dir_metadata',
                                return_value=dir_metadata):
-            self.assertEqual(self.notifier.main(), {})
+            bugs, _ = self.notifier.main()
+            self.assertEqual(bugs, {})
 
         self.buganizer_client.NewIssue.assert_not_called()
         self.assertEqual(len(self.host.web.requests), 0,

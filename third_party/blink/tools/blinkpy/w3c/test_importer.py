@@ -517,7 +517,7 @@ class TestImporter:
         wpt_range: CommitRange,
         locally_applied_commits: Optional[List[ChromiumCommit]] = None,
     ) -> str:
-        wpt_short_range = CommitRange(wpt_range.start[:10], wpt_range.end[:10])
+        wpt_short_range = CommitRange(wpt_range.start[:9], wpt_range.end[:9])
         message = textwrap.dedent(f"""\
             {ImportNotifier.IMPORT_SUBJECT_PREFIX}{wpt_range.end}
 
@@ -617,7 +617,6 @@ class TestImporter:
             TestExpectations rather than reverting. See:
             """)
         description += '\n'.join([
-            '',
             *textwrap.wrap(gardener_instructions, width=72),
             'https://chromium.googlesource.com/chromium/src/+/'
             'main/docs/testing/web_platform_tests.md',
@@ -709,14 +708,14 @@ class TestImporter:
               (origin/main) <tip-of-tree>
         """
         _log.info('Filing bugs for the last WPT import.')
-        bugs_by_dir = notifier.main(dry_run=(not auto_file_bugs))
+        bugs_by_dir, cl = notifier.main(dry_run=(not auto_file_bugs))
         referenced_bugs = self._update_bugs_in_expectations(
             notifier, bugs_by_dir)
 
         if self.project_git.has_working_directory_changes():
             self.project_git.add_list([self.finder.path_from_web_tests()])
             description = textwrap.dedent(f"""\
-                [wpt-import] Update `TestExpectations` with bugs for new failures
+                Update `TestExpectations` with bugs filed for crrev.com/c/{cl.number}
 
                 Bug: {', '.join(map(str, sorted(referenced_bugs)))}
                 """)
