@@ -26,7 +26,6 @@ mod noise;
 use crate::error::Error;
 use crate::noise::{HandshakeType, Noise};
 use alloc::vec::Vec;
-use core::result::Result;
 use crypto::{P256Scalar, NONCE_LEN, P256_X962_LENGTH};
 
 // This is assumed to be vastly larger than any connection will ever reach.

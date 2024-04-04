@@ -214,6 +214,7 @@ impl EnclaveServer {
         let mut seen_first_line = false;
         let mut websocket_key: Option<String> = None;
         let mut websocket_protocol: Option<String> = None;
+        let mut has_reauthentication_header = false;
         loop {
             let line = match next_line(&conn) {
                 Ok(line) => line,
@@ -238,6 +239,7 @@ impl EnclaveServer {
             match key.to_lowercase().as_str() {
                 "sec-websocket-key" => websocket_key = Some(String::from(value.trim())),
                 "sec-websocket-protocol" => websocket_protocol = Some(String::from(value.trim())),
+                "reauthentication" => has_reauthentication_header = true,
                 _ => (),
             }
         }
@@ -306,9 +308,13 @@ impl EnclaveServer {
 
         let cbor_response = match processor::process_client_msg(
             client_state,
-            // This timestamp is fixed so that any XML files submitted by tests will be considered
-            // unexpired.
-            1707344402000,
+            processor::ExternalContext {
+                // This timestamp is fixed so that any XML files submitted by tests will be
+                // considered unexpired.
+                current_time_epoch_millis: 1707344402000,
+                client_device_identifier: Vec::new(),
+                is_reauthenticated: has_reauthentication_header,
+            },
             &handshake_response.handshake_hash,
             commands,
         ) {

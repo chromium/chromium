@@ -44,15 +44,17 @@ pub use crate::rustcrypto::{
 #[cfg(feature = "ring")]
 pub use crate::ringimpl::{
     aes_128_gcm_open_in_place, aes_128_gcm_seal_in_place, aes_256_gcm_open_in_place,
-    aes_256_gcm_seal_in_place, ecdsa_verify, hkdf_sha256, p256_scalar_mult, rand_bytes, rsa_verify,
-    sha1_two_part, sha256, sha256_two_part, EcdsaKeyPair, P256Scalar, RsaKeyPair,
+    aes_256_gcm_seal_in_place, ecdsa_verify, hkdf_sha256, hmac_sha256, p256_scalar_mult,
+    rand_bytes, rsa_verify, sha1_two_part, sha256, sha256_two_part, EcdsaKeyPair, P256Scalar,
+    RsaKeyPair,
 };
 
 #[cfg(feature = "bssl")]
 pub use crate::bsslimpl::{
     aes_128_gcm_open_in_place, aes_128_gcm_seal_in_place, aes_256_gcm_open_in_place,
-    aes_256_gcm_seal_in_place, ecdsa_verify, hkdf_sha256, p256_scalar_mult, rand_bytes, rsa_verify,
-    sha1_two_part, sha256, sha256_two_part, EcdsaKeyPair, P256Scalar, RsaKeyPair,
+    aes_256_gcm_seal_in_place, ecdsa_verify, hkdf_sha256, hmac_sha256, p256_scalar_mult,
+    rand_bytes, rsa_verify, sha1_two_part, sha256, sha256_two_part, EcdsaKeyPair, P256Scalar,
+    RsaKeyPair,
 };
 
 #[cfg(feature = "rustcrypto")]
@@ -358,6 +360,12 @@ mod ringimpl {
         ctx.finish().as_ref().try_into().unwrap()
     }
 
+    pub fn hmac_sha256(key: &[u8], msg: &[u8]) -> [u8; SHA256_OUTPUT_LEN] {
+        let key = ring::hmac::Key::new(ring::hmac::HMAC_SHA256, key);
+        // unwrap: HMAC-SHA256 has to produce output of the correct length.
+        ring::hmac::sign(&key, msg).as_ref().try_into().unwrap()
+    }
+
     pub struct P256Scalar {
         v: ring::agreement::EphemeralPrivateKey,
     }
@@ -514,6 +522,7 @@ mod bsslimpl {
     use bssl_crypto::aead::{Aead, Aes128Gcm, Aes256Gcm};
     use bssl_crypto::ec::P256;
     use bssl_crypto::hkdf::HkdfSha256;
+    use bssl_crypto::hmac::HmacSha256;
     use bssl_crypto::{digest, ecdh, ecdsa, hkdf, rsa};
 
     const GCM_TAG_LEN: usize = 16;
@@ -582,6 +591,10 @@ mod bsslimpl {
 
     pub fn hkdf_sha256(ikm: &[u8], salt: &[u8], info: &[u8], output: &mut [u8]) -> Result<(), ()> {
         HkdfSha256::derive_into(ikm, hkdf::Salt::NonEmpty(salt), info, output).map_err(|_| ())
+    }
+
+    pub fn hmac_sha256(key: &[u8], msg: &[u8]) -> [u8; SHA256_OUTPUT_LEN] {
+        HmacSha256::mac(key, msg)
     }
 
     pub fn sha1_two_part(input1: &[u8], input2: &[u8]) -> [u8; SHA1_OUTPUT_LEN] {
