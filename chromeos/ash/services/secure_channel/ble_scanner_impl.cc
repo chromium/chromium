@@ -174,7 +174,7 @@ void BleScannerImpl::EnsureDiscoverySessionActive() {
             kServiceData,
         kAdvertisingServiceUuidAsBytes);
     auto filter = device::BluetoothLowEnergyScanFilter::Create(
-        device::BluetoothLowEnergyScanFilter::Range::kNear,
+        device::BluetoothLowEnergyScanFilter::Range::kFar,
         kScanningDeviceFoundTimeout, kScanningDeviceLostTimeout, {pattern},
         kScanningRssiSamplingPeriod);
     if (!filter) {
