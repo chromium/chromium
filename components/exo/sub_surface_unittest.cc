@@ -240,12 +240,9 @@ TEST_F(SubSurfaceTest, AugmentedSurfaceDoesNotExpandHierarchy) {
   auto sub_surface_role =
       std::make_unique<SubSurface>(sub_surface.get(), parent.get());
 
-  auto parent_buffer = std::make_unique<Buffer>(
-      exo_test_helper()->CreateGpuMemoryBuffer(gfx::Size(800, 600)));
-  auto sub_surface_buffer = std::make_unique<Buffer>(
-      exo_test_helper()->CreateGpuMemoryBuffer(gfx::Size(10, 10)));
-  auto sub_layer_buffer = std::make_unique<Buffer>(
-      exo_test_helper()->CreateGpuMemoryBuffer(gfx::Size(10, 10)));
+  auto parent_buffer = exo_test_helper()->CreateBuffer(gfx::Size(800, 600));
+  auto sub_surface_buffer = exo_test_helper()->CreateBuffer(gfx::Size(10, 10));
+  auto sub_layer_buffer = exo_test_helper()->CreateBuffer(gfx::Size(10, 10));
 
   // Set position to be outside parent surface.
   sub_layer_role->SetPosition(gfx::PointF(-10, 0));
