@@ -15,7 +15,7 @@ items:
 - caption: Disable device app info reporting
   value: false
 owners:
-- cros-reporting-team@google.com
+- cros-reporting-eng@google.com
 - lbaraz@chromium.org
 - mattme@google.com
 schema:

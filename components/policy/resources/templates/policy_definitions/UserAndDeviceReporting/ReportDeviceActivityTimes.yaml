@@ -14,7 +14,7 @@ items:
 - caption: Disable device activity time reporting
   value: false
 owners:
-- cros-reporting-team@google.com
+- cros-reporting-eng@google.com
 - lbaraz@chromium.org
 schema:
   type: boolean
