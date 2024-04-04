@@ -26,8 +26,9 @@ constexpr CGFloat kChipHorizontalPadding = 12;
 // kIOSKeyboardAccessoryUpgrade feature is enabled.
 constexpr CGFloat kChipVerticalPadding = 11.5;
 
-// Vertical margin for the button. How much bigger the tap target is.
-constexpr CGFloat kChipVerticalMargin = 2;
+// Vertical margin for the button. How much bigger the tap target is. Used when
+// the kIOSKeyboardAccessoryUpgrade feature is disabled.
+constexpr CGFloat kChipVerticalMargin = 4;
 
 // Font size for the button's title.
 constexpr CGFloat kFontSize = 14;
@@ -35,13 +36,9 @@ constexpr CGFloat kFontSize = 14;
 // Line spacing for the button's title.
 constexpr CGFloat kLineSpacing = 6;
 
-// Button's touch target size.
-constexpr CGFloat kTouchTargetSize = 44;
-
 // Returns the vertical margin to use.
 CGFloat GetChipVerticalMargin() {
-  return IsKeyboardAccessoryUpgradeEnabled() ? kChipVerticalMargin
-                                             : 2 * kChipVerticalMargin;
+  return IsKeyboardAccessoryUpgradeEnabled() ? 0 : kChipVerticalMargin;
 }
 
 // Returns the horizontal padding to use.
@@ -180,7 +177,6 @@ CGFloat GetChipVerticalPadding() {
   [self addSubview:_backgroundView];
   [self sendSubviewToBack:_backgroundView];
   [NSLayoutConstraint activateConstraints:@[
-    [self.heightAnchor constraintGreaterThanOrEqualToConstant:kTouchTargetSize],
     [_backgroundView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
     [_backgroundView.trailingAnchor
         constraintEqualToAnchor:self.trailingAnchor],

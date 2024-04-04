@@ -5,10 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_UI_AUTOFILL_MANUAL_FILL_CHIP_BUTTON_H_
 #define IOS_CHROME_BROWSER_UI_AUTOFILL_MANUAL_FILL_CHIP_BUTTON_H_
 
-#import <UIKit/UIKit.h>
+#import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 
 // Buttons with a rounded border and gray background in highlighted state.
-@interface ChipButton : UIButton
+@interface ChipButton : ExtendedTouchTargetButton
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_MANUAL_FILL_CHIP_BUTTON_H_
