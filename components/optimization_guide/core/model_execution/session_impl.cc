@@ -209,6 +209,9 @@ SessionImpl::AddContextResult SessionImpl::AddContextImpl(
   context_->CheckTypeAndMergeFrom(request_metadata);
   context_start_time_ = base::TimeTicks::Now();
 
+  // Cancel any pending response.
+  CancelPendingResponse(ExecuteModelResult::kCancelled);
+
   if (!ShouldUseOnDeviceModel()) {
     DestroyOnDeviceState();
     return AddContextResult::kUsingServer;
@@ -222,9 +225,6 @@ SessionImpl::AddContextResult SessionImpl::AddContextImpl(
     DestroyOnDeviceState();
     return AddContextResult::kFailedConstructingInput;
   }
-
-  // Cancel any pending response.
-  CancelPendingResponse(ExecuteModelResult::kCancelled);
 
   // Only the latest context is used, so restart the mojo session here.
   on_device_state_->session.reset();
@@ -272,6 +272,7 @@ void SessionImpl::ExecuteModel(
   }
 
   if (!ShouldUseOnDeviceModel()) {
+    CancelPendingResponse(ExecuteModelResult::kCancelled);
     DestroyOnDeviceState();
     execute_remote_fn_.Run(
         feature_, *last_message_,
@@ -290,23 +291,26 @@ void SessionImpl::ExecuteModel(
     CHECK(context_);
     std::unique_ptr<google::protobuf::MessageLite> context =
         std::move(context_);
+    // Note that this will CancelPendingResponse, so it must be called before
+    // switching to the new pending response below.
     AddContext(*context);
     CHECK(!on_device_state_->add_context_before_execute);
   }
+
+  // Make sure to cancel any pending response.
+  CancelPendingResponse(ExecuteModelResult::kCancelled);
+  // Set new pending response.
+  on_device_state_->histogram_logger = std::move(logger);
+  on_device_state_->callback = std::move(callback);
 
   auto input = on_device_state_->adapter->ConstructInputString(
       *last_message_, /*want_input_context=*/false);
   if (!input) {
     // Use server if can't construct input.
-    on_device_state_->histogram_logger = std::move(logger);
-    on_device_state_->callback = std::move(callback);
     DestroyOnDeviceStateAndFallbackToRemote(
         ExecuteModelResult::kFailedConstructingMessage);
     return;
   }
-
-  // Make sure to cancel any pending response.
-  CancelPendingResponse(ExecuteModelResult::kCancelled);
 
   // Cancel any optional context still processing.
   if (on_device_state_->context_processor) {
@@ -327,8 +331,8 @@ void SessionImpl::ExecuteModel(
   }
 
   // Note: if on-device fails for some reason, the result will be changed.
-  logger->set_result(ExecuteModelResult::kUsedOnDevice);
-  on_device_state_->histogram_logger = std::move(logger);
+  on_device_state_->histogram_logger->set_result(
+      ExecuteModelResult::kUsedOnDevice);
 
   if (!input->should_ignore_input_context &&
       on_device_state_->context_processor) {
@@ -356,7 +360,6 @@ void SessionImpl::ExecuteModel(
   }
 
   on_device_state_->log_ai_data_request = std::move(log_ai_data_request);
-  on_device_state_->callback = std::move(callback);
   on_device_state_->start = base::TimeTicks::Now();
   on_device_state_->timer_for_first_response.Start(
       FROM_HERE, features::GetOnDeviceModelTimeForInitialResponse(),
@@ -497,6 +500,9 @@ void SessionImpl::OnDisconnect() {
 
 void SessionImpl::CancelPendingResponse(ExecuteModelResult result,
                                         ModelExecutionError error) {
+  if (!on_device_state_) {
+    return;
+  }
   if (on_device_state_->histogram_logger) {
     on_device_state_->histogram_logger->set_result(result);
   }
@@ -521,7 +527,7 @@ void SessionImpl::CancelPendingResponse(ExecuteModelResult result,
 void SessionImpl::SendResponse(ResponseType response_type) {
   on_device_state_->timer_for_first_response.Stop();
   if (!on_device_state_->callback) {
-    on_device_state_->histogram_logger.get();
+    on_device_state_->histogram_logger.reset();
     return;
   }
 
@@ -686,6 +692,7 @@ void SessionImpl::DestroyOnDeviceStateAndFallbackToRemote(
 }
 
 void SessionImpl::DestroyOnDeviceState() {
+  DCHECK(!on_device_state_ || !on_device_state_->callback);
   on_device_state_.reset();
 }
 
