@@ -155,6 +155,18 @@ chromium-metrics-reviews@google.com.
   <variant name="NotDeferred"/>
 </variants>
 
+<variants name="DeviceType">
+  <variant name="Rtc"/>
+  <variant name="VirtioBalloon"/>
+  <variant name="VirtioBlock"/>
+  <variant name="VirtioFs"/>
+  <variant name="VirtioGpu"/>
+  <variant name="VirtioNet"/>
+  <variant name="VirtioOther"/>
+  <variant name="VirtioVsock"/>
+  <variant name="VirtioWayland"/>
+</variants>
+
 <variants name="SuccessFailure">
   <variant name=".Failure" summary="Operation failed"/>
   <variant name=".Success" summary="Operation succeeded"/>
@@ -2660,6 +2672,17 @@ chromium-metrics-reviews@google.com.
     Records the number of times an API for adding and excluding route in VPN is
     called from ChromeOS Vpn Service Builder Compat Library.
   </summary>
+</histogram>
+
+<histogram name="Arc.Wakeup.{DeviceType}" units="ms" expires_after="2024-10-03">
+  <owner>stevensd@google.com</owner>
+  <owner>cros-core-systems-perf@google.com</owner>
+  <summary>
+    Every time a {DeviceType} device wakes ARCVM up from a sleep state (e.g.
+    s2idle), records how long ARCVM was in that sleep state before being woken
+    up.
+  </summary>
+  <token key="DeviceType" variants="DeviceType"/>
 </histogram>
 
 <histogram name="Arc.Wayland.LateTiming.Duration{WaylandEventType}" units="ms"
