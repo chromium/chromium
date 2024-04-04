@@ -1068,6 +1068,15 @@ void RecordDiscreteGpuHistograms(const GPUInfo& gpu_info) {
 }
 
 #if BUILDFLAG(IS_WIN)
+std::string DirectMLFeatureLevelToString(uint32_t directml_feature_level) {
+  if (directml_feature_level == 0) {
+    return "Not supported";
+  } else {
+    return base::StringPrintf("%d.%d", (directml_feature_level >> 12) & 0xF,
+                              (directml_feature_level >> 8) & 0xF);
+  }
+}
+
 std::string D3DFeatureLevelToString(uint32_t d3d_feature_level) {
   if (d3d_feature_level == 0) {
     return "Not supported";

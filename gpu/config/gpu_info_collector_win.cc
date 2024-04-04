@@ -5,24 +5,26 @@
 #include "gpu/config/gpu_info_collector.h"
 
 // C system before C++ system.
-#include <stddef.h>
-#include <stdint.h>
-
+#include <DirectML.h>
 #include <d3d11.h>
 #include <d3d11_3.h>
 #include <d3d12.h>
 #include <dxgi.h>
 #include <dxgi1_6.h>
+#include <stddef.h>
+#include <stdint.h>
 #include <vulkan/vulkan.h>
 #include <wrl/client.h>
 
 #include "base/file_version_info_win.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/path_service.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
@@ -290,13 +292,15 @@ bool CanCreateD3D12Device(IDXGIAdapter* dxgi_adapter) {
 }
 
 // DirectX 12 are included with Windows 10 and Server 2016.
-void GetGpuSupportedD3D12Version(uint32_t& d3d12_feature_level,
-                                 uint32_t& highest_shader_model_version) {
-  TRACE_EVENT0("gpu", "GetGpuSupportedD3D12Version");
+void GetGpuSupportedDirectXVersion(uint32_t& d3d12_feature_level,
+                                   uint32_t& highest_shader_model_version,
+                                   uint32_t& directml_feature_level) {
+  TRACE_EVENT0("gpu", "GetGpuSupportedDirectXVersion");
 
   // Initialize to 0 to indicated an unknown type in UMA.
   d3d12_feature_level = 0;
   highest_shader_model_version = 0;
+  directml_feature_level = 0;
 
   base::ScopedNativeLibrary d3d12_library(
       base::FilePath(FILE_PATH_LITERAL("d3d12.dll")));
@@ -308,11 +312,11 @@ void GetGpuSupportedD3D12Version(uint32_t& d3d12_feature_level,
       D3D_FEATURE_LEVEL_12_2, D3D_FEATURE_LEVEL_12_1, D3D_FEATURE_LEVEL_12_0,
       D3D_FEATURE_LEVEL_11_1, D3D_FEATURE_LEVEL_11_0};
 
-  PFN_D3D12_CREATE_DEVICE D3D12CreateDevice =
+  PFN_D3D12_CREATE_DEVICE d3d12_create_device_proc =
       reinterpret_cast<PFN_D3D12_CREATE_DEVICE>(
           d3d12_library.GetFunctionPointer("D3D12CreateDevice"));
   Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device;
-  if (D3D12CreateDevice) {
+  if (d3d12_create_device_proc) {
     Microsoft::WRL::ComPtr<IDXGIFactory1> dxgi_factory;
     HRESULT hr = ::CreateDXGIFactory1(IID_PPV_ARGS(&dxgi_factory));
     if (FAILED(hr)) {
@@ -332,34 +336,75 @@ void GetGpuSupportedD3D12Version(uint32_t& d3d12_feature_level,
     // For the default adapter only: EnumAdapters(0, ...).
     // Check to see if the adapter supports Direct3D 12.
     for (auto level : feature_levels) {
-      if (SUCCEEDED(D3D12CreateDevice(dxgi_adapter.Get(), level,
-                                      _uuidof(ID3D12Device), &d3d12_device))) {
+      if (SUCCEEDED(d3d12_create_device_proc(dxgi_adapter.Get(), level,
+                                             _uuidof(ID3D12Device),
+                                             &d3d12_device))) {
         d3d12_feature_level = level;
         break;
       }
     }
-  }
 
-  // Query the maximum supported shader model version.
-  if (d3d12_device) {
-    // As per the documentation, CheckFeatureSupport will return E_INVALIDARG if
-    // the shader model is not known by the current runtime, so we loop in
-    // decreasing shader model version to determine the highest supported model:
-    // https://docs.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_feature_data_shader_model.
-    const D3D_SHADER_MODEL shader_models[] = {
-        D3D_SHADER_MODEL_6_7, D3D_SHADER_MODEL_6_6, D3D_SHADER_MODEL_6_5,
-        D3D_SHADER_MODEL_6_4, D3D_SHADER_MODEL_6_3, D3D_SHADER_MODEL_6_2,
-        D3D_SHADER_MODEL_6_1, D3D_SHADER_MODEL_6_0, D3D_SHADER_MODEL_5_1,
-    };
+    // Query the maximum supported shader model version.
+    if (d3d12_device) {
+      // As per the documentation, CheckFeatureSupport will return E_INVALIDARG
+      // if the shader model is not known by the current runtime, so we loop in
+      // decreasing shader model version to determine the highest supported
+      // model:
+      // https://docs.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_feature_data_shader_model.
+      const D3D_SHADER_MODEL shader_models[] = {
+          D3D_SHADER_MODEL_6_7, D3D_SHADER_MODEL_6_6, D3D_SHADER_MODEL_6_5,
+          D3D_SHADER_MODEL_6_4, D3D_SHADER_MODEL_6_3, D3D_SHADER_MODEL_6_2,
+          D3D_SHADER_MODEL_6_1, D3D_SHADER_MODEL_6_0, D3D_SHADER_MODEL_5_1,
+      };
 
-    for (auto model : shader_models) {
-      D3D12_FEATURE_DATA_SHADER_MODEL shader_model_data = {};
-      shader_model_data.HighestShaderModel = model;
-      if (SUCCEEDED(d3d12_device->CheckFeatureSupport(
-              D3D12_FEATURE_SHADER_MODEL, &shader_model_data,
-              sizeof(shader_model_data)))) {
-        highest_shader_model_version = shader_model_data.HighestShaderModel;
-        break;
+      for (auto model : shader_models) {
+        D3D12_FEATURE_DATA_SHADER_MODEL shader_model_data = {};
+        shader_model_data.HighestShaderModel = model;
+        if (SUCCEEDED(d3d12_device->CheckFeatureSupport(
+                D3D12_FEATURE_SHADER_MODEL, &shader_model_data,
+                sizeof(shader_model_data)))) {
+          highest_shader_model_version = shader_model_data.HighestShaderModel;
+          break;
+        }
+      }
+      // DirectML is supported starting on D3D12.
+      base::ScopedNativeLibrary dml_library(
+          base::ScopedNativeLibrary(base::LoadSystemLibrary(L"directml.dll")));
+      if (!dml_library.is_valid()) {
+        return;
+      }
+      // On older versions of windows DMLCreateDevice accepts a different
+      // number of parameters. We should use DMLCreateDevice1 which always
+      // takes the same number of parameters to ensure consistency
+      // among all versions of windows.
+      auto dml_create_device1_proc =
+          reinterpret_cast<decltype(DMLCreateDevice1)*>(
+              dml_library.GetFunctionPointer("DMLCreateDevice1"));
+      if (!dml_create_device1_proc) {
+        return;
+      }
+      Microsoft::WRL::ComPtr<IDMLDevice> dml_device;
+      if (FAILED(dml_create_device1_proc(
+              d3d12_device.Get(), DML_CREATE_DEVICE_FLAG_NONE,
+              DML_FEATURE_LEVEL_1_0, IID_PPV_ARGS(&dml_device)))) {
+        return;
+      }
+
+      DML_FEATURE_LEVEL feature_levels_requested[] = {
+          DML_FEATURE_LEVEL_1_0, DML_FEATURE_LEVEL_2_0, DML_FEATURE_LEVEL_2_1,
+          DML_FEATURE_LEVEL_3_0, DML_FEATURE_LEVEL_3_1, DML_FEATURE_LEVEL_4_0,
+          DML_FEATURE_LEVEL_4_1, DML_FEATURE_LEVEL_5_0};
+
+      DML_FEATURE_QUERY_FEATURE_LEVELS feature_levels_query = {
+          std::size(feature_levels_requested), feature_levels_requested};
+
+      DML_FEATURE_DATA_FEATURE_LEVELS feature_levels_supported = {};
+      if (SUCCEEDED(dml_device->CheckFeatureSupport(
+              DML_FEATURE_FEATURE_LEVELS, sizeof(feature_levels_query),
+              &feature_levels_query, sizeof(feature_levels_supported),
+              &feature_levels_supported))) {
+        directml_feature_level =
+            feature_levels_supported.MaxSupportedFeatureLevel;
       }
     }
   }

@@ -182,6 +182,10 @@ base::Value::List GetBasicGpuInfo(const gpu::GPUInfo& gpu_info,
   }
 
   basic_info.Append(display::BuildGpuInfoEntry(
+      "DirectML feature level",
+      gpu::DirectMLFeatureLevelToString(gpu_info.directml_feature_level)));
+
+  basic_info.Append(display::BuildGpuInfoEntry(
       "Driver D3D12 feature level",
       gpu::D3DFeatureLevelToString(gpu_info.d3d12_feature_level)));
 

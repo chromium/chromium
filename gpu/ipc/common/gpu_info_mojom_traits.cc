@@ -511,6 +511,7 @@ bool StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo>::Read(
   out->visibility_callback_call_count = data.visibility_callback_call_count();
 
 #if BUILDFLAG(IS_WIN)
+  out->directml_feature_level = data.directml_feature_level();
   out->d3d12_feature_level = data.d3d12_feature_level();
   out->vulkan_version = data.vulkan_version();
   out->shared_image_d3d = data.shared_image_d3d();
