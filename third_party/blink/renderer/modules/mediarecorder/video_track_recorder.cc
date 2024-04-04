@@ -247,7 +247,7 @@ bool MustUseVEA(CodecId codec_id) {
 }
 
 // Returns the default codec profile for |codec_id|.
-media::VideoCodecProfile DefaultCodecProfile(
+std::optional<media::VideoCodecProfile> DefaultCodecProfile(
     VideoTrackRecorder::CodecId codec_id) {
   switch (codec_id) {
 #if BUILDFLAG(ENABLE_OPENH264)
@@ -263,8 +263,8 @@ media::VideoCodecProfile DefaultCodecProfile(
       return media::AV1PROFILE_MIN;
 #endif  // BUILDFLAG(ENABLE_LIBAOM)
     default:
-      NOTREACHED_NORETURN()
-          << "Unsupported codec: " << static_cast<int>(codec_id);
+      NOTREACHED() << "Unsupported codec: " << static_cast<int>(codec_id);
+      return std::nullopt;
   }
 }
 
@@ -999,12 +999,6 @@ void VideoTrackRecorderImpl::InitializeEncoderOnEncoderSupportKnown(
   const gfx::Size& input_size = frame->visible_rect().size();
   const bool can_use_vea = CanUseAcceleratedEncoder(
       codec_profile, input_size.width(), input_size.height());
-  // If |can_use_vea| is true, codec_profile.profile must be filled after
-  // CanUseAcceleratedEncoder().
-  if (!codec_profile.profile.has_value()) {
-    CHECK(!can_use_vea);
-    codec_profile.profile = DefaultCodecProfile(codec_profile.codec_id);
-  }
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS) && !BUILDFLAG(ENABLE_OPENH264)
   if (MustUseVEA(codec_profile.codec_id) &&
@@ -1019,10 +1013,25 @@ void VideoTrackRecorderImpl::InitializeEncoderOnEncoderSupportKnown(
   }
 #endif
 
+  // If |can_use_vea| is true, codec_profile.profile must be filled after
+  // CanUseAcceleratedEncoder().
+  if (!codec_profile.profile.has_value()) {
+    CHECK(!can_use_vea);
+    std::optional<media::VideoCodecProfile> default_profile =
+        DefaultCodecProfile(codec_profile.codec_id);
+    if (!default_profile) {
+      DLOG(ERROR) << "No software encoder is available for the codec";
+      callback_interface()->OnVideoEncodingError();
+      return;
+    }
+    codec_profile.profile = *default_profile;
+  }
+
   // Avoid reinitializing |encoder_| when there are multiple frames sent to the
   // sink to initialize, https://crbug.com/698441.
-  if (encoder_)
+  if (encoder_) {
     return;
+  }
 
   DisconnectFromTrack();
 
