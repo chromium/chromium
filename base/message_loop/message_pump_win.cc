@@ -102,8 +102,10 @@ void MessagePumpForUI::ScheduleWork() {
   // |bound_thread_|.
 
   bool not_scheduled = false;
-  if (!work_scheduled_.compare_exchange_strong(not_scheduled, true))
+  if (!work_scheduled_.compare_exchange_strong(not_scheduled, true,
+                                               std::memory_order_relaxed)) {
     return;  // Someone else continued the pumping.
+  }
 
   // Make sure the MessagePump does some work for us.
   const BOOL ret = ::PostMessage(message_window_.hwnd(), kMsgHaveWork, 0, 0);
@@ -120,7 +122,7 @@ void MessagePumpForUI::ScheduleWork() {
   // probably be recoverable.
 
   // Clarify that we didn't really insert.
-  work_scheduled_ = false;
+  work_scheduled_.store(false, std::memory_order_relaxed);
   TRACE_EVENT_INSTANT0("base", "Chrome.MessageLoopProblem.MESSAGE_POST_ERROR",
                        TRACE_EVENT_SCOPE_THREAD);
 }
@@ -145,7 +147,7 @@ void MessagePumpForUI::ScheduleDelayedWork(
   // See MessageLoopTest.PostDelayedTaskFromSystemPump for an example.
   // TODO(gab): This could potentially be replaced by a ForegroundIdleProc hook
   // if Windows ends up being the only platform requiring ScheduleDelayedWork().
-  if (in_native_loop_ && !work_scheduled_) {
+  if (in_native_loop_ && !work_scheduled_.load(std::memory_order_relaxed)) {
     ScheduleNativeTimer(next_work_info);
   }
 }
@@ -325,7 +327,7 @@ void MessagePumpForUI::HandleWorkMessage() {
   // sort.
   if (!run_state_) {
     // Since we handled a kMsgHaveWork message, we must still update this flag.
-    work_scheduled_ = false;
+    work_scheduled_.store(false, std::memory_order_relaxed);
     return;
   }
 
@@ -578,8 +580,8 @@ bool MessagePumpForUI::ProcessPumpReplacementMessage() {
          msg.hwnd != message_window_.hwnd());
 
   // Since we discarded a kMsgHaveWork message, we must update the flag.
-  DCHECK(work_scheduled_);
-  work_scheduled_ = false;
+  DCHECK(work_scheduled_.load(std::memory_order_relaxed));
+  work_scheduled_.store(false, std::memory_order_relaxed);
 
   // We don't need a special time slice if we didn't |have_message| to process.
   if (!have_message)
@@ -653,8 +655,10 @@ void MessagePumpForIO::ScheduleWork() {
   // |bound_thread_|.
 
   bool not_scheduled = false;
-  if (!work_scheduled_.compare_exchange_strong(not_scheduled, true))
+  if (!work_scheduled_.compare_exchange_strong(not_scheduled, true,
+                                               std::memory_order_relaxed)) {
     return;  // Someone else continued the pumping.
+  }
 
   // Make sure the MessagePump does some work for us.
   const BOOL ret = ::PostQueuedCompletionStatus(
@@ -665,7 +669,8 @@ void MessagePumpForIO::ScheduleWork() {
 
   // See comment in MessagePumpForUI::ScheduleWork() for this error recovery.
 
-  work_scheduled_ = false;  // Clarify that we didn't succeed.
+  work_scheduled_.store(
+      false, std::memory_order_relaxed);  // Clarify that we didn't succeed.
   TRACE_EVENT_INSTANT0("base",
                        "Chrome.MessageLoopProblem.COMPLETION_POST_ERROR",
                        TRACE_EVENT_SCOPE_THREAD);
@@ -815,7 +820,7 @@ bool MessagePumpForIO::ProcessInternalIOItem(const IOItem& item) {
           reinterpret_cast<void*>(item.handler.get())) {
     // This is our internal completion.
     DCHECK(!item.bytes_transfered);
-    work_scheduled_ = false;
+    work_scheduled_.store(false, std::memory_order_relaxed);
     return true;
   }
   return false;
