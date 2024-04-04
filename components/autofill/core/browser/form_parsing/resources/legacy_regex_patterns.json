@@ -3135,5 +3135,27 @@
         "form_control_types": ["INPUT_TEXT", "TEXT_AREA", "INPUT_NUMBER"]
       }
     ]
+  },
+  "IN_STREET_LOCATION": {
+    "en": [
+      {
+        "positive_pattern": "house.?no|building|flat|apartment",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": ["LABEL", "NAME"],
+        "form_control_types": ["INPUT_TEXT", "INPUT_SEARCH"]
+      }
+    ]
+  },
+  "IN_DEPENDENT_LOCALITY": {
+    "en": [
+      {
+        "positive_pattern": "area|locality|street|colony|sector|town|village",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": ["LABEL", "NAME"],
+        "form_control_types": ["INPUT_TEXT", "INPUT_SEARCH"]
+      }
+    ]
   }
 }
