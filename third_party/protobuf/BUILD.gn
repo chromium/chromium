@@ -76,23 +76,6 @@ if (is_win) {
   ]
 }
 
-# Do not allow libprotobuf_lite to be dynamically linked on Linux.  Later
-# versions of Ubuntu like Xenial and Yakkety link in the system
-# libprotobuf_lite by the following dependency chain: chrome -> gtk ->
-# libmirclient -> libmirprotobuf -> libprotobuf-lite.  Trying to load
-# the system libprotobuf-lite after already having loaded the libprotobuf_lite
-# component will result in an immediate crash. (crbug.com/700120)
-if (is_component_build && use_gtk) {
-  shared_library("mirclient") {
-    inputs = [ "mirclient.map" ]
-    sources = [ "mirclient.cc" ]
-    ldflags =
-        [ "-Wl,--version-script=" +
-          rebase_path("//third_party/protobuf/mirclient.map", root_build_dir) ]
-    output_extension = "so.9"
-  }
-}
-
 component("protobuf_lite") {
   sources = protobuf_lite_sources + protobuf_headers
 
@@ -129,10 +112,6 @@ component("protobuf_lite") {
   }
 
   cflags = protobuf_lite_cflags
-
-  if (is_component_build && use_gtk) {
-    deps = [ ":mirclient" ]
-  }
 
   # Required for component builds. See http://crbug.com/172800.
   if (is_component_build) {
