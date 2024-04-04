@@ -91,9 +91,7 @@ AutofillHandler::AutofillHandler(protocol::UberDispatcher* dispatcher,
   }
 }
 
-AutofillHandler::~AutofillHandler() {
-  Disable();
-}
+AutofillHandler::~AutofillHandler() = default;
 
 protocol::Response AutofillHandler::Trigger(
     int field_id,
@@ -178,11 +176,6 @@ protocol::Response AutofillHandler::Trigger(
 void AutofillHandler::SetAddresses(
     std::unique_ptr<protocol::Array<protocol::Autofill::Address>> addresses,
     std::unique_ptr<SetAddressesCallback> callback) {
-  if (!base::FeatureList::IsEnabled(
-          autofill::features::kAutofillTestFormWithTestAddresses)) {
-    return;
-  }
-
   if (!content::DevToolsAgentHost::GetForId(target_id_)) {
     std::move(callback)->sendFailure(Response::ServerError("Target not found"));
     return;
@@ -445,13 +438,5 @@ Response AutofillHandler::Enable() {
 Response AutofillHandler::Disable() {
   enabled_ = false;
   autofill_manager_observation_.Reset();
-  autofill::ContentAutofillDriver* autofill_driver = GetAutofillDriver();
-  if (autofill_driver) {
-    static_cast<autofill::BrowserAutofillManager&>(
-        autofill_driver->GetAutofillManager())
-        .client()
-        .GetPersonalDataManager()
-        ->set_test_addresses({});
-  }
   return Response::Success();
 }

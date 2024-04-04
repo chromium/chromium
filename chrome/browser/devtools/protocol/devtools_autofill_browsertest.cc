@@ -131,12 +131,6 @@ class TestAutofillManager : public autofill::BrowserAutofillManager {
 
 class DevToolsAutofillTest : public DevToolsProtocolTestBase {
  public:
-  DevToolsAutofillTest() {
-    feature_list_.InitWithFeatures(
-        {features::kAutofillTestFormWithDevtools,
-         features::kAutofillTestFormWithTestAddresses},
-        {});
-  }
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
   }
@@ -268,7 +262,8 @@ class DevToolsAutofillTest : public DevToolsProtocolTestBase {
 
  private:
   test::AutofillUnitTestEnvironment autofill_test_environment_;
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{
+      features::kAutofillTestFormWithDevtools};
   FormGlobalId form_id_ = test::MakeFormGlobalId();
   autofill::TestAutofillManagerInjector<TestAutofillManager>
       autofill_manager_injector_;

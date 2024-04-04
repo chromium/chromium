@@ -1484,31 +1484,6 @@ TEST_F(AutofillExternalDelegateUnitTest, AcceptSuggestion) {
       SuggestionPosition{.row = 2});
 }
 
-// Test that an accepted test address autofill suggestion will fill the form.
-TEST_F(AutofillExternalDelegateUnitTest, TestAddressSuggestion_FillAndPreview) {
-  IssueOnQuery();
-  const AutofillProfile profile = test::GetFullProfile();
-  pdm().set_test_addresses({profile});
-  const Suggestion suggestion = test::CreateAutofillSuggestion(
-      PopupItemId::kDevtoolsTestAddressEntry, u"John Legend",
-      Suggestion::Guid(profile.guid()));
-
-  // Test preview.
-  EXPECT_CALL(manager(), FillOrPreviewProfileForm(
-                             mojom::ActionPersistence::kPreview,
-                             HasQueriedFormId(), HasQueriedFieldId(), _, _));
-  external_delegate().DidSelectSuggestion(suggestion);
-
-  // Test fill.
-  EXPECT_CALL(manager(), FillOrPreviewProfileForm(
-                             mojom::ActionPersistence::kFill,
-                             HasQueriedFormId(), HasQueriedFieldId(), _, _));
-  EXPECT_CALL(client(),
-              HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 0});
-}
-
 TEST_F(AutofillExternalDelegateUnitTest,
        AcceptFirstPopupLevelSuggestion_LogSuggestionAcceptedMetric) {
   IssueOnQuery();
@@ -1536,20 +1511,22 @@ TEST_F(AutofillExternalDelegateUnitTest,
       PopupItemId::kFillEverythingFromAddressProfile, u"John Legend",
       Suggestion::Guid(profile.guid()));
 
-  // Test preview.
-  EXPECT_CALL(manager(), FillOrPreviewProfileForm(
-                             mojom::ActionPersistence::kPreview,
-                             HasQueriedFormId(), HasQueriedFieldId(), _, _));
-  external_delegate().DidSelectSuggestion(suggestion);
-
-  // Test fill.
+  EXPECT_CALL(client(),
+              HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
+  // Test fill
   EXPECT_CALL(manager(), FillOrPreviewProfileForm(
                              mojom::ActionPersistence::kFill,
                              HasQueriedFormId(), HasQueriedFieldId(), _, _));
-  EXPECT_CALL(client(),
-              HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
+
   external_delegate().DidAcceptSuggestion(suggestion,
                                           SuggestionPosition{.row = 2});
+
+  // Test preview
+  EXPECT_CALL(manager(), FillOrPreviewProfileForm(
+                             mojom::ActionPersistence::kPreview,
+                             HasQueriedFormId(), HasQueriedFieldId(), _, _));
+
+  external_delegate().DidSelectSuggestion(suggestion);
 }
 
 // Tests that when accepting a suggestion, the `AutofillSuggestionTriggerSource`
