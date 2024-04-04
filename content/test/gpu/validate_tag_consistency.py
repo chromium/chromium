@@ -224,6 +224,11 @@ TAG_HEADER = """\
 # tags: [ webgpu-compat webgpu-not-compat ]
 # WebGPU DXC
 # tags: [ webgpu-dxc-enabled webgpu-dxc-disabled ]
+# WebGPU worker usage
+# tags: [ webgpu-no-worker
+#         webgpu-service-worker
+#         webgpu-dedicated-worker
+#         webgpu-shared-worker ]
 # Clang coverage
 # tags: [ clang-coverage no-clang-coverage ]
 # Skia Graphite

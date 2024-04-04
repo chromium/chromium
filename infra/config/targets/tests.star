@@ -2610,6 +2610,39 @@ targets.tests.gpu_telemetry_test(
 )
 
 targets.tests.gpu_telemetry_test(
+    name = "webgpu_cts_service_worker_tests",
+    telemetry_test_name = "webgpu_cts",
+    mixins = [
+        "has_native_resultdb_integration",
+    ],
+    args = [
+        "--use-worker=service",
+    ],
+)
+
+targets.tests.gpu_telemetry_test(
+    name = "webgpu_cts_dedicated_worker_tests",
+    telemetry_test_name = "webgpu_cts",
+    mixins = [
+        "has_native_resultdb_integration",
+    ],
+    args = [
+        "--use-worker=dedicated",
+    ],
+)
+
+targets.tests.gpu_telemetry_test(
+    name = "webgpu_cts_shared_worker_tests",
+    telemetry_test_name = "webgpu_cts",
+    mixins = [
+        "has_native_resultdb_integration",
+    ],
+    args = [
+        "--use-worker=shared",
+    ],
+)
+
+targets.tests.gpu_telemetry_test(
     name = "webgpu_cts_with_validation_tests",
     telemetry_test_name = "webgpu_cts",
     mixins = [

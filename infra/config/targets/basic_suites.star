@@ -2370,6 +2370,8 @@ targets.legacy_basic_suite(
 targets.legacy_basic_suite(
     name = "gpu_dawn_web_platform_webgpu_cts_force_swiftshader",
     tests = {
+        # We intentionally do not have worker versions of these tests since
+        # non-SwiftShader coverage should be sufficient.
         "webgpu_swiftshader_web_platform_cts_tests": targets.legacy_test_config(
             mixins = [
                 "webgpu_telemetry_cts",
@@ -2451,6 +2453,8 @@ targets.legacy_basic_suite(
 targets.legacy_basic_suite(
     name = "gpu_dawn_webgpu_compat_cts",
     tests = {
+        # Worker versions of compat tests intentionally omitted since it is
+        # unlikely that the compat path will interact with workers.
         "webgpu_cts_compat_tests": targets.legacy_test_config(
             mixins = [
                 "webgpu_telemetry_cts",
@@ -2483,6 +2487,33 @@ targets.legacy_basic_suite(
                 shards = 36,
             ),
         ),
+        "webgpu_cts_service_worker_tests": targets.legacy_test_config(
+            mixins = [
+                "webgpu_telemetry_cts",
+                "linux_vulkan",
+            ],
+            swarming = targets.swarming(
+                shards = 1,
+            ),
+        ),
+        "webgpu_cts_dedicated_worker_tests": targets.legacy_test_config(
+            mixins = [
+                "webgpu_telemetry_cts",
+                "linux_vulkan",
+            ],
+            swarming = targets.swarming(
+                shards = 1,
+            ),
+        ),
+        "webgpu_cts_shared_worker_tests": targets.legacy_test_config(
+            mixins = [
+                "webgpu_telemetry_cts",
+                "linux_vulkan",
+            ],
+            swarming = targets.swarming(
+                shards = 1,
+            ),
+        ),
         "webgpu_cts_with_validation_tests": targets.legacy_test_config(
             mixins = [
                 "webgpu_telemetry_cts",
@@ -2498,6 +2529,8 @@ targets.legacy_basic_suite(
                 shards = 36,
             ),
         ),
+        # We intentionally do not have validation + worker tests since
+        # no validation + worker should provide sufficient coverage.
     },
 )
 
@@ -2513,6 +2546,33 @@ targets.legacy_basic_suite(
                 shards = 8,
             ),
         ),
+        "webgpu_cts_service_worker_tests": targets.legacy_test_config(
+            mixins = [
+                "webgpu_telemetry_cts",
+                "linux_vulkan",
+            ],
+            swarming = targets.swarming(
+                shards = 1,
+            ),
+        ),
+        "webgpu_cts_dedicated_worker_tests": targets.legacy_test_config(
+            mixins = [
+                "webgpu_telemetry_cts",
+                "linux_vulkan",
+            ],
+            swarming = targets.swarming(
+                shards = 1,
+            ),
+        ),
+        "webgpu_cts_shared_worker_tests": targets.legacy_test_config(
+            mixins = [
+                "webgpu_telemetry_cts",
+                "linux_vulkan",
+            ],
+            swarming = targets.swarming(
+                shards = 1,
+            ),
+        ),
         "webgpu_cts_fxc_tests": targets.legacy_test_config(
             mixins = [
                 "webgpu_telemetry_cts",
@@ -2525,12 +2585,16 @@ targets.legacy_basic_suite(
                 shards = 8,
             ),
         ),
+        # We intentionally do not have fxc + worker tests since dxc + worker
+        # should provide sufficient coverage.
     },
 )
 
 targets.legacy_basic_suite(
     name = "gpu_dawn_webgpu_cts_fxc",
     tests = {
+        # We intentionally do not have worker versions of these tests since
+        # non-fxc + worker should provide sufficient coverage.
         "webgpu_cts_fxc_tests": targets.legacy_test_config(
             mixins = [
                 "webgpu_telemetry_cts",

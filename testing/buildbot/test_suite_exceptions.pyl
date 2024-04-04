@@ -5067,6 +5067,26 @@
       },
     },
   },
+  'webgpu_cts_dedicated_worker_tests': {
+    'remove_from': [
+      # We only need coverage on one GPU per OS, so remove from lower capacity
+      # configs.
+      'Dawn Linux x64 DEPS Release (Intel UHD 630)',
+      'Dawn Linux x64 Release (Intel UHD 630)',
+      'Dawn Mac x64 DEPS Release (AMD)',
+      'Dawn Mac x64 DEPS Release (Intel)',
+      'Dawn Mac x64 Experimental Release (AMD)',
+      'Dawn Mac x64 Experimental Release (Intel)',
+      'Dawn Mac x64 Release (AMD)',
+      'Dawn Mac x64 Release (Intel)',
+      'Dawn Win10 x64 ASAN Release (Intel)',
+      'Dawn Win10 x64 DEPS Release (Intel)',
+      'Dawn Win10 x64 Experimental Release (Intel)',
+      'Dawn Win10 x64 Release (Intel)',
+      'Dawn Win10 x86 DEPS Release (Intel)',
+      'Dawn Win10 x86 Release (Intel)',
+    ],
+  },
   'webgpu_cts_fxc_with_validation_tests': {
     'remove_from': [
       # Disable testing with validation on x86 where they frequently OOM.
@@ -5076,6 +5096,46 @@
       'Dawn Win10 x86 Experimental Release (Intel)',
       'Dawn Win10 x86 DEPS Release (NVIDIA)',
       'Dawn Win10 x86 Release (NVIDIA)',
+    ],
+  },
+  'webgpu_cts_service_worker_tests': {
+    'remove_from': [
+      # We only need coverage on one GPU per OS, so remove from lower capacity
+      # configs.
+      'Dawn Linux x64 DEPS Release (Intel UHD 630)',
+      'Dawn Linux x64 Release (Intel UHD 630)',
+      'Dawn Mac x64 DEPS Release (AMD)',
+      'Dawn Mac x64 DEPS Release (Intel)',
+      'Dawn Mac x64 Experimental Release (AMD)',
+      'Dawn Mac x64 Experimental Release (Intel)',
+      'Dawn Mac x64 Release (AMD)',
+      'Dawn Mac x64 Release (Intel)',
+      'Dawn Win10 x64 ASAN Release (Intel)',
+      'Dawn Win10 x64 DEPS Release (Intel)',
+      'Dawn Win10 x64 Experimental Release (Intel)',
+      'Dawn Win10 x64 Release (Intel)',
+      'Dawn Win10 x86 DEPS Release (Intel)',
+      'Dawn Win10 x86 Release (Intel)',
+    ],
+  },
+  'webgpu_cts_shared_worker_tests': {
+    'remove_from': [
+      # We only need coverage on one GPU per OS, so remove from lower capacity
+      # configs.
+      'Dawn Linux x64 DEPS Release (Intel UHD 630)',
+      'Dawn Linux x64 Release (Intel UHD 630)',
+      'Dawn Mac x64 DEPS Release (AMD)',
+      'Dawn Mac x64 DEPS Release (Intel)',
+      'Dawn Mac x64 Experimental Release (AMD)',
+      'Dawn Mac x64 Experimental Release (Intel)',
+      'Dawn Mac x64 Release (AMD)',
+      'Dawn Mac x64 Release (Intel)',
+      'Dawn Win10 x64 ASAN Release (Intel)',
+      'Dawn Win10 x64 DEPS Release (Intel)',
+      'Dawn Win10 x64 Experimental Release (Intel)',
+      'Dawn Win10 x64 Release (Intel)',
+      'Dawn Win10 x86 DEPS Release (Intel)',
+      'Dawn Win10 x86 Release (Intel)',
     ],
   },
   'webgpu_cts_tests': {

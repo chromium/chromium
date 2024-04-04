@@ -295,6 +295,7 @@ def GetMockArgs(webgl_version: str = '1.0.0') -> mock.MagicMock:
   args.expected_vendor_id = 0
   args.expected_device_id = 0
   args.browser_options = []
+  args.use_worker = 'none'
   return args
 
 

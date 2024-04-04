@@ -2690,6 +2690,48 @@
     },
 
     'gpu_dawn_webgpu_cts': {
+      'webgpu_cts_dedicated_worker_tests': {
+        'telemetry_test_name': 'webgpu_cts',
+        'mixins': [
+          'has_native_resultdb_integration',
+          'webgpu_telemetry_cts',
+          'linux_vulkan',
+        ],
+        'args': [
+          '--use-worker=dedicated',
+        ],
+        'swarming': {
+          'shards': 1,
+        },
+      },
+      'webgpu_cts_service_worker_tests': {
+        'telemetry_test_name': 'webgpu_cts',
+        'mixins': [
+          'has_native_resultdb_integration',
+          'webgpu_telemetry_cts',
+          'linux_vulkan',
+        ],
+        'args': [
+          '--use-worker=service',
+        ],
+        'swarming': {
+          'shards': 1,
+        },
+      },
+      'webgpu_cts_shared_worker_tests': {
+        'telemetry_test_name': 'webgpu_cts',
+        'mixins': [
+          'has_native_resultdb_integration',
+          'webgpu_telemetry_cts',
+          'linux_vulkan',
+        ],
+        'args': [
+          '--use-worker=shared',
+        ],
+        'swarming': {
+          'shards': 1,
+        },
+      },
       'webgpu_cts_tests': {
         'telemetry_test_name': 'webgpu_cts',
         'mixins': [
@@ -2724,6 +2766,20 @@
     },
 
     'gpu_dawn_webgpu_cts_asan': {
+      'webgpu_cts_dedicated_worker_tests': {
+        'telemetry_test_name': 'webgpu_cts',
+        'mixins': [
+          'has_native_resultdb_integration',
+          'webgpu_telemetry_cts',
+          'linux_vulkan',
+        ],
+        'args': [
+          '--use-worker=dedicated',
+        ],
+        'swarming': {
+          'shards': 1,
+        },
+      },
       'webgpu_cts_fxc_tests': {
         'telemetry_test_name': 'webgpu_cts',
         'mixins': [
@@ -2736,6 +2792,34 @@
         ],
         'swarming': {
           'shards': 8,
+        },
+      },
+      'webgpu_cts_service_worker_tests': {
+        'telemetry_test_name': 'webgpu_cts',
+        'mixins': [
+          'has_native_resultdb_integration',
+          'webgpu_telemetry_cts',
+          'linux_vulkan',
+        ],
+        'args': [
+          '--use-worker=service',
+        ],
+        'swarming': {
+          'shards': 1,
+        },
+      },
+      'webgpu_cts_shared_worker_tests': {
+        'telemetry_test_name': 'webgpu_cts',
+        'mixins': [
+          'has_native_resultdb_integration',
+          'webgpu_telemetry_cts',
+          'linux_vulkan',
+        ],
+        'args': [
+          '--use-worker=shared',
+        ],
+        'swarming': {
+          'shards': 1,
         },
       },
       'webgpu_cts_tests': {

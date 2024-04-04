@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import collections
+import enum
 import fnmatch
 import json
 import os
@@ -63,6 +64,14 @@ MESSAGE_TYPE_TEST_LOG = 'TEST_LOG'
 MESSAGE_TYPE_TEST_FINISHED = 'TEST_FINISHED'
 
 
+# This can be switched to a StrEnum once Python 3.11+ is used.
+class WorkerType(enum.Enum):
+  NONE = 'none'
+  SERVICE = 'service'
+  DEDICATED = 'dedicated'
+  SHARED = 'shared'
+
+
 @dataclasses.dataclass
 class WebGpuTestResult():
   """Struct-like object for holding a single test result."""
@@ -74,7 +83,6 @@ class WebGpuTestResult():
 class WebGpuTestArgs():
   """Struct-like object for holding arguments for a single test."""
   query: str
-  run_in_worker: bool
   additional_browser_args: Optional[List[str]] = None
 
 class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
@@ -91,6 +99,7 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
   _use_webgpu_power_preference: Optional[str] = None
   _use_fxc = False
   _os_name: Optional[str] = None
+  _worker_type: Optional[WorkerType] = None
 
   _build_dir: Optional[str] = None
 
@@ -106,7 +115,6 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
   def __init__(self, *args, **kwargs):
     super().__init__(*args, **kwargs)
     self._query: Optional[str] = None
-    self._run_in_worker = False
     self._longest_time_between_heartbeats = 0
     self._heartbeat_timeout = 0
     self._test_duration = 0
@@ -161,6 +169,14 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
         default=False,
         help=('On Windows, pass --disable-dawn-features=use_dxc to the '
               'browser.'))
+    parser.add_argument(
+        '--use-worker',
+        choices=['none', 'service', 'dedicated', 'shared'],
+        default='none',
+        help=('Whether to run tests in workers or not. Defaults to running '
+              'all tests outside of workers. If a worker type is specified, '
+              'then a subset of tests will be run in the specified worker '
+              'type.'))
 
   @classmethod
   def StartBrowser(cls) -> None:
@@ -240,6 +256,7 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     cls._use_webgpu_adapter = options.use_webgpu_adapter
     cls._use_webgpu_power_preference = options.use_webgpu_power_preference
     cls._use_fxc = options.use_fxc
+    cls._worker_type = WorkerType(options.use_worker)
 
   @classmethod
   def _ModifyBrowserEnvironment(cls) -> None:
@@ -270,27 +287,33 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
   @classmethod
   def GenerateGpuTests(cls, options: ct.ParsedCmdArgs) -> ct.TestGenerator:
     cls._SetClassVariablesFromOptions(options)
+
     if cls._test_list is None:
       with open(TEST_LIST_FILE) as f:
         cls._test_list = [l for l in f.read().splitlines() if l]
-    if cls._worker_test_globs is None:
-      with open(WORKER_TEST_GLOB_FILE) as f:
-        contents = f.read()
-      cls._worker_test_globs = [l for l in contents.splitlines() if l]
+
+    if cls._worker_type != WorkerType.NONE:
+      if cls._worker_test_globs is None:
+        with open(WORKER_TEST_GLOB_FILE) as f:
+          contents = f.read()
+        cls._worker_test_globs = [l for l in contents.splitlines() if l]
+
+    # Iterate through all valid test names. Generate a test for each one if not
+    # running worker tests, or generate a test for each if we are running worker
+    # tests and the test name matches a worker glob.
     for line in cls._test_list:  # pylint:disable=not-an-iterable
+      if cls._worker_type != WorkerType.NONE:
+        for wg in cls._worker_test_globs:  # pylint:disable=not-an-iterable
+          if fnmatch.fnmatch(line, wg):
+            break
+        else:
+          continue
+      # At this point, we're either not running worker tests or we are running
+      # worker tests and the current test is a worker test.
       additional_browser_args = cls._GetAdditionalBrowserArgsForQuery(line)
       test_args = WebGpuTestArgs(
-          query=line,
-          run_in_worker=False,
-          additional_browser_args=additional_browser_args)
-      yield (TestNameFromInputs(test_args.query, test_args.run_in_worker),
-             HTML_FILENAME, [test_args])
-      for wg in cls._worker_test_globs:  # pylint:disable=not-an-iterable
-        if fnmatch.fnmatch(line, wg):
-          test_args.run_in_worker = True
-          yield (TestNameFromInputs(test_args.query, test_args.run_in_worker),
-                 HTML_FILENAME, [test_args])
-          break
+          query=line, additional_browser_args=additional_browser_args)
+      yield test_args.query, HTML_FILENAME, [test_args]
 
   def _DetermineRetryWorkaround(self, exception: Exception) -> bool:
     # Instances of WebGpuMessageTimeoutError:
@@ -327,7 +350,6 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     cls = self.__class__
     test_args = args[0]
     self._query = test_args.query
-    self._run_in_worker = test_args.run_in_worker
     additional_browser_args = test_args.additional_browser_args
     # Some CTS tests require non-standard browser arguments so we need to
     # verify before running each case.
@@ -343,8 +365,8 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     if self.UseWebGpuCompatMode():
       self._query += '&compatibility=1'
 
-    if self._run_in_worker:
-      self._query += '&worker=1'
+    if self._worker_type != WorkerType.NONE:
+      self._query += f'&worker={self._worker_type.value}'
 
     try:
       first_load = self._NavigateIfNecessary(test_path)
@@ -556,8 +578,7 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     # We access the expectations directly instead of using
     # self.GetExpectationsForTest since we need the raw results, but that method
     # only returns the parsed results and whether the test should be retried.
-    expectation = self._GetSlowTests().expectations_for(
-        TestNameFromInputs(self._query, self._run_in_worker))
+    expectation = self._GetSlowTests().expectations_for(self._query)
     return 'Slow' in expectation.raw_results
 
   @classmethod
@@ -581,6 +602,8 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
         tags.append('webgpu-dxc-disabled')
       else:
         tags.append('webgpu-dxc-enabled')
+
+    tags.append(_GetWorkerTag(cls._worker_type))
 
     # No need to tag _use_webgpu_power_preference here,
     # since Telemetry already reports the GPU vendorID
@@ -696,5 +719,14 @@ def VerifyMessageOrderTestFinished(message_state: Dict[str, bool]) -> None:
         'Received finish message before log message')
 
 
-def TestNameFromInputs(query: str, worker: bool) -> str:
-  return 'worker_%s' % query if worker else query
+def _GetWorkerTag(worker_type: WorkerType) -> str:
+  """Helper function to get worker type tags."""
+  if worker_type == WorkerType.NONE:
+    return 'webgpu-no-worker'
+  if worker_type == WorkerType.SERVICE:
+    return 'webgpu-service-worker'
+  if worker_type == WorkerType.DEDICATED:
+    return 'webgpu-dedicated-worker'
+  if worker_type == WorkerType.SHARED:
+    return 'webgpu-shared-worker'
+  raise RuntimeError(f'Unhandled worker type {worker_type.name}')
