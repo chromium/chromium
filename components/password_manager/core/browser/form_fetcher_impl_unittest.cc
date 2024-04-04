@@ -62,6 +62,8 @@ constexpr const char kTestFederatedRealm[] =
     "federation://example.in/accounts.google.com";
 constexpr const char kTestFederationURL[] = "https://accounts.google.com/";
 
+constexpr const char kTestGroupedURL[] = "https://grouped.match.com/";
+
 class MockConsumer : public FormFetcher::Consumer {
  public:
   MOCK_METHOD0(OnFetchCompleted, void());
@@ -231,6 +233,12 @@ PasswordForm CreateBlocked() {
 PasswordForm CreateBlockedPsl() {
   PasswordForm form = CreateBlocked();
   form.match_type = PasswordForm::MatchType::kPSL;
+  return form;
+}
+
+PasswordForm CreateGrouped() {
+  PasswordForm form = CreateHTMLForm(kTestGroupedURL, "user", "password");
+  form.match_type = PasswordForm::MatchType::kGrouped;
   return form;
 }
 
@@ -427,6 +435,42 @@ TEST_P(FormFetcherImplTest, BlockedDifferentScheme) {
   DeliverPasswordStoreResults(/*profile_store_results=*/std::move(results),
                               /*account_store_results=*/{});
   EXPECT_EQ(FormFetcher::State::NOT_WAITING, form_fetcher_->GetState());
+  EXPECT_FALSE(form_fetcher_->IsBlocklisted());
+}
+
+// Grouped credentials should be filtered out unless `FormFetcher` is configured
+// explicitly to include them.
+TEST_P(FormFetcherImplTest, FiltersGroupedCredentials) {
+  Fetch();
+  form_fetcher_->AddConsumer(&consumer_);
+  PasswordForm non_federated = CreateNonFederated();
+  std::vector<PasswordForm> results = {non_federated, CreateGrouped()};
+  EXPECT_CALL(consumer_, OnFetchCompleted);
+  DeliverPasswordStoreResults(/*profile_store_results=*/std::move(results),
+                              /*account_store_results=*/{});
+  EXPECT_EQ(FormFetcher::State::NOT_WAITING, form_fetcher_->GetState());
+  EXPECT_THAT(form_fetcher_->GetNonFederatedMatches(),
+              UnorderedElementsAre(Pointee(non_federated)));
+  EXPECT_THAT(form_fetcher_->GetFederatedMatches(), IsEmpty());
+  EXPECT_FALSE(form_fetcher_->IsBlocklisted());
+}
+
+// Grouped credentials should be returned if `FormFetcher` is configured to do
+// keep them in the result set.
+TEST_P(FormFetcherImplTest, ReturnsGroupedCredentialsIfConfigured) {
+  form_fetcher_->set_filter_grouped_credentials(false);
+  Fetch();
+  form_fetcher_->AddConsumer(&consumer_);
+  PasswordForm non_federated = CreateNonFederated();
+  PasswordForm grouped = CreateGrouped();
+  std::vector<PasswordForm> results = {non_federated, grouped};
+  EXPECT_CALL(consumer_, OnFetchCompleted);
+  DeliverPasswordStoreResults(/*profile_store_results=*/std::move(results),
+                              /*account_store_results=*/{});
+  EXPECT_EQ(FormFetcher::State::NOT_WAITING, form_fetcher_->GetState());
+  EXPECT_THAT(form_fetcher_->GetNonFederatedMatches(),
+              UnorderedElementsAre(Pointee(non_federated), Pointee(grouped)));
+  EXPECT_THAT(form_fetcher_->GetFederatedMatches(), IsEmpty());
   EXPECT_FALSE(form_fetcher_->IsBlocklisted());
 }
 

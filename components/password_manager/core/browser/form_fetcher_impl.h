@@ -69,6 +69,10 @@ class FormFetcherImpl : public FormFetcher,
   std::optional<PasswordStoreBackendError> GetAccountStoreBackendError()
       const override;
 
+  inline void set_filter_grouped_credentials(bool filter_grouped_credentials) {
+    filter_grouped_credentials_ = filter_grouped_credentials;
+  }
+
  protected:
   // Actually finds best matches and notifies consumers.
   void FindMatchesAndNotifyConsumers(
@@ -142,6 +146,11 @@ class FormFetcherImpl : public FormFetcher,
   // and account password stores respectively.
   bool is_blocklisted_in_profile_store_ = false;
   bool is_blocklisted_in_account_store_ = false;
+
+  // Defines if the grouped (weakly affiliated) credentials should be filtered
+  // out from the password forms returned by any password store queried by this
+  // form fetcher.
+  bool filter_grouped_credentials_ = true;
 
   int wait_counter_ = 0;
   std::vector<std::unique_ptr<PasswordForm>> partial_results_;

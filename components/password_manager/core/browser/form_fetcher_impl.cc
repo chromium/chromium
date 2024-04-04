@@ -347,6 +347,11 @@ void FormFetcherImpl::OnGetPasswordStoreResultsOrErrorFrom(
 
   std::vector<PasswordForm> results =
       GetLoginsOrEmptyListOnFailure(std::move(results_or_error));
+  if (filter_grouped_credentials_) {
+    std::erase_if(results, [](const auto& form) {
+      return form.match_type == PasswordForm::MatchType::kGrouped;
+    });
+  }
 
   DCHECK_EQ(State::WAITING, state_);
   DCHECK_GT(wait_counter_, 0);
