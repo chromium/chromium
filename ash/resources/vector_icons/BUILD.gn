@@ -338,6 +338,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "picker_local_files.icon",
     "picker_open_tab.icon",
     "picker_symbol.icon",
+    "picker_units_maths.icon",
     "pin_request_lock.icon",
     "pinned.icon",
     "placeholder_app.icon",

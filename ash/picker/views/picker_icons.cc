@@ -31,8 +31,7 @@ const gfx::VectorIcon& GetVectorIconForPickerCategory(PickerCategory category) {
       // TODO: b/322926823 - Use correct icons.
       return kCalendarEventIcon;
     case PickerCategory::kUnitsMaths:
-      // TODO: b/322926823 - Use correct icons.
-      return kKsCalculatorIcon;
+      return kPickerUnitsMathsIcon;
   }
 }
 
