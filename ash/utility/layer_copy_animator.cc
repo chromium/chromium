@@ -25,9 +25,9 @@ DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(LayerCopyAnimator,
 // referenced.
 void MaybeLayerCopied(base::WeakPtr<LayerCopyAnimator> swc,
                       std::unique_ptr<ui::Layer> new_layer) {
-  if (!swc.MaybeValid())
-    return;
-  swc->OnLayerCopied(std::move(new_layer));
+  if (swc) {
+    swc->OnLayerCopied(std::move(new_layer));
+  }
 }
 
 }  // namespace

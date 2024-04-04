@@ -1515,6 +1515,13 @@ void Layer::SetScrollOffset(const gfx::PointF& offset) {
 
 void Layer::RequestCopyOfOutput(
     std::unique_ptr<viz::CopyOutputRequest> request) {
+  if (!request->has_result_task_runner()) {
+    CHECK(GetCompositor())
+        << "A copy request must either have a task runner, or be added to the "
+           "layer that has already been added to compositor.";
+    request->set_result_task_runner(GetCompositor()->task_runner());
+  }
+
   cc_layer_->RequestCopyOfOutput(std::move(request));
 }
 
