@@ -449,11 +449,13 @@ class WPTResultsProcessorTest(LoggingTestCase):
                     expected='PASS')
         self._event(action='process_output',
                     command='chromedriver',
-                    data='Log this line')
+                    data='Log this line',
+                    process='101')
         self._event(action='test_end',
                     test='/timeout.html',
                     status='TIMEOUT',
-                    expected='OK')
+                    expected='OK',
+                    extra={'browser_pid': 101})
 
         result = self.processor.sink.report_individual_test_result.call_args.kwargs[
             'result']
@@ -765,13 +767,16 @@ class WPTResultsProcessorTest(LoggingTestCase):
                     self.fs.join('/mock-checkout', 'out', 'Default',
                                  'layout-test-results', filename)))
 
-    def test_extract_logs(self):
+    def test_extract_logs_interleaved(self):
+        self.processor.browser_logs.capacity = 2
         self._event(action='process_output',
-                    command='content_shell --run-web-tests',
-                    data='[ERROR] Log this line')
+                    command='chromedriver --port=101',
+                    data='Running test.html',
+                    process='101')
         self._event(action='process_output',
                     command='git rev-parse HEAD',
-                    data='[ERROR] Do not log this line')
+                    data='Do not log; unrelated executable',
+                    process='99999')
         self._event(action='test_start', test='/test.html')
         self._event(
             action='test_status',
@@ -780,10 +785,28 @@ class WPTResultsProcessorTest(LoggingTestCase):
             # The Greek letter pi, which 'cp1252' cannot represent.
             subtest='subtest with Unicode \u03c0',
             message='assert_eq(a, b)')
+        self._event(action='test_start', test='/timeout.html')
+        self._event(action='process_output',
+                    command='chromedriver --port=101',
+                    data='Running test.html',
+                    process='101')
+        self._event(action='process_output',
+                    command='chromedriver --port=202',
+                    data='Running timeout.html',
+                    process='202')
         self._event(action='test_end',
                     test='/test.html',
                     status='OK',
-                    message='Test ran to completion.')
+                    message='Test ran to completion.',
+                    extra={'browser_pid': 101})
+        self._event(action='test_end',
+                    test='/timeout.html',
+                    status='TIMEOUT',
+                    extra={'browser_pid': 202})
+        self._event(action='process_output',
+                    command='chromedriver --port=101',
+                    data='Do not log; this event occurs after `test_end`',
+                    process='101')
 
         self.assertEqual(
             self.fs.read_text_file(
@@ -800,7 +823,16 @@ class WPTResultsProcessorTest(LoggingTestCase):
                              'layout-test-results', 'external', 'wpt',
                              'test-crash-log.txt')),
             textwrap.dedent("""\
-                [ERROR] Log this line
+                Running test.html
+                Running test.html
+                """))
+        self.assertEqual(
+            self.fs.read_text_file(
+                self.fs.join('/mock-checkout', 'out', 'Default',
+                             'layout-test-results', 'external', 'wpt',
+                             'timeout-crash-log.txt')),
+            textwrap.dedent("""\
+                Running timeout.html
                 """))
 
     def test_unknown_event(self):

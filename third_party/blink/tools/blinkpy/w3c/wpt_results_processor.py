@@ -8,6 +8,7 @@ import collections
 import contextlib
 import functools
 import json
+import io
 import logging
 import math
 import os
@@ -37,6 +38,7 @@ import mozinfo
 
 from blinkpy.common import path_finder
 from blinkpy.common.html_diff import html_diff
+from blinkpy.common.lru import LRUMapping
 from blinkpy.common.memoized import memoized
 from blinkpy.common.system.filesystem import FileSystem
 from blinkpy.common.unified_diff import unified_diff
@@ -359,7 +361,8 @@ class WPTResultsProcessor:
                  test_name_prefix: str = '',
                  failure_threshold: Optional[int] = None,
                  crash_timeout_threshold: Optional[int] = None,
-                 reset_results: bool = False):
+                 reset_results: bool = False,
+                 processes: Optional[int] = None):
         self.fs = fs
         self.port = port
         self.artifacts_dir = artifacts_dir
@@ -378,7 +381,18 @@ class WPTResultsProcessor:
 
         self._iteration: int = 0
         self._results: Dict[str, WPTResult] = {}
-        self._crash_log: List[str] = []
+        # Map browser PIDs to file-like buffers holding browser logs. The
+        # mapping's capacity should be limited to `wpt run --processes`, which
+        # isn't known until later (`default_child_processes()` is a
+        # placeholder).
+        #
+        # Since wptrunner doesn't communicate browser lifecycles, use
+        # `LRUMapping` to avoid accumulating too many logs that will never be
+        # retrieved by a `test_end` event. Dead browser processes stop
+        # producing logs, which will eventually be purged by output produced by
+        # restarted browsers.
+        self.browser_logs: Dict[int, io.StringIO] = LRUMapping(
+            processes or port.default_child_processes())
         self._event_handlers = {
             'suite_start': self.suite_start,
             'test_start': self.test_start,
@@ -570,8 +584,7 @@ class WPTResultsProcessor:
             file_path=self._file_path_for_test(test),
             test_type=self.get_test_type(test),
             exp_line=self._expectations.get_expectations(test),
-            baseline=baseline,
-            pid=event.pid)
+            baseline=baseline)
 
     def get_path_from_test_root(self, test: str) -> str:
         if self.path_finder.is_wpt_internal_path(test):
@@ -630,6 +643,7 @@ class WPTResultsProcessor:
         if not result:
             raise EventProcessingError('Test not started: %s' % test)
         result.took = max(0, event.time - result.started) / 1000
+        result.pid = (extra or {}).get('browser_pid', 0)
         result.update_from_test(status, message)
         artifacts, image_diff_stats = self._extract_artifacts(result, extra)
         result.artifacts = artifacts.artifacts
@@ -742,12 +756,14 @@ class WPTResultsProcessor:
         }
         return final_results
 
-    def process_output(self, event: Event, command: str, data: Any, **_):
+    def process_output(self, event: Event, command: str, data: Any,
+                       process: str, **_):
         if not any(executable in command for executable in self._executables):
             return
         if not isinstance(data, str):
             data = json.dumps(data, sort_keys=True)
-        self._crash_log.append(data + '\n')
+        browser_log = self.browser_logs.setdefault(int(process), io.StringIO())
+        browser_log.write(f'{data}\n')
 
     def _write_text_results(self, result: WPTResult, artifacts: Artifacts):
         """Write actual, expected, and diff text outputs to disk, if possible.
@@ -858,12 +874,9 @@ class WPTResultsProcessor:
         return stats
 
     def _write_log(self, test_name: str, artifacts: Artifacts,
-                   artifact_id: str, suffix: str, lines: List[str]):
+                   artifact_id: str, suffix: str, contents: str):
         log_subpath = self.port.output_filename(test_name, suffix, '.txt')
-        # Each line should already end in a newline.
-        artifacts.CreateArtifact(artifact_id, log_subpath,
-                                 ''.join(lines).encode())
-        lines.clear()
+        artifacts.CreateArtifact(artifact_id, log_subpath, contents.encode())
 
     def _extract_artifacts(self, result: WPTResult, extra) -> (Artifacts, str):
         # Ensure `artifacts_base_dir` (i.e., `layout-test-results`) is prepended
@@ -886,13 +899,19 @@ class WPTResultsProcessor:
                     result.name, artifacts, screenshots)
 
         if result.messages:
+            # Each line should already end in a newline.
             self._write_log(result.name, artifacts, 'stderr',
                             test_failures.FILENAME_SUFFIX_STDERR,
-                            result.messages)
-        if self._crash_log:
+                            ''.join(result.messages))
+
+        # If the browser process isn't restarted, it's possible for that process
+        # to continue producing stdio that will be dumped into the log for the
+        # next test that browser runs.
+        browser_log = self.browser_logs.pop(result.pid, None)
+        if browser_log:
             self._write_log(result.name, artifacts, 'crash_log',
                             test_failures.FILENAME_SUFFIX_CRASH_LOG,
-                            self._crash_log)
+                            browser_log.getvalue())
 
         return artifacts, image_diff_stats
 
