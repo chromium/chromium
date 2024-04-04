@@ -291,13 +291,10 @@ class CORE_EXPORT OutOfFlowLayoutPart {
       bool outer_context_has_fixedpos_container = false,
       HeapVector<MulticolChildInfo>* multicol_children = nullptr);
 
-  void CreateAnchorEvaluator(
-      std::optional<AnchorEvaluatorImpl>& anchor_evaluator_storage,
+  AnchorEvaluatorImpl CreateAnchorEvaluator(
       const ContainingBlockInfo& container_info,
-      WritingDirectionMode self_writing_direction,
-      const ScopedCSSName* default_anchor_specifier,
-      const LayoutBox& candidate_layout_box,
-      const LogicalAnchorQueryMap* anchor_queries);
+      const BlockNode& candidate,
+      const LogicalAnchorQueryMap* anchor_queries) const;
 
   const ContainingBlockInfo ApplyInsetArea(
       const InsetArea& inset_area,
@@ -325,7 +322,6 @@ class CORE_EXPORT OutOfFlowLayoutPart {
       const NodeInfo& node_info,
       const ComputedStyle& style,
       AnchorEvaluatorImpl*,
-      const LogicalAnchorQueryMap* anchor_queries,
       bool try_fit_available_space,
       NonOverflowingScrollRange* out_scroll_range);
 
