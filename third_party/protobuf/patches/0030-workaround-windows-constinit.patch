@@ -1,24 +1,3 @@
-diff --git a/src/google/protobuf/compiler/cpp/cpp_file.cc b/src/google/protobuf/compiler/cpp/cpp_file.cc
-index 24f2ccba46c3f..9526c6752f32c 100644
---- a/src/google/protobuf/compiler/cpp/cpp_file.cc
-+++ b/src/google/protobuf/compiler/cpp/cpp_file.cc
-@@ -499,7 +499,15 @@ void FileGenerator::GenerateSourceDefaultInstance(int idx,
-   // enough. However, the empty destructor fails to be elided in some
-   // configurations (like non-opt or with certain sanitizers). NO_DESTROY is
-   // there just to improve performance and binary size in these builds.
--  format("PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT "
-+  //
-+  // Use PROTOBUF_CONSTINIT_WITH_PTR instead of PROTOBUF_CONSTINIT because, in
-+  // Windows shared library builds, this constructor takes a pointer to a
-+  // dllimport variable, fixed_address_empty_string. This is not constinit on
-+  // Windows. This is a bug in protobuf as the default instance was intended to
-+  // be constant-initialized. But the components build in Chromium is a
-+  // developer configuration, so we tolerate an initializer as long as the build
-+  // works, until protobuf has a proper fix.
-+  format("PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT_WITH_PTR "
-          "PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 $1$ $2$;\n",
-          DefaultInstanceType(generator->descriptor_, options_),
-          DefaultInstanceName(generator->descriptor_, options_));
 diff --git a/src/google/protobuf/port_def.inc b/src/google/protobuf/port_def.inc
 index 8bd06d340f7c3..cae9ebe01ec2c 100644
 --- a/src/google/protobuf/port_def.inc

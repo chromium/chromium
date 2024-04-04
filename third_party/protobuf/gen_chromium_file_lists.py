@@ -61,7 +61,7 @@ def is_protoc_header(path):
     return not path.endswith("/importer.h") and not path.endswith("/parser.h")
 
 
-def prefix_paths(prefix, paths):
+def prefix_paths(paths):
     return [f'src/{p}' for p in paths]
 
 
@@ -89,11 +89,27 @@ def main():
         p for p in vars['nobase_include_HEADERS'] if is_protoc_header(p)
     ]
 
-    protobuf_headers = prefix_paths('src', protobuf_headers)
-    protobuf_lite_sources = prefix_paths('src', protobuf_lite_sources)
-    protobuf_sources = prefix_paths('src', protobuf_sources)
-    protoc_sources = prefix_paths('src', protoc_sources)
-    protoc_headers = prefix_paths('src', protoc_headers)
+    protoc_java_sources = [p for p in protoc_sources if 'compiler/java' in p]
+    protoc_java_headers = [p for p in protoc_headers if 'compiler/java' in p]
+
+    protoc_python_sources = [p for p in protoc_sources if 'compiler/python' in p]
+    protoc_python_headers = [p for p in protoc_headers if 'compiler/python' in p]
+
+    protoc_sources =[p for p in protoc_sources if not p in protoc_java_sources]
+    protoc_headers =[p for p in protoc_headers if not p in protoc_java_headers]
+
+    protoc_sources =[p for p in protoc_sources if not p in protoc_python_sources]
+    protoc_headers =[p for p in protoc_headers if not p in protoc_python_headers]
+
+    protobuf_headers = prefix_paths(protobuf_headers)
+    protobuf_lite_sources = prefix_paths(protobuf_lite_sources)
+    protobuf_sources = prefix_paths(protobuf_sources)
+    protoc_sources = prefix_paths(protoc_sources)
+    protoc_headers = prefix_paths(protoc_headers)
+    protoc_java_sources = prefix_paths(protoc_java_sources)
+    protoc_java_headers = prefix_paths(protoc_java_headers)
+    protoc_python_sources = prefix_paths(protoc_python_sources)
+    protoc_python_headers = prefix_paths(protoc_python_headers)
 
     # Not upstream protobuf, added via Chromium patch.
     protobuf_lite_sources.append("src/google/protobuf/arenastring.cc")
@@ -127,6 +143,10 @@ def main():
         write_gn_variable(f, 'protobuf_sources', protobuf_sources)
         write_gn_variable(f, 'protoc_sources', protoc_sources)
         write_gn_variable(f, 'protoc_headers', protoc_headers)
+        write_gn_variable(f, 'protoc_java_sources', protoc_java_sources)
+        write_gn_variable(f, 'protoc_java_headers', protoc_java_headers)
+        write_gn_variable(f, 'protoc_python_sources', protoc_python_sources)
+        write_gn_variable(f, 'protoc_python_headers', protoc_python_headers)
         write_gn_variable(f, 'pyproto_sources', pyproto_sources)
         write_gn_variable(f, 'pyproto_internal_sources',
                           pyproto_internal_sources)

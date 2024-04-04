@@ -254,6 +254,42 @@ if (current_toolchain == host_toolchain) {
   # protoc compiler is separated into protoc library and executable targets to
   # support protoc plugins that need to link libprotoc, but not the main()
   # itself. See src/google/protobuf/compiler/plugin.h
+  source_set("protoc_java") {
+    sources = protoc_java_sources + protoc_java_headers
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [
+      "//build/config/compiler:no_chromium_code",
+
+      # Must be after no_chromium_code for warning flags to be ordered
+      # correctly.
+      ":protobuf_warnings",
+      ":protoc_warnings",
+    ]
+
+    public_configs = [ ":protobuf_config" ]
+
+    cflags = protobuf_lite_cflags
+
+    public_deps = [ ":protobuf_full" ]
+  }
+  source_set("protoc_python") {
+    sources = protoc_python_sources + protoc_python_headers
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [
+      "//build/config/compiler:no_chromium_code",
+
+      # Must be after no_chromium_code for warning flags to be ordered
+      # correctly.
+      ":protobuf_warnings",
+      ":protoc_warnings",
+    ]
+
+    public_configs = [ ":protobuf_config" ]
+
+    cflags = protobuf_lite_cflags
+
+    public_deps = [ ":protobuf_full" ]
+  }
   static_library("protoc_lib") {
     sources = protoc_sources + protoc_headers
 
@@ -276,6 +312,10 @@ if (current_toolchain == host_toolchain) {
     cflags = protobuf_lite_cflags
 
     public_deps = [ ":protobuf_full" ]
+    deps = [
+      ":protoc_java",
+      ":protoc_python",
+    ]
   }
 
   executable("protoc") {

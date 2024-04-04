@@ -1,0 +1,13 @@
+diff --git a/src/google/protobuf/parse_context.h b/src/google/protobuf/parse_context.h
+index 2c191827d6a3b..15051c3eba82f 100644
+--- a/src/google/protobuf/parse_context.h
++++ b/src/google/protobuf/parse_context.h
+@@ -610,7 +610,7 @@ RotRight7AndReplaceLowByte(uint64_t res, const char& byte) {
+   res |= 0xFF & byte;
+ #endif
+   return res;
+-};
++}
+
+ inline PROTOBUF_ALWAYS_INLINE
+ const char* ReadTagInlined(const char* ptr, uint32_t* out) {

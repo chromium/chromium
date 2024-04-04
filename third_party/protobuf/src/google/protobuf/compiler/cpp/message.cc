@@ -1583,7 +1583,7 @@ void MessageGenerator::GenerateClassDefinition(io::Printer* printer) {
       "friend void swap($classname$& a, $classname$& b) {\n"
       "  a.Swap(&b);\n"
       "}\n"
-      "inline void Swap($classname$* other) {\n"
+      "PROTOBUF_NOINLINE void Swap($classname$* other) {\n"
       "  if (other == this) return;\n"
       "#ifdef PROTOBUF_FORCE_COPY_IN_SWAP\n"
       "  if (GetOwningArena() != nullptr &&\n"

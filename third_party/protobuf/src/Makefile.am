@@ -339,9 +339,9 @@ libprotoc_la_SOURCES =                                         \
   google/protobuf/compiler/cpp/file.cc                         \
   google/protobuf/compiler/cpp/generator.cc                    \
   google/protobuf/compiler/cpp/helpers.cc                      \
-  google/protobuf/compiler/cpp/cpp_map_field.cc                    \
+  google/protobuf/compiler/cpp/map_field.cc                    \
   google/protobuf/compiler/cpp/map_field.h                     \
-  google/protobuf/compiler/cpp/cpp_message.cc                      \
+  google/protobuf/compiler/cpp/message.cc                      \
   google/protobuf/compiler/cpp/message.h                       \
   google/protobuf/compiler/cpp/message_field.cc                \
   google/protobuf/compiler/cpp/message_field.h                 \
@@ -353,7 +353,7 @@ libprotoc_la_SOURCES =                                         \
   google/protobuf/compiler/cpp/parse_function_generator.h      \
   google/protobuf/compiler/cpp/primitive_field.cc              \
   google/protobuf/compiler/cpp/primitive_field.h               \
-  google/protobuf/compiler/cpp/cpp_service.cc                      \
+  google/protobuf/compiler/cpp/service.cc                      \
   google/protobuf/compiler/cpp/service.h                       \
   google/protobuf/compiler/cpp/string_field.cc                 \
   google/protobuf/compiler/cpp/string_field.h                  \
@@ -387,43 +387,43 @@ libprotoc_la_SOURCES =                                         \
   google/protobuf/compiler/csharp/csharp_source_generator_base.h \
   google/protobuf/compiler/csharp/csharp_wrapper_field.cc      \
   google/protobuf/compiler/csharp/csharp_wrapper_field.h       \
-  google/protobuf/compiler/java/java_context.cc                     \
+  google/protobuf/compiler/java/context.cc                     \
   google/protobuf/compiler/java/context.h                      \
   google/protobuf/compiler/java/doc_comment.cc                 \
   google/protobuf/compiler/java/doc_comment.h                  \
-  google/protobuf/compiler/java/java_enum.cc                        \
+  google/protobuf/compiler/java/enum.cc                        \
   google/protobuf/compiler/java/enum.h                         \
-  google/protobuf/compiler/java/java_enum_field.cc                  \
+  google/protobuf/compiler/java/enum_field.cc                  \
   google/protobuf/compiler/java/enum_field.h                   \
   google/protobuf/compiler/java/enum_field_lite.cc             \
   google/protobuf/compiler/java/enum_field_lite.h              \
   google/protobuf/compiler/java/enum_lite.cc                   \
   google/protobuf/compiler/java/enum_lite.h                    \
-  google/protobuf/compiler/java/java_extension.cc                   \
+  google/protobuf/compiler/java/extension.cc                   \
   google/protobuf/compiler/java/extension.h                    \
   google/protobuf/compiler/java/extension_lite.cc              \
   google/protobuf/compiler/java/extension_lite.h               \
-  google/protobuf/compiler/java/java_field.cc                       \
+  google/protobuf/compiler/java/field.cc                       \
   google/protobuf/compiler/java/field.h                        \
-  google/protobuf/compiler/java/java_file.cc                        \
+  google/protobuf/compiler/java/file.cc                        \
   google/protobuf/compiler/java/file.h                         \
-  google/protobuf/compiler/java/java_generator.cc                   \
+  google/protobuf/compiler/java/generator.cc                   \
   google/protobuf/compiler/java/generator_factory.cc           \
   google/protobuf/compiler/java/generator_factory.h            \
-  google/protobuf/compiler/java/java_helpers.cc                     \
+  google/protobuf/compiler/java/helpers.cc                     \
   google/protobuf/compiler/java/helpers.h                      \
   google/protobuf/compiler/java/kotlin_generator.cc            \
-  google/protobuf/compiler/java/java_map_field.cc                   \
+  google/protobuf/compiler/java/map_field.cc                   \
   google/protobuf/compiler/java/map_field.h                    \
   google/protobuf/compiler/java/map_field_lite.cc              \
   google/protobuf/compiler/java/map_field_lite.h               \
-  google/protobuf/compiler/java/java_message.cc                     \
+  google/protobuf/compiler/java/message.cc                     \
   google/protobuf/compiler/java/message.h                      \
   google/protobuf/compiler/java/message_builder.cc             \
   google/protobuf/compiler/java/message_builder.h              \
   google/protobuf/compiler/java/message_builder_lite.cc        \
   google/protobuf/compiler/java/message_builder_lite.h         \
-  google/protobuf/compiler/java/java_message_field.cc               \
+  google/protobuf/compiler/java/message_field.cc               \
   google/protobuf/compiler/java/message_field.h                \
   google/protobuf/compiler/java/message_field_lite.cc          \
   google/protobuf/compiler/java/message_field_lite.h           \
@@ -432,15 +432,15 @@ libprotoc_la_SOURCES =                                         \
   google/protobuf/compiler/java/name_resolver.cc               \
   google/protobuf/compiler/java/name_resolver.h                \
   google/protobuf/compiler/java/options.h                      \
-  google/protobuf/compiler/java/java_primitive_field.cc             \
+  google/protobuf/compiler/java/primitive_field.cc             \
   google/protobuf/compiler/java/primitive_field.h              \
   google/protobuf/compiler/java/primitive_field_lite.cc        \
   google/protobuf/compiler/java/primitive_field_lite.h         \
-  google/protobuf/compiler/java/java_service.cc                     \
+  google/protobuf/compiler/java/service.cc                     \
   google/protobuf/compiler/java/service.h                      \
   google/protobuf/compiler/java/shared_code_generator.cc       \
   google/protobuf/compiler/java/shared_code_generator.h        \
-  google/protobuf/compiler/java/java_string_field.cc                \
+  google/protobuf/compiler/java/string_field.cc                \
   google/protobuf/compiler/java/string_field.h                 \
   google/protobuf/compiler/java/string_field_lite.cc           \
   google/protobuf/compiler/java/string_field_lite.h            \
@@ -470,8 +470,8 @@ libprotoc_la_SOURCES =                                         \
   google/protobuf/compiler/php/php_generator.cc                \
   google/protobuf/compiler/plugin.cc                           \
   google/protobuf/compiler/plugin.pb.cc                        \
-  google/protobuf/compiler/python/python_generator.cc                 \
-  google/protobuf/compiler/python/python_helpers.cc                   \
+  google/protobuf/compiler/python/generator.cc                 \
+  google/protobuf/compiler/python/helpers.cc                   \
   google/protobuf/compiler/python/helpers.h                    \
   google/protobuf/compiler/python/pyi_generator.cc             \
   google/protobuf/compiler/ruby/ruby_generator.cc              \

@@ -1,5 +1,5 @@
---- a/src/google/protobuf/compiler/cpp/cpp_message.cc
-+++ b/src/google/protobuf/compiler/cpp/cpp_message.cc
+--- a/src/google/protobuf/compiler/cpp/message.cc
++++ b/src/google/protobuf/compiler/cpp/message.cc
 @@ -1300,7 +1300,7 @@ void MessageGenerator::GenerateClassDefinition(io::Printer* printer) {
        "friend void swap($classname$& a, $classname$& b) {\n"
        "  a.Swap(&b);\n"
