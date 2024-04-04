@@ -1,6 +1,8 @@
 include_rules = [
+  "+components/autofill/core/browser",
   "+components/optimization_guide/core",
   "+services/metrics/public",
+  "+services/network/public/cpp",
 ]
 
 specific_include_rules = {

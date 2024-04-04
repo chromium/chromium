@@ -11,15 +11,25 @@ static_library("browser") {
     "facilitated_payments_driver.h",
     "facilitated_payments_manager.cc",
     "facilitated_payments_manager.h",
+    "payments/facilitated_payments_initiate_payment_request.cc",
+    "payments/facilitated_payments_initiate_payment_request.h",
+    "payments/facilitated_payments_initiate_payment_request_details.cc",
+    "payments/facilitated_payments_initiate_payment_request_details.h",
+    "payments/facilitated_payments_initiate_payment_response_details.cc",
+    "payments/facilitated_payments_initiate_payment_response_details.h",
+    "payments/facilitated_payments_network_interface.cc",
+    "payments/facilitated_payments_network_interface.h",
   ]
 
   public_deps = [
     "//base",
+    "//components/autofill/core/browser",
     "//components/facilitated_payments/core/features",
     "//components/facilitated_payments/core/mojom",
     "//components/optimization_guide/core",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
+    "//services/network/public/cpp",
     "//url",
   ]
 }
