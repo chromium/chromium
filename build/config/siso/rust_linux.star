@@ -143,7 +143,7 @@ def __step_config(ctx, step_config):
             "indirect_inputs": rust_indirect_inputs,
             "deps": "none",  # disable gcc scandeps
             "remote": remote_run,
-            "canonicalize_dir": True,
+            # "canonicalize_dir": True,  # TODO(b/300352286)
             "timeout": "2m",
             "platform_ref": platform_ref,
         },
@@ -153,8 +153,8 @@ def __step_config(ctx, step_config):
             "inputs": rust_inputs + clang_inputs,
             "indirect_inputs": rust_indirect_inputs,
             "deps": "none",  # disable gcc scandeps
+            # "canonicalize_dir": True,  # TODO(b/300352286)
             "remote": remote_run,
-            "canonicalize_dir": True,
             "timeout": "2m",
             "platform_ref": platform_ref,
         },
@@ -176,7 +176,7 @@ def __step_config(ctx, step_config):
             "indirect_inputs": rust_indirect_inputs,
             "deps": "none",  # disable gcc scandeps
             "remote": remote_run,
-            "canonicalize_dir": True,
+            # "canonicalize_dir": True,  # TODO(b/300352286)
             "timeout": "2m",
             "platform_ref": platform_ref,
         },
