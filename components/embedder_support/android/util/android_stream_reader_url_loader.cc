@@ -61,6 +61,23 @@ void OpenInputStreamOnWorkerThread(
                                 std::move(input_stream)));
 }
 
+network::ResourceRequest CopyResourceRequest(
+    const network::ResourceRequest& request) {
+  // If the features is disabled, copy the full request to preserve previous
+  // behavior.
+  if (!base::FeatureList::IsEnabled(
+          network::features::kAvoidResourceRequestCopies)) {
+    return request;
+  }
+
+  // Copy only the fields we need from the request.
+  network::ResourceRequest new_request;
+  new_request.url = request.url;
+  new_request.mode = request.mode;
+  new_request.headers = request.headers;
+  return new_request;
+}
+
 }  // namespace
 
 // In the case when stream reader related tasks are posted on a dedicated
@@ -125,7 +142,7 @@ AndroidStreamReaderURLLoader::AndroidStreamReaderURLLoader(
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
     std::unique_ptr<ResponseDelegate> response_delegate,
     std::optional<SecurityOptions> security_options)
-    : resource_request_(resource_request),
+    : resource_request_(CopyResourceRequest(resource_request)),
       response_head_(network::mojom::URLResponseHead::New()),
       reject_cors_request_(false),
       client_(std::move(client)),

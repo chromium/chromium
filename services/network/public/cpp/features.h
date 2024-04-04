@@ -193,6 +193,9 @@ extern const base::FeatureParam<bool> kSkipTpcdMitigationsForAdsTrial;
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::FeatureParam<bool> kSkipTpcdMitigationsForAdsTopLevelTrial;
 
+COMPONENT_EXPORT(NETWORK_CPP)
+BASE_DECLARE_FEATURE(kAvoidResourceRequestCopies);
+
 }  // namespace features
 }  // namespace network
 

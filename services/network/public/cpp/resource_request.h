@@ -63,6 +63,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
     // TODO(altimin): Make this move-only to avoid cloning mojo interfaces.
     TrustedParams(const TrustedParams& params);
     TrustedParams& operator=(const TrustedParams& other);
+    TrustedParams(TrustedParams&& other);
+    TrustedParams& operator=(TrustedParams&& other);
 
     bool EqualsForTesting(const TrustedParams& other) const;
 
@@ -119,6 +121,10 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   ResourceRequest();
 #endif
   ResourceRequest(const ResourceRequest& request);
+  ResourceRequest& operator=(const ResourceRequest& other);
+  ResourceRequest(ResourceRequest&& other);
+  ResourceRequest& operator=(ResourceRequest&& other);
+
   ~ResourceRequest();
 
   bool EqualsForTesting(const ResourceRequest& request) const;

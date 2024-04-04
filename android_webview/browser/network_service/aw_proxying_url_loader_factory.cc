@@ -44,6 +44,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_util.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
@@ -79,7 +80,7 @@ class InterceptedRequest : public network::mojom::URLLoader,
       int frame_tree_node_id,
       int32_t request_id,
       uint32_t options,
-      const network::ResourceRequest& request,
+      network::ResourceRequest request,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
@@ -288,7 +289,7 @@ InterceptedRequest::InterceptedRequest(
     int frame_tree_node_id,
     int32_t request_id,
     uint32_t options,
-    const network::ResourceRequest& request,
+    network::ResourceRequest request,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
     mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
@@ -304,7 +305,7 @@ InterceptedRequest::InterceptedRequest(
       requested_with_header_mode(
           AwSettings::GetDefaultRequestedWithHeaderMode()),
       security_options_(security_options),
-      request_(request),
+      request_(std::move(request)),
       traffic_annotation_(traffic_annotation),
       proxied_loader_receiver_(this, std::move(loader_receiver)),
       target_client_(std::move(client)),
@@ -979,11 +980,23 @@ void AwProxyingURLLoaderFactory::CreateLoaderAndStart(
 
   // manages its own lifecycle
   // TODO(timvolodine): consider keeping track of requests.
-  InterceptedRequest* req = new InterceptedRequest(
-      frame_tree_node_id_, request_id, options, request, traffic_annotation,
-      std::move(loader), std::move(client), std::move(target_factory_clone),
-      intercept_only_, security_options_, xrw_allowlist_matcher_,
-      browser_context_handle_);
+  InterceptedRequest* req;
+  if (base::FeatureList::IsEnabled(
+          network::features::kAvoidResourceRequestCopies)) {
+    // TODO(crbug.com/332697604): Pass by non-const ref once mojo supports it.
+    req = new InterceptedRequest(
+        frame_tree_node_id_, request_id, options,
+        std::move(const_cast<network::ResourceRequest&>(request)),
+        traffic_annotation, std::move(loader), std::move(client),
+        std::move(target_factory_clone), intercept_only_, security_options_,
+        xrw_allowlist_matcher_, browser_context_handle_);
+  } else {
+    req = new InterceptedRequest(
+        frame_tree_node_id_, request_id, options, request, traffic_annotation,
+        std::move(loader), std::move(client), std::move(target_factory_clone),
+        intercept_only_, security_options_, xrw_allowlist_matcher_,
+        browser_context_handle_);
+  }
   req->Restart();
 }
 

@@ -475,4 +475,9 @@ const base::FeatureParam<bool> kSkipTpcdMitigationsForAdsTopLevelTrial{
     /*name=*/"SkipTpcdMitigationsForAdsTopLevelTrial",
     /*default_value=*/false};
 
+// Avoids copying ResourceRequest when possible.
+BASE_FEATURE(kAvoidResourceRequestCopies,
+             "AvoidResourceRequestCopies",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace network::features

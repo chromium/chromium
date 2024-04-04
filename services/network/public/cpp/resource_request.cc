@@ -148,6 +148,7 @@ ResourceRequest::TrustedParams::TrustedParams(const TrustedParams& other) {
 
 ResourceRequest::TrustedParams& ResourceRequest::TrustedParams::operator=(
     const TrustedParams& other) {
+  TRACE_EVENT("loading", "ResourceRequest::TrustedParams.copy");
   isolation_info = other.isolation_info;
   disable_secure_dns = other.disable_secure_dns;
   has_user_activation = other.has_user_activation;
@@ -173,6 +174,10 @@ ResourceRequest::TrustedParams& ResourceRequest::TrustedParams::operator=(
           other.shared_dictionary_observer));
   return *this;
 }
+
+ResourceRequest::TrustedParams::TrustedParams(TrustedParams&& other) = default;
+ResourceRequest::TrustedParams& ResourceRequest::TrustedParams::operator=(
+    TrustedParams&& other) = default;
 
 bool ResourceRequest::TrustedParams::EqualsForTesting(
     const TrustedParams& other) const {
@@ -246,6 +251,10 @@ ResourceRequest::ResourceRequest(const ResourceRequest& request) {
   TRACE_EVENT("loading", "ResourceRequest::ResourceRequest.copy_constructor");
   *this = request;
 }
+ResourceRequest& ResourceRequest::operator=(const ResourceRequest& other) =
+    default;
+ResourceRequest::ResourceRequest(ResourceRequest&& other) = default;
+ResourceRequest& ResourceRequest::operator=(ResourceRequest&& other) = default;
 ResourceRequest::~ResourceRequest() = default;
 
 bool ResourceRequest::EqualsForTesting(const ResourceRequest& request) const {

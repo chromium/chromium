@@ -955,6 +955,9 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.CURSOR_ANCHOR_INFO_MOJO_PIPE,
                 "If enabled, CursorAnchorInfo is sent from Blink to the browser using a single"
                         + " IPC."),
+        Flag.baseFeature(
+                NetworkServiceFeatures.AVOID_RESOURCE_REQUEST_COPIES,
+                "Avoids copying ResourceRequest when possible."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
