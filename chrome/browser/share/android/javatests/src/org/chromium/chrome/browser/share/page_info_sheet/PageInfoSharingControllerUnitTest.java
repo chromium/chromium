@@ -188,21 +188,20 @@ public class PageInfoSharingControllerUnitTest {
         when(mPageInfoSharingBridgeJni.doesProfileSupportPageInfo(mProfile)).thenReturn(true);
         when(mPageInfoSharingBridgeJni.doesTabSupportPageInfo(Mockito.any())).thenReturn(true);
 
-        mActivityScenarioRule
-                .getScenario()
-                .onActivity(
-                        activity -> {
+        var activityScenario = mActivityScenarioRule.getScenario();
+        activityScenario.onActivity(
+                activity -> {
+                    PageInfoSharingControllerImpl.getInstance()
+                            .sharePageInfo(
+                                    activity,
+                                    mBottomSheetController,
+                                    mChromeOptionShareCallback,
+                                    firstTab);
+                    assertFalse(
+                            "Page sharing process should only happen for one tab at a time",
                             PageInfoSharingControllerImpl.getInstance()
-                                    .sharePageInfo(
-                                            activity,
-                                            mBottomSheetController,
-                                            mChromeOptionShareCallback,
-                                            firstTab);
-                            assertFalse(
-                                    "Page sharing process should only happen for one tab at a time",
-                                    PageInfoSharingControllerImpl.getInstance()
-                                            .isAvailableForTab(secondTab));
-                        });
+                                    .isAvailableForTab(secondTab));
+                });
     }
 
     @Test
@@ -212,18 +211,17 @@ public class PageInfoSharingControllerUnitTest {
         when(mPageInfoSharingBridgeJni.doesProfileSupportPageInfo(mProfile)).thenReturn(true);
         when(mPageInfoSharingBridgeJni.doesTabSupportPageInfo(tab)).thenReturn(true);
 
-        mActivityScenarioRule
-                .getScenario()
-                .onActivity(
-                        activity -> {
-                            PageInfoSharingControllerImpl.getInstance()
-                                    .sharePageInfo(
-                                            activity,
-                                            mBottomSheetController,
-                                            mChromeOptionShareCallback,
-                                            tab);
-                            verify(mBottomSheetController).requestShowContent(any(), anyBoolean());
-                        });
+        var activityScenario = mActivityScenarioRule.getScenario();
+        activityScenario.onActivity(
+                activity -> {
+                    PageInfoSharingControllerImpl.getInstance()
+                            .sharePageInfo(
+                                    activity,
+                                    mBottomSheetController,
+                                    mChromeOptionShareCallback,
+                                    tab);
+                    verify(mBottomSheetController).requestShowContent(any(), anyBoolean());
+                });
     }
 
     @Test
@@ -234,34 +232,31 @@ public class PageInfoSharingControllerUnitTest {
         when(mPageInfoSharingBridgeJni.doesTabSupportPageInfo(tab)).thenReturn(true);
         RenderFrameHost mainFrame = tab.getWebContents().getMainFrame();
 
-        mActivityScenarioRule
-                .getScenario()
-                .onActivity(
-                        activity -> {
-                            ArgumentCaptor<Callback<Optional<String>>>
-                                    innerTextExtractionCallbackCaptor =
-                                            ArgumentCaptor.forClass(Callback.class);
+        var activityScenario = mActivityScenarioRule.getScenario();
+        activityScenario.onActivity(
+                activity -> {
+                    ArgumentCaptor<Callback<Optional<String>>> innerTextExtractionCallbackCaptor =
+                            ArgumentCaptor.forClass(Callback.class);
 
-                            PageInfoSharingControllerImpl.getInstance()
-                                    .sharePageInfo(
-                                            activity,
-                                            mBottomSheetController,
-                                            mChromeOptionShareCallback,
-                                            tab);
+                    PageInfoSharingControllerImpl.getInstance()
+                            .sharePageInfo(
+                                    activity,
+                                    mBottomSheetController,
+                                    mChromeOptionShareCallback,
+                                    tab);
 
-                            // Verify page text extraction was requested.
-                            verify(mInnerTextJniMock)
-                                    .getInnerText(
-                                            eq(mainFrame),
-                                            innerTextExtractionCallbackCaptor.capture());
+                    // Verify page text extraction was requested.
+                    verify(mInnerTextJniMock)
+                            .getInnerText(
+                                    eq(mainFrame), innerTextExtractionCallbackCaptor.capture());
 
-                            innerTextExtractionCallbackCaptor
-                                    .getValue()
-                                    .onResult(Optional.of("Inner text of web page"));
+                    innerTextExtractionCallbackCaptor
+                            .getValue()
+                            .onResult(Optional.of("Inner text of web page"));
 
-                            verify(mModelExecutionSession)
-                                    .executeModel(eq("Inner text of web page"), any());
-                        });
+                    verify(mModelExecutionSession)
+                            .executeModel(eq("Inner text of web page"), any());
+                });
     }
 
     @Test
@@ -282,66 +277,59 @@ public class PageInfoSharingControllerUnitTest {
                 .when(mInnerTextJniMock)
                 .getInnerText(eq(mainFrame), any());
 
-        mActivityScenarioRule
-                .getScenario()
-                .onActivity(
-                        activity -> {
-                            ArgumentCaptor<Callback<ExecutionResult>> modelExecutionCallbackCaptor =
-                                    ArgumentCaptor.forClass(Callback.class);
-                            ArgumentCaptor<BottomSheetContent> bottomSheetContentCaptor =
-                                    ArgumentCaptor.forClass(BottomSheetContent.class);
+        var activityScenario = mActivityScenarioRule.getScenario();
+        activityScenario.onActivity(
+                activity -> {
+                    ArgumentCaptor<Callback<ExecutionResult>> modelExecutionCallbackCaptor =
+                            ArgumentCaptor.forClass(Callback.class);
+                    ArgumentCaptor<BottomSheetContent> bottomSheetContentCaptor =
+                            ArgumentCaptor.forClass(BottomSheetContent.class);
 
-                            PageInfoSharingControllerImpl.getInstance()
-                                    .sharePageInfo(
-                                            activity,
-                                            mBottomSheetController,
-                                            mChromeOptionShareCallback,
-                                            tab);
+                    PageInfoSharingControllerImpl.getInstance()
+                            .sharePageInfo(
+                                    activity,
+                                    mBottomSheetController,
+                                    mChromeOptionShareCallback,
+                                    tab);
 
-                            verify(mBottomSheetController)
-                                    .requestShowContent(
-                                            bottomSheetContentCaptor.capture(), anyBoolean());
-                            verify(mModelExecutionSession)
-                                    .executeModel(
-                                            eq("Inner text of web page"),
-                                            modelExecutionCallbackCaptor.capture());
+                    verify(mBottomSheetController)
+                            .requestShowContent(bottomSheetContentCaptor.capture(), anyBoolean());
+                    verify(mModelExecutionSession)
+                            .executeModel(
+                                    eq("Inner text of web page"),
+                                    modelExecutionCallbackCaptor.capture());
 
-                            Callback<ExecutionResult> executionResultCallback =
-                                    modelExecutionCallbackCaptor.getValue();
-                            BottomSheetContent bottomSheetContent =
-                                    bottomSheetContentCaptor.getValue();
+                    Callback<ExecutionResult> executionResultCallback =
+                            modelExecutionCallbackCaptor.getValue();
+                    BottomSheetContent bottomSheetContent = bottomSheetContentCaptor.getValue();
 
-                            // Call model execution callback with multiple streaming results.
-                            executionResultCallback.onResult(
-                                    new ExecutionResult("Web", /* isCompleteResult= */ false));
-                            executionResultCallback.onResult(
-                                    new ExecutionResult(" ", /* isCompleteResult= */ false));
-                            executionResultCallback.onResult(
-                                    new ExecutionResult("page", /* isCompleteResult= */ false));
-                            executionResultCallback.onResult(
-                                    new ExecutionResult(" ", /* isCompleteResult= */ false));
-                            executionResultCallback.onResult(
-                                    new ExecutionResult("sum", /* isCompleteResult= */ false));
-                            executionResultCallback.onResult(
-                                    new ExecutionResult("mary", /* isCompleteResult= */ false));
+                    // Call model execution callback with multiple streaming results.
+                    executionResultCallback.onResult(
+                            new ExecutionResult("Web", /* isCompleteResult= */ false));
+                    executionResultCallback.onResult(
+                            new ExecutionResult(" ", /* isCompleteResult= */ false));
+                    executionResultCallback.onResult(
+                            new ExecutionResult("page", /* isCompleteResult= */ false));
+                    executionResultCallback.onResult(
+                            new ExecutionResult(" ", /* isCompleteResult= */ false));
+                    executionResultCallback.onResult(
+                            new ExecutionResult("sum", /* isCompleteResult= */ false));
+                    executionResultCallback.onResult(
+                            new ExecutionResult("mary", /* isCompleteResult= */ false));
 
-                            View summaryTextView =
-                                    bottomSheetContent
-                                            .getContentView()
-                                            .findViewById(R.id.summary_text);
-                            View acceptButton =
-                                    bottomSheetContent
-                                            .getContentView()
-                                            .findViewById(R.id.accept_button);
+                    View summaryTextView =
+                            bottomSheetContent.getContentView().findViewById(R.id.summary_text);
+                    View acceptButton =
+                            bottomSheetContent.getContentView().findViewById(R.id.accept_button);
 
-                            ShadowLooper.runUiThreadTasks();
+                    ShadowLooper.runUiThreadTasks();
 
-                            // Streaming results should be concatenated and shown on the bottom
-                            // sheet.
-                            ViewMatchers.assertThat(summaryTextView, withText("Web page summary"));
-                            // Accept button should be hidden during streaming.
-                            ViewMatchers.assertThat(acceptButton, not(ViewMatchers.isDisplayed()));
-                        });
+                    // Streaming results should be concatenated and shown on the bottom
+                    // sheet.
+                    ViewMatchers.assertThat(summaryTextView, withText("Web page summary"));
+                    // Accept button should be hidden during streaming.
+                    ViewMatchers.assertThat(acceptButton, not(ViewMatchers.isDisplayed()));
+                });
     }
 
     @Test
@@ -362,84 +350,75 @@ public class PageInfoSharingControllerUnitTest {
                 .when(mInnerTextJniMock)
                 .getInnerText(eq(mainFrame), any());
 
-        mActivityScenarioRule
-                .getScenario()
-                .onActivity(
-                        activity -> {
-                            ArgumentCaptor<Callback<ExecutionResult>> modelExecutionCallbackCaptor =
-                                    ArgumentCaptor.forClass(Callback.class);
-                            ArgumentCaptor<BottomSheetContent> bottomSheetContentCaptor =
-                                    ArgumentCaptor.forClass(BottomSheetContent.class);
+        var activityScenario = mActivityScenarioRule.getScenario();
+        activityScenario.onActivity(
+                activity -> {
+                    ArgumentCaptor<Callback<ExecutionResult>> modelExecutionCallbackCaptor =
+                            ArgumentCaptor.forClass(Callback.class);
+                    ArgumentCaptor<BottomSheetContent> bottomSheetContentCaptor =
+                            ArgumentCaptor.forClass(BottomSheetContent.class);
 
-                            PageInfoSharingControllerImpl.getInstance()
-                                    .sharePageInfo(
-                                            activity,
-                                            mBottomSheetController,
-                                            mChromeOptionShareCallback,
-                                            tab);
+                    PageInfoSharingControllerImpl.getInstance()
+                            .sharePageInfo(
+                                    activity,
+                                    mBottomSheetController,
+                                    mChromeOptionShareCallback,
+                                    tab);
 
-                            verify(mBottomSheetController)
-                                    .requestShowContent(
-                                            bottomSheetContentCaptor.capture(), anyBoolean());
-                            verify(mModelExecutionSession)
-                                    .executeModel(
-                                            eq("Inner text of web page"),
-                                            modelExecutionCallbackCaptor.capture());
+                    verify(mBottomSheetController)
+                            .requestShowContent(bottomSheetContentCaptor.capture(), anyBoolean());
+                    verify(mModelExecutionSession)
+                            .executeModel(
+                                    eq("Inner text of web page"),
+                                    modelExecutionCallbackCaptor.capture());
 
-                            Callback<ExecutionResult> executionResultCallback =
-                                    modelExecutionCallbackCaptor.getValue();
-                            BottomSheetContent bottomSheetContent =
-                                    bottomSheetContentCaptor.getValue();
-                            ArgumentCaptor<ShareParams> shareParamsCaptor =
-                                    ArgumentCaptor.forClass(ShareParams.class);
-                            ArgumentCaptor<ChromeShareExtras> chromeShareExtrasCaptor =
-                                    ArgumentCaptor.forClass(ChromeShareExtras.class);
+                    Callback<ExecutionResult> executionResultCallback =
+                            modelExecutionCallbackCaptor.getValue();
+                    BottomSheetContent bottomSheetContent = bottomSheetContentCaptor.getValue();
+                    ArgumentCaptor<ShareParams> shareParamsCaptor =
+                            ArgumentCaptor.forClass(ShareParams.class);
+                    ArgumentCaptor<ChromeShareExtras> chromeShareExtrasCaptor =
+                            ArgumentCaptor.forClass(ChromeShareExtras.class);
 
-                            // Call model execution callback with multiple streaming results and a
-                            // final result.
-                            executionResultCallback.onResult(
-                                    new ExecutionResult("Page", /* isCompleteResult= */ false));
-                            executionResultCallback.onResult(
-                                    new ExecutionResult(" ", /* isCompleteResult= */ false));
-                            executionResultCallback.onResult(
-                                    new ExecutionResult("summary", /* isCompleteResult= */ false));
-                            executionResultCallback.onResult(
-                                    new ExecutionResult(
-                                            "Page summary", /* isCompleteResult= */ true));
+                    // Call model execution callback with multiple streaming results and a
+                    // final result.
+                    executionResultCallback.onResult(
+                            new ExecutionResult("Page", /* isCompleteResult= */ false));
+                    executionResultCallback.onResult(
+                            new ExecutionResult(" ", /* isCompleteResult= */ false));
+                    executionResultCallback.onResult(
+                            new ExecutionResult("summary", /* isCompleteResult= */ false));
+                    executionResultCallback.onResult(
+                            new ExecutionResult("Page summary", /* isCompleteResult= */ true));
 
-                            View summaryTextView =
-                                    bottomSheetContent
-                                            .getContentView()
-                                            .findViewById(R.id.summary_text);
-                            View acceptButton =
-                                    bottomSheetContent
-                                            .getContentView()
-                                            .findViewById(R.id.accept_button);
+                    View summaryTextView =
+                            bottomSheetContent.getContentView().findViewById(R.id.summary_text);
+                    View acceptButton =
+                            bottomSheetContent.getContentView().findViewById(R.id.accept_button);
 
-                            ShadowLooper.runUiThreadTasks();
+                    ShadowLooper.runUiThreadTasks();
 
-                            // Final result should be visible on sheet.
-                            ViewMatchers.assertThat(summaryTextView, withText("Page summary"));
-                            // Accept button should enabled after receiving final result.
-                            ViewMatchers.assertThat(acceptButton, isEnabled());
+                    // Final result should be visible on sheet.
+                    ViewMatchers.assertThat(summaryTextView, withText("Page summary"));
+                    // Accept button should enabled after receiving final result.
+                    ViewMatchers.assertThat(acceptButton, isEnabled());
 
-                            // Click accept button.
-                            acceptButton.performClick();
+                    // Click accept button.
+                    acceptButton.performClick();
 
-                            // Verify share sheet was opened.
-                            verify(mChromeOptionShareCallback)
-                                    .showShareSheet(
-                                            shareParamsCaptor.capture(),
-                                            chromeShareExtrasCaptor.capture(),
-                                            anyLong());
+                    // Verify share sheet was opened.
+                    verify(mChromeOptionShareCallback)
+                            .showShareSheet(
+                                    shareParamsCaptor.capture(),
+                                    chromeShareExtrasCaptor.capture(),
+                                    anyLong());
 
-                            // Ensure shared params contains URL and summary.
-                            assertEquals(
-                                    tab.getUrl().getSpec(), shareParamsCaptor.getValue().getUrl());
-                            assertEquals("Page summary", shareParamsCaptor.getValue().getText());
-                            assertEquals(
-                                    DetailedContentType.PAGE_INFO,
-                                    chromeShareExtrasCaptor.getValue().getDetailedContentType());
-                        });
+                    // Ensure shared params contains URL and summary.
+                    assertEquals(tab.getUrl().getSpec(), shareParamsCaptor.getValue().getUrl());
+                    assertEquals("Page summary", shareParamsCaptor.getValue().getText());
+                    assertEquals(
+                            DetailedContentType.PAGE_INFO,
+                            chromeShareExtrasCaptor.getValue().getDetailedContentType());
+                });
     }
 }
