@@ -65,7 +65,7 @@ SchedulerDfs::Sequence::Task::Task(base::OnceClosure closure,
 
 SchedulerDfs::Sequence::Task::Task(Task&& other) = default;
 SchedulerDfs::Sequence::Task::~Task() {
-  DCHECK(report_callback.is_null());
+  CHECK(report_callback.is_null());
 }
 
 SchedulerDfs::Sequence::Task& SchedulerDfs::Sequence::Task::operator=(
@@ -314,15 +314,14 @@ SequenceId SchedulerDfs::CreateSequenceForTesting(SchedulingPriority priority) {
 }
 
 void SchedulerDfs::DestroySequence(SequenceId sequence_id) {
-  base::circular_deque<Sequence::Task> tasks_to_be_destroyed;
-  {
     base::AutoLock auto_lock(lock_);
 
-    Sequence* sequence = GetSequence(sequence_id);
-    DCHECK(sequence);
-    tasks_to_be_destroyed = std::move(sequence->tasks_);
+    // We want to destroy the sequence after removing it from the sequence map
+    // so that looping over the sequence map does not access a destroyed sequence.
+    std::unique_ptr<Sequence> sequence =
+        std::move(sequence_map_.at(sequence_id));
+    CHECK(sequence);
     sequence_map_.erase(sequence_id);
-  }
 }
 
 SchedulerDfs::Sequence* SchedulerDfs::GetSequence(SequenceId sequence_id) {
@@ -513,6 +512,7 @@ bool SchedulerDfs::HasAnyUnblockedTasksOnRunner(
   // Loop over all sequences and check if any of them are unblocked and belong
   // to |task_runner|.
   for (const auto& [_, sequence] : sequence_map_) {
+    CHECK(sequence);
     if (sequence->task_runner() == task_runner && sequence->enabled() &&
         sequence->IsNextTaskUnblocked()) {
       return true;
