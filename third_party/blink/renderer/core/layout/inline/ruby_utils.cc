@@ -796,4 +796,115 @@ void UpdateRubyColumnInlinePositions(
   }
 }
 
+// ================================================================
+
+RubyBlockPositionCalculator::RubyBlockPositionCalculator() = default;
+
+RubyBlockPositionCalculator& RubyBlockPositionCalculator::GroupLines(
+    const HeapVector<Member<LogicalRubyColumn>>& column_list) {
+  HandleRubyLine(EnsureRubyLine(RubyLevel()), column_list);
+  return *this;
+}
+
+void RubyBlockPositionCalculator::HandleRubyLine(
+    const RubyLine& current_ruby_line,
+    const HeapVector<Member<LogicalRubyColumn>>& column_list) {
+  if (column_list.empty()) {
+    return;
+  }
+
+  auto create_level_and_update_depth =
+      [](const RubyLevel& current, const AnnotationDepth& current_depth) {
+        AnnotationDepth depth = current_depth;
+        RubyLevel new_level;
+        new_level.reserve(current.size() + 1);
+        new_level.AppendVector(current);
+        if (depth.column->ruby_position == RubyPosition::kAfter) {
+          new_level.push_back(--depth.under_depth);
+        } else {
+          new_level.push_back(++depth.over_depth);
+        }
+        return std::make_pair(new_level, depth);
+      };
+
+  HeapVector<AnnotationDepth, 1> depth_stack;
+  const RubyLevel& current_level = current_ruby_line.Level();
+  for (wtf_size_t i = 0; i < column_list.size(); ++i) {
+    // Push depth values with zeros.  Actual depths are fixed on closing this
+    // ruby column.
+    depth_stack.push_back(AnnotationDepth{column_list[i].Get(), 0, 0});
+
+    // Close this ruby column and parent ruby columns which are not parents of
+    // the next column.
+    auto should_close_column = [=]() {
+      const LogicalRubyColumn* column = depth_stack.back().column;
+      return i + 1 >= column_list.size() ||
+             column->EndIndex() <= column_list[i + 1]->start_index;
+    };
+    while (!depth_stack.empty() && should_close_column()) {
+      const auto [annotation_level, closing_depth] =
+          create_level_and_update_depth(current_level, depth_stack.back());
+      RubyLine& annotation_line = EnsureRubyLine(annotation_level);
+      annotation_line.Append(*closing_depth.column);
+      HandleRubyLine(annotation_line, closing_depth.column->ruby_column_list);
+      annotation_line.MaybeRecordBaseIndexes(*closing_depth.column);
+
+      depth_stack.pop_back();
+      if (!depth_stack.empty()) {
+        AnnotationDepth& parent_depth = depth_stack.back();
+        parent_depth.over_depth =
+            std::max(parent_depth.over_depth, closing_depth.over_depth);
+        parent_depth.under_depth =
+            std::min(parent_depth.under_depth, closing_depth.under_depth);
+      }
+    }
+  }
+  CHECK(depth_stack.empty());
+}
+
+RubyBlockPositionCalculator::RubyLine&
+RubyBlockPositionCalculator::EnsureRubyLine(const RubyLevel& level) {
+  // We do linear search because ruby_lines_ typically has only two items.
+  auto* it =
+      base::ranges::find_if(ruby_lines_, [&](const Member<RubyLine>& line) {
+        return base::ranges::equal(line->Level(), level);
+      });
+  if (it != ruby_lines_.end()) {
+    return **it;
+  }
+  ruby_lines_.push_back(MakeGarbageCollected<RubyLine>(level));
+  return *ruby_lines_.back();
+}
+
+// ================================================================
+
+RubyBlockPositionCalculator::RubyLine::RubyLine(const RubyLevel& level)
+    : level_(level) {}
+
+void RubyBlockPositionCalculator::RubyLine::Trace(Visitor* visitor) const {
+  visitor->Trace(column_list_);
+}
+
+void RubyBlockPositionCalculator::RubyLine::Append(
+    LogicalRubyColumn& logical_column) {
+  column_list_.push_back(logical_column);
+}
+
+void RubyBlockPositionCalculator::RubyLine::MaybeRecordBaseIndexes(
+    const LogicalRubyColumn& logical_column) {
+  if (level_.size() == 1 && (level_[0] == 1 || level_[0] == -1)) {
+    for (wtf_size_t item_index = logical_column.start_index;
+         item_index < logical_column.EndIndex(); ++item_index) {
+      base_index_list_.push_back(item_index);
+    }
+  }
+}
+
+// ================================================================
+
+void RubyBlockPositionCalculator::AnnotationDepth::Trace(
+    Visitor* visitor) const {
+  visitor->Trace(column);
+}
+
 }  // namespace blink

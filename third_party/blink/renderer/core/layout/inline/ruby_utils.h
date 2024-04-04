@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_RUBY_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_RUBY_UTILS_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
@@ -103,6 +104,87 @@ void UpdateRubyColumnInlinePositions(
     LayoutUnit inline_size,
     HeapVector<Member<LogicalRubyColumn>>& column_list);
 
+// This class calculates block positions of annotation lines on the base line.
+class CORE_EXPORT RubyBlockPositionCalculator {
+  STACK_ALLOCATED();
+
+ public:
+  // RubyLevel represents a ruby base/annotation level.  e.g.
+  //  The base -> []
+  //  The first annotation over the base -> [1]
+  //  The second annotation under the base -> [-2]
+  //  The first annotation under the first annotation over the base -> [1, -1]
+  //   <ruby>[]<rt><ruby ruby-position:under>[1]<rt>[1, -1]</ruby></ruby>
+  //   <ruby ruby-position:under><ruby
+  //   ruby-position:under>[]<rt>[-1]</ruby><rt>[-2]</ruby>
+  using RubyLevel = Vector<int32_t>;
+
+  // A RubyLine instance represents a list of ruby annotations in a single
+  // annotation level.
+  class RubyLine : public GarbageCollected<RubyLine> {
+   public:
+    explicit RubyLine(const RubyLevel& level);
+    void Trace(Visitor* visitor) const;
+
+    const RubyLevel& Level() const { return level_; }
+    bool IsBaseLevel() const { return level_.empty(); }
+    const Vector<wtf_size_t> BaseIndexList() const { return base_index_list_; }
+
+    void Append(LogicalRubyColumn& logical_column);
+    void MaybeRecordBaseIndexes(const LogicalRubyColumn& logical_column);
+
+    const HeapVector<Member<LogicalRubyColumn>>& ColumnListForTesting() const {
+      return column_list_;
+    }
+
+   private:
+    RubyLevel level_;
+
+    HeapVector<Member<LogicalRubyColumn>> column_list_;
+
+    // Store base item indexes.  This is available only for the first level
+    // annotations of the base level because other levels don't touch the base
+    // level.
+    Vector<wtf_size_t> base_index_list_;
+  };
+
+  // Represents the maximum number of over/under annotations attached to the
+  // current level. Only HandleRubyLine() uses this class.
+  struct AnnotationDepth {
+    DISALLOW_NEW();
+
+    Member<LogicalRubyColumn> column;
+    wtf_size_t over_depth = 0;
+    wtf_size_t under_depth = 0;
+
+    void Trace(Visitor* visitor) const;
+  };
+
+  RubyBlockPositionCalculator();
+
+  // Group all LogicalRubyColumn instances linked from `column_list` with the
+  // same level. The result is stored in `this`.
+  RubyBlockPositionCalculator& GroupLines(
+      const HeapVector<Member<LogicalRubyColumn>>& column_list);
+
+  // TODO(crbug.com/324111880): Add methods to compute block offsets
+  // of RubyLines.
+
+  const HeapVector<Member<RubyLine>, 2>& RubyLineListForTesting() const {
+    return ruby_lines_;
+  }
+
+ private:
+  void HandleRubyLine(const RubyLine& current_ruby_line,
+                      const HeapVector<Member<LogicalRubyColumn>>& column_list);
+  RubyLine& EnsureRubyLine(const RubyLevel& level);
+
+  HeapVector<Member<RubyLine>, 2> ruby_lines_;
+};
+
 }  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
+    blink::RubyBlockPositionCalculator::AnnotationDepth)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_RUBY_UTILS_H_

@@ -35,7 +35,8 @@ struct PendingPositions {
 
 // Represents a ruby column.  This associates LogicalLineItems for a ruby-base
 // and LogicalLineItems for a ruby-text.
-struct LogicalRubyColumn : public GarbageCollected<LogicalRubyColumn> {
+struct CORE_EXPORT LogicalRubyColumn
+    : public GarbageCollected<LogicalRubyColumn> {
   // Start index of a ruby-base for the corresponding LogicalLineItems.
   unsigned start_index;
   // The number of ruby-base items in the corresponding LogicalLineItems.
