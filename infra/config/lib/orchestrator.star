@@ -261,7 +261,6 @@ def _set_orchestrator_properties(ctx):
         orchestrator_properties["$build/chromium_orchestrator"] = {
             "compilator": compilator.simple_name,
             "compilator_watcher_git_revision": _COMPILATOR_WATCHER_GIT_REVISION,
-            "propagate_properties_to_compilator": True,
         }
         encoded_orchestrator_properties = json.encode(orchestrator_properties)
         orchestrator.builder.properties = encoded_orchestrator_properties
