@@ -83,6 +83,10 @@ void RecordIsOptionalUpdateSkipped(bool skipped) {
                             skipped);
 }
 
+void RecordOobeConsumerUpdateAvailableHistogram() {
+  base::UmaHistogramBoolean("OOBE.ConsumerUpdateScreen.UpdateAvailable", true);
+}
+
 }  // namespace
 
 // static
@@ -448,6 +452,7 @@ void ConsumerUpdateScreen::UpdateInfoChanged(
       view_->SetUpdateState(
           ConsumerUpdateScreenView::UIState::kCheckingForUpdate);
       update_available = true;
+      RecordOobeConsumerUpdateAvailableHistogram();
       break;
     case update_engine::Operation::DOWNLOADING:
       if (context()->quick_start_setup_ongoing &&

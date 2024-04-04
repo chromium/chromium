@@ -463,6 +463,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OOBE.ConsumerUpdateScreen.UpdateAvailable" enum="Boolean"
+    expires_after="2024-09-15">
+  <owner>bchikhaoui@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Whether an update was avaialble within the consumer update screen.
+  </summary>
+</histogram>
+
 <histogram name="OOBE.ConsumerUpdateScreen.UpdateTime.{ConsumerUpdateType}"
     units="ms" expires_after="2024-05-12">
   <owner>osamafathy@google.com</owner>
