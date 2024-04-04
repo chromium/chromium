@@ -11,6 +11,7 @@
 
 #import "base/sequence_checker.h"
 #import "components/tab_groups/tab_group_visual_data.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group_range.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
 class WebStateList;
@@ -22,9 +23,8 @@ class WebStateList;
 // state change, as well as any group state change.
 class TabGroup {
  public:
-  TabGroup(
-      const tab_groups::TabGroupVisualData& visual_data,
-      const WebStateList::Range& range = WebStateList::Range::InvalidRange())
+  explicit TabGroup(const tab_groups::TabGroupVisualData& visual_data,
+                    TabGroupRange range = TabGroupRange::InvalidRange())
       : visual_data_(visual_data), range_(range) {}
 
   TabGroup(const TabGroup&) = delete;
@@ -49,11 +49,11 @@ class TabGroup {
   }
 
   // The range of this group within its owning WebStateList.
-  const WebStateList::Range& range() const {
+  const TabGroupRange& range() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return range_;
   }
-  WebStateList::Range& range() {
+  TabGroupRange& range() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return range_;
   }
@@ -74,7 +74,7 @@ class TabGroup {
  private:
   SEQUENCE_CHECKER(sequence_checker_);
   tab_groups::TabGroupVisualData visual_data_;
-  WebStateList::Range range_;
+  TabGroupRange range_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_TAB_GROUP_H_

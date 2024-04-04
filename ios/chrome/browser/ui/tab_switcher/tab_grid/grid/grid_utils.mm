@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/web_state_tab_switcher_item.h"
 
 NSArray<GridItemIdentifier*>* CreateTabItems(WebStateList* web_state_list,
-                                             WebStateList::Range range) {
+                                             TabGroupRange range) {
   NSMutableArray<GridItemIdentifier*>* items = [[NSMutableArray alloc] init];
   for (int index : range) {
     web::WebState* web_state = web_state_list->GetWebStateAt(index);

@@ -1517,7 +1517,7 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
         selectedIDs.insert(identifier.tabSwitcherItem.identifier);
         break;
       case GridItemType::Group: {
-        const WebStateList::Range groupRange =
+        const TabGroupRange groupRange =
             identifier.tabGroupItem.tabGroup->range();
         for (int index : groupRange) {
           web::WebState* webState = self.webStateList->GetWebStateAt(index);

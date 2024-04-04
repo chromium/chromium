@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller.h"
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller_source.h"
 #import "ios/chrome/browser/shared/model/web_state_list/removing_indexes.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group_range.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web/model/session_state/web_session_state_tab_helper.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -216,9 +217,9 @@ SessionWindowIOS* FilterInvalidTabs(SessionWindowIOS* session_window) {
   // `rangeStart` properties.
   NSMutableArray<SessionTabGroup*>* groups = [[NSMutableArray alloc] init];
   for (SessionTabGroup* group in session_window.tabGroups) {
-    const WebStateList::Range range(
+    const TabGroupRange range(
         removing_indexes.IndexAfterRemoval(group.rangeStart), group.rangeCount);
-    WebStateList::Range final_range = range;
+    TabGroupRange final_range = range;
     for (int index : range) {
       if (removing_indexes.Contains(index)) {
         final_range.ContractRight();

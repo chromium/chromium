@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/overlays/model/public/web_content_area/java_script_prompt_dialog_overlay.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group_range.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
 namespace {
@@ -133,9 +134,8 @@ void BreadcrumbManagerBrowserAgent::WebStateListDidChange(
       // of N tab moves?
       const WebStateListChangeGroupMove& group_move_change =
           change.As<WebStateListChangeGroupMove>();
-      const WebStateList::Range from_range =
-          group_move_change.moved_from_range();
-      const WebStateList::Range to_range = group_move_change.moved_to_range();
+      const TabGroupRange from_range = group_move_change.moved_from_range();
+      const TabGroupRange to_range = group_move_change.moved_to_range();
       CHECK_EQ(from_range.count(), to_range.count());
       for (auto from_it = from_range.begin(), to_it = to_range.begin();
            (from_it != from_range.end()) && (to_it != to_range.end());

@@ -104,8 +104,8 @@ WebStateListChange::Type WebStateListChangeGroupVisualDataUpdate::type() const {
 
 WebStateListChangeGroupMove::WebStateListChangeGroupMove(
     raw_ptr<const TabGroup> moved_group,
-    WebStateList::Range moved_from_range,
-    WebStateList::Range moved_to_range)
+    TabGroupRange moved_from_range,
+    TabGroupRange moved_to_range)
     : moved_group_(moved_group),
       moved_from_range_(moved_from_range),
       moved_to_range_(moved_to_range) {

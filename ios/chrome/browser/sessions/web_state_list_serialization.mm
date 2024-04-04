@@ -413,7 +413,7 @@ std::vector<web::WebState*> DeserializeWebStateListInternal(
         continue;
       }
       web_state_list->CreateGroup(
-          WebStateList::Range(group.range_start, group.range_count).AsSet(),
+          TabGroupRange(group.range_start, group.range_count).AsSet(),
           group.visual_data);
     }
   }
@@ -487,7 +487,7 @@ SessionWindowIOS* SerializeWebStateList(const WebStateList* web_state_list) {
   NSMutableArray<SessionTabGroup*>* serialized_groups =
       [[NSMutableArray alloc] init];
   for (const TabGroup* group : web_state_list->GetGroups()) {
-    const WebStateList::Range group_range = group->range();
+    const TabGroupRange group_range = group->range();
 
     SessionTabGroup* serialized_group = [[SessionTabGroup alloc]
         initWithRangeStart:group_range.range_begin()
@@ -554,7 +554,7 @@ void SerializeWebStateList(const WebStateList& web_state_list,
   }
 
   for (const TabGroup* group : web_state_list.GetGroups()) {
-    const WebStateList::Range group_range = group->range();
+    const TabGroupRange group_range = group->range();
 
     ios::proto::TabGroupStorage& group_storage = *storage.add_groups();
     ios::proto::RangeIndex& range = *group_storage.mutable_range();

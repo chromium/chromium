@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/sessions/session_window_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group_range.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/web_state_list_builder_from_description.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -145,7 +146,7 @@ void SerializeWebStateList(const WebStateList& web_state_list,
 
 // Checks that the given `tab_group_range` is present in the `web_state_list`.
 bool CheckWebStateListHasTabGroup(const WebStateList& web_state_list,
-                                  const WebStateList::Range& tab_group_range) {
+                                  TabGroupRange tab_group_range) {
   const TabGroup* group =
       web_state_list.GetGroupOfWebStateAt(tab_group_range.range_begin());
   return group && group->range() == tab_group_range;
@@ -863,7 +864,7 @@ TEST_F(WebStateListSerializationTest, Deserialize_Proto_SessionIDCheck) {
 // Protobuf message variant.
 TEST_F(WebStateListSerializationTest, Deserialize_Proto_TabGroupsEnabled) {
   FakeWebStateListDelegate delegate;
-  const WebStateList::Range group_range = WebStateList::Range(0, 1);
+  const TabGroupRange group_range = TabGroupRange(0, 1);
 
   // Create a WebStateList, populate it and serialize to `storage`.
   ios::proto::WebStateListStorage storage;
@@ -903,7 +904,7 @@ TEST_F(WebStateListSerializationTest, Deserialize_Proto_TabGroupsEnabled) {
 // Objective-C (legacy) variant.
 TEST_F(WebStateListSerializationTest, Deserialize_ObjC_TabGroupsEnabled) {
   FakeWebStateListDelegate delegate;
-  const WebStateList::Range group_range = WebStateList::Range(0, 1);
+  const TabGroupRange group_range = TabGroupRange(0, 1);
 
   // Create a WebStateList, populate it, and save data to `session_window`.
   SessionWindowIOS* session_window = nil;
@@ -945,8 +946,8 @@ TEST_F(WebStateListSerializationTest, Deserialize_ObjC_TabGroupsEnabled) {
 TEST_F(WebStateListSerializationTest,
        Deserialize_Proto_TabGroupsEnabled_MultipleGroups) {
   FakeWebStateListDelegate delegate;
-  const WebStateList::Range group_range_first = WebStateList::Range(0, 1);
-  const WebStateList::Range group_range_second = WebStateList::Range(2, 2);
+  const TabGroupRange group_range_first = TabGroupRange(0, 1);
+  const TabGroupRange group_range_second = TabGroupRange(2, 2);
 
   // Create a WebStateList, populate it and serialize to `storage`.
   ios::proto::WebStateListStorage storage;
@@ -987,8 +988,8 @@ TEST_F(WebStateListSerializationTest,
 // Objective-C (legacy) variant.
 TEST_F(WebStateListSerializationTest, Deserialize_ObjC_MultipleGroups) {
   FakeWebStateListDelegate delegate;
-  const WebStateList::Range group_range_first = WebStateList::Range(0, 1);
-  const WebStateList::Range group_range_second = WebStateList::Range(2, 2);
+  const TabGroupRange group_range_first = TabGroupRange(0, 1);
+  const TabGroupRange group_range_second = TabGroupRange(2, 2);
 
   // Create a WebStateList, populate it, and save data to `session_window`.
   SessionWindowIOS* session_window = nil;
@@ -1107,7 +1108,7 @@ TEST_F(WebStateListSerializationTest, Deserialize_ObjC_TabGroupsDisabled) {
 // Protobuf message variant.
 TEST_F(WebStateListSerializationTest, Deserialize_Proto_TabGroupsInvalid) {
   FakeWebStateListDelegate delegate;
-  const WebStateList::Range valid_group_range = WebStateList::Range(0, 1);
+  const TabGroupRange valid_group_range = TabGroupRange(0, 1);
 
   // Create a WebStateList, populate it and serialize to `storage`.
   ios::proto::WebStateListStorage storage;
@@ -1155,7 +1156,7 @@ TEST_F(WebStateListSerializationTest, Deserialize_Proto_TabGroupsInvalid) {
 // Objective-C (legacy) variant.
 TEST_F(WebStateListSerializationTest, Deserialize_ObjC_TabGroupsInvalid) {
   FakeWebStateListDelegate delegate;
-  const WebStateList::Range valid_group_range = WebStateList::Range(0, 1);
+  const TabGroupRange valid_group_range = TabGroupRange(0, 1);
 
   // Create a WebStateList, populate it, and save data to `session_window`.
   SessionWindowIOS* session_window = nil;

@@ -68,8 +68,8 @@ class WebStateListTestObserver : public WebStateListObserver {
     old_visual_data_ = TabGroupVisualData();
     group_moved_count_ = 0;
     group_moved_group_ = nullptr;
-    group_moved_from_range_ = WebStateList::Range::InvalidRange();
-    group_moved_to_range_ = WebStateList::Range::InvalidRange();
+    group_moved_from_range_ = TabGroupRange::InvalidRange();
+    group_moved_to_range_ = TabGroupRange::InvalidRange();
     group_deleted_count_ = 0;
     group_deleted_group_ = nullptr;
     batch_operation_started_count_ = 0;
@@ -184,14 +184,12 @@ class WebStateListTestObserver : public WebStateListObserver {
   const TabGroup* group_moved_group() const { return group_moved_group_; }
 
   // Returns the previous range of the group that moved.
-  WebStateList::Range group_moved_from_range() const {
+  TabGroupRange group_moved_from_range() const {
     return group_moved_from_range_;
   }
 
   // Returns the current range of the group that moved.
-  WebStateList::Range group_moved_to_range() const {
-    return group_moved_to_range_;
-  }
+  TabGroupRange group_moved_to_range() const { return group_moved_to_range_; }
 
   // Returns the number of groups deleted.
   int group_deleted_count() const { return group_deleted_count_; }
@@ -357,10 +355,8 @@ class WebStateListTestObserver : public WebStateListObserver {
   TabGroupVisualData old_visual_data_ = TabGroupVisualData();
   int group_moved_count_ = 0;
   raw_ptr<const TabGroup> group_moved_group_ = nullptr;
-  WebStateList::Range group_moved_from_range_ =
-      WebStateList::Range::InvalidRange();
-  WebStateList::Range group_moved_to_range_ =
-      WebStateList::Range::InvalidRange();
+  TabGroupRange group_moved_from_range_ = TabGroupRange::InvalidRange();
+  TabGroupRange group_moved_to_range_ = TabGroupRange::InvalidRange();
   int group_deleted_count_ = 0;
   raw_ptr<const TabGroup> group_deleted_group_ = nullptr;
   int batch_operation_started_count_ = 0;
@@ -449,148 +445,6 @@ class TestWebStateListDelegate final : public WebStateListDelegate {
 
 }  // namespace
 
-using WebStateListRangeTest = PlatformTest;
-
-// Tests properties of the invalid range.
-TEST_F(WebStateListRangeTest, InvalidRange) {
-  WebStateList::Range range = WebStateList::Range::InvalidRange();
-
-  EXPECT_FALSE(range.IsValid());
-}
-
-// Tests properties of the zero range.
-TEST_F(WebStateListRangeTest, ZeroRange) {
-  WebStateList::Range range(0, 0);
-
-  EXPECT_TRUE(range.IsValid());
-  EXPECT_EQ(0, range.range_begin());
-  EXPECT_EQ(0, range.count());
-  EXPECT_EQ(0, range.range_end());
-
-  EXPECT_FALSE(range.contains(-1));
-  EXPECT_FALSE(range.contains(0));
-  EXPECT_FALSE(range.contains(1));
-
-  EXPECT_EQ(WebStateList::Range(0, 0), range);
-  EXPECT_NE(WebStateList::Range(0, 1), range);
-  EXPECT_NE(WebStateList::Range(1, 0), range);
-  EXPECT_NE(WebStateList::Range(1, 1), range);
-  EXPECT_NE(WebStateList::Range::InvalidRange(), range);
-}
-
-// Tests properties of a non-particular range.
-TEST_F(WebStateListRangeTest, SomeRange) {
-  WebStateList::Range range(1, 2);
-
-  EXPECT_TRUE(range.IsValid());
-  EXPECT_EQ(1, range.range_begin());
-  EXPECT_EQ(2, range.count());
-  EXPECT_EQ(3, range.range_end());
-
-  EXPECT_FALSE(range.contains(-1));
-  EXPECT_FALSE(range.contains(0));
-  EXPECT_TRUE(range.contains(1));
-  EXPECT_TRUE(range.contains(2));
-  EXPECT_FALSE(range.contains(3));
-
-  EXPECT_NE(WebStateList::Range(0, 0), range);
-  EXPECT_NE(WebStateList::Range(0, 1), range);
-  EXPECT_NE(WebStateList::Range(1, 0), range);
-  EXPECT_NE(WebStateList::Range(1, 1), range);
-  EXPECT_EQ(WebStateList::Range(1, 2), range);
-  EXPECT_NE(WebStateList::Range::InvalidRange(), range);
-}
-
-// Tests that moving a range moves the start but not the count.
-TEST_F(WebStateListRangeTest, Move) {
-  WebStateList::Range range(1, 2);
-
-  range.Move(3);
-  EXPECT_EQ(WebStateList::Range(4, 2), range);
-
-  range.Move(-2);
-  EXPECT_EQ(WebStateList::Range(2, 2), range);
-
-  range.Move(-2);
-  EXPECT_EQ(WebStateList::Range(0, 2), range);
-
-  range.Move(10);
-  EXPECT_EQ(WebStateList::Range(10, 2), range);
-
-  range.Move(0);
-  EXPECT_EQ(WebStateList::Range(10, 2), range);
-}
-
-// Tests that moving a range left and right moves the start but not the count.
-TEST_F(WebStateListRangeTest, MoveLeftRight) {
-  WebStateList::Range range(1, 2);
-
-  range.MoveLeft();
-  EXPECT_EQ(WebStateList::Range(0, 2), range);
-
-  range.MoveRight();
-  EXPECT_EQ(WebStateList::Range(1, 2), range);
-
-  range.MoveRight();
-  EXPECT_EQ(WebStateList::Range(2, 2), range);
-
-  range.MoveLeft(2);
-  EXPECT_EQ(WebStateList::Range(0, 2), range);
-
-  range.MoveRight(3);
-  EXPECT_EQ(WebStateList::Range(3, 2), range);
-
-  range.MoveLeft(0);
-  EXPECT_EQ(WebStateList::Range(3, 2), range);
-
-  range.MoveRight(0);
-  EXPECT_EQ(WebStateList::Range(3, 2), range);
-}
-
-// Tests that expanding a range moves the count and potentially the start.
-TEST_F(WebStateListRangeTest, Expand) {
-  WebStateList::Range range(1, 2);
-
-  range.ExpandLeft();
-  EXPECT_EQ(WebStateList::Range(0, 3), range);
-
-  range.ExpandRight();
-  EXPECT_EQ(WebStateList::Range(0, 4), range);
-}
-
-// Tests that contracting a range moves the count and potentially the start.
-TEST_F(WebStateListRangeTest, Contract) {
-  WebStateList::Range range(1, 2);
-
-  range.ContractLeft();
-  EXPECT_EQ(WebStateList::Range(2, 1), range);
-
-  range.ContractRight();
-  EXPECT_EQ(WebStateList::Range(2, 0), range);
-}
-
-// Tests that the `AsSet` getter returns the correct set of indices.
-TEST_F(WebStateListRangeTest, AsSet) {
-  WebStateList::Range range(12, 3);
-  std::set<int> expected = {12, 13, 14};
-
-  EXPECT_EQ(expected, range.AsSet());
-}
-
-// Tests iterating over the indices from a range in a range-based for-loop lists
-// all indices correctly.
-TEST_F(WebStateListRangeTest, ForLoop) {
-  WebStateList::Range range(12, 3);
-  std::vector<int> indices;
-
-  for (int i : range) {
-    indices.push_back(i);
-  }
-
-  std::vector<int> expected = {12, 13, 14};
-  EXPECT_EQ(expected, indices);
-}
-
 class WebStateListTest : public PlatformTest {
  public:
   WebStateListTest() : web_state_list_(&delegate_) {
@@ -637,7 +491,7 @@ class WebStateListTest : public PlatformTest {
       if (!current_group) {
         continue;
       }
-      const WebStateList::Range current_group_range = current_group->range();
+      const TabGroupRange current_group_range = current_group->range();
       if (!current_group_range.contains(index)) {
         return false;
       }
@@ -1923,9 +1777,9 @@ TEST_F(WebStateListTest, GetGroupRanges) {
   const TabGroup* group_1 = builder.GetTabGroupForIdentifier('1');
   const TabGroup* group_2 = builder.GetTabGroupForIdentifier('2');
 
-  EXPECT_EQ(WebStateList::Range(3, 1), group_0->range());
-  EXPECT_EQ(WebStateList::Range(5, 3), group_1->range());
-  EXPECT_EQ(WebStateList::Range(8, 1), group_2->range());
+  EXPECT_EQ(TabGroupRange(3, 1), group_0->range());
+  EXPECT_EQ(TabGroupRange(5, 3), group_1->range());
+  EXPECT_EQ(TabGroupRange(8, 1), group_2->range());
 }
 
 // Tests that inserting when there are no groups doesn't create any group.
@@ -2511,7 +2365,7 @@ TEST_F(WebStateListTest, MoveWebStateAt_NoMove_Grouped) {
   EXPECT_EQ("| [ 0 a ]", builder.GetWebStateListDescription());
   EXPECT_EQ(0, observer_.web_state_moved_count());
   EXPECT_EQ(0, observer_.status_only_count());
-  EXPECT_EQ(WebStateList::Range(0, 1), group->range());
+  EXPECT_EQ(TabGroupRange(0, 1), group->range());
 }
 
 // Tests that moving from a group to another position removes the group.
@@ -2545,7 +2399,7 @@ TEST_F(WebStateListTest, MoveWebStateAt_Move_GroupedToSameGroup) {
   EXPECT_EQ(0, observer_.status_only_count());
   EXPECT_EQ(group, observer_.web_state_moved_old_group());
   EXPECT_EQ(group, observer_.web_state_moved_new_group());
-  EXPECT_EQ(WebStateList::Range(0, 2), group->range());
+  EXPECT_EQ(TabGroupRange(0, 2), group->range());
 }
 
 // Tests that moving from a group on the right to the middle of another group on
@@ -2565,8 +2419,8 @@ TEST_F(WebStateListTest, MoveWebStateAt_MoveLeft_GroupedToOtherGroup) {
   EXPECT_EQ(0, observer_.status_only_count());
   EXPECT_EQ(group_1, observer_.web_state_moved_old_group());
   EXPECT_EQ(group_0, observer_.web_state_moved_new_group());
-  EXPECT_EQ(WebStateList::Range(0, 3), group_0->range());
-  EXPECT_EQ(WebStateList::Range(3, 1), group_1->range());
+  EXPECT_EQ(TabGroupRange(0, 3), group_0->range());
+  EXPECT_EQ(TabGroupRange(3, 1), group_1->range());
 }
 
 // Tests that moving from a group on the left to the middle of another group on
@@ -2586,8 +2440,8 @@ TEST_F(WebStateListTest, MoveWebStateAt_MoveRight_GroupedToOtherGroup) {
   EXPECT_EQ(0, observer_.status_only_count());
   EXPECT_EQ(group_0, observer_.web_state_moved_old_group());
   EXPECT_EQ(group_1, observer_.web_state_moved_new_group());
-  EXPECT_EQ(WebStateList::Range(0, 1), group_0->range());
-  EXPECT_EQ(WebStateList::Range(1, 3), group_1->range());
+  EXPECT_EQ(TabGroupRange(0, 1), group_0->range());
+  EXPECT_EQ(TabGroupRange(1, 3), group_1->range());
 }
 
 // Tests moving a ungrouped tab to another ungrouped position on the left
@@ -2606,9 +2460,9 @@ TEST_F(WebStateListTest,
 
   EXPECT_EQ("| [ 0 a ] c [ 1 b ] [ 2 d ]",
             builder.GetWebStateListDescription());
-  EXPECT_EQ(WebStateList::Range(0, 1), group_0->range());
-  EXPECT_EQ(WebStateList::Range(2, 1), group_1->range());
-  EXPECT_EQ(WebStateList::Range(3, 1), group_2->range());
+  EXPECT_EQ(TabGroupRange(0, 1), group_0->range());
+  EXPECT_EQ(TabGroupRange(2, 1), group_1->range());
+  EXPECT_EQ(TabGroupRange(3, 1), group_2->range());
   EXPECT_EQ(1, observer_.web_state_moved_count());
   EXPECT_EQ(0, observer_.status_only_count());
   EXPECT_EQ(nullptr, observer_.web_state_moved_old_group());
@@ -2631,9 +2485,9 @@ TEST_F(WebStateListTest,
 
   EXPECT_EQ("| [ 0 a ] [ 1 c ] b [ 2 d ]",
             builder.GetWebStateListDescription());
-  EXPECT_EQ(WebStateList::Range(0, 1), group_0->range());
-  EXPECT_EQ(WebStateList::Range(1, 1), group_1->range());
-  EXPECT_EQ(WebStateList::Range(3, 1), group_2->range());
+  EXPECT_EQ(TabGroupRange(0, 1), group_0->range());
+  EXPECT_EQ(TabGroupRange(1, 1), group_1->range());
+  EXPECT_EQ(TabGroupRange(3, 1), group_2->range());
   EXPECT_EQ(1, observer_.web_state_moved_count());
   EXPECT_EQ(0, observer_.status_only_count());
   EXPECT_EQ(nullptr, observer_.web_state_moved_old_group());
@@ -2712,7 +2566,7 @@ TEST_F(WebStateListTest, SetWebStatePinnedAt_PinningUngroups) {
   EXPECT_TRUE(observer_.pinned_state_changed());
   EXPECT_EQ(group, observer_.status_only_old_group());
   EXPECT_EQ(nullptr, observer_.status_only_new_group());
-  EXPECT_EQ(WebStateList::Range(1, 1), group->range());
+  EXPECT_EQ(TabGroupRange(1, 1), group->range());
 }
 
 // Tests that unpinning a tab doesn't add it to a group.
@@ -2730,7 +2584,7 @@ TEST_F(WebStateListTest, SetWebStatePinnedAt_UnpinningDoesntGroup) {
   EXPECT_TRUE(observer_.pinned_state_changed());
   EXPECT_EQ(nullptr, observer_.web_state_moved_old_group());
   EXPECT_EQ(nullptr, observer_.web_state_moved_new_group());
-  EXPECT_EQ(WebStateList::Range(0, 1), group->range());
+  EXPECT_EQ(TabGroupRange(0, 1), group->range());
 }
 
 // Tests that getting groups returns the groups of the web state list.
@@ -2772,7 +2626,7 @@ TEST_F(WebStateListTest, CreateGroup_OneTab_NotMoving) {
 
   builder.SetTabGroupIdentifier(group, '0');
   EXPECT_EQ("| [ 0 a* ]", builder.GetWebStateListDescription());
-  EXPECT_EQ(WebStateList::Range(0, 1), group->range());
+  EXPECT_EQ(TabGroupRange(0, 1), group->range());
   EXPECT_EQ(visual_data, group->visual_data());
   EXPECT_EQ(0, observer_.web_state_activated_count());
   EXPECT_EQ(0, observer_.web_state_moved_count());
@@ -2794,7 +2648,7 @@ TEST_F(WebStateListTest, CreateGroup_OneTab_Moving) {
 
   builder.SetTabGroupIdentifier(group, '0');
   EXPECT_EQ("b | [ 0 a* ]", builder.GetWebStateListDescription());
-  EXPECT_EQ(WebStateList::Range(1, 1), group->range());
+  EXPECT_EQ(TabGroupRange(1, 1), group->range());
   EXPECT_EQ(visual_data, group->visual_data());
   EXPECT_EQ(0, observer_.web_state_activated_count());
   EXPECT_EQ(1, observer_.web_state_moved_count());
@@ -2816,7 +2670,7 @@ TEST_F(WebStateListTest, CreateGroup_SeveralTabs) {
 
   builder.SetTabGroupIdentifier(group, '0');
   EXPECT_EQ("| [ 0 a c e ] b* d", builder.GetWebStateListDescription());
-  EXPECT_EQ(WebStateList::Range(0, 3), group->range());
+  EXPECT_EQ(TabGroupRange(0, 3), group->range());
   EXPECT_EQ(visual_data, group->visual_data());
   EXPECT_EQ(0, observer_.web_state_activated_count());
   EXPECT_EQ(2, observer_.web_state_moved_count());
@@ -2838,7 +2692,7 @@ TEST_F(WebStateListTest, CreateGroup_SeveralTabs_SomePinned) {
 
   builder.SetTabGroupIdentifier(group, '0');
   EXPECT_EQ("a c | [ 0 b* d ] e", builder.GetWebStateListDescription());
-  EXPECT_EQ(WebStateList::Range(2, 2), group->range());
+  EXPECT_EQ(TabGroupRange(2, 2), group->range());
   EXPECT_EQ(visual_data, group->visual_data());
   EXPECT_EQ(0, observer_.web_state_activated_count());
   EXPECT_EQ(1, observer_.web_state_moved_count());
@@ -2862,8 +2716,8 @@ TEST_F(WebStateListTest, CreateGroup_SeveralTabs_SomeGrouped) {
   builder.SetTabGroupIdentifier(group_1, '1');
   EXPECT_EQ("| [ 0 a c ] [ 1 b d* ] e", builder.GetWebStateListDescription());
 
-  EXPECT_EQ(WebStateList::Range(0, 2), group_0->range());
-  EXPECT_EQ(WebStateList::Range(2, 2), group_1->range());
+  EXPECT_EQ(TabGroupRange(0, 2), group_0->range());
+  EXPECT_EQ(TabGroupRange(2, 2), group_1->range());
   EXPECT_EQ(visual_data_1, group_1->visual_data());
   EXPECT_EQ(0, observer_.web_state_activated_count());
   EXPECT_EQ(1, observer_.web_state_moved_count());
@@ -2888,8 +2742,8 @@ TEST_F(WebStateListTest, CreateGroup_SeveralTabs_PinnedAndGrouped) {
   builder.SetTabGroupIdentifier(group_1, '1');
   EXPECT_EQ("e f | [ 1 a b c d h i j ] g [ 0 k ] l",
             builder.GetWebStateListDescription());
-  EXPECT_EQ(WebStateList::Range(10, 1), group_0->range());
-  EXPECT_EQ(WebStateList::Range(2, 7), group_1->range());
+  EXPECT_EQ(TabGroupRange(10, 1), group_0->range());
+  EXPECT_EQ(TabGroupRange(2, 7), group_1->range());
   EXPECT_EQ(7, observer_.web_state_moved_count());
   EXPECT_EQ(1, observer_.group_created_count());
   EXPECT_EQ(group_1, observer_.group_created_group());
@@ -2911,9 +2765,9 @@ TEST_F(WebStateListTest, CreateGroup_SeveralTabs_GroupedLeftAndRight) {
   builder.SetTabGroupIdentifier(group_2, '2');
   EXPECT_EQ("| [ 0 a c ] [ 2 b e h i ] d f [ 1 g j ] k l",
             builder.GetWebStateListDescription());
-  EXPECT_EQ(WebStateList::Range(0, 2), group_0->range());
-  EXPECT_EQ(WebStateList::Range(8, 2), group_1->range());
-  EXPECT_EQ(WebStateList::Range(2, 4), group_2->range());
+  EXPECT_EQ(TabGroupRange(0, 2), group_0->range());
+  EXPECT_EQ(TabGroupRange(8, 2), group_1->range());
+  EXPECT_EQ(TabGroupRange(2, 4), group_2->range());
   EXPECT_EQ(4, observer_.web_state_moved_count());
   EXPECT_EQ(1, observer_.group_created_count());
   EXPECT_EQ(group_2, observer_.group_created_group());
@@ -2963,7 +2817,7 @@ TEST_F(WebStateListTest, MoveToGroup_NoMove_GoToLeftGroup) {
   web_state_list_.MoveToGroup({1}, group_0);
 
   EXPECT_EQ("| [ 0 a b ]", builder.GetWebStateListDescription());
-  EXPECT_EQ(WebStateList::Range(0, 2), group_0->range());
+  EXPECT_EQ(TabGroupRange(0, 2), group_0->range());
   EXPECT_EQ(0, observer_.web_state_moved_count());
   EXPECT_EQ(1, observer_.status_only_count());
   EXPECT_EQ(nullptr, observer_.status_only_old_group());
@@ -2983,7 +2837,7 @@ TEST_F(WebStateListTest, MoveToGroup_NoMove_GoToRightGroup) {
   web_state_list_.MoveWebStateWrapperAt(0, 0, false, group_0);
 
   EXPECT_EQ("| [ 0 a b ]", builder.GetWebStateListDescription());
-  EXPECT_EQ(WebStateList::Range(0, 2), group_0->range());
+  EXPECT_EQ(TabGroupRange(0, 2), group_0->range());
   EXPECT_EQ(0, observer_.web_state_moved_count());
   EXPECT_EQ(1, observer_.status_only_count());
   EXPECT_EQ(nullptr, observer_.status_only_old_group());
@@ -3002,7 +2856,7 @@ TEST_F(WebStateListTest, MoveToGroup_NoMove_GoToLeftGroup_OldGroupEmpty) {
   web_state_list_.MoveToGroup({1}, group_0);
 
   EXPECT_EQ("| [ 0 a b ]", builder.GetWebStateListDescription());
-  EXPECT_EQ(WebStateList::Range(0, 2), group_0->range());
+  EXPECT_EQ(TabGroupRange(0, 2), group_0->range());
   EXPECT_EQ(0, observer_.web_state_moved_count());
   EXPECT_EQ(1, observer_.status_only_count());
   EXPECT_EQ(group_1, observer_.status_only_old_group());
@@ -3026,7 +2880,7 @@ TEST_F(WebStateListTest, MoveToGroup_NoMove_GoToRightGroup_OldGroupEmpty) {
   web_state_list_.MoveWebStateWrapperAt(0, 0, false, group_1);
 
   EXPECT_EQ("| [ 1 a b ]", builder.GetWebStateListDescription());
-  EXPECT_EQ(WebStateList::Range(0, 2), group_1->range());
+  EXPECT_EQ(TabGroupRange(0, 2), group_1->range());
   EXPECT_EQ(0, observer_.web_state_moved_count());
   EXPECT_EQ(1, observer_.status_only_count());
   EXPECT_EQ(group_0, observer_.status_only_old_group());
@@ -3048,8 +2902,8 @@ TEST_F(WebStateListTest, MoveToGroup_NoMove_GoToLeftGroup_OldGroupNonEmpty) {
   web_state_list_.MoveToGroup({2}, group_0);
 
   EXPECT_EQ("| [ 0 a b c ] [ 1 d ]", builder.GetWebStateListDescription());
-  EXPECT_EQ(WebStateList::Range(0, 3), group_0->range());
-  EXPECT_EQ(WebStateList::Range(3, 1), group_1->range());
+  EXPECT_EQ(TabGroupRange(0, 3), group_0->range());
+  EXPECT_EQ(TabGroupRange(3, 1), group_1->range());
   EXPECT_EQ(0, observer_.web_state_moved_count());
   EXPECT_EQ(1, observer_.status_only_count());
   EXPECT_EQ(group_1, observer_.status_only_old_group());
@@ -3072,8 +2926,8 @@ TEST_F(WebStateListTest, MoveToGroup_NoMove_GoToRightGroup_OldGroupNonEmpty) {
   web_state_list_.MoveWebStateWrapperAt(1, 1, false, group_1);
 
   EXPECT_EQ("| [ 0 a ] [ 1 b c d ]", builder.GetWebStateListDescription());
-  EXPECT_EQ(WebStateList::Range(0, 1), group_0->range());
-  EXPECT_EQ(WebStateList::Range(1, 3), group_1->range());
+  EXPECT_EQ(TabGroupRange(0, 1), group_0->range());
+  EXPECT_EQ(TabGroupRange(1, 3), group_1->range());
   EXPECT_EQ(0, observer_.web_state_moved_count());
   EXPECT_EQ(1, observer_.status_only_count());
   EXPECT_EQ(group_0, observer_.status_only_old_group());
@@ -3093,7 +2947,7 @@ TEST_F(WebStateListTest, MoveToGroup_NoMove_PinnedToGroup) {
   web_state_list_.MoveWebStateWrapperAt(0, 0, false, group);
 
   EXPECT_EQ("| [ 0 a b ]", builder.GetWebStateListDescription());
-  EXPECT_EQ(WebStateList::Range(0, 2), group->range());
+  EXPECT_EQ(TabGroupRange(0, 2), group->range());
   EXPECT_EQ(0, observer_.web_state_moved_count());
   EXPECT_EQ(1, observer_.status_only_count());
   EXPECT_EQ(1, observer_.pinned_state_changed());
@@ -3111,7 +2965,7 @@ TEST_F(WebStateListTest, MoveToGroup_Move_PinnedToGroup) {
   web_state_list_.MoveToGroup({0}, group);
 
   EXPECT_EQ("| [ 0 b a ]", builder.GetWebStateListDescription());
-  EXPECT_EQ(WebStateList::Range(0, 2), group->range());
+  EXPECT_EQ(TabGroupRange(0, 2), group->range());
   EXPECT_EQ(1, observer_.web_state_moved_count());
   EXPECT_EQ(0, observer_.status_only_count());
   EXPECT_EQ(1, observer_.pinned_state_changed());
@@ -3129,7 +2983,7 @@ TEST_F(WebStateListTest, MoveToGroup_MoveToLeft_NoGroupToGroup) {
   web_state_list_.MoveToGroup({2}, group_0);
 
   EXPECT_EQ("| [ 0 a c ] b", builder.GetWebStateListDescription());
-  EXPECT_EQ(WebStateList::Range(0, 2), group_0->range());
+  EXPECT_EQ(TabGroupRange(0, 2), group_0->range());
   EXPECT_EQ(1, observer_.web_state_moved_count());
   EXPECT_EQ(0, observer_.status_only_count());
   EXPECT_EQ(nullptr, observer_.web_state_moved_old_group());
@@ -3146,7 +3000,7 @@ TEST_F(WebStateListTest, MoveToGroup_MoveToRight_NoGroupToGroup) {
   web_state_list_.MoveToGroup({0}, group_0);
 
   EXPECT_EQ("| [ 0 b a ]", builder.GetWebStateListDescription());
-  EXPECT_EQ(WebStateList::Range(0, 2), group_0->range());
+  EXPECT_EQ(TabGroupRange(0, 2), group_0->range());
   EXPECT_EQ(1, observer_.web_state_moved_count());
   EXPECT_EQ(0, observer_.status_only_count());
   EXPECT_EQ(nullptr, observer_.web_state_moved_old_group());
@@ -3165,7 +3019,7 @@ TEST_F(WebStateListTest, MoveToGroup_MoveToLeft_GroupToGroup) {
   web_state_list_.MoveToGroup({2}, group_0);
 
   EXPECT_EQ("| [ 0 a c ] b", builder.GetWebStateListDescription());
-  EXPECT_EQ(WebStateList::Range(0, 2), group_0->range());
+  EXPECT_EQ(TabGroupRange(0, 2), group_0->range());
   EXPECT_EQ(1, observer_.web_state_moved_count());
   EXPECT_EQ(0, observer_.status_only_count());
   EXPECT_EQ(group_1, observer_.web_state_moved_old_group());
@@ -3186,7 +3040,7 @@ TEST_F(WebStateListTest, MoveToGroup_MoveToRight_GroupToGroup) {
   web_state_list_.MoveToGroup({0}, group_1);
 
   EXPECT_EQ("| [ 1 b a ]", builder.GetWebStateListDescription());
-  EXPECT_EQ(WebStateList::Range(0, 2), group_1->range());
+  EXPECT_EQ(TabGroupRange(0, 2), group_1->range());
   EXPECT_EQ(1, observer_.web_state_moved_count());
   EXPECT_EQ(0, observer_.status_only_count());
   EXPECT_EQ(group_0, observer_.web_state_moved_old_group());
@@ -3207,8 +3061,8 @@ TEST_F(WebStateListTest, MoveToGroup_MoveToLeft_GroupToGroup_NoEmptyGroup) {
   web_state_list_.MoveToGroup({2}, group_0);
 
   EXPECT_EQ("| [ 0 a c ] [ 1 b ]", builder.GetWebStateListDescription());
-  EXPECT_EQ(WebStateList::Range(0, 2), group_0->range());
-  EXPECT_EQ(WebStateList::Range(2, 1), group_1->range());
+  EXPECT_EQ(TabGroupRange(0, 2), group_0->range());
+  EXPECT_EQ(TabGroupRange(2, 1), group_1->range());
   EXPECT_EQ(1, observer_.web_state_moved_count());
   EXPECT_EQ(0, observer_.status_only_count());
   EXPECT_EQ(group_1, observer_.web_state_moved_old_group());
@@ -3227,8 +3081,8 @@ TEST_F(WebStateListTest, MoveToGroup_MoveToRight_GroupToGroup_NoEmptyGroup) {
   web_state_list_.MoveToGroup({0}, group_1);
 
   EXPECT_EQ("| [ 0 b ] [ 1 c a ]", builder.GetWebStateListDescription());
-  EXPECT_EQ(WebStateList::Range(0, 1), group_0->range());
-  EXPECT_EQ(WebStateList::Range(1, 2), group_1->range());
+  EXPECT_EQ(TabGroupRange(0, 1), group_0->range());
+  EXPECT_EQ(TabGroupRange(1, 2), group_1->range());
   EXPECT_EQ(1, observer_.web_state_moved_count());
   EXPECT_EQ(0, observer_.status_only_count());
   EXPECT_EQ(group_0, observer_.web_state_moved_old_group());
@@ -3266,8 +3120,8 @@ TEST_F(WebStateListTest, RemoveFromGroups_SomeFromSameGroup) {
   EXPECT_EQ(2, observer_.status_only_count());
   EXPECT_EQ(group_0, observer_.status_only_old_group());
   EXPECT_EQ(nullptr, observer_.status_only_new_group());
-  EXPECT_EQ(WebStateList::Range(0, 1), group_0->range());
-  EXPECT_EQ(WebStateList::Range(3, 2), group_1->range());
+  EXPECT_EQ(TabGroupRange(0, 1), group_0->range());
+  EXPECT_EQ(TabGroupRange(3, 2), group_1->range());
 }
 
 // Tests removing all tabs from a group ungroups them and keeps them in place.
@@ -3289,7 +3143,7 @@ TEST_F(WebStateListTest, RemoveFromGroups_AllFromSameGroup) {
   EXPECT_EQ(nullptr, observer_.status_only_new_group());
   EXPECT_EQ(1, observer_.group_deleted_count());
   EXPECT_EQ(group_0, observer_.group_deleted_group());
-  EXPECT_EQ(WebStateList::Range(3, 2), group_1->range());
+  EXPECT_EQ(TabGroupRange(3, 2), group_1->range());
 }
 
 // Tests removing some tabs from different group ungroups them and moves them
@@ -3305,8 +3159,8 @@ TEST_F(WebStateListTest, RemoveFromGroups_SomeFromDifferentGroupsWithMoves) {
   web_state_list_.RemoveFromGroups({1, 3});
 
   EXPECT_EQ("| [ 0 a c ] b [ 1 e ] d", builder.GetWebStateListDescription());
-  EXPECT_EQ(WebStateList::Range(0, 2), group_0->range());
-  EXPECT_EQ(WebStateList::Range(3, 1), group_1->range());
+  EXPECT_EQ(TabGroupRange(0, 2), group_0->range());
+  EXPECT_EQ(TabGroupRange(3, 1), group_1->range());
   EXPECT_EQ(2, observer_.web_state_moved_count());
   EXPECT_EQ(0, observer_.status_only_count());
   // observer_.web_state_moved_old_group() is not sufficient to check the groups
@@ -3344,7 +3198,7 @@ TEST_F(WebStateListTest, RemoveFromGroups_KeepsActive) {
   web_state_list_.RemoveFromGroups({0});
 
   EXPECT_EQ("| [ 0 b ] a*", builder.GetWebStateListDescription());
-  EXPECT_EQ(WebStateList::Range(0, 1), group_0->range());
+  EXPECT_EQ(TabGroupRange(0, 1), group_0->range());
   EXPECT_EQ(1, observer_.web_state_moved_count());
   EXPECT_EQ(0, observer_.status_only_count());
   EXPECT_FALSE(observer_.pinned_state_changed());
@@ -3365,8 +3219,8 @@ TEST_F(WebStateListTest, MoveGroup_NoMove_SamePosition) {
   web_state_list_.MoveGroup(group_0, 1);
 
   EXPECT_EQ("a | [ 0 b* c ] [ 1 d e ]", builder.GetWebStateListDescription());
-  EXPECT_EQ(WebStateList::Range(1, 2), group_0->range());
-  EXPECT_EQ(WebStateList::Range(3, 2), group_1->range());
+  EXPECT_EQ(TabGroupRange(1, 2), group_0->range());
+  EXPECT_EQ(TabGroupRange(3, 2), group_1->range());
   EXPECT_EQ(0, observer_.web_state_moved_count());
   EXPECT_EQ(0, observer_.status_only_count());
   EXPECT_EQ(0, observer_.group_moved_count());
@@ -3384,8 +3238,8 @@ TEST_F(WebStateListTest, MoveGroup_NoMove_SameGroup) {
   web_state_list_.MoveGroup(group_0, 2);
 
   EXPECT_EQ("a | [ 0 b* c ] [ 1 d e ]", builder.GetWebStateListDescription());
-  EXPECT_EQ(WebStateList::Range(1, 2), group_0->range());
-  EXPECT_EQ(WebStateList::Range(3, 2), group_1->range());
+  EXPECT_EQ(TabGroupRange(1, 2), group_0->range());
+  EXPECT_EQ(TabGroupRange(3, 2), group_1->range());
   EXPECT_EQ(0, observer_.web_state_moved_count());
   EXPECT_EQ(0, observer_.status_only_count());
   EXPECT_EQ(0, observer_.group_moved_count());
@@ -3426,7 +3280,7 @@ TEST_F(WebStateListTest, MoveGroup_MovingActiveWebState) {
     ASSERT_TRUE(RangesOfTabGroupsAreValid());
     const TabGroup* group_2 = builder.GetTabGroupForIdentifier('2');
     ASSERT_NE(nullptr, group_2);
-    const WebStateList::Range prior_range = group_2->range();
+    const TabGroupRange prior_range = group_2->range();
 
     // Moving group 2 before `to_index`.
     web_state_list_.MoveGroup(group_2, to_index);
@@ -3490,7 +3344,7 @@ TEST_F(WebStateListTest, MoveGroup_NotMovingActiveWebState) {
     ASSERT_TRUE(RangesOfTabGroupsAreValid());
     const TabGroup* group_2 = builder.GetTabGroupForIdentifier('2');
     ASSERT_NE(nullptr, group_2);
-    const WebStateList::Range prior_range = group_2->range();
+    const TabGroupRange prior_range = group_2->range();
 
     // Moving group 2 before `to_index`.
     web_state_list_.MoveGroup(group_2, to_index);
@@ -3529,7 +3383,7 @@ TEST_F(WebStateListTest, DeleteGroup) {
   web_state_list_.DeleteGroup(group_0);
 
   EXPECT_EQ("| a* b [ 1 c ] d", builder.GetWebStateListDescription());
-  EXPECT_EQ(WebStateList::Range(2, 1), group_1->range());
+  EXPECT_EQ(TabGroupRange(2, 1), group_1->range());
   EXPECT_EQ(0, observer_.web_state_moved_count());
   EXPECT_EQ(2, observer_.status_only_count());
   EXPECT_FALSE(observer_.web_state_activated());

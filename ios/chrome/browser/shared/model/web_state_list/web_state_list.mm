@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller_source_from_web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/removing_indexes.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group_range.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
@@ -465,7 +466,7 @@ int WebStateList::InsertWebStateImpl(std::unique_ptr<web::WebState> web_state,
   int range_begin = 0;
   int range_end = count();
   if (group) {
-    const Range tab_group_range = group->range();
+    const TabGroupRange tab_group_range = group->range();
     range_begin = tab_group_range.range_begin();
     range_end = tab_group_range.range_end();
   } else if (pinned) {
@@ -534,7 +535,7 @@ int WebStateList::InsertWebStateImpl(std::unique_ptr<web::WebState> web_state,
   // Shift groups on the right of `index` towards the right.
   web_state_wrappers_[index]->SetGroup(group);
   for (const auto& current_group : groups_) {
-    Range& current_range = current_group->range();
+    TabGroupRange& current_range = current_group->range();
     if (current_group.get() == group) {
       current_range.ExpandRight();
     } else if (current_range.range_begin() >= index) {
@@ -668,7 +669,7 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
   // Update the span of the group containing the detached WebState and the
   // starting index of all groups located after the detached WebState.
   for (const auto& current_group : groups_) {
-    Range& current_range = current_group->range();
+    TabGroupRange& current_range = current_group->range();
     if (current_group.get() == group) {
       current_range.ContractRight();
     } else if (current_range.range_begin() >= index) {
@@ -819,7 +820,8 @@ const TabGroup* WebStateList::CreateGroupImpl(
   DCHECK_NE(pivot_index, kInvalidIndex);
 
   // Create the group.
-  auto group = std::make_unique<TabGroup>(visual_data, Range(pivot_index, 0));
+  auto group =
+      std::make_unique<TabGroup>(visual_data, TabGroupRange(pivot_index, 0));
   const TabGroup* new_group = group.get();
   groups_.insert(std::move(group));
 
@@ -880,7 +882,7 @@ void WebStateList::MoveToGroupImpl(const std::set<int>& indices,
   DCHECK(ContainsGroup(group));
   DCHECK(!indices.empty());
 
-  const Range group_range = group->range();
+  const TabGroupRange group_range = group->range();
 
   // Split indices between WebStates left of the group moving to their right and
   // WebStates right of the group moving to their left. This is to keep indices
@@ -961,7 +963,7 @@ void WebStateList::MoveGroupImpl(const TabGroup* group, int before_index) {
 
   // Compute the stride, i.e. by how much to change the start of the moving
   // group's range.
-  const Range prior_range = group->range();
+  const TabGroupRange prior_range = group->range();
   const int from_index = prior_range.range_begin();
   int stride = to_index - from_index;
   if (stride > 0) {
@@ -978,7 +980,7 @@ void WebStateList::MoveGroupImpl(const TabGroup* group, int before_index) {
   // Update the groups ranges.
   const int group_count = prior_range.count();
   for (auto& some_group : groups_) {
-    Range& some_group_range = some_group->range();
+    TabGroupRange& some_group_range = some_group->range();
     if (some_group.get() == group) {
       // Update the moved group range.
       some_group_range.Move(stride);
@@ -1113,7 +1115,7 @@ void WebStateList::MoveWebStateWrapperAt(int from_index,
 
   // Update the groups ranges.
   for (auto& group : groups_) {
-    Range& group_range = group->range();
+    TabGroupRange& group_range = group->range();
     // Remove the item from the old group.
     if (group.get() == old_group) {
       group_range.ContractRight();
@@ -1247,7 +1249,7 @@ void CloseAllNonPinnedWebStates(WebStateList& web_state_list, int close_flags) {
 void CloseAllWebStatesInGroup(WebStateList& web_state_list,
                               const TabGroup* group,
                               int close_flags) {
-  const WebStateList::Range range = group->range();
+  const TabGroupRange range = group->range();
 
   const WebStateList::ScopedBatchOperation batch =
       web_state_list.StartBatchOperation();

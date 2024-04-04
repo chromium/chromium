@@ -59,7 +59,7 @@ TabStripItemData* CreateTabItemData(int index, WebStateList* web_state_list) {
   const TabGroup* group = web_state_list->GetGroupOfWebStateAt(index);
   TabStripItemData* data = [[TabStripItemData alloc] init];
   if (group) {
-    const WebStateList::Range range = group->range();
+    const TabGroupRange range = group->range();
     data.isFirstTabInGroup = range.range_begin() == index;
     data.isLastTabInGroup = range.range_end() == index + 1;
     data.groupStrokeColor = group->GetColor();
@@ -81,7 +81,7 @@ NSMutableArray<TabStripItemData*>* CreateItemData(
     WebStateList* web_state_list,
     bool including_hidden_tab_items = true,
     bool including_group_items = true,
-    WebStateList::Range range = WebStateList::Range::InvalidRange()) {
+    TabGroupRange range = TabGroupRange::InvalidRange()) {
   CHECK(web_state_list);
   if (!range.IsValid()) {
     range = {0, web_state_list->count()};
@@ -142,7 +142,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
     WebStateList* web_state_list,
     bool including_hidden_tab_items = true,
     bool including_group_items = true,
-    WebStateList::Range range = WebStateList::Range::InvalidRange()) {
+    TabGroupRange range = TabGroupRange::InvalidRange()) {
   CHECK(web_state_list);
   if (!range.IsValid()) {
     range = {0, web_state_list->count()};
@@ -431,7 +431,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
           change.As<WebStateListChangeGroupMove>();
       TabStripItemIdentifier* itemIdentifier = CreateGroupItemIdentifier(
           groupMoveChange.moved_group(), _webStateList);
-      const WebStateList::Range toRange = groupMoveChange.moved_to_range();
+      const TabGroupRange toRange = groupMoveChange.moved_to_range();
       // Move item to new position.
       if (TabStripItemIdentifier* previousItemIdentifier =
               [self destinationItemAtIndex:(toRange.range_begin() - 1)
@@ -959,7 +959,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 // For each WebState in `group`, the associated item is reconfigured with an
 // up-to-date `TabStripItemData`.
 - (void)updateDataAndReconfigureItemsInGroup:(const TabGroup*)group {
-  const WebStateList::Range range = group->range();
+  const TabGroupRange range = group->range();
   NSArray<TabStripItemIdentifier*>* tabItemIdentifiers =
       CreateItemIdentifiers(_webStateList, /*including_hidden_tab_items=*/false,
                             /*including_group_items=*/true, range);

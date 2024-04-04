@@ -35,21 +35,21 @@ TEST_F(TabGroupTest, DefaultsToInvalidRange) {
   TabGroup group(tab_groups::TabGroupVisualData(
       u"Group", tab_groups::TabGroupColorId::kGrey));
 
-  EXPECT_EQ(WebStateList::Range::InvalidRange(), group.range());
+  EXPECT_EQ(TabGroupRange::InvalidRange(), group.range());
 }
 
 // Checks that the range at construction is correctly set up.
 TEST_F(TabGroupTest, RangeAtConstruction) {
   TabGroup group(tab_groups::TabGroupVisualData(
                      u"Group", tab_groups::TabGroupColorId::kGrey),
-                 WebStateList::Range(2, 3));
+                 TabGroupRange(2, 3));
 
-  EXPECT_EQ(WebStateList::Range(2, 3), group.range());
+  EXPECT_EQ(TabGroupRange(2, 3), group.range());
 }
 
 // Checks that the range is correctly update via the setter on TabGroup.
 TEST_F(TabGroupTest, RangeUpdate) {
-  auto range = WebStateList::Range(2, 3);
+  auto range = TabGroupRange(2, 3);
   TabGroup group(tab_groups::TabGroupVisualData(
                      u"Group", tab_groups::TabGroupColorId::kGrey),
                  range);

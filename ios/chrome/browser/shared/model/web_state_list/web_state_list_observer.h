@@ -7,6 +7,7 @@
 
 #import "base/observer_list_types.h"
 #import "components/tab_groups/tab_group_visual_data.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group_range.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
 class TabGroup;
@@ -326,8 +327,8 @@ class WebStateListChangeGroupMove final : public WebStateListChange {
   static constexpr Type kType = Type::kGroupMove;
 
   WebStateListChangeGroupMove(raw_ptr<const TabGroup> moved_group,
-                              WebStateList::Range moved_from_range,
-                              WebStateList::Range moved_to_range);
+                              TabGroupRange moved_from_range,
+                              TabGroupRange moved_to_range);
   ~WebStateListChangeGroupMove() final = default;
 
   Type type() const final;
@@ -339,15 +340,15 @@ class WebStateListChangeGroupMove final : public WebStateListChange {
   }
 
   // The previous range of the group.
-  WebStateList::Range moved_from_range() const { return moved_from_range_; }
+  TabGroupRange moved_from_range() const { return moved_from_range_; }
 
   // The current range of the group.
-  WebStateList::Range moved_to_range() const { return moved_to_range_; }
+  TabGroupRange moved_to_range() const { return moved_to_range_; }
 
  private:
   raw_ptr<const TabGroup> moved_group_;
-  const WebStateList::Range moved_from_range_;
-  const WebStateList::Range moved_to_range_;
+  const TabGroupRange moved_from_range_;
+  const TabGroupRange moved_to_range_;
 };
 
 // Represents a change that corresponds to the deletion of a tab group. The
