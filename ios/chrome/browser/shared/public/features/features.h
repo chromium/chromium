@@ -311,18 +311,14 @@ BASE_DECLARE_FEATURE(kIOSSaveToPhotos);
 BASE_DECLARE_FEATURE(kEnableUIEditMenuInteraction);
 
 // Causes the restore shorty and re-signin flows to offer a history opt-in
-// screen. This only has any effect if kReplaceSyncPromosWithSignInPromos is
-// also enabled.
+// screen.
 BASE_DECLARE_FEATURE(kHistoryOptInForRestoreShortyAndReSignin);
 
 // Enables batch upload entry point from the Bookmarks Manager.
-// Note: This has no effect if kReplaceSyncPromosWithSignInPromos is not
-// enabled.
 BASE_DECLARE_FEATURE(kEnableBatchUploadFromBookmarksManager);
 
 // Enables the promo in the Bookmarks Manager or Reading Lists Manager to review
-// account settings when these types are disabled. Note: This should only be
-// used if kReplaceSyncPromosWithSignInPromos is enabled.
+// account settings when these types are disabled.
 BASE_DECLARE_FEATURE(kEnableReviewAccountSettingsPromo);
 
 // Enables linking account settings in the Privacy Settings page footer for

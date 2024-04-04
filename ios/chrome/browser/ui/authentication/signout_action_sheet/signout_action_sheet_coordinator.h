@@ -39,8 +39,8 @@ class Browser;
 // block the UI, when the sign-out flow is in progress. The UI needs to be
 // blocked and unblocked using methods from
 // SignoutActionSheetCoordinatorDelegate.
-// When `kReplaceSyncPromosWithSignInPromos` will be removed, the sync feature
-// won't be enabled anymore.
+// TODO(crbug.com/40066949): Update this comment when syncing users no longer
+// exist on iOS.
 @interface SignoutActionSheetCoordinator : ChromeCoordinator
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
