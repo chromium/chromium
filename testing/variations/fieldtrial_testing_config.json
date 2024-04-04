@@ -10244,21 +10244,6 @@
             ]
         }
     ],
-    "InvalidateLocalSurfaceIdPreCommit": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20240305",
-                    "enable_features": [
-                        "InvalidateLocalSurfaceIdPreCommit"
-                    ]
-                }
-            ]
-        }
-    ],
     "IsolateSandboxedIframes": [
         {
             "platforms": [
