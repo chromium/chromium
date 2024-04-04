@@ -243,14 +243,14 @@ void WolvicContentMainDelegate::InitializeResourceBundle() {
     pak_region = global_descriptors->GetRegion(kShellPakDescriptor);
   } else {
     pak_fd =
-        base::android::OpenApkAsset("assets/content_shell.pak", &pak_region);
+        base::android::OpenApkAsset("assets/wolvic.pak", &pak_region);
     // Loaded from disk for browsertests.
     if (pak_fd < 0) {
       base::FilePath pak_file;
       bool r = base::PathService::Get(base::DIR_ANDROID_APP_DATA, &pak_file);
       DCHECK(r);
       pak_file = pak_file.Append(FILE_PATH_LITERAL("paks"));
-      pak_file = pak_file.Append(FILE_PATH_LITERAL("content_shell.pak"));
+      pak_file = pak_file.Append(FILE_PATH_LITERAL("wolvic.pak"));
       int flags = base::File::FLAG_OPEN | base::File::FLAG_READ;
       pak_fd = base::File(pak_file, flags).TakePlatformFile();
       pak_region = base::MemoryMappedFile::Region::kWholeFile;
