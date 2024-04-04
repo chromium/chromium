@@ -175,6 +175,34 @@ void BirchCalendarItem::LoadIcon(LoadIconCallback callback) const {
 // static
 std::u16string BirchCalendarItem::GetSubtitle(base::Time start_time,
                                               base::Time end_time) {
+  base::Time now = base::Time::Now();
+  if (start_time < now && now < end_time) {
+    // This is an ongoing event. Return "Now · Ends 11:20 AM".
+    return l10n_util::GetStringFUTF16(IDS_ASH_BIRCH_CALENDAR_ONGOING_SUBTITLE,
+                                      base::TimeFormatTimeOfDay(end_time));
+  }
+  if (start_time < now + base::Minutes(30)) {
+    // This event is starting soon. Return "In 5 mins · 10:00 AM - 10:30 AM".
+    int minutes = (start_time - now).InMinutes();
+    return l10n_util::GetPluralStringFUTF16(IDS_ASH_BIRCH_CALENDAR_MINUTES,
+                                            minutes) +
+           u" · " + GetStartEndString(start_time, end_time);
+  }
+  if (now.LocalMidnight() + base::Days(1) < start_time) {
+    // This event starts tomorrow. We don't show events more than 1 day in the
+    // future, so we don't need to worry about days other than "tomorrow".
+    // Return "Tomorrow · 10:00 AM - 11:30 AM"
+    return l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CALENDAR_TOMORROW) + u" · " +
+           GetStartEndString(start_time, end_time);
+  }
+  // Otherwise return "10:00 AM - 11:30 AM".
+  return GetStartEndString(start_time, end_time);
+}
+
+// static
+std::u16string BirchCalendarItem::GetStartEndString(base::Time start_time,
+                                                    base::Time end_time) {
+  // Return "10:00 AM - 10:30 AM".
   return base::TimeFormatTimeOfDay(start_time) + u" - " +
          base::TimeFormatTimeOfDay(end_time);
 }

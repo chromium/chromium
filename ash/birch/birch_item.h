@@ -126,6 +126,10 @@ class ASH_EXPORT BirchCalendarItem : public BirchItem {
  private:
   static std::u16string GetSubtitle(base::Time start_time, base::Time end_time);
 
+  // Returns a string like "10:00 AM - 10:30 AM".
+  static std::u16string GetStartEndString(base::Time start_time,
+                                          base::Time end_time);
+
   base::Time start_time_;
   base::Time end_time_;
   // Link to the event in the Google Calendar UI.

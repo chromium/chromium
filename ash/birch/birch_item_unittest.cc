@@ -51,12 +51,18 @@ class BirchItemTest : public testing::Test {
         std::make_unique<TestNewWindowDelegateProvider>(
             std::move(new_window_delegate));
     BirchItem::set_action_count_for_test(0);
+
+    // The mock clock starts with a fixed but arbitrary time. Adjust the time
+    // to make the test times more readable (this makes "now" 5 PM).
+    mock_clock_override_.Advance(base::Minutes(53));
   }
 
   ~BirchItemTest() override { BirchItem::set_action_count_for_test(0); }
 
   std::unique_ptr<TestNewWindowDelegateProvider> new_window_delegate_provider_;
   raw_ptr<TestNewWindowDelegateImpl> new_window_delegate_ = nullptr;
+  // Use an arbitrary but fixed "now" time for tests.
+  base::ScopedMockClockOverride mock_clock_override_;
 };
 
 TEST_F(BirchItemTest, RecordActionMetrics_Basics) {
@@ -171,6 +177,47 @@ TEST_F(BirchItemTest, Calendar_PerformAction_NoURL) {
   EXPECT_EQ(new_window_delegate_->last_opened_url_, GURL());
 }
 
+TEST_F(BirchItemTest, Calendar_Subtitle_Ongoing) {
+  BirchCalendarItem item(u"item",
+                         /*start_time=*/base::Time::Now() - base::Minutes(30),
+                         /*end_time=*/base::Time::Now() + base::Minutes(30),
+                         /*calendar_url=*/GURL("http://calendar.com"),
+                         /*conference_url=*/GURL(),
+                         /*event_id=*/"000");
+  EXPECT_EQ(item.subtitle(), u"Now · Ends 5:30 PM");
+}
+
+TEST_F(BirchItemTest, Calendar_Subtitle_Soon) {
+  BirchCalendarItem item(u"item",
+                         /*start_time=*/base::Time::Now() + base::Minutes(15),
+                         /*end_time=*/base::Time::Now() + base::Hours(1),
+                         /*calendar_url=*/GURL("http://calendar.com"),
+                         /*conference_url=*/GURL(),
+                         /*event_id=*/"000");
+  EXPECT_EQ(item.subtitle(), u"In 15 mins · 5:15 PM - 6:00 PM");
+}
+
+TEST_F(BirchItemTest, Calendar_Subtitle_NotSoon) {
+  BirchCalendarItem item(u"item",
+                         /*start_time=*/base::Time::Now() + base::Hours(1),
+                         /*end_time=*/base::Time::Now() + base::Hours(2),
+                         /*calendar_url=*/GURL("http://calendar.com"),
+                         /*conference_url=*/GURL(),
+                         /*event_id=*/"000");
+  EXPECT_EQ(item.subtitle(), u"6:00 PM - 7:00 PM");
+}
+
+TEST_F(BirchItemTest, Calendar_Subtitle_Tomorrow) {
+  base::Time next_midnight = base::Time::Now().LocalMidnight() + base::Days(1);
+  BirchCalendarItem item(u"item",
+                         /*start_time=*/next_midnight + base::Hours(1),
+                         /*end_time=*/next_midnight + base::Hours(2),
+                         /*calendar_url=*/GURL("http://calendar.com"),
+                         /*conference_url=*/GURL(),
+                         /*event_id=*/"000");
+  EXPECT_EQ(item.subtitle(), u"Tomorrow · 1:00 AM - 2:00 AM");
+}
+
 TEST_F(BirchItemTest, Attachment_PerformAction_ValidUrl) {
   BirchAttachmentItem item(u"item",
                            /*file_url=*/GURL("http://file.com/"),
@@ -253,8 +300,6 @@ TEST_F(BirchItemTest, Weather_PerformAction_Histograms) {
 }
 
 TEST_F(BirchItemTest, Tab_Subtitle_Recent) {
-  // Use a mock clock so that Now() always returns the same fixed time.
-  base::ScopedMockClockOverride clock;
   BirchTabItem item(u"item", /*url=*/GURL("http://example.com/"),
                     /*timestamp=*/base::Time::Now() - base::Minutes(5),
                     /*favicon_url=*/GURL(), /*session_name=*/"Chromebook",
@@ -263,8 +308,6 @@ TEST_F(BirchItemTest, Tab_Subtitle_Recent) {
 }
 
 TEST_F(BirchItemTest, Tab_Subtitle_OneHour) {
-  // Use a mock clock so that Now() always returns the same fixed time.
-  base::ScopedMockClockOverride clock;
   BirchTabItem item(u"item", /*url=*/GURL("http://example.com/"),
                     /*timestamp=*/base::Time::Now() - base::Minutes(65),
                     /*favicon_url=*/GURL(), /*session_name=*/"Chromebook",
@@ -273,8 +316,6 @@ TEST_F(BirchItemTest, Tab_Subtitle_OneHour) {
 }
 
 TEST_F(BirchItemTest, Tab_Subtitle_TwoHours) {
-  // Use a mock clock so that Now() always returns the same fixed time.
-  base::ScopedMockClockOverride clock;
   BirchTabItem item(u"item", /*url=*/GURL("http://example.com/"),
                     /*timestamp=*/base::Time::Now() - base::Minutes(125),
                     /*favicon_url=*/GURL(), /*session_name=*/"Chromebook",
@@ -283,8 +324,6 @@ TEST_F(BirchItemTest, Tab_Subtitle_TwoHours) {
 }
 
 TEST_F(BirchItemTest, Tab_Subtitle_Yesterday) {
-  // Use a mock clock so that Now() always returns the same fixed time.
-  base::ScopedMockClockOverride clock;
   BirchTabItem item(
       u"item", /*url=*/GURL("http://example.com/"),
       /*timestamp=*/base::Time::Now().LocalMidnight() - base::Minutes(5),

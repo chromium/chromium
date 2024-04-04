@@ -7949,6 +7949,17 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_PINE_EDUCATION_NUDGE" translateable="false" desc="Text of the Pine education nudge.">
         You can go back to Overview at anytime to get back to suggestions
       </message>
+      <message name="IDS_ASH_BIRCH_CALENDAR_ONGOING_SUBTITLE" translateable="false" desc="Subtitle for the suggestion chip for an ongoing calendar event (e.g. a meeting that is happening right now)">
+        Now · Ends <ph name="END_TIME">$1<ex>11:20 AM</ex></ph>
+      </message>
+      <message name="IDS_ASH_BIRCH_CALENDAR_MINUTES" translateable="false" desc="Brief description of the number of minutes until an upcoming calendar event">
+        {MINUTES, plural,
+         =1 {In 1 min}
+         other {In # mins}}
+      </message>
+      <message name="IDS_ASH_BIRCH_CALENDAR_TOMORROW" translateable="false" desc="Subtitle text for a calendar event that occurs tomorrow">
+        Tomorrow
+      </message>
       <message name="IDS_ASH_BIRCH_CALENDAR_ATTACHMENT_SUBTITLE" translateable="false" desc="Subtitle for the calendar event file attachment suggestion chip">
         Attached to a meeting
       </message>
