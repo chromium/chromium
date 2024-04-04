@@ -669,7 +669,7 @@
     "type": "additional_compile_target",
   },
   "cronet_package_ci": {
-    "label": "//components/cronet:cronet_package_ci",
+    "label": "//components/cronet/android:cronet_package_ci",
     "type": "additional_compile_target",
   },
   "cronet_perf_test_apk": {
