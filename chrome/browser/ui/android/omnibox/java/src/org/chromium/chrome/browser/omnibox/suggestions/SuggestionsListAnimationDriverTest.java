@@ -68,7 +68,7 @@ public class SuggestionsListAnimationDriverTest {
 
         assertEquals(mListModel.get(SuggestionListProperties.ALPHA), 0.4f, MathUtils.EPSILON);
         assertEquals(
-                mListModel.get(SuggestionListProperties.TRANSLATION_Y),
+                mListModel.get(SuggestionListProperties.CHILD_TRANSLATION_Y),
                 200.0f + VERTICAL_OFFSET * 0.6f,
                 MathUtils.EPSILON);
 
@@ -78,7 +78,7 @@ public class SuggestionsListAnimationDriverTest {
 
         assertEquals(mListModel.get(SuggestionListProperties.ALPHA), 0.7f, MathUtils.EPSILON);
         assertEquals(
-                mListModel.get(SuggestionListProperties.TRANSLATION_Y),
+                mListModel.get(SuggestionListProperties.CHILD_TRANSLATION_Y),
                 100.0f + VERTICAL_OFFSET * 0.3f,
                 MathUtils.EPSILON);
 
@@ -86,7 +86,7 @@ public class SuggestionsListAnimationDriverTest {
         mImeAnimation.setFraction(0.95f);
         mDriver.onProgress(new WindowInsetsCompat.Builder().build(), List.of(mImeAnimation));
         assertEquals(
-                mListModel.get(SuggestionListProperties.TRANSLATION_Y),
+                mListModel.get(SuggestionListProperties.CHILD_TRANSLATION_Y),
                 VERTICAL_OFFSET * 0.05f,
                 MathUtils.EPSILON);
 
@@ -96,14 +96,18 @@ public class SuggestionsListAnimationDriverTest {
         verify(mInsetObserver).removeWindowInsetsAnimationListener(mDriver);
         assertEquals(mListModel.get(SuggestionListProperties.ALPHA), 1.0f, MathUtils.EPSILON);
         assertEquals(
-                mListModel.get(SuggestionListProperties.TRANSLATION_Y), 0.0f, MathUtils.EPSILON);
+                mListModel.get(SuggestionListProperties.CHILD_TRANSLATION_Y),
+                0.0f,
+                MathUtils.EPSILON);
 
         mImeAnimation.setFraction(0.9f);
         mDriver.onProgress(new WindowInsetsCompat.Builder().build(), List.of(mImeAnimation));
         /// Progress updates after onEnd should be ignored.
         assertEquals(mListModel.get(SuggestionListProperties.ALPHA), 1.0f, MathUtils.EPSILON);
         assertEquals(
-                mListModel.get(SuggestionListProperties.TRANSLATION_Y), 0.0f, MathUtils.EPSILON);
+                mListModel.get(SuggestionListProperties.CHILD_TRANSLATION_Y),
+                0.0f,
+                MathUtils.EPSILON);
     }
 
     @Test
