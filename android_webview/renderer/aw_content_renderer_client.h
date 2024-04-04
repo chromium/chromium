@@ -56,6 +56,7 @@ class AwContentRendererClient : public content::ContentRendererClient,
   bool IsLinkVisited(uint64_t link_hash) override;
   void RunScriptsAtDocumentStart(content::RenderFrame* render_frame) override;
   std::unique_ptr<media::KeySystemSupportRegistration> GetSupportedKeySystems(
+      content::RenderFrame* render_frame,
       media::GetSupportedKeySystemsCB cb) override;
   std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>
   CreateWebSocketHandshakeThrottleProvider() override;

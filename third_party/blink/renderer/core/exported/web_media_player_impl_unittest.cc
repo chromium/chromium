@@ -855,7 +855,8 @@ class WebMediaPlayerImplTest
         WebString::FromUTF8("https://test.origin"));
 
     if (!key_systems_) {
-      key_systems_ = std::make_unique<media::KeySystemsImpl>();
+      key_systems_ =
+          std::make_unique<media::KeySystemsImpl>(base::NullCallback());
     }
     base::RunLoop run_loop;
     WebContentDecryptionModuleImpl::Create(

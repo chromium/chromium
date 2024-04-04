@@ -190,6 +190,7 @@ bool ContentRendererClient::IsOriginIsolatedPepperPlugin(
 
 std::unique_ptr<media::KeySystemSupportRegistration>
 ContentRendererClient::GetSupportedKeySystems(
+    RenderFrame* render_frame,
     media::GetSupportedKeySystemsCB cb) {
   std::move(cb).Run({});
   return nullptr;

@@ -58,6 +58,7 @@ class ShellContentRendererClient : public ContentRendererClient {
 
 #if BUILDFLAG(ENABLE_MOJO_CDM)
   std::unique_ptr<media::KeySystemSupportRegistration> GetSupportedKeySystems(
+      content::RenderFrame* render_frame,
       media::GetSupportedKeySystemsCB cb) override;
 #endif
 

@@ -202,6 +202,7 @@ WebEngineContentRendererClient::CreateURLLoaderThrottleProvider(
 
 std::unique_ptr<media::KeySystemSupportRegistration>
 WebEngineContentRendererClient::GetSupportedKeySystems(
+    content::RenderFrame* render_frame,
     media::GetSupportedKeySystemsCB cb) {
   media::KeySystemInfos key_systems;
   media::SupportedCodecs supported_video_codecs = 0;

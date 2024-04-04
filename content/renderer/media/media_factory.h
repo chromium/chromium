@@ -14,7 +14,9 @@
 #include "build/buildflag.h"
 #include "build/chromecast_buildflags.h"
 #include "components/viz/common/surfaces/surface_id.h"
+#include "media/base/key_system_info.h"
 #include "media/base/key_systems.h"
+#include "media/base/key_systems_support_registration.h"
 #include "media/base/media_player_logging_id.h"
 #include "media/base/renderer_factory_selector.h"
 #include "media/base/routing_token_callback.h"
@@ -153,6 +155,10 @@ class MediaFactory {
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING)
   media::mojom::RemoterFactory* GetRemoterFactory();
 #endif
+
+  // Initializes the key systems remote and receivers.
+  std::unique_ptr<media::KeySystemSupportRegistration> GetSupportedKeySystems(
+      media::GetSupportedKeySystemsCB cb);
 
   media::KeySystems* GetKeySystems();
 

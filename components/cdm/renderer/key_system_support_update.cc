@@ -20,6 +20,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/cdm/renderer/external_clear_key_key_system_info.h"
 #include "content/public/renderer/key_system_support.h"
+#include "content/public/renderer/render_frame.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/cdm_capability.h"
 #include "media/base/content_decryption_module.h"
@@ -590,10 +591,12 @@ void OnKeySystemSupportUpdated(
 }  // namespace
 
 std::unique_ptr<media::KeySystemSupportRegistration>
-GetSupportedKeySystemsUpdates(bool can_persist_data,
+GetSupportedKeySystemsUpdates(content::RenderFrame* render_frame,
+                              bool can_persist_data,
                               media::GetSupportedKeySystemsCB cb) {
-  return content::ObserveKeySystemSupportUpdate(base::BindRepeating(
-      &OnKeySystemSupportUpdated, can_persist_data, std::move(cb)));
+  return content::ObserveKeySystemSupportUpdate(
+      render_frame, base::BindRepeating(&OnKeySystemSupportUpdated,
+                                        can_persist_data, std::move(cb)));
 }
 
 }  // namespace cdm

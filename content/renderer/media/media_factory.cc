@@ -27,6 +27,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/content_renderer_client.h"
+#include "content/public/renderer/key_system_support.h"
 #include "content/public/renderer/render_frame_media_playback_options.h"
 #include "content/renderer/media/batching_media_log.h"
 #include "content/renderer/media/inspector_media_event_handler.h"
@@ -44,6 +45,7 @@
 #include "media/base/renderer_factory_selector.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/buildflags.h"
+#include "media/mojo/mojom/key_system_support.mojom.h"
 #include "media/renderers/decrypting_renderer_factory.h"
 #include "media/renderers/default_decoder_factory.h"
 #include "media/renderers/renderer_impl_factory.h"
@@ -884,9 +886,18 @@ media::mojom::RemoterFactory* MediaFactory::GetRemoterFactory() {
 }
 #endif
 
+std::unique_ptr<media::KeySystemSupportRegistration>
+MediaFactory::GetSupportedKeySystems(media::GetSupportedKeySystemsCB cb) {
+  return GetContentClient()->renderer()->GetSupportedKeySystems(render_frame_,
+                                                                std::move(cb));
+}
+
 media::KeySystems* MediaFactory::GetKeySystems() {
   if (!key_systems_) {
-    key_systems_ = std::make_unique<media::KeySystemsImpl>();
+    // Safe to use base::Unretained(this) because `key_systems_` is owned by
+    // `this`.
+    key_systems_ = std::make_unique<media::KeySystemsImpl>(base::BindOnce(
+        &MediaFactory::GetSupportedKeySystems, base::Unretained(this)));
   }
   return key_systems_.get();
 }

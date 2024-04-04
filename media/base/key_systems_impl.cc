@@ -267,7 +267,8 @@ static bool CanBlock(const KeySystemInfo& key_system_info) {
 
 }  // namespace
 
-KeySystemsImpl::KeySystemsImpl() {
+KeySystemsImpl::KeySystemsImpl(RegisterKeySystemsSupportCB cb)
+    : register_key_systems_support_cb_(std::move(cb)) {
   Initialize();
 }
 
@@ -291,9 +292,12 @@ void KeySystemsImpl::UpdateSupportedKeySystems() {
     OnSupportedKeySystemsUpdated({});
     return;
   }
-  key_system_support_registration_ = GetMediaClient()->GetSupportedKeySystems(
-      base::BindRepeating(&KeySystemsImpl::OnSupportedKeySystemsUpdated,
-                          weak_factory_.GetWeakPtr()));
+
+  key_system_support_registration_ =
+      std::move(register_key_systems_support_cb_)
+          .Run(
+              base::BindRepeating(&KeySystemsImpl::OnSupportedKeySystemsUpdated,
+                                  weak_factory_.GetWeakPtr()));
 }
 
 void KeySystemsImpl::UpdateIfNeeded(base::OnceClosure done_cb) {

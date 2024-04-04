@@ -288,7 +288,8 @@ class CONTENT_EXPORT ContentRendererClient {
 
   // Allows embedder to register the key system(s) it supports.
   virtual std::unique_ptr<media::KeySystemSupportRegistration>
-  GetSupportedKeySystems(media::GetSupportedKeySystemsCB cb);
+  GetSupportedKeySystems(RenderFrame* render_frame,
+                         media::GetSupportedKeySystemsCB cb);
 
   // Allows embedder to describe customized audio capabilities.
   virtual bool IsSupportedAudioType(const media::AudioType& type);

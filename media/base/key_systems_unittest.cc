@@ -287,7 +287,8 @@ class KeySystemsTest : public testing::Test {
 
     SetMediaClient(&test_media_client_);
 
-    key_systems_ = std::make_unique<KeySystemsImpl>();
+    key_systems_ = std::make_unique<KeySystemsImpl>(base::BindOnce(
+        &KeySystemsTest::RegisterKeySystemsSupport, base::Unretained(this)));
   }
 
   void SetUp() override {
@@ -311,6 +312,11 @@ class KeySystemsTest : public testing::Test {
     base::RunLoop run_loop;
     key_systems_->UpdateIfNeeded(run_loop.QuitClosure());
     run_loop.Run();
+  }
+
+  std::unique_ptr<KeySystemSupportRegistration> RegisterKeySystemsSupport(
+      GetSupportedKeySystemsCB cb) {
+    return test_media_client_.GetSupportedKeySystems(std::move(cb));
   }
 
   typedef std::vector<std::string> CodecVector;

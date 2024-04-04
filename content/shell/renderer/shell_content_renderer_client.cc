@@ -363,6 +363,7 @@ ShellContentRendererClient::CreateURLLoaderThrottleProvider(
 #if BUILDFLAG(ENABLE_MOJO_CDM)
 std::unique_ptr<media::KeySystemSupportRegistration>
 ShellContentRendererClient::GetSupportedKeySystems(
+    content::RenderFrame* render_frame,
     media::GetSupportedKeySystemsCB cb) {
   media::KeySystemInfos key_systems;
   if (base::FeatureList::IsEnabled(media::kExternalClearKeyForTesting))

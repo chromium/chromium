@@ -86,6 +86,8 @@ class MEDIA_EXPORT KeySystemInfo {
 
 using KeySystemInfos = std::vector<std::unique_ptr<KeySystemInfo>>;
 
+// TODO(b/321307544): Rename this callback to more appropriate name e.g.
+// SupportedKeySystemsUpdateCB.
 using GetSupportedKeySystemsCB = base::RepeatingCallback<void(KeySystemInfos)>;
 
 }  // namespace media

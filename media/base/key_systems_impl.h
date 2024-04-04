@@ -25,11 +25,17 @@
 
 namespace media {
 
+// TODO(b/321307544): Rename this callback to more appropriate name e.g.
+// GetSupportedKeySystemsCB.
+using RegisterKeySystemsSupportCB =
+    base::OnceCallback<std::unique_ptr<KeySystemSupportRegistration>(
+        GetSupportedKeySystemsCB)>;
+
 // An implementation of KeySystems that provides functionality to query
 // registered key systems.
 class MEDIA_EXPORT KeySystemsImpl : public KeySystems {
  public:
-  KeySystemsImpl();
+  explicit KeySystemsImpl(RegisterKeySystemsSupportCB cb);
   ~KeySystemsImpl() override;
 
   KeySystemsImpl(const KeySystemsImpl&) = delete;
@@ -123,6 +129,9 @@ class MEDIA_EXPORT KeySystemsImpl : public KeySystems {
 
   std::unique_ptr<KeySystemSupportRegistration>
       key_system_support_registration_;
+
+  // Callback that is used to initialize key systems.
+  RegisterKeySystemsSupportCB register_key_systems_support_cb_;
 
   base::WeakPtrFactory<KeySystemsImpl> weak_factory_{this};
 };

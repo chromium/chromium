@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "content/public/renderer/render_thread.h"
+#include "content/renderer/render_frame_impl.h"
 #include "media/base/key_systems_support_registration.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -43,13 +44,15 @@ class KeySystemSupportObserverImpl
 }  // namespace
 
 std::unique_ptr<media::KeySystemSupportRegistration>
-ObserveKeySystemSupportUpdate(media::KeySystemSupportCB cb) {
+ObserveKeySystemSupportUpdate(content::RenderFrame* render_frame,
+                              media::KeySystemSupportCB cb) {
   DVLOG(1) << __func__;
 
   // `key_system_support` will stay alive as long as the returned value of this
   // function is not destructed by the caller.
   mojo::Remote<media::mojom::KeySystemSupport> key_system_support;
-  content::RenderThread::Get()->BindHostReceiver(
+  RenderFrameImpl* impl = static_cast<RenderFrameImpl*>(render_frame);
+  impl->GetBrowserInterfaceBroker()->GetInterface(
       key_system_support.BindNewPipeAndPassReceiver());
 
   mojo::PendingRemote<media::mojom::KeySystemSupportObserver> observer_remote;
