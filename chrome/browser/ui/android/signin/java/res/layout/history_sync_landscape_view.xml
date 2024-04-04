@@ -77,7 +77,8 @@ found in the LICENSE file.
                 <org.chromium.components.browser_ui.widget.DualControlLayout
                     android:id="@+id/dual_control_button_bar"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"/>
             </LinearLayout>
         </ScrollView>
 
