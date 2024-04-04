@@ -7,9 +7,6 @@ import './region_selection.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BrowserProxyImpl} from './browser_proxy.js';
-import {CenterRotatedBox_CoordinateType} from './geometry.mojom-webui.js';
-import type {CenterRotatedBox} from './geometry.mojom-webui.js';
 import type {RegionSelectionElement} from './region_selection.js';
 import {getTemplate} from './selection_overlay.html.js';
 import {DRAG_THRESHOLD, DragFeature, emptyGestureEvent, type GestureEvent, GestureState} from './selection_utils.js';
@@ -49,14 +46,26 @@ export class SelectionOverlayElement extends PolymerElement {
   override ready() {
     super.ready();
     this.addEventListener('pointerdown', this.onPointerDown.bind(this));
-    this.addEventListener('pointerup', this.onPointerUp.bind(this));
-    this.addEventListener('pointermove', this.onPointerMove.bind(this));
+  }
+
+  private addDragListeners() {
+    this.addEventListener('pointerup', this.onPointerUp);
+    this.addEventListener('pointermove', this.onPointerMove);
+    this.addEventListener('pointercancel', this.onPointerCancel);
+  }
+
+  private removeDragListeners() {
+    this.removeEventListener('pointerup', this.onPointerUp);
+    this.removeEventListener('pointermove', this.onPointerMove);
+    this.removeEventListener('pointercancel', this.onPointerCancel);
   }
 
   private onPointerDown(event: PointerEvent) {
     if (this.shouldIgnoreEvent(event)) {
       return;
     }
+
+    this.addDragListeners();
 
     this.currentGesture = {
       state: GestureState.STARTING,
@@ -73,10 +82,6 @@ export class SelectionOverlayElement extends PolymerElement {
   }
 
   private onPointerUp(event: PointerEvent) {
-    if (this.shouldIgnoreEvent(event)) {
-      return;
-    }
-
     this.updateGestureCoordinates(event);
 
     // Allow proper feature to respond to the tap/drag event.
@@ -84,9 +89,7 @@ export class SelectionOverlayElement extends PolymerElement {
       case GestureState.DRAGGING:
         // Drag has finished. Let the features respond to the end of a drag.
         if (this.draggingRespondent === DragFeature.MANUAL_REGION) {
-          BrowserProxyImpl.getInstance().handler.issueLensRequest(
-              this.getNormalizedCenterRotatedBoxFromGesture(
-                  this.currentGesture));
+          this.$.regionSelectionLayer.handleUpGesture(this.currentGesture);
         } else if (this.draggingRespondent === DragFeature.TEXT) {
           this.$.textSelectionLayer.handleUpGesture();
         }
@@ -101,6 +104,7 @@ export class SelectionOverlayElement extends PolymerElement {
     // After features have responded to the event, reset the current drag state.
     this.currentGesture = emptyGestureEvent();
     this.draggingRespondent = DragFeature.NONE;
+    this.removeDragListeners();
   }
 
   private onPointerMove(event: PointerEvent) {
@@ -114,6 +118,11 @@ export class SelectionOverlayElement extends PolymerElement {
     if (this.isDragging()) {
       this.currentGesture.state = GestureState.DRAGGING;
 
+      // Capture pointer events so gestures still work if the users pointer
+      // leaves the selection overlay div. Pointer capture is implicitly
+      // released after pointerup or pointercancel events.
+      this.setPointerCapture(event.pointerId);
+
       if (this.draggingRespondent === DragFeature.TEXT) {
         this.$.textSelectionLayer.handleDragGesture(this.currentGesture);
       } else {
@@ -123,6 +132,16 @@ export class SelectionOverlayElement extends PolymerElement {
         this.$.regionSelectionLayer.handleDragGesture(this.currentGesture);
       }
     }
+  }
+
+  private onPointerCancel() {
+    // Pointer cancelled, so cancel any pending gestures.
+    this.$.textSelectionLayer.cancelGesture();
+    this.$.regionSelectionLayer.cancelGesture();
+
+    this.currentGesture = emptyGestureEvent();
+    this.draggingRespondent = DragFeature.NONE;
+    this.removeDragListeners();
   }
 
   // Updates the currentGesture to correspond with the given PointerEvent.
@@ -151,34 +170,6 @@ export class SelectionOverlayElement extends PolymerElement {
     const yMovement =
         Math.abs(this.currentGesture.clientY - this.currentGesture.startY);
     return xMovement > DRAG_THRESHOLD || yMovement > DRAG_THRESHOLD;
-  }
-
-  /**
-   * @returns a mojo CenterRotatedBox corresponding to the gesture provided,
-   *          normalized to the selection overlay dimensions.
-   */
-  private getNormalizedCenterRotatedBoxFromGesture(gesture: GestureEvent):
-      CenterRotatedBox {
-    const parentRect = this.getBoundingClientRect();
-
-    const normalizedWidth =
-        Math.abs(gesture.clientX - gesture.startX) / parentRect.width;
-    const normalizedHeight =
-        Math.abs(gesture.clientY - gesture.startY) / parentRect.height;
-    const normalizedCenterX =
-        (gesture.clientX + gesture.startX) / 2 / parentRect.width;
-    const normalizedCenterY =
-        (gesture.clientY + gesture.startY) / 2 / parentRect.height;
-    return {
-      box: {
-        x: normalizedCenterX,
-        y: normalizedCenterY,
-        width: normalizedWidth,
-        height: normalizedHeight,
-      },
-      rotation: 0,
-      coordinateType: CenterRotatedBox_CoordinateType.kNormalized,
-    };
   }
 }
 

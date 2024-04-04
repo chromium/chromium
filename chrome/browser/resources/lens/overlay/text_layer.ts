@@ -126,6 +126,10 @@ export class TextLayerElement extends PolymerElement {
     this.isSelectingText = false;
   }
 
+  cancelGesture() {
+    this.unselectWords();
+  }
+
   private unselectWords() {
     this.selectionStartIndex = -1;
     this.selectionEndIndex = -1;

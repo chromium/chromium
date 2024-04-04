@@ -4,7 +4,7 @@
 
 import 'chrome-untrusted://lens/selection_overlay.js';
 
-import type {RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
+import type {Point, RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 import {BrowserProxyImpl} from 'chrome-untrusted://lens/browser_proxy.js';
 import type {LensPageRemote} from 'chrome-untrusted://lens/lens.mojom-webui.js';
 import type {SelectionOverlayElement} from 'chrome-untrusted://lens/selection_overlay.js';
@@ -14,11 +14,6 @@ import {flushTasks} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 import {createLine, createParagraph, createText, createWord} from '../utils/text_utils.js';
 
 import {TestLensOverlayBrowserProxy} from './test_overlay_browser_proxy.js';
-
-interface Point {
-  x: number;
-  y: number;
-}
 
 function getCenterX(boundingBox: DOMRect): number {
   return boundingBox.left + boundingBox.width / 2;
@@ -339,4 +334,8 @@ suite('TextSelection', function() {
     highlightedWords = getHighlightedWords();
     assertEquals(0, highlightedWords.length);
   });
+
+  // TODO(b/328294794): Once there is logic for doing something after a text
+  // selection, add tests to ensure finishing a drag off the selection overlay
+  // still triggers text selection logic.
 });

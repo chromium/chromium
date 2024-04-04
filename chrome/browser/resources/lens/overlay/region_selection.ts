@@ -3,8 +3,12 @@
 // found in the LICENSE file.
 
 import {assert} from '//resources/js/assert.js';
+import type {Point} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {BrowserProxyImpl} from './browser_proxy.js';
+import {CenterRotatedBox_CoordinateType} from './geometry.mojom-webui.js';
+import type {CenterRotatedBox} from './geometry.mojom-webui.js';
 import {getTemplate} from './region_selection.html.js';
 import type {GestureEvent} from './selection_utils.js';
 
@@ -63,6 +67,15 @@ export class RegionSelectionElement extends PolymerElement {
     this.renderDashedBoundingBox(event);
   }
 
+  handleUpGesture(event: GestureEvent) {
+    BrowserProxyImpl.getInstance().handler.issueLensRequest(
+        this.getNormalizedCenterRotatedBoxFromGesture(event));
+  }
+
+  cancelGesture() {
+    this.clearCanvas();
+  }
+
   private setCanvasSizeToParent() {
     assert(this.parentElement);
     // Resetting the canvas width and height also clears the canvas.
@@ -74,22 +87,35 @@ export class RegionSelectionElement extends PolymerElement {
     this.context.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
   }
 
+  // Converts the clientX and clientY to be relative to the Region Selection
+  // Canvas bounds instead of the viewport. If the event is out of the region
+  // selection canvas bounds, returns the closest point on the overlay.
+  private getRelativeCoordinate(coord: Point): Point {
+    const boundingRect = this.getBoundingClientRect();
+
+    return {
+      x: Math.max(0, Math.min(coord.x, boundingRect.right) - boundingRect.left),
+      y: Math.max(0, Math.min(coord.y, boundingRect.bottom) - boundingRect.top),
+    };
+  }
+
   private renderDashedBoundingBox(event: GestureEvent, idealCornerRadius = 12) {
     const dashLength = 6;
     const gapLength = 5;
 
-    // Get the dimensions of the box from the gesture event points.
-    const width = Math.abs(event.clientX - event.startX);
-    const height = Math.abs(event.clientY - event.startY);
+    // Get the drag event coordinates relative to the canvas
+    const relativeDragStart =
+        this.getRelativeCoordinate({x: event.startX, y: event.startY});
+    const relativeDragEnd =
+        this.getRelativeCoordinate({x: event.clientX, y: event.clientY});
 
-    // Find the offsets of the canvas relative to the window.
-    const rect = this.$.regionSelectionCanvas.getBoundingClientRect();
-    const offsetX = rect.left;
-    const offsetY = rect.top;
+    // Get the dimensions of the box from the gesture event points.
+    const width = Math.abs(relativeDragEnd.x - relativeDragStart.x);
+    const height = Math.abs(relativeDragEnd.y - relativeDragStart.y);
 
     // Define the points for the bounding box for readability.
-    const topLeftX = Math.min(event.clientX - offsetX, event.startX - offsetX);
-    const topLeftY = Math.min(event.clientY - offsetY, event.startY - offsetY);
+    const topLeftX = Math.min(relativeDragStart.x, relativeDragEnd.x);
+    const topLeftY = Math.min(relativeDragStart.y, relativeDragEnd.y);
 
     this.context.setLineDash([dashLength, gapLength]);
     this.context.lineWidth = 2;
@@ -102,6 +128,40 @@ export class RegionSelectionElement extends PolymerElement {
         topLeftX, topLeftY, width, height, idealCornerRadius);
     this.context.stroke();
     this.context.fill();
+  }
+
+  /**
+   * @returns a mojo CenterRotatedBox corresponding to the gesture provided,
+   *          normalized to the selection overlay dimensions.
+   */
+  private getNormalizedCenterRotatedBoxFromGesture(gesture: GestureEvent):
+      CenterRotatedBox {
+    const parentRect = this.getBoundingClientRect();
+
+    // Get coordinates relative to the region selection bounds
+    const relativeDragStart =
+        this.getRelativeCoordinate({x: gesture.startX, y: gesture.startY});
+    const relativeDragEnd =
+        this.getRelativeCoordinate({x: gesture.clientX, y: gesture.clientY});
+
+    const normalizedWidth =
+        Math.abs(relativeDragEnd.x - relativeDragStart.x) / parentRect.width;
+    const normalizedHeight =
+        Math.abs(relativeDragEnd.y - relativeDragStart.y) / parentRect.height;
+    const centerX = (relativeDragEnd.x + relativeDragStart.x) / 2;
+    const centerY = (relativeDragEnd.y + relativeDragStart.y) / 2;
+    const normalizedCenterX = centerX / parentRect.width;
+    const normalizedCenterY = centerY / parentRect.height;
+    return {
+      box: {
+        x: normalizedCenterX,
+        y: normalizedCenterY,
+        width: normalizedWidth,
+        height: normalizedHeight,
+      },
+      rotation: 0,
+      coordinateType: CenterRotatedBox_CoordinateType.kNormalized,
+    };
   }
 }
 
