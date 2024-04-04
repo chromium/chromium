@@ -6633,8 +6633,8 @@ AutotestPrivateInstallBruschettaFunction::Run() {
   // This API is available only on test images.
   base::SysInfo::CrashIfChromeOSNonTestImage();
 
-  std::optional<api::autotest_private::RemoveBruschetta::Params> params =
-      api::autotest_private::RemoveBruschetta::Params::Create(args());
+  std::optional<api::autotest_private::InstallBruschetta::Params> params =
+      api::autotest_private::InstallBruschetta::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
