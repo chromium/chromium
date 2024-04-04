@@ -114,6 +114,7 @@ source_set("model") {
     "//ios/chrome/browser/policy_url_blocking/model",
     "//ios/chrome/browser/power_bookmarks/model",
     "//ios/chrome/browser/prefs/model",
+    "//ios/chrome/browser/price_insights/model",
     "//ios/chrome/browser/promos_manager/model:factory",
     "//ios/chrome/browser/push_notification/model:browser_state_service_factory",
     "//ios/chrome/browser/reading_list/model",

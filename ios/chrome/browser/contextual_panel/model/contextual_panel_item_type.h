@@ -8,6 +8,7 @@
 // Enum to represent the existing Contextual Panel item types.
 enum class ContextualPanelItemType {
   SamplePanelItem = 0,
+  PriceInsightsItem = 1,
 };
 
 #endif  // IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_MODEL_CONTEXTUAL_PANEL_ITEM_TYPE_H_

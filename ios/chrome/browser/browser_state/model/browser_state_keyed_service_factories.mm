@@ -64,6 +64,7 @@
 #import "ios/chrome/browser/plus_addresses/model/plus_address_service_factory.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service_factory.h"
 #import "ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_service.h"
+#import "ios/chrome/browser/price_insights/model/price_insights_model_factory.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_browser_state_service_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
@@ -207,6 +208,7 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   SafeBrowsingClientFactory::GetInstance();
   SafeBrowsingMetricsCollectorFactory::GetInstance();
   SamplePanelModelFactory::GetInstance();
+  PriceInsightsModelFactory::GetInstance();
   segmentation_platform::SegmentationPlatformServiceFactory::GetInstance();
   SessionRestorationServiceFactory::GetInstance();
   SigninBrowserStateInfoUpdaterFactory::GetInstance();

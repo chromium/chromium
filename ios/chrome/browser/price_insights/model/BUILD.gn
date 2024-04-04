@@ -32,3 +32,17 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 }
+
+source_set("feature") {
+  sources = [
+    "price_insights_feature.h",
+    "price_insights_feature.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:shopping_service",
+    "//ios/chrome/browser/commerce/model:shopping_service",
+    "//ios/chrome/browser/shared/model/browser_state",
+  ]
+}

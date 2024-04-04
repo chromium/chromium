@@ -10,6 +10,9 @@
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_model_service.h"
 #import "ios/chrome/browser/contextual_panel/model/sample/sample_panel_model.h"
 #import "ios/chrome/browser/contextual_panel/model/sample/sample_panel_model_factory.h"
+#import "ios/chrome/browser/price_insights/model/price_insights_feature.h"
+#import "ios/chrome/browser/price_insights/model/price_insights_model.h"
+#import "ios/chrome/browser/price_insights/model/price_insights_model_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
@@ -33,6 +36,7 @@ ContextualPanelModelServiceFactory::ContextualPanelModelServiceFactory()
           "ContextualPanelModelService",
           BrowserStateDependencyManager::GetInstance()) {
   DependsOn(SamplePanelModelFactory::GetInstance());
+  DependsOn(PriceInsightsModelFactory::GetInstance());
 }
 
 ContextualPanelModelServiceFactory::~ContextualPanelModelServiceFactory() {}
@@ -46,6 +50,12 @@ ContextualPanelModelServiceFactory::BuildServiceInstanceFor(
   if (IsContextualPanelForceShowEntrypointEnabled()) {
     models.emplace(ContextualPanelItemType::SamplePanelItem,
                    SamplePanelModelFactory::GetForBrowserState(browser_state));
+  }
+
+  if (IsPriceInsightsEnabled(browser_state)) {
+    models.emplace(
+        ContextualPanelItemType::PriceInsightsItem,
+        PriceInsightsModelFactory::GetForBrowserState(browser_state));
   }
   return std::make_unique<ContextualPanelModelService>(models);
 }
