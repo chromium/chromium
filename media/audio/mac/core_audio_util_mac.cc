@@ -11,6 +11,7 @@
 #include "base/apple/osstatus_logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/audio/apple/scoped_audio_unit.h"
@@ -378,7 +379,8 @@ bool IsOutputDevice(AudioObjectID device_id) {
 base::TimeDelta GetHardwareLatency(AudioUnit audio_unit,
                                    AudioDeviceID device_id,
                                    AudioObjectPropertyScope scope,
-                                   int sample_rate) {
+                                   int sample_rate,
+                                   bool is_input) {
   if (!audio_unit || device_id == kAudioObjectUnknown) {
     DLOG(WARNING) << "Audio unit object is NULL or device ID is unknown";
     return base::TimeDelta();
@@ -437,9 +439,32 @@ base::TimeDelta GetHardwareLatency(AudioUnit audio_unit,
         << "Could not get audio device stream ids size.";
   }
 
-  return base::Seconds(audio_unit_latency_sec) +
-         AudioTimestampHelper::FramesToTime(
-             device_latency_frames + stream_latency_frames, sample_rate);
+  const base::TimeDelta audio_unit_latency =
+      base::Seconds(audio_unit_latency_sec);
+  const base::TimeDelta device_latency =
+      AudioTimestampHelper::FramesToTime(device_latency_frames, sample_rate);
+  const base::TimeDelta stream_latency =
+      AudioTimestampHelper::FramesToTime(stream_latency_frames, sample_rate);
+  const base::TimeDelta total_latency =
+      audio_unit_latency + device_latency + stream_latency;
+
+  // This function is not currently not called on iOS, but guard against an
+  // accidental future change drastically changing these metrics.
+#if BUILDFLAG(IS_MAC)
+  const std::string uma_name = base::StringPrintf(
+      "Media.Audio.Mac.HardwareLatency.%s", is_input ? "Input" : "Output");
+
+  base::UmaHistogramTimes(base::StringPrintf("%s.AudioUnit", uma_name.c_str()),
+                          audio_unit_latency);
+  base::UmaHistogramTimes(base::StringPrintf("%s.Device", uma_name.c_str()),
+                          device_latency);
+  base::UmaHistogramTimes(base::StringPrintf("%s.Stream", uma_name.c_str()),
+                          stream_latency);
+  base::UmaHistogramTimes(base::StringPrintf("%s.Total", uma_name.c_str()),
+                          total_latency);
+#endif
+
+  return total_latency;
 }
 
 }  // namespace core_audio_mac

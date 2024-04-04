@@ -849,6 +849,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.Mac.HardwareLatency.{Direction}.{Component}"
+    units="misses" expires_after="2024-09-01">
+  <owner>tguilbert@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    The reported hardware latency, used to adjust timestamps for A/V sync.
+    Logged once per low-latency input stream creation (AUAudioInputStream only),
+    or once per output stream creation.
+  </summary>
+  <token key="Direction">
+    <variant name="Input" summary="Audio capture"/>
+    <variant name="Output" summary="Audio playback"/>
+  </token>
+  <token key="Component">
+    <variant name="AudioUnit" summary="Latency reported by AudioUnit"/>
+    <variant name="Device" summary="Latency reported by the HW device"/>
+    <variant name="Stream" summary="Latency reported by the stream"/>
+    <variant name="Total" summary="Total reported latency"/>
+  </token>
+</histogram>
+
 <histogram name="Media.Audio.MakeAudioInputStreamStatus"
     enum="MakeAudioInputStreamStatus" expires_after="2024-09-22">
   <owner>yuhsuan@chromium.org</owner>

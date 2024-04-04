@@ -245,7 +245,7 @@ AudioInputStream::OpenOutcome AUAudioInputStream::Open() {
   if (base::FeatureList::IsEnabled(kIncludeMicrophonHardwareDelayMacOS)) {
     hardware_latency_ = core_audio_mac::GetHardwareLatency(
         audio_unit_, input_device_id_, kAudioDevicePropertyScopeInput,
-        format_.mSampleRate);
+        format_.mSampleRate, /*is_input=*/true);
   }
 #else
   AudioManagerIOS* manager_ios = static_cast<AudioManagerIOS*>(manager_);
