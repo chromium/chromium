@@ -5,9 +5,12 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_APP_INSTALL_APP_INSTALL_DIALOG_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_APP_INSTALL_APP_INSTALL_DIALOG_H_
 
+#include "chrome/browser/apps/almanac_api_client/almanac_icon_cache.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install.mojom.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install_ui.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
+#include "ui/views/native_window_tracker.h"
 
 namespace ash::app_install {
 
@@ -27,10 +30,17 @@ class AppInstallDialog : public SystemWebDialogDelegate {
   AppInstallDialog& operator=(const AppInstallDialog&) = delete;
 
   // Displays the dialog.
-  void Show(gfx::NativeWindow parent,
+  void Show(Profile* profile,
+            gfx::NativeWindow parent,
             mojom::DialogArgsPtr args,
+            int icon_width,
+            bool is_icon_maskable,
             std::string expected_app_id,
             base::OnceCallback<void(bool accepted)> dialog_accepted_callback);
+  void OnIconDownloaded(int icon_width,
+                        bool is_icon_maskable,
+                        const gfx::Image& icon);
+  void OnLoadIcon(apps::IconValuePtr icon_value);
   // Callers must call this once the install has finished, passing in the app_id
   // if the installation succeeded or a nullptr if it failed.
   void SetInstallComplete(const std::string* app_id);
@@ -52,9 +62,13 @@ class AppInstallDialog : public SystemWebDialogDelegate {
 
   base::WeakPtr<AppInstallDialog> GetWeakPtr();
 
+  base::WeakPtr<Profile> profile_;
+  gfx::NativeWindow parent_;
   mojom::DialogArgsPtr dialog_args_;
   std::string expected_app_id_;
 
+  std::unique_ptr<views::NativeWindowTracker> parent_window_tracker_;
+  std::unique_ptr<apps::AlmanacIconCache> icon_cache_;
   raw_ptr<AppInstallDialogUI> dialog_ui_ = nullptr;
   base::OnceCallback<void(bool accepted)> dialog_accepted_callback_;
 

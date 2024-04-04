@@ -297,7 +297,10 @@ void AppInstallServiceAsh::ShowDialogAndInstall(
                     ? anchor_window.value()
                     : nullptr;
             dialog->Show(
-                parent, std::move(args), expected_app_id,
+                &*profile_, parent, std::move(args),
+                data->icon ? data->icon->width_in_pixels : 0,
+                data->icon ? data->icon->is_masking_allowed : false,
+                expected_app_id,
                 base::BindOnce(&AppInstallServiceAsh::InstallIfDialogAccepted,
                                weak_ptr_factory_.GetWeakPtr(), surface,
                                expected_package_id, std::move(data).value(),

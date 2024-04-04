@@ -10,12 +10,14 @@
 
 #include "ash/style/typography.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install.mojom.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install_page_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/webapps/common/constants.h"
 #include "ui/aura/window.h"
+#include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/gfx/text_utils.h"
@@ -54,10 +56,20 @@ AppInstallDialog::AppInstallDialog()
 AppInstallDialog::~AppInstallDialog() = default;
 
 void AppInstallDialog::Show(
+    Profile* profile,
     gfx::NativeWindow parent,
     mojom::DialogArgsPtr args,
+    int icon_width,
+    bool is_icon_maskable,
     std::string expected_app_id,
     base::OnceCallback<void(bool accepted)> dialog_accepted_callback) {
+  profile_ = profile->GetWeakPtr();
+
+  if (parent) {
+    parent_window_tracker_ = views::NativeWindowTracker::Create(parent);
+  }
+  parent_ = std::move(parent);
+
   expected_app_id_ = std::move(expected_app_id);
   dialog_accepted_callback_ = std::move(dialog_accepted_callback);
 
@@ -76,9 +88,41 @@ void AppInstallDialog::Show(
       base::UTF8ToUTF16(dialog_args_->description),
       webapps::kMaximumDescriptionLength, gfx::CHARACTER_BREAK));
 
-  this->set_dialog_modal_type(ui::MODAL_TYPE_WINDOW);
-  this->ShowSystemDialog(parent);
+  icon_cache_ =
+      std::make_unique<apps::AlmanacIconCache>(profile_.get()->GetProfileKey());
+  icon_cache_->GetIcon(
+      dialog_args_->icon_url,
+      base::BindOnce(&AppInstallDialog::OnIconDownloaded,
+                     weak_factory_.GetWeakPtr(), icon_width, is_icon_maskable));
+}
 
+void AppInstallDialog::OnIconDownloaded(int icon_width,
+                                        bool is_icon_maskable,
+                                        const gfx::Image& icon) {
+  apps::IconValuePtr icon_value = std::make_unique<apps::IconValue>();
+  icon_value->icon_type = apps::IconType::kStandard;
+  icon_value->is_placeholder_icon = false;
+  icon_value->is_maskable_icon = is_icon_maskable;
+  icon_value->uncompressed = icon.AsImageSkia();
+
+  apps::ApplyIconEffects(profile_.get(), /*app_id=*/std::nullopt,
+                         apps::IconEffects::kCrOsStandardIcon, icon_width,
+                         std::move(icon_value),
+                         base::BindOnce(&AppInstallDialog::OnLoadIcon,
+                                        weak_factory_.GetWeakPtr()));
+}
+
+void AppInstallDialog::OnLoadIcon(apps::IconValuePtr icon_value) {
+  dialog_args_->icon_url =
+      GURL(webui::GetBitmapDataUrl(*icon_value->uncompressed.bitmap()));
+  this->set_dialog_modal_type(ui::MODAL_TYPE_WINDOW);
+
+  gfx::NativeWindow parent =
+      (parent_window_tracker_ &&
+       parent_window_tracker_->WasNativeWindowDestroyed())
+          ? nullptr
+          : parent_;
+  this->ShowSystemDialog(parent);
   this->RepositionNearTopOf(parent);
 }
 

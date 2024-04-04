@@ -139,8 +139,9 @@ IN_PROC_BROWSER_TEST_F(AppInstallDialogBrowserTest, FailedInstall) {
       AppInstallDialog::CreateDialog();
 
   dialog_handle->Show(
-      browser()->window()->GetNativeWindow(),
+      browser()->profile(), browser()->window()->GetNativeWindow(),
       /* dialog_args= */ ash::app_install::mojom::DialogArgs::New(),
+      /* icon_width= */ 0, /* is_icon_maskable= */ true,
       /* expected_app_id= */ "",
       base::BindOnce(
           [](base::WeakPtr<AppInstallDialog> dialog_handle,

@@ -59,28 +59,22 @@ namespace cros_events = metrics::structured::events::v2::cr_os_events;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// Gets the first icon larger than `kIconSize` from `manifest_icons` and returns
-// the url. If none exist, returns the url of the largest icon. Returns empty
-// GURL if vector is empty.
+// Returns the first icon larger than `kIconSize` from `manifest_icons`. If none
+// exist, returns the largest icon. Returns an empty IconInfo if there are no
+// icons.
 // TODO(crbug.com/1488697): This function assumes manifest_icons is sorted,
 // which it may not be. Icon purpose also needs to be considered.
-const GURL& GetIconUrl(const std::vector<apps::IconInfo>& manifest_icons) {
-  if (manifest_icons.empty()) {
-    return GURL::EmptyGURL();
-  }
-
-  const GURL* icon_url = &GURL::EmptyGURL();
+apps::IconInfo GetIcon(const std::vector<apps::IconInfo>& manifest_icons) {
   for (const auto& icon_info : manifest_icons) {
-    icon_url = &icon_info.url;
     if (icon_info.square_size_px > ash::app_install::kIconSize) {
-      break;
+      return icon_info;
     }
   }
-
-  return *icon_url;
+  return apps::IconInfo();
 }
 
 void OnManifestFetchedShowCrosDialog(
+    Profile* profile,
     base::WeakPtr<ash::app_install::AppInstallDialog> dialog_handle,
     std::vector<webapps::Screenshot> screenshots,
     content::WebContents* initiator_web_contents,
@@ -93,7 +87,8 @@ void OnManifestFetchedShowCrosDialog(
   args->url = web_app_info->start_url.GetWithEmptyPath();
   args->name = base::UTF16ToUTF8(web_app_info->title);
   args->description = base::UTF16ToUTF8(web_app_info->description);
-  args->icon_url = GetIconUrl(web_app_info->manifest_icons);
+  apps::IconInfo icon = GetIcon(web_app_info->manifest_icons);
+  args->icon_url = icon.url;
   for (const auto& screenshot : screenshots) {
     auto dialog_screenshot = ash::app_install::mojom::Screenshot::New();
     dialog_screenshot->url = GURL(webui::GetBitmapDataUrl(screenshot.image));
@@ -103,7 +98,10 @@ void OnManifestFetchedShowCrosDialog(
   }
 
   dialog_handle->Show(
-      initiator_web_contents->GetTopLevelNativeWindow(), std::move(args),
+      profile, initiator_web_contents->GetTopLevelNativeWindow(),
+      std::move(args),
+      icon.square_size_px.has_value() ? icon.square_size_px.value() : 0,
+      icon.purpose == apps::IconInfo::Purpose::kMaskable,
       web_app::GenerateAppIdFromManifestId(web_app_info->manifest_id),
       base::BindOnce(
           [](std::unique_ptr<WebAppInstallInfo> web_app_info,
@@ -298,7 +296,8 @@ void CreateWebAppFromCurrentWebContents(Browser* browser,
         ash::app_install::AppInstallDialog::CreateDialog();
     provider->scheduler().FetchManifestAndInstall(
         install_source, web_contents->GetWeakPtr(),
-        base::BindOnce(OnManifestFetchedShowCrosDialog, dialog_handle,
+        base::BindOnce(OnManifestFetchedShowCrosDialog, browser->profile(),
+                       dialog_handle,
                        data.has_value() ? std::move(data->screenshots)
                                         : std::vector<webapps::Screenshot>()),
         base::BindOnce(OnWebAppInstalledFromCrosDialog, dialog_handle,
@@ -361,11 +360,13 @@ bool CreateWebAppFromManifest(content::WebContents* web_contents,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (base::FeatureList::IsEnabled(
           chromeos::features::kCrosOmniboxInstallDialog)) {
+    Profile* profile =
+        Profile::FromBrowserContext(web_contents->GetBrowserContext());
     base::WeakPtr<ash::app_install::AppInstallDialog> dialog_handle =
         ash::app_install::AppInstallDialog::CreateDialog();
     provider->scheduler().FetchManifestAndInstall(
         install_source, web_contents->GetWeakPtr(),
-        base::BindOnce(OnManifestFetchedShowCrosDialog, dialog_handle,
+        base::BindOnce(OnManifestFetchedShowCrosDialog, profile, dialog_handle,
                        data.has_value() ? std::move(data->screenshots)
                                         : std::vector<webapps::Screenshot>()),
         base::BindOnce(OnWebAppInstalledFromCrosDialog, dialog_handle,
