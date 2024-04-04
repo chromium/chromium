@@ -1749,7 +1749,13 @@ bool ChildProcessSecurityPolicyImpl::IsAccessAllowedForSandboxedProcess(
       // Sandboxed frame processes should only be able to host opaque origins,
       // and only those origins should ever be used as a source or initiator
       // origin in things like postMessage.
-      return url_is_for_opaque_origin;
+      //
+      // TODO(crbug.com/325410297): Some extensions-layer callers of
+      // `HostsOrigin()` do not currently provide a proper opaque origin
+      // for sandboxed frames. Temporarily return true to avoid renderer kills,
+      // and flip this to `url_is_for_opaque_origin` once these callers are
+      // fixed.
+      return true;
     case AccessType::kCanAccessDataForCommittedOrigin:
       // Sandboxed frames should never access passwords, storage, or other data
       // for any origin.
