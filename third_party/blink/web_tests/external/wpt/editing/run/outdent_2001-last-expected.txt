@@ -67,9 +67,9 @@ Found 37 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["defaultparagraphseparator","p"],["outdent",""]] "<ul> <li>foo</li> <li>bar</li> <li>[baz]</li></ul>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul> <li>foo</li> <li>bar</li></ul> <p>baz</p>" but got "<ul> <li>foo</li> <li>bar</li> </ul>baz<br>"
 [FAIL] [["defaultparagraphseparator","div"],["outdent",""]] "<ol><li>[]a<table><tr><td><br></table></ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div>a</div><table><tbody><tr><td><br></td></tr></tbody></table>" but got "<ol><li><table><tbody><tr><td><br></td></tr></tbody></table></li></ol>a<table><tbody><tr><td><br></td></tr></tbody></table>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div>a</div><table><tbody><tr><td><br></td></tr></tbody></table>" but got "a<table><tbody><tr><td><br></td></tr></tbody></table>"
 [FAIL] [["defaultparagraphseparator","p"],["outdent",""]] "<ol><li>[]a<table><tr><td><br></table></ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>a</p><table><tbody><tr><td><br></td></tr></tbody></table>" but got "<ol><li><table><tbody><tr><td><br></td></tr></tbody></table></li></ol>a<table><tbody><tr><td><br></td></tr></tbody></table>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>a</p><table><tbody><tr><td><br></td></tr></tbody></table>" but got "a<table><tbody><tr><td><br></td></tr></tbody></table>"
 [FAIL] [["outdent",""]] "<blockquote><span>foo<br>[bar]</span></blockquote>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foo</blockquote><span>bar</span>" but got "bar<br><blockquote><span>foo<br></span></blockquote>"
 [FAIL] [["outdent",""]] "<ul><ul><li><span style=\\"color:rgb(255, 0, 0)\\">[]foo</span></li></ul></ul>" compare innerHTML

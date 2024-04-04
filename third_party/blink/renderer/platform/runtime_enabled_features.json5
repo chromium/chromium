@@ -3181,6 +3181,12 @@
       status: "stable",
       base_feature: "none",
     },
+    // Remove a node if it's selected fully even though it has children. See
+    // https://crbug.com/331074432
+    {
+      name: "RemoveNodeHavingChildrenIfFullySelected",
+      status: "stable",
+    },
     {
       // See https://issues.chromium.org/issues/41311101
       name: "RemoveVisibleSelectionInDOMSelection",

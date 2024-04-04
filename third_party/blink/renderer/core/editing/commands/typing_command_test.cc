@@ -119,13 +119,10 @@ TEST_F(TypingCommandTest, ForwardDeleteInvalidatesSelection) {
   TypingCommand::ForwardDeleteKeyPressed(GetDocument(), &editing_state);
 
   EXPECT_EQ(
-      "<blockquote>|</blockquote>"
-      "<q>"
-      "<table contenteditable=\"false\">"
-      "<colgroup width=\"-1\"></colgroup>"
-      "</table>\n"
-      "<svg></svg>"
-      "</q>",
+      "<blockquote>"
+      "<q>|<br></q>"
+      "</blockquote>"
+      "<q>\n<svg></svg></q>",
       GetSelectionTextFromBody());
 }
 
