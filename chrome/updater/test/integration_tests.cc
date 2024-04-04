@@ -1623,34 +1623,36 @@ TEST_F(IntegrationTest, UninstallCmdLine) {
   ASSERT_TRUE(WaitForUpdaterExit());
 }
 
-// TODO(https://crbug.com/332654156): Test is flaky on win-asan.
-#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
-#define MAYBE_AppLogoUrl DISABLED_AppLogoUrl
-#else
-#define MAYBE_AppLogoUrl AppLogoUrl
-#endif
-TEST_F(IntegrationTest, MAYBE_AppLogoUrl) {
-  ScopedServer test_server(test_commands_);
-  const std::string kAppId("test");
+TEST_F(IntegrationTest, AppLogoUrl) {
+  ScopedServer test_update_server(test_commands_);
+  ScopedServer test_logo_server(test_commands_);
+  EnterTestMode(test_update_server.update_url(),
+                test_update_server.crash_upload_url(),
+                test_update_server.device_management_url(),
+                test_logo_server.app_logo_url(), base::Minutes(5));
 
-  EnterTestMode(GURL("http://update.server.not_exist/update"),
-                GURL("http://crash.report.not_exist/crash"),
-                GURL("http://dm.server.not_exist/dmapi"),
-                test_server.app_logo_url(), base::Minutes(5));
-  test_server.ExpectOnce(
+  const std::string kAppId("test");
+  const base::Version v1("1");
+  ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
+      &test_update_server, kAppId, "", UpdateService::Priority::kForeground,
+      base::Version({0, 0, 0, 0}), v1));
+
+  test_logo_server.ExpectOnce(
       {
           request::GetPathMatcher(base::StringPrintf(
-              "%s%s.bmp\\?lang=%s", test_server.app_logo_path().c_str(), "test",
-              base::WideToUTF8(GetPreferredLanguage()).c_str())),
+              "%s%s.bmp\\?lang=%s", test_logo_server.app_logo_path().c_str(),
+              "test", base::WideToUTF8(GetPreferredLanguage()).c_str())),
       },
       {});
-  ASSERT_NO_FATAL_FAILURE(
-      InstallUpdaterAndApp(kAppId, /*is_silent_install=*/false, "usagestats=1",
-                           base::WideToUTF8(GetLocalizedStringF(
-                               IDS_NO_NETWORK_PRESENT_ERROR_BASE,
-                               GetExecutableRelativePath().value()))));
-
+  ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(
+      kAppId, /*is_silent_install=*/false, "usagestats=1",
+      base::WideToUTF8(
+          GetLocalizedString(IDS_BUNDLE_INSTALLED_SUCCESSFULLY_BASE))));
   ASSERT_TRUE(WaitForUpdaterExit());
+
+  ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kAppId, v1));
+
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_update_server));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
