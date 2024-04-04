@@ -20,7 +20,7 @@ schema:
     type: string
   type: array
 items:
-- caption: Scanner drivers
+- caption: Scanners
   name: scanner_drivers
   value: scanner_drivers
 example_value:
