@@ -88,6 +88,15 @@ std::u16string AXPlatformNodeDelegate::GetTextContentUTF16() const {
   return text_content;
 }
 
+int AXPlatformNodeDelegate::GetTextContentLengthUTF16() const {
+  // TODO(accessibility): Simplify once ViewsAX is complete.
+  if (node_) {
+    return node_->GetTextContentLengthUTF16();
+  }
+
+  return GetTextContentUTF16().length();
+}
+
 std::u16string AXPlatformNodeDelegate::GetValueForControl() const {
   if (node_)
     return base::UTF8ToUTF16(node()->GetValueForControl());

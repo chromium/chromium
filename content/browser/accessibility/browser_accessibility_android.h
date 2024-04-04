@@ -117,6 +117,7 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   // ...-android-external.txt files. On other platforms this may be ::GetName().
   std::u16string GetTextContentUTF16() const override;
   std::u16string GetValueForControl() const override;
+  int GetTextContentLengthUTF16() const override;
 
   typedef base::RepeatingCallback<bool(const std::u16string& partial)>
       EarlyExitPredicate;

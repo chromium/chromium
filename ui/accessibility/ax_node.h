@@ -513,10 +513,11 @@ class AX_EXPORT AXNode final {
   // this node's coordinate system as specified in
   // `AXNodeData::relative_bounds`.
   //
-  // Note that `start_offset` and `end_offset` are either in UTF8 or UTF16 code
-  // units, not in grapheme clusters.
-  gfx::RectF GetTextContentRangeBoundsUTF8(int start_offset,
-                                           int end_offset) const;
+  // Note that `start_offset` and `end_offset` are in UTF16 code units, not in
+  // grapheme clusters. For example, the following Hindi text
+  // u"\x0939\x093F\x0928\x094D\x0926\x0940" consists of two glyphs and has
+  // character offsets {40, 40, 59, 59, 59, 59} since the first glyph is
+  // represented by 2 code units in UTF16 and the second by 4 code units.
   gfx::RectF GetTextContentRangeBoundsUTF16(int start_offset,
                                             int end_offset) const;
 

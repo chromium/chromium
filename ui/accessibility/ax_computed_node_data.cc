@@ -275,7 +275,17 @@ int AXComputedNodeData::GetOrComputeTextContentLengthUTF8() const {
 }
 
 int AXComputedNodeData::GetOrComputeTextContentLengthUTF16() const {
-  return static_cast<int>(GetOrComputeTextContentUTF16().length());
+  if (utf16_length_) {
+    return utf16_length_.value();
+  }
+  if (text_content_utf16_) {
+    // Used the cached UTF16 representation if we have it already.
+    utf16_length_ = text_content_utf16_->length();
+  } else {
+    // Do not cache the text since used just to extract the length.
+    utf16_length_ = ComputeTextContentUTF16().length();
+  }
+  return utf16_length_.value();
 }
 
 void AXComputedNodeData::ComputeUnignoredValues(

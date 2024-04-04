@@ -178,6 +178,11 @@ class AX_EXPORT AXComputedNodeData final {
       text_content_with_paragraph_breaks_utf16_;
   mutable std::optional<std::string> text_content_utf8_;
   mutable std::optional<std::u16string> text_content_utf16_;
+  // In rare cases, the length of the text content in UTF16 does not align with
+  // the length of the character offsets array. Store the computed length to
+  // avoid needing to cache the UTF16 representation of the text.
+  // TODO(kevers): Remove once alignment is guaranteed.
+  mutable std::optional<int32_t> utf16_length_;
 };
 
 }  // namespace ui

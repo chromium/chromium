@@ -587,7 +587,7 @@ gfx::Rect BrowserAccessibility::GetInnerTextRangeBoundsRect(
     const ui::AXCoordinateSystem coordinate_system,
     const ui::AXClippingBehavior clipping_behavior,
     ui::AXOffscreenResult* offscreen_result) const {
-  const int text_length = GetTextContentUTF16().length();
+  const int text_length = GetTextContentLengthUTF16();
   if (start_offset < 0 || end_offset > text_length || start_offset > end_offset)
     return gfx::Rect();
 
@@ -616,7 +616,7 @@ gfx::Rect BrowserAccessibility::GetInnerTextRangeBoundsRectInSubtree(
        it != InternalChildrenEnd(); ++it) {
     const BrowserAccessibility* browser_accessibility_child = it.get();
     const int child_text_length =
-        browser_accessibility_child->GetTextContentUTF16().length();
+        browser_accessibility_child->GetTextContentLengthUTF16();
 
     // The text bounds queried are not in this subtree; skip it and continue.
     const int child_start_offset =

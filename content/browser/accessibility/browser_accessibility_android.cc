@@ -655,6 +655,10 @@ std::u16string BrowserAccessibilityAndroid::GetTextContentUTF16() const {
   return GetSubstringTextContentUTF16(std::nullopt);
 }
 
+int BrowserAccessibilityAndroid::GetTextContentLengthUTF16() const {
+  return GetTextContentUTF16().length();
+}
+
 std::u16string BrowserAccessibilityAndroid::GetSubstringTextContentUTF16(
     std::optional<EarlyExitPredicate> predicate) const {
   if (ui::IsIframe(GetRole()))
