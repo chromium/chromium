@@ -19,3 +19,5 @@ build/mac-build-perf-siso
 build/win-build-perf-developer
 ci/Deterministic Linux
 ci/Deterministic Linux (dbg)
+ci/linux-win-cross-rel
+try/linux-win-cross-rel

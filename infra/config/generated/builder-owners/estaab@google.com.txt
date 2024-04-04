@@ -1,2 +1,0 @@
-ci/linux-win-cross-rel
-try/linux-win-cross-rel

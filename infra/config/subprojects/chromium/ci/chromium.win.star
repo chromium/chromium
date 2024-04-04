@@ -530,6 +530,5 @@ ci.builder(
         category = "misc",
         short_name = "lxw",
     ),
-    # TODO(crbug.com/332248571): Transfer ownership once green.
-    contact_team_email = "estaab@google.com",
+    contact_team_email = "chrome-build-team@google.com",
 )

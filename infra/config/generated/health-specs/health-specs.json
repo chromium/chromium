@@ -10642,7 +10642,7 @@
         ]
       },
       "linux-win-cross-rel": {
-        "contact_team_email": "estaab@google.com",
+        "contact_team_email": "chrome-build-team@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
