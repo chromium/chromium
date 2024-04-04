@@ -86,7 +86,8 @@ export class HistoryClustersHeaderElementV2 extends ElementBase {
           action: 'disable',
           icon: 'modules:block',
           text: this.i18nRecursive(
-              '', 'modulesDisableButtonTextV2', 'modulesThisTypeOfCardText'),
+              '', 'modulesDisableButtonTextV2',
+              'modulesHistoryResumeBrowsingTitle'),
         },
         {
           action: 'show-all',
