@@ -1095,6 +1095,8 @@ by a child template that "extends" this file.
             </intent-filter>
         </service>
 
+        <receiver android:name="org.chromium.chrome.browser.data_sharing.DataSharingNotificationManager$Receiver"
+            android:exported="false" />
 
         <receiver android:name="org.chromium.chrome.browser.announcement.AnnouncementNotificationManager$Receiver"
             android:exported="false"/>

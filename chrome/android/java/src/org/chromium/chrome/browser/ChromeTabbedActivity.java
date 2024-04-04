@@ -93,6 +93,7 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChromeTablet;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager.TabModelStartupInfo;
 import org.chromium.chrome.browser.cookies.CookiesFetcher;
 import org.chromium.chrome.browser.crypto.CipherFactory;
+import org.chromium.chrome.browser.data_sharing.DataSharingNotificationManager;
 import org.chromium.chrome.browser.dependency_injection.ChromeActivityComponent;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
@@ -1400,6 +1401,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 handleDebugIntent(intent);
             }
 
+            // Launch tab switcher if it is a data sharing intent.
+            maybeShowTabSwitcher(intent);
         } finally {
             TraceEvent.end("ChromeTabbedActivity.onNewIntentWithNative");
         }
@@ -1789,6 +1792,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     getWindowAndroid().setUnfoldLatencyBeginTime(unfoldLatencyBeginTime);
                 }
             }
+
+            // TODO(b/332766879): Call maybeShowTabSwitcher() here to handle data sharing intent on
+            // new Chrome instances.
         } finally {
             TraceEvent.end("ChromeTabbedActivity.initializeState");
         }
@@ -4014,5 +4020,21 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     public void showStartSurfaceForTesting() {
         showOverview(StartSurfaceState.SHOWING_START);
+    }
+
+    private void maybeShowTabSwitcher(Intent intent) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID)) return;
+        boolean shouldShowTabSwitcher =
+                IntentUtils.safeGetBooleanExtra(
+                                intent, DataSharingNotificationManager.DATA_SHARING_EXTRA, false)
+                        && IntentHandler.wasIntentSenderChrome(intent);
+        if (shouldShowTabSwitcher && !isInOverviewMode()) {
+            // TODO(haileywang): Close the tab grid dialog when showing tab switcher from this path.
+            TabModelUtils.runOnTabStateInitialized(
+                    getTabModelSelectorSupplier().get(),
+                    (tabModelSelectorReturn) -> {
+                        showOverview(StartSurfaceState.SHOWING_TABSWITCHER);
+                    });
+        }
     }
 }

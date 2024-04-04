@@ -760,6 +760,10 @@
         android:name="org.chromium.chrome.browser.customtabs.CustomTabsShareBroadcastReceiver"
         android:exported="false">
     </receiver>  # DIFF-ANCHOR: fd245bee
+    <receiver  # DIFF-ANCHOR: 0448b6b4
+        android:name="org.chromium.chrome.browser.data_sharing.DataSharingNotificationManager$Receiver"
+        android:exported="false">
+    </receiver>  # DIFF-ANCHOR: 0448b6b4
     <receiver  # DIFF-ANCHOR: 2b9c19aa
         android:name="org.chromium.chrome.browser.notifications.NotificationIntentInterceptor$Receiver"
         android:exported="false">
