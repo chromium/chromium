@@ -177,19 +177,6 @@ void MaybeRegisterChromeFeaturePromos(
     return;
   }
 
-  // kIPHAutofillCreditCardBenefitFeature:
-  registry.RegisterFeature(std::move(
-      FeaturePromoSpecification::CreateForToastPromo(
-          feature_engagement::kIPHAutofillCreditCardBenefitFeature,
-          kAutofillCreditCardBenefitElementId,
-          IDS_AUTOFILL_CREDIT_CARD_BENEFIT_IPH_BUBBLE_LABEL,
-          IDS_AUTOFILL_CREDIT_CARD_BENEFIT_IPH_BUBBLE_LABEL_SCREENREADER,
-          FeaturePromoSpecification::AcceleratorInfo())
-          .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)
-          .SetMetadata(125, "justinleewells@google.com",
-                       "Triggered after a credit card benefit is displayed for "
-                       "the first time.")));
-
   // TODO(1432894): Use toast or snooze instead of legacy promo.
   // kIPHAutofillExternalAccountProfileSuggestionFeature:
   registry.RegisterFeature(

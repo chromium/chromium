@@ -1395,25 +1395,6 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 
-  if (kIPHAutofillCreditCardBenefitFeature.name == feature->name) {
-    // Credit card benefit IPH is shown:
-    // * once for an installation, 10-year window is used as the maximum
-    // * when a credit card benefit is displayed for the first time
-    std::optional<FeatureConfig> config = FeatureConfig();
-    config->valid = true;
-    config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(EQUAL, 0);
-    config->trigger =
-        EventConfig("autofill_credit_card_benefit_iph_trigger",
-                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
-                    feature_engagement::kMaxStoragePeriod);
-    config->used =
-        EventConfig("autofill_credit_card_benefit_iph_accepted",
-                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
-                    feature_engagement::kMaxStoragePeriod);
-    return config;
-  }
-
   if (kIPHAutofillExternalAccountProfileSuggestionFeature.name ==
       feature->name) {
     // Externally created account profile suggestion IPH is shown:
