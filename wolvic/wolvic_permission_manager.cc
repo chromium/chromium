@@ -8,7 +8,9 @@
 #include <algorithm>
 #include <memory>
 #include <span>
+#include <string>
 
+#include "absl/types/optional.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
@@ -16,16 +18,22 @@
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/media_capture_devices.h"
+#include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/permission_request_description.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
+#include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "wolvic/jni_headers/PermissionManagerBridge_jni.h"
 
 namespace wolvic {
 namespace {
+
+constexpr char kMediaSourceClass[] = "org/chromium/wolvic/PermissionManagerBridge$MediaSource";
 
 // Has to be kept in sync with PermissionManagerBridge.java
 enum class WolvicPermissionType {
@@ -47,6 +55,21 @@ enum class WolvicPermissionStatus {
   kPrompt = 0,
   kDeny = 1,
   kAllow = 2,
+};
+
+// Has to be kept in sync with PermissionManagerBridge.java
+enum class MediaSourceType {
+  kCamera = 0,
+  kScreen = 1,
+  kMicrophone = 2,
+  kAudiocapture = 3,
+  kOther = 4,
+};
+
+// Has to be kept in sync with PermissionManagerBridge.java
+enum class MediaType {
+  kVideo = 0,
+  kAudio = 1,
 };
 
 WolvicPermissionType ToWolvicPermissionType(blink::PermissionType permission) {
@@ -89,6 +112,29 @@ std::string ToAndroidPermission(blink::PermissionType permission) {
       // PermissionManagerBridge.java. It's used to tell Wolvic that the given
       // permission type doesn't require any Android permissions.
       return "org.chromium.wolvic.NO_ANDROID_PERMISSION";
+  }
+}
+
+blink::PermissionType MediaStreamTypeToContentPermission(
+    blink::mojom::MediaStreamType type) {
+  using namespace blink::mojom;
+
+  switch (type) {
+    case MediaStreamType::DEVICE_AUDIO_CAPTURE:
+      return blink::PermissionType::AUDIO_CAPTURE;
+    case MediaStreamType::DEVICE_VIDEO_CAPTURE:
+      return blink::PermissionType::VIDEO_CAPTURE;
+    case MediaStreamType::GUM_TAB_AUDIO_CAPTURE:
+    case MediaStreamType::GUM_DESKTOP_AUDIO_CAPTURE:
+    case MediaStreamType::DISPLAY_AUDIO_CAPTURE:
+    case MediaStreamType::GUM_TAB_VIDEO_CAPTURE:
+    case MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE:
+    case MediaStreamType::DISPLAY_VIDEO_CAPTURE:
+    case MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB:
+    case MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET:
+      return blink::PermissionType::DISPLAY_CAPTURE;
+    default:
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -135,6 +181,89 @@ std::vector<content::PermissionStatus> FromJavaWolvicPermissionStatuses(
   return result;
 }
 
+MediaSourceType ToWolvicMediaSourceType(blink::mojom::MediaStreamType type) {
+  using namespace blink::mojom;
+
+  switch (type) {
+    case MediaStreamType::DEVICE_AUDIO_CAPTURE:
+      return MediaSourceType::kMicrophone;
+    case MediaStreamType::DEVICE_VIDEO_CAPTURE:
+      return MediaSourceType::kCamera;
+    case MediaStreamType::GUM_TAB_AUDIO_CAPTURE:
+    case MediaStreamType::GUM_DESKTOP_AUDIO_CAPTURE:
+    case MediaStreamType::DISPLAY_AUDIO_CAPTURE:
+      return MediaSourceType::kAudiocapture;
+    case MediaStreamType::GUM_TAB_VIDEO_CAPTURE:
+    case MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE:
+    case MediaStreamType::DISPLAY_VIDEO_CAPTURE:
+    case MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB:
+    case MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET:
+      return MediaSourceType::kScreen;
+    default:
+      return MediaSourceType::kOther;
+  }
+}
+
+base::android::ScopedJavaLocalRef<jobject> CreateJavaMediaSource(
+    JNIEnv* env,
+    const std::string& id,
+    const std::string& name,
+    MediaSourceType source,
+    MediaType type) {
+  jclass cls = env->FindClass(kMediaSourceClass);
+  jmethodID constructor = env->GetMethodID(
+      cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;II)V");
+  jobject media_source = env->NewObject(
+      cls, constructor, base::android::ConvertUTF8ToJavaString(env, id).obj(),
+      base::android::ConvertUTF8ToJavaString(env, name).obj(),
+      static_cast<jint>(source), static_cast<jint>(type));
+  return base::android::ScopedJavaLocalRef<jobject>(env, media_source);
+}
+
+void ToJavaMediaSources(
+    JNIEnv* env,
+    const content::MediaStreamRequest& request,
+    base::android::ScopedJavaLocalRef<jobjectArray>* video,
+    base::android::ScopedJavaLocalRef<jobjectArray>* audio) {
+  auto video_source = CreateJavaMediaSource(
+      env, request.requested_video_device_id, "",
+      ToWolvicMediaSourceType(request.video_type), MediaType::kVideo);
+  auto audio_source = CreateJavaMediaSource(
+      env, request.requested_audio_device_id, "",
+      ToWolvicMediaSourceType(request.audio_type), MediaType::kAudio);
+
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> video_sources{
+      video_source};
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> audio_sources{
+      audio_source};
+
+  auto media_source_class = base::android::GetClass(env, kMediaSourceClass);
+  *video = base::android::ToTypedJavaArrayOfObjects(env, video_sources,
+                                                    media_source_class);
+  *audio = base::android::ToTypedJavaArrayOfObjects(env, audio_sources,
+                                                    media_source_class);
+}
+
+// this method is copied from
+// android_webview/browser/permission/media_access_permission_request.cc
+// Return the device specified by |device_id| if exists, otherwise the first
+// available device is returned.
+const blink::MediaStreamDevice* GetDeviceByIdOrFirstAvailable(
+    const blink::MediaStreamDevices& devices,
+    const std::string& device_id) {
+  if (devices.empty())
+    return nullptr;
+
+  if (!device_id.empty()) {
+    for (const auto& device : devices) {
+      if (device.id == device_id)
+        return &device;
+    }
+  }
+
+  return &devices[0];
+}
+
 wolvic::WolvicPermissionManager* g_instance = nullptr;
 wolvic::WolvicPermissionManager* g_off_the_record_instance = nullptr;
 
@@ -168,10 +297,14 @@ std::vector<content::PermissionStatus> CombineStatuses(
 
 InProgressRequest::InProgressRequest(
     const content::PermissionRequestDescription& description,
-    base::OnceCallback<void(const std::vector<content::PermissionStatus>&)>
-        callback)
-    : description(description) {
-  callbacks.emplace_back(std::move(callback));
+    absl::optional<PermissionRequestCallback> callback,
+    absl::optional<content::MediaStreamRequest> media_request,
+    absl::optional<content::MediaResponseCallback> media_callback)
+    : description(description),
+      media_request(media_request),
+      media_callback(std::move(media_callback)) {
+  if (callback)
+    callbacks.emplace_back(std::move(callback.value()));
 }
 
 InProgressRequest::~InProgressRequest() = default;
@@ -190,11 +323,16 @@ WolvicPermissionManager::WolvicPermissionManager(
 
 WolvicPermissionManager::~WolvicPermissionManager() = default;
 
+WolvicPermissionManager* WolvicPermissionManager::GetInstance(
+    bool is_off_the_record) {
+  return is_off_the_record ? GetOffTheRecordPermissionManager()
+                           : GetPermissionManager();
+}
+
 void WolvicPermissionManager::RequestPermissions(
     content::RenderFrameHost* render_frame_host,
     const content::PermissionRequestDescription& request_description,
-    base::OnceCallback<void(const std::vector<content::PermissionStatus>&)>
-        callback) {
+    PermissionRequestCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (render_frame_host->IsNestedWithinFencedFrame()) {
@@ -227,8 +365,7 @@ void WolvicPermissionManager::ResetPermission(blink::PermissionType permission,
 void WolvicPermissionManager::RequestPermissionsFromCurrentDocument(
     content::RenderFrameHost* render_frame_host,
     const content::PermissionRequestDescription& request_description,
-    base::OnceCallback<void(const std::vector<content::PermissionStatus>&)>
-        callback) {
+    PermissionRequestCallback callback) {
   RequestPermissions(render_frame_host, request_description,
                      std::move(callback));
 }
@@ -304,6 +441,39 @@ WolvicPermissionManager::SubscribePermissionStatusChange(
 void WolvicPermissionManager::UnsubscribePermissionStatusChange(
     SubscriptionId subscription_id) {}
 
+void WolvicPermissionManager::RequestMediaAccessPermission(
+    content::WebContents* web_contents,
+    const content::MediaStreamRequest& request,
+    content::MediaResponseCallback callback) {
+  std::vector<blink::PermissionType> permissions;
+  if (request.audio_type != blink::mojom::MediaStreamType::NO_SERVICE) {
+    permissions.push_back(
+        MediaStreamTypeToContentPermission(request.audio_type));
+  }
+  if (request.video_type != blink::mojom::MediaStreamType::NO_SERVICE) {
+    permissions.push_back(
+        MediaStreamTypeToContentPermission(request.video_type));
+  }
+
+  content::PermissionRequestDescription description(
+      permissions, /*user_gesture=*/false, request.security_origin);
+  JNIEnv* env = base::android::AttachCurrentThread();
+  in_progress_requests_.emplace_back(std::make_unique<InProgressRequest>(
+      description, /*callback=*/absl::nullopt, request, std::move(callback)));
+  RequestContentPermissions(env, in_progress_requests_.back().get());
+}
+
+bool WolvicPermissionManager::CheckMediaAccessPermission(
+    content::RenderFrameHost* render_frame_host,
+    const GURL& security_origin,
+    blink::mojom::MediaStreamType type) {
+  auto it = allowed_media_permissions_cache_.find(security_origin);
+  if (it == allowed_media_permissions_cache_.end())
+    return false;
+
+  return it->second.find(type) != it->second.end();
+}
+
 void WolvicPermissionManager::OnContentPermissionResult(
     JNIEnv* env,
     InProgressRequest* in_progress_request,
@@ -316,6 +486,91 @@ void WolvicPermissionManager::OnAndroidPermissionResult(
     InProgressRequest* in_progress_request,
     const std::vector<content::PermissionStatus>& result) {
   in_progress_request->android_results = result;
+
+  // If this was part of media request, proceed with requesting media permissions.
+  if (in_progress_request->media_callback) {
+    OnMediaContentPermissionResult(
+        in_progress_request,
+        CombineStatuses(in_progress_request->content_results.value(),
+                        in_progress_request->android_results.value()));
+    return;
+  }
+
+  // Otherwise, complete the request.
+  CompleteRequest(in_progress_request);
+}
+
+void WolvicPermissionManager::OnMediaContentPermissionResult(
+    InProgressRequest* in_progress_request,
+    const std::vector<content::PermissionStatus>& result) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobjectArray> video_sources;
+  base::android::ScopedJavaLocalRef<jobjectArray> audio_sources;
+  ToJavaMediaSources(env, in_progress_request->media_request.value(),
+                     &video_sources, &audio_sources);
+  auto url = base::android::ConvertUTF8ToJavaString(
+      env, in_progress_request->media_request.value().security_origin.spec());
+  Java_PermissionManagerBridge_onMediaPermissionRequest(
+      env, video_sources, audio_sources, url,
+      browser_context_->IsOffTheRecord(),
+      reinterpret_cast<jlong>(in_progress_request));
+}
+
+void WolvicPermissionManager::OnMediaPermissionResult(
+    InProgressRequest* in_progress_request,
+    bool granted,
+    const absl::optional<std::string>& video_id,
+    const absl::optional<std::string>& audio_id) {
+  blink::mojom::StreamDevicesSet stream_devices_set;
+  if (!granted) {
+    std::move(in_progress_request->media_callback.value()).Run(
+        stream_devices_set,
+        blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
+        std::unique_ptr<content::MediaStreamUI>());
+    return;
+  }
+
+  stream_devices_set.stream_devices.emplace_back(blink::mojom::StreamDevices::New());
+  blink::mojom::StreamDevices& devices = *stream_devices_set.stream_devices.back();
+
+  if (video_id) {
+    const blink::MediaStreamDevice* device = GetDeviceByIdOrFirstAvailable(
+        content::MediaCaptureDevices::GetInstance()->GetVideoCaptureDevices(),
+        *video_id);
+    if (device)
+      devices.video_device = *device;
+  }
+
+  if (audio_id) {
+    const blink::MediaStreamDevice* device = GetDeviceByIdOrFirstAvailable(
+        content::MediaCaptureDevices::GetInstance()->GetAudioCaptureDevices(),
+        *audio_id);
+    if (device)
+      devices.audio_device = *device;
+  }
+
+  auto result = blink::mojom::MediaStreamRequestResult::NO_HARDWARE;
+
+  if (devices.video_device.has_value()) {
+    result = blink::mojom::MediaStreamRequestResult::OK;
+    allowed_media_permissions_cache_[in_progress_request->media_request
+                                         ->security_origin]
+        .insert(in_progress_request->media_request->video_type);
+  }
+
+  if (devices.audio_device.has_value()) {
+    result = blink::mojom::MediaStreamRequestResult::OK;
+    allowed_media_permissions_cache_[in_progress_request->media_request
+                                         ->security_origin]
+        .insert(in_progress_request->media_request->audio_type);
+  }
+
+  if (result == blink::mojom::MediaStreamRequestResult::NO_HARDWARE)
+    stream_devices_set.stream_devices.clear();
+
+  std::move(in_progress_request->media_callback.value())
+      .Run(stream_devices_set, result,
+           std::unique_ptr<content::MediaStreamUI>());
   CompleteRequest(in_progress_request);
 }
 
@@ -396,9 +651,8 @@ static void JNI_PermissionManagerBridge_OnContentPermissionResult(
   base::android::JavaIntArrayToIntVector(env, results,
                                          &java_permission_results);
 
-  auto* permission_manager = is_off_the_record
-                                 ? GetOffTheRecordPermissionManager()
-                                 : GetPermissionManager();
+  auto* permission_manager =
+      WolvicPermissionManager::GetInstance(is_off_the_record);
   permission_manager->OnContentPermissionResult(
       env, in_progress_request,
       FromJavaWolvicPermissionStatuses(java_permission_results));
@@ -418,12 +672,35 @@ static void JNI_PermissionManagerBridge_OnAndroidPermissionResult(
   base::android::JavaIntArrayToIntVector(env, results,
                                          &java_permission_results);
 
-  auto* permission_manager = is_off_the_record
-                                 ? GetOffTheRecordPermissionManager()
-                                 : GetPermissionManager();
+  auto* permission_manager =
+      WolvicPermissionManager::GetInstance(is_off_the_record);
   permission_manager->OnAndroidPermissionResult(
       in_progress_request,
       FromJavaWolvicPermissionStatuses(java_permission_results));
+}
+
+static void JNI_PermissionManagerBridge_OnMediaPermissionResult(
+    JNIEnv* env,
+    jboolean is_off_the_record,
+    jlong in_progress_request_ptr,
+    jboolean granted,
+    const base::android::JavaParamRef<jstring>& java_video_id,
+    const base::android::JavaParamRef<jstring>& java_audio_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  auto* in_progress_request =
+      reinterpret_cast<InProgressRequest*>(in_progress_request_ptr);
+  auto* permission_manager =
+      WolvicPermissionManager::GetInstance(is_off_the_record);
+  absl::optional<std::string> video_id;
+  absl::optional<std::string> audio_id;
+  if (java_video_id)
+    video_id = base::android::ConvertJavaStringToUTF8(java_video_id);
+  if (java_audio_id)
+    audio_id = base::android::ConvertJavaStringToUTF8(java_audio_id);
+
+  permission_manager->OnMediaPermissionResult(
+      in_progress_request, granted, video_id, audio_id);
 }
 
 }  // namespace wolvic
