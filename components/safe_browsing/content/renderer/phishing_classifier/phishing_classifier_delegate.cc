@@ -26,6 +26,7 @@
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
+#include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
@@ -100,7 +101,8 @@ void PhishingClassifierDelegate::StartPhishingDetection(
   RecordEvent(SBPhishingClassifierEvent::kPhishingDetectionRequested);
 
   if (!callback_.is_null())
-    std::move(callback_).Run(mojom::PhishingDetectorResult::CANCELLED, "");
+    std::move(callback_).Run(mojom::PhishingDetectorResult::CANCELLED,
+                             std::nullopt);
   is_phishing_detection_running_ = true;
   awaiting_retry_ = false;
   last_url_received_from_browser_ = StripRef(url);
@@ -215,7 +217,7 @@ void PhishingClassifierDelegate::ClassificationDone(
     DCHECK_EQ(last_url_sent_to_classifier_.spec(), verdict.url());
   }
 
-  std::move(callback_).Run(result, verdict.SerializeAsString());
+  std::move(callback_).Run(result, mojo_base::ProtoWrapper(verdict));
 }
 
 void PhishingClassifierDelegate::MaybeStartClassification() {
@@ -248,7 +250,7 @@ void PhishingClassifierDelegate::MaybeStartClassification() {
       // Keep classifier_page_text_, in case a Scorer is set later.
       if (!callback_.is_null()) {
         std::move(callback_).Run(
-            mojom::PhishingDetectorResult::CLASSIFIER_NOT_READY, "");
+            mojom::PhishingDetectorResult::CLASSIFIER_NOT_READY, std::nullopt);
       }
     }
     return;
@@ -264,7 +266,7 @@ void PhishingClassifierDelegate::MaybeStartClassification() {
     is_phishing_detection_running_ = false;
     if (!callback_.is_null())
       std::move(callback_).Run(
-          mojom::PhishingDetectorResult::FORWARD_BACK_TRANSITION, "");
+          mojom::PhishingDetectorResult::FORWARD_BACK_TRANSITION, std::nullopt);
     return;
   }
 
@@ -310,7 +312,7 @@ void PhishingClassifierDelegate::OnRetryTimeout() {
   awaiting_retry_ = false;
   if (!callback_.is_null()) {
     std::move(callback_).Run(
-        mojom::PhishingDetectorResult::CLASSIFIER_NOT_READY, "");
+        mojom::PhishingDetectorResult::CLASSIFIER_NOT_READY, std::nullopt);
   }
   LogClassificationRetryWithinTimeout(false);
 }

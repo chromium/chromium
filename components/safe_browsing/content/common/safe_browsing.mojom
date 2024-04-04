@@ -4,9 +4,8 @@
 
 module safe_browsing.mojom;
 
-
 import "components/safe_browsing/core/common/safe_browsing_url_checker.mojom";
-import "mojo/public/mojom/base/byte_string.mojom";
+import "mojo/public/mojom/base/proto_wrapper.mojom";
 import "mojo/public/mojom/base/read_only_file.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "services/network/public/mojom/http_request_headers.mojom";
@@ -152,11 +151,11 @@ enum PhishingDetectorResult {
 interface PhishingDetector {
   // Tells the renderer to begin phishing detection for the given toplevel URL
   // which it has started loading. Returns the serialized request proto and a
-  // |result| enum to indicate failure. If the URL is phishing the request proto
-  // will have |is_phishing()| set to true.
+  // `result` enum to indicate failure. If the URL is phishing the `request`
+  // ClientPhishingRequest will have `is_phishing()` set to true.
   StartPhishingDetection(url.mojom.Url url)
     => (PhishingDetectorResult result,
-        mojo_base.mojom.ByteString request_proto);
+        mojo_base.mojom.ProtoWrapper? request);
 };
 
 [EnableIf=full_safe_browsing]
@@ -240,7 +239,7 @@ interface PhishingImageEmbedderDetector {
   // ImageFeatureEmbedding object declared in csd.proto
   StartImageEmbedding(url.mojom.Url url)
     => (PhishingImageEmbeddingResult result,
-        mojo_base.mojom.ByteString image_embedding_request_proto);
+        mojo_base.mojom.ProtoWrapper? image_embedding_request);
 };
 
 // Enum representing protocol type of a web request.

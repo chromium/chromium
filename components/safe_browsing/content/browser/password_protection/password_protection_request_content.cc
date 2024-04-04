@@ -26,6 +26,7 @@
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/base/proto_wrapper.h"
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -263,7 +264,7 @@ void PasswordProtectionRequestContent::GetDomFeatures() {
 
 void PasswordProtectionRequestContent::OnGetDomFeatures(
     mojom::PhishingDetectorResult result,
-    const std::string& verdict) {
+    std::optional<mojo_base::ProtoWrapper> verdict) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   if (dom_features_collection_complete_)
     return;
@@ -276,9 +277,12 @@ void PasswordProtectionRequestContent::OnGetDomFeatures(
       "PasswordProtection.SuccessfulPhishingDetectionWithinTimeout", true);
 
   dom_features_collection_complete_ = true;
-  ClientPhishingRequest dom_features_request;
-  if (dom_features_request.ParseFromString(verdict)) {
-    ExtractClientPhishingRequestFeatures(dom_features_request);
+  if (verdict.has_value()) {
+    auto dom_features_request = verdict->As<ClientPhishingRequest>();
+    if (dom_features_request.has_value()) {
+      ExtractClientPhishingRequestFeatures(
+          std::move(dom_features_request.value()));
+    }
   }
 
   if (!request_proto_->mutable_visual_features()->has_image() &&

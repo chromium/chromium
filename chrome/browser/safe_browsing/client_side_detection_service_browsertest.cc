@@ -4,6 +4,8 @@
 
 #include "components/safe_browsing/content/browser/client_side_detection_service.h"
 
+#include <optional>
+
 #include "base/path_service.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -24,6 +26,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ipc/ipc_channel_proxy.h"
+#include "mojo/public/cpp/base/proto_wrapper.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -166,27 +169,28 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
     rfh->GetRemoteAssociatedInterfaces()->GetInterface(&phishing_detector);
 
     mojom::PhishingDetectorResult result;
-    std::string verdict;
+    std::optional<mojo_base::ProtoWrapper> verdict;
     phishing_detector->StartPhishingDetection(
-        url,
-        base::BindOnce(
-            [](base::RepeatingClosure quit_closure,
-               mojom::PhishingDetectorResult* out_result,
-               std::string* out_verdict, mojom::PhishingDetectorResult result,
-               const std::string& verdict) {
-              *out_result = result;
-              *out_verdict = verdict;
-              quit_closure.Run();
-            },
-            run_loop.QuitClosure(), &result, &verdict));
+        url, base::BindOnce(
+                 [](base::RepeatingClosure quit_closure,
+                    mojom::PhishingDetectorResult* out_result,
+                    std::optional<mojo_base::ProtoWrapper>* out_verdict,
+                    mojom::PhishingDetectorResult result,
+                    std::optional<mojo_base::ProtoWrapper> verdict) {
+                   *out_result = result;
+                   *out_verdict = std::move(verdict);
+                   quit_closure.Run();
+                 },
+                 run_loop.QuitClosure(), &result, &verdict));
 
     run_loop.Run();
 
     EXPECT_EQ(result, mojom::PhishingDetectorResult::SUCCESS);
 
-    ClientPhishingRequest request;
-    ASSERT_TRUE(request.ParseFromString(verdict));
-    EXPECT_EQ(27, request.model_version());  // Example model file version
+    ASSERT_TRUE(verdict.has_value());
+    auto request = verdict->As<ClientPhishingRequest>();
+    ASSERT_TRUE(request.has_value());
+    EXPECT_EQ(27, request->model_version());  // Example model file version
   }
 }
 
@@ -258,28 +262,29 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
     rfh->GetRemoteAssociatedInterfaces()->GetInterface(&phishing_detector);
 
     mojom::PhishingDetectorResult result;
-    std::string verdict;
+    std::optional<mojo_base::ProtoWrapper> verdict;
     phishing_detector->StartPhishingDetection(
-        url,
-        base::BindOnce(
-            [](base::RepeatingClosure quit_closure,
-               mojom::PhishingDetectorResult* out_result,
-               std::string* out_verdict, mojom::PhishingDetectorResult result,
-               const std::string& verdict) {
-              *out_result = result;
-              *out_verdict = verdict;
-              quit_closure.Run();
-            },
-            run_loop.QuitClosure(), &result, &verdict));
+        url, base::BindOnce(
+                 [](base::RepeatingClosure quit_closure,
+                    mojom::PhishingDetectorResult* out_result,
+                    std::optional<mojo_base::ProtoWrapper>* out_verdict,
+                    mojom::PhishingDetectorResult result,
+                    std::optional<mojo_base::ProtoWrapper> verdict) {
+                   *out_result = result;
+                   *out_verdict = std::move(verdict);
+                   quit_closure.Run();
+                 },
+                 run_loop.QuitClosure(), &result, &verdict));
 
     run_loop.Run();
 
     EXPECT_EQ(result, mojom::PhishingDetectorResult::SUCCESS);
 
-    ClientPhishingRequest request;
-    ASSERT_TRUE(request.ParseFromString(verdict));
-    EXPECT_EQ(27, request.model_version());
-    csd_service->ClassifyPhishingThroughThresholds(&request);
+    ASSERT_TRUE(verdict.has_value());
+    auto request = verdict->As<ClientPhishingRequest>();
+    ASSERT_TRUE(request.has_value());
+    EXPECT_EQ(27, request->model_version());
+    csd_service->ClassifyPhishingThroughThresholds(&request.value());
 
     histogram_tester.ExpectUniqueSample(
         "SBClientPhishing.ClassifyThresholdsResult",
@@ -398,29 +403,30 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
     rfh->GetRemoteAssociatedInterfaces()->GetInterface(&phishing_detector);
 
     mojom::PhishingDetectorResult result;
-    std::string verdict;
+    std::optional<mojo_base::ProtoWrapper> verdict;
     phishing_detector->StartPhishingDetection(
-        url,
-        base::BindOnce(
-            [](base::RepeatingClosure quit_closure,
-               mojom::PhishingDetectorResult* out_result,
-               std::string* out_verdict, mojom::PhishingDetectorResult result,
-               const std::string& verdict) {
-              *out_result = result;
-              *out_verdict = verdict;
-              quit_closure.Run();
-            },
-            run_loop.QuitClosure(), &result, &verdict));
+        url, base::BindOnce(
+                 [](base::RepeatingClosure quit_closure,
+                    mojom::PhishingDetectorResult* out_result,
+                    std::optional<mojo_base::ProtoWrapper>* out_verdict,
+                    mojom::PhishingDetectorResult result,
+                    std::optional<mojo_base::ProtoWrapper> verdict) {
+                   *out_result = result;
+                   *out_verdict = std::move(verdict);
+                   quit_closure.Run();
+                 },
+                 run_loop.QuitClosure(), &result, &verdict));
 
     run_loop.Run();
 
     EXPECT_EQ(result, mojom::PhishingDetectorResult::SUCCESS);
 
-    ClientPhishingRequest request;
-    ASSERT_TRUE(request.ParseFromString(verdict));
-    EXPECT_EQ(27, request.model_version());  // Example model file version
+    ASSERT_TRUE(verdict.has_value());
+    auto request = verdict->As<ClientPhishingRequest>();
+    ASSERT_TRUE(request.has_value());
+    EXPECT_EQ(27, request->model_version());  // Example model file version
 
-    csd_service->ClassifyPhishingThroughThresholds(&request);
+    csd_service->ClassifyPhishingThroughThresholds(&request.value());
 
     histogram_tester.ExpectUniqueSample(
         "SBClientPhishing.ClassifyThresholdsResult",

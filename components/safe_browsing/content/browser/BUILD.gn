@@ -302,6 +302,7 @@ source_set("client_side_detection") {
     "//components/variations",
     "//components/zoom:zoom",
     "//content/public/browser",
+    "//mojo/public/mojom/base:protobuf_support",
   ]
 
   if (safe_browsing_mode != 0) {

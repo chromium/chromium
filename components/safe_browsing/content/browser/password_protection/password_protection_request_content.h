@@ -6,6 +6,7 @@
 #define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_PASSWORD_PROTECTION_PASSWORD_PROTECTION_REQUEST_CONTENT_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -23,6 +24,7 @@
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
+#include "mojo/public/cpp/base/proto_wrapper_passkeys.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
@@ -131,7 +133,7 @@ class PasswordProtectionRequestContent final
 
   // Called when the DOM feature extraction is complete.
   void OnGetDomFeatures(mojom::PhishingDetectorResult result,
-                        const std::string& verdict);
+                        std::optional<mojo_base::ProtoWrapper> verdict);
 
   void ExtractClientPhishingRequestFeatures(ClientPhishingRequest verdict);
 

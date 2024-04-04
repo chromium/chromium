@@ -46,6 +46,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
+#include "mojo/public/cpp/base/proto_wrapper.h"
 #include "net/base/ip_endpoint.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -597,7 +598,7 @@ void ClientSideDetectionHost::OnPhishingPreClassificationDone(
 void ClientSideDetectionHost::PhishingDetectionDone(
     ClientSideDetectionType request_type,
     mojom::PhishingDetectorResult result,
-    const std::string& verdict_str) {
+    std::optional<mojo_base::ProtoWrapper> wrapped_verdict) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // There is something seriously wrong if there is no service class but
   // this method is called.  The renderer should not start phishing detection
@@ -651,14 +652,15 @@ void ClientSideDetectionHost::PhishingDetectionDone(
     return;
   }
 
-  // We parse the protocol buffer here.  If we're unable to parse it we
-  // won't send the verdict further.
-  std::unique_ptr<ClientPhishingRequest> verdict(new ClientPhishingRequest);
-  bool verdict_parse_successful =
-      verdict->ParseFromString(verdict_str) && verdict->IsInitialized();
+  // We parse the protocol buffer here.  If we're unable to parse it or it was
+  // not provided we won't send the verdict further.
+  std::optional<ClientPhishingRequest> verdict;
+  if (wrapped_verdict.has_value()) {
+    verdict = wrapped_verdict->As<ClientPhishingRequest>();
+  }
   base::UmaHistogramBoolean("SBClientPhishing.VerdictParseSuccessful",
-                            verdict_parse_successful);
-  if (csd_service_ && verdict_parse_successful) {
+                            verdict.has_value());
+  if (csd_service_ && verdict.has_value()) {
     verdict->set_client_side_detection_type(request_type);
 
     // We should only cache the verdict string if the result is SUCCESS, so that
@@ -681,7 +683,8 @@ void ClientSideDetectionHost::PhishingDetectionDone(
           current_url_, std::make_unique<ClientPhishingRequest>(*verdict));
     }
 
-    MaybeSendClientPhishingRequest(std::move(verdict));
+    MaybeSendClientPhishingRequest(
+        std::make_unique<ClientPhishingRequest>(verdict.value()));
   }
 }
 
@@ -843,13 +846,19 @@ void ClientSideDetectionHost::MaybeSendClientPhishingRequest(
 void ClientSideDetectionHost::PhishingImageEmbeddingDone(
     std::unique_ptr<ClientPhishingRequest> verdict,
     mojom::PhishingImageEmbeddingResult result,
-    const std::string& image_feature_embedding_string) {
+    std::optional<mojo_base::ProtoWrapper> image_feature_embedding) {
   base::UmaHistogramEnumeration("SBClientPhishing.PhishingImageEmbeddingResult",
                                 result);
   if (result == mojom::PhishingImageEmbeddingResult::kSuccess) {
-    if (!verdict->mutable_image_feature_embedding()->ParseFromString(
-            image_feature_embedding_string)) {
-      VLOG(0) << "Failed to parse image feature embedding string";
+    std::optional<ImageFeatureEmbedding> embedding;
+    if (image_feature_embedding.has_value()) {
+      embedding = image_feature_embedding->As<ImageFeatureEmbedding>();
+    }
+    if (embedding.has_value()) {
+      *verdict->mutable_image_feature_embedding() =
+          std::move(embedding.value());
+    } else {
+      VLOG(0) << "Failed to parse image feature embedding.";
     }
   }
 

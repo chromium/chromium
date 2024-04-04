@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
@@ -25,6 +26,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_status_code.h"
@@ -158,16 +160,15 @@ class ClientSideDetectionHost
   void OnPhishingPreClassificationDone(ClientSideDetectionType request_type,
                                        bool should_classify);
 
-  // |verdict| is an encoded ClientPhishingRequest protocol message, |result|
-  // is the outcome of the renderer classification. |request_type| is passed in
+  // `verdict` is a wrapped ClientPhishingRequest protocol message, `result`
+  // is the outcome of the renderer classification. `request_type` is passed in
   // to specify the process that requests the classification, which is passed
-  // along from |OnPhishingPreClassificationDone|.
+  // along from OnPhishingPreClassificationDone().
   void PhishingDetectionDone(ClientSideDetectionType request_type,
                              mojom::PhishingDetectorResult result,
-                             const std::string& verdict);
+                             std::optional<mojo_base::ProtoWrapper> verdict);
 
-  // |verdict| is an object parsed from the serialized string passed into
-  // |PhishingDetectionDone|.
+  // `verdict` is the ClientPhishingRequest passed into PhishingDetectionDone().
   void MaybeSendClientPhishingRequest(
       std::unique_ptr<ClientPhishingRequest> verdict);
 
@@ -177,7 +178,7 @@ class ClientSideDetectionHost
   void PhishingImageEmbeddingDone(
       std::unique_ptr<ClientPhishingRequest> verdict,
       mojom::PhishingImageEmbeddingResult result,
-      const std::string& image_feature_embedding_string);
+      std::optional<mojo_base::ProtoWrapper> image_feature_embedding);
 
   // Callback that is called when the server ping back is
   // done. Display an interstitial if |is_phishing| is true.

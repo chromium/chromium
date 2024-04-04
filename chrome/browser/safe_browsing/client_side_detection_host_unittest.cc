@@ -2,17 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/safe_browsing/chrome_client_side_detection_host_delegate.h"
-
 #include <memory>
+#include <optional>
 #include <tuple>
 #include <utility>
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -20,7 +18,9 @@
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "chrome/browser/safe_browsing/chrome_client_side_detection_host_delegate.h"
 #include "chrome/browser/safe_browsing/chrome_safe_browsing_blocking_page_factory.h"
 #include "chrome/browser/safe_browsing/chrome_ui_manager_delegate.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
@@ -58,6 +58,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "ipc/ipc_test_sink.h"
+#include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/http/http_status_code.h"
@@ -244,7 +245,7 @@ class FakePhishingDetector : public mojom::PhishingDetector {
     ClientPhishingRequest request;
     request.set_client_score(0.8);
     std::move(callback).Run(mojom::PhishingDetectorResult::SUCCESS,
-                            request.SerializeAsString());
+                            mojo_base::ProtoWrapper(request));
 
     return;
   }
@@ -364,15 +365,15 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
-  void PhishingDetectionDone(const std::string& verdict_str) {
+  void PhishingDetectionDone(std::optional<mojo_base::ProtoWrapper> verdict) {
     csd_host_->PhishingDetectionDone(ClientSideDetectionType::TRIGGER_MODELS,
                                      mojom::PhishingDetectorResult::SUCCESS,
-                                     verdict_str);
+                                     std::move(verdict));
   }
 
   void PhishingDetectionError(mojom::PhishingDetectorResult error) {
     csd_host_->PhishingDetectionDone(ClientSideDetectionType::TRIGGER_MODELS,
-                                     error, "");
+                                     error, std::nullopt);
   }
 
   void ExpectPreClassificationChecks(const GURL& url,
@@ -467,10 +468,10 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneInvalidVerdict) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
     GTEST_SKIP();
 
-  // Case 0: renderer sends an invalid verdict string that we're unable to
-  // parse.
+  // Case 0: renderer sends an invalid protobuf that we're unable to
+  // parse. This has the same behavior as providing nullopt.
   EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _, _)).Times(0);
-  PhishingDetectionDone("Invalid Protocol Buffer");
+  PhishingDetectionDone(std::nullopt);
   EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
 }
 
@@ -489,7 +490,7 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneNotPhishing) {
   EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
                                  PartiallyEqualVerdict(verdict), _, _))
       .WillOnce(MoveArg<1>(&cb));
-  PhishingDetectionDone(verdict.SerializeAsString());
+  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict));
   EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
   ASSERT_FALSE(cb.is_null());
 
@@ -515,7 +516,7 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneDisabled) {
   EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
                                  PartiallyEqualVerdict(verdict), _, _))
       .WillOnce(MoveArg<1>(&cb));
-  PhishingDetectionDone(verdict.SerializeAsString());
+  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict));
   EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
   ASSERT_FALSE(cb.is_null());
 
@@ -542,7 +543,7 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneShowInterstitial) {
   EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
                                  PartiallyEqualVerdict(verdict), _, _))
       .WillOnce(MoveArg<1>(&cb));
-  PhishingDetectionDone(verdict.SerializeAsString());
+  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict));
   EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
   EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
   ASSERT_FALSE(cb.is_null());
@@ -589,7 +590,7 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneMultiplePings) {
   EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
                                  PartiallyEqualVerdict(verdict), _, _))
       .WillOnce(MoveArg<1>(&cb));
-  PhishingDetectionDone(verdict.SerializeAsString());
+  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict));
   EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
   EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
   ASSERT_FALSE(cb.is_null());
@@ -608,7 +609,7 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneMultiplePings) {
   EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
                                  PartiallyEqualVerdict(verdict), _, _))
       .WillOnce(MoveArg<1>(&cb_other));
-  PhishingDetectionDone(verdict.SerializeAsString());
+  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
   EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
@@ -654,7 +655,7 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneVerdictNotPhishing) {
   verdict.set_is_phishing(false);
 
   EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _, _)).Times(0);
-  PhishingDetectionDone(verdict.SerializeAsString());
+  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict));
   EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
 }
 
@@ -676,7 +677,7 @@ TEST_F(ClientSideDetectionHostTest,
   NavigateAndCommit(url);
   WaitAndCheckPreClassificationChecks();
 
-  PhishingDetectionDone(verdict.SerializeAsString());
+  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict));
 }
 
 TEST_F(ClientSideDetectionHostTest,
@@ -707,7 +708,7 @@ TEST_F(ClientSideDetectionHostTest,
   NavigateAndCommit(url);
   WaitAndCheckPreClassificationChecks();
 
-  PhishingDetectionDone(verdict.SerializeAsString());
+  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict));
 }
 
 TEST_F(
@@ -745,7 +746,7 @@ TEST_F(
 
   WaitAndCheckPreClassificationChecks();
 
-  PhishingDetectionDone(verdict.SerializeAsString());
+  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict));
 }
 
 TEST_F(ClientSideDetectionHostTest,
@@ -770,7 +771,7 @@ TEST_F(ClientSideDetectionHostTest,
   EXPECT_CALL(*raw_token_fetcher_, Start(_)).WillOnce(MoveArg<0>(&cb));
 
   // Make the call.
-  PhishingDetectionDone(verdict.SerializeAsString());
+  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict));
 
   // Wait for token fetcher to be called.
   EXPECT_TRUE(Mock::VerifyAndClear(raw_token_fetcher_));
@@ -810,7 +811,7 @@ TEST_F(ClientSideDetectionHostTest,
       .WillRepeatedly(MoveArg<0>(&cb));
 
   // Make the call.
-  PhishingDetectionDone(verdict.SerializeAsString());
+  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict));
 
   // Wait for token fetcher to be called.
   EXPECT_TRUE(Mock::VerifyAndClear(raw_token_fetcher_));
@@ -822,7 +823,7 @@ TEST_F(ClientSideDetectionHostTest,
   EXPECT_CALL(*raw_token_fetcher_, Start(_))
       .Times(1)
       .WillRepeatedly(MoveArg<0>(&cb));
-  PhishingDetectionDone(verdict.SerializeAsString());
+  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict));
   EXPECT_TRUE(Mock::VerifyAndClear(raw_token_fetcher_));
   ASSERT_FALSE(cb.is_null());
   std::move(cb).Run("fake_access_token_2");
@@ -849,7 +850,7 @@ TEST_F(ClientSideDetectionHostIncognitoTest,
   EXPECT_CALL(*raw_token_fetcher_, Start(_)).Times(0);
 
   // Make the call.
-  PhishingDetectionDone(verdict.SerializeAsString());
+  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict));
 }
 
 TEST_F(ClientSideDetectionHostTest,
@@ -871,7 +872,7 @@ TEST_F(ClientSideDetectionHostTest,
   EXPECT_CALL(*raw_token_fetcher_, Start(_)).Times(0);
 
   // Make the call.
-  PhishingDetectionDone(verdict.SerializeAsString());
+  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict));
 }
 
 // This test doesn't work because it makes assumption about how
@@ -1170,7 +1171,7 @@ TEST_F(ClientSideDetectionHostTest, RecordsPhishingDetectorResults) {
 
     EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _, _))
         .Times(0);
-    PhishingDetectionDone(verdict.SerializeAsString());
+    PhishingDetectionDone(mojo_base::ProtoWrapper(verdict));
     EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
 
     histogram_tester.ExpectUniqueSample(
@@ -1235,7 +1236,7 @@ TEST_F(ClientSideDetectionHostTest, RecordsPhishingDetectionDuration) {
   const base::TimeDelta duration = base::Milliseconds(10);
   AdvanceTimeTickClock(duration);
 
-  PhishingDetectionDone(verdict.SerializeAsString());
+  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict));
 
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.PhishingDetectionDuration.TriggerModel", 3);
@@ -1264,7 +1265,7 @@ TEST_F(ClientSideDetectionHostTest, PopulatesPageLoadToken) {
   std::unique_ptr<ClientPhishingRequest> verdict_sent;
   EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _, _))
       .WillOnce(MoveArg<0>(&verdict_sent));
-  PhishingDetectionDone(verdict.SerializeAsString());
+  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict));
   EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
   ASSERT_EQ(1, verdict_sent->population().page_load_tokens_size());
 }
@@ -1309,7 +1310,7 @@ TEST_F(ClientSideDetectionHostTest,
   EXPECT_CALL(*raw_token_fetcher_, Start(_))
       .Times(1)
       .WillRepeatedly(MoveArg<0>(&token_cb));
-  PhishingDetectionDone(verdict.SerializeAsString());
+  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict));
 
   // Wait for token fetcher to be called.
   EXPECT_TRUE(Mock::VerifyAndClear(raw_token_fetcher_));
@@ -1377,15 +1378,16 @@ class ClientSideDetectionHostNotificationTest
     ClientSideDetectionHostTest::TearDown();
   }
 
-  void PhishingDetectionDone(const std::string& verdict_str) {
+  void PhishingDetectionDone(mojo_base::ProtoWrapper verdict) {
     csd_host_->PhishingDetectionDone(
         ClientSideDetectionType::NOTIFICATION_PERMISSION_PROMPT,
-        mojom::PhishingDetectorResult::SUCCESS, verdict_str);
+        mojom::PhishingDetectorResult::SUCCESS, std::move(verdict));
   }
 
   void PhishingDetectionError(mojom::PhishingDetectorResult error) {
     csd_host_->PhishingDetectionDone(
-        ClientSideDetectionType::NOTIFICATION_PERMISSION_PROMPT, error, "");
+        ClientSideDetectionType::NOTIFICATION_PERMISSION_PROMPT, error,
+        std::nullopt);
   }
 
   void WaitForBubbleToBeShown() {
@@ -1502,7 +1504,7 @@ TEST_F(ClientSideDetectionHostNotificationTest,
   EXPECT_CALL(*raw_token_fetcher_, Start(_)).WillOnce(MoveArg<0>(&cb));
 
   // Make the call.
-  PhishingDetectionDone(verdict.SerializeAsString());
+  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict));
 
   // Wait for token fetcher to be called.
   EXPECT_TRUE(Mock::VerifyAndClear(raw_token_fetcher_));

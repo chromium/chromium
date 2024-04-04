@@ -56,6 +56,7 @@
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
+#include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -152,8 +153,9 @@ class TestPhishingDetector : public mojom::PhishingDetector {
     ClientPhishingRequest verdict;
     verdict.set_is_phishing(false);
     verdict.set_client_score(0.1);
+
     std::move(callback).Run(mojom::PhishingDetectorResult::SUCCESS,
-                            verdict.SerializeAsString());
+                            mojo_base::ProtoWrapper(verdict));
   }
 
   void set_should_timeout(bool timeout) { should_timeout_ = timeout; }
