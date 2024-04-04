@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/thread_debugger.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
+#include "third_party/blink/renderer/platform/bindings/v8_histogram_accumulator.h"
 #include "third_party/blink/renderer/platform/bindings/v8_object_constructor.h"
 #include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
 #include "third_party/blink/renderer/platform/bindings/v8_value_cache.h"
@@ -444,14 +445,16 @@ void* CreateHistogram(const char* name, int min, int max, size_t buckets) {
 
   const std::string histogram_name =
       Platform::Current()->GetNameForHistogram(name);
-  return base::Histogram::FactoryGet(
+  base::HistogramBase* histogram = base::Histogram::FactoryGet(
       histogram_name, min, max, static_cast<uint32_t>(buckets),
       base::Histogram::kUmaTargetedHistogramFlag);
+
+  return V8HistogramAccumulator::GetInstance()->RegisterHistogram(
+      histogram, histogram_name);
 }
 
 void AddHistogramSample(void* hist, int sample) {
-  auto* histogram = static_cast<base::HistogramBase*>(hist);
-  histogram->Add(sample);
+  V8HistogramAccumulator::GetInstance()->AddSample(hist, sample);
 }
 
 }  // namespace blink

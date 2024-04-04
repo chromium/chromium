@@ -91,6 +91,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="V8.CompileBackgroundMicroSeconds.Cumulative.Interactive"
+    units="microseconds" expires_after="2024-09-21">
+  <owner>marja@chromium.org</owner>
+  <owner>v8-runtime@google.com</owner>
+  <summary>
+    Aggregated time spent in compiling on the background thread until the page
+    turned interactive. Emitted when the page turns interactive.
+
+    Includes samples only from clients with a high-resolution clock.
+  </summary>
+</histogram>
+
 <histogram name="V8.CompileCacheableMicroSeconds" units="microseconds"
     expires_after="M85">
   <owner>yangguo@chromium.org</owner>
@@ -131,6 +143,18 @@ chromium-metrics-reviews@google.com.
     will cause this metric to have an abnormal distribution. When considering
     revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
     solution.
+  </summary>
+</histogram>
+
+<histogram name="V8.CompileForegroundMicroSeconds.Cumulative.Interactive"
+    units="microseconds" expires_after="2024-09-21">
+  <owner>marja@chromium.org</owner>
+  <owner>v8-runtime@google.com</owner>
+  <summary>
+    Aggregated time spent in compiling on the foreground thread until the page
+    turned interactive. Emitted when the page turns interactive.
+
+    Includes samples only from clients with a high-resolution clock.
   </summary>
 </histogram>
 

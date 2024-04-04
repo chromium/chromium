@@ -201,6 +201,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
+#include "third_party/blink/renderer/platform/bindings/v8_histogram_accumulator.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/graphics/image_data_buffer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
@@ -2644,6 +2645,8 @@ void LocalFrame::MainFrameInteractive() {
   }
   constexpr bool kIsFinalData = true;
   v8_local_compile_hints_producer_->GenerateData(kIsFinalData);
+
+  V8HistogramAccumulator::GetInstance()->GenerateDataInteractive();
 }
 
 void LocalFrame::MainFrameFirstMeaningfulPaint() {
