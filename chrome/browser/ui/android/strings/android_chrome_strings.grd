@@ -220,6 +220,11 @@ CHAR_LIMIT guidelines:
         Advanced
       </message>
 
+      <!-- TODO(b/326574743): Revisit string and mark it as translateable.-->
+      <message name="IDS_PREFS_CONTROL_YOUR_DATA" desc='Title of "Control your data and accounts" section of preferences. [CHAR_LIMIT=32]' translateable="false">
+        Control your data &amp; accounts
+      </message>
+
       <!-- Notification channels -->
       <message name="IDS_NOTIFICATION_CATEGORY_GROUP_GENERAL" desc='Subheading for "General" section of a list of notification categories. [CHAR_LIMIT=32]'>
         General

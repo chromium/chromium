@@ -48,4 +48,8 @@ found in the LICENSE file.
         android:key="google_activity_controls"
         android:summary="@string/data_types_switches_summary"/>
 
+    <PreferenceCategory
+        android:key="control_your_data_category"
+        android:title="@string/prefs_control_your_data"/>
+
 </PreferenceScreen>
