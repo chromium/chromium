@@ -157,10 +157,7 @@ class MockRenderProcessHost : public RenderProcessHost {
       override;
   const base::TimeTicks& GetLastInitTime() override;
   bool IsProcessBackgrounded() override;
-  size_t GetKeepAliveRefCount() const;
   size_t GetWorkerRefCount() const;
-  void IncrementKeepAliveRefCount(uint64_t handle_id) override;
-  void DecrementKeepAliveRefCount(uint64_t handle_id) override;
   std::string GetKeepAliveDurations() const override;
   size_t GetShutdownDelayRefCount() const override;
   int GetRenderFrameHostCount() const override;
@@ -335,7 +332,6 @@ class MockRenderProcessHost : public RenderProcessHost {
   bool is_unused_;
   bool is_ready_ = false;
   base::Process process;
-  int keep_alive_ref_count_;
   int worker_ref_count_;
   int pending_reuse_ref_count_;
   int foreground_service_worker_count_;

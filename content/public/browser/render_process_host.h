@@ -441,29 +441,6 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // Returns true if this process currently has backgrounded priority.
   virtual bool IsProcessBackgrounded() = 0;
 
-  // "Keep alive ref count" represents the number of the customers of this
-  // render process who wish the renderer process to be alive. While the ref
-  // count is positive, |this| object will keep the renderer process alive,
-  // unless DisableRefCounts() is called. |handle_id| is a unique identifier
-  // associated with each keep-alive request.
-  // TODO(wjmaclean): Remove |handle_id| once the causes behind
-  // https://crbug.com/1148542 are known.
-  //
-  // Here is the list of users:
-  //  - Keepalive request (if the KeepAliveRendererForKeepaliveRequests
-  //    feature is enabled):
-  //    When a fetch request with keepalive flag
-  //    (https://fetch.spec.whatwg.org/#request-keepalive-flag) specified is
-  //    pending, it wishes the renderer process to be kept alive.
-  //  - Unload handlers:
-  //    Keeps the process alive briefly to give subframe unload handlers a
-  //    chance to execute after their parent frame navigates or is detached.
-  //    See https://crbug.com/852204.
-  //  - Process reuse timer (experimental):
-  //    Keeps the process alive for a set period of time in case it can be
-  //    reused for the same site. See https://crbug.com/894253.
-  virtual void IncrementKeepAliveRefCount(uint64_t handle_id) = 0;
-  virtual void DecrementKeepAliveRefCount(uint64_t handle_id) = 0;
   // Returns a list of durations for active KeepAlive requests.
   // For debugging only. TODO(wjmaclean): Remove once the causes behind
   // https://crbug.com/1148542 are known.
@@ -473,6 +450,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // For debugging only. TODO(wjmaclean): Remove once the causes behind
   // https://crbug.com/1148542 are known.
   virtual size_t GetShutdownDelayRefCount() const = 0;
+
   // Diagnostic code for https://crbug/1148542. This will be removed prior to
   // resolving that issue. It counts all RenderFrameHosts that have not been
   // destroyed, including speculative ones and pending deletion ones. This

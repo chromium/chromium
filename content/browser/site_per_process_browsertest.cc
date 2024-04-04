@@ -5446,8 +5446,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // `blink::WebView`, which is where the original bug was triggered.
   // Incrementing the keep alive ref count will cause
   // RenderProcessHostImpl::Cleanup to forego process termination.
-  RenderProcessHost* subframe_process =
-      root->child_at(0)->current_frame_host()->GetProcess();
+  RenderProcessHostImpl* subframe_process = static_cast<RenderProcessHostImpl*>(
+      root->child_at(0)->current_frame_host()->GetProcess());
   subframe_process->IncrementKeepAliveRefCount(0);
 
   // Navigate the subframe away from b.com.  Since this is the last active

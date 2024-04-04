@@ -455,9 +455,7 @@ TEST_F(SharedWorkerServiceImplTest, TwoRendererTest) {
 
   // Only a single worker instance in process 0.
   EXPECT_EQ(1u, renderer_host0->GetWorkerRefCount());
-  EXPECT_EQ(0u, renderer_host0->GetKeepAliveRefCount());
   EXPECT_EQ(0u, renderer_host1->GetWorkerRefCount());
-  EXPECT_EQ(0u, renderer_host1->GetKeepAliveRefCount());
 
   worker_host->OnConnected(connection_request_id1);
 

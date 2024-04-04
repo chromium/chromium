@@ -288,8 +288,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
       override;
   const base::TimeTicks& GetLastInitTime() override;
   bool IsProcessBackgrounded() override;
-  void IncrementKeepAliveRefCount(uint64_t handle_id_) override;
-  void DecrementKeepAliveRefCount(uint64_t handle_id_) override;
   std::string GetKeepAliveDurations() const override;
   size_t GetShutdownDelayRefCount() const override;
   int GetRenderFrameHostCount() const override;
@@ -396,6 +394,33 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // list.
   static void RegisterHost(int host_id, RenderProcessHost* host);
   static void UnregisterHost(int host_id);
+
+  // "Keep alive ref count" represents the number of the customers of this
+  // render process who wish the renderer process to be alive. While the ref
+  // count is positive, |this| object will keep the renderer process alive,
+  // unless DisableRefCounts() is called. |handle_id| is a unique identifier
+  // associated with each keep-alive request.
+  // TODO(wjmaclean): Remove |handle_id| once the causes behind
+  // https://crbug.com/1148542 are known.
+  //
+  // Here is the list of users:
+  //  - Keepalive request (if the KeepAliveRendererForKeepaliveRequests
+  //    feature is enabled):
+  //    When a fetch request with keepalive flag
+  //    (https://fetch.spec.whatwg.org/#request-keepalive-flag) specified is
+  //    pending, it wishes the renderer process to be kept alive.
+  //  - Unload handlers:
+  //    Keeps the process alive briefly to give subframe unload handlers a
+  //    chance to execute after their parent frame navigates or is detached.
+  //    See https://crbug.com/852204.
+  //  - Process reuse timer (experimental):
+  //    Keeps the process alive for a set period of time in case it can be
+  //    reused for the same site. See https://crbug.com/894253.
+  void IncrementKeepAliveRefCount(uint64_t handle_id_);
+  void DecrementKeepAliveRefCount(uint64_t handle_id_);
+
+  int keep_alive_ref_count() const { return keep_alive_ref_count_; }
+  int worker_ref_count() const { return worker_ref_count_; }
 
   static void RegisterCreationObserver(
       RenderProcessHostCreationObserver* observer);
@@ -804,9 +829,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
 #endif
 
   void SetBatterySaverMode(bool battery_saver_mode_enabled) override;
-
-  int keep_alive_ref_count() const { return keep_alive_ref_count_; }
-  int worker_ref_count() const { return worker_ref_count_; }
 
 #if BUILDFLAG(IS_ANDROID)
   // Notifies the renderer process of memory pressure level.

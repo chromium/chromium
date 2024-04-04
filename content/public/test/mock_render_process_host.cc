@@ -79,7 +79,6 @@ MockRenderProcessHost::MockRenderProcessHost(
       is_for_guests_only_(is_for_guests_only),
       is_process_backgrounded_(false),
       is_unused_(true),
-      keep_alive_ref_count_(0),
       worker_ref_count_(0),
       pending_reuse_ref_count_(0),
       foreground_service_worker_count_(0) {
@@ -396,18 +395,6 @@ bool MockRenderProcessHost::IsProcessBackgrounded() {
   return is_process_backgrounded_;
 }
 
-size_t MockRenderProcessHost::GetKeepAliveRefCount() const {
-  return keep_alive_ref_count_;
-}
-
-void MockRenderProcessHost::IncrementKeepAliveRefCount(uint64_t handle_id) {
-  ++keep_alive_ref_count_;
-}
-
-void MockRenderProcessHost::DecrementKeepAliveRefCount(uint64_t handle_id) {
-  --keep_alive_ref_count_;
-}
-
 std::string MockRenderProcessHost::GetKeepAliveDurations() const {
   return std::string("MockRenderProcessHost: durations not tracked.");
 }
@@ -476,7 +463,6 @@ size_t MockRenderProcessHost::GetWorkerRefCount() const {
 }
 
 void MockRenderProcessHost::DisableRefCounts() {
-  keep_alive_ref_count_ = 0;
   worker_ref_count_ = 0;
   pending_reuse_ref_count_ = 0;
 
@@ -518,7 +504,7 @@ void MockRenderProcessHost::SetIsUsed() {
 }
 
 bool MockRenderProcessHost::HostHasNotBeenUsed() {
-  return IsUnused() && listeners_.IsEmpty() && GetKeepAliveRefCount() == 0;
+  return IsUnused() && listeners_.IsEmpty();
 }
 
 bool MockRenderProcessHost::IsSpare() const {
