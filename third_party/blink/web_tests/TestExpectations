@@ -2617,6 +2617,7 @@ crbug.com/626703 [ Mac ] external/wpt/mediacapture-insertable-streams/legacy/Med
 crbug.com/626703 external/wpt/uievents/mouse/mouse_boundary_events_after_removing_last_over_element.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac12 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/audioworklet.https.sub.html [ Timeout ]
 crbug.com/332572646 external/wpt/wasm/webapi/esm-integration/worker-import-source-phase.tentative.html [ Timeout ]
 crbug.com/332572643 external/wpt/css/css-transforms/transform-iframe-scroll-position.html [ Failure ]
 crbug.com/332572643 virtual/backface-visibility-interop/external/wpt/css/css-transforms/transform-iframe-scroll-position.html [ Failure ]
@@ -6676,7 +6677,13 @@ crbug.com/1502794 external/wpt/html/semantics/invokers/invoketarget-on-video-beh
 # Gardener 2023-11-17
 crbug.com/1503108 [ Mac ] external/wpt/credential-management/fedcm-disconnect.sub.https.html [ Timeout ]
 crbug.com/1503108 [ Win ] external/wpt/credential-management/fedcm-disconnect.sub.https.html [ Timeout ]
-crbug.com/1503051 [ Mac ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/audioworklet.https.sub.html [ Failure Pass ]
+crbug.com/1503051 [ Mac11 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/audioworklet.https.sub.html [ Failure Pass ]
+crbug.com/1503051 [ Mac11-arm64 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/audioworklet.https.sub.html [ Failure Pass ]
+crbug.com/1503051 [ Mac12-arm64 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/audioworklet.https.sub.html [ Failure Pass ]
+crbug.com/1503051 [ Mac13 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/audioworklet.https.sub.html [ Failure Pass ]
+crbug.com/1503051 [ Mac13-arm64 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/audioworklet.https.sub.html [ Failure Pass ]
+crbug.com/1503051 [ Mac14 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/audioworklet.https.sub.html [ Failure Pass ]
+crbug.com/1503051 [ Mac14-arm64 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/audioworklet.https.sub.html [ Failure Pass ]
 crbug.com/1503119 [ Mac11 ] external/wpt/webtransport/echo-large-bidirectional-streams.https.any.html [ Timeout ]
 
 # Gardener 2023-11-21

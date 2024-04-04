@@ -1,18 +1,25 @@
 <!doctype html>
 <meta charset="utf-8">
-<title>CSS Scrollbars: scrollbar-width thin on the root overridess ::-webkit-scrollbar</title>
+<title>CSS Scrollbars: scrollbar-color auto on the root defers to ::-webkit-scrollbar</title>
 <link rel="author" title="Luke Warlow" href="mailto:luke@warlow.dev" />
-<link rel="help" href="https://drafts.csswg.org/css-scrollbars-1/" />
+<link rel="help" href="https://drafts.csswg.org/css-scrollbars-1/#color-compat" />
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/css/support/parsing-testcommon.js"></script>
 <style>
   :root {
-    scrollbar-width: thin;
+    scrollbar-color: auto;
   }
 
-  ::-webkit-scrollbar {
+  :root::-webkit-scrollbar {
     display: none;
+  }
+
+  /* This is so that browsers that don't implement the WebKit prefix still pass the test */
+  @supports not selector(::-webkit-scrollbar) {
+    :root {
+      overflow: hidden;
+    }
   }
 
   :root,
@@ -47,9 +54,9 @@
       let body = document.body;
       let content = document.getElementById('content');
 
-      assert_less_than(root.offsetWidth, window.innerWidth, "viewport has a scrollbar");
+      assert_equals(root.offsetWidth, window.innerWidth, "viewport does not show a scrollbar");
       assert_equals(body.offsetWidth, root.offsetWidth, "body matches root");
       assert_equals(content.offsetWidth, body.offsetWidth, "content matches body");
-    }, "scrollbar-width thin on the root overridess ::-webkit-scrollbar");
+    }, "scrollbar-color auto on the root defers to ::-webkit-scrollbar");
   </script>
 </body>

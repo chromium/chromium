@@ -1,10 +1,10 @@
 <!doctype html>
 <html>
-<title>CSS Scrollbars: scrollbar-color on scrollable areas correctly interacts with ::-webkit-scrollbar-corner on container</title>
+<title>CSS Scrollbars: scrollbar-color on scrollable areas correctly interacts with ::-webkit-scrollbar-corner</title>
 <link rel="author" title="Luke Warlow" href="mailto:luke@warlow.dev" />
-<link rel="match" href="scrollbar-color-007-ref.html" />
-<link rel="mismatch" href="scrollbar-color-007-mis-ref.html" />
-<link rel="help" href="https://drafts.csswg.org/css-scrollbars-1/" />
+<link rel="match" href="scrollbar-color-006-ref.html" />
+<link rel="mismatch" href="scrollbar-color-006-mis-ref.html" />
+<link rel="help" href="https://drafts.csswg.org/css-scrollbars-1/#color-compat" />
 <style>
   .container {
     scrollbar-gutter: stable;
@@ -18,7 +18,7 @@
     scrollbar-color: yellow blue;
   }
 
-  .container::-webkit-scrollbar-corner {
+  ::-webkit-scrollbar-corner {
     background-color: purple;
   }
 

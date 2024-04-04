@@ -1,19 +1,18 @@
 <!doctype html>
 <meta charset="utf-8">
-<title>CSS Scrollbars: scrollbar-width none on the root overrides ::-webkit-scrollbar on the root</title>
+<title>CSS Scrollbars: scrollbar-width thin on the root overridess ::-webkit-scrollbar</title>
 <link rel="author" title="Luke Warlow" href="mailto:luke@warlow.dev" />
-<link rel="help" href="https://drafts.csswg.org/css-scrollbars-1/" />
+<link rel="help" href="https://drafts.csswg.org/css-scrollbars-1/#width-compat" />
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/css/support/parsing-testcommon.js"></script>
 <style>
   :root {
-    scrollbar-width: none;
+    scrollbar-width: thin;
   }
 
-  :root::-webkit-scrollbar {
-    width: 20px;
-    background-color: lightgray;
+  ::-webkit-scrollbar {
+    display: none;
   }
 
   :root,
@@ -48,9 +47,9 @@
       let body = document.body;
       let content = document.getElementById('content');
 
-      assert_equals(root.offsetWidth, window.innerWidth, "viewport does not show a scrollbar");
+      assert_less_than(root.offsetWidth, window.innerWidth, "viewport has a scrollbar");
       assert_equals(body.offsetWidth, root.offsetWidth, "body matches root");
       assert_equals(content.offsetWidth, body.offsetWidth, "content matches body");
-    }, "scrollbar-width none on the root overrides ::-webkit-scrollbar");
+    }, "scrollbar-width thin on the root overridess ::-webkit-scrollbar");
   </script>
 </body>
