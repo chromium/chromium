@@ -127,6 +127,8 @@ dependencies {
 
     // Needed by androidx.macrobenchmarks
     androidTestCompile "com.squareup.wire:wire-runtime-jvm:4.4.3"
+    // Needed by androidx.benchmark
+    androidTestCompile "com.squareup.moshi:moshi-adapters:1.15.0"
 
     // There is an -jre flavor of guava as well, but it requires Android O+ (for MethodHandle).
     // The -android version is missing symbols (e.g. ImmutableList stream APIs).

@@ -96,6 +96,8 @@
     "libs/com_googlecode_java_diff_utils_diffutils",
     "libs/com_squareup_javapoet",
     "libs/com_squareup_javawriter",
+    "libs/com_squareup_moshi_moshi",
+    "libs/com_squareup_moshi_moshi_adapters",
     "libs/com_squareup_okio_okio_jvm",
     "libs/com_squareup_wire_wire_runtime_jvm",
     "libs/io_github_java_diff_utils_java_diff_utils",

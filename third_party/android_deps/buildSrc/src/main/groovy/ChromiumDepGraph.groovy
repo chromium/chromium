@@ -118,6 +118,8 @@ class ChromiumDepGraph {
             licenseName: 'Apache 2.0',
             // Both -jre and -android versions are listed. Filter to only the -android ones.
             versionFilter: '-android'),
+        com_squareup_moshi_moshi_adapters: new PropertyOverride(
+            overrideLatest: true),
         com_squareup_wire_wire_runtime_jvm: new PropertyOverride(
             licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
             licenseName: 'Apache 2.0'),

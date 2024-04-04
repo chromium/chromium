@@ -15,11 +15,11 @@ import fetch_common
 
 _REPO_URL = 'https://repo.maven.apache.org/maven2'
 SPEC = fetch_common.Spec(repo_url=_REPO_URL,
-                         group_name='com/squareup/okio',
-                         module_name='okio-jvm',
+                         group_name='com/squareup/moshi',
+                         module_name='moshi',
                          file_ext='jar',
                          patch_version='cr1',
-                         version_override='3.7.0',
+                         version_override='1.15.0',
                          version_filter=None)
 
 

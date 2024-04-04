@@ -1,0 +1,10 @@
+# Copyright 2018 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# To create CIPD package run the following command.
+# cipd create --pkg-def cipd.yaml -tag version:2@1.15.0.cr1
+package: chromium/third_party/android_deps/libs/com_squareup_moshi_moshi_adapters
+description: "moshi-adapters"
+data:
+- file: moshi-adapters-1.15.0.jar
