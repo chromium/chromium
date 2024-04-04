@@ -42,6 +42,12 @@ BASE_FEATURE(kAdaptiveChargingForTesting,
              "AdaptiveChargingForTesting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the UI for additional on-device parental controls that can be used to
+// enable or block ARC++ apps.
+BASE_FEATURE(kAdditionalOnDeviceAppsParentalControls,
+             "AdditionalOnDeviceAppsParentalControls",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether the advanced documentScan APIs for document scanners
 // are available.
 BASE_FEATURE(kAdvancedDocumentScanAPI,
@@ -3164,6 +3170,10 @@ bool IsAdaptiveChargingEnabled() {
 
 bool IsAdaptiveChargingForTestingEnabled() {
   return base::FeatureList::IsEnabled(kAdaptiveChargingForTesting);
+}
+
+bool IsAdditionalOnDeviceAppsParentalControlsEnabled() {
+  return base::FeatureList::IsEnabled(kAdditionalOnDeviceAppsParentalControls);
 }
 
 bool IsAdvancedDocumentScanAPIEnabled() {
