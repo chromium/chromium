@@ -17,6 +17,13 @@ class PaymentsDataManagerTestApi {
       PaymentsDataManager& payments_data_manager)
       : payments_data_manager_(payments_data_manager) {}
 
+  // Adds `credit_card` to the web database as a server card.
+  //
+  // In production code, server cards are set via the Chrome Sync process, and
+  // not via PaymentsDataManager. However integration tests and unittests of
+  // PersonalDataManager/PaymentsDataManager may need to directly add cards.
+  void AddServerCreditCard(const CreditCard& credit_card);
+
   // Returns the number of credit card benefits.
   size_t GetCreditCardBenefitsCount() {
     return payments_data_manager_->credit_card_benefits_.size();
@@ -27,9 +34,7 @@ class PaymentsDataManagerTestApi {
   }
 
   void OnCardArtImagesFetched(
-      std::vector<std::unique_ptr<CreditCardArtImage>> images) {
-    payments_data_manager_->OnCardArtImagesFetched(std::move(images));
-  }
+      std::vector<std::unique_ptr<CreditCardArtImage>> images);
 
  private:
   const raw_ref<PaymentsDataManager> payments_data_manager_;

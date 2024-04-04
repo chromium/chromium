@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/autofill/autofill_uitest_util.h"
-#include "base/memory/raw_ptr.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/payments_data_manager_test_api.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
@@ -68,10 +69,12 @@ void AddTestCreditCard(Profile* base_profile, const CreditCard& card) {
 
 void AddTestServerCreditCard(Profile* base_profile, const CreditCard& card) {
   PdmChangeWaiter observer(base_profile);
-  GetPersonalDataManager(base_profile)->AddFullServerCreditCardForTesting(card);
 
-  // AddFullServerCreditCardForTesting is asynchronous. Wait for it to finish
-  // before continuing the tests.
+  test_api(GetPersonalDataManager(base_profile)->payments_data_manager())
+      .AddServerCreditCard(card);
+
+  // AddServerCreditCard is asynchronous. Wait for it to finish before
+  // continuing the tests.
   observer.Wait();
 }
 

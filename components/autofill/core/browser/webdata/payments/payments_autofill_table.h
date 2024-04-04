@@ -389,11 +389,9 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   // credit card to remove.
   bool RemoveCreditCard(const std::string& guid);
 
-  // Adds to the masked_credit_cards table.
-  //
-  // TODO(crbug.com/1497734): Remove this method entirely; server cards should
-  // only be added via AddCreditCard.
-  bool AddFullServerCreditCard(const CreditCard& credit_card);
+  // Adds to the masked_credit_cards table. Only tests add cards this way - in
+  // production server cards are set directly via `SetServerCreditCards`.
+  bool AddServerCreditCardForTesting(const CreditCard& credit_card);
 
   // Retrieves a credit card with guid |guid|.
   std::unique_ptr<CreditCard> GetCreditCard(const std::string& guid);

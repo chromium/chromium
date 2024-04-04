@@ -43,8 +43,7 @@ class ContentAutofillSharedStorageHandlerBrowserTest
 
 IN_PROC_BROWSER_TEST_F(ContentAutofillSharedStorageHandlerBrowserTest,
                        CheckSharedStorageData) {
-
-  CreditCard card = test::GetFullServerCard();
+  CreditCard card = test::GetMaskedServerCardVisa();
   AddTestServerCreditCard(browser()->profile(), card);
 
   base::test::TestFuture<storage::SharedStorageDatabase::GetResult> future;
@@ -98,7 +97,7 @@ class AutofillSharedStorageServerCardDataDisabledTest
 
 IN_PROC_BROWSER_TEST_F(AutofillSharedStorageServerCardDataDisabledTest,
                        NoSharedStorageData) {
-  CreditCard card = test::GetFullServerCard();
+  CreditCard card = test::GetMaskedServerCardVisa();
   AddTestServerCreditCard(browser()->profile(), card);
 
   base::test::TestFuture<storage::SharedStorageDatabase::GetResult> future;

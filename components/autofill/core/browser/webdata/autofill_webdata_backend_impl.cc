@@ -73,8 +73,8 @@ enum class Result {
   kRemoveCreditCard_Success = 90,
   kRemoveCreditCard_ReadFailure = 91,
   kRemoveCreditCard_WriteFailure = 92,
-  kAddFullServerCreditCard_Success = 100,
-  kAddFullServerCreditCard_Failure = 101,
+  kAddServerCreditCardForTesting_Success = 100,
+  kAddServerCreditCardForTesting_Failure = 101,
   kUnmaskServerCreditCard_Success = 110,
   kUnmaskServerCreditCard_Failure = 111,
   kMaskServerCreditCard_Success = 120,
@@ -549,24 +549,6 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveCreditCard(
   return WebDatabase::COMMIT_NEEDED;
 }
 
-WebDatabase::State AutofillWebDataBackendImpl::AddFullServerCreditCard(
-    const CreditCard& credit_card,
-    WebDatabase* db) {
-  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  if (!PaymentsAutofillTable::FromWebDatabase(db)->AddFullServerCreditCard(
-          credit_card)) {
-    ReportResult(Result::kAddFullServerCreditCard_Failure);
-    return WebDatabase::COMMIT_NOT_NEEDED;
-  }
-
-  for (auto& db_observer : db_observer_list_) {
-    db_observer.CreditCardChanged(CreditCardChange(
-        CreditCardChange::ADD, credit_card.guid(), credit_card));
-  }
-  ReportResult(Result::kAddFullServerCreditCard_Success);
-  return WebDatabase::COMMIT_NEEDED;
-}
-
 std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetCreditCards(
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
@@ -959,6 +941,24 @@ WebDatabase::State AutofillWebDataBackendImpl::ClearAllCreditCardBenefits(
   }
   ReportResult(Result::kClearAllCreditCardBenefits_Failure);
   return WebDatabase::COMMIT_NOT_NEEDED;
+}
+
+WebDatabase::State AutofillWebDataBackendImpl::AddServerCreditCardForTesting(
+    const CreditCard& credit_card,
+    WebDatabase* db) {
+  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  if (!PaymentsAutofillTable::FromWebDatabase(db)
+           ->AddServerCreditCardForTesting(credit_card)) {
+    ReportResult(Result::kAddServerCreditCardForTesting_Failure);
+    return WebDatabase::COMMIT_NOT_NEEDED;
+  }
+
+  for (auto& db_observer : db_observer_list_) {
+    db_observer.CreditCardChanged(CreditCardChange(
+        CreditCardChange::ADD, credit_card.guid(), credit_card));
+  }
+  ReportResult(Result::kAddServerCreditCardForTesting_Success);
+  return WebDatabase::COMMIT_NEEDED;
 }
 
 }  // namespace autofill

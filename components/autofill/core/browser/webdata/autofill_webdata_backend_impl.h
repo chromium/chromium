@@ -162,10 +162,6 @@ class AutofillWebDataBackendImpl
   // Removes a credit card from the web database. Valid only for local cards.
   WebDatabase::State RemoveCreditCard(const std::string& guid, WebDatabase* db);
 
-  // Adds a full server credit card to the web database.
-  WebDatabase::State AddFullServerCreditCard(const CreditCard& credit_card,
-                                             WebDatabase* db);
-
   // Returns a vector of local/server credit cards from the web database.
   std::unique_ptr<WDTypedResult> GetCreditCards(WebDatabase* db);
   std::unique_ptr<WDTypedResult> GetServerCreditCards(WebDatabase* db);
@@ -241,6 +237,12 @@ class AutofillWebDataBackendImpl
 
   // Clears all the credit card benefits from the database.
   WebDatabase::State ClearAllCreditCardBenefits(WebDatabase* db);
+
+  // Adds a server credit card to the web database. Used only in tests - in
+  // production, server cards are set directly from Chrome Sync code.
+  WebDatabase::State AddServerCreditCardForTesting(
+      const CreditCard& credit_card,
+      WebDatabase* db);
 
  protected:
   ~AutofillWebDataBackendImpl() override;

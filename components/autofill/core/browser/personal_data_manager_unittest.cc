@@ -38,6 +38,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
+#include "components/autofill/core/browser/payments_data_manager_test_api.h"
 #include "components/autofill/core/browser/personal_data_manager_test_base.h"
 #include "components/autofill/core/browser/profile_token_quality_test_api.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
@@ -167,18 +168,18 @@ class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
   void SetUpTwoCardTypes() {
     EXPECT_EQ(0U, personal_data_->GetCreditCards().size());
     CreditCard masked_server_card;
-    test::SetCreditCardInfo(&masked_server_card, "Elvis Presley",
-                            "4234567890123456",  // Visa
-                            "04", "2999", "1");
+    test::SetCreditCardInfo(&masked_server_card, "Elvis Presley", "3456", "04",
+                            "2999", "1");
     masked_server_card.set_guid("00000000-0000-0000-0000-000000000007");
-    masked_server_card.set_record_type(CreditCard::RecordType::kFullServerCard);
+    masked_server_card.set_record_type(
+        CreditCard::RecordType::kMaskedServerCard);
     masked_server_card.set_server_id("masked_id");
     masked_server_card.set_use_count(15);
+    masked_server_card.SetNetworkForMaskedCard(kVisaCard);
     {
       PersonalDataChangedWaiter waiter(*personal_data_);
-      // TODO(crbug.com/1497734): Switch to an appropriate setter for masked
-      // cards, as full cards have been removed.
-      personal_data_->AddFullServerCreditCardForTesting(masked_server_card);
+      test_api(personal_data_->payments_data_manager())
+          .AddServerCreditCard(masked_server_card);
       std::move(waiter).Wait();
     }
     ASSERT_EQ(1U, personal_data_->GetCreditCards().size());

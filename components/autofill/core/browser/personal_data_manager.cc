@@ -899,34 +899,6 @@ bool PersonalDataManager::IsAutofillSyncToggleAvailable() const {
          pref_service_->GetBoolean(::prefs::kExplicitBrowserSignin);
 }
 
-void PersonalDataManager::AddFullServerCreditCardForTesting(
-    const CreditCard& credit_card) {
-  DCHECK_EQ(CreditCard::RecordType::kFullServerCard, credit_card.record_type());
-  DCHECK(!credit_card.IsEmpty(app_locale_));
-  DCHECK(!credit_card.server_id().empty());
-  DCHECK(payments_data_manager_->GetServerDatabase())
-      << "Adding server card without server storage.";
-
-  // Don't add a duplicate.
-  if (base::ranges::any_of(payments_data_manager_->server_credit_cards_,
-                           [&](const auto& element) {
-                             return element->guid() == credit_card.guid();
-                           }) ||
-      base::ranges::any_of(payments_data_manager_->server_credit_cards_,
-                           [&](const auto& element) {
-                             return element->Compare(credit_card) == 0;
-                           })) {
-    return;
-  }
-
-  // Add the new credit card to the web database.
-  payments_data_manager_->GetServerDatabase()->AddFullServerCreditCard(
-      credit_card);
-
-  // Refresh our local cache and send notifications to observers.
-  Refresh();
-}
-
 std::optional<signin::AccountManagedStatusFinder::Outcome>
 PersonalDataManager::GetAccountStatusForTesting() const {
   return account_status_finder_

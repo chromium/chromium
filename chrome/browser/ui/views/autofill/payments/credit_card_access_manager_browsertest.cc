@@ -76,18 +76,6 @@ class CreditCardAccessManagerBrowserTest : public InProcessBrowserTest {
         .GetCreditCardAccessManager();
   }
 
-  CreditCard SaveServerCard(std::string card_number) {
-    CreditCard server_card;
-    test::SetCreditCardInfo(&server_card, "John Smith", card_number.c_str(),
-                            "12", test::NextYear().c_str(), "1");
-    server_card.set_guid("00000000-0000-0000-0000-" +
-                         card_number.substr(0, 12));
-    server_card.set_record_type(CreditCard::RecordType::kFullServerCard);
-    server_card.set_server_id("full_id_" + card_number);
-    AddTestServerCreditCard(browser()->profile(), server_card);
-    return server_card;
-  }
-
  private:
   test::AutofillBrowserTestEnvironment autofill_test_environment_;
   TestAutofillManagerInjector<TestAutofillManager> autofill_manager_injector_;
@@ -95,12 +83,11 @@ class CreditCardAccessManagerBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(CreditCardAccessManagerBrowserTest,
                        NavigateFromPage_UnmaskedCardCacheResets) {
-  CreditCard card = SaveServerCard("1223122348859229");
-
   // CreditCardAccessManager is completely recreated on page navigation, so to
   // ensure we're not using stale pointers, always re-fetch it on use.
   EXPECT_TRUE(
       test_api(GetCreditCardAccessManager()).UnmaskedCardCacheIsEmpty());
+  CreditCard card = test::GetFullServerCard();
   GetCreditCardAccessManager().CacheUnmaskedCardInfo(card, u"123");
   EXPECT_FALSE(
       test_api(GetCreditCardAccessManager()).UnmaskedCardCacheIsEmpty());

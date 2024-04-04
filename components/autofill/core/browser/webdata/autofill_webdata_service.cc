@@ -183,14 +183,6 @@ void AutofillWebDataService::RemoveCreditCard(const std::string& guid) {
                                 autofill_backend_, guid));
 }
 
-void AutofillWebDataService::AddFullServerCreditCard(
-    const CreditCard& credit_card) {
-  wdbs_->ScheduleDBTask(
-      FROM_HERE,
-      base::BindOnce(&AutofillWebDataBackendImpl::AddFullServerCreditCard,
-                     autofill_backend_, credit_card));
-}
-
 void AutofillWebDataService::AddLocalIban(const Iban& iban) {
   wdbs_->ScheduleDBTask(
       FROM_HERE, base::BindOnce(&AutofillWebDataBackendImpl::AddLocalIban,
@@ -436,6 +428,14 @@ AutofillWebDataService::RemoveExpiredAutocompleteEntries(
           &AutofillWebDataBackendImpl::RemoveExpiredAutocompleteEntries,
           autofill_backend_),
       consumer);
+}
+
+void AutofillWebDataService::AddServerCreditCardForTesting(
+    const CreditCard& credit_card) {
+  wdbs_->ScheduleDBTask(
+      FROM_HERE,
+      base::BindOnce(&AutofillWebDataBackendImpl::AddServerCreditCardForTesting,
+                     autofill_backend_, credit_card));
 }
 
 AutofillWebDataService::~AutofillWebDataService() = default;

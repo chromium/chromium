@@ -768,11 +768,13 @@ bool PaymentsAutofillTable::RemoveCreditCard(const std::string& guid) {
   return DeleteWhereColumnEq(db_, kCreditCardsTable, kGuid, guid);
 }
 
-bool PaymentsAutofillTable::AddFullServerCreditCard(const CreditCard& credit_card) {
-  // TODO(crbug.com/1497734): Remove this method entirely.
-  DCHECK_EQ(CreditCard::RecordType::kFullServerCard, credit_card.record_type());
+bool PaymentsAutofillTable::AddServerCreditCardForTesting(
+    const CreditCard& credit_card) {
+  DCHECK_EQ(CreditCard::RecordType::kMaskedServerCard,
+            credit_card.record_type());
   DCHECK(!credit_card.number().empty());
   DCHECK(!credit_card.server_id().empty());
+  DCHECK(!credit_card.network().empty());
 
   sql::Transaction transaction(db_);
   if (!transaction.Begin())
@@ -781,12 +783,7 @@ bool PaymentsAutofillTable::AddFullServerCreditCard(const CreditCard& credit_car
   // Make sure there aren't duplicates for this card.
   DeleteFromMaskedCreditCards(credit_card.server_id());
 
-  CreditCard masked(credit_card);
-  masked.set_record_type(CreditCard::RecordType::kMaskedServerCard);
-  masked.SetNumber(credit_card.LastFourDigits());
-  masked.RecordAndLogUse();
-  DCHECK(!masked.network().empty());
-  AddMaskedCreditCards({masked});
+  AddMaskedCreditCards({credit_card});
 
   transaction.Commit();
 

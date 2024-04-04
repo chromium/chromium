@@ -578,17 +578,18 @@ TEST_F(PaymentsAutofillTableTest, ReconcileServerCvcs) {
   EXPECT_EQ(3333, deleted_cvc_list[0]->instrument_id);
 }
 
-TEST_F(PaymentsAutofillTableTest, AddFullServerCreditCard) {
+TEST_F(PaymentsAutofillTableTest, AddServerCreditCardForTesting) {
   CreditCard credit_card;
-  credit_card.set_record_type(CreditCard::RecordType::kFullServerCard);
+  credit_card.set_record_type(CreditCard::RecordType::kMaskedServerCard);
   credit_card.set_server_id("server_id");
   credit_card.set_origin("https://www.example.com/");
   credit_card.SetRawInfo(CREDIT_CARD_NAME_FULL, u"Jack Torrance");
-  credit_card.SetRawInfo(CREDIT_CARD_NUMBER, u"1234567890123456");
+  credit_card.SetRawInfo(CREDIT_CARD_NUMBER, u"3456");
   credit_card.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"04");
   credit_card.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"2013");
+  credit_card.SetNetworkForMaskedCard(kVisaCard);
 
-  EXPECT_TRUE(table_->AddFullServerCreditCard(credit_card));
+  EXPECT_TRUE(table_->AddServerCreditCardForTesting(credit_card));
 
   std::vector<std::unique_ptr<CreditCard>> outputs;
   ASSERT_TRUE(table_->GetServerCreditCards(outputs));

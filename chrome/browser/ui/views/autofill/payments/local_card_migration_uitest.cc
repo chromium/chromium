@@ -142,6 +142,7 @@ constexpr char kFirstCardNumber[] = "5428424047572420";   // Mastercard
 constexpr char kSecondCardNumber[] = "4782187095085933";  // Visa
 constexpr char kThirdCardNumber[] = "4111111111111111";   // Visa
 constexpr char kInvalidCardNumber[] = "4444444444444444";
+constexpr char kMaskedCardNumber[] = "2420";
 
 constexpr double kFakeGeolocationLatitude = 1.23;
 constexpr double kFakeGeolocationLongitude = 4.56;
@@ -334,8 +335,9 @@ class LocalCardMigrationBrowserTest
                             "12", test::NextYear().c_str(), "1");
     server_card.set_guid("00000000-0000-0000-0000-" +
                          card_number.substr(0, 12));
-    server_card.set_record_type(CreditCard::RecordType::kFullServerCard);
+    server_card.set_record_type(CreditCard::RecordType::kMaskedServerCard);
     server_card.set_server_id("full_id_" + card_number);
+    server_card.SetNetworkForMaskedCard(kVisaCard);
     AddTestServerCreditCard(GetProfile(0), server_card);
     return server_card;
   }
@@ -599,7 +601,7 @@ IN_PROC_BROWSER_TEST_F(
     DISABLED_ReusingServerCardDoesNotShowIntermediateMigrationOffer) {
   base::HistogramTester histogram_tester;
 
-  SaveServerCard(kFirstCardNumber);
+  SaveServerCard(kMaskedCardNumber);
   FillAndSubmitFormWithCard(kFirstCardNumber);
 
   // No bubble should be showing.
@@ -617,7 +619,7 @@ IN_PROC_BROWSER_TEST_F(
     DISABLED_ReusingServerCardWithMigratableLocalCardShowIntermediateMigrationOffer) {
   base::HistogramTester histogram_tester;
 
-  SaveServerCard(kFirstCardNumber);
+  SaveServerCard(kMaskedCardNumber);
   SaveLocalCard(kSecondCardNumber);
   UseCardAndWaitForMigrationOffer(kFirstCardNumber);
 
@@ -715,7 +717,7 @@ IN_PROC_BROWSER_TEST_F(
     LocalCardMigrationBrowserTest,
     // TODO(crbug.com/1007051): Flaky, but feature should soon be removed.
     DISABLED_CreditCardIconShownInLocationBar) {
-  SaveServerCard(kFirstCardNumber);
+  SaveServerCard(kMaskedCardNumber);
   SaveLocalCard(kSecondCardNumber);
   UseCardAndWaitForMigrationOffer(kFirstCardNumber);
 

@@ -166,18 +166,18 @@ class PaymentsDataManagerHelper : public PersonalDataManagerTestBase {
   void SetUpTwoCardTypes() {
     EXPECT_EQ(0U, personal_data_->GetCreditCards().size());
     CreditCard masked_server_card;
-    test::SetCreditCardInfo(&masked_server_card, "Elvis Presley",
-                            "4234567890123456",  // Visa
-                            "04", "2999", "1");
+    test::SetCreditCardInfo(&masked_server_card, "Elvis Presley", "3456", "04",
+                            "2999", "1");
     masked_server_card.set_guid("00000000-0000-0000-0000-000000000007");
-    masked_server_card.set_record_type(CreditCard::RecordType::kFullServerCard);
+    masked_server_card.set_record_type(
+        CreditCard::RecordType::kMaskedServerCard);
     masked_server_card.set_server_id("masked_id");
+    masked_server_card.SetNetworkForMaskedCard(kVisaCard);
     masked_server_card.set_use_count(15);
     {
       PersonalDataChangedWaiter waiter(*personal_data_);
-      // TODO(crbug.com/1497734): Switch to an appropriate setter for masked
-      // cards, as full cards have been removed.
-      personal_data_->AddFullServerCreditCardForTesting(masked_server_card);
+      test_api(personal_data_->payments_data_manager())
+          .AddServerCreditCard(masked_server_card);
       std::move(waiter).Wait();
     }
     ASSERT_EQ(1U, personal_data_->GetCreditCards().size());
@@ -526,12 +526,13 @@ TEST_F(PaymentsDataManagerTest, AddUpdateRemoveCreditCards) {
   // Add a full server card.
   CreditCard credit_card3(base::Uuid::GenerateRandomV4().AsLowercaseString(),
                           test::kEmptyOrigin);
-  test::SetCreditCardInfo(&credit_card3, "Jane Doe",
-                          "4111111111111111" /* Visa */, "04", "2999", "1");
-  credit_card3.set_record_type(CreditCard::RecordType::kFullServerCard);
+  test::SetCreditCardInfo(&credit_card3, "Jane Doe", "1111", "04", "2999", "1");
+  credit_card3.set_record_type(CreditCard::RecordType::kMaskedServerCard);
   credit_card3.set_server_id("server_id");
+  credit_card3.SetNetworkForMaskedCard(kVisaCard);
 
-  personal_data_->AddFullServerCreditCardForTesting(credit_card3);
+  test_api(personal_data_->payments_data_manager())
+      .AddServerCreditCard(credit_card3);
   PersonalDataChangedWaiter(*personal_data_).Wait();
 
   cards.push_back(&credit_card3);
@@ -540,7 +541,8 @@ TEST_F(PaymentsDataManagerTest, AddUpdateRemoveCreditCards) {
   // Must not add a duplicate server card with same GUID.
   EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged()).Times(0);
 
-  personal_data_->AddFullServerCreditCardForTesting(credit_card3);
+  test_api(personal_data_->payments_data_manager())
+      .AddServerCreditCard(credit_card3);
 
   ExpectSameElements(cards, personal_data_->GetCreditCards());
 
@@ -551,7 +553,8 @@ TEST_F(PaymentsDataManagerTest, AddUpdateRemoveCreditCards) {
 
   EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged()).Times(0);
 
-  personal_data_->AddFullServerCreditCardForTesting(duplicate_server_card);
+  test_api(personal_data_->payments_data_manager())
+      .AddServerCreditCard(duplicate_server_card);
 
   ExpectSameElements(cards, personal_data_->GetCreditCards());
 }
@@ -745,9 +748,9 @@ TEST_F(PaymentsDataManagerTest, AddCreditCard_Invalid) {
 }
 
 TEST_F(PaymentsDataManagerTest, GetCreditCardByServerId) {
-  CreditCard card = test::GetFullServerCard();
+  CreditCard card = test::GetMaskedServerCardVisa();
   card.set_server_id("server id");
-  personal_data_->AddFullServerCreditCardForTesting(card);
+  test_api(personal_data_->payments_data_manager()).AddServerCreditCard(card);
   PersonalDataChangedWaiter(*personal_data_).Wait();
 
   ASSERT_EQ(1u, personal_data_->GetCreditCards().size());
@@ -1284,15 +1287,14 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest, SwitchServerStorages) {
 
   // Add a new card to the persistent storage.
   CreditCard server_card;
-  test::SetCreditCardInfo(&server_card, "Server Card",
-                          "4234567890123456",  // Visa
-                          "04", "2999", "1");
+  test::SetCreditCardInfo(&server_card, "Server Card", "3456", "04", "2999",
+                          "1");
   server_card.set_guid("00000000-0000-0000-0000-000000000007");
-  server_card.set_record_type(CreditCard::RecordType::kFullServerCard);
+  server_card.set_record_type(CreditCard::RecordType::kMaskedServerCard);
   server_card.set_server_id("server_id");
-  // TODO(crbug.com/1497734): Switch to an appropriate setter for masked
-  // cards, as full cards have been removed.
-  personal_data_->AddFullServerCreditCardForTesting(server_card);
+  server_card.SetNetworkForMaskedCard(kVisaCard);
+  test_api(personal_data_->payments_data_manager())
+      .AddServerCreditCard(server_card);
   PersonalDataChangedWaiter(*personal_data_).Wait();
 
   EXPECT_EQ(1U, personal_data_->GetServerCreditCards().size());
@@ -1313,13 +1315,14 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest,
        UseCorrectStorageForDifferentCards) {
   // Add a server card.
   CreditCard server_card;
-  test::SetCreditCardInfo(&server_card, "Server Card",
-                          "4234567890123456",  // Visa
-                          "04", "2999", "1");
+  test::SetCreditCardInfo(&server_card, "Server Card", "3456", "04", "2999",
+                          "1");
   server_card.set_guid("00000000-0000-0000-0000-000000000007");
-  server_card.set_record_type(CreditCard::RecordType::kFullServerCard);
+  server_card.set_record_type(CreditCard::RecordType::kMaskedServerCard);
   server_card.set_server_id("server_id");
-  personal_data_->AddFullServerCreditCardForTesting(server_card);
+  server_card.SetNetworkForMaskedCard(kVisaCard);
+  test_api(personal_data_->payments_data_manager())
+      .AddServerCreditCard(server_card);
 
   // Set server card metadata.
   server_card.set_use_count(15);
@@ -1736,9 +1739,9 @@ TEST_F(PaymentsDataManagerTest, ProcessCardArtUrlChanges) {
     run_loop.Run();
   };
 
-  CreditCard card = test::GetFullServerCard();
+  CreditCard card = test::GetMaskedServerCardVisa();
   card.set_server_id("card_server_id");
-  personal_data_->AddFullServerCreditCardForTesting(card);
+  test_api(personal_data_->payments_data_manager()).AddServerCreditCard(card);
   PersonalDataChangedWaiter(*personal_data_).Wait();
 
   card.set_server_id("card_server_id");
@@ -1746,14 +1749,14 @@ TEST_F(PaymentsDataManagerTest, ProcessCardArtUrlChanges) {
   std::vector<GURL> updated_urls;
   updated_urls.emplace_back("https://www.example.com/card1");
 
-  personal_data_->AddFullServerCreditCardForTesting(card);
+  test_api(personal_data_->payments_data_manager()).AddServerCreditCard(card);
   wait_for_fetch_images_for_url();
 
   card.set_card_art_url(GURL("https://www.example.com/card2"));
   updated_urls.clear();
   updated_urls.emplace_back("https://www.example.com/card2");
 
-  personal_data_->AddFullServerCreditCardForTesting(card);
+  test_api(personal_data_->payments_data_manager()).AddServerCreditCard(card);
   wait_for_fetch_images_for_url();
 }
 #endif

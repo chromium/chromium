@@ -321,6 +321,10 @@ class PersonalDataManager : public KeyedService,
   virtual void ClearAllLocalData();
 
   // Sets a server credit card for test.
+  //
+  // TODO(crbug.com/330865438): This method currently sets `server_cards_`
+  // directly which is not correct for the real PersonalDataManager. It should
+  // be moved to TestPersonalDataManager, and unittests should switch to that.
   void AddServerCreditCardForTest(std::unique_ptr<CreditCard> credit_card);
 
   void AddIbanForTest(std::unique_ptr<Iban> iban) {
@@ -620,13 +624,6 @@ class PersonalDataManager : public KeyedService,
   const std::vector<AutofillProfile>& test_addresses() const {
     return test_addresses_;
   }
-
-  // Adds `credit_card` to the web database as a full server card.
-  //
-  // It is no longer possible for users to reach this path as full server cards
-  // have been deprecated, however tests still use this when testing
-  // still-supported paths (filling, editing, and deleting full server cards).
-  void AddFullServerCreditCardForTesting(const CreditCard& credit_card);
 
   AlternativeStateNameMapUpdater*
   get_alternative_state_name_map_updater_for_testing() {
