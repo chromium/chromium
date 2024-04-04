@@ -1121,10 +1121,11 @@ BASE_FEATURE(kWebAssemblyTiering,
 // Enable WebAssembly trap handler.
 BASE_FEATURE(kWebAssemblyTrapHandler,
              "WebAssemblyTrapHandler",
-#if ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
-      BUILDFLAG(IS_MAC)) &&                                                 \
-     defined(ARCH_CPU_X86_64)) ||                                           \
-    (BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
+#if ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) ||  \
+      BUILDFLAG(IS_MAC)) &&                                                  \
+     defined(ARCH_CPU_X86_64)) ||                                            \
+    ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)) && \
+     defined(ARCH_CPU_ARM64))
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
