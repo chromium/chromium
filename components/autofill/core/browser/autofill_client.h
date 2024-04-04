@@ -827,6 +827,11 @@ class AutofillClient {
   // platform is not supported.
   virtual std::unique_ptr<device_reauth::DeviceAuthenticator>
   GetDeviceAuthenticator();
+
+  // Attaches the IPH for the manual fallback feature to the `field`, on
+  // platforms that support manual fallback.
+  virtual void ShowAutofillFieldIphForManualFallbackFeature(
+      const FormFieldData& field);
 };
 
 }  // namespace autofill

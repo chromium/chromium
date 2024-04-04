@@ -52,6 +52,7 @@ class AutofillPopupHideHelper : public content::WebContentsObserver,
   // `hiding_callback_`.
   struct HidingParams {
     bool hide_on_text_field_change = true;
+    bool hide_on_web_contents_lost_focus = true;
   };
 
   AutofillPopupHideHelper(

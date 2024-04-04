@@ -445,6 +445,10 @@ class MockAutofillClient : public TestAutofillClient {
               OnVirtualCardDataAvailable,
               (const VirtualCardManualFallbackBubbleOptions&),
               (override));
+  MOCK_METHOD(void,
+              ShowAutofillFieldIphForManualFallbackFeature,
+              (const FormFieldData& field),
+              (override));
 };
 
 class MockTouchToFillDelegate : public TouchToFillDelegate {
@@ -1593,6 +1597,57 @@ TEST_F(BrowserAutofillManagerTest,
   EXPECT_EQ(external_delegate()->GetMainFillingProduct(),
             FillingProduct::kCreditCard);
 }
+
+TEST_F(BrowserAutofillManagerTest,
+       AutofillManualFallback_IphIsDisplayedCorrectly) {
+  base::test::ScopedFeatureList enabled_features{
+      features::kAutofillEnableManuallFallbackIPH};
+
+  FormData form;
+  form.name = u"MyForm";
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("https://myform.com/submit.html");
+  form.fields = {
+      CreateTestFormField("First Name", "firstname", "",
+                          FormControlType::kInputText, "given-name"),
+      CreateTestFormField("Middle Name", "middle", "",
+                          FormControlType::kInputText, ""),
+      CreateTestFormField("Last Name", "lastname", "",
+                          FormControlType::kInputText, "unrecognized"),
+      CreateTestFormField("unrecognized", "unrecognized", "",
+                          FormControlType::kInputText, "unrecognized")};
+
+  FormsSeen({form});
+
+  MockFunction<void(int)> check;
+  {
+    InSequence s;
+    EXPECT_CALL(autofill_client_, ShowAutofillFieldIphForManualFallbackFeature)
+        .Times(0);
+    EXPECT_CALL(check, Call(1));
+    EXPECT_CALL(autofill_client_, ShowAutofillFieldIphForManualFallbackFeature);
+    EXPECT_CALL(check, Call(2));
+    EXPECT_CALL(autofill_client_, ShowAutofillFieldIphForManualFallbackFeature)
+        .Times(0);
+  }
+
+  // IPH should not be shown for correct autocomplete value.
+  GetAutofillSuggestions(form, form.fields[0]);
+  // IPH should not be shown for fields which are not autofillable.
+  GetAutofillSuggestions(form, form.fields[3]);
+  check.Call(1);
+
+  // IPH is shown on unrecognized autocomplete.
+  GetAutofillSuggestions(form, form.fields[2]);
+  check.Call(2);
+
+  personal_data().ClearProfiles();
+  personal_data().AddProfile(test::GetIncompleteProfile2());
+
+  // IPH should not be shown if the profiles don't have values for that field.
+  GetAutofillSuggestions(form, form.fields[2]);
+}
+
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 // Test that when small forms are disabled (min required fields enforced) no

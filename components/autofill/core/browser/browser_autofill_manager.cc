@@ -1192,6 +1192,24 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     // TODO(crbug.com/1344590): Revisit here to see whether we should offer IBAN
     // filling for fields with unrecognized autocomplete attribute
     if (context.suppress_reason == SuppressReason::kAutocompleteUnrecognized) {
+      FormStructure* form_structure = nullptr;
+      AutofillField* autofill_field = nullptr;
+      // Display the IPH only if the form can be autofilled and the user has
+      // profiles which can fill the current field.
+      if (GetCachedFormAndField(form, field, &form_structure,
+                                &autofill_field) &&
+          FieldTypeGroupToFormType(autofill_field->Type().group()) ==
+              FormType::kAddressForm &&
+          base::ranges::any_of(
+              client().GetPersonalDataManager()->GetProfiles(),
+              [field_type = autofill_field->Type().GetStorableType()](
+                  AutofillProfile* profile) {
+                return profile->HasInfo(field_type);
+              }) &&
+          base::FeatureList::IsEnabled(
+              features::kAutofillEnableManuallFallbackIPH)) {
+        client().ShowAutofillFieldIphForManualFallbackFeature(field);
+      }
       return false;
     }
 

@@ -8,6 +8,8 @@
 #include "base/functional/overloaded.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_field_promo_view.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/ui/popup_hiding_reasons.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
@@ -18,8 +20,10 @@ namespace autofill {
 
 AutofillFieldPromoControllerImpl::AutofillFieldPromoControllerImpl(
     content::WebContents* web_contents,
+    const base::Feature& feature_promo,
     ui::ElementIdentifier promo_element_identifier)
     : web_contents_(web_contents),
+      feature_promo_(feature_promo),
       promo_element_identifier_(std::move(promo_element_identifier)) {}
 
 AutofillFieldPromoControllerImpl::~AutofillFieldPromoControllerImpl() {
@@ -35,7 +39,10 @@ void AutofillFieldPromoControllerImpl::Show(const gfx::RectF& bounds) {
   }
 
   AutofillPopupHideHelper::HidingParams hiding_params = {
-      .hide_on_text_field_change = false};
+      .hide_on_text_field_change = false,
+      // TODO(b/313587343): Maybe make this true when clicking on the IPH
+      // doesn't trigger anymore the event of web contents losing focus.
+      .hide_on_web_contents_lost_focus = false};
   AutofillPopupHideHelper::HidingCallback hiding_callback =
       base::BindRepeating([](AutofillFieldPromoControllerImpl& controller,
                              PopupHidingReason) { controller.Hide(); },
@@ -52,6 +59,13 @@ void AutofillFieldPromoControllerImpl::Show(const gfx::RectF& bounds) {
       std::move(hiding_callback), std::move(pip_detection_callback));
   promo_view_ = AutofillFieldPromoView::CreateAndShow(
       web_contents_, bounds, promo_element_identifier_);
+
+  if (!chrome::FindBrowserWithTab(web_contents_)
+           ->window()
+           ->MaybeShowFeaturePromo(feature_promo_.get())) {
+    // Destroy the invisible view if the promo was not shown.
+    Hide();
+  }
 }
 
 void AutofillFieldPromoControllerImpl::Hide() {

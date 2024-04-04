@@ -16,9 +16,11 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "url/origin.h"
 
@@ -69,6 +71,10 @@ class AutofillFieldPromoViewImplTest : public TestWithBrowserView {
 
   content::WebContents* web_contents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  const ui::ElementIdentifier& element_identifier() {
+    return test_promo_element_identifier_;
   }
 
   base::WeakPtr<AutofillFieldPromoView> CreateView(
@@ -169,6 +175,12 @@ TEST_F(AutofillFieldPromoViewImplTest, OverlapsWithPictureInPictureWindow) {
   picture_in_picture_window_controller.SetWindowBounds(
       gfx::Rect(100, 100, 1000, 1000));
   EXPECT_TRUE(view->OverlapsWithPictureInPictureWindow());
+}
+
+TEST_F(AutofillFieldPromoViewImplTest, ElementIdForIphIsCorrect) {
+  EXPECT_EQ(
+      GetViewRawPtr(CreateView())->GetProperty(views::kElementIdentifierKey),
+      element_identifier());
 }
 
 }  // namespace autofill

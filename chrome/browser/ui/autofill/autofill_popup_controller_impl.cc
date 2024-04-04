@@ -207,7 +207,8 @@ void AutofillPopupControllerImpl::Show(
       .hide_on_text_field_change =
           IsRootPopup() && suggestions.size() == 1 &&
           GetFillingProductFromPopupItemId(suggestions[0].popup_item_id) ==
-              FillingProduct::kCompose};
+              FillingProduct::kCompose,
+      .hide_on_web_contents_lost_focus = true};
 
   AutofillPopupHideHelper::HidingCallback hiding_callback = base::BindRepeating(
       &AutofillPopupControllerImpl::Hide, base::Unretained(this));

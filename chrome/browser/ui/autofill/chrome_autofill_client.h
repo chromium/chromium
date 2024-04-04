@@ -16,6 +16,7 @@
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/autofill/autofill_field_promo_controller.h"
 #include "chrome/browser/ui/hats/hats_service_desktop.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/autofill_driver.h"
@@ -53,6 +54,7 @@ class AutofillSaveCardBottomSheetBridge;
 class AutofillSnackbarControllerImpl;
 class AutofillCvcSaveMessageDelegate;
 #endif  // BUILDFLAG(IS_ANDROID)
+struct FormFieldData;
 struct OfferNotificationOptions;
 struct VirtualCardEnrollmentFields;
 class VirtualCardEnrollmentManager;
@@ -253,16 +255,26 @@ class ChromeAutofillClient : public ContentAutofillClient,
   FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override;
   std::unique_ptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator()
       override;
+  void ShowAutofillFieldIphForManualFallbackFeature(
+      const FormFieldData& field) override;
 
+  // TODO(b/320634151): Create a test API.
   base::WeakPtr<AutofillPopupControllerImpl> popup_controller_for_testing() {
     return popup_controller_;
   }
+#if defined(UNIT_TEST)
   void KeepPopupOpenForTesting() { keep_popup_open_for_testing_ = true; }
   std::unique_ptr<CardUnmaskPromptControllerImpl>
   SetCardUnmaskControllerForTesting(
       std::unique_ptr<CardUnmaskPromptControllerImpl> test_controller) {
     return std::exchange(unmask_controller_, std::move(test_controller));
   }
+  void SetAutofillFieldPromoControllerManualFallbackForTesting(
+      std::unique_ptr<AutofillFieldPromoController> test_controller) {
+    autofill_field_promo_controller_manual_fallback_ =
+        std::move(test_controller);
+  }
+#endif  // defined(UNIT_TEST)
 
   // ContentAutofillClient:
   std::unique_ptr<AutofillManager> CreateManager(
@@ -323,6 +335,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
       autofill_cvc_save_message_delegate_;
 #endif
   std::unique_ptr<CardUnmaskPromptControllerImpl> unmask_controller_;
+  std::unique_ptr<AutofillFieldPromoController>
+      autofill_field_promo_controller_manual_fallback_;
 };
 
 }  // namespace autofill

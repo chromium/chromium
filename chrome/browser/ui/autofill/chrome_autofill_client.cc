@@ -42,6 +42,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/autofill/address_bubbles_controller.h"
+#include "chrome/browser/ui/autofill/autofill_field_promo_controller_impl.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
@@ -51,6 +52,7 @@
 #include "chrome/browser/ui/autofill/payments/mandatory_reauth_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/view_factory.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
@@ -90,9 +92,11 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_switches.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/form_interactions_flow.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/buildflags.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -974,6 +978,14 @@ void ChromeAutofillClient::ShowAutofillPopup(
       open_args.suggestions, open_args.trigger_source,
       ShouldAutofillPopupAutoselectFirstSuggestion(open_args.trigger_source));
 
+  // The autofill popup is allowed to overlap with the IPH under the condition
+  // that the IPH is hidden immediately AFTER the autofill popup is shown. For
+  // more information, check
+  // `popup_view_utils.cc::BoundsOverlapWithAnyWidget()`.
+  if (autofill_field_promo_controller_manual_fallback_) {
+    autofill_field_promo_controller_manual_fallback_->Hide();
+  }
+
   // When testing, try to keep popup open when the reason to hide is from an
   // external browser frame resize that is extraneous to our testing goals.
   if (keep_popup_open_for_testing_ && popup_controller_.get()) {
@@ -1209,6 +1221,20 @@ ChromeAutofillClient::GetDeviceAuthenticator() {
 #else
   return nullptr;
 #endif
+}
+
+void ChromeAutofillClient::ShowAutofillFieldIphForManualFallbackFeature(
+    const FormFieldData& field) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (!autofill_field_promo_controller_manual_fallback_) {
+    autofill_field_promo_controller_manual_fallback_ =
+        std::make_unique<AutofillFieldPromoControllerImpl>(
+            web_contents(),
+            feature_engagement::kIPHAutofillManualFallbackFeature,
+            kAutofillManualFallbackElementId);
+  }
+  autofill_field_promo_controller_manual_fallback_->Show(field.bounds);
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)

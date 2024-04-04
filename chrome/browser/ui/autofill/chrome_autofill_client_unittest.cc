@@ -17,6 +17,7 @@
 #include "chrome/browser/fast_checkout/fast_checkout_client_impl.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
+#include "chrome/browser/ui/autofill/autofill_field_promo_controller.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
@@ -29,12 +30,15 @@
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/browser/ui/mock_autofill_popup_delegate.h"
 #include "components/autofill/core/browser/ui/mock_fast_checkout_client.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/form_interactions_flow.h"
 #include "components/plus_addresses/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/unified_consent/pref_names.h"
+#include "components/user_education/test/mock_feature_promo_controller.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -62,6 +66,7 @@ using ::testing::Field;
 using ::testing::InSequence;
 using ::testing::Ref;
 using ::testing::Return;
+using user_education::test::MockFeaturePromoController;
 
 #if BUILDFLAG(IS_ANDROID)
 class MockAutofillSaveCardBottomSheetBridge
@@ -87,6 +92,13 @@ class MockSaveCardBubbleController : public SaveCardBubbleControllerImpl {
   MOCK_METHOD(void, ShowConfirmationBubbleView, (bool), (override));
 };
 #endif
+
+class MockAutofillFieldPromoController : public AutofillFieldPromoController {
+ public:
+  ~MockAutofillFieldPromoController() override = default;
+  MOCK_METHOD(void, Show, (const gfx::RectF&), (override));
+  MOCK_METHOD(void, Hide, (), (override));
+};
 
 class TestChromeAutofillClient : public ChromeAutofillClient {
  public:
@@ -121,6 +133,13 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
     // Creates the AutofillDriver and AutofillManager.
     NavigateAndCommit(GURL("about:blank"));
 
+    auto autofill_field_promo_controller_manual_fallback =
+        std::make_unique<MockAutofillFieldPromoController>();
+    autofill_field_promo_controller_manual_fallback_ =
+        autofill_field_promo_controller_manual_fallback.get();
+    client()->SetAutofillFieldPromoControllerManualFallbackForTesting(
+        std::move(autofill_field_promo_controller_manual_fallback));
+
 #if !BUILDFLAG(IS_ANDROID)
     SecurityStateTabHelper::CreateForWebContents(web_contents());
 
@@ -134,6 +153,7 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
   void TearDown() override {
     // Avoid that the raw pointer becomes dangling.
     personal_data_manager_ = nullptr;
+    autofill_field_promo_controller_manual_fallback_ = nullptr;
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
@@ -144,6 +164,11 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
 
   TestPersonalDataManager* personal_data_manager() {
     return personal_data_manager_;
+  }
+
+  MockAutofillFieldPromoController*
+  autofill_field_promo_controller_manual_fallback() {
+    return autofill_field_promo_controller_manual_fallback_;
   }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -173,6 +198,8 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
   }
 
   raw_ptr<TestPersonalDataManager> personal_data_manager_ = nullptr;
+  raw_ptr<MockAutofillFieldPromoController>
+      autofill_field_promo_controller_manual_fallback_;
   TestAutofillClientInjector<TestChromeAutofillClient>
       test_autofill_client_injector_;
   base::OnceCallback<void()> setup_flags_;
@@ -299,6 +326,22 @@ TEST_F(ChromeAutofillClientTest, EditAddressDialogFooter) {
             l10n_util::GetStringFUTF16(
                 IDS_AUTOFILL_UPDATE_PROMPT_ACCOUNT_ADDRESS_SOURCE_NOTICE,
                 base::ASCIIToUTF16(account->email)));
+}
+
+TEST_F(ChromeAutofillClientTest, AutofillManualFallbackIPH_IsShown) {
+  EXPECT_CALL(*autofill_field_promo_controller_manual_fallback(), Show);
+  client()->ShowAutofillFieldIphForManualFallbackFeature(FormFieldData{});
+}
+
+TEST_F(ChromeAutofillClientTest,
+       AutofillManualFallbackIPH_HideOnShowAutofillPopup) {
+  auto delegate = std::make_unique<MockAutofillPopupDelegate>();
+
+  EXPECT_CALL(*autofill_field_promo_controller_manual_fallback(), Hide);
+  client()->ShowAutofillPopup(AutofillClient::PopupOpenArgs(),
+                              delegate->GetWeakPtr());
+  testing::Mock::VerifyAndClearExpectations(
+      autofill_field_promo_controller_manual_fallback());
 }
 #endif
 

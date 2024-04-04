@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/autofill/autofill_field_promo_view_impl.h"
-#include <cstddef>
 
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ui/browser.h"
@@ -16,6 +15,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/views/view_class_properties.h"
 
 namespace {
 
@@ -57,8 +57,7 @@ AutofillFieldPromoViewImpl::AutofillFieldPromoViewImpl(
     const ui::ElementIdentifier& promo_element_identifier)
     : web_contents_(web_contents) {
   SetViewBounds(element_bounds);
-  // TODO(b/320634151): Call `this->SetProperty(..., promo_element_identifier)`
-  // in order to anchor the IPH on this view.
+  SetProperty(views::kElementIdentifierKey, promo_element_identifier);
 }
 
 AutofillFieldPromoViewImpl::~AutofillFieldPromoViewImpl() = default;

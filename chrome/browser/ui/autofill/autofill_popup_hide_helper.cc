@@ -52,7 +52,9 @@ void AutofillPopupHideHelper::WebContentsDestroyed() {
 
 void AutofillPopupHideHelper::OnWebContentsLostFocus(
     content::RenderWidgetHost* render_widget_host) {
-  hiding_callback_.Run(PopupHidingReason::kFocusChanged);
+  if (hiding_params_.hide_on_web_contents_lost_focus) {
+    hiding_callback_.Run(PopupHidingReason::kFocusChanged);
+  }
 }
 
 void AutofillPopupHideHelper::PrimaryMainFrameWasResized(bool width_changed) {

@@ -272,6 +272,9 @@ AutofillClient::GetDeviceAuthenticator() {
   return nullptr;
 }
 
+void AutofillClient::ShowAutofillFieldIphForManualFallbackFeature(
+    const FormFieldData&) {}
+
 std::optional<AutofillClient::PopupScreenLocation>
 AutofillClient::GetPopupScreenLocation() const {
   NOTIMPLEMENTED();
