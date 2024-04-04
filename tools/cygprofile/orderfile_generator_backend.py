@@ -535,17 +535,13 @@ class OrderfileGenerator:
       self._host_profile_root = _SRC_PATH / 'profile_data'
       urls = [profile_android_startup.AndroidProfileTool.TEST_URL]
       use_wpr = True
-      simulate_user = False
       urls = options.urls
       use_wpr = not options.no_wpr
-      simulate_user = options.simulate_user
       device = self._SetDevice()
       self._profiler = profile_android_startup.AndroidProfileTool(
-          str(self._instrumented_out_dir),
           str(self._host_profile_root),
           use_wpr,
           urls,
-          simulate_user,
           device,
           debug=self._options.streamline_for_debugging,
           verbosity=self._options.verbosity)

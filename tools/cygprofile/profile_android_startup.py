@@ -161,40 +161,31 @@ class WprManager:
 
 
 class AndroidProfileTool:
-  """A utility for generating orderfile profile data for chrome on android.
+  """A utility for generating orderfile profile data for Chrome on Android.
 
-  Runs cygprofile_unittest found in output_directory, does profiling runs,
-  and pulls the data to the local machine in output_directory/profile_data.
+  Does profiling runs, and pulls the data to the local machine.
   """
 
   _DEVICE_PROFILE_DIR = '/data/local/tmp/chrome/orderfile'
-
-  # Old profile data directories that used to be used. These are cleaned up in
-  # order to keep devices tidy.
-  _LEGACY_PROFILE_DIRS = ['/data/local/tmp/chrome/cyglog']
 
   TEST_URL = 'http://en.m.wikipedia.org/wiki/Science'
   _WPR_ARCHIVE = os.path.join(
       os.path.dirname(__file__), 'memory_top_10_mobile_000.wprgo')
 
   def __init__(self,
-               output_directory: str,
                host_profile_root: str,
                use_wpr: bool,
                urls: List[str],
-               simulate_user: bool,
                device: device_utils.DeviceUtils,
                debug=False,
                verbosity=0):
     """Constructor.
 
     Args:
-      output_directory: Chrome build directory.
       host_profile_root: Where to store the profiles on the host.
       use_wpr: Whether to use Web Page Replay.
       urls: URLs to load. Have to be contained in the WPR archive if
                   use_wpr is True.
-      simulate_user: Whether to simulate a user.
       device: Android device selected to be used to
                             generate orderfile.
       debug: Use simpler, non-representative debugging profile.
@@ -202,12 +193,9 @@ class AndroidProfileTool:
     """
     assert device, 'Expected a valid device'
     self._device = device
-    self._cygprofile_tests = os.path.join(
-        output_directory, 'cygprofile_unittests')
     self._host_profile_root = host_profile_root
     self._use_wpr = use_wpr
     self._urls = urls
-    self._simulate_user = simulate_user
     self._debug = debug
     self._verbosity = verbosity
     self._SetUpDevice()
@@ -225,24 +213,6 @@ class AndroidProfileTool:
     """
     logging.info('Using pregenerated profiles')
     self._pregenerated_profiles = files
-
-  def RunCygprofileTests(self):
-    """Run the cygprofile unit tests suite on the device.
-
-    Returns:
-      The exit code for the tests.
-    """
-    device_path = '/data/local/tmp/cygprofile_unittests'
-    self._device.PushChangedFiles([(self._cygprofile_tests, device_path)])
-    try:
-      self._device.RunShellCommand(device_path, check_return=True)
-    except (device_errors.CommandFailedError,
-            device_errors.DeviceUnreachableError):
-      # TODO(jbudorick): Let the exception propagate up once clients can
-      # handle it.
-      logging.exception('Failure while running cygprofile_unittests:')
-      return 1
-    return 0
 
   def CollectSystemHealthProfile(self, apk: str):
     """Run the orderfile system health benchmarks and collect log files.
@@ -391,10 +361,9 @@ class AndroidProfileTool:
 
   def _DeleteDeviceData(self):
     """Clears out profile storage locations on the device. """
-    for profile_dir in [self._DEVICE_PROFILE_DIR] + self._LEGACY_PROFILE_DIRS:
-      self._device.RunShellCommand(
-          ['rm', '-rf', str(profile_dir)],
-          check_return=True)
+    for profile_dir in [self._DEVICE_PROFILE_DIR]:
+      self._device.RunShellCommand(['rm', '-rf', str(profile_dir)],
+                                   check_return=True)
 
   def _DeleteHostData(self, host_profile_dir):
     """Clears out profile storage locations on the host."""
@@ -429,10 +398,12 @@ class AndroidProfileTool:
                           host_profile_dir,
                           timeout=300)
 
-    # Temporary workaround/investigation: if (for unknown reason) 'adb pull' of
-    # the directory 'orderfile' '.../Release/profile_data' produces
-    # '...profile_data/orderfile/files' instead of the usual
-    # '...profile_data/files', list the files deeper in the tree.
+    # After directory pull (over ADB), collect all the profiling-related file
+    # names in it. Some old versions of ADB did not create the subdirectory
+    # named after the last component of the pulled path (e.g. directory 'd'
+    # after 'adb pull /tmp/d') - this case is handled specially. See
+    # crbug.com/40484274.
+    # TODO(pasko): Stop supporting old versions of ADB and simplify this.
     files = []
     redundant_dir_root = os.path.basename(self._DEVICE_PROFILE_DIR)
     for root_file in os.listdir(host_profile_dir):
@@ -492,11 +463,9 @@ def main():
     trace_directory = os.path.join(args.output_directory, 'profile_data')
   devices = device_utils.DeviceUtils.HealthyDevices()
   assert devices, 'Expected at least one connected device'
-  profiler = AndroidProfileTool(args.output_directory,
-                                host_profile_root=trace_directory,
+  profiler = AndroidProfileTool(host_profile_root=trace_directory,
                                 use_wpr=not args.no_wpr,
                                 urls=args.urls,
-                                simulate_user=args.simulate_user,
                                 device=devices[0])
   profiler.CollectSystemHealthProfile(args.apk_path)
   return 0
