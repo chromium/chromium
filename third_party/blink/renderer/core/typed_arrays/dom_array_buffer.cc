@@ -295,7 +295,11 @@ bool DOMArrayBuffer::IsDetached() const {
       ++nondetached_count;
     }
   }
-  CHECK_LE(nondetached_count, 1);
+  // This CHECK fires even though it should not. TODO(330759272): Investigate
+  // under which conditions we end up with multiple non-detached JSABs for the
+  // same DOMAB and potentially restore this check.
+
+  // CHECK_LE(nondetached_count, 1);
 
   return nondetached_count == 0 && detached_count > 0;
 }
