@@ -372,8 +372,7 @@ ScriptPromise<IDLUndefined> FileSystemUnderlyingSink::WriteData(
         kArrayBuffer: {
       DOMArrayBuffer* array_buffer = data->GetAsArrayBuffer();
       data_source = std::make_unique<mojo::StringDataSource>(
-          base::span<const char>(static_cast<const char*>(array_buffer->Data()),
-                                 array_buffer->ByteLength()),
+          base::as_chars(array_buffer->ByteSpan()),
           mojo::StringDataSource::AsyncWritingMode::
               STRING_MAY_BE_INVALIDATED_BEFORE_COMPLETION);
       break;
@@ -383,9 +382,7 @@ ScriptPromise<IDLUndefined> FileSystemUnderlyingSink::WriteData(
       DOMArrayBufferView* array_buffer_view =
           data->GetAsArrayBufferView().Get();
       data_source = std::make_unique<mojo::StringDataSource>(
-          base::span<const char>(
-              static_cast<const char*>(array_buffer_view->BaseAddress()),
-              array_buffer_view->byteLength()),
+          base::as_chars(array_buffer_view->ByteSpan()),
           mojo::StringDataSource::AsyncWritingMode::
               STRING_MAY_BE_INVALIDATED_BEFORE_COMPLETION);
       break;

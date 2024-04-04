@@ -475,7 +475,7 @@ ScriptPromise<USBOutTransferResult> USBDevice::controlTransferOut(
       return ScriptPromise<USBOutTransferResult>();
     }
 
-    data = base::make_span(optional_data.Bytes(), optional_data.ByteLength());
+    data = optional_data.ByteSpan();
   }
 
   auto* resolver =
@@ -569,7 +569,7 @@ ScriptPromise<USBOutTransferResult> USBDevice::transferOut(
 
   device_requests_.insert(resolver);
   device_->GenericTransferOut(
-      endpoint_number, base::make_span(data.Bytes(), data.ByteLength()), 0,
+      endpoint_number, data.ByteSpan(), 0,
       resolver->WrapCallbackInScriptScope(
           WTF::BindOnce(&USBDevice::AsyncTransferOut, WrapPersistent(this),
                         static_cast<uint32_t>(data.ByteLength()))));
@@ -644,8 +644,7 @@ USBDevice::isochronousTransferOut(ScriptState* script_state,
 
   device_requests_.insert(resolver);
   device_->IsochronousTransferOut(
-      endpoint_number, base::make_span(data.Bytes(), data.ByteLength()),
-      packet_lengths, 0,
+      endpoint_number, data.ByteSpan(), packet_lengths, 0,
       resolver->WrapCallbackInScriptScope(WTF::BindOnce(
           &USBDevice::AsyncIsochronousTransferOut, WrapPersistent(this))));
   return promise;

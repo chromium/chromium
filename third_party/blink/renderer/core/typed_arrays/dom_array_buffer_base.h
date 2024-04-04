@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TYPED_ARRAYS_DOM_ARRAY_BUFFER_BASE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TYPED_ARRAYS_DOM_ARRAY_BUFFER_BASE_H_
 
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
@@ -26,6 +27,16 @@ class CORE_EXPORT DOMArrayBufferBase : public ScriptWrappable {
   void* DataMaybeShared() { return contents_.DataMaybeShared(); }
 
   size_t ByteLength() const { return contents_.DataLength(); }
+
+  base::span<uint8_t> ByteSpan() { return contents_.ByteSpan(); }
+  base::span<const uint8_t> ByteSpan() const { return contents_.ByteSpan(); }
+
+  base::span<uint8_t> ByteSpanMaybeShared() {
+    return contents_.ByteSpanMaybeShared();
+  }
+  base::span<const uint8_t> ByteSpanMaybeShared() const {
+    return contents_.ByteSpanMaybeShared();
+  }
 
   // TODO(331348222): It doesn't make sense to detach DomSharedArrayBuffers,
   // remove that possibility.

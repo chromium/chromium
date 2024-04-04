@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TYPED_ARRAYS_DOM_ARRAY_PIECE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TYPED_ARRAYS_DOM_ARRAY_PIECE_H_
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 
@@ -36,8 +37,7 @@ class CORE_EXPORT DOMArrayPiece {
       const V8UnionArrayBufferOrArrayBufferView* array_buffer_or_view);
 
   bool operator==(const DOMArrayBuffer& other) const {
-    return ByteLength() == other.ByteLength() &&
-           memcmp(Data(), other.Data(), ByteLength()) == 0;
+    return ByteSpan() == other.ByteSpan();
   }
 
   bool IsNull() const;
@@ -45,16 +45,16 @@ class CORE_EXPORT DOMArrayPiece {
   void* Data() const;
   unsigned char* Bytes() const;
   size_t ByteLength() const;
+  base::span<uint8_t> ByteSpan() const;
 
  private:
   void InitWithArrayBuffer(DOMArrayBuffer*);
   void InitWithArrayBufferView(DOMArrayBufferView*);
-  void InitWithData(void* data, size_t byte_length);
+  void InitWithData(base::span<uint8_t> data);
 
   void InitNull();
 
-  void* data_;
-  size_t byte_length_;
+  base::span<uint8_t> data_;
   bool is_null_;
   bool is_detached_;
 };

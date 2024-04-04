@@ -248,13 +248,10 @@ void MLContext::writeBuffer(
     const MaybeShared<DOMArrayBufferView>& src_data_view,
     uint64_t src_element_offset,
     ExceptionState& exception_state) {
-  WriteWebNNBuffer(
-      script_state, dst_buffer,
-      base::span<const uint8_t>(
-          static_cast<const uint8_t*>(src_data_view->BaseAddressMaybeShared()),
-          src_data_view->byteLength()),
-      src_element_offset, src_data_view->TypeSize(),
-      /*src_element_count=*/std::nullopt, exception_state);
+  WriteWebNNBuffer(script_state, dst_buffer,
+                   src_data_view->ByteSpanMaybeShared(), src_element_offset,
+                   src_data_view->TypeSize(),
+                   /*src_element_count=*/std::nullopt, exception_state);
 }
 
 void MLContext::writeBuffer(
@@ -264,13 +261,10 @@ void MLContext::writeBuffer(
     uint64_t src_element_offset,
     uint64_t src_element_count,
     ExceptionState& exception_state) {
-  WriteWebNNBuffer(
-      script_state, dst_buffer,
-      base::span<const uint8_t>(
-          static_cast<const uint8_t*>(src_data_view->BaseAddressMaybeShared()),
-          src_data_view->byteLength()),
-      src_element_offset, src_data_view->TypeSize(), src_element_count,
-      exception_state);
+  WriteWebNNBuffer(script_state, dst_buffer,
+                   src_data_view->ByteSpanMaybeShared(), src_element_offset,
+                   src_data_view->TypeSize(), src_element_count,
+                   exception_state);
 }
 
 void MLContext::writeBuffer(ScriptState* script_state,
@@ -278,14 +272,10 @@ void MLContext::writeBuffer(ScriptState* script_state,
                             const DOMArrayBufferBase* src_data_base,
                             uint64_t src_byte_offset,
                             ExceptionState& exception_state) {
-  WriteWebNNBuffer(
-      script_state, dst_buffer,
-      base::span<const uint8_t>(
-          static_cast<const uint8_t*>(src_data_base->DataMaybeShared()),
-          src_data_base->ByteLength()),
-      src_byte_offset,
-      /*src_data_type_size_bytes=*/1, /*src_element_count=*/std::nullopt,
-      exception_state);
+  WriteWebNNBuffer(script_state, dst_buffer,
+                   src_data_base->ByteSpanMaybeShared(), src_byte_offset,
+                   /*src_data_type_size_bytes=*/1,
+                   /*src_element_count=*/std::nullopt, exception_state);
 }
 
 void MLContext::writeBuffer(ScriptState* script_state,
@@ -295,10 +285,7 @@ void MLContext::writeBuffer(ScriptState* script_state,
                             uint64_t src_byte_size,
                             ExceptionState& exception_state) {
   WriteWebNNBuffer(script_state, dst_buffer,
-                   base::make_span(static_cast<const uint8_t*>(
-                                       src_data_base->DataMaybeShared()),
-                                   src_data_base->ByteLength()),
-                   src_byte_offset,
+                   src_data_base->ByteSpanMaybeShared(), src_byte_offset,
                    /*src_data_type_size_bytes=*/1,
                    /*src_element_count=*/src_byte_size, exception_state);
 }
