@@ -29,6 +29,10 @@ class PasswordAffiliationSourceAdapter
   void GetFacets(AffiliationSource::ResultCallback response_callback) override;
   void StartObserving() override;
 
+  // Disables fetching facets that require affiliations and stops observing
+  // password changes.
+  void DisableSource();
+
  private:
   // PasswordStoreInterface::Observer:
   void OnLoginsChanged(PasswordStoreInterface* store,
@@ -40,6 +44,9 @@ class PasswordAffiliationSourceAdapter
   // PasswordStoreConsumer:
   void OnGetPasswordStoreResults(
       std::vector<std::unique_ptr<PasswordForm>> results) override;
+
+  // Whether this class should continue fetching passwords.
+  bool is_fetching_canceled_ = false;
 
   AffiliationSource::ResultCallback on_password_forms_received_callback_;
 
