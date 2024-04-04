@@ -794,7 +794,9 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"internetJoinType", IDS_SETTINGS_INTERNET_JOIN_TYPE},
       {"internetKnownNetworksPageTitle", IDS_SETTINGS_INTERNET_KNOWN_NETWORKS},
       {"internetNoNetworks", IDS_SETTINGS_INTERNET_NO_NETWORKS},
-      {"internetPageTitle", IDS_SETTINGS_INTERNET},
+      {"internetPageTitle", features::IsInstantHotspotRebrandEnabled()
+                                ? IDS_SETTINGS_INTERNET
+                                : IDS_SETTINGS_INTERNET_LEGACY},
       {"internetSummaryButtonA11yLabel",
        IDS_SETTINGS_INTERNET_SUMMARY_BUTTON_ACCESSIBILITY_LABEL},
       {"internetToggleTetherA11yLabel",
@@ -1227,7 +1229,9 @@ void InternetSection::AddHandlers(content::WebUI* web_ui) {
 }
 
 int InternetSection::GetSectionNameMessageId() const {
-  return IDS_SETTINGS_INTERNET;
+  return features::IsInstantHotspotRebrandEnabled()
+             ? IDS_SETTINGS_INTERNET
+             : IDS_SETTINGS_INTERNET_LEGACY;
 }
 
 mojom::Section InternetSection::GetSection() const {

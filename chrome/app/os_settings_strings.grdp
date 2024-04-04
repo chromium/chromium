@@ -4251,8 +4251,11 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_INTERNET_NO_NETWORKS" desc="Entry when there are no preferred networks or no networks of a particular type.">
     None
   </message>
-  <message name="IDS_SETTINGS_INTERNET" desc="Name of the settings page which displays internet preferences.">
+  <message name="IDS_SETTINGS_INTERNET_LEGACY" desc="Name of the settings page which displays internet preferences.">
     Network
+  </message>
+  <message name="IDS_SETTINGS_INTERNET" desc="Name of the settings page which displays internet preferences.">
+    Internet
   </message>
   <message name="IDS_SETTINGS_INTERNET_HOTSPOT" desc="Name of the settings page which displays hotspot preferences.">
     Hotspot
