@@ -28,6 +28,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "components/embedder_support/android/util/features.h"
 #include "components/embedder_support/android/util/input_stream.h"
 #include "components/embedder_support/android/util/web_resource_response.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -388,11 +389,11 @@ AwContentsIoThreadClient::CacheMode AwContentsIoThreadClient::GetCacheMode()
 
 namespace {
 
-std::unique_ptr<AwWebResourceInterceptResponse> NoInterceptRequest() {
-  return nullptr;
+AwContentsIoThreadClient::InterceptResponseData NoInterceptRequest() {
+  return AwContentsIoThreadClient::InterceptResponseData();
 }
 
-std::unique_ptr<AwWebResourceInterceptResponse> RunShouldInterceptRequest(
+AwContentsIoThreadClient::InterceptResponseData RunShouldInterceptRequest(
     AwWebResourceRequest request,
     JavaObjectWeakGlobalRef ref) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
@@ -426,17 +427,39 @@ std::unique_ptr<AwWebResourceInterceptResponse> RunShouldInterceptRequest(
   UMA_HISTOGRAM_BOOLEAN(
       "Android.WebView.ShouldInterceptRequest.IsRequestIntercepted",
       has_response);
-  return web_resource_intercept_response;
+  AwContentsIoThreadClient::InterceptResponseData response_data;
+  // Grab the input stream now as an optimization to avoid thread hopping later.
+  if (base::FeatureList::IsEnabled(
+          embedder_support::features::kInputStreamOptimizations) &&
+      has_response) {
+    auto response = web_resource_intercept_response->GetResponse(env);
+    if (response->HasInputStream(env)) {
+      // Only transfer the input stream if it exists since GetInputStream() can
+      // only be called once, even for null input streams.
+      response_data.input_stream = response->GetInputStream(env);
+    }
+  }
+  response_data.response = std::move(web_resource_intercept_response);
+  return response_data;
 }
 
 }  // namespace
+
+AwContentsIoThreadClient::InterceptResponseData::InterceptResponseData() =
+    default;
+AwContentsIoThreadClient::InterceptResponseData::~InterceptResponseData() =
+    default;
+AwContentsIoThreadClient::InterceptResponseData::InterceptResponseData(
+    InterceptResponseData&& other) = default;
+AwContentsIoThreadClient::InterceptResponseData&
+AwContentsIoThreadClient::InterceptResponseData::operator=(
+    InterceptResponseData&& other) = default;
 
 void AwContentsIoThreadClient::ShouldInterceptRequestAsync(
     AwWebResourceRequest request,
     ShouldInterceptRequestResponseCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  base::OnceCallback<std::unique_ptr<AwWebResourceInterceptResponse>()>
-      get_response = base::BindOnce(&NoInterceptRequest);
+  auto get_response = base::BindOnce(&NoInterceptRequest);
   JNIEnv* env = AttachCurrentThread();
   if (!bg_thread_client_object_) {
     bg_thread_client_object_.Reset(

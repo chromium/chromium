@@ -98,7 +98,7 @@ class AndroidStreamReaderURLLoader : public network::mojom::URLLoader {
 
   ~AndroidStreamReaderURLLoader() override;
 
-  void Start();
+  void Start(std::unique_ptr<InputStream> input_stream);
 
   // network::mojom::URLLoader overrides:
   void FollowRedirect(

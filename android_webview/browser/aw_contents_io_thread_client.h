@@ -22,6 +22,10 @@ namespace content {
 class WebContents;
 }
 
+namespace embedder_support {
+class InputStream;
+}
+
 namespace android_webview {
 
 class AwWebResourceInterceptResponse;
@@ -92,8 +96,19 @@ class AwContentsIoThreadClient {
                               const blink::LocalFrameToken& child_frame_token);
 
   // This method is called on the IO thread only.
+  struct InterceptResponseData {
+    InterceptResponseData();
+    ~InterceptResponseData();
+
+    // Move only.
+    InterceptResponseData(InterceptResponseData&& other);
+    InterceptResponseData& operator=(InterceptResponseData&& other);
+
+    std::unique_ptr<AwWebResourceInterceptResponse> response;
+    std::unique_ptr<embedder_support::InputStream> input_stream;
+  };
   using ShouldInterceptRequestResponseCallback =
-      base::OnceCallback<void(std::unique_ptr<AwWebResourceInterceptResponse>)>;
+      base::OnceCallback<void(InterceptResponseData)>;
   void ShouldInterceptRequestAsync(
       AwWebResourceRequest request,
       ShouldInterceptRequestResponseCallback callback);

@@ -68,6 +68,7 @@ const char kRequestedWithHeaderWebView[] = "WebView";
 // which can live on the heap and be populated by async callbacks.
 struct InterceptResponseReceivedArgs {
   std::unique_ptr<AwWebResourceInterceptResponse> intercept_response = nullptr;
+  std::unique_ptr<embedder_support::InputStream> input_stream = nullptr;
   bool xrw_origin_trial_enabled = false;
 };
 
@@ -125,7 +126,8 @@ class InterceptedRequest : public network::mojom::URLLoader,
 
   void ContinueAfterIntercept();
   void ContinueAfterInterceptWithOverride(
-      std::unique_ptr<embedder_support::WebResourceResponse> response);
+      std::unique_ptr<embedder_support::WebResourceResponse> response,
+      std::unique_ptr<embedder_support::InputStream> input_stream);
 
   void InterceptResponseReceived(
       std::unique_ptr<InterceptResponseReceivedArgs> args);
@@ -397,8 +399,9 @@ void CheckXrwOriginTrialAsync(GURL request_url,
 void OnShouldInterceptRequestAsyncResult(
     InterceptResponseReceivedArgs* result_args,
     base::OnceClosure done_closure,
-    std::unique_ptr<AwWebResourceInterceptResponse> async_result) {
-  result_args->intercept_response = std::move(async_result);
+    AwContentsIoThreadClient::InterceptResponseData async_result) {
+  result_args->intercept_response = std::move(async_result.response);
+  result_args->input_stream = std::move(async_result.input_stream);
   std::move(done_closure).Run();
 }
 
@@ -544,7 +547,8 @@ void InterceptedRequest::InterceptResponseReceived(
     // non-null response: make sure to use it as an override for the
     // normal network data.
     ContinueAfterInterceptWithOverride(
-        args->intercept_response->GetResponse(env));
+        args->intercept_response->GetResponse(env),
+        std::move(args->input_stream));
     return;
   }
 
@@ -605,7 +609,7 @@ void InterceptedRequest::ContinueAfterIntercept() {
             std::make_unique<ProtocolResponseDelegate>(
                 request_.url, weak_factory_.GetWeakPtr()),
             security_options_);
-    loader->Start();
+    loader->Start(nullptr);
     return;
   }
 
@@ -618,7 +622,8 @@ void InterceptedRequest::ContinueAfterIntercept() {
 }
 
 void InterceptedRequest::ContinueAfterInterceptWithOverride(
-    std::unique_ptr<embedder_support::WebResourceResponse> response) {
+    std::unique_ptr<embedder_support::WebResourceResponse> response,
+    std::unique_ptr<embedder_support::InputStream> input_stream) {
   embedder_support::AndroidStreamReaderURLLoader* loader =
       new embedder_support::AndroidStreamReaderURLLoader(
           request_, proxied_client_receiver_.BindNewPipeAndPassRemote(),
@@ -626,7 +631,7 @@ void InterceptedRequest::ContinueAfterInterceptWithOverride(
           std::make_unique<InterceptResponseDelegate>(
               std::move(response), weak_factory_.GetWeakPtr()),
           std::nullopt);
-  loader->Start();
+  loader->Start(std::move(input_stream));
 }
 
 namespace {
