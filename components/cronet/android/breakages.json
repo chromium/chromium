@@ -14,32 +14,26 @@
   "breakages": [
     {
       "bad_change_id": "I206419b181c2ce20525cc00bcf21c6398a921b8b",
-      "good_change_id": "I00d057da4be1d6aef82d0b2860a5b0cde5467157",
-      "bug": "b/330325607",
-      "comment": "Backward compat errors due to telemetry related changes."
-    },
-    {
-      "bad_change_id": "I206419b181c2ce20525cc00bcf21c6398a921b8b",
-      "good_change_id": "Ib61de719d1bf3814b5ebce737b1d85138394fe91",
-      "bug": "b/329601514",
-      "comment": "NPE when the Cronet ImplVersion class is missing"
+      "good_change_id": "Iab6e97af48769ee45fb5bb48d71453d08f542532",
+      "bugs": ["b/329601514","b/330325607","b/331164502","b/331160704"],
+      "comment": "Errors due to the telemetry related change, crrev.com/c/5171800."
     },
     {
       "bad_change_id": "Ia4f2af3242c6d2acfbc0a93538cf1896892c1745",
       "good_change_id": "I4f5e3d17ee700e69020d3b0854ffa5d9ed5d51f8",
-      "bug": "b/326426454",
+      "bugs": ["b/326426454"],
       "comment": "Crashes on missing StatsEvent.Builder method on Android <T"
     },
     {
       "bad_change_id": "Ibd48557709ccf80d380eb2ae21cfac97d237ddb4",
       "good_change_id": "Ie310ca912bab58eb196ef3c6e751fba685fcada9",
-      "bug": "crbug/1456762",
+      "bugs": ["crbug/1456762"],
       "comment": "jni_zero proguard crash"
     },
     {
       "bad_change_id": "I9e28d3a0617e27614451e3b2d8e4cf3e2e6d3145",
       "good_change_id": "Icc888cec884c77a12f47f4cd2b0fcdb3046a02b2",
-      "bug": "crbug/1449478",
+      "bugs": ["crbug/1449478"],
       "comment": "Connection migration crash"
     }
   ],
