@@ -56,7 +56,7 @@ class CONTENT_EXPORT WebUIMessageHandler {
   void AllowJavascript();
 
   // This is where subclasses specify which messages they'd like to handle and
-  // perform any additional initialization.. At this point web_ui() will return
+  // perform any additional initialization. At this point web_ui() will return
   // the associated WebUI object.
   virtual void RegisterMessages() = 0;
 
