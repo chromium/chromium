@@ -856,15 +856,6 @@ def main():
                                        universal_newlines=True).rstrip()
   base_cmake_args += ['-DLLVM_ENABLE_UNWIND_TABLES=OFF']
 
-  # See https://crbug.com/1302636#c49 - #c56 -- intercepting crypt_r() does not
-  # work with the sysroot for not fully understood reasons. Disable it.
-  sanitizers_override = [
-    '-DSANITIZER_OVERRIDE_INTERCEPTORS',
-    '-I' + os.path.join(THIS_DIR, 'sanitizers'),
-  ]
-  cflags += sanitizers_override
-  cxxflags += sanitizers_override
-
   goma_cmake_args = []
   goma_ninja_args = []
   if args.with_goma:
