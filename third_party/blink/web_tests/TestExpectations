@@ -2617,7 +2617,7 @@ crbug.com/626703 [ Mac ] external/wpt/mediacapture-insertable-streams/legacy/Med
 crbug.com/626703 external/wpt/uievents/mouse/mouse_boundary_events_after_removing_last_over_element.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-[ Mac12 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/audioworklet.https.sub.html [ Timeout ]
+crbug.com/332741532 [ Mac12 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/audioworklet.https.sub.html [ Timeout ]
 crbug.com/332572646 external/wpt/wasm/webapi/esm-integration/worker-import-source-phase.tentative.html [ Timeout ]
 crbug.com/332572643 external/wpt/css/css-transforms/transform-iframe-scroll-position.html [ Failure ]
 crbug.com/332572643 virtual/backface-visibility-interop/external/wpt/css/css-transforms/transform-iframe-scroll-position.html [ Failure ]
