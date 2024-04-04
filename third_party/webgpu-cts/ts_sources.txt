@@ -745,9 +745,12 @@ src/webgpu/shader/validation/expression/call/builtin/dot4I8Packed.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/dot4U8Packed.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/exp.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/exp2.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/faceForward.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/firstLeadingBit.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/firstTrailingBit.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/floor.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/fract.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/frexp.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/inverseSqrt.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/length.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/log.spec.ts
