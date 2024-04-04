@@ -37,7 +37,8 @@ const CSSPropertyValueSet* TryValueFlips::FlipSet(
 
 const CSSPropertyValueSet* TryValueFlips::CreateFlipSet(
     const TryTacticTransform& transform) const {
-  constexpr wtf_size_t kMaxDeclarations = 10;
+  // The maximum number of declarations that can be added to the flip set.
+  constexpr wtf_size_t kMaxDeclarations = 17;
   HeapVector<CSSPropertyValue, kMaxDeclarations> declarations;
 
   auto add = [&declarations, transform](CSSPropertyID from, CSSPropertyID to) {
@@ -129,6 +130,8 @@ const CSSPropertyValueSet* TryValueFlips::CreateFlipSet(
     add(CSSPropertyID::kMaxBlockSize, CSSPropertyID::kMaxInlineSize);
     add(CSSPropertyID::kMaxInlineSize, CSSPropertyID::kMaxBlockSize);
   }
+
+  // Consider updating `kMaxDeclarations` when new properties are added.
 
   return ImmutableCSSPropertyValueSet::Create(
       declarations.data(), declarations.size(), kHTMLStandardMode);
