@@ -243,6 +243,34 @@ TEST(ClientSharedImageTest, ExportAndImport) {
             static_cast<uint32_t>(GL_TEXTURE_2D));
 }
 
+TEST(ClientSharedImageTest, MakeUnowned) {
+  auto sii = base::MakeRefCounted<TestSharedImageInterface>();
+
+  const auto kFormat = viz::SinglePlaneFormat::kRGBA_8888;
+  const gfx::Size kSize(256, 256);
+  const uint32_t kUsage =
+      SHARED_IMAGE_USAGE_RASTER_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ;
+  SharedImageInfo si_info{kFormat,
+                          kSize,
+                          gfx::ColorSpace(),
+                          kTopLeft_GrSurfaceOrigin,
+                          kOpaque_SkAlphaType,
+                          kUsage,
+                          ""};
+
+  auto client_si = sii->CreateSharedImage(si_info, kNullSurfaceHandle);
+  auto unowned_si = client_si->MakeUnowned();
+
+  EXPECT_TRUE(unowned_si->mailbox() ==
+              sii->GetMailboxForMostRecentlyCreatedSharedImage());
+  EXPECT_EQ(unowned_si->format(), kFormat);
+  EXPECT_EQ(unowned_si->size(), kSize);
+  EXPECT_EQ(unowned_si->usage(), kUsage);
+  EXPECT_EQ(unowned_si->GetTextureTarget(),
+            static_cast<uint32_t>(GL_TEXTURE_2D));
+  EXPECT_FALSE(unowned_si->HasHolder());
+}
+
 // The default target should be set for single-planar formats with no
 // native buffer used.
 TEST(ClientSharedImageTest,
