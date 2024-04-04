@@ -84,6 +84,17 @@ void DownloadManagerTabHelper::AdaptToFullscreen(bool adapt_to_fullscreen) {
   }
 }
 
+bool DownloadManagerTabHelper::WillDownloadTaskBeSavedToDrive() const {
+  if (!base::FeatureList::IsEnabled(kIOSSaveToDrive)) {
+    return false;
+  }
+  DriveTabHelper* drive_tab_helper =
+      DriveTabHelper::GetOrCreateForWebState(task_->GetWebState());
+  UploadTask* upload_task =
+      drive_tab_helper->GetUploadTaskForDownload(task_.get());
+  return upload_task && !upload_task->IsDone();
+}
+
 #pragma mark - web::WebStateObserver
 
 void DownloadManagerTabHelper::WasShown(web::WebState* web_state) {
@@ -154,17 +165,6 @@ void DownloadManagerTabHelper::DidCreateDownload(
                       didCreateDownload:task_.get()
                       webStateIsVisible:true];
   }
-}
-
-bool DownloadManagerTabHelper::WillDownloadTaskBeSavedToDrive() const {
-  if (!base::FeatureList::IsEnabled(kIOSSaveToDrive)) {
-    return false;
-  }
-  DriveTabHelper* drive_tab_helper =
-      DriveTabHelper::GetOrCreateForWebState(task_->GetWebState());
-  UploadTask* upload_task =
-      drive_tab_helper->GetUploadTaskForDownload(task_.get());
-  return upload_task && !upload_task->IsDone();
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(DownloadManagerTabHelper)
