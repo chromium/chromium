@@ -145,6 +145,11 @@ class ComposeState {
     is_user_edited_ = true;
   }
 
+  void UnsetUserEdited() {
+    original_response_ = "";
+    is_user_edited_ = false;
+  }
+
   void SetMojoState(compose::mojom::ComposeStatePtr mojo_state) {
     mojo_state_ = std::move(mojo_state);
   }
@@ -597,6 +602,7 @@ void ComposeSession::ModelExecutionComplete(
   SaveMostRecentOkStateToUndoStack();
   current_state_->response->undo_available = !undo_states_.empty();
   most_recent_ok_state_->SetMojoState(current_state_->Clone());
+  most_recent_ok_state_->UnsetUserEdited();
 
   ui_response->undo_available = !undo_states_.empty();
   if (dialog_remote_.is_bound()) {
@@ -847,14 +853,39 @@ void ComposeSession::SetUserFeedback(compose::mojom::UserFeedback feedback) {
 }
 
 void ComposeSession::EditResult(const std::string& new_result) {
+  // Nothing has changed. Ignore.
+  if (new_result == most_recent_ok_state_->mojo_state()->response->result) {
+    return;
+  }
+
+  // If user undid edits, then pop from stack and return.
+  if (most_recent_ok_state_->is_user_edited() &&
+      most_recent_ok_state_->original_response() == new_result) {
+    current_state_->response->result = new_result;
+    most_recent_ok_state_->UnsetUserEdited();
+    most_recent_ok_state_->SetModelingLogEntry(
+        undo_states_.top()->TakeModelingLogEntry());
+    most_recent_ok_state_->SetMojoState(undo_states_.top()->TakeMojoState());
+    undo_states_.pop();
+    return;
+  }
+
   // Save the state if it hasn't been edited.
   if (!most_recent_ok_state_->is_user_edited()) {
     SaveMostRecentOkStateToUndoStack();
+
+    // Restore the states that were moved away as part of the undo save with
+    // copies.
+    most_recent_ok_state_->SetMojoState(current_state_.Clone());
+
+    // Set the user edited field in the restored ok state.
     most_recent_ok_state_->SetUserEdited(
         most_recent_ok_state_->mojo_state()->response->result);
   }
+
   // Update result to be the edited result.
   most_recent_ok_state_->mojo_state()->response->result = new_result;
+  current_state_->response->result = new_result;
 }
 
 void ComposeSession::InitializeWithText(const std::optional<std::string>& text,
