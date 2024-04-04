@@ -1097,7 +1097,14 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
                      base::TimeTicks query_start_time,
                      int rv) {
     bool success = false;
-    if (rv == OK && probe_stats && session_ && context_) {
+    while (probe_stats && session_ && context_) {
+      if (rv != OK) {
+        // The DoH probe queries don't go through the standard DnsAttempt path,
+        // so the ServerStats have not been updated yet.
+        context_->RecordServerFailure(doh_server_index, /*is_doh_server=*/true,
+                                      rv, session_.get());
+        break;
+      }
       // Check that the response parses properly before considering it a
       // success.
       DCHECK_LT(attempt_number, probe_stats->probe_attempts.size());
@@ -1116,8 +1123,6 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
           for (const auto& result : results.value()) {
             if (result->type() == HostResolverInternalResult::Type::kData &&
                 !result->AsData().endpoints().empty()) {
-              // The DoH probe queries don't go through the standard DnsAttempt
-              // path, so the ServerStats have not been updated yet.
               context_->RecordServerSuccess(
                   doh_server_index, /*is_doh_server=*/true, session_.get());
               context_->RecordRtt(doh_server_index, /*is_doh_server=*/true,
@@ -1135,6 +1140,12 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
           }
         }
       }
+      if (!success) {
+        context_->RecordServerFailure(
+            doh_server_index, /*is_doh_server=*/true,
+            /*rv=*/ERR_DNS_SECURE_PROBE_RECORD_INVALID, session_.get());
+      }
+      break;
     }
 
     base::UmaHistogramLongTimes(

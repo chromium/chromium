@@ -1021,5 +1021,9 @@ NET_ERROR(DNS_NO_MATCHING_SUPPORTED_ALPN, -811)
 // Error -812 was removed
 // Error -813 was removed
 
+// When checking whether secure DNS can be used, the response returned for the
+// requested probe record either had no answer or was invalid.
+NET_ERROR(DNS_SECURE_PROBE_RECORD_INVALID, -814)
+
 // CAUTION: Before adding errors here, please check the ranges of errors written
 // in the top of this file.

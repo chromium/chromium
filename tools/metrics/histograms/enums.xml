@@ -3012,6 +3012,7 @@ In case of new special images, values 3 to 9 can be used. -->
 Called by update_net_error_codes.py.-->
 
   <int value="-1478" label="SSL_CLIENT_AUTH_NO_COMMON_ALGORITHMS (old)"/>
+  <int value="-814" label="DNS_SECURE_PROBE_RECORD_INVALID"/>
   <int value="-813" label="DICTIONARY_ORIGIN_CHECK_FAILED"/>
   <int value="-812" label="DICTIONARY_LOAD_FAILED (old)"/>
   <int value="-811" label="DNS_NO_MATCHING_SUPPORTED_ALPN"/>
@@ -27459,6 +27460,7 @@ Called by update_net_error_codes.py.-->
   <int value="811" label="DNS_NO_MATCHING_SUPPORTED_ALPN"/>
   <int value="812" label="DICTIONARY_LOAD_FAILED (old)"/>
   <int value="813" label="DICTIONARY_ORIGIN_CHECK_FAILED"/>
+  <int value="814" label="DNS_SECURE_PROBE_RECORD_INVALID"/>
   <int value="1478" label="SSL_CLIENT_AUTH_NO_COMMON_ALGORITHMS_0"/>
 </enum>
 

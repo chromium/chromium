@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <cstdlib>
 #include <limits>
 #include <memory>
 #include <optional>
@@ -3474,6 +3475,7 @@ TEST_F(DnsTransactionTest, EarlyCancel) {
 TEST_F(DnsTransactionTestWithMockTime, ProbeUntilSuccess) {
   ConfigureDohServers(true /* use_post */, 1 /* num_doh_servers */,
                       false /* make_available */);
+  ASSERT_EQ(kDohProbeHostname, kT4HostName);
   AddQueryAndErrorResponse(0 /* id */, kT4HostName, kT4Qtype,
                            ERR_CONNECTION_REFUSED, SYNCHRONOUS,
                            Transport::HTTPS, nullptr /* opt_rdata */,
@@ -3512,8 +3514,10 @@ TEST_F(DnsTransactionTestWithMockTime, ProbeUntilSuccess) {
 }
 
 TEST_F(DnsTransactionTestWithMockTime, ProbeCreationTriggersSuccessMetric) {
+  config_.secure_dns_mode = SecureDnsMode::kAutomatic;
   ConfigureDohServers(/*use_post=*/true, /*num_doh_servers=*/1,
                       /*make_available=*/false);
+  ASSERT_EQ(kDohProbeHostname, kT4HostName);
   AddQueryAndResponse(/*id=*/0, kT4HostName, kT4Qtype, kT4ResponseDatagram,
                       std::size(kT4ResponseDatagram), ASYNC, Transport::HTTPS,
                       /*opt_rdata=*/nullptr,
@@ -3524,6 +3528,7 @@ TEST_F(DnsTransactionTestWithMockTime, ProbeCreationTriggersSuccessMetric) {
   EXPECT_FALSE(
       resolve_context_->doh_autoupgrade_metrics_timer_is_running_for_testing());
 
+  base::HistogramTester histogram_tester;
   std::unique_ptr<DnsProbeRunner> runner =
       transaction_factory_->CreateDohProbeRunner(resolve_context_.get());
   runner->Start(/*network_change=*/false);
@@ -3541,6 +3546,104 @@ TEST_F(DnsTransactionTestWithMockTime, ProbeCreationTriggersSuccessMetric) {
 
   EXPECT_FALSE(
       resolve_context_->doh_autoupgrade_metrics_timer_is_running_for_testing());
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.DNS.ResolveContext.DohAutoupgrade.Other.Status",
+      DohServerAutoupgradeStatus::kSuccessWithNoPriorFailures, 1);
+}
+
+TEST_F(DnsTransactionTestWithMockTime,
+       ProbeAttemptConnectionFailureAffectsHistograms) {
+  config_.secure_dns_mode = SecureDnsMode::kAutomatic;
+  ConfigureDohServers(/*use_post=*/true, /*num_doh_servers=*/1,
+                      /*make_available=*/false);
+  ASSERT_EQ(kDohProbeHostname, kT4HostName);
+  AddQueryAndErrorResponse(/*id=*/0, kT4HostName, kT4Qtype,
+                           ERR_CONNECTION_REFUSED, SYNCHRONOUS,
+                           Transport::HTTPS, /*opt_rdata=*/nullptr,
+                           DnsQuery::PaddingStrategy::BLOCK_LENGTH_128,
+                           /*enqueue_transaction_id=*/false);
+
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<DnsProbeRunner> runner =
+      transaction_factory_->CreateDohProbeRunner(resolve_context_.get());
+  runner->Start(/*network_change=*/false);
+
+  // Consume the one failure response and then destroy the probe so it doesn't
+  // continue to make requests.
+  RunUntilIdle();
+  runner = nullptr;
+
+  FastForwardBy(ResolveContext::kDohAutoupgradeSuccessMetricTimeout +
+                base::Milliseconds(1));
+  histogram_tester.ExpectUniqueSample(
+      "Net.DNS.ResolveContext.DohAutoupgrade.Other.Status",
+      DohServerAutoupgradeStatus::kFailureWithNoPriorSuccesses, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.DNS.DnsTransaction.SecureNotValidated.Other.FailureError",
+      std::abs(Error::ERR_CONNECTION_REFUSED), 1);
+}
+
+TEST_F(DnsTransactionTestWithMockTime, ProbeAttemptServFailAffectsHistograms) {
+  config_.secure_dns_mode = SecureDnsMode::kAutomatic;
+  ConfigureDohServers(/*use_post=*/true, /*num_doh_servers=*/1,
+                      /*make_available=*/false);
+  ASSERT_EQ(kDohProbeHostname, kT4HostName);
+  AddQueryAndRcode(kT4HostName, kT4Qtype, dns_protocol::kRcodeSERVFAIL,
+                   SYNCHRONOUS, Transport::HTTPS,
+                   DnsQuery::PaddingStrategy::BLOCK_LENGTH_128, /*id=*/0,
+                   /*enqueue_transaction_id=*/false);
+
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<DnsProbeRunner> runner =
+      transaction_factory_->CreateDohProbeRunner(resolve_context_.get());
+  runner->Start(/*network_change=*/false);
+
+  RunUntilIdle();
+  runner = nullptr;
+
+  FastForwardBy(ResolveContext::kDohAutoupgradeSuccessMetricTimeout +
+                base::Milliseconds(1));
+  histogram_tester.ExpectUniqueSample(
+      "Net.DNS.ResolveContext.DohAutoupgrade.Other.Status",
+      DohServerAutoupgradeStatus::kFailureWithNoPriorSuccesses, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.DNS.DnsTransaction.SecureNotValidated.Other.FailureError",
+      std::abs(Error::ERR_DNS_SERVER_FAILED), 1);
+}
+
+TEST_F(DnsTransactionTestWithMockTime,
+       ProbeAttemptEmptyResponseAffectsHistograms) {
+  config_.secure_dns_mode = SecureDnsMode::kAutomatic;
+  ConfigureDohServers(/*use_post=*/true, /*num_doh_servers=*/1,
+                      /*make_available=*/false);
+  ASSERT_EQ(kDohProbeHostname, kT4HostName);
+  auto response = std::make_unique<DnsResponse>(
+      BuildTestDnsResponse(kT4HostName, dns_protocol::kTypeA,
+                           /*answers=*/{}));
+  auto data = std::make_unique<DnsSocketData>(
+      /*id=*/0, kT4HostName, dns_protocol::kTypeA, SYNCHRONOUS,
+      Transport::HTTPS, /*opt_rdata=*/nullptr,
+      DnsQuery::PaddingStrategy::BLOCK_LENGTH_128);
+  data->AddResponse(std::move(response), SYNCHRONOUS);
+  AddSocketData(std::move(data), /*enqueue_transaction_id=*/false);
+
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<DnsProbeRunner> runner =
+      transaction_factory_->CreateDohProbeRunner(resolve_context_.get());
+  runner->Start(/*network_change=*/false);
+
+  RunUntilIdle();
+  runner = nullptr;
+
+  FastForwardBy(ResolveContext::kDohAutoupgradeSuccessMetricTimeout +
+                base::Milliseconds(1));
+  histogram_tester.ExpectUniqueSample(
+      "Net.DNS.ResolveContext.DohAutoupgrade.Other.Status",
+      DohServerAutoupgradeStatus::kFailureWithNoPriorSuccesses, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.DNS.DnsTransaction.SecureNotValidated.Other.FailureError",
+      std::abs(Error::ERR_DNS_SECURE_PROBE_RECORD_INVALID), 1);
 }
 
 // Test that if a probe attempt hangs, additional probes will still run on
