@@ -167,7 +167,7 @@ TEST_F(AnchorPositionScrollDataTest, ScrollerSizeChange) {
   Element* anchored = GetElementById("anchored");
   EXPECT_TRUE(anchored->GetAnchorPositionScrollData());
   EXPECT_EQ(gfx::Vector2dF(0, 300),
-            anchored->GetAnchorPositionScrollData()->AccumulatedOffset());
+            anchored->GetAnchorPositionScrollData()->AccumulatedAdjustment());
 
   GetElementById("scroller")->classList().Add(AtomicString("changed"));
 
@@ -176,7 +176,7 @@ TEST_F(AnchorPositionScrollDataTest, ScrollerSizeChange) {
   SimulateFrame();
   EXPECT_TRUE(anchored->GetAnchorPositionScrollData());
   EXPECT_EQ(gfx::Vector2dF(0, 300),
-            anchored->GetAnchorPositionScrollData()->AccumulatedOffset());
+            anchored->GetAnchorPositionScrollData()->AccumulatedAdjustment());
 
   UnsetAnimationScheduled();
   UpdateAllLifecyclePhasesForTest();
@@ -190,7 +190,7 @@ TEST_F(AnchorPositionScrollDataTest, ScrollerSizeChange) {
   SimulateFrame();
   EXPECT_TRUE(anchored->GetAnchorPositionScrollData());
   EXPECT_EQ(gfx::Vector2dF(0, 200),
-            anchored->GetAnchorPositionScrollData()->AccumulatedOffset());
+            anchored->GetAnchorPositionScrollData()->AccumulatedAdjustment());
 
   // Should not schedule another frame after all updates are done.
   UnsetAnimationScheduled();
@@ -230,7 +230,7 @@ TEST_F(AnchorPositionScrollDataTest, ScrollContentSizeChange) {
   Element* anchored = GetElementById("anchored");
   EXPECT_TRUE(anchored->GetAnchorPositionScrollData());
   EXPECT_EQ(gfx::Vector2dF(0, 300),
-            anchored->GetAnchorPositionScrollData()->AccumulatedOffset());
+            anchored->GetAnchorPositionScrollData()->AccumulatedAdjustment());
 
   GetElementById("spacer")->classList().Add(AtomicString("changed"));
 
@@ -239,7 +239,7 @@ TEST_F(AnchorPositionScrollDataTest, ScrollContentSizeChange) {
   SimulateFrame();
   EXPECT_TRUE(anchored->GetAnchorPositionScrollData());
   EXPECT_EQ(gfx::Vector2dF(0, 300),
-            anchored->GetAnchorPositionScrollData()->AccumulatedOffset());
+            anchored->GetAnchorPositionScrollData()->AccumulatedAdjustment());
 
   UnsetAnimationScheduled();
   UpdateAllLifecyclePhasesForTest();
@@ -253,7 +253,7 @@ TEST_F(AnchorPositionScrollDataTest, ScrollContentSizeChange) {
   SimulateFrame();
   EXPECT_TRUE(anchored->GetAnchorPositionScrollData());
   EXPECT_EQ(gfx::Vector2dF(0, 200),
-            anchored->GetAnchorPositionScrollData()->AccumulatedOffset());
+            anchored->GetAnchorPositionScrollData()->AccumulatedAdjustment());
 
   // Should not schedule another frame after all updates are done.
   UnsetAnimationScheduled();

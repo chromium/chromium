@@ -811,7 +811,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateAnchorPositionScrollTranslation() {
       const AnchorPositionScrollData& anchor_position_scroll_data =
           *To<Element>(box.GetNode())->GetAnchorPositionScrollData();
       gfx::Vector2dF translation_offset =
-          -anchor_position_scroll_data.AccumulatedOffset();
+          -anchor_position_scroll_data.AccumulatedAdjustment();
       TransformPaintPropertyNode::State state{
           {gfx::Transform::MakeTranslation(translation_offset)}};
 
@@ -841,7 +841,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateAnchorPositionScrollTranslation() {
               anchor_position_scroll_data.AdjustmentContainerIds().begin(),
               anchor_position_scroll_data.AdjustmentContainerIds().end());
       state.anchor_position_scroll_data->accumulated_scroll_origin =
-          anchor_position_scroll_data.AccumulatedScrollOrigin();
+          anchor_position_scroll_data.AccumulatedAdjustmentScrollOrigin();
       state.anchor_position_scroll_data->needs_scroll_adjustment_in_x =
           anchor_position_scroll_data.NeedsScrollAdjustmentInX();
       state.anchor_position_scroll_data->needs_scroll_adjustment_in_y =

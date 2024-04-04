@@ -406,11 +406,11 @@ void ElementRareDataVector::RemoveAnchorPositionScrollData() {
   SetField(FieldId::kAnchorPositionScrollData, nullptr);
 }
 AnchorPositionScrollData& ElementRareDataVector::EnsureAnchorPositionScrollData(
-    Element* owner_element) {
+    Element* anchored_element) {
   DCHECK(!GetAnchorPositionScrollData() ||
-         GetAnchorPositionScrollData()->OwnerElement() == owner_element);
+         GetAnchorPositionScrollData()->AnchoredElement() == anchored_element);
   return EnsureField<AnchorPositionScrollData>(
-      FieldId::kAnchorPositionScrollData, owner_element);
+      FieldId::kAnchorPositionScrollData, anchored_element);
 }
 
 AnchorElementObserver& ElementRareDataVector::EnsureAnchorElementObserver(

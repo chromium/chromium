@@ -20,26 +20,29 @@ class AnchorPositionVisibilityObserver;
 class Element;
 class LayoutObject;
 
+// Created for each anchor-positioned element.
+//
 // https://drafts.csswg.org/css-anchor-position-1/#scroll
 //
-// Created for each anchor-positioned element that needs to adjust its location
-// based on the scroll, sticky and anchor-positioning offsets between this
-// element and another element (its default anchor or the additional
-// fallback-bounds rect).
+// To adjust the location of the anchor-positioned element based on scroll,
+// sticky and anchor-positioning offsets between this element and the anchor
+// (the default anchor and the target of the `position-fallback-bounds`
+// property, respectively), this class stores a snapshot of all the scroll
+// adjustment containers [1] of the anchor up to the containing block
+// (exclusively) of the anchor-positioned element, along the containing block
+// hierarchy. Note that "containing block" is in the spec meaning, which
+// corresponds to LayoutObject::Container() instead of ContainingBlock().
 //
-// Stores a snapshot of all the scroll adjustment containers of the anchor up
-// to the containing block (exclusively) of the anchor-positioned element,
-// along the containing block hierarchy. Note that "containing block" is in the
-// spec meaning, which corresponds to LayoutObject::Container() instead of
-// ContainingBlock().
+// [1] An element is a scroll adjustment container if it is a scroll container,
+// has sticky position, or is anchor-positioned.
 //
-// An element is a scroll adjustment container if it is a scroll container, has
-// sticky position, or is anchor-positioned.
+// https://drafts.csswg.org/css-anchor-position-1/#fallback
 //
-// Also stores a similar snapshot for the target of the
-// 'position-fallback-bounds' property.
+// Also stores a snapshot of the scroll offset of the scroll container of the
+// anchor-positioned element, which affects position fallback.
 //
-// The snapshot is passed as input to the position fallback algorithm.
+// The snapshot passed as input to the position fallback and position visibility
+// algorithm.
 //
 // The snapshot is updated once per frame update on top of animation frame to
 // avoid layout cycling. If there is any change, we trigger an update to
@@ -49,10 +52,10 @@ class AnchorPositionScrollData
       public ScrollSnapshotClient,
       public ElementRareDataField {
  public:
-  explicit AnchorPositionScrollData(Element*);
+  explicit AnchorPositionScrollData(Element* anchored_element);
   virtual ~AnchorPositionScrollData();
 
-  Element* OwnerElement() const { return owner_.Get(); }
+  Element* AnchoredElement() const { return anchored_element_.Get(); }
 
   bool NeedsScrollAdjustment() const {
     return !default_anchor_adjustment_data_.adjustment_container_ids.empty();
@@ -64,11 +67,16 @@ class AnchorPositionScrollData
     return default_anchor_adjustment_data_.needs_scroll_adjustment_in_y;
   }
 
-  gfx::Vector2dF AccumulatedOffset() const {
-    return default_anchor_adjustment_data_.accumulated_offset;
+  gfx::Vector2dF TotalOffset() const {
+    return default_anchor_adjustment_data_.accumulated_adjustment +
+           default_anchor_adjustment_data_
+               .anchored_element_container_scroll_offset;
   }
-  gfx::Vector2d AccumulatedScrollOrigin() const {
-    return default_anchor_adjustment_data_.accumulated_scroll_origin;
+  gfx::Vector2dF AccumulatedAdjustment() const {
+    return default_anchor_adjustment_data_.accumulated_adjustment;
+  }
+  gfx::Vector2d AccumulatedAdjustmentScrollOrigin() const {
+    return default_anchor_adjustment_data_.accumulated_adjustment_scroll_origin;
   }
   const Vector<CompositorElementId>& AdjustmentContainerIds() const {
     return default_anchor_adjustment_data_.adjustment_container_ids;
@@ -83,17 +91,17 @@ class AnchorPositionScrollData
     return default_anchor_adjustment_data_.containers_include_viewport;
   }
 
-  // Utility function that returns accumulated_offset_ rounded as a
+  // Utility function that returns AccumulatedAdjustment() rounded as a
   // PhysicalOffset.
   // TODO(crbug.com/1309178): It's conceptually wrong to use
   // Physical/LogicalOffset, which only represents the location of a box within
   // a container, to represent a scroll offset. Stop using this function.
   PhysicalOffset TranslationAsPhysicalOffset() const {
-    return -PhysicalOffset::FromVector2dFFloor(AccumulatedOffset());
+    return -PhysicalOffset::FromVector2dFFloor(AccumulatedAdjustment());
   }
 
-  // Returns whether `owner_` is still an anchor-positioned element using `this`
-  // as its AnchroScrollData.
+  // Returns whether `anchored_element_` is still an anchor-positioned element
+  // using `this` as its AnchroScrollData.
   bool IsActive() const;
 
   // ScrollSnapshotClient:
@@ -118,20 +126,25 @@ class AnchorPositionScrollData
 
     // Compositor element ids of the ancestor scroll adjustment containers
     // (see the class documentation) of some element (anchor or
-    // position-fallback-bounds), up to the containing block of `owner_`
-    // (exclusively), along the containing block hierarchy.
+    // position-fallback-bounds), up to the containing block of
+    // `anchored_element_` (exclusively), along the containing block hierarchy.
     Vector<CompositorElementId> adjustment_container_ids;
 
     // Sum of the adjustment offsets of the above containers. This includes
     // snapshots of
     // - scroll offsets of scroll containers,
     // - opposite of sticky offsets of stick-positioned containers,
-    // - `accumulated_offset` of anchor-positioned containers.
-    gfx::Vector2dF accumulated_offset;
+    // - `accumulated_adjustment` of anchor-positioned containers.
+    gfx::Vector2dF accumulated_adjustment;
 
     // Sum of the scroll origins of scroll containers in the above containers.
     // Used by the compositor to deal with writing modes.
-    gfx::Vector2d accumulated_scroll_origin;
+    gfx::Vector2d accumulated_adjustment_scroll_origin;
+
+    // The scroll offset of the containing block of `anchored_element_` if it's
+    // a scroll container. The offset doesn't contribute to the adjustment, but
+    // may affect the results of position fallback and position visibility.
+    gfx::Vector2dF anchored_element_container_scroll_offset;
 
     // Whether viewport is in `container_ids`.
     bool containers_include_viewport = false;
@@ -151,7 +164,8 @@ class AnchorPositionScrollData
   // If `update` is true, also rewrites the existing snapshot.
   SnapshotDiff TakeAndCompareSnapshot(bool update);
   bool IsFallbackPositionValid(
-      const gfx::Vector2dF& new_accumulated_offset,
+      const gfx::Vector2dF& new_accumulated_adjustment,
+      const gfx::Vector2dF& new_anchored_element_container_scroll_offset,
       const gfx::Vector2dF& new_additional_bounds_offset) const;
 
   void InvalidateLayoutAndPaint();
@@ -162,7 +176,7 @@ class AnchorPositionScrollData
   bool is_snapshot_validated_ = false;
 
   // The anchor-positioned element.
-  Member<Element> owner_;
+  Member<Element> anchored_element_;
 
   AdjustmentData default_anchor_adjustment_data_;
 

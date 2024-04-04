@@ -74,9 +74,10 @@ bool CalculateNonOverflowingRangeInOneAxis(
       return false;
     }
   } else {
-    // Otherwise, the start edge of the SAIMCB is always at the same location,
-    // while that of the scroll-shifted margin box can move by at most
-    // |start_available_space| before overflowing.
+    // Otherwise, the start edge of the scroll-adjusted inset-modified
+    // containing block is always at the same location, while that of the
+    // scroll-shifted margin box can move by at most `start_available_space`
+    // before overflowing.
     *out_scroll_max = start_available_space;
   }
   // Calculation for the end edge is symmetric.
@@ -1873,7 +1874,7 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
   if (Element* element = DynamicTo<Element>(node_info.node.GetDOMNode())) {
     if (const AnchorPositionScrollData* data =
             element->GetAnchorPositionScrollData()) {
-      anchor_offset = data->AccumulatedOffset();
+      anchor_offset = data->TotalOffset();
       additional_bounds_offset = data->AdditionalBoundsOffset();
     }
   }
@@ -1916,7 +1917,8 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
         TryCalculateOffset(node_info, style, &anchor_evaluator,
                            try_fit_available_space, &non_overflowing_range);
 
-    // Also check if it fits the containing block after applying scroll offset.
+    // Also check if it fits the containing block after applying scroll offset
+    // (i.e. the scroll-adjusted inset-modified containing block).
     if (offset_info) {
       if (try_fit_available_space) {
         non_overflowing_scroll_ranges.push_back(non_overflowing_range);
