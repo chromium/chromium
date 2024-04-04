@@ -149,6 +149,27 @@ void MojoMessage::SetParcel(ScopedIpczHandle parcel) {
   }
 }
 
+MojoResult MojoMessage::ReserveCapacity(uint32_t payload_buffer_size,
+                                        uint32_t* buffer_size) {
+  DCHECK(!parcel_.is_valid());
+  if (context_ || size_committed_ || !data_.empty()) {
+    // TODO(andreaorru): support reserving additional capacity
+    // in the middle of the serialization.
+    return MOJO_RESULT_FAILED_PRECONDITION;
+  }
+
+  data_storage_size_ = std::max(payload_buffer_size, uint32_t{kMinBufferSize});
+  DataPtr new_storage(
+      static_cast<uint8_t*>(base::AllocNonScannable(data_storage_size_)));
+  data_storage_ = std::move(new_storage);
+  data_ = base::make_span(data_storage_.get(), 0u);
+
+  if (buffer_size) {
+    *buffer_size = base::checked_cast<uint32_t>(data_storage_size_);
+  }
+  return MOJO_RESULT_OK;
+}
+
 MojoResult MojoMessage::AppendData(uint32_t additional_num_bytes,
                                    const MojoHandle* handles,
                                    uint32_t num_handles,

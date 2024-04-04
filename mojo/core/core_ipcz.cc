@@ -283,9 +283,10 @@ MojoResult MojoSerializeMessageIpcz(
 MojoResult MojoReserveMessageCapacityIpcz(MojoMessageHandle message,
                                           uint32_t payload_buffer_size,
                                           uint32_t* buffer_size) {
-  // TODO(crbug.com/329911837): implement for IPCz to support predictive
-  // allocation outside of ChromeOS.
-  return MOJO_RESULT_UNIMPLEMENTED;
+  if (auto* m = ipcz_driver::MojoMessage::FromHandle(message)) {
+    return m->ReserveCapacity(payload_buffer_size, buffer_size);
+  }
+  return MOJO_RESULT_INVALID_ARGUMENT;
 }
 
 MojoResult MojoAppendMessageDataIpcz(

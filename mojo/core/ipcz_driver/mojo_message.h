@@ -58,6 +58,11 @@ class MojoMessage {
   // Sets the received parcel object backing this message.
   void SetParcel(ScopedIpczHandle parcel);
 
+  // Reserves capacity within a new message object, effectively implementing
+  // MojoReserveMessageCapacity().
+  MojoResult ReserveCapacity(uint32_t payload_buffer_size,
+                             uint32_t* buffer_size);
+
   // Appends data to a new or partially serialized message, effectively
   // implementing MojoAppendMessageData().
   MojoResult AppendData(uint32_t additional_num_bytes,
