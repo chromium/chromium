@@ -293,6 +293,9 @@ void EditLabel::OnBlur() {
   SetToDefault();
   // Reset the error state if an reserved key was pressed.
   SetNameTagState(/*is_error=*/false, u"");
+
+  // Remove a11y description. It only shows once after shown.
+  SetAccessibleDescription(u"");
 }
 
 bool EditLabel::OnKeyPressed(const ui::KeyEvent& event) {
