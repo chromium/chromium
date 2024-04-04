@@ -8,6 +8,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/repeating_test_future.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_install/app_install.pb.h"
@@ -76,7 +77,12 @@ class AppInstallNavigationThrottleBrowserTest
     return param.param ? "AshDialogEnabled" : "AshDialogDisabled";
   }
 
-  AppInstallNavigationThrottleBrowserTest() = default;
+  AppInstallNavigationThrottleBrowserTest() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    feature_list_.InitWithFeatureState(
+        chromeos::features::kCrosWebAppInstallDialog, is_ash_dialog_enabled());
+#endif
+  }
 
   bool is_ash_dialog_enabled() const { return GetParam(); }
 
@@ -86,11 +92,17 @@ class AppInstallNavigationThrottleBrowserTest
     }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    if (is_ash_dialog_enabled() &&
-        chromeos::LacrosService::Get()
-                ->GetInterfaceVersion<crosapi::mojom::TestController>() <
-            int{crosapi::mojom::TestController::MethodMinVersions::
-                    kSetAppInstallDialogAutoAcceptMinVersion}) {
+    // Lacros has no way to disable the dialog, so we only run tests with the
+    // dialog enabled.
+    ASSERT_TRUE(is_ash_dialog_enabled());
+
+    if (!crosapi::AshSupportsCapabilities({"b/331715712"})) {
+      GTEST_SKIP() << "Unsupported Ash version.";
+    }
+
+    if (crosapi::GetInterfaceVersion<crosapi::mojom::TestController>() <
+        int{crosapi::mojom::TestController::MethodMinVersions::
+                kSetAppInstallDialogAutoAcceptMinVersion}) {
       GTEST_SKIP() << "Unsupported Ash version.";
     }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -121,6 +133,7 @@ class AppInstallNavigationThrottleBrowserTest
     return std::move(http_response);
   }
 
+  base::test::ScopedFeatureList feature_list_;
   std::map<GURL, std::string> response_map_;
   base::AutoReset<bool> feature_scope_ =
       chromeos::features::SetAppInstallServiceUriEnabledForTesting();
@@ -185,11 +198,12 @@ IN_PROC_BROWSER_TEST_P(AppInstallNavigationThrottleBrowserTest,
     web_app::WebAppTestInstallObserver(browser()->profile())
         .BeginListeningAndWait({app_id});
 
-    // Check that window.open() didn't leave an extra about:blank tab lying
-    // around, there should only be the original about:blank tab and the install
-    // page tab / install dialog.
-    EXPECT_EQ(browser()->tab_strip_model()->count(),
-              is_ash_dialog_enabled() ? 1 : 2);
+    if (!is_ash_dialog_enabled()) {
+      // Check that window.open() didn't leave an extra about:blank tab lying
+      // around, there should only be the original about:blank tab and the
+      // install page tab.
+      EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
+    }
   }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -227,7 +241,9 @@ IN_PROC_BROWSER_TEST_P(AppInstallNavigationThrottleBrowserTest,
 
   auto [app_id, package_id] = SetupDefaultServerResponse();
 
-  // Force BrowserAppInstanceTracker to forget about the current window.
+  // Force BrowserAppInstanceTracker to forget about the current window. This
+  // will cause the dialog to have no parent, and is more reliable than trying
+  // to get the browser to close with the right timing.
   auto* proxy = AppServiceProxyFactory::GetForProfile(browser()->profile());
   ASSERT_TRUE(proxy);
   ASSERT_TRUE(proxy->BrowserAppInstanceTracker());
@@ -241,20 +257,12 @@ IN_PROC_BROWSER_TEST_P(AppInstallNavigationThrottleBrowserTest,
   // Make install prompts auto accept.
   AutoAcceptInstallDialogScope auto_accept_scope(is_ash_dialog_enabled());
 
-  // Create a different browser window so the process doesn't stop when the
-  // browser window closes.
-  Browser::Create(
-      Browser::CreateParams(browser()->profile(), /*user_gesture=*/true));
-
-  // Open install-app URI. ExecJs returns false because its window closes.
-  EXPECT_FALSE(content::ExecJs(
+  // Open install-app URI.
+  EXPECT_TRUE(content::ExecJs(
       browser()->tab_strip_model()->GetActiveWebContents(),
       base::StringPrintf(
-          "window.location.href='almanac://install-app?package_id=%s'; "
-          "window.close();",
+          "window.location.href='almanac://install-app?package_id=%s'",
           package_id.ToString().c_str())));
-
-  EXPECT_TRUE(browser()->IsBrowserClosing());
 
   // This should trigger the sequence:
   // - AppInstallNavigationThrottle
@@ -274,7 +282,13 @@ IN_PROC_BROWSER_TEST_P(AppInstallNavigationThrottleBrowserTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     AppInstallNavigationThrottleBrowserTest,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     testing::Bool(),
+#else
+    // Lacros has no way to disable the dialog, so we only
+    // run tests with the dialog enabled.
+    testing::Values(true),
+#endif
     AppInstallNavigationThrottleBrowserTest::ParamToString);
 
 class AppInstallNavigationThrottleUserGestureBrowserTest

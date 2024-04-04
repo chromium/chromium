@@ -251,6 +251,12 @@ constexpr std::string_view kAshCapabilities[] = {
     // past M127.
     "b/326167458",
 
+    // Support showing the Ash-driven App Install Dialog when requesting
+    // installation in AppInstallServiceAsh.
+    // TODO(b/331715712): Remove this capability once Ash and Lacros are both
+    // past M128.
+    "b/331715712"
+
     // Entries added to this list must record the current milestone + 3 with a
     // TODO for removal.
 };

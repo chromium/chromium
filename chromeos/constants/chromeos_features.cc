@@ -24,7 +24,7 @@ bool g_app_install_service_uri_enabled_for_testing = false;
 // Enables triggering app installs from a specific URI.
 BASE_FEATURE(kAppInstallServiceUri,
              "AppInstallServiceUri",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Enables or disables more filtering out of phones from the Bluetooth UI.
@@ -115,7 +115,7 @@ BASE_FEATURE(kCrosOmniboxInstallDialog,
 // Enables the more detailed, OS-level dialog for web app installs.
 BASE_FEATURE(kCrosWebAppInstallDialog,
              "CrosWebAppInstallDialog",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // With this feature enabled, the shortcut app badge is painted in the UI
