@@ -27,9 +27,8 @@ class DecorationLinePainter final {
 
   void Paint(const Color& color, const cc::PaintFlags* flags = nullptr);
 
-  static void DrawLineForText(GraphicsContext&,
-                              const gfx::PointF& pt,
-                              float width,
+  static void DrawLineForText(GraphicsContext& context,
+                              const gfx::RectF& line_rect,
                               const StyledStrokeData& styled_stroke,
                               const AutoDarkMode& auto_dark_mode,
                               const cc::PaintFlags* paint_flags = nullptr);
@@ -37,6 +36,10 @@ class DecorationLinePainter final {
                                  float width,
                                  float stroke_thickness,
                                  StrokeStyle stroke_style);
+
+  static Vector<gfx::RectF> GetRectsForTextLine(
+      const gfx::RectF line_rect_without_intercepts,
+      const Vector<gfx::RectF>& stripe_intercepts);
 
  private:
   void PaintWavyTextDecoration(const AutoDarkMode&);

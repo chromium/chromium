@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/paint/decoration_line_painter.h"
 #include "third_party/blink/renderer/core/paint/inline_paint_context.h"
 #include "third_party/blink/renderer/core/paint/text_paint_style.h"
+#include "third_party/blink/renderer/core/paint/text_painter.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -519,6 +520,25 @@ void TextDecorationInfo::SetSpellingOrGrammarErrorLineData(
   SetLineData(HasSpellingError() ? TextDecorationLine::kSpellingError
                                  : TextDecorationLine::kGrammarError,
               paint_underline_offset);
+}
+
+void TextDecorationInfo::SetSkipInkIntercepts(
+    const TextPainter text_painter,
+    const TextFragmentPaintInfo* fragment_paint_info) {
+  if (fragment_paint_info &&
+      target_style_.TextDecorationSkipInk() == ETextDecorationSkipInk::kAuto) {
+    // In order to ignore intersects less than 0.5px, inflate by -0.5.
+    gfx::RectF decoration_bounds = Bounds();
+    decoration_bounds.Inset(gfx::InsetsF::VH(0.5, 0));
+
+    Vector<gfx::RectF> stripe_intercepts =
+        text_painter.GetDecorationStripeIntercepts(
+            *fragment_paint_info, InkSkipClipUpper(decoration_bounds.y()),
+            decoration_bounds.height(),
+            std::min(ResolvedThickness(), kDecorationClipMaxDilation));
+
+    stripe_intercepts_ = stripe_intercepts;
+  }
 }
 
 bool TextDecorationInfo::ShouldAntialias() const {

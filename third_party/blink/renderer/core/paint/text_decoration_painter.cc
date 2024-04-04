@@ -164,28 +164,34 @@ void TextDecorationPainter::PaintUnderOrOverLineDecorations(
                                TextDecorationLine::kGrammarError)) {
             decoration_info.SetSpellingOrGrammarErrorLineData(
                 decoration_offset);
-            // We ignore "text-decoration-skip-ink: auto" for spelling and
+            // Skip `SetSkipInkIntercepts`, because we ignore
+            // "text-decoration-skip-ink: auto" for spelling and
             // grammar error markers.
+            decoration_info.ClearSkipInkIntercepts();
             text_painter_.PaintDecorationLine(
                 decoration_info, LineColorForPhase(decoration_info, phase),
-                nullptr);
+                text_style);
             continue;
           }
 
           if (decoration_info.HasUnderline() && decoration_info.FontData() &&
               EnumHasFlags(lines_to_paint, TextDecorationLine::kUnderline)) {
             decoration_info.SetUnderlineLineData(decoration_offset);
+            decoration_info.SetSkipInkIntercepts(text_painter_,
+                                                 &fragment_paint_info);
             text_painter_.PaintDecorationLine(
                 decoration_info, LineColorForPhase(decoration_info, phase),
-                &fragment_paint_info);
+                text_style);
           }
 
           if (decoration_info.HasOverline() && decoration_info.FontData() &&
               EnumHasFlags(lines_to_paint, TextDecorationLine::kOverline)) {
             decoration_info.SetOverlineLineData(decoration_offset);
+            decoration_info.SetSkipInkIntercepts(text_painter_,
+                                                 &fragment_paint_info);
             text_painter_.PaintDecorationLine(
                 decoration_info, LineColorForPhase(decoration_info, phase),
-                &fragment_paint_info);
+                text_style);
           }
         }
       },
@@ -212,12 +218,12 @@ void TextDecorationPainter::PaintLineThroughDecorations(
             decoration_info.SetDecorationIndex(applied_decoration_index);
 
             decoration_info.SetLineThroughLineData();
-
-            // No skip: ink for line-through,
+            // Skip `SetSkipInkIntercepts` for line-through,
             // compare https://github.com/w3c/csswg-drafts/issues/711
+            decoration_info.ClearSkipInkIntercepts();
             text_painter_.PaintDecorationLine(
                 decoration_info, LineColorForPhase(decoration_info, phase),
-                nullptr);
+                text_style);
           }
         }
       },
