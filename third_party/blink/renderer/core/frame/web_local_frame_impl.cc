@@ -1420,10 +1420,11 @@ bool WebLocalFrameImpl::HasSelection() const {
   if (plugin_container)
     return plugin_container->Plugin()->HasSelection();
 
-  // frame()->selection()->isNone() never returns true.
-  const auto& selection =
-      GetFrame()->Selection().ComputeVisibleSelectionInDOMTreeDeprecated();
-  return selection.Start() != selection.End();
+  // TODO(editing-dev): The use of UpdateStyleAndLayoutIgnorePendingStylesheets
+  // needs to be audited.  See http://crbug.com/590369 for more details.
+  GetFrame()->GetDocument()->UpdateStyleAndLayout(
+      DocumentUpdateReason::kSelection);
+  return GetFrame()->Selection().ComputeVisibleSelectionInDOMTree().IsRange();
 }
 
 WebRange WebLocalFrameImpl::SelectionRange() const {
@@ -1434,7 +1435,7 @@ WebRange WebLocalFrameImpl::SelectionRange() const {
 
   return GetFrame()
       ->Selection()
-      .ComputeVisibleSelectionInDOMTreeDeprecated()
+      .ComputeVisibleSelectionInDOMTree()
       .ToNormalizedEphemeralRange();
 }
 
