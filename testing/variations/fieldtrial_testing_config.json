@@ -7032,25 +7032,6 @@
             ]
         }
     ],
-    "EnableShoppingListDesktop": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20221005",
-                    "enable_features": [
-                        "ShoppingList"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableShoppingListIOSM119": [
         {
             "platforms": [
@@ -14229,6 +14210,25 @@
                         "IPH_PriceDropNTP"
                     ],
                     "disable_features": []
+                }
+            ]
+        }
+    ],
+    "PriceTrackingDesktopExpansionStudy": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ShoppingList"
+                    ]
                 }
             ]
         }
