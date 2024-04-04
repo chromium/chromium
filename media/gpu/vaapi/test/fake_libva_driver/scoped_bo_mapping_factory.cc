@@ -141,16 +141,14 @@ ScopedBOMappingFactory::ScopedBOMappingFactory(int drm_fd)
   CHECK(gbm_device_);
 }
 
-ScopedBOMappingFactory::~ScopedBOMappingFactory() {
-  gbm_device_destroy(gbm_device_);
-}
+ScopedBOMappingFactory::~ScopedBOMappingFactory() = default;
 
 ScopedBOMapping ScopedBOMappingFactory::Create(
     gbm_import_fd_modifier_data import_data) {
 #if defined(MINIGBM)
   base::AutoLock lock(lock_);
   struct gbm_bo* bo_import =
-      gbm_bo_import(gbm_device_, GBM_BO_IMPORT_FD_MODIFIER, &import_data,
+      gbm_bo_import(gbm_device_.get(), GBM_BO_IMPORT_FD_MODIFIER, &import_data,
                     GBM_BO_USE_SW_READ_OFTEN | GBM_BO_USE_SW_WRITE_OFTEN);
   CHECK(bo_import);
 

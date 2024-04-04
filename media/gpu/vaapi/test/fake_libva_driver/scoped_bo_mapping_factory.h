@@ -12,6 +12,7 @@
 #include "base/files/scoped_file.h"
 #include "base/memory/raw_ref.h"
 #include "base/synchronization/lock.h"
+#include "ui/gfx/linux/scoped_gbm_device.h"
 
 namespace media::internal {
 
@@ -137,7 +138,7 @@ class ScopedBOMappingFactory {
                                    struct gbm_bo* bo_import);
 
   base::Lock lock_;
-  const raw_ptr<gbm_device> gbm_device_ GUARDED_BY(lock_);
+  const ui::ScopedGbmDevice gbm_device_ GUARDED_BY(lock_);
 };
 
 }  // namespace media::internal

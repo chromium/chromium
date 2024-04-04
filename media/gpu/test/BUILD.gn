@@ -310,6 +310,7 @@ if (is_chromeos_ash) {
       "//third_party/minigbm",
       "//ui/gfx:memory_buffer",
       "//ui/gfx/geometry",
+      "//ui/gfx/linux:gbm",
     ]
   }
 }

@@ -5,6 +5,7 @@
 #include "ui/gfx/linux/gbm_wrapper.h"
 
 #include <gbm.h>
+
 #include <memory>
 #include <utility>
 #include <vector>
@@ -20,6 +21,7 @@
 #include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/gfx/linux/gbm_buffer.h"
 #include "ui/gfx/linux/gbm_device.h"
+#include "ui/gfx/linux/scoped_gbm_device.h"
 
 #if !defined(MINIGBM)
 #include <dlfcn.h>
@@ -29,8 +31,8 @@
 #include "base/strings/stringize_macros.h"
 #endif
 
+namespace ui {
 namespace gbm_wrapper {
-
 namespace {
 
 uint32_t GetHandleForPlane(struct gbm_bo* bo, int plane) {
@@ -273,14 +275,13 @@ class Device final : public ui::GbmDevice {
 
   Device(const Device&) = delete;
   Device& operator=(const Device&) = delete;
-
-  ~Device() override { gbm_device_destroy(device_); }
+  ~Device() override = default;
 
   std::unique_ptr<ui::GbmBuffer> CreateBuffer(uint32_t format,
                                               const gfx::Size& size,
                                               uint32_t flags) override {
-    struct gbm_bo* bo =
-        gbm_bo_create(device_, size.width(), size.height(), format, flags);
+    struct gbm_bo* bo = gbm_bo_create(device_.get(), size.width(),
+                                      size.height(), format, flags);
     if (!bo) {
 #if DCHECK_IS_ON()
       const char fourcc_as_string[5] = {
@@ -290,7 +291,7 @@ class Device final : public ui::GbmDevice {
       DVLOG(2) << "Failed to create GBM BO, " << fourcc_as_string << ", "
                << size.ToString() << ", flags: 0x" << std::hex << flags
                << "; gbm_device_is_format_supported() = "
-               << gbm_device_is_format_supported(device_, format, flags);
+               << gbm_device_is_format_supported(device_.get(), format, flags);
 #endif
       return nullptr;
     }
@@ -324,7 +325,7 @@ class Device final : public ui::GbmDevice {
 
     while (!valid_modifiers && !filtered_modifiers.empty()) {
       created_bo = gbm_bo_create_with_modifiers(
-          device_, size_for_verification.width(),
+          device_.get(), size_for_verification.width(),
           size_for_verification.height(), format, filtered_modifiers.data(),
           filtered_modifiers.size());
       if (!created_bo) {
@@ -348,8 +349,8 @@ class Device final : public ui::GbmDevice {
         fd_data.offsets[i] = gbm_bo_get_offset(created_bo, i);
       }
 
-      struct gbm_bo* imported_bo =
-          gbm_bo_import(device_, GBM_BO_IMPORT_FD_MODIFIER, &fd_data, flags);
+      struct gbm_bo* imported_bo = gbm_bo_import(
+          device_.get(), GBM_BO_IMPORT_FD_MODIFIER, &fd_data, flags);
 
       if (imported_bo) {
         valid_modifiers = true;
@@ -371,8 +372,8 @@ class Device final : public ui::GbmDevice {
     // ie: different size, so create it now with the `requested_size`.
     if (valid_modifiers && !created_bo) {
       created_bo = gbm_bo_create_with_modifiers(
-          device_, requested_size.width(), requested_size.height(), format,
-          filtered_modifiers.data(), filtered_modifiers.size());
+          device_.get(), requested_size.width(), requested_size.height(),
+          format, filtered_modifiers.data(), filtered_modifiers.size());
       PLOG_IF(ERROR, !created_bo) << "Failed to create BO with modifiers.";
     }
 
@@ -424,8 +425,8 @@ class Device final : public ui::GbmDevice {
 
     // The fd passed to gbm_bo_import is not ref-counted and need to be
     // kept open for the lifetime of the buffer.
-    struct gbm_bo* bo =
-        gbm_bo_import(device_, GBM_BO_IMPORT_FD_MODIFIER, &fd_data, gbm_flags);
+    struct gbm_bo* bo = gbm_bo_import(device_.get(), GBM_BO_IMPORT_FD_MODIFIER,
+                                      &fd_data, gbm_flags);
     if (!bo) {
       LOG(ERROR) << "nullptr returned from gbm_bo_import";
       return nullptr;
@@ -442,17 +443,21 @@ class Device final : public ui::GbmDevice {
 #if defined(MINIGBM)
   int GetSupportedGbmFlags(uint32_t format) {
     int gbm_flags = GBM_BO_USE_SCANOUT | GBM_BO_USE_TEXTURING;
-    if (gbm_device_is_format_supported(device_, format, gbm_flags))
+    if (gbm_device_is_format_supported(device_.get(), format, gbm_flags)) {
       return gbm_flags;
+    }
     gbm_flags = GBM_BO_USE_TEXTURING;
-    if (gbm_device_is_format_supported(device_, format, gbm_flags))
+    if (gbm_device_is_format_supported(device_.get(), format, gbm_flags)) {
       return gbm_flags;
+    }
     return 0;
   }
 #else
   int GetSupportedGbmFlags(uint32_t format) {
-    if (gbm_device_is_format_supported(device_, format, GBM_BO_USE_SCANOUT))
+    if (gbm_device_is_format_supported(device_.get(), format,
+                                       GBM_BO_USE_SCANOUT)) {
       return GBM_BO_USE_SCANOUT;
+    }
     return 0;
   }
 #endif
@@ -480,13 +485,11 @@ class Device final : public ui::GbmDevice {
     modifier_blocklist_.push_back({format, flags, modifier});
   }
 
-  const raw_ptr<gbm_device> device_;
+  const ScopedGbmDevice device_;
   std::vector<std::tuple<uint32_t, uint32_t, uint64_t>> modifier_blocklist_;
 };
 
 }  // namespace gbm_wrapper
-
-namespace ui {
 
 std::unique_ptr<GbmDevice> CreateGbmDevice(int fd) {
   gbm_device* device = gbm_create_device(fd);
