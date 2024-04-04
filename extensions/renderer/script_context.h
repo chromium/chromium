@@ -59,6 +59,7 @@ class ScriptContext {
                 blink::WebLocalFrame* frame,
                 const mojom::HostID& host_id,
                 const Extension* extension,
+                std::optional<int> blink_isolated_world_id,
                 mojom::ContextType context_type,
                 const Extension* effective_extension,
                 mojom::ContextType effective_context_type);
@@ -306,6 +307,12 @@ class ScriptContext {
   // The extension associated with this context, or NULL if there is none. This
   // might be a hosted app in the case that this context is hosting a web URL.
   scoped_refptr<const Extension> extension_;
+
+  // The ID of the isolated world with which this context is associated, if
+  // any.  This is predominantly set for user script and content script
+  // contexts, but may be set for others, such as when something injects into a
+  // <webview>.
+  const std::optional<int> blink_isolated_world_id_;
 
   // The type of context.
   mojom::ContextType context_type_;

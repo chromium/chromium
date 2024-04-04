@@ -66,7 +66,7 @@ class IsolatedWorldManager {
 
   // Returns whether messaging APIs should be enabled in worlds for the given
   // `host_id`.
-  bool IsMessagingEnabledInUserScriptWorlds(const std::string& host_id);
+  bool IsMessagingEnabledInUserScriptWorld(int blink_world_id);
 
   // Returns the id of the isolated world associated with the given
   // `injection_host`.  If none exists, creates a new world for it associated
@@ -75,6 +75,10 @@ class IsolatedWorldManager {
       const InjectionHost& injection_host,
       mojom::ExecutionWorld execution_world,
       const std::optional<std::string>& world_id);
+
+  // Returns true if `blink_world_id` corresponds to the ID for an extension
+  // isolated world (either a content script world or user script world).
+  static bool IsExtensionIsolatedWorld(int blink_world_id);
 
  private:
   // A structure to track existing isolated world information, where an
@@ -112,6 +116,9 @@ class IsolatedWorldManager {
 
     // CSP to use for the isolated world, if any.
     std::optional<std::string> csp;
+
+    // Whether messaging is enabled within this isolated world.
+    bool enable_messaging;
   };
 
   // A set of data to store properties for user script worlds. There may or may

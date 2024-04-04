@@ -36,6 +36,20 @@ constexpr char kCheckIfEvalAllowedScriptSource[] =
        }
        result;)";
 
+constexpr char kGetMessagingProperties[] =
+    R"(let messagingProperties = [
+           'sendMessage', 'onMessage', 'connect', 'onConnect'
+       ];
+       let runtimeProperties =
+           chrome && chrome.runtime
+               ? Object.keys(chrome.runtime)
+               : [];
+       messagingProperties =
+           messagingProperties.filter((prop) => {
+             return runtimeProperties.includes(prop);
+           });
+       messagingProperties;)";
+
 }  // namespace
 
 class UserScriptWorldBrowserTest : public ExtensionApiTest {
@@ -515,20 +529,6 @@ IN_PROC_BROWSER_TEST_F(UserScriptWorldBrowserTest,
 
   NavigateToURL(example_com);
 
-  static constexpr char kGetMessagingProperties[] =
-      R"(let messagingProperties = [
-             'sendMessage', 'onMessage', 'connect', 'onConnect'
-         ];
-         let runtimeProperties =
-             chrome && chrome.runtime
-                 ? Object.keys(chrome.runtime)
-                 : [];
-         messagingProperties =
-             messagingProperties.filter((prop) => {
-               return runtimeProperties.includes(prop);
-             });
-         messagingProperties;)";
-
   // By default, messaging APIs are not allowed.
   {
     base::Value script_result =
@@ -621,6 +621,48 @@ IN_PROC_BROWSER_TEST_F(UserScriptWorldBrowserTest,
   EXPECT_EQ(ExecuteScriptInUserScriptWorld(kCheckIfEvalAllowedScriptSource,
                                            *extension, "world 2"),
             "disallowed eval");
+}
+
+// Tests that different user script worlds have unique configurations for
+// enabling messaging.
+IN_PROC_BROWSER_TEST_F(UserScriptWorldBrowserTest,
+                       UniquePropertiesPerUserScriptWorld_Messaging) {
+  const Extension* extension =
+      LoadExtensionWithHostPermission("http://example.com/*");
+
+  GURL example_com =
+      embedded_test_server()->GetURL("example.com", "/simple.html");
+
+  NavigateToURL(example_com);
+
+  // Check whether messaging APIs are allowed in either "world 1" or "world 2".
+  // Neither have been configured, so both should default to disallowing
+  // messaging.
+  EXPECT_THAT(ExecuteScriptInUserScriptWorld(kGetMessagingProperties,
+                                             *extension, "world 1"),
+              base::test::IsJson("[]"));
+  EXPECT_THAT(ExecuteScriptInUserScriptWorld(kGetMessagingProperties,
+                                             *extension, "world 2"),
+              base::test::IsJson("[]"));
+
+  // Allow messaging in "world 1", but leave "world 2" as default (disallowing
+  // messaging).
+  SetUserScriptWorldProperties(*extension, "world 1",
+                               /*csp=*/std::nullopt,
+                               /*enable_messaging=*/true);
+
+  // Navigate to create a new isolated world.
+  NavigateToURL(embedded_test_server()->GetURL("example.com", "/simple.html"));
+
+  // Check whether messaging is allowed again. It should be allowed in world 1,
+  // but not in world 2.
+  EXPECT_THAT(ExecuteScriptInUserScriptWorld(kGetMessagingProperties,
+                                             *extension, "world 1"),
+              base::test::IsJson(
+                  R"(["sendMessage","onMessage","connect","onConnect"])"));
+  EXPECT_THAT(ExecuteScriptInUserScriptWorld(kGetMessagingProperties,
+                                             *extension, "world 2"),
+              base::test::IsJson("[]"));
 }
 
 }  // namespace extensions

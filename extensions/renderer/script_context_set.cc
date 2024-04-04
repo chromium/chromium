@@ -106,9 +106,14 @@ ScriptContext* ScriptContextSet::Register(
     }
   }
 
-  ScriptContext* context =
-      new ScriptContext(v8_context, frame, host_id, extension, context_type,
-                        effective_extension, effective_context_type);
+  std::optional<int> blink_isolated_world_id;
+  if (IsolatedWorldManager::IsExtensionIsolatedWorld(world_id)) {
+    blink_isolated_world_id = world_id;
+  }
+
+  ScriptContext* context = new ScriptContext(
+      v8_context, frame, host_id, extension, std::move(blink_isolated_world_id),
+      context_type, effective_extension, effective_context_type);
   contexts_.insert(context);  // takes ownership
   return context;
 }

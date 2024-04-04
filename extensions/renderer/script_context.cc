@@ -129,6 +129,7 @@ ScriptContext::ScriptContext(const v8::Local<v8::Context>& v8_context,
                              blink::WebLocalFrame* web_frame,
                              const mojom::HostID& host_id,
                              const Extension* extension,
+                             std::optional<int> blink_isolated_world_id,
                              mojom::ContextType context_type,
                              const Extension* effective_extension,
                              mojom::ContextType effective_context_type)
@@ -137,6 +138,7 @@ ScriptContext::ScriptContext(const v8::Local<v8::Context>& v8_context,
       web_frame_(web_frame),
       host_id_(host_id),
       extension_(extension),
+      blink_isolated_world_id_(std::move(blink_isolated_world_id)),
       context_type_(context_type),
       effective_extension_(effective_extension),
       effective_context_type_(effective_context_type),
@@ -287,6 +289,7 @@ Feature::Availability ScriptContext::GetAvailability(
   // enabling or disabling APIs.
   if (context_type_ == mojom::ContextType::kUserScript) {
     CHECK(extension());
+    CHECK(blink_isolated_world_id_.has_value());
 
     static const constexpr char* kMessagingApis[] = {
         "runtime.onMessage",
@@ -299,7 +302,7 @@ Feature::Availability ScriptContext::GetAvailability(
         std::end(kMessagingApis)) {
       bool is_available =
           IsolatedWorldManager::GetInstance()
-              .IsMessagingEnabledInUserScriptWorlds(extension()->id());
+              .IsMessagingEnabledInUserScriptWorld(*blink_isolated_world_id_);
       if (!is_available) {
         return Feature::Availability(
             Feature::INVALID_CONTEXT,

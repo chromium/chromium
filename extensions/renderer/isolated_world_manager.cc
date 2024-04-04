@@ -82,10 +82,13 @@ void IsolatedWorldManager::SetUserScriptWorldProperties(
     return;
   }
 
-  for (const auto& [blink_world_id, isolated_world] : isolated_worlds_) {
+  for (auto& [blink_world_id, isolated_world] : isolated_worlds_) {
     if (isolated_world.host_id == host_id &&
         isolated_world.execution_world == mojom::ExecutionWorld::kUserScript &&
         isolated_world.world_id == world_id) {
+      isolated_world.enable_messaging = enable_messaging;
+      isolated_world.csp = pending_info.csp;
+
       blink::WebIsolatedWorldInfo info;
       info.security_origin =
           blink::WebSecurityOrigin::Create(isolated_world.url);
@@ -99,13 +102,10 @@ void IsolatedWorldManager::SetUserScriptWorldProperties(
   }
 }
 
-bool IsolatedWorldManager::IsMessagingEnabledInUserScriptWorlds(
-    const std::string& host_id) {
-  // TODO(https://crbug.com/331680187): Use the proper world ID here when
-  // looking up if messaging APIs are available.
-  const std::optional<std::string> world_id;
-  PendingWorldInfo* world_info = FindPendingWorldInfo(host_id, world_id);
-  return world_info && world_info->enable_messaging;
+bool IsolatedWorldManager::IsMessagingEnabledInUserScriptWorld(
+    int blink_world_id) {
+  auto iter = isolated_worlds_.find(blink_world_id);
+  return iter != isolated_worlds_.end() && iter->second.enable_messaging;
 }
 
 int IsolatedWorldManager::GetOrCreateIsolatedWorldForHost(
@@ -142,18 +142,26 @@ int IsolatedWorldManager::GetOrCreateIsolatedWorldForHost(
     world_info->blink_world_id = blink_world_id;
   }
 
-  // Initialize CSP for the new world. First, check if we have a dedicated
-  // user script CSP.
+  // Initialize CSP and messaging for the new world. First, check if we have a
+  // dedicated user script world configuration.
   const std::string* csp = nullptr;
+  // The default for messaging depends on whether this is a user script world or
+  // a content script world.
+  world_info->enable_messaging =
+      execution_world == mojom::ExecutionWorld::kIsolated;
   if (execution_world == mojom::ExecutionWorld::kUserScript) {
     PendingWorldInfo* pending_world_info =
         FindPendingWorldInfo(host_id, world_id);
-    if (pending_world_info && pending_world_info->csp) {
-      csp = &(*pending_world_info->csp);
+    if (pending_world_info) {
+      world_info->enable_messaging = pending_world_info->enable_messaging;
+      if (pending_world_info->csp) {
+        csp = &(*pending_world_info->csp);
+      }
     }
   }
 
-  // If not, check the injection host's default CSP.
+  // If we don't have a dedicated user script world, check the injection host's
+  // default CSP.
   if (!csp) {
     csp = injection_host.GetContentSecurityPolicy();
   }
@@ -168,6 +176,14 @@ int IsolatedWorldManager::GetOrCreateIsolatedWorldForHost(
   UpdateBlinkIsolatedWorldInfo(world_info->blink_world_id, *world_info);
 
   return world_info->blink_world_id;
+}
+
+// static
+bool IsolatedWorldManager::IsExtensionIsolatedWorld(int blink_world_id) {
+  // Extension worlds are any that are higher than the lowest isolated world
+  // value (values below that are reserved for other purposes).
+  return blink_world_id >=
+         ExtensionsRendererClient::Get()->GetLowestIsolatedWorldId();
 }
 
 IsolatedWorldManager::IsolatedWorldInfo*

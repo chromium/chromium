@@ -500,7 +500,8 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
   // service workers that aren't registered by extensions.
   ScriptContext* context = new ScriptContext(
       v8_context, nullptr, GenerateHostIdFromExtensionId(extension->id()),
-      extension, mojom::ContextType::kPrivilegedExtension, extension,
+      extension, /*blink_isolated_world_id=*/std::nullopt,
+      mojom::ContextType::kPrivilegedExtension, extension,
       mojom::ContextType::kPrivilegedExtension);
   context->set_url(script_url);
   context->set_service_worker_scope(service_worker_scope);
