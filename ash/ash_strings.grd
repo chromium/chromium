@@ -5359,6 +5359,10 @@ No devices connected.
       </message>
 
       <!-- Media Tray  -->
+      <message name="IDS_ASH_GLOBAL_MEDIA_CONTROLS_CAST_LIST_HEADER" desc="Label for the Global Media Controls cast list header.">
+        Cast to
+      </message>
+
       <message name="IDS_ASH_GLOBAL_MEDIA_CONTROLS_BUTTON_TOOLTIP_TEXT" desc="Tooltip for the Global Media Controls icon, which appears in the toolbar. The tooltip appears on mouseover of the icon.">
         Control your music, videos, and more
       </message>

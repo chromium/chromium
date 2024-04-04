@@ -11,6 +11,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/global_media_controls/public/constants.h"
+#include "components/global_media_controls/public/mojom/device_service.mojom.h"
 #include "components/media_message_center/notification_theme.h"
 
 class MediaItemUIDeviceSelectorDelegate;
@@ -37,8 +38,43 @@ namespace media_router {
 class MediaRoute;
 }  // namespace media_router
 
+// A set of the pending remote of `DeviceListHost` and the pending receiver of
+// `DeviceListClient`.
+struct HostAndClientPair {
+  HostAndClientPair();
+  HostAndClientPair(HostAndClientPair&&);
+  HostAndClientPair& operator=(HostAndClientPair&&);
+  ~HostAndClientPair();
+
+  mojo::PendingRemote<global_media_controls::mojom::DeviceListHost> host;
+  mojo::PendingReceiver<global_media_controls::mojom::DeviceListClient> client;
+};
+
 // These helper functions are shared among Chrome OS and other desktop
 // platforms.
+
+// Checks if we should show the device selector view (cast device list) under
+// the media ui view. Returns false if any of `device_service`,
+// `selector_delegate`, `profile`, `item` is null.
+bool ShouldShowDeviceSelectorView(
+    Profile* profile,
+    global_media_controls::mojom::DeviceService* device_service,
+    const std::string& item_id,
+    const base::WeakPtr<media_message_center::MediaNotificationItem>& item,
+    MediaItemUIDeviceSelectorDelegate* selector_delegate);
+
+// Creates and returns a `HostAndClientPair`.
+HostAndClientPair CreateHostAndClient(
+    Profile* profile,
+    const std::string& id,
+    const base::WeakPtr<media_message_center::MediaNotificationItem>& item,
+    global_media_controls::mojom::DeviceService* device_service);
+
+// Returns the stop casting callback if it's casting.
+base::RepeatingClosure GetStopCastingCallback(
+    Profile* profile,
+    const std::string& id,
+    const base::WeakPtr<media_message_center::MediaNotificationItem>& item);
 
 // Returns whether `item` has an associated Remote Playback route.
 bool HasRemotePlaybackRoute(

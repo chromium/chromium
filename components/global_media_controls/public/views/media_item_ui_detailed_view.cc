@@ -675,7 +675,15 @@ void MediaItemUIDetailedView::UpdateCastingState() {
       start_casting_button_->UpdateText(
           IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_SHOW_DEVICE_LIST);
     }
-    device_selector_view_separator_->SetVisible(is_expanded);
+
+    bool is_ash_background_listening_enabled = false;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    is_ash_background_listening_enabled =
+        base::FeatureList::IsEnabled(media::kBackgroundListening);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+    device_selector_view_separator_->SetVisible(
+        is_expanded && !is_ash_background_listening_enabled);
   } else {
     device_selector_view_->SetVisible(false);
     device_selector_view_separator_->SetVisible(false);

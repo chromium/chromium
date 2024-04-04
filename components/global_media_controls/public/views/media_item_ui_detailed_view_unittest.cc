@@ -501,4 +501,49 @@ TEST_F(MediaItemUIDetailedViewTest, ChapterList) {
 #endif
 }
 
+TEST_F(MediaItemUIDetailedViewTest, ShouldNotShowDeviceSelectorViewForAsh) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(media::kBackgroundListening);
+  auto* start_casting_button = view()->GetStartCastingButtonForTesting();
+  auto* separator = view()->GetDeviceSelectorSeparatorForTesting();
+  auto* device_selector_view = view()->GetDeviceSelectorForTesting();
+
+  ASSERT_TRUE(start_casting_button);
+  EXPECT_FALSE(start_casting_button->GetVisible());
+  EXPECT_EQ(device_selector_view, device_selector());
+  EXPECT_FALSE(device_selector_view->GetVisible());
+  ASSERT_TRUE(separator);
+  EXPECT_FALSE(separator->GetVisible());
+
+  // Add devices to the list to show the start casting button.
+  EXPECT_CALL(*device_selector(), IsDeviceSelectorExpanded())
+      .WillOnce(Return(false));
+  view()->UpdateDeviceSelectorAvailability(/*has_devices=*/true);
+  EXPECT_TRUE(start_casting_button->GetVisible());
+  EXPECT_TRUE(device_selector_view->GetVisible());
+  EXPECT_FALSE(separator->GetVisible());
+
+  // Click the start casting button to show devices.
+  EXPECT_CALL(*device_selector(), ShowDevices());
+  EXPECT_CALL(*device_selector(), IsDeviceSelectorExpanded())
+      .WillOnce(Return(false))
+      .WillOnce(Return(true));
+  views::test::ButtonTestApi(start_casting_button)
+      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+                                  gfx::Point(), ui::EventTimeForNow(), 0, 0));
+  EXPECT_FALSE(separator->GetVisible());
+
+  // Click the start casting button to hide devices.
+  EXPECT_CALL(*device_selector(), HideDevices());
+  EXPECT_CALL(*device_selector(), IsDeviceSelectorExpanded())
+      .WillOnce(Return(true))
+      .WillOnce(Return(false));
+  views::test::ButtonTestApi(start_casting_button)
+      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+                                  gfx::Point(), ui::EventTimeForNow(), 0, 0));
+  EXPECT_FALSE(separator->GetVisible());
+#endif
+}
+
 }  // namespace global_media_controls

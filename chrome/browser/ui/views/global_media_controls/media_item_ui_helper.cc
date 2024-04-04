@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_helper.h"
 
+#include <string>
+
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_item.h"
@@ -25,10 +27,40 @@
 
 namespace {
 
-bool ShouldShowDeviceSelectorView(
-    const std::string& item_id,
+void UpdateMediaSessionItemReceiverName(
     base::WeakPtr<media_message_center::MediaNotificationItem> item,
-    Profile* profile) {
+    const std::optional<media_router::MediaRoute>& route) {
+  if (item->GetSourceType() ==
+      media_message_center::SourceType::kLocalMediaSession) {
+    auto* media_session_item =
+        static_cast<global_media_controls::MediaSessionNotificationItem*>(
+            item.get());
+    if (route.has_value()) {
+      media_session_item->UpdateDeviceName(route->media_sink_name());
+    } else {
+      media_session_item->UpdateDeviceName(std::nullopt);
+    }
+  }
+}
+
+}  // namespace
+
+HostAndClientPair::HostAndClientPair() = default;
+HostAndClientPair::HostAndClientPair(HostAndClientPair&&) = default;
+HostAndClientPair& HostAndClientPair::operator=(HostAndClientPair&&) = default;
+HostAndClientPair::~HostAndClientPair() = default;
+
+bool ShouldShowDeviceSelectorView(
+    Profile* profile,
+    global_media_controls::mojom::DeviceService* device_service,
+    const std::string& item_id,
+    const base::WeakPtr<media_message_center::MediaNotificationItem>& item,
+
+    MediaItemUIDeviceSelectorDelegate* selector_delegate) {
+  if (!device_service || !selector_delegate || !profile || !item) {
+    return false;
+  }
+
   auto source_type = item->GetSourceType();
   if (source_type == media_message_center::SourceType::kCast) {
     return false;
@@ -47,23 +79,68 @@ bool ShouldShowDeviceSelectorView(
   return true;
 }
 
-void UpdateMediaSessionItemReceiverName(
-    base::WeakPtr<media_message_center::MediaNotificationItem> item,
-    const std::optional<media_router::MediaRoute>& route) {
-  if (item->GetSourceType() ==
-      media_message_center::SourceType::kLocalMediaSession) {
-    auto* media_session_item =
-        static_cast<global_media_controls::MediaSessionNotificationItem*>(
-            item.get());
-    if (route.has_value()) {
-      media_session_item->UpdateDeviceName(route->media_sink_name());
+HostAndClientPair CreateHostAndClient(
+    Profile* profile,
+    const std::string& id,
+    const base::WeakPtr<media_message_center::MediaNotificationItem>& item,
+    global_media_controls::mojom::DeviceService* device_service) {
+  mojo::PendingRemote<global_media_controls::mojom::DeviceListHost> host;
+  mojo::PendingRemote<global_media_controls::mojom::DeviceListClient> client;
+  auto client_receiver = client.InitWithNewPipeAndPassReceiver();
+  if (media_router::GlobalMediaControlsCastStartStopEnabled(profile)) {
+    if (item->GetSourceType() ==
+        media_message_center::SourceType::kLocalMediaSession) {
+      device_service->GetDeviceListHostForSession(
+          id, host.InitWithNewPipeAndPassReceiver(), std::move(client));
     } else {
-      media_session_item->UpdateDeviceName(std::nullopt);
+      device_service->GetDeviceListHostForPresentation(
+          host.InitWithNewPipeAndPassReceiver(), std::move(client));
     }
   }
+  HostAndClientPair host_and_client;
+  host_and_client.host = std::move(host);
+  host_and_client.client = std::move(client_receiver);
+
+  return host_and_client;
 }
 
-}  // namespace
+base::RepeatingClosure GetStopCastingCallback(
+    Profile* profile,
+    const std::string& id,
+    const base::WeakPtr<media_message_center::MediaNotificationItem>& item) {
+  base::RepeatingClosure stop_casting_callback;
+
+  // Show a footer view for a local media item when it has an associated Remote
+  // Playback session or a Tab Mirroring Session.
+  if (item->GetSourceType() !=
+      media_message_center::SourceType::kLocalMediaSession) {
+    return stop_casting_callback;
+  }
+  auto route = GetSessionRoute(id, item, profile);
+  UpdateMediaSessionItemReceiverName(item, route);
+  if (!route.has_value()) {
+    return stop_casting_callback;
+  }
+
+  const auto& route_id = route->media_route_id();
+  auto cast_mode = HasRemotePlaybackRoute(item)
+                       ? media_router::MediaCastMode::REMOTE_PLAYBACK
+                       : media_router::MediaCastMode::TAB_MIRROR;
+
+  stop_casting_callback = base::BindRepeating(
+      [](const std::string& route_id, media_router::MediaRouter* router,
+         media_router::MediaCastMode cast_mode) {
+        router->TerminateRoute(route_id);
+        MediaItemUIMetrics::RecordStopCastingMetrics(cast_mode);
+        if (cast_mode == media_router::MediaCastMode::TAB_MIRROR) {
+          MediaDialogView::HideDialog();
+        }
+      },
+      route_id,
+      media_router::MediaRouterFactory::GetApiForBrowserContext(profile),
+      cast_mode);
+  return stop_casting_callback;
+}
 
 bool HasRemotePlaybackRoute(
     base::WeakPtr<media_message_center::MediaNotificationItem> item) {
@@ -141,30 +218,20 @@ BuildDeviceSelector(
     global_media_controls::GlobalMediaControlsEntryPoint entry_point,
     bool show_devices,
     std::optional<media_message_center::MediaColorTheme> media_color_theme) {
-  if (!device_service || !selector_delegate || !profile ||
-      !ShouldShowDeviceSelectorView(id, item, profile)) {
+  if (!ShouldShowDeviceSelectorView(profile, device_service, id, item,
+                                    selector_delegate)) {
     return nullptr;
   }
 
   const bool is_local_media_session =
       item->GetSourceType() ==
       media_message_center::SourceType::kLocalMediaSession;
-  const bool gmc_cast_start_stop_enabled =
-      media_router::GlobalMediaControlsCastStartStopEnabled(profile);
-  mojo::PendingRemote<global_media_controls::mojom::DeviceListHost> host;
-  mojo::PendingRemote<global_media_controls::mojom::DeviceListClient> client;
-  auto client_receiver = client.InitWithNewPipeAndPassReceiver();
-  if (gmc_cast_start_stop_enabled) {
-    if (is_local_media_session) {
-      device_service->GetDeviceListHostForSession(
-          id, host.InitWithNewPipeAndPassReceiver(), std::move(client));
-    } else {
-      device_service->GetDeviceListHostForPresentation(
-          host.InitWithNewPipeAndPassReceiver(), std::move(client));
-    }
-  }
+
+  auto device_set = CreateHostAndClient(profile, id, item, device_service);
+
   return std::make_unique<MediaItemUIDeviceSelectorView>(
-      id, selector_delegate, std::move(host), std::move(client_receiver),
+      id, selector_delegate, std::move(device_set.host),
+      std::move(device_set.client),
       /*has_audio_output=*/is_local_media_session, entry_point, show_devices,
       media_color_theme);
 }
@@ -200,36 +267,12 @@ std::unique_ptr<global_media_controls::MediaItemUIFooter> BuildFooter(
             static_cast<CastMediaNotificationItem*>(item.get())->GetWeakPtr()));
   }
 
-  // Show a footer view for a local media item when it has an associated Remote
-  // Playback session or a Tab Mirroring Session.
-  if (item->GetSourceType() !=
-      media_message_center::SourceType::kLocalMediaSession) {
+  base::RepeatingClosure stop_casting_cb =
+      GetStopCastingCallback(profile, id, item);
+  if (stop_casting_cb.is_null()) {
     return nullptr;
   }
 
-  auto route = GetSessionRoute(id, item, profile);
-  UpdateMediaSessionItemReceiverName(item, route);
-  if (!route.has_value()) {
-    return nullptr;
-  }
-
-  const auto& route_id = route->media_route_id();
-  auto cast_mode = HasRemotePlaybackRoute(item)
-                       ? media_router::MediaCastMode::REMOTE_PLAYBACK
-                       : media_router::MediaCastMode::TAB_MIRROR;
-
-  auto stop_casting_cb = base::BindRepeating(
-      [](const std::string& route_id, media_router::MediaRouter* router,
-         media_router::MediaCastMode cast_mode) {
-        router->TerminateRoute(route_id);
-        MediaItemUIMetrics::RecordStopCastingMetrics(cast_mode);
-        if (cast_mode == media_router::MediaCastMode::TAB_MIRROR) {
-          MediaDialogView::HideDialog();
-        }
-      },
-      route_id,
-      media_router::MediaRouterFactory::GetApiForBrowserContext(profile),
-      cast_mode);
   return std::make_unique<MediaItemUILegacyCastFooterView>(
       std::move(stop_casting_cb));
 }
