@@ -88,15 +88,15 @@ constexpr bool IsWallpaperTypeSyncable(WallpaperType type) {
 void PopulateOnlineWallpaperInfo(WallpaperInfo* info,
                                  const base::Value::Dict& info_dict) {
   const std::string* asset_id_str =
-      info_dict.FindString(WallpaperPrefManager::kNewWallpaperAssetIdNodeName);
-  const std::string* collection_id = info_dict.FindString(
-      WallpaperPrefManager::kNewWallpaperCollectionIdNodeName);
+      info_dict.FindString(WallpaperInfo::kNewWallpaperAssetIdNodeName);
+  const std::string* collection_id =
+      info_dict.FindString(WallpaperInfo::kNewWallpaperCollectionIdNodeName);
   const std::string* dedup_key =
-      info_dict.FindString(WallpaperPrefManager::kNewWallpaperDedupKeyNodeName);
+      info_dict.FindString(WallpaperInfo::kNewWallpaperDedupKeyNodeName);
   const std::string* unit_id_str =
-      info_dict.FindString(WallpaperPrefManager::kNewWallpaperUnitIdNodeName);
-  const base::Value::List* variant_list = info_dict.FindList(
-      WallpaperPrefManager::kNewWallpaperVariantListNodeName);
+      info_dict.FindString(WallpaperInfo::kNewWallpaperUnitIdNodeName);
+  const base::Value::List* variant_list =
+      info_dict.FindList(WallpaperInfo::kNewWallpaperVariantListNodeName);
 
   info->collection_id = collection_id ? *collection_id : std::string();
   info->dedup_key = dedup_key ? std::make_optional(*dedup_key) : std::nullopt;
@@ -118,12 +118,12 @@ void PopulateOnlineWallpaperInfo(WallpaperInfo* info,
         continue;
       }
       const base::Value::Dict& variant_info = variant_info_value.GetDict();
-      const std::string* variant_asset_id_str = variant_info.FindString(
-          WallpaperPrefManager::kNewWallpaperAssetIdNodeName);
-      const std::string* url = variant_info.FindString(
-          WallpaperPrefManager::kOnlineWallpaperUrlNodeName);
-      std::optional<int> type = variant_info.FindInt(
-          WallpaperPrefManager::kOnlineWallpaperTypeNodeName);
+      const std::string* variant_asset_id_str =
+          variant_info.FindString(WallpaperInfo::kNewWallpaperAssetIdNodeName);
+      const std::string* url =
+          variant_info.FindString(WallpaperInfo::kOnlineWallpaperUrlNodeName);
+      std::optional<int> type =
+          variant_info.FindInt(WallpaperInfo::kOnlineWallpaperTypeNodeName);
       if (variant_asset_id_str && url && type.has_value()) {
         uint64_t variant_asset_id;
         if (base::StringToUint64(*variant_asset_id_str, &variant_asset_id))
@@ -152,16 +152,16 @@ bool GetWallpaperInfo(const AccountId& account_id,
     return false;
 
   // Use temporary variables to keep |info| untouched in the error case.
-  const std::string* location = info_dict->FindString(
-      WallpaperPrefManager::kNewWallpaperLocationNodeName);
-  const std::string* file_path = info_dict->FindString(
-      WallpaperPrefManager::kNewWallpaperUserFilePathNodeName);
+  const std::string* location =
+      info_dict->FindString(WallpaperInfo::kNewWallpaperLocationNodeName);
+  const std::string* file_path =
+      info_dict->FindString(WallpaperInfo::kNewWallpaperUserFilePathNodeName);
   std::optional<int> layout =
-      info_dict->FindInt(WallpaperPrefManager::kNewWallpaperLayoutNodeName);
+      info_dict->FindInt(WallpaperInfo::kNewWallpaperLayoutNodeName);
   std::optional<int> type =
-      info_dict->FindInt(WallpaperPrefManager::kNewWallpaperTypeNodeName);
+      info_dict->FindInt(WallpaperInfo::kNewWallpaperTypeNodeName);
   const std::string* date_string =
-      info_dict->FindString(WallpaperPrefManager::kNewWallpaperDateNodeName);
+      info_dict->FindString(WallpaperInfo::kNewWallpaperDateNodeName);
 
   if (!location || !layout || !type || !date_string)
     return false;
@@ -218,57 +218,7 @@ bool SetWallpaperInfo(const AccountId& account_id,
       << " to prefs";
 
   ScopedDictPrefUpdate wallpaper_update(pref_service, pref_name);
-  base::Value::Dict wallpaper_info_dict;
-  if (info.asset_id.has_value()) {
-    wallpaper_info_dict.Set(WallpaperPrefManager::kNewWallpaperAssetIdNodeName,
-                            base::NumberToString(info.asset_id.value()));
-  }
-  if (info.unit_id.has_value()) {
-    wallpaper_info_dict.Set(WallpaperPrefManager::kNewWallpaperUnitIdNodeName,
-                            base::NumberToString(info.unit_id.value()));
-  }
-  base::Value::List online_wallpaper_variant_list;
-  for (const auto& variant : info.variants) {
-    base::Value::Dict online_wallpaper_variant_dict;
-    online_wallpaper_variant_dict.Set(
-        WallpaperPrefManager::kNewWallpaperAssetIdNodeName,
-        base::NumberToString(variant.asset_id));
-    online_wallpaper_variant_dict.Set(
-        WallpaperPrefManager::kOnlineWallpaperUrlNodeName,
-        variant.raw_url.spec());
-    online_wallpaper_variant_dict.Set(
-        WallpaperPrefManager::kOnlineWallpaperTypeNodeName,
-        static_cast<int>(variant.type));
-    online_wallpaper_variant_list.Append(
-        std::move(online_wallpaper_variant_dict));
-  }
-
-  wallpaper_info_dict.Set(
-      WallpaperPrefManager::kNewWallpaperVariantListNodeName,
-      std::move(online_wallpaper_variant_list));
-  wallpaper_info_dict.Set(
-      WallpaperPrefManager::kNewWallpaperCollectionIdNodeName,
-      info.collection_id);
-  // TODO(skau): Change time representation to TimeToValue.
-  wallpaper_info_dict.Set(
-      WallpaperPrefManager::kNewWallpaperDateNodeName,
-      base::NumberToString(
-          info.date.ToDeltaSinceWindowsEpoch().InMicroseconds()));
-  if (info.dedup_key) {
-    wallpaper_info_dict.Set(WallpaperPrefManager::kNewWallpaperDedupKeyNodeName,
-                            info.dedup_key.value());
-  }
-  wallpaper_info_dict.Set(WallpaperPrefManager::kNewWallpaperLocationNodeName,
-                          info.location);
-  wallpaper_info_dict.Set(
-      WallpaperPrefManager::kNewWallpaperUserFilePathNodeName,
-      info.user_file_path);
-  wallpaper_info_dict.Set(WallpaperPrefManager::kNewWallpaperLayoutNodeName,
-                          info.layout);
-  wallpaper_info_dict.Set(WallpaperPrefManager::kNewWallpaperTypeNodeName,
-                          static_cast<int>(info.type));
-  wallpaper_update->Set(account_id.GetUserEmail(),
-                        std::move(wallpaper_info_dict));
+  wallpaper_update->Set(account_id.GetUserEmail(), info.ToDict());
   return true;
 }
 
@@ -596,23 +546,6 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
 };
 
 }  // namespace
-
-const char WallpaperPrefManager::kNewWallpaperAssetIdNodeName[] = "asset_id";
-const char WallpaperPrefManager::kNewWallpaperCollectionIdNodeName[] =
-    "collection_id";
-const char WallpaperPrefManager::kNewWallpaperDateNodeName[] = "date";
-const char WallpaperPrefManager::kNewWallpaperDedupKeyNodeName[] = "dedup_key";
-const char WallpaperPrefManager::kNewWallpaperLayoutNodeName[] = "layout";
-const char WallpaperPrefManager::kNewWallpaperLocationNodeName[] = "file";
-const char WallpaperPrefManager::kNewWallpaperUserFilePathNodeName[] =
-    "file_path";
-const char WallpaperPrefManager::kNewWallpaperTypeNodeName[] = "type";
-const char WallpaperPrefManager::kNewWallpaperUnitIdNodeName[] = "unit_id";
-const char WallpaperPrefManager::kNewWallpaperVariantListNodeName[] =
-    "variants";
-const char WallpaperPrefManager::kOnlineWallpaperTypeNodeName[] =
-    "online_image_type";
-const char WallpaperPrefManager::kOnlineWallpaperUrlNodeName[] = "url";
 
 // static
 bool WallpaperPrefManager::ShouldSyncOut(const WallpaperInfo& local_info) {

@@ -7,6 +7,7 @@
 
 #include <ostream>
 #include <string>
+#include <string_view>
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/wallpaper/google_photos_wallpaper_params.h"
@@ -14,11 +15,32 @@
 #include "ash/public/cpp/wallpaper/online_wallpaper_variant.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace ash {
 
 struct ASH_PUBLIC_EXPORT WallpaperInfo {
+  // Names of nodes with wallpaper info in |kUserWallpaperInfo| dictionary.
+  static constexpr std::string_view kNewWallpaperAssetIdNodeName = "asset_id";
+  static constexpr std::string_view kNewWallpaperCollectionIdNodeName =
+      "collection_id";
+  static constexpr std::string_view kNewWallpaperDateNodeName = "date";
+  static constexpr std::string_view kNewWallpaperDedupKeyNodeName = "dedup_key";
+  static constexpr std::string_view kNewWallpaperLayoutNodeName = "layout";
+  static constexpr std::string_view kNewWallpaperLocationNodeName = "file";
+  static constexpr std::string_view kNewWallpaperUserFilePathNodeName =
+      "file_path";
+  static constexpr std::string_view kNewWallpaperTypeNodeName = "type";
+  static constexpr std::string_view kNewWallpaperUnitIdNodeName = "unit_id";
+  static constexpr std::string_view kNewWallpaperVariantListNodeName =
+      "variants";
+
+  // Names of nodes for the online wallpaper variant dictionary.
+  static constexpr std::string_view kOnlineWallpaperTypeNodeName =
+      "online_image_type";
+  static constexpr std::string_view kOnlineWallpaperUrlNodeName = "url";
+
   WallpaperInfo();
 
   // `target_variant` should match one of the
@@ -49,6 +71,10 @@ struct ASH_PUBLIC_EXPORT WallpaperInfo {
   // image is active.
   bool MatchesSelection(const WallpaperInfo& other) const;
   bool MatchesAsset(const WallpaperInfo& other) const;
+
+  // Returns the dictionary representation of the `WallpaperInfo` to be saved
+  // into pref store.
+  base::Value::Dict ToDict() const;
 
   ~WallpaperInfo();
 

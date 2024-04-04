@@ -4413,17 +4413,16 @@ TEST_P(WallpaperControllerTest, OldOnlineInfoSynced_Discarded) {
   // DO NOT CHANGE as there are preferences like this in production.
   base::Value::Dict wallpaper_info_dict;
   wallpaper_info_dict.Set(
-      WallpaperPrefManager::kNewWallpaperDateNodeName,
+      WallpaperInfo::kNewWallpaperDateNodeName,
       base::NumberToString(
           base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds()));
-  wallpaper_info_dict.Set(WallpaperPrefManager::kNewWallpaperLocationNodeName,
+  wallpaper_info_dict.Set(WallpaperInfo::kNewWallpaperLocationNodeName,
                           "location");
-  wallpaper_info_dict.Set(
-      WallpaperPrefManager::kNewWallpaperUserFilePathNodeName,
-      "user_file_path");
-  wallpaper_info_dict.Set(WallpaperPrefManager::kNewWallpaperLayoutNodeName,
+  wallpaper_info_dict.Set(WallpaperInfo::kNewWallpaperUserFilePathNodeName,
+                          "user_file_path");
+  wallpaper_info_dict.Set(WallpaperInfo::kNewWallpaperLayoutNodeName,
                           WallpaperLayout::WALLPAPER_LAYOUT_CENTER);
-  wallpaper_info_dict.Set(WallpaperPrefManager::kNewWallpaperTypeNodeName,
+  wallpaper_info_dict.Set(WallpaperInfo::kNewWallpaperTypeNodeName,
                           static_cast<int>(WallpaperType::kOnline));
 
   {

@@ -58,22 +58,6 @@ class WallpaperProfileHelper {
 // Manages wallpaper preferences and tracks the currently configured wallpaper.
 class ASH_EXPORT WallpaperPrefManager : public SessionObserver {
  public:
-  // Names of nodes with wallpaper info in |kUserWallpaperInfo| dictionary.
-  static const char kNewWallpaperAssetIdNodeName[];
-  static const char kNewWallpaperCollectionIdNodeName[];
-  static const char kNewWallpaperDateNodeName[];
-  static const char kNewWallpaperDedupKeyNodeName[];
-  static const char kNewWallpaperLayoutNodeName[];
-  static const char kNewWallpaperLocationNodeName[];
-  static const char kNewWallpaperUserFilePathNodeName[];
-  static const char kNewWallpaperTypeNodeName[];
-  static const char kNewWallpaperUnitIdNodeName[];
-  static const char kNewWallpaperVariantListNodeName[];
-
-  // Names of nodes for the online wallpaper variant dictionary.
-  static const char kOnlineWallpaperTypeNodeName[];
-  static const char kOnlineWallpaperUrlNodeName[];
-
   // Determines whether the wallpaper info is syncable and should be stored in
   // synced prefs.
   static bool ShouldSyncOut(const WallpaperInfo& local_info);
