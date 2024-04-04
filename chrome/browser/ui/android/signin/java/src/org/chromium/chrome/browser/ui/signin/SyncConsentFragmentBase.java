@@ -250,6 +250,9 @@ public abstract class SyncConsentFragmentBase extends Fragment
     // TODO(crbug.com/1462264): Refactor method to take CoreAccountInfo instead of String email.
     protected void signinAndEnableSync(
             String accountEmail, boolean settingsClicked, SigninManager.SignInCallback callback) {
+        // Getting the profile depends on the Activity, which may be gone by the time the callback
+        // runs.
+        final Profile profile = getProfile();
         AccountManagerFacadeProvider.getInstance()
                 .getCoreAccountInfos()
                 .then(
@@ -262,7 +265,6 @@ public abstract class SyncConsentFragmentBase extends Fragment
                                 callback.onSignInAborted();
                                 return;
                             }
-                            Profile profile = getProfile();
                             SigninManager signinManager =
                                     IdentityServicesProvider.get().getSigninManager(profile);
                             signinManager.signinAndEnableSync(
@@ -366,6 +368,7 @@ public abstract class SyncConsentFragmentBase extends Fragment
                 .getCoreAccountInfos()
                 .then(
                         (coreAccountInfos) -> {
+                            if (getActivity() == null) return;
                             CoreAccountInfo selectedCoreAccountInfo =
                                     AccountUtils.findCoreAccountInfoByEmail(
                                             coreAccountInfos, mSelectedAccountEmail);
@@ -706,6 +709,9 @@ public abstract class SyncConsentFragmentBase extends Fragment
     }
 
     private void seedAccountsAndSignin(boolean settingsClicked, View confirmationView) {
+        // Getting the profile depends on the Activity, which may be gone by the time the callback
+        // runs.
+        final Profile profile = getProfile();
         AccountInfoServiceProvider.get()
                 .getAccountInfoByEmail(mSelectedAccountEmail)
                 .then(
@@ -721,7 +727,7 @@ public abstract class SyncConsentFragmentBase extends Fragment
                                 return;
                             }
                             mConsentTextTracker.recordConsent(
-                                    getProfile(),
+                                    profile,
                                     accountInfo.getId(),
                                     ConsentAuditorFeature.CHROME_SYNC,
                                     (TextView) confirmationView,
