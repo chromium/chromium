@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_model.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_bio_enrollment_sheet_view.h"
@@ -30,6 +31,10 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/views/webauthn/authenticator_touch_id_view.h"
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace {
 
@@ -366,13 +371,26 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
           std::make_unique<AuthenticatorTrustThisComputerSheetModel>(
               dialog_model));
       break;
+    case Step::kGPMTouchID:
+#if BUILDFLAG(IS_MAC)
+      if (__builtin_available(macOS 12.0, *)) {
+        sheet_view = std::make_unique<AuthenticatorTouchIdView>(
+            std::make_unique<AuthenticatorTouchIdSheetModel>(dialog_model));
+      } else {
+        NOTREACHED_NORETURN()
+            << "MacOS version does not support LAAuthenticationView";
+      }
+#else
+      sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
+          std::make_unique<PlaceholderSheetModel>(dialog_model));
+#endif
+      break;
     case Step::kNotStarted:
     case Step::kConditionalMediation:
     case Step::kClosed:
     case Step::kRecoverSecurityDomain:
     case Step::kWaitingForEnclave:
     case Step::kGPMCreatePasskey:
-    case Step::kGPMTouchID:
     case Step::kGPMOnboarding:
     case Step::kGPMPasskeySaved:
     case Step::kGPMReauthAccount:

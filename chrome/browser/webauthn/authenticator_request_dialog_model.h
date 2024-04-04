@@ -448,6 +448,8 @@ struct AuthenticatorRequestDialogModel {
   // creds contains possible credentials to select between before or after an
   // authenticator has responded to a request.
   std::vector<device::DiscoverableCredentialMetadata> creds;
+  // preselected_cred contains a credential preselected by the user.
+  std::optional<device::DiscoverableCredentialMetadata> preselected_cred;
   // offer_try_again_in_ui indicates whether a button to retry the request
   // should be included on the dialog sheet shown when encountering certain
   // errors.
