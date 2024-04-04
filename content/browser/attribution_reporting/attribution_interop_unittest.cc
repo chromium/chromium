@@ -232,15 +232,6 @@ TEST_P(AttributionInteropTest, HasExpectedOutput) {
   AttributionInteropConfig config = GetConfig();
   base::Value::Dict dict = base::test::ParseJsonDictFromFile(GetParam());
 
-  if (const base::Value* api_config = dict.Find("api_config")) {
-    ASSERT_TRUE(api_config->is_dict());
-    ASSERT_THAT(MergeAttributionInteropConfig(api_config->GetDict(), config),
-                base::test::HasValue());
-  }
-
-  std::optional<base::Value> input = dict.Extract("input");
-  ASSERT_TRUE(input && input->is_dict());
-
   std::optional<base::Value> output = dict.Extract("output");
   ASSERT_TRUE(output && output->is_dict());
 
@@ -248,10 +239,9 @@ TEST_P(AttributionInteropTest, HasExpectedOutput) {
       auto expected_output,
       AttributionInteropOutput::Parse(std::move(*output).TakeDict()));
 
-  ASSERT_OK_AND_ASSIGN(
-      AttributionInteropOutput actual_output,
-      RunAttributionInteropSimulation(std::move(*input).TakeDict(), config,
-                                      kHpkeKey.GetPublicKey()));
+  ASSERT_OK_AND_ASSIGN(AttributionInteropOutput actual_output,
+                       RunAttributionInteropSimulation(
+                           std::move(dict), config, kHpkeKey.GetPublicKey()));
 
   PreProcessOutput(expected_output, /*actual=*/false);
   PreProcessOutput(actual_output, /*actual=*/true);

@@ -307,9 +307,17 @@ void FastForwardUntilReportsConsumed(AttributionManager& manager,
 }  // namespace
 
 base::expected<AttributionInteropOutput, std::string>
-RunAttributionInteropSimulation(base::Value::Dict input,
-                                const AttributionInteropConfig& config,
+RunAttributionInteropSimulation(base::Value::Dict dict,
+                                AttributionInteropConfig config,
                                 const PublicKey& hpke_key) {
+  if (const base::Value* api_config = dict.Find("api_config")) {
+    const base::Value::Dict* config_dict = api_config->GetIfDict();
+    if (!config_dict) {
+      return base::unexpected("api_config must be a dict");
+    }
+    RETURN_IF_ERROR(MergeAttributionInteropConfig(*config_dict, config));
+  }
+
   std::vector<base::test::FeatureRef> enabled_features(
       {blink::features::kKeepAliveInBrowserMigration,
        blink::features::kAttributionReportingInBrowserMigration});
@@ -335,6 +343,11 @@ RunAttributionInteropSimulation(base::Value::Dict input,
 
   attribution_reporting::ScopedMaxEventLevelEpsilonForTesting
       scoped_max_event_level_epsilon(config.max_event_level_epsilon);
+
+  std::optional<base::Value> input = dict.Extract("input");
+  if (!input.has_value() || !input->is_dict()) {
+    return base::unexpected("input must be a dict");
+  }
 
   // Prerequisites for using an environment with mock time.
   BrowserTaskEnvironment task_environment(
@@ -363,9 +376,9 @@ RunAttributionInteropSimulation(base::Value::Dict input,
 
   const base::Time time_origin = base::Time::Now();
 
-  ASSIGN_OR_RETURN(AttributionSimulationEvents events,
-                   ParseAttributionInteropInput(std::move(input), time_origin));
-
+  ASSIGN_OR_RETURN(
+      AttributionSimulationEvents events,
+      ParseAttributionInteropInput(std::move(*input).TakeDict(), time_origin));
   if (events.empty()) {
     return AttributionInteropOutput();
   }

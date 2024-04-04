@@ -20,10 +20,12 @@ struct AttributionInteropOutput;
 struct PublicKey;
 
 // Simulates the Attribution Reporting API for a single user on sources and
-// triggers specified in `input`. Returns the generated reports.
+// triggers specified in the given dictionary, which must have a top-level
+// "input" field and may have a top-level "api_config" field, which, if present
+// will be merged with the given config. Returns the generated reports.
 base::expected<AttributionInteropOutput, std::string>
 RunAttributionInteropSimulation(base::Value::Dict input,
-                                const AttributionInteropConfig&,
+                                AttributionInteropConfig,
                                 const PublicKey& hpke_key);
 
 class ReportBodyAdjuster {

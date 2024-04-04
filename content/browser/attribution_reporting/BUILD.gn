@@ -82,3 +82,13 @@ if (is_win || is_mac || is_linux || is_chromeos) {
     data_deps = [ "//third_party/sqlite:sqlite_dev_shell" ]
   }
 }
+
+executable("attribution_reporting_interop") {
+  sources = [ "interop_main.cc" ]
+  deps = [
+    "//base",
+    "//content/public/browser",
+    "//content/test:test_support",
+  ]
+  testonly = true
+}
