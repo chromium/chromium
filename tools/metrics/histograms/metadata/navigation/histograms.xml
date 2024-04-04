@@ -795,34 +795,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Navigation.FencedFrameBeaconReportingCountCrossOrigin"
-    units="beacons" expires_after="2025-03-13">
-  <owner>lbrady@google.com</owner>
-  <owner>shivanisha@chromium.org</owner>
-  <owner>chrome-fenced-frames-core@google.com</owner>
-  <summary>
-    Records how many beacons were sent through window.fence.reportEvent() from a
-    document that is cross-origin to the mapped URL of the FencedFrameConfig
-    during the lifetime of the FencedFrameConfig object. This is recorded when
-    the FencedFrameConfig object is destroyed and is recorded once per
-    FencedFrameConfig instance.
-  </summary>
-</histogram>
-
-<histogram name="Navigation.FencedFrameBeaconReportingCountSameOrigin"
-    units="beacons" expires_after="2025-03-13">
-  <owner>lbrady@google.com</owner>
-  <owner>shivanisha@chromium.org</owner>
-  <owner>chrome-fenced-frames-core@google.com</owner>
-  <summary>
-    Records how many beacons were sent through window.fence.reportEvent() from a
-    document that is same-origin to the mapped URL of the FencedFrameConfig
-    during the lifetime of the FencedFrameConfig object. This is recorded when
-    the FencedFrameConfig object is destroyed and is recorded once per
-    FencedFrameConfig instance.
-  </summary>
-</histogram>
-
 <histogram name="Navigation.FencedFrameTopNavigation"
     enum="FencedFrameNavigationState" expires_after="2024-10-01">
   <owner>lbrady@google.com</owner>

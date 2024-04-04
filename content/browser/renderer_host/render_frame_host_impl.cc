@@ -8616,10 +8616,9 @@ void RenderFrameHostImpl::SendPrivateAggregationRequestsForFencedFrameEvent(
       !GetLastCommittedOrigin().IsSameOriginWith(
           url::Origin::Create(fenced_frame_properties->mapped_url()
                                   ->GetValueIgnoringVisibility()))) {
-    AddMessageToConsole(
-        blink::mojom::ConsoleMessageLevel::kError,
+    mojo::ReportBadMessage(
         "This frame is cross-origin to the mapped url of its fenced frame "
-        "config and cannot report a Private Aggregation event.");
+        "config, so the renderer should not be able to call reportEvent.");
     return;
   }
 
@@ -8763,9 +8762,8 @@ void RenderFrameHostImpl::ForwardFencedFrameEventToEmbedder(
 void RenderFrameHostImpl::SendFencedFrameReportingBeacon(
     const std::string& event_data,
     const std::string& event_type,
-    const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
-    bool cross_origin_exposed) {
-  if (!IsFencedFrameReportingFromRendererAllowed(cross_origin_exposed)) {
+    const std::vector<blink::FencedFrame::ReportingDestination>& destinations) {
+  if (!IsFencedFrameReportingFromRendererAllowed()) {
     return;
   }
   if (event_data.length() > blink::kFencedFrameMaxBeaconLength) {
@@ -8785,16 +8783,14 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeacon(
   for (const blink::FencedFrame::ReportingDestination& destination :
        destinations) {
     SendFencedFrameReportingBeaconInternal(
-        DestinationEnumEvent(event_type, event_data, cross_origin_exposed),
-        destination);
+        DestinationEnumEvent(event_type, event_data), destination);
   }
 }
 
 // TODO(crbug.com/1400992): Move SendFencedFrameReportingBeaconToCustomURL into
 // a separate refcounted class, so that pending beacons can outlive the RFHI.
 void RenderFrameHostImpl::SendFencedFrameReportingBeaconToCustomURL(
-    const GURL& destination_url,
-    bool cross_origin_exposed) {
+    const GURL& destination_url) {
   if (!base::FeatureList::IsEnabled(
           blink::features::kAdAuctionReportingWithMacroApi)) {
     mojo::ReportBadMessage(
@@ -8811,12 +8807,12 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeaconToCustomURL(
     return;
   }
 
-  if (!IsFencedFrameReportingFromRendererAllowed(cross_origin_exposed)) {
+  if (!IsFencedFrameReportingFromRendererAllowed()) {
     return;
   }
 
   SendFencedFrameReportingBeaconInternal(
-      DestinationURLEvent(destination_url, cross_origin_exposed),
+      DestinationURLEvent(destination_url),
       blink::FencedFrame::ReportingDestination::kBuyer);
 }
 
@@ -8974,8 +8970,7 @@ void RenderFrameHostImpl::MaybeSendFencedFrameAutomaticReportingBeacon(
   }
 }
 
-bool RenderFrameHostImpl::IsFencedFrameReportingFromRendererAllowed(
-    bool cross_origin_exposed) {
+bool RenderFrameHostImpl::IsFencedFrameReportingFromRendererAllowed() {
   if (!blink::features::IsFencedFramesEnabled()) {
     mojo::ReportBadMessage(
         "Request to send reporting beacons received while FencedFrames not "
@@ -8991,15 +8986,6 @@ bool RenderFrameHostImpl::IsFencedFrameReportingFromRendererAllowed(
 
   const std::optional<FencedFrameProperties>& fenced_frame_properties =
       frame_tree_node_->GetFencedFrameProperties();
-
-  if (cross_origin_exposed &&
-      !base::FeatureList::IsEnabled(
-          blink::features::kFencedFramesCrossOriginEventReporting)) {
-    mojo::ReportBadMessage(
-        "Request to send cross-origin reporting beacons received while feature "
-        "not enabled.");
-    return false;
-  }
 
   if (!fenced_frame_properties.has_value() ||
       !fenced_frame_properties->fenced_frame_reporter()) {
@@ -9022,24 +9008,14 @@ bool RenderFrameHostImpl::IsFencedFrameReportingFromRendererAllowed(
     return false;
   }
 
-  if (!GetLastCommittedOrigin().IsSameOriginWith(
+  if (!fenced_frame_properties->mapped_url().has_value() ||
+      !GetLastCommittedOrigin().IsSameOriginWith(
           url::Origin::Create(fenced_frame_properties->mapped_url()
                                   ->GetValueIgnoringVisibility()))) {
-    if (!fenced_frame_properties->allow_cross_origin_event_reporting()) {
-      mojo::ReportBadMessage(
-          "This document is cross-origin to the document that contains "
-          "reporting metadata, but the fenced frame's document was not served "
-          "with the 'Allow-Cross-Origin-Event-Reporting' header.");
-      return false;
-    }
-
-    if (!cross_origin_exposed) {
-      mojo::ReportBadMessage(
-          "This document is cross-origin to the document that contains "
-          "reporting metadata, but reportEvent() was not called with "
-          "crossOriginExposed=true.");
-      return false;
-    }
+    mojo::ReportBadMessage(
+        "This frame is cross-origin to the mapped url of its fenced frame "
+        "config, so the renderer should not be able to call reportEvent.");
+    return false;
   }
 
   return true;
@@ -9144,8 +9120,8 @@ void RenderFrameHostImpl::SetFencedFrameAutomaticBeaconReportEventData(
             url::Origin::Create(fenced_frame_properties->mapped_url()
                                     ->GetValueIgnoringVisibility()))) {
       mojo::ReportBadMessage(
-          "Automatic beacon data can only be set from frames that registered "
-          "reporting metadata.");
+          "Automatic beacon data can only be set from documents that are same-"
+          "origin to the mapped url from the fenced frame config.");
       return;
     }
 

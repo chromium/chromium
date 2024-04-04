@@ -121,13 +121,6 @@ void Fence::reportEventToDestinationEnum(const FenceEvent* event,
     exception_state.ThrowTypeError("Missing required 'eventType' property.");
     return;
   }
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kFencedFramesCrossOriginEventReporting) &&
-      event->crossOriginExposed()) {
-    exception_state.ThrowTypeError(
-        "'crossOriginExposed' is not supported with reportEvent().");
-    return;
-  }
 
   if (event->hasEventData() &&
       event->eventData().length() > blink::kFencedFrameMaxBeaconLength) {
@@ -139,29 +132,15 @@ void Fence::reportEventToDestinationEnum(const FenceEvent* event,
 
   LocalFrame* frame = DomWindow()->GetFrame();
   DCHECK(frame->GetDocument());
-
-  const auto& properties =
-      frame->GetDocument()->Loader()->FencedFrameProperties();
-  if (!properties.has_value() || !properties->has_fenced_frame_reporting()) {
+  bool has_fenced_frame_reporting =
+      frame->GetDocument()->Loader()->FencedFrameProperties().has_value() &&
+      frame->GetDocument()
+          ->Loader()
+          ->FencedFrameProperties()
+          ->has_fenced_frame_reporting();
+  if (!has_fenced_frame_reporting) {
     AddConsoleMessage("This frame did not register reporting metadata.");
     return;
-  }
-
-  if (properties->is_cross_origin_content()) {
-    if (!properties->allow_cross_origin_event_reporting()) {
-      AddConsoleMessage(
-          "This document is cross-origin to the document that contains "
-          "reporting metadata, but the fenced frame's document was not served "
-          "with the 'Allow-Cross-Origin-Event-Reporting' header.");
-      return;
-    }
-    if (!event->crossOriginExposed()) {
-      AddConsoleMessage(
-          "This document is cross-origin to the document that contains "
-          "reporting metadata, but reportEvent() was not called with "
-          "crossOriginExposed=true.");
-      return;
-    }
   }
 
   WTF::Vector<blink::FencedFrame::ReportingDestination> destinations;
@@ -171,8 +150,7 @@ void Fence::reportEventToDestinationEnum(const FenceEvent* event,
                           ToPublicDestination);
 
   frame->GetLocalFrameHostRemote().SendFencedFrameReportingBeacon(
-      event->getEventDataOr(String{""}), event->eventType(), destinations,
-      event->crossOriginExposed());
+      event->getEventDataOr(String{""}), event->eventType(), destinations);
 }
 
 void Fence::reportEventToDestinationURL(const FenceEvent* event,
@@ -193,13 +171,6 @@ void Fence::reportEventToDestinationURL(const FenceEvent* event,
     exception_state.ThrowTypeError(
         "When reporting to a custom destination URL, 'destination' is not "
         "allowed.");
-    return;
-  }
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kFencedFramesCrossOriginEventReporting) &&
-      event->crossOriginExposed()) {
-    exception_state.ThrowTypeError(
-        "'crossOriginExposed' is not supported with reportEvent().");
     return;
   }
   if (event->destinationURL().length() > blink::kFencedFrameMaxBeaconLength) {
@@ -224,33 +195,19 @@ void Fence::reportEventToDestinationURL(const FenceEvent* event,
 
   LocalFrame* frame = DomWindow()->GetFrame();
   DCHECK(frame->GetDocument());
-
-  const auto& properties =
-      frame->GetDocument()->Loader()->FencedFrameProperties();
-  if (!properties.has_value() || !properties->has_fenced_frame_reporting()) {
+  bool has_fenced_frame_reporting =
+      frame->GetDocument()->Loader()->FencedFrameProperties().has_value() &&
+      frame->GetDocument()
+          ->Loader()
+          ->FencedFrameProperties()
+          ->has_fenced_frame_reporting();
+  if (!has_fenced_frame_reporting) {
     AddConsoleMessage("This frame did not register reporting metadata.");
     return;
   }
 
-  if (properties->is_cross_origin_content()) {
-    if (!properties->allow_cross_origin_event_reporting()) {
-      AddConsoleMessage(
-          "This document is cross-origin to the document that contains "
-          "reporting metadata, but the fenced frame's document was not served "
-          "with the 'Allow-Cross-Origin-Event-Reporting' header.");
-      return;
-    }
-    if (!event->crossOriginExposed()) {
-      AddConsoleMessage(
-          "This document is cross-origin to the document that contains "
-          "reporting metadata, but reportEvent() was not called with "
-          "crossOriginExposed=true.");
-      return;
-    }
-  }
-
   frame->GetLocalFrameHostRemote().SendFencedFrameReportingBeaconToCustomURL(
-      destinationURL, event->crossOriginExposed());
+      destinationURL);
 }
 
 void Fence::setReportEventDataForAutomaticBeacons(
@@ -294,18 +251,14 @@ void Fence::setReportEventDataForAutomaticBeacons(
   }
   LocalFrame* frame = DomWindow()->GetFrame();
   DCHECK(frame->GetDocument());
-
-  const auto& properties =
-      frame->GetDocument()->Loader()->FencedFrameProperties();
-  if (!properties.has_value() || !properties->has_fenced_frame_reporting()) {
+  bool has_fenced_frame_reporting =
+      frame->GetDocument()->Loader()->FencedFrameProperties().has_value() &&
+      frame->GetDocument()
+          ->Loader()
+          ->FencedFrameProperties()
+          ->has_fenced_frame_reporting();
+  if (!has_fenced_frame_reporting) {
     AddConsoleMessage("This frame did not register reporting metadata.");
-    return;
-  }
-
-  if (properties->is_cross_origin_content()) {
-    AddConsoleMessage(
-        "Automatic beacon data can only be set from documents that registered "
-        "reporting metadata.");
     return;
   }
 
@@ -403,9 +356,13 @@ void Fence::reportPrivateAggregationEvent(const String& event,
   LocalFrame* frame = DomWindow()->GetFrame();
   DCHECK(frame->GetDocument());
 
-  const auto& properties =
-      frame->GetDocument()->Loader()->FencedFrameProperties();
-  if (!properties.has_value() || !properties->has_fenced_frame_reporting()) {
+  bool has_fenced_frame_reporting =
+      frame->GetDocument()->Loader()->FencedFrameProperties().has_value() &&
+      frame->GetDocument()
+          ->Loader()
+          ->FencedFrameProperties()
+          ->has_fenced_frame_reporting();
+  if (!has_fenced_frame_reporting) {
     AddConsoleMessage("This frame did not register reporting metadata.");
     return;
   }

@@ -2424,11 +2424,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void SendFencedFrameReportingBeacon(
       const std::string& event_data,
       const std::string& event_type,
-      const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
-      bool cross_origin_exposed) override;
+      const std::vector<blink::FencedFrame::ReportingDestination>& destinations)
+      override;
   void SendFencedFrameReportingBeaconToCustomURL(
-      const GURL& destination_url,
-      bool cross_origin_exposed) override;
+      const GURL& destination_url) override;
   void SetFencedFrameAutomaticBeaconReportEventData(
       blink::mojom::AutomaticBeaconType event_type,
       const std::string& event_data,
@@ -4055,7 +4054,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // and event data.
   // Note: This function has side effects. It may terminate misbehaving
   // renderers. It may also add messages for certain cases that return false.
-  bool IsFencedFrameReportingFromRendererAllowed(bool cross_origin_exposed);
+  bool IsFencedFrameReportingFromRendererAllowed();
 
   // Helper function that handles creating and sending a fenced frame beacon for
   // a given destination.

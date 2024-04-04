@@ -6076,45 +6076,6 @@ void NavigationRequest::CommitNavigation() {
   commit_params_->modified_runtime_features =
       runtime_feature_state_context_.GetFeatureOverrides();
 
-  // Documents loaded from fenced frame configs can opt into allowing
-  // cross-origin subframes to use their reporting metadata to send
-  // `reportEvent()` beacons. The cross-origin subframes still require a
-  // separate per-report opt-in.
-  {
-    std::string allow;
-    if (fenced_frame_properties_.has_value() && response() &&
-        response()->headers->GetNormalizedHeader(
-            "Allow-Cross-Origin-Event-Reporting", &allow) &&
-        allow == "true") {
-      fenced_frame_properties_->SetAllowCrossOriginEventReporting();
-    }
-  }
-
-  // Create a view of the fenced frame properties from the perspective of the
-  // fenced frame content, which will be sent to its renderer.
-  // On each navigation commit within the fenced frame tree:
-  // * If the properties have no mapped url, the browser will send the renderer
-  //   the `RedactedFencedFrameProperties` unconditionally.
-  // * If the properties do have a mapped url, the browser will send the
-  //   renderer the `RedactedFencedFrameProperties`, redacting extra information
-  //   based on whether the origin is same-origin to the urn's mapped_url (after
-  //   redirects).
-  // This is because we want to make fenced frame APIs available only
-  // in same-origin contexts, when "same-origin" has a coherent definition.
-  const auto& computed_fenced_frame_properties = ComputeFencedFrameProperties();
-  if (computed_fenced_frame_properties.has_value()) {
-    content::FencedFrameEntity entity =
-        content::FencedFrameEntity::kSameOriginContent;
-    if (computed_fenced_frame_properties->mapped_url().has_value() &&
-        !origin_to_commit.IsSameOriginWith(
-            computed_fenced_frame_properties->mapped_url()
-                ->GetValueIgnoringVisibility())) {
-      entity = content::FencedFrameEntity::kCrossOriginContent;
-    }
-    commit_params_->fenced_frame_properties =
-        computed_fenced_frame_properties->RedactFor(entity);
-  }
-
   auto common_params = common_params_->Clone();
   auto commit_params = commit_params_.Clone();
   auto response_head = response_head_.Clone();
@@ -7875,6 +7836,32 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
           GetParentFrameOrOuterDocument()->GetPermissionsPolicy(),
           GetParentFrameOrOuterDocument()->GetLastCommittedOrigin());
     }
+  }
+
+  // Create a view of the fenced frame properties from the perspective of the
+  // fenced frame content, which will be sent to its renderer.
+  // On each navigation commit within the fenced frame tree:
+  // * If the properties have no mapped url, the browser will send the renderer
+  //   the `RedactedFencedFrameProperties` unconditionally.
+  // * If the properties do have a mapped url, the browser will send the
+  //   renderer the `RedactedFencedFrameProperties`, redacting extra information
+  //   based on whether the origin is same-origin to the urn's mapped_url (after
+  //   redirects).
+  // This is because we want to make fenced frame APIs available only
+  // in same-origin contexts, when "same-origin" has a coherent definition.
+  const auto& computed_fenced_frame_properties = ComputeFencedFrameProperties();
+  if (computed_fenced_frame_properties.has_value()) {
+    content::FencedFrameEntity entity =
+        content::FencedFrameEntity::kSameOriginContent;
+    if (computed_fenced_frame_properties->mapped_url().has_value() &&
+        origin_to_commit.has_value() &&
+        !origin_to_commit->IsSameOriginWith(
+            computed_fenced_frame_properties->mapped_url()
+                ->GetValueIgnoringVisibility())) {
+      entity = content::FencedFrameEntity::kCrossOriginContent;
+    }
+    commit_params_->fenced_frame_properties =
+        computed_fenced_frame_properties->RedactFor(entity);
   }
 
   if (ready_to_commit_callback_for_testing_)
