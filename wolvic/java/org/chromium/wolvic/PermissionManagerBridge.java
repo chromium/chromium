@@ -6,6 +6,7 @@ package org.chromium.wolvic;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -50,8 +51,47 @@ public class PermissionManagerBridge {
         int ALLOW = 2;
     }
 
+    @IntDef({MediaSourceType.CAMERA, MediaSourceType.SCREEN, MediaSourceType.MICROPHONE,
+            MediaSourceType.AUDIOCAPTURE, MediaSourceType.OTHER})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface MediaSourceType {
+        int CAMERA = 0;
+        int SCREEN = 1;
+        int MICROPHONE = 2;
+        int AUDIOCAPTURE = 3;
+        int OTHER = 4;
+    }
+
+    @IntDef({MediaType.VIDEO, MediaType.AUDIO})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface MediaType {
+        int VIDEO = 0;
+        int AUDIO = 1;
+    }
+
+    public static class MediaSource {
+        public final @NonNull String id;
+        public final @NonNull String name;
+        public final @MediaSourceType int source;
+        public final @MediaType int type;
+
+        public MediaSource(@NonNull String id, @Nullable String name,
+                           @MediaSourceType int source,
+                           @MediaType int type) {
+            this.id = id;
+            this.name = name;
+            this.source = source;
+            this.type = type;
+        }
+    }
+
     public interface PermissionCallback {
         void onPermissionResult(@PermissionStatus int[] results);
+    }
+
+    public interface MediaCallback {
+        void onMediaPermissionResult(boolean granted, @Nullable String videoId,
+                                     @Nullable String audioId);
     }
 
     public interface Delegate {
@@ -59,6 +99,8 @@ public class PermissionManagerBridge {
                                         boolean isOffTheRecord, PermissionCallback callback);
         void onAndroidPermissionRequest(String[] androidPermissionTypes,
                                         PermissionCallback callback);
+        void onMediaPermissionRequest(String url, MediaSource[] video, MediaSource[] audio,
+                                      MediaCallback callback);
     }
     
     private static PermissionManagerBridge sInstance;
@@ -120,6 +162,23 @@ public class PermissionManagerBridge {
         });
     }
 
+    @CalledByNative
+    public static void onMediaPermissionRequest(MediaSource[] video, MediaSource[] audio,
+                                                String url, boolean isOffTheRecord,
+                                                long inProgressRequestPtr) {
+        PermissionManagerBridge bridge = get();
+        if (bridge.mDelegate == null) {
+            return;
+        }
+        bridge.mDelegate.onMediaPermissionRequest(url, video, audio, new MediaCallback() {
+            @Override
+            public void onMediaPermissionResult(boolean granted, @Nullable String videoId,
+                                                @Nullable String audioId) {
+                PermissionManagerBridgeJni.get().onMediaPermissionResult(isOffTheRecord,
+                        inProgressRequestPtr, granted, videoId, audioId);
+            }
+        });
+    }
 
     @NativeMethods
     public interface Natives {
@@ -129,5 +188,10 @@ public class PermissionManagerBridge {
         void onAndroidPermissionResult(boolean isOffTheRecord,
                                        long inProgressRequestPtr,
                                        @PermissionStatus int[] results);
+        void onMediaPermissionResult(boolean isOffTheRecord,
+                                     long inProgressRequestPtr,
+                                     boolean granted,
+                                     @Nullable String videoId,
+                                     @Nullable String audioId);
     }
 }

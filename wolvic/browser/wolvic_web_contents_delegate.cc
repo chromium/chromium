@@ -6,6 +6,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "wolvic/browser/wolvic_contents.h"
 #include "wolvic/jni_headers/WolvicWebContentsDelegate_jni.h"
@@ -13,6 +14,7 @@
 #include "wolvic/browser/dialogs/color_chooser_manager.h"
 #include "wolvic/browser/dialogs/file_select_manager.h"
 #include "wolvic/browser/dialogs/wolvic_javascript_dialog_manager.h"
+#include "wolvic/wolvic_permission_manager.h"
 
 namespace wolvic {
 
@@ -84,6 +86,26 @@ void WolvicWebContentsDelegate::RunFileChooser(
     const blink::mojom::FileChooserParams& params) {
   FileSelectManager::RunFileChooser(render_frame_host, std::move(listener),
                                    params);
+}
+
+void WolvicWebContentsDelegate::RequestMediaAccessPermission(
+    content::WebContents* web_contents,
+    const content::MediaStreamRequest& request,
+    content::MediaResponseCallback callback) {
+  auto* permission_manager = WolvicPermissionManager::GetInstance(
+      web_contents->GetBrowserContext()->IsOffTheRecord());
+  permission_manager->RequestMediaAccessPermission(web_contents, request,
+                                                   std::move(callback));
+}
+
+bool WolvicWebContentsDelegate::CheckMediaAccessPermission(
+    content::RenderFrameHost* render_frame_host,
+    const GURL& security_origin,
+    blink::mojom::MediaStreamType type) {
+  auto* permission_manager = WolvicPermissionManager::GetInstance(
+      render_frame_host->GetBrowserContext()->IsOffTheRecord());
+  return permission_manager->CheckMediaAccessPermission(render_frame_host,
+                                                        security_origin, type);
 }
 
 } // namespace wolvic
