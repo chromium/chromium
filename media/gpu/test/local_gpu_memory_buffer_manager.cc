@@ -124,7 +124,7 @@ class GpuMemoryBufferImplGbm : public gfx::GpuMemoryBuffer {
       Unmap();
     }
 
-    gbm_bo_destroy(buffer_object_);
+    gbm_bo_destroy(buffer_object_.ExtractAsDangling());
   }
 
   bool Map() override {

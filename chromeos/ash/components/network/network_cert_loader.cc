@@ -275,7 +275,10 @@ class NetworkCertLoader::CertCache : public net::CertDatabase::Observer {
   bool certificates_update_required_ = false;
 
   // The NSS certificate database from which the certificates should be loaded.
-  raw_ptr<net::NSSCertDatabase> nss_database_ = nullptr;
+  // Dangling during LoginIntegrationTest.TestLogin on
+  // chromeos-amd64-generic-rel-gtest.
+  raw_ptr<net::NSSCertDatabase, AcrossTasksDanglingUntriaged> nss_database_ =
+      nullptr;
 
   // The slot from which certificates are listed.
   crypto::ScopedPK11Slot slot_;

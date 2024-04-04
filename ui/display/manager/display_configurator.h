@@ -441,8 +441,10 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   static RefreshRateThrottleState GetRefreshRateThrottleStateForDisplay(
       const DisplaySnapshot& display);
 
-  raw_ptr<StateController> state_controller_;
-  raw_ptr<SoftwareMirroringController> mirroring_controller_;
+  // Dangling in DemoIntegrationTest.NewTab on chromeos-amd64-generic-rel-gtest.
+  raw_ptr<StateController, DanglingUntriaged> state_controller_;
+  // Dangling in DemoIntegrationTest.NewTab on chromeos-amd64-generic-rel-gtest.
+  raw_ptr<SoftwareMirroringController, DanglingUntriaged> mirroring_controller_;
   std::unique_ptr<NativeDisplayDelegate> native_display_delegate_;
 
   // Used to enable modes which rely on panel fitting.
