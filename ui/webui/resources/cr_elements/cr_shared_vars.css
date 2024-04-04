@@ -120,7 +120,6 @@ html {
 
   --cr-card-shadow: var(--cr-elevation-2);
 
-  --cr-checked-color: var(--google-blue-600);
   --cr-focused-item-color: var(--google-grey-300);
   --cr-form-field-label-color: var(--google-grey-700);
   --cr-hairline-rgb: 0, 0, 0;
@@ -135,7 +134,6 @@ html {
 @media (prefers-color-scheme: dark) {
   html {
     --cr-card-background-color: var(--google-grey-900-white-4-percent);
-    --cr-checked-color: var(--google-blue-300);
     --cr-focused-item-color: var(--google-grey-800);
     --cr-form-field-label-color: var(--dark-secondary-color);
     --cr-hairline-rgb: 255, 255, 255;
@@ -316,6 +314,11 @@ html {
 
   /* Elevation */
   --cr-shadow-color: var(--color-sys-shadow, rgb(0, 0, 0));
+
+  /* Common UI colors. */
+  --cr-checked-color: var(
+      --color-checkbox-foreground-checked,
+      var(--cr-fallback-color-primary));
 }
 
 @media (prefers-color-scheme: dark) {
