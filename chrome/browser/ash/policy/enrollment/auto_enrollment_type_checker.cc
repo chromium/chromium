@@ -75,7 +75,9 @@ static std::string FRERequirementToString(
 }
 
 // Returns true if FRE is allowed to be enabled on Flex by the command line.
-static bool IsFREEnabledOnFlexByCommandLineSwitch() {
+// Note that this function does *not* check whether the device is running Flex
+// or not.
+static bool IsFREOnFlexEnabledByCommandLineSwitch() {
   return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
              ash::switches::kEnterpriseEnableForcedReEnrollmentOnFlex) ==
          AutoEnrollmentTypeChecker::kForcedReEnrollmentAlways;
@@ -84,7 +86,9 @@ static bool IsFREEnabledOnFlexByCommandLineSwitch() {
 // Returns true if FRE state keys are supported.
 static bool AreFREStateKeysSupported() {
   return IsOfficialGoogleChrome() ||
-         (IsOfficialGoogleFlex() && IsFREEnabledOnFlexByCommandLineSwitch());
+         // TODO(b/331677599): Replace with IsOfficialGoogleFlex().
+         (ash::switches::IsRevenBranding() &&
+          IsFREOnFlexEnabledByCommandLineSwitch());
 }
 
 // Kill switch config request parameters.
@@ -275,9 +279,7 @@ bool AutoEnrollmentTypeChecker::IsFREEnabled() {
   std::string command_line_mode = command_line->GetSwitchValueASCII(
       ash::switches::kEnterpriseEnableForcedReEnrollment);
   if (command_line_mode == kForcedReEnrollmentAlways) {
-    // Enable if not on Flex, or if the Flex-specific flag is also forced.
-    return !ash::switches::IsRevenBranding() ||
-           IsFREEnabledOnFlexByCommandLineSwitch();
+    return true;
   }
   if (command_line_mode.empty() ||
       command_line_mode == kForcedReEnrollmentOfficialBuild) {
@@ -331,12 +333,6 @@ AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
   // TODO(b/265923216): Migrate legacy code to support unified state
   // determination.
   if (IsUnifiedStateDeterminationEnabled()) {
-    // Flex devices should not do FRE if not explicitly enabled.
-    if (ash::switches::IsRevenBranding() &&
-        !IsFREEnabledOnFlexByCommandLineSwitch()) {
-      LOG(WARNING) << "Unified state determination on Flex is not enabled.";
-      return FRERequirement::kRequired;
-    }
     LOG(WARNING) << "Unified state determination is enabled. Forcing"
                     "re-enrollment check.";
     return FRERequirement::kExplicitlyRequired;
@@ -364,7 +360,7 @@ AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
   if (ash::switches::IsRevenBranding()) {
     // We only enable FRE for Flex devices if the command line forces it to be
     // always enabled.
-    if (IsFREEnabledOnFlexByCommandLineSwitch()) {
+    if (IsFREOnFlexEnabledByCommandLineSwitch()) {
       LOG(WARNING) << "Requiring re-enrollment check on Flex.";
       return FRERequirement::kExplicitlyRequired;
     } else {

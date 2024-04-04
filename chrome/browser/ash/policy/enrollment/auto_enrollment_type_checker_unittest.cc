@@ -167,26 +167,6 @@ TEST_F(AutoEnrollmentTypeCheckerTest, FREEnabledWhenSwitchIsAlways) {
   EXPECT_TRUE(AutoEnrollmentTypeChecker::IsFREEnabled());
 }
 
-TEST_F(AutoEnrollmentTypeCheckerTest,
-       FREEnabledWhenSwitchIsAlwaysOnFlexAndFlexSpecificSwitchIsAlways) {
-  SetUpFlexDeviceWithCommandLineSwitchToAlways();
-  command_line_.GetProcessCommandLine()->AppendSwitchASCII(
-      ash::switches::kEnterpriseEnableForcedReEnrollment,
-      AutoEnrollmentTypeChecker::kForcedReEnrollmentAlways);
-
-  EXPECT_TRUE(AutoEnrollmentTypeChecker::IsFREEnabled());
-}
-
-TEST_F(AutoEnrollmentTypeCheckerTest,
-       FREDisabledWhenSwitchIsAlwaysOnAndFlexSpecificSwitchIsNotAlways) {
-  SetUpFlexDevice();
-  command_line_.GetProcessCommandLine()->AppendSwitchASCII(
-      ash::switches::kEnterpriseEnableForcedReEnrollment,
-      AutoEnrollmentTypeChecker::kForcedReEnrollmentAlways);
-
-  EXPECT_FALSE(AutoEnrollmentTypeChecker::IsFREEnabled());
-}
-
 TEST_F(AutoEnrollmentTypeCheckerTest, FREEnabledWhenSwitchIsOfficialBuild) {
   fake_statistics_provider_.SetMachineStatistic(
       ash::system::kFirmwareTypeKey, ash::system::kFirmwareTypeValueNormal);
@@ -215,26 +195,6 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
       AutoEnrollmentTypeChecker::kForcedReEnrollmentOfficialBuild);
 
   EXPECT_FALSE(AutoEnrollmentTypeChecker::IsFREEnabled());
-}
-
-TEST_F(AutoEnrollmentTypeCheckerTest,
-       FREDisabledWhenSwitchIsOfficialBuildOnFlexAndFlexSwitchIsNotAlways) {
-  SetUpFlexDevice();
-  command_line_.GetProcessCommandLine()->AppendSwitchASCII(
-      ash::switches::kEnterpriseEnableForcedReEnrollment,
-      AutoEnrollmentTypeChecker::kForcedReEnrollmentOfficialBuild);
-
-  EXPECT_FALSE(AutoEnrollmentTypeChecker::IsFREEnabled());
-}
-
-TEST_F(AutoEnrollmentTypeCheckerTest,
-       FREEnabledWhenSwitchIsOfficialBuildOnFlexAndSwitchFlexIsAlways) {
-  SetUpFlexDeviceWithCommandLineSwitchToAlways();
-  command_line_.GetProcessCommandLine()->AppendSwitchASCII(
-      ash::switches::kEnterpriseEnableForcedReEnrollment,
-      AutoEnrollmentTypeChecker::kForcedReEnrollmentOfficialBuild);
-
-  EXPECT_EQ(AutoEnrollmentTypeChecker::IsFREEnabled(), is_google_branded_);
 }
 
 TEST_F(AutoEnrollmentTypeCheckerTest, FREDisabledWhenSwitchIsNever) {
@@ -406,6 +366,7 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
        FRERequiredOnFlexEnabledByCommandLineSwitch) {
   SetUpFlexDeviceWithCommandLineSwitchToAlways();
 
+  EXPECT_TRUE(AutoEnrollmentTypeChecker::IsFREEnabled());
   EXPECT_EQ(AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
                 &fake_statistics_provider_),
             AutoEnrollmentTypeChecker::FRERequirement::kExplicitlyRequired);
@@ -424,19 +385,6 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
 TEST_F(AutoEnrollmentTypeCheckerTest,
        FRERequiredOnFlexNotEnabledByCommandLineSwitch) {
   SetUpFlexDevice();
-
-  EXPECT_FALSE(AutoEnrollmentTypeChecker::IsFREEnabled());
-  EXPECT_EQ(AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
-                &fake_statistics_provider_),
-            AutoEnrollmentTypeChecker::FRERequirement::kDisabled);
-}
-
-TEST_F(AutoEnrollmentTypeCheckerTest,
-       FRERequiredOnFlexNotEnabledByCommandLineSwitchEvenWithFREAlwaysEnabled) {
-  SetUpFlexDevice();
-  command_line_.GetProcessCommandLine()->AppendSwitchASCII(
-      ash::switches::kEnterpriseEnableForcedReEnrollment,
-      AutoEnrollmentTypeChecker::kForcedReEnrollmentAlways);
 
   EXPECT_FALSE(AutoEnrollmentTypeChecker::IsFREEnabled());
   EXPECT_EQ(AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
@@ -754,8 +702,8 @@ class AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP
   }
 
   bool IsFRESupportedByDevice() {
-    return google_branded_ && (device_os_ == DeviceOs::Chrome ||
-                               device_os_ == DeviceOs::FlexWithFRE);
+    return (google_branded_ && device_os_ == DeviceOs::Chrome) ||
+           device_os_ == DeviceOs::FlexWithFRE;
   }
 
   const DeviceOs device_os_ = std::get<0>(GetParam());
@@ -797,8 +745,7 @@ TEST_P(AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP, Never) {
   command_line_.GetProcessCommandLine()->AppendSwitchASCII(
       ash::switches::kEnterpriseEnableForcedReEnrollment,
       AutoEnrollmentTypeChecker::kForcedReEnrollmentAlways);
-  EXPECT_EQ(AutoEnrollmentTypeChecker::IsFREEnabled(),
-            device_os_ != DeviceOs::FlexWithoutFRE);
+  EXPECT_TRUE(AutoEnrollmentTypeChecker::IsFREEnabled());
 
   ash::system::FakeStatisticsProvider statistics_provider;
   if (device_os_ == DeviceOs::Chrome) {
@@ -836,12 +783,9 @@ TEST_P(AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP, Always) {
 
   // Ensure that legacy functions behave as if FRE was explicitly enabled.
   EXPECT_TRUE(AutoEnrollmentTypeChecker::IsFREEnabled());
-  EXPECT_EQ(
-      AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
-          /*statistics_provider=*/nullptr),
-      device_os_ == DeviceOs::FlexWithoutFRE
-          ? AutoEnrollmentTypeChecker::FRERequirement::kRequired
-          : AutoEnrollmentTypeChecker::FRERequirement::kExplicitlyRequired);
+  EXPECT_EQ(AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
+                /*statistics_provider=*/nullptr),
+            AutoEnrollmentTypeChecker::FRERequirement::kExplicitlyRequired);
 }
 
 INSTANTIATE_TEST_SUITE_P(
