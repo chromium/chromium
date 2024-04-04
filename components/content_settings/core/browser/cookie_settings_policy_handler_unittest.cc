@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -16,7 +15,6 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 
 namespace content_settings {
@@ -46,7 +44,6 @@ class CookieSettingsPolicyHandlerTest
                nullptr);
     UpdateProviderPolicy(policy);
   }
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(CookieSettingsPolicyHandlerTest, ThirdPartyCookieBlockingNotSet) {
@@ -57,7 +54,7 @@ TEST_F(CookieSettingsPolicyHandlerTest, ThirdPartyCookieBlockingNotSet) {
 }
 
 TEST_F(CookieSettingsPolicyHandlerTest,
-       BlockAndAllowPrefsNotSetWhenPolicyNotSetPost3pcd) {
+       BlockAndAllowPrefsNotSetWhenPolicyNotSet) {
   policy::PolicyMap policy;
   UpdateProviderPolicy(policy);
   const base::Value* block_all_3pc_pref_value;
@@ -77,9 +74,7 @@ TEST_F(CookieSettingsPolicyHandlerTest, ThirdPartyCookieBlockingEnabled) {
 }
 
 TEST_F(CookieSettingsPolicyHandlerTest,
-       BlockAndAllowPrefsSetWhenPolicyIsFalsePost3pcd) {
-  feature_list_.InitWithFeatures(
-      {privacy_sandbox::kTrackingProtectionSettingsLaunch}, {});
+       BlockAndAllowPrefsSetWhenPolicyIsFalse) {
   SetThirdPartyCookiePolicy(false);
   const base::Value* block_all_3pc_pref_value;
   const base::Value* allow_all_3pc_pref_value;
@@ -92,10 +87,7 @@ TEST_F(CookieSettingsPolicyHandlerTest,
   EXPECT_TRUE(allow_all_3pc_pref_value->GetBool());
 }
 
-TEST_F(CookieSettingsPolicyHandlerTest,
-       BlockAndAllowPrefsSetWhenPolicyIsTruePost3pcd) {
-  feature_list_.InitWithFeatures(
-      {privacy_sandbox::kTrackingProtectionSettingsLaunch}, {});
+TEST_F(CookieSettingsPolicyHandlerTest, BlockAndAllowPrefsSetWhenPolicyIsTrue) {
   SetThirdPartyCookiePolicy(true);
   const base::Value* block_all_3pc_pref_value;
   const base::Value* allow_all_3pc_pref_value;

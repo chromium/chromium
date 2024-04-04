@@ -10,7 +10,6 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
-#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 
 namespace content_settings {
@@ -28,18 +27,13 @@ void CookieSettingsPolicyHandler::ApplyPolicySettings(
       policies.GetValue(policy_name(), base::Value::Type::BOOLEAN);
 
   if (third_party_cookie_blocking) {
-    if (base::FeatureList::GetInstance() &&
-        base::FeatureList::IsEnabled(
-            privacy_sandbox::kTrackingProtectionSettingsLaunch)) {
-      bool block_3pc = third_party_cookie_blocking->GetBool();
-      prefs->SetBoolean(prefs::kBlockAll3pcToggleEnabled, block_3pc);
-      prefs->SetBoolean(prefs::kAllowAll3pcToggleEnabled, !block_3pc);
-    }
+    bool block_3pc = third_party_cookie_blocking->GetBool();
+    prefs->SetBoolean(prefs::kBlockAll3pcToggleEnabled, block_3pc);
+    prefs->SetBoolean(prefs::kAllowAll3pcToggleEnabled, !block_3pc);
     prefs->SetInteger(
         prefs::kCookieControlsMode,
-        static_cast<int>(third_party_cookie_blocking->GetBool()
-                             ? CookieControlsMode::kBlockThirdParty
-                             : CookieControlsMode::kOff));
+        static_cast<int>(block_3pc ? CookieControlsMode::kBlockThirdParty
+                                   : CookieControlsMode::kOff));
   }
   // If there is a Cookie BLOCK default content setting, then this implicitly
   // also blocks 3PC.
