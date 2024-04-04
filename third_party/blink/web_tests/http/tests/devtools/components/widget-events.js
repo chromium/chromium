@@ -165,27 +165,6 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
       next();
     },
 
-    function testWidgetCounter(next) {
-      var parentWidget = new TestWidget('Parent');
-      parentWidget.show(UI.InspectorView.InspectorView.instance().element);
-
-      var childWidget = new TestWidget('Child');
-      childWidget.show(parentWidget.element);
-      TestRunner.addResult('  widget counter: ' + parentWidget.element.__widgetCounter);
-
-      var childWidget2 = new TestWidget('Child 2');
-      childWidget2.show(parentWidget.element);
-      TestRunner.addResult('  widget counter: ' + parentWidget.element.__widgetCounter);
-
-      childWidget.detach();
-      TestRunner.addResult('  widget counter: ' + parentWidget.element.__widgetCounter);
-
-      childWidget2.detach();
-      TestRunner.addResult('  widget counter: ' + parentWidget.element.__widgetCounter);
-
-      next();
-    },
-
     function testRemoveChild(next) {
       var parentWidget = new TestWidget('Parent');
       parentWidget.show(UI.InspectorView.InspectorView.instance().element);
