@@ -309,6 +309,16 @@ void FileSystemProviderServiceAsh::OperationFinished(
                                ProfileManager::GetPrimaryUserProfile());
 }
 
+void FileSystemProviderServiceAsh::OpenFileFinishedSuccessfully(
+    mojom::FileSystemIdPtr file_system_id,
+    int64_t request_id,
+    base::Value::List args,
+    OperationFinishedCallback callback) {
+  OpenFileFinishedSuccessfullyWithProfile(
+      std::move(file_system_id), request_id, std::move(args),
+      std::move(callback), ProfileManager::GetPrimaryUserProfile());
+}
+
 void FileSystemProviderServiceAsh::MountFinished(
     const std::string& extension_id,
     int64_t request_id,
@@ -615,6 +625,25 @@ void FileSystemProviderServiceAsh::OperationFinishedWithProfile(
       break;
     }
   }
+  std::move(callback).Run(std::move(error));
+}
+
+void FileSystemProviderServiceAsh::OpenFileFinishedSuccessfullyWithProfile(
+    mojom::FileSystemIdPtr file_system_id,
+    int64_t request_id,
+    base::Value::List args,
+    OperationFinishedCallback callback,
+    Profile* profile) {
+  using extensions::api::file_system_provider_internal::
+      OpenFileRequestedSuccess::Params;
+  std::optional<Params> params = Params::Create(std::move(args));
+  if (!params) {
+    std::move(callback).Run(kDeserializationError);
+  }
+  auto value = RequestValue::CreateForOpenFileSuccess(std::move(*params));
+  std::string error =
+      ForwardOperationResponse(std::move(file_system_id), request_id, value,
+                               /*has_more=*/false, profile);
   std::move(callback).Run(std::move(error));
 }
 
