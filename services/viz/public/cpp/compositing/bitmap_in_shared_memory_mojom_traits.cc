@@ -105,6 +105,10 @@ bool StructTraits<viz::mojom::BitmapInSharedMemoryDataView, SkBitmap>::Read(
   if (!mapping_ptr->IsValid())
     return false;
 
+  if (mapping_ptr->size() < image_info.computeByteSize(data.row_bytes())) {
+    return false;
+  }
+
   if (!sk_bitmap->installPixels(image_info, mapping_ptr->memory(),
                                 data.row_bytes(), &DeleteSharedMemoryMapping,
                                 mapping_ptr.get())) {
