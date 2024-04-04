@@ -10,29 +10,13 @@ load("//project.star", "settings")
 load("./args.star", "args")
 load("./builder_url.star", "linkify_builder")
 load("./chrome_settings.star", "per_builder_outputs_config")
+load("./enums.star", "enums")
 load("./nodes.star", "nodes")
 load("./sheriff_rotations.star", "get_sheriff_rotations")
 load("./structs.star", "structs")
 load("./targets.star", "get_targets_spec_generator", "register_targets")
 
-def _enum(**kwargs):
-    """Create an enum struct.
-
-    Args:
-        **kwargs - The enum values to create. A field will be added the struct
-            with the key for the name of the field and the value for the value
-            of the field.
-
-    Returns:
-        A struct with fields for each item in `kwargs`. The struct will
-        also have a `_values` field that contains a list of the values in
-        `kwargs`.
-    """
-    if "_values" in kwargs:
-        fail("cannot create an enum value named '_values'")
-    return struct(_values = kwargs.values(), **kwargs)
-
-_execution_mode = _enum(
+_execution_mode = enums.enum(
     # The builder will perform compilation of any targets configured in the
     # testing spec as well as any tests that will be run by the builder or any
     # triggered builders.
@@ -63,19 +47,19 @@ def _gclient_config(*, config, apply_configs = None):
         apply_configs = args.listify(apply_configs),
     )
 
-_build_config = _enum(
+_build_config = enums.enum(
     RELEASE = "Release",
     DEBUG = "Debug",
 )
 
-_target_arch = _enum(
+_target_arch = enums.enum(
     INTEL = "intel",
     ARM = "arm",
     MIPS = "mips",
     MIPSEL = "mipsel",
 )
 
-_target_platform = _enum(
+_target_platform = enums.enum(
     LINUX = "linux",
     WIN = "win",
     MAC = "mac",
@@ -120,13 +104,13 @@ def _chromium_config(
     """
     if not config:
         fail("config must be provided")
-    if build_config != None and build_config not in _build_config._values:
+    if build_config != None and build_config not in _build_config.values:
         fail("unknown build_config: {}".format(build_config))
-    if target_arch != None and target_arch not in _target_arch._values:
+    if target_arch != None and target_arch not in _target_arch.values:
         fail("unknown target_arch: {}".format(target_arch))
     if target_bits != None and target_bits not in (32, 64):
         fail("unknown target_bits: {}".format(target_bits))
-    if target_platform not in _target_platform._values:
+    if target_platform not in _target_platform.values:
         fail("unknown target_platform: {}".format(target_platform))
     if ((target_cros_boards or cros_boards_with_qemu_images) and
         target_platform != _target_platform.CHROMEOS):
@@ -292,7 +276,7 @@ def _builder_spec(
         A builder spec struct that can be passed to builder to set the builder
         spec to be used for the builder.
     """
-    if execution_mode not in _execution_mode._values:
+    if execution_mode not in _execution_mode.values:
         fail("unknown execution_mode: {}".format(execution_mode))
     if not gclient_config:
         fail("gclient_config must be provided")
