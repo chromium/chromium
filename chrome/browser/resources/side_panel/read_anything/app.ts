@@ -294,6 +294,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     if (chrome.readingMode) {
       chrome.readingMode.onConnected();
     }
+    this.synth.onvoiceschanged = () => {
+      this.getVoices(/*refresh =*/ true);
+    };
 
     this.showLoading();
 
@@ -662,8 +665,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         {});
   }
 
-  private getVoices(): SpeechSynthesisVoice[] {
-    if (!this.availableVoices) {
+  private getVoices(refresh: boolean = false): SpeechSynthesisVoice[] {
+    if (!this.availableVoices || refresh) {
       let availableVoices = this.synth.getVoices();
       if (availableVoices.some(({localService}) => localService)) {
         availableVoices =
