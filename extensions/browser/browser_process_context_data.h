@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "extensions/common/process_context_data.h"
-#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {

@@ -10,7 +10,6 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
-#include "url/gurl.h"
 
 namespace extensions {
 

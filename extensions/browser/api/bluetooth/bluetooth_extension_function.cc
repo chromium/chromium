@@ -13,7 +13,6 @@
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "extensions/browser/api/bluetooth/bluetooth_api.h"
 #include "extensions/browser/api/bluetooth/bluetooth_event_router.h"
-#include "url/gurl.h"
 
 using content::BrowserThread;
 

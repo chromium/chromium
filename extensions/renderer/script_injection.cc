@@ -33,7 +33,6 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_script_execution_callback.h"
 #include "third_party/blink/public/web/web_script_source.h"
-#include "url/gurl.h"
 
 using perfetto::protos::pbzero::ChromeTrackEvent;
 

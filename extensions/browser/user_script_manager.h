@@ -21,7 +21,6 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/user_script.h"
-#include "url/gurl.h"
 
 namespace content {
 class BrowserContext;
