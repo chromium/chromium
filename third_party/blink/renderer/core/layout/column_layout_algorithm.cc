@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/out_of_flow_layout_part.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/simplified_oof_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/table/table_layout_utils.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -416,6 +417,29 @@ MinMaxSizesResult ColumnLayoutAlgorithm::ComputeMinMaxSizes(
 
   result.sizes += BorderScrollbarPadding().InlineSum();
   return result;
+}
+
+const PhysicalBoxFragment& ColumnLayoutAlgorithm::CreateEmptyColumn(
+    const BlockNode& node,
+    const ConstraintSpace& parent_space,
+    const PhysicalBoxFragment& previous_column) {
+  WritingMode writing_mode = parent_space.GetWritingMode();
+  DCHECK(previous_column.IsColumnBox());
+  const BlockBreakToken* break_token = previous_column.GetBreakToken();
+  LogicalSize column_size =
+      previous_column.Size().ConvertToLogical(writing_mode);
+  ConstraintSpace child_space = CreateConstraintSpaceForFragmentainer(
+      parent_space, kFragmentColumn, column_size,
+      /*percentage_resolution_size=*/column_size, /*balance_columns=*/false,
+      kBreakAppealLastResort);
+  FragmentGeometry fragment_geometry =
+      CalculateInitialFragmentGeometry(child_space, node, break_token);
+  LayoutAlgorithmParams params(node, fragment_geometry, child_space,
+                               break_token);
+  SimplifiedOofLayoutAlgorithm child_algorithm(params, previous_column);
+  child_algorithm.ResumeColumnLayout(break_token);
+  return To<PhysicalBoxFragment>(
+      child_algorithm.Layout()->GetPhysicalFragment());
 }
 
 MinMaxSizesResult ColumnLayoutAlgorithm::ComputeSpannersMinMaxSizes(

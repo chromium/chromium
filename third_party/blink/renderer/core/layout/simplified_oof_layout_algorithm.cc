@@ -21,25 +21,21 @@ SimplifiedOofLayoutAlgorithm::SimplifiedOofLayoutAlgorithm(
   container_builder_.SetFragmentBlockSize(
       params.space.FragmentainerBlockSize());
   container_builder_.SetHasOutOfFlowFragmentChild(true);
+}
 
-  const BlockBreakToken* old_fragment_break_token =
-      last_fragmentainer.GetBreakToken();
+void SimplifiedOofLayoutAlgorithm::ResumeColumnLayout(
+    const BlockBreakToken* old_fragment_break_token) {
   if (!old_fragment_break_token ||
       !old_fragment_break_token->IsCausedByColumnSpanner()) {
     return;
   }
 
-  // If the last column break was caused by a spanner, and we're about to add
-  // additional columns now [1], we have some work to do: In order to correctly
+  // Since the last column break was caused by a spanner, and we're about to add
+  // additional columns now, we have some work to do: In order to correctly
   // resume layout after the spanner after having added additional columns to
   // hold OOFs, we need to copy over any in-flow child break tokens, so that the
   // outgoing break token from the last column before the spanner actually
   // points at the content that we're supposed to resume at after the spanner.
-  //
-  // [1] We don't know at this point whether we're adding a new column, or if
-  // we're just going to merge this into an existing one. In the latter case,
-  // copying existing break tokens is harmless. In the former case, it's
-  // essential.
   for (const auto& child_break_token :
        old_fragment_break_token->ChildBreakTokens()) {
     if (!child_break_token->InputNode().IsOutOfFlowPositioned()) {

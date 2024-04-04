@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/out_of_flow_layout_part.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/simplified_oof_layout_algorithm.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
 namespace blink {
@@ -78,6 +79,27 @@ const LayoutResult* PaginatedRootLayoutAlgorithm::Layout() {
   return container_builder_.ToBoxFragment();
 }
 
+const PhysicalBoxFragment& PaginatedRootLayoutAlgorithm::CreateEmptyPage(
+    const BlockNode& node,
+    const ConstraintSpace& parent_space,
+    const PhysicalBoxFragment& previous_fragmentainer) {
+  WritingMode writing_mode = parent_space.GetWritingMode();
+  // TODO(mstensho): We can do better than just using the size of the last page
+  // (figure out the correct page size by checking the page index and name), but
+  // there are other parts of the code that assume this behavior.
+  LogicalSize page_size =
+      previous_fragmentainer.Size().ConvertToLogical(writing_mode);
+  ConstraintSpace fragmentainer_space =
+      CreateConstraintSpaceForPages(node, parent_space, page_size);
+  const BlockBreakToken* break_token = previous_fragmentainer.GetBreakToken();
+  FragmentGeometry fragment_geometry =
+      CalculateInitialFragmentGeometry(fragmentainer_space, node, break_token);
+  LayoutAlgorithmParams params(node, fragment_geometry, fragmentainer_space,
+                               break_token);
+  SimplifiedOofLayoutAlgorithm algorithm(params, previous_fragmentainer);
+  return To<PhysicalBoxFragment>(algorithm.Layout()->GetPhysicalFragment());
+}
+
 const PhysicalBoxFragment* PaginatedRootLayoutAlgorithm::LayoutPage(
     uint32_t page_index,
     const AtomicString& page_name,
@@ -89,7 +111,8 @@ const PhysicalBoxFragment* PaginatedRootLayoutAlgorithm::LayoutPage(
 
   DCHECK(page_size.inline_size != kIndefiniteSize);
   DCHECK(page_size.block_size != kIndefiniteSize);
-  ConstraintSpace child_space = CreateConstraintSpaceForPages(page_size);
+  ConstraintSpace child_space =
+      CreateConstraintSpaceForPages(Node(), GetConstraintSpace(), page_size);
   FragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(child_space, Node(), GetBreakToken());
   BlockLayoutAlgorithm child_algorithm(
@@ -100,10 +123,11 @@ const PhysicalBoxFragment* PaginatedRootLayoutAlgorithm::LayoutPage(
 }
 
 ConstraintSpace PaginatedRootLayoutAlgorithm::CreateConstraintSpaceForPages(
-    const LogicalSize& page_size) const {
-  ConstraintSpaceBuilder space_builder(GetConstraintSpace(),
-                                       Style().GetWritingDirection(),
-                                       /* is_new_fc */ true);
+    const BlockNode& node,
+    const ConstraintSpace& space,
+    const LogicalSize& page_size) {
+  ConstraintSpaceBuilder space_builder(
+      space, node.Style().GetWritingDirection(), /*is_new_fc=*/true);
   space_builder.SetAvailableSize(page_size);
   space_builder.SetPercentageResolutionSize(page_size);
   space_builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchImplicit);

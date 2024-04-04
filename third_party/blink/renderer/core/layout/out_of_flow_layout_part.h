@@ -398,6 +398,16 @@ class CORE_EXPORT OutOfFlowLayoutPart {
     return FragmentationContextChildren().size();
   }
 
+  void AddFragmentainer(const PhysicalBoxFragment& fragmentainer,
+                        LogicalOffset fragmentainer_offset) {
+    if (column_balancing_info_) {
+      column_balancing_info_->columns.push_back(
+          LogicalFragmentLink{fragmentainer, fragmentainer_offset});
+    } else {
+      container_builder_->AddChild(fragmentainer, fragmentainer_offset);
+    }
+  }
+
   // Return the break token of the previous fragmentainer to the child at
   // `index`.
   const BlockBreakToken* PreviousFragmentainerBreakToken(wtf_size_t) const;

@@ -27,12 +27,22 @@ class CORE_EXPORT PaginatedRootLayoutAlgorithm
     NOTREACHED_NORETURN();
   }
 
+  // Create an empty page box fragment, modeled after an existing fragmentainer.
+  // The resulting page box may then be used and mutated by the out-of-flow
+  // layout code, to add out-of-flow descendants.
+  static const PhysicalBoxFragment& CreateEmptyPage(
+      const BlockNode& node,
+      const ConstraintSpace& parent_space,
+      const PhysicalBoxFragment& previous_fragmentainer);
+
  private:
   const PhysicalBoxFragment* LayoutPage(
       uint32_t page_index,
       const AtomicString& page_name,
       const BlockBreakToken* break_token) const;
-  ConstraintSpace CreateConstraintSpaceForPages(const LogicalSize& size) const;
+  static ConstraintSpace CreateConstraintSpaceForPages(const BlockNode&,
+                                                       const ConstraintSpace&,
+                                                       const LogicalSize& size);
 };
 
 }  // namespace blink

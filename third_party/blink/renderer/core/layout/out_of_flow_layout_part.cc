@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/layout/anchor_position_scroll_data.h"
 #include "third_party/blink/renderer/core/layout/anchor_position_visibility_observer.h"
 #include "third_party/blink/renderer/core/layout/anchor_query_map.h"
+#include "third_party/blink/renderer/core/layout/column_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/disable_layout_side_effects_scope.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
@@ -30,6 +31,7 @@
 #include "third_party/blink/renderer/core/layout/legacy_layout_tree_walking.h"
 #include "third_party/blink/renderer/core/layout/logical_fragment.h"
 #include "third_party/blink/renderer/core/layout/oof_positioned_node.h"
+#include "third_party/blink/renderer/core/layout/paginated_root_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/physical_fragment.h"
 #include "third_party/blink/renderer/core/layout/simplified_layout_algorithm.h"
@@ -2306,36 +2308,47 @@ void OutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
   }
 
   // If we are a new fragment, find a non-spanner fragmentainer as a basis.
-  wtf_size_t original_index = index;
-  while (index >= num_children ||
-         !GetChildFragment(index).IsFragmentainerBox()) {
+  wtf_size_t last_fragmentainer_index = index;
+  while (last_fragmentainer_index >= num_children ||
+         !GetChildFragment(last_fragmentainer_index).IsFragmentainerBox()) {
     DCHECK_GT(num_children, 0u);
-    index--;
+    last_fragmentainer_index--;
+  }
+
+  const LogicalFragmentLink& container_link =
+      FragmentationContextChildren()[last_fragmentainer_index];
+  const BlockNode& node = container_builder_->Node();
+  LogicalOffset fragmentainer_offset = container_link.offset;
+  if (is_new_fragment) {
+    // The fragmentainer being requested doesn't exist yet. This just means that
+    // there are OOFs past the last fragmentainer that hold in-flow content.
+    // Create and append an empty fragmentainer. Creating a fragmentainer is
+    // algorithm-specific and not necessarily a trivial job, so leave it to the
+    // fragmentation context algorithms.
+    //
+    // Afterwards we'll run SimplifiedOofLayoutAlgorithm and merge the results
+    // from that algorithm into the new empty fragmentainer.
+    const PhysicalBoxFragment& previous_fragmentainer =
+        GetChildFragment(last_fragmentainer_index);
+    const PhysicalBoxFragment* new_fragmentainer;
+    if (node.IsPaginatedRoot()) {
+      new_fragmentainer = &PaginatedRootLayoutAlgorithm::CreateEmptyPage(
+          node, GetConstraintSpace(), previous_fragmentainer);
+    } else {
+      new_fragmentainer = &ColumnLayoutAlgorithm::CreateEmptyColumn(
+          node, GetConstraintSpace(), previous_fragmentainer);
+    }
+    fragmentainer_offset += fragmentainer_progression;
+    AddFragmentainer(*new_fragmentainer, fragmentainer_offset);
+    DCHECK_EQ(index + 1, ChildCount());
   }
 
   const ConstraintSpace& space = GetFragmentainerConstraintSpace(index);
-  const LogicalFragmentLink& container_link =
-      FragmentationContextChildren()[index];
-  const BlockNode& node = container_builder_->Node();
   const PhysicalBoxFragment* fragmentainer = &GetChildFragment(index);
   FragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
-  LogicalOffset fragmentainer_offset = container_link.offset;
-  if (is_new_fragment) {
-    fragmentainer_offset += fragmentainer_progression;
-  }
-
-  const BlockBreakToken* previous_break_token = nullptr;
-  if (!column_balancing_info_) {
-    // Note: We don't fetch this when column balancing because we don't actually
-    // create and add new fragments to the builder until a later layout pass.
-    // However, the break token is only needed when we are actually adding to
-    // the builder, so it is ok to leave this as nullptr in such cases.
-    previous_break_token = PreviousFragmentainerBreakToken(original_index);
-  }
   LayoutAlgorithmParams params(node, fragment_geometry, space,
-                               previous_break_token,
-                               /* early_break */ nullptr);
+                               PreviousFragmentainerBreakToken(index));
   // This algorithm will be used to add new OOFs. The existing fragment passed
   // is the last fragmentainer created so far.
   SimplifiedOofLayoutAlgorithm algorithm(params, *fragmentainer);
@@ -2367,24 +2380,14 @@ void OutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
   const LayoutResult* fragmentainer_result = algorithm.Layout();
   const auto& new_fragmentainer =
       To<PhysicalBoxFragment>(fragmentainer_result->GetPhysicalFragment());
-  const PhysicalBoxFragment* updated_fragmentainer = fragmentainer;
 
-  if (is_new_fragment) {
-    // Add the new fragmentainer to the builder.
-    container_builder_->AddChild(new_fragmentainer, fragmentainer_offset);
-    updated_fragmentainer = &new_fragmentainer;
-  } else {
-    // A fragmentainer already exists at the given index. The new one that was
-    // just prepared by the algorithm is treated as a temporatry placeholder
-    // fragmentainer which will be "poured" into the existing one, and then
-    // forgotten about. This will add new OOFs (and whatever relevant info they
-    // propagated).
-    updated_fragmentainer->GetMutableForOofFragmentation().Merge(
-        new_fragmentainer);
-  }
+  // The new fragmentainer was just prepared by the algorithm as a temporary
+  // placeholder fragmentainer which will be "poured" into the existing one, and
+  // then forgotten. This will add new OOFs (and whatever relevant info they
+  // propagated).
+  fragmentainer->GetMutableForOofFragmentation().Merge(new_fragmentainer);
 
-  if (const BlockBreakToken* break_token =
-          updated_fragmentainer->GetBreakToken()) {
+  if (const BlockBreakToken* break_token = fragmentainer->GetBreakToken()) {
     *monolithic_overflow = break_token->MonolithicOverflow();
   } else {
     *monolithic_overflow = LayoutUnit();

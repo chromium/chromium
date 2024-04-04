@@ -28,6 +28,14 @@ class CORE_EXPORT ColumnLayoutAlgorithm
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
 
+  // Create an empty column fragment, modeled after an existing column. The
+  // resulting column may then be used and mutated by the out-of-flow layout
+  // code, to add out-of-flow descendants.
+  static const PhysicalBoxFragment& CreateEmptyColumn(
+      const BlockNode&,
+      const ConstraintSpace& parent_space,
+      const PhysicalBoxFragment& previous_column);
+
  private:
   MinMaxSizesResult ComputeSpannersMinMaxSizes(
       const BlockNode& search_parent) const;

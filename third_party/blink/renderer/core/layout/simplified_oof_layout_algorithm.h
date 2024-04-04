@@ -35,6 +35,11 @@ class CORE_EXPORT SimplifiedOofLayoutAlgorithm
     return MinMaxSizesResult();
   }
 
+  // To be called when creating a new column based on an existing one. The break
+  // token passed is the outgoing break token from the last column created so
+  // far.
+  void ResumeColumnLayout(const BlockBreakToken* old_fragment_break_token);
+
   void SetHasSubsequentChildren() {
     // There will be more fragmentainers after this one. Make sure that an
     // outgoing break token is created, regardless of whether any OOFs in this
