@@ -23,6 +23,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "base/trace_event/named_trigger.h"
 #include "base/types/expected.h"
 #include "base/uuid.h"
 #include "components/aggregation_service/aggregation_coordinator_utils.h"
@@ -452,6 +453,7 @@ void AdAuctionServiceImpl::RunAdAuction(
       base::BindRepeating(&AdAuctionServiceImpl::GetAdAuctionPageData,
                           base::Unretained(this));
 
+  base::trace_event::EmitNamedTrigger("fledge-top-level-auction-start");
   std::unique_ptr<AuctionRunner> auction = AuctionRunner::CreateAndStart(
       &auction_worklet_manager_, auction_nonce_manager_.get(),
       &GetInterestGroupManager(), render_frame_host().GetBrowserContext(),
@@ -575,6 +577,9 @@ void AdAuctionServiceImpl::GetInterestGroupAdAuctionData(
     ReportBadMessageAndDeleteThis("Invalid Bidding and Auction Coordinator");
     return;
   }
+
+  base::trace_event::EmitNamedTrigger(
+      "fledge-get-interest-group-ad-auction-data");
 
   // If the interest group API is not allowed for this origin do nothing.
   if (!IsInterestGroupAPIAllowed(

@@ -31,6 +31,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "base/trace_event/typed_macros.h"
 #include "base/types/pass_key.h"
 #include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
 #include "content/browser/interest_group/interest_group_features.h"
@@ -3634,183 +3635,198 @@ std::optional<std::vector<StorageInterestGroup>> DoGetInterestGroupsForOwner(
     const PassKey& passkey,
     const url::Origin& owner,
     base::Time now) {
+  TRACE_EVENT("fledge", "DoGetInterestGroupsForOwner");
   sql::Transaction transaction(&db);
 
   if (!transaction.Begin()) {
     return std::nullopt;
   }
 
-  // clang-format off
-  sql::Statement load(
-      db.GetCachedStatement(SQL_FROM_HERE,
-        "SELECT " COMMON_INTEREST_GROUPS_QUERY_FIELDS ","
-          "name "
-        "FROM interest_groups "
-        "WHERE owner=? AND expiration>?"));
-  // clang-format on
-
-  if (!load.is_valid()) {
-    return std::nullopt;
-  }
-
-  load.BindString(0, Serialize(owner));
-  load.BindTime(1, now);
-
   std::unordered_map<std::string, StorageInterestGroup> interest_group_by_name;
+  {
+    TRACE_EVENT("fledge", "load_from_interest_groups_table");
 
-  while (load.Step()) {
-    std::string name = load.ColumnString(26);
-    StorageInterestGroup& db_interest_group = interest_group_by_name[name];
-    db_interest_group.bidding_browser_signals =
-        auction_worklet::mojom::BiddingBrowserSignals::New();
+    // clang-format off
+    sql::Statement load(
+        db.GetCachedStatement(SQL_FROM_HERE,
+          "SELECT " COMMON_INTEREST_GROUPS_QUERY_FIELDS ","
+            "name "
+          "FROM interest_groups "
+          "WHERE owner=? AND expiration>?"));
+    // clang-format on
 
-    blink::InterestGroup& group = db_interest_group.interest_group;
-    group.owner = owner;
-    group.name = name;
-
-    PopulateInterestGroupFromQueryResult(
-        load, passkey, group, &db_interest_group.joining_origin,
-        &db_interest_group.join_time, &db_interest_group.last_updated);
-  }
-
-  if (!load.Succeeded()) {
-    return std::nullopt;
-  }
-
-  sql::Statement kanon_query(
-      db.GetCachedStatement(SQL_FROM_HERE,
-                            "SELECT name, key, last_k_anon_updated_time "
-                            "FROM k_anon "
-                            "WHERE owner=? AND is_k_anon>0"));
-
-  kanon_query.BindString(0, Serialize(owner));
-
-  while (kanon_query.Step()) {
-    std::string name = kanon_query.ColumnString(0);
-
-    auto it = interest_group_by_name.find(name);
-    if (it == interest_group_by_name.end()) {
-      // TODO: Return std::nullopt?
-      continue;
+    if (!load.is_valid()) {
+      return std::nullopt;
     }
 
-    StorageInterestGroup& db_interest_group = it->second;
+    load.BindString(0, Serialize(owner));
+    load.BindTime(1, now);
 
-    StorageInterestGroup::KAnonymityData kanon_data = {
-        kanon_query.ColumnString(1),
-        /*is_k_anonymous=*/true,
-        /*last_updated=*/kanon_query.ColumnTime(2)};
+    while (load.Step()) {
+      std::string name = load.ColumnString(26);
+      StorageInterestGroup& db_interest_group = interest_group_by_name[name];
+      db_interest_group.bidding_browser_signals =
+          auction_worklet::mojom::BiddingBrowserSignals::New();
 
-    if (kanon_data.key.starts_with(blink::kKAnonKeyForAdBidPrefix)) {
-      db_interest_group.bidding_ads_kanon.push_back(kanon_data);
-    } else if (kanon_data.key.starts_with(
-                   blink::kKAnonKeyForAdComponentBidPrefix)) {
-      db_interest_group.component_ads_kanon.push_back(kanon_data);
-    } else {
-      db_interest_group.reporting_ads_kanon.push_back(kanon_data);
-    }
-  }
+      blink::InterestGroup& group = db_interest_group.interest_group;
+      group.owner = owner;
+      group.name = name;
 
-  if (!kanon_query.Succeeded()) {
-    return std::nullopt;
-  }
-
-  // clang-format off
-  sql::Statement join_count(
-      db.GetCachedStatement(SQL_FROM_HERE,
-    "SELECT name, SUM(count) "
-    "FROM join_history "
-    "WHERE owner=? AND join_time>=? "
-    "GROUP BY name"));
-  // clang-format on
-
-  join_count.BindString(0, Serialize(owner));
-  join_count.BindTime(1, now - InterestGroupStorage::kHistoryLength);
-
-  while (join_count.Step()) {
-    std::string name = join_count.ColumnString(0);
-
-    auto it = interest_group_by_name.find(name);
-    if (it == interest_group_by_name.end()) {
-      // TODO: Return std::nullopt?
-      continue;
+      PopulateInterestGroupFromQueryResult(
+          load, passkey, group, &db_interest_group.joining_origin,
+          &db_interest_group.join_time, &db_interest_group.last_updated);
     }
 
-    StorageInterestGroup& db_interest_group = it->second;
-
-    db_interest_group.bidding_browser_signals->join_count =
-        join_count.ColumnInt64(1);
+    if (!load.Succeeded()) {
+      return std::nullopt;
+    }
   }
+  {
+    TRACE_EVENT("fledge", "load_from_kanon_table");
 
-  if (!join_count.Succeeded()) {
-    return std::nullopt;
-  }
+    sql::Statement kanon_query(
+        db.GetCachedStatement(SQL_FROM_HERE,
+                              "SELECT name, key, last_k_anon_updated_time "
+                              "FROM k_anon "
+                              "WHERE owner=? AND is_k_anon>0"));
 
-  // clang-format off
-  sql::Statement bid_count(
-      db.GetCachedStatement(SQL_FROM_HERE,
-    "SELECT name, SUM(count) "
-    "FROM bid_history "
-    "WHERE owner=? AND bid_time>=? "
-    "GROUP BY name"));
-  // clang-format on
+    kanon_query.BindString(0, Serialize(owner));
 
-  bid_count.BindString(0, Serialize(owner));
-  bid_count.BindTime(1, now - InterestGroupStorage::kHistoryLength);
+    while (kanon_query.Step()) {
+      std::string name = kanon_query.ColumnString(0);
 
-  while (bid_count.Step()) {
-    std::string name = bid_count.ColumnString(0);
+      auto it = interest_group_by_name.find(name);
+      if (it == interest_group_by_name.end()) {
+        // TODO: Return std::nullopt?
+        continue;
+      }
 
-    auto it = interest_group_by_name.find(name);
-    if (it == interest_group_by_name.end()) {
-      // TODO: Return std::nullopt?
-      continue;
+      StorageInterestGroup& db_interest_group = it->second;
+
+      StorageInterestGroup::KAnonymityData kanon_data = {
+          kanon_query.ColumnString(1),
+          /*is_k_anonymous=*/true,
+          /*last_updated=*/kanon_query.ColumnTime(2)};
+
+      if (kanon_data.key.starts_with(blink::kKAnonKeyForAdBidPrefix)) {
+        db_interest_group.bidding_ads_kanon.push_back(kanon_data);
+      } else if (kanon_data.key.starts_with(
+                     blink::kKAnonKeyForAdComponentBidPrefix)) {
+        db_interest_group.component_ads_kanon.push_back(kanon_data);
+      } else {
+        db_interest_group.reporting_ads_kanon.push_back(kanon_data);
+      }
     }
 
-    StorageInterestGroup& db_interest_group = it->second;
-
-    db_interest_group.bidding_browser_signals->bid_count =
-        bid_count.ColumnInt64(1);
+    if (!kanon_query.Succeeded()) {
+      return std::nullopt;
+    }
   }
+  {
+    TRACE_EVENT("fledge", "load_from_join_history_table");
 
-  if (!bid_count.Succeeded()) {
-    return std::nullopt;
-  }
+    // clang-format off
+    sql::Statement join_count(
+        db.GetCachedStatement(SQL_FROM_HERE,
+      "SELECT name, SUM(count) "
+      "FROM join_history "
+      "WHERE owner=? AND join_time>=? "
+      "GROUP BY name"));
+    // clang-format on
 
-  // clang-format off
-  sql::Statement prev_wins(
-      db.GetCachedStatement(SQL_FROM_HERE,
-                            "SELECT name, win_time, ad "
-                            "FROM win_history "
-                            "WHERE owner=? AND win_time>=? "
-                            "ORDER BY name, win_time DESC "));
-  // clang-format on
+    join_count.BindString(0, Serialize(owner));
+    join_count.BindTime(1, now - InterestGroupStorage::kHistoryLength);
 
-  prev_wins.BindString(0, Serialize(owner));
-  prev_wins.BindTime(1, now - InterestGroupStorage::kHistoryLength);
+    while (join_count.Step()) {
+      std::string name = join_count.ColumnString(0);
 
-  while (prev_wins.Step()) {
-    std::string name = prev_wins.ColumnString(0);
+      auto it = interest_group_by_name.find(name);
+      if (it == interest_group_by_name.end()) {
+        // TODO: Return std::nullopt?
+        continue;
+      }
 
-    auto it = interest_group_by_name.find(name);
-    if (it == interest_group_by_name.end()) {
-      // TODO: Return std::nullopt?
-      continue;
+      StorageInterestGroup& db_interest_group = it->second;
+
+      db_interest_group.bidding_browser_signals->join_count =
+          join_count.ColumnInt64(1);
     }
 
-    StorageInterestGroup& db_interest_group = it->second;
-
-    PreviousWinPtr prev_win = auction_worklet::mojom::PreviousWin::New(
-        /*time=*/prev_wins.ColumnTime(1),
-        /*ad_json=*/prev_wins.ColumnString(2));
-    db_interest_group.bidding_browser_signals->prev_wins.push_back(
-        std::move(prev_win));
+    if (!join_count.Succeeded()) {
+      return std::nullopt;
+    }
   }
+  {
+    TRACE_EVENT("fledge", "load_from_bid_history_table");
 
-  if (!prev_wins.Succeeded()) {
-    return std::nullopt;
+    // clang-format off
+    sql::Statement bid_count(
+        db.GetCachedStatement(SQL_FROM_HERE,
+      "SELECT name, SUM(count) "
+      "FROM bid_history "
+      "WHERE owner=? AND bid_time>=? "
+      "GROUP BY name"));
+    // clang-format on
+
+    bid_count.BindString(0, Serialize(owner));
+    bid_count.BindTime(1, now - InterestGroupStorage::kHistoryLength);
+
+    while (bid_count.Step()) {
+      std::string name = bid_count.ColumnString(0);
+
+      auto it = interest_group_by_name.find(name);
+      if (it == interest_group_by_name.end()) {
+        // TODO: Return std::nullopt?
+        continue;
+      }
+
+      StorageInterestGroup& db_interest_group = it->second;
+
+      db_interest_group.bidding_browser_signals->bid_count =
+          bid_count.ColumnInt64(1);
+    }
+
+    if (!bid_count.Succeeded()) {
+      return std::nullopt;
+    }
   }
+  {
+    TRACE_EVENT("fledge", "load_from_prev_wins_table");
 
+    // clang-format off
+    sql::Statement prev_wins(
+        db.GetCachedStatement(SQL_FROM_HERE,
+                              "SELECT name, win_time, ad "
+                              "FROM win_history "
+                              "WHERE owner=? AND win_time>=? "
+                              "ORDER BY name, win_time DESC "));
+    // clang-format on
+
+    prev_wins.BindString(0, Serialize(owner));
+    prev_wins.BindTime(1, now - InterestGroupStorage::kHistoryLength);
+
+    while (prev_wins.Step()) {
+      std::string name = prev_wins.ColumnString(0);
+
+      auto it = interest_group_by_name.find(name);
+      if (it == interest_group_by_name.end()) {
+        // TODO: Return std::nullopt?
+        continue;
+      }
+
+      StorageInterestGroup& db_interest_group = it->second;
+
+      PreviousWinPtr prev_win = auction_worklet::mojom::PreviousWin::New(
+          /*time=*/prev_wins.ColumnTime(1),
+          /*ad_json=*/prev_wins.ColumnString(2));
+      db_interest_group.bidding_browser_signals->prev_wins.push_back(
+          std::move(prev_win));
+    }
+
+    if (!prev_wins.Succeeded()) {
+      return std::nullopt;
+    }
+  }
   if (!transaction.Commit()) {
     return std::nullopt;
   }
