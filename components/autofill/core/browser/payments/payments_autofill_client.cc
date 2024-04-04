@@ -6,7 +6,10 @@
 
 #include "base/functional/callback.h"
 #include "components/autofill/core/browser/autofill_progress_dialog_type.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
+#include "components/autofill/core/browser/payments/card_unmask_delegate.h"
+#include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 
 namespace autofill::payments {
 
@@ -65,5 +68,13 @@ void PaymentsAutofillClient::ShowAutofillErrorDialog(
 PaymentsWindowManager* PaymentsAutofillClient::GetPaymentsWindowManager() {
   return nullptr;
 }
+
+void PaymentsAutofillClient::ShowUnmaskPrompt(
+    const CreditCard& card,
+    const CardUnmaskPromptOptions& card_unmask_prompt_options,
+    base::WeakPtr<CardUnmaskDelegate> delegate) {}
+
+void PaymentsAutofillClient::OnUnmaskVerificationResult(
+    AutofillClient::PaymentsRpcResult result) {}
 
 }  // namespace autofill::payments

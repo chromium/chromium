@@ -5,15 +5,15 @@
 #ifndef IOS_CHROME_BROWSER_UI_AUTOFILL_IOS_CHROME_PAYMENTS_AUTOFILL_CLIENT_H_
 #define IOS_CHROME_BROWSER_UI_AUTOFILL_IOS_CHROME_PAYMENTS_AUTOFILL_CLIENT_H_
 
-#import "components/autofill/core/browser/payments/payments_autofill_client.h"
-
 #import <memory>
 
 #import "base/functional/callback.h"
 #import "base/memory/raw_ref.h"
 #import "base/memory/weak_ptr.h"
 #import "components/autofill/core/browser/autofill_progress_dialog_type.h"
+#import "components/autofill/core/browser/payments/payments_autofill_client.h"
 #import "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
+#import "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
 
 class ChromeBrowserState;
 
@@ -53,6 +53,12 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
   void CloseAutofillProgressDialog(
       bool show_confirmation_before_closing,
       base::OnceClosure no_interactive_authentication_callback) override;
+  void ShowUnmaskPrompt(
+      const CreditCard& card,
+      const CardUnmaskPromptOptions& card_unmask_prompt_options,
+      base::WeakPtr<CardUnmaskDelegate> delegate) override;
+  void OnUnmaskVerificationResult(
+      AutofillClient::PaymentsRpcResult result) override;
 
   std::unique_ptr<AutofillProgressDialogControllerImpl>
   GetProgressDialogModel() {
@@ -72,6 +78,8 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
       progress_dialog_controller_;
   base::WeakPtr<AutofillProgressDialogControllerImpl>
       progress_dialog_controller_weak_;
+
+  CardUnmaskPromptControllerImpl unmask_controller_;
 };
 
 }  // namespace payments

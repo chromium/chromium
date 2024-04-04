@@ -83,8 +83,6 @@ class AutofillOptimizationGuide;
 class AutofillPopupDelegate;
 class AutofillProfile;
 struct CardUnmaskChallengeOption;
-class CardUnmaskDelegate;
-struct CardUnmaskPromptOptions;
 class CreditCard;
 class CreditCardCvcAuthenticator;
 enum class CreditCardFetchResult;
@@ -515,14 +513,6 @@ class AutofillClient {
 
   // Causes the Autofill settings UI to be shown.
   virtual void ShowAutofillSettings(FillingProduct main_filling_product) = 0;
-
-  // A user has attempted to use a masked card. Prompt them for further
-  // information to proceed.
-  virtual void ShowUnmaskPrompt(
-      const CreditCard& card,
-      const CardUnmaskPromptOptions& card_unmask_prompt_options,
-      base::WeakPtr<CardUnmaskDelegate> delegate);
-  virtual void OnUnmaskVerificationResult(PaymentsRpcResult result);
 
   // Shows a dialog for the user to choose/confirm the authentication
   // to use in card unmasking.

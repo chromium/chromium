@@ -46,7 +46,6 @@
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
-#include "chrome/browser/ui/autofill/payments/create_card_unmask_prompt_view.h"
 #include "chrome/browser/ui/autofill/payments/credit_card_scanner_controller.h"
 #include "chrome/browser/ui/autofill/payments/iban_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/mandatory_reauth_bubble_controller_impl.h"
@@ -85,8 +84,6 @@
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller_impl.h"
-#include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
-#include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -116,7 +113,6 @@
 #include "components/sync/service/sync_service.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/unified_consent/pref_names.h"
-#include "components/user_prefs/user_prefs.h"
 #include "components/variations/service/variations_service.h"
 #include "components/webauthn/content/browser/internal_authenticator_impl.h"
 #include "content/public/browser/navigation_entry.h"
@@ -376,7 +372,7 @@ FormDataImporter* ChromeAutofillClient::GetFormDataImporter() {
   return form_data_importer_.get();
 }
 
-payments::PaymentsAutofillClient*
+payments::ChromePaymentsAutofillClient*
 ChromeAutofillClient::GetPaymentsAutofillClient() {
   if (!payments_autofill_client_) {
     payments_autofill_client_ =
@@ -534,48 +530,6 @@ void ChromeAutofillClient::ShowAutofillSettings(
       case FillingProduct::kNone:
         NOTREACHED();
     }
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
-}
-
-void ChromeAutofillClient::ShowUnmaskPrompt(
-    const CreditCard& card,
-    const CardUnmaskPromptOptions& card_unmask_prompt_options,
-        base::WeakPtr<CardUnmaskDelegate> delegate) {
-  unmask_controller_->ShowPrompt(
-      base::BindOnce(&CreateCardUnmaskPromptView,
-                     base::Unretained(unmask_controller_.get()),
-                     base::Unretained(web_contents())),
-      card, card_unmask_prompt_options, delegate);
-}
-
-// TODO(crbug.com/1220990): Refactor this for both CVC and Biometrics flows.
-void ChromeAutofillClient::OnUnmaskVerificationResult(
-    PaymentsRpcResult result) {
-  unmask_controller_->OnVerificationResult(result);
-#if BUILDFLAG(IS_ANDROID)
-  // For VCN-related errors, on Android we show a new error dialog instead of
-  // updating the CVC unmask prompt with the error message.
-  switch (result) {
-    case AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure:
-      GetPaymentsAutofillClient()->ShowAutofillErrorDialog(
-          AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
-              /*is_permanent_error=*/true));
-      break;
-    case AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure:
-      GetPaymentsAutofillClient()->ShowAutofillErrorDialog(
-          AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
-              /*is_permanent_error=*/false));
-      break;
-    case AutofillClient::PaymentsRpcResult::kSuccess:
-    case AutofillClient::PaymentsRpcResult::kTryAgainFailure:
-    case AutofillClient::PaymentsRpcResult::kPermanentFailure:
-    case AutofillClient::PaymentsRpcResult::kNetworkError:
-      // Do nothing
-      break;
-    case AutofillClient::PaymentsRpcResult::kNone:
-      NOTREACHED();
-      return;
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 }
@@ -1246,9 +1200,7 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
           // renderer.
           LogManager::Create(AutofillLogRouterFactory::GetForBrowserContext(
                                  web_contents->GetBrowserContext()),
-                             base::NullCallback())),
-      unmask_controller_(std::make_unique<CardUnmaskPromptControllerImpl>(
-          user_prefs::UserPrefs::Get(web_contents->GetBrowserContext()))) {
+                             base::NullCallback())) {
   // Initialize StrikeDatabase so its cache will be loaded and ready to use
   // when requested by other Autofill classes.
   GetStrikeDatabase();

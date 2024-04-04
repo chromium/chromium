@@ -13,9 +13,11 @@
 #import "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #import "components/autofill/core/browser/payments/payments_network_interface.h"
 #import "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
+#import "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/ui/autofill/chrome_autofill_client_ios.h"
+#import "ios/chrome/browser/ui/autofill/create_card_unmask_prompt_view_bridge.h"
 #import "ios/public/provider/chrome/browser/risk_data/risk_data_api.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 
@@ -31,7 +33,8 @@ IOSChromePaymentsAutofillClient::IOSChromePaymentsAutofillClient(
                   browser_state->GetURLLoaderFactory()),
               client->GetIdentityManager(),
               client->GetPersonalDataManager(),
-              browser_state->IsOffTheRecord())) {}
+              browser_state->IsOffTheRecord())),
+      unmask_controller_(browser_state->GetPrefs()) {}
 
 IOSChromePaymentsAutofillClient::~IOSChromePaymentsAutofillClient() = default;
 
@@ -76,6 +79,23 @@ void IOSChromePaymentsAutofillClient::ShowAutofillErrorDialog(
 PaymentsNetworkInterface*
 IOSChromePaymentsAutofillClient::GetPaymentsNetworkInterface() {
   return payments_network_interface_.get();
+}
+
+void IOSChromePaymentsAutofillClient::ShowUnmaskPrompt(
+    const CreditCard& card,
+    const CardUnmaskPromptOptions& card_unmask_prompt_options,
+    base::WeakPtr<CardUnmaskDelegate> delegate) {
+  unmask_controller_.ShowPrompt(
+      base::BindOnce(&CreateCardUnmaskPromptViewBridge,
+                     base::Unretained(&unmask_controller_),
+                     base::Unretained(client_->base_view_controller()),
+                     base::Unretained(client_->GetPersonalDataManager())),
+      card, card_unmask_prompt_options, delegate);
+}
+
+void IOSChromePaymentsAutofillClient::OnUnmaskVerificationResult(
+    AutofillClient::PaymentsRpcResult result) {
+  unmask_controller_.OnVerificationResult(result);
 }
 
 }  // namespace autofill::payments

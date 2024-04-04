@@ -9,6 +9,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/risk_data_loader.h"
 
@@ -16,6 +17,9 @@ namespace autofill {
 
 struct AutofillErrorDialogContext;
 enum class AutofillProgressDialogType;
+class CardUnmaskDelegate;
+struct CardUnmaskPromptOptions;
+class CreditCard;
 class MigratableCreditCard;
 class OtpUnmaskDelegate;
 struct CardUnmaskChallengeOption;
@@ -122,6 +126,15 @@ class PaymentsAutofillClient : public RiskDataLoader {
 
   // Gets the PaymentsWindowManager owned by the client.
   virtual PaymentsWindowManager* GetPaymentsWindowManager();
+
+  // A user has attempted to use a masked card. Prompt them for further
+  // information to proceed.
+  virtual void ShowUnmaskPrompt(
+      const CreditCard& card,
+      const CardUnmaskPromptOptions& card_unmask_prompt_options,
+      base::WeakPtr<CardUnmaskDelegate> delegate);
+  virtual void OnUnmaskVerificationResult(
+      AutofillClient::PaymentsRpcResult result);
 };
 
 }  // namespace payments

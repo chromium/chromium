@@ -23,7 +23,6 @@
 #include "components/autofill/core/browser/strike_databases/strike_database.h"
 #include "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_name_fix_flow_controller_impl.h"
-#include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -61,6 +60,7 @@ class ChromeAutofillClientIOS : public AutofillClient {
 
   // Sets a weak reference to the view controller used to present UI.
   void SetBaseViewController(UIViewController* base_view_controller);
+  UIViewController* base_view_controller() { return base_view_controller_; }
 
   void set_commands_handler(id<AutofillCommands> commands_handler) {
     commands_handler_ = commands_handler;
@@ -95,11 +95,6 @@ class ChromeAutofillClientIOS : public AutofillClient {
   translate::TranslateDriver* GetTranslateDriver() override;
   GeoIpCountryCode GetVariationConfigCountryCode() const override;
   void ShowAutofillSettings(FillingProduct main_filling_product) override;
-  void ShowUnmaskPrompt(
-      const CreditCard& card,
-      const CardUnmaskPromptOptions& card_unmask_prompt_options,
-      base::WeakPtr<CardUnmaskDelegate> delegate) override;
-  void OnUnmaskVerificationResult(PaymentsRpcResult result) override;
   void ShowUnmaskAuthenticatorSelectionDialog(
       const std::vector<CardUnmaskChallengeOption>& challenge_options,
       base::OnceCallback<void(const std::string&)>
@@ -198,7 +193,6 @@ class ChromeAutofillClientIOS : public AutofillClient {
   std::unique_ptr<FormDataImporter> form_data_importer_;
   scoped_refptr<AutofillWebDataService> autofill_web_data_service_;
   raw_ptr<infobars::InfoBarManager> infobar_manager_;
-  CardUnmaskPromptControllerImpl unmask_controller_;
   std::unique_ptr<LogManager> log_manager_;
   CardNameFixFlowControllerImpl card_name_fix_flow_controller_;
   CardExpirationDateFixFlowControllerImpl

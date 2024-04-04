@@ -6,6 +6,7 @@
 
 #include "base/check_deref.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/autofill/payments/create_card_unmask_prompt_view.h"
 #include "chrome/browser/ui/autofill/payments/view_factory.h"
 #include "chrome/browser/ui/autofill/risk_util.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
@@ -19,7 +20,10 @@
 #include "components/autofill/core/browser/ui/payments/autofill_error_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller_impl.h"
+#include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
+#include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -37,7 +41,10 @@ namespace autofill::payments {
 ChromePaymentsAutofillClient::ChromePaymentsAutofillClient(
     ContentAutofillClient* client)
     : content::WebContentsObserver(&client->GetWebContents()),
-      client_(CHECK_DEREF(client)) {}
+      client_(CHECK_DEREF(client)),
+      unmask_controller_(std::make_unique<CardUnmaskPromptControllerImpl>(
+          user_prefs::UserPrefs::Get(
+              client->GetWebContents().GetBrowserContext()))) {}
 
 ChromePaymentsAutofillClient::~ChromePaymentsAutofillClient() = default;
 
@@ -208,6 +215,48 @@ ChromePaymentsAutofillClient::GetPaymentsWindowManager() {
 #else
   return nullptr;
 #endif  // !BUILDFLAG(IS_ANDROID)
+}
+
+void ChromePaymentsAutofillClient::ShowUnmaskPrompt(
+    const CreditCard& card,
+    const CardUnmaskPromptOptions& card_unmask_prompt_options,
+    base::WeakPtr<CardUnmaskDelegate> delegate) {
+  unmask_controller_->ShowPrompt(
+      base::BindOnce(&CreateCardUnmaskPromptView,
+                     base::Unretained(unmask_controller_.get()),
+                     base::Unretained(web_contents())),
+      card, card_unmask_prompt_options, delegate);
+}
+
+// TODO(crbug.com/1220990): Refactor this for both CVC and Biometrics flows.
+void ChromePaymentsAutofillClient::OnUnmaskVerificationResult(
+    AutofillClient::PaymentsRpcResult result) {
+  unmask_controller_->OnVerificationResult(result);
+#if BUILDFLAG(IS_ANDROID)
+  // For VCN-related errors, on Android we show a new error dialog instead of
+  // updating the CVC unmask prompt with the error message.
+  switch (result) {
+    case AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure:
+      ShowAutofillErrorDialog(
+          AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
+              /*is_permanent_error=*/true));
+      break;
+    case AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure:
+      ShowAutofillErrorDialog(
+          AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
+              /*is_permanent_error=*/false));
+      break;
+    case AutofillClient::PaymentsRpcResult::kSuccess:
+    case AutofillClient::PaymentsRpcResult::kTryAgainFailure:
+    case AutofillClient::PaymentsRpcResult::kPermanentFailure:
+    case AutofillClient::PaymentsRpcResult::kNetworkError:
+      // Do nothing
+      break;
+    case AutofillClient::PaymentsRpcResult::kNone:
+      NOTREACHED();
+      return;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace autofill::payments

@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/autofill_field_promo_controller.h"
+#include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
 #include "chrome/browser/ui/hats/hats_service_desktop.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/autofill_driver.h"
@@ -27,7 +28,6 @@
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
-#include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -61,7 +61,6 @@ class VirtualCardEnrollmentManager;
 struct VirtualCardManualFallbackBubbleOptions;
 
 namespace payments {
-class PaymentsAutofillClient;
 class MandatoryReauthManager;
 }  // namespace payments
 
@@ -124,7 +123,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   syncer::SyncService* GetSyncService() override;
   signin::IdentityManager* GetIdentityManager() override;
   FormDataImporter* GetFormDataImporter() override;
-  payments::PaymentsAutofillClient* GetPaymentsAutofillClient() override;
+  payments::ChromePaymentsAutofillClient* GetPaymentsAutofillClient() override;
   StrikeDatabase* GetStrikeDatabase() override;
   ukm::UkmRecorder* GetUkmRecorder() override;
   ukm::SourceId GetUkmSourceId() override;
@@ -142,11 +141,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   CreateCreditCardInternalAuthenticator(AutofillDriver* driver) override;
 
   void ShowAutofillSettings(FillingProduct main_filling_product) override;
-  void ShowUnmaskPrompt(
-      const CreditCard& card,
-      const CardUnmaskPromptOptions& card_unmask_prompt_options,
-      base::WeakPtr<CardUnmaskDelegate> delegate) override;
-  void OnUnmaskVerificationResult(PaymentsRpcResult result) override;
+
   void ShowUnmaskAuthenticatorSelectionDialog(
       const std::vector<CardUnmaskChallengeOption>& challenge_options,
       base::OnceCallback<void(const std::string&)>
@@ -264,11 +259,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
   }
 #if defined(UNIT_TEST)
   void KeepPopupOpenForTesting() { keep_popup_open_for_testing_ = true; }
-  std::unique_ptr<CardUnmaskPromptControllerImpl>
-  SetCardUnmaskControllerForTesting(
-      std::unique_ptr<CardUnmaskPromptControllerImpl> test_controller) {
-    return std::exchange(unmask_controller_, std::move(test_controller));
-  }
   void SetAutofillFieldPromoControllerManualFallbackForTesting(
       std::unique_ptr<AutofillFieldPromoController> test_controller) {
     autofill_field_promo_controller_manual_fallback_ =
@@ -303,7 +293,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
   // These members are initialized lazily in their respective getters.
   // Therefore, do not access the members directly.
   std::unique_ptr<AutofillCrowdsourcingManager> crowdsourcing_manager_;
-  std::unique_ptr<payments::PaymentsAutofillClient> payments_autofill_client_;
+  std::unique_ptr<payments::ChromePaymentsAutofillClient>
+      payments_autofill_client_;
   std::unique_ptr<CreditCardCvcAuthenticator> cvc_authenticator_;
   std::unique_ptr<CreditCardOtpAuthenticator> otp_authenticator_;
   std::unique_ptr<CreditCardRiskBasedAuthenticator> risk_based_authenticator_;
@@ -334,7 +325,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
   std::unique_ptr<AutofillCvcSaveMessageDelegate>
       autofill_cvc_save_message_delegate_;
 #endif
-  std::unique_ptr<CardUnmaskPromptControllerImpl> unmask_controller_;
   std::unique_ptr<AutofillFieldPromoController>
       autofill_field_promo_controller_manual_fallback_;
 };

@@ -30,7 +30,6 @@
 #import "components/autofill/core/browser/payments/virtual_card_enroll_metrics_logger.h"
 #import "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
-#import "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #import "components/autofill/core/browser/ui/payments/virtual_card_enroll_ui_model.h"
 #import "components/autofill/core/browser/ui/popup_item_ids.h"
 #import "components/autofill/core/common/autofill_features.h"
@@ -70,7 +69,6 @@
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/ui/autofill/card_expiration_date_fix_flow_view_bridge.h"
 #import "ios/chrome/browser/ui/autofill/card_name_fix_flow_view_bridge.h"
-#import "ios/chrome/browser/ui/autofill/create_card_unmask_prompt_view_bridge.h"
 #import "ios/chrome/browser/ui/autofill/scoped_autofill_payment_reauth_module_override.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/chrome/common/channel_info.h"
@@ -115,7 +113,6 @@ ChromeAutofillClientIOS::ChromeAutofillClientIOS(
               ServiceAccessType::EXPLICIT_ACCESS),
           GetApplicationContext()->GetApplicationLocale())),
       infobar_manager_(infobar_manager),
-      unmask_controller_(browser_state->GetPrefs()),
       // TODO(crbug.com/928595): Replace the closure with a callback to the
       // renderer that indicates if log messages should be sent from the
       // renderer.
@@ -284,23 +281,6 @@ GeoIpCountryCode ChromeAutofillClientIOS::GetVariationConfigCountryCode()
 void ChromeAutofillClientIOS::ShowAutofillSettings(
     FillingProduct main_filling_product) {
   NOTREACHED();
-}
-
-void ChromeAutofillClientIOS::ShowUnmaskPrompt(
-    const CreditCard& card,
-    const CardUnmaskPromptOptions& card_unmask_prompt_options,
-    base::WeakPtr<CardUnmaskDelegate> delegate) {
-  unmask_controller_.ShowPrompt(
-      base::BindOnce(&CreateCardUnmaskPromptViewBridge,
-                     base::Unretained(&unmask_controller_),
-                     base::Unretained(base_view_controller_),
-                     base::Unretained(personal_data_manager_)),
-      card, card_unmask_prompt_options, delegate);
-}
-
-void ChromeAutofillClientIOS::OnUnmaskVerificationResult(
-    PaymentsRpcResult result) {
-  unmask_controller_.OnVerificationResult(result);
 }
 
 void ChromeAutofillClientIOS::ShowUnmaskAuthenticatorSelectionDialog(

@@ -144,12 +144,13 @@ void CreditCardCvcAuthenticator::ShowUnmaskPrompt(
     const CreditCard& card,
     const CardUnmaskPromptOptions& card_unmask_prompt_options,
     base::WeakPtr<CardUnmaskDelegate> delegate) {
-  client_->ShowUnmaskPrompt(card, card_unmask_prompt_options, delegate);
+  client_->GetPaymentsAutofillClient()->ShowUnmaskPrompt(
+      card, card_unmask_prompt_options, delegate);
 }
 
 void CreditCardCvcAuthenticator::OnUnmaskVerificationResult(
     AutofillClient::PaymentsRpcResult result) {
-  client_->OnUnmaskVerificationResult(result);
+  client_->GetPaymentsAutofillClient()->OnUnmaskVerificationResult(result);
 }
 
 #if BUILDFLAG(IS_ANDROID)

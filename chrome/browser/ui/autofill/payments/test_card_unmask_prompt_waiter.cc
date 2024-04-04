@@ -51,7 +51,8 @@ class TestCardUnmaskPromptControllerImpl
 TestCardUnmaskPromptWaiter::TestCardUnmaskPromptWaiter(
     content::WebContents* web_contents,
     PrefService* pref_service)
-    : client_(ChromeAutofillClient::FromWebContentsForTesting(web_contents)) {
+    : client_(ChromeAutofillClient::FromWebContentsForTesting(web_contents)
+                  ->GetPaymentsAutofillClient()) {
   auto controller =
       std::make_unique<TestCardUnmaskPromptControllerImpl>(pref_service);
   injected_controller_ = controller.get();

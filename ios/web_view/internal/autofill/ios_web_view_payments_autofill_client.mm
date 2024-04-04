@@ -43,6 +43,20 @@ IOSWebViewPaymentsAutofillClient::GetPaymentsNetworkInterface() {
   return payments_network_interface_.get();
 }
 
+void IOSWebViewPaymentsAutofillClient::ShowUnmaskPrompt(
+    const CreditCard& card,
+    const CardUnmaskPromptOptions& card_unmask_prompt_options,
+    base::WeakPtr<CardUnmaskDelegate> delegate) {
+  [bridge_ showUnmaskPromptForCard:card
+           cardUnmaskPromptOptions:card_unmask_prompt_options
+                          delegate:delegate];
+}
+
+void IOSWebViewPaymentsAutofillClient::OnUnmaskVerificationResult(
+    AutofillClient::PaymentsRpcResult result) {
+  [bridge_ didReceiveUnmaskVerificationResult:result];
+}
+
 void IOSWebViewPaymentsAutofillClient::set_bridge(
     id<CWVAutofillClientIOSBridge> bridge) {
   bridge_ = bridge;

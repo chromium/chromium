@@ -223,15 +223,6 @@ void AutofillClient::ConfirmUploadIbanToCloud(
     bool should_show_prompt,
     SaveIbanPromptCallback callback) {}
 
-void AutofillClient::ShowUnmaskPrompt(
-    const CreditCard& card,
-    const CardUnmaskPromptOptions& card_unmask_prompt_options,
-    base::WeakPtr<CardUnmaskDelegate> delegate) {
-}
-
-void AutofillClient::OnUnmaskVerificationResult(PaymentsRpcResult result) {
-}
-
 void AutofillClient::UpdateOfferNotification(
     const AutofillOfferData* offer,
     const OfferNotificationOptions& options) {
