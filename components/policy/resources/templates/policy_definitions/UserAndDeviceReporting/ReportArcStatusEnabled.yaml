@@ -13,7 +13,7 @@ items:
 - caption: Disable Android reporting
   value: false
 owners:
-- cros-reporting-team@google.com
+- cros-reporting-eng@google.com
 - lbaraz@chromium.org
 - phweiss@chromium.org
 schema:

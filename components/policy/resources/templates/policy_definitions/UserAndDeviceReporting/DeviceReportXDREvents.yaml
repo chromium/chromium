@@ -15,7 +15,7 @@ items:
 - caption: Do not report information about extended detection and response (XDR) events
   value: false
 owners:
-- cros-reporting-team@google.com
+- cros-reporting-eng@google.com
 - jrhilke@google.com
 schema:
   type: boolean
