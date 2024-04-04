@@ -561,10 +561,10 @@ public class SelectFileDialogTest {
     @Test
     public void testPhotoPickerLaunchAndMimeTypes() {
         ShadowMimeTypeMap shadowMimeTypeMap = Shadows.shadowOf(MimeTypeMap.getSingleton());
-        shadowMimeTypeMap.addExtensionMimeTypMapping("jpg", "image/jpeg");
-        shadowMimeTypeMap.addExtensionMimeTypMapping("gif", "image/gif");
-        shadowMimeTypeMap.addExtensionMimeTypMapping("txt", "text/plain");
-        shadowMimeTypeMap.addExtensionMimeTypMapping("mpg", "video/mpeg");
+        shadowMimeTypeMap.addExtensionMimeTypeMapping("jpg", "image/jpeg");
+        shadowMimeTypeMap.addExtensionMimeTypeMapping("gif", "image/gif");
+        shadowMimeTypeMap.addExtensionMimeTypeMapping("txt", "text/plain");
+        shadowMimeTypeMap.addExtensionMimeTypeMapping("mpg", "video/mpeg");
 
         assertEquals("", SelectFileDialog.ensureMimeType(""));
         assertEquals("image/jpeg", SelectFileDialog.ensureMimeType(".jpg"));
