@@ -50,6 +50,22 @@ source_set("tracking_protection_onboarding") {
   public_deps = [ "//base" ]
 }
 
+source_set("tracking_protection_reminder_service") {
+  sources = [
+    "tracking_protection_reminder_service.cc",
+    "tracking_protection_reminder_service.h",
+  ]
+
+  deps = [
+    ":features",
+    ":privacy_sandbox_prefs",
+    "//components/keyed_service/core:core",
+    "//components/prefs",
+  ]
+
+  public_deps = [ "//base" ]
+}
+
 source_set("tracking_protection_settings") {
   sources = [
     "tracking_protection_settings.cc",
@@ -124,6 +140,7 @@ if (use_blink) {
 
     deps = [
       ":privacy_sandbox_prefs",
+      ":tracking_protection_reminder_service",
       ":tracking_protection_settings",
       "//components/browsing_topics/common:common",
       "//components/content_settings/core/browser",
