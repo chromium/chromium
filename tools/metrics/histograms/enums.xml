@@ -11436,6 +11436,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4935" label="V8Ink_RequestPresenter_Method"/>
   <int value="4936" label="EventTimingOrphanPointerup"/>
   <int value="4937" label="NavigatorCookieEnabledThirdParty"/>
+  <int value="4938" label="FoldableAPIs"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

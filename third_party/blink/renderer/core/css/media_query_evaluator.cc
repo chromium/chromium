@@ -1375,6 +1375,7 @@ static bool HorizontalViewportSegmentsMediaFeatureEval(
     const MediaValues& media_values) {
   UseCounter::Count(media_values.GetDocument(),
                     WebFeature::kViewportSegmentsMediaFeature);
+  UseCounter::Count(media_values.GetDocument(), WebFeature::kFoldableAPIs);
   int horizontal_viewport_segments =
       media_values.GetHorizontalViewportSegments();
 
@@ -1399,6 +1400,7 @@ static bool VerticalViewportSegmentsMediaFeatureEval(
     const MediaValues& media_values) {
   UseCounter::Count(media_values.GetDocument(),
                     WebFeature::kViewportSegmentsMediaFeature);
+  UseCounter::Count(media_values.GetDocument(), WebFeature::kFoldableAPIs);
   int vertical_viewport_segments = media_values.GetVerticalViewportSegments();
 
   MaybeRecordMediaFeatureValue(
@@ -1466,6 +1468,7 @@ static bool DevicePostureMediaFeatureEval(const MediaQueryExpValue& value,
                                           const MediaValues& media_values) {
   UseCounter::Count(media_values.GetDocument(),
                     WebFeature::kDevicePostureMediaFeature);
+  UseCounter::Count(media_values.GetDocument(), WebFeature::kFoldableAPIs);
   // isValid() is false if there is no parameter. Without parameter we should
   // return true to indicate that device posture is enabled in the
   // browser.

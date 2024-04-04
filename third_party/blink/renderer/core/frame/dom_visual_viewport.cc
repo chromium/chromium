@@ -201,6 +201,8 @@ std::optional<HeapVector<Member<DOMRect>>> DOMVisualViewport::segments() const {
     return std::nullopt;
   }
 
+  UseCounter::Count(frame->GetDocument(), WebFeature::kFoldableAPIs);
+
   WebVector<gfx::Rect> web_segments =
       frame->GetWidgetForLocalRoot()->ViewportSegments();
 

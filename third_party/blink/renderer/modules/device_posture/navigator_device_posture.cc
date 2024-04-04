@@ -19,6 +19,7 @@ DevicePosture* NavigatorDevicePosture::devicePosture(Navigator& navigator) {
   DCHECK(RuntimeEnabledFeatures::DevicePostureEnabled(
       navigator.GetExecutionContext()));
 
+  UseCounter::Count(navigator.GetExecutionContext(), WebFeature::kFoldableAPIs);
   NavigatorDevicePosture* supplement =
       Supplement<Navigator>::From<NavigatorDevicePosture>(navigator);
   if (!supplement) {
