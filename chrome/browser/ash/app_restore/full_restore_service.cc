@@ -703,7 +703,8 @@ void FullRestoreService::OnGotAllSessionsAsh(
          session_windows) {
       session_windows_map.emplace(
           session_window->window_id.id(),
-          ::full_restore::ToSessionWindowPtr(session_window.get()));
+          ::full_restore::ToSessionWindowPtr(*session_window,
+                                             /*lacros_profile_id=*/0));
     }
   }
 
@@ -788,7 +789,7 @@ void FullRestoreService::OnSessionInformationReceived(
 
       pine_contents_data->apps_infos.emplace_back(
           app_id, session_window->active_tab_title, session_window->urls,
-          session_window->tab_count);
+          session_window->tab_count, session_window->profile_id);
     }
   }
 

@@ -17,10 +17,12 @@ constexpr size_t kMaxUrls = 5u;
 }  // namespace
 
 crosapi::mojom::SessionWindowPtr ToSessionWindowPtr(
-    sessions::SessionWindow* session_window) {
+    const sessions::SessionWindow& session_window,
+    uint64_t lacros_profile_id) {
   crosapi::mojom::SessionWindowPtr new_session_window =
       crosapi::mojom::SessionWindow::New();
-  new_session_window->window_id = session_window->window_id.id();
+  new_session_window->window_id = session_window.window_id.id();
+  new_session_window->profile_id = lacros_profile_id;
 
   // App browsers app ID is the same as regular chrome browsers. To get the
   // correct icon and title from the app service, we need to find the app
@@ -28,9 +30,8 @@ crosapi::mojom::SessionWindowPtr ToSessionWindowPtr(
   // meet PWA has an app name "_crx_kjgfgldnnfoeklkmfkjfagphfepbbdan". We will
   // send this to ash where it will use "kjgfgldnnfoeklkmfkjfagphfepbbdan" to
   // query the app service for data.
-  const std::string app_name = session_window->app_name;
-  if (!app_name.empty()) {
-    new_session_window->app_name = app_name;
+  if (!session_window.app_name.empty()) {
+    new_session_window->app_name = session_window.app_name;
 
     // App browsers will use the new app id to get an app icon and app
     // title. We don't need to look at tab data for these.
@@ -43,7 +44,7 @@ crosapi::mojom::SessionWindowPtr ToSessionWindowPtr(
   // title.
   std::string active_tab_title;
   std::vector<GURL> tab_urls;
-  const auto& tabs = session_window->tabs;
+  const auto& tabs = session_window.tabs;
   for (const std::unique_ptr<sessions::SessionTab>& tab : tabs) {
     const auto& navigations = tab->navigations;
     const int index = tab->current_navigation_index;

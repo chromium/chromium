@@ -14,9 +14,12 @@ struct SessionWindow;
 namespace full_restore {
 
 // Converts a `sessions::SessionWindow` object to the one defined in
-// full_restore.mojom.
+// full_restore.mojom. `lacros_profile_id` is profile id associated with
+// `session_window`. This is used in lacros-chrome builds to ensure we use the
+// correct favicon service to fetch our favicons.
 crosapi::mojom::SessionWindowPtr ToSessionWindowPtr(
-    sessions::SessionWindow* session_window);
+    const sessions::SessionWindow& session_window,
+    uint64_t lacros_profile_id);
 
 }  // namespace full_restore
 

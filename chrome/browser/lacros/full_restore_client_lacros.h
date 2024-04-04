@@ -23,13 +23,17 @@ class FullRestoreClientLacros : public crosapi::mojom::FullRestoreClient {
 
  private:
   using SessionWindows = std::vector<std::unique_ptr<sessions::SessionWindow>>;
+  using SessionWindowsPair =
+      std::pair<SessionWindows, /*lacros_profile_id=*/uint64_t>;
 
-  void OnGotSession(base::OnceCallback<void(SessionWindows)> barrier,
+  void OnGotSession(base::OnceCallback<void(SessionWindowsPair)> barrier,
+                    uint64_t profile_id,
                     SessionWindows session_windows,
                     SessionID active_window_id,
                     bool read_error);
-  void OnGotAllSessions(GetSessionInformationCallback callback,
-                        const std::vector<SessionWindows>& all_session_windows);
+  void OnGotAllSessions(
+      GetSessionInformationCallback callback,
+      const std::vector<SessionWindowsPair>& all_session_windows);
 
   mojo::Receiver<crosapi::mojom::FullRestoreClient> receiver_{this};
 

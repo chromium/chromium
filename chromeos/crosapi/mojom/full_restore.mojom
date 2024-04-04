@@ -29,6 +29,10 @@ struct SessionWindow {
 
   // Number of tabs in this window.
   uint32 tab_count@4;
+
+  // A stable identifier of the profile. It is computed by hashing the path of
+  // the profile's storage directory.
+  [MinVersion=1] uint64 profile_id@5;
 };
 
 // Interface for full restore clients. Implemented by lacros-chrome.

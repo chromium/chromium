@@ -36,7 +36,7 @@ void FullRestoreClientLacros::GetSessionInformation(
 
   // Retrieves session service data from browser and app browsers, which
   // will be used to display favicons and tab titles.
-  auto barrier = base::BarrierCallback<SessionWindows>(
+  auto barrier = base::BarrierCallback<SessionWindowsPair>(
       /*num_callbacks=*/2u * profiles.size(), /*done_callback=*/base::BindOnce(
           &FullRestoreClientLacros::OnGotAllSessions,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -50,32 +50,35 @@ void FullRestoreClientLacros::GetSessionInformation(
       return;
     }
 
+    const uint64_t profile_id = HashProfilePathToProfileId(profile->GetPath());
     service->GetLastSession(
         base::BindOnce(&FullRestoreClientLacros::OnGotSession,
-                       weak_ptr_factory_.GetWeakPtr(), barrier));
+                       weak_ptr_factory_.GetWeakPtr(), barrier, profile_id));
     app_service->GetLastSession(
         base::BindOnce(&FullRestoreClientLacros::OnGotSession,
-                       weak_ptr_factory_.GetWeakPtr(), barrier));
+                       weak_ptr_factory_.GetWeakPtr(), barrier, profile_id));
   }
 }
 
 void FullRestoreClientLacros::OnGotSession(
-    base::OnceCallback<void(SessionWindows)> barrier,
+    base::OnceCallback<void(SessionWindowsPair)> barrier,
+    uint64_t profile_id,
     SessionWindows session_windows,
     SessionID active_window_id,
     bool read_error) {
-  std::move(barrier).Run(std::move(session_windows));
+  std::move(barrier).Run({std::move(session_windows), profile_id});
 }
 
 void FullRestoreClientLacros::OnGotAllSessions(
     GetSessionInformationCallback callback,
-    const std::vector<SessionWindows>& all_session_windows) {
+    const std::vector<SessionWindowsPair>& all_session_windows) {
   std::vector<crosapi::mojom::SessionWindowPtr> session_window_ptrs;
-  for (const SessionWindows& session_windows : all_session_windows) {
+  for (const SessionWindowsPair& session_windows : all_session_windows) {
+    const uint64_t lacros_profile_id = session_windows.second;
     for (const std::unique_ptr<sessions::SessionWindow>& session_window :
-         session_windows) {
+         session_windows.first) {
       session_window_ptrs.emplace_back(
-          full_restore::ToSessionWindowPtr(session_window.get()));
+          full_restore::ToSessionWindowPtr(*session_window, lacros_profile_id));
     }
   }
   std::move(callback).Run(std::move(session_window_ptrs));

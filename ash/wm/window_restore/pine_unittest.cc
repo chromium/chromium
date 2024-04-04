@@ -639,7 +639,7 @@ TEST_F(PineTest, ClickRestoreToExit) {
 TEST_F(PineTest, PineItemView) {
   PineContentsData::AppInfo app_info(
       "TEST_ID", "TEST_TITLE",
-      std::vector<GURL>{GURL(), GURL(), GURL(), GURL()}, 4u);
+      std::vector<GURL>{GURL(), GURL(), GURL(), GURL()}, 4u, 0);
 
   // Test when the tab count is within regular limits.
   auto item_view =

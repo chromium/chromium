@@ -17,8 +17,13 @@ PineContentsData::AppInfo::AppInfo(const std::string& app_id,
 PineContentsData::AppInfo::AppInfo(const std::string& app_id,
                                    const std::string& title,
                                    const std::vector<GURL>& tab_urls,
-                                   const size_t tab_count)
-    : app_id(app_id), title(title), tab_urls(tab_urls), tab_count(tab_count) {}
+                                   const size_t tab_count,
+                                   uint64_t lacros_profile_id)
+    : app_id(app_id),
+      title(title),
+      tab_urls(tab_urls),
+      tab_count(tab_count),
+      lacros_profile_id(lacros_profile_id) {}
 
 PineContentsData::AppInfo::AppInfo(const AppInfo&) = default;
 

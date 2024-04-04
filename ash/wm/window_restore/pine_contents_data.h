@@ -28,7 +28,8 @@ struct ASH_EXPORT PineContentsData {
     AppInfo(const std::string& app_id,
             const std::string& title,
             const std::vector<GURL>& tab_urls,
-            const size_t tab_count);
+            const size_t tab_count,
+            uint64_t lacros_profile_id);
     AppInfo(const AppInfo&);
     ~AppInfo();
     // App id. Used to retrieve the app name and app icon from the app registry
@@ -45,8 +46,13 @@ struct ASH_EXPORT PineContentsData {
     // to retrieve favicons.
     std::vector<GURL> tab_urls;
 
-    // The total number of tabs, including ones not listed in `tab_urls`.
+    // Used by browser only. The total number of tabs, including ones not listed
+    // in `tab_urls`.
     size_t tab_count = 0u;
+
+    // Used by lacros-browser only. Used to fetch the favicon from the favicon
+    // service associated with this id.
+    uint64_t lacros_profile_id = 0;
   };
 
   using AppsInfos = std::vector<AppInfo>;

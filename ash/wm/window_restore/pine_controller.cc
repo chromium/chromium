@@ -187,7 +187,7 @@ void PineController::MaybeStartPineOverviewSessionDevAccelerator() {
           GURL("https://www.cnn.com/"), GURL("https://www.reddit.com/"),
           GURL("https://www.youtube.com/"), GURL("https://www.waymo.com/"),
           GURL("https://www.google.com/")},
-      /*tab_count=*/10u);
+      /*tab_count=*/10u, /*lacros_profile_id=*/0);
   // PWA.
   data->apps_infos.emplace_back("kjgfgldnnfoeklkmfkjfagphfepbbdan", "Meet");
 
@@ -201,14 +201,14 @@ void PineController::MaybeStartPineOverviewSessionDevAccelerator() {
   data->apps_infos.emplace_back(
       "mgndgikekgjfcpckkfioiadnlibdjbkf", /*tab_title=*/"Maps",
       std::vector<GURL>{GURL("https://www.google.com/maps/")},
-      /*tab_count=*/1);
+      /*tab_count=*/1, /*lacros_profile_id=*/0);
   data->apps_infos.emplace_back("fkiggjmkendpmbegkagpmagjepfkpmeb", "Files");
   data->apps_infos.emplace_back(
       "mgndgikekgjfcpckkfioiadnlibdjbkf", /*tab_title=*/"Twitter",
       std::vector<GURL>{GURL("https://www.twitter.com/"),
                         GURL("https://www.youtube.com/"),
                         GURL("https://www.google.com/")},
-      /*tab_count=*/3u);
+      /*tab_count=*/3u, /*lacros_profile_id=*/0);
 
   MaybeStartPineOverviewSession(std::move(data));
 }
