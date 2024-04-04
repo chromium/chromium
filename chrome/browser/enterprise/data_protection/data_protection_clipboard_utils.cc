@@ -21,6 +21,7 @@
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/clipboard_observer.h"
 #include "ui/base/clipboard/clipboard_sequence_number_token.h"
+#include "ui/base/clipboard/clipboard_util.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -53,6 +54,14 @@ class ClipboardObserver : public ui::ClipboardObserver {
   // png, etc.) before `OnClipboardDataChanged()` is called, so `data` is merged
   // into `pending_seqno_data_` instead of replacing it entirely.
   void AddDataToNextSeqno(content::ClipboardPasteData data) {
+    // Bitmap isn't used directly by pasting code, so it must first be converted
+    // to PNG before being stored in `GetLastReplacedClipboardData()`.
+    if (!data.bitmap.empty()) {
+      data.png = ui::clipboard_util::EncodeBitmapToPngAcceptJank(
+          std::move(data.bitmap));
+      data.bitmap = SkBitmap();
+    }
+
     if (pending_seqno_data_.empty()) {
       ui::ClipboardMonitor::GetInstance()->AddObserver(this);
     }
@@ -61,13 +70,16 @@ class ClipboardObserver : public ui::ClipboardObserver {
 
   // ui::ClipboardObserver:
   void OnClipboardDataChanged() override {
-    GetLastReplacedClipboardData().seqno =
-        ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
-            ui::ClipboardBuffer::kCopyPaste);
-    GetLastReplacedClipboardData().clipboard_paste_data.Merge(
-        std::move(pending_seqno_data_));
+    GetLastReplacedClipboardData() = {
+        .seqno = ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
+            ui::ClipboardBuffer::kCopyPaste),
+        // `LastReplacedClipboardData::clipboard_paste_data` is reassigned to
+        // clear previous data corresponding to an older seqno.
+        .clipboard_paste_data = std::move(pending_seqno_data_),
+    };
+
     // Explicitly clear `pending_seqno_data_` in case it eventually holds a data
-    // member that doesn't clear itself after moving.
+    // member that doesn't clear itself cleanly after moving.
     pending_seqno_data_ = content::ClipboardPasteData();
 
     ui::ClipboardMonitor::GetInstance()->RemoveObserver(this);
