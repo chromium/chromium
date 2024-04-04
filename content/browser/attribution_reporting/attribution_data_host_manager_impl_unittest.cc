@@ -74,6 +74,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/trigger_verification.h"
 #include "services/network/public/cpp/trigger_verification_test_utils.h"
+#include "services/network/public/mojom/attribution.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
@@ -100,6 +101,7 @@ using ::attribution_reporting::mojom::RegistrationEligibility;
 using ::attribution_reporting::mojom::SourceRegistrationError;
 using ::attribution_reporting::mojom::SourceType;
 using ::attribution_reporting::mojom::TriggerRegistrationError;
+using ::network::mojom::AttributionSupport;
 
 using AttributionFilters = ::attribution_reporting::FiltersDisjunction;
 using FilterConfig = ::attribution_reporting::FilterConfig;
@@ -110,6 +112,7 @@ using ::testing::Field;
 using ::testing::InSequence;
 using ::testing::Mock;
 using ::testing::Property;
+using ::testing::Return;
 using ::testing::SizeIs;
 
 using Checkpoint = ::testing::MockFunction<void(int step)>;
@@ -1497,15 +1500,15 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   // A first source is received through the data host.
   data_host_remote->OsSourceDataAvailable(
-      {attribution_reporting::OsRegistrationItem{
-          .url = GURL("https://b.test/x")}});
+      reporting_origin, {attribution_reporting::OsRegistrationItem{
+                            .url = GURL("https://b.test/x")}});
   data_host_remote.FlushForTesting();
   checkpoint.Call(1);
 
   // A second source is received through the data host.
   data_host_remote->OsSourceDataAvailable(
-      {attribution_reporting::OsRegistrationItem{
-          .url = GURL("https://b.test/x")}});
+      reporting_origin, {attribution_reporting::OsRegistrationItem{
+                            .url = GURL("https://b.test/x")}});
   data_host_remote.FlushForTesting();
   checkpoint.Call(2);
 
@@ -2884,6 +2887,12 @@ TEST_F(AttributionDataHostManagerImplTest, OsSourceAvailable) {
   const auto kTopLevelOrigin = *SuitableOrigin::Deserialize("https://a.test");
   const GURL kRegistrationUrl("https://b.test/x");
 
+  MockAttributionReportingContentBrowserClient browser_client;
+  ScopedContentBrowserClientSetting setting(&browser_client);
+
+  EXPECT_CALL(browser_client, GetAttributionSupport)
+      .WillOnce(Return(AttributionSupport::kOs));
+
   EXPECT_CALL(mock_manager_, HandleOsRegistration(OsRegistration(
                                  {OsRegistrationItem(kRegistrationUrl,
                                                      /*debug_reporting=*/true)},
@@ -2899,18 +2908,27 @@ TEST_F(AttributionDataHostManagerImplTest, OsSourceAvailable) {
           /*is_nested_within_fenced_frame=*/true, kFrameId, kLastNavigationId),
       RegistrationEligibility::kSourceOrTrigger);
 
+  const auto reporting_origin =
+      *SuitableOrigin::Deserialize("https://report.test");
+
   // A call with no items should be ignored.
-  data_host_remote->OsSourceDataAvailable({});
+  data_host_remote->OsSourceDataAvailable(reporting_origin, {});
 
   data_host_remote->OsSourceDataAvailable(
-      {attribution_reporting::OsRegistrationItem{.url = kRegistrationUrl,
-                                                 .debug_reporting = true}});
+      reporting_origin, {attribution_reporting::OsRegistrationItem{
+                            .url = kRegistrationUrl, .debug_reporting = true}});
   data_host_remote.FlushForTesting();
 }
 
 TEST_F(AttributionDataHostManagerImplTest, OsTriggerAvailable) {
   const auto kTopLevelOrigin = *SuitableOrigin::Deserialize("https://a.test");
   const GURL kRegistrationUrl("https://b.test/x");
+
+  MockAttributionReportingContentBrowserClient browser_client;
+  ScopedContentBrowserClientSetting setting(&browser_client);
+
+  EXPECT_CALL(browser_client, GetAttributionSupport)
+      .WillOnce(Return(AttributionSupport::kOs));
 
   EXPECT_CALL(
       mock_manager_,
@@ -2928,12 +2946,15 @@ TEST_F(AttributionDataHostManagerImplTest, OsTriggerAvailable) {
           /*is_nested_within_fenced_frame=*/true, kFrameId, kLastNavigationId),
       RegistrationEligibility::kSourceOrTrigger);
 
+  const auto reporting_origin =
+      *SuitableOrigin::Deserialize("https://report.test");
+
   // A call with no items should be ignored.
-  data_host_remote->OsTriggerDataAvailable({});
+  data_host_remote->OsTriggerDataAvailable(reporting_origin, {});
 
   data_host_remote->OsTriggerDataAvailable(
-      {attribution_reporting::OsRegistrationItem{.url = kRegistrationUrl,
-                                                 .debug_reporting = true}});
+      reporting_origin, {attribution_reporting::OsRegistrationItem{
+                            .url = kRegistrationUrl, .debug_reporting = true}});
   data_host_remote.FlushForTesting();
 }
 
@@ -2958,7 +2979,7 @@ TEST_F(AttributionDataHostManagerImplTest, WebDisabled_SourceNotRegistered) {
           GetAttributionSupport(
               ContentBrowserClient::AttributionReportingOsApiState::kDisabled,
               testing::_))
-          .WillOnce(testing::Return(network::mojom::AttributionSupport::kNone));
+          .WillOnce(Return(AttributionSupport::kNone));
     } else if (state ==
                ContentBrowserClient::AttributionReportingOsApiState::kEnabled) {
       EXPECT_CALL(
@@ -2966,7 +2987,7 @@ TEST_F(AttributionDataHostManagerImplTest, WebDisabled_SourceNotRegistered) {
           GetAttributionSupport(
               ContentBrowserClient::AttributionReportingOsApiState::kEnabled,
               testing::_))
-          .WillOnce(testing::Return(network::mojom::AttributionSupport::kOs));
+          .WillOnce(Return(AttributionSupport::kOs));
     }
 
     const blink::AttributionSrcToken attribution_src_token;
@@ -4409,7 +4430,7 @@ struct PreferredPlatformTestCase {
   const char* info_header;
   bool has_web_header;
   bool has_os_header;
-  network::mojom::AttributionSupport support;
+  AttributionSupport support;
   bool expected_web;
   bool expected_os;
 };
@@ -4419,7 +4440,7 @@ const PreferredPlatformTestCase kPreferredPlatformTestCases[] = {
         .info_header = nullptr,
         .has_web_header = true,
         .has_os_header = true,
-        .support = network::mojom::AttributionSupport::kWebAndOs,
+        .support = AttributionSupport::kWebAndOs,
         .expected_web = false,
         .expected_os = false,
     },
@@ -4427,7 +4448,7 @@ const PreferredPlatformTestCase kPreferredPlatformTestCases[] = {
         .info_header = nullptr,
         .has_web_header = true,
         .has_os_header = false,
-        .support = network::mojom::AttributionSupport::kWebAndOs,
+        .support = AttributionSupport::kWebAndOs,
         .expected_web = true,
         .expected_os = false,
     },
@@ -4435,7 +4456,7 @@ const PreferredPlatformTestCase kPreferredPlatformTestCases[] = {
         .info_header = nullptr,
         .has_web_header = false,
         .has_os_header = true,
-        .support = network::mojom::AttributionSupport::kWebAndOs,
+        .support = AttributionSupport::kWebAndOs,
         .expected_web = false,
         .expected_os = true,
     },
@@ -4443,7 +4464,7 @@ const PreferredPlatformTestCase kPreferredPlatformTestCases[] = {
         .info_header = "preferred-platform=os",
         .has_web_header = true,
         .has_os_header = true,
-        .support = network::mojom::AttributionSupport::kWebAndOs,
+        .support = AttributionSupport::kWebAndOs,
         .expected_web = false,
         .expected_os = true,
     },
@@ -4451,7 +4472,7 @@ const PreferredPlatformTestCase kPreferredPlatformTestCases[] = {
         .info_header = "preferred-platform=os",
         .has_web_header = true,
         .has_os_header = true,
-        .support = network::mojom::AttributionSupport::kOs,
+        .support = AttributionSupport::kOs,
         .expected_web = false,
         .expected_os = true,
     },
@@ -4459,7 +4480,7 @@ const PreferredPlatformTestCase kPreferredPlatformTestCases[] = {
         .info_header = "preferred-platform=os",
         .has_web_header = true,
         .has_os_header = true,
-        .support = network::mojom::AttributionSupport::kWeb,
+        .support = AttributionSupport::kWeb,
         .expected_web = true,
         .expected_os = false,
     },
@@ -4467,7 +4488,7 @@ const PreferredPlatformTestCase kPreferredPlatformTestCases[] = {
         .info_header = "preferred-platform=os",
         .has_web_header = true,
         .has_os_header = true,
-        .support = network::mojom::AttributionSupport::kNone,
+        .support = AttributionSupport::kNone,
         .expected_web = false,
         .expected_os = false,
     },
@@ -4475,7 +4496,7 @@ const PreferredPlatformTestCase kPreferredPlatformTestCases[] = {
         .info_header = "preferred-platform=os",
         .has_web_header = false,
         .has_os_header = true,
-        .support = network::mojom::AttributionSupport::kWeb,
+        .support = AttributionSupport::kWeb,
         .expected_web = false,
         .expected_os = false,
     },
@@ -4483,7 +4504,7 @@ const PreferredPlatformTestCase kPreferredPlatformTestCases[] = {
         .info_header = "preferred-platform=os",
         .has_web_header = true,
         .has_os_header = false,
-        .support = network::mojom::AttributionSupport::kWeb,
+        .support = AttributionSupport::kWeb,
         .expected_web = false,
         .expected_os = false,
     },
@@ -4491,7 +4512,7 @@ const PreferredPlatformTestCase kPreferredPlatformTestCases[] = {
         .info_header = "preferred-platform=web",
         .has_web_header = true,
         .has_os_header = true,
-        .support = network::mojom::AttributionSupport::kWebAndOs,
+        .support = AttributionSupport::kWebAndOs,
         .expected_web = true,
         .expected_os = false,
     },
@@ -4499,7 +4520,7 @@ const PreferredPlatformTestCase kPreferredPlatformTestCases[] = {
         .info_header = "preferred-platform=web",
         .has_web_header = true,
         .has_os_header = true,
-        .support = network::mojom::AttributionSupport::kWeb,
+        .support = AttributionSupport::kWeb,
         .expected_web = true,
         .expected_os = false,
     },
@@ -4507,7 +4528,7 @@ const PreferredPlatformTestCase kPreferredPlatformTestCases[] = {
         .info_header = "preferred-platform=web",
         .has_web_header = true,
         .has_os_header = true,
-        .support = network::mojom::AttributionSupport::kOs,
+        .support = AttributionSupport::kOs,
         .expected_web = false,
         .expected_os = true,
     },
@@ -4515,7 +4536,7 @@ const PreferredPlatformTestCase kPreferredPlatformTestCases[] = {
         .info_header = "preferred-platform=web",
         .has_web_header = true,
         .has_os_header = true,
-        .support = network::mojom::AttributionSupport::kNone,
+        .support = AttributionSupport::kNone,
         .expected_web = false,
         .expected_os = false,
     },
@@ -4523,7 +4544,7 @@ const PreferredPlatformTestCase kPreferredPlatformTestCases[] = {
         .info_header = "preferred-platform=web",
         .has_web_header = true,
         .has_os_header = false,
-        .support = network::mojom::AttributionSupport::kOs,
+        .support = AttributionSupport::kOs,
         .expected_web = false,
         .expected_os = false,
     },
@@ -4531,7 +4552,7 @@ const PreferredPlatformTestCase kPreferredPlatformTestCases[] = {
         .info_header = "preferred-platform=web",
         .has_web_header = false,
         .has_os_header = true,
-        .support = network::mojom::AttributionSupport::kOs,
+        .support = AttributionSupport::kOs,
         .expected_web = false,
         .expected_os = false,
     },
@@ -4561,7 +4582,7 @@ TEST_P(AttributionDataHostManagerImplPreferredPlatformEnabledTest,
   const auto& test_case = GetParam();
 
   EXPECT_CALL(browser_client, GetAttributionSupport)
-      .WillRepeatedly(testing::Return(test_case.support));
+      .WillRepeatedly(Return(test_case.support));
 
   const GURL reporter_url("https://report.test");
   const auto source_site = *SuitableOrigin::Deserialize("https://source.test");
@@ -4606,7 +4627,7 @@ TEST_P(AttributionDataHostManagerImplPreferredPlatformEnabledTest,
   const auto& test_case = GetParam();
 
   EXPECT_CALL(browser_client, GetAttributionSupport)
-      .WillRepeatedly(testing::Return(test_case.support));
+      .WillRepeatedly(Return(test_case.support));
 
   EXPECT_CALL(mock_manager_, HandleSource).Times(test_case.expected_web);
   EXPECT_CALL(mock_manager_, HandleOsRegistration).Times(test_case.expected_os);
@@ -4660,7 +4681,7 @@ TEST_P(
   const auto& test_case = GetParam();
 
   EXPECT_CALL(browser_client, GetAttributionSupport)
-      .WillRepeatedly(testing::Return(test_case.support));
+      .WillRepeatedly(Return(test_case.support));
 
   EXPECT_CALL(mock_manager_, HandleSource).Times(test_case.expected_web);
   EXPECT_CALL(mock_manager_, HandleOsRegistration).Times(test_case.expected_os);
@@ -4708,7 +4729,7 @@ TEST_P(
   const auto& test_case = GetParam();
 
   EXPECT_CALL(browser_client, GetAttributionSupport)
-      .WillRepeatedly(testing::Return(test_case.support));
+      .WillRepeatedly(Return(test_case.support));
 
   EXPECT_CALL(mock_manager_, HandleTrigger).Times(test_case.expected_web);
   EXPECT_CALL(mock_manager_, HandleOsRegistration).Times(test_case.expected_os);
@@ -4859,6 +4880,70 @@ TEST_F(AttributionDataHostManagerImplTest,
         attribution_src_token);
     // Wait for parsing to finish.
     task_environment_.FastForwardBy(base::TimeDelta());
+  }
+}
+
+TEST_F(AttributionDataHostManagerImplTest,
+       DataHostRegistration_RegistrarSupportChecked) {
+  const auto reporting_origin =
+      *SuitableOrigin::Deserialize("https://reporter.test");
+  const auto context_origin =
+      *SuitableOrigin::Deserialize("https://context.test");
+
+  for (const bool has_support : {false, true}) {
+    MockAttributionReportingContentBrowserClient browser_client;
+    ScopedContentBrowserClientSetting setting(&browser_client);
+
+    AttributionSupport web_support =
+        has_support ? AttributionSupport::kWeb : AttributionSupport::kNone;
+    AttributionSupport os_support =
+        has_support ? AttributionSupport::kOs : AttributionSupport::kNone;
+
+    EXPECT_CALL(browser_client, GetAttributionSupport)
+        .WillOnce(Return(web_support))
+        .WillOnce(Return(web_support))
+        .WillOnce(Return(os_support))
+        .WillOnce(Return(os_support));
+
+    EXPECT_CALL(mock_manager_, HandleSource).Times(has_support);
+    EXPECT_CALL(mock_manager_, HandleTrigger).Times(has_support);
+    EXPECT_CALL(
+        mock_manager_,
+        HandleOsRegistration(Field(
+            &OsRegistration::registration_items,
+            ElementsAre(Field(&attribution_reporting::OsRegistrationItem::url,
+                              GURL("https://a.test/x"))))))
+        .Times(has_support);
+    EXPECT_CALL(
+        mock_manager_,
+        HandleOsRegistration(Field(
+            &OsRegistration::registration_items,
+            ElementsAre(Field(&attribution_reporting::OsRegistrationItem::url,
+                              GURL("https://b.test/x"))))))
+        .Times(has_support);
+
+    mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+    data_host_manager_.RegisterDataHost(
+        data_host_remote.BindNewPipeAndPassReceiver(),
+        AttributionSuitableContext::CreateForTesting(
+            context_origin,
+            /*is_nested_within_fenced_frame=*/false, kFrameId,
+            kLastNavigationId),
+        RegistrationEligibility::kSourceOrTrigger);
+    data_host_remote->SourceDataAvailable(
+        reporting_origin,
+        SourceRegistration(*DestinationSet::Create(
+            {net::SchemefulSite::Deserialize("https://destination.example")})));
+    data_host_remote->TriggerDataAvailable(reporting_origin,
+                                           TriggerRegistration(),
+                                           /*verifications=*/{});
+    data_host_remote->OsSourceDataAvailable(
+        reporting_origin, {attribution_reporting::OsRegistrationItem{
+                              .url = GURL("https://a.test/x")}});
+    data_host_remote->OsTriggerDataAvailable(
+        reporting_origin, {attribution_reporting::OsRegistrationItem{
+                              .url = GURL("https://b.test/x")}});
+    data_host_remote.FlushForTesting();
   }
 }
 

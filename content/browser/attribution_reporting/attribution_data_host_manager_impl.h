@@ -188,8 +188,10 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
       attribution_reporting::TriggerRegistration,
       std::vector<network::TriggerVerification>) override;
   void OsSourceDataAvailable(
+      attribution_reporting::SuitableOrigin reporting_origin,
       std::vector<attribution_reporting::OsRegistrationItem>) override;
   void OsTriggerDataAvailable(
+      attribution_reporting::SuitableOrigin reporting_origin,
       std::vector<attribution_reporting::OsRegistrationItem>) override;
   void ReportRegistrationHeaderError(
       attribution_reporting::SuitableOrigin reporting_origin,
@@ -197,6 +199,12 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
 
   const RegistrationContext* GetReceiverRegistrationContextForSource();
   const RegistrationContext* GetReceiverRegistrationContextForTrigger();
+
+  [[nodiscard]] bool CheckRegistrarSupport(
+      attribution_reporting::Registrar,
+      attribution_reporting::mojom::RegistrationType,
+      const RegistrationContext&,
+      const attribution_reporting::SuitableOrigin& reporting_origin);
 
   void OnReceiverDisconnected();
 

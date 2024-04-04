@@ -1108,7 +1108,6 @@ TEST_F(AttributionManagerImplTest, HandleOsRegistration) {
   const GURL kRegistrationUrl2("https://r2.test/y");
   const GURL kRegistrationUrl3;  // opaque
   const GURL kRegistrationUrl4("https://r4.test/y");
-  const GURL kRegistrationUrl5("https://r5.test/y");
 
   const auto kRegistrationOrigin1 = url::Origin::Create(kRegistrationUrl1);
   const auto kRegistrationOrigin2 = url::Origin::Create(kRegistrationUrl2);
@@ -1171,20 +1170,6 @@ TEST_F(AttributionManagerImplTest, HandleOsRegistration) {
     SCOPED_TRACE(test_case.name);
 
     MockAttributionReportingContentBrowserClient browser_client;
-    EXPECT_CALL(
-        browser_client,
-        GetAttributionSupport(
-            ContentBrowserClient::AttributionReportingOsApiState::kEnabled,
-            /*client_os_disabled=*/false))
-        .WillRepeatedly(
-            testing::Return(network::mojom::AttributionSupport::kWebAndOs));
-    EXPECT_CALL(
-        browser_client,
-        GetAttributionSupport(
-            ContentBrowserClient::AttributionReportingOsApiState::kEnabled,
-            /*client_os_disabled=*/true))
-        .WillRepeatedly(
-            testing::Return(network::mojom::AttributionSupport::kWeb));
 
     base::HistogramTester histograms;
 
@@ -1254,21 +1239,6 @@ TEST_F(AttributionManagerImplTest, HandleOsRegistration) {
                   Register(registration2,
                            /*is_debug_key_allowed=*/ElementsAre(true), _))
           .WillOnce(base::test::RunOnceCallback<2>(registration2, false));
-
-      // Dropped due to Os attribution being disabled by the client.
-      EXPECT_CALL(
-          *os_level_manager_,
-          Register(
-              OsRegistration({OsRegistrationItem(kRegistrationUrl5,
-                                                 /*debug_reporting=*/false)},
-                             kTopLevelOrigin1, test_case.input_event,
-                             /*is_within_fenced_frame=*/false, kFrameId,
-                             {ContentBrowserClient::
-                                  AttributionReportingOsRegistrar::kDisabled,
-                              ContentBrowserClient::
-                                  AttributionReportingOsRegistrar::kDisabled}),
-              _, _))
-          .Times(0);
     }
 
     attribution_manager_->HandleOsRegistration(OsRegistration(
@@ -1289,12 +1259,6 @@ TEST_F(AttributionManagerImplTest, HandleOsRegistration) {
          OsRegistrationItem(kRegistrationUrl2, /*debug_reporting=*/false)},
         kTopLevelOrigin5, test_case.input_event,
         /*is_within_fenced_frame=*/false, kFrameId, kOsRegistrars));
-    attribution_manager_->HandleOsRegistration(OsRegistration(
-        {OsRegistrationItem(kRegistrationUrl5, /*debug_reporting=*/false)},
-        kTopLevelOrigin1, test_case.input_event,
-        /*is_within_fenced_frame=*/false, kFrameId,
-        {ContentBrowserClient::AttributionReportingOsRegistrar::kDisabled,
-         ContentBrowserClient::AttributionReportingOsRegistrar::kDisabled}));
 
     ExpectOperationAllowed(
         browser_client, test_case.register_op,
@@ -1355,7 +1319,6 @@ TEST_F(AttributionManagerImplTest, HandleOsRegistration) {
         histograms.GetAllSamples(test_case.metric),
         ElementsAre(
             base::Bucket(OsRegistrationResult::kPassedToOs, 4),
-            base::Bucket(OsRegistrationResult::kUnsupported, 1),
             base::Bucket(OsRegistrationResult::kInvalidRegistrationUrl, 2),
             base::Bucket(OsRegistrationResult::kProhibitedByBrowserPolicy, 1),
             base::Bucket(OsRegistrationResult::kRejectedByOs, 2)));
@@ -3478,13 +3441,6 @@ TEST_F(AttributionManagerImplTest,
     EXPECT_CALL(*report_sender_, SendReport(_, _)).Times(0);
 
     MockAttributionReportingContentBrowserClient browser_client;
-    EXPECT_CALL(
-        browser_client,
-        GetAttributionSupport(
-            ContentBrowserClient::AttributionReportingOsApiState::kEnabled,
-            /*client_os_disabled=*/false))
-        .WillOnce(
-            testing::Return(network::mojom::AttributionSupport::kWebAndOs));
     EXPECT_CALL(browser_client,
                 IsAttributionReportingOperationAllowed(
                     _,

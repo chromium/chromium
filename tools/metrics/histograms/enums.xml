@@ -3870,7 +3870,6 @@ Called by update_net_error_codes.py.-->
 
 <enum name="ConversionOsRegistrationResult">
   <int value="0" label="Passed to OS"/>
-  <int value="1" label="Unsupported"/>
   <int value="2" label="Invalid registration url"/>
   <int value="3" label="Prohibited by browser policy"/>
   <int value="4" label="Excessive queue size"/>

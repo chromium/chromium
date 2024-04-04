@@ -576,7 +576,6 @@ const registrationTypeText: Readonly<Record<RegistrationType, string>> = {
 const osRegistrationResultText:
     Readonly<Record<OsRegistrationResult, string>> = {
       [OsRegistrationResult.kPassedToOs]: 'Passed to OS',
-      [OsRegistrationResult.kUnsupported]: 'Unsupported',
       [OsRegistrationResult.kInvalidRegistrationUrl]:
           'Invalid registration URL',
       [OsRegistrationResult.kProhibitedByBrowserPolicy]:

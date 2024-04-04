@@ -1060,29 +1060,9 @@ void AttributionDataHostManagerImpl::ParseHeader(
   }
 
   const bool is_source = pending_decode.GetType() == RegistrationType::kSource;
-  const bool client_os_disabled =
-      is_source ? it->os_registrars().source_registrar ==
-                      AttributionReportingOsRegistrar::kDisabled
-                : it->os_registrars().trigger_registrar ==
-                      AttributionReportingOsRegistrar::kDisabled;
-
-  network::mojom::AttributionSupport attribution_support =
-      AttributionManager::GetAttributionSupport(client_os_disabled);
 
   switch (registrar) {
     case Registrar::kWeb:
-      if (!network::HasAttributionWebSupport(attribution_support)) {
-        MaybeLogAuditIssue(
-            it->render_frame_id(),
-            /*request_url=*/pending_decode.reporting_url,
-            it->devtools_request_id(),
-            /*invalid_parameter=*/std::nullopt,
-            /*violation_type=*/
-            blink::mojom::AttributionReportingIssueType::kNoWebOrOsSupport);
-        MaybeOnRegistrationsFinished(it);
-        break;
-      }
-
       // Max header size is 256 KB, use 1M count to encapsulate.
       base::UmaHistogramCounts1M(
           is_source ? "Conversions.HeadersSize.RegisterSource"
@@ -1097,17 +1077,6 @@ void AttributionDataHostManagerImpl::ParseHeader(
       }
       break;
     case Registrar::kOs:
-      if (!network::HasAttributionOsSupport(attribution_support)) {
-        MaybeLogAuditIssue(
-            it->render_frame_id(),
-            /*request_url=*/pending_decode.reporting_url,
-            it->devtools_request_id(),
-            /*invalid_parameter=*/std::nullopt,
-            /*violation_type=*/
-            blink::mojom::AttributionReportingIssueType::kNoWebOrOsSupport);
-        MaybeOnRegistrationsFinished(it);
-        break;
-      }
       if (auto* rfh = RenderFrameHostImpl::FromID(it->render_frame_id())) {
         GetContentClient()->browser()->LogWebFeatureForCurrentPage(
             rfh, blink::mojom::WebFeature::kAttributionReportingCrossAppWeb);
@@ -1726,6 +1695,11 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
     return;
   }
 
+  if (!CheckRegistrarSupport(Registrar::kWeb, RegistrationType::kSource,
+                             *context, reporting_origin)) {
+    return;
+  }
+
   RecordRegistrationMethod(context->registration_method());
   attribution_manager_->HandleSource(
       StorableSource(std::move(reporting_origin), std::move(data),
@@ -1747,6 +1721,11 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
     return;
   }
 
+  if (!CheckRegistrarSupport(Registrar::kWeb, RegistrationType::kTrigger,
+                             *context, reporting_origin)) {
+    return;
+  }
+
   RecordRegistrationMethod(context->registration_method());
   attribution_manager_->HandleTrigger(
       AttributionTrigger(std::move(reporting_origin), std::move(data),
@@ -1757,12 +1736,19 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
 }
 
 void AttributionDataHostManagerImpl::OsSourceDataAvailable(
+    attribution_reporting::SuitableOrigin reporting_origin,
     std::vector<attribution_reporting::OsRegistrationItem> registration_items) {
   const RegistrationContext* context =
       GetReceiverRegistrationContextForSource();
   if (!context || registration_items.empty()) {
     return;
   }
+
+  if (!CheckRegistrarSupport(Registrar::kOs, RegistrationType::kSource,
+                             *context, reporting_origin)) {
+    return;
+  }
+
   RecordRegistrationMethod(context->registration_method());
   if (context->navigation_id().has_value()) {
     MaybeBufferOsRegistrations(context->navigation_id().value(),
@@ -1775,10 +1761,16 @@ void AttributionDataHostManagerImpl::OsSourceDataAvailable(
 }
 
 void AttributionDataHostManagerImpl::OsTriggerDataAvailable(
+    attribution_reporting::SuitableOrigin reporting_origin,
     std::vector<attribution_reporting::OsRegistrationItem> registration_items) {
   const RegistrationContext* context =
       GetReceiverRegistrationContextForTrigger();
   if (!context || registration_items.empty()) {
+    return;
+  }
+
+  if (!CheckRegistrarSupport(Registrar::kOs, RegistrationType::kTrigger,
+                             *context, reporting_origin)) {
     return;
   }
 
@@ -2307,6 +2299,52 @@ void AttributionDataHostManagerImpl::ReportRegistrationHeaderError(
   attribution_manager_->ReportRegistrationHeaderError(
       std::move(reporting_origin), error, context.context_origin(),
       context.is_within_fenced_frame(), context.render_frame_id());
+}
+
+bool AttributionDataHostManagerImpl::CheckRegistrarSupport(
+    Registrar registrar,
+    RegistrationType registration_type,
+    const RegistrationContext& context,
+    const SuitableOrigin& reporting_origin) {
+  const bool is_source = registration_type == RegistrationType::kSource;
+  AttributionReportingOsRegistrar os_registrar =
+      is_source ? context.os_registrars().source_registrar
+                : context.os_registrars().trigger_registrar;
+
+  network::mojom::AttributionSupport attribution_support =
+      AttributionManager::GetAttributionSupport(
+          /*client_os_disabled=*/os_registrar ==
+          AttributionReportingOsRegistrar::kDisabled);
+
+  blink::mojom::AttributionReportingIssueType issue_type;
+
+  switch (registrar) {
+    case Registrar::kWeb:
+      if (network::HasAttributionWebSupport(attribution_support)) {
+        return true;
+      }
+      issue_type =
+          is_source
+              ? blink::mojom::AttributionReportingIssueType::kSourceIgnored
+              : blink::mojom::AttributionReportingIssueType::kTriggerIgnored;
+      break;
+    case Registrar::kOs:
+      if (network::HasAttributionOsSupport(attribution_support)) {
+        return true;
+      }
+      issue_type =
+          is_source
+              ? blink::mojom::AttributionReportingIssueType::kOsSourceIgnored
+              : blink::mojom::AttributionReportingIssueType::kOsTriggerIgnored;
+      break;
+  }
+
+  MaybeLogAuditIssue(context.render_frame_id(),
+                     /*request_url=*/reporting_origin->GetURL(),
+                     context.devtools_request_id(),
+                     /*invalid_parameter=*/std::nullopt,
+                     /*violation_type=*/issue_type);
+  return false;
 }
 
 }  // namespace content

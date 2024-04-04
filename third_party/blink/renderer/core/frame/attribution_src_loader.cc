@@ -1013,7 +1013,8 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
             std::move(reporting_origin));
         return;
       }
-      data_host_->OsSourceDataAvailable(std::move(registration_items.value()));
+      data_host_->OsSourceDataAvailable(std::move(reporting_origin),
+                                        std::move(registration_items.value()));
       ++num_registrations_;
     }
   }
@@ -1081,7 +1082,8 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
             std::move(reporting_origin));
         return;
       }
-      data_host_->OsTriggerDataAvailable(std::move(registration_items.value()));
+      data_host_->OsTriggerDataAvailable(std::move(reporting_origin),
+                                         std::move(registration_items.value()));
       ++num_registrations_;
       break;
     }

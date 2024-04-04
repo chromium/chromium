@@ -24,7 +24,6 @@ enum RegistrationType {
 // numeric values should never be reused.
 enum OsRegistrationResult {
   kPassedToOs = 0,
-  kUnsupported = 1,
   kInvalidRegistrationUrl = 2,
   kProhibitedByBrowserPolicy = 3,
   kExcessiveQueueSize = 4,
