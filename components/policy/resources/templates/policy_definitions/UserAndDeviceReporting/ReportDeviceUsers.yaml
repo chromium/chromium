@@ -17,7 +17,7 @@ items:
   value: false
 owners:
 - stepco@chromium.org
-- cros-reporting-team@google.com
+- cros-reporting-eng@google.com
 - lbaraz@chromium.org
 schema:
   type: boolean
