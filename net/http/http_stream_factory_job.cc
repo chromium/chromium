@@ -28,7 +28,6 @@
 #include "net/http/bidirectional_stream_impl.h"
 #include "net/http/http_basic_stream.h"
 #include "net/http/http_network_session.h"
-#include "net/http/http_request_info.h"
 #include "net/http/http_server_properties.h"
 #include "net/http/http_stream_factory.h"
 #include "net/http/proxy_fallback.h"
@@ -115,7 +114,7 @@ HttpStreamFactory::Job::Job(
     Delegate* delegate,
     JobType job_type,
     HttpNetworkSession* session,
-    const HttpRequestInfo& request_info,
+    const StreamRequestInfo& request_info,
     RequestPriority priority,
     const ProxyInfo& proxy_info,
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
@@ -434,7 +433,7 @@ bool HttpStreamFactory::Job::ShouldForceQuic(
 SpdySessionKey HttpStreamFactory::Job::GetSpdySessionKey(
     const ProxyChain& proxy_chain,
     const GURL& origin_url,
-    const HttpRequestInfo& request_info) {
+    const StreamRequestInfo& request_info) {
   // In the case that we'll be sending a GET request to the proxy, look for a
   // HTTP/2 proxy session *to* the proxy, instead of to the origin server. The
   // way HTTP over HTTPS proxies work is that the ConnectJob makes a SpdyProxy,
@@ -1170,8 +1169,7 @@ int HttpStreamFactory::Job::DoCreateStream() {
                                   is_for_get_to_http_proxy,
                                   session_->websocket_endpoint_lock_manager());
     } else {
-      if (request_info_.upload_data_stream &&
-          !request_info_.upload_data_stream->AllowHTTP1()) {
+      if (!request_info_.is_http1_allowed) {
         return ERR_H2_OR_QUIC_REQUIRED;
       }
       stream_ = std::make_unique<HttpBasicStream>(std::move(connection_),
@@ -1315,7 +1313,7 @@ HttpStreamFactory::JobFactory::CreateJob(
     HttpStreamFactory::Job::Delegate* delegate,
     HttpStreamFactory::JobType job_type,
     HttpNetworkSession* session,
-    const HttpRequestInfo& request_info,
+    const StreamRequestInfo& request_info,
     RequestPriority priority,
     const ProxyInfo& proxy_info,
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,

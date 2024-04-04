@@ -108,14 +108,9 @@ AlternativeService GetAlternativeServiceForDnsJob(const GURL& url) {
   return AlternativeService(kProtoQUIC, HostPortPair::FromURL(url));
 }
 
-}  // namespace
-
-// The maximum time to wait for the alternate job to complete before resuming
-// the main job.
-const int kMaxDelayTimeForMainJobSecs = 3;
-
-base::Value::Dict NetLogJobControllerParams(const HttpRequestInfo& request_info,
-                                            bool is_preconnect) {
+base::Value::Dict NetLogJobControllerParams(
+    const HttpStreamFactory::StreamRequestInfo& request_info,
+    bool is_preconnect) {
   base::Value::Dict dict;
   dict.Set("url", request_info.url.possibly_invalid_spec());
   dict.Set("is_preconnect", is_preconnect);
@@ -132,12 +127,18 @@ base::Value::Dict NetLogAltSvcParams(const AlternativeServiceInfo* alt_svc_info,
   return dict;
 }
 
+}  // namespace
+
+// The maximum time to wait for the alternate job to complete before resuming
+// the main job.
+const int kMaxDelayTimeForMainJobSecs = 3;
+
 HttpStreamFactory::JobController::JobController(
     HttpStreamFactory* factory,
     HttpStreamRequest::Delegate* delegate,
     HttpNetworkSession* session,
     JobFactory* job_factory,
-    const HttpRequestInfo& request_info,
+    const HttpRequestInfo& http_request_info,
     bool is_preconnect,
     bool is_websocket,
     bool enable_ip_based_pooling,
@@ -154,7 +155,7 @@ HttpStreamFactory::JobController::JobController(
       enable_alternative_services_(enable_alternative_services),
       delay_main_job_with_available_spdy_session_(
           delay_main_job_with_available_spdy_session),
-      request_info_(request_info),
+      request_info_(http_request_info),
       allowed_bad_certs_(allowed_bad_certs),
       net_log_(NetLogWithSource::Make(
           session->net_log(),
@@ -168,14 +169,8 @@ HttpStreamFactory::JobController::JobController(
                                           url::kWsScheme) ||
          base::EqualsCaseInsensitiveASCII(request_info_.url.scheme_piece(),
                                           url::kWssScheme));
-  // Preconnects do not require a NetworkIsolationKey so we don't require it to
-  // be set consistently with the NetworkAnonymizationKey here.
-  if (!is_preconnect) {
-    DCHECK(request_info.IsConsistent());
-  }
-
   net_log_.BeginEvent(NetLogEventType::HTTP_STREAM_JOB_CONTROLLER, [&] {
-    return NetLogJobControllerParams(request_info, is_preconnect);
+    return NetLogJobControllerParams(request_info_, is_preconnect);
   });
 }
 
@@ -1170,7 +1165,7 @@ void HttpStreamFactory::JobController::RewriteUrlWithHostMappingRules(
 
 AlternativeServiceInfo
 HttpStreamFactory::JobController::GetAlternativeServiceInfoFor(
-    const HttpRequestInfo& request_info,
+    const StreamRequestInfo& request_info,
     HttpStreamRequest::Delegate* delegate,
     HttpStreamRequest::StreamType stream_type) {
   if (!enable_alternative_services_) {
@@ -1204,7 +1199,7 @@ HttpStreamFactory::JobController::GetAlternativeServiceInfoFor(
 
 AlternativeServiceInfo
 HttpStreamFactory::JobController::GetAlternativeServiceInfoInternal(
-    const HttpRequestInfo& request_info,
+    const StreamRequestInfo& request_info,
     HttpStreamRequest::Delegate* delegate,
     HttpStreamRequest::StreamType stream_type) {
   GURL original_url = request_info.url;

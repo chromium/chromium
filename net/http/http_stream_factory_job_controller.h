@@ -38,7 +38,7 @@ class HttpStreamFactory::JobController
                 HttpStreamRequest::Delegate* delegate,
                 HttpNetworkSession* session,
                 JobFactory* job_factory,
-                const HttpRequestInfo& request_info,
+                const HttpRequestInfo& http_request_info,
                 bool is_preconnect,
                 bool is_websocket,
                 bool enable_ip_based_pooling,
@@ -233,12 +233,12 @@ class HttpStreamFactory::JobController
   void ResetErrorStatusForJobs();
 
   AlternativeServiceInfo GetAlternativeServiceInfoFor(
-      const HttpRequestInfo& request_info,
+      const StreamRequestInfo& request_info,
       HttpStreamRequest::Delegate* delegate,
       HttpStreamRequest::StreamType stream_type);
 
   AlternativeServiceInfo GetAlternativeServiceInfoInternal(
-      const HttpRequestInfo& request_info,
+      const StreamRequestInfo& request_info,
       HttpStreamRequest::Delegate* delegate,
       HttpStreamRequest::StreamType stream_type);
 
@@ -360,7 +360,7 @@ class HttpStreamFactory::JobController
 
   State next_state_ = STATE_RESOLVE_PROXY;
   std::unique_ptr<ProxyResolutionRequest> proxy_resolve_request_;
-  const HttpRequestInfo request_info_;
+  const StreamRequestInfo request_info_;
   ProxyInfo proxy_info_;
   const std::vector<SSLConfig::CertAndStatus> allowed_bad_certs_;
   int num_streams_ = 0;
