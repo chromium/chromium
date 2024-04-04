@@ -1727,6 +1727,18 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "win10_intel_uhd_770_stable",
+    swarming = targets.swarming(
+        dimensions = {
+            "display_attached": "1",
+            "gpu": "8086:4680-31.0.101.5333",
+            "os": "Windows-10-19045.3930",
+            "pool": "chromium.tests.gpu",
+        },
+    ),
+)
+
+targets.mixin(
     name = "win10_nvidia_gtx_1660_experimental",
     swarming = targets.swarming(
         dimensions = {

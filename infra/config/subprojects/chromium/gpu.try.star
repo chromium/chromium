@@ -550,6 +550,17 @@ gpu_win_builder(
 )
 
 gpu_win_builder(
+    name = "gpu-fyi-try-win10-intel-uhd770-rel",
+    description_html = "Runs GPU tests on 12th gen Intel CPUs with UHD 770 GPUs",
+    mirrors = [
+        "ci/GPU FYI Win x64 Builder",
+        "ci/Win10 FYI x64 Release (Intel UHD 770)",
+    ],
+    gn_args = "ci/GPU FYI Win x64 Builder",
+    pool = "luci.chromium.gpu.win10.intel.uhd770.try",
+)
+
+gpu_win_builder(
     name = "gpu-fyi-try-win10-nvidia-dbg-64",
     mirrors = [
         "ci/GPU FYI Win x64 Builder (dbg)",
