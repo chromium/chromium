@@ -32,10 +32,12 @@ class PasswordSettingsUpdaterAndroidDispatcherBridgeImpl
 
   // PasswordSettingsUpdaterAndroidDispatcherBridge implementation.
   void GetPasswordSettingValue(std::optional<SyncingAccount> account,
-                               PasswordManagerSetting setting) override;
+                               PasswordManagerSetting setting,
+                               bool is_part_of_migration) override;
   void SetPasswordSettingValue(std::optional<SyncingAccount> account,
                                PasswordManagerSetting setting,
-                               bool value) override;
+                               bool value,
+                               bool is_part_of_migration) override;
 
  private:
   // This object is an instance of PasswordSettingsUpdaterDispatcherBridge, i.e.
