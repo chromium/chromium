@@ -5548,6 +5548,31 @@
             ]
         }
     ],
+    "DefaultBrowserPromptRefreshLaunch": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled1",
+                    "params": {
+                        "group_name": "enabled-arm-1",
+                        "max_prompt_count": "5",
+                        "reprompt_duration": "7d",
+                        "reprompt_duration_multiplier ": "2",
+                        "show_app_menu_chip": "false",
+                        "show_info_bar": "true",
+                        "updated_info_bar_copy": "true"
+                    },
+                    "enable_features": [
+                        "DefaultBrowserPromptRefresh",
+                        "DefaultBrowserPromptRefreshTrial"
+                    ]
+                }
+            ]
+        }
+    ],
     "DefaultGpuDiskCacheSize": [
         {
             "platforms": [

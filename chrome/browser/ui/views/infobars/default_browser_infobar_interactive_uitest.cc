@@ -46,6 +46,13 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabContents);
 
 class DefaultBrowserInfobarInteractiveTest : public InteractiveBrowserTest {
  public:
+  void SetUp() override {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kDefaultBrowserPromptRefresh);
+
+    InteractiveBrowserTest::SetUp();
+  }
+
   ConfirmInfoBar* GetActiveInfoBar() {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
@@ -54,6 +61,9 @@ class DefaultBrowserInfobarInteractiveTest : public InteractiveBrowserTest {
     CHECK(infobar_manager);
     return static_cast<ConfirmInfoBar*>(infobar_manager->infobars()[0]);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarInteractiveTest,
@@ -73,7 +83,7 @@ class DefaultBrowserInfobarWithRefreshInteractiveTest
         features::kDefaultBrowserPromptRefresh,
         {{features::kShowDefaultBrowserInfoBar.name, "true"}});
 
-    DefaultBrowserInfobarInteractiveTest::SetUp();
+    InteractiveBrowserTest::SetUp();
   }
 
   void ShowPrompt() {
