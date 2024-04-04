@@ -30,20 +30,15 @@ SaveCardAndVirtualCardEnrollConfirmationUiParams::
     SaveCardAndVirtualCardEnrollConfirmationUiParams(
         bool is_success,
         std::u16string title_text,
-        std::u16string description_text,
-        std::u16string failure_ok_button_accessible_name = std::u16string())
+        std::u16string description_text)
     : is_success(is_success),
       title_text(std::move(title_text)),
       description_text(std::move(description_text)),
-      failure_ok_button_text(
+      failure_button_text(
           is_success
               ? std::u16string()
               : l10n_util::GetStringUTF16(
-                    IDS_AUTOFILL_SAVE_CARD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_FAILURE_OK_BUTTON_TEXT)) {
-  if (!is_success) {
-    this->failure_ok_button_accessible_name =
-        std::move(failure_ok_button_accessible_name);
-  }
+                    IDS_AUTOFILL_SAVE_CARD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_FAILURE_BUTTON_TEXT)) {
 }
 
 // static
@@ -83,10 +78,7 @@ SaveCardAndVirtualCardEnrollConfirmationUiParams::CreateForSaveCardFailure() {
           IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_TITLE_TEXT),
       /*description_text=*/
       l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_DESCRIPTION_TEXT),
-      /*failure_ok_button_accessible_name=*/
-      l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_OK_BUTTON_ACCESSIBLE_NAME));
+          IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_DESCRIPTION_TEXT));
 }
 
 // static
@@ -101,10 +93,7 @@ SaveCardAndVirtualCardEnrollConfirmationUiParams::CreateForVirtualCardFailure(
       /*description_text=*/
       l10n_util::GetStringFUTF16(
           IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_CONFIRMATION_FAILURE_DESCRIPTION_TEXT,
-          card_label),
-      /*failure_ok_button_accessible_name=*/
-      l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_CONFIRMATION_FAILURE_OK_BUTTON_ACCESSIBLE_NAME));
+          card_label));
 }
 
 }  // namespace autofill

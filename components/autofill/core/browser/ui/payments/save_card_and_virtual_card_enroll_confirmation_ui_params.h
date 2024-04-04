@@ -39,15 +39,13 @@ struct SaveCardAndVirtualCardEnrollConfirmationUiParams {
   bool is_success;
   std::u16string title_text;
   std::u16string description_text;
-  std::u16string failure_ok_button_text;
-  std::u16string failure_ok_button_accessible_name;
+  std::u16string failure_button_text;
 
  private:
   SaveCardAndVirtualCardEnrollConfirmationUiParams(
       bool is_success,
       std::u16string title_text,
-      std::u16string description_text,
-      std::u16string failure_ok_button_accessible_name);
+      std::u16string description_text);
 };
 
 }  // namespace autofill
