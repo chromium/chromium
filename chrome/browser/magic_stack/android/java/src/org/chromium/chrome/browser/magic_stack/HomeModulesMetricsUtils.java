@@ -82,6 +82,11 @@ public class HomeModulesMetricsUtils {
                     HOME_MODULES_SHOW_ALL_MODULES_PARAM,
                     false);
 
+    private static final String HOME_MODULES_COMBINE_TABS_PARAM = "show_tabs_in_one_module";
+    public static final BooleanCachedFieldTrialParameter HOME_MODULES_COMBINE_TABS =
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.MAGIC_STACK_ANDROID, HOME_MODULES_COMBINE_TABS_PARAM, false);
+
     /**
      * Returns a string name of a module. Remember to update the variant ModuleType in
      * tools/metrics/histograms/metadata/magic_stack/histograms.xml when adding a new module type

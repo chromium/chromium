@@ -334,6 +334,49 @@ public class HomeModulesCoordinatorUnitTest {
 
     @Test
     @SmallTest
+    @EnableFeatures({ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID})
+    public void testGetModuleList_CombineTabs_TabResumptionEnabled() {
+        HomeModulesMetricsUtils.HOME_MODULES_COMBINE_TABS.setForTesting(true);
+        when(mHomeModulesConfigManager.getEnabledModuleSet())
+                .thenReturn(
+                        new HashSet<>(
+                                Set.of(
+                                        ModuleType.SINGLE_TAB,
+                                        ModuleType.PRICE_CHANGE,
+                                        ModuleType.TAB_RESUMPTION)));
+        assertFalse(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
+        mCoordinator = createCoordinator(/* skipInitProfile= */ false);
+
+        // Verifies that the tab resumption module will be added to the list without the single tab
+        // module.
+        List<Integer> expectedModuleList =
+                List.of(ModuleType.PRICE_CHANGE, ModuleType.TAB_RESUMPTION);
+        assertEquals(expectedModuleList, mCoordinator.getFixedModuleList());
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures({ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID})
+    public void testGetModuleList_CombineTabs_TabResumptionDisabled() {
+        HomeModulesMetricsUtils.HOME_MODULES_COMBINE_TABS.setForTesting(true);
+        when(mHomeModulesConfigManager.getEnabledModuleSet())
+                .thenReturn(
+                        new HashSet<>(
+                                Set.of(
+                                        ModuleType.SINGLE_TAB,
+                                        ModuleType.PRICE_CHANGE,
+                                        ModuleType.TAB_RESUMPTION)));
+        assertFalse(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
+        mCoordinator = createCoordinator(/* skipInitProfile= */ false);
+
+        // Verifies that the single tab module will be added to the list if the tab resumption
+        // feature flag is disabled.
+        List<Integer> expectedModuleList = List.of(ModuleType.PRICE_CHANGE, ModuleType.SINGLE_TAB);
+        assertEquals(expectedModuleList, mCoordinator.getFixedModuleList());
+    }
+
+    @Test
+    @SmallTest
     public void testOnModuleConfigChanged() {
         assertFalse(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
         when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);

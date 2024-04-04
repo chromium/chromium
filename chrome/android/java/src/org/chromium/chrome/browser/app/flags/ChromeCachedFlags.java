@@ -125,6 +125,7 @@ public class ChromeCachedFlags {
                         StartSurfaceConfiguration.LOGO_POLISH_MEDIUM_SIZE,
                         TabManagementFieldTrial.DELAY_TEMP_STRIP_TIMEOUT_MS,
                         HomeModulesMetricsUtils.HOME_MODULES_SHOW_ALL_MODULES,
+                        HomeModulesMetricsUtils.HOME_MODULES_COMBINE_TABS,
                         TabUiFeatureUtilities.ANIMATION_START_TIMEOUT_MS,
                         TabUiFeatureUtilities.ZOOMING_MIN_MEMORY,
                         TabUiFeatureUtilities.SKIP_SLOW_ZOOMING,

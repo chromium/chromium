@@ -2366,9 +2366,14 @@ const FeatureEntry::FeatureVariation kStartSurfaceReturnTimeVariations[] = {
 const FeatureEntry::FeatureParam kMagicStackAndroid_show_all_modules[] = {
     {"show_all_modules", "true"}};
 
+const FeatureEntry::FeatureParam kMagicStackAndroid_combine_tabs[] = {
+    {"show_tabs_in_one_module", "true"}};
+
 const FeatureEntry::FeatureVariation kMagicStackAndroidVariations[] = {
     {"Show all modules", kMagicStackAndroid_show_all_modules,
      std::size(kMagicStackAndroid_show_all_modules), nullptr},
+    {"Show tabs in one module", kMagicStackAndroid_combine_tabs,
+     std::size(kMagicStackAndroid_combine_tabs), nullptr},
 };
 
 const FeatureEntry::FeatureParam

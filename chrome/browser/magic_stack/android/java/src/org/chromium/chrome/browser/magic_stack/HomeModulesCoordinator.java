@@ -239,7 +239,7 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
         if (mSegmentationPlatformService == null
                 || !ChromeFeatureList.isEnabled(
                         ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER)) {
-            onGotRankedModules(
+            buildModulesAndShow(
                     getFixedModuleList(), onHomeModulesShownCallback, /* durationMs= */ 0);
             return;
         }
@@ -420,17 +420,30 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
      */
     @VisibleForTesting
     List<Integer> getFixedModuleList() {
-        List<Integer> generalModuleList = new ArrayList<Integer>();
+        List<Integer> generalModuleList = new ArrayList<>();
+
         boolean addAll = HomeModulesMetricsUtils.HOME_MODULES_SHOW_ALL_MODULES.getValue();
+        boolean combineTabs = HomeModulesMetricsUtils.HOME_MODULES_COMBINE_TABS.getValue();
         boolean isHomeSurface = mModuleDelegateHost.isHomeSurface();
+        boolean isTabResumptionEnabled = ChromeFeatureList.sTabResumptionModuleAndroid.isEnabled();
+
         generalModuleList.add(ModuleType.PRICE_CHANGE);
-        if (addAll || isHomeSurface) {
-            generalModuleList.add(ModuleType.SINGLE_TAB);
-        }
-        // Make tab resumption module NTP-only.
-        if (addAll
-                || (!isHomeSurface && ChromeFeatureList.sTabResumptionModuleAndroid.isEnabled())) {
-            generalModuleList.add(ModuleType.TAB_RESUMPTION);
+        if (combineTabs) {
+            if (isTabResumptionEnabled) {
+                generalModuleList.add(ModuleType.TAB_RESUMPTION);
+            } else {
+                generalModuleList.add(ModuleType.SINGLE_TAB);
+            }
+        } else {
+            if (addAll || isHomeSurface) {
+                generalModuleList.add(ModuleType.SINGLE_TAB);
+            }
+            // Make tab resumption module NTP-only.
+            if (addAll
+                    || (!isHomeSurface
+                            && ChromeFeatureList.sTabResumptionModuleAndroid.isEnabled())) {
+                generalModuleList.add(ModuleType.TAB_RESUMPTION);
+            }
         }
 
         ensureEnabledModuleSetCreated();
@@ -444,7 +457,7 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
         return moduleList;
     }
 
-    private void onGotRankedModules(
+    private void buildModulesAndShow(
             List<Integer> moduleList,
             Callback<Boolean> onHomeModulesShownCallback,
             long durationMs) {
@@ -483,7 +496,7 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
                                 getHostSurfaceType(), durationMs);
                         return;
                     }
-                    onGotRankedModules(
+                    buildModulesAndShow(
                             onGetClassificationResult(result),
                             onHomeModulesShownCallback,
                             durationMs);
