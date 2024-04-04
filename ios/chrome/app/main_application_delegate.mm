@@ -245,9 +245,6 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
         // Content notifications.
         [self.pushNotificationDelegate
             applicationDidRegisterWithAPNS:deviceToken];
-        if (IsContentPushNotificationsEnabled()) {
-          [self.pushNotificationDelegate registerNotificationCategories];
-        }
       }));
 }
 

@@ -4,9 +4,13 @@
 
 #import "ios/chrome/browser/content_notification/model/content_notification_client.h"
 
+#import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_service.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_service_factory.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
 ContentNotificationClient::ContentNotificationClient()
@@ -35,6 +39,15 @@ UIBackgroundFetchResult ContentNotificationClient::HandleNotificationReception(
 
 NSArray<UNNotificationCategory*>*
 ContentNotificationClient::RegisterActionableNotifications() {
-  // TODO: b/332578232 - Register actionalbe notifications.
-  return @[];
+  UNNotificationAction* feedbackAction = [UNNotificationAction
+      actionWithIdentifier:kContentNotificationFeedbackActionIdentifier
+                     title:l10n_util::GetNSString(
+                               IDS_IOS_CONTENT_NOTIFICATIONS_SEND_FEEDBACK)
+                   options:UNNotificationActionOptionForeground];
+  UNNotificationCategory* contentNotificationCategory = [UNNotificationCategory
+      categoryWithIdentifier:kContentNotificationFeedbackCategoryIdentifier
+                     actions:@[ feedbackAction ]
+           intentIdentifiers:@[]
+                     options:UNNotificationCategoryOptionCustomDismissAction];
+  return @[ contentNotificationCategory ];
 }
