@@ -2341,7 +2341,7 @@ component("base") {
 
   # On ARC++-enabled ChromeOS system, we need TimeTicks::FromUptimeMillis to
   # interpret time values sent from Android container.
-  if (is_android || is_chromeos_ash) {
+  if (is_android || is_chromeos) {
     sources += [ "time/time_android.cc" ]
   }
 

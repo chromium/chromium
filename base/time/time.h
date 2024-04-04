@@ -1214,7 +1214,7 @@ class BASE_EXPORT TimeTicks : public time_internal::TimeBase<TimeTicks> {
 
 #endif  // BUILDFLAG(IS_APPLE)
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
   // Converts to TimeTicks the value obtained from SystemClock.uptimeMillis().
   // Note: this conversion may be non-monotonic in relation to previously
   // obtained TimeTicks::Now() values because of the truncation (to
