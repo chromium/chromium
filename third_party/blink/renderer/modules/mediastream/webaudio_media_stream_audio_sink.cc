@@ -113,7 +113,6 @@ void WebAudioMediaStreamAudioSink::OnData(
     const media::AudioBus& audio_bus,
     base::TimeTicks estimated_capture_time) {
   NON_REENTRANT_SCOPE(capture_reentrancy_checker_);
-  DCHECK(!estimated_capture_time.is_null());
   TRACE_EVENT2(TRACE_DISABLED_BY_DEFAULT("mediastream"),
                "WebAudioMediaStreamAudioSink::OnData", "this",
                static_cast<void*>(this), "frames", audio_bus.frames());
