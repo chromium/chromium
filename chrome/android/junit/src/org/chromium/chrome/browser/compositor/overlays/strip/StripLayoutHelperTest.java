@@ -1915,9 +1915,9 @@ public class StripLayoutHelperTest {
     @Test
     @DisableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
     public void testTabOutline_SelectedTabInGroup_NotShow() {
-        // Mock 5 tabs and make 2 tab groups each containing 2 tabs.
+        // Initialize 5 tabs and make 2 tab groups each containing 2 tabs.
         initializeTest(false, false, false, 0, 5);
-        StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1, 150f, 5);
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
         groupTabs(0, 2);
         groupTabs(2, 4);
@@ -1941,9 +1941,9 @@ public class StripLayoutHelperTest {
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
     public void testTabOutline_SelectedTabInGroup_Show() {
-        // Mock 5 tabs and make 2 tab groups each containing 2 tabs.
+        // Initiailze 5 tabs and make 2 tab groups each containing 2 tabs.
         initializeTest(false, false, false, 0, 5);
-        StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1, 150f, 5);
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
         groupTabs(0, 2);
         groupTabs(2, 4);
@@ -1962,6 +1962,39 @@ public class StripLayoutHelperTest {
                 "Tab outline should not show.", mStripLayoutHelper.shouldShowTabOutline(tabs[3]));
         assertFalse(
                 "Tab outline should not show.", mStripLayoutHelper.shouldShowTabOutline(tabs[4]));
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS,
+        ChromeFeatureList.TAB_DRAG_DROP_ANDROID
+    })
+    public void testTabOutline_ForegroundedTabInGroup_TabDroppedOntoDestinationStrip_Show() {
+        // Setup with 3 tabs and select the first tab.
+        initializeTest(false, false, true, 0, 3);
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH_LANDSCAPE,
+                SCREEN_HEIGHT,
+                false,
+                TIMESTAMP,
+                PADDING_LEFT,
+                PADDING_RIGHT);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+        groupTabs(0, 3);
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+
+        // Start reorder for tab drop between the 2nd and 3rd tab.
+        mStripLayoutHelper.startReorderModeForTabDrop(300.f);
+
+        // Test tab outline should show for the foregrounded tab in destination window during tab
+        // drop.
+        assertTrue("Tab outline should show.", mStripLayoutHelper.shouldShowTabOutline(tabs[0]));
+
+        // Test tab outline should not show for the rest of tabs.
+        assertFalse(
+                "Tab outline should not show.", mStripLayoutHelper.shouldShowTabOutline(tabs[1]));
+        assertFalse(
+                "Tab outline should not show.", mStripLayoutHelper.shouldShowTabOutline(tabs[2]));
     }
 
     @Test
@@ -2541,6 +2574,52 @@ public class StripLayoutHelperTest {
                 expectedEndWidth,
                 groupTitle.getBottomIndicatorWidth(),
                 0.1f);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS,
+        ChromeFeatureList.TAB_DRAG_DROP_ANDROID
+    })
+    public void testBottomIndicatorWidth_TabHoveredOntoTabGroup_TabGroupIndicators() {
+        // Arrange
+        int tabCount = 6;
+        initializeTest(false, false, false, 0, tabCount);
+        groupTabs(0, 2);
+        mStripLayoutHelper.disableAnimationsForTesting();
+
+        // Assert: first view should be a GroupTitle.
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        assertTrue(EXPECTED_TITLE, views[0] instanceof StripLayoutGroupTitle);
+        StripLayoutGroupTitle groupTitle = ((StripLayoutGroupTitle) views[0]);
+
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
+
+        // Check initial bottom indicator width.
+        // availableSize = width(800) - NTB(32) - endPadding(8) - offsetXLeft(10) - offsetXRight(20)
+        // - groupTitleWidth(46) = 684.
+        // tabWidth = (availableSize(684) + 5 * overlap(28)) / 6 = 137.3333
+        float expectedStartWidth = calculateExpectedBottomIndicatorWidth(137.3333f, 2, groupTitle);
+        assertEquals(
+                "Unexpected bottom indicator width before tab hover.",
+                expectedStartWidth,
+                groupTitle.getBottomIndicatorWidth(),
+                0.1f);
+
+        setupForAnimations();
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // Start reorder for tab drop between the 1st and 2nd tab.
+        mStripLayoutHelper.startReorderModeForTabDrop(150.f);
+
+        // initial bottom indicator width(237) + trailing margin(69).
+        float expectedEndWidth = 306.f;
+        assertEquals(
+                "Unexpected bottom indicator width after tab hover.",
+                expectedEndWidth,
+                groupTitle.getBottomIndicatorWidth(),
+                0.5f);
     }
 
     private float calculateExpectedBottomIndicatorWidth(

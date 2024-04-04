@@ -1601,7 +1601,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             // 2.b. Still scrolling, update the scroll destination here.
             mScroller.setFinalX((int) (mScroller.getFinalX() + deltaX));
         } else {
-            // 2.cS. Not scrolling.
+            // 2.c. Not scrolling.
             if (!mIsStripScrollInProgress) {
                 mIsStripScrollInProgress = true;
                 RecordUserAction.record("MobileToolbarSlideTabs");
@@ -3038,10 +3038,20 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         return mTabGroupModelFilter.isTabInTabGroup(tab) ? tab.getId() : Tab.INVALID_TAB_ID;
     }
 
-    void mergeToGroupForTabDropIfNeeded(int rootId, int draggedTabId, int index) {
-        if (rootId == Tab.INVALID_TAB_ID) return;
+    void mergeToGroupForTabDropIfNeeded(int destTabId, int draggedTabId, int index) {
+        if (destTabId == Tab.INVALID_TAB_ID) return;
 
-        mTabGroupModelFilter.mergeTabsToGroup(draggedTabId, rootId, true);
+        Tab destTab = getTabById(destTabId);
+        StripLayoutGroupTitle groupTitle = findGroupTitle(destTab.getRootId());
+
+        // Animate bottom indicator when merging a new tab into group.
+        if (groupTitle != null) {
+            List<Animator> animators =
+                    getBottomIndicatorAnimatorForMergeOrMoveOutOfGroup(groupTitle, false);
+            startAnimationList(animators, null);
+        }
+
+        mTabGroupModelFilter.mergeTabsToGroup(draggedTabId, destTabId, true);
         mModel.moveTab(draggedTabId, index);
     }
 
@@ -3308,7 +3318,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     }
 
     /**
-     * Sets the trailing margin for the current tab. Animates if necessary.
+     * Sets the trailing margin for the current tab. Update bottom indicator width for Tab Group
+     * Indicators and animates if necessary.
      *
      * @param tab The tab to update.
      * @param trailingMargin The given tab's new trailing margin.
@@ -3318,6 +3329,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private boolean setTrailingMarginForTab(
             StripLayoutTab tab, float trailingMargin, List<Animator> animationList) {
         if (tab.getTrailingMargin() != trailingMargin) {
+            StripLayoutGroupTitle groupTitle = findGroupTitle(getStripTabRootId(tab));
+
             if (animationList != null) {
                 animationList.add(
                         CompositorAnimator.ofFloatProperty(
@@ -3327,8 +3340,34 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                                 tab.getTrailingMargin(),
                                 trailingMargin,
                                 ANIM_TAB_SLIDE_OUT_MS));
+
+                if (groupTitle != null) {
+                    float defaultWidth =
+                            calculateBottomIndicatorWidth(
+                                    groupTitle, getNumOfTabsInGroup(groupTitle));
+                    float startWidth = groupTitle.getBottomIndicatorWidth();
+                    float endWidth =
+                            trailingMargin == 0 ? defaultWidth : defaultWidth + trailingMargin;
+
+                    animationList.add(
+                            CompositorAnimator.ofFloatProperty(
+                                    mUpdateHost.getAnimationHandler(),
+                                    groupTitle,
+                                    StripLayoutGroupTitle.BOTTOM_INDICATOR_WIDTH,
+                                    startWidth,
+                                    endWidth,
+                                    ANIM_TAB_SLIDE_OUT_MS));
+                }
             } else {
                 tab.setTrailingMargin(trailingMargin);
+                if (groupTitle != null) {
+                    float defaultWidth =
+                            calculateBottomIndicatorWidth(
+                                    groupTitle, getNumOfTabsInGroup(groupTitle));
+                    float endWidth =
+                            trailingMargin == 0 ? defaultWidth : defaultWidth + trailingMargin;
+                    groupTitle.setBottomIndicatorWidth(endWidth);
+                }
             }
             return true;
         }
@@ -3421,7 +3460,10 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         boolean lastTabIsInGroup =
                 mTabGroupModelFilter.isTabInTabGroup(
                         getTabById(mStripTabs[mStripTabs.length - 1].getId()));
-        float startMargin = firstTabIsInGroup ? mTabMarginWidth : 0f;
+        float startMargin =
+                firstTabIsInGroup && !ChromeFeatureList.sTabStripGroupIndicators.isEnabled()
+                        ? mTabMarginWidth
+                        : 0f;
         float startMarginDelta = startMargin - mStripStartMarginForReorder;
         mStripStartMarginForReorder = startMargin;
         mStripTabs[mStripTabs.length - 1].setTrailingMargin(
@@ -3479,6 +3521,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                 .start();
     }
 
+    // TODO(crbug.com/332780745): Remove tab container detachment for tab drop in Tab Group
+    // Indicators.
     private void setBackgroundTabContainerVisible(StripLayoutTab tab, boolean visible) {
         if (mReorderingForTabDrop || tab != mInteractingTab) {
             float opacity = visible ? TAB_OPACITY_VISIBLE_BACKGROUND : TAB_OPACITY_HIDDEN;
@@ -3753,23 +3797,33 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     }
 
     /**
-     * Show tab outline for Tab Group Indicator when the tab is in a group and it is not in reorder
-     * mode.
+     * This method decides whether to show tab outline for Tab Group Indicators by checking whether
+     * its the selected tab and tab container state.
      *
      * @param stripLayoutTab The current {@link StripLayoutTab}.
      * @return whether to show tab outline.
      */
     protected boolean shouldShowTabOutline(StripLayoutTab stripLayoutTab) {
+        if (!ChromeFeatureList.sTabStripGroupIndicators.isEnabled()) {
+            return false;
+        }
+
         // Placeholder tabs on startup have invalid tab id, resulting in a null tab, if so, return
         // early.
         Tab tab = getTabById(stripLayoutTab.getId());
         if (tab == null) {
             return false;
         }
-        return ChromeFeatureList.sTabStripGroupIndicators.isEnabled()
-                && mTabGroupModelFilter.isTabInTabGroup(tab)
-                && getSelectedStripTab() == stripLayoutTab
-                && !mInReorderMode;
+
+        if (!mTabGroupModelFilter.isTabInTabGroup(tab)) {
+            return false;
+        }
+
+        // Show tab outline when tab is in group with folio attached and 1. tab is selected or 2.
+        // tab is in foreground (e.g. the previously selected tab in destination strip).
+        return stripLayoutTab.getFolioAttached()
+                && (getSelectedStripTab() == stripLayoutTab
+                        || stripLayoutTab.getContainerOpacity() == TAB_OPACITY_VISIBLE_FOREGROUND);
     }
 
     private void updateReorderPosition(float deltaX) {

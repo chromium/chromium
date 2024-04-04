@@ -371,7 +371,7 @@ public class StripLayoutTab extends StripLayoutView {
         mFolioAttached = folioAttached;
     }
 
-    boolean getFolioAttachedForTesting() {
+    boolean getFolioAttached() {
         return mFolioAttached;
     }
 

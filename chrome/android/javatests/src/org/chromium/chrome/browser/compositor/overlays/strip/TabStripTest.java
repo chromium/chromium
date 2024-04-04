@@ -1023,8 +1023,7 @@ public class TabStripTest {
         StripLayoutTab lastHoveredTab =
                 stripLayoutHelperManager.getActiveStripLayoutHelper().getLastHoveredTab();
         Assert.assertEquals("The last hovered tab is not set correctly.", tab1, lastHoveredTab);
-        Assert.assertFalse(
-                "|mFolioAttached| for tab1 should be false.", tab1.getFolioAttachedForTesting());
+        Assert.assertFalse("|mFolioAttached| for tab1 should be false.", tab1.getFolioAttached());
         Assert.assertEquals(
                 "tab1 container bottom margin should match.",
                 StripLayoutHelper.FOLIO_DETACHED_BOTTOM_MARGIN_DP,
@@ -1040,10 +1039,8 @@ public class TabStripTest {
                                 MotionEvent.ACTION_HOVER_MOVE, xMove, yMove));
         lastHoveredTab = stripLayoutHelperManager.getActiveStripLayoutHelper().getLastHoveredTab();
         Assert.assertEquals("The last hovered tab is not set correctly.", tab2, lastHoveredTab);
-        Assert.assertFalse(
-                "|mFolioAttached| for tab2 should be false.", tab2.getFolioAttachedForTesting());
-        Assert.assertTrue(
-                "|mFolioAttached| for tab1 should be true.", tab1.getFolioAttachedForTesting());
+        Assert.assertFalse("|mFolioAttached| for tab2 should be false.", tab2.getFolioAttached());
+        Assert.assertTrue("|mFolioAttached| for tab1 should be true.", tab1.getFolioAttached());
         Assert.assertEquals(
                 "tab1 container bottom margin should match.",
                 StripLayoutHelper.FOLIO_ATTACHED_BOTTOM_MARGIN_DP,
@@ -1059,8 +1056,7 @@ public class TabStripTest {
                                 MotionEvent.ACTION_HOVER_EXIT, xExit, yExit));
         lastHoveredTab = stripLayoutHelperManager.getActiveStripLayoutHelper().getLastHoveredTab();
         Assert.assertNull("The last hovered tab is not set correctly.", lastHoveredTab);
-        Assert.assertTrue(
-                "|mFolioAttached| for tab2 should be true.", tab2.getFolioAttachedForTesting());
+        Assert.assertTrue("|mFolioAttached| for tab2 should be true.", tab2.getFolioAttached());
     }
 
     /** Tests hover cards shown in standard as well as incognito tab models. */
