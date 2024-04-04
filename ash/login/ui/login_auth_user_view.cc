@@ -1177,6 +1177,14 @@ void LoginAuthUserView::OnUserViewTap() {
     // Tapping anywhere in the user view is the same with tapping the message.
     OnOnlineSignInMessageTap();
   } else {
+    if (Shell::Get()->login_screen_controller()->IsAuthenticating()) {
+      // TODO(b/330738798): We should prevent starting a
+      // new authentication process if one is already running.
+      LOG(WARNING) << "LoginAuthUserView::OnUserViewTap called during "
+                      "Authentication. To avoid double authentication we "
+                      "skip to run the on_tap_ callback.";
+      return;
+    }
     on_tap_.Run();
   }
 }
