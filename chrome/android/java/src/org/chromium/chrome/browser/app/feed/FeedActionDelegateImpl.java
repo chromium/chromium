@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.offlinepages.RequestCoordinatorBridge;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.SigninAndHistoryOptInActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
@@ -31,6 +32,7 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -179,6 +181,19 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
             @SigninAccessPoint int signinAccessPoint,
             BottomSheetController bottomSheetController,
             WindowAndroid windowAndroid) {
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+            SigninAndHistoryOptInActivityLauncherImpl.get()
+                    .launchActivityIfAllowed(
+                            mActivity,
+                            mProfile,
+                            SigninAndHistoryOptInCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
+                            SigninAndHistoryOptInCoordinator.WithAccountSigninMode
+                                    .DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                            SigninAndHistoryOptInCoordinator.HistoryOptInMode.NONE,
+                            signinAccessPoint);
+            return;
+        }
         SigninMetricsUtils.logSigninStartAccessPoint(signinAccessPoint);
         SigninMetricsUtils.logSigninUserActionForAccessPoint(signinAccessPoint);
         SigninBottomSheetCoordinator signinCoordinator =
