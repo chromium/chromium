@@ -2140,6 +2140,27 @@ TEST_F(AttributionManagerImplFakeReportTest, FakeReport_NotifiesObservers) {
   task_environment_.FastForwardBy(base::TimeDelta());
 }
 
+class AttributionManagerImplNoFakeReportTest
+    : public AttributionManagerImplTest {
+ protected:
+  void ConfigureStorageDelegate(
+      ConfigurableStorageDelegate& delegate) const override {
+    delegate.set_randomized_response({});
+  }
+};
+
+TEST_F(AttributionManagerImplNoFakeReportTest, NotNotifyObservers) {
+  MockAttributionObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionObserver> observation(
+      &observer);
+  observation.Observe(attribution_manager_.get());
+
+  EXPECT_CALL(observer, OnReportsChanged).Times(0);
+
+  attribution_manager_->HandleSource(SourceBuilder().Build(), kFrameId);
+  task_environment_.FastForwardBy(base::TimeDelta());
+}
+
 // Test that multiple source and trigger registrations, with and without debug
 // keys present, are handled in the order they are received by the manager.
 TEST_F(AttributionManagerImplTest, RegistrationsHandledInOrder) {

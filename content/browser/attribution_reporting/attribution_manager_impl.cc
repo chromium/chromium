@@ -643,10 +643,12 @@ void AttributionManagerImpl::OnSourceStored(
                              result.status());
   }
 
-  if (const auto* success_noised =
-          absl::get_if<StoreSourceResult::SuccessNoised>(&result.result())) {
-    scheduler_timer_->MaybeSet(success_noised->min_fake_report_time);
-    NotifyReportsChanged();
+  if (const auto* success =
+          absl::get_if<StoreSourceResult::Success>(&result.result())) {
+    scheduler_timer_->MaybeSet(success->min_fake_report_time);
+    if (success->min_fake_report_time.has_value()) {
+      NotifyReportsChanged();
+    }
   }
 
   NotifySourcesChanged();
@@ -779,6 +781,7 @@ void AttributionManagerImpl::ProcessNextEvent(bool registration_allowed,
                   /*cleared_debug_key=*/std::nullopt,
                   StoreSourceResult(
                       std::move(source),
+                      /*is_noised=*/false,
                       StoreSourceResult::ProhibitedByBrowserPolicy()));
             }
           },

@@ -75,6 +75,7 @@ TEST(AttributionDebugReportTest, NoDebugReporting_NoReportReturned) {
       &OperationAllowed,
       StoreSourceResult(
           SourceBuilder().Build(),
+          /*is_noised=*/false,
           StoreSourceResult::InsufficientUniqueDestinationCapacity(3))));
 
   EXPECT_FALSE(AttributionDebugReport::Create(
@@ -91,6 +92,7 @@ TEST(AttributionDebugReportTest, OperationProhibited_NoReportReturned) {
       &OperationProhibited,
       StoreSourceResult(
           SourceBuilder().SetDebugReporting(true).Build(),
+          /*is_noised=*/false,
           StoreSourceResult::InsufficientUniqueDestinationCapacity(3))));
 
   EXPECT_FALSE(AttributionDebugReport::Create(
@@ -111,6 +113,7 @@ TEST(AttributionDebugReportTest,
               .SetDebugReporting(true)
               .SetDebugCookieSet(true)
               .Build(),
+          /*is_noised=*/false,
           StoreSourceResult::InsufficientUniqueDestinationCapacity(3)));
   ASSERT_TRUE(report);
 
@@ -140,6 +143,7 @@ TEST(AttributionDebugReportTest, WithinFencedFrame_NoDebugReport) {
               .SetDebugReporting(true)
               .SetIsWithinFencedFrame(true)
               .Build(),
+          /*is_noised=*/false,
           StoreSourceResult::InsufficientUniqueDestinationCapacity(3))));
 
   EXPECT_FALSE(AttributionDebugReport::Create(
@@ -158,128 +162,167 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
   const struct {
     StoreSourceResult::Result result;
     std::optional<uint64_t> debug_key;
-    const char* expected_report_body;
+    bool is_noised = false;
+    const char* expected_report_body = nullptr;
   } kTestCases[] = {
-      {StoreSourceResult::Success(),
-       /*debug_key=*/std::nullopt,
-       R"json([{
-         "body": {
-           "attribution_destination": "https://conversion.test",
-           "source_event_id": "123",
-           "source_site": "https://impression.test"
-         },
-         "type": "source-success"
-       }])json"},
-      {StoreSourceResult::InternalError(),
-       /*debug_key=*/456,
-       /*expected_report_body=*/
-       R"json([{
-         "body": {
-           "attribution_destination": "https://conversion.test",
-           "source_debug_key": "456",
-           "source_event_id": "123",
-           "source_site": "https://impression.test"
-         },
-         "type": "source-unknown-error"
-       }])json"},
-      {StoreSourceResult::InsufficientSourceCapacity(10),
-       /*debug_key=*/std::nullopt,
-       /*expected_report_body=*/
-       R"json([{
-         "body": {
-           "attribution_destination": "https://conversion.test",
-           "limit": "10",
-           "source_event_id": "123",
-           "source_site": "https://impression.test"
-         },
-         "type": "source-storage-limit"
-       }])json"},
-      {StoreSourceResult::ProhibitedByBrowserPolicy(),
-       /*debug_key=*/std::nullopt,
-       /*expected_report_body=*/nullptr},
-      {StoreSourceResult::InsufficientUniqueDestinationCapacity(3),
-       /*debug_key=*/std::nullopt,
-       /*expected_report_body=*/
-       R"json([{
-         "body": {
-           "attribution_destination": "https://conversion.test",
-           "limit": "3",
-           "source_event_id": "123",
-           "source_site": "https://impression.test"
-         },
-         "type": "source-destination-limit"
-       }])json"},
-      {StoreSourceResult::SuccessNoised(/*min_fake_report_time=*/std::nullopt),
-       /*debug_key=*/std::nullopt,
-       /*expected_report_body=*/
-       R"json([{
-         "body": {
-           "attribution_destination": "https://conversion.test",
-           "source_event_id": "123",
-           "source_site": "https://impression.test"
-         },
-         "type": "source-noised"
-       }])json"},
-      {StoreSourceResult::ExcessiveReportingOrigins(),
-       /*debug_key=*/789,
-       /*expected_report_body=*/
-       R"json([{
-         "body": {
-           "attribution_destination": "https://conversion.test",
-           "source_debug_key": "789",
-           "source_event_id": "123",
-           "source_site": "https://impression.test"
-         },
-         "type": "source-success"
-       }])json"},
-      {StoreSourceResult::DestinationGlobalLimitReached(),
-       /*debug_key=*/789,
-       /*expected_report_body=*/
-       R"json([{
-         "body": {
-           "attribution_destination": "https://conversion.test",
-           "source_debug_key": "789",
-           "source_event_id": "123",
-           "source_site": "https://impression.test"
-         },
-         "type": "source-success"
-       }])json"},
-      {StoreSourceResult::DestinationReportingLimitReached(50),
-       /*debug_key=*/std::nullopt,
-       /*expected_report_body=*/
-       R"json([{
-         "body": {
-           "attribution_destination": "https://conversion.test",
-           "limit": "50",
-           "source_event_id": "123",
-           "source_site": "https://impression.test"
-         },
-         "type": "source-destination-rate-limit"
-       }])json"},
-      {StoreSourceResult::DestinationBothLimitsReached(50),
-       /*debug_key=*/std::nullopt,
-       /*expected_report_body=*/
-       R"json([{
-         "body": {
-           "attribution_destination": "https://conversion.test",
-           "limit": "50",
-           "source_event_id": "123",
-           "source_site": "https://impression.test"
-         },
-         "type": "source-destination-rate-limit"
-       }])json"},
-      {StoreSourceResult::ReportingOriginsPerSiteLimitReached(2),
-       /*debug_key=*/std::nullopt,
-       /*expected_report_body=*/
-       R"json([{
-         "body": {
-           "attribution_destination": "https://conversion.test",
-           "limit": "2",
-           "source_event_id": "123",
-           "source_site": "https://impression.test"
-         },
-         "type": "source-reporting-origin-per-site-limit"
-       }])json"},
+      {
+          .result =
+              StoreSourceResult::Success(/*min_fake_report_time=*/std::nullopt),
+          .debug_key = std::nullopt,
+          .expected_report_body = R"json([{
+            "body": {
+              "attribution_destination": "https://conversion.test",
+              "source_event_id": "123",
+              "source_site": "https://impression.test"
+            },
+            "type": "source-success"
+          }])json",
+      },
+      {
+          .result = StoreSourceResult::InternalError(),
+          .debug_key = 456,
+          .expected_report_body = R"json([{
+            "body": {
+              "attribution_destination": "https://conversion.test",
+              "source_debug_key": "456",
+              "source_event_id": "123",
+              "source_site": "https://impression.test"
+            },
+            "type": "source-unknown-error"
+          }])json",
+      },
+      {
+          .result = StoreSourceResult::InsufficientSourceCapacity(10),
+          .debug_key = std::nullopt,
+          .expected_report_body = R"json([{
+            "body": {
+              "attribution_destination": "https://conversion.test",
+              "limit": "10",
+              "source_event_id": "123",
+              "source_site": "https://impression.test"
+            },
+            "type": "source-storage-limit"
+          }])json",
+      },
+      {
+          .result = StoreSourceResult::ProhibitedByBrowserPolicy(),
+      },
+      {
+          .result = StoreSourceResult::InsufficientUniqueDestinationCapacity(3),
+          .expected_report_body = R"json([{
+            "body": {
+              "attribution_destination": "https://conversion.test",
+              "limit": "3",
+              "source_event_id": "123",
+              "source_site": "https://impression.test"
+            },
+            "type": "source-destination-limit"
+          }])json",
+      },
+      {
+          .result = StoreSourceResult::Success(
+              /*min_fake_report_time=*/std::nullopt),
+          .is_noised = true,
+          .expected_report_body = R"json([{
+            "body": {
+              "attribution_destination": "https://conversion.test",
+              "source_event_id": "123",
+              "source_site": "https://impression.test"
+            },
+            "type": "source-noised"
+          }])json",
+      },
+      {
+          .result = StoreSourceResult::ExcessiveReportingOrigins(),
+          .debug_key = 789,
+          .expected_report_body = R"json([{
+            "body": {
+              "attribution_destination": "https://conversion.test",
+              "source_debug_key": "789",
+              "source_event_id": "123",
+              "source_site": "https://impression.test"
+            },
+            "type": "source-success"
+          }])json",
+      },
+      {
+          .result = StoreSourceResult::ExcessiveReportingOrigins(),
+          .debug_key = 789,
+          .is_noised = true,
+          .expected_report_body = R"json([{
+            "body": {
+              "attribution_destination": "https://conversion.test",
+              "source_debug_key": "789",
+              "source_event_id": "123",
+              "source_site": "https://impression.test"
+            },
+            "type": "source-noised"
+          }])json",
+      },
+      {
+          .result = StoreSourceResult::DestinationGlobalLimitReached(),
+          .debug_key = 789,
+          .expected_report_body = R"json([{
+            "body": {
+              "attribution_destination": "https://conversion.test",
+              "source_debug_key": "789",
+              "source_event_id": "123",
+              "source_site": "https://impression.test"
+            },
+            "type": "source-success"
+          }])json",
+      },
+      {
+          .result = StoreSourceResult::DestinationGlobalLimitReached(),
+          .debug_key = 789,
+          .is_noised = true,
+          .expected_report_body = R"json([{
+            "body": {
+              "attribution_destination": "https://conversion.test",
+              "source_debug_key": "789",
+              "source_event_id": "123",
+              "source_site": "https://impression.test"
+            },
+            "type": "source-noised"
+          }])json",
+      },
+      {
+          .result = StoreSourceResult::DestinationReportingLimitReached(50),
+          .debug_key = std::nullopt,
+          .expected_report_body = R"json([{
+            "body": {
+              "attribution_destination": "https://conversion.test",
+              "limit": "50",
+              "source_event_id": "123",
+              "source_site": "https://impression.test"
+            },
+            "type": "source-destination-rate-limit"
+          }])json",
+      },
+      {
+          .result = StoreSourceResult::DestinationBothLimitsReached(50),
+          .expected_report_body = R"json([{
+            "body": {
+              "attribution_destination": "https://conversion.test",
+              "limit": "50",
+              "source_event_id": "123",
+              "source_site": "https://impression.test"
+            },
+            "type": "source-destination-rate-limit"
+          }])json",
+      },
+      {
+          .result = StoreSourceResult::ReportingOriginsPerSiteLimitReached(2),
+          .expected_report_body = R"json([{
+            "body": {
+              "attribution_destination": "https://conversion.test",
+              "limit": "2",
+              "source_event_id": "123",
+              "source_site": "https://impression.test"
+            },
+            "type": "source-reporting-origin-per-site-limit"
+          }])json",
+      },
   };
 
   for (bool is_debug_cookie_set : {false, true}) {
@@ -289,7 +332,7 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
                                    .SetDebugKey(test_case.debug_key)
                                    .SetDebugCookieSet(is_debug_cookie_set)
                                    .Build(),
-                               test_case.result);
+                               test_case.is_noised, test_case.result);
 
       SCOPED_TRACE(Message() << "is_debug_cookie_set: " << is_debug_cookie_set
                              << ", result: " << result.status());
@@ -323,7 +366,8 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
                         net::SchemefulSite::Deserialize("https://d.test"),
                     })
                     .Build(),
-                StoreSourceResult::SuccessNoised(
+                /*is_noised=*/true,
+                StoreSourceResult::Success(
                     /*min_fake_report_time=*/std::nullopt)));
 
     EXPECT_EQ(report->ReportBody(), base::test::ParseJson(R"json([{

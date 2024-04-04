@@ -103,17 +103,20 @@ std::optional<DebugDataTypeAndBody> GetReportDataBody(
               StoreSourceResult::ExceedsMaxTriggerStateCardinality>) {
             return std::optional<DebugDataTypeAndBody>();
           },
-          [](absl::variant<StoreSourceResult::Success,
-                           // `kSourceSuccess` is sent for a few errors as well
-                           // to mitigate the security concerns on reporting
-                           // these errors. Because these errors are thrown
-                           // based on information across reporting origins,
-                           // reporting on them would violate the same-origin
-                           // policy.
-                           StoreSourceResult::ExcessiveReportingOrigins,
-                           StoreSourceResult::DestinationGlobalLimitReached>) {
-            return std::make_optional<DebugDataTypeAndBody>(
-                DebugDataType::kSourceSuccess);
+          [&](absl::variant<StoreSourceResult::Success,
+                            // `kSourceSuccess` is sent for a few errors as well
+                            // to mitigate the security concerns on reporting
+                            // these errors. Because these errors are thrown
+                            // based on information across reporting origins,
+                            // reporting on them would violate the same-origin
+                            // policy.
+                            StoreSourceResult::ExcessiveReportingOrigins,
+                            StoreSourceResult::DestinationGlobalLimitReached>) {
+            return result.is_noised()
+                       ? std::make_optional<DebugDataTypeAndBody>(
+                             DebugDataType::kSourceNoised)
+                       : std::make_optional<DebugDataTypeAndBody>(
+                             DebugDataType::kSourceSuccess);
           },
           [](StoreSourceResult::InsufficientUniqueDestinationCapacity v) {
             return std::make_optional<DebugDataTypeAndBody>(
@@ -124,10 +127,6 @@ std::optional<DebugDataTypeAndBody> GetReportDataBody(
             return std::make_optional<DebugDataTypeAndBody>(
                 DebugDataType::kSourceDestinationRateLimit,
                 absl::visit([](auto v) { return v.limit; }, v));
-          },
-          [](StoreSourceResult::SuccessNoised) {
-            return std::make_optional<DebugDataTypeAndBody>(
-                DebugDataType::kSourceNoised);
           },
           [](StoreSourceResult::InsufficientSourceCapacity v) {
             return std::make_optional<DebugDataTypeAndBody>(

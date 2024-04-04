@@ -17,7 +17,11 @@ namespace content {
 
 class CONTENT_EXPORT StoreSourceResult {
  public:
-  struct Success {};
+  struct Success {
+    std::optional<base::Time> min_fake_report_time;
+    explicit Success(std::optional<base::Time> min_fake_report_time)
+        : min_fake_report_time(min_fake_report_time) {}
+  };
 
   struct InternalError {};
 
@@ -34,12 +38,6 @@ class CONTENT_EXPORT StoreSourceResult {
   struct ExcessiveReportingOrigins {};
 
   struct ProhibitedByBrowserPolicy {};
-
-  struct SuccessNoised {
-    std::optional<base::Time> min_fake_report_time;
-    explicit SuccessNoised(std::optional<base::Time> min_fake_report_time)
-        : min_fake_report_time(min_fake_report_time) {}
-  };
 
   struct DestinationReportingLimitReached {
     int limit;
@@ -68,7 +66,6 @@ class CONTENT_EXPORT StoreSourceResult {
                                InsufficientUniqueDestinationCapacity,
                                ExcessiveReportingOrigins,
                                ProhibitedByBrowserPolicy,
-                               SuccessNoised,
                                DestinationReportingLimitReached,
                                DestinationGlobalLimitReached,
                                DestinationBothLimitsReached,
@@ -76,7 +73,7 @@ class CONTENT_EXPORT StoreSourceResult {
                                ExceedsMaxChannelCapacity,
                                ExceedsMaxTriggerStateCardinality>;
 
-  StoreSourceResult(StorableSource, Result);
+  StoreSourceResult(StorableSource, bool is_noised, Result);
 
   ~StoreSourceResult();
 
@@ -90,10 +87,13 @@ class CONTENT_EXPORT StoreSourceResult {
 
   const StorableSource& source() const { return source_; }
 
+  bool is_noised() const { return is_noised_; }
+
   const Result& result() const { return result_; }
 
  private:
   StorableSource source_;
+  bool is_noised_;
   Result result_;
 };
 

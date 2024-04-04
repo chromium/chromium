@@ -1865,17 +1865,16 @@ TEST_F(AttributionStorageTest, StoreSource_ReturnsMinFakeReportTime) {
       },
       {
           std::vector<attribution_reporting::FakeEventLevelReport>(),
-          VariantWith<StoreSourceResult::SuccessNoised>(
-              Field(&StoreSourceResult::SuccessNoised::min_fake_report_time,
-                    std::nullopt)),
+          VariantWith<StoreSourceResult::Success>(Field(
+              &StoreSourceResult::Success::min_fake_report_time, std::nullopt)),
       },
       {
           std::vector<attribution_reporting::FakeEventLevelReport>{
               {.trigger_data = 0, .window_index = 0},
               {.trigger_data = 0, .window_index = 1},
               {.trigger_data = 0, .window_index = 2}},
-          VariantWith<StoreSourceResult::SuccessNoised>(
-              Field(&StoreSourceResult::SuccessNoised::min_fake_report_time,
+          VariantWith<StoreSourceResult::Success>(
+              Field(&StoreSourceResult::Success::min_fake_report_time,
                     now + base::Days(1))),
       },
   };
@@ -3042,14 +3041,18 @@ TEST_F(AttributionStorageTest, MaxReportingOriginsPerSource) {
           .Build());
   ASSERT_EQ(result.status(), StorableSource::Result::kSuccess);
 
+  delegate()->set_randomized_response(
+      std::vector<attribution_reporting::FakeEventLevelReport>{});
   result = storage()->StoreSource(
       SourceBuilder()
           .SetReportingOrigin(*SuitableOrigin::Deserialize("https://r3.test"))
           .SetDebugKey(3)
           .SetDebugCookieSet(true)
           .Build());
+  delegate()->set_randomized_response(std::nullopt);
   ASSERT_EQ(result.status(),
             StorableSource::Result::kExcessiveReportingOrigins);
+  EXPECT_TRUE(result.is_noised());
 
   EXPECT_THAT(storage()->GetActiveSources(),
               ElementsAre(SourceDebugKeyIs(1), SourceDebugKeyIs(2)));

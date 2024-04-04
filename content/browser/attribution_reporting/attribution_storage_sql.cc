@@ -510,8 +510,10 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
   CHECK(!source.registration().debug_key.has_value() ||
         source.common_info().debug_cookie_set());
 
+  bool is_noised = false;
+
   const auto make_result = [&](StoreSourceResult::Result&& result) {
-    return StoreSourceResult(std::move(source), std::move(result));
+    return StoreSourceResult(std::move(source), is_noised, std::move(result));
   };
 
   // TODO(crbug.com/1499890): Support multiple specs.
@@ -606,6 +608,13 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
     case RateLimitResult::kError:
       return make_result(StoreSourceResult::InternalError());
   }
+
+  is_noised = randomized_response_data.response().has_value();
+
+  // IMPORTANT: The following rate-limits are shared across reporting sites and
+  // therefore security sensitive. It's important to ensure that these
+  // rate-limits are checked as last steps in source registration to avoid
+  // side-channel leakage of the cross-origin data.
 
   if (auto result = CheckDestinationRateLimit(source, source_time);
       !absl::holds_alternative<StoreSourceResult::Success>(result)) {
@@ -785,10 +794,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
                                  kCurrentVersionNumber, /*min=*/56,
                                  /*exclusive_max=*/86, /*buckets=*/30);
 
-  if (attribution_logic == StoredSource::AttributionLogic::kTruthfully) {
-    return make_result(StoreSourceResult::Success());
-  }
-  return make_result(StoreSourceResult::SuccessNoised(min_fake_report_time));
+  return make_result(StoreSourceResult::Success(min_fake_report_time));
 }
 
 StoreSourceResult::Result AttributionStorageSql::CheckDestinationRateLimit(
@@ -803,7 +809,7 @@ StoreSourceResult::Result AttributionStorageSql::CheckDestinationRateLimit(
 
   switch (rate_limit_result) {
     case RateLimitTable::DestinationRateLimitResult::kAllowed:
-      return StoreSourceResult::Success();
+      return StoreSourceResult::Success(/*min_fake_report_time=*/std::nullopt);
     case RateLimitTable::DestinationRateLimitResult::kHitGlobalLimit:
       return StoreSourceResult::DestinationGlobalLimitReached();
     case RateLimitTable::DestinationRateLimitResult::kHitReportingLimit:
