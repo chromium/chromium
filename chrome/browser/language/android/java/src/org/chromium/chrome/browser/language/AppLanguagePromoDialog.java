@@ -49,13 +49,14 @@ import java.util.Set;
  * browser startup when no other promo or modals are shown.
  */
 public class AppLanguagePromoDialog {
-    private Activity mActivity;
-    private Profile mProfile;
-    private ModalDialogManager mModalDialogManager;
-    private PropertyModel mAppLanguageModal;
-    private PropertyModel mLoadingModal;
+    private final Activity mActivity;
+    private final Profile mProfile;
+    private final ModalDialogManager mModalDialogManager;
+    private final PropertyModel mAppLanguageModal;
+    private final PropertyModel mLoadingModal;
+    private final RestartAction mRestartAction;
+
     private LanguageItemAdapter mAdapter;
-    private RestartAction mRestartAction;
 
     /** Annotation for row item type. Either a LanguageItem or separator */
     @IntDef({ItemType.LANGUAGE, ItemType.SEPARATOR, ItemType.MORE_LANGUAGES})
@@ -121,6 +122,7 @@ public class AppLanguagePromoDialog {
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             RestartAction restartAction) {
         mActivity = activity;
+        mProfile = profile;
         mModalDialogManager = modalDialogManagerSupplier.get();
         mRestartAction = restartAction;
 
