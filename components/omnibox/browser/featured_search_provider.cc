@@ -116,11 +116,14 @@ void FeaturedSearchProvider::AddStarterPackMatch(
     if (OmniboxFieldTrial::IsStarterPackExpansionEnabled() &&
         template_url.starter_pack_id() ==
             TemplateURLStarterPackData::kAskGoogle) {
-      match.description = template_url.short_name();
+      match.description = l10n_util::GetStringFUTF16(
+          IDS_OMNIBOX_INSTANT_KEYWORD_CHAT_TEXT, template_url.keyword(),
+          template_url.short_name());
       match.relevance += 10;
     } else {
       match.description = l10n_util::GetStringFUTF16(
-          IDS_OMNIBOX_INSTANT_KEYWORD_SEARCH_TEXT, template_url.short_name());
+          IDS_OMNIBOX_INSTANT_KEYWORD_SEARCH_TEXT, template_url.keyword(),
+          template_url.short_name());
     }
     match.description_class.emplace_back(0, ACMatchClassification::NONE);
     match.contents =
