@@ -9309,6 +9309,16 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kComponentUpdaterTestRequestDescription, kOsCrOS,
      SINGLE_VALUE_TYPE_AND_VALUE(switches::kComponentUpdater,
                                  component_updater::kSwitchTestRequestParam)},
+
+    {"campaigns-test-tag",
+     flag_descriptions::kCampaignsComponentUpdaterTestTagName,
+     flag_descriptions::kCampaignsComponentUpdaterTestTagDescription, kOsCrOS,
+     STRING_VALUE_TYPE(switches::kCampaignsTestTag, "")},
+
+    {"demo-mode-test-tag",
+     flag_descriptions::kDemoModeComponentUpdaterTestTagName,
+     flag_descriptions::kDemoModeComponentUpdaterTestTagDescription, kOsCrOS,
+     STRING_VALUE_TYPE(switches::kDemoModeTestTag, "")},
 #endif
 
     {"enable-raw-draw", flag_descriptions::kEnableRawDrawName,

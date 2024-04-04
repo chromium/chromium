@@ -5889,6 +5889,13 @@ const char kCloudGamingDeviceName[] = "Enable cloud game search";
 const char kCloudGamingDeviceDescription[] =
     "Enables cloud game search results in the launcher.";
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kCampaignsComponentUpdaterTestTagName[] = "Campaigns test tag";
+const char kCampaignsComponentUpdaterTestTagDescription[] =
+    "Tags used for component updater to selet Omaha cohort for Growth "
+    "Campaigns.";
+#endif  // IS_CHROMEOS_ASH
+
 const char kComponentUpdaterTestRequestName[] =
     "Enable the component updater check 'test-request' parameter";
 const char kComponentUpdaterTestRequestDescription[] =
@@ -5969,6 +5976,12 @@ const char kCameraAppCrosEventsDescription[] =
 const char kCameraAppDigitalZoomName[] = "Camera App Digital Zoom";
 const char kCameraAppDigitalZoomDescription[] =
     "Enable this flag to use digital zoom in Camera app.";
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kDemoModeComponentUpdaterTestTagName[] = "Demo Mode test tag";
+const char kDemoModeComponentUpdaterTestTagDescription[] =
+    "Tags used for component updater to select Omaha cohort for Demo Mode.";
+#endif  // IS_CHROMEOS_ASH
 
 const char kDeskProfilesName[] = "Desk profiles";
 const char kDeskProfilesDescription[] =

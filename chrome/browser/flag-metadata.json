@@ -1146,6 +1146,11 @@
     "expiry_milestone": 128
   },
   {
+    "name": "campaigns-test-tag",
+    "owners": [ "llin@google.com", "cros-growth@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "campbell-glyph",
     "owners": [
       "tbarzic@chromium.org",
@@ -1795,6 +1800,11 @@
     "name": "defer-tab-switcher-layout-creation",
     "owners": [ "ckitagawa@google.com", "clank-isochron-team@google.com" ],
     "expiry_milestone": 125
+  },
+  {
+    "name": "demo-mode-test-tag",
+    "owners": [ "llin@google.com", "cros-demo-mode-eng@google.com" ],
+    "expiry_milestone": 130
   },
   {
     "name": "deprecate-alt-click",

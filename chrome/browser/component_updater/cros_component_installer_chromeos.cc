@@ -26,6 +26,7 @@
 #include "chromeos/ash/components/dbus/image_loader/image_loader_client.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/component_updater/component_updater_paths.h"
+#include "components/component_updater/component_updater_switches.h"
 #include "components/crx_file/id_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
@@ -41,15 +42,6 @@ namespace component_updater {
 const char kPreferDcheckSwitch[] = "prefer-dcheck";
 const char kPreferDcheckOptIn[] = "opt-in";
 const char kPreferDcheckOptOut[] = "opt-out";
-
-// Switch to control which serving campaigns file versions to select in test
-// cohort. Example: `--campaigns-test-tag=dev1` will select test cohort which
-// tag matches dev1.
-const char kCompaignsTestTag[] = "campaigns-test-tag";
-// Switch to control which serving demo mode app versions to select in test
-// cohort. Example: `--demo-app-test-tag=dev1` will select test cohort which tag
-// matches dev1.
-const char kDemoModeAppTestTag[] = "demo-app-test-tag";
 
 // Root path where all components are stored.
 constexpr char kComponentsRootPath[] = "cros-components";
@@ -322,9 +314,9 @@ DemoAppInstallerPolicy::GetInstallerAttributes() const {
       ash::demo_mode::IsFeatureAwareDevice() ? "true" : "false";
 
   auto* const cmdline = base::CommandLine::ForCurrentProcess();
-  if (cmdline->HasSwitch(kDemoModeAppTestTag)) {
+  if (cmdline->HasSwitch(switches::kDemoModeTestTag)) {
     demo_app_installer_attributes["tag"] =
-        cmdline->GetSwitchValueASCII(kDemoModeAppTestTag);
+        cmdline->GetSwitchValueASCII(switches::kDemoModeTestTag);
   }
   return demo_app_installer_attributes;
 }
@@ -348,8 +340,9 @@ update_client::InstallerAttributes
 GrowthCampaignsInstallerPolicy::GetInstallerAttributes() const {
   update_client::InstallerAttributes attributes;
   auto* const cmdline = base::CommandLine::ForCurrentProcess();
-  if (cmdline->HasSwitch(kCompaignsTestTag)) {
-    attributes["tag"] = cmdline->GetSwitchValueASCII(kCompaignsTestTag);
+  if (cmdline->HasSwitch(switches::kCampaignsTestTag)) {
+    attributes["tag"] =
+        cmdline->GetSwitchValueASCII(switches::kCampaignsTestTag);
   }
   return attributes;
 }

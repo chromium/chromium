@@ -100,6 +100,11 @@ extern const char kAuxiliarySearchDonationDescription[];
 extern const char kBackgroundResourceFetchName[];
 extern const char kBackgroundResourceFetchDescription[];
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+extern const char kCampaignsComponentUpdaterTestTagName[];
+extern const char kCampaignsComponentUpdaterTestTagDescription[];
+#endif  // IS_CHROMEOS_ASH
+
 extern const char kCOLRV1FontsDescription[];
 
 extern const char kCdmStorageDatabaseName[];
@@ -177,6 +182,11 @@ extern const char kDesynchronizedWebglDescription[];
 
 extern const char kDIPSName[];
 extern const char kDIPSDescription[];
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+extern const char kDemoModeComponentUpdaterTestTagName[];
+extern const char kDemoModeComponentUpdaterTestTagDescription[];
+#endif  // IS_CHROMEOS_ASH
 
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kDirectSocketsWebApiName[];
