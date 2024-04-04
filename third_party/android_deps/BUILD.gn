@@ -1224,6 +1224,20 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_prebuilt("com_squareup_moshi_moshi_adapters_java") {
+    jar_path =
+        "libs/com_squareup_moshi_moshi_adapters/moshi-adapters-1.15.0.jar"
+    output_name = "com_squareup_moshi_moshi_adapters"
+    supports_android = true
+    enable_bytecode_checks = false
+    testonly = true
+    deps = [
+      ":com_squareup_moshi_moshi_java",
+      ":org_jetbrains_kotlin_kotlin_stdlib_jdk8_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("com_squareup_wire_wire_runtime_jvm_java") {
     jar_path =
         "libs/com_squareup_wire_wire_runtime_jvm/wire-runtime-jvm-4.9.7.jar"
@@ -2324,6 +2338,26 @@ if (!limit_android_deps) {
       "//third_party/androidx:*",
     ]
     testonly = true
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_prebuilt("com_squareup_moshi_moshi_java") {
+    jar_path = "libs/com_squareup_moshi_moshi/moshi-1.15.0.jar"
+    output_name = "com_squareup_moshi_moshi"
+    supports_android = true
+    enable_bytecode_checks = false
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/android_deps/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/androidx:*",
+    ]
+    testonly = true
+    deps = [
+      ":com_squareup_okio_okio_jvm_java",
+      ":org_jetbrains_kotlin_kotlin_stdlib_jdk8_java",
+    ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
