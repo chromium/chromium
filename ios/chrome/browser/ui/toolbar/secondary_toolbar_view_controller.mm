@@ -116,11 +116,16 @@
   const CGFloat clampedFontSizeMultiplier = ToolbarClampedFontSizeMultiplier(
       self.traitCollection.preferredContentSizeCategory);
 
-  return AlignValueToPixel(
-      (kBottomAdaptiveLocationBarTopMargin * progress +
-       kBottomAdaptiveLocationBarVerticalMarginFullscreen * (1 - progress)) *
-          clampedFontSizeMultiplier +
-      (clampedFontSizeMultiplier - 1) * kLocationBarVerticalMarginDynamicType);
+  const BOOL hasBottomSafeArea = self.view.window.safeAreaInsets.bottom;
+  const CGFloat fullscreenMargin =
+      hasBottomSafeArea ? kBottomAdaptiveLocationBarVerticalMarginFullscreen
+                        : 0;
+
+  return AlignValueToPixel((kBottomAdaptiveLocationBarTopMargin * progress +
+                            fullscreenMargin * (1 - progress)) *
+                               clampedFontSizeMultiplier +
+                           (clampedFontSizeMultiplier - 1) *
+                               kLocationBarVerticalMarginDynamicType);
 }
 
 /// Collapses secondary toolbar when it's moved above the keyboard.
