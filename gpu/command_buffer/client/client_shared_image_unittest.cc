@@ -306,6 +306,42 @@ TEST(ClientSharedImageTest,
   }
 }
 
+// When the client asks for SCANOUT usage with a single-plane format,
+// GL_TEXTURE_2D should be used as the texture target on all platforms other
+// than Mac, where the MacOS-specific target for native buffers should be used.
+TEST(ClientSharedImageTest, GetTextureTarget_SinglePlaneFormats_ScanoutUsage) {
+  auto sii = base::MakeRefCounted<TestSharedImageInterface>();
+
+#if BUILDFLAG(IS_MAC)
+  // Explicitly set the MacOS-specific texture target to a target other than
+  // GL_TEXTURE_2D to ensure that the test is meaningful on Mac.
+  const uint32_t kMacOSSpecificTarget = GL_TEXTURE_RECTANGLE_ARB;
+  sii->set_macos_specific_texture_target(kMacOSSpecificTarget);
+#endif
+
+  const gfx::Size kSize(256, 256);
+  const uint32_t kUsage = SHARED_IMAGE_USAGE_SCANOUT;
+
+  for (auto format : viz::SinglePlaneFormat::kAll) {
+    SharedImageInfo si_info{format,
+                            kSize,
+                            gfx::ColorSpace(),
+                            kTopLeft_GrSurfaceOrigin,
+                            kOpaque_SkAlphaType,
+                            kUsage,
+                            ""};
+
+    auto client_si = sii->CreateSharedImage(si_info, kNullSurfaceHandle);
+
+#if BUILDFLAG(IS_MAC)
+    const uint32_t expected_texture_target = kMacOSSpecificTarget;
+#else
+    const uint32_t expected_texture_target = GL_TEXTURE_2D;
+#endif
+    EXPECT_EQ(client_si->GetTextureTarget(), expected_texture_target);
+  }
+}
+
 #if !BUILDFLAG(IS_MAC)
 // When not on Mac, the default target should be used for multi-planar
 // formats if external sampling is not set (the logic for Mac is distinct and is
