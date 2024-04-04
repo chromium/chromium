@@ -19,6 +19,12 @@ per-file attribution_*=file://content/browser/attribution_reporting/OWNERS
 # For Aggregation Service testing tool.
 per-file test_aggregation_service*=file://content/browser/aggregation_service/OWNERS
 
+# For Topics API.
+per-file browsing_topics_*=file://components/browsing_topics/OWNERS
+
+# For Shared Storage API.
+per-file shared_storage_*=file://third_party/blink/renderer/modules/shared_storage/OWNERS
+
 # Network Service
 per-file network_service_test_helper.*=file://services/network/OWNERS
 
