@@ -58,6 +58,10 @@ class DefaultBrowserPromptManager : public BrowserTabStripTrackerDelegate,
 
   void MaybeShowPrompt();
 
+  // Resets the tracking preferences for the default browser prompts so that
+  // they are re-shown if the browser ceases to be the user's chosen default.
+  static void ResetDefaultBrowserPromptPrefs(Profile* profile);
+
   void CreateInfoBarForWebContents(content::WebContents* contents,
                                    Profile* profile);
   void CloseAllInfoBars();

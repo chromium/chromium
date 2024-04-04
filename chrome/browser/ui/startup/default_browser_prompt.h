@@ -18,13 +18,6 @@ void MigrateDefaultBrowserLastDeclinedPref(PrefService* profile_prefs);
 // Shows a prompt UI to set the default browser if necessary.
 void ShowDefaultBrowserPrompt(Profile* profile);
 
-// Marks the default browser prompt as having been declined.
-void DefaultBrowserPromptDeclined(Profile* profile);
-
-// Resets the tracking preference for the default browser prompt so that it is
-// re-shown if the browser ceases to be the user's chosen default.
-void ResetDefaultBrowserPrompt(Profile* profile);
-
 // Only used within tests to confirm the behavior of the default browser prompt.
 void ShowPromptForTesting();
 

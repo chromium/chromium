@@ -51,6 +51,8 @@ class DefaultBrowserInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   void AllowExpiry();
 
+  void UpdatePrefsForDeclinedPrompt(Profile* profile);
+
   // ConfirmInfoBarDelegate:
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;

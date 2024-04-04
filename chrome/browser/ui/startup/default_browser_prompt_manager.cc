@@ -112,6 +112,15 @@ void DefaultBrowserPromptManager::CloseAllInfoBars() {
   infobars_.clear();
 }
 
+void DefaultBrowserPromptManager::ResetDefaultBrowserPromptPrefs(
+    Profile* profile) {
+  profile->GetPrefs()->ClearPref(prefs::kDefaultBrowserLastDeclined);
+
+  PrefService* local_state = g_browser_process->local_state();
+  local_state->ClearPref(prefs::kDefaultBrowserLastDeclinedTime);
+  local_state->ClearPref(prefs::kDefaultBrowserDeclinedCount);
+}
+
 bool DefaultBrowserPromptManager::ShouldTrackBrowser(Browser* browser) {
   return browser->is_type_normal() &&
          !browser->profile()->IsIncognitoProfile() &&

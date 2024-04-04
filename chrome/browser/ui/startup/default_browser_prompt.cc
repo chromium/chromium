@@ -36,11 +36,6 @@
 
 namespace {
 
-void ResetCheckDefaultBrowserPref(Profile* profile) {
-  if (profile)
-    ResetDefaultBrowserPrompt(profile);
-}
-
 void ShowPrompt() {
   // Show the default browser request prompt in the most recently active,
   // visible, tabbed browser. Do not show the prompt if no such browser exists.
@@ -94,7 +89,8 @@ void OnCheckIsDefaultBrowserFinished(
   if (state == shell_integration::IS_DEFAULT) {
     // Notify the user in the future if Chrome ceases to be the user's chosen
     // default browser.
-    ResetCheckDefaultBrowserPref(profile);
+    DefaultBrowserPromptManager::GetInstance()->ResetDefaultBrowserPromptPrefs(
+        profile);
   } else if (state == shell_integration::NOT_DEFAULT &&
              shell_integration::CanSetAsDefaultBrowser() &&
              ShouldShowDefaultBrowserPromptForCurrentVersion()) {
@@ -177,26 +173,6 @@ void ShowDefaultBrowserPrompt(Profile* profile) {
       new shell_integration::DefaultBrowserWorker())
       ->StartCheckIsDefault(
           base::BindOnce(&OnCheckIsDefaultBrowserFinished, profile));
-}
-
-void DefaultBrowserPromptDeclined(Profile* profile) {
-  base::Time now = base::Time::Now();
-  profile->GetPrefs()->SetInt64(prefs::kDefaultBrowserLastDeclined,
-                                now.ToInternalValue());
-
-  PrefService* local_state = g_browser_process->local_state();
-  local_state->SetTime(prefs::kDefaultBrowserLastDeclinedTime, now);
-  local_state->SetInteger(
-      prefs::kDefaultBrowserDeclinedCount,
-      local_state->GetInteger(prefs::kDefaultBrowserDeclinedCount) + 1);
-}
-
-void ResetDefaultBrowserPrompt(Profile* profile) {
-  profile->GetPrefs()->ClearPref(prefs::kDefaultBrowserLastDeclined);
-
-  PrefService* local_state = g_browser_process->local_state();
-  local_state->ClearPref(prefs::kDefaultBrowserLastDeclinedTime);
-  local_state->ClearPref(prefs::kDefaultBrowserDeclinedCount);
 }
 
 void ShowPromptForTesting() {

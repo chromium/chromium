@@ -12,13 +12,17 @@
 #include "base/metrics/user_metrics.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/pass_key.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/startup/default_browser_prompt.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
+#include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -61,6 +65,19 @@ void DefaultBrowserInfoBarDelegate::AllowExpiry() {
   should_expire_ = true;
 }
 
+void DefaultBrowserInfoBarDelegate::UpdatePrefsForDeclinedPrompt(
+    Profile* profile) {
+  base::Time now = base::Time::Now();
+  profile->GetPrefs()->SetInt64(prefs::kDefaultBrowserLastDeclined,
+                                now.ToInternalValue());
+
+  PrefService* local_state = g_browser_process->local_state();
+  local_state->SetTime(prefs::kDefaultBrowserLastDeclinedTime, now);
+  local_state->SetInteger(
+      prefs::kDefaultBrowserDeclinedCount,
+      local_state->GetInteger(prefs::kDefaultBrowserDeclinedCount) + 1);
+}
+
 infobars::InfoBarDelegate::InfoBarIdentifier
 DefaultBrowserInfoBarDelegate::GetIdentifier() const {
   return DEFAULT_BROWSER_INFOBAR_DELEGATE;
@@ -78,8 +95,9 @@ bool DefaultBrowserInfoBarDelegate::ShouldExpire(
 void DefaultBrowserInfoBarDelegate::InfoBarDismissed() {
   action_taken_ = true;
   // |profile_| may be null in tests.
-  if (profile_)
-    DefaultBrowserPromptDeclined(profile_);
+  if (profile_) {
+    UpdatePrefsForDeclinedPrompt(profile_);
+  }
   base::RecordAction(base::UserMetricsAction("DefaultBrowserInfoBar_Dismiss"));
   UMA_HISTOGRAM_ENUMERATION("DefaultBrowser.InfoBar.UserInteraction",
                             DISMISS_INFO_BAR,
