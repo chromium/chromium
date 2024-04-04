@@ -186,13 +186,9 @@ void EventAckData::DecrementInflightEvent(
 }
 
 void EventAckData::ClearUnackedEventsForRenderProcess(int render_process_id) {
-  for (auto it = unacked_events_.begin(); it != unacked_events_.end();) {
-    if (it->second.render_process_id == render_process_id) {
-      it = unacked_events_.erase(it);
-    } else {
-      ++it;
-    }
-  }
+  std::erase_if(unacked_events_, [render_process_id](const auto& entry) {
+    return entry.second.render_process_id == render_process_id;
+  });
 }
 
 EventAckData::EventInfo* EventAckData::GetUnackedEventForTesting(int event_id) {

@@ -164,13 +164,9 @@ void TabCaptureRegistry::OnExtensionUnloaded(
     const Extension* extension,
     UnloadedExtensionReason reason) {
   // Cleanup all the requested media streams for this extension.
-  for (auto it = requests_.begin(); it != requests_.end();) {
-    if ((*it)->extension_id() == extension->id()) {
-      it = requests_.erase(it);
-    } else {
-      ++it;
-    }
-  }
+  std::erase_if(requests_, [extension](const auto& entry) {
+    return entry->extension_id() == extension->id();
+  });
 }
 
 std::string TabCaptureRegistry::AddRequest(
