@@ -1293,7 +1293,7 @@ IN_PROC_BROWSER_TEST_F(
       "manage_isolated_web_apps_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsBluetoothPage) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OsBluetoothPage) {
   RunSettingsTest("os_bluetooth_page/os_bluetooth_page_test.js");
 }
 
