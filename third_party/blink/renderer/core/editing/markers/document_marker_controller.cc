@@ -173,6 +173,15 @@ inline bool DocumentMarkerController::PossiblyHasMarkers(
   return possibly_existing_marker_types_.Intersects(types);
 }
 
+bool DocumentMarkerController::HasAnyMarkersForText(const Text& text) const {
+  for (const auto& marker_map : markers_) {
+    if (marker_map && marker_map->Contains(&text)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 DocumentMarkerController::DocumentMarkerController(Document& document)
     : document_(&document) {
   markers_.Grow(DocumentMarker::kMarkerTypeIndexesCount);
@@ -801,6 +810,17 @@ DocumentMarkerVector DocumentMarkerController::MarkersFor(
               return marker1->StartOffset() < marker2->StartOffset();
             });
   return result;
+}
+
+DocumentMarkerVector DocumentMarkerController::MarkersFor(
+    const Text& text,
+    DocumentMarker::MarkerType marker_type,
+    unsigned start_offset,
+    unsigned end_offset) const {
+  DocumentMarkerVector result;
+  DocumentMarkerList* const list = FindMarkersForType(marker_type, &text);
+  return list ? list->MarkersIntersectingRange(start_offset, end_offset)
+              : result;
 }
 
 DocumentMarkerVector DocumentMarkerController::Markers() const {

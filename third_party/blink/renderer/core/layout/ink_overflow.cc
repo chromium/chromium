@@ -576,10 +576,16 @@ LogicalRect InkOverflow::ComputeDecorationOverflow(
   }
 
   DocumentMarkerController& controller = text_node->GetDocument().Markers();
-  std::optional<TextOffsetRange> fragment_dom_offsets;
+  if (!controller.HasAnyMarkersForText(*text_node)) {
+    return accumulated_bound;
+  }
+  TextOffsetRange fragment_dom_offsets =
+      HighlightPainter::GetFragmentDOMOffsets(
+          *text_node, fragment_item->StartOffset(), fragment_item->EndOffset());
 
   DocumentMarkerVector target_markers = controller.MarkersFor(
-      *text_node, DocumentMarker::MarkerTypes::TextFragment());
+      *text_node, DocumentMarker::kTextFragment, fragment_dom_offsets.start,
+      fragment_dom_offsets.end);
   if (!target_markers.empty()) {
     LogicalRect target_bound = ComputeMarkerOverflow(
         target_markers, DocumentMarker::kTextFragment, fragment_item,
@@ -589,7 +595,8 @@ LogicalRect InkOverflow::ComputeDecorationOverflow(
   }
 
   DocumentMarkerVector custom_markers = controller.MarkersFor(
-      *text_node, DocumentMarker::MarkerTypes::CustomHighlight());
+      *text_node, DocumentMarker::kCustomHighlight, fragment_dom_offsets.start,
+      fragment_dom_offsets.end);
   if (!custom_markers.empty()) {
     LogicalRect custom_bound = ComputeCustomHighlightOverflow(
         custom_markers, fragment_item, fragment_dom_offsets, text_node, style,
@@ -598,7 +605,8 @@ LogicalRect InkOverflow::ComputeDecorationOverflow(
   }
 
   DocumentMarkerVector spelling_markers = controller.MarkersFor(
-      *text_node, DocumentMarker::MarkerTypes::Spelling());
+      *text_node, DocumentMarker::kSpelling, fragment_dom_offsets.start,
+      fragment_dom_offsets.end);
   if (!spelling_markers.empty()) {
     LogicalRect spelling_bound = ComputeMarkerOverflow(
         spelling_markers, DocumentMarker::kSpelling, fragment_item,
@@ -607,8 +615,9 @@ LogicalRect InkOverflow::ComputeDecorationOverflow(
     accumulated_bound.Unite(spelling_bound);
   }
 
-  DocumentMarkerVector grammar_markers =
-      controller.MarkersFor(*text_node, DocumentMarker::MarkerTypes::Grammar());
+  DocumentMarkerVector grammar_markers = controller.MarkersFor(
+      *text_node, DocumentMarker::kGrammar, fragment_dom_offsets.start,
+      fragment_dom_offsets.end);
   if (!grammar_markers.empty()) {
     LogicalRect grammar_bound = ComputeMarkerOverflow(
         grammar_markers, DocumentMarker::kGrammar, fragment_item,
@@ -666,7 +675,7 @@ LogicalRect InkOverflow::ComputeMarkerOverflow(
     const DocumentMarkerVector& markers,
     const DocumentMarker::MarkerType type,
     const FragmentItem* fragment_item,
-    std::optional<TextOffsetRange>& fragment_dom_offsets,
+    const TextOffsetRange& fragment_dom_offsets,
     Text* text_node,
     const ComputedStyle& style,
     const Font& scaled_font,
@@ -684,13 +693,7 @@ LogicalRect InkOverflow::ComputeMarkerOverflow(
     return accumulated_bound;
   }
 
-  if (!fragment_dom_offsets) {
-    fragment_dom_offsets = HighlightPainter::GetFragmentDOMOffsets(
-        *text_node, fragment_item->StartOffset(), fragment_item->EndOffset());
-  }
-
-  MarkerRangeMappingContext mapping_context(*text_node,
-                                            fragment_dom_offsets.value());
+  MarkerRangeMappingContext mapping_context(*text_node, fragment_dom_offsets);
   for (auto marker : markers) {
     std::optional<TextOffsetRange> marker_offsets =
         mapping_context.GetTextContentOffsets(*marker);
@@ -721,7 +724,7 @@ LogicalRect InkOverflow::ComputeMarkerOverflow(
 LogicalRect InkOverflow::ComputeCustomHighlightOverflow(
     const DocumentMarkerVector& markers,
     const FragmentItem* fragment_item,
-    std::optional<TextOffsetRange>& fragment_dom_offsets,
+    const TextOffsetRange& fragment_dom_offsets,
     Text* text_node,
     const ComputedStyle& style,
     const Font& scaled_font,
@@ -731,13 +734,7 @@ LogicalRect InkOverflow::ComputeCustomHighlightOverflow(
   DCHECK(!fragment_item->IsSvgText());
   LogicalRect accumulated_bound;
 
-  if (!fragment_dom_offsets) {
-    fragment_dom_offsets = HighlightPainter::GetFragmentDOMOffsets(
-        *text_node, fragment_item->StartOffset(), fragment_item->EndOffset());
-  }
-
-  MarkerRangeMappingContext mapping_context(*text_node,
-                                            fragment_dom_offsets.value());
+  MarkerRangeMappingContext mapping_context(*text_node, fragment_dom_offsets);
   for (auto marker : markers) {
     std::optional<TextOffsetRange> marker_offsets =
         mapping_context.GetTextContentOffsets(*marker);

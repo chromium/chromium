@@ -201,7 +201,7 @@ class CORE_EXPORT InkOverflow {
       const DocumentMarkerVector& markers,
       const DocumentMarker::MarkerType type,
       const FragmentItem* fragment_item,
-      std::optional<TextOffsetRange>& fragment_dom_offsets,
+      const TextOffsetRange& fragment_dom_offsets,
       Text* node,
       const ComputedStyle& style,
       const Font& scaled_font,
@@ -212,7 +212,7 @@ class CORE_EXPORT InkOverflow {
   static LogicalRect ComputeCustomHighlightOverflow(
       const DocumentMarkerVector& markers,
       const FragmentItem* fragment_item,
-      std::optional<TextOffsetRange>& fragment_dom_offsets,
+      const TextOffsetRange& fragment_dom_offsets,
       Text* text_node,
       const ComputedStyle& style,
       const Font& scaled_font,

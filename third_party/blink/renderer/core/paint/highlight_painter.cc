@@ -368,18 +368,24 @@ HighlightPainter::HighlightPainter(
     const auto* text_node = DynamicTo<Text>(node_);
     if (text_node) {
       DocumentMarkerController& controller = node_->GetDocument().Markers();
-      markers_ = controller.ComputeMarkersToPaint(*text_node);
-      target_ = controller.MarkersFor(
-          *text_node, DocumentMarker::MarkerTypes::TextFragment());
-      spelling_ = controller.MarkersFor(
-          *text_node, DocumentMarker::MarkerTypes::Spelling());
-      grammar_ = controller.MarkersFor(*text_node,
-                                       DocumentMarker::MarkerTypes::Grammar());
-      custom_ = controller.MarkersFor(
-          *text_node, DocumentMarker::MarkerTypes::CustomHighlight());
-      // Check if there are any markers too, as required by OffsetMappingTest.
-      if (selection || !markers_.empty() || !target_.empty() ||
-          !spelling_.empty() || !grammar_.empty() || !custom_.empty()) {
+      if (controller.HasAnyMarkersForText(*text_node)) {
+        fragment_dom_offsets_ = GetFragmentDOMOffsets(
+            *text_node, fragment_paint_info_.from, fragment_paint_info_.to);
+        DCHECK(fragment_dom_offsets_);
+        markers_ = controller.ComputeMarkersToPaint(*text_node);
+        target_ = controller.MarkersFor(
+            *text_node, DocumentMarker::kTextFragment,
+            fragment_dom_offsets_->start, fragment_dom_offsets_->end);
+        spelling_ = controller.MarkersFor(*text_node, DocumentMarker::kSpelling,
+                                          fragment_dom_offsets_->start,
+                                          fragment_dom_offsets_->end);
+        grammar_ = controller.MarkersFor(*text_node, DocumentMarker::kGrammar,
+                                         fragment_dom_offsets_->start,
+                                         fragment_dom_offsets_->end);
+        custom_ = controller.MarkersFor(
+            *text_node, DocumentMarker::kCustomHighlight,
+            fragment_dom_offsets_->start, fragment_dom_offsets_->end);
+      } else if (selection) {
         fragment_dom_offsets_ = GetFragmentDOMOffsets(
             *text_node, fragment_paint_info_.from, fragment_paint_info_.to);
       }

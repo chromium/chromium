@@ -173,6 +173,10 @@ class CORE_EXPORT DocumentMarkerController final
   DocumentMarkerVector MarkersFor(
       const Text&,
       DocumentMarker::MarkerTypes = DocumentMarker::MarkerTypes::All()) const;
+  DocumentMarkerVector MarkersFor(const Text&,
+                                  DocumentMarker::MarkerType,
+                                  unsigned start_offset,
+                                  unsigned end_offset) const;
   DocumentMarkerVector Markers() const;
 
   // Apply a function to all the markers of a particular type. The
@@ -186,6 +190,7 @@ class CORE_EXPORT DocumentMarkerController final
   DocumentMarkerVector ComputeMarkersToPaint(const Text&) const;
   void MergeOverlappingMarkers(DocumentMarker::MarkerType);
 
+  bool HasAnyMarkersForText(const Text&) const;
   bool PossiblyHasTextMatchMarkers() const;
   Vector<gfx::Rect> LayoutRectsForTextMatchMarkers();
   void InvalidateRectsForAllTextMatchMarkers();
