@@ -4164,6 +4164,109 @@
           '--test-launcher-filter-file=testing/buildbot/filters/ios.base_unittests.filter',
         ],
       },
+      'blink_common_unittests': {},
+      'blink_fuzzer_unittests': {},
+      'blink_heap_unittests': {},
+      'blink_platform_unittests': {
+        'mixins': [
+          'skia_gold_test',
+        ],
+        'args': [
+          '--test-launcher-bot-mode',
+          '--test-launcher-filter-file=testing/buildbot/filters/ios.blink_platform_unittests.filter',
+        ],
+      },
+      'boringssl_crypto_tests': {},
+      'boringssl_ssl_tests': {},
+      'capture_unittests': {},
+      'cast_unittests': {},
+      'cc_unittests': {
+        'args': [
+          '--test-launcher-bot-mode',
+          '--test-launcher-filter-file=testing/buildbot/filters/ios.cc_unittests.filter',
+          '--use-gpu-in-tests',
+        ],
+      },
+      'compositor_unittests': {
+        'args': [
+          '--test-launcher-bot-mode',
+          '--test-launcher-filter-file=testing/buildbot/filters/ios.compositor_unittests.filter',
+        ],
+      },
+      'content_unittests': {
+        'args': [
+          '--test-launcher-bot-mode',
+          '--test-launcher-filter-file=testing/buildbot/filters/ios.content_unittests.filter',
+        ],
+      },
+      'crashpad_tests': {},
+      'crypto_unittests': {},
+      'device_unittests': {},
+      'display_unittests': {},
+      'env_chromium_unittests': {},
+      'events_unittests': {},
+      'gcm_unit_tests': {},
+      'gin_unittests': {},
+      'gl_unittests': {},
+      'google_apis_unittests': {},
+      'gpu_unittests': {
+        'args': [
+          '--test-launcher-bot-mode',
+          '--test-launcher-filter-file=testing/buildbot/filters/ios.gpu_unittests.filter',
+        ],
+      },
+      'gwp_asan_unittests': {},
+      'latency_unittests': {},
+      'leveldb_unittests': {},
+      'libjingle_xmpp_unittests': {},
+      'liburlpattern_unittests': {},
+      'media_unittests': {},
+      'media_unittests_skia_graphite_dawn': {
+        'test': 'media_unittests',
+        'args': [
+          '--test-launcher-bot-mode',
+          '--enable-features=SkiaGraphite',
+          '--skia-graphite-backend=dawn',
+          '--use-gpu-in-tests',
+        ],
+      },
+      'media_unittests_skia_graphite_metal': {
+        'test': 'media_unittests',
+        'args': [
+          '--test-launcher-bot-mode',
+          '--enable-features=SkiaGraphite',
+          '--skia-graphite-backend=metal',
+          '--use-gpu-in-tests',
+        ],
+      },
+      'midi_unittests': {},
+      'native_theme_unittests': {},
+      'net_unittests': {},
+      'perfetto_unittests': {},
+      'printing_unittests': {},
+      'sandbox_unittests': {},
+      'services_unittests': {},
+      'shell_dialogs_unittests': {},
+      'skia_unittests': {},
+      'sql_unittests': {},
+      'storage_unittests': {},
+      'ui_base_unittests': {
+        'args': [
+          '--test-launcher-filter-file=testing/buildbot/filters/ios.ui_base_unittests.filter',
+        ],
+      },
+      'ui_touch_selection_unittests': {},
+      'ui_unittests': {},
+      'url_unittests': {},
+      'viz_unittests': {
+        'args': [
+          '--test-launcher-bot-mode',
+          '--test-launcher-filter-file=testing/buildbot/filters/ios.viz_unittests.filter',
+          '--use-gpu-in-tests',
+        ],
+      },
+      'wtf_unittests': {},
+      'zlib_unittests': {},
     },
 
     'ios_common_tests': {
