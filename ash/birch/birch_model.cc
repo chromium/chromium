@@ -224,7 +224,6 @@ void BirchModel::RequestBirchDataFetch(bool is_post_login,
   fetch_start_time_ = GetNow();
 
   bool did_fetch = false;
-  // TODO(b/305094143): Call this before we begin showing birch views.
   if (birch_client_) {
     if (prefs->GetBoolean(prefs::kBirchUseCalendar)) {
       is_calendar_data_fresh_ = false;
