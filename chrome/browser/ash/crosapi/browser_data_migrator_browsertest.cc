@@ -443,8 +443,7 @@ IN_PROC_BROWSER_TEST_F(BrowserDataMigratorForKiosk, MigrateOnKioskLaunch) {
   base::RunLoop run_loop;
   ScopedRestartAttemptForTesting scoped_restart_attempt(
       base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
-  StartAppLaunchFromLoginScreen(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  StartAppLaunchFromLoginScreen(NetworkStatus::kOnline);
   run_loop.Run();
   EXPECT_TRUE(
       FakeSessionManagerClient::Get()->request_browser_data_migration_called());

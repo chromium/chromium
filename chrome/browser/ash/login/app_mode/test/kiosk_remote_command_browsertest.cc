@@ -122,8 +122,7 @@ class KioskRemoteCommandTest : public KioskBaseTest {
   }
 
   void LaunchKioskApp() {
-    StartAppLaunchFromLoginScreen(
-        NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+    StartAppLaunchFromLoginScreen(NetworkStatus::kOnline);
     WaitForAppLaunchWithOptions(/*check_launch_data=*/true,
                                 /*terminate_app=*/false,
                                 /*keep_app_open=*/true);

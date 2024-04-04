@@ -316,7 +316,7 @@ IN_PROC_BROWSER_TEST_F(LoginOfflineTest, PRE_AuthOffline) {
 
 IN_PROC_BROWSER_TEST_F(LoginOfflineTest, AuthOffline) {
   network_portal_detector_.SimulateDefaultNetworkState(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_OFFLINE);
+      NetworkPortalDetectorMixin::NetworkStatus::kOffline);
   offline_login_test_mixin_.GoOffline();
   offline_login_test_mixin_.InitOfflineLogin(test_account_id_,
                                              LoginManagerTest::kPassword);

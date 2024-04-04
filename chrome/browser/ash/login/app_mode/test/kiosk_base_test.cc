@@ -210,7 +210,7 @@ void KioskBaseTest::PrepareAppLaunch() {
 }
 
 void KioskBaseTest::StartAppLaunchFromLoginScreen(
-    NetworkPortalDetector::CaptivePortalStatus network_status) {
+    NetworkStatus network_status) {
   PrepareAppLaunch();
 
   network_portal_detector_.SimulateDefaultNetworkState(network_status);
@@ -218,7 +218,7 @@ void KioskBaseTest::StartAppLaunchFromLoginScreen(
 }
 
 void KioskBaseTest::StartExistingAppLaunchFromLoginScreen(
-    NetworkPortalDetector::CaptivePortalStatus network_status) {
+    NetworkStatus network_status) {
   SetupTestAppUpdateCheck();
 
   network_portal_detector_.SimulateDefaultNetworkState(network_status);
@@ -297,13 +297,11 @@ void KioskBaseTest::WaitForAppLaunchSuccess() {
 }
 
 void KioskBaseTest::SimulateNetworkOnline() {
-  network_portal_detector_.SimulateDefaultNetworkState(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  network_portal_detector_.SimulateDefaultNetworkState(NetworkStatus::kOnline);
 }
 
 void KioskBaseTest::SimulateNetworkOffline() {
-  network_portal_detector_.SimulateDefaultNetworkState(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_OFFLINE);
+  network_portal_detector_.SimulateDefaultNetworkState(NetworkStatus::kOffline);
 }
 
 void KioskBaseTest::BlockAppLaunch(bool block) {

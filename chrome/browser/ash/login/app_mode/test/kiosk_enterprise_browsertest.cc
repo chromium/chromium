@@ -237,8 +237,7 @@ IN_PROC_BROWSER_TEST_F(KioskEnterpriseTest,
   BlockAppLaunch(true);
 
   // Start app launch and wait for network connectivity timeout.
-  StartAppLaunchFromLoginScreen(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  StartAppLaunchFromLoginScreen(NetworkStatus::kOnline);
   WaitForOobeScreen(AppLaunchSplashScreenView::kScreenId);
 
   PressConfigureNetworkAccelerator();
@@ -263,8 +262,7 @@ IN_PROC_BROWSER_TEST_F(
   auto auto_reset = NetworkUiController::SetCanConfigureNetworkForTesting(true);
 
   // Start app launch with network portal state.
-  StartAppLaunchFromLoginScreen(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL);
+  StartAppLaunchFromLoginScreen(NetworkStatus::kPortal);
 
   WaitForNetworkScreen();
 
@@ -273,8 +271,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(KioskEnterpriseTest, LaunchAppUserCancel) {
-  StartAppLaunchFromLoginScreen(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  StartAppLaunchFromLoginScreen(NetworkStatus::kOnline);
   // Do not let the app be run to avoid race condition.
   BlockAppLaunch(true);
 

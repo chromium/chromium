@@ -68,6 +68,8 @@ class KioskBaseTest : public OobeBaseTest {
   ~KioskBaseTest() override;
 
  protected:
+  using NetworkStatus = NetworkPortalDetectorMixin::NetworkStatus;
+
   static KioskChromeAppManager::ConsumerKioskAutoLaunchStatus
   GetConsumerKioskModeStatus();
 
@@ -102,10 +104,8 @@ class KioskBaseTest : public OobeBaseTest {
 
   void PrepareAppLaunch();
 
-  void StartAppLaunchFromLoginScreen(
-      NetworkPortalDetector::CaptivePortalStatus network_status);
-  void StartExistingAppLaunchFromLoginScreen(
-      NetworkPortalDetector::CaptivePortalStatus network_status);
+  void StartAppLaunchFromLoginScreen(NetworkStatus network_status);
+  void StartExistingAppLaunchFromLoginScreen(NetworkStatus network_status);
 
   const extensions::Extension* GetInstalledApp();
 

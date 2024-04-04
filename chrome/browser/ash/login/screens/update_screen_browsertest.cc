@@ -592,7 +592,7 @@ IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestTemporaryPortalNetwork) {
 
   // Change ethernet state to offline.
   network_portal_detector_.SimulateDefaultNetworkState(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL);
+      NetworkPortalDetectorMixin::NetworkStatus::kPortal);
 
   ShowUpdateScreen();
 
@@ -603,7 +603,7 @@ IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestTemporaryPortalNetwork) {
 
   // If network goes back online, the error message timer should be canceled.
   network_portal_detector_.SimulateDefaultNetworkState(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+      NetworkPortalDetectorMixin::NetworkStatus::kOnline);
   EXPECT_FALSE(update_screen_->GetErrorMessageTimerForTesting()->IsRunning());
 
   update_engine::StatusResult status;
@@ -658,7 +658,7 @@ IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestTemporaryPortalNetwork) {
 IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestTwoOfflineNetworks) {
   // Change ethernet state to portal.
   network_portal_detector_.SimulateDefaultNetworkState(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL);
+      NetworkPortalDetectorMixin::NetworkStatus::kPortal);
   ShowUpdateScreen();
 
   WaitForDelayedErrorTimerToFire();
@@ -669,10 +669,9 @@ IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestTwoOfflineNetworks) {
   test::OobeJS().ExpectVisiblePath(
       {"error-message", "captive-portal-proxy-message-text"});
 
-  // Change active network to the wifi behind proxy.
   network_portal_detector_.SetDefaultNetwork(
       kStubWifiGuid, shill::kTypeWifi,
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PROXY_AUTH_REQUIRED);
+      NetworkPortalDetectorMixin::NetworkStatus::kOffline);
 
   test::OobeJS().ExpectVisiblePath(
       {"error-message", "update-proxy-message-text"});
@@ -712,7 +711,7 @@ IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestVoidNetwork) {
 
 IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestAPReselection) {
   network_portal_detector_.SimulateDefaultNetworkState(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL);
+      NetworkPortalDetectorMixin::NetworkStatus::kPortal);
 
   ShowUpdateScreen();
 

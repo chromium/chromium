@@ -167,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(DeviceDisablingTest, DisableWithEphemeralUsers) {
   ASSERT_TRUE(network_state_informer);
   network_state_informer->AddObserver(this);
   network_portal_detector_.SimulateDefaultNetworkState(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_OFFLINE);
+      NetworkPortalDetectorMixin::NetworkStatus::kOffline);
   network_state_change_wait_run_loop_->Run();
   network_state_informer->RemoveObserver(this);
   base::RunLoop().RunUntilIdle();

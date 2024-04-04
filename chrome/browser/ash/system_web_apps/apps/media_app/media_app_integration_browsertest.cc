@@ -301,7 +301,7 @@ class NotificationWatcher : public NotificationDisplayService::Observer {
       : profile_(profile) {
     // Notifications only fire if the device is "online". Simulate that.
     network_portal_detector.SimulateDefaultNetworkState(
-        ash::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+        ash::NetworkPortalDetectorMixin::NetworkStatus::kOnline);
 
     NotificationDisplayService::GetForProfile(profile_)->AddObserver(this);
   }

@@ -927,12 +927,12 @@ IN_PROC_BROWSER_TEST_F(AutoEnrollmentEmbeddedPolicyServer, Attestation) {
 // Verify able to advance to login screen when error screen is shown.
 IN_PROC_BROWSER_TEST_F(AutoEnrollmentEmbeddedPolicyServer, TestCaptivePortal) {
   network_portal_detector_.SimulateDefaultNetworkState(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL);
+      NetworkPortalDetectorMixin::NetworkStatus::kPortal);
   host()->StartWizard(AutoEnrollmentCheckScreenView::kScreenId);
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
 
   network_portal_detector_.SimulateDefaultNetworkState(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+      NetworkPortalDetectorMixin::NetworkStatus::kOnline);
   OobeScreenWaiter(GetFirstSigninScreen()).Wait();
 }
 

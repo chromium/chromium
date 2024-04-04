@@ -180,8 +180,7 @@ IN_PROC_BROWSER_TEST_F(KioskBaseTest, DISABLED_SpokenFeedback) {
   // to load (the engine will never load on linux-chromeos builds).
   TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
   AccessibilityManager::Get()->EnableSpokenFeedback(true);
-  StartAppLaunchFromLoginScreen(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  StartAppLaunchFromLoginScreen(NetworkStatus::kOnline);
   WaitForAppLaunchWithOptions(/*check launch data=*/false,
                               /*terminate app=*/false,
                               /*keep app open=*/true);

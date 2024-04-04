@@ -532,8 +532,7 @@ IN_PROC_BROWSER_TEST_F(
     SuccessCommandRequestWithoutPii) {
   SetLogUploadEnabledPolicy(true);
 
-  StartAppLaunchFromLoginScreen(
-      ash::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  StartAppLaunchFromLoginScreen(NetworkStatus::kOnline);
   WaitForAppLaunchWithOptions(false /* check launch data */,
                               false /* terminate app */,
                               true /* keep app open */);
@@ -575,8 +574,7 @@ IN_PROC_BROWSER_TEST_F(
     SuccessCommandRequestWithPii) {
   SetLogUploadEnabledPolicy(true);
 
-  StartAppLaunchFromLoginScreen(
-      ash::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  StartAppLaunchFromLoginScreen(NetworkStatus::kOnline);
   WaitForAppLaunchWithOptions(false /* check launch data */,
                               false /* terminate app */,
                               true /* keep app open */);

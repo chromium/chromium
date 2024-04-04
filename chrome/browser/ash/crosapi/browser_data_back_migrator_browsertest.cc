@@ -163,8 +163,7 @@ IN_PROC_BROWSER_TEST_F(BrowserDataBackMigratorForKiosk, MigrateOnKioskLaunch) {
   ScopedBackMigratorRestartAttemptForTesting
       scoped_back_migrator_restart_attempt(
           base::BindLambdaForTesting([&]() { waiter.SetValue(); }));
-  StartAppLaunchFromLoginScreen(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  StartAppLaunchFromLoginScreen(NetworkStatus::kOnline);
   EXPECT_TRUE(waiter.Wait());
   EXPECT_TRUE(FakeSessionManagerClient::Get()
                   ->request_browser_data_backward_migration_called());

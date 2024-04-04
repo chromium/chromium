@@ -83,7 +83,7 @@ class RemoveLocalAccountTest : public MixinBasedInProcessBrowserTest {
     // `ChromeSigninClient` uses `ash::DelayNetworkCall()` which requires
     // simulating being online.
     network_portal_detector_.SimulateDefaultNetworkState(
-        ash::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+        ash::NetworkPortalDetectorMixin::NetworkStatus::kOnline);
 #endif
   }
 

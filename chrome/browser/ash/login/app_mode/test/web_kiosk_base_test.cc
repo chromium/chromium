@@ -46,8 +46,8 @@ void WebKioskBaseTest::TearDownOnMainThread() {
 
 void WebKioskBaseTest::SetOnline(bool online) {
   network_portal_detector_.SimulateDefaultNetworkState(
-      online ? NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE
-             : NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_OFFLINE);
+      online ? NetworkPortalDetectorMixin::NetworkStatus::kOnline
+             : NetworkPortalDetectorMixin::NetworkStatus::kOffline);
 }
 
 void WebKioskBaseTest::PrepareAppLaunch() {

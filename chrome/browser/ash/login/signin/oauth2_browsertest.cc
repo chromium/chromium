@@ -477,7 +477,7 @@ class OAuth2Test : public OobeBaseTest {
 
   void SimulateNetworkOnline() {
     network_portal_detector_.SimulateDefaultNetworkState(
-        NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+        NetworkPortalDetectorMixin::NetworkStatus::kOnline);
   }
 
   FakeGaiaMixin fake_gaia_{&mixin_host_};
