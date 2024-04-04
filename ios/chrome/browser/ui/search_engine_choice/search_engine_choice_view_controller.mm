@@ -357,9 +357,13 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
   if (_didReachBottom) {
     [self.actionDelegate didTapPrimaryButton];
   } else {
-    CGPoint bottomOffset = CGPointMake(0, _scrollView.contentSize.height -
-                                              _scrollView.bounds.size.height +
-                                              _scrollView.contentInset.bottom);
+    // Adding 1 to the content offset to make sure the scroll view will reach
+    // the bottom of view to trigger the floating SetAsDefault container when
+    // `updateViewsBasedOnScrollPosition` will be called.
+    // See crbug.com/332719699.
+    CGPoint bottomOffset = CGPointMake(
+        0, _scrollView.contentSize.height - _scrollView.bounds.size.height +
+               _scrollView.contentInset.bottom + 1);
     [_scrollView setContentOffset:bottomOffset animated:YES];
   }
 }
