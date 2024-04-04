@@ -1270,7 +1270,7 @@ class StartSurfaceMediator
                     mContext.getResources(),
                     false,
                     StartSurfaceConfiguration.SURFACE_POLISH_LESS_BRAND_SPACE.getValue(),
-                    StartSurfaceConfiguration.isLogoPolishEnabled(/* isTablet= */ false),
+                    StartSurfaceConfiguration.isLogoPolishEnabled(),
                     StartSurfaceConfiguration.getLogoSizeForLogoPolish());
         }
 

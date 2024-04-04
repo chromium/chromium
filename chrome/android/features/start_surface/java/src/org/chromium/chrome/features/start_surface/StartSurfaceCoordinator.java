@@ -638,7 +638,7 @@ public class StartSurfaceCoordinator implements StartSurface {
     private int getLogoInSurfaceHeight() {
         Resources resources = mActivity.getResources();
 
-        if (StartSurfaceConfiguration.isLogoPolishEnabled(/* isTablet= */ false)) {
+        if (StartSurfaceConfiguration.isLogoPolishEnabled()) {
             return LogoUtils.getLogoTotalHeightForLogoPolish(
                     resources, StartSurfaceConfiguration.getLogoSizeForLogoPolish());
         }
