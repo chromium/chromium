@@ -37,11 +37,11 @@ class CacheManagerImpl : public CacheManager {
       bool in_memory_only = false);
 
   // Setup the cache directory for the specific FSP.
-  void InitializeForProvider(const base::FilePath& provider_folder_name,
+  void InitializeForProvider(const ProvidedFileSystemInfo& file_system_info,
                              FileErrorOrContentCacheCallback callback) override;
 
   void UninitializeForProvider(
-      const base::FilePath& provider_folder_name) override;
+      const ProvidedFileSystemInfo& file_system_info) override;
 
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
@@ -57,6 +57,9 @@ class CacheManagerImpl : public CacheManager {
   void OnUninitializeForProvider(
       const base::FilePath& base64_encoded_provider_folder_name,
       base::File::Error result);
+
+  const base::FilePath GetCacheDirectoryPath(
+      const ProvidedFileSystemInfo& file_system_info);
 
   const base::FilePath root_content_cache_directory_;
   bool in_memory_only_ = false;

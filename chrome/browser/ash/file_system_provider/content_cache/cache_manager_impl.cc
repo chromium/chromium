@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/content_cache_impl.h"
+#include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 
 namespace ash::file_system_provider {
 
@@ -40,23 +41,15 @@ std::unique_ptr<CacheManager> CacheManagerImpl::Create(
 }
 
 void CacheManagerImpl::InitializeForProvider(
-    const base::FilePath& provider_folder_name,
+    const ProvidedFileSystemInfo& file_system_info,
     FileErrorOrContentCacheCallback callback) {
-  if (provider_folder_name.empty()) {
+  const base::FilePath cache_directory_path =
+      GetCacheDirectoryPath(file_system_info);
+  if (cache_directory_path.empty()) {
     std::move(callback).Run(
         base::unexpected(base::File::FILE_ERROR_INVALID_URL));
     return;
   }
-
-  // The provider folder name takes the form
-  // {provider-id}:{file-system-id}:{user-hash} with the {file-system-id} being
-  // escaped but ultimately provided by the extension, so let's convert it to
-  // base64 before creating a directory.
-  const base::FilePath base64_encoded_provider_folder_name(
-      base::Base64Encode(provider_folder_name.value()));
-  const base::FilePath cache_directory_path(
-      root_content_cache_directory_.Append(
-          base64_encoded_provider_folder_name));
 
   if (in_memory_only_) {
     OnInitializeForProvider(std::move(callback), cache_directory_path,
@@ -72,13 +65,14 @@ void CacheManagerImpl::InitializeForProvider(
 }
 
 void CacheManagerImpl::UninitializeForProvider(
-    const base::FilePath& provider_folder_name) {
-  if (provider_folder_name.empty()) {
+    const ProvidedFileSystemInfo& file_system_info) {
+  const base::FilePath cache_directory_path =
+      GetCacheDirectoryPath(file_system_info);
+  if (cache_directory_path.empty()) {
     return;
   }
-
-  const base::FilePath base64_encoded_provider_folder_name(
-      base::Base64Encode(provider_folder_name.value()));
+  const base::FilePath base64_encoded_provider_folder_name =
+      cache_directory_path.BaseName();
   if (!initialized_providers_.contains(base64_encoded_provider_folder_name)) {
     OnUninitializeForProvider(base64_encoded_provider_folder_name,
                               base::File::FILE_ERROR_NOT_FOUND);
@@ -93,10 +87,6 @@ void CacheManagerImpl::UninitializeForProvider(
                               base::File::FILE_OK);
     return;
   }
-
-  const base::FilePath cache_directory_path(
-      root_content_cache_directory_.Append(
-          base64_encoded_provider_folder_name));
 
   // Attempt to delete the cache directory to ensure dead files don't remain
   // on the user's disk as the logic changes in this experimental design phase.
@@ -154,6 +144,27 @@ void CacheManagerImpl::OnUninitializeForProvider(
     observer.OnProviderUninitialized(base64_encoded_provider_folder_name,
                                      result);
   }
+}
+
+const base::FilePath CacheManagerImpl::GetCacheDirectoryPath(
+    const ProvidedFileSystemInfo& file_system_info) {
+  const base::FilePath& provider_folder_name =
+      file_system_info.mount_path().BaseName();
+  if (provider_folder_name.empty()) {
+    return base::FilePath();
+  }
+  // The provider folder name takes the form
+  // {provider-id}:{file-system-id}:{user-hash} with the {file-system-id} being
+  // escaped but ultimately provided by the extension, so let's convert it to
+  // base64 before creating a directory.
+  const base::FilePath base64_encoded_provider_folder_name(
+      base::Base64Encode(provider_folder_name.value()));
+
+  const base::FilePath cache_directory_path(
+      root_content_cache_directory_.Append(
+          base64_encoded_provider_folder_name));
+
+  return cache_directory_path;
 }
 
 }  // namespace ash::file_system_provider

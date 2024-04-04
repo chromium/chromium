@@ -54,12 +54,12 @@ class CacheManager {
 
   // Setup the cache directory for the specific FSP.
   virtual void InitializeForProvider(
-      const base::FilePath& provider_folder_name,
+      const ProvidedFileSystemInfo& file_system_info,
       FileErrorOrContentCacheCallback callback) = 0;
 
   // Destruction of the cache directory for the specific FSP.
   virtual void UninitializeForProvider(
-      const base::FilePath& provider_folder_name) = 0;
+      const ProvidedFileSystemInfo& file_system_info) = 0;
 
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;

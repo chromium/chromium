@@ -114,7 +114,7 @@ CloudFileSystem::CloudFileSystem(
   }
 
   cache_manager->InitializeForProvider(
-      file_system_->GetFileSystemInfo().mount_path().BaseName(),
+      file_system_->GetFileSystemInfo(),
       base::BindOnce(&CloudFileSystem::OnContentCacheInitialized,
                      weak_ptr_factory_.GetWeakPtr()));
 

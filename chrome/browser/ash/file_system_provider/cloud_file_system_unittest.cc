@@ -46,12 +46,12 @@ class MockCacheManager : public CacheManager {
  public:
   MOCK_METHOD(void,
               InitializeForProvider,
-              (const base::FilePath& provider_folder_name,
+              (const ProvidedFileSystemInfo& file_system_info,
                FileErrorOrContentCacheCallback callback),
               (override));
   MOCK_METHOD(void,
               UninitializeForProvider,
-              (const base::FilePath& provider_folder_name),
+              (const ProvidedFileSystemInfo& file_system_info),
               (override));
   MOCK_METHOD(void, AddObserver, (Observer * observer), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer * observer), (override));
@@ -85,28 +85,28 @@ class FileSystemProviderCloudFileSystemTest : public testing::Test,
 
   void SetUp() override { profile_ = std::make_unique<TestingProfile>(); }
 
-  const base::FilePath GetProviderMountPath() {
-    return util::GetMountPath(profile_.get(),
-                              ProviderId::CreateFromExtensionId(kExtensionId),
-                              kFileSystemId);
-  }
-
-  // Creates a CloudFileSystem which wraps a FakeProvidedFileSystem.
-  std::unique_ptr<CloudFileSystem> CreateCloudFileSystem(
-      bool with_mock_cache_manager) {
+  const ProvidedFileSystemInfo GetFileSystemInfo(bool with_mock_cache_manager) {
     MountOptions mount_options;
     mount_options.file_system_id = kFileSystemId;
     mount_options.display_name = kDisplayName;
     mount_options.supports_notify_tag = true;
     mount_options.writable = true;
-    std::unique_ptr<ProvidedFileSystemInfo> file_system_info =
-        std::make_unique<ProvidedFileSystemInfo>(
-            kExtensionId, mount_options, GetProviderMountPath(),
-            /*configurable=*/false,
-            /*watchable=*/true, extensions::SOURCE_NETWORK, IconSet(),
-            with_mock_cache_manager ? CacheType::LRU : CacheType::NONE);
+    const base::FilePath mount_path = util::GetMountPath(
+        profile_.get(), ProviderId::CreateFromExtensionId(kExtensionId),
+        kFileSystemId);
+    return ProvidedFileSystemInfo(
+        kExtensionId, mount_options, mount_path,
+        /*configurable=*/false,
+        /*watchable=*/true, extensions::SOURCE_NETWORK, IconSet(),
+        with_mock_cache_manager ? CacheType::LRU : CacheType::NONE);
+  }
+
+  // Creates a CloudFileSystem which wraps a FakeProvidedFileSystem.
+  std::unique_ptr<CloudFileSystem> CreateCloudFileSystem(
+      bool with_mock_cache_manager) {
     std::unique_ptr<FakeProvidedFileSystem> provided_file_system =
-        std::make_unique<FakeProvidedFileSystem>(*file_system_info.get());
+        std::make_unique<FakeProvidedFileSystem>(
+            GetFileSystemInfo(with_mock_cache_manager));
     // Start the CloudFileSystem initialisation.
     std::unique_ptr<CloudFileSystem> cloud_file_system =
         std::make_unique<CloudFileSystem>(
@@ -125,7 +125,8 @@ class FileSystemProviderCloudFileSystemTest : public testing::Test,
 TEST_F(FileSystemProviderCloudFileSystemTest,
        WatcherOnRootIsAddedWhenCacheManagerExists) {
   EXPECT_CALL(mock_cache_manager_,
-              InitializeForProvider(GetProviderMountPath().BaseName(), _))
+              InitializeForProvider(
+                  GetFileSystemInfo(/*with_mock_cache_manager=*/true), _))
       .Times(1);
   std::unique_ptr<CloudFileSystem> cloud_file_system =
       CreateCloudFileSystem(/*with_mock_cache_manager=*/true);
