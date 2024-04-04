@@ -199,7 +199,8 @@ class VIEWS_EXPORT BoxLayout : public LayoutManagerBase {
   // main view bounds are provided.
   SizeBound CalculateMaxChildWidth(BoxLayoutData& data) const;
 
-  // Calculate the preferred size of the largest subview.
+  // Calculate the preferred size of each subview by assuming that it takes the
+  // entire available space.
   void CalculatePreferredSize(const SizeBounds& size_bounds,
                               BoxLayoutData& data) const;
 

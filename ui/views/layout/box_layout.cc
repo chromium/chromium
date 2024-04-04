@@ -524,7 +524,8 @@ void BoxLayout::UpdateFlexLayout(const NormalizedSizeBounds& bounds,
       data.child_data.cbegin(), data.child_data.cend(), 0,
       [](int total, const BoxChildData& data) { return total + data.flex; });
 
-  // Free space can be negative indicating that the views want to overflow.
+  // `main_free_space` can be negative. The free space is distributed to each
+  // view proportionally to their flex value.
   SizeBound main_free_space = bounds.main() - total_main_axis_size;
   int total_padding = 0;
   int current_flex = 0;
@@ -585,6 +586,20 @@ void BoxLayout::UpdateFlexLayout(const NormalizedSizeBounds& bounds,
 
     box_child.actual_bounds.set_size_main(
         std::max(child_min_size, child_main_axis_size + current_padding));
+
+    // The cross size could change if its main size is shrunk.
+    if (box_child.actual_bounds.size_main() < box_child.preferred_size.main()) {
+      // TODO(crbug.com/332745403): we could probably remove this recalculation
+      // of preferred_size by providing GetPreferredSizeForView() with the
+      // actually allocated main size earlier.
+      box_child.preferred_size = Normalize(
+          orientation_, GetPreferredSizeForView(
+                            child_layout.child_view,
+                            NormalizedSizeBounds(
+                                SizeBound(box_child.actual_bounds.size_main()),
+                                cross_axis_size)));
+    }
+
     if (box_child.actual_bounds.size_main() > 0 || box_child.flex > 0) {
       data.total_size.set_main(box_child.actual_bounds.max_main());
       if (i < num_child - 1) {
