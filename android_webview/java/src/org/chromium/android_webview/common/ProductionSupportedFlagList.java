@@ -958,6 +958,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 NetworkServiceFeatures.AVOID_RESOURCE_REQUEST_COPIES,
                 "Avoids copying ResourceRequest when possible."),
+        Flag.baseFeature(
+                BlinkFeatures.LOWER_HIGH_RESOLUTION_TIMER_THRESHOLD,
+                "Schedule DOM Timers with high precision only if their deadline is <4ms."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
