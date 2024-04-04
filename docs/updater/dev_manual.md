@@ -188,13 +188,18 @@ nearly impossible (call stacks will not be symbolicated).
 
 #### Faster builds
 
-Building on Goma is typically much faster than your workstation. After you've
-set up Goma, specify it in `gn args` with `use_goma=true`.
+Reclient is a distributed compiler service that allows you to compile Chromium
+fast. The necessary Reclient binaries are distributed via CIPD and
+automatically installed when you run gclient sync. After you've
+set up Reclient, specify it in `gn args` with `use_remoteexec=true`.
 
-To get started on Goma, and for more information on how to use it, review its
-[public documentation](https://chromium.googlesource.com/infra/goma/client/+/HEAD/doc/early-access-guide.md)
-or its
-[Google-internal documentation](https://go.corp.google.com/how-to-use-goma).
+To get started on Reclient, and for more information on how to use it, see
+[macOS build instructions](https://chromium.googlesource.com/chromium/src/+/main/docs/mac_build_instructions.md),
+[Windows build instructions](https://chromium.googlesource.com/chromium/src/+/main/docs/windows_build_instructions.md),
+or [Google-internal documentation](go/building-chrome), if you are a Google
+employee.
+
+Goma can't be used anymore as of March, 2024.
 
 #### More release-like builds
 
