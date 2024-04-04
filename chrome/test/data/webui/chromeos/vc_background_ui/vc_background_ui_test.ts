@@ -165,15 +165,25 @@ suite('VcBackgroundUITest', () => {
 
     const breadcrumbElement = getVcBackgroundBreadcrumbs();
 
+    const classicArtTitle = 'Classic art';
     // Breadcrumbs should show 'Classic art'.
     assertArrayEquals(
         getVcBackgroundBreadcrumbsText(),
-        [breadcrumbElement.i18n('seaPenLabel'), 'Classic art']);
+        [breadcrumbElement.i18n('seaPenLabel'), classicArtTitle]);
 
     const dropdownMenu =
         breadcrumbElement.shadowRoot!.querySelector('cr-action-menu');
     assertTrue(!!dropdownMenu);
     assertFalse(dropdownMenu!.open, 'the action menu should not open yet');
+
+    // Verify the selected template.
+    const selectedElement =
+        dropdownMenu.querySelectorAll('button[aria-checked=\'true\']');
+    assertEquals(
+        1, selectedElement.length, 'there should be one template selected');
+    assertEquals(
+        classicArtTitle, (selectedElement[0] as HTMLElement)!.innerText.trim(),
+        `selected template in the dropdown should be ${classicArtTitle}`);
 
     // Activate the dropdown menu.
     const lastBreadcrumb = breadcrumbElement.shadowRoot!.querySelector(

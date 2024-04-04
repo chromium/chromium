@@ -267,9 +267,9 @@ export class VcBackgroundBreadcrumbElement extends
     return path === SeaPenPaths.RESULTS && !!template;
   }
 
-  private getAriaChecked_(templateId: string, seaPenTemplateId: string): 'true'|
-      'false' {
-    return templateId === seaPenTemplateId ? 'true' : 'false';
+  private getAriaChecked_(
+      templateId: SeaPenTemplateId, seaPenTemplateId: string): 'true'|'false' {
+    return templateId.toString() === seaPenTemplateId ? 'true' : 'false';
   }
 
   // Helper method to apply back transition style when navigating to path.
