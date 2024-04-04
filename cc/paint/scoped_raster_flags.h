@@ -7,7 +7,8 @@
 
 #include <optional>
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/stack_allocated.h"
 #include "cc/paint/decode_stashing_image_provider.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_flags.h"
@@ -17,6 +18,8 @@ namespace cc {
 // A helper class to modify the flags for raster. This includes alpha folding
 // from SaveLayers and decoding images.
 class CC_PAINT_EXPORT ScopedRasterFlags {
+  STACK_ALLOCATED();
+
  public:
   // |flags| and |image_provider| must outlive this class.
   template <class F, class = std::enable_if_t<std::is_same_v<F, float>>>
@@ -59,7 +62,7 @@ class CC_PAINT_EXPORT ScopedRasterFlags {
     if (decode_failed_)
       return nullptr;
 
-    return modified_flags_ ? &*modified_flags_ : original_flags_.get();
+    return modified_flags_ ? &*modified_flags_ : original_flags_;
   }
 
  private:
@@ -75,7 +78,9 @@ class CC_PAINT_EXPORT ScopedRasterFlags {
     return &*modified_flags_;
   }
 
-  raw_ptr<const PaintFlags> original_flags_;
+  // RAW_PTR_EXCLUSION: Performance: visible in sampling profiler and stack
+  // scoped.
+  RAW_PTR_EXCLUSION const PaintFlags* original_flags_;
   std::optional<PaintFlags> modified_flags_;
   std::optional<DecodeStashingImageProvider> decode_stashing_image_provider_;
   bool decode_failed_ = false;
