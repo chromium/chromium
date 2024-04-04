@@ -171,7 +171,6 @@ source_set("unit_tests") {
     "expanded_manual_fill_view_controller_unittest.mm",
     "fallback_view_controller_unittest.mm",
     "form_observer_helper_unittest.mm",
-    "full_card_requester_unittest.mm",
     "manual_fill_address+AutofillProfile_unittest.mm",
     "manual_fill_address_unittest.mm",
     "manual_fill_all_password_coordinator_unittest.mm",
@@ -236,9 +235,6 @@ source_set("unit_tests") {
 source_set("requesters") {
   sources = [
     "full_card_request_result_delegate_bridge.h",
-    "full_card_request_result_delegate_bridge.mm",
-    "full_card_requester.h",
-    "full_card_requester.mm",
     "manual_fill_full_card_requester.h",
     "manual_fill_full_card_requester.mm",
   ]
