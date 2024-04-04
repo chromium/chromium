@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ash/file_system_provider/cloud_file_system.h"
 
+#include "base/base64.h"
+#include "base/files/file_util.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
 #include "chrome/browser/ash/file_system_provider/fake_provided_file_system.h"
@@ -19,6 +22,20 @@ namespace ash::file_system_provider {
 namespace {
 const char kFileSystemId[] = "cloud-fs-id";
 const char kDisplayName[] = "Cloud FS";
+
+class MockCacheManagerObserver : public CacheManager::Observer {
+ public:
+  MOCK_METHOD(void,
+              OnProviderInitializationComplete,
+              (base::FilePath base64_encoded_provider_folder_name,
+               base::File::Error result),
+              (override));
+  MOCK_METHOD(void,
+              OnProviderUninitialized,
+              (base::FilePath base64_encoded_provider_folder_name,
+               base::File::Error result),
+              (override));
+};
 
 // Fake extension provider to create a `a `CloudFileSystem` wrapping by a
 // `FakeProvidedFileSystem`. This also observes the `CacheManager`, if it is
@@ -91,28 +108,128 @@ class CloudFileSystemBrowserTestWithContentCache
          chromeos::features::kFileSystemProviderContentCache},
         {});
   }
+
+  const base::FilePath GetProviderMountPath(
+      base::FilePath base64_encoded_provider_folder_name) {
+    return profile()
+        ->GetPath()
+        .Append(kFspContentCacheDirName)
+        .Append(base64_encoded_provider_folder_name);
+  }
 };
 
 // Tests that a CacheManager is created when mounting a CloudFileSystem when
 // `kFileSystemProviderCloudFileSystem` and `kFileSystemProviderContentCache`
-// are enabled.
-IN_PROC_BROWSER_TEST_F(CloudFileSystemBrowserTestWithContentCache,
-                       CacheManagerCreated) {
-  // Mount a CloudFileSystem.
-  MountOptions mount_options(kFileSystemId, kDisplayName);
+// are enabled. Tests that a ContentCache is initialized on the CacheManager
+// upon mount and is uninitialized upon unmount via the user.
+IN_PROC_BROWSER_TEST_F(
+    CloudFileSystemBrowserTestWithContentCache,
+    ContentCacheInitializedOnMountAndUninitializedOnUnmountByUser) {
+  // Catch the cache_manager pointer before it's passed to the CloudFileSystem
+  // constructor.
+  MockCacheManagerObserver observer;
   base::OnceCallback<void(CacheManager * cache_manager)> on_cache_manager =
-      base::BindLambdaForTesting([](CacheManager* cache_manager) {
+      base::BindLambdaForTesting([&](CacheManager* cache_manager) {
         // Expect the cache manager to have been created.
         ASSERT_TRUE(cache_manager);
+        cache_manager->AddObserver(&observer);
       });
 
+  // Mount a CloudFileSystem.
   // Specifically mount ODFS as Service::MountFileSystem() will only use a
   // CacheManager if kFileSystemProviderCloudFileSystem and
   // kFileSystemProviderContentCache are set and the extension is ODFS.
-  file_manager::test::MountProvidedFileSystem(
-      profile(), extension_misc::kODFSExtensionId, mount_options,
-      FakeExtensionProviderForCloudFileSystem::Create(
-          extension_misc::kODFSExtensionId, std::move(on_cache_manager)));
+  MountOptions mount_options(kFileSystemId, kDisplayName);
+  ProvidedFileSystemInterface* cloud_file_system =
+      file_manager::test::MountProvidedFileSystem(
+          profile(), extension_misc::kODFSExtensionId, mount_options,
+          FakeExtensionProviderForCloudFileSystem::Create(
+              extension_misc::kODFSExtensionId, std::move(on_cache_manager)));
+
+  // Wait for the provider to be initialized on the CacheManager.
+  base::RunLoop run_loop1;
+  const base::FilePath base64_encoded_provider_folder_name(base::Base64Encode(
+      cloud_file_system->GetFileSystemInfo().mount_path().BaseName().value()));
+  EXPECT_CALL(observer,
+              OnProviderInitializationComplete(
+                  base64_encoded_provider_folder_name, base::File::FILE_OK))
+      .WillOnce(base::test::RunClosure(run_loop1.QuitClosure()));
+  run_loop1.Run();
+
+  // Check provider cache folder exists.
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(base::PathExists(
+        GetProviderMountPath(base64_encoded_provider_folder_name)));
+  }
+
+  // Unmount.
+  Service* service = Service::Get(profile());
+  service->UnmountFileSystem(
+      cloud_file_system->GetFileSystemInfo().provider_id(),
+      cloud_file_system->GetFileSystemInfo().file_system_id(),
+      Service::UnmountReason::UNMOUNT_REASON_USER);
+
+  // Wait for the provider to be uninitialized on the CacheManager.
+  base::RunLoop run_loop2;
+  EXPECT_CALL(observer,
+              OnProviderUninitialized(base64_encoded_provider_folder_name,
+                                      base::File::FILE_OK))
+      .WillOnce(base::test::RunClosure(run_loop2.QuitClosure()));
+  run_loop2.Run();
+
+  // Check provider cache folder deleted.
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_FALSE(base::PathExists(
+        GetProviderMountPath(base64_encoded_provider_folder_name)));
+  }
+}
+
+// Tests that the content cache remains if unmount is performed by the system.
+IN_PROC_BROWSER_TEST_F(CloudFileSystemBrowserTestWithContentCache,
+                       ContentCacheNotUninitializedOnUnmountByShutdown) {
+  // Catch the cache_manager pointer before it's passed to the CloudFileSystem
+  // constructor.
+  MockCacheManagerObserver observer;
+  base::OnceCallback<void(CacheManager * cache_manager)> on_cache_manager =
+      base::BindLambdaForTesting([&](CacheManager* cache_manager) {
+        // Expect the cache manager to have been created.
+        ASSERT_TRUE(cache_manager);
+        cache_manager->AddObserver(&observer);
+      });
+
+  // Mount a CloudFileSystem.
+  // Specifically mount ODFS as Service::MountFileSystem() will only use a
+  // CacheManager if kFileSystemProviderCloudFileSystem and
+  // kFileSystemProviderContentCache are set and the extension is ODFS.
+  MountOptions mount_options(kFileSystemId, kDisplayName);
+  ProvidedFileSystemInterface* cloud_file_system =
+      file_manager::test::MountProvidedFileSystem(
+          profile(), extension_misc::kODFSExtensionId, mount_options,
+          FakeExtensionProviderForCloudFileSystem::Create(
+              extension_misc::kODFSExtensionId, std::move(on_cache_manager)));
+
+  // Wait for the provider to be initialized on the CacheManager.
+  base::RunLoop run_loop;
+  const base::FilePath base64_encoded_provider_folder_name(base::Base64Encode(
+      cloud_file_system->GetFileSystemInfo().mount_path().BaseName().value()));
+  EXPECT_CALL(observer,
+              OnProviderInitializationComplete(
+                  base64_encoded_provider_folder_name, base::File::FILE_OK))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+  run_loop.Run();
+
+  // Expect that the Provider won't be uninitialized.
+  EXPECT_CALL(observer, OnProviderUninitialized(testing::_, testing::_))
+      .Times(0);
+
+  // Unmount.
+  Service* service = Service::Get(profile());
+  service->UnmountFileSystem(
+      cloud_file_system->GetFileSystemInfo().provider_id(),
+      cloud_file_system->GetFileSystemInfo().file_system_id(),
+      Service::UnmountReason::UNMOUNT_REASON_SHUTDOWN);
 }
 
 class CloudFileSystemBrowserTestWithoutContentCache

@@ -61,6 +61,9 @@ class CacheManager {
   virtual void UninitializeForProvider(
       const ProvidedFileSystemInfo& file_system_info) = 0;
 
+  virtual bool IsProviderInitialized(
+      const ProvidedFileSystemInfo& file_system_info) = 0;
+
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
 };

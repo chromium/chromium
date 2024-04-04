@@ -43,6 +43,9 @@ class CacheManagerImpl : public CacheManager {
   void UninitializeForProvider(
       const ProvidedFileSystemInfo& file_system_info) override;
 
+  bool IsProviderInitialized(
+      const ProvidedFileSystemInfo& file_system_info) override;
+
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
 

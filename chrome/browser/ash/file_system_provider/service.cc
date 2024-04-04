@@ -257,6 +257,10 @@ base::File::Error Service::UnmountFileSystem(const ProviderId& provider_id,
   if (reason == UNMOUNT_REASON_USER) {
     registry_->ForgetFileSystem(file_system_info.provider_id(),
                                 file_system_info.file_system_id());
+    if (cache_manager_ &&
+        cache_manager_->IsProviderInitialized(file_system_info)) {
+      cache_manager_->UninitializeForProvider(file_system_info);
+    }
   }
 
   file_system_map_.erase(file_system_it);

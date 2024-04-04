@@ -53,6 +53,10 @@ class MockCacheManager : public CacheManager {
               UninitializeForProvider,
               (const ProvidedFileSystemInfo& file_system_info),
               (override));
+  MOCK_METHOD(bool,
+              IsProviderInitialized,
+              (const ProvidedFileSystemInfo& file_system_info),
+              (override));
   MOCK_METHOD(void, AddObserver, (Observer * observer), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer * observer), (override));
 };

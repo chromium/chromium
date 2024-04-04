@@ -104,6 +104,18 @@ void CacheManagerImpl::UninitializeForProvider(
                      base64_encoded_provider_folder_name));
 }
 
+bool CacheManagerImpl::IsProviderInitialized(
+    const ProvidedFileSystemInfo& file_system_info) {
+  const base::FilePath cache_directory_path =
+      GetCacheDirectoryPath(file_system_info);
+  if (cache_directory_path.empty()) {
+    return false;
+  }
+  const base::FilePath base64_encoded_provider_folder_name =
+      cache_directory_path.BaseName();
+  return initialized_providers_.contains(base64_encoded_provider_folder_name);
+}
+
 void CacheManagerImpl::AddObserver(Observer* observer) {
   DCHECK(observer);
   observers_.AddObserver(observer);
