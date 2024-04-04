@@ -177,7 +177,7 @@ TEST_F(HatsHandlerTest,
       {"Client Channel", "unknown"},
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
       {"Time On Page", "20000.000000"},
-      {"Friendlier Safe Browsing Settings", "false"},
+      {"Friendlier Safe Browsing Settings", "true"},
   };
 
   // Check that triggering the security page handler function will trigger HaTS

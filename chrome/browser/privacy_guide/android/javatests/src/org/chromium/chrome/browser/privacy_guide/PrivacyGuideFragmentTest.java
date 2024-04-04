@@ -356,7 +356,7 @@ public class PrivacyGuideFragmentTest {
         launchPrivacyGuide();
         goToCard(FragmentType.SAFE_BROWSING);
         clickOnArrowNextToRadioButtonWithText(R.string.privacy_guide_safe_browsing_enhanced_title);
-        mRenderTestRule.render(getRootView(), "privacy_guide_sb_enhanced_sheet");
+        mRenderTestRule.render(getRootView(), "privacy_guide_sb_enhanced_sheet_friendlier");
     }
 
     @Test

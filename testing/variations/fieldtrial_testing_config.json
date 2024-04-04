@@ -16005,28 +16005,6 @@
             ]
         }
     ],
-    "SafeBrowsingFriendlierSettings": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "FriendlierSafeBrowsingSettingsEnhancedProtection",
-                        "FriendlierSafeBrowsingSettingsStandardProtection"
-                    ]
-                }
-            ]
-        }
-    ],
     "SafeBrowsingHashPrefixRealTimeLookups": [
         {
             "platforms": [
@@ -17392,7 +17370,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "probability": "1",
+                        "probability": "0.5",
                         "security-page-time": "15s",
                         "security-page-trigger-id": "c4dvJ3Sz70ugnJ3q1cK0SkwJZodD"
                     },
