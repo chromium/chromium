@@ -19,7 +19,7 @@
 
 namespace webnn::coreml {
 
-const char kPlaceholderInputName[] = "placeholder";
+inline constexpr char kPlaceholderInputName[] = "placeholder";
 
 // Get name identifiers used in CoreML model files for input/output operands.
 std::string GetCoreMLNameFromInput(std::string_view input_name);

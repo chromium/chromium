@@ -42,7 +42,7 @@ using mojom::Operation;
 
 namespace {
 
-const char kWriteFileErrorMessage[] = "Failed to write constant to file.";
+constexpr char kWriteFileErrorMessage[] = "Failed to write constant to file.";
 
 const base::FilePath::CharType kMlPackageExtension[] =
     FILE_PATH_LITERAL(".mlpackage");
@@ -57,43 +57,43 @@ const base::FilePath::CharType kManifestFileName[] =
     FILE_PATH_LITERAL("Manifest.json");
 
 // Information in model package Manifest.json file.
-const char kManifestItemAuthorKey[] = "author";
-const char kManifestItemAuthorValue[] = "Chromium";
-const char kManifestItemDescriptionKey[] = "description";
-const char kManifestModelDescriptionValue[] = "CoreML Model Specification";
-const char kManifestWeightsDescriptionValue[] = "CoreML Model Weights";
-const char kManifestItemNameKey[] = "name";
-const char kManifestItemPathKey[] = "path";
-const char kManifestModelValue[] = "model.mlmodel";
-const char kManifestWeightsValue[] = "weights";
-const char kManifestItemInfoEntriesKey[] = "itemInfoEntries";
-const char kManifestVersionKey[] = "fileFormatVersion";
-const char kManifestVersionValue[] = "1.0.0";
-const char kManifestModelIdentifierKey[] = "rootModelIdentifier";
+constexpr char kManifestItemAuthorKey[] = "author";
+constexpr char kManifestItemAuthorValue[] = "Chromium";
+constexpr char kManifestItemDescriptionKey[] = "description";
+constexpr char kManifestModelDescriptionValue[] = "CoreML Model Specification";
+constexpr char kManifestWeightsDescriptionValue[] = "CoreML Model Weights";
+constexpr char kManifestItemNameKey[] = "name";
+constexpr char kManifestItemPathKey[] = "path";
+constexpr char kManifestModelValue[] = "model.mlmodel";
+constexpr char kManifestWeightsValue[] = "weights";
+constexpr char kManifestItemInfoEntriesKey[] = "itemInfoEntries";
+constexpr char kManifestVersionKey[] = "fileFormatVersion";
+constexpr char kManifestVersionValue[] = "1.0.0";
+constexpr char kManifestModelIdentifierKey[] = "rootModelIdentifier";
 
 // Prefixes to be added to CoreML entities name identifiers to avoid collision.
-const char kInputNamePrefix[] = "input";
-const char kOutputNamePrefix[] = "output";
-const char kIntermediateOperandPrefix[] = "var";
+constexpr char kInputNamePrefix[] = "input";
+constexpr char kOutputNamePrefix[] = "output";
+constexpr char kIntermediateOperandPrefix[] = "var";
 // Used when some op parameters are passed as values instead of operands.
-const char kConstValuePrefix[] = "value";
-const char kStringSeparator[] = "_";
+constexpr char kConstValuePrefix[] = "value";
+constexpr char kStringSeparator[] = "_";
 
 // model op related consts.
-const char kPlaceholderOuputName[] = "placeholder_output";
-const char kOpConstTypeName[] = "const";
-const char kOpAddTypeName[] = "add";
-const char kOpMultiplyTypeName[] = "mul";
-const char kOpDivideTypeName[] = "real_div";
-const char kOpSubtractTypeName[] = "sub";
-const char kOpMaximumTypeName[] = "maximum";
-const char kOpMinimumTypeName[] = "minimum";
-const char kOpPowerTypeName[] = "pow";
-const char kOpTransposeTypeName[] = "transpose";
-const char kOpConv2dTypeName[] = "conv";
+constexpr char kPlaceholderOuputName[] = "placeholder_output";
+constexpr char kOpConstTypeName[] = "const";
+constexpr char kOpAddTypeName[] = "add";
+constexpr char kOpMultiplyTypeName[] = "mul";
+constexpr char kOpDivideTypeName[] = "real_div";
+constexpr char kOpSubtractTypeName[] = "sub";
+constexpr char kOpMaximumTypeName[] = "maximum";
+constexpr char kOpMinimumTypeName[] = "minimum";
+constexpr char kOpPowerTypeName[] = "pow";
+constexpr char kOpTransposeTypeName[] = "transpose";
+constexpr char kOpConv2dTypeName[] = "conv";
 
 // Hard coded path used in the model file to point at the weight path.
-const char kWeightsRelativeFilePath[] = "@model_path/weights/weights.bin";
+constexpr char kWeightsRelativeFilePath[] = "@model_path/weights/weights.bin";
 
 // Maps to types defined in
 // https://github.com/apple/coremltools/blob/b416f36054af9ca9d10b2d74ba215d0454677ca0/mlmodel/src/MILBlob/Blob/BlobDataType.hpp#L14
@@ -607,8 +607,8 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForTranspose(
     return NewNotSupportedError("Unsupported input datatype.");
   }
 
-  static const char kParamX[] = "x";
-  static const char kParamPerm[] = "perm";
+  static constexpr char kParamX[] = "x";
+  static constexpr char kParamPerm[] = "perm";
   // Permutation is passed as a vector, adds a const op for this, then uses the
   // const's output as the transpose's input. This op needs to be added to
   // `block` before the transpose op.
@@ -669,15 +669,15 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForConv2d(
     return NewNotSupportedError("activation is not supported.");
   }
 
-  static const char kParamX[] = "x";
-  static const char kParamWeight[] = "weight";
-  static const char kParamStrides[] = "strides";
-  static const char kParamPadType[] = "pad_type";
-  static const char kParamPadTypeValue[] = "custom";
-  static const char kParamPad[] = "pad";
-  static const char kParamDilations[] = "dilations";
-  static const char kParamGroups[] = "groups";
-  static const char kParamBias[] = "bias";
+  static constexpr char kParamX[] = "x";
+  static constexpr char kParamWeight[] = "weight";
+  static constexpr char kParamStrides[] = "strides";
+  static constexpr char kParamPadType[] = "pad_type";
+  static constexpr char kParamPadTypeValue[] = "custom";
+  static constexpr char kParamPad[] = "pad";
+  static constexpr char kParamDilations[] = "dilations";
+  static constexpr char kParamGroups[] = "groups";
+  static constexpr char kParamBias[] = "bias";
 
   const std::string strides_output_name =
       GetCoreMLNameForParam(operation.output_operand_id, kParamStrides);
