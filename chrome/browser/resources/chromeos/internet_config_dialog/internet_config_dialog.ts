@@ -106,8 +106,6 @@ export class InternetConfigDialogElement extends
   override connectedCallback() {
     super.connectedCallback();
 
-    const isJellyEnabled = loadTimeData.valueExists('isJellyEnabled') &&
-        loadTimeData.getBoolean('isJellyEnabled');
     const dialogArgs = chrome.getVariableValue('dialogArguments');
     if (dialogArgs) {
       const args = JSON.parse(dialogArgs);
@@ -123,17 +121,7 @@ export class InternetConfigDialogElement extends
       this.prefilledProperties_ = null;
     }
 
-    if (isJellyEnabled) {
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = 'chrome://theme/colors.css?sets=legacy,sys';
-      document.head.appendChild(link);
-      document.body.classList.add('jelly-enabled');
-
-      (function() {
-        ColorChangeUpdater.forDocument().start();
-      })();
-    }
+    ColorChangeUpdater.forDocument().start();
 
     this.$.networkConfig.init();
 
