@@ -914,10 +914,22 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // highlighted.
     const axNodeIds: number[] = chrome.readingMode.getCurrentText();
 
-    const utteranceText = this.extractTextOf(axNodeIds);
-    // Return if the utterance is empty or null.
-    if (!utteranceText) {
+    // If there aren't any valid ax node ids returned by getCurrentText,
+    // speech should stop.
+    if (axNodeIds.length === 0) {
       return false;
+    }
+
+    const utteranceText = this.extractTextOf(axNodeIds);
+    // If node ids were returned but they don't exist in the Reading Mode panel,
+    // there's been a mismatch between Reading Mode and Read Aloud. In this
+    // case, we should move to the next Read Aloud node and attempt to continue
+    // playing.
+    if (!utteranceText) {
+      // TODO(b/332694565): This fallback should never be needed, but it is.
+      // Investigate root cause of Read Aloud / Reading Mode mismatch.
+      chrome.readingMode.movePositionToNextGranularity();
+      return this.highlightAndPlayMessage();
     }
 
     this.playText(utteranceText);
