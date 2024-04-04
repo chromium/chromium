@@ -24,8 +24,7 @@ const gfx::VectorIcon& GetVectorIconForPickerCategory(PickerCategory category) {
     case PickerCategory::kClipboard:
       return kPickerClipboardIcon;
     case PickerCategory::kDriveFiles:
-      // TODO: b/322926823 - Use correct icons.
-      return kFolderIcon;
+      return kPickerDriveFilesIcon;
     case PickerCategory::kLocalFiles:
       return kPickerLocalFilesIcon;
     case PickerCategory::kDatesTimes:
