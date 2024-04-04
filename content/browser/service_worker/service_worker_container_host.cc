@@ -635,9 +635,10 @@ void ServiceWorkerContainerHost::PostMessageToClient(
 
   base::WeakPtr<ServiceWorkerObjectHost> object_host =
       GetOrCreateServiceWorkerObjectHost(version);
-  if (!is_container_ready_ &&
-      buffered_messages_.size() < kMaxBufferedMessageSize) {
-    buffered_messages_.emplace_back(object_host, std::move(message));
+  if (!is_container_ready_) {
+    if (buffered_messages_.size() < kMaxBufferedMessageSize) {
+      buffered_messages_.emplace_back(object_host, std::move(message));
+    }
     return;
   }
   blink::mojom::ServiceWorkerObjectInfoPtr info;
