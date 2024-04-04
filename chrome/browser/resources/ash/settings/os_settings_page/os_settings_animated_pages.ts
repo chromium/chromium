@@ -106,8 +106,13 @@ class OsSettingsAnimatedPagesElement extends
     //  1) Not a direct navigation (such that the search box stays focused), and
     //  2) Not a "back" navigation, in which case the anchor element should be
     //     focused (further below in this function).
-    if (this.previousRoute_ &&
-        !Router.getInstance().lastRouteChangeWasPopstate()) {
+    //  OR
+    //  If the anchor element doesn't exist anymore
+    const lastRouteChangeWasPopstate =
+        Router.getInstance().lastRouteChangeWasPopstate();
+    if ((lastRouteChangeWasPopstate &&
+         document.activeElement instanceof HTMLBodyElement) ||
+        (this.previousRoute_ && !lastRouteChangeWasPopstate)) {
       const subpage = this.querySelector<OsSettingsSubpageElement>(
           'os-settings-subpage.iron-selected');
       if (subpage) {
