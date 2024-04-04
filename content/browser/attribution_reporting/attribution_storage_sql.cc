@@ -770,7 +770,8 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
             AttributionInfo(/*time=*/source_time,
                             /*debug_key=*/std::nullopt,
                             /*context_origin=*/common_info.source_origin()),
-            *stored_source, /*is_fake_event_level_attribution=*/true)) {
+            *stored_source, RateLimitTable::Scope::kEventLevelAttribution,
+            AttributionReport::Id(kUnsetRecordId))) {
       return make_result(StoreSourceResult::InternalError());
     }
   }
@@ -918,8 +919,12 @@ AttributionStorageSql::MaybeReplaceLowerPriorityEventLevelReport(
     return MaybeReplaceLowerPriorityEventLevelReportResult::kError;
   }
 
-  // Otherwise, delete the existing report with the lowest priority.
-  if (!DeleteReportInternal(*conversion_id_with_min_priority)) {
+  // Otherwise, delete the existing report with the lowest priority and the
+  // corresponding attribution rate-limit record.
+  if (!DeleteReportInternal(*conversion_id_with_min_priority) ||
+      !rate_limit_table_.DeleteAttributionRateLimit(
+          &db_, RateLimitTable::Scope::kEventLevelAttribution,
+          replaced->id())) {
     return MaybeReplaceLowerPriorityEventLevelReportResult::kError;
   }
 
@@ -1129,7 +1134,8 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
             MaybeCreateEventLevelReport(
                 attribution_info, source_to_attribute->source, trigger,
                 new_event_level_report, dedup_key,
-                limits.max_event_level_reports_per_destination);
+                limits.max_event_level_reports_per_destination,
+                limits.rate_limits_max_attributions);
         create_event_level_status != EventLevelResult::kSuccess) {
       event_level_status = create_event_level_status;
     }
@@ -1141,7 +1147,8 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
             MaybeCreateAggregatableAttributionReport(
                 attribution_info, source_to_attribute->source, trigger,
                 new_aggregatable_report, aggregatable_dedup_key,
-                limits.max_aggregatable_reports_per_destination);
+                limits.max_aggregatable_reports_per_destination,
+                limits.rate_limits_max_attributions);
         create_aggregatable_status != AggregatableResult::kSuccess) {
       aggregatable_status = create_aggregatable_status;
     }
@@ -1157,22 +1164,6 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
     return generate_null_reports_and_assemble_report_result(
         /*new_event_level_status=*/std::nullopt,
         /*new_aggregaable_status=*/std::nullopt);
-  }
-
-  switch (rate_limit_table_.AttributionAllowedForAttributionLimit(
-      &db_, attribution_info, source_to_attribute->source)) {
-    case RateLimitResult::kAllowed:
-      break;
-    case RateLimitResult::kNotAllowed:
-      limits.rate_limits_max_attributions =
-          delegate_->GetRateLimits().max_attributions;
-      new_aggregatable_report.reset();
-      return generate_null_reports_and_assemble_report_result(
-          EventLevelResult::kExcessiveAttributions,
-          AggregatableResult::kExcessiveAttributions);
-    case RateLimitResult::kError:
-      return assemble_report_result(EventLevelResult::kInternalError,
-                                    AggregatableResult::kInternalError);
   }
 
   switch (rate_limit_table_.AttributionAllowedForReportingOriginLimit(
@@ -1220,6 +1211,10 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
       store_aggregatable_status == AggregatableResult::kInternalError) {
     return assemble_report_result(EventLevelResult::kInternalError,
                                   AggregatableResult::kInternalError);
+  }
+
+  if (!IsSuccessResult(store_event_level_status)) {
+    new_event_level_report.reset();
   }
 
   if (!IsSuccessResult(store_aggregatable_status)) {
@@ -1273,9 +1268,20 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
   RecordAttributionResult(IsSuccessResult(store_event_level_status),
                           IsSuccessResult(store_aggregatable_status));
 
-  if (!rate_limit_table_.AddRateLimitForAttribution(
+  if (new_event_level_report.has_value() &&
+      !rate_limit_table_.AddRateLimitForAttribution(
           &db_, attribution_info, source_to_attribute->source,
-          /*is_fake_event_level_attribution=*/false)) {
+          RateLimitTable::Scope::kEventLevelAttribution,
+          new_event_level_report->id())) {
+    return assemble_report_result(EventLevelResult::kInternalError,
+                                  AggregatableResult::kInternalError);
+  }
+
+  if (new_aggregatable_report.has_value() &&
+      !rate_limit_table_.AddRateLimitForAttribution(
+          &db_, attribution_info, source_to_attribute->source,
+          RateLimitTable::Scope::kAggregatableAttribution,
+          new_aggregatable_report->id())) {
     return assemble_report_result(EventLevelResult::kInternalError,
                                   AggregatableResult::kInternalError);
   }
@@ -1340,7 +1346,8 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
     const AttributionTrigger& trigger,
     std::optional<AttributionReport>& report,
     std::optional<uint64_t>& dedup_key,
-    std::optional<int>& max_event_level_reports_per_destination) {
+    std::optional<int>& max_event_level_reports_per_destination,
+    std::optional<int64_t>& rate_limits_max_attributions) {
   if (source.attribution_logic() == StoredSource::AttributionLogic::kFalsely) {
     DCHECK_EQ(source.active_state(),
               StoredSource::ActiveState::kReachedEventLevelAttributionLimit);
@@ -1401,6 +1408,19 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
               AttributionReport::Type::kEventLevel);
       return EventLevelResult::kNoCapacityForConversionDestination;
     case ConversionCapacityStatus::kError:
+      return EventLevelResult::kInternalError;
+  }
+
+  switch (rate_limit_table_.AttributionAllowedForAttributionLimit(
+      &db_, attribution_info, source,
+      RateLimitTable::Scope::kEventLevelAttribution)) {
+    case RateLimitResult::kAllowed:
+      break;
+    case RateLimitResult::kNotAllowed:
+      rate_limits_max_attributions =
+          delegate_->GetRateLimits().max_attributions;
+      return EventLevelResult::kExcessiveAttributions;
+    case RateLimitResult::kError:
       return EventLevelResult::kInternalError;
   }
 
@@ -2899,7 +2919,8 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
     const AttributionTrigger& trigger,
     std::optional<AttributionReport>& report,
     std::optional<uint64_t>& dedup_key,
-    std::optional<int>& max_aggregatable_reports_per_destination) {
+    std::optional<int>& max_aggregatable_reports_per_destination,
+    std::optional<int64_t>& rate_limits_max_attributions) {
   const attribution_reporting::TriggerRegistration& trigger_registration =
       trigger.registration();
 
@@ -2957,6 +2978,19 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
               AttributionReport::Type::kAggregatableAttribution);
       return AggregatableResult::kNoCapacityForConversionDestination;
     case ConversionCapacityStatus::kError:
+      return AggregatableResult::kInternalError;
+  }
+
+  switch (rate_limit_table_.AttributionAllowedForAttributionLimit(
+      &db_, attribution_info, source,
+      RateLimitTable::Scope::kAggregatableAttribution)) {
+    case RateLimitResult::kAllowed:
+      break;
+    case RateLimitResult::kNotAllowed:
+      rate_limits_max_attributions =
+          delegate_->GetRateLimits().max_attributions;
+      return AggregatableResult::kExcessiveAttributions;
+    case RateLimitResult::kError:
       return AggregatableResult::kInternalError;
   }
 

@@ -171,61 +171,91 @@ inline constexpr const char kUpdateFailedReportSql[] =
 
 inline constexpr const char kRateLimitAttributionAllowedSql[] =
     "SELECT COUNT(*)FROM rate_limits "
-    "WHERE scope=1 "
+    "WHERE scope=? "
     "AND destination_site=? "
     "AND source_site=? "
     "AND reporting_site=? "
     "AND time>?";
-
-inline constexpr const char kRateLimitSourceAllowedSql[] =
-    "SELECT destination_site FROM rate_limits "
-    "WHERE scope=0 "
-    "AND source_site=? "
-    "AND reporting_site=? "
-    "AND source_expiry_or_attribution_time>?";
 
 static_assert(static_cast<int>(RateLimitTable::Scope::kSource) == 0,
               "update `scope=0` query below");
+#define RATE_LIMIT_SOURCE_CONDITION "scope=0"
+
+static_assert(static_cast<int>(RateLimitTable::Scope::kEventLevelAttribution) ==
+                  1,
+              "update `scope=1` query below");
+static_assert(
+    static_cast<int>(RateLimitTable::Scope::kAggregatableAttribution) == 2,
+    "update `scope=2` query below");
+#define RATE_LIMIT_ATTRIBUTION_CONDITION "(scope=1 OR scope=2)"
+
+inline constexpr const char kRateLimitSourceAllowedSql[] =
+    "SELECT destination_site FROM rate_limits "
+    "WHERE " RATE_LIMIT_SOURCE_CONDITION
+    " AND source_site=?"
+    " AND reporting_site=?"
+    " AND source_expiry_or_attribution_time>?";
+
 inline constexpr const char kRateLimitSourceAllowedDestinationRateLimitSql[] =
     "SELECT destination_site,reporting_site FROM rate_limits "
-    "WHERE scope=0 "
-    "AND source_site=? "
-    "AND source_expiry_or_attribution_time>? "
-    "AND time>?";
+    "WHERE " RATE_LIMIT_SOURCE_CONDITION
+    " AND source_site=?"
+    " AND source_expiry_or_attribution_time>?"
+    " AND time>?";
 
-inline constexpr const char kRateLimitSelectReportingOriginsSql[] =
-    "SELECT reporting_origin FROM rate_limits "
-    "WHERE scope=? "
-    "AND source_site=? "
-    "AND destination_site=? "
-    "AND time>?";
+#define RATE_LIMIT_SELECT_REPORTING_ORIGINS_QUERY \
+  "SELECT reporting_origin FROM rate_limits "     \
+  "WHERE source_site=? "                          \
+  "AND destination_site=? "                       \
+  "AND time>? "                                   \
+  "AND "
 
-static_assert(static_cast<int>(RateLimitTable::Scope::kSource) == 0,
-              "update `scope=0` clause below");
+inline constexpr const char kRateLimitSelectSourceReportingOriginsSql[] =
+    RATE_LIMIT_SELECT_REPORTING_ORIGINS_QUERY RATE_LIMIT_SOURCE_CONDITION;
+
+inline constexpr const char kRateLimitSelectAttributionReportingOriginsSql[] =
+    RATE_LIMIT_SELECT_REPORTING_ORIGINS_QUERY RATE_LIMIT_ATTRIBUTION_CONDITION;
+
+#undef RATE_LIMIT_SELECT_REPORTING_ORIGINS_QUERY
+
 inline constexpr const char kRateLimitSelectSourceReportingOriginsBySiteSql[] =
     "SELECT reporting_origin FROM rate_limits "
-    "WHERE scope=0 "
-    "AND source_site=?"
-    "AND reporting_site=? "
-    "AND time>?";
+    "WHERE " RATE_LIMIT_SOURCE_CONDITION
+    " AND source_site=?"
+    " AND reporting_site=?"
+    " AND time>?";
+
+static_assert(RateLimitTable::kUnsetReportId == -1,
+              "update `report_id!=-1` query below");
+#define RATE_LIMIT_REPORT_ID_SET_CONDITION "report_id!=-1"
+
+inline constexpr const char kDeleteAttributionRateLimitByReportIdSql[] =
+    "DELETE FROM rate_limits "
+    "WHERE " RATE_LIMIT_ATTRIBUTION_CONDITION
+    " AND scope=? AND " RATE_LIMIT_REPORT_ID_SET_CONDITION " AND report_id=?";
 
 inline constexpr const char kDeleteRateLimitRangeSql[] =
     "DELETE FROM rate_limits WHERE"
     "(time BETWEEN ?1 AND ?2)OR"
-    "(scope=1 AND source_expiry_or_attribution_time BETWEEN ?1 AND ?2)";
+    "(" RATE_LIMIT_ATTRIBUTION_CONDITION
+    "AND source_expiry_or_attribution_time BETWEEN ?1 AND ?2)";
 
 inline constexpr const char kSelectRateLimitsForDeletionSql[] =
     "SELECT id,reporting_origin "
     "FROM rate_limits WHERE"
     "(time BETWEEN ?1 AND ?2)OR"
-    "(scope=1 AND source_expiry_or_attribution_time BETWEEN ?1 AND ?2)";
+    "(" RATE_LIMIT_ATTRIBUTION_CONDITION
+    "AND source_expiry_or_attribution_time BETWEEN ?1 AND ?2)";
 
 inline constexpr const char kDeleteExpiredRateLimitsSql[] =
     "DELETE FROM rate_limits "
-    "WHERE time<=? AND(scope=1 OR source_expiry_or_attribution_time<=?)";
+    "WHERE time<=? AND(" RATE_LIMIT_ATTRIBUTION_CONDITION
+    "OR source_expiry_or_attribution_time<=?)";
 
 inline constexpr const char kDeleteRateLimitsBySourceIdSql[] =
     "DELETE FROM rate_limits WHERE source_id=?";
+
+#undef RATE_LIMIT_SOURCE_CONDITION
 
 }  // namespace content::attribution_queries
 

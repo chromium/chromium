@@ -283,9 +283,14 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion53ToCurrent) {
 
     // Verify that data is preserved across the migration.
     sql::Statement s(
-        db.GetUniqueStatement("SELECT reporting_site FROM rate_limits"));
+        db.GetUniqueStatement("SELECT reporting_site,scope FROM "
+                              "rate_limits ORDER BY id"));
     ASSERT_TRUE(s.Step());
     ASSERT_EQ("https://r.test", s.ColumnString(0));
+    ASSERT_EQ(1, s.ColumnInt(1));
+    ASSERT_TRUE(s.Step());
+    ASSERT_EQ("https://r.test", s.ColumnString(0));
+    ASSERT_EQ(2, s.ColumnInt(1));
     ASSERT_FALSE(s.Step());
   }
 
@@ -323,9 +328,14 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion54ToCurrent) {
 
     // Verify that data is preserved across the migration.
     sql::Statement s(
-        db.GetUniqueStatement("SELECT reporting_origin FROM rate_limits"));
+        db.GetUniqueStatement("SELECT reporting_origin,scope FROM "
+                              "rate_limits ORDER BY id"));
     ASSERT_TRUE(s.Step());
     ASSERT_EQ("https://a.r.test", s.ColumnString(0));
+    ASSERT_EQ(1, s.ColumnInt(1));
+    ASSERT_TRUE(s.Step());
+    ASSERT_EQ("https://a.r.test", s.ColumnString(0));
+    ASSERT_EQ(2, s.ColumnInt(1));
     ASSERT_FALSE(s.Step());
   }
 
@@ -429,6 +439,62 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion56ToCurrent) {
         "Conversions.CorruptSourcesDeletedOnMigration", 1, 1);
     histograms.ExpectUniqueSample(
         "Conversions.CorruptReportsDeletedOnMigration", 2, 1);
+  }
+
+  // DB creation histograms should be recorded.
+  histograms.ExpectTotalCount("Conversions.Storage.CreationTime", 0);
+  histograms.ExpectTotalCount("Conversions.Storage.MigrationTime", 1);
+}
+
+TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion58ToCurrent) {
+  base::HistogramTester histograms;
+  LoadDatabase(GetVersionFilePath(58), DbPath());
+
+  // Verify pre-conditions.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+
+    sql::Statement s(db.GetUniqueStatement(
+        "SELECT reporting_origin,scope FROM rate_limits ORDER BY id"));
+    ASSERT_TRUE(s.Step());
+    ASSERT_EQ("https://a.r.test", s.ColumnString(0));
+    ASSERT_EQ(0, s.ColumnInt(1));
+    ASSERT_TRUE(s.Step());
+    ASSERT_EQ("https://b.r.test", s.ColumnString(0));
+    ASSERT_EQ(1, s.ColumnInt(1));
+    ASSERT_FALSE(s.Step());
+  }
+  MigrateDatabase();
+
+  // Verify schema is current.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+
+    CheckVersionNumbers(&db);
+
+    // Compare normalized schemas
+    EXPECT_EQ(NormalizeSchema(GetCurrentSchema()),
+              NormalizeSchema(db.GetSchema()));
+
+    // Verify that data is preserved across the migration.
+    sql::Statement s(
+        db.GetUniqueStatement("SELECT reporting_origin,scope,report_id FROM "
+                              "rate_limits ORDER BY id"));
+    ASSERT_TRUE(s.Step());
+    ASSERT_EQ("https://a.r.test", s.ColumnString(0));
+    ASSERT_EQ(0, s.ColumnInt(1));
+    ASSERT_EQ(-1, s.ColumnInt(2));
+    ASSERT_TRUE(s.Step());
+    ASSERT_EQ("https://b.r.test", s.ColumnString(0));
+    ASSERT_EQ(1, s.ColumnInt(1));
+    ASSERT_EQ(-1, s.ColumnInt(2));
+    ASSERT_TRUE(s.Step());
+    ASSERT_EQ("https://b.r.test", s.ColumnString(0));
+    ASSERT_EQ(2, s.ColumnInt(1));
+    ASSERT_EQ(-1, s.ColumnInt(2));
+    ASSERT_FALSE(s.Step());
   }
 
   // DB creation histograms should be recorded.

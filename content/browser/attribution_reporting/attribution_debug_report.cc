@@ -58,7 +58,6 @@ enum class DebugDataType {
   kSourceUnknownError = 4,
   kSourceDestinationRateLimit = 5,
   kTriggerNoMatchingSource = 6,
-  kTriggerAttributionsPerSourceDestinationLimit = 7,
   kTriggerNoMatchingFilterData = 8,
   kTriggerReportingOriginLimit = 9,
   kTriggerEventDeduplicated = 10,
@@ -81,7 +80,9 @@ enum class DebugDataType {
   kTriggerEventNoMatchingTriggerData = 27,
   kHeaderParsingError = 28,
   kSourceReportingOriginPerSiteLimit = 29,
-  kMaxValue = kSourceReportingOriginPerSiteLimit,
+  kTriggerEventAttributionsPerSourceDestinationLimit = 30,
+  kTriggerAggregateAttributionsPerSourceDestinationLimit = 31,
+  kMaxValue = kTriggerAggregateAttributionsPerSourceDestinationLimit,
 };
 
 struct DebugDataTypeAndBody {
@@ -160,7 +161,7 @@ std::optional<DebugDataType> GetReportDataType(EventLevelResult result) {
     case EventLevelResult::kNoMatchingImpressions:
       return DebugDataType::kTriggerNoMatchingSource;
     case EventLevelResult::kExcessiveAttributions:
-      return DebugDataType::kTriggerAttributionsPerSourceDestinationLimit;
+      return DebugDataType::kTriggerEventAttributionsPerSourceDestinationLimit;
     case EventLevelResult::kNoMatchingSourceFilterData:
       return DebugDataType::kTriggerNoMatchingFilterData;
     case EventLevelResult::kDeduplicated:
@@ -198,7 +199,8 @@ std::optional<DebugDataType> GetReportDataType(AggregatableResult result) {
     case AggregatableResult::kNoMatchingImpressions:
       return DebugDataType::kTriggerNoMatchingSource;
     case AggregatableResult::kExcessiveAttributions:
-      return DebugDataType::kTriggerAttributionsPerSourceDestinationLimit;
+      return DebugDataType::
+          kTriggerAggregateAttributionsPerSourceDestinationLimit;
     case AggregatableResult::kNoMatchingSourceFilterData:
       return DebugDataType::kTriggerNoMatchingFilterData;
     case AggregatableResult::kDeduplicated:
@@ -230,8 +232,10 @@ std::string_view SerializeReportDataType(DebugDataType data_type) {
       return "source-unknown-error";
     case DebugDataType::kTriggerNoMatchingSource:
       return "trigger-no-matching-source";
-    case DebugDataType::kTriggerAttributionsPerSourceDestinationLimit:
-      return "trigger-attributions-per-source-destination-limit";
+    case DebugDataType::kTriggerEventAttributionsPerSourceDestinationLimit:
+      return "trigger-event-attributions-per-source-destination-limit";
+    case DebugDataType::kTriggerAggregateAttributionsPerSourceDestinationLimit:
+      return "trigger-aggregate-attributions-per-source-destination-limit";
     case DebugDataType::kTriggerNoMatchingFilterData:
       return "trigger-no-matching-filter-data";
     case DebugDataType::kTriggerReportingOriginLimit:
@@ -331,7 +335,8 @@ base::Value::Dict GetReportDataBody(DebugDataType data_type,
     case DebugDataType::kTriggerAggregateReportWindowPassed:
     case DebugDataType::kTriggerUnknownError:
       break;
-    case DebugDataType::kTriggerAttributionsPerSourceDestinationLimit:
+    case DebugDataType::kTriggerEventAttributionsPerSourceDestinationLimit:
+    case DebugDataType::kTriggerAggregateAttributionsPerSourceDestinationLimit:
       SetLimit(data_body, result.limits().rate_limits_max_attributions);
       break;
     case DebugDataType::kTriggerAggregateInsufficientBudget:
@@ -380,9 +385,10 @@ base::Value::Dict GetReportData(DebugDataType type, base::Value::Dict body) {
 }
 
 void RecordVerboseDebugReportType(DebugDataType type) {
-  static_assert(DebugDataType::kMaxValue ==
-                    DebugDataType::kSourceReportingOriginPerSiteLimit,
-                "Update ConversionVerboseDebugReportType enum.");
+  static_assert(
+      DebugDataType::kMaxValue ==
+          DebugDataType::kTriggerAggregateAttributionsPerSourceDestinationLimit,
+      "Update ConversionVerboseDebugReportType enum.");
   base::UmaHistogramEnumeration("Conversions.SentVerboseDebugReportType4",
                                 type);
 }

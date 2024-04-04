@@ -103,7 +103,10 @@
             "response": {
               "Attribution-Reporting-Register-Source": {
                 "destination": "https://destination.test",
-                "source_event_id": "999"
+                "source_event_id": "999",
+                "aggregation_keys": {
+                  "a": "0x1"
+                }
               }
             }
           }
@@ -128,6 +131,29 @@
                     "trigger_data": "2"
                   }
                 ]
+              }
+            }
+          }
+        ]
+      },
+      // Should not result in an aggregatable report due to the reporting origin
+      // limit.
+      {
+        "timestamp": "5001",
+        "registration_request": {
+          "attribution_src_url": "https://example.reporter.test/register-trigger",
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://example.reporter.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "debug_reporting": true,
+                "aggregatable_values": {
+                  "a": 123
+                }
               }
             }
           }
@@ -300,6 +326,19 @@
           }
         ],
         "report_time": "5000",
+        "report_url": "https://example.reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+           "body": {
+              "attribution_destination": "https://destination.test",
+              "limit": "1",
+              "source_event_id": "999",
+              "source_site": "https://source.test"
+           },
+           "type": "trigger-reporting-origin-limit"
+        } ],
+        "report_time": "5001",
         "report_url": "https://example.reporter.test/.well-known/attribution-reporting/debug/verbose"
       },
       {

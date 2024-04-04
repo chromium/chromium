@@ -1,7 +1,7 @@
 {
   "description": "Max attributions per rate-limit window",
   "api_config": {
-    "rate_limit_max_attributions": "3"
+    "rate_limit_max_attributions": "2"
   },
   "input": {
     "registrations": [
@@ -14,6 +14,7 @@
         "responses": [
           {
             "url": "https://reporter.test/register-source",
+            "debug_permission": true,
             "response": {
               "Attribution-Reporting-Register-Source": {
                 "destination": "https://example.destination.test",
@@ -27,8 +28,7 @@
           }
         ]
       },
-      // Should result in an event-level report and an aggregatable report
-      // because the attribution limit is not reached. This is counted as one
+      // Should result in an event-level report. This is counted as one event-level
       // attribution.
       {
         "timestamp": "1000",
@@ -44,7 +44,24 @@
                   {
                     "trigger_data": "1"
                   }
-                ],
+                ]
+              }
+            }
+          }
+        ]
+      },
+      // Should result in an aggregatable report. This is counted as one aggregatable
+      // attribution.
+      {
+        "timestamp": "1500",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
                 "aggregatable_trigger_data": [
                   {
                     "source_keys": ["a"],
@@ -103,8 +120,9 @@
           }
         ]
       },
-      // Should result in an event-level report. This is counted as one
-      // attribution.
+      // Should result in an event-level report and an aggregatable report
+      // because the attribution limit is not reached. This is counted as one
+      // event-level attribution and an aggregatable attribution.
       {
         "timestamp": "3001",
         "registration_request": {
@@ -119,24 +137,7 @@
                   {
                     "trigger_data": "7"
                   }
-                ]
-              }
-            }
-          }
-        ]
-      },
-      // Should result in an aggregatable report. This is counted as one
-      // attribution.
-      {
-        "timestamp": "3002",
-        "registration_request": {
-          "context_origin": "https://destination.test"
-        },
-        "responses": [
-          {
-            "url": "https://reporter.test/register-trigger",
-            "response": {
-              "Attribution-Reporting-Register-Trigger": {
+                ],
                 "aggregatable_trigger_data": [
                   {
                     "source_keys": ["b"],
@@ -418,11 +419,11 @@
           {
             "body": {
               "attribution_destination": "https://destination.test",
-              "limit": "3",
+              "limit": "2",
               "source_event_id": "222",
               "source_site": "https://source.test"
             },
-            "type": "trigger-attributions-per-source-destination-limit"
+            "type": "trigger-event-attributions-per-source-destination-limit"
           }
         ],
         "report_time": "3003",
@@ -433,11 +434,11 @@
           {
             "body": {
               "attribution_destination": "https://destination.test",
-              "limit": "3",
+              "limit": "2",
               "source_event_id": "222",
               "source_site": "https://source.test"
             },
-            "type": "trigger-attributions-per-source-destination-limit"
+            "type": "trigger-aggregate-attributions-per-source-destination-limit"
           }
         ],
         "report_time": "3004",
@@ -448,11 +449,11 @@
           {
             "body": {
               "attribution_destination": "https://destination.test",
-              "limit": "3",
+              "limit": "2",
               "source_event_id": "666",
               "source_site": "https://source.test"
             },
-            "type": "trigger-attributions-per-source-destination-limit"
+            "type": "trigger-event-attributions-per-source-destination-limit"
           }
         ],
         "report_time": "11000",
@@ -468,7 +469,7 @@
             }
           ]
         },
-        "report_time": "3601000",
+        "report_time": "3601500",
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
       },
       {
@@ -481,7 +482,7 @@
             }
           ]
         },
-        "report_time": "3603002",
+        "report_time": "3603001",
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
       },
       {

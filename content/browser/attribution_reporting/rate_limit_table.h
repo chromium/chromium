@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_RATE_LIMIT_TABLE_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_RATE_LIMIT_TABLE_H_
 
+#include <stdint.h>
+
 #include <optional>
 #include <set>
 #include <vector>
@@ -14,6 +16,7 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
+#include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/attribution_data_model.h"
@@ -45,16 +48,17 @@ enum class RateLimitResult : int;
 // destroyed on the same sequence. The sequence must outlive |this|.
 class CONTENT_EXPORT RateLimitTable {
  public:
-  // We have separate reporting origin rate limits for sources and attributions.
-  // This enum helps us differentiate between these two cases in the database.
+  // We have separate reporting origin rate limits for sources and attributions,
+  // and separate attribution rate limits for event-level and aggregatable
+  // attributions. This enum helps us differentiate between these cases in the
+  // database.
   //
   // These values are persisted to the DB. Entries should not be renumbered and
   // numeric values should never be reused.
-  //
-  // The enum is only exposed here for use in unit tests.
   enum class Scope {
     kSource = 0,
-    kAttribution = 1,
+    kEventLevelAttribution = 1,
+    kAggregatableAttribution = 2,
   };
 
   enum class DestinationRateLimitResult {
@@ -86,7 +90,8 @@ class CONTENT_EXPORT RateLimitTable {
       sql::Database* db,
       const AttributionInfo& attribution_info,
       const StoredSource&,
-      bool is_fake_event_level_attribution);
+      Scope,
+      AttributionReport::Id);
 
   [[nodiscard]] RateLimitResult SourceAllowedForReportingOriginLimit(
       sql::Database* db,
@@ -116,7 +121,12 @@ class CONTENT_EXPORT RateLimitTable {
   [[nodiscard]] RateLimitResult AttributionAllowedForAttributionLimit(
       sql::Database* db,
       const AttributionInfo& attribution_info,
-      const StoredSource&);
+      const StoredSource&,
+      Scope scope);
+
+  bool DeleteAttributionRateLimit(sql::Database* db,
+                                  Scope scope,
+                                  AttributionReport::Id);
 
   // These should be 1:1 with |AttributionStorageSql|'s |ClearData| functions.
   // Returns false on failure.
@@ -137,18 +147,21 @@ class CONTENT_EXPORT RateLimitTable {
 
   void SetDelegate(const AttributionStorageDelegate&);
 
+  static constexpr int64_t kUnsetReportId = -1;
+
  private:
   [[nodiscard]] bool AddRateLimit(
       sql::Database* db,
       const StoredSource& source,
       std::optional<base::Time> trigger_time,
       const attribution_reporting::SuitableOrigin& context_origin,
-      bool is_fake_event_level_attribution)
+      Scope,
+      std::optional<AttributionReport::Id>)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   [[nodiscard]] RateLimitResult AllowedForReportingOriginLimit(
       sql::Database* db,
-      Scope scope,
+      bool is_source,
       const CommonSourceInfo& common_info,
       base::Time time,
       const base::flat_set<net::SchemefulSite>& destination_sites)

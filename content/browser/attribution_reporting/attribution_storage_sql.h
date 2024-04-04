@@ -48,11 +48,11 @@ enum class RateLimitResult : int;
 class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
  public:
   // Version number of the database.
-  static constexpr int kCurrentVersionNumber = 58;
+  static constexpr int kCurrentVersionNumber = 59;
 
   // Earliest version which can use a `kCurrentVersionNumber` database
   // without failing.
-  static constexpr int kCompatibleVersionNumber = 58;
+  static constexpr int kCompatibleVersionNumber = 59;
 
   // Latest version of the database that cannot be upgraded to
   // `kCurrentVersionNumber` without razing the database.
@@ -304,7 +304,8 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       const AttributionTrigger& trigger,
       std::optional<AttributionReport>& report,
       std::optional<uint64_t>& dedup_key,
-      std::optional<int>& max_event_level_reports_per_destination)
+      std::optional<int>& max_event_level_reports_per_destination,
+      std::optional<int64_t>& rate_limits_max_attributions)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   AttributionTrigger::EventLevelResult MaybeStoreEventLevelReport(
@@ -379,7 +380,8 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       const AttributionTrigger& trigger,
       std::optional<AttributionReport>& report,
       std::optional<uint64_t>& dedup_key,
-      std::optional<int>& max_aggregatable_reports_per_destination)
+      std::optional<int>& max_aggregatable_reports_per_destination,
+      std::optional<int64_t>& rate_limits_max_attributions)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Stores the data associated with the aggregatable report, e.g. budget

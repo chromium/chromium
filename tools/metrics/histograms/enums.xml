@@ -4118,7 +4118,6 @@ Called by update_net_error_codes.py.-->
   <int value="4" label="source-unknown-error"/>
   <int value="5" label="source-destination-rate-limit"/>
   <int value="6" label="trigger-no-matching-source"/>
-  <int value="7" label="trigger-attributions-per-source-destination-limit"/>
   <int value="8" label="trigger-no-matching-filter-data"/>
   <int value="9" label="trigger-reporting-origin-limit"/>
   <int value="10" label="trigger-event-deduplicated"/>
@@ -4141,6 +4140,10 @@ Called by update_net_error_codes.py.-->
   <int value="27" label="trigger-event-no-matching-trigger-data"/>
   <int value="28" label="header-parsing-error"/>
   <int value="29" label="source-reporting-origin-per-site-limit"/>
+  <int value="30"
+      label="trigger-event-attributions-per-source-destination-limit"/>
+  <int value="31"
+      label="trigger-aggregate-attributions-per-source-destination-limit"/>
 </enum>
 
 <enum name="CookieAccessType">

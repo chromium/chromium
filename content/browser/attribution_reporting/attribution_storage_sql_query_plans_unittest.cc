@@ -200,10 +200,20 @@ TEST_F(AttributionSqlQueryPlanTest, kRateLimitSourceReportingOriginsBySiteSql) {
                         {"scope", "source_site"})));
 }
 
-TEST_F(AttributionSqlQueryPlanTest, kRateLimitSelectReportingOriginsSql) {
-  EXPECT_THAT(GetPlan(attribution_queries::kRateLimitSelectReportingOriginsSql),
-              ValueIs(UsesIndex("rate_limit_reporting_origin_idx",
-                                {"scope", "destination_site", "source_site"})));
+TEST_F(AttributionSqlQueryPlanTest, kRateLimitSelectSourceReportingOriginsSql) {
+  EXPECT_THAT(
+      GetPlan(attribution_queries::kRateLimitSelectSourceReportingOriginsSql),
+      ValueIs(UsesIndex("rate_limit_reporting_origin_idx",
+                        {"scope", "destination_site", "source_site"})));
+}
+
+TEST_F(AttributionSqlQueryPlanTest,
+       kRateLimitSelectAttributionReportingOriginsSql) {
+  EXPECT_THAT(
+      GetPlan(
+          attribution_queries::kRateLimitSelectAttributionReportingOriginsSql),
+      ValueIs(UsesIndex("rate_limit_reporting_origin_idx",
+                        {"scope", "destination_site", "source_site"})));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kDeleteRateLimitRangeSql) {
@@ -226,6 +236,12 @@ TEST_F(AttributionSqlQueryPlanTest, kDeleteExpiredRateLimitsSql) {
 TEST_F(AttributionSqlQueryPlanTest, kDeleteRateLimitsBySourceIdSql) {
   EXPECT_THAT(GetPlan(attribution_queries::kDeleteRateLimitsBySourceIdSql),
               ValueIs(UsesIndex("rate_limit_source_id_idx")));
+}
+
+TEST_F(AttributionSqlQueryPlanTest, kDeleteAttributionRateLimitByReportIdSql) {
+  EXPECT_THAT(
+      GetPlan(attribution_queries::kDeleteAttributionRateLimitByReportIdSql),
+      ValueIs(UsesIndex("rate_limit_report_id_idx")));
 }
 
 }  // namespace

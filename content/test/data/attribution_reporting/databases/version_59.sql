@@ -6,7 +6,7 @@ CREATE TABLE sources(source_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,source
 
 CREATE TABLE reports(report_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,source_id INTEGER NOT NULL,trigger_time INTEGER NOT NULL,report_time INTEGER NOT NULL,initial_report_time INTEGER NOT NULL,failed_send_attempts INTEGER NOT NULL,external_report_id TEXT NOT NULL,debug_key INTEGER,context_origin TEXT NOT NULL,reporting_origin TEXT NOT NULL,report_type INTEGER NOT NULL,metadata BLOB NOT NULL);
 
-CREATE TABLE rate_limits(id INTEGER PRIMARY KEY NOT NULL,scope INTEGER NOT NULL,source_id INTEGER NOT NULL,source_site TEXT NOT NULL,destination_site TEXT NOT NULL,context_origin TEXT NOT NULL,reporting_origin TEXT NOT NULL,reporting_site TEXT NOT NULL,time INTEGER NOT NULL,source_expiry_or_attribution_time INTEGER NOT NULL);
+CREATE TABLE rate_limits(id INTEGER PRIMARY KEY NOT NULL,scope INTEGER NOT NULL,source_id INTEGER NOT NULL,source_site TEXT NOT NULL,destination_site TEXT NOT NULL,context_origin TEXT NOT NULL,reporting_origin TEXT NOT NULL,reporting_site TEXT NOT NULL,time INTEGER NOT NULL,source_expiry_or_attribution_time INTEGER NOT NULL,report_id INTEGER NOT NULL);
 
 CREATE TABLE dedup_keys(source_id INTEGER NOT NULL,report_type INTEGER NOT NULL,dedup_key INTEGER NOT NULL,PRIMARY KEY(source_id,report_type,dedup_key))WITHOUT ROWID;
 
@@ -15,8 +15,8 @@ CREATE TABLE source_destinations(source_id INTEGER NOT NULL,destination_site TEX
 CREATE TABLE meta(key LONGVARCHAR NOT NULL UNIQUE PRIMARY KEY, value LONGVARCHAR);
 
 INSERT INTO meta VALUES('mmap_status','-1');
-INSERT INTO meta VALUES('version','58');
-INSERT INTO meta VALUES('last_compatible_version','58');
+INSERT INTO meta VALUES('version','59');
+INSERT INTO meta VALUES('last_compatible_version','59');
 
 CREATE INDEX sources_by_active_reporting_origin ON sources(event_level_active,aggregatable_active,reporting_origin);
 
@@ -42,7 +42,6 @@ CREATE INDEX rate_limit_time_idx ON rate_limits(time);
 
 CREATE INDEX rate_limit_source_id_idx ON rate_limits(source_id);
 
-INSERT INTO rate_limits VALUES (0,0,2,'3','4','5','https://a.r.test','https://r.test',6,7);
-INSERT INTO rate_limits VALUES (1,1,2,'3','4','5','https://b.r.test','https://r.test',6,7);
+CREATE INDEX rate_limit_report_id_idx ON rate_limits(scope,report_id)WHERE (scope=1 OR scope=2) AND report_id!=-1;
 
 COMMIT;

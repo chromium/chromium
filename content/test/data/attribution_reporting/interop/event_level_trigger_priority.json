@@ -1,5 +1,8 @@
 {
   "description": "Trigger priority for event-level reports",
+  "api_config": {
+    "rate_limit_max_attributions": "4"
+  },
   "input": {
     "registrations": [
       {

@@ -381,7 +381,7 @@ TEST(AttributionDebugReportTest, TriggerDebugging) {
              "source_event_id": "123",
              "source_site": "https://impression.test"
            },
-           "type": "trigger-attributions-per-source-destination-limit"
+           "type": "trigger-aggregate-attributions-per-source-destination-limit"
          }
        ])json"},
       {EventLevelResult::kNoMatchingConfigurations,
@@ -552,7 +552,7 @@ TEST(AttributionDebugReportTest, EventLevelAttributionDebugging) {
            "source_event_id": "123",
            "source_site": "https://impression.test"
          },
-         "type": "trigger-attributions-per-source-destination-limit"
+         "type": "trigger-event-attributions-per-source-destination-limit"
        }])json"},
       {EventLevelResult::kPriorityTooLow,
        /*replaced_event_level_report=*/std::nullopt,
@@ -816,7 +816,7 @@ TEST(AttributionDebugReportTest, AggregatableAttributionDebugging) {
            "source_site": "https://impression.test",
            "trigger_debug_key": "456"
          },
-         "type": "trigger-attributions-per-source-destination-limit"
+         "type": "trigger-aggregate-attributions-per-source-destination-limit"
        }])json"},
       {AggregatableResult::kExcessiveReportingOrigins,
        /*new_aggregatable_report=*/std::nullopt,

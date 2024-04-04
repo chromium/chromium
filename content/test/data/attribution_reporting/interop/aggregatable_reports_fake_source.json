@@ -1,11 +1,11 @@
 {
   "description": "aggregatable report attributed to source with randomized response only increments attribution rate-limit for effective destination",
   "api_config": {
-    "rate_limit_max_attributions": "2"
+    "rate_limit_max_attributions": "1"
   },
   "input": {
     "registrations": [
-      // This results in attribution rate-limit records for both destinations.
+      // This results in event-level attribution rate-limit records for both destinations.
       {
         "timestamp": "0",
         "registration_request": {
@@ -33,7 +33,7 @@
           }
         ]
       },
-      // This results in an attribution rate-limit record for https://destination1.test.
+      // This results in an aggregatable attribution rate-limit record for https://destination1.test.
       {
         "timestamp": "1000",
         "registration_request": {
@@ -122,10 +122,11 @@
           {
             "body": {
               "attribution_destination": "https://destination1.test",
+              "limit": "1",
               "source_event_id": "123",
               "source_site": "https://source.test"
             },
-            "type": "trigger-event-noise"
+            "type": "trigger-event-attributions-per-source-destination-limit"
           }
         ],
         "report_time": "1000",
@@ -135,11 +136,11 @@
         "payload": [ {
            "body": {
               "attribution_destination": "https://destination1.test",
-              "limit": "2",
+              "limit": "1",
               "source_event_id": "123",
               "source_site": "https://source.test"
            },
-           "type": "trigger-attributions-per-source-destination-limit"
+           "type": "trigger-aggregate-attributions-per-source-destination-limit"
         } ],
         "report_time": "2000",
         "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
