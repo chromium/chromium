@@ -173,12 +173,12 @@ struct ShowAutofillPopupParams {
   // Autofill closes the popup right away because it is outside of the content
   // area. To work around this, we attempt to bring up the Autofill popup
   // multiple times, with some delay.
-  AssertionResult a = AssertionFailure()
-                      << __func__ << "(): with " << p.num_profile_suggestions
-                      << " profile suggestions";
+  testing::Message m;
+  m << __func__ << "(): with " << p.num_profile_suggestions
+    << " profile suggestions.";
   bool field_was_focused_initially = IsFocusedField(e, rfh);
   for (size_t i = 1; i <= p.max_tries; ++i) {
-    a = a << "Iteration " << i << "/" << p.max_tries << ". ";
+    m << "\nIteration " << i << "/" << p.max_tries << ". ";
     // A Translate bubble may overlap with the Autofill popup, which causes
     // flakiness. See crbug.com/1175735#c10.
     // Also, the address-save prompts and others may overlap with the Autofill
@@ -191,12 +191,12 @@ struct ShowAutofillPopupParams {
       if (field_was_focused_initially) {
         // The Autofill popup may have opened due to a severely delayed event on
         // a slow bot. To reset the popup, we re-focus the field.
-        a << "Trying to re-focus the field. ";
+        m << "Trying to re-focus the field. ";
         if (AssertionResult b = BlurFocusedField(rfh); !b) {
-          a = a << b;
+          m << b.message();
         }
         if (AssertionResult b = FocusField(e, rfh); !b) {
-          a = a << b;
+          m << b.message();
         }
       }
     }
@@ -206,52 +206,59 @@ struct ShowAutofillPopupParams {
       // Press arrow down to open the popup and select first suggestion.
       // Depending on the platform, this requires one or two arrow-downs.
       if (!IsFocusedField(e, rfh)) {
-        return a << "Field " << *e << " must be focused. ";
+        return AssertionFailure()
+               << m << "Field " << *e << " must be focused. ";
       }
       if (!ShouldAutoselectFirstSuggestionOnArrowDown()) {
         if (AssertionResult b = ArrowDown({kSuggest}); !b) {
-          a << "Cannot trigger suggestions by first arrow: " << b;
+          m << "Cannot trigger suggestions by first arrow: " << b.message();
           continue;
         }
         if (AssertionResult b =
                 has_preview ? ArrowDown({kPreview}) : ArrowDown({});
             !b) {
-          a << "Cannot select first suggestion by second arrow: " << b;
+          m << "Cannot select first suggestion by second arrow: "
+            << b.message();
           continue;
         }
       } else if (AssertionResult b = has_preview
                                          ? ArrowDown({kPreview, kSuggest})
                                          : ArrowDown({kSuggest});
                  !b) {
-        a << "Cannot trigger and select first suggestion by arrow: " << b;
+        m << "Cannot trigger and select first suggestion by arrow: "
+          << b.message();
         continue;
       }
     } else if (p.show_method.character) {
       // Enter character to open the popup, but do not select an option.
       // If necessary, delete past iterations character first.
       if (!IsFocusedField(e, rfh)) {
-        return a << "Field " << *e << " must be focused. ";
+        return AssertionFailure()
+               << m << "Field " << *e << " must be focused. ";
       }
       if (i > 1) {
         if (AssertionResult b = Backspace(); !b) {
-          a << "Cannot undo past iteration's key: " << b;
+          m << "Cannot undo past iteration's key: " << b.message();
         }
       }
       std::string code = std::string("Key") + p.show_method.character;
       if (AssertionResult b = Char(code, {kSuggest}); !b) {
-        a << "Cannot trigger suggestions by key: " << b;
+        m << "Cannot trigger suggestions by key: " << b.message();
         continue;
       }
     } else if (p.show_method.click) {
       // Click item to open the popup, but do not select an option.
       if (AssertionResult b = Click({kSuggest}); !b) {
-        a << "Cannot trigger and select first suggestion by click: " << b;
+        m << "Cannot trigger and select first suggestion by click: "
+          << b.message();
         continue;
       }
     }
+    LOG(WARNING) << (m << "Succeeded.");
     return AssertionSuccess();
   }
-  return a << "Couldn't show Autofill suggestions on " << *e << ". ";
+  return AssertionFailure()
+         << m << "Couldn't show Autofill suggestions on " << *e << ". ";
 }
 
 struct AutofillSuggestionParams {
