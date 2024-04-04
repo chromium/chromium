@@ -182,10 +182,10 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
   ShowUi("Vcn3ds");
   VerifyUi();
 
-  // Navigate to a page where there are isComplete and token query params.
+  // Navigate to a page where there are shouldProceed and token query params.
   GetPopupWebContents()->OpenURL(
       content::OpenURLParams(
-          GURL("https://site.example/?isComplete=true&token=sometesttoken"),
+          GURL("https://site.example/?shouldProceed=true&token=sometesttoken"),
           content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
           ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
           /*is_renderer_initiated=*/false),
@@ -251,10 +251,10 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
   ShowUi("Vcn3ds");
   VerifyUi();
 
-  // Navigate to a page where there is an isComplete query param that denotes
+  // Navigate to a page where there is an shouldProceed query param that denotes
   // the authentication failed.
   GetPopupWebContents()->OpenURL(
-      content::OpenURLParams(GURL("https://site.example/?isComplete=false"),
+      content::OpenURLParams(GURL("https://site.example/?shouldProceed=false"),
                              content::Referrer(),
                              WindowOpenDisposition::CURRENT_TAB,
                              ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
@@ -311,10 +311,10 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
   ShowUi("Vcn3ds");
   VerifyUi();
 
-  // Navigate to a page where there is an isComplete query param but not token
-  // query param.
+  // Navigate to a page where there is an shouldProceed query param but not
+  // token query param.
   GetPopupWebContents()->OpenURL(
-      content::OpenURLParams(GURL("https://site.example/?isComplete=true"),
+      content::OpenURLParams(GURL("https://site.example/?shouldProceed=true"),
                              content::Referrer(),
                              WindowOpenDisposition::CURRENT_TAB,
                              ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
@@ -347,10 +347,10 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
   ShowUi("Vcn3ds");
   VerifyUi();
 
-  // Navigate to a page where there are isComplete and token query params.
+  // Navigate to a page where there are shouldProceed and token query params.
   GetPopupWebContents()->OpenURL(
       content::OpenURLParams(
-          GURL("https://site.example/?isComplete=true&token=sometesttoken"),
+          GURL("https://site.example/?shouldProceed=true&token=sometesttoken"),
           content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
           ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
           /*is_renderer_initiated=*/false),

@@ -36,7 +36,7 @@ ParseFinalUrlForVcn3ds(const GURL& url) {
   while (url::ExtractQueryKeyValue(query_piece, &query, &key, &value)) {
     std::string_view key_view = query_piece.substr(key.begin, key.len);
     std::string_view value_view = query_piece.substr(value.begin, value.len);
-    if (key_view == "isComplete") {
+    if (key_view == "shouldProceed") {
       is_complete = value_view == "true";
     } else if (key_view == "token") {
       redirect_completion_proof = std::string(value_view);
