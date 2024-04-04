@@ -32,6 +32,7 @@ def __filegroups(ctx):
                 "bin/clang",
                 "bin/clang++",
                 "bin/clang-cl.exe",
+                "*_ignorelist.txt",
             ],
         },
     }
