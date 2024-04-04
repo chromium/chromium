@@ -127,8 +127,9 @@ def main() -> int:
         # Attach the analysis result for this bug.
         if bug_id and args.attach_analysis_result and bug_result_string:
             bug_result_string = RESULT_TITLE + bug_result_string
-            if RESULT_TITLE not in str(buganizer_api.GetIssueComments(bug_id)):
-                buganizer_api.NewComment(bug_id, bug_result_string)
+            if RESULT_TITLE not in str(
+                    buganizer_api.GetIssueComments(int(bug_id))):
+                buganizer_api.NewComment(int(bug_id), bug_result_string)
                 bug_ids.append(bug_id)
                 _log.info('Successfully attach result to bug: %s', bug_id)
 
