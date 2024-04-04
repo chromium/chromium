@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <limits>
+#include <string_view>
 #include <tuple>
 
 #include "base/command_line.h"
@@ -27,7 +28,6 @@
 #include "base/process/process.h"
 #include "base/process/process_metrics.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/multiprocess_test.h"
@@ -339,7 +339,7 @@ TEST_F(ProcessUtilTest, TransferHandleToPath) {
 // besides |expected_path| are in the namespace.
 // Since GetSignalFilePath() uses "/tmp", tests for paths other than this must
 // include two paths. "/tmp" must always be last.
-int CheckOnlyOnePathExists(StringPiece expected_path) {
+int CheckOnlyOnePathExists(std::string_view expected_path) {
   bool is_expected_path_tmp = expected_path == "/tmp";
   std::vector<FilePath> paths;
 

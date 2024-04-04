@@ -9,6 +9,7 @@
 
 #include <map>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_util.h"
@@ -83,7 +84,7 @@ bool ReadProcFile(const FilePath& file, std::string* buffer) {
 }
 
 bool ReadProcFileToTrimmedStringPairs(pid_t pid,
-                                      StringPiece filename,
+                                      std::string_view filename,
                                       StringPairs* key_value_pairs) {
   std::string status_data;
   FilePath status_file = GetProcPidDir(pid).Append(filename);
@@ -95,7 +96,7 @@ bool ReadProcFileToTrimmedStringPairs(pid_t pid,
   return true;
 }
 
-size_t ReadProcStatusAndGetKbFieldAsSizeT(pid_t pid, StringPiece field) {
+size_t ReadProcStatusAndGetKbFieldAsSizeT(pid_t pid, std::string_view field) {
   StringPairs pairs;
   if (!ReadProcFileToTrimmedStringPairs(pid, "status", &pairs)) {
     return 0;
@@ -108,7 +109,7 @@ size_t ReadProcStatusAndGetKbFieldAsSizeT(pid_t pid, StringPiece field) {
       continue;
     }
 
-    std::vector<StringPiece> split_value_str =
+    std::vector<std::string_view> split_value_str =
         SplitStringPiece(value_str, " ", TRIM_WHITESPACE, SPLIT_WANT_ALL);
     if (split_value_str.size() != 2 || split_value_str[1] != "kB") {
       NOTREACHED();
@@ -127,7 +128,7 @@ size_t ReadProcStatusAndGetKbFieldAsSizeT(pid_t pid, StringPiece field) {
 }
 
 bool ReadProcStatusAndGetFieldAsUint64(pid_t pid,
-                                       StringPiece field,
+                                       std::string_view field,
                                        uint64_t* result) {
   StringPairs pairs;
   if (!ReadProcFileToTrimmedStringPairs(pid, "status", &pairs)) {

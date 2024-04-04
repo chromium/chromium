@@ -5,9 +5,10 @@
 #ifndef BASE_PROCESS_PROCESS_H_
 #define BASE_PROCESS_PROCESS_H_
 
+#include <string_view>
+
 #include "base/base_export.h"
 #include "base/process/process_handle.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
@@ -333,7 +334,7 @@ class BASE_EXPORT Process {
 // Given the contents of the /proc/<pid>/cgroup file, determine whether the
 // process is backgrounded or not.
 BASE_EXPORT Process::Priority GetProcessPriorityCGroup(
-    const StringPiece& cgroup_contents);
+    std::string_view cgroup_contents);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace base

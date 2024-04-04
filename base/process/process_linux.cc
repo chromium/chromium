@@ -10,6 +10,7 @@
 #include <sys/vfs.h>
 
 #include <cstring>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/files/file_util.h"
@@ -275,15 +276,15 @@ bool Process::SetPriority(Priority priority) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-Process::Priority GetProcessPriorityCGroup(const StringPiece& cgroup_contents) {
+Process::Priority GetProcessPriorityCGroup(std::string_view cgroup_contents) {
   // The process can be part of multiple control groups, and for each cgroup
   // hierarchy there's an entry in the file. We look for a control group
   // named "/chrome_renderers/background" to determine if the process is
   // backgrounded. crbug.com/548818.
-  std::vector<StringPiece> lines = SplitStringPiece(
+  std::vector<std::string_view> lines = SplitStringPiece(
       cgroup_contents, "\n", TRIM_WHITESPACE, SPLIT_WANT_NONEMPTY);
   for (const auto& line : lines) {
-    std::vector<StringPiece> fields =
+    std::vector<std::string_view> fields =
         SplitStringPiece(line, ":", TRIM_WHITESPACE, SPLIT_WANT_ALL);
     if (fields.size() != 3U) {
       NOTREACHED();
@@ -310,7 +311,7 @@ ProcessId Process::GetPidInNamespace() const {
     const std::string& key = pair.first;
     const std::string& value_str = pair.second;
     if (key == "NSpid") {
-      std::vector<StringPiece> split_value_str = SplitStringPiece(
+      std::vector<std::string_view> split_value_str = SplitStringPiece(
           value_str, "\t", TRIM_WHITESPACE, SPLIT_WANT_NONEMPTY);
       if (split_value_str.size() <= 1) {
         return kNullProcessId;

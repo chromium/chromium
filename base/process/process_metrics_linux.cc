@@ -16,6 +16,7 @@
 #include <unistd.h>
 
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/span.h"
@@ -29,7 +30,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/process/internal_linux.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
@@ -225,7 +225,7 @@ size_t GetSystemCommitChargeFromMeminfo(const SystemMemoryInfoKB& meminfo) {
          meminfo.buffers - meminfo.cached;
 }
 
-int ParseProcStatCPU(StringPiece input) {
+int ParseProcStatCPU(std::string_view input) {
   // |input| may be empty if the process disappeared somehow.
   // e.g. http://crbug.com/145811.
   if (input.empty())
@@ -343,7 +343,8 @@ Value::Dict SystemMemoryInfoKB::ToDict() const {
   return res;
 }
 
-bool ParseProcMeminfo(StringPiece meminfo_data, SystemMemoryInfoKB* meminfo) {
+bool ParseProcMeminfo(std::string_view meminfo_data,
+                      SystemMemoryInfoKB* meminfo) {
   // The format of /proc/meminfo is:
   //
   // MemTotal:      8235324 kB
@@ -358,9 +359,9 @@ bool ParseProcMeminfo(StringPiece meminfo_data, SystemMemoryInfoKB* meminfo) {
   // least non-zero. So start off with a zero total.
   meminfo->total = 0;
 
-  for (const StringPiece& line : SplitStringPiece(
+  for (std::string_view line : SplitStringPiece(
            meminfo_data, "\n", KEEP_WHITESPACE, SPLIT_WANT_NONEMPTY)) {
-    std::vector<StringPiece> tokens = SplitStringPiece(
+    std::vector<std::string_view> tokens = SplitStringPiece(
         line, kWhitespaceASCII, TRIM_WHITESPACE, SPLIT_WANT_NONEMPTY);
     // HugePages_* only has a number and no suffix so there may not be exactly 3
     // tokens.
@@ -413,7 +414,7 @@ bool ParseProcMeminfo(StringPiece meminfo_data, SystemMemoryInfoKB* meminfo) {
   return meminfo->total > 0;
 }
 
-bool ParseProcVmstat(StringPiece vmstat_data, VmStatInfo* vmstat) {
+bool ParseProcVmstat(std::string_view vmstat_data, VmStatInfo* vmstat) {
   // The format of /proc/vmstat is:
   //
   // nr_free_pages 299878
@@ -435,10 +436,10 @@ bool ParseProcVmstat(StringPiece vmstat_data, VmStatInfo* vmstat) {
   bool has_oom_kill = false;
   vmstat->oom_kill = 0;
 
-  for (const StringPiece& line : SplitStringPiece(
+  for (std::string_view line : SplitStringPiece(
            vmstat_data, "\n", KEEP_WHITESPACE, SPLIT_WANT_NONEMPTY)) {
-    std::vector<StringPiece> tokens = SplitStringPiece(
-        line, " ", KEEP_WHITESPACE, SPLIT_WANT_NONEMPTY);
+    std::vector<std::string_view> tokens =
+        SplitStringPiece(line, " ", KEEP_WHITESPACE, SPLIT_WANT_NONEMPTY);
     if (tokens.size() != 2)
       continue;
 
@@ -552,7 +553,7 @@ Value::Dict SystemDiskInfo::ToDict() const {
   return res;
 }
 
-bool IsValidDiskName(StringPiece candidate) {
+bool IsValidDiskName(std::string_view candidate) {
   if (candidate.length() < 3)
     return false;
 
@@ -591,7 +592,7 @@ bool GetSystemDiskInfo(SystemDiskInfo* diskinfo) {
     return false;
   }
 
-  std::vector<StringPiece> diskinfo_lines = SplitStringPiece(
+  std::vector<std::string_view> diskinfo_lines = SplitStringPiece(
       diskinfo_data, "\n", KEEP_WHITESPACE, SPLIT_WANT_NONEMPTY);
   if (diskinfo_lines.empty()) {
     DLOG(WARNING) << "No lines found";
@@ -622,8 +623,8 @@ bool GetSystemDiskInfo(SystemDiskInfo* diskinfo) {
   uint64_t io_time = 0;
   uint64_t weighted_io_time = 0;
 
-  for (const StringPiece& line : diskinfo_lines) {
-    std::vector<StringPiece> disk_fields = SplitStringPiece(
+  for (std::string_view line : diskinfo_lines) {
+    std::vector<std::string_view> disk_fields = SplitStringPiece(
         line, kWhitespaceASCII, TRIM_WHITESPACE, SPLIT_WANT_NONEMPTY);
 
     // Fields may have overflowed and reset to zero.
@@ -690,7 +691,7 @@ Value::Dict GraphicsMemoryInfoKB::ToDict() const {
   return res;
 }
 
-bool ParseZramMmStat(StringPiece mm_stat_data, SwapInfo* swap_info) {
+bool ParseZramMmStat(std::string_view mm_stat_data, SwapInfo* swap_info) {
   // There are 7 columns in /sys/block/zram0/mm_stat,
   // split by several spaces. The first three columns
   // are orig_data_size, compr_data_size and mem_used_total.
@@ -700,7 +701,7 @@ bool ParseZramMmStat(StringPiece mm_stat_data, SwapInfo* swap_info) {
   // For more details:
   // https://www.kernel.org/doc/Documentation/blockdev/zram.txt
 
-  std::vector<StringPiece> tokens = SplitStringPiece(
+  std::vector<std::string_view> tokens = SplitStringPiece(
       mm_stat_data, kWhitespaceASCII, TRIM_WHITESPACE, SPLIT_WANT_NONEMPTY);
   if (tokens.size() < 7) {
     DLOG(WARNING) << "zram mm_stat: tokens: " << tokens.size()
@@ -718,7 +719,7 @@ bool ParseZramMmStat(StringPiece mm_stat_data, SwapInfo* swap_info) {
   return true;
 }
 
-bool ParseZramStat(StringPiece stat_data, SwapInfo* swap_info) {
+bool ParseZramStat(std::string_view stat_data, SwapInfo* swap_info) {
   // There are 11 columns in /sys/block/zram0/stat,
   // split by several spaces. The first column is read I/Os
   // and fifth column is write I/Os.
@@ -728,7 +729,7 @@ bool ParseZramStat(StringPiece stat_data, SwapInfo* swap_info) {
   // For more details:
   // https://www.kernel.org/doc/Documentation/blockdev/zram.txt
 
-  std::vector<StringPiece> tokens = SplitStringPiece(
+  std::vector<std::string_view> tokens = SplitStringPiece(
       stat_data, kWhitespaceASCII, TRIM_WHITESPACE, SPLIT_WANT_NONEMPTY);
   if (tokens.size() < 11) {
     DLOG(WARNING) << "zram stat: tokens: " << tokens.size()

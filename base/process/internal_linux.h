@@ -11,8 +11,10 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <unistd.h>
+
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -54,18 +56,18 @@ pid_t ProcDirSlotToPid(const char* d_name);
 // trim the key and value. On success, return true and write the trimmed
 // key/value pairs into |key_value_pairs|.
 bool ReadProcFileToTrimmedStringPairs(pid_t pid,
-                                      StringPiece filename,
+                                      std::string_view filename,
                                       StringPairs* key_value_pairs);
 
 // Read /proc/<pid>/status and return the value for |field|, or 0 on failure.
 // Only works for fields in the form of "Field: value kB".
-size_t ReadProcStatusAndGetKbFieldAsSizeT(pid_t pid, StringPiece field);
+size_t ReadProcStatusAndGetKbFieldAsSizeT(pid_t pid, std::string_view field);
 
 // Read /proc/<pid>/status and look for |field|. On success, return true and
 // write the value for |field| into |result|.
 // Only works for fields in the form of "field    :     uint_value"
 bool ReadProcStatusAndGetFieldAsUint64(pid_t pid,
-                                       StringPiece field,
+                                       std::string_view field,
                                        uint64_t* result);
 
 // Reads /proc/<pid>/stat into |buffer|. Returns true if the file can be read
