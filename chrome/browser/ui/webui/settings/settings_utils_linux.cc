@@ -43,7 +43,7 @@ const char* const kGNOME3ProxyConfigCommand[] = {"gnome-control-center",
 const char* const kKDE3ProxyConfigCommand[] = {"kcmshell", "proxy"};
 const char* const kKDE4ProxyConfigCommand[] = {"kcmshell4", "proxy"};
 const char* const kKDE5ProxyConfigCommand[] = {"kcmshell5", "proxy"};
-const char* const kKDE6ProxyConfigCommand[] = {"kcmshell6", "proxy"};
+const char* const kKDE6ProxyConfigCommand[] = {"kcmshell6", "kcm_proxy"};
 
 // In Deepin OS, we might need to run dde-control-center instead.
 const char* const kDeepinProxyConfigCommand[] = {"dde-control-center",
