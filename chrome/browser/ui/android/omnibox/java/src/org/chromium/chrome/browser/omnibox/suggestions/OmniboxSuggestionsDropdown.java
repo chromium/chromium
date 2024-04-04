@@ -68,6 +68,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     private int mLastBroadcastedListViewMaxHeight;
     private @Nullable Callback<OmniboxAlignment> mOmniboxAlignmentObserver;
     private final boolean mForcePhoneStyleOmnibox;
+    private float mChildVerticalTranslation;
 
     /**
      * Interface that will receive notifications when the user is interacting with an item on the
@@ -319,6 +320,29 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     /** Resets selection typically in response to changes to the list. */
     public void resetSelection() {
         mSelectionController.resetSelection();
+    }
+
+    /**
+     * Translates all children by {@code translation}. This translation is applied to newly-added
+     * added children as well.
+     */
+    public void translateChildrenVertical(float translation) {
+        mChildVerticalTranslation = translation;
+        final int childCount = getChildCount();
+        for (int i = 0; i < childCount; i++) {
+            getChildAt(i).setTranslationY(translation);
+        }
+    }
+
+    @Override
+    public void onChildAttachedToWindow(@NonNull View child) {
+        if (mChildVerticalTranslation == 0.0f) return;
+        child.setTranslationY(mChildVerticalTranslation);
+    }
+
+    @Override
+    public void onChildDetachedFromWindow(@NonNull View child) {
+        child.setTranslationY(0.0f);
     }
 
     /** Resests the tracked keyboard shown state to properly respond to scroll events. */

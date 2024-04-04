@@ -18,6 +18,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import android.content.Context;
 import android.graphics.Rect;
 import android.view.ContextThemeWrapper;
+import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
@@ -438,6 +439,23 @@ public class OmniboxSuggestionsDropdownUnitTest {
         Mockito.clearInvocations(mDropdown);
         ShadowLooper.runUiThreadTasks();
         verify(mDropdown).requestLayout();
+    }
+
+    @Test
+    @SmallTest
+    public void translateChildrenVertical() {
+        mDropdown.setAdapter(mAdapter);
+        mDropdown.setEmbedder(mEmbedder);
+        mDropdown.onAttachedToWindow();
+
+        View childView = Mockito.mock(View.class);
+
+        mDropdown.translateChildrenVertical(45.6f);
+        mDropdown.onChildAttachedToWindow(childView);
+        verify(childView).setTranslationY(45.6f);
+
+        mDropdown.onChildDetachedFromWindow(childView);
+        verify(childView).setTranslationY(0.0f);
     }
 
     private void layoutDropdown(int width, int height) {
