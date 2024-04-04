@@ -540,7 +540,6 @@
 <translation id="4227825898293920515">گذرواژه <ph name="TIME" /> دیگر منقضی می‌شود</translation>
 <translation id="4238516577297848345">هیچ کار چاپی درحال انجام نیست</translation>
 <translation id="4239069858505860023">GPRS</translation>
-<translation id="4244962993387259361">برای اجرای «آزمایش حافظه»، حداقل به ۵۰۰ مگابایت فضای آزاد نیاز دارید. برای آزاد کردن فضا، به «تنظیمات &gt; مدیریت فضای ذخیره‌سازی» بروید.</translation>
 <translation id="4250229828105606438">نماگرفت</translation>
 <translation id="4251839292699800785">دفتر کار شیک</translation>
 <translation id="4258281355379922695">‏تأخیر HTTP</translation>
@@ -912,6 +911,7 @@
 <translation id="6382182670717268353">پیش‌نمایش محافظ صفحه‌نمایش</translation>
 <translation id="6388847657025262518">تغذیه‌کننده سند اسکنر گیر کرده است. تغذیه‌کننده را بررسی کنید و دوباره امتحان کنید.</translation>
 <translation id="6394634179843537518">افزودن فایل</translation>
+<translation id="6396719002784938593">علف پُرزدار خشک‌شده</translation>
 <translation id="639964859328803943">عصرانه</translation>
 <translation id="6400680457268373900"><ph name="DREAMSCAPES_OBJECT" /> فراواقعی ساخته‌شده از <ph name="DREAMSCAPES_MATERIAL" /> به رنگ <ph name="DREAMSCAPES_COLORS" /></translation>
 <translation id="6401427872449207797">جستجوی مرورگر</translation>
@@ -953,6 +953,7 @@
 <translation id="6575134580692778371">پیکربندی نشده</translation>
 <translation id="6576005492601044801">چپ</translation>
 <translation id="6579509898032828423">استفاده از این عکس</translation>
+<translation id="6587870930887634392">آبدار</translation>
 <translation id="6596816719288285829">‏نشانی IP</translation>
 <translation id="6599673642868607614">‏از بازخوردتان سپاس‌گزاریم. تیم ما بازخورد شما را مرور می‌کند و به‌کمک آن می‌توانیم تجربه استفاده از Chromebook را بهبود ببخشیم. به‌دلیل تعداد بالای گزارش‌ها، قادر به ارسال پاسخ نخواهیم بود.</translation>
 <translation id="6618744767048954150">درحال اجرا</translation>
@@ -1111,6 +1112,7 @@
 <translation id="7497215489070763236">گواهینامه مرکز صدور گواهی سرور</translation>
 <translation id="7501957181231305652">یا</translation>
 <translation id="7502658306369382406">‏نشانی IPv6</translation>
+<translation id="7507061649493508884">یک <ph name="FLOWER_TYPE" /> <ph name="FLOWER_COLOR" /> درخشان</translation>
 <translation id="7513770521371759388">پایین</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">ایجاد</translation>
@@ -1160,7 +1162,6 @@
 <translation id="780301667611848630">نه متشکرم</translation>
 <translation id="7805768142964895445">وضعیت</translation>
 <translation id="7813073042185856802">کوه</translation>
-<translation id="7819831665603418705">استفاده از الگو</translation>
 <translation id="7819857487979277519">‏PSK (WPA یا RSN)</translation>
 <translation id="7824219488248240180">پُست‌امپرسیونیست</translation>
 <translation id="7828503206075800057">کافه <ph name="CAFE_TYPE" /> ‏<ph name="CAFE_STYLE" /></translation>
@@ -1171,6 +1172,7 @@
 <translation id="7850847810298646851">‏کاغذدیواری با بهره‌گیری از هوش مصنوعی Google ایجاد شده است</translation>
 <translation id="785170686607360576">لاله</translation>
 <translation id="7856267634822906833">صفحه لمسی بلوتوث</translation>
+<translation id="7859006200041800233">گل کاکتوس</translation>
 <translation id="7869143217755017858">غیرفعال کردن حالت تاریک</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">نوع ارائه‌دهنده</translation>
@@ -1306,6 +1308,7 @@
 <translation id="8726019395068607495">متوقف شد - در باز است</translation>
 <translation id="8730621377337864115">تمام</translation>
 <translation id="8747900814994928677">تأیید تغییر</translation>
+<translation id="8749478549112817787">پس‌زمینه دوربین</translation>
 <translation id="8755946156089753497">برج</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">‏آلبوم Google Photos</translation>

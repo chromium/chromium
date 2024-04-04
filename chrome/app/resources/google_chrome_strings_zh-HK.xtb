@@ -150,6 +150,7 @@
 <translation id="3100998948628680988">為 Chrome 設定檔命名</translation>
 <translation id="3112458742631356345">由於此檔案不是常見的下載項目，可能含有危險內容，因此 Chrome 已禁止下載</translation>
 <translation id="3114643501466072395">如要檢查其他密碼是否安全，且未受資料外洩或其他安全性問題影響，請<ph name="BEGIN_LINK" />登入 Chrome<ph name="END_LINK" />。</translation>
+<translation id="3119573284443908657">這個封存檔案內含可能藏有惡意軟體的其他檔案，因此 Chrome 已禁止下載</translation>
 <translation id="3140883423282498090">您的變更將於下次重新啟動 Google Chrome 時生效。</translation>
 <translation id="3149510190863420837">Chrome 應用程式</translation>
 <translation id="3169523567916669830">在試用期間，您可以查看及移除網站用來向您顯示廣告的感興趣主題。Chrome 會根據您最近的瀏覽記錄，推測您感興趣的主題。</translation>
@@ -220,6 +221,7 @@
 <translation id="4334294535648607276">下載完成。</translation>
 <translation id="4335235004908507846">Chrome 能確保系統安全，避免發生資料外洩或擴充程式損毀等問題</translation>
 <translation id="4343195214584226067">已將 <ph name="EXTENSION_NAME" /> 加到 Chrome</translation>
+<translation id="436060642166082913">這個檔案可能會危害個人和社群網路帳戶，因此 Chrome 已禁止下載</translation>
 <translation id="4384570495110188418">由於您尚未登入帳戶，因此 Chrome 無法檢查密碼</translation>
 <translation id="4389991535395284064">使用無痕模式瀏覽時，Chrome 會在使用不安全的連線載入網站前顯示警告</translation>
 <translation id="4427306783828095590">強化保護功能可進一步封鎖仿冒詐騙和惡意軟件</translation>
@@ -475,6 +477,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="873133009373065397">Google Chrome 無法偵測或設定預設瀏覽器</translation>
 <translation id="8765470054473112089">在網址列或搜尋框中輸入內容時，Chrome 會將輸入的內容傳送至預設搜尋引擎，以便取得更切合需求的建議。此功能不會在無痕模式下啟用。</translation>
 <translation id="878572486461146056">安裝錯誤：網絡管理員已套用防止安裝的群組政策：<ph name="INSTALL_ERROR" /></translation>
+<translation id="8796073561259064743">這個檔案可能會危害個人和社群網路帳戶 (包括 <ph name="USER_EMAIL" />)，因此 Chrome 已禁止下載</translation>
 <translation id="8801657293260363985">V8 是 Chrome 的 JavaScript 和 WebAssembly 引擎，可提升網站效能</translation>
 <translation id="8821043148920470810">如要取得日後的 Google Chrome 更新，您需要使用 Windows 10 或以上版本。此電腦目前版本為 Windows 7。</translation>
 <translation id="8823341990149967727">Chrome 版本過舊</translation>

@@ -16,7 +16,6 @@
 <translation id="1066060668811609597">Urus Penyegerakan</translation>
 <translation id="1069154182096085577">Kata Laluan Sudah Wujud</translation>
 <translation id="1076421457278169141">Kod diimbas</translation>
-<translation id="1076785341346483463">Segerakkan dengan Akaun Terurus</translation>
 <translation id="1084365883616172403">Catatan Facebook selesai.</translation>
 <translation id="1103523840287552314">Sentiasa terjemahkan <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Tukar kepada Tetingkap Terbuka</translation>
@@ -24,7 +23,6 @@
 <translation id="1112015203684611006">Pencetakan gagal.</translation>
 <translation id="1125564390852150847">Buat tab baharu.</translation>
 <translation id="1126809382673880764">Tidak melindungi anda daripada laman web, muat turun dan sambungan yang berbahaya. Anda akan mendapat perlindungan Penyemakan Imbas Selamat, jika tersedia, dalam perkhidmatan Google yang lain, seperti Gmail dan Carian.</translation>
-<translation id="1145536944570833626">Padam data sedia ada.</translation>
 <translation id="1147031633655575115">Dilog masuk sebagai <ph name="USER" /></translation>
 <translation id="1150989369772528668">Kalendar</translation>
 <translation id="1154984953698510061">Lihat Tab Lain</translation>
@@ -54,7 +52,6 @@
 <translation id="1273416271143914096">{count,plural, =1{{count} kata laluan}other{{count} kata laluan}}</translation>
 <translation id="1275718070701477396">Dipilih</translation>
 <translation id="1279024913354609713">Jangan Benarkan</translation>
-<translation id="1281818060020671000">Urus Data</translation>
 <translation id="1282311502488501110">Jangan Log Masuk</translation>
 <translation id="1283524564873030414">24 Jam Yang Lalu</translation>
 <translation id="1285320974508926690">Jangan sekali-kali menterjemahkan tapak ini</translation>
@@ -563,7 +560,6 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3918585468378680136">Mendapatkan Status Pakej</translation>
 <translation id="3921585859122905677">Kedudukan Bar Alamat</translation>
 <translation id="3922310737605261887">Cari Teks yang Disalin</translation>
-<translation id="3928666092801078803">Gabungkan data saya</translation>
 <translation id="3929457972718048006">Alamat</translation>
 <translation id="3939505428630887612">Perihal Halaman Ini</translation>
 <translation id="3948600256434252210">Anda boleh meleret ke kanan untuk menyemak imbas dalam Inkognito.</translation>
@@ -943,6 +939,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="5857770089550859117">Ungkapan laluan diperlukan untuk memulakan penyegerakan.</translation>
 <translation id="5859715514067755465">Mundar</translation>
 <translation id="5860033963881614850">Dimatikan</translation>
+<translation id="5860491529813859533">Hidupkan</translation>
 <translation id="5896576662943111387">Dibina untuk iOS</translation>
 <translation id="5897749768294722429">Untuk segera kembali kepada laman yang telah anda lawati, segerakkan tab dan sejarah anda.</translation>
 <translation id="5897956970858271241">Lawati Pautan Disalin</translation>
@@ -961,7 +958,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="5971872012779224351">{count,plural, =1{1 penanda halaman dipadamkan}other{{count} penanda halaman dipadamkan}}</translation>
 <translation id="5979837087407522202">Cari Kata Laluan</translation>
 <translation id="5981230843984570095">Tutup Semua Butang Tidak Aktif</translation>
-<translation id="5982717868370722439">Tambahkan data sedia ada pada <ph name="USER_EMAIL" />.</translation>
 <translation id="5984222099446776634">Dilawati Baru-baru Ini</translation>
 <translation id="598634819525651074">Kawasan</translation>
 <translation id="5988097621740394599">Lihat penurunan harga pada tab anda.</translation>
@@ -1192,7 +1188,6 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7022197654033719543">Maklumat Laman</translation>
 <translation id="7029809446516969842">Kata laluan</translation>
 <translation id="704692552158601232">Apl Penyemak Imbas Lalai</translation>
-<translation id="7062545763355031412">Terima dan tukar akaun</translation>
 <translation id="7063811929043357292">Akaun anda diuruskan oleh ibu/bapa anda.
 <ph name="BEGIN_LINK" />Ketahui Lebih Lanjut<ph name="END_LINK" /></translation>
 <translation id="7069695992271320873">Alih keluar daripada Peranti Ini</translation>
@@ -1385,7 +1380,6 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="804427445359061970">Anda dapat menemukan tab anda daripada peranti lain di sini</translation>
 <translation id="8044568254381073661">Simpan Tanpa Penyulitan</translation>
 <translation id="8059533439631660104">Meruntuhkan bahagian.</translation>
-<translation id="806745655614357130">Biarkan data saya diasingkan</translation>
 <translation id="8069394452933076548">Pilih waktu untuk mengalihkan tab yang tidak digunakan baru-baru ini kepada bahagian tab tidak aktif.</translation>
 <translation id="8073670137947914548">Muat turun selesai</translation>
 <translation id="8073872304774253879">Perbaik Carian dan Penyemakan Imbas</translation>
@@ -1616,7 +1610,6 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="9165320910061267720">Untuk mendapatkan pemberitahuan tentang makluman penurunan harga, anda perlu menghidupkan pemberitahuan dalam tetapan iOS anda.</translation>
 <translation id="9177438225260810839">Cari Tab Terbuka</translation>
 <translation id="9187853111759024059">Tutup 99+ Tab Tidak Aktif?</translation>
-<translation id="9188680907066685419">Log keluar daripada akaun terurus</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> h yang lalu</translation>
 <translation id="9203116392574189331">Serah</translation>
 <translation id="9203951165704618409">Alihkan bar alamat anda dari bahagian atas ke bahagian bawah untuk mendapatkan pengalaman penyemakan imbas yang diperibadikan.</translation>

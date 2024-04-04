@@ -16,7 +16,6 @@
 <translation id="1066060668811609597">Upravljanje sinkronizacijom</translation>
 <translation id="1069154182096085577">Zaporka već postoji</translation>
 <translation id="1076421457278169141">Kod skeniran</translation>
-<translation id="1076785341346483463">Sinkronizacija s upravljanim računom</translation>
 <translation id="1084365883616172403">Dovršen je post za Facebook.</translation>
 <translation id="1103523840287552314">Uvijek prevedi <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Prijeđite na otvoreni prozor</translation>
@@ -24,7 +23,6 @@
 <translation id="1112015203684611006">Ispis nije uspio.</translation>
 <translation id="1125564390852150847">Otvori novu karticu.</translation>
 <translation id="1126809382673880764">Ne štiti vas od opasnih web-lokacija, preuzimanja i proširenja. Na drugim Googleovim uslugama, kao što su Gmail i Pretraživanje, i dalje ste zaštićeni Sigurnim pregledavanjem, ako je dostupno.</translation>
-<translation id="1145536944570833626">Brisanje postojećih podataka.</translation>
 <translation id="1147031633655575115">Prijavljeni ste kao <ph name="USER" /></translation>
 <translation id="1150989369772528668">Kalendar</translation>
 <translation id="1154984953698510061">Pogledaj ostale kartice</translation>
@@ -54,7 +52,6 @@
 <translation id="1273416271143914096">{count,plural, =1{{count} zaporka}one{{count} zaporka}few{{count} zaporke}other{{count} zaporki}}</translation>
 <translation id="1275718070701477396">Odabrano</translation>
 <translation id="1279024913354609713">Ne dopusti</translation>
-<translation id="1281818060020671000">Upravljanje podacima</translation>
 <translation id="1282311502488501110">Ne prijavljuj se</translation>
 <translation id="1283524564873030414">Posljednja 24 sata</translation>
 <translation id="1285320974508926690">Nikad nemoj prevoditi ovu web-lokaciju</translation>
@@ -563,7 +560,6 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="3918585468378680136">Dohvaćanje statusa</translation>
 <translation id="3921585859122905677">Položaj adresne trake</translation>
 <translation id="3922310737605261887">Pretraživanje teksta koji ste kopirali</translation>
-<translation id="3928666092801078803">Kombiniraj moje podatke</translation>
 <translation id="3929457972718048006">Adrese</translation>
 <translation id="3939505428630887612">O ovoj stranici</translation>
 <translation id="3948600256434252210">Da biste pregledavali u anonimnom načinu, prijeđite prstom udesno.</translation>
@@ -943,6 +939,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="5857770089550859117">Za pokretanje sinkronizacije potrebna je zaporka.</translation>
 <translation id="5859715514067755465">Unaprijed</translation>
 <translation id="5860033963881614850">Isključeno</translation>
+<translation id="5860491529813859533">Uključi</translation>
 <translation id="5896576662943111387">Razvijeno za iOS</translation>
 <translation id="5897749768294722429">Da biste se brzo vratili na web-lokacije koje ste posjetili, sinkronizirajte kartice i povijest.</translation>
 <translation id="5897956970858271241">Otvori kopiranu vezu</translation>
@@ -961,7 +958,6 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="5971872012779224351">{count,plural, =1{Izbrisana je jedna oznaka}one{Izbrisana je {count} oznaka}few{Izbrisane su {count} oznake}other{Izbrisano je {count} oznaka}}</translation>
 <translation id="5979837087407522202">Pretraživanje zaporki</translation>
 <translation id="5981230843984570095">Zatvori sve neaktivno</translation>
-<translation id="5982717868370722439">Dodavanje postojećih podataka na račun <ph name="USER_EMAIL" />.</translation>
 <translation id="5984222099446776634">Nedavno posjećeno</translation>
 <translation id="598634819525651074">Površina</translation>
 <translation id="5988097621740394599">Pogledajte pad cijena na karticama.</translation>
@@ -1192,7 +1188,6 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="7022197654033719543">Informacije o web-lokaciji</translation>
 <translation id="7029809446516969842">Zaporke</translation>
 <translation id="704692552158601232">Zadana aplikacija preglednika</translation>
-<translation id="7062545763355031412">Prihvati i promijeni račun</translation>
 <translation id="7063811929043357292">Tvojim računom upravlja roditelj.
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="7069695992271320873">Ukloni s ovog uređaja</translation>
@@ -1385,7 +1380,6 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="804427445359061970">Ovdje ćete pronaći svoje kartice s ostalih uređaja</translation>
 <translation id="8044568254381073661">Spremi bez šifriranja</translation>
 <translation id="8059533439631660104">Sažima odjeljak.</translation>
-<translation id="806745655614357130">Čuvaj moje podatke zasebno</translation>
 <translation id="8069394452933076548">Odaberite kada će se kartice koje nisu korištene u posljednje vrijeme premjestiti u odjeljak neaktivnih kartica.</translation>
 <translation id="8073670137947914548">Preuzimanje je dovršeno</translation>
 <translation id="8073872304774253879">Poboljšajte pretraživanje i pregledavanje</translation>
@@ -1616,7 +1610,6 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="9165320910061267720">Da biste primali obavijesti o sniženju cijena, uključite ih u postavkama iOS-a.</translation>
 <translation id="9177438225260810839">Pretraživanje otvorenih kartica</translation>
 <translation id="9187853111759024059">Želite li zatvoriti više od 99 neaktivnih kartica?</translation>
-<translation id="9188680907066685419">Odjava s upravljanog računa</translation>
 <translation id="9200875785104711666">Prije ovoliko dana: <ph name="TIME" /></translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9203951165704618409">Prebacite adresnu traku s vrha na dno da biste prilagodili doživljaj pregledavanja.</translation>

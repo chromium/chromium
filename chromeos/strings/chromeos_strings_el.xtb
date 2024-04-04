@@ -540,7 +540,6 @@
 <translation id="4227825898293920515">Ο κωδικός πρόσβασης λήγει σε <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Δεν υπάρχουν εργασίες εκτύπωσης σε εξέλιξη</translation>
 <translation id="4239069858505860023">GPRS</translation>
-<translation id="4244962993387259361">Χρειάζεστε τουλάχιστον 500 MB ελεύθερης μνήμης για να εκτελέσετε μια δοκιμή μνήμης. Για να αποδεσμεύσετε χώρο, μεταβείτε στις Ρυθμίσεις &gt; Διαχείριση αποθηκευτικού χώρου.</translation>
 <translation id="4250229828105606438">Στιγμιότυπο οθόνης</translation>
 <translation id="4251839292699800785">Κομψό γραφείο</translation>
 <translation id="4258281355379922695">Λανθάνων χρόνος HTTP</translation>
@@ -1160,7 +1159,6 @@
 <translation id="780301667611848630">Όχι, ευχαριστώ</translation>
 <translation id="7805768142964895445">Κατάσταση</translation>
 <translation id="7813073042185856802">βουνό</translation>
-<translation id="7819831665603418705">Χρήση προτύπου</translation>
 <translation id="7819857487979277519">PSK (WPA ή RSN)</translation>
 <translation id="7824219488248240180">μεταϊμπρεσιονισμού</translation>
 <translation id="7828503206075800057">Μια <ph name="CAFE_STYLE" /> καφετέρια <ph name="CAFE_TYPE" /></translation>

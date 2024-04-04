@@ -91,7 +91,6 @@ Du hittar fler inställningar som använder data för att förbättra Chromium-u
 <translation id="3567399274263440288">Logga in i Chromium med Google-kontot så att du får ut mesta möjliga av programmet.</translation>
 <translation id="3634039384458740619">Öppna inställningarna för Chromium</translation>
 <translation id="3639997914391704523">Chromium kan kontrollera dina lösenord när du loggar in med Google-kontot.</translation>
-<translation id="3650632991272923014"><ph name="USER_EMAIL1" /> använde Chromium och har lämnat kvar bokmärken, lösenord och andra inställningar på enheten.</translation>
 <translation id="3688710892786762883">Chromium identifierar försändelsens spårningsnummer på webbplatser du besöker och visar uppdateringar om försändelsen på sidan Ny flik. Din data delas med Google för att tillhandahålla den här funktionen och förbättra Shopping för alla.</translation>
 <translation id="372658070733623520">Verifiera din identitet för att använda och spara Chromium-data i ditt Google-konto.</translation>
 <translation id="3780779443901618967">Varnar dig om farliga webbplatser, även sådana som Google inte kände till tidigare, genom att analysera mer data från webbplatser än standardskyddet. Du kan välja att hoppa över Chromium-varningar.</translation>
@@ -182,7 +181,6 @@ Tänk på detta:
 <translation id="5983312940147103417">Gör Chromium bättre</translation>
 <translation id="5985102273857091344">Välj Chromium.</translation>
 <translation id="5985254578475526217">Om du vill få aviseringar från Chromium aktiverar du aviseringar i iOS-inställningarna</translation>
-<translation id="6062449165341879460">Organisationen <ph name="DOMAIN" /> har åtkomst till data, bokmärken, historik, lösenord och andra inställningar i Chromium som du lagrar i det här kontot. När du loggar ut raderas din data från enheten.  Datan lagras dock fortfarande i det hanterade Google-kontot och kan kommas åt av organisationen. Organisationen kan även ställa in användarpolicyer som gäller det kontot specifikt och som kan påverka hur Chromium fungerar.</translation>
 <translation id="6093744543579359059">Hantera lösenord i Chromium</translation>
 <translation id="6104024151682120539">Öppna i Chromium</translation>
 <translation id="61109258320235597">Ange lösenfrasen om du vill använda och spara Chromium-data i ditt Google-konto.</translation>
@@ -247,7 +245,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="7763454117143368771">Använd Chromium som standardwebbläsare med skydd mot skadliga webbplatser och skydd av dina lösenord</translation>
 <translation id="78025249032851484">Chromium är inaktuellt.</translation>
 <translation id="7859018312476869945">När du skriver i adressfältet eller sökrutan skickar Chromium det du skriver till standardsökmotorn för att du ska få bättre förslag. Detta är inaktiverat i inkognitoläge.</translation>
-<translation id="786327964234957808">Du håller på att byta synkroniseringskonto från <ph name="USER_EMAIL1" /> till <ph name="USER_EMAIL2" />. Befintlig data i Chromium hanteras av <ph name="DOMAIN" />. Åtgärden raderar din data från den här enheten men den finns kvar på <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Börja använda Chromium som skanner</translation>
 <translation id="7905064834449738336">När du använder ett lösenord visas en varning i Chromium om det har publicerats online. Under kontrollen krypteras dina lösenord och användarnamn så att varken Google eller någon annan kan läsa dem.</translation>
 <translation id="7911732829884437264">Använda Chromium som standard</translation>

@@ -41,6 +41,7 @@
 <translation id="102916930470544692">Clave de acceso</translation>
 <translation id="1029317248976101138">Zoom</translation>
 <translation id="1029526375103058355">Tocar para facer clic</translation>
+<translation id="1029724557649700742">Ofreceranse novas funcións, que variarán segundo o dispositivo, a medida que estean dispoñibles.</translation>
 <translation id="1031362278801463162">Cargando vista previa</translation>
 <translation id="1032605640136438169">Revísaas</translation>
 <translation id="103279545524624934">Libera espazo en disco para iniciar as aplicacións para Android.</translation>
@@ -1519,7 +1520,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2127372758936585790">Cargador de baixa potencia</translation>
 <translation id="212862741129535676">Porcentaxe de ocupación de estado de frecuencia</translation>
 <translation id="212876957201860463">Preparándose para configurar o dispositivo móbil…</translation>
-<translation id="2130909682040406368">Máis información sobre o uso de ferramentas de IA</translation>
 <translation id="2131077480075264">Non se pode instalar "<ph name="APP_NAME" />" debido a que "<ph name="IMPORT_NAME" />" non o permite</translation>
 <translation id="2133775869826239001">Seleccionar máis funcións para configurar</translation>
 <translation id="2133857665503360653">Tentar descargar <ph name="FILE_NAME" /> de novo</translation>
@@ -1558,6 +1558,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2155473371917268529">A opción de configuración actual de visibilidade é Os teus dispositivos</translation>
 <translation id="2155772377859296191">A resolución parece de <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156707722163479690">Con permiso para desprazarse e facer zoom polas pestanas compartidas</translation>
 <translation id="2156877321344104010">Executar Comprobación de seguranza de novo</translation>
 <translation id="2157474325782140681">Para gozar de funcións adicionais, utiliza unha base de Dell deseñada para funcionar con este Chromebook.</translation>
 <translation id="215753907730220065">Saír do modo de pantalla completa</translation>
@@ -1976,6 +1977,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2459706890611560967">Retomar a emisión da pestana no seguinte dispositivo: <ph name="DEVICE_NAME" /></translation>
 <translation id="2460356425461033301">Fai unha copia de seguranza dos teus datos do navegador e úsaos en calquera dispositivo</translation>
 <translation id="2460482211073772897">Noutros cartafoles</translation>
+<translation id="2461550163693930491">Non permitir que os sitios se despracen nin fagan zoom polas pestanas compartidas</translation>
 <translation id="2461593638794842577">Podes desactivar esta opción de configuración para gardar os contrasinais só neste dispositivo</translation>
 <translation id="2462332841984057083">Xa se está configurando Steam. Agarda a que remate o proceso.</translation>
 <translation id="2462724976360937186">ID de clave de autoridade de certificación</translation>
@@ -2009,6 +2011,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2482895651873876648">A pestana moveuse ao grupo <ph name="GROUP_NAME" /> (<ph name="GROUP_CONTENTS" />)</translation>
 <translation id="2483627560139625913">Definir buscador na configuración do navegador Chrome</translation>
 <translation id="2483698983806594329">Ficheiro sen verificar descargado</translation>
+<translation id="2484574361686148760">Actualizar información dos clientes de Wi-Fi Direct</translation>
 <translation id="2484743711056182585">Quitar permiso</translation>
 <translation id="2484909293434545162">Se un sitio utiliza cookies, aparecerá aquí</translation>
 <translation id="2484959914739448251">Para borrar os datos de navegación de todos os dispositivos sincronizados e da túa Conta de Google, tes que <ph name="BEGIN_LINK" />introducir a túa frase de acceso<ph name="END_LINK" />.</translation>
@@ -2202,6 +2205,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2629227353894235473">Programar aplicacións para Android</translation>
 <translation id="2629437048544561682">Borrar lenzo</translation>
 <translation id="2631498379019108537">Mostrar opcións de entrada no estante</translation>
+<translation id="2632176111713971407">Os sitios poden pedir permiso para desprazarse e facer zoom polas pestanas compartidas</translation>
 <translation id="2633212996805280240">Queres eliminar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> non puido completar a instalación, pero continuará executándose desde a súa imaxe de disco.</translation>
 <translation id="2633764681656412085">FIDO</translation>
@@ -3511,6 +3515,7 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="3659550105763988702">Usa a clave de acceso para <ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">Metiches un código de acceso incorrecto demasiadas veces. Téntao de novo máis tarde</translation>
 <translation id="3660234220361471169">Non fiables</translation>
+<translation id="3661106764436337772">Escribe con máis rapidez e confianza</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Atopouse un contrasinal}other{Atopáronse {NUM_PASSWORDS} contrasinais}}</translation>
 <translation id="3662207097851752847">Confirma a túa Conta de Google no teléfono</translation>
 <translation id="3663417513679360795">Máis información sobre a activación da precarga estándar</translation>
@@ -3863,6 +3868,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o explor
 <translation id="3900966090527141178">Exportar contrasinais</translation>
 <translation id="3902789559055749153">Indica como queres crear unha clave de acceso para <ph name="APP_NAME" /></translation>
 <translation id="3903187154317825986">Teclado integrado</translation>
+<translation id="3903696968689283281">Información das persoas propietarias de Wi-Fi Direct:</translation>
 <translation id="3904326018476041253">Servizos de localización</translation>
 <translation id="3905761538810670789">Reparar aplicación</translation>
 <translation id="3908288065506437185">Bloquear cookies de terceiros no modo de incógnito</translation>
@@ -4488,7 +4494,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4388650384344483842">Usar como mínimo 8 caracteres</translation>
 <translation id="4389091756366370506">Usuario <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> e <ph name="NUMBER_OF_OTHER_SWITCHES" /> interruptores máis</translation>
-<translation id="4390569024397171409">Instala a aplicación no teu dispositivo (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="439266289085815679">A configuración de Bluetooth contrólaa <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Edita o ficheiro de configuración</translation>
 <translation id="4393102500004843976">buscar + maiúsculas + <ph name="TOP_ROW_KEY" /></translation>
@@ -4518,6 +4523,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4409697491990005945">Marxes</translation>
 <translation id="4409779593816003679">Contrasinais e &amp;Autocompletar</translation>
 <translation id="4410545552906060960">Utiliza un número (PIN) en lugar dun contrasinal para desbloquear o dispositivo. Para definir o PIN máis tarde, vai a Configuración.</translation>
+<translation id="4411344321892622527">Sen permiso para desprazarse e facer zoom polas pestanas compartidas</translation>
 <translation id="4411578466613447185">Asinante de código</translation>
 <translation id="4411719918614785832">Estas claves de acceso só se gardan en Windows Hello neste ordenador. Non se gardan na túa Conta de Google.</translation>
 <translation id="4412544493002546580">Téntao de novo ou selecciona máis abaixo unha das inspiracións.</translation>
@@ -6857,6 +6863,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6257602895346497974">Activar sincronización…</translation>
 <translation id="625827534921607067">Esta rede terá preferencia se hai dispoñible máis dunha rede xa configurada ou á que te conectases anteriormente</translation>
 <translation id="62586649943626337">Organiza as túas pestanas en grupos</translation>
+<translation id="6259776178973198997">Actualizar información das persoas propietarias de Wi-Fi Direct</translation>
 <translation id="6262371516389954471">As copias de seguranza cárganse en Google e encríptanse co contrasinal da túa Conta de Google.</translation>
 <translation id="6263082573641595914">Versión de entidade emisora de certificados de Microsoft</translation>
 <translation id="6263284346895336537">Non crítica</translation>
@@ -7556,6 +7563,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> non se pode executar como raíz.</translation>
 <translation id="6812841287760418429">Manter os cambios</translation>
 <translation id="6813907279658683733">Pantalla completa</translation>
+<translation id="6814754908910736855">Información de clientes de Wi-Fi Direct:</translation>
 <translation id="6815376457351236663">Abrir de todas formas</translation>
 <translation id="6815787852028615386">O ficheiro é enganoso e pode producir cambios inesperados no teu dispositivo</translation>
 <translation id="6816097980753839617">Azul-amarelo (tritanomalía)</translation>
@@ -7992,7 +8000,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7168109975831002660">Tamaño mínimo do tipo de letra</translation>
 <translation id="7169122689956315694">Activar notificacións cando haxa dispositivos nas proximidades</translation>
 <translation id="7170236477717446850">Imaxe do perfil</translation>
-<translation id="7170751905948784001">Información do programador:</translation>
 <translation id="7171000599584840888">Engadir perfil…</translation>
 <translation id="7171259390164035663">Non inscribirse</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Engadir pestana ao grupo novo}other{Engadir pestanas ao grupo novo}}</translation>
@@ -8425,6 +8432,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7501957181231305652">ou</translation>
 <translation id="7502220299952823578">Engadir á lista Sitios que se manteñen sempre activos</translation>
 <translation id="7502528909759062987">Pór en pausa a emisión da pestana no seguinte dispositivo: <ph name="DEVICE_NAME" /></translation>
+<translation id="7502804472671406749">É posible desprazarse e facer zoom polas pestanas compartidas</translation>
 <translation id="7503191893372251637">Tipo de certificado de Netscape</translation>
 <translation id="7503985202154027481">Conservarase un rexistro da túa visita a este sitio na túa chave de seguranza.</translation>
 <translation id="7504145862399276792">Estase silenciando o audio desta pestana</translation>
@@ -8469,7 +8477,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7532009420053991888">A aplicación <ph name="LINUX_APP_NAME" /> non responde. Para pechala, selecciona Forzar peche.</translation>
 <translation id="7535730537657706072">Para borrar o historial de navegación do modo de incógnito do dispositivo, pecha todas as pestanas que teñas abertas nese modo</translation>
 <translation id="7536815228183532290">Iniciaches sesión como <ph name="EMAIL" /></translation>
-<translation id="7537182889548466084">Recibirás suxestións para agrupar pestanas similares. As pestanas abertas e os títulos enviaranse a Google e poderán someterse a un proceso de revisión manual para mellorar a función.</translation>
 <translation id="7538013435257102593">Non se adoita descargar este tipo de ficheiro, polo que pode ser perigoso</translation>
 <translation id="7540972813190816353">Produciuse un erro mentres se comprobaba se había actualizacións: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> cambiou a versión deste dispositivo a unha anterior. Garda os ficheiros importantes e, a continuación, reiníciao. Eliminaranse todos os datos do dispositivo.</translation>
@@ -10763,6 +10770,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="949807244219288032">Esta pestana está conectada a un dispositivo de interface humana</translation>
 <translation id="950079950995628542">De <ph name="PHONE_NAME" /></translation>
 <translation id="950307215746360464">Guía de configuración</translation>
+<translation id="951273949038779544"><ph name="SITE_ACCESS" />. Elemento instalado pola persoa administradora</translation>
 <translation id="951991426597076286">Rexeitar</translation>
 <translation id="952471655966876828">O dispositivo conectarase automaticamente cando se atope acendido e se estea utilizando</translation>
 <translation id="953434574221655299">Sitios que teñen permiso para saber cando estás utilizando o dispositivo de maneira activa</translation>

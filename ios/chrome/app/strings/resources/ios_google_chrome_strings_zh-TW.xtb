@@ -114,14 +114,12 @@
 <translation id="3901001113120561395">充分運用 Chrome 的各項功能。</translation>
 <translation id="3913386780052199712">已登入 Chrome</translation>
 <translation id="3967382818307165056">在 Chrome 中管理付款方式</translation>
-<translation id="3980220367029651214">您設定同步處理的帳戶即將從 <ph name="USER_EMAIL1" /> 改為 <ph name="USER_EMAIL2" />。您現有的 Chrome 資料是由 <ph name="DOMAIN" /> 所管理。系統會將您的資料從這個裝置上刪除，但繼續保留在 <ph name="USER_EMAIL1" /> 中。</translation>
 <translation id="3984746313391923992">貴機構要求你在 Chrome 保持登出狀態。</translation>
 <translation id="3988789688219830639">Google Chrome 無法存取您的相片或影片，請前往「iOS 設定」中的 [隱私權] &gt; [相片] 啟用存取權。</translation>
 <translation id="4064699917955374540">如要將 Chrome 的資料儲存到 Google 帳戶及使用這類資料，請驗證身分。</translation>
 <translation id="4067858366537947361">開啟 Chrome 無痕分頁</translation>
 <translation id="4093042601582616698">要將 Chrome 設為預設瀏覽器嗎？</translation>
 <translation id="417201473131094001">Chrome Canary 不支援這項功能</translation>
-<translation id="4233521129555661685"><ph name="USER_EMAIL1" /> 原本使用 Chrome，並將書籤、密碼和其他設定儲存在裝置上。</translation>
 <translation id="424864128008805179">要登出 Chrome 嗎？</translation>
 <translation id="4251174643044751591">使用 Chrome 開啟「付款方式設定」頁面。</translation>
 <translation id="4453284704333523777">管理 Chrome 設定</translation>
@@ -240,7 +238,6 @@
 <translation id="769104993356536261">在 iOS 上使用 Chrome 快捷操作</translation>
 <translation id="7693590760643069321">現在只要在訊息、文件和其他應用程式中輕觸連結，即可透過 Chrome 開啟。</translation>
 <translation id="7698568245838009292">Chrome 要求存取你的相機</translation>
-<translation id="7754633291442704733">貴機構 <ph name="DOMAIN" /> 將可存取你儲存在這個帳戶中的 Chrome 資料、書籤、歷史記錄、密碼和其他設定。登出帳戶後，系統會清除這部裝置中的資料。不過，你的資料仍會儲存在受管理 Google 帳戶中，並可供貴機構使用。貴機構也可以設定該帳戶專屬的使用者政策，這些政策可以變更 Chrome 的行為。</translation>
 <translation id="7780154209050837198">如要充分運用 Chrome 的各項功能，請透過 Google 帳戶登入 Chrome。</translation>
 <translation id="778855399387580014">在 Chrome 新分頁中進行搜尋。</translation>
 <translation id="7792140019572081272">Chrome 會使用 Face ID 保護你的私密資料。</translation>

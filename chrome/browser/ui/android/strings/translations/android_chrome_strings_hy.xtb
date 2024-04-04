@@ -59,7 +59,6 @@
 <translation id="1258753120186372309">Google doodle՝ <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1263063910731171689">Այժմ «Բաժանորդագրություններ» բաժնում կցուցադրվի բովանդակություն <ph name="SITE_NAME" /> կայքից և դրա մասին։ Կայքերն ու որոնման հարցումները, որոնց հետևում եք, պահվում են ձեր Google հաշվում։ Դուք ցանկացած ժամանակ կարող եք կառավարել ձեր բաժանորդագրությունները կարգավորումներում։</translation>
 <translation id="1263231323834454256">Ընթերցանության ցանկ</translation>
-<translation id="1266864766717917324">Չհաջողվեց ուղարկել բովանդակությունը (<ph name="CONTENT_TYPE" />)</translation>
 <translation id="1269129608791067105">Պատմությունը կգտնեք այստեղ</translation>
 <translation id="1273937721055267968">Արգելափակել <ph name="DOMAIN" /> տիրույթը</translation>
 <translation id="1283039547216852943">Հպեք՝ ընդարձակելու համար</translation>
@@ -96,7 +95,6 @@
 <translation id="1436784010935106834">Հեռացված</translation>
 <translation id="1437543266176261764">Կատարվում է <ph name="APP_NAME" />-ում</translation>
 <translation id="1448440926884431741">Էջանիշներում դասավորեք ապրանքները, որոնց հետևում եք</translation>
-<translation id="1450753235335490080">Չհաջողվեց ուղարկել բովանդակությունը (<ph name="CONTENT_TYPE" />)</translation>
 <translation id="1462833127986525564">Կապեք Chrome-ը Google-ի մյուս ծառայությունների հետ, եթե ուզում եք, որ դրանք ձեզ անհատականացված բովանդակություն ցուցադրեն՝ օգտագործելով միմյանց տվյալները</translation>
 <translation id="1466383950273130737">Ընտրեք Chrome-ի լեզուն</translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> ֆայլի ներբեռնումը ձախողվեց՝ սերվերի հետ կապված խնդրի պատճառով:</translation>
@@ -203,7 +201,6 @@
 <translation id="2093731487903423814">վերջին 15 րոպեն</translation>
 <translation id="2096012225669085171">Համաժամացում և անհատականացում բոլոր սարքերում</translation>
 <translation id="2100273922101894616">Ավտոմատ մուտք</translation>
-<translation id="2100314319871056947">Փորձեք ուղարկել տեքստը մաս-մաս</translation>
 <translation id="2111511281910874386">Բացել էջը</translation>
 <translation id="2119609734654412418">Ձեր էջանիշները կգտնեք այստեղ</translation>
 <translation id="2122601567107267586">Չհաջողվեց բացել հավելվածը</translation>
@@ -376,7 +373,6 @@
 <translation id="2981364137500752533">Դուք կարող եք բացել մինչև 5 պատուհան։</translation>
 <translation id="2983102365694924129">Կայքում ձեր գործողությունների հիման վրա։ Այս կարգավորումն անջատված է։</translation>
 <translation id="2984978667043170458">Ներառել շրջապատող տեքստը Google-ի որոնման հարցումներում</translation>
-<translation id="2987620471460279764">Այլ սարքից ուղարկված տեքստ</translation>
 <translation id="2989523299700148168">Վերջերս այցելած</translation>
 <translation id="2992473221983447149">Պատկերների նկարագրություն</translation>
 <translation id="2996291259634659425">Անցաբառի ստեղծում</translation>
@@ -384,7 +380,6 @@
 <translation id="2996932914629936323">Մաքրում է ձեր բոլոր համաժամացված սարքերի պատմությունը</translation>
 <translation id="2997081575621687554">Երբ Google-ի որևէ կայք հայցում է էջերի անանուն նախաբեռնում իր էջում առկա հղումների միջոցով, Chrome-ը գաղտնագրում և նախապես բեռնում է էջերը Google-ի սերվերների միջոցով առանց քուքիների։ Այդպիսով ձեր անձնական տվյալները չեն փոխանցվում։</translation>
 <translation id="3003253259757197230">Ձեր այցելած էջերի URL-ներն ուղարկվում են Google-ին՝ կանխատեսելու, թե հաջորդիվ ինչ կայքեր կարող եք այցելել, և ցուցադրելու լրացուցիչ տեղեկություններ ձեր այցելած էջի մասին</translation>
-<translation id="3016635187733453316">Համոզվեք, որ սարքը միացած է ինտերնետին</translation>
 <translation id="3026955690410463085">Ներառել հղումը</translation>
 <translation id="3027644380269727216">Կայքում ձեր գործողությունների հիման վրա։ Այս կարգավորումը միացված է։</translation>
 <translation id="3029276696788198026">Առանց նախաբեռնման</translation>
@@ -447,7 +442,6 @@
 <translation id="3374023511497244703">Ձեր էջանիշները, պատմությունը, գաղտնաբառերն ու Chrome-ի մյուս տվյալները այլևս չեն համաժամացվի ձեր Google հաշվի հետ:</translation>
 <translation id="3384347053049321195">Կիսվել պատկերով</translation>
 <translation id="3387650086002190359"><ph name="FILE_NAME" /> ֆայլի ներբեռնումը ձախողվեց՝ ֆայլային համակարգի սխալի պատճառով:</translation>
-<translation id="3389286852084373014">Տեքստը չափազանց մեծ է</translation>
 <translation id="3398320232533725830">Բացել էջանիշների կառավարիչը</translation>
 <translation id="3407392651057365886">Նախաբեռնվում են ավելի շատ էջեր։ Նախաբեռնումը կարող է կատարվել Google-ի սերվերների կողմից այլ կայքերի հարցումով։</translation>
 <translation id="3414952576877147120">Չափսը՝</translation>
@@ -800,7 +794,6 @@
 <translation id="5180063720319462041">Էջը թարգմանվել է <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="5186634140793586141">Կառավարեք ձեզ հետաքրքրող թեմաները և որոնման հարցումները</translation>
 <translation id="5191251636205085390">Իմացեք ավելին նոր տեխնոլոգիաների մասին, որոնք փոխարինելու են երրորդ կողմի քուքիներին։</translation>
-<translation id="5193988420012215838">Պատճենվեց սեղմատախտակին</translation>
 <translation id="5204967432542742771">Մուտքագրեք գաղտնաբառը</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Ֆայլը ներբեռնվում է…}one{Ներբեռնվում է # ֆայլ…}other{Ներբեռնվում է # ֆայլ…}}</translation>
 <translation id="5210286577605176222">Անցնել նախորդ ներդիր</translation>
@@ -825,7 +818,6 @@
 <translation id="5342314432463739672">Թույլտվությունների հարցումներ</translation>
 <translation id="534580735623577507">Կայքեր չկան նշված ժամանակահատվածից (<ph name="TIME_PERIOD" />)</translation>
 <translation id="5355191726083956201">Բարելավված պաշտպանությունը միացված է</translation>
-<translation id="5361107212971249203">տեքստ</translation>
 <translation id="5375577065097716013">Որոնել Google Տեսապակու միջոցով <ph name="BEGIN_NEW" />Նոր<ph name="END_NEW" /></translation>
 <translation id="5395376160638294582">Համոզվեք, որ միշտ կարող եք օգտվել Chrome-ի տվյալներից ձեր Google հաշվում</translation>
 <translation id="539881862970320163">Հուսալի գաղտնաբառ է առաջարկվում։ Ստեղնաշարը թաքցված է։</translation>
@@ -1209,7 +1201,6 @@
 <translation id="7221869452894271364">Վերաբեռնել այս էջը</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Կնեռբեռնվի 1 ֆայլ}one{Կներբեռնվի # ֆայլ}other{Կներբեռնվի # ֆայլ}}</translation>
 <translation id="72415438529550637">Գաղտնաբառի առաջարկը փակված է։</translation>
-<translation id="7248069434667874558">Համոզվեք, որ <ph name="TARGET_DEVICE_NAME" /> սարքի Chrome դիտարկիչում միացված է համաժամացումը:</translation>
 <translation id="7252076891734325316">Հեռախոսը դրեք համակարգչի մոտ</translation>
 <translation id="7260367682327802201">Ձեր Android սարքում կարող է նմանատիպ կարգավորում լինել։ Եթե գովազդի արդյունավետության գնահատումը Chrome-ում և ձեր Android սարքում միացված է, ընկերությունները կարող են գնահատել գովազդի արդյունավետությունը ձեր այցելած կայքերում և ձեր կողմից օգտագործվող հավելվածներում։</translation>
 <translation id="727288900855680735">Ուղարկե՞լ <ph name="ONE_TIME_CODE" /> կոդը <ph name="ORIGIN" /> կայքին</translation>
@@ -1317,7 +1308,6 @@
 <translation id="7707922173985738739">Օգտագործել բջջային ինտերնետ</translation>
 <translation id="7709918231054955894">Դիտեք ձեր բոլոր ներդիրները</translation>
 <translation id="7733878270780732638">Սարքում բավականաչափ տարածք չկա։</translation>
-<translation id="7757787379047923882"><ph name="DEVICE_NAME" /> սարքից ուղարկված հաղորդագրություն</translation>
 <translation id="7759809451544302770">Կամընտիր</translation>
 <translation id="7762668264895820836">SD քարտ <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Ավելացնել հասցե</translation>
@@ -1476,7 +1466,6 @@
 <translation id="8453310803815879010">Սկսել Dino խաղը</translation>
 <translation id="84594714173170813">Շարունակեք օգտագործել Chrome-ի տվյալները ձեր Google հաշվում</translation>
 <translation id="8460448946170646641">Դիտեք գաղտնիության և անվտանգության հիմնական կառավարման տարրերը</translation>
-<translation id="8466613982764129868">Համոզվեք, որ <ph name="TARGET_DEVICE_NAME" /> սարքը միացված է ինտերնետին</translation>
 <translation id="8473863474539038330">Հասցեներ և այլ տեղեկություններ</translation>
 <translation id="8478751349603791277">Կառավարեք պատմության համաժամացված տվյալների օգտագործման կարգավորումները՝ Google-ի այլ ծառայություններն անհատականացնելու համար</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>

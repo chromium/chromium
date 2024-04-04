@@ -59,7 +59,6 @@
 <translation id="1258753120186372309">Google 기념일 로고: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1263063910731171689">이제 팔로우 중에서 <ph name="SITE_NAME" /> 관련 콘텐츠를 볼 수 있습니다. 팔로우하는 사이트 및 검색은 Google 계정에 저장됩니다. 언제든지 설정에서 팔로우 항목을 관리할 수 있습니다.</translation>
 <translation id="1263231323834454256">읽기 목록</translation>
-<translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> 공유할 수 없음</translation>
 <translation id="1269129608791067105">여기에서 방문 기록을 확인할 수 있습니다</translation>
 <translation id="1273937721055267968"><ph name="DOMAIN" /> 차단</translation>
 <translation id="1283039547216852943">탭하여 펼치기</translation>
@@ -96,7 +95,6 @@
 <translation id="1436784010935106834">삭제됨</translation>
 <translation id="1437543266176261764"><ph name="APP_NAME" />에서 실행 중</translation>
 <translation id="1448440926884431741">추적 중인 제품을 북마크로 정리하세요.</translation>
-<translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> 공유할 수 없음</translation>
 <translation id="1462833127986525564">Chrome 및 기타 Google 서비스가 서로의 데이터를 사용하여 내 환경을 맞춤설정하도록 하려면 이러한 서비스를 연결하세요</translation>
 <translation id="1466383950273130737">Chrome 언어 선택</translation>
 <translation id="1477626028522505441">서버 문제로 인해 <ph name="FILE_NAME" />을(를) 다운로드할 수 없습니다.</translation>
@@ -203,7 +201,6 @@
 <translation id="2093731487903423814">지난 15분</translation>
 <translation id="2096012225669085171">모든 기기 동기화 및 맞춤설정</translation>
 <translation id="2100273922101894616">자동 로그인</translation>
-<translation id="2100314319871056947">좀 더 짧은 길이로 텍스트를 줄인 다음 공유해 보세요.</translation>
 <translation id="2111511281910874386">페이지로 이동</translation>
 <translation id="2119609734654412418">여기에서 북마크를 확인할 수 있습니다.</translation>
 <translation id="2122601567107267586">앱을 열 수 없음</translation>
@@ -376,7 +373,6 @@
 <translation id="2981364137500752533">최대 5개의 창을 열 수 있습니다.</translation>
 <translation id="2983102365694924129">사이트 내 활동을 기반으로 추천됩니다. 설정이 사용 중지되어 있습니다.</translation>
 <translation id="2984978667043170458">Google 검색어에 주변 텍스트 포함</translation>
-<translation id="2987620471460279764">다른 기기에서 공유된 텍스트</translation>
 <translation id="2989523299700148168">최근 방문</translation>
 <translation id="2992473221983447149">이미지 설명</translation>
 <translation id="2996291259634659425">암호 만들기</translation>
@@ -384,7 +380,6 @@
 <translation id="2996932914629936323">동기화된 모든 기기에서 기록 삭제</translation>
 <translation id="2997081575621687554">Google 사이트에서 페이지에 있는 링크를 비공개로 미리 로드해 달라고 요청하면 Chrome은 페이지를 암호화한 다음 쿠키를 사용하지 않고 Google 서버를 통해 미리 로드합니다. 이렇게 하면 미리 로드된 사이트에서 사용자의 신원을 숨길 수 있습니다.</translation>
 <translation id="3003253259757197230">다음에 방문할 사이트를 예측하고 현재 방문 중인 페이지에 관한 추가 정보를 표시하기 위해 내가 방문한 URL이 Google에 전송됩니다.</translation>
-<translation id="3016635187733453316">이 기기가 인터넷에 연결되어 있는지 확인하세요.</translation>
 <translation id="3026955690410463085">링크 포함</translation>
 <translation id="3027644380269727216">사이트 내 활동을 기반으로 추천됩니다. 이 설정을 사용하고 있습니다.</translation>
 <translation id="3029276696788198026">미리 로드 안함</translation>
@@ -447,7 +442,6 @@
 <translation id="3374023511497244703">북마크, 방문 기록, 비밀번호 등의 Chrome 데이터가 더 이상 Google 계정과 동기화되지 않습니다.</translation>
 <translation id="3384347053049321195">이미지 공유</translation>
 <translation id="3387650086002190359">파일 시스템에 오류가 발생하여 <ph name="FILE_NAME" />을(를) 다운로드할 수 없습니다.</translation>
-<translation id="3389286852084373014">텍스트가 너무 큼</translation>
 <translation id="3398320232533725830">북마크 관리자 열기</translation>
 <translation id="3407392651057365886">더 많은 페이지가 미리 로드됩니다. 다른 사이트에서 요청하면 Google 서버를 통해 페이지가 미리 로드될 수 있습니다.</translation>
 <translation id="3414952576877147120">크기:</translation>
@@ -800,7 +794,6 @@
 <translation id="5180063720319462041">페이지가 <ph name="TARGET_LANGUAGE" />로 번역됨</translation>
 <translation id="5186634140793586141">관심 있는 주제 및 검색어 관리</translation>
 <translation id="5191251636205085390">타사 쿠키를 대체하는 것을 목표로 하는 새로운 기술을 알아보고 관리하세요.</translation>
-<translation id="5193988420012215838">클립보드에 복사됨</translation>
 <translation id="5204967432542742771">비밀번호 입력</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{파일 1개 다운로드 중…}other{파일 #개 다운로드 중…}}</translation>
 <translation id="5210286577605176222">이전 탭으로 이동</translation>
@@ -825,7 +818,6 @@
 <translation id="5342314432463739672">권한 요청</translation>
 <translation id="534580735623577507"><ph name="TIME_PERIOD" /> 동안의 사이트 없음</translation>
 <translation id="5355191726083956201">향상된 보호 모드를 사용 중입니다.</translation>
-<translation id="5361107212971249203">텍스트</translation>
 <translation id="5375577065097716013">Google 렌즈로 이미지 검색 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="5395376160638294582">Google 계정의 Chrome 데이터를 언제든지 사용할 수 있도록 설정하세요.</translation>
 <translation id="539881862970320163">안전한 비밀번호가 제안되었습니다. 키보드가 숨겨졌습니다.</translation>
@@ -1209,7 +1201,6 @@
 <translation id="7221869452894271364">페이지 새로고침</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{다운로드 1개 대기 중}other{다운로드 #개 대기 중}}</translation>
 <translation id="72415438529550637">비밀번호 추천이 종료되었습니다.</translation>
-<translation id="7248069434667874558"><ph name="TARGET_DEVICE_NAME" />에서 Chrome 동기화가 사용 설정되어 있는지 확인하세요.</translation>
 <translation id="7252076891734325316">휴대전화를 컴퓨터 가까이 두세요</translation>
 <translation id="7260367682327802201">Android 기기에 비슷한 설정이 포함되어 있을 수 있습니다. Chrome과 Android 기기에서 광고 측정이 사용 설정되어 있으면 회사에서 사용자가 방문하는 웹사이트와 사용하는 앱에서 광고 효과를 측정할 수 있습니다.</translation>
 <translation id="727288900855680735"><ph name="ORIGIN" />에 <ph name="ONE_TIME_CODE" /> 코드를 제출하시겠습니까?</translation>
@@ -1317,7 +1308,6 @@
 <translation id="7707922173985738739">모바일 데이터 사용</translation>
 <translation id="7709918231054955894">탭 모두 가져오기</translation>
 <translation id="7733878270780732638">기기에 공간이 부족합니다.</translation>
-<translation id="7757787379047923882"><ph name="DEVICE_NAME" />에서 공유된 텍스트</translation>
 <translation id="7759809451544302770">선택사항</translation>
 <translation id="7762668264895820836">SD 카드 <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">주소 추가</translation>
@@ -1476,7 +1466,6 @@
 <translation id="8453310803815879010">공룡 게임 시작</translation>
 <translation id="84594714173170813">Google 계정의 Chrome 데이터를 계속 사용하세요.</translation>
 <translation id="8460448946170646641">주요 개인 정보 보호 및 보안 제어 기능 검토</translation>
-<translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" />이(가) 인터넷에 연결되어 있는지 확인하세요.</translation>
 <translation id="8473863474539038330">주소 및 기타</translation>
 <translation id="8478751349603791277">동기화된 기록을 사용하여 다른 Google 서비스를 맞춤설정하는 방식을 관리하세요.</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>

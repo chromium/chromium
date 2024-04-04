@@ -114,14 +114,12 @@ Tasub teada
 <translation id="3901001113120561395">Kasutage Chrome’i parimal moel.</translation>
 <translation id="3913386780052199712">Chrome'i sisse logitud</translation>
 <translation id="3967382818307165056">Makseviiside haldamine Chrome'is</translation>
-<translation id="3980220367029651214">Vahetate kontode sünkroonimise kontolt <ph name="USER_EMAIL1" /> kontole <ph name="USER_EMAIL2" />. Olemasolevaid Chrome'i andmeid haldab domeen <ph name="DOMAIN" />. See kustutab teie andmed sellest seadmest, kuid teie andmed jäävad alles kontole <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Teie organisatsioon nõuab, et jääksite Chrome'ist väljalogituks.</translation>
 <translation id="3988789688219830639">Google Chrome'il pole juurdepääsu fotodele ega videotele. Lubage iOS-is juurdep. valikutega Seaded &gt; Privaatsus &gt; Fotod.</translation>
 <translation id="4064699917955374540">Chrome’i andmete kasutamiseks ja salvestamiseks oma Google’i kontol kinnitage, et see olete teie.</translation>
 <translation id="4067858366537947361">Chrome'i inkognito vahekaardi avamine</translation>
 <translation id="4093042601582616698">Kas soovite Chrome'i vaikebrauseriks määrata?</translation>
 <translation id="417201473131094001">Ei toetata versioonis Chrome Canary</translation>
-<translation id="4233521129555661685"><ph name="USER_EMAIL1" /> kasutas Chrome'i ning jättis järjehoidjad, paroolid ja muud seaded sellesse seadmesse.</translation>
 <translation id="424864128008805179">Kas logida Chrome'ist välja?</translation>
 <translation id="4251174643044751591">Avab Chrome'is makseviisi seadete lehe.</translation>
 <translation id="4453284704333523777">Chrome'i seadete haldamine</translation>
@@ -240,7 +238,6 @@ Kui soovite näha veel seadeid, mis kasutavad andmeid, et parandada teie Chrome'
 <translation id="769104993356536261">Chrome'i toimingute kasutamine iOS-is</translation>
 <translation id="7693590760643069321">Nüüd saate kasutada Chrome'i iga kord, kui puudutate linke sõnumites, dokumentides ja muudes rakendustes.</translation>
 <translation id="7698568245838009292">Chrome soovib juurdepääsu kaamerale</translation>
-<translation id="7754633291442704733">Teie organisatsioon <ph name="DOMAIN" /> saab juurdepääsu teie Chrome'i andmetele, järjehoidjatele, ajaloole, paroolidele ja muudele seadetele, mille sellele kontole salvestate. Kui välja logite, kustutatakse teie andmed sellest seadmest.  Teie andmed jäävad teie hallatud Google'i kontole siiski alles ja need on teie organisatsiooni jaoks saadaval. Teie organisatsioon saab määrata ka konto kasutajareegleid, millega saab Chrome'i käitumist muuta.</translation>
 <translation id="7780154209050837198">Chrome'i kasutamiseks parimal moel logige Chrome'i sisse oma Google'i kontoga.</translation>
 <translation id="778855399387580014">Alustage otsingut uuel Chrome'i vahelehel.</translation>
 <translation id="7792140019572081272">Chrome kaitseb teie delikaatseid isikuandmeid näotuvastuse abil.</translation>

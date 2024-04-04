@@ -413,6 +413,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1734878702283171397">Pokušajte kontaktirati administratora sustava.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, istječe <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Računalo</translation>
+<translation id="1739422091279046802">pomicanje i zumiranje</translation>
 <translation id="1741613555002899862">Mora se navesti kao važeći niz kada je DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Krevetnina i posteljina</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Kako upotrebljavamo te podatke:<ph name="END_BOLD" /> Chrome bilježi teme koje vas zanimaju dok pregledavate. Oznake tema unaprijed su definirane i uključuju primjerice umjetnost i zabavu, kupnju i sport. Web-lokacija koju poslije posjetite može poslije od Chromea zatražiti informacije o tome koje vas teme zanimaju (ali ne i vašu povijest pregledavanja) radi personalizacije oglasa koji vam se prikazuju.</translation>
@@ -451,6 +452,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1812527064848182527">pejzaž</translation>
 <translation id="1812975699435941848">Zdravstveno obrazovanje i medicinska obuka</translation>
 <translation id="1813414402673211292">Brisanje podataka o pregledavanju</translation>
+<translation id="1816436748874040213">Može tražiti dopuštenje za pomicanje i zumiranje dijeljenih kartica</translation>
 <translation id="1818522458013171885">Deblokiraj</translation>
 <translation id="1818585559878922121">Dokumentarni filmovi</translation>
 <translation id="182139138257690338">automatska preuzimanja</translation>
@@ -964,6 +966,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2838682941130655229">Web-lokacija <ph name="EMBEDDED_URL" /> želi upotrijebiti podatke koje je spremila o vama</translation>
 <translation id="2839032553903800133">Obavijesti blokirane</translation>
 <translation id="2839501879576190149">Pokušavate pristupiti lažnoj web-lokaciji</translation>
+<translation id="2843623755398178332">Želite li pomicati i zumirati dijeljenu karticu?</translation>
 <translation id="2851291081585704741">Niste povezani s internetom</translation>
 <translation id="2856444702002559011">Napadači možda pokušavaju ukrasti vaše podatke s web-lokacije <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (na primjer zaporke, poruke ili brojeve kreditnih kartica). <ph name="BEGIN_LEARN_MORE_LINK" />Saznajte više<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2858134430383535011">200 x 300 mm</translation>
@@ -1056,6 +1059,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3023165109041533893">Oglasi koje predlaže web-lokacija pomažu zaštititi vašu povijest pregledavanja i identitet, a web-lokacijama omogućuju prikazivanje relevantnih oglasa. Na temelju vaše aktivnosti web-lokacija koju ste posjetili može vam predložiti povezane oglase dok nastavljate pregledavati. U postavkama možete vidjeti popis tih web-lokacija i blokirati one koje ne želite.</translation>
 <translation id="3024663005179499861">Pogrešna vrsta pravila</translation>
 <translation id="3030331669969285614">Te oznake sprječavaju ili poništavaju potencijalno štetne izmjene i bit će dostupne samo ograničeno vrijeme.</translation>
+<translation id="3034526003882782781">Pomicanje i zumiranje je dopušteno</translation>
 <translation id="3036894576201005614">Proizvodi za čišćenje kućanstva</translation>
 <translation id="3037177537145227281">Praćenje cijene</translation>
 <translation id="3037605927509011580">O, ne!</translation>
@@ -1338,6 +1342,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3567778190852720481">Ne možete se prijaviti poslovnim računom (poslovni račun ne ispunjava uvjete).</translation>
 <translation id="3567901620846335314">100 x 150 mm</translation>
 <translation id="3568886473829759308">Pristupite web-lokaciji da biste vidjeli informacije, izvore ili usluge koje pruža tvrtka.</translation>
+<translation id="3570079787344939099">Pomicanje i zumiranje</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Dopusti za ovu web-lokaciju</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -1909,6 +1914,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4687718960473379118">Oglasi koje predlažu web-lokacije</translation>
 <translation id="469028408546145398">Gumb Zatvori anonimne prozore, aktivirajte ga da biste zatvorili sve anonimne prozore koji su trenutačno otvoreni</translation>
 <translation id="4691093235373904540">Krovopokrivanje</translation>
+<translation id="4692623383562244444">Tražilice</translation>
 <translation id="4698692901173737941">Borilački sportovi</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Bočni</translation>
@@ -2457,6 +2463,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5765072501007116331">Odaberite adresu za prikaz načina dostave i zahtjeva za dostavu.</translation>
 <translation id="57689295674415555">Broj virtualne kartice nije ispunjen?</translation>
 <translation id="5772086939108830423">Upotrijebi pristupni ključ na drugom uređaju</translation>
+<translation id="5775734789739406956">Kliknite desnom tipkom da biste dodali spremljene podatke u bilo koji obrazac</translation>
 <translation id="5776313857861697733">Prioritet</translation>
 <translation id="5776574724412881956">Virtualna kartica nije unesena? Kliknite podatke o virtualnoj kartici radi kopiranja u međuspremnik. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">Eksperiment omogućen</translation>
@@ -2473,6 +2480,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="580241730938216256">Pokreni ažuriranje</translation>
 <translation id="5803412860119678065">Želite li ispuniti podatke o kartici <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Dozvoljeno</translation>
+<translation id="5806871454498484178">Pomicanje i zumiranje je blokirano</translation>
 <translation id="5808435672482059465">Pregledaj povijest na Chromeu</translation>
 <translation id="5810442152076338065">Vaša veza s domenom <ph name="DOMAIN" /> kriptirana je zastarjelim kriptografskim paketom.</translation>
 <translation id="5813119285467412249">&amp;Ponovi dodavanje</translation>
@@ -3469,6 +3477,7 @@ Dodatne pojedinosti:
 <translation id="7673278391011283842">Izlazni spremnik s odjeljcima 6</translation>
 <translation id="7675325315208090829">Upravljanje načinima plaćanja...</translation>
 <translation id="767550629621587224">Perforirane kartice</translation>
+<translation id="7675756033024037212">Pomicanje i zumiranje nije dopušteno</translation>
 <translation id="7676643023259824263">Traženje teksta u međuspremniku, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Pregledajte svoju povijest pretraživanja u postavkama Chromea i upravljajte njima</translation>
 <translation id="7679947978757153706">Bejzbol</translation>

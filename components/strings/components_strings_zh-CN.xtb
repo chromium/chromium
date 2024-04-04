@@ -413,6 +413,7 @@
 <translation id="1734878702283171397">请尝试联系系统管理员。</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />，<ph name="CARD_NETWORK_NAME" />，<ph name="CARD_LAST_FOUR_DIGITS" />，有效期至：<ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">计算机</translation>
+<translation id="1739422091279046802">滚动和缩放</translation>
 <translation id="1741613555002899862">当 DnsOverHttpsMode 是“<ph name="SECURE_DNS_MODE_SECURE" />”时，必须将此政策指定为有效字符串。</translation>
 <translation id="1743393865165844832">床上用品</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />我们如何使用这些数据<ph name="END_BOLD" />：Chrome 会在您浏览时记录您感兴趣的主题。主题标签是预定义的，包括“艺术与娱乐”“购物”和“体育”等等。之后，您访问的网站便可请求 Chrome 提供您的若干主题（而非您的浏览记录），以便向您展示个性化广告。</translation>
@@ -451,6 +452,7 @@
 <translation id="1812527064848182527">横向</translation>
 <translation id="1812975699435941848">健康教育与医疗培训</translation>
 <translation id="1813414402673211292">清除浏览数据</translation>
+<translation id="1816436748874040213">可以请求滚动和缩放分享的标签页</translation>
 <translation id="1818522458013171885">取消屏蔽</translation>
 <translation id="1818585559878922121">纪录片</translation>
 <translation id="182139138257690338">自动下载内容</translation>
@@ -964,6 +966,7 @@
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> 想使用其保存的与您相关的信息</translation>
 <translation id="2839032553903800133">已阻止显示通知</translation>
 <translation id="2839501879576190149">您要访问的是虚假网站</translation>
+<translation id="2843623755398178332">要滚动和缩放您分享的标签页吗？</translation>
 <translation id="2851291081585704741">您目前处于离线状态</translation>
 <translation id="2856444702002559011">攻击者可能会试图从 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 窃取您的信息（例如：密码、通讯内容或信用卡信息）。<ph name="BEGIN_LEARN_MORE_LINK" />了解详情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2858134430383535011">200 x 300 毫米</translation>
@@ -1056,6 +1059,7 @@
 <translation id="3023165109041533893">网站建议的广告既有助于保护您的浏览记录和身份信息，又能让网站向您展示相关广告。在您浏览的过程中，您访问的网站可以根据您的活动建议相关广告。您可以在设置中查看这些网站，并酌情阻止这些网站活动。</translation>
 <translation id="3024663005179499861">策略类型有误</translation>
 <translation id="3030331669969285614">这些标记可以防止或还原破坏性更改，并且只能在有限的时间内使用。</translation>
+<translation id="3034526003882782781">允许滚动和缩放</translation>
 <translation id="3036894576201005614">家居清洁用品</translation>
 <translation id="3037177537145227281">正在跟踪价格</translation>
 <translation id="3037605927509011580">喔唷，崩溃啦！</translation>
@@ -1335,6 +1339,7 @@
 <translation id="3567778190852720481">无法通过企业账号注册（企业账号不符合条件）。</translation>
 <translation id="3567901620846335314">100 x 150 毫米</translation>
 <translation id="3568886473829759308">访问网站查看商家提供的信息、资源或服务。</translation>
+<translation id="3570079787344939099">滚动和缩放</translation>
 <translation id="3574305903863751447"><ph name="COUNTRY" /><ph name="STATE" /><ph name="CITY" /></translation>
 <translation id="3575121482199441727">允许此网站显示通知</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -1906,6 +1911,7 @@
 <translation id="4687718960473379118">网站建议的广告</translation>
 <translation id="469028408546145398">“关闭无痕式窗口”按钮，激活它即可关闭当前打开的所有无痕式窗口</translation>
 <translation id="4691093235373904540">屋顶修缮</translation>
+<translation id="4692623383562244444">搜索引擎</translation>
 <translation id="4698692901173737941">格斗运动</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /><ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">侧边</translation>
@@ -2454,6 +2460,7 @@
 <translation id="5765072501007116331">要查看递送方式和要求，请选择相应地址</translation>
 <translation id="57689295674415555">未填充虚拟卡号？</translation>
 <translation id="5772086939108830423">使用另一部设备上的通行密钥</translation>
+<translation id="5775734789739406956">右键点击即可将已保存的信息添加到任何表单</translation>
 <translation id="5776313857861697733">优先级</translation>
 <translation id="5776574724412881956">系统未自动填入虚拟卡信息？点击“虚拟卡详细信息”即可复制到剪贴板。<ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">已启用实验</translation>
@@ -2470,6 +2477,7 @@
 <translation id="580241730938216256">开始更新</translation>
 <translation id="5803412860119678065">要填充您的“<ph name="CARD_DETAIL" />”吗？</translation>
 <translation id="5804241973901381774">权限</translation>
+<translation id="5806871454498484178">禁止滚动和缩放</translation>
 <translation id="5808435672482059465">查看您的 Chrome 历史记录</translation>
 <translation id="5810442152076338065">您与 <ph name="DOMAIN" /> 之间的连接采用过时的加密套件进行了加密。</translation>
 <translation id="5813119285467412249">恢复添加(&amp;R)</translation>
@@ -3465,6 +3473,7 @@
 <translation id="7673278391011283842">信箱 6</translation>
 <translation id="7675325315208090829">管理付款方式…</translation>
 <translation id="767550629621587224">预剪切标签</translation>
+<translation id="7675756033024037212">不允许滚动和缩放</translation>
 <translation id="7676643023259824263">搜索剪贴板上的文字：<ph name="TEXT" /></translation>
 <translation id="7679367271685653708">在 Chrome 设置中查看和管理您的浏览记录</translation>
 <translation id="7679947978757153706">棒球</translation>

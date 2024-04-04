@@ -441,6 +441,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2841907151129139818">Đã chuyển sang chế độ máy tính bảng</translation>
 <translation id="2844169650293029770">Thiết bị USB-C (cổng phía trước, bên trái)</translation>
 <translation id="2844350028562914727">chi tiết</translation>
+<translation id="2847759467426165163">Truyền tới</translation>
 <translation id="2848120746144143659">Nhấn phím Enter để chụp ảnh toàn màn hình</translation>
 <translation id="2849936225196189499">Quan trọng</translation>
 <translation id="2860184359326882502">Kết quả phù hợp nhất</translation>
@@ -478,6 +479,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3009958530611748826">Chọn một thư mục để lưu</translation>
 <translation id="301282384882049174">Do quản trị viên của bạn chia sẻ</translation>
 <translation id="301584155502740476">Hiển thị thông tin chi tiết về điểm phát sóng. Điểm phát sóng đang tắt.</translation>
+<translation id="3017079585324758401">Nền</translation>
 <translation id="3018135054368884502">Tua nhanh nội dung nghe nhìn</translation>
 <translation id="3033545621352269033">Đang bật</translation>
 <translation id="3033912566804961911">Kết hợp với <ph name="DESK_NAME" /></translation>
@@ -1040,7 +1042,6 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="5104236669533825617">Không tạo được bản ghi màn hình</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
-<translation id="5111930673176965299">Làm mờ nền</translation>
 <translation id="5117590920725113268">Hiển thị tháng tiếp theo</translation>
 <translation id="5121628974188116412">Chuyển tới cuối trang</translation>
 <translation id="5122517996953421795">Bản xem trước <ph name="DESK_NAME" />. Không gian làm việc không hoạt động.</translation>

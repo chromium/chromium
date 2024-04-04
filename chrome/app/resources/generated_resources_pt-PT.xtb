@@ -41,6 +41,7 @@
 <translation id="102916930470544692">Chave de acesso</translation>
 <translation id="1029317248976101138">Zoom</translation>
 <translation id="1029526375103058355">Tocar para clicar</translation>
+<translation id="1029724557649700742">Vão ser incluídas novas funcionalidades à medida que forem disponibilizadas, e estas podem variar consoante o dispositivo.</translation>
 <translation id="1031362278801463162">A carregar a pré-visualização</translation>
 <translation id="1032605640136438169">Reveja os novos termos.</translation>
 <translation id="103279545524624934">Liberte espaço em disco para iniciar as aplicações para Android.</translation>
@@ -1520,7 +1521,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2127372758936585790">Carregador de baixo consumo</translation>
 <translation id="212862741129535676">Percentagem de ocupação no estado de frequência</translation>
 <translation id="212876957201860463">A preparar a configuração do dispositivo móvel…</translation>
-<translation id="2130909682040406368">Saber como usar as ferramentas de IA</translation>
 <translation id="2131077480075264">Não é possível instalar "<ph name="APP_NAME" />", pois não é permitido por "<ph name="IMPORT_NAME" />"</translation>
 <translation id="2133775869826239001">Escolha mais funcionalidades para configurar</translation>
 <translation id="2133857665503360653">Tentar novamente <ph name="FILE_NAME" /></translation>
@@ -1559,6 +1559,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2155473371917268529">A definição de visibilidade atual é Os seus dispositivos</translation>
 <translation id="2155772377859296191">Parece ter <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156707722163479690">Com autorização para deslocar e fazer zoom nos separadores partilhados</translation>
 <translation id="2156877321344104010">Executar novamente a verificação de segurança</translation>
 <translation id="2157474325782140681">Para ter acesso a mais funcionalidades, utilize uma estação de carregamento Dell concebida para trabalhar com este Chromebook.</translation>
 <translation id="215753907730220065">Sair do modo de ecrã inteiro</translation>
@@ -1977,6 +1978,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2459706890611560967">Retomar transmissão do separador para <ph name="DEVICE_NAME" /></translation>
 <translation id="2460356425461033301">Faça uma cópia de segurança dos itens do navegador e use-os em qualquer dispositivo</translation>
 <translation id="2460482211073772897">Noutras pastas</translation>
+<translation id="2461550163693930491">Não permitir que os sites desloquem e façam zoom nos separadores partilhados</translation>
 <translation id="2461593638794842577">Pode desativar esta definição para guardar as suas palavras-passe apenas neste dispositivo</translation>
 <translation id="2462332841984057083">O Steam já está a ser configurado. Aguarde pela conclusão da configuração.</translation>
 <translation id="2462724976360937186">ID da chave da autoridade de certificação</translation>
@@ -2010,6 +2012,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2482895651873876648">Separador movido para o grupo <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="2483627560139625913">Definir motor de pesquisa nas definições do navegador Chrome</translation>
 <translation id="2483698983806594329">Ficheiro não validado transferido</translation>
+<translation id="2484574361686148760">Atualizar informações dos clientes do Wi‑Fi Direct</translation>
 <translation id="2484743711056182585">Remover autorização de acesso</translation>
 <translation id="2484909293434545162">Se um site usar cookies, aparece aqui</translation>
 <translation id="2484959914739448251">Para limpar os dados de navegação de todos os seus dispositivos sincronizados e da sua Conta Google, <ph name="BEGIN_LINK" />introduza a sua frase de acesso<ph name="END_LINK" />.</translation>
@@ -2203,6 +2206,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2629227353894235473">Programar aplicações para Android</translation>
 <translation id="2629437048544561682">Limpar tela</translation>
 <translation id="2631498379019108537">Mostrar opções de introdução na prateleira</translation>
+<translation id="2632176111713971407">Os sites podem pedir para deslocar e fazer zoom nos separadores partilhados</translation>
 <translation id="2633212996805280240">Remover "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="263325223718984101">O <ph name="PRODUCT_NAME" /> não conseguiu terminar a instalação, mas continuará a executar a partir da respectiva imagem de disco.</translation>
 <translation id="2633764681656412085">FIDO</translation>
@@ -3510,6 +3514,7 @@ Quer pará-lo?</translation>
 <translation id="3659550105763988702">Use a sua token de acesso para a app <ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">Introduziu um código de acesso incorreto demasiadas vezes. Tente mais tarde</translation>
 <translation id="3660234220361471169">Não fidedigno</translation>
+<translation id="3661106764436337772">Escreva mais rápido e com mais confiança</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 palavra-passe existente encontrada}other{{NUM_PASSWORDS} palavras-passe existentes encontradas}}</translation>
 <translation id="3662207097851752847">Confirme a sua Conta Google no telemóvel</translation>
 <translation id="3663417513679360795">Mais informações sobre a ativação do pré-carregamento padrão</translation>
@@ -3862,6 +3867,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="3900966090527141178">Exportar palavras-passe</translation>
 <translation id="3902789559055749153">Escolha como quer criar uma token de acesso para a app <ph name="APP_NAME" /></translation>
 <translation id="3903187154317825986">Teclado incorporado</translation>
+<translation id="3903696968689283281">Informações dos proprietários do Wi-Fi Direct:</translation>
 <translation id="3904326018476041253">Serviços de localização</translation>
 <translation id="3905761538810670789">Reparar aplicação</translation>
 <translation id="3908288065506437185">Bloquear cookies de terceiros no Modo de navegação anónima</translation>
@@ -4487,7 +4493,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4388650384344483842">Use, pelo menos, 8 carateres</translation>
 <translation id="4389091756366370506">Utilizador <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> e mais <ph name="NUMBER_OF_OTHER_SWITCHES" /> interruptores</translation>
-<translation id="4390569024397171409">Instale a app no seu <ph name="DEVICE_TYPE" /></translation>
 <translation id="439266289085815679">A configuração do Bluetooth é controlada por <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Edite o ficheiro de configuração.</translation>
 <translation id="4393102500004843976">Pesquisa + Shift + <ph name="TOP_ROW_KEY" /></translation>
@@ -4517,6 +4522,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4409697491990005945">Margens</translation>
 <translation id="4409779593816003679">Palavras-passe e &amp;preenchimento automático</translation>
 <translation id="4410545552906060960">Utilize um número (PIN) em vez de uma palavra-passe para desbloquear o dispositivo. Para definir o PIN mais tarde, aceda a Definições.</translation>
+<translation id="4411344321892622527">Sem autorização para deslocar e fazer zoom nos separadores partilhados</translation>
 <translation id="4411578466613447185">Signatário do código</translation>
 <translation id="4411719918614785832">Estas chaves de acesso são guardadas no Windows Hello neste computador. Não são guardadas na sua Conta Google.</translation>
 <translation id="4412544493002546580">Tente novamente ou selecione uma das inspirações abaixo.</translation>
@@ -6860,6 +6866,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6257602895346497974">Ativar a sincronização</translation>
 <translation id="625827534921607067">Esta rede é a preferida se estiver disponível mais do que uma rede ligada ou configurada anteriormente</translation>
 <translation id="62586649943626337">Organize os seus separadores com grupos de separadores</translation>
+<translation id="6259776178973198997">Atualizar informações dos proprietários do Wi-Fi Direct</translation>
 <translation id="6262371516389954471">As cópias de segurança são carregadas para a Google e encriptadas com a palavra-passe da sua Conta Google.</translation>
 <translation id="6263082573641595914">Versão de AC Microsoft</translation>
 <translation id="6263284346895336537">Não crítica</translation>
@@ -7559,6 +7566,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6812349420832218321">O <ph name="PRODUCT_NAME" /> não pode ser executado como raiz.</translation>
 <translation id="6812841287760418429">Manter alterações</translation>
 <translation id="6813907279658683733">Ecrã inteiro</translation>
+<translation id="6814754908910736855">Informações dos clientes do Wi-Fi Direct:</translation>
 <translation id="6815376457351236663">Abrir mesmo assim</translation>
 <translation id="6815787852028615386">Este ficheiro é enganador e pode fazer alterações inesperadas ao seu dispositivo</translation>
 <translation id="6816097980753839617">Azul-amarelo (tritanomalia)</translation>
@@ -7996,7 +8004,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7168109975831002660">Tamanho mínimo do tipo de letra</translation>
 <translation id="7169122689956315694">Ative as notificações quando existirem dispositivos nas proximidades</translation>
 <translation id="7170236477717446850">Imagem do perfil</translation>
-<translation id="7170751905948784001">Informações do programador:</translation>
 <translation id="7171000599584840888">Adicionar perfil…</translation>
 <translation id="7171259390164035663">Não inscrever</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Adicionar separador a novo grupo}other{Adicionar separadores a novo grupo}}</translation>
@@ -8429,6 +8436,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7501957181231305652">ou</translation>
 <translation id="7502220299952823578">Adicionar à lista "manter sempre estes sites ativos"</translation>
 <translation id="7502528909759062987">Pausar transmissão do separador para <ph name="DEVICE_NAME" /></translation>
+<translation id="7502804472671406749">É possível deslocar e fazer zoom nos separadores partilhados</translation>
 <translation id="7503191893372251637">Tipo de certificado Netscape</translation>
 <translation id="7503985202154027481">É mantido um registo da sua visita a este site na sua chave de segurança.</translation>
 <translation id="7504145862399276792">O áudio deste separador foi desativado</translation>
@@ -8473,7 +8481,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> não está a responder. Selecione "Forçar fecho" para fechar a aplicação.</translation>
 <translation id="7535730537657706072">Para limpar o histórico de navegação da Navegação anónima no seu dispositivo, feche todos os separadores anónimos</translation>
 <translation id="7536815228183532290">Sessão iniciada como <ph name="EMAIL" /></translation>
-<translation id="7537182889548466084">Vai receber sugestões de grupos de separadores que agrupam separadores semelhantes. Os seus títulos e separadores abertos são enviados para a Google e podem ser revistos por humanos para melhorar esta funcionalidade.</translation>
 <translation id="7538013435257102593">Este tipo de ficheiro não é habitualmente transferido e pode ser perigoso</translation>
 <translation id="7540972813190816353">Ocorreu um erro durante a verificação de atualizações: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> colocou este dispositivo numa versão anterior. Guarde os ficheiros importantes e, em seguida, reinicie. Todos os dados no dispositivo serão eliminados.</translation>
@@ -10768,6 +10775,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="949807244219288032">Este separador está associado a um dispositivo HID</translation>
 <translation id="950079950995628542">De "<ph name="PHONE_NAME" />"</translation>
 <translation id="950307215746360464">Guia de configuração</translation>
+<translation id="951273949038779544"><ph name="SITE_ACCESS" />. Instalada pelo administrador</translation>
 <translation id="951991426597076286">Recusar</translation>
 <translation id="952471655966876828">O dispositivo associa-se automaticamente quando é ligado ou está a ser utilizado</translation>
 <translation id="953434574221655299">É permitido saber quando está a utilizar ativamente o dispositivo</translation>

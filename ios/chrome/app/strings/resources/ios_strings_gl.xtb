@@ -16,7 +16,6 @@
 <translation id="1066060668811609597">Xestionar sincronización</translation>
 <translation id="1069154182096085577">O contrasinal xa existe</translation>
 <translation id="1076421457278169141">Escaneouse o código</translation>
-<translation id="1076785341346483463">Sincronizar cunha conta xestionada</translation>
 <translation id="1084365883616172403">Completouse a publicación de Facebook.</translation>
 <translation id="1103523840287552314">Traducir sempre o <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Ir á ventá aberta</translation>
@@ -24,7 +23,6 @@
 <translation id="1112015203684611006">Erro impresión</translation>
 <translation id="1125564390852150847">Crear pestana nova</translation>
 <translation id="1126809382673880764">Non te protexe contra sitios web, descargas e extensións perigosos. Continuarás dispoñendo da protección da función Navegación segura, sempre que estea dispoñible, noutros servizos de Google (como Gmail e a Busca).</translation>
-<translation id="1145536944570833626">Elimina os datos existentes.</translation>
 <translation id="1147031633655575115">Tes a sesión iniciada como <ph name="USER" /></translation>
 <translation id="1150989369772528668">Calendario</translation>
 <translation id="1154984953698510061">Ver outras pestanas</translation>
@@ -54,7 +52,6 @@
 <translation id="1273416271143914096">{count,plural, =1{{count} contrasinal}other{{count} contrasinais}}</translation>
 <translation id="1275718070701477396">Seleccionado</translation>
 <translation id="1279024913354609713">Non permitir</translation>
-<translation id="1281818060020671000">Xestionar datos</translation>
 <translation id="1282311502488501110">Non iniciar sesión</translation>
 <translation id="1283524564873030414">Últimas 24 horas</translation>
 <translation id="1285320974508926690">Non traducir nunca este sitio</translation>
@@ -563,7 +560,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3918585468378680136">Obtendo estado do paquete</translation>
 <translation id="3921585859122905677">Posición da barra de enderezos</translation>
 <translation id="3922310737605261887">Buscar texto copiado</translation>
-<translation id="3928666092801078803">Combinar os meus datos</translation>
 <translation id="3929457972718048006">Enderezos</translation>
 <translation id="3939505428630887612">Acerca desta páxina</translation>
 <translation id="3948600256434252210">Podes pasar o dedo cara á dereita para navegar no modo de incógnito.</translation>
@@ -943,6 +939,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5857770089550859117">Introduce a frase de acceso para iniciar a sincronización.</translation>
 <translation id="5859715514067755465">Avanzar</translation>
 <translation id="5860033963881614850">Non</translation>
+<translation id="5860491529813859533">Activar</translation>
 <translation id="5896576662943111387">Compilación para iOS</translation>
 <translation id="5897749768294722429">Para volver rapidamente aos sitios que xa visitases, sincroniza as pestanas e o historial.</translation>
 <translation id="5897956970858271241">Ir á ligazón que copiaches</translation>
@@ -961,7 +958,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5971872012779224351">{count,plural, =1{Eliminouse 1 marcador}other{Elimináronse {count} marcadores}}</translation>
 <translation id="5979837087407522202">Buscar contrasinais</translation>
 <translation id="5981230843984570095">Pechar todas as pestanas inactivas</translation>
-<translation id="5982717868370722439">Engade os datos existentes a <ph name="USER_EMAIL" />.</translation>
 <translation id="5984222099446776634">Visitados recentemente</translation>
 <translation id="598634819525651074">Superficie</translation>
 <translation id="5988097621740394599">Consulta as baixadas de prezo nas túas pestanas.</translation>
@@ -1192,7 +1188,6 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7022197654033719543">Información sobre o sitio</translation>
 <translation id="7029809446516969842">Contrasinais</translation>
 <translation id="704692552158601232">Aplicación de navegador predeterminada</translation>
-<translation id="7062545763355031412">Aceptar e cambiar de conta</translation>
 <translation id="7063811929043357292">A túa conta está xestionada polo teu pai ou pola túa nai.
 <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="7069695992271320873">Quitar deste dispositivo</translation>
@@ -1385,7 +1380,6 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="804427445359061970">Aquí atoparás as túas pestanas doutros dispositivos</translation>
 <translation id="8044568254381073661">Gardar sen encriptación</translation>
 <translation id="8059533439631660104">Contrae a sección.</translation>
-<translation id="806745655614357130">Conservar os meus datos por separado</translation>
 <translation id="8069394452933076548">Selecciona cando queres que as pestanas que non se usasen recentemente se movan á sección de pestanas inactivas.</translation>
 <translation id="8073670137947914548">A descarga finalizou</translation>
 <translation id="8073872304774253879">Mellorar as buscas e a navegación</translation>
@@ -1616,7 +1610,6 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="9165320910061267720">Para recibir notificacións de alertas sobre baixadas de prezos, tes que activalas na configuración de iOS.</translation>
 <translation id="9177438225260810839">Realiza buscas nas pestanas abertas</translation>
 <translation id="9187853111759024059">Queres pechar máis de 99 pestanas inactivas?</translation>
-<translation id="9188680907066685419">Pechar sesión na conta xestionada</translation>
 <translation id="9200875785104711666">Hai <ph name="TIME" /> d</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9203951165704618409">Move a barra de enderezos da parte superior á inferior para desfrutar dunha experiencia de navegación personalizada.</translation>

@@ -524,7 +524,7 @@
 <translation id="4131410914670010031">Zuri-beltzez</translation>
 <translation id="4145784616224233563">HTTP protokolorako suebakia</translation>
 <translation id="4147897805161313378">Google Argazkiak</translation>
-<translation id="4150201353443180367">Pantaila</translation>
+<translation id="4150201353443180367">Bistaratzea</translation>
 <translation id="4155551848414053977">Ziurtatu eskanerra piztuta dagoela eta sarearen edo konexio zuzenaren bidez erabilgarri dagoela</translation>
 <translation id="4159238217853743776">Partziala</translation>
 <translation id="4159784952369912983">Morea</translation>
@@ -540,7 +540,6 @@
 <translation id="4227825898293920515"><ph name="TIME" /> barru iraungiko da pasahitza</translation>
 <translation id="4238516577297848345">Ez dago inprimatze-lanik abian</translation>
 <translation id="4239069858505860023">GPRS</translation>
-<translation id="4244962993387259361">Gutxienez 500 MB eduki behar dituzu libre memoriaren proba bat egiteko. Tokia egiteko, joan Ezarpenak &gt; Biltegi-kudeatzailea atalera.</translation>
 <translation id="4250229828105606438">Pantaila-argazkia</translation>
 <translation id="4251839292699800785">Bulego dotorea</translation>
 <translation id="4258281355379922695">HTTP eskaeren latentzia</translation>
@@ -912,6 +911,7 @@
 <translation id="6382182670717268353">Pantaila-babeslearen aurrebista</translation>
 <translation id="6388847657025262518">Eskanerraren dokumentu-elikatzailea trabatuta dago. Egiazta ezazu eta saiatu berriro.</translation>
 <translation id="6394634179843537518">Gehitu fitxategi bat</translation>
+<translation id="6396719002784938593">Stipa lehor</translation>
 <translation id="639964859328803943">tea hartzeko</translation>
 <translation id="6400680457268373900"><ph name="DREAMSCAPES_OBJECT" /> estilo surrealistan, <ph name="DREAMSCAPES_MATERIAL" />rekin egina, kolore hauekin: <ph name="DREAMSCAPES_COLORS" /></translation>
 <translation id="6401427872449207797">bilatu arakatzailearekin</translation>
@@ -953,6 +953,7 @@
 <translation id="6575134580692778371">Konfiguratu gabe</translation>
 <translation id="6576005492601044801">ezkerraldea</translation>
 <translation id="6579509898032828423">Erabili argazkia</translation>
+<translation id="6587870930887634392">Zukutsu</translation>
 <translation id="6596816719288285829">IP helbidea</translation>
 <translation id="6599673642868607614">Eskerrik asko iritzia emateagatik. Iritziek Chromebook-a hobetzen laguntzen digute. Gure taldeak berrikusiko du esan diguzuna. Txosten asko jasotzen ditugunez, ezingo dizugu erantzunik bidali.</translation>
 <translation id="6618744767048954150">Abian</translation>
@@ -1111,6 +1112,7 @@
 <translation id="7497215489070763236">Autoritate ziurtagiri-emaile batek jaulkitako zerbitzari-ziurtagiria</translation>
 <translation id="7501957181231305652">edo</translation>
 <translation id="7502658306369382406">IPv6 helbidea</translation>
+<translation id="7507061649493508884"><ph name="FLOWER_TYPE" /> <ph name="FLOWER_COLOR" /> eder bat</translation>
 <translation id="7513770521371759388">behealdea</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">Sortu</translation>
@@ -1160,7 +1162,6 @@
 <translation id="780301667611848630">Ez, eskerrik asko</translation>
 <translation id="7805768142964895445">Egoera</translation>
 <translation id="7813073042185856802">Mendi</translation>
-<translation id="7819831665603418705">Erabili txantiloi bat</translation>
 <translation id="7819857487979277519">PSK (WPA edo RSN)</translation>
 <translation id="7824219488248240180">postinpresionista</translation>
 <translation id="7828503206075800057"><ph name="CAFE_STYLE" /> estiloko <ph name="CAFE_TYPE" /> kafetegi bat</translation>
@@ -1171,6 +1172,7 @@
 <translation id="7850847810298646851">Google-ren AAk sortutako horma-papera</translation>
 <translation id="785170686607360576">Tulipa</translation>
 <translation id="7856267634822906833">Bluetooth bidezko ukipen-pantaila</translation>
+<translation id="7859006200041800233">Kaktus-lore</translation>
 <translation id="7869143217755017858">Desgaitu modu iluna</translation>
 <translation id="7881066108824108340">DNSa</translation>
 <translation id="7882358943899516840">Hornitzaile mota</translation>
@@ -1306,6 +1308,7 @@
 <translation id="8726019395068607495">Geldituta: atea irekita dago</translation>
 <translation id="8730621377337864115">Eginda</translation>
 <translation id="8747900814994928677">Berretsi aldaketa</translation>
+<translation id="8749478549112817787">Kameraren atzeko planoa</translation>
 <translation id="8755946156089753497">Dorrea</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Argazkiak zerbitzuko albuma</translation>

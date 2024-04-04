@@ -413,6 +413,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1734878702283171397">Experimente contactar o gestor do sistema.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, expira a <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Computador</translation>
+<translation id="1739422091279046802">deslocar e fazer zoom</translation>
 <translation id="1741613555002899862">A política tem de ser especificada, bem como uma string válida quando a DnsOverHttpsMode é <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Roupa de cama</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Como usamos estes dados:<ph name="END_BOLD" /> o Chrome regista tópicos de interesse à medida que navega. As etiquetas de tópicos são predefinidas e incluem, por exemplo, Arte e entretenimento, Compras e Desporto. Posteriormente, um site que visitar pode pedir alguns dos seus tópicos (mas não o seu histórico de navegação) ao Chrome para personalizar os anúncios que vê.</translation>
@@ -451,6 +452,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1812527064848182527">paisagem</translation>
 <translation id="1812975699435941848">Educação na área da saúde e formação médica</translation>
 <translation id="1813414402673211292">Limpar dados de navegação</translation>
+<translation id="1816436748874040213">Pode pedir para deslocar e fazer zoom nos separadores partilhados</translation>
 <translation id="1818522458013171885">Desbloquear</translation>
 <translation id="1818585559878922121">Documentários</translation>
 <translation id="182139138257690338">transferências automáticas</translation>
@@ -964,6 +966,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> quer usar as informações que guardou sobre si</translation>
 <translation id="2839032553903800133">Notificações bloqueadas</translation>
 <translation id="2839501879576190149">O site seguinte é falso</translation>
+<translation id="2843623755398178332">Quer deslocar e fazer zoom no seu separador partilhado?</translation>
 <translation id="2851291081585704741">Está offline</translation>
 <translation id="2856444702002559011">Os atacantes poderão estar a tentar roubar as suas informações de <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (por exemplo, palavras-passe, mensagens ou cartões de crédito). <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2858134430383535011">200 x 300 mm</translation>
@@ -1056,6 +1059,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3023165109041533893">Os anúncios sugeridos por sites ajudam a proteger o seu histórico de navegação e identidade, ao mesmo tempo que permitem que os sites lhe mostrem anúncios relevantes. Com base na sua atividade, um site que visitou pode sugerir anúncios relacionados à medida que continua a navegar. Pode ver uma lista destes sites e bloquear os que não quer nas definições.</translation>
 <translation id="3024663005179499861">Tipo de política incorreto</translation>
 <translation id="3030331669969285614">Estas sinalizações evitam ou revertem uma alteração interruptiva e estão disponíveis apenas por tempo limitado.</translation>
+<translation id="3034526003882782781">É permitido deslocar e fazer zoom</translation>
 <translation id="3036894576201005614">Produtos de limpeza domésticos</translation>
 <translation id="3037177537145227281">Monitorizar o preço</translation>
 <translation id="3037605927509011580">Ah, bolas!!</translation>
@@ -1338,6 +1342,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3567778190852720481">Não é possível inscrever-se com conta empresarial (a conta empresarial não é elegível).</translation>
 <translation id="3567901620846335314">100 x 150 mm</translation>
 <translation id="3568886473829759308">Aceda ao Website para ver informações, recursos ou serviços oferecidos pela empresa.</translation>
+<translation id="3570079787344939099">Deslocar e fazer zoom</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Permitir neste site</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -1910,6 +1915,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4687718960473379118">Anúncios sugeridos por sites</translation>
 <translation id="469028408546145398">Botão Fechar janelas de navegação anónima; ative para fechar todas as janelas de navegação anónima atualmente abertas</translation>
 <translation id="4691093235373904540">Coberturas</translation>
+<translation id="4692623383562244444">Motores de pesquisa</translation>
 <translation id="4698692901173737941">Desportos de combate</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Lado</translation>
@@ -2458,6 +2464,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5765072501007116331">Para ver os métodos de fornecimento e os requisitos, selecione um endereço</translation>
 <translation id="57689295674415555">O número do cartão virtual não foi preenchido?</translation>
 <translation id="5772086939108830423">Usar uma token de acesso num dispositivo diferente</translation>
+<translation id="5775734789739406956">Clique com o botão direito do rato para adicionar as informações guardadas a qualquer formulário</translation>
 <translation id="5776313857861697733">Prioridade</translation>
 <translation id="5776574724412881956">Cartão virtual não preenchido? Clique nos detalhes do cartão virtual para os copiar para a área de transferência. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">Experiência ativada</translation>
@@ -2474,6 +2481,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="580241730938216256">Iniciar atualização</translation>
 <translation id="5803412860119678065">Quer preencher o seu cartão <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Permissões</translation>
+<translation id="5806871454498484178">Deslocar e fazer zoom bloqueados</translation>
 <translation id="5808435672482059465">Ver Histórico do Chrome</translation>
 <translation id="5810442152076338065">A sua ligação a <ph name="DOMAIN" /> está encriptada através de um conjunto de cifras obsoleto.</translation>
 <translation id="5813119285467412249">&amp;Refazer adição</translation>
@@ -3469,6 +3477,7 @@ Detalhes adicionais:
 <translation id="7673278391011283842">Caixa de correio 6</translation>
 <translation id="7675325315208090829">Faça a gestão dos métodos de pagamento…</translation>
 <translation id="767550629621587224">Separadores pré-corte</translation>
+<translation id="7675756033024037212">Não é permitido deslocar e fazer zoom</translation>
 <translation id="7676643023259824263">Pesquisar texto da área de transferência, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Veja e faça a gestão do histórico de navegação nas definições do Chrome</translation>
 <translation id="7679947978757153706">Basebol</translation>

@@ -413,6 +413,7 @@
 <translation id="1734878702283171397">Покушајте да контактирате администратора система.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, истиче <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Рачунар</translation>
+<translation id="1739422091279046802">скроловање и зумирање</translation>
 <translation id="1741613555002899862">Мора да се наведе као важећи низ када је DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Постељно рубље и постељина</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Како користимо ове податке:<ph name="END_BOLD" /> Chrome бележи теме које вас занимају док прегледате. Ознаке тема су унапред дефинисане и обухватају, на пример, Уметност и забаву, Куповину и Спорт. Касније, сајт који посетите може да затражи од Chrome-а неколико ваших тема (али не и историју прегледања) ради персонализације огласа које видите.</translation>
@@ -451,6 +452,7 @@
 <translation id="1812527064848182527">водоравно</translation>
 <translation id="1812975699435941848">Здравствено образовање и медицинска обука</translation>
 <translation id="1813414402673211292">Брисање података прегледања</translation>
+<translation id="1816436748874040213">Може да тражи да скролује и зумира дељене картице</translation>
 <translation id="1818522458013171885">Одблокирај</translation>
 <translation id="1818585559878922121">Документарни филмови</translation>
 <translation id="182139138257690338">аутоматска преузимања</translation>
@@ -964,6 +966,7 @@
 <translation id="2838682941130655229">Веб-сајт <ph name="EMBEDDED_URL" /> жели да користи информације које је сачувао о вама</translation>
 <translation id="2839032553903800133">Обавештења су блокирана</translation>
 <translation id="2839501879576190149">Сајт на који желите да одете је лажан</translation>
+<translation id="2843623755398178332">Желите да скролујете и зумирате дељену картицу?</translation>
 <translation id="2851291081585704741">Офлајн сте</translation>
 <translation id="2856444702002559011">Нападачи можда покушавају да украду информације са <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (на пример, лозинке, поруке или кредитне картице). <ph name="BEGIN_LEARN_MORE_LINK" />Сазнајте више<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2858134430383535011">200×300 mm</translation>
@@ -1056,6 +1059,7 @@
 <translation id="3023165109041533893">Огласи које предлажу сајтови вам помажу да заштитите историју прегледања и идентитет док истовремено омогућавате сајтовима да вам приказују релевантне огласе. На основу активности, сајт који сте посетили може да вам предлаже сродне огласе док и даље прегледате садржај. Можете да видите листу тих сајтова и да блокирате оне које не желите у подешавањима.</translation>
 <translation id="3024663005179499861">Погрешан тип смерница</translation>
 <translation id="3030331669969285614">Те ознаке спречавају или враћају ризичну промену и биће доступне само у ограниченом периоду.</translation>
+<translation id="3034526003882782781">Скроловање и зумирање је дозвољено</translation>
 <translation id="3036894576201005614">Опрема за чишћење домаћинства</translation>
 <translation id="3037177537145227281">Прати се цена</translation>
 <translation id="3037605927509011580">О, не!</translation>
@@ -1338,6 +1342,7 @@
 <translation id="3567778190852720481">Не можете да се региструјете са налогом предузећа (налог предузећа не испуњава услове).</translation>
 <translation id="3567901620846335314">100×150 mm</translation>
 <translation id="3568886473829759308">Приступите веб-сајту да бисте видели информације, ресурсе или услуге које предузеће пружа.</translation>
+<translation id="3570079787344939099">Скроловање и зумирање</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Дозволи за овај сајт</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -1910,6 +1915,7 @@
 <translation id="4687718960473379118">Огласи које предлажу сајтови</translation>
 <translation id="469028408546145398">Дугме Затвори прозоре без архивирања, активирајте га да бисте затворили све прозоре без архивирања који су тренутно отворени</translation>
 <translation id="4691093235373904540">Кровни радови</translation>
+<translation id="4692623383562244444">Претраживачи</translation>
 <translation id="4698692901173737941">Борилачки спортови</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Страна</translation>
@@ -2458,6 +2464,7 @@
 <translation id="5765072501007116331">Да бисте видели начине и захтеве за испоруку, изаберите адресу</translation>
 <translation id="57689295674415555">Број виртуелне картице није унет?</translation>
 <translation id="5772086939108830423">Користите приступни кôд на другом уређају</translation>
+<translation id="5775734789739406956">Кликните десним тастером да бисте додали сачуване информације у било који образац</translation>
 <translation id="5776313857861697733">Приоритет</translation>
 <translation id="5776574724412881956">Нема виртуелне картице? Кликните на податке о виртуелној картици да бисте их копирали у привремену меморију. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">Експеримент је омогућен</translation>
@@ -2474,6 +2481,7 @@
 <translation id="580241730938216256">Покрени ажурирање</translation>
 <translation id="5803412860119678065">Желите ли да попуните подацима <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Дозволе</translation>
+<translation id="5806871454498484178">Скроловање и зумирање је блокирано</translation>
 <translation id="5808435672482059465">Прегледајте историју Chrome-а</translation>
 <translation id="5810442152076338065">Веза са доменом <ph name="DOMAIN" /> је шифрована помоћу застарелог пакета за шифровање.</translation>
 <translation id="5813119285467412249">&amp;Понови додавање</translation>
@@ -3469,6 +3477,7 @@
 <translation id="7673278391011283842">6. поштанско сандуче</translation>
 <translation id="7675325315208090829">Управљајте начинима плаћања…</translation>
 <translation id="767550629621587224">Перфориране картице</translation>
+<translation id="7675756033024037212">Скроловање и зумирање није дозвољено</translation>
 <translation id="7676643023259824263">Потражите текст у привременој меморији, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Прегледајте историју прегледања и управљајте њом у подешавањима Chrome-а</translation>
 <translation id="7679947978757153706">Бејзбол</translation>

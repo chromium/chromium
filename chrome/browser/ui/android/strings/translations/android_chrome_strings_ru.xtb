@@ -59,7 +59,6 @@
 <translation id="1258753120186372309">Дудл Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1263063910731171689">Теперь в ленте будут появляться материалы о сайте <ph name="SITE_NAME" /> и его контент. Сайты и поисковые запросы, на которые вы подписаны, сохраняются в вашем аккаунте Google. Управлять своими подписками можно в настройках.</translation>
 <translation id="1263231323834454256">Список для чтения</translation>
-<translation id="1266864766717917324">Не удалось отправить: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269129608791067105">Здесь будет показана история браузера</translation>
 <translation id="1273937721055267968">Заблокировать сайт <ph name="DOMAIN" /></translation>
 <translation id="1283039547216852943">Нажмите, чтобы развернуть</translation>
@@ -96,7 +95,6 @@
 <translation id="1436784010935106834">Удалено</translation>
 <translation id="1437543266176261764">Выполняется в <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Упорядочивайте отслеживаемые товары в закладках</translation>
-<translation id="1450753235335490080">Не удается отправить: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1462833127986525564">Свяжите Chrome и другие сервисы Google, чтобы они могли обмениваться данными друг с другом для персонализации контента.</translation>
 <translation id="1466383950273130737">Выбор языка для Chrome</translation>
 <translation id="1477626028522505441">Не удалось скачать файл <ph name="FILE_NAME" /> из-за неполадок на сервере.</translation>
@@ -203,7 +201,6 @@
 <translation id="2093731487903423814">за последние 15 минут</translation>
 <translation id="2096012225669085171">Синхронизация и персонализация данных на всех устройствах</translation>
 <translation id="2100273922101894616">Автоматический вход</translation>
-<translation id="2100314319871056947">Перед отправкой разбейте текст на несколько частей.</translation>
 <translation id="2111511281910874386">Перейти на страницу</translation>
 <translation id="2119609734654412418">Здесь будут ваши закладки.</translation>
 <translation id="2122601567107267586">Не удалось открыть приложение</translation>
@@ -376,7 +373,6 @@
 <translation id="2981364137500752533">Можно открыть не более пяти окон.</translation>
 <translation id="2983102365694924129">Подбираются на основе ваших действий на сайте. Параметр отключен.</translation>
 <translation id="2984978667043170458">Учитывать контекст в поиске Google</translation>
-<translation id="2987620471460279764">Текст, полученный с другого устройства</translation>
 <translation id="2989523299700148168">Недавние</translation>
 <translation id="2992473221983447149">Описания изображений</translation>
 <translation id="2996291259634659425">Придумайте кодовую фразу</translation>
@@ -384,7 +380,6 @@
 <translation id="2996932914629936323">Удаление истории на всех синхронизированных устройствах</translation>
 <translation id="2997081575621687554">Когда сайт на платформе Google запрашивает анонимную предзагрузку страниц по ссылкам на нем, Chrome шифрует и предварительно загружает страницы через серверы Google без файлов cookie. Благодаря этому предзагруженный сайт не получает сведений о вашей личности.</translation>
 <translation id="3003253259757197230">Чтобы предсказывать ваши дальнейшие запросы и показывать дополнительную информацию о просматриваемых страницах, URL посещенных вами сайтов отправляются в Google.</translation>
-<translation id="3016635187733453316">Убедитесь, что устройство подключено к Интернету.</translation>
 <translation id="3026955690410463085">Добавить ссылку</translation>
 <translation id="3027644380269727216">Подбирается на основе ваших действий на сайте. Параметр включен.</translation>
 <translation id="3029276696788198026">Без предзагрузки</translation>
@@ -447,7 +442,6 @@
 <translation id="3374023511497244703">Ваши закладки, пароли, история и другие данные Chrome больше не будут синхронизироваться с аккаунтом Google.</translation>
 <translation id="3384347053049321195">Поделиться изображением</translation>
 <translation id="3387650086002190359">Не удалось скачать файл <ph name="FILE_NAME" /> из-за ошибок файловой системы.</translation>
-<translation id="3389286852084373014">Сообщение слишком длинное</translation>
 <translation id="3398320232533725830">Открыть диспетчер закладок</translation>
 <translation id="3407392651057365886">Заранее загружается больше страниц. По запросу сайтов этот процесс может выполняться через серверы Google.</translation>
 <translation id="3414952576877147120">Размер:</translation>
@@ -800,7 +794,6 @@
 <translation id="5180063720319462041">Страница переведена на <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="5186634140793586141">Управлять темами и запросами, которые вам интересны</translation>
 <translation id="5191251636205085390">Узнайте больше о новых технологиях, которые придут на смену сторонним файлам cookie.</translation>
-<translation id="5193988420012215838">Скопировано в буфер обмена.</translation>
 <translation id="5204967432542742771">Введите пароль</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Скачивание 1 файла…}one{Скачивание # файла…}few{Скачивание # файлов…}many{Скачивание # файлов…}other{Скачивание # файла…}}</translation>
 <translation id="5210286577605176222">Перейти к предыдущей вкладке</translation>
@@ -825,7 +818,6 @@
 <translation id="5342314432463739672">Запросы разрешений</translation>
 <translation id="534580735623577507">0 сайтов <ph name="TIME_PERIOD" /></translation>
 <translation id="5355191726083956201">Улучшенная защита включена.</translation>
-<translation id="5361107212971249203">текст</translation>
 <translation id="5375577065097716013">Найти через Google Объектив <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
 <translation id="5395376160638294582">Обеспечьте доступ к данным Chrome в аккаунте Google.</translation>
 <translation id="539881862970320163">Предложен надежный пароль. Клавиатура скрыта.</translation>
@@ -1209,7 +1201,6 @@
 <translation id="7221869452894271364">Обновить эту страницу</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Ожидание скачивания 1 файла…}one{Ожидание скачивания # файла…}few{Ожидание скачивания # файлов…}many{Ожидание скачивания # файлов…}other{Ожидание скачивания # файла…}}</translation>
 <translation id="72415438529550637">Раздел с предложенным паролем закрыт.</translation>
-<translation id="7248069434667874558">Убедитесь, что в браузере Chrome на устройстве <ph name="TARGET_DEVICE_NAME" /> включена синхронизация.</translation>
 <translation id="7252076891734325316">Поднесите телефон к компьютеру.</translation>
 <translation id="7260367682327802201">На вашем устройстве Android может быть похожая функция. Если оценка эффективности рекламы включена в Chrome и на устройстве Android, компании смогут оценивать эффективность рекламы на посещаемых вами сайтах и в приложениях, которые вы используете.</translation>
 <translation id="727288900855680735">Отправить код <ph name="ONE_TIME_CODE" /> на сайт <ph name="ORIGIN" />?</translation>
@@ -1317,7 +1308,6 @@
 <translation id="7707922173985738739">Использовать мобильный Интернет</translation>
 <translation id="7709918231054955894">Просматривайте все свои вкладки</translation>
 <translation id="7733878270780732638">Недостаточно места на устройстве.</translation>
-<translation id="7757787379047923882">Текст с устройства <ph name="DEVICE_NAME" /></translation>
 <translation id="7759809451544302770">Необязательно</translation>
 <translation id="7762668264895820836">SD-карта <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Добавить адрес</translation>
@@ -1476,7 +1466,6 @@
 <translation id="8453310803815879010">Запустить игру Dino</translation>
 <translation id="84594714173170813">Продолжайте использовать данные Chrome в аккаунте Google.</translation>
 <translation id="8460448946170646641">Проверка основных настроек конфиденциальности и безопасности</translation>
-<translation id="8466613982764129868">Проверьте, подключено ли устройство <ph name="TARGET_DEVICE_NAME" /> к Интернету.</translation>
 <translation id="8473863474539038330">Адреса и другие данные</translation>
 <translation id="8478751349603791277">Управляйте настройками использования синхронизированных данных истории для персонализации других сервисов Google</translation>
 <translation id="8485434340281759656"><ph name="DESCRIPTION" /> <ph name="FILE_SIZE" /> <ph name="SEPARATOR" /></translation>

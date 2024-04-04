@@ -240,6 +240,7 @@
 <translation id="5427571867875391349">Подеси Chromium као подразумевани прегледач</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium бета</translation>
 <translation id="5473971139929175403">Chromium можда неће исправно радити зато што више није подржан на овој верзији Linux-а</translation>
+<translation id="5475924890392386523">Chromium је блокирао ово преузимање јер овај фајл може да нашкоди личним налозима и налозима на друштвеним мрежама</translation>
 <translation id="5480860683791598150">Chromium тражи приступ вашој локацији да бисте је делили са овим сајтом</translation>
 <translation id="5487574057737591516">Ради заштите приватности аутоматски бришемо интересовања старија од 4 недеље. Када наставите да прегледате, интересовање ће се можда поново појавити на листи. Ако Chromium погреши или не желите да вам се приказују одређени огласи, можете да уклоните интересовање.</translation>
 <translation id="549669000822060376">Сачекајте да Chromium инсталира најновија ажурирања система.</translation>
@@ -368,6 +369,7 @@ Chromium не може да врати подешавања.</translation>
 <translation id="7339898014177206373">Нови прозор</translation>
 <translation id="734373864078049451">Веб, обележивачи и други Chromium садржај се овде уживо приказују.</translation>
 <translation id="7349591376906416160">Администратор система је конфигурисао Chromium да отвара прегледач <ph name="ALTERNATIVE_BROWSER_NAME" /> да би приступао <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="7355355292030546812">Chromium је блокирао ово преузимање јер овај фајл може да нашкоди личним налозима и налозима на друштвеним мрежама, укључујући <ph name="USER_EMAIL" /></translation>
 <translation id="7398989605938454041">Помоћу Chromium профила можете да раздвојите све Chromium садржаје. На тај начин ћете лакше моћи да раздвојите посао и забаву.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Програмерска верзија Chromium-а</translation>
 <translation id="7451052299415159299">Chromium тражи дозволу да приступи камери за овај сајт</translation>
@@ -454,6 +456,7 @@ Chromium не може да врати подешавања.</translation>
 <translation id="8988036198400390003">Управљај Chromium профилима</translation>
 <translation id="9019929317751753759">Да бисмо учинили Chromium безбеднијим, онемогућили смо следећи додатак који <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> не наводи и који је можда додат без вашег знања.</translation>
 <translation id="9022552996538154597">Пријављивање на Chromium</translation>
+<translation id="904366664621834601">Chromium је блокирао ово преузимање јер фајл архиве садржи друге фајлове који могу да крију малвер</translation>
 <translation id="907832235989677238">Пријавите се у Chromium. Ако желите да се пријавите на налог само једном, можете да <ph name="GUEST_LINK_BEGIN" />користите уређај као гост<ph name="GUEST_LINK_END" />.</translation>
 <translation id="9078733879136747090">Chromium је аутоматски затворен</translation>
 <translation id="9089354809943900324">Chromium је застарео</translation>

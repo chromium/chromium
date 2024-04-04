@@ -441,6 +441,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2841907151129139818">Siirrytty tablettitilaan</translation>
 <translation id="2844169650293029770">C-tyypin USB-laite (vasemman sivun etummainen portti)</translation>
 <translation id="2844350028562914727">tiedot</translation>
+<translation id="2847759467426165163">Lähetä laitteelle</translation>
 <translation id="2848120746144143659">Ota koko näytön kuvakaappaus painamalla Enter</translation>
 <translation id="2849936225196189499">Kriittinen</translation>
 <translation id="2860184359326882502">Paras osuma</translation>
@@ -478,6 +479,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3009958530611748826">Valitse tallennuskansio</translation>
 <translation id="301282384882049174">Järjestelmänvalvojan jakama</translation>
 <translation id="301584155502740476">Näytä hotspotin tiedot. Hotspot on pois päältä.</translation>
+<translation id="3017079585324758401">Tausta</translation>
 <translation id="3018135054368884502">Kelaa mediaa eteenpäin</translation>
 <translation id="3033545621352269033">Päällä</translation>
 <translation id="3033912566804961911">Yhdistä <ph name="DESK_NAME" /></translation>
@@ -1040,7 +1042,6 @@ Joitakin ominaisuuksia on rajoitettu akunkeston parantamiseksi.</translation>
 <translation id="5104236669533825617">Ruutukaappausvideota ei voi luoda</translation>
 <translation id="5107522548814527560">Verkko</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
-<translation id="5111930673176965299">Taustan sumennus</translation>
 <translation id="5117590920725113268">Näytä seuraava kuukausi</translation>
 <translation id="5121628974188116412">Siirry sivun alareunaan</translation>
 <translation id="5122517996953421795">Esikatselu: <ph name="DESK_NAME" />. Työpöytä ei aktiivinen.</translation>

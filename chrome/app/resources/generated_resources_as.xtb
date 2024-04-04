@@ -1530,7 +1530,6 @@
 <translation id="2127372758936585790">কম শক্তিৰ চ্চাৰ্জাৰ</translation>
 <translation id="212862741129535676">সঘনতাৰ স্থিতি দখলৰ শতকৰা হাৰ</translation>
 <translation id="212876957201860463">আপোনাৰ চেলুলাৰ ডিভাইচ ছেট আপ কৰিবলৈ প্ৰস্তুত কৰি থকা হৈছে...</translation>
-<translation id="2130909682040406368">AI সঁজুলি ব্যৱহাৰ কৰাৰ বিষয়ে অধিক জানক</translation>
 <translation id="2131077480075264">"<ph name="IMPORT_NAME" />"এ অনুমতি প্ৰদান নকৰাৰ বাবে "<ph name="APP_NAME" />" ইনষ্টল কৰিব পৰা নগ’ল</translation>
 <translation id="2133775869826239001">ছেট আপ কৰিবলৈ অধিক সুবিধা বাছনি কৰক</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> পুনৰ চেষ্টা কৰক</translation>
@@ -3522,6 +3521,7 @@
 <translation id="3659550105763988702"><ph name="APP_NAME" />ৰ বাবে থকা আপোনাৰ পাছকীটো ব্যৱহাৰ কৰক</translation>
 <translation id="3659929705630080526">আপুনি বহুবাৰ এটা ভুল এক্সেছ ক’ড দিছে। পাছত পুনৰ চেষ্টা কৰক</translation>
 <translation id="3660234220361471169">অবিশ্বাসী হিচাপে চিহ্নিত</translation>
+<translation id="3661106764436337772">দ্ৰুতভাৱে আৰু অধিক আত্মবিশ্বাসেৰে লিখক</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{১ টা পূৰ্বৰে পৰা থকা পাছৱৰ্ড পোৱা গৈছে}one{{NUM_PASSWORDS} টা পূৰ্বৰে পৰা থকা পাছৱৰ্ড পোৱা গৈছে}other{{NUM_PASSWORDS} টা পূৰ্বৰে পৰা থকা পাছৱৰ্ড পোৱা গৈছে}}</translation>
 <translation id="3662207097851752847">আপোনাৰ ফ’নত আপোনাৰ Google একাউণ্টটো নিশ্চিত কৰক</translation>
 <translation id="3663417513679360795">মানক আগতীয়াকৈ ল’ড কৰা বিকল্পটোৰ বিষয়ে অধিক তথ্য</translation>
@@ -4498,7 +4498,6 @@
 <translation id="4388650384344483842">অতি কমেও ৮ টা বৰ্ণ ব্যৱহাৰ কৰক</translation>
 <translation id="4389091756366370506">ব্যৱহাৰকাৰী <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> আৰু অন্য <ph name="NUMBER_OF_OTHER_SWITCHES" /> টা ছুইচ</translation>
-<translation id="4390569024397171409">আপোনাৰ <ph name="DEVICE_TYPE" />ত এপ্‌টো ইনষ্টল কৰক</translation>
 <translation id="439266289085815679">ব্লুটুথ কনফিগাৰেশ্বন <ph name="USER_EMAIL" />ৰ দ্বাৰা নিয়ন্ত্ৰণ কৰা হয়।</translation>
 <translation id="4392896746540753732">কনফিগাৰেশ্বন ফাইলটো সম্পাদনা কৰক</translation>
 <translation id="4393102500004843976">ছাৰ্চ + শ্বিফ্ট + <ph name="TOP_ROW_KEY" /></translation>
@@ -8008,7 +8007,6 @@
 <translation id="7168109975831002660">ফ’ণ্টৰ সর্বনিম্ন আকাৰ</translation>
 <translation id="7169122689956315694">আশে-পাশে ডিভাইচ থাকিলে জাননী পোৱাৰ সুবিধাটো অন কৰক</translation>
 <translation id="7170236477717446850">প্ৰ’ফাইলৰ চিত্ৰ</translation>
-<translation id="7170751905948784001">বিকাশকৰ্তা সম্পৰ্কীয় তথ্য:</translation>
 <translation id="7171000599584840888">প্ৰ’ফাইল যোগ কৰক...</translation>
 <translation id="7171259390164035663">পঞ্জীয়ন নকৰিব</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{নতুন গোটত টেব যোগ দিয়ক}one{নতুন গোটত টেবসমূহ যোগ দিয়ক}other{নতুন গোটত টেবসমূহ যোগ দিয়ক}}</translation>
@@ -8485,7 +8483,6 @@
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" />এ সঁহাৰি দিয়া নাই। এপ্‌টো বন্ধ কৰিবলৈ "জোৰকৈ বন্ধ কৰক" সুবিধাটো বাছনি কৰক।</translation>
 <translation id="7535730537657706072">আপোনাৰ ডিভাইচৰ পৰা ইনক’গনিট’ত কৰা ব্ৰাউজিঙৰ ইতিহাস মচিবলৈ, আটাইবোৰ ইনক’গ্নিট’ টেব বন্ধ কৰক</translation>
 <translation id="7536815228183532290"><ph name="EMAIL" /> হিচাপে ছাইন ইন কৰিছে</translation>
-<translation id="7537182889548466084">আপুনি টেবৰ গোটৰ পৰামৰ্শ লাভ কৰিব যিয়ে একেধৰণৰ টেবসমূহৰ গোট সৃষ্টি কৰে। আপোনাৰ খুলি ৰখা টেব আৰু শিৰোনামসমূহ Googleলৈ পঠিওৱা হয় আৰু এই সুবিধাটো উন্নত কৰিবলৈ সেইবোৰ মানুহৰ দ্বাৰা পৰ্যালোচনা কৰা হ’ব পাৰে।</translation>
 <translation id="7538013435257102593">এই প্ৰকাৰৰ ফাইল সাধাৰণতে ডাউনল’ড কৰা নহয় আৰু ই বিপজ্জনক হ’ব পাৰে</translation>
 <translation id="7540972813190816353">আপডেট পৰীক্ষা কৰাৰ সময়ত এটা আসোঁৱাহ পোৱা গৈছে: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" />এ এই ডিভাইচটো পূৰ্বৱৰ্তী সংস্কৰণলৈ সলনি কৰিছে। অনুগ্ৰহ কৰি গুৰুত্বপূৰ্ণ ফাইলসমূহ ছেভ কৰক আৰু ৰিষ্টাৰ্ট কৰক। এই ডিভাইচটোত থকা আটাইবোৰ ডেটা মচা হ’ব।</translation>

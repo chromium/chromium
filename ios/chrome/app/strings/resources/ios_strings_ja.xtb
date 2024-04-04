@@ -16,7 +16,6 @@
 <translation id="1066060668811609597">同期の管理</translation>
 <translation id="1069154182096085577">このパスワードはすでに存在します</translation>
 <translation id="1076421457278169141">コードをスキャンしました</translation>
-<translation id="1076785341346483463">管理対象アカウントとの同期</translation>
 <translation id="1084365883616172403">Facebookへの投稿が完了しました。</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" />を常に翻訳</translation>
 <translation id="110724200315609752">開いているウィンドウに切り替え</translation>
@@ -24,7 +23,6 @@
 <translation id="1112015203684611006">印刷できませんでした。</translation>
 <translation id="1125564390852150847">新しいタブを作成。</translation>
 <translation id="1126809382673880764">危険なウェブサイト、ダウンロード、拡張機能から保護されていません。セーフ ブラウジングによる保護は、Gmail や Google 検索など他の Google サービスで利用可能な場合は、引き続き有効です。</translation>
-<translation id="1145536944570833626">既存のデータを削除します。</translation>
 <translation id="1147031633655575115"><ph name="USER" /> としてログイン</translation>
 <translation id="1150989369772528668">カレンダー</translation>
 <translation id="1154984953698510061">他のタブを表示</translation>
@@ -54,7 +52,6 @@
 <translation id="1273416271143914096">{count,plural, =1{{count} 個のパスワード}other{{count} 個のパスワード}}</translation>
 <translation id="1275718070701477396">選択中</translation>
 <translation id="1279024913354609713">許可しない</translation>
-<translation id="1281818060020671000">データの管理</translation>
 <translation id="1282311502488501110">ログインしない</translation>
 <translation id="1283524564873030414">過去 24 時間</translation>
 <translation id="1285320974508926690">このサイトは翻訳しない</translation>
@@ -563,7 +560,6 @@
 <translation id="3918585468378680136">配送状況を確認中</translation>
 <translation id="3921585859122905677">アドレスバーの位置</translation>
 <translation id="3922310737605261887">コピーしたテキストを検索</translation>
-<translation id="3928666092801078803">データを統合する</translation>
 <translation id="3929457972718048006">住所</translation>
 <translation id="3939505428630887612">このページについて</translation>
 <translation id="3948600256434252210">右にスワイプすると、シークレット モードでブラウジングできます。</translation>
@@ -943,6 +939,7 @@
 <translation id="5857770089550859117">同期を開始するにはパスフレーズが必要です。</translation>
 <translation id="5859715514067755465">進む</translation>
 <translation id="5860033963881614850">OFF</translation>
+<translation id="5860491529813859533">オンにする</translation>
 <translation id="5896576662943111387">iOS にぴったり</translation>
 <translation id="5897749768294722429">過去にアクセスしたサイトにすばやく戻るには、タブと履歴を同期します。</translation>
 <translation id="5897956970858271241">コピーしたリンクにアクセス</translation>
@@ -961,7 +958,6 @@
 <translation id="5971872012779224351">{count,plural, =1{1 個のブックマークが削除されました}other{{count} 個のブックマークが削除されました}}</translation>
 <translation id="5979837087407522202">パスワードを検索</translation>
 <translation id="5981230843984570095">アクティブでないタブをすべて閉じる</translation>
-<translation id="5982717868370722439">既存のデータを <ph name="USER_EMAIL" /> に追加します。</translation>
 <translation id="5984222099446776634">最近のアクセス</translation>
 <translation id="598634819525651074">面積</translation>
 <translation id="5988097621740394599">タブで値下げ情報を確認します。</translation>
@@ -1192,7 +1188,6 @@
 <translation id="7022197654033719543">サイト情報</translation>
 <translation id="7029809446516969842">パスワード</translation>
 <translation id="704692552158601232">デフォルトのブラウザ App</translation>
-<translation id="7062545763355031412">同意してアカウントを切り替える</translation>
 <translation id="7063811929043357292">ご利用のアカウントは保護者によって管理されています。
 <ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="7069695992271320873">このデバイスから削除</translation>
@@ -1385,7 +1380,6 @@
 <translation id="804427445359061970">他のデバイスで開いたタブはここに表示されます</translation>
 <translation id="8044568254381073661">暗号化せずに保存</translation>
 <translation id="8059533439631660104">セクションを折りたたみます。</translation>
-<translation id="806745655614357130">データを別に保持する</translation>
 <translation id="8069394452933076548">最近使用していないタブを無効なタブセクションにいつ移動するかを選択する。</translation>
 <translation id="8073670137947914548">ダウンロードが完了しました</translation>
 <translation id="8073872304774253879">検索とブラウジングを改善する</translation>
@@ -1616,7 +1610,6 @@
 <translation id="9165320910061267720">値下げアラートの通知を受け取るには、iOS の設定で通知をオンにする必要があります。</translation>
 <translation id="9177438225260810839">開いているタブを検索</translation>
 <translation id="9187853111759024059">アクティブでない 99 個以上のタブを閉じますか？</translation>
-<translation id="9188680907066685419">管理対象アカウントからログアウトする</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> 日前</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9203951165704618409">アドレスバーの位置を上から下に変更して、ブラウジング環境をカスタマイズできます。</translation>

@@ -115,6 +115,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1383597849754832576">Hindi ma-download ang mga speech file. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="1383876407941801731">Hanapin</translation>
 <translation id="1391102559483454063">Naka-on</translation>
+<translation id="1394698770495054737">Ganap na Blur</translation>
 <translation id="1407069428457324124">Madilim na tema</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Gamitin ang mga arrow key para mag-navigate sa pagitan ng mga petsa.</translation>
 <translation id="141170878022560212">Button sa Gitna</translation>
@@ -441,6 +442,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2841907151129139818">Lumipat sa tablet mode</translation>
 <translation id="2844169650293029770">USB-C device (port sa kaliwang bahagi sa harap)</translation>
 <translation id="2844350028562914727">mga detalye</translation>
+<translation id="2847759467426165163">I-cast sa</translation>
 <translation id="2848120746144143659">Pindutin ang enter para mag-capture screenshot ng full screen</translation>
 <translation id="2849936225196189499">Kritikal</translation>
 <translation id="2860184359326882502">Pinakatumutugma</translation>
@@ -478,6 +480,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3009958530611748826">Pumili ng folder kung saan magse-save</translation>
 <translation id="301282384882049174">Ibinahagi ng iyong administrator</translation>
 <translation id="301584155502740476">Ipakita ang mga detalye ng hotspot. Naka-off ang Hotspot.</translation>
+<translation id="3017079585324758401">Background</translation>
 <translation id="3018135054368884502">Mag-fast forward ng media</translation>
 <translation id="3033545621352269033">Naka-on</translation>
 <translation id="3033912566804961911">Isama sa <ph name="DESK_NAME" /></translation>
@@ -954,6 +957,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4798888871844665150">Nasa clipboard na ang kinopyang item. Gamitin ang <ph name="SHORTCUT_KEY_NAME" /> + V para matingnan.</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">I-disconnect</translation>
+<translation id="4806631651704497161">Manipis na Blur</translation>
 <translation id="4813311884204119883">I-drag ang link sa blangkong bahagi sa tabstrip</translation>
 <translation id="4814539958450445987">Screen sa Pag-log In</translation>
 <translation id="481455355267255546">Susunod</translation>
@@ -1040,7 +1044,6 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="5104236669533825617">Hindi makagawa ng screencast</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
-<translation id="5111930673176965299">Pag-blur ng background</translation>
 <translation id="5117590920725113268">Ipakita ang susunod na buwan</translation>
 <translation id="5121628974188116412">Pumunta sa pinakababa ng page</translation>
 <translation id="5122517996953421795">Preview ng <ph name="DESK_NAME" />. Hindi aktibong desk.</translation>

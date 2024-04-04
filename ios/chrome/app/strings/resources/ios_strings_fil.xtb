@@ -16,7 +16,6 @@
 <translation id="1066060668811609597">Pamahalaan ang Pag-sync</translation>
 <translation id="1069154182096085577">May Ganito Nang Password</translation>
 <translation id="1076421457278169141">Na-scan na ang code</translation>
-<translation id="1076785341346483463">I-sync sa Pinapamahalaang Account</translation>
 <translation id="1084365883616172403">Kumpleto na ang pag-post sa Facebook.</translation>
 <translation id="1103523840287552314">Palaging i-translate ang <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Lumipat sa Nakabukas na Window</translation>
@@ -24,7 +23,6 @@
 <translation id="1112015203684611006">Hindi na-print.</translation>
 <translation id="1125564390852150847">Gumawa ng bagong tab.</translation>
 <translation id="1126809382673880764">Hindi ka pinoprotektahan laban sa mga mapanganib na website, download, at extension. Magkakaroon ka pa rin ng proteksyon ng Ligtas na Pag-browse, kung available, sa iba pang serbisyo ng Google, tulad ng Gmail at Search.</translation>
-<translation id="1145536944570833626">I-delete ang kasalukuyang data.</translation>
 <translation id="1147031633655575115">Naka-sign in bilang <ph name="USER" /></translation>
 <translation id="1150989369772528668">Kalendaryo</translation>
 <translation id="1154984953698510061">Tingnan ang Iba pang Tab</translation>
@@ -54,7 +52,6 @@
 <translation id="1273416271143914096">{count,plural, =1{{count} password}one{{count} password}other{{count} na password}}</translation>
 <translation id="1275718070701477396">Pinili</translation>
 <translation id="1279024913354609713">Huwag Payagan</translation>
-<translation id="1281818060020671000">Pamahalaan ang Data</translation>
 <translation id="1282311502488501110">Huwag Mag-sign In</translation>
 <translation id="1283524564873030414">Nakalipas na 24 na Oras</translation>
 <translation id="1285320974508926690">Huwag isalin kailanman ang site na ito</translation>
@@ -563,7 +560,6 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="3918585468378680136">Kinukuha ang Status ng Package</translation>
 <translation id="3921585859122905677">Posisyon ng Address Bar</translation>
 <translation id="3922310737605261887">Maghanap para sa Kinopyang Text</translation>
-<translation id="3928666092801078803">Pagsamahin ang aking data</translation>
 <translation id="3929457972718048006">Mga Address</translation>
 <translation id="3939505428630887612">Tungkol sa Page na Ito</translation>
 <translation id="3948600256434252210">Puwede kang mag-swipe pakanan para mag-browse sa Incognito.</translation>
@@ -943,6 +939,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="5857770089550859117">Kinakailangan ang passphrase upang masimulan ang pag-sync.</translation>
 <translation id="5859715514067755465">I-forward</translation>
 <translation id="5860033963881614850">Naka-off</translation>
+<translation id="5860491529813859533">I-on</translation>
 <translation id="5896576662943111387">Ginawa para sa iOS</translation>
 <translation id="5897749768294722429">Para mabilis na makabalik sa mga site na binisita mo, i-sync ang iyong mga tab at history.</translation>
 <translation id="5897956970858271241">Bisitahin ang Kinopyang Link</translation>
@@ -961,7 +958,6 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="5971872012779224351">{count,plural, =1{Na-delete ang 1 bookmark}one{Na-delete ang {count} bookmark}other{Na-delete ang {count} na bookmark}}</translation>
 <translation id="5979837087407522202">Maghanap ng Mga Password</translation>
 <translation id="5981230843984570095">Isara ang Lahat ng Hindi Aktibo</translation>
-<translation id="5982717868370722439">Idagdag ang kasalukuyang data sa <ph name="USER_EMAIL" />.</translation>
 <translation id="5984222099446776634">Kamakailang Binisita</translation>
 <translation id="598634819525651074">Area</translation>
 <translation id="5988097621740394599">Tingnan ang mga pagbaba ng presyo sa iyong mga tab.</translation>
@@ -1192,7 +1188,6 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="7022197654033719543">Impormasyon ng Site</translation>
 <translation id="7029809446516969842">Mga Password</translation>
 <translation id="704692552158601232">Default na Browser App</translation>
-<translation id="7062545763355031412">Tanggapin at lumipat ng account</translation>
 <translation id="7063811929043357292">Pinapamahalaan ng iyong magulang ang account mo.
 <ph name="BEGIN_LINK" />Matuto Pa<ph name="END_LINK" /></translation>
 <translation id="7069695992271320873">Alisin sa Device na Ito</translation>
@@ -1385,7 +1380,6 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="804427445359061970">Makikita mo rito ang iyong mga tab mula sa iba pang device</translation>
 <translation id="8044568254381073661">I-save Nang Walang Pag-encrypt</translation>
 <translation id="8059533439631660104">Kino-collapse ang seksyon.</translation>
-<translation id="806745655614357130">Panatilihing hiwalay ang aking data</translation>
 <translation id="8069394452933076548">Piliin kung kailan ililipat ang mga tab na hindi ginamit kamakailan sa seksyon ng hindi aktibong tab.</translation>
 <translation id="8073670137947914548">Tapos na ang pag-download</translation>
 <translation id="8073872304774253879">Mas Pahusayin ang Mga Paghahanap at Pagba-browse</translation>
@@ -1616,7 +1610,6 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="9165320910061267720">Para makatanggap ng mga notification tungkol sa mga alerto sa pagbaba ng presyo, kakailanganin mong i-on ang mga notification sa mga setting ng iyong iOS.</translation>
 <translation id="9177438225260810839">Maghanap sa Mga Bukas na Tab</translation>
 <translation id="9187853111759024059">Isara ang 99+ Hindi Aktibong Tab?</translation>
-<translation id="9188680907066685419">Mag-sign out sa pinamamahalaang account</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> (na) araw na ang nakalipas</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9203951165704618409">Ilipat ang iyong address bar sa ibaba mula sa itaas para sa naka-customize na experience sa pag-browse.</translation>

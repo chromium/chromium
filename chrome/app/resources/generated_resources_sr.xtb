@@ -41,6 +41,7 @@
 <translation id="102916930470544692">Приступни кључ</translation>
 <translation id="1029317248976101138">Зумирај</translation>
 <translation id="1029526375103058355">Додирните да бисте кликнули</translation>
+<translation id="1029724557649700742">Нове функције ће бити уврштене чим постану доступне, а могу да се разликују у зависности од уређаја.</translation>
 <translation id="1031362278801463162">Учитавање прегледа</translation>
 <translation id="1032605640136438169">Прегледајте нове услове</translation>
 <translation id="103279545524624934">Ослободите простор на диску да бисте покренули Android апликације.</translation>
@@ -1518,7 +1519,6 @@
 <translation id="2127372758936585790">Пуњач мале снаге</translation>
 <translation id="212862741129535676">Проценат заузетости стања фреквенције</translation>
 <translation id="212876957201860463">Подешавање мобилног уређаја се припрема...</translation>
-<translation id="2130909682040406368">Сазнајте више о коришћењу алатки вештачке интелигенције</translation>
 <translation id="2131077480075264">Није успело инсталирање „<ph name="APP_NAME" />“ јер то не дозвољава „<ph name="IMPORT_NAME" />“</translation>
 <translation id="2133775869826239001">Одаберите додатне функције за подешавање</translation>
 <translation id="2133857665503360653">Поново отворите <ph name="FILE_NAME" /></translation>
@@ -1557,6 +1557,7 @@
 <translation id="2155473371917268529">Актуелно подешавање видљивости је Ваши уређаји</translation>
 <translation id="2155772377859296191">Изгледа да је у питању <ph name="WIDTH" />×<ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Сервисер: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156707722163479690">Дозвољено им је да скролују и зумирају дељене картице</translation>
 <translation id="2156877321344104010">Поново покрени безбедносну проверу</translation>
 <translation id="2157474325782140681">Да бисте користили додатне функције, користите Dell базну станицу компатибилну са овим Chromebook-ом.</translation>
 <translation id="215753907730220065">Изађи из режима целог екрана</translation>
@@ -1975,6 +1976,7 @@
 <translation id="2459706890611560967">Наставите пребацивање картице на <ph name="DEVICE_NAME" /></translation>
 <translation id="2460356425461033301">Правите резервне копије садржаја из прегледача и користите га на било ком уређају.</translation>
 <translation id="2460482211073772897">У другим фолдерима</translation>
+<translation id="2461550163693930491">Не дозвољавај сајтовима да скролују и зумирају дељене картице</translation>
 <translation id="2461593638794842577">Можете да искључите ово подешавање да бисте чували лозинке само на овом уређају</translation>
 <translation id="2462332841984057083">Steam се већ подешава. Сачекајте да се подешавање заврши.</translation>
 <translation id="2462724976360937186">ИД кључа ауторитета за издавање сертификата</translation>
@@ -2008,6 +2010,7 @@
 <translation id="2482895651873876648">Картица је премештена у групу <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="2483627560139625913">Подесите претраживач у подешавањима Chrome прегледача</translation>
 <translation id="2483698983806594329">Преузет је неверификовани фајл</translation>
+<translation id="2484574361686148760">Освежи информације о WiFi Direct клијентима</translation>
 <translation id="2484743711056182585">Уклони дозволу</translation>
 <translation id="2484909293434545162">Ако сајт користи колачиће, они ће се приказивати овде</translation>
 <translation id="2484959914739448251">Да бисте обрисали податке прегледања са свих синхронизованих уређаја и са Google налога, <ph name="BEGIN_LINK" />унесите приступну фразу<ph name="END_LINK" />.</translation>
@@ -2201,6 +2204,7 @@
 <translation id="2629227353894235473">Програмирајте Android апликације</translation>
 <translation id="2629437048544561682">Избриши платно</translation>
 <translation id="2631498379019108537">Приказуј опције уноса у полици</translation>
+<translation id="2632176111713971407">Сајтови могу да траже да скролују и зумирају дељене картице</translation>
 <translation id="2633212996805280240">Желите ли да уклоните „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> није могао да доврши инсталацију, али ће наставити да се покреће са слике диска.</translation>
 <translation id="2633764681656412085">FIDO</translation>
@@ -3507,6 +3511,7 @@
 <translation id="3659550105763988702">Користите приступни кôд за апликацију <ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">Превише пута сте унели нетачан приступни кôд. Пробајте поново касније.</translation>
 <translation id="3660234220361471169">Непоуздани</translation>
+<translation id="3661106764436337772">Пишите брже и сигурније</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Пронађена је 1 постојећа лозинка}one{Пронађена је {NUM_PASSWORDS} постојећа лозинка}few{Пронађене су {NUM_PASSWORDS} постојеће лозинке}other{Пронађено је {NUM_PASSWORDS} постојећих лозинки}}</translation>
 <translation id="3662207097851752847">Потврдите Google налог на телефону</translation>
 <translation id="3663417513679360795">Више информација о укључивању стандардног предучитавања</translation>
@@ -3859,6 +3864,7 @@
 <translation id="3900966090527141178">Извезите лозинке</translation>
 <translation id="3902789559055749153">Одаберите како желите да направите приступни кôд за апликацију <ph name="APP_NAME" /></translation>
 <translation id="3903187154317825986">Уграђена тастатура</translation>
+<translation id="3903696968689283281">Информације о WiFi Direct власницима:</translation>
 <translation id="3904326018476041253">Услуге локације</translation>
 <translation id="3905761538810670789">Поправи апликацију</translation>
 <translation id="3908288065506437185">Блокирај колачиће треће стране у режиму без архивирања</translation>
@@ -4484,7 +4490,6 @@
 <translation id="4388650384344483842">Користите бар 8 знакова.</translation>
 <translation id="4389091756366370506">Корисник <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> и још <ph name="NUMBER_OF_OTHER_SWITCHES" /> прекидача</translation>
-<translation id="4390569024397171409">Инсталирајте апликацију на <ph name="DEVICE_TYPE" /></translation>
 <translation id="439266289085815679">Конфигурацију Bluetooth-а контролише <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Измените датотеку конфигурације</translation>
 <translation id="4393102500004843976">тастер за претрагу + shift + <ph name="TOP_ROW_KEY" /></translation>
@@ -4514,6 +4519,7 @@
 <translation id="4409697491990005945">Маргине</translation>
 <translation id="4409779593816003679">Лозинке и аутоматско попуњавање</translation>
 <translation id="4410545552906060960">Користите број (PIN) уместо лозинке за откључавање уређаја. Идите у Подешавања да бисте касније подесили PIN.</translation>
+<translation id="4411344321892622527">Није им дозвољено да скролују и зумирају дељене картице</translation>
 <translation id="4411578466613447185">Потписник кода</translation>
 <translation id="4411719918614785832">Ови приступни кодови се чувају у услузи Windows Hello на овом рачунару. Они се не чувају на Google налогу.</translation>
 <translation id="4412544493002546580">Пробајте поново или изаберите неку од инспирација у наставку.</translation>
@@ -6856,6 +6862,7 @@
 <translation id="6257602895346497974">Укључи синхронизацију...</translation>
 <translation id="625827534921607067">Ова мрежа ће имати приоритет ако је доступно више претходно повезаних или конфигурисаних мрежа</translation>
 <translation id="62586649943626337">Организујте картице помоћу група картица</translation>
+<translation id="6259776178973198997">Освежи информације о WiFi Direct власницима</translation>
 <translation id="6262371516389954471">Резервне копије се отпремају на Google и шифрују помоћу лозинке за Google налог.</translation>
 <translation id="6263082573641595914">Верзија Microsoft CA</translation>
 <translation id="6263284346895336537">Није од пресудне важности</translation>
@@ -7559,6 +7566,7 @@
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> не може да се покреће као основни производ.</translation>
 <translation id="6812841287760418429">Задржи промене</translation>
 <translation id="6813907279658683733">Цео екран</translation>
+<translation id="6814754908910736855">Информације о WiFi Direct клијентима:</translation>
 <translation id="6815376457351236663">Ипак отвори</translation>
 <translation id="6815787852028615386">Овај фајл је обмањујући и може да направи неочекиване промене на уређају</translation>
 <translation id="6816097980753839617">Плаво-жута (тританомалија)</translation>
@@ -7996,7 +8004,6 @@
 <translation id="7168109975831002660">Минимална величина фонта</translation>
 <translation id="7169122689956315694">Укључите обавештења када су уређаји у близини</translation>
 <translation id="7170236477717446850">Слика профила</translation>
-<translation id="7170751905948784001">Информације о програмеру:</translation>
 <translation id="7171000599584840888">Додај профил…</translation>
 <translation id="7171259390164035663">Без регистрације</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Додај картицу у нову групу}one{Додај картице у нову групу}few{Додај картице у нову групу}other{Додај картице у нову групу}}</translation>
@@ -8429,6 +8436,7 @@
 <translation id="7501957181231305652">или</translation>
 <translation id="7502220299952823578">Додај на листу Увек задржи ове сајтове активним</translation>
 <translation id="7502528909759062987">Паузирајте картицу за пребацивање на <ph name="DEVICE_NAME" /></translation>
+<translation id="7502804472671406749">Дељене картице могу да се скролују и зумирају</translation>
 <translation id="7503191893372251637">Тип Netscape сертификата</translation>
 <translation id="7503985202154027481">Посета овом сајту ће бити забележена на безбедносном кључу.</translation>
 <translation id="7504145862399276792">Звук ове картице је искључен</translation>
@@ -8473,7 +8481,6 @@
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> не реагује. Изаберите „Принудно затвори“ да бисте затворили апликацију.</translation>
 <translation id="7535730537657706072">Да бисте обрисали историју прегледања без архивирања са уређаја, затворите све картице без архивирања</translation>
 <translation id="7536815228183532290">Пријављени сте као <ph name="EMAIL" /></translation>
-<translation id="7537182889548466084">Добијаћете предлоге за групе картица које групишу сличне картице. Отворене картице и наслови се шаљу Google-у и могу да их прегледају људи да би се побољшала ова функција.</translation>
 <translation id="7538013435257102593">Овај тип фајла се обично не преузима и може да буде опасан</translation>
 <translation id="7540972813190816353">Дошло је до грешке при провери ажурирања: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232">Менаџер <ph name="MANAGER" /> је вратио овај уређај на претходну верзију. Сачувајте важне фајлове, па рестартујте. Сви подаци на уређају ће бити избрисани.</translation>
@@ -10770,6 +10777,7 @@
 <translation id="949807244219288032">Ова картица је повезана са HID уређајем</translation>
 <translation id="950079950995628542">Са телефона <ph name="PHONE_NAME" /></translation>
 <translation id="950307215746360464">Водич за подешавање</translation>
+<translation id="951273949038779544"><ph name="SITE_ACCESS" />. Инсталирао је администратор</translation>
 <translation id="951991426597076286">Одбиј</translation>
 <translation id="952471655966876828">Веза са уређајем ће се аутоматски укључити када се уређај укључи или се користи</translation>
 <translation id="953434574221655299">Имају дозволу да знају када активно користите уређај</translation>

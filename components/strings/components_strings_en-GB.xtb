@@ -71,6 +71,7 @@
 <translation id="1125573121925420732">Warnings may be common while websites update their security. This should improve soon.</translation>
 <translation id="112840717907525620">Policy cache OK</translation>
 <translation id="1131264053432022307">Image that you copied</translation>
+<translation id="1138458427267715730">Get alerts when the price drops on any site across the web</translation>
 <translation id="1142713751288681188">Paper type</translation>
 <translation id="1142846828089312304">Block third-party cookies in Incognito</translation>
 <translation id="1144136880160289237">You don't have any active topics yet</translation>
@@ -412,6 +413,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1734878702283171397">Try contacting the system admin.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, expires <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Computer</translation>
+<translation id="1739422091279046802">scrolling and zooming</translation>
 <translation id="1741613555002899862">Must be specified and a valid string when DnsOverHttpsMode is <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Bedding and Bed Linen</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />How we use this data:<ph name="END_BOLD" /> Chrome notes topics of interest as you browse. Topic labels are predefined and include things like Arts and entertainment, Shopping and Sports. Later, a site that you visit can ask Chrome for a few of your topics (but not your browsing history) to personalise the ads that you see.</translation>
@@ -450,6 +452,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1812527064848182527">landscape</translation>
 <translation id="1812975699435941848">Health Education and Medical Training</translation>
 <translation id="1813414402673211292">Clear Browsing Data</translation>
+<translation id="1816436748874040213">Can ask to scroll and zoom shared tabs</translation>
 <translation id="1818522458013171885">Unblock</translation>
 <translation id="1818585559878922121">Documentary films</translation>
 <translation id="182139138257690338">automatic downloads</translation>
@@ -963,6 +966,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> wants to use info they've saved about you</translation>
 <translation id="2839032553903800133">Notifications blocked</translation>
 <translation id="2839501879576190149">Fake site ahead</translation>
+<translation id="2843623755398178332">Scroll and zoom your shared tab?</translation>
 <translation id="2851291081585704741">You're offline</translation>
 <translation id="2856444702002559011">Attackers might be trying to steal your information from <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (for example, passwords, messages or credit cards). <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2858134430383535011">200 mm x 300 mm</translation>
@@ -1055,6 +1059,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3023165109041533893">Site-suggested ads help protect your browsing history and identity while enabling sites to show you relevant ads. Based on your activity, a site that you visited can suggest related ads as you continue browsing. You can see a list of these sites and block the ones that you don’t want in settings.</translation>
 <translation id="3024663005179499861">Wrong policy type</translation>
 <translation id="3030331669969285614">These flags prevent or revert a breaking change and will only be available for a limited time.</translation>
+<translation id="3034526003882782781">Scroll and zoom allowed</translation>
 <translation id="3036894576201005614">Household Cleaning Supplies</translation>
 <translation id="3037177537145227281">Tracking price</translation>
 <translation id="3037605927509011580">Aw, Snap!</translation>
@@ -1337,6 +1342,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3567778190852720481">Can't enrol with enterprise account (enterprise account is not eligible).</translation>
 <translation id="3567901620846335314">100 mm x 150 mm</translation>
 <translation id="3568886473829759308">Access the website to view information, resources or services provided by the business.</translation>
+<translation id="3570079787344939099">Scrolling and zooming</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Allow for this site</translation>
 <translation id="3575168918110434329">A4 x 7</translation>
@@ -1909,6 +1915,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4687718960473379118">Site-suggested ads</translation>
 <translation id="469028408546145398">Close Incognito windows button, activate to close all Incognito windows that are currently open</translation>
 <translation id="4691093235373904540">Roofing</translation>
+<translation id="4692623383562244444">Search engines</translation>
 <translation id="4698692901173737941">Combat Sports</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Side</translation>
@@ -2457,6 +2464,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5765072501007116331">To see delivery methods and requirements, select an address</translation>
 <translation id="57689295674415555">Virtual card number not filled in?</translation>
 <translation id="5772086939108830423">Use a passkey on a different device</translation>
+<translation id="5775734789739406956">Right-click to add your saved info to any form</translation>
 <translation id="5776313857861697733">Priority</translation>
 <translation id="5776574724412881956">Virtual card not filled in? Click virtual card details to copy to clipboard. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">Experiment enabled</translation>
@@ -2473,6 +2481,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="580241730938216256">Start update</translation>
 <translation id="5803412860119678065">Do you want to fill in your <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Permissions</translation>
+<translation id="5806871454498484178">Scroll and zoom blocked</translation>
 <translation id="5808435672482059465">View Your Chrome History</translation>
 <translation id="5810442152076338065">Your connection to <ph name="DOMAIN" /> is encrypted using an obsolete cipher suite.</translation>
 <translation id="5813119285467412249">&amp;Redo Add</translation>
@@ -3469,6 +3478,7 @@ Additional details:
 <translation id="7673278391011283842">Mailbox 6</translation>
 <translation id="7675325315208090829">Manage Payment Methods…</translation>
 <translation id="767550629621587224">Pre-cut tabs</translation>
+<translation id="7675756033024037212">Scroll and zoom not allowed</translation>
 <translation id="7676643023259824263">Search for clipboard text, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">View and manage your browsing history in Chrome settings</translation>
 <translation id="7679947978757153706">Baseball</translation>

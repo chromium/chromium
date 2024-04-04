@@ -115,6 +115,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1383597849754832576">Non se puideron descargar os ficheiros de voz. Téntao máis tarde.</translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1391102559483454063">Activada</translation>
+<translation id="1394698770495054737">Desenfoque completo</translation>
 <translation id="1407069428457324124">Tema escuro</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Usa as teclas das frechas para desprazarte polas datas.</translation>
 <translation id="141170878022560212">Botón central</translation>
@@ -441,6 +442,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2841907151129139818">Cambiouse ao modo de tableta</translation>
 <translation id="2844169650293029770">Dispositivo USB‑C (porto esquerdo frontal)</translation>
 <translation id="2844350028562914727">detalles</translation>
+<translation id="2847759467426165163">Emitir a</translation>
 <translation id="2848120746144143659">Premer Introducir para facer captura de pantalla completa</translation>
 <translation id="2849936225196189499">Esencial</translation>
 <translation id="2860184359326882502">Do mellor resultado ao peor</translation>
@@ -478,6 +480,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3009958530611748826">Seleccionar un cartafol para gardar os ficheiros</translation>
 <translation id="301282384882049174">Compartido polo teu administrador</translation>
 <translation id="301584155502740476">Mostrar os detalles da zona wifi. A zona wifi está desactivada.</translation>
+<translation id="3017079585324758401">Fondo</translation>
 <translation id="3018135054368884502">Avanzar rapidamente o contido multimedia</translation>
 <translation id="3033545621352269033">Activada</translation>
 <translation id="3033912566804961911">Combinar con <ph name="DESK_NAME" /></translation>
@@ -955,6 +958,7 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="4798888871844665150">O elemento copiado xa está no portapapeis. Usa <ph name="SHORTCUT_KEY_NAME" /> + V para velo.</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">Desconectar</translation>
+<translation id="4806631651704497161">Desenfoque suave</translation>
 <translation id="4813311884204119883">Arrastra a ligazón a unha zona baleira da franxa de pestanas</translation>
 <translation id="4814539958450445987">Pantalla de inicio de sesión</translation>
 <translation id="481455355267255546">Próximos eventos</translation>
@@ -1040,7 +1044,6 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="5104236669533825617">Non se puido crear a gravación da pantalla</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
-<translation id="5111930673176965299">Desenfoque do fondo</translation>
 <translation id="5117590920725113268">Mostrar mes seguinte</translation>
 <translation id="5121628974188116412">Vai á parte inferior da páxina</translation>
 <translation id="5122517996953421795">Vista previa de <ph name="DESK_NAME" />. Escritorio inactivo.</translation>

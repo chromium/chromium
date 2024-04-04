@@ -115,6 +115,7 @@
 <translation id="1383597849754832576">ดาวน์โหลดไฟล์คำพูดไม่ได้ โปรดลองอีกครั้งภายหลัง</translation>
 <translation id="1383876407941801731">ค้นหา</translation>
 <translation id="1391102559483454063">เปิด</translation>
+<translation id="1394698770495054737">เบลอมาก</translation>
 <translation id="1407069428457324124">ธีมมืด</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" /> ใช้ปุ่มลูกศรเพื่อไปยังวันที่ต่างๆ</translation>
 <translation id="141170878022560212">ปุ่มกลาง</translation>
@@ -441,6 +442,7 @@
 <translation id="2841907151129139818">เปลี่ยนเป็นโหมดแท็บเล็ตแล้ว</translation>
 <translation id="2844169650293029770">อุปกรณ์ USB-C (พอร์ตด้านหน้าซ้าย)</translation>
 <translation id="2844350028562914727">รายละเอียด</translation>
+<translation id="2847759467426165163">ส่งไปยัง</translation>
 <translation id="2848120746144143659">กด Enter เพื่อจับภาพแบบเต็มหน้าจอ</translation>
 <translation id="2849936225196189499">สำคัญ</translation>
 <translation id="2860184359326882502">ตรงที่สุด</translation>
@@ -478,6 +480,7 @@
 <translation id="3009958530611748826">เลือกโฟลเดอร์ที่จะใช้บันทึก</translation>
 <translation id="301282384882049174">แชร์โดยผู้ดูแลระบบ</translation>
 <translation id="301584155502740476">แสดงรายละเอียดฮอตสปอต ฮอตสปอตปิดอยู่</translation>
+<translation id="3017079585324758401">พื้นหลัง</translation>
 <translation id="3018135054368884502">กรอสื่อไปข้างหน้า</translation>
 <translation id="3033545621352269033">เปิด</translation>
 <translation id="3033912566804961911">รวมกับ <ph name="DESK_NAME" /></translation>
@@ -949,6 +952,7 @@
 <translation id="4798888871844665150">รายการที่คัดลอกอยู่ในคลิปบอร์ดแล้ว ใช้ <ph name="SHORTCUT_KEY_NAME" /> + V เพื่อดู</translation>
 <translation id="479989351350248267">ค้นหา</translation>
 <translation id="4804818685124855865">ตัดการเชื่อมต่อ</translation>
+<translation id="4806631651704497161">เบลอเล็กน้อย</translation>
 <translation id="4813311884204119883">ลากลิงก์ไปยังพื้นที่ว่างบนแนวแท็บ</translation>
 <translation id="4814539958450445987">หน้าจอการเข้าสู่ระบบ</translation>
 <translation id="481455355267255546">กิจกรรมถัดไป</translation>
@@ -1035,7 +1039,6 @@
 <translation id="5104236669533825617">สร้าง Screencast ไม่ได้</translation>
 <translation id="5107522548814527560">เว็บ</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
-<translation id="5111930673176965299">การเบลอพื้นหลัง</translation>
 <translation id="5117590920725113268">แสดงเดือนถัดไป</translation>
 <translation id="5121628974188116412">ไปที่ด้านล่างสุดของหน้า</translation>
 <translation id="5122517996953421795">ตัวอย่าง <ph name="DESK_NAME" /> เดสก์ที่ไม่ได้ใช้งาน</translation>

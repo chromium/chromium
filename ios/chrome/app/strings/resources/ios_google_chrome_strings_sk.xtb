@@ -114,14 +114,12 @@
 <translation id="3901001113120561395">Využívajte Chrome naplno.</translation>
 <translation id="3913386780052199712">Prihlásený/-á do Chromu</translation>
 <translation id="3967382818307165056">Spravovať spôsoby platby v Chrome</translation>
-<translation id="3980220367029651214">Účet na synchronizáciu <ph name="USER_EMAIL1" /> prepínate na účet <ph name="USER_EMAIL2" />. Vaše existujúce údaje prehliadača Chrome spravuje doména <ph name="DOMAIN" />. Touto akciou odstránite údaje z príslušného zariadenia, avšak naďalej zostanú v účte <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Vaša organizácia vyžaduje, aby ste sa do Chromu neprihlasovali.</translation>
 <translation id="3988789688219830639">Google Chrome nemá prístup k vašim fotkám ani videám. Prístup povolíte v časti Nastavenia systému iOS &gt; Súkromie &gt; Fotky.</translation>
 <translation id="4064699917955374540">Ak chcete vo svojom účte Google používať a ukladať údaje Chromu, overte svoju totožnosť.</translation>
 <translation id="4067858366537947361">Otvoriť kartu inkognito v Chrome</translation>
 <translation id="4093042601582616698">Chcete nastaviť Chrome ako predvolený prehliadač?</translation>
 <translation id="417201473131094001">Nepodporované vo verzii Chrome Canary</translation>
-<translation id="4233521129555661685"><ph name="USER_EMAIL1" /> používal(a) Chrome a zanechal(a) záložky, heslá a ďalšie nastavenia v tomto zariadení.</translation>
 <translation id="424864128008805179">Odhlásiť sa z Chromu?</translation>
 <translation id="4251174643044751591">Otvorí stránku nastavení spôsobov platby v Chrome.</translation>
 <translation id="4453284704333523777">Spravovať Nastavenia Chromu</translation>
@@ -240,7 +238,6 @@
 <translation id="769104993356536261">Používanie akcií v Chrome v systéme iOS</translation>
 <translation id="7693590760643069321">Chrome môžete teraz kedykoľvek použiť klepnutím na odkazy v správach, dokumentoch a ďalších aplikáciách.</translation>
 <translation id="7698568245838009292">Chrome chce použiť fotoaparát</translation>
-<translation id="7754633291442704733">Vaša organizácia <ph name="DOMAIN" /> bude mať prístup k údajom, záložkám, histórii, heslám a ďalším nastaveniam Chromu, ktoré uložíte v tomto účte. Keď sa odhlásite, vaše údaje budú z tohto zariadenia vymazané.  Údaje však zostanú uložené vo vašom spravovanom účte Google a budú k dispozícii vašej organizácii. Vaša organizácia môže nastaviť aj pravidlá pre používateľov špecifické pre daný účet, ktoré môžu zmeniť správanie Chromu.</translation>
 <translation id="7780154209050837198">Ak chcete využívať Chrome naplno, prihláste sa doň svojím účtom Google.</translation>
 <translation id="778855399387580014">Začnite vyhľadávanie na novej karte Chrome.</translation>
 <translation id="7792140019572081272">Chrome chráni vaše citlivé údaje pomocou funkcie Face ID.</translation>

@@ -115,6 +115,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1383597849754832576">Não é possível transferir os ficheiros de voz. Tente mais tarde.</translation>
 <translation id="1383876407941801731">Pesquisar</translation>
 <translation id="1391102559483454063">Ativada</translation>
+<translation id="1394698770495054737">Efeito totalmente esbatido</translation>
 <translation id="1407069428457324124">Tema escuro</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Utilize as teclas de seta para navegar entre datas.</translation>
 <translation id="141170878022560212">Botão central</translation>
@@ -441,6 +442,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2841907151129139818">Mudou para o modo de tablet</translation>
 <translation id="2844169650293029770">Dispositivo USB-C (porta frontal do lado esquerdo)</translation>
 <translation id="2844350028562914727">detalhes</translation>
+<translation id="2847759467426165163">Transmitir para</translation>
 <translation id="2848120746144143659">Prima Enter para fazer uma captura de ecrã inteiro</translation>
 <translation id="2849936225196189499">Crítica</translation>
 <translation id="2860184359326882502">Melhor correspondência</translation>
@@ -478,6 +480,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3009958530611748826">Selecione uma pasta onde guardar</translation>
 <translation id="301282384882049174">Partilhado pelo seu administrador</translation>
 <translation id="301584155502740476">Veja os detalhes da zona Wi-Fi. A zona Wi-Fi está desativada.</translation>
+<translation id="3017079585324758401">Fundo</translation>
 <translation id="3018135054368884502">Avançar o conteúdo multimédia</translation>
 <translation id="3033545621352269033">Ativada</translation>
 <translation id="3033912566804961911">Combinar com <ph name="DESK_NAME" /></translation>
@@ -954,6 +957,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4798888871844665150">O item copiado já está na área de transferência. Use <ph name="SHORTCUT_KEY_NAME" /> + V para ver.</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">Desligar</translation>
+<translation id="4806631651704497161">Efeito esbatido ligeiro</translation>
 <translation id="4813311884204119883">Arraste o link para a área em branco na Faixa de separadores</translation>
 <translation id="4814539958450445987">Ecrã de início de sessão</translation>
 <translation id="481455355267255546">A seguir</translation>
@@ -1040,7 +1044,6 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="5104236669533825617">Não é possível criar a gravação de ecrã</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
-<translation id="5111930673176965299">Efeito esbatido do fundo</translation>
 <translation id="5117590920725113268">Mostrar mês seguinte</translation>
 <translation id="5121628974188116412">Ir para a parte inferior da página</translation>
 <translation id="5122517996953421795">Pré-visualização de <ph name="DESK_NAME" />. Espaço de trabalho inativo.</translation>

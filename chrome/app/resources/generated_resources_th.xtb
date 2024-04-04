@@ -41,6 +41,7 @@
 <translation id="102916930470544692">พาสคีย์</translation>
 <translation id="1029317248976101138">ซูม</translation>
 <translation id="1029526375103058355">แตะเพื่อคลิก</translation>
+<translation id="1029724557649700742">ฟีเจอร์ใหม่ๆ จะพร้อมใช้งานเมื่อพร้อมให้บริการ และฟีเจอร์อาจแตกต่างกันไปตามอุปกรณ์</translation>
 <translation id="1031362278801463162">กำลังโหลดหน้าตัวอย่าง</translation>
 <translation id="1032605640136438169">โปรดอ่านข้อกำหนดใหม่</translation>
 <translation id="103279545524624934">เพิ่มพื้นที่ว่างในดิสก์เพื่อเปิดแอป Android</translation>
@@ -1520,7 +1521,6 @@
 <translation id="2127372758936585790">ที่ชาร์จพลังงานต่ำ</translation>
 <translation id="212862741129535676">เปอร์เซ็นต์การเกิดขึ้นของสถานะความถี่</translation>
 <translation id="212876957201860463">กำลังเตรียมตั้งค่าอุปกรณ์มือถือ...</translation>
-<translation id="2130909682040406368">ดูข้อมูลเพิ่มเติมเกี่ยวกับการใช้เครื่องมือ AI</translation>
 <translation id="2131077480075264">ไม่สามารถติดตั้ง "<ph name="APP_NAME" />" เนื่องจากไม่ได้รับอนุญาตจาก "<ph name="IMPORT_NAME" />"</translation>
 <translation id="2133775869826239001">เลือกฟีเจอร์เพิ่มเติมเพื่อตั้งค่า</translation>
 <translation id="2133857665503360653">ลอง <ph name="FILE_NAME" /> อีกครั้ง</translation>
@@ -1559,6 +1559,7 @@
 <translation id="2155473371917268529">การตั้งค่าระดับการเข้าถึงปัจจุบันคืออุปกรณ์ของคุณ</translation>
 <translation id="2155772377859296191">ดูเหมือน <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service Worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156707722163479690">ได้รับอนุญาตให้เลื่อนและซูมแท็บที่แชร์</translation>
 <translation id="2156877321344104010">เรียกใช้การตรวจสอบความปลอดภัยอีกครั้ง</translation>
 <translation id="2157474325782140681">โปรดใช้แท่นชาร์จ Dell ที่ออกแบบมาให้ใช้งานกับ Chromebook นี้เพื่อใช้ฟีเจอร์เพิ่มเติม</translation>
 <translation id="215753907730220065">ออกจากการแสดงเต็มหน้าจอ</translation>
@@ -1977,6 +1978,7 @@
 <translation id="2459706890611560967">แคสต์แท็บไปยัง <ph name="DEVICE_NAME" /> ต่อ</translation>
 <translation id="2460356425461033301">สำรองข้อมูลเบราว์เซอร์และใช้ได้ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="2460482211073772897">ในโฟลเดอร์อื่นๆ</translation>
+<translation id="2461550163693930491">ไม่อนุญาตให้เว็บไซต์เลื่อนและซูมแท็บที่แชร์</translation>
 <translation id="2461593638794842577">คุณสามารถปิดการตั้งค่านี้เพื่อบันทึกรหัสผ่านลงในอุปกรณ์นี้เท่านั้น</translation>
 <translation id="2462332841984057083">กําลังตั้งค่า Steam อยู่แล้ว โปรดรอให้การตั้งค่าเสร็จสมบูรณ์</translation>
 <translation id="2462724976360937186">รหัสคีย์ผู้ออกใบรับรอง</translation>
@@ -2010,6 +2012,7 @@
 <translation id="2482895651873876648">แท็บถูกย้ายไปอยู่ในกลุ่ม <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="2483627560139625913">ตั้งค่าเครื่องมือค้นหาในการตั้งค่าเบราว์เซอร์ Chrome</translation>
 <translation id="2483698983806594329">ดาวน์โหลดไฟล์ที่ไม่ได้รับการยืนยันแล้ว</translation>
+<translation id="2484574361686148760">รีเฟรชข้อมูลไคลเอ็นต์ของ Wi-Fi Direct</translation>
 <translation id="2484743711056182585">นำการให้สิทธิ์ออก</translation>
 <translation id="2484909293434545162">หากเว็บไซต์ใช้คุกกี้ก็จะปรากฏที่นี่</translation>
 <translation id="2484959914739448251"><ph name="BEGIN_LINK" />ป้อนรหัสผ่าน<ph name="END_LINK" />เพื่อล้างข้อมูลการท่องเว็บในอุปกรณ์ทุกเครื่องที่ซิงค์และบัญชี Google</translation>
@@ -2203,6 +2206,7 @@
 <translation id="2629227353894235473">พัฒนาแอป Android</translation>
 <translation id="2629437048544561682">ล้าง Canvas</translation>
 <translation id="2631498379019108537">แสดงตัวเลือกการป้อนข้อมูลในชั้นวาง</translation>
+<translation id="2632176111713971407">เว็บไซต์สามารถขอเลื่อนและซูมแท็บที่แชร์ได้</translation>
 <translation id="2633212996805280240">นำ "<ph name="EXTENSION_NAME" />" ออกหรือไม่</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> ไม่สามารถติดตั้งให้เสร็จสมบูรณ์ แต่จะเรียกใช้จากดิสก์อิมเมจต่อไป</translation>
 <translation id="2633764681656412085">Fido</translation>
@@ -3509,6 +3513,7 @@
 <translation id="3659550105763988702">ใช้พาสคีย์สําหรับ "<ph name="APP_NAME" />"</translation>
 <translation id="3659929705630080526">คุณป้อนรหัสการเข้าถึงไม่ถูกต้องหลายครั้งเกินไป ลองอีกครั้งในภายหลัง</translation>
 <translation id="3660234220361471169">ไม่น่าเชื่อถือ</translation>
+<translation id="3661106764436337772">เขียนได้เร็วขึ้นและมั่นใจมากขึ้น</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{มีรหัสผ่านอยู่ 1 รายการ}other{มีรหัสผ่านอยู่ {NUM_PASSWORDS} รายการ}}</translation>
 <translation id="3662207097851752847">ยืนยันบัญชี Google ในโทรศัพท์ของคุณ</translation>
 <translation id="3663417513679360795">ข้อมูลเพิ่มเติมเกี่ยวกับการเปิดการโหลดล่วงหน้าแบบมาตรฐาน</translation>
@@ -3861,6 +3866,7 @@
 <translation id="3900966090527141178">ส่งออกรหัสผ่าน</translation>
 <translation id="3902789559055749153">เลือกวิธีที่คุณต้องการสร้างพาสคีย์สําหรับ "<ph name="APP_NAME" />"</translation>
 <translation id="3903187154317825986">แป้นพิมพ์ในตัว</translation>
+<translation id="3903696968689283281">ข้อมูลเจ้าของ Wi-Fi Direct:</translation>
 <translation id="3904326018476041253">บริการตำแหน่ง</translation>
 <translation id="3905761538810670789">ซ่อมแอป</translation>
 <translation id="3908288065506437185">บล็อกคุกกี้ของบุคคลที่สามในโหมดไม่ระบุตัวตน</translation>
@@ -4486,7 +4492,6 @@
 <translation id="4388650384344483842">ใช้อักขระอย่างน้อย 8 ตัว</translation>
 <translation id="4389091756366370506">ผู้ใช้ <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> และสวิตช์อื่นๆ อีก <ph name="NUMBER_OF_OTHER_SWITCHES" /> รายการ</translation>
-<translation id="4390569024397171409">ติดตั้งแอปลงใน <ph name="DEVICE_TYPE" /></translation>
 <translation id="439266289085815679">การกำหนดค่าบลูทูธควบคุมโดย <ph name="USER_EMAIL" /></translation>
 <translation id="4392896746540753732">แก้ไขไฟล์การกำหนดค่า</translation>
 <translation id="4393102500004843976">ค้นหา + Shift + <ph name="TOP_ROW_KEY" /></translation>
@@ -4516,6 +4521,7 @@
 <translation id="4409697491990005945">ระยะขอบ</translation>
 <translation id="4409779593816003679">รหัสผ่านและการป้อนข้อความอัตโนมัติ</translation>
 <translation id="4410545552906060960">ใช้หมายเลข (PIN) แทนรหัสผ่านเพื่อปลดล็อกอุปกรณ์ หากต้องการกำหนด PIN ทีหลัง ให้ไปที่การตั้งค่า</translation>
+<translation id="4411344321892622527">ไม่ได้รับอนุญาตให้เลื่อนและซูมแท็บที่แชร์</translation>
 <translation id="4411578466613447185">ผู้เซ็นชื่อบนโค้ด</translation>
 <translation id="4411719918614785832">พาสคีย์เหล่านี้จะบันทึกอยู่ใน Windows Hello ในคอมพิวเตอร์เครื่องนี้ โดยจะไม่บันทึกไว้ในบัญชี Google ของคุณ</translation>
 <translation id="4412544493002546580">ลองอีกครั้งหรือเลือกจากตัวอย่างแรงบันดาลใจด้านล่าง</translation>
@@ -6855,6 +6861,7 @@
 <translation id="6257602895346497974">เปิดการซิงค์...</translation>
 <translation id="625827534921607067">ระบบจะเลือกเครือข่ายนี้หากมีมากกว่า 1 เครือข่ายที่เชื่อมต่อหรือกำหนดค่าไว้ก่อนหน้านี้</translation>
 <translation id="62586649943626337">จัดแท็บให้เป็นระเบียบด้วยกลุ่มแท็บ</translation>
+<translation id="6259776178973198997">รีเฟรชข้อมูลเจ้าของ Wi-Fi Direct</translation>
 <translation id="6262371516389954471">ข้อมูลสำรองดังกล่าวจะอัปโหลดขึ้น Google และเข้ารหัสโดยใช้รหัสผ่านบัญชี Google</translation>
 <translation id="6263082573641595914">รุ่นของผู้มีสิทธิ์ออกใบรับรองของ Microsoft</translation>
 <translation id="6263284346895336537">ไม่สำคัญ</translation>
@@ -7554,6 +7561,7 @@
 <translation id="6812349420832218321">ไม่สามารถเรียกใช้ <ph name="PRODUCT_NAME" /> ในฐานะผู้ใช้ระดับราก</translation>
 <translation id="6812841287760418429">เก็บการเปลี่ยนแปลงไว้</translation>
 <translation id="6813907279658683733">ทั้งหน้าจอ</translation>
+<translation id="6814754908910736855">ข้อมูลไคลเอ็นต์ของ Wi-Fi Direct:</translation>
 <translation id="6815376457351236663">เปิดต่อไป</translation>
 <translation id="6815787852028615386">ไฟล์นี้เป็นไฟล์หลอกลวงและอาจทําการเปลี่ยนแปลงที่ไม่คาดคิดในอุปกรณ์</translation>
 <translation id="6816097980753839617">น้ำเงิน-เหลือง (ตาบอดสีน้ำเงิน)</translation>
@@ -7991,7 +7999,6 @@
 <translation id="7168109975831002660">ขนาดแบบอักษรขั้นต่ำ</translation>
 <translation id="7169122689956315694">เปิดการแจ้งเตือนเมื่อมีอุปกรณ์อยู่ใกล้เคียง</translation>
 <translation id="7170236477717446850">รูปโปรไฟล์</translation>
-<translation id="7170751905948784001">ข้อมูลนักพัฒนาแอป:</translation>
 <translation id="7171000599584840888">เพิ่มโปรไฟล์...</translation>
 <translation id="7171259390164035663">ไม่ต้องลงทะเบียน</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{เพิ่มแท็บไปยังกลุ่มใหม่}other{เพิ่มแท็บไปยังกลุ่มใหม่}}</translation>
@@ -8423,6 +8430,7 @@
 <translation id="7501957181231305652">หรือ</translation>
 <translation id="7502220299952823578">เพิ่มไปยังรายการ "ให้เว็บไซต์เหล่านี้ทำงานอยู่เสมอ"</translation>
 <translation id="7502528909759062987">หยุดแคสต์แท็บไปยัง <ph name="DEVICE_NAME" /> ชั่วคราว</translation>
+<translation id="7502804472671406749">เลื่อนและซูมแท็บที่แชร์ได้</translation>
 <translation id="7503191893372251637">ประเภทใบรับรองของ Netscape </translation>
 <translation id="7503985202154027481">ระบบจะเก็บบันทึกการเข้าชมเว็บไซต์นี้ไว้ในคีย์ความปลอดภัย</translation>
 <translation id="7504145862399276792">ปิดเสียงของแท็บนี้อยู่</translation>
@@ -8467,7 +8475,6 @@
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> ไม่ตอบสนอง เลือก "บังคับปิด" เพื่อปิดแอป</translation>
 <translation id="7535730537657706072">ปิดแท็บที่ไม่ระบุตัวตนทั้งหมดเพื่อล้างประวัติการท่องเว็บแบบไม่ระบุตัวตนออกจากอุปกรณ์</translation>
 <translation id="7536815228183532290">ลงชื่อเข้าใช้ด้วย <ph name="EMAIL" /></translation>
-<translation id="7537182889548466084">คุณจะได้รับคำแนะนำกลุ่มแท็บที่จัดกลุ่มแท็บที่คล้ายกันไว้ด้วยกัน ระบบจะส่งแท็บและชื่อที่เปิดอยู่ไปยัง Google และอาจได้รับการตรวจสอบโดยเจ้าหน้าที่เพื่อปรับปรุงฟีเจอร์นี้</translation>
 <translation id="7538013435257102593">ไฟล์ประเภทนี้ไม่ได้มีการดาวน์โหลดกันโดยทั่วไปและอาจเป็นอันตราย</translation>
 <translation id="7540972813190816353">เกิดข้อผิดพลาดในขณะทำการตรวจสอบการอัปเดต: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> ได้ทำให้อุปกรณ์นี้เป็นเวอร์ชันก่อนหน้า โปรดบันทึกไฟล์สำคัญแล้วจึงรีสตาร์ท ระบบจะลบข้อมูลทั้งหมดในเครื่อง</translation>
@@ -10762,6 +10769,7 @@
 <translation id="949807244219288032">แท็บนี้เชื่อมต่ออยู่กับอุปกรณ์ HID</translation>
 <translation id="950079950995628542">จาก "<ph name="PHONE_NAME" />"</translation>
 <translation id="950307215746360464">คำแนะนำในการตั้งค่า</translation>
+<translation id="951273949038779544"><ph name="SITE_ACCESS" /> ติดตั้งโดยผู้ดูแลระบบ</translation>
 <translation id="951991426597076286">ปฏิเสธ</translation>
 <translation id="952471655966876828">อุปกรณ์จะเชื่อมต่อโดยอัตโนมัติเมื่อเปิดและใช้งานอุปกรณ์</translation>
 <translation id="953434574221655299">อนุญาตให้ทราบเวลาที่คุณใช้งานอุปกรณ์อยู่</translation>

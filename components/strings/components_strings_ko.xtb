@@ -413,6 +413,7 @@
 <translation id="1734878702283171397">시스템 관리자에게 문의하세요.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, 만료일: <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">컴퓨터</translation>
+<translation id="1739422091279046802">스크롤 및 확대/축소</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode가 <ph name="SECURE_DNS_MODE_SECURE" />일 때 반드시 지정되어야 하며 유효한 문자열이어야 합니다.</translation>
 <translation id="1743393865165844832">침구</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Chrome의 데이터 사용 방식:<ph name="END_BOLD" /> Chrome에서 내가 인터넷을 사용하는 동안 관심 주제를 파악합니다. 주제 라벨은 사전 정의되어 있으며 예술 및 엔터테인먼트, 쇼핑, 스포츠 등을 포함합니다. 나중에 사이트를 방문하면 사이트에서 광고 개인 최적화를 위해 내 관심 주제 몇 가지를 Chrome에 요청할 수 있습니다(방문 기록 제외).</translation>
@@ -451,6 +452,7 @@
 <translation id="1812527064848182527">가로 모드</translation>
 <translation id="1812975699435941848">건강 교육 및 의료 훈련</translation>
 <translation id="1813414402673211292">인터넷 사용 기록 삭제</translation>
+<translation id="1816436748874040213">공유한 탭의 스크롤 및 확대/축소를 요청할 수 있음</translation>
 <translation id="1818522458013171885">차단 해제</translation>
 <translation id="1818585559878922121">다큐멘터리 영화</translation>
 <translation id="182139138257690338">자동 다운로드</translation>
@@ -964,6 +966,7 @@
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" />에서 나에 관해 저장된 정보를 사용하려고 합니다</translation>
 <translation id="2839032553903800133">알림 차단됨</translation>
 <translation id="2839501879576190149">가짜 사이트 주의</translation>
+<translation id="2843623755398178332">공유한 탭을 스크롤하고 확대/축소하시겠습니까?</translation>
 <translation id="2851291081585704741">오프라인 상태입니다</translation>
 <translation id="2856444702002559011">공격자가 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />에서 정보(예: 비밀번호, 메시지, 신용카드 등)를 도용하려고 시도 중일 수 있습니다. <ph name="BEGIN_LEARN_MORE_LINK" />자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2858134430383535011">200x300mm</translation>
@@ -1056,6 +1059,7 @@
 <translation id="3023165109041533893">사이트 추천 광고는 내 방문 기록과 신원 정보를 보호하면서 사이트가 관련성 있는 광고를 표시하도록 지원합니다. 방문한 사이트에서는 내가 인터넷을 사용하는 동안 내 활동을 기반으로 관련 광고를 추천할 수 있습니다. 설정에서 이러한 사이트 목록을 확인하고 광고 추천을 원하지 않는 사이트를 차단할 수 있습니다.</translation>
 <translation id="3024663005179499861">잘못된 정책 유형</translation>
 <translation id="3030331669969285614">이 플래그는 브레이킹 체인지를 방지하거나 되돌리며 제한된 기간 동안만 사용할 수 있습니다.</translation>
+<translation id="3034526003882782781">스크롤 및 확대/축소가 허용됨</translation>
 <translation id="3036894576201005614">가정용 청소용품</translation>
 <translation id="3037177537145227281">가격 추적</translation>
 <translation id="3037605927509011580">앗, 이런!</translation>
@@ -1338,6 +1342,7 @@
 <translation id="3567778190852720481">회사 계정으로는 등록할 수 없습니다(회사 계정을 사용할 수 없음).</translation>
 <translation id="3567901620846335314">100x150mm</translation>
 <translation id="3568886473829759308">웹사이트에 액세스하여 비즈니스에서 제공하는 정보, 리소스 또는 서비스를 확인하세요</translation>
+<translation id="3570079787344939099">스크롤 및 확대/축소</translation>
 <translation id="3574305903863751447"><ph name="COUNTRY" /> <ph name="STATE" />, <ph name="CITY" /></translation>
 <translation id="3575121482199441727">이 사이트에 허용</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -1910,6 +1915,7 @@
 <translation id="4687718960473379118">사이트 추천 광고</translation>
 <translation id="469028408546145398">시크릿 창 닫기 버튼, 현재 열려 있는 시크릿 창을 모두 닫으려면 활성화하세요.</translation>
 <translation id="4691093235373904540">지붕 수리</translation>
+<translation id="4692623383562244444">검색엔진</translation>
 <translation id="4698692901173737941">격투기</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">사이드</translation>
@@ -2458,6 +2464,7 @@
 <translation id="5765072501007116331">배달 방법과 요구사항을 확인하려면 주소를 선택하세요.</translation>
 <translation id="57689295674415555">가상 카드 번호가 자동 완성되지 않았나요?</translation>
 <translation id="5772086939108830423">다른 기기의 패스키 사용</translation>
+<translation id="5775734789739406956">양식에 저장된 정보를 추가하려면 마우스 오른쪽 버튼으로 클릭</translation>
 <translation id="5776313857861697733">우선순위</translation>
 <translation id="5776574724412881956">가상 카드가 입력되지 않았나요? 가상 카드 세부정보를 클릭하여 클립보드에 복사합니다. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">실험 기능 사용 설정됨</translation>
@@ -2474,6 +2481,7 @@
 <translation id="580241730938216256">업데이트 시작</translation>
 <translation id="5803412860119678065"><ph name="CARD_DETAIL" />을(를) 입력하시겠습니까?</translation>
 <translation id="5804241973901381774">권한</translation>
+<translation id="5806871454498484178">스크롤 및 확대/축소 차단됨</translation>
 <translation id="5808435672482059465">Chrome 방문 기록 보기</translation>
 <translation id="5810442152076338065"><ph name="DOMAIN" />에 대한 연결이 더 이상 사용되지 않는 암호화 기술을 사용하여 암호화됩니다.</translation>
 <translation id="5813119285467412249">추가 다시 실행(&amp;R)</translation>
@@ -3469,6 +3477,7 @@
 <translation id="7673278391011283842">메일박스 6</translation>
 <translation id="7675325315208090829">결제 수단 관리...</translation>
 <translation id="767550629621587224">미리 커팅된 탭</translation>
+<translation id="7675756033024037212">스크롤 및 확대/축소가 허용되지 않음</translation>
 <translation id="7676643023259824263">클립보드 텍스트 <ph name="TEXT" /> 검색</translation>
 <translation id="7679367271685653708">Chrome 설정에서 방문 기록 보기 및 관리</translation>
 <translation id="7679947978757153706">야구</translation>

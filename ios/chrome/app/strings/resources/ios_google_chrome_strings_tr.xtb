@@ -114,14 +114,12 @@ Dikkate alınması gereken noktalar:
 <translation id="3901001113120561395">Chrome'dan en iyi şekilde yararlanın.</translation>
 <translation id="3913386780052199712">Chrome'da oturum açıldı</translation>
 <translation id="3967382818307165056">Chrome'daki ödeme yöntemlerini yönet</translation>
-<translation id="3980220367029651214">Senkronizasyon hesapları arasında (<ph name="USER_EMAIL1" /> hesabından <ph name="USER_EMAIL2" /> hesabına) geçiş yapıyorsunuz. Mevcut Chrome verileriniz <ph name="DOMAIN" /> tarafından yönetiliyor. Bu işlemle verileriniz bu cihazdan silinir, ancak <ph name="USER_EMAIL1" /> hesabınızda kalmaya devam eder.</translation>
 <translation id="3984746313391923992">Kuruluşunuz, Chrome'da oturum kapatmış olarak kalmanızı zorunlu tutuyor.</translation>
 <translation id="3988789688219830639">Google Chrome, fotoğraflarınıza veya videolarınıza erişemiyor. iOS Ayarlar &gt; Gizlilik &gt; Fotoğraflar'dan erişimi etkinleştirin.</translation>
 <translation id="4064699917955374540">Chrome verilerini kullanmak ve Google Hesabınıza kaydetmek için kimliğinizi doğrulayın.</translation>
 <translation id="4067858366537947361">Chrome gizli sekmesini aç</translation>
 <translation id="4093042601582616698">Chrome varsayılan tarayıcınız yapılsın mı?</translation>
 <translation id="417201473131094001">Chrome Canary'de desteklenmiyor</translation>
-<translation id="4233521129555661685"><ph name="USER_EMAIL1" />, Chrome'u kullanıyordu, ardından yer işaretlerini, şifrelerini ve diğer ayarlarını bu cihazda bıraktı.</translation>
 <translation id="424864128008805179">Chrome oturumu kapatılsın mı?</translation>
 <translation id="4251174643044751591">Chrome'daki ödeme yöntemi ayarları sayfasını açar.</translation>
 <translation id="4453284704333523777">Chrome ayarlarını yönet</translation>
@@ -240,7 +238,6 @@ Veri kullanarak Chrome deneyiminizi iyileştiren daha fazla ayar görmek için <
 <translation id="769104993356536261">iOS'te Chrome İşlemler özelliğini kullanın</translation>
 <translation id="7693590760643069321">Artık mesajlardaki, dokümanlardaki ve diğer uygulamalardaki bağlantılara dokunduğunuzda Chrome'u kullanabilirsiniz.</translation>
 <translation id="7698568245838009292">Chrome, Kameraya Erişmek İstiyor</translation>
-<translation id="7754633291442704733">Chrome verilerinize, yer işaretlerinize, geçmişinize, şifrelerinize ve bu hesapta sakladığınız diğer ayarlara kuruluşunuz <ph name="DOMAIN" /> erişebilir. Oturumunuzu kapattığınızda verileriniz bu cihazdan silinir.  Ancak verileriniz, yönetilen Google Hesabınızda saklanır ve kuruluşunuzun kullanımına açıktır. Kuruluşunuz ayrıca, söz konusu hesaba özel olup Chrome'un davranışını değiştirebilecek kullanıcı politikaları belirleyebilir.</translation>
 <translation id="7780154209050837198">Chrome'dan en iyi şekilde yararlanmak için Google Hesabı'nızla Chrome'da oturum açın.</translation>
 <translation id="778855399387580014">Yeni bir Chrome sekmesinde arama başlatır.</translation>
 <translation id="7792140019572081272">Chrome, Face ID ile hassas verilerinizi güvende tutar.</translation>

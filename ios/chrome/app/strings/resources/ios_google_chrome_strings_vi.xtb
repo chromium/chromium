@@ -114,14 +114,12 @@ Những yếu tố cần xem xét:
 <translation id="3901001113120561395">Khai thác tối đa Chrome.</translation>
 <translation id="3913386780052199712">Đã đăng nhập vào Chrome</translation>
 <translation id="3967382818307165056">Quản lý phương thức thanh toán trên Chrome</translation>
-<translation id="3980220367029651214">Bạn đang chuyển các tài khoản đồng bộ hóa từ <ph name="USER_EMAIL1" /> về <ph name="USER_EMAIL2" />. Dữ liệu Chrome hiện có của bạn do <ph name="DOMAIN" /> quản lý. Thao tác này sẽ xóa dữ liệu của bạn khỏi thiết bị này nhưng dữ liệu đó sẽ vẫn còn trong <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Tổ chức của bạn yêu cầu bạn duy trì trạng thái đăng xuất khỏi Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome không có quyền truy cập ảnh hoặc video của bạn. Hãy cho phép truy cập trong Cài đặt iOS &gt; Bảo mật &gt; Ảnh.</translation>
 <translation id="4064699917955374540">Để sử dụng và lưu dữ liệu Chrome trong Tài khoản Google, hãy xác minh danh tính của bạn.</translation>
 <translation id="4067858366537947361">Mở thẻ ẩn danh trên Chrome</translation>
 <translation id="4093042601582616698">Đặt Chrome làm trình duyệt mặc định?</translation>
 <translation id="417201473131094001">Chưa hỗ trợ trên Chrome Canary</translation>
-<translation id="4233521129555661685"><ph name="USER_EMAIL1" /> đã dùng Chrome và lưu lại dấu trang, mật khẩu cũng như các chế độ cài đặt khác trên thiết bị này.</translation>
 <translation id="424864128008805179">Đăng xuất khỏi Chrome?</translation>
 <translation id="4251174643044751591">Mở trang Cài đặt phương thức thanh toán trên Chrome.</translation>
 <translation id="4453284704333523777">Quản lý chế độ cài đặt Chrome</translation>
@@ -240,7 +238,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="769104993356536261">Sử dụng Thao tác trên Chrome trên iOS</translation>
 <translation id="7693590760643069321">Giờ đây, bạn có thể dùng Chrome mỗi khi nhấn vào các đường liên kết trong thư/tin nhắn, tài liệu và các ứng dụng khác.</translation>
 <translation id="7698568245838009292">Chrome muốn truy cập vào máy ảnh</translation>
-<translation id="7754633291442704733">Tổ chức của bạn (<ph name="DOMAIN" />) sẽ có quyền truy cập vào dữ liệu của bạn trên Chrome, dấu trang, nhật ký, mật khẩu và các chế độ cài đặt khác mà bạn lưu trữ trong tài khoản này. Khi bạn đăng xuất, dữ liệu của bạn sẽ bị xoá khỏi thiết bị này.  Tuy nhiên, dữ liệu vẫn được lưu trữ trong Tài khoản Google được quản lý của bạn và tổ chức có thể sử dụng dữ liệu này. Tổ chức của bạn cũng có thể thiết lập chính sách người dùng dành riêng cho tài khoản đó và việc này có thể làm thay đổi hành vi của Chrome.</translation>
 <translation id="7780154209050837198">Để khai thác tối đa Chrome, hãy đăng nhập vào Chrome bằng Tài khoản Google của bạn.</translation>
 <translation id="778855399387580014">Bắt đầu tìm kiếm trong thẻ Chrome mới.</translation>
 <translation id="7792140019572081272">Chrome bảo vệ dữ liệu nhạy cảm của bạn bằng Face ID.</translation>

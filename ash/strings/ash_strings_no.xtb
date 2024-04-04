@@ -115,6 +115,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1383597849754832576">Kan ikke laste ned talefiler. Prøv på nytt senere.</translation>
 <translation id="1383876407941801731">Søk</translation>
 <translation id="1391102559483454063">På</translation>
+<translation id="1394698770495054737">Fullstendig uskarphet</translation>
 <translation id="1407069428457324124">Mørkt tema</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Bruk piltastene for å navigere mellom datoer.</translation>
 <translation id="141170878022560212">Midtre knapp</translation>
@@ -441,6 +442,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2841907151129139818">Byttet til nettbrettmodus</translation>
 <translation id="2844169650293029770">USB-C-enhet (porten foran på venstre side)</translation>
 <translation id="2844350028562914727">detaljer</translation>
+<translation id="2847759467426165163">Cast til</translation>
 <translation id="2848120746144143659">Trykk på Enter for å ta en skjermdump av hele skjermen</translation>
 <translation id="2849936225196189499">Kritisk</translation>
 <translation id="2860184359326882502">Beste treff</translation>
@@ -478,6 +480,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3009958530611748826">Velg mappen du vil lagre i</translation>
 <translation id="301282384882049174">Delt av administratoren din</translation>
 <translation id="301584155502740476">Vis detaljer for wifi-sonen. Wifi-sonen er av.</translation>
+<translation id="3017079585324758401">Bakgrunn</translation>
 <translation id="3018135054368884502">Spol medieinnhold fremover</translation>
 <translation id="3033545621352269033">På</translation>
 <translation id="3033912566804961911">Kombiner med <ph name="DESK_NAME" /></translation>
@@ -954,6 +957,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4798888871844665150">Det kopierte elementet er allerede på utklippstavlen. Bruk <ph name="SHORTCUT_KEY_NAME" /> + V for å se det.</translation>
 <translation id="479989351350248267">søk</translation>
 <translation id="4804818685124855865">Koble fra</translation>
+<translation id="4806631651704497161">Lett uskarphet</translation>
 <translation id="4813311884204119883">Dra en link til et tomt område på faneraden</translation>
 <translation id="4814539958450445987">Påloggingsskjerm</translation>
 <translation id="481455355267255546">Neste</translation>
@@ -1040,7 +1044,6 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="5104236669533825617">Kan ikke opprette skjermopptaket</translation>
 <translation id="5107522548814527560">Nettet</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
-<translation id="5111930673176965299">Uskarp bakgrunn</translation>
 <translation id="5117590920725113268">Se neste måned</translation>
 <translation id="5121628974188116412">Gå til bunnen av siden</translation>
 <translation id="5122517996953421795">Forhåndsvisning av <ph name="DESK_NAME" />. Inaktivt skrivebord.</translation>

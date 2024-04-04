@@ -57,7 +57,6 @@
 <translation id="1258753120186372309">Google 涂鸦：<ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1263063910731171689">现在，您会在“已关注”部分中看到来自<ph name="SITE_NAME" />及与其相关的内容。您关注的网站和搜索内容会保存在您的 Google 账号中。您可随时在设置中管理您关注的内容。</translation>
 <translation id="1263231323834454256">阅读清单</translation>
-<translation id="1266864766717917324">无法分享<ph name="CONTENT_TYPE" /></translation>
 <translation id="1269129608791067105">您的历史记录会显示在此处</translation>
 <translation id="1273937721055267968">屏蔽 <ph name="DOMAIN" /></translation>
 <translation id="1283039547216852943">点按即可展开</translation>
@@ -94,7 +93,6 @@
 <translation id="1436784010935106834">已删除</translation>
 <translation id="1437543266176261764">正在“<ph name="APP_NAME" />”应用内运行</translation>
 <translation id="1448440926884431741">在“书签”页面中整理您跟踪的商品</translation>
-<translation id="1450753235335490080">无法分享<ph name="CONTENT_TYPE" /></translation>
 <translation id="1462833127986525564">如果您想让 Chrome 和其他 Google 服务利用彼此的数据为您提供个性化体验，请关联这些服务</translation>
 <translation id="1466383950273130737">选择要让 Chrome 采用的语言</translation>
 <translation id="1477626028522505441">未能成功下载 <ph name="FILE_NAME" />，因为服务器出现了问题。</translation>
@@ -201,7 +199,6 @@
 <translation id="2093731487903423814">过去 15 分钟</translation>
 <translation id="2096012225669085171">在所有设备上保持同步，获享个性化体验</translation>
 <translation id="2100273922101894616">自动登录</translation>
-<translation id="2100314319871056947">请尝试使用较小的文本块进行分享</translation>
 <translation id="2111511281910874386">转至相关网页</translation>
 <translation id="2119609734654412418">您的书签会显示在此处</translation>
 <translation id="2122601567107267586">无法打开此应用</translation>
@@ -374,7 +371,6 @@
 <translation id="2981364137500752533">您最多只能打开 5 个窗口。</translation>
 <translation id="2983102365694924129">根据您在网站上的活动。此设置已关闭。</translation>
 <translation id="2984978667043170458">将上下文内容纳入到 Google 搜索查询中</translation>
-<translation id="2987620471460279764">从其他设备分享的文字</translation>
 <translation id="2989523299700148168">最近用过的搜索引擎</translation>
 <translation id="2992473221983447149">图片说明</translation>
 <translation id="2996291259634659425">创建密码</translation>
@@ -382,7 +378,6 @@
 <translation id="2996932914629936323">会从所有已同步的设备中清除历史记录</translation>
 <translation id="2997081575621687554">当某个 Google 网站请求以私密方式预加载其网页上的链接时，Chrome 会通过 Google 服务器（而不使用 Cookie）加密和预加载网页。这样一来，预加载的网站便无法得知您的身份。</translation>
 <translation id="3003253259757197230">系统会将您访问过的网址发送给 Google，以预测您接下来可能会访问的网站，并向您显示有关当前所访问网页的更多信息</translation>
-<translation id="3016635187733453316">请确保此设备已连接到互联网。</translation>
 <translation id="3026955690410463085">包括链接</translation>
 <translation id="3027644380269727216">根据您在网站上的活动推测得出。此设置已开启。</translation>
 <translation id="3029276696788198026">无预加载</translation>
@@ -445,7 +440,6 @@
 <translation id="3374023511497244703">您的书签、历史记录、密码和其他 Chrome 数据将不再同步到您的 Google 账号中</translation>
 <translation id="3384347053049321195">分享图片</translation>
 <translation id="3387650086002190359">未能成功下载 <ph name="FILE_NAME" />，因为文件系统出现了错误。</translation>
-<translation id="3389286852084373014">文本过长</translation>
 <translation id="3398320232533725830">打开书签管理器</translation>
 <translation id="3407392651057365886">预加载更多网页。被其他网站请求的网页可能会通过 Google 服务器预加载。</translation>
 <translation id="3414952576877147120">大小：</translation>
@@ -798,7 +792,6 @@
 <translation id="5180063720319462041">网页已翻译成<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="5186634140793586141">管理您感兴趣的主题和搜索查询</translation>
 <translation id="5191251636205085390">了解和掌控旨在取代第三方 Cookie 的新技术</translation>
-<translation id="5193988420012215838">已复制到剪贴板</translation>
 <translation id="5204967432542742771">输入密码</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{正在下载文件…}other{正在下载 # 个文件…}}</translation>
 <translation id="5210286577605176222">跳转到上一个标签页</translation>
@@ -823,7 +816,6 @@
 <translation id="5342314432463739672">权限请求</translation>
 <translation id="534580735623577507"><ph name="TIME_PERIOD" />内未访问任何网站</translation>
 <translation id="5355191726083956201">已开启增强型保护</translation>
-<translation id="5361107212971249203">文字</translation>
 <translation id="5375577065097716013">使用 Google 智能镜头搜索图片<ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
 <translation id="5395376160638294582">请确保您可以一直使用 Google 账号中的 Chrome 数据</translation>
 <translation id="539881862970320163">建议使用安全系数高的密码。键盘已隐藏。</translation>
@@ -1207,7 +1199,6 @@
 <translation id="7221869452894271364">重新加载此页</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{有 1 项下载尚待处理}other{有 # 项下载尚待处理}}</translation>
 <translation id="72415438529550637">已关闭密码建议。</translation>
-<translation id="7248069434667874558">请确保<ph name="TARGET_DEVICE_NAME" />已在 Chrome 中开启同步功能</translation>
 <translation id="7252076891734325316">将手机靠近计算机</translation>
 <translation id="7260367682327802201">您的 Android 设备可能包含类似的设置。如果您在 Chrome 中和 Android 设备上开启了“广告衡量”，相关公司或许就能在您访问的网站和使用的应用中衡量广告的效果。</translation>
 <translation id="727288900855680735">将 <ph name="ONE_TIME_CODE" /> 提交至 <ph name="ORIGIN" />？</translation>
@@ -1315,7 +1306,6 @@
 <translation id="7707922173985738739">使用移动数据</translation>
 <translation id="7709918231054955894">同步显示您的所有标签页</translation>
 <translation id="7733878270780732638">设备上的存储空间不足。</translation>
-<translation id="7757787379047923882">分享自“<ph name="DEVICE_NAME" />”的文字</translation>
 <translation id="7759809451544302770">可选</translation>
 <translation id="7762668264895820836">SD 卡 <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">添加地址</translation>
@@ -1474,7 +1464,6 @@
 <translation id="8453310803815879010">启动恐龙游戏</translation>
 <translation id="84594714173170813">请继续使用您的 Google 账号中的 Chrome 数据</translation>
 <translation id="8460448946170646641">检查重要的隐私控制设置和安全控件</translation>
-<translation id="8466613982764129868">请确保<ph name="TARGET_DEVICE_NAME" />已连接到互联网</translation>
 <translation id="8473863474539038330">地址和其他信息</translation>
 <translation id="8478751349603791277">控制系统如何使用您已同步的历史记录对其他 Google 服务进行个性化设置</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>

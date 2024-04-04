@@ -237,6 +237,7 @@
 <translation id="5427571867875391349">‏تنظیم Chromium به عنوان مرورگر پیش‌فرضتان</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta</translation>
 <translation id="5473971139929175403">‏Chromium ممکن است درست کار نکند زیرا این توزیع Linux دیگر از آن پشتیبانی نمی‌کند.</translation>
+<translation id="5475924890392386523">‏‫Chromium این بارگیری را مسدود کرد زیرا این فایل می‌تواند به حساب‌های شخصی و شبکه‌های اجتماعی شما آسیب برساند</translation>
 <translation id="5480860683791598150">‏Chromium برای هم‌رسانی مکانتان با این سایت باید به مکان شما دسترسی داشته باشد</translation>
 <translation id="5487574057737591516">‏برای محافظت از حریم خصوصی شما، علایقی را که قدیمی‌تر از ۴ هفته باشند به‌طور خودکار حذف می‌کنیم. وقتی به مرور کردن ادامه می‌دهید، ممکن است علاقه‌ای مجدداً به فهرست اضافه شود. و اگر Chromium به‌اشتباه علاقه‌ای را اضافه کند یا شما نخواهید آگهی‌های مشخصی را ببینید، می‌توانید آن علاقه را بردارید.</translation>
 <translation id="549669000822060376">‏وقتی Chromium جدیدترین به‌روزرسانی‌های سیستم را نصب می‌کند، لطفاً صبر کنید.</translation>
@@ -364,6 +365,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="7339898014177206373">پنجرهٔ جدید</translation>
 <translation id="734373864078049451">‏وب، نشانک‌ها و موارد دیگر Chromium شما در اینجا هستند.</translation>
 <translation id="7349591376906416160">‏سرپرست سیستم برای باز شدن <ph name="ALTERNATIVE_BROWSER_NAME" /> جهت دسترسی به <ph name="TARGET_URL_HOSTNAME" />، Chromium را پیکربندی کرده است.</translation>
+<translation id="7355355292030546812">‏‫Chromium این بارگیری را مسدود کرد زیرا این فایل می‌تواند به حساب‌های شخصی و شبکه‌های اجتماعی شما ازجمله <ph name="USER_EMAIL" /> آسیب برساند</translation>
 <translation id="7398989605938454041">‏با نمایه‌های Chromium می‌توانید همه‌چیزتان را در Chromium جدا کنید. با این کار، راحت‌تر می‌توان کار و سرگرمی را ازهم جدا کرد.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7451052299415159299">‏Chromium برای این سایت به مجوز دسترسی به دوربین نیاز دارد</translation>
@@ -450,6 +452,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="8988036198400390003">‏مدیریت نمایه‌های Chromium</translation>
 <translation id="9019929317751753759">‏برای ایمن‌تر کردن Chromium، افزونه زیر را که در <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> فهرست نشده است و ممکن است بدون اطلاع شما اضافه شده باشد، غیرفعال کردیم.</translation>
 <translation id="9022552996538154597">‏ورود به سیستم Chromium</translation>
+<translation id="904366664621834601">‏‫Chromium این بارگیری را مسدود کرد زیرا فایل بایگانی حاوی فایل‌های دیگری است که ممکن است بدافزار باشد</translation>
 <translation id="907832235989677238">‏ورود به سیستم Chromium اگر فقط یک‌بار می‌خواهید به سیستم حساب وارد شوید، می‌توانید <ph name="GUEST_LINK_BEGIN" />به‌عنوان مهمان از دستگاه استفاده کنید<ph name="GUEST_LINK_END" />.</translation>
 <translation id="9078733879136747090">‏Chromium به‌طور خودکار بسته شد</translation>
 <translation id="9089354809943900324">‏نسخه Chromium قدیمی است</translation>

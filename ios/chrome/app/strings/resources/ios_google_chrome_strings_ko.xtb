@@ -114,14 +114,12 @@
 <translation id="3901001113120561395">Chrome 최대한 활용하기</translation>
 <translation id="3913386780052199712">Chrome에 로그인됨</translation>
 <translation id="3967382818307165056">Chrome에서 결제 수단 관리</translation>
-<translation id="3980220367029651214">동기화 계정을 <ph name="USER_EMAIL1" />에서 <ph name="USER_EMAIL2" />(으)로 전환합니다. 기존 Chrome 데이터는 <ph name="DOMAIN" />에서 관리합니다. 이렇게 하면 데이터가 이 기기에서 삭제되지만 <ph name="USER_EMAIL1" />에는 그대로 유지됩니다.</translation>
 <translation id="3984746313391923992">조직에서 Chrome 로그아웃 상태를 유지할 것을 요청합니다.</translation>
 <translation id="3988789688219830639">Chrome이 사진 또는 동영상에 액세스할 수 없습니다. 'iOS 설정 &gt; 개인 정보 보호 &gt; 사진'에서 액세스를 허용하세요.</translation>
 <translation id="4064699917955374540">Google 계정에서 Chrome 데이터를 사용하고 저장하려면 본인 확인 절차를 거치세요.</translation>
 <translation id="4067858366537947361">Chrome 시크릿 탭 열기</translation>
 <translation id="4093042601582616698">Chrome을 기본 브라우저로 지정하시겠습니까?</translation>
 <translation id="417201473131094001">Chrome Canary에서 지원되지 않습니다.</translation>
-<translation id="4233521129555661685"><ph name="USER_EMAIL1" /> 계정이 Chrome을 사용했으며 이 기기에 북마크, 비밀번호, 기타 설정을 남겼습니다</translation>
 <translation id="424864128008805179">Chrome에서 로그아웃하시겠습니까?</translation>
 <translation id="4251174643044751591">Chrome에서 결제 수단 설정 페이지를 엽니다.</translation>
 <translation id="4453284704333523777">Chrome 설정 관리</translation>
@@ -240,7 +238,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="769104993356536261">iOS에서 Chrome 작업 사용하기</translation>
 <translation id="7693590760643069321">이제 언제든 메시지, 문서 및 다른 앱에서 링크를 탭하여 Chrome을 사용할 수 있습니다.</translation>
 <translation id="7698568245838009292">Chrome에서 카메라에 액세스하려고 함</translation>
-<translation id="7754633291442704733"><ph name="DOMAIN" /> 조직에서 이 계정에 저장하는 Chrome 데이터, 북마크, 방문 기록, 비밀번호, 기타 설정에 액세스할 수 있습니다. 로그아웃하면 데이터가 기기에서 삭제됩니다.  하지만 데이터는 관리 Google 계정에 계속 저장되어 조직에서 사용할 수 있습니다. 조직에서 관련 계정에 적용되는 사용자 정책을 설정하여 Chrome의 동작을 변경할 수도 있습니다.</translation>
 <translation id="7780154209050837198">Chrome을 최대한 활용하려면 Google 계정으로 Chrome에 로그인하세요</translation>
 <translation id="778855399387580014">새 Chrome 탭에서 검색을 시작합니다.</translation>
 <translation id="7792140019572081272">Chrome은 Face ID를 통해 사용자의 민감한 정보를 안전하게 보호합니다.</translation>

@@ -540,7 +540,6 @@
 <translation id="4227825898293920515">Platnost hesla vyprší za <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nemáte žádné probíhající tiskové úlohy</translation>
 <translation id="4239069858505860023">GPRS</translation>
-<translation id="4244962993387259361">Ke spuštění testu paměti potřebujete minimálně 500 MB volného místa. Pokud chcete místo uvolnit, přejděte do Nastavení &gt; Správa úložiště.</translation>
 <translation id="4250229828105606438">Snímek obrazovky</translation>
 <translation id="4251839292699800785">Stylová kancelář</translation>
 <translation id="4258281355379922695">Latence požadavků HTTP</translation>
@@ -1160,7 +1159,6 @@
 <translation id="780301667611848630">Ne, děkuji</translation>
 <translation id="7805768142964895445">Stav</translation>
 <translation id="7813073042185856802">hora</translation>
-<translation id="7819831665603418705">Použijte šablonu</translation>
 <translation id="7819857487979277519">PSK (WPA nebo RSN)</translation>
 <translation id="7824219488248240180">postimpresionismus</translation>
 <translation id="7828503206075800057">Kavárna ve stylu <ph name="CAFE_STYLE" /> typu <ph name="CAFE_TYPE" /></translation>

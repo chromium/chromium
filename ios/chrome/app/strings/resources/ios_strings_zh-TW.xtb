@@ -16,7 +16,6 @@
 <translation id="1066060668811609597">管理同步功能</translation>
 <translation id="1069154182096085577">已有這個密碼</translation>
 <translation id="1076421457278169141">已掃描圖碼/條碼</translation>
-<translation id="1076785341346483463">與受管理帳戶同步</translation>
 <translation id="1084365883616172403">已順利發布到 Facebook。</translation>
 <translation id="1103523840287552314">一律翻譯<ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">切換至已開啟的視窗</translation>
@@ -24,7 +23,6 @@
 <translation id="1112015203684611006">列印失敗。</translation>
 <translation id="1125564390852150847">新增分頁。</translation>
 <translation id="1126809382673880764">無法封鎖不安全的網站、下載內容和擴充功能。在 Gmail 和 Google 搜尋等其他 Google 服務中，安全瀏覽功能的防護機制仍然會發揮作用 (在適用情況下)。</translation>
-<translation id="1145536944570833626">刪除現有資料。</translation>
 <translation id="1147031633655575115">已使用「<ph name="USER" />」的身分登入</translation>
 <translation id="1150989369772528668">日曆</translation>
 <translation id="1154984953698510061">查看其他分頁</translation>
@@ -54,7 +52,6 @@
 <translation id="1273416271143914096">{count,plural, =1{{count} 個密碼}other{{count} 個密碼}}</translation>
 <translation id="1275718070701477396">已選取</translation>
 <translation id="1279024913354609713">不允許</translation>
-<translation id="1281818060020671000">管理資料</translation>
 <translation id="1282311502488501110">不登入</translation>
 <translation id="1283524564873030414">過去 24 小時</translation>
 <translation id="1285320974508926690">一律不翻譯此網站</translation>
@@ -563,7 +560,6 @@
 <translation id="3918585468378680136">正在取得包裹狀態資訊</translation>
 <translation id="3921585859122905677">網址列位置</translation>
 <translation id="3922310737605261887">搜尋複製的文字</translation>
-<translation id="3928666092801078803">合併我的資料</translation>
 <translation id="3929457972718048006">地址</translation>
 <translation id="3939505428630887612">關於本頁</translation>
 <translation id="3948600256434252210">向右滑動即可使用無痕模式瀏覽。</translation>
@@ -943,6 +939,7 @@
 <translation id="5857770089550859117">必須輸入通關密語，才能開始進行同步處理。</translation>
 <translation id="5859715514067755465">繼續</translation>
 <translation id="5860033963881614850">關閉</translation>
+<translation id="5860491529813859533">啟用</translation>
 <translation id="5896576662943111387">專為 iOS 打造</translation>
 <translation id="5897749768294722429">如要快速回訪瀏覽過的網站，可以同步分頁和歷史記錄。</translation>
 <translation id="5897956970858271241">前往複製的連結</translation>
@@ -961,7 +958,6 @@
 <translation id="5971872012779224351">{count,plural, =1{已刪除 1 個書籤}other{已刪除 {count} 個書籤}}</translation>
 <translation id="5979837087407522202">搜尋密碼</translation>
 <translation id="5981230843984570095">關閉所有閒置分頁</translation>
-<translation id="5982717868370722439">將現有資料新增至 <ph name="USER_EMAIL" />。</translation>
 <translation id="5984222099446776634">最近造訪的網站</translation>
 <translation id="598634819525651074">面積</translation>
 <translation id="5988097621740394599">在分頁上查看降價資訊。</translation>
@@ -1183,6 +1179,7 @@
 <translation id="6989674195860388998">切換至「設定」…</translation>
 <translation id="6998989275928107238">收件者</translation>
 <translation id="699954956411469731">行動裝置通知</translation>
+<translation id="699985840472413751">關閉下載列</translation>
 <translation id="7004032350256606903">貴機構要求你使用私密瀏覽模式。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">最近開啟的分頁</translation>
@@ -1191,7 +1188,6 @@
 <translation id="7022197654033719543">網站資訊</translation>
 <translation id="7029809446516969842">密碼</translation>
 <translation id="704692552158601232">預設瀏覽器 App</translation>
-<translation id="7062545763355031412">接受並切換帳戶</translation>
 <translation id="7063811929043357292">你的帳戶是由家長管理。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="7069695992271320873">從這部裝置移除</translation>
@@ -1384,7 +1380,6 @@
 <translation id="804427445359061970">這裡會顯示你在其他裝置上查看的分頁</translation>
 <translation id="8044568254381073661">不加密直接儲存</translation>
 <translation id="8059533439631660104">收合這個專區。</translation>
-<translation id="806745655614357130">分開保留我的資料</translation>
 <translation id="8069394452933076548">針對最近沒有使用的分頁，選擇過多久要移至閒置分頁區塊。</translation>
 <translation id="8073670137947914548">下載完成</translation>
 <translation id="8073872304774253879">改善搜尋和瀏覽體驗</translation>
@@ -1472,6 +1467,7 @@
 <translation id="850600235656508448">以無痕模式開啟</translation>
 <translation id="8517375800490286174">開放原始碼授權</translation>
 <translation id="8522147671363140027">{count,plural, =1{這 {count} 個密碼和其他項目只會儲存在這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶 ({email})。}other{這 {count} 個密碼和其他項目只會儲存在這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶 ({email})。}}</translation>
+<translation id="8522813812888400223">取消下載</translation>
 <translation id="8524799873541103884">第 <ph name="FIRST_VISIBLE_TAB" /> 至 <ph name="LAST_VISIBLE_TAB" /> 個<ph name="INCOGNITO" />分頁，共 <ph name="NUMBER_OF_OPEN_TABS" /> 個</translation>
 <translation id="852576975834694248">你將登出並關閉分頁</translation>
 <translation id="8528009254289981965">在無痕模式中開啟其他應用程式的連結</translation>
@@ -1614,7 +1610,6 @@
 <translation id="9165320910061267720">如要接收降價快訊通知，請在 iOS 設定中開啟通知功能。</translation>
 <translation id="9177438225260810839">在開啟的分頁中搜尋</translation>
 <translation id="9187853111759024059">要關閉 99 個以上的閒置分頁嗎？</translation>
-<translation id="9188680907066685419">登出受管理的帳戶</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> 天前</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9203951165704618409">你可以將網址列從頂端移至底部，享受量身打造的瀏覽體驗。</translation>

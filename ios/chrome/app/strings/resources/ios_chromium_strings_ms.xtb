@@ -91,7 +91,6 @@ Untuk mendapatkan lebih banyak tetapan yang menggunakan data untuk meningkatkan 
 <translation id="3567399274263440288">Untuk memanfaatkan Chromium sepenuhnya, log masuk ke Chromium dengan Google Account anda.</translation>
 <translation id="3634039384458740619">Buka Tetapan Chromium</translation>
 <translation id="3639997914391704523">Chromium boleh menyemak kata laluan anda apabila anda log masuk menggunakan Google Account anda.</translation>
-<translation id="3650632991272923014"><ph name="USER_EMAIL1" /> telah menggunakan Chromium dan membiarkan penanda halaman, kata laluan dan tetapan lain pada peranti ini.</translation>
 <translation id="3688710892786762883">Chromium akan mengesan nombor penjejakan pakej pada laman yang anda lawati dan menunjukkan kepada anda kemaskinian pakej pada halaman Tab Baharu. Data anda akan dikongsi dengan Google untuk memberikan ciri ini dan meningkatkan Shopping untuk semua orang.</translation>
 <translation id="372658070733623520">Untuk menggunakan dan menyimpan data Chromium dalam Google Account anda, sahkan identiti anda.</translation>
 <translation id="3780779443901618967">Memberikan amaran kepada anda tentang laman berbahaya, termasuk laman yang tidak diketahui oleh Google sebelum ini, dengan menganalisis lebih banyak data daripada laman berbanding perlindungan standard. Anda boleh memilih untuk melangkau amaran Chromium.</translation>
@@ -182,7 +181,6 @@ Perkara yang perlu dipertimbangkan:
 <translation id="5983312940147103417">Jadikan Chromium Lebih Baik</translation>
 <translation id="5985102273857091344">Pilih "Chromium".</translation>
 <translation id="5985254578475526217">Untuk menerima pemberitahuan daripada Chromium, hidupkan pemberitahuan dalam Tetapan iOS anda.</translation>
-<translation id="6062449165341879460">Organisasi <ph name="DOMAIN" /> anda akan mempunyai akses kepada data Chromium, penanda halaman, sejarah, kata laluan dan tetapan lain yang anda simpan dalam akaun ini. Apabila anda log keluar, data anda akan dikosongkan daripada peranti ini.  Namun begitu, data anda akan terus disimpan dalam Google Account terurus anda dan akan tersedia di organisasi anda. Organisasi anda juga boleh menetapkan dasar pengguna khusus untuk akaun tersebut yang boleh mengubah gelagat Chromium.</translation>
 <translation id="6093744543579359059">Urus Kata Laluan dalam Chromium</translation>
 <translation id="6104024151682120539">Buka dalam Chromium</translation>
 <translation id="61109258320235597">Untuk menggunakan dan menyimpan data Chromium dalam Google Account anda, masukkan ungkapan laluan anda.</translation>
@@ -247,7 +245,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data tersul
 <translation id="7763454117143368771">Gunakan Chromium sebagai penyemak imbas lalai anda untuk kekal dilindungi daripada laman berbahaya &amp; memastikan kata laluan anda selamat</translation>
 <translation id="78025249032851484">Chromium anda sudah lapuk.</translation>
 <translation id="7859018312476869945">Apabila anda menaip dalam bar alamat atau kotak carian, Chromium menghantar perkara yang anda taip ke enjin carian lalai anda untuk mendapatkan cadangan yang lebih baik. Tetapan ini dimatikan dalam Inkognito.</translation>
-<translation id="786327964234957808">Anda sedang menukar akaun penyegerakan daripada <ph name="USER_EMAIL1" /> kepada <ph name="USER_EMAIL2" />. Data Chromium sedia ada diurus oleh <ph name="DOMAIN" />. Tindakan ini akan memadamkan data anda daripada peranti ini, tetapi data itu akan kekal disimpan dalam <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Mula menggunakan pengimbas Chromium</translation>
 <translation id="7905064834449738336">Apabila anda menggunakan kata laluan, Chromium akan memberi anda amaran jika kata laluan tersebut telah diterbitkan dalam talian. Apabila melakukan tindakan ini, kata laluan dan nama pengguna anda akan disulitkan supaya data ini tidak dapat dibaca oleh sesiapa termasuk Google.</translation>
 <translation id="7911732829884437264">Gunakan Chromium Secara Lalai</translation>

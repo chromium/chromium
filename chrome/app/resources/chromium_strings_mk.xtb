@@ -240,6 +240,7 @@
 <translation id="5427571867875391349">Поставете го Chromium за стандарден прелистувач</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta</translation>
 <translation id="5473971139929175403">Chromium може да не работи правилно затоа што веќе не е поддржан на овој систем на Linux</translation>
+<translation id="5475924890392386523">Chromium го блокираше преземањево бидејќи датотеката може да им наштети на вашите лични сметки и на вашите сметки на друштвените мрежи</translation>
 <translation id="5480860683791598150">На Chromium му треба пристап до вашата локација за да ја сподели со сајтов</translation>
 <translation id="5487574057737591516">Заради заштита на вашата приватност, автоматски ги бришеме вашите интереси што се постари од 4 седмици. Додека прелистувате, може да се појави интерес на списокот повторно. Ако Chromium погреши или не сакате да гледате одредени реклами, може да отстраните интерес.</translation>
 <translation id="549669000822060376">Почекајте додека Chromium ги инсталира последните системски ажурирања.</translation>
@@ -368,6 +369,7 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="7339898014177206373">Нов прозорец</translation>
 <translation id="734373864078049451">Вашите веб, обележувачи и други работи на Chromium живеат тука.</translation>
 <translation id="7349591376906416160">Системскиот администратор го конфигурирал Chromium да отвора <ph name="ALTERNATIVE_BROWSER_NAME" /> за пристап до <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="7355355292030546812">Chromium го блокираше преземањево бидејќи датотеката може да им наштети на вашите лични сметки и на вашите сметки на друштвените мрежи, меѓу кои и <ph name="USER_EMAIL" /></translation>
 <translation id="7398989605938454041">Со профилите на Chromium може да ги одделите сите ваши работи на Chromium. Со ова е полесно да се одделат работата и забавата.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7451052299415159299">На Chromium му треба дозвола за да пристапи до камерата за сајтов</translation>
@@ -454,6 +456,7 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="8988036198400390003">Управувајте со профилите на Chromium</translation>
 <translation id="9019929317751753759">За Chromium да биде побезбеден, ја оневозможивме следнава екстензија што не е наведена во <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> и може да е додадена без ваше знаење.</translation>
 <translation id="9022552996538154597">Најавете се на Chromium</translation>
+<translation id="904366664621834601">Chromium го блокираше преземањево бидејќи архивираната датотека содржи други датотеки што може да кријат злонамерен софтвер</translation>
 <translation id="907832235989677238">Најавете се на Chromium. Ако сакате да најавите сметка само еднократно, може <ph name="GUEST_LINK_BEGIN" />да го користите уредот како гостин<ph name="GUEST_LINK_END" />.</translation>
 <translation id="9078733879136747090">Chromium се затвори автоматски</translation>
 <translation id="9089354809943900324">Chromium е застарен</translation>

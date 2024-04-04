@@ -59,7 +59,6 @@
 <translation id="1258753120186372309">Дудл Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1263063910731171689">Тепер у розділі "Підписки" відображатиметься контент із каналу <ph name="SITE_NAME" /> і про нього. Сайти й пошукові запити, на які ви підписалися, зберігаються в обліковому записі Google. Ви можете будь-коли керувати підписками в налаштуваннях.</translation>
 <translation id="1263231323834454256">Список читання</translation>
-<translation id="1266864766717917324">Не вдалося надіслати: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269129608791067105">Тут відображатиметься ваша історія</translation>
 <translation id="1273937721055267968">Заблокувати домен <ph name="DOMAIN" /></translation>
 <translation id="1283039547216852943">Торкніться, щоб розгорнути</translation>
@@ -96,7 +95,6 @@
 <translation id="1436784010935106834">Видалено</translation>
 <translation id="1437543266176261764">Запущено в додатку <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Впорядковуйте відстежувані товари в закладках</translation>
-<translation id="1450753235335490080">Не вдалося надіслати: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1462833127986525564">Зв’яжіть Chrome з іншими сервісами Google, щоб вони могли обмінюватися даними між собою і персоналізувати вашу роботу</translation>
 <translation id="1466383950273130737">Виберіть мову Chrome</translation>
 <translation id="1477626028522505441">Файл <ph name="FILE_NAME" /> не завантажено через проблеми із сервером.</translation>
@@ -203,7 +201,6 @@
 <translation id="2093731487903423814">останні 15 хвилин</translation>
 <translation id="2096012225669085171">Синхронізація та персоналізація на всіх пристроях</translation>
 <translation id="2100273922101894616">Автоматичний вхід</translation>
-<translation id="2100314319871056947">Спробуйте надіслати текст меншими частинами</translation>
 <translation id="2111511281910874386">Перейти на сторінку</translation>
 <translation id="2119609734654412418">Тут відображатимуться ваші закладки</translation>
 <translation id="2122601567107267586">Не вдалося відкрити додаток</translation>
@@ -376,7 +373,6 @@
 <translation id="2981364137500752533">Ви можете відкрити не більше ніж 5 вікон.</translation>
 <translation id="2983102365694924129">На основі ваших дій на сайті. Це налаштування вимкнено.</translation>
 <translation id="2984978667043170458">Враховувати контекст для пошуку в Google</translation>
-<translation id="2987620471460279764">Текст, яким поділилися з іншого пристрою</translation>
 <translation id="2989523299700148168">Нещодавно відвідані</translation>
 <translation id="2992473221983447149">Описи зображень</translation>
 <translation id="2996291259634659425">Створити парольну фразу</translation>
@@ -384,7 +380,6 @@
 <translation id="2996932914629936323">Буде видалено історію на всіх синхронізованих пристроях</translation>
 <translation id="2997081575621687554">Коли сайт Google надсилає запит на приватне попереднє завантаження посилань на його сторінці, Chrome шифрує та попередньо завантажує сторінки через сервери Google без файлів cookie. Таким чином вашу особу не можна визначити через попередньо завантажений сайт.</translation>
 <translation id="3003253259757197230">URL-адреси сторінок, які ви відвідуєте, надсилаються в Google, щоб ми могли показувати вам додаткову інформацію про них і передбачати, які сайти ви можете відвідати наступними</translation>
-<translation id="3016635187733453316">Перевірте, чи пристрій підключено до Інтернету</translation>
 <translation id="3026955690410463085">Додати посилання</translation>
 <translation id="3027644380269727216">На основі ваших дій на сайті. Це налаштування ввімкнено.</translation>
 <translation id="3029276696788198026">Без попереднього завантаження</translation>
@@ -447,7 +442,6 @@
 <translation id="3374023511497244703">Закладки, історія, паролі й інші дані Chrome більше не синхронізуватимуться з обліковим записом Google</translation>
 <translation id="3384347053049321195">Поділитися зображенням</translation>
 <translation id="3387650086002190359">Файл <ph name="FILE_NAME" /> не завантажено через помилки файлової системи.</translation>
-<translation id="3389286852084373014">SMS-повідомлення завелике</translation>
 <translation id="3398320232533725830">Відкрити Диспетчер закладок</translation>
 <translation id="3407392651057365886">Більше сторінок будуть попередньо завантажуватися. Сторінки можуть попередньо завантажуватися через сервери Google, коли інші сайти надсилають запити на них.</translation>
 <translation id="3414952576877147120">Розмір:</translation>
@@ -800,7 +794,6 @@
 <translation id="5180063720319462041">Сторінку перекладено такою мовою: <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="5186634140793586141">Керуйте темами й пошуковими запитами, які вас цікавлять</translation>
 <translation id="5191251636205085390">Дізнайтеся про нові технології, що приходять на зміну стороннім файлам cookie, і як ними керувати</translation>
-<translation id="5193988420012215838">Скопійовано в буфер обміну</translation>
 <translation id="5204967432542742771">Введіть пароль</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Завантажується файл…}one{Завантажується # файл…}few{Завантажуються # файли…}many{Завантажуються # файлів…}other{Завантажується # файлу…}}</translation>
 <translation id="5210286577605176222">Перейти до попередньої вкладки</translation>
@@ -825,7 +818,6 @@
 <translation id="5342314432463739672">Запити на дозволи</translation>
 <translation id="534580735623577507">Немає сайтів за <ph name="TIME_PERIOD" /></translation>
 <translation id="5355191726083956201">Покращений захист увімкнено</translation>
-<translation id="5361107212971249203">текст</translation>
 <translation id="5375577065097716013">Шукати через Об'єктив <ph name="BEGIN_NEW" />Нове<ph name="END_NEW" /></translation>
 <translation id="5395376160638294582">Подбайте про те, щоб завжди мати змогу використовувати дані Chrome в обліковому записі Google</translation>
 <translation id="539881862970320163">Запропоновано надійний пароль. Клавіатуру сховано.</translation>
@@ -1209,7 +1201,6 @@
 <translation id="7221869452894271364">Перезавантажити цю сторінку</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Очікується 1 завантаження}one{Очікується # завантаження}few{Очікується # завантаження}many{Очікується # завантажень}other{Очікується # завантаження}}</translation>
 <translation id="72415438529550637">Пропозицію пароля закрито.</translation>
-<translation id="7248069434667874558">Переконайтеся, що на пристрої <ph name="TARGET_DEVICE_NAME" /> увімкнено синхронізацію в Chrome</translation>
 <translation id="7252076891734325316">Розмістіть телефон біля комп’ютера</translation>
 <translation id="7260367682327802201">На вашому пристрої Android може бути схоже налаштування. Якщо опцію "Оцінка ефективності реклами" ввімкнено в Chrome і на пристрої Android, компанії можуть визначати ефективність своїх оголошень на веб-сайтах, що ви відвідуєте, та в додатках, якими ви користуєтеся.</translation>
 <translation id="727288900855680735">Надіслати код <ph name="ONE_TIME_CODE" /> на сайт <ph name="ORIGIN" />?</translation>
@@ -1317,7 +1308,6 @@
 <translation id="7707922173985738739">Використовувати мобільне передавання даних</translation>
 <translation id="7709918231054955894">Переглядайте всі свої вкладки</translation>
 <translation id="7733878270780732638">На пристрої недостатньо місця.</translation>
-<translation id="7757787379047923882">Текст, надісланий із пристрою <ph name="DEVICE_NAME" /></translation>
 <translation id="7759809451544302770">Необов’язково</translation>
 <translation id="7762668264895820836">Карта SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Додати адресу</translation>
@@ -1476,7 +1466,6 @@
 <translation id="8453310803815879010">Почати гру Dino</translation>
 <translation id="84594714173170813">Продовжуйте використовувати дані Chrome в обліковому записі Google</translation>
 <translation id="8460448946170646641">Перегляньте основні елементи керування конфіденційністю та безпекою</translation>
-<translation id="8466613982764129868">Переконайтеся, що пристрій <ph name="TARGET_DEVICE_NAME" /> підключено до Інтернету</translation>
 <translation id="8473863474539038330">Адреси й інше</translation>
 <translation id="8478751349603791277">Вибирайте, як синхронізована історія може використовуватися для персоналізації інших сервісів Google</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>

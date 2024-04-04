@@ -114,14 +114,12 @@ Mambo ya kuzingatia:
 <translation id="3901001113120561395">Nufaika zaidi na Chrome.</translation>
 <translation id="3913386780052199712">Umeingia katika akaunti kwenye Chrome</translation>
 <translation id="3967382818307165056">Kudhibiti Njia za Kulipa kwenye Chrome</translation>
-<translation id="3980220367029651214">Unabadilisha akaunti za kusawazisha kutoka <ph name="USER_EMAIL1" /> hadi <ph name="USER_EMAIL2" />. Data yako iliyopo ya Chrome inadhibitiwa na <ph name="DOMAIN" />. Hatua hii itafuta data yako kwenye kifaa hiki, lakini data yako itasalia katika <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Shirika lako linahitaji usiingie katika akaunti kwenye Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome haina uwezo wa kufikia picha au video zako. Washa ufikiaji katika Mipangilio ya iOS &gt; Faragha &gt; Picha.</translation>
 <translation id="4064699917955374540">Ili utumie na uhifadhi data ya Chrome kwenye Akaunti yako ya Google, thibitisha kuwa ni wewe.</translation>
 <translation id="4067858366537947361">Kufungua Kichupo Fiche kwenye Chrome</translation>
 <translation id="4093042601582616698">Ungependa Kufanya Chrome Iwe Kivinjari Chako Chaguomsingi?</translation>
 <translation id="417201473131094001">Haitumiki kwenye Chrome Canary (toleo la jaribio)</translation>
-<translation id="4233521129555661685"><ph name="USER_EMAIL1" /> alikuwa akitumia Chrome na akaacha alamisho, manenosiri na mipangilio mingine kwenye kifaa hiki.</translation>
 <translation id="424864128008805179">Ungependa kuondoka kwenye Chrome?</translation>
 <translation id="4251174643044751591">Hufungua Ukurasa wa Mipangilio ya Njia ya Kulipa kwenye Chrome.</translation>
 <translation id="4453284704333523777">Kudhibiti Mipangilio ya Chrome</translation>
@@ -240,7 +238,6 @@ Kwa mipangilio zaidi inayotumia data kuboresha hali yako ya utumiaji wa Chrome, 
 <translation id="769104993356536261">Tumia kipengele cha Vitendo vya Chrome kwenye iOS</translation>
 <translation id="7693590760643069321">Sasa unaweza kutumia Chrome wakati wowote unapogusa viungo kwenye ujumbe, hati na programu zingine.</translation>
 <translation id="7698568245838009292">Chrome Inataka Kufikia Kamera</translation>
-<translation id="7754633291442704733">Shirika lako <ph name="DOMAIN" /> litakuwa na uwezo wa kufikia data yako ya Chrome, alamisho, historia, manenosiri na mipangilio mingine uliyohifadhi kwenye akaunti hii. Ukiondoka kwenye akaunti, data yako itafutwa kwenye kifaa hiki.  Hata hivyo, data yako itabaki imehifadhiwa kwenye akaunti yako ya Google inayosimamiwa na itapatikana katika shirika lako. Shirika lako linaweza pia kuweka sera mahususi za mtumiaji kwenye akaunti hiyo, hivyo zinaweza kubadilisha tabia ya Chrome.</translation>
 <translation id="7780154209050837198">Ili unufaike zaidi na Chrome, ingia kwenye Chrome ukitumia Akaunti yako ya Google.</translation>
 <translation id="778855399387580014">Anza kutafuta ukitumia kichupo kipya cha Chrome.</translation>
 <translation id="7792140019572081272">Chrome huweka data yako nyeti salama kwa kutumia Face ID.</translation>

@@ -41,6 +41,7 @@
 <translation id="102916930470544692">Passkey</translation>
 <translation id="1029317248976101138">Zoom</translation>
 <translation id="1029526375103058355">Tocco per fare clic</translation>
+<translation id="1029724557649700742">Verranno incluse nuove funzionalità non appena saranno disponibili e potrebbero variare in base al dispositivo.</translation>
 <translation id="1031362278801463162">Caricamento anteprima in corso</translation>
 <translation id="1032605640136438169">Ti invitiamo a leggere i nuovi termini</translation>
 <translation id="103279545524624934">Libera spazio sul disco per avviare le app Android.</translation>
@@ -1520,7 +1521,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2127372758936585790">Caricabatterie a basso consumo</translation>
 <translation id="212862741129535676">Percentuale di occupazione dello stato di frequenza</translation>
 <translation id="212876957201860463">Preparazione per la configurazione del dispositivo cellulare…</translation>
-<translation id="2130909682040406368">Scopri di più sull'utilizzo degli strumenti di IA</translation>
 <translation id="2131077480075264">Impossibile installare "<ph name="APP_NAME" />" perché non è consentita da "<ph name="IMPORT_NAME" />"</translation>
 <translation id="2133775869826239001">Scegli altre funzionalità da configurare</translation>
 <translation id="2133857665503360653">Riprova l'azione per il file <ph name="FILE_NAME" /></translation>
@@ -1559,6 +1559,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2155473371917268529">L'impostazione di visibilità attuale è quella dei tuoi dispositivi</translation>
 <translation id="2155772377859296191">Risoluzione di <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156707722163479690">Scorrimento e zoom delle schede condivise consentito</translation>
 <translation id="2156877321344104010">Ripeti il controllo di sicurezza</translation>
 <translation id="2157474325782140681">Per avere a disposizione funzionalità aggiuntive, usa una dock station Dell progettata per supportare questo Chromebook.</translation>
 <translation id="215753907730220065">Esci da schermo intero</translation>
@@ -1977,6 +1978,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2459706890611560967">Riprendi la trasmissione della scheda su <ph name="DEVICE_NAME" /></translation>
 <translation id="2460356425461033301">Esegui il backup dei dati del browser e usali su qualsiasi dispositivo</translation>
 <translation id="2460482211073772897">In altre cartelle</translation>
+<translation id="2461550163693930491">Non consentire ai siti di scorrere e aumentare lo zoom delle schede condivise</translation>
 <translation id="2461593638794842577">Puoi disattivare questa impostazione per salvare le password solo su questo dispositivo</translation>
 <translation id="2462332841984057083">Steam è già in fase di configurazione. Attendi il completamento dell'operazione.</translation>
 <translation id="2462724976360937186">ID della chiave dell'autorità di certificazione</translation>
@@ -2010,6 +2012,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2482895651873876648">Scheda spostata nel gruppo <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="2483627560139625913">Imposta il motore di ricerca nelle impostazioni del browser Chrome</translation>
 <translation id="2483698983806594329">File scaricato non verificato</translation>
+<translation id="2484574361686148760">Aggiorna informazioni clienti WiFi Direct</translation>
 <translation id="2484743711056182585">Rimuovi concessione</translation>
 <translation id="2484909293434545162">Se un sito utilizza i cookie, verrà mostrato qui</translation>
 <translation id="2484959914739448251"><ph name="BEGIN_LINK" />Inserisci la passphrase<ph name="END_LINK" /> per cancellare i dati di navigazione da tutti i dispositivi sincronizzati e dal tuo Account Google.</translation>
@@ -2203,6 +2206,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2629227353894235473">Sviluppo di app Android</translation>
 <translation id="2629437048544561682">Cancella canvas</translation>
 <translation id="2631498379019108537">Mostra opzioni di immissione nella barra delle app</translation>
+<translation id="2632176111713971407">I siti possono chiedere di scorrere e aumentare lo zoom delle schede condivise</translation>
 <translation id="2633212996805280240">Rimuovere "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> non è stato in grado di completare l'installazione ma continuerà a essere eseguito dall'immagine disco.</translation>
 <translation id="2633764681656412085">FIDO</translation>
@@ -3509,6 +3513,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3659550105763988702">Utilizza la tua passkey per <ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">Hai inserito troppe volte un codice di accesso errato. Riprova più tardi.</translation>
 <translation id="3660234220361471169">Non attendibile</translation>
+<translation id="3661106764436337772">Scrivi più velocemente e con maggiore sicurezza</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 password esistente trovata}other{{NUM_PASSWORDS} password esistenti trovate}}</translation>
 <translation id="3662207097851752847">Conferma il tuo Account Google sullo smartphone</translation>
 <translation id="3663417513679360795">Maggiori informazioni sull'attivazione del precaricamento standard</translation>
@@ -3861,6 +3866,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="3900966090527141178">Esportazione delle password</translation>
 <translation id="3902789559055749153">Scegli come creare una passkey per <ph name="APP_NAME" /></translation>
 <translation id="3903187154317825986">Tastiera incorporata</translation>
+<translation id="3903696968689283281">Informazioni proprietari WiFi Direct:</translation>
 <translation id="3904326018476041253">Servizi di geolocalizzazione</translation>
 <translation id="3905761538810670789">Ripara app</translation>
 <translation id="3908288065506437185">Blocca i cookie di terze parti in modalità di navigazione in incognito</translation>
@@ -4486,7 +4492,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4388650384344483842">Utilizza almeno 8 caratteri</translation>
 <translation id="4389091756366370506">Utente <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> e altri <ph name="NUMBER_OF_OTHER_SWITCHES" /> sensori</translation>
-<translation id="4390569024397171409">Installa l'app su <ph name="DEVICE_TYPE" /></translation>
 <translation id="439266289085815679">Configurazione Bluetooth controllata da <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Modifica il file di configurazione</translation>
 <translation id="4393102500004843976">tasto per la ricerca + Maiusc + <ph name="TOP_ROW_KEY" /></translation>
@@ -4516,6 +4521,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4409697491990005945">Margini</translation>
 <translation id="4409779593816003679">Password e &amp;compilazione automatica</translation>
 <translation id="4410545552906060960">Usa un numero (PIN) anziché una password per sbloccare il dispositivo. Per impostare il PIN in un secondo momento, vai alle Impostazioni.</translation>
+<translation id="4411344321892622527">Scorrimento e zoom delle schede condivise non consentiti</translation>
 <translation id="4411578466613447185">Certificato di firma del codice</translation>
 <translation id="4411719918614785832">Queste passkey sono salvate in Windows Hello su questo computer e non nel tuo Account Google.</translation>
 <translation id="4412544493002546580">Riprova o seleziona uno dei suggerimenti di seguito.</translation>
@@ -6855,6 +6861,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6257602895346497974">Attiva la sincronizzazione...</translation>
 <translation id="625827534921607067">Questa rete avrà la precedenza se sarà disponibile più di una rete configurata o collegata in passato</translation>
 <translation id="62586649943626337">Organizza le schede con i gruppi di schede</translation>
+<translation id="6259776178973198997">Aggiorna informazioni proprietari WiFi Direct</translation>
 <translation id="6262371516389954471">Le copie di backup vengono caricate su Google e criptate usando la password del tuo Account Google.</translation>
 <translation id="6263082573641595914">Versione CA Microsoft</translation>
 <translation id="6263284346895336537">Non critica</translation>
@@ -7554,6 +7561,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> non può essere eseguito come root.</translation>
 <translation id="6812841287760418429">Mantieni le modifiche</translation>
 <translation id="6813907279658683733">Schermo intero</translation>
+<translation id="6814754908910736855">Informazioni clienti WiFi Direct:</translation>
 <translation id="6815376457351236663">Apri comunque</translation>
 <translation id="6815787852028615386">Questo file è ingannevole e potrebbe apportare modifiche impreviste al dispositivo</translation>
 <translation id="6816097980753839617">Blu-giallo (tritanomalia)</translation>
@@ -7991,7 +7999,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7168109975831002660">Dimensioni minime dei caratteri</translation>
 <translation id="7169122689956315694">Attiva la notifica quando ci sono dispositivi nelle vicinanze</translation>
 <translation id="7170236477717446850">Immagine del profilo</translation>
-<translation id="7170751905948784001">Informazioni sviluppatore:</translation>
 <translation id="7171000599584840888">Aggiungi profilo…</translation>
 <translation id="7171259390164035663">Non registrare</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Aggiungi scheda a nuovo gruppo}other{Aggiungi schede a nuovo gruppo}}</translation>
@@ -8424,6 +8431,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7501957181231305652">oppure</translation>
 <translation id="7502220299952823578">Aggiungi all'elenco "mantieni questi siti sempre attivi"</translation>
 <translation id="7502528909759062987">Metti in pausa la trasmissione della scheda su <ph name="DEVICE_NAME" /></translation>
+<translation id="7502804472671406749">È possibile scorrere e aumentare lo zoom delle schede condivise</translation>
 <translation id="7503191893372251637">Tipo di certificato Netscape</translation>
 <translation id="7503985202154027481">Sul tuo token di sicurezza verrà memorizzato un record della tua visita a questo sito.</translation>
 <translation id="7504145862399276792">L'audio di questa scheda sta per essere disattivato</translation>
@@ -8468,7 +8476,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> non risponde. Seleziona "Termina" per chiudere l'app.</translation>
 <translation id="7535730537657706072">Per cancellare la cronologia di navigazione in incognito dal tuo dispositivo, chiudi tutte le schede di navigazione in incognito</translation>
 <translation id="7536815228183532290">Accesso eseguito come <ph name="EMAIL" /></translation>
-<translation id="7537182889548466084">Riceverai suggerimenti relativi ai gruppi di schede che raggruppano schede simili. Le schede aperte e i titoli vengono inviati a Google e potrebbero essere esaminati da revisori per migliorare questa funzionalità.</translation>
 <translation id="7538013435257102593">Questo tipo di file non viene comunemente scaricato e potrebbe essere pericoloso</translation>
 <translation id="7540972813190816353">Si è verificato un errore durante il controllo della disponibilità di aggiornamenti: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> ha riportato questo dispositivo a una versione precedente. Salva i file importanti, poi riavvia. Tutti i dati memorizzati sul dispositivo verranno eliminati.</translation>
@@ -10763,6 +10770,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="949807244219288032">La scheda è connessa a un dispositivo HID</translation>
 <translation id="950079950995628542">Di "<ph name="PHONE_NAME" />"</translation>
 <translation id="950307215746360464">Guida alla configurazione</translation>
+<translation id="951273949038779544"><ph name="SITE_ACCESS" />. Elemento installato dall'amministratore</translation>
 <translation id="951991426597076286">Rifiuta</translation>
 <translation id="952471655966876828">Il dispositivo si connetterà automaticamente quando verrà acceso e sarà in uso</translation>
 <translation id="953434574221655299">Autorizzati a sapere quando stai utilizzando attivamente il tuo dispositivo</translation>

@@ -540,7 +540,6 @@
 <translation id="4227825898293920515">Паролата изтича след <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Няма активни задания за отпечатване</translation>
 <translation id="4239069858505860023">GPRS</translation>
-<translation id="4244962993387259361">За да извършите тест на паметта, трябва да имате поне 500 МБ свободно място. За да освободите място, отворете „Настройки &gt; Мениджър на хранилището”.</translation>
 <translation id="4250229828105606438">Eкранна снимка</translation>
 <translation id="4251839292699800785">Стилен офис</translation>
 <translation id="4258281355379922695">Забавяне на HTTP</translation>
@@ -1163,7 +1162,6 @@
 <translation id="780301667611848630">Не, благодаря</translation>
 <translation id="7805768142964895445">Състояние</translation>
 <translation id="7813073042185856802">планина</translation>
-<translation id="7819831665603418705">Използване на шаблон</translation>
 <translation id="7819857487979277519">PSK (WPA или RSN)</translation>
 <translation id="7824219488248240180">постимпресионизъм</translation>
 <translation id="7828503206075800057">Кафене, което е <ph name="CAFE_STYLE" /> и под формата на <ph name="CAFE_TYPE" /></translation>

@@ -41,6 +41,7 @@
 <translation id="102916930470544692">पासकी</translation>
 <translation id="1029317248976101138">ज़ूम</translation>
 <translation id="1029526375103058355">टैप टू क्लिक</translation>
+<translation id="1029724557649700742">नई सुविधाओं के उपलब्ध होने पर उन्हें शामिल कर लिया जाएगा. साथ ही, सुविधाएं डिवाइस के हिसाब से अलग-अलग हो सकती हैं.</translation>
 <translation id="1031362278801463162">झलक लोड हो रही है</translation>
 <translation id="1032605640136438169">कृपया सेवा की नई शर्तों को ध्यान से पढ़ें</translation>
 <translation id="103279545524624934">Android ऐप्लिकेशन लॉन्च करने के लिए डिस्क में जगह खाली करें.</translation>
@@ -1533,7 +1534,6 @@
 <translation id="2127372758936585790">कम-शक्ति वाला चार्जर</translation>
 <translation id="212862741129535676">आवृत्ति स्थिति उपयोग प्रतिशत</translation>
 <translation id="212876957201860463">आपका मोबाइल डिवाइस सेटअप किया जा रहा है...</translation>
-<translation id="2130909682040406368">एआई टूल इस्तेमाल करने के बारे में ज़्यादा जानें</translation>
 <translation id="2131077480075264">"<ph name="APP_NAME" />" इंस्‍टॉल करने में असमर्थ क्‍योंकि "<ph name="IMPORT_NAME" />" द्वारा इसकी अनुमति नहीं है</translation>
 <translation id="2133775869826239001">सेट अप करने के लिए, ज़्यादा सुविधाएं चुनें</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> को फिर से डाउनलोड करने की कोशिश करें</translation>
@@ -1572,6 +1572,7 @@
 <translation id="2155473371917268529">'डिवाइस किसको दिखे' की सेटिंग, फ़िलहाल 'आपके डिवाइस' पर सेट है</translation>
 <translation id="2155772377859296191"><ph name="WIDTH" /> x <ph name="HEIGHT" /> जैसा लगता है</translation>
 <translation id="2156294658807918600">सर्विस वर्कर: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156707722163479690">शेयर किए गए टैब में स्क्रोल और ज़ूम करने की अनुमति है</translation>
 <translation id="2156877321344104010">फिर से सुरक्षा जांच करें</translation>
 <translation id="2157474325782140681">ज़्यादा सुविधाएं पाने के लिए, ऐसा Dell डॉकिंग स्टेशन इस्तेमाल करें जिसे इस Chromebook के साथ काम करने के लिए बनाया गया हो.</translation>
 <translation id="215753907730220065">फ़ुल स्क्रीन से बाहर निकलें</translation>
@@ -1993,6 +1994,7 @@
 <translation id="2459706890611560967"><ph name="DEVICE_NAME" /> पर, टैब को कास्ट करना फिर से शुरू करें</translation>
 <translation id="2460356425461033301">अपने ब्राउज़र के डेटा का बैक अप लें और इसे किसी भी डिवाइस पर इस्तेमाल करें</translation>
 <translation id="2460482211073772897">अन्य फ़ोल्डर में</translation>
+<translation id="2461550163693930491">साइटों को शेयर किए गए टैब में स्क्रोल और ज़ूम करने की अनुमति न दें</translation>
 <translation id="2461593638794842577">सिर्फ़ इस डिवाइस पर अपने पासवर्ड सेव करने के लिए, इस सेटिंग को बंद किया जा सकता है</translation>
 <translation id="2462332841984057083">Steam को पहले से ही सेट अप किया जा रहा है. सेटअप पूरा होने का इंतज़ार करें.</translation>
 <translation id="2462724976360937186">प्रमाणन प्राधिकरण कुंजी आईडी</translation>
@@ -2026,6 +2028,7 @@
 <translation id="2482895651873876648">टैब को <ph name="GROUP_NAME" /> ग्रुप में ले जाया गया - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="2483627560139625913">Chrome ब्राउज़र सेटिंग में सर्च इंजन सेट करें</translation>
 <translation id="2483698983806594329">बिना पुष्टि वाली फ़ाइल डाउनलोड की गई</translation>
+<translation id="2484574361686148760">वाई-फ़ाई डायरेक्ट क्लाइंट की जानकारी रीफ़्रेश करें</translation>
 <translation id="2484743711056182585">ऐक्सेस की अनुमति हटाएं</translation>
 <translation id="2484909293434545162">अगर कोई साइट कुकी का इस्तेमाल करती है, तो वह यहां दिखेगी</translation>
 <translation id="2484959914739448251">अपने सभी सिंक किए हुए डिवाइस और अपने 'Google खाते' से ब्राउज़िंग डेटा साफ़ करने के लिए, <ph name="BEGIN_LINK" />अपना लंबा पासवर्ड डालें<ph name="END_LINK" />.</translation>
@@ -2219,6 +2222,7 @@
 <translation id="2629227353894235473">Android ऐप्लिकेशन डेवलप करें</translation>
 <translation id="2629437048544561682">कैनवस साफ़ करें</translation>
 <translation id="2631498379019108537">शेल्फ़ में इनपुट के विकल्प दिखाएं</translation>
+<translation id="2632176111713971407">साइट को शेयर किए गए टैब में स्क्रोल और ज़ूम करने की अनुमति मिलेगी या नहीं</translation>
 <translation id="2633212996805280240">"<ph name="EXTENSION_NAME" />" हटाना है?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> इंस्टॉल नहीं कर सका, लेकिन इसकी डिस्क इमेज से चलना जारी रहेगा.</translation>
 <translation id="2633764681656412085">FIDO</translation>
@@ -3525,6 +3529,7 @@
 <translation id="3659550105763988702"><ph name="APP_NAME" /> के लिए अपनी पासकी इस्तेमाल करें</translation>
 <translation id="3659929705630080526">आपने कई बार गलत ऐक्सेस कोड डाला है. बाद में कोशिश करें</translation>
 <translation id="3660234220361471169">अविश्वसनीय</translation>
+<translation id="3661106764436337772">तेज़ी और आत्मविश्वास के साथ लिखें</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 मौजूदा पासवर्ड मिला}one{{NUM_PASSWORDS} मौजूदा पासवर्ड मिला}other{{NUM_PASSWORDS} मौजूदा पासवर्ड मिले}}</translation>
 <translation id="3662207097851752847">अपने फ़ोन पर Google खाते की पुष्टि करें</translation>
 <translation id="3663417513679360795">पहले से लोड करने की स्टैंडर्ड सुविधा को चालू करने के बारे में ज़्यादा जानकारी</translation>
@@ -3877,6 +3882,7 @@
 <translation id="3900966090527141178">पासवर्ड निर्यात करें</translation>
 <translation id="3902789559055749153"><ph name="APP_NAME" /> के लिए पासकी सेट करने का तरीका चुनें</translation>
 <translation id="3903187154317825986">पहले से मौजूद कीबोर्ड</translation>
+<translation id="3903696968689283281">वाई-फ़ाई डायरेक्ट मालिकों की जानकारी:</translation>
 <translation id="3904326018476041253">जगह की जानकारी</translation>
 <translation id="3905761538810670789">ऐप्लिकेशन को ठीक करें</translation>
 <translation id="3908288065506437185">गुप्त मोड में, तीसरे पक्ष की कुकी को ब्लॉक करें</translation>
@@ -4501,7 +4507,6 @@
 <translation id="4388650384344483842">पासवर्ड में कम से कम आठ वर्णों का इस्तेमाल करें</translation>
 <translation id="4389091756366370506">उपयोगकर्ता <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" />, और <ph name="NUMBER_OF_OTHER_SWITCHES" /> और स्विच ऐक्सेस बटन</translation>
-<translation id="4390569024397171409">अपने <ph name="DEVICE_TYPE" /> पर ऐप्लिकेशन इंस्टॉल करें</translation>
 <translation id="439266289085815679">ब्लूटूथ कॉन्फ़िगरेशन को <ph name="USER_EMAIL" /> से नियंत्रित किया जाता है.</translation>
 <translation id="4392896746540753732">कॉन्फ़िगरेशन फ़ाइल में बदलाव करें</translation>
 <translation id="4393102500004843976">खोज बटन + shift + <ph name="TOP_ROW_KEY" /></translation>
@@ -4531,6 +4536,7 @@
 <translation id="4409697491990005945">मार्जिन</translation>
 <translation id="4409779593816003679">पासवर्ड और ऑटोमैटिक भरने की सुविधा</translation>
 <translation id="4410545552906060960">अपने डिवाइस को अनलॉक करने के लिए नंबर (पिन) के बजाय पासवर्ड का इस्तेमाल करें. बाद में अपना पिन सेट करने के लिए, सेटिंग पर जाएं.</translation>
+<translation id="4411344321892622527">शेयर किए गए टैब में स्क्रोल और ज़ूम करने की अनुमति नहीं है</translation>
 <translation id="4411578466613447185">कोड हस्ताक्षरकर्ता</translation>
 <translation id="4411719918614785832">ये पासकी इस कंप्यूटर पर, Windows Hello में सेव की गई हैं. इन्हें आपके Google खाते में सेव नहीं किया गया है.</translation>
 <translation id="4412544493002546580">फिर से कोशिश करें या यहां दिए गए विकल्पों में से किसी एक को चुनें.</translation>
@@ -6874,6 +6880,7 @@
 <translation id="6257602895346497974">सिंक करना चालू करें...</translation>
 <translation id="625827534921607067">अगर पहले से कनेक्ट या कॉन्फ़िगर किए गए एक से ज़्यादा नेटवर्क उपलब्ध हैं, तो इस नेटवर्क को प्राथमिकता दी जाएगी</translation>
 <translation id="62586649943626337">टैब ग्रुप की मदद से, अपने टैब व्यवस्थित करें</translation>
+<translation id="6259776178973198997">वाई-फ़ाई डायरेक्ट मालिकों की जानकारी रीफ़्रेश करें</translation>
 <translation id="6262371516389954471">आपके डिवाइस के डेटा का बैक अप Google पर अपलोड हो गया है. साथ ही, उसे Google खाते के पासवर्ड से एन्क्रिप्ट (सुरक्षित) कर दिया गया है.</translation>
 <translation id="6263082573641595914">Microsoft CA Version</translation>
 <translation id="6263284346895336537">महत्वपूर्ण नहीं</translation>
@@ -7575,6 +7582,7 @@
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> को रूट की तरह नहीं चलाया जा सकता.</translation>
 <translation id="6812841287760418429">बदलावों को बनाए रखें</translation>
 <translation id="6813907279658683733">पूरी स्क्रीन</translation>
+<translation id="6814754908910736855">वाई-फ़ाई डायरेक्ट क्लाइंट की जानकारी:</translation>
 <translation id="6815376457351236663">फिर भी खोलें</translation>
 <translation id="6815787852028615386">यह धोखाधड़ी वाली फ़ाइल है और यह आपके डिवाइस में अनचाहे बदलाव कर सकती है</translation>
 <translation id="6816097980753839617">नीले-पीले रंग की पहचान से जुड़ी समस्या (ट्राईटैनॉमली) के लिए फ़िल्टर</translation>
@@ -8012,7 +8020,6 @@
 <translation id="7168109975831002660">फ़ॉन्ट का कम से कम साइज़</translation>
 <translation id="7169122689956315694">डिवाइसों के आस-पास होने पर सूचना मिलने की सुविधा चालू करें</translation>
 <translation id="7170236477717446850">प्रोफ़ाइल फ़ोटो</translation>
-<translation id="7170751905948784001">डेवलपर की जानकारी:</translation>
 <translation id="7171000599584840888">प्रोफ़ाइल जोड़ें...</translation>
 <translation id="7171259390164035663">रजिस्टर न करें</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{टैब को नए ग्रुप में जोड़ें}one{टैब को नए ग्रुप में जोड़ें}other{टैब को नए ग्रुप में जोड़ें}}</translation>
@@ -8444,6 +8451,7 @@
 <translation id="7501957181231305652">या</translation>
 <translation id="7502220299952823578">"इन साइटों को हमेशा चालू रखें" सूची में जोड़ें</translation>
 <translation id="7502528909759062987"><ph name="DEVICE_NAME" /> पर, टैब कास्ट करना रोकें</translation>
+<translation id="7502804472671406749">शेयर किए गए टैब में स्क्रोल और ज़ूम किए जा सकते हैं</translation>
 <translation id="7503191893372251637">Netscape प्रमाणपत्र प्रकार</translation>
 <translation id="7503985202154027481">आपके इस साइट पर आने का रिकॉर्ड आपकी सुरक्षा कुंजी पर रह जाएगा.</translation>
 <translation id="7504145862399276792">इस टैब का ऑडियो म्यूट किया जा रहा है</translation>
@@ -8488,7 +8496,6 @@
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> काम नहीं कर रहा है. ऐप्लिकेशन को बंद करने के लिए "ज़बरदस्ती बंद करें" चुनें.</translation>
 <translation id="7535730537657706072">अपने डिवाइस पर गुप्त मोड में की गई ब्राउज़िंग का इतिहास मिटाने के लिए, सभी गुप्त टैब बंद कर दें</translation>
 <translation id="7536815228183532290">आपने <ph name="EMAIL" /> के तौर पर साइन इन किया है</translation>
-<translation id="7537182889548466084">आपको टैब ग्रुप के सुझाव मिलेंगे. ये सुझाव मिलते-जुलते टैब को ग्रुप में बांटते हैं. आपके खुले हुए टैब और टाइटल, Google को भेजे जाते हैं. इस सुविधा को बेहतर बनाने के लिए, इनकी समीक्षा मैन्युअल तरीके से की जा सकती है.</translation>
 <translation id="7538013435257102593">यह फ़ाइल टाइप आम तौर पर डाउनलोड नहीं किया जाता है और यह खतरनाक हो सकता है</translation>
 <translation id="7540972813190816353">अपडेट की जाँच करते समय कोई गड़बड़ी आई: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> ने इस डिवाइस को पिछले वर्शन पर सेट किया है. कृपया ज़रूरी फ़ाइलों को सेव कर लें. इसके बाद, रीस्टार्ट करें. इस डिवाइस का सारा डेटा मिट जाएगा.</translation>
@@ -10783,6 +10790,7 @@
 <translation id="949807244219288032">यह टैब किसी एचआईडी डिवाइस से कनेक्ट है</translation>
 <translation id="950079950995628542">"<ph name="PHONE_NAME" />" से</translation>
 <translation id="950307215746360464">सेट अप गाइड</translation>
+<translation id="951273949038779544"><ph name="SITE_ACCESS" />. इसे आपके एडमिन ने इंस्टॉल किया है</translation>
 <translation id="951991426597076286">अस्वीकार करें</translation>
 <translation id="952471655966876828">चालू होने पर या इस्तेमाल किए जाने पर डिवाइस अपने-आप कनेक्ट हो जाएगा</translation>
 <translation id="953434574221655299">साइटों को यह जानने की अनुमति है कि आप अपने डिवाइस का इस्तेमाल कब करते हैं</translation>

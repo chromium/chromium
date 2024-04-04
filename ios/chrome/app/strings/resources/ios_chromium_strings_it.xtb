@@ -91,7 +91,6 @@ Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza co
 <translation id="3567399274263440288">Accedi con il tuo Account Google a Chromium per usare al meglio questo browser.</translation>
 <translation id="3634039384458740619">Apri Impostazioni di Chromium</translation>
 <translation id="3639997914391704523">Chromium può controllare le tue password quando accedi con il tuo Account Google.</translation>
-<translation id="3650632991272923014"><ph name="USER_EMAIL1" /> stava usando Chromium e ha lasciato preferiti, password e altre impostazioni su questo dispositivo.</translation>
 <translation id="3688710892786762883">Chromium rileverà i numeri di tracciamento delle spedizioni sui siti che visiti e mostrerà gli aggiornamenti relativi ai pacchetti nella pagina Nuova scheda. I tuoi dati verranno condivisi con Google per fornire questa funzionalità e migliorare Shopping per tutti.</translation>
 <translation id="372658070733623520">Per usare e salvare i dati di Chromium nel tuo Account Google, verifica la tua identità.</translation>
 <translation id="3780779443901618967">Ricevi un avviso in caso di siti pericolosi, inclusi quelli di cui Google non era a conoscenza, analizzando più dati provenienti dai siti rispetto al livello Protezione standard. Puoi scegliere di ignorare gli avvisi di Chromium.</translation>
@@ -182,7 +181,6 @@ Aspetti da considerare:
 <translation id="5983312940147103417">Migliora Chromium</translation>
 <translation id="5985102273857091344">Seleziona "Chromium".</translation>
 <translation id="5985254578475526217">Per ricevere notifiche da Chromium, attiva le notifiche nelle Impostazioni di iOS.</translation>
-<translation id="6062449165341879460">La tua organizzazione <ph name="DOMAIN" /> avrà accesso ai dati, ai preferiti, alla cronologia, alle password e ad altre impostazioni di Chromium che hai memorizzato in questo account. Quando esci, i dati verranno cancellati da questo dispositivo.  Tuttavia, i tuoi dati rimarranno memorizzati nel tuo Account Google gestito e saranno disponibili per la tua organizzazione. La tua organizzazione può anche impostare criteri specifici per l'account in grado di modificare il comportamento di Chromium.</translation>
 <translation id="6093744543579359059">Gestisci le password in Chromium</translation>
 <translation id="6104024151682120539">Apri in Chromium</translation>
 <translation id="61109258320235597">Per usare e salvare i dati di Chromium nel tuo Account Google, inserisci la passphrase.</translation>
@@ -247,7 +245,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="7763454117143368771">Usa Chromium come browser predefinito per proteggerti da siti pericolosi e tenere al sicuro le tue password</translation>
 <translation id="78025249032851484">Chromium non è aggiornato.</translation>
 <translation id="7859018312476869945">Quando digiti nella barra degli indirizzi o nella casella di ricerca, Chromium invia ciò che digiti al tuo motore di ricerca predefinito per ricevere suggerimenti migliori. Questa opzione è disattivata nella modalità di navigazione in incognito.</translation>
-<translation id="786327964234957808">Stai cambiando account di sincronizzazione, passando dall'account <ph name="USER_EMAIL1" /> all'account <ph name="USER_EMAIL2" />. I dati di Chromium esistenti sono gestiti da <ph name="DOMAIN" />. I dati verranno cancellati dal dispositivo, ma rimarranno memorizzati nell'account <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Inizia a usare lo scanner di Chromium</translation>
 <translation id="7905064834449738336">Quando utilizzi una password, Chromium ti avvisa se è stata pubblicata online. Durante questa operazione, le tue password e i tuoi nomi utente vengono criptati, quindi non possono essere letti da nessuno, Google compresa.</translation>
 <translation id="7911732829884437264">Usa Chromium per impostazione predefinita</translation>

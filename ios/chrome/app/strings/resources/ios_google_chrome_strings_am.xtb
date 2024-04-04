@@ -114,14 +114,12 @@
 <translation id="3901001113120561395">ከChrome ምርጡን ያግኙ።</translation>
 <translation id="3913386780052199712">Chrome ውስጥ ገብተዋል</translation>
 <translation id="3967382818307165056">በChrome ውስጥ የመክፈያ ዘዴዎችን ያስተዳድሩ</translation>
-<translation id="3980220367029651214">የስምረት መለያዎችን ከ<ph name="USER_EMAIL1" /> ወደ <ph name="USER_EMAIL2" /> እየቀየሩ ነው። ነባሩ የChrome ውሂብዎ በ<ph name="DOMAIN" /> ነው የሚተዳደረው። ይሄ ውሂብዎን ከዚህ መሣሪያዎ ይሰርዘዋል፣ ነገር ግን ውሂብዎ በ<ph name="USER_EMAIL1" /> ውስጥ እንዳለ ይቀራል።</translation>
 <translation id="3984746313391923992">ድርጅትዎ ከChrome ዘግተው እንደወጡ እንዲቆዩ ይፈልጋል።</translation>
 <translation id="3988789688219830639">Google Chrome የእርስዎ ፎቶዎች ወይም ቪዲዮዎች መዳረሻ የለውም። መዳረሻ በiOS ቅንብሮች &gt; ግላዊነት &gt; ፎቶዎች ውስጥ ያንቁ።</translation>
 <translation id="4064699917955374540">በGoogle መለያዎ ውስጥ የChrome ውሂብን ለመጠቀም እና ለማስቀመጥ እርስዎ መሆንዎን ያረጋግጡ።</translation>
 <translation id="4067858366537947361">የChrome ማንነት የማያሳውቅ ትርን ይክፈቱ</translation>
 <translation id="4093042601582616698">Chrome የእርስዎ ነባሪ አሳሽ ይደረግ?</translation>
 <translation id="417201473131094001">በChrome Canary ላይ አይደገፍም</translation>
-<translation id="4233521129555661685"><ph name="USER_EMAIL1" /> በዚህ መሣሪያ ላይ Chromeን እና ግራ ዕልባቶችን፣ የይለፍ ቃላትን እና ሌሎች ቅንብሮችን እየተጠቀመ ነበር።</translation>
 <translation id="424864128008805179">ከChrome ተዘግቶ ይወጣ?</translation>
 <translation id="4251174643044751591">በChrome ውስጥ የመክፈያ ዘዴዎች ቅንብር ገፅን ይከፍታል።</translation>
 <translation id="4453284704333523777">የChrome ቅንብሮችን ያስተዳድሩ</translation>
@@ -240,7 +238,6 @@
 <translation id="769104993356536261">በiOS ላይ Chrome እርምጃዎችን ይጠቀሙ</translation>
 <translation id="7693590760643069321">አገናኞችን በመልዕክቶች፣ በሰነዶች እና በሌሎች መተግበሪያዎች ውስጥ መታ በሚያደርጉበት ጊዜ ሁሉ Chromeን አሁን መጠቀም ይችላሉ።</translation>
 <translation id="7698568245838009292">Chrome ካሜራውን መድረስ ይፈልጋል</translation>
-<translation id="7754633291442704733">ድርጅትዎ <ph name="DOMAIN" /> በዚህ መለያ ወደሚያከማቹት የእርስዎ Chrome ውሂብ፣ እልባቶች፣ ታሪክ፣ የይለፍ ቃላት እና ሌሎች ቅንብሮች መድረስ ይችላል። ዘግተው በሚወጡበት ጊዜ፣ ውሂብዎ ከዚህ መሣሪያ ላይ ይጸዳል።  ሆኖም፣ ውሂብዎ በሚተዳደር የGoogle መለያዎ እንደተከማቸ የሚቆይ እና ለድርጅትዎ የሚገኝ ይሆናል። እንዲሁም ድርጅትዎ የChromeን ባህሪ መቀየር የሚችሉ ለዚያ መለያ የተወሰኑ የተጠቃሚ መመሪያዎችን ማቀናበር ይችላል።</translation>
 <translation id="7780154209050837198">ከChrome የበለጠ ለማግኘት በGoogle መለያዎ ወደ Chrome ይግቡ።</translation>
 <translation id="778855399387580014">በአዲስ የChrome ትር ውስጥ ፍለጋ ጀምር።</translation>
 <translation id="7792140019572081272">Chrome አደጋ ሊያስከትል የሚችል ውሂብዎን በፊት መታወቂያ ደህንነቱን ይጠብቃል።</translation>

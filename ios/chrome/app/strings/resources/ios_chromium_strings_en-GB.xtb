@@ -91,7 +91,6 @@ For more settings that use data to improve your Chromium experience, go to <ph n
 <translation id="3567399274263440288">To get the most out of Chromium, sign in to Chromium with your Google Account.</translation>
 <translation id="3634039384458740619">Open Chromium settings</translation>
 <translation id="3639997914391704523">Chromium can check your passwords when you sign in with your Google Account.</translation>
-<translation id="3650632991272923014"><ph name="USER_EMAIL1" /> was using Chromium and left bookmarks, passwords and other settings on this device.</translation>
 <translation id="3688710892786762883">Chromium will detect package tracking numbers on sites that you visit and show you package updates on the New Tab page. Your data will be shared with Google to provide this feature and to improve Shopping for everyone.</translation>
 <translation id="372658070733623520">To use and save Chromium data in your Google Account, verify that it's you.</translation>
 <translation id="3780779443901618967">Warns you about dangerous sites, even ones that Google didn't know about before, by analysing more data from sites than standard protection. You can choose to skip Chromium warnings.</translation>
@@ -182,7 +181,6 @@ Things to consider:
 <translation id="5983312940147103417">Make Chromium Better</translation>
 <translation id="5985102273857091344">Select "Chromium."</translation>
 <translation id="5985254578475526217">To receive notifications from Chromium, turn on notifications in your iOS settings.</translation>
-<translation id="6062449165341879460">Your organisation <ph name="DOMAIN" /> will have access to your Chromium data, bookmarks, history, passwords and other settings that you store in this account. When you sign out, your data will be cleared from this device.  However, your data will remain stored in your managed Google Account and be available to your organisation. Your organisation can also set user policies specific to that account that can change the behaviour of Chromium.</translation>
 <translation id="6093744543579359059">Manage Passwords in Chromium</translation>
 <translation id="6104024151682120539">Open in Chromium</translation>
 <translation id="61109258320235597">To use and save Chromium data in your Google Account, enter your passphrase.</translation>
@@ -247,7 +245,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="7763454117143368771">Use Chromium as your default browser to stay protected from dangerous sites and keep your passwords safe</translation>
 <translation id="78025249032851484">Your Chromium is out of date.</translation>
 <translation id="7859018312476869945">When you type in the address bar or search box, Chromium sends what you type to your default search engine to get better suggestions. This is off in Incognito.</translation>
-<translation id="786327964234957808">You are switching sync accounts from <ph name="USER_EMAIL1" /> to <ph name="USER_EMAIL2" />. Your existing Chromium data is managed by <ph name="DOMAIN" />. This will delete your data from this device, but your data will remain in <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Start using Chromium scanner</translation>
 <translation id="7905064834449738336">When you use a password, Chromium warns you if it has been published online. When doing this, your passwords and usernames are encrypted, so they can’t be read by anyone, including Google.</translation>
 <translation id="7911732829884437264">Use Chromium by default</translation>

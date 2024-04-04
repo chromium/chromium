@@ -115,6 +115,7 @@
 <translation id="1383597849754832576">اسپیچ فائلز ڈاؤن لوڈ نہیں کر سکتے۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="1383876407941801731">تلاش کریں</translation>
 <translation id="1391102559483454063">آن</translation>
+<translation id="1394698770495054737">پورا دھندلا</translation>
 <translation id="1407069428457324124">گہری تھیم</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />۔ تواریخ کے درمیان نیویگیٹ کرنے کے لیے تیر کے نشان والی کلیدوں کا استعمال کریں۔</translation>
 <translation id="141170878022560212">بیچ کا بٹن</translation>
@@ -441,6 +442,7 @@
 <translation id="2841907151129139818">ٹیبلیٹ وضع میں سوئچ کیا</translation>
 <translation id="2844169650293029770">‏USB-C آلہ (بائیں طرف کا اگلا پورٹ)</translation>
 <translation id="2844350028562914727">تفصيلات</translation>
+<translation id="2847759467426165163">اس پر کاسٹ کریں</translation>
 <translation id="2848120746144143659">پوری اسکرین کا اسکرین شاٹ لینے کے لیے اینٹر دبائیں</translation>
 <translation id="2849936225196189499">اہم</translation>
 <translation id="2860184359326882502">بہترین مماثلت</translation>
@@ -478,6 +480,7 @@
 <translation id="3009958530611748826">محفوظ کرنے کے لئے فولڈر منتخب کریں</translation>
 <translation id="301282384882049174">آپ کے منتظم کے ذریعے اشتراک کردہ</translation>
 <translation id="301584155502740476">ہاٹ اسپاٹ کی تفصیلات دکھائیں۔ ہاٹ اسپاٹ آف ہے۔</translation>
+<translation id="3017079585324758401">پس منظر</translation>
 <translation id="3018135054368884502">فاسٹ فارورڈ میڈیا</translation>
 <translation id="3033545621352269033">آن</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> کے ساتھ یکجا کریں</translation>
@@ -954,6 +957,7 @@
 <translation id="4798888871844665150">‏کاپی کیے گئے آئٹم پہلے ہی کلپ بورڈ میں ہیں۔ دیکھنے کے لیے <ph name="SHORTCUT_KEY_NAME" /> + V کا استعمال کریں۔</translation>
 <translation id="479989351350248267">تلاش کریں</translation>
 <translation id="4804818685124855865">منقطع کریں</translation>
+<translation id="4806631651704497161">ہلکا دھندلا</translation>
 <translation id="4813311884204119883">لنک کو ٹیب اسٹرپ پر خالی جگہ پر گھسیٹیں</translation>
 <translation id="4814539958450445987">لاگ ان اسکرین</translation>
 <translation id="481455355267255546">اس کے آگے</translation>
@@ -1039,7 +1043,6 @@
 <translation id="5104236669533825617">اسکرین شاٹ تخلیق نہیں کیا جا سکتا</translation>
 <translation id="5107522548814527560">ویب</translation>
 <translation id="5111318697104479778"><ph name="DESC" />، <ph name="STRENGTH" /></translation>
-<translation id="5111930673176965299">پس منظر کا دھندلا پن</translation>
 <translation id="5117590920725113268">اگلا مہینہ دکھائیں</translation>
 <translation id="5121628974188116412">صفحہ کے نچلے حصے پر جائیں</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" /> کا پیش منظر۔ غیر فعال ڈیسک۔</translation>

@@ -48,6 +48,7 @@
 <translation id="123124571410524056">పోర్టల్‌తో సమస్య ఉన్నట్టుగా ఉంది</translation>
 <translation id="1232610416724362657">జలపాతం</translation>
 <translation id="1238612778414822719">HTTPS ప్రతిస్పందన సమయం</translation>
+<translation id="1252766349417594414">జాయ్‌స్టిక్</translation>
 <translation id="1270369111467284986">క్యాప్టివ్ పోర్టల్ అనుమానించబడింది</translation>
 <translation id="1274654146705270731">నారింజలు</translation>
 <translation id="1275718070701477396">ఎంచుకోబడింది</translation>
@@ -147,7 +148,9 @@
 <translation id="1755556344721611131">సమస్య విశ్లేషణలకు సంబంధించిన యాప్</translation>
 <translation id="175763766237925754">బాగుంది (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
+<translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1765169783255151332">కీలను వేగంగా మార్చండి</translation>
 <translation id="1768959921651994223">ప్రామాణీకరణ రకం</translation>
 <translation id="1776228893584526149">వాల్‌పేపర్ రంగు</translation>
 <translation id="1777913922912475695">వంతెన</translation>
@@ -206,6 +209,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2073232437457681324">విశాలమైన మహాసముద్రం</translation>
 <translation id="2080070583977670716">మరిన్ని సెట్టింగ్‌లు</translation>
+<translation id="2082932131694554252">కేటాయించిన కీబోర్డ్ కీ</translation>
 <translation id="2085089206770112532">డిస్‌ప్లే బ్రైట్‌నెస్‌ను తగ్గించండి</translation>
 <translation id="2102231663024125441">టెక్స్ట్‌ను ఎడిట్ చేయడం</translation>
 <translation id="2105810540595158374">పరికర రకం గేమ్ కంట్రోలర్.</translation>
@@ -304,6 +308,7 @@
 <translation id="2620436844016719705">సిస్టమ్</translation>
 <translation id="2638662041295312666">సైన్ ఇన్ ఇమేజ్</translation>
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> ఆల్బమ్ ఎంచుకోబడింది</translation>
+<translation id="2645380101799517405">కంట్రోల్స్</translation>
 <translation id="2652403576514495859">డిక్టేషన్‌‌ను ఎనేబుల్ చేయండి లేదా టోగుల్ చేయండి</translation>
 <translation id="2653659639078652383">సమర్పించు</translation>
 <translation id="2656001153562991489">ప్రత్యేకించి Chromebook Plusకు మాత్రమే</translation>
@@ -334,6 +339,7 @@
 <translation id="2875812231449496375">ఈ వాల్‌పేపర్‌తో ఉత్తమ ఫలితాలను పొందడం కోసం దీన్ని ఆన్ చేయండి. మీరు ఈ సెట్టింగ్‌ను ఏ సమయంలోనైనా ఆఫ్ చేయవచ్చు.</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> సెకన్లలో <ph name="RATE" /> డిశ్చార్జ్ చేయబడింది.</translation>
 <translation id="2880569433548999039">క్లౌడ్ ఫ్లో స్క్రీన్ సేవర్</translation>
+<translation id="2882230315487799269">AI ప్రాంప్ట్‌ను అనుకూలంగా మార్చండి</translation>
 <translation id="2888298276507578975">"థ్యాంక్ యూ నోట్ రాయండి" వంటి ప్రాంప్ట్‌ను ఎంటర్ చేయండి</translation>
 <translation id="2890557891229184386">ట్రాపికల్ దీవి</translation>
 <translation id="2895772081848316509">డార్క్</translation>
@@ -445,7 +451,9 @@
 <translation id="3606583719724308068">HTTPS వెబ్‌సైట్‌లలో ప్రతిస్పందన సమయం ఎక్కువగా ఉంది</translation>
 <translation id="361575905210396100">మీ ఫీడ్‌బ్యాక్‌ను తెలిపినందుకు ధన్యవాదాలు</translation>
 <translation id="3621072146987826699">ఏనుగులు</translation>
+<translation id="3632040286124154621">మంచి సూచన</translation>
 <translation id="3632579075709132555">గోప్యతా స్క్రీన్ టోగుల్</translation>
+<translation id="3644695927181369554">సూచన బాలేదు</translation>
 <translation id="3651050199673793219">ఉష్ణోగ్రత యూనిట్‌ను ఎంచుకోండి</translation>
 <translation id="3661106764436337772">మరింత వేగంగా, మరింత నమ్మకంతో రాయండి</translation>
 <translation id="3662461537616691585">బర్గండీ, మెరూన్</translation>
@@ -455,10 +463,12 @@
 <translation id="370665806235115550">లోడ్ అవుతోంది...</translation>
 <translation id="3708186454126126312">ఇంతకు మునుపు కనెక్ట్ చేయబడినవి</translation>
 <translation id="3715651196924935218">ఫ్లోట్ మోడ్ నుండి నిష్క్రమించండి</translation>
+<translation id="3716250181321371108">కంట్రోల్‌ను క్రియేట్ చేయండి</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> రివ్యూలు)</translation>
 <translation id="3748026146096797577">కనెక్ట్ కాలేదు</translation>
 <translation id="3749289110408117711">ఫైల్ పేరు</translation>
 <translation id="3771294271822695279">వీడియో ఫైళ్లు</translation>
+<translation id="3780740315729837296">కీబోర్డ్ కీని కేటాయించండి</translation>
 <translation id="3784455785234192852">లాక్ చేయి</translation>
 <translation id="3785643128701396311">పిక్సెల్ ఆర్ట్</translation>
 <translation id="3790109258688020991">పాయింటిలిస్ట్</translation>
@@ -488,6 +498,7 @@
 <translation id="3916998944874125962">స్క్రీన్‌షాట్‌ను తీస్తుంది</translation>
 <translation id="3923184630988645767">డేటా వినియోగం</translation>
 <translation id="3932043219784172185">పరికరం ఏదీ కనెక్ట్ చేయబడలేదు</translation>
+<translation id="3934185438132762746">కేటాయించని <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">హోస్ట్‌ను పరిష్కరించడంలో విఫలమైంది</translation>
 <translation id="3942420633017001071">నిర్ధారణలు</translation>
 <translation id="3954678691475912818">పరికరం రకం తెలియదు.</translation>
@@ -510,6 +521,7 @@
 <translation id="4054683689023980771">ఇమేజ్‌ను డౌన్‌లోడ్ చేస్తోంది</translation>
 <translation id="4063039537646912479">లేత నీలం</translation>
 <translation id="4070799384363688067">యానిమే</translation>
+<translation id="4086271957099059213">మరో కంట్రోల్‌ను క్రియేట్ చేయండి</translation>
 <translation id="4091002263446255071">రొమాంటిక్</translation>
 <translation id="4093865285251893588">ప్రొఫైల్ ఇమేజ్</translation>
 <translation id="409427325554347132">టెస్ట్ వివరాలను సేవ్ చేయండి</translation>
@@ -540,7 +552,6 @@
 <translation id="4227825898293920515"><ph name="TIME" />లో పాస్‌వర్డ్‌ గడువు ముగుస్తుంది</translation>
 <translation id="4238516577297848345">ప్రింట్ టాస్క్‌లు ఏవీ ప్రోగ్రెస్‌లో లేవు</translation>
 <translation id="4239069858505860023">GPRS</translation>
-<translation id="4244962993387259361">మెమరీ టెస్ట్‌ను రన్ చేయడానికి మీ దగ్గర కనీసం 500 MB ఖాళీగా ఉండాలి. స్పేస్‌ను ఖాళీ చేయడానికి, సెట్టింగ్‌లు &gt; స్టోరేజ్ మేనేజ్‌మెంట్‌కు వెళ్లండి.</translation>
 <translation id="4250229828105606438">స్క్రీన్‌షాట్</translation>
 <translation id="4251839292699800785">స్టైలిష్ ఆఫీస్</translation>
 <translation id="4258281355379922695">HTTP ప్రతిస్పందన సమయం</translation>
@@ -612,6 +623,7 @@
 <translation id="4646949265910132906">సురక్షిత Wi-Fi కనెక్షన్</translation>
 <translation id="4650608062294027130">కుడి వైపు షిఫ్ట్</translation>
 <translation id="4654549501020883054">ప్రతి రోజూ మార్చండి</translation>
+<translation id="4655868084888499342">వాల్‌పేపర్‌గా ఇమేజ్ సెట్ చేయబడింది</translation>
 <translation id="4661249927038176904">సర్రియల్</translation>
 <translation id="4664651912255946953">బొచ్చు</translation>
 <translation id="4665014895760275686">తయారీదారు</translation>
@@ -619,6 +631,7 @@
 <translation id="467715984478005772">ఫైర్‌వాల్‌తో సమస్య ఉన్నట్టుగా ఉంది</translation>
 <translation id="4691278870498629773">ఆగిపోయింది - ట్రే అందుబాటులో లేదు</translation>
 <translation id="469379815867856270">సిగ్నల్ సామర్థ్యం</translation>
+<translation id="4697260493945012995">మీ కంట్రోల్ రకాన్ని ఎంచుకోండి</translation>
 <translation id="4731797938093519117">తల్లి/తండ్రి యాక్సెస్</translation>
 <translation id="473775607612524610">అప్‌డేట్‌</translation>
 <translation id="4744944742468440486">మీ ఎంపికకు సంబంధించిన సమాచారం</translation>
@@ -859,6 +872,7 @@
 <translation id="6108952804512516814">AIతో క్రియేట్ చేయండి</translation>
 <translation id="6112878310391905610">ఈ సెట్టింగ్‌ను మీ అడ్మినిస్ట్రేటర్‌లు మేనేజ్ చేస్తారు</translation>
 <translation id="6113701710518389813">పై వైపు బాణం</translation>
+<translation id="6116005346231504406">మొదటి కంట్రోల్‌ను క్రియేట్ చేయండి</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, మరో +<ph name="NUMBER" /> ఆల్బమ్‌లు</translation>
 <translation id="6122191549521593678">ఆన్‌లైన్</translation>
 <translation id="6122277663991249694">ChromeOS ఇన్‌పుట్ విధాన సర్వీస్</translation>
@@ -912,6 +926,7 @@
 <translation id="6382182670717268353">స్క్రీన్ సేవర్ ప్రివ్యూ</translation>
 <translation id="6388847657025262518">స్కానర్ డాక్యుమెంట్ ఫీడర్ ఇరుక్కుపోయింది. ఫీడర్‌ను చెక్ చేసి, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="6394634179843537518">ఫైల్‌ను జోడించండి</translation>
+<translation id="6396719002784938593">ఎండిన ఫెదర్ గ్రాస్</translation>
 <translation id="639964859328803943">హై టీ</translation>
 <translation id="6400680457268373900"><ph name="DREAMSCAPES_COLORS" />లలో <ph name="DREAMSCAPES_MATERIAL" />తో తయారు చేయబడిన ఒక సర్రియల్ <ph name="DREAMSCAPES_OBJECT" /></translation>
 <translation id="6401427872449207797">బ్రౌజర్ సెర్చ్</translation>
@@ -953,6 +968,7 @@
 <translation id="6575134580692778371">కాన్ఫిగర్ చేయలేదు</translation>
 <translation id="6576005492601044801">ఎడమవైపు</translation>
 <translation id="6579509898032828423">ఈ ఫోటోను ఉపయోగించండి</translation>
+<translation id="6587870930887634392">సక్యులెంట్</translation>
 <translation id="6596816719288285829">IP అడ్రస్‌</translation>
 <translation id="6599673642868607614">మీ ఫీడ్‌బ్యాక్‌ను తెలిపినందుకు ధన్యవాదాలు. మీ ఫీడ్‌బ్యాక్ Chromebook అనుభవాన్ని మెరుగుపరచడంలో మాకు సహాయపడుతుంది, ఇంకా మా టీమ్ ద్వారా రివ్యూ చేయబడుతుంది. పెద్ద సంఖ్యలో రిపోర్ట్‌లు ఉన్నందున మేము రిప్లయిని పంపడం సాధ్యం కాదు.</translation>
 <translation id="6618744767048954150">రన్ అవుతున్నాయి</translation>
@@ -1045,6 +1061,7 @@
 <translation id="7143207342074048698">కనెక్ట్ అవుతో.</translation>
 <translation id="7144878232160441200">మళ్లీ ట్రై చేయండి</translation>
 <translation id="7144954474087165241">పగోడా</translation>
+<translation id="7147557737960578492">కొత్త కీని ఎంచుకోవడం ద్వారా మళ్లీ కేటాయించండి</translation>
 <translation id="714876143603641390">LAN కనెక్టివిటీ</translation>
 <translation id="7154020516215182599">మీ ఫీడ్‌బ్యాక్‌ను షేర్ చేయండి లేదా మీ సమస్యను వివరించండి. అవసరమైతే, మీ సమస్య ఎలా ఏర్పడింది అనే దానిని దశల వారిగా చేర్చండి.</translation>
 <translation id="7155037718620478619">మరిన్ని APNలను కనుగొనండి</translation>
@@ -1090,6 +1107,7 @@
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Searchలో ఫలితాన్ని చూడటానికి 'Search + Space'ను నొక్కండి.</translation>
 <translation id="7343649194310845056">నెట్‌వర్క్ పరికరాలు</translation>
 <translation id="7344788170842919262">మట్టి రంగు</translation>
+<translation id="7346768383111016081">మీ కీబోర్డ్‌తో ఆడేందుకు గేమ్ చర్యలకు కంట్రోల్‌ను సెట్ చేయండి</translation>
 <translation id="7353413232959255829"><ph name="LIST_SIZE" />లోని <ph name="LIST_POSITION" />లో ఉన్న సెర్చ్ ఫలితం: <ph name="SEARCH_RESULT_TEXT" />. షార్ట్‌కట్‌కు నావిగేట్ అవ్వడానికి 'Enter'ను నొక్కండి.</translation>
 <translation id="7359657277149375382">ఫైల్ రకం</translation>
 <translation id="73631062356239394">సమస్య విశ్లేషణ డేటాను షేర్ చేయండి</translation>
@@ -1111,6 +1129,7 @@
 <translation id="7497215489070763236">సర్వర్ CA సర్టిఫికేట్</translation>
 <translation id="7501957181231305652">లేదా</translation>
 <translation id="7502658306369382406">IPv6 అడ్రస్‌</translation>
+<translation id="7507061649493508884">ప్రకాశవంతమైన <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /></translation>
 <translation id="7513770521371759388">దిగువ</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">క్రియేట్ చేయండి</translation>
@@ -1160,7 +1179,6 @@
 <translation id="780301667611848630">వద్దు</translation>
 <translation id="7805768142964895445">స్థితి</translation>
 <translation id="7813073042185856802">పర్వతం</translation>
-<translation id="7819831665603418705">టెంప్లేట్‌ను ఉపయోగించండి</translation>
 <translation id="7819857487979277519">PSK (WPA లేదా RSN)</translation>
 <translation id="7824219488248240180">పోస్ట్-ఇంప్రెషనిస్ట్</translation>
 <translation id="7828503206075800057"><ph name="CAFE_STYLE" /> <ph name="CAFE_TYPE" /> కెఫే</translation>
@@ -1171,6 +1189,7 @@
 <translation id="7850847810298646851">వాల్‌పేపర్ Googleకు చెందిన AI టెక్నాలజీల ద్వారా అందించబడుతోంది</translation>
 <translation id="785170686607360576">ట్యూలిప్</translation>
 <translation id="7856267634822906833">బ్లూటూత్ టచ్‌స్క్రీన్</translation>
+<translation id="7859006200041800233">కాక్టస్ పువ్వు</translation>
 <translation id="7869143217755017858">డార్క్ మోడ్‌ను డిజేబుల్ చేయండి</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">ప్రదాత రకం</translation>
@@ -1283,6 +1302,7 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">టీ హౌస్</translation>
 <translation id="8538236298648811558">Googleకు చెందిన AI టెక్నాలజీల ద్వారా అందించబడుతోంది</translation>
+<translation id="8550364285433943656">మీ కీబోర్డ్‌తో ఆడేందుకు గేమ్ చర్యలకు కంట్రోల్స్‌ను సెట్ చేయండి</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">వారి నెట్‌వర్క్‌కు కనెక్ట్ అవ్వడానికి మీ క్యారియర్‌కు ఈ ఆప్షన్ అవసరం పడవచ్చు. వివరాల కోసం మీ క్యారియర్‌ను సంప్రదించండి.</translation>
 <translation id="8576249514688522074">ప్రారంభం కాలేదు</translation>
@@ -1306,6 +1326,7 @@
 <translation id="8726019395068607495">ఆగిపోయింది - డోర్ తెరిచి ఉంది</translation>
 <translation id="8730621377337864115">పూర్తయింది</translation>
 <translation id="8747900814994928677">మార్పును నిర్ధారించండి</translation>
+<translation id="8749478549112817787">కెమెరా బ్యాక్‌గ్రౌండ్</translation>
 <translation id="8755946156089753497">టవర్</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos ఆల్బమ్</translation>
@@ -1400,6 +1421,7 @@
 <translation id="9189000703457422362">ఆటోమేటిక్‌గా గుర్తించబడే APNలను ఉపయోగించి ఈ నెట్‌వర్క్‌కు కనెక్ట్ చేయడం సాధ్యపడదు. మరింత సమాచారం కోసం మీ మొబైల్ క్యారియర్‌ను సంప్రదించండి.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Android యాప్‌ల నుండి గేట్‌వేను సంప్రదించడం సాధ్యపడదు</translation>
+<translation id="921080052717160800">బ్యాక్‌గ్రౌండ్‌గా ఇమేజ్ సెట్ చేయబడింది</translation>
 <translation id="9211490828691860325">అన్ని డెస్క్‌లు</translation>
 <translation id="932327136139879170">హోమ్</translation>
 <translation id="939519157834106403">SSID</translation>

@@ -91,7 +91,6 @@ Am ragor o osodiadau sy'n defnyddio data i wella'ch profiad Chromium, ewch i <ph
 <translation id="3567399274263440288">I gael y gorau o Chromium, mewngofnodwch i Chromium â'ch Cyfrif Google.</translation>
 <translation id="3634039384458740619">Agor Gosodiadau Chromium</translation>
 <translation id="3639997914391704523">Gall Chromium wirio'ch cyfrineiriau pan fyddwch yn mewngofnodi gyda'ch Cyfrif Google.</translation>
-<translation id="3650632991272923014">Roedd <ph name="USER_EMAIL1" /> yn defnyddio Chromium a gadawodd nodau tudalen, cyfrineiriau, a gosodiadau eraill ar y ddyfais hon.</translation>
 <translation id="3688710892786762883">Bydd Chromium yn canfod rhifau olrhain pecyn ar wefannau rydych chi'n ymweld â nhw ac yn dangos diweddariadau pecyn ar y dudalen Tab Newydd. Bydd eich data yn cael eu rhannu gyda Google i ddarparu'r nodwedd hon ac i wella Siopa i bawb.</translation>
 <translation id="372658070733623520">I ddefnyddio a chadw data Chromium yn eich Cyfrif Google, cadarnhewch mai chi sydd yno.</translation>
 <translation id="3780779443901618967">Yn eich rhybuddio am wefannau peryglus, hyd yn oed rhai nad oedd Google yn gwybod amdanynt o'r blaen, trwy ddadansoddi mwy o ddata o wefannau na diogelwch safonol. Gallwch ddewis hepgor rhybuddion Chromium.</translation>
@@ -182,7 +181,6 @@ Pethau i'w hystyried:
 <translation id="5983312940147103417">Gwella Chromium</translation>
 <translation id="5985102273857091344">Dewiswch "Chromium."</translation>
 <translation id="5985254578475526217">I dderbyn hysbysiadau gan Chromium, trowch hysbysiadau ymlaen yn eich Gosodiadau iOS.</translation>
-<translation id="6062449165341879460">Bydd gan <ph name="DOMAIN" /> eich sefydliad fynediad at eich data Chromium, nodau tudalen, hanes, cyfrineiriau a gosodiadau eraill rydych yn eu storio yn y cyfrif hwn. Pan fyddwch yn allgofnodi, bydd eich data yn cael eu clirio o'r ddyfais hon.  Fodd bynnag, bydd eich data yn parhau i gael ei storio yn eich Cyfrif Google a reolir a bydd ar gael i'ch sefydliad. Gall eich sefydliad hefyd osod polisïau defnyddwyr sy'n benodol i'r cyfrif hwnnw a all newid ymddygiad Chromium.</translation>
 <translation id="6093744543579359059">Rheoli Cyfrineiriau yn Chromium</translation>
 <translation id="6104024151682120539">Agor yn Chromium</translation>
 <translation id="61109258320235597">I ddefnyddio a chadw data Chromium yn eich Cyfrif Google, rhowch eich cyfrinymadrodd.</translation>
@@ -247,7 +245,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="7763454117143368771">Defnyddiwch Chromium fel eich porwr diofyn i gadw yn ddiogel rhag gwefannau peryglus ac i gadw eich cyfrineiriau'n ddiogel</translation>
 <translation id="78025249032851484">Mae eich Chromium yn hen.</translation>
 <translation id="7859018312476869945">Pan fyddwch yn teipio yn y bar cyfeiriad neu'r blwch chwilio, bydd Chromium yn anfon yr hyn rydych yn ei deipio i'ch peiriant chwilio diofyn i gael awgrymiadau gwell. Mae hwn wedi'i ddiffodd yn y modd Anhysbys.</translation>
-<translation id="786327964234957808">Rydych yn newid cyfrifon cysoni o <ph name="USER_EMAIL1" /> i <ph name="USER_EMAIL2" />. Mae eich data Chromium presennol yn cael eu rheoli gan <ph name="DOMAIN" />. Bydd hyn yn dileu eich data o'r ddyfais hon, ond bydd eich data yn aros yn <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Dechrau defnyddio sganiwr Chromium</translation>
 <translation id="7905064834449738336">Pan fyddwch yn defnyddio cyfrinair, mae Chromium yn eich rhybuddio os yw wedi'i gyhoeddi ar-lein. Wrth wneud hyn, mae eich cyfrineiriau a'ch enwau defnyddiwr wedi'u hamgryptio, felly ni all unrhyw un, gan gynnwys Google, eu darllen.</translation>
 <translation id="7911732829884437264">Defnyddiwch Chromium Yn Ddiofyn</translation>

@@ -540,7 +540,6 @@
 <translation id="4227825898293920515">စကားဝှက်သည် <ph name="TIME" /> တွင် သက်တမ်းကုန်ပါမည်</translation>
 <translation id="4238516577297848345">ပရင့်ထုတ်ရန် ဖိုင်များ လုပ်ဆောင်မနေပါ</translation>
 <translation id="4239069858505860023">GPRS</translation>
-<translation id="4244962993387259361">မှတ်ဉာဏ်စစ်ဆေးမှု လုပ်ဆောင်ရန် အနည်းဆုံး ၅၀၀ MB လွတ်နေရမည်။ နေရာလွတ်ပြုလုပ်ရန် ဆက်တင်များ &gt; ‘သိုလှောင်ခန်းစီမံခန့်ခွဲမှုစနစ်’ သို့ သွားပါ။</translation>
 <translation id="4250229828105606438">မျက်နှာပြင် လျှပ်တပြက်ပုံ</translation>
 <translation id="4251839292699800785">စတိုင်ကျသောရုံးခန်း</translation>
 <translation id="4258281355379922695">HTTP တုံ့ပြန်ချိန်</translation>
@@ -912,6 +911,7 @@
 <translation id="6382182670717268353">စခရင်နားချိန်ပုံ အစမ်းကြည့်ရှုခြင်း</translation>
 <translation id="6388847657025262518">စကင်ဖတ်စက်၏ စာရွက်ထည့်ရန်ဗန်း ညပ်နေသည်။ ဗန်းကို စစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="6394634179843537518">ဖိုင်ထည့်ရန်</translation>
+<translation id="6396719002784938593">အမွှေးဖွား မြက်ပင်ခြောက်</translation>
 <translation id="639964859328803943">လက်ဖက်ရည်</translation>
 <translation id="6400680457268373900"><ph name="DREAMSCAPES_COLORS" /> <ph name="DREAMSCAPES_MATERIAL" /> ဖြင့်ပြုလုပ်ထားသော အိမ်မက်ဆန်သည့် <ph name="DREAMSCAPES_OBJECT" /></translation>
 <translation id="6401427872449207797">ဘရောင်ဇာ ရှာဖွေမှု</translation>
@@ -953,6 +953,7 @@
 <translation id="6575134580692778371">စီစဉ်မဖွဲ့စည်းရသေး</translation>
 <translation id="6576005492601044801">ဘယ်</translation>
 <translation id="6579509898032828423">ဤပုံသုံးရန်</translation>
+<translation id="6587870930887634392">အရည်ရွှမ်းပင်</translation>
 <translation id="6596816719288285829">IP လိပ်စာ</translation>
 <translation id="6599673642868607614">သင့်အကြံပြုချက်အတွက် ကျေးဇူးတင်ပါသည်။ သင့်အကြံပြုချက်သည် Chromebook အသုံးပြုမှုကို ပိုမိုကောင်းမွန်စေရန် ကူညီပေးပြီး ၎င်းကို ကျွန်ုပ်တို့၏အဖွဲ့က စိစစ်ပါမည်။ အကြောင်းကြားချက်ပေးပို့မှု အလွန်များသဖြင့် အကြောင်းပြန်နိုင်မည် မဟုတ်ပါ။</translation>
 <translation id="6618744767048954150">လုပ်ဆောင်နေသည်</translation>
@@ -1111,6 +1112,7 @@
 <translation id="7497215489070763236">ဆာဗာ CA အသိအမှတ်ပြုလက်မှတ်</translation>
 <translation id="7501957181231305652">သို့မဟုတ်</translation>
 <translation id="7502658306369382406">IPv6 လိပ်စာ</translation>
+<translation id="7507061649493508884">ရွှန်းစိုသော <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /></translation>
 <translation id="7513770521371759388">အောက်</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">ပြုလုပ်ရန်</translation>
@@ -1160,7 +1162,6 @@
 <translation id="780301667611848630">မလိုပါ</translation>
 <translation id="7805768142964895445">အခြေအနေ</translation>
 <translation id="7813073042185856802">တောင်</translation>
-<translation id="7819831665603418705">နမူနာပုံစံကို အသုံးပြုပါ</translation>
 <translation id="7819857487979277519">PSK (WPA သို့မဟုတ် RSN)</translation>
 <translation id="7824219488248240180">ပို့စ်-အင်ပရက်ရှင်နစ်</translation>
 <translation id="7828503206075800057"><ph name="CAFE_STYLE" /> <ph name="CAFE_TYPE" /> ကော်ဖီဆိုင်</translation>
@@ -1171,6 +1172,7 @@
 <translation id="7850847810298646851">Google AI က ပံ့ပိုးထားသော နောက်ခံ</translation>
 <translation id="785170686607360576">ကျူးလစ်ပန်း</translation>
 <translation id="7856267634822906833">ဘလူးတုသ် တို့ထိမျက်နှာပြင်</translation>
+<translation id="7859006200041800233">ရှားစောင်းပင် အပွင့်</translation>
 <translation id="7869143217755017858">အမှောင်မုဒ် ပိတ်ရန်</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">ထောက်ပံ့သူအမျိုးစား</translation>
@@ -1306,6 +1308,7 @@
 <translation id="8726019395068607495">ရပ်သွားသည် - တံခါးပွင့်နေသည်</translation>
 <translation id="8730621377337864115">ပြီးပါပြီ</translation>
 <translation id="8747900814994928677">ပြောင်းလဲမှုကို အတည်ပြုခြင်း</translation>
+<translation id="8749478549112817787">ကင်မရာ နောက်ခံ</translation>
 <translation id="8755946156089753497">မျှော်စင်</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos အယ်လ်ဘမ်</translation>

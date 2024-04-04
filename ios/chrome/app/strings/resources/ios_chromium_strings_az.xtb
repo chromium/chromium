@@ -91,7 +91,6 @@ Chromium təcrübənizi təkmilləşdirmək məqsədilə data istifadə edən di
 <translation id="3567399274263440288">Chromium'dan maksimum yararlanmaq üçün Google Hesabınızla Chromium'a daxil olun.</translation>
 <translation id="3634039384458740619">Chromium ayarlarını açın</translation>
 <translation id="3639997914391704523">Google Hesabınız ilə daxil olduqda Chromium parollarınızı yoxlaya bilər.</translation>
-<translation id="3650632991272923014"><ph name="USER_EMAIL1" /> bu cihazda Chromium istifadə edirdi və əlfəcinlər, parollar və digər ayarlar qalıb.</translation>
 <translation id="3688710892786762883">Chromium daxil olduğunuz saytlarda bağlama izləmə nömrələrini aşkar edəcək və Yeni tab səhifəsində bağlama yeniləmələrini göstərəcək. Bu funksiyanı təmin etmək və Şopinq xidmətini təkmilləşdirmək üçün data Google ilə paylaşılacaq.</translation>
 <translation id="372658070733623520">Google Hesabında Chromium datasını istifadə etmək və saxlamaq üçün kimliyinizi təsdiq edin.</translation>
 <translation id="3780779443901618967">Standart qoruma ilə müqayisədə saytlardan daha çox data təhlil edərək təhlükəli, hətta Google-un bilmədiyi saytlar haqqında xəbərdar edir. Chromium xəbərdarlıqlarını ötürə bilərsiniz.</translation>
@@ -182,7 +181,6 @@ Nəzərə alın ki:
 <translation id="5983312940147103417">Chromium'u yaxşılaşdırın</translation>
 <translation id="5985102273857091344">"Chromium" seçin.</translation>
 <translation id="5985254578475526217">Chromium-dan bildiriş almaq üçün iOS ayarlarında bildirişləri aktiv edin.</translation>
-<translation id="6062449165341879460">Təşkilatınızın (<ph name="DOMAIN" />) bu hesabda saxladığınız Chromium datası, əlfəcinlər, tarixçələr, parollar və digər ayarlara girişi olacaq. Hesabdan çıxdığınız zaman datanız bu cihazdan silinəcək.  Bununla belə, datanız idarə olunan Google Hesabınızda saxlanacaq və təşkilatınız üçün əlçatan olacaq. Təşkilatınız həmçinin Chromium'un davranışını dəyişə bilən hesab üçün xüsusi istifadəçi siyasətləri təyin edə bilər.</translation>
 <translation id="6093744543579359059">Chromium-da parolları idarə edin</translation>
 <translation id="6104024151682120539">Chromium-da açın</translation>
 <translation id="61109258320235597">Google Hesabında Chromium datasını istifadə etmək və saxlamaq üçün parol ifadəsi daxil edin.</translation>
@@ -247,7 +245,6 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="7763454117143368771">Təhlükəli saytlardan qorunmaq və parollarınızı qorumaq üçün defolt brauzeriniz olaraq Chromium istifadə edin</translation>
 <translation id="78025249032851484">Chromium köhnəlib.</translation>
 <translation id="7859018312476869945">Ünvan panelinə və ya axtarış xanasına mətn daxil etdiyiniz zaman Chromium sizə daha yaxşı təkliflər təqdim etmək üçün yazdıqlarınızı defolt axtarış sisteminizə göndərir. Bu, Anonim rejimdə deaktivdir.</translation>
-<translation id="786327964234957808">Sinxronizasiya hesablarını <ph name="USER_EMAIL1" /> hesabından <ph name="USER_EMAIL2" /> hesabına keçirirsiniz. Mövcud Chromium datanız <ph name="DOMAIN" /> tərəfindən idarə olunur. Datanızı bu cihazdan siləcək, lakin data <ph name="USER_EMAIL1" /> hesabında qalacaq.</translation>
 <translation id="7890287942691234100">Chromium skanerindən istifadə etməyə başlayın</translation>
 <translation id="7905064834449738336">İstifadə edilən parol onlayn yayımlanıbsa, Chromium xəbərdarlıq edir. Parol və istifadəçi adları şifrələnir və hətta Google-a da görünmür.</translation>
 <translation id="7911732829884437264">Defolt olaraq Chromium istifadə edin</translation>

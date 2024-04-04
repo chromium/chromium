@@ -271,6 +271,7 @@
 <translation id="2446553403094072641">‏רמת הדיוק של נקודה צפה (floating-point)</translation>
 <translation id="2448312741937722512">סוג</translation>
 <translation id="2465272316171730950">יש עומס גדול מהרגיל. כדאי לנסות שוב עוד מעט.</translation>
+<translation id="2472215337771558851">‏אפשר להשתמש בכלי 'עזרה בכתיבה' כדי ליצור טיוטה או לשפר עבודה קיימת. הכלי מבוסס על AI מבית Google</translation>
 <translation id="2480572840229215612">סרטנים</translation>
 <translation id="248546197012830854">‏המכשיר במצב אופליין. צריך להתחבר לרשת Wi-Fi כדי לראות את תוכן העזרה.</translation>
 <translation id="2486301288428798846">עץ</translation>
@@ -328,10 +329,12 @@
 <translation id="2860473693272905224">צריך להניח דף נוסף על הסורק</translation>
 <translation id="2872961005593481000">כיבוי</translation>
 <translation id="2873483161362553159">ניווט באמצעות הדפדפן</translation>
+<translation id="2873939192640533085">אפשר להזין הנחיה כמו "אני רוצה שזה ישמע עם יותר ביטחון עצמי"</translation>
 <translation id="2874939134665556319">הרצועה הקודמת</translation>
 <translation id="2875812231449496375">כדאי להפעיל את ההגדרה הזו כדי ליהנות מהתוצאות הטובות ביותר עם הטפט הזה. תמיד אפשר להשבית את ההגדרה הזו.</translation>
 <translation id="2878387241690264070">בוצעה פריקה של <ph name="RATE" /> ב-<ph name="NUM_SECONDS" /> שניות.</translation>
 <translation id="2880569433548999039">שומר המסך של תנועת העננים</translation>
+<translation id="2888298276507578975">אפשר להזין הנחיה כמו "אני רוצה לכתוב מכתב תודה"</translation>
 <translation id="2890557891229184386">אי טרופי</translation>
 <translation id="2895772081848316509">כהה</translation>
 <translation id="2926057806159140518">‏צריך להזין את שם המשתמש והסיסמה או לסרוק את קוד ה-QR</translation>
@@ -376,6 +379,7 @@
 <translation id="3226405216343213872">מתבצע חיפוש של סורקים</translation>
 <translation id="3226657629376379887">תפריט הפעולות בפריסה</translation>
 <translation id="3227186760713762082">צריך לחלק את הערך של <ph name="CATEGORY_TEXT" /> ב-<ph name="CONVERSION_RATE" /></translation>
+<translation id="3237710083340813756">שכתוב</translation>
 <translation id="3246869037381808805">משימות הדפסה בנות יותר מיום אחד יוסרו</translation>
 <translation id="324961752321393509">אין אישור מהאדמין שלך לסגור את האפליקציה הזו</translation>
 <translation id="3268178239013324452">נכשלה – דלת המדפסת פתוחה</translation>
@@ -414,6 +418,7 @@
 <translation id="346539236881580388">צילום חוזר</translation>
 <translation id="3484914941826596830">במהלך עדכון הקושחה אין לנתק את המכשיר החיצוני הזה או לכבות את המחשב. אפשר למזער את החלון הזה. העדכון הזה עשוי לקחת כמה דקות ויכול להיות שהמכשיר החיצוני לא יפעל במהלכו.</translation>
 <translation id="3486220673238053218">הגדרה</translation>
+<translation id="3487866404496702283">‏משוב על תכונת Mahi</translation>
 <translation id="3488065109653206955">מופעל חלקית</translation>
 <translation id="3492882532495507361">משרד בסגנון <ph name="OFFICE_STYLE" /> עם נגיעות בעיצוב <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">‏הנתונים נמדדים על ידי מכשיר Chromebook שלך. יכול להיות שהנתונים האלה יהיו שונים מנתוני הספק.</translation>
@@ -442,6 +447,7 @@
 <translation id="3621072146987826699">פילים</translation>
 <translation id="3632579075709132555">לחצן להחלפת מצב של מסך הפרטיות</translation>
 <translation id="3651050199673793219">בחירת יחידת מידה לטמפרטורה</translation>
+<translation id="3661106764436337772">לכתוב מהר יותר ועם יותר ביטחון</translation>
 <translation id="3662461537616691585">בורדו וחום ערמוני</translation>
 <translation id="3668449597372804501">הטפט של תנועת העננים</translation>
 <translation id="3675132884790542448">חזירים</translation>
@@ -534,7 +540,6 @@
 <translation id="4227825898293920515">תוקף הסיסמה יפוג בעוד <ph name="TIME" /></translation>
 <translation id="4238516577297848345">אין משימות הדפסה שמתבצעות כרגע</translation>
 <translation id="4239069858505860023">GPRS</translation>
-<translation id="4244962993387259361">‏צריך נפח אחסון פנוי של MB‏500 לפחות כדי להריץ בדיקת זיכרון. כדי לפנות מקום, עוברים להגדרות &gt; ניהול האחסון.</translation>
 <translation id="4250229828105606438">צילום מסך</translation>
 <translation id="4251839292699800785">משרד אופנתי</translation>
 <translation id="4258281355379922695">‏זמן המתנה ל-HTTP</translation>
@@ -877,6 +882,7 @@
 <translation id="6235460611964961764">איפוס ידני של השימוש בחבילת הגלישה</translation>
 <translation id="6243280677745499710">מוגדר עכשיו</translation>
 <translation id="6250316632541035980">בייקון וביצים</translation>
+<translation id="6255213378196499011">ההגדרות של 'עזרה בכתיבה'</translation>
 <translation id="6275224645089671689">חץ ימינה</translation>
 <translation id="6278428485366576908">עיצוב</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -905,6 +911,7 @@
 <translation id="6382182670717268353">תצוגה מקדימה של שומר המסך</translation>
 <translation id="6388847657025262518">מזין המסמכים של הסורק תקוע. יש לבדוק אותו ולנסות שוב.</translation>
 <translation id="6394634179843537518">הוספה של קובץ</translation>
+<translation id="6396719002784938593">עשב נוצות מיובש</translation>
 <translation id="639964859328803943">מסיבת תה</translation>
 <translation id="6400680457268373900"><ph name="DREAMSCAPES_OBJECT" /> בסגנון סוריאליסטי מ<ph name="DREAMSCAPES_MATERIAL" /> בצבע <ph name="DREAMSCAPES_COLORS" /></translation>
 <translation id="6401427872449207797">חיפוש בדפדפן</translation>
@@ -946,6 +953,7 @@
 <translation id="6575134580692778371">לא הוגדר</translation>
 <translation id="6576005492601044801">שמאל</translation>
 <translation id="6579509898032828423">שימוש בתמונה הזו</translation>
+<translation id="6587870930887634392">סוקולנט</translation>
 <translation id="6596816719288285829">‏כתובת IP</translation>
 <translation id="6599673642868607614">‏תודה על המשוב שלך. המשוב שלך ייבדק על ידי הצוות שלנו ויעזור בשיפור חוויית השימוש ב-Chromebook. אנחנו מקבלים הרבה דיווחים, ולכן לא נוכל לשלוח תשובה.</translation>
 <translation id="6618744767048954150">הבדיקה מתבצעת עכשיו</translation>
@@ -1104,6 +1112,7 @@
 <translation id="7497215489070763236">‏אישור CA של שרת</translation>
 <translation id="7501957181231305652">או</translation>
 <translation id="7502658306369382406">‏כתובת IPv6</translation>
+<translation id="7507061649493508884">‫<ph name="FLOWER_TYPE" /> בצבע <ph name="FLOWER_COLOR" /> זוהר</translation>
 <translation id="7513770521371759388">חלק תחתון</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">יצירה</translation>
@@ -1153,7 +1162,6 @@
 <translation id="780301667611848630">לא תודה</translation>
 <translation id="7805768142964895445">סטטוס</translation>
 <translation id="7813073042185856802">הר</translation>
-<translation id="7819831665603418705">שימוש בתבנית</translation>
 <translation id="7819857487979277519">‏PSK ‏(WPA או RSN)</translation>
 <translation id="7824219488248240180">פוסט-אימפרסיוניסטי</translation>
 <translation id="7828503206075800057">בית קפה מסוג <ph name="CAFE_TYPE" /> בסגנון <ph name="CAFE_STYLE" /></translation>
@@ -1164,6 +1172,7 @@
 <translation id="7850847810298646851">‏טפטים שנוצרו על ידי AI מבית Google</translation>
 <translation id="785170686607360576">צבעוני</translation>
 <translation id="7856267634822906833">‏מסך מגע של Bluetooth</translation>
+<translation id="7859006200041800233">פרח קקטוס</translation>
 <translation id="7869143217755017858">השבתת המצב הכהה</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">סוג ספק</translation>
@@ -1299,6 +1308,7 @@
 <translation id="8726019395068607495">הפסיקה – דלת המדפסת פתוחה</translation>
 <translation id="8730621377337864115">בוצע</translation>
 <translation id="8747900814994928677">אישור השינוי</translation>
+<translation id="8749478549112817787">רקע המצלמה</translation>
 <translation id="8755946156089753497">מגדל</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">‏אלבום של Google Photos</translation>

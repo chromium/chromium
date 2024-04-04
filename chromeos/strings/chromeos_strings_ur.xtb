@@ -163,7 +163,7 @@
 <translation id="183675228220305365">حقیقت پسند</translation>
 <translation id="1838374766361614909">تلاش صاف کریں</translation>
 <translation id="1840474674287087346">ڈیسک ٹاپ کا رنگ</translation>
-<translation id="184095011128924488">تخلیق کنندہ</translation>
+<translation id="184095011128924488">تخلیقی</translation>
 <translation id="1846318329111865304">ڈریم اسکیپس</translation>
 <translation id="1851218745569890714">ویڈیو کانفرنسنگ</translation>
 <translation id="1852934301711881861">‏ChromeOS Flex انسٹال کریں</translation>
@@ -460,7 +460,7 @@
 <translation id="3749289110408117711">فائل کا نام</translation>
 <translation id="3771294271822695279">ویڈیو فائلیں</translation>
 <translation id="3784455785234192852">مقفل کریں</translation>
-<translation id="3785643128701396311">پکسل الرٹ</translation>
+<translation id="3785643128701396311">پکسل آرٹ</translation>
 <translation id="3790109258688020991">پوائنٹ لسٹ</translation>
 <translation id="380097101658023925">‏RGB کنٹرولز</translation>
 <translation id="38114475217616659">تمام سرگزشت صاف کریں</translation>
@@ -540,7 +540,6 @@
 <translation id="4227825898293920515">پاس ورڈ کی میعاد <ph name="TIME" /> میں ختم ہونے والی ہے</translation>
 <translation id="4238516577297848345">کوئی پرنٹ جاب پیشرفت میں نہیں</translation>
 <translation id="4239069858505860023">GPRS</translation>
-<translation id="4244962993387259361">‏میموری ٹیسٹ چلانے کیلئے آپ کے پاس کم از کم MB‏ 500 خالی ہونا ضروری ہے۔ اسپیس خالی کرنے کیلئے ترتیبات &gt; اسٹوریج مینیجمنٹ پر جائیں۔</translation>
 <translation id="4250229828105606438">اسکرین شاٹ</translation>
 <translation id="4251839292699800785">اسٹائلش آفس</translation>
 <translation id="4258281355379922695">‏HTTPS کی درخواستوں میں تاخیر</translation>
@@ -686,7 +685,7 @@
 <translation id="5049856988445523908">‏SIM مقفل ہو گیا (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">گروپ کا نام</translation>
 <translation id="5051044138948155788">یہ واحد صفحہ ہے۔ یہ آپ کو سکیننگ اسٹارٹ سکرین پر لے جائے گا۔</translation>
-<translation id="5078983345702708852">مُستَقبِلی</translation>
+<translation id="5078983345702708852">اختراعی</translation>
 <translation id="5087864757604726239">پیچھے</translation>
 <translation id="5088172560898466307">سرور کا میزبان نام</translation>
 <translation id="5089810972385038852">ریاست</translation>
@@ -912,7 +911,8 @@
 <translation id="6382182670717268353">اسکرین سیور کا پیش منظر</translation>
 <translation id="6388847657025262518">اسکینر کا دستاویز فیڈر جام ہے۔ فیڈر چیک کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="6394634179843537518">فائل شامل کریں</translation>
-<translation id="639964859328803943">شام کا ہلکا کھانا</translation>
+<translation id="6396719002784938593">خشک پنکھوں والی گھاس</translation>
+<translation id="639964859328803943">ہائی ٹی</translation>
 <translation id="6400680457268373900"><ph name="DREAMSCAPES_COLORS" /> میں <ph name="DREAMSCAPES_MATERIAL" /> سے بنا ہوا حقیقت پسندانہ <ph name="DREAMSCAPES_OBJECT" /></translation>
 <translation id="6401427872449207797">براؤزر کی تلاش</translation>
 <translation id="6410257289063177456">تصویری فائلیں</translation>
@@ -953,6 +953,7 @@
 <translation id="6575134580692778371">کنفیگر نہیں ہے</translation>
 <translation id="6576005492601044801">بائیں</translation>
 <translation id="6579509898032828423">یہ تصویر استعمال کریں</translation>
+<translation id="6587870930887634392">سکلینٹ</translation>
 <translation id="6596816719288285829">‏IP پتہ</translation>
 <translation id="6599673642868607614">‏آپ کے تاثرات کیلئے شکریہ۔ آپ کے تاثرات Chromebook کے تجربے کو بہتر بنانے میں ہماری مدد کرتے ہیں اور ہماری ٹیم اس کا جائزہ لے گی۔ رپورٹس کی بڑی تعداد کی وجہ سے، ہم جواب نہیں بھیج سکیں گے۔</translation>
 <translation id="6618744767048954150">جاری ہے</translation>
@@ -1111,6 +1112,7 @@
 <translation id="7497215489070763236">‏سرور CA سرٹیفکیٹ</translation>
 <translation id="7501957181231305652">یا</translation>
 <translation id="7502658306369382406">‏IPv6 پتہ</translation>
+<translation id="7507061649493508884"><ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /> ریڈیئنٹ</translation>
 <translation id="7513770521371759388">نیچے</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">بنائیں</translation>
@@ -1160,7 +1162,6 @@
 <translation id="780301667611848630">نہیں شکریہ</translation>
 <translation id="7805768142964895445">صورتحال</translation>
 <translation id="7813073042185856802">پہاڑ</translation>
-<translation id="7819831665603418705">تمثیل کا استعمال کریں</translation>
 <translation id="7819857487979277519">‏‫‫PSK‎‏ (WPA یا RSN)‏</translation>
 <translation id="7824219488248240180">پوسٹ امپریشنسٹ</translation>
 <translation id="7828503206075800057">ایک <ph name="CAFE_STYLE" /> <ph name="CAFE_TYPE" /> کیفے</translation>
@@ -1171,6 +1172,7 @@
 <translation id="7850847810298646851">‏Google AI سے تقویت یافتہ وال پیپر</translation>
 <translation id="785170686607360576">گل لالہ</translation>
 <translation id="7856267634822906833">بلوٹوتھ ٹچ اسکرین</translation>
+<translation id="7859006200041800233">ناگ پھنی کا پھول</translation>
 <translation id="7869143217755017858">تاریک وضع غیر فعال کریں</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">فراہم کنندہ کی قسم</translation>
@@ -1306,6 +1308,7 @@
 <translation id="8726019395068607495">رک گیا - دروازہ کھلا ہے</translation>
 <translation id="8730621377337864115">ہوگیا</translation>
 <translation id="8747900814994928677">تبدیلی کی توثیق کریں</translation>
+<translation id="8749478549112817787">کیمرے کا پس منظر</translation>
 <translation id="8755946156089753497">ٹاور</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">‏Google تصاویر کا البم</translation>

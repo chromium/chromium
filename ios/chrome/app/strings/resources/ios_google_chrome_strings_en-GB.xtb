@@ -114,14 +114,12 @@ Things to consider:
 <translation id="3901001113120561395">Get the most out of Chrome.</translation>
 <translation id="3913386780052199712">Signed in to Chrome</translation>
 <translation id="3967382818307165056">Manage Payment Methods in Chrome</translation>
-<translation id="3980220367029651214">You are switching sync accounts from <ph name="USER_EMAIL1" /> to <ph name="USER_EMAIL2" />. Your existing Chrome data is managed by <ph name="DOMAIN" />. This will delete your data from this device, but your data will remain in <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Your organisation requires you to stay signed out of Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome does not have access to your photos or videos. Enable access in iOS Settings &gt; Privacy &gt; Photos.</translation>
 <translation id="4064699917955374540">To use and save Chrome data in your Google Account, verify that it's you.</translation>
 <translation id="4067858366537947361">Open Chrome Incognito Tab</translation>
 <translation id="4093042601582616698">Make Chrome your default browser?</translation>
 <translation id="417201473131094001">Not supported on Chrome Canary</translation>
-<translation id="4233521129555661685"><ph name="USER_EMAIL1" /> was using Chrome and left bookmarks, passwords and other settings on this device.</translation>
 <translation id="424864128008805179">Sign out of Chrome?</translation>
 <translation id="4251174643044751591">Opens The Payment Methods Setting Page in Chrome.</translation>
 <translation id="4453284704333523777">Manage Chrome settings</translation>
@@ -240,7 +238,6 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
 <translation id="769104993356536261">Use Chrome Actions on iOS</translation>
 <translation id="7693590760643069321">You can now use Chrome any time that you tap links in messages, documents and other apps.</translation>
 <translation id="7698568245838009292">Chrome would like to access the camera</translation>
-<translation id="7754633291442704733">Your organisation <ph name="DOMAIN" /> will have access to your Chrome data, bookmarks, history, passwords and other settings that you store in this account. When you sign out, your data will be cleared from this device.  However, your data will remain stored in your managed Google Account and be available to your organisation. Your organisation can also set user policies specific to that account that can change the behaviour of Chrome.</translation>
 <translation id="7780154209050837198">To get the most out of Chrome, sign in to Chrome with your Google Account.</translation>
 <translation id="778855399387580014">Start a search in a new Chrome tab.</translation>
 <translation id="7792140019572081272">Chrome keeps your sensitive data secure with Face ID.</translation>

@@ -91,7 +91,6 @@
 <translation id="3567399274263440288">Để khai thác tối đa Chromium, hãy đăng nhập vào Chromium bằng Tài khoản Google của bạn.</translation>
 <translation id="3634039384458740619">Mở phần Cài đặt Chromium</translation>
 <translation id="3639997914391704523">Chromium có thể kiểm tra mật khẩu khi bạn đăng nhập bằng Tài khoản Google của mình.</translation>
-<translation id="3650632991272923014"><ph name="USER_EMAIL1" /> đã dùng Chromium và lưu lại dấu trang, mật khẩu cũng như các chế độ cài đặt khác trên thiết bị này.</translation>
 <translation id="3688710892786762883">Chromium sẽ phát hiện số vận đơn của gói hàng trên các trang web bạn truy cập và cho bạn thấy thông tin cập nhật về gói hàng trên trang Thẻ mới. Dữ liệu của bạn sẽ được chia sẻ với Google để cung cấp tính năng này và cải thiện trải nghiệm Mua sắm cho mọi người.</translation>
 <translation id="372658070733623520">Để sử dụng và lưu dữ liệu Chromium trong Tài khoản Google, hãy xác minh danh tính của bạn.</translation>
 <translation id="3780779443901618967">Cảnh báo cho bạn về các trang web nguy hiểm, kể cả trang web mà Google chưa từng biết, bằng cách phân tích nhiều dữ liệu trên các trang web hơn so với chế độ bảo vệ tiêu chuẩn. Bạn có thể chọn bỏ qua cảnh báo của Chromium.</translation>
@@ -182,7 +181,6 @@ Những yếu tố cần xem xét:
 <translation id="5983312940147103417">Cải thiện Chromium</translation>
 <translation id="5985102273857091344">Chọn "Chromium".</translation>
 <translation id="5985254578475526217">Để nhận thông báo của Chromium, hãy bật thông báo trong phần Cài đặt trên iOS.</translation>
-<translation id="6062449165341879460">Tổ chức của bạn (<ph name="DOMAIN" />) sẽ có quyền truy cập vào dữ liệu của bạn trên Chromium, dấu trang, nhật ký, mật khẩu và các chế độ cài đặt khác mà bạn lưu trữ trong tài khoản này. Khi bạn đăng xuất, dữ liệu của bạn sẽ bị xoá khỏi thiết bị này.  Tuy nhiên, dữ liệu vẫn được lưu trữ trong Tài khoản Google được quản lý của bạn và tổ chức có thể sử dụng dữ liệu này. Tổ chức của bạn cũng có thể thiết lập chính sách người dùng dành riêng cho tài khoản đó và việc này có thể làm thay đổi hành vi của Chromium.</translation>
 <translation id="6093744543579359059">Quản lý mật khẩu trong Chromium</translation>
 <translation id="6104024151682120539">Mở trong Chromium</translation>
 <translation id="61109258320235597">Để sử dụng và lưu dữ liệu Chromium trong Tài khoản Google, hãy nhập cụm mật khẩu của bạn.</translation>
@@ -247,7 +245,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="7763454117143368771">Hãy đặt Chromium làm trình duyệt mặc định để luôn được bảo vệ khỏi các trang web nguy hiểm và giữ cho mật khẩu của bạn an toàn</translation>
 <translation id="78025249032851484">Chromium của bạn đã lỗi thời.</translation>
 <translation id="7859018312476869945">Khi bạn nhập vào thanh địa chỉ hoặc hộp tìm kiếm, Chromium sẽ gửi nội dung bạn nhập đến công cụ tìm kiếm mặc định để đề xuất cho bạn cụm từ phù hợp hơn. Tính năng này bị tắt trong chế độ Ẩn danh.</translation>
-<translation id="786327964234957808">Bạn đang chuyển các tài khoản đồng bộ hóa từ <ph name="USER_EMAIL1" /> về <ph name="USER_EMAIL2" />. Dữ liệu Chromium hiện có của bạn do <ph name="DOMAIN" /> quản lý. Thao tác này sẽ xóa dữ liệu của bạn khỏi thiết bị này nhưng dữ liệu đó sẽ vẫn còn trong <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Bắt đầu dùng trình quét của Chromium</translation>
 <translation id="7905064834449738336">Khi bạn dùng một mật khẩu đã bị công khai trên mạng, Chromium sẽ cảnh báo cho bạn. Trong quá trình này, mật khẩu và tên người dùng của bạn được mã hoá nên không ai đọc được, kể cả Google.</translation>
 <translation id="7911732829884437264">Sử dụng Chromium theo mặc định</translation>

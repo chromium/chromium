@@ -115,6 +115,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1383597849754832576">Tidak dapat mendownload file ucapan. Coba lagi nanti.</translation>
 <translation id="1383876407941801731">Telusuri</translation>
 <translation id="1391102559483454063">Aktif</translation>
+<translation id="1394698770495054737">Buram Penuh</translation>
 <translation id="1407069428457324124">Tema gelap</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Gunakan tombol panah untuk berpindah-pindah antar-tanggal.</translation>
 <translation id="141170878022560212">Tombol Tengah</translation>
@@ -441,6 +442,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2841907151129139818">Beralih ke mode tablet</translation>
 <translation id="2844169650293029770">Perangkat USB-C (port depan sebelah kiri)</translation>
 <translation id="2844350028562914727">detail</translation>
+<translation id="2847759467426165163">Transmisikan ke</translation>
 <translation id="2848120746144143659">Tekan Enter untuk mengambil screenshot layar penuh</translation>
 <translation id="2849936225196189499">Kritis</translation>
 <translation id="2860184359326882502">Paling Cocok</translation>
@@ -478,6 +480,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3009958530611748826">Pilih folder untuk menyimpan</translation>
 <translation id="301282384882049174">Dibagikan oleh administrator Anda</translation>
 <translation id="301584155502740476">Tampilkan detail hotspot. Hotspot dinonaktifkan.</translation>
+<translation id="3017079585324758401">Latar belakang</translation>
 <translation id="3018135054368884502">Putar maju cepat media</translation>
 <translation id="3033545621352269033">Aktif</translation>
 <translation id="3033912566804961911">Gabungkan dengan <ph name="DESK_NAME" /></translation>
@@ -954,6 +957,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4798888871844665150">Item yang disalin sudah ada di papan klip. Gunakan <ph name="SHORTCUT_KEY_NAME" /> + V untuk melihat.</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">Putuskan koneksi</translation>
+<translation id="4806631651704497161">Buram Ringan</translation>
 <translation id="4813311884204119883">Tarik link ke area kosong pada tab setrip</translation>
 <translation id="4814539958450445987">Layar Login</translation>
 <translation id="481455355267255546">Berikutnya</translation>
@@ -1040,7 +1044,6 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="5104236669533825617">Tidak dapat membuat screencast</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
-<translation id="5111930673176965299">Blur latar belakang</translation>
 <translation id="5117590920725113268">Tampilkan bulan berikutnya</translation>
 <translation id="5121628974188116412">Membuka bagian bawah halaman</translation>
 <translation id="5122517996953421795">Pratinjau <ph name="DESK_NAME" />. Desktop virtual tidak aktif.</translation>

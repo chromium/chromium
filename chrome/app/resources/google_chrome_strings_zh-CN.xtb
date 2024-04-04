@@ -146,6 +146,7 @@
 <translation id="3100998948628680988">请为您的 Chrome 个人资料命名</translation>
 <translation id="3112458742631356345">Chrome 阻止了此项下载操作，因为这不是常下载的文件，可能具有危险性</translation>
 <translation id="3114643501466072395">若要检查您的其他密码是否未曾遭遇数据泄露和其他安全问题，请<ph name="BEGIN_LINK" />登录 Chrome<ph name="END_LINK" />。</translation>
+<translation id="3119573284443908657">Chrome 阻止了此项下载操作，因为归档文件包含可能隐藏恶意软件的其他文件</translation>
 <translation id="3140883423282498090">您所做的更改会在下次重新启动 Google Chrome 时生效。</translation>
 <translation id="3149510190863420837">Chrome 应用</translation>
 <translation id="3169523567916669830">在试用期间，您可看到并移除被网站用来向您展示广告的兴趣主题。Chrome 会根据您近期的浏览记录推测出您的兴趣。</translation>
@@ -216,6 +217,7 @@
 <translation id="4334294535648607276">下载完毕。</translation>
 <translation id="4335235004908507846">Chrome 有助于保护您免受数据泄露、不良扩展程序等问题的影响</translation>
 <translation id="4343195214584226067">“<ph name="EXTENSION_NAME" />”已添加到 Chrome</translation>
+<translation id="436060642166082913">Chrome 阻止了此项下载操作，因为该文件可能会危害您的个人和社交网络账号</translation>
 <translation id="4384570495110188418">Chrome 无法检查您的密码，因为您未登录</translation>
 <translation id="4389991535395284064">当您在无痕模式下浏览内容时，Chrome 会在使用不安全的连接加载网站前向您发出警告</translation>
 <translation id="4427306783828095590">“增强型保护”选项在防范网上诱骗和恶意软件方面更高一筹</translation>
@@ -467,6 +469,7 @@
 <translation id="873133009373065397">Google Chrome 无法确定或设置默认浏览器</translation>
 <translation id="8765470054473112089">当您在地址栏或搜索框中输入内容时，Chrome 会将您输入的内容发送给默认搜索引擎，以便为您提供更好的建议。在无痕模式下，此设置处于关闭状态。</translation>
 <translation id="878572486461146056">安装时出错：您的网络管理员所应用的一项群组政策阻止了安装进程：<ph name="INSTALL_ERROR" /></translation>
+<translation id="8796073561259064743">Chrome 阻止了此项下载操作，因为该文件可能会危害您的个人和社交网络账号，包括 <ph name="USER_EMAIL" /></translation>
 <translation id="8801657293260363985">V8 是 Chrome 的 JavaScript 和 WebAssembly 引擎，用于提升网站性能</translation>
 <translation id="8821043148920470810">若要接收后续 Google Chrome 更新，您需使用 Windows 10 或更高版本。该计算机目前使用的是 Windows 7。</translation>
 <translation id="8823341990149967727">Chrome版本太旧</translation>

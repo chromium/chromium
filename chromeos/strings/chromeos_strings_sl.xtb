@@ -540,7 +540,6 @@
 <translation id="4227825898293920515">Geslo poteče čez toliko časa: <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nobeno tiskalno opravilo ne poteka</translation>
 <translation id="4239069858505860023">GPRS</translation>
-<translation id="4244962993387259361">Če želite izvajati preizkus pomnilnika, potrebujete najmanj 500 MB prostora. Če želite sprostiti prostor, odprite »Nastavitve &gt; Upravljanje shrambe«.</translation>
 <translation id="4250229828105606438">Posnetek zaslona</translation>
 <translation id="4251839292699800785">Elegantna pisarna</translation>
 <translation id="4258281355379922695">Zakasnitev HTTP</translation>
@@ -912,6 +911,7 @@
 <translation id="6382182670717268353">Predogled ohranjevalnika zaslona</translation>
 <translation id="6388847657025262518">V podajalniku papirja optičnega bralnika se je zagozdil papir. Preverite podajalnik in poskusite znova.</translation>
 <translation id="6394634179843537518">Dodaj datoteko</translation>
+<translation id="6396719002784938593">posušena pernata trava</translation>
 <translation id="639964859328803943">popoldanski prigrizek</translation>
 <translation id="6400680457268373900">Nadrealen predmet <ph name="DREAMSCAPES_OBJECT" /> iz materiala <ph name="DREAMSCAPES_MATERIAL" /> teh barv: <ph name="DREAMSCAPES_COLORS" /></translation>
 <translation id="6401427872449207797">iskanje v brskalniku</translation>
@@ -953,6 +953,7 @@
 <translation id="6575134580692778371">Naprava ni konfigurirana</translation>
 <translation id="6576005492601044801">levo</translation>
 <translation id="6579509898032828423">Uporabi to fotografijo</translation>
+<translation id="6587870930887634392">sočnica</translation>
 <translation id="6596816719288285829">Naslov IP</translation>
 <translation id="6599673642868607614">Hvala za povratne informacije. Povratne informacije nam pomagajo izboljšati uporabo Chromebooka, zato jih bo pregledala naša skupina. Zaradi velikega števila poročil vam ne bomo mogli odgovoriti.</translation>
 <translation id="6618744767048954150">Preverjanje poteka</translation>
@@ -1111,6 +1112,7 @@
 <translation id="7497215489070763236">Strežniško overjeno potrdilo</translation>
 <translation id="7501957181231305652">ali</translation>
 <translation id="7502658306369382406">Naslov IPv6</translation>
+<translation id="7507061649493508884">Živahna <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /></translation>
 <translation id="7513770521371759388">spodaj</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">Ustvari</translation>
@@ -1160,7 +1162,6 @@
 <translation id="780301667611848630">Ne, hvala</translation>
 <translation id="7805768142964895445">Stanje</translation>
 <translation id="7813073042185856802">gora</translation>
-<translation id="7819831665603418705">Uporabite predlogo</translation>
 <translation id="7819857487979277519">PSK (WPA ali RSN)</translation>
 <translation id="7824219488248240180">postimpresionizem</translation>
 <translation id="7828503206075800057"><ph name="CAFE_TYPE" /> v tem slogu: <ph name="CAFE_STYLE" /></translation>
@@ -1171,6 +1172,7 @@
 <translation id="7850847810298646851">Zaslonsko ozadje uporablja Googlovo umetno inteligenco</translation>
 <translation id="785170686607360576">tulipan</translation>
 <translation id="7856267634822906833">Zaslon na dotik Bluetooth</translation>
+<translation id="7859006200041800233">kaktusov cvet</translation>
 <translation id="7869143217755017858">Onemogočanje temnega načina</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Vrsta ponudnika</translation>
@@ -1306,6 +1308,7 @@
 <translation id="8726019395068607495">Ustavljeno – vrata so odprta</translation>
 <translation id="8730621377337864115">Končano</translation>
 <translation id="8747900814994928677">Potrditev spremembe</translation>
+<translation id="8749478549112817787">Ozadje kamere</translation>
 <translation id="8755946156089753497">stolp</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album v Googlu Foto</translation>

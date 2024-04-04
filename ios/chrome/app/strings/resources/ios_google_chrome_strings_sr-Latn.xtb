@@ -114,14 +114,12 @@
 <translation id="3901001113120561395">Iskoristite Chrome na najbolji način.</translation>
 <translation id="3913386780052199712">Prijavljen/a u Chrome</translation>
 <translation id="3967382818307165056">Upravljajte načinima plaćanja u Chrome-u</translation>
-<translation id="3980220367029651214">Menjate nalog za sinhronizaciju iz <ph name="USER_EMAIL1" /> u <ph name="USER_EMAIL2" />. Postojećim Chrome podacima upravlja <ph name="DOMAIN" />. Promena će izbrisati podatke sa ovog uređaja, ali će podaci ostati na <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Organizacija zahteva da ostanete odjavljeni sa Chrome-a.</translation>
 <translation id="3988789688219830639">Google Chrome ne može da pristupa slikama ili videima. Omogućite pristup u iOS Settings (Podešavanja iOS-a) &gt; Privacy (Privatnost) &gt; Photos (Slike).</translation>
 <translation id="4064699917955374540">Da biste koristili i čuvali Chrome podatke na Google nalogu, potvrdite svoj identitet.</translation>
 <translation id="4067858366537947361">Otvori Chrome karticu bez arhiviranja</translation>
 <translation id="4093042601582616698">Želite da podesite Chrome kao podrazumevani pregledač?</translation>
 <translation id="417201473131094001">Nije podržano u verziji Chrome Canary</translation>
-<translation id="4233521129555661685">Korisnik <ph name="USER_EMAIL1" /> je koristio Chrome i ostavio obeleživače, lozinke i druga podešavanja na ovom uređaju.</translation>
 <translation id="424864128008805179">Želite li da se odjavite iz Chrome-a?</translation>
 <translation id="4251174643044751591">Otvara stranicu Podešavanje načina plaćanja u Chrome-u.</translation>
 <translation id="4453284704333523777">Upravljajte podešavanjima Chrome-a</translation>
@@ -240,7 +238,6 @@ Još podešavanja koja koriste podatke za poboljšanje doživljaja Chrome-a potr
 <translation id="769104993356536261">Koristite Chrome radnje na iOS-u</translation>
 <translation id="7693590760643069321">Sada možete da koristite Chrome svaki put kada dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="7698568245838009292">Chrome želi da pristupi kameri</translation>
-<translation id="7754633291442704733">Organizacija <ph name="DOMAIN" /> će imati pristup Chrome podacima, obeleživačima, istoriji, lozinkama i drugim podešavanjima koja čuvate na ovom nalogu. Kada se odjavite, podaci će se obrisati sa ovog uređaja.  Međutim, podaci će se i dalje čuvati na Google nalogu kojim se upravlja i biće dostupni vašoj organizaciji. Organizacija može da podešava posebne smernice za korisnike za taj nalog koje mogu da promene ponašanje Chrome-a.</translation>
 <translation id="7780154209050837198">Da biste koristili Chrome na najbolji način, prijavite se na Chrome pomoću Google naloga.</translation>
 <translation id="778855399387580014">Započnite pretragu na novoj Chrome kartici.</translation>
 <translation id="7792140019572081272">Chrome štiti osetljive podatke pomoću Face ID-a.</translation>

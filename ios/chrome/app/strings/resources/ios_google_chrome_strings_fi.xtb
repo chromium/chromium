@@ -114,14 +114,12 @@ Huomioitavaa:
 <translation id="3901001113120561395">Paras hyöty Chromesta</translation>
 <translation id="3913386780052199712">Kirjautunut Chromeen</translation>
 <translation id="3967382818307165056">Hallinnoi maksutapoja Chromessa</translation>
-<translation id="3980220367029651214">Muutoksen jälkeen synkronointi käyttää tilin <ph name="USER_EMAIL1" /> sijaan tiliä <ph name="USER_EMAIL2" />. Nykyisiä Chrome-tietojasi hallinnoi <ph name="DOMAIN" />. Tietosi poistetaan tältä laitteelta, mutta ne jäävät tilille <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Organisaatiosi edellyttää, että et kirjaudu sisään Chromeen.</translation>
 <translation id="3988789688219830639">Google Chrome ei voi käyttää kuviasi tai videoitasi. Anna käyttöoikeus kohdassa iOS-asetukset &gt; Tietosuoja &gt; Kuvat.</translation>
 <translation id="4064699917955374540">Chrome-datan käyttö ja tallennus Google-tilillä edellyttää, että vahvistat henkilöllisyytesi.</translation>
 <translation id="4067858366537947361">Avaa Chromen incognito-välilehti</translation>
 <translation id="4093042601582616698">Tehdäänkö Chromesta oletusselain?</translation>
 <translation id="417201473131094001">Ei tueta Chrome Canaryssa</translation>
-<translation id="4233521129555661685"><ph name="USER_EMAIL1" /> käytti Chromea, ja hänen käyttämiä kirjanmerkkejä, salasanoja ja muita asetuksia jäi laitteelle.</translation>
 <translation id="424864128008805179">Kirjaudutaanko ulos Chromesta?</translation>
 <translation id="4251174643044751591">Avaa maksutapojen asetussivun Chromessa.</translation>
 <translation id="4453284704333523777">Muuta Chromen asetuksia</translation>
@@ -240,7 +238,6 @@ Siirry <ph name="BEGIN_LINK" />Googlen palveluihin<ph name="END_LINK" />, jos ha
 <translation id="769104993356536261">Käytä Chrome-pikavalintoja iOS:ssä</translation>
 <translation id="7693590760643069321">Voit nyt käyttää Chromea aina, kun napautat linkkejä viesteissä, dokumenteissa tai muissa sovelluksissa.</translation>
 <translation id="7698568245838009292">Chrome pyytää kameran käyttöoikeutta</translation>
-<translation id="7754633291442704733">Organisaatiosi <ph name="DOMAIN" /> saa pääsyn Chrome-dataasi, kirjanmerkkeihisi, historiaasi, salasanoihisi ja muihin asetuksiisi, jotka olet tallentanut tälle tilille. Kun kirjaudut ulos, datasi tyhjennetään tältä laitteelta.  Data säilyy kuitenkin hallinnoidulla Google-tililläsi ja on organisaation saatavilla. Organisaatiosi voi myös asettaa tilikohtaisia käyttäjäkäytäntöjä, jotka voivat muuttaa Chromen toimintaa.</translation>
 <translation id="7780154209050837198">Kirjaudu sisään Chromeen Google-tililläsi, jotta saat parhaan hyödyn Chromesta.</translation>
 <translation id="778855399387580014">Aloita haku Chrome-välilehdellä.</translation>
 <translation id="7792140019572081272">Chrome pitää arkaluontoiset tietosi turvassa Face ID:n avulla.</translation>

@@ -91,7 +91,6 @@ Si quieres ver más parámetros de configuración que usan datos para mejorar tu
 <translation id="3567399274263440288">Para aprovechar Chromium al maximo, accede al navegador con tu Cuenta de Google.</translation>
 <translation id="3634039384458740619">Abrir la configuración de Chromium</translation>
 <translation id="3639997914391704523">Chromium puede revisar las contraseñas cuando accedes con tu Cuenta de Google.</translation>
-<translation id="3650632991272923014"><ph name="USER_EMAIL1" /> usó Chromium y dejó favoritos, contraseñas y otros parámetros de configuración en este dispositivo.</translation>
 <translation id="3688710892786762883">Chrome detectará los números de seguimiento del paquete en los sitios que visites y te mostrará actualizaciones de tus paquetes en la página Nueva pestaña. Tus datos se compartirán con Google para proporcionar esta función y mejorar Shopping para todos los usuarios.</translation>
 <translation id="372658070733623520">Para usar y guardar datos de Chromium en tu Cuenta de Google, verifica tu identidad.</translation>
 <translation id="3780779443901618967">Analiza más datos de los sitios que la protección estándar para advertirte sobre sitios peligrosos, incluso sobre los que Google no conocía. Puedes omitir las advertencias de Chromium.</translation>
@@ -182,7 +181,6 @@ Aspectos que debes tener en cuenta:
 <translation id="5983312940147103417">Cómo mejorar Chromium</translation>
 <translation id="5985102273857091344">Selecciona "Chromium".</translation>
 <translation id="5985254578475526217">Para recibir notificaciones de Chromium, actívalas en la configuración de iOS.</translation>
-<translation id="6062449165341879460">Tu organización <ph name="DOMAIN" /> tendrá acceso a tus datos, favoritos, historial, contraseñas y otros parámetros de configuración de Chromium que almacenes en esta cuenta. Cuando salgas, se borrarán tus datos de este dispositivo.  Sin embargo, tus datos permanecerán almacenados en tu Cuenta de Google administrada y estarán disponibles para tu organización. Tu organización también puede establecer políticas del usuario específicas de esa cuenta, que pueden cambiar el comportamiento de Chromium.</translation>
 <translation id="6093744543579359059">Administrar contraseñas en Chromium</translation>
 <translation id="6104024151682120539">Abrir en Chromium</translation>
 <translation id="61109258320235597">Para usar y guardar datos de Chromium en tu Cuenta de Google, ingresa tu frase de contraseña.</translation>
@@ -247,7 +245,6 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="7763454117143368771">Usa Chromium como tu navegador predeterminado para protegerte de sitios peligrosos y mantener tus contraseñas seguras</translation>
 <translation id="78025249032851484">Chromium está desactualizado.</translation>
 <translation id="7859018312476869945">Cuando escribes en la barra de direcciones o en el cuadro de búsqueda, Chromium envía lo que escribes a tu motor de búsqueda predeterminado para obtener mejores sugerencias. Esta función está desactivada en el modo Incógnito.</translation>
-<translation id="786327964234957808">La cuenta de sincronización cambiará de <ph name="USER_EMAIL1" /> a <ph name="USER_EMAIL2" />. El dominio <ph name="DOMAIN" /> administra tus datos existentes de Chromium. Esta acción borrará los datos de este dispositivo, pero permanecerán en <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Usar el escáner de Chromium</translation>
 <translation id="7905064834449738336">Cuando usas una contraseña, Chromium te advierte si se publicó en línea. Si lo haces, se encriptan tus contraseñas y nombres de usuario para que nadie, ni siquiera Google, pueda leer esta información.</translation>
 <translation id="7911732829884437264">Usa Chromium de forma predeterminada</translation>

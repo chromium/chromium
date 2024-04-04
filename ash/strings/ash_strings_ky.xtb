@@ -115,6 +115,7 @@
 <translation id="1383597849754832576">Кеп файлдары жүктөлүп алынган жок. Кийинчерээк кайталаңыз.</translation>
 <translation id="1383876407941801731">Издөө</translation>
 <translation id="1391102559483454063">Күйүк</translation>
+<translation id="1394698770495054737">Толугу менен бүдөмүктөтүү</translation>
 <translation id="1407069428457324124">Караңгы тема</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Күндөргө өтүү үчүн жебе баскычтарын колдонуңуз.</translation>
 <translation id="141170878022560212">Ортоңку баскыч</translation>
@@ -441,6 +442,7 @@
 <translation id="2841907151129139818">Планшет режимине которулду</translation>
 <translation id="2844169650293029770">USB-C түзмөгү (сол жактагы маңдайкы оюкча)</translation>
 <translation id="2844350028562914727">чоо-жайы</translation>
+<translation id="2847759467426165163">Төмөнкүгө чыгаруу</translation>
 <translation id="2848120746144143659">Толук экрандын скриншотун тартып алуу үчүн "Enter" баскычын басыңыз</translation>
 <translation id="2849936225196189499">Олуттуу</translation>
 <translation id="2860184359326882502">Дал келди</translation>
@@ -478,6 +480,7 @@
 <translation id="3009958530611748826">Скандалган нерселерди сактоо үчүн папка тандаңыз</translation>
 <translation id="301282384882049174">Администраторуңуз бөлүштү</translation>
 <translation id="301584155502740476">Байланыш түйүнүнүн чоо-жайын көрсөтүү. Байланыш түйүнү өчүк.</translation>
+<translation id="3017079585324758401">Фон</translation>
 <translation id="3018135054368884502">Медианы алдыга тез түрдүрүү</translation>
 <translation id="3033545621352269033">Күйүк</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> менен бириктирүү</translation>
@@ -954,6 +957,7 @@
 <translation id="4798888871844665150">Алмашуу буфериндеги элемент көчүрүлдү. Көрүү үчүн <ph name="SHORTCUT_KEY_NAME" /> + V баскычтарын басыңыз.</translation>
 <translation id="479989351350248267">издөө</translation>
 <translation id="4804818685124855865">Ажыратуу</translation>
+<translation id="4806631651704497161">Жеңил бүдөмүктөтүү</translation>
 <translation id="4813311884204119883">Шилтемени өтмөк тасмасындагы бош жерге сүйрөңүз</translation>
 <translation id="4814539958450445987">Аккаунтка кирүү экраны</translation>
 <translation id="481455355267255546">Кийинки</translation>
@@ -1039,7 +1043,6 @@
 <translation id="5104236669533825617">Скринкаст түзүлбөй жатат</translation>
 <translation id="5107522548814527560">Интернет</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
-<translation id="5111930673176965299">Фонду бүдөмүктөтүү</translation>
 <translation id="5117590920725113268">Кийинки айды көрсөтүү</translation>
 <translation id="5121628974188116412">Барактын аягына өтүү</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" /> алдын ала көрүү. Жигерсиз иш такта.</translation>

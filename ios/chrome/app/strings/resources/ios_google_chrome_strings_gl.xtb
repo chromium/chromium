@@ -114,14 +114,12 @@ Cuestións que debes ter en conta:
 <translation id="3901001113120561395">Tira o máximo proveito de Chrome.</translation>
 <translation id="3913386780052199712">Sesión iniciada en Chrome</translation>
 <translation id="3967382818307165056">Xestiona os métodos de pago en Chrome</translation>
-<translation id="3980220367029651214">Estás cambiando a conta de sincronización <ph name="USER_EMAIL1" /> por <ph name="USER_EMAIL2" />. <ph name="DOMAIN" /> xestiona os datos de Chrome actuais. Ao realizar esta acción, eliminaranse os teus datos deste dispositivo, pero conservaranse en <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">A túa organización require que manteñas a sesión pechada en Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome non ten acceso ás túas fotos nin aos teus vídeos. Activa o acceso en Configuración de iOS &gt; Privacidade &gt; Fotos.</translation>
 <translation id="4064699917955374540">Para usar e gardar os datos de Chrome na túa Conta de Google, verifica a túa identidade.</translation>
 <translation id="4067858366537947361">Abre unha pestana do modo de incógnito en Chrome</translation>
 <translation id="4093042601582616698">Queres que Chrome sexa o teu navegador predeterminado?</translation>
 <translation id="417201473131094001">Non compatible en Chrome Canary</translation>
-<translation id="4233521129555661685"><ph name="USER_EMAIL1" /> estivo usando Chrome e deixou os marcadores, os contrasinais e outras opcións de configuración neste dispositivo.</translation>
 <translation id="424864128008805179">Queres pechar sesión en Chrome?</translation>
 <translation id="4251174643044751591">Abre a páxina de configuración de métodos de pago en Chrome.</translation>
 <translation id="4453284704333523777">Xestiona a configuración de Chrome</translation>
@@ -240,7 +238,6 @@ Se queres ver máis opcións de configuración que usen datos para mellorar a t�
 <translation id="769104993356536261">Usa Accións de Chrome en iOS</translation>
 <translation id="7693590760643069321">Xa podes utilizar Chrome sempre que toques ligazóns en mensaxes, en documentos e noutras aplicacións.</translation>
 <translation id="7698568245838009292">Chrome quere acceder á cámara</translation>
-<translation id="7754633291442704733">A túa organización (<ph name="DOMAIN" />) terá acceso aos teus datos de Chrome, así como aos marcadores, ao historial, aos contrasinais e a outras opcións de configuración que almacenes nesta conta. Cando peches sesión, os datos borraranse deste dispositivo.  Non obstante, permanecerán almacenados na túa Conta de Google xestionada e estarán dispoñibles para a túa organización. Esta tamén pode definir políticas de usuario específicas para esa conta que poden modificar o comportamento de Chrome.</translation>
 <translation id="7780154209050837198">Para tirarlle o máximo partido a Chrome, inicia sesión coa túa Conta de Google en Chrome.</translation>
 <translation id="778855399387580014">Inicia unha busca nunha nova pestana de Chrome.</translation>
 <translation id="7792140019572081272">Chrome protexe os teus datos confidenciais con Face ID.</translation>

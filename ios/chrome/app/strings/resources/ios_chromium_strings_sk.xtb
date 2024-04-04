@@ -91,7 +91,6 @@
 <translation id="3567399274263440288">Ak chcete využívať Chromium naplno, prihláste sa doň svojím účtom Google.</translation>
 <translation id="3634039384458740619">Otvoriť Nastavenia prehliadača Chromium</translation>
 <translation id="3639997914391704523">Keď sa prihlásite účtom Google, Chromium môže skontrolovať vaše heslá.</translation>
-<translation id="3650632991272923014"><ph name="USER_EMAIL1" /> používal(a) Chromium a zanechal(a) záložky, heslá a ďalšie nastavenia v tomto zariadení.</translation>
 <translation id="3688710892786762883">Chromium zistí sledovacie čísla zásielok na weboch, ktoré navštívite, a zobrazí aktuality o zásielke na stránke na novej karte. Vaše údaje sa budú zdieľať s Googlom na účely poskytovania tejto funkcie a zlepšovania Nákupov pre všetkých.</translation>
 <translation id="372658070733623520">Ak chcete vo svojom účte Google používať a ukladať údaje prehliadača Chromium, overte svoju totožnosť.</translation>
 <translation id="3780779443901618967">Analyzuje viac údajov z webov než štandardná ochrana a upozorňuje vás na nebezpečné weby, dokonca aj také, o ktorých Google predtým nevedel. Upozornenia z prehliadača Chromium môžete preskočiť.</translation>
@@ -182,7 +181,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje prehl
 <translation id="5983312940147103417">Zlepšujte Chromium</translation>
 <translation id="5985102273857091344">Vyberte Chromium.</translation>
 <translation id="5985254578475526217">Ak chcete dostávať upozornenia z prehliadača Chromium, zapnite upozornenia v nastaveniach systému iOS.</translation>
-<translation id="6062449165341879460">Vaša organizácia <ph name="DOMAIN" /> bude mať prístup k údajom, záložkám, histórii, heslám a ďalším nastaveniam prehliadača Chromium, ktoré uložíte v tomto účte. Keď sa odhlásite, vaše údaje budú z tohto zariadenia vymazané.  Údaje však zostanú uložené vo vašom spravovanom účte Google a budú k dispozícii vašej organizácii. Vaša organizácia môže nastaviť aj pravidlá pre používateľov špecifické pre daný účet, ktoré môžu zmeniť správanie prehliadača Chromium.</translation>
 <translation id="6093744543579359059">Spravovať heslá v prehliadači Chromium</translation>
 <translation id="6104024151682120539">Otvoriť v prehliadači Chromium</translation>
 <translation id="61109258320235597">Ak chcete vo svojom účte Google používať a ukladať údaje prehliadača Chromium, zadajte prístupovú frázu.</translation>
@@ -247,7 +245,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje prehl
 <translation id="7763454117143368771">Používajte Chromium ako svoj predvolený prehliadač, aby ste sa naďalej chránili pred nebezpečnými webmi a zaistili ochranu svojich hesiel</translation>
 <translation id="78025249032851484">Váš prehliadač Chromium je zastaraný.</translation>
 <translation id="7859018312476869945">Keď zadávate v paneli s adresou alebo vyhľadávacom poli, prehliadač Chromium odosiela zadaný text do vášho predvoleného vyhľadávača, aby dostal lepšie návrhy. Táto možnosť je v režime inkognito vypnutá.</translation>
-<translation id="786327964234957808">Účet na synchronizáciu <ph name="USER_EMAIL1" /> prepínate na <ph name="USER_EMAIL2" />. Vaše existujúce údaje prehliadača Chromium spravuje doména <ph name="DOMAIN" />. Touto akciou odstránite údaje z vášho zariadenia, avšak zostanú naďalej v účte <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Začnite používať skener prehliadača Chromium</translation>
 <translation id="7905064834449738336">Keď používate heslo, Chromium vás upozorní, ak bude zverejnené na internete. Vaše heslá a používateľské mená sú pritom šifrované, aby ich nikto nemohol prečítať (ani Google).</translation>
 <translation id="7911732829884437264">Predvolene používať Chromium</translation>

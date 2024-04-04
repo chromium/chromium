@@ -540,7 +540,6 @@
 <translation id="4227825898293920515">O contrasinal caduca en <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Non hai ningunha tarefa de impresión en curso</translation>
 <translation id="4239069858505860023">GPRS</translation>
-<translation id="4244962993387259361">Como mínimo, precísanse 500 MB de espazo para executar unha proba de memoria. Se queres liberar espazo, vai a Configuración &gt; Xestión do almacenamento.</translation>
 <translation id="4250229828105606438">Captura de pantalla</translation>
 <translation id="4251839292699800785">Despacho elegante</translation>
 <translation id="4258281355379922695">Latencia de HTTP</translation>
@@ -912,6 +911,7 @@
 <translation id="6382182670717268353">Previsualizar o protector de pantalla</translation>
 <translation id="6388847657025262518">O alimentador de documentos do escáner está atascado. Revísao e téntao de novo.</translation>
 <translation id="6394634179843537518">Engadir ficheiro</translation>
+<translation id="6396719002784938593">carrizo seco</translation>
 <translation id="639964859328803943">de té</translation>
 <translation id="6400680457268373900"><ph name="DREAMSCAPES_OBJECT" /> de <ph name="DREAMSCAPES_MATERIAL" /> en <ph name="DREAMSCAPES_COLORS" /></translation>
 <translation id="6401427872449207797">busca do navegador</translation>
@@ -953,6 +953,7 @@
 <translation id="6575134580692778371">Non configurado</translation>
 <translation id="6576005492601044801">esquerda</translation>
 <translation id="6579509898032828423">Usar esta foto</translation>
+<translation id="6587870930887634392">suculenta</translation>
 <translation id="6596816719288285829">Enderezo IP</translation>
 <translation id="6599673642868607614">Grazas pola túa opinión. O noso equipo revisará os teus comentarios, que nos axudan a mellorar a experiencia que ofrecemos cos Chromebooks. Non imos poder enviar unha resposta debido ao gran número de informes que recibimos.</translation>
 <translation id="6618744767048954150">En execución</translation>
@@ -1111,6 +1112,7 @@
 <translation id="7497215489070763236">Certificado de CA do servidor</translation>
 <translation id="7501957181231305652">ou</translation>
 <translation id="7502658306369382406">Enderezo IPv6</translation>
+<translation id="7507061649493508884"><ph name="FLOWER_TYPE" /> radiante de cor <ph name="FLOWER_COLOR" /></translation>
 <translation id="7513770521371759388">parte inferior</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">Crear</translation>
@@ -1160,7 +1162,6 @@
 <translation id="780301667611848630">Non, grazas</translation>
 <translation id="7805768142964895445">Estado</translation>
 <translation id="7813073042185856802">montaña</translation>
-<translation id="7819831665603418705">Utilizar un modelo</translation>
 <translation id="7819857487979277519">PSK (WPA ou RSN)</translation>
 <translation id="7824219488248240180">postimpresionista</translation>
 <translation id="7828503206075800057">Unha cafetaría <ph name="CAFE_STYLE" /> <ph name="CAFE_TYPE" /></translation>
@@ -1171,6 +1172,7 @@
 <translation id="7850847810298646851">Fondo de pantalla con tecnoloxía da IA de Google</translation>
 <translation id="785170686607360576">tulipán</translation>
 <translation id="7856267634822906833">Pantalla táctil con conexión por Bluetooth</translation>
+<translation id="7859006200041800233">flor do cacto</translation>
 <translation id="7869143217755017858">Desactivar modo escuro</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tipo de fornecedor</translation>
@@ -1306,6 +1308,7 @@
 <translation id="8726019395068607495">Detívose (a tapa está aberta)</translation>
 <translation id="8730621377337864115">Feito</translation>
 <translation id="8747900814994928677">Confirmar o cambio</translation>
+<translation id="8749478549112817787">Fondo da cámara</translation>
 <translation id="8755946156089753497">torre</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Álbums de Google Fotos</translation>

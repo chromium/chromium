@@ -41,6 +41,7 @@
 <translation id="102916930470544692">Ključ za dostop</translation>
 <translation id="1029317248976101138">Povečaj</translation>
 <translation id="1029526375103058355">Dotik za klik</translation>
+<translation id="1029724557649700742">Nove funkcije bodo vključene, ko bodo na voljo, pri čemer se lahko funkcije razlikujejo glede na napravo.</translation>
 <translation id="1031362278801463162">Nalaganje predogleda</translation>
 <translation id="1032605640136438169">Preglejte nove pogoje</translation>
 <translation id="103279545524624934">Če želite zagnati aplikacije za Android, sprostite prostor na disku.</translation>
@@ -1535,7 +1536,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2127372758936585790">Nizkoenergijski polnilnik</translation>
 <translation id="212862741129535676">Odstotek zasedenosti frekvenčnega stanja</translation>
 <translation id="212876957201860463">Pripravljanje nastavitve mobilne naprave …</translation>
-<translation id="2130909682040406368">Več o uporabi orodij z umetno inteligenco</translation>
 <translation id="2131077480075264">»<ph name="APP_NAME" />« ni mogoče namestiti, ker »<ph name="IMPORT_NAME" />« tega ne dovoli.</translation>
 <translation id="2133775869826239001">Izbira več funkcij za nastavitev</translation>
 <translation id="2133857665503360653">Vnovičen poskus datoteke <ph name="FILE_NAME" /></translation>
@@ -1574,6 +1574,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2155473371917268529">Trenutna nastavitev vidnosti je za vaše naprave</translation>
 <translation id="2155772377859296191">Videti je <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Proces storitve: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156707722163479690">Pomikanje in povečava/pomanjšava deljenih zavihkov sta dovoljena</translation>
 <translation id="2156877321344104010">Vnovični zagon varnostnega preverjanja</translation>
 <translation id="2157474325782140681">Če želite dodatne funkcije, uporabite priklopno postajo Dell, zasnovano za uporabo s tem Chromebookom.</translation>
 <translation id="215753907730220065">Izhod iz celozaslonskega načina</translation>
@@ -1995,6 +1996,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2459706890611560967">Nadaljuj predvajanje zavihka v napravi <ph name="DEVICE_NAME" /></translation>
 <translation id="2460356425461033301">Varnostno kopirajte vsebino brskalnika in jo uporabljajte v poljubni napravi.</translation>
 <translation id="2460482211073772897">V drugih mapah</translation>
+<translation id="2461550163693930491">Spletnim mestom nista dovoljena pomikanje po deljenih zavihkih in njihova povečava/pomanjšava</translation>
 <translation id="2461593638794842577">To nastavitev lahko izklopite, če želite, da se gesla shranjujejo samo v tej napravi</translation>
 <translation id="2462332841984057083">Steam se že nastavlja. Počakajte, da se nastavitev konča.</translation>
 <translation id="2462724976360937186">ID ključa overitelja potrdil</translation>
@@ -2028,6 +2030,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2482895651873876648">Zavihek je premaknjen v skupino <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" />.</translation>
 <translation id="2483627560139625913">Nastavitev iskalnika v nastavitvah brskalnika Chrome</translation>
 <translation id="2483698983806594329">Prenesena je nepreverjena datoteka</translation>
+<translation id="2484574361686148760">Osveži podatke o odjemalcih Wi-Fi Direct</translation>
 <translation id="2484743711056182585">Odstrani odobritev</translation>
 <translation id="2484909293434545162">Če spletno mesto uporablja piškotke, bo prikazano tukaj.</translation>
 <translation id="2484959914739448251">Če želite izbrisati podatke brskanja iz vseh sinhroniziranih naprav in Google Računa, <ph name="BEGIN_LINK" />vnesite geslo<ph name="END_LINK" />.</translation>
@@ -2221,6 +2224,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2629227353894235473">Razvoj aplikacij za Android</translation>
 <translation id="2629437048544561682">Počisti platno</translation>
 <translation id="2631498379019108537">Prikaz možnosti vnosa na polici</translation>
+<translation id="2632176111713971407">Spletna mesta lahko zahtevajo pomikanje in povečavo/pomanjšavo deljenih zavihkov</translation>
 <translation id="2633212996805280240">Želite odstraniti »<ph name="EXTENSION_NAME" />«?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> ni mogel končati namestitve, a se bo še vedno izvajal s posnetka diska.</translation>
 <translation id="2633764681656412085">FIDO</translation>
@@ -3527,6 +3531,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3659550105763988702">Uporabite ključ za dostop za aplikacijo <ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">Prevečkrat ste vnesli napačno kodo za dostop. Poskusite znova pozneje.</translation>
 <translation id="3660234220361471169">Ni vredno zaupanja</translation>
+<translation id="3661106764436337772">Pišite hitreje in z več samozavesti</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Najdeno je bilo 1 obstoječe geslo}one{Najdeno je bilo {NUM_PASSWORDS} obstoječe geslo}two{Najdeni sta bili {NUM_PASSWORDS} obstoječi gesli}few{Najdena so bila {NUM_PASSWORDS} obstoječa gesla}other{Najdenih je bilo {NUM_PASSWORDS} obstoječih gesel}}</translation>
 <translation id="3662207097851752847">Potrdite račun Google v telefonu</translation>
 <translation id="3663417513679360795">Več informacij o vklopu standardnega vnaprejšnjega nalaganja</translation>
@@ -3879,6 +3884,7 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="3900966090527141178">Izvoz gesel</translation>
 <translation id="3902789559055749153">Izberite, kako želite ustvariti ključ za dostop za aplikacijo <ph name="APP_NAME" />.</translation>
 <translation id="3903187154317825986">Vgrajena tipkovnica</translation>
+<translation id="3903696968689283281">Podatki o lastnikih Wi-Fi Direct:</translation>
 <translation id="3904326018476041253">Lokacijske storitve</translation>
 <translation id="3905761538810670789">Popravi aplikacijo</translation>
 <translation id="3908288065506437185">Blokiranje piškotkov tretjih oseb v anonimnem načinu.</translation>
@@ -4504,7 +4510,6 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="4388650384344483842">Uporabite vsaj 8 znakov.</translation>
 <translation id="4389091756366370506">Uporabnik <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> in še toliko stikal: <ph name="NUMBER_OF_OTHER_SWITCHES" /></translation>
-<translation id="4390569024397171409">Namestite aplikacijo v napravo <ph name="DEVICE_TYPE" /></translation>
 <translation id="439266289085815679">Konfiguracijo Bluetootha nadzira <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Urejanje konfiguracijske datoteke</translation>
 <translation id="4393102500004843976">tipka za iskanje + shift + <ph name="TOP_ROW_KEY" /></translation>
@@ -4534,6 +4539,7 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="4409697491990005945">Robovi</translation>
 <translation id="4409779593816003679">Gesla in &amp;samodejno izpolnjevanje</translation>
 <translation id="4410545552906060960">Za odklepanje naprave namesto gesla uporabite številko (kodo PIN). Kodo PIN lahko nastavite pozneje v nastavitvah.</translation>
+<translation id="4411344321892622527">Pomikanje in povečava/pomanjšava deljenih zavihkov nista dovoljena</translation>
 <translation id="4411578466613447185">Podpisnik kode</translation>
 <translation id="4411719918614785832">Ti ključi za dostop so v tem računalniku shranjeni v funkciji Windows Hello. Niso shranjeni v vašem računu Google.</translation>
 <translation id="4412544493002546580">Poskusite znova ali izberite enega od spodnjih navdihov.</translation>
@@ -6879,6 +6885,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6257602895346497974">Vklopi sinhronizacijo …</translation>
 <translation id="625827534921607067">To omrežje bo prednostno, če je na voljo več kot eno predhodno povezano ali konfigurirano omrežje.</translation>
 <translation id="62586649943626337">Organizirajte zavihke s skupinami zavihkov</translation>
+<translation id="6259776178973198997">Osveži podatke o lastnikih Wi-Fi Direct</translation>
 <translation id="6262371516389954471">Varnostne kopije so naložene v Google in šifrirane z geslom za račun Google.</translation>
 <translation id="6263082573641595914">Microsoftova različica overitelja potrdil</translation>
 <translation id="6263284346895336537">Ni kritično</translation>
@@ -7584,6 +7591,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="6812349420832218321">Programa <ph name="PRODUCT_NAME" /> ni mogoče zagnati kot korenski uporabnik.</translation>
 <translation id="6812841287760418429">Ohrani spremembe</translation>
 <translation id="6813907279658683733">Celoten zaslon</translation>
+<translation id="6814754908910736855">Podatki o odjemalcih Wi-Fi Direct:</translation>
 <translation id="6815376457351236663">Vseeno odpri</translation>
 <translation id="6815787852028615386">Ta datoteka zavaja in lahko povzroči nepričakovane spremembe v napravi</translation>
 <translation id="6816097980753839617">Modra-rumena (tritanomalija)</translation>
@@ -8021,7 +8029,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7168109975831002660">Najmanjša velikost pisave</translation>
 <translation id="7169122689956315694">Vklop obvestila, ko so v bližini druge naprave</translation>
 <translation id="7170236477717446850">Profilna slika</translation>
-<translation id="7170751905948784001">Informacije za razvijalce:</translation>
 <translation id="7171000599584840888">Dodajanje profila …</translation>
 <translation id="7171259390164035663">Brez včlanitve</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Dodaj zavihek novi skupini}one{Dodaj zavihke novi skupini}two{Dodaj zavihke novi skupini}few{Dodaj zavihke novi skupini}other{Dodaj zavihke novi skupini}}</translation>
@@ -8454,6 +8461,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7501957181231305652">ali</translation>
 <translation id="7502220299952823578">Dodaj na seznam »Ta spletna mesta naj bodo vedno aktivna«</translation>
 <translation id="7502528909759062987">Začasno zaustavi predvajanje zavihka v napravi <ph name="DEVICE_NAME" /></translation>
+<translation id="7502804472671406749">Po deljenih zavihkih se je mogoče pomikati in jih povečati/pomanjšati</translation>
 <translation id="7503191893372251637">Vrsta Netscapeovega potrdila</translation>
 <translation id="7503985202154027481">Na varnostnem ključu se bo zabeležil obisk tega spletnega mesta.</translation>
 <translation id="7504145862399276792">Zvok tega zavihka je izklopljen</translation>
@@ -8498,7 +8506,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> se ne odziva. Če želite zapreti aplikacijo, izberite »Vsili zapiranje«.</translation>
 <translation id="7535730537657706072">Če želite izbrisati anonimno zgodovino brskanja iz naprave, zaprite vse anonimne zavihke.</translation>
 <translation id="7536815228183532290">Prijavljeni ste kot <ph name="EMAIL" /></translation>
-<translation id="7537182889548466084">Prejemali boste predloge za skupine zavihkov, v katerih so združeni podobni zavihki. Odprti zavihki in naslovi se pošiljajo Googlu, pregledale jih bodo osebe in uporabljeni bodo za izboljšanje te funkcije.</translation>
 <translation id="7538013435257102593">Ta vrsta datoteke ni pogosto prenesena in je lahko nevarna</translation>
 <translation id="7540972813190816353">Napaka pri preverjanju posodobitev: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> je to napravo povrnil na prejšnjo različico. Shranite pomembne datoteke, nato znova zaženite. Vsi podatki v napravi bodo izbrisani.</translation>
@@ -10796,6 +10803,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="949807244219288032">Ta zavihek je povezan z napravo HID</translation>
 <translation id="950079950995628542">Iz telefona »<ph name="PHONE_NAME" />«</translation>
 <translation id="950307215746360464">Vodnik za nastavitev</translation>
+<translation id="951273949038779544"><ph name="SITE_ACCESS" />. Namestil skrbnik</translation>
 <translation id="951991426597076286">Zavrni</translation>
 <translation id="952471655966876828">Naprava samodejno vzpostavi povezavo, ko je vklopljena in je v uporabi.</translation>
 <translation id="953434574221655299">Dovoljeno vedeti, kdaj aktivno uporabljate napravo</translation>

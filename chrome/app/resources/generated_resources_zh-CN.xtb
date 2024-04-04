@@ -41,6 +41,7 @@
 <translation id="102916930470544692">通行密钥</translation>
 <translation id="1029317248976101138">缩放</translation>
 <translation id="1029526375103058355">点按即点击</translation>
+<translation id="1029724557649700742">新功能推出后便可供使用，但具体功能可能会因设备而异。</translation>
 <translation id="1031362278801463162">正在加载预览</translation>
 <translation id="1032605640136438169">请查阅新版条款</translation>
 <translation id="103279545524624934">请释放磁盘空间以启动 Android 应用。</translation>
@@ -1513,7 +1514,6 @@
 <translation id="2127372758936585790">低功率充电器</translation>
 <translation id="212862741129535676">频率状态占用率</translation>
 <translation id="212876957201860463">正在准备设置您的移动网络设备…</translation>
-<translation id="2130909682040406368">详细了解如何使用 AI 工具</translation>
 <translation id="2131077480075264">“<ph name="IMPORT_NAME" />”不允许安装“<ph name="APP_NAME" />”，因为无法进行此项安装</translation>
 <translation id="2133775869826239001">选择更多功能进行设置</translation>
 <translation id="2133857665503360653">重新尝试下载“<ph name="FILE_NAME" />”文件</translation>
@@ -1552,6 +1552,7 @@
 <translation id="2155473371917268529">当前的公开范围设置是“您的设备”</translation>
 <translation id="2155772377859296191">有效分辨率：<ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service Worker：<ph name="SCRIPT_URL" /></translation>
+<translation id="2156707722163479690">允许滚动和缩放分享的标签页</translation>
 <translation id="2156877321344104010">再次运行安全检查</translation>
 <translation id="2157474325782140681">要获得更多功能，请使用由戴尔专为这款 Chromebook 设计的基座。</translation>
 <translation id="215753907730220065">退出全屏模式</translation>
@@ -1970,6 +1971,7 @@
 <translation id="2459706890611560967">继续将标签页投放到“<ph name="DEVICE_NAME" />”</translation>
 <translation id="2460356425461033301">备份您的浏览器资料，以便在任意设备上使用</translation>
 <translation id="2460482211073772897">在其他文件夹中</translation>
+<translation id="2461550163693930491">不允许网站滚动和缩放分享的标签页</translation>
 <translation id="2461593638794842577">您可以关闭此设置，以便仅将密码保存在此设备上</translation>
 <translation id="2462332841984057083">已经在设置 Steam 了。请等待设置完成。</translation>
 <translation id="2462724976360937186">证书授权中心密钥 ID</translation>
@@ -2003,6 +2005,7 @@
 <translation id="2482895651873876648">此标签页已移至“<ph name="GROUP_NAME" />”组中 - 该组包含<ph name="GROUP_CONTENTS" /></translation>
 <translation id="2483627560139625913">在 Chrome 浏览器设置中设置搜索引擎</translation>
 <translation id="2483698983806594329">下载的文件未经验证</translation>
+<translation id="2484574361686148760">刷新 Wi-Fi 直接客户端信息</translation>
 <translation id="2484743711056182585">撤消授权</translation>
 <translation id="2484909293434545162">如果网站使用 Cookie，它就会显示在此处</translation>
 <translation id="2484959914739448251">要想清除您的所有已同步设备中的浏览数据以及您的 Google 账号中的浏览数据，请<ph name="BEGIN_LINK" />输入您的密码<ph name="END_LINK" />。</translation>
@@ -2195,6 +2198,7 @@
 <translation id="2629227353894235473">开发 Android 应用</translation>
 <translation id="2629437048544561682">清除画布</translation>
 <translation id="2631498379019108537">在任务栏中显示输入法选项</translation>
+<translation id="2632176111713971407">网站可以请求滚动和缩放分享的标签页</translation>
 <translation id="2633212996805280240">要删除“<ph name="EXTENSION_NAME" />”吗？</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" />无法完成安装，但是会通过其磁盘映像继续运行。</translation>
 <translation id="2633764681656412085">FIDO</translation>
@@ -3501,6 +3505,7 @@
 <translation id="3659550105763988702">将您的通行密钥用于<ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">访问代码输错次数过多。请稍后重试</translation>
 <translation id="3660234220361471169">不可信</translation>
+<translation id="3661106764436337772">写作更快更自信</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{找到 1 个现有密码}other{找到 {NUM_PASSWORDS} 个现有密码}}</translation>
 <translation id="3662207097851752847">请在手机上确认您的 Google 账号</translation>
 <translation id="3663417513679360795">详细了解如何开启标准预加载功能</translation>
@@ -3853,6 +3858,7 @@
 <translation id="3900966090527141178">导出密码</translation>
 <translation id="3902789559055749153">选择您希望以何种方式为<ph name="APP_NAME" />创建通行密钥</translation>
 <translation id="3903187154317825986">内置键盘</translation>
+<translation id="3903696968689283281">Wi-Fi 直连所有者信息：</translation>
 <translation id="3904326018476041253">位置信息服务</translation>
 <translation id="3905761538810670789">修复应用</translation>
 <translation id="3908288065506437185">在无痕模式下阻止第三方 Cookie</translation>
@@ -4477,7 +4483,6 @@
 <translation id="4388650384344483842">请输入至少 8 个字符</translation>
 <translation id="4389091756366370506">用户 <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" /> 和另外 <ph name="NUMBER_OF_OTHER_SWITCHES" /> 个开关键</translation>
-<translation id="4390569024397171409">在 <ph name="DEVICE_TYPE" /> 上安装应用</translation>
 <translation id="439266289085815679">蓝牙配置由 <ph name="USER_EMAIL" /> 控制。</translation>
 <translation id="4392896746540753732">修改配置文件</translation>
 <translation id="4393102500004843976">搜索键 + Shift + <ph name="TOP_ROW_KEY" /></translation>
@@ -4507,6 +4512,7 @@
 <translation id="4409697491990005945">边距</translation>
 <translation id="4409779593816003679">密码和自动填充(&amp;A)</translation>
 <translation id="4410545552906060960">使用数字（PIN 码）代替密码来解锁设备。若想在晚些时候设置 PIN 码，请前往“设置”。</translation>
+<translation id="4411344321892622527">不允许滚动和缩放分享的标签页</translation>
 <translation id="4411578466613447185">代码签名人</translation>
 <translation id="4411719918614785832">这些通行密钥会保存在此计算机上的 Windows Hello 中，不会保存到您的 Google 账号中。</translation>
 <translation id="4412544493002546580">请重试或从以下壁纸中选择一个。</translation>
@@ -6846,6 +6852,7 @@
 <translation id="6257602895346497974">开启同步功能…</translation>
 <translation id="625827534921607067">如果有多个之前已连接或配置好的网络可用，系统会优先选择此网络</translation>
 <translation id="62586649943626337">使用标签页分组整理标签页</translation>
+<translation id="6259776178973198997">刷新 Wi-Fi 直连所有者信息</translation>
 <translation id="6262371516389954471">您的备份内容将上传到 Google 并使用您的 Google 账号密码进行加密。</translation>
 <translation id="6263082573641595914">Microsoft CA 版本</translation>
 <translation id="6263284346895336537">非关键</translation>
@@ -7545,6 +7552,7 @@
 <translation id="6812349420832218321">不能以根用户身份运行 <ph name="PRODUCT_NAME" />。</translation>
 <translation id="6812841287760418429">保留更改</translation>
 <translation id="6813907279658683733">整个屏幕</translation>
+<translation id="6814754908910736855">Wi-Fi 直连客户端信息：</translation>
 <translation id="6815376457351236663">仍然打开</translation>
 <translation id="6815787852028615386">此文件具有欺骗性，可能会对您的设备做出您意想不到的更改</translation>
 <translation id="6816097980753839617">蓝/黄（蓝色弱视）</translation>
@@ -7982,7 +7990,6 @@
 <translation id="7168109975831002660">最小字号</translation>
 <translation id="7169122689956315694">附近有其他设备时开启通知</translation>
 <translation id="7170236477717446850">个人资料照片</translation>
-<translation id="7170751905948784001">开发者信息：</translation>
 <translation id="7171000599584840888">添加个人资料…</translation>
 <translation id="7171259390164035663">不注册</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{向新群组中添加标签页}other{向新群组中添加标签页}}</translation>
@@ -8415,6 +8422,7 @@
 <translation id="7501957181231305652">或</translation>
 <translation id="7502220299952823578">添加到“始终让这些网站保持活动状态”列表</translation>
 <translation id="7502528909759062987">暂停将标签页投放到“<ph name="DEVICE_NAME" />”</translation>
+<translation id="7502804472671406749">分享的标签页可以滚动和缩放</translation>
 <translation id="7503191893372251637">Netscape 证书类型</translation>
 <translation id="7503985202154027481">您对该网站的访问记录将保留在安全密钥上。</translation>
 <translation id="7504145862399276792">此标签页已设为静音</translation>
@@ -8459,7 +8467,6 @@
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> 无响应。请选择“强制关闭”以关闭此应用。</translation>
 <translation id="7535730537657706072">若要清除您设备中的无痕浏览记录，请关闭所有无痕式标签页</translation>
 <translation id="7536815228183532290">目前登录的账号是 <ph name="EMAIL" /></translation>
-<translation id="7537182889548466084">系统会向您提供标签页分组建议，以便将类似的标签页分为一组。您打开的标签页和标题会发送给 Google，并可能经过人工审核以改进此功能。</translation>
 <translation id="7538013435257102593">此文件类型不常被下载，可能具有危险性</translation>
 <translation id="7540972813190816353">检查更新时出错：<ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> 已将此设备回滚到上一个版本。请保存重要文件，然后重启。此设备上的所有数据都将被删除。</translation>
@@ -10754,6 +10761,7 @@
 <translation id="949807244219288032">此标签页已连接到 HID 设备</translation>
 <translation id="950079950995628542">来自“<ph name="PHONE_NAME" />”</translation>
 <translation id="950307215746360464">设置指南</translation>
+<translation id="951273949038779544"><ph name="SITE_ACCESS" />。已由管理员安装</translation>
 <translation id="951991426597076286">拒绝</translation>
 <translation id="952471655966876828">已开启且正被使用时，设备会自动连接</translation>
 <translation id="953434574221655299">允许以下网站了解您何时在主动使用设备</translation>

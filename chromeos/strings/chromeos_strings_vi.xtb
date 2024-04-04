@@ -271,6 +271,7 @@
 <translation id="2446553403094072641">Độ chính xác của dấu phẩy động</translation>
 <translation id="2448312741937722512">Loại</translation>
 <translation id="2465272316171730950">Chúng tôi hiện đang hoạt động hết công suất. Vui lòng quay lại sau giây lát.</translation>
+<translation id="2472215337771558851">Sử dụng tính năng Giúp tôi viết để soạn bản nháp hoặc trau chuốt văn bản hiện có, dựa trên công nghệ AI của Google</translation>
 <translation id="2480572840229215612">cua</translation>
 <translation id="248546197012830854">Thiết bị hiện không có kết nối mạng. Hãy kết nối với mạng Wi-Fi để xem nội dung trợ giúp.</translation>
 <translation id="2486301288428798846">gỗ</translation>
@@ -328,10 +329,12 @@
 <translation id="2860473693272905224">Đặt một trang khác lên máy quét</translation>
 <translation id="2872961005593481000">Tắt</translation>
 <translation id="2873483161362553159">Điều hướng trên trình duyệt</translation>
+<translation id="2873939192640533085">Nhập một câu lệnh như "nghe tự tin hơn"</translation>
 <translation id="2874939134665556319">Bản nhạc trước</translation>
 <translation id="2875812231449496375">Bật chế độ này để hình nền này hiển thị được tốt nhất. Bạn có thể tắt chế độ cài đặt này bất cứ lúc nào.</translation>
 <translation id="2878387241690264070">Đã xả <ph name="RATE" /> pin sau <ph name="NUM_SECONDS" /> giây.</translation>
 <translation id="2880569433548999039">Trình bảo vệ màn hình Luồng đám mây</translation>
+<translation id="2888298276507578975">Nhập một câu lệnh như "hãy viết thư cảm ơn"</translation>
 <translation id="2890557891229184386">đảo nhiệt đới</translation>
 <translation id="2895772081848316509">tối</translation>
 <translation id="2926057806159140518">Nhập tên người dùng và mật khẩu hoặc quét mã QR</translation>
@@ -376,6 +379,7 @@
 <translation id="3226405216343213872">Đang tìm máy quét</translation>
 <translation id="3226657629376379887">Trình đơn thao tác của bố cục</translation>
 <translation id="3227186760713762082">Lấy giá trị <ph name="CATEGORY_TEXT" /> chia cho <ph name="CONVERSION_RATE" /></translation>
+<translation id="3237710083340813756">Viết lại</translation>
 <translation id="3246869037381808805">Các lệnh in quá 1 ngày sẽ bị xóa</translation>
 <translation id="324961752321393509">Quản trị viên của bạn không cho phép đóng ứng dụng này</translation>
 <translation id="3268178239013324452">Không thành công – Cửa máy in đang mở</translation>
@@ -414,6 +418,7 @@
 <translation id="346539236881580388">Chụp lại</translation>
 <translation id="3484914941826596830">Khi chương trình cơ sở đang cập nhật, đừng rút thiết bị bên ngoài này ra hay tắt máy tính. Bạn có thể thu nhỏ cửa sổ này. Quá trình cập nhật có thể mất vài phút và thiết bị bên ngoài của bạn có thể không hoạt động được trong thời gian này.</translation>
 <translation id="3486220673238053218">định nghĩa</translation>
+<translation id="3487866404496702283">Phản hồi về tính năng mahi</translation>
 <translation id="3488065109653206955">Được kích hoạt một phần</translation>
 <translation id="3492882532495507361">Văn phòng <ph name="OFFICE_STYLE" /> màu <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">Chromebook sẽ đo mức sử dụng dữ liệu. Số liệu này có thể khác với dữ liệu của nhà cung cấp.</translation>
@@ -442,6 +447,7 @@
 <translation id="3621072146987826699">con voi</translation>
 <translation id="3632579075709132555">Bật/tắt Màn hình bảo vệ quyền riêng tư</translation>
 <translation id="3651050199673793219">Chọn đơn vị nhiệt độ</translation>
+<translation id="3661106764436337772">Viết nhanh hơn và tự tin hơn</translation>
 <translation id="3662461537616691585">đỏ tía và nâu sẫm</translation>
 <translation id="3668449597372804501">Hình nền Luồng đám mây</translation>
 <translation id="3675132884790542448">lợn</translation>
@@ -534,7 +540,6 @@
 <translation id="4227825898293920515">Mật khẩu sẽ hết hạn sau <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Không có lệnh in nào đang xử lý</translation>
 <translation id="4239069858505860023">GPRS</translation>
-<translation id="4244962993387259361">Bạn cần ít nhất 500 MB trống để chạy tính năng kiểm tra Bộ nhớ. Để giải phóng dung lượng, hãy chuyển đến phần Cài đặt &gt; Trình quản lý bộ nhớ.</translation>
 <translation id="4250229828105606438">Ảnh chụp màn hình</translation>
 <translation id="4251839292699800785">Văn phòng thời thượng</translation>
 <translation id="4258281355379922695">Độ trễ của yêu cầu HTTP</translation>
@@ -877,6 +882,7 @@
 <translation id="6235460611964961764">Đặt lại mức sử dụng dữ liệu theo cách thủ công</translation>
 <translation id="6243280677745499710">Hiện đã được đặt</translation>
 <translation id="6250316632541035980">thịt xông khói và trứng</translation>
+<translation id="6255213378196499011">Chế độ cài đặt của tính năng Giúp tôi viết</translation>
 <translation id="6275224645089671689">Mũi tên phải</translation>
 <translation id="6278428485366576908">Chủ đề</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -1153,7 +1159,6 @@
 <translation id="780301667611848630">Không, cảm ơn</translation>
 <translation id="7805768142964895445">Trạng thái</translation>
 <translation id="7813073042185856802">ngọn núi</translation>
-<translation id="7819831665603418705">Sử dụng mẫu</translation>
 <translation id="7819857487979277519">PSK (WPA hoặc RSN)</translation>
 <translation id="7824219488248240180">trường phái hậu ấn tượng</translation>
 <translation id="7828503206075800057">Quán cà phê <ph name="CAFE_TYPE" /> theo phong cách <ph name="CAFE_STYLE" /></translation>

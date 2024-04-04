@@ -16,7 +16,6 @@
 <translation id="1066060668811609597">Gérer la synchronisation</translation>
 <translation id="1069154182096085577">Ce mot de passe existe déjà</translation>
 <translation id="1076421457278169141">Code scanné</translation>
-<translation id="1076785341346483463">Synchroniser avec un compte géré</translation>
 <translation id="1084365883616172403">Post Facebook publié.</translation>
 <translation id="1103523840287552314">Toujours traduire les pages rédigées en <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Passer à une autre fenêtre ouverte</translation>
@@ -24,7 +23,6 @@
 <translation id="1112015203684611006">Échec impr.</translation>
 <translation id="1125564390852150847">Créer un onglet</translation>
 <translation id="1126809382673880764">Ce mode ne vous protège pas contre les téléchargements, les extensions et les sites Web dangereux. Le cas échéant, vous bénéficierez toujours de la protection offerte par la navigation sécurisée dans d'autres services Google, tels que Gmail et la recherche.</translation>
-<translation id="1145536944570833626">Supprimez les données existantes</translation>
 <translation id="1147031633655575115">Connecté en tant que <ph name="USER" /></translation>
 <translation id="1150989369772528668">Agenda</translation>
 <translation id="1154984953698510061">Voir les autres onglets</translation>
@@ -54,7 +52,6 @@
 <translation id="1273416271143914096">{count,plural, =1{{count} mot de passe}one{{count} mot de passe}other{{count} mots de passe}}</translation>
 <translation id="1275718070701477396">Sélectionnée</translation>
 <translation id="1279024913354609713">Ne pas autoriser</translation>
-<translation id="1281818060020671000">Gérer les données</translation>
 <translation id="1282311502488501110">Ne pas se connecter</translation>
 <translation id="1283524564873030414">Dernières 24 heures</translation>
 <translation id="1285320974508926690">Ne jamais traduire ce site</translation>
@@ -563,7 +560,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3918585468378680136">Obtenir des infos de suivi</translation>
 <translation id="3921585859122905677">Position de la barre d'adresse</translation>
 <translation id="3922310737605261887">Rechercher le texte copié</translation>
-<translation id="3928666092801078803">Combiner mes données</translation>
 <translation id="3929457972718048006">Adresses</translation>
 <translation id="3939505428630887612">À propos de cette page</translation>
 <translation id="3948600256434252210">Vous pouvez balayer l'écran vers la droite pour utiliser le mode navigation privée.</translation>
@@ -943,6 +939,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5857770089550859117">Veuillez saisir la phrase secrète pour lancer la synchronisation.</translation>
 <translation id="5859715514067755465">Suivant</translation>
 <translation id="5860033963881614850">Désactivé</translation>
+<translation id="5860491529813859533">Activer</translation>
 <translation id="5896576662943111387">Conçu pour iOS</translation>
 <translation id="5897749768294722429">Pour revenir rapidement aux sites que vous avez consultés, synchronisez vos onglets et votre historique.</translation>
 <translation id="5897956970858271241">Consulter le lien copié</translation>
@@ -961,7 +958,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5971872012779224351">{count,plural, =1{1 favori supprimé}one{{count} favori supprimé}other{{count} favoris supprimés}}</translation>
 <translation id="5979837087407522202">Rechercher des mots de passe</translation>
 <translation id="5981230843984570095">Fermer tous les onglets inactifs</translation>
-<translation id="5982717868370722439">Ajoutez les données existantes au compte <ph name="USER_EMAIL" />.</translation>
 <translation id="5984222099446776634">Consultations récentes</translation>
 <translation id="598634819525651074">Aire</translation>
 <translation id="5988097621740394599">Les prix en baisse s'affichent dans les onglets.</translation>
@@ -1183,6 +1179,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="6989674195860388998">Changer dans les paramètres…</translation>
 <translation id="6998989275928107238">À</translation>
 <translation id="699954956411469731">Notifications mobiles</translation>
+<translation id="699985840472413751">Fermer le téléchargement</translation>
 <translation id="7004032350256606903">Votre organisation exige que vous utilisiez le mode navigation privée.
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Onglets récents</translation>
@@ -1191,7 +1188,6 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7022197654033719543">Informations sur le site</translation>
 <translation id="7029809446516969842">Mots de passe</translation>
 <translation id="704692552158601232">Appli du navigateur par défaut</translation>
-<translation id="7062545763355031412">Accepter et changer de compte</translation>
 <translation id="7063811929043357292">Ton compte est géré par ton parent.
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="7069695992271320873">Supprimer de cet appareil</translation>
@@ -1385,7 +1381,6 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="804427445359061970">Les onglets ouverts sur d'autres appareils s'afficheront ici</translation>
 <translation id="8044568254381073661">Enregistrer sans chiffrement</translation>
 <translation id="8059533439631660104">Réduit la section.</translation>
-<translation id="806745655614357130">Conserver mes données à part</translation>
 <translation id="8069394452933076548">Indiquez quand déplacer les onglets non utilisés récemment vers la section des onglets inactifs.</translation>
 <translation id="8073670137947914548">Téléchargement terminé</translation>
 <translation id="8073872304774253879">Améliorer les recherches et la navigation</translation>
@@ -1473,6 +1468,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="850600235656508448">Ouvrir en mode navigation privée</translation>
 <translation id="8517375800490286174">Licences Open Source</translation>
 <translation id="8522147671363140027">{count,plural, =1{{count} mot de passe et d'autres éléments ne sont enregistrés que sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google ({email}).}one{{count} mot de passe et d'autres éléments ne sont enregistrés que sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google ({email}).}other{{count} mots de passe et d'autres éléments ne sont enregistrés que sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google ({email}).}}</translation>
+<translation id="8522813812888400223">Annuler le téléchargement</translation>
 <translation id="8524799873541103884">Onglets <ph name="INCOGNITO" /> <ph name="FIRST_VISIBLE_TAB" /> à <ph name="LAST_VISIBLE_TAB" /> sur <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="852576975834694248">Vous allez être déconnecté et les onglets seront fermés</translation>
 <translation id="8528009254289981965">Ouvrir les liens d'autres applis en navigation privée</translation>
@@ -1615,7 +1611,6 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="9165320910061267720">Pour recevoir des alertes en cas de baisse de prix, vous devez activer les notifications dans les paramètres iOS.</translation>
 <translation id="9177438225260810839">Rechercher dans les onglets ouverts</translation>
 <translation id="9187853111759024059">Fermer plus de 99 onglets inactifs ?</translation>
-<translation id="9188680907066685419">Se déconnecter d'un compte géré</translation>
 <translation id="9200875785104711666">Il y a <ph name="TIME" /> j</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9203951165704618409">Déplacez la barre d'adresse du haut vers le bas pour une expérience de navigation personnalisée.</translation>

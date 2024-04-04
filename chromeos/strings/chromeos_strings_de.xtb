@@ -540,7 +540,6 @@
 <translation id="4227825898293920515">Passwort läuft in <ph name="TIME" /> ab</translation>
 <translation id="4238516577297848345">Keine laufenden Druckaufträge</translation>
 <translation id="4239069858505860023">GPRS</translation>
-<translation id="4244962993387259361">Zum Ausführen eines Speichertests müssen mindestens 500 MB frei sein. Unter „Einstellungen“ &gt; „Speicherplatzverwaltung“ kannst du Speicherplatz freigeben.</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="4251839292699800785">Elegantes Büro</translation>
 <translation id="4258281355379922695">HTTP-Latenz</translation>
@@ -912,6 +911,7 @@
 <translation id="6382182670717268353">Bildschirmschoner – Vorschau</translation>
 <translation id="6388847657025262518">Der Dokumenteneinzug des Scanners klemmt. Kontrolliere den Einzug und versuche es noch einmal.</translation>
 <translation id="6394634179843537518">Datei hinzufügen</translation>
+<translation id="6396719002784938593">Getrocknetes Federgras</translation>
 <translation id="639964859328803943">High-Tea</translation>
 <translation id="6400680457268373900">Ein(e) fantasievolle(r/s) <ph name="DREAMSCAPES_OBJECT" /> aus <ph name="DREAMSCAPES_MATERIAL" /> in <ph name="DREAMSCAPES_COLORS" /></translation>
 <translation id="6401427872449207797">Browsersuche</translation>
@@ -953,6 +953,7 @@
 <translation id="6575134580692778371">Nicht konfiguriert</translation>
 <translation id="6576005492601044801">links</translation>
 <translation id="6579509898032828423">Dieses Foto verwenden</translation>
+<translation id="6587870930887634392">Sukkulente</translation>
 <translation id="6596816719288285829">IP-Adresse</translation>
 <translation id="6599673642868607614">Vielen Dank für das Feedback! Dein Feedback wird von unserem Team gelesen und hilft uns dabei, Chromebooks noch weiter zu verbessern. Da wir sehr viele Rückmeldungen erhalten, können wir dir nicht persönlich antworten.</translation>
 <translation id="6618744767048954150">Läuft</translation>
@@ -1111,6 +1112,7 @@
 <translation id="7497215489070763236">CA-Serverzertifikat</translation>
 <translation id="7501957181231305652">oder</translation>
 <translation id="7502658306369382406">IPv6-Adresse</translation>
+<translation id="7507061649493508884"><ph name="FLOWER_TYPE" /> in einem strahlenden <ph name="FLOWER_COLOR" /></translation>
 <translation id="7513770521371759388">unten</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">Erstellen</translation>
@@ -1160,7 +1162,6 @@
 <translation id="780301667611848630">Nein, danke</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7813073042185856802">Berg</translation>
-<translation id="7819831665603418705">Vorlage verwenden</translation>
 <translation id="7819857487979277519">PSK (WPA oder RSN)</translation>
 <translation id="7824219488248240180">Post-Impressionismus</translation>
 <translation id="7828503206075800057"><ph name="CAFE_STYLE" />es <ph name="CAFE_TYPE" />-Café</translation>
@@ -1171,6 +1172,7 @@
 <translation id="7850847810298646851">Auf Google AI basierender Hintergrund</translation>
 <translation id="785170686607360576">Tulpe</translation>
 <translation id="7856267634822906833">Bluetooth-Touchscreen</translation>
+<translation id="7859006200041800233">Kaktusblüte</translation>
 <translation id="7869143217755017858">Dunklen Modus deaktivieren</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Providertyp</translation>
@@ -1306,6 +1308,7 @@
 <translation id="8726019395068607495">Angehalten – Druckerklappe offen</translation>
 <translation id="8730621377337864115">Fertig</translation>
 <translation id="8747900814994928677">Änderung bestätigen</translation>
+<translation id="8749478549112817787">Kamerahintergrund</translation>
 <translation id="8755946156089753497">Turm</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Fotos-Album</translation>

@@ -114,14 +114,12 @@ Hafðu í huga:
 <translation id="3901001113120561395">Fáðu sem mest út úr Chrome.</translation>
 <translation id="3913386780052199712">Skráð(ur) inn á Chrome</translation>
 <translation id="3967382818307165056">Stjórna greiðslumátum í Chrome</translation>
-<translation id="3980220367029651214">Þú ert að breyta samstillingarreikningi þínum úr <ph name="USER_EMAIL1" /> í <ph name="USER_EMAIL2" />.Fyrirliggjandi Chrome gögnum þínum er stjórnað af <ph name="DOMAIN" />. Þetta eyðir gögnunum þínum af þessu tæki en þau verða áfram geymd á <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Fyrirtækið þitt krefst þess að þú skráir þig ekki inn í Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome hefur ekki aðgang að myndunum þínum eða myndskeiðum. Veittu aðgang í iOS Settings &gt; Privacy &gt; Photos.</translation>
 <translation id="4064699917955374540">Staðfestu að þetta sért þú til að nota og vista Chrome-gögn á Google-reikningnum þínum.</translation>
 <translation id="4067858366537947361">Opna huliðsflipa í Chrome</translation>
 <translation id="4093042601582616698">Gera Chrome að sjálfgefnum vafra?</translation>
 <translation id="417201473131094001">Ekki stutt í Chrome Canary</translation>
-<translation id="4233521129555661685"><ph name="USER_EMAIL1" /> notaði Chrome og skildi eftir bókamerki, aðgangsorð og aðrar stillingar í þessu tæki.</translation>
 <translation id="424864128008805179">Viltu skrá þig út úr Chrome?</translation>
 <translation id="4251174643044751591">Opnar stillingasíðu greiðslumáta í Chrome.</translation>
 <translation id="4453284704333523777">Stjórna stillingum Chrome</translation>
@@ -240,7 +238,6 @@ Til að skoða fleiri stillingar sem nota gögn til að bæta Chrome-upplifunina
 <translation id="769104993356536261">Nota Chrome-aðgerðir í iOS</translation>
 <translation id="7693590760643069321">Núna geturðu notað Chrome hvenær sem þú ýtir á tengil í skilaboðum, skjölum og öðrum forritum.</translation>
 <translation id="7698568245838009292">Chrome biður um aðgang að myndavélinni</translation>
-<translation id="7754633291442704733"><ph name="DOMAIN" /> fyrirtækisins þíns fær aðgang að Chrome gögnunum þínum, bókamerkjum, ferli, aðgangsorðum og öðrum stillingum sem þú geymir á þessum reikningi. Þegar þú skráir þig út verður gögnunum þínum eytt úr þessu tæki.  Hins vegar verða gögnin þín geymd á stýrða Google reikningnum þínum og verða aðgengileg fyrirtækinu þínu. Fyrirtækið þitt getur líka stillt notendareglur sem eru sértækar fyrir reikninginn þinn og geta breytt virkni Chrome.</translation>
 <translation id="7780154209050837198">Skráðu þig inn á Chrome með Google reikningnum þínum svo að Chrome nýtist þér sem best.</translation>
 <translation id="778855399387580014">Hefja leit í nýjum flipa í Chrome.</translation>
 <translation id="7792140019572081272">Chrome notar andlitskennsl til að halda viðkvæmu upplýsingunum þínum öruggum.</translation>

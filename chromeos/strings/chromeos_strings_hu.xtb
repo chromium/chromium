@@ -271,6 +271,7 @@
 <translation id="2446553403094072641">Lebegőpontos pontosság</translation>
 <translation id="2448312741937722512">Típus</translation>
 <translation id="2465272316171730950">Most nincs szabad kapacitásunk. Jöjjön vissza később.</translation>
+<translation id="2472215337771558851">A (Google AI által működtetett) Segítség az íráshoz funkció használatával vázlatokat hozhat létre, és finomhangolhatja a meglévő munkákat.</translation>
 <translation id="2480572840229215612">rákok</translation>
 <translation id="248546197012830854">Az eszköz offline állapotú. A súgótartalom megtekintéséhez csatlakozzon Wi-Fi-hálózathoz.</translation>
 <translation id="2486301288428798846">fa</translation>
@@ -328,10 +329,12 @@
 <translation id="2860473693272905224">Helyezze az újabb oldalt a szkennerre</translation>
 <translation id="2872961005593481000">Leállítás</translation>
 <translation id="2873483161362553159">Navigáció böngészővel</translation>
+<translation id="2873939192640533085">Írjon be valamilyen utasítást, például azt, hogy „hangozzon magabiztosabban”.</translation>
 <translation id="2874939134665556319">Előző szám</translation>
 <translation id="2875812231449496375">Úgy érheti el a legjobb eredményt ezzel a háttérképpel, ha bekapcsolja ezt a beállítást. Ez a beállítás bármikor kikapcsolható.</translation>
 <translation id="2878387241690264070"><ph name="RATE" /> lemerítve <ph name="NUM_SECONDS" /> másodperc alatt.</translation>
 <translation id="2880569433548999039">Szálló felhők képernyővédő</translation>
+<translation id="2888298276507578975">Írjon be egy utasítást, például „írj köszönőüzenetet”.</translation>
 <translation id="2890557891229184386">trópusi sziget</translation>
 <translation id="2895772081848316509">sötét</translation>
 <translation id="2926057806159140518">Adja meg felhasználónevét és jelszavát, vagy olvassa be QR-kódját.</translation>
@@ -376,6 +379,7 @@
 <translation id="3226405216343213872">Szkennerek keresése</translation>
 <translation id="3226657629376379887">Elrendezésműveletek menüje</translation>
 <translation id="3227186760713762082">Ossza el a(z) <ph name="CATEGORY_TEXT" /> értékét ennyivel: <ph name="CONVERSION_RATE" /></translation>
+<translation id="3237710083340813756">Átírás</translation>
 <translation id="3246869037381808805">Az 1 napnál régebbi nyomtatási feladatokat eltávolítja a rendszer</translation>
 <translation id="324961752321393509">A rendszergazda nem engedélyezi az alkalmazás bezárását</translation>
 <translation id="3268178239013324452">Sikertelen – Nyitva van a nyomtató fedele</translation>
@@ -414,6 +418,7 @@
 <translation id="346539236881580388">Új kép készítése</translation>
 <translation id="3484914941826596830">A firmware frissítése közben ne húzza ki a külső eszközt, és ne kapcsolja ki számítógépét. Ezt az ablakot kis méretre állíthatja. A frissítés eltarthat néhány percig, és előfordulhat, hogy közben nem működik a külső eszköz.</translation>
 <translation id="3486220673238053218">definíció</translation>
+<translation id="3487866404496702283">Visszajelzés a mahi funkcióról</translation>
 <translation id="3488065109653206955">Részben aktiválva</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_STYLE" /> iroda <ph name="OFFICE_COLOR" /> tónusokkal</translation>
 <translation id="3493187369049186498">Az adatforgalmat a Chromebook méri. Az általa mért forgalom eltérhet a szolgáltató által mérttől.</translation>
@@ -442,6 +447,7 @@
 <translation id="3621072146987826699">elefántok</translation>
 <translation id="3632579075709132555">Az Adatvédelmi képernyő kapcsolója</translation>
 <translation id="3651050199673793219">Hőmérséklet mértékegységének kiválasztása</translation>
+<translation id="3661106764436337772">Gyorsabb és magabiztosabb írás</translation>
 <translation id="3662461537616691585">burgundi és gesztenyevörös</translation>
 <translation id="3668449597372804501">Szálló felhők háttérkép</translation>
 <translation id="3675132884790542448">sertések</translation>
@@ -534,7 +540,6 @@
 <translation id="4227825898293920515">A jelszó <ph name="TIME" /> múlva lejár</translation>
 <translation id="4238516577297848345">Nincsenek folyamatban lévő nyomtatási feladatok</translation>
 <translation id="4239069858505860023">GPRS</translation>
-<translation id="4244962993387259361">Legalább 500 MB szabad tárhely szükséges memóriateszt futtatásához. Tárhely felszabadításához lépjen a Beállítások &gt; Tárhelykezelő menübe.</translation>
 <translation id="4250229828105606438">Képernyőkép</translation>
 <translation id="4251839292699800785">Stílusos iroda</translation>
 <translation id="4258281355379922695">HTTP várakozási idő</translation>
@@ -877,6 +882,7 @@
 <translation id="6235460611964961764">Adathasználat manuális visszaállítása</translation>
 <translation id="6243280677745499710">Jelenleg beállított</translation>
 <translation id="6250316632541035980">sonka és tojás</translation>
+<translation id="6255213378196499011">A „Segítség az íráshoz” beállításai</translation>
 <translation id="6275224645089671689">Jobbra nyíl</translation>
 <translation id="6278428485366576908">Téma</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -1153,7 +1159,6 @@
 <translation id="780301667611848630">Köszönöm, nem</translation>
 <translation id="7805768142964895445">Állapot</translation>
 <translation id="7813073042185856802">hegy</translation>
-<translation id="7819831665603418705">Sablon használata</translation>
 <translation id="7819857487979277519">PSK (WPA vagy RSN)</translation>
 <translation id="7824219488248240180">posztimpresszionista</translation>
 <translation id="7828503206075800057">Egy <ph name="CAFE_STYLE" /> <ph name="CAFE_TYPE" /> kávézó</translation>

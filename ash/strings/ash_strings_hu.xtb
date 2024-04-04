@@ -441,6 +441,7 @@
 <translation id="2841907151129139818">Visszaváltott táblagép módra</translation>
 <translation id="2844169650293029770">C típusú USB-vel kompatibilis eszköz (bal első port)</translation>
 <translation id="2844350028562914727">részletek</translation>
+<translation id="2847759467426165163">Átküldés a következőre</translation>
 <translation id="2848120746144143659">Nyomja le az Entert, ha a teljes képernyő tartalmáról szeretne képernyőképet készíteni</translation>
 <translation id="2849936225196189499">Fontos</translation>
 <translation id="2860184359326882502">Legjobb találat</translation>
@@ -478,6 +479,7 @@
 <translation id="3009958530611748826">Válassza ki a mentés helyét</translation>
 <translation id="301282384882049174">Adminisztrátor által megosztva</translation>
 <translation id="301584155502740476">Hotspotadatok megjelenítése. A hotspot ki van kapcsolva.</translation>
+<translation id="3017079585324758401">Háttér</translation>
 <translation id="3018135054368884502">Médiatartalom előretekerése</translation>
 <translation id="3033545621352269033">Be</translation>
 <translation id="3033912566804961911">Összevonás a következővel: <ph name="DESK_NAME" /></translation>
@@ -1041,7 +1043,6 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="5104236669533825617">Nem sikerült létrehozni a képernyőfelvételt</translation>
 <translation id="5107522548814527560">Internet</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
-<translation id="5111930673176965299">Háttér homályosítása</translation>
 <translation id="5117590920725113268">A következő hónap megjelenítése</translation>
 <translation id="5121628974188116412">Ugrás az oldal aljára</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" /> előnézete. Inaktív asztal.</translation>

@@ -5,6 +5,7 @@
 <translation id="1013923882670373915">„Bluetooth“ įrenginys „<ph name="DEVICE_NAME" />“ prašo leidimo susieti. Šiame įrenginyje įveskite šį PIN kodą: <ph name="PINCODE" /></translation>
 <translation id="1014722676793506285">„<ph name="APP_NAME" />“ ir visoms programoms bei svetainėms, turinčioms leidimą pasiekti vietovės duomenis ir „ChromeOS“, leidžiama naudoti „Wi-Fi“ ir mobiliojo ryšio tinklų vietovę.</translation>
 <translation id="1017556409696559990">Sumažinti viršutinį langą, kai naršyklėje „Chrome“ nėra istorijos</translation>
+<translation id="101823271612280837">Įrašymas sustabdytas. Negalima naudoti žaidimų informacijos suvestinės planšetinio kompiuterio režimu.</translation>
 <translation id="1024364763893396229">Išsaugokite „<ph name="NAME" />“</translation>
 <translation id="1032891413405719768">Rašiklio akumuliatorius senka</translation>
 <translation id="1036073649888683237">Norėdami tvarkyti pranešimus, eikite į nustatymus</translation>
@@ -95,6 +96,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">Atidaryti skiltį „Naršymas“</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301513122398173424">Bet kuriuo metu paspauskite „<ph name="LAUNCHER_KEY_NAME" />“ + g</translation>
 <translation id="1306549533752902673">REKOMENDUOJAMOS PROGRAMOS</translation>
 <translation id="1311294419381837540">Perduodate skirtuką. Galite bet kada pristabdyti arba sustabdyti perdavimą.</translation>
 <translation id="1312604459020188865">Signalo stiprumas <ph name="SIGNAL_STRENGTH" /></translation>
@@ -115,6 +117,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1383597849754832576">Nepavyko atsisiųsti kalbos failų. Vėliau bandykite dar kartą.</translation>
 <translation id="1383876407941801731">Ieškoti</translation>
 <translation id="1391102559483454063">Įjungta</translation>
+<translation id="1394698770495054737">Visiškas suliejimas</translation>
 <translation id="1407069428457324124">Tamsioji tema</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Rodyklių klavišais pereikite nuo vienos datos prie kitos.</translation>
 <translation id="141170878022560212">Vidurinis mygtukas</translation>
@@ -227,6 +230,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1882814835921407042">Nėra mobiliojo ryšio tinklo</translation>
 <translation id="1882897271359938046">Dubliuojama <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Atrakinimas piršto antspaudu</translation>
+<translation id="1894024878080591367">Nustatykite, kad galėtumėte žaisti naudodami klaviatūrą</translation>
 <translation id="1904997243703671177">Kai išjungsite „Bluetooth“, išoriniai įrenginiai (<ph name="DEVICE_COUNT" />) bus atjungti nuo „<ph name="DEVICE_TYPE" />“, įskaitant:</translation>
 <translation id="1908992311423394684">Naujas įdiegimas</translation>
 <translation id="1915307458270490472">Baigti</translation>
@@ -325,6 +329,8 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2367972762794486313">Rodyti programas</translation>
 <translation id="2368828502825385061">Rasti</translation>
 <translation id="2369165858548251131">„Labas“ kinų kalba</translation>
+<translation id="2370971919968699910">Dėl to gali būti taikomas duomenų mokestis.
+Prijungtų įrenginių: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2382875860893882175">Perdavimas šiuo metu pristabdytas. Galite bet kada tęsti arba sustabdyti perdavimą.</translation>
 <translation id="2386292613071805067">Pasirinkti viską puslapyje</translation>
 <translation id="2392659840443812875">Nėra pasiekiamo viešosios interneto prieigos taško. Įsitikinkite, kad įrenginys yra netoliese ir įjungtas „Bluetooth“.</translation>
@@ -394,6 +400,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2624588537172718173">Įrenginio garsas ir mikrofonas</translation>
 <translation id="263399434338050016">„Pasirinkti viską“</translation>
 <translation id="2644422758626431000">Prisegti langą kairėje</translation>
+<translation id="2645380101799517405">Valdikliai</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">Lango užfiksavimas</translation>
 <translation id="2653659639078652383">Pateikti</translation>
@@ -406,6 +413,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2695305337569143674">žiniatinklis</translation>
 <translation id="2697697418792422688">Rodyti klaviatūros nustatymus. Pasirinkta: <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2700493154570097719">Klaviatūros nustatymas</translation>
+<translation id="2701576323154693023">Viešosios interneto prieigos taškas įjungtas („Wi-Fi“ išjungtas)</translation>
 <translation id="2704781753052663061">Prisijungti prie kitų „Wi-Fi“ tinklų</translation>
 <translation id="2705001408393684014">Perjungti mikrofoną. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Aukštyn</translation>
@@ -427,6 +435,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2785499565474703580">Prijungtas 1 įrenginys</translation>
 <translation id="2791421900609674576">Matysite rekomendacijas, kad galėtumėte tęsti nuo ten, kur baigėte. Palieskite ir palaikykite, jei norite pašalinti rekomendacijas.</translation>
 <translation id="2792498699870441125">„Alt“ + paieškos klavišas</translation>
+<translation id="2798702144670138229">Planšetinio kompiuterio režimas įjungtas. Žaidimų informacijos suvestinė nepasiekiama.</translation>
 <translation id="2801954693771979815">Ekrano dydis</translation>
 <translation id="2802938996245446490">„<ph name="BUTTON_LABEL" />“, pasirinkta</translation>
 <translation id="2805756323405976993">Taikomosios programos</translation>
@@ -441,6 +450,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2841907151129139818">Perjungta į planšetinio kompiuterio režimą</translation>
 <translation id="2844169650293029770">USB-C įrenginys (prievadas kairėje, priekinėje dalyje)</translation>
 <translation id="2844350028562914727">išsami informacija</translation>
+<translation id="2847759467426165163">Perduoti į</translation>
 <translation id="2848120746144143659">Paspauskite „Enter“, kad užfiksuotumėte viso ekrano kopiją</translation>
 <translation id="2849936225196189499">Kritinis</translation>
 <translation id="2860184359326882502">Geriausia atitiktis</translation>
@@ -474,10 +484,12 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2992327365391326550">Įrenginio mikrofono mygtukas išjungtas.</translation>
 <translation id="2996462380875591307">Prie doko prijungtas didintuvas įgalintas. Dar kartą paspauskite „Ctrl“ + paieškos klavišą + D, kad išjungtumėte režimą.</translation>
 <translation id="3000461861112256445">Monofoninis garsas</translation>
+<translation id="3001391739687111021">Redaguoti ekrano dydį</translation>
 <translation id="3009178788565917040">Išvestis</translation>
 <translation id="3009958530611748826">Pasirinkite aplanką, kuriame pageidaujate išsaugoti</translation>
 <translation id="301282384882049174">Bendrina administratorius</translation>
 <translation id="301584155502740476">Rodyti išsamią viešosios interneto prieigos taško informaciją. Viešosios interneto prieigos taškas išjungtas.</translation>
+<translation id="3017079585324758401">Fonas</translation>
 <translation id="3018135054368884502">Sukti pirmyn mediją</translation>
 <translation id="3033545621352269033">Įjungta</translation>
 <translation id="3033912566804961911">Sujungti su „<ph name="DESK_NAME" />“</translation>
@@ -502,6 +514,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="3100274880412651815">Atsisakyti užfiksavimo režimo</translation>
 <translation id="3105917916468784889">Padaryti ekrano kopiją</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> („Bluetooth“)</translation>
+<translation id="3107155169630537783">Pasisveikinimo pranešimo būsena: <ph name="STATE" /></translation>
 <translation id="3113492864356515707">Paryškinti ankstesnį elementą lentynoje</translation>
 <translation id="311799651966070385">Uždaryti priminimą</translation>
 <translation id="3120421559657122717">Išjungti įrenginį?</translation>
@@ -740,6 +753,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="3984536049089846927">Kitas puslapis</translation>
 <translation id="3986082989454912832">Atsakyti</translation>
 <translation id="3990002060657467458">Dažnai naudojami valdikliai, pvz., „Wi-Fi“, „Bluetooth“ ir garsumo, pateikiami sparčiuosiuose nustatymuose. Čia taip pat galite kurti ekrano kopijas.</translation>
+<translation id="3991203706072366707">Išjungta naudojant „<ph name="GAME_APP_NAME" />“</translation>
 <translation id="3995138139523574647">USB-C įrenginys (prievadas dešinėje, užpakalinėje dalyje)</translation>
 <translation id="4002066346123236978">Pavadinimas</translation>
 <translation id="40062176907008878">Rašymas ranka</translation>
@@ -833,6 +847,7 @@ Kai kurios funkcijos ribojamos, kad būtų galima pailginti akumuliatoriaus veik
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322742403972824594">Pakeistas spartusis klavišas „Ctrl“ + „Alt“ + rodyklė aukštyn. Jei norite naudoti klavišą „Home“, paspauskite <ph name="LAUNCHER_KEY_NAME" /> klavišą + rodyklę kairėn.</translation>
 <translation id="4324840740119394760">Tai leis pasiekti vaizdo kamerą programai „<ph name="APP_NAME" />“ ir visoms programoms bei svetainėms, turinčioms vaizdo kameros leidimą</translation>
+<translation id="4327147325944669226">Įrašyti žaidimą</translation>
 <translation id="4333628967105022692">„Lacros“ nepalaikoma, kai prisijungę keli naudotojai.</translation>
 <translation id="4338109981321384717">Didinamasis stiklas</translation>
 <translation id="4351244548802238354">Uždaryti dialogo langą</translation>
@@ -868,6 +883,8 @@ Kai kurios funkcijos ribojamos, kad būtų galima pailginti akumuliatoriaus veik
 <translation id="4471432286288241507">{0,plural, =0{Atnaujinkite įrenginį dabar}=1{Atnaujinkite įrenginį per vieną sekundę}one{Atnaujinkite įrenginį per # sekundę}few{Atnaujinkite įrenginį per # sekundes}many{Atnaujinkite įrenginį per # sekundės}other{Atnaujinkite įrenginį per # sekundžių}}</translation>
 <translation id="4472575034687746823">Pradėkite</translation>
 <translation id="4477350412780666475">Kitas takelis</translation>
+<translation id="4477751544736611934">Dėl to gali būti taikomas duomenų mokestis.
+Prijungtas vienas įrenginys.</translation>
 <translation id="4477892968187500306">Šiame įrenginyje gali būti programų, kurių „Google“ nepatvirtino.</translation>
 <translation id="4479639480957787382">Eternetas</translation>
 <translation id="4481530544597605423">Atsieti įrenginiai</translation>
@@ -954,6 +971,7 @@ Kai kurios funkcijos ribojamos, kad būtų galima pailginti akumuliatoriaus veik
 <translation id="4798888871844665150">Elementas jau nukopijuotas į iškarpinę. Norėdami peržiūrėti, naudokite <ph name="SHORTCUT_KEY_NAME" /> + V.</translation>
 <translation id="479989351350248267">ieškoti</translation>
 <translation id="4804818685124855865">Atsijungti</translation>
+<translation id="4806631651704497161">Nežymus suliejimas</translation>
 <translation id="4813311884204119883">Nuvilkite nuorodą į tuščią sritį skirtuko juostelėje</translation>
 <translation id="4814539958450445987">Prisijungimo ekranas</translation>
 <translation id="481455355267255546">Toliau</translation>
@@ -996,6 +1014,7 @@ Kai kurios funkcijos ribojamos, kad būtų galima pailginti akumuliatoriaus veik
 <translation id="4945196315133970626">Išjungti pranešimus</translation>
 <translation id="4946376291507881335">Užfiksuoti</translation>
 <translation id="495046168593986294">Slinkti į viršų</translation>
+<translation id="4950800194215951939">Tinkinkite žaidimų funkcijas</translation>
 <translation id="4952936045814352993">Telefono vietos nustatymo funkcija nepasiekiama, kai įspėjimų garsai yra išjungti</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> reikalauja grąžinti ankstesnę „<ph name="DEVICE_TYPE" />“ versiją. Jūsų įrenginys bus nustatytas iš naujo ir visi duomenys bus ištrinti.</translation>
 <translation id="4961318399572185831">Perduoti ekraną</translation>
@@ -1010,6 +1029,8 @@ Kai kurios funkcijos ribojamos, kad būtų galima pailginti akumuliatoriaus veik
 <translation id="4981175556418720939">Pakeista <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">16 darbalaukis</translation>
 <translation id="4989163558385430922">Žr. viską</translation>
+<translation id="4995963195354861331">Pasisveikinimo dialogo langas</translation>
+<translation id="4996265698919320288">Įrašoma</translation>
 <translation id="5003993274120026347">Kitas sakinys</translation>
 <translation id="5004607513195820459">Tinklas tvarkomas</translation>
 <translation id="5009463889040999939">Pervardijamas profilis. Tai gali užtrukti kelias minutes.</translation>
@@ -1040,7 +1061,6 @@ Kai kurios funkcijos ribojamos, kad būtų galima pailginti akumuliatoriaus veik
 <translation id="5104236669533825617">Nepavyko sukurti ekrano vaizdo įrašo</translation>
 <translation id="5107522548814527560">Žiniatinklis</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
-<translation id="5111930673176965299">Fono suliejimas</translation>
 <translation id="5117590920725113268">Rodyti kitą mėnesį</translation>
 <translation id="5121628974188116412">Eiti į puslapio apačią</translation>
 <translation id="5122517996953421795">„<ph name="DESK_NAME" />“ peržiūra. Neaktyvus darbalaukis.</translation>
@@ -1102,6 +1122,8 @@ Kai kurios funkcijos yra apribotos siekiant pailginti akumuliatoriaus veikimo la
 <translation id="533282197239610265">Rodyti perdavimo įrenginius</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (dešinioji)</translation>
 <translation id="5352250171825660495">Tamsioji tema įjungta</translation>
+<translation id="5354804064646502504">Dėl to gali būti taikomas duomenų mokestis.
+Nėra jokių prijungtų įrenginių.</translation>
 <translation id="5356963482258194581">Perjunkite iš tamsiosios į šviesiąją temą ir atvirkščiai. Dešiniuoju klavišu spustelėkite darbalaukyje ir pasirinkite „Ekrano fonas ir stilius“.</translation>
 <translation id="536019650977002321">Jūsų administratorius neleidžia fiksuoti garso įrašų. Susisiekite su administratoriumi, jei reikia daugiau informacijos.</translation>
 <translation id="5361524080961918551">Iš dalies atsisiųsti <ph name="LANGUAGE" /> kalbos failai</translation>
@@ -1201,6 +1223,7 @@ Kai kurios funkcijos yra apribotos siekiant pailginti akumuliatoriaus veikimo la
 <translation id="5712132663381964774">Viską, ką reikia padaryti „<ph name="PRODUCT_NAME" />“, galite atlikti naudodamiesi programomis. Programas rasite paleidimo priemonėje.</translation>
 <translation id="571295407079589142">Mobiliojo ryšio duomenys išjungti</translation>
 <translation id="5727460725221669831">Jei pamiršote slaptažodį arba neseniai pakeitėte „Google“ paskyros slaptažodį, pabandykite atkurti šį naudotoją.</translation>
+<translation id="5733630091161562207">Pasisveikinimo pranešimas</translation>
 <translation id="573413375004481890">Šis įrenginys negali palaikyti visų ekranų, todėl vienas iš jų buvo atjungtas</translation>
 <translation id="5740328398383587084">Bendrinimas netoliese</translation>
 <translation id="574392208103952083">Vidutinis</translation>
@@ -1386,6 +1409,7 @@ Kai kurios funkcijos yra apribotos siekiant pailginti akumuliatoriaus veikimo la
 <translation id="6453179446719226835">Kalba pakeista</translation>
 <translation id="6459472438155181876">Ekranas išplečiamas į <ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">vaizdai</translation>
+<translation id="6467290994038932560">Įjungta naudojant „<ph name="GAME_APP_NAME" />“</translation>
 <translation id="6469104339369989396">Perjungti viešosios interneto prieigos tašką</translation>
 <translation id="6477681113376365978">Neįmanoma atsiųsti failo</translation>
 <translation id="6482559668224714696">Viso ekrano didintuvas</translation>
@@ -1775,6 +1799,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="7963689218131240420">Netrukdymo režimas išjungtas.</translation>
 <translation id="7963992254934562106">Iš „<ph name="PHONE_NAME" />“</translation>
 <translation id="7968693143708939792">Pasirinkti aplanką...</translation>
+<translation id="7973756967040444713">Uždaryti įrankių juostą</translation>
 <translation id="797512352675305461">Įjungti arba išjungti viso ekrano didintuvą</translation>
 <translation id="7977927628060636163">Ieškoma mobiliojo ryšio tinklų...</translation>
 <translation id="7982789257301363584">Tinklas</translation>
@@ -1927,6 +1952,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="861045123704058818">Programos laikinai sutvarkytos pagal kategoriją</translation>
 <translation id="8612216344243590325">Laikykite svarbius failus „<ph name="HOLDING_SPACE_TITLE" />“, o ne darbalaukyje. Tiesiog nuvilkite failus į „<ph name="HOLDING_SPACE_TITLE" />“.</translation>
 <translation id="8614517853887502247">„<ph name="APP_1_TITLE" />“ ir „<ph name="APP_2_TITLE" />“ pranešimai paslėpti, nes įjungta peržiūros apsauga</translation>
+<translation id="8615778328722901791">Atidaryti įrankių juostą</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">Sumažinti garsumą</translation>
 <translation id="8627191004499078455">Prisijungta prie „<ph name="DEVICE_NAME" />“</translation>
@@ -1949,6 +1975,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8703634754197148428">Pradėkite įrašyti. Pradėjus įrašyti, naudodami „Alt“ + „Shift“ + L eikite į juostą ir raskite įrašymo sustabdymo mygtuką</translation>
 <translation id="8704155109538237473">Paryškinti vaizdo vaizde langą</translation>
 <translation id="870917907284186124">Įjungti ir (arba) išjungti diktavimą (teksto vedimą balsu)</translation>
+<translation id="8711169534266271368">Žaidimų informacijos suvestinės parinktys</translation>
 <translation id="8714138378966541668">Užrakino teikėjas</translation>
 <translation id="8717459106217102612">Pasirinkti ankstesnį žodį ar raidę</translation>
 <translation id="8721053961083920564">Perjungti garsumą. <ph name="STATE_TEXT" /></translation>
@@ -1979,6 +2006,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8815390544836110344">Paspauskite ekrano kopijos spartųjį klavišą, „Ctrl“, „Shift“ ir apžvalgos režimo klavišą</translation>
 <translation id="881757059229893486">Įvesties metodų nustatymai</translation>
 <translation id="8819728065740986820">Prisitaikantis įkrovimas įjungtas</translation>
+<translation id="8822104519413696986">Tai yra jutiklinio ekrano žaidimas</translation>
 <translation id="8825863694328519386">Kad grįžtumėte, perbraukite iš kairės</translation>
 <translation id="8832513206237979203">Rodyti arba slėpti žymių juostą</translation>
 <translation id="8834539327799336565">Šiuo metu susieti</translation>
@@ -2089,6 +2117,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="953431725143473984">Išjungti įrenginį?</translation>
 <translation id="954052413789300507">Nepakanka vietos failui „<ph name="FILENAME" />“. Atlaisvinkite vietos.</translation>
 <translation id="954520015070501466">30 min.</translation>
+<translation id="956452277966142925">Žaidimų informacijos suvestinės nustatymai</translation>
 <translation id="974545358917229949">Pagal užklausą „<ph name="QUERY" />“ pateikiama rezultatų: <ph name="RESULT_COUNT" /></translation>
 <translation id="981011780479609956">Termino nėra</translation>
 <translation id="98120814841227350">Eiti į dokumento pabaigą</translation>

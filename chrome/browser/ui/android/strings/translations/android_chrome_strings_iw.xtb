@@ -59,7 +59,6 @@
 <translation id="1258753120186372309">‏דודל של Google‏: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1263063910731171689">‏מעכשיו יוצג לך תוכן מאתר <ph name="SITE_NAME" />, ותוכן לגביו, בקטע 'במעקב'. האתרים והחיפושים שבמעקב נשמרים בחשבון Google שלך. בכל שלב אפשר לנהל את הפריטים שבמעקב בהגדרות.</translation>
 <translation id="1263231323834454256">רשימת קריאה</translation>
-<translation id="1266864766717917324">לא ניתן היה לשתף את ה<ph name="CONTENT_TYPE" /></translation>
 <translation id="1269129608791067105">ההיסטוריה תופיע כאן</translation>
 <translation id="1273937721055267968">חסימה של <ph name="DOMAIN" /></translation>
 <translation id="1283039547216852943">יש להקיש כדי להרחיב</translation>
@@ -96,7 +95,6 @@
 <translation id="1436784010935106834">הוסר</translation>
 <translation id="1437543266176261764">הפעילות מתבצעת ב-<ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">‏יש לך אפשרות לארגן את המוצרים שבמעקב ב-Bookmarks</translation>
-<translation id="1450753235335490080">לא ניתן לשתף את ה<ph name="CONTENT_TYPE" /></translation>
 <translation id="1462833127986525564">‏אפשר לקשר את Chrome לשירותי Google אחרים כדי לאפשר להם לשתף ביניהם נתונים ולהתאים עבורך אישית את חוויית השימוש</translation>
 <translation id="1466383950273130737">‏בחירת השפה ב-Chrome</translation>
 <translation id="1477626028522505441">הורדת <ph name="FILE_NAME" /> נכשלה עקב בעיות בשרת.</translation>
@@ -203,7 +201,6 @@
 <translation id="2093731487903423814">15 הדקות האחרונות</translation>
 <translation id="2096012225669085171">סנכרון והתאמה אישית במכשירים שונים</translation>
 <translation id="2100273922101894616">כניסה אוטומטית</translation>
-<translation id="2100314319871056947">כדאי לשתף את הטקסט במקטעים קטנים יותר</translation>
 <translation id="2111511281910874386">מעבר לדף</translation>
 <translation id="2119609734654412418">הסימניות זמינות כאן</translation>
 <translation id="2122601567107267586">לא ניתן היה לפתוח את היישום</translation>
@@ -376,7 +373,6 @@
 <translation id="2981364137500752533">ניתן לפתוח עד 5 חלונות.</translation>
 <translation id="2983102365694924129">על סמך הפעילות שלך באתר מסוים. ההגדרה הזו מושבתת.</translation>
 <translation id="2984978667043170458">‏הכללת הטקסט שמסביב בחיפושים ב-Google</translation>
-<translation id="2987620471460279764">טקסט ששותף ממכשיר אחר</translation>
 <translation id="2989523299700148168">מנועי חיפוש שהשתמשת בהם לאחרונה</translation>
 <translation id="2992473221983447149">תיאורי תמונות</translation>
 <translation id="2996291259634659425">יצירת ביטוי סיסמה</translation>
@@ -384,7 +380,6 @@
 <translation id="2996932914629936323">ניקוי ההיסטוריה בכל המכשירים המסונכרנים</translation>
 <translation id="2997081575621687554">‏כשאתר שנוצר באמצעות Google Sites מבקש לטעון מראש קישורים בדף שלו באופן פרטי, מערכת Chrome מצפינה וטוענת מראש את הדפים באמצעות השרתים של Google ללא קובצי cookie. כך מוסתרת הזהות שלך מהאתר שנטען מראש.</translation>
 <translation id="3003253259757197230">‏במהלך הגלישה, כתובת ה-URL שמבקרים בהן יישלחו אל Google כדי לחזות את האתרים הבאים שעשויים להיפתח וכדי להציג לך מידע נוסף על הדף הנוכחי</translation>
-<translation id="3016635187733453316">יש לוודא שהמכשיר הזה מחובר לאינטרנט</translation>
 <translation id="3026955690410463085">הכללת הקישור</translation>
 <translation id="3027644380269727216">על סמך הפעילות שלך באתר מסוים. ההגדרה הזו פועלת.</translation>
 <translation id="3029276696788198026">ללא טעינה מראש</translation>
@@ -447,7 +442,6 @@
 <translation id="3374023511497244703">‏הסימניות, ההיסטוריה, הסיסמאות ונתונים אחרים ב-Chrome כבר לא יסונכרנו עם חשבון Google</translation>
 <translation id="3384347053049321195">שיתוף תמונה</translation>
 <translation id="3387650086002190359">הורדת <ph name="FILE_NAME" /> נכשלה עקב שגיאות במערכת הקבצים.</translation>
-<translation id="3389286852084373014">הטקסט ארוך מדי</translation>
 <translation id="3398320232533725830">פתיחת מנהל הסימניות</translation>
 <translation id="3407392651057365886">‏יותר דפים נטענים מראש. דפים יכולים להיטען מראש באמצעות השרתים של Google כשמתקבלת בקשה מאתרים אחרים.</translation>
 <translation id="3414952576877147120">גודל:</translation>
@@ -800,7 +794,6 @@
 <translation id="5180063720319462041">הדף תורגם ל<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="5186634140793586141">ניהול הנושאים והחיפושים שמעניינים אותך</translation>
 <translation id="5191251636205085390">‏מידע על טכנולוגיות חדשות שמיועדות להחליף קובצי cookie של צד שלישי והוראות לשליטה בהן.</translation>
-<translation id="5193988420012215838">הועתק אל הלוח</translation>
 <translation id="5204967432542742771">הזנת סיסמה</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{מתבצעת הורדה של קובץ…}one{מתבצעת הורדה של # קבצים…}two{מתבצעת הורדה של # קבצים…}other{מתבצעת הורדה של # קבצים…}}</translation>
 <translation id="5210286577605176222">חזרה לכרטיסייה הקודמת</translation>
@@ -825,7 +818,6 @@
 <translation id="5342314432463739672">בקשות הרשאה</translation>
 <translation id="534580735623577507">אין ביקורים באתרים מאז <ph name="TIME_PERIOD" /></translation>
 <translation id="5355191726083956201">מופעלת הגנה משופרת</translation>
-<translation id="5361107212971249203">טקסט</translation>
 <translation id="5375577065097716013">‏חיפוש תמונה בעזרת Google Lens <ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
 <translation id="5395376160638294582">‏כדאי לוודא שתמיד תהיה לך אפשרות להשתמש בנתוני Chrome בחשבון Google שלך</translation>
 <translation id="539881862970320163">מוצגת הצעה לסיסמה חזקה. המקלדת מוסתרת.</translation>
@@ -1209,7 +1201,6 @@
 <translation id="7221869452894271364">רענון הדף</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{הורדה אחת בהמתנה}one{# הורדות בהמתנה}two{# הורדות בהמתנה}other{# הורדות בהמתנה}}</translation>
 <translation id="72415438529550637">ההצעה לסיסמה נסגרה.</translation>
-<translation id="7248069434667874558">‏יש לוודא שהסנכרון ב-Chrome הופעל ב-<ph name="TARGET_DEVICE_NAME" /></translation>
 <translation id="7252076891734325316">יש להניח את הטלפון בקרבת המחשב</translation>
 <translation id="7260367682327802201">‏במכשיר Android עשויה להופיע הגדרה דומה. אם מדידת המודעות מופעלת ב-Chrome ובמכשיר Android, לחברה מסוימת עשויה להיות הרשאה למדוד את רמת האפקטיביות של מודעה כלשהי באתרים שבהם מבקרים ובאפליקציות שבהן משתמשים.</translation>
 <translation id="727288900855680735">לשלוח את <ph name="ONE_TIME_CODE" /> אל <ph name="ORIGIN" />?</translation>
@@ -1317,7 +1308,6 @@
 <translation id="7707922173985738739">שימוש בחבילת הגלישה</translation>
 <translation id="7709918231054955894">הצגת כל הכרטיסיות</translation>
 <translation id="7733878270780732638">אין מספיק נפח אחסון פנוי במכשיר.</translation>
-<translation id="7757787379047923882">הטקסט שותף דרך <ph name="DEVICE_NAME" /></translation>
 <translation id="7759809451544302770">אופציונלי</translation>
 <translation id="7762668264895820836">‏כרטיס SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">הוספת כתובת</translation>
@@ -1476,7 +1466,6 @@
 <translation id="8453310803815879010">‏הפעלת המשחק Dino</translation>
 <translation id="84594714173170813">‏המשך השימוש בנתוני Chrome בחשבון Google שלך</translation>
 <translation id="8460448946170646641">בדיקה של אמצעי הבקרה החשובים ביותר על פרטיות ואבטחה</translation>
-<translation id="8466613982764129868">יש לוודא ש-<ph name="TARGET_DEVICE_NAME" /> מחובר לאינטרנט</translation>
 <translation id="8473863474539038330">כתובות ועוד</translation>
 <translation id="8478751349603791277">‏אפשר לקבוע איך ההיסטוריה המסונכרנת תשמש להתאמה אישית של שירותי Google אחרים</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>

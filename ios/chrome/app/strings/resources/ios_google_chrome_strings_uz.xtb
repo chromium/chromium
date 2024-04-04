@@ -115,14 +115,12 @@ Bularni hisobga olish kerak:
 <translation id="3901001113120561395">Chromedan unumli foydalaning</translation>
 <translation id="3913386780052199712">Chrome hisobiga kirildi</translation>
 <translation id="3967382818307165056">Chromeda toʻlov usullarini boshqarish</translation>
-<translation id="3980220367029651214">Siz <ph name="USER_EMAIL1" /> hisobi ma’lumotlarini <ph name="USER_EMAIL2" /> hisobiga ko‘chirish arafasizdasiz. Mavjud Chrome ma’lumotlaringiz <ph name="DOMAIN" /> domenida boshqariladi. Barcha Chrome ma’lumotlari ushbu qurilmadan o‘chiriladi, lekin <ph name="USER_EMAIL1" /> hisobida saqlanib qoladi.</translation>
 <translation id="3984746313391923992">Tashkilotingiz Chrome hisobidan chiqishingizni talab qilmoqda.</translation>
 <translation id="3988789688219830639">Google Chrome rasm va videolaringizni ko‘ra olmayapti. “Sozlamalar &gt; Maxfiylik &gt; Rasmlar” oynasida ruxsat bering.</translation>
 <translation id="4064699917955374540">Chrome maʼlumotlarini Google hisobida saqlash va ulardan foydalanish uchun shaxsingizni tasdiqlang.</translation>
 <translation id="4067858366537947361">Chromeda inkognito varaq ochish</translation>
 <translation id="4093042601582616698">Chrome brauzeri asosiy brauzer etib belgilansinmi?</translation>
 <translation id="417201473131094001">Chrome Canary nashrida ishlamaydi</translation>
-<translation id="4233521129555661685"><ph name="USER_EMAIL1" /> Chrome ishlatardi va bu qurilmada uning bukmarklar, parollar va boshqa sozlamalari qolgan.</translation>
 <translation id="424864128008805179">Chrome hisobidan chiqmoqchimisiz?</translation>
 <translation id="4251174643044751591">Chromeda toʻlov usullari sozlamalari sahifasini ochadi.</translation>
 <translation id="4453284704333523777">Chrome sozlamalarini boshqarish</translation>
@@ -241,7 +239,6 @@ Chromeni yaxshilashda ishlatiladigan maʼlumotlar qoʻshimcha sozlamalarini <ph 
 <translation id="769104993356536261">iOS tizimida Chrome amallarini ishlatish</translation>
 <translation id="7693590760643069321">Siz endi Chrome brauzerini har doim xabarlar, hujjatlar va boshqa ilovalardagi havolalar ustiga bosib ishga tushirishingiz mumkin.</translation>
 <translation id="7698568245838009292">Chrome kameradan foydalanmoqchi</translation>
-<translation id="7754633291442704733">Tashkilotingiz (<ph name="DOMAIN" />) hisobingizdagi Chrome maʼlumotlari, bukmarklar, tarix, parollar va boshqa sozlamalaringizni koʻra oladi. Hisobdan chiqsangiz, bu qurilmadagi maʼlumotlaringiz tozalanadi.  Lekin, boshqaruvdagi Google hisobi maʼlumotlari joyida qoladi va tashkilotingiz ularni koʻra oladi. Tashkilotingiz Chrome funksiyasini oʻzgartirish mumkin boʻlgan oʻsha hisobga tegishli foydalanuvchi siyosatlarini oʻrnatishi ham mumkin.</translation>
 <translation id="7780154209050837198">Chrome imkoniyatlaridan maksimal foydalanish uchun Chromega Google hisobingiz bilan kiring.</translation>
 <translation id="778855399387580014">Yangi Chrome sahifasida qidirish.</translation>
 <translation id="7792140019572081272">Chrome Face ID bilan maxfiy maʼlumotlarni xavfsiz saqlaydi.</translation>

@@ -59,7 +59,6 @@
 <translation id="1258753120186372309">Google डूडल: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1263063910731171689">तुम्हाला आता फॉलो करत आहे यामध्ये <ph name="SITE_NAME" /> मधील आणि त्याबद्दल आशय दिसेल. तुम्ही फॉलो करत असलेल्या साइट आणि शोध तुमच्या Google खाते मध्ये सेव्ह केले जातात. तुम्ही तुमचे फॉलो करत आहे हे सेटिंग्जमध्ये कधीही व्यवस्थापित करू शकता.</translation>
 <translation id="1263231323834454256">वाचन सूची</translation>
-<translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> शेअर करू शकलो नाही</translation>
 <translation id="1269129608791067105">तुमचा इतिहास तुम्हाला येथे सापडेल</translation>
 <translation id="1273937721055267968"><ph name="DOMAIN" /> ब्लॉक करा</translation>
 <translation id="1283039547216852943">विस्तृत करण्यासाठी टॅप करा</translation>
@@ -96,7 +95,6 @@
 <translation id="1436784010935106834">काढली</translation>
 <translation id="1437543266176261764"><ph name="APP_NAME" /> मध्ये रन होत आहे</translation>
 <translation id="1448440926884431741">तुमची माग ठेवलेली उत्पादने Bookmarks मध्ये व्यवस्थापित करा</translation>
-<translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> शेअर करू शकत नाही</translation>
 <translation id="1462833127986525564">Chrome आणि इतर Google सेवांनी एकमेकांकडील डेटा वापरून तुमचा अनुभव पर्सनलाइझ करायचा असल्यास, ते लिंक करा</translation>
 <translation id="1466383950273130737">Chrome ची भाषा निवडा</translation>
 <translation id="1477626028522505441">सर्व्हर समस्यांमुळे <ph name="FILE_NAME" /> डाउनलोड अयशस्वी झाले.</translation>
@@ -203,7 +201,6 @@
 <translation id="2093731487903423814">मागील १५ मिनिटांमधील</translation>
 <translation id="2096012225669085171">डिव्हाइसवर सिंक आणि पर्सनलाइझ करा</translation>
 <translation id="2100273922101894616">ऑटो साइन इन करा</translation>
-<translation id="2100314319871056947">मजकूर लहान भागांमध्ये शेअर करून पहा</translation>
 <translation id="2111511281910874386">पेजवर जा</translation>
 <translation id="2119609734654412418">तुम्हाला तुमचे बुकमार्क येथे आढळतील</translation>
 <translation id="2122601567107267586">ॲप उघडता आले नाही</translation>
@@ -376,7 +373,6 @@
 <translation id="2981364137500752533">तुम्ही कमाल पाच विंडो उघडू शकता.</translation>
 <translation id="2983102365694924129">साइटवरील तुमच्या अ‍ॅक्टिव्हिटीवर आधारित. हे सेटिंग बंद आहे.</translation>
 <translation id="2984978667043170458">Google वर शोधताना आसपासच्या मजकुराचा समावेश करा</translation>
-<translation id="2987620471460279764">मजकूर इतर डिव्हाइसवरून शेअर केला आहे</translation>
 <translation id="2989523299700148168">अलीकडे भेट दिलेले</translation>
 <translation id="2992473221983447149">इमेजची वर्णने</translation>
 <translation id="2996291259634659425">सांकेतिक पासफ्रेझ तयार करा</translation>
@@ -384,7 +380,6 @@
 <translation id="2996932914629936323">सिंक केलेल्या सर्व डिव्हाइसवरून इतिहास साफ करते</translation>
 <translation id="2997081575621687554">Google साइटने त्यांच्या पेजवरील लिंक खाजगीरीत्या प्रीलोड करण्यास सांगितल्यास, Chrome हे कुकीशिवाय Google सर्व्हरद्वारे पेज एंक्रिप्ट आणि प्रीलोड करते. हे प्रीलोड केलेल्या साइटपासून तुमची ओळख लपवते.</translation>
 <translation id="3003253259757197230">तुम्ही भेट देता त्या URLs तुम्ही पुढे कोणत्या साइटला भेट देऊ शकता याचा अंदाज घेण्यासाठी आणि तुम्ही भेट देत असलेल्या पेजबद्दल तुम्हाला अतिरिक्त माहिती दाखवण्यासाठी Google ला पाठवल्या जातात</translation>
-<translation id="3016635187733453316">हे डिव्हाइस इंटरनेटशी कनेक्ट केले असल्याची खात्री करा</translation>
 <translation id="3026955690410463085">लिंकचा समावेश करा</translation>
 <translation id="3027644380269727216">साइटवरील तुमच्या अ‍ॅक्टिव्हिटीवर आधारित. हे सेटिंग सुरू आहे.</translation>
 <translation id="3029276696788198026">प्रीलोडिंग नाही</translation>
@@ -447,7 +442,6 @@
 <translation id="3374023511497244703">तुमचे बुकमार्क, इतिहास, पासवर्ड आणि इतर Chrome डेटा आता तुमच्या Google खात्यामध्ये सिंक केला जाणार नाही</translation>
 <translation id="3384347053049321195">इमेज शेअर करा</translation>
 <translation id="3387650086002190359">फाइल सिस्टम एररमुळे <ph name="FILE_NAME" /> डाउनलोड अयशस्वी झाले.</translation>
-<translation id="3389286852084373014">मजकूर खूप मोठा आहे</translation>
 <translation id="3398320232533725830">बुकमार्क व्यवस्थापक उघडा</translation>
 <translation id="3407392651057365886">अधिक पेज प्रीलोड केलेली आहेत. इतर साइटद्वारे विनंती केल्यावर पेज Google सर्व्हरद्वारे प्रीलोड केली जाऊ शकतात.</translation>
 <translation id="3414952576877147120">आकार:</translation>
@@ -800,7 +794,6 @@
 <translation id="5180063720319462041"><ph name="TARGET_LANGUAGE" /> मध्ये पेजचे भाषांतर केले आहे</translation>
 <translation id="5186634140793586141">तुम्हाला स्वारस्य असलेले विषय आणि शोध व्यवस्थापित करा</translation>
 <translation id="5191251636205085390">तृतीय पक्षाच्या कुकी बदलण्याचा उद्देश असलेल्या नवीन तंत्रज्ञान आणि ते कसे नियंत्रित करायचे याविषयी जाणून घ्या</translation>
-<translation id="5193988420012215838">तुमच्या क्लिपबोर्डवर कॉपी केले</translation>
 <translation id="5204967432542742771">पासवर्ड एंटर करा</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{फाइल डाउनलोड होत आहे…}other{# फाइल डाउनलोड होत आहेत…}}</translation>
 <translation id="5210286577605176222">मागील टॅबवर जा</translation>
@@ -825,7 +818,6 @@
 <translation id="5342314432463739672">परवानगीच्या विनंत्या</translation>
 <translation id="534580735623577507"><ph name="TIME_PERIOD" /> कालावधीमध्ये कोणत्याही साइटना भेटी दिल्या गेल्या नाहीत</translation>
 <translation id="5355191726083956201">सुधारित संरक्षण सुरू आहे</translation>
-<translation id="5361107212971249203">मजकूर</translation>
 <translation id="5375577065097716013">Google Lens सह इमेज शोधा <ph name="BEGIN_NEW" />नवीन<ph name="END_NEW" /></translation>
 <translation id="5395376160638294582">तुम्ही तुमच्या Google खाते मधील Chrome डेटा कधीही वापरू शकता याची खात्री करा</translation>
 <translation id="539881862970320163">क्लिष्ट पासवर्ड सुचवला. कीबोर्ड लपवलेला आहे.</translation>
@@ -1209,7 +1201,6 @@
 <translation id="7221869452894271364">हे पेज रीलोड करा</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{एक डाउनलोड बाकी आहे}other{# डाउनलोड बाकी आहेत}}</translation>
 <translation id="72415438529550637">पासवर्डसंबंधित सूचना बंद आहे.</translation>
-<translation id="7248069434667874558"><ph name="TARGET_DEVICE_NAME" /> ने Chrome मध्ये सिंक सुरू केले असल्याची खात्री करा</translation>
 <translation id="7252076891734325316">तुमचा फोन कॉंप्युटरच्या जवळ ठेवा</translation>
 <translation id="7260367682327802201">तुमच्या Android डिव्हाइसमध्ये समान सेटिंग समाविष्ट असू शकते. Chrome मध्ये आणि तुमच्या Android डिव्हाइसवर जाहिरात मापन सुरू केले असल्यास, एखादी कंपनी तुम्ही भेट देत असलेल्या वेबसाइट आणि तुम्ही वापरत असलेल्या ॲप्सवर जाहिरातीची परिणामकारकता मोजू शकते.</translation>
 <translation id="727288900855680735"><ph name="ORIGIN" /> ला <ph name="ONE_TIME_CODE" /> सबमिट करायचा आहे का?</translation>
@@ -1317,7 +1308,6 @@
 <translation id="7707922173985738739">मोबाइल डेटा वापरा</translation>
 <translation id="7709918231054955894">तुमचे सर्व टॅब मिळवा</translation>
 <translation id="7733878270780732638">डिव्हाइसवर पुरेशी रिकामी जागा नाही.</translation>
-<translation id="7757787379047923882"><ph name="DEVICE_NAME" /> वरून शेअर केलेला मजकूर</translation>
 <translation id="7759809451544302770">पर्यायी</translation>
 <translation id="7762668264895820836">SD कार्ड <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">पत्ता जोडा</translation>
@@ -1476,7 +1466,6 @@
 <translation id="8453310803815879010">Dino गेम सुरू करा</translation>
 <translation id="84594714173170813">तुमच्या Google खाते मधील Chrome डेटा वापरणे सुरू ठेवा</translation>
 <translation id="8460448946170646641">महत्त्वाच्या गोपनीयता आणि सुरक्षा नियंत्रणांचे पुनरावलोकन करा</translation>
-<translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> इंटरनेटशी कनेक्ट केले असल्याची खात्री करा</translation>
 <translation id="8473863474539038330">अ‍ॅड्रेस आणि बरेच काही</translation>
 <translation id="8478751349603791277">तुमचा सिंक केलेला इतिहास इतर Google सेवा पर्सनलाइझ करण्यासाठी कसा वापरला जाऊ शकतो ते नियंत्रित करा</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>

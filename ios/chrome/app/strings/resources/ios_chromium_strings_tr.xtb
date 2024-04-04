@@ -91,7 +91,6 @@ Veri kullanarak Chromium deneyiminizi iyileştiren daha fazla ayar görmek için
 <translation id="3567399274263440288">Chromium'dan en iyi şekilde yararlanmak için Google Hesabı'nızla Chromium'da oturum açın.</translation>
 <translation id="3634039384458740619">Chromium Ayarları'nı aç</translation>
 <translation id="3639997914391704523">Chromium, Google Hesabınızla oturum açtığınızda şifrelerinizi kontrol edebilir.</translation>
-<translation id="3650632991272923014"><ph name="USER_EMAIL1" />, Chromium'u kullanıyordu, ardından yer işaretlerini, şifrelerini ve diğer ayarlarını bu cihazda bıraktı.</translation>
 <translation id="3688710892786762883">Chromium, ziyaret ettiğiniz sitelerdeki kargo takip numaralarını algılar ve kargoyla ilgili güncellemeleri Yeni Sekme sayfasında gösterir. Verileriniz, bu özelliği sunmak ve Alışveriş'i herkes için iyileştirmek üzere Google ile paylaşılır.</translation>
 <translation id="372658070733623520">Chromium verilerini kullanmak ve Google Hesabınıza kaydetmek için kimliğinizi doğrulayın.</translation>
 <translation id="3780779443901618967">Standart korumaya ek olarak sitelerden alınmış daha fazla veriyi analiz ederek Google'ın daha önce bilmedikleri de dahil olmak üzere tehlikeli siteler hakkında sizi uyarır. Chromium uyarılarını atlamayı seçebilirsiniz.</translation>
@@ -182,7 +181,6 @@ Dikkate alınması gereken noktalar:
 <translation id="5983312940147103417">Chromium'u Daha İyi Hale Getirin</translation>
 <translation id="5985102273857091344">"Chromium"u seçin.</translation>
 <translation id="5985254578475526217">Chromium'dan bildirim almak için iOS ayarlarınızdan bildirimleri açın.</translation>
-<translation id="6062449165341879460">Chromium verilerinize, yer işaretlerinize, geçmişinize, şifrelerinize ve bu hesapta sakladığınız diğer ayarlara kuruluşunuz <ph name="DOMAIN" /> erişebilir. Oturumunuzu kapattığınızda verileriniz bu cihazdan silinir.  Ancak verileriniz, yönetilen Google Hesabınızda saklanır ve kuruluşunuzun kullanımına açıktır. Kuruluşunuz ayrıca, söz konusu hesaba özel olup Chromium'un davranışını değiştirebilecek kullanıcı politikaları belirleyebilir.</translation>
 <translation id="6093744543579359059">Chromium'daki şifreleri yönet</translation>
 <translation id="6104024151682120539">Chromium'da aç</translation>
 <translation id="61109258320235597">Chromium verilerini kullanmak ve Google Hesabınıza kaydetmek için parolanızı girin.</translation>
@@ -247,7 +245,6 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="7763454117143368771">Tehlikeli sitelere karşı koruma altında kalmak ve şifrelerinizi güvende tutmak için varsayılan tarayıcınız olarak Chromium'u kullanın</translation>
 <translation id="78025249032851484">Chromium'unuz güncel değil.</translation>
 <translation id="7859018312476869945">Adres çubuğuna veya arama kutusuna yazdığınızda Chromium, yazdıklarınızı varsayılan arama motorunuza göndererek daha iyi öneriler görmenizi sağlar. Bu ayar Gizli modda kapalıdır.</translation>
-<translation id="786327964234957808">Senkronizasyon hesapları arasında (<ph name="USER_EMAIL1" /> hesabından <ph name="USER_EMAIL2" /> hesabına) geçiş yapıyorsunuz. Mevcut Chromium verileriniz <ph name="DOMAIN" /> tarafından yönetiliyor. Bu işlemle verileriniz bu cihazdan silinir, ancak <ph name="USER_EMAIL1" /> hesabınızda kalmaya devam eder.</translation>
 <translation id="7890287942691234100">Chromium tarayıcıyı kullanmaya başlayın</translation>
 <translation id="7905064834449738336">Kullandığınız bir şifre internette yayınlanmışsa Chromium sizi uyarır. Bu işlem sırasında şifreleriniz ve kullanıcı adlarınız şifrelendiğinden, Google dahil olmak üzere hiç kimse tarafından okunamaz.</translation>
 <translation id="7911732829884437264">Varsayılan olarak Chromium kullanın</translation>

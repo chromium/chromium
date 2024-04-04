@@ -115,6 +115,7 @@
 <translation id="1383597849754832576">တိုက်ရိုက်စာတန်းဖိုင်များကို ဒေါင်းလုဒ်လုပ်၍ မရပါ။ နောက်မှ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="1383876407941801731">ရှာဖွေမှု</translation>
 <translation id="1391102559483454063">ဖွင့်ရန်</translation>
+<translation id="1394698770495054737">အပြည့် မှုန်ဝါးခြင်း</translation>
 <translation id="1407069428457324124">အမှောင်နောက်ခံ</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />။ ရက်စွဲများအကြား ရွှေ့ပြောင်းရန် မြားကီးများ အသုံးပြုပါ။</translation>
 <translation id="141170878022560212">အလယ်ခလုတ်</translation>
@@ -441,6 +442,7 @@
 <translation id="2841907151129139818">တက်ဘလက်မုဒ်သို့ ပြောင်းထားသည်</translation>
 <translation id="2844169650293029770">USB-C ကိရိယာ (အရှေ့ပိုင်း ဘယ် ပို့တ်)</translation>
 <translation id="2844350028562914727">အသေးစိတ်</translation>
+<translation id="2847759467426165163">သို့ကက်စ်လုပ်မည်</translation>
 <translation id="2848120746144143659">ဖန်သားပြင်အပြည့် ဖန်သားပြင်ဓာတ်ပုံ ရိုက်ကူးရန် Enter နှိပ်ပါ</translation>
 <translation id="2849936225196189499">အရေးကြီး</translation>
 <translation id="2860184359326882502">အနီးစပ်ဆုံး</translation>
@@ -478,6 +480,7 @@
 <translation id="3009958530611748826">သိမ်းရန် ဖိုင်တွဲကို ရွေးပါ</translation>
 <translation id="301282384882049174">သင်၏စီမံခန့်ခွဲသူက မျှဝေထားသည်</translation>
 <translation id="301584155502740476">ဟော့စပေါ့အသေးစိတ် ပြသည်။ ဟော့စပေါ့ ပိတ်လိုက်သည်။</translation>
+<translation id="3017079585324758401">နောက်ခံ</translation>
 <translation id="3018135054368884502">မီဒီယာကို ရှေ့သို့အမြန်သွားရန်</translation>
 <translation id="3033545621352269033">ဖွင့်ရန်</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> ဖြင့် ပေါင်းစည်းနိုင်သည်</translation>
@@ -954,6 +957,7 @@
 <translation id="4798888871844665150">မိတ္တူကူးထားသောဖိုင်သည် ကလစ်ဘုတ်တွင် ရှိနှင့်ပြီးဖြစ်သည်။ <ph name="SHORTCUT_KEY_NAME" /> + V သုံး၍ ကြည့်ပါ။</translation>
 <translation id="479989351350248267">ရှာဖွေမှု</translation>
 <translation id="4804818685124855865">အဆက်ဖြတ်ရန်</translation>
+<translation id="4806631651704497161">အနည်းငယ် မှုန်ဝါးခြင်း</translation>
 <translation id="4813311884204119883">လင့်ခ်ကို တဘ်ဘားတန်းပေါ်ရှိ နေရာလွတ်သို့ ဖိဆွဲပါ</translation>
 <translation id="4814539958450445987">အကောင့်ဝင်ရန် ဖန်သားပြင်</translation>
 <translation id="481455355267255546">နောက်တစ်ခု</translation>
@@ -1039,7 +1043,6 @@
 <translation id="5104236669533825617">ဖန်သားပြင်ထုတ်လွှင့်မှု ပြုလုပ်၍မရပါ</translation>
 <translation id="5107522548814527560">ဝဘ်</translation>
 <translation id="5111318697104479778"><ph name="DESC" />၊ <ph name="STRENGTH" /></translation>
-<translation id="5111930673176965299">နောက်ခံမှုန်ဝါးရန်</translation>
 <translation id="5117590920725113268">လာမည့် လကို ပြရန်</translation>
 <translation id="5121628974188116412">စာမျက်နှာ၏ အောက်ဆုံးသို့ သွားရန်</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" /> အစမ်းပြကွက်။ အသုံးမပြုသည့် မျက်နှာပြင်။</translation>

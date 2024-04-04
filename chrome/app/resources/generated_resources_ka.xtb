@@ -1521,7 +1521,6 @@
 <translation id="2127372758936585790">დამტენის დაბალი მუხტი</translation>
 <translation id="212862741129535676">სიხშირის მდგომარეობის დაკავებულობის პროცენტულობა</translation>
 <translation id="212876957201860463">მიმდინარეობს მომზადება თქვენი მობილური მოწყობილობის დასაყენებლად...</translation>
-<translation id="2130909682040406368">შეიტყვეთ მეტი ხელოვნური ინტელექტის ხელსაწყოების გამოყენების შესახებ</translation>
 <translation id="2131077480075264">„<ph name="APP_NAME" />“-ის ინსტალაცია შეუძლებელია, რადგან იგი არ არის ნებადართული „<ph name="IMPORT_NAME" />“-ის მიერ</translation>
 <translation id="2133775869826239001">აირჩიეთ მეტი ფუნქცია დასაყენებლად</translation>
 <translation id="2133857665503360653">ხელახლა ჩამოიტვირთოს <ph name="FILE_NAME" /></translation>
@@ -3514,6 +3513,7 @@
 <translation id="3659550105763988702">გამოიყენეთ თქვენი წვდომის გასაღები <ph name="APP_NAME" />-ისთვის</translation>
 <translation id="3659929705630080526">წვდომის არასწორი კოდი ზედმეტად ბევრჯერ შეიყვანეთ. ცადეთ მოგვიანებით</translation>
 <translation id="3660234220361471169">არასანდო</translation>
+<translation id="3661106764436337772">წერეთ უფრო სწრაფად და თავდაჯერებულად</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{მოიძებნა 1 არსებული პაროლი}other{მოიძებნა {NUM_PASSWORDS} არსებული პაროლი}}</translation>
 <translation id="3662207097851752847">დაადასტურეთ Google ანგარიში თქვენს ტელეფონში</translation>
 <translation id="3663417513679360795">დამატებითი ინფორმაცია სტანდარტული წინასწარი ჩატვირთვის ჩართვის შესახებ</translation>
@@ -4492,7 +4492,6 @@
 <translation id="4388650384344483842">გამოიყენეთ მინიმუმ 8 სიმბოლო</translation>
 <translation id="4389091756366370506">მომხმარებლის <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> და <ph name="NUMBER_OF_OTHER_SWITCHES" /> სხვა გადამრთველი</translation>
-<translation id="4390569024397171409">დააინსტალირეთ აპი თქვენს <ph name="DEVICE_TYPE" />-ზე</translation>
 <translation id="439266289085815679">Bluetooth-ის კონფიგურაციას მართავს <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">კონფიგურაციის ფაილის რედაქტირება</translation>
 <translation id="4393102500004843976">search + shift + <ph name="TOP_ROW_KEY" /></translation>
@@ -8002,7 +8001,6 @@
 <translation id="7168109975831002660">შრიფტის მინიმალური ზომა</translation>
 <translation id="7169122689956315694">ჩართეთ შეტყობინებები, როცა მოწყობილობები ახლომახლოა</translation>
 <translation id="7170236477717446850">პროფილის სურათი</translation>
-<translation id="7170751905948784001">დეველოპერის ინფორმაცია:</translation>
 <translation id="7171000599584840888">პროფილის დამატება…</translation>
 <translation id="7171259390164035663">არ მსურს რეგისტრაცია</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{ჩანართის დამატება ახალ ჯგუფში}other{ჩანართების დამატება ახალ ჯგუფში}}</translation>
@@ -8479,7 +8477,6 @@
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> არ რეაგირებს. მის დასახურად აირჩიეთ „იძულებით დახურვა“.</translation>
 <translation id="7535730537657706072">თქვენი მოწყობილობიდან ინკოგნიტო რეჟიმში დათვალიერების ისტორია რომ წაშალოთ, დახურეთ ყველა ინკოგნიტო ჩანართი</translation>
 <translation id="7536815228183532290">შესული ხართ, როგორც <ph name="EMAIL" /></translation>
-<translation id="7537182889548466084">თქვენ მიიღებთ მსგავსი ჩანართების დაჯგუფების შემოთავაზებებს. თქვენი გახსნილი ჩანართები და სათაურები ეგზავნება Google-ს. ისინი, შესაძლოა, ადამიანებმა შეამოწმონ ამ ფუნქციის გაუმჯობესების მიზნით.</translation>
 <translation id="7538013435257102593">ამ ტიპის ფაილის ჩამოტვირთვა არ ხდება ხოლმე — შესაძლოა, ის სახიფათო იყოს</translation>
 <translation id="7540972813190816353">განახლებების შემოწმებისას შეცდომა მოხდა: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" />-მა დააბრუნა ეს მოწყობილობა წინა ვერსიაზე. შეინახეთ მნიშვნელოვანი ფაილები, შემდეგ კი გადატვირთეთ მოწყობილობა. მასზე არსებული ყველა მონაცემი წაიშლება.</translation>

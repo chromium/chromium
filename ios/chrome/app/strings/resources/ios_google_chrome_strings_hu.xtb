@@ -114,14 +114,12 @@ Megjegyzések:
 <translation id="3901001113120561395">Hozza ki a legtöbbet a Chrome-ból.</translation>
 <translation id="3913386780052199712">Bejelentkezve: Chrome</translation>
 <translation id="3967382818307165056">Fizetési módok kezelése a Chrome-ban</translation>
-<translation id="3980220367029651214">A(z) <ph name="USER_EMAIL1" /> szinkronizált fiókról a következőre vált át: <ph name="USER_EMAIL2" />. A meglévő Chrome-adatokat a(z) <ph name="DOMAIN" /> kezeli. Ezzel törli az adatait erről az eszközről, viszont azok továbbra is megmaradnak a(z) <ph name="USER_EMAIL1" /> fiókban.</translation>
 <translation id="3984746313391923992">Szervezete nem engedélyezi, hogy bejelentkezzen a Chrome-ba.</translation>
 <translation id="3988789688219830639">A Google Chrome nem fér hozzá az Ön képeihez és videóihoz. Engedélyezés iOS-en: Beállítások &gt; Adatvédelem &gt; Fényképek.</translation>
 <translation id="4064699917955374540">Ha Chrome-adatokat szeretne használni és tárolni Google-fiókjában, igazolja személyazonosságát.</translation>
 <translation id="4067858366537947361">Chrome-inkognitó lap megnyitása</translation>
 <translation id="4093042601582616698">A Chrome legyen az alapértelmezett böngésző?</translation>
 <translation id="417201473131094001">A Chrome Canary nem támogatja</translation>
-<translation id="4233521129555661685"><ph name="USER_EMAIL1" /> felhasználó használta Chrome-ot, és könyvjelzőket, jelszavakat, valamint egyéb beállításokat hagyott az eszközön.</translation>
 <translation id="424864128008805179">Kijelentkezés a Chrome-ból</translation>
 <translation id="4251174643044751591">Megnyitja a Fizetési módok beállítási oldalát a Chrome-ban.</translation>
 <translation id="4453284704333523777">A Chrome beállításainak kezelése</translation>
@@ -240,7 +238,6 @@ Az adatokat a Chrome-élmény javítására használó további beállításoké
 <translation id="769104993356536261">Chrome-műveletek használata iOS rendszeren</translation>
 <translation id="7693590760643069321">Mostantól bármikor használhatja a Chrome-ot, amikor üzenetekben, dokumentumokban és más alkalmazásokban linkekre kattint.</translation>
 <translation id="7698568245838009292">A Chrome hozzá szeretne férni a kamerához</translation>
-<translation id="7754633291442704733">Szervezete (<ph name="DOMAIN" />) hozzáfér majd az Ön Chrome-adataihoz, -könyvjelzőihez, -előzményeihez, -jelszavaihoz és az ebben a fiókban tárolt egyéb beállításaihoz. Kijelentkezéskor az adatai törlődnek erről az eszközről.  Az adatok azonban továbbra is megmaradnak a felügyelt Google-fiókban, és hozzáférhetők lesznek szervezete számára. Szervezete felhasználói házirendeket is beállíthat erre a fiókra vonatkozóan, amelyek módosíthatják a Chrome viselkedését.</translation>
 <translation id="7780154209050837198">Annak érdekében, hogy a legtöbbet hozhassa ki a Chrome-ból, jelentkezzen be Google-fiókjával a Chrome-ba.</translation>
 <translation id="778855399387580014">Keresés indítása új Chrome-lapon.</translation>
 <translation id="7792140019572081272">A Chrome biztonságban tartja az Ön bizalmas adatait a Face ID segítségével.</translation>

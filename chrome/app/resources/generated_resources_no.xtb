@@ -41,6 +41,7 @@
 <translation id="102916930470544692">Passnøkkel</translation>
 <translation id="1029317248976101138">Zoom</translation>
 <translation id="1029526375103058355">Trykk for å klikke</translation>
+<translation id="1029724557649700742">Nye funksjoner blir lagt til etter hvert som de blir tilgjengelige, og funksjonene kan variere fra enhet til enhet.</translation>
 <translation id="1031362278801463162">Laster inn forhåndsvisning</translation>
 <translation id="1032605640136438169">Les gjennom de nye vilkårene</translation>
 <translation id="103279545524624934">Frigjør lagringsplass for å starte Android-apper.</translation>
@@ -1526,7 +1527,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2127372758936585790">Lading med lav effekt</translation>
 <translation id="212862741129535676">Utnyttelsesgrad for frekvenstilstand</translation>
 <translation id="212876957201860463">Forbereder konfigureringen av mobilenheten din …</translation>
-<translation id="2130909682040406368">Finn ut mer om bruk av AI-verktøy</translation>
 <translation id="2131077480075264">Kunne ikke installere «<ph name="APP_NAME" />» fordi det ikke er tillatt av «<ph name="IMPORT_NAME" />»</translation>
 <translation id="2133775869826239001">Velg flere funksjoner du vil konfigurere</translation>
 <translation id="2133857665503360653">Prøv å laste ned <ph name="FILE_NAME" /> på nytt</translation>
@@ -1565,6 +1565,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2155473371917268529">Den gjeldende synlighetsinnstillingen er enhetene dine</translation>
 <translation id="2155772377859296191">Ser ut som <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service Worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156707722163479690">Nettsteder som har lov til å rulle og zoome på delte faner</translation>
 <translation id="2156877321344104010">Kjør sikkerhetssjekken på nytt</translation>
 <translation id="2157474325782140681">For å få flere funksjoner, bruk en Dell-dokkingstasjon som er laget for å fungere sammen med denne Chromebooken.</translation>
 <translation id="215753907730220065">Avslutt fullskjermmodus</translation>
@@ -1987,6 +1988,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2459706890611560967">Fortsett å caste fanen til <ph name="DEVICE_NAME" /></translation>
 <translation id="2460356425461033301">Sikkerhetskopier nettlesertingene dine, og bruk dem på alle enheter.</translation>
 <translation id="2460482211073772897">I andre mapper</translation>
+<translation id="2461550163693930491">Ikke la nettsteder rulle og zoome på delte faner</translation>
 <translation id="2461593638794842577">Du kan slå av denne innstillingen for å lagre passordene dine kun på denne enheten</translation>
 <translation id="2462332841984057083">Steam holder allerede på å konfigureres. Vent til konfigureringen er fullført.</translation>
 <translation id="2462724976360937186">Nøkkel-ID for sertifiseringsinstans</translation>
@@ -2020,6 +2022,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2482895651873876648">Fanen er flyttet til gruppen <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="2483627560139625913">Angi søkemotor i Chrome-nettleserinnstillingene</translation>
 <translation id="2483698983806594329">Lastet ned en ubekreftet fil</translation>
+<translation id="2484574361686148760">Last inn informasjon om Wifi Direct-klienter på nytt</translation>
 <translation id="2484743711056182585">Fjern innvilget tillatelse</translation>
 <translation id="2484909293434545162">Hvis et nettsted bruker informasjonskapsler, vises det her</translation>
 <translation id="2484959914739448251">For å slette nettlesingsdata på alle synkroniserte enheter og Google-kontoen din må du <ph name="BEGIN_LINK" />skrive inn passordfrasen din<ph name="END_LINK" />.</translation>
@@ -2213,6 +2216,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2629227353894235473">Utvikle Android-apper</translation>
 <translation id="2629437048544561682">Tøm lerretet</translation>
 <translation id="2631498379019108537">Vis inndataalternativer i hyllen</translation>
+<translation id="2632176111713971407">Nettsteder kan be om å få rulle og zoome på delte faner</translation>
 <translation id="2633212996805280240">Vil du fjerne «<ph name="EXTENSION_NAME" />»?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> kan ikke fullføre installeringen, men vil fortsette å kjøre fra diskavbildningen.</translation>
 <translation id="2633764681656412085">FIDO</translation>
@@ -3519,6 +3523,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3659550105763988702">Bruk tilgangsnøkkelen din for <ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">Du har oppgitt feil tilgangskode for mange ganger. Prøv på nytt senere</translation>
 <translation id="3660234220361471169">Uklarert</translation>
+<translation id="3661106764436337772">Skriv raskere og med mer selvsikkerhet</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Fant 1 eksisterende passord}other{Fant {NUM_PASSWORDS} eksisterende passord}}</translation>
 <translation id="3662207097851752847">Bekreft Google-kontoen din på telefonen</translation>
 <translation id="3663417513679360795">Mer informasjon om å slå på standard forhåndslasting</translation>
@@ -3871,6 +3876,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="3900966090527141178">Eksportér passord</translation>
 <translation id="3902789559055749153">Velg hvordan du vil opprette en passnøkkel for <ph name="APP_NAME" /></translation>
 <translation id="3903187154317825986">Innebygd tastatur</translation>
+<translation id="3903696968689283281">Informasjon om Wifi Direct-eiere:</translation>
 <translation id="3904326018476041253">Stedstjenester</translation>
 <translation id="3905761538810670789">Reparer appen</translation>
 <translation id="3908288065506437185">Blokker informasjonskapsler fra tredjeparter i Inkognitomodus</translation>
@@ -4494,7 +4500,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4388650384344483842">Bruk minst åtte tegn</translation>
 <translation id="4389091756366370506">Bruker <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" />, og <ph name="NUMBER_OF_OTHER_SWITCHES" /> brytere til</translation>
-<translation id="4390569024397171409">Installer appen på <ph name="DEVICE_TYPE" /></translation>
 <translation id="439266289085815679">Bluetooth-konfigurasjonen kontrolleres av <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Rediger konfigurasjonsfilen</translation>
 <translation id="4393102500004843976">søketasten + Shift + <ph name="TOP_ROW_KEY" /></translation>
@@ -4524,6 +4529,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4409697491990005945">Marger</translation>
 <translation id="4409779593816003679">Passord og &amp;autofyll</translation>
 <translation id="4410545552906060960">Bruk et tall (en PIN-kode) i stedet for et passord for å låse opp enheten din. For å angi PIN-kode senere, gå til Innstillinger.</translation>
+<translation id="4411344321892622527">Nettsteder som ikke har lov til å rulle og zoome på delte faner</translation>
 <translation id="4411578466613447185">Kodesignatar</translation>
 <translation id="4411719918614785832">Disse tilgangsnøklene lagres i Windows Hello på denne datamaskinen. De lagres ikke i Google-kontoen din.</translation>
 <translation id="4412544493002546580">Prøv på nytt, eller velg en av inspirasjonene nedenfor.</translation>
@@ -6865,6 +6871,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6257602895346497974">Slå på synkronisering</translation>
 <translation id="625827534921607067">Dette nettverket foretrekkes hvis mer enn ett tidligere tilkoblet eller konfigurert nettverk er tilgjengelig</translation>
 <translation id="62586649943626337">Organiser fanene dine med fanegrupper</translation>
+<translation id="6259776178973198997">Last inn informasjon om Wifi Direct-eiere på nytt</translation>
 <translation id="6262371516389954471">Sikkerhetskopiene dine lastes opp til Google og krypteres med passordet til Google-kontoen din.</translation>
 <translation id="6263082573641595914">Microsoft sertifiseringsinstansversjon</translation>
 <translation id="6263284346895336537">Ikke kritisk</translation>
@@ -7564,6 +7571,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> kan ikke kjøres som rot.</translation>
 <translation id="6812841287760418429">Behold endringene</translation>
 <translation id="6813907279658683733">Hele skjermen</translation>
+<translation id="6814754908910736855">Informasjon om Wifi Direct-klienter:</translation>
 <translation id="6815376457351236663">Åpne likevel</translation>
 <translation id="6815787852028615386">Denne filen er villedende og kan gjøre uventede endringer på enheten din</translation>
 <translation id="6816097980753839617">Blå/gul (tritanomali)</translation>
@@ -8001,7 +8009,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7168109975831002660">Minste skriftstørrelse</translation>
 <translation id="7169122689956315694">Slå på varsler fra enheter i nærheten</translation>
 <translation id="7170236477717446850">Profilbilde</translation>
-<translation id="7170751905948784001">Utviklerinformasjon:</translation>
 <translation id="7171000599584840888">Legg til profil…</translation>
 <translation id="7171259390164035663">Ikke registrer</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Legg fanen til i en ny gruppe}other{Legg fanene til i en ny gruppe}}</translation>
@@ -8434,6 +8441,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7501957181231305652">eller</translation>
 <translation id="7502220299952823578">Legg til på «La disse nettstedene alltid være aktive»-listen</translation>
 <translation id="7502528909759062987">Sett casting av fanen til <ph name="DEVICE_NAME" /> på pause</translation>
+<translation id="7502804472671406749">Rulling og zooming på delte faner er tillatt</translation>
 <translation id="7503191893372251637">Netscape sertifikattype</translation>
 <translation id="7503985202154027481">Besøket ditt på dette nettstedet registreres på sikkerhetsnøkkelen.</translation>
 <translation id="7504145862399276792">Lyden er kuttet for denne fanen</translation>
@@ -8478,7 +8486,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> svarer ikke. Velg «Tving avslutning» for å lukke appen.</translation>
 <translation id="7535730537657706072">For å fjerne Inkognito-nettleserloggen fra enheten, lukk alle inkognitofaner</translation>
 <translation id="7536815228183532290">Logget på som <ph name="EMAIL" /></translation>
-<translation id="7537182889548466084">Du får forslag til fanegrupper som grupperer lignende faner. De åpne fanene dine og titlene på dem sendes til Google og kan bli gjennomgått av mennesker, slik at vi kan gjøre denne funksjonen bedre.</translation>
 <translation id="7538013435257102593">Denne filtypen lastes sjelden ned og kan være farlig</translation>
 <translation id="7540972813190816353">Det oppsto en feil under søk etter oppdateringer: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> har stilt denne enheten inn på en tidligere versjon. Lagre viktige filer, og start på nytt. Alle data på enheten blir slettet.</translation>
@@ -10773,6 +10780,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="949807244219288032">Denne fanen er koblet til en HID-enhet</translation>
 <translation id="950079950995628542">Fra «<ph name="PHONE_NAME" />»</translation>
 <translation id="950307215746360464">Konfigureringsveiledning</translation>
+<translation id="951273949038779544"><ph name="SITE_ACCESS" />. Installert av administratoren din</translation>
 <translation id="951991426597076286">Avvis</translation>
 <translation id="952471655966876828">Enheten kobles til automatisk når den slås på og er i bruk</translation>
 <translation id="953434574221655299">Får vite når du bruker enheten aktivt</translation>

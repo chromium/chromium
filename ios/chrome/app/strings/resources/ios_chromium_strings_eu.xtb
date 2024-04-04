@@ -91,7 +91,6 @@ Chromium-en erabilera hobetzeko datuak erabiltzen dituzten ezarpen gehiago ikust
 <translation id="3567399274263440288">Chromium-i etekinik handiena ateratzeko, hasi saioa Chromium-en Google-ko kontuarekin.</translation>
 <translation id="3634039384458740619">Ireki Chromium-en ezarpenak</translation>
 <translation id="3639997914391704523">Saioa Google-ko kontu batekin hasten baduzu, Chromium-ek pasahitzak egiazta ditzake.</translation>
-<translation id="3650632991272923014"><ph name="USER_EMAIL1" /> Chromium-en erabiltzailea zenez, laster-markak, pasahitzak eta beste ezarpena batzuk utzi ditu gailuan.</translation>
 <translation id="3688710892786762883">Chromium-ek paketeen jarraipen-zenbakiak hautemango ditu bisitatzen dituzun webguneetan, eta paketeei buruzko informazio eguneratua erakutsiko dizu Fitxa berria orrian. Eginbide hori emateko eta erosketak guztientzat hobetzeko, datuak Google-rekin partekatuko dira.</translation>
 <translation id="372658070733623520">Chromium-eko datuak Google-ko kontuan gordetzeko eta erabiltzeko, egiaztatu zeu zarela.</translation>
 <translation id="3780779443901618967">Webgune arriskutsuen berri ematen dizu, Google-k ezagutzen ez zituenak barne, webguneetan babes estandarrak baino datu gehiago aztertuz. Chromium-en abisuak saltatzea aukera dezakezu.</translation>
@@ -182,7 +181,6 @@ Kontuan hartu beharrekoak:
 <translation id="5983312940147103417">Hobetu Chromium</translation>
 <translation id="5985102273857091344">Hautatu "Chromium".</translation>
 <translation id="5985254578475526217">Chromium-en jakinarazpenak jasotzeko, aktibatu jakinarazpenak iOS-en ezarpenetan.</translation>
-<translation id="6062449165341879460">Chromium-eko datuak, laster-markak, historia, pasahitzak eta kontu honetan gordetzen dituzun bestelako ezarpenak atzitu ahalko ditu zure erakundeak (<ph name="DOMAIN" />). Saioa amaitzen duzunean, datuak garbitu egingo dira gailu honetatik.  Hala ere, Google-ko kontu kudeatuan jarraituko dute, eta erakundea haiek atzitzeko gai izango da. Halaber, erabiltzaile-gidalerro jakin batzuk ezar ditzake erakundeak kontu horretarako, eta gidalerro horiek Chromium-en portaera alda dezakete.</translation>
 <translation id="6093744543579359059">Kudeatu pasahitzak Chromium-en</translation>
 <translation id="6104024151682120539">Ireki Chromium-en</translation>
 <translation id="61109258320235597">Chromium-eko datuak Google-ko kontuan gordetzeko eta erabiltzeko, idatzi pasaesaldia.</translation>
@@ -247,7 +245,6 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="7763454117143368771">Erabili Chromium arakatzaile lehenetsi gisa webgune arriskutsuen aurka babestuta egoteko eta pasahitzak seguru mantentzeko</translation>
 <translation id="78025249032851484">Chromium zaharkituta dago.</translation>
 <translation id="7859018312476869945">Helbide-barran edo bilaketa-koadroan zerbait idazten duzunean, Chromium-ek bilatzaile lehenetsira bidaltzen du, iradokizun hobeak lortzeko. Ezkutuko moduan, aukera hori desaktibatuta dago.</translation>
-<translation id="786327964234957808"><ph name="USER_EMAIL1" /> kontuaren ordez <ph name="USER_EMAIL2" /> kontua erabiliko duzu sinkronizatzeko. <ph name="DOMAIN" /> da zure orain arteko Chromium datuen kudeatzailea. Aurrera eginez gero, gailu honetako datuak ezabatuko dira, baina <ph name="USER_EMAIL1" /> kontuan egoten jarraituko dute.</translation>
 <translation id="7890287942691234100">Hasi Chromium-en eskanerra erabiltzen</translation>
 <translation id="7905064834449738336">Pasahitz bat erabiltzen duzunean, Chromium-ek sarean argitaratu den ala ez jakinarazten dizu. Horretarako, pasahitzak eta erabiltzaile-izenak enkriptatzen ditu inork irakurri ezin ditzan, ezta Google-k ere.</translation>
 <translation id="7911732829884437264">Erabili Chromium modu lehenetsian</translation>

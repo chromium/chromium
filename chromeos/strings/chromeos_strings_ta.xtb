@@ -540,7 +540,6 @@
 <translation id="4227825898293920515">கடவுச்சொல் காலாவதியாக இன்னும் <ph name="TIME" /></translation>
 <translation id="4238516577297848345">அச்சுப் பணி எதுவும் செயலில் இல்லை</translation>
 <translation id="4239069858505860023">GPRS</translation>
-<translation id="4244962993387259361">நினைவகச் சோதனையை இயக்க, குறைந்தது 500 MB சேமிப்பிடம் காலியாக இருக்க வேண்டும். சேமிப்பிடத்தைக் காலியாக்க 'அமைப்புகள் &gt; சேமிப்பக நிர்வாகி' என்பதற்குச் செல்லவும்.</translation>
 <translation id="4250229828105606438">ஸ்கிரீன்ஷாட்</translation>
 <translation id="4251839292699800785">ஸ்டைலான அலுவலகம்</translation>
 <translation id="4258281355379922695">HTTP தாமதம்</translation>
@@ -912,6 +911,7 @@
 <translation id="6382182670717268353">ஸ்கிரீன் சேவர் மாதிரிக்காட்சி</translation>
 <translation id="6388847657025262518">ஸ்கேனரின் டாக்குமெண்ட் ஃபீடரில் தாள் சிக்கிக் கொண்டது. ஃபீடரைச் சரிசெய்துவிட்டு மீண்டும் முயலவும்.</translation>
 <translation id="6394634179843537518">ஃபைலைச் சேர்</translation>
+<translation id="6396719002784938593">காய்ந்த இறகுப் புல்</translation>
 <translation id="639964859328803943">ஹை-டீ</translation>
 <translation id="6400680457268373900"><ph name="DREAMSCAPES_COLORS" /> வண்ணத்தில் <ph name="DREAMSCAPES_MATERIAL" /> பயன்படுத்திச் செய்யப்பட்ட கற்பனையான <ph name="DREAMSCAPES_OBJECT" /></translation>
 <translation id="6401427872449207797">உலாவித் தேடல்</translation>
@@ -953,6 +953,7 @@
 <translation id="6575134580692778371">உள்ளமைக்கப்படவில்லை</translation>
 <translation id="6576005492601044801">இடதுபுறம்</translation>
 <translation id="6579509898032828423">இந்தப் படத்தைப் பயன்படுத்து</translation>
+<translation id="6587870930887634392">சதைப்பற்றுள்ள பூ</translation>
 <translation id="6596816719288285829">IP முகவரி</translation>
 <translation id="6599673642868607614">கருத்து தெரிவித்ததற்கு நன்றி. Chromebook அனுபவத்தை மேம்படுத்துவதற்கு உங்கள் கருத்துகள் எங்களுக்கு உதவியாக இருக்கும். அவை எங்கள் குழுவால் மதிப்பாய்வு செய்யப்படும். புகார்களின் எண்ணிக்கை அதிகமாக இருப்பதால் எங்களால் பதிலளிக்க முடியாது.</translation>
 <translation id="6618744767048954150">சோதனை செய்கிறது</translation>
@@ -1111,6 +1112,7 @@
 <translation id="7497215489070763236">சேவையக CA சான்றிதழ்</translation>
 <translation id="7501957181231305652">அல்லது</translation>
 <translation id="7502658306369382406">IPv6 முகவரி</translation>
+<translation id="7507061649493508884">பிரகாசமான <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /></translation>
 <translation id="7513770521371759388">கீழ்ப்புறம்</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">உருவாக்கு</translation>
@@ -1160,7 +1162,6 @@
 <translation id="780301667611848630">வேண்டாம்</translation>
 <translation id="7805768142964895445">நிலை</translation>
 <translation id="7813073042185856802">மலை</translation>
-<translation id="7819831665603418705">டெம்ப்ளேட்டைப் பயன்படுத்துங்கள்</translation>
 <translation id="7819857487979277519">PSK (WPA அல்லது RSN)</translation>
 <translation id="7824219488248240180">பின்-உணர்வுப்பதிவியம்</translation>
 <translation id="7828503206075800057"><ph name="CAFE_STYLE" /> <ph name="CAFE_TYPE" /> கஃபே</translation>
@@ -1171,6 +1172,7 @@
 <translation id="7850847810298646851">Google AI உருவாக்கிய வால்பேப்பர்</translation>
 <translation id="785170686607360576">ட்யூலிப்</translation>
 <translation id="7856267634822906833">புளூடூத் டச்ஸ்கிரீன்</translation>
+<translation id="7859006200041800233">சப்பாத்திக் கள்ளி</translation>
 <translation id="7869143217755017858">டார்க் பயன்முறையை முடக்குதல்</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">வழங்குநர் வகை</translation>
@@ -1306,6 +1308,7 @@
 <translation id="8726019395068607495">மூடி திறந்துள்ளதால் அச்சிட முடியவில்லை</translation>
 <translation id="8730621377337864115">முடிந்தது</translation>
 <translation id="8747900814994928677">மாற்றத்தை உறுதிப்படுத்துங்கள்</translation>
+<translation id="8749478549112817787">கேமராவின் பின்புலம்</translation>
 <translation id="8755946156089753497">கோபுரம்</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos ஆல்பம்</translation>

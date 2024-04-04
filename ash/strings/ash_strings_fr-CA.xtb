@@ -441,6 +441,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2841907151129139818">Mode tablette activé</translation>
 <translation id="2844169650293029770">Appareil USB-C (port avant-gauche)</translation>
 <translation id="2844350028562914727">détails</translation>
+<translation id="2847759467426165163">Diffuser vers</translation>
 <translation id="2848120746144143659">Appuyez sur Entrée pour effectuer une capture plein écran</translation>
 <translation id="2849936225196189499">Essentielle</translation>
 <translation id="2860184359326882502">Meilleures correspondances</translation>
@@ -478,6 +479,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3009958530611748826">Sélectionnez un dossier dans lequel enregistrer les fichiers</translation>
 <translation id="301282384882049174">Partagé par votre administrateur</translation>
 <translation id="301584155502740476">Afficher les détails du point d'accès sans fil. Le point d'accès sans fil est désactivé</translation>
+<translation id="3017079585324758401">Arrière-plan</translation>
 <translation id="3018135054368884502">Avance rapide du contenu multimédia</translation>
 <translation id="3033545621352269033">Activé</translation>
 <translation id="3033912566804961911">Combiner avec <ph name="DESK_NAME" /></translation>
@@ -1038,7 +1040,6 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5104236669533825617">Impossible de créer une vidéocapture d'écran</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
-<translation id="5111930673176965299">Flou d'arrière-plan</translation>
 <translation id="5117590920725113268">Afficher le mois suivant</translation>
 <translation id="5121628974188116412">Aller à la fin de la page</translation>
 <translation id="5122517996953421795">Aperçu du bureau <ph name="DESK_NAME" />. Bureau inactif.</translation>

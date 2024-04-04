@@ -271,6 +271,7 @@
 <translation id="2446553403094072641">Erkin harakatlanish nuqtasi aniqligi</translation>
 <translation id="2448312741937722512">Turi</translation>
 <translation id="2465272316171730950">Imkoniyat doirasidan tashqaridamiz. Keyinroq qayta tekshiring.</translation>
+<translation id="2472215337771558851">Matn yordamchisi qoralama yaratish yoki mavjud matnni yaxshilashga yordam beradi, Google AI asosida ishlaydi</translation>
 <translation id="2480572840229215612">qisqichbaqalar</translation>
 <translation id="248546197012830854">Qurilma internetga ulanmagan. Yordam sahifasini ochish uchun Wi-Fi tarmoqqa ulaning.</translation>
 <translation id="2486301288428798846">yogʻoch</translation>
@@ -328,10 +329,12 @@
 <translation id="2860473693272905224">Skanerga boshqa sahifani joylang</translation>
 <translation id="2872961005593481000">Ishni tamomlash</translation>
 <translation id="2873483161362553159">Brauzer navigatsiyasi</translation>
+<translation id="2873939192640533085">Soʻrov kiriting: "dadilroq ovoz bilan" kabi</translation>
 <translation id="2874939134665556319">Avvalgi musiqa</translation>
 <translation id="2875812231449496375">Bu fon rasmi uchun eng yaxshi natija olish uchun shu sozlamani yoqing. Istalgan vaqt bu sozlamani faolsizlantirishingiz mumkin.</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> soniyada <ph name="RATE" /> quvvat sarflandi.</translation>
 <translation id="2880569433548999039">Bulut manzaralari ekran lavhasi</translation>
+<translation id="2888298276507578975">Soʻrov kiriting: "rahmatnoma qayd yozish" kabi</translation>
 <translation id="2890557891229184386">tropik orol</translation>
 <translation id="2895772081848316509">tungi</translation>
 <translation id="2926057806159140518">Login va parolingizni kiriting yoki QR kodni skanerlang</translation>
@@ -376,6 +379,7 @@
 <translation id="3226405216343213872">Skanerlar qidirilmoqda</translation>
 <translation id="3226657629376379887">Interfeys amallari menyusi</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> qiymatini <ph name="CONVERSION_RATE" /> ga boʻling</translation>
+<translation id="3237710083340813756">Qayta yozish</translation>
 <translation id="3246869037381808805">1 kundan eski chop etish vazifalari avtomatik tozalanadi</translation>
 <translation id="324961752321393509">Administrator bu ilovani yopishni taqiqlagan</translation>
 <translation id="3268178239013324452">Bajarilmadi - Eshikchasi ochiq</translation>
@@ -414,6 +418,7 @@
 <translation id="346539236881580388">Qaytadan</translation>
 <translation id="3484914941826596830">Mikrodastur yangilanayotganda tashqi qurilmani uzmay va kompyuterni oʻchirmay turing. Bu oynani yigʻish mumkin. Bu yangilanish bir necha daqiqa vaqt oladi va bu vaqtda tashqi qurilma ishlamay turishi mumkin.</translation>
 <translation id="3486220673238053218">ta’rif</translation>
+<translation id="3487866404496702283">Mahi funksiyasi yuzasidan fikr-mulohaza</translation>
 <translation id="3488065109653206955">Qisman faollashtirilgan</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> tusdagi <ph name="OFFICE_STYLE" /> ofis</translation>
 <translation id="3493187369049186498">Trafik sarfi Chromebook tomonidan hisoblanadi. Bu hisob provayder trafigi bilan farq qilishi mumkin.</translation>
@@ -442,6 +447,7 @@
 <translation id="3621072146987826699">fillar</translation>
 <translation id="3632579075709132555">Maxfiylik ekrani tugmasi</translation>
 <translation id="3651050199673793219">Harorat birligini tanlang</translation>
+<translation id="3661106764436337772">Tezroq va dadilroq yozing</translation>
 <translation id="3662461537616691585">bordo va qirmizi</translation>
 <translation id="3668449597372804501">Bulut manzaralari fon rasmi</translation>
 <translation id="3675132884790542448">choʻchqalar</translation>
@@ -534,7 +540,6 @@
 <translation id="4227825898293920515">Parol muddati tugashiga <ph name="TIME" /> qoldi</translation>
 <translation id="4238516577297848345">Hozir hech nima chop etilmayapti</translation>
 <translation id="4239069858505860023">GPRS</translation>
-<translation id="4244962993387259361">Xotira testini bajarish uchun kamida 500 MB boʻsh joy kerak. Joy ochish uchun Sozlamalar &gt; Xotira boshqaruvi sahifasini oching.</translation>
 <translation id="4250229828105606438">Skrinshot</translation>
 <translation id="4251839292699800785">Shinam ofis</translation>
 <translation id="4258281355379922695">HTTP kechikishi</translation>
@@ -877,6 +882,7 @@
 <translation id="6235460611964961764">Trafik sarfini oddiy usulda asliga qaytarish</translation>
 <translation id="6243280677745499710">Hozirda tanlangan</translation>
 <translation id="6250316632541035980">choʻchqa goʻshti va tuxumlar</translation>
+<translation id="6255213378196499011">Matn yordamchisi sozlamalari</translation>
 <translation id="6275224645089671689">Oʻngga strelka</translation>
 <translation id="6278428485366576908">Mavzu</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -1153,7 +1159,6 @@
 <translation id="780301667611848630">Kerak emas</translation>
 <translation id="7805768142964895445">Holat</translation>
 <translation id="7813073042185856802">togʻ</translation>
-<translation id="7819831665603418705">Andoza ishlatish</translation>
 <translation id="7819857487979277519">PSK (WPA yoki RSN)</translation>
 <translation id="7824219488248240180">postimpressionizm</translation>
 <translation id="7828503206075800057"><ph name="CAFE_STYLE" /> <ph name="CAFE_TYPE" /> kafe</translation>

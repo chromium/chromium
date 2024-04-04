@@ -71,6 +71,7 @@
 <translation id="1125573121925420732">Las advertencias pueden ser habituales cuando las páginas web actualizan su seguridad. Esto debería mejorar pronto.</translation>
 <translation id="112840717907525620">Caché de política correcta</translation>
 <translation id="1131264053432022307">Imagen que copiaste</translation>
+<translation id="1138458427267715730">Recibe alertas cuando haya reducciones de precio en cualquier sitio de la Web</translation>
 <translation id="1142713751288681188">Tipo de papel</translation>
 <translation id="1142846828089312304">Bloquear cookies de terceros en el modo Incógnito</translation>
 <translation id="1144136880160289237">Aún no tienes temas activos</translation>
@@ -738,7 +739,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2361263712565360498">275 × 395 mm</translation>
 <translation id="236340516568226369">Menú para cambio de tamaño</translation>
-<translation id="2365355378251437925">Ingresa el <ph name="FIELD" /></translation>
+<translation id="2365355378251437925">Ingresa <ph name="FIELD" /></translation>
 <translation id="2365382709349300355">Se bloqueó 1 archivo por la política</translation>
 <translation id="2365508935344991784">Muebles de exteriores</translation>
 <translation id="2366689192918515749">Carne y mariscos</translation>
@@ -1910,6 +1911,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4687718960473379118">Anuncios sugeridos por sitios</translation>
 <translation id="469028408546145398">Botón Cerrar ventanas de incógnito: actívalo para cerrar todas las ventanas de incógnito que estén abiertas</translation>
 <translation id="4691093235373904540">Tejados</translation>
+<translation id="4692623383562244444">Motores de búsqueda</translation>
 <translation id="4698692901173737941">Deportes de combate</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Lado</translation>

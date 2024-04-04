@@ -41,6 +41,7 @@
 <translation id="102916930470544692">密鑰</translation>
 <translation id="1029317248976101138">放大</translation>
 <translation id="1029526375103058355">輕按點撃功能</translation>
+<translation id="1029724557649700742">新功能推出後就會開放使用，但可用功能會因裝置而異。</translation>
 <translation id="1031362278801463162">正在載入預覽畫面</translation>
 <translation id="1032605640136438169">請閱讀新版條款</translation>
 <translation id="103279545524624934">請釋出磁碟的儲存空間，以啟動 Android 應用程式。</translation>
@@ -219,6 +220,7 @@
 <translation id="1164891049599601209">已在欺詐網站上輸入</translation>
 <translation id="1165039591588034296">錯誤</translation>
 <translation id="1166212789817575481">關閉右側分頁</translation>
+<translation id="1166457390969131095">使用並儲存 Google 帳戶中的密碼和密鑰</translation>
 <translation id="1166583374608765787">檢查新名稱</translation>
 <translation id="1166596238782048887">「<ph name="TAB_TITLE" />」分頁屬於「<ph name="DESK_TITLE" />」桌面</translation>
 <translation id="1167262726334064738">試用新密碼</translation>
@@ -763,6 +765,7 @@
 <translation id="1575741822946219011">語言和輸入方法</translation>
 <translation id="1576594961618857597">預設白色圖示</translation>
 <translation id="1576729678809834061">舉報此搜尋結果</translation>
+<translation id="1578488449637163638">深色</translation>
 <translation id="1578558981922970608">強制關閉</translation>
 <translation id="157931050206866263">進一步瞭解惡意軟件掃瞄程序</translation>
 <translation id="1580772913177567930">請聯絡您的管理員</translation>
@@ -1240,6 +1243,7 @@
 <translation id="1915734383465415025">商店編號</translation>
 <translation id="1916260783734263714">目前的分頁</translation>
 <translation id="1916502483199172559">預設紅色圖示</translation>
+<translation id="1918127774159128277">重新整理 Wi-Fi Direct 功能</translation>
 <translation id="1918141783557917887">縮小(&amp;S)</translation>
 <translation id="1919872106782726755">如要設定指紋，請讓子女輕觸鍵盤右上角 (即開關按鈕旁) 的指紋感應器，子女的指紋資料會安全儲存在此 <ph name="DEVICE_TYPE" /> 上，絕不會外洩。</translation>
 <translation id="192015196730532810">你可以建立自己的分頁群組。</translation>
@@ -1294,6 +1298,7 @@
 <translation id="1951012854035635156">助理</translation>
 <translation id="1954597385941141174">網站可要求連接 USB 裝置</translation>
 <translation id="1954813140452229842">連接共用裝置時發生錯誤。請檢查您的憑證，然後再試一次。</translation>
+<translation id="1955749740583837857">閂建議</translation>
 <translation id="1956050014111002555">檔案含有多個憑證，但全都無法匯入：</translation>
 <translation id="1956167375087861299">不允許使用識別碼來播放受保護的內容</translation>
 <translation id="1956390763342388273">此操作會上載「<ph name="FOLDER_PATH" />」中的所有檔案。請只在您信任該網站的情況下執行此操作。</translation>
@@ -1528,7 +1533,6 @@
 <translation id="2127372758936585790">低功率充電器</translation>
 <translation id="212862741129535676">頻率狀態佔用率</translation>
 <translation id="212876957201860463">正在準備設定您的流動裝置…</translation>
-<translation id="2130909682040406368">進一步了解點樣用 AI 工具</translation>
 <translation id="2131077480075264">由於「<ph name="IMPORT_NAME" />」不允許，因此無法安裝「<ph name="APP_NAME" />」</translation>
 <translation id="2133775869826239001">選擇更多要設定的功能</translation>
 <translation id="2133857665503360653">重試 <ph name="FILE_NAME" /></translation>
@@ -1567,6 +1571,7 @@
 <translation id="2155473371917268529">目前嘅分享設定係「你嘅裝置」</translation>
 <translation id="2155772377859296191">解像度：<ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service Worker：<ph name="SCRIPT_URL" /></translation>
+<translation id="2156707722163479690">允許捲動及縮放已分享的分頁</translation>
 <translation id="2156877321344104010">再次執行安全檢查</translation>
 <translation id="2157474325782140681">如要取得其他功能，請使用此 Chromebook 的專用插座。</translation>
 <translation id="215753907730220065">結束全螢幕</translation>
@@ -1988,6 +1993,7 @@
 <translation id="2459706890611560967">繼續投放分頁去 <ph name="DEVICE_NAME" /></translation>
 <translation id="2460356425461033301">備份瀏覽器資料，並在任何裝置上使用</translation>
 <translation id="2460482211073772897">在其他資料夾中</translation>
+<translation id="2461550163693930491">不允許網站捲動及縮放已分享的分頁</translation>
 <translation id="2461593638794842577">你可關閉此設定，只將密碼儲存在此裝置</translation>
 <translation id="2462332841984057083">已有其他程序正在設定 Steam，請等待設定完成。</translation>
 <translation id="2462724976360937186">憑證授權單位金鑰識別碼</translation>
@@ -2021,6 +2027,7 @@
 <translation id="2482895651873876648">分頁移咗去包含「<ph name="GROUP_CONTENTS" />」嘅「<ph name="GROUP_NAME" />」群組</translation>
 <translation id="2483627560139625913">在 Chrome 瀏覽器設定中設定搜尋引擎</translation>
 <translation id="2483698983806594329">下載咗未驗證嘅檔案</translation>
+<translation id="2484574361686148760">重新整理 Wi-Fi Direct 用戶端資訊</translation>
 <translation id="2484743711056182585">移除存取權</translation>
 <translation id="2484909293434545162">使用 Cookie 的網站會在此處顯示</translation>
 <translation id="2484959914739448251">如要從所有已同步的裝置和 Google 帳戶中清除瀏覽資料，請<ph name="BEGIN_LINK" />輸入密碼短語<ph name="END_LINK" />。</translation>
@@ -2214,6 +2221,7 @@
 <translation id="2629227353894235473">開發 Android 應用程式</translation>
 <translation id="2629437048544561682">清除畫布</translation>
 <translation id="2631498379019108537">在捷徑列中顯示輸入法選項</translation>
+<translation id="2632176111713971407">網站可要求捲動及縮放已分享的分頁</translation>
 <translation id="2633212996805280240">要移除「<ph name="EXTENSION_NAME" />」嗎？</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> 無法完成安裝，但會繼續透過磁碟影像執行。</translation>
 <translation id="2633764681656412085">FIDO</translation>
@@ -2397,6 +2405,7 @@
 <translation id="2764920001292228569">請輸入設定檔名稱</translation>
 <translation id="2765100602267695013">請聯絡流動裝置供應商</translation>
 <translation id="2765217105034171413">小</translation>
+<translation id="2765820627968019645">淺色</translation>
 <translation id="2766006623206032690">貼上及前往(&amp;S)</translation>
 <translation id="2766161002040448006">詢問家長</translation>
 <translation id="2767077837043621282">無法更新 Chromebook。請稍後再試。</translation>
@@ -2656,6 +2665,7 @@
 <translation id="2960942820860729477">更新率</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" /> (已延長期限)</translation>
 <translation id="2961695502793809356">按一下到下一頁，按住則可查看記錄</translation>
+<translation id="29618148602069201">主題</translation>
 <translation id="2963151496262057773">下列外掛程式無回應：<ph name="PLUGIN_NAME" />　您要中止嗎？</translation>
 <translation id="2964193600955408481">停用 WiFi</translation>
 <translation id="2964245677645334031">「咫尺共享」分享設定</translation>
@@ -3518,6 +3528,7 @@
 <translation id="3659550105763988702">將密鑰用於 <ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">您輸入不正確存取碼的次數過多。請稍後再試</translation>
 <translation id="3660234220361471169">不受信任</translation>
+<translation id="3661106764436337772">更有自信地快速編寫</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{找到 1 個現有密碼}other{找到 {NUM_PASSWORDS} 個現有密碼}}</translation>
 <translation id="3662207097851752847">請在手機上確認 Google 帳戶</translation>
 <translation id="3663417513679360795">更多關於打開標準預先載入嘅資料</translation>
@@ -3627,6 +3638,7 @@
 <translation id="3729506734996624908">允許的網站</translation>
 <translation id="3729957991398443677">如果要睇密碼或加相關備註，請喺搜尋同網址列入面揀「管理密碼」</translation>
 <translation id="3730076362938942381">觸控筆書寫應用程式</translation>
+<translation id="3730298295914858769">Wi-Fi Direct 功能：</translation>
 <translation id="3732078975418297900">第<ph name="ERROR_LINE" />行有錯</translation>
 <translation id="3732414796052961578">以<ph name="ACCOUNT_NAME" />的身分繼續</translation>
 <translation id="3732530910372558017">PIN 不可超出 63 個字元</translation>
@@ -3867,6 +3879,7 @@
 <translation id="3900966090527141178">匯出密碼</translation>
 <translation id="3902789559055749153">選擇為 <ph name="APP_NAME" /> 建立密鑰的方式</translation>
 <translation id="3903187154317825986">內置鍵盤</translation>
+<translation id="3903696968689283281">Wi-Fi Direct 擁有者資訊：</translation>
 <translation id="3904326018476041253">定位服務</translation>
 <translation id="3905761538810670789">修復應用程式</translation>
 <translation id="3908288065506437185">在無痕模式中封鎖第三方 Cookie</translation>
@@ -4345,6 +4358,7 @@
 <translation id="4279129444466079448">您在此裝置上最多可安裝 <ph name="PROFILE_LIMIT" /> 個 eSIM 卡設定檔。如要新增其他設定檔，請先移除現有的設定檔。</translation>
 <translation id="4280325816108262082">當裝置關閉或處於閒置狀態時，裝置將會自動中斷連線</translation>
 <translation id="4281637354026226955">允許擁有位置存取權的 ChromeOS 和 Android 應用程式和服務使用裝置位置。Google 可能會定期收集並以匿名方式使用位置資料，以提高定位精確度及改善適地性服務。</translation>
+<translation id="4281789858103154731">建立</translation>
 <translation id="4281844954008187215">服務條款</translation>
 <translation id="4281849573951338030">自訂觸控筆按鈕</translation>
 <translation id="4282196459431406533">Smart Lock 已啟用</translation>
@@ -4489,7 +4503,6 @@
 <translation id="4388650384344483842">請至少使用 8 個字元</translation>
 <translation id="4389091756366370506">使用者 <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" /> 以及另外 <ph name="NUMBER_OF_OTHER_SWITCHES" /> 個按鈕裝置</translation>
-<translation id="4390569024397171409">在 <ph name="DEVICE_TYPE" /> 上安裝應用程式</translation>
 <translation id="439266289085815679">藍牙設定由 <ph name="USER_EMAIL" /> 控制。</translation>
 <translation id="4392896746540753732">編輯設定檔案</translation>
 <translation id="4393102500004843976">搜尋鍵 + Shift + <ph name="TOP_ROW_KEY" /> 鍵</translation>
@@ -4519,6 +4532,7 @@
 <translation id="4409697491990005945">邊界</translation>
 <translation id="4409779593816003679">密碼和自動填入 (&amp;A)</translation>
 <translation id="4410545552906060960">您可以使用數字 (PIN) 來解鎖裝置。如要稍後才設定 PIN，請前往「設定」。</translation>
+<translation id="4411344321892622527">不允許捲動及縮放已分享的分頁</translation>
 <translation id="4411578466613447185">程式碼簽署者</translation>
 <translation id="4411719918614785832">這些密鑰會儲存在此電腦的 Windows Hello 上，並不會儲存至您的 Google 帳戶。</translation>
 <translation id="4412544493002546580">請再試一次，或選取下方其中一個靈感。</translation>
@@ -5447,6 +5461,7 @@
 <translation id="5146235736676876345">自行選擇</translation>
 <translation id="5146896637028965135">系統語音</translation>
 <translation id="5147097165869384760">正在尋找 OS 系統頁面嗎？請前往 <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />。</translation>
+<translation id="5147113439721488265">建議</translation>
 <translation id="5147516217412920887">按照手機上的指示輸入驗證碼</translation>
 <translation id="5147992672778369947">使用建議的密碼</translation>
 <translation id="5148285448107770349">密碼不可少於 8 個字元</translation>
@@ -6859,6 +6874,7 @@
 <translation id="6257602895346497974">開啟同步處理功能…</translation>
 <translation id="625827534921607067">如有多個先前曾連線或設定過的網絡，系統會優先使用此網絡</translation>
 <translation id="62586649943626337">使用分頁群組來整理分頁</translation>
+<translation id="6259776178973198997">重新整理 Wi-Fi Direct 擁有者資訊</translation>
 <translation id="6262371516389954471">您的備份會上載至 Google，並透過您的 Google 帳戶密碼加密。</translation>
 <translation id="6263082573641595914">Microsoft CA 版本</translation>
 <translation id="6263284346895336537">非重要</translation>
@@ -7481,6 +7497,7 @@
 <translation id="6770042910635026163">您所瀏覽的網站會定義您的興趣</translation>
 <translation id="6770602306803890733">為您和網絡上的所有使用者提高安全性</translation>
 <translation id="6771503742377376720">這是憑證授權單位</translation>
+<translation id="6772974422346500939">開啟並編輯</translation>
 <translation id="6774710250118040929">新增密碼</translation>
 <translation id="6775163072363532304">可用的裝置將會在這裡顯示。</translation>
 <translation id="677646486571529447">新增附註</translation>
@@ -7557,6 +7574,7 @@
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> 無法以根使用者的身分執行。</translation>
 <translation id="6812841287760418429">保留變更</translation>
 <translation id="6813907279658683733">整個螢幕畫面</translation>
+<translation id="6814754908910736855">Wi-Fi Direct 用戶端資訊：</translation>
 <translation id="6815376457351236663">仍要開啟</translation>
 <translation id="6815787852028615386">這是欺詐檔案，可能會對裝置造成非預期的變更</translation>
 <translation id="6816097980753839617">藍 - 黃 (藍色弱視)</translation>
@@ -7863,6 +7881,7 @@
 <translation id="7049293980323620022">要保留檔案嗎？</translation>
 <translation id="7049524156282610342">瀏覽資料 - <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">無效的熱點設定</translation>
+<translation id="7051222203795962489">{COUNT,plural, =1{密碼已儲存至 Google 帳戶 (<ph name="USER_EMAIL" />)}other{密碼已儲存至 Google 帳戶 (<ph name="USER_EMAIL" />)}}</translation>
 <translation id="7053983685419859001">封鎖</translation>
 <translation id="7055152154916055070">已禁止重新導向：</translation>
 <translation id="7055451306017383754">某個應用程式正在使用此資料夾，因此無法取消分享。系統會在下次關閉 Parallels Desktop 時取消分享此資料夾。</translation>
@@ -7993,7 +8012,6 @@
 <translation id="7168109975831002660">最小字型大小</translation>
 <translation id="7169122689956315694">附近有其他裝置時開啟通知</translation>
 <translation id="7170236477717446850">個人檔案相片</translation>
-<translation id="7170751905948784001">開發人員資料：</translation>
 <translation id="7171000599584840888">新增設定檔…</translation>
 <translation id="7171259390164035663">不要註冊</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{在新群組中加入分頁}other{在新群組中加入分頁}}</translation>
@@ -8425,6 +8443,7 @@
 <translation id="7501957181231305652">或</translation>
 <translation id="7502220299952823578">加去「一律啟用這些網站」清單</translation>
 <translation id="7502528909759062987">暫停將分頁投放去 <ph name="DEVICE_NAME" /></translation>
+<translation id="7502804472671406749">可捲動及縮放已分享的分頁</translation>
 <translation id="7503191893372251637">Netscape 憑證類型</translation>
 <translation id="7503985202154027481">您的安全密鑰會保留您瀏覽此網站的記錄。</translation>
 <translation id="7504145862399276792">此分頁的音訊已設為靜音</translation>
@@ -8469,7 +8488,6 @@
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> 沒有回應。選取「強制關閉」即可關閉應用程式。</translation>
 <translation id="7535730537657706072">如要清除裝置上的無痕瀏覽記錄，請關閉所有無痕式分頁</translation>
 <translation id="7536815228183532290">已使用 <ph name="EMAIL" /> 的身分登入</translation>
-<translation id="7537182889548466084">你將取得分頁群組建議，將類似分頁歸類到同一組。你開啟的分頁和標題會傳送給 Google，並可能交由專人審核，以改善此功能。</translation>
 <translation id="7538013435257102593">此檔案類型不是常見的下載項目，可能含有危險內容</translation>
 <translation id="7540972813190816353">檢查更新時發生錯誤：<ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> 已將此裝置回復為先前的版本，請儲存重要檔案後再重新啟動。裝置上的所有資料將被刪除。</translation>
@@ -10764,6 +10782,7 @@
 <translation id="949807244219288032">此分頁已連接至 HID 裝置</translation>
 <translation id="950079950995628542">來自「<ph name="PHONE_NAME" />」</translation>
 <translation id="950307215746360464">設定指南</translation>
+<translation id="951273949038779544"><ph name="SITE_ACCESS" />。由系統管理員安裝</translation>
 <translation id="951991426597076286">拒絕</translation>
 <translation id="952471655966876828">當裝置開啟，而且正在使用時，裝置將會自動連線</translation>
 <translation id="953434574221655299">允許偵測您使用裝置的時間</translation>

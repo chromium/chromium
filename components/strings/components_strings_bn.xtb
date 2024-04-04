@@ -71,6 +71,7 @@
 <translation id="1125573121925420732">ওয়েবসাইটগুলির নিরাপত্তা আপডেট করার সময় সতর্কতা দেখানো খুবই স্বভাবিক। এটি শীঘ্রই উন্নত করা উচিত।</translation>
 <translation id="112840717907525620">নীতি ক্যাশেটি ঠিক আছে</translation>
 <translation id="1131264053432022307">আপনার কপি করা ছবি</translation>
+<translation id="1138458427267715730">ওয়েব জুড়ে কোনও সাইটের দাম কমে গেলে সতর্কতা পান</translation>
 <translation id="1142713751288681188">পেপারের ধরন</translation>
 <translation id="1142846828089312304">ছদ্মবেশী মোডে থার্ড-পার্টি কুকি ব্লক করুন</translation>
 <translation id="1144136880160289237">এখনও আপনার কোনও অ্যাক্টিভ বিষয় নেই</translation>
@@ -412,6 +413,7 @@
 <translation id="1734878702283171397">সিস্টেম প্রশাসকের সাথে যোগাযোগ করে দেখুন।</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, <ph name="CARD_EXPIRATION" />-এ মেয়াদ শেষ হবে</translation>
 <translation id="1736420071277903564">কম্পিউটার</translation>
+<translation id="1739422091279046802">স্ক্রল করা ও জুম করা</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> হলে অবশ্যই নির্দিষ্ট করে দিতে হবে এবং একটি সঠিক স্ট্রিং হতে হবে।</translation>
 <translation id="1743393865165844832">বেডিং ও বেড লিনেন</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />এই ডেটা আমরা কীভাবে ব্যবহার করি:<ph name="END_BOLD" /> আপনি ব্রাউজ করার সাথে সাথে Chrome আগ্রহের বিষয় নোট করে। বিষয়ের লেবেলগুলি আগে থেকে ঠিক করা থাকে এবং এতে শিল্প ও বিনোদন, কেনাকাটা এবং খেলাধুলার মতো জিনিস অন্তর্ভুক্ত থাকে। পরে, আপনি যে সাইটটি ভিজিট করেন সেগুলি আপনি যে বিজ্ঞাপনগুলি দেখছেন তা পছন্দমতো করার জন্য কয়েকটি বিষয় সম্পর্কে (কিন্তু আপনার ব্রাউজিং ইতিহাস নয়) Chrome-কে জিজ্ঞাসা করতে পারে।</translation>
@@ -450,6 +452,7 @@
 <translation id="1812527064848182527">ল্যান্ডস্কেপ</translation>
 <translation id="1812975699435941848">স্বাস্থ্য বিষয়ক শিক্ষা ও চিকিৎসা প্রশিক্ষণ</translation>
 <translation id="1813414402673211292">ব্রাউজ করা ডেটা সাফ করুন</translation>
+<translation id="1816436748874040213">শেয়ার করা ট্যাব স্ক্রল ও জুম করার কথা বলতে পারবেন</translation>
 <translation id="1818522458013171885">আনব্লক করুন</translation>
 <translation id="1818585559878922121">ডকুমেন্টারি সিনেমা</translation>
 <translation id="182139138257690338">অটোমেটিক ডাউনলোড</translation>
@@ -964,6 +967,7 @@
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> আপনার সম্পর্কে যে তথ্য সেভ করেছে সেগুলি ব্যবহার করতে চায়</translation>
 <translation id="2839032553903800133">বিজ্ঞপ্তি ব্লক করা হয়েছে</translation>
 <translation id="2839501879576190149">আপনি যে সাইটটি ভিজিট করতে চলেছেন সেটি ভুয়ো</translation>
+<translation id="2843623755398178332">আপনার শেয়ার করা ট্যাব স্ক্রল ও জুম করবেন?</translation>
 <translation id="2851291081585704741">আপনি অফলাইন আছেন</translation>
 <translation id="2856444702002559011">আক্রমণকারীরা হয়ত <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> থেকে আপনার তথ্য (যেমন পাসওয়ার্ড, মেসেজ বা ক্রেডিট কার্ড) চুরি করার চেষ্টা করছে। <ph name="BEGIN_LEARN_MORE_LINK" />আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2858134430383535011">২০০ x ৩০০ মিমি</translation>
@@ -1056,6 +1060,7 @@
 <translation id="3023165109041533893">আপনাকে প্রাসঙ্গিক বিজ্ঞাপনগুলি দেখানোর জন্য সাইটগুলি চালু করার সময় সাইট-প্রস্তাবিত বিজ্ঞাপনগুলি আপনার ব্রাউজিং ইতিহাস এবং পরিচয় রক্ষা করতে সাহায্য করে। আপনি ব্রাউজ করতে থাকলে, আপনার অ্যাক্টিভিটির উপর ভিত্তি করে, আপনার ভিজিট করা সাইটটি সেই সম্পর্কিত বিজ্ঞাপন সাজেস্ট করতে পারে। আপনি এই সাইটগুলির একটি তালিকা দেখতে পারেন এবং সেটিংসে যেগুলি আপনি চান না সেগুলিকে ব্লক করতে পারেন।</translation>
 <translation id="3024663005179499861">নীতির ভুল প্রকার</translation>
 <translation id="3030331669969285614">এইসব ফ্ল্যাগ ব্রেকিং পরিবর্তন থেকে রক্ষা করে অথবা তার অভিমুখ পরিবর্তন করে এবং শুধুমাত্র সীমিত সময়ের জন্য এটি উপলভ্য থাকে।</translation>
+<translation id="3034526003882782781">স্ক্রল ও জুম করা যাবে</translation>
 <translation id="3036894576201005614">বাড়ি সাফাইয়ের সরবরাহকারী</translation>
 <translation id="3037177537145227281">দাম ট্র্যাক করা হচ্ছে</translation>
 <translation id="3037605927509011580">ইস!</translation>
@@ -1338,6 +1343,7 @@
 <translation id="3567778190852720481">এন্টারপ্রাইজ অ্যাকাউন্ট দিয়ে এনরোল করা যাচ্ছে না (এন্টারপ্রাইজ অ্যাকাউন্টকে এখানে অনুমতি দেওয়া হয়নি)।</translation>
 <translation id="3567901620846335314">১০০ x ১৫০ মিমি</translation>
 <translation id="3568886473829759308">তথ্য, রিসোর্স অথবা ব্যবসার পরিষেবা প্রদান দেখতে ওয়েবসাইট অ্যাক্সেস করুন।</translation>
+<translation id="3570079787344939099">স্ক্রল করা ও জুম করা</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">এই সাইটের জন্য অনুমতি দিন</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -1910,6 +1916,7 @@
 <translation id="4687718960473379118">সাইট-প্রস্তাবিত বিজ্ঞাপন</translation>
 <translation id="469028408546145398">ছদ্মবেশী উইন্ডো বন্ধ করুন বোতাম, বর্তমানে খোলা থাকা সব ছদ্মবেশী উইন্ডো বন্ধ করতে এটি চালু করুন</translation>
 <translation id="4691093235373904540">ক্ষতিগ্রস্ত ছাদ মেরামত করা</translation>
+<translation id="4692623383562244444">সার্চ ইঞ্জিনসমূহ</translation>
 <translation id="4698692901173737941">কম্ব্যাট স্পোর্টস</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">সাইড</translation>
@@ -2458,6 +2465,7 @@
 <translation id="5765072501007116331">ডেলিভারির পদ্ধতি এবং প্রয়োজনীয়তাগুলি দেখতে একটি ঠিকানা বেছে নিন</translation>
 <translation id="57689295674415555">ভার্চুয়াল কার্ডের নম্বর দেওয়া হয়নি?</translation>
 <translation id="5772086939108830423">অন্য কোনও ডিভাইসে 'পাসকী' ব্যবহার করুন</translation>
+<translation id="5775734789739406956">যেকোনও ফর্মে আপনার সেভ করা তথ্য যোগ করতে ডানদিকের বোতামে ক্লিক করুন</translation>
 <translation id="5776313857861697733">অগ্রাধিকার</translation>
 <translation id="5776574724412881956">ভার্চুয়াল কার্ড পূরণ করা হয়নি? ক্লিপবোর্ডে কপি করতে ভার্চুয়াল কার্ডের বিবরণে ক্লিক করুন। <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">এক্সপেরিমেন্ট চালু করা হয়েছে</translation>
@@ -2474,6 +2482,7 @@
 <translation id="580241730938216256">আপডেট শুরু করুন</translation>
 <translation id="5803412860119678065">আপনি কি আপনার <ph name="CARD_DETAIL" /> এর তথ্য পূরণ করতে চান?</translation>
 <translation id="5804241973901381774">অনুমতিগুলি</translation>
+<translation id="5806871454498484178">স্ক্রল ও জুম করার সুবিধা ব্লক করা আছে</translation>
 <translation id="5808435672482059465">আপনার Chrome ইতিহাস দেখুন</translation>
 <translation id="5810442152076338065"><ph name="DOMAIN" />-এ আপনার সংযোগ একটি অপ্রচলিত সাইফার স্যুট ব্যবহার করে এনক্রিপ্ট করা হয়েছে৷</translation>
 <translation id="5813119285467412249">&amp;যোগ করাকে পুনরায় করুন</translation>
@@ -3469,6 +3478,7 @@
 <translation id="7673278391011283842">মেলবক্স ৬</translation>
 <translation id="7675325315208090829">পেমেন্ট পদ্ধতিগুলি ম্যানেজ করুন...</translation>
 <translation id="767550629621587224">প্রি-কাট ট্যাব</translation>
+<translation id="7675756033024037212">স্ক্রল ও জুম করা যাবে না</translation>
 <translation id="7676643023259824263">ক্লিপবোর্ড টেক্সট <ph name="TEXT" /> সার্চ করুন</translation>
 <translation id="7679367271685653708">Chrome সেটিংস থেকে আপনার ব্রাউজিংয়ের ইতিহাস দেখুন এবং ম্যানেজ করুন</translation>
 <translation id="7679947978757153706">বেসবল</translation>

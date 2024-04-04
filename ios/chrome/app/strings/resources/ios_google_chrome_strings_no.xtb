@@ -114,14 +114,12 @@ Du bør tenke på følgende:
 <translation id="3901001113120561395">Få mest mulig ut av Chrome.</translation>
 <translation id="3913386780052199712">Pålogget Chrome</translation>
 <translation id="3967382818307165056">Administrer betalingsmåter i Chrome</translation>
-<translation id="3980220367029651214">Du bytter synkroniseringskonto fra <ph name="USER_EMAIL1" /> til <ph name="USER_EMAIL2" />. De eksisterende Chrome-dataene dine administreres av <ph name="DOMAIN" />. Dette sletter dataene dine fra denne enheten, men dataene blir værende i <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Organisasjonen din krever at du forblir logget av Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome har ikke tilgang til bildene eller videoene dine. Slå på tilgangen i iOS-innstillingene &gt; Personvern &gt; Bilder.</translation>
 <translation id="4064699917955374540">For å bruke og lagre Chrome-data i Google-kontoen din, bekreft at det er deg.</translation>
 <translation id="4067858366537947361">Åpne en inkognitofane i Chrome</translation>
 <translation id="4093042601582616698">Vil du gjøre Chrome til standardnettleseren din?</translation>
 <translation id="417201473131094001">Støttes ikke i Chrome Canary</translation>
-<translation id="4233521129555661685"><ph name="USER_EMAIL1" /> har brukt Chrome og etterlatt seg bokmerker, passord og andre innstillinger på denne enheten.</translation>
 <translation id="424864128008805179">Vil du logge av Chrome?</translation>
 <translation id="4251174643044751591">Åpner innstillingssiden for betalingsmåter i Chrome.</translation>
 <translation id="4453284704333523777">Administrer Chrome-innstillinger</translation>
@@ -240,7 +238,6 @@ For å se flere innstillinger som bruker data for å forbedre Chrome-opplevelsen
 <translation id="769104993356536261">Bruk Chrome-handlinger i iOS</translation>
 <translation id="7693590760643069321">Nå kan du bruke Chrome hver gang du trykker på linker i meldinger, dokumenter og andre apper.</translation>
 <translation id="7698568245838009292">Chrome vil ha tilgang til kameraet</translation>
-<translation id="7754633291442704733">Organisasjonen din, <ph name="DOMAIN" />, får tilgang til data, bokmerker, logg, passord og andre innstillinger for Chrome som du lagrer i denne kontoen. Når du logger av, slettes dataene dine fra denne enheten.  Dataene forblir imidlertid lagret i den administrerte Google-kontoen og er tilgjengelige for organisasjonen din. Organisasjonen din kan også angi spesifikke brukerinnstillinger for den aktuelle kontoen. Disse kan endre virkemåten til Chrome.</translation>
 <translation id="7780154209050837198">For å få mest mulig ut av Chrome, logg på Chrome med Google-kontoen din.</translation>
 <translation id="778855399387580014">Start et søk i en ny Chrome-fane.</translation>
 <translation id="7792140019572081272">Chrome beskytter de sensitive dataene dine med Face ID.</translation>

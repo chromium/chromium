@@ -442,6 +442,7 @@
 <translation id="2841907151129139818">Превключихте към режима на таблет</translation>
 <translation id="2844169650293029770">Устройство с USB-C (предният ляв порт)</translation>
 <translation id="2844350028562914727">подробности</translation>
+<translation id="2847759467426165163">Предаване към</translation>
 <translation id="2848120746144143659">Натиснете Enter за създаване на екранна снимка на целия екран</translation>
 <translation id="2849936225196189499">Критично</translation>
 <translation id="2860184359326882502">Най-добро съответствие</translation>
@@ -479,6 +480,7 @@
 <translation id="3009958530611748826">Изберете папка, в която да запазите</translation>
 <translation id="301282384882049174">Споделено от администратора ви</translation>
 <translation id="301584155502740476">Показване на подробностите за точката за достъп. Тя е изключена.</translation>
+<translation id="3017079585324758401">Фон</translation>
 <translation id="3018135054368884502">Превъртане напред на мултимедия</translation>
 <translation id="3033545621352269033">Включено</translation>
 <translation id="3033912566804961911">Комбиниране с(ъс) <ph name="DESK_NAME" /></translation>
@@ -1042,7 +1044,6 @@
 <translation id="5104236669533825617">Не може да се създаде скрийнкаст</translation>
 <translation id="5107522548814527560">Мрежата</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
-<translation id="5111930673176965299">Замъгляване на фона</translation>
 <translation id="5117590920725113268">Показване на следващия месец</translation>
 <translation id="5121628974188116412">Преминаване към края на страницата</translation>
 <translation id="5122517996953421795">Визуализация на <ph name="DESK_NAME" />. Неактивен работен кът.</translation>

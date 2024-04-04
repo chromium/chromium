@@ -48,6 +48,7 @@
 <translation id="123124571410524056">ສົງໄສວ່າເປັນໜ້າເວັບ</translation>
 <translation id="1232610416724362657">ນໍ້າຕົກຕາດ</translation>
 <translation id="1238612778414822719">ເວລາແຝງ HTTPS</translation>
+<translation id="1252766349417594414">ຈອຍສະຕິກ</translation>
 <translation id="1270369111467284986">ສົງໄສວ່າເປັນຊ່ອງທາງເຂົ້າຮັກສາໄວ້</translation>
 <translation id="1274654146705270731">ໝາກກ້ຽງ</translation>
 <translation id="1275718070701477396">​ເລືອກແລ້ວ</translation>
@@ -147,7 +148,9 @@
 <translation id="1755556344721611131">ແອັບການວິນິໄສ</translation>
 <translation id="175763766237925754">ດີ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
+<translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1765169783255151332">ປຸ່ມກົດດ່ວນ</translation>
 <translation id="1768959921651994223">ປະເພດການພິສູດຢືນຢັນ</translation>
 <translation id="1776228893584526149">ໂທນສີຮູບພື້ນຫຼັງ</translation>
 <translation id="1777913922912475695">ຂົວ</translation>
@@ -206,6 +209,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2073232437457681324">ມະຫາສະໝຸດກວ້າງໃຫຍ່</translation>
 <translation id="2080070583977670716">ການຕັ້ງຄ່າເພີ່ມເຕີມ</translation>
+<translation id="2082932131694554252">ປຸ່ມແປ້ນພິມທີ່ກຳນົດແລ້ວ</translation>
 <translation id="2085089206770112532">ຫຼຸດຄວາມສະຫວ່າງການສະແດງຜົນ</translation>
 <translation id="2102231663024125441">ການແກ້ໄຂຂໍ້ຄວາມ</translation>
 <translation id="2105810540595158374">ອຸປະກອນແມ່ນມືເກມ.</translation>
@@ -304,6 +308,7 @@
 <translation id="2620436844016719705">ລະ​ບົບ</translation>
 <translation id="2638662041295312666">ຮູບການເຂົ້າສູ່ລະບົບ</translation>
 <translation id="2640549051766135490">ເລືອກອະລະບໍ້າ <ph name="TITLE" /> <ph name="DESC" /> ແລ້ວ</translation>
+<translation id="2645380101799517405">ການຄວບຄຸມ</translation>
 <translation id="2652403576514495859">ເປີດການນຳໃຊ້ ຫຼື ເປີດ/ປິດການປ້ອນຂໍ້ມູນດ້ວຍສຽງ</translation>
 <translation id="2653659639078652383">ສົ່ງ</translation>
 <translation id="2656001153562991489">ພິເສດສະເພາະສຳລັບ Chromebook Plus</translation>
@@ -334,6 +339,7 @@
 <translation id="2875812231449496375">ເປີດການຕັ້ງຄ່ານີ້ໄວ້ເພື່ອຜົນໄດ້ຮັບທີ່ດີທີ່ສຸດສຳລັບຮູບພື້ນຫຼັງນີ້. ທ່ານສາມາດປິດການຕັ້ງຄ່ານີ້ຕອນໃດກໍໄດ້.</translation>
 <translation id="2878387241690264070">ຄາຍປະຈຸ <ph name="RATE" /> ໃນ <ph name="NUM_SECONDS" /> ວິນາທີ.</translation>
 <translation id="2880569433548999039">ພາບພັກໜ້າຈໍການເຄື່ອນທີ່ຂອງເມກ</translation>
+<translation id="2882230315487799269">ປັບແຕ່ງ AI prompt</translation>
 <translation id="2888298276507578975">ໃສ່ prompt ເຊັ່ນ: "ຂຽນບັນທຶກຂອບໃຈ"</translation>
 <translation id="2890557891229184386">ເກາະເຂດຮ້ອນ</translation>
 <translation id="2895772081848316509">ມືດ</translation>
@@ -445,7 +451,9 @@
 <translation id="3606583719724308068">ເວລາຕອບສະໜອງຫາເວັບໄຊ HTTPS ສູງ</translation>
 <translation id="361575905210396100">ຂໍຂອບໃຈສຳລັບຄຳຕິຊົມຂອງທ່ານ</translation>
 <translation id="3621072146987826699">ຊ້າງ</translation>
+<translation id="3632040286124154621">ການແນະນຳທີ່ດີ</translation>
 <translation id="3632579075709132555">ສະຫຼັບໜ້າຈໍຄວາມເປັນສ່ວນຕົວ</translation>
+<translation id="3644695927181369554">ການແນະນຳທີ່ບໍ່ດີ</translation>
 <translation id="3651050199673793219">ເລືອກຫົວໜ່ວຍອຸນຫະພູມ</translation>
 <translation id="3661106764436337772">ຂຽນໄດ້ໄວຂຶ້ນ ແລະ ມີຄວາມໝັ້ນໃຈຫຼາຍຂຶ້ນ</translation>
 <translation id="3662461537616691585">ສີເບີກັນດີ ແລະ ສີນ້ຳຕານແດງ</translation>
@@ -455,10 +463,12 @@
 <translation id="370665806235115550">ກໍາລັງໂຫຼດ ...</translation>
 <translation id="3708186454126126312">ເຊື່ອມຕໍ່ກ່ອນໜ້ານີ້</translation>
 <translation id="3715651196924935218">ອອກຈາກໂໝດລອຍ</translation>
+<translation id="3716250181321371108">ສ້າງການຄວບຄຸມ</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ຄຳຕິຊົມ)</translation>
 <translation id="3748026146096797577">ບໍ່​ໄດ້​ເຊື່ອມ​ຕໍ່</translation>
 <translation id="3749289110408117711">ຊື່​ໄຟລ​໌</translation>
 <translation id="3771294271822695279">ໄຟລ​໌​ວິ​ດີ​ໂອ</translation>
+<translation id="3780740315729837296">ກຳນົດປຸ່ມແປ້ນພິມ</translation>
 <translation id="3784455785234192852">ລັອກ</translation>
 <translation id="3785643128701396311">ສິນລະປະພິກເຊວ</translation>
 <translation id="3790109258688020991">ປະສົມຈຸດສີ</translation>
@@ -488,6 +498,7 @@
 <translation id="3916998944874125962">ຖ່າຍຮູບໜ້າຈໍ</translation>
 <translation id="3923184630988645767">ການນຳໃຊ້ອິນເຕີເນັດ</translation>
 <translation id="3932043219784172185">ບໍ່ມີການເຊື່ອມຕໍ່ອຸປະກອນ</translation>
+<translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> ທີ່ບໍ່ໄດ້ກຳນົດ</translation>
 <translation id="3941014780699102620">ແກ້ໄຂບັນຫາໂຮສບໍ່ສຳເລັດ</translation>
 <translation id="3942420633017001071">ການກວດວິເຄາະບັນຫາ</translation>
 <translation id="3954678691475912818">ບໍ່ຮູ້ປະເພດອຸປະກອນ.</translation>
@@ -510,6 +521,7 @@
 <translation id="4054683689023980771">ກຳລັງດາວໂຫຼດຮູບ</translation>
 <translation id="4063039537646912479">ຟ້າອ່ອນ</translation>
 <translation id="4070799384363688067">ອະນິເມະ</translation>
+<translation id="4086271957099059213">ສ້າງການຄວບຄຸມອື່ນ</translation>
 <translation id="4091002263446255071">ໂຣແມນຕິກ</translation>
 <translation id="4093865285251893588">ຮູບໂປຣໄຟລ໌</translation>
 <translation id="409427325554347132">ບັນທຶກລາຍລະອຽດຜົນທົດສອບ</translation>
@@ -540,7 +552,6 @@
 <translation id="4227825898293920515">ລະຫັດຜ່ານໝົດອາຍຸໃນ <ph name="TIME" /></translation>
 <translation id="4238516577297848345">ບໍ່ມີວຽກການພິມທີ່ພວມດຳເນີນຢູ່</translation>
 <translation id="4239069858505860023">GPRS</translation>
-<translation id="4244962993387259361">ທ່ານຕ້ອງມີພື້ນທີ່ຫວ່າງຢ່າງໜ້ອຍ 500 MB ເພື່ອເປີດໃຊ້ການທົດສອບໜ່ວຍຄວາມຈຳ. ເພື່ອສ້າງພື້ນທີ່ຫວ່າງ, ໃຫ້ເຂົ້າໄປການຕັ້ງຄ່າ &gt; ການຈັດການບ່ອນຈັດເກັບຂໍ້ມູນ.</translation>
 <translation id="4250229828105606438">ຮູບຖ່າຍໜ້າຈໍ</translation>
 <translation id="4251839292699800785">ຫ້ອງການແບບມີສະໄຕລ໌</translation>
 <translation id="4258281355379922695">ການຕອບສະໜອງ HTTP</translation>
@@ -612,6 +623,7 @@
 <translation id="4646949265910132906">ການເຊື່ອມຕໍ່ WiFi ທີ່ປອດໄພ</translation>
 <translation id="4650608062294027130">Shift ຂວາ</translation>
 <translation id="4654549501020883054">ປ່ຽນທຸກມື້</translation>
+<translation id="4655868084888499342">ຮູບທີ່ຕັ້ງເປັນພາບພື້ນຫຼັງ</translation>
 <translation id="4661249927038176904">ເໜືອຄວາມຈິງ</translation>
 <translation id="4664651912255946953">ຂົນ</translation>
 <translation id="4665014895760275686">ຜູ້​ຜະ​ລິດ</translation>
@@ -619,6 +631,7 @@
 <translation id="467715984478005772">ສົງໄສວ່າເປັນ Firewall</translation>
 <translation id="4691278870498629773">ຢຸດພິມ, ບໍ່ມີຖາດເຈ້ຍ</translation>
 <translation id="469379815867856270">ຄວາມແຮງສັນຍານ</translation>
+<translation id="4697260493945012995">ເລືອກປະເພດການຄວບຄຸມຂອງທ່ານ</translation>
 <translation id="4731797938093519117">ສິດເຂົ້າເຖິງຂອງພໍ່ແມ່</translation>
 <translation id="473775607612524610">ອັບເດດ</translation>
 <translation id="4744944742468440486">ຂໍ້ມູນທີ່ກ່ຽວຂ້ອງກັບການເລືອກຂອງທ່ານ</translation>
@@ -859,6 +872,7 @@
 <translation id="6108952804512516814">ສ້າງດ້ວຍ AI</translation>
 <translation id="6112878310391905610">ການຕັ້ງຄ່ານີ້ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="6113701710518389813">ລູກສອນຂຶ້ນ</translation>
+<translation id="6116005346231504406">ສ້າງການຄວບຄຸມທຳອິດ</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, +<ph name="NUMBER" /> ອະ​ລະ​ບ້ຳ​ເພີ່ມ​ເຕີມ</translation>
 <translation id="6122191549521593678">ອອນ​ລາຍ</translation>
 <translation id="6122277663991249694">ບໍລິການວິທີການປ້ອນຂໍ້ມູນຂອງ ChromeOS</translation>
@@ -1048,6 +1062,7 @@
 <translation id="7143207342074048698">ກຳ​ລັງ​ເຊື່ອມ​ຕໍ່</translation>
 <translation id="7144878232160441200">ລອງໃໝ່ອີກ</translation>
 <translation id="7144954474087165241">ພະທາດ</translation>
+<translation id="7147557737960578492">ກຳນົດໃໝ່ໂດຍການເລືອກປຸ່ມໃໝ່</translation>
 <translation id="714876143603641390">ການເຊື່ອມຕໍ່ LAN</translation>
 <translation id="7154020516215182599">ແບ່ງປັນຄຳຕິຊົມ ຫຼື ອະທິບາຍບັນຫາຂອງທ່ານ. ຫາກເປັນໄປໄດ້, ໃຫ້ຮວມຂັ້ນຕອນໃນການເຮັດໃຫ້ເກີດບັນຫາຂອງທ່ານຄືນໃໝ່.</translation>
 <translation id="7155037718620478619">ຄົ້ນພົບ APN ເພີ່ມເຕີມ</translation>
@@ -1093,6 +1108,7 @@
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; ກົດຊອກຫາພ້ອມກັບຍະຫວ່າງເພື່ອເບິ່ງຜົນການຊອກຫາໃນ Google ຊອກຫາ.</translation>
 <translation id="7343649194310845056">ອຸປະກອນເຄືອຂ່າຍ</translation>
 <translation id="7344788170842919262">ສີເອິຣ໌ທໂທນ</translation>
+<translation id="7346768383111016081">ວາງການຄວບຄຸມຄຳສັ່ງເກມເພື່ອຫຼິ້ນດ້ວຍແປ້ນພິມຂອງທ່ານ</translation>
 <translation id="7353413232959255829">ຜົນການຊອກຫາ <ph name="LIST_POSITION" /> ຈາກ <ph name="LIST_SIZE" /> ລາຍການ: <ph name="SEARCH_RESULT_TEXT" />. ກົດ Enter ເພື່ອໄປທາງລັດ.</translation>
 <translation id="7359657277149375382">ປະເພດໄຟລ໌</translation>
 <translation id="73631062356239394">ແບ່ງປັນຂໍ້ມູນການວິນິໄສ</translation>
@@ -1164,7 +1180,6 @@
 <translation id="780301667611848630">ບໍ່​, ​ຂອບ​ໃຈ</translation>
 <translation id="7805768142964895445">ສະ​ຖາ​ນະ​</translation>
 <translation id="7813073042185856802">ພູເຂົາ</translation>
-<translation id="7819831665603418705">ໃຊ້ແມ່ແບບ</translation>
 <translation id="7819857487979277519">PSK (WPA ຫຼື RSN)</translation>
 <translation id="7824219488248240180">ໂພສຕ໌ອິມເພຣສຊັນນິສຕ໌</translation>
 <translation id="7828503206075800057">ຄາເຟ່ <ph name="CAFE_STYLE" /> <ph name="CAFE_TYPE" /></translation>
@@ -1288,6 +1303,7 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">ຮ້ານນ້ຳຊາ</translation>
 <translation id="8538236298648811558">ຂັບເຄື່ອນໂດຍ Google AI</translation>
+<translation id="8550364285433943656">ວາງການຄວບຄຸມຄຳສັ່ງເກມເພື່ອຫຼິ້ນດ້ວຍປຸ່ມແປ້ນພິມ</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">ຜູ້ໃຫ້ບໍລິການຂອງທ່ານອາດຕ້ອງໃຊ້ຕົວເລືອກນີ້ເພື່ອເຊື່ອມຕໍ່ຫາເຄືອຂ່າຍຂອງເຂົາເຈົ້າ. ກະລຸນາຕິດຕໍ່ຫາຜູ້ໃຫ້ບໍລິການຂອງທ່ານສຳລັບລາຍລະອຽດ.</translation>
 <translation id="8576249514688522074">ບໍ່ໄດ້ລິເລີ່ມ</translation>
@@ -1406,6 +1422,7 @@
 <translation id="9189000703457422362">ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບເຄືອຂ່າຍນີ້ໂດຍໃຊ້ APN ທີ່ກວດພົບໂດຍອັດຕະໂນມັດ. ກະລຸນາຕິດຕໍ່ຜູ້ໃຫ້ບໍລິການມືຖືຂອງທ່ານສຳລັບຂໍ້ມູນເພີ່ມເຕີມ.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">ບໍ່ສາມາດຕິດຕໍ່ຫາເກດເວຈາກແອັບ Android ໄດ້</translation>
+<translation id="921080052717160800">ຮູບທີ່ຕັ້ງເປັນພາບພື້ນຫຼັງຂອງກ້ອງຖ່າຍຮູບ</translation>
 <translation id="9211490828691860325">ໂຕະທັງໝົດ</translation>
 <translation id="932327136139879170">ບ້ານ</translation>
 <translation id="939519157834106403">SSID</translation>

@@ -59,7 +59,6 @@
 <translation id="1258753120186372309">Google Doodle：<ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1263063910731171689">你現在會在「追蹤中」分頁看到「<ph name="SITE_NAME" />」的內容和簡介。你追蹤的網站和搜尋內容會儲存在 Google 帳戶中。隨時可前往設定管理追蹤項目。</translation>
 <translation id="1263231323834454256">閱讀清單</translation>
-<translation id="1266864766717917324">無法分享<ph name="CONTENT_TYPE" /></translation>
 <translation id="1269129608791067105">您可在此查看記錄</translation>
 <translation id="1273937721055267968">封鎖 <ph name="DOMAIN" /></translation>
 <translation id="1283039547216852943">輕按即可展開</translation>
@@ -96,7 +95,6 @@
 <translation id="1436784010935106834">已移除</translation>
 <translation id="1437543266176261764">正在 <ph name="APP_NAME" /> 中執行</translation>
 <translation id="1448440926884431741">在「書籤」中整理追蹤的產品</translation>
-<translation id="1450753235335490080">無法分享<ph name="CONTENT_TYPE" /></translation>
 <translation id="1462833127986525564">連結 Chrome 和其他 Google 服務，即可讓這些服務使用對方的資料來個人化你的體驗</translation>
 <translation id="1466383950273130737">選取 Chrome 的語言</translation>
 <translation id="1477626028522505441">伺服器發生問題，因此無法下載 <ph name="FILE_NAME" />。</translation>
@@ -203,7 +201,6 @@
 <translation id="2093731487903423814">過去 15 分鐘</translation>
 <translation id="2096012225669085171">在不同裝置上同步與個人化</translation>
 <translation id="2100273922101894616">自動登入</translation>
-<translation id="2100314319871056947">請嘗試將要分享的文字分為數個簡短片段</translation>
 <translation id="2111511281910874386">前往網頁</translation>
 <translation id="2119609734654412418">這裡會顯示您的書籤</translation>
 <translation id="2122601567107267586">無法開啟應用程式</translation>
@@ -376,7 +373,6 @@
 <translation id="2981364137500752533">您最多可同時開啟 5 個視窗。</translation>
 <translation id="2983102365694924129">根據您在網站上的活動推薦。此設定已關閉。</translation>
 <translation id="2984978667043170458">加入前後文來執行 Google 搜尋</translation>
-<translation id="2987620471460279764">從其他裝置分享的文字</translation>
 <translation id="2989523299700148168">最近使用的搜尋引擎</translation>
 <translation id="2992473221983447149">圖片說明</translation>
 <translation id="2996291259634659425">建立密碼短語</translation>
@@ -384,7 +380,6 @@
 <translation id="2996932914629936323">清除所有已同步裝置上的記錄</translation>
 <translation id="2997081575621687554">當 Google 網站要求以私密方式預先載入網頁上的連結時，Chrome 會透過 Google 伺服器對該連結加密並預先載入網頁，且不會使用 Cookie。這麼做可在預先載入網站中隱藏您的身分。</translation>
 <translation id="3003253259757197230">系統會將你瀏覽的網址傳送至 Google，以便預測你接下來可能會瀏覽的網站，並顯示所在網頁的其他相關資訊</translation>
-<translation id="3016635187733453316">請確保此裝置已連接互聯網</translation>
 <translation id="3026955690410463085">加入連結</translation>
 <translation id="3027644380269727216">根據您在網站上的活動推薦。此設定已開啟。</translation>
 <translation id="3029276696788198026">不使用預先載入模式</translation>
@@ -447,7 +442,6 @@
 <translation id="3374023511497244703">您的書籤、記錄、密碼及其他 Chrome 資料將不會同步至您的 Google 帳戶。</translation>
 <translation id="3384347053049321195">分享圖片</translation>
 <translation id="3387650086002190359">檔案系統發生錯誤，因此無法下載 <ph name="FILE_NAME" />。</translation>
-<translation id="3389286852084373014">文字過多</translation>
 <translation id="3398320232533725830">開啟書籤管理員</translation>
 <translation id="3407392651057365886">預先載入更多網頁。當其他網站要求連結網頁時，系統可能會透過 Google 伺服器預先載入這些網頁。</translation>
 <translation id="3414952576877147120">大小：</translation>
@@ -800,7 +794,6 @@
 <translation id="5180063720319462041">頁面內容已翻譯成<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="5186634140793586141">管理感興趣的主題和搜尋內容</translation>
 <translation id="5191251636205085390">瞭解及控制用於取代第三方 Cookie 的全新技術</translation>
-<translation id="5193988420012215838">已複製至剪貼簿</translation>
 <translation id="5204967432542742771">輸入密碼</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{正在下載檔案…}other{正在下載 # 個檔案…}}</translation>
 <translation id="5210286577605176222">跳至上一個分頁</translation>
@@ -825,7 +818,6 @@
 <translation id="5342314432463739672">權限要求</translation>
 <translation id="534580735623577507"><ph name="TIME_PERIOD" />未瀏覽任何網站</translation>
 <translation id="5355191726083956201">已開啟「強化保護功能」</translation>
-<translation id="5361107212971249203">文字</translation>
 <translation id="5375577065097716013">使用「Google 智能鏡頭」搜尋圖片 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="5395376160638294582">請確保您可隨時使用 Google 帳戶中的 Chrome 資料</translation>
 <translation id="539881862970320163">建議用安全度高嘅密碼。隱藏咗鍵盤。</translation>
@@ -1209,7 +1201,6 @@
 <translation id="7221869452894271364">重新載入這個網頁</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 項下載操作尚待處理}other{# 項下載操作尚待處理}}</translation>
 <translation id="72415438529550637">閂咗密碼建議功能。</translation>
-<translation id="7248069434667874558">請確認 <ph name="TARGET_DEVICE_NAME" /> 已開啟 Chrome 的同步處理功能。</translation>
 <translation id="7252076891734325316">請將手機放在電腦附近</translation>
 <translation id="7260367682327802201">Android 裝置可能會有類似的設定。如果 Chrome 和 Android 裝置已開啟廣告成效評估，商家或能在你瀏覽的網站和使用的應用程式評估廣告成效。</translation>
 <translation id="727288900855680735">要將 <ph name="ONE_TIME_CODE" /> 提交至 <ph name="ORIGIN" /> 嗎？</translation>
@@ -1317,7 +1308,6 @@
 <translation id="7707922173985738739">使用流動數據</translation>
 <translation id="7709918231054955894">取得您所有的分頁</translation>
 <translation id="7733878270780732638">裝置空間不足。</translation>
-<translation id="7757787379047923882">透過 <ph name="DEVICE_NAME" /> 分享的文字</translation>
 <translation id="7759809451544302770">選用</translation>
 <translation id="7762668264895820836">SD 卡 <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">新增地址</translation>
@@ -1476,7 +1466,6 @@
 <translation id="8453310803815879010">啟動恐龍遊戲</translation>
 <translation id="84594714173170813">繼續使用 Google 帳戶中的 Chrome 資料</translation>
 <translation id="8460448946170646641">查看重要的私隱和安全控制項</translation>
-<translation id="8466613982764129868">請確保 <ph name="TARGET_DEVICE_NAME" /> 已連接互聯網</translation>
 <translation id="8473863474539038330">地址及其他資料</translation>
 <translation id="8478751349603791277">控制其他 Google 服務如何使用已同步的記錄提供個人化體驗</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>

@@ -413,6 +413,7 @@
 <translation id="1734878702283171397">सिस्टम प्रशासकाशी संपर्क साधण्याचा प्रयत्न करा.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, एक्स्पायर होईल <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">काँप्युटर</translation>
+<translation id="1739422091279046802">स्क्रोल आणि झूम करणे</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode हे <ph name="SECURE_DNS_MODE_SECURE" /> असेल तेव्हा धोरण नमूद केलेले असणे आणि एक योग्य स्ट्रिंग असणे आवश्यक आहे.</translation>
 <translation id="1743393865165844832">बेडिंग आणि बेड लिनन</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />आम्ही हा डेटा कसा वापरतो:<ph name="END_BOLD" /> तुम्ही ब्राउझ करता, तसे Chrome हे तुम्हाला स्वारस्य असलेल्या विषयांची नोंद ठेवते. विषयाची लेबल पूर्वनिर्धारित केलेली असतात आणि त्यांमध्ये कला व मनोरंजन, खरेदी आणि क्रीडा यांसारख्या गोष्टी समाविष्ट असतात. त्यानंतर, तुम्ही भेट दिलेली साइट ही तुम्ही पाहत असलेल्या जाहिराती पर्सनलाइझ करण्यासाठी Chrome कडे तुमचे काही विषय मागू शकते (पण तुमचा ब्राउझिंग इतिहास नाही).</translation>
@@ -451,6 +452,7 @@
 <translation id="1812527064848182527">लॅंडस्केप</translation>
 <translation id="1812975699435941848">आरोग्य शिक्षण आणि वैद्यकीय प्रशिक्षण</translation>
 <translation id="1813414402673211292">ब्राउझिंग डेटा साफ करा</translation>
+<translation id="1816436748874040213">शेअर केलेल्या टॅबना स्क्रोल आणि झूम करण्याची विनंती करू शकतात</translation>
 <translation id="1818522458013171885">अनब्लॉक करा</translation>
 <translation id="1818585559878922121">माहितीपट</translation>
 <translation id="182139138257690338">ऑटोमॅटिक डाउनलोड</translation>
@@ -964,6 +966,7 @@
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> ने तुमच्याविषयी सेव्ह केलेली माहिती त्यांना वापरायची आहे</translation>
 <translation id="2839032553903800133">सूचना ब्लॉक केल्या आहेत</translation>
 <translation id="2839501879576190149">पुढे बनावट साइट आहे</translation>
+<translation id="2843623755398178332">तुमचा शेअर केलेला टॅब स्क्रोल आणि झूम करायचा आहे का?</translation>
 <translation id="2851291081585704741">तुम्ही ऑफलाइन आहात</translation>
 <translation id="2856444702002559011">हल्लेखोर कदाचित तुमची माहिती (उदाहरणार्थ पासवर्ड, संदेश किंवा क्रेडिट कार्ड) <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> मधून चोरण्याचा प्रयत्न करत असतील. <ph name="BEGIN_LEARN_MORE_LINK" />आणखी जाणून घ्या<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2858134430383535011">२०० x ३०० मिमी</translation>
@@ -1056,6 +1059,7 @@
 <translation id="3023165109041533893">साइटने सुचवलेल्या जाहिराती तुमचा ब्राउझिंग इतिहास आणि ओळख संरक्षित करण्यात, तसेच तुम्हाला उपयुक्त जाहिराती दाखवण्यासाठी साइटना मदत करतात. तुमच्या अ‍ॅक्टिव्हिटीवर आधारित, तुम्ही निरंतर ब्राउझिंग करत असताना तुम्ही भेट दिलेली साइट उपयुक्त जाहिराती सुचवू शकते. तुम्ही सेटिंग्जमध्ये या साइटची सूची पाहू शकता आणि तुम्हाला नको असलेल्या साइट ब्लॉक करू शकता.</translation>
 <translation id="3024663005179499861">चुकीचा धोरण प्रकार</translation>
 <translation id="3030331669969285614">या फ्लॅगमुळे ब्रेकिंग चेंज प्रतिबंधित किंवा रिव्हर्ट होतात आणि हे फ्लॅग मर्यादित कालावधीसाठीच उपलब्ध असतील.</translation>
+<translation id="3034526003882782781">स्क्रोल आणि झूम करण्याची अनुमती आहे</translation>
 <translation id="3036894576201005614">घरगुती स्वच्छतेसंबंधित वस्तूंचा पुरवठा</translation>
 <translation id="3037177537145227281">किमतीचा माग ठेवत आहे</translation>
 <translation id="3037605927509011580">च्चक!</translation>
@@ -1337,6 +1341,7 @@
 <translation id="3567778190852720481">एंटरप्राइझ खात्यासोबत नोंदणी करू शकत नाही (एंटरप्राइझ खाते पात्र नाही).</translation>
 <translation id="3567901620846335314">१०० x १५० मिमी</translation>
 <translation id="3568886473829759308">व्यवसायाद्वारे पुरवलेली माहिती, स्रोत किंवा सेवा पाहण्यासाठी वेबसाइट अ‍ॅक्सेस करा.</translation>
+<translation id="3570079787344939099">स्क्रोल आणि झूम करणे</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">या साइटला अनुमती द्या</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -1909,6 +1914,7 @@
 <translation id="4687718960473379118">साइटने सुचवलेल्या जाहिराती</translation>
 <translation id="469028408546145398">गुप्त विंडो बंद करा बटण, सध्या उघड्या असलेल्या सर्व गुप्त विंडो बंद करण्यासाठी अ‍ॅक्टिव्हेट करा</translation>
 <translation id="4691093235373904540">रूफिंग</translation>
+<translation id="4692623383562244444">शोध इंजिने</translation>
 <translation id="4698692901173737941">द्वंद्व क्रीडा</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">साइड</translation>
@@ -2457,6 +2463,7 @@
 <translation id="5765072501007116331">वितरण पद्धती आणि आवश्यकता पाहण्यासाठी, एक पत्ता निवडा</translation>
 <translation id="57689295674415555">व्हर्च्युअल कार्ड नंबर भरला नाही का?</translation>
 <translation id="5772086939108830423">वेगळ्या डिव्हाइसवर पासकी वापरा</translation>
+<translation id="5775734789739406956">तुमची सेव्ह केलेली माहिती कोणत्याही फॉर्ममध्ये जोडण्यासाठी राइट-क्लिक करा</translation>
 <translation id="5776313857861697733">प्राधान्य</translation>
 <translation id="5776574724412881956">व्हर्च्युअल कार्ड भरलेले नाही का? क्लिपबोर्डवर कॉपी करण्यासाठी व्हर्च्युअल कार्डच्या तपशिलांवर क्लिक करा. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">प्रयोग सुरू केला आहे</translation>
@@ -2473,6 +2480,7 @@
 <translation id="580241730938216256">अपडेट सुरू करा</translation>
 <translation id="5803412860119678065">तुम्ही तुमचे <ph name="CARD_DETAIL" /> भरू इच्छित आहात?</translation>
 <translation id="5804241973901381774">परवानग्या</translation>
+<translation id="5806871454498484178">स्क्रोल आणि झूम करणे ब्लॉक केले आहे</translation>
 <translation id="5808435672482059465">तुमचा Chrome इतिहास पहा</translation>
 <translation id="5810442152076338065">तुमचे <ph name="DOMAIN" /> वरील कनेक्शन ऑब्सोलीट सायफर सूट वापरून एंक्रिप्ट केलेले आहे.</translation>
 <translation id="5813119285467412249">&amp;जोडा पुन्हा करा</translation>
@@ -3470,6 +3478,7 @@
 <translation id="7673278391011283842">मेलबॉक्स ६</translation>
 <translation id="7675325315208090829">पेमेंट पद्धती व्यवस्थापित करा…</translation>
 <translation id="767550629621587224">प्री-कट टॅब</translation>
+<translation id="7675756033024037212">स्क्रोल आणि झूम करण्याची अनुमती नाही</translation>
 <translation id="7676643023259824263">क्लिपबोर्ड मजकूर, <ph name="TEXT" /> शोधा</translation>
 <translation id="7679367271685653708">Chrome सेटिंग्जमध्ये तुमचा ब्राउझिंग इतिहास पहा आणि व्‍यवस्‍थापित करा</translation>
 <translation id="7679947978757153706">बेसबॉल</translation>

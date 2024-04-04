@@ -41,6 +41,7 @@
 <translation id="102916930470544692">パスキー</translation>
 <translation id="1029317248976101138">ズーム</translation>
 <translation id="1029526375103058355">タップによるクリック</translation>
+<translation id="1029724557649700742">新機能は利用可能になったときに追加され、デバイスによって使用できる機能は異なる場合があります。</translation>
 <translation id="1031362278801463162">プレビューを読み込んでいます</translation>
 <translation id="1032605640136438169">新しい利用規約をご確認ください</translation>
 <translation id="103279545524624934">Android アプリを起動できるようにディスク領域を解放します。</translation>
@@ -1517,7 +1518,6 @@
 <translation id="2127372758936585790">低電力の充電器</translation>
 <translation id="212862741129535676">周波数状態の占有率（%）</translation>
 <translation id="212876957201860463">モバイル デバイスのセットアップ準備中...</translation>
-<translation id="2130909682040406368">AI ツールの使用に関する詳細</translation>
 <translation id="2131077480075264">「<ph name="APP_NAME" />」は「<ph name="IMPORT_NAME" />」で許可されていないためインストールできません</translation>
 <translation id="2133775869826239001">設定するその他の機能を選択する</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> を再試行</translation>
@@ -1556,6 +1556,7 @@
 <translation id="2155473371917268529">現在の公開設定は「お使いのデバイス」です</translation>
 <translation id="2155772377859296191">表示上のサイズ: <ph name="WIDTH" />x<ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service Worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156707722163479690">共有タブのスクロールとズームを許可する</translation>
 <translation id="2156877321344104010">安全チェックを再実行</translation>
 <translation id="2157474325782140681">すべての機能を利用できるようにするには、この Chromebook に対応した Dell のドッキング ステーションを使用してください。</translation>
 <translation id="215753907730220065">全画面表示を終了</translation>
@@ -1972,6 +1973,7 @@
 <translation id="2459706890611560967"><ph name="DEVICE_NAME" /> へのタブのキャストを再開する</translation>
 <translation id="2460356425461033301">ブラウザをバックアップして、他のデバイスで使用できるようにします</translation>
 <translation id="2460482211073772897">他のフォルダ</translation>
+<translation id="2461550163693930491">共有タブのスクロールとズームをサイトに許可しない</translation>
 <translation id="2461593638794842577">この設定をオフにすると、パスワードをこのデバイスにのみ保存できます</translation>
 <translation id="2462332841984057083">Steam はすでに設定中です。セットアップが完了するまでお待ちください。</translation>
 <translation id="2462724976360937186">認証局キー ID</translation>
@@ -2005,6 +2007,7 @@
 <translation id="2482895651873876648">タブを <ph name="GROUP_NAME" /> グループに移動しました - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="2483627560139625913">Chrome ブラウザ設定で検索エンジンを設定</translation>
 <translation id="2483698983806594329">未確認のファイルをダウンロードしました</translation>
+<translation id="2484574361686148760">Wi-Fi Direct クライアント情報を更新</translation>
 <translation id="2484743711056182585">権限を削除</translation>
 <translation id="2484909293434545162">サイトが Cookie を使用している場合は、ここに表示されます</translation>
 <translation id="2484959914739448251">同期しているすべてのデバイスと Google アカウントから閲覧データを削除するには、<ph name="BEGIN_LINK" />パスフレーズを入力<ph name="END_LINK" />してください。</translation>
@@ -2197,6 +2200,7 @@
 <translation id="2629227353894235473">Android アプリの開発</translation>
 <translation id="2629437048544561682">キャンバスを消去</translation>
 <translation id="2631498379019108537">シェルフに入力オプションを表示</translation>
+<translation id="2632176111713971407">サイトが共有タブのスクロールとズームを要求できる</translation>
 <translation id="2633212996805280240">「<ph name="EXTENSION_NAME" />」を削除しますか？</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> のインストールを完了できませんでした。ただし、今後もディスク イメージから実行できます。</translation>
 <translation id="2633764681656412085">FIDO</translation>
@@ -3502,6 +3506,7 @@
 <translation id="3659550105763988702"><ph name="APP_NAME" /> のパスキーを使用する</translation>
 <translation id="3659929705630080526">間違ったアクセスコードを複数回入力しました。しばらくしてからもう一度お試しください</translation>
 <translation id="3660234220361471169">信頼されていない</translation>
+<translation id="3661106764436337772">より確実な文章をすばやく作成</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 件の既存のパスワードが見つかりました}other{{NUM_PASSWORDS} 件の既存のパスワードが見つかりました}}</translation>
 <translation id="3662207097851752847">スマートフォンで Google アカウントを確認してください</translation>
 <translation id="3663417513679360795">標準プリロードの有効化の詳細</translation>
@@ -3853,6 +3858,7 @@
 <translation id="3900966090527141178">パスワードのエクスポート</translation>
 <translation id="3902789559055749153"><ph name="APP_NAME" /> のパスキーの作成方法を選択してください</translation>
 <translation id="3903187154317825986">デバイス内蔵キーボード</translation>
+<translation id="3903696968689283281">Wi-Fi Direct 所有者情報:</translation>
 <translation id="3904326018476041253">位置情報サービス</translation>
 <translation id="3905761538810670789">アプリを修復</translation>
 <translation id="3908288065506437185">シークレット モードでサードパーティ Cookie をブロックする</translation>
@@ -4478,7 +4484,6 @@
 <translation id="4388650384344483842">8 文字以上で指定してください</translation>
 <translation id="4389091756366370506">ユーザー <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" />、他 <ph name="NUMBER_OF_OTHER_SWITCHES" /> 個のスイッチ</translation>
-<translation id="4390569024397171409"><ph name="DEVICE_TYPE" /> にアプリをインストール</translation>
 <translation id="439266289085815679">Bluetooth 設定は <ph name="USER_EMAIL" /> によって管理されています。</translation>
 <translation id="4392896746540753732">設定ファイルを編集します</translation>
 <translation id="4393102500004843976">検索+Shift+<ph name="TOP_ROW_KEY" /></translation>
@@ -4508,6 +4513,7 @@
 <translation id="4409697491990005945">余白</translation>
 <translation id="4409779593816003679">パスワードと自動入力(&amp;A)</translation>
 <translation id="4410545552906060960">パスワードではなく数字（PIN）を使用してデバイスのロックを解除することができます。後で PIN を設定する場合は、[設定] に移動してください。</translation>
+<translation id="4411344321892622527">共有タブのスクロールとズームを許可しない</translation>
 <translation id="4411578466613447185">コードの署名者</translation>
 <translation id="4411719918614785832">これらのパスキーは、このパソコンの Windows Hello に保存されます。Google アカウントには保存されません。</translation>
 <translation id="4412544493002546580">もう一度お試しいただくか、以下のインスピレーションから選択してください。</translation>
@@ -6847,6 +6853,7 @@
 <translation id="6257602895346497974">同期を有効にする...</translation>
 <translation id="625827534921607067">これまでに接続または設定したネットワークが複数ある場合は、このネットワークが優先されます</translation>
 <translation id="62586649943626337">タブグループを使ってタブを整理できます</translation>
+<translation id="6259776178973198997">Wi-Fi Direct 所有者情報を更新</translation>
 <translation id="6262371516389954471">バックアップ データは Google にアップロードされ、Google アカウントのパスワードを使って暗号化されます。</translation>
 <translation id="6263082573641595914">Microsoft CA バージョン</translation>
 <translation id="6263284346895336537">非重要</translation>
@@ -7544,6 +7551,7 @@
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> を root で実行することはできません。</translation>
 <translation id="6812841287760418429">変更を保持</translation>
 <translation id="6813907279658683733">画面全体</translation>
+<translation id="6814754908910736855">Wi-Fi Direct クライアント情報:</translation>
 <translation id="6815376457351236663">開く</translation>
 <translation id="6815787852028615386">このファイルは偽物であるため、デバイスに予期しない変更が加えられる可能性があります</translation>
 <translation id="6816097980753839617">青 - 黄（第三色弱）</translation>
@@ -7981,7 +7989,6 @@
 <translation id="7168109975831002660">最小フォント サイズ</translation>
 <translation id="7169122689956315694">周辺にデバイスがあるときに通知をオンにする</translation>
 <translation id="7170236477717446850">プロフィール写真</translation>
-<translation id="7170751905948784001">デベロッパー情報:</translation>
 <translation id="7171000599584840888">プロファイルを追加...</translation>
 <translation id="7171259390164035663">登録しない</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{タブを新しいグループに追加}other{タブを新しいグループに追加}}</translation>
@@ -8412,6 +8419,7 @@
 <translation id="7501957181231305652">または</translation>
 <translation id="7502220299952823578">常にアクティブにするサイトのリストに追加</translation>
 <translation id="7502528909759062987"><ph name="DEVICE_NAME" /> へのタブのキャストを一時停止する</translation>
+<translation id="7502804472671406749">共有タブのスクロールとズームが許可されています</translation>
 <translation id="7503191893372251637">Netscape 証明書タイプ</translation>
 <translation id="7503985202154027481">このサイトへのアクセスの記録がセキュリティ キーに保存されます。</translation>
 <translation id="7504145862399276792">このタブの音声はミュートされています</translation>
@@ -8456,7 +8464,6 @@
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> から応答がありません。終了するには [強制終了] を選択してください。</translation>
 <translation id="7535730537657706072">シークレット モードでの閲覧履歴をデバイスから消去するには、すべてのシークレット タブを閉じます</translation>
 <translation id="7536815228183532290"><ph name="EMAIL" /> としてログインしています</translation>
-<translation id="7537182889548466084">類似のタブをひとまとめにしたタブグループが提案されます。開いているタブとタイトルが Google に送信され、この機能を改善するため、人間が確認することがあります。</translation>
 <translation id="7538013435257102593">このファイル形式は一般的にダウンロードされている形式ではなく、危害を及ぼす可能性があります</translation>
 <translation id="7540972813190816353">更新の確認中にエラーが発生しました: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> がこのデバイスを以前のバージョンに戻しました。重要なファイルを保存してから、再起動してください。デバイス上のデータはすべて削除されます。</translation>
@@ -10750,6 +10757,7 @@
 <translation id="949807244219288032">このタブは HID デバイスに接続されています</translation>
 <translation id="950079950995628542">「<ph name="PHONE_NAME" />」から</translation>
 <translation id="950307215746360464">セットアップ ガイド</translation>
+<translation id="951273949038779544"><ph name="SITE_ACCESS" />。管理者によりインストールされました</translation>
 <translation id="951991426597076286">同意しない</translation>
 <translation id="952471655966876828">デバイスの電源がオンになったときや使用されているときは自動的に接続します</translation>
 <translation id="953434574221655299">このデバイスのアクティブ状態の検出を許可する</translation>

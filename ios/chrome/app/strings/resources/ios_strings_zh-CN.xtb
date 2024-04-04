@@ -16,7 +16,6 @@
 <translation id="1066060668811609597">管理同步数据</translation>
 <translation id="1069154182096085577">密码已存在</translation>
 <translation id="1076421457278169141">已扫描代码</translation>
-<translation id="1076785341346483463">与受管理的账号同步</translation>
 <translation id="1084365883616172403">Facebook 信息发布已完成。</translation>
 <translation id="1103523840287552314">一律翻译<ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">切换到另一个已打开的窗口</translation>
@@ -24,7 +23,6 @@
 <translation id="1112015203684611006">打印操作失败。</translation>
 <translation id="1125564390852150847">创建新的标签页。</translation>
 <translation id="1126809382673880764">不会保护您免受危险网站、下载内容和扩展程序的侵害。在 Gmail 和 Google 搜索等其他 Google 服务中，若安全浏览保护可用，您仍将获得该保护。</translation>
-<translation id="1145536944570833626">删除现有数据。</translation>
 <translation id="1147031633655575115">目前的登录者是：<ph name="USER" /></translation>
 <translation id="1150989369772528668">日历</translation>
 <translation id="1154984953698510061">查看其他标签页</translation>
@@ -54,7 +52,6 @@
 <translation id="1273416271143914096">{count,plural, =1{{count} 个密码}other{{count} 个密码}}</translation>
 <translation id="1275718070701477396">已选择</translation>
 <translation id="1279024913354609713">不允许</translation>
-<translation id="1281818060020671000">管理数据</translation>
 <translation id="1282311502488501110">不登录</translation>
 <translation id="1283524564873030414">过去 24 小时</translation>
 <translation id="1285320974508926690">一律不翻译此网站</translation>
@@ -563,7 +560,6 @@
 <translation id="3918585468378680136">正在获取包裹状态</translation>
 <translation id="3921585859122905677">地址栏位置</translation>
 <translation id="3922310737605261887">搜索复制的文字</translation>
-<translation id="3928666092801078803">合并我的数据</translation>
 <translation id="3929457972718048006">地址</translation>
 <translation id="3939505428630887612">关于此页</translation>
 <translation id="3948600256434252210">向右滑动即可在无痕模式下浏览内容。</translation>
@@ -943,6 +939,7 @@
 <translation id="5857770089550859117">必须输入密码才能开始同步。</translation>
 <translation id="5859715514067755465">前进</translation>
 <translation id="5860033963881614850">关闭</translation>
+<translation id="5860491529813859533">启用</translation>
 <translation id="5896576662943111387">专为 iOS 打造</translation>
 <translation id="5897749768294722429">如果想快速重新访问浏览过的网站，请同步您的标签页和历史记录。</translation>
 <translation id="5897956970858271241">访问复制的链接</translation>
@@ -961,7 +958,6 @@
 <translation id="5971872012779224351">{count,plural, =1{已删除 1 个书签}other{已删除 {count} 个书签}}</translation>
 <translation id="5979837087407522202">搜索密码</translation>
 <translation id="5981230843984570095">关闭所有闲置标签页</translation>
-<translation id="5982717868370722439">将现有数据添加到 <ph name="USER_EMAIL" />。</translation>
 <translation id="5984222099446776634">最近访问过的内容</translation>
 <translation id="598634819525651074">面积</translation>
 <translation id="5988097621740394599">查看您打开的标签页上的降价商品。</translation>
@@ -1192,7 +1188,6 @@
 <translation id="7022197654033719543">网站信息</translation>
 <translation id="7029809446516969842">密码</translation>
 <translation id="704692552158601232">默认浏览器应用</translation>
-<translation id="7062545763355031412">接受并切换账号</translation>
 <translation id="7063811929043357292">您的账号由您的家长管理。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="7069695992271320873">从此设备中移除</translation>
@@ -1385,7 +1380,6 @@
 <translation id="804427445359061970">您在其他设备上打开的标签页会显示在此处</translation>
 <translation id="8044568254381073661">直接保存，不加密</translation>
 <translation id="8059533439631660104">合拢此部分。</translation>
-<translation id="806745655614357130">单独保存我的数据</translation>
 <translation id="8069394452933076548">选择何时将最近未使用的标签页移至“闲置标签页”部分中。</translation>
 <translation id="8073670137947914548">已下载完毕</translation>
 <translation id="8073872304774253879">改善搜索和浏览体验</translation>
@@ -1616,7 +1610,6 @@
 <translation id="9165320910061267720">若要接收降价提醒通知，您需在 iOS 设置中开启通知功能。</translation>
 <translation id="9177438225260810839">在打开的标签页中搜索</translation>
 <translation id="9187853111759024059">要关闭超过 99 个闲置标签页吗？</translation>
-<translation id="9188680907066685419">退出受管理的账号</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> 天前</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9203951165704618409">您可以将地址栏从顶部移至底部，获享个性化的浏览体验。</translation>

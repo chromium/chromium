@@ -41,6 +41,7 @@
 <translation id="102916930470544692">Toegangssleutel</translation>
 <translation id="1029317248976101138">Zoom</translation>
 <translation id="1029526375103058355">Tikken om te klikken</translation>
+<translation id="1029724557649700742">Nieuwe functies worden toegevoegd zodra ze beschikbaar komen, en de functies kunnen per apparaat verschillen.</translation>
 <translation id="1031362278801463162">Voorbeeld wordt geladen</translation>
 <translation id="1032605640136438169">Lees de nieuwe voorwaarden door</translation>
 <translation id="103279545524624934">Maak schijfruimte vrij om Android-apps te starten.</translation>
@@ -1520,7 +1521,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2127372758936585790">Laag-vermogen-lader</translation>
 <translation id="212862741129535676">Bezettingspercentage van frequentiestatus</translation>
 <translation id="212876957201860463">Voorbereiden om je mobiele apparaat in te stellen…</translation>
-<translation id="2130909682040406368">Meer informatie over het gebruik van AI-tools</translation>
 <translation id="2131077480075264">Kan <ph name="APP_NAME" /> niet installeren, omdat dit niet wordt toegestaan door <ph name="IMPORT_NAME" /></translation>
 <translation id="2133775869826239001">Meer functies kiezen om in te stellen</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> opnieuw proberen</translation>
@@ -1559,6 +1559,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2155473371917268529">De huidige instelling voor zichtbaarheid is Je apparaten</translation>
 <translation id="2155772377859296191">Ziet eruit als <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156707722163479690">Scrollen en zoomen op gedeelde tabbladen toegestaan</translation>
 <translation id="2156877321344104010">Veiligheidscheck opnieuw uitvoeren</translation>
 <translation id="2157474325782140681">Gebruik voor aanvullende functies een Dell-dockingstation dat is bedoeld voor gebruik met deze Chromebook.</translation>
 <translation id="215753907730220065">Volledig scherm sluiten</translation>
@@ -1977,6 +1978,7 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="2459706890611560967">Tabblad casten naar <ph name="DEVICE_NAME" /> hervatten</translation>
 <translation id="2460356425461033301">Maak een back-up van je browsergegevens en gebruik deze op elk apparaat.</translation>
 <translation id="2460482211073772897">In andere mappen</translation>
+<translation id="2461550163693930491">Niet toestaan dat sites scrollen en zoomen op gedeelde tabbladen</translation>
 <translation id="2461593638794842577">Je kunt deze instelling uitzetten om je wachtwoorden alleen op dit apparaat op te slaan</translation>
 <translation id="2462332841984057083">Steam wordt al ingesteld. Wacht tot het instellen is afgerond.</translation>
 <translation id="2462724976360937186">Sleutel-ID van certificeringsinstantie</translation>
@@ -2010,6 +2012,7 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="2482895651873876648">Tabblad verplaatst naar groep <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="2483627560139625913">Zoekmachine instellen in de Chrome-browserinstellingen</translation>
 <translation id="2483698983806594329">Niet-geverifieerd bestand gedownload</translation>
+<translation id="2484574361686148760">Informatie over Wifi Direct-klanten vernieuwen</translation>
 <translation id="2484743711056182585">Toegang intrekken</translation>
 <translation id="2484909293434545162">Als een site cookies gebruikt, komt deze hier te staan</translation>
 <translation id="2484959914739448251">Als je browsegegevens wilt wissen van al je gesynchroniseerde apparaten en je Google-account, <ph name="BEGIN_LINK" />geef je je wachtwoordzin op<ph name="END_LINK" />.</translation>
@@ -2203,6 +2206,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2629227353894235473">Android-apps ontwikkelen</translation>
 <translation id="2629437048544561682">Canvas wissen</translation>
 <translation id="2631498379019108537">Invoeropties op de plank bekijken</translation>
+<translation id="2632176111713971407">Sites kunnen vragen of ze mogen scrollen en zoomen op gedeelde tabbladen</translation>
 <translation id="2633212996805280240">Wil je '<ph name="EXTENSION_NAME" />' verwijderen?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> kan de installatie niet voltooien, maar wordt nog steeds uitgevoerd via de schijfkopie.</translation>
 <translation id="2633764681656412085">FIDO</translation>
@@ -3509,6 +3513,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3659550105763988702">Gebruik je toegangssleutel voor <ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">Je hebt te vaak een onjuiste toegangscode opgegeven. Probeer het later opnieuw.</translation>
 <translation id="3660234220361471169">Niet vertrouwd</translation>
+<translation id="3661106764436337772">Schrijf sneller en met meer vertrouwen</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 bestaand wachtwoord gevonden}other{{NUM_PASSWORDS} bestaande wachtwoorden gevonden}}</translation>
 <translation id="3662207097851752847">Je Google-account bevestigen op je telefoon</translation>
 <translation id="3663417513679360795">Meer informatie over hoe je standaard vooraf laden aanzet</translation>
@@ -3861,6 +3866,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser 
 <translation id="3900966090527141178">Wachtwoorden exporteren</translation>
 <translation id="3902789559055749153">Kies hoe je een toegangssleutel wilt maken voor <ph name="APP_NAME" /></translation>
 <translation id="3903187154317825986">Geïntegreerd toetsenbord</translation>
+<translation id="3903696968689283281">Informatie over Wifi Direct-eigenaren:</translation>
 <translation id="3904326018476041253">Locatieservices</translation>
 <translation id="3905761538810670789">App repareren</translation>
 <translation id="3908288065506437185">Cookies van derden blokkeren in de incognitomodus</translation>
@@ -4485,7 +4491,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4388650384344483842">Gebruik minstens 8 tekens</translation>
 <translation id="4389091756366370506">Gebruiker <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> en nog <ph name="NUMBER_OF_OTHER_SWITCHES" /> andere schakelaars</translation>
-<translation id="4390569024397171409">App installeren op je <ph name="DEVICE_TYPE" /></translation>
 <translation id="439266289085815679">Bluetooth-configuratie wordt beheerd door <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Het configuratiebestand bewerken</translation>
 <translation id="4393102500004843976">Zoeken + Shift + <ph name="TOP_ROW_KEY" /></translation>
@@ -4515,6 +4520,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4409697491990005945">Marges</translation>
 <translation id="4409779593816003679">Wachtwoorden en &amp;automatisch invullen</translation>
 <translation id="4410545552906060960">Gebruik een nummer (pincode) in plaats van een wachtwoord om je apparaat te ontgrendelen. Als je later een pincode wilt instellen, ga je naar Instellingen.</translation>
+<translation id="4411344321892622527">Scrollen en zoomen op gedeelde tabbladen niet toegestaan</translation>
 <translation id="4411578466613447185">Ondertekening van code</translation>
 <translation id="4411719918614785832">Deze toegangssleutels worden opgeslagen in Windows Hello op deze computer. Ze worden niet opgeslagen in je Google-account.</translation>
 <translation id="4412544493002546580">Probeer het opnieuw of selecteer een van de inspiraties hieronder.</translation>
@@ -6078,7 +6084,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5654669866168491665">Meer informatie over sites die misschien niet werken als cookies van derden worden geblokkeerd</translation>
 <translation id="565515993087783098">Als je dit netwerk vergeet, verwijder je ook het Passpoint-abonnement en de bijbehorende netwerken.</translation>
 <translation id="5655296450510165335">Apparaatinschrijving</translation>
-<translation id="5655823808357523308">Pas aan hoe kleuren worden getoond op je telefoon</translation>
+<translation id="5655823808357523308">Pas aan hoe kleuren worden getoond op je scherm</translation>
 <translation id="5656845498778518563">Feedback sturen naar Google</translation>
 <translation id="5657667036353380798">Voor de externe extensie moet Chrome-versie <ph name="MINIMUM_CHROME_VERSION" /> of hoger zijn geïnstalleerd.</translation>
 <translation id="565899488479822148">De nieuwste update installeren</translation>
@@ -6852,6 +6858,7 @@ Zichtbaar als <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="6257602895346497974">Synchronisatie aanzetten...</translation>
 <translation id="625827534921607067">Dit netwerk krijgt de voorkeur als er meer dan één eerder verbonden of ingesteld netwerk beschikbaar is</translation>
 <translation id="62586649943626337">Je tabbladen ordenen met tabbladgroepen</translation>
+<translation id="6259776178973198997">Informatie over Wifi Direct-eigenaren vernieuwen</translation>
 <translation id="6262371516389954471">Je back-ups worden geüpload naar Google en versleuteld met het wachtwoord van je Google-account.</translation>
 <translation id="6263082573641595914">CA-versie van Microsoft</translation>
 <translation id="6263284346895336537">Niet kritiek</translation>
@@ -7551,6 +7558,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> kan niet worden uitgevoerd als root.</translation>
 <translation id="6812841287760418429">Wijzigingen behouden</translation>
 <translation id="6813907279658683733">Volledig scherm</translation>
+<translation id="6814754908910736855">Informatie over Wifi Direct-klanten:</translation>
 <translation id="6815376457351236663">Toch openen</translation>
 <translation id="6815787852028615386">Dit bestand is misleidend en kan onverwachte wijzigingen aanbrengen op je apparaat</translation>
 <translation id="6816097980753839617">Blauw-geel (tritanomalie)</translation>
@@ -7987,7 +7995,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7168109975831002660">Minimum lettergrootte</translation>
 <translation id="7169122689956315694">Melding aanzetten als apparaten in de buurt zijn</translation>
 <translation id="7170236477717446850">Profielfoto</translation>
-<translation id="7170751905948784001">Informatie voor ontwikkelaars:</translation>
 <translation id="7171000599584840888">Profiel toevoegen...</translation>
 <translation id="7171259390164035663">Niet inschrijven</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Tabblad toevoegen aan nieuwe groep}other{Tabbladen toevoegen aan nieuwe groep}}</translation>
@@ -8419,6 +8426,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7501957181231305652">of</translation>
 <translation id="7502220299952823578">Toevoegen aan de lijst Deze sites altijd actief houden</translation>
 <translation id="7502528909759062987">Tabblad casten naar <ph name="DEVICE_NAME" /> onderbreken</translation>
+<translation id="7502804472671406749">Gedeelde tabbladen kunnen worden gescrolld en gezoomd</translation>
 <translation id="7503191893372251637">Type Netscape-certificaat</translation>
 <translation id="7503985202154027481">Er wordt een record van je bezoek aan deze site geregistreerd in je beveiligingssleutel.</translation>
 <translation id="7504145862399276792">De audio van dit tabblad is uitgezet</translation>
@@ -8463,7 +8471,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> reageert niet. Selecteer 'Nu sluiten' om de app te sluiten.</translation>
 <translation id="7535730537657706072">Sluit alle incognitotabbladen om de incognito-browsegeschiedenis op je apparaat te wissen</translation>
 <translation id="7536815228183532290">Ingelogd als <ph name="EMAIL" /></translation>
-<translation id="7537182889548466084">Je krijgt suggesties voor tabbladgroepen die vergelijkbare tabbladen groeperen. Je geopende tabbladen en titels worden naar Google gestuurd en kunnen door mensen worden beoordeeld om deze functie te verbeteren.</translation>
 <translation id="7538013435257102593">Dit bestandstype wordt niet vaak gedownload en kan gevaarlijk zijn</translation>
 <translation id="7540972813190816353">Er is een fout opgetreden bij het ​​zoeken naar updates: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> heeft dit apparaat teruggezet naar een oudere versie. Sla belangrijke bestanden op en start opnieuw op. Alle gegevens op het apparaat worden verwijderd.</translation>
@@ -10757,6 +10764,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="949807244219288032">Dit tabblad is gekoppeld aan een HID-apparaat</translation>
 <translation id="950079950995628542">Van <ph name="PHONE_NAME" /></translation>
 <translation id="950307215746360464">Instelgids</translation>
+<translation id="951273949038779544"><ph name="SITE_ACCESS" />. Geïnstalleerd door je beheerder</translation>
 <translation id="951991426597076286">Afwijzen</translation>
 <translation id="952471655966876828">Het apparaat maakt automatisch verbinding als het wordt aangezet en wordt gebruikt</translation>
 <translation id="953434574221655299">Mogen weten wanneer je je apparaat actief gebruikt</translation>

@@ -441,6 +441,7 @@
 <translation id="2841907151129139818">Έγινε εναλλαγή σε λειτουργία tablet.</translation>
 <translation id="2844169650293029770">Συσκευή USB-C (αριστερή μπροστινή θύρα)</translation>
 <translation id="2844350028562914727">λεπτομέρειες</translation>
+<translation id="2847759467426165163">Μετάδοση σε</translation>
 <translation id="2848120746144143659">Πατήστε Enter για λήψη στιγμιότυπου πλήρους οθόνης</translation>
 <translation id="2849936225196189499">Κρίσιμη</translation>
 <translation id="2860184359326882502">Βέλτιστη αντιστοίχιση</translation>
@@ -478,6 +479,7 @@
 <translation id="3009958530611748826">Επιλέξτε έναν φάκελο στον οποίο θέλετε να γίνεται αποθήκευση.</translation>
 <translation id="301282384882049174">Σε κοινή χρήση από τον διαχειριστή σας</translation>
 <translation id="301584155502740476">Εμφάνιση λεπτομερειών σημείου πρόσβασης Wi-Fi. Το σημείο πρόσβασης Wi-Fi είναι ανενεργό.</translation>
+<translation id="3017079585324758401">Φόντο</translation>
 <translation id="3018135054368884502">Γρήγορη προώθηση μέσου</translation>
 <translation id="3033545621352269033">Eνεργό</translation>
 <translation id="3033912566804961911">Συνδυασμός με <ph name="DESK_NAME" /></translation>
@@ -1040,7 +1042,6 @@
 <translation id="5104236669533825617">Δεν είναι δυνατή η δημιουργία ψηφιακής εγγραφής οθόνης</translation>
 <translation id="5107522548814527560">Ιστός</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
-<translation id="5111930673176965299">Θάμπωμα φόντου</translation>
 <translation id="5117590920725113268">Εμφάνιση επόμενου μήνα</translation>
 <translation id="5121628974188116412">Μετάβαση στο κάτω μέρος της σελίδας</translation>
 <translation id="5122517996953421795">Προεπισκόπηση του <ph name="DESK_NAME" />. Ανενεργό γραφείο.</translation>

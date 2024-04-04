@@ -271,6 +271,7 @@
 <translation id="2446553403094072641">Exactitud del punto flotante</translation>
 <translation id="2448312741937722512">Tipo</translation>
 <translation id="2465272316171730950">Nuestros servidores están en el límite de su capacidad. Vuelve a intentarlo más tarde.</translation>
+<translation id="2472215337771558851">Usa Ayúdame a escribir para crear un borrador o mejorar el trabajo existente con la tecnología de IA de Google</translation>
 <translation id="2480572840229215612">cangrejos</translation>
 <translation id="248546197012830854">El dispositivo está sin conexión. Conéctate a una red Wi-Fi para ver el contenido de ayuda.</translation>
 <translation id="2486301288428798846">madera</translation>
@@ -328,10 +329,12 @@
 <translation id="2860473693272905224">Coloca otra página en el escáner.</translation>
 <translation id="2872961005593481000">Apagar</translation>
 <translation id="2873483161362553159">Exploración en el navegador</translation>
+<translation id="2873939192640533085">Ingresa una instrucción como "proyectar más confianza"</translation>
 <translation id="2874939134665556319">Pista anterior</translation>
 <translation id="2875812231449496375">Activa esta opción para obtener mejores resultados con este fondo de pantalla. Puedes desactivar esta opción en cualquier momento.</translation>
 <translation id="2878387241690264070">Se descargó el <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segundos.</translation>
 <translation id="2880569433548999039">Protector de pantalla Flujo de nubes</translation>
+<translation id="2888298276507578975">Ingresa una instrucción como "escribir una nota de agradecimiento"</translation>
 <translation id="2890557891229184386">una isla tropical</translation>
 <translation id="2895772081848316509">oscuro</translation>
 <translation id="2926057806159140518">Ingresa tu nombre de usuario y contraseña, o bien, escanea tu código QR</translation>
@@ -376,6 +379,7 @@
 <translation id="3226405216343213872">Buscando escáneres</translation>
 <translation id="3226657629376379887">Menú de acciones de diseño</translation>
 <translation id="3227186760713762082">Divide el valor de <ph name="CATEGORY_TEXT" /> por <ph name="CONVERSION_RATE" /></translation>
+<translation id="3237710083340813756">Volver a escribir</translation>
 <translation id="3246869037381808805">Se quitarán los trabajos de impresión que tengan más de 1 día</translation>
 <translation id="324961752321393509">Tu administrador no permite cerrar esta app</translation>
 <translation id="3268178239013324452">Error: La tapa está abierta</translation>
@@ -414,6 +418,7 @@
 <translation id="346539236881580388">Repetir</translation>
 <translation id="3484914941826596830">No desconectes este dispositivo externo ni apagues la computadora mientras se actualiza el firmware. Puedes minimizar esta ventana. Es posible que esta actualización demore unos minutos y que el dispositivo externo no funcione hasta que termine.</translation>
 <translation id="3486220673238053218">definición</translation>
+<translation id="3487866404496702283">Comentarios sobre la función mahi</translation>
 <translation id="3488065109653206955">Parcialmente activado</translation>
 <translation id="3492882532495507361">Una oficina <ph name="OFFICE_STYLE" /> con tonos <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">La Chromebook mide los datos. Pueden diferir de los datos del proveedor.</translation>
@@ -442,6 +447,7 @@
 <translation id="3621072146987826699">elefantes</translation>
 <translation id="3632579075709132555">Activar o desactivar la Pantalla de privacidad</translation>
 <translation id="3651050199673793219">Selecciona una unidad de temperatura</translation>
+<translation id="3661106764436337772">Escribe más rápido y con más confianza</translation>
 <translation id="3662461537616691585">borgoña y granate</translation>
 <translation id="3668449597372804501">Fondo de pantalla Flujo de nubes</translation>
 <translation id="3675132884790542448">cerdos</translation>
@@ -534,7 +540,6 @@
 <translation id="4227825898293920515">La contraseña caduca en <ph name="TIME" /></translation>
 <translation id="4238516577297848345">No hay trabajos de impresión en curso</translation>
 <translation id="4239069858505860023">GPRS</translation>
-<translation id="4244962993387259361">Necesitas al menos 500 MB libres para ejecutar una prueba de memoria. Para liberar espacio, ve a Configuración &gt; Administración de almacenamiento.</translation>
 <translation id="4250229828105606438">Captura de pantalla</translation>
 <translation id="4251839292699800785">Oficina elegante</translation>
 <translation id="4258281355379922695">Latencia de HTTP</translation>
@@ -877,6 +882,7 @@
 <translation id="6235460611964961764">Restablecer el uso de datos manualmente</translation>
 <translation id="6243280677745499710">Establecido actualmente</translation>
 <translation id="6250316632541035980">tocino y huevos</translation>
+<translation id="6255213378196499011">Configuración de Ayúdame a escribir</translation>
 <translation id="6275224645089671689">Flecha hacia la derecha</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -1153,7 +1159,6 @@
 <translation id="780301667611848630">No, gracias</translation>
 <translation id="7805768142964895445">Estado</translation>
 <translation id="7813073042185856802">una montaña</translation>
-<translation id="7819831665603418705">Usa una plantilla</translation>
 <translation id="7819857487979277519">PSK (WPA o RSN)</translation>
 <translation id="7824219488248240180">postimpresionista</translation>
 <translation id="7828503206075800057">Una cafetería <ph name="CAFE_TYPE" /> <ph name="CAFE_STYLE" /></translation>

@@ -114,14 +114,12 @@ Pethau i'w hystyried:
 <translation id="3901001113120561395">Manteisio i'r eithaf ar Chrome.</translation>
 <translation id="3913386780052199712">Wedi mewngofnodi i Chrome</translation>
 <translation id="3967382818307165056">Rheoli Dulliau Talu yn Chrome</translation>
-<translation id="3980220367029651214">Rydych yn newid cyfrifon cysoni o <ph name="USER_EMAIL1" /> i <ph name="USER_EMAIL2" />. Mae eich data Chrome presennol yn cael eu rheoli gan <ph name="DOMAIN" />. Bydd hyn yn dileu eich data o'r ddyfais hon, ond bydd eich data yn aros yn <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Mae eich sefydliad yn gofyn i chi barhau i fod wedi'ch allgofnodi o Chrome.</translation>
 <translation id="3988789688219830639">Nid oes gan Google Chrome fynediad at eich lluniau na fideos. Galluogwch fynediad yn Gosodiadau iOS &gt; Preifatrwydd &gt; Lluniau.</translation>
 <translation id="4064699917955374540">I ddefnyddio a chadw data Chrome yn eich Cyfrif Google, cadarnhewch mai chi sydd yno.</translation>
 <translation id="4067858366537947361">Agor Tab Anhysbys Chrome</translation>
 <translation id="4093042601582616698">Gwneud Chrome yn Borwr Diofyn i chi?</translation>
 <translation id="417201473131094001">Ni chefnogir ar Chrome Canary</translation>
-<translation id="4233521129555661685">Roedd <ph name="USER_EMAIL1" /> yn defnyddio Chrome a gadawodd nodau tudalen, cyfrineiriau, a gosodiadau eraill ar y ddyfais hon.</translation>
 <translation id="424864128008805179">Allgofnodi o Chrome?</translation>
 <translation id="4251174643044751591">Yn Agor Y Dudalen Gosodiad Dulliau Talu yn Chrome.</translation>
 <translation id="4453284704333523777">Rheoli Gosodiadau Chrome</translation>
@@ -240,7 +238,6 @@ Am ragor o osodiadau sy'n defnyddio data i wella'ch profiad Chrome, ewch i <ph n
 <translation id="769104993356536261">Defnyddio Chrome Actions ar iOS</translation>
 <translation id="7693590760643069321">Gallwch bellach ddefnyddio Chrome unrhyw bryd y byddwch yn tapio dolenni mewn negeseuon, dogfennau ac apiau eraill.</translation>
 <translation id="7698568245838009292">Hoffai Chrome gael mynediad at y Camera</translation>
-<translation id="7754633291442704733">Bydd gan <ph name="DOMAIN" /> eich sefydliad fynediad at eich data Chrome, nodau tudalen, hanes, cyfrineiriau a gosodiadau eraill rydych yn eu storio yn y cyfrif hwn. Pan fyddwch yn allgofnodi, bydd eich data yn cael eu clirio o'r ddyfais hon.  Fodd bynnag, bydd eich data yn parhau i gael ei storio yn eich Cyfrif Google a reolir a bydd ar gael i'ch sefydliad. Gall eich sefydliad hefyd osod polisïau defnyddwyr sy'n benodol i'r cyfrif hwnnw a all newid ymddygiad Chrome.</translation>
 <translation id="7780154209050837198">I gael y gorau o Chrome, mewngofnodwch i Chrome â'ch Cyfrif Google.</translation>
 <translation id="778855399387580014">Dechrau chwiliad mewn tab Chrome newydd.</translation>
 <translation id="7792140019572081272">Mae Chrome yn cadw'ch data sensitif yn ddiogel gyda Face ID.</translation>

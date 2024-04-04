@@ -114,14 +114,12 @@
 <translation id="3901001113120561395">‏ליהנות מכל מה ש-Chrome מציע.</translation>
 <translation id="3913386780052199712">‏נכנסת ל-Chrome</translation>
 <translation id="3967382818307165056">‏ניהול אמצעי תשלום ב-Chrome</translation>
-<translation id="3980220367029651214">‏מתבצעת החלפה של חשבונות סנכרון מ-<ph name="USER_EMAIL1" /> ל-<ph name="USER_EMAIL2" />. הנתונים הקיימים שלך ב-Chrome מנוהלים על-ידי <ph name="DOMAIN" />. פעולה זו תמחק את הנתונים שלך מהמכשיר הזה, אבל הם יישארו ב-<ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">‏לפי דרישת הארגון שלך, אין אפשרות להתחבר לחשבון ב-Chrome.</translation>
 <translation id="3988789688219830639">‏ל-Google Chrome אין גישה לתמונות או לסרטונים שלך. אפשר גישה ב'הגדרות iOS' &gt; 'פרטיות' &gt; 'תמונות'.</translation>
 <translation id="4064699917955374540">‏כדי להשתמש בנתוני Chrome ולשמור אותם בחשבון Google, עליך לאמת את הזהות שלך.</translation>
 <translation id="4067858366537947361">‏פתיחה של כרטיסייה פרטית ב-Chrome</translation>
 <translation id="4093042601582616698">‏להגדיר את Chrome כדפדפן ברירת המחדל?</translation>
 <translation id="417201473131094001">‏אין תמיכה ב-Chrome Canary</translation>
-<translation id="4233521129555661685">‏במכשיר הזה נעשה שימוש ב‑Chrome על ידי <ph name="USER_EMAIL1" /> ונשארו סימניות, סיסמאות והגדרות נוספות.</translation>
 <translation id="424864128008805179">‏האם לצאת מ-Chrome?</translation>
 <translation id="4251174643044751591">‏פתיחת דף ההגדרות של אמצעי תשלום ב-Chrome.</translation>
 <translation id="4453284704333523777">‏ניהול של הגדרות Chrome</translation>
@@ -240,7 +238,6 @@
 <translation id="769104993356536261">‏שימוש בפעולות ב-Chrome ב-iOS</translation>
 <translation id="7693590760643069321">‏עכשיו משתמשים ב-Chrome בכל פעם שמקישים על קישורים בהודעות, במסמכים ובאפליקציות אחרות.</translation>
 <translation id="7698568245838009292">‏ל-Chrome דרושה גישה למצלמה</translation>
-<translation id="7754633291442704733">‏לדומיין <ph name="DOMAIN" /> של הארגון תהיה גישה לנתונים, לסימניות, להיסטוריה, לסיסמאות ולהגדרות אחרות ששמרת בחשבון הזה ב-Chrome. לאחר היציאה מהחשבון, הנתונים יימחקו מהמכשיר הזה.  עם זאת, הנתונים יישארו בחשבון Google המנוהל שלך ויהיו זמינים לארגון שלך. בנוסף, לארגון יש אפשרות להגדיר מדיניות משתמש ספציפית לחשבון, שיכולה לשנות את אופן הפעולה של Chrome.</translation>
 <translation id="7780154209050837198">‏אפשר להיכנס ל-Chrome באמצעות חשבון Google כדי להפיק את המרב מ-Chrome.</translation>
 <translation id="778855399387580014">‏חיפוש בכרטיסיית Chrome חדשה.</translation>
 <translation id="7792140019572081272">‏Chrome שומר על האבטחה של מידע אישי רגיש באמצעות Face ID.</translation>

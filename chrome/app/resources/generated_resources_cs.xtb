@@ -1522,7 +1522,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2127372758936585790">Nabíječka má příliš nízký výkon</translation>
 <translation id="212862741129535676">Procentuální zastoupení stavů frekvence</translation>
 <translation id="212876957201860463">Probíhá příprava na nastavení mobilního zařízení...</translation>
-<translation id="2130909682040406368">Další informace o používání nástrojů s podporou umělé inteligence</translation>
 <translation id="2131077480075264">Aplikaci <ph name="APP_NAME" /> nelze nainstalovat, protože není povolena rozhraním <ph name="IMPORT_NAME" /></translation>
 <translation id="2133775869826239001">Vyberte další funkce, které chcete nastavit</translation>
 <translation id="2133857665503360653">Zkusit znovu otevřít soubor <ph name="FILE_NAME" /></translation>
@@ -3511,6 +3510,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3659550105763988702">Přístupový klíč pro <ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">Zadali jste příliš mnohokrát nesprávný přístupový kód. Zkuste to znovu později</translation>
 <translation id="3660234220361471169">Nedůvěryhodný</translation>
+<translation id="3661106764436337772">Pište rychleji a s větší jistotou</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Bylo nalezeno 1 existující heslo}few{Byla nalezena {NUM_PASSWORDS} existující hesla}many{Bylo nalezeno {NUM_PASSWORDS} existujícího hesla}other{Bylo nalezeno {NUM_PASSWORDS} existujících hesel}}</translation>
 <translation id="3662207097851752847">Potvrďte na telefonu svůj účet Google</translation>
 <translation id="3663417513679360795">Další informace o zapnutí standardního předběžného načítání</translation>
@@ -4487,7 +4487,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4388650384344483842">Použijte alespoň 8 znaků</translation>
 <translation id="4389091756366370506">Uživatel <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> a další přepínače<ph name="NUMBER_OF_OTHER_SWITCHES" /></translation>
-<translation id="4390569024397171409">Instalace aplikace do zařízení <ph name="DEVICE_TYPE" /></translation>
 <translation id="439266289085815679">Konfiguraci rozhraní Bluetooth spravuje <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Upravit konfigurační soubor</translation>
 <translation id="4393102500004843976">hledat + shift + <ph name="TOP_ROW_KEY" /></translation>
@@ -7996,7 +7995,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7168109975831002660">Minimální velikost písma</translation>
 <translation id="7169122689956315694">Zapnout oznámení o zařízeních v okolí</translation>
 <translation id="7170236477717446850">Profilová fotka</translation>
-<translation id="7170751905948784001">Informace pro vývojáře:</translation>
 <translation id="7171000599584840888">Přidat profil…</translation>
 <translation id="7171259390164035663">Neregistrovat</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Přidat kartu do nové skupiny}few{Přidat karty do nové skupiny}many{Přidat karty do nové skupiny}other{Přidat karty do nové skupiny}}</translation>
@@ -8472,7 +8470,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7532009420053991888">Aplikace <ph name="LINUX_APP_NAME" /> neodpovídá. Chcete-li ji zavřít, vyberte Ukončit aplikaci.</translation>
 <translation id="7535730537657706072">Pokud ze zařízení chcete vymazat historii anonymního prohlížení, zavřete všechny anonymní karty</translation>
 <translation id="7536815228183532290">Jste přihlášeni jako <ph name="EMAIL" /></translation>
-<translation id="7537182889548466084">Získáte návrhy skupin karet s podobnými kartami. Vaše otevřené karty a názvy se odesílají do Googlu a mohou být za účelem vylepšení této funkce zkontrolovány lidmi.</translation>
 <translation id="7538013435257102593">Tento typ souboru se běžně nestahuje a může být nebezpečný</translation>
 <translation id="7540972813190816353">Při kontrole aktualizací došlo k chybě: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232">Organizace <ph name="MANAGER" /> toto zařízení převedla na předchozí verzi. Uložte důležité soubory a poté zařízení restartujte. Veškerá data zařízení budou vymazána.</translation>

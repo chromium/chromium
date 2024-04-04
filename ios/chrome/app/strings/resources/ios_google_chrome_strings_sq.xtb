@@ -113,14 +113,12 @@ Gjëra për të pasur parasysh:
 <translation id="3901001113120561395">Përfito sa më shumë nga Chrome.</translation>
 <translation id="3913386780052199712">Identifikuar në Chrome</translation>
 <translation id="3967382818307165056">Menaxho mënyrat e pagesës në Chrome</translation>
-<translation id="3980220367029651214">Po i ndërron llogaritë e sinkronizimit nga <ph name="USER_EMAIL1" /> te <ph name="USER_EMAIL2" />. Të dhënat ekzistuese të Chrome po menaxhohen nga <ph name="DOMAIN" />. Kjo do t'i fshijë të dhënat e tua nga kjo pajisje, por të dhënat e tua do të mbeten në <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Organizata jote kërkon që të qëndrosh i dalë nga Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome nuk ka qasje te fotografitë apo videot e tua. Aktivizo qasjen te Cilësimet e iOS &gt; Privatësia &gt; Fotografitë.</translation>
 <translation id="4064699917955374540">Për të përdorur dhe për të ruajtur të dhënat e Chrome në "Llogarinë tënde të Google", verifiko që je ti.</translation>
 <translation id="4067858366537947361">Hap skedën "e fshehtë" në Chrome</translation>
 <translation id="4093042601582616698">Të bëhet Chrome shfletuesi yt i parazgjedhur?</translation>
 <translation id="417201473131094001">Nuk mbështetet në Chrome Canary</translation>
-<translation id="4233521129555661685"><ph name="USER_EMAIL1" /> po përdorte Chrome dhe ka lënë faqeshënues, fjalëkalime dhe cilësime të tjera në këtë pajisje.</translation>
 <translation id="424864128008805179">Do të dalësh nga Chrome?</translation>
 <translation id="4251174643044751591">Hap faqen e cilësimit të mënyrës së pagesës në Chrome.</translation>
 <translation id="4453284704333523777">Menaxho cilësimet e Chrome</translation>
@@ -239,7 +237,6 @@ Për më shumë cilësime që përdorin të dhënat për të përmirësuar përv
 <translation id="769104993356536261">Përdor "Veprimet në Chrome" në iOS</translation>
 <translation id="7693590760643069321">Tani mund të përdorësh Chrome sa herë që troket te lidhjet në mesazhe, dokumente dhe aplikacione të tjera.</translation>
 <translation id="7698568245838009292">Chrome dëshiron të ketë qasje te kamera</translation>
-<translation id="7754633291442704733">Organizata jote <ph name="DOMAIN" /> do të ketë qasje te të dhënat, faqeshënuesit, historiku, fjalëkalimet dhe cilësimet e tua të tjera të Chrome që ti ruan në këtë llogari. Kur të dalësh nga llogaria, të dhënat e tua do të pastrohen nga kjo pajisje.  Sidoqoftë, të dhënat e tua do të qëndrojnë të ruajtura në "Llogarinë tënde të menaxhuar të Google" dhe do të jenë të disponueshme për organizatën tënde. Organizata jote mund të caktojë po ashtu politika përdoruesi specifike për atë llogari që mund të ndryshojnë sjelljen e Chrome.</translation>
 <translation id="7780154209050837198">Për të marrë maksimumin nga Chrome, identifikohu në Chrome me "Llogarinë tënde të Google".</translation>
 <translation id="778855399387580014">Nis një kërkim në një skedë të re Chrome.</translation>
 <translation id="7792140019572081272">Chrome i mban të dhënat e tua delikate të sigurta me Face ID.</translation>

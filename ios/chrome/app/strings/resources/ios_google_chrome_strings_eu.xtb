@@ -114,14 +114,12 @@ Kontuan hartu beharrekoak:
 <translation id="3901001113120561395">Atera ahalik eta etekin handiena Chrome-ri.</translation>
 <translation id="3913386780052199712">Chrome-n saioa hasita daukazu</translation>
 <translation id="3967382818307165056">Kudeatu ordainketa-metodoak Chrome-n</translation>
-<translation id="3980220367029651214"><ph name="USER_EMAIL2" /> ezarri duzu sinkronizazio-kontu gisa, orain arte zenerabilen <ph name="USER_EMAIL1" /> kontuaren ordez. Lehendik dituzun Chrome datuak <ph name="DOMAIN" /> domeinuak kudeatzen ditu. Horrela, datuak gailutik ezabatuko dira, baina <ph name="USER_EMAIL1" /> kontuan egoten jarraituko dute.</translation>
 <translation id="3984746313391923992">Chrome-n saioa amaituta edukitzea eskatzen dizu zure erakundeak.</translation>
 <translation id="3988789688219830639">Google Chrome-k ez du argazki eta bideoetarako sarbiderik. Gaitu ezazu iOS sistemako Settings &gt; Privacy &gt; Photos atalean.</translation>
 <translation id="4064699917955374540">Chrome-ko datuak Google-ko kontuan gordetzeko eta erabiltzeko, egiaztatu zeu zarela.</translation>
 <translation id="4067858366537947361">Ireki Chrome-ko ezkutuko moduko fitxa bat</translation>
 <translation id="4093042601582616698">Chrome arakatzaile lehenetsi bihurtu nahi duzu?</translation>
 <translation id="417201473131094001">Ez da bateragarria Chrome Canary-rekin</translation>
-<translation id="4233521129555661685"><ph name="USER_EMAIL1" /> Chrome-ren erabiltzailea zenez, laster-markak, pasahitzak eta beste ezarpena batzuk utzi ditu gailuan.</translation>
 <translation id="424864128008805179">Chrome-ko saioa amaitu nahi duzu?</translation>
 <translation id="4251174643044751591">Chrome-ko ordainketa-metodoen ezarpenen orria irekitzen du.</translation>
 <translation id="4453284704333523777">Kudeatu Chrome-ren ezarpenak</translation>
@@ -240,7 +238,6 @@ Chrome-ren erabilera hobetzeko datuak erabiltzen dituzten ezarpen gehiago ikuste
 <translation id="769104993356536261">Erabili Chrome-ren Ekintzak iOS-en</translation>
 <translation id="7693590760643069321">Orain, Chrome erabili ahalko duzu mezuetan, dokumentuetan eta aplikazioetan estekak sakatzen dituzunean.</translation>
 <translation id="7698568245838009292">Chrome-k kamera atzitu nahi du</translation>
-<translation id="7754633291442704733">Chrome-ko datuak, laster-markak, historia, pasahitzak eta kontu honetan gordetzen dituzun bestelako ezarpenak atzitu ahalko ditu zure erakundeak (<ph name="DOMAIN" />). Saioa amaitzen duzunean, datuak garbitu egingo dira gailu honetatik.  Hala ere, Google-ko kontu kudeatuan jarraituko dute, eta erakundea haiek atzitzeko gai izango da. Halaber, erabiltzaile-gidalerro jakin batzuk ezar ditzake erakundeak kontu horretarako, eta gidalerro horiek Chrome-ren portaera alda dezakete.</translation>
 <translation id="7780154209050837198">Chrome-ri etekinik handiena ateratzeko, hasi saioa Chrome-n Google-ko kontuarekin.</translation>
 <translation id="778855399387580014">Hasi bilaketa Chrome-ren fitxa berri batean.</translation>
 <translation id="7792140019572081272">Chrome-k Face ID bidez babesten ditu zure kontuzko datuak.</translation>

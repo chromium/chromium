@@ -115,6 +115,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1383597849754832576">Ekki er hægt að sækja talskrár. Reyndu aftur síðar.</translation>
 <translation id="1383876407941801731">Leita</translation>
 <translation id="1391102559483454063">Kveikt</translation>
+<translation id="1394698770495054737">Algjör óskýrleiki</translation>
 <translation id="1407069428457324124">Dökkt þema</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Notaðu örvalyklana til að fletta á milli daga.</translation>
 <translation id="141170878022560212">Miðhnappur</translation>
@@ -441,6 +442,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2841907151129139818">Skipt yfir í spjaldtölvustillingu</translation>
 <translation id="2844169650293029770">USB-C tæki (tengi vinstra megin að framan)</translation>
 <translation id="2844350028562914727">upplýsingar</translation>
+<translation id="2847759467426165163">Senda út í</translation>
 <translation id="2848120746144143659">Ýttu á Enter til að taka skjámynd af öllum skjánum</translation>
 <translation id="2849936225196189499">Hætta</translation>
 <translation id="2860184359326882502">Besta samsvörun</translation>
@@ -478,6 +480,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="3009958530611748826">Veldu möppu til að vista í</translation>
 <translation id="301282384882049174">Deilt af stjórnanda</translation>
 <translation id="301584155502740476">Sýna upplýsingar um heitan reit. Slökkt er á heitum reit.</translation>
+<translation id="3017079585324758401">Bakgrunnur</translation>
 <translation id="3018135054368884502">Spóla áfram í efni</translation>
 <translation id="3033545621352269033">Kveikt</translation>
 <translation id="3033912566804961911">Sameina með <ph name="DESK_NAME" /></translation>
@@ -954,6 +957,7 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="4798888871844665150">Afritað atriði þegar á klippiborði. Notaðu <ph name="SHORTCUT_KEY_NAME" /> + V til að skoða.</translation>
 <translation id="479989351350248267">leita</translation>
 <translation id="4804818685124855865">Aftengja</translation>
+<translation id="4806631651704497161">Léttur óskýrleiki</translation>
 <translation id="4813311884204119883">Dragðu tengilinn yfir á auðan hluta á fliparæmunni</translation>
 <translation id="4814539958450445987">Innskráningarskjár</translation>
 <translation id="481455355267255546">Næst á dagskrá</translation>
@@ -1039,7 +1043,6 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="5104236669533825617">Ekki er hægt að búa til skjáupptöku</translation>
 <translation id="5107522548814527560">Vefur</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
-<translation id="5111930673176965299">Óskýr bakgrunnur</translation>
 <translation id="5117590920725113268">Sýna næsta mánuð</translation>
 <translation id="5121628974188116412">Fara neðst á síðu</translation>
 <translation id="5122517996953421795">Forskoðun <ph name="DESK_NAME" />. Óvirkt skrifborð.</translation>

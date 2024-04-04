@@ -114,14 +114,12 @@ Aspetti da considerare:
 <translation id="3901001113120561395">Usa al meglio Chrome.</translation>
 <translation id="3913386780052199712">Accesso a Chrome eseguito</translation>
 <translation id="3967382818307165056">Gestisci i metodi di pagamento in Chrome</translation>
-<translation id="3980220367029651214">Stai per cambiare account di sincronizzazione, passando dall'account <ph name="USER_EMAIL1" /> all'account <ph name="USER_EMAIL2" />. I tuoi attuali dati di Chrome vengono gestiti da <ph name="DOMAIN" />. I dati verranno eliminati da questo dispositivo, ma rimarranno memorizzati nell'account <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">La tua organizzazione ti richiede di non effettuare l'accesso a Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome non ha accesso alle tue foto o ai tuoi video. Attiva l'accesso in Impostazioni iOS &gt; Privacy &gt; Foto.</translation>
 <translation id="4064699917955374540">Per usare e salvare i dati di Chrome nel tuo Account Google, verifica la tua identità.</translation>
 <translation id="4067858366537947361">Apri la scheda di navigazione in incognito Chrome</translation>
 <translation id="4093042601582616698">Vuoi impostare Chrome come browser predefinito?</translation>
 <translation id="417201473131094001">Non supportata su Chrome Canary</translation>
-<translation id="4233521129555661685"><ph name="USER_EMAIL1" /> stava usando Chrome e ha lasciato preferiti, password e altre impostazioni su questo dispositivo.</translation>
 <translation id="424864128008805179">Uscire da Chrome?</translation>
 <translation id="4251174643044751591">Apre la pagina delle impostazioni dei metodi di pagamento in Chrome.</translation>
 <translation id="4453284704333523777">Gestisci le impostazioni di Chrome</translation>
@@ -240,7 +238,6 @@ Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza co
 <translation id="769104993356536261">Usa la funzionalità Azioni di Chrome su iOS</translation>
 <translation id="7693590760643069321">Ora puoi usare Chrome ogni volta che tocchi i link in messaggi, documenti e altre app.</translation>
 <translation id="7698568245838009292">Chrome vorrebbe accedere alla fotocamera</translation>
-<translation id="7754633291442704733">La tua organizzazione <ph name="DOMAIN" /> avrà accesso ai dati, ai preferiti, alla cronologia, alle password e ad altre impostazioni di Chrome memorizzate in questo account. Quando esci, i dati verranno cancellati da questo dispositivo.  Tuttavia, i tuoi dati rimarranno memorizzati nel tuo Account Google gestito e saranno disponibili per la tua organizzazione. La tua organizzazione può anche impostare criteri relativi agli utenti specifici per l'account, in grado di modificare il comportamento di Chrome.</translation>
 <translation id="7780154209050837198">Accedi con il tuo Account Google a Chrome per usare al meglio questo browser.</translation>
 <translation id="778855399387580014">Avvia una ricerca in una nuova scheda di Chrome.</translation>
 <translation id="7792140019572081272">Chrome protegge i tuoi dati sensibili con Face ID.</translation>

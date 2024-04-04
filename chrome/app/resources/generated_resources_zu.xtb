@@ -1533,7 +1533,6 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2127372758936585790">Ishaja yamandla aphansi</translation>
 <translation id="212862741129535676">Amaphesenti wokuthatha indawo yesimo esijwayelekile</translation>
 <translation id="212876957201860463">Ilungisela ukusetha idivayisi yakho yeseli...</translation>
-<translation id="2130909682040406368">Funda kabanzi ngokusebenzisa amathuluzi we-AI</translation>
 <translation id="2131077480075264">Ayikwazi ukufaka i-"<ph name="APP_NAME" />" ngoba ayivunyelwe yi-"<ph name="IMPORT_NAME" />"</translation>
 <translation id="2133775869826239001">Khetha izakhi ezengeziwe ozozimisa</translation>
 <translation id="2133857665503360653">Phinda uzame i-<ph name="FILE_NAME" /></translation>
@@ -3530,6 +3529,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="3659550105763988702">Sebenzisa ukhiye wakho wokudlula we-<ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">Ufake ikhodi yokufinyelela engalungile izikhathi eziningi kakhulu. Zama futhi ngemuva kwesikhathi</translation>
 <translation id="3660234220361471169">Okungathenjiwe</translation>
+<translation id="3661106764436337772">Bhala ngokushesha nangokuzethemba okwengeziwe</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Iphasiwedi e-1 ekhona etholiwe}one{Amaphasiwedi angu-{NUM_PASSWORDS} akhona atholiwe}other{Amaphasiwedi angu-{NUM_PASSWORDS} akhona atholiwe}}</translation>
 <translation id="3662207097851752847">Qinisekisa i-Google Account yakho kufoni yakho</translation>
 <translation id="3663417513679360795">Olunye ulwazi mayelana nokuvula ukulayisha ngaphambilini okujwayelekile</translation>
@@ -4507,7 +4507,6 @@ Lokhu kungafaka ulwazi mayelana nesofthiwe efakiwe, amafayela, ibhrawuza yakho, 
 <translation id="4388650384344483842">Sebenzisa okungenani izinhlamvu eziyi-8</translation>
 <translation id="4389091756366370506">Umsebenzisi ongu-<ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" />, kanye namaswishi angu-<ph name="NUMBER_OF_OTHER_SWITCHES" /> ngaphezulu</translation>
-<translation id="4390569024397171409">Faka i-app ku-<ph name="DEVICE_TYPE" /> yakho</translation>
 <translation id="439266289085815679">Ukulungiswa kwe-Bluetooth kulawula ngu-<ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Hlela ifayela lokulungiselelwa</translation>
 <translation id="4393102500004843976">sesha + u-shift + <ph name="TOP_ROW_KEY" /></translation>
@@ -8021,7 +8020,6 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="7168109975831002660">Usayizi omncane wefonti</translation>
 <translation id="7169122689956315694">Vula isaziso uma amadivayisi aseduze</translation>
 <translation id="7170236477717446850">Isithombe sephrofayela</translation>
-<translation id="7170751905948784001">Ulwazi lonjiniyela:</translation>
 <translation id="7171000599584840888">Engeza iphrofayela...</translation>
 <translation id="7171259390164035663">Ungahbalisi</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Engeza ithebhu eqenjini elisha}one{Engeza amathebhu eqenjini elisha}other{Engeza amathebhu eqenjini elisha}}</translation>
@@ -8499,7 +8497,6 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="7532009420053991888">I-<ph name="LINUX_APP_NAME" /> ayiphenduli. Khetha okuthi "Phoqa ukuvala" ukuze uvale uhlelo lokusebenza.</translation>
 <translation id="7535730537657706072">Ukuze usule umlando wokuphequlula we-Incognito kudivayisi yakho, vala wonke amathebhu we-incognito</translation>
 <translation id="7536815228183532290">Ungene ngemvume njengo-<ph name="EMAIL" /></translation>
-<translation id="7537182889548466084">Uzothola iziphakamiso zeqembu lethebhu ezihlanganisa amathebhu afanayo. Amathebhu akho avuliwe nezihloko zithunyelwa ku-Google, futhi zingabuyekezwa abantu ukuze kuthuthukiswe lesi sakhi.</translation>
 <translation id="7538013435257102593">Lolu hlobo lwefayela aluvamile ukudawunilodwa futhi lungaba yingozi</translation>
 <translation id="7540972813190816353">Kuvele iphutha ngenkathi kuhlolelwa izibuyekezo: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232">I-<ph name="MANAGER" /> ibeke le divayisi ohlotsheni lwangaphambilini. Sicela ulondoloze amafayela abalulekile, bese uqala kabusha. Yonke idatha ekudivayisi izosulwa.</translation>

@@ -59,7 +59,6 @@
 <translation id="1258753120186372309">Дудл Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1263063910731171689">Цяпер вы будзеце бачыць змесціва канала "<ph name="SITE_NAME" />" і інфармацыю пра яго ў раздзеле "Вы падпісаны". Сайты і вынікі пошуку, на якія вы падпісаны, захоўваюцца ў вашым Уліковым запісе Google. Падпіскамі можна кіраваць у наладах у любы час.</translation>
 <translation id="1263231323834454256">Спіс чытання</translation>
-<translation id="1266864766717917324">Не ўдалося абагуліць змесціва наступнага тыпу: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269129608791067105">Ваша гісторыя знаходзіцца тут</translation>
 <translation id="1273937721055267968">Заблакіраваць <ph name="DOMAIN" /></translation>
 <translation id="1283039547216852943">Дакраніцеся, каб разгарнуць</translation>
@@ -96,7 +95,6 @@
 <translation id="1436784010935106834">Выдалены</translation>
 <translation id="1437543266176261764">Выконваецца ў <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Упарадкоўвайце тавары, за якімі сочыце, у Закладках</translation>
-<translation id="1450753235335490080">Не ўдалося абагуліць наступнае змесціва: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1462833127986525564">Звяжыце Chrome з іншымі сэрвісамі Google, калі вы хочаце, каб яны абменьваліся данымі для персаналізацыі змесціва</translation>
 <translation id="1466383950273130737">Выберыце мову Chrome</translation>
 <translation id="1477626028522505441">Збой спампоўкі файла "<ph name="FILE_NAME" />" з-за праблем на серверы.</translation>
@@ -203,7 +201,6 @@
 <translation id="2093731487903423814">апошнія 15 хвілін</translation>
 <translation id="2096012225669085171">Сінхранізацыя і персаналізацыя на ўсіх прыладах</translation>
 <translation id="2100273922101894616">Аўтаматычны ўваход</translation>
-<translation id="2100314319871056947">Паспрабуйце абагуліць тэкст меншымі кавалкамі</translation>
 <translation id="2111511281910874386">Перайдзіце на старонку</translation>
 <translation id="2119609734654412418">Вашы закладкі знаходзяцца тут</translation>
 <translation id="2122601567107267586">Не ўдалося адкрыць праграму</translation>
@@ -376,7 +373,6 @@
 <translation id="2981364137500752533">Вы можаце адкрываць не больш за 5 вокнаў.</translation>
 <translation id="2983102365694924129">Выкарыстоўваюцца даныя пра вашы дзеянні на сайце. Гэта налада выключана.</translation>
 <translation id="2984978667043170458">Дадаваць кантэкст у пошукавыя запыты Google</translation>
-<translation id="2987620471460279764">Тэкст, абагулены з іншай прылады</translation>
 <translation id="2989523299700148168">Нядаўнія</translation>
 <translation id="2992473221983447149">Апісанні відарысаў</translation>
 <translation id="2996291259634659425">Стварыць фразу-пароль</translation>
@@ -384,7 +380,6 @@
 <translation id="2996932914629936323">З усіх сінхранізаваных прылад будзе выдалена гісторыя</translation>
 <translation id="2997081575621687554">Калі сайт Google па спасылках на ім запытвае перадзагрузку старонак у прыватным рэжыме, Chrome шыфруе і перадзагружае старонкі праз серверы Google, не выкарыстоўваючы файлы cookie. Дзякуючы гэтаму перадзагружаны сайт не атрымлівае звестак пра вашу асобу.</translation>
 <translation id="3003253259757197230">URL-адрасы старонак, якія вы наведваеце, адпраўляюцца ў Google, каб можна было прадказваць, якія сайты вы можаце наведаць далей, і паказваць вам дадатковую інфармацыю пра старонку, на якой вы знаходзіцеся</translation>
-<translation id="3016635187733453316">Праверце, ці падключана прылада да інтэрнэту</translation>
 <translation id="3026955690410463085">Абагуліць разам са спасылкай</translation>
 <translation id="3027644380269727216">Выкарыстоўваюцца даныя пра вашы дзеянні на сайце. Гэта налада ўключана.</translation>
 <translation id="3029276696788198026">Без перадзагрузкі</translation>
@@ -447,7 +442,6 @@
 <translation id="3374023511497244703">Закладкі, гісторыя, паролі і іншыя даныя Chrome больш не будуць сінхранізавацца з Уліковым запісам Google</translation>
 <translation id="3384347053049321195">Абагуліць відарыс</translation>
 <translation id="3387650086002190359">Не ўдалося спампаваць файл "<ph name="FILE_NAME" />" з-за памылак файлавай сістэмы.</translation>
-<translation id="3389286852084373014">Тэкст занадта вялікі</translation>
 <translation id="3398320232533725830">Адкрыць менеджар закладак</translation>
 <translation id="3407392651057365886">Перадзагружаецца больш старонак. Перадзагрузка можа ажыццяўляцца праз серверы Google па запыце іншых сайтаў.</translation>
 <translation id="3414952576877147120">Памер:</translation>
@@ -800,7 +794,6 @@
 <translation id="5180063720319462041">Старонка перакладзена на наступную мову: <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="5186634140793586141">Кіраваць тэмамі і пошукавымі запытамі, якімі вы цікавіцеся</translation>
 <translation id="5191251636205085390">Даведайцеся пра новыя тэхналогіі, якія прыходзяць на змену староннім файлам cookie, а таксама пра спосабы кіравання імі</translation>
-<translation id="5193988420012215838">Скапіравана ў буфер абмену</translation>
 <translation id="5204967432542742771">Увядзіце пароль</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Ідзе спампоўванне файла…}one{Ідзе спампоўванне # файла…}few{Ідзе спампоўванне # файлаў…}many{Ідзе спампоўванне # файлаў…}other{Ідзе спампоўванне # файла…}}</translation>
 <translation id="5210286577605176222">Перайсці на папярэднюю ўкладку</translation>
@@ -825,7 +818,6 @@
 <translation id="5342314432463739672">Запыты дазволаў</translation>
 <translation id="534580735623577507">Няма сайтаў за <ph name="TIME_PERIOD" /></translation>
 <translation id="5355191726083956201">Палепшаная абарона ўключана</translation>
-<translation id="5361107212971249203">тэкст</translation>
 <translation id="5375577065097716013">Шукаць праз Аб'ектыў <ph name="BEGIN_NEW" />Навінка<ph name="END_NEW" /></translation>
 <translation id="5395376160638294582">Падбайце аб тым, каб заўсёды мець доступ да даных Chrome ва Уліковым запісе Google</translation>
 <translation id="539881862970320163">Прапанаваны надзейны пароль. Клавіятура схавана.</translation>
@@ -1209,7 +1201,6 @@
 <translation id="7221869452894271364">Перазагрузіце старонку</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Чакаецца 1 спампоўка}one{Чакаецца # спампоўка}few{Чакаецца # спампоўкі}many{Чакаецца # спамповак}other{Чакаецца # спампоўкі}}</translation>
 <translation id="72415438529550637">Прапанова пароля закрыта.</translation>
-<translation id="7248069434667874558">Праверце, ці ўключана на прыладзе "<ph name="TARGET_DEVICE_NAME" />" сінхранізацыя ў браўзеры Chrome</translation>
 <translation id="7252076891734325316">Размясціце тэлефон каля камп’ютара</translation>
 <translation id="7260367682327802201">На вашай прыладзе Android можа быць падобная налада. Калі вымярэнне паказчыкаў, звязаных з рэкламай, уключана ў Chrome і на вашай прыладзе Android, кампаніі змогуць ацэньваць эфектыўнасць рэкламы на сайтах, якія вы наведваеце, і ў праграмах, якімі вы карыстаецеся.</translation>
 <translation id="727288900855680735">Адправіць код <ph name="ONE_TIME_CODE" /> на сайт <ph name="ORIGIN" />?</translation>
@@ -1317,7 +1308,6 @@
 <translation id="7707922173985738739">Выкарыстоўваць мабільную перадачу даных</translation>
 <translation id="7709918231054955894">Праглядайце ўсе свае ўкладкі</translation>
 <translation id="7733878270780732638">Недастаткова месца на прыладзе.</translation>
-<translation id="7757787379047923882">Тэкст абагулены з прылады "<ph name="DEVICE_NAME" />"</translation>
 <translation id="7759809451544302770">Неабавязкова</translation>
 <translation id="7762668264895820836">SD-карта <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Дадаць адрас</translation>
@@ -1476,7 +1466,6 @@
 <translation id="8453310803815879010">Пачаць гульню з дыназаўрам</translation>
 <translation id="84594714173170813">Працягвайце выкарыстоўваць даныя Chrome ва Уліковым запісе Google</translation>
 <translation id="8460448946170646641">Праверка ключавых налад бяспекі і прыватнасці</translation>
-<translation id="8466613982764129868">Праверце, ці прылада "<ph name="TARGET_DEVICE_NAME" />" падключана да інтэрнэту</translation>
 <translation id="8473863474539038330">Адрасы і іншае</translation>
 <translation id="8478751349603791277">Кіруйце тым, як сінхранізаваная гісторыя выкарыстоўваецца для персаналізацыі іншых сэрвісаў Google</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>

@@ -41,6 +41,7 @@
 <translation id="102916930470544692">पासकी</translation>
 <translation id="1029317248976101138">झूम करा</translation>
 <translation id="1029526375103058355">क्लिक करण्यासाठी टॅप करा</translation>
+<translation id="1029724557649700742">नवीन वैशिष्ट्ये उपलब्ध होताच त्यांचा समावेश केला जाईल आणि ही वैशिष्ट्ये डिव्हाइसनुसार बदलू शकतात.</translation>
 <translation id="1031362278801463162">पूर्वावलोकन लोड करत आहे</translation>
 <translation id="1032605640136438169">कृपया नवीन अटींचे पुनरावलोकन करा</translation>
 <translation id="103279545524624934">Android ॲप्स लाँच करण्यासाठी डिस्क स्थान मोकळे करा.</translation>
@@ -1531,7 +1532,6 @@
 <translation id="2127372758936585790">निम्न-उर्जेचे चार्जर</translation>
 <translation id="212862741129535676">फ्रिक्वेन्सी स्थिती कब्जा टक्केवारी</translation>
 <translation id="212876957201860463">तुमचे मोबाइल डिव्हाइस सेट करण्यास तयार करत आहे…</translation>
-<translation id="2130909682040406368">AI टूल वापरण्याबद्दल अधिक जाणून घ्या</translation>
 <translation id="2131077480075264">"<ph name="IMPORT_NAME" />" द्वारे "<ph name="APP_NAME" />" ला अनुमती नसल्‍याने तो स्‍थापित करण्‍यात अक्षम</translation>
 <translation id="2133775869826239001">सेट करण्यासाठी आणखी वैशिष्ट्ये निवडा</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> लोड करण्याचा पुन्हा प्रयत्न करा</translation>
@@ -1570,6 +1570,7 @@
 <translation id="2155473371917268529">सध्याचे दृश्यमानता सेटिंग हे तुमची डिव्हाइस असे आहे</translation>
 <translation id="2155772377859296191"><ph name="WIDTH" /> x <ph name="HEIGHT" /> सारखे दिसते</translation>
 <translation id="2156294658807918600">सेवा कर्मचारी: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156707722163479690">शेअर केलेले टॅब स्क्रोल आणि झूम करण्याची अनुमती आहे</translation>
 <translation id="2156877321344104010">सुरक्षा तपासणी पुन्हा रन करा</translation>
 <translation id="2157474325782140681">अतिरिक्त वैशिष्‍ट्ये मिळवण्यासाठी, या Chromebook सोबत काम करणारे Dell डॉक स्टेशन वापरा.</translation>
 <translation id="215753907730220065">पूर्ण स्क्रीनमधून निर्गमन करा</translation>
@@ -1991,6 +1992,7 @@
 <translation id="2459706890611560967"><ph name="DEVICE_NAME" /> वर टॅब कास्ट करणे पुन्हा सुरू करा</translation>
 <translation id="2460356425461033301">तुमच्या ब्राउझर डेटाचा बॅकअप घ्या आणि तो कोणत्याही डिव्हाइसवर वापरा</translation>
 <translation id="2460482211073772897">इतर फोल्डरमध्ये</translation>
+<translation id="2461550163693930491">साइटना शेअर केलेले टॅब स्क्रोल आणि झूम करण्याची अनुमती देऊ नका</translation>
 <translation id="2461593638794842577">तुमचे पासवर्ड फक्त या डिव्हाइसवर सेव्ह करण्यासाठी तुम्ही हे सेटिंग बंद करू शकता</translation>
 <translation id="2462332841984057083">Steam आधीपासून सेट करत आहे. सेटअप पूर्ण होण्याची प्रतीक्षा करा.</translation>
 <translation id="2462724976360937186">प्रमाणन अधिकृतता की आयडी</translation>
@@ -2024,6 +2026,7 @@
 <translation id="2482895651873876648">टॅब गट <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> यामध्ये हलवला आहे</translation>
 <translation id="2483627560139625913">Chrome ब्राउझर सेटिंग्जमध्ये शोध इंजीन सेट करा</translation>
 <translation id="2483698983806594329">पडताळणी न केलेली फाइल डाउनलोड केली आहे</translation>
+<translation id="2484574361686148760">वायफाय डिरेक्ट च्या क्लायंटसंबंधित माहिती रिफ्रेश करा</translation>
 <translation id="2484743711056182585">मंजुरी काढून टाका</translation>
 <translation id="2484909293434545162">साइटने कुकी वापरल्यास, त्या येथे दिसतील</translation>
 <translation id="2484959914739448251">तुमच्या सिंक केलेल्या सर्व डिव्हाइसमधून आणि तुमच्या Google खात्यामधून ब्राउझ केलेला डेटा साफ करण्यासाठी, <ph name="BEGIN_LINK" />तुमचा पासफ्रेझ एंटर करा<ph name="END_LINK" />.</translation>
@@ -2217,6 +2220,7 @@
 <translation id="2629227353894235473">Android अ‍ॅप्स तयार करा</translation>
 <translation id="2629437048544561682">कॅन्व्हास साफ करा</translation>
 <translation id="2631498379019108537">शेल्फ मधील इनपुट पर्याय दर्शवा</translation>
+<translation id="2632176111713971407">साइट शेअर केलेल्या टॅबना स्क्रोल आणि झूम करण्याची विनंती करू शकतात</translation>
 <translation id="2633212996805280240">"<ph name="EXTENSION_NAME" />" काढून टाकायचे?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> इंस्टॉलेशन पूर्ण करू शकत नाही, परंतु ते त्याच्या डिस्क इमेजवरून चालत राहील.</translation>
 <translation id="2633764681656412085">FIDO</translation>
@@ -3523,6 +3527,7 @@
 <translation id="3659550105763988702">तुमची पासकी <ph name="APP_NAME" /> साठी वापरा</translation>
 <translation id="3659929705630080526">तुम्ही खूप वेळा चुकीचा अ‍ॅक्सेस कोड एंटर केला आहे. नंतर पुन्हा प्रयत्न करा</translation>
 <translation id="3660234220361471169">अविश्‍वासू</translation>
+<translation id="3661106764436337772">जलद आणि अधिक आत्मविश्वासाने लिहा</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{एक सद्य पासवर्ड आढळला आहे}other{{NUM_PASSWORDS} सद्य पासवर्ड आढळले आहेत}}</translation>
 <translation id="3662207097851752847">तुमच्या फोनवर तुमचे Google खाते कन्फर्म करा</translation>
 <translation id="3663417513679360795">साधारण प्रीलोड करणे सुरू करण्याबद्दल अधिक माहिती</translation>
@@ -3875,6 +3880,7 @@
 <translation id="3900966090527141178">पासवर्ड एक्सपोर्ट करा</translation>
 <translation id="3902789559055749153">तुम्हाला <ph name="APP_NAME" /> साठी कशाप्रकारे पासकी तयार करायची आहे ते निवडा</translation>
 <translation id="3903187154317825986">बिल्ट-इन कीबोर्ड</translation>
+<translation id="3903696968689283281">वायफाय डिरेक्ट च्या मालकांसंबंधित माहिती:</translation>
 <translation id="3904326018476041253">स्‍थान सेवा</translation>
 <translation id="3905761538810670789">अ‍ॅप दुरुस्त करा</translation>
 <translation id="3908288065506437185">गुप्त मोडमध्ये तृतीय पक्ष कुकी ब्लॉक करा</translation>
@@ -4498,7 +4504,6 @@
 <translation id="4388650384344483842">किमान आठ वर्ण वापरा</translation>
 <translation id="4389091756366370506">वापरकर्ता <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" />, आणि आणखी <ph name="NUMBER_OF_OTHER_SWITCHES" /> स्विच</translation>
-<translation id="4390569024397171409">तुमच्या<ph name="DEVICE_TYPE" /> वर अ‍ॅप इंस्टॉल करा</translation>
 <translation id="439266289085815679">ब्लूटूथ कॉन्फिगरेशन <ph name="USER_EMAIL" /> नियंत्रित करते.</translation>
 <translation id="4392896746540753732">कॉन्फिगरेशन फाइल संपादित करा</translation>
 <translation id="4393102500004843976">search + shift + <ph name="TOP_ROW_KEY" /></translation>
@@ -4528,6 +4533,7 @@
 <translation id="4409697491990005945">समास</translation>
 <translation id="4409779593816003679">पासवर्ड आणि ऑटोफिल</translation>
 <translation id="4410545552906060960">तुमचे डिव्हाइस अनलॉक करण्यासाठी पासवर्डऐवजी नंबर (पिन) वापरा. तुमचा पिन नंतर सेट करण्यासाठी, सेटिंग्जवर जा.</translation>
+<translation id="4411344321892622527">शेअर केलेले टॅब स्क्रोल आणि झूम करण्याची अनुमती नाही</translation>
 <translation id="4411578466613447185">कोड साइनर</translation>
 <translation id="4411719918614785832">या पासकी या कॉंप्युटरवर Windows Hello मध्ये सेव्ह केल्या जातात. त्या तुमच्या Google खाते मध्ये सेव्ह केल्या जात नाहीत.</translation>
 <translation id="4412544493002546580">पुन्हा प्रयत्न करा किंवा खालील उपलब्ध प्रेरणांपैकी एक निवडा.</translation>
@@ -6872,6 +6878,7 @@
 <translation id="6257602895346497974">सिंक सुरू करा…</translation>
 <translation id="625827534921607067">पूर्वी कनेक्ट केलेले किंवा कॉन्फिगर केलेले एकापेक्षा जास्त नेटवर्क उपलब्ध असल्यास, या नेटवर्कला प्राधान्य दिले जाईल</translation>
 <translation id="62586649943626337">टॅब गटांसह तुमचे टॅब संगतवार लावा</translation>
+<translation id="6259776178973198997">वायफाय डिरेक्ट च्या मालकांसंबंधित माहिती रिफ्रेश करा</translation>
 <translation id="6262371516389954471">तुमचे बॅकअप Google वर अपलोड केले जातात आणि तुमचा Google खाते पासवर्ड वापरून एंक्रिप्ट केले जातात.</translation>
 <translation id="6263082573641595914">Microsoft CA आवृत्ती</translation>
 <translation id="6263284346895336537">गंभीर नाही</translation>
@@ -7571,6 +7578,7 @@
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> मूळ म्हणून चालवणे शक्य नाही.</translation>
 <translation id="6812841287760418429">बदल ठेवा</translation>
 <translation id="6813907279658683733">संपूर्ण स्क्रीन</translation>
+<translation id="6814754908910736855">वायफाय डिरेक्ट च्या क्लायंटसंबंधित माहिती:</translation>
 <translation id="6815376457351236663">तरीही उघडा</translation>
 <translation id="6815787852028615386">ही फाइल फसवी आहे आणि तुमच्या डिव्हाइसमध्ये अनपेक्षित बदल करू शकते</translation>
 <translation id="6816097980753839617">निळा-पिवळा (तृतीयवर्ण दृष्टिक्षीणता)</translation>
@@ -8008,7 +8016,6 @@
 <translation id="7168109975831002660">किमान फॉंट आकार</translation>
 <translation id="7169122689956315694">डिव्‍हाइस जवळपास असतात, तेव्हा सूचना सुरू करा</translation>
 <translation id="7170236477717446850">प्रोफाइल फोटो</translation>
-<translation id="7170751905948784001">डेव्हलपरची माहिती:</translation>
 <translation id="7171000599584840888">प्रोफाइल जोडा…</translation>
 <translation id="7171259390164035663">नोंदणी करू नका</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{नवीन गटामध्ये टॅब जोडा}other{नवीन गटामध्ये टॅब जोडा}}</translation>
@@ -8441,6 +8448,7 @@
 <translation id="7501957181231305652">किंवा</translation>
 <translation id="7502220299952823578">"या साइट नेहमी अ‍ॅक्टिव्ह ठेवा" सूचीमध्ये जोडा</translation>
 <translation id="7502528909759062987"><ph name="DEVICE_NAME" /> वर टॅब कास्ट करणे थांबवा</translation>
+<translation id="7502804472671406749">शेअर केलेले टॅब स्क्रोल आणि झूम केले जाऊ शकतात</translation>
 <translation id="7503191893372251637">Netscape सर्टिफिकेट प्रकार</translation>
 <translation id="7503985202154027481">तुम्ही या साइटला भेट दिल्याचे रेकॉर्ड तुमच्या सिक्युरिटी कीवर ठेवले जातील.</translation>
 <translation id="7504145862399276792">या टॅबचा ऑडिओ म्यूट केला जात आहे</translation>
@@ -8485,7 +8493,6 @@
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> प्रतिसाद देत नाही. अ‍ॅप बंद करण्यासाठी "सक्तीने बंद करा" निवडा.</translation>
 <translation id="7535730537657706072">तुमच्या डिव्हाइसवरून गुप्त मोडमधील ब्राउझिंग इतिहास साफ करण्यासाठी सर्व गुप्त टॅब बंद करा</translation>
 <translation id="7536815228183532290"><ph name="EMAIL" /> म्हणून साइन इन केले आहे</translation>
-<translation id="7537182889548466084">तुम्हाला टॅब गट सूचना मिळतील ज्या समान टॅब गटबद्ध करतात. तुमचे खुले टॅब आणि शीर्षके Google कडे पाठवली जातात व या वैशिष्ट्यामध्ये सुधारणा करण्यासाठी मानवी परीक्षण केले जाऊ शकते.</translation>
 <translation id="7538013435257102593">हा फाइल प्रकार सामान्यतः डाउनलोड केला जात नाही आणि तो धोकादायक असू शकतो</translation>
 <translation id="7540972813190816353">अपडेट तपासताना एक एरर आली: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> यांनी हे डिव्हाइस मागील आवृत्तीवर स्विच केले आहे. कृपया महत्त्वाच्या फाइल सेव्ह करा, त्यानंतर रीस्टार्ट करा. डिव्हाइसवरील सर्व डेटा हटवला जाईल.</translation>
@@ -10779,6 +10786,7 @@
 <translation id="949807244219288032">हा टॅब HID डिव्हाइसशी कनेक्ट केलेला आहे</translation>
 <translation id="950079950995628542">"<ph name="PHONE_NAME" />" कडील</translation>
 <translation id="950307215746360464">सेटअप मार्गदर्शक</translation>
+<translation id="951273949038779544"><ph name="SITE_ACCESS" />. तुमच्या अ‍ॅडमिनिस्ट्रेटरद्वारे इंस्टॉल केले आहे</translation>
 <translation id="951991426597076286">नकार द्या</translation>
 <translation id="952471655966876828">डिव्हाइस हे सुरू केले जाईल किंवा वापरले जात असेल, तेव्हा आपोआप कनेक्ट होईल</translation>
 <translation id="953434574221655299">तुम्ही तुमचे डिव्हाइस सक्रियपणे वापरता तेव्हा जाणून घेण्याची अनुमती आहे</translation>

@@ -413,6 +413,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1734878702283171397">Probeer contact op te nemen met de systeembeheerder.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, verloopt op <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Computer</translation>
+<translation id="1739422091279046802">scrollen en zoomen</translation>
 <translation id="1741613555002899862">Moet gespecificeerd zijn en een geldige tekenreeks zijn als DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> is.</translation>
 <translation id="1743393865165844832">Beddengoed</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Hoe we deze gegevens gebruiken:<ph name="END_BOLD" /> Chrome registreert interessante onderwerpen terwijl je browst. Onderwerplabels zijn vooraf gedefinieerd en omvatten bijvoorbeeld Kunst en entertainment, Shopping en Sport. Later kan een site die je bezoekt Chrome om een aantal van je onderwerpen vragen (maar niet je browsegeschiedenis) om de advertenties te personaliseren die je te zien krijgt.</translation>
@@ -451,6 +452,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1812527064848182527">liggend</translation>
 <translation id="1812975699435941848">Gezondheidsvoorlichting en medische opleidingen</translation>
 <translation id="1813414402673211292">Browsegegevens wissen</translation>
+<translation id="1816436748874040213">Kan vragen om te scrollen en te zoomen op gedeelde tabbladen</translation>
 <translation id="1818522458013171885">Niet meer blokkeren</translation>
 <translation id="1818585559878922121">Documentaires</translation>
 <translation id="182139138257690338">automatische downloads</translation>
@@ -964,6 +966,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> wil de informatie gebruiken die over jou is opgeslagen</translation>
 <translation id="2839032553903800133">Meldingen geblokkeerd</translation>
 <translation id="2839501879576190149">Nepsite gedetecteerd</translation>
+<translation id="2843623755398178332">Scrollen en zoomen op je gedeelde tabblad?</translation>
 <translation id="2851291081585704741">Je bent offline</translation>
 <translation id="2856444702002559011">Cybercriminelen proberen mogelijk je gegevens van <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> te stelen (bijvoorbeeld wachtwoorden, berichten of creditcardgegevens). <ph name="BEGIN_LEARN_MORE_LINK" />Meer informatie<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2858134430383535011">200 x 300 mm</translation>
@@ -1056,6 +1059,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3023165109041533893">Met door sites voorgestelde advertenties worden je browsegeschiedenis en identiteit beschermd terwijl de sites je relevante advertenties kunnen laten zien. Op basis van je activiteit kan een site die je hebt bezocht gerelateerde advertenties voorstellen terwijl je browst. In de instellingen kun je een lijst van deze sites bekijken en ongewenste sites blokkeren.</translation>
 <translation id="3024663005179499861">Onjuist beleidstype</translation>
 <translation id="3030331669969285614">Deze flags voorkomen een schadelijke wijziging of maken deze ongedaan en zijn maar beperkte tijd beschikbaar.</translation>
+<translation id="3034526003882782781">Scrollen en zoomen toegestaan</translation>
 <translation id="3036894576201005614">Huishoudelijke schoonmaakbenodigdheden</translation>
 <translation id="3037177537145227281">Prijs wordt gevolgd</translation>
 <translation id="3037605927509011580">Asjemenou!</translation>
@@ -1334,6 +1338,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3567778190852720481">Kan niet inschrijven met werkaccount (werkaccount komt niet in aanmerking).</translation>
 <translation id="3567901620846335314">100 x 150 mm</translation>
 <translation id="3568886473829759308">Ga naar de website om de informatie, bronnen en services te bekijken die het bedrijf levert.</translation>
+<translation id="3570079787344939099">Scrollen en zoomen</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Toestaan voor deze site</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -1905,6 +1910,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4687718960473379118">Door sites voorgestelde advertenties</translation>
 <translation id="469028408546145398">Knop Incognitovensters sluiten. Activeer deze om alle momenteel geopende incognitovensters te sluiten.</translation>
 <translation id="4691093235373904540">Dakbedekking</translation>
+<translation id="4692623383562244444">Zoekmachines</translation>
 <translation id="4698692901173737941">Vechtsporten</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Team</translation>
@@ -2453,6 +2459,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5765072501007116331">Selecteer een adres om bezorgingsmethoden en vereisten te bekijken</translation>
 <translation id="57689295674415555">Virtueel kaartnummer niet ingevuld?</translation>
 <translation id="5772086939108830423">Een toegangscode gebruiken op een ander apparaat</translation>
+<translation id="5775734789739406956">Klik met de rechtermuisknop om je opgeslagen informatie aan elk formulier toe te voegen</translation>
 <translation id="5776313857861697733">Priority</translation>
 <translation id="5776574724412881956">Virtuele kaart niet ingevuld? Klik op Gegevens van virtuele kaart om deze naar het klembord te kopiëren. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">Experiment staat aan</translation>
@@ -2469,6 +2476,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="580241730938216256">Update starten</translation>
 <translation id="5803412860119678065">Wil je de gegevens van je <ph name="CARD_DETAIL" /> laten invullen?</translation>
 <translation id="5804241973901381774">Rechten</translation>
+<translation id="5806871454498484178">Scrollen en zoomen geblokkeerd</translation>
 <translation id="5808435672482059465">Je Chrome-geschiedenis bekijken</translation>
 <translation id="5810442152076338065">Je verbinding met <ph name="DOMAIN" /> is versleuteld via een verouderde Cipher Suite.</translation>
 <translation id="5813119285467412249">&amp;Opnieuw toevoegen</translation>
@@ -3464,6 +3472,7 @@ Aanvullende informatie:
 <translation id="7673278391011283842">Mailbox 6</translation>
 <translation id="7675325315208090829">Betaalmethoden beheren...</translation>
 <translation id="767550629621587224">Voorgesneden tabbladen</translation>
+<translation id="7675756033024037212">Scrollen en zoomen niet toegestaan</translation>
 <translation id="7676643023259824263">Zoeken naar klembordtekst, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Je browsegeschiedenis bekijken en beheren in de Chrome-instellingen</translation>
 <translation id="7679947978757153706">Honkbal</translation>

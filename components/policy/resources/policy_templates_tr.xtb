@@ -1843,7 +1843,6 @@ Bu politika ayarlandığında kullanıcı, değeri geçersiz kılamaz.
 Bu politika ayarlanmadan bırakılırsa gizlilik ekranı başta devre dışı bırakılır, ancak kullanıcı tarafından kontrol edilebilir.</translation>
 <translation id="2413899611035194909">Giriş ekranı sistem tepsisi menüsünde erişilebilirlik seçeneklerini göster</translation>
 <translation id="2415715982424988916">Keşfet (91 sürümünden itibaren desteklenir)</translation>
-<translation id="2419114151067000328">Ürün spesifikasyonları özelliği kullanıcılar tarafından kullanılamaz.</translation>
 <translation id="2420958105721932612">Bir uygulamanın nasıl yükleneceğini belirtir. AVAILABLE: Uygulama otomatik olarak yüklenmez, ancak kullanıcı tarafından yüklenebilir. Bu politika belirtilmezse varsayılan olarak bu ayar uygulanır. FORCE_INSTALLED: Uygulama otomatik olarak yüklenir ve kullanıcı tarafından kaldırılamaz. BLOCKED: Uygulama engellenir ve yüklenemez. Uygulama önceki politikalardan biri kapsamında yüklenmişse kaldırılır.</translation>
 <translation id="2421400544595297401">İlişkili olmayan kullanıcıların Android uygulamalarını kullanmasına izin verme</translation>
 <translation id="2421677964966613267">Bu politika, M88 sürümünde kullanımdan kaldırılmıştır. Flash artık Chrome tarafından desteklenmemektedir. Politikayı ayarlamak, <ph name="FLASH_PLUGIN_NAME" /> eklentisini çalıştıramayan siteleri belirten URL kalıpları için bir liste yapmanıza olanak tanır.
@@ -2576,7 +2575,6 @@ Sağlanan filtrelerden biriyle eşleşen alan adları için ayarlanan çerezler,
 <translation id="2985927503455169394">Asistan ilk katılım deneyiminin varsayılan modunu kullanma</translation>
 <translation id="2987155890997901449">ARC'yi etkinleştir</translation>
 <translation id="2987227569419001736">Web Bluetooth API'sının kullanımını kontrol et</translation>
-<translation id="2989259649530222762">Dijital Parmak İzi Koruması özelliğini devre dışı bırak.</translation>
 <translation id="2989404644164421834">Sayfaları Yeniden Yükle</translation>
 <translation id="299446489108785864"><ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> politikasının hangi URL'lere uygulanacağını belirten URL'lerin listesi. Bu politikanın, kullanıcılar tarafından belirlenen otomatik olarak açık değerler üzerinde hiçbir etkisi yoktur.
 
@@ -3378,7 +3376,6 @@ Bu politikayı her zaman (özellikle de üretim dağıtımı zamanlarında) etki
 <translation id="3606571057705314194">Başlangıçta profil seçiciyi devre dışı bırak</translation>
 <translation id="3608206578291537084">Şifrelenmiş Raporlama Ardışık Düzeni'ni etkinleştir</translation>
 <translation id="3608281460204780443"><ph name="PRODUCT_OS_NAME" /> başlatıcıda ve yeni sekme sayfasında Chrome Web Mağazası simgesini göster</translation>
-<translation id="361046511337768385">Ürün spesifikasyonları özelliğinin etkinleştirilmesine izin ver</translation>
 <translation id="3616490235694929053">Bu politika, ilk oturum açma sırasında görüntü boyutu ayar ekranının kullanıcıya gösterilip gösterilmeyeceğini belirler.
       Bu politika yanlış değerine ayarlanırsa görüntü boyutu ayar ekranı gösterilmez.
       Doğru değerine ayarlanırsa görüntü boyutu ayar ekranı gösterilir.</translation>
@@ -5438,7 +5435,6 @@ Politika ayarlanmadan bırakılırsa <ph name="URL_BLOCKLIST_POLICY_NAME" /> pol
 
 Bu politika, <ph name="PRODUCT_NAME" /> 92 sürümünden itibaren gözetimsiz modda da desteklenir.</translation>
 <translation id="5362531528507578966">Varsayılan arka plan grafikleri yazdırma modunu geçersiz kılar.</translation>
-<translation id="5363412016871318326">Ürün spesifikasyonları özelliği kullanıcılar tarafından kullanılabilir.</translation>
 <translation id="5365476955714838841">Alternatif tarayıcı için komut satırı parametreleri.</translation>
 <translation id="5365946944967967336">Araç çubuğunda Ana Sayfa düğmesini göster</translation>
 <translation id="5366977351895725771">False (yanlış) olarak ayarlanırsa, bu kullanıcının denetlenen kullanıcı oluşturma yetkisi devre dışı bırakılır. Mevcut tüm denetlenen kullanıcılar kullanılabilir olmaya devam eder.
@@ -6560,7 +6556,6 @@ Bu takviye 8 ile 32 karakter arasında bir dize olmalıdır.
       Bu durum kullanıcıları ses altsisteminin korumalı alana alınmadan çalıştırılmasıyla ilgili güvenlik risklerine açık hale getirir.
       Bu politika ayarlanmazsa ses korumalı alanının varsayılan yapılandırması kullanılır. Bu yapılandırma platformdan platforma değişiklik gösterebilir.
       Bu politika, korumalı alanın çalışmasını etkileyen güvenlik yazılımı yapılandırmaları kullanan işletmelere ses korumalı alanını devre dışı bırakma esnekliği sunmak amacıyla tasarlanmıştır.</translation>
-<translation id="624808913905048408">Kullanıcıların, cihazlarında <ph name="PRIVACY_SANDBOX_NAME" /> IP koruması ayarını etkinleştirmesine veya devre dışı bırakmasına izin ver.</translation>
 <translation id="624818583115864448">bağlantı noktası 554 (15.10.2021'e kadar engellemesi kaldırılabilir)</translation>
 <translation id="6249912382559535329">Giriş ekranında sanal klavye erişilebilirlik özelliğini etkinleştirin.
 
@@ -7762,7 +7757,6 @@ Bu politika <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_DISABLED" />
 <translation id="7044883996351280650">Android yedekleme ve geri yükleme hizmetini kontrol etme</translation>
 <translation id="7045221780834308118">Politika, Etkin değerine ayarlanırsa üçüncü taraf web uygulamaları, <ph name="PRODUCT_OS_NAME" /> masalarını kontrol etmek için Desk API'yi kullanabilir. Politika ayarlanmaz veya devre dışı bırakılırsa <ph name="DESK_API_NAME" /> kullanılamaz. Politika yalnızca kayıtlı cihazlarda geçerli olur.</translation>
 <translation id="7046113122884041950">Smart Lock'a izin verme</translation>
-<translation id="7046226611117346112">Dijital Parmak İzi Koruması özelliğini etkinleştir.</translation>
 <translation id="7046997898355294677">Kullanıcı kapatana dek gizlilik uyarılarını göster</translation>
 <translation id="7047495632846973438">Görüntü yakalama izinleri politikasının kontrol edilip edilmediğini veya atlanıp atlanmadığını belirtir.</translation>
 <translation id="7055022222176591388">Eski <ph name="FLASH_PLUGIN_NAME" /> eklentisine izin verme</translation>
@@ -9051,9 +9045,6 @@ Uyarı: Kullanıcıların yazılım güncellemelerini ve kritik güvenlik düzel
 <translation id="8102854005031553638">PDF görüntüleyici AGG oluşturucuyu kullanır.</translation>
 <translation id="8102913158860568230">Varsayılan medya akışı ayarı</translation>
 <translation id="8104962233214241919">Bu siteler için istemci sertifikalarını otomatik olarak seç</translation>
-<translation id="810509972572344398">Bu politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa ürün spesifikasyonları kullanıcılar tarafından kullanılabilir.
-
-Bu politika, Devre Dışı değerine ayarlanırsa ürün spesifikasyonları kullanılamaz.</translation>
 <translation id="8109762054721090517"><ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> <ph name="INTERNET_PRINTING_PROTOCOL" /> <ph name="IPP_ATTRIBUTE" /> şablonu</translation>
 <translation id="8111331908123507719">Kilit ekranında ekran koruyucu gösterilmeden önce cihazın boşta bekleyeceği süreyi saniye cinsinden yapılandırır.
 

@@ -41,6 +41,7 @@
 <translation id="102916930470544692">Passkey</translation>
 <translation id="1029317248976101138">Zoomen</translation>
 <translation id="1029526375103058355">Touchpad-Klick</translation>
+<translation id="1029724557649700742">Neue Funktionen werden hinzugefügt, sobald sie verfügbar sind. Funktionen können sich je nach Gerät unterscheiden.</translation>
 <translation id="1031362278801463162">Vorschau wird geladen...</translation>
 <translation id="1032605640136438169">Bitte lies dir die neue Fassung durch</translation>
 <translation id="103279545524624934">Gib Speicherplatz frei, um Android-Apps starten zu können.</translation>
@@ -1517,7 +1518,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2127372758936585790">Schwaches Ladegerät</translation>
 <translation id="212862741129535676">Aktiver Zustand – Auslastung in Prozent</translation>
 <translation id="212876957201860463">Die Einrichtung des Mobilgeräts wird vorbereitet…</translation>
-<translation id="2130909682040406368">Weitere Informationen zur Verwendung von KI-Tools</translation>
 <translation id="2131077480075264">"<ph name="APP_NAME" />" konnte nicht installiert werden, da dies vom "<ph name="IMPORT_NAME" />" nicht zugelassen wurde.</translation>
 <translation id="2133775869826239001">Weitere Funktionen zum Einrichten auswählen</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> noch einmal herunterladen</translation>
@@ -1556,6 +1556,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2155473371917268529">Die aktuelle Sichtbarkeitseinstellung ist „Meine Geräte“</translation>
 <translation id="2155772377859296191">Auflösung <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service Worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156707722163479690">Scrollen und Zoomen auf geteilten Tabs zulässig</translation>
 <translation id="2156877321344104010">Sicherheitscheck noch einmal durchführen</translation>
 <translation id="2157474325782140681">Verwende eine für dieses Chromebook entwickelte Dockingstation von Dell, um zusätzliche Funktionen nutzen zu können.</translation>
 <translation id="215753907730220065">Vollbildmodus aus</translation>
@@ -1974,6 +1975,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2459706890611560967">Streamen des Tabs an „<ph name="DEVICE_NAME" />“ fortsetzen</translation>
 <translation id="2460356425461033301">Möchtest du deine Browserdaten sichern und auf jedem Gerät verwenden?</translation>
 <translation id="2460482211073772897">In anderen Ordnern</translation>
+<translation id="2461550163693930491">Websites dürfen auf geteilten Tabs nicht scrollen und zoomen</translation>
 <translation id="2461593638794842577">Du kannst diese Einstellung deaktivieren, um deine Passwörter nur auf diesem Gerät zu speichern</translation>
 <translation id="2462332841984057083">Steam wird bereits eingerichtet. Bitte warte, bis die Einrichtung abgeschlossen ist.</translation>
 <translation id="2462724976360937186">Schlüssel-ID der Zertifizierungsstelle</translation>
@@ -2007,6 +2009,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2482895651873876648">Tab wurde in die folgende Gruppe verschoben: <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="2483627560139625913">Suchmaschine in den Chrome-Browsereinstellungen festlegen</translation>
 <translation id="2483698983806594329">Ungeprüfte Datei heruntergeladen</translation>
+<translation id="2484574361686148760">Informationen für Wi-Fi Direct-Clients aktualisieren</translation>
 <translation id="2484743711056182585">Zugriffsberechtigung entfernen</translation>
 <translation id="2484909293434545162">Wenn eine Website Cookies verwendet, werden sie hier angezeigt</translation>
 <translation id="2484959914739448251">Wenn du Browserdaten von allen deinen synchronisierten Geräten und aus deinem Google-Konto löschen möchtest, <ph name="BEGIN_LINK" />gib deine Passphrase ein<ph name="END_LINK" />.</translation>
@@ -2200,6 +2203,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2629227353894235473">Android-Apps entwickeln</translation>
 <translation id="2629437048544561682">Arbeitsbereich löschen</translation>
 <translation id="2631498379019108537">Eingabeoptionen in der Ablage anzeigen</translation>
+<translation id="2632176111713971407">Websites dürfen nachfragen, ob auf geteilten Tabs gescrollt und gezoomt werden darf</translation>
 <translation id="2633212996805280240">"<ph name="EXTENSION_NAME" />" entfernen?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> konnte die Installation nicht abschließen, wird jedoch weiterhin über das Datenträgerabbild ausgeführt.</translation>
 <translation id="2633764681656412085">FIDO</translation>
@@ -3506,6 +3510,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3659550105763988702">Passkey für <ph name="APP_NAME" /> verwenden</translation>
 <translation id="3659929705630080526">Du hast zu oft einen falschen Zugriffscode eingegeben. Versuche es später noch einmal.</translation>
 <translation id="3660234220361471169">Nicht vertrauenswürdig</translation>
+<translation id="3661106764436337772">Schneller und mit mehr Sicherheit schreiben</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 vorhandenes Passwort gefunden}other{{NUM_PASSWORDS} vorhandene Passwörter gefunden}}</translation>
 <translation id="3662207097851752847">Google-Konto auf dem Smartphone bestätigen</translation>
 <translation id="3663417513679360795">Weitere Informationen zum Aktivieren des standardmäßigen Vorabladens</translation>
@@ -3858,6 +3863,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="3900966090527141178">Passwörter exportieren</translation>
 <translation id="3902789559055749153">Wähle aus, wie der Passkey für <ph name="APP_NAME" /> erstellt werden soll</translation>
 <translation id="3903187154317825986">Integrierte Tastatur</translation>
+<translation id="3903696968689283281">Informationen für Wi-Fi Direct-Inhaber:</translation>
 <translation id="3904326018476041253">Standortdienste</translation>
 <translation id="3905761538810670789">App reparieren</translation>
 <translation id="3908288065506437185">Drittanbieter-Cookies im Inkognitomodus blockieren</translation>
@@ -4483,7 +4489,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4388650384344483842">Gib mindestens 8 Zeichen ein</translation>
 <translation id="4389091756366370506">Nutzer <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> und <ph name="NUMBER_OF_OTHER_SWITCHES" /> weitere Schalter</translation>
-<translation id="4390569024397171409">App auf deinem <ph name="DEVICE_TYPE" /> installieren</translation>
 <translation id="439266289085815679">Die Bluetooth-Konfiguration wird von <ph name="USER_EMAIL" /> festgelegt.</translation>
 <translation id="4392896746540753732">Konfigurationsdatei bearbeiten</translation>
 <translation id="4393102500004843976">Suchtaste + Umschalttaste + <ph name="TOP_ROW_KEY" /></translation>
@@ -4513,6 +4518,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4409697491990005945">Ränder</translation>
 <translation id="4409779593816003679">Passwörter und &amp;Autofill</translation>
 <translation id="4410545552906060960">Anstelle eines Passworts kannst du eine Nummer (PIN) zum Entsperren deines Geräts verwenden. Die PIN kann später unter "Einstellungen" festgelegt werden.</translation>
+<translation id="4411344321892622527">Scrollen und Zoomen auf geteilten Tabs nicht zulässig</translation>
 <translation id="4411578466613447185">Code-Signaturgeber</translation>
 <translation id="4411719918614785832">Diese Passkeys sind in Windows Hello auf diesem Computer gespeichert. Sie sind nicht in deinem Google-Konto gespeichert.</translation>
 <translation id="4412544493002546580">Versuch es noch einmal oder wähle unten einen der Vorschläge aus.</translation>
@@ -6852,6 +6858,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6257602895346497974">Synchronisierung aktivieren…</translation>
 <translation id="625827534921607067">Dieses Netzwerk wird bevorzugt, wenn mehr als ein zuvor verbundenes oder konfiguriertes Netzwerk verfügbar ist</translation>
 <translation id="62586649943626337">Organisiere deine Tabs mithilfe von Tabgruppen</translation>
+<translation id="6259776178973198997">Informationen für Wi-Fi Direct-Inhaber aktualisieren</translation>
 <translation id="6262371516389954471">Deine Sicherungen werden an Google gesendet und mit dem Passwort deines Google-Kontos verschlüsselt.</translation>
 <translation id="6263082573641595914">Microsoft - Version der Zertifizierungsstelle</translation>
 <translation id="6263284346895336537">Nicht kritisch</translation>
@@ -7551,6 +7558,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> kann nicht als Root ausgeführt werden.</translation>
 <translation id="6812841287760418429">Änderungen beibehalten</translation>
 <translation id="6813907279658683733">Gesamter Bildschirm</translation>
+<translation id="6814754908910736855">Informationen für Wi-Fi Direct-Clients:</translation>
 <translation id="6815376457351236663">Trotzdem öffnen</translation>
 <translation id="6815787852028615386">Diese Datei ist irreführend und kann unerwartete Änderungen an deinem Gerät vornehmen</translation>
 <translation id="6816097980753839617">Blau-Gelb (Tritanomalie)</translation>
@@ -7988,7 +7996,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7168109975831002660">Mindestgröße</translation>
 <translation id="7169122689956315694">Benachrichtigungen aktivieren, wenn sich Geräte in der Nähe befinden</translation>
 <translation id="7170236477717446850">Profilbild</translation>
-<translation id="7170751905948784001">Entwicklerinformationen:</translation>
 <translation id="7171000599584840888">Profil hinzufügen…</translation>
 <translation id="7171259390164035663">Nicht anmelden</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Tab zu neuer Gruppe hinzufügen}other{Tabs zu neuer Gruppe hinzufügen}}</translation>
@@ -8421,6 +8428,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7501957181231305652">oder</translation>
 <translation id="7502220299952823578">Zur Liste „Diese Websites immer aktiv lassen“ hinzufügen</translation>
 <translation id="7502528909759062987">Streamen des Tabs an „<ph name="DEVICE_NAME" />“ pausieren</translation>
+<translation id="7502804472671406749">Auf geteilten Tabs darf gescrollt und gezoomt werden</translation>
 <translation id="7503191893372251637">Netscape-Zertifikatstyp</translation>
 <translation id="7503985202154027481">Auf deinem Sicherheitsschlüssel wird zum Besuch dieser Website ein Datensatz angelegt.</translation>
 <translation id="7504145862399276792">Der Ton dieses Tabs ist stummgeschaltet</translation>
@@ -8465,7 +8473,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> reagiert nicht. Wähle "Schließen erzwingen" aus, um die App zu beenden.</translation>
 <translation id="7535730537657706072">Schließe alle Inkognitotabs, um den Inkognito-Browserverlauf vom Gerät zu löschen</translation>
 <translation id="7536815228183532290">Angemeldet als <ph name="EMAIL" /></translation>
-<translation id="7537182889548466084">Du erhältst Vorschläge für Tabgruppen, bei denen ähnliche Tabs zusammengefasst werden. Deine geöffneten Tabs und Titel werden an Google gesendet und möglicherweise manuell überprüft, um diese Funktion zu verbessern.</translation>
 <translation id="7538013435257102593">Dieser Dateityp wird normalerweise nicht heruntergeladen und könnte schädlich sein</translation>
 <translation id="7540972813190816353">Fehler beim Suchen nach Updates: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> hat das Gerät auf eine frühere Version zurückgesetzt. Bitte speichere wichtige Dateien und starte es dann neu. Sämtliche Daten auf dem Gerät werden gelöscht.</translation>
@@ -10760,6 +10767,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="949807244219288032">Dieser Tab ist mit einem HID-Gerät verbunden</translation>
 <translation id="950079950995628542">Von „<ph name="PHONE_NAME" />“</translation>
 <translation id="950307215746360464">Einrichtungsassistent</translation>
+<translation id="951273949038779544"><ph name="SITE_ACCESS" />. Von deinem Administrator installiert</translation>
 <translation id="951991426597076286">Ablehnen</translation>
 <translation id="952471655966876828">Gerät wird automatisch verbunden, wenn es eingeschaltet oder verwendet wird</translation>
 <translation id="953434574221655299">Darf Informationen zu deiner aktiven Nutzung dieses Geräts abrufen</translation>

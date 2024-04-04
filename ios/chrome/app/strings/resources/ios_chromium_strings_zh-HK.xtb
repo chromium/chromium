@@ -91,7 +91,6 @@
 <translation id="3567399274263440288">如要充分運用 Chromium 的所有功能，請透過 Google 帳戶登入 Chromium。</translation>
 <translation id="3634039384458740619">開啟 Chromium 設定</translation>
 <translation id="3639997914391704523">Chromium 可在您使用 Google 帳戶登入時檢查密碼。</translation>
-<translation id="3650632991272923014"><ph name="USER_EMAIL1" /> 之前曾在此裝置上使用 Chromium，並儲存書籤、密碼和其他設定。</translation>
 <translation id="3688710892786762883">當你瀏覽網站時，Chromium 會在網站上偵測是否有包裹追蹤號碼，並在「新分頁」顯示包裹最新消息。系統將與 Google 分享你的資料，以提供此功能，並為所有使用者改善「購物」功能。</translation>
 <translation id="372658070733623520">如要將 Chromium 的資料儲存至 Google 帳戶及使用這類資料，請驗證身分。</translation>
 <translation id="3780779443901618967">此防護機制分析的網站資料比標準保護多，因此即使是 Google 不知道的網站，此防護機制亦能提供危險網站警告。你可選擇略過 Chromium 警告。</translation>
@@ -182,7 +181,6 @@
 <translation id="5983312940147103417">讓 Chromium 更臻完美</translation>
 <translation id="5985102273857091344">選取 [Chromium]。</translation>
 <translation id="5985254578475526217">如要接收 Chromium 通知，請在 iOS 設定開啟通知功能。</translation>
-<translation id="6062449165341879460">您的機構 <ph name="DOMAIN" /> 將可存取您儲存在此帳戶中的 Chromium 資料、書籤、記錄、密碼和其他設定。登出帳戶後，系統會清除此裝置中的資料。不過，您的資料仍會儲存在受管 Google 帳戶中，並可供機構使用。您的機構亦可為該帳戶設定特定使用者政策，以變更 Chromium 的行為。</translation>
 <translation id="6093744543579359059">在 Chromium 中管理密碼</translation>
 <translation id="6104024151682120539">在 Chromium 中開啟</translation>
 <translation id="61109258320235597">如要將 Chromium 的資料儲存至 Google 帳戶及使用這類資料，請輸入密碼短語。</translation>
@@ -247,7 +245,6 @@
 <translation id="7763454117143368771">使用 Chrome 作為預設瀏覽器可保護您免受危險網站威脅，同時確保密碼安全</translation>
 <translation id="78025249032851484">Chromium 版本過舊。</translation>
 <translation id="7859018312476869945">在網址列或搜尋框中輸入內容時，Chromium 會將輸入的內容傳送至預設搜尋引擎，以便取得更切合需求的建議。此功能不會在無痕模式下啟用。</translation>
-<translation id="786327964234957808">您正在將同步處理帳戶從 <ph name="USER_EMAIL1" /> 切換到 <ph name="USER_EMAIL2" />。您現有的 Chromium 資料由 <ph name="DOMAIN" /> 管理。這會刪除此裝置上的資料，但這些資料仍會保留在 <ph name="USER_EMAIL1" /> 中。</translation>
 <translation id="7890287942691234100">開始使用 Chromium 掃瞄器</translation>
 <translation id="7905064834449738336">如果你使用的密碼已在網上發佈，Chromium 就會發出警告。核對時，你的密碼和使用者名稱將會加密，任何人 (包括 Google) 均無法讀取。</translation>
 <translation id="7911732829884437264">預設為使用 Chromium</translation>

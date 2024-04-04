@@ -16,7 +16,6 @@
 <translation id="1066060668811609597">Gérer la synchronisation</translation>
 <translation id="1069154182096085577">Le mot de passe existe déjà</translation>
 <translation id="1076421457278169141">Code numérisé</translation>
-<translation id="1076785341346483463">Synchroniser avec un compte géré</translation>
 <translation id="1084365883616172403">Message Facebook terminé.</translation>
 <translation id="1103523840287552314">Toujours traduire les pages rédigées en <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Retourner à la fenêtre ouverte</translation>
@@ -24,7 +23,6 @@
 <translation id="1112015203684611006">Échec impr.</translation>
 <translation id="1125564390852150847">Créer un onglet.</translation>
 <translation id="1126809382673880764">Ce mode ne vous protège pas contre les téléchargements, les extensions ni les sites Web dangereux. Vous profitez toujours de la protection de navigation sécurisée, lorsqu'elle est offerte, dans d'autres services Google, comme Gmail et la recherche.</translation>
-<translation id="1145536944570833626">Supprimer toutes les données existantes.</translation>
 <translation id="1147031633655575115">Connecté en tant que <ph name="USER" /></translation>
 <translation id="1150989369772528668">Agenda</translation>
 <translation id="1154984953698510061">Voir les autres onglets</translation>
@@ -54,7 +52,6 @@
 <translation id="1273416271143914096">{count,plural, =1{{count} mot de passe}one{{count} mot de passe}other{{count} mots de passe}}</translation>
 <translation id="1275718070701477396">Sélectionné</translation>
 <translation id="1279024913354609713">Ne pas autoriser</translation>
-<translation id="1281818060020671000">Gérer les données</translation>
 <translation id="1282311502488501110">Ne pas se connecter</translation>
 <translation id="1283524564873030414">24 dernières heures</translation>
 <translation id="1285320974508926690">Ne jamais traduire ce site</translation>
@@ -563,7 +560,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3918585468378680136">Consultez l'état du colis</translation>
 <translation id="3921585859122905677">Position de la barre d'adresse</translation>
 <translation id="3922310737605261887">Rechercher le texte copié</translation>
-<translation id="3928666092801078803">Combiner mes données</translation>
 <translation id="3929457972718048006">Adresses</translation>
 <translation id="3939505428630887612">À propos de cette page</translation>
 <translation id="3948600256434252210">Vous pouvez balayer l'écran vers la droite pour naviguer en mode Navigation privée.</translation>
@@ -943,6 +939,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5857770089550859117">Une phrase de passe est requise pour commencer la synchronisation.</translation>
 <translation id="5859715514067755465">Avancer</translation>
 <translation id="5860033963881614850">Désactivé</translation>
+<translation id="5860491529813859533">Activer</translation>
 <translation id="5896576662943111387">Conçu pour iOS</translation>
 <translation id="5897749768294722429">Pour revenir rapidement aux sites déjà visités, synchronisez vos onglets et votre historique.</translation>
 <translation id="5897956970858271241">Consulter le lien copié</translation>
@@ -961,7 +958,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5971872012779224351">{count,plural, =1{1 favori supprimé}one{{count} favoris supprimés}other{{count} favoris supprimés}}</translation>
 <translation id="5979837087407522202">Rechercher des mots de passe</translation>
 <translation id="5981230843984570095">Fermer tous les onglets inactifs</translation>
-<translation id="5982717868370722439">Ajouter les données existantes à <ph name="USER_EMAIL" />.</translation>
 <translation id="5984222099446776634">Dossiers récents</translation>
 <translation id="598634819525651074">Zone</translation>
 <translation id="5988097621740394599">Faites le suivi des réductions dans vos onglets.</translation>
@@ -1192,7 +1188,6 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7022197654033719543">Renseignements sur le site</translation>
 <translation id="7029809446516969842">Mots de passe</translation>
 <translation id="704692552158601232">Application de navigation par défaut</translation>
-<translation id="7062545763355031412">Accepter et changer de compte</translation>
 <translation id="7063811929043357292">Ton compte est géré par ton parent.
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="7069695992271320873">Retirer le compte de cet appareil</translation>
@@ -1385,7 +1380,6 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="804427445359061970">Vous trouverez ici les onglets ouverts sur d'autres appareils</translation>
 <translation id="8044568254381073661">Enregistrer sans chiffrement</translation>
 <translation id="8059533439631660104">Réduit la section.</translation>
-<translation id="806745655614357130">Conserver mes données à part</translation>
 <translation id="8069394452933076548">Choisir quand les onglets qui n'ont pas été utilisés récemment sont déplacés vers la section des onglets inactifs.</translation>
 <translation id="8073670137947914548">Téléchargement terminé</translation>
 <translation id="8073872304774253879">Améliorer les recherches et de la navigation</translation>
@@ -1616,7 +1610,6 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="9165320910061267720">Pour recevoir des notifications d'alertes relatives à une baisse de prix, vous devez activer les notifications dans vos paramètres iOS.</translation>
 <translation id="9177438225260810839">Rechercher dans les onglets ouverts</translation>
 <translation id="9187853111759024059">Fermer plus de 99 onglets inactifs?</translation>
-<translation id="9188680907066685419">Se déconnecter du compte géré</translation>
 <translation id="9200875785104711666">il y a <ph name="TIME" /> j</translation>
 <translation id="9203116392574189331">Transférer</translation>
 <translation id="9203951165704618409">Changez la position de votre barre d'adresse du haut de l'écran au bas de l'écran pour une expérience de navigation personnalisée.</translation>

@@ -1521,7 +1521,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2127372758936585790">Chargeur de faible puissance</translation>
 <translation id="212862741129535676">Pourcentage d'utilisation des valeurs de fréquence</translation>
 <translation id="212876957201860463">Préparation pour la configuration du service cellulaire en cours…</translation>
-<translation id="2130909682040406368">En savoir plus sur l'utilisation des outils d'IA</translation>
 <translation id="2131077480075264">Impossible d'installer « <ph name="APP_NAME" /> », car elle n'est pas autorisée par « <ph name="IMPORT_NAME" /> »</translation>
 <translation id="2133775869826239001">Choisir plus de fonctionnalités à configurer</translation>
 <translation id="2133857665503360653">Réessayer <ph name="FILE_NAME" /></translation>
@@ -3512,6 +3511,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3659550105763988702">Utilisez votre clé d'accès pour <ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">Vous avez entré un trop grand nombre de codes d'accès incorrects. Réessayez plus tard</translation>
 <translation id="3660234220361471169">Non fiable</translation>
+<translation id="3661106764436337772">Écrire plus vite et avec plus de confiance</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{un ancien mot de passe trouvé}one{{NUM_PASSWORDS} mots de passe existants trouvés}other{{NUM_PASSWORDS} mots de passe existants trouvés}}</translation>
 <translation id="3662207097851752847">Confirmez votre compte Google sur votre téléphone</translation>
 <translation id="3663417513679360795">Plus de renseignements sur l'activation du préchargement standard</translation>
@@ -4489,7 +4489,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4388650384344483842">Utiliser au moins huit caractères</translation>
 <translation id="4389091756366370506">Utilisateur <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> et <ph name="NUMBER_OF_OTHER_SWITCHES" /> autres commutateurs</translation>
-<translation id="4390569024397171409">Installer l'application sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="439266289085815679">La configuration du Bluetooth est contrôlée par <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Modifier le fichier de configuration</translation>
 <translation id="4393102500004843976">recherche+majuscule+<ph name="TOP_ROW_KEY" /></translation>
@@ -7998,7 +7997,6 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7168109975831002660">Taille de police minimale</translation>
 <translation id="7169122689956315694">Activer les notifications lorsque des appareils se trouvent à proximité</translation>
 <translation id="7170236477717446850">Photo du profil</translation>
-<translation id="7170751905948784001">Renseignements sur le développeur :</translation>
 <translation id="7171000599584840888">Ajouter un profil…</translation>
 <translation id="7171259390164035663">Ne pas s'inscrire</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Ajouter un onglet au nouveau groupe}one{Ajouter un onglet au nouveau groupe}other{Ajouter des onglets au nouveau groupe}}</translation>
@@ -8475,7 +8473,6 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> ne répond pas. Sélectionnez « Forcer la fermeture » pour fermer l'application.</translation>
 <translation id="7535730537657706072">Pour effacer l'historique de navigation privée de votre appareil, fermez tous les onglets de navigation privée</translation>
 <translation id="7536815228183532290">Connecté en tant que <ph name="EMAIL" /></translation>
-<translation id="7537182889548466084">Vous recevrez des suggestions de groupes d'onglets regroupant des onglets similaires. Vos onglets et vos titres ouverts sont envoyés à Google et peuvent être examinés par des humains pour améliorer cette fonctionnalité.</translation>
 <translation id="7538013435257102593">Ce type de fichier n'est pas souvent téléchargé et pourrait être dangereux</translation>
 <translation id="7540972813190816353">Une erreur s'est produite pendant la vérification des mises à jour : <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> a restauré une version antérieure de cet appareil. Veuillez enregistrer les fichiers importants, puis redémarrer l'appareil. Toutes les données qu'il contient seront supprimées.</translation>

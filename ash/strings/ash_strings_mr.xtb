@@ -115,6 +115,7 @@
 <translation id="1383597849754832576">स्पीच फाइल डाउनलोड करू शकत नाही. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="1383876407941801731">शोधा</translation>
 <translation id="1391102559483454063">सुरू</translation>
+<translation id="1394698770495054737">पूर्ण ब्लर</translation>
 <translation id="1407069428457324124">गडद थीम</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. तारखांदरम्यान नेव्हिगेट करण्यासाठी अ‍ॅरो की वापरा.</translation>
 <translation id="141170878022560212">मधले बटण</translation>
@@ -441,6 +442,7 @@
 <translation id="2841907151129139818">टॅबलेट मोडवर स्विच केले</translation>
 <translation id="2844169650293029770">USB-C डिव्‍हाइस (डाव्‍या बाजूचे पुढील पोर्ट)</translation>
 <translation id="2844350028562914727">तपशील</translation>
+<translation id="2847759467426165163">यावर कास्ट करा</translation>
 <translation id="2848120746144143659">फुल स्क्रीन स्क्रीनशॉट कॅप्चर करण्यासाठी एंटर प्रेस करा</translation>
 <translation id="2849936225196189499">गंभीर</translation>
 <translation id="2860184359326882502">सर्वोत्तम जुळणी</translation>
@@ -478,6 +480,7 @@
 <translation id="3009958530611748826">ज्यामध्ये सेव्ह करायचे आहे ते फोल्डर निवडा</translation>
 <translation id="301282384882049174">तुमच्या अ‍ॅडमिनिस्ट्रेटरने शेअर केलेले</translation>
 <translation id="301584155502740476">हॉटस्पॉटचे तपशील दाखवा. हॉटस्पॉट बंद आहे.</translation>
+<translation id="3017079585324758401">बॅकग्राउंड</translation>
 <translation id="3018135054368884502">मीडिया फास्ट फॉरवर्ड करा</translation>
 <translation id="3033545621352269033">सुरू</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> सह एकत्र करा</translation>
@@ -954,6 +957,7 @@
 <translation id="4798888871844665150">क्लिपबोर्डमध्ये आधीपासून असलेला आयटम कॉपी करा. पाहण्यासाठी <ph name="SHORTCUT_KEY_NAME" /> + V वापरा.</translation>
 <translation id="479989351350248267">शोध</translation>
 <translation id="4804818685124855865">‍डिस्कनेक्ट</translation>
+<translation id="4806631651704497161">सौम्‍य ब्‍लर</translation>
 <translation id="4813311884204119883">टॅब स्ट्रिपवरील रिक्त भागावर लिंक ड्रॅग करा</translation>
 <translation id="4814539958450445987">लॉगिन स्क्रीन</translation>
 <translation id="481455355267255546">पुढील</translation>
@@ -1040,7 +1044,6 @@
 <translation id="5104236669533825617">स्क्रीनकास्ट तयार करू शकत नाही</translation>
 <translation id="5107522548814527560">वेब</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
-<translation id="5111930673176965299">बॅकग्राउंड ब्लर</translation>
 <translation id="5117590920725113268">पुढील महिना दर्शवा</translation>
 <translation id="5121628974188116412">पेजच्या तळाशी जा</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" /> चे पूर्वावलोकन करा. इनॅक्टिव्ह डेस्‍क.</translation>

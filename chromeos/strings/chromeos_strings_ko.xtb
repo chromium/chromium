@@ -190,7 +190,7 @@
 <translation id="1962550982027027473">기본 APN이 필요합니다.</translation>
 <translation id="1967860190218310525">새 APN 만들기</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
-<translation id="1977973007732255293">정통</translation>
+<translation id="1977973007732255293">전통적인</translation>
 <translation id="1977994649430373166">Google 프로필 사진</translation>
 <translation id="1979103255016296513">비밀번호 변경 기한 지남</translation>
 <translation id="1999615961760456652">종속 포털</translation>
@@ -540,7 +540,6 @@
 <translation id="4227825898293920515">비밀번호가 <ph name="TIME" /> 후에 만료됨</translation>
 <translation id="4238516577297848345">진행 중인 인쇄 작업 없음</translation>
 <translation id="4239069858505860023">GPRS</translation>
-<translation id="4244962993387259361">메모리 테스트를 실행하려면 500MB 이상의 용량이 남아 있어야 합니다. 공간을 확보하려면 설정 &gt; 스토리지 관리로 이동하세요.</translation>
 <translation id="4250229828105606438">스크린샷</translation>
 <translation id="4251839292699800785">세련된 사무실</translation>
 <translation id="4258281355379922695">HTTP 지연 시간</translation>
@@ -912,6 +911,7 @@
 <translation id="6382182670717268353">화면 보호기 미리보기</translation>
 <translation id="6388847657025262518">스캐너의 급지대에 용지가 걸렸습니다. 급지대를 확인한 후 다시 시도해 보세요.</translation>
 <translation id="6394634179843537518">파일 추가</translation>
+<translation id="6396719002784938593">말린 나래새</translation>
 <translation id="639964859328803943">하이 티</translation>
 <translation id="6400680457268373900"><ph name="DREAMSCAPES_COLORS" /> <ph name="DREAMSCAPES_MATERIAL" />(으)로 만든 초현실적인 <ph name="DREAMSCAPES_OBJECT" /></translation>
 <translation id="6401427872449207797">브라우저 검색</translation>
@@ -953,6 +953,7 @@
 <translation id="6575134580692778371">설정되지 않음</translation>
 <translation id="6576005492601044801">왼쪽</translation>
 <translation id="6579509898032828423">이 사진 사용</translation>
+<translation id="6587870930887634392">다육식물</translation>
 <translation id="6596816719288285829">IP 주소</translation>
 <translation id="6599673642868607614">의견을 보내 주셔서 감사합니다. 사용자의 의견은 Google팀에서 검토할 예정이며 Chromebook 사용 환경을 개선하는 데 도움이 됩니다. 접수되는 의견이 많아 직접 답변해 드리기는 어렵습니다.</translation>
 <translation id="6618744767048954150">실행 중</translation>
@@ -1089,7 +1090,7 @@
           AI로는 개인용 배경화면 및 비상업용 배경화면만 만들 수 있습니다. 배경화면 지원을 받는 경우 배경화면 추천을 생성하기 위해 <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google 개인정보처리방침<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />에 따라 텍스트가 Google AI 서버로 전송됩니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />, <ph name="RESULT_TEXT" />, Search와 Space키를 눌러 Google 검색에서 검색결과를 확인하세요.</translation>
 <translation id="7343649194310845056">네트워크 기기</translation>
-<translation id="7344788170842919262">황토빛</translation>
+<translation id="7344788170842919262">황톳빛</translation>
 <translation id="7353413232959255829">검색 결과 <ph name="LIST_SIZE" />개 중 <ph name="LIST_POSITION" />번: <ph name="SEARCH_RESULT_TEXT" />. 바로가기로 이동하려면 Enter를 누르세요.</translation>
 <translation id="7359657277149375382">파일 형식</translation>
 <translation id="73631062356239394">진단 데이터 공유</translation>
@@ -1111,6 +1112,7 @@
 <translation id="7497215489070763236">서버 CA 인증서</translation>
 <translation id="7501957181231305652">또는</translation>
 <translation id="7502658306369382406">IPv6 주소</translation>
+<translation id="7507061649493508884">선명한 <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /></translation>
 <translation id="7513770521371759388">하단</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">만들기</translation>
@@ -1160,7 +1162,6 @@
 <translation id="780301667611848630">사용 안함</translation>
 <translation id="7805768142964895445">상태</translation>
 <translation id="7813073042185856802">산</translation>
-<translation id="7819831665603418705">템플릿 사용</translation>
 <translation id="7819857487979277519">PSK (WPA 또는 RSN)</translation>
 <translation id="7824219488248240180">후기인상파</translation>
 <translation id="7828503206075800057"><ph name="CAFE_STYLE" /> 느낌의 <ph name="CAFE_TYPE" /> 카페</translation>
@@ -1171,6 +1172,7 @@
 <translation id="7850847810298646851">Google AI 기반 배경화면</translation>
 <translation id="785170686607360576">튤립</translation>
 <translation id="7856267634822906833">블루투스 터치스크린</translation>
+<translation id="7859006200041800233">선인장꽃</translation>
 <translation id="7869143217755017858">어두운 모드 사용 중지</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">공급자 유형</translation>
@@ -1306,6 +1308,7 @@
 <translation id="8726019395068607495">중지됨 - 덮개 열림</translation>
 <translation id="8730621377337864115">완료</translation>
 <translation id="8747900814994928677">변경사항 확인</translation>
+<translation id="8749478549112817787">카메라 배경</translation>
 <translation id="8755946156089753497">탑</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google 포토 앨범</translation>
@@ -1385,7 +1388,7 @@
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />페이지 스캔 중</translation>
 <translation id="9111102763498581341">잠금 해제</translation>
 <translation id="9122602430962285795">다시 연결하려면 설정으로 이동하세요.</translation>
-<translation id="9122865513525855321">평온함</translation>
+<translation id="9122865513525855321">평온한</translation>
 <translation id="9126720536733509015">여러 페이지를 하나의 PDF로 저장</translation>
 <translation id="9133772297793293778">키보드에서 특수키 1~4개와 다른 키 1개를 누릅니다. 수정 모드를 종료하려면 Alt + Esc를 누르세요.</translation>
 <translation id="9137526406337347448">Google 서비스</translation>

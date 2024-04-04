@@ -413,6 +413,7 @@
 <translation id="1734878702283171397">Обратитесь за помощью к системному администратору.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, действительна до <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Компьютер</translation>
+<translation id="1739422091279046802">изменение масштаба и прокрутка</translation>
 <translation id="1741613555002899862">Необходимо указать значение и ввести действительную строку, если для правила DnsOverHttpsMode выбрано значение <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Постельное белье</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Как мы используем эти данные.<ph name="END_BOLD" /> По мере того как вы посещаете сайты, Chrome определяет, какие темы вас интересуют. Названия тем заданы, например "Искусство и развлечения", "Покупки" или "Спорт". В дальнейшем посещаемые вами сайты могут запрашивать у Chrome несколько таких тем рекламы (но не историю браузера), чтобы персонализировать рекламу для вас.</translation>
@@ -451,6 +452,7 @@
 <translation id="1812527064848182527">горизонтальная ориентация</translation>
 <translation id="1812975699435941848">Санитарное просвещение и медицинское образование</translation>
 <translation id="1813414402673211292">Очистка истории</translation>
+<translation id="1816436748874040213">Может запрашивать разрешение на изменение масштаба и прокрутку содержимого демонстрируемых вкладок</translation>
 <translation id="1818522458013171885">Разблокировать</translation>
 <translation id="1818585559878922121">Документальные фильмы</translation>
 <translation id="182139138257690338">автоматическое скачивание</translation>
@@ -964,6 +966,7 @@
 <translation id="2838682941130655229">Сайт <ph name="EMBEDDED_URL" /> запрашивает разрешение на использование сохраненной информации о вас</translation>
 <translation id="2839032553903800133">Уведомления заблокированы</translation>
 <translation id="2839501879576190149">Осторожно, поддельный сайт!</translation>
+<translation id="2843623755398178332">Разрешить изменять масштаб и прокручивать содержимое демонстрируемой вкладки?</translation>
 <translation id="2851291081585704741">Нет подключения к интернету</translation>
 <translation id="2856444702002559011">Злоумышленники могут пытаться похитить ваши данные с сайта <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (например, пароли, сообщения или номера банковских карт). <ph name="BEGIN_LEARN_MORE_LINK" />Подробнее…<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2858134430383535011">200 x 300 мм</translation>
@@ -1056,6 +1059,7 @@
 <translation id="3023165109041533893">Реклама, предлагаемая сайтами, помогает защищать вашу историю браузера и личные данные, при этом позволяя сайтам показывать подходящие для вас объявления. Посещенные вами сайты могут в дальнейшем предлагать другим сайтам рекламу для вас, исходя из ваших действий. В настройках вы можете посмотреть список таких сайтов и заблокировать ненужные.</translation>
 <translation id="3024663005179499861">Неверный тип политики</translation>
 <translation id="3030331669969285614">Эти параметры блокируют или отменяют критическое изменение. Срок их действия ограничен.</translation>
+<translation id="3034526003882782781">Изменение масштаба и прокрутка разрешены</translation>
 <translation id="3036894576201005614">Бытовая химия</translation>
 <translation id="3037177537145227281">Вы отслеживаете цену на этот товар</translation>
 <translation id="3037605927509011580">Опаньки...</translation>
@@ -1337,6 +1341,7 @@
 <translation id="3567778190852720481">Корпоративные аккаунты не допускаются к регистрации.</translation>
 <translation id="3567901620846335314">100 x 150 мм</translation>
 <translation id="3568886473829759308">Перейти на сайт, чтобы посмотреть услуги компании или опубликованную ей информацию</translation>
+<translation id="3570079787344939099">Изменение масштаба и прокрутка</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Показывать уведомления с этого сайта</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -1909,6 +1914,7 @@
 <translation id="4687718960473379118">Реклама, предлагаемая сайтами</translation>
 <translation id="469028408546145398">Кнопка "Закрыть окна в режиме инкогнито". Нажмите ее, чтобы закрыть все окна, открытые в режиме инкогнито.</translation>
 <translation id="4691093235373904540">Кровельные работы</translation>
+<translation id="4692623383562244444">Поисковые системы</translation>
 <translation id="4698692901173737941">Спортивные единоборства</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Сторона</translation>
@@ -2457,6 +2463,7 @@
 <translation id="5765072501007116331">Выберите адрес, чтобы посмотреть способы и условия доставки.</translation>
 <translation id="57689295674415555">Номер виртуальной карты не указан?</translation>
 <translation id="5772086939108830423">Использовать ключ доступа на другом устройстве</translation>
+<translation id="5775734789739406956">Нажмите правой кнопкой мыши, чтобы подставить в форму сохраненные данные</translation>
 <translation id="5776313857861697733">Приоритет</translation>
 <translation id="5776574724412881956">Виртуальная карта не указана? Нажмите на ее реквизиты, чтобы скопировать их в буфер обмена. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">Эксперимент включен</translation>
@@ -2473,6 +2480,7 @@
 <translation id="580241730938216256">Обновить</translation>
 <translation id="5803412860119678065">Заполнить данные банковской карты <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Разрешения</translation>
+<translation id="5806871454498484178">Изменение масштаба и прокрутка заблокированы</translation>
 <translation id="5808435672482059465">Посмотреть историю Chrome</translation>
 <translation id="5810442152076338065">Соединение с <ph name="DOMAIN" /> зашифровано с помощью устаревшего набора шифров.</translation>
 <translation id="5813119285467412249">&amp;Повторить добавление</translation>
@@ -3469,6 +3477,7 @@
 <translation id="7673278391011283842">Почтовый ящик 6</translation>
 <translation id="7675325315208090829">Настроить способы оплаты</translation>
 <translation id="767550629621587224">Бумага с вкладками</translation>
+<translation id="7675756033024037212">Изменение масштаба и прокрутка запрещены</translation>
 <translation id="7676643023259824263">Поиск по тексту "<ph name="TEXT" />" из буфера обмена</translation>
 <translation id="7679367271685653708">Посмотреть историю браузера в настройках Chrome и управлять ею</translation>
 <translation id="7679947978757153706">Бейсбол</translation>

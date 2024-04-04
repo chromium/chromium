@@ -540,7 +540,6 @@
 <translation id="4227825898293920515">Aðgangsorð rennur út eftir <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Engin prentun í gangi</translation>
 <translation id="4239069858505860023">GPRS</translation>
-<translation id="4244962993387259361">Þú verður að hafa a.m.k. 500 MB laus til að keyra minnisprófun. Til að losa um pláss skaltu opna Stillingar &gt; Geymslustjórnun.</translation>
 <translation id="4250229828105606438">Skjámynd</translation>
 <translation id="4251839292699800785">Stílhrein skrifstofa</translation>
 <translation id="4258281355379922695">HTTP-biðtími</translation>
@@ -912,6 +911,7 @@
 <translation id="6382182670717268353">Forskoðun skjávara</translation>
 <translation id="6388847657025262518">Skjalamatarinn á skannanum er fastur. Athugaðu skjalamatarann og reyndu aftur.</translation>
 <translation id="6394634179843537518">Bæta við skrá</translation>
+<translation id="6396719002784938593">þurrkað fjaðurgras</translation>
 <translation id="639964859328803943">síðdegiste</translation>
 <translation id="6400680457268373900">Undarlegur/undarleg/undarlegt <ph name="DREAMSCAPES_OBJECT" /> úr <ph name="DREAMSCAPES_MATERIAL" /> í <ph name="DREAMSCAPES_COLORS" /></translation>
 <translation id="6401427872449207797">vafraleit</translation>
@@ -953,6 +953,7 @@
 <translation id="6575134580692778371">Ekki stillt</translation>
 <translation id="6576005492601044801">vinstri</translation>
 <translation id="6579509898032828423">Nota þessa mynd</translation>
+<translation id="6587870930887634392">safaríkt</translation>
 <translation id="6596816719288285829">IP-tala</translation>
 <translation id="6599673642868607614">Við þökkum þér fyrir ábendinguna. Ábendingin þín hjálpar okkur að bæta Chromebook-upplifunina og verður yfirfarin af teyminu okkar. Vegna fjölda tilkynninga höfum við ekki tök á því að svara.</translation>
 <translation id="6618744767048954150">Í gangi</translation>
@@ -1111,6 +1112,7 @@
 <translation id="7497215489070763236">CA-vottorð þjóns</translation>
 <translation id="7501957181231305652">eða</translation>
 <translation id="7502658306369382406">IPv6-veffang</translation>
+<translation id="7507061649493508884">Litríkt <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /></translation>
 <translation id="7513770521371759388">neðst</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">Búa til</translation>
@@ -1160,7 +1162,6 @@
 <translation id="780301667611848630">Nei, takk</translation>
 <translation id="7805768142964895445">Staða</translation>
 <translation id="7813073042185856802">fjalli</translation>
-<translation id="7819831665603418705">Notaðu sniðmát</translation>
 <translation id="7819857487979277519">PSK (WPA eða RSN)</translation>
 <translation id="7824219488248240180">síðimpressjónískum stíl</translation>
 <translation id="7828503206075800057"><ph name="CAFE_STYLE" /> <ph name="CAFE_TYPE" /> kaffihús</translation>
@@ -1171,6 +1172,7 @@
 <translation id="7850847810298646851">Veggfóður knúið af gervigreind Google</translation>
 <translation id="785170686607360576">túlípani</translation>
 <translation id="7856267634822906833">Bluetooth-snertiskjár</translation>
+<translation id="7859006200041800233">kaktusblóm</translation>
 <translation id="7869143217755017858">Slökkva á dökkri stillingu</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Gerð veitu</translation>
@@ -1306,6 +1308,7 @@
 <translation id="8726019395068607495">Stöðvað – hlíf er opin</translation>
 <translation id="8730621377337864115">Lokið</translation>
 <translation id="8747900814994928677">Staðfesta breytingu</translation>
+<translation id="8749478549112817787">Bakgrunnur myndavélar</translation>
 <translation id="8755946156089753497">turn</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Albúm í Google-myndum</translation>

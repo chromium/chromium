@@ -16,7 +16,6 @@
 <translation id="1066060668811609597">مدیریت همگام‌سازی</translation>
 <translation id="1069154182096085577">این گذرواژه ازقبل وجود دارد</translation>
 <translation id="1076421457278169141">کد اسکن شد</translation>
-<translation id="1076785341346483463">همگام‌سازی با حساب مدیریت‌شده</translation>
 <translation id="1084365883616172403">‏پست Facebook ارسال شد.</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> همیشه ترجمه شود</translation>
 <translation id="110724200315609752">رفتن به پنجره باز</translation>
@@ -24,7 +23,6 @@
 <translation id="1112015203684611006">چاپ انجام نشد.</translation>
 <translation id="1125564390852150847">ایجاد برگه جدید</translation>
 <translation id="1126809382673880764">‏دربرابر وب‌سایت‌ها، بارگیری‌ها، و افزونه‌های خطرناک از شما محافظت نمی‌کند. درصورت موجود بودن، همچنان ویژگی حفاظتی «مرور ایمن» را در سرویس‌های دیگر Google مثل Gmail و «جستجو» دریافت می‌کنید.</translation>
-<translation id="1145536944570833626">حذف داده‌های موجود.</translation>
 <translation id="1147031633655575115">با <ph name="USER" /> به سیستم وارد شده‌اید</translation>
 <translation id="1150989369772528668">تقویم</translation>
 <translation id="1154984953698510061">دیدن برگه‌های دیگر</translation>
@@ -54,7 +52,6 @@
 <translation id="1273416271143914096">{count,plural, =1{‫{count} گذرواژه}one{‫{count} گذرواژه}other{‫{count} گذرواژه}}</translation>
 <translation id="1275718070701477396">انتخاب شد</translation>
 <translation id="1279024913354609713">مجاز نیست</translation>
-<translation id="1281818060020671000">مدیریت داده‌ها</translation>
 <translation id="1282311502488501110">وارد سیستم نشود</translation>
 <translation id="1283524564873030414">۲۴ ساعت گذشته</translation>
 <translation id="1285320974508926690">این سایت هرگز ترجمه نشود</translation>
@@ -563,7 +560,6 @@
 <translation id="3918585468378680136">درحال دریافت وضعیت بسته</translation>
 <translation id="3921585859122905677">جایگاه نوار نشانی</translation>
 <translation id="3922310737605261887">جستجوی نوشتار کپی‌شده</translation>
-<translation id="3928666092801078803">ادغام کردن داده‌های من</translation>
 <translation id="3929457972718048006">نشانی‌ها</translation>
 <translation id="3939505428630887612">درباره این صفحه</translation>
 <translation id="3948600256434252210">برای مرور در «حالت ناشناس»، می‌توانید تند به‌راست بکشید.</translation>
@@ -943,6 +939,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="5857770089550859117">برای شروع همگام‌سازی به گذرعبارت نیاز است.</translation>
 <translation id="5859715514067755465">بازارسال</translation>
 <translation id="5860033963881614850">خاموش</translation>
+<translation id="5860491529813859533">روشن کردن</translation>
 <translation id="5896576662943111387">‏ساخته‌شده برای iOS</translation>
 <translation id="5897749768294722429">برای برگشتن سریع به سایت‌هایی که بازدید کرده‌اید، برگه‌ها و سابقه را همگام‌سازی کنید.</translation>
 <translation id="5897956970858271241">به پیوندی که کپی کرده‌اید بروید</translation>
@@ -961,7 +958,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="5971872012779224351">{count,plural, =1{یک نشانک حذف شد}one{{count} نشانک حذف شد}other{{count} نشانک حذف شد}}</translation>
 <translation id="5979837087407522202">جستجوی گذرواژه‌ها</translation>
 <translation id="5981230843984570095">بستن همه برگه‌های غیرفعال</translation>
-<translation id="5982717868370722439">افزودن داده‌های موجود به <ph name="USER_EMAIL" />.</translation>
 <translation id="5984222099446776634">به‌تازگی بازدیدشده</translation>
 <translation id="598634819525651074">مساحت</translation>
 <translation id="5988097621740394599">کاهش قیمت را در برگه‌ها مشاهده کنید.</translation>
@@ -1192,7 +1188,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7022197654033719543">اطلاعات سایت</translation>
 <translation id="7029809446516969842">گذرواژه‌ها</translation>
 <translation id="704692552158601232">برنامه مرورگر پیش‌فرض</translation>
-<translation id="7062545763355031412">پذیرش و تغییر حساب‌ها</translation>
 <translation id="7063811929043357292">حساب شما را ولی‌تان مدیریت می‌کند.
 <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="7069695992271320873">برداشتن از این دستگاه</translation>
@@ -1385,7 +1380,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="804427445359061970">برگه‌های مربوط به دستگاه‌های دیگر را اینجا خواهید دید</translation>
 <translation id="8044568254381073661">ذخیره بدون رمزگذاری</translation>
 <translation id="8059533439631660104">بخش را کوچک می‌کند.</translation>
-<translation id="806745655614357130">داده‌های من مجزا باشد</translation>
 <translation id="8069394452933076548">انتخاب کنید برگه‌هایی که اخیراً از آن‌ها استفاده نشده است چه‌موقع به بخش برگه غیرفعال منتقل شوند.</translation>
 <translation id="8073670137947914548">بارگیری به پایان رسید</translation>
 <translation id="8073872304774253879">بهبود جستجوها و مرور</translation>
@@ -1616,7 +1610,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="9165320910061267720">‏برای دریافت اعلان‌های هشدار کاهش قیمت، باید اعلان‌ها را در تنظیمات iOS روشن کنید.</translation>
 <translation id="9177438225260810839">جستجوی برگه‌های باز</translation>
 <translation id="9187853111759024059">بیش‌از ۹۹ برگه غیرفعال بسته شود؟</translation>
-<translation id="9188680907066685419">خروج از حساب مدیریت‌شده</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> روز قبل</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9203951165704618409">برای داشتن تجربه مرور سفارشی‌سازی‌شده، نوار نشانی را از بالا به پایین منتقل کنید.</translation>

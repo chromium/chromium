@@ -540,7 +540,6 @@
 <translation id="4227825898293920515">รหัสผ่านจะหมดอายุในอีก <ph name="TIME" /></translation>
 <translation id="4238516577297848345">ไม่มีงานที่กำลังพิมพ์</translation>
 <translation id="4239069858505860023">GPRS</translation>
-<translation id="4244962993387259361">คุณต้องมีพื้นที่เหลืออย่างน้อย 500 MB จึงจะทดสอบหน่วยความจำได้ ไปที่การตั้งค่า &gt; การจัดการพื้นที่เก็บข้อมูลเพื่อเพิ่มพื้นที่</translation>
 <translation id="4250229828105606438">ภาพหน้าจอ</translation>
 <translation id="4251839292699800785">สำนักงานที่มีสไตล์</translation>
 <translation id="4258281355379922695">เวลาในตอบสนองของ HTTP</translation>
@@ -912,6 +911,7 @@
 <translation id="6382182670717268353">ตัวอย่างโปรแกรมรักษาหน้าจอ</translation>
 <translation id="6388847657025262518">ตัวป้อนเอกสารของเครื่องสแกนมีกระดาษติด ตรวจสอบตัวป้อนเอกสารแล้วลองอีกครั้ง</translation>
 <translation id="6394634179843537518">เพิ่มไฟล์</translation>
+<translation id="6396719002784938593">หญ้าขนตากแห้ง</translation>
 <translation id="639964859328803943">จิบชาหลังเลิกงาน</translation>
 <translation id="6400680457268373900">ภาพเหนือจริงของ <ph name="DREAMSCAPES_OBJECT" /> ทำจาก <ph name="DREAMSCAPES_MATERIAL" /> ในสี <ph name="DREAMSCAPES_COLORS" /></translation>
 <translation id="6401427872449207797">การค้นหาด้วยเบราว์เซอร์</translation>
@@ -953,6 +953,7 @@
 <translation id="6575134580692778371">ไม่ได้กำหนดค่า</translation>
 <translation id="6576005492601044801">ด้านซ้าย</translation>
 <translation id="6579509898032828423">ใช้รูปภาพนี้</translation>
+<translation id="6587870930887634392">พืชอวบน้ำ</translation>
 <translation id="6596816719288285829">ที่อยู่ IP</translation>
 <translation id="6599673642868607614">ขอขอบคุณที่แสดงความคิดเห็น ความคิดเห็นของคุณจะช่วยเราปรับปรุงประสบการณ์การใช้งาน Chromebook และได้รับการตรวจสอบจากทีม แต่เราจะตอบกลับไม่ได้เนื่องจากได้รับรายงานเข้ามาเป็นจำนวนมาก</translation>
 <translation id="6618744767048954150">กำลังดำเนินการ</translation>
@@ -1111,6 +1112,7 @@
 <translation id="7497215489070763236">ใบรับรอง CA ของเซิร์ฟเวอร์</translation>
 <translation id="7501957181231305652">หรือ</translation>
 <translation id="7502658306369382406">ที่อยู่ IPv6</translation>
+<translation id="7507061649493508884"><ph name="FLOWER_TYPE" />สี<ph name="FLOWER_COLOR" />สดใส</translation>
 <translation id="7513770521371759388">ด้านล่าง</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">สร้าง</translation>
@@ -1160,7 +1162,6 @@
 <translation id="780301667611848630">ไม่ ขอบคุณ</translation>
 <translation id="7805768142964895445">สถานะ</translation>
 <translation id="7813073042185856802">ภูเขา</translation>
-<translation id="7819831665603418705">ใช้เทมเพลต</translation>
 <translation id="7819857487979277519">PSK (WPA หรือ RSN)</translation>
 <translation id="7824219488248240180">โพสต์อิมเพรสชันนิสม์</translation>
 <translation id="7828503206075800057">คาเฟ่ <ph name="CAFE_STYLE" /> <ph name="CAFE_TYPE" /></translation>
@@ -1171,6 +1172,7 @@
 <translation id="7850847810298646851">วอลเปเปอร์ที่ทำงานด้วยระบบ AI ของ Google</translation>
 <translation id="785170686607360576">ทิวลิป</translation>
 <translation id="7856267634822906833">หน้าจอสัมผัสบลูทูธ</translation>
+<translation id="7859006200041800233">ดอกกระบองเพชร</translation>
 <translation id="7869143217755017858">ปิดใช้โหมดมืด</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">ประเภทผู้ให้บริการ</translation>
@@ -1306,6 +1308,7 @@
 <translation id="8726019395068607495">หยุดพิมพ์ - ฝาเครื่องเปิดอยู่</translation>
 <translation id="8730621377337864115">เสร็จสิ้น</translation>
 <translation id="8747900814994928677">ยืนยันการเปลี่ยนแปลง</translation>
+<translation id="8749478549112817787">พื้นหลังกล้อง</translation>
 <translation id="8755946156089753497">หอคอย</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">อัลบั้มใน Google Photos</translation>

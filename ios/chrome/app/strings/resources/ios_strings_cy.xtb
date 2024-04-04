@@ -16,7 +16,6 @@
 <translation id="1066060668811609597">Rheoli Cysoni</translation>
 <translation id="1069154182096085577">Cyfrinair sydd Eisoes yn Bodoli</translation>
 <translation id="1076421457278169141">Mae'r cod wedi'i sganio</translation>
-<translation id="1076785341346483463">Cysoni Gyda Chyfrif a Reolir</translation>
 <translation id="1084365883616172403">Wedi gorffen postio i Facebook.</translation>
 <translation id="1103523840287552314">Cyfieithu <ph name="LANGUAGE" /> bob amser</translation>
 <translation id="110724200315609752">Newid i ffenestr sydd ar Agor</translation>
@@ -24,7 +23,6 @@
 <translation id="1112015203684611006">Wedi methu ag argraffu.</translation>
 <translation id="1125564390852150847">Creu tab newydd.</translation>
 <translation id="1126809382673880764">Nid yw'n eich amddiffyn rhag gwefannau peryglus, lawrlwythiadau nac estyniadau. Byddwch yn dal i gael amddiffyniad Pori'n Ddiogel, lle mae ar gael, mewn gwasanaethau Google eraill, megis Gmail a Search.</translation>
-<translation id="1145536944570833626">Dileu'r data presennol.</translation>
 <translation id="1147031633655575115">Wedi mewngofnodi fel <ph name="USER" /></translation>
 <translation id="1150989369772528668">Calendar</translation>
 <translation id="1154984953698510061">Gweld Tabiau Eraill</translation>
@@ -54,7 +52,6 @@
 <translation id="1273416271143914096">{count,plural, =1{{count} cyfrinair}zero{{count} cyfrinair}two{{count} gyfrinair}few{{count} cyfrinair}many{{count} cyfrinair}other{{count} cyfrinair}}</translation>
 <translation id="1275718070701477396">Wedi'i ddewis</translation>
 <translation id="1279024913354609713">Peidio â chaniatáu</translation>
-<translation id="1281818060020671000">Rheoli Data</translation>
 <translation id="1282311502488501110">Peidio â Mewngofnodi</translation>
 <translation id="1283524564873030414">24 awr ddiwethaf</translation>
 <translation id="1285320974508926690">Peidio byth â chyfieithu'r wefan hon</translation>
@@ -563,7 +560,6 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="3918585468378680136">Wrthi'n Nôl Statws Pecyn</translation>
 <translation id="3921585859122905677">Safle Bar Cyfeiriad</translation>
 <translation id="3922310737605261887">Chwilio am destun sydd wedi'i gopïo</translation>
-<translation id="3928666092801078803">Cyfunwch fy nata</translation>
 <translation id="3929457972718048006">Cyfeiriadau</translation>
 <translation id="3939505428630887612">Ynghylch y Dudalen Hon</translation>
 <translation id="3948600256434252210">Gallwch sweipio i'r dde i bori yn y modd Anhysbys.</translation>
@@ -943,6 +939,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="5857770089550859117">Mae angen cyfrinymadrodd i ddechrau cysoni.</translation>
 <translation id="5859715514067755465">Ymlaen</translation>
 <translation id="5860033963881614850">Diffodd</translation>
+<translation id="5860491529813859533">Troi ymlaen</translation>
 <translation id="5896576662943111387">Wedi'i greu ar gyfer iOS</translation>
 <translation id="5897749768294722429">I fynd yn ôl yn gyflym i wefannau rydych wedi ymweld â nhw, cysonwch eich tabiau a'ch hanes.</translation>
 <translation id="5897956970858271241">Mynd i Ddolen a Gopïwyd</translation>
@@ -961,7 +958,6 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="5971872012779224351">{count,plural, =1{Mae 1 nod tudalen wedi'i ddileu}zero{Mae {count} nod tudalen wedi'u dileu}two{Mae {count} nod tudalen wedi'u dileu}few{Mae {count} nod tudalen wedi'u dileu}many{Mae {count} nod tudalen wedi'u dileu}other{Mae {count} nod tudalen wedi'u dileu}}</translation>
 <translation id="5979837087407522202">Chwilio'r Cyfrineiriau</translation>
 <translation id="5981230843984570095">Cau Pob Tab Anweithredol</translation>
-<translation id="5982717868370722439">Ychwanegu data sydd eisoes yn bodoli at <ph name="USER_EMAIL" />.</translation>
 <translation id="5984222099446776634">Ymwelwyd yn Ddiweddar</translation>
 <translation id="598634819525651074">Ardal</translation>
 <translation id="5988097621740394599">Gweld gostyngiadau prisiau yn eich tabiau.</translation>
@@ -1192,7 +1188,6 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="7022197654033719543">Gwybodaeth am y Wefan</translation>
 <translation id="7029809446516969842">Cyfrineiriau</translation>
 <translation id="704692552158601232">Ap Porwr Diofyn</translation>
-<translation id="7062545763355031412">Derbyn a newid cyfrifon</translation>
 <translation id="7063811929043357292">Mae dy borwr yn cael ei reoli gan dy riant.
 <ph name="BEGIN_LINK" />Dysgu Rhagor<ph name="END_LINK" /></translation>
 <translation id="7069695992271320873">Tynnu o'r Ddyfais Hon</translation>
@@ -1385,7 +1380,6 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="804427445359061970">Byddwch yn gweld eich tabiau o ddyfeisiau eraill yma</translation>
 <translation id="8044568254381073661">Cadw Heb Amgryptiad</translation>
 <translation id="8059533439631660104">Yn crebachu'r adran.</translation>
-<translation id="806745655614357130">Cadw fy nata ar wahân</translation>
 <translation id="8069394452933076548">Dewiswch pryd y bydd tabiau nad ydynt wedi'u defnyddio'n ddiweddar yn cael eu symud i'r adran tabiau anweithredol.</translation>
 <translation id="8073670137947914548">Wedi gorffen lawrlwytho</translation>
 <translation id="8073872304774253879">Gwneud Chwiliadau a Phori yn well</translation>
@@ -1616,7 +1610,6 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="9165320910061267720">I gael hysbysiadau o rybuddion gostyngiad mewn prisiau, bydd angen i chi droi hysbysiadau ymlaen yn eich gosodiadau iOS.</translation>
 <translation id="9177438225260810839">Chwilio Tabiau sydd ar Agor</translation>
 <translation id="9187853111759024059">Cau 99+ o Dabiau Anweithredol?</translation>
-<translation id="9188680907066685419">Allgofnodi o'r cyfrif a reolir</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> d yn ôl</translation>
 <translation id="9203116392574189331">Trosglwyddo</translation>
 <translation id="9203951165704618409">Newidiwch eich bar cyfeiriad o'r brig i'r gwaelod i gael profiad pori personol.</translation>

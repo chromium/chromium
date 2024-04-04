@@ -442,6 +442,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2841907151129139818">Lülitati tahvelarvutirežiimile</translation>
 <translation id="2844169650293029770">C-tüüpi USB-seade (eesmine vasakpoolne port)</translation>
 <translation id="2844350028562914727">üksikasjad</translation>
+<translation id="2847759467426165163">Ülekandmine seadmesse</translation>
 <translation id="2848120746144143659">Vajutage täisekraani jäädvustamiseks sisestusklahvi</translation>
 <translation id="2849936225196189499">Kriitiline</translation>
 <translation id="2860184359326882502">Parim vaste</translation>
@@ -479,6 +480,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3009958530611748826">Valige kaust, kuhu salvestada</translation>
 <translation id="301282384882049174">Jagas teie administraator</translation>
 <translation id="301584155502740476">Kuumkoha üksikasjade kuvamine. Kuumkoht on välja lülitatud.</translation>
+<translation id="3017079585324758401">Taust</translation>
 <translation id="3018135054368884502">Keri meediasisu edasi</translation>
 <translation id="3033545621352269033">Sees</translation>
 <translation id="3033912566804961911">Ühita töölauaga <ph name="DESK_NAME" /></translation>
@@ -1043,7 +1045,6 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="5104236669533825617">Ekraaniülekannet ei saa luua</translation>
 <translation id="5107522548814527560">Veeb</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
-<translation id="5111930673176965299">Taustahägustus</translation>
 <translation id="5117590920725113268">Järgmise kuu kuvamine</translation>
 <translation id="5121628974188116412">Lehe lõppu liikumine</translation>
 <translation id="5122517996953421795">Töölaua <ph name="DESK_NAME" /> eelvaade. Inaktiivne töölaud.</translation>

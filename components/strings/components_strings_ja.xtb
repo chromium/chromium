@@ -413,6 +413,7 @@
 <translation id="1734878702283171397">システム管理者にお問い合わせください。</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />、<ph name="CARD_NETWORK_NAME" />、<ph name="CARD_LAST_FOUR_DIGITS" /> の有効期限は <ph name="CARD_EXPIRATION" /> です</translation>
 <translation id="1736420071277903564">パソコン</translation>
+<translation id="1739422091279046802">スクロールとズーム</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode が「<ph name="SECURE_DNS_MODE_SECURE" />」の場合は、有効な文字列を指定する必要があります。</translation>
 <translation id="1743393865165844832">寝具</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Google によるこのデータの使用:<ph name="END_BOLD" /> Chrome では、ユーザーによるウェブサイト閲覧時にそのユーザーの興味 / 関心のあるトピックが記録されます。トピックのラベルは、「アートやエンターテインメント」、「ショッピング」、「スポーツ」など事前に定義されています。その後、ユーザーが訪れるウェブサイトは、表示する広告をパーソナライズするため、Chrome に（閲覧履歴ではなく）いくつかのトピックを提示するよう要求できます。</translation>
@@ -451,6 +452,7 @@
 <translation id="1812527064848182527">横向き</translation>
 <translation id="1812975699435941848">健康教育、医療トレーニング</translation>
 <translation id="1813414402673211292">閲覧履歴データを削除</translation>
+<translation id="1816436748874040213">共有タブのスクロールとズームを要求できる</translation>
 <translation id="1818522458013171885">ブロックを解除</translation>
 <translation id="1818585559878922121">ドキュメンタリー映画</translation>
 <translation id="182139138257690338">自動ダウンロード</translation>
@@ -964,6 +966,7 @@
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> から、保存したあなたに関する情報の使用を求められています</translation>
 <translation id="2839032553903800133">通知をブロック中</translation>
 <translation id="2839501879576190149">偽のサイトにアクセスしようとしています</translation>
+<translation id="2843623755398178332">共有タブをスクロールしてズームしますか？</translation>
 <translation id="2851291081585704741">オフラインです</translation>
 <translation id="2856444702002559011"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> では、悪意のあるユーザーによって、パスワード、メッセージ、クレジット カードなどの情報が盗まれる可能性があります。<ph name="BEGIN_LEARN_MORE_LINK" />詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2858134430383535011">200x300 mm</translation>
@@ -1056,6 +1059,7 @@
 <translation id="3023165109041533893">ユーザーの閲覧履歴と個人情報を保護しつつ、関連性の高い広告を表示できるようにするウェブサイトによる広告の提案機能。ユーザーの訪れるウェブサイトが、ユーザーの行動に基づき、それ以降のウェブサイト閲覧時に関連する広告を提案します。設定でウェブサイトのリストを確認したり、必要のないサイトをブロックしたりすることができます。</translation>
 <translation id="3024663005179499861">ポリシー タイプが間違っています</translation>
 <translation id="3030331669969285614">以下は破壊的変更を防止したり元に戻したりするフラグです。期間限定でご利用いただけます。</translation>
+<translation id="3034526003882782781">スクロールとズームが許可されました</translation>
 <translation id="3036894576201005614">家庭用掃除用品</translation>
 <translation id="3037177537145227281">価格をトラッキングします</translation>
 <translation id="3037605927509011580">エラー</translation>
@@ -1338,6 +1342,7 @@
 <translation id="3567778190852720481">企業アカウントでは登録できません（企業アカウントは利用できません）。</translation>
 <translation id="3567901620846335314">100x150 mm</translation>
 <translation id="3568886473829759308">ウェブサイトにアクセスして、ビジネスが提供する情報、リソース、サービスを確認します。</translation>
+<translation id="3570079787344939099">スクロールとズーム</translation>
 <translation id="3574305903863751447"><ph name="COUNTRY" /> <ph name="STATE" /> <ph name="CITY" /></translation>
 <translation id="3575121482199441727">このサイトの通知を許可</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -1910,6 +1915,7 @@
 <translation id="4687718960473379118">ウェブサイトによる広告の提案</translation>
 <translation id="469028408546145398">[すべてのシークレット ウィンドウを閉じる] ボタンです。実行すると、現在開いているすべてのシークレット ウィンドウを閉じることができます</translation>
 <translation id="4691093235373904540">屋根材、ルーフ修理</translation>
+<translation id="4692623383562244444">検索エンジン</translation>
 <translation id="4698692901173737941">格闘技</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">側面</translation>
@@ -2458,6 +2464,7 @@
 <translation id="5765072501007116331">配達方法と要件を確認するには、住所を選択してください</translation>
 <translation id="57689295674415555">仮想カード番号が入力されない場合</translation>
 <translation id="5772086939108830423">別のデバイスのパスキーを使用する</translation>
+<translation id="5775734789739406956">右クリックすると、他のフォームに保存した情報を追加できます</translation>
 <translation id="5776313857861697733">優先度</translation>
 <translation id="5776574724412881956">仮想カードが入力されない場合は、仮想カードの詳細をクリックして、クリップボードにコピーしてください。<ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">テスト機能を有効にしました</translation>
@@ -2474,6 +2481,7 @@
 <translation id="580241730938216256">更新を開始</translation>
 <translation id="5803412860119678065"><ph name="CARD_DETAIL" /> を入力しますか？</translation>
 <translation id="5804241973901381774">権限</translation>
+<translation id="5806871454498484178">スクロールとズームはブロックされました</translation>
 <translation id="5808435672482059465">Chrome 履歴を表示</translation>
 <translation id="5810442152076338065"><ph name="DOMAIN" /> への接続は古い暗号スイートにより暗号化されています。</translation>
 <translation id="5813119285467412249">追加のやり直し（&amp;R）</translation>
@@ -3471,6 +3479,7 @@
 <translation id="7673278391011283842">用紙受け 6</translation>
 <translation id="7675325315208090829">お支払い方法を管理...</translation>
 <translation id="767550629621587224">プレカットタブ</translation>
+<translation id="7675756033024037212">スクロールとズームは許可されませんでした</translation>
 <translation id="7676643023259824263">クリップボードにあるテキスト<ph name="TEXT" />を検索します</translation>
 <translation id="7679367271685653708">Chrome の設定で閲覧履歴を表示、管理します</translation>
 <translation id="7679947978757153706">野球</translation>

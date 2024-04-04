@@ -114,14 +114,12 @@ Kaj je treba upoštevati:
 <translation id="3901001113120561395">Izkoristite Chrome na najboljši način.</translation>
 <translation id="3913386780052199712">Prijavljeni ste v Chrome</translation>
 <translation id="3967382818307165056">Upravljanje plačilnih sredstev v Chromu</translation>
-<translation id="3980220367029651214">Z računa za sinhronizacijo <ph name="USER_EMAIL1" /> boste preklopili na račun <ph name="USER_EMAIL2" />. Obstoječe podatke v Chromu upravlja <ph name="DOMAIN" />. S tem boste izbrisali podatke iz te naprave, vendar bodo vaši podatki še vedno na voljo v računu <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Vaša organizacija zahteva, da niste prijavljeni v Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome nima dostopa do fotografij ali videoposnetkov. Omogočite dostop v sistemu iOS: Settings &gt; Privacy &gt; Photos.</translation>
 <translation id="4064699917955374540">Če želite v računu Google uporabljati in shranjevati podatke iz Chroma, potrdite, da ste to vi.</translation>
 <translation id="4067858366537947361">Odpiranje aninimnega zavihka v Chromu</translation>
 <translation id="4093042601582616698">Želite nastaviti Chrome kot privzeti brskalnik?</translation>
 <translation id="417201473131094001">Ni podprto v Chromu Canary</translation>
-<translation id="4233521129555661685">Uporabnik <ph name="USER_EMAIL1" /> je uporabljal Chrome in pustil zaznamke, gesla in druge nastavitve v tej napravi.</translation>
 <translation id="424864128008805179">Se želite odjaviti iz Chroma?</translation>
 <translation id="4251174643044751591">V Chromu odpre stran z nastavitvijo plačilnih sredstev.</translation>
 <translation id="4453284704333523777">Upravljanje Chromovih nastavitev</translation>
@@ -240,7 +238,6 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="769104993356536261">Uporaba dejanj v Chromu za iOS</translation>
 <translation id="7693590760643069321">Zdaj lahko uporabljate Chrome, kadar koli se dotaknete povezav v sporočilih, dokumentih in drugih aplikacijah.</translation>
 <translation id="7698568245838009292">Chrome želi dostopati do fotoaparata</translation>
-<translation id="7754633291442704733">Vaša organizacija <ph name="DOMAIN" /> bo imela dostop do podatkov Chroma, zaznamkov, zgodovine, gesel in drugih nastavitev, ki jih shranite v tem računu. Ko se odjavite, bodo podatki izbrisani iz te naprave.  Vaši podatki bodo kljub temu še naprej shranjeni v upravljanem računu Google in bodo na voljo vaši organizaciji. Vaša organizacija lahko nastavi tudi uporabniške pravilnike, specifične za ta račun, to pa lahko spremeni način delovanja Chroma.</translation>
 <translation id="7780154209050837198">Če želite kar najbolje izkoristiti Chrome, se prijavite vanj z računom Google.</translation>
 <translation id="778855399387580014">Začnite iskanje na novem Chromovem zavihku.</translation>
 <translation id="7792140019572081272">Chrome zagotavlja varnost občutljivih podatkov s funkcijo Face ID.</translation>

@@ -16,7 +16,6 @@
 <translation id="1066060668811609597">Синкийг удирдах</translation>
 <translation id="1069154182096085577">Нууц үг аль хэдийн байна</translation>
 <translation id="1076421457278169141">Кодыг скан хийсэн</translation>
-<translation id="1076785341346483463">Тохиргоо хийгдсэн бүртгэлтэй синк хийх</translation>
 <translation id="1084365883616172403">Facebook дээр постолж дууслаа.</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" />-ийг үргэлж орчуулах</translation>
 <translation id="110724200315609752">Нээлттэй цонх руу сэлгэх</translation>
@@ -24,7 +23,6 @@
 <translation id="1112015203684611006">Хэвлэж чадсангүй.</translation>
 <translation id="1125564390852150847">Шинэ таб үүсгэнэ үү.</translation>
 <translation id="1126809382673880764">Таныг аюултай вебсайт, таталт болон өргөтгөлөөс хамгаалахгүй. Гэхдээ та Аюулгүй үзэх хамгаалалтыг Gmail, Хайлт зэрэг Google-н боломжтой бусад үйлчилгээнд авсан хэвээр байна.</translation>
-<translation id="1145536944570833626">Одоо байгаа өгөгдлийг устгана уу.</translation>
 <translation id="1147031633655575115"><ph name="USER" />-р нэвтэрсэн</translation>
 <translation id="1150989369772528668">Календарь</translation>
 <translation id="1154984953698510061">Бусад табыг харах</translation>
@@ -54,7 +52,6 @@
 <translation id="1273416271143914096">{count,plural, =1{{count} нууц үг}other{{count} нууц үг}}</translation>
 <translation id="1275718070701477396">Сонгогдсон</translation>
 <translation id="1279024913354609713">Бүү зөвшөөр</translation>
-<translation id="1281818060020671000">Өгөгдөл удирдах</translation>
 <translation id="1282311502488501110">Бүү нэвтэр</translation>
 <translation id="1283524564873030414">Сүүлийн 24 цаг</translation>
 <translation id="1285320974508926690">Энэ сайтыг хэзээ ч бүү хөрвүүл</translation>
@@ -563,7 +560,6 @@
 <translation id="3918585468378680136">Илгээмжийн төлөвийг авч байна</translation>
 <translation id="3921585859122905677">Хаяг оруулах хэсгийн байрлал</translation>
 <translation id="3922310737605261887">Хуулсан текстээ хайх</translation>
-<translation id="3928666092801078803">Миний өгөгдлийг нэгтгэх</translation>
 <translation id="3929457972718048006">Хаягууд</translation>
 <translation id="3939505428630887612">Энэ хуудасны тухай</translation>
 <translation id="3948600256434252210">Та Нууцлалтай горимд үзэхийн тулд баруун тийш шудрах боломжтой.</translation>
@@ -943,6 +939,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="5857770089550859117">Синкийг эхлүүлэхийн тулд нэвтрэх үг оруулах шаардлагатай.</translation>
 <translation id="5859715514067755465">Урагшлуулах</translation>
 <translation id="5860033963881614850">Идэвхгүй байна</translation>
+<translation id="5860491529813859533">Асаах</translation>
 <translation id="5896576662943111387">iOS-д зориулан бүтээсэн</translation>
 <translation id="5897749768294722429">Зочилсон сайтууддаа шуурхай буцаж очихын тулд табууд болон түүхээ синк хийгээрэй.</translation>
 <translation id="5897956970858271241">Хуулсан холбоосонд зочлох</translation>
@@ -961,7 +958,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="5971872012779224351">{count,plural, =1{1 хавчуургыг устгасан}other{{count} хавчуургыг устгасан}}</translation>
 <translation id="5979837087407522202">Нууц үгийг хайх</translation>
 <translation id="5981230843984570095">Бүх идэвхгүй табыг хаах</translation>
-<translation id="5982717868370722439">Одоо байгаа өгөгдлийг <ph name="USER_EMAIL" />-д нэмнэ үү.</translation>
 <translation id="5984222099446776634">Саяхан хандсан</translation>
 <translation id="598634819525651074">Бүс</translation>
 <translation id="5988097621740394599">Өөрийн табууд дээрх үнэ бууралтыг харна уу.</translation>
@@ -1192,7 +1188,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7022197654033719543">Сайтын мэдээлэл</translation>
 <translation id="7029809446516969842">Нууц үг</translation>
 <translation id="704692552158601232">Хөтчийн өгөгдмөл апп</translation>
-<translation id="7062545763355031412">Зөвшөөрч, бүртгэлийг шилжүүлэх</translation>
 <translation id="7063811929043357292">Таны бүртгэлийг танай эцэг эх удирддаг.
 <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="7069695992271320873">Энэ төхөөрөмжөөс хасах</translation>
@@ -1385,7 +1380,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="804427445359061970">Та бусад төхөөрөмжийн табаа эндээс олох болно</translation>
 <translation id="8044568254381073661">Шифрлэлтгүйгээр хадгалах</translation>
 <translation id="8059533439631660104">Хэсгийг хураалаа.</translation>
-<translation id="806745655614357130">Миний өгөгдлийг тусад нь байлгах</translation>
 <translation id="8069394452933076548">Ойрын үед ашиглаагүй табуудыг идэвхгүй табын хэсэг рүү хэзээ зөөхийг сонгоно уу.</translation>
 <translation id="8073670137947914548">Татаж дууслаа</translation>
 <translation id="8073872304774253879">Хайлт болон хөтлөх явцыг сайжруулах</translation>
@@ -1616,7 +1610,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="9165320910061267720">Үнэ буурсан талаарх дохионы мэдэгдэл авахын тулд та iOS-н тохиргоондоо мэдэгдлийг асаах шаардлагатай болно.</translation>
 <translation id="9177438225260810839">Нээлттэй табуудыг хайх</translation>
 <translation id="9187853111759024059">Идэвхгүй 99+ табыг хаах уу?</translation>
-<translation id="9188680907066685419">Удирдсан бүртгэлээс гарах</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> өдрийн өмнө</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9203951165704618409">Өөрчилсөн үзэх хэрэглээг авах бол хаяг оруулах хэсгээ дээрээс доош шилжүүлнэ үү.</translation>

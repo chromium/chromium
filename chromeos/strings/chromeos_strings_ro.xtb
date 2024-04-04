@@ -540,7 +540,6 @@
 <translation id="4227825898293920515">Parola expiră în <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nicio sarcină de printare în desfășurare</translation>
 <translation id="4239069858505860023">GPRS</translation>
-<translation id="4244962993387259361">Ai nevoie de minimum 500 MB de spațiu disponibil pentru a rula un test de memorie. Pentru a elibera spațiu, accesează Setări &gt; Gestionarea stocării.</translation>
 <translation id="4250229828105606438">Captură de ecran</translation>
 <translation id="4251839292699800785">Birou elegant</translation>
 <translation id="4258281355379922695">Latența solicitărilor HTTP</translation>
@@ -912,6 +911,7 @@
 <translation id="6382182670717268353">Previzualizarea screensaverului</translation>
 <translation id="6388847657025262518">Alimentatorul de documente al scanerului este blocat. Verifică alimentatorul și încearcă din nou.</translation>
 <translation id="6394634179843537518">Adaugă un fișier</translation>
+<translation id="6396719002784938593">iarbă uscată decorativă</translation>
 <translation id="639964859328803943">ceai și gustări</translation>
 <translation id="6400680457268373900">Fantezie cu <ph name="DREAMSCAPES_OBJECT" /> din <ph name="DREAMSCAPES_MATERIAL" /> în tonuri de <ph name="DREAMSCAPES_COLORS" /></translation>
 <translation id="6401427872449207797">căutare în browser</translation>
@@ -953,6 +953,7 @@
 <translation id="6575134580692778371">Nu este configurată</translation>
 <translation id="6576005492601044801">stânga</translation>
 <translation id="6579509898032828423">Folosește fotografia</translation>
+<translation id="6587870930887634392">plantă suculentă</translation>
 <translation id="6596816719288285829">Adresă IP</translation>
 <translation id="6599673642868607614">Mulțumim pentru feedback. Feedbackul tău ne ajută să îmbunătățim experiența Chromebookurilor și va fi examinat de echipa noastră. Din cauza numărului mare de rapoarte, nu vom putea să trimitem un răspuns.</translation>
 <translation id="6618744767048954150">Rulează</translation>
@@ -1111,6 +1112,7 @@
 <translation id="7497215489070763236">Certificat CA de server</translation>
 <translation id="7501957181231305652">sau</translation>
 <translation id="7502658306369382406">Adresă IPv6</translation>
+<translation id="7507061649493508884">O <ph name="FLOWER_TYPE" /> <ph name="FLOWER_COLOR" /> viu colorată</translation>
 <translation id="7513770521371759388">jos</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">Creați</translation>
@@ -1160,7 +1162,6 @@
 <translation id="780301667611848630">Nu, mulțumesc</translation>
 <translation id="7805768142964895445">Stare</translation>
 <translation id="7813073042185856802">munte</translation>
-<translation id="7819831665603418705">Folosește un șablon</translation>
 <translation id="7819857487979277519">PSK (WPA sau RSN)</translation>
 <translation id="7824219488248240180">post-impresionist</translation>
 <translation id="7828503206075800057">O cafenea <ph name="CAFE_TYPE" /> <ph name="CAFE_STYLE" /></translation>
@@ -1171,6 +1172,7 @@
 <translation id="7850847810298646851">Imagine de fundal bazată pe Google AI</translation>
 <translation id="785170686607360576">lalea</translation>
 <translation id="7856267634822906833">Ecran tactil cu Bluetooth</translation>
+<translation id="7859006200041800233">floare de cactus</translation>
 <translation id="7869143217755017858">Dezactivează modul întunecat</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tip furnizor</translation>
@@ -1306,6 +1308,7 @@
 <translation id="8726019395068607495">Oprită – Ușă deschisă</translation>
 <translation id="8730621377337864115">Terminat</translation>
 <translation id="8747900814994928677">Confirmă schimbarea</translation>
+<translation id="8749478549112817787">Imaginea de fundal a camerei foto</translation>
 <translation id="8755946156089753497">turn</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album Google Foto</translation>

@@ -91,7 +91,6 @@ Du kan finde flere indstillinger, der bruger data til at forbedre din Chromium-o
 <translation id="3567399274263440288">Log ind i Chromium med din Google-konto for at få mest muligt ud af Chromium.</translation>
 <translation id="3634039384458740619">Åbn Chromium-indstillinger</translation>
 <translation id="3639997914391704523">Chromium kan tjekke dine adgangskoder, når du er logget ind med din Google-konto</translation>
-<translation id="3650632991272923014"><ph name="USER_EMAIL1" /> brugte Chromium og gemte bogmærker, adgangskoder og andre indstillinger på denne enhed.</translation>
 <translation id="3688710892786762883">Chromium registrerer pakkesporingsnumre på de websites, du besøger, og viser dig pakkeopdateringer på siden Ny fane. Dine data deles med Google med henblik på at levere denne funktion og forbedre Shopping for alle.</translation>
 <translation id="372658070733623520">Verificer din identitet for at bruge og gemme Chromium-data på din Google-konto.</translation>
 <translation id="3780779443901618967">Advarer dig om skadelige websites – også websites, som Google ikke tidligere har kendt til – ved at analysere flere data fra websites end Standardbeskyttelse. Du kan vælge at springe Chromium-advarsler over.</translation>
@@ -182,7 +181,6 @@ Vær opmærksom på følgende:
 <translation id="5983312940147103417">Gør Chromium bedre</translation>
 <translation id="5985102273857091344">Vælg "Chromium".</translation>
 <translation id="5985254578475526217">Hvis du vil modtage notifikationer fra Chromium, skal du aktivere notifikationer i iOS-indstillingerne.</translation>
-<translation id="6062449165341879460">Din organisation <ph name="DOMAIN" /> får adgang til din Chromium-historik samt dine Chromium-data, -bogmærker, -adgangskoder og andre indstillinger, som du har gemt på denne konto. Når du logger ud, ryddes dine data fra denne enhed.  Dine data vil dog fortsat være gemt på din managerstyrede Google-konto, og de vil fortsat være tilgængelige for din organisation. Din organisation kan også konfigurere brugerpolitikker, der gælder specifikt for den pågældende konto, og som kan ændre Chromiums adfærd.</translation>
 <translation id="6093744543579359059">Administrer adgangskoder i Chromium</translation>
 <translation id="6104024151682120539">Åbn i Chromium</translation>
 <translation id="61109258320235597">Angiv din adgangssætning for at bruge og gemme Chromium-data på din Google-konto.</translation>
@@ -247,7 +245,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="7763454117143368771">Brug Chromium som din standardbrowser for at blive beskyttet mod skadelige websites og holde dine adgangskoder private</translation>
 <translation id="78025249032851484">Chromium er forældet.</translation>
 <translation id="7859018312476869945">Når du indtaster noget i adresselinjen eller søgefeltet, sender Chromium det, du skriver, til din standardsøgemaskine for at få bedre forslag. Dette er deaktiveret i inkognitotilstand.</translation>
-<translation id="786327964234957808">Du er ved at skifte synkroniseringskonto fra <ph name="USER_EMAIL1" /> til <ph name="USER_EMAIL2" />. Dine eksisterende Chromium-data administreres af <ph name="DOMAIN" />. Denne handling sletter dine data fra denne enhed, men dine data forbliver gemt på <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Begynd at bruge Chromium-scanner</translation>
 <translation id="7905064834449738336">Når du bruger en adgangskode, advarer Chromium dig, hvis den er blevet afsløret online. Dine adgangskoder og brugernavne krypteres under disse tjek, så de kan ikke læses af nogen, heller ikke Google.</translation>
 <translation id="7911732829884437264">Brug Chromium som standard</translation>

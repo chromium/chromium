@@ -114,14 +114,12 @@
 <translation id="3901001113120561395">最大限度利用 Chrome。</translation>
 <translation id="3913386780052199712">已登录 Chrome</translation>
 <translation id="3967382818307165056">在 Chrome 中管理付款方式</translation>
-<translation id="3980220367029651214">您正要将同步账号从 <ph name="USER_EMAIL1" /> 切换到 <ph name="USER_EMAIL2" />。您现有的 Chrome 数据由 <ph name="DOMAIN" /> 管理。切换同步账号后，您的数据将从这台设备上删除，但仍会保留在 <ph name="USER_EMAIL1" /> 中。</translation>
 <translation id="3984746313391923992">贵组织要求您保持已退出 Chrome 的状态。</translation>
 <translation id="3988789688219830639">Google Chrome 无权访问您的照片或视频。请依次点按 iOS 中的“设置”&gt;“隐私”&gt;“照片”，授予其访问权限。</translation>
 <translation id="4064699917955374540">如要将 Chrome 数据保存在您的 Google 账号中并使用这些数据，请确认是您本人在操作。</translation>
 <translation id="4067858366537947361">打开 Chrome 无痕式标签页</translation>
 <translation id="4093042601582616698">将 Chrome 设为默认浏览器？</translation>
 <translation id="417201473131094001">在 Chrome Canary 版中不受支持</translation>
-<translation id="4233521129555661685"><ph name="USER_EMAIL1" /> 原本使用 Chrome，并在此设备上保存了书签、密码及其他设置。</translation>
 <translation id="424864128008805179">退出 Chrome？</translation>
 <translation id="4251174643044751591">在 Chrome 中打开“付款方式设置”页面。</translation>
 <translation id="4453284704333523777">管理 Chrome 设置</translation>
@@ -238,7 +236,6 @@
 <translation id="769104993356536261">在 iOS 设备上使用 Chrome 操作</translation>
 <translation id="7693590760643069321">现在，每当点按消息、文档和其他应用中的链接时，您都可以使用 Chrome 打开链接。</translation>
 <translation id="7698568245838009292">Chrome 想要访问相机</translation>
-<translation id="7754633291442704733">贵组织 (<ph name="DOMAIN" />) 将能够访问您在此账号中存储的 Chrome 数据、书签、历史记录、密码和其他设置。当您退出账号时，系统将从这部设备上清除您的数据。不过，您的数据仍会存储在您名下受管理的 Google 账号中，且可供贵组织访问。贵组织也可专门针对上述账号设置用户规范，这可能会改变 Chrome 的行为。</translation>
 <translation id="7780154209050837198">若要充分利用 Chrome，请使用您的 Google 账号登录 Chrome。</translation>
 <translation id="778855399387580014">在新的 Chrome 标签页中发起搜索。</translation>
 <translation id="7792140019572081272">Chrome 可利用面容 ID 确保您的敏感数据安全。</translation>

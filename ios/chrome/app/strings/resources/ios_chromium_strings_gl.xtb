@@ -91,7 +91,6 @@ Se queres ver máis opcións de configuración que usen datos para mellorar a t�
 <translation id="3567399274263440288">Para tirarlle o máximo partido a Chromium, inicia sesión coa túa Conta de Google en Chromium.</translation>
 <translation id="3634039384458740619">Abre a configuración de Chromium</translation>
 <translation id="3639997914391704523">Chromium pode comprobar os teus contrasinais cando inicies sesión coa túa Conta de Google.</translation>
-<translation id="3650632991272923014"><ph name="USER_EMAIL1" /> estivo usando Chromium e deixou os marcadores, os contrasinais e outras opcións de configuración neste dispositivo.</translation>
 <translation id="3688710892786762883">Chromium detectará os números de seguimento dos paquetes nos sitios que visites e mostrarache a información actualizada na páxina Nova pestana. Os teus datos compartiranse con Google para poder fornecer esta función e mellorar a experiencia de compra para todo o mundo.</translation>
 <translation id="372658070733623520">Para usar e gardar os datos de Chromium na túa Conta de Google, verifica a túa identidade.</translation>
 <translation id="3780779443901618967">Analiza máis datos de sitios que a protección estándar para avisarte sobre os sitios perigosos (mesmo sobre os que Google non coñeza ata ese momento). Se queres, podes omitir as advertencias de Chromium.</translation>
@@ -182,7 +181,6 @@ Cuestións que debes ter en conta:
 <translation id="5983312940147103417">Mellora Chromium</translation>
 <translation id="5985102273857091344">Selecciona Chromium.</translation>
 <translation id="5985254578475526217">Para recibir notificacións de Chromium, activa as notificacións na configuración de iOS.</translation>
-<translation id="6062449165341879460">A túa organización (<ph name="DOMAIN" />) terá acceso aos teus datos de Chromium, así como aos marcadores, ao historial, aos contrasinais e a outras opcións de configuración que almacenes nesta conta. Cando peches sesión, os datos borraranse deste dispositivo.  Non obstante, permanecerán almacenados na túa Conta de Google xestionada e estarán dispoñibles para a túa organización. Esta tamén pode definir políticas de usuario específicas para esa conta que poden modificar o comportamento de Chromium.</translation>
 <translation id="6093744543579359059">Xestiona os contrasinais en Chromium</translation>
 <translation id="6104024151682120539">Abrir en Chromium</translation>
 <translation id="61109258320235597">Para usar e gardar os datos de Chromium na túa Conta de Google, introduce o a túa frase de acceso.</translation>
@@ -247,7 +245,6 @@ Só poderá ler os teus datos encriptados quen teña a túa frase de acceso (Goo
 <translation id="7763454117143368771">Usa Chromium como navegador predeterminado para protexer a túa seguranza contra sitios perigosos e manter a salvo os teus contrasinais</translation>
 <translation id="78025249032851484">Estás usando unha versión de Chromium desactualizada.</translation>
 <translation id="7859018312476869945">Cando escribes algo na barra de enderezos ou na caixa de busca, Chromium envíallo ao motor de busca predeterminado para obter mellores suxestións. Esta opción está desactivada no modo de incógnito.</translation>
-<translation id="786327964234957808">Estás cambiando a conta de sincronización <ph name="USER_EMAIL1" /> por <ph name="USER_EMAIL2" />. <ph name="DOMAIN" /> xestiona os datos de Chromium actuais. Ao realizar esta acción, eliminaranse os teus datos deste dispositivo, pero conservaranse en <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Comeza a utilizar o escáner de Chromium</translation>
 <translation id="7905064834449738336">Cando usas un contrasinal, Chromium avísate se se publicou en liña. Ao facelo, os teus contrasinais e os teus nomes de usuario encríptanse, polo que ninguén pode lelos, nin sequera Google.</translation>
 <translation id="7911732829884437264">Utiliza Chromium de forma predeterminada</translation>

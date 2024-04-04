@@ -71,6 +71,7 @@
 <translation id="1125573121925420732">網站更新安全性設定期間，可能會經常顯示警告。這項行為將於近期內改善。</translation>
 <translation id="112840717907525620">政策快取正確</translation>
 <translation id="1131264053432022307">你複製的圖片</translation>
+<translation id="1138458427267715730">如果產品在任何網站上降價，透過快訊取得通知</translation>
 <translation id="1142713751288681188">紙張類型</translation>
 <translation id="1142846828089312304">在無痕模式中封鎖第三方 Cookie</translation>
 <translation id="1144136880160289237">目前沒有任何有效主題</translation>
@@ -411,6 +412,7 @@
 <translation id="1734878702283171397">建議您與系統管理員聯絡。</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />，<ph name="CARD_NETWORK_NAME" />，<ph name="CARD_LAST_FOUR_DIGITS" />，到期日為 <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">電腦</translation>
+<translation id="1739422091279046802">捲動及縮放</translation>
 <translation id="1741613555002899862">將 DnsOverHttpsMode 設為 <ph name="SECURE_DNS_MODE_SECURE" /> 時，必須指定有效的字串。</translation>
 <translation id="1743393865165844832">寢具與床用織物</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />我們使用這些資料的方式：<ph name="END_BOLD" />Chrome 會在你瀏覽內容時記錄感興趣的主題。系統已預先定義主題標籤，包括「藝術與娛樂」、「購物」和「運動」等。在此之後，你造訪的網站就可以要求 Chrome 提供一些主題 (而非你的瀏覽記錄)，據此向你放送個人化廣告。</translation>
@@ -449,6 +451,7 @@
 <translation id="1812527064848182527">橫向</translation>
 <translation id="1812975699435941848">健康教育與醫療訓練</translation>
 <translation id="1813414402673211292">清除瀏覽資料</translation>
+<translation id="1816436748874040213">可要求捲動及縮放已分享的分頁</translation>
 <translation id="1818522458013171885">解除封鎖</translation>
 <translation id="1818585559878922121">紀錄片</translation>
 <translation id="182139138257690338">自動下載</translation>
@@ -962,6 +965,7 @@
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> 要求使用與你相關的既有資訊</translation>
 <translation id="2839032553903800133">已封鎖通知</translation>
 <translation id="2839501879576190149">你要造訪的是偽造的網站</translation>
+<translation id="2843623755398178332">要捲動及縮放已分享的分頁嗎？</translation>
 <translation id="2851291081585704741">你已離線</translation>
 <translation id="2856444702002559011">攻擊者可能會試圖從 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 竊取你的資訊 (例如密碼、郵件或信用卡資料)。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2858134430383535011">200 x 300 公釐</translation>
@@ -1054,6 +1058,7 @@
 <translation id="3023165109041533893">網站建議廣告有助於保護瀏覽記錄和身分，同時可讓網站向你顯示相關廣告。隨著你持續瀏覽，你造訪過的網站可以根據你的活動推薦相關廣告。你可以查看這些網站的清單，在設定中封鎖不適合的網站。</translation>
 <translation id="3024663005179499861">政策類型有誤</translation>
 <translation id="3030331669969285614">這些旗標是用來防止或還原破壞性變更，且只能在限定期間內使用。</translation>
+<translation id="3034526003882782781">允許捲動及縮放</translation>
 <translation id="3036894576201005614">家用清潔用品</translation>
 <translation id="3037177537145227281">追蹤價格</translation>
 <translation id="3037605927509011580">糟糕！</translation>
@@ -1335,6 +1340,7 @@
 <translation id="3567778190852720481">無法使用公司帳戶註冊 (公司帳戶不符合註冊資格)。</translation>
 <translation id="3567901620846335314">100 x 150 公釐</translation>
 <translation id="3568886473829759308">前往網站查看商家提供的資訊、資源或服務。</translation>
+<translation id="3570079787344939099">捲動及縮放</translation>
 <translation id="3574305903863751447"><ph name="COUNTRY" />，<ph name="STATE" />，<ph name="CITY" /></translation>
 <translation id="3575121482199441727">允許這個網站的通知</translation>
 <translation id="3575168918110434329">A4 x 7</translation>
@@ -1907,6 +1913,7 @@
 <translation id="4687718960473379118">網站建議廣告</translation>
 <translation id="469028408546145398">「關閉無痕視窗」按鈕，啟動後即可關閉目前開啟的所有無痕視窗</translation>
 <translation id="4691093235373904540">屋頂施工</translation>
+<translation id="4692623383562244444">搜尋引擎</translation>
 <translation id="4698692901173737941">搏擊運動</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">側邊</translation>
@@ -2455,6 +2462,7 @@
 <translation id="5765072501007116331">如要查看快遞方式和相關規定，請選取一個地址</translation>
 <translation id="57689295674415555">尚未填寫虛擬卡號嗎？</translation>
 <translation id="5772086939108830423">使用其他裝置的密碼金鑰</translation>
+<translation id="5775734789739406956">按一下滑鼠右鍵即可將已儲存的資訊填入任何表單</translation>
 <translation id="5776313857861697733">優先順序</translation>
 <translation id="5776574724412881956">系統未填入虛擬卡片資料嗎？按一下虛擬卡片資料即可複製到剪貼簿。<ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">實驗已啟用</translation>
@@ -2471,6 +2479,7 @@
 <translation id="580241730938216256">開始更新</translation>
 <translation id="5803412860119678065">要填入你的 <ph name="CARD_DETAIL" /> 資訊嗎？</translation>
 <translation id="5804241973901381774">權限</translation>
+<translation id="5806871454498484178">已禁止捲動及縮放</translation>
 <translation id="5808435672482059465">查看 Chrome 歷史記錄</translation>
 <translation id="5810442152076338065">您的 <ph name="DOMAIN" /> 連線使用過舊的加密套件進行加密。</translation>
 <translation id="5813119285467412249">重做新增(&amp;R)</translation>
@@ -3467,6 +3476,7 @@
 <translation id="7673278391011283842">出紙槽 6</translation>
 <translation id="7675325315208090829">管理付款方式...</translation>
 <translation id="767550629621587224">預先裁切分隔紙</translation>
+<translation id="7675756033024037212">不允許捲動及縮放</translation>
 <translation id="7676643023259824263">搜尋剪貼簿文字：<ph name="TEXT" /></translation>
 <translation id="7679367271685653708">在 Chrome 設定中查看及管理瀏覽記錄</translation>
 <translation id="7679947978757153706">棒球</translation>

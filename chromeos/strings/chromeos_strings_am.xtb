@@ -540,7 +540,6 @@
 <translation id="4227825898293920515">የይለፍ ቃል በ <ph name="TIME" /> ውስጥ አገልግሎት ጊዜው ያበቃል</translation>
 <translation id="4238516577297848345">በሂደት ላይ ያሉ ምንም የህትመት ስራዎች የሉም</translation>
 <translation id="4239069858505860023">ጂፒአርኤስ</translation>
-<translation id="4244962993387259361">የማህደረ ትውስታ ሙከራን ለማካሄድ ቢያንስ 500 ሜባ ነፃ ያስፈልገዎታል። ቦታን ለማስለቀቅ ወደ ቅንብሮች &gt; የማከማቻ አቀናባሪ ይሂዱ።</translation>
 <translation id="4250229828105606438">ቅጽበታዊ ገፅ ዕይታ</translation>
 <translation id="4251839292699800785">ቅጥ ያለው ቢሮ</translation>
 <translation id="4258281355379922695">የኤችቲቲፒ የስርዓተ ምላሽ ጊዜ</translation>
@@ -912,6 +911,7 @@
 <translation id="6382182670717268353">የማያ ገፅ ቆጣቢ ቅድመ ዕይታ</translation>
 <translation id="6388847657025262518">የቃኚው ሰነድ መጋቢ ተቀርቅሯል። መጋቢውን ይፈትሹ እና እንደገና ይሞክሩ።</translation>
 <translation id="6394634179843537518">ፋይል አክል</translation>
+<translation id="6396719002784938593">የደረቀ የላባ ሣር</translation>
 <translation id="639964859328803943">መክሰስ</translation>
 <translation id="6400680457268373900">በ<ph name="DREAMSCAPES_COLORS" /> ውስጥ ከ<ph name="DREAMSCAPES_MATERIAL" /> የተሰራ ያልተለመደ <ph name="DREAMSCAPES_OBJECT" /></translation>
 <translation id="6401427872449207797">የአሳሸ ፍለጋ</translation>
@@ -953,6 +953,7 @@
 <translation id="6575134580692778371">አልተዋቀረም</translation>
 <translation id="6576005492601044801">የግራ</translation>
 <translation id="6579509898032828423">ይህን ፎቶ ተጠቀም</translation>
+<translation id="6587870930887634392">ልፍት</translation>
 <translation id="6596816719288285829">IP አድራሻ</translation>
 <translation id="6599673642868607614">ስለግብረመልስዎ እናመሰግናለን። የእርስዎ ግብረመልስ የChromebook ተሞክሮን እንድናሻሽል ያግዘናል እና በቡድናችን የሚገመገም ይሆናል። ብዙ ቁጥር ባላቸው ሪፖርቶች ምክንያት መልስ መላክ አንችልም።</translation>
 <translation id="6618744767048954150">በማሄድ ላይ</translation>
@@ -1111,6 +1112,7 @@
 <translation id="7497215489070763236">የአገልጋይ CA እውቅና ማረጋገጫ</translation>
 <translation id="7501957181231305652">ወይም</translation>
 <translation id="7502658306369382406">የIPv6 አድራሻ</translation>
+<translation id="7507061649493508884">አንፀባራቂ <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /></translation>
 <translation id="7513770521371759388">ዝቅተኛ</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">ፍጠር</translation>
@@ -1160,7 +1162,6 @@
 <translation id="780301667611848630">አይ፣ አመሰግናለሁ</translation>
 <translation id="7805768142964895445">ሁኔታ</translation>
 <translation id="7813073042185856802">ተራራ</translation>
-<translation id="7819831665603418705">አንድ ቅንብር ደንብ ይጠቀሙ</translation>
 <translation id="7819857487979277519">PSK (WPA ወይም RSN)</translation>
 <translation id="7824219488248240180">ድህረ-ኢምፕሬሽኒስት</translation>
 <translation id="7828503206075800057">የ<ph name="CAFE_STYLE" /> <ph name="CAFE_TYPE" /> ካፌ</translation>
@@ -1171,6 +1172,7 @@
 <translation id="7850847810298646851">በGoogle AI የተጎላበተ ልጣፍ</translation>
 <translation id="785170686607360576">ቱሊፕ</translation>
 <translation id="7856267634822906833">የብሉቱዝ መነካት የሚችል ማያ</translation>
+<translation id="7859006200041800233">የቁልቋል አበባ</translation>
 <translation id="7869143217755017858">ጨለማ ሁነታን አሰናክል</translation>
 <translation id="7881066108824108340">ዲኤንኤስ</translation>
 <translation id="7882358943899516840">የአቅራቢ ዓይነት</translation>
@@ -1306,6 +1308,7 @@
 <translation id="8726019395068607495">ቆሟል - በር ክፍት ነው</translation>
 <translation id="8730621377337864115">ተከናውኗል</translation>
 <translation id="8747900814994928677">ለውጥን አረጋግጥ</translation>
+<translation id="8749478549112817787">የካሜራ ዳራ</translation>
 <translation id="8755946156089753497">ማማ</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">የGoogle ፎቶዎች አልበም</translation>

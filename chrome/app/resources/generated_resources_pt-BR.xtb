@@ -41,6 +41,7 @@
 <translation id="102916930470544692">Chave de acesso</translation>
 <translation id="1029317248976101138">Zoom</translation>
 <translation id="1029526375103058355">Tocar para clicar</translation>
+<translation id="1029724557649700742">Novos recursos serão incluídos à medida que forem disponibilizados. Eles podem variar de acordo com o dispositivo.</translation>
 <translation id="1031362278801463162">Carregando visualização</translation>
 <translation id="1032605640136438169">Leia os novos termos</translation>
 <translation id="103279545524624934">Libere espaço em disco para iniciar apps Android.</translation>
@@ -1533,7 +1534,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2127372758936585790">Carregador de baixa potência</translation>
 <translation id="212862741129535676">Porcentagem de ocupação em estado de frequência</translation>
 <translation id="212876957201860463">Preparando para configurar seu dispositivo…</translation>
-<translation id="2130909682040406368">Saiba mais sobre como usar ferramentas de IA</translation>
 <translation id="2131077480075264">Não foi possível instalar o app "<ph name="APP_NAME" />" porque ele não é permitido por "<ph name="IMPORT_NAME" />"</translation>
 <translation id="2133775869826239001">Escolher mais recursos para configurar</translation>
 <translation id="2133857665503360653">Tentar de novo: <ph name="FILE_NAME" /></translation>
@@ -1572,6 +1572,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2155473371917268529">A configuração de visibilidade atual é: seus dispositivos</translation>
 <translation id="2155772377859296191">Resolução: <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156707722163479690">Com permissão para rolar a tela e aplicar zoom em guias compartilhadas</translation>
 <translation id="2156877321344104010">Fazer a confirmação de segurança novamente</translation>
 <translation id="2157474325782140681">Para ter outros recursos, use uma base de encaixe Dell compatível com este Chromebook.</translation>
 <translation id="215753907730220065">Sair do modo tela cheia</translation>
@@ -1993,6 +1994,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2459706890611560967">Retomar transmissão da guia para <ph name="DEVICE_NAME" /></translation>
 <translation id="2460356425461033301">Faça backup e use seus dados do navegador em qualquer dispositivo</translation>
 <translation id="2460482211073772897">Em outras pastas</translation>
+<translation id="2461550163693930491">Não permitir que os sites rolem a tela e apliquem zoom em guias compartilhadas</translation>
 <translation id="2461593638794842577">É possível desativar essa configuração para salvar suas senhas apenas neste dispositivo</translation>
 <translation id="2462332841984057083">O Steam já está sendo configurado. Aguarde a conclusão do processo.</translation>
 <translation id="2462724976360937186">ID da chave da autoridade de certificação</translation>
@@ -2026,6 +2028,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2482895651873876648">A guia foi movida para o grupo <ph name="GROUP_NAME" />: <ph name="GROUP_CONTENTS" /></translation>
 <translation id="2483627560139625913">Definir o mecanismo de pesquisa nas configurações do navegador Chrome</translation>
 <translation id="2483698983806594329">Download de arquivo não verificado</translation>
+<translation id="2484574361686148760">Atualizar informações dos clientes do Wi-Fi Direct</translation>
 <translation id="2484743711056182585">Remover permissão</translation>
 <translation id="2484909293434545162">Se um site usar cookies, ele vai aparecer aqui</translation>
 <translation id="2484959914739448251">Para limpar os dados de navegação de todos os dispositivos sincronizados e da sua Conta do Google, <ph name="BEGIN_LINK" />digite sua senha longa<ph name="END_LINK" />.</translation>
@@ -2219,6 +2222,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2629227353894235473">Desenvolver apps Android</translation>
 <translation id="2629437048544561682">Limpar Canvas</translation>
 <translation id="2631498379019108537">Mostrar opções de entrada na estante</translation>
+<translation id="2632176111713971407">Os sites podem pedir para rolar a tela e aplicar zoom em guias compartilhadas</translation>
 <translation id="2633212996805280240">Remover "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="263325223718984101">O <ph name="PRODUCT_NAME" /> não conseguiu completar a instalação, mas continuará a ser executado a partir da sua imagem de disco.</translation>
 <translation id="2633764681656412085">FIDO</translation>
@@ -3525,6 +3529,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3659550105763988702">Use senha de acesso para no app <ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">Você digitou um código de acesso incorreto muitas vezes. Tente novamente mais tarde</translation>
 <translation id="3660234220361471169">Não confiáveis</translation>
+<translation id="3661106764436337772">Escreva com mais rapidez e confiança</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 senha encontrada}one{{NUM_PASSWORDS} senha encontrada}other{{NUM_PASSWORDS} senhas encontradas}}</translation>
 <translation id="3662207097851752847">Confirme sua Conta do Google no smartphone</translation>
 <translation id="3663417513679360795">Mais informações sobre como ativar o pré-carregamento padrão</translation>
@@ -3877,6 +3882,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="3900966090527141178">Exportar senhas</translation>
 <translation id="3902789559055749153">Escolha como você quer criar uma senha de acesso para o app <ph name="APP_NAME" /></translation>
 <translation id="3903187154317825986">Teclado integrado</translation>
+<translation id="3903696968689283281">Informações dos proprietários do Wi-Fi Direct:</translation>
 <translation id="3904326018476041253">Serviços de localização</translation>
 <translation id="3905761538810670789">Reparar app</translation>
 <translation id="3908288065506437185">Bloquear cookies de terceiros no modo de navegação anônima</translation>
@@ -4502,7 +4508,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4388650384344483842">Use pelo menos oito caracteres</translation>
 <translation id="4389091756366370506">Usuário <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> e mais <ph name="NUMBER_OF_OTHER_SWITCHES" /> interruptores</translation>
-<translation id="4390569024397171409">Instale o app no <ph name="DEVICE_TYPE" /></translation>
 <translation id="439266289085815679">A configuração do Bluetooth é controlada por <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Editar o arquivo de configuração</translation>
 <translation id="4393102500004843976">Pesquisa + Shift + <ph name="TOP_ROW_KEY" /></translation>
@@ -4532,6 +4537,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4409697491990005945">Margens</translation>
 <translation id="4409779593816003679">Senhas e preenchimento automático</translation>
 <translation id="4410545552906060960">Use um número (PIN) em vez de uma senha para desbloquear o dispositivo. Para definir seu PIN mais tarde, acesse as configurações.</translation>
+<translation id="4411344321892622527">Sem permissão para rolar a tela e aplicar zoom em guias compartilhadas</translation>
 <translation id="4411578466613447185">Signatário do código</translation>
 <translation id="4411719918614785832">Essas chaves de acesso são salvas no Windows Hello neste computador, não na sua Conta do Google.</translation>
 <translation id="4412544493002546580">Tente de novo ou selecione uma das inspirações abaixo.</translation>
@@ -6876,6 +6882,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6257602895346497974">Ativar a sincronização…</translation>
 <translation id="625827534921607067">Esta rede terá preferência se mais de uma rede conectada ou configurada anteriormente estiver disponível</translation>
 <translation id="62586649943626337">Organize as guias usando grupos</translation>
+<translation id="6259776178973198997">Atualizar informações dos proprietários do Wi-Fi Direct</translation>
 <translation id="6262371516389954471">Seus backups são enviados para o Google e criptografados usando a senha da sua Conta do Google.</translation>
 <translation id="6263082573641595914">Versão da autoridade de certificação da Microsoft</translation>
 <translation id="6263284346895336537">Não crítico</translation>
@@ -7577,6 +7584,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> não pode ser executado como raiz.</translation>
 <translation id="6812841287760418429">Manter alterações</translation>
 <translation id="6813907279658683733">Tela cheia</translation>
+<translation id="6814754908910736855">Informações dos clientes do Wi-Fi Direct:</translation>
 <translation id="6815376457351236663">Abrir mesmo assim</translation>
 <translation id="6815787852028615386">Este arquivo é enganoso e pode fazer mudanças inesperadas no seu dispositivo</translation>
 <translation id="6816097980753839617">Azul e amarelo (tritanomalia)</translation>
@@ -8014,7 +8022,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7168109975831002660">Tamanho mínimo da fonte</translation>
 <translation id="7169122689956315694">Ativar notificação quando os dispositivos estiverem por perto</translation>
 <translation id="7170236477717446850">Foto do perfil</translation>
-<translation id="7170751905948784001">Informações do desenvolvedor:</translation>
 <translation id="7171000599584840888">Adicionar perfil…</translation>
 <translation id="7171259390164035663">Não se inscrever</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Adicionar guia ao novo grupo}one{Adicionar guia ao novo grupo}other{Adicionar guias ao novo grupo}}</translation>
@@ -8447,6 +8454,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7501957181231305652">ou</translation>
 <translation id="7502220299952823578">Adicionar à lista "Sempre manter estes sites ativos"</translation>
 <translation id="7502528909759062987">Pausar a transmissão da guia para <ph name="DEVICE_NAME" /></translation>
+<translation id="7502804472671406749">As guias compartilhadas podem ser roladas e ampliadas</translation>
 <translation id="7503191893372251637">Tipo de certificado do Netscape</translation>
 <translation id="7503985202154027481">Um registro da visita a este site será mantido na sua chave de segurança.</translation>
 <translation id="7504145862399276792">O áudio desta guia está sendo desativado</translation>
@@ -8491,7 +8499,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> não está respondendo. Selecione "Forçar fechamento" para fechar o app.</translation>
 <translation id="7535730537657706072">Para limpar o histórico de navegação anônima do seu dispositivo, feche todas as guias anônimas</translation>
 <translation id="7536815228183532290">Conta conectada: <ph name="EMAIL" /></translation>
-<translation id="7537182889548466084">Você vai receber sugestões de grupos de guias que agrupam guias semelhantes. As guias abertas e os títulos são enviados ao Google e podem ser analisados por humanos para melhorar esse recurso.</translation>
 <translation id="7538013435257102593">Esse tipo de arquivo não é transferido com frequência e pode ser perigoso</translation>
 <translation id="7540972813190816353">Ocorreu um erro durante a verificação de atualizações: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> reverteu este dispositivo para uma versão anterior. Salve arquivos importantes e o reinicie. Todos os dados do dispositivo serão excluídos.</translation>
@@ -10787,6 +10794,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="949807244219288032">Esta guia está conectada a um dispositivo HID</translation>
 <translation id="950079950995628542">De "<ph name="PHONE_NAME" />"</translation>
 <translation id="950307215746360464">Guia de configuração</translation>
+<translation id="951273949038779544"><ph name="SITE_ACCESS" />. Instalado pelo administrador</translation>
 <translation id="951991426597076286">Recusar</translation>
 <translation id="952471655966876828">O dispositivo será conectado automaticamente quando estiver ligado e em uso</translation>
 <translation id="953434574221655299">Com autorização para saber quando você está usando o dispositivo ativamente</translation>

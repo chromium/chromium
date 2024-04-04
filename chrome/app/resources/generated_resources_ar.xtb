@@ -41,6 +41,7 @@
 <translation id="102916930470544692">مفتاح المرور</translation>
 <translation id="1029317248976101138">تكبير/تصغير</translation>
 <translation id="1029526375103058355">الضغط للنقر</translation>
+<translation id="1029724557649700742">سيتم تضمين الميزات الجديدة عند توفّرها، وقد تختلف الميزات حسب الجهاز.</translation>
 <translation id="1031362278801463162">تحميل المعاينة</translation>
 <translation id="1032605640136438169">يُرجى مراجعة البنود الجديدة.</translation>
 <translation id="103279545524624934">‏احرص على تفريغ مساحة على القرص لتشغيل تطبيقات Android.</translation>
@@ -1525,7 +1526,6 @@
 <translation id="2127372758936585790">شاحن منخفض الطاقة</translation>
 <translation id="212862741129535676">نسبة إشغال حالة التردد</translation>
 <translation id="212876957201860463">جارٍ التحضير لإعداد جهازك الخلوي...</translation>
-<translation id="2130909682040406368">‏مزيد من المعلومات حول استخدام أدوات الذكاء الاصطناعي (AI)</translation>
 <translation id="2131077480075264">تعذّر تثبيت "<ph name="APP_NAME" />" لأنه لم يُسمح به من قبل "<ph name="IMPORT_NAME" />"</translation>
 <translation id="2133775869826239001">اختيار المزيد من الميزات لإعدادها</translation>
 <translation id="2133857665503360653">محاولة تنزيل الملف "<ph name="FILE_NAME" />" مجددًا</translation>
@@ -1564,6 +1564,7 @@
 <translation id="2155473371917268529">الإعداد الحالي لميزة "مشاركة عن قرب" هو "أجهزتك".</translation>
 <translation id="2155772377859296191">‏تبدو كـ <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">مشغّل الخدمات: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156707722163479690">المواقع الإلكترونية المسموح لها بالانتقال للأعلى أو للأسفل في محتوى علامات التبويب التي تمّت مشاركتها وتكبيره أو تصغيره</translation>
 <translation id="2156877321344104010">تشغيل اختبار "التحقق من الأمان" مرة أخرى</translation>
 <translation id="2157474325782140681">‏للحصول على ميزات إضافية، يُرجى استخدام محطة إرساء Dell المصمّمة للعمل مع جهاز Chromebook هذا.</translation>
 <translation id="215753907730220065">إنهاء وضع ملء الشاشة</translation>
@@ -1982,6 +1983,7 @@
 <translation id="2459706890611560967">استئناف بث علامة التبويب على "<ph name="DEVICE_NAME" />"</translation>
 <translation id="2460356425461033301">الاحتفاظ بنسخة احتياطية من بيانات المتصفِّح واستخدامها على أي جهاز</translation>
 <translation id="2460482211073772897">في مجلدات أخرى</translation>
+<translation id="2461550163693930491">عدم السماح للمواقع الإلكترونية بالانتقال للأعلى أو للأسفل في محتوى علامات التبويب التي تمّت مشاركتها وتكبيره أو تصغيره</translation>
 <translation id="2461593638794842577">يمكنك إيقاف هذه الميزة لحفظ كلمات المرور على هذا الجهاز فقط</translation>
 <translation id="2462332841984057083">‏تجري الآن عملية إعداد تطبيق Steam. يُرجى الانتظار إلى أن تكتمل العملية.</translation>
 <translation id="2462724976360937186">معرّف مفتاح المرجع المصدق</translation>
@@ -2015,6 +2017,7 @@
 <translation id="2482895651873876648">تم نقل علامة التبويب إلى المجموعة <ph name="GROUP_NAME" /> والتي تحتوي على <ph name="GROUP_CONTENTS" />.</translation>
 <translation id="2483627560139625913">‏ضبط محرك البحث في إعدادات متصفّح Chrome</translation>
 <translation id="2483698983806594329">تم تنزيل ملف لم يتم التحقّق منه.</translation>
+<translation id="2484574361686148760">‏إعادة تحميل معلومات عملاء Wi-Fi Direct</translation>
 <translation id="2484743711056182585">إزالة إذن الوصول</translation>
 <translation id="2484909293434545162">سيظهر هنا أي موقع إلكتروني يستخدم ملفات تعريف الارتباط.</translation>
 <translation id="2484959914739448251">‏لمحو بيانات التصفُّح من جميع أجهزتك التي تمت مزامنتها ومن حسابك على Google، يُرجى <ph name="BEGIN_LINK" />إدخال عبارة المرور<ph name="END_LINK" />.</translation>
@@ -2208,6 +2211,7 @@
 <translation id="2629227353894235473">‏تطوير تطبيقات Android</translation>
 <translation id="2629437048544561682">محو لوحة الرسم</translation>
 <translation id="2631498379019108537">إظهار خيارات الإدخال في الرف</translation>
+<translation id="2632176111713971407">السماح للمواقع الإلكترونية بطلب الانتقال للأعلى أو للأسفل في محتوى علامات التبويب التي تمّت مشاركتها وتكبيره أو تصغيره</translation>
 <translation id="2633212996805280240">هل تريد إزالة "<ph name="EXTENSION_NAME" />"؟</translation>
 <translation id="263325223718984101">تعذر على <ph name="PRODUCT_NAME" /> إكمال التثبيت، ولكن ستتم متابعة تشغيله من صورته على القرص.</translation>
 <translation id="2633764681656412085">FIDO</translation>
@@ -3514,6 +3518,7 @@
 <translation id="3659550105763988702">استخدام مفتاح المرور لتسجيل الدخول إلى "<ph name="APP_NAME" />"</translation>
 <translation id="3659929705630080526">لقد أدخلت رمز دخول غير صحيح عدّة مرات. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="3660234220361471169">غير موثوق بها</translation>
+<translation id="3661106764436337772">الكتابة بشكلٍ أسرع وبأسلوب أكثر ثقة</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{تم العثور على كلمة مرور حالية واحدة}zero{تم العثور على {NUM_PASSWORDS} كلمة مرور حالية}two{تم العثور على كلمتَي مرور حاليتَين ({NUM_PASSWORDS})}few{تم العثور على {NUM_PASSWORDS} كلمات مرور حالية}many{تم العثور على {NUM_PASSWORDS} كلمة مرور حالية}other{تم العثور على {NUM_PASSWORDS} كلمة مرور حالية}}</translation>
 <translation id="3662207097851752847">‏تأكيد حسابك على Google باستخدام هاتفك</translation>
 <translation id="3663417513679360795">مزيد من المعلومات حول تفعيل التحميل المُسبق العادي</translation>
@@ -3867,6 +3872,7 @@
 <translation id="3900966090527141178">تصدير كلمات المرور</translation>
 <translation id="3902789559055749153">اختَر الطريقة التي تريد من خلالها إنشاء مفتاح مرور لتسجيل الدخول إلى "<ph name="APP_NAME" />".</translation>
 <translation id="3903187154317825986">لوحة المفاتيح المضمّنة</translation>
+<translation id="3903696968689283281">‏معلومات مالكي Wi-Fi Direct:</translation>
 <translation id="3904326018476041253">خدمات الموقع الجغرافي</translation>
 <translation id="3905761538810670789">إصلاح التطبيق</translation>
 <translation id="3908288065506437185">حظر ملفات تعريف الارتباط التابعة لجهات خارجية في وضع التصفُّح المتخفي</translation>
@@ -4489,7 +4495,6 @@
 <translation id="4388650384344483842">يجب استخدام 8 أحرف على الأقل.</translation>
 <translation id="4389091756366370506">المستخدم <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" /> و<ph name="SECOND_SWITCH" /> و<ph name="THIRD_SWITCH" /> و<ph name="NUMBER_OF_OTHER_SWITCHES" /> مفتاح تبديل آخر</translation>
-<translation id="4390569024397171409">تثبيت التطبيق على <ph name="DEVICE_TYPE" /></translation>
 <translation id="439266289085815679">يتم التحكّم في إعداد البلوتوث من قِبل <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">تعديل ملف الضبط</translation>
 <translation id="4393102500004843976">‏مفتاح البحث + shift + <ph name="TOP_ROW_KEY" /></translation>
@@ -4519,6 +4524,7 @@
 <translation id="4409697491990005945">الهوامش</translation>
 <translation id="4409779593816003679">كلمات المرور وميزة "الملء التلقائي"</translation>
 <translation id="4410545552906060960">‏يمكنك استخدام رقم تعريف شخصي (PIN) بدلاً من كلمة مرور لفتح قفل الجهاز. لضبط رقم تعريفك الشخصي لاحقًا، انتقل إلى "الإعدادات".</translation>
+<translation id="4411344321892622527">المواقع الإلكترونية غير المسموح لها بالانتقال للأعلى أو للأسفل في محتوى علامات التبويب التي تمّت مشاركتها وتكبيره أو تصغيره</translation>
 <translation id="4411578466613447185">موقّع الشفرة</translation>
 <translation id="4411719918614785832">‏يتم حفظ مفاتيح المرور هذه في Windows Hello على هذا الكمبيوتر. ولا يتم حفظها في حسابك على Google.</translation>
 <translation id="4412544493002546580">بإمكانك إعادة المحاولة أو اختيار إحدى الخلفيات المُلهمة أدناه.</translation>
@@ -5292,7 +5298,7 @@
 <translation id="5026806129670917316">‏تفعيل شبكة Wi-Fi</translation>
 <translation id="5026874946691314267">عدم إظهار هذه الإشعارات مرة أخرى</translation>
 <translation id="5027550639139316293">شهادة البريد الإلكتروني</translation>
-<translation id="5027562294707732951">تثبيت إضافة</translation>
+<translation id="5027562294707732951">تثبيت الإضافة</translation>
 <translation id="5029287942302939687">تم ضبط كلمة المرور</translation>
 <translation id="5029873138381728058">‏تعذّر التحقّق من الأجهزة الافتراضية (VM).</translation>
 <translation id="503155457707535043">تنزيل التطبيقات</translation>
@@ -6861,6 +6867,7 @@
 <translation id="6257602895346497974">تفعيل المزامنة...</translation>
 <translation id="625827534921607067">سيتم تفضيل هذه الشبكة في حال توفُّر أكثر من شبكة تم إعدادها أو ربطها سابقًا.</translation>
 <translation id="62586649943626337">تنظيم علامات التبويب باستخدام مجموعات علامات التبويب</translation>
+<translation id="6259776178973198997">‏إعادة تحميل معلومات مالكي Wi-Fi Direct</translation>
 <translation id="6262371516389954471">‏يتمّ تحميل النُسخ الاحتياطية إلى Google ويتم ترميزها باستخدام كلمة مرور حسابك على Google.</translation>
 <translation id="6263082573641595914">‏إصدار المرجع المصدق (CA) لـ Microsoft</translation>
 <translation id="6263284346895336537">غير مهمة</translation>
@@ -7568,6 +7575,7 @@
 <translation id="6812349420832218321">لا يمكن تشغيل <ph name="PRODUCT_NAME" /> كجذر.</translation>
 <translation id="6812841287760418429">الإبقاء على التغييرات</translation>
 <translation id="6813907279658683733">الشاشة بالكامل</translation>
+<translation id="6814754908910736855">‏معلومات عملاء Wi-Fi Direct:</translation>
 <translation id="6815376457351236663">الفتح على أي حال</translation>
 <translation id="6815787852028615386">هذا الملف مُخادع وقد يُجري تغييرات غير متوقعة على جهازك.</translation>
 <translation id="6816097980753839617">فلتر للّونين الأزرق والأصفر (غَمَشُ الأزرق)</translation>
@@ -8006,7 +8014,6 @@
 <translation id="7168109975831002660">الحد الأدنى لحجم الخط</translation>
 <translation id="7169122689956315694">تفعيل الإشعارات عندما تكون الأجهزة قريبة</translation>
 <translation id="7170236477717446850">صورة الملف الشخصي</translation>
-<translation id="7170751905948784001">معلومات المطوِّر:</translation>
 <translation id="7171000599584840888">إضافة ملف شخصي...</translation>
 <translation id="7171259390164035663">عدم التسجيل</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{إضافة علامة التبويب إلى مجموعة جديدة}zero{إضافة علامات التبويب إلى مجموعة جديدة}two{إضافة علامتَي التبويب إلى مجموعة جديدة}few{إضافة علامات التبويب إلى مجموعة جديدة}many{إضافة علامات التبويب إلى مجموعة جديدة}other{إضافة علامات التبويب إلى مجموعة جديدة}}</translation>
@@ -8438,6 +8445,7 @@
 <translation id="7501957181231305652">أو</translation>
 <translation id="7502220299952823578">الإضافة إلى قائمة "إبقاء المواقع الإلكترونية التالية نشطة طوال الوقت"</translation>
 <translation id="7502528909759062987">إيقاف بث علامة التبويب مؤقتًا على "<ph name="DEVICE_NAME" />"</translation>
+<translation id="7502804472671406749">يمكن الانتقال للأعلى أو للأسفل في محتوى علامات التبويب التي تمّت مشاركتها وتكبيره أو تصغيره</translation>
 <translation id="7503191893372251637">‏نوع شهادات Netscape</translation>
 <translation id="7503985202154027481">سيتم حفظ سجلّ زيارتك لهذا الموقع الإلكتروني في مفتاح الأمان.</translation>
 <translation id="7504145862399276792">تم كتم صوت علامة التبويب هذه.</translation>
@@ -8482,7 +8490,6 @@
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> لا يستجيب. اختَر "فرض الإغلاق" لإغلاق التطبيق.</translation>
 <translation id="7535730537657706072">لمحو سجل التصفّح في وضع التصفّح المتخفي على جهازك، عليك إغلاق كل علامات التبويب في وضع التصفُّح المتخفي.</translation>
 <translation id="7536815228183532290">تم تسجيل الدخول بحساب <ph name="EMAIL" />.</translation>
-<translation id="7537182889548466084">‏ستحصل على اقتراحات لإضافة علامات التبويب المشابهة إلى مجموعات. ويتم إرسال علامات التبويب والعناوين المفتوحة إلى Google، وقد تتم مراجعتها من قبل الموظفين المعنيين للمساعدة في تحسين هذه الميزة.</translation>
 <translation id="7538013435257102593">لا يتم تنزيل نوع هذا الملف عادةً، وقد يكون خطيرًا.</translation>
 <translation id="7540972813190816353">حدث خطأ أثناء التحقق من التحديثات: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232">أعاد <ph name="MANAGER" /> هذا الجهاز إلى إصدار سابق من نظام التشغيل. يُرجى حفظ الملفات المُهمة، ثم إعادة تشغيل الجهاز. سيتم حذف كل البيانات على الجهاز.</translation>
@@ -10782,6 +10789,7 @@
 <translation id="949807244219288032">‏علامة التبويب هذه متصلة بجهاز HID.</translation>
 <translation id="950079950995628542">من "<ph name="PHONE_NAME" />"</translation>
 <translation id="950307215746360464">دليل عملية الإعداد</translation>
+<translation id="951273949038779544"><ph name="SITE_ACCESS" />. تم التثبيت من قِبل مشرفك</translation>
 <translation id="951991426597076286">رفض</translation>
 <translation id="952471655966876828">سيتصل الجهاز بالبلوتوث تلقائيًا عند تشغيله أو استخدامه.</translation>
 <translation id="953434574221655299">المواقع الإلكترونية التي يُسمح لها بمعرفة متى تستخدم جهازك بشكل نشط</translation>

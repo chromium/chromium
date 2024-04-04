@@ -271,6 +271,7 @@
 <translation id="2446553403094072641">Floating point accuracy</translation>
 <translation id="2448312741937722512">Type</translation>
 <translation id="2465272316171730950">We're at capacity. Please come back in a bit.</translation>
+<translation id="2472215337771558851">Use Help me write to create a draft or refine existing work, powered by Google AI</translation>
 <translation id="2480572840229215612">crabs</translation>
 <translation id="248546197012830854">Device is offline. Connect to Wi-Fi network to see help content.</translation>
 <translation id="2486301288428798846">wood</translation>
@@ -328,10 +329,12 @@
 <translation id="2860473693272905224">Place another page on the scanner</translation>
 <translation id="2872961005593481000">Shut down</translation>
 <translation id="2873483161362553159">Browser navigation</translation>
+<translation id="2873939192640533085">Enter a prompt, like 'sound more confident'</translation>
 <translation id="2874939134665556319">Previous track</translation>
 <translation id="2875812231449496375">Turn this on for best results with this wallpaper. You can turn off this setting at any time.</translation>
 <translation id="2878387241690264070">Discharged <ph name="RATE" /> in <ph name="NUM_SECONDS" /> seconds.</translation>
 <translation id="2880569433548999039">Cloud flow screen saver</translation>
+<translation id="2888298276507578975">Enter a prompt, like 'write a thank you note'</translation>
 <translation id="2890557891229184386">tropical island</translation>
 <translation id="2895772081848316509">dark</translation>
 <translation id="2926057806159140518">Enter your username and password or scan your QR code</translation>
@@ -376,6 +379,7 @@
 <translation id="3226405216343213872">Looking for scanners</translation>
 <translation id="3226657629376379887">Layout actions menu</translation>
 <translation id="3227186760713762082">Divide the <ph name="CATEGORY_TEXT" /> value by <ph name="CONVERSION_RATE" /></translation>
+<translation id="3237710083340813756">Rewrite</translation>
 <translation id="3246869037381808805">Print jobs older than 1 day will be removed</translation>
 <translation id="324961752321393509">Your administrator doesn't allow closing this app</translation>
 <translation id="3268178239013324452">Failed – Door open</translation>
@@ -414,6 +418,7 @@
 <translation id="346539236881580388">Retake</translation>
 <translation id="3484914941826596830">While the firmware is updating, do not unplug this external device or shut down your computer. You can minimise this window. This update may take a few minutes and your external device may not work during this time.</translation>
 <translation id="3486220673238053218">definition</translation>
+<translation id="3487866404496702283">Feedback for mahi feature</translation>
 <translation id="3488065109653206955">Partially activated</translation>
 <translation id="3492882532495507361">A <ph name="OFFICE_STYLE" /> office with <ph name="OFFICE_COLOR" /> tones</translation>
 <translation id="3493187369049186498">Data is measured by your Chromebook. This may be different from provider data.</translation>
@@ -442,6 +447,7 @@
 <translation id="3621072146987826699">elephants</translation>
 <translation id="3632579075709132555">Privacy screen toggle</translation>
 <translation id="3651050199673793219">Select a temperature unit</translation>
+<translation id="3661106764436337772">Write faster and with more confidence</translation>
 <translation id="3662461537616691585">burgundy and maroon</translation>
 <translation id="3668449597372804501">Cloud flow wallpaper</translation>
 <translation id="3675132884790542448">pigs</translation>
@@ -534,7 +540,6 @@
 <translation id="4227825898293920515">Password expires in <ph name="TIME" /></translation>
 <translation id="4238516577297848345">No print jobs in progress</translation>
 <translation id="4239069858505860023">GPRS</translation>
-<translation id="4244962993387259361">You need at least 500 MB free to run a Memory test. To free up space, go to Settings &gt; Storage management.</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="4251839292699800785">Stylish office</translation>
 <translation id="4258281355379922695">HTTP latency</translation>
@@ -877,6 +882,7 @@
 <translation id="6235460611964961764">Manually reset data usage</translation>
 <translation id="6243280677745499710">Currently set</translation>
 <translation id="6250316632541035980">bacon and eggs</translation>
+<translation id="6255213378196499011">Help me write settings</translation>
 <translation id="6275224645089671689">Right arrow</translation>
 <translation id="6278428485366576908">Theme</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -905,6 +911,7 @@
 <translation id="6382182670717268353">Screen saver preview</translation>
 <translation id="6388847657025262518">The scanner’s document feeder is jammed. Check the feeder and try again.</translation>
 <translation id="6394634179843537518">Add file</translation>
+<translation id="6396719002784938593">dried feather grass</translation>
 <translation id="639964859328803943">high tea</translation>
 <translation id="6400680457268373900">A surreal <ph name="DREAMSCAPES_OBJECT" /> made of <ph name="DREAMSCAPES_MATERIAL" /> in <ph name="DREAMSCAPES_COLORS" /></translation>
 <translation id="6401427872449207797">browser search</translation>
@@ -946,6 +953,7 @@
 <translation id="6575134580692778371">Not configured</translation>
 <translation id="6576005492601044801">left</translation>
 <translation id="6579509898032828423">Use this photo</translation>
+<translation id="6587870930887634392">succulent</translation>
 <translation id="6596816719288285829">IP Address</translation>
 <translation id="6599673642868607614">Thanks for your feedback. Your feedback helps us improve the Chromebook experience and will be reviewed by our team. Because of the large number of reports, we won’t be able to send a reply.</translation>
 <translation id="6618744767048954150">Running</translation>
@@ -1104,6 +1112,7 @@
 <translation id="7497215489070763236">Server CA certificate</translation>
 <translation id="7501957181231305652">or</translation>
 <translation id="7502658306369382406">IPv6 address</translation>
+<translation id="7507061649493508884">A radiant <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /></translation>
 <translation id="7513770521371759388">bottom</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">Create</translation>
@@ -1153,7 +1162,6 @@
 <translation id="780301667611848630">No, thanks</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7813073042185856802">mountain</translation>
-<translation id="7819831665603418705">Use a template</translation>
 <translation id="7819857487979277519">PSK (WPA or RSN)</translation>
 <translation id="7824219488248240180">post-impressionist</translation>
 <translation id="7828503206075800057">A <ph name="CAFE_STYLE" /> <ph name="CAFE_TYPE" /> cafe</translation>
@@ -1164,6 +1172,7 @@
 <translation id="7850847810298646851">Wallpaper powered by Google AI</translation>
 <translation id="785170686607360576">tulip</translation>
 <translation id="7856267634822906833">Bluetooth touchscreen</translation>
+<translation id="7859006200041800233">cactus flower</translation>
 <translation id="7869143217755017858">Disable dark mode</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Provider type</translation>
@@ -1299,6 +1308,7 @@
 <translation id="8726019395068607495">Stopped – door open</translation>
 <translation id="8730621377337864115">Done</translation>
 <translation id="8747900814994928677">Confirm change</translation>
+<translation id="8749478549112817787">Camera background</translation>
 <translation id="8755946156089753497">tower</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos album</translation>

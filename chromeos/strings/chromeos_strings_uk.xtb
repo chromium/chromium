@@ -271,6 +271,7 @@
 <translation id="2446553403094072641">Точність рухомої коми</translation>
 <translation id="2448312741937722512">Тип</translation>
 <translation id="2465272316171730950">Систему перевантажено. Спробуйте пізніше.</translation>
+<translation id="2472215337771558851">Скористайтеся функцією "Допомога з текстом", щоб створити чернетку або покращити наявний текст завдяки ШІ від Google</translation>
 <translation id="2480572840229215612">краби</translation>
 <translation id="248546197012830854">Пристрій не підключено до Інтернету. Щоб переглянути довідковий контент, підключіться до мережі Wi-Fi.</translation>
 <translation id="2486301288428798846">дерева</translation>
@@ -328,10 +329,12 @@
 <translation id="2860473693272905224">Розмістіть на сканері ще одну сторінку</translation>
 <translation id="2872961005593481000">Завершити роботу</translation>
 <translation id="2873483161362553159">Навігація у веб-переглядачі</translation>
+<translation id="2873939192640533085">Введіть запит, наприклад "напиши впевненішим тоном"</translation>
 <translation id="2874939134665556319">Попередня композиція</translation>
 <translation id="2875812231449496375">Щоб фоновий малюнок виглядав якнайкраще, увімкніть цю функцію. Ви завжди можете її вимкнути.</translation>
 <translation id="2878387241690264070">Акумулятор розрядився на <ph name="RATE" /> за <ph name="NUM_SECONDS" /> с.</translation>
 <translation id="2880569433548999039">Заставка "Плин хмар"</translation>
+<translation id="2888298276507578975">Введіть запит, наприклад "напиши лист подяки"</translation>
 <translation id="2890557891229184386">тропічний острів</translation>
 <translation id="2895772081848316509">темних</translation>
 <translation id="2926057806159140518">Введіть ім’я користувача та пароль або зіскануйте QR-код</translation>
@@ -376,6 +379,7 @@
 <translation id="3226405216343213872">Пошук сканерів</translation>
 <translation id="3226657629376379887">Меню дій для макета</translation>
 <translation id="3227186760713762082">Поділіть значення "<ph name="CATEGORY_TEXT" />" на <ph name="CONVERSION_RATE" /></translation>
+<translation id="3237710083340813756">Переписати</translation>
 <translation id="3246869037381808805">Завдання друку, старіші за 1 день, буде вилучено</translation>
 <translation id="324961752321393509">Ваш адміністратор не дозволяє закрити цей додаток</translation>
 <translation id="3268178239013324452">Не надруковано – відкрито кришку принтера</translation>
@@ -414,6 +418,7 @@
 <translation id="346539236881580388">Зробити інше фото</translation>
 <translation id="3484914941826596830">Поки мікропрограма оновлюється, не відключайте цей зовнішній пристрій і не завершуйте роботу комп’ютера. Можете згорнути це вікно. Оновлення може зайняти кілька хвилин, і впродовж цього часу зовнішній пристрій, імовірно, не працюватиме.</translation>
 <translation id="3486220673238053218">визначення</translation>
+<translation id="3487866404496702283">Відгук про функцію Mahi</translation>
 <translation id="3488065109653206955">Частково активовано</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_STYLE" /> офіс в <ph name="OFFICE_COLOR" /> тонах</translation>
 <translation id="3493187369049186498">Дані про використання трафіку вимірює пристрій Chromebook. Вони можуть відрізнятися від даних постачальника.</translation>
@@ -442,6 +447,7 @@
 <translation id="3621072146987826699">слони</translation>
 <translation id="3632579075709132555">Перемикач Екрана конфіденційності</translation>
 <translation id="3651050199673793219">Виберіть одиницю вимірювання температури</translation>
+<translation id="3661106764436337772">Пишіть швидше й впевненіше</translation>
 <translation id="3662461537616691585">бордового й темно-бордового</translation>
 <translation id="3668449597372804501">Фоновий малюнок "Плин хмар"</translation>
 <translation id="3675132884790542448">свині</translation>
@@ -534,7 +540,6 @@
 <translation id="4227825898293920515">Термін дії пароля закінчиться через <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Немає активних завдань друку</translation>
 <translation id="4239069858505860023">GPRS</translation>
-<translation id="4244962993387259361">Щоб виконати перевірку пам’яті, потрібно принаймні 500 МБ вільного місця. Щоб звільнити пам’ять, перейдіть у розділ "Налаштування" &gt; "Керування пам’яттю".</translation>
 <translation id="4250229828105606438">Знімок екрана</translation>
 <translation id="4251839292699800785">Стильний офіс</translation>
 <translation id="4258281355379922695">Затримка HTTP</translation>
@@ -877,6 +882,7 @@
 <translation id="6235460611964961764">Вручну скидати дані про використання трафіку</translation>
 <translation id="6243280677745499710">Налаштовано зараз</translation>
 <translation id="6250316632541035980">яєчня з беконом</translation>
+<translation id="6255213378196499011">Налаштування функції "Допомога з текстом"</translation>
 <translation id="6275224645089671689">Стрілка вправо</translation>
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -1153,7 +1159,6 @@
 <translation id="780301667611848630">Ні, дякую</translation>
 <translation id="7805768142964895445">Статус</translation>
 <translation id="7813073042185856802">гора</translation>
-<translation id="7819831665603418705">Використати шаблон</translation>
 <translation id="7819857487979277519">PSK (WPA або RSN)</translation>
 <translation id="7824219488248240180">постімпресіонізм</translation>
 <translation id="7828503206075800057"><ph name="CAFE_STYLE" /> кафе в <ph name="CAFE_TYPE" /></translation>

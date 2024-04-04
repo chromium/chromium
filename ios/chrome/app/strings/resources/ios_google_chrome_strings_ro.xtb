@@ -114,14 +114,12 @@ De reținut:
 <translation id="3901001113120561395">Profită din plin de Chrome</translation>
 <translation id="3913386780052199712">Te-ai conectat la Chrome</translation>
 <translation id="3967382818307165056">Gestionează metodele de plată în Chrome</translation>
-<translation id="3980220367029651214">Comuți contul pentru sincronizare de la <ph name="USER_EMAIL1" /> la <ph name="USER_EMAIL2" />. Datele Chrome existente sunt gestionate de <ph name="DOMAIN" />. Astfel, se vor șterge datele de pe acest dispozitiv, dar datele vor rămâne în <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Organizația îți solicită să nu te conectezi la Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome nu are acces la fotografii și videoclipuri. Activează accesul din Setări iOS &gt; Confidențialitate &gt; Fotografii.</translation>
 <translation id="4064699917955374540">Pentru a folosi și a salva datele Chrome în Contul Google, confirmă-ți identitatea.</translation>
 <translation id="4067858366537947361">Deschide o filă incognito în Chrome</translation>
 <translation id="4093042601582616698">Setezi Chrome ca browser prestabilit?</translation>
 <translation id="417201473131094001">Nu se acceptă pe Chrome Canary</translation>
-<translation id="4233521129555661685"><ph name="USER_EMAIL1" /> folosea Chrome și marcajele, parolele și alte setări ale sale au rămas pe acest dispozitiv.</translation>
 <translation id="424864128008805179">Te deconectezi de la Chrome?</translation>
 <translation id="4251174643044751591">Deschide pagina cu setări pentru metodele de plată în Chrome.</translation>
 <translation id="4453284704333523777">Gestionează setările Chrome</translation>
@@ -240,7 +238,6 @@ Pentru mai multe setări care folosesc date pentru a-ți îmbunătăți experien
 <translation id="769104993356536261">Folosește Acțiuni în Chrome pe iOS</translation>
 <translation id="7693590760643069321">Acum poți folosi Chrome oricând atingi linkuri în mesaje, documente și alte aplicații.</translation>
 <translation id="7698568245838009292">Chrome vrea să acceseze camera foto</translation>
-<translation id="7754633291442704733">Organizația ta <ph name="DOMAIN" /> va avea acces la datele Chrome, marcajele, istoricul, parolele și alte setări pe care le stochezi în acest cont. Când te deconectezi, datele vor fi șterse de pe acest dispozitiv.  Însă vor rămâne stocate în Contul Google administrat și vor fi disponibile pentru organizația ta. În plus, organizația ta poate să seteze politici privind utilizatorii specifice contului, care pot să modifice comportamentul browserului Chrome.</translation>
 <translation id="7780154209050837198">Pentru a profita din plin de Chrome, conectează-te la Chrome folosind Contul Google.</translation>
 <translation id="778855399387580014">Începe o căutare într-o filă Chrome nouă.</translation>
 <translation id="7792140019572081272">Chrome îți păstrează în siguranță datele sensibile cu Face ID.</translation>

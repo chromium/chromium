@@ -540,7 +540,6 @@
 <translation id="4227825898293920515">Passordet utløper om <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Ingen utskriftsjobber pågår</translation>
 <translation id="4239069858505860023">GPRS</translation>
-<translation id="4244962993387259361">Du må ha minst 500 MB ledig for å kjøre en minnetest. For å frigjøre plass, gå til Innstillinger &gt; Lagringsbehandling.</translation>
 <translation id="4250229828105606438">Skjermdump</translation>
 <translation id="4251839292699800785">Stilig kontor</translation>
 <translation id="4258281355379922695">HTTP-tidsforsinkelse</translation>
@@ -912,6 +911,7 @@
 <translation id="6382182670717268353">Forhåndsvisning av skjermsparer</translation>
 <translation id="6388847657025262518">Skannerens dokumentmater er tilstoppet. Sjekk materen, og prøv på nytt.</translation>
 <translation id="6394634179843537518">Legg til fil</translation>
+<translation id="6396719002784938593">tørket fjærgress</translation>
 <translation id="639964859328803943">high tea</translation>
 <translation id="6400680457268373900">Surrealistisk <ph name="DREAMSCAPES_OBJECT" /> laget av <ph name="DREAMSCAPES_MATERIAL" /> i <ph name="DREAMSCAPES_COLORS" /></translation>
 <translation id="6401427872449207797">nettlesersøk</translation>
@@ -953,6 +953,7 @@
 <translation id="6575134580692778371">Ikke konfigurert</translation>
 <translation id="6576005492601044801">venstre</translation>
 <translation id="6579509898032828423">Bruk dette bildet</translation>
+<translation id="6587870930887634392">sukkulent</translation>
 <translation id="6596816719288285829">IP-adresse</translation>
 <translation id="6599673642868607614">Takk for tilbakemeldingen. Tilbakemeldingen din hjelper oss med å gjøre Chromebook-opplevelsen bedre, og den blir gjennomgått av teamet vårt. På grunn av det store antallet rapporter kan vi ikke sende svar.</translation>
 <translation id="6618744767048954150">Kjører</translation>
@@ -1111,6 +1112,7 @@
 <translation id="7497215489070763236">Tjenerens CA-sertifikat</translation>
 <translation id="7501957181231305652">eller</translation>
 <translation id="7502658306369382406">IPv6-adresse</translation>
+<translation id="7507061649493508884">En fargerik <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /></translation>
 <translation id="7513770521371759388">bunn</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">Opprett</translation>
@@ -1160,7 +1162,6 @@
 <translation id="780301667611848630">Nei takk</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7813073042185856802">fjell</translation>
-<translation id="7819831665603418705">Bruk en mal</translation>
 <translation id="7819857487979277519">PSK (WPA eller RSN)</translation>
 <translation id="7824219488248240180">postimpresjonisme</translation>
 <translation id="7828503206075800057">En <ph name="CAFE_STYLE" /> <ph name="CAFE_TYPE" />-kafé</translation>
@@ -1171,6 +1172,7 @@
 <translation id="7850847810298646851">Bakgrunn basert på AI-løsninger fra Google</translation>
 <translation id="785170686607360576">tulipan</translation>
 <translation id="7856267634822906833">Bluetooth-berøringsskjerm</translation>
+<translation id="7859006200041800233">kaktusblomst</translation>
 <translation id="7869143217755017858">Slå av mørk modus</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Leverandørtype</translation>
@@ -1306,6 +1308,7 @@
 <translation id="8726019395068607495">Stoppet – luken er åpen</translation>
 <translation id="8730621377337864115">Ferdig</translation>
 <translation id="8747900814994928677">Bekreft endringen</translation>
+<translation id="8749478549112817787">Kamerabakgrunn</translation>
 <translation id="8755946156089753497">tårn</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Foto-album</translation>

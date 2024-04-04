@@ -5,6 +5,7 @@
 <translation id="1013923882670373915">"<ph name="DEVICE_NAME" />" എന്ന Bluetooth ഉപകരണം ജോടിയാക്കുന്നതിനുള്ള അനുമതി ആവശ്യപ്പെടുന്നു. ആ ഉപകരണത്തിൽ ഈ പിൻ കോഡ് നൽകുക: <ph name="PINCODE" /></translation>
 <translation id="1014722676793506285"><ph name="APP_NAME" /> എന്നതിനെയും ലൊക്കേഷൻ അനുമതിയുള്ള എല്ലാ ആപ്പുകളെയും വെബ്സൈറ്റുകളെയും ChromeOS-നെയും വൈഫൈ, മൊബൈൽ നെറ്റ്‌വർക്കുകളുടെ ലൊക്കേഷൻ ഉപയോഗിക്കാൻ ഇത് അനുവദിക്കുന്നു.</translation>
 <translation id="1017556409696559990">Chrome-ൽ മുൻചരിത്രം ഇല്ലെങ്കിൽ ടോപ് വിൻഡോ ചുരുക്കുക</translation>
+<translation id="101823271612280837">റെക്കോർഡിംഗ് നിർത്തി. ടാബ്‌ലെറ്റ് മോഡിൽ ഗെയിം ഡാഷ്ബോർഡ് ഉപയോഗിക്കാനാകില്ല.</translation>
 <translation id="1024364763893396229">നിങ്ങളുടെ <ph name="NAME" /> സംരക്ഷിക്കുക</translation>
 <translation id="1032891413405719768">സ്‌റ്റൈലസ് ബാറ്ററി കുറവാണ്</translation>
 <translation id="1036073649888683237">അറിയിപ്പുകൾ മാനേജ് ചെയ്യാൻ ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
@@ -95,6 +96,7 @@
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">'അടുത്തറിയുക' തുറക്കുക</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301513122398173424">ഏതുസമയത്തും <ph name="LAUNCHER_KEY_NAME" /> + g അമർത്തുക</translation>
 <translation id="1306549533752902673">ശുപാർശിത ആപ്പുകൾ</translation>
 <translation id="1311294419381837540">നിങ്ങൾ ഒരു ടാബ് കാസ്റ്റ് ചെയ്യുന്നു. നിങ്ങൾക്ക് ഏതുസമയത്തും കാസ്റ്റ് ചെയ്യൽ നിർത്തുകയോ താൽക്കാലികമായി നിർത്തുകയോ ചെയ്യാം.</translation>
 <translation id="1312604459020188865">സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" /></translation>
@@ -115,6 +117,7 @@
 <translation id="1383597849754832576">സംഭാഷണ ഫയലുകൾ ഡൗൺലോഡ് ചെയ്യാനായില്ല. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1391102559483454063">ഓണാണ്</translation>
+<translation id="1394698770495054737">പൂർണ്ണമായി മങ്ങിക്കൽ</translation>
 <translation id="1407069428457324124">ഡാർക്ക് തീം</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. തീയതികൾക്കിടയിൽ നാവിഗേറ്റ് ചെയ്യാൻ അമ്പടയാള കീകൾ ഉപയോഗിക്കുക.</translation>
 <translation id="141170878022560212">മിഡിൽ ബട്ടൺ</translation>
@@ -227,6 +230,7 @@
 <translation id="1882814835921407042">മൊബൈൽ നെറ്റ്‌വർക്ക് ഇല്ല</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> എന്നതിലേക്ക് മിറർ ചെയ്യുന്നു</translation>
 <translation id="1885785240814121742">ഫിംഗർപ്രിന്‍റ് ഉപയോഗിച്ച് അൺലോക്ക് ചെയ്യുക</translation>
+<translation id="1894024878080591367">നിങ്ങളുടെ കീബോർഡ് ഉപയോഗിച്ച് കളിക്കാൻ സജ്ജീകരിക്കുക</translation>
 <translation id="1904997243703671177">നിങ്ങൾ Bluetooth ഓഫാക്കിയാൽ, <ph name="DEVICE_COUNT" /> ബാഹ്യ ഉപകരണങ്ങൾ നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> എന്നതിൽ നിന്ന് വിച്ഛേദിക്കും, ഇതിൽ ഇനിപ്പറയുന്നവ ഉൾപ്പെടുന്നു:</translation>
 <translation id="1908992311423394684">പുതുതായി ഇൻസ്റ്റാൾ ചെയ്തത്</translation>
 <translation id="1915307458270490472">ഹാംഗ് അപ്പ് ചെയ്യുക</translation>
@@ -325,6 +329,8 @@
 <translation id="2367972762794486313">അപ്ലിക്കേഷനുകൾ കാണിക്കുക</translation>
 <translation id="2368828502825385061">കണ്ടെത്തുക</translation>
 <translation id="2369165858548251131">"ഹലോ" എന്നത് ചൈനീസിൽ</translation>
+<translation id="2370971919968699910">ഇതിന് ഡാറ്റാ നിരക്കുകൾ ഈടാക്കിയേക്കാം.
+<ph name="DEVICECOUNT" /> ഉപകരണങ്ങൾ കണക്‌റ്റ് ചെയ്‌തിരിക്കുന്നു.</translation>
 <translation id="2382875860893882175">കാസ്റ്റ് ചെയ്യുന്നത് നിലവിൽ താൽക്കാലികമായി നിർത്തി. നിങ്ങൾക്ക് ഏതുസമയത്തും കാസ്റ്റ് ചെയ്യൽ പുനരാരംഭിക്കുകയോ നിർത്തുകയോ ചെയ്യാം.</translation>
 <translation id="2386292613071805067">പേജിലെ എല്ലാം തിരഞ്ഞെടുക്കുക</translation>
 <translation id="2392659840443812875">ലഭ്യമായ ഹോട്ട്സ്പോട്ടുകളൊന്നുമില്ല. നിങ്ങളുടെ ഉപകരണം സമീപത്തുണ്ടെന്നും Bluetooth ഓണാക്കിയിട്ടുണ്ടെന്നും ഉറപ്പാക്കുക.</translation>
@@ -394,6 +400,7 @@
 <translation id="2624588537172718173">ഉപകരണത്തിന്റെ ഓഡിയോയും മൈക്രോഫോണും</translation>
 <translation id="263399434338050016">"എല്ലാം തിരഞ്ഞെടുക്കുക"</translation>
 <translation id="2644422758626431000">വിൻഡോ ഇടതുഭാഗത്ത് പിൻ ചെയ്യുക</translation>
+<translation id="2645380101799517405">നിയന്ത്രണങ്ങൾ</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">വിൻഡോ ക്യാപ്‌ചർ</translation>
 <translation id="2653659639078652383">സമര്‍പ്പിക്കുക</translation>
@@ -406,6 +413,7 @@
 <translation id="2695305337569143674">വെബ്</translation>
 <translation id="2697697418792422688">കീബോർഡ് ക്രമീകരണം കാണിക്കുക. <ph name="KEYBOARD_NAME" /> തിരഞ്ഞെടുത്തു.</translation>
 <translation id="2700493154570097719">നിങ്ങളുടെ കീബോഡ് സജ്ജീകരിക്കുക</translation>
+<translation id="2701576323154693023">ഹോട്ട്‌സ്പോട്ട് ഓണാണ് (വൈഫൈ ഓഫാണ്)</translation>
 <translation id="2704781753052663061">മറ്റ് വൈഫൈ നെറ്റ്‍വർക്കുകളിൽ ചേരുക</translation>
 <translation id="2705001408393684014">മൈക്ക് മാറ്റുക. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">മുകളിലേക്കുള്ള കീ</translation>
@@ -427,6 +435,7 @@
 <translation id="2785499565474703580">ഒരു ഉപകരണം കണക്‌റ്റ് ചെയ്‌തു</translation>
 <translation id="2791421900609674576">നിർത്തിയ ഇടത്ത് നിന്ന് തുടരാനാകുന്ന തരത്തിൽ നിങ്ങൾക്ക് നിർദ്ദേശങ്ങൾ കാണാം.  നിർദ്ദേശങ്ങൾ നീക്കം ചെയ്യാൻ സ്പർശിച്ച് പിടിക്കുക.</translation>
 <translation id="2792498699870441125">Alt+തിരയൽ</translation>
+<translation id="2798702144670138229">ടാബ്‌ലെറ്റ് മോഡ് ഓണാണ്. ഗെയിം ഡാഷ്ബോർഡ് ലഭ്യമല്ല.</translation>
 <translation id="2801954693771979815">സ്‌ക്രീൻ വലുപ്പം</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, തിരഞ്ഞെടുത്തു</translation>
 <translation id="2805756323405976993">ആപ്പുകൾ</translation>
@@ -441,6 +450,7 @@
 <translation id="2841907151129139818">ടാബ്‌ലെറ്റ് മോഡിലേക്ക് മാറി</translation>
 <translation id="2844169650293029770">USB-C ഉപകരണം (ഇടത് വശത്ത് മുൻഭാഗത്തെ പോർട്ട്)</translation>
 <translation id="2844350028562914727">വിശദാംശങ്ങൾ</translation>
+<translation id="2847759467426165163">ഇതിലേക്ക് കാസ്‌റ്റ് ചെയ്യുക</translation>
 <translation id="2848120746144143659">പൂർണ്ണ സ്ക്രീൻ സ്ക്രീൻഷോട്ട് എടുക്കാൻ Enter അമർത്തുക</translation>
 <translation id="2849936225196189499">ഗുരുതരം</translation>
 <translation id="2860184359326882502">മികച്ച പൊരുത്തം</translation>
@@ -474,10 +484,12 @@
 <translation id="2992327365391326550">ഉപകരണത്തിന്റെ മൈക്രോഫോൺ ബട്ടൺ ഓഫാണ്.</translation>
 <translation id="2996462380875591307">ഡോക്ക് ചെയ്‌ത മാഗ്നിഫയർ പ്രവർത്തനക്ഷമമാക്കി. ഇത് മാറ്റാൻ, കൺട്രോൾ+തിരയൽ+D വീണ്ടും അമർത്തുക.</translation>
 <translation id="3000461861112256445">മോണോ ഓഡിയോ</translation>
+<translation id="3001391739687111021">സ്ക്രീൻ വലുപ്പം എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="3009178788565917040">ഔട്ട്പുട്ട്</translation>
 <translation id="3009958530611748826">സംരക്ഷിക്കാൻ ഒരു ഫോൾഡർ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="301282384882049174">നിങ്ങളുടെ അഡ്‌മിൻ പങ്കിട്ടത്</translation>
 <translation id="301584155502740476">ഹോട്ട്സ്പോട്ട് വിശദാംശങ്ങൾ കാണിക്കുക. ഹോട്ട്സ്പോട്ട് ഓഫാണ്.</translation>
+<translation id="3017079585324758401">പശ്ചാത്തലം</translation>
 <translation id="3018135054368884502">മീഡിയ ഫാസ്റ്റ് ഫോർവേഡ് ചെയ്യുക</translation>
 <translation id="3033545621352269033">ഓണാണ്</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> എന്ന ഡെസ്ക്കുമായി സംയോജിപ്പിക്കുക</translation>
@@ -502,6 +514,7 @@
 <translation id="3100274880412651815">ക്യാപ്‌ചർ മോഡ് ഡിസ്‌മിസ് ചെയ്യുക</translation>
 <translation id="3105917916468784889">സ്ക്രീന്‍ഷോട്ട് എടുക്കുക</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3107155169630537783">സ്വാഗത അറിയിപ്പ് <ph name="STATE" /> ആണ്</translation>
 <translation id="3113492864356515707">ഷെൽഫിലെ മുമ്പത്തെ ഇനം ഹൈലൈറ്റ് ചെയ്യുക</translation>
 <translation id="311799651966070385">നഡ്‌ജ് അടയ്‌ക്കുക</translation>
 <translation id="3120421559657122717">ഉപകരണം ഷട്ട് ഡൗൺ ചെയ്യണോ?</translation>
@@ -740,6 +753,7 @@
 <translation id="3984536049089846927">അടുത്ത പേജ്</translation>
 <translation id="3986082989454912832">കോൾ സ്വീകരിക്കുക</translation>
 <translation id="3990002060657467458">വൈഫൈ, Bluetooth, വോളിയം എന്നിവ പോലുള്ള പതിവായി ഉപയോഗിക്കുന്ന നിയന്ത്രണങ്ങൾ ദ്രുത ക്രമീകരണത്തിലാണ്. സ്ക്രീൻഷോട്ടുകൾ എടുക്കാൻ നിങ്ങൾക്ക് ഇവിടേക്കും പോകാം.</translation>
+<translation id="3991203706072366707"><ph name="GAME_APP_NAME" /> എന്നതിന് ഓഫാണ്</translation>
 <translation id="3995138139523574647">USB-C ഉപകരണം (വലതുവശത്ത് പിന്നിലെ പോർട്ട്)</translation>
 <translation id="4002066346123236978">ശീർഷകം</translation>
 <translation id="40062176907008878">കൈയ്യെഴുത്ത്</translation>
@@ -833,6 +847,7 @@
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322742403972824594">'Ctrl + Alt + മുകളിലേയ്ക്കുള്ള അമ്പടയാളം' കീബോഡ് കുറുക്കുവഴി മാറിയിട്ടുണ്ട്. Home കീ ഉപയോഗിക്കാൻ, <ph name="LAUNCHER_KEY_NAME" /> കീ+ ഇടത്തേയ്ക്കുള്ള അമ്പടയാളം അമർത്തുക.</translation>
 <translation id="4324840740119394760"><ph name="APP_NAME" /> എന്നതിനും ക്യാമറ ആക്‌സസ് ചെയ്യാൻ അനുമതിയുള്ള എല്ലാ ആപ്പുകൾക്കും വെബ്സൈറ്റുകൾക്കും ഇത് ക്യാമറയിലേക്ക് ആക്‌സസ് അനുവദിക്കുന്നു</translation>
+<translation id="4327147325944669226">ഗെയിം റെക്കോർഡ് ചെയ്യുക</translation>
 <translation id="4333628967105022692">ഒന്നിലേറെ ഉപയോക്താക്കൾ സൈൻ ഇൻ ചെയ്തിരിക്കുമ്പോൾ Lacros-ന് പിന്തുണയുണ്ടാകില്ല.</translation>
 <translation id="4338109981321384717">മാഗ്‌നിഫൈയിംഗ് ഗ്ലാസ്</translation>
 <translation id="4351244548802238354">ഡയലോഗ് അടയ്‌ക്കുക</translation>
@@ -868,6 +883,8 @@
 <translation id="4471432286288241507">{0,plural, =0{ഉപകരണം ഇപ്പോൾ അപ്‌ഡേറ്റ് ചെയ്യുക}=1{ഒരു സെക്കൻഡിനുള്ളിൽ ഉപകരണം അപ്‌ഡേറ്റ് ചെയ്യുക}other{# സെക്കൻഡിനുള്ളിൽ ഉപകരണം അപ്‌ഡേറ്റ് ചെയ്യുക}}</translation>
 <translation id="4472575034687746823">ആരംഭിക്കാം</translation>
 <translation id="4477350412780666475">അടുത്ത ട്രാക്ക്</translation>
+<translation id="4477751544736611934">ഇതിന് ഡാറ്റാ നിരക്കുകൾ ഈടാക്കിയേക്കാം.
+ഒരു ഉപകരണം കണക്‌റ്റ് ചെയ്‌തിരിക്കുന്നു.</translation>
 <translation id="4477892968187500306">Google പരിശോധിച്ചുറപ്പിച്ചിട്ടില്ലാത്ത ആപ്പുകൾ ഈ ഉപകരണത്തിൽ അടങ്ങിയിരിക്കാം.</translation>
 <translation id="4479639480957787382">എതെര്‍‌നെറ്റ്</translation>
 <translation id="4481530544597605423">ജോടി മാറ്റിയ ഉപകരണങ്ങൾ</translation>
@@ -954,6 +971,7 @@
 <translation id="4798888871844665150">ഇനം മുമ്പേ ക്ലിപ്പ്ബോർഡിലേക്ക് പകർത്തി. കാണാൻ <ph name="SHORTCUT_KEY_NAME" /> + V ഉപയോഗിക്കുക.</translation>
 <translation id="479989351350248267">തിരയുക</translation>
 <translation id="4804818685124855865">വിച്ഛേദിക്കുക</translation>
+<translation id="4806631651704497161">ചെറുതായി മങ്ങിക്കൽ</translation>
 <translation id="4813311884204119883">തുറന്ന് വച്ചിട്ടുള്ള ടാബുകളിലെ ശൂന്യമായ സ്ഥലത്തേക്ക് ലിങ്ക് വലിച്ചിടുക</translation>
 <translation id="4814539958450445987">ലോഗിൻ സ്‌ക്രീൻ</translation>
 <translation id="481455355267255546">അടുത്തത്</translation>
@@ -996,6 +1014,7 @@
 <translation id="4945196315133970626">അറിയിപ്പുകൾ ഓഫാക്കുക</translation>
 <translation id="4946376291507881335">ക്യാപ്‌ചർ ചെയ്യുക</translation>
 <translation id="495046168593986294">മുകളിലേക്ക് സ്ക്രോള്‍ ചെയ്യുക</translation>
+<translation id="4950800194215951939">നിങ്ങളുടെ ഗെയിമിംഗ് അനുഭവം ഇഷ്ടാനുസൃതമാക്കുക</translation>
 <translation id="4952936045814352993">അലാറം ശബ്‌ദങ്ങൾ പ്രവർത്തനരഹിതമാക്കിയിരിക്കുന്നതിനാൽ 'ഫോൺ കണ്ടെത്തൽ' ലഭ്യമല്ല</translation>
 <translation id="4960324571663582548">മുമ്പത്തെ പതിപ്പിലേക്ക് <ph name="DEVICE_TYPE" /> പുനഃസ്ഥാപിക്കാൻ <ph name="MANAGER" /> നിങ്ങളോട് ആവശ്യപ്പെടുന്നു. നിങ്ങളുടെ ഉപകരണം റീസെറ്റ് ചെയ്യുകയും എല്ലാ ഡാറ്റയും ഇല്ലാതാകുകയും ചെയ്യും.</translation>
 <translation id="4961318399572185831">സ്‌ക്രീൻ കാസ്റ്റ് ചെയ്യുക</translation>
@@ -1010,6 +1029,8 @@
 <translation id="4981175556418720939"><ph name="DATE_AND_TIME" />-ന് പരിഷ്‌കരിച്ചു</translation>
 <translation id="4987738733603015246">ഡെസ്‌ക് 16</translation>
 <translation id="4989163558385430922">എല്ലാം കാണുക</translation>
+<translation id="4995963195354861331">സ്വാഗത ഡയലോഗ്</translation>
+<translation id="4996265698919320288">റെക്കോർഡ് ചെയ്യുന്നു</translation>
 <translation id="5003993274120026347">അടുത്ത വാചകം</translation>
 <translation id="5004607513195820459">മാനേജ് ചെയ്യുന്ന നെറ്റ്‌വർക്കാണ്</translation>
 <translation id="5009463889040999939">പ്രൊഫൈലിന്റെ പേര് മാറ്റുന്നു. ഇതിന് കുറച്ച് സമയമെടുത്തേക്കാം.</translation>
@@ -1040,7 +1061,6 @@
 <translation id="5104236669533825617">സ്ക്രീൻകാസ്റ്റ് സൃഷ്ടിക്കാനാകുന്നില്ല</translation>
 <translation id="5107522548814527560">വെബ്</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
-<translation id="5111930673176965299">പശ്ചാത്തലം മങ്ങിക്കൽ</translation>
 <translation id="5117590920725113268">അടുത്ത മാസം കാണിക്കുക</translation>
 <translation id="5121628974188116412">പേജിന്റെ താഴേയ്ക്ക് പോവുക</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" /> പ്രിവ്യൂ. നിഷ്ക്രിയ ഡെസ്‌ക്.</translation>
@@ -1102,6 +1122,8 @@
 <translation id="533282197239610265">കാസ്‌റ്റ് ഉപകരണങ്ങൾ കാണിക്കുക</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (വലത്)</translation>
 <translation id="5352250171825660495">ഡാർക്ക് തീം ഓണാണ്</translation>
+<translation id="5354804064646502504">ഇതിന് ഡാറ്റാ നിരക്കുകൾ ഈടാക്കിയേക്കാം.
+ഉപകരണങ്ങളൊന്നും കണക്‌റ്റ് ചെയ്തിട്ടില്ല.</translation>
 <translation id="5356963482258194581">ഡാർക്ക്, ലൈറ്റ് തീമുകൾ തമ്മിൽ മാറുക. ഡെസ്‌ക്ടോപ്പിൽ വലത് ക്ലിക്ക് ചെയ്ത ശേഷം വാൾപേപ്പറും സ്റ്റൈലും തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="536019650977002321">നിങ്ങളുടെ അഡ്‌മിൻ ഓഡിയോ ക്യാപ്ചർ ചെയ്യാൻ അനുവദിക്കുന്നില്ല. കൂടുതൽ വിവരങ്ങൾക്ക് നിങ്ങളുടെ അഡ്‌മിനെ ബന്ധപ്പെടുക.</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> സംഭാഷണ ഫയലുകൾ ഭാഗികമായി ഡൗൺലോഡ് ചെയ്തു</translation>
@@ -1201,6 +1223,7 @@
 <translation id="5712132663381964774"><ph name="PRODUCT_NAME" /> എന്നതിൽ നിങ്ങൾക്ക് ആവശ്യമുള്ളതെല്ലാം ചെയ്യാൻ ആപ്പുകൾ ഉപയോഗിക്കുക. ലോഞ്ചറിൽ നിങ്ങളുടെ ആപ്പുകൾ കണ്ടെത്താം.</translation>
 <translation id="571295407079589142">മൊബൈൽ ഡാറ്റ ഓഫാക്കി</translation>
 <translation id="5727460725221669831">നിങ്ങൾ പാസ്‌വേഡ് മറന്നെങ്കിലോ അടുത്തിടെ നിങ്ങളുടെ Google Account പാസ്‌വേഡ് മാറ്റിയിട്ടുണ്ടെങ്കിലോ ഈ ഉപയോക്താവിനെ വീണ്ടെടുക്കാൻ ശ്രമിക്കുക.</translation>
+<translation id="5733630091161562207">സ്വാഗത അറിയിപ്പ്</translation>
 <translation id="573413375004481890">ഈ ഉപകരണത്തിന് നിങ്ങളുടെ എല്ലാ ഡിസ്പ്ലേകൾക്കും പിന്തുണ നൽകാനാവാത്തതിനാൽ ഒന്ന് വിച്ഛേദിച്ചു</translation>
 <translation id="5740328398383587084">സമീപമുള്ള പങ്കിടൽ</translation>
 <translation id="574392208103952083">ഇടത്തരം</translation>
@@ -1386,6 +1409,7 @@
 <translation id="6453179446719226835">ഭാഷ മാറ്റിയിരിക്കുന്നു</translation>
 <translation id="6459472438155181876">സ്‌ക്രീൻ <ph name="DISPLAY_NAME" /> എന്നതിലേക്ക് വികസിപ്പിക്കുന്നു</translation>
 <translation id="6464094930452079790">ചിത്രങ്ങൾ</translation>
+<translation id="6467290994038932560"><ph name="GAME_APP_NAME" /> എന്നതിന് ഓണാണ്</translation>
 <translation id="6469104339369989396">ഹോട്ട്സ്‌പോട്ട് ടോഗിൾ ചെയ്യുക</translation>
 <translation id="6477681113376365978">ഫയൽ ഡൗൺലോഡ് ചെയ്യാനാകുന്നില്ല</translation>
 <translation id="6482559668224714696">പൂർണ്ണസ്‌ക്രീൻ മാഗ്‌നിഫയർ</translation>
@@ -1776,6 +1800,7 @@
 <translation id="7963689218131240420">'ശല്യപ്പെടുത്തരുത്' ഓഫാണ്.</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> എന്നതിൽ നിന്നുള്ളത്</translation>
 <translation id="7968693143708939792">ഫോൾഡർ തിരഞ്ഞെടുക്കുക...</translation>
+<translation id="7973756967040444713">ടൂൾബാർ അടയ്ക്കുക</translation>
 <translation id="797512352675305461">പൂർണ്ണസ്‌ക്രീൻ മാഗ്നിഫയർ ഓണാക്കുകയോ ഓഫാക്കുകയോ ചെയ്യുക</translation>
 <translation id="7977927628060636163">മൊബൈൽ നെറ്റ്‌വർക്കുകൾ തിരയുന്നു...</translation>
 <translation id="7982789257301363584">നെറ്റ്‌വർക്ക്</translation>
@@ -1928,6 +1953,7 @@
 <translation id="861045123704058818">ആപ്പുകൾ താൽക്കാലികമായി വിഭാഗം അനുസരിച്ച് ഓർഗനൈസ് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="8612216344243590325">പ്രധാനപ്പെട്ട ഫയലുകൾ ഡെസ്ക്ടോപ്പിൽ സൂക്ഷിക്കുന്നതിന് പകരം <ph name="HOLDING_SPACE_TITLE" /> എന്നതിൽ സൂക്ഷിക്കുക. <ph name="HOLDING_SPACE_TITLE" /> എന്നതിലേക്ക് ഫയലുകൾ വലിച്ചിടുക.</translation>
 <translation id="8614517853887502247">'കാണുന്നതിൽ നിന്നുള്ള പരിരക്ഷ' ഓണായതിനാൽ <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> അറിയിപ്പുകൾ മറച്ചിരിക്കുന്നു</translation>
+<translation id="8615778328722901791">ടൂൾബാർ തുറക്കുക</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">ശബ്‌ദം കുറയ്ക്കുക</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> ഉപകരണത്തിലേക്ക് കണക്റ്റ് ചെയ്‌തു</translation>
@@ -1950,6 +1976,7 @@
 <translation id="8703634754197148428">റെക്കോർഡിംഗ് ആരംഭിക്കൂ. റെക്കോർഡിംഗ് ആരംഭിച്ചുകഴിഞ്ഞാൽ, ഷെൽഫിലേക്ക് പോയി റെക്കോർഡിംഗ് നിർത്തുക ബട്ടൺ കണ്ടെത്താൻ Alt + Shift + L ഉപയോഗിക്കുക</translation>
 <translation id="8704155109538237473">ചിത്രത്തിനുള്ളിൽ ചിത്രം വിൻഡോ ഫോക്കസ് ചെയ്യുക</translation>
 <translation id="870917907284186124">കേട്ടെഴുത്ത് ഓണാക്കുകയോ ഓഫാക്കുകയോ ചെയ്യുക (നിങ്ങളുടെ ശബ്ദം ഉപയോഗിച്ച് ടൈപ്പ് ചെയ്യുക)</translation>
+<translation id="8711169534266271368">ഗെയിം ഡാഷ്ബോർഡ് ഓപ്ഷനുകൾ</translation>
 <translation id="8714138378966541668">ദാതാവ് ലോക്ക് ചെയ്തു</translation>
 <translation id="8717459106217102612">മുമ്പത്തെ വാക്കോ അക്ഷരമോ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="8721053961083920564">വോളിയം മാറ്റുക. <ph name="STATE_TEXT" /></translation>
@@ -1980,6 +2007,7 @@
 <translation id="8815390544836110344">Ctrl പ്ലസ് Shift പ്ലസ് ഓവർവ്യൂ മോഡ് കീ എന്ന, സ്ക്രീന്‍ഷോട്ടെടുക്കാനുള്ള കുറുക്കുവഴി അമർത്തുക</translation>
 <translation id="881757059229893486">ഇൻപുട്ട് രീതികളുടെ ക്രമീകരണം</translation>
 <translation id="8819728065740986820">അഡാപ്റ്റീവ് ചാർജിംഗ് ഓണാണ്</translation>
+<translation id="8822104519413696986">ഇതൊരു ടച്ച് ഗെയിമാണ്</translation>
 <translation id="8825863694328519386">തിരികെ പോകാൻ ഇടതുഭാഗത്ത് നിന്ന് സ്വൈപ്പ് ചെയ്യുക</translation>
 <translation id="8832513206237979203">ബുക്ക്‌മാർക്ക് ബാർ കാണിക്കുക അല്ലെങ്കിൽ മറയ്ക്കുക</translation>
 <translation id="8834539327799336565">നിലവിൽ കണക്റ്റ് ചെയ്‌തവ</translation>
@@ -2090,6 +2118,7 @@
 <translation id="953431725143473984">ഉപകരണം ഷട്ട് ഡൗൺ ചെയ്യണോ?</translation>
 <translation id="954052413789300507"><ph name="FILENAME" /> എന്നതിനാവശ്യമായ ഇടം ലഭ്യമല്ല. ഇടം സൃഷ്ടിക്കുക.</translation>
 <translation id="954520015070501466">30 മിനിറ്റ്</translation>
+<translation id="956452277966142925">ഗെയിം ഡാഷ്ബോർഡ് ക്രമീകരണം</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> എന്നതിനുള്ള <ph name="RESULT_COUNT" /> ഫലങ്ങൾ കാണിക്കുന്നു</translation>
 <translation id="981011780479609956">അവസാന തീയതിയില്ലാത്തവ</translation>
 <translation id="98120814841227350">ഡോക്യുമെന്റിന്റെ താഴേക്ക് പോവുക</translation>

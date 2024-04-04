@@ -91,7 +91,6 @@ Ga naar <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> voor meer 
 <translation id="3567399274263440288">Log in bij Chromium met je Google-account om het maximale uit Chromium te halen.</translation>
 <translation id="3634039384458740619">Chromium-instellingen openen</translation>
 <translation id="3639997914391704523">Chromium kan je wachtwoorden checken als je inlogt met je Google-account.</translation>
-<translation id="3650632991272923014"><ph name="USER_EMAIL1" /> heeft Chromium gebruikt en heeft bookmarks, wachtwoorden en andere instellingen op dit apparaat laten staan.</translation>
 <translation id="3688710892786762883">Chromium herkent nummers voor pakkettracking op sites die je bezoekt en toont je pakketupdates op de pagina Nieuw tabblad. Je gegevens worden gedeeld met Google om deze functie te bieden en Shopping voor iedereen te verbeteren.</translation>
 <translation id="372658070733623520">Bevestig dat jij het bent als je Chromium-gegevens wilt gebruiken en opslaan in je Google-account.</translation>
 <translation id="3780779443901618967">Geeft je waarschuwingen over gevaarlijke sites, zelfs sites die Google niet eerder kende, door meer gegevens van sites te analyseren dan de standaardbeveiliging. Je kunt ervoor kiezen om waarschuwingen voor Chromium over te slaan.</translation>
@@ -182,7 +181,6 @@ Aandachtspunten:
 <translation id="5983312940147103417">Chromium verbeteren</translation>
 <translation id="5985102273857091344">Selecteer Chromium.</translation>
 <translation id="5985254578475526217">Als je meldingen van Chromium wilt krijgen, zet je meldingen aan via je iOS-instellingen.</translation>
-<translation id="6062449165341879460">Je organisatie <ph name="DOMAIN" /> heeft toegang tot je Chromium-gegevens, bookmarks, geschiedenis, wachtwoorden en andere instellingen die je in dit account opslaat. Als je uitlogt, worden je gegevens van dit apparaat gewist.  De gegevens blijven wel opgeslagen in je beheerde Google-account en zijn nog steeds beschikbaar voor je organisatie. Je organisatie kan ook specifiek voor dat account gebruikersbeleid instellen waarmee het gedrag van Chromium kan worden gewijzigd.</translation>
 <translation id="6093744543579359059">Wachtwoorden beheren in Chromium</translation>
 <translation id="6104024151682120539">Openen in Chromium</translation>
 <translation id="61109258320235597">Geef je wachtwoordzin op als je Chromium-gegevens wilt gebruiken en opslaan in je Google-account.</translation>
@@ -247,7 +245,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="7763454117143368771">Gebruik Chromium als je standaardbrowser voor bescherming tegen gevaarlijke sites en om je wachtwoorden te beveiligen</translation>
 <translation id="78025249032851484">Je Chromium is verouderd.</translation>
 <translation id="7859018312476869945">Als je in de adresbalk of het zoekvak typt, stuurt Chromium wat je typt naar je standaard zoekmachine om betere suggesties te krijgen. Dit staat uit in de incognitomodus.</translation>
-<translation id="786327964234957808">Je wijzigt het synchronisatieaccount van <ph name="USER_EMAIL1" /> in <ph name="USER_EMAIL2" />. Je bestaande Chromium-gegevens worden beheerd door <ph name="DOMAIN" />. Hierdoor worden je gegevens van dit apparaat verwijderd. Je gegevens blijven echter opgeslagen in <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Chromium-scanner gebruiken</translation>
 <translation id="7905064834449738336">Als je een wachtwoord gebruikt, waarschuwt Chromium je als het online is gepubliceerd. Als dit wordt gedaan, zijn je wachtwoorden en gebruikersnamen versleuteld, zodat ze door niemand (ook niet Google) kunnen worden gelezen.</translation>
 <translation id="7911732829884437264">Chromium standaard gebruiken</translation>

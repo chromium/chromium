@@ -115,6 +115,7 @@
 <translation id="1383597849754832576">உடனடி வசனத்தின் ஃபைல்களைப் பதிவிறக்க முடியவில்லை. பிறகு முயலவும்.</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1391102559483454063">இயக்கப்பட்டுள்ளது</translation>
+<translation id="1394698770495054737">முழுவதும்</translation>
 <translation id="1407069428457324124">டார்க் தீம்</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. தேதிகளுக்கு இடையே ஃபோகஸை நகர்த்த, அம்புக்குறி பட்டன்களைப் பயன்படுத்தவும்.</translation>
 <translation id="141170878022560212">நடு பட்டன்</translation>
@@ -441,6 +442,7 @@
 <translation id="2841907151129139818">டேப்லெட் பயன்முறைக்கு மாற்றப்பட்டது</translation>
 <translation id="2844169650293029770">USB-C சாதனம் (இடது பக்கம் முன்னே இருக்கும் போர்ட்)</translation>
 <translation id="2844350028562914727">விவரங்கள்</translation>
+<translation id="2847759467426165163">இதற்கு அலைபரப்பு</translation>
 <translation id="2848120746144143659">முழுத்திரையை ஸ்கிரீன்ஷாட் எடுக்க Enter பட்டனை அழுத்தவும்</translation>
 <translation id="2849936225196189499">சிக்கலான</translation>
 <translation id="2860184359326882502">சிறப்பாகப் பொருந்துபவை</translation>
@@ -478,6 +480,7 @@
 <translation id="3009958530611748826">சேமிப்பதற்கான ஃபோல்டரைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="301282384882049174">உங்கள் நிர்வாகி பகிர்ந்துள்ளார்</translation>
 <translation id="301584155502740476">ஹாட்ஸ்பாட் விவரங்களைக் காட்டும். ஹாட்ஸ்பாட் முடக்கப்பட்டுள்ளது.</translation>
+<translation id="3017079585324758401">பின்புலம்</translation>
 <translation id="3018135054368884502">மீடியாவை முன்னோக்கி நகர்த்து</translation>
 <translation id="3033545621352269033">இயக்கப்பட்டுள்ளது</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> உடன் ஒன்றிணைக்கும்</translation>
@@ -954,6 +957,7 @@
 <translation id="4798888871844665150">நகலெடுக்கப்பட்டது ஏற்கெனவே கிளிப்போர்டில் உள்ளது. அதைப் பார்க்க <ph name="SHORTCUT_KEY_NAME" /> + V அழுத்தவும்.</translation>
 <translation id="479989351350248267">தேடல்</translation>
 <translation id="4804818685124855865">தொடர்பைத் துண்டி</translation>
+<translation id="4806631651704497161">சிறிதளவு</translation>
 <translation id="4813311884204119883">உலாவிப்பக்கப் பட்டியில் உள்ள வெற்றுப் பகுதியில் இணைப்பை இழுக்கவும்</translation>
 <translation id="4814539958450445987">உள்நுழைவுத் திரை</translation>
 <translation id="481455355267255546">அடுத்து</translation>
@@ -1040,7 +1044,6 @@
 <translation id="5104236669533825617">ஸ்க்ரீன்காஸ்ட்டை உருவாக்க முடியவில்லை</translation>
 <translation id="5107522548814527560">இணையம்</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
-<translation id="5111930673176965299">பின்னணியை மங்கலாக்கு</translation>
 <translation id="5117590920725113268">அடுத்த மாதத்தைக் காட்டு</translation>
 <translation id="5121628974188116412">பக்கத்தின் கீழ்ப்பக்கத்திற்குச் செல்லும்</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" /> மாதிரிக்காட்சி. செயலில் இல்லாத டெஸ்க்.</translation>

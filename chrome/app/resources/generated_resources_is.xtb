@@ -41,6 +41,7 @@
 <translation id="102916930470544692">Aðgangslykill</translation>
 <translation id="1029317248976101138">Aðdráttur</translation>
 <translation id="1029526375103058355">Ýta til að smella</translation>
+<translation id="1029724557649700742">Boðið verður upp á nýja eiginleika þegar þeir verða tiltækir og þeir geta verið mismunandi eftir tækjum.</translation>
 <translation id="1031362278801463162">Hleður forskoðun</translation>
 <translation id="1032605640136438169">Kynntu þér nýju skilmálana</translation>
 <translation id="103279545524624934">Losaðu um geymslupláss til að opna Android forrit.</translation>
@@ -1533,7 +1534,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2127372758936585790">Afllítið hleðslutæki</translation>
 <translation id="212862741129535676">Nýtingarhlutfall tíðnistöðu</translation>
 <translation id="212876957201860463">Undirbýr uppsetningu farsíma...</translation>
-<translation id="2130909682040406368">Nánar um notkun á gervigreindarverkfærum</translation>
 <translation id="2131077480075264">Ekki er hægt að setja „<ph name="APP_NAME" />“ upp vegna þess að „<ph name="IMPORT_NAME" />“ leyfir það ekki</translation>
 <translation id="2133775869826239001">Veldu fleiri eiginleika til að setja upp</translation>
 <translation id="2133857665503360653">Reyna aftur að sækja <ph name="FILE_NAME" /></translation>
@@ -1572,6 +1572,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2155473371917268529">Sýnileiki er stilltur á tækin þín</translation>
 <translation id="2155772377859296191">Virðist vera <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Þjónustuaðili: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156707722163479690">Leyft að fletta og stækka/minnka samnýtta flipa</translation>
 <translation id="2156877321344104010">Keyra öryggisathugun aftur</translation>
 <translation id="2157474325782140681">Til að fá viðbótareiginleika skaltu nota Dell-dokku sem er hönnuð fyrir þessa Chromebook tölvu.</translation>
 <translation id="215753907730220065">Hætta að nota allan skjáinn</translation>
@@ -1993,6 +1994,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2459706890611560967">Halda áfram að varpa flipa yfir í <ph name="DEVICE_NAME" /></translation>
 <translation id="2460356425461033301">Afritaðu vafraefnið þitt og notaðu það í hvaða tæki sem er</translation>
 <translation id="2460482211073772897">Í öðrum möppum</translation>
+<translation id="2461550163693930491">Ekki leyfa vefsvæðum að fletta og stækka/minnka samnýtta flipa</translation>
 <translation id="2461593638794842577">Þú getur slökkt á þessari stillingu til að vista aðgangsorðið aðeins í þessu tæki</translation>
 <translation id="2462332841984057083">Uppsetning Steam er þegar í gangi. Bíddu þar til uppsetningu lýkur.</translation>
 <translation id="2462724976360937186">Lykilsauðkenni vottunarstöðvar</translation>
@@ -2026,6 +2028,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2482895651873876648">Flipi færður inn í hópinn <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="2483627560139625913">Stilla leitarvél í vafrastillingum Chrome</translation>
 <translation id="2483698983806594329">Sóttir óstaðfesta skrá</translation>
+<translation id="2484574361686148760">Endurnýja upplýsingar um WiFi Direct-biðlara</translation>
 <translation id="2484743711056182585">Fjarlægja veittan aðgang</translation>
 <translation id="2484909293434545162">Ef vefsvæði notar fótspor birtist það hér</translation>
 <translation id="2484959914739448251">Til að hreinsa vafragögn úr öllum samstilltum tækjum og af Google reikningnum þínum skaltu <ph name="BEGIN_LINK" />slá inn aðgangsorðið þitt<ph name="END_LINK" />.</translation>
@@ -2219,6 +2222,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2629227353894235473">Þróa Android forrit</translation>
 <translation id="2629437048544561682">Hreinsa striga</translation>
 <translation id="2631498379019108537">Sýna innsláttarvalkosti á hillunni</translation>
+<translation id="2632176111713971407">Vefsvæði geta beðið um að fletta og stækka/minnka samnýtta flipa</translation>
 <translation id="2633212996805280240">Fjarlægja „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="263325223718984101">Ekki var hægt að ljúka uppsetningu <ph name="PRODUCT_NAME" /> en það verður keyrt af diskmyndinni.</translation>
 <translation id="2633764681656412085">FIDO</translation>
@@ -3525,6 +3529,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3659550105763988702">Notaðu aðgangslykilinn þinn fyrir <ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">Þú hefur slegið of oft inn rangan aðgangskóða. Reyndu aftur síðar</translation>
 <translation id="3660234220361471169">Ótraust</translation>
+<translation id="3661106764436337772">Vertu fljótari og öruggari að skrifa</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 fyrirliggjandi aðgangsorð fannst}one{{NUM_PASSWORDS} fyrirliggjandi aðgangsorð fannst}other{{NUM_PASSWORDS} fyrirliggjandi aðgangsorð fundust}}</translation>
 <translation id="3662207097851752847">Staðfestu Google-reikninginn þinn í símanum</translation>
 <translation id="3663417513679360795">Nánari upplýsingar um að kveikja á hefðbundinni forhleðslu</translation>
@@ -3877,6 +3882,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3900966090527141178">Flytja út aðgangsorð</translation>
 <translation id="3902789559055749153">Veldu hvernig þú vilt búa til aðgangslykil fyrir <ph name="APP_NAME" /></translation>
 <translation id="3903187154317825986">Innbyggt lyklaborð</translation>
+<translation id="3903696968689283281">Upplýsingar um WiFi Direct-eigendur:</translation>
 <translation id="3904326018476041253">Staðsetningarþjónusta</translation>
 <translation id="3905761538810670789">Gera við forrit</translation>
 <translation id="3908288065506437185">Loka á fótspor þriðju aðila í huliðsstillingu</translation>
@@ -4502,7 +4508,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4388650384344483842">Notaðu að minnsta kosti 8 stafi</translation>
 <translation id="4389091756366370506">Notandi <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> og <ph name="NUMBER_OF_OTHER_SWITCHES" /> rofar í viðbót</translation>
-<translation id="4390569024397171409">Settu upp forrit í <ph name="DEVICE_TYPE" /></translation>
 <translation id="439266289085815679">Bluetooth-stillingu er stjórnað af <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Breyta stillingaskrá</translation>
 <translation id="4393102500004843976">leitarlykill + shift + <ph name="TOP_ROW_KEY" /></translation>
@@ -4532,6 +4537,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4409697491990005945">Spássíur</translation>
 <translation id="4409779593816003679">Aðgangsorð og sjálfvirk útfylling</translation>
 <translation id="4410545552906060960">Notaðu PIN-númer í stað aðgangsorðs til að opna tækið. Til að stilla PIN-númer síðar ferðu í „Stillingar“.</translation>
+<translation id="4411344321892622527">Ekki leyft að fletta og stækka/minnka samnýtta flipa</translation>
 <translation id="4411578466613447185">Kóðaundirritun</translation>
 <translation id="4411719918614785832">Þessir aðgangslyklar eru vistaðir í Windows Hello í þessari tölvu. Þeir eru ekki vistaðir á Google-reikningnum þínum.</translation>
 <translation id="4412544493002546580">Reyndu aftur eða veldu úr tiltækum innblæstri hér fyrir neðan.</translation>
@@ -4545,7 +4551,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4414242853388122273">Villa kom upp við að fjarlægja <ph name="VM_NAME" />. Reyndu aftur.</translation>
 <translation id="4415213869328311284">Þú getur byrjað að nota <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4415245286584082850">Engin tæki fundust. Opnaðu grein hjálparmiðstöðvarinnar í nýjum flipa.</translation>
-<translation id="4415276339145661267">Stjórna Google reikningnum</translation>
+<translation id="4415276339145661267">Stjórna Google-reikningnum</translation>
 <translation id="4415748029120993980">SECG sporger ferill secp384r1 (e.þ.s. NIST P-384)</translation>
 <translation id="4415815425191869676">Halda þessum vefsvæðum ávallt virkum</translation>
 <translation id="4416582610654027550">Sláðu inn gilda vefslóð</translation>
@@ -6875,6 +6881,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6257602895346497974">Kveikja á samstillingu...</translation>
 <translation id="625827534921607067">Þetta net hefur forgang ef fleiri en eitt net sem áður hafa verið notuð eða grunnstillt eru í boði.</translation>
 <translation id="62586649943626337">Flokkaðu flipa með „flipahópum“</translation>
+<translation id="6259776178973198997">Endurnýja upplýsingar um WiFi Direct-eigendur</translation>
 <translation id="6262371516389954471">Öryggisafritunum þínum er hlaðið inn á Google og þau dulkóðuð með aðgangsorði Google reikningsins.</translation>
 <translation id="6263082573641595914">CA-útgáfa Microsoft</translation>
 <translation id="6263284346895336537">Ekki hætta</translation>
@@ -7576,6 +7583,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6812349420832218321">Ekki er hægt að keyra <ph name="PRODUCT_NAME" /> með rótaraðgang.</translation>
 <translation id="6812841287760418429">Halda breytingum</translation>
 <translation id="6813907279658683733">Allur skjárinn</translation>
+<translation id="6814754908910736855">Upplýsingar um WiFi Direct-biðlara:</translation>
 <translation id="6815376457351236663">Opna samt</translation>
 <translation id="6815787852028615386">Þessi skrá er villandi og kann að gera óvæntar breytingar á tækinu þínu.</translation>
 <translation id="6816097980753839617">Blálitaskerðing (tritanomaly)</translation>
@@ -8012,7 +8020,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7168109975831002660">Lágmarksleturstærð</translation>
 <translation id="7169122689956315694">Kveikja á tilkynningu þegar tæki eru nálæg</translation>
 <translation id="7170236477717446850">Prófílmynd</translation>
-<translation id="7170751905948784001">Upplýsingar um þróunaraðila</translation>
 <translation id="7171000599584840888">Bæta prófíl við...</translation>
 <translation id="7171259390164035663">Ekki skrá</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Bæta flipa við nýjan hóp}one{Bæta flipum við nýjan hóp}other{Bæta flipum við nýjan hóp}}</translation>
@@ -8445,6 +8452,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7501957181231305652">eða</translation>
 <translation id="7502220299952823578">Bæta við listann „halda þessum vefsvæðum ávallt virkum“</translation>
 <translation id="7502528909759062987">Gera hlé á vörpun flipa yfir í <ph name="DEVICE_NAME" /></translation>
+<translation id="7502804472671406749">Hægt er að fletta og stækka/minnka samnýtta flipa</translation>
 <translation id="7503191893372251637">Tegund Netscape-vottorðs</translation>
 <translation id="7503985202154027481">Færsla um heimsókn þína á þetta vefsvæði verður vistuð á öryggislyklinum þínum.</translation>
 <translation id="7504145862399276792">Slökkt er á hljóði þessa flipa</translation>
@@ -8489,7 +8497,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> svarar ekki. Veldu „Þvinga fram lokun“ til að loka forritinu.</translation>
 <translation id="7535730537657706072">Lokaðu öllum huliðsflipum til að hreinsa vafraferil huliðsstillingar úr tækinu þínu</translation>
 <translation id="7536815228183532290">Skráð(ur) inn sem <ph name="EMAIL" /></translation>
-<translation id="7537182889548466084">Þú færð tillögur að flipahópum sem flokka svipaða flipa saman í hóp. Opnir flipar og titlar eru sendir til Google og verða hugsanlega yfirfarðir af mennskum aðilum til að bæta þennan eiginleika.</translation>
 <translation id="7538013435257102593">Ekki er algengt að þessi skráargerð sé sótt og hún kann að vera hættuleg</translation>
 <translation id="7540972813190816353">Villa kom upp við að leita að uppfærslum: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> hefur fært þetta tæki í fyrri útgáfu. Vistaðu mikilvægar skrár og endurræstu svo. Öllum gögnum í þessu tæki verður eytt.</translation>
@@ -10784,6 +10791,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="949807244219288032">Þessi flipi er tengdur við HID-tæki</translation>
 <translation id="950079950995628542">Úr „<ph name="PHONE_NAME" />“</translation>
 <translation id="950307215746360464">Uppsetningarleiðbeiningar</translation>
+<translation id="951273949038779544"><ph name="SITE_ACCESS" />. Sett upp af kerfisstjóranum þínum.</translation>
 <translation id="951991426597076286">Hafna</translation>
 <translation id="952471655966876828">Tækið tengist sjálfkrafa þegar kveikt er á því og það notað</translation>
 <translation id="953434574221655299">Mega vita hvenær þú notar tækið þitt</translation>

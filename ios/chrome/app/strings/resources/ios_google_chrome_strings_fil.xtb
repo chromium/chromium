@@ -114,14 +114,12 @@ Mga bagay na dapat isaalang-alang:
 <translation id="3901001113120561395">Sulitin ang Chrome.</translation>
 <translation id="3913386780052199712">Naka-sign in sa Chrome</translation>
 <translation id="3967382818307165056">Mamahala ng Mga Paraan ng Pagbabayad sa Chrome</translation>
-<translation id="3980220367029651214">Lumilipat ka mula sa naka-sync na account na <ph name="USER_EMAIL1" /> papunta sa <ph name="USER_EMAIL2" />. Pinamamahalaan ng <ph name="DOMAIN" /> ang kasalukuyan mong data sa Chrome. Ide-delete nito ang data mo sa device na ito, ngunit mananatili ang iyong data sa <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Hinihiling sa iyo ng organisasyon mo na manatiling naka-sign out sa Chrome.</translation>
 <translation id="3988789688219830639">Walang access ang Google Chrome sa larawan o video. I-enable ang access sa Mga Setting ng iOS &gt; Privacy &gt; Mga Larawan.</translation>
 <translation id="4064699917955374540">Para magamit at ma-save ang data ng Chrome sa iyong Google Account, i-verify na ikaw ito.</translation>
 <translation id="4067858366537947361">Buksan ang Tab na Incognito sa Chrome</translation>
 <translation id="4093042601582616698">Gawing Default na Browser Mo ang Chrome?</translation>
 <translation id="417201473131094001">Hindi sinusuportahan sa Chrome Canary</translation>
-<translation id="4233521129555661685">Ginamit ni <ph name="USER_EMAIL1" /> ang Chrome at nag-iwan siya ng mga bookmark, password, at iba pang mga setting sa device na ito.</translation>
 <translation id="424864128008805179">Mag-sign out sa Chrome?</translation>
 <translation id="4251174643044751591">Bubuksan ang Page ng Setting ng Mga Paraan ng Pagbabayad sa Chrome.</translation>
 <translation id="4453284704333523777">Pamahalaan ang Mga Setting ng Chrome</translation>
@@ -240,7 +238,6 @@ Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experie
 <translation id="769104993356536261">Gamitin ang Mga Pagkilos sa Chrome sa iOS</translation>
 <translation id="7693590760643069321">Magagamit mo na ang Chrome sa tuwing magta-tap ka ng mga link sa mga mensahe, dokumento, at iba pang app.</translation>
 <translation id="7698568245838009292">Gustong I-access ng Chrome ang Camera</translation>
-<translation id="7754633291442704733">Magkakaroon ng access ang <ph name="DOMAIN" /> ng iyong organisasyon sa data, mga bookmark, history, mga password, at iba mo pang setting sa Chrome na iso-store mo sa account na ito. Kapag nag-sign out ka, maki-clear ang iyong data sa device na ito.  Gayunpaman, mananatiling naka-store ang iyong data sa pinapamahalaang Google Account mo at magiging available ito sa iyong organisasyon. Puwede ring magtakda ang iyong organisasyon ng mga patakaran ng user na partikular sa account na iyon na puwedeng makabago sa gawi ng Chrome.</translation>
 <translation id="7780154209050837198">Para masulit ang Chrome, mag-sign in sa Chrome gamit ang iyong Google Account.</translation>
 <translation id="778855399387580014">Start a search in a new Chrome tab.</translation>
 <translation id="7792140019572081272">Pinapanatiling secure ng Chrome ang iyong sensitibong data gamit ang Face ID.</translation>

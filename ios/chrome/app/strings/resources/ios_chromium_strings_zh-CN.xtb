@@ -91,7 +91,6 @@
 <translation id="3567399274263440288">若要充分利用 Chromium，请使用您的 Google 账号登录 Chromium。</translation>
 <translation id="3634039384458740619">打开 Chromium 设置</translation>
 <translation id="3639997914391704523">您需要先登录 Google 账号才能使用 Chromium 的密码检查功能。</translation>
-<translation id="3650632991272923014"><ph name="USER_EMAIL1" /> 原本使用 Chromium，并在此设备上保存了书签、密码及其他设置。</translation>
 <translation id="3688710892786762883">Chromium 将检测您所访问的网站上的包裹跟踪编号，并在新标签页中向您显示包裹动态。您的数据将分享给 Google，以便系统提供此功能和改进 Google 购物，让所有人都受益。</translation>
 <translation id="372658070733623520">如要将 Chromium 数据保存在您的 Google 账号中并使用这些数据，请确认是您本人在操作。</translation>
 <translation id="3780779443901618967">通过比“标准保护”机制分析更多的网站数据，针对危险网站（甚至是 Google 未曾得知的网站）向您发出警告。您可以选择忽略 Chromium 警告。</translation>
@@ -182,7 +181,6 @@
 <translation id="5983312940147103417">帮助改善 Chromium</translation>
 <translation id="5985102273857091344">选择“Chromium”。</translation>
 <translation id="5985254578475526217">若要接收来自 Chromium 的通知，请在 iOS 设置中开启通知。</translation>
-<translation id="6062449165341879460">贵组织 (<ph name="DOMAIN" />) 将能够访问您在此账号中存储的 Chromium 数据、书签、历史记录、密码和其他设置。当您退出账号时，系统将从这部设备上清除您的数据。不过，您的数据仍会存储在您名下受管理的 Google 账号中，且可供贵组织访问。贵组织也可专门针对上述账号设置用户规范，这可能会改变 Chromium 的行为。</translation>
 <translation id="6093744543579359059">在 Chromium 中管理密码</translation>
 <translation id="6104024151682120539">在 Chromium 中打开</translation>
 <translation id="61109258320235597">如要将 Chromium 数据保存在您的 Google 账号中并使用这些数据，请输入您的口令。</translation>
@@ -247,7 +245,6 @@
 <translation id="7763454117143368771">使用 Chromium 作为默认浏览器不仅可让您免受危险网站的侵害，还可保护您的密码</translation>
 <translation id="78025249032851484">您的 Chromium 版本过旧。</translation>
 <translation id="7859018312476869945">当您在地址栏或搜索框中输入内容时，Chromium 会将您输入的内容发送给默认搜索引擎，以便为您提供更好的建议。在无痕模式下，此设置处于关闭状态。</translation>
-<translation id="786327964234957808">您正要将同步账号从 <ph name="USER_EMAIL1" /> 切换到 <ph name="USER_EMAIL2" />。您现有的 Chromium 数据由 <ph name="DOMAIN" /> 管理。切换同步账号后，您的数据将从这台设备上删除，但仍会保留在 <ph name="USER_EMAIL1" /> 中。</translation>
 <translation id="7890287942691234100">开始使用 Chromium 扫描器</translation>
 <translation id="7905064834449738336">当您使用某个密码时，如果 Chromium 发现它已被在线发布，就会向您发出警告。当 Chromium 进行这项检查时，您的密码和用户名都会被加密，所以绝不会被任何人员/任何一方（包括 Google）读取。</translation>
 <translation id="7911732829884437264">默认使用 Chromium</translation>

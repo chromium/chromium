@@ -91,7 +91,6 @@ Til að skoða fleiri stillingar sem nota gögn til að bæta Chromium-upplifuni
 <translation id="3567399274263440288">Skráðu þig inn í Chromium með Google reikningnum þínum svo að Chromium nýtist þér sem best.</translation>
 <translation id="3634039384458740619">Opna Chromium-stillingar</translation>
 <translation id="3639997914391704523">Chromium getur athugað aðgangsorðin þín þegar þú skráir þig inn með Google reikningnum þínum</translation>
-<translation id="3650632991272923014"><ph name="USER_EMAIL1" /> notaði Chromium og skildi eftir bókamerki, aðgangsorð og aðrar stillingar í þessu tæki.</translation>
 <translation id="3688710892786762883">Chromium mun greina pakkarakningarnúmer á vefsvæðum sem þú opnar og birta þér fréttir af pökkum á síðu nýrra flipa. Gögnunum verður deilt með Google til að veita þennan eiginleika og til að bæta Shopping hjá öllum.</translation>
 <translation id="372658070733623520">Staðfestu að þetta sért þú til að nota og vista Chromium-gögn á Google-reikningnum þínum.</translation>
 <translation id="3780779443901618967">Varar þig við hættulegum vefsvæðum, jafnvel þeim sem Google hafði enga vitneskju um, með því að greina fleiri gögn frá vefsvæðum en hefðbundin vörn. Þú getur valið að sleppa Chromium-viðvörunum.</translation>
@@ -182,7 +181,6 @@ Hafðu í huga:
 <translation id="5983312940147103417">Bættu Chromium</translation>
 <translation id="5985102273857091344">Veldu „Chromium“.</translation>
 <translation id="5985254578475526217">Til að fá tilkynningar frá Chromium skaltu kveikja á tilkynningum í iOS-stillingum.</translation>
-<translation id="6062449165341879460"><ph name="DOMAIN" /> fyrirtækisins þíns fær aðgang að Chromium gögnunum þínum, bókamerkjum, ferli, aðgangsorðum og öðrum stillingum sem þú geymir á þessum reikningi. Þegar þú skráir þig út verður gögnunum þínum eytt úr þessu tæki.  Hins vegar verða gögnin þín geymd á stýrða Google reikningnum þínum og verða aðgengileg fyrirtækinu þínu. Fyrirtækið þitt getur líka stillt notendareglur sem eru sértækar fyrir reikninginn þinn og geta breytt virkni Chromium.</translation>
 <translation id="6093744543579359059">Stjórna aðgangsorðum í Chromium</translation>
 <translation id="6104024151682120539">Opna í Chromium</translation>
 <translation id="61109258320235597">Sláðu inn aðgangsorðið þitt til að nota og vista Chromium-gögn á Google-reikningnum þínum.</translation>
@@ -247,7 +245,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="7763454117143368771">Notaðu Chromium sem sjálfgefinn vafra til að njóta verndar gegn hættulegum vefsvæðum og tryggja öryggi aðgangsorðanna þinna</translation>
 <translation id="78025249032851484">Chromium-útgáfan þín er úrelt.</translation>
 <translation id="7859018312476869945">Þegar þú skrifar í veffangastiku eða leitarreit sendir Chromium það sem þú skrifar á sjálfgefna leitarvél til að fá betri tillögur. Slökkt er á þessu í huliðsstillingu.</translation>
-<translation id="786327964234957808">Þú ert að skipta um samstillingarreikning úr <ph name="USER_EMAIL1" /> yfir í <ph name="USER_EMAIL2" />. Chromium gögnin þín sem eru þegar til staðar eru í umsjón <ph name="DOMAIN" />. Þetta mun eyða gögnum af þessu tæki, en þau verða enn til staðar á <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Byrjaðu að nota Chromium skanna</translation>
 <translation id="7905064834449738336">Þegar þú notar aðgangsorð varar Chromium þig við ef það hefur verið birt á netinu. Meðan á þessu stendur eru aðgangsorðin þín og notandanöfnin dulkóðuð svo enginn geti lesið þau, þ.m.t. Google.</translation>
 <translation id="7911732829884437264">Notaðu Chromium sem sjálfgefinn vafra</translation>
