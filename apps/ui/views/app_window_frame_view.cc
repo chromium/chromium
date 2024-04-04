@@ -240,7 +240,7 @@ void AppWindowFrameView::SizeConstraintsChanged() {
 }
 
 gfx::Size AppWindowFrameView::CalculatePreferredSize() const {
-  gfx::Size pref = widget_->client_view()->GetPreferredSize();
+  gfx::Size pref = widget_->client_view()->GetPreferredSize({});
   gfx::Rect bounds(0, 0, pref.width(), pref.height());
   return widget_->non_client_view()
       ->GetWindowBoundsForClientBounds(bounds)
@@ -263,7 +263,7 @@ void AppWindowFrameView::Layout(PassKey) {
   const int kRightMargin = 3;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  gfx::Size close_size = close_button_->GetPreferredSize();
+  gfx::Size close_size = close_button_->GetPreferredSize({});
   close_button_->SetBounds(width() - kRightMargin - close_size.width(),
                            kButtonOffsetY,
                            close_size.width(),
@@ -271,13 +271,13 @@ void AppWindowFrameView::Layout(PassKey) {
 
   maximize_button_->SetEnabled(widget_->widget_delegate() &&
                                widget_->widget_delegate()->CanMaximize());
-  gfx::Size maximize_size = maximize_button_->GetPreferredSize();
+  gfx::Size maximize_size = maximize_button_->GetPreferredSize({});
   maximize_button_->SetBounds(
       close_button_->x() - kButtonSpacing - maximize_size.width(),
       kButtonOffsetY,
       maximize_size.width(),
       maximize_size.height());
-  gfx::Size restore_size = restore_button_->GetPreferredSize();
+  gfx::Size restore_size = restore_button_->GetPreferredSize({});
   restore_button_->SetBounds(
       close_button_->x() - kButtonSpacing - restore_size.width(),
       kButtonOffsetY,
@@ -292,7 +292,7 @@ void AppWindowFrameView::Layout(PassKey) {
   else
     restore_button_->SetState(views::Button::STATE_NORMAL);
 
-  gfx::Size minimize_size = minimize_button_->GetPreferredSize();
+  gfx::Size minimize_size = minimize_button_->GetPreferredSize({});
   minimize_button_->SetState(views::Button::STATE_NORMAL);
   minimize_button_->SetBounds(
       maximize_button_->x() - kButtonSpacing - minimize_size.width(),
