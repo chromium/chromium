@@ -96,6 +96,8 @@ class RecentlyUsedImageButton : public views::ImageButton {
     // TODO(b/332573200): only construct this button when the metadata is
     // decodable.
     SetAccessibilityLabelFromMetadata(metadata);
+
+    SetFlipCanvasOnPaintForRTLUI(false);
   }
 
   void SetSelected(bool selected) {
