@@ -5633,7 +5633,6 @@ if (is_chromeos_lacros) {
       "../browser/ui/views/intent_picker_bubble_view_browsertest.cc",
       "../browser/ui/views/location_bar/intent_chip_button_browsertest.cc",
       "../browser/ui/views/profiles/profile_picker_view_browsertest.cc",
-      "../browser/ui/views/profiles/profile_picker_window_browsertest.cc",
       "../browser/ui/views/tabs/alert_indicator_button_browsertest.cc",
       "../browser/ui/views/web_apps/web_app_integration_browsertest.cc",
       "../browser/ui/views/web_apps/web_app_integration_browsertest_cros.cc",
