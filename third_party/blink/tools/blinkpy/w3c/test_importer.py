@@ -210,7 +210,8 @@ class TestImporter:
 
         directory_owners = self.get_directory_owners()
         description = self.cl_description(directory_owners)
-        self._upload_cl(description)
+        import_issue_num = self._upload_cl(description)
+        self._cleanup.callback(self._ensure_cl_closed, import_issue_num)
 
         if not self.update_expectations_for_cl():
             return 1
@@ -290,7 +291,6 @@ class TestImporter:
     def run_commit_queue_for_cl(self):
         """Triggers CQ and either commits or aborts; returns True on success."""
         _log.info('Triggering CQ try jobs.')
-        self._cleanup.callback(self._ensure_cl_closed)
         self.git_cl.run(['try'])
         cl_status = self.git_cl.wait_for_try_jobs(
             poll_delay_seconds=POLL_DELAY_SECONDS,

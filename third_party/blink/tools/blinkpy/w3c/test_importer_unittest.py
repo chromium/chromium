@@ -235,8 +235,7 @@ class TestImporterTest(LoggingTestCase):
             })
         importer.fetch_new_expectations_and_baselines = lambda: None
 
-        with importer:
-            success = importer.run_commit_queue_for_cl()
+        success = importer.run_commit_queue_for_cl()
         self.assertFalse(success)
         self.assertLog([
             'INFO: Triggering CQ try jobs.\n',
@@ -245,7 +244,6 @@ class TestImporterTest(LoggingTestCase):
         ])
         self.assertEqual(importer.git_cl.calls, [
             ['git', 'cl', 'try'],
-            ['git', 'cl', 'set-close'],
         ])
 
     def test_run_commit_queue_for_cl_fail_to_land(self):
@@ -266,8 +264,7 @@ class TestImporterTest(LoggingTestCase):
         importer._need_sheriff_attention = lambda: False
         importer.git_cl.wait_for_closed_status = lambda timeout_seconds: False
 
-        with importer:
-            success = importer.run_commit_queue_for_cl()
+        success = importer.run_commit_queue_for_cl()
         self.assertFalse(success)
         self.assertLog([
             'INFO: Triggering CQ try jobs.\n',
@@ -287,7 +284,6 @@ class TestImporterTest(LoggingTestCase):
                 'git', 'cl', 'upload', '-f', '--send-mail',
                 '--enable-auto-submit', '--reviewers', RUBBER_STAMPER_BOT
             ],
-            ['git', 'cl', 'set-close'],
         ])
 
     def test_run_commit_queue_for_cl_closed_cl(self):
@@ -305,8 +301,7 @@ class TestImporterTest(LoggingTestCase):
                     'COMPLETED', 'SUCCESS'),
             })
 
-        with importer:
-            success = importer.run_commit_queue_for_cl()
+        success = importer.run_commit_queue_for_cl()
         self.assertFalse(success)
         self.assertLog([
             'INFO: Triggering CQ try jobs.\n',
