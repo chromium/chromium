@@ -88,13 +88,17 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
     private static final int CHANGING_ICON_SHELL_UPDATE = 1 << 5;
     private static final int HISTOGRAM_SCOPE = 1 << 6;
 
+    private static final int WEB_APK_ICON_UPDATE_BLOCKED_AT_PERCENTAGE = 11;
+
     private static final String PARAM_SHELL_VERSION = "shell_version";
-    private static final String PARAM_CHANGE_THRESHOLD = "change_threshold";
 
     private final ActivityTabProvider mTabProvider;
 
     /** Whether updates are enabled. Some tests disable updates. */
     private static boolean sUpdatesDisabledForTesting;
+
+    /** The icon change threshold while testing updates. */
+    private static Integer sIconThresholdForTesting;
 
     /** The activity context to use. */
     private Context mContext;
@@ -178,6 +182,12 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
     public static void setUpdatesDisabledForTesting(boolean value) {
         sUpdatesDisabledForTesting = value;
         ResettersForTesting.register(() -> sUpdatesDisabledForTesting = false);
+    }
+
+    public static void setIconThresholdForTesting(int percentage) {
+        sIconThresholdForTesting = percentage;
+        ResettersForTesting.register(
+                () -> sIconThresholdForTesting = WEB_APK_ICON_UPDATE_BLOCKED_AT_PERCENTAGE);
     }
 
     /**
@@ -423,11 +433,12 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
      *     changes up to 1%).
      */
     private static boolean belowAppIdIconUpdateThreshold(int percentage) {
-        return percentage
-                < ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                        ChromeFeatureList.WEB_APK_ICON_UPDATE_THRESHOLD,
-                        PARAM_CHANGE_THRESHOLD,
-                        -1);
+        // See also go/app-id-update-threshold/ for (internal) discussion.
+        int threshold =
+                sIconThresholdForTesting != null
+                        ? sIconThresholdForTesting
+                        : WEB_APK_ICON_UPDATE_BLOCKED_AT_PERCENTAGE;
+        return percentage < threshold;
     }
 
     protected void showIconOrNameUpdateDialog(

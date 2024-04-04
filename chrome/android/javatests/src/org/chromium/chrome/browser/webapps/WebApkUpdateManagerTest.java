@@ -522,13 +522,11 @@ public class WebApkUpdateManagerTest {
                     Integer.toString(WEBAPK_SHELL_VERSION));
         }
 
+        FeatureList.setTestValues(mTestValues);
+
         // The same icon is always used for tests, but the threshold is raised or lowered, depending
         // on the outcome we want.
-        String threshold = iconChangeSignificant ? "0" : "101";
-        mTestValues.addFieldTrialParamOverride(
-                ChromeFeatureList.WEB_APK_ICON_UPDATE_THRESHOLD, "change_threshold", threshold);
-
-        FeatureList.setTestValues(mTestValues);
+        WebApkUpdateManager.setIconThresholdForTesting(iconChangeSignificant ? 0 : 101);
     }
 
     @Test

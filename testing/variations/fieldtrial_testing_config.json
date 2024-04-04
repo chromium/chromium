@@ -21188,24 +21188,6 @@
             ]
         }
     ],
-    "WebApkIconUpdateThreshold": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_WebApkIconUpdateThreshold",
-                    "params": {
-                        "change_threshold": "10"
-                    },
-                    "enable_features": [
-                        "WebApkIconUpdateThreshold"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebApkShellUpdate": [
         {
             "platforms": [
