@@ -24,7 +24,6 @@
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_widget_sublevel.h"
-#include "chrome/browser/ui/views/media_preview/media_preview_metrics.h"
 #include "chrome/browser/ui/views/title_origin_label.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/url_constants.h"
@@ -59,10 +58,6 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
-
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
-#include "chrome/browser/ui/views/media_preview/scroll_media_preview.h"
-#endif
 
 namespace {
 
@@ -141,24 +136,6 @@ std::optional<std::u16string> GetExtraText(
   }
 }
 
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
-std::optional<MediaCoordinator::ViewType> ComputePreviewType(
-    std::vector<std::string> requested_audio_capture_device_ids,
-    std::vector<std::string> requested_video_capture_device_ids) {
-  if (!requested_audio_capture_device_ids.empty() &&
-      !requested_video_capture_device_ids.empty()) {
-    return MediaCoordinator::ViewType::kBoth;
-  }
-  if (!requested_video_capture_device_ids.empty()) {
-    return MediaCoordinator::ViewType::kCameraOnly;
-  }
-  if (!requested_audio_capture_device_ids.empty()) {
-    return MediaCoordinator::ViewType::kMicOnly;
-  }
-  return std::nullopt;
-}
-#endif
-
 }  // namespace
 
 PermissionPromptBubbleOneOriginView::PermissionPromptBubbleOneOriginView(
@@ -212,8 +189,8 @@ void PermissionPromptBubbleOneOriginView::RunButtonCallback(int button_id) {
   auto button = GetPermissionDialogButton(button_id);
   if (button == PermissionDialogButton::kAccept ||
       button == PermissionDialogButton::kAcceptOnce) {
-    if (media_preview_coordinator_.has_value()) {
-      media_preview_coordinator_->UpdateDevicePreferenceRanking();
+    if (media_previews_.has_value()) {
+      media_previews_->UpdateDevicePreferenceRanking();
     }
   }
 #endif
@@ -282,9 +259,12 @@ void PermissionPromptBubbleOneOriginView::MaybeAddMediaPreview(
     return;
   }
 
-  auto view_type = ComputePreviewType(requested_audio_capture_device_ids,
-                                      requested_video_capture_device_ids);
-  if (!view_type) {
+  if (requested_audio_capture_device_ids.empty() &&
+      requested_video_capture_device_ids.empty()) {
+    return;
+  }
+
+  if (!camera_permission_label_ && !mic_permission_label_) {
     return;
   }
 
@@ -299,17 +279,9 @@ void PermissionPromptBubbleOneOriginView::MaybeAddMediaPreview(
     OnAudioDevicesChanged(cached_device_info->GetAudioDeviceInfos());
   }
 
-  media_preview_coordinator_.emplace(
-      view_type.value(),
-      *scroll_media_preview::CreateScrollViewAndGetContents(*this, index),
-      /*is_subsection=*/false,
-      MediaCoordinator::EligibleDevices{
-          /*cameras=*/requested_video_capture_device_ids,
-          /*mics=*/requested_audio_capture_device_ids},
-      *browser_->profile()->GetPrefs(),
-      /*allow_device_selection=*/true,
-      media_preview_metrics::Context(
-          media_preview_metrics::UiLocation::kPermissionPrompt));
+  media_previews_.emplace(browser_, this, index,
+                          requested_audio_capture_device_ids,
+                          requested_video_capture_device_ids);
 #endif
 }
 
