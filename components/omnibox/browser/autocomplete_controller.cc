@@ -111,6 +111,15 @@ using ScoringSignals = ::metrics::OmniboxEventProto::Suggestion::ScoringSignals;
 
 constexpr bool is_android = !!BUILDFLAG(IS_ANDROID);
 
+void RecordMlScoreCoverage(size_t matches_with_non_null_scores,
+                           size_t total_scored_matches) {
+  int percent_score_coverage =
+      matches_with_non_null_scores * 100 / total_scored_matches;
+  base::UmaHistogramPercentage(
+      "Omnibox.URLScoringModelExecuted.MLScoreCoverage",
+      percent_score_coverage);
+}
+
 // Appends available autocompletion of the given type, subtype, and number to
 // the existing available autocompletions string, encoding according to the
 // spec.
@@ -1884,10 +1893,7 @@ void AutocompleteController::RunBatchUrlScoringModel(OldResult& old_result) {
 
   // Record the percentage of matches that were assigned non-null scores by
   // the ML scoring model.
-  int percent_score_coverage = score_coverage_count * 100 / results.size();
-  base::UmaHistogramPercentage(
-      "Omnibox.URLScoringModelExecuted.MLScoreCoverage",
-      percent_score_coverage);
+  RecordMlScoreCoverage(score_coverage_count, results.size());
 
   if (!relevance_heap.empty()) {
     // Record whether the model was executed for at least one eligible match.
@@ -2103,13 +2109,23 @@ void AutocompleteController::RunBatchUrlScoringModelMappedSearchBlending(
   const int grouping_threshold = OmniboxFieldTrial::GetMLConfig()
                                      .mapped_search_blending_grouping_threshold;
 
+  int score_coverage_count = 0;
   for (size_t i = 0; i < results.size(); ++i) {
+    const auto& prediction = results[i];
+    float p_value = prediction.value_or(0);
+    if (prediction.has_value()) {
+      score_coverage_count++;
+    }
     auto& match = internal_result_.matches_[scored_positions[i]];
     match.RecordAdditionalInfo("ml legacy relevance", match.relevance);
-    match.RecordAdditionalInfo("ml model output", *results[i]);
-    match.relevance = min + *results[i] * (max - min);
+    match.RecordAdditionalInfo("ml model output", p_value);
+    match.relevance = min + p_value * (max - min);
     match.shortcut_boosted = match.relevance > grouping_threshold;
   }
+
+  // Record the percentage of matches that were assigned non-null scores by
+  // the ML scoring model.
+  RecordMlScoreCoverage(score_coverage_count, results.size());
 
   // Following the initial relevance assignment, build a sorted list of
   // values which will contain the finalized set of relevance scores for URL
@@ -2134,7 +2150,9 @@ void AutocompleteController::RunBatchUrlScoringModelMappedSearchBlending(
 
   std::vector<std::pair<float, size_t>> prediction_and_position_heap;
   for (size_t i = 0; i < results.size(); ++i) {
-    prediction_and_position_heap.push_back({*results[i], scored_positions[i]});
+    const auto& prediction = results[i];
+    prediction_and_position_heap.push_back(
+        {prediction.value_or(0), scored_positions[i]});
   }
   base::ranges::stable_sort(prediction_and_position_heap, std::greater<>(),
                             [](const auto& pair) { return pair.first; });
