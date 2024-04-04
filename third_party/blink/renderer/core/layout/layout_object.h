@@ -2168,15 +2168,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   void InvalidateVisualOverflowForDCheck();
 #endif
 
-  // Subclasses must reimplement this method to compute the size and position
-  // of this object and all its descendants.
-  //
-  // By default, layout only lays out the children that are marked for layout.
-  // In some cases, layout has to force laying out more children. An example is
-  // when the width of the LayoutObject changes as this impacts children with
-  // 'width' set to auto.
-  virtual void UpdateLayout() = 0;
-
   void HandleSubtreeModifications();
   virtual void SubtreeDidChange() { NOT_DESTROYED(); }
 
@@ -2207,11 +2198,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return bitfields_.SubtreeChangeListenerRegistered();
   }
 
-  /* This function performs a layout only if one is needed. */
-  DISABLE_CFI_PERF void LayoutIfNeeded() {
+  // Update layout for an SVG object. Shouldn't be reached for non-SVG objects.
+  virtual void UpdateSVGLayout() {
     NOT_DESTROYED();
-    if (NeedsLayout())
-      UpdateLayout();
+    NOTREACHED_NORETURN();
   }
 
   // Used for element state updates that cannot be fixed with a paint

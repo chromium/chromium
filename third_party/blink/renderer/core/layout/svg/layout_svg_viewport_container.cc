@@ -34,7 +34,7 @@ namespace blink {
 LayoutSVGViewportContainer::LayoutSVGViewportContainer(SVGSVGElement* node)
     : LayoutSVGContainer(node), is_layout_size_changed_(false) {}
 
-void LayoutSVGViewportContainer::UpdateLayout() {
+void LayoutSVGViewportContainer::UpdateSVGLayout() {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
 
@@ -55,7 +55,7 @@ void LayoutSVGViewportContainer::UpdateLayout() {
     }
   }
 
-  LayoutSVGContainer::UpdateLayout();
+  LayoutSVGContainer::UpdateSVGLayout();
 }
 
 SVGTransformChange LayoutSVGViewportContainer::UpdateLocalTransform(

@@ -71,6 +71,7 @@ class CORE_EXPORT LayoutView : public LayoutNGBlockFlow {
   ~LayoutView() override;
   void Trace(Visitor*) const override;
 
+  void LayoutRoot();
   void WillBeDestroyed() override;
 
   // hitTest() will update layout, style and compositing first while
@@ -112,7 +113,6 @@ class CORE_EXPORT LayoutView : public LayoutNGBlockFlow {
   bool IsChildAllowed(LayoutObject*, const ComputedStyle&) const override;
 
   void InvalidateSvgRootsWithRelativeLengthDescendents();
-  void UpdateLayout() final;
   LayoutUnit ComputeMinimumWidth();
 
   // Based on LocalFrameView::LayoutSize, but:

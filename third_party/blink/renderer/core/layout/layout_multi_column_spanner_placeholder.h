@@ -62,7 +62,6 @@ class LayoutMultiColumnSpannerPlaceholder final : public LayoutBox {
  protected:
   void InsertedIntoTree() override;
   void WillBeRemovedFromTree() override;
-  void UpdateLayout() override;
 
  private:
   LayoutPoint LocationInternal() const override;

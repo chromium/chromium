@@ -26,7 +26,7 @@ namespace blink {
 LayoutSVGHiddenContainer::LayoutSVGHiddenContainer(SVGElement* element)
     : LayoutSVGContainer(element) {}
 
-void LayoutSVGHiddenContainer::UpdateLayout() {
+void LayoutSVGHiddenContainer::UpdateSVGLayout() {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
 

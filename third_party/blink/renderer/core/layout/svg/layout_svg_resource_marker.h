@@ -74,7 +74,7 @@ class LayoutSVGResourceMarker final : public LayoutSVGResourceContainer {
   }
 
  private:
-  void UpdateLayout() override;
+  void UpdateSVGLayout() override;
   SVGTransformChange UpdateLocalTransform(
       const gfx::RectF& reference_box) final;
   bool FindCycleFromSelf() const override;

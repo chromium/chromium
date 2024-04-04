@@ -34,7 +34,6 @@
 
 namespace blink {
 
-struct BoxLayoutExtraInput;
 struct IntrinsicSizingInfo;
 
 // LayoutReplaced is the base class for a replaced element as defined by CSS:
@@ -123,19 +122,6 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   // content box.
   bool ClipsToContentBox() const;
 
-  void SetNewContentRect(const PhysicalRect* new_content_rect) {
-    NOT_DESTROYED();
-    new_content_rect_ = new_content_rect;
-  }
-
-  // This returns a local rectangle excluding borders and padding from
-  // FrameRect().
-  //
-  // This is a variant of LayoutBox::PhysicalContentBoxRect().
-  // - Supports BoxLayoutExtraInput
-  // - Doesn't support scrollbars
-  PhysicalRect PhysicalContentBoxRectFromNG() const;
-
  protected:
   virtual bool CanApplyObjectViewBox() const {
     NOT_DESTROYED();
@@ -153,8 +139,6 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   }
 
   void WillBeDestroyed() override;
-
-  void UpdateLayout() override;
 
   PhysicalSize IntrinsicSize() const {
     NOT_DESTROYED();
@@ -230,11 +214,6 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   // The natural/intrinsic size for this replaced element based on the natural
   // size for the element's contents.
   mutable PhysicalSize intrinsic_size_;
-
-  // The new content rect for SVG roots. This is set during layout, and cleared
-  // afterwards. Always nullptr when this object isn't in the process of being
-  // laid out.
-  const PhysicalRect* new_content_rect_ = nullptr;
 };
 
 template <>

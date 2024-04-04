@@ -104,7 +104,7 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
     NOT_DESTROYED();
     return true;
   }
-  void UpdateLayout() override;
+  void UpdateSVGLayout() override;
   // Update LayoutObject state after layout has completed. Returns true if
   // boundaries needs to be propagated (because of a change to the transform).
   bool UpdateAfterLayout(SVGTransformChange transform_change,

@@ -94,7 +94,7 @@ class LayoutSVGImage final : public LayoutSVGModelObject {
 
   void ImageChanged(WrappedImagePtr, CanDeferInvalidation) override;
 
-  void UpdateLayout() override;
+  void UpdateSVGLayout() override;
   void Paint(const PaintInfo&) const override;
 
   bool UpdateBoundingBox();

@@ -102,11 +102,6 @@ void LayoutMultiColumnSpannerPlaceholder::WillBeRemovedFromTree() {
   LayoutBox::WillBeRemovedFromTree();
 }
 
-void LayoutMultiColumnSpannerPlaceholder::UpdateLayout() {
-  NOT_DESTROYED();
-  NOTREACHED_NORETURN();
-}
-
 LayoutPoint LayoutMultiColumnSpannerPlaceholder::LocationInternal() const {
   NOT_DESTROYED();
   return layout_object_in_flow_thread_->LocationInternal();

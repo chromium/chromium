@@ -41,6 +41,8 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
   ~LayoutSVGRoot() override;
   void Trace(Visitor*) const override;
 
+  void LayoutRoot(const PhysicalRect& content_rect);
+
   bool IsEmbeddedThroughSVGImage() const;
   bool IsEmbeddedThroughFrameContainingSVGDocument() const;
 
@@ -146,7 +148,6 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
   }
 
   void ComputeIntrinsicSizingInfo(IntrinsicSizingInfo&) const override;
-  void UpdateLayout() override;
   void PaintReplaced(const PaintInfo&,
                      const PhysicalOffset& paint_offset) const override;
 
@@ -196,7 +197,7 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
   bool StyleChangeAffectsIntrinsicSize(const ComputedStyle& old_style) const;
 
   bool UpdateCachedBoundaries();
-  SVGTransformChange BuildLocalToBorderBoxTransform();
+  SVGTransformChange BuildLocalToBorderBoxTransform(const PhysicalRect&);
 
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const final;
 
@@ -206,6 +207,12 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
   PhysicalSize container_size_;
   AffineTransform local_to_border_box_transform_;
   HeapHashSet<Member<LayoutSVGText>> text_set_;
+
+  // The new content size for SVG roots. This is set during layout, and cleared
+  // afterwards. Always nullptr when this object isn't in the process of being
+  // laid out.
+  const PhysicalSize* new_content_size_ = nullptr;
+
   bool is_layout_size_changed_ : 1;
   bool did_screen_scale_factor_change_ : 1;
   bool needs_boundaries_or_transform_update_ : 1;

@@ -86,9 +86,4 @@ void LayoutSVGFilterPrimitive::StyleDidChange(StyleDifference diff,
   }
 }
 
-void LayoutSVGFilterPrimitive::UpdateLayout() {
-  NOT_DESTROYED();
-  ClearNeedsLayout();
-}
-
 }  // namespace blink

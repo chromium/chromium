@@ -141,11 +141,6 @@ bool LayoutFlowThread::MapToVisualRectInAncestorSpaceInternal(
       ancestor, transform_state, visual_rect_flags);
 }
 
-void LayoutFlowThread::UpdateLayout() {
-  NOT_DESTROYED();
-  NOTREACHED_NORETURN();
-}
-
 PaintLayerType LayoutFlowThread::LayerTypeRequired() const {
   NOT_DESTROYED();
   return kNoPaintLayer;

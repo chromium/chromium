@@ -187,10 +187,12 @@ class LayoutSVGShape : public LayoutSVGModelObject {
     NOT_DESTROYED();
     return true;
   }
-  void UpdateLayout() final;
+
+  void UpdateSVGLayout() final;
   // Update LayoutObject state after layout has completed. Returns true if
   // boundaries needs to be propagated (because of a change to the transform).
   bool UpdateAfterLayout(bool bbox_changed);
+
   void Paint(const PaintInfo&) const final;
 
   bool NodeAtPoint(HitTestResult&,

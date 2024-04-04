@@ -212,7 +212,7 @@ void LayoutSVGText::Paint(const PaintInfo& paint_info) const {
   }
 }
 
-void LayoutSVGText::UpdateLayout() {
+void LayoutSVGText::UpdateSVGLayout() {
   NOT_DESTROYED();
 
   // If the root layout size changed (eg. window size changes), or the screen
@@ -250,7 +250,7 @@ void LayoutSVGText::UpdateLayout() {
   if (bounds_changed) {
     update_parent_boundaries = true;
   }
-  if (UpdateAfterSvgLayout(bounds_changed)) {
+  if (UpdateAfterSVGLayout(bounds_changed)) {
     update_parent_boundaries = true;
   }
 
@@ -260,7 +260,7 @@ void LayoutSVGText::UpdateLayout() {
   }
 }
 
-bool LayoutSVGText::UpdateAfterSvgLayout(bool bounds_changed) {
+bool LayoutSVGText::UpdateAfterSVGLayout(bool bounds_changed) {
   if (bounds_changed) {
     // Invalidate all resources of this client if our reference box changed.
     SVGResourceInvalidator resource_invalidator(*this);

@@ -18,6 +18,12 @@ namespace blink {
 
 namespace {
 
+void UpdateSVGLayoutIfNeeded(LayoutObject* child) {
+  if (child->NeedsLayout()) {
+    child->UpdateSVGLayout();
+  }
+}
+
 void LayoutMarkerResourcesIfNeeded(LayoutObject& layout_object) {
   SVGElementResourceClient* client = SVGResources::GetClient(layout_object);
   if (!client)
@@ -25,13 +31,13 @@ void LayoutMarkerResourcesIfNeeded(LayoutObject& layout_object) {
   const ComputedStyle& style = layout_object.StyleRef();
   if (auto* marker = GetSVGResourceAsType<LayoutSVGResourceMarker>(
           *client, style.MarkerStartResource()))
-    marker->LayoutIfNeeded();
+    UpdateSVGLayoutIfNeeded(marker);
   if (auto* marker = GetSVGResourceAsType<LayoutSVGResourceMarker>(
           *client, style.MarkerMidResource()))
-    marker->LayoutIfNeeded();
+    UpdateSVGLayoutIfNeeded(marker);
   if (auto* marker = GetSVGResourceAsType<LayoutSVGResourceMarker>(
           *client, style.MarkerEndResource()))
-    marker->LayoutIfNeeded();
+    UpdateSVGLayoutIfNeeded(marker);
 }
 
 // Update a bounding box taking into account the validity of the other bounding
@@ -144,7 +150,7 @@ void SVGContentContainer::Layout(const SVGContainerLayoutInfo& layout_info) {
     // leads to circular layout.
     // TODO(layout-dev): Do we still need this special treatment?
     if (child->IsSVGResourceContainer()) {
-      child->LayoutIfNeeded();
+      UpdateSVGLayoutIfNeeded(child);
     } else {
       DCHECK(!child->IsSVGRoot());
       if (force_child_layout) {
@@ -154,7 +160,7 @@ void SVGContentContainer::Layout(const SVGContainerLayoutInfo& layout_info) {
 
       // Lay out any referenced resources before the child.
       LayoutMarkerResourcesIfNeeded(*child);
-      child->LayoutIfNeeded();
+      UpdateSVGLayoutIfNeeded(child);
     }
   }
 }

@@ -70,7 +70,7 @@ class TransformHelper {
 };
 
 // The following enumeration is used to optimize cases where the scale is known
-// to be invariant (see: LayoutSVGContainer::UpdateLayout and
+// to be invariant (see: LayoutSVGContainer::UpdateSVGLayout and
 // LayoutSVGRoot). The value 'Full' can be used in the general case when the
 // scale change is unknown, or known to have changed.
 enum class SVGTransformChange {

@@ -774,7 +774,7 @@ void LocalFrameView::PerformLayout() {
 #endif
       fragment_tree_spines.clear();
     } else {
-      GetLayoutView()->UpdateLayout();
+      GetLayoutView()->LayoutRoot();
     }
   }
 

@@ -91,14 +91,6 @@ void LayoutEmbeddedObject::PaintReplaced(
   EmbeddedObjectPainter(*this).PaintReplaced(paint_info, paint_offset);
 }
 
-void LayoutEmbeddedObject::UpdateLayout() {
-  NOT_DESTROYED();
-  DCHECK(NeedsLayout());
-  ClearScrollableOverflow();
-  ClearSelfNeedsScrollableOverflowRecalc();
-  ClearNeedsLayout();
-}
-
 void LayoutEmbeddedObject::UpdateAfterLayout() {
   NOT_DESTROYED();
   LayoutEmbeddedContent::UpdateAfterLayout();

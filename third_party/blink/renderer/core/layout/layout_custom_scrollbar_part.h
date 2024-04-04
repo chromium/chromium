@@ -109,14 +109,6 @@ class CORE_EXPORT LayoutCustomScrollbarPart final : public LayoutReplaced {
     return nullptr;
   }
 
-  // A scrollbar part is not in the layout tree and is not laid out like other
-  // layout objects. CustomScrollbar will call scrollbar parts' SetFrameRect()
-  // from its SetFrameRect() when needed.
-  void UpdateLayout() override {
-    NOT_DESTROYED();
-    NOTREACHED();
-  }
-
   // Have all padding getters return 0. The important point here is to avoid
   // resolving percents against the containing block, since scroll bar corners
   // don't always have one (so it would crash). Scroll bar corners are not

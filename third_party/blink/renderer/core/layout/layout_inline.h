@@ -292,11 +292,6 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   LayoutBox* CreateAnonymousBoxToSplit(
       const LayoutBox* box_to_split) const final;
 
-  void UpdateLayout() final {
-    NOT_DESTROYED();
-    NOTREACHED();
-  }  // Do nothing for layout()
-
   void Paint(const PaintInfo&) const final;
 
   bool NodeAtPoint(HitTestResult&,

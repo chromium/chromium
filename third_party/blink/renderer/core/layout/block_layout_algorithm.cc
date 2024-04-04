@@ -3554,7 +3554,6 @@ LayoutUnit BlockLayoutAlgorithm::FinishTextControlPlaceholder(
 LogicalOffset BlockLayoutAlgorithm::AdjustSliderThumbInlineOffset(
     const LogicalFragment& fragment,
     const LogicalOffset& logical_offset) {
-  // See LayoutSliderTrack::UpdateLayout().
   const LayoutUnit available_extent =
       ChildAvailableSize().inline_size - fragment.InlineSize();
   const auto* input =

@@ -90,7 +90,7 @@ bool LayoutSVGForeignObject::CreatesNewFormattingContext() const {
   return true;
 }
 
-void LayoutSVGForeignObject::UpdateLayout() {
+void LayoutSVGForeignObject::UpdateSVGLayout() {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
 
@@ -160,7 +160,7 @@ void LayoutSVGForeignObject::UpdateLayout() {
   if (bounds_changed) {
     update_parent_boundaries = true;
   }
-  if (UpdateAfterSvgLayout(bounds_changed)) {
+  if (UpdateAfterSVGLayout(bounds_changed)) {
     update_parent_boundaries = true;
   }
 
@@ -172,7 +172,7 @@ void LayoutSVGForeignObject::UpdateLayout() {
   DCHECK(!needs_transform_update_);
 }
 
-bool LayoutSVGForeignObject::UpdateAfterSvgLayout(bool bounds_changed) {
+bool LayoutSVGForeignObject::UpdateAfterSVGLayout(bool bounds_changed) {
   // Invalidate all resources of this client if our reference box changed.
   if (EverHadLayout() && bounds_changed) {
     SVGResourceInvalidator(*this).InvalidateEffects();

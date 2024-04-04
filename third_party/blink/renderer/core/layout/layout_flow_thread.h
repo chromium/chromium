@@ -93,8 +93,6 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
       const LayoutObject&,
       AncestorSearchConstraint);
 
-  void UpdateLayout() final;
-
   PaintLayerType LayerTypeRequired() const final;
 
   virtual void FlowThreadDescendantWasInserted(LayoutObject*) {

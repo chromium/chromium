@@ -826,7 +826,7 @@ void LayoutView::InvalidateSvgRootsWithRelativeLengthDescendents() {
   }
 }
 
-void LayoutView::UpdateLayout() {
+void LayoutView::LayoutRoot() {
   NOT_DESTROYED();
   if (ShouldUsePrintingLayout()) {
     intrinsic_logical_widths_ = LogicalWidth();

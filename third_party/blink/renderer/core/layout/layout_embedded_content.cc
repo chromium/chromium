@@ -311,12 +311,6 @@ void LayoutEmbeddedContent::StyleDidChange(StyleDifference diff,
     frame->UpdateVisibleToHitTesting();
 }
 
-void LayoutEmbeddedContent::UpdateLayout() {
-  NOT_DESTROYED();
-  DCHECK(NeedsLayout());
-  ClearNeedsLayout();
-}
-
 void LayoutEmbeddedContent::PaintReplaced(
     const PaintInfo& paint_info,
     const PhysicalOffset& paint_offset) const {

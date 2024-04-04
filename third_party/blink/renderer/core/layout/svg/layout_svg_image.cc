@@ -147,7 +147,7 @@ bool LayoutSVGImage::UpdateBoundingBox() {
   return old_object_bounding_box != object_bounding_box_;
 }
 
-void LayoutSVGImage::UpdateLayout() {
+void LayoutSVGImage::UpdateSVGLayout() {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
 

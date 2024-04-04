@@ -59,7 +59,7 @@ class LayoutSVGResourceContainer : public LayoutSVGHiddenContainer {
     return false;
   }
 
-  void UpdateLayout() override;
+  void UpdateSVGLayout() override;
   bool IsSVGResourceContainer() const final {
     NOT_DESTROYED();
     return true;

@@ -120,16 +120,6 @@ void LayoutReplaced::StyleDidChange(StyleDifference diff,
   }
 }
 
-void LayoutReplaced::UpdateLayout() {
-  NOT_DESTROYED();
-  DCHECK(NeedsLayout());
-
-  ClearScrollableOverflow();
-  ClearSelfNeedsScrollableOverflowRecalc();
-  ClearChildNeedsScrollableOverflowRecalc();
-  ClearNeedsLayout();
-}
-
 void LayoutReplaced::IntrinsicSizeChanged() {
   NOT_DESTROYED();
   LayoutUnit scaled_width =
@@ -375,11 +365,6 @@ PhysicalRect LayoutReplaced::ReplacedContentRectFrom(
     const PhysicalRect& base_content_rect) const {
   NOT_DESTROYED();
   return ComputeReplacedContentRect(base_content_rect);
-}
-
-PhysicalRect LayoutReplaced::PhysicalContentBoxRectFromNG() const {
-  NOT_DESTROYED();
-  return new_content_rect_ ? *new_content_rect_ : PhysicalContentBoxRect();
 }
 
 PhysicalRect LayoutReplaced::PreSnappedRectForPersistentSizing(

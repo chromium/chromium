@@ -63,6 +63,7 @@
 #include "third_party/blink/renderer/core/layout/shapes/shape_outside_info.h"
 #include "third_party/blink/renderer/core/layout/simplified_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/space_utils.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
 #include "third_party/blink/renderer/core/layout/table/table_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/table/table_row_layout_algorithm.h"
@@ -746,19 +747,17 @@ void BlockNode::FinishLayout(
   const auto& physical_fragment =
       To<PhysicalBoxFragment>(layout_result->GetPhysicalFragment());
 
-  if (auto* replaced = DynamicTo<LayoutReplaced>(*box_)) {
+  if (auto* svg_root = DynamicTo<LayoutSVGRoot>(GetLayoutBox())) {
     // Calculate the new content rect for SVG roots.
     PhysicalRect content_rect = physical_fragment.LocalRect();
     content_rect.Contract(physical_fragment.Borders() +
                           physical_fragment.Padding());
 
-    if (!box_->NeedsLayout()) {
-      box_->SetNeedsLayout(layout_invalidation_reason::kSizeChanged,
-                           kMarkOnlyThis);
+    if (!svg_root->NeedsLayout()) {
+      svg_root->SetNeedsLayout(layout_invalidation_reason::kSizeChanged,
+                               kMarkOnlyThis);
     }
-    replaced->SetNewContentRect(&content_rect);
-    box_->LayoutIfNeeded();
-    replaced->SetNewContentRect(nullptr);
+    svg_root->LayoutRoot(content_rect);
   }
 
   // If we miss the cache for one result (fragment), we need to clear the
@@ -1148,9 +1147,8 @@ void BlockNode::CopyFragmentDataToLayoutBox(
   if (UNLIKELY(!is_last_fragment))
     return;
 
-  LayoutBlock* block = DynamicTo<LayoutBlock>(box_.Get());
   bool needs_full_invalidation = false;
-  if (LIKELY(block)) {
+  if (LayoutBlock* block = DynamicTo<LayoutBlock>(box_.Get())) {
     if (UNLIKELY(flow_thread && Style().HasColumnRule())) {
       // Issue full invalidation, in case the number of column rules have
       // changed.
@@ -1160,6 +1158,9 @@ void BlockNode::CopyFragmentDataToLayoutBox(
     block->SetNeedsOverflowRecalc(
         LayoutObject::OverflowRecalcType::kOnlyVisualOverflowRecalc);
     block->SetScrollableOverflowFromLayoutResults();
+  } else {
+    box_->ClearChildNeedsScrollableOverflowRecalc();
+    box_->ClearSelfNeedsScrollableOverflowRecalc();
   }
 
   box_->UpdateAfterLayout();

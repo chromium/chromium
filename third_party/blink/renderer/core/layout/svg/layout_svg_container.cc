@@ -51,7 +51,7 @@ void LayoutSVGContainer::Trace(Visitor* visitor) const {
   LayoutSVGModelObject::Trace(visitor);
 }
 
-void LayoutSVGContainer::UpdateLayout() {
+void LayoutSVGContainer::UpdateSVGLayout() {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
 

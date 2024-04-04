@@ -322,7 +322,7 @@ bool LayoutSVGShape::StrokeContains(const HitTestLocation& location,
   return ShapeDependentStrokeContains(location);
 }
 
-void LayoutSVGShape::UpdateLayout() {
+void LayoutSVGShape::UpdateSVGLayout() {
   NOT_DESTROYED();
 
   // The cached stroke may be affected by the ancestor transform, and so needs
