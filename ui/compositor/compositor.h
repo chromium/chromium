@@ -511,6 +511,10 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   void RemoveSimpleBeginFrameObserver(
       ui::HostBeginFrameObserver::SimpleBeginFrameObserver* obs);
 
+  const std::optional<base::TimeDelta>& max_vrr_interval_for_testing() const {
+    return max_vrr_interval_;
+  }
+
  private:
   friend class base::RefCounted<Compositor>;
   friend class TotalAnimationThroughputReporter;
