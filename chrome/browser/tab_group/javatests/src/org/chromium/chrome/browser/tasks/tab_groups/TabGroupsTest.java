@@ -9,6 +9,8 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
 
+import android.text.TextUtils;
+
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -56,6 +58,9 @@ import java.util.List;
 @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
 @Batch(Batch.PER_CLASS)
 public class TabGroupsTest {
+    private static final int OTHER_ROOT_ID_1 = 11;
+    private static final int OTHER_ROOT_ID_2 = 22;
+
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
@@ -260,6 +265,11 @@ public class TabGroupsTest {
         Tab tab5 = tabs.get(5);
         Tab tab6 = tabs.get(6);
 
+        // All of the old roots have titles set.
+        TabGroupTitleUtils.storeTabGroupTitle(tab0.getId(), "0");
+        TabGroupTitleUtils.storeTabGroupTitle(tab1.getId(), "1");
+        TabGroupTitleUtils.storeTabGroupTitle(tab6.getId(), "6");
+
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     tab0.setRootId(tab6.getId());
@@ -272,6 +282,10 @@ public class TabGroupsTest {
                     mTabGroupModelFilter.resetFilterState();
                 });
 
+        // This should move:
+        // 6 -> 0
+        // 0 -> 1
+        // 1 -> 6
         assertFixedTabGroupRootIdCount(3);
 
         assertEquals(tab0.getId(), tab0.getRootId());
@@ -280,6 +294,68 @@ public class TabGroupsTest {
         assertEquals(tab1.getId(), tab3.getRootId());
         assertEquals(tab5.getId(), tab4.getRootId());
         assertEquals(tab5.getId(), tab5.getRootId());
+        assertEquals(tab6.getId(), tab6.getRootId());
+
+        // The three titles should have been rotated around.
+        assertEquals("0", mTabGroupModelFilter.getTabGroupTitle(tab1.getRootId()));
+        assertEquals("1", mTabGroupModelFilter.getTabGroupTitle(tab6.getRootId()));
+        assertEquals("6", mTabGroupModelFilter.getTabGroupTitle(tab0.getRootId()));
+    }
+
+    @Test
+    @SmallTest
+    public void testFixTabGroupRootIds_movesMetadata() {
+        prepareTabs(Arrays.asList(new Integer[] {3, 2, 1}));
+        List<Tab> tabs = getCurrentTabs();
+
+        // Tab 0
+        // Tab 1, 2, 3
+        // Tab 4, 5
+        // Tab 6
+        Tab tab0 = tabs.get(0);
+        Tab tab1 = tabs.get(1);
+        Tab tab2 = tabs.get(2);
+        Tab tab3 = tabs.get(3);
+        Tab tab4 = tabs.get(4);
+        Tab tab5 = tabs.get(5);
+        Tab tab6 = tabs.get(6);
+
+        TabGroupTitleUtils.storeTabGroupTitle(OTHER_ROOT_ID_1, "together");
+        TabGroupTitleUtils.storeTabGroupTitle(tab4.getRootId(), "split");
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // This whole group stays together with a wrong id.
+                    tab1.setRootId(OTHER_ROOT_ID_1);
+                    tab2.setRootId(OTHER_ROOT_ID_1);
+                    tab3.setRootId(OTHER_ROOT_ID_1);
+
+                    // Split this group in half, one of the tabs was updated while one wasn't.
+                    tab4.setRootId(OTHER_ROOT_ID_2);
+
+                    mTabGroupModelFilter.resetFilterState();
+                });
+
+        // This should move:
+        // OTHER_ROOT_ID_2 -> 4
+        // 4 > 5
+        // OTHER_ROOT_ID_1 -> 1
+        assertFixedTabGroupRootIdCount(3);
+
+        assertEquals(tab0.getId(), tab0.getRootId());
+        assertEquals(tab1.getId(), tab1.getRootId());
+        assertEquals(tab1.getId(), tab2.getRootId());
+        assertEquals(tab1.getId(), tab3.getRootId());
+        assertEquals(tab4.getId(), tab4.getRootId());
+        assertEquals(tab5.getId(), tab5.getRootId());
+        assertEquals(tab6.getId(), tab6.getRootId());
+
+        // Should have been completely moved.
+        assertEquals("together", mTabGroupModelFilter.getTabGroupTitle(tab1.getRootId()));
+        assertTrue(TextUtils.isEmpty(mTabGroupModelFilter.getTabGroupTitle(OTHER_ROOT_ID_1)));
+        // Should now be duplicated.
+        assertEquals("split", mTabGroupModelFilter.getTabGroupTitle(tab4.getRootId()));
+        assertEquals("split", mTabGroupModelFilter.getTabGroupTitle(tab5.getRootId()));
     }
 
     @Test

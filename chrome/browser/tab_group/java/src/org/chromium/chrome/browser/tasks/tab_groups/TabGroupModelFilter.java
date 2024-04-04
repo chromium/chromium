@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 
@@ -43,6 +44,20 @@ import java.util.Set;
  * https://crbug.com/1523745.
  */
 public class TabGroupModelFilter extends TabModelFilter {
+    /**
+     * Class to hold metadata while fixRootIds still exists. Delete when rootId is removed.
+     * Instanced to allow easy setting of fields in constructor.
+     */
+    private class TabGroupMetadata {
+        public final String title;
+        public final int color;
+
+        public TabGroupMetadata(int rootId) {
+            title = getTabGroupTitle(rootId);
+            color = getTabGroupColor(rootId);
+        }
+    }
+
     private static final int INVALID_COLOR_ID = -1;
 
     private ObserverList<TabGroupModelFilterObserver> mGroupFilterObserver = new ObserverList<>();
@@ -980,6 +995,18 @@ public class TabGroupModelFilter extends TabModelFilter {
     public int fixRootIds() {
         int fixedRootIdCount = 0;
         TabModel model = getTabModel();
+
+        // Cannot simply move metadata when we change root ids. It's possible what used to be one
+        // group has become two groups, in which case we try to copy the metadata into both ids.
+        // It's possible that we shift around multiple chains of root ids, even in a circle. To get
+        // around these edge cases, hold all metadata in memory, and only start writing metadata
+        // after reading everything. Then do a second pass to remove any old metadata that no longer
+        // has matching root ids.
+        // Note: It was fairly arbitrarily chosen that when we split a group, we duplicate metadata.
+        // If we have a reason to change this behavior, we can.
+        Map<Integer, Integer> oldToNewRootIds = new HashMap<>();
+        Map<Integer, TabGroupMetadata> oldRootIdsToMetadata = new HashMap<>();
+
         for (Map.Entry<Integer, TabGroup> entry : mRootIdToGroupMap.entrySet()) {
             int rootId = entry.getKey();
             TabGroup group = entry.getValue();
@@ -990,11 +1017,30 @@ public class TabGroupModelFilter extends TabModelFilter {
                 Tab tab = TabModelUtils.getTabById(model, tabId);
                 tab.setRootId(fixedRootId);
             }
+
+            oldRootIdsToMetadata.put(rootId, new TabGroupMetadata(rootId));
+            oldToNewRootIds.put(rootId, fixedRootId);
             fixedRootIdCount++;
         }
 
         if (fixedRootIdCount != 0) {
+            for (Entry<Integer, Integer> oldToNew : oldToNewRootIds.entrySet()) {
+                int oldRootId = oldToNew.getKey();
+                int newRootId = oldToNew.getValue();
+                TabGroupMetadata metadata = oldRootIdsToMetadata.get(oldRootId);
+                if (metadata.title != null) setTabGroupTitle(newRootId, metadata.title);
+                if (metadata.color != INVALID_COLOR_ID) setTabGroupColor(newRootId, metadata.color);
+            }
+
             resetFilterState();
+
+            for (Entry<Integer, Integer> oldToNew : oldToNewRootIds.entrySet()) {
+                int oldRootId = oldToNew.getKey();
+                if (!mRootIdToGroupMap.containsKey(oldRootId)) {
+                    TabGroupTitleUtils.deleteTabGroupTitle(oldRootId);
+                    TabGroupColorUtils.deleteTabGroupColor(oldRootId);
+                }
+            }
         }
         return fixedRootIdCount;
     }
