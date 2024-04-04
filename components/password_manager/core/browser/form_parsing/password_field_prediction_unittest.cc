@@ -24,6 +24,7 @@ using autofill::AutofillType;
 using autofill::CalculateFieldSignatureForField;
 using autofill::CalculateFormSignature;
 using autofill::CONFIRMATION_PASSWORD;
+using autofill::CREDIT_CARD_NUMBER;
 using autofill::CREDIT_CARD_VERIFICATION_CODE;
 using autofill::EMAIL_ADDRESS;
 using autofill::FieldGlobalId;
@@ -81,6 +82,14 @@ TEST(FormPredictionsTest, ConvertToFormPredictions) {
        CREDIT_CARD_VERIFICATION_CODE,
        false,
        {CREDIT_CARD_VERIFICATION_CODE}},
+      // `CREDIT_CARD_NUMBER` takes precedence over any credential related
+      // types.
+      {"cc-number",
+       FormControlType::kInputPassword,
+       PASSWORD,
+       CREDIT_CARD_NUMBER,
+       false,
+       {CREDIT_CARD_NUMBER}},
       // non-password, non-cvc types in |additional_types| are ignored.
       {"email",
        FormControlType::kInputText,
