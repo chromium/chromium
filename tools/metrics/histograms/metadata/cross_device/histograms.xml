@@ -1717,6 +1717,10 @@ chromium-metrics-reviews@google.com.
     In this context, &quot;background&quot; refers to the BLE advertising scheme
     under which the remote device is persistently advertising &quot;in the
     background&quot; at low power.
+
+    Note that max latency updated from 30s to 45s in m122.0.6192.0, which
+    mistakenly changed the bucket boundaries. There may be odd, minor overlap
+    between buckets shortly before and after this change.
   </summary>
 </histogram>
 
@@ -1733,6 +1737,10 @@ chromium-metrics-reviews@google.com.
     In this context, &quot;background&quot; refers to the BLE advertising scheme
     under which the remote device is persistently advertising &quot;in the
     background&quot; at low power.
+
+    Note that max latency updated from 30s to 45s in m122.0.6192.0, which
+    mistakenly changed the bucket boundaries. There may be odd, minor overlap
+    between buckets shortly before and after this change.
   </summary>
 </histogram>
 
@@ -1750,6 +1758,10 @@ chromium-metrics-reviews@google.com.
     In this context, &quot;background&quot; refers to the BLE advertising scheme
     under which the remote device is persistently advertising &quot;in the
     background&quot; at low power.
+
+    Note that max latency updated from 30s to 45s in m122.0.6192.0, which
+    mistakenly changed the bucket boundaries. There may be odd, minor overlap
+    between buckets shortly before and after this change.
   </summary>
 </histogram>
 
@@ -1766,6 +1778,10 @@ chromium-metrics-reviews@google.com.
     In this context, &quot;background&quot; refers to the BLE advertising scheme
     under which the remote device is persistently advertising &quot;in the
     background&quot; at low power.
+
+    Note that max latency updated from 30s to 45s in m122.0.6192.0, which
+    mistakenly changed the bucket boundaries. There may be odd, minor overlap
+    between buckets shortly before and after this change.
   </summary>
 </histogram>
 
@@ -1782,6 +1798,10 @@ chromium-metrics-reviews@google.com.
     In this context, &quot;background&quot; refers to the BLE advertising scheme
     under which the remote device is persistently advertising &quot;in the
     background&quot; at low power.
+
+    Note that max latency updated from 30s to 45s in m122.0.6192.0, which
+    mistakenly changed the bucket boundaries. There may be odd, minor overlap
+    between buckets shortly before and after this change.
   </summary>
 </histogram>
 
