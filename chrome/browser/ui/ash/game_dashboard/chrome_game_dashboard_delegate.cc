@@ -16,9 +16,9 @@
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
 #include "components/user_manager/user_manager.h"
 
-ChromeGameDashboardDelegate::ChromeGameDashboardDelegate() = default;
+ChromeGameDashboardDelegate::ChromeGameDashboardDelegate() {}
 
-ChromeGameDashboardDelegate::~ChromeGameDashboardDelegate() = default;
+ChromeGameDashboardDelegate::~ChromeGameDashboardDelegate() {}
 
 void ChromeGameDashboardDelegate::GetIsGame(const std::string& app_id,
                                             IsGameCallback callback) {
@@ -26,11 +26,6 @@ void ChromeGameDashboardDelegate::GetIsGame(const std::string& app_id,
   auto* profile = ProfileManager::GetPrimaryUserProfile();
   CHECK(profile);
   auto* arc_app_list_prefs = ArcAppListPrefs::Get(profile);
-  if (!arc_app_list_prefs) {
-    // If there's no ArcAppListPrefs, assume the app is not a game.
-    std::move(callback).Run(/*is_game=*/false);
-    return;
-  }
   const auto app_category = arc_app_list_prefs->GetAppCategory(app_id);
   // If the category is anything except `kUndefined`, fire the callback,
   // otherwise, retrieve the category from ARC.
