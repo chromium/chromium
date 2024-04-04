@@ -742,7 +742,7 @@ chrome_app("chrome") {
 
   entitlements_target = ":entitlements"
   info_plist_target = ":info_plist"
-  bundle_identifier = "$chromium_bundle_id"
+  bundle_identifier = "$ios_chromium_bundle_id"
   if (ios_chrome_orderfile != "") {
     orderfile_path = ios_chrome_orderfile
   }
@@ -805,8 +805,8 @@ chrome_app("chrome") {
   }
 
   extra_substitutions = [
-    "CONTENT_WIDGET_EXTENSION_BUNDLE_ID=$chromium_bundle_id.ContentTodayExtension",
-    "CHROMIUM_BUNDLE_ID=$chromium_bundle_id",
+    "CONTENT_WIDGET_EXTENSION_BUNDLE_ID=$ios_chromium_bundle_id.ContentTodayExtension",
+    "CHROMIUM_BUNDLE_ID=$ios_chromium_bundle_id",
     "CHROMIUM_HANDOFF_ID=$chromium_handoff_id",
     "CHROMIUM_SHORT_NAME=$chromium_short_name",
     "CHROMIUM_URL_SCHEME_1=$url_unsecure_scheme",

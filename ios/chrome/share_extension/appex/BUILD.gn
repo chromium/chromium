@@ -37,5 +37,5 @@ ios_appex_bundle("appex") {
 
   entitlements_target = ":entitlements"
   info_plist_target = ":tweak_info_plist"
-  bundle_identifier = "$chromium_bundle_id.ShareExtension"
+  bundle_identifier = "$ios_chromium_bundle_id.ShareExtension"
 }

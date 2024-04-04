@@ -14,7 +14,7 @@ tweak_info_plist("tweak_info_plist") {
 compile_entitlements("entitlements") {
   substitutions = [
     "IOS_BUNDLE_ID_PREFIX=$ios_app_bundle_id_prefix",
-    "CHROMIUM_BUNDLE_ID=$chromium_bundle_id",
+    "CHROMIUM_BUNDLE_ID=$ios_chromium_bundle_id",
   ]
   output_name = "$target_gen_dir/widget_kit_extension.appex.entitlements"
   entitlements_templates =
@@ -25,6 +25,6 @@ ios_appex_bundle("appex") {
   output_name = "widget_kit_extension"
   entitlements_target = ":entitlements"
   info_plist_target = ":tweak_info_plist"
-  bundle_identifier = "$chromium_bundle_id.WidgetKitExtension"
+  bundle_identifier = "$ios_chromium_bundle_id.WidgetKitExtension"
   deps = [ "//ios/chrome/widget_kit_extension:widget_kit_extension_swift" ]
 }

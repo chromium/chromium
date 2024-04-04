@@ -15,7 +15,7 @@ tweak_info_plist("info_plist") {
 compile_entitlements("entitlements") {
   substitutions = [
     "IOS_BUNDLE_ID_PREFIX=$ios_app_bundle_id_prefix",
-    "CHROMIUM_BUNDLE_ID=$chromium_bundle_id",
+    "CHROMIUM_BUNDLE_ID=$ios_chromium_bundle_id",
   ]
   entitlements_templates =
       [ "entitlements/external/intents_extension.entitlements" ]
@@ -31,5 +31,5 @@ ios_appex_bundle("appex") {
 
   entitlements_target = ":entitlements"
   info_plist_target = ":info_plist"
-  bundle_identifier = "$chromium_bundle_id.IntentsExtension"
+  bundle_identifier = "$ios_chromium_bundle_id.IntentsExtension"
 }

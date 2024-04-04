@@ -91,6 +91,9 @@ declare_args() {
 
   # Enable memory debugging.
   ios_enable_memory_debugging = !is_chrome_branded
+
+  # The iOS app bundle id.
+  ios_chromium_bundle_id = "$ios_app_bundle_id_prefix.chrome.ios.dev"
 }
 
 if (target_environment == "catalyst") {
@@ -133,7 +136,6 @@ if (is_official_build && is_chrome_branded) {
   is_official_release = false
 }
 
-chromium_bundle_id = "$ios_app_bundle_id_prefix.chrome.ios.dev"
 chromium_handoff_id = "$ios_app_bundle_id_prefix.chrome.handoff"
 ios_move_tab_activity_type = "$ios_app_bundle_id_prefix.chrome.move-tab"
 
