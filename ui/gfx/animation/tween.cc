@@ -18,6 +18,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_f.h"
+#include "ui/gfx/geometry/three_point_cubic_bezier.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_operations.h"
 
@@ -43,6 +44,11 @@ double Tween::CalculateValue(Tween::Type type, double state) {
       if (state < 0.5)
         return pow(state * 2, 2) / 2.0;
       return 1.0 - (pow((state - 1.0) * 2, 2) / 2.0);
+
+    case EASE_IN_OUT_EMPHASIZED:
+      return gfx::ThreePointCubicBezier(0.05, 0, 0.133333, 0.06, 0.166666, 0.4,
+                                        0.208333, 0.82, 0.25, 1)
+          .Solve(state);
 
     case EASE_IN_OUT_2:
       return gfx::CubicBezier(0.33, 0, 0.67, 1).Solve(state);

@@ -59,6 +59,8 @@ component("geometry") {
     "size_conversions.h",
     "size_f.cc",
     "size_f.h",
+    "three_point_cubic_bezier.cc",
+    "three_point_cubic_bezier.h",
     "triangle_f.cc",
     "triangle_f.h",
     "vector2d.cc",
