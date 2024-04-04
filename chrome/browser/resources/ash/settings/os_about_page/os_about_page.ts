@@ -281,7 +281,6 @@ export class OsAboutPageElement extends OsAboutPageBase {
         value: false,
         computed: 'computeShowExtendedUpdatesOption_(' +
             'isExtendedUpdatesOptInEligible_,' +
-            'hasCheckedForUpdates_,' +
             'currentUpdateStatusEvent_)',
       },
 
@@ -866,7 +865,7 @@ export class OsAboutPageElement extends OsAboutPageBase {
   }
 
   private computeShowExtendedUpdatesOption_(): boolean {
-    return this.isExtendedUpdatesOptInEligible_ && this.hasCheckedForUpdates_ &&
+    return this.isExtendedUpdatesOptInEligible_ &&
         this.checkStatus_(UpdateStatus.UPDATED);
   }
 

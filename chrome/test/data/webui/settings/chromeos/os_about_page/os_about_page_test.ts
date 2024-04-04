@@ -834,7 +834,8 @@ suite('<os-about-page> AllBuilds', () => {
       aboutBrowserProxy.setExtendedUpdatesOptInEligible(true);
 
       await initPage();
-      assertExtendedUpdatesVisibility(false);
+      // Extended updates is shown initially if no pending updates.
+      assertExtendedUpdatesVisibility(true);
 
       fireStatusChanged(UpdateStatus.CHECKING);
       assertExtendedUpdatesVisibility(false);
@@ -865,8 +866,6 @@ suite('<os-about-page> AllBuilds', () => {
     test('is not shown after opting in', async () => {
       aboutBrowserProxy.setExtendedUpdatesOptInEligible(true);
       await initPage();
-      fireStatusChanged(UpdateStatus.CHECKING);
-      fireStatusChanged(UpdateStatus.UPDATED);
       assertExtendedUpdatesVisibility(true);
 
       fireExtendedUpdatesPolicyChanged();
@@ -922,10 +921,7 @@ suite('<os-about-page> AllBuilds', () => {
               });
               aboutBrowserProxy.setExtendedUpdatesOptInEligible(
                   tc.expectedVisibility);
-
               await initPage();
-              fireStatusChanged(UpdateStatus.CHECKING);
-              fireStatusChanged(UpdateStatus.UPDATED);
 
               assertDeepEquals(
                   [tc.eolPassed, tc.extDatePassed, tc.optInRequired],
