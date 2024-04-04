@@ -23,11 +23,17 @@
 #include "extensions/renderer/isolated_world_manager.h"
 #include "extensions/renderer/renderer_frame_context_data.h"
 #include "extensions/renderer/script_context.h"
+#include "pdf/buildflags.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "v8/include/v8-isolate.h"
 #include "v8/include/v8-object.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "base/feature_list.h"
+#include "pdf/pdf_features.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace extensions {
 
@@ -308,6 +314,15 @@ mojom::ContextType ScriptContextSet::ClassifyJavaScriptContext(
       return mojom::ContextType::kLockscreenExtension;
 
     if (is_webview) {
+#if BUILDFLAG(ENABLE_PDF)
+      // The PDF Viewer extension in a webview needs to be a privileged
+      // extension in order to load.
+      if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif) &&
+          extension->id() == extension_misc::kPdfExtensionId) {
+        return mojom::ContextType::kPrivilegedExtension;
+      }
+#endif  // BUILDFLAG(ENABLE_PDF)
+
       return mojom::ContextType::kUnprivilegedExtension;
     }
 

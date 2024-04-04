@@ -73,12 +73,18 @@
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
+#include "pdf/buildflags.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service_factory.h"
 #include "chromeos/constants/chromeos_features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "base/feature_list.h"
+#include "pdf/pdf_features.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 using blink::web_pref::WebPreferences;
 using content::BrowserContext;
@@ -812,12 +818,23 @@ void ChromeContentBrowserClientExtensionsPart::SiteInstanceGotProcessAndSite(
     return;
   }
 
-  // Don't consider guests that load extension URLs as extension processes.
-  // This is possible when an embedder app navigates <webview> to a
-  // webview-accessible app resource; the resulting <webview> process shouldn't
-  // receive extension process privileges.
-  if (site_instance->IsGuest())
+  // Don't consider guests that load extension URLs as extension processes,
+  // except for the PDF Viewer extension URL. This is possible when an embedder
+  // app navigates <webview> to a webview-accessible app resource; the resulting
+  // <webview> process shouldn't receive extension process privileges. The PDF
+  // Viewer extension is an exception. The PDF extension is in a separate
+  // process that needs to be classified as privileged in order to expose the
+  // appropriate API methods to it.
+#if BUILDFLAG(ENABLE_PDF)
+  const bool is_oopif_pdf_extension =
+      base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif) &&
+      extension->id() == extension_misc::kPdfExtensionId;
+#else
+  constexpr bool is_oopif_pdf_extension = false;
+#endif  // BUILDFLAG(ENABLE_PDF)
+  if (site_instance->IsGuest() && !is_oopif_pdf_extension) {
     return;
+  }
 
   // Note that this may be called more than once for multiple instances
   // of the same extension, such as when the same hosted app is opened in

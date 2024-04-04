@@ -6,6 +6,9 @@ include_rules = [
   "+net/base/backoff_entry.h",
   "+net/base/net_errors.h",
 
+  "+pdf/buildflags.h",
+  "+pdf/pdf_features.h",
+
   "+third_party/skia/include/core",
   "+third_party/cld_3",
 

@@ -4,6 +4,7 @@
 
 import("//build/config/features.gni")
 import("//extensions/buildflags/buildflags.gni")
+import("//pdf/features.gni")
 
 assert(enable_extensions)
 
@@ -281,6 +282,13 @@ source_set("renderer") {
 
   # Temporarily allow crash_key; see https://crbug.com/1034755
   deps += [ "//components/crash/core/common:crash_key" ]
+
+  if (enable_pdf) {
+    deps += [
+      "//pdf:buildflags",
+      "//pdf:features",
+    ]
+  }
 }
 
 static_library("unit_test_support") {

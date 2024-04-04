@@ -19,6 +19,12 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/mojom/context_type.mojom.h"
+#include "pdf/buildflags.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "extensions/common/constants.h"
+#include "pdf/pdf_features.h"
+#endif
 
 namespace extensions {
 
@@ -184,7 +190,8 @@ mojom::ContextType ProcessMap::GetMostLikelyContextType(
     return mojom::ContextType::kWebPage;
   }
 
-  if (!Contains(extension->id(), process_id)) {
+  const ExtensionId& extension_id = extension->id();
+  if (!Contains(extension_id, process_id)) {
     // If the process map doesn't contain the process, it might be an extension
     // frame in a webview.
     // We (deliberately) don't add webview-hosted frames to the process map and
@@ -192,6 +199,16 @@ mojom::ContextType ProcessMap::GetMostLikelyContextType(
     if (url && extension->origin().IsSameOriginWith(*url) &&
         IsWebViewProcessForExtension(process_id, extension->id())) {
       // Yep, it's an extension frame in a webview.
+#if BUILDFLAG(ENABLE_PDF)
+      // The PDF Viewer extension is an exception, since webviews need to be
+      // able to load the PDF Viewer. The PDF extension needs a
+      // kPrivilegedExtension context to load, so the PDF extension frame is
+      // added to the process map and shouldn't reach here.
+      if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif)) {
+        CHECK_NE(extension_id, extension_misc::kPdfExtensionId);
+      }
+#endif  // BUILDFLAG(ENABLE_PDF)
+
       return mojom::ContextType::kUnprivilegedExtension;
     }
 
