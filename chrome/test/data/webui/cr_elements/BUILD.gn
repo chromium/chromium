@@ -65,9 +65,6 @@ build_webui_tests("build") {
     "web_ui_listener_mixin_lit_test.ts",
   ]
 
-  # Using custom config to turn off useDefineForClassFields TS compiler flag
-  # which is necessary when defining Polymer elements.
-  ts_tsconfig_base = "tsconfig_base.json"
   ts_composite = true
   ts_definitions = [
     "//tools/typescript/definitions/chrome_event.d.ts",

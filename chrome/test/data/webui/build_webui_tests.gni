@@ -66,10 +66,21 @@ template("build_webui_tests") {
     }
     root_dir = preprocess_dir
     out_dir = tsc_dir
-    tsconfig_base = "//chrome/test/data/webui/tsconfig_base.json"
 
+    # Default tsconfig is set to
+    # //chrome/test/data/webui/tsconfig_base_polymer.json for targets
+    # with a Polymer dependency, and
+    # //chrome/test/data/webui/tsconfig_base_polymer.json) for other targets.
+    tsconfig_base = "//chrome/test/data/webui/tsconfig_base.json"
     if (defined(invoker.ts_tsconfig_base)) {
       tsconfig_base = invoker.ts_tsconfig_base
+    } else if (defined(invoker.ts_deps)) {
+      has_polymer =
+          filter_include(invoker.ts_deps,
+                         [ "//third_party/polymer/v3_0:library" ]) != []
+      if (has_polymer) {
+        tsconfig_base = "//chrome/test/data/webui/tsconfig_base_polymer.json"
+      }
     }
 
     path_mappings = []
