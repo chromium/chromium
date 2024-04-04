@@ -1116,13 +1116,6 @@ bool IsMlUrlScoreCachingEnabled() {
 
 // <- ML Relevance Scoring
 // ---------------------------------------------------------
-// Android UI Revamp ->
-const base::FeatureParam<bool> kOmniboxModernizeVisualUpdateMergeClipboardOnNTP(
-    &omnibox::kOmniboxModernizeVisualUpdate,
-    "modernize_visual_update_merge_clipboard_on_ntp",
-    true);
-// <- Android UI Revamp
-// ---------------------------------------------------------
 // Touch Down Trigger For Prefetch ->
 const base::FeatureParam<int>
     kTouchDownTriggerForPrefetchMaxPrefetchesPerOmniboxSession(

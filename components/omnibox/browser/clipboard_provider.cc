@@ -250,8 +250,6 @@ void ClipboardProvider::AddCreatedMatchWithTracking(
                                            clipboard_contents_age);
 
   if (is_android &&
-      OmniboxFieldTrial::kOmniboxModernizeVisualUpdateMergeClipboardOnNTP
-          .Get() &&
       omnibox::IsNTPPage(input.current_page_classification())) {
     // Assign the Clipboard to the PZPS group on NTP pages to improve the use
     // of the suggest space.

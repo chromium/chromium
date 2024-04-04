@@ -376,43 +376,7 @@ TEST_F(ClipboardProviderTest, CreateImageMatchWithContent) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-TEST_F(ClipboardProviderTest,
-       Android_DontMergedWithPZPSGroupOnNTPWithFeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      omnibox::kOmniboxModernizeVisualUpdate,
-      {{OmniboxFieldTrial::kOmniboxModernizeVisualUpdateMergeClipboardOnNTP
-            .name,
-        "false"}});
-
-  SetClipboardText(kClipboardText);
-  auto template_url_service = std::make_unique<TemplateURLService>(
-      /*initializers=*/nullptr, /*count=*/0);
-  client_->set_template_url_service(std::move(template_url_service));
-
-  AutocompleteInput input(std::u16string(), metrics::OmniboxEventProto::NTP,
-                          classifier_);
-  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
-
-  provider_->Start(input, false);
-
-  // Expect the clipboard entry, but not the content. Content is not directly
-  // available on mobile devices - the user needs to explicitly ask to reveal
-  // the content.
-  ASSERT_EQ(provider_->matches().size(), 1U);
-  const auto& match = provider_->matches().back();
-  EXPECT_EQ(AutocompleteMatchType::CLIPBOARD_TEXT, match.type);
-  EXPECT_EQ(omnibox::GROUP_MOBILE_CLIPBOARD, match.suggestion_group_id);
-}
-
 TEST_F(ClipboardProviderTest, Android_MergedWithPZPSGroupOnNTP) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      omnibox::kOmniboxModernizeVisualUpdate,
-      {{OmniboxFieldTrial::kOmniboxModernizeVisualUpdateMergeClipboardOnNTP
-            .name,
-        "true"}});
-
   SetClipboardText(kClipboardText);
   auto template_url_service = std::make_unique<TemplateURLService>(
       /*initializers=*/nullptr, /*count=*/0);
@@ -435,13 +399,6 @@ TEST_F(ClipboardProviderTest, Android_MergedWithPZPSGroupOnNTP) {
 }
 
 TEST_F(ClipboardProviderTest, Android_StandaloneSuggestionOnSearchActivity) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      omnibox::kOmniboxModernizeVisualUpdate,
-      {{OmniboxFieldTrial::kOmniboxModernizeVisualUpdateMergeClipboardOnNTP
-            .name,
-        "true"}});
-
   SetClipboardText(kClipboardText);
   auto template_url_service = std::make_unique<TemplateURLService>(
       /*initializers=*/nullptr, /*count=*/0);
@@ -464,13 +421,6 @@ TEST_F(ClipboardProviderTest, Android_StandaloneSuggestionOnSearchActivity) {
 }
 
 TEST_F(ClipboardProviderTest, Android_StandaloneSuggestionInNonNTPContext) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      omnibox::kOmniboxModernizeVisualUpdate,
-      {{OmniboxFieldTrial::kOmniboxModernizeVisualUpdateMergeClipboardOnNTP
-            .name,
-        "true"}});
-
   SetClipboardText(kClipboardText);
   auto template_url_service = std::make_unique<TemplateURLService>(
       /*initializers=*/nullptr, /*count=*/0);

@@ -523,9 +523,6 @@
             "experiments": [
                 {
                     "name": "Enabled_Tablets",
-                    "params": {
-                        "modernize_visual_update_merge_clipboard_on_ntp": "true"
-                    },
                     "enable_features": [
                         "OmniboxModernizeVisualUpdate"
                     ]

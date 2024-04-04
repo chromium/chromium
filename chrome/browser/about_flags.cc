@@ -2641,25 +2641,6 @@ const FeatureEntry::Choice kNotificationSchedulerChoices[] = {
 
 #if BUILDFLAG(IS_ANDROID)
 
-const FeatureEntry::FeatureParam
-    kOmniboxModernizeVisualUpdateSmallestMargins[] = {
-        {"modernize_visual_update_merge_clipboard_on_ntp", "false"}};
-
-const FeatureEntry::FeatureParam
-    kOmniboxModernizeVisualUpdateSmallestMarginsMergeClipboard[] = {
-        {"modernize_visual_update_merge_clipboard_on_ntp", "true"}};
-
-const FeatureEntry::FeatureVariation kOmniboxModernizeVisualUpdateVariations[] =
-    {
-        {"(Smallest margins, don't merge clipboard)",
-         kOmniboxModernizeVisualUpdateSmallestMargins,
-         std::size(kOmniboxModernizeVisualUpdateSmallestMargins), nullptr},
-        {"(Smallest margins, merge clipboard)",
-         kOmniboxModernizeVisualUpdateSmallestMarginsMergeClipboard,
-         std::size(kOmniboxModernizeVisualUpdateSmallestMarginsMergeClipboard),
-         nullptr},
-};
-
 const FeatureEntry::FeatureParam kPhotoPickerAdoptionStudyActionGetContent[] = {
     {"use_action_get_content", "true"}};
 const FeatureEntry::FeatureParam kPhotoPickerAdoptionStudyActionPickImages[] = {
@@ -5962,9 +5943,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"omnibox-modernize-visual-update",
      flag_descriptions::kOmniboxModernizeVisualUpdateName,
      flag_descriptions::kOmniboxModernizeVisualUpdateDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kOmniboxModernizeVisualUpdate,
-                                    kOmniboxModernizeVisualUpdateVariations,
-                                    "OmniboxModernizeVisualUpdate")},
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxModernizeVisualUpdate)},
 
     {"omnibox-most-visited-tiles-horizontal-render-group",
      flag_descriptions::kOmniboxMostVisitedTilesHorizontalRenderGroupName,
