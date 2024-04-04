@@ -467,11 +467,7 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
       }
 
       if (insertChange.group()) {
-        GridItemIdentifier* groupIdentifier =
-            [GridItemIdentifier groupIdentifier:insertChange.group()
-                               withWebStateList:webStateList];
-        [self.consumer replaceItem:groupIdentifier
-               withReplacementItem:groupIdentifier];
+        [self updateCellGroup:insertChange.group()];
       } else {
         web::WebState* insertedWebState = insertChange.inserted_web_state();
         [self insertItem:[GridItemIdentifier tabIdentifier:insertedWebState]
