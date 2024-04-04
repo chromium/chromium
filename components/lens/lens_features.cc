@@ -60,6 +60,10 @@ const base::FeatureParam<int> kLensOverlayImageMaxHeight{
 const base::FeatureParam<int> kLensOverlayImageMaxWidth{
     &kLensOverlay, "image-dimensions-max-width", 1000};
 
+constexpr base::FeatureParam<std::string> kLensOverlayEndpointUrl{
+    &kLensOverlay, "endpoint-url",
+    "https://lens.google.com/lensonelrpui/crupload"};
+
 constexpr base::FeatureParam<std::string> kHomepageURLForLens{
     &kLensStandalone, "lens-homepage-url", "https://lens.google.com/v3/"};
 
@@ -213,6 +217,10 @@ int GetLensOverlayImageMaxHeight() {
 
 int GetLensOverlayImageMaxWidth() {
   return kLensOverlayImageMaxWidth.Get();
+}
+
+std::string GetLensOverlayEndpointURL() {
+  return kLensOverlayEndpointUrl.Get();
 }
 
 }  // namespace lens::features

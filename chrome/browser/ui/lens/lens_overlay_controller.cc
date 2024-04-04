@@ -73,8 +73,6 @@ LensOverlayController::LensOverlayController(tabs::TabModel* tab_model)
     : tab_model_(tab_model) {
   // Automatically unregisters on destruction.
   tab_model_->owning_model()->AddObserver(this);
-  lens_overlay_query_controller_ =
-      std::make_unique<lens::LensOverlayQueryController>();
 }
 
 LensOverlayController::~LensOverlayController() {
@@ -120,6 +118,18 @@ void LensOverlayController::ShowUI() {
             SidePanelUI::GetSidePanelUIForBrowser(tab_browser),
             tab_model_->contents());
   }
+
+  // Create the query controller.
+  lens_overlay_query_controller_ =
+      std::make_unique<lens::LensOverlayQueryController>(
+          base::BindRepeating(&LensOverlayController::HandleStartQueryResponse,
+                              weak_factory_.GetWeakPtr()),
+          base::BindRepeating(
+              &LensOverlayController::HandleInteractionURLResponse,
+              weak_factory_.GetWeakPtr()),
+          base::BindRepeating(
+              &LensOverlayController::HandleInteractionDataResponse,
+              weak_factory_.GetWeakPtr()));
 
   state_ = State::kScreenshot;
   view->CopyFromSurface(
@@ -174,6 +184,7 @@ void LensOverlayController::CloseUI() {
   receiver_.reset();
   page_.reset();
   current_screenshot_.reset();
+  lens_overlay_query_controller_.reset();
   // In the future we may want a hibernate state. In this case we would stop
   // showing the UI but persist enough information to defrost the original UI
   // state when the tab is foregrounded.
@@ -197,10 +208,7 @@ void LensOverlayController::BindOverlay(
   page_.Bind(std::move(page));
   state_ = State::kOverlay;
 
-  lens_overlay_query_controller_->StartQueryFlow(
-      current_screenshot_,
-      base::BindOnce(&LensOverlayController::HandleStartQueryResponse,
-                     weak_factory_.GetWeakPtr()));
+  lens_overlay_query_controller_->StartQueryFlow(current_screenshot_);
 }
 
 void LensOverlayController::BindSidePanel(
@@ -456,16 +464,17 @@ void LensOverlayController::IssueLensRequest(
       break;
   }
 
-  lens_overlay_query_controller_->SendInteraction(
-      request, base::BindOnce(&LensOverlayController::HandleInteractionResponse,
-                              weak_factory_.GetWeakPtr()));
+  lens_overlay_query_controller_->SendInteraction(request);
 
   results_side_panel_coordinator_->RegisterEntryAndShow();
   state_ = State::kOverlayAndResults;
 }
 
 void LensOverlayController::HandleStartQueryResponse(
-    lens::proto::LensOverlayResponse response) {}
+    lens::proto::LensOverlayFullImageResponse response) {}
 
-void LensOverlayController::HandleInteractionResponse(const GURL& url,
-                                                      std::string signals) {}
+void LensOverlayController::HandleInteractionURLResponse(
+    lens::proto::LensOverlayUrlResponse response) {}
+
+void LensOverlayController::HandleInteractionDataResponse(
+    lens::proto::LensOverlayInteractionResponse response) {}

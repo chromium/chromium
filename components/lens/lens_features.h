@@ -219,6 +219,10 @@ extern int GetLensOverlayImageMaxHeight();
 // Returns the finch configured max image width for the Lens overlay feature.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern int GetLensOverlayImageMaxWidth();
+
+// Returns the finch configured endpoint URL for the Lens overlay.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern std::string GetLensOverlayEndpointURL();
 }  // namespace lens::features
 
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

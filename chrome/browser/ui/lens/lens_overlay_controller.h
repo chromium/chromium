@@ -175,10 +175,16 @@ class LensOverlayController : public TabStripModelObserver,
   void CloseUIAsync();
 
   // Handles the response to the Lens start query request.
-  void HandleStartQueryResponse(lens::proto::LensOverlayResponse response);
+  void HandleStartQueryResponse(
+      lens::proto::LensOverlayFullImageResponse response);
 
-  // Handles the response to the Lens interaction request.
-  void HandleInteractionResponse(const GURL& url, std::string signals);
+  // Handles the URL response to the Lens interaction request.
+  void HandleInteractionURLResponse(
+      lens::proto::LensOverlayUrlResponse response);
+
+  // Handles the suggest signals response to the Lens interaction request.
+  void HandleInteractionDataResponse(
+      lens::proto::LensOverlayInteractionResponse response);
 
   // Owns this class.
   raw_ptr<tabs::TabModel> tab_model_;

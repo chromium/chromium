@@ -7687,6 +7687,8 @@ test("unit_tests") {
       "../browser/importer/firefox_profile_lock_unittest.cc",
       "../browser/importer/profile_writer_unittest.cc",
       "../browser/lens/lens_overlay/lens_overlay_image_helper_unittest.cc",
+      "../browser/lens/lens_overlay/lens_overlay_query_controller_unittest.cc",
+      "../browser/lens/lens_overlay/lens_overlay_request_id_generator_unittest.cc",
       "../browser/lifetime/application_lifetime_unittest.cc",
       "../browser/lookalikes/lookalike_url_navigation_throttle_unittest.cc",
       "../browser/media/unified_autoplay_config_unittest.cc",
