@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/screens/osauth/password_selection_screen.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/check_is_test.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
@@ -71,6 +72,7 @@ PasswordSelectionScreen::PasswordSelectionScreen(
 PasswordSelectionScreen::~PasswordSelectionScreen() = default;
 
 void PasswordSelectionScreen::ShowImpl() {
+  is_shown_ = true;
   if (!view_) {
     return;
   }
@@ -80,6 +82,11 @@ void PasswordSelectionScreen::ShowImpl() {
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&PasswordSelectionScreen::ProcessOptions,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void PasswordSelectionScreen::HideImpl() {
+  BaseOSAuthSetupScreen::HideImpl();
+  is_shown_ = false;
 }
 
 void PasswordSelectionScreen::OnUserAction(const base::Value::List& args) {
@@ -103,6 +110,13 @@ void PasswordSelectionScreen::OnUserAction(const base::Value::List& args) {
 }
 
 bool PasswordSelectionScreen::MaybeSkip(WizardContext& wizard_context) {
+  if (wizard_context.skip_post_login_screens_for_tests && is_shown_) {
+    CHECK_IS_TEST();
+    // WizardController::SkipPostLoginScreensForTesting() can be triggered
+    // after screen is shown.
+    exit_callback_.Run(Result::GAIA_PASSWORD_FALLBACK);
+    return true;
+  }
   return false;
 }
 
