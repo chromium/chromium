@@ -73,6 +73,17 @@ uint32_t ComputeTextureTargetForSharedImage(
     return GL_TEXTURE_2D;
   }
 
+#if !BUILDFLAG(IS_OZONE)
+  // External sampling with GMBs is supported in Chromium only for Ozone.
+  // Android uses a bespoke path for external sampling where the AHB doesn't get
+  // put in a GMB, and Windows doesn't use external sampling at all. It is not
+  // possible to set PrefersExternalSampler() on a MP SIF outside of Ozone, but
+  // legacy MP formats could theoretically be used on any platform. This
+  // DUMP_WILL_BE_CHECK() is added in advance of adding the invariant that they
+  // are *actually* used only on Ozone.
+  DUMP_WILL_BE_CHECK(false);
+#endif
+
   // The client should configure an SI to use external sampling only if they
   // have provided a native buffer to back that SI.
   // TODO(crbug.com/332069927): Figure out why this is going off on LaCrOS and

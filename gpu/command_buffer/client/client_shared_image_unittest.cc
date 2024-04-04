@@ -413,9 +413,9 @@ TEST(ClientSharedImageTest,
 }
 #endif
 
-#if !BUILDFLAG(IS_APPLE)
-// On non-Apple platforms, the target for native buffers should be used if a
-// legacy multiplanar format is passed.
+#if BUILDFLAG(IS_OZONE)
+// On Ozone, the target for native buffers should be used if a legacy
+// multiplanar format is passed.
 TEST(ClientSharedImageTest, GetTextureTarget_LegacyMultiplanarFormats) {
   auto sii = base::MakeRefCounted<TestSharedImageInterface>();
   sii->emulate_client_provided_native_buffer();
