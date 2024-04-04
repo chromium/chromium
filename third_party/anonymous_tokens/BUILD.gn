@@ -90,6 +90,16 @@ proto_library("anonymous_tokens_cc_proto") {
   proto_in_dir = "src"
 }
 
+if (is_android) {
+  import("//build/config/android/rules.gni")
+
+  proto_java_library("anonymous_tokens_java_proto") {
+    sources = [ "src/anonymous_tokens/proto/anonymous_tokens.proto" ]
+
+    proto_path = "src/"
+  }
+}
+
 source_set("proto_utils") {
   sources = [
     "src/anonymous_tokens/cpp/shared/proto_utils.cc",
