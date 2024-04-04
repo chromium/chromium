@@ -69,7 +69,7 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   void RestoreDefaultTaskRunner() override;
   void AddNestingObserver(RunLoop::NestingObserver* observer) override;
   void RemoveNestingObserver(RunLoop::NestingObserver* observer) override;
-  void SetTaskExecutionAllowed(bool allowed) override;
+  void SetTaskExecutionAllowedInNativeNestedLoop(bool allowed) override;
   bool IsTaskExecutionAllowed() const override;
   MessagePump* GetBoundMessagePump() const override;
   void PrioritizeYieldingToNative(base::TimeTicks prioritize_until) override;

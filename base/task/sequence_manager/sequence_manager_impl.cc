@@ -1097,11 +1097,12 @@ SequenceManagerImpl::GetMetricRecordingSettings() const {
   return metric_recording_settings_;
 }
 
-void SequenceManagerImpl::SetTaskExecutionAllowed(bool allowed) {
-  controller_->SetTaskExecutionAllowed(allowed);
+void SequenceManagerImpl::SetTaskExecutionAllowedInNativeNestedLoop(
+    bool allowed) {
+  controller_->SetTaskExecutionAllowedInNativeNestedLoop(allowed);
 }
 
-bool SequenceManagerImpl::IsTaskExecutionAllowed() const {
+bool SequenceManagerImpl::IsTaskExecutionAllowedInNativeNestedLoop() const {
   return controller_->IsTaskExecutionAllowed();
 }
 

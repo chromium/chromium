@@ -119,7 +119,7 @@ class BASE_EXPORT ThreadController {
 
   // Explicitly allow or disallow task execution. Implicitly disallowed when
   // entering a nested runloop.
-  virtual void SetTaskExecutionAllowed(bool allowed) = 0;
+  virtual void SetTaskExecutionAllowedInNativeNestedLoop(bool allowed) = 0;
 
   // Whether task execution is allowed or not.
   virtual bool IsTaskExecutionAllowed() const = 0;

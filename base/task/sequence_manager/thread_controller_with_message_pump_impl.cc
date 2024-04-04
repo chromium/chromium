@@ -690,19 +690,27 @@ void ThreadControllerWithMessagePumpImpl::EnsureWorkScheduled() {
   }
 }
 
-void ThreadControllerWithMessagePumpImpl::SetTaskExecutionAllowed(
-    bool allowed) {
+void ThreadControllerWithMessagePumpImpl::
+    SetTaskExecutionAllowedInNativeNestedLoop(bool allowed) {
   if (allowed) {
     // We need to schedule work unconditionally because we might be about to
     // enter an OS level nested message loop. Unlike a RunLoop().Run() we don't
     // get a call to DoWork on entering for free.
     work_deduplicator_.OnWorkRequested();  // Set the pending DoWork flag.
-    pump_->ScheduleWork();
   } else {
     // We've (probably) just left an OS level nested message loop. Make sure a
     // subsequent PostTask within the same Task doesn't ScheduleWork with the
     // pump (this will be done anyway when the task exits).
     work_deduplicator_.OnWorkStarted();
+  }
+  if (!pump_->HandleNestedNativeLoopWithApplicationTasks(
+          allowed ? MessagePump::NativeLoopStatus::kOnEntry
+                  : MessagePump::NativeLoopStatus::kOnExit)) {
+    // Pump does not have its own support for native nested loops,
+    // ThreadController must handle scheduling for upcoming tasks.
+    if (allowed) {
+      pump_->ScheduleWork();
+    }
   }
   main_thread_only().task_execution_allowed = allowed;
 }

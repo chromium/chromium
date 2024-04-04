@@ -48,6 +48,11 @@ MessagePump::MessagePump() = default;
 
 MessagePump::~MessagePump() = default;
 
+bool MessagePump::HandleNestedNativeLoopWithApplicationTasks(
+    NativeLoopStatus allowed) {
+  return false;
+}
+
 // static
 void MessagePump::OverrideMessagePumpForUIFactory(MessagePumpFactory* factory) {
   DCHECK(!message_pump_for_ui_factory_);

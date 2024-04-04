@@ -337,7 +337,8 @@ void ThreadControllerImpl::SetWorkBatchSize(int work_batch_size) {
   main_sequence_only().work_batch_size_ = work_batch_size;
 }
 
-void ThreadControllerImpl::SetTaskExecutionAllowed(bool allowed) {
+void ThreadControllerImpl::SetTaskExecutionAllowedInNativeNestedLoop(
+    bool allowed) {
   NOTREACHED();
 }
 

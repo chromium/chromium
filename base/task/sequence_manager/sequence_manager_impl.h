@@ -165,8 +165,8 @@ class BASE_EXPORT SequenceManagerImpl
   MessagePump* GetMessagePump() const;
   bool IsType(MessagePumpType type) const;
   void SetAddQueueTimeToTasks(bool enable);
-  void SetTaskExecutionAllowed(bool allowed);
-  bool IsTaskExecutionAllowed() const;
+  void SetTaskExecutionAllowedInNativeNestedLoop(bool allowed);
+  bool IsTaskExecutionAllowedInNativeNestedLoop() const;
 #if BUILDFLAG(IS_IOS)
   void AttachToMessagePump();
 #endif

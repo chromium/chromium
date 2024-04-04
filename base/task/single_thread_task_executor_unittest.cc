@@ -1364,28 +1364,6 @@ TEST_P(SingleThreadTaskExecutorTypedTest,
   run_loop.Run();
 }
 
-TEST_P(SingleThreadTaskExecutorTypedTest,
-       ApplicationTasksAllowedInNativeNestedLoopExplicitlyInScope) {
-  SingleThreadTaskExecutor executor(GetParam());
-  RunLoop run_loop;
-  executor.task_runner()->PostTask(
-      FROM_HERE,
-      BindOnce(
-          [](RunLoop* run_loop) {
-            {
-              CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop
-                  allow_nestable_tasks;
-              EXPECT_TRUE(CurrentThread::Get()
-                              ->ApplicationTasksAllowedInNativeNestedLoop());
-            }
-            EXPECT_FALSE(CurrentThread::Get()
-                             ->ApplicationTasksAllowedInNativeNestedLoop());
-            run_loop->Quit();
-          },
-          Unretained(&run_loop)));
-  run_loop.Run();
-}
-
 TEST_P(SingleThreadTaskExecutorTypedTest, IsIdleForTesting) {
   SingleThreadTaskExecutor executor(GetParam());
   EXPECT_TRUE(CurrentThread::Get()->IsIdleForTesting());
@@ -2065,6 +2043,29 @@ TEST(SingleThreadTaskExecutorTest, AlwaysHaveUserMessageWhenNesting) {
   g_loop_to_quit_from_message_handler = nullptr;
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+TEST(SingleThreadTaskExecutorTest,
+     ApplicationTasksAllowedInNativeNestedLoopExplicitlyInScope) {
+  // Only UI pumps support native loops.
+  SingleThreadTaskExecutor executor(MessagePumpType::UI);
+  RunLoop run_loop;
+  executor.task_runner()->PostTask(
+      FROM_HERE,
+      BindOnce(
+          [](RunLoop* run_loop) {
+            {
+              CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop
+                  allow_nestable_tasks;
+              EXPECT_TRUE(CurrentThread::Get()
+                              ->ApplicationTasksAllowedInNativeNestedLoop());
+            }
+            EXPECT_FALSE(CurrentThread::Get()
+                             ->ApplicationTasksAllowedInNativeNestedLoop());
+            run_loop->Quit();
+          },
+          Unretained(&run_loop)));
+  run_loop.Run();
+}
 
 // Verify that tasks posted to and code running in the scope of the same
 // SingleThreadTaskExecutor access the same SequenceLocalStorage values.
