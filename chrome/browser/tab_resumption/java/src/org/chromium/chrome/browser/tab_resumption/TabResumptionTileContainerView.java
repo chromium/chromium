@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.Sugge
 
 /** The view containing suggestion tiles on the tab resumption module. */
 public class TabResumptionTileContainerView extends LinearLayout {
-
     public TabResumptionTileContainerView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
@@ -52,7 +51,9 @@ public class TabResumptionTileContainerView extends LinearLayout {
         removeAllViews();
 
         String allTilesTexts = "";
-        boolean isSingle = bundle.entries.size() == 1;
+        int entryCount = bundle.entries.size();
+        boolean isSingle = entryCount == 1;
+        int entryIndex = 0;
         for (SuggestionEntry entry : bundle.entries) {
             // Add divider if some tile already exists.
             if (getChildCount() > 0) {
@@ -75,8 +76,10 @@ public class TabResumptionTileContainerView extends LinearLayout {
             allTilesTexts +=
                     loadTileTexts(entry, bundle.referenceTimeMs, isSingle, tileView) + ". ";
             loadTileUrlImage(entry, urlImageProvider, tileView);
-            tileView.bindSuggestionClickCallback(suggestionClickCallback, entry.url);
+            tileView.bindSuggestionClickCallback(
+                    suggestionClickCallback, entry.url, entryCount, entryIndex);
             addView(tileView);
+            ++entryIndex;
         }
         return allTilesTexts;
     }

@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.magic_stack.ModuleProviderBuilder;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ModuleVisibility;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -44,6 +45,7 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
         if (!TabResumptionModuleUtils.shouldShowTabResumptionModule(profile)) {
             return false;
         }
+
         addRefToDataSource();
         TabResumptionDataProvider dataProvider =
                 new ForeignSessionTabResumptionDataProvider(
@@ -81,7 +83,12 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
         // See b/324138242.
         if (!mProfileSupplier.hasValue()) return false;
 
-        return TabResumptionModuleUtils.shouldShowTabResumptionModule(getRegularProfile());
+        ModuleVisibility visibility =
+                TabResumptionModuleUtils.computeModuleVisibility(getRegularProfile());
+        if (!visibility.value) {
+            TabResumptionModuleMetricsUtils.recordModuleNotShownReason(visibility.notShownReason);
+        }
+        return visibility.value;
     }
 
     /** Gets the regular profile if exists. */

@@ -14,6 +14,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleBuilder.java",
     "java/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleCoordinator.java",
     "java/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleMediator.java",
+    "java/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleMetricsUtils.java",
     "java/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleProperties.java",
     "java/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleUtils.java",
     "java/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleView.java",
