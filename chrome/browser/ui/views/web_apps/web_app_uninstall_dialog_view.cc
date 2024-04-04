@@ -188,7 +188,6 @@ void WebAppUninstallDialogDelegateView::ProcessAutoConfirmValue() {
     case extensions::ScopedTestDialogAutoConfirm::NONE:
       break;
     case extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_OPTION:
-    case extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_REMEMBER_OPTION:
       checkbox_->SetChecked(/*checked=*/true);
       AcceptDialog();
       break;

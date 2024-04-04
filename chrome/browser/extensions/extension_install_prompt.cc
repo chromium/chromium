@@ -618,8 +618,7 @@ bool ExtensionInstallPrompt::AutoConfirmPromptIfEnabled() {
     // the real implementations it's highly likely the message loop will be
     // pumping a few times before the user clicks accept or cancel.
     case extensions::ScopedTestDialogAutoConfirm::ACCEPT:
-    case extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_OPTION:
-    case extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_REMEMBER_OPTION: {
+    case extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_OPTION: {
       // Permissions are withheld at installation when the prompt specifies it
       // and option wasn't selected (which grants permissions when selected).
       auto result =
