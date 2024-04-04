@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
+#import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 
@@ -104,6 +105,9 @@ void TabBasedIPHBrowserAgent::NewTabDidLoadUrl(const GURL& url,
 void TabBasedIPHBrowserAgent::DidStartNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
+  if (navigation_context->IsSameDocument()) {
+    return;
+  }
   // `multi_gesture_refresh_` would be set to `false` immediately after the
   // presentation of the pull-to-refresh IPH, so it is possible that the IPH is
   // still visible when the user attempted a new navigation. Remove it from
@@ -115,6 +119,20 @@ void TabBasedIPHBrowserAgent::DidStartNavigation(
   // called, it would be handled by `DidStopLoading`.
   if (!multi_gesture_refresh_) {
     [HelpHandler() handleTapOutsideOfVisibleGestureInProductHelp];
+  }
+}
+
+void TabBasedIPHBrowserAgent::DidFinishNavigation(
+    web::WebState* web_state,
+    web::NavigationContext* navigation_context) {
+  // Catch back/forward swipe actions that is implemented by WKWebView instead
+  // of the side swipe gesture recognizer.
+  if (navigation_context->GetPageTransition() &
+          ui::PageTransition::PAGE_TRANSITION_FORWARD_BACK &&
+      !navigation_context->HasUserGesture() &&
+      !navigation_context->IsSameDocument()) {
+    engagement_tracker_->NotifyEvent(
+        feature_engagement::events::kIOSSwipeBackForwardUsed);
   }
 }
 
