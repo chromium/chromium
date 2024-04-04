@@ -541,7 +541,10 @@ ExtensionFunction::ResponseAction UserScriptsConfigureWorldFunction::Run() {
   std::optional<std::string> csp = params->properties.csp;
   bool enable_messaging = params->properties.messaging.value_or(false);
 
-  util::SetUserScriptWorldInfo(*extension(), browser_context(), csp,
+  // TODO(https://crbug.com/331680187): Add support for passing `world_id` to
+  // allow configuration of multiple user script worlds.
+  std::optional<std::string> world_id;
+  util::SetUserScriptWorldInfo(*extension(), browser_context(), world_id, csp,
                                enable_messaging);
 
   return RespondNow(NoArguments());

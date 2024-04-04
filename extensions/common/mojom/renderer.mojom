@@ -119,8 +119,8 @@ interface Renderer {
   // is only used for testing.
   SetScriptingAllowlist(array<string> extension_ids);
 
-  // Updates the user script world accordiging to `info`.
-  UpdateUserScriptWorld(UserScriptWorldInfo info);
+  // Updates the user script worlds accordiging to `infos`.
+  UpdateUserScriptWorlds(array<UserScriptWorldInfo> infos);
 
   // Asks the lazy background page if it is ready to be suspended and replies
   // back to the browser. This is sent when the page is considered idle.

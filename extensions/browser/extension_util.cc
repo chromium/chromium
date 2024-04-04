@@ -63,6 +63,33 @@ bool IsSigninProfileTestExtensionOnTestImage(const Extension* extension) {
 }
 #endif
 
+// Returns the key entry in the user script world dictionary to use for the
+// provided `world_id`.
+std::string_view GetUserScriptWorldKeyForWorldId(
+    const std::optional<std::string>& world_id) {
+  return world_id ? world_id->c_str() : kDefaultUserScriptWorldKey;
+}
+
+// Attempts to parse the given `dict` into a mojom::UserScriptWorldInfo. If
+// `dict` is null, returns a default specification for a
+// mojom::UserScriptWorldInfo.
+mojom::UserScriptWorldInfoPtr ParseUserScriptWorldInfo(
+    const ExtensionId& extension_id,
+    const std::optional<std::string>& world_id,
+    const base::Value::Dict* dict) {
+  bool enable_messaging = false;
+  std::optional<std::string> csp;
+  if (dict) {
+    enable_messaging =
+        dict->FindBool(kUserScriptWorldMessagingKey).value_or(false);
+    const std::string* csp_pref = dict->FindString(kUserScriptWorldCspKey);
+    csp = csp_pref ? std::make_optional(*csp_pref) : std::nullopt;
+  }
+
+  return mojom::UserScriptWorldInfo::New(extension_id, world_id, csp,
+                                         enable_messaging);
+}
+
 }  // namespace
 
 mojom::HostID::HostType HostIdTypeFromGuestView(
@@ -195,6 +222,7 @@ content::ServiceWorkerContext* GetServiceWorkerContextForExtensionId(
 
 void SetUserScriptWorldInfo(const Extension& extension,
                             content::BrowserContext* browser_context,
+                            const std::optional<std::string>& world_id,
                             std::optional<std::string> csp,
                             bool messaging) {
   // Persist world configuratation in state store.
@@ -211,42 +239,72 @@ void SetUserScriptWorldInfo(const Extension& extension,
   if (csp.has_value()) {
     world_info.Set(kUserScriptWorldCspKey, *csp);
   }
-  update_dict->SetKey(kDefaultUserScriptWorldKey,
+
+  update_dict->SetKey(GetUserScriptWorldKeyForWorldId(world_id),
                       base::Value(std::move(world_info)));
 
   // Notify the renderer.
   RendererStartupHelperFactory::GetForBrowserContext(browser_context)
-      ->SetUserScriptWorldProperties(extension, csp, messaging);
+      ->SetUserScriptWorldProperties(extension, world_id, csp, messaging);
 }
 
 mojom::UserScriptWorldInfoPtr GetUserScriptWorldInfo(
     const ExtensionId& extension_id,
+    const std::optional<std::string>& world_id,
     content::BrowserContext* browser_context) {
-  bool enable_messaging = false;
-  std::optional<std::string> csp = std::nullopt;
-
   const base::Value::Dict* worlds_configuration =
       ExtensionPrefs::Get(browser_context)
           ->ReadPrefAsDictionary(extension_id, kUserScriptsWorldsConfiguration);
-  if (worlds_configuration) {
-    const base::Value::Dict* world_info =
-        worlds_configuration->FindDict(kDefaultUserScriptWorldKey);
+  const base::Value::Dict* world_info =
+      worlds_configuration ? worlds_configuration->FindDict(
+                                 GetUserScriptWorldKeyForWorldId(world_id))
+                           : nullptr;
 
-    if (world_info) {
-      enable_messaging =
-          world_info->FindBool(kUserScriptWorldMessagingKey).value_or(false);
+  return ParseUserScriptWorldInfo(extension_id, world_id, world_info);
+}
 
-      const std::string* csp_pref =
-          world_info->FindString(kUserScriptWorldCspKey);
-      csp = csp_pref ? std::make_optional(*csp_pref) : std::nullopt;
-    }
+std::vector<mojom::UserScriptWorldInfoPtr> GetAllUserScriptWorlds(
+    const ExtensionId& extension_id,
+    content::BrowserContext* browser_context) {
+  const base::Value::Dict* worlds_configuration =
+      ExtensionPrefs::Get(browser_context)
+          ->ReadPrefAsDictionary(extension_id, kUserScriptsWorldsConfiguration);
+  if (!worlds_configuration) {
+    return {};
   }
 
-  // TODO(https://crbug.com/331680187): Plumb world ID here to allow
-  // configuration of custom user script worlds.
-  const std::optional<std::string> world_id;
-  return mojom::UserScriptWorldInfo::New(extension_id, world_id, csp,
-                                         enable_messaging);
+  std::vector<mojom::UserScriptWorldInfoPtr> result;
+  // TODO(https://crbug.com/331680187): Add more testing for invalid
+  // preferences.
+  for (auto [world_id_key, world_value] : *worlds_configuration) {
+    if (world_id_key.length() < 1) {
+      continue;  // Invalid key. Ignore.
+    }
+
+    if (!world_value.is_dict()) {
+      continue;  // Invalid value. Ignore.
+    }
+
+    std::optional<std::string> world_id;
+    if (world_id_key[0] == '_') {
+      if (world_id_key != kDefaultUserScriptWorldKey) {
+        continue;  // Invalid key. Ignore.
+      }
+    } else {
+      // Otherwise, the world ID is the key in the dictionary.
+      world_id = world_id_key;
+    }
+
+    mojom::UserScriptWorldInfoPtr parsed_world = ParseUserScriptWorldInfo(
+        extension_id, world_id, &world_value.GetDict());
+    if (!parsed_world) {
+      continue;  // Failed to parse. Ignore.
+    }
+
+    result.push_back(std::move(parsed_world));
+  }
+
+  return result;
 }
 
 // This function is security sensitive. Bugs could cause problems that break

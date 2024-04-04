@@ -91,16 +91,28 @@ content::ServiceWorkerContext* GetServiceWorkerContextForExtensionId(
     const ExtensionId& extension_id,
     content::BrowserContext* browser_context);
 
-// Sets the `extension` user script world configuration for `browser_context`
-// in the state store and notifies the renderer.
+// TODO(devlin): Is it worth extracting the user script world info handling to
+// a separate class? It's getting a bit more complex than it initially was
+// when it was added to this util file.
+
+// Sets the `extension` user script world configuration for the given `world_id`
+// in the given `browser_context` in the state store and notifies the renderer.
 void SetUserScriptWorldInfo(const Extension& extension,
                             content::BrowserContext* browser_context,
+                            const std::optional<std::string>& world_id,
                             std::optional<std::string> csp,
                             bool messaging);
 
-// Returns the `extension_id` user script world configuration for
-// `browser_context`.
+// Returns the `extension_id` user script world configuration for the given
+// `world_id` and `browser_context`.
 mojom::UserScriptWorldInfoPtr GetUserScriptWorldInfo(
+    const ExtensionId& extension_id,
+    const std::optional<std::string>& world_id,
+    content::BrowserContext* browser_context);
+
+// Returns all known user script world configurations for the given
+// `extension_id` and `browser_context`.
+std::vector<mojom::UserScriptWorldInfoPtr> GetAllUserScriptWorlds(
     const ExtensionId& extension_id,
     content::BrowserContext* browser_context);
 

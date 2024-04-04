@@ -133,12 +133,20 @@ class UserScriptWorldBrowserTest : public ExtensionApiTest {
   }
 
   // Sets the user script world properties in the renderer(s).
+  void SetDefaultUserScriptWorldProperties(const Extension& extension,
+                                           std::optional<std::string> csp,
+                                           bool enable_messaging) {
+    SetUserScriptWorldProperties(extension, /*world_id=*/std::nullopt,
+                                 std::move(csp), enable_messaging);
+  }
+
   void SetUserScriptWorldProperties(const Extension& extension,
+                                    std::optional<std::string> world_id,
                                     std::optional<std::string> csp,
                                     bool enable_messaging) {
     RendererStartupHelperFactory::GetForBrowserContext(profile())
-        ->SetUserScriptWorldProperties(extension, std::move(csp),
-                                       enable_messaging);
+        ->SetUserScriptWorldProperties(extension, std::move(world_id),
+                                       std::move(csp), enable_messaging);
   }
 
   content::WebContents* GetActiveWebContents() {
@@ -155,8 +163,8 @@ IN_PROC_BROWSER_TEST_F(UserScriptWorldBrowserTest,
 
   // Enable messaging to get the full suite of possible APIs exposed to
   // user script worlds.
-  SetUserScriptWorldProperties(*extension, std::nullopt,
-                               /*enable_messaging=*/true);
+  SetDefaultUserScriptWorldProperties(*extension, std::nullopt,
+                                      /*enable_messaging=*/true);
 
   GURL example_com =
       embedded_test_server()->GetURL("example.com", "/simple.html");
@@ -224,8 +232,8 @@ IN_PROC_BROWSER_TEST_F(UserScriptWorldBrowserTest,
   EXPECT_EQ(script_result, "disallowed eval");
 
   // Update the user script world CSP to allow unsafe eval.
-  SetUserScriptWorldProperties(*extension, "script-src 'unsafe-eval'",
-                               /*enable_messaging=*/true);
+  SetDefaultUserScriptWorldProperties(*extension, "script-src 'unsafe-eval'",
+                                      /*enable_messaging=*/true);
   // Navigate to create a new isolated world.
   NavigateToURL(embedded_test_server()->GetURL("example.com", "/simple.html"));
 
@@ -251,8 +259,8 @@ IN_PROC_BROWSER_TEST_F(UserScriptWorldBrowserTest,
   EXPECT_EQ(script_result, "disallowed eval");
 
   // Update the user script world CSP to allow unsafe eval.
-  SetUserScriptWorldProperties(*extension, "script-src 'unsafe-eval'",
-                               /*enable_messaging=*/true);
+  SetDefaultUserScriptWorldProperties(*extension, "script-src 'unsafe-eval'",
+                                      /*enable_messaging=*/true);
 
   // Re-evaluate the script. Eval should still be disallowed since CSP updates
   // do not apply to existing isolated worlds (by design).
@@ -280,8 +288,8 @@ IN_PROC_BROWSER_TEST_F(UserScriptWorldBrowserTest,
   // injected in this new document.
   NavigateToURL(embedded_test_server()->GetURL("example.com", "/simple.html"));
   // Update the user script world CSP to allow unsafe eval.
-  SetUserScriptWorldProperties(*extension, "script-src 'unsafe-eval'",
-                               /*enable_messaging=*/true);
+  SetDefaultUserScriptWorldProperties(*extension, "script-src 'unsafe-eval'",
+                                      /*enable_messaging=*/true);
 
   // Re-evaluate the script. Somewhat surprisingly, eval is still disallowed.
   // This is because the new document greedily instantiates CSP for the current
@@ -339,8 +347,8 @@ IN_PROC_BROWSER_TEST_F(UserScriptWorldBrowserTest, SendMessageAPI) {
   ASSERT_TRUE(extension);
 
   // Enable messaging.
-  SetUserScriptWorldProperties(*extension, std::nullopt,
-                               /*enable_messaging=*/true);
+  SetDefaultUserScriptWorldProperties(*extension, std::nullopt,
+                                      /*enable_messaging=*/true);
 
   NavigateToURL(embedded_test_server()->GetURL("example.com", "/simple.html"));
 
@@ -414,8 +422,8 @@ IN_PROC_BROWSER_TEST_F(UserScriptWorldBrowserTest, ConnectAPI) {
   ASSERT_TRUE(extension);
 
   // Enable messaging.
-  SetUserScriptWorldProperties(*extension, std::nullopt,
-                               /*enable_messaging=*/true);
+  SetDefaultUserScriptWorldProperties(*extension, std::nullopt,
+                                      /*enable_messaging=*/true);
 
   NavigateToURL(embedded_test_server()->GetURL("example.com", "/simple.html"));
 
@@ -465,8 +473,8 @@ IN_PROC_BROWSER_TEST_F(UserScriptWorldBrowserTest,
   ASSERT_TRUE(extension);
 
   // Enable messaging.
-  SetUserScriptWorldProperties(*extension, std::nullopt,
-                               /*enable_messaging=*/true);
+  SetDefaultUserScriptWorldProperties(*extension, std::nullopt,
+                                      /*enable_messaging=*/true);
 
   NavigateToURL(embedded_test_server()->GetURL("example.com", "/simple.html"));
 
@@ -529,8 +537,8 @@ IN_PROC_BROWSER_TEST_F(UserScriptWorldBrowserTest,
   }
 
   // Flip the bit to allow messaging APIs and refresh the page.
-  SetUserScriptWorldProperties(*extension, std::nullopt,
-                               /*enable_messaging=*/true);
+  SetDefaultUserScriptWorldProperties(*extension, std::nullopt,
+                                      /*enable_messaging=*/true);
   NavigateToURL(example_com);
 
   // Now, all messaging APIs should be exposed.
@@ -576,6 +584,43 @@ IN_PROC_BROWSER_TEST_F(UserScriptWorldBrowserTest,
   // since this is the second time we're injecting into this user script world.
   EXPECT_EQ(base::Value(2),
             ExecuteScriptInUserScriptWorld(kCode, *extension, "world 1"));
+}
+
+// Tests that different user script worlds have unique configurations for CSP.
+IN_PROC_BROWSER_TEST_F(UserScriptWorldBrowserTest,
+                       UniquePropertiesPerUserScriptWorld_CSP) {
+  // Load a simple extension with permission to example.com and navigate a new
+  // tab to example.com.
+  const Extension* extension =
+      LoadExtensionWithHostPermission("http://example.com/*");
+
+  NavigateToURL(embedded_test_server()->GetURL("example.com", "/simple.html"));
+
+  // Check whether eval is allowed in either "world 1" or "world 2". Neither
+  // have been configured, so both should default to disallowing eval.
+  EXPECT_EQ(ExecuteScriptInUserScriptWorld(kCheckIfEvalAllowedScriptSource,
+                                           *extension, "world 1"),
+            "disallowed eval");
+  EXPECT_EQ(ExecuteScriptInUserScriptWorld(kCheckIfEvalAllowedScriptSource,
+                                           *extension, "world 2"),
+            "disallowed eval");
+
+  // Allow eval in "world 1", but leave "world 2" as default (disallowing eval).
+  SetUserScriptWorldProperties(*extension, "world 1",
+                               "script-src 'unsafe-eval'",
+                               /*enable_messaging=*/false);
+
+  // Navigate to create a new isolated world.
+  NavigateToURL(embedded_test_server()->GetURL("example.com", "/simple.html"));
+
+  // Check whether eval is allowed again. It should be allowed in world 1,
+  // but not in world 2.
+  EXPECT_EQ(ExecuteScriptInUserScriptWorld(kCheckIfEvalAllowedScriptSource,
+                                           *extension, "world 1"),
+            "allowed eval");
+  EXPECT_EQ(ExecuteScriptInUserScriptWorld(kCheckIfEvalAllowedScriptSource,
+                                           *extension, "world 2"),
+            "disallowed eval");
 }
 
 }  // namespace extensions

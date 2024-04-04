@@ -233,7 +233,8 @@ class Dispatcher : public content::RenderThreadObserver,
   void SetWebViewPartitionID(const std::string& partition_id) override;
   void SetScriptingAllowlist(
       const std::vector<ExtensionId>& extension_ids) override;
-  void UpdateUserScriptWorld(mojom::UserScriptWorldInfoPtr info) override;
+  void UpdateUserScriptWorlds(
+      std::vector<mojom::UserScriptWorldInfoPtr> infos) override;
   void ShouldSuspend(ShouldSuspendCallback callback) override;
   void TransferBlobs(TransferBlobsCallback callback) override;
   void UpdatePermissions(const ExtensionId& extension_id,

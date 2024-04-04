@@ -1045,9 +1045,12 @@ void Dispatcher::UpdateDefaultPolicyHostRestrictions(
   UpdateAllBindings(/*api_permissions_changed=*/false);
 }
 
-void Dispatcher::UpdateUserScriptWorld(mojom::UserScriptWorldInfoPtr info) {
-  IsolatedWorldManager::GetInstance().SetUserScriptWorldProperties(
-      info->extension_id, info->world_id, info->csp, info->enable_messaging);
+void Dispatcher::UpdateUserScriptWorlds(
+    std::vector<mojom::UserScriptWorldInfoPtr> infos) {
+  for (const auto& info : infos) {
+    IsolatedWorldManager::GetInstance().SetUserScriptWorldProperties(
+        info->extension_id, info->world_id, info->csp, info->enable_messaging);
+  }
 }
 
 void Dispatcher::UpdateUserHostRestrictions(URLPatternSet user_blocked_hosts,

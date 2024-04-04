@@ -131,7 +131,8 @@ class RendererStartupHelperInterceptor : public RendererStartupHelper,
   void SetScriptingAllowlist(
       const std::vector<ExtensionId>& extension_ids) override {}
 
-  void UpdateUserScriptWorld(mojom::UserScriptWorldInfoPtr info) override {}
+  void UpdateUserScriptWorlds(
+      std::vector<mojom::UserScriptWorldInfoPtr> info) override {}
 
   void ShouldSuspend(ShouldSuspendCallback callback) override {
     std::move(callback).Run();

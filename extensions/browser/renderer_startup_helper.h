@@ -99,9 +99,10 @@ class RendererStartupHelper : public KeyedService,
   // Sends a message to all renderers to update the developer mode.
   void OnDeveloperModeChanged(bool in_developer_mode);
 
-  // Sets properties for the user script world CSP for the given `extension`
-  // in all applicable renderers.
+  // Sets properties for the user script world of the given `world_id` for
+  // the given `extension` in all applicable renderers.
   void SetUserScriptWorldProperties(const Extension& extension,
+                                    std::optional<std::string> world_id,
                                     std::optional<std::string> csp,
                                     bool enable_messaging);
 
