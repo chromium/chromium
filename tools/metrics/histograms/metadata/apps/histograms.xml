@@ -423,6 +423,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Apps.AppList.AnnotationStorage.ImageAnnotationWorker.ImageContentAnnotator.NumberOfRetries"
+    units="count" expires_after="2024-10-31">
+  <owner>dgrebenyuk@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
+  <summary>
+    Records the number of retries that has taken place before ICA DLC is ready.
+    Reported once each time the ICA DLC is successfully loaded.
+  </summary>
+</histogram>
+
+<histogram
     name="Apps.AppList.AnnotationStorage.ImageAnnotationWorker.ImageContentAnnotator.Status"
     enum="ImageContentAnnotatorStatus" expires_after="2024-10-31">
   <owner>dgrebenyuk@google.com</owner>
@@ -431,6 +443,20 @@ chromium-metrics-reviews@google.com.
   <summary>
     To track the errors that may occur during the DLC installation. Logged once
     per installation.
+  </summary>
+</histogram>
+
+<histogram
+    name="Apps.AppList.AnnotationStorage.ImageAnnotationWorker.IndexingStatus"
+    enum="ImageAnnotationWorkerIndexingStatus" expires_after="2024-10-31">
+  <owner>dgrebenyuk@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
+  <summary>
+    Records status of image annotation worker indexing. Logged when the indexing
+    starts and when it succeeds. The bucket proportion is not meaningful as
+    there is overlapping between ICA and OCR processing. Instead, the bucket
+    ratio can be used to calculate the DLC processing success rate.
   </summary>
 </histogram>
 

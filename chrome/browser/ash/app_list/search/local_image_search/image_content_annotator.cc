@@ -76,13 +76,18 @@ void ImageContentAnnotator::ConnectToImageAnnotator() {
   ml_service_->LoadImageAnnotator(
       std::move(config), image_content_annotator_.BindNewPipeAndPassReceiver(),
       base::BindOnce(
-          [](bool* ica_dlc_initialized,
+          [](bool* ica_dlc_initialized, int* num_retries_passed,
              const chromeos::machine_learning::mojom::LoadModelResult result) {
             DVLOG(1) << result;
             if (result ==
                 chromeos::machine_learning::mojom::LoadModelResult::OK) {
               DVLOG(1) << "ICA bind is done.";
               LogStatusUma(Status::kOk);
+              // Tracks how many retries have been done before the DLC is ready.
+              base::UmaHistogramExactLinear(
+                  "Apps.AppList.AnnotationStorage.ImageAnnotationWorker."
+                  "ImageContentAnnotator.NumberOfRetries",
+                  *num_retries_passed, 20);
               *ica_dlc_initialized = true;
               return;
             } else if (result == chromeos::machine_learning::mojom::
@@ -103,7 +108,7 @@ void ImageContentAnnotator::ConnectToImageAnnotator() {
             }
             *ica_dlc_initialized = false;
           },
-          &ica_dlc_initialized_));
+          &ica_dlc_initialized_, &num_retries_passed_));
 }
 
 void ImageContentAnnotator::DisconnectAnnotator() {

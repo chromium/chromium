@@ -513,6 +513,14 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Load icon via non-mojom call"/>
 </enum>
 
+<enum name="ImageAnnotationWorkerIndexingStatus">
+  <int value="0" label="Start indexing"/>
+  <int value="1" label="Start OCR processing"/>
+  <int value="2" label="OCR Succeed"/>
+  <int value="3" label="Start ICA processing"/>
+  <int value="4" label="ICA Succeed"/>
+</enum>
+
 <enum name="ImageAnnotationWorkerStatus">
   <int value="0" label="Ok"/>
   <int value="1" label="Failed to initialize ICA"/>

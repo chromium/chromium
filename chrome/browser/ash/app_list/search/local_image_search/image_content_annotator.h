@@ -32,6 +32,10 @@ class ImageContentAnnotator {
           callback);
   bool IsDlcInitialized() const;
 
+  // TODO(b/306283895): This function is for debugging purpose only, and should
+  // be removed when the ICA DLC bug has been fixed.
+  void set_num_retries_passed(int num) { num_retries_passed_ = num; }
+
  private:
   void ConnectToImageAnnotator();
 
@@ -41,6 +45,7 @@ class ImageContentAnnotator {
       image_content_annotator_;
 
   bool ica_dlc_initialized_ = false;
+  int num_retries_passed_ = 0;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

@@ -39,7 +39,7 @@ constexpr int kMaxFileSizeBytes = 2e+7;    // ~ 20MiB
 constexpr int kConfidenceThreshold = 79;   // 30% of 255 (max of ICA)
 constexpr int kOcrMinWordLength = 3;
 constexpr int kRetryDelay = 2;  // For exponential delays.
-constexpr int kMaxNumRetries = 10;
+constexpr int kMaxNumRetries = 12;          // Over 2 hrs.
 constexpr int kDefaultIndexingLimit = 500;  // 500 images per user session.
 constexpr base::TimeDelta kInitialIndexingDelay = base::Seconds(1);
 constexpr base::TimeDelta kMaxImageProcessingTime = base::Minutes(2);
@@ -55,15 +55,32 @@ enum class Status {
   kMaxValue = kImageProcessingTimeOut,
 };
 
+void LogStatusUma(Status status) {
+  base::UmaHistogramEnumeration(
+      "Apps.AppList.AnnotationStorage.ImageAnnotationWorker.Status", status);
+}
+
+// These values persist to logs. Entries should not be renumbered and numeric
+// values should never be reused.
+enum class IndexingStatus {
+  kStart = 0,
+  kOcrStart = 1,
+  kOcrSucceed = 2,
+  kIcaStart = 3,
+  kIcaSucceed = 4,
+  kMaxValue = kIcaSucceed,
+};
+
+void LogIndexingUma(IndexingStatus status) {
+  base::UmaHistogramEnumeration(
+      "Apps.AppList.AnnotationStorage.ImageAnnotationWorker.IndexingStatus",
+      status);
+}
+
 int GetConfidenceThreshold() {
   return base::GetFieldTrialParamByFeatureAsInt(
       search_features::kLauncherLocalImageSearchConfidence,
       "confidence_threshold", kConfidenceThreshold);
-}
-
-void LogStatusUma(Status status) {
-  base::UmaHistogramEnumeration(
-      "Apps.AppList.AnnotationStorage.ImageAnnotationWorker.Status", status);
 }
 
 // Exclude animated WebPs.
@@ -250,6 +267,7 @@ void ImageAnnotationWorker::OnDlcInstalled() {
                        weak_ptr_factory_.GetWeakPtr()),
         base::Seconds(std::pow(kRetryDelay, num_retries_passed_)));
     num_retries_passed_ += 1;
+    image_content_annotator_.set_num_retries_passed(num_retries_passed_);
     return;
   }
 
@@ -408,6 +426,7 @@ void ImageAnnotationWorker::ProcessNextImage() {
   }
 
   if (use_ocr_ || use_ica_) {
+    LogIndexingUma(IndexingStatus::kStart);
     ash::image_util::DecodeImageFile(
         base::BindOnce(&ImageAnnotationWorker::OnDecodeImageFile,
                        weak_ptr_factory_.GetWeakPtr(), image_info),
@@ -434,6 +453,8 @@ void ImageAnnotationWorker::OnDecodeImageFile(
                      weak_ptr_factory_.GetWeakPtr()));
 
   if (use_ocr_ && use_ica_) {
+    LogIndexingUma(IndexingStatus::kOcrStart);
+    LogIndexingUma(IndexingStatus::kIcaStart);
     optical_character_recognizer_.ReadImage(
         *image_skia.bitmap(),
         base::BindOnce(&ImageAnnotationWorker::OnPerformOcr,
@@ -448,6 +469,7 @@ void ImageAnnotationWorker::OnDecodeImageFile(
   }
 
   if (use_ocr_) {
+    LogIndexingUma(IndexingStatus::kOcrStart);
     optical_character_recognizer_.ReadImage(
         *image_skia.bitmap(),
         base::BindOnce(&ImageAnnotationWorker::OnPerformOcr,
@@ -456,6 +478,7 @@ void ImageAnnotationWorker::OnDecodeImageFile(
   }
 
   if (use_ica_) {
+    LogIndexingUma(IndexingStatus::kIcaStart);
     image_content_annotator_.AnnotateEncodedImage(
         image_info.path,
         base::BindOnce(&ImageAnnotationWorker::OnPerformIca,
@@ -468,6 +491,7 @@ void ImageAnnotationWorker::OnDecodeImageFile(
 void ImageAnnotationWorker::OnPerformOcr(
     ImageInfo image_info,
     screen_ai::mojom::VisualAnnotationPtr visual_annotation) {
+  LogIndexingUma(IndexingStatus::kOcrSucceed);
   DVLOG(1) << "OnPerformOcr";
   for (const auto& text_line : visual_annotation->lines) {
     TokenizedString tokens(base::UTF8ToUTF16(text_line->text_line),
@@ -495,6 +519,10 @@ void ImageAnnotationWorker::OnPerformOcr(
 void ImageAnnotationWorker::OnPerformIca(
     ImageInfo image_info,
     chromeos::machine_learning::mojom::ImageAnnotationResultPtr ptr) {
+  if (ptr->status ==
+      chromeos::machine_learning::mojom::ImageAnnotationResult::Status::OK) {
+    LogIndexingUma(IndexingStatus::kIcaSucceed);
+  }
   DVLOG(1) << "OnPerformIca. Status: " << ptr->status
            << " Size: " << ptr->annotations.size();
   for (const auto& a : ptr->annotations) {
