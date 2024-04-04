@@ -2267,7 +2267,8 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkRelations) {
   AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;
-  root.AddIntListAttribute(ax::mojom::IntListAttribute::kDetailsIds, {2});
+  // Add 999 as a target relation id to test that invalid relations are dropped.
+  root.AddIntListAttribute(ax::mojom::IntListAttribute::kDetailsIds, {2, 999});
 
   AXNodeData child1;
   child1.id = 2;
@@ -2278,7 +2279,7 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkRelations) {
   AXNodeData child2;
   child2.id = 3;
   child2.role = ax::mojom::Role::kStaticText;
-  std::vector<int32_t> labelledby_ids = {1, 4};
+  std::vector<int32_t> labelledby_ids = {1, 999, 4};
   child2.AddIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds,
                              labelledby_ids);
 
