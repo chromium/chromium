@@ -72,6 +72,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/signin/SyncConsentDelegate.java",
     "java/src/org/chromium/chrome/browser/ui/signin/SyncConsentFragmentBase.java",
     "java/src/org/chromium/chrome/browser/ui/signin/SyncPromoController.java",
+    "java/src/org/chromium/chrome/browser/ui/signin/UpgradePromoCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerBottomSheetCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerBottomSheetMediator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerBottomSheetProperties.java",
@@ -144,6 +145,8 @@ android_resources("java_resources") {
     "java/res/layout/sync_promo_view_recent_tabs.xml",
     "java/res/layout/sync_promo_view_settings.xml",
     "java/res/layout/uma_dialog.xml",
+    "java/res/layout/upgrade_promo_landscape_view.xml",
+    "java/res/layout/upgrade_promo_portrait_view.xml",
     "java/res/values/dimens.xml",
   ]
   deps = [

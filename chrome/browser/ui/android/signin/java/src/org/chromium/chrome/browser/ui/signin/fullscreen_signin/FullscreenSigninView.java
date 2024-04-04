@@ -54,6 +54,7 @@ public class FullscreenSigninView extends RelativeLayout {
         mFooter = findViewById(R.id.signin_fre_footer);
         mSigninProgressSpinner = findViewById(R.id.fre_signin_progress_spinner);
         mSigninProgressText = findViewById(R.id.fre_signin_progress_text);
+        // TODO(crbug.com/41493788): Only show this in the FRE.
         mPrivacyDisclaimer = (TextView) findViewById(R.id.privacy_disclaimer);
     }
 

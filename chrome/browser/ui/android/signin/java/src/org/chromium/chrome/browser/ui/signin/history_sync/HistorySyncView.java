@@ -32,7 +32,7 @@ class HistorySyncView extends LinearLayout {
         super.onFinishInflate();
 
         // TODO(crbug.com/1520791): Set up scrollView.
-        mAccountImage = findViewById(R.id.account_image);
+        mAccountImage = findViewById(R.id.history_sync_account_image);
         TextView title = findViewById(R.id.sync_consent_title);
         TextView subtitle = findViewById(R.id.sync_consent_subtitle);
         mDetailsDescription = findViewById(R.id.sync_consent_details_description);

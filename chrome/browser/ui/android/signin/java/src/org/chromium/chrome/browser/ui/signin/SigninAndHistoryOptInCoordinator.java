@@ -416,7 +416,8 @@ public class SigninAndHistoryOptInCoordinator
                         profile,
                         mSigninAccessPoint,
                         mDidShowSigninStep,
-                        mDidShowSigninStep && mIsHistorySyncDedicatedFlow);
+                        mDidShowSigninStep && mIsHistorySyncDedicatedFlow,
+                        null);
         assert mDialogModel != null;
         mDialogModel.set(ModalDialogProperties.CUSTOM_VIEW, mHistorySyncCoordinator.getView());
         ModalDialogManager manager = mModalDialogManagerSupplier.get();
