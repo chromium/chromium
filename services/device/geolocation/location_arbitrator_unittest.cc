@@ -87,7 +87,6 @@ class TestingLocationArbitrator : public LocationArbitrator {
       bool should_use_system_location_provider = false)
       : LocationArbitrator(std::move(provider_getter),
                            /*geolocation_system_permission_manager=*/nullptr,
-                           /*main_task_runner=*/nullptr,
                            std::move(url_loader_factory),
                            std::string() /* api_key */,
                            std::make_unique<FakePositionCache>(),

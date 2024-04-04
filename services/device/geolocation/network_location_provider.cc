@@ -21,7 +21,6 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/device/geolocation/position_cache.h"
 #include "services/device/public/cpp/device_features.h"
-#include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -45,8 +44,6 @@ const int kLastPositionMaxAgeSeconds = 10 * 60;  // 10 minutes
 // NetworkLocationProvider
 NetworkLocationProvider::NetworkLocationProvider(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    GeolocationSystemPermissionManager* geolocation_system_permission_manager,
-    const scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
     const std::string& api_key,
     PositionCache* position_cache,
     base::RepeatingClosure internals_updated_closure,
@@ -71,34 +68,18 @@ NetworkLocationProvider::NetworkLocationProvider(
   CHECK(internals_updated_closure_);
   CHECK(network_request_callback_);
   CHECK(network_response_callback_);
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
-  DCHECK(geolocation_system_permission_manager);
-  geolocation_system_permission_manager_ =
-      geolocation_system_permission_manager;
-  permission_observers_ =
-      geolocation_system_permission_manager->GetObserverList();
-  permission_observers_->AddObserver(this);
-  main_task_runner->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&GeolocationSystemPermissionManager::GetSystemPermission,
-                     base::Unretained(geolocation_system_permission_manager)),
-      base::BindOnce(&NetworkLocationProvider::OnSystemPermissionUpdated,
-                     weak_factory_.GetWeakPtr()));
-#endif
 }
 
 NetworkLocationProvider::~NetworkLocationProvider() {
   DCHECK(thread_checker_.CalledOnValidThread());
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
-  permission_observers_->RemoveObserver(this);
-#endif
-  if (IsStarted())
+  if (is_started_) {
     StopProvider();
+  }
 }
 
 void NetworkLocationProvider::FillDiagnostics(
     mojom::GeolocationDiagnostics& diagnostics) {
-  if (IsStarted()) {
+  if (is_started_) {
     if (high_accuracy_) {
       diagnostics.provider_state =
           mojom::GeolocationDiagnostics::ProviderState::kHighAccuracy;
@@ -106,12 +87,6 @@ void NetworkLocationProvider::FillDiagnostics(
       diagnostics.provider_state =
           mojom::GeolocationDiagnostics::ProviderState::kLowAccuracy;
     }
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
-    if (!is_system_permission_granted_) {
-      diagnostics.provider_state = mojom::GeolocationDiagnostics::
-          ProviderState::kBlockedBySystemPermission;
-    }
-#endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
   } else {
     diagnostics.provider_state =
         mojom::GeolocationDiagnostics::ProviderState::kStopped;
@@ -137,48 +112,15 @@ void NetworkLocationProvider::SetUpdateCallback(
 void NetworkLocationProvider::OnPermissionGranted() {
   const bool was_permission_granted = is_permission_granted_;
   is_permission_granted_ = true;
-  if (!was_permission_granted && IsStarted()) {
+  if (!was_permission_granted && is_started_) {
     RequestPosition();
     internals_updated_closure_.Run();
   }
 }
 
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
-void NetworkLocationProvider::OnSystemPermissionUpdated(
-    LocationSystemPermissionStatus new_status) {
-  is_awaiting_initial_permission_status_ = false;
-  const bool was_permission_granted = is_system_permission_granted_;
-  is_system_permission_granted_ =
-      (new_status == LocationSystemPermissionStatus::kAllowed);
-
-  if (!is_system_permission_granted_ && location_provider_update_callback_) {
-    location_provider_update_callback_.Run(
-        this, mojom::GeopositionResult::NewError(mojom::GeopositionError::New(
-                  mojom::GeopositionErrorCode::kPermissionDenied,
-                  "User has not allowed access to system location.", "")));
-  }
-  if (!was_permission_granted && is_system_permission_granted_ && IsStarted()) {
-    wifi_data_provider_handle_->ForceRescan();
-    OnWifiDataUpdate();
-  }
-  internals_updated_closure_.Run();
-}
-#endif
-
 void NetworkLocationProvider::OnWifiDataUpdate() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(IsStarted());
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
-  if (!is_system_permission_granted_) {
-    if (!is_awaiting_initial_permission_status_) {
-      location_provider_update_callback_.Run(
-          this, mojom::GeopositionResult::NewError(mojom::GeopositionError::New(
-                    mojom::GeopositionErrorCode::kPermissionDenied,
-                    "User has not allowed access to system location.", "")));
-    }
-    return;
-  }
-#endif
+  DCHECK(is_started_);
   is_wifi_data_complete_ = wifi_data_provider_handle_->GetData(&wifi_data_);
   if (is_wifi_data_complete_) {
     wifi_timestamp_ = base::Time::Now();
@@ -238,8 +180,10 @@ void NetworkLocationProvider::StartProvider(bool high_accuracy) {
 
   high_accuracy_ = high_accuracy;
 
-  if (IsStarted())
+  if (is_started_) {
     return;
+  }
+  is_started_ = true;
 
   // Registers a callback with the data provider.
   // Releasing the handle will automatically unregister the callback.
@@ -258,8 +202,9 @@ void NetworkLocationProvider::StartProvider(bool high_accuracy) {
 void NetworkLocationProvider::StopProvider() {
   GEOLOCATION_LOG(DEBUG) << "Stop provider";
   DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(IsStarted());
+  DCHECK(is_started_);
   wifi_data_provider_handle_ = nullptr;
+  is_started_ = false;
   weak_factory_.InvalidateWeakPtrs();
 }
 
@@ -272,12 +217,6 @@ void NetworkLocationProvider::RequestPosition() {
   GEOLOCATION_LOG(DEBUG) << "Request position: is_new_data_available_="
                          << is_new_data_available_ << " is_wifi_data_complete_="
                          << is_wifi_data_complete_;
-
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
-  if (!is_system_permission_granted_) {
-    return;
-  }
-#endif
 
   // The wifi polling policy may require us to wait for several minutes before
   // fresh wifi data is available. To ensure we can return a position estimate
@@ -371,10 +310,6 @@ void NetworkLocationProvider::RequestPosition() {
   if (base::FeatureList::IsEnabled(features::kGeolocationDiagnosticsObserver)) {
     network_request_callback_.Run(request_->GetRequestDataForDiagnostics());
   }
-}
-
-bool NetworkLocationProvider::IsStarted() const {
-  return wifi_data_provider_handle_ != nullptr;
 }
 
 }  // namespace device

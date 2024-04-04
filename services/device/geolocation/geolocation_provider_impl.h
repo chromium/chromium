@@ -19,7 +19,9 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/device/geolocation/geolocation_provider.h"
+#include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
 #include "services/device/public/cpp/geolocation/location_provider.h"
+#include "services/device/public/cpp/geolocation/location_system_permission_status.h"
 #include "services/device/public/mojom/geolocation_control.mojom.h"
 #include "services/device/public/mojom/geolocation_internals.mojom.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
@@ -36,8 +38,6 @@ class SharedURLLoaderFactory;
 
 namespace device {
 
-class GeolocationSystemPermissionManager;
-
 // Callback that returns the embedder's custom location provider. This callback
 // is provided to the Device Service by its embedder.
 using CustomLocationProviderCallback =
@@ -47,6 +47,10 @@ using CustomLocationProviderCallback =
 // API of the geolocation subsystem. Clients subscribe for location updates
 // with AddLocationUpdateCallback and cancel their subscription by destroying
 // the returned subscription object.
+//
+// It also implements GeolocationSystemPermissionManager::PermissionObserver on
+// supported platforms. Monitors system permission changes to manage the
+// LocationArbitrator and report permission errors to clients.
 //
 // THREADING
 //
@@ -61,10 +65,16 @@ using CustomLocationProviderCallback =
 // which generate new position estimates. LocationProviders must only run on
 // the geolocation thread. Providers report new position estimates by calling
 // OnLocationUpdate on the geolocation thread.
-class GeolocationProviderImpl : public GeolocationProvider,
-                                public mojom::GeolocationControl,
-                                public mojom::GeolocationInternals,
-                                public base::Thread {
+class GeolocationProviderImpl
+    : public GeolocationProvider,
+      public mojom::GeolocationControl,
+      public mojom::GeolocationInternals,
+      public base::Thread
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+    ,
+      public GeolocationSystemPermissionManager::PermissionObserver
+#endif
+{
  public:
   // GeolocationProvider implementation:
   base::CallbackListSubscription AddLocationUpdateCallback(
@@ -104,6 +114,9 @@ class GeolocationProviderImpl : public GeolocationProvider,
       GeolocationSystemPermissionManager* geolocation_system_permission_manager,
       bool use_gms_core_location_provider);
 
+  static void SetGeolocationSystemPermissionManagerForTesting(
+      GeolocationSystemPermissionManager* instance_for_testing);
+
   void BindGeolocationControlReceiver(
       mojo::PendingReceiver<mojom::GeolocationControl> receiver);
 
@@ -133,6 +146,15 @@ class GeolocationProviderImpl : public GeolocationProvider,
   // Calls OnInternalsUpdated on the geolocation thread to simulate updated
   // diagnostics in tests.
   void SimulateInternalsUpdatedForTesting();
+
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+  // GeolocationSystemPermissionManager::PermissionObserver implementation.
+  void OnSystemPermissionUpdated(
+      LocationSystemPermissionStatus new_status) override;
+#endif
+
+  static constexpr char kSystemPermissionDeniedErrorMessage[] =
+      "User has not allowed access to system location.";
 
  private:
   friend struct base::DefaultSingletonTraits<GeolocationProviderImpl>;
@@ -202,6 +224,15 @@ class GeolocationProviderImpl : public GeolocationProvider,
   // Disables geolocation diagnostics. Must be called on the geolocation thread.
   void DisableDiagnosticsOnGeolocationThread();
 
+  // Called on main thread to post a task to start providers on geolocation
+  // thread.
+  void DoStartProvidersOnGeolocationThread();
+
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+  // Called on main thread to notify clients when system permission is denied.
+  void NotifyClientsSystemPermissionDenied();
+#endif
+
   base::RepeatingCallbackList<void(const mojom::GeopositionResult&)>
       high_accuracy_callbacks_;
   base::RepeatingCallbackList<void(const mojom::GeopositionResult&)>
@@ -227,6 +258,18 @@ class GeolocationProviderImpl : public GeolocationProvider,
   // If enabled, calling OnInternalsUpdated collects diagnostic information and
   // sends it to `internals_observers_`.
   bool diagnostics_enabled_ = false;
+
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+  LocationSystemPermissionStatus system_permission_status_ =
+      LocationSystemPermissionStatus::kNotDetermined;
+
+  // On CrOS, GeolocationSystemPermissionManager may be destroyed before
+  // GeolocationProviderImpl. Retaining `observers_` allows
+  // GeolocationProviderImpl to safely unregister itself during its own
+  // destruction.
+  scoped_refptr<GeolocationSystemPermissionManager::PermissionObserverList>
+      observers_;
+#endif
 };
 
 }  // namespace device
