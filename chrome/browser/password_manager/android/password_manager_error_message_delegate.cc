@@ -126,7 +126,7 @@ void PasswordManagerErrorMessageDelegate::MaybeDisplayErrorMessage(
     base::OnceCallback<void()> dismissal_callback) {
   DCHECK(web_contents);
 
-  if (!helper_bridge_->ShouldShowErrorUI(web_contents)) {
+  if (!ShouldShowErrorUI(web_contents, error_type)) {
     // Even if no message was technically shown, the owner of `this` should know
     // that it has served its purpose and can be safely destroyed.
     std::move(dismissal_callback).Run();
@@ -157,6 +157,24 @@ void PasswordManagerErrorMessageDelegate::MaybeDisplayErrorMessage(
       message_.get(), web_contents, messages::MessageScopeType::WEB_CONTENTS,
       messages::MessagePriority::kUrgent);
   helper_bridge_->SaveErrorUIShownTimestamp(web_contents);
+}
+
+bool PasswordManagerErrorMessageDelegate::ShouldShowErrorUI(
+    content::WebContents* web_contents,
+    password_manager::PasswordStoreBackendErrorType error_type) {
+  switch (error_type) {
+    case PasswordStoreBackendErrorType::kAuthErrorResolvable:
+    case PasswordStoreBackendErrorType::kAuthErrorUnresolvable:
+    case PasswordStoreBackendErrorType::kKeyRetrievalRequired:
+      return helper_bridge_->ShouldShowSignInErrorUI(web_contents);
+    case PasswordStoreBackendErrorType::kGMSCoreOutdatedSavingPossible:
+    case PasswordStoreBackendErrorType::kGMSCoreOutdatedSavingDisabled:
+      return helper_bridge_->ShouldShowUpdateGMSCoreErrorUI(web_contents);
+    case PasswordStoreBackendErrorType::kUncategorized:
+    case PasswordStoreBackendErrorType::kKeychainError:
+      // Other error types aren't supported.
+      NOTREACHED_NORETURN();
+  }
 }
 
 std::unique_ptr<messages::MessageWrapper>

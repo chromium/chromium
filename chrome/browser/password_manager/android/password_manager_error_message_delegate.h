@@ -45,6 +45,10 @@ class PasswordManagerErrorMessageDelegate {
  private:
   friend class PasswordManagerErrorMessageDelegateTest;
 
+  bool ShouldShowErrorUI(
+      content::WebContents* web_contents,
+      password_manager::PasswordStoreBackendErrorType error_type);
+
   std::unique_ptr<messages::MessageWrapper> CreateMessage(
       content::WebContents* web_contents,
       password_manager::PasswordStoreBackendErrorType error_type,

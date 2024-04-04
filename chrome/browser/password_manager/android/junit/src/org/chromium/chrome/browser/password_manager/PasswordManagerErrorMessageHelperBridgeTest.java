@@ -135,7 +135,7 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
                 ChromePreferenceKeys.SYNC_ERROR_MESSAGE_SHOWN_AT_TIME, timeOfSyncPrompt);
         mFakeTimeTestRule.advanceMillis(
                 PasswordManagerErrorMessageHelperBridge.MINIMAL_INTERVAL_BETWEEN_PROMPTS_MS);
-        assertFalse(PasswordManagerErrorMessageHelperBridge.shouldShowErrorUi(mProfile));
+        assertFalse(PasswordManagerErrorMessageHelperBridge.shouldShowSignInErrorUI(mProfile));
     }
 
     @Test
@@ -150,7 +150,7 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
                 .thenReturn(Long.toString(timeOfFirstUpmPrompt));
         mSharedPrefsManager.writeLong(
                 ChromePreferenceKeys.SYNC_ERROR_MESSAGE_SHOWN_AT_TIME, timeOfSyncPrompt);
-        assertFalse(PasswordManagerErrorMessageHelperBridge.shouldShowErrorUi(mProfile));
+        assertFalse(PasswordManagerErrorMessageHelperBridge.shouldShowSignInErrorUI(mProfile));
     }
 
     @Test
@@ -166,7 +166,27 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
                 ChromePreferenceKeys.SYNC_ERROR_MESSAGE_SHOWN_AT_TIME, timeOfSyncPrompt);
         mFakeTimeTestRule.advanceMillis(
                 PasswordManagerErrorMessageHelperBridge.MINIMAL_INTERVAL_BETWEEN_PROMPTS_MS + 1);
-        assertTrue(PasswordManagerErrorMessageHelperBridge.shouldShowErrorUi(mProfile));
+        assertTrue(PasswordManagerErrorMessageHelperBridge.shouldShowSignInErrorUI(mProfile));
+    }
+
+    @Test
+    public void testEnoughTimeSinceLastUpmError() {
+        final long timeOfFirstUpmPrompt = TimeUtils.currentTimeMillis();
+        when(mPrefService.getString(Pref.UPM_ERROR_UI_SHOWN_TIMESTAMP))
+                .thenReturn(Long.toString(timeOfFirstUpmPrompt));
+        mFakeTimeTestRule.advanceMillis(
+                PasswordManagerErrorMessageHelperBridge.MINIMAL_INTERVAL_BETWEEN_PROMPTS_MS + 1);
+        assertTrue(
+                PasswordManagerErrorMessageHelperBridge.shouldShowUpdateGMSCoreErrorUI(mProfile));
+    }
+
+    @Test
+    public void testNotEnoughTimeSinceLastUpmError() {
+        final long timeOfFirstUpmPrompt = TimeUtils.currentTimeMillis();
+        when(mPrefService.getString(Pref.UPM_ERROR_UI_SHOWN_TIMESTAMP))
+                .thenReturn(Long.toString(timeOfFirstUpmPrompt));
+        assertFalse(
+                PasswordManagerErrorMessageHelperBridge.shouldShowUpdateGMSCoreErrorUI(mProfile));
     }
 
     @Test
@@ -240,7 +260,7 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
     @Test
     public void testDontShowMessageWithtoutAccount() {
         when(mIdentityManagerMock.getPrimaryAccountInfo(ConsentLevel.SIGNIN)).thenReturn(null);
-        assertFalse(PasswordManagerErrorMessageHelperBridge.shouldShowErrorUi(mProfile));
+        assertFalse(PasswordManagerErrorMessageHelperBridge.shouldShowSignInErrorUI(mProfile));
     }
 
     @Test

@@ -42,11 +42,20 @@ void PasswordManagerErrorMessageHelperBridgeImpl::
       ProfileAndroid::FromProfile(profile)->GetJavaObject());
 }
 
-bool PasswordManagerErrorMessageHelperBridgeImpl::ShouldShowErrorUI(
+bool PasswordManagerErrorMessageHelperBridgeImpl::ShouldShowSignInErrorUI(
     content::WebContents* web_contents) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  return Java_PasswordManagerErrorMessageHelperBridge_shouldShowErrorUi(
+  return Java_PasswordManagerErrorMessageHelperBridge_shouldShowSignInErrorUI(
+      base::android::AttachCurrentThread(),
+      ProfileAndroid::FromProfile(profile)->GetJavaObject());
+}
+
+bool PasswordManagerErrorMessageHelperBridgeImpl::
+    ShouldShowUpdateGMSCoreErrorUI(content::WebContents* web_contents) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  return Java_PasswordManagerErrorMessageHelperBridge_shouldShowUpdateGMSCoreErrorUI(
       base::android::AttachCurrentThread(),
       ProfileAndroid::FromProfile(profile)->GetJavaObject());
 }

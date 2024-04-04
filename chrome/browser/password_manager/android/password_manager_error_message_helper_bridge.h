@@ -26,7 +26,9 @@ class PasswordManagerErrorMessageHelperBridge {
       content::WebContents* web_contents) = 0;
 
   // Checks if enough time has passed since the last error UI was shown.
-  virtual bool ShouldShowErrorUI(content::WebContents* web_contents) = 0;
+  virtual bool ShouldShowSignInErrorUI(content::WebContents* web_contents) = 0;
+  virtual bool ShouldShowUpdateGMSCoreErrorUI(
+      content::WebContents* web_contents) = 0;
 
   // Saves the timestam at which the error UI was shown.
   virtual void SaveErrorUIShownTimestamp(

@@ -24,7 +24,7 @@
 using testing::Return;
 
 namespace {
-const std::string kErrorMessageDismissalReasonHistogramName =
+constexpr char kErrorMessageDismissalReasonHistogramName[] =
     "PasswordManager.ErrorMessageDismissalReason.";
 constexpr char kErrorMessageDisplayReasonHistogramName[] =
     "PasswordManager.ErrorMessageDisplayReason";
@@ -87,6 +87,8 @@ void PasswordManagerErrorMessageDelegateTest::SetUp() {
   ChromeRenderViewHostTestHarness::SetUp();
   messages::MessageDispatcherBridge::SetInstanceForTesting(
       &message_dispatcher_bridge_);
+  test_pref_service_.registry()->RegisterTimePref(
+      password_manager::prefs::kUPMErrorUIShownTimestamp, base::Time());
 }
 
 void PasswordManagerErrorMessageDelegateTest::TearDown() {
@@ -97,7 +99,7 @@ void PasswordManagerErrorMessageDelegateTest::TearDown() {
 void PasswordManagerErrorMessageDelegateTest::DisplayMessageAndExpectEnqueued(
     password_manager::ErrorMessageFlowType flow_type,
     password_manager::PasswordStoreBackendErrorType error_type) {
-  EXPECT_CALL(*helper_bridge_, ShouldShowErrorUI(web_contents()))
+  EXPECT_CALL(*helper_bridge_, ShouldShowSignInErrorUI(web_contents()))
       .WillOnce(Return(true));
   EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage);
   delegate_->MaybeDisplayErrorMessage(web_contents(), pref_service(), flow_type,
@@ -175,10 +177,16 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
        MessagePropertyValuesUpdateGooglePlayServices) {
   base::HistogramTester histogram_tester;
 
-  DisplayMessageAndExpectEnqueued(
+  EXPECT_CALL(*helper_bridge(), ShouldShowUpdateGMSCoreErrorUI)
+      .WillOnce(Return(true));
+  ;
+  EXPECT_CALL(*message_dispatcher_bridge(), EnqueueMessage);
+  delegate()->MaybeDisplayErrorMessage(
+      web_contents(), pref_service(),
       password_manager::ErrorMessageFlowType::kSaveFlow,
       password_manager::PasswordStoreBackendErrorType::
-          kGMSCoreOutdatedSavingPossible);
+          kGMSCoreOutdatedSavingPossible,
+      mock_dismissal_callback()->Get());
 
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_UPDATE_GMS),
             GetMessageWrapper()->GetTitle());
@@ -206,10 +214,16 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
        MessagePropertyValuesUpdateToSavePasswords) {
   base::HistogramTester histogram_tester;
 
-  DisplayMessageAndExpectEnqueued(
+  EXPECT_CALL(*helper_bridge(), ShouldShowUpdateGMSCoreErrorUI)
+      .WillOnce(Return(true));
+  ;
+  EXPECT_CALL(*message_dispatcher_bridge(), EnqueueMessage);
+  delegate()->MaybeDisplayErrorMessage(
+      web_contents(), pref_service(),
       password_manager::ErrorMessageFlowType::kSaveFlow,
       password_manager::PasswordStoreBackendErrorType::
-          kGMSCoreOutdatedSavingDisabled);
+          kGMSCoreOutdatedSavingDisabled,
+      mock_dismissal_callback()->Get());
 
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_UPDATE_TO_SAVE_PASSWORDS),
             GetMessageWrapper()->GetTitle());
@@ -248,7 +262,8 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
   // this happens automatically, but on the java side.
   DismissMessageAndExpectDismissed(messages::DismissReason::PRIMARY_ACTION);
   histogram_tester.ExpectUniqueSample(
-      kErrorMessageDismissalReasonHistogramName + "AuthErrorResolvable",
+      base::StrCat(
+          {kErrorMessageDismissalReasonHistogramName, "AuthErrorResolvable"}),
       messages::DismissReason::PRIMARY_ACTION, 1);
 }
 
@@ -271,7 +286,8 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
   // this happens automatically, but on the java side.
   DismissMessageAndExpectDismissed(messages::DismissReason::PRIMARY_ACTION);
   histogram_tester.ExpectUniqueSample(
-      kErrorMessageDismissalReasonHistogramName + "AuthErrorUnresolvable",
+      base::StrCat(
+          {kErrorMessageDismissalReasonHistogramName, "AuthErrorUnresolvable"}),
       messages::DismissReason::PRIMARY_ACTION, 1);
 }
 
@@ -282,10 +298,15 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
        UpdateGMSCoreOnActionClickWhenSavingPossible) {
   base::HistogramTester histogram_tester;
 
-  DisplayMessageAndExpectEnqueued(
+  EXPECT_CALL(*helper_bridge(), ShouldShowUpdateGMSCoreErrorUI)
+      .WillOnce(Return(true));
+  EXPECT_CALL(*message_dispatcher_bridge(), EnqueueMessage);
+  delegate()->MaybeDisplayErrorMessage(
+      web_contents(), pref_service(),
       password_manager::ErrorMessageFlowType::kSaveFlow,
       password_manager::PasswordStoreBackendErrorType::
-          kGMSCoreOutdatedSavingPossible);
+          kGMSCoreOutdatedSavingPossible,
+      mock_dismissal_callback()->Get());
 
   EXPECT_CALL(*helper_bridge(), LaunchGmsUpdate());
   // Trigger the click action on the "Update" button and dismiss the message.
@@ -295,8 +316,8 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
   DismissMessageAndExpectDismissed(messages::DismissReason::PRIMARY_ACTION);
 
   histogram_tester.ExpectUniqueSample(
-      kErrorMessageDismissalReasonHistogramName +
-          "GMSCoreOutdatedSavingPossible",
+      base::StrCat({kErrorMessageDismissalReasonHistogramName,
+                    "GMSCoreOutdatedSavingPossible"}),
       messages::DismissReason::PRIMARY_ACTION, 1);
 }
 
@@ -307,10 +328,16 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
        UpdateGMSCoreOnActionClickWhenSavingDisabled) {
   base::HistogramTester histogram_tester;
 
-  DisplayMessageAndExpectEnqueued(
+  EXPECT_CALL(*helper_bridge(), ShouldShowUpdateGMSCoreErrorUI)
+      .WillOnce(Return(true));
+  ;
+  EXPECT_CALL(*message_dispatcher_bridge(), EnqueueMessage);
+  delegate()->MaybeDisplayErrorMessage(
+      web_contents(), pref_service(),
       password_manager::ErrorMessageFlowType::kSaveFlow,
       password_manager::PasswordStoreBackendErrorType::
-          kGMSCoreOutdatedSavingDisabled);
+          kGMSCoreOutdatedSavingDisabled,
+      mock_dismissal_callback()->Get());
 
   EXPECT_CALL(*helper_bridge(), LaunchGmsUpdate());
   // Trigger the click action on the "Update" button and dismiss the message.
@@ -320,8 +347,8 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
   DismissMessageAndExpectDismissed(messages::DismissReason::PRIMARY_ACTION);
 
   histogram_tester.ExpectUniqueSample(
-      kErrorMessageDismissalReasonHistogramName +
-          "GMSCoreOutdatedSavingDisabled",
+      base::StrCat({kErrorMessageDismissalReasonHistogramName,
+                    "GMSCoreOutdatedSavingDisabled"}),
       messages::DismissReason::PRIMARY_ACTION, 1);
 }
 
@@ -338,13 +365,14 @@ TEST_F(PasswordManagerErrorMessageDelegateTest, MetricOnAutodismissTimer) {
   DismissMessageAndExpectDismissed(messages::DismissReason::TIMER);
 
   histogram_tester.ExpectUniqueSample(
-      kErrorMessageDismissalReasonHistogramName + "AuthErrorResolvable",
+      base::StrCat(
+          {kErrorMessageDismissalReasonHistogramName, "AuthErrorResolvable"}),
       messages::DismissReason::TIMER, 1);
 }
 
 TEST_F(PasswordManagerErrorMessageDelegateTest,
        NotDisplayedWhenCondiditonNotMet) {
-  EXPECT_CALL(*helper_bridge(), ShouldShowErrorUI(web_contents()))
+  EXPECT_CALL(*helper_bridge(), ShouldShowSignInErrorUI(web_contents()))
       .WillOnce(Return(false));
   EXPECT_CALL(*message_dispatcher_bridge(), EnqueueMessage).Times(0);
   EXPECT_CALL(*mock_dismissal_callback(), Run);
@@ -395,6 +423,7 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
   // this happens automatically, but on the java side.
   DismissMessageAndExpectDismissed(messages::DismissReason::PRIMARY_ACTION);
   histogram_tester.ExpectUniqueSample(
-      kErrorMessageDismissalReasonHistogramName + "KeyRetrievalRequired",
+      base::StrCat(
+          {kErrorMessageDismissalReasonHistogramName, "KeyRetrievalRequired"}),
       messages::DismissReason::PRIMARY_ACTION, 1);
 }

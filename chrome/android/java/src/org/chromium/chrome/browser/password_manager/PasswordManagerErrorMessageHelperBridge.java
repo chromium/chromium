@@ -53,7 +53,7 @@ public class PasswordManagerErrorMessageHelperBridge {
      * @return whether the UI can be shown given the conditions above.
      */
     @CalledByNative
-    static boolean shouldShowErrorUi(Profile profile) {
+    static boolean shouldShowSignInErrorUI(Profile profile) {
         final CoreAccountInfo primaryAccountInfo =
                 IdentityServicesProvider.get()
                         .getIdentityManager(profile)
@@ -72,6 +72,24 @@ public class PasswordManagerErrorMessageHelperBridge {
         long currentTime = TimeUtils.currentTimeMillis();
         return (currentTime - lastShownTimestamp > MINIMAL_INTERVAL_BETWEEN_PROMPTS_MS)
                 && (currentTime - lastShownSyncErrorTimestamp) > MINIMAL_INTERVAL_TO_SYNC_ERROR_MS;
+    }
+
+    /**
+     * Checks whether the right amount of time has passed since the last error UI messages were
+     * shown.
+     *
+     * <p>The error UI should be shown at least {@link #MINIMAL_INTERVAL_BETWEEN_PROMPTS_MS} from
+     * the previous one.
+     *
+     * @return whether the UI can be shown given the conditions above.
+     */
+    @CalledByNative
+    static boolean shouldShowUpdateGMSCoreErrorUI(Profile profile) {
+        PrefService prefService = UserPrefs.get(profile);
+        long lastShownTimestamp =
+                Long.valueOf(prefService.getString(Pref.UPM_ERROR_UI_SHOWN_TIMESTAMP));
+        long currentTime = TimeUtils.currentTimeMillis();
+        return currentTime - lastShownTimestamp > MINIMAL_INTERVAL_BETWEEN_PROMPTS_MS;
     }
 
     /** Saves the timestamp in ms since UNIX epoch at which the error UI was shown. */
