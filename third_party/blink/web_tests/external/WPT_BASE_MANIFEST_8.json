@@ -606,6 +606,13 @@
        null,
        {}
       ]
+     ],
+     "chrome-40286059-crash.html": [
+      "dbbeb5ac4df9bb2a17a757ece48a48cbbf3f677e",
+      [
+       null,
+       {}
+      ]
      ]
     },
     "css-animations": {
@@ -270298,6 +270305,19 @@
          {}
         ]
        ],
+       "display-none-or-contents.html": [
+        "8f0ad3ab29c9d976bf18e2f180d4862d41aebb3e",
+        [
+         null,
+         [
+          [
+           "/html/rendering/widgets/button-layout/display-none-or-contents-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "inline-level.html": [
         "e23aba731ce2ff58a0e0ca173cce97ac2d9f70de",
         [
@@ -288403,15 +288423,15 @@
       []
      ],
      "eddsa.https.any-expected.txt": [
-      "2705d0d9527da5e3963f6376469d36b51ad0d3ca",
+      "47813cd0a558dbe4c24b0824c9bf702db90e9cdb",
       []
      ],
      "eddsa.https.any.worker-expected.txt": [
-      "2705d0d9527da5e3963f6376469d36b51ad0d3ca",
+      "47813cd0a558dbe4c24b0824c9bf702db90e9cdb",
       []
      ],
      "eddsa.js": [
-      "4952df502d83ce3464af11a85b91d6a0c0d727eb",
+      "74452d26091ae28fb6ed3ff020bb7f30c9917e1d",
       []
      ],
      "eddsa_vectors.js": [
@@ -301504,6 +301524,10 @@
       "3ef19970007d4bb6a889f9601bc7c910f619f841",
       []
      ],
+     "WEB_FEATURES.yml": [
+      "2059bd49274dcd9fe4896674e266c0f3b33b29da",
+      []
+     ],
      "animation-common-ref.html": [
       "ddc7da67ddf5fed83e653d1130a65f5c1e3a6dec",
       []
@@ -301561,6 +301585,10 @@
       []
      ],
      "parsing": {
+      "WEB_FEATURES.yml": [
+       "7e3ccd1b3b7f488544a7ca4073935a645ae5e1fd",
+       []
+      ],
       "animation-computed-expected.txt": [
        "501753e83a234d56654c857a2b9c43864a28acf2",
        []
@@ -301648,7 +301676,15 @@
       "d673be5f4f29bf82619aba6f40ed7e287e902582",
       []
      ],
+     "WEB_FEATURES.yml": [
+      "bee11ae42cf53d3e57733ffb0401a0c8ca27cfa5",
+      []
+     ],
      "animations": {
+      "WEB_FEATURES.yml": [
+       "0d5911d01d5cec0d737aae75aa477d5719c6dcd5",
+       []
+      ],
       "background-color-animation-element-not-visible-at-current-viewport-ref.html": [
        "e47a83e393b77657869eceb7786bbf3e61ae4b07",
        []
@@ -301863,6 +301899,10 @@
       []
      ],
      "background-clip": {
+      "WEB_FEATURES.yml": [
+       "5258340ceeba8489d3c75a62b6199908640bd591",
+       []
+      ],
       "clip-rounded-corner-ref.html": [
        "379ad36992a92384444bd0db12cb7b90531fcd1c",
        []
@@ -302663,6 +302703,10 @@
       []
      ],
      "parsing": {
+      "WEB_FEATURES.yml": [
+       "6a2438077a7db085bf5e0a1450095e13aee45dee",
+       []
+      ],
       "background-image-computed.sub-expected.txt": [
        "2d9d7cc3b899a3d782cfb5871d2dd39400644d66",
        []
@@ -304774,6 +304818,10 @@
       "62cd9f61ce8ef70159268b40d05237aa08ea504f",
       []
      ],
+     "WEB_FEATURES.yml": [
+      "38aaee302125ed8e557a4353e6765ddcc7829787",
+      []
+     ],
      "all-prop-001-ref.html": [
       "e25558578344f0725d752e35fcc35e2db683eb2c",
       []
@@ -304814,6 +304862,12 @@
       "fe004e5bda989248b67aad3b5c20f8a280447914",
       []
      ],
+     "parsing": {
+      "WEB_FEATURES.yml": [
+       "56f7e89b85a9ac407fb3acd3fe0974d3928bc56b",
+       []
+      ]
+     },
      "reference": {
       "all-green.html": [
        "c70532129ad86b81faad3e98093084d644100bfb",
@@ -304868,6 +304922,10 @@
      ],
      "META.yml": [
       "f5030db7cb57a09012f740fe54ae26d466bcef24",
+      []
+     ],
+     "WEB_FEATURES.yml": [
+      "8910deab28b0f600ac25a1ae11d0f8d2678cf786",
       []
      ],
      "a98rgb-003-ref.html": [
@@ -305145,6 +305203,10 @@
       []
      ],
      "parsing": {
+      "WEB_FEATURES.yml": [
+       "cc8273c2adc8a53ee46bd3882878cbebe0f39b07",
+       []
+      ],
       "color-computed-color-mix-function-expected.txt": [
        "758fd2477b5b32f723870f25c47db287e4ae1fde",
        []
@@ -328541,6 +328603,10 @@
       ]
      },
      "aspect-ratio": {
+      "WEB_FEATURES.yml": [
+       "65e2142a16b28a03211e4edc706b65828da46cd8",
+       []
+      ],
       "fieldset-element-001-ref.html": [
        "cc964da974077b062212a7cd4e388f1daa017ec9",
        []
@@ -331435,6 +331501,10 @@
       }
      },
      "parsing": {
+      "WEB_FEATURES.yml": [
+       "e06782e8f5b477831cdb06a2f93d0dc7fc49af1b",
+       []
+      ],
       "hanging-punctuation-valid-expected.txt": [
        "da6ecb32455878c26d4bcd307bf3c651c3d5b065",
        []
@@ -332337,6 +332407,10 @@
       ]
      },
      "text-spacing-trim": {
+      "WEB_FEATURES.yml": [
+       "329fa18e2a80a229f31c2a8598729f2f044a9656",
+       []
+      ],
       "support": {
        "variant-class.js": [
         "28cf85ff9f65b4b962250104080c9990382a28db",
@@ -336768,6 +336842,10 @@
       "c5557e4cb4143fd9b3e42ddb87098d130860ae66",
       []
      ],
+     "WEB_FEATURES.yml": [
+      "003340211166f1539767ac3949b3153b0402142e",
+      []
+     ],
      "accent-color-checkbox-checked-001-notref.html": [
       "9f9d73177a9044b4562d0fceebe09152fd6ca7ed",
       []
@@ -336788,6 +336866,12 @@
       "e9c3cfad7c0f12181f73d52ad6b56ea7da9d9b9d",
       []
      ],
+     "animation": {
+      "WEB_FEATURES.yml": [
+       "07cdf85b209f6e5a7e58837bc2df657eecb081b1",
+       []
+      ]
+     },
      "appearance-auto-input-non-widget-001-ref.html": [
       "ffbf612615516e72befbd5b84b848e1e93de46aa",
       []
@@ -338146,6 +338230,10 @@
     "css-values": {
      "META.yml": [
       "a22882a9996b14afa942d3403fa1a873f526073a",
+      []
+     ],
+     "WEB_FEATURES.yml": [
+      "ca3c0ff91b9f8b46195b54ea0364a5f3f071aca2",
       []
      ],
      "acos-asin-atan-atan2-computed-expected.txt": [
@@ -342366,6 +342454,10 @@
       "3fb37c54468a6cca0fda8a99b821c3d349404e35",
       []
      ],
+     "WEB_FEATURES.yml": [
+      "a545dbadcb86aa32dee062ed7b23f77636883397",
+      []
+     ],
      "add-background-attachment-fixed-during-smooth-scroll-ref.html": [
       "8bcbf4110267dca94150e28c61fdb1783b73df08",
       []
@@ -342670,6 +342762,16 @@
       "930b762b01a1a75e5b5ab4fb18dedd5939618fe1",
       []
      ],
+     "WEB_FEATURES.yml": [
+      "a882be3079a80eb51af07f4fb00c5f915192354e",
+      []
+     ],
+     "animation": {
+      "WEB_FEATURES.yml": [
+       "cd7e6695d4de7ff1c83fa704e84ce272cbcc28c2",
+       []
+      ]
+     },
      "backdrop-filter-basic-background-color-ref.html": [
       "4997007f0bf858986b8f0fbbe8348153cfee1dd6",
       []
@@ -343034,6 +343136,12 @@
       "51a402fc65b7dedd5db5b0a101350578ee50fbd8",
       []
      ],
+     "parsing": {
+      "WEB_FEATURES.yml": [
+       "cd7e6695d4de7ff1c83fa704e84ce272cbcc28c2",
+       []
+      ]
+     },
      "reference": {
       "backdrop-filter-clip-rect-2-ref.html": [
        "f12e88515fe9d3d845599273054803b7f782dd5a",
@@ -343977,7 +344085,7 @@
       []
      ],
      "WEB_FEATURES.yml": [
-      "a5574bde7b8166716efc51a45fe48889a4564d62",
+      "47cf05a2c0fc03f3b9d5977cb140de117a607ffb",
       []
      ],
      "attribute-selectors": {
@@ -344173,6 +344281,10 @@
       ]
      },
      "invalidation": {
+      "WEB_FEATURES.yml": [
+       "4eaa2f393109a65e8ea78a77b5273cf0357ed202",
+       []
+      ],
       "any-link-attribute-removal-ref.html": [
        "b5407429be803d9b774c4ca0108318fbd6e5134f",
        []
@@ -344498,7 +344610,7 @@
      },
      "parsing": {
       "WEB_FEATURES.yml": [
-       "0da21b5f1cac9efd94818bb2d51558a84a9de900",
+       "261019c003df1d48ce35e3edb41fbba270f2be0d",
        []
       ],
       "invalid-pseudos-expected.txt": [
@@ -347603,7 +347715,7 @@
       []
      ],
      "outdent_2001-last-expected.txt": [
-      "eb642bc9a587754714809606f8fecdaa8483274d",
+      "074f23f5ed167223396eb9a1d414dbc4a26dfda2",
       []
      ],
      "removeformat-expected.txt": [
@@ -366018,6 +366130,10 @@
        ],
        "computed-style-expected.txt": [
         "ba78f3f8fa33e909b62fc07fd0ba8d8d0360a59e",
+        []
+       ],
+       "display-none-or-contents-ref.html": [
+        "c20a3065e443ed09151be84d5f350a31fe0977c6",
         []
        ],
        "display-other-expected.txt": [
@@ -439807,6 +439923,13 @@
        {}
       ]
      ],
+     "anchor-typed-om.html": [
+      "d4fec49dd3d9e1169ab198106cff3211b1198b51",
+      [
+       null,
+       {}
+      ]
+     ],
      "at-position-try-allowed-declarations.html": [
       "f6dac753d2bcf29faede677fd5a5731294722ca0",
       [
@@ -439878,7 +440001,7 @@
       ]
      ],
      "inset-area-basic.html": [
-      "01c543f1fef855f40f53990c59adfac2a7f7607c",
+      "b89d0e2428965172ae769c7d1ac5a5ecb17c0170",
       [
        null,
        {}
@@ -440131,6 +440254,13 @@
        {}
       ]
      ],
+     "position-try-order-basic.html": [
+      "d1c74e7b9fd76d0180379ac751a23f7405b885be",
+      [
+       null,
+       {}
+      ]
+     ],
      "position-try-position-anchor.html": [
       "7355c23f53b6373d3ab1f0f4bee4821eca5d91f7",
       [
@@ -440147,6 +440277,13 @@
      ],
      "position-try-tree-scoped.html": [
       "d0c94fd6797dc7a87d129769f06a55cfca3d88a5",
+      [
+       null,
+       {}
+      ]
+     ],
+     "position-try-typed-om.html": [
+      "76ec9411b8d2ec34660132ab4d40f90a87cc6c25",
       [
        null,
        {}
@@ -440210,6 +440347,13 @@
      ],
      "try-tactic-sizing.html": [
       "432992491dd8828f08f2db2d6b4a1df6abcc96f3",
+      [
+       null,
+       {}
+      ]
+     ],
+     "try-tactic-wm.html": [
+      "bc1c82c35d1932769aba16cb86bfacebde097481",
       [
        null,
        {}
@@ -526857,7 +527001,7 @@
      ]
     ],
     "cross-origin-ancestor-activeelement-after-child-lose-focus.sub.html": [
-     "6688bfdf0dbd5245fc7c3e71e63ffafdce7401e9",
+     "35844bc91fb56c0446c9a433114af52b8970ddb1",
      [
       null,
       {
@@ -648072,6 +648216,15 @@
      ],
      "layout_change_should_fire_mouseover.html": [
       "49257ae60d19dc69d523f735fc0e5ccbde1663bf",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "mouse_boundary_events_after_reappending_last_over_target.tentative.html": [
+      "f75404ad782b60380ff19391b55c0b5b48fb64c0",
       [
        null,
        {
