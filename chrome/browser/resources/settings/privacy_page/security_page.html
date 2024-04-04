@@ -340,7 +340,7 @@
 
 <if expr="chrome_root_store_cert_management_ui">
     <template is="dom-if" if="[[enableCertManagementUIV2_]]">
-      <cr-link-row id="manageCertificates"
+      <cr-link-row id="manageCertificatesLinkRow"
           class="hr"
           role-description="$i18n{subpageArrowRoleDescription}"
           label="$i18n{manageCertificates}"
@@ -350,7 +350,7 @@
     </template>
 
     <template is="dom-if" if="[[!enableCertManagementUIV2_]]">
-      <cr-link-row id="manageCertificates"
+      <cr-link-row id="manageCertificatesLinkRow"
           class="hr"
 <if expr="not use_nss_certs">
           external
@@ -374,7 +374,7 @@
 </if>
 
 <if expr="not chrome_root_store_cert_management_ui">
-      <cr-link-row id="manageCertificates"
+      <cr-link-row id="manageCertificatesLinkRow"
           class="hr"
 <if expr="not use_nss_certs">
           external

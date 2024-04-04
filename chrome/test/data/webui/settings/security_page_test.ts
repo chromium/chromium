@@ -104,7 +104,8 @@ suite('Main', function() {
   // when there is a solution for the client certificates settings page on
   // Lacros-Chrome.
   test('LogManageCertificatesClick', async function() {
-    page.shadowRoot!.querySelector<HTMLElement>('#manageCertificates')!.click();
+    page.shadowRoot!.querySelector<HTMLElement>(
+                        '#manageCertificatesLinkRow')!.click();
     const result =
         await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
     assertEquals(PrivacyElementInteractions.MANAGE_CERTIFICATES, result);
@@ -290,7 +291,8 @@ suite('FlagsDisabled', function() {
 
   // <if expr="is_macosx or is_win">
   test('NativeCertificateManager', function() {
-    page.shadowRoot!.querySelector<HTMLElement>('#manageCertificates')!.click();
+    page.shadowRoot!.querySelector<HTMLElement>(
+                        '#manageCertificatesLinkRow')!.click();
     return testPrivacyBrowserProxy.whenCalled('showManageSslCertificates');
   });
   // </if>
@@ -311,7 +313,8 @@ suite('FlagsDisabled', function() {
   // when there is a solution for the client certificates settings page on
   // Lacros-Chrome.
   test('LogManageCertificatesClick', async function() {
-    page.shadowRoot!.querySelector<HTMLElement>('#manageCertificates')!.click();
+    page.shadowRoot!.querySelector<HTMLElement>(
+                        '#manageCertificatesLinkRow')!.click();
     const result =
         await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
     assertEquals(PrivacyElementInteractions.MANAGE_CERTIFICATES, result);

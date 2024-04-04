@@ -261,8 +261,8 @@ export class SettingsSecurityPageElement extends
     // <if expr="use_nss_certs">
     if (routes.CERTIFICATES) {
       this.focusConfig.set(routes.CERTIFICATES.path, () => {
-        const toFocus =
-            this.shadowRoot!.querySelector<HTMLElement>('#manageCertificates');
+        const toFocus = this.shadowRoot!.querySelector<HTMLElement>(
+            '#manageCertificatesLinkRow');
         assert(toFocus);
         focusWithoutInk(toFocus);
       });
