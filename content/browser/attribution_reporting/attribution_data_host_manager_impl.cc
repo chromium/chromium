@@ -30,6 +30,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
@@ -291,6 +292,17 @@ void LogInvalidInfoHeader(GlobalRenderFrameHostId render_frame_id,
   MaybeLogAuditIssue(render_frame_id, request_url, request_devtools_id,
                      info_header,
                      AttributionReportingIssueType::kInvalidInfoHeader);
+}
+
+Registrar ConvertToRegistrar(AttributionReportingOsRegistrar os_registrar) {
+  switch (os_registrar) {
+    case AttributionReportingOsRegistrar::kWeb:
+      return Registrar::kWeb;
+    case AttributionReportingOsRegistrar::kOs:
+      return Registrar::kOs;
+    case AttributionReportingOsRegistrar::kDisabled:
+      NOTREACHED_NORETURN();
+  }
 }
 
 }  // namespace
@@ -2235,13 +2247,21 @@ void AttributionDataHostManagerImpl::SubmitOsRegistrations(
   base::UmaHistogramCounts100("Conversions.OsRegistrationItemsPerBatch",
                               items.size());
 
-  if (type == RegistrationType::kSource) {
-    // The OsRegistration uses the optional to determine if its a source or a
-    // trigger. However, we want to send an actual input event only when the
-    // registration is tied to a navigation.
-    input_event.emplace(registration_context.navigation_id().has_value()
-                            ? registration_context.last_input_event()
-                            : AttributionInputEvent());
+  AttributionReportingOsRegistrar os_registrar;
+
+  switch (type) {
+    case RegistrationType::kSource:
+      // The OsRegistration uses the optional to determine if it's a source or a
+      // trigger. However, we want to send an actual input event only when the
+      // registration is tied to a navigation.
+      input_event.emplace(registration_context.navigation_id().has_value()
+                              ? registration_context.last_input_event()
+                              : AttributionInputEvent());
+      os_registrar = registration_context.os_registrars().source_registrar;
+      break;
+    case RegistrationType::kTrigger:
+      os_registrar = registration_context.os_registrars().trigger_registrar;
+      break;
   }
 
   attribution_manager_->HandleOsRegistration(OsRegistration(
@@ -2249,7 +2269,7 @@ void AttributionDataHostManagerImpl::SubmitOsRegistrations(
       /*top_level_origin=*/registration_context.context_origin(),
       std::move(input_event), registration_context.is_within_fenced_frame(),
       registration_context.render_frame_id(),
-      registration_context.os_registrars()));
+      ConvertToRegistrar(os_registrar)));
 }
 
 void AttributionDataHostManagerImpl::MaybeLogAuditIssueAndReportHeaderError(

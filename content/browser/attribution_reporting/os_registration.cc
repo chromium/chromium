@@ -23,21 +23,14 @@ OsRegistration::OsRegistration(
     std::optional<AttributionInputEvent> input_event,
     bool is_within_fenced_frame,
     GlobalRenderFrameHostId render_frame_id,
-    ContentBrowserClient::AttributionReportingOsRegistrars os_registrars)
+    attribution_reporting::Registrar registrar)
     : registration_items(std::move(items)),
       top_level_origin(std::move(top_level_origin)),
       input_event(std::move(input_event)),
       is_within_fenced_frame(is_within_fenced_frame),
-      render_frame_id(render_frame_id) {
+      render_frame_id(render_frame_id),
+      registrar(registrar) {
   CHECK(!this->registration_items.empty());
-  switch (GetType()) {
-    case attribution_reporting::mojom::RegistrationType::kSource:
-      registrar = os_registrars.source_registrar;
-      break;
-    case attribution_reporting::mojom::RegistrationType::kTrigger:
-      registrar = os_registrars.trigger_registrar;
-      break;
-  }
 }
 
 OsRegistration::~OsRegistration() = default;

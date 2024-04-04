@@ -11,11 +11,11 @@
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_routing_id.h"
 #include "url/origin.h"
 
 namespace attribution_reporting {
+enum class Registrar;
 struct OsRegistrationItem;
 }  // namespace attribution_reporting
 
@@ -29,15 +29,14 @@ struct CONTENT_EXPORT OsRegistration {
   std::optional<AttributionInputEvent> input_event;
   bool is_within_fenced_frame;
   GlobalRenderFrameHostId render_frame_id;
-  ContentBrowserClient::AttributionReportingOsRegistrar registrar;
+  attribution_reporting::Registrar registrar;
 
-  OsRegistration(
-      std::vector<attribution_reporting::OsRegistrationItem>,
-      url::Origin top_level_origin,
-      std::optional<AttributionInputEvent> input_event,
-      bool is_within_fenced_frame,
-      GlobalRenderFrameHostId render_frame_id,
-      ContentBrowserClient::AttributionReportingOsRegistrars os_registrars);
+  OsRegistration(std::vector<attribution_reporting::OsRegistrationItem>,
+                 url::Origin top_level_origin,
+                 std::optional<AttributionInputEvent> input_event,
+                 bool is_within_fenced_frame,
+                 GlobalRenderFrameHostId render_frame_id,
+                 attribution_reporting::Registrar);
 
   ~OsRegistration();
 

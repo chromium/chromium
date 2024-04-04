@@ -22,7 +22,6 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/task/task_traits.h"
@@ -30,7 +29,9 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/attribution_reporting/os_registration.h"
+#include "components/attribution_reporting/registrar.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
+#include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_os_level_manager.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/os_registration.h"
@@ -39,6 +40,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/content_browser_client.h"
+#include "services/network/public/cpp/attribution_utils.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -47,8 +49,9 @@ namespace content {
 
 namespace {
 
+using ::attribution_reporting::Registrar;
+
 using ApiState = ContentBrowserClient::AttributionReportingOsApiState;
-using OsRegistrar = ContentBrowserClient::AttributionReportingOsRegistrar;
 
 int GetDeletionMode(bool delete_rate_limit_data) {
   // See
@@ -143,13 +146,9 @@ void AttributionOsLevelManagerAndroid::Register(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(registration.registration_items.size(), is_debug_key_allowed.size());
 
-  // TODO(apaseltiner): Ideally `OsRegistration` wouldn't even be able to
-  // represent `kDisabled` at this point in the processing pipeline.
-  const OsRegistrar registrar = registration.registrar;
-  CHECK_NE(registrar, OsRegistrar::kDisabled);
-
   JNIEnv* env = base::android::AttachCurrentThread();
 
+  Registrar registrar = registration.registrar;
   attribution_reporting::mojom::RegistrationType type = registration.GetType();
   std::vector<base::android::ScopedJavaLocalRef<jobject>> registration_urls;
   base::ranges::transform(
@@ -169,7 +168,7 @@ void AttributionOsLevelManagerAndroid::Register(
     case attribution_reporting::mojom::RegistrationType::kSource: {
       DCHECK(input_event.has_value());
       switch (registrar) {
-        case OsRegistrar::kWeb: {
+        case Registrar::kWeb: {
           auto sources =
               Java_AttributionOsLevelManager_createWebSourceParamsList(
                   env, is_debug_key_allowed.size());
@@ -182,21 +181,19 @@ void AttributionOsLevelManagerAndroid::Register(
               input_event->input_event);
           break;
         }
-        case OsRegistrar::kOs: {
+        case Registrar::kOs: {
           Java_AttributionOsLevelManager_registerAttributionSource(
               env, jobj_, request_id,
               url::GURLAndroid::ToJavaArrayOfGURLs(env, registration_urls),
               input_event->input_event);
           break;
         }
-        case OsRegistrar::kDisabled:
-          NOTREACHED_NORETURN();
       }
       break;
     }
     case attribution_reporting::mojom::RegistrationType::kTrigger: {
       switch (registrar) {
-        case OsRegistrar::kWeb: {
+        case Registrar::kWeb: {
           auto triggers =
               Java_AttributionOsLevelManager_createWebTriggerParamsList(
                   env, is_debug_key_allowed.size());
@@ -208,15 +205,13 @@ void AttributionOsLevelManagerAndroid::Register(
               env, jobj_, request_id, triggers, top_level_origin);
           break;
         }
-        case OsRegistrar::kOs: {
+        case Registrar::kOs: {
           for (const auto& registration_url : registration_urls) {
             Java_AttributionOsLevelManager_registerAttributionTrigger(
                 env, jobj_, request_id, registration_url);
           }
           break;
         }
-        case OsRegistrar::kDisabled:
-          NOTREACHED_NORETURN();
       }
       break;
     }

@@ -15,12 +15,11 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/os_registration.h"
+#include "components/attribution_reporting/registrar.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_os_level_manager.h"
-#include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/os_registration.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
-#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -31,8 +30,7 @@
 namespace content {
 namespace {
 
-using AttributionReportingOsRegistrar =
-    ContentBrowserClient::AttributionReportingOsRegistrar;
+using ::attribution_reporting::Registrar;
 
 class AttributionOsLevelManagerAndroidTest : public ::testing::Test {
  public:
@@ -56,49 +54,17 @@ TEST_F(AttributionOsLevelManagerAndroidTest, Register) {
   const struct {
     const char* desc;
     std::optional<AttributionInputEvent> input_event;
-    ContentBrowserClient::AttributionReportingOsRegistrars os_registrars;
+    Registrar registrar;
     size_t items_count;
   } kTestCases[] = {
-      {"os-trigger-single",
-       std::nullopt,
-       {AttributionReportingOsRegistrar::kOs,
-        AttributionReportingOsRegistrar::kOs},
-       1},
-      {"os-trigger-multi",
-       std::nullopt,
-       {AttributionReportingOsRegistrar::kOs,
-        AttributionReportingOsRegistrar::kOs},
-       3},
-      {"web-trigger-single",
-       std::nullopt,
-       {AttributionReportingOsRegistrar::kOs,
-        AttributionReportingOsRegistrar::kWeb},
-       1},
-      {"web-trigger-multi",
-       std::nullopt,
-       {AttributionReportingOsRegistrar::kOs,
-        AttributionReportingOsRegistrar::kWeb},
-       3},
-      {"web-source-single",
-       AttributionInputEvent(),
-       {AttributionReportingOsRegistrar::kWeb,
-        AttributionReportingOsRegistrar::kWeb},
-       1},
-      {"web-source-multi",
-       AttributionInputEvent(),
-       {AttributionReportingOsRegistrar::kWeb,
-        AttributionReportingOsRegistrar::kWeb},
-       3},
-      {"os-source-single",
-       AttributionInputEvent(),
-       {AttributionReportingOsRegistrar::kOs,
-        AttributionReportingOsRegistrar::kWeb},
-       1},
-      {"os-source-multi",
-       AttributionInputEvent(),
-       {AttributionReportingOsRegistrar::kOs,
-        AttributionReportingOsRegistrar::kWeb},
-       3},
+      {"os-trigger-single", std::nullopt, Registrar::kOs, 1},
+      {"os-trigger-multi", std::nullopt, Registrar::kOs, 3},
+      {"web-trigger-single", std::nullopt, Registrar::kWeb, 1},
+      {"web-trigger-multi", std::nullopt, Registrar::kWeb, 3},
+      {"web-source-single", AttributionInputEvent(), Registrar::kWeb, 1},
+      {"web-source-multi", AttributionInputEvent(), Registrar::kWeb, 3},
+      {"os-source-single", AttributionInputEvent(), Registrar::kOs, 1},
+      {"os-source-multi", AttributionInputEvent(), Registrar::kOs, 3},
   };
 
   for (const auto& test_case : kTestCases) {
@@ -115,24 +81,13 @@ TEST_F(AttributionOsLevelManagerAndroidTest, Register) {
       is_debug_key_allowed.push_back(false);
     }
     manager_->Register(
-        OsRegistration(std::move(items),
-                       url::Origin::Create(GURL("https://o.test")),
-                       test_case.input_event, /*is_within_fenced_frame=*/false,
-                       /*render_frame_id=*/GlobalRenderFrameHostId(),
-                       test_case.os_registrars),
+        OsRegistration(
+            std::move(items), url::Origin::Create(GURL("https://o.test")),
+            test_case.input_event, /*is_within_fenced_frame=*/false,
+            /*render_frame_id=*/GlobalRenderFrameHostId(), test_case.registrar),
         is_debug_key_allowed,
         base::BindLambdaForTesting(
             [&](const OsRegistration& registration, bool success) {
-              switch (registration.GetType()) {
-                case attribution_reporting::mojom::RegistrationType::kSource:
-                  EXPECT_EQ(registration.registrar,
-                            test_case.os_registrars.source_registrar);
-                  break;
-                case attribution_reporting::mojom::RegistrationType::kTrigger:
-                  EXPECT_EQ(registration.registrar,
-                            test_case.os_registrars.trigger_registrar);
-                  break;
-              }
               // We don't check `success` here because the measurement API may
               // or may not be available depending on the Android version.
               run_loop.Quit();

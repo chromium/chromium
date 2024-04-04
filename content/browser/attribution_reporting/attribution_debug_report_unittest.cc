@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/os_registration_error.mojom.h"
+#include "components/attribution_reporting/registrar.h"
 #include "components/attribution_reporting/registration_header_error.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
@@ -26,7 +27,6 @@
 #include "content/browser/attribution_reporting/os_registration.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/store_source_result.h"
-#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_routing_id.h"
 #include "net/base/schemeful_site.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -42,6 +42,9 @@ using EventLevelResult = ::content::AttributionTrigger::EventLevelResult;
 using ::attribution_reporting::OsRegistrationItem;
 using ::attribution_reporting::RegistrationHeaderError;
 using ::attribution_reporting::SuitableOrigin;
+
+constexpr attribution_reporting::Registrar kRegistrar =
+    attribution_reporting::Registrar::kWeb;
 
 AttributionReport DefaultEventLevelReport(
     base::Time source_time = base::Time::Now()) {
@@ -979,9 +982,7 @@ TEST(AttributionDebugReportTest, OsRegistrationDebugging) {
               /*top_level_origin=*/url::Origin::Create(GURL("https://b.test")),
               AttributionInputEvent(),
               /*is_within_fenced_frame=*/false,
-              /*render_frame_id=*/GlobalRenderFrameHostId(),
-              {ContentBrowserClient::AttributionReportingOsRegistrar::kWeb,
-               ContentBrowserClient::AttributionReportingOsRegistrar::kWeb}),
+              /*render_frame_id=*/GlobalRenderFrameHostId(), kRegistrar),
           operation_allowed,
           R"json([{
             "body": {
@@ -998,9 +999,7 @@ TEST(AttributionDebugReportTest, OsRegistrationDebugging) {
                                   /*debug_reporting=*/true)},
               /*top_level_origin=*/url::Origin::Create(GURL("https://b.test")),
               /*input_event=*/std::nullopt, /*is_within_fenced_frame=*/false,
-              /*render_frame_id=*/GlobalRenderFrameHostId(),
-              {ContentBrowserClient::AttributionReportingOsRegistrar::kWeb,
-               ContentBrowserClient::AttributionReportingOsRegistrar::kWeb}),
+              /*render_frame_id=*/GlobalRenderFrameHostId(), kRegistrar),
           operation_allowed,
           R"json([{
             "body": {
@@ -1017,9 +1016,7 @@ TEST(AttributionDebugReportTest, OsRegistrationDebugging) {
                                   /*debug_reporting=*/false)},
               /*top_level_origin=*/url::Origin::Create(GURL("https://b.test")),
               /*input_event=*/std::nullopt, /*is_within_fenced_frame=*/false,
-              /*render_frame_id=*/GlobalRenderFrameHostId(),
-              {ContentBrowserClient::AttributionReportingOsRegistrar::kWeb,
-               ContentBrowserClient::AttributionReportingOsRegistrar::kWeb}),
+              /*render_frame_id=*/GlobalRenderFrameHostId(), kRegistrar),
           operation_allowed,
           nullptr,
       },
@@ -1030,9 +1027,7 @@ TEST(AttributionDebugReportTest, OsRegistrationDebugging) {
                                   /*debug_reporting=*/true)},
               /*top_level_origin=*/url::Origin::Create(GURL("https://b.test")),
               /*input_event=*/std::nullopt, /*is_within_fenced_frame=*/true,
-              /*render_frame_id=*/GlobalRenderFrameHostId(),
-              {ContentBrowserClient::AttributionReportingOsRegistrar::kWeb,
-               ContentBrowserClient::AttributionReportingOsRegistrar::kWeb}),
+              /*render_frame_id=*/GlobalRenderFrameHostId(), kRegistrar),
           operation_allowed,
           nullptr,
       },
@@ -1043,9 +1038,7 @@ TEST(AttributionDebugReportTest, OsRegistrationDebugging) {
                                   /*debug_reporting=*/true)},
               /*top_level_origin=*/url::Origin::Create(GURL("https://b.test")),
               /*input_event=*/std::nullopt, /*is_within_fenced_frame=*/false,
-              /*render_frame_id=*/GlobalRenderFrameHostId(),
-              {ContentBrowserClient::AttributionReportingOsRegistrar::kWeb,
-               ContentBrowserClient::AttributionReportingOsRegistrar::kWeb}),
+              /*render_frame_id=*/GlobalRenderFrameHostId(), kRegistrar),
           operation_allowed,
           nullptr,
       },
@@ -1056,9 +1049,7 @@ TEST(AttributionDebugReportTest, OsRegistrationDebugging) {
                                   /*debug_reporting=*/true)},
               /*top_level_origin=*/url::Origin::Create(GURL("https://b.test")),
               /*input_event=*/std::nullopt, /*is_within_fenced_frame=*/false,
-              /*render_frame_id=*/GlobalRenderFrameHostId(),
-              {ContentBrowserClient::AttributionReportingOsRegistrar::kWeb,
-               ContentBrowserClient::AttributionReportingOsRegistrar::kWeb}),
+              /*render_frame_id=*/GlobalRenderFrameHostId(), kRegistrar),
           operation_allowed_if_not_registration_origin,
           nullptr,
       },

@@ -40,6 +40,7 @@
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/os_registration_error.mojom-shared.h"
+#include "components/attribution_reporting/registrar.h"
 #include "components/attribution_reporting/registration_eligibility.mojom.h"
 #include "components/attribution_reporting/registration_header_error.h"
 #include "components/attribution_reporting/source_registration.h"
@@ -146,9 +147,8 @@ using attribution_reporting::kAttributionReportingRegisterSourceHeader;
 using attribution_reporting::kAttributionReportingRegisterTriggerHeader;
 
 const GlobalRenderFrameHostId kFrameId = {0, 1};
-const ContentBrowserClient::AttributionReportingOsRegistrars kOsRegistrars = {
-    ContentBrowserClient::AttributionReportingOsRegistrar::kWeb,
-    ContentBrowserClient::AttributionReportingOsRegistrar::kWeb};
+constexpr attribution_reporting::Registrar kRegistrar =
+    attribution_reporting::Registrar::kWeb;
 
 constexpr BeaconId kBeaconId(123);
 constexpr int64_t kNavigationId(456);
@@ -1353,7 +1353,7 @@ TEST_F(AttributionDataHostManagerImplTest, NavigationRedirectOsSource) {
                    OsRegistrationItem(GURL("https://r.test/y"),
                                       /*debug_reporting=*/false)},
                   *source_site, AttributionInputEvent(),
-                  /*is_within_fenced_frame=*/false, kFrameId, kOsRegistrars)))
+                  /*is_within_fenced_frame=*/false, kFrameId, kRegistrar)))
       .Times(1);
 
   const blink::AttributionSrcToken attribution_src_token;
@@ -2383,7 +2383,7 @@ TEST_F(AttributionDataHostManagerImplTest,
                                       /*debug_reporting=*/false)},
                   *source_origin, AttributionInputEvent(),
                   /*is_within_fenced_frame=*/false,
-                  /*render_frame_id=*/kFrameId, kOsRegistrars)));
+                  /*render_frame_id=*/kFrameId, kRegistrar)));
 
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
   headers->SetHeader(kAttributionReportingRegisterOsSourceHeader,
@@ -2898,7 +2898,7 @@ TEST_F(AttributionDataHostManagerImplTest, OsSourceAvailable) {
                                                      /*debug_reporting=*/true)},
                                  *kTopLevelOrigin, AttributionInputEvent(),
                                  /*is_within_fenced_frame=*/true,
-                                 /*render_frame_id=*/kFrameId, kOsRegistrars)));
+                                 /*render_frame_id=*/kFrameId, kRegistrar)));
 
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
   data_host_manager_.RegisterDataHost(
@@ -2936,7 +2936,7 @@ TEST_F(AttributionDataHostManagerImplTest, OsTriggerAvailable) {
           {OsRegistrationItem(kRegistrationUrl, /*debug_reporting=*/true)},
           *kTopLevelOrigin,
           /*input_event=*/std::nullopt,
-          /*is_within_fenced_frame=*/true, kFrameId, kOsRegistrars)));
+          /*is_within_fenced_frame=*/true, kFrameId, kRegistrar)));
 
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
   data_host_manager_.RegisterDataHost(
@@ -4008,7 +4008,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
                   {OsRegistrationItem(GURL("https://r.test/x"),
                                       /*debug_reporting=*/false)},
                   context_origin, /*input_event=*/AttributionInputEvent(),
-                  /*is_within_fenced_frame=*/false, kFrameId, kOsRegistrars)));
+                  /*is_within_fenced_frame=*/false, kFrameId, kRegistrar)));
 
   data_host_manager_.NotifyBackgroundRegistrationStarted(
       kBackgroundId, suitable_context,
@@ -4214,7 +4214,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
                   {OsRegistrationItem(GURL("https://r.test/x"),
                                       /*debug_reporting=*/false)},
                   context_origin, /*input_event=*/std::nullopt,
-                  /*is_within_fenced_frame=*/false, kFrameId, kOsRegistrars)));
+                  /*is_within_fenced_frame=*/false, kFrameId, kRegistrar)));
 
   data_host_manager_.NotifyBackgroundRegistrationStarted(
       kBackgroundId,
