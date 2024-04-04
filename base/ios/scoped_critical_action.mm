@@ -8,6 +8,7 @@
 #include <float.h>
 
 #include <atomic>
+#include <string_view>
 
 #include "base/ios/ios_util.h"
 #include "base/logging.h"
@@ -15,7 +16,6 @@
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/lock.h"
 
@@ -29,7 +29,7 @@ std::atomic<int> g_num_active_background_tasks_for_test{0};
 
 }  // namespace
 
-ScopedCriticalAction::ScopedCriticalAction(StringPiece task_name)
+ScopedCriticalAction::ScopedCriticalAction(std::string_view task_name)
     : task_handle_(ActiveBackgroundTaskCache::GetInstance()
                        ->EnsureBackgroundTaskExistsWithName(task_name)) {}
 
@@ -59,8 +59,9 @@ ScopedCriticalAction::Core::~Core() {
 // whose execution will continue (temporarily) even after the app is
 // backgrounded.
 // static
-void ScopedCriticalAction::Core::StartBackgroundTask(scoped_refptr<Core> core,
-                                                     StringPiece task_name) {
+void ScopedCriticalAction::Core::StartBackgroundTask(
+    scoped_refptr<Core> core,
+    std::string_view task_name) {
   UIApplication* application = UIApplication.sharedApplication;
   if (!application) {
     return;
@@ -146,7 +147,7 @@ ScopedCriticalAction::ActiveBackgroundTaskCache::~ActiveBackgroundTaskCache() =
 
 ScopedCriticalAction::ActiveBackgroundTaskCache::Handle ScopedCriticalAction::
     ActiveBackgroundTaskCache::EnsureBackgroundTaskExistsWithName(
-        StringPiece task_name) {
+        std::string_view task_name) {
   const base::TimeTicks now = base::TimeTicks::Now();
   const base::TimeTicks min_reusable_time = now - kMaxTaskReuseDelay;
   NameAndTime min_reusable_key{task_name, min_reusable_time};

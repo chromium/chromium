@@ -7,10 +7,10 @@
 
 #include <map>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/memory/ref_counted.h"
-#include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 
@@ -32,7 +32,7 @@ namespace ios {
 // save such data.
 class ScopedCriticalAction {
  public:
-  ScopedCriticalAction(StringPiece task_name);
+  ScopedCriticalAction(std::string_view task_name);
 
   ScopedCriticalAction(const ScopedCriticalAction&) = delete;
   ScopedCriticalAction& operator=(const ScopedCriticalAction&) = delete;
@@ -61,7 +61,7 @@ class ScopedCriticalAction {
     // Invoking this function more than once is allowed: all except the
     // first successful call will be a no-op.
     static void StartBackgroundTask(scoped_refptr<Core> core,
-                                    StringPiece task_name);
+                                    std::string_view task_name);
     // Informs the OS that the background task has completed. This is a
     // static method to ensure that the instance has a non-zero refcount.
     // Invoking this function more than once is allowed: all except the
@@ -117,7 +117,7 @@ class ScopedCriticalAction {
     // task already exists with the same name, its lifetime is effectively
     // extended. Callers must invoke ReleaseHandle() once they no longer need to
     // prevent background suspension.
-    Handle EnsureBackgroundTaskExistsWithName(StringPiece task_name);
+    Handle EnsureBackgroundTaskExistsWithName(std::string_view task_name);
 
     // Indicates that a previous caller to EnsureBackgroundTaskExistsWithName()
     // no longer needs to prevent background suspension.
