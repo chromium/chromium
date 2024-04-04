@@ -130,6 +130,12 @@ class ClientSideDetectionHost
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostPrerenderBrowserTest,
                            ClassifyPrerenderedPageAfterActivation);
   FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostPrerenderBrowserTest,
+      ClassifyPrerenderedPageAfterActivationAndCheckDebuggingMetadataCache);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostPrerenderBrowserTest,
+      CheckDebuggingMetadataCacheAfterClearingCacheAfterNavigation);
+  FRIEND_TEST_ALL_PREFIXES(
       ClientSideDetectionHostPrerenderExclusiveAccessBrowserTest,
       KeyboardLockTriggersPreclassificationCheck);
   FRIEND_TEST_ALL_PREFIXES(

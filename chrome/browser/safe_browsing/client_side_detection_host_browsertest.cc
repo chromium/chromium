@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/chrome_client_side_detection_host_delegate.h"
-
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/chrome_client_side_detection_host_delegate.h"
 #include "chrome/browser/safe_browsing/chrome_safe_browsing_blocking_page_factory.h"
 #include "chrome/browser/safe_browsing/chrome_ui_manager_delegate.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
@@ -20,6 +19,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/safe_browsing/content/browser/client_side_detection_feature_cache.h"
 #include "components/safe_browsing/content/browser/client_side_detection_service.h"
 #include "components/safe_browsing/content/browser/client_side_phishing_model.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
@@ -247,7 +247,8 @@ class ClientSideDetectionHostPrerenderBrowserTest
   std::string client_side_model() { return flatbuffer_model_str_; }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      kClientSideDetectionDebuggingMetadataCache};
 
  private:
   content::test::PrerenderTestHelper prerender_helper_;
@@ -459,6 +460,144 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
   EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));
   std::move(fake_csd_service.saved_callback())
       .Run(prerender_url, true, net::HTTP_OK);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ClientSideDetectionHostPrerenderBrowserTest,
+    ClassifyPrerenderedPageAfterActivationAndCheckDebuggingMetadataCache) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+                       SafeBrowsingState::ENHANCED_PROTECTION);
+
+  FakeClientSideDetectionService fake_csd_service;
+  fake_csd_service.SetModel(client_side_model());
+
+  scoped_refptr<StrictMock<MockSafeBrowsingUIManager>> mock_ui_manager =
+      new StrictMock<MockSafeBrowsingUIManager>();
+
+  std::unique_ptr<ClientSideDetectionHost> csd_host =
+      ChromeClientSideDetectionHostDelegate::CreateHost(
+          browser()->tab_strip_model()->GetActiveWebContents());
+  csd_host->set_client_side_detection_service(fake_csd_service.GetWeakPtr());
+  csd_host->set_ui_manager(mock_ui_manager.get());
+
+  fake_csd_service.SendModelToRenderers();
+
+  base::RunLoop run_loop;
+  fake_csd_service.SetRequestCallback(run_loop.QuitClosure());
+
+  const GURL initial_url(embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+
+  // Prerender then activate a phishing page.
+  const GURL prerender_url =
+      embedded_test_server()->GetURL("/safe_browsing/malware.html");
+  prerender_helper().AddPrerender(prerender_url);
+  prerender_helper().NavigatePrimaryPage(prerender_url);
+
+  // Bypass the pre-classification checks.
+  csd_host->OnPhishingPreClassificationDone(
+      ClientSideDetectionType::TRIGGER_MODELS, /*should_classify=*/true);
+
+  run_loop.Run();
+
+  ASSERT_FALSE(fake_csd_service.saved_callback_is_null());
+
+  EXPECT_EQ(fake_csd_service.saved_request().model_version(), 123);
+
+  // Expect an interstitial to be shown.
+  EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));
+  std::move(fake_csd_service.saved_callback())
+      .Run(prerender_url, true, net::HTTP_OK);
+
+  ClientSideDetectionFeatureCache* feature_cache_map =
+      ClientSideDetectionFeatureCache::FromWebContents(GetWebContents());
+  LoginReputationClientRequest::DebuggingMetadata* debugging_metadata =
+      feature_cache_map->GetOrCreateDebuggingMetadataForURL(prerender_url);
+  ClientPhishingRequest* verdict_from_cache =
+      feature_cache_map->GetVerdictForURL(prerender_url);
+  EXPECT_EQ(verdict_from_cache->model_version(), 123);
+  // The value remains private ip since we bypassed it in the test.
+  EXPECT_EQ(debugging_metadata->preclassification_check_result(),
+            PreClassificationCheckResult::NO_CLASSIFY_PRIVATE_IP);
+  EXPECT_EQ(debugging_metadata->network_result(), net::HTTP_OK);
+  EXPECT_EQ(debugging_metadata->phishing_detector_result(),
+            PhishingDetectorResult::CLASSIFICATION_SUCCESS);
+  EXPECT_TRUE(debugging_metadata->local_model_detects_phishing());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ClientSideDetectionHostPrerenderBrowserTest,
+    CheckDebuggingMetadataCacheAfterClearingCacheAfterNavigation) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+                       SafeBrowsingState::ENHANCED_PROTECTION);
+
+  ClientSideDetectionFeatureCache* feature_cache_map =
+      ClientSideDetectionFeatureCache::FromWebContents(GetWebContents());
+
+  FakeClientSideDetectionService fake_csd_service;
+  fake_csd_service.SetModel(client_side_model());
+
+  scoped_refptr<StrictMock<MockSafeBrowsingUIManager>> mock_ui_manager =
+      new StrictMock<MockSafeBrowsingUIManager>();
+
+  std::unique_ptr<ClientSideDetectionHost> csd_host =
+      ChromeClientSideDetectionHostDelegate::CreateHost(
+          browser()->tab_strip_model()->GetActiveWebContents());
+  csd_host->set_client_side_detection_service(fake_csd_service.GetWeakPtr());
+  csd_host->set_ui_manager(mock_ui_manager.get());
+
+  fake_csd_service.SendModelToRenderers();
+
+  base::RunLoop run_loop;
+  fake_csd_service.SetRequestCallback(run_loop.QuitClosure());
+
+  const GURL initial_url(embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+
+  // Prerender then activate a phishing page.
+  const GURL prerender_url =
+      embedded_test_server()->GetURL("/safe_browsing/malware.html");
+  prerender_helper().AddPrerender(prerender_url);
+  prerender_helper().NavigatePrimaryPage(prerender_url);
+
+  feature_cache_map->Clear();
+
+  // Bypass the pre-classification checks.
+  csd_host->OnPhishingPreClassificationDone(
+      ClientSideDetectionType::TRIGGER_MODELS, /*should_classify=*/true);
+
+  run_loop.Run();
+
+  ASSERT_FALSE(fake_csd_service.saved_callback_is_null());
+
+  EXPECT_EQ(fake_csd_service.saved_request().model_version(), 123);
+
+  // Expect an interstitial to be shown.
+  EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));
+  std::move(fake_csd_service.saved_callback())
+      .Run(prerender_url, true, net::HTTP_OK);
+
+  LoginReputationClientRequest::DebuggingMetadata* debugging_metadata =
+      feature_cache_map->GetOrCreateDebuggingMetadataForURL(prerender_url);
+  ClientPhishingRequest* verdict_from_cache =
+      feature_cache_map->GetVerdictForURL(prerender_url);
+  EXPECT_EQ(verdict_from_cache->model_version(), 123);
+  // The value remains private ip since we bypassed it in the test, but we
+  // cleared the cache before bypassing, so this should not equal anymore.
+  EXPECT_NE(debugging_metadata->preclassification_check_result(),
+            PreClassificationCheckResult::NO_CLASSIFY_PRIVATE_IP);
+  EXPECT_EQ(debugging_metadata->network_result(), net::HTTP_OK);
+  EXPECT_EQ(debugging_metadata->phishing_detector_result(),
+            PhishingDetectorResult::CLASSIFICATION_SUCCESS);
+  EXPECT_TRUE(debugging_metadata->local_model_detects_phishing());
 }
 
 IN_PROC_BROWSER_TEST_F(

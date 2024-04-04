@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_CLIENT_SIDE_DETECTION_FEATURE_CACHE_H_
 #define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_CLIENT_SIDE_DETECTION_FEATURE_CACHE_H_
 
+#include <deque>
 #include <memory>
 
 #include "base/callback_list.h"
@@ -60,6 +61,9 @@ class ClientSideDetectionFeatureCache
 
  private:
   friend class content::WebContentsUserData<ClientSideDetectionFeatureCache>;
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostPrerenderBrowserTest,
+      CheckDebuggingMetadataCacheAfterClearingCacheAfterNavigation);
 
   void Clear();
 
@@ -69,7 +73,7 @@ class ClientSideDetectionFeatureCache
       std::unique_ptr<LoginReputationClientRequest::DebuggingMetadata>>
       debug_metadata_map_;
   base::queue<GURL> gurl_queue_;
-  base::queue<GURL> debugging_metadata_queue_
+  std::deque<GURL> debugging_metadata_deque_
       GUARDED_BY_CONTEXT(sequence_checker_);
   static constexpr size_t kMaxMapCapacity = 10;
   base::CallbackListSubscription clear_cache_subscription_;

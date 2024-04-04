@@ -67,11 +67,10 @@ ClientSideDetectionFeatureCache::GetOrCreateDebuggingMetadataForURL(
         new DebuggingMetadata);
 
     debug_metadata_map_[url] = std::move(new_debugging_metadata);
-
-    debugging_metadata_queue_.push(url);
+    debugging_metadata_deque_.push_back(url);
 
     while (debug_metadata_map_.size() > kMaxMapCapacity) {
-      GURL popped_url = debugging_metadata_queue_.front();
+      GURL popped_url = debugging_metadata_deque_.front();
       RemoveDebuggingMetadataForURL(popped_url);
     }
 
@@ -84,13 +83,18 @@ ClientSideDetectionFeatureCache::GetOrCreateDebuggingMetadataForURL(
 void ClientSideDetectionFeatureCache::RemoveDebuggingMetadataForURL(
     const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (debug_metadata_map_.contains(url)) {
-    debug_metadata_map_.erase(url);
-    // The remove function is called when PW-Reuse is called, and we want to
-    // ensure that the most recent debuging metadata is the URL that the
-    // PW-Reuse happened on.
-    DCHECK_EQ(url, debugging_metadata_queue_.front());
-    debugging_metadata_queue_.pop();
+  // The remove function is called when PW-Reuse is called, and we want to
+  // ensure that the most recent debugging metadata is the URL that the
+  // PW-Reuse happened on. We do not need to check whether the map contains the
+  // url because the erase function handles that already.
+  debug_metadata_map_.erase(url);
+  for (std::deque<GURL>::iterator it = debugging_metadata_deque_.begin();
+       it != debugging_metadata_deque_.end();) {
+    if (*it == url) {
+      it = debugging_metadata_deque_.erase(it);
+      break;
+    }
+    ++it;
   }
 }
 
@@ -121,8 +125,13 @@ void ClientSideDetectionFeatureCache::AddClearCacheSubscription(
 }
 
 void ClientSideDetectionFeatureCache::Clear() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   verdict_map_.clear();
+  base::queue<GURL> empty_gurl;
+  gurl_queue_.swap(empty_gurl);
+
   debug_metadata_map_.clear();
+  debugging_metadata_deque_.clear();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ClientSideDetectionFeatureCache);
