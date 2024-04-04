@@ -1042,7 +1042,7 @@ float TextAutosizer::WidthFromBlock(const LayoutBlock* block) const {
       if ((width = specified_width.Value()) > 0)
         return width;
     }
-    if (specified_width.IsPercentOrCalc()) {
+    if (specified_width.HasPercent()) {
       if (float container_width = ContentInlineSize(block->ContainingBlock())) {
         if ((width = FloatValueForLength(specified_width, container_width)) > 0)
           return width;

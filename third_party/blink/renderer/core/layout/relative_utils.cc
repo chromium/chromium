@@ -30,8 +30,9 @@ LogicalOffset ComputeRelativeOffset(
                          LayoutUnit size) -> std::optional<LayoutUnit> {
     if (length.IsAuto())
       return std::nullopt;
-    if (length.IsPercentOrCalc() && size == kIndefiniteSize)
+    if (length.HasPercent() && size == kIndefiniteSize) {
       return std::nullopt;
+    }
     return MinimumValueForLength(length, size);
   };
 

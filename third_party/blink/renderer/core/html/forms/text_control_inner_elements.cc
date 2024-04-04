@@ -184,7 +184,7 @@ const ComputedStyle* TextControlInnerEditorElement::CustomStyleForLayoutObject(
     // in which we don't want to remove line-height with percent or calculated
     // length.
     // TODO(tkent): This should be done during layout.
-    if (logical_height.IsPercentOrCalc() ||
+    if (logical_height.HasPercent() ||
         (logical_height.IsFixed() &&
          logical_height.GetFloatValue() > computed_line_height)) {
       style_builder.SetLineHeight(

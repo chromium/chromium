@@ -282,8 +282,9 @@ std::optional<LayoutUnit> ContentMinimumInlineSize(
   const auto& style = block_node.Style();
   const auto& main_inline_size = style.LogicalWidth();
 
-  if (!main_inline_size.IsPercentOrCalc())
+  if (!main_inline_size.HasPercent()) {
     return std::nullopt;
+  }
 
   // Manually resolve the main-length against zero. calc() expressions may
   // resolve to something greater than "zero".

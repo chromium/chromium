@@ -424,14 +424,14 @@ void BackgroundImageGeometry::CalculateFillTileSize(
 
       if (layer_width.IsFixed()) {
         tile_size_.width = LayoutUnit(layer_width.Value());
-      } else if (layer_width.IsPercentOrCalc()) {
+      } else if (layer_width.IsPercent() || layer_width.IsCalculated()) {
         tile_size_.width =
             ValueForLength(layer_width, positioning_area_size.width);
       }
 
       if (layer_height.IsFixed()) {
         tile_size_.height = LayoutUnit(layer_height.Value());
-      } else if (layer_height.IsPercentOrCalc()) {
+      } else if (layer_height.IsPercent() || layer_height.IsCalculated()) {
         tile_size_.height =
             ValueForLength(layer_height, positioning_area_size.height);
       }

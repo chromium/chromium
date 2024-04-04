@@ -557,9 +557,9 @@ const CSSValue* ComputedStyleUtils::BackgroundPositionYOrWebkitMaskPositionY(
 }
 
 static CSSNumericLiteralValue* ValueForImageSlice(const Length& slice) {
-  // TODO(alancutter): Make this code aware of calc lengths.
+  CHECK(slice.IsPercent() || slice.IsFixed());
   return CSSNumericLiteralValue::Create(
-      slice.Value(), slice.IsPercentOrCalc()
+      slice.Value(), slice.IsPercent()
                          ? CSSPrimitiveValue::UnitType::kPercentage
                          : CSSPrimitiveValue::UnitType::kNumber);
 }
@@ -828,7 +828,11 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
     return ZoomAdjustedPixelValue(inset, style);
   }
 
-  if (offset.IsPercentOrCalc() && box && box->IsPositioned()) {
+  // TODO(https://crbug.com/40059176): This looks like it handles both
+  // percentages and anchor queries, but it looks like it handles anchor
+  // queries incorrectly.
+  if ((offset.IsPercent() || offset.IsCalculated()) && box &&
+      box->IsPositioned()) {
     LayoutUnit containing_block_size;
     if (box->IsStickyPositioned()) {
       const LayoutBox* scroll_container = box->ContainingScrollContainer();
@@ -866,7 +870,10 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
           0, CSSPrimitiveValue::UnitType::kPixels);
     }
 
-    if (opposite.IsPercentOrCalc()) {
+    // TODO(https://crbug.com/40059176): This looks like it handles both
+    // percentages and anchor queries, but it looks like it handles anchor
+    // queries incorrectly.
+    if (opposite.IsPercent() || opposite.IsCalculated()) {
       if (box) {
         LayoutUnit containing_block_size =
             is_horizontal_property ==

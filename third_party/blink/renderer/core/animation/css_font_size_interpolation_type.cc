@@ -143,9 +143,13 @@ void CSSFontSizeInterpolationType::ApplyStandardPropertyValue(
                                               Length::ValueRange::kNonNegative);
   float font_size =
       FloatValueForLength(font_size_length, parent_font.GetSize().value);
+  // TODO(dbaron): Setting is_absolute_size this way doesn't match the way
+  // StyleBuilderConverterBase::ConvertFontSize handles calc().  But neither
+  // really makes sense.  (Is it possible to get a calc() here?)
   state.GetFontBuilder().SetSize(FontDescription::Size(
       0, font_size,
-      !font_size_length.IsPercentOrCalc() || parent_font.IsAbsoluteSize()));
+      !(font_size_length.IsPercent() || font_size_length.IsCalculated()) ||
+          parent_font.IsAbsoluteSize()));
 }
 
 }  // namespace blink

@@ -255,8 +255,8 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionForReplaced(
   MinMaxSizes result;
   result = ComputeReplacedSize(child, space, border_padding).inline_size;
 
-  if (child_style.LogicalWidth().IsPercentOrCalc() ||
-      child_style.LogicalMaxWidth().IsPercentOrCalc()) {
+  if (child_style.LogicalWidth().HasPercent() ||
+      child_style.LogicalMaxWidth().HasPercent()) {
     // TODO(ikilpatrick): No browser does this today, but we'd get slightly
     // better results here if we also considered the min-block size, and
     // transferred through the aspect-ratio (if available).
@@ -304,7 +304,7 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionInternal(
 
   MinMaxSizesResult result;
   // TODO(https://crbug.com/313072): Rewrite this test for calc-size().
-  if (inline_size.HasAuto() || inline_size.IsPercentOrCalc() ||
+  if (inline_size.HasAuto() || inline_size.HasPercent() ||
       inline_size.IsFillAvailable() || inline_size.IsFitContent()) {
     result = min_max_sizes_func(MinMaxSizesType::kContent);
   } else {
@@ -905,8 +905,12 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
       // TODO(crbug.com/1218055): Instead of using the default natural size, we
       // should be using the initial containing block size. When doing this
       // we'll need to invalidated (sparingly) on window resize.
-      if (inline_length.IsPercentOrCalc())
+      // TODO(https://crbug.com/313072): Values with intrinsic sizing or
+      // content sizing keywords should perhaps also get the natural size here
+      // (or be zero).
+      if (inline_length.HasPercent()) {
         size += ComputeDefaultNaturalSize(node).inline_size;
+      }
     } else {
       // Stretch to the available-size if it is definite.
       size = ResolveMainInlineLength(
@@ -1122,20 +1126,26 @@ LogicalSize ComputeReplacedSize(const BlockNode& node,
   LogicalSize size =
       ComputeReplacedSizeInternal(node, space, border_padding, mode);
 
-  if (node.Style().LogicalWidth().IsPercentOrCalc()) {
+  if (node.Style().LogicalWidth().HasPercent()) {
     double factor = svg_root->LogicalSizeScaleFactorForPercentageLengths();
     if (factor != 1.0) {
+      // TODO(https://crbug.com/313072): Just because a calc *has* percentages
+      // doesn't mean *all* the lengths are percentages.
       size.inline_size *= factor;
     }
   }
 
   const Length& logical_height = node.Style().LogicalHeight();
-  if (logical_height.IsPercentOrCalc()) {
+  if (logical_height.HasPercent()) {
+    // TODO(https://crbug.com/313072): Might this also be needed for intrinsic
+    // sizing keywords?
     LayoutUnit height = ValueForLength(
         logical_height,
         node.GetDocument().GetLayoutView()->ViewLogicalHeightForPercentages());
     double factor = svg_root->LogicalSizeScaleFactorForPercentageLengths();
     if (factor != 1.0) {
+      // TODO(https://crbug.com/313072): Just because a calc *has* percentages
+      // doesn't mean *all* the lengths are percentages.
       height *= factor;
     }
     size.block_size = height;
