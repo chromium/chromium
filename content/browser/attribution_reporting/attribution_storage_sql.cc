@@ -616,9 +616,25 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
   // rate-limits are checked as last steps in source registration to avoid
   // side-channel leakage of the cross-origin data.
 
-  if (auto result = CheckDestinationRateLimit(source, source_time);
-      !absl::holds_alternative<StoreSourceResult::Success>(result)) {
-    return make_result(std::move(result));
+  RateLimitTable::DestinationRateLimitResult destination_rate_limit_result =
+      rate_limit_table_.SourceAllowedForDestinationRateLimit(&db_, source,
+                                                             source_time);
+  base::UmaHistogramEnumeration("Conversions.DestinationRateLimitResult",
+                                destination_rate_limit_result);
+
+  switch (destination_rate_limit_result) {
+    case RateLimitTable::DestinationRateLimitResult::kAllowed:
+      break;
+    case RateLimitTable::DestinationRateLimitResult::kHitGlobalLimit:
+      return make_result(StoreSourceResult::DestinationGlobalLimitReached());
+    case RateLimitTable::DestinationRateLimitResult::kHitReportingLimit:
+      return make_result(StoreSourceResult::DestinationReportingLimitReached(
+          delegate_->GetDestinationRateLimit().max_per_reporting_site));
+    case RateLimitTable::DestinationRateLimitResult::kHitBothLimits:
+      return make_result(StoreSourceResult::DestinationBothLimitsReached(
+          delegate_->GetDestinationRateLimit().max_per_reporting_site));
+    case RateLimitTable::DestinationRateLimitResult::kError:
+      return make_result(StoreSourceResult::InternalError());
   }
 
   switch (rate_limit_table_.SourceAllowedForReportingOriginLimit(&db_, source,
@@ -795,32 +811,6 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
                                  /*exclusive_max=*/86, /*buckets=*/30);
 
   return make_result(StoreSourceResult::Success(min_fake_report_time));
-}
-
-StoreSourceResult::Result AttributionStorageSql::CheckDestinationRateLimit(
-    const StorableSource& source,
-    base::Time source_time) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  RateLimitTable::DestinationRateLimitResult rate_limit_result =
-      rate_limit_table_.SourceAllowedForDestinationRateLimit(&db_, source,
-                                                             source_time);
-  base::UmaHistogramEnumeration("Conversions.DestinationRateLimitResult",
-                                rate_limit_result);
-
-  switch (rate_limit_result) {
-    case RateLimitTable::DestinationRateLimitResult::kAllowed:
-      return StoreSourceResult::Success(/*min_fake_report_time=*/std::nullopt);
-    case RateLimitTable::DestinationRateLimitResult::kHitGlobalLimit:
-      return StoreSourceResult::DestinationGlobalLimitReached();
-    case RateLimitTable::DestinationRateLimitResult::kHitReportingLimit:
-      return StoreSourceResult::DestinationReportingLimitReached(
-          delegate_->GetDestinationRateLimit().max_per_reporting_site);
-    case RateLimitTable::DestinationRateLimitResult::kHitBothLimits:
-      return StoreSourceResult::DestinationBothLimitsReached(
-          delegate_->GetDestinationRateLimit().max_per_reporting_site);
-    case RateLimitTable::DestinationRateLimitResult::kError:
-      return StoreSourceResult::InternalError();
-  }
 }
 
 // Checks whether a new report is allowed to be stored for the given source
