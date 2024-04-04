@@ -16,6 +16,7 @@
 #include "chrome/app/chrome_dll_resource.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_caption_button_container_win.h"
@@ -313,6 +314,15 @@ int BrowserFrameViewWin::NonClientHitTest(const gfx::Point& point) {
     return HTNOWHERE;
   }
 
+  // At the window corners the resize area is not actually bigger, but the 16
+  // pixels at the end of the top and bottom edges trigger diagonal resizing.
+  constexpr int kResizeCornerWidth = 16;
+  int window_component = GetHTComponentForFrame(
+      point, gfx::Insets::TLBR(GetLayoutConstant(TAB_STRIP_PADDING), 0, 0, 0),
+      GetLayoutConstant(TAB_STRIP_PADDING),
+      kResizeCornerWidth - FrameBorderThickness(),
+      frame()->widget_delegate()->CanResize());
+
   int frame_component = frame()->client_view()->NonClientHitTest(point);
 
   // See if we're in the sysmenu region.  We still have to check the tabstrip
@@ -328,6 +338,13 @@ int BrowserFrameViewWin::NonClientHitTest(const gfx::Point& point) {
   }
 
   if (frame_component != HTNOWHERE) {
+    // If the clientview  registers a hit within it's bounds, it's still
+    // possible that the hit target should be top resize since the tabstrip
+    // region paints to the top of the frame. If the frame registered a hit for
+    // the Top resize, override the client frame target.
+    if (window_component == HTTOP && !IsMaximized()) {
+      return window_component;
+    }
     return frame_component;
   }
 
@@ -377,15 +394,6 @@ int BrowserFrameViewWin::NonClientHitTest(const gfx::Point& point) {
       return HTNOWHERE;
     }
   }
-
-  int top_border_thickness = FrameTopBorderThickness(false);
-  // At the window corners the resize area is not actually bigger, but the 16
-  // pixels at the end of the top and bottom edges trigger diagonal resizing.
-  constexpr int kResizeCornerWidth = 16;
-  int window_component = GetHTComponentForFrame(
-      point, gfx::Insets::TLBR(top_border_thickness, 0, 0, 0),
-      top_border_thickness, kResizeCornerWidth - FrameBorderThickness(),
-      frame()->widget_delegate()->CanResize());
 
   if (window_component != HTNOWHERE) {
     return window_component;
@@ -488,7 +496,7 @@ int BrowserFrameViewWin::FrameTopBorderThickness(bool restored) const {
       // default. When maximized, the OS sizes the window such that the border
       // extends beyond the screen edges. In that case, we must return the
       // default value.
-      const int kTopResizeFrameArea = features::IsChromeRefresh2023() ? 1 : 5;
+      const int kTopResizeFrameArea = 0;
       return kTopResizeFrameArea;
     }
 
