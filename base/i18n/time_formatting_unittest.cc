@@ -276,9 +276,9 @@ TEST(TimeFormattingTest, TimeFormatDateGB) {
   EXPECT_EQ(u"30/04/2011, 15:42:07 " + GetShortTimeZone(time),
             TimeFormatShortDateAndTimeWithTimeZone(time));
   EXPECT_EQ(u"April 2011", TimeFormatMonthAndYear(time));
-  EXPECT_EQ(u"Saturday, 30 April 2011 at 15:42:07",
+  EXPECT_EQ(u"Saturday 30 April 2011 at 15:42:07",
             TimeFormatFriendlyDateAndTime(time));
-  EXPECT_EQ(u"Saturday, 30 April 2011", TimeFormatFriendlyDate(time));
+  EXPECT_EQ(u"Saturday 30 April 2011", TimeFormatFriendlyDate(time));
 }
 
 TEST(TimeFormattingTest, TimeFormatWithPattern) {
@@ -486,7 +486,7 @@ TEST(TimeFormattingTest, TimeIntervalFormat) {
 
   i18n::SetICUDefaultLocale("en_GB");
   EXPECT_EQ(
-      u"Monday 16\u2009–\u2009Saturday 28 May",
+      u"Monday 16 May\u2009–\u2009Saturday 28 May",
       DateIntervalFormat(begin_time, end_time, DATE_FORMAT_MONTH_WEEKDAY_DAY));
 
   i18n::SetICUDefaultLocale("ja");
