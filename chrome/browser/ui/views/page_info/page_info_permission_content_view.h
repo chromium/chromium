@@ -69,6 +69,15 @@ class PageInfoPermissionContentView
   void SetPermissionInfo(const PermissionInfoList& permission_info_list,
                          ChosenObjectInfoList chosen_object_info_list) override;
 
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+  const raw_ptr<views::Label> GetTitleForTesting() const { return title_; }
+
+  const std::optional<ActiveDevicesMediaCoordinator>&
+  GetActiveDevicesMediaCoordinatorForTesting() const {
+    return active_devices_media_preview_coordinator_;
+  }
+#endif
+
  private:
   // views::View overrides
   void ChildPreferredSizeChanged(views::View* child) override;

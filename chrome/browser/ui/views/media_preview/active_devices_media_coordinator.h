@@ -38,6 +38,10 @@ class ActiveDevicesMediaCoordinator
                        blink::mojom::MediaStreamType stream_type,
                        const content::MediaRequestState state) override;
 
+  MediaCoordinator::ViewType GetViewTypeForTesting() const {
+    return view_type_;
+  }
+
  private:
   void UpdateMediaCoordinatorList();
 
