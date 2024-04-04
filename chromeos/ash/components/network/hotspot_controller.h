@@ -101,7 +101,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController
   // HotspotStateHandler::Observer:
   void OnHotspotStatusChanged() override;
 
-  void CheckTetheringReadiness();
   void OnCheckTetheringReadiness(
       HotspotCapabilitiesProvider::CheckTetheringReadinessResult result);
   void PerformSetTetheringEnabled(bool enabled);

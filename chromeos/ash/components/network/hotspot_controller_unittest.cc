@@ -234,11 +234,6 @@ class HotspotControllerTest : public ::testing::Test {
   TestObserver observer_;
 };
 
-TEST_F(HotspotControllerTest, EnableTetheringCapabilitiesNotAllowed) {
-  EXPECT_EQ(hotspot_config::mojom::HotspotControlResult::kNotAllowed,
-            EnableHotspot(/*abort=*/false));
-}
-
 TEST_F(HotspotControllerTest, EnableTetheringSuccess) {
   SetHotspotAllowed();
   AddActiveCellularServivce();

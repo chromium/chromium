@@ -280,7 +280,8 @@ TEST_F(CrosHotspotConfigTest, SetHotspotConfig) {
 
 TEST_F(CrosHotspotConfigTest, EnableHotspot) {
   SetupObserver();
-  EXPECT_EQ(mojom::HotspotControlResult::kNotAllowed, EnableHotspot());
+  EXPECT_EQ(mojom::HotspotControlResult::kReadinessCheckFailed,
+            EnableHotspot());
 
   SetReadinessCheckResultReady();
   SetValidHotspotCapabilities();
