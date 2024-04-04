@@ -167,10 +167,6 @@ ActionEditView::ActionEditView(DisplayOverlayController* controller,
 
 ActionEditView::~ActionEditView() = default;
 
-void ActionEditView::RemoveNewState() {
-  labels_view_->RemoveNewState();
-}
-
 void ActionEditView::OnActionInputBindingUpdated() {
   labels_view_->OnActionInputBindingUpdated();
   if (for_editing_list_) {
@@ -178,8 +174,16 @@ void ActionEditView::OnActionInputBindingUpdated() {
   }
 }
 
+void ActionEditView::RemoveNewState() {
+  labels_view_->RemoveNewState();
+}
+
 std::u16string ActionEditView::CalculateActionName() {
   return labels_view_->CalculateActionName();
+}
+
+void ActionEditView::PerformPulseAnimation() {
+  labels_view_->PerformPulseAnimationOnFirstLabel();
 }
 
 void ActionEditView::OnClicked() {

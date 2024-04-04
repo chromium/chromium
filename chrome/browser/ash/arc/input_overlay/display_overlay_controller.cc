@@ -780,11 +780,15 @@ void DisplayOverlayController::RemoveActionNewState(Action* action) {
   touch_injector_->RemoveActionNewState(action);
 }
 
-size_t DisplayOverlayController::GetActiveActionsSize() {
+size_t DisplayOverlayController::GetActiveActionsSize() const {
   return touch_injector_->GetActiveActionsSize();
 }
 
-bool DisplayOverlayController::IsActiveAction(Action* action) {
+bool DisplayOverlayController::HasSingleUserAddedAction() const {
+  return touch_injector_->HasSingleUserAddedAction();
+}
+
+bool DisplayOverlayController::IsActiveAction(Action* action) const {
   const auto& actions = touch_injector_->actions();
   if (actions.empty()) {
     return false;

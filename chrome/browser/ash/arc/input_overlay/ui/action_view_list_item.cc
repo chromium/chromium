@@ -22,10 +22,6 @@ ActionViewListItem::ActionViewListItem(DisplayOverlayController* controller,
 
 ActionViewListItem::~ActionViewListItem() = default;
 
-void ActionViewListItem::PerformPulseAnimation() {
-  labels_view_->PerformPulseAnimationOnFirstLabel();
-}
-
 void ActionViewListItem::ClickCallback() {
   controller_->AddButtonOptionsMenuWidget(action_);
 }

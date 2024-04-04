@@ -948,6 +948,19 @@ size_t TouchInjector::GetActiveActionsSize() {
   return active_size;
 }
 
+bool TouchInjector::HasSingleUserAddedAction() const {
+  size_t action_size = 0;
+  for (const auto& action : actions_) {
+    if (!action->IsDefaultAction()) {
+      action_size++;
+      if (action_size > 1u) {
+        return false;
+      }
+    }
+  }
+  return action_size == 1u;
+}
+
 void TouchInjector::AddNewAction(ActionType action_type,
                                  const gfx::Point& target_pos) {
   DCHECK(IsBeta());

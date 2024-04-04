@@ -103,6 +103,10 @@ class ButtonOptionsActionEdit : public ActionEditView,
     if (active) {
       DCHECK(!for_editing_list_);
       labels_view_->FocusLabel();
+
+      if (action_->is_new() && controller_->HasSingleUserAddedAction()) {
+        PerformPulseAnimation();
+      }
     }
   }
 
