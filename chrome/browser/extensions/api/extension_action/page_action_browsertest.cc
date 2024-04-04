@@ -52,7 +52,7 @@ INSTANTIATE_TEST_SUITE_P(PersistentBackground,
 
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          PageActionBrowserTest,
-                         ::testing::Values(ContextType::kServiceWorker));
+                         ::testing::Values(ContextType::kServiceWorkerMV2));
 
 IN_PROC_BROWSER_TEST_P(PageActionBrowserTest, PageActionCrash25562) {
   ASSERT_TRUE(embedded_test_server()->Start());

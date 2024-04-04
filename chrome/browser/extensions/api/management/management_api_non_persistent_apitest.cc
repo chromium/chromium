@@ -130,8 +130,9 @@ INSTANTIATE_TEST_SUITE_P(EventPage,
                          ManagementApiNonPersistentApiTest,
                          ::testing::Values(ContextType::kEventPage));
 
+// UninstallViaBrowserAction requires MV2.
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ManagementApiNonPersistentApiTest,
-                         ::testing::Values(ContextType::kServiceWorker));
+                         ::testing::Values(ContextType::kServiceWorkerMV2));
 
 }  // namespace extensions

@@ -299,9 +299,10 @@ class DeclarativeContentApiTestWithContextType
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          DeclarativeContentApiTestWithContextType,
                          ::testing::Values(ContextType::kPersistentBackground));
+// These tests use page_action, which is unavailable in MV3.
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          DeclarativeContentApiTestWithContextType,
-                         ::testing::Values(ContextType::kServiceWorker));
+                         ::testing::Values(ContextType::kServiceWorkerMV2));
 
 // TODO(crbug.com/1425203): Convert this to run in both modes.
 IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest, Overview) {

@@ -57,9 +57,11 @@ class ExecuteScriptApiTest : public ExecuteScriptApiTestBase,
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          ExecuteScriptApiTest,
                          ::testing::Values(ContextType::kPersistentBackground));
+// These tests use chrome.tabs.executeScript, which is not available in MV3.
+// See crbug.com/332328868.
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ExecuteScriptApiTest,
-                         ::testing::Values(ContextType::kServiceWorker));
+                         ::testing::Values(ContextType::kServiceWorkerMV2));
 
 // If failing, mark disabled and update http://crbug.com/92105.
 IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptBasic) {

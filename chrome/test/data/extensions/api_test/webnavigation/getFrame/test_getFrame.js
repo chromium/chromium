@@ -150,6 +150,13 @@ ready.then(async function() {
       });
     },
     async function testGetPrerenderingFrames() {
+      // This test is not valid for MV3+ because it uses
+      // chrome.tabs.executeScript. See crbug.com/332328868
+      if (chrome.runtime.getManifest().manifest_version > 2) {
+        chrome.test.succeed();
+        return;
+      }
+
       const urlPrefix =
       `http://a.test:${port}/extensions/api_test/webnavigation/getFrame/`;
       const initialUrl = urlPrefix + "a.html?initial";
@@ -244,6 +251,13 @@ ready.then(async function() {
       chrome.tabs.update(tab.id, {"url": initiatorUrl});
     },
     async function testGetPrerenderingFramesInNewTab() {
+      // This test is not valid for MV3+ because it uses
+      // chrome.tabs.executeScript. See crbug.com/332328868
+      if (chrome.runtime.getManifest().manifest_version > 2) {
+        chrome.test.succeed();
+        return;
+      }
+
       const urlPrefix =
           `http://a.test:${port}/extensions/api_test/webnavigation/getFrame/`;
       const initialUrl = urlPrefix + 'a.html?initial';
@@ -294,6 +308,13 @@ ready.then(async function() {
       chrome.tabs.update(initiatorTab.id, {'url': initiatorUrl});
     },
     async function testGetActivatedPrerenderingFrames() {
+      // This test is not valid for MV3+ because it uses
+      // chrome.tabs.executeScript. See crbug.com/332328868
+      if (chrome.runtime.getManifest().manifest_version > 2) {
+        chrome.test.succeed();
+        return;
+      }
+
       const urlPrefix =
           `http://a.test:${port}/extensions/api_test/webnavigation/getFrame/`;
       const initialUrl = urlPrefix + "a.html?initial";

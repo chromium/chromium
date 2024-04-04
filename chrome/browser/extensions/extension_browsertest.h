@@ -65,6 +65,8 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
     kEventPage,
     // A Service Worker based extension.
     kServiceWorker,
+    // A Service Worker based extension that uses MV2.
+    kServiceWorkerMV2,
     // An extension with a persistent background page.
     kPersistentBackground,
     // Use the value from the manifest. This is used when the test
@@ -82,6 +84,15 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
   void OnExtensionLoaded(content::BrowserContext* browser_context,
                          const Extension* extension) override;
   void OnShutdown(ExtensionRegistry* registry) override;
+
+  static bool IsServiceWorkerContext(ContextType context_type) {
+    return context_type == ContextType::kServiceWorker ||
+           context_type == ContextType::kServiceWorkerMV2;
+  }
+
+  bool IsContextTypeForServiceWorker() const {
+    return IsServiceWorkerContext(context_type_);
+  }
 
  protected:
   struct LoadOptions {

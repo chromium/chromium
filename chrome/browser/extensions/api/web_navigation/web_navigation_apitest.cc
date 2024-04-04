@@ -355,7 +355,9 @@ class WebNavigationApiPrerenderTestWithServiceWorker
       public testing::WithParamInterface<bool> {
  public:
   WebNavigationApiPrerenderTestWithServiceWorker()
-      : WebNavigationApiTest(ContextType::kServiceWorker) {
+      // This test uses chrome.tabs.executeScript, which is not available in
+      // MV3 or later. See crbug.com/332328868.
+      : WebNavigationApiTest(ContextType::kServiceWorkerMV2) {
     feature_list_.InitWithFeatureState(
         extensions_features::kExtensionsServiceWorkerOptimizedEventDispatch,
         GetParam());

@@ -273,7 +273,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, Update) {
 IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, UpdateSvg) {
   // TODO(crbug.com/1064671): Service Workers currently don't support loading
   // SVG images.
-  const bool expect_failure = GetParam() == ContextType::kServiceWorker;
+  const bool expect_failure = IsContextTypeForServiceWorker();
   ASSERT_NO_FATAL_FAILURE(
       RunUpdateTest("browser_action/update_svg", expect_failure));
 }
@@ -283,7 +283,7 @@ INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          ::testing::Values(ContextType::kPersistentBackground));
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          BrowserActionApiTestWithContextType,
-                         ::testing::Values(ContextType::kServiceWorker));
+                         ::testing::Values(ContextType::kServiceWorkerMV2));
 
 IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, DynamicBrowserAction) {
   ASSERT_TRUE(RunExtensionTest("browser_action/no_icon")) << message_;

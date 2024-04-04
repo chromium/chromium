@@ -56,6 +56,12 @@ chrome.test.getConfig(function(config) {
     },
 
     function testErrorForCodeInjection() {
+      // This test is not valid for MV3+ because it uses
+      // chrome.tabs.executeScript. See crbug.com/332328868
+      if (chrome.runtime.getManifest().manifest_version > 2) {
+        chrome.test.succeed();
+        return;
+      }
       chrome.tabs.create({url: testUrl('a.com')}, function(tab) {
         chrome.tabs.executeScript(tab.id, {code: ''},
           // Error message should *not* contain a page URL here because the

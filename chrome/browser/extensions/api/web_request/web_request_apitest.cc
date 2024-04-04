@@ -458,15 +458,17 @@ INSTANTIATE_TEST_SUITE_P(
             BackgroundResourceFetchTestCase::kBackgroundResourceFetchDisabled)),
     ExtensionWebRequestApiTestWithContextType::PrintToStringParamName());
 
+// These tests use webRequestBlocking and/or declarativeWebRequest.
+// See crbug.com/332512510.
 INSTANTIATE_TEST_SUITE_P(
     ServiceWorker,
     ExtensionWebRequestApiTestWithContextType,
     ::testing::Values(
         std::make_pair(
-            ContextType::kServiceWorker,
+            ContextType::kServiceWorkerMV2,
             BackgroundResourceFetchTestCase::kBackgroundResourceFetchEnabled),
         std::make_pair(
-            ContextType::kServiceWorker,
+            ContextType::kServiceWorkerMV2,
             BackgroundResourceFetchTestCase::kBackgroundResourceFetchDisabled)),
     ExtensionWebRequestApiTestWithContextType::PrintToStringParamName());
 
@@ -604,15 +606,17 @@ INSTANTIATE_TEST_SUITE_P(
             BackgroundResourceFetchTestCase::kBackgroundResourceFetchDisabled)),
     ExtensionWebRequestApiTestWithContextType::PrintToStringParamName());
 
+// These tests use webRequestBlocking and/or declarativeWebRequest.
+// See crbug.com/332512510.
 INSTANTIATE_TEST_SUITE_P(
     ServiceWorker,
     ExtensionDevToolsProtocolTest,
     ::testing::Values(
         std::make_pair(
-            ContextType::kServiceWorker,
+            ContextType::kServiceWorkerMV2,
             BackgroundResourceFetchTestCase::kBackgroundResourceFetchEnabled),
         std::make_pair(
-            ContextType::kServiceWorker,
+            ContextType::kServiceWorkerMV2,
             BackgroundResourceFetchTestCase::kBackgroundResourceFetchDisabled)),
     ExtensionWebRequestApiTestWithContextType::PrintToStringParamName());
 
@@ -966,16 +970,18 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(ARTestParams(ProfileMode::kIncognito,
                                    ContextType::kPersistentBackground)));
 
+// These tests use webRequestBlocking and/or declarativeWebRequest.
+// See crbug.com/332512510.
 INSTANTIATE_TEST_SUITE_P(
     ServiceWorker,
     ExtensionWebRequestApiAuthRequiredTest,
     ::testing::Values(ARTestParams(ProfileMode::kUserProfile,
-                                   ContextType::kServiceWorker)));
+                                   ContextType::kServiceWorkerMV2)));
 INSTANTIATE_TEST_SUITE_P(
     ServiceWorkerIncognito,
     ExtensionWebRequestApiAuthRequiredTest,
     ::testing::Values(ARTestParams(ProfileMode::kIncognito,
-                                   ContextType::kServiceWorker)));
+                                   ContextType::kServiceWorkerMV2)));
 
 IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
                        WebRequestBlocking) {
@@ -3016,15 +3022,18 @@ INSTANTIATE_TEST_SUITE_P(
             ContextType::kPersistentBackground,
             BackgroundResourceFetchTestCase::kBackgroundResourceFetchDisabled)),
     ExtensionWebRequestApiTestWithContextType::PrintToStringParamName());
+
+// These tests use webRequestBlocking and/or declarativeWebRequest.
+// See crbug.com/332512510.
 INSTANTIATE_TEST_SUITE_P(
     ServiceWorker,
     ExtensionWebRequestMockedClockTest,
     ::testing::Values(
         std::make_pair(
-            ContextType::kServiceWorker,
+            ContextType::kServiceWorkerMV2,
             BackgroundResourceFetchTestCase::kBackgroundResourceFetchEnabled),
         std::make_pair(
-            ContextType::kServiceWorker,
+            ContextType::kServiceWorkerMV2,
             BackgroundResourceFetchTestCase::kBackgroundResourceFetchDisabled)),
     ExtensionWebRequestApiTestWithContextType::PrintToStringParamName());
 
@@ -3484,15 +3493,17 @@ INSTANTIATE_TEST_SUITE_P(
     ServiceWorkerWebRequestApiTest,
     ::testing::Values(SWTestParams(false, ContextType::kPersistentBackground)));
 
+// These tests use webRequestBlocking and/or declarativeWebRequest.
+// See crbug.com/332512510.
 INSTANTIATE_TEST_SUITE_P(
     ServiceWorkerWithExtraHeaders,
     ServiceWorkerWebRequestApiTest,
-    ::testing::Values(SWTestParams(true, ContextType::kServiceWorker)));
+    ::testing::Values(SWTestParams(true, ContextType::kServiceWorkerMV2)));
 
 INSTANTIATE_TEST_SUITE_P(
     ServiceWorker,
     ServiceWorkerWebRequestApiTest,
-    ::testing::Values(SWTestParams(false, ContextType::kServiceWorker)));
+    ::testing::Values(SWTestParams(false, ContextType::kServiceWorkerMV2)));
 
 IN_PROC_BROWSER_TEST_P(ServiceWorkerWebRequestApiTest, ServiceWorkerFetch) {
   RunServiceWorkerFetchTest("fetch_event_respond_with_fetch.js");
@@ -4358,15 +4369,17 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(SWBTestParams(false,
                                     ContextType::kPersistentBackground)));
 
+// These tests use webRequestBlocking and/or declarativeWebRequest.
+// See crbug.com/332512510.
 INSTANTIATE_TEST_SUITE_P(
     ServiceWorkerWithExtraHeaders,
     SubresourceWebBundlesWebRequestApiTest,
-    ::testing::Values(SWBTestParams(true, ContextType::kServiceWorker)));
+    ::testing::Values(SWBTestParams(true, ContextType::kServiceWorkerMV2)));
 
 INSTANTIATE_TEST_SUITE_P(
     ServiceWorker,
     SubresourceWebBundlesWebRequestApiTest,
-    ::testing::Values(SWBTestParams(false, ContextType::kServiceWorker)));
+    ::testing::Values(SWBTestParams(false, ContextType::kServiceWorkerMV2)));
 
 // Ensure web request listeners can intercept requests for a web bundle and its
 // subresources.
@@ -5235,17 +5248,19 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(RITestParams(RedirectType::kOnHeadersReceived,
                                    ContextType::kPersistentBackground)));
 
+// These tests use webRequestBlocking and/or declarativeWebRequest.
+// See crbug.com/332512510.
 INSTANTIATE_TEST_SUITE_P(
     ServiceWorkerOnBeforeRequest,
     RedirectInfoWebRequestApiTest,
     ::testing::Values(RITestParams(RedirectType::kOnBeforeRequest,
-                                   ContextType::kServiceWorker)));
+                                   ContextType::kServiceWorkerMV2)));
 
 INSTANTIATE_TEST_SUITE_P(
     ServiceWorkerOnHeadersReceived,
     RedirectInfoWebRequestApiTest,
     ::testing::Values(RITestParams(RedirectType::kOnHeadersReceived,
-                                   ContextType::kServiceWorker)));
+                                   ContextType::kServiceWorkerMV2)));
 
 // Test that a main frame request redirected by an extension has the correct
 // site_for_cookies and network_isolation_key parameters.

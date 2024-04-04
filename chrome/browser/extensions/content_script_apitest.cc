@@ -197,9 +197,11 @@ class ContentScriptApiTestWithContextType
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          ContentScriptApiTestWithContextType,
                          ::testing::Values(ContextType::kPersistentBackground));
+// These tests use chrome.tabs.executeScript, which is not available in MV3 and
+// above.
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ContentScriptApiTestWithContextType,
-                         ::testing::Values(ContextType::kServiceWorker));
+                         ::testing::Values(ContextType::kServiceWorkerMV2));
 
 IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType, AllFrames) {
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -693,9 +695,11 @@ class ContentScriptApiManagementPolicyTestWithContextType
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          ContentScriptApiManagementPolicyTestWithContextType,
                          ::testing::Values(ContextType::kPersistentBackground));
+// These tests use chrome.tabs.executeScript, which is not available in MV3 and
+// above.
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ContentScriptApiManagementPolicyTestWithContextType,
-                         ::testing::Values(ContextType::kServiceWorker));
+                         ::testing::Values(ContextType::kServiceWorkerMV2));
 
 IN_PROC_BROWSER_TEST_P(ContentScriptApiManagementPolicyTestWithContextType,
                        Policy) {
@@ -2192,9 +2196,11 @@ class ContentScriptApiPrerenderingTest
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          ContentScriptApiPrerenderingTest,
                          ::testing::Values(ContextType::kPersistentBackground));
+// These tests use chrome.tabs.executeScript, which is not available in MV3 and
+// above. See crbug.com/332328868.
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ContentScriptApiPrerenderingTest,
-                         ::testing::Values(ContextType::kServiceWorker));
+                         ::testing::Values(ContextType::kServiceWorkerMV2));
 
 IN_PROC_BROWSER_TEST_P(ContentScriptApiPrerenderingTest, Prerendering) {
   ASSERT_TRUE(StartEmbeddedTestServer());
