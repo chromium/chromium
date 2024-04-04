@@ -517,29 +517,29 @@ bool WillUpdateSizeContainerDuringLayout(const LayoutObject& layout_object) {
          layout_object.IsEligibleForSizeContainment();
 }
 
-bool IsValidShadowHostName(const QualifiedName& tag_name) {
-  DEFINE_STATIC_LOCAL(HashSet<QualifiedName>, shadow_root_tags,
+bool IsValidShadowHostName(const AtomicString& local_name) {
+  DEFINE_STATIC_LOCAL(HashSet<AtomicString>, shadow_root_tags,
                       ({
-                          html_names::kArticleTag,
-                          html_names::kAsideTag,
-                          html_names::kBlockquoteTag,
-                          html_names::kBodyTag,
-                          html_names::kDivTag,
-                          html_names::kFooterTag,
-                          html_names::kH1Tag,
-                          html_names::kH2Tag,
-                          html_names::kH3Tag,
-                          html_names::kH4Tag,
-                          html_names::kH5Tag,
-                          html_names::kH6Tag,
-                          html_names::kHeaderTag,
-                          html_names::kNavTag,
-                          html_names::kMainTag,
-                          html_names::kPTag,
-                          html_names::kSectionTag,
-                          html_names::kSpanTag,
+                          html_names::kArticleTag.LocalName(),
+                          html_names::kAsideTag.LocalName(),
+                          html_names::kBlockquoteTag.LocalName(),
+                          html_names::kBodyTag.LocalName(),
+                          html_names::kDivTag.LocalName(),
+                          html_names::kFooterTag.LocalName(),
+                          html_names::kH1Tag.LocalName(),
+                          html_names::kH2Tag.LocalName(),
+                          html_names::kH3Tag.LocalName(),
+                          html_names::kH4Tag.LocalName(),
+                          html_names::kH5Tag.LocalName(),
+                          html_names::kH6Tag.LocalName(),
+                          html_names::kHeaderTag.LocalName(),
+                          html_names::kNavTag.LocalName(),
+                          html_names::kMainTag.LocalName(),
+                          html_names::kPTag.LocalName(),
+                          html_names::kSectionTag.LocalName(),
+                          html_names::kSpanTag.LocalName(),
                       }));
-  return shadow_root_tags.Contains(tag_name);
+  return shadow_root_tags.Contains(local_name);
 }
 
 }  // namespace
@@ -4652,10 +4652,10 @@ void Element::setEditContext(EditContext* edit_context,
   // https://w3c.github.io/edit-context/#extensions-to-the-htmlelement-interface
   // 1. If this's local name is neither a valid shadow host name nor "canvas",
   // then throw a "NotSupportedError" DOMException.
-  const QualifiedName& tag_name = TagQName();
-  if (!(IsCustomElement() &&
-        CustomElement::IsValidName(tag_name.LocalName())) &&
-      !IsValidShadowHostName(tag_name) && tag_name != html_names::kCanvasTag) {
+  const AtomicString& local_name = localName();
+  if (!(IsCustomElement() && CustomElement::IsValidName(local_name)) &&
+      !IsValidShadowHostName(local_name) &&
+      local_name != html_names::kCanvasTag) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         "This element does not support EditContext");
@@ -5233,13 +5233,12 @@ const ElementInternals* Element::GetElementInternals() const {
 }
 
 bool Element::CanAttachShadowRoot() const {
-  const QualifiedName& tag_name = TagQName();
+  const AtomicString& local_name = localName();
   // Checking IsCustomElement() here is just an optimization
   // because IsValidName is not cheap.
-  return (IsCustomElement() &&
-          CustomElement::IsValidName(tag_name.LocalName())) ||
-         IsValidShadowHostName(tag_name) ||
-         tag_name == html_names::kSelectlistTag;
+  return (IsCustomElement() && CustomElement::IsValidName(local_name)) ||
+         IsValidShadowHostName(local_name) ||
+         local_name == html_names::kSelectlistTag;
 }
 
 const char* Element::ErrorMessageForAttachShadow(bool for_declarative) const {
