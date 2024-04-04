@@ -30,11 +30,9 @@ class VideoStreamView : public views::View, public viz::ContextLostObserver {
   void ClearFrame();
   size_t GetRenderedFrameCount();
 
-  // views::View overrides
-  void OnPaint(gfx::Canvas* canvas) override;
-
  protected:
   // views::View overrides
+  void OnPaint(gfx::Canvas* canvas) override;
   int GetHeightForWidth(int w) const override;
   gfx::Size CalculatePreferredSize() const override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
