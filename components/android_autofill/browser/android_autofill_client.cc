@@ -8,12 +8,12 @@
 
 #include "base/android/build_info.h"
 #include "base/android/jni_android.h"
-#include "base/android/jni_string.h"
 #include "base/android/locale_utils.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/function_ref.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/android_autofill/browser/android_autofill_manager.h"
@@ -41,7 +41,6 @@ using autofill::features::kAutofillVirtualViewStructureAndroid;
 using autofill::features::
     kAutofillVirtualViewStructureAndroidSkipsCompatibilityCheck;
 using base::android::AttachCurrentThread;
-using base::android::ConvertUTF16ToJavaString;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
@@ -225,17 +224,7 @@ void AndroidAutofillClient::HideTouchToFillCreditCard() {}
 void AndroidAutofillClient::ShowAutofillPopup(
     const autofill::AutofillClient::PopupOpenArgs& open_args,
     base::WeakPtr<autofill::AutofillPopupDelegate> delegate) {
-  suggestions_ = open_args.suggestions;
-  delegate_ = delegate;
-
-  // Convert element_bounds to be in screen space.
-  gfx::Rect client_area = GetWebContents().GetContainerBounds();
-  gfx::RectF element_bounds_in_screen_space =
-      open_args.element_bounds + client_area.OffsetFromOrigin();
-
-  ShowAutofillPopupImpl(element_bounds_in_screen_space,
-                        open_args.text_direction == base::i18n::RIGHT_TO_LEFT,
-                        open_args.suggestions);
+  NOTIMPLEMENTED();
 }
 
 void AndroidAutofillClient::UpdateAutofillPopupDataListValues(
@@ -264,13 +253,7 @@ void AndroidAutofillClient::UpdatePopup(
 
 void AndroidAutofillClient::HideAutofillPopup(
     autofill::PopupHidingReason reason) {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (!obj) {
-    return;
-  }
-  delegate_.reset();
-  Java_AndroidAutofillClient_hideAutofillPopup(env, obj);
+  // TODO(321950502): Analyze hiding the datalist popup here.
 }
 
 bool AndroidAutofillClient::IsAutocompleteEnabled() const {
@@ -320,20 +303,6 @@ AndroidAutofillClient::GetCurrentFormInteractionsFlowId() {
   return {};
 }
 
-void AndroidAutofillClient::Dismissed(JNIEnv* env,
-                                      const JavaParamRef<jobject>& obj) {
-  anchor_view_.Reset();
-}
-
-void AndroidAutofillClient::SuggestionSelected(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& object,
-    jint position) {
-  if (delegate_) {
-    delegate_->DidAcceptSuggestion(suggestions_[position], {.row = position});
-  }
-}
-
 AndroidAutofillClient::AndroidAutofillClient(
     WebContents* contents,
     base::FunctionRef<void(const JavaRef<jobject>&)> notify_client_created)
@@ -344,57 +313,6 @@ AndroidAutofillClient::AndroidAutofillClient(
 
   notify_client_created(delegate);
   java_ref_ = JavaObjectWeakGlobalRef(env, delegate);
-}
-
-// TODO(b/321950502): Remove if unused!
-void AndroidAutofillClient::ShowAutofillPopupImpl(
-    const gfx::RectF& element_bounds,
-    bool is_rtl,
-    const std::vector<autofill::Suggestion>& suggestions) {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (!obj) {
-    return;
-  }
-
-  // We need an array of AutofillSuggestion.
-  size_t count = suggestions.size();
-
-  ScopedJavaLocalRef<jobjectArray> data_array =
-      Java_AndroidAutofillClient_createAutofillSuggestionArray(env, count);
-
-  for (size_t i = 0; i < count; ++i) {
-    ScopedJavaLocalRef<jstring> name =
-        ConvertUTF16ToJavaString(env, suggestions[i].main_text.value);
-    ScopedJavaLocalRef<jstring> label =
-        base::android::ConvertUTF8ToJavaString(env, std::string());
-    // For Android, we only show the primary/first label in the matrix.
-    if (!suggestions[i].labels.empty()) {
-      label = ConvertUTF16ToJavaString(env, suggestions[i].labels[0][0].value);
-    }
-
-    Java_AndroidAutofillClient_addToAutofillSuggestionArray(
-        env, data_array, i, name, label,
-        base::to_underlying(suggestions[i].popup_item_id));
-  }
-  ui::ViewAndroid* view_android = GetWebContents().GetNativeView();
-  if (!view_android) {
-    return;
-  }
-
-  const ScopedJavaLocalRef<jobject> current_view = anchor_view_.view();
-  if (!current_view) {
-    anchor_view_ = view_android->AcquireAnchorView();
-  }
-
-  const ScopedJavaLocalRef<jobject> view = anchor_view_.view();
-  if (!view) {
-    return;
-  }
-
-  view_android->SetAnchorRect(view, element_bounds);
-  Java_AndroidAutofillClient_showAutofillPopup(env, obj, view, is_rtl,
-                                               data_array);
 }
 
 content::WebContents& AndroidAutofillClient::GetWebContents() const {

@@ -3821,14 +3821,10 @@ public class AwContents implements SmartClipProvider {
 
     /**
      * @see android.webkit.WebView#clearFormData().
-     *
-     * The popup shall also be hidden on the WebView detached from window.
+     *     <p>The popup shall also be hidden on the WebView detached from window.
      */
     public void hideAutofillPopup() {
         if (TRACE) Log.i(TAG, "%s hideAutofillPopup", this);
-        if (mAndroidAutofillClient != null) {
-            mAndroidAutofillClient.hideAutofillPopup();
-        }
         if (mAutofillProvider != null) {
             mAutofillProvider.hideDatalistPopup();
         }
@@ -4163,7 +4159,6 @@ public class AwContents implements SmartClipProvider {
     @CalledByNative
     private void setAndroidAutofillClient(AndroidAutofillClient client) {
         mAndroidAutofillClient = client;
-        client.init(mContext);
     }
 
     @VisibleForTesting

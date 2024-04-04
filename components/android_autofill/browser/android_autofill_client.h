@@ -150,11 +150,6 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   bool IsContextSecure() const override;
   autofill::FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override;
 
-  void Dismissed(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
-  void SuggestionSelected(JNIEnv* env,
-                          const base::android::JavaParamRef<jobject>& obj,
-                          jint position);
-
   // ContentAutofillClient:
   std::unique_ptr<autofill::AutofillManager> CreateManager(
       base::PassKey<autofill::ContentAutofillDriver> pass_key,
@@ -184,11 +179,6 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
 
   JavaObjectWeakGlobalRef java_ref_;
 
-  ui::ViewAndroid::ScopedAnchorView anchor_view_;
-
-  // The current Autofill query values.
-  std::vector<autofill::Suggestion> suggestions_;
-  base::WeakPtr<autofill::AutofillPopupDelegate> delegate_;
   std::unique_ptr<autofill::AutofillCrowdsourcingManager>
       crowdsourcing_manager_;
 };
