@@ -503,23 +503,11 @@ void ServiceWorkerVersion::set_fetch_handler_type(
   fetch_handler_type_ = fetch_handler_type;
 }
 
+// TODO(crbug.com/41494030): Remove this method and directly use
+// fetch_handler_type() instead.
 ServiceWorkerVersion::FetchHandlerType
 ServiceWorkerVersion::EffectiveFetchHandlerType() const {
-  switch (fetch_handler_type()) {
-    case FetchHandlerType::kNoHandler:
-      return FetchHandlerType::kNoHandler;
-    case FetchHandlerType::kNotSkippable:
-      return FetchHandlerType::kNotSkippable;
-    case FetchHandlerType::kEmptyFetchHandler: {
-      if (base::FeatureList::IsEnabled(
-              features::kServiceWorkerSkipIgnorableFetchHandler) &&
-          features::kSkipEmptyFetchHandler.Get()) {
-        return FetchHandlerType::kEmptyFetchHandler;
-      } else {
-        return FetchHandlerType::kNotSkippable;
-      }
-    }
-  }
+  return fetch_handler_type();
 }
 
 void ServiceWorkerVersion::set_has_hid_event_handlers(

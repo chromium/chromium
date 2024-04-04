@@ -73,6 +73,13 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
         kBypassFetchHandlerForAllOnlyIfServiceWorkerNotStarted_Status_Starting,
   };
 
+  // Default duration to start fetch handler when service worker is started in
+  // `TaskRunner::PostDelayTask`.
+  static constexpr int kStartServiceWorkerForEmptyFetchHandlerDurationInMs = 50;
+
+  static void SetStartServiceWorkerForEmptyFetchHandlerDurationForTesting(
+      int duration);
+
   // If |skip_service_worker| is true, service workers are bypassed for
   // request interception.
   ServiceWorkerControlleeRequestHandler(
@@ -159,6 +166,11 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
   // the ServiceWorkerSkipEmptyFetchHandler feature and the browser handles
   // an empty fetch handler, this runs after the service worker starts.
   void DidStartWorker(blink::ServiceWorkerStatusCode status);
+
+  int GetServiceWorkerForEmptyFetchHandlerDurationMs();
+
+  static std::optional<int>
+      start_service_worker_for_empty_fetch_handler_duration_for_testing_;
 
   const base::WeakPtr<ServiceWorkerContextCore> context_;
   const base::WeakPtr<ServiceWorkerContainerHost> container_host_;

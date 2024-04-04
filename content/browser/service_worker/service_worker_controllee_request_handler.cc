@@ -155,6 +155,9 @@ bool ShouldBypassFetchHandlerForMainResourceByOriginTrial(
 
 }  // namespace
 
+std::optional<int> ServiceWorkerControlleeRequestHandler::
+    start_service_worker_for_empty_fetch_handler_duration_for_testing_;
+
 ServiceWorkerControlleeRequestHandler::ServiceWorkerControlleeRequestHandler(
     base::WeakPtr<ServiceWorkerContextCore> context,
     base::WeakPtr<ServiceWorkerContainerHost> container_host,
@@ -559,30 +562,14 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
       active_version->CountFeature(
           blink::mojom::WebFeature::kServiceWorkerSkippedForEmptyFetchHandler);
       CompleteWithoutLoader();
-      if (!features::kStartServiceWorkerForEmptyFetchHandler.Get()) {
-        return;
-      }
-      if (features::kAsyncStartServiceWorkerForEmptyFetchHandler.Get()) {
-        int duration =
-            features::kAsyncStartServiceWorkerForEmptyFetchHandlerDurationInMs
-                .Get();
-        constexpr int kDurationThresholdInMs = 10 * 1000;  // 10 seconds.
-        if (duration < 0 || duration > kDurationThresholdInMs) {
-          LOG(ERROR) << "Ignored out-of-range duration:" << duration;
-          duration = 0;
-        }
-        base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-            FROM_HERE,
-            base::BindOnce(
-                &ServiceWorkerControlleeRequestHandler::MaybeStartServiceWorker,
-                weak_factory_.GetWeakPtr(), std::move(active_version),
-                ServiceWorkerMetrics::EventType::SKIP_EMPTY_FETCH_HANDLER),
-            base::Milliseconds(duration));
-        return;
-      }
-      MaybeStartServiceWorker(
-          std::move(active_version),
-          ServiceWorkerMetrics::EventType::SKIP_EMPTY_FETCH_HANDLER);
+
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(
+              &ServiceWorkerControlleeRequestHandler::MaybeStartServiceWorker,
+              weak_factory_.GetWeakPtr(), std::move(active_version),
+              ServiceWorkerMetrics::EventType::SKIP_EMPTY_FETCH_HANDLER),
+          base::Milliseconds(GetServiceWorkerForEmptyFetchHandlerDurationMs()));
       return;
     }
     case ServiceWorkerVersion::FetchHandlerType::kNotSkippable: {
@@ -796,6 +783,20 @@ void ServiceWorkerControlleeRequestHandler::MaybeStartServiceWorker(
       event_type,
       base::BindOnce(&ServiceWorkerControlleeRequestHandler::DidStartWorker,
                      weak_factory_.GetWeakPtr()));
+}
+
+int ServiceWorkerControlleeRequestHandler::
+    GetServiceWorkerForEmptyFetchHandlerDurationMs() {
+  if (start_service_worker_for_empty_fetch_handler_duration_for_testing_) {
+    return start_service_worker_for_empty_fetch_handler_duration_for_testing_
+        .value();
+  }
+  return kStartServiceWorkerForEmptyFetchHandlerDurationInMs;
+}
+
+void ServiceWorkerControlleeRequestHandler::
+    SetStartServiceWorkerForEmptyFetchHandlerDurationForTesting(int duration) {
+  start_service_worker_for_empty_fetch_handler_duration_for_testing_ = duration;
 }
 
 }  // namespace content

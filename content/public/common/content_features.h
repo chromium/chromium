@@ -255,14 +255,6 @@ enum class ServiceWorkerBypassFetchHandlerTarget {
 CONTENT_EXPORT extern const base::FeatureParam<
     ServiceWorkerBypassFetchHandlerTarget>
     kServiceWorkerBypassFetchHandlerTarget;
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kServiceWorkerSkipIgnorableFetchHandler);
-CONTENT_EXPORT extern const base::FeatureParam<bool> kSkipEmptyFetchHandler;
-CONTENT_EXPORT extern const base::FeatureParam<bool>
-    kStartServiceWorkerForEmptyFetchHandler;
-CONTENT_EXPORT extern const base::FeatureParam<bool>
-    kAsyncStartServiceWorkerForEmptyFetchHandler;
-CONTENT_EXPORT extern const base::FeatureParam<int>
-    kAsyncStartServiceWorkerForEmptyFetchHandlerDurationInMs;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kServiceWorkerStaticRouter);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kUserMediaCaptureOnFocus);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebLockScreenApi);

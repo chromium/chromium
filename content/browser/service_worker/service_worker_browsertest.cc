@@ -5249,47 +5249,12 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBypassFetchHandlerOriginTrialTest,
   run_loop.Run();
 }
 
-enum class SkipEmptyFetchHandlerEnum {
-  kDisabled,
-  kEnabled,
-  kEnabledAndStartWorker,
-};
-
 class ServiceWorkerSkipEmptyFetchHandlerBrowserTest
-    : public ServiceWorkerBrowserTest,
-      public testing::WithParamInterface<SkipEmptyFetchHandlerEnum> {
+    : public ServiceWorkerBrowserTest {
  public:
   ServiceWorkerSkipEmptyFetchHandlerBrowserTest() {
-    switch (GetParam()) {
-      case SkipEmptyFetchHandlerEnum::kEnabled:
-        scoped_feature_list_.InitWithFeaturesAndParameters(
-            {{features::kServiceWorkerSkipIgnorableFetchHandler,
-              {
-                  {"SkipEmptyFetchHandler", "true"},
-                  {"StartServiceWorkerForEmptyFetchHandler", "false"},
-                  {"AsyncStartServiceWorkerForEmptyFetchHandler", "false"},
-                  {"AsyncStartServiceWorkerForEmptyFetchHandlerDurationInMs",
-                   "0"},
-              }}},
-            {});
-        break;
-      case SkipEmptyFetchHandlerEnum::kEnabledAndStartWorker:
-        scoped_feature_list_.InitWithFeaturesAndParameters(
-            {{features::kServiceWorkerSkipIgnorableFetchHandler,
-              {
-                  {"SkipEmptyFetchHandler", "true"},
-                  {"StartServiceWorkerForEmptyFetchHandler", "true"},
-                  {"AsyncStartServiceWorkerForEmptyFetchHandler", "false"},
-                  {"AsyncStartServiceWorkerForEmptyFetchHandlerDurationInMs",
-                   "0"},
-              }}},
-            {});
-        break;
-      case SkipEmptyFetchHandlerEnum::kDisabled:
-        scoped_feature_list_.InitAndDisableFeature(
-            features::kServiceWorkerSkipIgnorableFetchHandler);
-        break;
-    }
+    ServiceWorkerControlleeRequestHandler::
+        SetStartServiceWorkerForEmptyFetchHandlerDurationForTesting(0);
   }
   ~ServiceWorkerSkipEmptyFetchHandlerBrowserTest() override = default;
 
@@ -5309,14 +5274,7 @@ class ServiceWorkerSkipEmptyFetchHandlerBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ServiceWorkerSkipEmptyFetchHandlerBrowserTest,
-    ::testing::Values(SkipEmptyFetchHandlerEnum::kDisabled,
-                      SkipEmptyFetchHandlerEnum::kEnabled,
-                      SkipEmptyFetchHandlerEnum::kEnabledAndStartWorker));
-
-IN_PROC_BROWSER_TEST_P(ServiceWorkerSkipEmptyFetchHandlerBrowserTest,
+IN_PROC_BROWSER_TEST_F(ServiceWorkerSkipEmptyFetchHandlerBrowserTest,
                        HasNotSkippedMetrics) {
   base::HistogramTester tester;
 
@@ -5360,7 +5318,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerSkipEmptyFetchHandlerBrowserTest,
       ServiceWorkerVersion::FetchHandlerType::kNotSkippable, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(ServiceWorkerSkipEmptyFetchHandlerBrowserTest,
+IN_PROC_BROWSER_TEST_F(ServiceWorkerSkipEmptyFetchHandlerBrowserTest,
                        HasSkippedForEmptyFetchHandlerMetrics) {
   base::HistogramTester tester;
 
@@ -5391,40 +5349,16 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerSkipEmptyFetchHandlerBrowserTest,
   // Conduct a main resource load.
   WorkerRunningStatusObserver observer2(public_context());
   EXPECT_TRUE(NavigateToURL(shell(), in_scope_url));
-  switch (GetParam()) {
-    case SkipEmptyFetchHandlerEnum::kEnabled:
-      // In this case, navigation request doesn't start the service
-      // worker if the fetch handler is skipped.
-      EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped,
-                version->running_status());
-      tester.ExpectUniqueSample(
-          "ServiceWorker.FetchHandler.SkipReason",
-          ServiceWorkerControlleeRequestHandler::FetchHandlerSkipReason::
-              kSkippedForEmptyFetchHandler,
-          1);
-      break;
-    case SkipEmptyFetchHandlerEnum::kEnabledAndStartWorker:
-      // In this case, the service worker is started while the fetch handler is
-      // skipped.
-      observer2.WaitUntilRunning();
-      EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning,
-                version->running_status());
-      tester.ExpectUniqueSample(
-          "ServiceWorker.FetchHandler.SkipReason",
-          ServiceWorkerControlleeRequestHandler::FetchHandlerSkipReason::
-              kSkippedForEmptyFetchHandler,
-          1);
-      break;
-    case SkipEmptyFetchHandlerEnum::kDisabled:
-      observer2.WaitUntilRunning();
-      EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning,
-                version->running_status());
-      tester.ExpectUniqueSample("ServiceWorker.FetchHandler.SkipReason",
-                                ServiceWorkerControlleeRequestHandler::
-                                    FetchHandlerSkipReason::kNotSkipped,
-                                1);
-      break;
-  }
+
+  // The service worker is started while the fetch handler is skipped.
+  observer2.WaitUntilRunning();
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
+  tester.ExpectUniqueSample(
+      "ServiceWorker.FetchHandler.SkipReason",
+      ServiceWorkerControlleeRequestHandler::FetchHandlerSkipReason::
+          kSkippedForEmptyFetchHandler,
+      1);
+
   tester.ExpectUniqueSample(
       "ServiceWorker.FetchHandler."
       "TypeAtContinueWithActivatedVersion",

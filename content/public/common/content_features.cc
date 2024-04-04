@@ -837,9 +837,8 @@ constexpr base::FeatureParam<bool>
         &kProcessPerSiteUpToMainFrameThreshold,
         "ProcessPerSiteMainFrameAllowDevToolsAttached", false};
 
-// Enables bypassing the service worker fetch handler. Unlike
-// `kServiceWorkerSkipIgnorableFetchHandler`, this feature starts the service
-// worker for subsequent requests.
+// Enables bypassing the service worker fetch handler. This feature starts the
+// service worker for subsequent requests.
 BASE_FEATURE(kServiceWorkerBypassFetchHandler,
              "ServiceWorkerBypassFetchHandler",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -879,49 +878,6 @@ const base::FeatureParam<ServiceWorkerBypassFetchHandlerTarget>
         &kServiceWorkerBypassFetchHandler, "bypass_for",
         ServiceWorkerBypassFetchHandlerTarget::kMainResource,
         &service_worker_bypass_fetch_handler_target_options};
-
-// Enables skipping the service worker fetch handler if the fetch handler is
-// identified as ignorable.
-BASE_FEATURE(kServiceWorkerSkipIgnorableFetchHandler,
-             "ServiceWorkerSkipIgnorableFetchHandler",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// This feature param controls if the empty service worker fetch handler is
-// skipped.
-constexpr base::FeatureParam<bool> kSkipEmptyFetchHandler{
-    &kServiceWorkerSkipIgnorableFetchHandler,
-    "SkipEmptyFetchHandler",
-    true,
-};
-
-// This feature param controls if the service worker is started for an
-// empty service worker fetch handler while `kSkipEmptyFetchHandler` is on.
-constexpr base::FeatureParam<bool> kStartServiceWorkerForEmptyFetchHandler{
-    &kServiceWorkerSkipIgnorableFetchHandler,
-    "StartServiceWorkerForEmptyFetchHandler",
-    true,
-};
-
-// This feature param controls if the service worker is started for an
-// empty service worker fetch handler while `kSkipEmptyFetchHandler` is on.
-// Unlike the feature param `kStartServiceWorkerForEmptyFetchHandler`,
-// this starts service worker in `TaskRunner::PostDelayTask`.
-constexpr base::FeatureParam<bool> kAsyncStartServiceWorkerForEmptyFetchHandler{
-    &kServiceWorkerSkipIgnorableFetchHandler,
-    "AsyncStartServiceWorkerForEmptyFetchHandler",
-    true,
-};
-
-// This feature param controls duration to start fetch handler
-// if `kAsyncStartServiceWorkerForEmptyFetchHandler` is used.
-// Negative values and the value larger than a threshold is ignored, and
-// treated as 0.
-constexpr base::FeatureParam<int>
-    kAsyncStartServiceWorkerForEmptyFetchHandlerDurationInMs{
-        &kServiceWorkerSkipIgnorableFetchHandler,
-        "AsyncStartServiceWorkerForEmptyFetchHandlerDurationInMs",
-        50,
-    };
 
 // Enables ServiceWorker static routing API.
 // https://github.com/WICG/service-worker-static-routing-api
