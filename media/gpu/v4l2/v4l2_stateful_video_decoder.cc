@@ -557,6 +557,7 @@ void V4L2StatefulVideoDecoder::Reset(base::OnceClosure closure) {
   } else {
     CAPTURE_queue_.reset();
     OUTPUT_queue_.reset();
+    num_decoder_instances_.Decrement();
   }
 
   encoding_timestamps_.clear();
@@ -1138,6 +1139,7 @@ bool V4L2StatefulVideoDecoder::TryAndEnqueueOUTPUTQueueBuffers() {
 void V4L2StatefulVideoDecoder::PrintAndTraceQueueStates(
     const base::Location& from_here) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(IsInitialized()) << "V4L2StatefulVideoDecoder must be Initialize()d";
   VLOG(4) << from_here.function_name() << "(): |OUTPUT_queue_| "
           << OUTPUT_queue_->QueuedBuffersCount() << "/"
           << OUTPUT_queue_->AllocatedBuffersCount() << ", |CAPTURE_queue_| "
