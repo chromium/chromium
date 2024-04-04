@@ -21,7 +21,7 @@ To run Cronet native API unit and integration tests:
 
 ```shell
 $ gn gen out/Default  # Generate Ninja build files.
-$ ninja -C out/Default cronet_unittests cronet_tests  # Build both test suites.
+$ autoninja -C out/Default cronet_unittests cronet_tests  # Build both test suites.
 $ ./out/Default/cronet_unittests  # Run unit tests.
 $ ./out/Default/cronet_tests  # Run the integration tests.
 ```

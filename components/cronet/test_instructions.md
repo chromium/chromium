@@ -39,7 +39,7 @@ To run C++ and Java unit tests of net/ functionality:
 
 ```shell
 $ ./components/cronet/tools/cr_cronet.py gn
-$ ninja -C out/Debug net_unittests
+$ autoninja -C out/Debug net_unittests
 $ ./out/Debug/bin/run_net_unittests --fast-local-dev
 ```
 

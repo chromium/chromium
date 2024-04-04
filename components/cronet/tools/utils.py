@@ -99,16 +99,16 @@ def read_file(path):
 
 
 def build(out_dir, build_target, extra_options=None):
-  """Runs `ninja build`.
+  """Runs `autoninja build`.
 
-  Runs `ninja -C |out_dir| |build_target| |extra_options|` which will build
+  Runs `autoninja -C |out_dir| |build_target| |extra_options|` which will build
   the target |build_target| for the GN configuration living under |out_dir|.
   This is done locally on the same chromium checkout.
 
   Returns:
-    Exit code of running `ninja ..` command with the argument provided.
+    Exit code of running `autoninja ..` command with the argument provided.
   """
-  cmd = ['ninja', '-C', out_dir, build_target] + _get_ninja_jobs_options()
+  cmd = ['autoninja', '-C', out_dir, build_target]
   if extra_options:
     cmd += extra_options
   return run(cmd)
@@ -145,22 +145,7 @@ def get_android_gn_args(is_release, target_cpu):
   gn_args = subprocess.check_output(
       ['python3', _MB_PATH, 'lookup', '-m', group_name, '-b',
        builder_name]).decode('utf-8').strip()
-  return filter_gn_args(gn_args.split("\n"), ["use_remoteexec"])
-
-
-def _use_goma():
-  goma_dir = (subprocess.check_output(['goma_ctl',
-                                       'goma_dir']).decode('utf-8').strip())
-  result = run(['goma_ctl', 'ensure_start'])
-  if not result:
-    return 'use_goma=true goma_dir="' + goma_dir + '" '
-  return ''
-
-
-def _get_ninja_jobs_options():
-  if _use_goma():
-    return ["-j1000"]
-  return []
+  return filter_gn_args(gn_args.split("\n"), [])
 
 
 def get_path_from_gn_label(gn_label: str) -> str:
