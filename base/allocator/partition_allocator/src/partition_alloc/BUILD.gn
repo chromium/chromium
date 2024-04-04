@@ -142,9 +142,6 @@ component("raw_ptr") {
 # of full-on pointers. Defaults to false, which implies the use of
 # "encoded next" freelist entry.
 #
-# This is disabled because it ends up accessing fields from a null pointer. See
-# https://crrev.com/c/5379567/comment/9407f1ad_cf4c0ca4/
-#
 # Only usable when pointers are 64-bit.
 use_freelist_pool_offsets = has_64_bit_pointers && false
 

@@ -197,12 +197,9 @@ struct PartitionFreelistDispatcherImpl : PartitionFreelistDispatcher {
                          EncodedNextFreelistEntry,
                          PoolOffsetFreelistEntry>;
 
-  Entry& GetEntryImpl(PartitionFreelistEntry* entry) const {
-    if constexpr (encoding == PartitionFreelistEncoding::kEncodedFreeList) {
-      return entry->encoded_entry_;
-    } else {
-      return entry->pool_offset_entry_;
-    }
+  // `entry` can be passed in as `nullptr`
+  Entry* GetEntryImpl(PartitionFreelistEntry* entry) const {
+    return reinterpret_cast<Entry*>(entry);
   }
 
   PA_ALWAYS_INLINE PartitionFreelistEntry* EmplaceAndInitNull(
@@ -217,18 +214,12 @@ struct PartitionFreelistDispatcherImpl : PartitionFreelistDispatcher {
         Entry::EmplaceAndInitNull(slot_start));
   }
 
+  // `next` can be passed in as `nullptr`
   PA_ALWAYS_INLINE PartitionFreelistEntry* EmplaceAndInitForThreadCache(
       uintptr_t slot_start,
       PartitionFreelistEntry* next) const override {
-    if constexpr (encoding == PartitionFreelistEncoding::kEncodedFreeList) {
-      return reinterpret_cast<PartitionFreelistEntry*>(
-          Entry::EmplaceAndInitForThreadCache(slot_start,
-                                              &(next->encoded_entry_)));
-    } else {
-      return reinterpret_cast<PartitionFreelistEntry*>(
-          Entry::EmplaceAndInitForThreadCache(slot_start,
-                                              &(next->pool_offset_entry_)));
-    }
+    return reinterpret_cast<PartitionFreelistEntry*>(
+        Entry::EmplaceAndInitForThreadCache(slot_start, GetEntryImpl(next)));
   }
 
   PA_ALWAYS_INLINE void EmplaceAndInitForTest(
@@ -240,21 +231,21 @@ struct PartitionFreelistDispatcherImpl : PartitionFreelistDispatcher {
 
   PA_ALWAYS_INLINE void CorruptNextForTesting(PartitionFreelistEntry* entry,
                                               uintptr_t v) const override {
-    return GetEntryImpl(entry).CorruptNextForTesting(v);
+    return GetEntryImpl(entry)->CorruptNextForTesting(v);
   }
 
   PA_ALWAYS_INLINE PartitionFreelistEntry* GetNextForThreadCacheTrue(
       PartitionFreelistEntry* entry,
       size_t slot_size) const override {
     return reinterpret_cast<PartitionFreelistEntry*>(
-        GetEntryImpl(entry).template GetNextForThreadCache<true>(slot_size));
+        GetEntryImpl(entry)->template GetNextForThreadCache<true>(slot_size));
   }
 
   PA_ALWAYS_INLINE PartitionFreelistEntry* GetNextForThreadCacheFalse(
       PartitionFreelistEntry* entry,
       size_t slot_size) const override {
     return reinterpret_cast<PartitionFreelistEntry*>(
-        GetEntryImpl(entry).template GetNextForThreadCache<false>(slot_size));
+        GetEntryImpl(entry)->template GetNextForThreadCache<false>(slot_size));
   }
 
   PA_ALWAYS_INLINE PartitionFreelistEntry* GetNextForThreadCacheBool(
@@ -272,37 +263,34 @@ struct PartitionFreelistDispatcherImpl : PartitionFreelistDispatcher {
       PartitionFreelistEntry* entry,
       size_t slot_size) const override {
     return reinterpret_cast<PartitionFreelistEntry*>(
-        GetEntryImpl(entry).GetNext(slot_size));
+        GetEntryImpl(entry)->GetNext(slot_size));
   }
 
   PA_NOINLINE void CheckFreeList(PartitionFreelistEntry* entry,
                                  size_t slot_size) const override {
-    return GetEntryImpl(entry).CheckFreeList(slot_size);
+    return GetEntryImpl(entry)->CheckFreeList(slot_size);
   }
 
   PA_NOINLINE void CheckFreeListForThreadCache(
       PartitionFreelistEntry* entry,
       size_t slot_size) const override {
-    return GetEntryImpl(entry).CheckFreeListForThreadCache(slot_size);
+    return GetEntryImpl(entry)->CheckFreeListForThreadCache(slot_size);
   }
 
+  // `next` can be passed in as `nullptr`
   PA_ALWAYS_INLINE void SetNext(PartitionFreelistEntry* entry,
                                 PartitionFreelistEntry* next) const override {
-    if constexpr (encoding == PartitionFreelistEncoding::kEncodedFreeList) {
-      return GetEntryImpl(entry).SetNext(&(next->encoded_entry_));
-    } else {
-      return GetEntryImpl(entry).SetNext(&(next->pool_offset_entry_));
-    }
+    return GetEntryImpl(entry)->SetNext(GetEntryImpl(next));
   }
 
   PA_ALWAYS_INLINE uintptr_t
   ClearForAllocation(PartitionFreelistEntry* entry) const override {
-    return GetEntryImpl(entry).ClearForAllocation();
+    return GetEntryImpl(entry)->ClearForAllocation();
   }
 
   PA_ALWAYS_INLINE constexpr bool IsEncodedNextPtrZero(
       PartitionFreelistEntry* entry) const override {
-    return GetEntryImpl(entry).IsEncodedNextPtrZero();
+    return GetEntryImpl(entry)->IsEncodedNextPtrZero();
   }
 };
 
