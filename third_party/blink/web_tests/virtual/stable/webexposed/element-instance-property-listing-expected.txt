@@ -331,6 +331,7 @@ namespace http://www.w3.org/1999/xhtml
     property webkitRequestFullscreen
     property writingSuggestions
 html element a
+    property attributionSrc
     property charset
     property coords
     property download
@@ -675,6 +676,7 @@ html element iframe
 html element img
     property align
     property alt
+    property attributionSrc
     property border
     property complete
     property crossOrigin
@@ -925,6 +927,7 @@ html element s
 html element samp
 html element script
     property async
+    property attributionSrc
     property blocking
     property charset
     property crossOrigin

@@ -29,6 +29,7 @@
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
+#include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -148,7 +149,8 @@ class PrivacySandboxAdsAPIsAllEnabledBrowserTest
          blink::features::kBrowsingTopicsDocumentAPI,
          blink::features::kInterestGroupStorage, blink::features::kFencedFrames,
          blink::features::kSharedStorageAPI},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{
+            network::features::kAttributionReportingCrossAppWeb});
   }
 
  private:
@@ -509,8 +511,11 @@ class PrivacySandboxAdsAPIsDisabledBrowserTest
     : public PrivacySandboxAdsAPIsBrowserTestBase {
  public:
   PrivacySandboxAdsAPIsDisabledBrowserTest() {
-    feature_list_.InitAndDisableFeature(
-        blink::features::kPrivacySandboxAdsAPIs);
+    feature_list_.InitWithFeatures(
+        {},
+        /*disabled_features=*/{
+            blink::features::kPrivacySandboxAdsAPIs,
+            network::features::kAttributionReportingCrossAppWeb});
   }
 
  private:

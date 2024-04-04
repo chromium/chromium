@@ -162,7 +162,7 @@ BASE_FEATURE(kAttributionReportingReportVerification,
 // registering with a native attribution API.
 BASE_FEATURE(kAttributionReportingCrossAppWeb,
              "AttributionReportingCrossAppWeb",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables preprocessing requests with the Private State Tokens API Fetch flags
 // set, and handling their responses, according to the protocol.

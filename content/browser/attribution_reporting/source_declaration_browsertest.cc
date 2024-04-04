@@ -82,7 +82,9 @@ class AttributionSourceDisabledBrowserTest : public AttributionSourceBrowserTest
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {},
-        /*disabled_features=*/{features::kPrivacySandboxAdsAPIsM1Override});
+        /*disabled_features=*/{
+            features::kPrivacySandboxAdsAPIsM1Override,
+            features::kAttributionReportingCrossAppWebOverride});
   }
 
  private:

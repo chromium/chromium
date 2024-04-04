@@ -5458,12 +5458,18 @@ class FencedFrameReportEventBrowserTest
           ExpectValidAttributionReportingEligibleHeaderForEventBeacon(
               response.http_request()->headers.at(
                   "Attribution-Reporting-Eligible"));
+          ExpectValidAttributionReportingSupportHeader(
+              response.http_request()->headers.at(
+                  "Attribution-Reporting-Support"),
+              /*web_expected=*/true,
+              /*os_expected=*/false);
         } else {
           EXPECT_FALSE(base::Contains(response.http_request()->headers,
                                       "Attribution-Reporting-Eligible"));
+          EXPECT_FALSE(base::Contains(response.http_request()->headers,
+                                      "Attribution-Reporting-Support"));
         }
-        EXPECT_FALSE(base::Contains(response.http_request()->headers,
-                                    "Attribution-Reporting-Support"));
+
         // TODO(crbug.com/1496395): Remove this check after 3PCD.
         EXPECT_EQ(0U, response.http_request()->headers.count("Cookie"));
         response.Done();
@@ -6117,8 +6123,11 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
   ExpectValidAttributionReportingEligibleHeaderForEventBeacon(
       reporting_response.http_request()->headers.at(
           "Attribution-Reporting-Eligible"));
-  EXPECT_FALSE(base::Contains(reporting_response.http_request()->headers,
-                              "Attribution-Reporting-Support"));
+  ExpectValidAttributionReportingSupportHeader(
+      reporting_response.http_request()->headers.at(
+          "Attribution-Reporting-Support"),
+      /*web_expected=*/true,
+      /*os_expected=*/false);
 }
 
 // The reportEvent beacon is a POST request. Upon receiving a 302 redirect
@@ -6204,13 +6213,15 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
               net::test_server::HttpMethod::METHOD_POST);
     ExpectValidAttributionReportingEligibleHeaderForEventBeacon(
         response.http_request()->headers.at("Attribution-Reporting-Eligible"));
+    ExpectValidAttributionReportingSupportHeader(
+        response.http_request()->headers.at("Attribution-Reporting-Support"),
+        /*web_expected=*/true,
+        /*os_expected=*/false);
     EXPECT_TRUE(
         base::Contains(response.http_request()->headers, "Content-Length"));
     EXPECT_TRUE(
         base::Contains(response.http_request()->headers, "Content-Type"));
     EXPECT_TRUE(base::Contains(response.http_request()->headers, "Origin"));
-    EXPECT_FALSE(base::Contains(response.http_request()->headers,
-                                "Attribution-Reporting-Support"));
 
     // Send 302 redirect response.
     GURL redirect_url = https_server()->GetURL("a.test", "/redirect.html");
@@ -6241,8 +6252,10 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
     ExpectValidAttributionReportingEligibleHeaderForEventBeacon(
         redirect_response.http_request()->headers.at(
             "Attribution-Reporting-Eligible"));
-    EXPECT_FALSE(base::Contains(response.http_request()->headers,
-                                "Attribution-Reporting-Support"));
+    ExpectValidAttributionReportingSupportHeader(
+        response.http_request()->headers.at("Attribution-Reporting-Support"),
+        /*web_expected=*/true,
+        /*os_expected=*/false);
   }
 }
 
@@ -6335,8 +6348,11 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
     ExpectValidAttributionReportingEligibleHeaderForEventBeacon(
         reporting_response.http_request()->headers.at(
             "Attribution-Reporting-Eligible"));
-    EXPECT_FALSE(base::Contains(reporting_response.http_request()->headers,
-                                "Attribution-Reporting-Support"));
+    ExpectValidAttributionReportingSupportHeader(
+        reporting_response.http_request()->headers.at(
+            "Attribution-Reporting-Support"),
+        /*web_expected=*/true,
+        /*os_expected=*/false);
 
     // Send 302 redirect response, with "Access-Control-Allow-Origin" header.
     // This header is needed to get the redirect through.
@@ -6366,8 +6382,11 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
     ExpectValidAttributionReportingEligibleHeaderForEventBeacon(
         redirect_response.http_request()->headers.at(
             "Attribution-Reporting-Eligible"));
-    EXPECT_FALSE(base::Contains(reporting_response.http_request()->headers,
-                                "Attribution-Reporting-Support"));
+    ExpectValidAttributionReportingSupportHeader(
+        redirect_response.http_request()->headers.at(
+            "Attribution-Reporting-Support"),
+        /*web_expected=*/true,
+        /*os_expected=*/false);
   }
 }
 
@@ -7392,8 +7411,10 @@ class FencedFrameAutomaticBeaconBrowserTest
     // Verify the request contains the eligibility header.
     ExpectValidAttributionReportingEligibleHeaderForNavigation(
         response.http_request()->headers.at("Attribution-Reporting-Eligible"));
-    EXPECT_FALSE(base::Contains(response.http_request()->headers,
-                                "Attribution-Reporting-Support"));
+    ExpectValidAttributionReportingSupportHeader(
+        response.http_request()->headers.at("Attribution-Reporting-Support"),
+        /*web_expected=*/true,
+        /*os_expected=*/false);
 
     // Verify the request has credentials attached.
     // TODO(crbug.com/1496395): Remove this block after 3PCD.
