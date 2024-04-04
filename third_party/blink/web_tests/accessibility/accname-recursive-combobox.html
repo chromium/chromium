@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+<head>
+  <title>Name Comp: Embedded Control</title>
+  <script src="../resources/testharness.js"></script>
+  <script src="../resources/testharnessreport.js"></script>
+  <script src="../resources/testdriver.js"></script>
+  <script src="../resources/testdriver-vendor.js"></script>
+  <script src="../resources/testdriver-actions.js"></script>
+</head>
+<body>
+
+<label>
+  <input type="checkbox"id="label0">
+  Flash the screen
+  <span role="combobox">
+    <span aria-labelledby="label0">recursive</span>
+  </span> times
+</label>
+
+<script>
+promise_test(async t => {
+  const label = await test_driver.get_computed_label(document.getElementById('label0'));
+  assert_equals(label, "Flash the screen times");
+}, "Don't overflow the stack when computing the label of a combobox that references a label containing the combobox");
+</script>
+</body>
+</html>
