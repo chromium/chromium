@@ -7,6 +7,7 @@
 
 #include <DirectML.h>
 #include <wrl.h>
+
 #include <map>
 #include <memory>
 #include <string>
@@ -27,6 +28,7 @@ using Microsoft::WRL::ComPtr;
 
 class CommandQueue;
 class CommandRecorder;
+class ContextImpl;
 class GraphBuilder;
 
 // Record the total byte length of buffers and the D3D12_RANGE for each
@@ -49,7 +51,8 @@ class GraphImpl final : public WebNNGraphImpl {
   // wait for the initialization work to be completed on GPU, the GraphImpl
   // instance will only be created and bound to the mojom receiver in
   // GraphImpl::OnInitializationComplete method.
-  static void CreateAndBuild(scoped_refptr<CommandQueue> command_queue,
+  static void CreateAndBuild(base::WeakPtr<ContextImpl> context,
+                             scoped_refptr<CommandQueue> command_queue,
                              ComPtr<IDMLDevice> dml_device,
                              mojom::GraphInfoPtr graph_info,
                              mojom::WebNNContext::CreateGraphCallback callback,
@@ -195,6 +198,7 @@ class GraphImpl final : public WebNNGraphImpl {
   // initialization, while the data of the input tensor is uploaded for every
   // graph execution.
   static void OnCompilationComplete(
+      base::WeakPtr<ContextImpl> context,
       mojom::WebNNContext::CreateGraphCallback callback,
       std::unique_ptr<CommandRecorder> command_recorder,
       base::flat_map<uint64_t, mojo_base::BigBuffer> constant_id_to_buffer_map,
@@ -209,6 +213,7 @@ class GraphImpl final : public WebNNGraphImpl {
   // Notice that the persistent_buffer could be nullptr which means it isn't
   // required by the graph.
   static void OnInitializationComplete(
+      base::WeakPtr<ContextImpl> context,
       std::unique_ptr<CommandRecorder> command_recorder,
       std::unique_ptr<PersistentResource> persistent_resource,
       ComPtr<IDMLCompiledOperator> compiled_operator,

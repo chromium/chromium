@@ -5,6 +5,7 @@
 #include "services/webnn/dml/graph_impl.h"
 
 #include <winerror.h>
+
 #include <algorithm>
 #include <array>
 #include <limits>
@@ -24,6 +25,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/webnn/dml/command_queue.h"
 #include "services/webnn/dml/command_recorder.h"
+#include "services/webnn/dml/context_impl.h"
 #include "services/webnn/dml/error.h"
 #include "services/webnn/dml/graph_builder.h"
 #include "services/webnn/dml/tensor_desc.h"
@@ -3587,6 +3589,7 @@ ComPtr<IDMLCompiledOperator> GraphImpl::CompileOnBackgroundThread(
 
 // static
 void GraphImpl::OnCompilationComplete(
+    base::WeakPtr<ContextImpl> context,
     mojom::WebNNContext::CreateGraphCallback callback,
     std::unique_ptr<CommandRecorder> command_recorder,
     base::flat_map<uint64_t, mojo_base::BigBuffer> constant_id_to_buffer_map,
@@ -3761,14 +3764,15 @@ void GraphImpl::OnCompilationComplete(
       command_recorder->GetCommandQueue());
 
   command_queue->WaitAsync(base::BindOnce(
-      &GraphImpl::OnInitializationComplete, std::move(command_recorder),
-      std::move(persistent_resource), std::move(compiled_operator),
-      std::move(compute_resource_info), std::move(graph_buffer_binding_info),
-      std::move(callback)));
+      &GraphImpl::OnInitializationComplete, std::move(context),
+      std::move(command_recorder), std::move(persistent_resource),
+      std::move(compiled_operator), std::move(compute_resource_info),
+      std::move(graph_buffer_binding_info), std::move(callback)));
 }
 
 // static
 void GraphImpl::OnInitializationComplete(
+    base::WeakPtr<ContextImpl> context,
     std::unique_ptr<CommandRecorder> command_recorder,
     std::unique_ptr<PersistentResource> persistent_resource,
     ComPtr<IDMLCompiledOperator> compiled_operator,
@@ -3812,17 +3816,24 @@ void GraphImpl::OnInitializationComplete(
     return;
   }
 
+  if (!context) {
+    HandleGraphCreationFailure(
+        "Failed to create graph because the context was destroyed.",
+        std::move(callback));
+    return;
+  }
+
   scoped_refptr<CommandQueue> command_queue(
       command_recorder->GetCommandQueue());
   // The remote sent to the renderer.
   mojo::PendingRemote<mojom::WebNNGraph> blink_remote;
   // The receiver bound to GraphImpl.
-  mojo::MakeSelfOwnedReceiver<mojom::WebNNGraph>(
+  context->OnWebNNGraphImplCreated(
+      blink_remote.InitWithNewPipeAndPassReceiver(),
       base::WrapUnique(new GraphImpl(
           std::move(command_recorder), std::move(persistent_resource),
           std::move(compiled_operator), std::move(compute_resource_info),
-          std::move(graph_buffer_binding_info), std::move(compute_resources))),
-      blink_remote.InitWithNewPipeAndPassReceiver());
+          std::move(graph_buffer_binding_info), std::move(compute_resources))));
   command_queue->ReleaseCompletedResources();
   std::move(callback).Run(
       CreateGraphResult::NewGraphRemote(std::move(blink_remote)));
@@ -3830,6 +3841,7 @@ void GraphImpl::OnInitializationComplete(
 
 // static
 void GraphImpl::CreateAndBuild(
+    base::WeakPtr<ContextImpl> context,
     scoped_refptr<CommandQueue> command_queue,
     ComPtr<IDMLDevice> dml_device,
     mojom::GraphInfoPtr graph_info,
@@ -4205,8 +4217,8 @@ void GraphImpl::CreateAndBuild(
       base::BindOnce(&GraphImpl::CompileOnBackgroundThread,
                      std::move(graph_builder),
                      pass_dml_execution_disable_meta_commands),
-      base::BindOnce(&GraphImpl::OnCompilationComplete, std::move(callback),
-                     std::move(command_recorder),
+      base::BindOnce(&GraphImpl::OnCompilationComplete, std::move(context),
+                     std::move(callback), std::move(command_recorder),
                      std::move(graph_info->constant_id_to_buffer_map),
                      std::move(constant_id_to_input_index_map),
                      std::move(graph_buffer_binding_info),

@@ -37,7 +37,8 @@ ContextImpl::~ContextImpl() = default;
 void ContextImpl::CreateGraphImpl(
     mojom::GraphInfoPtr graph_info,
     mojom::WebNNContext::CreateGraphCallback callback) {
-  GraphImpl::CreateAndBuild(adapter_->command_queue(), adapter_->dml_device(),
+  GraphImpl::CreateAndBuild(weak_factory_.GetWeakPtr(),
+                            adapter_->command_queue(), adapter_->dml_device(),
                             std::move(graph_info), std::move(callback),
                             gpu_feature_info_->IsWorkaroundEnabled(
                                 gpu::DML_EXECUTION_DISABLE_META_COMMANDS));

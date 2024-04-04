@@ -104,4 +104,10 @@ void WebNNContextImpl::WriteBuffer(const WebNNBufferImpl& dst_buffer,
   WriteBufferImpl(dst_buffer, std::move(src_buffer));
 }
 
+void WebNNContextImpl::OnWebNNGraphImplCreated(
+    mojo::PendingReceiver<mojom::WebNNGraph> receiver,
+    std::unique_ptr<WebNNGraphImpl> graph_impl) {
+  graph_impls_.Add(std::move(graph_impl), std::move(receiver));
+}
+
 }  // namespace webnn
