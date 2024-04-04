@@ -65,9 +65,9 @@ class COMPONENT_EXPORT(OZONE_BASE) GLOzone {
   // Clears static GL bindings.
   virtual void ShutdownGL(gl::GLDisplay* display) = 0;
 
-  // Returns true if the NativePixmap of the specified type can be imported
-  // into GL using ImportNativePixmap().
-  virtual bool CanImportNativePixmap() = 0;
+  // Returns true if the NativePixmap of the specified type and format can be
+  // imported into GL using ImportNativePixmap().
+  virtual bool CanImportNativePixmap(gfx::BufferFormat format) = 0;
 
   // Imports NativePixmap into GL and binds it to the provided texture_id. The
   // NativePixmapGLBinding does not take ownership of the provided texture_id

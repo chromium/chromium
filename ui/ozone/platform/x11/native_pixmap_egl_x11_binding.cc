@@ -154,6 +154,11 @@ NativePixmapEGLX11Binding::~NativePixmapEGLX11Binding() {
   }
 }
 
+bool NativePixmapEGLX11Binding::IsBufferFormatSupported(
+    gfx::BufferFormat format) {
+  return gl::IsFormatSupported(format);
+}
+
 bool NativePixmapEGLX11Binding::Initialize(x11::Pixmap pixmap) {
   CHECK_NE(pixmap, x11::Pixmap::None);
   pixmap_ = pixmap;

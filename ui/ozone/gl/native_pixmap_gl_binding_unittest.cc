@@ -32,11 +32,14 @@
 namespace gl {
 namespace {
 
+constexpr gfx::BufferUsage kUsage = gfx::BufferUsage::SCANOUT;
+constexpr gfx::BufferFormat kFormat = gfx::BufferFormat::BGRA_8888;
+
 bool SkipTest(GLDisplay* display) {
   ui::GLOzone* gl_ozone = ui::OzonePlatform::GetInstance()
                               ->GetSurfaceFactoryOzone()
                               ->GetCurrentGLOzone();
-  if (!gl_ozone || !gl_ozone->CanImportNativePixmap()) {
+  if (!gl_ozone || !gl_ozone->CanImportNativePixmap(kFormat)) {
     LOG(WARNING) << "Skip test, ozone implementation can't import native "
                  << "pixmaps";
     return true;
@@ -72,9 +75,6 @@ class NativePixmapGLBindingTest : public testing::Test {
  protected:
   std::unique_ptr<ui::NativePixmapGLBinding> CreateSolidColorImage(
       const gfx::Size& size) {
-    auto kUsage = gfx::BufferUsage::SCANOUT;
-    auto kFormat = gfx::BufferFormat::BGRA_8888;
-
     ui::SurfaceFactoryOzone* surface_factory =
         ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
     scoped_refptr<gfx::NativePixmap> pixmap =
@@ -89,13 +89,14 @@ class NativePixmapGLBindingTest : public testing::Test {
       glGenTextures(1, &texture_id_);
     }
 
-    auto binding =
-        ui::OzonePlatform::GetInstance()
-            ->GetSurfaceFactoryOzone()
-            ->GetCurrentGLOzone()
-            ->ImportNativePixmap(
-                std::move(pixmap), kFormat, gfx::BufferPlane::DEFAULT, size,
-                gfx::ColorSpace(), GL_TEXTURE_EXTERNAL_OES, texture_id_);
+    ui::GLOzone* gl_ozone = ui::OzonePlatform::GetInstance()
+                                ->GetSurfaceFactoryOzone()
+                                ->GetCurrentGLOzone();
+    EXPECT_TRUE(gl_ozone->CanImportNativePixmap(kFormat));
+
+    auto binding = gl_ozone->ImportNativePixmap(
+        std::move(pixmap), kFormat, gfx::BufferPlane::DEFAULT, size,
+        gfx::ColorSpace(), GL_TEXTURE_EXTERNAL_OES, texture_id_);
     EXPECT_TRUE(binding);
     return binding;
   }

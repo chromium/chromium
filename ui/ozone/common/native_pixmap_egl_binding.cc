@@ -90,6 +90,10 @@ NativePixmapEGLBinding::~NativePixmapEGLBinding() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
+bool NativePixmapEGLBinding::IsBufferFormatSupported(gfx::BufferFormat format) {
+  return FourCC(format) != DRM_FORMAT_INVALID;
+}
+
 // static
 std::unique_ptr<NativePixmapGLBinding> NativePixmapEGLBinding::Create(
     scoped_refptr<gfx::NativePixmap> pixmap,

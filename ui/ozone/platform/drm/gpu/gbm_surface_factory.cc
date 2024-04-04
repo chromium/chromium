@@ -118,9 +118,13 @@ class GLOzoneEGLGbm : public GLOzoneEGL {
 
   ~GLOzoneEGLGbm() override = default;
 
-  bool CanImportNativePixmap() override {
-    return gl::GLSurfaceEGL::GetGLDisplayEGL()
-        ->ext->b_EGL_EXT_image_dma_buf_import;
+  bool CanImportNativePixmap(gfx::BufferFormat format) override {
+    if (!gl::GLSurfaceEGL::GetGLDisplayEGL()
+             ->ext->b_EGL_EXT_image_dma_buf_import) {
+      return false;
+    }
+
+    return NativePixmapEGLBinding::IsBufferFormatSupported(format);
   }
 
   std::unique_ptr<NativePixmapGLBinding> ImportNativePixmap(

@@ -68,8 +68,21 @@ class GLOzoneEGLX11 : public GLOzoneEGL {
     return GLOzoneEGL::InitializeStaticGLBindings(implementation);
   }
 
-  bool CanImportNativePixmap() override {
-    return GetNativePixmapSupportType() != NativePixmapSupportType::kNone;
+  bool CanImportNativePixmap(gfx::BufferFormat format) override {
+    if (GetNativePixmapSupportType() == NativePixmapSupportType::kNone) {
+      return false;
+    }
+
+    switch (GetNativePixmapSupportType()) {
+      case NativePixmapSupportType::kDMABuf: {
+        return NativePixmapEGLBinding::IsBufferFormatSupported(format);
+      }
+      case NativePixmapSupportType::kX11Pixmap: {
+        return NativePixmapEGLX11Binding::IsBufferFormatSupported(format);
+      }
+      default:
+        return false;
+    }
   }
 
   std::unique_ptr<NativePixmapGLBinding> ImportNativePixmap(

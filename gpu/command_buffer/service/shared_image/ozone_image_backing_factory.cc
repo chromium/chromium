@@ -303,7 +303,8 @@ bool OzoneImageBackingFactory::IsSupported(
   }
 
   ui::GLOzone* gl_ozone = factory->GetCurrentGLOzone();
-  if (used_by_gl && (!gl_ozone || !gl_ozone->CanImportNativePixmap())) {
+  if (used_by_gl &&
+      (!gl_ozone || !gl_ozone->CanImportNativePixmap(ToBufferFormat(format)))) {
     return false;
   }
 

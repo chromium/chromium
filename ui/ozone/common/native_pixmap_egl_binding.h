@@ -23,6 +23,8 @@ class NativePixmapEGLBinding : public NativePixmapGLBinding {
                          gfx::BufferPlane plane);
   ~NativePixmapEGLBinding() override;
 
+  static bool IsBufferFormatSupported(gfx::BufferFormat format);
+
   // Create an EGLImage from a given NativePixmap and plane and bind
   // |texture_id| to |target| followed by binding the image to |target|. The
   // color space is for the external sampler: When we sample the YUV buffer as

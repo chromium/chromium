@@ -24,6 +24,8 @@ class NativePixmapEGLX11Binding : public NativePixmapGLBinding {
   explicit NativePixmapEGLX11Binding(gfx::BufferFormat format);
   ~NativePixmapEGLX11Binding() override;
 
+  static bool IsBufferFormatSupported(gfx::BufferFormat format);
+
   static std::unique_ptr<NativePixmapGLBinding> Create(
       scoped_refptr<gfx::NativePixmap> pixmap,
       gfx::BufferFormat plane_format,

@@ -35,7 +35,7 @@ class GLOzoneEGL : public GLOzone {
   bool InitializeExtensionSettingsOneOffPlatform(
       gl::GLDisplay* display) override;
   void ShutdownGL(gl::GLDisplay* display) override;
-  bool CanImportNativePixmap() override;
+  bool CanImportNativePixmap(gfx::BufferFormat format) override;
   std::unique_ptr<NativePixmapGLBinding> ImportNativePixmap(
       scoped_refptr<gfx::NativePixmap> pixmap,
       gfx::BufferFormat plane_format,
