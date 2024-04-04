@@ -2145,7 +2145,6 @@ TEST_P(QuicChromiumClientSessionTest, WriteErrorAfterHandshakeConfirmed) {
 TEST_P(QuicChromiumClientSessionTest, ReportsReceivedEcn) {
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitAndEnableFeature(net::features::kReceiveEcn);
-  FLAGS_quic_reloadable_flag_quic_clone_ecn = true;
 
   MockQuicData mock_quic_data(version_);
   int write_packet_num = 1, read_packet_num = 0;
