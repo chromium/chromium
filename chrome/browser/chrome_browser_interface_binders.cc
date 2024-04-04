@@ -1867,7 +1867,9 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
 #if !BUILDFLAG(IS_ANDROID)
   if (lens::features::IsLensOverlayEnabled()) {
     registry.ForWebUI<lens::LensUntrustedUI>()
-        .Add<lens::mojom::LensPageHandlerFactory>();
+        .Add<lens::mojom::LensPageHandlerFactory>()
+        .Add<searchbox::mojom::PageHandler>()
+        .Add<color_change_listener::mojom::PageHandler>();
   }
   if (companion::IsCompanionFeatureEnabled()) {
     registry.ForWebUI<CompanionSidePanelUntrustedUI>()
