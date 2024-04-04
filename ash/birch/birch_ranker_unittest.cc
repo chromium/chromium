@@ -337,45 +337,59 @@ TEST(BirchRankerTest, RankRecentTabItems) {
   base::Time now = TimeFromString("22 Feb 2024 09:00 UTC");
   BirchRanker ranker(now);
 
-  // Create tab with a timestamp in the last 5 minutes.
+  // Create phone tab with a timestamp in the last 5 minutes.
   BirchTabItem item0(u"item0", GURL(), TimeFromString("22 Feb 2024 08:59 UTC"),
-                     GURL(), "", BirchTabItem::DeviceFormFactor::kDesktop);
+                     GURL(), "", BirchTabItem::DeviceFormFactor::kPhone);
 
-  // Create a tab with timestamp in the last hour.
-  BirchTabItem item1(u"item1", GURL(), TimeFromString("22 Feb 2024 08:30 UTC"),
+  // Create tablet tab with a timestamp in the last 5 minutes.
+  BirchTabItem item1(u"item1", GURL(), TimeFromString("22 Feb 2024 08:58 UTC"),
+                     GURL(), "", BirchTabItem::DeviceFormFactor::kTablet);
+
+  // Create phone tab with a timestamp in the last hour.
+  BirchTabItem item2(u"item2", GURL(), TimeFromString("22 Feb 2024 08:31 UTC"),
+                     GURL(), "", BirchTabItem::DeviceFormFactor::kPhone);
+
+  // Create a desktop tab with timestamp in the last hour.
+  BirchTabItem item3(u"item3", GURL(), TimeFromString("22 Feb 2024 08:30 UTC"),
                      GURL(), "", BirchTabItem::DeviceFormFactor::kDesktop);
 
   // Create a tab with timestamp in the last day.
-  BirchTabItem item2(u"item2", GURL(), TimeFromString("21 Feb 2024 09:01 UTC"),
+  BirchTabItem item4(u"item4", GURL(), TimeFromString("21 Feb 2024 09:01 UTC"),
                      GURL(), "", BirchTabItem::DeviceFormFactor::kDesktop);
 
   // Create a tab with timestamp more than a day ago.
-  BirchTabItem item3(u"item3", GURL(), TimeFromString("21 Feb 2024 08:59 UTC"),
+  BirchTabItem item5(u"item5", GURL(), TimeFromString("21 Feb 2024 08:59 UTC"),
                      GURL(), "", BirchTabItem::DeviceFormFactor::kDesktop);
 
   // Put the items in the vector in reverse order to validate that they are
   // still handled in the correct order (by time) inside the ranker.
-  std::vector<BirchTabItem> items = {item3, item2, item1, item0};
+  std::vector<BirchTabItem> items = {item5, item4, item3, item2, item1, item0};
 
   ranker.RankRecentTabItems(&items);
 
-  ASSERT_EQ(4u, items.size());
+  ASSERT_EQ(6u, items.size());
 
-  // The tab with a timestamp in the last 5 minutes has high priority.
+  // The mobile tabs with a timestamp in the last 5 minutes has high priority.
   EXPECT_EQ(items[0].title(), u"item0");
   EXPECT_FLOAT_EQ(items[0].ranking(), 14.f);
-
-  // The tab with a timestamp in the last hour has medium priority.
   EXPECT_EQ(items[1].title(), u"item1");
-  EXPECT_FLOAT_EQ(items[1].ranking(), 17.f);
+  EXPECT_FLOAT_EQ(items[1].ranking(), 14.f);
 
-  // The tab with a timestamp in the last day has low priority.
+  // The mobile tab with a timestamp in the last hour is unranked.
   EXPECT_EQ(items[2].title(), u"item2");
-  EXPECT_FLOAT_EQ(items[2].ranking(), 30.f);
+  EXPECT_FLOAT_EQ(items[2].ranking(), std::numeric_limits<float>::max());
+
+  // The desktop tab with a timestamp in the last hour has medium priority.
+  EXPECT_EQ(items[3].title(), u"item3");
+  EXPECT_FLOAT_EQ(items[3].ranking(), 17.f);
+
+  // The desktop tab with a timestamp in the last day has low priority.
+  EXPECT_EQ(items[4].title(), u"item4");
+  EXPECT_FLOAT_EQ(items[4].ranking(), 30.f);
 
   // The tab with a timestamp more than a day ago wasn't ranked.
-  EXPECT_EQ(items[3].title(), u"item3");
-  EXPECT_FLOAT_EQ(items[3].ranking(), std::numeric_limits<float>::max());
+  EXPECT_EQ(items[5].title(), u"item5");
+  EXPECT_FLOAT_EQ(items[5].ranking(), std::numeric_limits<float>::max());
 }
 
 TEST(BirchRankerTest, RankWeatherItems_Morning) {

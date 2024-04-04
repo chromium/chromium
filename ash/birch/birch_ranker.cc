@@ -141,21 +141,24 @@ void BirchRanker::RankRecentTabItems(std::vector<BirchTabItem>* items) {
               return b.timestamp() < a.timestamp();
             });
 
-  // TODO(b/305094126): Distinguish between tabs from mobile and tabs from
-  // desktop.
   for (BirchTabItem& item : *items) {
-    // Very recent items have high priority.
-    if (now_ - base::Minutes(5) < item.timestamp()) {
+    const bool is_mobile =
+        item.form_factor() == BirchTabItem::DeviceFormFactor::kPhone ||
+        item.form_factor() == BirchTabItem::DeviceFormFactor::kTablet;
+    // Very recent mobile items have high priority.
+    if (is_mobile && now_ - base::Minutes(5) < item.timestamp()) {
       item.set_ranking(14.f);
       continue;
     }
-    // Items from the last hour have medium priority.
-    if (now_ - base::Hours(1) < item.timestamp()) {
+    const bool is_desktop =
+        item.form_factor() == BirchTabItem::DeviceFormFactor::kDesktop;
+    // Desktop items from the last hour have medium priority.
+    if (is_desktop && now_ - base::Hours(1) < item.timestamp()) {
       item.set_ranking(17.f);
       continue;
     }
-    // Items from the last day have low priority.
-    if (now_ - base::Days(1) < item.timestamp()) {
+    // Desktop items from the last day have low priority.
+    if (is_desktop && now_ - base::Days(1) < item.timestamp()) {
       item.set_ranking(30.f);
       continue;
     }
