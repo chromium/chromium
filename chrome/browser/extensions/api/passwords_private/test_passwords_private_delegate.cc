@@ -433,6 +433,16 @@ void TestPasswordsPrivateDelegate::ShowExportedFileInShell(
   exported_file_shown_in_shell_ = true;
 }
 
+void TestPasswordsPrivateDelegate::ChangePasswordManagerPin(
+    content::WebContents* web_contents) {
+  change_password_manager_pin_called_ = true;
+}
+
+bool TestPasswordsPrivateDelegate::IsPasswordManagerPinAvailable(
+    content::WebContents* web_contents) {
+  return false;
+}
+
 base::WeakPtr<PasswordsPrivateDelegate>
 TestPasswordsPrivateDelegate::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

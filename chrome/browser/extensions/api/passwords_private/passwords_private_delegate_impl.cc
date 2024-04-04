@@ -44,6 +44,7 @@
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/webauthn/change_pin_controller.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/extensions/api/passwords_private.h"
@@ -933,6 +934,25 @@ void PasswordsPrivateDelegateImpl::ShowExportedFileInShell(
   base::FilePath path(base::UTF8ToWide(file_path));
 #endif
   platform_util::ShowItemInFolder(browser->profile(), path);
+}
+
+void PasswordsPrivateDelegateImpl::ChangePasswordManagerPin(
+    content::WebContents* web_contents) {
+  ChangePinController* controller =
+      ChangePinController::ForWebContents(web_contents);
+  if (controller) {
+    controller->StartChangePin();
+  }
+}
+
+bool PasswordsPrivateDelegateImpl::IsPasswordManagerPinAvailable(
+    content::WebContents* web_contents) {
+  ChangePinController* controller =
+      ChangePinController::ForWebContents(web_contents);
+  if (!controller) {
+    return false;
+  }
+  return controller->IsChangePinFlowAvailable();
 }
 
 base::WeakPtr<PasswordsPrivateDelegate>

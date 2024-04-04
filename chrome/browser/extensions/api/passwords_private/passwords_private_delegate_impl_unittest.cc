@@ -48,6 +48,7 @@
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "chrome/browser/webapps/webapps_client_desktop.h"
+#include "chrome/browser/webauthn/change_pin_controller.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "chrome/test/base/test_browser_window.h"
@@ -159,6 +160,12 @@ class MockPasswordManagerPorter : public PasswordManagerPorterInterface {
                ImportResultsCallback results_callback),
               (override));
   MOCK_METHOD(void, ResetImporter, (bool delete_file), (override));
+};
+
+class MockChangePinController : public ChangePinController {
+ public:
+  MOCK_METHOD(bool, IsChangePinFlowAvailable, (), (override));
+  MOCK_METHOD(bool, StartChangePin, (), (override));
 };
 
 class FakePasswordManagerPorter : public PasswordManagerPorterInterface {
@@ -412,6 +419,7 @@ class PasswordsPrivateDelegateImplTest : public WebAppTest {
   scoped_refptr<TestPasswordStore> profile_store_;
   scoped_refptr<TestPasswordStore> account_store_;
   raw_ptr<ui::TestClipboard, DanglingUntriaged> test_clipboard_;
+  MockChangePinController change_pin_controller_;
 
  private:
   base::HistogramTester histogram_tester_;
@@ -444,6 +452,7 @@ void PasswordsPrivateDelegateImplTest::SetUp() {
                                          -> std::unique_ptr<KeyedService> {
         return std::make_unique<password_manager::MockPasswordSenderService>();
       }));
+  ChangePinController::set_instance_for_testing(&change_pin_controller_);
 }
 
 void PasswordsPrivateDelegateImplTest::SetUpPasswordStores(
@@ -1868,6 +1877,16 @@ TEST_F(PasswordsPrivateDelegateImplTest, ShareNonExistentPassword) {
   EXPECT_CALL(*password_sender_service, SendPasswords).Times(0);
 
   delegate->SharePassword(/*id=*/100, recipients);
+}
+
+TEST_F(PasswordsPrivateDelegateImplTest, ChangePin) {
+  auto delegate = CreateDelegate();
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+
+  EXPECT_CALL(change_pin_controller_, IsChangePinFlowAvailable)
+      .WillOnce(Return(true));
+
+  EXPECT_TRUE(delegate->IsPasswordManagerPinAvailable(web_contents.get()));
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)

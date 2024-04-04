@@ -97,6 +97,9 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   void ShowAddShortcutDialog(content::WebContents* web_contents) override;
   void ShowExportedFileInShell(content::WebContents* web_contents,
                                std::string file_path) override;
+  void ChangePasswordManagerPin(content::WebContents* web_contents) override;
+  bool IsPasswordManagerPinAvailable(
+      content::WebContents* web_contents) override;
   base::WeakPtr<PasswordsPrivateDelegate> AsWeakPtr() override;
 
   void SetProfile(Profile* profile);
@@ -136,6 +139,10 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
 
   bool get_exported_file_shown_in_shell() const {
     return exported_file_shown_in_shell_;
+  }
+
+  bool get_change_password_manager_pin_called() const {
+    return change_password_manager_pin_called_;
   }
 
  protected:
@@ -197,6 +204,9 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
 
   // used to track whether the exported file was shown in shell.
   bool exported_file_shown_in_shell_ = false;
+
+  // used for checking whether `ChangePasswordManagerPin` is called.
+  bool change_password_manager_pin_called_ = false;
 
   base::WeakPtrFactory<TestPasswordsPrivateDelegate> weak_ptr_factory_{this};
 };

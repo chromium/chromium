@@ -650,4 +650,23 @@ ResponseAction PasswordsPrivateShowAddShortcutDialogFunction::Run() {
   return RespondNow(NoArguments());
 }
 
+// PasswordsPrivateChangePasswordManagerPinFunction
+ResponseAction PasswordsPrivateChangePasswordManagerPinFunction::Run() {
+  if (auto delegate = GetDelegate(browser_context())) {
+    delegate->ChangePasswordManagerPin(GetSenderWebContents());
+    return RespondNow(NoArguments());
+  }
+
+  return RespondNow(Error(kNoDelegateError));
+}
+
+ResponseAction PasswordsPrivateIsPasswordManagerPinAvailableFunction::Run() {
+  if (auto delegate = GetDelegate(browser_context())) {
+    return RespondNow(WithArguments(
+        delegate->IsPasswordManagerPinAvailable(GetSenderWebContents())));
+  }
+
+  return RespondNow(Error(kNoDelegateError));
+}
+
 }  // namespace extensions

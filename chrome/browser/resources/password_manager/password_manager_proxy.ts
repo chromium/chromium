@@ -380,6 +380,12 @@ export interface PasswordManagerProxy {
 
   /** Dismiss the menu notifications for the Safety Hub password module. */
   dismissSafetyHubPasswordMenuNotification(): void;
+
+  /** Starts the flow for changing Password Manager PIN. */
+  changePasswordManagerPin(): void;
+
+  /** Checks whether changing the Password Manager PIN is possible. */
+  isPasswordManagerPinAvailable(): Promise<boolean>;
 }
 
 /**
@@ -607,6 +613,14 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
 
   dismissSafetyHubPasswordMenuNotification() {
     chrome.send('dismissSafetyHubPasswordMenuNotification');
+  }
+
+  changePasswordManagerPin() {
+    chrome.passwordsPrivate.changePasswordManagerPin();
+  }
+
+  isPasswordManagerPinAvailable() {
+    return chrome.passwordsPrivate.isPasswordManagerPinAvailable();
   }
 
   static getInstance(): PasswordManagerProxy {

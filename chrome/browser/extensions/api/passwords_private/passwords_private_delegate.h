@@ -255,6 +255,14 @@ class PasswordsPrivateDelegate
   virtual void ShowExportedFileInShell(content::WebContents* web_contents,
                                        std::string file_path) = 0;
 
+  // Starts the flow for changing the password manager PIN.
+  virtual void ChangePasswordManagerPin(content::WebContents* web_contents) = 0;
+
+  // Returns true if it's allowed to change the password manager PIN, if it
+  // exists.
+  virtual bool IsPasswordManagerPinAvailable(
+      content::WebContents* web_contents) = 0;
+
   virtual base::WeakPtr<PasswordsPrivateDelegate> AsWeakPtr() = 0;
 
  protected:

@@ -462,6 +462,32 @@ class PasswordsPrivateShowExportedFileInShellFunction
   ResponseAction Run() override;
 };
 
+class PasswordsPrivateChangePasswordManagerPinFunction
+    : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("passwordsPrivate.changePasswordManagerPin",
+                             PASSWORDSPRIVATE_CHANGEPASSWORDMANAGERPIN)
+
+ protected:
+  ~PasswordsPrivateChangePasswordManagerPinFunction() override = default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+};
+
+class PasswordsPrivateIsPasswordManagerPinAvailableFunction
+    : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("passwordsPrivate.isPasswordManagerPinAvailable",
+                             PASSWORDSPRIVATE_ISPASSWORDMANAGERPINAVAILABLE)
+
+ protected:
+  ~PasswordsPrivateIsPasswordManagerPinAvailableFunction() override = default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_PASSWORDS_PRIVATE_PASSWORDS_PRIVATE_API_H_
