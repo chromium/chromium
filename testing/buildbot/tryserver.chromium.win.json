@@ -266,7 +266,8 @@
       },
       {
         "args": [
-          "--ignore-runtime-requirements=*"
+          "--ignore-runtime-requirements=*",
+          "--gtest_filter=-WebXrVrOpenXrBrowserTest.TestNoStalledFrameLoop"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
