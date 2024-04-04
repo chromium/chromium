@@ -35,6 +35,9 @@ class ProductSpecificationsService : public KeyedService {
   AddProductSpecificationsSet(const std::string& name,
                               const std::vector<const GURL>& urls);
 
+  // Deletes product specification set corresponding to identifier |uuid|.
+  void DeleteProductSpecificationsSet(const std::string& uuid);
+
  private:
   std::unique_ptr<ProductSpecificationsSyncBridge> bridge_;
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;

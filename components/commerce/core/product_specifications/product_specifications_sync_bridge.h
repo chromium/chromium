@@ -61,6 +61,8 @@ class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
   AddProductSpecifications(const std::string& name,
                            const std::vector<const GURL>& urls);
 
+  void DeleteProductSpecificationsSet(const std::string& uuid);
+
   void OnStoreCreated(const std::optional<syncer::ModelError>& error,
                       std::unique_ptr<syncer::ModelTypeStore> store);
   void OnReadAllData(

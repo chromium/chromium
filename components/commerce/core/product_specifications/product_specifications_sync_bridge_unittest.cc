@@ -32,7 +32,7 @@ const std::vector<int64_t> kUpdateTime = {
     kCreationTime[0] + base::Time::kMillisecondsPerDay,
     kCreationTime[1] + 2 * base::Time::kMillisecondsPerDay,
     kCreationTime[2] + base::Time::kMillisecondsPerDay};
-const std::vector<std::vector<std::string>> kCompareUrls = {
+const std::vector<const std::vector<const std::string>> kCompareUrls = {
     {"https://foo.com/", "https://bar.com/"},
     {"https://foo-bar.com", "https://bar-foo.com"},
     {"https://amazon.com/dp/12345",
@@ -84,6 +84,23 @@ sync_pb::CompareSpecifics BuildCompareSpecifics(
   }
   return specifics;
 }
+
+const sync_pb::CompareSpecifics kInitCompareSpecifics[] = {
+    BuildCompareSpecifics(kInitUuid[0],
+                          kCreationTime[0],
+                          kUpdateTime[0],
+                          kInitName[0],
+                          kCompareUrls[0]),
+    BuildCompareSpecifics(kInitUuid[1],
+                          kCreationTime[1],
+                          kUpdateTime[1],
+                          kInitName[1],
+                          kCompareUrls[1]),
+    BuildCompareSpecifics(kInitUuid[2],
+                          kCreationTime[2],
+                          kUpdateTime[2],
+                          kInitName[2],
+                          kCompareUrls[2])};
 
 const sync_pb::CompareSpecifics kCompareSpecifics[] = {
     BuildCompareSpecifics("abba",
@@ -163,6 +180,10 @@ class ProductSpecificationsSyncBridgeTest : public testing::Test {
       const std::string& name,
       const std::vector<const GURL> urls) {
     return bridge().AddProductSpecifications(name, urls);
+  }
+
+  void DeleteProductSpecifications(const std::string& uuid) {
+    bridge().DeleteProductSpecificationsSet(uuid);
   }
 
   void CommitToStoreAndWait(
@@ -435,6 +456,29 @@ TEST_F(ProductSpecificationsSyncBridgeTest,
       AddProductSpecifications(
           kInitName[0], {GURL(kCompareUrls[0][0]), GURL(kCompareUrls[0][1])});
   EXPECT_FALSE(new_specifics.has_value());
+}
+
+TEST_F(ProductSpecificationsSyncBridgeTest,
+       TestDeleteProductSpecificationsSet) {
+  VerifySpecificsExists(kInitCompareSpecifics[0]);
+  DeleteProductSpecifications(kInitCompareSpecifics[0].uuid());
+  base::RunLoop().RunUntilIdle();
+  VerifySpecificsNonExistence(kInitCompareSpecifics[0]);
+}
+
+TEST_F(ProductSpecificationsSyncBridgeTest,
+       TestDeleteProductSpecificationsSetNotTrackingMetadata) {
+  ProcessorNotTrackingMetadata();
+  VerifyEntriesAndStoreSize(3);
+  for (const auto& compare_specifics : kInitCompareSpecifics) {
+    VerifySpecificsExists(compare_specifics);
+  }
+  DeleteProductSpecifications(kInitCompareSpecifics[0].uuid());
+  // Delete operation should be ineffectual because we're not tracking metadata
+  VerifyEntriesAndStoreSize(3);
+  for (const auto& compare_specifics : kInitCompareSpecifics) {
+    VerifySpecificsExists(compare_specifics);
+  }
 }
 
 }  // namespace commerce

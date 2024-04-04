@@ -53,4 +53,9 @@ ProductSpecificationsService::AddProductSpecificationsSet(
   return std::optional(ProductSpecificationsSet::FromProto(specifics.value()));
 }
 
+void ProductSpecificationsService::DeleteProductSpecificationsSet(
+    const std::string& uuid) {
+  bridge_->DeleteProductSpecificationsSet(uuid);
+}
+
 }  // namespace commerce

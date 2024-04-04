@@ -157,6 +157,23 @@ ProductSpecificationsSyncBridge::AddProductSpecifications(
   return std::optional(specifics);
 }
 
+void ProductSpecificationsSyncBridge::DeleteProductSpecificationsSet(
+    const std::string& uuid) {
+  if (!change_processor()->IsTrackingMetadata()) {
+    return;
+  }
+
+  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
+      store_->CreateWriteBatch();
+
+  change_processor()->Delete(uuid, batch->GetMetadataChangeList());
+
+  entries_.erase(uuid);
+  batch->DeleteData(uuid);
+
+  Commit(std::move(batch));
+}
+
 void ProductSpecificationsSyncBridge::OnStoreCreated(
     const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::ModelTypeStore> store) {
