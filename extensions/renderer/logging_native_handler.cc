@@ -4,8 +4,12 @@
 
 #include "extensions/renderer/logging_native_handler.h"
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
+#include "extensions/common/extension.h"
 #include "extensions/renderer/script_context.h"
 #include "v8/include/v8-function-callback.h"
 #include "v8/include/v8-primitive.h"
@@ -37,6 +41,11 @@ void LoggingNativeHandler::AddRoutes() {
   RouteHandlerFunction("WARNING",
                        base::BindRepeating(&LoggingNativeHandler::Warning,
                                            base::Unretained(this)));
+
+  RouteHandlerFunction(
+      "LogGetBackgroundClientUsage",
+      base::BindRepeating(&LoggingNativeHandler::LogGetBackgroundClientUsage,
+                          base::Unretained(this)));
 }
 
 void LoggingNativeHandler::Check(
@@ -85,6 +94,14 @@ void LoggingNativeHandler::ParseArgs(
 
   if (!check_value)
     *error_message += "\n" + context()->GetStackTraceAsString();
+}
+
+void LoggingNativeHandler::LogGetBackgroundClientUsage(
+    const v8::FunctionCallbackInfo<v8::Value>& args) {
+  CHECK(context()->extension());
+  base::UmaHistogramSparse(
+      "Extensions.ServiceWorker.GetBackgroundClientCallManifestVersion",
+      std::min(context()->extension()->manifest_version(), 100));
 }
 
 }  // namespace extensions

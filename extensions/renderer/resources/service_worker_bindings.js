@@ -46,6 +46,8 @@
   // client, or is rejected if there is no background client or if the
   // background client failed to wake.
   self.chrome.runtime.getBackgroundClient = function() {
+    logging.LogGetBackgroundClientUsage();
+
     return findBackgroundClient().then(function(client) {
       if (client) {
         // Background client is already awake, or it was persistent.

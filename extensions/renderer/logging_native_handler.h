@@ -50,6 +50,12 @@ class LoggingNativeHandler : public ObjectBackedNativeHandler {
   void ParseArgs(const v8::FunctionCallbackInfo<v8::Value>& args,
                  bool* check_value,
                  std::string* error_message);
+
+  // Logs that an extension called chrome.runtime.getBackgroundClient().
+  // TODO(https://crbug.com/332366095): Remove this. It doesn't really belong
+  // here, but it's okay for the short-term that we're looking at this data.
+  void LogGetBackgroundClientUsage(
+      const v8::FunctionCallbackInfo<v8::Value>& args);
 };
 
 }  // namespace extensions
