@@ -7,6 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "ios/chrome/browser/ui/push_notification/scoped_notification_auth_swizzler.h"
+#import "ios/chrome/browser/ui/settings/notifications/notifications_constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -35,6 +36,11 @@ void TapMenuItem(int labelId) {
   [[EarlGrey selectElementWithMatcher:item] performAction:grey_tap()];
 }
 
+// Returns the matcher for the updated Notifications Settings screen.
+id<GREYMatcher> NotificationsSettingsMatcher() {
+  return grey_accessibilityID(kNotificationsBannerTableViewId);
+}
+
 }  // namespace
 
 // Integration tests using the Price Notifications settings screen.
@@ -55,14 +61,22 @@ void TapMenuItem(int labelId) {
   std::string notificationMenuItemFlag =
       std::string("NotificationSettingsMenuItem");
 
-  config.additional_args.push_back(
-      "--enable-features=" + priceNotificationsFlag + "," + shoppingListFlag +
-      "," + notificationMenuItemFlag);
-  config.additional_args.push_back("--enable-features=IOSTipsNotifications");
+  // Test the updated settings page when the Tips Notifications feature is
+  // enabled.
+  if ([self isRunningTest:@selector
+            (testNotificationsSwipeDown_WithUpdatedSettingsView)] ||
+      [self isRunningTest:@selector(testTipsSwitch)]) {
+    config.additional_args.push_back("--enable-features=IOSTipsNotifications");
+  } else {
+    config.additional_args.push_back("--disable-features=IOSTipsNotifications");
+  }
+
   return config;
 }
 
 // Tests that the settings page is dismissed by swiping down from the top.
+// TODO(crbug.com/326070899): remove this test when Tips Notifications is
+// enabled by default.
 - (void)testPriceNotificationsSwipeDown {
   // Opens price notifications setting.
   [ChromeEarlGreyUI openSettingsMenu];
@@ -81,8 +95,28 @@ void TapMenuItem(int labelId) {
       assertWithMatcher:grey_nil()];
 }
 
-// Tests that switching on Tips Notifications causes the alert prompt to appear
-// when the user has disabled notifications.
+// Tests that the updated settings page is dismissed by swiping down from the
+// top.
+- (void)testNotificationsSwipeDown_WithUpdatedSettingsView {
+  // Opens notifications setting.
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsMenuNotificationsButton()];
+
+  // Check that Notifications TableView is presented.
+  [[EarlGrey selectElementWithMatcher:NotificationsSettingsMatcher()]
+      assertWithMatcher:grey_notNil()];
+
+  // Swipe TableView down.
+  [[EarlGrey selectElementWithMatcher:NotificationsSettingsMatcher()]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+
+  // Check that Settings has been dismissed.
+  [[EarlGrey selectElementWithMatcher:NotificationsSettingsMatcher()]
+      assertWithMatcher:grey_nil()];
+}
+
+// Tests that switching on Tips Notifications on the updated settings page
+// causes the alert prompt to appear when the user has disabled notifications.
 - (void)testTipsSwitch {
   // Swizzle in the "denied' auth status for notifications.
   ScopedNotificationAuthSwizzler auth(UNAuthorizationStatusDenied, NO);
@@ -91,7 +125,7 @@ void TapMenuItem(int labelId) {
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsMenuNotificationsButton()];
 
   // Check that the TableView is presented.
-  [[EarlGrey selectElementWithMatcher:SettingsNotificationsTableView()]
+  [[EarlGrey selectElementWithMatcher:NotificationsSettingsMatcher()]
       assertWithMatcher:grey_notNil()];
   [[EarlGrey selectElementWithMatcher:TipsSwitchMatcher()]
       assertWithMatcher:grey_notNil()];

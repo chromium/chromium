@@ -13,3 +13,6 @@ NSString* const kSettingsNotificationsContentCellId =
     @"kSettingsNotificationsContentCellId";
 
 NSString* const kNewspaperSFSymbol = @"newspaper";
+
+NSString* const kNotificationsBannerTableViewId =
+    @"kNotificationsBannerTableViewId";

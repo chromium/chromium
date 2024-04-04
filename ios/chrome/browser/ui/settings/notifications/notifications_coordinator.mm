@@ -14,12 +14,14 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/push_notification/notifications_opt_in_alert_coordinator.h"
 #import "ios/chrome/browser/ui/settings/notifications/content_notifications/content_notifications_coordinator.h"
+#import "ios/chrome/browser/ui/settings/notifications/notifications_banner_view_controller.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_mediator.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_navigation_commands.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_settings_observer.h"
@@ -36,10 +38,16 @@
     NotificationsViewControllerPresentationDelegate,
     ContentNotificationsCoordinatorDelegate,
     TrackingPriceCoordinatorDelegate,
-    NotificationsOptInAlertCoordinatorDelegate>
+    NotificationsOptInAlertCoordinatorDelegate,
+    NotificationsBannerViewControllerPresentationDelegate>
 
-// View controller presented by coordinator.
+// View controller presented by coordinator when feature IOSTipsNotifications is
+// disabled.
 @property(nonatomic, strong) NotificationsViewController* viewController;
+// View controller presented by coordinator when feature IOSTipsNotifications is
+// enabled.
+@property(nonatomic, strong)
+    NotificationsBannerViewController* updatedViewController;
 // Notifications settings mediator.
 @property(nonatomic, strong) NotificationsMediator* mediator;
 // Coordinator for Content settings menu.
@@ -84,18 +92,32 @@
       initWithPrefService:prefService
                localState:GetApplicationContext()->GetLocalState()];
 
-  self.viewController = [[NotificationsViewController alloc]
-      initWithStyle:ChromeTableViewStyle()];
-  self.viewController.presentationDelegate = self;
   self.mediator = [[NotificationsMediator alloc] initWithPrefService:prefService
                                                               gaiaID:gaiaID];
-  self.mediator.consumer = self.viewController;
   self.mediator.handler = self;
   self.mediator.presenter = self;
   _notificationsObserver.delegate = self.mediator;
-  self.viewController.modelDelegate = self.mediator;
-  [self.baseNavigationController pushViewController:self.viewController
-                                           animated:YES];
+
+  if (IsIOSTipsNotificationsEnabled()) {
+    self.updatedViewController =
+        [[NotificationsBannerViewController alloc] init];
+    self.updatedViewController.presentationDelegate = self;
+    self.updatedViewController.modelDelegate = self.mediator;
+    self.mediator.consumer = self.updatedViewController;
+    [self.baseNavigationController pushViewController:self.updatedViewController
+                                             animated:YES];
+  } else {
+    self.viewController = [[NotificationsViewController alloc]
+        initWithStyle:ChromeTableViewStyle()];
+    self.viewController.presentationDelegate = self;
+    self.viewController.modelDelegate = self.mediator;
+    self.mediator.consumer = self.viewController;
+    [self.baseNavigationController.navigationBar
+        setBackgroundImage:[UIImage imageNamed:@"notifications_opt_in_banner"]
+             forBarMetrics:UIBarMetricsDefault];
+    [self.baseNavigationController pushViewController:self.viewController
+                                             animated:YES];
+  }
 }
 
 - (void)stop {
@@ -109,8 +131,11 @@
 
 - (void)presentTipsNotificationPermissionAlert {
   [_optInAlertCoordinator stop];
+  UIViewController* baseViewController = IsIOSTipsNotificationsEnabled()
+                                             ? self.updatedViewController
+                                             : self.viewController;
   _optInAlertCoordinator = [[NotificationsOptInAlertCoordinator alloc]
-      initWithBaseViewController:self.viewController
+      initWithBaseViewController:baseViewController
                          browser:self.browser];
   _optInAlertCoordinator.clientIds =
       std::vector{PushNotificationClientId::kTips};
@@ -148,6 +173,14 @@
 - (void)notificationsViewControllerDidRemove:
     (NotificationsViewController*)controller {
   DCHECK_EQ(self.viewController, controller);
+  [self.delegate notificationsCoordinatorDidRemove:self];
+}
+
+#pragma mark - NotificationsBannerViewControllerPresentationDelegate
+
+- (void)notificationsBannerViewControllerDidRemove:
+    (NotificationsBannerViewController*)controller {
+  DCHECK_EQ(self.updatedViewController, controller);
   [self.delegate notificationsCoordinatorDidRemove:self];
 }
 

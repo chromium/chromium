@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_consumer.h"
 
 @class TableViewItem;
+@class TableViewHeaderFooterItem;
 
 // Consumer protocol for Notifications settings.
 @protocol NotificationsConsumer <LegacyChromeTableViewConsumer>

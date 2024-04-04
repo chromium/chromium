@@ -37,12 +37,40 @@ using chrome_test_util::SettingsTrackingPriceTableView;
       "--enable-features=" + priceNotificationsFlag + "," + shoppingListFlag +
       "," + settingsMenuItem);
 
+  // Test the updated settings page when the Tips Notifications feature is
+  // enabled.
+  if ([self isRunningTest:@selector
+            (testTrackingPriceSwipeDown_FromUpdatedSettingsView)]) {
+    config.additional_args.push_back("--enable-features=IOSTipsNotifications");
+  } else {
+    config.additional_args.push_back("--disable-features=IOSTipsNotifications");
+  }
+
   return config;
 }
 
 // Tests that the settings page is dismissed by swiping down from the top.
+// TODO(crbug.com/326070899): remove this test when Tips Notifications is
+// enabled by default.
 - (void)testTrackingPriceSwipeDown {
   [self openTrackingPriceSettings];
+
+  // Check that Tracking Price TableView is presented.
+  [[EarlGrey selectElementWithMatcher:SettingsTrackingPriceTableView()]
+      assertWithMatcher:grey_notNil()];
+
+  // Swipe TableView down.
+  [[EarlGrey selectElementWithMatcher:SettingsTrackingPriceTableView()]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+
+  // Check that Settings has been dismissed.
+  [[EarlGrey selectElementWithMatcher:SettingsTrackingPriceTableView()]
+      assertWithMatcher:grey_nil()];
+}
+
+// Tests that the settings page is dismissed by swiping down from the top.
+- (void)testTrackingPriceSwipeDown_FromUpdatedSettingsView {
+  [self openTrackingPriceSettingsFromUpdatedSettingsView];
 
   // Check that Tracking Price TableView is presented.
   [[EarlGrey selectElementWithMatcher:SettingsTrackingPriceTableView()]
@@ -66,6 +94,17 @@ using chrome_test_util::SettingsTrackingPriceTableView;
   [ChromeEarlGreyUI tapPriceNotificationsMenuButton:
                         ButtonWithAccessibilityLabelId(
                             IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACKING_TITLE)];
+}
+
+// Opens tracking price settings from updated notifications setting page.
+- (void)openTrackingPriceSettingsFromUpdatedSettingsView {
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsMenuNotificationsButton()];
+  id priceTrackingCell =
+      grey_allOf(chrome_test_util::ContainsPartialText(l10n_util::GetNSString(
+                     IDS_IOS_NOTIFICATIONS_OPT_IN_PRICE_TRACKING_TOGGLE_TITLE)),
+                 grey_sufficientlyVisible(), nil);
+  [ChromeEarlGreyUI tapPriceNotificationsMenuButton:priceTrackingCell];
 }
 
 @end

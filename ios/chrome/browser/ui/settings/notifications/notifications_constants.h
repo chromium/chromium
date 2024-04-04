@@ -20,4 +20,7 @@ extern NSString* const kSettingsNotificationsContentCellId;
 // (SF Symbols are Apple's system symbols that can be used as text or logos).
 extern NSString* const kNewspaperSFSymbol;
 
+// The accessibility identifier of the updated Notifications setting table view.
+extern NSString* const kNotificationsBannerTableViewId;
+
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_NOTIFICATIONS_NOTIFICATIONS_CONSTANTS_H_

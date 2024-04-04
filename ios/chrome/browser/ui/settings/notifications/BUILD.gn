@@ -28,10 +28,12 @@ source_set("notifications") {
     "//ios/chrome/browser/shared/public/features:features",
     "//ios/chrome/browser/shared/ui/list_model",
     "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui_util",
+    "//ios/chrome/browser/ui/push_notification:notifications_opt_in_ui",
     "//ios/chrome/browser/ui/push_notification:opt_in_alert_coordinator",
     "//ios/chrome/browser/ui/push_notification:presenters",
     "//ios/chrome/browser/ui/settings/notifications/content_notifications",
@@ -43,7 +45,10 @@ source_set("notifications") {
 
 source_set("notifications_ui") {
   sources = [
+    "notifications_banner_view_controller.h",
+    "notifications_banner_view_controller.mm",
     "notifications_consumer.h",
+    "notifications_item_identifier.h",
     "notifications_navigation_commands.h",
     "notifications_view_controller.h",
     "notifications_view_controller.mm",
@@ -54,10 +59,16 @@ source_set("notifications_ui") {
     ":constants",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/commerce/model/push_notification",
-    "//ios/chrome/browser/shared/public/features:features",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/list_model",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/push_notification:notifications_opt_in_ui",
     "//ios/chrome/browser/ui/settings:settings_root",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements",
+    "//ios/chrome/common/ui/promo_style",
     "//ui/base",
   ]
 }
