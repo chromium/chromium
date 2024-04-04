@@ -123,6 +123,10 @@ ConnectionClosedReasonFromAbortFlowReason(
 QuickStartController::QuickStartController() {
   // Main feature flag
   if (!features::IsOobeQuickStartEnabled()) {
+    if (g_browser_process->local_state()->GetBoolean(
+            prefs::kShouldResumeQuickStartAfterReboot)) {
+      ForceEnableQuickStart();
+    }
     return;
   }
 
