@@ -15,5 +15,5 @@ void PriceInsightsModel::FetchConfigurationForWebState(
     web::WebState* web_state,
     FetchConfigurationForWebStateCallback callback) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
+      FROM_HERE, base::BindOnce(std::move(callback), nullptr));
 }

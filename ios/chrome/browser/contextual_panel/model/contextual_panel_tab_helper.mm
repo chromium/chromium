@@ -78,9 +78,9 @@ void ContextualPanelTabHelper::QueryModels() {
 
 void ContextualPanelTabHelper::ModelCallbackReceived(
     ContextualPanelItemType item_type,
-    std::optional<ContextualPanelItemConfiguration> configuration) {
+    std::unique_ptr<ContextualPanelItemConfiguration> configuration) {
   DCHECK(!responses_[item_type].completed);
-  responses_[item_type] = ModelResponse(configuration);
+  responses_[item_type] = ModelResponse(std::move(configuration));
 
   // Check if all models have returned.
   for (const auto& [key, response] : responses_) {
@@ -92,22 +92,29 @@ void ContextualPanelTabHelper::ModelCallbackReceived(
 }
 
 void ContextualPanelTabHelper::AllRequestsFinished() {
-  std::vector<ContextualPanelItemConfiguration> configurations;
+  // The active configurations passed to observers as weak ptrs.
+  // TODO(crbug.com/332927986): See if this can be an instance variable passed
+  // as a reference once the UI lifetime is more stable.
+  std::vector<base::WeakPtr<ContextualPanelItemConfiguration>> configurations;
   for (const auto& [key, response] : responses_) {
     DCHECK(response.completed);
 
     if (response.configuration) {
-      configurations.push_back(std::move(response.configuration).value());
+      configurations.push_back(response.configuration->AsWeakPtr());
     }
   }
 
-  responses_.clear();
-
   // Sort configurations so the highest relevance is first.
   std::sort(configurations.begin(), configurations.end(),
-            [](ContextualPanelItemConfiguration first,
-               ContextualPanelItemConfiguration second) {
-              return first.relevance > second.relevance;
+            [](base::WeakPtr<ContextualPanelItemConfiguration> first,
+               base::WeakPtr<ContextualPanelItemConfiguration> second) {
+              if (!first) {
+                return false;
+              }
+              if (!second) {
+                return true;
+              }
+              return first->relevance > second->relevance;
             });
 
   for (auto& observer : observers_) {
@@ -116,10 +123,10 @@ void ContextualPanelTabHelper::AllRequestsFinished() {
 }
 
 ContextualPanelTabHelper::ModelResponse::ModelResponse()
-    : completed(false), configuration(std::nullopt) {}
+    : completed(false), configuration(nullptr) {}
 
 ContextualPanelTabHelper::ModelResponse::ModelResponse(
-    std::optional<ContextualPanelItemConfiguration> configuration)
+    std::unique_ptr<ContextualPanelItemConfiguration>&& configuration)
     : completed(true), configuration(std::move(configuration)) {}
 
 ContextualPanelTabHelper::ModelResponse::~ModelResponse() {}

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
 
+#import "base/memory/weak_ptr.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
@@ -19,15 +20,17 @@ namespace {
 class TestContextualPanelTabHelperObserver
     : public ContextualPanelTabHelperObserver {
  public:
-  void ContextualPanelHasNewData(ContextualPanelTabHelper* tab_helper,
-                                 std::vector<ContextualPanelItemConfiguration>
-                                     item_configurations) override {
+  void ContextualPanelHasNewData(
+      ContextualPanelTabHelper* tab_helper,
+      std::vector<base::WeakPtr<ContextualPanelItemConfiguration>>
+          item_configurations) override {
     item_configurations_ = item_configurations;
     run_loop_->Quit();
   }
 
   raw_ptr<base::RunLoop> run_loop_;
-  std::vector<ContextualPanelItemConfiguration> item_configurations_;
+  std::vector<base::WeakPtr<ContextualPanelItemConfiguration>>
+      item_configurations_;
 };
 
 }  // namespace

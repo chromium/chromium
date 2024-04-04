@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_mediator.h"
 
+#import "base/memory/weak_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_mediator_delegate.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_consumer.h"
@@ -42,7 +43,7 @@
 #pragma mark - ContextualPanelCommands
 
 - (void)showContextualPanelEntrypoint {
-  ContextualPanelItemConfiguration config =
+  base::WeakPtr<ContextualPanelItemConfiguration> config =
       _contextualPanelBrowserAgent->GetEntrypointConfiguration();
 
   [self.consumer setEntrypointConfig:config];

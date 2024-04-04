@@ -15,8 +15,8 @@ class WebState;
 // Abstract class representing a model for a Contextual Panel item.
 class ContextualPanelModel {
  public:
-  using FetchConfigurationForWebStateCallback =
-      base::OnceCallback<void(std::optional<ContextualPanelItemConfiguration>)>;
+  using FetchConfigurationForWebStateCallback = base::OnceCallback<void(
+      std::unique_ptr<ContextualPanelItemConfiguration>)>;
   // Asks the model to do any work necessary to fetch the Contextual Panel
   // data for the given `web_state`. Once it has fetched the data, it should
   // call the `callback` with it, or nullopt if it has no data for this

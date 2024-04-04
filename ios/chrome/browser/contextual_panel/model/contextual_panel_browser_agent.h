@@ -5,12 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_MODEL_CONTEXTUAL_PANEL_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_MODEL_CONTEXTUAL_PANEL_BROWSER_AGENT_H_
 
+#import <UIKit/UIKit.h>
+
+#import "base/memory/weak_ptr.h"
 #import "base/scoped_observation.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
-
-#import <UIKit/UIKit.h>
 
 class Browser;
 class WebStateList;
@@ -30,7 +31,7 @@ class ContextualPanelBrowserAgent
 
   // GetEntrypointConfiguration allows to get the appropriate configuration for
   // entrypoint that should currently be shown.
-  ContextualPanelItemConfiguration GetEntrypointConfiguration();
+  base::WeakPtr<ContextualPanelItemConfiguration> GetEntrypointConfiguration();
 
  private:
   friend class BrowserUserData<ContextualPanelBrowserAgent>;
@@ -44,6 +45,9 @@ class ContextualPanelBrowserAgent
                              const WebStateListStatus& status) override;
 
   void WebStateListDestroyed(WebStateList* web_state_list) override;
+
+  // Temporary sample configuration
+  ContextualPanelItemConfiguration sample_configuration_;
 
   // ScopedObservation for WebStateList.
   base::ScopedObservation<WebStateList, WebStateListObserver>

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_view_controller.h"
 
+#import "base/memory/weak_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_mutator.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
@@ -134,12 +135,16 @@ NSString* const kContextualPanelEntrypointBadgeButtonIdentifier =
 
 #pragma mark - ContextualPanelEntrypointConsumer
 
-- (void)setEntrypointConfig:(ContextualPanelItemConfiguration)config {
+- (void)setEntrypointConfig:
+    (base::WeakPtr<ContextualPanelItemConfiguration>)config {
+  if (!config) {
+    return;
+  }
   _badgeButton.accessibilityLabel =
-      base::SysUTF8ToNSString(config.accessibility_label);
+      base::SysUTF8ToNSString(config->accessibility_label);
 
   UIImage* image = CustomSymbolWithPointSize(
-      base::SysUTF8ToNSString(config.entrypoint_image_name),
+      base::SysUTF8ToNSString(config->entrypoint_image_name),
       kInfobarSymbolPointSize);
   [_badgeButton setImage:image forState:UIControlStateNormal];
 }

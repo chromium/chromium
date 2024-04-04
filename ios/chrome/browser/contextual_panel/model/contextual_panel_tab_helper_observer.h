@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_MODEL_CONTEXTUAL_PANEL_TAB_HELPER_OBSERVER_H_
 #define IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_MODEL_CONTEXTUAL_PANEL_TAB_HELPER_OBSERVER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 
 struct ContextualPanelItemConfiguration;
@@ -17,7 +18,8 @@ class ContextualPanelTabHelperObserver : public base::CheckedObserver {
   // user, and the first one should be the item displayed in any entry point.
   virtual void ContextualPanelHasNewData(
       ContextualPanelTabHelper* tab_helper,
-      std::vector<ContextualPanelItemConfiguration> item_configurations) {}
+      std::vector<base::WeakPtr<ContextualPanelItemConfiguration>>
+          item_configurations) {}
 };
 
 #endif  // IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_MODEL_CONTEXTUAL_PANEL_TAB_HELPER_OBSERVER_H_

@@ -47,15 +47,18 @@ class ContextualPanelTabHelper
   // Helper struct to store responses received from individual models.
   struct ModelResponse {
     bool completed = false;
-    std::optional<ContextualPanelItemConfiguration> configuration =
-        std::nullopt;
+    std::unique_ptr<ContextualPanelItemConfiguration> configuration = nullptr;
 
     // Constructs a non-complete response.
     ModelResponse();
 
+    ModelResponse(const ModelResponse&) = delete;
+    ModelResponse& operator=(const ModelResponse&) = delete;
+    ModelResponse& operator=(ModelResponse&& other) = default;
+
     // Constructs a completed response with the provided configuration
     explicit ModelResponse(
-        std::optional<ContextualPanelItemConfiguration> configuration);
+        std::unique_ptr<ContextualPanelItemConfiguration>&& configuration);
     ~ModelResponse();
   };
 
@@ -66,7 +69,7 @@ class ContextualPanelTabHelper
   // Callback for when the given model has finished fetching its data.
   void ModelCallbackReceived(
       ContextualPanelItemType item_type,
-      std::optional<ContextualPanelItemConfiguration> configuration);
+      std::unique_ptr<ContextualPanelItemConfiguration> configuration);
 
   // Query all the individual models for their data.
   void QueryModels();

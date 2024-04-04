@@ -25,18 +25,18 @@ ContextualPanelBrowserAgent::~ContextualPanelBrowserAgent() {
   web_state_list_observation_.Reset();
 }
 
-ContextualPanelItemConfiguration
+base::WeakPtr<ContextualPanelItemConfiguration>
 ContextualPanelBrowserAgent::GetEntrypointConfiguration() {
   CHECK(IsContextualPanelForceShowEntrypointEnabled());
 
   // Only pass a test config when force showing the entrypoint.
   // TODO(crbug.com/327181130) cleanup when appropriate to do so.
-  ContextualPanelItemConfiguration config;
-  config.entrypoint_image_name = base::SysNSStringToUTF8(kDownTrendSymbol);
-  config.image_type =
+  sample_configuration_.entrypoint_image_name =
+      base::SysNSStringToUTF8(kDownTrendSymbol);
+  sample_configuration_.image_type =
       ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol;
-  config.accessibility_label = "Just a test entrypoint.";
-  return config;
+  sample_configuration_.accessibility_label = "Just a test entrypoint.";
+  return sample_configuration_.AsWeakPtr();
 }
 
 #pragma mark - WebStateListObserver

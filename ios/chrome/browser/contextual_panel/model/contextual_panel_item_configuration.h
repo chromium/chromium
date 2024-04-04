@@ -7,9 +7,12 @@
 
 #include <string>
 
+#include "base/memory/weak_ptr.h"
+
 // Data to configure a Contextual Panel item. Individual features can subclass
 // this to add their own data.
-struct ContextualPanelItemConfiguration {
+struct ContextualPanelItemConfiguration
+    : public base::SupportsWeakPtr<ContextualPanelItemConfiguration> {
   // A constant defined to always be a high relevance amount.
   static const int high_relevance;
 
@@ -19,10 +22,9 @@ struct ContextualPanelItemConfiguration {
   ContextualPanelItemConfiguration();
   ~ContextualPanelItemConfiguration();
   ContextualPanelItemConfiguration(
-      const ContextualPanelItemConfiguration& other);
-  ContextualPanelItemConfiguration(ContextualPanelItemConfiguration&& other);
+      const ContextualPanelItemConfiguration& other) = delete;
   ContextualPanelItemConfiguration& operator=(
-      const ContextualPanelItemConfiguration& other);
+      const ContextualPanelItemConfiguration& other) = delete;
 
   // The different supported image types.
   enum class EntrypointImageType {

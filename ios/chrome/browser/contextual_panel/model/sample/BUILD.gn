@@ -4,6 +4,7 @@
 
 source_set("sample") {
   sources = [
+    "sample_panel_item_configuration.h",
     "sample_panel_model.h",
     "sample_panel_model.mm",
     "sample_panel_model_factory.h",

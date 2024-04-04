@@ -19,14 +19,14 @@ class PriceInsightsModelTest : public PlatformTest {
   }
 
   void FetchConfigurationCallback(
-      std::optional<ContextualPanelItemConfiguration> configuration) {
+      std::unique_ptr<ContextualPanelItemConfiguration> configuration) {
     returned_configuration_ = std::move(configuration);
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   std::unique_ptr<PriceInsightsModel> price_insights_model_;
-  std::optional<ContextualPanelItemConfiguration> returned_configuration_;
+  std::unique_ptr<ContextualPanelItemConfiguration> returned_configuration_;
 };
 
 // Tests that fetching the configuration for the price insights model returns.
@@ -40,5 +40,5 @@ TEST_F(PriceInsightsModelTest, TestFetchConfiguration) {
           .Then(run_loop.QuitClosure()));
   run_loop.Run();
 
-  EXPECT_EQ(std::nullopt, returned_configuration_);
+  EXPECT_EQ(nullptr, returned_configuration_);
 }
