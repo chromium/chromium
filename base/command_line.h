@@ -17,6 +17,7 @@
 #define BASE_COMMAND_LINE_H_
 
 #include <stddef.h>
+
 #include <functional>
 #include <map>
 #include <memory>
@@ -27,7 +28,6 @@
 #include "base/base_export.h"
 #include "base/containers/span.h"
 #include "base/debug/debugging_buildflags.h"
-#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(ENABLE_COMMANDLINE_SEQUENCE_CHECKS)
@@ -188,30 +188,32 @@ class BASE_EXPORT CommandLine {
   // Switch names must be lowercase.
   // The second override provides an optimized version to avoid inlining codegen
   // at every callsite to find the length of the constant and construct a
-  // StringPiece.
-  bool HasSwitch(StringPiece switch_string) const;
+  // std::string_view.
+  bool HasSwitch(std::string_view switch_string) const;
   bool HasSwitch(const char switch_constant[]) const;
 
   // Returns the value associated with the given switch. If the switch has no
   // value or isn't present, this method returns the empty string.
   // Switch names must be lowercase.
-  std::string GetSwitchValueASCII(StringPiece switch_string) const;
-  FilePath GetSwitchValuePath(StringPiece switch_string) const;
-  StringType GetSwitchValueNative(StringPiece switch_string) const;
+  std::string GetSwitchValueASCII(std::string_view switch_string) const;
+  FilePath GetSwitchValuePath(std::string_view switch_string) const;
+  StringType GetSwitchValueNative(std::string_view switch_string) const;
 
   // Get a copy of all switches, along with their values.
   const SwitchMap& GetSwitches() const { return switches_; }
 
   // Append a switch [with optional value] to the command line.
   // Note: Switches will precede arguments regardless of appending order.
-  void AppendSwitch(StringPiece switch_string);
-  void AppendSwitchPath(StringPiece switch_string, const FilePath& path);
-  void AppendSwitchNative(StringPiece switch_string, StringPieceType value);
-  void AppendSwitchASCII(StringPiece switch_string, StringPiece value);
+  void AppendSwitch(std::string_view switch_string);
+  void AppendSwitchPath(std::string_view switch_string, const FilePath& path);
+  void AppendSwitchNative(std::string_view switch_string,
+                          StringPieceType value);
+  void AppendSwitchASCII(std::string_view switch_string,
+                         std::string_view value);
 
   // Removes the switch that matches |switch_key_without_prefix|, regardless of
   // prefix and value. If no such switch is present, this has no effect.
-  void RemoveSwitch(const base::StringPiece switch_key_without_prefix);
+  void RemoveSwitch(std::string_view switch_key_without_prefix);
 
   // Copies a set of switches (and any values) from another command line.
   // Commonly used when launching a subprocess.
@@ -226,7 +228,7 @@ class BASE_EXPORT CommandLine {
   // properly such that it is interpreted as one argument to the target command.
   // AppendArg is primarily for ASCII; non-ASCII input is interpreted as UTF-8.
   // Note: Switches will precede arguments regardless of appending order.
-  void AppendArg(StringPiece value);
+  void AppendArg(std::string_view value);
   void AppendArgPath(const FilePath& value);
   void AppendArgNative(StringPieceType value);
 
@@ -341,7 +343,7 @@ class BASE_EXPORT CommandLine {
 class BASE_EXPORT DuplicateSwitchHandler {
  public:
   // out_value contains the existing value of the switch
-  virtual void ResolveDuplicate(base::StringPiece key,
+  virtual void ResolveDuplicate(std::string_view key,
                                 CommandLine::StringPieceType new_value,
                                 CommandLine::StringType& out_value) = 0;
   virtual ~DuplicateSwitchHandler() = default;

@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/debug/debugging_buildflags.h"
@@ -512,7 +513,7 @@ TEST(CommandLineTest, Init) {
   EXPECT_EQ(initial, current);
 }
 
-// Test that copies of CommandLine have a valid StringPiece map.
+// Test that copies of CommandLine have a valid std::string_view map.
 TEST(CommandLineTest, Copy) {
   auto initial = std::make_unique<CommandLine>(CommandLine::NO_PROGRAM);
   initial->AppendSwitch("a");
@@ -759,7 +760,7 @@ class MergeDuplicateFoosSemicolon : public DuplicateSwitchHandler {
  public:
   ~MergeDuplicateFoosSemicolon() override;
 
-  void ResolveDuplicate(base::StringPiece key,
+  void ResolveDuplicate(std::string_view key,
                         CommandLine::StringPieceType new_value,
                         CommandLine::StringType& out_value) override;
 };
@@ -767,7 +768,7 @@ class MergeDuplicateFoosSemicolon : public DuplicateSwitchHandler {
 MergeDuplicateFoosSemicolon::~MergeDuplicateFoosSemicolon() = default;
 
 void MergeDuplicateFoosSemicolon::ResolveDuplicate(
-    base::StringPiece key,
+    std::string_view key,
     CommandLine::StringPieceType new_value,
     CommandLine::StringType& out_value) {
   if (key != "mergeable-foo") {

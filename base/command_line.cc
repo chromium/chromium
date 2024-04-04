@@ -5,6 +5,7 @@
 #include "base/command_line.h"
 
 #include <ostream>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
@@ -16,7 +17,6 @@
 #include "base/numerics/checked_math.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
@@ -332,16 +332,17 @@ void CommandLine::SetProgram(const FilePath& program) {
 #endif
 }
 
-bool CommandLine::HasSwitch(StringPiece switch_string) const {
+bool CommandLine::HasSwitch(std::string_view switch_string) const {
   DCHECK_EQ(ToLowerASCII(switch_string), switch_string);
   return Contains(switches_, switch_string);
 }
 
 bool CommandLine::HasSwitch(const char switch_constant[]) const {
-  return HasSwitch(StringPiece(switch_constant));
+  return HasSwitch(std::string_view(switch_constant));
 }
 
-std::string CommandLine::GetSwitchValueASCII(StringPiece switch_string) const {
+std::string CommandLine::GetSwitchValueASCII(
+    std::string_view switch_string) const {
   StringType value = GetSwitchValueNative(switch_string);
 #if BUILDFLAG(IS_WIN)
   if (!IsStringASCII(base::AsStringPiece16(value))) {
@@ -358,27 +359,27 @@ std::string CommandLine::GetSwitchValueASCII(StringPiece switch_string) const {
 #endif
 }
 
-FilePath CommandLine::GetSwitchValuePath(StringPiece switch_string) const {
+FilePath CommandLine::GetSwitchValuePath(std::string_view switch_string) const {
   return FilePath(GetSwitchValueNative(switch_string));
 }
 
 CommandLine::StringType CommandLine::GetSwitchValueNative(
-    StringPiece switch_string) const {
+    std::string_view switch_string) const {
   DCHECK_EQ(ToLowerASCII(switch_string), switch_string);
   auto result = switches_.find(switch_string);
   return result == switches_.end() ? StringType() : result->second;
 }
 
-void CommandLine::AppendSwitch(StringPiece switch_string) {
+void CommandLine::AppendSwitch(std::string_view switch_string) {
   AppendSwitchNative(switch_string, StringType());
 }
 
-void CommandLine::AppendSwitchPath(StringPiece switch_string,
+void CommandLine::AppendSwitchPath(std::string_view switch_string,
                                    const FilePath& path) {
   AppendSwitchNative(switch_string, path.value());
 }
 
-void CommandLine::AppendSwitchNative(StringPiece switch_string,
+void CommandLine::AppendSwitchNative(std::string_view switch_string,
                                      CommandLine::StringPieceType value) {
 #if BUILDFLAG(ENABLE_COMMANDLINE_SEQUENCE_CHECKS)
   sequence_checker_.Check();
@@ -387,7 +388,7 @@ void CommandLine::AppendSwitchNative(StringPiece switch_string,
   const std::string switch_key = ToLowerASCII(switch_string);
   StringType combined_switch_string(UTF8ToWide(switch_key));
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-  StringPiece switch_key = switch_string;
+  std::string_view switch_key = switch_string;
   StringType combined_switch_string(switch_key);
 #endif
   size_t prefix_length = GetSwitchPrefixLength(combined_switch_string);
@@ -411,8 +412,8 @@ void CommandLine::AppendSwitchNative(StringPiece switch_string,
   begin_args_ = (CheckedNumeric(begin_args_) + 1).ValueOrDie();
 }
 
-void CommandLine::AppendSwitchASCII(StringPiece switch_string,
-                                    StringPiece value_string) {
+void CommandLine::AppendSwitchASCII(std::string_view switch_string,
+                                    std::string_view value_string) {
 #if BUILDFLAG(IS_WIN)
   AppendSwitchNative(switch_string, UTF8ToWide(value_string));
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
@@ -422,7 +423,7 @@ void CommandLine::AppendSwitchASCII(StringPiece switch_string,
 #endif
 }
 
-void CommandLine::RemoveSwitch(base::StringPiece switch_key_without_prefix) {
+void CommandLine::RemoveSwitch(std::string_view switch_key_without_prefix) {
 #if BUILDFLAG(ENABLE_COMMANDLINE_SEQUENCE_CHECKS)
   sequence_checker_.Check();
 #endif
@@ -476,7 +477,7 @@ CommandLine::StringVector CommandLine::GetArgs() const {
   return args;
 }
 
-void CommandLine::AppendArg(StringPiece value) {
+void CommandLine::AppendArg(std::string_view value) {
 #if BUILDFLAG(IS_WIN)
   DCHECK(IsStringUTF8(value));
   AppendArgNative(UTF8ToWide(value));
