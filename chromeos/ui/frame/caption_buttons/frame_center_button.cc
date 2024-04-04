@@ -62,7 +62,7 @@ FrameCenterButton::FrameCenterButton(PressedCallback callback)
 FrameCenterButton::~FrameCenterButton() = default;
 
 gfx::Size FrameCenterButton::GetMinimumSize() const {
-  gfx::Size size = GetPreferredSize();
+  gfx::Size size = GetPreferredSize({0, 0});
   // Similar to CalculatePreferredSize(), but allow the text width to be zero.
   size.set_width((sub_icon_image_
                       ? base::ClampCeil(icon_image().width() / 2.0f) +

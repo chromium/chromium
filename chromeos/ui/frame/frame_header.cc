@@ -468,7 +468,7 @@ void FrameHeader::LayoutHeaderInternal() {
       views::GetCaptionButtonLayoutSize(GetButtonLayoutSize()));
 
   const gfx::Size caption_button_container_size =
-      caption_button_container()->GetPreferredSize();
+      caption_button_container()->GetPreferredSize({});
   caption_button_container()->SetBounds(
       view_->width() - caption_button_container_size.width(), 0,
       caption_button_container_size.width(),
@@ -478,7 +478,7 @@ void FrameHeader::LayoutHeaderInternal() {
 
   int origin = 0;
   if (back_button_) {
-    gfx::Size size = back_button_->GetPreferredSize();
+    gfx::Size size = back_button_->GetPreferredSize({});
     back_button_->SetBounds(0, 0, size.width(),
                             caption_button_container_size.height());
     origin = back_button_->bounds().right();
@@ -487,7 +487,7 @@ void FrameHeader::LayoutHeaderInternal() {
   if (left_header_view_) {
     // Vertically center the left header view (typically the window icon) with
     // respect to the caption button container.
-    const gfx::Size icon_size(left_header_view_->GetPreferredSize());
+    const gfx::Size icon_size(left_header_view_->GetPreferredSize({}));
     const int icon_offset_y = (GetHeaderHeight() - icon_size.height()) / 2;
     constexpr int kLeftViewXInset = 9;
     left_header_view_->SetBounds(kLeftViewXInset + origin, icon_offset_y,
@@ -497,7 +497,7 @@ void FrameHeader::LayoutHeaderInternal() {
 
   if (center_button_) {
     constexpr int kCenterButtonSpacing = 5;
-    const int full_width = center_button_->GetPreferredSize().width();
+    const int full_width = center_button_->GetPreferredSize({}).width();
     const int begin = std::max((view_->width() - full_width) / 2,
                                origin + kCenterButtonSpacing);
     const int end = std::max(

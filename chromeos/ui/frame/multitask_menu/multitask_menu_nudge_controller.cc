@@ -102,7 +102,8 @@ std::unique_ptr<views::Widget> CreateWidget(aura::Window* window) {
                       gfx::Font::Weight::NORMAL))
                   .SetText(l10n_util::GetStringUTF16(message_id)))
           .Build();
-  const float corner_radius = contents_view->GetPreferredSize().height() / 2.0f;
+  const float corner_radius =
+      contents_view->GetPreferredSize({}).height() / 2.0f;
   contents_view->SetBackground(views::CreateThemedRoundedRectBackground(
       ui::kColorSysSurface3, corner_radius));
   contents_view->SetBorder(std::make_unique<views::HighlightBorder>(
@@ -476,7 +477,7 @@ void MultitaskMenuNudgeController::UpdateWidgetAndPulse() {
     }
   }
 
-  const gfx::Size size = nudge_widget_->GetContentsView()->GetPreferredSize();
+  const gfx::Size size = nudge_widget_->GetContentsView()->GetPreferredSize({});
 
   if (tablet_mode) {
     // The nudge is placed in the top center of the window, just below the cue.
