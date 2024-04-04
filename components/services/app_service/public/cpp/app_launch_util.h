@@ -19,8 +19,10 @@ namespace apps {
 // - Update LaunchSource in enums.xml
 // - Update ApplicationLaunchSource in
 //   //components/services/app_service/public/protos/app_types.proto.
-// - Email chromeos-data-team@google.com to request a corresponding change to
-//   backend enums.
+//
+// This is used for metrics and should not be reordered or removed and email
+// chromeos-data-team@google.com to request a corresponding change to backend
+// enums.
 //
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
