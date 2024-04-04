@@ -15,7 +15,7 @@ items:
 - caption: Disable device backlight info reporting
   value: false
 owners:
-- cros-reporting-team@google.com
+- cros-reporting-eng@google.com
 - lbaraz@chromium.org
 schema:
   type: boolean
