@@ -720,7 +720,9 @@ void PasswordFormManager::SetDriver(
 
 void PasswordFormManager::ProvisionallySaveFieldDataManagerInfo(
     const FieldDataManager& field_data_manager,
-    const PasswordManagerDriver* driver) {
+    const PasswordManagerDriver* driver,
+    const base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>&
+        possible_usernames) {
   bool data_found = false;
   for (FormFieldData& field : mutable_observed_form()->fields) {
     FieldRendererId field_id = field.renderer_id;
@@ -734,7 +736,7 @@ void PasswordFormManager::ProvisionallySaveFieldDataManagerInfo(
   // Provisionally save form and set the manager to be submitted if valid
   // data was recovered.
   if (data_found)
-    ProvisionallySave(*observed_form(), driver, nullptr);
+    ProvisionallySave(*observed_form(), driver, possible_usernames);
 }
 #endif  // BUILDFLAG(IS_IOS)
 
@@ -938,7 +940,7 @@ void PasswordFormManager::RecordProvisionalSaveFailure(
 bool PasswordFormManager::ProvisionallySave(
     const FormData& submitted_form,
     const PasswordManagerDriver* driver,
-    const base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>*
+    const base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>&
         possible_usernames) {
   DCHECK(DoesManage(submitted_form.renderer_id, driver));
   auto [parsed_submitted_form, in_form_username_detection_method] =
@@ -980,8 +982,8 @@ bool PasswordFormManager::ProvisionallySave(
     votes_uploader_->set_should_send_username_first_flow_votes(false);
   }
 
-  if (possible_usernames && !possible_usernames->empty()) {
-    HandleUsernameFirstFlow(*possible_usernames,
+  if (!possible_usernames.empty()) {
+    HandleUsernameFirstFlow(possible_usernames,
                             in_form_username_detection_method);
   }
   HandleForgotPasswordFormData();

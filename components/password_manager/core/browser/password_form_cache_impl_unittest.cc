@@ -10,6 +10,7 @@
 #include "components/password_manager/core/browser/password_form_digest.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
+#include "components/password_manager/core/browser/possible_username_data.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -59,8 +60,10 @@ class PasswordFormCacheTest : public testing::Test {
     EXPECT_EQ(filled_form.fields.size(), 2u);
     filled_form.fields[0].value = u"username";
     filled_form.fields[1].value = u"password";
-    form_manager->ProvisionallySave(filled_form, &driver(),
-                                    /*possible_usernames=*/nullptr);
+    form_manager->ProvisionallySave(
+        filled_form, &driver(),
+        base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>(
+            /*max_size=*/2));
     EXPECT_TRUE(form_manager->is_submitted());
     return form_manager;
   }

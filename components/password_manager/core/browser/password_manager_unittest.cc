@@ -996,6 +996,228 @@ TEST_P(PasswordManagerTest,
   manager()->UpdateStateOnUserInput(&fake_driver, form_data.renderer_id,
                                     password_element, typed_password);
 }
+
+// Tests that the user input in a single username form is correctly added to
+// the possible usernames.
+TEST_P(PasswordManagerTest, AddUserInputToPossibleUsernames) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kIosDetectUsernameInUff);
+
+  ON_CALL(client_, IsSavingAndFillingEnabled(_)).WillByDefault(Return(true));
+
+  FormData form_data = MakeSingleUsernameFormData();
+  FieldRendererId username_renderer_id = form_data.fields[0].renderer_id;
+
+  ON_CALL(driver_, GetLastCommittedURL).WillByDefault(ReturnRef(form_data.url));
+
+  // Register found form in PasswordManager.
+  manager()->OnPasswordFormsParsed(&driver_, {form_data});
+  task_environment_.RunUntilIdle();
+
+  // Take the user input in the single username form.
+  std::u16string typed_username = u"test_user";
+  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id,
+                                    username_renderer_id, typed_username);
+
+  // Verify that the user input was cached as a possible username.
+  EXPECT_THAT(
+      manager()->possible_usernames(),
+      ElementsAre(Pair(
+          PossibleUsernameFieldIdentifier(driver_.GetId(),
+                                          username_renderer_id),
+          AllOf(
+              Field(&PossibleUsernameData::value, typed_username),
+              Field(&PossibleUsernameData::autocomplete_attribute_has_username,
+                    false),
+              Field(&PossibleUsernameData::is_likely_otp, false),
+              Field(&PossibleUsernameData::renderer_id, username_renderer_id),
+              Field(&PossibleUsernameData::signon_realm,
+                    GetSignonRealm(form_data.url)),
+              Field(&PossibleUsernameData::driver_id, driver_.GetId()),
+              Field(&PossibleUsernameData::form_predictions, _),
+              Field(&PossibleUsernameData::last_change, base::Time::Now())))));
+}
+
+// Tests that the `autocomplete_attribute_has_username` bit of the added
+// possible username is correctly set to true when there is a username value in
+// the autocomplete attribute.
+TEST_P(PasswordManagerTest,
+       AddUserInputToPossibleUsernames_AutocompleteWithUsername) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kIosDetectUsernameInUff);
+
+  ON_CALL(client_, IsSavingAndFillingEnabled(_)).WillByDefault(Return(true));
+
+  FormData form_data = MakeSingleUsernameFormData();
+  form_data.fields[0].autocomplete_attribute = "username";
+  FieldRendererId username_renderer_id = form_data.fields[0].renderer_id;
+
+  ON_CALL(driver_, GetLastCommittedURL).WillByDefault(ReturnRef(form_data.url));
+
+  // Register found form in PasswordManager.
+  manager()->OnPasswordFormsParsed(&driver_, {form_data});
+  task_environment_.RunUntilIdle();
+
+  // Take the user input in the single username form.
+  std::u16string typed_username = u"test_user";
+  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id,
+                                    username_renderer_id, typed_username);
+
+  // Verify that that the autocomplete bit is correctly set in the possible
+  // username data.
+  EXPECT_THAT(
+      manager()->possible_usernames(),
+      ElementsAre(
+          Pair(PossibleUsernameFieldIdentifier(driver_.GetId(),
+                                               username_renderer_id),
+               Field(&PossibleUsernameData::autocomplete_attribute_has_username,
+                     true))));
+}
+
+// Tests that the `is_likely_otp` bit of the added possible username is
+// correctly set to true when there is a username value in the autocomplete
+// attribute.
+TEST_P(PasswordManagerTest, AddUserInputToPossibleUsernames_LikelyOtp) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kIosDetectUsernameInUff);
+
+  ON_CALL(client_, IsSavingAndFillingEnabled(_)).WillByDefault(Return(true));
+
+  FormData form_data = MakeSingleUsernameFormData();
+  form_data.fields[0].name_attribute = u"onetime";
+  FieldRendererId username_renderer_id = form_data.fields[0].renderer_id;
+
+  ON_CALL(driver_, GetLastCommittedURL).WillByDefault(ReturnRef(form_data.url));
+
+  // Register found form in PasswordManager.
+  manager()->OnPasswordFormsParsed(&driver_, {form_data});
+  task_environment_.RunUntilIdle();
+
+  // Take the user input in the single username form.
+  std::u16string typed_username = u"test_user";
+  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id,
+                                    username_renderer_id, typed_username);
+
+  // Verify that the otp bit is correctly set.
+  EXPECT_THAT(
+      manager()->possible_usernames(),
+      ElementsAre(Pair(PossibleUsernameFieldIdentifier(driver_.GetId(),
+                                                       username_renderer_id),
+                       Field(&PossibleUsernameData::is_likely_otp, true))));
+}
+
+// Tests that save possible username is disabled by default.
+TEST_P(PasswordManagerTest, AddUserInputToPossibleUsernames_DisabledByDefault) {
+  ON_CALL(client_, IsSavingAndFillingEnabled(_)).WillByDefault(Return(true));
+
+  FormData form_data = MakeSimpleFormData();
+  const FieldRendererId password_renderer_id = form_data.fields[1].renderer_id;
+
+  ON_CALL(driver_, GetLastCommittedURL).WillByDefault(ReturnRef(form_data.url));
+
+  // Register found form in PasswordManager.
+  manager()->OnPasswordFormsParsed(&driver_, {form_data});
+  task_environment_.RunUntilIdle();
+
+  // Take the user input in the password form.
+  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id,
+                                    password_renderer_id, u"test_password");
+
+  // Verify that there was no user input cached as possible username because the
+  // feature is disabled by default.
+  EXPECT_THAT(manager()->possible_usernames(), IsEmpty());
+}
+
+// Tests that a user input on a password field isn't considered as a possible
+// username.
+TEST_P(PasswordManagerTest, AddUserInputToPossibleUsernames_OnPasswordInput) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kIosDetectUsernameInUff);
+
+  ON_CALL(client_, IsSavingAndFillingEnabled(_)).WillByDefault(Return(true));
+
+  FormData form_data = MakeSimpleFormData();
+  const FieldRendererId password_renderer_id = form_data.fields[1].renderer_id;
+
+  ON_CALL(driver_, GetLastCommittedURL).WillByDefault(ReturnRef(form_data.url));
+
+  // Register found form in PasswordManager.
+  manager()->OnPasswordFormsParsed(&driver_, {form_data});
+  task_environment_.RunUntilIdle();
+
+  // Take the user input in the password form.
+  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id,
+                                    password_renderer_id, u"test_password");
+
+  // Verify that there was no user input cached as possible username because the
+  // field was a password field.
+  EXPECT_THAT(manager()->possible_usernames(), IsEmpty());
+}
+
+// Tests that a user input on a non-text field isn't considered as a possible
+// username.
+TEST_P(PasswordManagerTest, AddUserInputToPossibleUsernames_OnNonTextInput) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kIosDetectUsernameInUff);
+
+  ON_CALL(client_, IsSavingAndFillingEnabled(_)).WillByDefault(Return(true));
+
+  FormData form_data = MakeSingleUsernameFormData();
+  // Make the field a non-text field.
+  FormFieldData& field = form_data.fields[0];
+  field.form_control_type = autofill::FormControlType::kInputCheckbox;
+  field.name = u"checkbox";
+  field.id_attribute = field.name;
+  field.name_attribute = field.name;
+
+  ON_CALL(driver_, GetLastCommittedURL).WillByDefault(ReturnRef(form_data.url));
+
+  const FieldRendererId element_renderer_id = form_data.fields[0].renderer_id;
+
+  // Register found form in PasswordManager.
+  manager()->OnPasswordFormsParsed(&driver_, {form_data});
+  task_environment_.RunUntilIdle();
+
+  // Take the user input in the password form.
+  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id,
+                                    element_renderer_id, u"on");
+
+  // Verify that there was no user input cached as possible username because the
+  // field was a password field.
+  EXPECT_THAT(manager()->possible_usernames(), IsEmpty());
+}
+
+// Tests that a user input on a text field that isn't a password field but that
+// doesn't show the characteristics of a username field isn't considered as a
+// possible username.
+TEST_P(PasswordManagerTest,
+       AddUserInputToPossibleUsernames_NotConsideredAsUsername) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kIosDetectUsernameInUff);
+
+  ON_CALL(client_, IsSavingAndFillingEnabled(_)).WillByDefault(Return(true));
+
+  FormData form_data = MakeSingleUsernameFormData();
+  // Single character values that aren't considered as a username.
+  form_data.fields[0].name_attribute = u"a";
+  form_data.fields[0].id_attribute = u"a";
+
+  ON_CALL(driver_, GetLastCommittedURL).WillByDefault(ReturnRef(form_data.url));
+
+  const FieldRendererId username_renderer_id = form_data.fields[0].renderer_id;
+
+  // Register found form in PasswordManager.
+  manager()->OnPasswordFormsParsed(&driver_, {form_data});
+  task_environment_.RunUntilIdle();
+
+  // Take the user input in the single username form.
+  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id,
+                                    username_renderer_id, u"test_username");
+
+  // Verify that there was no user input cached as possible username because the
+  // field can't be considered as a username field.
+  EXPECT_THAT(manager()->possible_usernames(), IsEmpty());
+}
 #endif  // BUILDFLAG(IS_IOS)
 
 TEST_P(PasswordManagerTest, FormSubmitNoGoodMatch) {

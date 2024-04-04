@@ -162,7 +162,10 @@ class CredentialsFilterTest : public SyncUsernameTestBase {
     fetcher_.SetNonFederated(matches);
     fetcher_.NotifyFetchCompleted();
 
-    form_manager_->ProvisionallySave(pending_.form_data, &driver_, nullptr);
+    form_manager_->ProvisionallySave(
+        pending_.form_data, &driver_,
+        base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>(
+            /*max_size=*/2));
   }
 
  protected:

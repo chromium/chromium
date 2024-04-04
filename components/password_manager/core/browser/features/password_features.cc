@@ -53,6 +53,11 @@ BASE_FEATURE(kFillOnAccountSelect,
 BASE_FEATURE(kIOSPasswordSignInUff,
              "IOSPasswordSignInUff",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kIosDetectUsernameInUff,
+             "IosSaveUsernameInUff",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #endif  // IS_IOS
 
 BASE_FEATURE(kLocalStateEnterprisePasswordHashes,

@@ -106,7 +106,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
       const autofill::FormData& submitted_form,
       const PasswordManagerDriver* driver,
       const base::LRUCache<PossibleUsernameFieldIdentifier,
-                           PossibleUsernameData>* possible_usernames);
+                           PossibleUsernameData>& possible_usernames);
 
   // If |submitted_form| is managed by *this then saves |submitted_form| to
   // |submitted_form_| field, sets |is_submitted| = true and returns true.
@@ -220,7 +220,9 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // and provisionally saves the manager if the relevant data is found.
   void ProvisionallySaveFieldDataManagerInfo(
       const autofill::FieldDataManager& field_data_manager,
-      const PasswordManagerDriver* driver);
+      const PasswordManagerDriver* driver,
+      const base::LRUCache<PossibleUsernameFieldIdentifier,
+                           PossibleUsernameData>& possible_usernames);
 #endif  // BUILDFLAG(IS_IOS)
 
   // Create a copy of |*this| which can be passed to the code handling

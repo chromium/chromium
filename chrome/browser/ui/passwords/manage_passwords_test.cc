@@ -30,6 +30,7 @@
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
+#include "components/password_manager/core/browser/possible_username_data.h"
 #include "components/password_manager/core/browser/stub_form_saver.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -40,6 +41,8 @@
 
 using base::ASCIIToUTF16;
 using password_manager::PasswordFormManager;
+using password_manager::PossibleUsernameData;
+using password_manager::PossibleUsernameFieldIdentifier;
 using testing::Return;
 using testing::ReturnRef;
 
@@ -284,8 +287,10 @@ std::unique_ptr<PasswordFormManager> ManagePasswordsTest::CreateFormManager() {
 
   autofill::FormData submitted_form = observed_form;
   submitted_form.fields[1].value = u"new_password";
-  form_manager->ProvisionallySave(submitted_form, &driver_,
-                                  nullptr /* possible_username */);
+  form_manager->ProvisionallySave(
+      submitted_form, &driver_,
+      base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>(
+          /*max_size=*/2));
 
   return form_manager;
 }

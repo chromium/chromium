@@ -11,6 +11,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
@@ -29,12 +30,14 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/form_data_predictions.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/credential_cache.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/field_info_manager.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
@@ -47,6 +50,7 @@
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_reuse_manager.h"
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
+#include "components/password_manager/core/common/password_manager_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/password_manager/core/common/password_manager_util.h"
@@ -452,7 +456,7 @@ void PasswordManager::OnPresaveGeneratedPassword(
     // Provisionally save entire |form_data| to make sure the form is parsed
     // properly afterwards (crbug.com/1170351).
     // TODO(crbug/1399524): Invoke this from SharedPasswordController.
-    form_manager->ProvisionallySave(form_data, driver, &possible_usernames_);
+    form_manager->ProvisionallySave(form_data, driver, possible_usernames_);
 #endif  // BUILDFLAG(IS_IOS)
   }
 }
@@ -859,7 +863,7 @@ PasswordFormManager* PasswordManager::ProvisionallySaveForm(
   // `TryToFindPredictionsToPossibleUsernames`.
   TryToFindPredictionsToPossibleUsernames();
   if (!matched_manager->ProvisionallySave(submitted_form, driver,
-                                          &possible_usernames_)) {
+                                          possible_usernames_)) {
     return nullptr;
   }
 
@@ -910,6 +914,7 @@ void PasswordManager::NotifyStorePasswordCalled() {
 }
 
 #if BUILDFLAG(IS_IOS)
+// LINT.IfChange(update_password_state_for_text_change)
 void PasswordManager::UpdateStateOnUserInput(
     PasswordManagerDriver* driver,
     FormRendererId form_id,
@@ -919,9 +924,45 @@ void PasswordManager::UpdateStateOnUserInput(
   if (!manager)
     return;
 
+  const autofill::FormData* observed_form = manager->observed_form();
+
   manager->UpdateStateOnUserInput(form_id, field_id, field_value);
-  OnInformAboutUserInput(driver, *manager->observed_form());
+
+  OnInformAboutUserInput(driver, *observed_form);
+
+  // Notify PasswordManager about potential username fields for UFF.
+
+  if (!base::FeatureList::IsEnabled(features::kIosDetectUsernameInUff)) {
+    return;
+  }
+
+  // Get the field that corresponds to `field_id`.
+  auto it = base::ranges::find(observed_form->fields, field_id,
+                               &autofill::FormFieldData::renderer_id);
+  if (it == observed_form->fields.end()) {
+    return;
+  }
+  const autofill::FormFieldData& field = *it;
+
+  if (field.IsPasswordInputElement() || !field.IsTextInputElement()) {
+    return;
+  }
+
+  if (!util::CanBeConsideredAsSingleUsername(field_value, field.name_attribute,
+                                             field.id_attribute, field.label)) {
+    return;
+  }
+
+  bool is_likely_otp = password_manager::util::IsLikelyOtp(
+      field.name_attribute, field.id_attribute, field.autocomplete_attribute);
+
+  OnUserModifiedNonPasswordField(
+      driver, field_id, field_value,
+      base::Contains(field.autocomplete_attribute,
+                     password_manager::constants::kAutocompleteUsername),
+      is_likely_otp);
 }
+// LINT.ThenChange()
 
 // TODO(crbug/1399524): Unify this method with the cross-platform
 // PasswordManager::OnPasswordNoLongerGenerated implementation.
@@ -972,7 +1013,8 @@ void PasswordManager::PropagateFieldDataManagerInfo(
           PasswordManagerMetricsRecorder::SAVING_DISABLED, manager->GetURL());
       continue;
     }
-    manager->ProvisionallySaveFieldDataManagerInfo(field_data_manager, driver);
+    manager->ProvisionallySaveFieldDataManagerInfo(field_data_manager, driver,
+                                                   possible_usernames_);
   }
 }
 #endif  // BUILDFLAG(IS_IOS)
@@ -1464,8 +1506,8 @@ bool PasswordManager::DetectPotentialSubmission(
 
   // If the manager is not submitted, it still can have autofilled data.
   if (!form_manager->is_submitted()) {
-    form_manager->ProvisionallySaveFieldDataManagerInfo(field_data_manager,
-                                                        driver);
+    form_manager->ProvisionallySaveFieldDataManagerInfo(
+        field_data_manager, driver, possible_usernames_);
   }
   // If the manager was set to be submitted, either prior to this function call
   // or on provisional save above, consider submission successful.
