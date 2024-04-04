@@ -962,9 +962,14 @@ gfx::Rect DirectRenderer::ComputeScissorRectForRenderPass(
   }
 
   // If the root damage rect has been expanded due to overlays, all the other
-  // damage rect calculations are incorrect.
-  if (!root_render_pass->damage_rect.Contains(root_damage_rect))
+  // damage rect calculations are incorrect. If the root damage rect was shrunk
+  // to an empty rect (i.e. during overlay processing for delegated compositing)
+  // then |Contains()| no longer works as expected so it must be checked
+  // separately.
+  if (!root_damage_rect.IsEmpty() &&
+      !root_render_pass->damage_rect.Contains(root_damage_rect)) {
     return render_pass->output_rect;
+  }
 
   DCHECK(render_pass->copy_requests.empty() ||
          (render_pass->damage_rect == render_pass->output_rect));
