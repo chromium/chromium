@@ -572,6 +572,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "WarningBadgeService",
     "WarningService",
     "WebAuthenticationProxyAPI",
+#if BUILDFLAG(IS_CHROMEOS)
+    "WebcamPrivateAPI",
+#endif
     "WebDataService",
     "WebNavigationAPI",
     "WebRequestAPI",
