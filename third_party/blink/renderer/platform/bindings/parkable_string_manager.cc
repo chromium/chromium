@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -108,6 +109,25 @@ ParkableStringManager& ParkableStringManager::Instance() {
 
 ParkableStringManager::~ParkableStringManager() = default;
 
+void ParkableStringManager::SetRendererBackgrounded(bool backgrounded) {
+  DCHECK(IsMainThread());
+  bool state_did_change = backgrounded != backgrounded_;
+  backgrounded_ = backgrounded;
+
+  if (state_did_change && backgrounded_ &&
+      base::FeatureList::IsEnabled(features::kLessAggressiveParkableString) &&
+      (!unparked_strings_.empty() || !parked_strings_.empty())) {
+    // Restart the aging tick, since it stops running while we are in
+    // foreground.
+    ScheduleAgingTaskIfNeeded();
+  }
+}
+
+bool ParkableStringManager::IsRendererBackgrounded() const {
+  DCHECK(IsMainThread());
+  return backgrounded_;
+}
+
 bool ParkableStringManager::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd) {
   DCHECK(IsMainThread());
@@ -143,6 +163,13 @@ bool ParkableStringManager::ShouldPark(const StringImpl& string) {
   // TODO(lizeb): Consider parking non-main thread strings.
   return string.length() > kSizeThreshold && IsMainThread() &&
          CompressionEnabled();
+}
+
+// static
+base::TimeDelta ParkableStringManager::AgingInterval() {
+  return base::FeatureList::IsEnabled(features::kLessAggressiveParkableString)
+             ? kLessAggressiveAgingInterval
+             : kAgingInterval;
 }
 
 scoped_refptr<ParkableStringImpl> ParkableStringManager::Add(
@@ -340,10 +367,14 @@ void ParkableStringManager::RecordStatisticsAfter5Minutes() const {
 
 void ParkableStringManager::AgeStringsAndPark() {
   DCHECK(CompressionEnabled());
-
-  TRACE_EVENT0("blink", "ParkableStringManager::AgeStringsAndPark");
   has_pending_aging_task_ = false;
 
+  if (base::FeatureList::IsEnabled(features::kLessAggressiveParkableString) &&
+      !IsRendererBackgrounded()) {
+    return;
+  }
+
+  TRACE_EVENT0("blink", "ParkableStringManager::AgeStringsAndPark");
   auto unparked = EnumerateStrings(unparked_strings_);
   auto parked = EnumerateStrings(parked_strings_);
 
@@ -378,13 +409,16 @@ void ParkableStringManager::AgeStringsAndPark() {
 }
 
 void ParkableStringManager::ScheduleAgingTaskIfNeeded() {
-  if (!CompressionEnabled())
+  if (!CompressionEnabled() ||
+      (base::FeatureList::IsEnabled(features::kLessAggressiveParkableString) &&
+       !IsRendererBackgrounded())) {
     return;
+  }
 
   if (has_pending_aging_task_)
     return;
 
-  base::TimeDelta delay = kAgingInterval;
+  base::TimeDelta delay = AgingInterval();
   // Delay the first aging tick, since this renderer may be short-lived, we do
   // not want to waste CPU time compressing memory that is going away soon.
   if (!first_string_aging_was_delayed_) {

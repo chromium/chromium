@@ -65,6 +65,8 @@ class PLATFORM_EXPORT ParkableStringManager {
   ParkableStringManager& operator=(const ParkableStringManager&) = delete;
   ~ParkableStringManager();
 
+  void SetRendererBackgrounded(bool backgrounded);
+  bool IsRendererBackgrounded() const;
   void PurgeMemory();
   // Number of parked and unparked strings. Public for testing.
   size_t Size() const;
@@ -74,15 +76,7 @@ class PLATFORM_EXPORT ParkableStringManager {
   // Whether a string is parkable or not. Can be called from any thread.
   static bool ShouldPark(const StringImpl& string);
 
-  // Public for testing.
-  //
-  // Arbitrarily chosen, was shown to not regress metrics in a field experiment
-  // in 2019 on desktop and Android. From local testing, strings are either
-  // requested in a very rapid succession (during compilation), or almost
-  // never. We want to allow strings to be dropped quickly, to reduce peak
-  // memory usage, particularly as reading and decompressing strings is
-  // typically very cheap.
-  constexpr static base::TimeDelta kAgingInterval = base::Seconds(2);
+  static base::TimeDelta AgingInterval();
 
   // According to UMA data (as of 2021-11-09) ~70% of renderers exist for less
   // than 60 seconds. Using this as a delay of the first parking attempts
@@ -196,6 +190,17 @@ class PLATFORM_EXPORT ParkableStringManager {
   void ResetForTesting();
   ParkableStringManager();
 
+  // Arbitrarily chosen, was shown to not regress metrics in a field experiment
+  // in 2019 on desktop and Android. From local testing, strings are either
+  // requested in a very rapid succession (during compilation), or almost
+  // never. We want to allow strings to be dropped quickly, to reduce peak
+  // memory usage, particularly as reading and decompressing strings is
+  // typically very cheap.
+  constexpr static base::TimeDelta kAgingInterval = base::Seconds(2);
+  constexpr static base::TimeDelta kLessAggressiveAgingInterval =
+      base::Seconds(10);
+
+  bool backgrounded_ = false;
   bool has_pending_aging_task_ = false;
   bool has_posted_unparking_time_accounting_task_ = false;
   bool did_register_memory_pressure_listener_ = false;

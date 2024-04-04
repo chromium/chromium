@@ -122,7 +122,7 @@ class ParkableStringTest
           ParkableStringManager::kFirstParkingDelay);
       first_aging_done_ = true;
     } else {
-      task_environment_.FastForwardBy(ParkableStringManager::kAgingInterval);
+      task_environment_.FastForwardBy(ParkableStringManager::AgingInterval());
     }
   }
 
@@ -155,6 +155,10 @@ class ParkableStringTest
         task_environment_.GetMainThreadTaskRunner());
     manager.SetDataAllocatorForTesting(
         std::make_unique<InMemoryDataAllocator>());
+
+    manager.SetRendererBackgrounded(true);
+    // No string yet, should not post a task since there is nothing to do.
+    ASSERT_EQ(0u, task_environment_.GetPendingMainThreadTaskCount());
   }
 
   void TearDown() override {
@@ -618,7 +622,7 @@ TEST_P(ParkableStringTest, DelayFirstParkingOfString) {
 
   // Now that the first aging took place the next aging task will take place
   // after the normal interval.
-  task_environment_.FastForwardBy(ParkableStringManager::kAgingInterval);
+  task_environment_.FastForwardBy(ParkableStringManager::AgingInterval());
 
   EXPECT_TRUE(parkable.Impl()->is_parked());
 }
@@ -1125,7 +1129,7 @@ TEST_P(ParkableStringTest, NoPrematureAging) {
   EXPECT_EQ(ParkableStringImpl::Age::kYoung,
             parkable.Impl()->age_for_testing());
 
-  task_environment_.FastForwardBy(ParkableStringManager::kAgingInterval);
+  task_environment_.FastForwardBy(ParkableStringManager::AgingInterval());
 
   // Since not enough time elapsed not aging was done.
   EXPECT_EQ(ParkableStringImpl::Age::kYoung,
@@ -1245,7 +1249,9 @@ TEST_P(ParkableStringTest, ReportTotalUnparkingTime) {
   ParkableString parkable(MakeLargeString().ReleaseImpl());
   ParkAndWait(parkable);
 
-  const int kNumIterations = 10;
+  // Iteration count: has to be low enough to end before the CPU cost task runs
+  // (after 5 minutes), for both regular and less aggressive modes.
+  const int kNumIterations = 4;
   for (int i = 0; i < kNumIterations; ++i) {
     parkable.ToString();
     ASSERT_FALSE(parkable.Impl()->is_parked());
@@ -1269,7 +1275,7 @@ TEST_P(ParkableStringTest, ReportTotalDiskTime) {
   ParkableString parkable(MakeLargeString().ReleaseImpl());
   ParkAndWait(parkable);
 
-  const int kNumIterations = 10;
+  const int kNumIterations = 4;
   for (int i = 0; i < kNumIterations; ++i) {
     parkable.ToString();
     ASSERT_FALSE(parkable.Impl()->is_parked());
@@ -1283,9 +1289,10 @@ TEST_P(ParkableStringTest, ReportTotalDiskTime) {
   task_environment_.FastForwardUntilNoTasksRemain();
   int64_t mock_elapsed_time_ms =
       base::ScopedMockElapsedTimersForTest::kMockElapsedTime.InMilliseconds();
-  // The string is read kNumIterations times.
-  histogram_tester.ExpectUniqueSample("Memory.ParkableString.DiskReadTime.5min",
-                                      mock_elapsed_time_ms * kNumIterations, 1);
+  // String does not get to disk at the first iteration, hence "-1".
+  histogram_tester.ExpectUniqueSample(
+      "Memory.ParkableString.DiskReadTime.5min",
+      mock_elapsed_time_ms * (kNumIterations - 1), 1);
 
   // The string is only written once despite the multiple parking/unparking
   // calls.
@@ -1355,7 +1362,8 @@ TEST_P(ParkableStringTestWithQueuedThreadPool, AgingParkingInProgress) {
   // task completes.
   base::RunLoop run_loop;
   scheduler::GetSingleThreadTaskRunnerForTesting()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), ParkableStringManager::kAgingInterval);
+      FROM_HERE, run_loop.QuitClosure(),
+      ParkableStringManager::AgingInterval());
   run_loop.Run();
 
   // The aging task is rescheduled.
@@ -1424,5 +1432,66 @@ TEST_P(ParkableStringTestWithLimitedDiskCapacity, ParkWithLimitedDiskCapacity) {
   WaitForDiskWriting();
   EXPECT_TRUE(parkable.Impl()->is_on_disk());
 }
+
+class ParkableStringTestLessAggressiveMode : public ParkableStringTest {
+ public:
+  ParkableStringTestLessAggressiveMode()
+      : features_(features::kLessAggressiveParkableString) {}
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+TEST_P(ParkableStringTestLessAggressiveMode, NoParkingInForeground) {
+  auto& manager = ParkableStringManager::Instance();
+  manager.SetRendererBackgrounded(false);
+
+  ParkableString parkable(MakeLargeString().Impl());
+  ASSERT_FALSE(parkable.Impl()->is_parked());
+  EXPECT_EQ(1u, manager.Size());
+  task_environment_.FastForwardBy(ParkableStringManager::kFirstParkingDelay);
+  // No aging.
+  EXPECT_EQ(ParkableStringImpl::Age::kYoung,
+            parkable.Impl()->age_for_testing());
+  EXPECT_FALSE(parkable.Impl()->is_parked());
+  CheckOnlyCpuCostTaskRemains();
+
+  manager.SetRendererBackgrounded(true);
+  // A tick task has been posted.
+  EXPECT_EQ(2u, task_environment_.GetPendingMainThreadTaskCount());
+  // Aging restarts.
+  WaitForAging();
+  EXPECT_EQ(ParkableStringImpl::Age::kOld, parkable.Impl()->age_for_testing());
+  manager.SetRendererBackgrounded(false);
+  // Another task has been posted.
+  EXPECT_EQ(2u, task_environment_.GetPendingMainThreadTaskCount());
+  // But the string does not age further, since we are in foreground.
+  WaitForAging();
+  EXPECT_EQ(ParkableStringImpl::Age::kOld, parkable.Impl()->age_for_testing());
+  EXPECT_FALSE(parkable.Impl()->is_parked());
+  CheckOnlyCpuCostTaskRemains();
+
+  // Back to foreground, pick up where we left off.
+  manager.SetRendererBackgrounded(true);
+  EXPECT_EQ(2u, task_environment_.GetPendingMainThreadTaskCount());
+  WaitForAging();
+  EXPECT_TRUE(parkable.Impl()->is_parked());
+  WaitForDiskWriting();
+  EXPECT_TRUE(parkable.Impl()->is_on_disk());
+  // The tick eventually stops.
+  WaitForAging();
+  CheckOnlyCpuCostTaskRemains();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    CompressionAlgorithm,
+    ParkableStringTestLessAggressiveMode,
+    ::testing::Values(ParkableStringImpl::CompressionAlgorithm::kZlib,
+                      ParkableStringImpl::CompressionAlgorithm::kSnappy
+#if BUILDFLAG(HAS_ZSTD_COMPRESSION)
+                      ,
+                      ParkableStringImpl::CompressionAlgorithm::kZstd
+#endif  // BUILDFLAG(HAS_ZSTD_COMPRESSION)
+                      ));
 
 }  // namespace blink
