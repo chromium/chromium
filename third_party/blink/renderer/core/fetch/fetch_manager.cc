@@ -879,17 +879,6 @@ void FetchManager::Loader::Failed(
     DOMException* dom_exception,
     absl::optional<String> devtools_request_id,
     absl::optional<base::UnguessableToken> issue_id) {
-
-  recordreplay::Assert("[RUN-3404-3409] Loader::Failed A %d %d %d"
-    "dom_exception=%d devtools_request_id=%d issue_id=%d",
-    failed_ || finished_,
-    execution_context_ && execution_context_->IsContextDestroyed(),
-    !!resolver_,
-    !!dom_exception,
-    !!devtools_request_id,
-    !!issue_id
-  );
-
   if (failed_ || finished_)
     return;
   failed_ = true;
@@ -935,7 +924,7 @@ void FetchManager::Loader::Failed(
     }
   }
 
-  recordreplay::Assert("[RUN-3404-3409] Loader::Failed B");
+  recordreplay::Assert("[TT-187-819] Loader::Failed B");
   NotifyFinished();
 }
 
