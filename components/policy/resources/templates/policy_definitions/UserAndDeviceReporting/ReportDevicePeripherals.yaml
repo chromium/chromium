@@ -15,9 +15,8 @@ items:
 - caption: Do not report information about peripherals that are plugged into the device
   value: false
 owners:
-- cros-reporting-team@google.com
+- cros-reporting-eng@google.com
 - lbaraz@chromium.org
-- tylergarrett@google.com
 schema:
   type: boolean
 supported_on:

@@ -14,7 +14,7 @@ items:
 - caption: Disable device power status reporting
   value: false
 owners:
-- cros-reporting-team@google.com
+- cros-reporting-eng@google.com
 - lbaraz@chromium.org
 - antrim@chromium.org
 schema:

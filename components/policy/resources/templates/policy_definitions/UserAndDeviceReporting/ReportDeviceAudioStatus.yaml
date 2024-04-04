@@ -16,8 +16,7 @@ items:
 - caption: Do not report audio status
   value: false
 owners:
-- cros-reporting-team@google.com
-- tylergarrett@google.com
+- cros-reporting-eng@google.com
 schema:
   type: boolean
 supported_on:
