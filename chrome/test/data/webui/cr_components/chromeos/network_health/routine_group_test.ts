@@ -18,7 +18,7 @@ import {createResult, getIconFromSrc} from './network_health_test_utils.js';
  * Test suite for the Routine Group element.
  */
 suite('RoutineGroupTest', () => {
-  let routineGroup: RoutineGroupElement|null;
+  let routineGroup: RoutineGroupElement;
 
   /**
    * Creates baseline routines.
@@ -65,8 +65,7 @@ suite('RoutineGroupTest', () => {
   });
 
   teardown(() => {
-    routineGroup!.remove();
-    routineGroup = null;
+    routineGroup.remove();
   });
 
   /**
@@ -74,7 +73,7 @@ suite('RoutineGroupTest', () => {
    * then flushes the Polymes DOM.
    */
   function setRoutines(routines: Routine[]): void {
-    routineGroup!.routines = routines;
+    routineGroup.routines = routines;
     flush();
   }
 
@@ -83,7 +82,7 @@ suite('RoutineGroupTest', () => {
    */
   function clickRoutineGroup(): void {
     const container =
-        routineGroup!.shadowRoot!.querySelector('network-health-container');
+        routineGroup.shadowRoot!.querySelector('network-health-container');
     assertTrue(!!container);
     container.click();
     flush();
@@ -94,10 +93,10 @@ suite('RoutineGroupTest', () => {
    */
   function checkRunning(): void {
     const spinner =
-        routineGroup!.shadowRoot!.querySelector('paper-spinner-lite');
+        routineGroup.shadowRoot!.querySelector('paper-spinner-lite');
     assertTrue(!!spinner);
     assertFalse(spinner.hidden);
-    const icon = routineGroup!.shadowRoot!.querySelector<HTMLImageElement>(
+    const icon = routineGroup.shadowRoot!.querySelector<HTMLImageElement>(
         '.routine-icon');
     assertTrue(!!icon);
     assertTrue(icon.hidden);
@@ -109,9 +108,9 @@ suite('RoutineGroupTest', () => {
    */
   function checkResult(iconResult: string): void {
     const spinner =
-        routineGroup!.shadowRoot!.querySelector('paper-spinner-lite');
+        routineGroup.shadowRoot!.querySelector('paper-spinner-lite');
     assertFalse(!!spinner);
-    const icon = routineGroup!.shadowRoot!.querySelector<HTMLImageElement>(
+    const icon = routineGroup.shadowRoot!.querySelector<HTMLImageElement>(
         '.routine-icon');
     assertTrue(!!icon);
     assertFalse(icon.hidden);
@@ -153,7 +152,7 @@ suite('RoutineGroupTest', () => {
    * Test when all routines are complete.
    */
   test('RunningNone', () => {
-    routineGroup!.routines = createRoutines();
+    routineGroup.routines = createRoutines();
     flush();
 
     checkResult(Icons.TEST_PASSED);
