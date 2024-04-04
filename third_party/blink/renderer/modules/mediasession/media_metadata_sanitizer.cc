@@ -103,6 +103,7 @@ SanitizeChapterInformationAndConvertToMojo(const ChapterInformation* chapter,
     return mojo_chapter;
   }
 
+  mojo_chapter = media_session::mojom::blink::ChapterInformation::New();
   mojo_chapter->title = chapter->title().Left(kMaxStringLength);
   mojo_chapter->startTime = base::Seconds(chapter->startTime());
 
