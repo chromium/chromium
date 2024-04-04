@@ -45,8 +45,8 @@ class FetchInstallInfoFromInstallUrlCommandTest : public WebAppTest {
       std::optional<webapps::ManifestId> parent_manifest_id,
       bool disable_web_app_info = false,
       bool valid_manifest = true,
-      WebAppUrlLoader::Result url_load_result =
-          WebAppUrlLoader::Result::kUrlLoaded) {
+      webapps::WebAppUrlLoaderResult url_load_result =
+          webapps::WebAppUrlLoaderResult::kUrlLoaded) {
     auto& install_page_state =
         web_contents_manager().GetOrCreatePageState(install_url);
     install_page_state.url_load_result = url_load_result;
@@ -139,7 +139,7 @@ TEST_F(FetchInstallInfoFromInstallUrlCommandTest, UrlLoadingFailure) {
   std::unique_ptr<WebAppInstallInfo> command_result = CreateAndRunCommand(
       app_url(), manifest_id(), parent_manifest_id(),
       /*disable_web_app_info=*/false, /*valid_manifest=*/true,
-      WebAppUrlLoader::Result::kRedirectedUrlLoaded);
+      webapps::WebAppUrlLoaderResult::kRedirectedUrlLoaded);
   EXPECT_FALSE(command_result);
   EXPECT_EQ(GetCommandErrorFromLog(), "kUrlLoadingFailure");
 }

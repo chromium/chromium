@@ -16,9 +16,9 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_app_icon_downloader.h"
-#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "components/webapps/browser/installable/installable_logging.h"
+#include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "components/webapps/common/web_page_metadata.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
@@ -66,8 +66,8 @@ class FakeWebContentsManager : public WebContentsManager {
     // will be given as the result. Otherwise,`kRedirectedUrlLoaded` is
     // returned.
     std::optional<GURL> redirection_url = std::nullopt;
-    WebAppUrlLoaderResult url_load_result =
-        WebAppUrlLoaderResult::kFailedErrorPageLoaded;
+    webapps::WebAppUrlLoaderResult url_load_result =
+        webapps::WebAppUrlLoaderResult::kFailedErrorPageLoaded;
 
     // `WebAppDataRetriever::GetWebAppInstallInfo`:
     bool return_null_info = false;
@@ -112,7 +112,7 @@ class FakeWebContentsManager : public WebContentsManager {
 
   void SetUrlLoaded(content::WebContents* web_contents, const GURL& url);
 
-  std::unique_ptr<WebAppUrlLoader> CreateUrlLoader() override;
+  std::unique_ptr<webapps::WebAppUrlLoader> CreateUrlLoader() override;
   std::unique_ptr<WebAppDataRetriever> CreateDataRetriever() override;
   std::unique_ptr<WebAppIconDownloader> CreateIconDownloader() override;
 
@@ -138,7 +138,7 @@ class FakeWebContentsManager : public WebContentsManager {
   using LoadUrlTracker = base::RepeatingCallback<void(
       content::NavigationController::LoadURLParams& load_url_params,
       content::WebContents* web_contents,
-      WebAppUrlLoader::UrlComparison url_comparison)>;
+      webapps::WebAppUrlLoader::UrlComparison url_comparison)>;
 
   // Specify a `base::RepeatingCallback` that is invoked with the arguments
   // passed to `WebAppUrlLoader::LoadUrl` whenever it is called on one of the

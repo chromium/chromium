@@ -244,7 +244,7 @@ class IsolatedWebAppUpdateManagerDevModeUpdateTest
         "/.well-known/_generated_install_page.html");
     auto& page_state =
         fake_web_contents_manager().GetOrCreatePageState(install_url);
-    page_state.url_load_result = WebAppUrlLoaderResult::kUrlLoaded;
+    page_state.url_load_result = webapps::WebAppUrlLoaderResult::kUrlLoaded;
     page_state.error_code = webapps::InstallableStatusCode::NO_ERROR_DETECTED;
     page_state.manifest_url =
         url_info.origin().GetURL().Resolve("manifest.webmanifest");
@@ -399,7 +399,7 @@ class IsolatedWebAppUpdateManagerUpdateTest
 
     auto& page_state =
         fake_web_contents_manager().GetOrCreatePageState(install_url);
-    page_state.url_load_result = WebAppUrlLoaderResult::kUrlLoaded;
+    page_state.url_load_result = webapps::WebAppUrlLoaderResult::kUrlLoaded;
     page_state.error_code = webapps::InstallableStatusCode::NO_ERROR_DETECTED;
     page_state.manifest_url =
         iwa_info.url_info.origin().GetURL().Resolve("manifest.webmanifest");

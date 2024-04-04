@@ -26,11 +26,11 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
-#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "content/public/browser/web_contents.h"
 
 namespace web_app {
@@ -135,7 +135,7 @@ void InstallFromSyncCommand::StartWithLock(
 
   url_loader_->LoadUrl(
       params_.start_url, &lock_->shared_web_contents(),
-      WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,
+      webapps::WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,
       base::BindOnce(
           &InstallFromSyncCommand::OnWebAppUrlLoadedGetWebAppInstallInfo,
           weak_ptr_factory_.GetWeakPtr()));
@@ -147,25 +147,25 @@ void InstallFromSyncCommand::SetFallbackTriggeredForTesting(
 }
 
 void InstallFromSyncCommand::OnWebAppUrlLoadedGetWebAppInstallInfo(
-    WebAppUrlLoader::Result result) {
+    webapps::WebAppUrlLoaderResult result) {
   GetMutableDebugValue().Set("WebAppUrlLoader::Result",
                              ConvertUrlLoaderResultToString(result));
-  if (result != WebAppUrlLoader::Result::kUrlLoaded) {
+  if (result != webapps::WebAppUrlLoaderResult::kUrlLoaded) {
     install_error_log_entry_.LogUrlLoaderError(
         "OnWebAppUrlLoaded", params_.start_url.spec(), result);
   }
 
-  if (result == WebAppUrlLoader::Result::kRedirectedUrlLoaded) {
+  if (result == webapps::WebAppUrlLoaderResult::kRedirectedUrlLoaded) {
     InstallFallback(webapps::InstallResultCode::kInstallURLRedirected);
     return;
   }
 
-  if (result == WebAppUrlLoader::Result::kFailedPageTookTooLong) {
+  if (result == webapps::WebAppUrlLoaderResult::kFailedPageTookTooLong) {
     InstallFallback(webapps::InstallResultCode::kInstallURLLoadTimeOut);
     return;
   }
 
-  if (result != WebAppUrlLoader::Result::kUrlLoaded) {
+  if (result != webapps::WebAppUrlLoaderResult::kUrlLoaded) {
     InstallFallback(webapps::InstallResultCode::kInstallURLLoadFailed);
     return;
   }

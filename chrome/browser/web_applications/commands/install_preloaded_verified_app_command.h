@@ -23,11 +23,14 @@
 #include "third_party/blink/public/mojom/manifest/manifest_manager.mojom.h"
 #include "url/gurl.h"
 
+namespace webapps {
+class WebAppUrlLoader;
+enum class WebAppUrlLoaderResult;
+}  // namespace webapps
+
 namespace web_app {
 
 class SharedWebContentsWithAppLock;
-class WebAppUrlLoader;
-enum class WebAppUrlLoaderResult;
 
 // Installs a web app using a raw manifest JSON string, which is interpreted as
 // if it was loaded from the renderer for a given URL. This does not attempt to
@@ -73,7 +76,7 @@ class InstallPreloadedVerifiedAppCommand
   void StartWithLock(std::unique_ptr<SharedWebContentsLock> lock) override;
 
  private:
-  void OnAboutBlankLoaded(WebAppUrlLoaderResult result);
+  void OnAboutBlankLoaded(webapps::WebAppUrlLoaderResult result);
   void OnManifestParsed(blink::mojom::ManifestPtr manifest);
   void OnIconsRetrieved(IconsDownloadedResult result,
                         IconsMap icons_map,
@@ -97,7 +100,7 @@ class InstallPreloadedVerifiedAppCommand
   // SharedWebContentsWithAppLock is held while installing the app.
   std::unique_ptr<SharedWebContentsWithAppLock> app_lock_;
 
-  std::unique_ptr<WebAppUrlLoader> url_loader_;
+  std::unique_ptr<webapps::WebAppUrlLoader> url_loader_;
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
 
   std::unique_ptr<WebAppInstallInfo> web_app_info_;

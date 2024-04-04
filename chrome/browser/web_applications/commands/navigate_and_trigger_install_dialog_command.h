@@ -23,13 +23,16 @@ namespace content {
 class WebContents;
 }
 
+namespace webapps {
+class WebAppUrlLoader;
+enum class WebAppUrlLoaderResult;
+}  // namespace webapps
+
 namespace web_app {
 
 class AppLock;
 class WebAppDataRetriever;
-class WebAppUrlLoader;
 class WebAppUiManager;
-enum class WebAppUrlLoaderResult;
 
 enum class NavigateAndTriggerInstallDialogCommandResult {
   kFailure,
@@ -37,6 +40,7 @@ enum class NavigateAndTriggerInstallDialogCommandResult {
   kDialogShown,
   kShutdown
 };
+
 // The navigation will always succeed. The `result` indicates whether the
 // command was able to trigger the install dialog.
 using NavigateAndTriggerInstallDialogCommandCallback = base::OnceCallback<void(
@@ -55,7 +59,7 @@ class NavigateAndTriggerInstallDialogCommand
       bool is_renderer_initiated,
       NavigateAndTriggerInstallDialogCommandCallback callback,
       base::WeakPtr<WebAppUiManager> ui_manager,
-      std::unique_ptr<WebAppUrlLoader> url_loader,
+      std::unique_ptr<webapps::WebAppUrlLoader> url_loader,
       std::unique_ptr<WebAppDataRetriever> data_retriever,
       Profile* profile);
   ~NavigateAndTriggerInstallDialogCommand() override;
@@ -67,7 +71,7 @@ class NavigateAndTriggerInstallDialogCommand
  private:
   bool IsWebContentsDestroyed();
 
-  void OnUrlLoaded(WebAppUrlLoaderResult result);
+  void OnUrlLoaded(webapps::WebAppUrlLoaderResult result);
   void OnInstallabilityChecked(blink::mojom::ManifestPtr opt_manifest,
                                const GURL& manifest_url,
                                bool valid_manifest_for_web_app,
@@ -82,7 +86,7 @@ class NavigateAndTriggerInstallDialogCommand
   const bool is_renderer_initiated_;
 
   base::WeakPtr<WebAppUiManager> ui_manager_;
-  const std::unique_ptr<WebAppUrlLoader> url_loader_;
+  const std::unique_ptr<webapps::WebAppUrlLoader> url_loader_;
   const std::unique_ptr<WebAppDataRetriever> data_retriever_;
   raw_ptr<Profile> profile_ = nullptr;
 

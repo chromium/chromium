@@ -40,12 +40,12 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
-#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/uninstall_result_code.h"
+#include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
 
@@ -118,7 +118,7 @@ void ExternalAppResolutionCommand::StartWithLock(
 
   url_loader_->LoadUrl(
       install_options_.install_url, web_contents_.get(),
-      WebAppUrlLoader::UrlComparison::kSameOrigin,
+      webapps::WebAppUrlLoader::UrlComparison::kSameOrigin,
       base::BindOnce(
           &ExternalAppResolutionCommand::OnUrlLoadedAndBranchInstallation,
           weak_ptr_factory_.GetWeakPtr()));
@@ -140,8 +140,8 @@ void ExternalAppResolutionCommand::Abort(webapps::InstallResultCode code) {
 }
 
 void ExternalAppResolutionCommand::OnUrlLoadedAndBranchInstallation(
-    WebAppUrlLoader::Result result) {
-  if (result == WebAppUrlLoader::Result::kUrlLoaded) {
+    webapps::WebAppUrlLoaderResult result) {
+  if (result == webapps::WebAppUrlLoaderResult::kUrlLoaded) {
     data_retriever_->GetWebAppInstallInfo(
         web_contents_.get(),
         base::BindOnce(
@@ -180,7 +180,7 @@ void ExternalAppResolutionCommand::OnUrlLoadedAndBranchInstallation(
 
   // Avoid counting an error if we are shutting down. This matches later
   // stages of install where if the WebContents is destroyed we return early.
-  if (result == WebAppUrlLoader::Result::kFailedWebContentsDestroyed) {
+  if (result == webapps::WebAppUrlLoaderResult::kFailedWebContentsDestroyed) {
     Abort(webapps::InstallResultCode::kWebContentsDestroyed);
     return;
   }
@@ -189,21 +189,21 @@ void ExternalAppResolutionCommand::OnUrlLoadedAndBranchInstallation(
       webapps::InstallResultCode::kInstallURLLoadFailed;
 
   switch (result) {
-    case WebAppUrlLoader::Result::kUrlLoaded:
-    case WebAppUrlLoader::Result::kFailedWebContentsDestroyed:
+    case webapps::WebAppUrlLoaderResult::kUrlLoaded:
+    case webapps::WebAppUrlLoaderResult::kFailedWebContentsDestroyed:
       // Handled above.
       NOTREACHED();
       break;
-    case WebAppUrlLoader::Result::kRedirectedUrlLoaded:
+    case webapps::WebAppUrlLoaderResult::kRedirectedUrlLoaded:
       code = webapps::InstallResultCode::kInstallURLRedirected;
       break;
-    case WebAppUrlLoader::Result::kFailedUnknownReason:
+    case webapps::WebAppUrlLoaderResult::kFailedUnknownReason:
       code = webapps::InstallResultCode::kInstallURLLoadFailed;
       break;
-    case WebAppUrlLoader::Result::kFailedPageTookTooLong:
+    case webapps::WebAppUrlLoaderResult::kFailedPageTookTooLong:
       code = webapps::InstallResultCode::kInstallURLLoadTimeOut;
       break;
-    case WebAppUrlLoader::Result::kFailedErrorPageLoaded:
+    case webapps::WebAppUrlLoaderResult::kFailedErrorPageLoaded:
       code = webapps::InstallResultCode::kInstallURLLoadFailed;
       break;
   }
@@ -297,7 +297,7 @@ void ExternalAppResolutionCommand::OnDidPerformInstallableCheck(
     const GURL kAboutBlankURL = GURL(url::kAboutBlankURL);
     url_loader_->LoadUrl(
         kAboutBlankURL, web_contents_.get(),
-        WebAppUrlLoader::UrlComparison::kExact,
+        webapps::WebAppUrlLoader::UrlComparison::kExact,
         base::BindOnce(
             &ExternalAppResolutionCommand::OnPreparedForIconRetrieving,
             weak_ptr_factory_.GetWeakPtr(), std::move(icon_urls),
@@ -305,13 +305,13 @@ void ExternalAppResolutionCommand::OnDidPerformInstallableCheck(
     return;
   }
   OnPreparedForIconRetrieving(std::move(icon_urls), skip_page_favicons,
-                              WebAppUrlLoaderResult::kUrlLoaded);
+                              webapps::WebAppUrlLoaderResult::kUrlLoaded);
 }
 
 void ExternalAppResolutionCommand::OnPreparedForIconRetrieving(
     IconUrlSizeSet icon_urls,
     bool skip_page_favicons,
-    WebAppUrlLoaderResult result) {
+    webapps::WebAppUrlLoaderResult result) {
   data_retriever_->GetIcons(
       web_contents_.get(), std::move(icon_urls), skip_page_favicons,
       /*fail_all_if_any_fail=*/false,

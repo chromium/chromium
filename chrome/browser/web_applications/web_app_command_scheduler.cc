@@ -75,6 +75,7 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
 
@@ -250,7 +251,7 @@ void WebAppCommandScheduler::ScheduleNavigateAndTriggerInstallDialog(
       std::make_unique<NavigateAndTriggerInstallDialogCommand>(
           install_url, origin, is_renderer_initiated, std::move(callback),
           provider_->ui_manager().GetWeakPtr(),
-          std::make_unique<WebAppUrlLoader>(),
+          std::make_unique<webapps::WebAppUrlLoader>(),
           std::make_unique<WebAppDataRetriever>(), &*profile_),
       location);
 }

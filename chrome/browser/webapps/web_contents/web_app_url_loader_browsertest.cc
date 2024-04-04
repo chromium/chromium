@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
+#include "components/webapps/browser/web_contents/web_app_url_loader.h"
 
 #include <optional>
 
@@ -17,9 +17,8 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/chrome_test_utils.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
@@ -28,7 +27,14 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace web_app {
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/test/base/android/android_browser_test.h"
+#else
+#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
+#endif
+
+namespace webapps {
 
 using UrlResult = WebAppUrlLoader::Result;
 using UrlComparison = WebAppUrlLoader::UrlComparison;
@@ -68,7 +74,7 @@ HandleMatchingRequestOrReturnEmptyPage(
   return http_response;
 }
 
-class WebAppUrlLoaderTest : public WebAppControllerBrowserTest {
+class WebAppUrlLoaderTest : public PlatformBrowserTest {
  public:
   WebAppUrlLoaderTest() = default;
   WebAppUrlLoaderTest(const WebAppUrlLoaderTest&) = delete;
@@ -77,16 +83,16 @@ class WebAppUrlLoaderTest : public WebAppControllerBrowserTest {
 
   void SetUpOnMainThread() override {
     web_contents_ = content::WebContents::Create(
-        content::WebContents::CreateParams(browser()->profile()));
+        content::WebContents::CreateParams(profile()));
 
     host_resolver()->AddRule("*", "127.0.0.1");
-    WebAppControllerBrowserTest::SetUpOnMainThread();
+    PlatformBrowserTest::SetUpOnMainThread();
   }
 
   void TearDownOnMainThread() override {
     // The WebContents needs to be destroyed before the profile.
     web_contents_.reset();
-    WebAppControllerBrowserTest::TearDownOnMainThread();
+    PlatformBrowserTest::TearDownOnMainThread();
   }
 
   UrlResult LoadUrlAndWait(UrlComparison url_comparison,
@@ -110,6 +116,10 @@ class WebAppUrlLoaderTest : public WebAppControllerBrowserTest {
   }
 
  protected:
+Profile* profile() {
+  return chrome_test_utils::GetProfile(this);
+}
+
   content::WebContents* web_contents() { return web_contents_.get(); }
 
   void ResetWebContents() { web_contents_.reset(); }
@@ -245,7 +255,8 @@ IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, Hung) {
   // Forward the clock so that |loader| times out first load of about:blank.
   // It is unclear why this load also needs to time out, and can't just load
   // correctly.
-  task_runner->FastForwardBy(WebAppUrlLoader::kSecondsToWaitForWebContentsLoad);
+  task_runner->FastForwardBy(
+    webapps::WebAppUrlLoader::kSecondsToWaitForWebContentsLoad);
   task_runner->RunUntilIdle();
 
   // Run all pending tasks. The URL should still be loading now.
@@ -257,7 +268,8 @@ IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, Hung) {
   EXPECT_FALSE(result.has_value());
 
   // Forward the clock so that |loader| times out.
-  task_runner->FastForwardBy(WebAppUrlLoader::kSecondsToWaitForWebContentsLoad);
+  task_runner->FastForwardBy(
+    webapps::WebAppUrlLoader::kSecondsToWaitForWebContentsLoad);
   task_runner->RunUntilIdle();
   ASSERT_TRUE(result);
   EXPECT_EQ(UrlResult::kFailedPageTookTooLong, result.value());
@@ -298,10 +310,10 @@ IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, MultipleLoadUrlCalls) {
 
   std::unique_ptr<content::WebContents> web_contents1 =
       content::WebContents::Create(
-          content::WebContents::CreateParams(browser()->profile()));
+          content::WebContents::CreateParams(profile()));
   std::unique_ptr<content::WebContents> web_contents2 =
       content::WebContents::Create(
-          content::WebContents::CreateParams(browser()->profile()));
+          content::WebContents::CreateParams(profile()));
 
   base::RunLoop run_loop;
   base::RepeatingClosure barrier_closure =
@@ -403,4 +415,4 @@ IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, PrepareForLoad_RecordResultMetric) {
                                UrlResult::kUrlLoaded, 2);
 }
 
-}  // namespace web_app
+}  // namespace webapps

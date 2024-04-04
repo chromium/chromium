@@ -18,8 +18,8 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
-#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "components/webapps/browser/installable/installable_logging.h"
+#include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -33,7 +33,7 @@ NavigateAndTriggerInstallDialogCommand::NavigateAndTriggerInstallDialogCommand(
     bool is_renderer_initiated,
     NavigateAndTriggerInstallDialogCommandCallback callback,
     base::WeakPtr<WebAppUiManager> ui_manager,
-    std::unique_ptr<WebAppUrlLoader> url_loader,
+    std::unique_ptr<webapps::WebAppUrlLoader> url_loader,
     std::unique_ptr<WebAppDataRetriever> data_retriever,
     Profile* profile)
     : WebAppCommand<NoopLock, NavigateAndTriggerInstallDialogCommandResult>(
@@ -91,13 +91,13 @@ void NavigateAndTriggerInstallDialogCommand::StartWithLock(
   web_contents_ = new_tab->GetWeakPtr();
   url_loader_->LoadUrl(
       std::move(load_url_params), web_contents_.get(),
-      WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,
+      webapps::WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,
       base::BindOnce(&NavigateAndTriggerInstallDialogCommand::OnUrlLoaded,
                      weak_factory_.GetWeakPtr()));
 }
 
 void NavigateAndTriggerInstallDialogCommand::OnUrlLoaded(
-    WebAppUrlLoader::Result result) {
+    webapps::WebAppUrlLoaderResult result) {
   GetMutableDebugValue().Set("WebAppUrlLoader::Result",
                              ConvertUrlLoaderResultToString(result));
   if (IsWebContentsDestroyed()) {
@@ -107,7 +107,7 @@ void NavigateAndTriggerInstallDialogCommand::OnUrlLoaded(
         NavigateAndTriggerInstallDialogCommandResult::kFailure);
     return;
   }
-  if (result != WebAppUrlLoader::Result::kUrlLoaded) {
+  if (result != webapps::WebAppUrlLoaderResult::kUrlLoaded) {
     CompleteAndSelfDestruct(
         CommandResult::kFailure,
         NavigateAndTriggerInstallDialogCommandResult::kFailure);

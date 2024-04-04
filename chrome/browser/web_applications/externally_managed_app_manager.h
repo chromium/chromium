@@ -27,6 +27,7 @@ class Value;
 
 namespace webapps {
 enum class InstallResultCode;
+class WebAppUrlLoader;
 }
 
 namespace content {
@@ -39,7 +40,6 @@ class AllAppsLock;
 class ExternallyManagedAppInstallTask;
 class ExternallyManagedAppRegistrationTaskBase;
 class WebAppDataRetriever;
-class WebAppUrlLoader;
 class WebAppProvider;
 
 enum class RegistrationResultCode { kSuccess, kAlreadyRegistered, kTimeout };
@@ -169,7 +169,8 @@ class ExternallyManagedAppManager {
   void Shutdown();
 
   // TODO(http://b/283521737): Remove this and use WebContentsManager.
-  void SetUrlLoaderForTesting(std::unique_ptr<WebAppUrlLoader> url_loader);
+  void SetUrlLoaderForTesting(
+      std::unique_ptr<webapps::WebAppUrlLoader> url_loader);
   // TODO(http://b/283521737): Remove this and use WebContentsManager.
   void SetDataRetrieverFactoryForTesting(
       base::RepeatingCallback<std::unique_ptr<WebAppDataRetriever>()> factory);
@@ -261,7 +262,7 @@ class ExternallyManagedAppManager {
       synchronize_requests_;
 
   // unique_ptr so that it can be replaced in tests.
-  std::unique_ptr<WebAppUrlLoader> url_loader_;
+  std::unique_ptr<webapps::WebAppUrlLoader> url_loader_;
   // Allows tests to set the data retriever for install tasks.
   base::RepeatingCallback<std::unique_ptr<WebAppDataRetriever>()>
       data_retriever_factory_;

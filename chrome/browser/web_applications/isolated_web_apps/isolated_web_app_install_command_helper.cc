@@ -39,10 +39,10 @@
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
-#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "components/base32/base32.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_manager.h"
+#include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/storage_partition_config.h"
@@ -132,8 +132,8 @@ void RemoveParentDirectory(const base::FilePath& path) {
   }
 }
 
-bool IsUrlLoadingResultSuccess(WebAppUrlLoader::Result result) {
-  return result == WebAppUrlLoader::Result::kUrlLoaded;
+bool IsUrlLoadingResultSuccess(webapps::WebAppUrlLoaderResult result) {
+  return result == webapps::WebAppUrlLoaderResult::kUrlLoaded;
 }
 
 }  // namespace
@@ -340,7 +340,7 @@ void IsolatedWebAppInstallCommandHelper::CreateStoragePartitionIfNotPresent(
 void IsolatedWebAppInstallCommandHelper::LoadInstallUrl(
     const IwaSourceWithMode& source,
     content::WebContents& web_contents,
-    WebAppUrlLoader& url_loader,
+    webapps::WebAppUrlLoader& url_loader,
     base::OnceCallback<void(base::expected<void, std::string>)> callback) {
   // |web_app::IsolatedWebAppURLLoaderFactory| uses the isolation data in
   // order to determine the current state of content serving (installation
@@ -366,14 +366,14 @@ void IsolatedWebAppInstallCommandHelper::LoadInstallUrl(
 
   url_loader.LoadUrl(
       std::move(load_params), &web_contents,
-      WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,
+      webapps::WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,
       base::BindOnce(&IsolatedWebAppInstallCommandHelper::OnLoadInstallUrl,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void IsolatedWebAppInstallCommandHelper::OnLoadInstallUrl(
     base::OnceCallback<void(base::expected<void, std::string>)> callback,
-    WebAppUrlLoaderResult result) {
+    webapps::WebAppUrlLoaderResult result) {
   if (!IsUrlLoadingResultSuccess(result)) {
     std::move(callback).Run(base::unexpected(
         base::StrCat({"Error during URL loading: ",

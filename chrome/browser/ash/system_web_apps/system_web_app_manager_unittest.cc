@@ -1235,7 +1235,7 @@ TEST_F(SystemWebAppManagerTimerTest, TestTimer) {
   web_app::TestWebAppUrlLoader* loader = url_loader.get();
   timers[0]->SetUrlLoaderForTesting(std::move(url_loader));
   loader->SetNextLoadUrlResult(AppUrl1(),
-                               web_app::WebAppUrlLoader::Result::kUrlLoaded);
+                               webapps::WebAppUrlLoaderResult::kUrlLoaded);
 
   EXPECT_EQ(base::Seconds(60), timers[0]->period_for_testing());
   base::RunLoop().RunUntilIdle();
@@ -1251,7 +1251,7 @@ TEST_F(SystemWebAppManagerTimerTest, TestTimer) {
   EXPECT_EQ(1u, timers[0]->opened_count_for_testing());
 
   loader->SetNextLoadUrlResult(AppUrl1(),
-                               web_app::WebAppUrlLoader::Result::kUrlLoaded);
+                               webapps::WebAppUrlLoaderResult::kUrlLoaded);
 
   EXPECT_EQ(SystemWebAppBackgroundTask::WAIT_PERIOD,
             timers[0]->get_state_for_testing());
@@ -1262,7 +1262,7 @@ TEST_F(SystemWebAppManagerTimerTest, TestTimer) {
   EXPECT_EQ(2u, timers[0]->opened_count_for_testing());
 
   loader->SetNextLoadUrlResult(
-      AppUrl1(), web_app::WebAppUrlLoader::Result::kFailedUnknownReason);
+      AppUrl1(), webapps::WebAppUrlLoaderResult::kFailedUnknownReason);
 
   task_environment()->FastForwardBy(base::Seconds(61));
 
@@ -1289,7 +1289,7 @@ TEST_F(SystemWebAppManagerTimerTest,
         loader = url_loader.get();
         timers[0]->SetUrlLoaderForTesting(std::move(url_loader));
         loader->SetNextLoadUrlResult(
-            AppUrl1(), web_app::WebAppUrlLoader::Result::kUrlLoaded);
+            AppUrl1(), webapps::WebAppUrlLoaderResult::kUrlLoaded);
       }));
   system_web_app_manager().Start();
   waiter.Wait();
@@ -1307,7 +1307,7 @@ TEST_F(SystemWebAppManagerTimerTest,
             timers[0]->get_state_for_testing());
 
   loader->SetNextLoadUrlResult(AppUrl1(),
-                               web_app::WebAppUrlLoader::Result::kUrlLoaded);
+                               webapps::WebAppUrlLoaderResult::kUrlLoaded);
 
   task_environment()->FastForwardBy(base::Seconds(300));
 
@@ -1332,7 +1332,7 @@ TEST_F(SystemWebAppManagerTimerTest, TestTimerStartsImmediately) {
         loader = url_loader.get();
         timers[0]->SetUrlLoaderForTesting(std::move(url_loader));
         loader->SetNextLoadUrlResult(
-            AppUrl1(), web_app::WebAppUrlLoader::Result::kUrlLoaded);
+            AppUrl1(), webapps::WebAppUrlLoaderResult::kUrlLoaded);
       }));
   system_web_app_manager().Start();
   waiter.Wait();
@@ -1354,7 +1354,7 @@ TEST_F(SystemWebAppManagerTimerTest, TestTimerStartsImmediately) {
             timers[0]->get_state_for_testing());
 
   loader->SetNextLoadUrlResult(AppUrl1(),
-                               web_app::WebAppUrlLoader::Result::kUrlLoaded);
+                               webapps::WebAppUrlLoaderResult::kUrlLoaded);
 
   task_environment()->FastForwardBy(base::Seconds(300));
 
@@ -1380,7 +1380,7 @@ TEST_F(SystemWebAppManagerTimerTest, TestTimerWaitsForIdle) {
         loader = url_loader.get();
         timers[0]->SetUrlLoaderForTesting(std::move(url_loader));
         loader->SetNextLoadUrlResult(
-            AppUrl1(), web_app::WebAppUrlLoader::Result::kUrlLoaded);
+            AppUrl1(), webapps::WebAppUrlLoaderResult::kUrlLoaded);
       }));
   system_web_app_manager().Start();
   waiter.Wait();
@@ -1410,7 +1410,7 @@ TEST_F(SystemWebAppManagerTimerTest, TestTimerWaitsForIdle) {
     EXPECT_EQ(1u, timers[0]->opened_count_for_testing());
     EXPECT_EQ(base::Time(), timers[0]->polling_since_time_for_testing());
     loader->SetNextLoadUrlResult(AppUrl1(),
-                                 web_app::WebAppUrlLoader::Result::kUrlLoaded);
+                                 webapps::WebAppUrlLoaderResult::kUrlLoaded);
     task_environment()->FastForwardBy(base::Seconds(300));
 
     EXPECT_EQ(2u, timers[0]->timer_activated_count_for_testing());
@@ -1419,7 +1419,7 @@ TEST_F(SystemWebAppManagerTimerTest, TestTimerWaitsForIdle) {
   {
     ui::ScopedSetIdleState scoped_locked(ui::IDLE_STATE_LOCKED);
     loader->SetNextLoadUrlResult(AppUrl1(),
-                                 web_app::WebAppUrlLoader::Result::kUrlLoaded);
+                                 webapps::WebAppUrlLoaderResult::kUrlLoaded);
     task_environment()->FastForwardBy(base::Seconds(300));
     EXPECT_EQ(SystemWebAppBackgroundTask::WAIT_PERIOD,
               timers[0]->get_state_for_testing());
@@ -1446,7 +1446,7 @@ TEST_F(SystemWebAppManagerTimerTest, TestTimerRunsAfterIdleLimitReached) {
         loader = url_loader.get();
         timers[0]->SetUrlLoaderForTesting(std::move(url_loader));
         loader->SetNextLoadUrlResult(
-            AppUrl1(), web_app::WebAppUrlLoader::Result::kUrlLoaded);
+            AppUrl1(), webapps::WebAppUrlLoaderResult::kUrlLoaded);
       }));
   system_web_app_manager().Start();
   waiter.Wait();
@@ -1483,7 +1483,7 @@ TEST_F(SystemWebAppManagerTimerTest, TestTimerRunsAfterIdleLimitReached) {
   EXPECT_EQ(1u, timers[0]->opened_count_for_testing());
 
   loader->SetNextLoadUrlResult(AppUrl1(),
-                               web_app::WebAppUrlLoader::Result::kUrlLoaded);
+                               webapps::WebAppUrlLoaderResult::kUrlLoaded);
 }
 
 TEST_F(SystemWebAppManagerTest,

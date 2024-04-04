@@ -34,14 +34,12 @@ class WebContents;
 }
 
 namespace webapps {
+class WebAppUrlLoader;
+enum class WebAppUrlLoaderResult;
 enum class InstallResultCode;
 }
 
 namespace web_app {
-
-class WebAppUrlLoader;
-
-enum class WebAppUrlLoaderResult;
 
 struct IsolatedWebAppApplyUpdateCommandError {
   std::string message;
@@ -149,7 +147,7 @@ class IsolatedWebAppApplyUpdateCommand
   const IsolatedWebAppUrlInfo url_info_;
 
   std::unique_ptr<content::WebContents> web_contents_;
-  std::unique_ptr<WebAppUrlLoader> url_loader_;
+  std::unique_ptr<webapps::WebAppUrlLoader> url_loader_;
 
   const std::unique_ptr<ScopedKeepAlive> optional_keep_alive_;
   const std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive_;

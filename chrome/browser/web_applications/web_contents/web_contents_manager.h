@@ -8,11 +8,14 @@
 #include <memory>
 #include "base/memory/weak_ptr.h"
 
+namespace webapps {
+class WebAppUrlLoader;
+}
+
 namespace web_app {
 
 class WebAppDataRetriever;
 class WebAppIconDownloader;
-class WebAppUrlLoader;
 
 // This manager is intended to wrap all of the functionality that the
 // `WebAppProvider` system needs from `WebContents`. This encompasses retrieving
@@ -28,7 +31,7 @@ class WebContentsManager {
   WebContentsManager();
   virtual ~WebContentsManager();
 
-  virtual std::unique_ptr<WebAppUrlLoader> CreateUrlLoader();
+  virtual std::unique_ptr<webapps::WebAppUrlLoader> CreateUrlLoader();
 
   virtual std::unique_ptr<WebAppDataRetriever> CreateDataRetriever();
 

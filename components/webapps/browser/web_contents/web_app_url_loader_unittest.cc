@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
+#include "components/webapps/browser/web_contents/web_app_url_loader.h"
 
 #include <memory>
 #include <optional>
@@ -12,23 +12,23 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/web_applications/test/web_app_test.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace web_app {
+namespace webapps {
 
-class WebAppUrlLoaderTest : public WebAppTest {
+class WebAppUrlLoaderTest  : public content::RenderViewHostTestHarness  {
  public:
   void SetUp() override {
-    WebAppTest::SetUp();
+    content::RenderViewHostTestHarness::SetUp();
     loader_ = std::make_unique<WebAppUrlLoader>();
   }
 
   void TearDown() override {
     loader_.reset();
-    WebAppTest::TearDown();
+    content::RenderViewHostTestHarness::TearDown();
   }
 
   content::WebContentsTester& web_contents_tester() {

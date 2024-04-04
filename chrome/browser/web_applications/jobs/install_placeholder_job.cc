@@ -19,9 +19,9 @@
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
-#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -66,7 +66,7 @@ InstallPlaceholderJob::~InstallPlaceholderJob() = default;
 void InstallPlaceholderJob::Start() {
   url_loader_ = lock_->web_contents_manager().CreateUrlLoader();
   url_loader_->LoadUrl(install_options_.install_url, web_contents_,
-                       WebAppUrlLoader::UrlComparison::kSameOrigin,
+                       webapps::WebAppUrlLoader::UrlComparison::kSameOrigin,
                        base::BindOnce(&InstallPlaceholderJob::OnUrlLoaded,
                                       weak_factory_.GetWeakPtr()));
 }
@@ -86,7 +86,7 @@ void InstallPlaceholderJob::Abort(webapps::InstallResultCode code) {
 }
 
 void InstallPlaceholderJob::OnUrlLoaded(
-    WebAppUrlLoader::Result load_url_result) {
+    webapps::WebAppUrlLoaderResult load_url_result) {
   CHECK(web_contents_ && !web_contents_->IsBeingDestroyed());
 
   if (install_options_.override_icon_url) {

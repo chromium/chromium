@@ -10,7 +10,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "content/public/browser/service_worker_context_observer.h"
 
 class GURL;
@@ -21,10 +20,13 @@ class ServiceWorkerContext;
 class WebContents;
 }  // namespace content
 
+namespace webapps {
+class WebAppUrlLoader;
+}
+
 namespace web_app {
 
 enum class RegistrationResultCode;
-class WebAppUrlLoader;
 
 class ExternallyManagedAppRegistrationTaskBase
     : public content::ServiceWorkerContextObserver {
@@ -56,7 +58,7 @@ class ExternallyManagedAppRegistrationTask
   ExternallyManagedAppRegistrationTask(
       GURL install_url,
       const base::TimeDelta registration_timeout,
-      WebAppUrlLoader* url_loader,
+      webapps::WebAppUrlLoader* url_loader,
       content::WebContents* web_contents,
       RegistrationCallback callback);
 
@@ -80,7 +82,7 @@ class ExternallyManagedAppRegistrationTask
 
   void OnRegistrationTimeout();
 
-  const raw_ptr<WebAppUrlLoader> url_loader_;
+  const raw_ptr<webapps::WebAppUrlLoader> url_loader_;
   const raw_ptr<content::WebContents> web_contents_;
   RegistrationCallback callback_;
   raw_ptr<content::ServiceWorkerContext> service_worker_context_ = nullptr;

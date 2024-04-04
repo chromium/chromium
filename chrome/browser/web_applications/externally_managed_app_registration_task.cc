@@ -7,7 +7,7 @@
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
-#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
+#include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -31,7 +31,7 @@ ExternallyManagedAppRegistrationTaskBase::
 ExternallyManagedAppRegistrationTask::ExternallyManagedAppRegistrationTask(
     GURL install_url,
     const base::TimeDelta registration_timeout,
-    WebAppUrlLoader* url_loader,
+    webapps::WebAppUrlLoader* url_loader,
     content::WebContents* web_contents,
     RegistrationCallback callback)
     : ExternallyManagedAppRegistrationTaskBase(std::move(install_url),
@@ -108,7 +108,7 @@ void ExternallyManagedAppRegistrationTask::OnDidCheckHasServiceWorker(
   }
 
   url_loader_->LoadUrl(install_url(), web_contents_,
-                       WebAppUrlLoader::UrlComparison::kExact,
+                       webapps::WebAppUrlLoader::UrlComparison::kExact,
                        base::DoNothing());
 }
 

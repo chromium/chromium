@@ -20,8 +20,8 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
-#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "components/webapps/browser/installable/installable_logging.h"
+#include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -70,7 +70,7 @@ class FetchInstallabilityForChromeManagementTest : public WebAppTest {
   FetchResult ScheduleCommandAndWait(
       const GURL& url,
       base::WeakPtr<content::WebContents> web_contents,
-      std::unique_ptr<WebAppUrlLoader> url_loader,
+      std::unique_ptr<webapps::WebAppUrlLoader> url_loader,
       std::unique_ptr<WebAppDataRetriever> data_retriever) {
     base::RunLoop run_loop;
     FetchResult output;
@@ -103,8 +103,8 @@ TEST_F(FetchInstallabilityForChromeManagementTest, UrlLoadError) {
   auto data_retriever = std::make_unique<FakeDataRetriever>();
 
   // Url loading fails.
-  url_loader->SetNextLoadUrlResult(kWebAppUrl,
-                                   WebAppUrlLoaderResult::kFailedUnknownReason);
+  url_loader->SetNextLoadUrlResult(
+      kWebAppUrl, webapps::WebAppUrlLoaderResult::kFailedUnknownReason);
   FetchResult result =
       ScheduleCommandAndWait(kWebAppUrl, web_contents()->GetWeakPtr(),
                              std::move(url_loader), std::move(data_retriever));
@@ -119,7 +119,7 @@ TEST_F(FetchInstallabilityForChromeManagementTest, NotInstallable) {
 
   // Url loading succeeds, but manifest fetch says not installable.
   url_loader->SetNextLoadUrlResult(kWebAppUrl,
-                                   WebAppUrlLoaderResult::kUrlLoaded);
+                                   webapps::WebAppUrlLoaderResult::kUrlLoaded);
   data_retriever->SetManifest(blink::mojom::ManifestPtr(),
                               webapps::InstallableStatusCode::NO_MANIFEST);
 
@@ -136,7 +136,7 @@ TEST_F(FetchInstallabilityForChromeManagementTest, Installable) {
   auto data_retriever = std::make_unique<FakeDataRetriever>();
   // Url loading succeeds and manifest loads. No apps installed yet, so succeed!
   url_loader->SetNextLoadUrlResult(kWebAppUrl,
-                                   WebAppUrlLoaderResult::kUrlLoaded);
+                                   webapps::WebAppUrlLoaderResult::kUrlLoaded);
   data_retriever->SetManifest(
       CreateManifest(), webapps::InstallableStatusCode::NO_ERROR_DETECTED);
 
@@ -153,7 +153,7 @@ TEST_F(FetchInstallabilityForChromeManagementTest, AlreadyInstalled) {
   auto data_retriever = std::make_unique<FakeDataRetriever>();
   // Url loading succeeds and manifest loads. No apps installed yet, so succeed!
   url_loader->SetNextLoadUrlResult(kWebAppUrl,
-                                   WebAppUrlLoaderResult::kUrlLoaded);
+                                   webapps::WebAppUrlLoaderResult::kUrlLoaded);
   data_retriever->SetManifest(
       CreateManifest(), webapps::InstallableStatusCode::NO_ERROR_DETECTED);
 

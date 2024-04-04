@@ -58,13 +58,13 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "chrome/common/chrome_features.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/web_bundle_builder.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "net/http/http_status_code.h"
@@ -184,7 +184,7 @@ class InstallIsolatedWebAppCommandTest : public WebAppTest {
     GURL application_url = url_info.origin().GetURL();
     auto& page_state = web_contents_manager().GetOrCreatePageState(
         application_url.Resolve(kManifestPath));
-    page_state.url_load_result = WebAppUrlLoader::Result::kUrlLoaded;
+    page_state.url_load_result = webapps::WebAppUrlLoaderResult::kUrlLoaded;
     page_state.error_code = webapps::InstallableStatusCode::NO_ERROR_DETECTED;
 
     page_state.manifest_url = CreateDefaultManifestURL(application_url);
@@ -227,7 +227,8 @@ class InstallIsolatedWebAppCommandTest : public WebAppTest {
 TEST_F(InstallIsolatedWebAppCommandTest, PropagateErrorWhenURLLoaderFails) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
   auto [page_state, icon_state] = SetUpPageAndIconStates(url_info);
-  page_state.url_load_result = WebAppUrlLoader::Result::kFailedErrorPageLoaded;
+  page_state.url_load_result =
+      webapps::WebAppUrlLoaderResult::kFailedErrorPageLoaded;
 
   EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}),
               ErrorIs(Field(&InstallIsolatedWebAppCommandError::message,
@@ -239,7 +240,7 @@ TEST_F(InstallIsolatedWebAppCommandTest,
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
   auto [page_state, icon_state] = SetUpPageAndIconStates(url_info);
   page_state.url_load_result =
-      WebAppUrlLoader::Result::kFailedWebContentsDestroyed;
+      webapps::WebAppUrlLoaderResult::kFailedWebContentsDestroyed;
 
   EXPECT_THAT(
       ExecuteCommand(Parameters{.url_info = url_info}),
@@ -437,7 +438,7 @@ TEST_F(InstallIsolatedWebAppCommandTest,
   web_contents_manager().TrackLoadUrlCalls(base::BindLambdaForTesting(
       [&](content::NavigationController::LoadURLParams& load_url_params,
           content::WebContents* unused_web_contents,
-          WebAppUrlLoader::UrlComparison unused_url_comparison) {
+          webapps::WebAppUrlLoader::UrlComparison unused_url_comparison) {
         EXPECT_THAT(load_url_params.url,
                     Eq(url_info.origin().GetURL().Resolve(kManifestPath)));
         storage_partition_during_url_loading = profile()->GetStoragePartition(
@@ -603,7 +604,8 @@ TEST_F(InstallIsolatedWebAppCommandMetricsTest,
 TEST_F(InstallIsolatedWebAppCommandMetricsTest, ReportErrorWhenUrlLoaderFails) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
   auto [page_state, icon_state] = SetUpPageAndIconStates(url_info);
-  page_state.url_load_result = WebAppUrlLoader::Result::kFailedErrorPageLoaded;
+  page_state.url_load_result =
+      webapps::WebAppUrlLoaderResult::kFailedErrorPageLoaded;
 
   base::HistogramTester histogram_tester;
 

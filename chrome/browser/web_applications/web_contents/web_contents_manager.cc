@@ -8,15 +8,16 @@
 
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_app_icon_downloader.h"
-#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
+#include "components/webapps/browser/web_contents/web_app_url_loader.h"
 
 namespace web_app {
 
 WebContentsManager::WebContentsManager() = default;
 WebContentsManager::~WebContentsManager() = default;
 
-std::unique_ptr<WebAppUrlLoader> WebContentsManager::CreateUrlLoader() {
-  return std::make_unique<WebAppUrlLoader>();
+std::unique_ptr<webapps::WebAppUrlLoader>
+WebContentsManager::CreateUrlLoader() {
+  return std::make_unique<webapps::WebAppUrlLoader>();
 }
 
 std::unique_ptr<WebAppDataRetriever> WebContentsManager::CreateDataRetriever() {

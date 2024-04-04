@@ -28,6 +28,11 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace webapps {
+class WebAppUrlLoader;
+enum class WebAppUrlLoaderResult;
+}  // namespace webapps
+
 namespace web_app {
 
 enum class IconsDownloadedResult;
@@ -38,9 +43,6 @@ class IwaSourceWithMode;
 class IwaSourceWithModeAndFileOp;
 class UnusableSwbnFileError;
 class WebAppDataRetriever;
-class WebAppUrlLoader;
-enum class WebAppUrlLoaderResult;
-
 // Copies the file being installed to the profile directory.
 // On success returns a new owned location in the callback.
 void UpdateBundlePathAndCreateStorageLocation(
@@ -87,7 +89,7 @@ class IsolatedWebAppInstallCommandHelper {
   void LoadInstallUrl(
       const IwaSourceWithMode& source,
       content::WebContents& web_contents,
-      WebAppUrlLoader& url_loader,
+      webapps::WebAppUrlLoader& url_loader,
       base::OnceCallback<void(base::expected<void, std::string>)> callback);
 
   struct ManifestAndUrl {
@@ -133,7 +135,7 @@ class IsolatedWebAppInstallCommandHelper {
 
   void OnLoadInstallUrl(
       base::OnceCallback<void(base::expected<void, std::string>)> callback,
-      WebAppUrlLoaderResult result);
+      webapps::WebAppUrlLoaderResult result);
 
   void OnCheckInstallabilityAndRetrieveManifest(
       base::OnceCallback<void(base::expected<ManifestAndUrl, std::string>)>

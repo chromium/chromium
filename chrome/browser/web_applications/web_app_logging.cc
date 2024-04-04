@@ -10,9 +10,9 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "components/webapps/common/web_app_id.h"
 #include "net/http/http_status_code.h"
 
@@ -57,9 +57,10 @@ base::Value::Dict InstallErrorLogEntry::TakeErrorDict() {
   return error_dict;
 }
 
-void InstallErrorLogEntry::LogUrlLoaderError(const char* stage,
-                                             const std::string& url,
-                                             WebAppUrlLoader::Result result) {
+void InstallErrorLogEntry::LogUrlLoaderError(
+    const char* stage,
+    const std::string& url,
+    webapps::WebAppUrlLoaderResult result) {
   if (!error_dict_)
     return;
 

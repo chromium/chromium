@@ -68,6 +68,8 @@ source_set("browser") {
     "installable/ml_installability_promoter.h",
     "pwa_install_path_tracker.cc",
     "pwa_install_path_tracker.h",
+    "web_contents/web_app_url_loader.cc",
+    "web_contents/web_app_url_loader.h",
     "webapps_client.cc",
     "webapps_client.h",
   ]
@@ -192,6 +194,7 @@ source_set("unit_tests") {
     "installable/installable_evaluator_unittest.cc",
     "installable/installable_task_queue_unittest.cc",
     "pwa_install_path_tracker_unittest.cc",
+    "web_contents/web_app_url_loader_unittest.cc",
   ]
   deps = [
     ":browser",

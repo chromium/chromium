@@ -16,9 +16,9 @@
 #include "chrome/browser/web_applications/web_app_icon_operations.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
-#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "chrome/common/chrome_features.h"
+#include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "content/public/browser/web_contents.h"
 #include "url/origin.h"
 
@@ -113,19 +113,21 @@ void FetchInstallInfoFromInstallUrlCommand::StartWithLock(
     return;
   }
 
-  url_loader_->LoadUrl(install_url_, &lock_->shared_web_contents(),
-                       WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,
-                       base::BindOnce(&FetchInstallInfoFromInstallUrlCommand::
-                                          OnWebAppUrlLoadedGetWebAppInstallInfo,
-                                      weak_ptr_factory_.GetWeakPtr()));
+  url_loader_->LoadUrl(
+      install_url_, &lock_->shared_web_contents(),
+      webapps::WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,
+      base::BindOnce(&FetchInstallInfoFromInstallUrlCommand::
+                         OnWebAppUrlLoadedGetWebAppInstallInfo,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void FetchInstallInfoFromInstallUrlCommand::
-    OnWebAppUrlLoadedGetWebAppInstallInfo(WebAppUrlLoader::Result result) {
+    OnWebAppUrlLoadedGetWebAppInstallInfo(
+        webapps::WebAppUrlLoaderResult result) {
   GetMutableDebugValue().Set("url_loading_result",
                              ConvertUrlLoaderResultToString(result));
 
-  if (result != WebAppUrlLoader::Result::kUrlLoaded) {
+  if (result != webapps::WebAppUrlLoaderResult::kUrlLoaded) {
     install_error_log_entry_.LogUrlLoaderError(
         "OnWebAppUrlLoadedGetWebAppInstallInfo", install_url_.spec(), result);
     CompleteCommandAndSelfDestruct(FetchInstallInfoResult::kUrlLoadingFailure,

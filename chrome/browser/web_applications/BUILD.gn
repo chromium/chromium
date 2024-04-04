@@ -335,8 +335,6 @@ source_set("web_applications") {
     "web_contents/web_app_data_retriever.h",
     "web_contents/web_app_icon_downloader.cc",
     "web_contents/web_app_icon_downloader.h",
-    "web_contents/web_app_url_loader.cc",
-    "web_contents/web_app_url_loader.h",
     "web_contents/web_contents_manager.cc",
     "web_contents/web_contents_manager.h",
   ]
@@ -862,7 +860,6 @@ source_set("web_applications_unit_tests") {
     "web_app_utils_unittest.cc",
     "web_contents/web_app_data_retriever_unittest.cc",
     "web_contents/web_app_icon_downloader_unittest.cc",
-    "web_contents/web_app_url_loader_unittest.cc",
   ]
 
   if (is_win) {
@@ -1031,7 +1028,6 @@ source_set("web_applications_browser_tests") {
     "web_app_internals_browsertest.cc",
     "web_app_origin_association_manager_browsertest.cc",
     "web_app_scope_extensions_browsertest.cc",
-    "web_contents/web_app_url_loader_browsertest.cc",
   ]
 
   if (is_chromeos) {

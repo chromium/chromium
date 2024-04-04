@@ -18,7 +18,7 @@
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_app_icon_downloader.h"
-#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
+#include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "components/webapps/common/web_page_metadata.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
@@ -27,9 +27,10 @@
 
 namespace web_app {
 namespace {
-bool EqualsWithComparison(const GURL& a,
-                          const GURL& b,
-                          WebAppUrlLoader::UrlComparison url_comparison) {
+bool EqualsWithComparison(
+    const GURL& a,
+    const GURL& b,
+    webapps::WebAppUrlLoader::UrlComparison url_comparison) {
   DCHECK(a.is_valid());
   DCHECK(b.is_valid());
   if (a == b) {
@@ -37,12 +38,12 @@ bool EqualsWithComparison(const GURL& a,
   }
   GURL::Replacements replace;
   switch (url_comparison) {
-    case WebAppUrlLoader::UrlComparison::kExact:
+    case webapps::WebAppUrlLoader::UrlComparison::kExact:
       return false;
-    case WebAppUrlLoader::UrlComparison::kSameOrigin:
+    case webapps::WebAppUrlLoader::UrlComparison::kSameOrigin:
       replace.ClearPath();
       [[fallthrough]];
-    case WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef:
+    case webapps::WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef:
       replace.ClearQuery();
       replace.ClearRef();
       break;
@@ -53,7 +54,7 @@ bool EqualsWithComparison(const GURL& a,
 
 // TODO(http://b/262606416): Replace FakeWebAppUrlLoader with this by redoing
 // how the web contents dependency is wrapped.
-class FakeWebContentsManager::FakeUrlLoader : public WebAppUrlLoader {
+class FakeWebContentsManager::FakeUrlLoader : public webapps::WebAppUrlLoader {
  public:
   explicit FakeUrlLoader(base::WeakPtr<FakeWebContentsManager> manager)
       : manager_(manager) {}
@@ -76,8 +77,9 @@ class FakeWebContentsManager::FakeUrlLoader : public WebAppUrlLoader {
       DLOG(WARNING) << "No page state at url: " << url.spec();
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
-          base::BindOnce(std::move(callback),
-                         WebAppUrlLoaderResult::kFailedErrorPageLoaded));
+          base::BindOnce(
+              std::move(callback),
+              webapps::WebAppUrlLoaderResult::kFailedErrorPageLoaded));
       return;
     }
     FakeWebContentsManager::FakePageState& page = page_it->second;
@@ -88,8 +90,9 @@ class FakeWebContentsManager::FakeUrlLoader : public WebAppUrlLoader {
                                 url_comparison)) {
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE,
-            base::BindOnce(std::move(callback),
-                           WebAppUrlLoaderResult::kRedirectedUrlLoaded));
+            base::BindOnce(
+                std::move(callback),
+                webapps::WebAppUrlLoaderResult::kRedirectedUrlLoaded));
         return;
       }
     }
@@ -368,7 +371,8 @@ void FakeWebContentsManager::SetUrlLoaded(content::WebContents* web_contents,
   loaded_urls_[web_contents] = url;
 }
 
-std::unique_ptr<WebAppUrlLoader> FakeWebContentsManager::CreateUrlLoader() {
+std::unique_ptr<webapps::WebAppUrlLoader>
+FakeWebContentsManager::CreateUrlLoader() {
   return std::make_unique<FakeUrlLoader>(weak_factory_.GetWeakPtr());
 }
 
@@ -401,7 +405,8 @@ webapps::AppId FakeWebContentsManager::CreateBasicInstallPageState(
     const GURL& start_url,
     std::u16string_view name) {
   FakePageState& install_page_state = GetOrCreatePageState(install_url);
-  install_page_state.url_load_result = WebAppUrlLoaderResult::kUrlLoaded;
+  install_page_state.url_load_result =
+      webapps::WebAppUrlLoaderResult::kUrlLoaded;
   install_page_state.redirection_url = std::nullopt;
 
   install_page_state.title = u"Page title";

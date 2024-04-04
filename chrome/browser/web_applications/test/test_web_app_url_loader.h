@@ -12,12 +12,12 @@
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
+#include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "url/gurl.h"
 
 namespace web_app {
 
-class TestWebAppUrlLoader : public WebAppUrlLoader {
+class TestWebAppUrlLoader : public webapps::WebAppUrlLoader {
  public:
   TestWebAppUrlLoader();
   TestWebAppUrlLoader(const TestWebAppUrlLoader&) = delete;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
+#include "components/webapps/browser/web_contents/web_app_url_loader.h"
 
 #include <memory>
 #include <utility>
@@ -27,7 +27,7 @@
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
-namespace web_app {
+namespace webapps {
 namespace {
 using UrlComparison = WebAppUrlLoader::UrlComparison;
 

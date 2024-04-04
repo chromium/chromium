@@ -192,7 +192,7 @@ TEST_F(InstallFromSyncTest, SuccessWithManifest) {
   // Page with manifest.
   auto& fake_page_state =
       web_contents_manager().GetOrCreatePageState(kWebAppStartUrl);
-  fake_page_state.url_load_result = WebAppUrlLoaderResult::kUrlLoaded;
+  fake_page_state.url_load_result = webapps::WebAppUrlLoaderResult::kUrlLoaded;
   fake_page_state.opt_metadata =
       FakeWebContentsManager::CreateMetadataWithIconAndTitle(
           kDocumentTitle, kDocumentIconUrl, kIconSize);
@@ -228,7 +228,7 @@ TEST_F(InstallFromSyncTest, SuccessWithoutManifest) {
   // Page without manifest.
   auto& fake_page_state =
       web_contents_manager().GetOrCreatePageState(kWebAppStartUrl);
-  fake_page_state.url_load_result = WebAppUrlLoaderResult::kUrlLoaded;
+  fake_page_state.url_load_result = webapps::WebAppUrlLoaderResult::kUrlLoaded;
   fake_page_state.opt_metadata =
       FakeWebContentsManager::CreateMetadataWithIconAndTitle(
           kDocumentTitle, kDocumentIconUrl, kIconSize);
@@ -262,7 +262,7 @@ TEST_F(InstallFromSyncTest, SuccessManifestNoIcons) {
   // Page with manifest, no icons.
   auto& fake_page_state =
       web_contents_manager().GetOrCreatePageState(kWebAppStartUrl);
-  fake_page_state.url_load_result = WebAppUrlLoaderResult::kUrlLoaded;
+  fake_page_state.url_load_result = webapps::WebAppUrlLoaderResult::kUrlLoaded;
   fake_page_state.opt_metadata =
       FakeWebContentsManager::CreateMetadataWithIconAndTitle(
           kDocumentTitle, kDocumentIconUrl, kIconSize);
@@ -298,7 +298,8 @@ TEST_F(InstallFromSyncTest, UrlRedirectUseFallback) {
   // Page redirects.
   auto& fake_page_state =
       web_contents_manager().GetOrCreatePageState(kWebAppStartUrl);
-  fake_page_state.url_load_result = WebAppUrlLoaderResult::kRedirectedUrlLoaded;
+  fake_page_state.url_load_result =
+      webapps::WebAppUrlLoaderResult::kRedirectedUrlLoaded;
 
   // Fallback icon state.
   web_contents_manager().GetOrCreateIconState(kFallbackIconUrl).bitmaps = {
@@ -332,7 +333,7 @@ TEST_F(InstallFromSyncTest, FallbackWebAppInstallInfo) {
   // Page redirects.
   auto& fake_page_state =
       web_contents_manager().GetOrCreatePageState(kWebAppStartUrl);
-  fake_page_state.url_load_result = WebAppUrlLoaderResult::kUrlLoaded;
+  fake_page_state.url_load_result = webapps::WebAppUrlLoaderResult::kUrlLoaded;
   fake_page_state.return_null_info = true;
 
   // Fallback icon state.
@@ -367,7 +368,7 @@ TEST_F(InstallFromSyncTest, FallbackManifestIdMismatch) {
   // Page with manifest.
   auto& fake_page_state =
       web_contents_manager().GetOrCreatePageState(kWebAppStartUrl);
-  fake_page_state.url_load_result = WebAppUrlLoaderResult::kUrlLoaded;
+  fake_page_state.url_load_result = webapps::WebAppUrlLoaderResult::kUrlLoaded;
   fake_page_state.opt_metadata =
       FakeWebContentsManager::CreateMetadataWithIconAndTitle(
           kDocumentTitle, kDocumentIconUrl, kIconSize);
@@ -506,7 +507,7 @@ TEST_F(InstallFromSyncTest, Shutdown) {
   // down.
   auto& fake_page_state =
       web_contents_manager().GetOrCreatePageState(kWebAppStartUrl);
-  fake_page_state.url_load_result = WebAppUrlLoaderResult::kUrlLoaded;
+  fake_page_state.url_load_result = webapps::WebAppUrlLoaderResult::kUrlLoaded;
   fake_page_state.opt_metadata =
       FakeWebContentsManager::CreateMetadataWithIconAndTitle(
           kDocumentTitle, kDocumentIconUrl, kIconSize);

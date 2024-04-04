@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_WEB_CONTENTS_WEB_APP_URL_LOADER_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_WEB_CONTENTS_WEB_APP_URL_LOADER_H_
+#ifndef COMPONENTS_WEBAPPS_BROWSER_WEB_CONTENTS_WEB_APP_URL_LOADER_H_
+#define COMPONENTS_WEBAPPS_BROWSER_WEB_CONTENTS_WEB_APP_URL_LOADER_H_
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
@@ -16,7 +16,7 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-namespace web_app {
+namespace webapps {
 
 // Result enum values are persisted to logs. Entries should not be renumbered
 // and numeric values should never be reused. Update corresponding enums.xml
@@ -96,4 +96,4 @@ const char* ConvertUrlLoaderResultToString(WebAppUrlLoader::Result result);
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_WEB_CONTENTS_WEB_APP_URL_LOADER_H_
+#endif  // COMPONENTS_WEBAPPS_BROWSER_WEB_CONTENTS_WEB_APP_URL_LOADER_H_

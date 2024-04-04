@@ -13,9 +13,12 @@
 #include "chrome/browser/web_applications/web_app_logging.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 
+namespace webapps {
+class WebAppUrlLoader;
+}
+
 namespace web_app {
 
-class WebAppUrlLoader;
 class WebAppDataRetriever;
 
 enum class FetchInstallInfoResult {
@@ -53,7 +56,8 @@ class FetchInstallInfoFromInstallUrlCommand
 
  private:
   bool IsWebContentsDestroyed();
-  void OnWebAppUrlLoadedGetWebAppInstallInfo(WebAppUrlLoader::Result result);
+  void OnWebAppUrlLoadedGetWebAppInstallInfo(
+      webapps::WebAppUrlLoaderResult result);
   void OnGetWebAppInstallInfo(std::unique_ptr<WebAppInstallInfo> install_info);
   void OnManifestRetrieved(std::unique_ptr<WebAppInstallInfo> web_app_info,
                            blink::mojom::ManifestPtr opt_manifest,
@@ -74,7 +78,7 @@ class FetchInstallInfoFromInstallUrlCommand
   GURL install_url_;
   std::optional<webapps::ManifestId> parent_manifest_id_;
 
-  std::unique_ptr<WebAppUrlLoader> url_loader_;
+  std::unique_ptr<webapps::WebAppUrlLoader> url_loader_;
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
 
   InstallErrorLogEntry install_error_log_entry_;

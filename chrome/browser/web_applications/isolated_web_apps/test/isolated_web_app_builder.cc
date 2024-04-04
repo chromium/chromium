@@ -95,7 +95,8 @@ void FakeInstallPageState(Profile* profile,
   GURL install_url = base_url.Resolve(kInstallPagePath);
   FakeWebContentsManager::FakePageState& install_page_state =
       fake_web_contents_manager.GetOrCreatePageState(install_url);
-  install_page_state.url_load_result = WebAppUrlLoaderResult::kUrlLoaded;
+  install_page_state.url_load_result =
+      webapps::WebAppUrlLoaderResult::kUrlLoaded;
   install_page_state.error_code =
       webapps::InstallableStatusCode::NO_ERROR_DETECTED;
   install_page_state.manifest_url = base_url.Resolve(kManifestPath);

@@ -26,10 +26,13 @@ namespace content {
 class WebContents;
 }
 
+namespace webapps {
+class WebAppUrlLoader;
+}
+
 namespace web_app {
 
 class WebAppProvider;
-class WebAppUrlLoader;
 
 // The command manager is used to schedule commands or callbacks to write & read
 // from the WebAppProvider system. To use, simply call `ScheduleCommand` to
@@ -116,7 +119,7 @@ class WebAppCommandManager {
   raw_ptr<WebAppProvider> provider_ = nullptr;
 
   std::unique_ptr<content::WebContents> shared_web_contents_;
-  std::unique_ptr<WebAppUrlLoader> url_loader_;
+  std::unique_ptr<webapps::WebAppUrlLoader> url_loader_;
 
   bool started_ = false;
   bool is_in_shutdown_ = false;

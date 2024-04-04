@@ -18,8 +18,8 @@
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
-#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "components/webapps/browser/installable/installable_logging.h"
+#include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
@@ -29,7 +29,7 @@ namespace web_app {
 FetchInstallabilityForChromeManagement::FetchInstallabilityForChromeManagement(
     const GURL& url,
     base::WeakPtr<content::WebContents> web_contents,
-    std::unique_ptr<WebAppUrlLoader> url_loader,
+    std::unique_ptr<webapps::WebAppUrlLoader> url_loader,
     std::unique_ptr<WebAppDataRetriever> data_retriever,
     FetchInstallabilityForChromeManagementCallback callback)
     : WebAppCommand<NoopLock,
@@ -67,15 +67,16 @@ void FetchInstallabilityForChromeManagement::StartWithLock(
     return;
   }
 
-  url_loader_->LoadUrl(url_, web_contents_.get(),
-                       WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,
-                       base::BindOnce(&FetchInstallabilityForChromeManagement::
-                                          OnUrlLoadedCheckInstallability,
-                                      weak_factory_.GetWeakPtr()));
+  url_loader_->LoadUrl(
+      url_, web_contents_.get(),
+      webapps::WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,
+      base::BindOnce(&FetchInstallabilityForChromeManagement::
+                         OnUrlLoadedCheckInstallability,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void FetchInstallabilityForChromeManagement::OnUrlLoadedCheckInstallability(
-    WebAppUrlLoader::Result result) {
+    webapps::WebAppUrlLoaderResult result) {
   if (IsWebContentsDestroyed()) {
     GetMutableDebugValue().Set("web_contents_destroyed", true);
     CompleteAndSelfDestruct(CommandResult::kSuccess,
@@ -86,21 +87,21 @@ void FetchInstallabilityForChromeManagement::OnUrlLoadedCheckInstallability(
   GetMutableDebugValue().Set("WebAppUrlLoader::Result",
                              ConvertUrlLoaderResultToString(result));
 
-  if (result == WebAppUrlLoader::Result::kRedirectedUrlLoaded) {
+  if (result == webapps::WebAppUrlLoaderResult::kRedirectedUrlLoaded) {
     CompleteAndSelfDestruct(CommandResult::kSuccess,
                             InstallableCheckResult::kNotInstallable,
                             std::nullopt);
     return;
   }
 
-  if (result == WebAppUrlLoader::Result::kFailedPageTookTooLong) {
+  if (result == webapps::WebAppUrlLoaderResult::kFailedPageTookTooLong) {
     CompleteAndSelfDestruct(CommandResult::kSuccess,
                             InstallableCheckResult::kNotInstallable,
                             std::nullopt);
     return;
   }
 
-  if (result != WebAppUrlLoader::Result::kUrlLoaded) {
+  if (result != webapps::WebAppUrlLoaderResult::kUrlLoaded) {
     CompleteAndSelfDestruct(CommandResult::kFailure,
                             InstallableCheckResult::kNotInstallable,
                             std::nullopt);

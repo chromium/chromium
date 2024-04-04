@@ -22,13 +22,15 @@ namespace content {
 class WebContents;
 }
 
+namespace webapps {
+class WebAppUrlLoader;
+enum class WebAppUrlLoaderResult;
+}  // namespace webapps
+
 namespace web_app {
 
 class AppLock;
 class WebAppDataRetriever;
-class WebAppUrlLoader;
-enum class WebAppUrlLoaderResult;
-
 enum class InstallableCheckResult {
   kNotInstallable,
   kInstallable,
@@ -49,7 +51,7 @@ class FetchInstallabilityForChromeManagement
   FetchInstallabilityForChromeManagement(
       const GURL& url,
       base::WeakPtr<content::WebContents> web_contents,
-      std::unique_ptr<WebAppUrlLoader> url_loader,
+      std::unique_ptr<webapps::WebAppUrlLoader> url_loader,
       std::unique_ptr<WebAppDataRetriever> data_retriever,
       FetchInstallabilityForChromeManagementCallback callback);
   ~FetchInstallabilityForChromeManagement() override;
@@ -58,7 +60,7 @@ class FetchInstallabilityForChromeManagement
   void StartWithLock(std::unique_ptr<NoopLock>) override;
 
  private:
-  void OnUrlLoadedCheckInstallability(WebAppUrlLoaderResult result);
+  void OnUrlLoadedCheckInstallability(webapps::WebAppUrlLoaderResult result);
   void OnWebAppInstallabilityChecked(blink::mojom::ManifestPtr opt_manifest,
                                      const GURL& manifest_url,
                                      bool valid_manifest_for_web_app,
@@ -74,7 +76,7 @@ class FetchInstallabilityForChromeManagement
   webapps::AppId app_id_;
 
   base::WeakPtr<content::WebContents> web_contents_;
-  const std::unique_ptr<WebAppUrlLoader> url_loader_;
+  const std::unique_ptr<webapps::WebAppUrlLoader> url_loader_;
   const std::unique_ptr<WebAppDataRetriever> data_retriever_;
 
   base::WeakPtrFactory<FetchInstallabilityForChromeManagement> weak_factory_{

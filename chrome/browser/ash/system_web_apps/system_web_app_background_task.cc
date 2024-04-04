@@ -22,7 +22,7 @@ SystemWebAppBackgroundTask::SystemWebAppBackgroundTask(
     const SystemWebAppBackgroundTaskInfo& info)
     : profile_(profile),
       web_contents_(nullptr),
-      web_app_url_loader_(std::make_unique<web_app::WebAppUrlLoader>()),
+      web_app_url_loader_(std::make_unique<webapps::WebAppUrlLoader>()),
       timer_(std::make_unique<base::OneShotTimer>()),
       url_(info.url),
       period_(info.period),
@@ -119,15 +119,16 @@ void SystemWebAppBackgroundTask::NavigateBackgroundPage() {
   web_contents_->SetWebPreferences(prefs);
   web_app_url_loader_->LoadUrl(
       url_, web_contents_.get(),
-      web_app::WebAppUrlLoader::UrlComparison::kExact,
+      webapps::WebAppUrlLoader::UrlComparison::kExact,
       base::BindOnce(&SystemWebAppBackgroundTask::OnPageReady,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SystemWebAppBackgroundTask::OnPageReady(
-    web_app::WebAppUrlLoader::Result result) {
-  if (result == web_app::WebAppUrlLoader::Result::kUrlLoaded)
+    webapps::WebAppUrlLoaderResult result) {
+  if (result == webapps::WebAppUrlLoaderResult::kUrlLoaded) {
     opened_count_++;
+  }
 }
 
 }  // namespace ash
