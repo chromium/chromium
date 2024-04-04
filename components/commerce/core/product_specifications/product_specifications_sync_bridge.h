@@ -48,8 +48,8 @@ class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
 
  private:
   friend class commerce::MockProductSpecificationsSyncBridge;
-  friend class commerce::ProductSpecificationsSyncBridgeTest;
   friend class commerce::ProductSpecificationsService;
+  friend class commerce::ProductSpecificationsSyncBridgeTest;
   using CompareSpecificsEntries =
       std::map<std::string, sync_pb::CompareSpecifics>;
   CompareSpecificsEntries entries_;
