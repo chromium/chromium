@@ -356,6 +356,7 @@ TEST_F(DriveRecentFileSuggestionProviderTest,
         auto search_query = std::make_unique<FakeSearchQuery>(CreateQueryItems(
             {{.path = base::FilePath("/Modified last item 1"),
               .last_modified_time = GetReferenceTime(),
+              .modified_by_me_time = GetReferenceTime() - base::Hours(12),
               .last_viewed_by_me_time = GetReferenceTime() - base::Days(1)},
              {.path = base::FilePath("/Folder last modified"),
               .is_folder = true,
@@ -698,13 +699,13 @@ TEST_F(DriveRecentFileSuggestionProviderTest, SharedItems) {
                 EXPECT_THAT(
                     actual_suggestions,
                     ElementsAre(
-                        SuggestionInfo(
-                            root.Append("Modified last, viewed by user"),
-                            u"Test User edited · just now"),
                         SuggestionInfo(root.Append("Modified last by user"),
                                        u"You edited · just now"),
                         SuggestionInfo(root.Append("Viewed last item"),
                                        u"You opened · just now"),
+                        SuggestionInfo(
+                            root.Append("Modified last, viewed by user"),
+                            u"Test User edited · just now"),
                         SuggestionInfo(
                             root.Append("Modified last, not viewed by user"),
                             u"Shared with you · just now"),
@@ -840,13 +841,13 @@ TEST_F(DriveRecentFileSuggestionProviderWithSharingUserTest, SharedItems) {
                 EXPECT_THAT(
                     actual_suggestions,
                     ElementsAre(
-                        SuggestionInfo(
-                            root.Append("Modified last, viewed by user"),
-                            u"Test User edited · just now"),
                         SuggestionInfo(root.Append("Modified last by user"),
                                        u"You edited · just now"),
                         SuggestionInfo(root.Append("Viewed last item"),
                                        u"You opened · just now"),
+                        SuggestionInfo(
+                            root.Append("Modified last, viewed by user"),
+                            u"Test User edited · just now"),
                         SuggestionInfo(
                             root.Append("Modified last, not viewed by user"),
                             u"Shared with you · just now"),
@@ -886,7 +887,8 @@ TEST_F(DriveRecentFileSuggestionProviderTest,
 
         auto search_query = std::make_unique<FakeSearchQuery>(CreateQueryItems(
             {{.path = base::FilePath("/Modified last item 1"),
-              .last_modified_time = GetReferenceTime()},
+              .last_modified_time = GetReferenceTime(),
+              .modified_by_me_time = GetReferenceTime()},
              {.path = base::FilePath("/Modified and viewed last item"),
               .last_modified_time = GetReferenceTime() - base::Days(1),
               .last_viewed_by_me_time = GetReferenceTime() - base::Days(1)}}));
@@ -953,7 +955,7 @@ TEST_F(DriveRecentFileSuggestionProviderTest,
                     actual_suggestions,
                     ElementsAre(
                         SuggestionInfo(root.Append("Modified last item 1"),
-                                       u"Edited · just now"),
+                                       u"You edited · just now"),
                         SuggestionInfo(root.Append("Viewed last item 1"),
                                        u"You opened · Dec 4"),
                         SuggestionInfo(
@@ -995,7 +997,7 @@ TEST_F(DriveRecentFileSuggestionProviderTest, TimestampsInFuture) {
              {.path = base::FilePath("/Modified last by someone else"),
               .last_modified_time = GetReferenceTime() + base::Days(2),
               .modified_by_me_time = GetReferenceTime() + base::Days(1),
-              .last_modifying_user = "Test User",
+              .last_modifying_user = "Test User 1",
               .last_viewed_by_me_time = GetReferenceTime() + base::Days(2)},
              {.path = base::FilePath("/No modified by me time"),
               .last_modified_time = GetReferenceTime() + base::Minutes(1),
@@ -1020,8 +1022,8 @@ TEST_F(DriveRecentFileSuggestionProviderTest, TimestampsInFuture) {
                   query_params->sort_direction);
         auto search_query = std::make_unique<FakeSearchQuery>(CreateQueryItems(
             {{.path = base::FilePath("/Viewed last item"),
-              .last_modified_time = GetReferenceTime() + base::Days(1),
-              .modified_by_me_time = GetReferenceTime() + base::Days(1),
+              .last_modified_time = GetReferenceTime() + base::Hours(26),
+              .modified_by_me_time = GetReferenceTime() + base::Hours(26),
               .last_modifying_user = "Test User",
               .last_viewed_by_me_time = GetReferenceTime() + base::Days(2)}}));
         mojo::MakeSelfOwnedReceiver(std::move(search_query),
@@ -1060,16 +1062,16 @@ TEST_F(DriveRecentFileSuggestionProviderTest, TimestampsInFuture) {
                 EXPECT_THAT(
                     actual_suggestions,
                     ElementsAre(
+                        SuggestionInfo(root.Append("Viewed last item"),
+                                       u"You opened · Dec 7"),
+                        SuggestionInfo(
+                            root.Append("Modified last by someone else"),
+                            u"Test User 1 edited · Dec 7"),
+                        SuggestionInfo(root.Append("Modified last by user"),
+                                       u"You opened · 2:30 PM"),
                         SuggestionInfo(
                             root.Append("No last modifying user info"),
                             u"Edited · Dec 8"),
-                        SuggestionInfo(
-                            root.Append("Modified last by someone else"),
-                            u"Test User edited · Dec 7"),
-                        SuggestionInfo(root.Append("Viewed last item"),
-                                       u"You opened · Dec 7"),
-                        SuggestionInfo(root.Append("Modified last by user"),
-                                       u"You opened · 2:30 PM"),
                         SuggestionInfo(root.Append("No modified by me time"),
                                        u"You opened · just now")));
                 result_waiter.Quit();
@@ -1140,7 +1142,7 @@ TEST_F(DriveRecentFileSuggestionProviderTest, LastViewedSearchFailed) {
               .last_viewed_by_me_time = GetReferenceTime() - base::Days(1)},
              {.path = base::FilePath("/Modified and viewed last item"),
               .last_modified_time = GetReferenceTime() - base::Days(1),
-              .last_viewed_by_me_time = GetReferenceTime() - base::Days(1)},
+              .last_viewed_by_me_time = GetReferenceTime() - base::Days(2)},
              {.path = base::FilePath("/Modified last item 2"),
               .last_modified_time = GetReferenceTime() - base::Days(3),
               .last_viewed_by_me_time = GetReferenceTime() - base::Days(3)}}));

@@ -72,13 +72,6 @@ class ZeroStateDriveProvider : public SearchProvider,
   void SetSearchResults(
       const std::vector<ash::FileSuggestData>& suggest_results);
 
-  std::unique_ptr<FileResult> MakeListResult(
-      const std::string& result_id,
-      const base::FilePath& filepath,
-      ash::FileSuggestionJustificationType justification_type,
-      const std::optional<std::u16string>& prediction_reason,
-      const float relevance);
-
   // Requests an update from the ItemSuggestCache, but only if the call is long
   // enough after the provider was constructed. This helps ease resource
   // contention at login, and prevents the call from failing because Google auth

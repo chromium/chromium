@@ -175,51 +175,27 @@ void ZeroStateDriveProvider::SetSearchResults(
                              ? ash::ToTimestampBasedScore(result, max_recency)
                              : (1.0 - item_index / total_items);
     ++item_index;
-    provider_results.emplace_back(
-        MakeListResult(result.id, result.file_path, result.justification_type,
-                       result.prediction_reason, score));
+    auto provider_result = std::make_unique<FileResult>(
+        result.id, result.file_path, result.prediction_reason,
+        ash::AppListSearchResultType::kZeroStateDrive,
+        ash::SearchResultDisplayType::kContinue, score, std::u16string(),
+        FileResult::Type::kFile, profile_);
+    if (result.modified_time) {
+      provider_result->SetContinueFileSuggestionType(
+          ash::ContinueFileSuggestionType::kModifiedByCurrentUserDrive);
+    } else if (result.viewed_time) {
+      provider_result->SetContinueFileSuggestionType(
+          ash::ContinueFileSuggestionType::kViewedDrive);
+    } else if (result.shared_time) {
+      provider_result->SetContinueFileSuggestionType(
+          ash::ContinueFileSuggestionType::kSharedWithUserDrive);
+    }
+
+    provider_results.emplace_back(std::move(provider_result));
   }
 
   SwapResults(&provider_results);
   LogLatency(base::TimeTicks::Now() - query_start_time_);
-}
-
-std::unique_ptr<FileResult> ZeroStateDriveProvider::MakeListResult(
-    const std::string& result_id,
-    const base::FilePath& filepath,
-    ash::FileSuggestionJustificationType justification_type,
-    const std::optional<std::u16string>& prediction_reason,
-    const float relevance) {
-  std::optional<std::u16string> details;
-  if (prediction_reason)
-    details = prediction_reason.value();
-
-  auto result = std::make_unique<FileResult>(
-      result_id, filepath, details,
-      ash::AppListSearchResultType::kZeroStateDrive,
-      ash::SearchResultDisplayType::kContinue, relevance, std::u16string(),
-      FileResult::Type::kFile, profile_);
-  switch (justification_type) {
-    case ash::FileSuggestionJustificationType::kUnknown:
-      break;
-    case ash::FileSuggestionJustificationType::kViewed:
-      result->SetContinueFileSuggestionType(
-          ash::ContinueFileSuggestionType::kViewedDrive);
-      break;
-    case ash::FileSuggestionJustificationType::kModified:
-      result->SetContinueFileSuggestionType(
-          ash::ContinueFileSuggestionType::kModifiedDrive);
-      break;
-    case ash::FileSuggestionJustificationType::kModifiedByCurrentUser:
-      result->SetContinueFileSuggestionType(
-          ash::ContinueFileSuggestionType::kModifiedByCurrentUserDrive);
-      break;
-    case ash::FileSuggestionJustificationType::kShared:
-      result->SetContinueFileSuggestionType(
-          ash::ContinueFileSuggestionType::kSharedWithUserDrive);
-      break;
-  }
-  return result;
 }
 
 void ZeroStateDriveProvider::MaybeUpdateCache() {

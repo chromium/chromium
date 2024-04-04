@@ -328,6 +328,8 @@ IN_PROC_BROWSER_TEST_P(LauncherContinueSectionTest, ShowDriveFiles) {
       AddTestDriveFile("Test File 2.gdoc", "http://fake/test_file_2");
   base::FilePath file_3 =
       AddTestDriveFile("Test File 3.gdoc", "http://fake/test_file_3");
+  base::FilePath file_4 =
+      AddTestDriveFile("Test File 4.gdoc", "http://fake/test_file_4");
 
   auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->profile());
   EXPECT_CALL(
@@ -363,7 +365,11 @@ IN_PROC_BROWSER_TEST_P(LauncherContinueSectionTest, ShowDriveFiles) {
               .last_viewed_by_me_time = GetReferenceTime() - base::Days(2)},
              {.path = file_2,
               .last_modified_time = GetReferenceTime() - base::Days(5),
-              .last_modifying_user = "Test User 2"}}));
+              .modified_by_me_time = GetReferenceTime() - base::Days(6),
+              .last_modifying_user = "Test User 2"},
+             {.path = file_4,
+              .last_modified_time = GetReferenceTime() - base::Days(5),
+              .last_modifying_user = "Test User 3"}}));
         mojo::MakeSelfOwnedReceiver(std::move(search_query),
                                     std::move(pending_receiver));
       });
@@ -418,8 +424,8 @@ IN_PROC_BROWSER_TEST_P(LauncherContinueSectionTest, ShowDriveAndLocalFiles) {
       AddTestDriveFile("Test File 3.gdoc", "http://fake/test_file_3");
 
   base::FilePath local_file = AddTestLocalFile(
-      "Test Local File.txt", GetReferenceTime() - base::Days(3),
-      GetReferenceTime() - base::Days(4));
+      "Test Local File.txt", GetReferenceTime() - base::Days(4),
+      GetReferenceTime() - base::Days(5));
 
   auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->profile());
   EXPECT_CALL(
@@ -455,8 +461,10 @@ IN_PROC_BROWSER_TEST_P(LauncherContinueSectionTest, ShowDriveAndLocalFiles) {
               .modified_by_me_time = GetReferenceTime() - base::Days(4),
               .last_viewed_by_me_time = GetReferenceTime() - base::Minutes(2)},
              {.path = file_2,
-              .last_modified_time = GetReferenceTime() - base::Days(5),
-              .last_modifying_user = "Test User 2"}}));
+              .last_modified_time = GetReferenceTime(),
+              .modified_by_me_time = GetReferenceTime() - base::Days(6),
+              .last_modifying_user = "Test User 2",
+              .last_viewed_by_me_time = GetReferenceTime() - base::Days(7)}}));
         mojo::MakeSelfOwnedReceiver(std::move(search_query),
                                     std::move(pending_receiver));
       });
@@ -496,13 +504,13 @@ IN_PROC_BROWSER_TEST_P(LauncherContinueSectionTest, ShowDriveAndLocalFiles) {
 
   std::vector<std::u16string> expected_descriptions;
   if (MixLocalAndDriveFiles()) {
-    expected_descriptions = {u"You opened · just now", u"You opened · Feb 25",
-                             u"Test User 2 edited · Feb 23",
+    expected_descriptions = {u"You opened · just now", u"You opened · Feb 24",
+                             u"Test User 2 edited · just now",
                              u"Test User 3 shared · 10:00 AM"};
   } else {
     expected_descriptions = {
-        u"You opened · just now", u"Test User 2 edited · Feb 23",
-        u"Test User 3 shared · 10:00 AM", u"You opened · Feb 25"};
+        u"You opened · just now", u"Test User 2 edited · just now",
+        u"Test User 3 shared · 10:00 AM", u"You opened · Feb 24"};
   }
   EXPECT_EQ(expected_descriptions, GetContinueTaskDescriptions(continue_tasks));
 

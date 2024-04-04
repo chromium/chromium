@@ -57,15 +57,21 @@ double ToTimestampBasedScore(const FileSuggestData& data,
                        static_cast<double>(max_recency.InSeconds()));
   };
 
-  if (data.timestamp) {
-    return score_timestamp(*data.timestamp,
-                           /*interval_max=*/1.0, /*interval_size=*/0.5);
+  if (data.modified_time) {
+    return score_timestamp(*data.modified_time,
+                           /*interval_max=*/1.0, /*interval_size=*/0.33);
   }
 
-  if (data.secondary_timestamp) {
-    return score_timestamp(*data.secondary_timestamp,
-                           /*interval_max=*/0.5, /*interval_size=*/0.5);
+  if (data.viewed_time) {
+    return score_timestamp(*data.viewed_time,
+                           /*interval_max=*/0.66, /*interval_size=*/0.33);
   }
+
+  if (data.shared_time) {
+    return score_timestamp(*data.shared_time,
+                           /*interval_max=*/0.33, /*interval_size=*/0.33);
+  }
+
   return 0.0;
 }
 
@@ -74,19 +80,19 @@ double ToTimestampBasedScore(const FileSuggestData& data,
 FileSuggestData::FileSuggestData(
     FileSuggestionType new_type,
     const base::FilePath& new_file_path,
-    FileSuggestionJustificationType justification_type,
     const std::optional<std::u16string>& new_prediction_reason,
-    const std::optional<base::Time>& timestamp,
-    const std::optional<base::Time>& secondary_timestamp,
+    const std::optional<base::Time>& modified_time,
+    const std::optional<base::Time>& viewed_time,
+    const std::optional<base::Time>& shared_time,
     std::optional<float> new_score,
     const std::optional<std::string>& drive_file_id)
     : type(new_type),
       file_path(new_file_path),
       id(CalculateSuggestionId(type, file_path)),
-      justification_type(justification_type),
       prediction_reason(new_prediction_reason),
-      timestamp(timestamp),
-      secondary_timestamp(secondary_timestamp),
+      modified_time(modified_time),
+      viewed_time(viewed_time),
+      shared_time(shared_time),
       score(new_score),
       drive_file_id(drive_file_id) {}
 

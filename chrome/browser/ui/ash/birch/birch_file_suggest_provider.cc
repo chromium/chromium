@@ -61,10 +61,12 @@ void BirchFileSuggestProvider::OnSuggestedFileDataUpdated(
 
   std::vector<BirchFileItem> file_items;
   for (const auto& suggestion : *suggest_results) {
-    const base::Time timestamp =
-        suggestion.timestamp
-            ? *suggestion.timestamp
-            : suggestion.secondary_timestamp.value_or(base::Time());
+    base::Time timestamp = suggestion.modified_time.value_or(base::Time());
+    timestamp =
+        std::max(timestamp, suggestion.viewed_time.value_or(base::Time()));
+    timestamp =
+        std::max(timestamp, suggestion.shared_time.value_or(base::Time()));
+
     file_items.emplace_back(suggestion.file_path,
                             suggestion.prediction_reason.value_or(u""),
                             timestamp, suggestion.drive_file_id.value_or(""));

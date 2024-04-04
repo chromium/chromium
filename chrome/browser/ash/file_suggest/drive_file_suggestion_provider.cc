@@ -216,10 +216,10 @@ void DriveFileSuggestionProvider::OnDriveFilePathsLocated(
     }
     suggest_results.emplace_back(
         FileSuggestionType::kDriveFile,
-        ReparentToDriveMount(path_or_error->get_path(), drive_service_),
-        FileSuggestionJustificationType::kUnknown, reason,
-        /*timestamp=*/std::nullopt,
-        /*secondary_timestamp=*/std::nullopt,
+        ReparentToDriveMount(path_or_error->get_path(), drive_service_), reason,
+        /*modified_time=*/std::nullopt,
+        /*viewed_time=*/std::nullopt,
+        /*shared_time=*/std::nullopt,
         /*score=*/std::nullopt,
         /*drive_file_id=*/std::nullopt);
   }
