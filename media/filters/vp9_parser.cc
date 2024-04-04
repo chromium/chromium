@@ -18,8 +18,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/sys_byteorder.h"
 #include "media/filters/vp9_compressed_header_parser.h"
 #include "media/filters/vp9_uncompressed_header_parser.h"
 

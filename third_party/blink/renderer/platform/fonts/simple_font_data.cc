@@ -36,7 +36,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
-#include "base/sys_byteorder.h"
+#include "base/numerics/byte_conversions.h"
 #include "build/build_config.h"
 #include "skia/ext/font_utils.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"

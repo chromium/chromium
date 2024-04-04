@@ -27,7 +27,6 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
-#include "base/sys_byteorder.h"
 #include "components/services/font/public/cpp/font_loader.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "third_party/blink/public/platform/web_font_description.h"

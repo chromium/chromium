@@ -22,8 +22,6 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
-#include "base/sys_byteorder.h"
-#include "build/build_config.h"
 #include "net/filter/gzip_header.h"
 #include "third_party/zlib/google/compression_utils.h"
 #include "ui/base/resource/resource_scale_factor.h"
@@ -378,12 +376,6 @@ base::StringPiece DataPack::GetStringPieceFromOffset(
 
 std::optional<base::StringPiece> DataPack::GetStringPiece(
     uint16_t resource_id) const {
-  // It won't be hard to make this endian-agnostic, but it's not worth
-  // bothering to do right now.
-#if !defined(ARCH_CPU_LITTLE_ENDIAN)
-#error "datapack assumes little endian"
-#endif
-
   const Entry* target = LookupEntryById(resource_id);
   if (!target)
     return std::nullopt;
@@ -455,9 +447,6 @@ void DataPack::CheckForDuplicateResources(
 bool DataPack::WritePack(const base::FilePath& path,
                          const std::map<uint16_t, base::StringPiece>& resources,
                          TextEncodingType text_encoding_type) {
-#if !defined(ARCH_CPU_LITTLE_ENDIAN)
-#error "datapack assumes little endian"
-#endif
   if (text_encoding_type != UTF8 && text_encoding_type != UTF16 &&
       text_encoding_type != BINARY) {
     LOG(ERROR) << "Invalid text encoding type, got " << text_encoding_type

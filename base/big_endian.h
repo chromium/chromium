@@ -17,8 +17,6 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_span.h"
 #include "base/strings/string_piece.h"
-#include "base/sys_byteorder.h"
-#include "build/build_config.h"
 
 namespace base {
 

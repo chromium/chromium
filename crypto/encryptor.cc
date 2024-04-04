@@ -9,7 +9,6 @@
 
 #include "base/logging.h"
 #include "base/strings/string_util.h"
-#include "base/sys_byteorder.h"
 #include "crypto/openssl_util.h"
 #include "crypto/symmetric_key.h"
 #include "third_party/boringssl/src/include/openssl/aes.h"

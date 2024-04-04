@@ -17,7 +17,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/sys_byteorder.h"
 #include "build/build_config.h"
 #include "media/cast/common/encoded_frame.h"
 #include "third_party/opus/src/include/opus.h"

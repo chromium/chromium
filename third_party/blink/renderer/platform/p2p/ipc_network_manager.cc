@@ -12,7 +12,6 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sys_byteorder.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/webrtc/net_address_utils.h"
 #include "net/base/ip_address.h"

@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "base/sys_byteorder.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"

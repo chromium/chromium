@@ -16,7 +16,6 @@
 #include "base/hash/md5.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "base/sys_byteorder.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"

@@ -6,7 +6,6 @@
 
 #include "base/containers/heap_array.h"
 #include "base/notreached.h"
-#include "base/sys_byteorder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/modules/skcms/skcms.h"
 

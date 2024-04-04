@@ -6,8 +6,9 @@
 
 #undef Bool
 
+#include "base/containers/span.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/sys_byteorder.h"
+#include "base/numerics/byte_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ui {

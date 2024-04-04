@@ -18,7 +18,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/strcat.h"
-#include "base/sys_byteorder.h"
 #include "crypto/hkdf.h"
 #include "third_party/boringssl/src/include/openssl/aead.h"
 
