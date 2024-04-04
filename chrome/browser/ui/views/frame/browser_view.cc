@@ -1807,7 +1807,8 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
       GetDataProtectionSettings(
           GetProfile(), web_contents(),
           base::BindOnce(&BrowserView::ApplyDataProtectionSettings,
-                         weak_ptr_factory_.GetWeakPtr(), web_contents()));
+                         weak_ptr_factory_.GetWeakPtr(),
+                         web_contents()->GetWeakPtr()));
 #endif
 }
 
@@ -2743,7 +2744,7 @@ void BrowserView::DidStartNavigation(
             GetProfile(), navigation_handle,
             base::BindOnce(
                 &BrowserView::DelayApplyDataProtectionSettingsIfEmpty,
-                weak_ptr_factory_.GetWeakPtr(), web_contents()));
+                weak_ptr_factory_.GetWeakPtr(), web_contents()->GetWeakPtr()));
   }
 }
 
@@ -2774,7 +2775,7 @@ void BrowserView::DocumentOnLoadCompletedInPrimaryMainFrame() {
   // regardless of the order in which they execute.
 
   if (watermark_view_ && clear_watermark_text_on_page_load_) {
-    ApplyDataProtectionSettings(web_contents(), std::string());
+    ApplyDataProtectionSettings(web_contents()->GetWeakPtr(), std::string());
   }
 }
 
@@ -5511,11 +5512,11 @@ void BrowserView::UpdateFullscreenAllowedFromPolicy(
 }
 
 void BrowserView::ApplyDataProtectionSettings(
-    content::WebContents* expected_web_contents,
+    base::WeakPtr<content::WebContents> expected_web_contents,
     const std::string& watermark_text) {
   // Since retrieving data protections is async, make sure that the view is
   // still on the right tab before applying the settings.
-  if (web_contents() != expected_web_contents) {
+  if (!expected_web_contents || web_contents() != expected_web_contents.get()) {
     return;
   }
 
@@ -5528,11 +5529,11 @@ void BrowserView::ApplyDataProtectionSettings(
 }
 
 void BrowserView::DelayApplyDataProtectionSettingsIfEmpty(
-    content::WebContents* expected_web_contents,
+    base::WeakPtr<content::WebContents> expected_web_contents,
     const std::string& watermark_text) {
   // Since retrieving data protections is async, make sure that the view is
   // still on the right tab before applying the settings.
-  if (web_contents() != expected_web_contents) {
+  if (!expected_web_contents || web_contents() != expected_web_contents.get()) {
     return;
   }
 

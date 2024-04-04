@@ -1075,8 +1075,9 @@ class BrowserView : public BrowserWindow,
 
   // Applies data protection settings based on the verdict received by
   // safe-browsing's realtime to `watermark_view_`.
-  void ApplyDataProtectionSettings(content::WebContents* expected_web_contents,
-                                   const std::string& watermark_text);
+  void ApplyDataProtectionSettings(
+      base::WeakPtr<content::WebContents> expected_web_contents,
+      const std::string& watermark_text);
 
   // Applies data protection settings if there are any to apply, otherwise
   // delay clearing the data protection settings until the page loads.
@@ -1089,7 +1090,7 @@ class BrowserView : public BrowserWindow,
   // `ApplyDataProtectionSettings()` will be called.  See
   // `DocumentOnLoadCompletedInPrimaryMainFrame()`.
   void DelayApplyDataProtectionSettingsIfEmpty(
-      content::WebContents* expected_web_contents,
+      base::WeakPtr<content::WebContents> expected_web_contents,
       const std::string& watermark_text);
 
   // The BrowserFrame that hosts this view.
