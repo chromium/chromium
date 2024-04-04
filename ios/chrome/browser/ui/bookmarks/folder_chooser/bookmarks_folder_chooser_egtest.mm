@@ -697,8 +697,108 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
       performAction:grey_tap()];
 }
 
+// Verify undoing a move.
+- (void)testMoveAndUndoSignedOut {
+  [self util_testMoveAndUndoFromModel:KindOfTest::kSignedOut
+                              toModel:KindOfTest::kSignedOut];
+}
+- (void)testMoveAndUndoLocal {
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [self util_testMoveAndUndoFromModel:KindOfTest::kLocal
+                              toModel:KindOfTest::kLocal];
+}
+- (void)testMoveAndUndoAccount {
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [self util_testMoveAndUndoFromModel:KindOfTest::kAccount
+                              toModel:KindOfTest::kAccount];
+}
+// TODO(crbug.com/326425036): Moving the bookmarks fails in test but not when
+// reproduced manually.
+- (void)DISABLED_testMoveAndUndoLocalToAccount {
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [self util_testMoveAndUndoFromModel:KindOfTest::kLocal
+                              toModel:KindOfTest::kAccount];
+}
+- (void)testMoveAndUndoAccountToLocal {
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [self util_testMoveAndUndoFromModel:KindOfTest::kAccount
+                              toModel:KindOfTest::kLocal];
+}
+- (void)util_testMoveAndUndoFromModel:(KindOfTest)sourceKind
+                              toModel:(KindOfTest)destinationKind {
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:kindOfTestToStorageType(sourceKind)];
+  if (sourceKind != destinationKind) {
+    [BookmarkEarlGrey setupStandardBookmarksInStorage:kindOfTestToStorageType(
+                                                          destinationKind)];
+  }
+  // Move to Mobile Bookmarks > Folder 1
+  [BookmarkEarlGreyUI openBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks:sourceKind];
+  [[EarlGrey
+      selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 1")]
+      performAction:grey_tap()];
+
+  // Invoke Move through long press.
+  [[EarlGrey
+      selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 2")]
+      performAction:grey_longPress()];
+
+  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+                                          IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE)]
+      performAction:grey_tap()];
+
+  // Select Mobile Bookmarks as new parent folder for "Title For New Folder".
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kBookmarkFolderPickerViewContainerIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[[EarlGrey selectElementWithMatcher:TappableBookmarkNodeWithLabel(
+                                           @"Folder 1.1", destinationKind)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+      onElementWithMatcher:grey_accessibilityID(
+                               kBookmarkFolderPickerViewContainerIdentifier)]
+      performAction:grey_tap()];
+
+  // Verify folder picker is dismissed.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kBookmarkFolderPickerViewContainerIdentifier)]
+      assertWithMatcher:grey_notVisible()];
+
+  // Verify folder is in destination and not in source.
+  [BookmarkEarlGrey verifyChildCount:1
+                    inFolderWithName:@"Folder 1.1"
+                           inStorage:kindOfTestToStorageType(destinationKind)];
+  [BookmarkEarlGrey verifyChildCount:0
+                    inFolderWithName:@"Folder 1"
+                           inStorage:kindOfTestToStorageType(sourceKind)];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(@"Folder 2"),
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_nil()];
+
+  // Press undo
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Undo")]
+      performAction:grey_tap()];
+  // Verify folder is in source and not in destination.
+  [BookmarkEarlGrey verifyChildCount:0
+                    inFolderWithName:@"Folder 1.1"
+                           inStorage:kindOfTestToStorageType(destinationKind)];
+  [BookmarkEarlGrey verifyChildCount:1
+                    inFolderWithName:@"Folder 1"
+                           inStorage:kindOfTestToStorageType(sourceKind)];
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Folder 2")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  // Close bookmarks
+  [[EarlGrey selectElementWithMatcher:BookmarksHomeDoneButton()]
+      performAction:grey_tap()];
+}
+
 // Verify Move functionality on single folder through long press.
-- (void)testMoveFunctionalityOnSingleSignedOut {
+- (void)testMoveFunctionalityOnSingleFolderSignedOut {
   [self
       util_testMoveFunctionalityOnSingleFolderFromModel:KindOfTest::kSignedOut
                                                 toModel:KindOfTest::kSignedOut];
@@ -751,8 +851,8 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
       performAction:grey_tap()];
 
   // Enter custom new folder name.
-  [BookmarkEarlGreyUI
-      renameBookmarkFolderWithFolderTitle:@"Title For New Folder"];
+  NSString* newFolderTitle = @"Title For New Folder";
+  [BookmarkEarlGreyUI renameBookmarkFolderWithFolderTitle:newFolderTitle];
 
   // Verify current parent folder for "Title For New Folder" folder is "Mobile
   // Bookmarks" folder.
@@ -827,10 +927,6 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Folder 1.1")]
       assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Close bookmarks
-  [[EarlGrey selectElementWithMatcher:BookmarksHomeDoneButton()]
-      performAction:grey_tap()];
 }
 
 // Verify Move functionality on multiple folder selection.
