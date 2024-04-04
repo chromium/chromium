@@ -853,7 +853,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             toolbarContainerView,
                             tabHoverCardViewStub,
                             getWindowAndroid(),
-                            getToolbarManager());
+                            getToolbarManager(),
+                            mRootUiCoordinator.getAppHeaderCoordinatorSupplier());
             mLayoutStateProviderSupplier.set(mLayoutManager);
         }
     }

@@ -604,6 +604,14 @@ public class RootUiCoordinator
         return null;
     }
 
+    /**
+     * @return Supplier for the {@link AppHeaderCoordinator} instance associated with the current
+     *     activity.
+     */
+    public OneshotSupplier<AppHeaderCoordinator> getAppHeaderCoordinatorSupplier() {
+        return mAppHeaderCoordinatorSupplier;
+    }
+
     public void onAttachFragment(Fragment fragment) {
         if (fragment instanceof QrCodeDialog) {
             QrCodeDialog qrCodeDialog = (QrCodeDialog) fragment;

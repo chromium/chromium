@@ -38,6 +38,7 @@ public class AppHeaderUtils {
      */
     public static boolean isAppInDesktopWindow(
             @Nullable Supplier<Boolean> desktopWindowModeSupplier) {
+        // TODO (crbug/332784708): Assert that the supplier is an instance of AppHeaderCoordinator.
         return desktopWindowModeSupplier != null
                 && Boolean.TRUE.equals(desktopWindowModeSupplier.get());
     }

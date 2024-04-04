@@ -48,6 +48,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
@@ -64,6 +65,7 @@ import org.chromium.chrome.browser.compositor.layouts.components.TintedComposito
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager.TabModelStartupInfo;
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayer;
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayerJni;
+import org.chromium.chrome.browser.desktop_windowing.AppHeaderCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
@@ -118,6 +120,8 @@ public class StripLayoutHelperManagerTest {
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private ToolbarManager mToolbarManager;
     @Mock private StatusBarColorController mStatusBarColorController;
+    @Mock private OneshotSupplier<AppHeaderCoordinator> mAppHeaderCoordinatorSupplier;
+    @Mock private AppHeaderCoordinator mAppHeaderCoordinator;
 
     private StripLayoutHelperManager mStripLayoutHelperManager;
     private Context mContext;
@@ -183,13 +187,15 @@ public class StripLayoutHelperManagerTest {
                         mTabContentManagerSupplier,
                         mBrowserControlStateProvider,
                         mWindowAndroid,
-                        mToolbarManager);
+                        mToolbarManager,
+                        mAppHeaderCoordinatorSupplier);
         mStripLayoutHelperManager.setTabModelSelector(mTabModelSelector, mTabCreatorManager);
+        mStripLayoutHelperManager.setDesktopWindowModeSupplierForTesting(mAppHeaderCoordinator);
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
     public void testGetBackgroundColor_ActivityFocusChange_TsloDisabled() {
+        ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(false);
         assertEquals(
                 "Initial strip background color is incorrect.",
                 ChromeColors.getSurfaceColor(mContext, R.dimen.default_elevation_3),
@@ -197,15 +203,30 @@ public class StripLayoutHelperManagerTest {
         // Assume the current activity lost focus.
         mStripLayoutHelperManager.onTopResumedActivityChanged(false);
         assertEquals(
-                "Strip background color should not be updated when activity focus state changes",
+                "Strip background color should not be updated when activity focus state changes.",
                 ChromeColors.getSurfaceColor(mContext, R.dimen.default_elevation_3),
                 mStripLayoutHelperManager.getBackgroundColor());
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
-    public void testGetBackgroundColor_ActivityFocusChange_LightTheme() {
+    public void testGetBackgroundColor_ActivityFocusChange_NotInDesktopWindow() {
         ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
+        when(mAppHeaderCoordinator.get()).thenReturn(false);
+        assertEquals(
+                "Initial strip background color is incorrect.",
+                ChromeColors.getSurfaceColor(mContext, R.dimen.default_elevation_3),
+                mStripLayoutHelperManager.getBackgroundColor());
+        // Assume the current activity lost focus.
+        mStripLayoutHelperManager.onTopResumedActivityChanged(false);
+        assertEquals(
+                "Strip background color should not be updated when activity focus state changes"
+                        + " while not in desktop window.",
+                ChromeColors.getSurfaceColor(mContext, R.dimen.default_elevation_3),
+                mStripLayoutHelperManager.getBackgroundColor());
+    }
+
+    @Test
+    public void testGetBackgroundColor_ActivityFocusChange_LightTheme() {
         initializeTest();
         doTestBackgroundColorOnActivityFocusChange(
                 /* isNightMode= */ false, /* isIncognito= */ false);
@@ -213,18 +234,14 @@ public class StripLayoutHelperManagerTest {
 
     @Test
     @Config(qualifiers = "night")
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
     public void testGetBackgroundColor_ActivityFocusChange_DarkTheme() {
-        ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
         initializeTest();
         doTestBackgroundColorOnActivityFocusChange(
                 /* isNightMode= */ true, /* isIncognito= */ false);
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
     public void testGetBackgroundColor_ActivityFocusChange_Incognito() {
-        ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
         initializeTest();
         mStripLayoutHelperManager.setIsIncognitoForTesting(true);
         doTestBackgroundColorOnActivityFocusChange(
@@ -233,6 +250,8 @@ public class StripLayoutHelperManagerTest {
 
     private void doTestBackgroundColorOnActivityFocusChange(
             boolean isNightMode, boolean isIncognito) {
+        ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
+        when(mAppHeaderCoordinator.get()).thenReturn(true);
         @ColorInt
         int focusedColor =
                 ChromeColors.getSurfaceColor(

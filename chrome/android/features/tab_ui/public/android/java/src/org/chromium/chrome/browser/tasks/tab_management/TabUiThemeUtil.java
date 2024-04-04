@@ -12,7 +12,6 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.Px;
 import androidx.core.content.res.ResourcesCompat;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.util.ColorUtils;
@@ -25,18 +24,32 @@ public class TabUiThemeUtil {
     private static final float MAX_TAB_STRIP_TAB_WIDTH_DP = 265.f;
 
     /**
-     * Returns the color for the tab strip background.
+     * Returns the default color for the tab strip background, that does not take the activity focus
+     * state into account.
+     *
+     * @param context {@link Context} used to retrieve color.
+     * @param isIncognito Whether the color is used for incognito mode.
+     * @return The {@link ColorInt} for the tab strip background.
+     */
+    public static @ColorInt int getTabStripBackgroundColor(Context context, boolean isIncognito) {
+        return getTabStripBackgroundColorForActivityState(
+                context, isIncognito, /* isActivityFocused= */ true);
+    }
+
+    /**
+     * Returns the color for the tab strip background based on the activity state. To get the
+     * default strip background color that is not affected by the activity focus state, use {@link
+     * #getTabStripBackgroundColor(Context, boolean)}.
      *
      * @param context {@link Context} used to retrieve color.
      * @param isIncognito Whether the color is used for incognito mode.
      * @param isActivityFocused Whether the activity containing the tab strip is focused.
      * @return The {@link ColorInt} for the tab strip background.
      */
-    public static @ColorInt int getTabStripBackgroundColor(
+    public static @ColorInt int getTabStripBackgroundColorForActivityState(
             Context context, boolean isIncognito, boolean isActivityFocused) {
-        // Default specs for incognito, dark and light themes, used when
-        // TAB_STRIP_LAYOUT_OPTIMIZATION is disabled or when the activity is focused when this
-        // feature is enabled.
+        // Default spec for incognito, dark and light themes, used when not in desktop windowing
+        // mode or when the activity is focused in desktop windowing mode.
         @ColorRes int incognitoColor = R.color.default_bg_color_dark_elev_2_baseline;
         @Px
         float darkThemeElevation =
@@ -45,12 +58,8 @@ public class TabUiThemeUtil {
         float lightThemeElevation =
                 context.getResources().getDimensionPixelSize(R.dimen.default_elevation_3);
 
-        // Specs for when the activity containing the tab strip is not focused.
-        // TODO (crbug.com/326290073): Use another boolean to allow using the default spec even when
-        // the activity is not in focus, when this feature is enabled.
-        // TODO (crbug.com/326290073): Update this to use the helper method from
-        // TabUiFeatureUtilities.
-        if (ChromeFeatureList.sTabStripLayoutOptimization.isEnabled() && !isActivityFocused) {
+        // Spec for when the activity is in an unfocused desktop window.
+        if (!isActivityFocused) {
             incognitoColor = R.color.default_bg_color_dark_elev_1_baseline;
             darkThemeElevation =
                     context.getResources().getDimensionPixelSize(R.dimen.default_elevation_1);

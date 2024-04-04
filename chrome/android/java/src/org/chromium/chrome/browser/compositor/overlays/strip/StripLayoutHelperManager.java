@@ -24,6 +24,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
@@ -37,6 +38,7 @@ import org.chromium.chrome.browser.compositor.layouts.components.TintedComposito
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.AreaMotionEventFilter;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.MotionEventHandler;
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayer;
+import org.chromium.chrome.browser.desktop_windowing.AppHeaderCoordinator;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -186,7 +188,9 @@ public class StripLayoutHelperManager
     private float mModelSelectorWidth;
     private float mLastVisibleViewportOffsetY;
 
+    // Desktop windowing mode constants.
     private boolean mIsTopResumedActivity;
+    private ObservableSupplier<Boolean> mDesktopWindowModeSupplier;
 
     // 3-dots menu button with tab strip end padding
     private float mStripEndPadding;
@@ -348,6 +352,7 @@ public class StripLayoutHelperManager
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
      * @param browserControlsStateProvider @{@link BrowserControlsStateProvider} for drag drop.
      * @param toolbarManager The {@link ToolbarManager} instance.
+     * @param appHeaderCoordinatorSupplier Supplier of the {@link AppHeaderCoordinator} instance.
      */
     public StripLayoutHelperManager(
             Context context,
@@ -366,7 +371,8 @@ public class StripLayoutHelperManager
             @NonNull WindowAndroid windowAndroid,
             // TODO(crbug.com/1498252): Avoid passing the ToolbarManager instance. Potentially
             // implement an interface to manage strip transition states.
-            @NonNull ToolbarManager toolbarManager) {
+            @NonNull ToolbarManager toolbarManager,
+            OneshotSupplier<AppHeaderCoordinator> appHeaderCoordinatorSupplier) {
         Resources res = context.getResources();
         mUpdateHost = updateHost;
         mLayerTitleCacheSupplier = layerTitleCacheSupplier;
@@ -526,6 +532,8 @@ public class StripLayoutHelperManager
                 });
 
         mIsTopResumedActivity = AppHeaderUtils.isActivityFocusedAtStartup(lifecycleDispatcher);
+        appHeaderCoordinatorSupplier.onAvailable(
+                appHeaderCoordinator -> mDesktopWindowModeSupplier = appHeaderCoordinator);
 
         if (ToolbarFeatures.isTabStripWindowLayoutOptimizationEnabled(/* isTablet= */ true)) {
             // Add some large margins to tab strip when flag enabled.
@@ -810,7 +818,9 @@ public class StripLayoutHelperManager
 
     @Override
     public void onTopResumedActivityChanged(boolean isTopResumedActivity) {
-        if (!mIsLayoutOptimizationsEnabled) return;
+        // TODO (crbug/328055199): Check if losing focus to a non-Chrome task.
+        if (!mIsLayoutOptimizationsEnabled
+                && !AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowModeSupplier)) return;
         mIsTopResumedActivity = isTopResumedActivity;
         mUpdateHost.requestUpdate();
     }
@@ -1192,12 +1202,18 @@ public class StripLayoutHelperManager
     }
 
     public @ColorInt int getBackgroundColor() {
-        return TabUiThemeUtil.getTabStripBackgroundColor(
-                mContext, mIsIncognito, mIsTopResumedActivity);
+        // In desktop windowing mode, consider the activity focus state when determining the tab
+        // strip background color.
+        if (AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowModeSupplier)) {
+            return TabUiThemeUtil.getTabStripBackgroundColorForActivityState(
+                    mContext, mIsIncognito, mIsTopResumedActivity);
+        }
+        return TabUiThemeUtil.getTabStripBackgroundColor(mContext, mIsIncognito);
     }
 
     /**
      * Updates all internal resources and dimensions.
+     *
      * @param context The current Android {@link Context}.
      */
     public void onContextChanged(Context context) {
@@ -1304,5 +1320,10 @@ public class StripLayoutHelperManager
 
     public void setIsIncognitoForTesting(boolean isIncognito) {
         mIsIncognito = isIncognito;
+    }
+
+    public void setDesktopWindowModeSupplierForTesting(
+            ObservableSupplier<Boolean> desktopWindowModeSupplier) {
+        mDesktopWindowModeSupplier = desktopWindowModeSupplier;
     }
 }

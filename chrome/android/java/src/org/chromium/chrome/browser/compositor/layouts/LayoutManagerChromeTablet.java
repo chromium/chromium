@@ -12,11 +12,13 @@ import androidx.annotation.NonNull;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager.TabModelStartupInfo;
+import org.chromium.chrome.browser.desktop_windowing.AppHeaderCoordinator;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.hub.HubLayoutDependencyHolder;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -84,6 +86,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
      *     drag and drop.
      * @param tabHoverCardViewStub The {@link ViewStub} representing the strip tab hover card.
      * @param toolbarManager The {@link ToolbarManager} instance.
+     * @param appHeaderCoordinatorSupplier Supplier for the {@link AppHeaderCoordinator} instance.
      */
     public LayoutManagerChromeTablet(
             LayoutManagerHost host,
@@ -104,7 +107,8 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             View toolbarContainerView,
             @NonNull ViewStub tabHoverCardViewStub,
             @NonNull WindowAndroid windowAndroid,
-            @NonNull ToolbarManager toolbarManager) {
+            @NonNull ToolbarManager toolbarManager,
+            OneshotSupplier<AppHeaderCoordinator> appHeaderCoordinatorSupplier) {
         super(
                 host,
                 contentContainer,
@@ -133,7 +137,8 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
                         tabContentManagerSupplier,
                         browserControlsStateProvider,
                         windowAndroid,
-                        toolbarManager);
+                        toolbarManager,
+                        appHeaderCoordinatorSupplier);
         addSceneOverlay(mTabStripLayoutHelperManager);
         addObserver(mTabStripLayoutHelperManager.getTabSwitcherObserver());
 
