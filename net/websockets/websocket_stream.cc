@@ -112,12 +112,12 @@ class WebSocketStreamRequestImpl : public WebSocketStreamRequestAPI {
       std::unique_ptr<WebSocketStream::ConnectDelegate> connect_delegate,
       std::unique_ptr<WebSocketStreamRequestAPI> api_delegate)
       : delegate_(this),
+        connect_delegate_(std::move(connect_delegate)),
         url_request_(context->CreateRequest(url,
                                             DEFAULT_PRIORITY,
                                             &delegate_,
                                             traffic_annotation,
                                             /*is_for_websockets=*/true)),
-        connect_delegate_(std::move(connect_delegate)),
         api_delegate_(std::move(api_delegate)) {
     DCHECK_EQ(IsolationInfo::RequestType::kOther,
               isolation_info.request_type());
@@ -300,12 +300,14 @@ class WebSocketStreamRequestImpl : public WebSocketStreamRequestAPI {
   // initialised first and destroyed second.
   Delegate delegate_;
 
+  std::unique_ptr<WebSocketStream::ConnectDelegate> connect_delegate_;
+
   // Deleting the WebSocketStreamRequestImpl object deletes this URLRequest
   // object, cancelling the whole connection. Must be destroyed before
-  // `delegate_`, since `url_request_` has a pointer to it.
+  // `delegate_`, since `url_request_` has a pointer to it, and before
+  // `connect_delegate_`, because there may be a pointer to it further down the
+  // stack.
   const std::unique_ptr<URLRequest> url_request_;
-
-  std::unique_ptr<WebSocketStream::ConnectDelegate> connect_delegate_;
 
   // This is owned by the caller of
   // WebsocketHandshakeStreamCreateHelper::CreateBasicStream() or
