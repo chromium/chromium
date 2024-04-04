@@ -55,8 +55,7 @@ void CardUnmaskAuthenticationSelectionMediator::DidSelectChallengeOption(
 }
 
 void CardUnmaskAuthenticationSelectionMediator::DidAcceptSelection() {
-  // TODO(crbug.com/40282545): Implement accepting the authentication selection
-  // option.
+  model_controller_->OnOkButtonClicked();
 }
 
 void CardUnmaskAuthenticationSelectionMediator::DidCancelSelection() {

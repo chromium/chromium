@@ -310,12 +310,22 @@ void ChromeAutofillClientIOS::ShowUnmaskAuthenticatorSelectionDialog(
     base::OnceClosure cancel_unmasking_closure) {
   AutofillBottomSheetTabHelper* bottomSheetTabHelper =
       AutofillBottomSheetTabHelper::FromWebState(web_state_);
+  auto controller = std::make_unique<
+      autofill::CardUnmaskAuthenticationSelectionDialogControllerImpl>(
+      challenge_options, std::move(confirm_unmask_challenge_option_callback),
+      std::move(cancel_unmasking_closure));
+  card_unmask_authentication_selection_controller_ = controller->GetWeakPtr();
   bottomSheetTabHelper->ShowCardUnmaskAuthenticationSelection(
-      std::make_unique<
-          autofill::CardUnmaskAuthenticationSelectionDialogControllerImpl>(
-          challenge_options,
-          std::move(confirm_unmask_challenge_option_callback),
-          std::move(cancel_unmasking_closure)));
+      std::move(controller));
+}
+
+void ChromeAutofillClientIOS::DismissUnmaskAuthenticatorSelectionDialog(
+    bool server_success) {
+  if (card_unmask_authentication_selection_controller_) {
+    card_unmask_authentication_selection_controller_
+        ->DismissDialogUponServerProcessedAuthenticationMethodRequest(
+            server_success);
+  }
 }
 
 payments::MandatoryReauthManager*

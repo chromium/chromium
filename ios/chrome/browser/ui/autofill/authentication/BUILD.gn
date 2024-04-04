@@ -85,6 +85,7 @@ source_set("card_unmask_authentication_selection_mediator_unittest") {
   deps = [
     ":card_unmask_authentication_selection_mediator",
     ":card_unmask_authentication_selection_mutator",
+    "//base/test:test_support",
     "//components/autofill/core/browser",
     "//components/strings:components_strings_grit",
     "//testing/gtest",

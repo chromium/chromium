@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/autofill/authentication/card_unmask_authentication_selection_mediator.h"
 
 #import "base/functional/callback_helpers.h"
+#import "base/test/mock_callback.h"
 #import "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
 #import "components/strings/grit/components_strings.h"
@@ -40,7 +41,8 @@ class CardUnmaskAuthenticationSelectionMediatorTest : public PlatformTest {
     CHECK(!mediator_) << "Only initialize the mediator once in tests.";
     controller_ = std::make_unique<
         autofill::CardUnmaskAuthenticationSelectionDialogControllerImpl>(
-        challenge_options, base::DoNothing(), base::DoNothing());
+        challenge_options, confirm_unmasking_method_callback_.Get(),
+        base::DoNothing());
     mediator_ = std::make_unique<CardUnmaskAuthenticationSelectionMediator>(
         controller_->GetWeakPtr(), consumer_);
     return mediator_.get();
@@ -85,6 +87,10 @@ class CardUnmaskAuthenticationSelectionMediatorTest : public PlatformTest {
                           IDS_AUTOFILL_AUTHENTICATION_MODE_SECURITY_CODE)
         challengeInfo:@"challenge_info2"];
   }
+
+ protected:
+  base::MockOnceCallback<void(const std::string&)>
+      confirm_unmasking_method_callback_;
 
  private:
   id<CardUnmaskAuthenticationSelectionConsumer> consumer_;
@@ -140,4 +146,15 @@ TEST_F(CardUnmaskAuthenticationSelectionMediatorTest,
   OCMExpect([consumer() enterPendingState]);
 
   mediator->UpdateContent();
+}
+
+TEST_F(CardUnmaskAuthenticationSelectionMediatorTest,
+       OnAcceptedSelection_CallsConfirmUnmaskingMethodCallback) {
+  CardUnmaskAuthenticationSelectionMediator* mediator = InitializeMediator(
+      {SmsAutofillChallengeOption(), CvcAutofillChallengeOption()});
+  mediator->DidSelectChallengeOption(CvcIOSChallengeOption());
+
+  EXPECT_CALL(confirm_unmasking_method_callback_,
+              Run(CvcAutofillChallengeOption().id.value()));
+  [mediator->AsMutator() didAcceptSelection];
 }
