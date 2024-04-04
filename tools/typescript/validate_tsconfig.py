@@ -152,6 +152,9 @@ def validateJavaScriptAllowed(source_dir, out_dir, is_ios):
       'chrome/test/data/webui/bluetooth_internals',
       'chrome/test/data/webui/chromeos',
       'chrome/test/data/webui/chromeos/ash_common',
+      # TODO(b/245336251): Migrate diagnostics app tests to Typescript and
+      # remove exception.
+      'chrome/test/data/webui/chromeos/diagnostics',
       # TODO(b/315002705): Migrate shimless rma app tests to Typescript and
       # remove exception.
       'chrome/test/data/webui/chromeos/shimless_rma',

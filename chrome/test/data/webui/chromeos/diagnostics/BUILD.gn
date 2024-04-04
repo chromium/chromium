@@ -2,13 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ui/webui/resources/tools/generate_grd.gni")
+import("../../build_webui_tests.gni")
 
-generate_grd("build_grdp") {
-  grd_prefix = "webui_chromeos_diagnostics"
-  out_grd = "$target_gen_dir/resources.grdp"
+build_webui_tests("build_webui_tests") {
+  ts_path_mappings = [
+    "chrome://diagnostics/*|" +
+        rebase_path("$root_gen_dir/ash/webui/diagnostics_ui/resources/tsc/*",
+                    target_gen_dir),
+    "chrome://webui-test/chromeos/*|" +
+        rebase_path("$root_gen_dir/chrome/test/data/webui/chromeos/tsc/*",
+                    target_gen_dir),
+  ]
 
-  input_files = [
+  files = [
     "battery_status_card_test.js",
     "cellular_info_test.js",
     "connectivity_card_test.js",
@@ -52,6 +58,14 @@ generate_grd("build_grdp") {
     "touchscreen_tester_test.js",
     "wifi_info_test.js",
   ]
-  input_files_base_dir = rebase_path(".", "//")
-  resource_path_prefix = "chromeos/diagnostics"
+
+  ts_deps = [
+    "//ash/webui/common/resources:build_ts",
+    "//ash/webui/common/resources/cr_elements:build_ts",
+    "//ash/webui/diagnostics_ui/resources:build_ts",
+    "//chrome/test/data/webui/chromeos:build_ts",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
 }
