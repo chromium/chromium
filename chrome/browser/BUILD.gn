@@ -4762,6 +4762,8 @@ static_library("browser") {
         "themes/theme_color_policy_handler.cc",
         "themes/theme_color_policy_handler.h",
       ]
+
+      deps += [ "//chrome/browser/shortcuts" ]
     }
     if (!is_chromeos_ash) {
       sources += [

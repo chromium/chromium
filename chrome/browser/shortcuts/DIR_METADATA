@@ -1,0 +1,5 @@
+# TODO(dibyapal): Createa a new monorail component.
+
+monorail: {
+  component: "UI>Browser>WebAppInstalls"
+}

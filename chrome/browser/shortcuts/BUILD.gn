@@ -1,0 +1,16 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/browser/buildflags.gni")
+
+assert(!is_android)
+
+source_set("shortcuts") {
+  sources = [ "create_shortcut_for_current_web_contents_task.h" ]
+
+  deps = [
+    "//base",
+    "//content/public/browser",
+  ]
+}
