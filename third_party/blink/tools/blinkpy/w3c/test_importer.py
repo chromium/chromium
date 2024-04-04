@@ -11,6 +11,7 @@ If this script is given the argument --auto-update, it will also:
 """
 
 import argparse
+import contextlib
 import json
 import logging
 import textwrap
@@ -18,11 +19,11 @@ from functools import cached_property
 from typing import List, Mapping, Optional, Set
 
 from blinkpy.common.checkout.git import CommitRange
-from blinkpy.common.net.git_cl import GitCL
+from blinkpy.common.net.git_cl import CLRevisionID, GitCL
 from blinkpy.common.net.network_transaction import NetworkTimeout
 from blinkpy.common.path_finder import PathFinder
 from blinkpy.common.system.log_utils import configure_logging
-from blinkpy.w3c.buganizer import BuganizerIssue
+from blinkpy.w3c.buganizer import BuganizerClient, BuganizerIssue
 from blinkpy.w3c.chromium_commit import ChromiumCommit
 from blinkpy.w3c.chromium_exportable_commits import exportable_commits_over_last_n_commits
 from blinkpy.w3c.common import (
@@ -57,7 +58,12 @@ _log = logging.getLogger(__file__)
 
 
 class TestImporter:
-    def __init__(self, host, github=None, wpt_manifests=None):
+
+    def __init__(self,
+                 host,
+                 github=None,
+                 wpt_manifests=None,
+                 buganizer_client: Optional[BuganizerClient] = None):
         self.host = host
         self.github = github
 
@@ -74,6 +80,14 @@ class TestImporter:
         self.wpt_git = None
         self.verbose = False
         self.wpt_manifests = wpt_manifests
+        self._buganizer_client = buganizer_client or BuganizerClient()
+        self._cleanup = contextlib.ExitStack()
+
+    def __enter__(self):
+        return self._cleanup.__enter__()
+
+    def __exit__(self, exc_type, exc, tb):
+        return self._cleanup.__exit__(exc_type, exc, tb)
 
     @cached_property
     def expectations_updater(self):
@@ -131,7 +145,7 @@ class TestImporter:
         # that manually revived CLs still receive bugs.
         gerrit_api = GerritAPI.from_credentials(self.host, credentials)
         notifier = ImportNotifier(self.host, self.project_git, local_wpt,
-                                  gerrit_api)
+                                  gerrit_api, self._buganizer_client)
         self.file_and_record_bugs(notifier,
                                   auto_file_bugs=options.auto_file_bugs)
 
@@ -197,19 +211,18 @@ class TestImporter:
         directory_owners = self.get_directory_owners()
         description = self.cl_description(directory_owners)
         self._upload_cl(description)
-        _log.info('Issue: %s', self.git_cl.run(['issue']).strip())
 
-        try:
-            if not self.update_expectations_for_cl():
-                return 1
-            if not options.auto_update:
-                return 0
-            if not self.run_commit_queue_for_cl():
-                return 1
-        finally:
-            if self.git_cl.get_cl_status().lower() != 'closed':
-                self.git_cl.close()
+        if not self.update_expectations_for_cl():
+            return 1
+        if not options.auto_update:
+            return 0
+        if not self.run_commit_queue_for_cl():
+            return 1
         return 0
+
+    def _ensure_cl_closed(self, issue: Optional[int] = None):
+        if self.git_cl.get_cl_status(issue).lower() != 'closed':
+            self.git_cl.close(issue)
 
     def log_try_job_results(self, try_job_results) -> None:
         if try_job_results:
@@ -277,6 +290,7 @@ class TestImporter:
     def run_commit_queue_for_cl(self):
         """Triggers CQ and either commits or aborts; returns True on success."""
         _log.info('Triggering CQ try jobs.')
+        self._cleanup.callback(self._ensure_cl_closed)
         self.git_cl.run(['try'])
         cl_status = self.git_cl.wait_for_try_jobs(
             poll_delay_seconds=POLL_DELAY_SECONDS,
@@ -567,7 +581,8 @@ class TestImporter:
 
     def _upload_cl(self,
                    description: str,
-                   extra_args: Optional[List[str]] = None):
+                   extra_args: Optional[List[str]] = None) -> int:
+        """Upload a CL on the current branch and return its issue number."""
         _log.info('Uploading change list.')
         self.git_cl.run([
             'upload',
@@ -576,6 +591,9 @@ class TestImporter:
             f'--message={description}',
             *(extra_args or []),
         ])
+        issue_num = int(self.git_cl.get_issue_number())
+        _log.info(f'Issue: {CLRevisionID(issue_num)}')
+        return issue_num
 
     def get_directory_owners(self):
         """Returns a mapping of email addresses to owners of changed tests."""
@@ -690,7 +708,7 @@ class TestImporter:
               (HEAD -> wpt-import, update_wpt) [wpt-import] Update `TestExpectations` ...
               (origin/main) <tip-of-tree>
         """
-        _log.info('Filing bugs for the last WPT import')
+        _log.info('Filing bugs for the last WPT import.')
         bugs_by_dir = notifier.main(dry_run=(not auto_file_bugs))
         referenced_bugs = self._update_bugs_in_expectations(
             notifier, bugs_by_dir)
@@ -707,17 +725,44 @@ class TestImporter:
             # Immediately send the fixup CL to CQ+2. The chained CQ votes
             # feature of CV should automatically rebase the `Import wpt@...`
             # CL on tip-of-tree after the fixup CL lands.
-            self._upload_cl(description, [
+            fixup_cl_issue = self._upload_cl(description, [
                 '--send-mail',
                 '--enable-auto-submit',
                 f'--reviewers={RUBBER_STAMPER_BOT}',
             ])
             # Get back on an issue-less branch for the `Import wpt@...` CL.
             self.project_git.new_branch('import-wpt')
+            self._cleanup.callback(self._notify_if_cl_blocked, referenced_bugs,
+                                   fixup_cl_issue, self.host.time())
 
         diff_from_tracking = self.project_git.changed_files(
             CommitRange('@{u}', 'HEAD'))
         assert not diff_from_tracking, diff_from_tracking
+
+    def _notify_if_cl_blocked(self, referenced_bugs: Set[int], issue: int,
+                              start: float):
+        assert referenced_bugs
+        # If both CL types were created, it's likely this timeout has already
+        # elapsed (i.e., this will only block if only the bug fixup CL was
+        # created).
+        if self.git_cl.wait_for_closed_status(POLL_DELAY_SECONDS,
+                                              TIMEOUT_SECONDS, issue, start):
+            return
+
+        bug_links = {
+            f'https://crbug.com/{issue_id}'
+            for issue_id in sorted(referenced_bugs)
+        }
+        _log.warning(f'Failed to automatically submit {CLRevisionID(issue)}. '
+                     f'Pinging {", ".join(bug_links)} for help.')
+        comment = (
+            f'{CLRevisionID(issue)} backfills TestExpectations to reference '
+            'this bug, but that CL failed to land automatically. Please try '
+            'resubmitting. You may need to rebase that CL on tip-of-tree and '
+            'resolve any resulting merge conflicts.')
+        for issue_id in referenced_bugs:
+            self._buganizer_client.NewComment(issue_id, comment)
+        self._ensure_cl_closed(issue)
 
     def _update_bugs_in_expectations(
         self,

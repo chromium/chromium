@@ -15,7 +15,8 @@ def main():
     host = Host()
     importer = TestImporter(host)
     try:
-        host.exit(importer.main())
+        with importer:
+            host.exit(importer.main())
     except KeyboardInterrupt:
         host.print_("Interrupted, exiting")
         host.exit(exit_codes.INTERRUPTED_EXIT_STATUS)

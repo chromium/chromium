@@ -22,13 +22,14 @@ from blinkpy.common.system.log_testing import LoggingTestCase
 from blinkpy.w3c.buganizer import BuganizerIssue
 from blinkpy.w3c.chromium_commit_mock import MockChromiumCommit
 from blinkpy.w3c.directory_owners_extractor import WPTDirMetadata
-from blinkpy.w3c.import_notifier import ImportNotifier
+from blinkpy.w3c.import_notifier import DirectoryFailures, ImportNotifier
 from blinkpy.w3c.local_wpt import LocalWPT
 from blinkpy.w3c.local_wpt_mock import MockLocalWPT
 from blinkpy.w3c.test_importer import TestImporter, ROTATIONS_URL, SHERIFF_EMAIL_FALLBACK, RUBBER_STAMPER_BOT
 from blinkpy.w3c.wpt_github_mock import MockWPTGitHub
 from blinkpy.w3c.wpt_manifest import BASE_MANIFEST_NAME
 from blinkpy.web_tests.builder_list import BuilderList
+from blinkpy.web_tests.models import typ_types
 from unittest.mock import patch
 
 MOCK_WEB_TESTS = '/mock-checkout/' + RELATIVE_WEB_TESTS
@@ -44,6 +45,11 @@ MANIFEST_INSTALL_CMD = [
 
 
 class TestImporterTest(LoggingTestCase):
+
+    def setUp(self):
+        super().setUp()
+        self.buganizer_client = mock.Mock()
+
     def mock_host(self):
         host = MockHost()
         host.builders = BuilderList({
@@ -88,7 +94,8 @@ class TestImporterTest(LoggingTestCase):
         self.logMessages().clear()
         return TestImporter(host,
                             github=github,
-                            wpt_manifests=[manifest])
+                            wpt_manifests=[manifest],
+                            buganizer_client=self.buganizer_client)
 
     def test_update_expectations_for_cl_no_results(self):
         host = self.mock_host()
@@ -187,6 +194,7 @@ class TestImporterTest(LoggingTestCase):
                 Build('cq-builder-a', 123): TryJobStatus(
                     'COMPLETED', 'SUCCESS'),
             })
+
         success = importer.run_commit_queue_for_cl()
         self.assertTrue(success)
         self.assertLog([
@@ -226,7 +234,9 @@ class TestImporterTest(LoggingTestCase):
                     'COMPLETED', 'SUCCESS'),
             })
         importer.fetch_new_expectations_and_baselines = lambda: None
-        success = importer.run_commit_queue_for_cl()
+
+        with importer:
+            success = importer.run_commit_queue_for_cl()
         self.assertFalse(success)
         self.assertLog([
             'INFO: Triggering CQ try jobs.\n',
@@ -235,6 +245,7 @@ class TestImporterTest(LoggingTestCase):
         ])
         self.assertEqual(importer.git_cl.calls, [
             ['git', 'cl', 'try'],
+            ['git', 'cl', 'set-close'],
         ])
 
     def test_run_commit_queue_for_cl_fail_to_land(self):
@@ -254,7 +265,9 @@ class TestImporterTest(LoggingTestCase):
             })
         importer._need_sheriff_attention = lambda: False
         importer.git_cl.wait_for_closed_status = lambda timeout_seconds: False
-        success = importer.run_commit_queue_for_cl()
+
+        with importer:
+            success = importer.run_commit_queue_for_cl()
         self.assertFalse(success)
         self.assertLog([
             'INFO: Triggering CQ try jobs.\n',
@@ -274,6 +287,7 @@ class TestImporterTest(LoggingTestCase):
                 'git', 'cl', 'upload', '-f', '--send-mail',
                 '--enable-auto-submit', '--reviewers', RUBBER_STAMPER_BOT
             ],
+            ['git', 'cl', 'set-close'],
         ])
 
     def test_run_commit_queue_for_cl_closed_cl(self):
@@ -290,7 +304,9 @@ class TestImporterTest(LoggingTestCase):
                 Build('cq-builder-b', 200): TryJobStatus(
                     'COMPLETED', 'SUCCESS'),
             })
-        success = importer.run_commit_queue_for_cl()
+
+        with importer:
+            success = importer.run_commit_queue_for_cl()
         self.assertFalse(success)
         self.assertLog([
             'INFO: Triggering CQ try jobs.\n',
@@ -651,14 +667,13 @@ class TestImporterTest(LoggingTestCase):
         gerrit_cl = mock.Mock(messages=[])
         gerrit_api = mock.Mock()
         gerrit_api.query_cls.return_value = [gerrit_cl]
-        buganizer_client = mock.Mock()
-        buganizer_client.NewIssue.side_effect = lambda issue: BuganizerIssue(
+        self.buganizer_client.NewIssue.side_effect = lambda issue: BuganizerIssue(
             **{
                 **dataclasses.asdict(issue),
                 'issue_id': 111,
             })
         notifier = ImportNotifier(host, git, local_wpt, gerrit_api,
-                                  buganizer_client)
+                                  self.buganizer_client)
         with mock.patch(
                 'blinkpy.w3c.import_notifier.'
                 'DirectoryOwnersExtractor.read_dir_metadata',
@@ -668,7 +683,7 @@ class TestImporterTest(LoggingTestCase):
         gerrit_cl.post_comment.assert_called_once_with(
             'Filed bugs for failures introduced by this CL: '
             'https://crbug.com/111')
-        buganizer_client.NewIssue.assert_called_once()
+        self.buganizer_client.NewIssue.assert_called_once()
         self.assertEqual(
             git.show_blob(RELATIVE_WEB_TESTS + 'TestExpectations',
                           'HEAD').decode(),
@@ -722,10 +737,10 @@ class TestImporterTest(LoggingTestCase):
         git.commit_locally_with_message(f'Import wpt@{"f" * 40}')
 
         local_wpt = MockLocalWPT()
-        gerrit_api, buganizer_client = mock.Mock(), mock.Mock()
+        gerrit_api = mock.Mock()
         gerrit_api.query_cls.return_value = [mock.Mock(messages=[])]
         notifier = ImportNotifier(host, git, local_wpt, gerrit_api,
-                                  buganizer_client)
+                                  self.buganizer_client)
         with mock.patch(
                 'blinkpy.w3c.import_notifier.'
                 'DirectoryOwnersExtractor.read_dir_metadata',
@@ -737,6 +752,50 @@ class TestImporterTest(LoggingTestCase):
                           'HEAD').decode(), contents)
         self.assertEqual(importer.git_cl.calls, [])
         self.assertEqual(git.current_branch(), 'update_wpt')
+
+    def test_file_and_record_bugs_notify_on_timeout(self):
+        host = self.mock_host()
+        importer = self._get_test_importer(host)
+        importer.git_cl = MockGitCL(host, status='commit', time_out=True)
+
+        git, fs = importer.project_git, host.filesystem
+        exp_path = MOCK_WEB_TESTS + 'TestExpectations'
+        fs.write_text_file(
+            exp_path,
+            textwrap.dedent("""\
+                # results: [ Pass Failure ]
+                external/wpt/foo/new.html [ Failure ]
+                """))
+        git.add_list([MOCK_WEB_TESTS])
+        git.commit_locally_with_message(f'Import wpt@{"e" * 40}')
+
+        # For this test, don't actually simulate bug filing.
+        exp = typ_types.Expectation(test='external/wpt/foo/new.html',
+                                    results=frozenset(
+                                        [typ_types.ResultType.Failure]))
+        notifier = mock.Mock(default_port=host.port_factory.get('test'))
+        notifier.new_failures_by_directory = {
+            'external/wpt/foo': DirectoryFailures({exp_path: [exp]}),
+        }
+        notifier.main.return_value = {
+            'external/wpt/foo': BuganizerIssue('New failures', '', '', 111),
+        }
+
+        with importer:
+            importer.file_and_record_bugs(notifier)
+        self.assertLog([
+            'INFO: Filing bugs for the last WPT import.\n',
+            'INFO: Committing changes.\n',
+            'INFO: Uploading change list.\n',
+            'INFO: Issue: https://crrev.com/c/1234\n',
+            'WARNING: Failed to automatically submit https://crrev.com/c/1234. '
+            'Pinging https://crbug.com/111 for help.\n',
+        ])
+        self.buganizer_client.NewComment.assert_called_once_with(111, mock.ANY)
+        _, message = self.buganizer_client.NewComment.call_args.args
+        self.assertIn('https://crrev.com/c/1234 backfills TestExpectations',
+                      message)
+        self.assertIn(['git', 'cl', 'set-close'], importer.git_cl.calls)
 
     def test_find_insert_index_ignore_pattern_empty_list(self):
         host = self.mock_host()
