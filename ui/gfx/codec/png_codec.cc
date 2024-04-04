@@ -127,12 +127,6 @@ bool PNGCodec::Decode(const unsigned char* input,
     return false;
   }
 
-  // TODO(b/332584706): we have a handful of unit tests which fail if the
-  // returned SkBitmap has colorspace information. These unit tests should be
-  // fixed; once that's done, we can return the SkBitmap without stripping off
-  // its colorspace.
-  bitmap->setColorSpace(nullptr);
-
   return codec->getPixels(bitmap->pixmap()) == SkCodec::kSuccess;
 }
 
