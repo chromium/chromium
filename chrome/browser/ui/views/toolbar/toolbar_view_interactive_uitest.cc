@@ -284,6 +284,11 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewTest, BackButtonMenu) {
       MoveMouseTo(kToolbarBackButtonElementId), ClickMouse(ui_controls::RIGHT),
       Log("Logging to probe crbug.com/1489499. Waiting for back button menu."),
       WaitForShow(kToolbarBackButtonMenuElementId),
+#if BUILDFLAG(IS_MAC)
+      Log("Skipping remainder of test because native Mac context menus steal "
+          "the event loop making testing unreliable. See b/40074126 for full "
+          "description."));
+#else
       // Don't try to send an event to the menu before it's fully shown.
       FlushEvents(),
       // Dismiss the context menu by clicking on it.
@@ -292,4 +297,5 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewTest, BackButtonMenu) {
       Log("Clicking mouse to dismiss."), ClickMouse(),
       Log("Waiting for menu to dismiss."),
       WaitForHide(kToolbarBackButtonMenuElementId), Log("Menu dismissed."));
+#endif
 }
