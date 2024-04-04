@@ -136,9 +136,9 @@ std::unique_ptr<Buffer> Display::CreateLinuxDMABufBuffer(
     LOG(ERROR) << "Failed to create GpuMemoryBuffer from handle";
     return nullptr;
   }
-  return std::make_unique<Buffer>(std::move(gpu_memory_buffer), query_type,
-                                  use_zero_copy, is_overlay_candidate,
-                                  y_invert);
+  return base::WrapUnique(new Buffer(std::move(gpu_memory_buffer), query_type,
+                                     use_zero_copy, is_overlay_candidate,
+                                     y_invert));
 }
 
 std::unique_ptr<ShellSurface> Display::CreateShellSurface(Surface* surface) {

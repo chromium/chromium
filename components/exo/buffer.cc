@@ -562,9 +562,9 @@ std::unique_ptr<Buffer> Buffer::CreateBufferFromGMBHandle(
   // Note that for now we are always creating a GMB from GMBHandle here. This
   // will help clients to move away from using GMB to create Exo::Buffer while
   // still keep the code inside here intact.
-  return std::make_unique<Buffer>(std::move(gpu_memory_buffer), query_type,
-                                  use_zero_copy, is_overlay_candidate,
-                                  y_invert);
+  return base::WrapUnique(new Buffer(std::move(gpu_memory_buffer), query_type,
+                                     use_zero_copy, is_overlay_candidate,
+                                     y_invert));
 }
 
 // static
@@ -576,14 +576,14 @@ std::unique_ptr<Buffer> Buffer::CreateBuffer(
     gpu::SurfaceHandle surface_handle,
     base::WaitableEvent* shutdown_event,
     bool is_overlay_candidate) {
-  return std::make_unique<Buffer>(
+  return base::WrapUnique(new Buffer(
       aura::Env::GetInstance()
           ->context_factory()
           ->GetGpuMemoryBufferManager()
           ->CreateGpuMemoryBuffer(buffer_size, buffer_format, buffer_usage,
                                   surface_handle, shutdown_event),
       kDefaultQueryType, kDefaultUseZeroCopy, is_overlay_candidate,
-      kDefaultYInvert);
+      kDefaultYInvert));
 }
 
 bool Buffer::ProduceTransferableResource(

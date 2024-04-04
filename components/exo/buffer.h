@@ -33,13 +33,6 @@ class FrameSinkResourceManager;
 // and not defined as part of this class.
 class Buffer {
  public:
-  explicit Buffer(std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer);
-  Buffer(std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
-         unsigned query_type,
-         bool use_zero_copy,
-         bool is_overlay_candidate,
-         bool y_invert);
-
   Buffer(const Buffer&) = delete;
   Buffer& operator=(const Buffer&) = delete;
   virtual ~Buffer();
@@ -130,8 +123,24 @@ class Buffer {
 
   virtual base::WeakPtr<Buffer> AsWeakPtr();
 
+ protected:
+  // Currently only derived class access this constructor.
+  explicit Buffer(std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer);
+
  private:
+  // TODO(vikassoni): Once MappableSI is fully landed, these clients do not need
+  // to access the Buffer constructors. So it should be removed from the friend
+  // list.
+  friend class Display;
+  friend class SharedMemory;
+
   class Texture;
+
+  Buffer(std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
+         unsigned query_type,
+         bool use_zero_copy,
+         bool is_overlay_candidate,
+         bool y_invert);
 
   struct BufferRelease {
     BufferRelease(

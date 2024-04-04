@@ -100,9 +100,9 @@ std::unique_ptr<Buffer> SharedMemory::CreateBuffer(const gfx::Size& size,
     LOG(ERROR) << "Failed to create GpuMemoryBuffer from handle";
     return nullptr;
   }
-  return std::make_unique<Buffer>(std::move(gpu_memory_buffer), query_type,
-                                  use_zero_copy, is_overlay_candidate,
-                                  y_invert);
+  return base::WrapUnique(new Buffer(std::move(gpu_memory_buffer), query_type,
+                                     use_zero_copy, is_overlay_candidate,
+                                     y_invert));
 }
 
 size_t SharedMemory::GetSize() const {
