@@ -16,6 +16,10 @@ bool ShouldShowCardMetadata(const CreditCard& card);
 // Returns whether the virtual card is supported.
 bool VirtualCardFeatureEnabled();
 
+// Returns whether VCN 3DS authentication is enabled and can be used as an
+// authentication option.
+bool IsVcn3dsEnabled();
+
 // TODO(crbug.com/1431355): Move here payments related feature availability
 // checks from autofill_experiments.
 

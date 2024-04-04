@@ -26,4 +26,10 @@ bool VirtualCardFeatureEnabled() {
 #endif
 }
 
+bool IsVcn3dsEnabled() {
+  return base::FeatureList::IsEnabled(
+             features::kAutofillEnableVcn3dsAuthentication) &&
+         !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS);
+}
+
 }  // namespace autofill

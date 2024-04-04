@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
@@ -318,8 +319,7 @@ TEST_P(VirtualCardUnmaskCardRequestTest,
   // OTP challenge options, two CVC challenge options, two email OTP challenge
   // options, one 3ds challenge option if 3DS is enabled and fields can be
   // correctly parsed.
-  const size_t expected_number_challenges =
-      IsAutofillEnable3dsForVcnYellowPathTurnedOn() ? 7u : 6u;
+  const size_t expected_number_challenges = IsVcn3dsEnabled() ? 7u : 6u;
   ASSERT_EQ(expected_number_challenges,
             response_details.card_unmask_challenge_options.size());
 
@@ -369,7 +369,7 @@ TEST_P(VirtualCardUnmaskCardRequestTest,
   EXPECT_EQ(u"c******d@google.com", challenge_option_6.challenge_info);
   EXPECT_EQ(4u, challenge_option_6.challenge_input_length);
 
-  if (IsAutofillEnable3dsForVcnYellowPathTurnedOn()) {
+  if (IsVcn3dsEnabled()) {
     const CardUnmaskChallengeOption& challenge_option_7 =
         response_details.card_unmask_challenge_options[6];
     EXPECT_EQ(CardUnmaskChallengeOptionType::kThreeDomainSecure,
