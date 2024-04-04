@@ -39,16 +39,6 @@ class LocationBarPhone extends LocationBarLayout {
         TouchDelegate touchDelegate = new TouchDelegate(delegateArea, mUrlActionContainer);
         assert mUrlActionContainer.getParent() == this;
         mCompositeTouchDelegate.addDelegateForDescendantView(touchDelegate);
-
-        if (OmniboxFeatures.shouldShowModernizeVisualUpdate(getContext())) {
-            setPaddingRelative(
-                    getContext()
-                            .getResources()
-                            .getDimensionPixelSize(R.dimen.location_bar_start_padding_modern),
-                    getPaddingTop(),
-                    getPaddingEnd(),
-                    getPaddingBottom());
-        }
     }
 
     @Override
