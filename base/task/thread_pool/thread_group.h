@@ -14,6 +14,8 @@
 #include "base/base_export.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/stack_allocated.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/thread_pool/priority_queue.h"
 #include "base/task/thread_pool/task.h"
@@ -234,7 +236,9 @@ class BASE_EXPORT ThreadGroup {
    protected:
     explicit BaseScopedCommandsExecutor(ThreadGroup* outer);
 
-    raw_ptr<ThreadGroup> outer_;
+    // RAW_PTR_EXCLUSION: Performance: visible in sampling profiler and stack
+    // scoped, also a back-pointer to the owning object.
+    RAW_PTR_EXCLUSION ThreadGroup* outer_;
 
    protected:
     // Performs BaseScopedCommandsExecutor-related tasks, must be called in this
@@ -250,6 +254,8 @@ class BASE_EXPORT ThreadGroup {
   // Allows a task source to be pushed to a ThreadGroup's PriorityQueue at the
   // end of a scope, when all locks have been released.
   class ScopedReenqueueExecutor {
+    STACK_ALLOCATED();
+
    public:
     ScopedReenqueueExecutor();
     ScopedReenqueueExecutor(const ScopedReenqueueExecutor&) = delete;
@@ -267,7 +273,7 @@ class BASE_EXPORT ThreadGroup {
     // should be enqueued.
     std::optional<RegisteredTaskSourceAndTransaction>
         transaction_with_task_source_;
-    raw_ptr<ThreadGroup> destination_thread_group_ = nullptr;
+    ThreadGroup* destination_thread_group_ = nullptr;
   };
 
   ThreadGroup(TrackedRef<TaskTracker> task_tracker,
@@ -465,11 +471,6 @@ class BASE_EXPORT ThreadGroup {
   // is nonetheless always safe to read it without the lock (since it's atomic).
   std::atomic<YieldSortKey> max_allowed_sort_key_ GUARDED_BY(lock_){
       kMaxYieldSortKey};
-
-  // If |replacement_thread_group_| is non-null, this ThreadGroup is invalid and
-  // all task sources should be scheduled on |replacement_thread_group_|. Used
-  // to support the UseNativeThreadPool experiment.
-  raw_ptr<ThreadGroup> replacement_thread_group_ = nullptr;
 
   const std::string histogram_label_;
   const std::string thread_group_label_;

@@ -164,8 +164,6 @@ void ThreadGroup::StartImpl(
     WorkerEnvironment worker_environment,
     bool synchronous_thread_start_for_testing,
     std::optional<TimeDelta> may_block_threshold) {
-  DCHECK(!replacement_thread_group_);
-
   if (synchronous_thread_start_for_testing) {
     worker_started_for_testing_.emplace(WaitableEvent::ResetPolicy::AUTOMATIC);
     // Don't emit a ScopedBlockingCallWithBaseSyncPrimitives from this
@@ -362,7 +360,6 @@ void ThreadGroup::UpdateSortKeyImpl(BaseScopedCommandsExecutor* executor,
 void ThreadGroup::PushTaskSourceAndWakeUpWorkersImpl(
     BaseScopedCommandsExecutor* executor,
     RegisteredTaskSourceAndTransaction transaction_with_task_source) {
-  DCHECK(!replacement_thread_group_);
   DCHECK_EQ(delegate_->GetThreadGroupForTraits(
                 transaction_with_task_source.transaction.traits()),
             this);
