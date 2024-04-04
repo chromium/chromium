@@ -27,19 +27,20 @@ class MahiMenuView : public chromeos::editor_menu::PreTargetHandlerView {
 
  public:
   MahiMenuView();
-
   MahiMenuView(const MahiMenuView&) = delete;
   MahiMenuView& operator=(const MahiMenuView&) = delete;
-
   ~MahiMenuView() override;
-
-  // chromeos::editor_menu::PreTargetHandlerView:
-  void RequestFocus() override;
 
   // Creates a menu widget that contains a `MahiMenuView`, configured with the
   // given `anchor_view_bounds`.
   static views::UniqueWidgetPtr CreateWidget(
       const gfx::Rect& anchor_view_bounds);
+
+  // Returns the host widget's name.
+  static const char* GetWidgetName();
+
+  // chromeos::editor_menu::PreTargetHandlerView:
+  void RequestFocus() override;
 
   // Updates the bounds of the view according to the given `anchor_view_bounds`.
   void UpdateBounds(const gfx::Rect& anchor_view_bounds);

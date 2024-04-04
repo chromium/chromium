@@ -28,6 +28,8 @@ constexpr int kPanelDefaultHeight = 492;
 constexpr int kPanelHeightWithRefreshBanner = 524;
 constexpr int kPanelBoundsPadding = 8;
 
+constexpr char kWidgetName[] = "MahiPanel";
+
 gfx::Rect CalculateWidgetBounds(aura::Window* root_window,
                                 bool refresh_banner_shown = false) {
   auto display =
@@ -76,7 +78,7 @@ views::UniqueWidgetPtr MahiPanelWidget::CreatePanelWidget(int64_t display_id) {
 
   views::Widget::InitParams params(
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  params.name = "MahiPanel";
+  params.name = GetName();
   // TODO(b/319467834): Decide what container this widget should be on.
   params.parent = Shell::GetContainer(root_window, kShellWindowId_PipContainer);
 
@@ -89,6 +91,11 @@ views::UniqueWidgetPtr MahiPanelWidget::CreatePanelWidget(int64_t display_id) {
 
   widget->SetBounds(CalculateWidgetBounds(root_window));
   return widget;
+}
+
+// static
+const char* MahiPanelWidget::GetName() {
+  return kWidgetName;
 }
 
 void MahiPanelWidget::NotifyRefreshAvailabilityChanged(bool available) {

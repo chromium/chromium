@@ -112,6 +112,17 @@ ui::Layer* FindLayerWithName(ui::Layer* layer, std::string_view name);
 // layer is found, `nullptr` is returned.
 ui::Layer* FindLayerWithName(views::View* view, std::string_view name);
 
+// Returns a pointer to the `views::Widget` with the specified `name` found
+// across all root windows. In the event that no such widget is found, `nullptr`
+// is returned.
+views::Widget* FindWidgetWithName(std::string_view name);
+
+// Returns a pointer to the `views::Widget` with the specified `name` found
+// across all root windows. If no such widget when this function is called,
+// waits until there is one.
+// NOTE: This function causes an infinite loop if the target widget never shows.
+views::Widget* FindWidgetWithNameAndWaitIfNeeded(const std::string& name);
+
 }  // namespace ash
 
 #endif

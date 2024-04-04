@@ -15,9 +15,7 @@ source_set("mahi_ash") {
   ]
   deps = [
     "//ash",
-    "//base",
     "//chromeos/components/mahi/public/cpp",
-    "//chromeos/crosapi/mojom",
   ]
 }
 
@@ -29,19 +27,7 @@ source_set("unit_tests") {
     "mahi_manager_impl_unittest.cc",
   ]
   deps = [
-    ":mahi_ash",
-    "//ash:test_support",
-    "//base",
     "//base/test:test_support",
     "//chrome/browser/ash",
-    "//chrome/browser/ash/crosapi:test_support",
-    "//chromeos/crosapi/mojom",
-    "//components/signin/public/identity_manager:test_support",
-    "//content/test:test_support",
-    "//services/network:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//ui/aura:aura",
-    "//ui/views:views",
   ]
 }

@@ -235,13 +235,6 @@ MahiMenuView::MahiMenuView() {
 
 MahiMenuView::~MahiMenuView() = default;
 
-void MahiMenuView::RequestFocus() {
-  views::View::RequestFocus();
-
-  // TODO(b/319735347): Add browsertest for this behavior.
-  settings_button_->RequestFocus();
-}
-
 // static
 views::UniqueWidgetPtr MahiMenuView::CreateWidget(
     const gfx::Rect& anchor_view_bounds) {
@@ -252,7 +245,7 @@ views::UniqueWidgetPtr MahiMenuView::CreateWidget(
   params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
   params.type = views::Widget::InitParams::TYPE_POPUP;
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
-  params.name = kWidgetName;
+  params.name = GetWidgetName();
 
   views::UniqueWidgetPtr widget =
       std::make_unique<views::Widget>(std::move(params));
@@ -261,6 +254,18 @@ views::UniqueWidgetPtr MahiMenuView::CreateWidget(
   mahi_menu_view->UpdateBounds(anchor_view_bounds);
 
   return widget;
+}
+
+// static
+const char* MahiMenuView::GetWidgetName() {
+  return kWidgetName;
+}
+
+void MahiMenuView::RequestFocus() {
+  views::View::RequestFocus();
+
+  // TODO(b/319735347): Add browsertest for this behavior.
+  settings_button_->RequestFocus();
 }
 
 void MahiMenuView::UpdateBounds(const gfx::Rect& anchor_view_bounds) {

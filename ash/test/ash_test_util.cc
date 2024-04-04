@@ -97,6 +97,27 @@ views::MenuItemView* FindMenuItemWithLabelFromWindow(
   return nullptr;
 }
 
+// Returns a pointer to the `aura::Window` in the window tree associated with
+// the specified `window` which has the specified `name`. In the event that no
+// such `aura::Window` is found, `nullptr` is returned.
+aura::Window* FindWindowWithName(aura::Window* window, std::string_view name) {
+  if (!window) {
+    return nullptr;
+  }
+
+  if (window->GetName() == name) {
+    return window;
+  }
+
+  for (aura::Window* const child : window->children()) {
+    if (aura::Window* found = FindWindowWithName(child, name)) {
+      return found;
+    }
+  }
+
+  return nullptr;
+}
+
 // MenuItemViewWithLabelWaiter -------------------------------------------------
 
 class MenuItemViewWithLabelWaiter : public aura::WindowObserver {
@@ -332,6 +353,26 @@ ui::Layer* FindLayerWithName(views::View* view, std::string_view name) {
   }
 
   return nullptr;
+}
+
+views::Widget* FindWidgetWithName(std::string_view name) {
+  for (aura::Window* const root_window : Shell::Get()->GetAllRootWindows()) {
+    if (aura::Window* const found = FindWindowWithName(root_window, name)) {
+      return views::Widget::GetWidgetForNativeView(found);
+    }
+  }
+
+  return nullptr;
+}
+
+views::Widget* FindWidgetWithNameAndWaitIfNeeded(const std::string& name) {
+  if (views::Widget* const found = FindWidgetWithName(name)) {
+    return found;
+  }
+
+  return views::NamedWidgetShownWaiter(views::test::AnyWidgetTestPasskey(),
+                                       name)
+      .WaitIfNeededAndGet();
 }
 
 }  // namespace ash
