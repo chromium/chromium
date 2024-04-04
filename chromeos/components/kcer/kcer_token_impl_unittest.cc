@@ -1431,7 +1431,9 @@ TEST_F(KcerTokenImplTest, ImportCertFromBytesSuccess) {
       chromeos::PKCS11_CKO_CERTIFICATE;
   chromeos::PKCS11_CK_CERTIFICATE_TYPE cert_type = chromeos::PKCS11_CKC_X_509;
   chromeos::PKCS11_CK_BBOOL kTrue = chromeos::PKCS11_CK_TRUE;
-  std::string expected_label = "";
+  // The label comes from the client_1.pem file, see the generating script
+  // //net/data/ssl/scripts/generate-client-certificates.sh for details.
+  const std::string kExpectedLabel = "Client Cert A";
 
   // Contains "CN=B CA".
   std::vector<uint8_t> issuer_name_der =
@@ -1452,7 +1454,7 @@ TEST_F(KcerTokenImplTest, ImportCertFromBytesSuccess) {
   EXPECT_TRUE(FindAttribute(cert_attrs, chromeos::PKCS11_CKA_ID,
                             GetRsaPkcs11Id().value()));
   EXPECT_TRUE(FindAttribute(cert_attrs, chromeos::PKCS11_CKA_LABEL,
-                            base::as_byte_span(expected_label)));
+                            base::as_byte_span(kExpectedLabel)));
   EXPECT_TRUE(
       FindAttribute(cert_attrs, chromeos::PKCS11_CKA_VALUE, cert.value()));
   EXPECT_TRUE(

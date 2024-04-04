@@ -926,8 +926,25 @@ void KcerTokenImpl::ImportCertFromBytesWithKeyHandle(
         .Run(base::unexpected(Error::kInvalidCertificate));
   }
 
-  // TODO(b/244409232): Assign the correct nickname.
-  std::string label = "";
+  std::vector<scoped_refptr<const Cert>> existing_certs =
+      cert_cache_.GetAllCerts();
+
+  std::vector<std::string_view> existing_nicknames;
+  existing_nicknames.reserve(existing_certs.size());
+  for (const auto& existing_cert : existing_certs) {
+    existing_nicknames.push_back(
+        std::string_view(existing_cert->GetNickname()));
+  }
+
+  std::string label;
+  Pkcs12ReaderStatusCode get_nickname_result =
+      GetNickname(std::move(existing_certs), std::move(existing_nicknames),
+                  cert.get(), reader, label);
+  if (get_nickname_result != Pkcs12ReaderStatusCode::kSuccess) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kFailedToMakeCertNickname));
+  }
+
   CertDer cert_der = task.cert_der;
   auto import_callback =
       base::BindOnce(&KcerTokenImpl::DidImportCertFromBytes,

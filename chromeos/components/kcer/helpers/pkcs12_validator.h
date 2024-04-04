@@ -25,6 +25,15 @@ std::string MakePkcs12CertImportErrorMessage(Pkcs12ReaderStatusCode error_code);
 
 Error ConvertPkcs12ParsingError(Pkcs12ReaderStatusCode status);
 
+// Finds or creates the correct nickname for the `cert` taking the
+// `existing_certs` into account.
+Pkcs12ReaderStatusCode GetNickname(
+    const std::vector<scoped_refptr<const Cert>>& existing_certs,
+    const base::flat_set<std::string_view>& existing_nicknames,
+    X509* cert,
+    const Pkcs12Reader& pkcs12_reader,
+    std::string& cert_nickname);
+
 // Filter out certs from (`certs`) which are not directly related to key_data
 // (`key_data`), extracts nickname from the certificate or placing default
 // nickname and stores certificates which will be installed to
