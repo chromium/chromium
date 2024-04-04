@@ -21,7 +21,11 @@ from absl import app
 from absl import flags
 
 FLAGS = flags.FLAGS
-flags.DEFINE_string('download_path', None, 'Path to the download folder.')
+
+flags.DEFINE_string('download_path', None,
+                    'Absolute path to the download folder.')
+flags.mark_flag_as_required('download_path')
+
 flags.DEFINE_string('channel', 'CANARY', 'Chrome Channel to download.')
 
 
