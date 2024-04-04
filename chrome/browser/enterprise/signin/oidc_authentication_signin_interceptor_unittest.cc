@@ -395,7 +395,9 @@ TEST_P(OidcAuthenticationSigninInterceptorTest, ProfileCreationThenSwitch) {
   // TODO(b/329283247): after the operation order is corrected, this should not
   // start a registration attempt.
   TestProfileCreationOrSwitch(kExampleOidcTokens, kExampleSubjectIdentifier,
-                              /*expect_profile_created=*/false);
+                              /*expect_profile_created=*/false,
+                              /*expect_registration_attempt=*/
+                              RegistrationResult::kNoRegistrationExpected);
 }
 
 TEST_P(OidcAuthenticationSigninInterceptorTest, MultipleProfileCreation) {
@@ -412,25 +414,26 @@ TEST_P(OidcAuthenticationSigninInterceptorTest, MultipleProfileCreation) {
 TEST_P(OidcAuthenticationSigninInterceptorTest, UserDidNotAccept) {
   TestProfileCreationOrSwitch(kExampleOidcTokens, kExampleSubjectIdentifier,
                               /*expect_profile_created=*/false,
-                              RegistrationResult::kSuccess,
+                              RegistrationResult::kNoRegistrationExpected,
                               SigninInterceptionResult::kDeclined,
                               OidcInterceptionStatus::kNoInterception);
 
   TestProfileCreationOrSwitch(kExampleOidcTokens, kExampleSubjectIdentifier,
                               /*expect_profile_created=*/false,
-                              RegistrationResult::kSuccess,
+                              RegistrationResult::kNoRegistrationExpected,
                               SigninInterceptionResult::kIgnored,
                               OidcInterceptionStatus::kNoInterception);
 
   TestProfileCreationOrSwitch(kExampleOidcTokens, kExampleSubjectIdentifier,
                               /*expect_profile_created=*/false,
-                              RegistrationResult::kSuccess,
+                              RegistrationResult::kNoRegistrationExpected,
                               SigninInterceptionResult::kDismissed,
                               OidcInterceptionStatus::kNoInterception);
 
   TestProfileCreationOrSwitch(
       kExampleOidcTokens, kExampleSubjectIdentifier,
-      /*expect_profile_created=*/false, RegistrationResult::kSuccess,
+      /*expect_profile_created=*/false,
+      RegistrationResult::kNoRegistrationExpected,
       SigninInterceptionResult::kAcceptedWithExistingProfile,
       OidcInterceptionStatus::kNoInterception);
 }
@@ -462,7 +465,7 @@ TEST_P(OidcAuthenticationSigninInterceptorTest, RegistrationFailure) {
       kExampleOidcTokens, kExampleSubjectIdentifier,
       /*expect_profile_created=*/false, RegistrationResult::kFailure,
       SigninInterceptionResult::kAccepted, OidcInterceptionStatus::kError,
-      /*expect_dialog_to_show=*/false);
+      /*expect_dialog_to_show=*/true);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
