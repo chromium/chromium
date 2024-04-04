@@ -80,6 +80,6 @@ blink_modules_sources("accessibility") {
   }
 
   if (is_android) {
-    defines = [ " REDUCE_AX_INLINE_TEXTBOXES " ]
+    defines = [ "REDUCE_AX_INLINE_TEXTBOXES" ]
   }
 }
