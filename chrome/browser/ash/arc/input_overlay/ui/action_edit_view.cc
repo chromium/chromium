@@ -122,8 +122,7 @@ ActionEditView::ActionEditView(DisplayOverlayController* controller,
   container
       ->AddColumn(/*h_align=*/views::LayoutAlignment::kStart,
                   /*v_align=*/
-                  for_editing_list ? views::LayoutAlignment::kCenter
-                                   : views::LayoutAlignment::kStart,
+                  views::LayoutAlignment::kCenter,
                   /*horizontal_resize=*/1.0f,
                   /*size_type=*/views::TableLayout::ColumnSize::kUsePreferred,
                   /*fixed_width=*/0, /*min_width=*/0)
