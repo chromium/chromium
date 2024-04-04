@@ -1141,8 +1141,6 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
        IDS_AUTOFILL_SETTINGS_PAGE_BENEFITS_TERMS_TAG_FOR_CREDIT_CARD_LIST_ENTRY},
       {"cardBenefitsToggleLabel",
        IDS_AUTOFILL_SETTINGS_PAGE_CARD_BENEFITS_TOGGLE_LABEL},
-      {"cardBenefitsToggleSublabel",
-       IDS_AUTOFILL_SETTINGS_PAGE_CARD_BENEFITS_TOGGLE_SUBLABEL_WITH_LEARN_LINK},
       {"aiPageTitle", IDS_SETTINGS_AI_PAGE_TITLE},
       {"aiPageMainLabel", IDS_SETTINGS_AI_PAGE_MAIN_LABEL},
       {"aiPageMainSublabel", IDS_SETTINGS_AI_PAGE_MAIN_SUBLABEL},
@@ -1216,6 +1214,12 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
           autofill::features::kAutofillEnableCardBenefitsForAmericanExpress) ||
           base::FeatureList::IsEnabled(
               autofill::features::kAutofillEnableCardBenefitsForCapitalOne));
+
+  html_source->AddString(
+      "cardBenefitsToggleSublabel",
+      l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_SETTINGS_PAGE_CARD_BENEFITS_TOGGLE_SUBLABEL_WITH_LEARN_LINK,
+          l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
 
   html_source->AddBoolean(
       "autofillEnablePaymentsMandatoryReauth",
