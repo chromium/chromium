@@ -567,10 +567,15 @@ TEST_F(PaymentsAutofillTableTest, ReconcileServerCvcs) {
   EXPECT_TRUE(table_->AddServerCvc(ServerCvc{3333, u"456", kArbitraryTime}));
   EXPECT_EQ(3U, table_->GetAllServerCvcs().size());
 
+  std::vector<std::unique_ptr<ServerCvc>> deleted_cvc_list =
+      table_->DeleteOrphanedServerCvcs();
+
   // After we reconcile server cvc, we should only see 2 cvcs in
   // server_stored_cvc table because obsolete cvc has been reconciled.
-  EXPECT_TRUE(table_->ReconcileServerCvcs());
+  // Additionally, `deleted_cvc_list` should contain the obsolete CVC..
   EXPECT_EQ(2U, table_->GetAllServerCvcs().size());
+  ASSERT_EQ(1uL, deleted_cvc_list.size());
+  EXPECT_EQ(3333, deleted_cvc_list[0]->instrument_id);
 }
 
 TEST_F(PaymentsAutofillTableTest, AddFullServerCreditCard) {

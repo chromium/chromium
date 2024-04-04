@@ -957,14 +957,19 @@ bool PaymentsAutofillTable::ClearServerCvcs() {
   return db_->GetLastChangeCount() > 0;
 }
 
-bool PaymentsAutofillTable::ReconcileServerCvcs() {
+std::vector<std::unique_ptr<ServerCvc>>
+PaymentsAutofillTable::DeleteOrphanedServerCvcs() {
+  std::vector<std::unique_ptr<ServerCvc>> cvcs_to_be_deleted;
   sql::Statement s(db_->GetUniqueStatement(
       base::StrCat({"DELETE FROM ", kServerStoredCvcTable, " WHERE ",
                     kInstrumentId, " NOT IN (SELECT ", kInstrumentId, " FROM ",
-                    kMaskedCreditCardsTable, ")"})
+                    kMaskedCreditCardsTable, ") RETURNING *"})
           .c_str()));
-  s.Run();
-  return db_->GetLastChangeCount() > 0;
+  while (s.Step()) {
+    cvcs_to_be_deleted.push_back(
+        ServerCvcFromStatement(s, *autofill_table_encryptor_));
+  }
+  return cvcs_to_be_deleted;
 }
 
 std::vector<std::unique_ptr<ServerCvc>> PaymentsAutofillTable::GetAllServerCvcs()

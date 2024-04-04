@@ -422,7 +422,9 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   // Payment cannot delete the CVC from server side directly, and this has to be
   // done on the Chrome side. So this ReconcileServerCvc will be invoked when
   // card sync happens and will remove orphaned CVC from the current client.
-  bool ReconcileServerCvcs();
+  // The list of deleted CVCs will also be returned back to trigger the deletion
+  // flow for the sync server.
+  std::vector<std::unique_ptr<ServerCvc>> DeleteOrphanedServerCvcs();
   // Get all server cvcs from `server_stored_cvc` table.
   std::vector<std::unique_ptr<ServerCvc>> GetAllServerCvcs() const;
 
