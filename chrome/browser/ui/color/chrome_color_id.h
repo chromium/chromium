@@ -269,6 +269,9 @@
   E_CPONLY(kColorNewTabPageWallpaperSearchButtonBackground) \
   E_CPONLY(kColorNewTabPageWallpaperSearchButtonBackgroundHovered) \
   E_CPONLY(kColorNewTabPageWallpaperSearchButtonForeground) \
+  /* New Tab Page Colors for Doodle Share Button. */ \
+  E_CPONLY(kColorNewTabPageDoodleShareButtonBackground) \
+  E_CPONLY(kColorNewTabPageDoodleShareButtonIcon) \
   /* Omnibox colors. */ \
   E_CPONLY(kColorOmniboxAnswerIconBackground) \
   E_CPONLY(kColorOmniboxAnswerIconForeground) \

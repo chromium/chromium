@@ -23,8 +23,6 @@ import {NewTabPageProxy} from './new_tab_page_proxy.js';
 import {$$} from './utils.js';
 import {WindowProxy} from './window_proxy.js';
 
-const SHARE_BUTTON_SIZE_PX: number = 26;
-
 // Shows the Google logo or a doodle if available.
 export class LogoElement extends PolymerElement {
   static get is() {
@@ -209,29 +207,6 @@ export class LogoElement extends PolymerElement {
   }
 
   private onImageDoodleChange_() {
-    const shareButton = this.imageDoodle_ && this.imageDoodle_.shareButton;
-    if (shareButton) {
-      const height = this.imageDoodle_!.height;
-      const width = this.imageDoodle_!.width;
-      this.updateStyles({
-        '--ntp-logo-share-button-background-color':
-            skColorToRgba(shareButton.backgroundColor),
-        '--ntp-logo-share-button-height':
-            `${SHARE_BUTTON_SIZE_PX / height * 100}%`,
-        '--ntp-logo-share-button-width':
-            `${SHARE_BUTTON_SIZE_PX / width * 100}%`,
-        '--ntp-logo-share-button-x': `${shareButton.x / width * 100}%`,
-        '--ntp-logo-share-button-y': `${shareButton.y / height * 100}%`,
-      });
-    } else {
-      this.updateStyles({
-        '--ntp-logo-share-button-background-color': null,
-        '--ntp-logo-share-button-height': null,
-        '--ntp-logo-share-button-width': null,
-        '--ntp-logo-share-button-x': null,
-        '--ntp-logo-share-button-y': null,
-      });
-    }
     if (this.imageDoodle_) {
       this.updateStyles({
         '--ntp-logo-box-color':

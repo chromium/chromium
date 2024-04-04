@@ -79,27 +79,36 @@
     width: 100%;
   }
 
+  #doodle {
+    position: relative;
+  }
+
   #shareButton {
-    background-color: var(--ntp-logo-share-button-background-color, none);
+    background-color: var(--color-new-tab-page-doodle-share-button-background, none);
     border: none;
-    height: var(--ntp-logo-share-button-height, 0);
-    left: var(--ntp-logo-share-button-x, 0);
-    min-width: var(--ntp-logo-share-button-width, 0);
-    opacity: 0.8;
-    outline: initial;
-    padding: 2px;
+    height: 32px;
+    min-width: 32px;
+    padding: 0;
     position: absolute;
-    top: var(--ntp-logo-share-button-y, 0);
-    width: var(--ntp-logo-share-button-width, 0);
+    width: 32px;
+    bottom: 0;
   }
 
-  #shareButton:hover {
-    opacity: 1;
+  :host-context([dir='ltr']) #shareButton {
+    right: -40px;
   }
 
-  #shareButton img {
-    height: 100%;
-    width: 100%;
+  :host-context([dir='rtl']) #shareButton {
+    left: -40px;
+  }
+
+  #shareButtonIcon {
+    width: 18px;
+    height: 18px;
+    margin: 7px;
+    vertical-align: bottom;
+    mask-image: url(chrome://new-tab-page/icons/share_unfilled.svg);
+    background-color: var(--color-new-tab-page-doodle-share-button-icon, none)
   }
 
   #iframe {
@@ -131,14 +140,11 @@
         <ntp-iframe id="animation" src="[[animationUrl_]]"
             hidden="[[!showAnimation_]]">
         </ntp-iframe>
-        <cr-button id="shareButton" title="$i18n{shareDoodle}"
-            on-click="onShareButtonClick_"
-            hidden="[[!imageDoodle_.shareButton]]">
-          <img id="shareButtonImage"
-              src="[[imageDoodle_.shareButton.iconUrl.url]]">
-          </img>
-        </cr-button>
       </div>
+      <cr-button id="shareButton" title="$i18n{shareDoodle}"
+          on-click="onShareButtonClick_">
+        <div id="shareButtonIcon"></div>
+      </cr-button>
     </div>
     <template is="dom-if" if="[[iframeUrl_]]" restamp>
       <ntp-iframe id="iframe" src="[[iframeUrl_]]" expanded$="[[expanded_]]"

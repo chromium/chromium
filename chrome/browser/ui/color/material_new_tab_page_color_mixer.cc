@@ -52,6 +52,11 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
       ui::kColorSysBaseContainerElevated};
 
   mixer[kColorNewTabPageModuleBackground] = {ui::kColorSysBaseContainer};
+  // Styling for Doodle Share Button.
+  mixer[kColorNewTabPageDoodleShareButtonBackground] = {
+      ui::kColorSysNeutralContainer};
+  mixer[kColorNewTabPageDoodleShareButtonIcon] = {ui::kColorSysOnSurface};
+
   if (base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned)) {
     mixer[kColorNewTabPageModuleItemBackground] = {
         ui::kColorSysBaseContainerElevated};
