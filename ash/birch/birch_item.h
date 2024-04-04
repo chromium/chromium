@@ -170,7 +170,7 @@ class ASH_EXPORT BirchAttachmentItem : public BirchItem {
   const std::string& file_id() const { return file_id_; }
 
  private:
-  static std::u16string GetSubtitle();
+  static std::u16string GetSubtitle(base::Time start_time, base::Time end_time);
 
   GURL file_url_;          // Link to the file.
   GURL icon_url_;          // Link to the file's icon's art asset.

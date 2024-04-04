@@ -215,7 +215,7 @@ BirchAttachmentItem::BirchAttachmentItem(const std::u16string& title,
                                          const base::Time& start_time,
                                          const base::Time& end_time,
                                          const std::string& file_id)
-    : BirchItem(title, GetSubtitle()),
+    : BirchItem(title, GetSubtitle(start_time, end_time)),
       file_url_(file_url),
       icon_url_(icon_url),
       start_time_(start_time),
@@ -270,8 +270,17 @@ void BirchAttachmentItem::LoadIcon(LoadIconCallback callback) const {
 }
 
 // static
-std::u16string BirchAttachmentItem::GetSubtitle() {
-  return l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CALENDAR_ATTACHMENT_SUBTITLE);
+std::u16string BirchAttachmentItem::GetSubtitle(base::Time start_time,
+                                                base::Time end_time) {
+  base::Time now = base::Time::Now();
+  if (start_time < now && now < end_time) {
+    // This event is happening now.
+    return l10n_util::GetStringUTF16(
+        IDS_ASH_BIRCH_CALENDAR_ATTACHMENT_NOW_SUBTITLE);
+  }
+  // This event will happen in the future.
+  return l10n_util::GetStringUTF16(
+      IDS_ASH_BIRCH_CALENDAR_ATTACHMENT_UPCOMING_SUBTITLE);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

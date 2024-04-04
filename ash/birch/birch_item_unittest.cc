@@ -254,6 +254,28 @@ TEST_F(BirchItemTest, Attachment_PerformAction_EmptyUrl) {
   EXPECT_EQ(new_window_delegate_->last_opened_url_, GURL());
 }
 
+TEST_F(BirchItemTest, Attachment_Subtitle_Now) {
+  base::Time now = base::Time::Now();
+  BirchAttachmentItem item(u"item",
+                           /*file_url=*/GURL("http://file.com/"),
+                           /*icon_url=*/GURL("http://attachment.icon"),
+                           /*start_time=*/now - base::Minutes(30),
+                           /*end_time=*/now + base::Minutes(30),
+                           /*file_id=*/"");
+  EXPECT_EQ(item.subtitle(), u"From event happening now");
+}
+
+TEST_F(BirchItemTest, Attachment_Subtitle_Upcoming) {
+  base::Time now = base::Time::Now();
+  BirchAttachmentItem item(u"item",
+                           /*file_url=*/GURL("http://file.com/"),
+                           /*icon_url=*/GURL("http://attachment.icon"),
+                           /*start_time=*/now + base::Hours(1),
+                           /*end_time=*/now + base::Hours(2),
+                           /*file_id=*/"");
+  EXPECT_EQ(item.subtitle(), u"From upcoming calendar event");
+}
+
 TEST_F(BirchItemTest, File_TitleDoesNotShowFileExtension) {
   BirchFileItem item(base::FilePath("/path/to/file.gdoc"), u"suggested",
                      base::Time(), "id_1");

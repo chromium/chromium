@@ -7960,8 +7960,11 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_BIRCH_CALENDAR_TOMORROW" translateable="false" desc="Subtitle text for a calendar event that occurs tomorrow">
         Tomorrow
       </message>
-      <message name="IDS_ASH_BIRCH_CALENDAR_ATTACHMENT_SUBTITLE" translateable="false" desc="Subtitle for the calendar event file attachment suggestion chip">
-        Attached to a meeting
+      <message name="IDS_ASH_BIRCH_CALENDAR_ATTACHMENT_UPCOMING_SUBTITLE" translateable="false" desc="Subtitle for a suggestion chip for a file attached to a calendar event in the future">
+        From upcoming calendar event
+      </message>
+      <message name="IDS_ASH_BIRCH_CALENDAR_ATTACHMENT_NOW_SUBTITLE" translateable="false" desc="Subtitle for a suggestion chip for a file attached to a calendar event happening now">
+        From event happening now
       </message>
       <message name="IDS_ASH_BIRCH_CALENDAR_JOIN_BUTTON" translateable="false" desc="Button label for joining a meeting associated with a calendar event">
         Join
