@@ -1314,6 +1314,8 @@ computing stability metrics.
 * WebUI's HTML/CSS/JS code follows the [Chromium Web
   Development Style Guide](../styleguide/web/web.md)
 * Adding tests for WebUI pages: [Testing WebUI](./testing_webui.md)
+* Demo WebUI widgets at `chrome://webui-gallery` (and source at
+  [chrome/browser/resources/webui_gallery/](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/resources/webui_gallery/))
 
 
 <script>
