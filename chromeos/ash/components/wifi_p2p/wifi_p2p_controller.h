@@ -8,7 +8,9 @@
 #include "base/check.h"
 #include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/values.h"
 
 namespace ash {
 
@@ -41,6 +43,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_WIFI_P2P) WifiP2PController {
   ~WifiP2PController();
 
   void Init();
+
+  // Callback when set shill manager property operation failed.
+  void OnSetManagerPropertyFailure(const std::string& property_name,
+                                   const std::string& error_name,
+                                   const std::string& error_message);
+
+  base::WeakPtrFactory<WifiP2PController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

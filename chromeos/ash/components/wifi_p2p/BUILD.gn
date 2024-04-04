@@ -8,9 +8,32 @@ assert(is_chromeos_ash, "Non Chrome OS builds cannot depend on //chromeos/ash")
 
 component("wifi_p2p") {
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_WIFI_P2P_IMPL" ]
-  deps = [ "//base" ]
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/components/feature_usage",
+    "//chromeos/ash/components/network",
+    "//components/device_event_log",
+  ]
   sources = [
     "wifi_p2p_controller.cc",
     "wifi_p2p_controller.h",
   ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":wifi_p2p",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/components/feature_usage",
+    "//chromeos/ash/components/network",
+    "//components/device_event_log",
+    "//testing/gtest",
+  ]
+  sources = [ "wifi_p2p_controller_unittest.cc" ]
 }
