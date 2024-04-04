@@ -84,7 +84,6 @@ public class Fido2CredentialRequest
     private boolean mAppIdExtensionUsed;
     private boolean mEchoCredProps;
     private WebauthnBrowserBridge mBrowserBridge;
-    private boolean mAttestationAcceptable;
     private boolean mIsCrossOrigin;
     // mIsHybridRequest is true if this request comes from a hybrid (i.e. cross-device) flow rather
     // than a WebContents. Handling the hybrid protocol can be delegated to Chrome (by Play
@@ -197,16 +196,10 @@ public class Fido2CredentialRequest
     private void continueMakeCredentialRequestAfterRpIdValidation(
             PublicKeyCredentialCreationOptions options, byte[] maybeClientDataHash, Origin origin) {
         RenderFrameHost frameHost = mAuthenticationContextProvider.getRenderFrameHost();
-        // Attestation is only for non-discoverable credentials in the Android
-        // platform authenticator and discoverable credentials aren't supported
-        // on security keys. There was a bug where discoverable credentials
-        // accidentally included attestation, which was confusing, so that's
-        // filtered here.
         final boolean rkDiscouraged =
                 options.authenticatorSelection == null
                         || options.authenticatorSelection.residentKey
                                 == ResidentKeyRequirement.DISCOURAGED;
-        mAttestationAcceptable = rkDiscouraged;
         mEchoCredProps = options.credProps;
 
         if (!isChrome(mAuthenticationContextProvider.getWebContents())) {
@@ -996,7 +989,7 @@ public class Fido2CredentialRequest
         byte[] responseBytes = resultData.getByteArray(Fido2Api.CREDENTIAL_EXTRA);
         if (responseBytes != null) {
             try {
-                response = Fido2Api.parseResponse(responseBytes, mAttestationAcceptable);
+                response = Fido2Api.parseResponse(responseBytes);
             } catch (IllegalArgumentException e) {
                 Log.e(TAG, "Failed to parse FIDO2 API response from ResultReceiver", e);
                 response = null;
@@ -1024,7 +1017,7 @@ public class Fido2CredentialRequest
                     errorCode = AuthenticatorStatus.NOT_ALLOWED_ERROR;
                 } else {
                     try {
-                        response = Fido2Api.parseIntentResponse(data, mAttestationAcceptable);
+                        response = Fido2Api.parseIntentResponse(data);
                     } catch (IllegalArgumentException e) {
                         response = null;
                     }

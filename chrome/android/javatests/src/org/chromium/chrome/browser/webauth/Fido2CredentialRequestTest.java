@@ -909,42 +909,12 @@ public class Fido2CredentialRequestTest {
         mCallback.blockUntilCalled();
         Assert.assertEquals(mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.SUCCESS));
         MakeCredentialAuthenticatorResponse response = mCallback.getMakeCredentialResponse();
-        // Since the CBOR must be in canonical form, the "fmt" key comes first
-        // and we can match against "fmt=android-safetynet".
-        final byte[] expectedPrefix =
-                new byte[] {
-                    0xa3 - 256,
-                    0x63,
-                    0x66,
-                    0x6d,
-                    0x74,
-                    0x71,
-                    0x61,
-                    0x6e,
-                    0x64,
-                    0x72,
-                    0x6f,
-                    0x69,
-                    0x64,
-                    0x2d,
-                    0x73,
-                    0x61,
-                    0x66,
-                    0x65,
-                    0x74,
-                    0x79,
-                    0x6e,
-                    0x65,
-                    0x74
-                };
-        byte[] actualPrefix =
-                Arrays.copyOfRange(response.attestationObject, 0, expectedPrefix.length);
-        Assert.assertArrayEquals(expectedPrefix, actualPrefix);
+        assertHasAttestation(response);
     }
 
     @Test
     @SmallTest
-    public void testInternalAuthenticatorMakeCredential_rkRequired_attestationRemoved()
+    public void testInternalAuthenticatorMakeCredential_rkRequired_attestationKept()
             throws Exception {
         // This test can't work on Android N because it lacks the java.nio.file
         // APIs used to load the test data.
@@ -969,18 +939,12 @@ public class Fido2CredentialRequestTest {
         mCallback.blockUntilCalled();
         Assert.assertEquals(mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.SUCCESS));
         MakeCredentialAuthenticatorResponse response = mCallback.getMakeCredentialResponse();
-        // Since the CBOR must be in canonical form, the "fmt" key comes first
-        // and we can match against "fmt=none".
-        final byte[] expectedPrefix =
-                new byte[] {0xa3 - 256, 0x63, 0x66, 0x6d, 0x74, 0x64, 0x6e, 0x6f, 0x6e, 0x65};
-        byte[] actualPrefix =
-                Arrays.copyOfRange(response.attestationObject, 0, expectedPrefix.length);
-        Assert.assertArrayEquals(expectedPrefix, actualPrefix);
+        assertHasAttestation(response);
     }
 
     @Test
     @SmallTest
-    public void testInternalAuthenticatorMakeCredential_rkPreferred_attestationRemoved()
+    public void testInternalAuthenticatorMakeCredential_rkPreferred_attestationKept()
             throws Exception {
         // This test can't work on Android N because it lacks the java.nio.file
         // APIs used to load the test data.
@@ -1005,13 +969,7 @@ public class Fido2CredentialRequestTest {
         mCallback.blockUntilCalled();
         Assert.assertEquals(mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.SUCCESS));
         MakeCredentialAuthenticatorResponse response = mCallback.getMakeCredentialResponse();
-        // Since the CBOR must be in canonical form, the "fmt" key comes first
-        // and we can match against "fmt=none".
-        final byte[] expectedPrefix =
-                new byte[] {0xa3 - 256, 0x63, 0x66, 0x6d, 0x74, 0x64, 0x6e, 0x6f, 0x6e, 0x65};
-        byte[] actualPrefix =
-                Arrays.copyOfRange(response.attestationObject, 0, expectedPrefix.length);
-        Assert.assertArrayEquals(expectedPrefix, actualPrefix);
+        assertHasAttestation(response);
     }
 
     @Test
@@ -2367,5 +2325,39 @@ public class Fido2CredentialRequestTest {
         // Fido2Api.java around the use of VAL_PARCELABLE and update this test
         // to have a 3rd acceptable encoding that matches the changes.
         Assert.fail("No matching encoding found");
+    }
+
+    private void assertHasAttestation(MakeCredentialAuthenticatorResponse response) {
+        // Since the CBOR must be in canonical form, the "fmt" key comes first
+        // and we can match against "fmt=android-safetynet".
+        final byte[] expectedPrefix =
+                new byte[] {
+                    0xa3 - 256,
+                    0x63,
+                    0x66,
+                    0x6d,
+                    0x74,
+                    0x71,
+                    0x61,
+                    0x6e,
+                    0x64,
+                    0x72,
+                    0x6f,
+                    0x69,
+                    0x64,
+                    0x2d,
+                    0x73,
+                    0x61,
+                    0x66,
+                    0x65,
+                    0x74,
+                    0x79,
+                    0x6e,
+                    0x65,
+                    0x74
+                };
+        byte[] actualPrefix =
+                Arrays.copyOfRange(response.attestationObject, 0, expectedPrefix.length);
+        Assert.assertArrayEquals(expectedPrefix, actualPrefix);
     }
 }

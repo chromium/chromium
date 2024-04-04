@@ -25,7 +25,6 @@ import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
 import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
-import org.chromium.blink.mojom.ResidentKeyRequirement;
 import org.chromium.components.webauthn.AuthenticationContextProvider;
 import org.chromium.components.webauthn.Fido2Api;
 import org.chromium.components.webauthn.Fido2CredentialRequest;
@@ -73,8 +72,6 @@ class CableAuthenticator implements AuthenticationContextProvider {
     private boolean mLinkQR;
     // mAccessory contains the USB device, if operating in USB mode.
     private UsbAccessory mAccessory;
-    // mAttestationAcceptable is true if a makeCredential request may return attestation.
-    private boolean mAttestationAcceptable;
 
     // mHandle is the opaque ID returned by the native code to ensure that
     // |stop| doesn't apply to a transaction that this instance didn't create.
@@ -145,9 +142,6 @@ class CableAuthenticator implements AuthenticationContextProvider {
         // were already in the process of rolling out the hybrid authenticator
         // in Play Services and so it continued not to be supported.
         params.prfInput = null;
-
-        mAttestationAcceptable =
-                params.authenticatorSelection.residentKey == ResidentKeyRequirement.DISCOURAGED;
 
         final Fido2CredentialRequest request = new Fido2CredentialRequest(this);
         request.setIsHybridRequest(true);
@@ -286,7 +280,7 @@ class CableAuthenticator implements AuthenticationContextProvider {
                     ctapStatus = CTAP2_ERR_OPERATION_DENIED;
                 } else {
                     try {
-                        response = Fido2Api.parseIntentResponse(data, mAttestationAcceptable);
+                        response = Fido2Api.parseIntentResponse(data);
                     } catch (IllegalArgumentException e) {
                         response = null;
                     }

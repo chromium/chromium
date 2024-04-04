@@ -27,14 +27,13 @@ namespace webauthn {
 static jboolean JNI_Fido2Api_ParseAttestationObject(
     JNIEnv* env,
     const base::android::JavaParamRef<jbyteArray>& jattestation_object_bytes,
-    jboolean attestation_acceptable,
     const base::android::JavaParamRef<jobject>& out_result) {
   std::vector<uint8_t> attestation_object_bytes;
   JavaByteArrayToByteVector(env, jattestation_object_bytes,
                             &attestation_object_bytes);
   std::optional<device::AttestationObject::ResponseFields> fields =
       device::AttestationObject::ParseForResponseFields(
-          std::move(attestation_object_bytes), attestation_acceptable);
+          std::move(attestation_object_bytes), /*attestation_acceptable=*/true);
   if (!fields) {
     return false;
   }
