@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/test/test_future.h"
 #include "content/public/browser/audio_service.h"
 
 namespace media_effects {
@@ -19,8 +20,24 @@ void FakeAudioService::AddFakeInputDevice(
   fake_system_info_.AddFakeInputDevice(descriptor);
 }
 
+bool FakeAudioService::AddFakeInputDeviceBlocking(
+    const media::AudioDeviceDescription& descriptor) {
+  base::test::TestFuture<void> test_future;
+  SetOnRepliedWithInputDeviceDescriptionsCallback(test_future.GetCallback());
+  AddFakeInputDevice(descriptor);
+  return test_future.WaitAndClear();
+}
+
 void FakeAudioService::RemoveFakeInputDevice(const std::string& device_id) {
   fake_system_info_.RemoveFakeInputDevice(device_id);
+}
+
+bool FakeAudioService::RemoveFakeInputDeviceBlocking(
+    const std::string& device_id) {
+  base::test::TestFuture<void> test_future;
+  SetOnRepliedWithInputDeviceDescriptionsCallback(test_future.GetCallback());
+  RemoveFakeInputDevice(device_id);
+  return test_future.WaitAndClear();
 }
 
 void FakeAudioService::SetOnRepliedWithInputDeviceDescriptionsCallback(

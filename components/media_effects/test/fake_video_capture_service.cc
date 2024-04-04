@@ -4,6 +4,7 @@
 
 #include "components/media_effects/test/fake_video_capture_service.h"
 
+#include "base/test/test_future.h"
 #include "content/public/browser/video_capture_service.h"
 
 namespace media_effects {
@@ -13,8 +14,24 @@ void FakeVideoCaptureService::AddFakeCamera(
   fake_provider_.AddFakeCamera(descriptor);
 }
 
+bool FakeVideoCaptureService::AddFakeCameraBlocking(
+    const media::VideoCaptureDeviceDescriptor& descriptor) {
+  base::test::TestFuture<void> test_future;
+  SetOnRepliedWithSourceInfosCallback(test_future.GetCallback());
+  AddFakeCamera(descriptor);
+  return test_future.WaitAndClear();
+}
+
 void FakeVideoCaptureService::RemoveFakeCamera(const std::string& device_id) {
   fake_provider_.RemoveFakeCamera(device_id);
+}
+
+bool FakeVideoCaptureService::RemoveFakeCameraBlocking(
+    const std::string& device_id) {
+  base::test::TestFuture<void> test_future;
+  SetOnRepliedWithSourceInfosCallback(test_future.GetCallback());
+  RemoveFakeCamera(device_id);
+  return test_future.WaitAndClear();
 }
 
 void FakeVideoCaptureService::SetOnRepliedWithSourceInfosCallback(

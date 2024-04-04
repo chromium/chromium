@@ -5,10 +5,10 @@
 #ifndef COMPONENTS_MEDIA_EFFECTS_TEST_FAKE_VIDEO_CAPTURE_SERVICE_H_
 #define COMPONENTS_MEDIA_EFFECTS_TEST_FAKE_VIDEO_CAPTURE_SERVICE_H_
 
+#include <string>
+
 #include "components/media_effects/test/fake_video_source_provider.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
-
-#include <string>
 
 namespace media_effects {
 
@@ -22,8 +22,11 @@ class FakeVideoCaptureService
   FakeVideoCaptureService& operator=(const FakeVideoCaptureService&) = delete;
 
   void AddFakeCamera(const media::VideoCaptureDeviceDescriptor& descriptor);
+  bool AddFakeCameraBlocking(
+      const media::VideoCaptureDeviceDescriptor& descriptor);
 
   void RemoveFakeCamera(const std::string& device_id);
+  bool RemoveFakeCameraBlocking(const std::string& device_id);
 
   // `callback` will be triggered after the source provider replies back to its
   // client in GetSourceInfos(). Useful as a stopping point for a base::RunLoop.
@@ -64,7 +67,7 @@ class FakeVideoCaptureService
   FakeVideoSourceProvider fake_provider_;
 };
 
-class ScopedFakeVideoCaptureService : FakeVideoCaptureService {
+class ScopedFakeVideoCaptureService : public FakeVideoCaptureService {
  public:
   ScopedFakeVideoCaptureService();
   ~ScopedFakeVideoCaptureService() override;

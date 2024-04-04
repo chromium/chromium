@@ -20,6 +20,7 @@ source_set("test_support") {
 
   deps = [
     "//base",
+    "//base/test:test_support",
     "//components/media_effects:media_effects",
     "//content/public/browser",
     "//services/audio/public/cpp:test_support",
