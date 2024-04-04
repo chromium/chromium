@@ -953,11 +953,10 @@
       status: "test",
     },
     {
-      // Support the position-try-order property. Currently not implied by the
-      // anchor positioning feature.
+      // Support the position-try-order property.
       // https://drafts.csswg.org/css-anchor-position-1/#position-try-order-property
       name: "CSSPositionTryOrder",
-      status: "test",
+      implied_by: ["CSSAnchorPositioning"],
     },
     {
       // Support the position-visibility property for anchor positioning.

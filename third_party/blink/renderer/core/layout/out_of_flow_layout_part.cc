@@ -6,6 +6,8 @@
 
 #include <math.h>
 
+#include <algorithm>
+
 #include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -126,6 +128,14 @@ class OOFCandidateStyleIterator {
     return position_try_options_ != nullptr;
   }
 
+  // https://drafts.csswg.org/css-anchor-position-1/#propdef-position-try-order
+  EPositionTryOrder PositionTryOrder() const { return position_try_order_; }
+
+  // The current index into the position-try-options list. If nullopt, then
+  // we're currently at the regular style, i.e. the one without any try option
+  // included.
+  std::optional<wtf_size_t> TryOptionIndex() const { return try_option_index_; }
+
   const ComputedStyle& GetStyle() const { return *style_; }
 
   const ComputedStyle& GetBaseStyle() const {
@@ -165,24 +175,11 @@ class OOFCandidateStyleIterator {
     // Need to loop in case a @position-try option does not exist.
     for (; *try_option_index_ < position_try_options_->GetOptions().size();
          ++*try_option_index_) {
-      const PositionTryOption& option =
-          position_try_options_->GetOptions()[*try_option_index_];
-      const CSSPropertyValueSet* properties = nullptr;
-      if (!option.GetInsetArea().IsNone()) {
-        // TODO(crbug.com/329687279): Support inset-area() function.
-        continue;
+      if (const ComputedStyle* style = UpdateStyle(*try_option_index_)) {
+        style_ = style;
+        return true;
       }
-      if (const ScopedCSSName* name = option.GetPositionTryName()) {
-        const StyleRulePositionTry* rule = GetPositionTryRule(*name);
-        if (!rule) {
-          // @position-try option does not exist.
-          continue;
-        }
-        properties = &rule->Properties();
-      }
-      style_ = UpdateStyle(properties, option.GetTryTactic());
-      CHECK(style_);
-      return true;
+      // @position-try option does not exist.
     }
     return false;
   }
@@ -192,10 +189,23 @@ class OOFCandidateStyleIterator {
     style_ = UpdateStyle(/* try_set */ nullptr, kNoTryTactics);
   }
 
+  void MoveToTryOptionIndex(std::optional<wtf_size_t> index) {
+    if (index == try_option_index_) {
+      // We're already at this position.
+      return;
+    }
+    if (!index.has_value()) {
+      MoveToStyleWithoutOptions();
+    } else {
+      style_ = UpdateStyle(index.value());
+    }
+  }
+
  private:
   void Initialize() {
     if (element_) {
       position_try_options_ = style_->GetPositionTryOptions();
+      position_try_order_ = style_->PositionTryOrder();
       // We may have previously resolved a style using some try set,
       // and may have speculated that the same try set still applied.
       // Calling UpdateStyle with an explicit nullptr clears the set,
@@ -215,6 +225,30 @@ class OOFCandidateStyleIterator {
         scoped_name);
   }
 
+  // Update the style using the specified index into `position_try_options_`
+  // (which must exist), and return that updated style. Returns nullptr if
+  // the option references a @position-try rule which doesn't exist.
+  const ComputedStyle* UpdateStyle(wtf_size_t try_option_index) {
+    CHECK(position_try_options_);
+    CHECK_LE(try_option_index, position_try_options_->GetOptions().size());
+    const PositionTryOption& option =
+        position_try_options_->GetOptions()[try_option_index];
+    if (!option.GetInsetArea().IsNone()) {
+      // TODO(crbug.com/329687279): Support inset-area() function.
+      return nullptr;
+    }
+    const CSSPropertyValueSet* properties = nullptr;
+    if (const ScopedCSSName* name = option.GetPositionTryName()) {
+      const StyleRulePositionTry* rule = GetPositionTryRule(*name);
+      if (!rule) {
+        // @position-try option does not exist.
+        return nullptr;
+      }
+      properties = &rule->Properties();
+    }
+    return UpdateStyle(properties, option.GetTryTactic());
+  }
+
   const ComputedStyle* UpdateStyle(const CSSPropertyValueSet* try_set,
                                    const TryTacticList& tactic_list) {
     CHECK(element_);
@@ -228,6 +262,7 @@ class OOFCandidateStyleIterator {
     // propagation of writing modes.
     return element_->GetLayoutObject()->Style();
   }
+
   Element* element_ = nullptr;
 
   // The current candidate style if no auto anchor fallback is triggered.
@@ -241,6 +276,8 @@ class OOFCandidateStyleIterator {
   // If the current style is applying a `position-try-options` option, this
   // holds the list of options. Otherwise nullptr.
   const PositionTryOptions* position_try_options_ = nullptr;
+
+  EPositionTryOrder position_try_order_ = EPositionTryOrder::kNormal;
 
   // If the current style is created using `position-try-options`, an index into
   // the list of options; otherwise nullopt.
@@ -1737,6 +1774,100 @@ const LayoutResult* OutOfFlowLayoutPart::LayoutOOFNode(
   return layout_result;
 }
 
+namespace {
+
+// Ths spec says:
+//
+// "
+// Implementations may choose to impose an implementation-defined limit on the
+// length of position options lists, to limit the amount of excess layout work
+// that may be required. This limit must be at least five.
+// "
+//
+// We use 6 here because the first attempt is without anything from the
+// position options list applied.
+constexpr unsigned kMaxTryAttempts = 6;
+
+// When considering multiple candidate styles (i.e. position-try-options),
+// we keep track of each successful placement as a NonOverflowingCandidate.
+// These candidates are then sorted according to the specified
+// position-try-order.
+//
+// https://drafts.csswg.org/css-anchor-position-1/#position-try-order-property
+struct NonOverflowingCandidate {
+  DISALLOW_NEW();
+
+ public:
+  // The index into the position-try-options list that generated this
+  // NonOverflowingCandidate. A value of nullopt means the regular styles
+  // (without any position-try-option applied) generated the object.
+  std::optional<wtf_size_t> try_option_index;
+  // The result of TryCalculateOffset.
+  OutOfFlowLayoutPart::OffsetInfo offset_info;
+
+  void Trace(Visitor* visitor) const { visitor->Trace(offset_info); }
+};
+
+EPositionTryOrder ToLogicalPositionTryOrder(
+    EPositionTryOrder position_try_order,
+    WritingDirectionMode writing_direction) {
+  switch (position_try_order) {
+    case EPositionTryOrder::kNormal:
+    case EPositionTryOrder::kMostBlockSize:
+    case EPositionTryOrder::kMostInlineSize:
+      return position_try_order;
+    case EPositionTryOrder::kMostWidth:
+      return writing_direction.IsHorizontal()
+                 ? EPositionTryOrder::kMostInlineSize
+                 : EPositionTryOrder::kMostBlockSize;
+    case EPositionTryOrder::kMostHeight:
+      return writing_direction.IsHorizontal()
+                 ? EPositionTryOrder::kMostBlockSize
+                 : EPositionTryOrder::kMostInlineSize;
+  }
+}
+
+// Sorts `candidates` according to `position_try_order`, such that the correct
+// candidate is at candidates.front().
+void SortNonOverflowingCandidates(
+    EPositionTryOrder position_try_order,
+    WritingDirectionMode writing_direction,
+    HeapVector<NonOverflowingCandidate, kMaxTryAttempts>& candidates) {
+  EPositionTryOrder logical_position_try_order =
+      ToLogicalPositionTryOrder(position_try_order, writing_direction);
+
+  if (logical_position_try_order == EPositionTryOrder::kNormal) {
+    // §5.2, normal: "Try the position options in the order specified by
+    // position-try-options".
+    return;
+  }
+
+  // §5.2, most-block-size (etc): "Stably sort the position options list
+  // according to this size, with the largest coming first".
+  std::stable_sort(
+      candidates.begin(), candidates.end(),
+      [logical_position_try_order](const NonOverflowingCandidate& a,
+                                   const NonOverflowingCandidate& b) {
+        switch (logical_position_try_order) {
+          case EPositionTryOrder::kMostBlockSize:
+            return a.offset_info.imcb_for_position_order->BlockSize() >
+                   b.offset_info.imcb_for_position_order->BlockSize();
+          case EPositionTryOrder::kMostInlineSize:
+            return a.offset_info.imcb_for_position_order->InlineSize() >
+                   b.offset_info.imcb_for_position_order->InlineSize();
+          case EPositionTryOrder::kNormal:
+            // Should have exited early.
+          case EPositionTryOrder::kMostWidth:
+          case EPositionTryOrder::kMostHeight:
+            // We should have already converted to logical.
+            NOTREACHED();
+            return false;
+        }
+      });
+}
+
+}  // namespace
+
 OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
     const NodeInfo& node_info,
     const LogicalAnchorQueryMap* anchor_queries) {
@@ -1761,19 +1892,9 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
   OOFCandidateStyleIterator iter(*node_info.node.GetLayoutBox(),
                                  anchor_evaluator);
   bool has_try_options = iter.HasPositionTryOptions();
-  std::optional<OffsetInfo> offset_info;
+  EPositionTryOrder position_try_order = iter.PositionTryOrder();
 
-  // Ths spec says:
-  //
-  // "
-  // Implementations may choose to impose an implementation-defined limit on the
-  // length of position options lists, to limit the amount of excess layout work
-  // that may be required. This limit must be at least five.
-  // "
-  //
-  // We use 6 here because the first attempt is without anything from the
-  // position options list applied.
-  unsigned attempts_left = 6;
+  unsigned attempts_left = kMaxTryAttempts;
   bool has_no_overflow_visibility =
       RuntimeEnabledFeatures::CSSPositionVisibilityEnabled() &&
       node_info.node.Style().HasPositionVisibility(
@@ -1781,6 +1902,12 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
   // If `position-try-options` or `position-visibility: no-overflow` exists,
   // let |TryCalculateOffset| check if the result fits the available space.
   bool try_fit_available_space = has_try_options || has_no_overflow_visibility;
+  // Non-overflowing candidates (i.e. successfully placed candidates) are
+  // collected into a vector. If position-try-order is non-normal, then we
+  // collect *all* such candidates into the vector, and sort them according
+  // to position-try-order.
+  HeapVector<NonOverflowingCandidate, kMaxTryAttempts>
+      non_overflowing_candidates;
   do {
     NonOverflowingScrollRange non_overflowing_range;
     // Do @position-try placement decisions on the *base style* to avoid
@@ -1788,34 +1915,52 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
     const ComputedStyle& style = iter.ActivateBaseStyleForTryAttempt();
     // However, without @position-try, the style is the current style.
     CHECK(has_try_options || &style == &iter.GetStyle());
-    offset_info =
+    std::optional<OffsetInfo> offset_info =
         TryCalculateOffset(node_info, style, &anchor_evaluator,
                            try_fit_available_space, &non_overflowing_range);
 
     // Also check if it fits the containing block after applying scroll offset.
-    if (offset_info && try_fit_available_space) {
-      non_overflowing_scroll_ranges.push_back(non_overflowing_range);
-      if (!non_overflowing_range.Contains(anchor_offset,
-                                          additional_bounds_offset)) {
-        offset_info = std::nullopt;
+    if (offset_info) {
+      if (try_fit_available_space) {
+        non_overflowing_scroll_ranges.push_back(non_overflowing_range);
+        if (!non_overflowing_range.Contains(anchor_offset,
+                                            additional_bounds_offset)) {
+          continue;
+        }
       }
+      non_overflowing_candidates.push_back(
+          NonOverflowingCandidate{iter.TryOptionIndex(), *offset_info});
     }
-  } while (!offset_info && --attempts_left != 0 && has_try_options &&
-           iter.MoveToNextStyle());
+  } while ((non_overflowing_candidates.empty() ||
+            position_try_order != EPositionTryOrder::kNormal) &&
+           --attempts_left != 0 && has_try_options && iter.MoveToNextStyle());
+
+  // https://drafts.csswg.org/css-anchor-position-1/#position-try-order-property
+  SortNonOverflowingCandidates(position_try_order,
+                               node_info.container_info.writing_direction,
+                               non_overflowing_candidates);
+
+  std::optional<OffsetInfo> offset_info =
+      non_overflowing_candidates.empty()
+          ? std::optional<OffsetInfo>()
+          : non_overflowing_candidates.front().offset_info;
 
   if (RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled() &&
       try_fit_available_space) {
     bool overflows_containing_block = false;
-    if (!offset_info) {
+    if (non_overflowing_candidates.empty()) {
       // None of the options worked out.
       // Fall back to style without any options applied.
       iter.MoveToStyleWithoutOptions();
       overflows_containing_block = true;
+    } else {
+      // Move the iterator to the chosen candidate.
+      iter.MoveToTryOptionIndex(
+          non_overflowing_candidates.front().try_option_index);
     }
     // Once the position-try-options placement has been decided, calculate the
     // offset again, using the non-base style.
     const ComputedStyle& style = iter.ActivateStyleForChosenOption();
-    CHECK(offset_info || &style == &iter.GetStyle());
     NonOverflowingScrollRange non_overflowing_range_unused;
     offset_info = TryCalculateOffset(node_info, style, &anchor_evaluator,
                                      /* try_fit_available_space */ false,
@@ -2003,6 +2148,7 @@ OutOfFlowLayoutPart::TryCalculateOffset(
         space.AvailableSize(), alignment, insets, static_position,
         candidate_style, container_writing_direction,
         candidate_writing_direction);
+    offset_info.imcb_for_position_order = imcb_for_position_fallback;
     if (!CalculateNonOverflowingRangeInOneAxis(
             insets.inline_start, insets.inline_end,
             imcb_for_position_fallback->inline_start,
@@ -2706,3 +2852,5 @@ void OutOfFlowLayoutPart::NodeToLayout::Trace(Visitor* visitor) const {
 }
 
 }  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::NonOverflowingCandidate)

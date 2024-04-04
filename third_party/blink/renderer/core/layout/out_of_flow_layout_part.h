@@ -212,6 +212,13 @@ class CORE_EXPORT OutOfFlowLayoutPart {
     // or the anchored element has position-visibility: no-overflow.
     Vector<NonOverflowingScrollRange> non_overflowing_scroll_ranges;
 
+    // This field is set when we're calculating |OffsetInfo| with
+    // try_fit_available_space=true, e.g. when we have a non-empty
+    // position-try-options. We have to retain the IMCB to implement
+    // position-try-order, which decides which of the various candidates styles
+    // we should select based on the biggest IMCB size (in some axis).
+    std::optional<InsetModifiedContainingBlock> imcb_for_position_order;
+
     bool inline_size_depends_on_min_max_sizes = false;
 
     // True if this element is anchor-positioned, and any anchor reference in
