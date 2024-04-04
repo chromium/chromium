@@ -7059,7 +7059,6 @@ crbug.com/330207209 external/wpt/html/browsers/browsing-the-web/history-traversa
 [ Mac14-arm64 ] virtual/gpu-rasterization/images/color-profile-munsell-adobe-to-srgb-webgl.html [ Skip Timeout ]
 [ Mac14-arm64 ] virtual/gpu/fast/canvas/OffscreenCanvas-2d-drawImage.html [ Failure ]
 [ Mac14-arm64 ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-2d-drawImage.html [ Failure ]
-[ Mac14-arm64 ] virtual/saa-beyond-cookies-disabled/external/wpt/storage-access-api/hasStorageAccess.sub.https.window.html [ Crash Pass ]
 [ Mac14-arm64 ] virtual/scalefactor200/css3/filters/effect-hue-rotate-hw.html [ Failure ]
 [ Mac14-arm64 ] virtual/scalefactor200/css3/filters/effect-reference-colorspace.html [ Failure ]
 [ Mac14-arm64 ] virtual/scalefactor200/css3/filters/effect-reference-subregion.html [ Failure ]

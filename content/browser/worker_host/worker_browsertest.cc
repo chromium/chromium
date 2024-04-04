@@ -87,7 +87,6 @@ bool SupportsSharedWorker() {
 // 0 => Base
 // 1 => kPlzDedicatedWorker enabled
 // 2 => kPrivateNetworkAccessForWorkers enabled
-// 3 => kStorageAccessAPIBeyondCookies enabled
 class WorkerTest : public ContentBrowserTest,
                    public testing::WithParamInterface<int> {
  public:
@@ -113,13 +112,6 @@ class WorkerTest : public ContentBrowserTest,
             {
                 blink::features::kPlzDedicatedWorker,
                 features::kPrivateNetworkAccessForWorkers,
-            },
-            {});
-        break;
-      case 3:  // StorageAccessAPIBeyondCookies
-        feature_list_.InitWithFeatures(
-            {
-                blink::features::kStorageAccessAPIBeyondCookies,
             },
             {});
         break;
@@ -328,7 +320,7 @@ class WorkerTest : public ContentBrowserTest,
   base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All, WorkerTest, testing::Range(0, 4));
+INSTANTIATE_TEST_SUITE_P(All, WorkerTest, testing::Range(0, 3));
 
 IN_PROC_BROWSER_TEST_P(WorkerTest, SingleWorker) {
   RunTest(GetTestURL("single_worker.html", std::string()));
@@ -348,7 +340,7 @@ class WorkerTestWithAllowFileAccessFromFiles : public WorkerTest {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          WorkerTestWithAllowFileAccessFromFiles,
-                         testing::Range(0, 4));
+                         testing::Range(0, 3));
 
 IN_PROC_BROWSER_TEST_P(WorkerTestWithAllowFileAccessFromFiles,
                        SingleWorkerFromFile) {
@@ -928,7 +920,7 @@ class WorkerFromCredentiallessIframeNikBrowserTest : public WorkerTest {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          WorkerFromCredentiallessIframeNikBrowserTest,
-                         testing::Range(0, 4));
+                         testing::Range(0, 3));
 
 IN_PROC_BROWSER_TEST_P(WorkerFromCredentiallessIframeNikBrowserTest,
                        SharedWorkerRequestIsDoneWithPartitionedNetworkState) {
@@ -1021,18 +1013,9 @@ IN_PROC_BROWSER_TEST_P(WorkerTest, SameSiteCookiesSharedWorkerSameNone) {
       shell(),
       "new SharedWorker('/workers/worker.js', {sameSiteCookies: 'none'});");
   ASSERT_TRUE(result.error.empty());
-  if (base::FeatureList::IsEnabled(
-          blink::features::kStorageAccessAPIBeyondCookies)) {
-    EXPECT_EQ(kNoCookie, GetReceivedCookie("/workers/worker.js"));
-    EXPECT_EQ(kNoCookie, GetReceivedCookie("/workers/empty.js"));
-    EXPECT_EQ(kNoCookie, GetReceivedCookie("/workers/empty.html"));
-  } else {
-    // If the feature is off we still send SameSite cookies in a first-party
-    // context.
-    EXPECT_EQ(kSameSiteCookie, GetReceivedCookie("/workers/worker.js"));
-    EXPECT_EQ(kSameSiteCookie, GetReceivedCookie("/workers/empty.js"));
-    EXPECT_EQ(kSameSiteCookie, GetReceivedCookie("/workers/empty.html"));
-  }
+  EXPECT_EQ(kNoCookie, GetReceivedCookie("/workers/worker.js"));
+  EXPECT_EQ(kNoCookie, GetReceivedCookie("/workers/empty.js"));
+  EXPECT_EQ(kNoCookie, GetReceivedCookie("/workers/empty.html"));
 }
 
 // Test that an "a.test" frame starting a worker with `sameSiteCookies: 'none'`
@@ -1145,17 +1128,7 @@ IN_PROC_BROWSER_TEST_P(WorkerTest, SameSiteCookiesSharedWorkerCrossAll) {
   EvalJsResult worker_result = EvalJs(
       subframe_rfh,
       "new SharedWorker('/workers/worker.js', {sameSiteCookies: 'all'});");
-  if (base::FeatureList::IsEnabled(
-          blink::features::kStorageAccessAPIBeyondCookies)) {
-    ASSERT_FALSE(worker_result.error.empty());
-  } else {
-    // If the feature is off, there is no error but we still don't send
-    // SameSite cookies.
-    ASSERT_TRUE(worker_result.error.empty());
-    EXPECT_EQ(kNoCookie, GetReceivedCookie("/workers/worker.js"));
-    EXPECT_EQ(kNoCookie, GetReceivedCookie("/workers/empty.js"));
-    EXPECT_EQ(kNoCookie, GetReceivedCookie("/workers/empty.html"));
-  }
+  ASSERT_FALSE(worker_result.error.empty());
 }
 
 }  // namespace content

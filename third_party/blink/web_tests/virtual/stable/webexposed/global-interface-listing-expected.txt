@@ -1650,6 +1650,7 @@ interface Document : Node
     method hasPrivateToken
     method hasRedemptionRecord
     method hasStorageAccess
+    method hasUnpartitionedCookieAccess
     method importNode
     method open
     method prepend

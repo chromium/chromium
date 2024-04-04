@@ -2563,18 +2563,6 @@
     "expires": "June 30, 2024"
   },
   {
-    "prefix": "saa-beyond-cookies-disabled",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "external/wpt/storage-access-api",
-      "external/wpt/workers/same-site-cookies",
-      "wpt_internal/storage-access-api"
-    ],
-    "args": ["--disable-blink-features=StorageAccessAPIBeyondCookies"],
-    "expires": "Jul 1, 2024",
-    "owners": ["arichiv@chromium.org"]
-  },
-  {
     "prefix": "saa-top-level-site-cors-exception",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [

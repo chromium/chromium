@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Check SharedWorker sameSiteCookies option all for third-party
-  assert_equals: Worker should not have started expected "DidNotStart" but got "ReadOnLoad:None,ReadOnFetch:None"
-Harness: the test ran to completion.
-

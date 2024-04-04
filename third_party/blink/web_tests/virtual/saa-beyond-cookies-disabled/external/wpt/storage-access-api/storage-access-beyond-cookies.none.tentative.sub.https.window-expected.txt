@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Verify StorageAccessAPIBeyondCookies for None
-  assert_equals: Storage Access API should not allow access for empty requests. expected "HasAccess for none" but got "Unable to load handle in same-origin context for none"
-Harness: the test ran to completion.
-
