@@ -590,7 +590,7 @@ BASE_FEATURE(kMemoryPressureBasedSourceBufferGC,
 // image.
 BASE_FEATURE(kUseWritePixelsYUV,
              "UseWritePixelsYUV",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables creating single shared image and mailbox for multi-planar formats for
 // hardware video decoders.
