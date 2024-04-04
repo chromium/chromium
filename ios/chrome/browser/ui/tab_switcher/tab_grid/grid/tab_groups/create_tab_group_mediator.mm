@@ -165,9 +165,8 @@
 // Sends to the consumer the needed pictures and the number of items to display
 // it properly.
 - (void)updateConsumer {
-  NSInteger numberOfItem = _tabGroup
-                               ? _webStateList->GetGroupRange(_tabGroup).count()
-                               : _identifiers.size();
+  NSInteger numberOfItem =
+      _tabGroup ? _tabGroup->range().count() : _identifiers.size();
   [_consumer setTabGroupInfos:_tabGroupInfos
         numberOfSelectedItems:numberOfItem];
 }

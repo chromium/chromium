@@ -48,7 +48,7 @@ void MoveWebStatesInRangeBetweenLists(WebStateList* source,
   std::vector<std::pair<WebStateList::Range, tab_groups::TabGroupVisualData>>
       groups;
   for (const TabGroup* group : source->GetGroups()) {
-    WebStateList::Range range = source->GetGroupRange(group);
+    WebStateList::Range range = group->range();
     // The group is not in the range of moving items, ignore it.
     if (range.range_end() <= start || end <= range.range_begin()) {
       continue;

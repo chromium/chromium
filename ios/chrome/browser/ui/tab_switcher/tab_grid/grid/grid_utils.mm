@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_utils.h"
 
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_group_item.h"
@@ -34,7 +35,7 @@ NSArray<GridItemIdentifier*>* CreateItems(WebStateList* web_state_list) {
                                           withWebStateList:web_state_list]];
 
       // Skip the webStates that belong to `group_item`.
-      incrementer = web_state_list->GetGroupRange(tab_group).count();
+      incrementer = tab_group->range().count();
 
     } else {
       web::WebState* web_state = web_state_list->GetWebStateAt(i);

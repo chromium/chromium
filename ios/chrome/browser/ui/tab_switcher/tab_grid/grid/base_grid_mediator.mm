@@ -491,9 +491,7 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
                              withWebStateList:webStateList];
 
       [self insertItem:groupItemIdentifier
-           beforeIndex:webStateList
-                           ->GetGroupRange(
-                               groupItemIdentifier.tabGroupItem.tabGroup)
+           beforeIndex:groupItemIdentifier.tabGroupItem.tabGroup->range()
                            .range_end() +
                        1];
       break;
@@ -1520,7 +1518,7 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
         break;
       case GridItemType::Group: {
         const WebStateList::Range groupRange =
-            self.webStateList->GetGroupRange(identifier.tabGroupItem.tabGroup);
+            identifier.tabGroupItem.tabGroup->range();
         for (int index : groupRange) {
           web::WebState* webState = self.webStateList->GetWebStateAt(index);
           selectedIDs.insert(webState->GetUniqueIdentifier());

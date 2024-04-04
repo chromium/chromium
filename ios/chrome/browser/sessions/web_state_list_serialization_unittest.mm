@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/sessions/session_tab_group.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/web_state_list_builder_from_description.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -147,7 +148,7 @@ bool CheckWebStateListHasTabGroup(const WebStateList& web_state_list,
                                   const WebStateList::Range& tab_group_range) {
   const TabGroup* group =
       web_state_list.GetGroupOfWebStateAt(tab_group_range.range_begin());
-  return tab_group_range == web_state_list.GetGroupRange(group);
+  return group && group->range() == tab_group_range;
 }
 
 }  // namespace

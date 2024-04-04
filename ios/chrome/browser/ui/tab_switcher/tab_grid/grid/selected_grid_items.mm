@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/selected_grid_items.h"
 
 #import "base/notreached.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
@@ -51,7 +52,7 @@
     case GridItemType::Group: {
       [_itemsIdentifiers addObject:item];
       const TabGroup* group = item.tabGroupItem.tabGroup;
-      WebStateList::Range range = _webStateList->GetGroupRange(group);
+      const WebStateList::Range range = group->range();
       for (int i : range) {
         web::WebStateID webStateID =
             _webStateList->GetWebStateAt(i)->GetUniqueIdentifier();
@@ -77,7 +78,7 @@
     }
     case GridItemType::Group: {
       const TabGroup* group = item.tabGroupItem.tabGroup;
-      WebStateList::Range range = _webStateList->GetGroupRange(group);
+      const WebStateList::Range range = group->range();
       for (int i : range) {
         web::WebStateID webStateID =
             _webStateList->GetWebStateAt(i)->GetUniqueIdentifier();
@@ -119,8 +120,7 @@
         tabs.insert(item.tabSwitcherItem.identifier);
         break;
       case GridItemType::Group: {
-        WebStateList::Range range =
-            _webStateList->GetGroupRange(item.tabGroupItem.tabGroup);
+        WebStateList::Range range = item.tabGroupItem.tabGroup->range();
         for (int i : range) {
           tabs.insert(_webStateList->GetWebStateAt(i)->GetUniqueIdentifier());
         }

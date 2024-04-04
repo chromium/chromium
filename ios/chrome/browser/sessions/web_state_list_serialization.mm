@@ -487,8 +487,7 @@ SessionWindowIOS* SerializeWebStateList(const WebStateList* web_state_list) {
   NSMutableArray<SessionTabGroup*>* serialized_groups =
       [[NSMutableArray alloc] init];
   for (const TabGroup* group : web_state_list->GetGroups()) {
-    const WebStateList::Range group_range =
-        web_state_list->GetGroupRange(group);
+    const WebStateList::Range group_range = group->range();
 
     SessionTabGroup* serialized_group = [[SessionTabGroup alloc]
         initWithRangeStart:group_range.range_begin()
@@ -555,7 +554,7 @@ void SerializeWebStateList(const WebStateList& web_state_list,
   }
 
   for (const TabGroup* group : web_state_list.GetGroups()) {
-    const WebStateList::Range group_range = web_state_list.GetGroupRange(group);
+    const WebStateList::Range group_range = group->range();
 
     ios::proto::TabGroupStorage& group_storage = *storage.add_groups();
     ios::proto::RangeIndex& range = *group_storage.mutable_range();

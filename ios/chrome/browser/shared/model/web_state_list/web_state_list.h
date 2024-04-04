@@ -392,10 +392,6 @@ class WebStateList {
   // after-which the pointer should not be used.
   const TabGroup* GetGroupOfWebStateAt(int index) const;
 
-  // Returns the range of WebStates belonging to the tab group. The group must
-  // be valid and belong to this WebStateList.
-  Range GetGroupRange(const TabGroup* group) const;
-
   // Returns the list of all groups. The order is not particularly the order in
   // which they appear in this WebStateList.
   std::set<const TabGroup*> GetGroups() const;

@@ -46,7 +46,7 @@ const TabGroup* FindTabGroupStartingAtIndex(int index,
                                             WebStateList* web_state_list) {
   CHECK(web_state_list);
   for (const TabGroup* group : web_state_list->GetGroups()) {
-    if (web_state_list->GetGroupRange(group).range_begin() == index) {
+    if (group->range().range_begin() == index) {
       return group;
     }
   }
@@ -59,7 +59,7 @@ TabStripItemData* CreateTabItemData(int index, WebStateList* web_state_list) {
   const TabGroup* group = web_state_list->GetGroupOfWebStateAt(index);
   TabStripItemData* data = [[TabStripItemData alloc] init];
   if (group) {
-    const WebStateList::Range range = web_state_list->GetGroupRange(group);
+    const WebStateList::Range range = group->range();
     data.isFirstTabInGroup = range.range_begin() == index;
     data.isLastTabInGroup = range.range_end() == index + 1;
     data.groupStrokeColor = group->GetColor();
@@ -393,7 +393,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
       [self.consumer updateItemData:@{groupItemIdentifier : groupItemData}
                    reconfigureItems:NO];
       // Determine the destination item for the new group item.
-      const int pivotIndex = webStateList->GetGroupRange(group).range_begin();
+      const int pivotIndex = group->range().range_begin();
       TabStripItemIdentifier* destinationItemIdentifier =
           [self destinationItemAtIndex:pivotIndex parentGroup:nullptr];
       [self.consumer insertItems:@[ groupItemIdentifier ]
@@ -901,7 +901,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
     }
     const TabGroup* group = items[itemIndex].tabGroupItem.tabGroup;
     if (group->visual_data().is_collapsed()) {
-      webStateListInsertionIndex += _webStateList->GetGroupRange(group).count();
+      webStateListInsertionIndex += group->range().count();
     }
   }
   return WebStateList::InsertionParams::AtIndex(webStateListInsertionIndex)
@@ -959,7 +959,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 // For each WebState in `group`, the associated item is reconfigured with an
 // up-to-date `TabStripItemData`.
 - (void)updateDataAndReconfigureItemsInGroup:(const TabGroup*)group {
-  const WebStateList::Range range = _webStateList->GetGroupRange(group);
+  const WebStateList::Range range = group->range();
   NSArray<TabStripItemIdentifier*>* tabItemIdentifiers =
       CreateItemIdentifiers(_webStateList, /*including_hidden_tab_items=*/false,
                             /*including_group_items=*/true, range);
@@ -997,9 +997,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   // Option 1. There is a `parentGroup`.
 
   if (parentGroup) {
-    const WebStateList::Range parentGroupRange =
-        _webStateList->GetGroupRange(parentGroup);
-    if (parentGroupRange.contains(index)) {
+    if (parentGroup->range().contains(index)) {
       // If the item at `index` also belongs to `parentGroup`, then it can be
       // used as a destination item.
       return CreateTabItemIdentifier(destinationWebState);

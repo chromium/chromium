@@ -102,9 +102,8 @@
     identifier = [GridItemIdentifier tabIdentifier:webState];
   }
 
-  [self.consumer populateItems:CreateTabItems(
-                                   self.webStateList,
-                                   self.webStateList->GetGroupRange(_tabGroup))
+  [self.consumer populateItems:CreateTabItems(self.webStateList,
+                                              _tabGroup->range())
         selectedItemIdentifier:identifier];
 }
 

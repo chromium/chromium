@@ -216,7 +216,7 @@ SessionWindowIOS* FilterInvalidTabs(SessionWindowIOS* session_window) {
   // `rangeStart` properties.
   NSMutableArray<SessionTabGroup*>* groups = [[NSMutableArray alloc] init];
   for (SessionTabGroup* group in session_window.tabGroups) {
-    WebStateList::Range range(
+    const WebStateList::Range range(
         removing_indexes.IndexAfterRemoval(group.rangeStart), group.rangeCount);
     WebStateList::Range final_range = range;
     for (int index : range) {

@@ -48,7 +48,7 @@ const CGFloat kFaviconSize = 16;
 }
 
 - (NSInteger)numberOfTabsInGroup {
-  return (NSUInteger)_webStateList->GetGroupRange(_tabGroup).count();
+  return _tabGroup->range().count();
 }
 
 - (BOOL)collapsed {
@@ -57,7 +57,7 @@ const CGFloat kFaviconSize = 16;
 
 - (void)fetchGroupTabInfos:(GroupTabInfosFetchingCompletionBlock)completion {
   NSUInteger numberOfRequestedImages = 0;
-  for (int index : _webStateList->GetGroupRange(_tabGroup)) {
+  for (int index : _tabGroup->range()) {
     if (numberOfRequestedImages >= 7) {
       break;
     }
@@ -123,7 +123,7 @@ const CGFloat kFaviconSize = 16;
   info.favicon = favicon;
   [_tabGroupInfos addObject:info];
   if (static_cast<int>([_tabGroupInfos count]) ==
-      MIN(_webStateList->GetGroupRange(_tabGroup).count(), 7)) {
+      MIN(_tabGroup->range().count(), 7)) {
     completion(self, _tabGroupInfos);
   }
 }
