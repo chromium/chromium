@@ -242,6 +242,11 @@ INSTANTIATE_TEST_SUITE_P(
          /*expected_csp_acceptable=*/true,
          /*expected_error_name=*/"",
          /*expected_script_should_load=*/true},
+        {/*base_page=*/
+         "/webrtc/webrtc_getallscreensmedia_valid_multiple_csps_test.html",
+         /*expected_csp_acceptable=*/true,
+         /*expected_error_name=*/"",
+         /*expected_script_should_load=*/true},
         {/*base_page=*/"/webrtc/"
                        "webrtc_getallscreensmedia_no_object_source_test.html",
          /*expected_csp_acceptable=*/false,

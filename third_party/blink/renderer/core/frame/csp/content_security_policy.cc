@@ -1378,12 +1378,23 @@ bool ContentSecurityPolicy::ExperimentalFeaturesEnabled() const {
 }
 
 bool ContentSecurityPolicy::IsStrictPolicyEnforced() const {
-  return base::ranges::any_of(policies_, [](const auto& policy) {
-    return !CSPDirectiveListIsReportOnly(*policy) &&
-           CSPDirectiveListIsObjectRestrictionReasonable(*policy) &&
-           CSPDirectiveListIsBaseRestrictionReasonable(*policy) &&
-           CSPDirectiveListIsScriptRestrictionReasonable(*policy);
-  });
+  const bool is_object_restriction_reasonable =
+      base::ranges::any_of(policies_, [](const auto& policy) {
+        return !CSPDirectiveListIsReportOnly(*policy) &&
+               CSPDirectiveListIsObjectRestrictionReasonable(*policy);
+      });
+  const bool is_base_restriction_reasonable =
+      base::ranges::any_of(policies_, [](const auto& policy) {
+        return !CSPDirectiveListIsReportOnly(*policy) &&
+               CSPDirectiveListIsBaseRestrictionReasonable(*policy);
+      });
+  const bool is_script_restriction_reasonable =
+      base::ranges::any_of(policies_, [](const auto& policy) {
+        return !CSPDirectiveListIsReportOnly(*policy) &&
+               CSPDirectiveListIsScriptRestrictionReasonable(*policy);
+      });
+  return is_object_restriction_reasonable && is_base_restriction_reasonable &&
+         is_script_restriction_reasonable;
 }
 
 bool ContentSecurityPolicy::RequiresTrustedTypes() const {
