@@ -226,9 +226,14 @@ HRESULT MediaFoundationRenderer::CreateMediaEngine(
     }
   }
 
-  // TODO(frankli): Only call the followings when there is a video stream.
-  RETURN_IF_FAILED(InitializeDXGIDeviceManager());
-  RETURN_IF_FAILED(InitializeVirtualVideoWindow());
+  // Only call the followings when there is a video stream.
+  for (media::DemuxerStream* stream : media_resource->GetAllStreams()) {
+    if (stream->type() == media::DemuxerStream::VIDEO) {
+      RETURN_IF_FAILED(InitializeDXGIDeviceManager());
+      RETURN_IF_FAILED(InitializeVirtualVideoWindow());
+      break;
+    }
+  }
 
   // The OnXxx() callbacks are invoked by MF threadpool thread, we would like
   // to bind the callbacks to |task_runner_| MessageLoop.
