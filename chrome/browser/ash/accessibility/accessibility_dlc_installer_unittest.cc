@@ -16,8 +16,17 @@
 #include "ui/accessibility/accessibility_features.h"
 
 namespace {
-constexpr char kInstallationMetricName[] =
+constexpr char kFaceGazeAssetsInstallDurationMetric[] =
+    "Accessibility.DlcInstallerFaceGazeAssetsInstallationDuration";
+
+constexpr char kFaceGazeAssetsInstallationMetric[] =
+    "Accessibility.DlcInstallerFaceGazeAssetsSuccess";
+
+constexpr char kPumpkinInstallationMetric[] =
     "PumpkinInstaller.InstallationSuccess";
+
+constexpr char kPumpkinInstallDurationMetric[] =
+    "Accessibility.DlcInstallerPumpkinInstallationDuration";
 }  // namespace
 
 namespace ash {
@@ -140,13 +149,35 @@ class AccessibilityDlcInstallerTest : public testing::Test {
   }
 
   void ExpectPumpkinSuccessHistogramCount(int expected_count) {
-    histogram_tester_.ExpectBucketCount(/*name=*/kInstallationMetricName,
+    histogram_tester_.ExpectBucketCount(/*name=*/kPumpkinInstallationMetric,
                                         /*sample=*/true, expected_count);
   }
 
   void ExpectPumpkinFailureHistogramCount(int expected_count) {
-    histogram_tester_.ExpectBucketCount(/*name=*/kInstallationMetricName,
+    histogram_tester_.ExpectBucketCount(/*name=*/kPumpkinInstallationMetric,
                                         /*sample=*/false, expected_count);
+  }
+
+  void ExpectTotalPumpkinDurationSamples(int expected_count) {
+    histogram_tester_.ExpectTotalCount(/*name=*/kPumpkinInstallDurationMetric,
+                                       expected_count);
+  }
+
+  void ExpectFaceGazeSuccessHistogramCount(int expected_count) {
+    histogram_tester_.ExpectBucketCount(
+        /*name=*/kFaceGazeAssetsInstallationMetric,
+        /*sample=*/true, expected_count);
+  }
+
+  void ExpectFaceGazeFailureHistogramCount(int expected_count) {
+    histogram_tester_.ExpectBucketCount(
+        /*name=*/kFaceGazeAssetsInstallationMetric,
+        /*sample=*/false, expected_count);
+  }
+
+  void ExpectTotalFaceGazeDurationSamples(int expected_count) {
+    histogram_tester_.ExpectTotalCount(
+        /*name=*/kFaceGazeAssetsInstallDurationMetric, expected_count);
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
@@ -282,9 +313,15 @@ TEST_F(AccessibilityDlcInstallerTest, InstallFaceGazeAssets) {
   ASSERT_TRUE(IsFaceGazeAssetsInstalled());
   ASSERT_EQ(GetDlcRootPath(DlcType::kFaceGazeAssets), "/fake/root/path");
 
+  // We should record FaceGaze metrics.
+  ExpectFaceGazeSuccessHistogramCount(1);
+  ExpectFaceGazeFailureHistogramCount(0);
+  ExpectTotalFaceGazeDurationSamples(1);
+
   // We shouldn't record Pumpkin metrics if we didn't install it.
   ExpectPumpkinSuccessHistogramCount(0);
   ExpectPumpkinFailureHistogramCount(0);
+  ExpectTotalPumpkinDurationSamples(0);
 }
 
 // Verifies that multiple installs can be handled simultaneously.
@@ -310,6 +347,15 @@ TEST_F(AccessibilityDlcInstallerTest, InstallMultipleDlcs) {
   ASSERT_TRUE(IsPumpkinInstalled());
   ASSERT_EQ(GetDlcRootPath(DlcType::kFaceGazeAssets), "/fake/root/path");
   ASSERT_EQ(GetDlcRootPath(DlcType::kPumpkin), "/fake/root/path");
+
+  // Assert metrics are properly recorded.
+  ExpectFaceGazeSuccessHistogramCount(1);
+  ExpectFaceGazeFailureHistogramCount(0);
+  ExpectTotalFaceGazeDurationSamples(1);
+
+  ExpectPumpkinSuccessHistogramCount(1);
+  ExpectPumpkinFailureHistogramCount(0);
+  ExpectTotalPumpkinDurationSamples(1);
 }
 
 TEST_F(AccessibilityDlcInstallerTest, InstallFaceGazeAssetsTwice) {
@@ -322,12 +368,18 @@ TEST_F(AccessibilityDlcInstallerTest, InstallFaceGazeAssetsTwice) {
   ASSERT_TRUE(IsFaceGazeAssetsInstalled());
   ASSERT_EQ(GetDlcRootPath(DlcType::kFaceGazeAssets), "/fake/root/path");
 
+  ExpectFaceGazeSuccessHistogramCount(1);
+  ExpectFaceGazeFailureHistogramCount(0);
+
   // Call this codepath again to verify that it can be called multiple times
   // without failing.
   MaybeInstallFaceGazeAssetsAndWait();
   ASSERT_TRUE(GetInstallSuccess(DlcType::kFaceGazeAssets));
   ASSERT_TRUE(IsFaceGazeAssetsInstalled());
   ASSERT_EQ(GetDlcRootPath(DlcType::kFaceGazeAssets), "/fake/root/path");
+
+  ExpectFaceGazeSuccessHistogramCount(2);
+  ExpectFaceGazeFailureHistogramCount(0);
 }
 
 }  // namespace ash

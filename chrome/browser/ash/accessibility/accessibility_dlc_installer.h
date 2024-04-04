@@ -13,6 +13,10 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 
+namespace base {
+class Time;
+}  // namespace base
+
 namespace ash {
 
 // This class encapsulates all logic involving the installation of accessibility
@@ -71,6 +75,7 @@ class AccessibilityDlcInstaller {
                           const std::string& error,
                           const dlcservice::DlcState& dlc_state);
   void OnInstalled(DlcType type,
+                   const base::Time start_time,
                    const DlcserviceClient::InstallResult& install_result);
   void OnProgress(DlcType type, double progress);
 

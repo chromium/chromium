@@ -1052,6 +1052,43 @@ even if they fit the naming pattern. -->
   </token>
 </histogram>
 
+<histogram name="Accessibility.DlcInstallerFaceGazeAssetsInstallationDuration"
+    units="ms" expires_after="2025-02-28">
+  <owner>akihiroota@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The FaceGaze assets DLC installation is triggered when one of the features
+    using the DLC (currently the only feature using FaceGaze assets is FaceGaze)
+    is enabled. This histogram records the time taken to successfully install
+    the FaceGaze assets DLC. Note that this histogram is not recorded if the
+    installation fails.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.DlcInstallerFaceGazeAssetsSuccess"
+    enum="BooleanSuccess" expires_after="2025-02-28">
+  <owner>akihiroota@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The FaceGaze assets DLC installation is triggered when one of the features
+    using the DLC (currently the only feature using FaceGaze assets is FaceGaze)
+    is enabled. This histogram is recorded once when FaceGaze assets
+    installation finishes with either success or failure.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.DlcInstallerPumpkinInstallationDuration"
+    units="ms" expires_after="2025-02-28">
+  <owner>akihiroota@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The Pumpkin DLC installation is triggered when one of the features using the
+    DLC (currently the only feature using Pumpkin is Dictation) is enabled. This
+    histogram records the time taken to successfully install the Pumpkin DLC.
+    Note that this histogram is not recorded if the installation fails.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.EventProcessingTime3{Variation}" units="ms"
     expires_after="2024-08-22">
   <owner>grt@chromium.org</owner>
