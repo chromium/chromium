@@ -4224,8 +4224,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordProtection.PageInfoAction"
-    enum="PasswordProtectionWarningAction" expires_after="2024-05-12">
-  <owner>drubery@chromium.org</owner>
+    enum="PasswordProtectionWarningAction" expires_after="2025-05-12">
+  <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records how a user interacts with page info bubble that displays the
