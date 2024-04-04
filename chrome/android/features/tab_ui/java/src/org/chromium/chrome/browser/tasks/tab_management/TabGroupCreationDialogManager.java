@@ -87,8 +87,18 @@ public class TabGroupCreationDialogManager implements Destroyable {
                                 return;
                             }
 
-                            final @DialogDismissalCause int cause;
                             if (buttonType == ModalDialogProperties.ButtonType.POSITIVE) {
+                                mModalDialogManager.dismissDialog(
+                                        mModel, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+                            }
+                        }
+
+                        @Override
+                        public void onDismiss(PropertyModel model, int dismissalCause) {
+                            if (dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED
+                                    || dismissalCause
+                                            == DialogDismissalCause
+                                                    .NAVIGATE_BACK_OR_TOUCH_OUTSIDE) {
                                 final @TabGroupColorId int color =
                                         colorPickerCoordinator.getSelectedColorSupplier().get();
                                 filter.setTabGroupColor(rootId, color);
@@ -102,19 +112,8 @@ public class TabGroupCreationDialogManager implements Destroyable {
 
                                 // Refresh the GTS tab list with the newly set color and title.
                                 mOnDialogAcceptedRunnable.run();
-
-                                cause = DialogDismissalCause.POSITIVE_BUTTON_CLICKED;
-                            } else {
-                                // This custom dialog design only utilizes the positive button.
-                                assert false : "Not reached.";
-                                cause = DialogDismissalCause.UNKNOWN;
                             }
-
-                            mModalDialogManager.dismissDialog(mModel, cause);
                         }
-
-                        @Override
-                        public void onDismiss(PropertyModel model, int dismissalCause) {}
                     };
 
             mModel =
