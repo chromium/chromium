@@ -208,38 +208,6 @@ const char* GetPlatformPrintApiString(PlatformPrintApiVariation variation) {
   }
 }
 
-const char* GetPlatformPrintApiTestSuffix(
-    const testing::TestParamInfo<PlatformPrintApiVariation>& info) {
-  return GetPlatformPrintApiString(info.param);
-}
-
-// Tests using these variations are not concerned with the different language
-// types, where one Windows GDI type is sufficient.
-constexpr PlatformPrintApiVariation
-    kSandboxedServicePlatformPrintApiVariations[] = {
-#if BUILDFLAG(IS_WIN)
-        // TODO(crbug.com/1008222):  Include XPS variation.
-        PlatformPrintApiVariation::kGdiEmf,
-#else
-        PlatformPrintApiVariation::kCups,
-#endif
-};
-
-// Tests using these variations are concerned with all the different language
-// types on Windows.
-constexpr PlatformPrintApiVariation
-    kSandboxedServicePlatformPrintLanguageApiVariations[] = {
-#if BUILDFLAG(IS_WIN)
-        // TODO(crbug.com/1008222):  Include XPS variation.
-        PlatformPrintApiVariation::kGdiEmf,
-        PlatformPrintApiVariation::kGdiPostScriptLevel2,
-        PlatformPrintApiVariation::kGdiPostScriptLevel3,
-        PlatformPrintApiVariation::kGdiTextOnly,
-#else
-        PlatformPrintApiVariation::kCups,
-#endif
-};
-
 // Caution must be taken with platform API variations, as `kXps` should not
 // be generated with `kInBrowserProcess`.  Use of `testing::Combine()` between
 // `PrintBackendFeatureVariation` and `PlatformPrintApiVariation` could
@@ -248,6 +216,26 @@ constexpr PlatformPrintApiVariation
 struct PrintBackendAndPlatformPrintApiVariation {
   PrintBackendFeatureVariation print_backend;
   PlatformPrintApiVariation platform_api;
+};
+
+// Tests using these variations are concerned with all the different language
+// types on Windows.
+constexpr PrintBackendAndPlatformPrintApiVariation
+    kSandboxedServicePlatformPrintLanguageApiVariations[] = {
+#if BUILDFLAG(IS_WIN)
+        // TODO(crbug.com/1008222):  Include XPS variation.
+        {PrintBackendFeatureVariation::kOopSandboxedService,
+         PlatformPrintApiVariation::kGdiEmf},
+        {PrintBackendFeatureVariation::kOopSandboxedService,
+         PlatformPrintApiVariation::kGdiPostScriptLevel2},
+        {PrintBackendFeatureVariation::kOopSandboxedService,
+         PlatformPrintApiVariation::kGdiPostScriptLevel3},
+        {PrintBackendFeatureVariation::kOopSandboxedService,
+         PlatformPrintApiVariation::kGdiTextOnly},
+#else
+        {PrintBackendFeatureVariation::kOopSandboxedService,
+         PlatformPrintApiVariation::kCups},
+#endif
 };
 
 std::string GetPrintBackendAndPlatformPrintApiString(
@@ -1337,59 +1325,6 @@ INSTANTIATE_TEST_SUITE_P(
     /*EarlyStartService=*/testing::Bool(),
     GetServiceLaunchTimingTestSuffix);
 
-class SystemAccessProcessSandboxedServicePrintBrowserTest
-    : public SystemAccessProcessPrintBrowserTestBase,
-      public testing::WithParamInterface<PlatformPrintApiVariation> {
- public:
-  SystemAccessProcessSandboxedServicePrintBrowserTest() = default;
-  ~SystemAccessProcessSandboxedServicePrintBrowserTest() override = default;
-
-  bool UseService() override { return true; }
-  bool SandboxService() override { return true; }
-#if BUILDFLAG(IS_WIN)
-  bool UseXps() override {
-    return GetParam() == PlatformPrintApiVariation::kXps;
-  }
-#endif
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SystemAccessProcessSandboxedServicePrintBrowserTest,
-    testing::ValuesIn(kSandboxedServicePlatformPrintApiVariations),
-    GetPlatformPrintApiTestSuffix);
-
-class SystemAccessProcessSandboxedServiceLanguagePrintBrowserTest
-    : public SystemAccessProcessSandboxedServicePrintBrowserTest {
- public:
-  SystemAccessProcessSandboxedServiceLanguagePrintBrowserTest() = default;
-  ~SystemAccessProcessSandboxedServiceLanguagePrintBrowserTest() override =
-      default;
-
-#if BUILDFLAG(IS_WIN)
-  mojom::PrinterLanguageType UseLanguageType() {
-    switch (GetParam()) {
-      case PlatformPrintApiVariation::kGdiEmf:
-        return mojom::PrinterLanguageType::kNone;
-      case PlatformPrintApiVariation::kGdiPostScriptLevel2:
-        return mojom::PrinterLanguageType::kPostscriptLevel2;
-      case PlatformPrintApiVariation::kGdiPostScriptLevel3:
-        return mojom::PrinterLanguageType::kPostscriptLevel3;
-      case PlatformPrintApiVariation::kGdiTextOnly:
-        return mojom::PrinterLanguageType::kTextOnly;
-      case PlatformPrintApiVariation::kXps:
-        return mojom::PrinterLanguageType::kXps;
-    }
-  }
-#endif
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SystemAccessProcessSandboxedServiceLanguagePrintBrowserTest,
-    testing::ValuesIn(kSandboxedServicePlatformPrintLanguageApiVariations),
-    GetPlatformPrintApiTestSuffix);
-
 class SystemAccessProcessServicePrintBrowserTest
     : public SystemAccessProcessPrintBrowserTestBase,
       public testing::WithParamInterface<
@@ -1408,6 +1343,23 @@ class SystemAccessProcessServicePrintBrowserTest
     return GetParam().platform_api == PlatformPrintApiVariation::kXps;
   }
 #endif
+
+#if BUILDFLAG(IS_WIN)
+  mojom::PrinterLanguageType UseLanguageType() {
+    switch (GetParam().platform_api) {
+      case PlatformPrintApiVariation::kGdiEmf:
+        return mojom::PrinterLanguageType::kNone;
+      case PlatformPrintApiVariation::kGdiPostScriptLevel2:
+        return mojom::PrinterLanguageType::kPostscriptLevel2;
+      case PlatformPrintApiVariation::kGdiPostScriptLevel3:
+        return mojom::PrinterLanguageType::kPostscriptLevel3;
+      case PlatformPrintApiVariation::kGdiTextOnly:
+        return mojom::PrinterLanguageType::kTextOnly;
+      case PlatformPrintApiVariation::kXps:
+        return mojom::PrinterLanguageType::kXps;
+    }
+  }
+#endif
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1416,6 +1368,25 @@ INSTANTIATE_TEST_SUITE_P(
     testing::ValuesIn(GeneratePrintBackendAndPlatformPrintApiVariations(
         {PrintBackendFeatureVariation::kOopSandboxedService,
          PrintBackendFeatureVariation::kOopUnsandboxedService})),
+    GetPrintBackendAndPlatformPrintApiTestSuffix);
+
+using SystemAccessProcessSandboxedServicePrintBrowserTest =
+    SystemAccessProcessServicePrintBrowserTest;
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SystemAccessProcessSandboxedServicePrintBrowserTest,
+    testing::ValuesIn(GeneratePrintBackendAndPlatformPrintApiVariations(
+        {PrintBackendFeatureVariation::kOopSandboxedService})),
+    GetPrintBackendAndPlatformPrintApiTestSuffix);
+
+using SystemAccessProcessSandboxedServiceLanguagePrintBrowserTest =
+    SystemAccessProcessServicePrintBrowserTest;
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SystemAccessProcessSandboxedServiceLanguagePrintBrowserTest,
+    testing::ValuesIn(kSandboxedServicePlatformPrintLanguageApiVariations),
     GetPrintBackendAndPlatformPrintApiTestSuffix);
 
 class SystemAccessProcessPrintBrowserTest
