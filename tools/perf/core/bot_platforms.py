@@ -425,7 +425,7 @@ _MAC_HIGH_END_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
 ])
 _MAC_HIGH_END_EXECUTABLE_CONFIGS = frozenset([
     _base_perftests(300),
-    _dawn_perf_tests(330),
+    # _dawn_perf_tests(330),    # b/332611618
     _performance_browser_tests(190),
     _views_perftests(),
 ])
