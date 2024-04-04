@@ -380,7 +380,7 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
     return path === Paths.SEA_PEN_RESULTS && !!template;
   }
 
-  private getAriaSelected_(
+  private getAriaChecked_(
       templateId: SeaPenTemplateId, seaPenTemplateId: string): 'true'|'false' {
     return templateId.toString() === seaPenTemplateId ? 'true' : 'false';
   }

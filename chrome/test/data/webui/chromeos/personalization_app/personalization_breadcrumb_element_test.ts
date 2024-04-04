@@ -506,7 +506,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     const allMenuItems = dropdownMenu.querySelectorAll('button');
     assertTrue(allMenuItems.length > 1);
     const selectedElement =
-        dropdownMenu.querySelectorAll('button[aria-selected=\'true\']');
+        dropdownMenu.querySelectorAll('button[aria-checked=\'true\']');
     assertEquals(1, selectedElement.length);
     assertEquals('Airbrushed', (selectedElement[0] as HTMLElement)!.innerText);
   });
@@ -523,7 +523,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     const dropdownMenu =
         breadcrumbElement.shadowRoot!.querySelector('cr-action-menu');
     const template =
-        (dropdownMenu!.querySelectorAll('button[aria-selected=\'false\']')[0] as
+        (dropdownMenu!.querySelectorAll('button[aria-checked=\'false\']')[0] as
          HTMLElement);
 
     const original = PersonalizationRouterElement.instance;

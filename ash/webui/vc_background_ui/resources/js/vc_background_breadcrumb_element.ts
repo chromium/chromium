@@ -267,8 +267,8 @@ export class VcBackgroundBreadcrumbElement extends
     return path === SeaPenPaths.RESULTS && !!template;
   }
 
-  private getAriaSelected_(templateId: string, seaPenTemplateId: string):
-      'true'|'false' {
+  private getAriaChecked_(templateId: string, seaPenTemplateId: string): 'true'|
+      'false' {
     return templateId === seaPenTemplateId ? 'true' : 'false';
   }
 

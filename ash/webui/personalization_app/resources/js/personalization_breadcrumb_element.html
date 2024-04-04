@@ -80,7 +80,7 @@
     margin-inline-end: 16px;
   }
 
-  button:not([aria-selected='true']) iron-icon.dropdown-check {
+  button:not([aria-checked='true']) iron-icon.dropdown-check {
     visibility: hidden;
   }
 
@@ -118,11 +118,14 @@
           </template>
         </cr-button>
       </template>
-      <cr-action-menu>
+      <cr-action-menu
+          accessibility-label="$i18n{seaPenTemplateHeading}"
+          role-description="$i18n{seaPenMenuRoleDescription}">
         <template is="dom-repeat" items="[[seaPenTemplates_]]" as="template">
           <button
-              aria-selected$="[[getAriaSelected_(template.id, seaPenTemplateId)]]"
+              aria-checked$="[[getAriaChecked_(template.id, seaPenTemplateId)]]"
               class="dropdown-item"
+              role="menuitemcheckbox"
               data-id$="[[template.id]]"
               on-click="onClickMenuItem_">
             <iron-icon class="dropdown-check" icon="cr:check"></iron-icon>
