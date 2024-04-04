@@ -499,8 +499,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kSpdyHeadersToHttpResponseUseBuilder);
 // Enables receiving ECN bit by sockets in Chrome.
 NET_EXPORT BASE_DECLARE_FEATURE(kReceiveEcn);
 
-NET_EXPORT BASE_DECLARE_FEATURE(kNewCertPathBuilderIterationLimit);
-
 // Enables using the new ALPS codepoint to negotiate application settings for
 // HTTP2.
 NET_EXPORT BASE_DECLARE_FEATURE(kUseNewAlpsCodepointHttp2);

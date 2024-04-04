@@ -1701,27 +1701,7 @@ TEST_F(CertVerifyProcBuiltinTest,
   EXPECT_THAT(error, IsOk());
 }
 
-class CertVerifyProcBuiltinIterationTest
-    : public CertVerifyProcBuiltinTest,
-      public testing::WithParamInterface<bool> {
- public:
-  CertVerifyProcBuiltinIterationTest() {
-    if (new_iteration_limit()) {
-      feature_list_.InitAndEnableFeature(
-          features::kNewCertPathBuilderIterationLimit);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          features::kNewCertPathBuilderIterationLimit);
-    }
-  }
-
-  bool new_iteration_limit() const { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_P(CertVerifyProcBuiltinIterationTest, IterationLimit) {
+TEST_F(CertVerifyProcBuiltinTest, IterationLimit) {
   // Create a chain which will require many iterations in the path builder.
   std::vector<std::unique_ptr<CertBuilder>> builders =
       CertBuilder::CreateSimpleChain(6);
@@ -1782,20 +1762,10 @@ TEST_P(CertVerifyProcBuiltinIterationTest, IterationLimit) {
   });
   ASSERT_NE(event, events.end());
 
-  if (new_iteration_limit()) {
-    // The path builder gives up before it finishes all the invalid paths.
-    EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_AUTHORITY_INVALID);
-    EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
-    EXPECT_EQ(true, event->params.FindBool("exceeded_iteration_limit"));
-  } else {
-    // After exploring many dead ends, the path builder finds the valid path.
-    EXPECT_THAT(error, IsOk());
-    EXPECT_FALSE(event->params.Find("exceeded_iteration_limit"));
-  }
+  // The path builder gives up before it finishes all the invalid paths.
+  EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_AUTHORITY_INVALID);
+  EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+  EXPECT_EQ(true, event->params.FindBool("exceeded_iteration_limit"));
 }
-
-INSTANTIATE_TEST_SUITE_P(NewLimit,
-                         CertVerifyProcBuiltinIterationTest,
-                         testing::Bool());
 
 }  // namespace net

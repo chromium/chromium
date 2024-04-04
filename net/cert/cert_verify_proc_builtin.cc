@@ -58,11 +58,12 @@ namespace net {
 
 namespace {
 
-// Very conservative iteration count limit.
-// TODO(https://crbug.com/634470): Remove this in favor of
-// kPathBuilderIterationLimitNew.
-constexpr uint32_t kPathBuilderIterationLimit = 25000;
-constexpr uint32_t kPathBuilderIterationLimitNew = 20;
+// To avoid a denial-of-service risk, cap iterations by the path builder.
+// Without a limit, path building is potentially exponential. This limit was
+// set based on UMA histograms in the wild. See https://crrev.com/c/4903550.
+//
+// TODO(crbug.com/41267856): Move this limit into BoringSSL as a default.
+constexpr uint32_t kPathBuilderIterationLimit = 20;
 
 constexpr base::TimeDelta kMaxVerificationTime = base::Seconds(60);
 
@@ -972,12 +973,7 @@ bssl::CertPathBuilder::Result TryBuildPath(
     }
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kNewCertPathBuilderIterationLimit)) {
-    path_builder.SetIterationLimit(kPathBuilderIterationLimitNew);
-  } else {
-    path_builder.SetIterationLimit(kPathBuilderIterationLimit);
-  }
+  path_builder.SetIterationLimit(kPathBuilderIterationLimit);
 
   return path_builder.Run();
 }
