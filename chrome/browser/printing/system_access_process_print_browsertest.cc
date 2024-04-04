@@ -14,7 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog.h"
 #include "chrome/browser/printing/print_browsertest.h"
 #include "chrome/browser/printing/print_job.h"
 #include "chrome/browser/printing/print_test_utils.h"
@@ -27,7 +26,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/enterprise/common/proto/connectors.pb.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -57,11 +55,13 @@
 #endif
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"  // nogncheck
 #include "chrome/browser/enterprise/connectors/test/fake_content_analysis_delegate.h"  // nogncheck
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "components/enterprise/buildflags/buildflags.h"
+#include "components/enterprise/common/proto/connectors.pb.h"
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/connectors/test/fake_content_analysis_sdk_manager.h"  // nogncheck
@@ -213,6 +213,9 @@ const char* GetPlatformPrintApiString(PlatformPrintApiVariation variation) {
 // `PrintBackendFeatureVariation` and `PlatformPrintApiVariation` could
 // inadvertently cause this illegal combination.  This can be avoided by using
 // a local helper method to generate the allowed combinations.
+//
+// `SystemAccessProcessPrintBrowserTestBase` will check this constraint at
+// runtime.
 struct PrintBackendAndPlatformPrintApiVariation {
   PrintBackendFeatureVariation print_backend;
   PlatformPrintApiVariation platform_api;
@@ -628,16 +631,17 @@ class SystemAccessProcessPrintBrowserTestBase
       disabled_features.push_back(features::kUseXpsForPrintingFromPdf);
       // TODO(crbug.com/1291257):  Support `kReadPrinterCapabilitiesWithXps`.
       disabled_features.push_back(features::kReadPrinterCapabilitiesWithXps);
-#endif
+#endif  // BUILDFLAG(IS_WIN)
     } else {
       disabled_features.push_back(features::kEnableOopPrintDrivers);
 #if BUILDFLAG(IS_WIN)
+      CHECK(!UseXps());
       disabled_features.push_back(features::kUseXpsForPrinting);
       disabled_features.push_back(features::kUseXpsForPrintingFromPdf);
       disabled_features.push_back(features::kReadPrinterCapabilitiesWithXps);
-#endif
+#endif  // BUILDFLAG(IS_WIN)
     }
-#endif
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
   }
@@ -1261,7 +1265,7 @@ class SystemAccessProcessPrintBrowserTestBase
   bool simulate_spooling_memory_errors_ = false;
 #if BUILDFLAG(IS_WIN)
   std::optional<uint32_t> simulate_pdf_conversion_error_on_page_index_;
-#endif
+#endif  // BUILDFLAG(IS_WIN)
   mojo::Remote<mojom::PrintBackendService> test_remote_;
   std::unique_ptr<PrintBackendServiceTestImpl> print_backend_service_;
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
