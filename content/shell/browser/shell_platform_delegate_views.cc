@@ -116,7 +116,7 @@ class ShellView : public views::BoxLayoutView,
 
     // Resize the widget, keeping the same origin.
     gfx::Rect bounds = GetWidget()->GetWindowBoundsInScreen();
-    bounds.set_size(GetWidget()->GetRootView()->GetPreferredSize());
+    bounds.set_size(GetWidget()->GetRootView()->GetPreferredSize({}));
     GetWidget()->SetBounds(bounds);
 
     // Resizing a widget on chromeos doesn't automatically resize the root, need
@@ -144,7 +144,7 @@ class ShellView : public views::BoxLayoutView,
   void InitShellWindow() {
     auto toolbar_button_rule = [](const views::View* view,
                                   const views::SizeBounds& size_bounds) {
-      gfx::Size preferred_size = view->GetPreferredSize();
+      gfx::Size preferred_size = view->GetPreferredSize({});
       if (size_bounds != views::SizeBounds() &&
           size_bounds.width().is_bounded()) {
         preferred_size.set_width(std::max(
