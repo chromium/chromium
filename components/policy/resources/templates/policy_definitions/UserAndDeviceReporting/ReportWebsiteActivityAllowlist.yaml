@@ -16,7 +16,7 @@ features:
   per_profile: true
 owners:
 - vshenvi@google.com
-- cros-reporting-team@google.com
+- cros-reporting-eng@google.com
 schema:
   type: array
   items:

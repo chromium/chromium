@@ -12,7 +12,7 @@ features:
   dynamic_refresh: true
   unlisted: true
 owners:
-- cros-reporting-team@google.com
+- cros-reporting-eng@google.com
 - albertojuarez@google.com
 schema:
   minimum: 60000

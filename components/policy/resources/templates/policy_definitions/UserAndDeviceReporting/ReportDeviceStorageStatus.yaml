@@ -15,7 +15,7 @@ items:
 - caption: Disable device storage status reporting
   value: false
 owners:
-- cros-reporting-team@google.com
+- cros-reporting-eng@google.com
 - lbaraz@chromium.org
 - antrim@chromium.org
 schema:
