@@ -234,6 +234,13 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
 
     cls.CustomizeBrowserArgs([])
     cls.StartBrowser()
+
+    # Shared workers are not supported on Android and test suites should be
+    # removed accordingly, but add a runtime check in case tests are still run
+    # for some reason.
+    if cls._os_name == 'android' and cls._worker_type == WorkerType.SHARED:
+      raise RuntimeError('Shared workers are not supported on Android')
+
     # pylint:disable=protected-access
     cls._build_dir = cls.browser._browser_backend.build_dir
     # pylint:enable=protected-access
