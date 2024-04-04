@@ -7955,7 +7955,16 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_BIRCH_CALENDAR_JOIN_BUTTON" translateable="false" desc="Button label for joining a meeting associated with a calendar event">
         Join
       </message>
-      <message name="IDS_ASH_BIRCH_RECENT_TAB_SUBTITLE" translateable="false" desc="Subtitle for the suggestion chip with recent tabs from other devices">
+      <message name="IDS_ASH_BIRCH_RECENT_TAB_SUBTITLE_YESTERDAY" translateable="false" desc="Subtitle for the suggestion chip with recent tabs from other devices shared yesterday">
+        Yesterday
+      </message>
+      <message name="IDS_ASH_BIRCH_RECENT_TAB_SUBTITLE_PREFIX" translateable="false" desc="Start of the subtitle for the suggestion chip with recent tabs from other devices">
+        {HOURS, plural,
+         =0 {&lt; 1 hour ago}
+         =1 {1 hour ago}
+         other {# hours ago}}
+      </message>
+      <message name="IDS_ASH_BIRCH_RECENT_TAB_SUBTITLE_SUFFIX" translateable="false" desc="End of the subtitle for the suggestion chip with recent tabs from other devices">
         From <ph name="SESSION_NAME">$1<ex>Chromebook</ex></ph>
       </message>
       <message name="IDS_ASH_BIRCH_RELEASE_NOTES_TITLE" translateable="false" desc="Title for the suggestion chip that links to release notes">

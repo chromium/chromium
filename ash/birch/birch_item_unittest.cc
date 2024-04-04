@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_mock_clock_override.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -251,12 +252,45 @@ TEST_F(BirchItemTest, Weather_PerformAction_Histograms) {
                                BirchItemType::kWeather, 1);
 }
 
-TEST_F(BirchItemTest, Tab_SubtitleHasSessionName) {
+TEST_F(BirchItemTest, Tab_Subtitle_Recent) {
+  // Use a mock clock so that Now() always returns the same fixed time.
+  base::ScopedMockClockOverride clock;
   BirchTabItem item(u"item", /*url=*/GURL("http://example.com/"),
-                    /*timestamp=*/base::Time(),
+                    /*timestamp=*/base::Time::Now() - base::Minutes(5),
                     /*favicon_url=*/GURL(), /*session_name=*/"Chromebook",
                     BirchTabItem::DeviceFormFactor::kDesktop);
-  EXPECT_EQ(item.subtitle(), u"From Chromebook");
+  EXPECT_EQ(item.subtitle(), u"< 1 hour ago · From Chromebook");
+}
+
+TEST_F(BirchItemTest, Tab_Subtitle_OneHour) {
+  // Use a mock clock so that Now() always returns the same fixed time.
+  base::ScopedMockClockOverride clock;
+  BirchTabItem item(u"item", /*url=*/GURL("http://example.com/"),
+                    /*timestamp=*/base::Time::Now() - base::Minutes(65),
+                    /*favicon_url=*/GURL(), /*session_name=*/"Chromebook",
+                    BirchTabItem::DeviceFormFactor::kDesktop);
+  EXPECT_EQ(item.subtitle(), u"1 hour ago · From Chromebook");
+}
+
+TEST_F(BirchItemTest, Tab_Subtitle_TwoHours) {
+  // Use a mock clock so that Now() always returns the same fixed time.
+  base::ScopedMockClockOverride clock;
+  BirchTabItem item(u"item", /*url=*/GURL("http://example.com/"),
+                    /*timestamp=*/base::Time::Now() - base::Minutes(125),
+                    /*favicon_url=*/GURL(), /*session_name=*/"Chromebook",
+                    BirchTabItem::DeviceFormFactor::kDesktop);
+  EXPECT_EQ(item.subtitle(), u"2 hours ago · From Chromebook");
+}
+
+TEST_F(BirchItemTest, Tab_Subtitle_Yesterday) {
+  // Use a mock clock so that Now() always returns the same fixed time.
+  base::ScopedMockClockOverride clock;
+  BirchTabItem item(
+      u"item", /*url=*/GURL("http://example.com/"),
+      /*timestamp=*/base::Time::Now().LocalMidnight() - base::Minutes(5),
+      /*favicon_url=*/GURL(), /*session_name=*/"Chromebook",
+      BirchTabItem::DeviceFormFactor::kDesktop);
+  EXPECT_EQ(item.subtitle(), u"Yesterday · From Chromebook");
 }
 
 TEST_F(BirchItemTest, Tab_PerformAction_ValidUrl) {

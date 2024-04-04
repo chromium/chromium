@@ -361,7 +361,7 @@ BirchTabItem::BirchTabItem(const std::u16string& title,
                            const GURL& favicon_url,
                            const std::string& session_name,
                            const DeviceFormFactor& form_factor)
-    : BirchItem(title, GetSubtitle(session_name)),
+    : BirchItem(title, GetSubtitle(session_name, timestamp)),
       url_(url),
       timestamp_(timestamp),
       favicon_url_(favicon_url),
@@ -412,10 +412,27 @@ void BirchTabItem::LoadIcon(LoadIconCallback callback) const {
 }
 
 // static
-std::u16string BirchTabItem::GetSubtitle(const std::string& session_name) {
+std::u16string BirchTabItem::GetSubtitle(const std::string& session_name,
+                                         base::Time timestamp) {
+  std::u16string prefix;
+  if (timestamp < base::Time::Now().LocalMidnight()) {
+    // Builds the string "Yesterday". We only show tabs within the last 24 hours
+    // so we don't need to worry about days before yesterday.
+    prefix =
+        l10n_util::GetStringUTF16(IDS_ASH_BIRCH_RECENT_TAB_SUBTITLE_YESTERDAY);
+  } else {
+    // Builds a string like "12 hours ago". We only show tabs within the last
+    // 24 hours so we don't need to worry about a day count.
+    int hours = (base::Time::Now() - timestamp).InHours();
+    prefix = l10n_util::GetPluralStringFUTF16(
+        IDS_ASH_BIRCH_RECENT_TAB_SUBTITLE_PREFIX, hours);
+  }
+
   // Builds a string like "From Chromebook".
-  return l10n_util::GetStringFUTF16(IDS_ASH_BIRCH_RECENT_TAB_SUBTITLE,
-                                    base::UTF8ToUTF16(session_name));
+  std::u16string suffix =
+      l10n_util::GetStringFUTF16(IDS_ASH_BIRCH_RECENT_TAB_SUBTITLE_SUFFIX,
+                                 base::UTF8ToUTF16(session_name));
+  return prefix + u" · " + suffix;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

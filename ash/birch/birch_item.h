@@ -239,7 +239,8 @@ class ASH_EXPORT BirchTabItem : public BirchItem {
   DeviceFormFactor form_factor() const { return form_factor_; }
 
  private:
-  static std::u16string GetSubtitle(const std::string& session_name);
+  static std::u16string GetSubtitle(const std::string& session_name,
+                                    base::Time timestamp);
 
   GURL url_;
   base::Time timestamp_;
