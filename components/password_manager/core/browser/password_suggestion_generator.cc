@@ -157,7 +157,7 @@ void MaybeAppendManagePasswordsEntry(
   suggestion.icon = autofill::Suggestion::Icon::kSettings;
   // The UI code will pick up an icon from the resources based on the string.
   suggestion.trailing_icon = autofill::Suggestion::Icon::kGooglePasswordManager;
-  suggestions->push_back(std::move(suggestion));
+  suggestions->emplace_back(std::move(suggestion));
 }
 
 // If |field_suggestion| matches |field_content|, creates a Suggestion out of it
@@ -205,7 +205,7 @@ void AppendSuggestionIfMatching(
       suggestion.trailing_icon = CreateStoreIcon(from_account_store);
     }
 #endif
-    suggestions->push_back(suggestion);
+    suggestions->emplace_back(std::move(suggestion));
   }
 }
 
@@ -237,8 +237,8 @@ void GetSuggestions(const autofill::PasswordFormFillData& fill_data,
 
 void AddPasswordUsernameChildSuggestion(const std::u16string& username,
                                         autofill::Suggestion& suggestion) {
-  suggestion.children.push_back(autofill::Suggestion(
-      username, autofill::PopupItemId::kPasswordFieldByFieldFilling));
+  suggestion.children.emplace_back(
+      username, autofill::PopupItemId::kPasswordFieldByFieldFilling);
 }
 
 void AddFillPasswordChildSuggestion(autofill::Suggestion& suggestion,
@@ -248,7 +248,7 @@ void AddFillPasswordChildSuggestion(autofill::Suggestion& suggestion,
           IDS_PASSWORD_MANAGER_MANUAL_FALLBACK_FILL_PASSWORD_ENTRY),
       autofill::PopupItemId::kFillPassword);
   fill_password.payload = autofill::Suggestion::ValueToFill(password);
-  suggestion.children.push_back(fill_password);
+  suggestion.children.emplace_back(std::move(fill_password));
 }
 
 void AddViewPasswordDetailsChildSuggestion(autofill::Suggestion& suggestion) {
@@ -257,7 +257,7 @@ void AddViewPasswordDetailsChildSuggestion(autofill::Suggestion& suggestion) {
           IDS_PASSWORD_MANAGER_MANUAL_FALLBACK_VIEW_DETAILS_ENTRY),
       autofill::PopupItemId::kViewPasswordDetails);
   view_password_details.icon = autofill::Suggestion::Icon::kKey;
-  suggestion.children.push_back(view_password_details);
+  suggestion.children.emplace_back(std::move(view_password_details));
 }
 
 autofill::Suggestion GetManualFallbackSuggestion(
@@ -278,8 +278,7 @@ autofill::Suggestion GetManualFallbackSuggestion(
     AddPasswordUsernameChildSuggestion(maybe_username, suggestion);
   }
   AddFillPasswordChildSuggestion(suggestion, credential.password);
-  suggestion.children.push_back(
-      autofill::Suggestion(autofill::PopupItemId::kSeparator));
+  suggestion.children.emplace_back(autofill::PopupItemId::kSeparator);
   AddViewPasswordDetailsChildSuggestion(suggestion);
 
   return suggestion;
@@ -354,26 +353,27 @@ PasswordSuggestionGenerator::GetSuggestionsForDomain(
   if (uses_passkeys && delegate->OfferPasskeysFromAnotherDeviceOption()) {
     bool listed_passkeys = delegate->GetPasskeys().has_value() &&
                            delegate->GetPasskeys()->size() > 0;
-    suggestions.push_back(CreateWebAuthnEntry(listed_passkeys));
+    suggestions.emplace_back(CreateWebAuthnEntry(listed_passkeys));
   }
 #endif
 
   // Add password generation entry, if available.
   if (offers_generation) {
-    suggestions.push_back(show_account_storage_optin
-                              ? CreateEntryToOptInToAccountStorageThenGenerate()
-                              : CreateGenerationEntry());
+    suggestions.emplace_back(
+        show_account_storage_optin
+            ? CreateEntryToOptInToAccountStorageThenGenerate()
+            : CreateGenerationEntry());
   }
 
   // Add button to opt into using the account storage for passwords and then
   // suggest.
   if (show_account_storage_optin) {
-    suggestions.push_back(CreateEntryToOptInToAccountStorageThenFill());
+    suggestions.emplace_back(CreateEntryToOptInToAccountStorageThenFill());
   }
 
   // Add button to sign-in which unlocks the previously used account store.
   if (show_account_storage_resignin) {
-    suggestions.push_back(CreateEntryToReSignin());
+    suggestions.emplace_back(CreateEntryToReSignin());
   }
 
   // Add "Manage all passwords" link to settings.
