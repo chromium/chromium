@@ -5982,7 +5982,7 @@ const AtomicString& AXObjectCacheImpl::ComputedRoleForNode(Node* node) {
   ProcessDeferredAccessibilityEvents(GetDocument(), /*force*/ true);
   ScopedFreezeAXCache scoped_freeze_cache(*this);
   AXObject* obj = Get(node);
-  return AXObject::ARIARoleName(obj ? obj->RoleValue()
+  return AXObject::ARIARoleName(obj ? obj->ComputeFinalRoleForSerialization()
                                     : ax::mojom::blink::Role::kUnknown);
 }
 

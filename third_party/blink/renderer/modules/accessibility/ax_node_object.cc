@@ -1200,10 +1200,6 @@ bool AXNodeObject::IsDescendantOfLandmarkDisallowedElement() const {
   if (!GetNode())
     return false;
 
-  if (AriaRoleAttribute() == ax::mojom::blink::Role::kComplementary) {
-    return false;
-  }
-
   auto role_names = GetLandmarkIsNotAllowedAncestorRoles(RoleValue());
 
   for (AXObject* parent = ParentObjectUnignored(); parent;
@@ -2226,9 +2222,7 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
     return ax::mojom::blink::Role::kComplementary;
 
   if (GetNode()->HasTagName(html_names::kSectionTag)) {
-    // Treat a named <section> as role="region".
-    return IsNameFromAuthorAttribute() ? ax::mojom::blink::Role::kRegion
-                                       : ax::mojom::blink::Role::kSection;
+    return ax::mojom::blink::Role::kSection;
   }
 
   if (GetNode()->HasTagName(html_names::kAddressTag))

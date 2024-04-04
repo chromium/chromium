@@ -2691,7 +2691,8 @@ ax::mojom::blink::Role AXObject::ComputeFinalRoleForSerialization() const {
   // AXNodeObject::RoleFromLayoutObjectOrNode is called, that node's
   // accessible children have not been calculated. Rather than force calculation
   // there, wait until we have the full tree.
-  if (role_ == ax::mojom::blink::Role::kSvgRoot && !UnignoredChildCount()) {
+  if (role_ == ax::mojom::blink::Role::kSvgRoot &&
+      AccessibilityIsIncludedInTree() && !UnignoredChildCount()) {
     return ax::mojom::blink::Role::kImage;
   }
 
@@ -2734,11 +2735,18 @@ ax::mojom::blink::Role AXObject::ComputeFinalRoleForSerialization() const {
   // An <aside> element should not be considered a landmark region
   // if it is a child of a landmark disallowed element, UNLESS it has
   // an accessible name.
-  if (role_ == ax::mojom::blink::Role::kComplementary) {
+  if (role_ == ax::mojom::blink::Role::kComplementary &&
+      AriaRoleAttribute() != ax::mojom::blink::Role::kComplementary) {
     if (IsDescendantOfLandmarkDisallowedElement() &&
         !IsNameFromAuthorAttribute()) {
       return ax::mojom::blink::Role::kGenericContainer;
     }
+  }
+
+  // Treat a named <section> as role="region".
+  if (role_ == ax::mojom::blink::Role::kSection) {
+    return IsNameFromAuthorAttribute() ? ax::mojom::blink::Role::kRegion
+                                       : ax::mojom::blink::Role::kSection;
   }
 
   // TODO(accessibility): Consider moving the image vs. image map role logic
