@@ -20446,6 +20446,7 @@ from previous Chrome versions.
       label="NonValidatingReloadOnRefreshContentV2:disabled"/>
   <int value="-234231190" label="SharingDeviceRegistration:enabled"/>
   <int value="-233334129" label="BiometricTouchToFill:disabled"/>
+  <int value="-232769318" label="EventBasedLogUpload:disabled"/>
   <int value="-231967261" label="AutofillUpdatedCardUnmaskPromptUi:disabled"/>
   <int value="-231922000" label="enable-renderer-mojo-channel"/>
   <int value="-231642350" label="EnableWindowsGamingInputDataFetcher:disabled"/>
@@ -24808,6 +24809,7 @@ from previous Chrome versions.
   <int value="1726474125"
       label="AccessibilityDictationKeyboardImprovements:disabled"/>
   <int value="1726578007" label="EnableFileBackedBlobFactory:disabled"/>
+  <int value="1727201171" label="EventBasedLogUpload:enabled"/>
   <int value="1730094138" label="enable-md-storage-manager"/>
   <int value="1730236697" label="force-device-scale-factor"/>
   <int value="1730416578" label="NTPCondensedLayout:enabled"/>

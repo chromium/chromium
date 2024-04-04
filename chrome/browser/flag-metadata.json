@@ -4108,6 +4108,11 @@
     "expiry_milestone": 83
   },
   {
+    "name": "event-based-log-upload",
+    "owners": [ "iremuguz@google.com", "chromeos-commercial-supportability@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "exo-gamepad-vibration",
     "owners": [ "prabirmsp@chromium.org" ],
     "expiry_milestone": 90

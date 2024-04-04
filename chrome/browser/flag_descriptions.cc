@@ -6399,6 +6399,12 @@ const char kEolIncentiveName[] = "Enable end of life incentives";
 const char kEolIncentiveDescription[] =
     "Allows end of life incentives to be shown within the system ui.";
 
+const char kEventBasedLogUpload[] = "Enable event based log uploads";
+const char kEventBasedLogUploadDescription[] =
+    "Uploads relevant logs to device management server when unexpected events "
+    "(e.g. crashes) occur on the device. The feature is guarded by "
+    "LogUploadEnabled policy.";
+
 const char kExoGamepadVibrationName[] = "Gamepad Vibration for Exo Clients";
 const char kExoGamepadVibrationDescription[] =
     "Allow Exo clients like Android to request vibration events for gamepads "

@@ -1600,4 +1600,12 @@ BASE_FEATURE(kSupportsRtcWakeOver24Hours,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// A feature to enable event based log uploads. See
+// go/cros-eventbasedlogcollection-dd.
+BASE_FEATURE(kEventBasedLogUpload,
+             "EventBasedLogUpload",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 }  // namespace features

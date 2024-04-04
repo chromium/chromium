@@ -7805,6 +7805,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPipTuckDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kPipTuck)},
 
+    {"event-based-log-upload", flag_descriptions::kEventBasedLogUpload,
+     flag_descriptions::kEventBasedLogUploadDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kEventBasedLogUpload)},
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"enable-fenced-frames", flag_descriptions::kEnableFencedFramesName,
