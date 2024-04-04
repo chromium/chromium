@@ -82,7 +82,7 @@ public class SuggestionsListAnimationDriver implements WindowInsetsAnimationList
         removeInsetListener();
         mAnimation = null;
         mListPropertyModel.set(SuggestionListProperties.ALPHA, 1.0f);
-        mListPropertyModel.set(SuggestionListProperties.CHILD_TRANSLATION_Y, 0.0f);
+        mListPropertyModel.set(SuggestionListProperties.TRANSLATION_Y, 0.0f);
     }
 
     @NonNull
@@ -98,7 +98,7 @@ public class SuggestionsListAnimationDriver implements WindowInsetsAnimationList
         if (verticalTranslationOfOmnibox > 0.0f
                 || mListPropertyModel.get(SuggestionListProperties.TRANSLATION_Y) > 0.0f) {
             mListPropertyModel.set(
-                    SuggestionListProperties.CHILD_TRANSLATION_Y,
+                    SuggestionListProperties.TRANSLATION_Y,
                     verticalTranslationOfOmnibox
                             + mAdditionalVerticalOffset * (1.0f - interpolatedFraction));
         }
