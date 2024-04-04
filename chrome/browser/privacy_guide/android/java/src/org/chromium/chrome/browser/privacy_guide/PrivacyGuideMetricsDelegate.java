@@ -151,10 +151,10 @@ class PrivacyGuideMetricsDelegate {
     }
 
     /** A method to record metrics on the next click of {@link SafeBrowsingFragment} */
-    private void recordMetricsOnNextForSafeBrowsingCard() {
+    private void recordMetricsOnNextForSafeBrowsingCard(Profile profile) {
         assert mInitialSafeBrowsingState != null : "Initial state of Safe Browsing not set.";
 
-        @SafeBrowsingState int currentValue = PrivacyGuideUtils.getSafeBrowsingState();
+        @SafeBrowsingState int currentValue = PrivacyGuideUtils.getSafeBrowsingState(profile);
 
         boolean isStartStateEnhance =
                 mInitialSafeBrowsingState == SafeBrowsingState.ENHANCED_PROTECTION;
@@ -274,7 +274,7 @@ class PrivacyGuideMetricsDelegate {
                 }
             case PrivacyGuideFragment.FragmentType.SAFE_BROWSING:
                 {
-                    mInitialSafeBrowsingState = PrivacyGuideUtils.getSafeBrowsingState();
+                    mInitialSafeBrowsingState = PrivacyGuideUtils.getSafeBrowsingState(mProfile);
                     break;
                 }
             case PrivacyGuideFragment.FragmentType.COOKIES:
@@ -326,7 +326,7 @@ class PrivacyGuideMetricsDelegate {
                 }
             case PrivacyGuideFragment.FragmentType.SAFE_BROWSING:
                 {
-                    recordMetricsOnNextForSafeBrowsingCard();
+                    recordMetricsOnNextForSafeBrowsingCard(mProfile);
                     break;
                 }
             case PrivacyGuideFragment.FragmentType.COOKIES:

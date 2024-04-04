@@ -9,10 +9,18 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.chrome.browser.profiles.Profile;
+
 /** Bridge providing access to native-side Safe Browsing data. */
-// TODO(crbug.com/1410601): Pass in the profile and remove GetActiveUserProfile in C++.
 @JNINamespace("safe_browsing")
 public final class SafeBrowsingBridge {
+    private final Profile mProfile;
+
+    /** Constructs a {@link SafeBrowsingBridge} associated with the given {@link Profile}. */
+    public SafeBrowsingBridge(Profile profile) {
+        mProfile = profile;
+    }
+
     /**
      * Reports UMA values based on files' extensions.
      *
@@ -26,53 +34,53 @@ public final class SafeBrowsingBridge {
     /**
      * @return Whether Safe Browsing Extended Reporting is currently enabled.
      */
-    public static boolean isSafeBrowsingExtendedReportingEnabled() {
-        return SafeBrowsingBridgeJni.get().getSafeBrowsingExtendedReportingEnabled();
+    public boolean isSafeBrowsingExtendedReportingEnabled() {
+        return SafeBrowsingBridgeJni.get().getSafeBrowsingExtendedReportingEnabled(mProfile);
     }
 
     /**
      * @param enabled Whether Safe Browsing Extended Reporting should be enabled.
      */
-    public static void setSafeBrowsingExtendedReportingEnabled(boolean enabled) {
-        SafeBrowsingBridgeJni.get().setSafeBrowsingExtendedReportingEnabled(enabled);
+    public void setSafeBrowsingExtendedReportingEnabled(boolean enabled) {
+        SafeBrowsingBridgeJni.get().setSafeBrowsingExtendedReportingEnabled(mProfile, enabled);
     }
 
     /**
      * @return Whether Safe Browsing Extended Reporting is managed
      */
-    public static boolean isSafeBrowsingExtendedReportingManaged() {
-        return SafeBrowsingBridgeJni.get().getSafeBrowsingExtendedReportingManaged();
+    public boolean isSafeBrowsingExtendedReportingManaged() {
+        return SafeBrowsingBridgeJni.get().getSafeBrowsingExtendedReportingManaged(mProfile);
     }
 
     /**
      * @return The Safe Browsing state. It can be Enhanced Protection, Standard Protection, or No
-     *         Protection.
+     *     Protection.
      */
-    public static @SafeBrowsingState int getSafeBrowsingState() {
-        return SafeBrowsingBridgeJni.get().getSafeBrowsingState();
+    public @SafeBrowsingState int getSafeBrowsingState() {
+        return SafeBrowsingBridgeJni.get().getSafeBrowsingState(mProfile);
     }
 
     /**
      * @param state Set the Safe Browsing state. It can be Enhanced Protection, Standard Protection,
-     *         or No Protection.
+     *     or No Protection.
      */
-    public static void setSafeBrowsingState(@SafeBrowsingState int state) {
-        SafeBrowsingBridgeJni.get().setSafeBrowsingState(state);
+    public void setSafeBrowsingState(@SafeBrowsingState int state) {
+        SafeBrowsingBridgeJni.get().setSafeBrowsingState(mProfile, state);
     }
 
     /**
-     * @return Whether the Safe Browsing preference is managed. It can be managed by either
-     * the SafeBrowsingEnabled policy(legacy) or the SafeBrowsingProtectionLevel policy(new).
+     * @return Whether the Safe Browsing preference is managed. It can be managed by either the
+     *     SafeBrowsingEnabled policy(legacy) or the SafeBrowsingProtectionLevel policy(new).
      */
-    public static boolean isSafeBrowsingManaged() {
-        return SafeBrowsingBridgeJni.get().isSafeBrowsingManaged();
+    public boolean isSafeBrowsingManaged() {
+        return SafeBrowsingBridgeJni.get().isSafeBrowsingManaged(mProfile);
     }
 
     /**
      * @return Whether the user is under Advanced Protection.
      */
-    public static boolean isUnderAdvancedProtection() {
-        return SafeBrowsingBridgeJni.get().isUnderAdvancedProtection();
+    public boolean isUnderAdvancedProtection() {
+        return SafeBrowsingBridgeJni.get().isUnderAdvancedProtection(mProfile);
     }
 
     /**
@@ -87,20 +95,20 @@ public final class SafeBrowsingBridge {
     public interface Natives {
         int umaValueForFile(String path);
 
-        boolean getSafeBrowsingExtendedReportingEnabled();
+        boolean getSafeBrowsingExtendedReportingEnabled(Profile profile);
 
-        void setSafeBrowsingExtendedReportingEnabled(boolean enabled);
+        void setSafeBrowsingExtendedReportingEnabled(Profile profile, boolean enabled);
 
-        boolean getSafeBrowsingExtendedReportingManaged();
+        boolean getSafeBrowsingExtendedReportingManaged(Profile profile);
 
         @SafeBrowsingState
-        int getSafeBrowsingState();
+        int getSafeBrowsingState(Profile profile);
 
-        void setSafeBrowsingState(@SafeBrowsingState int state);
+        void setSafeBrowsingState(Profile profile, @SafeBrowsingState int state);
 
-        boolean isSafeBrowsingManaged();
+        boolean isSafeBrowsingManaged(Profile profile);
 
-        boolean isUnderAdvancedProtection();
+        boolean isUnderAdvancedProtection(Profile profile);
 
         boolean isHashRealTimeLookupEligibleInSession();
     }

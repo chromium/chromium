@@ -143,7 +143,8 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
 
         Preference safeBrowsingPreference = findPreference(PREF_SAFE_BROWSING);
         safeBrowsingPreference.setSummary(
-                SafeBrowsingSettingsFragment.getSafeBrowsingSummaryString(getContext()));
+                SafeBrowsingSettingsFragment.getSafeBrowsingSummaryString(
+                        getContext(), getProfile()));
         safeBrowsingPreference.setOnPreferenceClickListener(
                 (preference) -> {
                     preference
@@ -179,12 +180,12 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                         // Advanced Protection automatically enables HTTPS-Only Mode so
                         // lock the setting.
                         return isPreferenceControlledByPolicy(preference)
-                                || SafeBrowsingBridge.isUnderAdvancedProtection();
+                                || new SafeBrowsingBridge(getProfile()).isUnderAdvancedProtection();
                     }
                 });
         httpsFirstModePref.setChecked(
                 UserPrefs.get(getProfile()).getBoolean(Pref.HTTPS_ONLY_MODE_ENABLED));
-        if (SafeBrowsingBridge.isUnderAdvancedProtection()) {
+        if (new SafeBrowsingBridge(getProfile()).isUnderAdvancedProtection()) {
             httpsFirstModePref.setSummary(
                     getContext()
                             .getResources()
@@ -321,7 +322,8 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
         Preference safeBrowsingPreference = findPreference(PREF_SAFE_BROWSING);
         if (safeBrowsingPreference != null && safeBrowsingPreference.isVisible()) {
             safeBrowsingPreference.setSummary(
-                    SafeBrowsingSettingsFragment.getSafeBrowsingSummaryString(getContext()));
+                    SafeBrowsingSettingsFragment.getSafeBrowsingSummaryString(
+                            getContext(), getProfile()));
         }
 
         Preference usageStatsPref = findPreference(PREF_USAGE_STATS);

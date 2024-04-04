@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.privacy_guide;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.when;
 
 import androidx.test.filters.SmallTest;
@@ -89,7 +90,7 @@ public class PrivacyGuideMetricsDelegateTest {
     private void mockSafeBrowsingState(
             @SafeBrowsingState int initialSafeBrowsingState,
             @SafeBrowsingState int finalSafeBrowsingState) {
-        when(mSafeBrowsingNativeMock.getSafeBrowsingState())
+        when(mSafeBrowsingNativeMock.getSafeBrowsingState(eq(mProfile)))
                 .thenReturn(initialSafeBrowsingState, finalSafeBrowsingState);
     }
 

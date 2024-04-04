@@ -7,12 +7,16 @@ package org.chromium.chrome.browser.privacy_guide;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentFactory;
 import androidx.fragment.app.testing.FragmentScenario;
 
 import org.junit.After;
@@ -34,6 +38,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridgeJni;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
@@ -49,6 +54,7 @@ public class SafeBrowsingFragmentTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
+    @Mock private Profile mProfile;
     @Mock private SafeBrowsingBridge.Natives mNativeMock;
     @Mock private OneshotSupplierImpl<BottomSheetController> mBottomSheetControllerSupplier;
 
@@ -74,10 +80,24 @@ public class SafeBrowsingFragmentTest {
     }
 
     private void initFragmentWithSBState(@SafeBrowsingState int state) {
-        when(mNativeMock.getSafeBrowsingState()).thenReturn(state);
+        when(mNativeMock.getSafeBrowsingState(eq(mProfile))).thenReturn(state);
         mScenario =
                 FragmentScenario.launchInContainer(
-                        SafeBrowsingFragment.class, Bundle.EMPTY, R.style.Theme_MaterialComponents);
+                        SafeBrowsingFragment.class,
+                        Bundle.EMPTY,
+                        R.style.Theme_MaterialComponents,
+                        new FragmentFactory() {
+                            @NonNull
+                            @Override
+                            public Fragment instantiate(
+                                    @NonNull ClassLoader classLoader, @NonNull String className) {
+                                Fragment fragment = super.instantiate(classLoader, className);
+                                if (fragment instanceof SafeBrowsingFragment) {
+                                    ((SafeBrowsingFragment) fragment).setProfile(mProfile);
+                                }
+                                return fragment;
+                            }
+                        });
         mScenario.onFragment(
                 fragment -> {
                     mEnhancedProtectionButton =
@@ -124,14 +144,14 @@ public class SafeBrowsingFragmentTest {
     public void testSelectEnhanced() {
         initFragmentWithSBState(SafeBrowsingState.STANDARD_PROTECTION);
         mEnhancedProtectionButton.performClick();
-        verify(mNativeMock).setSafeBrowsingState(SafeBrowsingState.ENHANCED_PROTECTION);
+        verify(mNativeMock).setSafeBrowsingState(mProfile, SafeBrowsingState.ENHANCED_PROTECTION);
     }
 
     @Test
     public void testSelectStandard() {
         initFragmentWithSBState(SafeBrowsingState.ENHANCED_PROTECTION);
         mStandardProtectionButton.performClick();
-        verify(mNativeMock).setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
+        verify(mNativeMock).setSafeBrowsingState(mProfile, SafeBrowsingState.STANDARD_PROTECTION);
     }
 
     @Test
@@ -171,7 +191,7 @@ public class SafeBrowsingFragmentTest {
         assertFalse(mStandardProtectionButtonFriendlier.isChecked());
         mStandardProtectionButtonFriendlier.performClick();
         assertTrue(mStandardProtectionButtonFriendlier.isChecked());
-        verify(mNativeMock).setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
+        verify(mNativeMock).setSafeBrowsingState(mProfile, SafeBrowsingState.STANDARD_PROTECTION);
     }
 
     @Test

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.privacy_guide;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
@@ -64,7 +65,7 @@ public class StepDisplayHandlerImplTest {
     }
 
     private void setSBState(@SafeBrowsingState int sbState) {
-        when(mSBNativesMock.getSafeBrowsingState()).thenReturn(sbState);
+        when(mSBNativesMock.getSafeBrowsingState(eq(mProfile))).thenReturn(sbState);
     }
 
     private void setSyncState(boolean enabled) {

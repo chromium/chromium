@@ -12,9 +12,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import androidx.annotation.NonNull;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
@@ -22,6 +25,7 @@ import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 /** The base fragment class for Safe Browsing settings fragments. */
 public abstract class SafeBrowsingSettingsFragmentBase extends ChromeBaseSettingsFragment {
     private SafeBrowsingSettingsFragmentHelper.CustomTabIntentHelper mCustomTabHelper;
+    private SafeBrowsingBridge mSafeBrowsingBridge;
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
@@ -31,6 +35,20 @@ public abstract class SafeBrowsingSettingsFragmentBase extends ChromeBaseSetting
         onCreatePreferencesInternal(bundle, s);
 
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void setProfile(@NonNull Profile profile) {
+        super.setProfile(profile);
+        mSafeBrowsingBridge = new SafeBrowsingBridge(profile);
+    }
+
+    /**
+     * Return the {@link SafeBrowsingBridge} associated with the Profile set in {@link
+     * #setProfile(Profile)}.
+     */
+    protected SafeBrowsingBridge getSafeBrowsingBridge() {
+        return mSafeBrowsingBridge;
     }
 
     /**

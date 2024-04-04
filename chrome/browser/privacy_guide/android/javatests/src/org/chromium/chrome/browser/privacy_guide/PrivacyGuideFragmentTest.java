@@ -235,7 +235,10 @@ public class PrivacyGuideFragmentTest {
     }
 
     private void setSafeBrowsingState(@SafeBrowsingState int safeBrowsingState) {
-        runOnUiThreadBlocking(() -> SafeBrowsingBridge.setSafeBrowsingState(safeBrowsingState));
+        runOnUiThreadBlocking(
+                () ->
+                        new SafeBrowsingBridge(ProfileManager.getLastUsedRegularProfile())
+                                .setSafeBrowsingState(safeBrowsingState));
     }
 
     private void setCookieControlsMode(@CookieControlsMode int cookieControlsMode) {

@@ -4,13 +4,11 @@
 
 #include "base/android/jni_string.h"
 #include "base/files/file_path.h"
-// NOTE: This target is transitively depended on by //chrome/browser and thus
-// can't depend on it.
-#include "chrome/browser/profiles/profile_manager.h"  // nogncheck
 #include "chrome/browser/safe_browsing/android/jni_headers/SafeBrowsingBridge_jni.h"
 // NOTE: This target is transitively depended on by //chrome/browser and thus
 // can't depend on it.
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"  // nogncheck
@@ -24,10 +22,8 @@ using base::android::JavaParamRef;
 
 namespace {
 
-PrefService* GetPrefService() {
-  return ProfileManager::GetActiveUserProfile()
-      ->GetOriginalProfile()
-      ->GetPrefs();
+PrefService* GetPrefService(const base::android::JavaRef<jobject>& j_profile) {
+  return ProfileAndroid::FromProfileAndroid(j_profile)->GetPrefs();
 }
 
 }  // namespace
@@ -43,44 +39,54 @@ static jint JNI_SafeBrowsingBridge_UmaValueForFile(
 }
 
 static jboolean JNI_SafeBrowsingBridge_GetSafeBrowsingExtendedReportingEnabled(
-    JNIEnv* env) {
-  return safe_browsing::IsExtendedReportingEnabled(*GetPrefService());
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_profile) {
+  return safe_browsing::IsExtendedReportingEnabled(*GetPrefService(j_profile));
 }
 
 static void JNI_SafeBrowsingBridge_SetSafeBrowsingExtendedReportingEnabled(
     JNIEnv* env,
+    const JavaParamRef<jobject>& j_profile,
     jboolean enabled) {
   safe_browsing::SetExtendedReportingPrefAndMetric(
-      GetPrefService(), enabled,
+      GetPrefService(j_profile), enabled,
       safe_browsing::SBER_OPTIN_SITE_ANDROID_SETTINGS);
 }
 
 static jboolean JNI_SafeBrowsingBridge_GetSafeBrowsingExtendedReportingManaged(
-    JNIEnv* env) {
-  PrefService* pref_service = GetPrefService();
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_profile) {
+  PrefService* pref_service = GetPrefService(j_profile);
   return pref_service->IsManagedPreference(
       prefs::kSafeBrowsingScoutReportingEnabled);
 }
 
-static jint JNI_SafeBrowsingBridge_GetSafeBrowsingState(JNIEnv* env) {
+static jint JNI_SafeBrowsingBridge_GetSafeBrowsingState(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_profile) {
   return static_cast<jint>(
-      safe_browsing::GetSafeBrowsingState(*GetPrefService()));
+      safe_browsing::GetSafeBrowsingState(*GetPrefService(j_profile)));
 }
 
-static void JNI_SafeBrowsingBridge_SetSafeBrowsingState(JNIEnv* env,
-                                                        jint state) {
+static void JNI_SafeBrowsingBridge_SetSafeBrowsingState(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_profile,
+    jint state) {
   return safe_browsing::SetSafeBrowsingState(
-      GetPrefService(), static_cast<SafeBrowsingState>(state),
+      GetPrefService(j_profile), static_cast<SafeBrowsingState>(state),
       /*is_esb_enabled_in_sync=*/false);
 }
 
-static jboolean JNI_SafeBrowsingBridge_IsSafeBrowsingManaged(JNIEnv* env) {
-  return safe_browsing::IsSafeBrowsingPolicyManaged(*GetPrefService());
+static jboolean JNI_SafeBrowsingBridge_IsSafeBrowsingManaged(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_profile) {
+  return safe_browsing::IsSafeBrowsingPolicyManaged(*GetPrefService(j_profile));
 }
 
-static jboolean JNI_SafeBrowsingBridge_IsUnderAdvancedProtection(JNIEnv* env) {
-  Profile* profile =
-      ProfileManager::GetActiveUserProfile()->GetOriginalProfile();
+static jboolean JNI_SafeBrowsingBridge_IsUnderAdvancedProtection(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_profile) {
+  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
   return profile &&
          safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(
              profile)

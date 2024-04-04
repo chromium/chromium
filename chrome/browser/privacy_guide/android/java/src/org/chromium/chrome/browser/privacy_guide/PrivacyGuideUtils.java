@@ -47,8 +47,8 @@ class PrivacyGuideUtils {
         return UserPrefs.get(profile).getBoolean(Pref.SEARCH_SUGGEST_ENABLED);
     }
 
-    static @SafeBrowsingState int getSafeBrowsingState() {
-        return SafeBrowsingBridge.getSafeBrowsingState();
+    static @SafeBrowsingState int getSafeBrowsingState(Profile profile) {
+        return new SafeBrowsingBridge(profile).getSafeBrowsingState();
     }
 
     static @CookieControlsMode int getCookieControlsMode(Profile profile) {

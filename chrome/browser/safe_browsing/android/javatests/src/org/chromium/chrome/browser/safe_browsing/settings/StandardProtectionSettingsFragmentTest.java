@@ -77,20 +77,33 @@ public class StandardProtectionSettingsFragmentTest {
                 mPasswordLeakDetectionPreference);
     }
 
+    private void setSafeBrowsingState(@SafeBrowsingState int state) {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    new SafeBrowsingBridge(ProfileManager.getLastUsedRegularProfile())
+                            .setSafeBrowsingState(state);
+                });
+    }
+
+    private boolean isSafeBrowsingExtendedReportingEnabled() {
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> {
+                    return new SafeBrowsingBridge(ProfileManager.getLastUsedRegularProfile())
+                            .isSafeBrowsingExtendedReportingEnabled();
+                });
+    }
+
     @Test
     @SmallTest
     @Feature({"SafeBrowsing"})
     public void testSwitchExtendedReportingPreference() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    SafeBrowsingBridge.setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
-                });
+        setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
         launchSettingsActivity();
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     boolean is_extended_reporting_enabled =
-                            SafeBrowsingBridge.isSafeBrowsingExtendedReportingEnabled();
+                            isSafeBrowsingExtendedReportingEnabled();
                     String checked_state_error_message =
                             ASSERT_MESSAGE_PREFIX + EXTENDED_REPORTING + CHECKED_STATE;
                     String enabled_state_error_message =
@@ -111,7 +124,7 @@ public class StandardProtectionSettingsFragmentTest {
                     Assert.assertEquals(
                             enabled_state_error_message + FROM_NATIVE,
                             !is_extended_reporting_enabled,
-                            SafeBrowsingBridge.isSafeBrowsingExtendedReportingEnabled());
+                            isSafeBrowsingExtendedReportingEnabled());
                 });
     }
 
@@ -121,10 +134,7 @@ public class StandardProtectionSettingsFragmentTest {
     @DisableFeatures(ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION)
     public void testSwitchPasswordLeakDetectionPreferenceOriginal() {
         mBrowserTestRule.addTestAccountThenSigninAndEnableSync();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    SafeBrowsingBridge.setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
-                });
+        setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
         launchSettingsActivity();
 
         TestThreadUtils.runOnUiThreadBlocking(
@@ -165,10 +175,7 @@ public class StandardProtectionSettingsFragmentTest {
     @EnableFeatures(ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION)
     public void testSwitchPasswordLeakDetectionPreference() {
         mBrowserTestRule.addTestAccountThenSigninAndEnableSync();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    SafeBrowsingBridge.setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
-                });
+        setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
         launchSettingsActivity();
 
         TestThreadUtils.runOnUiThreadBlocking(
@@ -212,10 +219,7 @@ public class StandardProtectionSettingsFragmentTest {
     @Feature({"SafeBrowsing"})
     @DisableFeatures(ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION)
     public void testPasswordLeakDetectionPreferenceEnabledForSignedOutUsersOriginal() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    SafeBrowsingBridge.setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
-                });
+        setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
         launchSettingsActivity();
 
         TestThreadUtils.runOnUiThreadBlocking(
@@ -256,10 +260,7 @@ public class StandardProtectionSettingsFragmentTest {
     @Feature({"SafeBrowsing"})
     @EnableFeatures(ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION)
     public void testPasswordLeakDetectionPreferenceEnabledForSignedOutUsers() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    SafeBrowsingBridge.setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
-                });
+        setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
         launchSettingsActivity();
 
         TestThreadUtils.runOnUiThreadBlocking(
@@ -303,10 +304,7 @@ public class StandardProtectionSettingsFragmentTest {
     @Feature({"SafeBrowsing"})
     public void testPreferencesDisabledInEnhancedProtectionMode() {
         mBrowserTestRule.addTestAccountThenSigninAndEnableSync();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    SafeBrowsingBridge.setSafeBrowsingState(SafeBrowsingState.ENHANCED_PROTECTION);
-                });
+        setSafeBrowsingState(SafeBrowsingState.ENHANCED_PROTECTION);
         launchSettingsActivity();
 
         TestThreadUtils.runOnUiThreadBlocking(
@@ -331,10 +329,7 @@ public class StandardProtectionSettingsFragmentTest {
     @Feature({"SafeBrowsing"})
     public void testPreferencesDisabledInNoProtectionMode() {
         mBrowserTestRule.addTestAccountThenSigninAndEnableSync();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    SafeBrowsingBridge.setSafeBrowsingState(SafeBrowsingState.NO_SAFE_BROWSING);
-                });
+        setSafeBrowsingState(SafeBrowsingState.NO_SAFE_BROWSING);
         launchSettingsActivity();
 
         TestThreadUtils.runOnUiThreadBlocking(
@@ -363,7 +358,7 @@ public class StandardProtectionSettingsFragmentTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
-                    SafeBrowsingBridge.setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
+                    setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
                 });
         launchSettingsActivity();
 
@@ -391,7 +386,7 @@ public class StandardProtectionSettingsFragmentTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
-                    SafeBrowsingBridge.setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
+                    setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
                 });
         launchSettingsActivity();
 
@@ -402,7 +397,8 @@ public class StandardProtectionSettingsFragmentTest {
                                     + EXTENDED_REPORTING
                                     + MANAGED_STATE
                                     + FROM_NATIVE,
-                            SafeBrowsingBridge.isSafeBrowsingExtendedReportingManaged());
+                            new SafeBrowsingBridge(ProfileManager.getLastUsedRegularProfile())
+                                    .isSafeBrowsingExtendedReportingManaged());
                     Assert.assertFalse(
                             ASSERT_MESSAGE_PREFIX + EXTENDED_REPORTING + ENABLED_STATE,
                             mExtendedReportingPreference.isEnabled());
@@ -417,10 +413,7 @@ public class StandardProtectionSettingsFragmentTest {
     @Feature({"SafeBrowsing"})
     @EnableFeatures(ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION)
     public void testFriendlierSafeBrowsingSettingsStandardProtection() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    SafeBrowsingBridge.setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
-                });
+        setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
         launchSettingsActivity();
 
         TestThreadUtils.runOnUiThreadBlocking(
@@ -470,10 +463,7 @@ public class StandardProtectionSettingsFragmentTest {
         ChromeFeatureList.HASH_PREFIX_REAL_TIME_LOOKUPS
     })
     public void testDisabledFriendlierSafeBrowsingSettingsStandardProtection() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    SafeBrowsingBridge.setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
-                });
+        setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
         launchSettingsActivity();
 
         TestThreadUtils.runOnUiThreadBlocking(
@@ -521,10 +511,7 @@ public class StandardProtectionSettingsFragmentTest {
     @EnableFeatures({ChromeFeatureList.HASH_PREFIX_REAL_TIME_LOOKUPS})
     @DisableFeatures({ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION})
     public void testDisabledFriendlierSafeBrowsingSettingsStandardProtectionWithProxy() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    SafeBrowsingBridge.setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
-                });
+        setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
         launchSettingsActivity();
 
         TestThreadUtils.runOnUiThreadBlocking(

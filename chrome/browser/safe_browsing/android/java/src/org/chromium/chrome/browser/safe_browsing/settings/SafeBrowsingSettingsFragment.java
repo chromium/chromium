@@ -13,6 +13,7 @@ import androidx.preference.Preference;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
@@ -39,8 +40,9 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
     /**
      * @return A summary that describes the current Safe Browsing state.
      */
-    public static String getSafeBrowsingSummaryString(Context context) {
-        @SafeBrowsingState int safeBrowsingState = SafeBrowsingBridge.getSafeBrowsingState();
+    public static String getSafeBrowsingSummaryString(Context context, Profile profile) {
+        @SafeBrowsingState
+        int safeBrowsingState = new SafeBrowsingBridge(profile).getSafeBrowsingState();
         String safeBrowsingStateString = "";
         if (safeBrowsingState == SafeBrowsingState.ENHANCED_PROTECTION) {
             safeBrowsingStateString =
@@ -74,7 +76,7 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
         ManagedPreferenceDelegate managedPreferenceDelegate = createManagedPreferenceDelegate();
 
         mSafeBrowsingPreference = findPreference(PREF_SAFE_BROWSING);
-        mSafeBrowsingPreference.init(SafeBrowsingBridge.getSafeBrowsingState(), mAccessPoint);
+        mSafeBrowsingPreference.init(getSafeBrowsingBridge().getSafeBrowsingState(), mAccessPoint);
         mSafeBrowsingPreference.setSafeBrowsingModeDetailsRequestedListener(this);
         mSafeBrowsingPreference.setManagedPreferenceDelegate(managedPreferenceDelegate);
         mSafeBrowsingPreference.setOnPreferenceChangeListener(this);
@@ -117,7 +119,7 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
             public boolean isPreferenceControlledByPolicy(Preference preference) {
                 String key = preference.getKey();
                 if (PREF_MANAGED_DISCLAIMER_TEXT.equals(key) || PREF_SAFE_BROWSING.equals(key)) {
-                    return SafeBrowsingBridge.isSafeBrowsingManaged();
+                    return getSafeBrowsingBridge().isSafeBrowsingManaged();
                 } else {
                     assert false : "Should not be reached.";
                 }
@@ -131,7 +133,7 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
         String key = preference.getKey();
         assert PREF_SAFE_BROWSING.equals(key) : "Unexpected preference key.";
         @SafeBrowsingState int newState = (int) newValue;
-        @SafeBrowsingState int currentState = SafeBrowsingBridge.getSafeBrowsingState();
+        @SafeBrowsingState int currentState = getSafeBrowsingBridge().getSafeBrowsingState();
         if (newState == currentState) {
             return true;
         }
@@ -150,8 +152,9 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
                                     // The user has confirmed to select no protection, set Safe
                                     // Browsing pref to no protection, and change the radio button /
                                     // UI checked state to no protection.
-                                    SafeBrowsingBridge.setSafeBrowsingState(
-                                            SafeBrowsingState.NO_SAFE_BROWSING);
+                                    getSafeBrowsingBridge()
+                                            .setSafeBrowsingState(
+                                                    SafeBrowsingState.NO_SAFE_BROWSING);
                                     mSafeBrowsingPreference.setCheckedState(
                                             SafeBrowsingState.NO_SAFE_BROWSING);
                                 }
@@ -159,7 +162,7 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
                             })
                     .show();
         } else {
-            SafeBrowsingBridge.setSafeBrowsingState(newState);
+            getSafeBrowsingBridge().setSafeBrowsingState(newState);
         }
         return true;
     }
