@@ -9,6 +9,7 @@
 #include "base/check_deref.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
+#include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #include "ios/web/public/browser_state.h"
 
@@ -43,6 +44,11 @@ SearchEngineChoiceServiceFactory::BuildServiceInstanceFor(
       ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<search_engines::SearchEngineChoiceService>(
       CHECK_DEREF(browser_state->GetPrefs()));
+}
+
+web::BrowserState* SearchEngineChoiceServiceFactory::GetBrowserStateToUse(
+    web::BrowserState* context) const {
+  return GetBrowserStateRedirectedInIncognito(context);
 }
 
 }  // namespace ios
