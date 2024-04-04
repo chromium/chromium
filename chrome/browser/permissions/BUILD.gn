@@ -100,8 +100,6 @@ source_set("permissions") {
       "notification_blocked_message_delegate_android.h",
       "permission_infobar_delegate_android.cc",
       "permission_infobar_delegate_android.h",
-      "permission_update_infobar_delegate_android.cc",
-      "permission_update_infobar_delegate_android.h",
       "permission_update_message_controller_android.cc",
       "permission_update_message_controller_android.h",
       "permission_update_message_delegate_android.cc",

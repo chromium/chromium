@@ -13,10 +13,6 @@ namespace messages {
 // Infobars infrastructure.
 BASE_DECLARE_FEATURE(kMessagesForAndroidAdsBlocked);
 
-// Feature that controls whether permission update prompts use Messages or
-// Infobars infrastructure.
-BASE_DECLARE_FEATURE(kMessagesForAndroidPermissionUpdate);
-
 // Feature that controls whether "popup blocked" prompts use Messages or
 // Infobars infrastructure.
 BASE_DECLARE_FEATURE(kMessagesForAndroidPopupBlocked);

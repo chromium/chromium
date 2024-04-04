@@ -73,10 +73,8 @@
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/permissions/notification_blocked_message_delegate_android.h"
 #include "chrome/browser/permissions/permission_infobar_delegate_android.h"
-#include "chrome/browser/permissions/permission_update_infobar_delegate_android.h"
 #include "chrome/browser/permissions/permission_update_message_controller_android.h"
 #include "components/infobars/content/content_infobar_manager.h"
-#include "components/messages/android/messages_feature.h"
 #include "components/permissions/permission_request_manager.h"
 #else
 #include "chrome/browser/ui/browser.h"
@@ -571,17 +569,11 @@ void ChromePermissionsClient::RepromptForAndroidPermissions(
     const std::vector<std::string>& required_permissions,
     const std::vector<std::string>& optional_permissions,
     PermissionsUpdatedCallback callback) {
-  if (messages::IsPermissionUpdateMessagesUiEnabled()) {
     PermissionUpdateMessageController::CreateForWebContents(web_contents);
     PermissionUpdateMessageController::FromWebContents(web_contents)
         ->ShowMessage(content_settings_types, filtered_content_settings_types,
                       required_permissions, optional_permissions,
                       std::move(callback));
-  } else {
-    PermissionUpdateInfoBarDelegate::Create(
-        web_contents, content_settings_types, filtered_content_settings_types,
-        required_permissions, optional_permissions, std::move(callback));
-  }
 }
 
 int ChromePermissionsClient::MapToJavaDrawableId(int resource_id) {

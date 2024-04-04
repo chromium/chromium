@@ -31,7 +31,6 @@
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/offline_pages/android/offline_page_bridge.h"
-#include "chrome/browser/permissions/permission_update_infobar_delegate_android.h"
 #include "chrome/browser/permissions/permission_update_message_controller_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
@@ -39,7 +38,6 @@
 #include "components/download/content/public/context_menu_download.h"
 #include "components/download/public/common/android/auto_resumption_handler.h"
 #include "components/infobars/content/content_infobar_manager.h"
-#include "components/messages/android/messages_feature.h"
 #include "components/pdf/common/constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
@@ -137,19 +135,12 @@ void OnRequestFileAccessResult(
     std::vector<std::string> permissions;
     permissions.push_back(permission_to_update);
 
-    if (messages::IsPermissionUpdateMessagesUiEnabled()) {
-      PermissionUpdateMessageController::CreateForWebContents(web_contents);
-      PermissionUpdateMessageController::FromWebContents(web_contents)
-          ->ShowMessage(permissions, IDR_ANDORID_MESSAGE_PERMISSION_STORAGE,
-                        IDS_MESSAGE_MISSING_STORAGE_ACCESS_PERMISSION_TITLE,
-                        IDS_MESSAGE_STORAGE_ACCESS_PERMISSION_TEXT,
-                        std::move(cb));
-    } else {
-      PermissionUpdateInfoBarDelegate::Create(
-          web_contents, permissions,
-          IDS_MISSING_STORAGE_PERMISSION_DOWNLOAD_EDUCATION_TEXT,
-          std::move(cb));
-    }
+    PermissionUpdateMessageController::CreateForWebContents(web_contents);
+    PermissionUpdateMessageController::FromWebContents(web_contents)
+        ->ShowMessage(permissions, IDR_ANDORID_MESSAGE_PERMISSION_STORAGE,
+                      IDS_MESSAGE_MISSING_STORAGE_ACCESS_PERMISSION_TITLE,
+                      IDS_MESSAGE_STORAGE_ACCESS_PERMISSION_TEXT,
+                      std::move(cb));
     return;
   }
 

@@ -5529,11 +5529,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "messages-for-android-permission-update",
-    "owners": [ "pavely@chromium.org", "lazzzis@chromium.org" ],
-    "expiry_milestone": 105
-  },
-  {
     "name": "messages-for-android-popup-blocked",
     "owners": [ "pavely@chromium.org", "lazzzis@chromium.org" ],
     "expiry_milestone": 97

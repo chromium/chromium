@@ -21315,7 +21315,6 @@ from previous Chrome versions.
   <int value="151173516" label="CellularUseAttachApn:enabled"/>
   <int value="151532710" label="ChromeSharePageInfo:disabled"/>
   <int value="151630887" label="WebUIA11yEnhancements:disabled"/>
-  <int value="151825088" label="MessagesForAndroidPermissionUpdate:enabled"/>
   <int value="152126026" label="ProjectorExcludeTranscript:enabled"/>
   <int value="153347646" label="SmartDimModelV3:disabled"/>
   <int value="155879687" label="ShimlessRMAEnableStandalone:disabled"/>
@@ -23206,7 +23205,6 @@ from previous Chrome versions.
   <int value="1009976778" label="SidePanel:disabled"/>
   <int value="1010832751" label="VideoToolboxAv1Decoding:disabled"/>
   <int value="1011491959" label="PageInfoCookiesSubpage:enabled"/>
-  <int value="1011550878" label="MessagesForAndroidPermissionUpdate:disabled"/>
   <int value="1012643576" label="CommerceDeveloper:enabled"/>
   <int value="1012916096" label="AutocorrectToggle:enabled"/>
   <int value="1012942422" label="HorizontalTabSwitcherAndroid:disabled"/>

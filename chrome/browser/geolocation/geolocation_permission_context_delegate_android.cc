@@ -8,7 +8,6 @@
 
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/installable/installed_webapp_bridge.h"
-#include "chrome/browser/permissions/permission_update_infobar_delegate_android.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/permissions/android/android_permission_util.h"

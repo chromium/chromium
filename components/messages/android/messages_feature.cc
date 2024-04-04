@@ -33,10 +33,6 @@ BASE_FEATURE(kMessagesForAndroidAdsBlocked,
              "MessagesForAndroidAdsBlocked",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kMessagesForAndroidPermissionUpdate,
-             "MessagesForAndroidPermissionUpdate",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kMessagesForAndroidPopupBlocked,
              "MessagesForAndroidPopupBlocked",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -68,10 +64,6 @@ bool IsPopupBlockedMessagesUiEnabled() {
 
 bool IsSaveCardMessagesUiEnabled() {
   return base::FeatureList::IsEnabled(kMessagesForAndroidSaveCard);
-}
-
-bool IsPermissionUpdateMessagesUiEnabled() {
-  return base::FeatureList::IsEnabled(kMessagesForAndroidPermissionUpdate);
 }
 
 bool IsStackingAnimationEnabled() {
