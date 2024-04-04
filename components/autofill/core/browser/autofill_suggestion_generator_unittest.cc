@@ -972,11 +972,9 @@ TEST_P(
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-// TODO(crbug.com/325646493): Cleanup
+// TODO(crbug.com/325646493): Clean up
 // AutofillSuggestionGeneratorTest.AutofillCreditCardBenefitsLabelTest setup and
 // parameters.
-// TODO(crbug.com/1477646): Add unittest coverage that credit cards with
-// benefits do not have benefit labels in suggestions when flag is disabled.
 // Params:
 // 1. Function reference to call which creates the appropriate credit card
 // benefit for the unittest.
@@ -1051,6 +1049,19 @@ class AutofillCreditCardBenefitsLabelTest
     return expected_benefit_text_;
   }
 
+  // Checks that CreateCreditCardSuggestion appropriately labels cards with
+  // benefits in MetadataLoggingContext.
+  void DoBenefitSuggestionLabel_MetadataLoggingContextTest() {
+    autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
+    test_api(suggestion_generator())
+        .CreateCreditCardSuggestionWithMetadataContext(
+            card(), CREDIT_CARD_NUMBER,
+            /*virtual_card_option=*/false,
+            /*card_linked_offer_available=*/false, metadata_logging_context);
+    EXPECT_THAT(metadata_logging_context.instrument_ids_with_benefits_available,
+                testing::ElementsAre(card().instrument_id()));
+  }
+
  private:
   std::u16string expected_benefit_text_;
   CreditCard card_;
@@ -1060,11 +1071,10 @@ class AutofillCreditCardBenefitsLabelTest
 INSTANTIATE_TEST_SUITE_P(
     AutofillSuggestionGeneratorTest,
     AutofillCreditCardBenefitsLabelTest,
-    testing::Combine(
-        ::testing::Values(&test::GetActiveCreditCardFlatRateBenefit,
-                          &test::GetActiveCreditCardCategoryBenefit,
-                          &test::GetActiveCreditCardMerchantBenefit),
-        ::testing::Values("amex", "capitalone")));
+    testing::Combine(testing::Values(&test::GetActiveCreditCardFlatRateBenefit,
+                                     &test::GetActiveCreditCardCategoryBenefit,
+                                     &test::GetActiveCreditCardMerchantBenefit),
+                     ::testing::Values("amex", "capitalone")));
 
 // Checks that for FPAN suggestions that the benefit description is displayed.
 TEST_P(AutofillCreditCardBenefitsLabelTest, BenefitSuggestionLabel_Fpan) {
@@ -1097,6 +1107,26 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
           std::vector<Suggestion::Text>{
               Suggestion::Text(l10n_util::GetStringUTF16(
                   IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE))}));
+}
+
+// Checks that for credit card suggestions with eligible benefits, the
+// instrument id of the credit card is marked in the MetadataLoggingContext.
+TEST_P(AutofillCreditCardBenefitsLabelTest,
+       BenefitSuggestionLabel_MetadataLoggingContext) {
+  DoBenefitSuggestionLabel_MetadataLoggingContextTest();
+}
+
+// Checks that for credit card suggestions with eligible benefits, the
+// instrument id of the credit card is marked in the MetadataLoggingContext. The
+// instrument ids should also be available when the benefit flags are disabled.
+TEST_P(AutofillCreditCardBenefitsLabelTest,
+       BenefitSuggestionLabel_MetadataLoggingContext_FlagsDisabled) {
+  base::test::ScopedFeatureList disable_benefits;
+  disable_benefits.InitWithFeatures(
+      /*enabled_features=*/{}, /*disabled_features=*/{
+          features::kAutofillEnableCardBenefitsForAmericanExpress,
+          features::kAutofillEnableCardBenefitsForCapitalOne});
+  DoBenefitSuggestionLabel_MetadataLoggingContextTest();
 }
 
 // Checks that the merchant benefit description is not displayed for suggestions

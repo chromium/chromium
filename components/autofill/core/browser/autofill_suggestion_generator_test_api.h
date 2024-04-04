@@ -7,6 +7,7 @@
 
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_field_data.h"
 
@@ -59,10 +60,24 @@ class AutofillSuggestionGeneratorTestApi {
       const CreditCard& credit_card,
       FieldType trigger_field_type,
       bool virtual_card_option,
-      bool card_linked_offer_available) const {
+      bool card_linked_offer_available,
+      url::Origin origin = url::Origin()) const {
+    autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
     return suggestion_generator_->CreateCreditCardSuggestion(
         credit_card, trigger_field_type, virtual_card_option,
-        card_linked_offer_available);
+        card_linked_offer_available, metadata_logging_context);
+  }
+
+  Suggestion CreateCreditCardSuggestionWithMetadataContext(
+      const CreditCard& credit_card,
+      FieldType trigger_field_type,
+      bool virtual_card_option,
+      bool card_linked_offer_available,
+      autofill_metrics::CardMetadataLoggingContext& metadata_logging_context,
+      url::Origin origin = url::Origin()) const {
+    return suggestion_generator_->CreateCreditCardSuggestion(
+        credit_card, trigger_field_type, virtual_card_option,
+        card_linked_offer_available, metadata_logging_context);
   }
 
   // TODO(b/326950201): Remove and use GetOrderedCardsToSuggest instead.

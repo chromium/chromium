@@ -1413,15 +1413,16 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
         with_offer, with_cvc, metadata_logging_context);
   }
 
+  metadata_logging_context =
+      autofill_metrics::GetMetadataLoggingContext(cards_to_suggest);
   std::vector<Suggestion> suggestions;
   for (const CreditCard& credit_card : cards_to_suggest) {
     suggestions.push_back(CreateCreditCardSuggestion(
         credit_card, trigger_field_type,
         credit_card.record_type() == CreditCard::RecordType::kVirtualCard,
-        base::Contains(card_linked_offers_map, credit_card.guid())));
+        base::Contains(card_linked_offers_map, credit_card.guid()),
+        metadata_logging_context));
   }
-  metadata_logging_context =
-      autofill_metrics::GetMetadataLoggingContext(cards_to_suggest);
   with_cvc = !base::ranges::all_of(cards_to_suggest, &std::u16string::empty,
                                    &CreditCard::cvc);
   if (suggestions.empty()) {
@@ -1788,7 +1789,9 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
     const CreditCard& credit_card,
     FieldType trigger_field_type,
     bool virtual_card_option,
-    bool card_linked_offer_available) const {
+    bool card_linked_offer_available,
+    autofill_metrics::CardMetadataLoggingContext& metadata_logging_context)
+    const {
   // Manual fallback entries are shown for all non credit card fields.
   const bool is_manual_fallback =
       GroupTypeOfFieldType(trigger_field_type) != FieldTypeGroup::kCreditCard;
@@ -1813,9 +1816,10 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
   suggestion.main_text = std::move(main_text);
   suggestion.minor_text = std::move(minor_text);
   if (std::vector<std::vector<Suggestion::Text>> card_labels =
-          GetSuggestionLabelsForCard(credit_card, is_manual_fallback
-                                                      ? CREDIT_CARD_NUMBER
-                                                      : trigger_field_type);
+          CreateSuggestionLabelsForCard(
+              credit_card,
+              is_manual_fallback ? CREDIT_CARD_NUMBER : trigger_field_type,
+              metadata_logging_context);
       !card_labels.empty()) {
     suggestion.labels = std::move(card_labels);
   }
@@ -1938,9 +1942,11 @@ AutofillSuggestionGenerator::GetSuggestionMainTextAndMinorTextForCard(
 }
 
 std::vector<std::vector<Suggestion::Text>>
-AutofillSuggestionGenerator::GetSuggestionLabelsForCard(
+AutofillSuggestionGenerator::CreateSuggestionLabelsForCard(
     const CreditCard& credit_card,
-    FieldType trigger_field_type) const {
+    FieldType trigger_field_type,
+    autofill_metrics::CardMetadataLoggingContext& metadata_logging_context)
+    const {
   const std::string& app_locale = personal_data().app_locale();
 
   if (credit_card.record_type() == CreditCard::RecordType::kVirtualCard &&
@@ -1960,10 +1966,20 @@ AutofillSuggestionGenerator::GetSuggestionLabelsForCard(
         credit_card.GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale))}};
 #else
     std::vector<std::vector<Suggestion::Text>> labels;
-    if (std::optional<Suggestion::Text> benefit_label =
-            GetCreditCardBenefitSuggestionLabel(credit_card);
-        benefit_label.has_value()) {
-      labels.push_back({*benefit_label});
+    std::optional<Suggestion::Text> benefit_label =
+        GetCreditCardBenefitSuggestionLabel(credit_card);
+    if (benefit_label) {
+      // Keep track of which cards had eligible benefits even if the
+      // benefit is not displayed in the suggestion due to
+      // IsCardEligibleForBenefits() == false. This is to denote a control group
+      // of users with benefit-eligible cards and assess how actually
+      // displaying the benefit in the experiment influences the users autofill
+      // interactions.
+      metadata_logging_context.instrument_ids_with_benefits_available.insert(
+          credit_card.instrument_id());
+      if (credit_card.IsCardEligibleForBenefits()) {
+        labels.push_back({*benefit_label});
+      }
     }
     labels.push_back({Suggestion::Text(
         ShouldSplitCardNameAndLastFourDigits()
@@ -2022,13 +2038,13 @@ AutofillSuggestionGenerator::GetSuggestionLabelsForCard(
       credit_card.CardIdentifierStringAndDescriptiveExpiration(app_locale))}};
 }
 
+// TODO(crbug.com/1121806): Move non-UI card benefit logic to
+// PaymentsDataManager.
 std::optional<Suggestion::Text>
 AutofillSuggestionGenerator::GetCreditCardBenefitSuggestionLabel(
     const CreditCard& credit_card) const {
-  // Benefits are only displayed if a card is eligible and the app locale is set
-  // to U.S English.
-  if (!credit_card.IsCardEligibleForBenefits() ||
-      personal_data().app_locale() != "en-US") {
+  // Benefits are only displayed for app locale set to U.S. English.
+  if (personal_data().app_locale() != "en-US") {
     return std::nullopt;
   }
   CreditCardBenefitBase::LinkedCardInstrumentId benefit_instrument_id(
@@ -2047,21 +2063,26 @@ AutofillSuggestionGenerator::GetCreditCardBenefitSuggestionLabel(
   }
 
   // 2. Check category benefit.
-  CreditCardCategoryBenefit::BenefitCategory category_benefit_type =
-      autofill_client_->GetAutofillOptimizationGuide()
-          ->AttemptToGetEligibleCreditCardBenefitCategory(
-              credit_card.issuer_id(),
-              autofill_client_->GetLastCommittedPrimaryMainFrameOrigin());
-  if (category_benefit_type !=
-      CreditCardCategoryBenefit::BenefitCategory::kUnknownBenefitCategory) {
-    std::optional<CreditCardCategoryBenefit> category_benefit =
-        personal_data()
-            .payments_data_manager()
-            .GetCategoryBenefitByInstrumentIdAndCategory(benefit_instrument_id,
-                                                         category_benefit_type);
-    if (category_benefit && category_benefit->IsActiveBenefit()) {
-      return GetBenefitTextWithTermsAppended(
-          category_benefit->benefit_description());
+  // TODO(crbug.com/331961211): Query PaymentsDataManager before Optimization
+  // Guide for category benefits
+  if (auto* autofill_optimization_guide =
+          autofill_client_->GetAutofillOptimizationGuide()) {
+    CreditCardCategoryBenefit::BenefitCategory category_benefit_type =
+        autofill_optimization_guide
+            ->AttemptToGetEligibleCreditCardBenefitCategory(
+                credit_card.issuer_id(),
+                autofill_client_->GetLastCommittedPrimaryMainFrameOrigin());
+    if (category_benefit_type !=
+        CreditCardCategoryBenefit::BenefitCategory::kUnknownBenefitCategory) {
+      std::optional<CreditCardCategoryBenefit> category_benefit =
+          personal_data()
+              .payments_data_manager()
+              .GetCategoryBenefitByInstrumentIdAndCategory(
+                  benefit_instrument_id, category_benefit_type);
+      if (category_benefit && category_benefit->IsActiveBenefit()) {
+        return GetBenefitTextWithTermsAppended(
+            category_benefit->benefit_description());
+      }
     }
   }
 
@@ -2144,9 +2165,9 @@ void AutofillSuggestionGenerator::AdjustVirtualCardSuggestionContent(
       // Reset the labels as we only show benefit and virtual card label to
       // conserve space.
       suggestion.labels = {};
-      if (std::optional<Suggestion::Text> benefit_label =
-              GetCreditCardBenefitSuggestionLabel(credit_card);
-          benefit_label.has_value()) {
+      std::optional<Suggestion::Text> benefit_label =
+          GetCreditCardBenefitSuggestionLabel(credit_card);
+      if (benefit_label && credit_card.IsCardEligibleForBenefits()) {
         suggestion.labels.push_back({*benefit_label});
       }
     }

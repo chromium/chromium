@@ -92,6 +92,10 @@ struct CardMetadataLoggingContext {
   // `selected_issuer_or_network_to_metadata_availability` has no value.
   std::optional<base::flat_map<std::string, bool>>
       selected_issuer_or_network_to_metadata_availability;
+
+  // Keeps record of credit card suggestions that included a benefit being
+  // available to show.
+  base::flat_set<int64_t> instrument_ids_with_benefits_available;
 };
 
 // Get histogram suffix based on given card issuer id or network.
