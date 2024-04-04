@@ -3793,7 +3793,30 @@ void vpx_highbd_convolve8_avg_neon(const uint16_t* src,
                                    int w,
                                    int h,
                                    int bd);
-#define vpx_highbd_convolve8_avg vpx_highbd_convolve8_avg_neon
+void vpx_highbd_convolve8_avg_sve2(const uint16_t* src,
+                                   ptrdiff_t src_stride,
+                                   uint16_t* dst,
+                                   ptrdiff_t dst_stride,
+                                   const InterpKernel* filter,
+                                   int x0_q4,
+                                   int x_step_q4,
+                                   int y0_q4,
+                                   int y_step_q4,
+                                   int w,
+                                   int h,
+                                   int bd);
+RTCD_EXTERN void (*vpx_highbd_convolve8_avg)(const uint16_t* src,
+                                             ptrdiff_t src_stride,
+                                             uint16_t* dst,
+                                             ptrdiff_t dst_stride,
+                                             const InterpKernel* filter,
+                                             int x0_q4,
+                                             int x_step_q4,
+                                             int y0_q4,
+                                             int y_step_q4,
+                                             int w,
+                                             int h,
+                                             int bd);
 
 void vpx_highbd_convolve8_avg_horiz_c(const uint16_t* src,
                                       ptrdiff_t src_stride,
@@ -8651,6 +8674,10 @@ static void setup_rtcd_internal(void) {
   vpx_highbd_convolve8 = vpx_highbd_convolve8_neon;
   if (flags & HAS_SVE2) {
     vpx_highbd_convolve8 = vpx_highbd_convolve8_sve2;
+  }
+  vpx_highbd_convolve8_avg = vpx_highbd_convolve8_avg_neon;
+  if (flags & HAS_SVE2) {
+    vpx_highbd_convolve8_avg = vpx_highbd_convolve8_avg_sve2;
   }
   vpx_highbd_convolve8_avg_horiz = vpx_highbd_convolve8_avg_horiz_neon;
   if (flags & HAS_SVE) {
