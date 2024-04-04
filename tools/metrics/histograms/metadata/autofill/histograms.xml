@@ -5941,33 +5941,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.WebView.Events" enum="AutofillWebViewEventsBitmask"
-    expires_after="2024-12-12">
-  <owner>jkeitel@google.com</owner>
-  <owner>battre@chromium.org</owner>
-  <summary>
-    Records the events that ocurred during an Autofill session on Android.
-
-    The emitted value is a bitmask whose bits have the following meaning:
-
-    Bit #1 is true iff WebView received a callback from the Android Autofill
-    framework.
-
-    Bit #2 is true iff suggestions were displayed.
-
-    Bit #3 is true iff the user changed the value of any field.
-
-    Bit #4 is true iff the user changed the value of an autofilled field.
-
-    Bit #5 is true iff a form field changed visibility during the Autofill
-    session.
-
-    Bit #6 is true iff a form submission was detected.
-
-    Bit #7 is true iff a bottom sheet was shown.
-  </summary>
-</histogram>
-
 <histogram
     name="Autofill.WebView.FormSimilarityCheck{FormSimilarityCheckOccasion}"
     enum="AutofillWebViewFormSimilarityCheckResult" expires_after="2024-06-30">
