@@ -419,23 +419,24 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
       } else if (![self isPinnedWebState:moveChange.moved_to_index()]) {
         // BaseGridMediator handles only non pinned tabs because pinned tabs are
         // handled in PinnedTabsMediator.
-        int nextItemIndex = moveChange.moved_to_index() + 1;
-        GridItemIdentifier* nextItem = nil;
-        if (webStateList->ContainsIndex(nextItemIndex)) {
-          const TabGroup* group =
-              webStateList->GetGroupOfWebStateAt(nextItemIndex);
-          if (group) {
-            nextItem = [GridItemIdentifier groupIdentifier:group
-                                          withWebStateList:webStateList];
-          } else {
-            nextItem = [GridItemIdentifier
-                tabIdentifier:webStateList->GetWebStateAt(nextItemIndex)];
-          }
+        if (moveChange.old_group()) {
+          [self updateCellGroup:moveChange.old_group()];
         }
-
-        [self.consumer moveItem:[GridItemIdentifier
-                                    tabIdentifier:moveChange.moved_web_state()]
-                     beforeItem:nextItem];
+        if (moveChange.new_group()) {
+          if (!moveChange.old_group()) {
+            [self.consumer
+                removeItemWithIdentifier:
+                    [GridItemIdentifier
+                        tabIdentifier:moveChange.moved_web_state()]
+                  selectedItemIdentifier:GetActiveNonPinnedIdentifier(
+                                             webStateList)];
+          }
+          [self updateCellGroup:moveChange.new_group()];
+        } else {
+          [self moveItem:[GridItemIdentifier
+                             tabIdentifier:moveChange.moved_web_state()]
+              beforeIndex:moveChange.moved_to_index() + 1];
+        }
       }
       break;
     }
@@ -511,24 +512,10 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
     case WebStateListChange::Type::kGroupMove: {
       const WebStateListChangeGroupMove& groupMoveChange =
           change.As<WebStateListChangeGroupMove>();
-      int nextItemIndex = groupMoveChange.moved_to_range().range_end() + 1;
-      GridItemIdentifier* nextItem = nil;
-      if (webStateList->ContainsIndex(nextItemIndex)) {
-        const TabGroup* group =
-            webStateList->GetGroupOfWebStateAt(nextItemIndex);
-        if (group) {
-          nextItem = [GridItemIdentifier groupIdentifier:group
-                                        withWebStateList:webStateList];
-        } else {
-          nextItem = [GridItemIdentifier
-              tabIdentifier:webStateList->GetWebStateAt(nextItemIndex)];
-        }
-      }
-
-      [self.consumer moveItem:[GridItemIdentifier
-                                   groupIdentifier:groupMoveChange.moved_group()
-                                  withWebStateList:webStateList]
-                   beforeItem:nextItem];
+      [self moveItem:[GridItemIdentifier
+                          groupIdentifier:groupMoveChange.moved_group()
+                         withWebStateList:webStateList]
+          beforeIndex:groupMoveChange.moved_to_range().range_end() + 1];
       break;
     }
     case WebStateListChange::Type::kGroupDelete: {
@@ -1427,6 +1414,33 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
     self.webStateList->MoveWebStateAt(sourceIndex,
                                       destinationWebStateListIndex);
   }
+}
+
+// Updates the cell of the given `group`.
+- (void)updateCellGroup:(const TabGroup*)group {
+  GridItemIdentifier* groupIdentifier =
+      [GridItemIdentifier groupIdentifier:group
+                         withWebStateList:self.webStateList];
+  [self.consumer replaceItem:groupIdentifier
+         withReplacementItem:groupIdentifier];
+}
+
+// Moves `item` before the item at `nextItemIndex`.
+- (void)moveItem:(GridItemIdentifier*)item beforeIndex:(int)nextItemIndex {
+  GridItemIdentifier* nextItem = nil;
+  if (self.webStateList->ContainsIndex(nextItemIndex)) {
+    const TabGroup* group =
+        self.webStateList->GetGroupOfWebStateAt(nextItemIndex);
+    if (group) {
+      nextItem = [GridItemIdentifier groupIdentifier:group
+                                    withWebStateList:self.webStateList];
+    } else {
+      nextItem = [GridItemIdentifier
+          tabIdentifier:self.webStateList->GetWebStateAt(nextItemIndex)];
+    }
+  }
+
+  [self.consumer moveItem:item beforeItem:nextItem];
 }
 
 #pragma mark - TabGridPageMutator
