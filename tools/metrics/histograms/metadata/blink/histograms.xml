@@ -1841,6 +1841,43 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.Timing.ShowAccountsDialogBreakdown.AccountsFetch"
+    units="ms" expires_after="M130">
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the time from when an accounts request is made to when the accounts
+    fetch response is received. Records one sample whenever it's ready to show
+    the accounts UI which could happen multiple times per API call.
+  </summary>
+</histogram>
+
+<histogram
+    name="Blink.FedCm.Timing.ShowAccountsDialogBreakdown.ClientMetadataFetch"
+    units="ms" expires_after="M130">
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the time from when a client metadata request is made to when the
+    fetch response is received. Records one sample whenever it's ready to show
+    the accounts UI which could happen multiple times per API call. If the
+    client metadata request is skipped, e.g. for returning users, records a zero
+    instead.
+  </summary>
+</histogram>
+
+<histogram
+    name="Blink.FedCm.Timing.ShowAccountsDialogBreakdown.WellKnownAndConfigFetch"
+    units="ms" expires_after="M130">
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the time from when a call to the API was made to when the well-known
+    and config files are fetched. Records one sample whenever it's ready to show
+    the accounts UI which could happen multiple times per API call.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.Timing.TurnaroundTime" units="ms"
     expires_after="2024-09-01">
   <owner>yigu@chromium.org</owner>
@@ -1849,6 +1886,23 @@ chromium-metrics-reviews@google.com.
     Records the overall time from when the API is called to when the token
     response is received. Only records a sample when the token response is
     received.
+  </summary>
+</histogram>
+
+<histogram name="Blink.FedCm.Timing.WellKnownAndConfigFetch" units="ms"
+    expires_after="M130">
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the time from when a call to the API was made to when the well-known
+    and config files fetch response are received. Records a sample when the
+    response is received. Recorded at most once per API call. The histogram
+    Blink.FedCm.Timing.ShowAccountsDialogBreakdown.WellKnownAndConfigFetch is
+    different because it only records the fetch time when the accounts dialog is
+    ready to show. i.e. there could be much fewer samples recorded in that
+    histogram because many well-known and config file fetches take too much time
+    such that the API call would fail without fetching the rest endpoints. i.e.
+    the distribution of the two histograms could be statically different.
   </summary>
 </histogram>
 

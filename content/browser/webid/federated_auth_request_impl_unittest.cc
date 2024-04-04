@@ -1846,6 +1846,19 @@ TEST_F(FederatedAuthRequestImplTest, AccountsCannotBeParsed) {
 
   histogram_tester_.ExpectTotalCount("Blink.FedCm.AccountsSize.Raw", 0);
   histogram_tester_.ExpectTotalCount("Blink.FedCm.AccountsSize.ReadyToShow", 0);
+
+  // Only records the following histograms if there are accounts to be shown.
+  histogram_tester_.ExpectTotalCount(
+      "Blink.FedCm.Timing.ShowAccountsDialogBreakdown.WellKnownAndConfigFetch",
+      0);
+  histogram_tester_.ExpectTotalCount(
+      "Blink.FedCm.Timing.ShowAccountsDialogBreakdown.AccountsFetch", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Blink.FedCm.Timing.ShowAccountsDialogBreakdown.ClientMetadataFetch", 0);
+  // Records the following histogram as long as the well-known and config file
+  // is fetched.
+  histogram_tester_.ExpectTotalCount(
+      "Blink.FedCm.Timing.WellKnownAndConfigFetch", 1);
 }
 
 // Test that privacy policy, terms of service or RP brand icon URLs are not
@@ -1942,6 +1955,17 @@ TEST_F(FederatedAuthRequestImplTest, LoginStateShouldBeSignInForReturningUser) {
   // the disclosure text. The disclosure text is not displayed for returning
   // users, thus fetching the client metadata endpoint should be skipped.
   EXPECT_FALSE(DidFetch(FetchedEndpoint::CLIENT_METADATA));
+
+  histogram_tester_.ExpectTotalCount(
+      "Blink.FedCm.Timing.ShowAccountsDialogBreakdown.WellKnownAndConfigFetch",
+      1);
+  histogram_tester_.ExpectTotalCount(
+      "Blink.FedCm.Timing.ShowAccountsDialogBreakdown.AccountsFetch", 1);
+  histogram_tester_.ExpectTotalCount(
+      "Blink.FedCm.Timing.ShowAccountsDialogBreakdown.ClientMetadataFetch", 1);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Blink.FedCm.Timing.ShowAccountsDialogBreakdown.ClientMetadataFetch",
+      base::TimeDelta(), 1);
 }
 
 TEST_F(FederatedAuthRequestImplTest,
@@ -2766,6 +2790,13 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
 
   ukm_loop.Run();
 
+  histogram_tester_.ExpectTotalCount(
+      "Blink.FedCm.Timing.ShowAccountsDialogBreakdown.WellKnownAndConfigFetch",
+      1);
+  histogram_tester_.ExpectTotalCount(
+      "Blink.FedCm.Timing.ShowAccountsDialogBreakdown.AccountsFetch", 1);
+  histogram_tester_.ExpectTotalCount(
+      "Blink.FedCm.Timing.ShowAccountsDialogBreakdown.ClientMetadataFetch", 1);
   histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.ShowAccountsDialog",
                                      1);
   histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.ContinueOnDialog", 1);
@@ -2818,6 +2849,13 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForUIExplicitlyDismissed) {
   ASSERT_TRUE(did_show_accounts_dialog());
   EXPECT_EQ(displayed_accounts()[0].login_state, LoginState::kSignUp);
 
+  histogram_tester_.ExpectTotalCount(
+      "Blink.FedCm.Timing.ShowAccountsDialogBreakdown.WellKnownAndConfigFetch",
+      1);
+  histogram_tester_.ExpectTotalCount(
+      "Blink.FedCm.Timing.ShowAccountsDialogBreakdown.AccountsFetch", 1);
+  histogram_tester_.ExpectTotalCount(
+      "Blink.FedCm.Timing.ShowAccountsDialogBreakdown.ClientMetadataFetch", 1);
   histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.ShowAccountsDialog",
                                      1);
   histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.ContinueOnDialog", 0);
@@ -2865,6 +2903,13 @@ TEST_F(FederatedAuthRequestImplTest, UIIsIgnored) {
   EXPECT_TRUE(weak_dialog_controller);
 
   // Only the time to show the account dialog gets recorded.
+  histogram_tester_.ExpectTotalCount(
+      "Blink.FedCm.Timing.ShowAccountsDialogBreakdown.WellKnownAndConfigFetch",
+      1);
+  histogram_tester_.ExpectTotalCount(
+      "Blink.FedCm.Timing.ShowAccountsDialogBreakdown.AccountsFetch", 1);
+  histogram_tester_.ExpectTotalCount(
+      "Blink.FedCm.Timing.ShowAccountsDialogBreakdown.ClientMetadataFetch", 1);
   histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.ShowAccountsDialog",
                                      1);
   histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.ContinueOnDialog", 0);
@@ -3272,6 +3317,13 @@ TEST_F(FederatedAuthRequestImplTest, ApiDisabledAfterAccountsDialogShown) {
 
   ukm_loop.Run();
 
+  histogram_tester_.ExpectTotalCount(
+      "Blink.FedCm.Timing.ShowAccountsDialogBreakdown.WellKnownAndConfigFetch",
+      1);
+  histogram_tester_.ExpectTotalCount(
+      "Blink.FedCm.Timing.ShowAccountsDialogBreakdown.AccountsFetch", 1);
+  histogram_tester_.ExpectTotalCount(
+      "Blink.FedCm.Timing.ShowAccountsDialogBreakdown.ClientMetadataFetch", 1);
   histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.ShowAccountsDialog",
                                      1);
   histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.ContinueOnDialog", 0);

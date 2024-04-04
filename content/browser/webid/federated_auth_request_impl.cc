@@ -1184,6 +1184,10 @@ void FederatedAuthRequestImpl::OnAllConfigAndWellKnownFetched(
     std::vector<FederatedProviderFetcher::FetchResult> fetch_results) {
   provider_fetcher_.reset();
 
+  well_known_and_config_fetched_time_ = base::TimeTicks::Now();
+  fedcm_metrics_->RecordWellKnownAndConfigFetchTime(
+      well_known_and_config_fetched_time_ - start_time_);
+
   for (const FederatedProviderFetcher::FetchResult& fetch_result :
        fetch_results) {
     const GURL& identity_provider_config_url =
@@ -1286,6 +1290,8 @@ void FederatedAuthRequestImpl::OnClientMetadataResponseReceived(
     const IdpNetworkRequestManager::AccountList& accounts,
     IdpNetworkRequestManager::FetchStatus status,
     IdpNetworkRequestManager::ClientMetadata client_metadata) {
+  client_metadata_fetched_time_ = base::TimeTicks::Now();
+
   // TODO(yigu): Clean up the client metadata related errors for metrics and
   // console logs.
   if (!idp_info->metadata.brand_background_color &&
@@ -1608,6 +1614,13 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
     fedcm_metrics_->RecordShowAccountsDialogTime(
         idp_data_for_display_,
         ready_to_display_accounts_dialog_time_ - start_time_);
+
+    fedcm_metrics_->RecordShowAccountsDialogTimeBreakdown(
+        well_known_and_config_fetched_time_ - start_time_,
+        accounts_fetched_time_ - well_known_and_config_fetched_time_,
+        client_metadata_fetched_time_ != base::TimeTicks()
+            ? client_metadata_fetched_time_ - accounts_fetched_time_
+            : base::TimeDelta());
   }
   bool did_succeed_for_at_least_one_idp =
       fetch_data_.did_succeed_for_at_least_one_idp;
@@ -1851,6 +1864,8 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
     std::unique_ptr<IdentityProviderInfo> idp_info,
     IdpNetworkRequestManager::FetchStatus status,
     IdpNetworkRequestManager::AccountList accounts) {
+  accounts_fetched_time_ = base::TimeTicks::Now();
+
   GURL idp_config_url = idp_info->provider->config->config_url;
   const std::optional<bool> old_idp_signin_status =
       permission_delegate_->GetIdpSigninStatus(
@@ -2566,6 +2581,9 @@ void FederatedAuthRequestImpl::CleanUp() {
   fedcm_metrics_.reset();
   account_id_ = std::string();
   start_time_ = base::TimeTicks();
+  well_known_and_config_fetched_time_ = base::TimeTicks();
+  accounts_fetched_time_ = base::TimeTicks();
+  client_metadata_fetched_time_ = base::TimeTicks();
   ready_to_display_accounts_dialog_time_ = base::TimeTicks();
   accounts_dialog_display_time_ = base::TimeTicks();
   select_account_time_ = base::TimeTicks();

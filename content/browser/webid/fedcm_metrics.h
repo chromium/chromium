@@ -202,6 +202,18 @@ class CONTENT_EXPORT FedCmMetrics {
       const std::vector<IdentityProviderData>& providers,
       base::TimeDelta duration);
 
+  // Records the time from when a call to the API was made to when the accounts
+  // dialog is shown in breakdown.
+  void RecordShowAccountsDialogTimeBreakdown(
+      base::TimeDelta well_known_and_config_fetch_duration,
+      base::TimeDelta accounts_fetch_duration,
+      base::TimeDelta client_metadata_fetch_duration);
+
+  // Records the time from when a call to the API was made to when the
+  // well-known and config files are fetched. This helps with measuring when the
+  // login_url could be available.
+  void RecordWellKnownAndConfigFetchTime(base::TimeDelta duration);
+
   // Records the time from when the accounts dialog is shown to when the user
   // presses the Continue button of an account of the given provider.
   void RecordContinueOnDialogTime(const GURL& provider,

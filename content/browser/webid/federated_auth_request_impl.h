@@ -446,6 +446,9 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // mediation flow.
   std::string account_id_;
   base::TimeTicks start_time_;
+  base::TimeTicks well_known_and_config_fetched_time_;
+  base::TimeTicks accounts_fetched_time_;
+  base::TimeTicks client_metadata_fetched_time_;
   base::TimeTicks ready_to_display_accounts_dialog_time_;
   base::TimeTicks accounts_dialog_display_time_;
   base::TimeTicks select_account_time_;

@@ -79,6 +79,26 @@ void FedCmMetrics::RecordShowAccountsDialogTime(
                                 duration);
 }
 
+void FedCmMetrics::RecordShowAccountsDialogTimeBreakdown(
+    base::TimeDelta well_known_and_config_fetch_duration,
+    base::TimeDelta accounts_fetch_duration,
+    base::TimeDelta client_metadata_fetch_duration) {
+  base::UmaHistogramMediumTimes(
+      "Blink.FedCm.Timing.ShowAccountsDialogBreakdown.WellKnownAndConfigFetch",
+      well_known_and_config_fetch_duration);
+  base::UmaHistogramMediumTimes(
+      "Blink.FedCm.Timing.ShowAccountsDialogBreakdown.AccountsFetch",
+      accounts_fetch_duration);
+  base::UmaHistogramMediumTimes(
+      "Blink.FedCm.Timing.ShowAccountsDialogBreakdown.ClientMetadataFetch",
+      client_metadata_fetch_duration);
+}
+
+void FedCmMetrics::RecordWellKnownAndConfigFetchTime(base::TimeDelta duration) {
+  base::UmaHistogramMediumTimes("Blink.FedCm.Timing.WellKnownAndConfigFetch",
+                                duration);
+}
+
 // static
 void FedCmMetrics::RecordNumRequestsPerDocument(ukm::SourceId page_source_id,
                                                 const int num_requests) {
