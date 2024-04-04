@@ -8706,6 +8706,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Prefs.JSonStore.SetValueKey" units="hash"
+    expires_after="2024-06-01">
+  <owner>etienneb@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
+  <summary>
+    Records the hash of a preference key that is modified. The metric is used to
+    track which preferences are triggering an update to the preference files on
+    disk.
+
+    Keys are registered within the pref registry (see:
+    components/prefs/pref_registry.h).
+  </summary>
+</histogram>
+
 <histogram name="Process.Sandbox.DllBlocked" enum="WinTroublesomeDllName"
     expires_after="2024-12-11">
   <owner>ajgo@chromium.org</owner>
