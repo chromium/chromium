@@ -36,8 +36,11 @@ bool IsShoppingListEligible(AccountChecker* account_checker) {
 }
 
 bool IsProductSpecificationsAllowedForEnterprise(PrefService* prefs) {
-  // TODO(b/325109916): Implement enterprise policy.
-  return true;
+  const base::Value* pref =
+      prefs->GetUserPrefValue(kProductSpecificationsEnabledPrefName);
+
+  // Default to true if there is no value set.
+  return !pref || pref->GetBool();
 }
 
 bool IsProductSpecificationsEnabled(AccountChecker* account_checker) {

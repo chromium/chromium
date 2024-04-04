@@ -1,0 +1,29 @@
+caption: Allow the product specifications feature to be enabled
+default: true
+desc: |-
+  If this policy is set to Enabled or not set, product specifications will be available to users.
+
+  If this policy is set to Disabled, product specifications will be unavailable.
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- ios
+- android
+items:
+- caption: The product specifications feature will be available to users.
+  value: true
+- caption: The product specifications feature will not be available to users.
+  value: false
+owners:
+- aymana@chromium.org
+- mdjones@chromium.org
+- chrome-shopping@google.com
+schema:
+  type: boolean
+supported_on:
+- chrome.*:124-
+- chrome_os:124-
+tags: []
+type: main
