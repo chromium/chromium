@@ -172,8 +172,6 @@ class TestMediaClient : public MediaClient {
   ~TestMediaClient() override;
 
   // MediaClient implementation.
-  std::unique_ptr<::media::KeySystemSupportRegistration> GetSupportedKeySystems(
-      GetSupportedKeySystemsCB cb) final;
   bool IsSupportedAudioType(const AudioType& type) final;
   bool IsSupportedVideoType(const VideoType& type) final;
   bool IsSupportedBitstreamAudioCodec(AudioCodec codec) final;
@@ -185,6 +183,9 @@ class TestMediaClient : public MediaClient {
 
   std::optional<AudioRendererAlgorithmParameters>
   GetAudioRendererAlgorithmParameters(AudioParameters audio_parameters) final;
+
+  std::unique_ptr<KeySystemSupportRegistration> GetSupportedKeySystems(
+      GetSupportedKeySystemsCB cb);
 
  private:
   KeySystemInfos GetSupportedKeySystemsInternal();

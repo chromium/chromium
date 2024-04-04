@@ -13,7 +13,6 @@
 #include "media/base/audio_parameters.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/key_system_info.h"
-#include "media/base/key_systems_support_registration.h"
 #include "media/base/media_export.h"
 #include "media/base/media_types.h"
 #include "media/base/video_codecs.h"
@@ -48,10 +47,6 @@ class MEDIA_EXPORT MediaClient {
  public:
   MediaClient();
   virtual ~MediaClient();
-
-  // Adds properties for supported key systems.
-  virtual std::unique_ptr<media::KeySystemSupportRegistration>
-  GetSupportedKeySystems(GetSupportedKeySystemsCB cb) = 0;
 
   // Returns true if the given audio config is supported.
   virtual bool IsSupportedAudioType(const AudioType& type) = 0;

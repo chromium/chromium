@@ -76,12 +76,6 @@ RenderMediaClient::RenderMediaClient()
 
 RenderMediaClient::~RenderMediaClient() = default;
 
-// TODO(b/321307544): Remove this code.
-std::unique_ptr<media::KeySystemSupportRegistration>
-RenderMediaClient::GetSupportedKeySystems(media::GetSupportedKeySystemsCB cb) {
-  NOTREACHED_NORETURN();
-}
-
 bool RenderMediaClient::IsSupportedAudioType(const media::AudioType& type) {
   return GetContentClient()->renderer()->IsSupportedAudioType(type);
 }
