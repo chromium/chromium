@@ -5521,9 +5521,7 @@ const CSSValue* MarginBottom::ParseSingleValue(
 
 bool MarginBottom::IsLayoutDependent(const ComputedStyle* style,
                                      LayoutObject* layout_object) const {
-  return layout_object && layout_object->IsBox() &&
-         (!style || !style->MarginBottom().IsFixed() ||
-          style->MayHavePositionFallbackList());
+  return layout_object && layout_object->IsBox();
 }
 
 const CSSValue* MarginBottom::CSSValueFromComputedStyleInternal(
@@ -5532,8 +5530,7 @@ const CSSValue* MarginBottom::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   if (const LayoutBox* box = DynamicTo<LayoutBox>(layout_object)) {
-    if (!style.MarginBottom().IsFixed() ||
-        style.MayHavePositionFallbackList()) {
+    if (!style.MarginBottom().IsFixed()) {
       return ZoomAdjustedPixelValue(box->MarginBottom(), style);
     }
   }
@@ -5578,8 +5575,7 @@ const CSSValue* MarginLeft::ParseSingleValue(
 bool MarginLeft::IsLayoutDependent(const ComputedStyle* style,
                                    LayoutObject* layout_object) const {
   return layout_object && layout_object->IsBox() &&
-         (!style || !style->MarginLeft().IsFixed() ||
-          style->MayHavePositionFallbackList());
+         (!style || !style->MarginLeft().IsFixed());
 }
 
 const CSSValue* MarginLeft::CSSValueFromComputedStyleInternal(
@@ -5588,7 +5584,7 @@ const CSSValue* MarginLeft::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   if (const LayoutBox* box = DynamicTo<LayoutBox>(layout_object)) {
-    if (!style.MarginLeft().IsFixed() || style.MayHavePositionFallbackList()) {
+    if (!style.MarginLeft().IsFixed()) {
       return ZoomAdjustedPixelValue(box->MarginLeft(), style);
     }
   }
@@ -5607,8 +5603,7 @@ const CSSValue* MarginRight::ParseSingleValue(
 bool MarginRight::IsLayoutDependent(const ComputedStyle* style,
                                     LayoutObject* layout_object) const {
   return layout_object && layout_object->IsBox() &&
-         (!style || !style->MarginRight().IsFixed() ||
-          style->MayHavePositionFallbackList());
+         (!style || !style->MarginRight().IsFixed());
 }
 
 const CSSValue* MarginRight::CSSValueFromComputedStyleInternal(
@@ -5617,7 +5612,7 @@ const CSSValue* MarginRight::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   if (const LayoutBox* box = DynamicTo<LayoutBox>(layout_object)) {
-    if (!style.MarginRight().IsFixed() || style.MayHavePositionFallbackList()) {
+    if (!style.MarginRight().IsFixed()) {
       return ZoomAdjustedPixelValue(box->MarginRight(), style);
     }
   }
@@ -5636,8 +5631,7 @@ const CSSValue* MarginTop::ParseSingleValue(
 bool MarginTop::IsLayoutDependent(const ComputedStyle* style,
                                   LayoutObject* layout_object) const {
   return layout_object && layout_object->IsBox() &&
-         (!style || !style->MarginTop().IsFixed() ||
-          style->MayHavePositionFallbackList());
+         (!style || !style->MarginTop().IsFixed());
 }
 
 const CSSValue* MarginTop::CSSValueFromComputedStyleInternal(
@@ -5646,7 +5640,7 @@ const CSSValue* MarginTop::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   if (const LayoutBox* box = DynamicTo<LayoutBox>(layout_object)) {
-    if (!style.MarginTop().IsFixed() || style.MayHavePositionFallbackList()) {
+    if (!style.MarginTop().IsFixed()) {
       return ZoomAdjustedPixelValue(box->MarginTop(), style);
     }
   }
