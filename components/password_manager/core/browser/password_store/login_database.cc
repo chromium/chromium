@@ -1022,6 +1022,9 @@ bool LoginDatabase::Init() {
     return false;
   }
 
+  base::ScopedClosureRunner close_db_runner(
+      base::BindOnce([](sql::Database* db) { db->Close(); }, &db_));
+
   if (!db_.Execute("PRAGMA foreign_keys = ON")) {
     LogDatabaseInitError(FOREIGN_KEY_ERROR);
     LOG(ERROR) << "Unable to activate foreign keys.";
@@ -1032,7 +1035,6 @@ bool LoginDatabase::Init() {
   if (!transaction.Begin()) {
     LogDatabaseInitError(START_TRANSACTION_ERROR);
     LOG(ERROR) << "Unable to start a transaction.";
-    db_.Close();
     return false;
   }
 
@@ -1041,8 +1043,6 @@ bool LoginDatabase::Init() {
                         kCompatibleVersionNumber)) {
     LogDatabaseInitError(META_TABLE_INIT_ERROR);
     LOG(ERROR) << "Unable to create the meta table.";
-    transaction.Rollback();
-    db_.Close();
     return false;
   }
   if (meta_table_.GetCompatibleVersionNumber() > kCurrentVersionNumber) {
@@ -1050,8 +1050,6 @@ bool LoginDatabase::Init() {
     LOG(ERROR) << "Password store database is too new, kCurrentVersionNumber="
                << kCurrentVersionNumber << ", GetCompatibleVersionNumber="
                << meta_table_.GetCompatibleVersionNumber();
-    transaction.Rollback();
-    db_.Close();
     return false;
   }
 
@@ -1072,22 +1070,16 @@ bool LoginDatabase::Init() {
 
   if (!logins_builder.CreateTable(&db_)) {
     LOG(ERROR) << "Failed to create the 'logins' table";
-    transaction.Rollback();
-    db_.Close();
     return false;
   }
 
   if (!passwords_sync_entities_metadata_builder.CreateTable(&db_)) {
     LOG(ERROR) << "Failed to create the 'sync_entities_metadata' table";
-    transaction.Rollback();
-    db_.Close();
     return false;
   }
 
   if (!passwords_sync_model_metadata_builder.CreateTable(&db_)) {
     LOG(ERROR) << "Failed to create the 'sync_model_metadata' table";
-    transaction.Rollback();
-    db_.Close();
     return false;
   }
 
@@ -1113,8 +1105,6 @@ bool LoginDatabase::Init() {
   if (migration_success && !insecure_credentials_builder.CreateTable(&db_)) {
     LOG(ERROR) << "Failed to create the 'insecure_credentials' table";
     LogDatabaseInitError(INIT_COMPROMISED_CREDENTIALS_ERROR);
-    transaction.Rollback();
-    db_.Close();
     return false;
   }
   // Enforce that 'password_notes' is created only after the 'logins' table was
@@ -1126,8 +1116,6 @@ bool LoginDatabase::Init() {
   if (migration_success && !password_notes_builder.CreateTable(&db_)) {
     LOG(ERROR) << "Failed to create the 'password_notes' table";
     LogDatabaseInitError(INIT_PASSWORD_NOTES_ERROR);
-    transaction.Rollback();
-    db_.Close();
     return false;
   }
   if (migration_success) {
@@ -1150,16 +1138,12 @@ bool LoginDatabase::Init() {
     LOG(ERROR) << "Unable to migrate database from "
                << meta_table_.GetVersionNumber() << " to "
                << kCurrentVersionNumber;
-    transaction.Rollback();
-    db_.Close();
     return false;
   }
 
   if (!stats_table_.CreateTableIfNecessary()) {
     LogDatabaseInitError(INIT_STATS_ERROR);
     LOG(ERROR) << "Unable to create the stats table.";
-    transaction.Rollback();
-    db_.Close();
     return false;
   }
 
@@ -1169,8 +1153,6 @@ bool LoginDatabase::Init() {
   if (db_.DoesTableExist("leaked_credentials")) {
     if (!db_.Execute("DROP TABLE leaked_credentials")) {
       LOG(ERROR) << "Unable to create the stats table.";
-      transaction.Rollback();
-      db_.Close();
       return false;
     }
   }
@@ -1179,8 +1161,6 @@ bool LoginDatabase::Init() {
   if (db_.DoesTableExist("field info")) {
     if (!db_.Execute("DROP TABLE field_info")) {
       LOG(ERROR) << "Unable to delete the field info table.";
-      transaction.Rollback();
-      db_.Close();
       return false;
     }
   }
@@ -1188,12 +1168,15 @@ bool LoginDatabase::Init() {
   if (!transaction.Commit()) {
     LogDatabaseInitError(COMMIT_TRANSACTION_ERROR);
     LOG(ERROR) << "Unable to commit a transaction.";
-    db_.Close();
     return false;
   }
 
   TriggerIsEmptyCb();
   LogDatabaseInitError(INIT_OK);
+
+  // Keep the database open if everything went well.
+  std::ignore = close_db_runner.Release();
+
   return true;
 }
 
