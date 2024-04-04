@@ -432,7 +432,7 @@ void HarfBuzzShaper::CommitGlyphs(RangeContext* range_data,
                                   const SimpleFontData* current_font,
                                   UScriptCode current_run_script,
                                   CanvasRotationInVertical canvas_rotation,
-                                  bool is_last_font,
+                                  FallbackFontStage fallback_stage,
                                   const BufferSlice& slice,
                                   ShapeResult* shape_result) const {
   hb_direction_t direction = range_data->HarfBuzzDirection(canvas_rotation);
@@ -472,7 +472,7 @@ void HarfBuzzShaper::CommitGlyphs(RangeContext* range_data,
       run_start_index = next_slice.start_character_index;
     }
   }
-  if (is_last_font) {
+  if (fallback_stage == kLast) {
     range_data->font->ReportNotDefGlyph();
   }
 }
@@ -484,7 +484,7 @@ void HarfBuzzShaper::ExtractShapeResults(
     const SimpleFontData* current_font,
     UScriptCode current_run_script,
     CanvasRotationInVertical canvas_rotation,
-    bool is_last_font,
+    FallbackFontStage fallback_stage,
     ShapeResult* shape_result) const {
   enum ClusterResult { kShaped, kNotDef, kUnknown };
   ClusterResult current_cluster_result = kUnknown;
@@ -517,7 +517,7 @@ void HarfBuzzShaper::ExtractShapeResults(
       // Glyph 0 must be assigned to a .notdef glyph.
       // https://docs.microsoft.com/en-us/typography/opentype/spec/recom#glyph-0-the-notdef-glyph
       glyph_result = kNotDef;
-    } else if (glyph_id == space_glyph && !is_last_font &&
+    } else if (glyph_id == space_glyph && fallback_stage == kIntermediate &&
                text_[current_cluster] == kIdeographicSpaceCharacter) {
       // HarfBuzz synthesizes U+3000 IDEOGRAPHIC SPACE using the space glyph.
       // This is not desired for run-splitting, applying features, and for
@@ -542,7 +542,8 @@ void HarfBuzzShaper::ExtractShapeResults(
         // If the most recent cluster is shaped and there is a state change,
         // it means the previous ones were unshaped, so we queue them, unless
         // we're using the last resort font.
-        if (current_cluster_result == kShaped && !is_last_font) {
+        if (current_cluster_result == kShaped &&
+            fallback_stage == kIntermediate) {
           QueueCharacters(range_data, current_font, font_cycle_queued, slice);
         } else {
           // If the most recent cluster is unshaped and there is a state
@@ -550,7 +551,7 @@ void HarfBuzzShaper::ExtractShapeResults(
           // the glyphs. We also commit when we've reached the last resort
           // font.
           CommitGlyphs(range_data, current_font, current_run_script,
-                       canvas_rotation, is_last_font, slice, shape_result);
+                       canvas_rotation, fallback_stage, slice, shape_result);
         }
         last_change_glyph_index = previous_cluster_start_glyph_index;
       }
@@ -572,7 +573,7 @@ void HarfBuzzShaper::ExtractShapeResults(
 
   // End of the run.
   if (current_cluster_result != previous_cluster_result &&
-      previous_cluster_result != kUnknown && !is_last_font) {
+      previous_cluster_result != kUnknown && fallback_stage == kIntermediate) {
     // The last cluster in the run still had shaping status different from
     // the cluster(s) before it, we need to submit one shaped and one
     // unshaped segment.
@@ -585,13 +586,13 @@ void HarfBuzzShaper::ExtractShapeResults(
           ComputeSlice(range_data, current_queue_item, glyph_info, num_glyphs,
                        previous_cluster_start_glyph_index, num_glyphs);
       CommitGlyphs(range_data, current_font, current_run_script,
-                   canvas_rotation, is_last_font, slice, shape_result);
+                   canvas_rotation, fallback_stage, slice, shape_result);
     } else {
       BufferSlice slice = ComputeSlice(
           range_data, current_queue_item, glyph_info, num_glyphs,
           last_change_glyph_index, previous_cluster_start_glyph_index);
       CommitGlyphs(range_data, current_font, current_run_script,
-                   canvas_rotation, is_last_font, slice, shape_result);
+                   canvas_rotation, fallback_stage, slice, shape_result);
       slice =
           ComputeSlice(range_data, current_queue_item, glyph_info, num_glyphs,
                        previous_cluster_start_glyph_index, num_glyphs);
@@ -603,11 +604,11 @@ void HarfBuzzShaper::ExtractShapeResults(
     BufferSlice slice =
         ComputeSlice(range_data, current_queue_item, glyph_info, num_glyphs,
                      last_change_glyph_index, num_glyphs);
-    if (current_cluster_result == kNotDef && !is_last_font) {
+    if (current_cluster_result == kNotDef && fallback_stage == kIntermediate) {
       QueueCharacters(range_data, current_font, font_cycle_queued, slice);
     } else {
       CommitGlyphs(range_data, current_font, current_run_script,
-                   canvas_rotation, is_last_font, slice, shape_result);
+                   canvas_rotation, fallback_stage, slice, shape_result);
     }
   }
 }
@@ -798,6 +799,7 @@ void HarfBuzzShaper::ShapeSegment(
                                                range_data->start);
   }
   FontDataForRangeSet* current_font_data_for_range_set = nullptr;
+  FallbackFontStage fallback_stage = kIntermediate;
   while (!range_data->reshape_queue.empty()) {
     ReshapeQueueItem current_queue_item = range_data->reshape_queue.TakeFirst();
 
@@ -819,6 +821,10 @@ void HarfBuzzShaper::ShapeSegment(
       }
       font_cycle_queued = false;
       continue;
+    }
+
+    if (!fallback_iterator.HasNext()) {
+      fallback_stage = kLast;
     }
 
     const SimpleFontData* font_data =
@@ -897,7 +903,7 @@ void HarfBuzzShaper::ShapeSegment(
 
     ExtractShapeResults(range_data, font_cycle_queued, current_queue_item,
                         adjusted_font, segment.script, canvas_rotation,
-                        !fallback_iterator.HasNext(), result);
+                        fallback_stage, result);
 
     if (UNLIKELY(!han_kerning.UnsafeToBreakBefore().empty())) {
       result->AddUnsafeToBreak(han_kerning.UnsafeToBreakBefore());

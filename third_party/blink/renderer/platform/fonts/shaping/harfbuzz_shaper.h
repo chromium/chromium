@@ -135,13 +135,15 @@ class PLATFORM_EXPORT HarfBuzzShaper final {
                     const RunSegmenter::RunSegmenterRange&,
                     ShapeResult*) const;
 
+  enum FallbackFontStage { kIntermediate, kLast };
+
   void ExtractShapeResults(RangeContext*,
                            bool& font_cycle_queued,
                            const ReshapeQueueItem&,
                            const SimpleFontData*,
                            UScriptCode,
                            CanvasRotationInVertical,
-                           bool is_last_font,
+                           FallbackFontStage fallback_stage,
                            ShapeResult*) const;
 
   bool CollectFallbackHintChars(const Deque<ReshapeQueueItem>&,
@@ -152,7 +154,7 @@ class PLATFORM_EXPORT HarfBuzzShaper final {
                     const SimpleFontData* current_font,
                     UScriptCode current_run_script,
                     CanvasRotationInVertical,
-                    bool is_last_font,
+                    FallbackFontStage fallback_stage,
                     const BufferSlice&,
                     ShapeResult*) const;
 
