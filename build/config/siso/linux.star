@@ -29,6 +29,14 @@ def __filegroups(ctx):
     fg.update(proto.filegroups(ctx))
     fg.update(rust.filegroups(ctx))
     fg.update(typescript.filegroups(ctx))
+    fg["third_party/perfetto/python:python"] = {
+        "type": "glob",
+        "includes": ["*.py"],
+    }
+    fg["third_party/perfetto/src/trace_processor:trace_processor"] = {
+        "type": "glob",
+        "includes": ["*.py"],
+    }
     return fg
 
 __handlers = {}
@@ -60,6 +68,76 @@ def __step_config(ctx, step_config):
     step_config = rust.step_config(ctx, step_config)
     step_config = typescript.step_config(ctx, step_config)
     step_config = v8.step_config(ctx, step_config)
+
+    step_config["rules"].extend([
+        {
+            "name": "write_buildflag_header",
+            "command_prefix": "python3 ../../build/write_buildflag_header.py",
+            "remote": config.get(ctx, "cog"),
+            "canonicalize_dir": True,
+            "timeout": "2m",
+        },
+        {
+            "name": "write_build_date_header",
+            "command_prefix": "python3 ../../base/write_build_date_header.py",
+            "remote": config.get(ctx, "cog"),
+            "canonicalize_dir": True,
+            "timeout": "2m",
+        },
+        {
+            "name": "version_py",
+            "command_prefix": "python3 ../../build/util/version.py ",
+            "inputs": [
+                "build/util/android_chrome_version.py",
+                "build/util/LASTCHANGE",
+            ],
+            "remote": config.get(ctx, "cog"),
+            "canonicalize_dir": True,
+            "timeout": "2m",
+        },
+        {
+            "name": "perfetto/touch_file",
+            "command_prefix": "python3 ../../third_party/perfetto/tools/touch_file.py",
+            "remote": config.get(ctx, "cog"),
+            "replace": True,
+            "canonicalize_dir": True,
+            "timeout": "2m",
+        },
+        {
+            "name": "perfetto/write_buildflag_header",
+            "command_prefix": "python3 ../../third_party/perfetto/gn/write_buildflag_header.py",
+            "remote": config.get(ctx, "cog"),
+            "canonicalize_dir": True,
+            "timeout": "2m",
+        },
+        {
+            "name": "perfetto/gen_tp_table_headers",
+            "command_prefix": "python3 ../../third_party/perfetto/tools/gen_tp_table_headers.py",
+            "inputs": [
+                "third_party/perfetto/python:python",
+                "third_party/perfetto/src/trace_processor:trace_processor",
+            ],
+            "remote": config.get(ctx, "cog"),
+            "canonicalize_dir": True,
+            "timeout": "2m",
+        },
+        {
+            "name": "perfetto/gen_cc_proto_descriptor",
+            "command_prefix": "python3 ../../third_party/perfetto/tools/gen_cc_proto_descriptor.py",
+            "remote": config.get(ctx, "cog"),
+            "canonicalize_dir": True,
+            "timeout": "2m",
+        },
+        {
+            # b/331716896: local fails due to link(2) error.
+            "name": "generate_fontconfig_cache",
+            "command_prefix": "python3 ../../build/gn_run_binary.py generate_fontconfig_caches",
+            "inputs": ["./etc/fonts/fonts.conf"],
+            "remote": config.get(ctx, "cog"),
+            "canonicalize_dir": True,
+            "timeout": "2m",
+        },
+    ])
 
     return step_config
 

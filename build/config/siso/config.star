@@ -10,6 +10,9 @@ __KNOWN_CONFIG_OPTIONS = [
     # Indicates that the build runs on a builder.
     "builder",
 
+    # Indicate that it runs on Cog (automatically set on Cog).
+    "cog",
+
     # TODO: b/308405411 - Enable this config for all builders.
     "remote-devtools-frontend-typescript",
 
@@ -34,7 +37,7 @@ def __get(ctx, key):
         # disable race strategy as "builder".
         # enable "remote-*" on cog
         # TODO: b/308405411 - enable "remote-devtools-frontend-typescript"
-        if key in ("builder", "remote-library-link", "remote-exec-link"):
+        if key in ("builder", "cog", "remote-library-link", "remote-exec-link"):
             return True
     return False
 
