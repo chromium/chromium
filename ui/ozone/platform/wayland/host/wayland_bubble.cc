@@ -167,8 +167,9 @@ bool WaylandBubble::OnInitialize(PlatformWindowInitProperties properties,
                                  PlatformWindowDelegate::State* state) {
   DCHECK(parent_window());
   state->window_scale = parent_window()->applied_state().window_scale;
-  state->size_px = gfx::ScaleToEnclosingRectIgnoringError(state->bounds_dip,
-                                                          state->window_scale)
+  // See details in WaylandWindow::RequestState().
+  state->size_px = gfx::ScaleToEnclosingRectIgnoringError(
+                       gfx::Rect(state->bounds_dip.size()), state->window_scale)
                        .size();
   set_ui_scale(parent_window()->ui_scale());
 
