@@ -872,6 +872,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kString;
   (*s_allowlist)[arc::prefs::kAlwaysOnVpnLockdown] =
       settings_api::PrefType::kBoolean;
+  (*s_allowlist)[::ash::prefs::kSoftwareScanningEnabled] =
+      settings_api::PrefType::kNumber;
 
   // Restore apps and pages on startup
   (*s_allowlist)[ash::prefs::kRestoreAppsAndPagesPrefName] =

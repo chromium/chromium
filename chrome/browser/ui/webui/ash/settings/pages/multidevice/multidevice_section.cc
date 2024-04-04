@@ -784,6 +784,10 @@ void MultiDeviceSection::AddLoadTimeData(
         l10n_util::GetStringUTF16(
             IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_SECTION_TITLE));
   }
+
+  html_source->AddBoolean(
+      "isFastPairSoftwareScanningSupportEnabled",
+      ash::features::IsFastPairSoftwareScanningSupportEnabled());
 }
 
 void MultiDeviceSection::AddHandlers(content::WebUI* web_ui) {

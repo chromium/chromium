@@ -102,6 +102,28 @@ export class SettingsBluetoothDevicesSubpageElement extends
         },
         readOnly: true,
       },
+
+      isFastPairSoftwareScanningSupportEnabled_: {
+        type: Boolean,
+        readOnly: true,
+        value() {
+          return loadTimeData.getBoolean(
+              'isFastPairSoftwareScanningSupportEnabled');
+        },
+      },
+
+      // Consistent with enum `SoftwareScanningStatus` in
+      // scanning_enabled_provider.h.
+      menuOptions_: {
+        type: Array,
+        readOnly: true,
+        value() {
+          return [
+            {name: 'Never', value: 0},
+            {name: 'Only when charging', value: 2},
+          ];
+        },
+      },
     };
   }
 
@@ -111,9 +133,11 @@ export class SettingsBluetoothDevicesSubpageElement extends
   private isBluetoothToggleOn_: boolean;
   private isFastPairSupportedByDevice_: boolean;
   private lastSelectedDeviceId_: string|null;
+  private readonly menuOptions_: string[];
   private savedDevicesSublabel_: string;
   private unconnectedDevices_: PairedBluetoothDeviceProperties[];
   private isBluetoothDisconnectWarningEnabled_: boolean;
+  private readonly isSoftwareScanningSupportEnabled_: boolean;
 
   constructor() {
     super();
