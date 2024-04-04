@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/crosapi/search_provider_ash.h"
 
+#include <string>
 #include <utility>
 
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
-#include "base/logging.h"
+#include "chromeos/crosapi/mojom/launcher_search.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace crosapi {
 
@@ -22,55 +22,16 @@ void SearchProviderAsh::BindReceiver(
 
 void SearchProviderAsh::Search(const std::u16string& query,
                                SearchResultsReceivedCallback callback) {
-  if (search_controller_.is_bound() && search_controller_.is_connected()) {
-    search_controller_->Search(
-        query, base::BindOnce(&SearchProviderAsh::BindPublisher,
-                              weak_factory_.GetWeakPtr(), std::move(callback)));
-  }
+  search_controller_.Search(query, std::move(callback));
 }
 
 void SearchProviderAsh::RegisterSearchController(
     mojo::PendingRemote<mojom::SearchController> search_controller) {
-  if (search_controller_.is_bound() && search_controller_.is_connected()) {
-    LOG(ERROR) << "Search Controller is already connected.";
-    return;
-  }
-
-  search_controller_.reset();
-  search_controller_.Bind(std::move(search_controller));
-}
-
-void SearchProviderAsh::OnSearchResultsReceived(
-    mojom::SearchStatus status,
-    std::optional<std::vector<mojom::SearchResultPtr>> results) {
-  switch (status) {
-    case mojom::SearchStatus::kError: {
-      LOG(ERROR) << "Search failed.";
-      publisher_receivers_.Remove(publisher_receivers_.current_receiver());
-      return;
-    }
-    case mojom::SearchStatus::kDone: {
-      const auto& callback = publisher_receivers_.current_context();
-      if (results.has_value() && !callback.is_null())
-        callback.Run(std::move(results.value()));
-      return;
-    }
-    case mojom::SearchStatus::kInProgress:
-    case mojom::SearchStatus::kCancelled:
-    case mojom::SearchStatus::kBackendUnavailable: {
-      return;
-    }
-  }
+  search_controller_.RegisterSearchController(std::move(search_controller));
 }
 
 bool SearchProviderAsh::IsSearchControllerConnected() const {
-  return search_controller_.is_bound() && search_controller_.is_connected();
-}
-
-void SearchProviderAsh::BindPublisher(
-    SearchResultsReceivedCallback callback,
-    mojo::PendingAssociatedReceiver<mojom::SearchResultsPublisher> publisher) {
-  publisher_receivers_.Add(this, std::move(publisher), std::move(callback));
+  return search_controller_.IsSearchControllerConnected();
 }
 
 }  // namespace crosapi
