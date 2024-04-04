@@ -1407,6 +1407,32 @@ ReadAnythingAppModel::GetNextValidPositionFromCurrentPosition(
   while (!IsValidAXPosition(new_position, current_granularity)) {
     ui::AXNodePosition::AXPositionInstance possible_new_position =
         new_position->CreateNextSentenceStartPosition(movement_options);
+    bool use_paragraph = false;
+
+    // If the new position and the previous position are the same, try moving
+    // to the next paragraph position instead. This happens rarely, but when
+    // it does, we can get stuck in an infinite loop of calling
+    // CreateNextSentenceStartPosition, as it will always return the same
+    // position.
+    if (possible_new_position->GetAnchor() && new_position->GetAnchor() &&
+        (possible_new_position->GetAnchor()->id() ==
+         new_position->GetAnchor()->id())) {
+      use_paragraph = true;
+      possible_new_position =
+          new_position->CreateNextParagraphStartPosition(movement_options);
+    }
+
+    // If the new position is still the same as the old position after trying
+    // a paragraph position, go ahead and return a null position instead, as
+    // ending speech early is preferable to getting stuck in an infinite
+    // loop.
+    if (possible_new_position->GetAnchor() && new_position->GetAnchor() &&
+        (possible_new_position->GetAnchor()->id() ==
+         new_position->GetAnchor()->id())) {
+      possible_new_position =
+          ui::AXNodePosition::AXPosition::CreateNullPosition();
+    }
+
     if (!possible_new_position->GetAnchor()) {
       if (NodeBeenOrWillBeSpoken(current_granularity,
                                  new_position->GetAnchor()->id())) {
@@ -1419,7 +1445,9 @@ ReadAnythingAppModel::GetNextValidPositionFromCurrentPosition(
     }
 
     new_position =
-        new_position->CreateNextSentenceStartPosition(movement_options);
+        use_paragraph
+            ? new_position->CreateNextParagraphStartPosition(movement_options)
+            : new_position->CreateNextSentenceStartPosition(movement_options);
   }
 
   return new_position;
