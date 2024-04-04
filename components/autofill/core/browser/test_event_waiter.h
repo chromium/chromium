@@ -52,6 +52,8 @@ class EventWaiter {
   base::TimeDelta timeout_;
   base::Location location_;
   base::RunLoop run_loop_;
+  // Collects failure messages that occur during Wait().
+  std::list<testing::Message> failure_messages_;
 };
 
 template <typename Event>
@@ -77,14 +79,25 @@ testing::AssertionResult EventWaiter<Event>::Wait() {
 
   DCHECK(!run_loop_.running());
   run_loop_.Run();
-  if (expected_events_.empty()) {
+
+  if (!expected_events_.empty()) {
+    failure_messages_.push_back(
+        testing::Message()
+        << expected_events_.size()
+        << " expected event(s) still pending after RunLoop timeout of "
+        << timeout_ << ", ");
+  }
+
+  if (failure_messages_.empty()) {
     return testing::AssertionSuccess();
   }
-  return testing::AssertionFailure()
-         << expected_events_.size()
-         << " expected event(s) still pending after RunLoop timeout of "
-         << timeout_ << ", from EventWaiter created in "
-         << location_.ToString();
+
+  testing::AssertionResult failure_result = testing::AssertionFailure();
+  for (auto message : failure_messages_) {
+    failure_result << message;
+  }
+  failure_result << "from EventWaiter created in " << location_.ToString();
+  return failure_result;
 }
 
 template <typename Event>
@@ -92,8 +105,13 @@ void EventWaiter<Event>::OnEvent(Event actual_event) {
   if (expected_events_.empty())
     return;
 
-  ASSERT_EQ(expected_events_.front(), actual_event)
-      << " in EventWaiter created at " << location_.ToString();
+  if (expected_events_.front() != actual_event) {
+    failure_messages_.push_back(
+        testing::Message() << "Expected:'"
+                           << ::testing::PrintToString(expected_events_.front())
+                           << "' but received:`"
+                           << ::testing::PrintToString(actual_event) << "', ");
+  }
   expected_events_.pop_front();
   // Only quit the loop if no other events are expected.
   if (expected_events_.empty() && run_loop_.running())
