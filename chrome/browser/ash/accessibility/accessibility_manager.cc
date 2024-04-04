@@ -1802,6 +1802,13 @@ void AccessibilityManager::UpdateChromeOSAccessibilityHistograms() {
         prefs->GetBoolean(prefs::kAccessibilityAutoclickEnabled);
     base::UmaHistogramBoolean("Accessibility.CrosAutoclick", autoclick_enabled);
 
+    if (::features::IsAccessibilityReducedAnimationsEnabled()) {
+      bool reduced_animations_enabled =
+          prefs->GetBoolean(prefs::kAccessibilityReducedAnimationsEnabled);
+      base::UmaHistogramBoolean("Accessibility.CrosReducedAnimations",
+                                reduced_animations_enabled);
+    }
+
     base::UmaHistogramBoolean(
         "Accessibility.CrosCursorColor",
         prefs->GetBoolean(prefs::kAccessibilityCursorColorEnabled));

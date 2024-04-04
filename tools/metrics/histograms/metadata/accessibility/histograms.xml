@@ -37,6 +37,7 @@ chromium-metrics-reviews@google.com.
   <variant name="FocusHighlight"/>
   <variant name="HighContrast"/>
   <variant name="LargeCursor"/>
+  <variant name="ReducedAnimations"/>
   <variant name="ScreenMagnifier"/>
   <variant name="SelectToSpeak"/>
   <variant name="StickyKeys"/>
